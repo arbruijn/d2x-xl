@@ -784,7 +784,7 @@ return bOk;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPlayer (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderPlayerModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 int bDynObjLight = (RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
 if (automap.m_bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
@@ -810,7 +810,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderRobot (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderRobotModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 if (gameStates.render.nType != 1)
 	return 0;
@@ -835,7 +835,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderReactor (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderReactorModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 if (gameStates.render.nType != 1)
 	return 0;
@@ -847,7 +847,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderWeapon (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderWeaponModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 	return 0;
@@ -917,7 +917,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPowerup (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderPowerupModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 	return 0;
@@ -945,7 +945,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderHostage (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderHostageModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, bDepthSort, 0)))
 	ConvertModelToHostage (objP);
@@ -968,10 +968,119 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
+static int RenderFireball (CObject* objP, int bForce)
+{
+if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
+	return 0;
+if (gameStates.render.nShadowPass != 2) {
+	DrawFireball (objP);
+	if (objP->info.nType == OBJ_WEAPON) {
+		RenderLightTrail (objP);
+		}
+	}
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderExplBlast (CObject* objP, int bForce)
+{
+if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
+	return 0;
+if (gameStates.render.nShadowPass != 2)
+	DrawExplBlast (objP);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderShrapnel (CObject* objP, int bForce)
+{
+if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
+	return 0;
+if (gameStates.render.nShadowPass != 2)
+	shrapnelManager.Draw (objP);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderWeapon (CObject* objP, int bForce)
+{
+if (gameStates.render.nType != 1)
+	return 0;
+if (gameStates.render.nShadowPass != 2) {
+	if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+		return 0;
+	if (objP->info.nType != OBJ_WEAPON)
+		DrawWeaponVClip (objP);
+	else {
+		if (WeaponIsMine (objP->info.nId)) {
+			if (!DoObjectSmoke (objP))
+				DrawWeaponVClip (objP);
+			}
+		else if ((objP->info.nId != OMEGA_ID) || !(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega)) {
+			DrawWeaponVClip (objP);
+			if (objP->info.nId != OMEGA_ID) {
+				RenderLightTrail (objP);
+				RenderMslLockIndicator (objP);
+				}
+			}
+		}
+	}
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderHostage (CObject* objP, int bDepthSort, int bForce)
+{
+if (gameStates.render.nType != 1)
+	return 0;
+if (ConvertHostageToModel (objP))
+	DrawPolygonObject (objP, bDepthSort, 0);
+else if (gameStates.render.nShadowPass != 2)
+	DrawHostage (objP);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderPowerup (CObject* objP, int bDepthSort, int bForce)
+{
+if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+	return 0;
+if (gameStates.render.nType != 1)
+	return 0;
+if (objP->PowerupToWeapon ()) {
+	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+	DrawPolygonObject (objP, bDepthSort, 0);
+	}
+else if (gameStates.render.nShadowPass != 2)
+	DrawPowerup (objP);
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static int RenderLaser (CObject* objP, int bForce)
+{
+if (gameStates.render.bQueryCoronas && (gameStates.render.nType != 1))
+	return 0;
+if (gameStates.render.nShadowPass != 2) {
+	RenderLaser (objP);
+	if (objP->info.nType == OBJ_WEAPON)
+		RenderLightTrail (objP);
+	}
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
 int RenderObject (CObject *objP, int nWindow, int bForce)
 {
 	short			nObject = objP->Index ();
-	int			mldSave, bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
+	int			bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
 
 int nType = objP->info.nType;
 if (nType == 255) {
@@ -1022,7 +1131,7 @@ if ((nType == OBJ_NONE)/* || (nType==OBJ_CAMBOT)*/){
 #endif
 	return 0;
 	}
-mldSave = gameStates.render.detail.nMaxLinearDepth;
+int mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
@@ -1059,27 +1168,27 @@ switch (objP->info.renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (nType == OBJ_PLAYER) {
-			if (!RenderPlayer (objP, bDepthSort, bSpectate))
+			if (!RenderPlayerModel (objP, bDepthSort, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_ROBOT) {
-			if (!RenderRobot (objP, bDepthSort, bSpectate))
+			if (!RenderRobotModel (objP, bDepthSort, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_WEAPON) {
-			if (!RenderWeapon (objP, bDepthSort, bSpectate))
+			if (!RenderWeaponModel (objP, bDepthSort, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_REACTOR) {
-			if (!RenderReactor (objP, bDepthSort, bSpectate))
+			if (!RenderReactorModel (objP, bDepthSort, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_POWERUP) {
-			if (!RenderPowerup (objP, bDepthSort, bSpectate))
+			if (!RenderPowerupModel (objP, bDepthSort, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_HOSTAGE) {
-			if (!RenderHostage (objP, bDepthSort, bSpectate))
+			if (!RenderHostageModel (objP, bDepthSort, bSpectate))
 				return 0;
 			}
 		else {
@@ -1102,88 +1211,38 @@ switch (objP->info.renderType) {
 			break;
 
 	case RT_FIREBALL:
-		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
+		if (!RenderFireball (objP, bForce))
 			return 0;
-		if (gameStates.render.nShadowPass != 2) {
-			DrawFireball (objP);
-			if (nType == OBJ_WEAPON) {
-				RenderLightTrail (objP);
-				}
-			}
 		break;
 
 	case RT_EXPLBLAST:
-		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
+		if (!RenderExplBlast (objP, bForce))
 			return 0;
-		if (gameStates.render.nShadowPass != 2)
-			DrawExplBlast (objP);
 		break;
 
 	case RT_SHRAPNELS:
-		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
+		if (!RenderShrapnel (objP, bForce))
 			return 0;
-		if (gameStates.render.nShadowPass != 2)
-			shrapnelManager.Draw (objP);
 		break;
 
 	case RT_WEAPON_VCLIP:
-		if (gameStates.render.nType != 1)
+		if (!RenderWeapon (objP, bForce))
 			return 0;
-		if (gameStates.render.nShadowPass != 2) {
-			if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
-				return 0;
-			if (nType != OBJ_WEAPON)
-				DrawWeaponVClip (objP);
-			else {
-				if (WeaponIsMine (objP->info.nId)) {
-					if (!DoObjectSmoke (objP))
-						DrawWeaponVClip (objP);
-					}
-				else if ((objP->info.nId != OMEGA_ID) || !(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega)) {
-					DrawWeaponVClip (objP);
-					if (objP->info.nId != OMEGA_ID) {
-						RenderLightTrail (objP);
-						RenderMslLockIndicator (objP);
-						}
-					}
-				}
-#if 0//def _DEBUG
-			if (EGI_FLAG (bPlayerShield, 0, 1, 0))
-				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
-#endif
-			}
 		break;
 
 	case RT_HOSTAGE:
-		if (gameStates.render.nType != 1)
+		if (!RenderHostage (objP, bDepthSort, bForce))
 			return 0;
-		if (ConvertHostageToModel (objP))
-			DrawPolygonObject (objP, bDepthSort, 0);
-		else if (gameStates.render.nShadowPass != 2)
-			DrawHostage (objP);
 		break;
 
 	case RT_POWERUP:
-		if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+		if (!RenderPowerup (objP, bDepthSort, bForce))
 			return 0;
-		if (gameStates.render.nType != 1)
-			return 0;
-		if (objP->PowerupToWeapon ()) {
-			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
-			DrawPolygonObject (objP, bDepthSort, 0);
-			}
-		else if (gameStates.render.nShadowPass != 2)
-			DrawPowerup (objP);
 		break;
 
 	case RT_LASER:
-		if (gameStates.render.bQueryCoronas && (gameStates.render.nType != 1))
+		if (!RenderLaser (objP, bForce))
 			return 0;
-		if (gameStates.render.nShadowPass != 2) {
-			RenderLaser (objP);
-			if (nType == OBJ_WEAPON)
-				RenderLightTrail (objP);
-			}
 		break;
 
 	case RT_SMOKE:
