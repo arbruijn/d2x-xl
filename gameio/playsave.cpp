@@ -547,6 +547,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.color.nLightmapRange, i, 0);
 
 		RP (gameOptions [i].render.powerups.b3D, i, 0);
+		RP (gameOptions [i].render.powerups.b3DShields, i, 0);
 		RP (gameOptions [i].render.powerups.nSpin, i, 0);
 
 		RP (gameOptions [i].render.shadows.bFast, i, 0);
@@ -1070,6 +1071,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.lightnings.nQuality", "1"},
  {"gameOptions[0].render.lightnings.nStyle", "1"},
  {"gameOptions[0].render.powerups.b3D", "1"},
+ {"gameOptions[0].render.powerups.b3DShields", "1"},
  {"gameOptions[0].render.powerups.nSpin", "1"},
  {"gameOptions[0].render.shadows.bFast", "1"},
  {"gameOptions[0].render.shadows.bMissiles", "1"},

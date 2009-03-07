@@ -95,15 +95,17 @@ void PowerupOptionsMenu (void)
 {
 	CMenu m;
 	int	i, j, choice = 0;
-	int	optSpin;
+	int	optSpin, optShieldSpheres;
 
 do {
 	m.Destroy ();
 	m.Create (10);
 	nOpt3D = m.AddCheck (TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);
 	if (!gameOpts->render.powerups.b3D)
-		optSpin = -1;
+		optSpin = 
+		optShieldSpheres = -1;
 	else {
+		optShieldSpheres = m.AddCheck (TXT_3D_SHIELDS, gameOpts->render.powerups.b3DShields, KEY_S, HTX_3D_SHIELDS);
 		m.AddText ("", 0);
 		optSpin = m.AddRadio (TXT_SPIN_OFF, 0, KEY_O);
 		m.AddRadio (TXT_SPIN_SLOW, 0, KEY_S);
@@ -116,12 +118,14 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (gameOpts->render.powerups.b3D && (optSpin >= 0))
+	if (gameOpts->render.powerups.b3D && (optSpin >= 0)) {
+		gameOpts->render.powerups.b3DShields = m [optShieldSpheres].m_value != 0;
 		for (j = 0; j < 4; j++)
 			if (m [optSpin + j].m_value) {
 				gameOpts->render.powerups.nSpin = j;
 				break;
 			}
+		}
 	} while (i == -2);
 }
 

@@ -296,6 +296,7 @@ typedef struct tShadowOptions {
 
 typedef struct tPowerupOptions {
 	int b3D;
+	int b3DShields;
 	int nSpin;
 } tPowerupOptions;
 

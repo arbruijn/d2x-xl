@@ -685,7 +685,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha)
+void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, fix nSize)
 {
 if (!CreateShieldSphere ())
 	return;
@@ -696,7 +696,8 @@ if (gameData.render.shield.nFaces > 0)
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
-		fix nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
+		if (!nSize)
+			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 		float	fScale, r = X2F (nSize) /** 1.05f*/;
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;

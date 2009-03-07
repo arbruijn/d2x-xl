@@ -56,7 +56,7 @@ class CSphere : private CSphereData {
 void SetupSpherePulse (CPulseData *pulseP, float fSpeed, float fMin);
 
 int CreateShieldSphere (void);
-void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha);
+void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, fix nSize = 0);
 void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha);
 
 #endif //__SPHERE_H
