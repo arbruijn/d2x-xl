@@ -719,7 +719,7 @@ if (gameData.render.shield.nFaces > 0)
 		gameStates.ogl.bUseTransform = 0;
 		transformation.Begin (vPos, posP->mOrient);
 		vPos.SetZero ();
-		glBlendFunc (GL_ONE, GL_ONE);
+		//glBlendFunc (GL_ONE, GL_ONE);
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		transformation.End ();
 		}
