@@ -413,7 +413,7 @@ if (m_bRadar) {
 	return;
 	}
 DrawLevelId ();
-PROF_END(ptFrame)
+PROF_END(ptRenderFrame)
 #endif
 OglSwapBuffers (0, 0);
 }
@@ -763,6 +763,7 @@ if (bRadar) {
 Controls [0].automapState = 0;
 GetSlowTicks ();
 do {
+	PROF_START
 	if (!nLeaveMode && Controls [0].automapState && ((TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME))
 		nLeaveMode = 1;
 	if (!Controls [0].automapState && (nLeaveMode == 1))
@@ -771,11 +772,7 @@ do {
 	redbook.CheckRepeat ();
 	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update (vTAngles);
-	{
-	PROF_START
 	Draw ();
-	PROF_END (ptFrame)
-	}
 	if (bFirstTime) {
 		bFirstTime = 0;
 		paletteManager.LoadEffect ();
@@ -784,6 +781,7 @@ do {
 	if (bPauseGame)
 		gameData.time.xFrame = t2 - t1;
 	t1 = t2;
+	PROF_END(ptFrame)
 	} while (!bDone);
 #if 0
 GrFreeCanvas (levelNumCanv);  

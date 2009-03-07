@@ -39,7 +39,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #include "transprender.h"
 #include "renderthreads.h"
 
-#define RENDER_TRANSPARENCY 1
+#define RENDER_TRANSPARENCY 0
 #define RENDER_TRANSP_DECALS 1
 
 #define TI_SPLIT_POLYS 0
@@ -1484,7 +1484,7 @@ void CTransparencyRenderer::Render (void)
 {
 #if RENDER_TRANSPARENCY
 	struct tTranspItem	**pd, *pl, *pn;
-	int						nDepth, bStencil;
+	int						nItems, nDepth, bStencil;
 
 if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
@@ -1522,7 +1522,7 @@ glDepthMask (0);
 glEnable (GL_CULL_FACE);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
-for (pd = m_data.depthBuffer + m_data.nMaxOffs; (pd >= m_data.depthBuffer.Buffer ()) && m_data.nItems; pd--) {
+for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems; (pd >= m_data.depthBuffer.Buffer ()) && nItems; pd--) {
 	if ((pl = *pd)) {
 		*pd = NULL;
 		nDepth = 0;
@@ -1531,7 +1531,7 @@ for (pd = m_data.depthBuffer + m_data.nMaxOffs; (pd >= m_data.depthBuffer.Buffer
 			if (pl->nItem == nDbgItem)
 				nDbgItem = nDbgItem;
 #endif
-			m_data.nItems--;
+			nItems--;
 			RenderItem (pl);
 			pn = pl->pNextItem;
 			pl->pNextItem = NULL;

@@ -528,7 +528,7 @@ else {
 			}
 		}
 	}
-if (!gameOpts->ogl.bGlTexMerge)
+if (!(gameStates.ogl.bGlTexMerge = gameOpts->ogl.bGlTexMerge))
 	gameStates.ogl.bHaveTexCompression = 0;
 }
 
