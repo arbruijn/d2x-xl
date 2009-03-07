@@ -106,7 +106,7 @@ tRenderQuality renderQualities [] = {
 	{GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR, 1, 0},	// smooth close textures, use non-smoothed mipmaps distant textures
 	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 0},	//smooth close textures, use smoothed mipmaps for distant ones
 	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1},	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
-	{GL_LINEAR, GL_LINEAR, 0, 1},	// special mode for high quality movie rendering: smooth textures + anti aliasing
+	{GL_LINEAR, GL_LINEAR, 0, 1}	// special mode for high quality movie rendering: smooth textures + anti aliasing
 	};
 
 //------------------------------------------------------------------------------
@@ -187,15 +187,15 @@ CFixVector	vNormal;
 #if 1
 if (pvNormal) {
 	if (gameStates.ogl.bUseTransform)
-		glNormal3f ((GLfloat) X2F ((*pvNormal)[X]),
-						(GLfloat) X2F ((*pvNormal)[Y]),
-						(GLfloat) X2F ((*pvNormal)[Z]));
+		glNormal3f ((GLfloat) X2F ((*pvNormal) [X]),
+						(GLfloat) X2F ((*pvNormal) [Y]),
+						(GLfloat) X2F ((*pvNormal) [Z]));
 		//VmVecAdd (&vNormal, pvNormal, &pointList [0]->p3_vec);
 	else {
 		transformation.Rotate (vNormal, *pvNormal, 0);
-		glNormal3f ((GLfloat) X2F (vNormal[X]),
-						(GLfloat) X2F (vNormal[Y]),
-						(GLfloat) X2F (vNormal[Z]));
+		glNormal3f ((GLfloat) X2F (vNormal [X]),
+						(GLfloat) X2F (vNormal [Y]),
+						(GLfloat) X2F (vNormal [Z]));
 		//VmVecInc (&vNormal, &pointList [0]->p3_vec);
 		}
 //	glNormal3f ((GLfloat) X2F (vNormal.x), (GLfloat) X2F (vNormal.y), (GLfloat) X2F (vNormal.z));
@@ -209,10 +209,8 @@ else
 	v [1] = pointList [1]->p3_index;
 	v [2] = pointList [2]->p3_index;
 	if ((v [0] < 0) || (v [1] < 0) || (v [2] < 0)) {
-		vNormal = CFixVector::Normal (pointList [0]->p3_vec,
-						 pointList [1]->p3_vec,
-						 pointList [2]->p3_vec);
-		glNormal3f ((GLfloat) X2F (vNormal[X]), (GLfloat) X2F (vNormal[Y]), (GLfloat) X2F (vNormal[Z]));
+		vNormal = CFixVector::Normal (pointList [0]->p3_vec, pointList [1]->p3_vec, pointList [2]->p3_vec);
+		glNormal3f ((GLfloat) X2F (vNormal [X]), (GLfloat) X2F (vNormal [Y]), (GLfloat) X2F (vNormal [Z]));
 		}
 	else {
 		int bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted);
@@ -729,7 +727,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		time_t t1 = clock ();
 		static tProfilerData p;
 		static float nFrameCount = 1;
-		if (t1 - t0 >= 500) {
+		if (t1 - t0 >= 1000) {
 			memcpy (&p, &gameData.profiler, sizeof (p));
 			nFrameCount = float (gameData.app.nFrameCount);
 			t0 = t1;
