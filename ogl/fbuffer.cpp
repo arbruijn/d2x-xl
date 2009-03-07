@@ -231,43 +231,51 @@ return 1;
 
 void CFBO::Setup (void)
 {
+PrintLog ("Checking rendering to texture ...\n");
 #if RENDER2TEXTURE
 if (gameStates.ogl.bUseRender2Texture) {
 #	ifdef _WIN32
-	glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) wglGetProcAddress ("glBindRenderbufferEXT");
-	glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC) wglGetProcAddress ("glIsRenderbufferEXT");
-	glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC) wglGetProcAddress ("glDeleteRenderbuffersEXT");
-	glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) wglGetProcAddress ("glGenRenderbuffersEXT");
-	glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) wglGetProcAddress ("glRenderbufferStorageEXT");
-	glGetRenderbufferParameterivEXT = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC) wglGetProcAddress ("glGetRenderbufferParameterivEXT");
-	glIsFramebufferEXT = (PFNGLISFRAMEBUFFEREXTPROC) wglGetProcAddress ("glIsFramebufferEXT");
-	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) wglGetProcAddress ("glBindFramebufferEXT");
-	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) wglGetProcAddress ("glDeleteFramebuffersEXT");
-	glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC) wglGetProcAddress ("glGenFramebuffersEXT");
-	glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) wglGetProcAddress ("glCheckFramebufferStatusEXT");
-	glFramebufferTexture1DEXT = (PFNGLFRAMEBUFFERTEXTURE1DEXTPROC) wglGetProcAddress ("glFramebufferTexture1DEXT");
-	glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) wglGetProcAddress ("glFramebufferTexture2DEXT");
-	glFramebufferTexture3DEXT = (PFNGLFRAMEBUFFERTEXTURE3DEXTPROC) wglGetProcAddress ("glFramebufferTexture3DEXT");
-	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) wglGetProcAddress ("glFramebufferRenderbufferEXT");
-	glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) wglGetProcAddress ("glGetFramebufferAttachmentParameterivEXT");
-	glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC) wglGetProcAddress ("glGenerateMipmapEXT");
-
-	gameStates.ogl.bRender2TextureOk =
-		(glBindRenderbufferEXT && glIsRenderbufferEXT && glDeleteRenderbuffersEXT &&
-		 glGenRenderbuffersEXT && glRenderbufferStorageEXT && glGetRenderbufferParameterivEXT &&
-		 glIsFramebufferEXT && glBindFramebufferEXT && glDeleteFramebuffersEXT &&
-		 glGenFramebuffersEXT && glCheckFramebufferStatusEXT && glFramebufferTexture1DEXT &&
-		 glFramebufferTexture2DEXT && glFramebufferTexture3DEXT && glFramebufferRenderbufferEXT &&
-		 glGetFramebufferAttachmentParameterivEXT && glGenerateMipmapEXT) ?
-		 2 : 0;
-#	else
-gameStates.ogl.bRender2TextureOk = 2;
+	gameStates.ogl.bRender2TextureOk = 0;
+	if (!(glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) wglGetProcAddress ("glBindRenderbufferEXT")))
+		PrintLog ("   glBindRenderbufferEXT not supported by the OpenGL driver\n");
+	if (!(glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC) wglGetProcAddress ("glIsRenderbufferEXT")))
+		PrintLog ("   glIsRenderbufferEXT not supported by the OpenGL driver\n");
+	if (!(glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC) wglGetProcAddress ("glDeleteRenderbuffersEXT")))
+		PrintLog ("   glDeleteRenderbuffersEXT not supported by the OpenGL driver\n");
+	if (!(glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) wglGetProcAddress ("glGenRenderbuffersEXT")))
+		PrintLog ("   glGenRenderbuffersEXT not supported by the OpenGL driver\n");
+	if (!(glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) wglGetProcAddress ("glRenderbufferStorageEXT")))
+		PrintLog ("   glRenderbufferStorageEXT not supported by the OpenGL driver\n");
+	if (!(glGetRenderbufferParameterivEXT = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC) wglGetProcAddress ("glGetRenderbufferParameterivEXT")))
+		PrintLog ("   glGetRenderbufferParameterivEXT not supported by the OpenGL driver\n");
+	if (!(glIsFramebufferEXT = (PFNGLISFRAMEBUFFEREXTPROC) wglGetProcAddress ("glIsFramebufferEXT")))
+		PrintLog ("   glIsFramebufferEXT not supported by the OpenGL driver\n");
+	if (!(glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) wglGetProcAddress ("glBindFramebufferEXT")))
+		PrintLog ("   glBindFramebufferEXT not supported by the OpenGL driver\n");
+	if (!(glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) wglGetProcAddress ("glDeleteFramebuffersEXT")))
+		PrintLog ("   glDeleteFramebuffersEXT not supported by the OpenGL driver\n");
+	if (!(glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC) wglGetProcAddress ("glGenFramebuffersEXT")))
+		PrintLog ("   glGenFramebuffersEXT not supported by the OpenGL driver\n");
+	if (!(glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) wglGetProcAddress ("glCheckFramebufferStatusEXT")))
+		PrintLog ("   glCheckFramebufferStatusEXT not supported by the OpenGL driver\n");
+	if (!(glFramebufferTexture1DEXT = (PFNGLFRAMEBUFFERTEXTURE1DEXTPROC) wglGetProcAddress ("glFramebufferTexture1DEXT")))
+		PrintLog ("   glFramebufferTexture1DEXT not supported by the OpenGL driver\n");
+	if (!(glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) wglGetProcAddress ("glFramebufferTexture2DEXT")))
+		PrintLog ("   glFramebufferTexture2DEXT not supported by the OpenGL driver\n");
+	if (!(glFramebufferTexture3DEXT = (PFNGLFRAMEBUFFERTEXTURE3DEXTPROC) wglGetProcAddress ("glFramebufferTexture3DEXT")))
+		PrintLog ("   glFramebufferTexture3DEXT not supported by the OpenGL driver\n");
+	if (!(glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) wglGetProcAddress ("glFramebufferRenderbufferEXT")))
+		PrintLog ("   glFramebufferRenderbufferEXT not supported by the OpenGL driver\n");
+	if (!(glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) wglGetProcAddress ("glGetFramebufferAttachmentParameterivEXT")))
+		PrintLog ("   glGetFramebufferAttachmentParameterivEXT not supported by the OpenGL driver\n");
+	if (!(glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC) wglGetProcAddress ("glGenerateMipmapEXT")))
+		PrintLog ("   glGenerateMipmapEXT not supported by the OpenGL driver\n");
+	else
 #	endif
+gameStates.ogl.bRender2TextureOk = 2;
 	}
 #endif
-PrintLog ((gameStates.ogl.bRender2TextureOk == 2)  
-		  ? "Rendering to texture is available\n" 
-		  : "No rendering to texture available\n");
+PrintLog ((gameStates.ogl.bRender2TextureOk == 2) ? "Rendering to texture is available\n" : "No rendering to texture available\n");
 }
 
 //------------------------------------------------------------------------------
