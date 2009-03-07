@@ -709,7 +709,7 @@ while ((c = KeyInKey ())) {
 			break;
 		}
 	}
-return bDone || gameStates.menus.nInMenu;
+return bDone;
 }
 
 //------------------------------------------------------------------------------
@@ -769,7 +769,7 @@ do {
 		bDone = 1;
 	bDone = GameFrame (bPauseGame, bDone);
 	redbook.CheckRepeat ();
-	bDone = ReadControls (nLeaveMode, bDone, bPauseGame);
+	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update (vTAngles);
 	{
 	PROF_START
@@ -791,10 +791,12 @@ levelNumCanv = NULL;
 GrFreeCanvas (levelNameCanv);  
 levelNameCanv = NULL;
 #endif
-GameFlushInputs ();
-if (gameData.app.bGamePaused)
-	ResumeGame ();
-gameStates.ogl.nContrast = nContrast;
+if (!gameStates.menus.nInMenu) {
+	GameFlushInputs ();
+	if (gameData.app.bGamePaused)
+		ResumeGame ();
+	gameStates.ogl.nContrast = nContrast;
+	}	
 m_bDisplay--;
 }
 
