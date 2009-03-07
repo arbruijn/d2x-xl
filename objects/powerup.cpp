@@ -192,8 +192,9 @@ void DrawPowerup (CObject *objP)
 #endif
 if (objP->info.nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
-else if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && (objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST))
-	DrawShieldSphere (objP, 0.0f, 0.15f, 0.75f, 0.5f, objP->info.xSize);
+else if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) && 
+			!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields)
+	DrawShieldSphere (objP, 0.0f, 0.15f, 0.75f, 0.5f, objP->info.xSize / 2);
 else if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < VCLIP_MAXNUM))) {
 		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
 		int				iFrame = objP->rType.vClipInfo.nCurFrame;

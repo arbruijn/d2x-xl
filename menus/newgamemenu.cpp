@@ -275,7 +275,7 @@ void NewGameMenu (void)
 	char				szLevel [5];
 #if DBG
 	int				optLives;
-	char				szLives [10];
+	char				szLives [5];
 #endif
 
 	static int		nPlayerMaxLevel = 1;
@@ -311,7 +311,7 @@ for (;;) {
 	menu.AddText ("");
 	menu.AddText ("Initial Lives:");
 	sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
-	optLives = menu.AddInput (szLives, 5);
+	optLives = menu.AddInput (szLives, 4);
 #endif
 	menu.AddText ("                              ", 0);
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
@@ -366,7 +366,7 @@ for (;;) {
 	else {
 		i = atoi (menu [optLives].m_text);
 		if (i > 0)
-			gameStates.gameplay.nInitialLives = i;
+			gameStates.gameplay.nInitialLives = min (i, 255);
 		}
 #endif
 	}
