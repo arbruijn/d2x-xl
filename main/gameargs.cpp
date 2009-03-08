@@ -258,7 +258,7 @@ if ((t = FindArg ("-sdl_mixer")))
 	gameOptions [0].sound.bUseSDLMixer = NumArg (t, 1);
 #endif
 #ifdef __macosx__
-	unsigned int address = (unsigned int)(Mix_OpenAudio); 
+	uintptr_t address = (uintptr_t)(Mix_OpenAudio); 
 	if(address == 0u) { 
 		// the SDL_mixer framework is not present,
 		// so regardless of what conf.h or d2x.ini says,
