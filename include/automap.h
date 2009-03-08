@@ -84,6 +84,8 @@ class CAutomap {
 		int						m_nLastEdge;
 		int						m_nWidth;
 		int						m_nHeight;
+		int						m_bChaseCam;
+		int						m_bFreeCam;
 		char						m_szLevelNum [200];
 		char						m_szLevelName [200];
 		CBitmap					m_background;

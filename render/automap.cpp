@@ -47,6 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "songs.h"
 #include "menubackground.h"
+#include "systemkeys.h"
 #include "automap.h"
 
 #ifndef Pi
@@ -463,7 +464,12 @@ int CAutomap::Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles)
 		fix		t1, t2;
 		CObject	*playerP;
 
-m_bDisplay++;
+if (!m_bDisplay++) {
+	if (m_bChaseCam = gameStates.render.bChaseCam)
+		SetChaseCam (0);
+	if (m_bFreeCam = gameStates.render.bFreeCam)
+		SetFreeCam (0);
+	}
 gameStates.ogl.nContrast = 8;
 InitColors ();
 if (!m_bRadar)
@@ -756,8 +762,14 @@ bPauseGame = Setup (bPauseGame, xEntryTime, vTAngles);
 bRedrawScreen = 0;
 if (bRadar) {
 	Draw ();
+	
 	gameStates.ogl.nContrast = nContrast;
-	m_bDisplay--;
+	if (!--m_bDisplay) {
+		if (m_bChaseCam)
+			SetChaseCam (1);
+		else if (m_bFreeCam)
+			SetFreeCam (1);
+		}
 	return;
 	}
 Controls [0].automapState = 0;
@@ -795,7 +807,12 @@ if (!gameStates.menus.nInMenu) {
 		ResumeGame ();
 	gameStates.ogl.nContrast = nContrast;
 	}	
-m_bDisplay--;
+if (!--m_bDisplay) {
+	if (m_bChaseCam)
+		SetChaseCam (1);
+	else if (m_bFreeCam)
+		SetFreeCam (1);
+	}
 }
 
 //------------------------------------------------------------------------------
