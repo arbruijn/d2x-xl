@@ -160,10 +160,10 @@ aspect = float (screen.Width ()) / float (screen.Height ());
 
 void CBitmap::OglTexCoord (void)
 {
-float h = float (m_info.texture.TW ());
+float h = float (m_info.texP->TW ());
 u1 = float (Left ()) / h;
 u2 = float (Right ()) / h;
-h = float (m_info.texture.TH ());
+h = float (m_info.texP->TH ());
 v1 = float (Top ()) / h;
 v2 = float (Bottom ()) / h;
 }
@@ -177,7 +177,7 @@ glEnable (GL_TEXTURE_2D);
 glActiveTexture (GL_TEXTURE0);
 if (Bind (bMipMaps, nTransp))
 	return NULL;
-m_info.texture.Wrap (GL_REPEAT);
+m_info.texP->Wrap (GL_REPEAT);
 
 bBlendState = glIsEnabled (GL_BLEND);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
@@ -287,24 +287,24 @@ if (wSrc < 0)
 else {
 	u2 = float (wSrc) / float (Width ());
 	if (u2 < 1.0f)
-		u2 *= m_info.texture.U ();
+		u2 *= m_info.texP->U ();
 	else
-		u2 = m_info.texture.U ();
+		u2 = m_info.texP->U ();
 	}
 if (hSrc < 0)
 	v2 = float (destP->Height ()) / float (-hSrc);
 else {
 	v2 = float (hSrc) / float (Height ());
 	if (v2 < 1.0f)
-		v2 *= m_info.texture.V ();
+		v2 *= m_info.texP->V ();
 	else
-		v2 = m_info.texture.V ();
+		v2 = m_info.texP->V ();
 	}
 OglRender (colorP, nColors, 0);
 OglEndRender ();
 
 if (bLocal) {
-	m_info.texture.Release ();
+	m_info.texP->Release ();
 	}
 return 0;
 }

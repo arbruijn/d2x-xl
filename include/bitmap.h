@@ -209,7 +209,7 @@ class CBitmap : public CArray< ubyte > {
 		inline ubyte FromPog (void) { return m_info.bFromPog; }
 		inline ubyte Flat (void) { return m_info.bFlat; }
 		inline ubyte Team (void) { return m_info.nTeam; }
-		inline CTexture* Texture (void) { return &m_info.texture; }
+		inline CTexture* Texture (void) { return m_info.texP; }
 		inline int *TransparentFrames (int i = 0) { return m_info.transparentFrames + i; }
 		inline int *SuperTranspFrames (int i = 0) { return m_info.supertranspFrames + i; }
 		inline char* Name (void) { return m_info.szName; }
