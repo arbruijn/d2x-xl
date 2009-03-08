@@ -310,7 +310,7 @@ if (frames) {
 		frames [i].ReleaseTexture ();
 		}
 	}
-else {
+else if (m_info.texP && (m_info.texP == &m_info.texture)) {
 #if RENDER2TEXTURE == 2
 	if (m_info.texP->IsRenderBuffer ())
 		OGL_BINDTEX (0);
@@ -326,6 +326,8 @@ else {
 		m_info.texP->Release ();
 		}
 	}
+else
+	m_info.texP = &m_info.texture;
 }
 
 //------------------------------------------------------------------------------
