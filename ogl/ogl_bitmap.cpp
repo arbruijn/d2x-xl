@@ -187,7 +187,7 @@ if (bBlend)
 else
 	glDisable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-return m_info.texture;
+return &m_info.texture;
 }
 
 //------------------------------------------------------------------------------
@@ -337,7 +337,6 @@ OglEndRender ();
 
 if (bLocal) {
 	m_info.texture.Release ();
-	SetTexture (NULL);
 	}
 return 0;
 }
