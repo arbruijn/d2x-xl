@@ -99,7 +99,6 @@
 		A45015470F3F93EC00D04D61 /* audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012C60F3F93EB00D04D61 /* audio.cpp */; };
 		A450154A0F3F93EC00D04D61 /* hmistub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012CA0F3F93EB00D04D61 /* hmistub.cpp */; };
 		A450154B0F3F93EC00D04D61 /* hmpfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012CB0F3F93EB00D04D61 /* hmpfile.cpp */; };
-		A450154C0F3F93EC00D04D61 /* hmpfile.h in Headers */ = {isa = PBXBuildFile; fileRef = A45012CD0F3F93EB00D04D61 /* hmpfile.h */; };
 		A450154F0F3F93EC00D04D61 /* objectaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012D00F3F93EB00D04D61 /* objectaudio.cpp */; };
 		A45015500F3F93EC00D04D61 /* rbaudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012D10F3F93EB00D04D61 /* rbaudio.cpp */; };
 		A45015510F3F93EC00D04D61 /* songs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012D20F3F93EB00D04D61 /* songs.cpp */; };
@@ -550,10 +549,10 @@
 		A45018F60F3FA56D00D04D61 /* lightmaps2.vert in Resources */ = {isa = PBXBuildFile; fileRef = A45013320F3F93EB00D04D61 /* lightmaps2.vert */; };
 		A45018F80F3FA56F00D04D61 /* lightmaps.frag in Resources */ = {isa = PBXBuildFile; fileRef = A450132F0F3F93EB00D04D61 /* lightmaps.frag */; };
 		A45018F90F3FA56F00D04D61 /* lightmaps.vert in Resources */ = {isa = PBXBuildFile; fileRef = A45013300F3F93EB00D04D61 /* lightmaps.vert */; };
-		A45019130F3FA7EB00D04D61 /* SDL_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A450175A0F3F94F600D04D61 /* SDL_mixer.framework */; };
 		A46A13FE0F4CA2A4009E4719 /* udp_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A46A13FD0F4CA2A4009E4719 /* udp_interface.cpp */; };
 		A46A14920F4CABBC009E4719 /* netmisc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012770F3F93EA00D04D61 /* netmisc.cpp */; };
 		A48165DA0E21F3C900F8360E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A48165D80E21F3C900F8360E /* InfoPlist.strings */; };
+		A4A347700F59471B00A5943E /* hmpfile.h in Headers */ = {isa = PBXBuildFile; fileRef = A4A3476F0F59471B00A5943E /* hmpfile.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -570,6 +569,7 @@
 		A40ADF160F48E0D00018DA6C /* trigger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = trigger.cpp; sourceTree = "<group>"; };
 		A40B253B0E21EDAF0061DFCB /* d2.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = d2.icns; path = io/macosx/d2.icns; sourceTree = "<group>"; };
 		A40B253C0E21EDAF0061DFCB /* d2doc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = d2doc.icns; path = io/macosx/d2doc.icns; sourceTree = "<group>"; };
+		A44E22020F63862400271B39 /* SDL_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_mixer.framework; path = /Library/Frameworks/SDL_mixer.framework; sourceTree = "<absolute>"; };
 		A45012460F3F93EA00D04D61 /* cockpit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cockpit.cpp; sourceTree = "<group>"; };
 		A45012470F3F93EA00D04D61 /* cockpitdata.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cockpitdata.cpp; sourceTree = "<group>"; };
 		A45012480F3F93EA00D04D61 /* genericcockpit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = genericcockpit.cpp; sourceTree = "<group>"; };
@@ -600,7 +600,6 @@
 		A450126A0F3F93EA00D04D61 /* ipx_bsd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ipx_bsd.cpp; sourceTree = "<group>"; };
 		A450126B0F3F93EA00D04D61 /* ipx_kali.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ipx_kali.cpp; sourceTree = "<group>"; };
 		A450126C0F3F93EA00D04D61 /* ipx_mcast4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ipx_mcast4.cpp; sourceTree = "<group>"; };
-		A450126D0F3F93EA00D04D61 /* ipx_udp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ipx_udp.cpp; sourceTree = "<group>"; };
 		A450126E0F3F93EA00D04D61 /* linuxnet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linuxnet.cpp; sourceTree = "<group>"; };
 		A450126F0F3F93EA00D04D61 /* serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serial.cpp; sourceTree = "<group>"; };
 		A45012700F3F93EA00D04D61 /* ukali.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ukali.cpp; sourceTree = "<group>"; };
@@ -662,7 +661,6 @@
 		A45012C90F3F93EB00D04D61 /* hmiplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hmiplay.cpp; sourceTree = "<group>"; };
 		A45012CA0F3F93EB00D04D61 /* hmistub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hmistub.cpp; sourceTree = "<group>"; };
 		A45012CB0F3F93EB00D04D61 /* hmpfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hmpfile.cpp; sourceTree = "<group>"; };
-		A45012CD0F3F93EB00D04D61 /* hmpfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmpfile.h; sourceTree = "<group>"; };
 		A45012CE0F3F93EB00D04D61 /* midi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi.cpp; sourceTree = "<group>"; };
 		A45012D00F3F93EB00D04D61 /* objectaudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = objectaudio.cpp; sourceTree = "<group>"; };
 		A45012D10F3F93EB00D04D61 /* rbaudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rbaudio.cpp; sourceTree = "<group>"; };
@@ -1118,12 +1116,11 @@
 		A45014D50F3F93EC00D04D61 /* fvi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fvi.cpp; sourceTree = "<group>"; };
 		A45014D70F3F93EC00D04D61 /* physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = physics.cpp; sourceTree = "<group>"; };
 		A45014D80F3F93EC00D04D61 /* slowmotion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = slowmotion.cpp; sourceTree = "<group>"; };
-		A450175A0F3F94F600D04D61 /* SDL_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_mixer.framework; path = /Library/Frameworks/SDL_mixer.framework; sourceTree = "<absolute>"; };
 		A45017E40F3F9B5100D04D61 /* hmpfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hmpfile.cpp; sourceTree = "<group>"; };
-		A45017E60F3F9B5100D04D61 /* hmpfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmpfile.h; sourceTree = "<group>"; };
 		A45017E70F3F9B5100D04D61 /* midi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi.cpp; sourceTree = "<group>"; };
 		A46A13FD0F4CA2A4009E4719 /* udp_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = udp_interface.cpp; sourceTree = "<group>"; };
 		A48165D90E21F3C900F8360E /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = io/macosx/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A4A3476F0F59471B00A5943E /* hmpfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmpfile.h; sourceTree = "<group>"; };
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		B2F67F1E04C773E400A80002 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -1137,7 +1134,6 @@
 				705340B409321DDF006BD186 /* OpenGL.framework in Frameworks */,
 				705340B509321DDF006BD186 /* GLUT.framework in Frameworks */,
 				70723359093CAC7300601454 /* SDL.framework in Frameworks */,
-				A45019130F3FA7EB00D04D61 /* SDL_mixer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1148,7 +1144,7 @@
 			isa = PBXGroup;
 			children = (
 				70723358093CAC7300601454 /* SDL.framework */,
-				A450175A0F3F94F600D04D61 /* SDL_mixer.framework */,
+				A44E22020F63862400271B39 /* SDL_mixer.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				B2F67ED704C74A3F00A80002 /* OpenGL.framework */,
 				B2F67F1E04C773E400A80002 /* GLUT.framework */,
@@ -1308,7 +1304,6 @@
 				A450126A0F3F93EA00D04D61 /* ipx_bsd.cpp */,
 				A450126B0F3F93EA00D04D61 /* ipx_kali.cpp */,
 				A450126C0F3F93EA00D04D61 /* ipx_mcast4.cpp */,
-				A450126D0F3F93EA00D04D61 /* ipx_udp.cpp */,
 				A450126E0F3F93EA00D04D61 /* linuxnet.cpp */,
 				A450126F0F3F93EA00D04D61 /* serial.cpp */,
 				A45012700F3F93EA00D04D61 /* ukali.cpp */,
@@ -1433,18 +1428,9 @@
 				A45012C90F3F93EB00D04D61 /* hmiplay.cpp */,
 				A45012CA0F3F93EB00D04D61 /* hmistub.cpp */,
 				A45012CB0F3F93EB00D04D61 /* hmpfile.cpp */,
-				A45012CC0F3F93EB00D04D61 /* include */,
 				A45012CE0F3F93EB00D04D61 /* midi.cpp */,
 			);
 			path = linux;
-			sourceTree = "<group>";
-		};
-		A45012CC0F3F93EB00D04D61 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				A45012CD0F3F93EB00D04D61 /* hmpfile.h */,
-			);
-			path = include;
 			sourceTree = "<group>";
 		};
 		A45012DA0F3F93EB00D04D61 /* models */ = {
@@ -1677,6 +1663,7 @@
 				A45013940F3F93EB00D04D61 /* highscores.h */,
 				A45013950F3F93EB00D04D61 /* hiresmodels.h */,
 				A45013960F3F93EB00D04D61 /* hitbox.h */,
+				A4A3476F0F59471B00A5943E /* hmpfile.h */,
 				A45013970F3F93EB00D04D61 /* hogfile.h */,
 				A45013980F3F93EB00D04D61 /* hostage.h */,
 				A45013990F3F93EB00D04D61 /* hud_defs.h */,
@@ -2050,18 +2037,9 @@
 			isa = PBXGroup;
 			children = (
 				A45017E40F3F9B5100D04D61 /* hmpfile.cpp */,
-				A45017E50F3F9B5100D04D61 /* include */,
 				A45017E70F3F9B5100D04D61 /* midi.cpp */,
 			);
 			path = win32;
-			sourceTree = "<group>";
-		};
-		A45017E50F3F9B5100D04D61 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				A45017E60F3F9B5100D04D61 /* hmpfile.h */,
-			);
-			path = include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -2085,7 +2063,6 @@
 				A450152A0F3F93EC00D04D61 /* SDLMain.h in Headers */,
 				A45015380F3F93EC00D04D61 /* clip.h in Headers */,
 				A45015400F3F93EC00D04D61 /* scalea.h in Headers */,
-				A450154C0F3F93EC00D04D61 /* hmpfile.h in Headers */,
 				A450156D0F3F93EC00D04D61 /* editor.h in Headers */,
 				A450156E0F3F93EC00D04D61 /* kdefs.h in Headers */,
 				A45015710F3F93EC00D04D61 /* medwall.h in Headers */,
@@ -2316,6 +2293,7 @@
 				A45017180F3F93EC00D04D61 /* fog.h in Headers */,
 				A40ADF110F48E0780018DA6C /* trigger.h in Headers */,
 				A40ADF130F48E08C0018DA6C /* gpgpu_lighting.h in Headers */,
+				A4A347700F59471B00A5943E /* hmpfile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2748,6 +2726,10 @@
 				INFOPLIST_FILE = io/macosx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					SDL_mixer,
+				);
 				PRODUCT_NAME = "d2x-xl";
 				USER_HEADER_SEARCH_PATHS = "";
 				WARNING_CFLAGS = (
@@ -2769,6 +2751,10 @@
 				INFOPLIST_FILE = io/macosx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					SDL_mixer,
+				);
 				PRODUCT_NAME = "d2x-xl";
 				USER_HEADER_SEARCH_PATHS = "";
 				WARNING_CFLAGS = (
