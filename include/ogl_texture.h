@@ -20,6 +20,7 @@
 //------------------------------------------------------------------------------
 
 class CBitmap;
+class CTextureManager;
 
 typedef struct tTexture {
 	int				index;
@@ -38,16 +39,16 @@ typedef struct tTexture {
 	CPBO				pbo;
 #elif RENDER2TEXTURE == 2
 	CFBO				fbo;
-	CBitmap			*bmP;
 #endif
 } tTexture;
 
 class CTexture {
 	private:
-#if 0
-		int		m_prev, m_next;
+#if 1
+		CTexture*	m_prev, * m_next;
 #endif
 		tTexture	m_info;
+
 	public:
 		CTexture () { Init (); }
 		~CTexture () { Destroy (); }
@@ -61,7 +62,7 @@ class CTexture {
 		int Load (ubyte *buffer);
 #endif
 		void Destroy (void);
-		void Unlink (void);
+		bool Register (void);
 		void Release (void);
 		static void Wrap (int state);
 		inline void Bind (void) { 
@@ -76,6 +77,14 @@ class CTexture {
 			}
 		int BindRenderBuffer (void);
 
+		inline CTexture* Prev (void) { return m_prev; }
+		inline CTexture* Next (void) { return m_next; }
+		inline void Link (CTexture* prev, CTexture* next) {
+			m_prev = prev;
+			m_next = next;
+			}
+		inline void SetPrev (CTexture* prev) { m_prev = prev; }
+		inline void SetNext (CTexture* next) { m_next = next; }
 		inline int Index (void) { return m_info.index; }
 		inline void SetIndex (int index) { m_info.index = index; }
 		inline GLint Handle (void) { return GLint (m_info.handle); }
@@ -87,13 +96,11 @@ class CTexture {
 		inline int Height (void) { return m_info.h; }
 		inline int TW (void) { return m_info.tw; }
 		inline int TH (void) { return m_info.th; }
-		inline CBitmap* Bitmap (void) { return m_info.bmP; }
 		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
 
 		inline void SetHandle (GLuint handle) { m_info.handle = handle; }
 		inline void SetFormat (GLenum format) { m_info.format = format; }
 		inline void SetInternalFormat (GLint internalFormat) { m_info.internalFormat = internalFormat; }
-		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 #if RENDER2TEXTURE == 1
 		inline CPBO& PBO (void) { return m_info.pbo; }
 		inline void SetRenderBuffer (CPBO *pbo);
@@ -126,8 +133,8 @@ class CTexturePool : public CDataPool< CTexture > {};
 
 class CTextureManager {
 	private:
-		CTexture			m_info;
-		CTexturePool	m_textures;
+		CTexture		m_info;
+		CTexture*	m_textures;
 
 	public:
 		CTextureManager () { Init (); }
@@ -135,16 +142,8 @@ class CTextureManager {
 		void Init (void);
 		void Smash (void);
 		void Destroy (void);
-		inline CTexture *Pop (void) { return m_textures.Pop (); }
-		void Push (CTexture *texP) { 
-			texP->Destroy ();
-			m_textures.Push (texP->Index ()); 
-			}
-		CTexture *Get (CBitmap *bmP);
-
-	private:
-		CTexture* GetFirst (void) { return m_textures.GetFirst (); }
-		CTexture* GetNext (void) { return m_textures.GetNext (); }
+		void Register (CTexture* texP);
+		void Release (CTexture* texP);
 	};
 
 extern CTextureManager textureManager;

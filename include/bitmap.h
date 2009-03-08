@@ -97,7 +97,7 @@ class CBitmapInfo {
 		CBitmap*				maskP;
 		CFrameInfo			frames;
 		CPalette*			palette;
-		CTexture*			texture;
+		CTexture				texture;
 
 	};
 
@@ -208,7 +208,7 @@ class CBitmap : public CArray< ubyte > {
 		inline ubyte FromPog (void) { return m_info.bFromPog; }
 		inline ubyte Flat (void) { return m_info.bFlat; }
 		inline ubyte Team (void) { return m_info.nTeam; }
-		inline CTexture *Texture (void) { return m_info.texture; }
+		inline CTexture* Texture (void) { return &m_info.texture; }
 		inline int *TransparentFrames (int i = 0) { return m_info.transparentFrames + i; }
 		inline int *SuperTranspFrames (int i = 0) { return m_info.supertranspFrames + i; }
 		inline char* Name (void) { return m_info.szName; }
@@ -232,7 +232,6 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetTeam (ubyte nTeam) { m_info.nTeam = nTeam; }
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
 		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
-		inline void SetTexture (CTexture *texture) { m_info.texture = texture; }
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
 		CBitmap *CreateMask (void);
@@ -259,9 +258,10 @@ class CBitmap : public CArray< ubyte > {
 		inline ubyte Compressed (void) { return 0; }
 		inline int Format (void) { return 0; }
 #endif
+#if 0
 		void UnlinkTexture (void);
 		void Unlink (int bAddon);
-
+#endif
 		void RenderFullScreen (void);
 		int Render (CBitmap *dest, 
 						int xDest, int yDest, int wDest, int hDest, 

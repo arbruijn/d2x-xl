@@ -75,9 +75,13 @@ return (minColor + maxColor) / 2;
 
 void CTextureManager::Init (void)
 {
+#if 1
+m_textures = NULL;
+#else
 m_textures.Create (TEXTURE_LIST_SIZE);
 for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 	m_textures [i].SetIndex (i);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -85,7 +89,6 @@ for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 void CTextureManager::Destroy (void)
 {
 	CTexture*	texP;
-	int		i;
 
 OglDestroyDrawBuffer ();
 cameraManager.Destroy ();
@@ -100,45 +103,27 @@ OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 
-if (!(texP = GetFirst ()))
-	return;
-do {
-	Push (texP);
+for (texP = m_textures; texP; texP = texP->Next ()) {
 	texP->SetHandle (0); //(GLuint) -1);
-	} while ((texP = GetNext ()));
-
-for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
-	gameData.pig.tex.addonBitmaps [i].Unlink (1);
-
-#if DBG
-// Make sure all textures (bitmaps) from the game texture lists that had an OpenGL handle get the handle reset
-CBitmap* bmP;
-for (i = 0; i < 2; i++) {
-	bmP = gameData.pig.tex.bitmaps [i].Buffer ();
-	for (int j = ((i || !gameData.hoard.nBitmaps) ? gameData.pig.tex.nBitmaps [i] : gameData.hoard.nBitmaps); j; j--, bmP++)
-		bmP->Unlink (0);
+	texP->Release ();
 	}
-#endif
+m_textures = NULL;
 }
 
 //------------------------------------------------------------------------------
 
-CTexture *CTextureManager::Get (CBitmap *bmP)
+void CTextureManager::Register (CTexture* texP)
 {
-CTexture *texP = Pop ();
+texP->Link (NULL, m_textures);
+m_textures = texP;
+}
 
-if (texP) 
-	texP->SetBitmap (bmP);
-else {
-#if DBG
-	Warning ("OGL: texture list full!\n");
-#endif
-	// try to recover: flush all textures, reload fonts and this level's textures
-	RebuildRenderContext (gameStates.app.bGameRunning);
-	if ((texP = Pop ()))
-		texP->SetBitmap (bmP);
-	}
-return texP;
+//------------------------------------------------------------------------------
+
+void CTextureManager::Release (CTexture* texP)
+{
+if (m_textures == texP)
+	m_textures = texP->Next ();
 }
 
 //------------------------------------------------------------------------------
@@ -161,7 +146,8 @@ m_info.u =
 m_info.v = 0;
 m_info.bRenderBuffer = 0;
 m_info.prio = 0.3f;
-m_info.bmP = NULL;
+m_prev =
+m_next = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -197,7 +183,16 @@ else {
 	}
 m_info.bMipMaps = bMipMap && !bMask;
 m_info.bSmoothe = bSmoothe || m_info.bMipMaps;
-m_info.bmP = bmP;
+}
+
+//------------------------------------------------------------------------------
+
+bool CTexture::Register (void)
+{
+if (m_prev || m_next)
+	return false;	// already registered
+textureManager.Register (this); 
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -723,15 +718,13 @@ SetBufSize (nBits, a, w, h);
 
 //------------------------------------------------------------------------------
 
-void CTexture::Unlink (void)
+void CTexture::Release (void)
 {
-if (m_info.bmP && (m_info.bmP->Texture () == this))
-	m_info.bmP->SetTexture (NULL);
-#if DBG
-else
-	m_info.bmP = m_info.bmP;
-#endif
-m_info.bmP = NULL;
+textureManager.Release (this);
+if (m_prev)
+	m_prev->m_next = m_next;
+if (m_next)
+	m_next->m_prev = m_prev;
 }
 
 //------------------------------------------------------------------------------
@@ -741,16 +734,9 @@ void CTexture::Destroy (void)
 if (m_info.handle && (m_info.handle != GLuint (-1))) {
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
-	Unlink ();
+	Release ();
 	Init ();
 	}
-}
-
-//------------------------------------------------------------------------------
-
-void CTexture::Release (void)
-{
-textureManager.Push (this);
 }
 
 //------------------------------------------------------------------------------
@@ -896,6 +882,8 @@ return 0;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#if 0
+
 void CBitmap::UnlinkTexture (void)
 {
 if (Texture () && (Texture ()->Handle () == -1)) {
@@ -934,6 +922,8 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 		}
 	}
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1040,15 +1030,12 @@ int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, CFBO *renderBu
 int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, tPixelBuffer *renderBuffer)
 #endif
 {
-	CTexture	*texP;
-
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, nTransp, bMask, renderBuffer);
 
-if (!(texP = Texture ())) {
-	if (!(texP = textureManager.Get (this)))
-		return 1;
-	SetTexture (texP);
+CTexture* texP = Texture ();
+
+if (texP->Register ()) {
 	texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	texP->SetRenderBuffer (renderBuffer);
 	}
