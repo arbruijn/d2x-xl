@@ -221,6 +221,10 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	}
 
 PrintLog ("   caching geometry textures\n");
+#if DBG
+int bNeedMipMaps = gameStates.ogl.bNeedMipMaps;
+gameStates.ogl.bNeedMipMaps = -1;	// disable loading textures to the OpenGL driver
+#endif
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		nBaseTex = sideP->m_nBaseTex;
@@ -271,6 +275,9 @@ for (i = 0; i < 2; i++)
 			LoadBitmap (gameData.cockpit.gauges [i][j].index, 0);
 for (i = 0; i < gameData.eff.nClips [0]; i++)
 	OglCacheVClipTextures (i, 1);
+#if DBG
+gameStates.ogl.bNeedMipMaps = bNeedMipMaps;
+#endif
 return 0;
 }
 

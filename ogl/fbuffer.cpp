@@ -55,7 +55,7 @@ PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
 PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
 PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
-PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
+PFNGLGENERATEMIPMAPEXTPROC glGenerateMipMapEXT;
 #	endif
 #endif
 
@@ -125,7 +125,7 @@ else {
 #endif
 	 {
 		glTexImage2D (GL_TEXTURE_2D, 0, 3, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glGenerateMipmapEXT (GL_TEXTURE_2D);
+		glGenerateMipMapEXT (GL_TEXTURE_2D);
 		}
 	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_info.hRenderBuffer, 0);
 #if FBO_STENCIL_BUFFER
@@ -268,8 +268,8 @@ if (gameStates.ogl.bUseRender2Texture) {
 		PrintLog ("   glFramebufferRenderbufferEXT not supported by the OpenGL driver\n");
 	if (!(glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) wglGetProcAddress ("glGetFramebufferAttachmentParameterivEXT")))
 		PrintLog ("   glGetFramebufferAttachmentParameterivEXT not supported by the OpenGL driver\n");
-	if (!(glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC) wglGetProcAddress ("glGenerateMipmapEXT")))
-		PrintLog ("   glGenerateMipmapEXT not supported by the OpenGL driver\n");
+	if (!(glGenerateMipMapEXT = (PFNGLGENERATEMIPMAPEXTPROC) wglGetProcAddress ("glGenerateMipMapEXT")))
+		PrintLog ("   glGenerateMipMapEXT not supported by the OpenGL driver\n");
 	else
 #	endif
 gameStates.ogl.bRender2TextureOk = 2;
