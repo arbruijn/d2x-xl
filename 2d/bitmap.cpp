@@ -305,24 +305,22 @@ if (frames) {
 
 	for (i = 0; i < nFrames; i++) {
 		frames [i].ReleaseTexture ();
-		frames [i].SetTexture (NULL);
 		}
 	}
-else if (m_info.texture) {
+else {
 #if RENDER2TEXTURE == 2
-	if (m_info.texture->IsRenderBuffer ())
+	if (m_info.texture.IsRenderBuffer ())
 		OGL_BINDTEX (0);
 	else
 #elif RENDER2TEXTURE == 1
 #	ifdef _WIN32
-	if (m_info.texture->bFrameBuf)
-		m_info.texture->pbo.Release ();
+	if (m_info.texture.bFrameBuf)
+		m_info.texture.pbo.Release ();
 	else
 #	endif
 #endif
-	 {
-		m_info.texture->Release ();
-		m_info.texture = NULL;
+		{
+		m_info.texture.Release ();
 		}
 	}
 }
