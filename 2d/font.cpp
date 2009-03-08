@@ -58,6 +58,29 @@ CFontManager fontManager;
 
 //------------------------------------------------------------------------------
 
+void CFont::Init (void)
+{
+m_info.width = 0;      
+m_info.height = 0;     
+m_info.flags = 0;      
+m_info.baseLine = 0;   
+m_info.minChar = 0;    
+m_info.maxChar = 0;    
+m_info.byteWidth = 0;  
+m_info.dataOffs = 0;
+m_info.widthOffs = 0;
+m_info.kernDataOffs = 0;
+m_info.data = NULL;
+m_info.widths = NULL; 
+m_info.kernData = NULL;
+m_info.chars.Clear ();
+for (uint i = 0; i < m_info.bitmaps.Length (); i++)
+	m_info.bitmaps [i].Init ();
+m_info.parentBitmap.Init ();
+}
+
+//------------------------------------------------------------------------------
+
 ubyte *CFont::FindKernEntry (ubyte first, ubyte second)
 {
 	ubyte *p = m_info.kernData;

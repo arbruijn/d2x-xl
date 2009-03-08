@@ -84,6 +84,7 @@ SetPalette (NULL);
 DestroyBuffer ();
 DestroyFrames ();
 DestroyMask ();
+m_info.texP = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -114,6 +115,7 @@ void CBitmap::Init (void)
 	char szSignature [20];
 
 memset (&m_info, 0, sizeof (m_info));
+m_info.texP = &m_info.texture;
 sprintf (szSignature, "Bitmap %d", nSignature++);
 SetName (szSignature);
 }
