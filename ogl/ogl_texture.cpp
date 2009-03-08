@@ -742,7 +742,7 @@ if (m_info.handle && (m_info.handle != GLuint (-1))) {
 }
 
 //------------------------------------------------------------------------------
-//Texture () MUST be bound first
+
 void CTexture::Wrap (int state)
 {
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, state);
@@ -969,34 +969,33 @@ if (!data)
 	return 1;
 
 	GLubyte*		bufP = NULL;
-	CTexture		texture, *texP;
+	CTexture		texture;
 	bool			bLocal;
 	int			funcRes = 1;
 
-texP = Texture ();
-if ((bLocal = (texP == NULL))) {
+if ((bLocal = (m_info.texP == NULL))) {
 	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);
-	texP = &texture;
+	m_info.texP = &texture;
 	}
 #if TEXTURE_COMPRESSION
-texP->Prepare (m_info.bCompressed);
+m_info.texP->Prepare (m_info.bCompressed);
 #	ifndef __macosx__
 if (!(m_info.bCompressed || superTransp || Parent ())) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
-		 ((texP->Format () == GL_RGBA) || (texP->Format () == GL_RGB)) && 
-		 (TextureP->TW () >= 64) && (texP->TH () >= m_info.tw))
-		texP->SetInternalformat (GL_COMPRESSED_RGBA);
-	if (texP->Verify ())
+		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) && 
+		 (TextureP->TW () >= 64) && (m_info.texP->TH () >= m_info.tw))
+		m_info.texP->SetInternalformat (GL_COMPRESSED_RGBA);
+	if (m_info.texP->Verify ())
 		return 1;
 	}
 #	endif
 #else
-texP->Prepare ();
+m_info.texP->Prepare ();
 #endif
 
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
-if (!texP->IsRenderBuffer ()) 
+if (!m_info.texP->IsRenderBuffer ()) 
 #endif
  {
 #if TEXTURE_COMPRESSION
@@ -1005,17 +1004,17 @@ if (!texP->IsRenderBuffer ())
 	if (data) {
 #endif
 		if (nTransp < 0) 
-			bufP = texP->Copy (dxo, dyo, data);
+			bufP = m_info.texP->Copy (dxo, dyo, data);
 		else
-			bufP = texP->Convert (dxo, dyo, this, nTransp, superTransp);
+			bufP = m_info.texP->Convert (dxo, dyo, this, nTransp, superTransp);
 		}
 #if TEXTURE_COMPRESSION
-	texP->Load (Compressed () ? Buffer () : bufP, BufSize (), Format (), Compressed ());
+	m_info.texP->Load (Compressed () ? Buffer () : bufP, BufSize (), Format (), Compressed ());
 #else
-	funcRes = texP->Load (bufP);
+	funcRes = m_info.texP->Load (bufP);
 #endif
 	if (bLocal)
-		texP->Destroy ();
+		m_info.texP->Destroy ();
 	}
 return 0;
 }
@@ -1194,11 +1193,6 @@ else
 #endif
 			return 1;
 			}
-		m_info.texP = bmP->Texture ();
-#if 0
-		if (!m_info.texP)
-			bmP->SetupTexture (1, nTransp, 1);
-#endif
 		}
 
 	CBitmap* mask = Mask ();
