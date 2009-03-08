@@ -103,7 +103,9 @@ OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 
-for (texP = m_textures; texP; texP = texP->Next ()) {
+while (m_textures) {
+	texP = m_textures;
+	m_textures = texP->Next ();
 	texP->SetHandle (0); //(GLuint) -1);
 	texP->Release ();
 	}
