@@ -268,7 +268,7 @@ if (gameStates.ogl.bUseRender2Texture) {
 		PrintLog ("   glFramebufferRenderbufferEXT not supported by the OpenGL driver\n");
 	else if (!(glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) wglGetProcAddress ("glGetFramebufferAttachmentParameterivEXT")))
 		PrintLog ("   glGetFramebufferAttachmentParameterivEXT not supported by the OpenGL driver\n");
-	else if (!(glGenerateMipMapEXT = (PFNGLGENERATEMIPMAPEXTPROC) wglGetProcAddress ("glGenerateMipMapEXT")))
+	else if (!(glGenerateMipMapEXT = (PFNGLGENERATEMIPMAPEXTPROC) wglGetProcAddress ("glGenerateMipmapEXT")))
 		PrintLog ("   glGenerateMipMapEXT not supported by the OpenGL driver\n");
 	else
 #	endif

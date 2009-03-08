@@ -859,9 +859,9 @@ if (!m_info.handle) {
 #endif
 	return 1;
 	}
-Bind ();
 m_info.prio = m_info.bMipMaps ? (m_info.th > m_info.tw) ? 1.0f : 0.5f : 0.1f;
 glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
+Bind ();
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 if (m_info.bSmoothe) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
@@ -883,7 +883,7 @@ else
 	if (gameStates.ogl.bNeedMipMaps >= 0) 
 #endif
 	{
-#if 1
+#if 0
 #if RENDER2TEXTURE == 2
 	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps && !glGenerateMipMapEXT)
 		glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
@@ -899,6 +899,7 @@ else
 	else
 		glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
 #endif
+	OglClearError (1);
 #if TEXTURE_COMPRESSION
 	Compress ();
 #endif
@@ -1098,10 +1099,6 @@ else {
 #if DBG
 	if (!strcmp (m_info.szName, "sparks.tga"))
 		nDbgSeg = nDbgSeg;
-	if (nFrames > 32)
-		nFrames = nFrames;
-	if (m_info.frames.bmP)
-		m_info.frames.bmP = m_info.frames.bmP;
 #endif
 	m_info.frames.bmP = new CBitmap [nFrames];
 
@@ -1273,16 +1270,19 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 		return NULL;
 	}
 else if (!Frames ()) {
-	CBitmap	*bmfP;
-	int		i;
-
+	h = CreateMasks ();
 	SetupFrames (bMipMaps, nTransp, bLoad);
-	if (CreateMasks ())
+	if (h) {
 		if (bLoad) {
-			for (i = nFrames, bmfP = Frames (); i; i--, bmfP++)
+			CBitmap*	bmfP = Frames ();
+			for (int i = nFrames; i; i--, bmfP++) {
+				if (bmfP->PrepareTexture (bMipMaps, nTransp, 1))
+					return NULL;
 				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, -1, 1, NULL)))
 					return NULL;
 				}
+			}
+		}
 	}
 return Override (-1);
 }

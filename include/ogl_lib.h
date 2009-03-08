@@ -81,8 +81,11 @@ static inline void OglClearError (int bTrapError)
 {
 	GLenum nError = glGetError ();
 
-if (bTrapError && nError)
-	nError = nError;
+if (nError) {
+	const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
+	if (bTrapError)
+		nError = nError;
+	}
 }
 
 #else
