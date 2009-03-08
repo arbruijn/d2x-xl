@@ -179,6 +179,7 @@ uint nSize = uint (h * m_info.props.rowSize);
 if (nOffset + nSize > parent->Size ())
 	return false;
 SetBuffer (parent->Buffer () + nOffset, 1, nSize);
+SetTexture (parent->Texture ());
 return true;
 }
 

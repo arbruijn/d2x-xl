@@ -115,6 +115,8 @@ m_textures = NULL;
 void CTextureManager::Register (CTexture* texP)
 {
 texP->Link (NULL, m_textures);
+if (m_textures)
+	m_textures->SetPrev (texP);
 m_textures = texP;
 }
 
@@ -1033,17 +1035,15 @@ int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, tPixelBuffer *
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, nTransp, bMask, renderBuffer);
 
-CTexture* texP = Texture ();
-
-if (texP->Register ()) {
-	texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
-	texP->SetRenderBuffer (renderBuffer);
+if (m_info.texP->Register ()) {
+	m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
+	m_info.texP->SetRenderBuffer (renderBuffer);
 	}
 else {
-	if (texP->Handle () > 0)
+	if (m_info.texP->Handle () > 0)
 		return 0;
-	if (!texP->Width ())
-		texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
+	if (!m_info.texP->Width ())
+		m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	}
 if (Flags () & BM_FLAG_RLE)
 	RLEExpand (NULL, 0);
@@ -1180,11 +1180,9 @@ if ((bmP = HasOverride ())) {
 	return i;
 	}
 
-	CTexture* texP = Texture ();
-
 #if RENDER2TEXTURE
-if (texP && texP->IsRenderBuffer ())
-	texP->BindRenderBuffer ();
+if (m_info.texP && m_info.texP->IsRenderBuffer ())
+	m_info.texP->BindRenderBuffer ();
 else
 #endif
  {
@@ -1196,9 +1194,9 @@ else
 #endif
 			return 1;
 			}
-		texP = bmP->Texture ();
+		m_info.texP = bmP->Texture ();
 #if 0
-		if (!texP)
+		if (!m_info.texP)
 			bmP->SetupTexture (1, nTransp, 1);
 #endif
 		}
@@ -1208,9 +1206,9 @@ else
 	if (mask && !mask->Prepared ())
 		mask->SetupTexture (0, -1, 1);
 	}
-if (!texP)
+if (!m_info.texP)
 	return -1;
-texP->Bind ();
+m_info.texP->Bind ();
 
 #if DBG
 nDepth--;

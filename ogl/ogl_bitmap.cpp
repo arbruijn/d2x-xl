@@ -265,17 +265,6 @@ if ((bmoP = HasOverride ()))
 
 //	ubyte *oldpal;
 OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
-#if 0
-if (!(texP = Texture ())) {
-	texP = &tex;
-	texP->Init ();
-	texP->Setup (Width (), Height (), RowSize (), BPP (), 0, bMipMaps, bSmoothe, this);
-	SetTexture (texP);
-	LoadTexture (xSrc, ySrc, nTransp, 0);
-	}
-else
-	SetupTexture (0, bTransp, 1);
-#endif
 tRgbaColorf color;
 int nColors;
 bool bBlend = bTransp && nTransp;
@@ -311,28 +300,7 @@ else {
 	else
 		v2 = m_info.texture.V ();
 	}
-#if 1
 OglRender (colorP, nColors, 0);
-#else
-glBegin (GL_QUADS);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-glTexCoord2f (u1, v1);
-glVertex2f (x0, y0);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
-glTexCoord2f (u2, v1);
-glVertex2f (x1, y0);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
-glTexCoord2f (u2, v2);
-glVertex2f (x1, y1);
-if (colorP)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
-glTexCoord2f (u1, v2);
-glVertex2f (x0, y1);
-glEnd ();
-#endif
 OglEndRender ();
 
 if (bLocal) {
