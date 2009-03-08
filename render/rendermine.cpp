@@ -1464,7 +1464,6 @@ if ((gameOpts->render.bDepthSort < 1) && !RENDERPATH)
 	RenderSkyBox (nWindow);
 //PrintLog  ("RenderSegmentList (1,1)\n");
 RenderSegmentList (1, 1);		// render objects
-#if 0
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
 		glDepthFunc (GL_LEQUAL);
@@ -1492,7 +1491,6 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		}
 	glDepthFunc (GL_LESS);
 	}
-#endif
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);
 }

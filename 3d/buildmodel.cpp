@@ -188,7 +188,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-inline const bool CFace::operator!= (CFace& other)
+const bool CFace::operator!= (CFace& other)
 {
 if (m_textureP && (m_nBitmap >= 0) && (other.m_nBitmap >= 0)) {
 	if (m_textureP->BPP () < m_textureP->BPP ())
@@ -318,7 +318,7 @@ for (i = 0; i < m_nSubModels; i++) {
 		pfi->m_nId = nId;
 		pfj = pfi++;
 		pfi->SetTexture (textureP);
-		if (pfi != pfj)
+		if (*pfi != *pfj)
 			nId++;
 #if G3_ALLOW_TRANSPARENCY
 		if (textureP && (textureP [pfi->nBitmap].props.flags & BM_FLAG_TRANSPARENT))

@@ -77,7 +77,7 @@ class CFace {
 
 		inline const bool operator< (CFace& other) { return m_nSubModel < other.m_nSubModel; }
 		inline const bool operator> (CFace& other) { return m_nSubModel > other.m_nSubModel; }
-		inline const bool operator!= (CFace& other);
+		const bool operator!= (CFace& other);
 	};
 
 inline int operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) { return a.Index (f); }
