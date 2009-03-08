@@ -30,6 +30,7 @@ typedef struct tTexture {
 //	int 				bytesu;
 //	int 				bytes;
 	GLfloat			u, v;
+	GLclampf			prio;
 	ubyte				bMipMaps;
 	ubyte				bSmoothe;
 	ubyte				bRenderBuffer;

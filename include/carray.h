@@ -101,7 +101,7 @@ class CArray : public CQuickSort < _T > {
 				count = count;
 				ArrayError ("array overflow\n");
 				}
-			if ((count == 0xffffffff) && (m_data.length > 512 * 512 * 16 * 32)) {
+			if ((count == 0xffffffff) && (m_data.length > 512 * 512 * 16 * 4)) {
 				count = count;
 				ArrayError ("array overflow\n");
 				}

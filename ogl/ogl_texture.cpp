@@ -159,6 +159,7 @@ m_info.bSmoothe = 0;
 m_info.u = 
 m_info.v = 0;
 m_info.bRenderBuffer = 0;
+m_info.prio = 0.3f;
 m_info.bmP = NULL;
 }
 
@@ -858,12 +859,8 @@ if (!m_info.handle) {
 	return 1;
 	}
 Bind ();
-int i;
-//GLclampf prio = 1;
-//glPrioritizeTextures (1, (GLuint *) &m_info.handle, &prio);
-i = glGetError ();
+glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-i = glGetError ();
 if (m_info.bSmoothe) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
@@ -872,7 +869,6 @@ else {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-i = glGetError ();
 #if TEXTURE_COMPRESSION
 if (bCompressed) {
 	glCompressedTexImage2D (
@@ -886,7 +882,6 @@ else
 		gluBuild2DMipmaps (GL_TEXTURE_2D, m_info.internalFormat, m_info.tw, m_info.th, m_info.format, GL_UNSIGNED_BYTE, buffer);
 	else
 		glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
-i = glGetError ();
 #if TEXTURE_COMPRESSION
 	Compress ();
 #endif
@@ -1086,6 +1081,10 @@ else {
 #if DBG
 	if (!strcmp (m_info.szName, "sparks.tga"))
 		nDbgSeg = nDbgSeg;
+	if (nFrames > 32)
+		nFrames = nFrames;
+	if (m_info.frames.bmP)
+		m_info.frames.bmP = m_info.frames.bmP;
 #endif
 	m_info.frames.bmP = new CBitmap [nFrames];
 
@@ -1224,6 +1223,8 @@ else
 	if (mask && !mask->Prepared ())
 		mask->SetupTexture (0, -1, 1);
 	}
+if (!texP)
+	return -1;
 texP->Bind ();
 
 #if DBG
@@ -1241,7 +1242,7 @@ CBitmap *CBitmap::SetupTexture (int bMipMaps, int nTransp, int bLoad)
 if ((bmP = HasOverride ()))
 	return bmP->SetupTexture (bMipMaps, nTransp, bLoad);
 
-int	i, h, w, nFrames;
+int	h, w, nFrames;
 
 h = m_info.props.h;
 w = m_info.props.w;
@@ -1256,13 +1257,12 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	}
 else if (!Frames ()) {
 	CBitmap	*bmfP;
+	int		i;
 
 	SetupFrames (bMipMaps, nTransp, bLoad);
-	if ((i = CreateMasks ()))
-		for (i = nFrames, bmfP = Frames (); i; i--, bmfP++)
-			if (bLoad) {
-				if (bmfP->PrepareTexture (bMipMaps, nTransp, 1))
-					return NULL;
+	if (CreateMasks ())
+		if (bLoad) {
+			for (i = nFrames, bmfP = Frames (); i; i--, bmfP++)
 				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, -1, 1, NULL)))
 					return NULL;
 				}

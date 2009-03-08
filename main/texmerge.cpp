@@ -101,9 +101,9 @@ nCacheEntries = 0;
 //--unused-- int info_printed = 0;
 CBitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
 {
-	CBitmap			*bmTop, *bmBot, *bmP;
+	CBitmap*			bmTop, * bmBot, * bmP;
 	int				i, nLowestFrame, nLRU;
-	TEXTURE_CACHE	*cacheP;
+	TEXTURE_CACHE*	cacheP;
 
 nLRU = 0;
 nLowestFrame = texCache [0].last_frame_used;

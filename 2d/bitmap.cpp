@@ -175,7 +175,7 @@ uint nOffset = uint ((m_info.props.y * m_info.props.rowSize) + m_info.props.x * 
 uint nSize = uint (h * m_info.props.rowSize);
 if (nOffset + nSize > parent->Size ())
 	return false;
-SetBuffer (parent->Buffer () + nOffset, true, nSize);
+SetBuffer (parent->Buffer () + nOffset, 1, nSize);
 return true;
 }
 
