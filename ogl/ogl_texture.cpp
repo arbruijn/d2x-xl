@@ -862,6 +862,15 @@ if (!m_info.handle) {
 Bind ();
 m_info.prio = m_info.bMipMaps ? (m_info.th > m_info.tw) ? 1.0f : 0.5f : 0.1f;
 glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
+glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+if (m_info.bSmoothe) {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
+	}
+else {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
 #if TEXTURE_COMPRESSION
 if (bCompressed) {
 	glCompressedTexImage2D (
@@ -875,15 +884,15 @@ else
 #endif
 	{
 #if 1
+#if RENDER2TEXTURE == 2
+	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps && !glGenerateMipMapEXT)
+		glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+#endif
 	glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
-	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps) {
 #	if RENDER2TEXTURE == 2
-		if (glGenerateMipMapEXT)
-			glGenerateMipMapEXT (GL_TEXTURE_2D);
-		else
+	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps && glGenerateMipMapEXT)
+		glGenerateMipMapEXT (GL_TEXTURE_2D);
 #	endif
-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-		}
 #else
 	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps)
 		gluBuild2DMipmaps (GL_TEXTURE_2D, m_info.internalFormat, m_info.tw, m_info.th, m_info.format, GL_UNSIGNED_BYTE, buffer);
@@ -894,15 +903,6 @@ else
 	Compress ();
 #endif
 	//SetSize ();
-	}
-glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-if (m_info.bSmoothe) {
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
-	}
-else {
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 return 0;
 }
