@@ -226,11 +226,7 @@ ubyte* CFont::Remap (const char *fontname, ubyte* fontData)
 {
 if (!m_info.parentBitmap.Buffer ())
 	return Load (fontname, fontData);
-if (m_info.parentBitmap.Texture ()) {
-	m_info.parentBitmap.Texture ()->Release ();
-	for (uint i = 0; i < m_info.bitmaps.Length (); i++)
-		m_info.bitmaps [i].SetTexture (NULL);
-	}
+m_info.parentBitmap.Texture ()->Release ();
 m_info.parentBitmap.PrepareTexture (0, 2, 0, NULL);
 for (uint i = 0; i < m_info.bitmaps.Length (); i++)
 	m_info.bitmaps [i].SetTexture (m_info.parentBitmap.Texture ());
@@ -255,7 +251,7 @@ m_info.parentBitmap.Clear (TRANSPARENCY_COLOR);
 m_info.parentBitmap.AddFlags (BM_FLAG_TRANSPARENT);
 m_info.parentBitmap.SetPalette (palette);
 //if (!(m_info.flags & FT_COLOR))
-	m_info.parentBitmap.SetTexture (textureManager.Get (&m_info.parentBitmap));
+m_info.parentBitmap.Texture ()->Register ();
 m_info.bitmaps.Create (nChars); 
 //m_info.bitmaps.Clear ();
 h = m_info.height;

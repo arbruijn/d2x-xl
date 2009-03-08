@@ -130,6 +130,7 @@ m_info.props.h = h;
 m_info.props.nMode = mode;
 m_info.nBPP = bpp ? bpp : 1;
 m_info.props.rowSize = w * bpp;
+m_info.texP = &m_info.texture;
 if (bpp > 2)
 	m_info.props.flags = (char) BM_FLAG_TGA;
 SetBuffer (buffer, false, FrameSize ());
@@ -309,18 +310,18 @@ if (frames) {
 	}
 else {
 #if RENDER2TEXTURE == 2
-	if (m_info.texture.IsRenderBuffer ())
+	if (m_info.texP->IsRenderBuffer ())
 		OGL_BINDTEX (0);
 	else
 #elif RENDER2TEXTURE == 1
 #	ifdef _WIN32
-	if (m_info.texture.bFrameBuf)
-		m_info.texture.pbo.Release ();
+	if (m_info.texP->bFrameBuf)
+		m_info.texP->pbo.Release ();
 	else
 #	endif
 #endif
 		{
-		m_info.texture.Release ();
+		m_info.texP->Release ();
 		}
 	}
 }

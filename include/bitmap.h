@@ -98,6 +98,7 @@ class CBitmapInfo {
 		CFrameInfo			frames;
 		CPalette*			palette;
 		CTexture				texture;
+		CTexture*			texP;
 
 	};
 
@@ -232,6 +233,7 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetTeam (ubyte nTeam) { m_info.nTeam = nTeam; }
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
 		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
+		inline void SetTexture (CTexture *texture) { m_info.texP = texture; }
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
 		CBitmap *CreateMask (void);
