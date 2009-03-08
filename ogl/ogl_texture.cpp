@@ -862,6 +862,7 @@ if (!m_info.handle) {
 m_info.prio = m_info.bMipMaps ? (m_info.th > m_info.tw) ? 1.0f : 0.5f : 0.1f;
 glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
 Bind ();
+glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 if (m_info.bSmoothe) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
@@ -879,26 +880,8 @@ if (bCompressed) {
 	}
 else 
 #endif
-#if DBG
-	if (gameStates.ogl.bNeedMipMaps >= 0) 
-#endif
 	{
-#if 0
-#if RENDER2TEXTURE == 2
-	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps && !glGenerateMipMapEXT)
-		glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-#endif
 	glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
-#	if RENDER2TEXTURE == 2
-	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps && glGenerateMipMapEXT)
-		glGenerateMipMapEXT (GL_TEXTURE_2D);
-#	endif
-#else
-	if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps)
-		gluBuild2DMipmaps (GL_TEXTURE_2D, m_info.internalFormat, m_info.tw, m_info.th, m_info.format, GL_UNSIGNED_BYTE, buffer);
-	else
-		glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
-#endif
 	OglClearError (1);
 #if TEXTURE_COMPRESSION
 	Compress ();
