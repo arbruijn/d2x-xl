@@ -225,10 +225,6 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 
 PrintLog ("   caching geometry textures\n");
 bLoadTextures = (gameStates.ogl.nPreloadTextures > 0);
-#if DBG
-int bNeedMipMaps = gameStates.ogl.bNeedMipMaps;
-//gameStates.ogl.bNeedMipMaps = -1;	// disable loading textures to the OpenGL driver
-#endif
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		nBaseTex = sideP->m_nBaseTex;
@@ -254,8 +250,10 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 ResetSpecialEffects ();
 InitSpecialEffects ();
 DoSpecialEffects ();
+
 PrintLog ("   caching addon textures\n");
 CacheAddonTextures ();
+
 PrintLog ("   caching model textures\n");
 bLoadTextures = (gameStates.ogl.nPreloadTextures > 1);
 bModelLoaded.Clear ();
@@ -267,31 +265,30 @@ FORALL_OBJS (objP, i) {
 	bModelLoaded [objP->rType.polyObjInfo.nModel] = true;
 	OglCachePolyModelTextures (objP->rType.polyObjInfo.nModel);
 	}
+
 PrintLog ("   caching object effect textures\n");
 CacheObjectEffects ();
-PrintLog ("   caching powerup sprites\n");
 bLoadTextures = (gameStates.ogl.nPreloadTextures > 2);
+for (i = 0; i < gameData.eff.nClips [0]; i++)
+	OglCacheVClipTextures (i, 1);
+
+PrintLog ("   caching hostage sprites\n");
+bLoadTextures = (gameStates.ogl.nPreloadTextures > 3);
+OglCacheVClipTextures (33, 2);    
+
+PrintLog ("   caching powerup sprites\n");
+bLoadTextures = (gameStates.ogl.nPreloadTextures > 4);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
-// cache explosion and effect textures
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 3);
-for (i = 0; i < gameData.eff.nClips [0]; i++)
-	OglCacheVClipTextures (i, 1);
-// cache the hostage clip frame textures
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 4);
-PrintLog ("   caching hostage sprites\n");
-OglCacheVClipTextures (33, 2);    
+
 PrintLog ("   caching cockpit textures\n");
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
 			LoadBitmap (gameData.cockpit.gauges [i][j].index, 0);
-#if DBG
-gameStates.ogl.bNeedMipMaps = bNeedMipMaps;
-#endif
 return 0;
 }
 

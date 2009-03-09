@@ -870,12 +870,10 @@ if (!m_info.handle) {
 	OglClearError (0);
 	return 1;
 	}
-#if DBG
-if (gameStates.ogl.bNeedMipMaps < 0)
-	return 0;
-#endif
+#if 0
 m_info.prio = m_info.bMipMaps ? (m_info.h == m_info.w) ? 1.0f : 0.5f : 0.1f;
 glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
+#endif
 Bind ();
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GLint (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps));
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
