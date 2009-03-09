@@ -258,7 +258,7 @@ CacheAddonTextures ();
 PrintLog ("   caching powerup sprites\n");
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
-for (i = 0; i < MAX_POWERUP_TYPES; i++)
+for (i = 0; i < gameData.eff.nClips [0]; i++)
 	if (i != 9)
 		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
 FORALL_OBJS (objP, i)

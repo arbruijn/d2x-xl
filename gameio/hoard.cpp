@@ -303,15 +303,17 @@ else {
 	if (gameData.hoard.monsterball.bm.Override ())
 		delete bmP;
 	}
-gameData.hoard.orb.bm.DestroyBuffer ();
-gameData.hoard.goal.bm.DestroyBuffer ();
+gameData.hoard.orb.bm.Destroy ();
+gameData.hoard.goal.bm.Destroy ();
 bmP = &gameData.hoard.monsterball.bm;
 memset (&gameData.hoard.orb.bm, 0, sizeof (CBitmap));
 for (i = 0; i < 2; i++)
-	gameData.hoard.icon [i].bm.DestroyBuffer ();
+	gameData.hoard.icon [i].bm.Destroy ();
 for (i = 1; i <= 4; i++) {
 	gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0].Destroy ();
 	}
+gameData.eff.nClips [0] = gameData.hoard.orb.nClip;
+gameData.hoard.bInitialized = 0;
 }
 //-----------------------------------------------------------------------------
 //eof

@@ -2911,7 +2911,7 @@ typedef struct tHoardItem {
 	int			nSize;
 	int			nFrames;
 	int			nClip;
-	CBitmap	bm;
+	CBitmap		bm;
 	CPalette		*palette;
 } tHoardItem;
 
