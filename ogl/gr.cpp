@@ -174,7 +174,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		fontManager.Remap ();
 	if (bGame) {
 		hudIcons.Destroy ();
-		ResetHoardData ();
+		//ResetHoardData ();
 		particleImageManager.FreeAll ();
 		FreeExtraImages ();
 		LoadExtraImages ();

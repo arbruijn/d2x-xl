@@ -86,6 +86,8 @@ for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 
 //------------------------------------------------------------------------------
 
+static int nTextures = 0;
+
 void CTextureManager::Destroy (void)
 {
 	CTexture*	texP;
@@ -115,6 +117,7 @@ while (m_textures) {
 	texP->SetHandle (0); //(GLuint) -1);
 	texP->Release ();
 	}
+nTextures = 0;
 m_textures = NULL;
 }
 
@@ -128,6 +131,9 @@ for (t = m_textures; t; t = t->Next ())
 	if (texP == t)
 		return;
 #endif
+nTextures++;
+if (nTextures == 4)
+	nTextures = nTextures;
 texP->Link (NULL, m_textures);
 if (m_textures)
 	m_textures->SetPrev (texP);
@@ -993,7 +999,6 @@ if (!data)
 
 if ((bLocal = (m_info.texP == NULL))) {
 	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);
-	m_info.texP = &texture;
 	}
 #if TEXTURE_COMPRESSION
 m_info.texP->Prepare (m_info.bCompressed);
@@ -1052,6 +1057,9 @@ int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, tPixelBuffer *
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, nTransp, bMask, renderBuffer);
 
+if (!m_info.texP)
+	m_info.texP = &m_info.texture;
+texP->SetBitmap (this);
 if (m_info.texP->Register ()) {
 	m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	m_info.texP->SetRenderBuffer (renderBuffer);
