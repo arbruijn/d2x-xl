@@ -155,7 +155,7 @@ return 0;
 
 #if TEXTURE_COMPRESSION
 
-int CBitmap::SaveS3TC (char *pszFolder, const char *pszFile)
+int CBitmap::SaveS3TC (const char *pszFolder, const char *pszFile)
 {
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
@@ -187,7 +187,7 @@ return !cf.Close ();
 
 //------------------------------------------------------------------------------
 
-int CBitmap::ReadS3TC (char *pszFolder, char *pszFile)
+int CBitmap::ReadS3TC (const char *pszFolder, const char *pszFile)
 {
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];

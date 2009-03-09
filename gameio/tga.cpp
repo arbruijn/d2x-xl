@@ -359,7 +359,7 @@ if (!pszFolder) {
 		pszFolder = gameFolders.szDataDir;
 	}
 #if TEXTURE_COMPRESSION
-if (ReadS3TC (bmP, pszFolder, pszFile))
+if (bmP->ReadS3TC (pszFolder, pszFile))
 	return 1;
 #endif
 if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
@@ -373,7 +373,7 @@ if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = const_cast<char*> (strstr 
 r = (cf.File() != NULL) && LoadTGA (cf, bmP, alpha, brightness, bGrayScale, bReverse);
 #if TEXTURE_COMPRESSION
 if (r && CompressTGA (bmP))
-	SaveS3TC (bmP, pszFolder, pszFile);
+	bmP->SaveS3TC (pszFolder, pszFile);
 #endif
 cf.Close ();
 #if 1//def _DEBUG

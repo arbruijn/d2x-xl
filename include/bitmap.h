@@ -271,8 +271,8 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetCompressed (bool bCompressed) { m_info.compressed.bCompressed = bCompressed; }
 		inline void SetFormat (int nFormat) { m_info.compressed.nFormat = nFormat; }
 		inline uint CompressedSize (void) { return m_info.compressed.buffer.Size (); }
-		int SaveS3TC (char *pszFolder, const char *pszFilename);
-		int ReadS3TC (char *pszFolder, char *pszFilename);
+		int SaveS3TC (const char *pszFolder, const char *pszFilename);
+		int ReadS3TC (const char *pszFolder, const char *pszFilename);
 #else
 		inline ubyte Compressed (void) { return 0; }
 		inline int Format (void) { return 0; }
