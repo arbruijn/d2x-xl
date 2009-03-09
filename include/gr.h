@@ -244,7 +244,7 @@ class CSegFace {
 		int					nFrame;
 		CBitmap*				bmBot;
 		CBitmap*				bmTop;
-		tTexCoord2f			texCoord [4];
+		//tTexCoord2f			texCoord [4];
 		tTexCoord2f*		pTexCoord;	//needed to override default tex coords, e.g. for camera outputs
 		tRgbaColorf			color;
 		float					fRads [2];

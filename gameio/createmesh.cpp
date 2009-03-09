@@ -1126,7 +1126,7 @@ void CQuadMeshBuilder::SplitIn4Tris (void)
 	CFloatVector	vSide [4];
 	tRgbaColorf		color;
 	tTexCoord2f		texCoord;
-	short				*triVertP;
+	short*			triVertP;
 	int				h, i, j, k, v;
 
 texCoord.v.u = texCoord.v.v = 0;
@@ -1175,7 +1175,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 			m_faceColorP [j] = m_colorP->color;
 			}
 		RotateTexCoord2f (*m_ovlTexCoordP, m_texCoordP [j], (ubyte) m_sideP->m_nOvlOrient);
-		m_faceP->texCoord [j] = *m_ovlTexCoordP++;
+		//m_faceP->texCoord [j] = *m_ovlTexCoordP++;
 		}
 	m_normalP = SetTriNormals (m_triP, m_normalP);
 	m_texCoordP += 3;

@@ -65,7 +65,7 @@ class CFrameInfo {
 	public:
 		CBitmap*	bmP;
 		CBitmap*	currentP;
-		uint		nCurrent;
+		int		nCurrent;
 		uint		nCount;
 	};
 
@@ -148,9 +148,9 @@ class CBitmap : public CArray< ubyte > {
 		void ReleaseTexture (void);
 
 		inline CBitmap *NextFrame (void) {
-			m_info.frames.currentP++;
-			if (++m_info.frames.currentP >= m_info.frames.bmP + m_info.frames.nCount)
-				m_info.frames.currentP = m_info.frames.bmP;
+			if (++m_info.frames.nCurrent > int (m_info.frames.nCount))
+				m_info.frames.nCurrent = 0;
+			m_info.frames.currentP = m_info.frames.bmP + m_info.frames.nCurrent;
 			return m_info.frames.currentP;
 			}
 
@@ -159,7 +159,8 @@ class CBitmap : public CArray< ubyte > {
 				return this;
 			if (iFrame < 0)
 				return m_info.frames.currentP ? m_info.frames.currentP : this;
-			return m_info.frames.bmP ? m_info.frames.currentP = m_info.frames.bmP + iFrame % m_info.frames.nCount : this;
+			m_info.frames.nCurrent = int (iFrame % m_info.frames.nCount);
+			return m_info.frames.bmP ? m_info.frames.currentP = m_info.frames.bmP + m_info.frames.nCurrent : this;
 			}
 
 		inline CBitmap* HasParent (void)
@@ -196,6 +197,7 @@ class CBitmap : public CArray< ubyte > {
 		void ExpandTo (CBitmap *destP);
 	
 		inline ubyte FrameCount (void) { return ((Type () != BM_TYPE_ALT) && Parent ()) ? Parent ()->FrameCount () : m_info.frames.nCount; }
+		inline ubyte FrameIndex (void) { return m_info.frames.nCurrent; }
 		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bmP : NULL; }
 		inline CBitmap *CurFrame (void) { return m_info.frames.currentP; }
 		inline CBitmap *Override (void) { return m_info.overrideP; }
@@ -209,8 +211,11 @@ class CBitmap : public CArray< ubyte > {
 		void SetParent (CBitmap *parentP) { m_info.parentP = parentP; }
 		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
 		void SetOverride (CBitmap *override) { m_info.overrideP = override; }
-		void SetCurFrame (CBitmap *frame) { m_info.frames.currentP = frame; }
-		void SetCurFrame (int nFrame) { m_info.frames.currentP = m_info.frames.bmP + nFrame; }
+		void SetCurFrame (CBitmap *frame) { 
+			m_info.frames.currentP = frame; 
+			m_info.frames.nCurrent = m_info.frames.currentP - m_info.frames.bmP;
+			}
+		void SetCurFrame (int nFrame) { m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame); }
 
 		inline short Width (void) { return m_info.props.w; }
 		inline short Height (void) { return m_info.props.h; }

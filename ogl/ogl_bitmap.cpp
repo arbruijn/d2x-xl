@@ -112,11 +112,11 @@ return 0;
 void CBitmap::SetTexCoord (GLfloat u, GLfloat v, int orient)
 {
 if (orient == 1)
-	glTexCoord2f ((1.0f - v) * aspect, u);
+	glTexCoord2f ((1.0f - v) * m_render.aspect, u);
 else if (orient == 2)
 	glTexCoord2f (1.0f - u, 1.0f - v);
 else if (orient == 3)
-	glTexCoord2f (v * aspect, 1.0f - u);
+	glTexCoord2f (v * m_render.aspect, 1.0f - u);
 else
 	glTexCoord2f (u, v);
 }
@@ -179,8 +179,8 @@ if (Bind (bMipMaps, nTransp))
 	return NULL;
 m_info.texP->Wrap (GL_REPEAT);
 
-bBlendState = glIsEnabled (GL_BLEND);
-glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
+m_render.bBlendState = glIsEnabled (GL_BLEND);
+glGetIntegerv (GL_DEPTH_FUNC, &m_render.depthFunc);
 glDepthFunc (GL_ALWAYS);
 if (bBlend)
 	glEnable (GL_BLEND);
@@ -200,15 +200,15 @@ SetTexCoord (m_render.u1, m_render.v1, orient);
 glVertex2f (m_render.x0, m_render.y0);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
-SetTexCoord (m_render.u2, m_render.v1, m_render.orient);
+SetTexCoord (m_render.u2, m_render.v1, orient);
 glVertex2f (m_render.x1, m_render.y0);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
-SetTexCoord (m_render.u2, m_render.v2, m_render.orient);
+SetTexCoord (m_render.u2, m_render.v2, orient);
 glVertex2f (m_render.x1, m_render.y1);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
-SetTexCoord (m_render.u1, m_render.v2, m_render.orient);
+SetTexCoord (m_render.u1, m_render.v2, orient);
 glVertex2f (m_render.x0, m_render.y1);
 glEnd ();
 }
@@ -217,8 +217,8 @@ glEnd ();
 
 void CBitmap::OglEndRender (void)
 {
-glDepthFunc (depthFunc);
-if (bBlendState)
+glDepthFunc (m_render.depthFunc);
+if (m_render.bBlendState)
 	glEnable (GL_BLEND);
 else
 	glDisable (GL_BLEND);
@@ -281,24 +281,24 @@ else
 if (!OglBeginRender (bBlend, bMipMaps, nTransp))
 	return 1; // fail
 
-u1 = v1 = 0;
+m_render.u1 = m_render.v1 = 0;
 if (wSrc < 0)
-	u2 = float (destP->Width ()) / float (-wSrc);
+	m_render.u2 = float (destP->Width ()) / float (-wSrc);
 else {
-	u2 = float (wSrc) / float (Width ());
-	if (u2 < 1.0f)
-		u2 *= m_info.texP->U ();
+	m_render.u2 = float (wSrc) / float (Width ());
+	if (m_render.u2 < 1.0f)
+		m_render.u2 *= m_info.texP->U ();
 	else
-		u2 = m_info.texP->U ();
+		m_render.u2 = m_info.texP->U ();
 	}
 if (hSrc < 0)
-	v2 = float (destP->Height ()) / float (-hSrc);
+	m_render.v2 = float (destP->Height ()) / float (-hSrc);
 else {
-	v2 = float (hSrc) / float (Height ());
-	if (v2 < 1.0f)
-		v2 *= m_info.texP->V ();
+	m_render.v2 = float (hSrc) / float (Height ());
+	if (m_render.v2 < 1.0f)
+		m_render.v2 *= m_info.texP->V ();
 	else
-		v2 = m_info.texP->V ();
+		m_render.v2 = m_info.texP->V ();
 	}
 OglRender (colorP, nColors, 0);
 OglEndRender ();
