@@ -1628,7 +1628,7 @@ if (!funcRes)
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
 
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
-#if DBG										  // this level
+#if 0 //DBG										  // this level
 InitHoardData ();
 SetMonsterballForces ();
 #endif
