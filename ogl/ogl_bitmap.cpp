@@ -147,13 +147,13 @@ if (orient & 1) {
 	}
 
 float fScale = X2F (scale);
-aspect = float (gameStates.ogl.nLastW * fScale);
-x0 = dx + float (x) / aspect;
-x1 = dx + float (x + w) / aspect;
-aspect = float (gameStates.ogl.nLastH * fScale);
-y0 = 1.0f - dy - float (y) / aspect;
-y1 = 1.0f - dy - float (y + h) / aspect;
-aspect = float (screen.Width ()) / float (screen.Height ());
+m_render.aspect = float (gameStates.ogl.nLastW * fScale);
+m_render.x0 = dx + float (x) / m_render.aspect;
+m_render.x1 = dx + float (x + w) / m_render.aspect;
+m_render.aspect = float (gameStates.ogl.nLastH * fScale);
+m_render.y0 = 1.0f - dy - float (y) / m_render.aspect;
+m_render.y1 = 1.0f - dy - float (y + h) / m_render.aspect;
+m_render.aspect = float (screen.Width ()) / float (screen.Height ());
 }
 
 //------------------------------------------------------------------------------
@@ -161,11 +161,11 @@ aspect = float (screen.Width ()) / float (screen.Height ());
 void CBitmap::OglTexCoord (void)
 {
 float h = float (m_info.texP->TW ());
-u1 = float (Left ()) / h;
-u2 = float (Right ()) / h;
+m_render.u1 = float (Left ()) / h;
+m_render.u2 = float (Right ()) / h;
 h = float (m_info.texP->TH ());
-v1 = float (Top ()) / h;
-v2 = float (Bottom ()) / h;
+m_render.v1 = float (Top ()) / h;
+m_render.v2 = float (Bottom ()) / h;
 }
 
 //------------------------------------------------------------------------------
@@ -196,20 +196,20 @@ void CBitmap::OglRender (tRgbaColorf* colorP, int nColors, int orient)
 {
 glBegin (GL_QUADS);
 glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-SetTexCoord (u1, v1, orient);
-glVertex2f (x0, y0);
+SetTexCoord (m_render.u1, m_render.v1, orient);
+glVertex2f (m_render.x0, m_render.y0);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
-SetTexCoord (u2, v1, orient);
-glVertex2f (x1, y0);
+SetTexCoord (m_render.u2, m_render.v1, m_render.orient);
+glVertex2f (m_render.x1, m_render.y0);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
-SetTexCoord (u2, v2, orient);
-glVertex2f (x1, y1);
+SetTexCoord (m_render.u2, m_render.v2, m_render.orient);
+glVertex2f (m_render.x1, m_render.y1);
 if (nColors > 1)
 	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
-SetTexCoord (u1, v2, orient);
-glVertex2f (x0, y1);
+SetTexCoord (m_render.u1, m_render.v2, m_render.orient);
+glVertex2f (m_render.x0, m_render.y1);
 glEnd ();
 }
 

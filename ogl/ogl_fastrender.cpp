@@ -131,14 +131,21 @@ if (!gameOpts->render.debug.bTextures)
 	return;
 #endif
 
-int i = faceP->nIndex,
-	 j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
+int	h,
+		i = faceP->nIndex,
+		j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
 
 if ((faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)) {
 	if (faceBuffer.nFaces)
 		G3FlushFaceBuffer (1);
 	faceBuffer.bmBot = bmBot;
-	faceBuffer.bmTop = bmTop;
+	if ((faceBuffer.bmTop = bmTop) && ((h = bmTop->FrameCount ()) > 1)) {
+		float				fScale = 1.0f / float (h);
+		tTexCoord2f*	pt = &FACES.ovlTexCoord [h + i];
+		for (h = 0; h < j; h++, pt++) {
+			*pt = faceP->texCoord [h];
+			pt->v.v
+		}
 	}
 faceBuffer.bTextured = bTextured;
 for (; j; j--)

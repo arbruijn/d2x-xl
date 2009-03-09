@@ -952,13 +952,13 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx)
 {
-	CBitmap*		bmP;
+	CBitmap*		bmP, * bmoP;
 	int			nFrames;
 
 LoadBitmap (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
-if (bmP->Override ()) {
-	bmP = bmP->Override ();
+if (bmoP = bmP->Override ()) {
+	bmP = bmoP;
 	if (bmP->WallAnim ()) {
 		nFrames = bmP->FrameCount ();
 		if (nFrames > 1) {

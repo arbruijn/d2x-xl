@@ -141,6 +141,8 @@ if (faceP->nCamera >= 0) {
 #if DBG
 if (FACE_IDX (faceP) == nDbgFace)
 	nDbgFace = nDbgFace;
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
 #endif
 if ((faceP->nBaseTex < 0) || !faceP->bTextured)
 	return;

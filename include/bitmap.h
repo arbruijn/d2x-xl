@@ -65,6 +65,7 @@ class CFrameInfo {
 	public:
 		CBitmap*	bmP;
 		CBitmap*	currentP;
+		uint		nCurrent;
 		uint		nCount;
 	};
 
@@ -72,7 +73,7 @@ class CFrameInfo {
 
 #if TEXTURE_COMPRESSION
 
-class CCompressionData {
+class CBitmapCompressionData {
 	public:
 		CArray< ubyte >	buffer;
 		bool					bCompressed;
@@ -100,7 +101,7 @@ class CBitmapInfo {
 		ubyte					bFlat;		//no texture, just a colored area
 		ubyte					nTeam;
 #if TEXTURE_COMPRESSION
-		CCompressionData	compressed;
+		CBitmapCompressionData	compressed;
 #endif
 		int					transparentFrames [4];
 		int					supertranspFrames [4];
@@ -111,18 +112,23 @@ class CBitmapInfo {
 		CPalette*			palette;
 		CTexture				texture;
 		CTexture*			texP;
+	};
 
+class CBitmapRenderData {
+	public:
+		GLfloat		x0, x1, y0, y1, u1, v1, u2, v2, aspect;
+		GLint			depthFunc, bBlendState;
+		int			nOrient;
+
+	CBitmapRenderData() { memset (this, 0, sizeof (*this)); }
 	};
 
 //-----------------------------------------------------------------------------
 
 class CBitmap : public CArray< ubyte > {
 	private:
-		CBitmapInfo	m_info;
-
-		GLfloat		x0, x1, y0, y1, u1, v1, u2, v2, aspect;
-		GLint			depthFunc, bBlendState;
-		int			nOrient;
+		CBitmapInfo			m_info;
+		CBitmapRenderData	m_render;
 
 	public:
 		CBitmap () { Init (); };
