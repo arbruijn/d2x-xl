@@ -126,6 +126,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "monsterball.h"
 #include "systemkeys.h"
 #include "renderthreads.h"
+#include "multi.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -173,6 +174,7 @@ void HUDClearMessages (); // From hud.c
 
 void SetFunctionMode (int);
 void InitHoardData ();
+void FreeHoardData (void);
 
 extern int nLastLevelPathCreated;
 extern int nTimeLastMoved;
@@ -694,6 +696,8 @@ if (!bRestore) {
 	}
 /*---*/PrintLog ("   unloading lightmaps\n");
 lightmapManager.Destroy ();
+PrintLog ("unloading hoard data\n");
+/*---*/FreeHoardData ();
 /*---*/PrintLog ("   unloading textures\n");
 UnloadTextures ();
 /*---*/PrintLog ("   unloading custom sounds\n");
@@ -1032,8 +1036,8 @@ paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore) {
-	RebuildRenderContext (1);
 	SetRenderQuality ();
+	RebuildRenderContext (1);
 	}
 ResetPingStats ();
 gameStates.gameplay.nDirSteps = 0;

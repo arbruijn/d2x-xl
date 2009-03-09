@@ -114,8 +114,7 @@ while (m_textures) {
 	if (!texP->Handle ())
 		break;
 #endif
-	texP->SetHandle (0); //(GLuint) -1);
-	texP->Release ();
+	texP->Destroy ();
 	}
 nTextures = 0;
 m_textures = NULL;
@@ -123,8 +122,12 @@ m_textures = NULL;
 
 //------------------------------------------------------------------------------
 
+static CTexture* dbgTexP = (CTexture*) 0x101fca30;
+
 void CTextureManager::Register (CTexture* texP)
 {
+if (texP == dbgTexP)
+	dbgTexP = dbgTexP;
 #if DBG
 CTexture* t;
 for (t = m_textures; t; t = t->Next ())
@@ -132,8 +135,6 @@ for (t = m_textures; t; t = t->Next ())
 		return;
 #endif
 nTextures++;
-if (nTextures == 4)
-	nTextures = nTextures;
 texP->Link (NULL, m_textures);
 if (m_textures)
 	m_textures->SetPrev (texP);
@@ -146,6 +147,7 @@ void CTextureManager::Release (CTexture* texP)
 {
 if (m_textures == texP)
 	m_textures = texP->Next ();
+nTextures--;
 }
 
 //------------------------------------------------------------------------------

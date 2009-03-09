@@ -158,6 +158,8 @@ bool CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
 m_info.parentP =
 m_info.overrideP =
 m_info.maskP = NULL;
+memset (&m_info.texture, 0, sizeof (m_info.texture));
+m_info.texP = &m_info.texture;
 memset (&m_info.frames, 0, sizeof (m_info.frames));
 m_info.bChild = 1;
 m_info.props.x += x;
@@ -179,7 +181,6 @@ uint nSize = uint (h * m_info.props.rowSize);
 if (nOffset + nSize > parent->Size ())
 	return false;
 SetBuffer (parent->Buffer () + nOffset, 1, nSize);
-SetTexture (parent->Texture ());
 return true;
 }
 

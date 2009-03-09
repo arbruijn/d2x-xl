@@ -92,7 +92,6 @@ u_int32_t nCurrentVGAMode;
 
 //#define TEST_TIMER	1		//if this is set, do checking on timer
 
-void FreeHoardData (void);
 int ReadControls (void);		// located in gamecntl.c
 void DoFinalBossFrame (void);
 
@@ -1041,8 +1040,6 @@ UnloadHiresAnimations ();
 UnloadTextures ();
 PrintLog ("freeing sound buffers\n");
 FreeSoundReplacements ();
-PrintLog ("unloading hoard data\n");
-FreeHoardData ();
 PrintLog ("unloading auxiliary poly model data\n");
 gameData.models.Destroy ();
 PrintLog ("unloading hires models\n");

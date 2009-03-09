@@ -328,6 +328,7 @@ for (i = 0; i < nChars; i++) {
 			}
 		}
 	m_info.bitmaps [i].InitChild (&m_info.parentBitmap, curx, cury, w, h);
+	m_info.bitmaps [i].SetTexture (m_info.parentBitmap.Texture ());
 	curx += w + gap;
 	}
 //if (!(m_info.flags & FT_COLOR))
