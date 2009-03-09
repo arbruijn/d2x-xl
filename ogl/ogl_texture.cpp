@@ -1001,7 +1001,7 @@ m_info.texP->Prepare (m_info.bCompressed);
 if (!(m_info.bCompressed || superTransp || Parent ())) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
 		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) && 
-		 (m_info.texP->TW () >= 64) && (m_info.texP->TH () >= m_info.tw))
+		 (m_info.texP->TW () >= 64) && (m_info.texP->TH () >= 64))
 		m_info.texP->SetInternalformat (GL_COMPRESSED_RGBA);
 	if (m_info.texP->Verify ())
 		return 1;

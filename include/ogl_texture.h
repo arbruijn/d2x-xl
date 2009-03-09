@@ -122,11 +122,11 @@ class CTexture {
 #if TEXTURE_COMPRESSION
 		int Compress ();
 #endif
+		int Verify (void);
 
 	private:
 		void SetSize (void);
 		void SetBufSize (int dbits, int bits, int w, int h);
-		int Verify (void);
 		int FormatSupported (void);
 	};
 
