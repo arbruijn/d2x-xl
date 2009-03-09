@@ -226,34 +226,34 @@ static void InitGameFileInfo (void)
 {
 gameFileInfo.level				=	-1;
 gameFileInfo.player.offset		=	-1;
-gameFileInfo.player.size		=	sizeof(CPlayerData);
+gameFileInfo.player.size		=	sizeof (CPlayerData);
 gameFileInfo.objects.offset	=	-1;
 gameFileInfo.objects.count		=	0;
-gameFileInfo.objects.size		=	sizeof(CObject);  
+gameFileInfo.objects.size		=	sizeof (CObject);  
 gameFileInfo.walls.offset		=	-1;
 gameFileInfo.walls.count		=	0;
-gameFileInfo.walls.size			=	sizeof(CWall);  
+gameFileInfo.walls.size			=	sizeof (CWall);  
 gameFileInfo.doors.offset		=	-1;
 gameFileInfo.doors.count		=	0;
-gameFileInfo.doors.size			=	sizeof(CActiveDoor);  
+gameFileInfo.doors.size			=	sizeof (CActiveDoor);  
 gameFileInfo.triggers.offset	=	-1;
 gameFileInfo.triggers.count	=	0;
-gameFileInfo.triggers.size		=	sizeof(CTrigger);  
+gameFileInfo.triggers.size		=	sizeof (CTrigger);  
 gameFileInfo.control.offset	=	-1;
 gameFileInfo.control.count		=	0;
-gameFileInfo.control.size		=	sizeof(tReactorTriggers);
+gameFileInfo.control.size		=	sizeof (tReactorTriggers);
 gameFileInfo.botGen.offset		=	-1;
 gameFileInfo.botGen.count		=	0;
-gameFileInfo.botGen.size		=	sizeof(tMatCenInfo);
+gameFileInfo.botGen.size		=	sizeof (tMatCenInfo);
 gameFileInfo.equipGen.offset	=	-1;
 gameFileInfo.equipGen.count	=	0;
-gameFileInfo.equipGen.size		=	sizeof(tMatCenInfo);
+gameFileInfo.equipGen.size		=	sizeof (tMatCenInfo);
 gameFileInfo.lightDeltaIndices.offset = -1;
 gameFileInfo.lightDeltaIndices.count =	0;
-gameFileInfo.lightDeltaIndices.size =	sizeof(CLightDeltaIndex);
+gameFileInfo.lightDeltaIndices.size =	sizeof (CLightDeltaIndex);
 gameFileInfo.lightDeltas.offset	=	-1;
 gameFileInfo.lightDeltas.count	=	0;
-gameFileInfo.lightDeltas.size		=	sizeof(CLightDelta);
+gameFileInfo.lightDeltas.size		=	sizeof (CLightDelta);
 }
 
 // -----------------------------------------------------------------------------
@@ -1096,7 +1096,7 @@ SetAmbientSoundFlags ();
 return 0;
 }
 
-
+// ----------------------------------------------------------------------------
 #if DBG
 void dump_mine_info(void)
 {
@@ -1121,7 +1121,7 @@ void dump_mine_info(void)
 			if (SEGMENTS [nSegment].m_xAvgSegLight > max_sl)
 				max_sl = SEGMENTS [nSegment].m_xAvgSegLight;
 
-			for (vertnum=0; vertnum<4; vertnum++) {
+			for (vertnum=0; vertnum < 4; vertnum++) {
 				if (sideP->m_uvls [vertnum].u < min_u)
 					min_u = sideP->m_uvls [vertnum].u;
 				else if (sideP->m_uvls [vertnum].u > max_u)
@@ -1143,4 +1143,7 @@ void dump_mine_info(void)
 }
 
 #endif
+
+// ----------------------------------------------------------------------------
+//eof
 

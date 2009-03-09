@@ -608,7 +608,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+	if (uint (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2) > uint (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -644,7 +644,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+	if (uint (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2) > uint (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -687,7 +687,7 @@ if (nEndSeg != -1) {
 #endif
 	aiP->nCurPathIndex = 0;
 	gameData.ai.freePointSegs += aiP->nPathLength;
-	if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+	if (uint (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2) > uint (LEVEL_POINT_SEGS)) {
 		AIResetAllPaths ();
 		return;
 		}
@@ -727,7 +727,7 @@ aiP->nCurPathIndex = 0;
 ValidatePath (8, gameData.ai.freePointSegs, aiP->nPathLength);
 #endif
 gameData.ai.freePointSegs += aiP->nPathLength;
-if (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2 > uint (LEVEL_POINT_SEGS)) {
+if (uint (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs) + MAX_PATH_LENGTH * 2) > uint (LEVEL_POINT_SEGS)) {
 	AIResetAllPaths ();
 	}
 aiP->PATH_DIR = 1;		//	Initialize to moving forward.

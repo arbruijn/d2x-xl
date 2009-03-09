@@ -85,6 +85,7 @@ PFNGLDRAWRANGEELEMENTSPROC			glDrawRangeElements = NULL;
 #endif
 
 #ifdef _WIN32
+PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT = NULL;
 PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
 #endif
 
@@ -234,6 +235,19 @@ PrintLog (gameStates.ogl.bMultiTexturingOk ? (char *) "Multi-texturing is availa
 void OglInitAntiAliasing (void)
 {
 gameStates.ogl.bAntiAliasingOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multisample"));
+}
+
+//------------------------------------------------------------------------------
+
+void OglInitRefreshSync (void)
+{
+gameStates.render.bVSyncOk = 0;
+#ifdef _WIN32
+if (!(wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress ("wglSwapIntervalEXT")))
+	 PrintLog ("V-Sync not supported by the OpenGL driver\n");
+else
+	gameStates.render.bVSyncOk = 1;
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -393,8 +393,11 @@ if ((t = FindArg ("-gl_readpixels_ok")))
 	gameStates.ogl.bReadPixels = NumArg (t, 1);
 if ((t = FindArg ("-gl_gettexlevelparam_ok")))
 	gameStates.ogl.bGetTexLevelParam = NumArg (t, 1);
+if ((t = FindArg ("-lowmem")))
+	gameStates.ogl.bLowMemory = NumArg (t, 1);
 if ((t = FindArg ("-FSAA")))
 	gameStates.ogl.bFSAA = NumArg (t, 1);
+
 #ifdef GL_ARB_multitexture
 if (t = FindArg ("-gl_arb_multitexture_ok")))
 	gameStates.ogl.bArbMultiTexture = NumArg (t, 1);

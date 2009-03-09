@@ -1898,10 +1898,10 @@ void LoadGameTexts(void);
 #define TXT_CLIENT_PORT					GT(1101)
 #define TXT_ENABLE_MODS					GT(1102)
 #define TXT_3D_SHIELDS					GT(1103)
+#define TXT_VSYNC							GT(1104)
 
 #if 0
 
-#define TXT_					GT(1104)
 #define TXT_					GT(1105)
 #define TXT_					GT(1106)
 #define TXT_					GT(1107)

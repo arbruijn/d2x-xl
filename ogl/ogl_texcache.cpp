@@ -37,6 +37,8 @@
 #include "menu.h"
 #include "menu.h"
 
+#define LOAD_TEXTURES	0
+
 //------------------------------------------------------------------------------
 
 void OglCachePolyModelTextures (int nModel)
@@ -53,7 +55,7 @@ void OglCacheVClipTextures (tVideoClip* vc, int nTransp)
 {
 for (int i = 0; i < vc->nFrameCount; i++) {
 	LoadBitmap (vc->frames [i].index, 0);
-	gameData.pig.tex.bitmaps [0][vc->frames [i].index].SetupTexture (1, nTransp, 1);
+	gameData.pig.tex.bitmaps [0][vc->frames [i].index].SetupTexture (1, nTransp, LOAD_TEXTURES);
 	}
 }
 
@@ -82,8 +84,8 @@ else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
 
 CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
 {
-	CBitmap	*bmP;
-	int			nFrames;
+	CBitmap*	bmP;
+	int		nFrames;
 
 LoadBitmap (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
@@ -92,13 +94,13 @@ if (bmP->Override ()) {
 	if (bmP->WallAnim ()) {
 		nFrames = bmP->FrameCount ();
 		if (nFrames > 1) {
-			bmP->SetupTexture (1, 3, 1);
+			bmP->SetupTexture (1, 3, LOAD_TEXTURES);
 			if (bmP->Frames ()) {
 				if ((nFrameIdx >= 0) || (-nFrames > nFrameIdx))
 					bmP->SetCurFrame (bmP->Frames ());
 				else
 					bmP->SetCurFrame (bmP->Frames () - nFrameIdx - 1);
-				bmP->CurFrame ()->SetupTexture (1, 3, 1);
+				bmP->CurFrame ()->SetupTexture (1, 3, LOAD_TEXTURES);
 				}
 			}
 		}
@@ -123,13 +125,13 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if ((tMap2 = sideP->m_nOvlTex)) {
 		bm2 = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
 		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
-			bm2->SetupTexture (1, 3, 1);
+			bm2->SetupTexture (1, 3, LOAD_TEXTURES);
 		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->m_nOvlOrient)))
 			bmP = bmm;
 		else
-			bm2->SetupTexture (1, 3, 1);
+			bm2->SetupTexture (1, 3, LOAD_TEXTURES);
 		}
-	bmP->SetupTexture (1, 3, 1);
+	bmP->SetupTexture (1, 3, LOAD_TEXTURES);
 	}
 }
 
@@ -181,7 +183,7 @@ void CacheAddonTextures (void)
 
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 	PageInAddonBitmap (-i - 1);
-	BM_ADDON (i)->SetupTexture (1, 0, gameOpts->render.bDepthSort <= 0);
+	BM_ADDON (i)->SetupTexture (1, 0, LOAD_TEXTURES); //gameOpts->render.bDepthSort <= 0);
 	}
 }
 
@@ -238,13 +240,13 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		if ((nOvlTex = sideP->m_nOvlTex)) {
 			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->m_nFrame);
 			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
-				bmTop->SetupTexture (1, 3, 1);
+				bmTop->SetupTexture (1, 3, LOAD_TEXTURES);
 			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->m_nOvlOrient)))
 				bmBot = bmm;
 			else
-				bmTop->SetupTexture (1, 3, 1);
+				bmTop->SetupTexture (1, 3, LOAD_TEXTURES);
 			}
-		bmBot->SetupTexture (1, 3, 1);
+		bmBot->SetupTexture (1, 3, LOAD_TEXTURES);
 		}
 	}
 ResetSpecialEffects ();

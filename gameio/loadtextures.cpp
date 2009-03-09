@@ -87,14 +87,12 @@ static short d2OpaqueDoors [] = {
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
-static int bLowMemory = 0;
-
 #if DBG
 #	define PIGGY_BUFFER_SIZE ((uint) (512*1024*1024))
 #else
 #	define PIGGY_BUFFER_SIZE ((uint) 0x7fffffff)
 #endif
-#define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)		// size of buffer when bLowMemory is set
+#define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)
 
 #define DBM_FLAG_ABM    64 // animated bitmap
 #define DBM_NUM_FRAMES  63
@@ -760,10 +758,6 @@ if (bmi >= gameData.pig.tex.nBitmaps [bD1])
 if (bitmapOffsets [bD1][bmi] == 0)
 	return 0;		// A read-from-disk bmi!!!
 
-if (bLowMemory) {
-	bmiSave = bmi;
-	bmi = gameData.pig.tex.bitmapXlat [bmi];          // Xlat for low-memory settings!
-	}
 #if DBG
 if (bmi == nDbgTexture)
 	nDbgTexture = nDbgTexture;
@@ -773,12 +767,6 @@ while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name,
 	G3_SLEEP (0);
 if (!i)
 	return 0;
-if (bLowMemory) {
-	if (bmiSave != bmi) {
-		gameData.pig.tex.bitmaps [bD1][bmiSave] = gameData.pig.tex.bitmaps [bD1][bmi];
-		bmi = bmiSave;
-		}
-	}
 gameData.pig.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
 return 1;
 }

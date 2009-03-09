@@ -78,7 +78,7 @@ static struct {
 	int	nBrightness;
 } renderOpts;
 
-static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
+static int fpsTable [16] = {-1, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250};
 
 static const char *pszTexQual [4];
 static const char *pszMeshQual [5];
@@ -116,7 +116,7 @@ int AdvancedRenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nSta
 if (nState)
 	return nCurItem;
 
-	CMenuItem	*m;
+	CMenuItem*	m;
 	int			v;
 
 if (renderOpts.nContrast >= 0) {
@@ -184,11 +184,18 @@ if (!gameStates.app.bNostalgia) {
 m = menu + renderOpts.nMaxFPS;
 v = fpsTable [m->m_value];
 if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
-	gameOpts->render.nMaxFPS = v ? v : 1;
-	if (v)
+	if (v > 0)
 		sprintf (m->m_text, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+	else if (v < 0) {
+		if (!gameStates.render.bVSyncOk)
+			return nCurItem;
+		sprintf (m->m_text, TXT_VSYNC);
+		wglSwapIntervalEXT (v < 0);
+		}
 	else
 		sprintf (m->m_text, TXT_NO_FRAMECAP);
+	gameOpts->render.nMaxFPS = v ? v : 1;
+	gameStates.render.bVSync = (v < 0);
 	m->m_bRebuild = 1;
 	}
 if (gameOpts->app.bExpertMode) {

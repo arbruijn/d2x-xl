@@ -75,7 +75,6 @@ CSoundSample bogusSound;
 
 #define RLE_REMAP_MAX_INCREASE 132 /* is enough for d1 pc registered */
 
-static int bLowMemory = 0;
 static int bMustWriteHamFile = 0;
 static int nBitmapFilesNew = 0;
 
@@ -94,7 +93,7 @@ ubyte d1ColorMap [256];
 #else
 #	define PIGGY_BUFFER_SIZE ((uint) 0x7fffffff)
 #endif
-#define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)		// size of buffer when bLowMemory is set
+#define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)		
 
 #define DBM_FLAG_ABM    64 // animated bitmap
 #define DBM_NUM_FRAMES  63
@@ -323,8 +322,6 @@ if (gameStates.app.bUseSwapFile) {
 #else
 gameStates.render.nMaxTextureQuality = 3;
 bitmapCacheSize = PIGGY_BUFFER_SIZE;
-if (bLowMemory)
-	bitmapCacheSize = PIGGY_SMALL_BUFFER_SIZE;
 // the following loop will scale bitmap memory down by 20% for each iteration
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
@@ -511,14 +508,6 @@ if (!bogusBitmap.FrameSize ()) {
 if (FindArg ("-bigpig"))
 	bBigPig = 1;
 
-if (FindArg ("-lowmem"))
-	bLowMemory = 1;
-
-if (FindArg ("-nolowmem"))
-	bLowMemory = 0;
-
-if (bLowMemory)
-	gameStates.sound.audio.bLoMem = 1;
 /*---*/PrintLog ("   Loading game data\n");
 PiggyInitPigFile (DefaultPigFile ());
 /*---*/PrintLog ("   Loading main ham file\n");

@@ -906,6 +906,9 @@ else {
 		if ((gameData.segs.nLevelVersion <= 1) && m_nOvlTex)
 			m_nOvlTex = ConvertD1Texture (m_nOvlTex, 0);
 		}
+	// guess what? One level from D2:CS contains a texture id "910". D'oh.
+	m_nBaseTex %= MAX_WALL_TEXTURES;	
+	m_nOvlTex %= MAX_WALL_TEXTURES;
 
 	// Read tUVL m_uvls [4] (u, v>>5, write as short, l>>1 write as short)
 	for (int i = 0; i < 4; i++) {

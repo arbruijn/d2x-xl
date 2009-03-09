@@ -728,6 +728,7 @@ typedef struct tOglStates {
 	int bUseTransform;
 	int bGlTexMerge;
 	int bBrightness;
+	int bLowMemory;
 	int nColorBits;
 	ubyte nTransparencyLimit;
 	GLint nDepthBits;
@@ -969,6 +970,8 @@ typedef struct tRenderStates {
 	int nMaxLightsPerPass;
 	int nMaxLightsPerFace;
 	int nMaxLightsPerObject;
+	int bVSync;
+	int bVSyncOk;
 	fix xZoom;
 	fix xZoomScale;
 	ubyte nRenderingType;
