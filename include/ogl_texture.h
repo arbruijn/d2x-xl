@@ -99,6 +99,7 @@ class CTexture {
 		inline int TW (void) { return m_info.tw; }
 		inline int TH (void) { return m_info.th; }
 		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
+		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 
 		inline void SetHandle (GLuint handle) { m_info.handle = handle; }
 		inline void SetFormat (GLenum format) { m_info.format = format; }
@@ -117,7 +118,6 @@ class CTexture {
 		inline int Next (void) { return m_next; }
 		inline void SetPrev (int prev) { m_prev = prev; }
 		inline void SetNext (int next) { m_next = next; }
-		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 #endif
 #if TEXTURE_COMPRESSION
 		Compress ();
