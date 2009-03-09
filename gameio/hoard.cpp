@@ -312,6 +312,8 @@ for (i = 0; i < 2; i++)
 for (i = 1; i <= 4; i++) {
 	gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0].Destroy ();
 	}
+gameData.eff.vClips [0][gameData.hoard.monsterball.nClip].nFrameCount = 
+gameData.eff.vClips [0][gameData.hoard.orb.nClip].nFrameCount = 0;
 gameData.eff.nClips [0] = gameData.hoard.orb.nClip;
 gameData.hoard.bInitialized = 0;
 }
