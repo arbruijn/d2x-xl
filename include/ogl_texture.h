@@ -120,7 +120,7 @@ class CTexture {
 		inline void SetNext (int next) { m_next = next; }
 #endif
 #if TEXTURE_COMPRESSION
-		Compress ();
+		int Compress ();
 #endif
 
 	private:

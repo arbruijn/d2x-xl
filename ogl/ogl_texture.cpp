@@ -798,7 +798,7 @@ return m_info.handle;
 
 int CTexture::Prepare (bool bCompressed)
 {
-#if TEXTURE_COMPRESSION
+#if 0 //TEXTURE_COMPRESSION
 if (bCompressed) {
 	m_info.SetWidth (w);
 	m_info.SetHeight (h);
@@ -816,11 +816,10 @@ return 0;
 
 int CTexture::Compress (void)
 {
-if (m_info.internalformat != GL_COMPRESSED_RGBA)
+if (m_info.internalFormat != GL_COMPRESSED_RGBA)
 	return 0;
 
-	GLint		nFormat, nParam;
-	ubyte		*data;
+	GLint		nParam, nFormat, nSize;
 	CBitmap	*bmP = m_info.bmP;
 
 glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_ARB, &nParam);
@@ -830,11 +829,9 @@ if (nParam) {
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ||
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) ||
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
-		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nParam);
-		if (nParam && (data = new ubyte [nParam])) {
-			bmP->DestroyBuffer ();
-			glGetCompressedTexImage (GL_TEXTURE_2D, 0, reinterpret_cast<GLvoid*> (data));
-			bmP->SetBuffer (data, 0, nParam);
+		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nSize);
+		if (bmP->CompressedBuffer ().Resize (nSize)) {
+			glGetCompressedTexImage (GL_TEXTURE_2D, 0, reinterpret_cast<GLvoid*> (bmP->CompressedBuffer ().Buffer ()));
 			bmP->SetFormat (nFormat);
 			bmP->SetCompressed (1);
 			}
@@ -887,9 +884,7 @@ else {
 	}
 #if TEXTURE_COMPRESSION
 if (bCompressed) {
-	glCompressedTexImage2D (
-		GL_TEXTURE_2D, 0, nFormat,
-		texP->tw, texP->th, 0, nBufSize, buffer);
+	glCompressedTexImage2D (GL_TEXTURE_2D, 0, m_info.format, m_info.tw, m_info.th, 0, nBufSize, buffer);
 	}
 else 
 #endif
@@ -984,8 +979,6 @@ return bmP;
 //------------------------------------------------------------------------------
 //loads a palettized bitmap into a ogl RGBA texture.
 //Sizes and pads dimensions to multiples of 2 if necessary.
-//In theory this could be a problem for repeating textures, but all real
-//textures (not sprites, etc) in descent are 64x64, so we are ok.
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
 int CBitmap::LoadTexture (int dxo, int dyo, int nTransp, int superTransp)
 {
@@ -1008,7 +1001,7 @@ m_info.texP->Prepare (m_info.bCompressed);
 if (!(m_info.bCompressed || superTransp || Parent ())) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
 		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) && 
-		 (TextureP->TW () >= 64) && (m_info.texP->TH () >= m_info.tw))
+		 (m_info.texP->TW () >= 64) && (m_info.texP->TH () >= m_info.tw))
 		m_info.texP->SetInternalformat (GL_COMPRESSED_RGBA);
 	if (m_info.texP->Verify ())
 		return 1;
@@ -1023,10 +1016,12 @@ m_info.texP->Prepare ();
 if (!m_info.texP->IsRenderBuffer ()) 
 #endif
  {
-#if TEXTURE_COMPRESSION
-	if (data && !m_info.bCompressed)
 #else
 	if (data) {
+#if TEXTURE_COMPRESSION
+		if (m_info.bCompressed)
+			bufP = CompressedBuffer ();
+		else
 #endif
 		if (nTransp < 0) 
 			bufP = m_info.texP->Copy (dxo, dyo, data);

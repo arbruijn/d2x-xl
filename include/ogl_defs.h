@@ -50,7 +50,7 @@
 
 #define LIGHTMAPS					1
 
-#define TEXTURE_COMPRESSION	0
+#define TEXTURE_COMPRESSION	1
 
 #if DBG
 #	define DBG_SHADERS			0
@@ -173,6 +173,13 @@ extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 
 #	ifdef _WIN32
 extern PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
+#	endif
+
+// texture compression ---------------------------------------------------------
+
+#	ifdef _WIN32
+extern PFNGLGETCOMPRESSEDTEXIMAGEPROC	glGetCompressedTexImage;
+extern PFNGLCOMPRESSEDTEXIMAGE2DPROC		glCompressedTexImage2D;
 #	endif
 
 //------------------------------------------------------------------------------
