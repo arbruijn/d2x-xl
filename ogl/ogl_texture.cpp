@@ -860,7 +860,7 @@ return 0;
 #if TEXTURE_COMPRESSION
 int CTexture::Load (ubyte *buffer, int nBufSize, int nFormat, bool bCompressed)
 #else
-int CTexture::Load (ubyte *buffer)
+int CTexture::Load (ubyte* buffer)
 #endif
 {
 if (!buffer)
