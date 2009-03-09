@@ -6458,7 +6458,7 @@ GLAPI void APIENTRY glFramebufferTexture2DEXT (GLenum, GLenum, GLenum, GLuint, G
 GLAPI void APIENTRY glFramebufferTexture3DEXT (GLenum, GLenum, GLenum, GLuint, GLint, GLint);
 GLAPI void APIENTRY glFramebufferRenderbufferEXT (GLenum, GLenum, GLenum, GLuint);
 GLAPI void APIENTRY glGetFramebufferAttachmentParameterivEXT (GLenum, GLenum, GLenum, GLint *);
-GLAPI void APIENTRY glGenerateMipMapEXT (GLenum);
+GLAPI void APIENTRY glGenerateMipmapEXT (GLenum);
 #endif /* GL_GLEXT_PROTOTYPES */
 typedef GLboolean (APIENTRYP PFNGLISRENDERBUFFEREXTPROC) (GLuint renderbuffer);
 typedef void (APIENTRYP PFNGLBINDRENDERBUFFEREXTPROC) (GLenum target, GLuint renderbuffer);
