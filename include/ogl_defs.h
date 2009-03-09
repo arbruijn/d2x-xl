@@ -169,6 +169,12 @@ extern PFNGLDRAWRANGEELEMENTSPROC		glDrawRangeElements;
 extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 #	endif
 
+// v-sync ----------------------------------------------------------------------
+
+#	ifdef _WIN32
+PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
+#	endif
+
 //------------------------------------------------------------------------------
 
 #	define	glCreateShaderObject			pglCreateShaderObjectARB
