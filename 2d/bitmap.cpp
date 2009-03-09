@@ -74,7 +74,9 @@ if ((m_info.nType != BM_TYPE_ALT) && m_info.parentP)
 else {
 	if (Buffer ())
 		CArray<ubyte>::Destroy ();
+#if TEXTURE_COMPRESSION
 	m_info.compressed.buffer.Destroy ();
+#endif
 	}
 //ReleaseTexture ();
 }

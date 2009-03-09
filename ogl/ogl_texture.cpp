@@ -890,7 +890,7 @@ else
 #endif
 	{
 	glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
-	if (gameStates.ogl.bLowMemory && (m_info.format == GL_RGB) && m_info.bMipMaps)
+	if (gameStates.ogl.bLowMemory && m_info.bMipMaps && (!m_info.bmP->Static () || (m_info.format == GL_RGB)))
 		m_info.bmP->FreeData ();
 	OglClearError (1);
 #if TEXTURE_COMPRESSION

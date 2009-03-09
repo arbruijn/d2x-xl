@@ -99,6 +99,7 @@ class CBitmapInfo {
 		ubyte					bFromPog;
 		ubyte					bChild;
 		ubyte					bFlat;		//no texture, just a colored area
+		ubyte					bStatic;		//must remain in RAM
 		ubyte					nTeam;
 #if TEXTURE_COMPRESSION
 		CBitmapCompressionData	compressed;
@@ -231,6 +232,7 @@ class CBitmap : public CArray< ubyte > {
 		inline ubyte WallAnim (void) { return m_info.bWallAnim; }
 		inline ubyte FromPog (void) { return m_info.bFromPog; }
 		inline ubyte Flat (void) { return m_info.bFlat; }
+		inline ubyte Static (void) { return m_info.bStatic; }
 		inline ubyte Team (void) { return m_info.nTeam; }
 		inline CTexture* Texture (void) { return m_info.texP; }
 		inline int *TransparentFrames (int i = 0) { return m_info.transparentFrames + i; }
@@ -250,6 +252,7 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetMode (sbyte nMode) { m_info.props.nMode = nMode; }
 		inline void SetBPP (ubyte nBPP) { m_info.nBPP = nBPP; m_info.props.rowSize = m_info.props.w * m_info.nBPP; }
 		inline void SetType (ubyte nType) { m_info.nType = nType; }
+		inline void SetStatic (ubyte bStatic) { m_info.bStatic = bStatic; }
 		inline void SetWallAnim (ubyte bWallAnim) { m_info.bWallAnim = bWallAnim; }
 		inline void SetFromPog (ubyte bFromPog) { m_info.bFromPog = bFromPog; }
 		inline void SetFlat (ubyte bFlat) { m_info.bFlat = bFlat; }

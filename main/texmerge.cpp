@@ -188,6 +188,7 @@ cacheP->bmTop = bmTop;
 cacheP->bmBot = bmBot;
 cacheP->last_frame_used = gameData.app.nFrameCount;
 cacheP->nOrient = nOrient;
+bmTop->SetStatic (1);
 return bmP;
 }
 

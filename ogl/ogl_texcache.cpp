@@ -84,27 +84,27 @@ else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
 
 static CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
 {
-	CBitmap*	bmP;
+	CBitmap*	bmP, * bmoP, * bmfP;
 	int		nFrames;
 
 LoadBitmap (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
-if (bmP->Override ()) {
-	bmP = bmP->Override ();
-	if (bmP->WallAnim ()) {
-		nFrames = bmP->FrameCount ();
-		if (nFrames > 1) {
-			bmP->SetupTexture (1, 3, bLoadTextures);
-			if (bmP->Frames ()) {
-				if ((nFrameIdx >= 0) || (-nFrames > nFrameIdx))
-					bmP->SetCurFrame (bmP->Frames ());
-				else
-					bmP->SetCurFrame (bmP->Frames () - nFrameIdx - 1);
-				bmP->CurFrame ()->SetupTexture (1, 3, bLoadTextures);
-				}
-			}
-		}
-	}
+bmP->SetStatic (1);
+if (!(bmoP = bmP->Override ()))
+	return bmP;
+bmoP->SetStatic (1);
+if (!bmoP->WallAnim ())
+	return bmoP;
+if (2 > (nFrames = bmoP->FrameCount ()))
+	return bmoP;
+bmoP->SetupTexture (1, 3, bLoadTextures);
+if (!(bmfP = bmoP->Frames ()))
+	return bmoP;
+if ((nFrameIdx < 0) && (nFrames >= -nFrameIdx))
+	bmfP -= (nFrameIdx + 1);
+bmoP->SetCurFrame (bmfP);
+bmfP->SetupTexture (1, 3, bLoadTextures);
+bmfP->SetStatic (1);
 return bmP;
 }
 
@@ -278,11 +278,14 @@ OglCacheVClipTextures (33, 2);
 
 PrintLog ("   caching powerup sprites\n");
 bLoadTextures = (gameStates.ogl.nPreloadTextures > 4);
-for (i = 0; i < EXTRA_OBJ_IDS; i++)
-	OglCacheWeaponTextures (gameData.weapons.info + i);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
+
+PrintLog ("   caching weapon sprites\n");
+bLoadTextures = (gameStates.ogl.nPreloadTextures > 5);
+for (i = 0; i < EXTRA_OBJ_IDS; i++)
+	OglCacheWeaponTextures (gameData.weapons.info + i);
 
 PrintLog ("   caching cockpit textures\n");
 for (i = 0; i < 2; i++)

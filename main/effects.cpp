@@ -180,8 +180,7 @@ else {
 			bmfP += nFrameStep;
 			}
 		}
-	else 
-		{
+	else {
 		for (i = 0; i < nFrames; i++) {
 			j = BM_INDEX (frameP, i, bIndirect, bObject);
 			gameData.pig.tex.bitmapP [j].SetOverride (bmP);

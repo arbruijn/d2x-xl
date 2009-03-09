@@ -50,7 +50,7 @@
 
 #define LIGHTMAPS					1
 
-#define TEXTURE_COMPRESSION	1
+#define TEXTURE_COMPRESSION	0
 
 #if DBG
 #	define DBG_SHADERS			0
