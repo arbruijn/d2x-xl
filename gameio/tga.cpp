@@ -19,7 +19,7 @@ if (bmP->Height () / bmP->Width () > 1)
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 0;	//don't compress textures containing some form of transparency
 #endif
-if (bmP->LoadTexture (0, 0, -1, 0))
+if (bmP->LoadTexture (0, 0, 0))
 	return 0;
 return 1;
 }
@@ -769,7 +769,7 @@ for (i = 0; i < m_nBitmaps; i++) {
 		bmP = bmP->Override (-1);
 		if (bmP->Frames ())
 			bmP = bmP->CurFrame ();
-		bmP->Bind (1, 3);
+		bmP->Bind (1);
 		m_bitmaps [i].SetTeam (m_nTeam.Buffer () ? m_nTeam [i] : 0);
 		}
 	}
@@ -797,7 +797,7 @@ if ((m_bitmaps.Buffer ()))
 	for (i = 0; i < m_nBitmaps; i++) {
 		if (!(m_bitmaps [i].Buffer () || Read (bCustom)))
 			return 0;
-		m_bitmaps [i].Bind (1, 3);
+		m_bitmaps [i].Bind (1);
 		}
 return 1;
 }
