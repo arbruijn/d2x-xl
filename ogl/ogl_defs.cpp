@@ -260,6 +260,7 @@ OglInitOcclusionQuery ();
 OglInitPointSprites ();
 OglInitTextureCompression ();
 OglInitStencilOps ();
+OglInitRefreshSync ();
 OglInitAntiAliasing ();
 OglInitVBOs ();
 OglInitShaders ();

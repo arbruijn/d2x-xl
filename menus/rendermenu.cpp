@@ -187,8 +187,10 @@ if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
 	if (v > 0)
 		sprintf (m->m_text, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
 	else if (v < 0) {
-		if (!gameStates.render.bVSyncOk)
+		if (!gameStates.render.bVSyncOk) {
+			m->m_value = 1;
 			return nCurItem;
+			}
 		sprintf (m->m_text, TXT_VSYNC);
 #if WIN32
 		wglSwapIntervalEXT (v < 0);
