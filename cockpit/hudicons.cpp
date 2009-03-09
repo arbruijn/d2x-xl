@@ -407,10 +407,10 @@ bInitIcons = 0;
 
 //	-----------------------------------------------------------------------------
 
-int CHUDIcons::LoadInventoryIcons	 (void)
+int CHUDIcons::LoadInventoryIcons (void)
 {
-	int	h, i;
-	ubyte	*buffer;
+	int		h, i;
+	ubyte*	buffer;
 
 if (!((bmpInventory = PiggyLoadBitmap ("inventry.bmp")) ||
 	   (bmpInventory = PiggyLoadBitmap ("inventory.bmp"))))
@@ -423,6 +423,7 @@ for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i].SetName ("Inventory");
 	bmInvItems [i].SetHeight (bmInvItems [i].Width ());
 	bmInvItems [i].SetBuffer (buffer + h * i, 1, h);
+	bmInvItems [i].ResetTexture ();
 	bmInvItems [i].SetPalette (paletteManager.Game ());
 	}
 return bHaveInvBms = 1;

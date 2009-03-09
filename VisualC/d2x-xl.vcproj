@@ -4301,15 +4301,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
-				>
-			</File>
-			<File
 				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
+				RelativePath="..\descent.ico"
+				>
+			</File>
+			<File
 				RelativePath="..\icon1.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\include\wglext.h"
 				>
 			</File>
 		</Filter>
@@ -4434,10 +4438,6 @@
 			</File>
 			<File
 				RelativePath="..\include\vesa.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\wglext.h"
 				>
 			</File>
 		</Filter>
