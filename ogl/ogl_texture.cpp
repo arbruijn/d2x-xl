@@ -876,8 +876,7 @@ if (!m_info.handle) {
 m_info.prio = m_info.bMipMaps ? (m_info.h == m_info.w) ? 1.0f : 0.5f : 0.1f;
 glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
 Bind ();
-if (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps)
-	glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GLint (m_info.bMipMaps && gameStates.ogl.bNeedMipMaps));
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 if (m_info.bSmoothe) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
