@@ -145,7 +145,8 @@ if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
 	return NULL;
 if (bmP->FrameCount () < 2)
 	return NULL;
-bmP->SetupTexture (1, 3, 1);
+bmP->SetTranspType (3);
+bmP->SetupTexture (1, 1);
 if (gameOpts->ogl.bGlTexMerge) {
 	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0].Buffer () : gameData.pig.tex.bitmapP.Buffer ();
 	for (i = 0; i < nFrames; i++) {
@@ -162,8 +163,10 @@ else {
 	CBitmap *bmfP, *hbmP;
 
 #if DBG
-	if (!bmP->Frames ())
-		bmP->SetupTexture (1, 3, 1);
+	if (!bmP->Frames ()) {
+		bmP->SetTranspType (3);
+		bmP->SetupTexture (1, 1);
+		}
 #endif
 	nBmFrames = bmP->FrameCount ();
 	if ((bmfP = bmP->Frames ())) {
@@ -258,9 +261,11 @@ xEffectTime += gameData.time.xFrame;
 			gameData.pig.tex.bmIndexP [t] = bmi;
 			}
 		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (bmP->FrameCount () > 1)) {
-			bmP->SetupTexture (1, 3, 1);
+			bmP->SetTranspType (3);
+			bmP->SetupTexture (1, 1);
 			bmP->SetCurFrame (bmP->Frames () + min (ecP->nCurFrame, bmP->FrameCount () - 1));
-			bmP->CurFrame ()->SetupTexture (1, 3, 1);
+			bmP->CurFrame ()->SetTranspType (3);
+			bmP->CurFrame ()->SetupTexture (1, 1);
 			}
 		else {
 			if ((ecP->flags & EF_ALTFMT) && (ecP->nCurFrame >= nFrames))
@@ -319,10 +324,12 @@ xEffectTime += gameData.time.xFrame;
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
 		else if ((ecP->flags & EF_ALTFMT) && bmP->Frames ()) {
-			bmP->SetupTexture (1, 3, 1);
+			bmP->SetTranspType (3);
+			bmP->SetupTexture (1, 1);
 			if (bmP->Frames ()) {
 				bmP->SetCurFrame (bmP->Frames () + ecP->nCurFrame);
-				bmP->CurFrame ()->SetupTexture (1, 3, 1);
+				bmP->CurFrame ()->SetTranspType (3);
+				bmP->CurFrame ()->SetupTexture (1, 1);
 				}
 			}
 		else {

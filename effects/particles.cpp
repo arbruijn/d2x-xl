@@ -1846,7 +1846,8 @@ if (TGAMakeSquare (bmP)) {
 #endif
 bmP = bmpParticle [bPointSprites][nType];
 bmP->SetFrameCount ();
-bmP->SetupTexture (0, 3, 1);
+bmP->SetTranspType (3);
+bmP->SetupTexture (0, 1);
 if (nType == SMOKE_PARTICLES)
 	h = 8;
 else if (nType == BUBBLE_PARTICLES)

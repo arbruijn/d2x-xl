@@ -85,7 +85,7 @@ int IsMonitorFace (short nSegment, short nSide, int bForce);
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
 					  tRgbaColorf *pc, int *bCloaking, ubyte *bTextured, ubyte* bCloaked);
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP);
-CBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
+CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures = 1);
 void DrawOutline (int nVertices, g3sPoint **pointList);
 int ToggleOutlineMode (void);
 int ToggleShowOnlyCurSide (void);

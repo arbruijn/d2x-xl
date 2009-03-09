@@ -104,6 +104,7 @@ class CBitmapInfo {
 #if TEXTURE_COMPRESSION
 		CBitmapCompressionData	compressed;
 #endif
+		int					nTranspType;
 		int					transparentFrames [4];
 		int					supertranspFrames [4];
 		CBitmap*				parentP;
@@ -259,23 +260,24 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetTeam (ubyte nTeam) { m_info.nTeam = nTeam; }
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
 		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
+		inline void SetTranspType (int nTranspType) { m_info.nTranspType = nTranspType; }
 		inline void SetTexture (CTexture *texP) { m_info.texP = texP; }
 		inline void ResetTexture (void) { m_info.texP = &m_info.texture; }
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
 		CBitmap *CreateMask (void);
 		int CreateMasks (void);
-		int SetupFrames (int bMipMaps, int nTransp, int bLoad);
-		CBitmap* SetupTexture (int bMipMaps, int nTransp, int bLoad);
-		int LoadTexture (int dxo, int dyo, int nTransp, int superTransp);
+		int SetupFrames (int bMipMaps, int bLoad);
+		CBitmap* SetupTexture (int bMipMaps, int bLoad);
+		int LoadTexture (int dxo, int dyo, int superTransp);
 #if RENDER2TEXTURE == 1
-		int PrepareTexture (int bMipMap, int nTransp, int bMask, CBO *renderBuffer = NULL);
+		int PrepareTexture (int bMipMap, int bMask, CBO *renderBuffer = NULL);
 #elif RENDER2TEXTURE == 2
-		int PrepareTexture (int bMipMap, int nTransp, int bMask, CFBO *renderBuffer = NULL);
+		int PrepareTexture (int bMipMap, int bMask, CFBO *renderBuffer = NULL);
 #else
-		int PrepareTexture (int bMipMap, int nTransp, int bMask, tPixelBuffer *renderBuffer = NULL);
+		int PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer = NULL);
 #endif
-		int Bind (int bMipMaps, int nTransp);
+		int Bind (int bMipMaps);
 		inline bool Prepared (void) { return Texture () && (Texture ()->Handle () > 0); }
 
 #if TEXTURE_COMPRESSION
@@ -315,7 +317,7 @@ class CBitmap : public CArray< ubyte > {
 		void OglVertices (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, CBitmap* destP = NULL);
 		void OglTexCoord (void);
 		void SetTexCoord (GLfloat u, GLfloat v, int orient);
-		CTexture* OglBeginRender (bool bBlend, int bMipMaps, int nTransp);
+		CTexture* OglBeginRender (bool bBlend, int bMipMaps, int nTranspType);
 		void OglRender (tRgbaColorf* colorP, int nColors, int orient);
 		void OglEndRender (void);
 		int RenderScaled (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, tCanvasColor *colorP = NULL);

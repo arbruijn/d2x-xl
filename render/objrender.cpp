@@ -288,7 +288,8 @@ return fScale;
 
 void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
-	CBitmap		*bmP;
+	CBitmap*		bmP;
+	CTexture*	texP;
 	tRgbaColorf	color;
 	int			nType = objP->info.nType;
 	int			nId = objP->info.nId;
@@ -348,20 +349,20 @@ else {
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
 if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())) {
-	bmP->SetupTexture (1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
+	bmP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	bmP = bmP->Override (iFrame);
 	//fAlpha = 1;
 	}
 else {
 	if (colorP && gameOpts->render.bDepthSort)
-		bmP->SetupTexture (1, nTransp, 0);
+		bmP->SetupTexture (1, 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	}
 if (!bmP)
 	return;
 fScale = ObjectBlobColor (objP, bmP, &color);
-if (!bmP->Buffer ())
+if (!(texP = bmP->Texture ()) && texP->Handle ())
 	return;
 if (colorP /*&& (bmi >= 0)*/)
 	*colorP = color;
@@ -431,7 +432,7 @@ void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 
 LoadBitmap (bmi.index, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
-	bmP->SetupTexture (1, -1, gameOpts->render.bDepthSort <= 0);
+	bmP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
 	bmP = bmP->Override (iFrame);
 	}
 delta = objP->info.position.mOrient.UVec () * objP->info.xSize;

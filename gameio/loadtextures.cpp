@@ -508,8 +508,6 @@ return -1;
 #if DBG
 int nPrevIndex = -1;
 char szPrevBm [FILENAME_LEN] = "";
-
-static bool bCheck = false;
 #endif
 
 int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bHires)
@@ -526,7 +524,7 @@ int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bH
 #if DBG
 if (!bmName)
 	return 0;
-if (nIndex == nDbgTexture)
+if ((nDbgTexture > 0) && (nIndex == nDbgTexture))
 	nDbgTexture = nDbgTexture;
 #endif
 if (bmP->Buffer ())
@@ -538,13 +536,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (nIndex == 1498)
-	nIndex = nIndex;
-if (strstr (bmName, "metl154")) {
-	bmName = bmName;
-	bCheck = true;
-	}
-if (strstr (bmName, "rbot019"))
+if (strstr (bmName, "pwr02#0"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
@@ -702,6 +694,7 @@ if (!bmP->Compressed ())
 	if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 		bmP->AddFlags (BM_FLAG_SEE_THRU);
 	bmP->SetType (BM_TYPE_ALT);
+	bmP->SetTranspType (-1);
 	if (IsOpaqueDoor (nIndex)) {
 		bmP->DelFlags (BM_FLAG_TRANSPARENT);
 		bmP->TransparentFrames () [0] &= ~1;
@@ -734,13 +727,12 @@ if (nDescentCriticalError) {
 nPrevIndex = nIndex;
 strcpy (szPrevBm, bmName);
 #endif
+tRgbColorf color;
+if (0 <= (bmP->AvgColor (&color)))
+	bmP->SetAvgColorIndex (ubyte (bmP->Palette ()->ClosestColor (&color)));
 StartTime (0);
 if (!bDefault)
 	cfP->Close ();
-#if DBG
-if (bCheck && !gameData.pig.tex.bitmaps [0][1498].Flags ())
-	bCheck = bCheck;
-#endif
 return 1;
 }
 

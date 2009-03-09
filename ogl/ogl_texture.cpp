@@ -950,29 +950,31 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 //------------------------------------------------------------------------------
 
-CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx)
+CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 {
-	CBitmap*		bmP, * bmoP;
-	int			nFrames;
+	CBitmap*	bmP, * bmoP, * bmfP;
+	int		nFrames;
 
 LoadBitmap (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
-if (bmoP = bmP->Override ()) {
-	bmP = bmoP;
-	if (bmP->WallAnim ()) {
-		nFrames = bmP->FrameCount ();
-		if (nFrames > 1) {
-			bmP->SetupTexture (1, 3, 1);
-			if (bmP->Frames ()) {
-				if ((nFrameIdx >= 0) || (-nFrames > nFrameIdx))
-					bmP->SetCurFrame (bmP->Frames ());
-				else
-					bmP->SetCurFrame (bmP->Frames () - nFrameIdx - 1);
-				bmP->CurFrame ()->SetupTexture (1, 3, 1);
-				}
-			}
-		}
-	}
+bmP->SetStatic (1);
+if (!(bmoP = bmP->Override ()))
+	return bmP;
+bmoP->SetStatic (1);
+if (!bmoP->WallAnim ())
+	return bmoP;
+if (2 > (nFrames = bmoP->FrameCount ()))
+	return bmoP;
+bmoP->SetTranspType (3);
+bmoP->SetupTexture (1, bLoadTextures);
+if (!(bmfP = bmoP->Frames ()))
+	return bmoP;
+if ((nFrameIdx < 0) && (nFrames >= -nFrameIdx))
+	bmfP -= (nFrameIdx + 1);
+bmoP->SetCurFrame (bmfP);
+bmfP->SetTranspType (3);
+bmfP->SetupTexture (1, bLoadTextures);
+bmfP->SetStatic (1);
 return bmP;
 }
 
@@ -980,7 +982,7 @@ return bmP;
 //loads a palettized bitmap into a ogl RGBA texture.
 //Sizes and pads dimensions to multiples of 2 if necessary.
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
-int CBitmap::LoadTexture (int dxo, int dyo, int nTransp, int superTransp)
+int CBitmap::LoadTexture (int dxo, int dyo, int superTransp)
 {
 	ubyte*		data = Buffer ();
 
@@ -1043,15 +1045,15 @@ return 0;
 ubyte decodebuf [2048*2048];
 
 #if RENDER2TEXTURE == 1
-int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, CBO *renderBuffer)
+int CBitmap::PrepareTexture (int bMipMap, int bMask, CBO *renderBuffer)
 #elif RENDER2TEXTURE == 2
-int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, CFBO *renderBuffer)
+int CBitmap::PrepareTexture (int bMipMap, int bMask, CFBO *renderBuffer)
 #else
-int CBitmap::PrepareTexture (int bMipMap, int nTransp, int bMask, tPixelBuffer *renderBuffer)
+int CBitmap::PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer)
 #endif
 {
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
-	return Parent ()->PrepareTexture (bMipMap, nTransp, bMask, renderBuffer);
+	return Parent ()->PrepareTexture (bMipMap, bMask, renderBuffer);
 
 if (!m_info.texP)
 	m_info.texP = &m_info.texture;
@@ -1066,6 +1068,7 @@ else {
 	if (!m_info.texP->Width ())
 		m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	}
+#if 0
 if (Flags () & BM_FLAG_RLE)
 	RLEExpand (NULL, 0);
 if (!bMask) {
@@ -1073,14 +1076,19 @@ if (!bMask) {
 	if (0 <= (AvgColor (&color)))
 		SetAvgColorIndex ((ubyte) Palette ()->ClosestColor (&color));
 	}
-LoadTexture (0, 0, (m_info.props.flags & BM_FLAG_TGA) ? -1 : nTransp, 
+#endif
+#if DBG
+if (m_info.nId == nDbgTexture)
+	nDbgTexture = nDbgTexture;
+#endif
+LoadTexture (0, 0, (m_info.props.flags & BM_FLAG_TGA) ? -1 : m_info.nTranspType, 
 				 (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int CBitmap::SetupFrames (int bMipMaps, int nTransp, int bLoad)
+int CBitmap::SetupFrames (int bMipMaps, int bLoad)
 {
 	int	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.frames.nCount : 0;
 	ubyte	nFlags;
@@ -1109,8 +1117,9 @@ else {
 		if (nFlags & BM_FLAG_SEE_THRU)
 			nFlags |= BM_FLAG_SEE_THRU;
 		bmfP->SetFlags (nFlags);
+		bmfP->SetTranspType (m_info.nTranspType);
 		if (bLoad)
-			bmfP->PrepareTexture (bMipMaps, nTransp, 0, NULL);
+			bmfP->PrepareTexture (bMipMaps, 0, NULL);
 		}
 	}
 return 1;
@@ -1137,6 +1146,7 @@ sprintf (m_info.szName, "{%s}", Name ());
 m_info.maskP->SetWidth (m_info.props.w);
 m_info.maskP->SetHeight (m_info.props.w);
 m_info.maskP->SetBPP (1);
+m_info.nTranspType = -1;
 UseBitmapCache (m_info.maskP, (int) m_info.maskP->Width () * (int) m_info.maskP->RowSize ());
 if (m_info.props.flags & BM_FLAG_TGA) {
 	for (pi = Buffer (), pm = m_info.maskP->Buffer (); i; i--, pi += 4, pm++)
@@ -1179,7 +1189,7 @@ return nMasks;
 //------------------------------------------------------------------------------
 // returns 0:Success, 1:Error
 
-int CBitmap::Bind (int bMipMaps, int nTransp)
+int CBitmap::Bind (int bMipMaps)
 {
 	CBitmap		*bmP;
 
@@ -1208,9 +1218,9 @@ else
 #endif
  {
 	if (!Prepared ()) {
-		if (!(bmP = SetupTexture (bMipMaps, nTransp, 1))) {
+		if (!(bmP = SetupTexture (bMipMaps, 1))) {
 #if DBG
-			SetupTexture (bMipMaps, nTransp, 1);
+			SetupTexture (bMipMaps, 1);
 			nDepth--;
 #endif
 			return 1;
@@ -1220,7 +1230,7 @@ else
 	CBitmap* mask = Mask ();
 
 	if (mask && !mask->Prepared ())
-		mask->SetupTexture (0, -1, 1);
+		mask->SetupTexture (0, 1);
 	}
 if (!m_info.texP)
 	return -1;
@@ -1234,12 +1244,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-CBitmap *CBitmap::SetupTexture (int bMipMaps, int nTransp, int bLoad)
+CBitmap *CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
 	CBitmap *bmP;
 
 if ((bmP = HasOverride ()))
-	return bmP->SetupTexture (bMipMaps, nTransp, bLoad);
+	return bmP->SetupTexture (bMipMaps, bLoad);
 
 int	h, w, nFrames;
 
@@ -1249,21 +1259,21 @@ if (!(h * w))
 	return NULL;
 nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
-	if (bLoad && PrepareTexture (bMipMaps, nTransp, 0, NULL))
+	if (bLoad && PrepareTexture (bMipMaps, 0, NULL))
 		return NULL;
-	if (CreateMasks () && Mask ()->PrepareTexture (0, -1, 1, NULL))
+	if (CreateMasks () && Mask ()->PrepareTexture (0, 1, NULL))
 		return NULL;
 	}
 else if (!Frames ()) {
 	h = CreateMasks ();
-	SetupFrames (bMipMaps, nTransp, bLoad);
+	SetupFrames (bMipMaps, bLoad);
 	if (h) {
 		if (bLoad) {
 			CBitmap*	bmfP = Frames ();
 			for (int i = nFrames; i; i--, bmfP++) {
 				if (bmfP->PrepareTexture (bMipMaps, nTransp, 1))
 					return NULL;
-				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, -1, 1, NULL)))
+				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, 1, NULL)))
 					return NULL;
 				}
 			}

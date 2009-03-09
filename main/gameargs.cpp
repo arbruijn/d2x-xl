@@ -396,7 +396,9 @@ if ((t = FindArg ("-gl_gettexlevelparam_ok")))
 if ((t = FindArg ("-lowmem")))
 	gameStates.ogl.bLowMemory = NumArg (t, 1);
 if ((t = FindArg ("-preload_textures")))
-	gameStates.ogl.nPreloadTextures = NumArg (t, 0);
+	gameStates.ogl.nPreloadTextures = NumArg (t, 3);
+else
+	gameStates.ogl.nPreloadTextures = 3;
 if ((t = FindArg ("-FSAA")))
 	gameStates.ogl.bFSAA = NumArg (t, 1);
 

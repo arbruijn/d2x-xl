@@ -2062,7 +2062,7 @@ class CTextureData {
 class CEffectData {
 	public:
 		CArray<tEffectClip>	effects [2]; //[MAX_EFFECTS];
-		CArray<tVideoClip>	vClips [2]; //[VCLIP_MAXNUM];
+		CArray<tVideoClip>	vClips [2]; //[MAX_VCLIPS];
 		int						nEffects [2];
 		int 						nClips [2];
 		CArray<tEffectClip>	effectP;

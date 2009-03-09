@@ -1394,7 +1394,8 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL
 	if (bmP->HasOverride ())
 		bmP = bmP->Override (-1);
 	gameStates.ogl.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)
-	bmP->SetupTexture (0, 3, 1);
+	bmP->SetTranspType (3);
+	bmP->SetupTexture (0, 1);
 	gameStates.ogl.nTransparencyLimit = 0;
 	CCanvas::Push ();
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);

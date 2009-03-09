@@ -137,7 +137,7 @@ if (!gameData.hoard.bInitialized) {
 	nBitmap = gameData.pig.tex.nBitmaps [0];
 	//Create orb tVideoClip
 	gameData.hoard.orb.nClip = gameData.eff.nClips [0]++;
-	Assert (gameData.eff.nClips [0] <= VCLIP_MAXNUM);
+	Assert (gameData.eff.nClips [0] <= MAX_VCLIPS);
 	vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
 	vcP->xTotalTime = I2X (1)/2;
 	vcP->nFrameCount = gameData.hoard.orb.nFrames;

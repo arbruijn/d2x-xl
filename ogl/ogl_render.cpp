@@ -645,7 +645,7 @@ if (bVertexArrays || bDepthSort) {
 		}
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
-		bmBot->SetupTexture (1, 3, 0);
+		bmBot->SetupTexture (1, 0);
 		transparencyRenderer.AddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 		return 0;
 		}

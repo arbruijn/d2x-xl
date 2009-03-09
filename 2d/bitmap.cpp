@@ -438,13 +438,14 @@ tRgbaColorf *CBitmap::GetAvgColor (tRgbaColorf *colorP)
 tRgbColorb* pc;
 
 colorP->alpha = 1.0f;
+#if 0
 if (!m_data.buffer) {
 	colorP->red = 
 	colorP->green =
 	colorP->blue = 0;
 	return colorP;
 	}
-
+#endif
 if (m_info.nBPP == 1) {
 	if (!m_info.palette) {
 		colorP->red = 

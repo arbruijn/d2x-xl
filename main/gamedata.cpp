@@ -694,7 +694,7 @@ CEffectData::CEffectData ()
 {
 for (int i = 0; i < 2; i++) {
 	effects [i].Create (MAX_EFFECTS);
-	vClips [i].Create (VCLIP_MAXNUM);
+	vClips [i].Create (MAX_VCLIPS);
 	}
 }
 

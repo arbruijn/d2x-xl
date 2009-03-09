@@ -375,10 +375,13 @@ if (animP->flags & WCF_ALTFMT) {
 			animP->flags &= ~WCF_ALTFMT;
 		else {
 			animP->flags |= WCF_INITIALIZED;
-			if (gameData.demo.nState == ND_STATE_RECORDING)
-				bmP->SetupTexture (1, 3, 1);
+			if (gameData.demo.nState == ND_STATE_RECORDING) {
+				bmP->SetTranspType (3);
+				bmP->SetupTexture (1, 1);
+				}
 			bmP->SetCurFrame (bmP->Frames () + nFrame);
-			bmP->CurFrame ()->SetupTexture (1, 3, 1);
+			bmP->CurFrame ()->SetTranspType (3);
+			bmP->CurFrame ()->SetupTexture (1, 1);
 			if (++nFrame > nFrames)
 				nFrame = nFrames;
 			}
