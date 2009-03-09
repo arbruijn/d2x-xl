@@ -192,12 +192,13 @@ if (gameOpts->render.nMaxFPS != v) {
 			return nCurItem;
 			}
 		sprintf (m->m_text, TXT_VSYNC);
-#if WIN32
-		wglSwapIntervalEXT (v < 0);
-#endif
 		}
 	else
 		sprintf (m->m_text, TXT_NO_FRAMECAP);
+#if WIN32
+	if (gameStates.render.bVSyncOk)
+		wglSwapIntervalEXT (v < 0);
+#endif
 	gameOpts->render.nMaxFPS = v;
 	gameStates.render.bVSync = (v < 0);
 	m->m_bRebuild = 1;
@@ -296,7 +297,7 @@ do {
 		}
 	if (gameOpts->render.nMaxFPS > 1)
 		sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
-	if (gameOpts->render.nMaxFPS < 0)
+	else if (gameOpts->render.nMaxFPS < 0)
 		sprintf (szMaxFps + 1, TXT_VSYNC, gameOpts->render.nMaxFPS);
 	else
 		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);

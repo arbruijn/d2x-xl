@@ -546,6 +546,8 @@ else {
 
 bTGA = 0;
 nFlags = (nIndex < 0) ? 0 : gameData.pig.tex.bitmapFlags [bD1][nIndex];
+if (bmP->Texture ())
+	bmP->Texture ()->Release ();
 bmP->SetBPP (1);
 
 if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0])) {
