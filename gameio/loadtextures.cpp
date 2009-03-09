@@ -555,7 +555,7 @@ if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->render
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
 		altBmP->nType = BM_TYPE_ALT;
-		bmP->Override ( = altBmP;
+		bmP->SetOverride (altBmP);
 		BM_FRAMECOUNT (altBmP) = 1;
 		nFlags &= ~BM_FLAG_RLE;
 		nFlags |= BM_FLAG_TGA;
@@ -942,12 +942,13 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 
 bool BitmapLoaded (int bmi, int bD1)
 {
-CBitmap* bmoP, * bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
+	CBitmap*		bmoP, * bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
+	CTexture*	texP;
 #if 1
-if ((bmoP = bmP->Override ()))
+if ((bmoP = bmP->Override (-1)))
 	bmP = bmoP;
 #endif
-return bmP->Buffer () && !(bmP->Flags () & BM_FLAG_PAGED_OUT);
+return (texP = bmP->Texture ()) && (texP->Handle ()) && !(bmP->Flags () & BM_FLAG_PAGED_OUT);
 }
 
 //------------------------------------------------------------------------------
