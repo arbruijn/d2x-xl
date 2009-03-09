@@ -274,16 +274,16 @@ gameData.hoard.bInitialized = 1;
 
 void ResetHoardData (void)
 {
-	int	i;
-
+#if 0
 gameData.hoard.orb.bm.SetTexture (NULL);
 gameData.hoard.goal.bm.SetTexture (NULL);
 if (gameData.hoard.monsterball.bm.Override ())
 	gameData.hoard.monsterball.bm.Override ()->SetTexture (NULL);
 else
 	gameData.hoard.monsterball.bm.SetTexture (NULL);
-for (i = 0; i < 2; i++)
+for (int i = 0; i < 2; i++)
 	gameData.hoard.icon [i].bm.SetTexture (NULL);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -317,5 +317,6 @@ gameData.eff.vClips [0][gameData.hoard.orb.nClip].nFrameCount = 0;
 gameData.eff.nClips [0] = gameData.hoard.orb.nClip;
 gameData.hoard.bInitialized = 0;
 }
+
 //-----------------------------------------------------------------------------
 //eof
