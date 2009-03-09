@@ -483,8 +483,11 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+int nBitmaps = 0;
+
 void LoadLevelTextures (void)
 {
+nBitmaps = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		int	i = LoadMineGaugeSize ();
 

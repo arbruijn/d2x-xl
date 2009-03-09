@@ -671,7 +671,7 @@ return gameStates.app.bAutoRunMission ? 0 :
 void UnloadLevelData (int bRestore)
 {
 ResetModFolders ();
-//textureManager.Destroy ();
+textureManager.Destroy ();
 gameOpts->render.textures.bUseHires [0] = gameOpts->render.textures.bUseHires [1];
 gameOpts->render.bHiresModels [0] = gameOpts->render.bHiresModels [1];
 if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {

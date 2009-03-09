@@ -107,23 +107,23 @@ extern ubyte bBigPig;
 
 #if DBG
 typedef struct tTrackedBitmaps {
-	CBitmap	*bmP;
-	int			nSize;
+	CBitmap*	bmP;
+	int		nSize;
 } tTrackedBitmaps;
 
-tTrackedBitmaps	trackedBitmaps [1000000];
+tTrackedBitmaps	trackedBitmaps [100000];
 int					nTrackedBitmaps = 0;
 #endif
 
 void UseBitmapCache (CBitmap *bmP, int nSize)
 {
-bitmapCacheUsed += nSize;
-if (0x7fffffff < bitmapCacheUsed)
+if ((nSize > 0) || (uint (-nSize) < bitmapCacheUsed))
+	bitmapCacheUsed += nSize;
+else
 	bitmapCacheUsed = 0;
 #if DBG
 if (nSize < 0) {
-	int i;
-	for (i = 0; i < nTrackedBitmaps; i++)
+	for (int i = 0; i < nTrackedBitmaps; i++)
 		if (trackedBitmaps [i].bmP == bmP) {
 			//CBP (trackedBitmaps [i].nSize != -nSize);
 			if (i < --nTrackedBitmaps)
@@ -662,7 +662,7 @@ if (bmP->bmCompressed)
 	UseBitmapCache (bmP, bmP->bmBufSize);
 else
 #endif
- {
+	{
 	if (bmP->CreateBuffer ())
 		UseBitmapCache (bmP, nSize);
 	}
@@ -740,8 +740,8 @@ return 1;
 
 int PiggyBitmapPageIn (int bmi, int bD1, bool bHires)
 {
-	CBitmap		*bmP;
-	int				i, bmiSave;
+	CBitmap*	bmP;
+	int		i, bmiSave;
 
 	//bD1 = gameStates.app.bD1Mission;
 bmiSave = 0;

@@ -194,7 +194,7 @@ int OglCacheLevelTextures (void)
 	int			max_efx = 0, ef;
 	int			nSegment, nSide;
 	short			nBaseTex, nOvlTex;
-	CBitmap	*bmBot,*bmTop, *bmm;
+	CBitmap*		bmBot,* bmTop, * bmm;
 	CSegment		*segP;
 	CSide			*sideP;
 	CObject		*objP;

@@ -497,8 +497,8 @@ Render (dest ? dest : CCanvas::Current (), x, y, w, h, 0, 0, w, h);
 void CBitmap::FreeData (void)
 {
 if (Buffer ()) {
+	UseBitmapCache (this, -int (Size ()));
 	DestroyBuffer ();
-	UseBitmapCache (this, int (-Width ()) * int (RowSize ()));
 	}
 }
 
