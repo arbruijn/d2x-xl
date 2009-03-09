@@ -117,7 +117,7 @@ class CTexture {
 		inline int Next (void) { return m_next; }
 		inline void SetPrev (int prev) { m_prev = prev; }
 		inline void SetNext (int next) { m_next = next; }
-		inline SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
+		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 #endif
 #if TEXTURE_COMPRESSION
 		Compress ();
