@@ -491,7 +491,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				bmP = bmP->Override (-1);
 				if (bmP->Frames ())
 					bmP = bmP->CurFrame ();
-				if (bmP->Bind (1, 3))
+				if (bmP->Bind (1))
 					continue;
 				bmP->Texture ()->Wrap (GL_REPEAT);
 				}

@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 #include "hitbox.h"
 #include "network.h"
+#include "renderlib.h"
 #include "fvi.h"
 
 int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
@@ -1154,8 +1155,6 @@ return nHitType;
 }
 
 //	-----------------------------------------------------------------------------
-
-CBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 
 int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v)
 {

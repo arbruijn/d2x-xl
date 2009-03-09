@@ -779,7 +779,8 @@ G3AddDeltaVec (&pTop, &p, &vDelta);
 if (!(p.p3_codes & CC_BEHIND)&& !(p.p3_flags & PF_OVERFLOW)) {
 	int imSave = gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 0;
-	if (!gameData.endLevel.satellite.bmP->Bind (1, 0))
+	gameData.endLevel.satellite.bmP->SetTranspType (0);
+	if (!gameData.endLevel.satellite.bmP->Bind (1))
 		G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &pTop, SATELLITE_WIDTH, I2X (1), satUVL);
 	gameStates.render.nInterpolationMethod = imSave;
 	}
