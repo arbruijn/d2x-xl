@@ -103,9 +103,15 @@ OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 
+int i = 0;
+
 while (m_textures) {
 	texP = m_textures;
-	m_textures = texP->Next ();
+	i++;
+#if DBG
+	if (!texP->Handle ())
+		break;
+#endif
 	texP->SetHandle (0); //(GLuint) -1);
 	texP->Release ();
 	}
@@ -116,6 +122,12 @@ m_textures = NULL;
 
 void CTextureManager::Register (CTexture* texP)
 {
+#if DBG
+CTexture* t;
+for (t = m_textures; t; t = t->Next ())
+	if (texP == t)
+		return;
+#endif
 texP->Link (NULL, m_textures);
 if (m_textures)
 	m_textures->SetPrev (texP);
@@ -152,6 +164,7 @@ m_info.bRenderBuffer = 0;
 m_info.prio = 0.3f;
 m_prev =
 m_next = NULL;
+m_bRegistered = false;
 }
 
 //------------------------------------------------------------------------------
@@ -193,10 +206,10 @@ m_info.bSmoothe = bSmoothe || m_info.bMipMaps;
 
 bool CTexture::Register (void)
 {
-if (m_prev || m_next)
+if (m_bRegistered)
 	return false;	// already registered
 textureManager.Register (this); 
-return true;
+return m_bRegistered = true;
 }
 
 //------------------------------------------------------------------------------
@@ -724,11 +737,14 @@ SetBufSize (nBits, a, w, h);
 
 void CTexture::Release (void)
 {
-textureManager.Release (this);
-if (m_prev)
-	m_prev->m_next = m_next;
-if (m_next)
-	m_next->m_prev = m_prev;
+if (m_bRegistered) {
+	textureManager.Release (this);
+	if (m_prev)
+		m_prev->m_next = m_next;
+	if (m_next)
+		m_next->m_prev = m_prev;
+	m_bRegistered = false;
+	}
 }
 
 //------------------------------------------------------------------------------

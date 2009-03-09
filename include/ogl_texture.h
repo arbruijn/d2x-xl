@@ -46,6 +46,7 @@ class CTexture {
 	private:
 #if 1
 		CTexture*	m_prev, * m_next;
+		bool			m_bRegistered;
 #endif
 		tTexture	m_info;
 
