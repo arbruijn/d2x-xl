@@ -155,27 +155,30 @@ return 0;
 
 #if TEXTURE_COMPRESSION
 
-int SaveS3TC (CBitmap *bmP, char *pszFolder, char *pszFilename)
+int CBitmap::SaveS3TC (char *pszFolder, const char *pszFile)
 {
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
 
-if (!bmP->bmCompressed)
+if (!m_info.compressed.bCompressed)
 	return 0;
-CFSplitPath (pszFilename, szFolder, szFilename + 1, NULL);
-strcat (szFilename + 1, ".s3tc");
-*szFilename = '\x02';	//don't search lib (hog) files
-if (*szFolder)
-	pszFolder = szFolder;
+
+if (!pszFolder)
+	pszFolder = gameFolders.szDataDir;
+CFile::SplitPath (pszFile, NULL, szFilename, NULL);
+sprintf (szFolder, "%s/dxt/", pszFolder);
+strcat (szFilename, ".dxt");
 if (cf.Exist (szFilename, pszFolder, 0))
 	return 1;
-if (!cf.Open (szFilename + 1, pszFolder, "wb", 0))
+if (!cf.Open (szFilename, szFolder, "wb", 0))
 	return 0;
-if ((cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
-	 (cf.Write (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
-	 (cf.Write (&bmP->bmFormat, sizeof (bmP->bmFormat), 1) != 1) ||
-    (cf.Write (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1) != 1) ||
-    (bmP->Write (cf, bmP->bmBufSize) != bmP->bmBufSize)) {
+
+m_info.compressed.nBufSize = m_info.compressed.buffer.Size ();
+if ((cf.Write (&m_info.props.w, sizeof (m_info.props.w), 1) != 1) ||
+	 (cf.Write (&m_info.props.h, sizeof (m_info.props.h), 1) != 1) ||
+	 (cf.Write (&m_info.compressed.nFormat, sizeof (m_info.compressed.nFormat), 1) != 1) ||
+    (cf.Write (&m_info.compressed.nBufSize, sizeof (m_info.compressed.nBufSize), 1) != 1) ||
+    (m_info.compressed.buffer.Write (cf, m_info.compressed.nBufSize) != m_info.compressed.nBufSize)) {
 	cf.Close ();
 	return 0;
 	}
@@ -184,38 +187,43 @@ return !cf.Close ();
 
 //------------------------------------------------------------------------------
 
-int ReadS3TC (CBitmap *bmP, char *pszFolder, char *pszFilename)
+int CBitmap::ReadS3TC (char *pszFolder, char *pszFile)
 {
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
 
 if (!gameStates.ogl.bHaveTexCompression)
 	return 0;
-CFSplitPath (pszFilename, szFolder, szFilename, NULL);
-if (!*szFilename)
-	CFSplitPath (pszFilename, szFolder, szFilename, NULL);
-strcat (szFilename, ".s3tc");
-if (*szFolder)
-	pszFolder = szFolder;
-if (!cf.Open (szFilename, pszFolder, "rb", 0))
+if (!m_info.compressed.bCompressed)
 	return 0;
-if ((cf.Read (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
-	 (cf.Read (&bmP->Width (), sizeof (bmP->Width ()), 1) != 1) ||
-	 (cf.Read (&bmP->bmFormat, sizeof (bmP->bmFormat), 1) != 1) ||
-	 (cf.Read (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1) != 1)) {
+
+if (!pszFolder)
+	pszFolder = gameFolders.szDataDir;
+CFile::SplitPath (pszFile, NULL, szFilename, NULL);
+sprintf (szFolder, "%s/dxt/", pszFolder);
+strcat (szFilename, ".dxt");
+if (cf.Exist (szFilename, pszFolder, 0))
+	return 1;
+if (!cf.Open (szFilename, szFolder, "rb", 0))
+	return 0;
+
+if ((cf.Read (&m_info.props.w, sizeof (m_info.props.w), 1) != 1) ||
+	 (cf.Read (&m_info.props.h, sizeof (m_info.props.h), 1) != 1) ||
+	 (cf.Read (&m_info.compressed.nFormat, sizeof (m_info.compressed.nFormat), 1) != 1) ||
+	 (cf.Read (&m_info.compressed.nBufSize, sizeof (m_info.compressed.nBufSize), 1) != 1)) {
 	cf.Close ();
 	return 0;
 	}
-if (!(bmP->SetBuffer (new ubyte [bmP->bmBufSize])) {
+if (!m_info.compressed.buffer.Resize (m_info.compressed.nBufSize)) {
 	cf.Close ();
 	return 0;
 	}
-if (bmP->Read (cf, bmP->bmBufSize) != bmP->bmBufSize) {
+if (m_info.compressed.buffer.Read (cf, m_info.compressed.nBufSize) != m_info.compressed.nBufSize) {
 	cf.Close ();
 	return 0;
 	}
 cf.Close ();
-bmP->bmCompressed = 1;
+m_info.compressed.bCompressed = true;
 return 1;
 }
 
@@ -435,7 +443,7 @@ if (bmP->Flags () & BM_FLAG_RLE) {
 	}
 else if (bDefault) {
 #if TEXTURE_COMPRESSION
-	if (bmP->bmCompressed)
+	if (bmP->Compressed ())
 		return 0;
 #endif
 	bmP->Read (*cfP, nSize);
@@ -658,8 +666,8 @@ if (cfP->Seek (nOffset, SEEK_SET)) {
 bmP->SetName (bmName);
 #endif
 #if TEXTURE_COMPRESSION
-if (bmP->bmCompressed)
-	UseBitmapCache (bmP, bmP->bmBufSize);
+if (bmP->Compressed ())
+	UseBitmapCache (bmP, bmP->CompressedSize ());
 else
 #endif
 	{
@@ -687,7 +695,7 @@ if (i) {
 	}
 else
 #if TEXTURE_COMPRESSION
-if (!bmP->bmCompressed)
+if (!bmP->Compressed ())
 #endif
 	{
 	ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
@@ -700,7 +708,7 @@ if (!bmP->bmCompressed)
 		}
 #if TEXTURE_COMPRESSION
 	if (CompressTGA (bmP))
-		SaveS3TC (bmP, gameFolders.szTextureCacheDir [bD1], bmName);
+		bmP->SaveS3TC (gameFolders.szTextureCacheDir [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1], bmName);
 	else {
 #endif
 		nBestShrinkFactor = BestShrinkFactor (bmP, nShrinkFactor);

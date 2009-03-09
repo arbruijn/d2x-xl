@@ -54,5 +54,6 @@ void TGAChangeBrightness (CBitmap *bmP, double dScale, int bInverse, int nOffset
 int TGAInterpolate (CBitmap *bmP, int nScale);
 int TGAMakeSquare (CBitmap *bmP);
 int ReadModelTGA (const char *pszFile, CBitmap *bmP, int bCustom);
+int CompressTGA (CBitmap *bmP);
 
 #endif //_TGA_H

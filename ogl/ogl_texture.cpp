@@ -996,13 +996,13 @@ if ((bLocal = (m_info.texP == NULL))) {
 	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);
 	}
 #if TEXTURE_COMPRESSION
-m_info.texP->Prepare (m_info.bCompressed);
+m_info.texP->Prepare (m_info.compressed.bCompressed);
 #	ifndef __macosx__
-if (!(m_info.bCompressed || superTransp || Parent ())) {
+if (!(m_info.compressed.bCompressed || Parent ())) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
 		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) && 
 		 (m_info.texP->TW () >= 64) && (m_info.texP->TH () >= 64))
-		m_info.texP->SetInternalformat (GL_COMPRESSED_RGBA);
+		m_info.texP->SetInternalFormat (GL_COMPRESSED_RGBA);
 	if (m_info.texP->Verify ())
 		return 1;
 	}
@@ -1016,11 +1016,10 @@ m_info.texP->Prepare ();
 if (!m_info.texP->IsRenderBuffer ()) 
 #endif
  {
-#else
 	if (data) {
 #if TEXTURE_COMPRESSION
-		if (m_info.bCompressed)
-			bufP = CompressedBuffer ();
+		if (m_info.compressed.bCompressed)
+			bufP = CompressedBuffer ().Buffer ();
 		else
 #endif
 		if (nTransp < 0) 
@@ -1029,7 +1028,7 @@ if (!m_info.texP->IsRenderBuffer ())
 			bufP = m_info.texP->Convert (dxo, dyo, this, nTransp, superTransp);
 		}
 #if TEXTURE_COMPRESSION
-	m_info.texP->Load (Compressed () ? Buffer () : bufP, BufSize (), Format (), Compressed ());
+	m_info.texP->Load (bufP, m_info.compressed.buffer.Size (), m_info.compressed.nFormat, m_info.compressed.bCompressed);
 #else
 	funcRes = m_info.texP->Load (bufP);
 #endif

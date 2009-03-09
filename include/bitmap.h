@@ -70,6 +70,20 @@ class CFrameInfo {
 
 //-----------------------------------------------------------------------------
 
+#if TEXTURE_COMPRESSION
+
+class CCompressionData {
+	public:
+		CArray< ubyte >	buffer;
+		bool					bCompressed;
+		int					nWidth;
+		int					nHeight;
+		int					nFormat;
+		int					nBufSize;
+	};
+
+#endif
+
 class CBitmapInfo {
 	public:
 		char					szName [20];
@@ -86,9 +100,7 @@ class CBitmapInfo {
 		ubyte					bFlat;		//no texture, just a colored area
 		ubyte					nTeam;
 #if TEXTURE_COMPRESSION
-		bool					bCompressed;
-		int					nFormat;
-		int					nBufSize;
+		CCompressionData	compressed;
 #endif
 		int					transparentFrames [4];
 		int					supertranspFrames [4];
@@ -111,10 +123,6 @@ class CBitmap : public CArray< ubyte > {
 		GLfloat		x0, x1, y0, y1, u1, v1, u2, v2, aspect;
 		GLint			depthFunc, bBlendState;
 		int			nOrient;
-
-#if TEXTURE_COMPRESSION
-		CArray< ubyte >	compressedBuffer;
-#endif
 
 	public:
 		CBitmap () { Init (); };
@@ -257,11 +265,14 @@ class CBitmap : public CArray< ubyte > {
 		inline bool Prepared (void) { return Texture () && (Texture ()->Handle () > 0); }
 
 #if TEXTURE_COMPRESSION
-		inline CArray<ubyte>& CompressedBuffer (void) { return compressedBuffer; }
-		inline ubyte Compressed (void) { return m_info.bCompressed; }
-		inline int Format (void) { return m_info.nFormat; }
-		inline void SetCompressed (bool bCompressed) { m_info.bCompressed = bCompressed; }
-		inline void SetFormat (int nFormat) { m_info.nFormat = nFormat; }
+		inline CArray<ubyte>& CompressedBuffer (void) { return m_info.compressed.buffer; }
+		inline ubyte Compressed (void) { return m_info.compressed.bCompressed; }
+		inline int Format (void) { return m_info.compressed.nFormat; }
+		inline void SetCompressed (bool bCompressed) { m_info.compressed.bCompressed = bCompressed; }
+		inline void SetFormat (int nFormat) { m_info.compressed.nFormat = nFormat; }
+		inline uint CompressedSize (void) { return m_info.compressed.buffer.Size (); }
+		int SaveS3TC (char *pszFolder, const char *pszFilename);
+		int ReadS3TC (char *pszFolder, char *pszFilename);
 #else
 		inline ubyte Compressed (void) { return 0; }
 		inline int Format (void) { return 0; }

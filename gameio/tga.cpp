@@ -13,10 +13,12 @@ int CompressTGA (CBitmap *bmP)
 {
 if (!(gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression))
 	return 0;
+#if 0
 if (bmP->Height () / bmP->Width () > 1)
 	return 0;	//don't compress animations
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 0;	//don't compress textures containing some form of transparency
+#endif
 if (bmP->LoadTexture (0, 0, -1, 0))
 	return 0;
 return 1;
