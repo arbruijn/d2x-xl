@@ -865,14 +865,15 @@ int CTexture::Load (ubyte *buffer)
 {
 if (!buffer)
 	return 1;
-// Generate OpenGL texture IDs.
 OglGenTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 if (!m_info.handle) {
-#if DBG
-	int nError = glGetError ();
-#endif
+	OglClearError (0);
 	return 1;
 	}
+#if DBG
+if (gameStates.ogl.bNeedMipMaps < 0)
+	return 0;
+#endif
 m_info.prio = m_info.bMipMaps ? (m_info.h == m_info.w) ? 1.0f : 0.5f : 0.1f;
 glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
 Bind ();
