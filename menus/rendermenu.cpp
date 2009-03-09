@@ -183,9 +183,9 @@ if (!gameStates.app.bNostalgia) {
 	}
 m = menu + renderOpts.nMaxFPS;
 v = fpsTable [m->m_value];
-if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
+if (gameOpts->render.nMaxFPS != v) {
 	if (v > 0)
-		sprintf (m->m_text, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+		sprintf (m->m_text, TXT_FRAMECAP, v);
 	else if (v < 0) {
 		if (!gameStates.render.bVSyncOk) {
 			m->m_value = 1;
@@ -198,7 +198,7 @@ if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
 		}
 	else
 		sprintf (m->m_text, TXT_NO_FRAMECAP);
-	gameOpts->render.nMaxFPS = v ? v : 1;
+	gameOpts->render.nMaxFPS = v;
 	gameStates.render.bVSync = (v < 0);
 	m->m_bRebuild = 1;
 	}
@@ -296,6 +296,8 @@ do {
 		}
 	if (gameOpts->render.nMaxFPS > 1)
 		sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+	if (gameOpts->render.nMaxFPS < 0)
+		sprintf (szMaxFps + 1, TXT_VSYNC, gameOpts->render.nMaxFPS);
 	else
 		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
 	*szMaxFps = *(TXT_FRAMECAP - 1);

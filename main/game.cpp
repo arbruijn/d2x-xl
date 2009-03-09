@@ -398,7 +398,7 @@ fix 	timerValue,
 		xLastFrameTime = gameData.time.xFrame;
 GetSlowTicks ();
 #if 1
-fix xMinFrameTime = (MAXFPS ? I2X (1) / MAXFPS : 1);
+fix xMinFrameTime = ((MAXFPS > 1) ? I2X (1) / MAXFPS : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
    gameData.time.xFrame = timerValue - gameData.time.xLast;
