@@ -1059,7 +1059,7 @@ if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 
 if (!m_info.texP)
 	m_info.texP = &m_info.texture;
-texP->SetBitmap (this);
+m_info.texP->SetBitmap (this);
 if (m_info.texP->Register ()) {
 	m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	m_info.texP->SetRenderBuffer (renderBuffer);
