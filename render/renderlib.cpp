@@ -115,7 +115,8 @@ if (!*bHaveP) {
 	else {
 		*bHaveP = 1;
 		bmP->SetFrameCount ();
-		bmP->Bind (1, 1);
+		bmP->SetTranspType (-1);
+		bmP->Bind (1);
 		}
 	*bmPP = bmP;
 	}

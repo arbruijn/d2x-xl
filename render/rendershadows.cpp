@@ -123,7 +123,8 @@ if (!bHaveShadowBuf) {
 	shadowBuf.SetHeight (STB_SIZE_Y);
 	shadowBuf.SetFlags ((char) BM_FLAG_TGA);
 	shadowBuf.SetBuffer (shadowTexBuf);
-	shadowBuf.PrepareTexture (0, -1, 0, NULL);
+	shadowBuf.SetTranspType (-1);
+	shadowBuf.PrepareTexture (0, 0, NULL);
 	bHaveShadowBuf = 1;
 	}
 #if 1
@@ -184,7 +185,8 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 glEnable (GL_TEXTURE_2D);
 OglActiveTexture (GL_TEXTURE0, 0);
-if (shadowBuf.Bind (0, 0))
+shadowBuf.SetTranspType (0);
+if (shadowBuf.Bind (0))
 	return;
 glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #if 0

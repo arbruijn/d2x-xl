@@ -508,7 +508,8 @@ if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {
 	return NULL;
 	}
 bmP->SetName (filename);
-bmP->Bind (0, 3);
+bmP->SetTranspType (3);
+bmP->Bind (0);
 return bmP;
 }
 

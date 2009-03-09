@@ -84,7 +84,7 @@ else {
 		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		if (bmpDeadzone->Bind (1, -1)) 
+		if (bmpDeadzone->Bind (1)) 
 			return;
 		bmpDeadzone->Texture ()->Wrap (GL_CLAMP);
 		glPushMatrix ();

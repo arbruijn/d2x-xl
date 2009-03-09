@@ -107,7 +107,7 @@ if (bmP || (nTexId >= 0)) {
 	if (nTexId >= 0)
 		OGL_BINDTEX (nTexId);
 	else {
-		if (bmP->Bind (1, 3))
+		if (bmP->Bind (1))
 			return 1;
 		bmP->Texture ()->Wrap (GL_REPEAT);
 		}
@@ -585,7 +585,7 @@ else if (!bDepthSort) {
 		}
 	else
 		InitTMU0 (bVertexArrays);
-	if (bmBot->Bind (1, 3))
+	if (bmBot->Bind (1))
 		return 1;
 	bmBot = bmBot->CurFrame (-1);
 	bmBot->Texture ()->Wrap ((bmBot == bmpDeadzone) ? GL_CLAMP : GL_REPEAT);
@@ -755,7 +755,7 @@ if (bOverlay > 0) {
 	r_tpolyc++;
 	OglActiveTexture (GL_TEXTURE0, 0);
 	glEnable (GL_TEXTURE_2D);
-	if (bmTop->Bind (1, 3))
+	if (bmTop->Bind (1))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
 	bmTop->Texture ()->Wrap (GL_REPEAT);
@@ -863,7 +863,7 @@ if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	glUseProgramObject (lmProg);
 	}
 InitTMU0 (0);	// use render pipeline 0 for bottom texture
-if (bmBot->Bind (1, 3))
+if (bmBot->Bind (1))
 	return 1;
 bmBot = bmBot->CurFrame (-1);
 bmBot->Texture ()->Wrap (GL_REPEAT);
@@ -871,7 +871,7 @@ if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 if (bmTop) { // use render pipeline 1 for overlay texture
 	InitTMU1 (0);
-	if (bmTop->Bind (1, 3))
+	if (bmTop->Bind (1))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
 	bmTop->Texture ()->Wrap (GL_REPEAT);
@@ -949,7 +949,7 @@ if (bmP == gameData.endLevel.satellite.bmP) {
 	}
 else
 	InitTMU0 (0);
-if (bmP->Bind (1, 3))
+if (bmP->Bind (1))
 	return 1;
 if (bmP == bmpDeadzone)
 	bmP->Texture ()->Wrap (GL_CLAMP);
@@ -1059,7 +1059,7 @@ else {
 	else {
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
-		if (bmP->Bind (1, 1))
+		if (bmP->Bind (1))
 			return 1;
 		bmP = bmP->Override (-1);
 		bmP->Texture ()->Wrap (GL_CLAMP);
@@ -1107,7 +1107,7 @@ if (bmP)
 else
 	glDisable (GL_TEXTURE_2D);
 if (bmP) {
-	if (bmP->Bind (1, 1))
+	if (bmP->Bind (1))
 		return 0;
 	bmP = bmP->Override (-1);
 	if (bmP->Frames ())

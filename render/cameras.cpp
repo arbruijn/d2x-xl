@@ -89,8 +89,10 @@ if (!m_info.buffer.glTexture)
 #elif RENDER2TEXTURE == 2
 if (!m_info.fbo.Disable ())
 	return 0;
-if (!m_info.buffer.Texture ())
-	m_info.buffer.PrepareTexture (0, -1, 0, &m_info.fbo);
+if (!m_info.buffer.Texture ()) {
+	m_info.buffer.SetTranspType (-1);
+	m_info.buffer.PrepareTexture (0, 0, &m_info.fbo);
+	}
 #endif
 return 1;
 }
@@ -479,7 +481,8 @@ if (m_info.buffer.Buffer ())
 	glReadBuffer (GL_BACK);
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport) {
 #if CAMERA_READPIXELS == 0
-		m_info.buffer.PrepareTexture (0, -1, 0, NULL);
+		m_info.buffer.SetTranspType (-1);
+		m_info.buffer.PrepareTexture (0, 0, NULL);
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
 			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
 			(CCanvas::Current ()->Height () - m_info.buffer.Height ()) / 2, 
@@ -495,7 +498,8 @@ if (m_info.buffer.Buffer ())
 		}
 	else {
 #if CAMERA_READPIXELS == 0
-			m_info.buffer.PrepareTexture (0, -1, 0, NULL);
+			m_info.buffer.SetTranspType (-1);
+			m_info.buffer.PrepareTexture (0, 0, NULL);
 			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
 				-(m_info.buffer.Width () - CCanvas::Current ()->Width ()) / 2,
 				-(m_info.buffer.Height () - CCanvas::Current ()->Height ()) / 2, 

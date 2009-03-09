@@ -790,7 +790,7 @@ if (bmP) {
 	if ((bmP != m_data.bmP [bDecal]) || (nFrame != m_data.nFrame) || (nWrap != m_data.nWrap)) {
 		gameData.render.nStateChanges++;
 		if (bmP) {
-			if (bmP->Bind (1, nTransp)) {
+			if (bmP->Bind (1)) {
 				m_data.bmP [bDecal] = NULL;
 				return 0;
 				}

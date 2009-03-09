@@ -78,7 +78,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 else {
 	glEnable (GL_TEXTURE_2D);
-	if (bmP->Bind (1, transp))
+	if (bmP->Bind (1))
 		return 1;
 	bmP = bmP->Override (-1);
 	bmP->Texture ()->Wrap (GL_CLAMP);
@@ -175,7 +175,7 @@ CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 OglClearError (1);
 glEnable (GL_TEXTURE_2D);
 glActiveTexture (GL_TEXTURE0);
-if (Bind (bMipMaps, nTransp))
+if (Bind (bMipMaps))
 	return NULL;
 m_info.texP->Wrap (GL_REPEAT);
 

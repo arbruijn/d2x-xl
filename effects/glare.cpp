@@ -522,7 +522,8 @@ if (color.alpha < 0.01f)
 glEnable (GL_TEXTURE_2D);
 if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 	return;
-if (bmP->Bind (1, -1))
+bmP->SetTranspType (-1);
+if (bmP->Bind (1))
 	return;
 bmP->Texture ()->Wrap (GL_CLAMP);
 glDisable (GL_CULL_FACE);
@@ -590,7 +591,7 @@ void RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture,
 	tRgbaColorf color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	int 			i;
-	CBitmap	*bmP = NULL;
+	CBitmap*		bmP = NULL;
 
 if (gameStates.render.bQueryCoronas) {
 	glDisable (GL_TEXTURE_2D);
@@ -604,6 +605,7 @@ else {
 	if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 		return;
 	}
+bmP->SetTranspType (-1);
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;
 else
@@ -616,7 +618,7 @@ else
 	glColor4f (color.red, color.green, color.blue, fIntensity);
 if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
 	if (gameStates.render.bQueryCoronas == 0) {
-		bmP->Bind (1, -1);
+		bmP->Bind (1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
@@ -625,7 +627,7 @@ if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE
 	}
 else {
 	if (gameStates.render.bQueryCoronas == 0)
-		bmP->Bind (1, -1);
+		bmP->Bind (1);
 	glBegin (GL_QUADS);
 	for  (i = 0; i < 4; i++) {
 		glTexCoord2fv (reinterpret_cast<GLfloat*> (tcGlare + i));

@@ -750,7 +750,8 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadBitmap (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
-		if (bmP->Bind (1, 2))
+		bmP->SetTranspType (2);
+		if (bmP->Bind (1))
 			return;
 		bmP = bmP->CurFrame (-1);
 		bmP->Texture ()->Wrap (GL_REPEAT);
@@ -1081,7 +1082,8 @@ if (!LoadThruster ()) {
 	}
 else if (gameOpts->render.bDepthSort <= 0) {
 	glEnable (GL_TEXTURE_2D);
-	if (bmpThruster [nStyle]->Bind (1, -1)) {
+	bmpThruster [nStyle]->SetTranspType (-1);
+	if (bmpThruster [nStyle]->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 		glDisable (GL_TEXTURE_2D);
 		}
@@ -1281,7 +1283,8 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-		if (bmP->Bind (1, -1))
+		bmP->SetTranspType (-1);
+		if (bmP->Bind (1))
 			return;
 		bmP->Texture ()->Wrap (GL_CLAMP);
 		if (bAdditive)
@@ -1406,7 +1409,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		glDepthFunc (GL_LEQUAL);
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
-		if (bmpCorona->Bind (1, -1))
+		bmpCorona->SetTranspType (-1);
+		if (bmpCorona->Bind (1))
 			return 0;
 		bmpCorona->Texture ()->Wrap (GL_CLAMP);
 		transformation.Begin (vPos, objP->info.position.mOrient);
@@ -1748,7 +1752,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			glDisable (GL_CULL_FACE);
 			glDepthMask (0);
 			glEnable (GL_TEXTURE_2D);
-			if (bmP->Bind (1, -1))
+			bmP->SetTranspType (-1);
+			if (bmP->Bind (1))
 				return;
 			bmP->Texture ()->Wrap (GL_CLAMP);
 			if (bDrawArrays) {

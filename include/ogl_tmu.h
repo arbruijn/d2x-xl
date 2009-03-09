@@ -174,7 +174,7 @@ else
 			if (_bClient) \
 				glClientActiveTexture (_tmu); \
 			if (_bmP) {\
-				if ((_bmP)->Bind (1, 3)) \
+				if ((_bmP)->Bind (1)) \
 					return 1; \
 				(_bmP) = (_bmP)->CurFrame (-1); \
 				(_bmP)->Texture ()->Wrap (GL_REPEAT); \

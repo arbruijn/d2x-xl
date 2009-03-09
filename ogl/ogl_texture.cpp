@@ -1024,10 +1024,10 @@ if (!m_info.texP->IsRenderBuffer ())
 			bufP = CompressedBuffer ().Buffer ();
 		else
 #endif
-		if (nTransp < 0) 
+		if (m_info.nTranspType < 0) 
 			bufP = m_info.texP->Copy (dxo, dyo, data);
 		else
-			bufP = m_info.texP->Convert (dxo, dyo, this, nTransp, superTransp);
+			bufP = m_info.texP->Convert (dxo, dyo, this, m_info.nTranspType, superTransp);
 		}
 #if TEXTURE_COMPRESSION
 	m_info.texP->Load (bufP, m_info.compressed.buffer.Size (), m_info.compressed.nFormat, m_info.compressed.bCompressed);
@@ -1081,8 +1081,7 @@ if (!bMask) {
 if (m_info.nId == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
-LoadTexture (0, 0, (m_info.props.flags & BM_FLAG_TGA) ? -1 : m_info.nTranspType, 
-				 (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
+LoadTexture (0, 0, (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
 return 0;
 }
 
@@ -1204,7 +1203,7 @@ if (!strcmp (m_info.szName, "sparks.tga"))
 	nDbgSeg = nDbgSeg;
 #endif
 if ((bmP = HasOverride ())) {
-	int i = bmP->Bind (bMipMaps, nTransp);
+	int i = bmP->Bind (bMipMaps);
 #if DBG
 	nDepth--;
 #endif
@@ -1271,7 +1270,7 @@ else if (!Frames ()) {
 		if (bLoad) {
 			CBitmap*	bmfP = Frames ();
 			for (int i = nFrames; i; i--, bmfP++) {
-				if (bmfP->PrepareTexture (bMipMaps, nTransp, 1))
+				if (bmfP->PrepareTexture (bMipMaps, 1))
 					return NULL;
 				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, 1, NULL)))
 					return NULL;

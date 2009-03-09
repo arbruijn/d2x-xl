@@ -390,7 +390,8 @@ for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 		bmP = po->m_textures.m_bitmaps + pf->m_texProps.nTexId;
 		if (bmP->Texture () && ((int) bmP->Texture ()->Handle () < 0))
 			bmP->Texture ()->SetHandle (0);
-		if (bmP->Bind (1, 0))
+		bmP->SetTranspType (0);
+		if (bmP->Bind (1))
 			return 0;
 		bmP->Texture ()->Wrap (GL_REPEAT);
 		if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
