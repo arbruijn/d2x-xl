@@ -172,7 +172,7 @@ extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 // v-sync ----------------------------------------------------------------------
 
 #	ifdef _WIN32
-PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
+extern PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
 #	endif
 
 //------------------------------------------------------------------------------
