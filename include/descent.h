@@ -730,6 +730,7 @@ typedef struct tOglStates {
 	int bBrightness;
 	int bLowMemory;
 	int nColorBits;
+	int nPreloadTextures;
 	ubyte nTransparencyLimit;
 	GLint nDepthBits;
 	GLint nStencilBits;

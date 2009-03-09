@@ -102,7 +102,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 void CacheObjectEffects (void)
 {
 	int				i, j, bD1;
-	tEffectClip				*ecP;
+	tEffectClip*	ecP;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 	for (i = 0, ecP = gameData.eff.effects [bD1].Buffer (); i < gameData.eff.nEffects [bD1]; i++, ecP++)

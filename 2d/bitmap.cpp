@@ -71,8 +71,8 @@ void CBitmap::DestroyBuffer (void)
 {
 if ((m_info.nType != BM_TYPE_ALT) && m_info.parentP)
 	SetBuffer (NULL, 0);
-else 
-	FreeData ();
+else if (Buffer ())
+	CArray<ubyte>::Destroy ();
 //ReleaseTexture ();
 }
 
