@@ -71,8 +71,8 @@ void CBitmap::DestroyBuffer (void)
 {
 if ((m_info.nType != BM_TYPE_ALT) && m_info.parentP)
 	SetBuffer (NULL, 0);
-else if (Buffer ())
-	CArray<ubyte>::Destroy ();
+else 
+	FreeData ();
 //ReleaseTexture ();
 }
 
@@ -320,12 +320,12 @@ else if (m_info.texP && (m_info.texP == &m_info.texture)) {
 #elif RENDER2TEXTURE == 1
 #	ifdef _WIN32
 	if (m_info.texP->bFrameBuf)
-		m_info.texP->pbo.Release ();
+		m_info.texP->pbo.Destroy ();
 	else
 #	endif
 #endif
 		{
-		m_info.texP->Release ();
+		m_info.texP->Destroy ();
 		}
 	}
 else

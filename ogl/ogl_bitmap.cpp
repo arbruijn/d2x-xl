@@ -304,7 +304,7 @@ OglRender (colorP, nColors, 0);
 OglEndRender ();
 
 if (bLocal) {
-	m_info.texP->Release ();
+	m_info.texP->Destroy ();
 	}
 return 0;
 }

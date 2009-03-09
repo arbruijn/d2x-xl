@@ -745,6 +745,17 @@ SetBufSize (nBits, a, w, h);
 
 void CTexture::Release (void)
 {
+if (m_info.handle && (m_info.handle != GLuint (-1))) {
+	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
+	m_info.handle = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CTexture::Destroy (void)
+{
+Release ();
 if (m_bRegistered) {
 	textureManager.Release (this);
 	if (m_prev)
@@ -753,18 +764,7 @@ if (m_bRegistered) {
 		m_next->m_prev = m_prev;
 	m_bRegistered = false;
 	}
-}
-
-//------------------------------------------------------------------------------
-
-void CTexture::Destroy (void)
-{
-if (m_info.handle && (m_info.handle != GLuint (-1))) {
-	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
-	m_info.handle = 0;
-	Release ();
-	Init ();
-	}
+Init ();
 }
 
 //------------------------------------------------------------------------------

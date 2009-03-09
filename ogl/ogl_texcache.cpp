@@ -37,7 +37,7 @@
 #include "menu.h"
 #include "menu.h"
 
-#define LOAD_TEXTURES	0
+static int bLoadTextures = 1;
 
 //------------------------------------------------------------------------------
 
@@ -51,17 +51,17 @@ if (modelP)
 
 //------------------------------------------------------------------------------
 
-void OglCacheVClipTextures (tVideoClip* vc, int nTransp)
+static void OglCacheVClipTextures (tVideoClip* vc, int nTransp)
 {
 for (int i = 0; i < vc->nFrameCount; i++) {
 	LoadBitmap (vc->frames [i].index, 0);
-	gameData.pig.tex.bitmaps [0][vc->frames [i].index].SetupTexture (1, nTransp, LOAD_TEXTURES);
+	gameData.pig.tex.bitmaps [0][vc->frames [i].index].SetupTexture (1, nTransp, bLoadTextures);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void OglCacheVClipTextures (int i, int nTransp)
+static void OglCacheVClipTextures (int i, int nTransp)
 {
 if (i >= 0) 
 	OglCacheVClipTextures (&gameData.eff.vClips [0][i], nTransp);
@@ -69,7 +69,7 @@ if (i >= 0)
 
 //------------------------------------------------------------------------------
 
-void OglCacheWeaponTextures (CWeaponInfo* wi)
+static void OglCacheWeaponTextures (CWeaponInfo* wi)
 {
 OglCacheVClipTextures (wi->nFlashVClip, 1);
 OglCacheVClipTextures (wi->nRobotHitVClip, 1);
@@ -82,7 +82,7 @@ else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
 
 //------------------------------------------------------------------------------
 
-CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
+static CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx)
 {
 	CBitmap*	bmP;
 	int		nFrames;
@@ -94,13 +94,13 @@ if (bmP->Override ()) {
 	if (bmP->WallAnim ()) {
 		nFrames = bmP->FrameCount ();
 		if (nFrames > 1) {
-			bmP->SetupTexture (1, 3, LOAD_TEXTURES);
+			bmP->SetupTexture (1, 3, bLoadTextures);
 			if (bmP->Frames ()) {
 				if ((nFrameIdx >= 0) || (-nFrames > nFrameIdx))
 					bmP->SetCurFrame (bmP->Frames ());
 				else
 					bmP->SetCurFrame (bmP->Frames () - nFrameIdx - 1);
-				bmP->CurFrame ()->SetupTexture (1, 3, LOAD_TEXTURES);
+				bmP->CurFrame ()->SetupTexture (1, 3, bLoadTextures);
 				}
 			}
 		}
@@ -110,7 +110,7 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-void CacheSideTextures (int nSeg)
+static void CacheSideTextures (int nSeg)
 {
 	short			nSide, tMap1, tMap2;
 	CBitmap*		bmP, * bm2, * bmm;
@@ -125,13 +125,13 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if ((tMap2 = sideP->m_nOvlTex)) {
 		bm2 = OglLoadFaceBitmap (tMap1, sideP->m_nFrame);
 		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
-			bm2->SetupTexture (1, 3, LOAD_TEXTURES);
+			bm2->SetupTexture (1, 3, bLoadTextures);
 		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->m_nOvlOrient)))
 			bmP = bmm;
 		else
-			bm2->SetupTexture (1, 3, LOAD_TEXTURES);
+			bm2->SetupTexture (1, 3, bLoadTextures);
 		}
-	bmP->SetupTexture (1, 3, LOAD_TEXTURES);
+	bmP->SetupTexture (1, 3, bLoadTextures);
 	}
 }
 
@@ -177,13 +177,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CacheAddonTextures (void)
+static void CacheAddonTextures (void)
 {
 	int	i;
 
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 	PageInAddonBitmap (-i - 1);
-	BM_ADDON (i)->SetupTexture (1, 0, LOAD_TEXTURES); //gameOpts->render.bDepthSort <= 0);
+	BM_ADDON (i)->SetupTexture (1, 0, bLoadTextures); //gameOpts->render.bDepthSort <= 0);
 	}
 }
 
@@ -240,13 +240,13 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		if ((nOvlTex = sideP->m_nOvlTex)) {
 			bmTop = OglLoadFaceBitmap (nOvlTex, sideP->m_nFrame);
 			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
-				bmTop->SetupTexture (1, 3, LOAD_TEXTURES);
+				bmTop->SetupTexture (1, 3, bLoadTextures);
 			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->m_nOvlOrient)))
 				bmBot = bmm;
 			else
-				bmTop->SetupTexture (1, 3, LOAD_TEXTURES);
+				bmTop->SetupTexture (1, 3, bLoadTextures);
 			}
-		bmBot->SetupTexture (1, 3, LOAD_TEXTURES);
+		bmBot->SetupTexture (1, 3, bLoadTextures);
 		}
 	}
 ResetSpecialEffects ();

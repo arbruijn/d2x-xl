@@ -1169,12 +1169,9 @@ bmiP = gameData.pig.tex.bmIndexP + (nTexture);
 LoadBitmap (*bmiP, gameStates.app.bD1Data);
 bmP = BmOverride (gameData.pig.tex.bitmapP + bmiP->index);
 #else
-#	if 1
+bmP = LoadFaceBitmap (nTexture, nFrame);
 if (!bmP->Buffer ())
 	return 0;
-#	else
-bmP = LoadFaceBitmap (nTexture, nFrame);
-#	endif
 #endif
 if (bmP->Flags () & BM_FLAG_RLE)
 	bmP = rle_expand_texture (bmP);
