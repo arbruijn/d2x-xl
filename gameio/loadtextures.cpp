@@ -473,28 +473,43 @@ return (strstr (bmName, "cockpit") == bmName) || (strstr (bmName, "status") == b
 
 static bool IsPowerup (const char* bmName)
 {
-	static const char* szPowerups [] = {
+	static const char* szNames [] = {
+		"invuln",
+		"pwr",
+		"flare"
+		};
+
+if (!strstr (bmName, "#0"))
+	return false;
+for (int i = 0, j = sizeofa (szNames); i < j; i++)
+	if (strstr (bmName, szNames [i]) == bmName)
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+
+static bool IsWeapon (const char* bmName)
+{
+	static const char* szNames [] = {
 		"slowmotion",
 		"bullettime",
-		"invuln",
 		"cmissil",
 		"erthshkr",
 		"hmissil",
 		"key",
 		"merc",
 		"mmissil",
-		"pwr",
 		"scmiss",
 		"shmiss",
 		"smissil",
-		"hostage",
-		"flare"
+		"hostage"
 		};
 
 if (!strstr (bmName, "#0"))
 	return false;
-for (int i = 0, j = sizeofa (szPowerups); i < j; i++)
-	if (strstr (bmName, szPowerups [i]) == bmName)
+for (int i = 0, j = sizeofa (szNames); i < j; i++)
+	if (strstr (bmName, szNames [i]) == bmName)
 		return true;
 return false;
 }
@@ -563,7 +578,7 @@ if (bmP->Buffer ())
 
 StopTime ();
 nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
-if ((nShrinkFactor == 1) && IsPowerup (bmName))	// force downscaling of powerup hires textures
+if ((nShrinkFactor == 1) && (IsPowerup (bmName) || IsWeapon (bmName)))	// force downscaling of powerup hires textures
 	nShrinkFactor = 2;
 nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
@@ -583,7 +598,8 @@ if (bmP->Texture ())
 	bmP->Texture ()->Destroy ();
 bmP->SetBPP (1);
 
-if (*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0])) {
+if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0])) &&
+	 !(gameOpts->render.powerups.b3D && IsWeapon (bmName))) {
 #if 0
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
