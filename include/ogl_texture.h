@@ -151,6 +151,7 @@ class CTextureManager {
 		void Register (CTexture* texP);
 		bool Release (CTexture* texP);
 		inline CTexture* Textures (void) { return m_textures; }
+		bool Check (void);
 	};
 
 extern CTextureManager textureManager;

@@ -122,15 +122,19 @@ m_textures = NULL;
 
 //------------------------------------------------------------------------------
 
-bool CheckTextures (void)
+bool CTextureManager::Check (void)
 {
-	CTexture*	texP = textureManager.Textures ();
+	CTexture*	texP = m_textures;
+	int			i = 0;
 
 while (texP) {
 	if (!texP->Check ())
 		return false;
 	texP = texP->Next ();
+	i++;
 	}
+if  (i != m_nTextures)
+	return false;
 return true;
 }
 
@@ -140,7 +144,7 @@ static CTexture* dbgTexP = (CTexture*) 0x101fca30;
 
 void CTextureManager::Register (CTexture* texP)
 {
-CheckTextures ();
+Check ();
 if (texP == dbgTexP)
 	dbgTexP = dbgTexP;
 #if DBG
@@ -160,7 +164,7 @@ m_textures = texP;
 
 bool CTextureManager::Release (CTexture* texP)
 {
-CheckTextures ();
+Check ();
 if (!m_textures)
 	return false;
 if (m_textures == texP)
