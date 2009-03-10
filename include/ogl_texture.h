@@ -98,6 +98,7 @@ class CTexture {
 		inline int Height (void) { return m_info.h; }
 		inline int TW (void) { return m_info.tw; }
 		inline int TH (void) { return m_info.th; }
+		inline bool Registered (void) { return m_bRegistered; }
 		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
 		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 
@@ -146,7 +147,7 @@ class CTextureManager {
 		void Smash (void);
 		void Destroy (void);
 		void Register (CTexture* texP);
-		void Release (CTexture* texP);
+		bool Release (CTexture* texP);
 	};
 
 extern CTextureManager textureManager;

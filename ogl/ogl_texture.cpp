@@ -86,8 +86,6 @@ for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 
 //------------------------------------------------------------------------------
 
-static int nTextures = 0;
-
 void CTextureManager::Destroy (void)
 {
 	CTexture*	texP;
@@ -111,12 +109,11 @@ while (m_textures) {
 	texP = m_textures;
 	i++;
 #if DBG
-	if (!texP->Handle ())
-		break;
+	if (!texP->Registered ())
+		texP = texP;
 #endif
 	texP->Destroy ();
 	}
-nTextures = 0;
 m_textures = NULL;
 }
 
@@ -134,7 +131,6 @@ for (t = m_textures; t; t = t->Next ())
 	if (texP == t)
 		return;
 #endif
-nTextures++;
 texP->Link (NULL, m_textures);
 if (m_textures)
 	m_textures->SetPrev (texP);
@@ -143,11 +139,13 @@ m_textures = texP;
 
 //------------------------------------------------------------------------------
 
-void CTextureManager::Release (CTexture* texP)
+bool CTextureManager::Release (CTexture* texP)
 {
+if (!m_textures)
+	return false;
 if (m_textures == texP)
 	m_textures = texP->Next ();
-nTextures--;
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -759,11 +757,14 @@ void CTexture::Destroy (void)
 {
 Release ();
 if (m_bRegistered) {
-	textureManager.Release (this);
-	if (m_prev)
-		m_prev->m_next = m_next;
-	if (m_next)
-		m_next->m_prev = m_prev;
+	if (textureManager.Release (this)) {
+		if (m_prev)
+			m_prev->m_next = m_next;
+		if (m_next)
+			m_next->m_prev = m_prev;
+		}
+	m_prev = 
+	m_next = NULL;
 	m_bRegistered = false;
 	}
 Init ();

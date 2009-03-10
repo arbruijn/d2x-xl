@@ -199,7 +199,7 @@ static void CacheAddonTextures (void)
 for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 	PageInAddonBitmap (-i - 1);
 	BM_ADDON (i)->SetTranspType (0);
-	BM_ADDON (i)->SetupTexture (1, bLoadTextures); //gameOpts->render.bDepthSort <= 0);
+	BM_ADDON (i)->SetupTexture (1, 1); //gameOpts->render.bDepthSort <= 0);
 	}
 }
 

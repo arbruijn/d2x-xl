@@ -324,7 +324,6 @@ if (bmP) {
 	glActiveTexture (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
-	bmP->SetTranspType (1);
 	if (bmP->Bind (1))
 		bmP = NULL;
 	else {
@@ -619,7 +618,7 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
-glTranslatef ((*vPosP) [X], (*vPosP) [Y], (*vPosP) [Z]);
+//glTranslatef ((*vPosP) [X], (*vPosP) [Y], (*vPosP) [Z]);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
@@ -699,28 +698,24 @@ if (gameData.render.shield.nFaces > 0)
 	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize);
 	else {
-		float	fScale, r = X2F (nSize) /** 1.05f*/;
+		float	fScale;
 		int	bAdditive;
 		if (nSize) {
 			fScale = 1;
 			bAdditive = 0;
+			return;
 			}
 		else {
 			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 			fScale = gameData.render.shield.Pulse ()->fScale;
 			bAdditive = 2;
 			}
+		float r = X2F (nSize);
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;
 		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
-		CFloatVector p;
-		p.SetZero ();
-		gameData.render.shield.Render (&p, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
-		transformation.End ();
-		gameStates.ogl.bUseTransform = 0;
-		transformation.Begin (vPos, posP->mOrient);
+		gameData.render.shield.Render (NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		vPos.SetZero ();
-		//glBlendFunc (GL_ONE, GL_ONE);
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		transformation.End ();
 		}
