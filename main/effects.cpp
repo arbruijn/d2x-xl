@@ -117,10 +117,9 @@ for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 
 CBitmap *FindAnimBaseTex (short *frameP, int nFrames, int bIndirect, int bObject, int *piBaseFrame)
 {
-	CBitmap	*bmP;
-	int			i;
+	CBitmap*	bmP;
 
-for (i = 0; i < nFrames; i++) {
+for (int i = 0; i < nFrames; i++) {
 	if (bObject)
 		bmP = gameData.pig.tex.bitmaps [0] + BM_INDEX (frameP, i, bIndirect, bObject);
 	else
@@ -145,7 +144,7 @@ if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
 	return NULL;
 if (bmP->FrameCount () < 2)
 	return NULL;
-bmP->SetTranspType (3);
+bmP->SetTranspType (-1);
 bmP->SetupTexture (1, 1);
 if (gameOpts->ogl.bGlTexMerge) {
 	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0].Buffer () : gameData.pig.tex.bitmapP.Buffer ();

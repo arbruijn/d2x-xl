@@ -82,7 +82,8 @@ m = menu + nOpt3D;
 v = m->m_value;
 if (v != gameOpts->render.powerups.b3D) {
 	if ((gameOpts->render.powerups.b3D = v))
-		ConvertAllPowerupsToWeapons ();
+		if (gameStates.app.bGameRunning)
+			ConvertAllPowerupsToWeapons ();
 	key = -2;
 	return nCurItem;
 	}

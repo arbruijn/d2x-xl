@@ -1119,6 +1119,7 @@ else {
 			nFlags |= BM_FLAG_SEE_THRU;
 		bmfP->SetFlags (nFlags);
 		bmfP->SetTranspType (m_info.nTranspType);
+		bmfP->NeedSetup ();
 		if (bLoad)
 			bmfP->PrepareTexture (bMipMaps, 0, NULL);
 		}
@@ -1253,11 +1254,13 @@ bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
 if (m_info.bSetup)
 	return true;
+m_info.bSetup = true;
 
 	CBitmap *bmP;
 
 if ((bmP = HasOverride ()))
 	return bmP->SetupTexture (bMipMaps, bLoad);
+
 
 	int	h, w, nFrames;
 
