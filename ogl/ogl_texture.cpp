@@ -1137,6 +1137,8 @@ CBitmap *CBitmap::CreateMask (void)
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return NULL;
+if (!Buffer ())
+	return NULL;
 if (m_info.maskP)
 	return m_info.maskP;
 SetBPP (4);
