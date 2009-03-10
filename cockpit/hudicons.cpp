@@ -148,11 +148,11 @@ if (!IsMultiGame || IsCoopGame) {
 			}
 		}
 	else {
-		y = 6 + 3 * nLineSpacing;
+		//y = 6 + 3 * nLineSpacing;
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
-			nIdTally [i] = GrPrintF (nIdTally + i, CCanvas::Current ()->Width () - w - HUD_LHX (2), y, szInfo);
+			nIdTally [i] = GrPrintF (nIdTally + i, x0 - w - HUD_LHX (2), y, szInfo);
 			y += nLineSpacing;
 			}
 		}

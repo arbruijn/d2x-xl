@@ -420,7 +420,10 @@ if (gameStates.render.bRearView)
 if (!gameOpts->render.cockpit.bPlayerStats)
 	return;
 fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-y = 6 + 2 * m_info.nLineSpacing;
+if (gameStates.render.cockpit.nType == CM_STATUS_BAR)
+	y = 6 + m_info.nLineSpacing;
+else
+	y = 6 + 2 * m_info.nLineSpacing;
 h = (gameData.stats.nDisplayMode - 1) / 2;
 if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
 	sprintf (szStats, "%s%d-%d %d-%d %d-%d",
