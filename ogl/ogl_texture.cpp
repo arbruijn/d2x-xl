@@ -150,6 +150,7 @@ if (!m_textures)
 if (m_textures == texP)
 	m_textures = texP->Next ();
 m_nTextures--;
+
 return true;
 }
 

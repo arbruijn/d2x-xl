@@ -760,10 +760,9 @@ return 1;
 
 int CModelTextures::Read (int bCustom)
 {
-	CBitmap	*bmP;
-	int		i;
+	CBitmap*	bmP;
 
-for (i = 0; i < m_nBitmaps; i++) {
+for (int i = 0; i < m_nBitmaps; i++) {
 	if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, bCustom))
 		return 0;
 	if (bmP->Buffer ()) {
@@ -781,10 +780,8 @@ return 1;
 
 void CModelTextures::Release (void)
 {
-	int		i;
-
 if ((m_bitmaps.Buffer ()))
-	for (i = 0; i < m_nBitmaps; i++)
+	for (int i = 0; i < m_nBitmaps; i++)
 		m_bitmaps [i].ReleaseTexture ();
 }
 
@@ -792,10 +789,8 @@ if ((m_bitmaps.Buffer ()))
 
 int CModelTextures::Bind (int bCustom)
 {
-	int		i;
-
 if ((m_bitmaps.Buffer ()))
-	for (i = 0; i < m_nBitmaps; i++) {
+	for (int i = 0; i < m_nBitmaps; i++) {
 		if (!(m_bitmaps [i].Buffer () || Read (bCustom)))
 			return 0;
 		m_bitmaps [i].Bind (1);
