@@ -701,9 +701,8 @@ if (gameData.render.shield.nFaces > 0)
 		float	fScale;
 		int	bAdditive;
 		if (nSize) {
-			fScale = 1;
+			fScale = 0.5f;
 			bAdditive = 0;
-			return;
 			}
 		else {
 			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();

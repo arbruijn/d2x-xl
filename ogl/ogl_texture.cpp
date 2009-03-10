@@ -103,11 +103,8 @@ OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 
-int i = 0;
-
 while (m_textures) {
 	texP = m_textures;
-	i++;
 #if DBG
 	if (!texP->Registered ())
 		texP = texP;
