@@ -149,6 +149,7 @@ if (!m_textures)
 	return false;
 if (m_textures == texP)
 	m_textures = texP->Next ();
+m_nTextures--;
 return true;
 }
 
