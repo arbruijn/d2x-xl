@@ -88,8 +88,8 @@ if (nState)
 
 m = menu + automapOpts.nOptTextured;
 v = m->m_value;
-if (v != gameOpts->render.automap.bTextured) {
-	gameOpts->render.automap.bTextured = v;
+if (v != (gameOpts->render.automap.bTextured & 1)) {
+	gameOpts->render.automap.bTextured = v ? 1 : 2;
 	key = -2;
 	return nCurItem;
 	}
@@ -125,8 +125,8 @@ pszRadarRange [2] = TXT_FAR;
 do {
 	m.Destroy ();
 	m.Create (30);
-	automapOpts.nOptTextured = m.AddCheck (TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured, KEY_T, HTX_AUTOMAP_TEXTURED);
-	if (gameOpts->render.automap.bTextured) {
+	automapOpts.nOptTextured = m.AddCheck (TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured & 1, KEY_T, HTX_AUTOMAP_TEXTURED);
+	if (gameOpts->render.automap.bTextured & 1) {
 		optBright = m.AddCheck (TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
 		optGrayOut = m.AddCheck (TXT_AUTOMAP_GRAYOUT, gameOpts->render.automap.bGrayOut, KEY_Y, HTX_AUTOMAP_GRAYOUT);
 		optCoronas = m.AddCheck (TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);

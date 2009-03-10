@@ -217,105 +217,114 @@ gameStates.ogl.bUseTransform = bUseTransform;
 
 void CAutomap::DrawObjects (void)
 {
+if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
+	return;
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
-if (!gameOpts->render.automap.bTextured || m_bRadar) {
-	DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
-	if (!m_bRadar) {
-		DrawMarkers ();
-		if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
-			char msg [10 + MARKER_MESSAGE_LEN + 1];
-			sprintf (msg, TXT_MARKER_MSG, gameData.marker.nHighlight + 1,
-						gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer * 2) + gameData.marker.nHighlight]);
-			CCanvas::Current ()->SetColorRGB (196, 0, 0, 255);
-			fontManager.SetCurrent (SMALL_FONT);
-			GrString (5, 20, msg, NULL);
-			}
-		}			
-	// Draw CPlayerData (s)...
-	if (AM_SHOW_PLAYERS) {
-		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
-				if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
-					color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
-					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
-					DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
-					}
+if ((gameOpts->render.automap.bTextured & 1) && !m_bRadar) {
+	gameStates.render.grAlpha = 0.5f;
+	glDisable (GL_DEPTH_TEST);
+	}
+glDisable (GL_TEXTURE_2D);
+glLineWidth (GLfloat (screen.Width ()) / 640.0f);
+DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
+if (!m_bRadar) {
+	DrawMarkers ();
+	if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
+		char msg [10 + MARKER_MESSAGE_LEN + 1];
+		sprintf (msg, TXT_MARKER_MSG, gameData.marker.nHighlight + 1,
+					gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer * 2) + gameData.marker.nHighlight]);
+		CCanvas::Current ()->SetColorRGB (196, 0, 0, 255);
+		fontManager.SetCurrent (SMALL_FONT);
+		GrString (5, 20, msg, NULL);
+		}
+	}			
+// Draw CPlayerData (s)...
+if (AM_SHOW_PLAYERS) {
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
+			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
+				color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
+				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
+				DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
 				}
 			}
 		}
+	}
 
-	CObject* objP = OBJECTS.Buffer ();
-	g3sPoint	spherePoint;
+CObject* objP = OBJECTS.Buffer ();
+g3sPoint	spherePoint;
 
-	FORALL_OBJS (objP, i) {
-		int size = objP->info.xSize;
-		switch (objP->info.nType) {
-			case OBJ_HOSTAGE:
-				CCanvas::Current ()->SetColorRGBi (m_colors.nHostage);
-				G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-				G3DrawSphere (&spherePoint,size, !m_bRadar);
-				break;
+FORALL_OBJS (objP, i) {
+	int size = objP->info.xSize;
+	switch (objP->info.nType) {
+		case OBJ_HOSTAGE:
+			CCanvas::Current ()->SetColorRGBi (m_colors.nHostage);
+			G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
+			G3DrawSphere (&spherePoint,size, !m_bRadar);
+			break;
 
-			case OBJ_MONSTERBALL:
-				CCanvas::Current ()->SetColorRGBi (m_colors.nMonsterball);
-				G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-				G3DrawSphere (&spherePoint,size, !m_bRadar);
-				break;
+		case OBJ_MONSTERBALL:
+			CCanvas::Current ()->SetColorRGBi (m_colors.nMonsterball);
+			G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
+			G3DrawSphere (&spherePoint,size, !m_bRadar);
+			break;
 
-			case OBJ_ROBOT:
-				if (m_visited [0][objP->info.nSegment] && AM_SHOW_ROBOTS) {
-					static int c = 0;
-					static int t = 0;
-					int h = SDL_GetTicks ();
-					if (h - t > 250) {
-						t = h;
-						c = !c;
-						}
-					if (ROBOTINFO (objP->info.nId).companion)
-						if (c)
-							CCanvas::Current ()->SetColorRGB (0, 123, 151, 255); //gr_getcolor (47, 1, 47)); 
-						else
-							CCanvas::Current ()->SetColorRGB (0, 78, 112, 255); //gr_getcolor (47, 1, 47)); 
+		case OBJ_ROBOT:
+			if (m_visited [0][objP->info.nSegment] && AM_SHOW_ROBOTS) {
+				static int c = 0;
+				static int t = 0;
+				int h = SDL_GetTicks ();
+				if (h - t > 250) {
+					t = h;
+					c = !c;
+					}
+				if (ROBOTINFO (objP->info.nId).companion)
+					if (c)
+						CCanvas::Current ()->SetColorRGB (0, 123, 151, 255); //gr_getcolor (47, 1, 47)); 
 					else
-						if (c)
-							CCanvas::Current ()->SetColorRGB (123, 0, 135, 255); //gr_getcolor (47, 1, 47)); 
-						else
-							CCanvas::Current ()->SetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
-					G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-					//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
-					G3DrawSphere (&spherePoint, (size * 3) / 2, !m_bRadar);
-					//transformation.End ();
-					}
-				break;
+						CCanvas::Current ()->SetColorRGB (0, 78, 112, 255); //gr_getcolor (47, 1, 47)); 
+				else
+					if (c)
+						CCanvas::Current ()->SetColorRGB (123, 0, 135, 255); //gr_getcolor (47, 1, 47)); 
+					else
+						CCanvas::Current ()->SetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
+				G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+				//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
+				G3DrawSphere (&spherePoint, (size * 3) / 2, !m_bRadar);
+				//transformation.End ();
+				}
+			break;
 
-			case OBJ_POWERUP:
-				if (AM_SHOW_POWERUPS (1) && 
-					(gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])) {
-					switch (objP->info.nId) {
-						case POW_KEY_RED:	
-							CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
-							size *= 4;
-							break;
-						case POW_KEY_BLUE:
-							CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 63)); 
-							size *= 4;
-							break;
-						case POW_KEY_GOLD:
-							CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 63, 10)); 
-							size *= 4;
-							break;
-						default:
-							CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
-							//Error ("Illegal key nType: %i", objP->info.nId);
-						}
-					G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
-					G3DrawSphere (&spherePoint, size, !m_bRadar);
+		case OBJ_POWERUP:
+			if (AM_SHOW_POWERUPS (1) && 
+				(gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])) {
+				switch (objP->info.nId) {
+					case POW_KEY_RED:	
+						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
+						size *= 4;
+						break;
+					case POW_KEY_BLUE:
+						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 63)); 
+						size *= 4;
+						break;
+					case POW_KEY_GOLD:
+						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 63, 10)); 
+						size *= 4;
+						break;
+					default:
+						CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
+						//Error ("Illegal key nType: %i", objP->info.nId);
 					}
-				break;
-			}
+				G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+				G3DrawSphere (&spherePoint, size, !m_bRadar);
+				}
+			break;
 		}
 	}
+gameStates.render.grAlpha = 1.0f;
+glEnable (GL_DEPTH_TEST);
+glLineWidth (1);
 }
 
 //------------------------------------------------------------------------------
@@ -334,7 +343,7 @@ if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
 	fontManager.Current ()->StringSize (m_szLevelName, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, m_szLevelName);
 	fontManager.SetCurrent (curFont);
-	if (gameOpts->render.automap.bTextured)
+	if (gameOpts->render.automap.bTextured & 1)
 		cockpit->DrawFrameRate ();
 	}
 }
@@ -348,26 +357,26 @@ PROF_START
 	int	bAutomapFrame = !m_bRadar && 
 								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) && 
 								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
-	CFixMatrix	vmRadar;
+	CFixMatrix	mRadar;
 
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
 if ((m_bRadar = m_bRadar) == 2) {
 	CFixMatrix& po = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 #if 1
-	vmRadar.RVec () = po.RVec ();
-	vmRadar.FVec () = po.UVec ();
-	vmRadar.FVec () [Y] = -vmRadar.FVec () [Y];
-	vmRadar.UVec () = po.FVec ();
+	mRadar.RVec () = po.RVec ();
+	mRadar.FVec () = po.UVec ();
+	mRadar.FVec () [Y] = -mRadar.FVec () [Y];
+	mRadar.UVec () = po.FVec ();
 #else
-	vmRadar.rVec.p.x = po->rVec.p.x;
-	vmRadar.rVec.p.y = po->rVec.p.y;
-	vmRadar.rVec.p.z = po->rVec.p.z;
-	vmRadar.fVec.p.x = po->uVec.p.x;
-	vmRadar.fVec.p.y = -po->uVec.p.y;
-	vmRadar.fVec.p.z = po->uVec.p.z;
-	vmRadar.uVec.p.x = po->fVec.p.x;
-	vmRadar.uVec.p.y = po->fVec.p.y;
-	vmRadar.uVec.p.z = po->fVec.p.z;
+	mRadar.rVec.p.x = po->rVec.p.x;
+	mRadar.rVec.p.y = po->rVec.p.y;
+	mRadar.rVec.p.z = po->rVec.p.z;
+	mRadar.fVec.p.x = po->uVec.p.x;
+	mRadar.fVec.p.y = -po->uVec.p.y;
+	mRadar.fVec.p.z = po->uVec.p.z;
+	mRadar.uVec.p.x = po->fVec.p.x;
+	mRadar.uVec.p.y = po->fVec.p.y;
+	mRadar.uVec.p.z = po->fVec.p.z;
 #endif
 	}
 CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
@@ -384,28 +393,31 @@ if (bAutomapFrame) {
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
 	//GrUpdate (0);
 	}
-G3StartFrame (m_bRadar || !gameOpts->render.automap.bTextured, 0); //!m_bRadar);
+
+if (!gameOpts->render.automap.bTextured)
+	gameOpts->render.automap.bTextured = 1;
+G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), 0); //!m_bRadar);
 
 if (bAutomapFrame)
 	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (m_bRadar == 2) {
-	m_data.viewPos = m_data.viewTarget + vmRadar.FVec () * (-m_data.nViewDist);
-	G3SetViewMatrix (m_data.viewPos, vmRadar, m_data.nZoom * 2, 1);
+	m_data.viewPos = m_data.viewTarget + mRadar.FVec () * (-m_data.nViewDist);
+	G3SetViewMatrix (m_data.viewPos, mRadar, m_data.nZoom * 2, 1);
 	}
 else {
-	m_data.viewPos = m_data.viewTarget + m_data.viewMatrix.FVec () * (m_bRadar ? -m_data.nViewDist : -m_data.nViewDist);
+	m_data.viewPos = m_data.viewTarget + m_data.viewMatrix.FVec () * -m_data.nViewDist;
 	G3SetViewMatrix (m_data.viewPos, m_data.viewMatrix, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
-if (!m_bRadar && gameOpts->render.automap.bTextured) {
+if (!m_bRadar && (gameOpts->render.automap.bTextured & 1)) {
 	gameData.render.mine.viewerEye = m_data.viewPos;
 	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);
 	RenderEffects (0);
 	}
-else
+if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
 	DrawEdges ();
-	// Draw player...
-DrawObjects ();
+	DrawObjects ();
+	}
 G3EndFrame ();
 
 gameData.app.nFrameCount++;
@@ -690,7 +702,12 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_T:
-			gameOpts->render.automap.bTextured = !gameOpts->render.automap.bTextured;
+			if (gameOpts->render.automap.bTextured == 1)
+				gameOpts->render.automap.bTextured = 3;
+			else if (gameOpts->render.automap.bTextured == 3)
+				gameOpts->render.automap.bTextured = 2;
+			else
+				gameOpts->render.automap.bTextured = 1;
 			break;
 
 #if DBG
