@@ -60,13 +60,17 @@ const char *pszObjTallyIcons [] = {"rboticon.tga", "pwupicon.tga"};
 
 int CHUDIcons::LoadTallyIcons (void)
 {
-	int	i;
+	char	szFilename [FILENAME_LEN];
+	CFile	cf;
 
 if (bHaveObjTallyBms > -1)
 	return bHaveObjTallyBms;
-for (i = 0; i < 2; i++) {
+for (int i = 0; i < 2; i++) {
 	bmObjTally [i].Destroy ();
-	if (!ReadTGA (pszObjTallyIcons [i], gameFolders.szDataDir, &bmObjTally [i], -1, 1.0, 0, 0)) {
+	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [2], pszObjTallyIcons [i]);
+	if (!cf.Exist (szFilename, "", 0))
+		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszObjTallyIcons [i]);
+	if (!ReadTGA (szFilename, NULL, &bmObjTally [i], -1, 1.0, 0, 0)) {
 		while (i) {
 			i--;
 			bmObjTally [i].Destroy ();
@@ -423,6 +427,7 @@ for (i = 0; i < NUM_INV_ITEMS; i++) {
 	bmInvItems [i].SetName ("Inventory");
 	bmInvItems [i].SetHeight (bmInvItems [i].Width ());
 	bmInvItems [i].SetBuffer (buffer + h * i, 1, h);
+	bmInvItems [i].SetTranspType (3);
 	bmInvItems [i].ResetTexture ();
 	bmInvItems [i].SetPalette (paletteManager.Game ());
 	}

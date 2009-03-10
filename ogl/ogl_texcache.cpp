@@ -287,7 +287,7 @@ FORALL_OBJS (objP, i) {
 
 PrintLog ("   caching hostage sprites\n");
 bLoadTextures = (gameStates.ogl.nPreloadTextures > 3);
-OglCacheVClipTextures (33, 2);    
+OglCacheVClipTextures (33, 3);    
 
 PrintLog ("   caching weapon sprites\n");
 bLoadTextures = (gameStates.ogl.nPreloadTextures > 5);

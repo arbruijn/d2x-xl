@@ -261,10 +261,10 @@ xEffectTime += gameData.time.xFrame;
 			gameData.pig.tex.bmIndexP [t] = bmi;
 			}
 		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (bmP->FrameCount () > 1)) {
-			bmP->SetTranspType (3);
+			bmP->SetTranspType (-1);
 			bmP->SetupTexture (1, 1);
 			bmP->SetCurFrame (bmP->Frames () + min (ecP->nCurFrame, bmP->FrameCount () - 1));
-			bmP->CurFrame ()->SetTranspType (3);
+			bmP->CurFrame ()->SetTranspType (-1);
 			bmP->CurFrame ()->SetupTexture (1, 1);
 			}
 		else {

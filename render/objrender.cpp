@@ -352,16 +352,11 @@ if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())) {
 	//bmoP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	bmP = bmP->Override (iFrame);
-	bmP->SetupTexture (1, 1);
 	//fAlpha = 1;
-	}
-else {
-	if (colorP && gameOpts->render.bDepthSort)
-		bmP->SetupTexture (1, 1);
-	//fScale = ObjectBlobColor (objP, bmP, &color);
 	}
 if (!bmP)
 	return;
+bmP->SetupTexture (1, 1);
 fScale = ObjectBlobColor (objP, bmP, &color);
 if (!((texP = bmP->Texture ()) && texP->Handle ()))
 	return;
