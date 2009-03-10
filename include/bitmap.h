@@ -152,7 +152,7 @@ class CBitmap : public CArray< ubyte > {
 		void ReleaseTexture (void);
 
 		inline CBitmap *NextFrame (void) {
-			if (++m_info.frames.nCurrent > int (m_info.frames.nCount))
+			if (++m_info.frames.nCurrent >= int (m_info.frames.nCount))
 				m_info.frames.nCurrent = 0;
 			m_info.frames.currentP = m_info.frames.bmP + m_info.frames.nCurrent;
 			return m_info.frames.currentP;
