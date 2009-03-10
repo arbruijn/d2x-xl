@@ -215,11 +215,14 @@ class CBitmap : public CArray< ubyte > {
 		void SetParent (CBitmap *parentP) { m_info.parentP = parentP; }
 		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
 		void SetOverride (CBitmap *override) { m_info.overrideP = override; }
-		void SetCurFrame (CBitmap *frame) { 
-			m_info.frames.currentP = frame; 
-			m_info.frames.nCurrent = m_info.frames.currentP - m_info.frames.bmP;
+		CBitmap* SetCurFrame (CBitmap *frameP) { 
+			m_info.frames.nCurrent = (m_info.frames.currentP = frameP) - m_info.frames.bmP;
+			return m_info.frames.currentP;
 			}
-		void SetCurFrame (int nFrame) { m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame); }
+		CBitmap* SetCurFrame (int nFrame) { 
+			m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame); 
+			return m_info.frames.currentP;
+			}
 
 		inline short Width (void) { return m_info.props.w; }
 		inline short Height (void) { return m_info.props.h; }

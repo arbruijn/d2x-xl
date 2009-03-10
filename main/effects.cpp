@@ -263,9 +263,9 @@ xEffectTime += gameData.time.xFrame;
 		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (bmP->FrameCount () > 1)) {
 			bmP->SetTranspType (-1);
 			bmP->SetupTexture (1, 1);
-			bmP->SetCurFrame (bmP->Frames () + min (ecP->nCurFrame, bmP->FrameCount () - 1));
-			bmP->CurFrame ()->SetTranspType (-1);
-			bmP->CurFrame ()->SetupTexture (1, 1);
+			CBitmap* bmfP = bmP->SetCurFrame (bmP->Frames () + min (ecP->nCurFrame, bmP->FrameCount () - 1));
+			bmfP->SetTranspType (-1);
+			bmfP->SetupTexture (1, 1);
 			}
 		else {
 			if ((ecP->flags & EF_ALTFMT) && (ecP->nCurFrame >= nFrames))
