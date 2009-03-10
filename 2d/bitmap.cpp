@@ -138,6 +138,7 @@ m_info.props.nMode = mode;
 m_info.nBPP = bpp ? bpp : 1;
 m_info.props.rowSize = w * bpp;
 m_info.texP = &m_info.texture;
+m_info.texture.SetBitmap (this);
 if (bpp > 2)
 	m_info.props.flags = (char) BM_FLAG_TGA;
 SetBuffer (buffer, false, FrameSize ());
