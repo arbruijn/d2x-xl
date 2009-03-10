@@ -140,6 +140,7 @@ static CTexture* dbgTexP = (CTexture*) 0x101fca30;
 
 void CTextureManager::Register (CTexture* texP)
 {
+CheckTextures ();
 if (texP == dbgTexP)
 	dbgTexP = dbgTexP;
 #if DBG
@@ -159,6 +160,7 @@ m_textures = texP;
 
 bool CTextureManager::Release (CTexture* texP)
 {
+CheckTextures ();
 if (!m_textures)
 	return false;
 if (m_textures == texP)
