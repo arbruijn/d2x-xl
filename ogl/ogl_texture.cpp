@@ -77,6 +77,7 @@ void CTextureManager::Init (void)
 {
 #if 1
 m_textures = NULL;
+m_nTextures = 0;
 #else
 m_textures.Create (TEXTURE_LIST_SIZE);
 for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
@@ -103,13 +104,18 @@ OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 
-while (m_textures) {
+while (m_textures && (m_nTextures > 0)) {
 	texP = m_textures;
 #if DBG
 	if (!texP->Registered ())
 		texP = texP;
 #endif
 	texP->Destroy ();
+	m_nTextures--;
+	}
+if (m_nTextures) {
+	PrintLog ("Error in texture management\n");
+	m_nTextures = 0;
 	}
 m_textures = NULL;
 }
@@ -131,6 +137,7 @@ for (t = m_textures; t; t = t->Next ())
 texP->Link (NULL, m_textures);
 if (m_textures)
 	m_textures->SetPrev (texP);
+m_nTextures++;
 m_textures = texP;
 }
 

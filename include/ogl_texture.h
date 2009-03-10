@@ -139,6 +139,7 @@ class CTextureManager {
 	private:
 		CTexture		m_info;
 		CTexture*	m_textures;
+		int			m_nTextures;
 
 	public:
 		CTextureManager () { Init (); }

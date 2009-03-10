@@ -516,7 +516,7 @@ else {
 	}
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
-color.alpha *= fIntensity;
+color.alpha *= fIntensity * fIntensity;
 if (color.alpha < 0.01f)
 	return;
 glEnable (GL_TEXTURE_2D);
@@ -612,6 +612,7 @@ else
 	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
+fIntensity *= fIntensity;
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
