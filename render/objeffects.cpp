@@ -49,7 +49,7 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
-	G3DrawSprite(*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
+	G3DrawSprite (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
 	glDepthMask (1);
 	}
 }
