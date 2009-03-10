@@ -349,20 +349,21 @@ else {
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
 if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())) {
-	bmP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
+	//bmoP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	bmP = bmP->Override (iFrame);
+	bmP->SetupTexture (1, 1);
 	//fAlpha = 1;
 	}
 else {
 	if (colorP && gameOpts->render.bDepthSort)
-		bmP->SetupTexture (1, 0);
+		bmP->SetupTexture (1, 1);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	}
 if (!bmP)
 	return;
 fScale = ObjectBlobColor (objP, bmP, &color);
-if (!(texP = bmP->Texture ()) && texP->Handle ())
+if (!((texP = bmP->Texture ()) && texP->Handle ()))
 	return;
 if (colorP /*&& (bmi >= 0)*/)
 	*colorP = color;
