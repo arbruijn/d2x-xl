@@ -422,7 +422,7 @@ return nShrinkFactor / 2;
 
 //------------------------------------------------------------------------------
 
-int ReadBitmap (CBitmap* bmP, int nSize, CFile* cfP, bool bDefault, bool bD1, bool bHires = false)
+static int ReadBitmap (CBitmap* bmP, int nSize, CFile* cfP, bool bDefault, bool bD1, bool bHires = false)
 {
 nDescentCriticalError = 0;
 if (bmP->Flags () & BM_FLAG_RLE) {
@@ -464,14 +464,44 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-bool IsCockpit (const char* bmName)
+static bool IsCockpit (const char* bmName)
 {
 return (strstr (bmName, "cockpit") == bmName) || (strstr (bmName, "status") == bmName);
 }
 
 //------------------------------------------------------------------------------
 
-void MakeBitmapFilenames (const char* bmName, char* rootFolder, char* cacheFolder, char* fn, char* fnShrunk, int nShrinkFactor)
+static bool IsPowerup (const char* bmName)
+{
+	static const char* szPowerups [] = {
+		"slowmotion",
+		"bullettime",
+		"invuln",
+		"cmissil",
+		"erthshkr",
+		"hmissil",
+		"key",
+		"merc",
+		"mmissil",
+		"pwr",
+		"scmiss",
+		"shmiss",
+		"smissil",
+		"hostage",
+		"flare"
+		};
+
+if (!strstr (bmName, "#0"))
+	return false;
+for (int i = 0, j = sizeofa (szPowerups); i < j; i++)
+	if (strstr (bmName, szPowerups [i]) == bmName)
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+
+static void MakeBitmapFilenames (const char* bmName, char* rootFolder, char* cacheFolder, char* fn, char* fnShrunk, int nShrinkFactor)
 {
 if (!*rootFolder)
 	*fn = *fnShrunk = '\0';
@@ -496,7 +526,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int OpenBitmapFile (char fn [6][FILENAME_LEN], CFile* cfP)
+static int OpenBitmapFile (char fn [6][FILENAME_LEN], CFile* cfP)
 {
 for (int i = 0; i < 6; i++)
 	if (*fn [i] && cfP->Open (fn [i], "", "rb", 0))
@@ -533,6 +563,8 @@ if (bmP->Buffer ())
 
 StopTime ();
 nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
+if ((nShrinkFactor == 1) && IsPowerup (bmName))	// force downscaling of powerup hires textures
+	nShrinkFactor = 2;
 nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);

@@ -100,6 +100,8 @@ class CBitmapInfo {
 		ubyte					bChild;
 		ubyte					bFlat;		//no texture, just a colored area
 		ubyte					bStatic;		//must remain in RAM
+		ubyte					bSetup;
+		ubyte					bMasks;
 		ubyte					nTeam;
 #if TEXTURE_COMPRESSION
 		CBitmapCompressionData	compressed;
@@ -268,7 +270,7 @@ class CBitmap : public CArray< ubyte > {
 		CBitmap *CreateMask (void);
 		int CreateMasks (void);
 		int SetupFrames (int bMipMaps, int bLoad);
-		CBitmap* SetupTexture (int bMipMaps, int bLoad);
+		bool SetupTexture (int bMipMaps, int bLoad);
 		int LoadTexture (int dxo, int dyo, int superTransp);
 #if RENDER2TEXTURE == 1
 		int PrepareTexture (int bMipMap, int bMask, CBO *renderBuffer = NULL);
@@ -278,7 +280,7 @@ class CBitmap : public CArray< ubyte > {
 		int PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer = NULL);
 #endif
 		int Bind (int bMipMaps);
-		inline bool Prepared (void) { return Texture () && (Texture ()->Handle () > 0); }
+		inline bool Prepared (void) { return m_info.texP && m_info.texP->Handle (); }
 
 #if TEXTURE_COMPRESSION
 		inline CArray<ubyte>& CompressedBuffer (void) { return m_info.compressed.buffer; }

@@ -568,6 +568,8 @@ return 1;
 
 void CBitmap::Unload (int i, int bD1)
 {
+m_info.bSetup =
+m_info.bMasks = 0;
 if (i < 0)
 	i = int (this - gameData.pig.tex.bitmaps [bD1]);
 FreeMask ();

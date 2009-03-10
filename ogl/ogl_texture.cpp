@@ -1172,6 +1172,9 @@ int CBitmap::CreateMasks (void)
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
+if (m_info.bMasks)
+	return 1;
+m_info.bMasks = 1;
 if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP) {
 	if (m_info.props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateMask () != NULL;
@@ -1217,7 +1220,7 @@ else
 #endif
  {
 	if (!Prepared ()) {
-		if (!(bmP = SetupTexture (bMipMaps, 1))) {
+		if (!SetupTexture (bMipMaps, 1)) {
 #if DBG
 			SetupTexture (bMipMaps, 1);
 			nDepth--;
@@ -1225,11 +1228,9 @@ else
 			return 1;
 			}
 		}
-
-	CBitmap* mask = Mask ();
-
-	if (mask && !mask->Prepared ())
-		mask->SetupTexture (0, 1);
+	CBitmap* maskP = Mask ();
+	if (maskP && !maskP->Prepared ())
+		maskP->SetupTexture (0, 1);
 	}
 if (!m_info.texP)
 	return -1;
@@ -1243,25 +1244,28 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-CBitmap *CBitmap::SetupTexture (int bMipMaps, int bLoad)
+bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
+if (m_info.bSetup)
+	return true;
+
 	CBitmap *bmP;
 
 if ((bmP = HasOverride ()))
 	return bmP->SetupTexture (bMipMaps, bLoad);
 
-int	h, w, nFrames;
+	int	h, w, nFrames;
 
 h = m_info.props.h;
 w = m_info.props.w;
 if (!(h * w))
-	return NULL;
+	return false;
 nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (bLoad && PrepareTexture (bMipMaps, 0, NULL))
-		return NULL;
+		return false;
 	if (CreateMasks () && Mask ()->PrepareTexture (0, 1, NULL))
-		return NULL;
+		return false;
 	}
 else if (!Frames ()) {
 	h = CreateMasks ();
@@ -1271,14 +1275,14 @@ else if (!Frames ()) {
 			CBitmap*	bmfP = Frames ();
 			for (int i = nFrames; i; i--, bmfP++) {
 				if (bmfP->PrepareTexture (bMipMaps, 1))
-					return NULL;
+					return false;
 				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, 1, NULL)))
-					return NULL;
+					return false;
 				}
 			}
 		}
 	}
-return Override (-1);
+return true;
 }
 
 //------------------------------------------------------------------------------
