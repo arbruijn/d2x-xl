@@ -1084,7 +1084,7 @@ if (m_info.nId == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
 LoadTexture (0, 0, (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
-return 0;
+return m_info.texP->Handle () == 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1252,15 +1252,14 @@ return 0;
 
 bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
-if (m_info.bSetup)
-	return true;
-m_info.bSetup = true;
-
 	CBitmap *bmP;
 
 if ((bmP = HasOverride ()))
 	return bmP->SetupTexture (bMipMaps, bLoad);
 
+if (m_info.bSetup)
+	return Prepared () || !PrepareTexture (bMipMaps, 0);
+m_info.bSetup = true;
 
 	int	h, w, nFrames;
 

@@ -356,7 +356,10 @@ if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())) {
 	}
 if (!bmP)
 	return;
-bmP->SetupTexture (1, 1);
+if (!bmP->SetupTexture (1, 1))
+	return;
+if (!bmP->Prepared () && bmP->PrepareTexture (1, 0))
+	return;
 fScale = ObjectBlobColor (objP, bmP, &color);
 if (!((texP = bmP->Texture ()) && texP->Handle ()))
 	return;
