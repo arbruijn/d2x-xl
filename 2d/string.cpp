@@ -611,6 +611,7 @@ x = 0;
 		}
 	}
 bmP->SetPalette (palP);
+bmP->SetTranspType (-1);
 return bmP;
 }
 

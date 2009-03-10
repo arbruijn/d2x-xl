@@ -330,6 +330,7 @@ for (i = 0; i < nChars; i++) {
 		}
 	m_info.bitmaps [i].InitChild (&m_info.parentBitmap, curx, cury, w, h);
 	m_info.bitmaps [i].SetTexture (m_info.parentBitmap.Texture ());
+	m_info.bitmaps [i].SetTranspType (2);
 	curx += w + gap;
 	}
 m_info.parentBitmap.SetTranspType (2);

@@ -39,6 +39,7 @@ int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha,
 bmP->SetBPP (nBytes);
 if (!(bmP->Buffer () || bmP->CreateBuffer ()))
 	 return 0;
+bmP->SetTranspType (-1);
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;

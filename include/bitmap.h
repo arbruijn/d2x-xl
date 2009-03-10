@@ -260,7 +260,7 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetTeam (ubyte nTeam) { m_info.nTeam = nTeam; }
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
 		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
-		inline void SetTranspType (int nTranspType) { m_info.nTranspType = nTranspType; }
+		inline void SetTranspType (int nTranspType) { m_info.nTranspType = ((m_info.nBPP > 1) ? -1 : nTranspType); }
 		inline void SetTexture (CTexture *texP) { m_info.texP = texP; }
 		inline void ResetTexture (void) { m_info.texP = &m_info.texture; }
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
