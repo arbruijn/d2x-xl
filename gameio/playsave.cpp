@@ -2206,7 +2206,10 @@ gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
-
+#if WIN32
+if (gameStates.render.bVSyncOk)
+	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
+#endif
 return funcRes;
 }
 
@@ -2214,7 +2217,7 @@ return funcRes;
 
 //finds entry for this level in table.  if not found, returns ptr to
 //empty entry.  If no empty entries, takes over last one
-int FindHLIEntry()
+int FindHLIEntry (void)
 {
 	int i;
 
@@ -2236,12 +2239,10 @@ return i;
 //set a new highest level for CPlayerData for this mission
 void SetHighestLevel (ubyte nLevel)
 {
-	int ret, i;
-
-ret = LoadPlayerProfile (0);
+int ret = LoadPlayerProfile (0);
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return;
-i = FindHLIEntry ();
+int i = FindHLIEntry ();
 if (nLevel > highestLevels [i].nLevel)
 	highestLevels [i].nLevel = nLevel;
 SavePlayerProfile ();
@@ -2268,294 +2269,6 @@ if (nHighestSaturnLevel > i)
 return i;
 }
 
-//------------------------------------------------------------------------------
-#if 0
-void WriteBinD2XParams (CFile cf)
-{
-	int	i, j;
-
-cf.WriteInt (sizeof (tGameOptions));
-for (i = 0; i < 2; i++) {
-	if (!i) {
-		cf.WriteByte (extraGameInfo [0].bFixedRespawns);
-		cf.WriteByte (extraGameInfo [0].bFriendlyFire);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].render.nMaxFPS);
-	if (!i)
-		cf.WriteByte ((sbyte) (extraGameInfo [0].nSpawnDelay / 1000));
-	cf.WriteByte ((sbyte) gameOptions [i].input.joystick.deadzones [0]);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowSize);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowPos);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowZoom);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].bPowerupsOnRadar);
-	cf.WriteByte ((sbyte) gameOptions [i].input.keyboard.nRamp);
-	cf.WriteByte ((sbyte) gameOptions [i].render.color.bAmbientLight);
-	cf.WriteByte ((sbyte) gameOptions [i].ogl.bSetGammaRamp);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].nZoomMode);
-	for (j = 0; j < 3; j++)
-		cf.WriteByte ((sbyte) gameOptions [i].input.keyboard.bRamp [j]);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [0].bEnhancedCTF);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bRobotsHitRobots);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].gameplay.nAutoSelectWeapon);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].bAutoDownload);
-	cf.WriteByte ((sbyte) gameOptions [i].render.color.bGunLight);
-	cf.WriteByte ((sbyte) tracker.m_bUse);
-	cf.WriteByte ((sbyte) gameOptions [i].gameplay.bFastRespawn);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].bDualMissileLaunch);
-	cf.WriteByte ((sbyte) gameStates.app.nDifficultyLevel);
-	cf.WriteByte ((sbyte) gameOptions [i].render.effects.bTransparent);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].bRobotsOnRadar);
-	cf.WriteByte ((sbyte) gameOptions [i].render.bAllSegs);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].grWallTransparency);
-	cf.WriteByte ((sbyte) gameOptions [i].input.mouse.sensitivity [0]);
-	cf.WriteByte ((sbyte) gameOptions [i].multi.bUseMacros);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].bWiggle);
-	cf.WriteByte ((sbyte) gameOptions [i].movies.nQuality);
-	cf.WriteByte ((sbyte) gameOptions [i].render.color.bWalls);
-	cf.WriteByte ((sbyte) gameOptions [i].input.bLinearJoySens);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [0].nSpeedBoost);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bDropAllMissiles);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bImmortalPowerups);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bUseCameras);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].render.cameras.bFitToWall);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cameras.nFPS);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].nFusionRamp);
-	cf.WriteByte ((sbyte) gameOptions [i].render.color.bUseLightmaps);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.bHUD);
-	cf.WriteByte ((sbyte) gameOptions [i].render.color.nLightmapRange);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [0].bMouseLook);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bMultiBosses);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].app.nVersionFilter);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [0].bSmartWeaponSwitch);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bFluidPhysics);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].render.nQuality);
-	cf.WriteByte ((sbyte) gameOptions [i].movies.bSubTitles);
-	cf.WriteByte ((sbyte) gameOptions [i].render.textures.nQuality);
-	cf.WriteInt (gameOptions [i].render.cameras.nSpeed);
-	if (!i)
-		cf.WriteByte (extraGameInfo [0].nWeaponDropMode);
-	cf.WriteInt (gameOptions [i].menus.bSmartFileSearch);
-	cf.WriteInt (GetDlTimeout ());
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nCaptureVirusLimit);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nCaptureTimeLimit);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nMaxVirusCapacity);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nBumpVirusCapacity);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nBashVirusCapacity);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nVirusGenTime);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nVirusLifespan);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nVirusStability);
-		cf.WriteShort ((short) extraGameInfo [0].entropy.nEnergyFillRate);
-		cf.WriteShort ((short) extraGameInfo [0].entropy.nShieldFillRate);
-		cf.WriteShort ((short) extraGameInfo [0].entropy.nShieldDamageRate);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.bRevertRooms);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.bDoConquerWarning);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.nOverrideTextures);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.bBrightenRooms);
-		cf.WriteByte ((sbyte) extraGameInfo [0].entropy.bPlayerHandicap);
-
-		cf.WriteByte ((sbyte) mpParams.nLevel);
-		cf.WriteByte ((sbyte) mpParams.nGameType);
-		cf.WriteByte ((sbyte) mpParams.nGameMode);
-		cf.WriteByte ((sbyte) mpParams.nGameAccess);
-		cf.WriteByte ((sbyte) mpParams.bShowPlayersOnAutomap);
-		cf.WriteByte ((sbyte) mpParams.nDifficulty);
-		cf.WriteInt (mpParams.nWeaponFilter);
-		cf.WriteInt (mpParams.nReactorLife);
-		cf.WriteByte ((sbyte) mpParams.nMaxTime);
-		cf.WriteByte ((sbyte) mpParams.nKillGoal);
-		cf.WriteByte ((sbyte) mpParams.bInvul);
-		cf.WriteByte ((sbyte) mpParams.bMarkerView);
-		cf.WriteByte ((sbyte) mpParams.bIndestructibleLights);
-		cf.WriteByte ((sbyte) mpParams.bBrightPlayers);
-		cf.WriteByte ((sbyte) mpParams.bShowAllNames);
-		cf.WriteByte ((sbyte) mpParams.bShortPackets);
-		cf.WriteByte ((sbyte) mpParams.nPPS);
-		cf.WriteInt (mpParams.udpPorts [1]);
-		cf.Write(mpParams.szServerIpAddr, 16, 1);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].render.nMeshQuality);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [1].bRotateLevels);
-		cf.WriteByte ((sbyte) extraGameInfo [1].bDisableReactor);
-		}
-	for (j = 0; j < 4; j++)
-		cf.WriteByte ((sbyte) gameOptions [0].input.joystick.deadzones [j]);
-	for (j = 0; j < 4; j++)
-		cf.WriteByte ((sbyte) gameOptions [0].input.joystick.sensitivity [j]);
-	cf.WriteByte ((sbyte) gameOptions [i].input.joystick.bSyncAxes);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [1].bDualMissileLaunch);
-		cf.WriteByte ((sbyte) extraGameInfo [1].bMouseLook);
-		}
-	for (j = 0; j < 3; j++)
-		cf.WriteByte ((sbyte) gameOptions [0].input.mouse.sensitivity [j]);
-	cf.WriteByte ((sbyte) gameOptions [i].input.mouse.bSyncAxes);
-	cf.WriteByte ((sbyte) gameOptions [i].render.color.bMix);
-	cf.WriteByte ((sbyte) gameOptions [i].render.color.bCap);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].nWeaponIcons);
-	cf.WriteByte ((sbyte) gameOptions [i].render.weaponIcons.bSmall);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].bAutoBalanceTeams);
-	cf.WriteByte ((sbyte) gameOptions [i].movies.bResize);
-	cf.WriteByte ((sbyte) gameOptions [i].menus.bShowLevelVersion);
-	cf.WriteByte ((sbyte) gameOptions [i].render.weaponIcons.nSort);
-	cf.WriteByte ((sbyte) gameOptions [i].render.weaponIcons.bShowAmmo);
-	cf.WriteByte ((sbyte) gameOptions [i].input.mouse.bUse);
-	cf.WriteByte ((sbyte) gameOptions [i].input.joystick.bUse);
-	cf.WriteByte ((sbyte) gameOptions [i].input.bUseHotKeys);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [0].bSafeUDP);
-		cf.Write(mpParams.szServerIpAddr + 16, 6, 1);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.bTextGauges);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.bScaleGauges);
-	cf.WriteByte ((sbyte) gameOptions [i].render.weaponIcons.bEquipment);
-	cf.WriteByte ((sbyte) gameOptions [i].render.weaponIcons.alpha);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.bFlashGauges);
-	if (!i) {
-		for (j = 0; j < 2; j++)
-			cf.WriteByte ((sbyte) extraGameInfo [j].bFastPitch);
-		cf.WriteInt (gameStates.multi.nConnection);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bUseParticles);
-		}
-	cf.WriteInt (gameOptions [i].render.particles.nDens [0]);
-	cf.WriteInt (gameOptions [i].render.particles.nSize [0]);
-	cf.WriteByte ((sbyte) gameOptions [i].render.particles.bPlayers);
-	cf.WriteByte ((sbyte) gameOptions [i].render.particles.bRobots);
-	cf.WriteByte ((sbyte) gameOptions [i].render.particles.bMissiles);
-	if (!i) {
-		cf.WriteByte ((sbyte) extraGameInfo [0].bDamageExplosions);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bThrusterFlames);
-		}
-	cf.WriteByte ((sbyte) 0);
-	cf.WriteByte ((sbyte) gameOptions [i].gameplay.bShieldWarning);
-	cf.WriteByte ((sbyte) gameOptions [i].app.bExpertMode);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].bShadows);
-	cf.WriteInt (gameOptions [i].render.shadows.nLights);
-	if (!i) {
-		cf.WriteInt (gameStates.ogl.nContrast);
-		cf.WriteByte ((sbyte) extraGameInfo [0].bPlayerShield);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].gameplay.bInventory);
-	cf.WriteInt (gameOptions [i].input.mouse.bJoystick);
-	if (!i) {
-		cf.WriteInt (displayModeInfo [NUM_DISPLAY_MODES].w);
-		cf.WriteInt (displayModeInfo [NUM_DISPLAY_MODES].h);
-		}
-	cf.WriteInt (gameOptions [i].render.cockpit.bMouseIndicator);
-	cf.WriteInt (extraGameInfo [i].bTeleporterCams);
-	cf.WriteInt (gameOptions [i].render.cockpit.bSplitHUDMsgs);
-	cf.WriteByte (gameOptions [i].input.joystick.deadzones [4]);
-	cf.WriteByte (gameOptions [i].input.joystick.sensitivity [4]);
-	if (!i) {
-		tMonsterballForce *pf = extraGameInfo [0].monsterball.forces;
-		cf.WriteByte (extraGameInfo [0].monsterball.nBonus);
-		for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
-			cf.WriteByte (pf->nWeaponId);
-			cf.WriteByte (pf->nForce);
-			}
-		}
-	if (!i)
-		cf.WriteByte (extraGameInfo [0].monsterball.nSizeMod);
-	cf.WriteInt (gameOptions [i].render.nLightingMethod);
-	cf.WriteInt (gameOptions [i].ogl.bLightObjects);
-	cf.WriteInt (gameOptions [i].ogl.nMaxLights);
-	cf.WriteByte (extraGameInfo [i].bDarkness);
-	cf.WriteByte (extraGameInfo [i].bTeamDoors);
-	cf.WriteByte (extraGameInfo [i].bEnableCheats);
-	cf.WriteByte (extraGameInfo [i].bTargetIndicators);
-	cf.WriteByte (extraGameInfo [i].bDamageIndicators);
-	cf.WriteByte (extraGameInfo [i].bFriendlyIndicators);
-	cf.WriteByte (extraGameInfo [i].bCloakedIndicators);
-	cf.WriteByte (extraGameInfo [i].bHeadlights);
-	cf.WriteByte (extraGameInfo [i].bPowerupLights);
-	cf.WriteByte (extraGameInfo [i].nSpotSize);
-	cf.WriteByte (extraGameInfo [i].bTowFlags);
-	cf.WriteByte (gameOptions [i].render.particles.bDecreaseLag);
-	cf.WriteByte (gameOptions [i].render.effects.bAutoTransparency);
-	if (!i) {
-		cf.WriteByte (extraGameInfo [i].bUseHitAngles);
-		cf.WriteByte (extraGameInfo [i].bLightTrails);
-		}
-	cf.WriteInt (gameOptions [i].render.particles.bSyncSizes);
-	for (j = 1; j < 4; j++) {
-		cf.WriteInt (gameOptions [i].render.particles.nDens [j]);
-		cf.WriteInt (gameOptions [i].render.particles.nSize [j]);
-		}
-	if (!i) {
-		cf.WriteByte (extraGameInfo [i].bTracers);
-		cf.WriteByte (extraGameInfo [i].bShockwaves);
-		}
-	cf.WriteByte (gameOptions [i].render.particles.bDisperse);
-	cf.WriteByte (extraGameInfo [i].bTagOnlyHitObjs);
-	for (j = 0; j < 4; j++)
-		cf.WriteInt (gameOptions [i].render.particles.nLife [j]);
-	cf.WriteByte (gameOptions [i].render.shadows.bRobots);
-	cf.WriteByte (gameOptions [i].render.shadows.bMissiles);
-	cf.WriteByte (gameOptions [i].render.shadows.bReactors);
-	cf.WriteByte (gameOptions [i].render.shadows.bPlayers);
-	cf.WriteByte (gameOptions [i].render.shadows.bFast);
-	cf.WriteByte (gameOptions [i].render.shadows.nReach);
-	cf.WriteByte (gameOptions [i].render.shadows.nClip);
-	cf.WriteByte (gameOptions [i].render.powerups.b3D);
-	cf.WriteByte (gameOptions [i].render.powerups.nSpin);
-	cf.WriteByte (gameOptions [i].gameplay.bIdleAnims);
-	if (!i)
-		cf.WriteByte (gameStates.app.nDifficultyLevel);
-	cf.WriteByte (gameOptions [i].demo.bOldFormat);
-	cf.WriteByte (gameOptions [i].render.cockpit.bObjectTally);
-	if (!i)
-		cf.WriteByte (extraGameInfo [0].nLightRange);
-	if (i)
-		cf.WriteByte (extraGameInfo [i].bCompetition);
-	cf.WriteByte (extraGameInfo [i].bFlickerLights);
-	if (!i) {
-		cf.WriteByte (extraGameInfo [i].bSmokeGrenades);
-		cf.WriteByte (extraGameInfo [i].nMaxSmokeGrenades);
-		cf.WriteByte (extraGameInfo [i].nMslTurnSpeed);
-		}
-	cf.WriteByte ((sbyte) gameOptions [i].render.particles.bDebris);
-	cf.WriteByte ((sbyte) gameOptions [i].render.particles.bStatic);
-	cf.WriteByte ((sbyte) gameOptions [i].gameplay.nAIAwareness);
-	cf.WriteByte ((sbyte) extraGameInfo [i].nCoopPenalty);
-	cf.WriteByte ((sbyte) extraGameInfo [i].bKillMissiles);
-	cf.WriteByte ((sbyte) extraGameInfo [i].nHitboxes);
-	cf.WriteByte ((sbyte) gameOptions [i].render.cockpit.bPlayerStats);
-	cf.WriteByte ((sbyte) gameOptions [i].render.coronas.bUse);
-	cf.WriteByte ((sbyte) gameOptions [i].render.automap.bTextured);
-	cf.WriteByte ((sbyte) gameOptions [i].render.automap.bBright);
-	cf.WriteByte ((sbyte) gameOptions [i].render.automap.bCoronas);
-	cf.WriteByte ((sbyte) gameOptions [i].render.automap.nColor);
-	if (!i)
-		cf.WriteByte ((sbyte) extraGameInfo [0].nRadar);
-	cf.WriteByte ((sbyte) gameOptions [i].render.automap.nRange);
-	cf.WriteByte ((sbyte) gameOptions [i].render.automap.bParticles);
-	cf.WriteInt (gameOptions [i].render.nDebrisLife);
-	cf.WriteByte ((sbyte) extraGameInfo [i].bMslLockIndicators);
-	cf.WriteByte ((sbyte) gameOpts->render.cockpit.bRotateMslLockInd);
-// end of D2X-XL stuff
-	}
-}
-#endif
 //------------------------------------------------------------------------------
 
 //write out CPlayerData's saved games.  returns errno (0 == no error)
