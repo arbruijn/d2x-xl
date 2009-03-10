@@ -279,26 +279,29 @@ FORALL_OBJS (objP, i) {
 
 		case OBJ_ROBOT:
 			if (((gameStates.render.bAllVisited && bTextured) || m_visited [0][objP->info.nSegment]) && AM_SHOW_ROBOTS) {
-				static int c = 0;
 				static int t = 0;
+				static int d = 1;
 				int h = SDL_GetTicks ();
-				if (h - t > 250) {
+				if (h - t > 333) {
 					t = h;
-					c = !c;
+					d = -d;
 					}
-				if (ROBOTINFO (objP->info.nId).companion)
-					if (c)
-						CCanvas::Current ()->SetColorRGB (0, 123, 151, 255); //gr_getcolor (47, 1, 47)); 
+				float fScale = float (h - t) / 333.0f;
+				if (ROBOTINFO (objP->info.nId).companion) {
+					if (d < 0)
+						CCanvas::Current ()->SetColorRGB (0, 123 - int ((123 - 78) * fScale + 0.5f), 151 - int ((151 - 112) * fScale + 0.5f), 255);
 					else
-						CCanvas::Current ()->SetColorRGB (0, 78, 112, 255); //gr_getcolor (47, 1, 47)); 
-				else
-					if (c)
-						CCanvas::Current ()->SetColorRGB (123, 0, 135, 255); //gr_getcolor (47, 1, 47)); 
+						CCanvas::Current ()->SetColorRGB (0, 78 + int ((123 - 78) * fScale + 0.5f), 122 + int ((151 - 112) * fScale + 0.5f), 255);
+					}
+				else {
+					if (d < 0)
+						CCanvas::Current ()->SetColorRGB (123 - int ((123 - 78) * fScale + 0.5f), 0, 135 - int ((135 - 96) * fScale + 0.5f), 255);
 					else
-						CCanvas::Current ()->SetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
+						CCanvas::Current ()->SetColorRGB (78 + int ((123 - 78) * fScale + 0.5f), 0, 96 + int ((135 - 96) * fScale + 0.5f), 255);
+					}
 				G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 				//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
-				G3DrawSphere (&spherePoint, (size * 3) / 2, !m_bRadar);
+				G3DrawSphere (&spherePoint, bTextured ? size : (size * 3) / 2, !m_bRadar);
 				//transformation.End ();
 				}
 			break;
