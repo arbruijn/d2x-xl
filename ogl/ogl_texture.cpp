@@ -122,6 +122,20 @@ m_textures = NULL;
 
 //------------------------------------------------------------------------------
 
+bool CheckTextures (void)
+{
+	CTexture*	texP = textureManager.Textures ();
+
+while (texP) {
+	if (!texP->Check ())
+		return false;
+	texP = texP->Next ();
+	}
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 static CTexture* dbgTexP = (CTexture*) 0x101fca30;
 
 void CTextureManager::Register (CTexture* texP)
@@ -222,6 +236,60 @@ if (m_bRegistered)
 	return false;	// already registered
 textureManager.Register (this); 
 return m_bRegistered = true;
+}
+
+//------------------------------------------------------------------------------
+
+void CTexture::Release (void)
+{
+if (m_info.handle && (m_info.handle != GLuint (-1))) {
+	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
+	m_info.handle = 0;
+	if (m_info.bmP)
+		m_info.bmP->NeedSetup ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CTexture::Destroy (void)
+{
+Release ();
+if (m_bRegistered) {
+	if (textureManager.Release (this)) {
+		if (m_prev) {
+#if DBG
+			if (m_prev->m_next != this)
+				PrintLog ("Error in texture management\n");
+#endif
+			m_prev->m_next = m_next;
+			}
+		if (m_next) {
+#if DBG
+			if (m_next->m_prev != this)
+				PrintLog ("Error in texture management\n");
+#endif
+			m_next->m_prev = m_prev;
+			}
+		}
+	m_prev = 
+	m_next = NULL;
+	m_bRegistered = false;
+	}
+else if (m_prev || m_next)
+	m_prev = m_next = NULL;
+Init ();
+}
+
+//------------------------------------------------------------------------------
+
+bool CTexture::Check (void)
+{
+if (m_prev && (m_prev->m_next != this))
+	return false;
+if (m_next && (m_next->m_prev != this))
+	return false;
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -743,37 +811,6 @@ switch (m_info.format) {
 		break;
 	}
 SetBufSize (nBits, a, w, h);
-}
-
-//------------------------------------------------------------------------------
-
-void CTexture::Release (void)
-{
-if (m_info.handle && (m_info.handle != GLuint (-1))) {
-	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
-	m_info.handle = 0;
-	if (m_info.bmP)
-		m_info.bmP->NeedSetup ();
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CTexture::Destroy (void)
-{
-Release ();
-if (m_bRegistered) {
-	if (textureManager.Release (this)) {
-		if (m_prev)
-			m_prev->m_next = m_next;
-		if (m_next)
-			m_next->m_prev = m_prev;
-		}
-	m_prev = 
-	m_next = NULL;
-	m_bRegistered = false;
-	}
-Init ();
 }
 
 //------------------------------------------------------------------------------

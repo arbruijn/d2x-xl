@@ -124,6 +124,7 @@ class CTexture {
 		int Compress ();
 #endif
 		int Verify (void);
+		bool Check (void);
 
 	private:
 		void SetSize (void);
@@ -149,6 +150,7 @@ class CTextureManager {
 		void Destroy (void);
 		void Register (CTexture* texP);
 		bool Release (CTexture* texP);
+		inline CTexture* Textures (void) { return m_textures; }
 	};
 
 extern CTextureManager textureManager;
