@@ -101,7 +101,7 @@ class CBitmapInfo {
 		ubyte					bFlat;		//no texture, just a colored area
 		ubyte					bStatic;		//must remain in RAM
 		ubyte					bSetup;
-		ubyte					bMasks;
+		char					nMasks;
 		ubyte					nTeam;
 #if TEXTURE_COMPRESSION
 		CBitmapCompressionData	compressed;
@@ -265,6 +265,10 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetTranspType (int nTranspType) { m_info.nTranspType = ((m_info.nBPP > 1) ? -1 : nTranspType); }
 		inline void SetTexture (CTexture *texP) { m_info.texP = texP; }
 		inline void ResetTexture (void) { m_info.texP = &m_info.texture; }
+		inline void NeedSetup (void) { 
+			m_info.bSetup = false; 
+			m_info.nMasks = 0; 
+			}
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
 		CBitmap *CreateMask (void);

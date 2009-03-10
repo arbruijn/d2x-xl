@@ -748,6 +748,8 @@ void CTexture::Release (void)
 if (m_info.handle && (m_info.handle != GLuint (-1))) {
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
+	if (m_info.bmP)
+		m_info.bmP->NeedSetup ();
 	}
 }
 
@@ -1161,6 +1163,7 @@ else {
 		else
 			*pm = 0xff;
 	}
+m_info.nMasks = 1;
 return m_info.maskP;
 }
 
@@ -1172,9 +1175,9 @@ int CBitmap::CreateMasks (void)
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
-if (m_info.bMasks)
-	return 1;
-m_info.bMasks = 1;
+if (m_info.nMasks)
+	return m_info.nMasks;
+m_info.nMasks = -1;
 if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP) {
 	if (m_info.props.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return CreateMask () != NULL;
@@ -1185,6 +1188,8 @@ for (nMasks = i = 0; i < nFrames; i++)
 	if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
 		if (m_info.frames.bmP [i].CreateMask ())
 			nMasks++;
+if (nMasks > 0)
+	m_info.nMasks = nMasks;
 return nMasks;
 }
 
@@ -1264,7 +1269,7 @@ nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (bLoad && PrepareTexture (bMipMaps, 0, NULL))
 		return false;
-	if (CreateMasks () && Mask ()->PrepareTexture (0, 1, NULL))
+	if ((CreateMasks () > 0) && Mask ()->PrepareTexture (0, 1, NULL))
 		return false;
 	}
 else if (!Frames ()) {
@@ -1282,7 +1287,7 @@ else if (!Frames ()) {
 			}
 		}
 	}
-return true;
+return m_info.bSetup = true;
 }
 
 //------------------------------------------------------------------------------
