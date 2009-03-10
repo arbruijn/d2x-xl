@@ -191,24 +191,24 @@ if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*3);
-G3TransformAndEncodePoint(&arrowPoint, vArrowPos);
+G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
 vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
 vHeadPos += objP->info.position.mOrient.RVec () * (size*1);
-G3TransformAndEncodePoint(&headPoint, vHeadPos);
+G3TransformAndEncodePoint (&headPoint, vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
 vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
 vHeadPos += objP->info.position.mOrient.RVec () * (size* (-1));
-G3TransformAndEncodePoint(&headPoint, vHeadPos);
+G3TransformAndEncodePoint (&headPoint, vHeadPos);
 G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw CPlayerData's up vector
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.UVec () * (size*2);
-G3TransformAndEncodePoint(&arrowPoint, vArrowPos);
+G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
 gameStates.ogl.bUseTransform = bUseTransform;
 }
@@ -221,12 +221,14 @@ if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 	return;
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
-if ((gameOpts->render.automap.bTextured & 1) && !m_bRadar) {
+int bBlend = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
+if (bBlend) {
+	glDisable (GL_CULL_FACE);
+	glEnable (GL_BLEND);
 	gameStates.render.grAlpha = 0.5f;
-	glDisable (GL_DEPTH_TEST);
 	}
 glDisable (GL_TEXTURE_2D);
-glLineWidth (GLfloat (screen.Width ()) / 640.0f);
+glLineWidth (5); //GLfloat (screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 if (!m_bRadar) {
 	DrawMarkers ();
@@ -239,18 +241,23 @@ if (!m_bRadar) {
 		GrString (5, 20, msg, NULL);
 		}
 	}			
-// Draw CPlayerData (s)...
+// Draw player(s)...
 if (AM_SHOW_PLAYERS) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
 			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
 				color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
+				if (bBlend)
+					glEnable (GL_BLEND);
 				DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
 				}
 			}
 		}
 	}
+
+if (bBlend)
+	glEnable (GL_BLEND);
 
 CObject* objP = OBJECTS.Buffer ();
 g3sPoint	spherePoint;
@@ -260,13 +267,13 @@ FORALL_OBJS (objP, i) {
 	switch (objP->info.nType) {
 		case OBJ_HOSTAGE:
 			CCanvas::Current ()->SetColorRGBi (m_colors.nHostage);
-			G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
+			G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 			G3DrawSphere (&spherePoint,size, !m_bRadar);
 			break;
 
 		case OBJ_MONSTERBALL:
 			CCanvas::Current ()->SetColorRGBi (m_colors.nMonsterball);
-			G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
+			G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 			G3DrawSphere (&spherePoint,size, !m_bRadar);
 			break;
 
@@ -866,6 +873,7 @@ void CAutomap::DrawEdges (void)
 	int			bUseTransform = gameStates.ogl.bUseTransform;
 
 gameStates.ogl.bUseTransform = RENDERPATH;
+glLineWidth (GLfloat (screen.Width ()) / 640.0f);
 for (i = 0; i <= m_nLastEdge; i++) {
 	//edgeP = &m_edges [Edge_used_list [i]];
 	edgeP = m_edges + i;
@@ -965,6 +973,7 @@ for (i = 0; i < nbright; i++) {
 		}
 	G3DrawLine (p1, p2);
 	}
+glLineWidth (1);
 gameStates.ogl.bUseTransform = bUseTransform;
 }
 

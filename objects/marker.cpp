@@ -119,7 +119,7 @@ spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
 	if ((objP = MarkerObj (-1, i))) {
 		bSpawn = (objP == SpawnMarkerObject (-1));
-		G3TransformAndEncodePoint(&spherePoint, objP->info.position.vPos);
+		G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 		for (j = 0; j < 3; j++) {
 			CCanvas::Current ()->SetColorRGB (PAL2RGBA (colors [bSpawn][j]), 0, 0, 255);
 			G3DrawSphere (&spherePoint, (int) (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
