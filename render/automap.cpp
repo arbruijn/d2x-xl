@@ -221,14 +221,14 @@ if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 	return;
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
-int bBlend = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
-if (bBlend) {
+int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
+if (bTextured) {
 	glDisable (GL_CULL_FACE);
 	glEnable (GL_BLEND);
 	gameStates.render.grAlpha = 0.5f;
 	}
 glDisable (GL_TEXTURE_2D);
-glLineWidth (5); //GLfloat (screen.Width ()) / 640.0f);
+glLineWidth (2 * GLfloat (screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 if (!m_bRadar) {
 	DrawMarkers ();
@@ -248,7 +248,7 @@ if (AM_SHOW_PLAYERS) {
 			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
 				color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
-				if (bBlend)
+				if (bTextured)
 					glEnable (GL_BLEND);
 				DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
 				}
@@ -256,7 +256,7 @@ if (AM_SHOW_PLAYERS) {
 		}
 	}
 
-if (bBlend)
+if (bTextured)
 	glEnable (GL_BLEND);
 
 CObject* objP = OBJECTS.Buffer ();
@@ -278,7 +278,7 @@ FORALL_OBJS (objP, i) {
 			break;
 
 		case OBJ_ROBOT:
-			if (m_visited [0][objP->info.nSegment] && AM_SHOW_ROBOTS) {
+			if (((gameStates.render.bAllVisited && bTextured) || m_visited [0][objP->info.nSegment]) && AM_SHOW_ROBOTS) {
 				static int c = 0;
 				static int t = 0;
 				int h = SDL_GetTicks ();
