@@ -108,7 +108,7 @@ while (m_textures && (m_nTextures > 0)) {
 	texP = m_textures;
 #if DBG
 	if (!texP->Registered ())
-		texP = texP;
+		PrintLog ("Error in texture management\n");
 #endif
 	texP->Destroy ();
 	m_nTextures--;
