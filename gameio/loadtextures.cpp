@@ -488,6 +488,7 @@ return false;
 }
 
 //------------------------------------------------------------------------------
+// returns not just weapons, but all sprites there is a 3D model available for.
 
 static bool IsWeapon (const char* bmName)
 {
