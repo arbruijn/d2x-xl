@@ -112,7 +112,6 @@ while (m_textures && (m_nTextures > 0)) {
 		PrintLog ("Error in texture management\n");
 #endif
 	texP->Destroy ();
-	m_nTextures--;
 	}
 if (m_nTextures) {
 	PrintLog ("Error in texture management\n");
@@ -158,7 +157,10 @@ texP->Link (NULL, m_textures);
 if (m_textures)
 	m_textures->SetPrev (texP);
 m_nTextures++;
+if (m_nTextures == 383)
+	m_nTextures = m_nTextures;
 m_textures = texP;
+Check ();
 }
 
 //------------------------------------------------------------------------------
@@ -168,10 +170,22 @@ bool CTextureManager::Release (CTexture* texP)
 Check ();
 if (!m_textures)
 	return false;
-if (m_textures == texP)
-	m_textures = texP->Next ();
+#if DBG
+CTexture* t;
+for (t = m_textures; t; t = t->Next ())
+	if (texP == t)
+		break;
+if (!t)
+	return false;
+#endif
 m_nTextures--;
-
+if (m_textures == texP) {
+	m_textures = texP->Next ();
+#if DBG
+	if (!m_textures && m_nTextures)
+		PrintLog ("Error in texture management\n");
+	}
+#endif
 return true;
 }
 
@@ -278,6 +292,7 @@ if (m_bRegistered) {
 #endif
 			m_next->m_prev = m_prev;
 			}
+		textureManager.Check ();
 		}
 	m_prev = 
 	m_next = NULL;

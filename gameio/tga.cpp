@@ -758,21 +758,29 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModelTextures::Read (int bCustom)
+int CModelTextures::ReadBitmap (int i, int bCustom)
 {
 	CBitmap*	bmP;
 
-for (int i = 0; i < m_nBitmaps; i++) {
-	if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, bCustom))
-		return 0;
-	if (bmP->Buffer ()) {
-		bmP = bmP->Override (-1);
-		if (bmP->Frames ())
-			bmP = bmP->CurFrame ();
-		bmP->Bind (1);
-		m_bitmaps [i].SetTeam (m_nTeam.Buffer () ? m_nTeam [i] : 0);
-		}
+if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, bCustom))
+	return 0;
+if (bmP->Buffer ()) {
+	bmP = bmP->Override (-1);
+	if (bmP->Frames ())
+		bmP = bmP->CurFrame ();
+	bmP->Bind (1);
+	m_bitmaps [i].SetTeam (m_nTeam.Buffer () ? m_nTeam [i] : 0);
 	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CModelTextures::Read (int bCustom)
+{
+for (int i = 0; i < m_nBitmaps; i++)
+	if (!ReadBitmap (i, bCustom))
+		return 0;
 return 1;
 }
 
@@ -791,7 +799,7 @@ int CModelTextures::Bind (int bCustom)
 {
 if ((m_bitmaps.Buffer ()))
 	for (int i = 0; i < m_nBitmaps; i++) {
-		if (!(m_bitmaps [i].Buffer () || Read (bCustom)))
+		if (!(m_bitmaps [i].Buffer () || ReadBitmap (i, bCustom)))
 			return 0;
 		m_bitmaps [i].Bind (1);
 		}

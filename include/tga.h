@@ -35,6 +35,7 @@ class CModelTextures {
 		int Bind (int bCustom);
 		void Release (void);
 		int Read (int bCustom);
+		int ReadBitmap (int i, int bCustom);
 		bool Create (int nBitmaps);
 		void Destroy (void);
 };
