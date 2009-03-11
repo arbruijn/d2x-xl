@@ -593,7 +593,8 @@ retryMove:
 	fq.p0 = &info.position.vPos;
 	fq.startSeg = info.nSegment;
 	fq.p1 = &vNewPos;
-	fq.radP0 = fq.radP1 = info.xSize;
+	fq.radP0 = 
+	fq.radP1 = info.xSize;
 	fq.thisObjNum = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
