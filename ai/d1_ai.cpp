@@ -555,18 +555,18 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 	tFVIQuery	fq;
 
 fq.p0 = pos;
-if ((*pos) != objP->info.position.vPos) {
+if ((*pos) == objP->info.position.vPos)
+	fq.startSeg	= objP->info.nSegment;
+else {
 	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
-	if (nSegment == -1) {
+	if (nSegment != -1) 
+		fq.startSeg = nSegment;
+	else {
 		fq.startSeg = objP->info.nSegment;
 		*pos = objP->info.position.vPos;
-		move_towards_segment_center(objP);
+		move_towards_segment_center (objP);
 		} 
-	else
-		fq.startSeg = nSegment;
 	} 
-else
-	fq.startSeg		= objP->info.nSegment;
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
 fq.radP0				= I2X (1)/4;
 fq.thisObjNum		= objP->Index ();
