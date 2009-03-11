@@ -605,7 +605,6 @@ else {
 	if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 		return;
 	}
-bmP->SetTranspType (-1);
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;
 else
@@ -618,7 +617,7 @@ if (bAdditive)
 else
 	glColor4f (color.red, color.green, color.blue, fIntensity);
 if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
-	if (gameStates.render.bQueryCoronas == 0) {
+	if (!gameStates.render.bQueryCoronas) {
 		bmP->Bind (1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}

@@ -87,6 +87,13 @@ for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 
 //------------------------------------------------------------------------------
 
+void TextureError (void)
+{
+PrintLog ("Error in texture management\n");
+}
+
+//------------------------------------------------------------------------------
+
 void CTextureManager::Destroy (void)
 {
 	CTexture*	texP;
@@ -109,12 +116,12 @@ while (m_textures && (m_nTextures > 0)) {
 	texP = m_textures;
 #if DBG
 	if (!texP->Registered ())
-		PrintLog ("Error in texture management\n");
+		TextureError ();
 #endif
 	texP->Destroy ();
 	}
 if (m_nTextures) {
-	PrintLog ("Error in texture management\n");
+	TextureError ();
 	m_nTextures = 0;
 	}
 m_textures = NULL;
@@ -128,13 +135,17 @@ bool CTextureManager::Check (void)
 	int			i = 0;
 
 while (texP) {
-	if (!texP->Check ())
+	if (!texP->Check ()) {
+		TextureError ();
 		return false;
+		}
 	texP = texP->Next ();
 	i++;
 	}
-if  (i != m_nTextures)
+if  (i != m_nTextures) {
+	TextureError ();
 	return false;
+	}
 return true;
 }
 
@@ -150,8 +161,10 @@ if (texP == dbgTexP)
 #if DBG
 CTexture* t;
 for (t = m_textures; t; t = t->Next ())
-	if (texP == t)
+	if (texP == t) {
+		TextureError ();
 		return;
+		}
 #endif
 texP->Link (NULL, m_textures);
 if (m_textures)
@@ -173,15 +186,17 @@ CTexture* t;
 for (t = m_textures; t; t = t->Next ())
 	if (texP == t)
 		break;
-if (!t)
+if (!t) {
+	TextureError ();
 	return false;
+	}
 #endif
 m_nTextures--;
 if (m_textures == texP) {
 	m_textures = texP->Next ();
 #if DBG
 	if (!m_textures && m_nTextures)
-		PrintLog ("Error in texture management\n");
+		TextureError ();
 #endif
 	}
 return true;
@@ -279,14 +294,14 @@ if (m_bRegistered) {
 		if (m_prev) {
 #if DBG
 			if (m_prev->m_next != this)
-				PrintLog ("Error in texture management\n");
+				TextureError ();
 #endif
 			m_prev->m_next = m_next;
 			}
 		if (m_next) {
 #if DBG
 			if (m_next->m_prev != this)
-				PrintLog ("Error in texture management\n");
+				TextureError ();
 #endif
 			m_next->m_prev = m_prev;
 			}

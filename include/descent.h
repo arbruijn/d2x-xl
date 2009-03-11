@@ -24,7 +24,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "carray.h"
 
-#include "irrstuff.h"
 #ifndef DBG
 #	ifdef _DEBUG
 #		define DBG 1
