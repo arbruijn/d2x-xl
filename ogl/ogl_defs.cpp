@@ -104,19 +104,19 @@ else {
 #	ifndef GL_VERSION_20
 	if (!(glGenQueries = (PFNGLGENQUERIESPROC) wglGetProcAddress ("glGenQueries")))
 		PrintLog ("   glGenQueries not supported by the OpenGL driver\n");
-	if (!(glDeleteQueries = (PFNGLDELETEQUERIESPROC) wglGetProcAddress ("glDeleteQueries")))
+	else if (!(glDeleteQueries = (PFNGLDELETEQUERIESPROC) wglGetProcAddress ("glDeleteQueries")))
 		PrintLog ("   glDeleteQueries not supported by the OpenGL driver\n");
-	if (!(glIsQuery = (PFNGLISQUERYPROC) wglGetProcAddress ("glIsQuery")))
+	else if (!(glIsQuery = (PFNGLISQUERYPROC) wglGetProcAddress ("glIsQuery")))
 		PrintLog ("   glIsQuery not supported by the OpenGL driver\n");
-	if (!(glBeginQuery = (PFNGLBEGINQUERYPROC) wglGetProcAddress ("glBeginQuery")))
+	else if (!(glBeginQuery = (PFNGLBEGINQUERYPROC) wglGetProcAddress ("glBeginQuery")))
 		PrintLog ("   glBeginQuery not supported by the OpenGL driver\n");
-	if (!(glEndQuery = (PFNGLENDQUERYPROC) wglGetProcAddress ("glEndQuery")))
+	else if (!(glEndQuery = (PFNGLENDQUERYPROC) wglGetProcAddress ("glEndQuery")))
 		PrintLog ("   glEndQuery not supported by the OpenGL driver\n");
-	if (!(glGetQueryiv = (PFNGLGETQUERYIVPROC) wglGetProcAddress ("glGetQueryiv")))
+	else if (!(glGetQueryiv = (PFNGLGETQUERYIVPROC) wglGetProcAddress ("glGetQueryiv")))
 		PrintLog ("   glGetQueryiv not supported by the OpenGL driver\n");
-	if (!(glGetQueryObjectiv = (PFNGLGETQUERYOBJECTIVPROC) wglGetProcAddress ("glGetQueryObjectiv")))
+	else if (!(glGetQueryObjectiv = (PFNGLGETQUERYOBJECTIVPROC) wglGetProcAddress ("glGetQueryObjectiv")))
 		PrintLog ("   glGetQueryObjectiv not supported by the OpenGL driver\n");
-	if (!(glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC) wglGetProcAddress ("glGetQueryObjectuiv")))
+	else if (!(glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC) wglGetProcAddress ("glGetQueryObjectuiv")))
 		PrintLog ("   glGetQueryObjectuiv not supported by the OpenGL driver\n");
 	else {
 		GLint nBits;
