@@ -1372,9 +1372,9 @@ if (automap.m_bDisplay && !gameStates.render.bAllVisited) {
 		if (!automap.m_visited [0][OBJECTS [m_nObject].Segment ()])
 			return;
 		}
-	else {
-		if (((m_nSegment [0] >= 0) && !automap.m_visited [0][m_nSegment [0]]) &&
-			 ((m_nSegment [1] >= 0) && !automap.m_visited [1][m_nSegment [0]]))
+	else if (!automap.m_bFull) {
+		if (((m_nSegment [0] >= 0) && !automap.m_visible [m_nSegment [0]]) &&
+			 ((m_nSegment [1] >= 0) && !automap.m_visible [m_nSegment [1]]))
 			return;
 		}
 	}

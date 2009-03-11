@@ -139,7 +139,7 @@ else {
 void CSparks::Render (void)
 {
 m_bUpdate = 1;
-if (!automap.m_bDisplay || gameStates.render.bAllVisited || automap.m_visited [0][m_nSegment])
+if (!automap.m_bDisplay || automap.m_bFull || automap.m_visible [m_nSegment])
 	for (int i = 0; i < m_nMaxSparks; i++)
 		m_sparks [i].Render ();
 }
