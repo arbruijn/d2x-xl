@@ -554,38 +554,32 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 	fix			dot;
 	tFVIQuery	fq;
 
-	fq.p0						= pos;
-	if ((*pos) != objP->info.position.vPos) {
-		int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
-		if (nSegment == -1) {
-			fq.startSeg = objP->info.nSegment;
-			*pos = objP->info.position.vPos;
-			move_towards_segment_center(objP);
-		} else
-			fq.startSeg = nSegment;
-	} else
-		fq.startSeg		= objP->info.nSegment;
-	fq.p1					= &gameData.ai.vBelievedPlayerPos;
-	fq.radP0				= I2X (1)/4;
-	fq.thisObjNum		= objP->Index ();
-	fq.ignoreObjList	= NULL;
-	fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
-
-	hitType = FindVectorIntersection(&fq,&hitData);
-
-	Hit_pos = hitData.hit.vPoint;
-	Hit_seg = hitData.hit.nSegment;
-
-	if ((hitType == HIT_NONE) || ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
-		dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
-		if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) {
-			return 2;
-		} else {
-			return 1;
-		}
-	} else {
-		return 0;
-	}
+fq.p0 = pos;
+if ((*pos) != objP->info.position.vPos) {
+	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
+	if (nSegment == -1) {
+		fq.startSeg = objP->info.nSegment;
+		*pos = objP->info.position.vPos;
+		move_towards_segment_center(objP);
+		} 
+	else
+		fq.startSeg = nSegment;
+	} 
+else
+	fq.startSeg		= objP->info.nSegment;
+fq.p1					= &gameData.ai.vBelievedPlayerPos;
+fq.radP0				= I2X (1)/4;
+fq.thisObjNum		= objP->Index ();
+fq.ignoreObjList	= NULL;
+fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
+hitType = FindVectorIntersection (&fq,&hitData);
+Hit_pos = hitData.hit.vPoint;
+Hit_seg = hitData.hit.nSegment;
+if ((hitType == HIT_NONE) || ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
+	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
+	return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
+	} 
+return 0;
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -1214,74 +1208,68 @@ int	Do_ai_flag=1;
 //	and is copied to player_visibility
 void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFixVector *vec_to_player, int *player_visibility, tRobotInfo *botInfoP, int *flag)
 {
-	if (!*flag) {
-		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-			fix			delta_time, dist;
-			int			cloak_index = objP->Index () % D1_MAX_AI_CLOAK_INFO;
+if (!*flag) {
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
+		fix	delta_time, dist;
+		int	cloak_index = objP->Index () % D1_MAX_AI_CLOAK_INFO;
 
-			delta_time = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
-			if (delta_time > I2X (2)) {
-				CFixVector	randvec;
-
-				gameData.ai.cloakInfo [cloak_index].lastTime = gameData.time.xGame;
-				randvec = CFixVector::Random();
-				gameData.ai.cloakInfo [cloak_index].vLastPos += randvec * (8*delta_time);
+		delta_time = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
+		if (delta_time > I2X (2)) {
+			gameData.ai.cloakInfo [cloak_index].lastTime = gameData.time.xGame;
+			CFixVector randvec = CFixVector::Random();
+			gameData.ai.cloakInfo [cloak_index].vLastPos += randvec * (8*delta_time);
 			}
 
-			dist = CFixVector::NormalizedDir(*vec_to_player, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
-			*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], vec_to_player);
-			// *player_visibility = 2;
+		dist = CFixVector::NormalizedDir (*vec_to_player, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
+		*player_visibility = player_is_visible_from_object (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], vec_to_player);
+		// *player_visibility = 2;
 
-			if ((ailP->nextMiscSoundTime < gameData.time.xGame) && (ailP->nextPrimaryFire < I2X (1)) && (dist < I2X (20))) {
-				ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
-				audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && (ailP->nextPrimaryFire < I2X (1)) && (dist < I2X (20))) {
+			ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
+			audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
-		} else {
-			//	Compute expensive stuff -- vec_to_player and player_visibility
-			CFixVector::NormalizedDir(*vec_to_player, gameData.ai.vBelievedPlayerPos, *pos);
-			if (vec_to_player->IsZero()) {
-				(*vec_to_player) [X] = I2X (1);
+		} 
+	else {
+		//	Compute expensive stuff -- vec_to_player and player_visibility
+		CFixVector::NormalizedDir (*vec_to_player, gameData.ai.vBelievedPlayerPos, *pos);
+		if (vec_to_player->IsZero()) {
+			(*vec_to_player) [X] = I2X (1);
 			}
-			*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], vec_to_player);
+		*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], vec_to_player);
 
-			//	This horrible code added by MK in desperation on 12/13/94 to make robots wake up as soon as they
-			//	see you without killing frame rate.
-		 {
-				tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-			if ((*player_visibility == 2) && (ailP->nPrevVisibility != 2))
-				if ((aiP->GOAL_STATE == D1_AIS_REST) || (aiP->CURRENT_STATE == D1_AIS_REST)) {
-					aiP->GOAL_STATE = D1_AIS_FIRE;
-					aiP->CURRENT_STATE = D1_AIS_FIRE;
+		//	This horrible code added by MK in desperation on 12/13/94 to make robots wake up as soon as they
+		//	see you without killing frame rate.
+		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+		if ((*player_visibility == 2) && (ailP->nPrevVisibility != 2))
+			if ((aiP->GOAL_STATE == D1_AIS_REST) || (aiP->CURRENT_STATE == D1_AIS_REST)) {
+				aiP->GOAL_STATE = D1_AIS_FIRE;
+				aiP->CURRENT_STATE = D1_AIS_FIRE;
 				}
-			}
 
-			if (!gameStates.app.bPlayerExploded && (ailP->nPrevVisibility != *player_visibility) && (*player_visibility == 2)) {
-				if (ailP->nPrevVisibility == 0) {
-					if (ailP->timePlayerSeen + I2X (1)/2 < gameData.time.xGame) {
-						audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
-						ailP->timePlayerSoundAttacked = gameData.time.xGame;
-						ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + rand()*4;
-					}
-				} else if (ailP->timePlayerSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
-					audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+		if (!gameStates.app.bPlayerExploded && (ailP->nPrevVisibility != *player_visibility) && (*player_visibility == 2)) {
+			if (ailP->nPrevVisibility == 0) {
+				if (ailP->timePlayerSeen + I2X (1)/2 < gameData.time.xGame) {
+					audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 					ailP->timePlayerSoundAttacked = gameData.time.xGame;
+					ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + rand()*4;
+					}
+				} 
+			else if (ailP->timePlayerSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
+				audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+				ailP->timePlayerSoundAttacked = gameData.time.xGame;
 				}
 			}
 
-			if ((*player_visibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
-				ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
-				audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+		if ((*player_visibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
+			ailP->nextMiscSoundTime = gameData.time.xGame + (rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
+			audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
-			ailP->nPrevVisibility = *player_visibility;
+		ailP->nPrevVisibility = *player_visibility;
 		}
-
-		*flag = 1;
-
-		if (*player_visibility) {
-			ailP->timePlayerSeen = gameData.time.xGame;
-		}
+	*flag = 1;
+	if (*player_visibility)
+		ailP->timePlayerSeen = gameData.time.xGame;
 	}
-
 }
 
 // --------------------------------------------------------------------------------------------------------------------

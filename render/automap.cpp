@@ -278,7 +278,7 @@ FORALL_OBJS (objP, i) {
 			break;
 
 		case OBJ_ROBOT:
-			if (((gameStates.render.bAllVisited && bTextured) || m_visited [0][objP->info.nSegment]) && AM_SHOW_ROBOTS) {
+			if (AM_SHOW_ROBOTS && ((gameStates.render.bAllVisited && bTextured) || m_visited [0][objP->info.nSegment])) {
 				static int t = 0;
 				static int d = 1;
 				int h = SDL_GetTicks ();
@@ -307,8 +307,7 @@ FORALL_OBJS (objP, i) {
 			break;
 
 		case OBJ_POWERUP:
-			if (AM_SHOW_POWERUPS (1) && 
-				(gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])) {
+			if (AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])) {
 				switch (objP->info.nId) {
 					case POW_KEY_RED:	
 						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
