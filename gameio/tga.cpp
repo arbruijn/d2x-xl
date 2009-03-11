@@ -760,9 +760,10 @@ return 1;
 
 int CModelTextures::ReadBitmap (int i, int bCustom)
 {
-	CBitmap*	bmP;
+	CBitmap*	bmP = m_bitmaps + i;
 
-if (!ReadModelTGA (m_names [i].Buffer (), bmP = m_bitmaps + i, bCustom))
+bmP->Destroy ();
+if (!ReadModelTGA (m_names [i].Buffer (), bmP, bCustom))
 	return 0;
 if (bmP->Buffer ()) {
 	bmP = bmP->Override (-1);
