@@ -157,8 +157,6 @@ texP->Link (NULL, m_textures);
 if (m_textures)
 	m_textures->SetPrev (texP);
 m_nTextures++;
-if (m_nTextures == 383)
-	m_nTextures = m_nTextures;
 m_textures = texP;
 Check ();
 }
@@ -184,8 +182,8 @@ if (m_textures == texP) {
 #if DBG
 	if (!m_textures && m_nTextures)
 		PrintLog ("Error in texture management\n");
-	}
 #endif
+	}
 return true;
 }
 
