@@ -89,6 +89,7 @@ class CAutomap {
 		char						m_szLevelNum [200];
 		char						m_szLevelName [200];
 		CBitmap					m_background;
+		CAngleVector			m_vTAngles;
 
 	public:
 		CArray<ushort>			m_visited [2];
@@ -105,8 +106,8 @@ class CAutomap {
 		void Init (void);
 		void InitColors (void);
 		bool InitBackground (void);
-		int Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles);
-		int Update (CAngleVector& vTAngles);
+		int Setup (int bPauseGame, fix& xEntryTime);
+		int Update (void);
 		void Draw (void);
 		void DoFrame (int nKeyCode, int bRadar);
 		void ClearVisited (void);

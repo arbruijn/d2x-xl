@@ -479,66 +479,67 @@ strcat (m_szLevelName, szExplored);
 int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
 
-int CAutomap::Setup (int bPauseGame, fix& xEntryTime, CAngleVector& vTAngles)
+int CAutomap::Setup (int bPauseGame, fix& xEntryTime)
 {
-		int		i;
-		fix		t1, t2;
-		CObject	*playerP;
+	int		i;
+	fix		t1, t2;
+	CObject	*playerP;
 
-if (!m_bDisplay++) {
+if (m_bDisplay < 0) {
+	m_bDisplay = 0;
 	if (m_bChaseCam = gameStates.render.bChaseCam)
 		SetChaseCam (0);
 	if (m_bFreeCam = gameStates.render.bFreeCam)
 		SetFreeCam (0);
-	}
-gameStates.ogl.nContrast = 8;
-InitColors ();
-if (!m_bRadar)
-	SlowMotionOff ();
-if (m_bRadar || 
-	 (IsMultiGame && 
-	  (gameStates.app.nFunctionMode == FMODE_GAME) && 
-	  (!gameStates.app.bEndLevelSequence)))
-	bPauseGame = 0;
-if (bPauseGame)
-	PauseGame ();
-if (m_bRadar || (gameStates.video.nDisplayMode > 1)) {
-	//GrSetMode (gameStates.video.nLastScreenMode);
-	if (m_bRadar) {
-		m_nWidth = CCanvas::Current ()->Width ();
-		m_nHeight = CCanvas::Current ()->Height ();
-		}
+
+	gameStates.ogl.nContrast = 8;
+	InitColors ();
+	if (!m_bRadar)
+		SlowMotionOff ();
+	if (m_bRadar || 
+		 (IsMultiGame && 
+		  (gameStates.app.nFunctionMode == FMODE_GAME) && 
+		  (!gameStates.app.bEndLevelSequence)))
+		bPauseGame = 0;
+	if (bPauseGame)
+		PauseGame ();
+	if (m_bRadar || (gameStates.video.nDisplayMode > 1)) {
+		//GrSetMode (gameStates.video.nLastScreenMode);
+		if (m_bRadar) {
+			m_nWidth = CCanvas::Current ()->Width ();
+			m_nHeight = CCanvas::Current ()->Height ();
+			}
+		else {
+			m_nWidth = screen.Canvas ()->Width ();
+			m_nHeight = screen.Canvas ()->Height ();
+			}
+		m_data.bHires = 1;
+		 }
 	else {
-		m_nWidth = screen.Canvas ()->Width ();
-		m_nHeight = screen.Canvas ()->Height ();
+		GrSetMode (SM (320, 400));
+		m_data.bHires = 0;
 		}
-	m_data.bHires = 1;
-	 }
-else {
-	GrSetMode (SM (320, 400));
-	m_data.bHires = 0;
-	}
-gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && m_data.bHires;
-if (!m_bRadar) {
-	CreateNameCanvas ();
-	paletteManager.ResetEffect ();
-	}
-//if (m_bRadar || !gameOpts->render.automap.bTextured)
-	BuildEdgeList ();
-if (m_bRadar)
-	m_data.nViewDist = ZOOM_DEFAULT;
-else if (!m_data.nViewDist)
-	m_data.nViewDist = ZOOM_DEFAULT;
-playerP = OBJECTS + LOCALPLAYER.nObject;
-m_data.viewMatrix = playerP->info.position.mOrient;
+	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && m_data.bHires;
+	if (!m_bRadar) {
+		CreateNameCanvas ();
+		paletteManager.ResetEffect ();
+		}
+	if (m_bRadar)
+		m_data.nViewDist = ZOOM_DEFAULT;
+	else if (!m_data.nViewDist)
+		m_data.nViewDist = ZOOM_DEFAULT;
+	playerP = OBJECTS + LOCALPLAYER.nObject;
+	m_data.viewMatrix = playerP->info.position.mOrient;
 
-vTAngles [PA] = PITCH_DEFAULT;
-vTAngles [HA] = 0;
-vTAngles [BA] = 0;
+	m_vTAngles [PA] = PITCH_DEFAULT;
+	m_vTAngles [HA] = 0;
+	m_vTAngles [BA] = 0;
 
-m_data.viewTarget = playerP->info.position.vPos;
-t1 = xEntryTime = TimerGetFixedSeconds ();
-t2 = t1;
+	m_data.viewTarget = playerP->info.position.vPos;
+	t1 = xEntryTime = TimerGetFixedSeconds ();
+	t2 = t1;
+	}
+BuildEdgeList ();
 //Fill in m_visited [0] from OBJECTS [LOCALPLAYER.nObject].nSegment
 if (m_bRadar) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
@@ -555,12 +556,13 @@ m_nSegmentLimit =
 m_nMaxSegsAway = 
 	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
 AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
-return bPauseGame;
+m_bDisplay++;
+return gameData.app.bGamePaused;
 }
 
 //------------------------------------------------------------------------------
 
-int CAutomap::Update (CAngleVector& vTAngles)
+int CAutomap::Update (void)
 {
 	CObject*		playerP = OBJECTS + LOCALPLAYER.nObject;
 	CFixMatrix	m;
@@ -568,18 +570,18 @@ int CAutomap::Update (CAngleVector& vTAngles)
 if (Controls [0].firePrimaryDownCount) {
 	// Reset orientation
 	m_data.nViewDist = ZOOM_DEFAULT;
-	vTAngles [PA] = PITCH_DEFAULT;
-	vTAngles [HA] = 0;
-	vTAngles [BA] = 0;
+	m_vTAngles [PA] = PITCH_DEFAULT;
+	m_vTAngles [HA] = 0;
+	m_vTAngles [BA] = 0;
 	m_data.viewTarget = playerP->info.position.vPos;
 	}
 if (Controls [0].forwardThrustTime)
 	m_data.viewTarget += m_data.viewMatrix.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
-vTAngles [PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
-vTAngles [HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
-vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+m_vTAngles [PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
+m_vTAngles [HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
+m_vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
-m = CFixMatrix::Create(vTAngles);
+m = CFixMatrix::Create (m_vTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
 	m_data.viewMatrix = playerP->info.position.mOrient * m;
 	m_data.viewTarget += m_data.viewMatrix.UVec () * (Controls [0].verticalThrustTime * SLIDE_SPEED);
@@ -770,7 +772,6 @@ return bDone;
 void CAutomap::DoFrame (int nKeyCode, int bRadar)
 {
 	int				bDone = 0;
-	CAngleVector	vTAngles;
 	int				nLeaveMode = 0;
 	int				bFirstTime = 1;
 	fix				xEntryTime;
@@ -784,7 +785,7 @@ void CAutomap::DoFrame (int nKeyCode, int bRadar)
 m_nMaxSegsAway = 0;
 m_nSegmentLimit = 1;
 m_bRadar = bRadar;
-bPauseGame = Setup (bPauseGame, xEntryTime, vTAngles);
+bPauseGame = Setup (bPauseGame, xEntryTime);
 bRedrawScreen = 0;
 if (bRadar) {
 	Draw ();
@@ -809,7 +810,7 @@ do {
 	bDone = GameFrame (bPauseGame, bDone);
 	redbook.CheckRepeat ();
 	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
-	Update (vTAngles);
+	Update ();
 	Draw ();
 	if (bFirstTime) {
 		bFirstTime = 0;
