@@ -323,7 +323,7 @@ do {
 			if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
 				sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 				*szMeshQual = *(TXT_MESH_QUALITY + 1);
-				renderOpts.nMeshQual = m.AddSlider (szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_O, HTX_MESH_QUALITY);
+				renderOpts.nMeshQual = m.AddSlider (szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 4, KEY_V, HTX_MESH_QUALITY);
 				}
 			else
 				renderOpts.nMeshQual = -1;

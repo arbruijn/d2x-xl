@@ -611,7 +611,8 @@ else
 	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
-fIntensity *= fIntensity;
+if (gameOpts->render.coronas.nStyle == 2)
+	fIntensity *= fIntensity;
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
@@ -670,13 +671,15 @@ fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 #if 1
-	if (gameStates.ogl.bUseDepthBlending && !automap.m_bDisplay && (CoronaStyle () == 2)) {
+	if (gameStates.ogl.bUseDepthBlending && (CoronaStyle () == 2)) {
+#	if !DBG
 		fSize *= 2;
 		if (fSize < 1)
 			fSize = 1;
 		else if (fSize > 20)
+#	endif
 			fSize = 20;
-		glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), (GLfloat) fSize);
+		glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), GLfloat (fSize));
 		}
 #endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
