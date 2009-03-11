@@ -89,7 +89,9 @@ SetPalette (NULL);
 DestroyBuffer ();
 DestroyFrames ();
 DestroyMask ();
-m_info.texP = NULL;
+ReleaseTexture ();
+if (m_info.texP != &m_info.texture)
+	m_info.texP = NULL;
 }
 
 //------------------------------------------------------------------------------

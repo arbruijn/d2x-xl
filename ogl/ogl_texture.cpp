@@ -91,6 +91,7 @@ void CTextureManager::Destroy (void)
 {
 	CTexture*	texP;
 
+Check ();
 OglDestroyDrawBuffer ();
 cameraManager.Destroy ();
 OglDeleteLists (&hBigSphere, 1);

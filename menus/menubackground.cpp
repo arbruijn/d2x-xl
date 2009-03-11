@@ -403,12 +403,12 @@ m_bValid = false;
 
 void CBackgroundManager::Destroy (void)
 {
-if (m_background [0])
-	m_background [0]->Destroy ();
-if (m_background [1])
-	m_background [1]->Destroy ();
 while (m_nDepth >= 0)
 	m_bg [m_nDepth--].Destroy ();
+if (m_background [1] && (m_background [1] != m_background [0]))
+	m_background [1]->Destroy ();
+if (m_background [0])
+	m_background [0]->Destroy ();
 Init ();
 }
 
