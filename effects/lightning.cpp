@@ -23,7 +23,7 @@
 #include "light.h"
 #include "dynlight.h"
 #include "ogl_lib.h"
-#include "u_mem.h"
+#include "automap.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -1189,6 +1189,13 @@ m_nObject = nObject;
 if (!(nLife && nLength && (nNodes > 4)))
 	return false;
 m_nLightnings = nLightnings;
+if (nObject >= 0)
+	m_nSegment [0] =
+	m_nSegment [1] = -1;
+else {
+	m_nSegment [0] = FindSegByPos (*vPos, -1, 1, 0);
+	m_nSegment [1] = FindSegByPos (*vEnd, -1, 1, 0);
+	}
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
 if (!m_lightnings.Create (nLightnings))
 	return false;
@@ -1360,7 +1367,19 @@ Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 
 void CLightningSystem::Render (int nStart, int nLightnings, int bDepthSort, int nThread)
 {
-	CLightning *lightningP = m_lightnings + nStart;
+if (automap.m_bDisplay && !gameStates.render.bAllVisited) {
+	if (m_nObject >= 0) {
+		if (!automap.m_visited [0][OBJECTS [m_nObject].Segment ()])
+			return;
+		}
+	else {
+		if (((m_nSegment [0] >= 0) && !automap.m_visited [0][m_nSegment [0]]) &&
+			 ((m_nSegment [1] >= 0) && !automap.m_visited [1][m_nSegment [0]]))
+			return;
+		}
+	}
+
+CLightning *lightningP = m_lightnings + nStart;
 
 if (nLightnings < 0)
 	nLightnings = m_nLightnings;

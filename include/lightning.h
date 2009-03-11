@@ -132,6 +132,7 @@ typedef struct tLightningSystem {
 	int						m_nId;
 	CArray<CLightning>	m_lightnings;
 	int						m_nLightnings;
+	short						m_nSegment [2];
 	short						m_nObject;
 	int						m_nKey [2];
 	time_t					m_tUpdate;

@@ -23,6 +23,7 @@
 #include "renderlib.h"
 #include "sparkeffect.h"
 #include "transprender.h"
+#include "automap.h"
 
 #define SPARK_MIN_PROB		16
 #define SPARK_FRAME_TIME	50
@@ -138,8 +139,9 @@ else {
 void CSparks::Render (void)
 {
 m_bUpdate = 1;
-for (int i = 0; i < m_nMaxSparks; i++)
-	m_sparks [i].Render ();
+if (!automap.m_bDisplay || gameStates.render.bAllVisited || automap.m_visited [0][m_nSegment])
+	for (int i = 0; i < m_nMaxSparks; i++)
+		m_sparks [i].Render ();
 }
 
 //-----------------------------------------------------------------------------
