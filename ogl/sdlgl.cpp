@@ -190,6 +190,13 @@ if (!OglVideoModeOK (w, h) ||
 	return 0;
 	}
 #endif
+const SDL_VideoInfo* viP = SDL_GetVideoInfo ();
+if (viP->video_mem) {
+	if (viP->video_mem < 256 * 1024 * 1024)
+		gameStates.render.nMaxTextureQuality = 1;
+	else if (viP->video_mem < 512 * 1024 * 1024)
+		gameStates.render.nMaxTextureQuality = 2;
+	}
 gameStates.ogl.nColorBits = 0;
 glGetIntegerv (GL_RED_BITS, &i);
 gameStates.ogl.nColorBits += i;
