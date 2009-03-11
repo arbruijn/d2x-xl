@@ -578,7 +578,7 @@ inline const float CFloatVector3::operator[] (size_t idx) const { return v [idx]
 
 inline bool CFloatVector3::IsZero (void) const { return ! (v [0] || v [1] || v [2]); }
 
-inline void CFloatVector3::SetZero (void) { memset (v, 0, 3*sizeof (float)); }
+inline void CFloatVector3::SetZero (void) { memset (v, 0, 3 * sizeof (float)); }
 
 inline void CFloatVector3::Set (const float f0, const float f1, const float f2) {
 	v [X] = f0; v [Y] = f1; v [Z] = f2;
@@ -693,14 +693,14 @@ inline const CFixVector CFixVector::Create (fix f0, fix f1, fix f2) {
 }
 
 inline const CFixVector CFixVector::Avg (const CFixVector& src0, const CFixVector& src1) {
-	return Create ( (src0 [X] + src1 [X]) / 2,
+	return Create ((src0 [X] + src1 [X]) / 2,
 	              (src0 [Y] + src1 [Y]) / 2,
 	              (src0 [Z] + src1 [Z]) / 2);
 }
 
 inline const CFixVector CFixVector::Avg (CFixVector& src0, CFixVector& src1,
 						   CFixVector& src2, CFixVector& src3) {
-	return Create ( (src0 [X] + src1 [X] + src2 [X] + src3 [X]) / 4,
+	return Create ((src0 [X] + src1 [X] + src2 [X] + src3 [X]) / 4,
 	 (src0 [Y] + src1 [Y] + src2 [Y] + src3 [Y]) / 4,
 	 (src0 [Z] + src1 [Z] + src2 [Z] + src3 [Z]) / 4);
 
@@ -758,7 +758,7 @@ inline const fix CFixVector::SSEDot (CFixVector *v0, CFixVector *v1) {
 			: "m" (v0h), "m" (v1h)
 			);
 	#endif
-		return (fix) ( (v0h [X] + v0h [Y] + v0h [Z]) * 65536);
+		return (fix) ((v0h [X] + v0h [Y] + v0h [Z]) * 65536);
 		}
 	#else
 	return 0;
@@ -766,14 +766,11 @@ inline const fix CFixVector::SSEDot (CFixVector *v0, CFixVector *v1) {
 }
 
 inline const fix CFixVector::Dot (const CFixVector& v0, const CFixVector& v1) {
-		return (fix) ( ( (double) v0 [X] * (double) v1 [X] +
-							 (double) v0 [Y] * (double) v1 [Y] +
-							 (double) v0 [Z] * (double) v1 [Z])
-						  / 65536.0);
+	return fix ((double (v0 [X]) * double (v1 [X]) + double (v0 [Y]) * double (v1 [Y]) + double (v0 [Z]) * double (v1 [Z])) / 65536.0);
 }
 
 inline const fix CFixVector::Dot (const fix x, const fix y, const fix z, const CFixVector& v) {
-	return (fix) ( ( (double) x * (double) v [X] + (double) y * (double) v [Y] + (double) z * (double) v [Z]) / 65536.0);
+	return fix ((double (x) * double (v [X]) + double (y) * double (v [Y]) + double (z) * double (v [Z])) / 65536.0);
 }
 
 inline const fix CFixVector::Normalize (CFixVector& v) {
@@ -858,7 +855,7 @@ inline void CFixVector::Set (const fix *vec) {
 
 inline bool CFixVector::IsZero (void) const { return ! (v [X] || v [Y] || v [Z]); }
 
-inline void CFixVector::SetZero (void) { memset (v, 0, 3*sizeof (fix)); }
+inline void CFixVector::SetZero (void) { memset (v, 0, 3 * sizeof (fix)); }
 
 inline const int CFixVector::Sign (void) const { return (v [X] * v [Y] * v [Z] < 0) ? -1 : 1; }
 
@@ -944,10 +941,10 @@ inline const CFixVector CFixVector::operator- (const CFloatVector& other) const 
 // to the plane given by the Normal n and a point p lieing in the plane, and store it in i.
 inline const CFixVector CFixVector::PlaneProjection (const CFixVector& n, const CFixVector& p) const {
 	CFixVector i;
-	double l = (double) -CFixVector::Dot (n, p) / (double) CFixVector::Dot (n, *this);
-	i [X] = (fix) (l * (double) v [X]);
-	i [Y] = (fix) (l * (double) v [Y]);
-	i [Z] = (fix) (l * (double) v [Z]);
+	double l = double (-CFixVector::Dot (n, p)) / double (CFixVector::Dot (n, *this));
+	i [X] = fix (l * double (v [X]));
+	i [Y] = fix (l * double (v [Y]));
+	i [Z] = fix (l * double (v [Z]));
 	return i;
 }
 
@@ -1126,7 +1123,7 @@ inline const CFixMatrix CFixMatrix::Create (CFixVector *v, fixang a) {
 	FixSinCos (a, &sinb, &cosb);
 	sinp = - (*v) [Y];
 	cosp = FixSqrt (I2X (1) - FixMul (sinp, sinp));
-	return Create (sinp, cosp, sinb, cosb, FixDiv ( (*v) [X], cosp), FixDiv ( (*v) [Z], cosp));
+	return Create (sinp, cosp, sinb, cosb, FixDiv ((*v) [X], cosp), FixDiv ((*v) [Z], cosp));
 }
 
 

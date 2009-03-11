@@ -567,8 +567,13 @@ else {
 		move_towards_segment_center (objP);
 		} 
 	} 
+#if DBG
+if (fq.startSeg == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
-fq.radP0				= I2X (1)/4;
+fq.radP0				=
+fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???

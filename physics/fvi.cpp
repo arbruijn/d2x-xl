@@ -923,7 +923,10 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 
 				//do the check recursively on the next CSegment.p.
 				nNewSeg = segP->m_children [nSide];
-				//PrintLog ("   check next seg (%d)\n", nNewSeg);
+#if DBG
+				if (nNewSeg == nDbgSeg)
+					nDbgSeg = nDbgSeg;
+#endif
 				for (i = 0; i < gameData.collisions.nSegsVisited && (nNewSeg != gameData.collisions.segsVisited [i]); i++)
 					;
 				if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
