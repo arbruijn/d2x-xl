@@ -171,14 +171,16 @@ if (!bmP->Buffer ())
 bmP->SetPalette (paletteManager.Game ());
 if (!gameOpts->ogl.bGlTexMerge) {
 	if (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) {
-//			return bmTop;
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 1);
 		bmP->AddFlags (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 		bmP->SetAvgColorIndex (bmTop->AvgColorIndex ());
 		}
 	else {
-//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->Buffer ());
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
+		if (bmBot->Flags () & bmTop->Flags () & BM_FLAG_TRANSPARENT)
+			bmP->AddFlags (BM_FLAG_TRANSPARENT);
+		else
+			bmP->DelFlags (BM_FLAG_TRANSPARENT);
 		bmP->AddFlags (bmBot->Flags () & (~BM_FLAG_RLE));
 		bmP->SetAvgColorIndex (bmBot->AvgColorIndex ());
 		}
@@ -188,7 +190,8 @@ cacheP->bmTop = bmTop;
 cacheP->bmBot = bmBot;
 cacheP->last_frame_used = gameData.app.nFrameCount;
 cacheP->nOrient = nOrient;
-bmTop->SetStatic (1);
+bmP->SetStatic (1);
+bmP->SetTranspType ((bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 return bmP;
 }
 
