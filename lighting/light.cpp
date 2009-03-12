@@ -981,9 +981,11 @@ do {
 	else if ((nSegment > p->nSegment) || ((nSegment == p->nSegment) && (nSide > p->nSide)))
 		l = m + 1;
 	else {
-		while ((p->nSegment == nSegment) && (p->nSide == nSide))
+		while ((p->nSegment == nSegment) && (p->nSide == nSide)) {
 			p--;
-		return (int) ((p + 1) - gameData.render.lights.deltaIndices);
+			m--;
+			}
+		return m;
 		}
 	} while (l <= r);
 return 0;
