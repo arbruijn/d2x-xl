@@ -27,6 +27,8 @@
 #include "hudmsgs.h"
 #include "maths.h"
 
+#define UNICODE_KEYS		0
+
 #define KEY_BUFFER_SIZE 16
 
 static ubyte bInstalled = 0;
@@ -55,12 +57,12 @@ static tKeyboard keyData;
 
 typedef struct tKeyProps {
 	const char*	pszKeyText;
-	ubyte			asciiValue;
-	ubyte			shiftedAsciiValue;
+	wchar_t		asciiValue;
+	wchar_t		shiftedAsciiValue;
 	SDLKey		sym;
 } tKeyProps;
 
-tKeyProps keyProperties [256] = {
+tKeyProps keyProperties [] = {
 { "",       255,    255,    (SDLKey) -1        },
 { "ESC",    255,    255,    SDLK_ESCAPE        },
 { "1",      '1',    '!',    SDLK_1             },
@@ -328,10 +330,12 @@ ubyte KeyToASCII (int keyCode)
 
 shifted = keyCode & KEY_SHIFTED;
 keyCode &= 0xFF;
-return shifted ? keyProperties [keyCode].shiftedAsciiValue : keyProperties [keyCode].asciiValue;
+return shifted ? static_cast<ubyte> (keyProperties [keyCode].shiftedAsciiValue) : static_cast<ubyte> (keyProperties [keyCode].asciiValue);
 }
 
 //------------------------------------------------------------------------------
+
+#if UNICODE_KEYS == 0
 
 static int KeyGerman (int i, tKeyInfo* keyP)
 {
@@ -386,30 +390,83 @@ else if (i == KEY_W)
 	return KEY_Z;
 else if (i == KEY_Z)
 	return KEY_W;
+else if (i == KEY_COMMA)
+	return KEY_SEMICOLON;
+else if (i == KEY_PERIOD)
+	return KEY_SEMICOLON;
+else if (i == KEY_SEMICOLON)
+	return KEY_M;
+else if (i == KEY_M)
+	return KEY_COMMA;
+else if (i == KEY_RBRACKET)
+	return KEY_EQUALS;
+else if (i == KEY_BACKSLASH)
+	return -1;
+else if (i == KEY_RAPOSTRO)
+	return -1;
+else if (i == KEY_SLASH)
+	return -1;
+else if (i == KEY_LBRACKET)
+	return -1;
+else if (i == KEY_SLASH)
+	return -1;
+else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
+	if (i == KEY_7)
+		return KEY_BACKSLASH;
+	else if (i == KEY_0)
+		return KEY_EQUALS;
+	else if (i == KEY_COMMA)
+		return KEY_SEMICOLON;
+	}
+else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
+	if ((i == KEY_4) || (i == KEY_5))
+		return KEY_LBRACKET;
+	else if ((i == KEY_MINUS) || (i == KEY_EQUALS))
+		return KEY_RBRACKET;
+	else if (i == KEY_0)
+		return KEY_EQUALS;
+	else if (i == KEY_8)
+		return KEY_BACKSLASH;
+	}
 return i;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
 void KeyHandler (SDL_KeyboardEvent *event)
 {
 	ubyte			state;
-	int			i, keyCode, event_key, keyState, nKeyboard = gameOpts->input.keyboard.nType;
+	int			keyCode, keyState, nKeyboard = gameOpts->input.keyboard.nType;
+	SDLKey		keySym;
+	wchar_t		unicode;
 	tKeyInfo*	keyP;
 	ubyte			temp;
 
-event_key = event->keysym.sym;
+keySym = event->keysym.sym;
+unicode = event->keysym.unicode;
 keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 
 //=====================================================
 //Here a translation from win keycodes to mac keycodes!
 //=====================================================
 
-for (i = 255; i >= 0; i--) {
+for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 	keyCode = i;
 	keyP = keyData.keys + keyCode;
 
-   if (keyProperties [i].sym == event_key)
+#if UNICODE_KEYS
+	if (unicode && (keyProperties [i].asciiValue != wchar_t (255))) {
+		if ((keyProperties [i].asciiValue == unicode) || (keyProperties [i].shiftedAsciiValue == unicode))
+			state = keyState;
+		else
+			state = keyP->lastState;
+		}
+   else if (keyProperties [i].sym == keySym)
+#else
+   if (keyProperties [i].sym == keySym)
+#endif
 		state = keyState;
 	else
 		state = keyP->lastState;
@@ -418,7 +475,7 @@ for (i = 255; i >= 0; i--) {
 		if (state) {
 			keyP->counter++;
 			gameStates.input.keys.nLastPressed = keyCode;
-			gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
+			gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();
 			keyP->flags = 0;
 			if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
 				keyP->flags |= ubyte (KEY_SHIFTED / 256);
@@ -455,7 +512,7 @@ for (i = 255; i >= 0; i--) {
 			keyP->timeHeldDown += TimerGetFixedSeconds () - keyP->timeWentDown;
 			}
 		}
-	if ((state && !keyP->lastState) || (state && keyP->lastState && (keyP->counter > 30) && (keyP->counter & 0x01))) {
+	if (state && (!keyP->lastState || ((keyP->counter > 30) && (keyP->counter & 1)))) {
 		if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
 			keyCode |= KEY_SHIFTED;
 		if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
@@ -472,6 +529,7 @@ for (i = 255; i >= 0; i--) {
 		if (temp >= KEY_BUFFER_SIZE) 
 			temp = 0;
 		if (temp != keyData.nKeyHead) {
+#if UNICODE_KEYS == 0
 			if (nKeyboard == 1) {
 				if (0 > (keyCode = KeyGerman (i, keyP)))
 					continue;
@@ -480,6 +538,7 @@ for (i = 255; i >= 0; i--) {
 				if (0 > (keyCode = KeyFrench (i, keyP)))
 					continue;
 				}
+#endif
 #if DBG
 			if ((i == KEY_LSHIFT) || (i == KEY_RSHIFT) || 
 				 (i == KEY_LALT) || (i == KEY_RALT) || 
@@ -512,14 +571,17 @@ void KeyInit (void)
 if (bInstalled) 
 	return;
 bInstalled = 1;
+#if UNICODE_KEYS
+SDL_EnableUNICODE (1);
+#endif
 gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();
 gameStates.input.keys.nBufferType = 1;
 gameStates.input.keys.bRepeat = 1;
 for(i = 0; i < 256; i++)
 	pszKeyText [i] = keyProperties [i].pszKeyText;
 // Clear the tKeyboard array
-KeyFlush();
-atexit(KeyClose);
+KeyFlush ();
+atexit (KeyClose);
 }
 
 //------------------------------------------------------------------------------
