@@ -341,6 +341,8 @@ else if (i == KEY_Z)
 	return KEY_Z;
 else if (i == KEY_SEMICOLON)
 	return -1;
+else if (i == KEY_EQUALS)
+	return KEY_RAPOSTRO;
 else if (i == KEY_RAPOSTRO)
 	return -1;
 else if (i == KEY_LBRACKET)
@@ -356,10 +358,10 @@ else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
 		return KEY_BACKSLASH;
 	else if (i == KEY_0)
 		return KEY_EQUALS;
+	else if (i == KEY_COMMA)
+		return KEY_SEMICOLON;
 	}
 else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
-	gameStates.input.keys.pressed [KEY_LCTRL] =
-	gameStates.input.keys.pressed [KEY_RALT] = 0;
 	if ((i == KEY_7) || (i == KEY_8))
 		return KEY_LBRACKET;
 	else if ((i == KEY_9) || (i == KEY_0))
@@ -368,9 +370,6 @@ else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pres
 		return KEY_EQUALS;
 	else if (i == KEY_MINUS)
 		return KEY_BACKSLASH;
-	else
-		gameStates.input.keys.pressed [KEY_LCTRL] =
-		gameStates.input.keys.pressed [KEY_RALT] = 1;
 	}
 return i;
 }
@@ -408,18 +407,8 @@ keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 
 for (i = 255; i >= 0; i--) {
 	keyCode = i;
-	if (nKeyboard == 1) {
-		if (0 > (keyCode = KeyGerman (i, keyP)))
-			continue;
-		}
-	else if (nKeyboard == 2) {
-		if (0 > (keyCode = KeyFrench (i, keyP)))
-			continue;
-		}
-	else
-		keyCode = i;
-
 	keyP = keyData.keys + keyCode;
+
    if (keyProperties [i].sym == event_key)
 		state = keyState;
 	else
@@ -483,6 +472,14 @@ for (i = 255; i >= 0; i--) {
 		if (temp >= KEY_BUFFER_SIZE) 
 			temp = 0;
 		if (temp != keyData.nKeyHead) {
+			if (nKeyboard == 1) {
+				if (0 > (keyCode = KeyGerman (i, keyP)))
+					continue;
+				}
+			else if (nKeyboard == 2) {
+				if (0 > (keyCode = KeyFrench (i, keyP)))
+					continue;
+				}
 #if DBG
 			if ((i == KEY_LSHIFT) || (i == KEY_RSHIFT) || 
 				 (i == KEY_LALT) || (i == KEY_RALT) || 
