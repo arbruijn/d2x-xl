@@ -190,7 +190,7 @@ do {
 	m.AddText ("", 0);
 	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
 	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_F, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
 	if (gameStates.app.bNostalgia < 2) {
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
 			m.AddText ("", 0);
