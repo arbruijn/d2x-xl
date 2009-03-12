@@ -411,10 +411,10 @@ else if (i == KEY_LBRACKET)
 else if (i == KEY_SLASH)
 	return -1;
 else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
-	if (i == KEY_7)
-		return KEY_BACKSLASH;
-	else if (i == KEY_0)
-		return KEY_EQUALS;
+	if (i == KEY_COMMA)
+		return KEY_PERIOD;
+	else if (i == KEY_PERIOD)
+		return KEY_SLASH;
 	else if (i == KEY_COMMA)
 		return KEY_SEMICOLON;
 	}
