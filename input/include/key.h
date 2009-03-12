@@ -84,11 +84,12 @@ extern uint KeyUpCount(int scancode);
 
 extern const char * pszKeyText[256];
 
-#define KEY_SHIFTED     0x100
-#define KEY_ALTED       0x200
-#define KEY_CTRLED      0x400
+#define KEY_SHIFTED     0x0100
+#define KEY_ALTED       0x0200
+#define KEY_CTRLED      0x0400
+#define KEYDBGGED			0x0800
 #define KEY_COMMAND     0x1000
-#define KEYDBGGED			0x800
+#define KEY_ALTGRED     0x2000
 
 // the following codes are indices in key.cpp::keyProperties which is containing the actual key scan codes
 // the input functions will scan keyProperties for the scan codes of keys that have been pressed and 
@@ -133,14 +134,14 @@ extern const char * pszKeyText[256];
 #define KEY_Z           0x2C
 
 #define KEY_MINUS       0x0C
-#define KEY_EQUAL       0x0D
+#define KEY_EQUALS      0x0D
 //Note: this is what we normally think of as slash:
 #define KEY_DIVIDE      0x35
 //Note: this is BACKslash:
 #define KEY_SLASH       0x2B
 #define KEY_COMMA       0x33
 #define KEY_PERIOD      0x34
-#define KEY_SEMICOL     0x27
+#define KEY_SEMICOLON   0x27
 
 #define KEY_LBRACKET    0x1A
 #define KEY_RBRACKET    0x1B
@@ -150,7 +151,7 @@ extern const char * pszKeyText[256];
 
 #define KEY_ESC         0x01
 #define KEY_ENTER       0x1C
-#define KEY_BACKSP      0x0E
+#define KEY_BACKSPACE   0x0E
 #define KEY_TAB         0x0F
 #define KEY_SPACEBAR    0x39
 

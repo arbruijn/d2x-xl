@@ -995,7 +995,7 @@ launchOption:
 			break;
 
 		#if DBG
-		case KEY_BACKSP:
+		case KEY_BACKSPACE:
 			if ((m_nChoice > - 1) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT_MENU))
 				Int3 (); 
 			break;
@@ -1224,7 +1224,7 @@ launchOption:
 
 			if (((Item (m_nChoice).m_nType == NM_TYPE_INPUT) || 
 				 ((Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 1))) && (oldChoice == m_nChoice)) {
-				if (m_nKey == KEY_LEFT || m_nKey == KEY_BACKSP || m_nKey == KEY_PAD4) {
+				if (m_nKey == KEY_LEFT || m_nKey == KEY_BACKSPACE || m_nKey == KEY_PAD4) {
 					if (Item (m_nChoice).m_value == -1) 
 						Item (m_nChoice).m_value = (int) strlen (Item (m_nChoice).m_text);
 					if (Item (m_nChoice).m_value > 0)
@@ -1321,8 +1321,8 @@ launchOption:
 					break;
 			 	case KEY_RIGHT:
 				case KEY_PAD6:
-			 	case KEY_EQUAL:
-				case KEY_EQUAL + KEY_SHIFTED:
+			 	case KEY_EQUALS:
+				case KEY_EQUALS + KEY_SHIFTED:
 				case KEY_PADPLUS:
 					Item (m_nChoice).m_value++;
 					break;
@@ -1332,7 +1332,7 @@ launchOption:
 					Item (m_nChoice).m_value += 10;
 					break;
 				case KEY_PAGEDOWN:
-				case KEY_BACKSP:
+				case KEY_BACKSPACE:
 				case KEY_PAD3:
 					Item (m_nChoice).m_value -= 10;
 					break;

@@ -470,7 +470,7 @@ switch (key) {
 		break;
 
 	case KEY_LEFT:
-	case KEY_BACKSP:
+	case KEY_BACKSPACE:
 	case KEY_PAD4:
 		if (gameData.multigame.msg.nIndex > 0)
 			gameData.multigame.msg.nIndex--;

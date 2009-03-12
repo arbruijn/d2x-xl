@@ -273,7 +273,7 @@ if (key == KEY_ESC) {
 	return;
 	}
 #if DBG
-	if (key == KEY_BACKSP)
+	if (key == KEY_BACKSPACE)
 		Int3 ();
 #endif
 }
@@ -308,7 +308,7 @@ else if (key == KEY_ESC) {
 	if (gameData.objs.consoleP->info.nFlags & OF_EXPLODING)
 		gameStates.app.bDeathSequenceAborted = 1;
 	}
-else if (key == KEY_BACKSP)  {
+else if (key == KEY_BACKSPACE)  {
 	gameStates.app.bDeathSequenceAborted  = 0;		// Clear because code above sets this for any key.
 	Int3 ();
 	}
@@ -336,8 +336,8 @@ switch (key) {
 		ShrinkWindow ();
 		break;
 
-	case KEY_SHIFTED + KEY_EQUAL:
-	case KEY_EQUAL:
+	case KEY_SHIFTED + KEY_EQUALS:
+	case KEY_EQUALS:
 		GrowWindow ();
 		break;
 
@@ -505,8 +505,8 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			bScreenChanged = 1;
 			break;
 
-		case KEY_SHIFTED + KEY_EQUAL:
-		case KEY_EQUAL:
+		case KEY_SHIFTED + KEY_EQUALS:
+		case KEY_EQUALS:
 			GrowWindow ();
 			bScreenChanged = 1;
 			break;
@@ -611,7 +611,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			songManager.Prev ();
 			break;
 
-		case KEY_EQUAL + KEY_ALTED:
+		case KEY_EQUALS + KEY_ALTED:
 			songManager.Next ();
 			break;
 
@@ -909,14 +909,14 @@ void HandleTestKey(int key)
 			MultiAddLifetimeKills ();
 			break;
 
-		case KEY_BACKSP:
-		case KEY_CTRLED + KEY_BACKSP:
-		case KEY_ALTED + KEY_BACKSP:
-		case KEY_ALTED + KEY_CTRLED + KEY_BACKSP:
-		case KEY_SHIFTED + KEY_BACKSP:
-		case KEY_SHIFTED + KEY_ALTED + KEY_BACKSP:
-		case KEY_SHIFTED + KEY_CTRLED + KEY_BACKSP:
-		case KEY_SHIFTED + KEY_CTRLED + KEY_ALTED + KEY_BACKSP:
+		case KEY_BACKSPACE:
+		case KEY_CTRLED + KEY_BACKSPACE:
+		case KEY_ALTED + KEY_BACKSPACE:
+		case KEY_ALTED + KEY_CTRLED + KEY_BACKSPACE:
+		case KEY_SHIFTED + KEY_BACKSPACE:
+		case KEY_SHIFTED + KEY_ALTED + KEY_BACKSPACE:
+		case KEY_SHIFTED + KEY_CTRLED + KEY_BACKSPACE:
+		case KEY_SHIFTED + KEY_CTRLED + KEY_ALTED + KEY_BACKSPACE:
 			Int3 ();
 			break;
 

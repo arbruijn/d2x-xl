@@ -618,7 +618,7 @@ while ((c = KeyInKey ())) {
 		MultiDoFrame();
 		switch (c) {
 #if DBG
-		case KEY_BACKSP: Int3 (); 
+		case KEY_BACKSPACE: Int3 (); 
 			break;
 #endif
 		case KEY_CTRLED + KEY_P:
@@ -668,7 +668,7 @@ while ((c = KeyInKey ())) {
 				}
 			break;
 
-		case KEY_EQUAL:
+		case KEY_EQUALS:
 		case KEY_PADPLUS:
 			if (m_nSegmentLimit < m_nMaxSegsAway) {
 				m_nSegmentLimit += ViewDistStep ();

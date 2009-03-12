@@ -428,7 +428,7 @@ while (!done) {
 			done = 1;
 			break;
 
-		case KEY_BACKSP:
+		case KEY_BACKSPACE:
 			if (!gameOpts->menus.bSmartFileSearch)
 				break;
 			if (nPatternLen > 0)
@@ -437,7 +437,7 @@ while (!done) {
 		default:
 			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
 				int nStart, ascii = KeyToASCII (m_nKey);
-				if ((m_nKey == KEY_BACKSP) || (ascii < 255)) {
+				if ((m_nKey == KEY_BACKSPACE) || (ascii < 255)) {
 					int cc, bFound = 0;
 					if (!gameOpts->menus.bSmartFileSearch) {
 						cc = m_nChoice + 1;
@@ -450,7 +450,7 @@ while (!done) {
 					else {
 						cc = 0;
 						nStart = 0;
-						if (m_nKey != KEY_BACKSP) {
+						if (m_nKey != KEY_BACKSPACE) {
 							szPattern [nPatternLen++] = tolower (ascii);
 							szPattern [nPatternLen] = '\0';
 							}

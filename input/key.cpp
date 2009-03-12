@@ -348,15 +348,18 @@ keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 //=====================================================
 
 for (i = 255; i >= 0; i--) {
+	keyCode = i;
 	if (gameOpts->input.keyboard.nType == 1) {
 		if (i == KEY_Z)
 			keyCode = KEY_Y;
 		else if (i == KEY_Z)
 			keyCode = KEY_Z;
-		else
-			keyCode = i;
 		}
 	else if (gameOpts->input.keyboard.nType == 2) {
+		if (i == KEY_SEMICOLON) {
+			keyP->flags |= ubyte (KEY_ALTGRED / 256);
+			continue;
+			}
 		if (i == KEY_A)
 			keyCode = KEY_Q;
 		else if (i == KEY_Q)
@@ -365,11 +368,30 @@ for (i = 255; i >= 0; i--) {
 			keyCode = KEY_Z;
 		else if (i == KEY_Z)
 			keyCode = KEY_W;
-		else
-			keyCode = i;
+		else if (i == KEY_LBRACKET)
+			continue;
+		else if (i == KEY_RBRACKET)
+			keyCode = KEY_EQUALS;
+		else if (i == KEY_SLASH)
+			keyCode = KEY_MINUS;
+		else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
+			if (i == KEY_7)
+				keyCode = KEY_SLASH;
+			else if (i == KEY_0)
+				keyCode = KEY_EQUALS;
+			}
+		else if (keyP->flags & ubyte (KEY_ALTGRED / 256)) {
+			if ((i == KEY_7) || (i == KEY_8))
+				keyCode = KEY_LBRACKET;
+			else if ((i == KEY_9) || (i == KEY_0))
+				keyCode = KEY_RBRACKET;
+			else if (i == KEY_0)
+				keyCode = KEY_EQUALS;
+			else if (i == KEY_MINUS)
+				keyCode = KEY_SLASH;
+			}
 		}
-	else
-		keyCode = i;
+
 	keyP = keyData.keys + keyCode;
    if (keyProperties [i].sym == event_key)
 		state = keyState;
@@ -383,11 +405,11 @@ for (i = 255; i >= 0; i--) {
 			gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			keyP->flags = 0;
 			if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
-				keyP->flags |= (ubyte) (KEY_SHIFTED / 256);
+				keyP->flags |= ubyte (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
-				keyP->flags |= (ubyte) (KEY_ALTED / 256);
+				keyP->flags |= ubyte (KEY_ALTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
-				keyP->flags |= (ubyte) (KEY_CTRLED / 256);
+				keyP->flags |= ubyte (KEY_CTRLED / 256);
 			}
 		}
 	else {
@@ -401,11 +423,11 @@ for (i = 255; i >= 0; i--) {
 			keyP->state = 1;
 			keyP->flags = 0;
 			if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
-				keyP->flags |= (ubyte) (KEY_SHIFTED / 256);
+				keyP->flags |= ubyte (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
-				keyP->flags |= (ubyte) (KEY_ALTED / 256);
+				keyP->flags |= ubyte (KEY_ALTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
-				keyP->flags |= (ubyte) (KEY_CTRLED / 256);
+				keyP->flags |= ubyte (KEY_CTRLED / 256);
 //				keyP->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			}
 		else {

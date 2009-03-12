@@ -54,9 +54,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #ifdef D2X_KEYS
 //added/removed by Victor Rachels for adding rebindable keys for these
 // KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0
-ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_MINUS, (ubyte) KEY_EQUAL, (ubyte) KEY_ALTED+KEY_F9 };
+ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_MINUS, (ubyte) KEY_EQUALS, (ubyte) KEY_ALTED+KEY_F9 };
 #else
-ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_0, (ubyte) KEY_1, (ubyte) KEY_2, (ubyte) KEY_3, (ubyte) KEY_4, (ubyte) KEY_5, (ubyte) KEY_6, (ubyte) KEY_7, (ubyte) KEY_8, (ubyte) KEY_9, (ubyte) KEY_0, (ubyte) KEY_MINUS, (ubyte) KEY_EQUAL, (ubyte) KEY_ALTED+KEY_F9 };
+ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_0, (ubyte) KEY_1, (ubyte) KEY_2, (ubyte) KEY_3, (ubyte) KEY_4, (ubyte) KEY_5, (ubyte) KEY_6, (ubyte) KEY_7, (ubyte) KEY_8, (ubyte) KEY_9, (ubyte) KEY_0, (ubyte) KEY_MINUS, (ubyte) KEY_EQUALS, (ubyte) KEY_ALTED+KEY_F9 };
 #endif
 
 #define TABLE_CREATION 0
@@ -1299,7 +1299,7 @@ for (;;) {
 		}
 	ocitem = nCurItem;
 	switch (k) {
-		case KEY_BACKSP:
+		case KEY_BACKSPACE:
 			Int3 ();
 			break;
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:

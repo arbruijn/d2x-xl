@@ -436,7 +436,7 @@ ReshowScores:
 				}
 			}
 			break;
-		case KEY_BACKSP:				
+		case KEY_BACKSPACE:				
 			Int3 (); 
 			k = 0; 
 			break;

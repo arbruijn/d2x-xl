@@ -138,7 +138,7 @@ else {
 			CursorRight ();
 			break;
 
-		case KEY_BACKSP:
+		case KEY_BACKSPACE:
 			CursorBSpace ();
 			break;
 

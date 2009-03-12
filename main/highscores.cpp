@@ -475,7 +475,7 @@ while (!done) {
 			SaveScreenShot (NULL, 0);
 			break;
 
-		case KEY_BACKSP:
+		case KEY_BACKSPACE:
 			Int3 ();
 			break;
 
