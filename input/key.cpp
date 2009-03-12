@@ -333,7 +333,7 @@ return shifted ? keyProperties [keyCode].shiftedAsciiValue : keyProperties [keyC
 
 //------------------------------------------------------------------------------
 
-static int KeyGerman (int i)
+static int KeyGerman (int i, tKeyInfo* keyP)
 {
 if (i == KEY_Z)
 	return KEY_Y;
@@ -371,7 +371,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-static int KeyFrench (int i)
+static int KeyFrench (int i, tKeyInfo* keyP)
 {
 if (i == KEY_A)
 	return KEY_Q;
@@ -403,11 +403,11 @@ keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 for (i = 255; i >= 0; i--) {
 	keyCode = i;
 	if (nKeyboard == 1) {
-		if (0 > (keyCode = KeyGerman (i)))
+		if (0 > (keyCode = KeyGerman (i, keyP)))
 			continue;
 		}
 	else if (nKeyboard == 2) {
-		if (0 > (keyCode = KeyGerman (i)))
+		if (0 > (keyCode = KeyFrench (i, keyP)))
 			continue;
 		}
 	else
