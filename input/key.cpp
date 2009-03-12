@@ -333,6 +333,59 @@ return shifted ? keyProperties [keyCode].shiftedAsciiValue : keyProperties [keyC
 
 //------------------------------------------------------------------------------
 
+static int KeyGerman (int i)
+{
+if (i == KEY_Z)
+	return KEY_Y;
+else if (i == KEY_Z)
+	return KEY_Z;
+else if (i == KEY_LBRACKET)
+	return -1;
+else if (i == KEY_RBRACKET)
+	return KEY_EQUALS;
+else if (i == KEY_SLASH)
+	return KEY_MINUS;
+else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
+	if (i == KEY_7)
+		return KEY_SLASH;
+	else if (i == KEY_0)
+		return KEY_EQUALS;
+	}
+else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
+	gameStates.input.keys.pressed [KEY_LCTRL] =
+	gameStates.input.keys.pressed [KEY_RALT] = 0;
+	if ((i == KEY_7) || (i == KEY_8))
+		return KEY_LBRACKET;
+	else if ((i == KEY_9) || (i == KEY_0))
+		return KEY_RBRACKET;
+	else if (i == KEY_0)
+		return KEY_EQUALS;
+	else if (i == KEY_MINUS)
+		return KEY_SLASH;
+	else
+		gameStates.input.keys.pressed [KEY_LCTRL] =
+		gameStates.input.keys.pressed [KEY_RALT] = 1;
+	}
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+static int KeyFrench (int i)
+{
+if (i == KEY_A)
+	return KEY_Q;
+else if (i == KEY_Q)
+	return KEY_A;
+else if (i == KEY_W)
+	return KEY_Z;
+else if (i == KEY_Z)
+	return KEY_W;
+return i;
+}
+
+//------------------------------------------------------------------------------
+
 void KeyHandler (SDL_KeyboardEvent *event)
 {
 	ubyte			state;
@@ -350,48 +403,15 @@ keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 for (i = 255; i >= 0; i--) {
 	keyCode = i;
 	if (nKeyboard == 1) {
-		if (i == KEY_Z)
-			keyCode = KEY_Y;
-		else if (i == KEY_Z)
-			keyCode = KEY_Z;
-		else if (i == KEY_LBRACKET)
+		if (0 > (keyCode = KeyGerman (i)))
 			continue;
-		else if (i == KEY_RBRACKET)
-			keyCode = KEY_EQUALS;
-		else if (i == KEY_SLASH)
-			keyCode = KEY_MINUS;
-		else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
-			if (i == KEY_7)
-				keyCode = KEY_SLASH;
-			else if (i == KEY_0)
-				keyCode = KEY_EQUALS;
-			}
-		else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {
-			gameStates.input.keys.pressed [KEY_LCTRL] =
-			gameStates.input.keys.pressed [KEY_RALT] = 0;
-			if ((i == KEY_7) || (i == KEY_8))
-				keyCode = KEY_LBRACKET;
-			else if ((i == KEY_9) || (i == KEY_0))
-				keyCode = KEY_RBRACKET;
-			else if (i == KEY_0)
-				keyCode = KEY_EQUALS;
-			else if (i == KEY_MINUS)
-				keyCode = KEY_SLASH;
-			else
-				gameStates.input.keys.pressed [KEY_LCTRL] =
-				gameStates.input.keys.pressed [KEY_RALT] = 1;
-			}
 		}
 	else if (nKeyboard == 2) {
-		if (i == KEY_A)
-			keyCode = KEY_Q;
-		else if (i == KEY_Q)
-			keyCode = KEY_A;
-		else if (i == KEY_W)
-			keyCode = KEY_Z;
-		else if (i == KEY_Z)
-			keyCode = KEY_W;
+		if (0 > (keyCode = KeyGerman (i)))
+			continue;
 		}
+	else
+		keyCode = i;
 
 	keyP = keyData.keys + keyCode;
    if (keyProperties [i].sym == event_key)
@@ -409,7 +429,7 @@ for (i = 255; i >= 0; i--) {
 				keyP->flags |= ubyte (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 				keyP->flags |= ubyte (KEY_ALTED / 256);
-			if (((nKeyboard != 1) && gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
+			if ((gameStates.input.keys.pressed [KEY_LCTRL] && (nKeyboard != 1)) || gameStates.input.keys.pressed [KEY_RCTRL])
 				keyP->flags |= ubyte (KEY_CTRLED / 256);
 			}
 		}
