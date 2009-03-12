@@ -190,7 +190,7 @@ else if (objP->info.nType == OBJ_REACTOR) {
 	}
 else if (objP->info.nType == OBJ_PLAYER) {
 	if (objP == gameData.objs.consoleP)	
-		InitPlayerObject();
+		InitPlayerObject ();
 	else
 		if (objP->info.renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
 			objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;

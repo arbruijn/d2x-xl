@@ -221,8 +221,6 @@ FORALL_OBJS (objP, i)
 
 void ResetPlayerObject (void)
 {
-	int i;
-
 //Init physics
 gameData.objs.consoleP->mType.physInfo.velocity.SetZero ();
 gameData.objs.consoleP->mType.physInfo.thrust.SetZero ();
@@ -237,8 +235,8 @@ gameData.objs.consoleP->info.renderType = RT_POLYOBJ;
 gameData.objs.consoleP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
 gameData.objs.consoleP->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
 gameData.objs.consoleP->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
-for (i = 0; i < MAX_SUBMODELS; i++)
-	gameData.objs.consoleP->rType.polyObjInfo.animAngles[i].SetZero ();
+for (int i = 0; i < MAX_SUBMODELS; i++)
+	gameData.objs.consoleP->rType.polyObjInfo.animAngles [i].SetZero ();
 // Clear misc
 gameData.objs.consoleP->info.nFlags = 0;
 }

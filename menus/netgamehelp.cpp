@@ -112,6 +112,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		}
 	else if (!gameOpts->multi.bNoRankings) {
 		sprintf (szText, TXT_EFF_LIFETIME, eff); 
+	m.AddText (szText);
 	if (eff < 60)
 		sprintf (szText, TXT_EFF_INFLUENCE, GT(546 + eff / 10)); 
 	else

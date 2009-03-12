@@ -393,6 +393,12 @@ if (bNewGame) {
 	playerP->nCloaks =
 	playerP->nInvuls = 0;
 	ResetShipData ();
+	if (IsMultiGame && !IsCoopGame) {
+		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
+			playerP->flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
+		else
+			playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
+		}
 	if (nPlayer = gameData.multiplayer.nLocalPlayer)
 		gameStates.app.bFirstSecretVisit = 1;
 	}
@@ -412,8 +418,7 @@ else {
 	playerP->hostages.nOnBoard = 0;
 	if (!bSecret) {
 		InitAmmoAndEnergy ();
-		playerP->flags &=
-			~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_FULLMAP | KEY_BLUE | KEY_RED | KEY_GOLD);
+		playerP->flags &=	~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_FULLMAP | KEY_BLUE | KEY_RED | KEY_GOLD);
 		playerP->cloakTime = 0;
 		playerP->invulnerableTime = 0;
 		if (IsMultiGame && !IsCoopGame) {
@@ -544,7 +549,6 @@ if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)
 SetFunctionMode (FMODE_MENU);
 gameData.app.nGameMode = GM_GAME_OVER;
 longjmp (gameExitPoint, 0);		// Exit out of game loop
-
 }
 
 //------------------------------------------------------------------------------
@@ -563,7 +567,6 @@ if (LOCALPLAYER.timeTotal > I2X (3600)) {
 	LOCALPLAYER.hoursTotal++;
 	}
 }
-
 
 //------------------------------------------------------------------------------
 
