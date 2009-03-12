@@ -981,11 +981,13 @@ do {
 	else if ((nSegment > p->nSegment) || ((nSegment == p->nSegment) && (nSide > p->nSide)))
 		l = m + 1;
 	else {
+		if (!m)
+			return 0;
 		while ((p->nSegment == nSegment) && (p->nSide == nSide)) {
 			p--;
 			m--;
 			}
-		return m;
+		return m + 1;
 		}
 	} while (l <= r);
 return 0;
