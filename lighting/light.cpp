@@ -970,7 +970,7 @@ if (!gameData.render.lights.deltaIndices.Buffer ())
 
 int	m,
 		l = 0,
-		r = gameData.render.lights.nStatic;
+		r = gameData.render.lights.nStatic - 1;
 
 CLightDeltaIndex* p;
 do {
@@ -1008,8 +1008,15 @@ if ((dir < 0) && lightManager.Delete (nSegment, nSide, -1))
 if (lightManager.Toggle (nSegment, nSide, -1, dir >= 0) >= 0)
 	return;
 if (gameData.render.lights.deltaIndices.Buffer ()) {
-	i = FindDLIndex (nSegment, nSide);
-	for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.nStatic; i++, dliP++) {
+	if (0 > (i = FindDLIndex (nSegment, nSide))) {
+#if DBG
+		FindDLIndex (nSegment, nSide);
+#endif
+		return;
+		}
+	if (!(dliP = gameData.render.lights.deltaIndices + i))
+		return;
+	for (; i < gameData.render.lights.nStatic; i++, dliP++) {
 		iSeg = dliP->nSegment;
 		iSide = dliP->nSide;
 #if !DBG
