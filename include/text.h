@@ -1899,13 +1899,13 @@ void LoadGameTexts(void);
 #define TXT_ENABLE_MODS					GT(1102)
 #define TXT_3D_SHIELDS					GT(1103)
 #define TXT_VSYNC							GT(1104)
+#define TXT_QWERTY						GT(1105)
+#define TXT_QWERTZ						GT(1106)
+#define TXT_AZERTY						GT(1107)
+#define TXT_KEYBOARD_LAYOUT			GT(1108)
 
 #if 0
 
-#define TXT_					GT(1105)
-#define TXT_					GT(1106)
-#define TXT_					GT(1107)
-#define TXT_					GT(1108)
 #define TXT_					GT(1109)
 #define TXT_					GT(1110)
 #define TXT_					GT(1111)
@@ -2507,10 +2507,10 @@ void LoadGameTexts(void);
 #define HTX_CHECK_PORTS					HT(388)			
 #define HTX_ENABLE_MODS					HT(389)			
 #define HTX_3D_SHIELDS					HT(390)			
+#define HTX_KEYBOARD_LAYOUT			HT(391)			
 
 #if 0
 
-#define HTX_						HT(391)			
 #define HTX_						HT(392)			
 #define HTX_						HT(393)			
 #define HTX_						HT(394)			

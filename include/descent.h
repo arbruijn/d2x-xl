@@ -478,6 +478,7 @@ typedef struct tTrackIRInputOptions {
 //------------------------------------------------------------------------------
 
 typedef struct tKeyboardInputOptions {
+	int nType;
 	int bUse;
 	int nRamp;
 	int bRamp [3];

@@ -89,9 +89,7 @@ tKeyProps keyProperties [256] = {
 { "P",      'p',    'P',    SDLK_p             },
 { "[",      '[',    '{',    SDLK_LEFTBRACKET   },
 { "]",      ']',    '}',    SDLK_RIGHTBRACKET  },
-//edited 06/08/99 Matt Mueller - set to correct text
 { "�",      255,    255,    SDLK_RETURN        },
-//end edit -MM
 { "LCTRL",  255,    255,    SDLK_LCTRL         },
 { "A",      'a',    'A',    SDLK_a             },
 { "S",      's',    'S',    SDLK_s             },
@@ -102,13 +100,9 @@ tKeyProps keyProperties [256] = {
 { "J",      'j',    'J',    SDLK_j             },
 { "K",      'k',    'K',    SDLK_k             },
 { "L",      'l',    'L',    SDLK_l             },
-//edited 06/08/99 Matt Mueller - set to correct sym
 { ";",      ';',    ':',    SDLK_SEMICOLON     },
-//end edit -MM
 { "'",      '\'',   '"',    SDLK_QUOTE         },
-//edited 06/08/99 Matt Mueller - set to correct sym
 { "`",      '`',    '~',    SDLK_BACKQUOTE     },
-//end edit -MM
 { "LSHFT",  255,    255,    SDLK_LSHIFT        },
 { "\\",     '\\',   '|',    SDLK_BACKSLASH     },
 { "Z",      'z',    'Z',    SDLK_z             },
@@ -118,11 +112,9 @@ tKeyProps keyProperties [256] = {
 { "B",      'b',    'B',    SDLK_b             },
 { "N",      'n',    'N',    SDLK_n             },
 { "M",      'm',    'M',    SDLK_m             },
-//edited 06/08/99 Matt Mueller - set to correct syms
 { ",",      ',',    '<',    SDLK_COMMA			  },
 { ".",      '.',    '>',    SDLK_PERIOD		  },
 { "/",      '/',    '?',    SDLK_SLASH			  },
-//end edit -MM
 { "RSHFT",  255,    255,    SDLK_RSHIFT		  },
 { "PAD*",   '*',    255,    SDLK_KP_MULTIPLY   },
 { "LALT",   255,    255,    SDLK_LALT          },
@@ -166,9 +158,7 @@ tKeyProps keyProperties [256] = {
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
-//edited 06/08/99 Matt Mueller - add pause ability
-{ "PAUSE",       255,    255,    SDLK_PAUSE    },
-//end edit -MM
+{ "PAUSE",  255,    255,    SDLK_PAUSE			  },
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
@@ -226,13 +216,9 @@ tKeyProps keyProperties [256] = {
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
-{ "",       255,    255,    (SDLKey) -1        },
-//edited 06/08/99 Matt Mueller - set to correct pszKeyText
-{ "PAD�",   255,    255,    SDLK_KP_ENTER      },
-//end edit -MM
-//edited 06/08/99 Matt Mueller - set to correct sym
+{ "",			255,    255,    (SDLKey) -1        },
+{ "PAD�",	255,    255,    SDLK_KP_ENTER      },
 { "RCTRL",  255,    255,    SDLK_RCTRL         },
-//end edit -MM
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
@@ -258,9 +244,7 @@ tKeyProps keyProperties [256] = {
 { "",       255,    255,    (SDLKey) -1        },
 { "PAD/",   255,    255,    SDLK_KP_DIVIDE     },
 { "",       255,    255,    (SDLKey) -1        },
-//edited 06/08/99 Matt Mueller - add printscreen ability
 { "PRSCR",  255,    255,    SDLK_PRINT         },
-//end edit -MM
 { "RALT",   255,    255,    SDLK_RALT          },
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
@@ -277,22 +261,14 @@ tKeyProps keyProperties [256] = {
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
 { "HOME",   255,    255,    SDLK_HOME          },
-//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "UP",		255,    255,    SDLK_UP            },
-//end edit -MM
 { "PGUP",   255,    255,    SDLK_PAGEUP        },
 { "",       255,    255,    (SDLKey) -1        },
-//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "LEFT",	255,    255,    SDLK_LEFT          },
-//end edit -MM
 { "",       255,    255,    (SDLKey) -1        },
-//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "RIGHT",	255,    255,    SDLK_RIGHT         },
-//end edit -MM
 { "",       255,    255,    (SDLKey) -1        },
-//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "END",    255,    255,    SDLK_END           },
-//end edit -MM
 { "DOWN",	255,    255,    SDLK_DOWN          },
 { "PGDN",	255,    255,    SDLK_PAGEDOWN      },
 { "INS",		255,    255,    SDLK_INSERT        },
@@ -372,7 +348,28 @@ keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 //=====================================================
 
 for (i = 255; i >= 0; i--) {
-	keyCode = i;
+	if (gameOpts->input.keyboard.nType == 1) {
+		if (i == KEY_Z)
+			keyCode = KEY_Y;
+		else if (i == KEY_Z)
+			keyCode = KEY_Z;
+		else
+			keyCode = i;
+		}
+	else if (gameOpts->input.keyboard.nType == 2) {
+		if (i == KEY_A)
+			keyCode = KEY_Q;
+		else if (i == KEY_Q)
+			keyCode = KEY_A;
+		else if (i == KEY_W)
+			keyCode = KEY_Z;
+		else if (i == KEY_Z)
+			keyCode = KEY_W;
+		else
+			keyCode = i;
+		}
+	else
+		keyCode = i;
 	keyP = keyData.keys + keyCode;
    if (keyProperties [i].sym == event_key)
 		state = keyState;

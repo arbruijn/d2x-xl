@@ -140,7 +140,7 @@ void MiscellaneousMenu (void)
 #if 0
 			optFastResp, 
 #endif
-			optHeadlight, optEscort, optUseMacros,	optAutoLevel, optEnableMods,
+			optHeadlight, optEscort, optUseMacros,	optAutoLevel, optEnableMods, optKeyboard,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
@@ -166,7 +166,7 @@ do {
 		optAutoLevel = -1;
 	optEscort = m.AddCheck (TXT_ESCORT_KEYS, gameOpts->gameplay.bEscortHotKeys, KEY_K, HTX_MISC_ESCORTKEYS);
 #if 0
-	optFastResp = m.AddCheck (TXT_FAST_RESPAWN, gameOpts->gameplay.bFastRespawn, KEY_F, HTX_MISC_FASTRESPAWN);
+	optFastResp = m.AddCheck (TXT_FAST_RESPAWN, gameOpts->gameplay.bFastRespawn, KEY_W, HTX_MISC_FASTRESPAWN);
 #endif
 	optUseMacros = m.AddCheck (TXT_USE_MACROS, gameOpts->multi.bUseMacros, KEY_M, HTX_MISC_USEMACROS);
 	if (!(gameStates.app.bNostalgia || gameStates.app.bGameRunning)) {
@@ -187,6 +187,10 @@ do {
 		miscOpts.nExpertMode = m.AddCheck (TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
 		optDemoFmt = m.AddCheck (TXT_OLD_DEMO_FORMAT, gameOpts->demo.bOldFormat, KEY_C, HTX_OLD_DEMO_FORMAT);
 		}
+	m.AddText ("", 0);
+	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_F, HTX_KEYBOARD_LAYOUT);
 	if (gameStates.app.bNostalgia < 2) {
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
 			m.AddText ("", 0);
@@ -216,6 +220,11 @@ do {
 		}
 	gameOpts->gameplay.bEscortHotKeys = m [optEscort].m_value;
 	gameOpts->multi.bUseMacros = m [optUseMacros].m_value;
+	for (int j = 0; j < 3; j++)
+		if (m [optKeyboard + j].m_value != 0) {
+			gameOpts->input.keyboard.nType = j;
+			break;
+			}
 	if (!gameStates.app.bNostalgia) {
 		gameOpts->app.bExpertMode = m [miscOpts.nExpertMode].m_value;
 		gameOpts->demo.bOldFormat = m [optDemoFmt].m_value;

@@ -1848,6 +1848,10 @@ const char *defaultGameTexts [][2] = {
  {"M~Ods aktivieren", "enable m~Ods"},
  {"3D-Sch~Ild-Powerups", "3D Sh~Ield Powerups"},
  {"Bildaufbau: V-Sync", "Framecap: V-Sync"},
+ {"QWERTY (~Englisch)", "QWERTY (~English)"},
+ {"QWERTZ (~Deutsch)", "QWERTY (~German)"},
+ {"AZERTY (~Franzoesisch)", "AZERTY (~French)"},
+ {"Tastaturlayout", "Keyboard layout"},
 #if 0
  {"", ""},
 #endif
@@ -2516,6 +2520,7 @@ const char *defaultHelpTexts [][2] = {
   "If checked, HUD display windows are wider too for\nwidescreen resolutions."},
  {"Wenn angekreuzt werden Mod-Daten verwendet;\nandernfalls werden sie ignoriert.", "If checked mod data will be used;\notherwise it will be ignored."},
  {"Wenn angekreuzt werden Schild-Powerups dreidimensional dargestellt.", "If check shield powerups will be rendered in 3D."},
+ {"Hier kann das Tastaturlayout ausgewaehlt werden.", "Chose your keyboard layout here."},
 #if 0
  {"", ""},
 #endif
