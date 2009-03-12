@@ -2746,6 +2746,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = io/macosx/Info.plist;
@@ -2756,6 +2757,7 @@
 					SDL_mixer,
 				);
 				PRODUCT_NAME = "d2x-xl";
+				STRIP_INSTALLED_PRODUCT = YES;
 				USER_HEADER_SEARCH_PATHS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
