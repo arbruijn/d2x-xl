@@ -167,6 +167,7 @@ extern const char * pszKeyText[256];
 
 #define KEY_LCTRL       0x1D
 #define KEY_RCTRL       0x9D
+#define KEY_ALTGR			0x54
 
 #define KEY_F1          0x3B
 #define KEY_F2          0x3C

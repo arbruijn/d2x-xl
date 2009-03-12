@@ -145,7 +145,7 @@ tKeyProps keyProperties [256] = {
 { "PAD3",   255,    255,    SDLK_KP3           },
 { "PAD0",   255,    255,    SDLK_KP0           },
 { "PAD.",   255,    255,    SDLK_KP_PERIOD     },
-{ "",       255,    255,    (SDLKey) -1        },
+{ "ALTGR",  255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
 { "",       255,    255,    (SDLKey) -1        },
 { "F11",    255,    255,    SDLK_F11           },
@@ -336,7 +336,7 @@ return shifted ? keyProperties [keyCode].shiftedAsciiValue : keyProperties [keyC
 void KeyHandler (SDL_KeyboardEvent *event)
 {
 	ubyte			state;
-	int			i, keyCode, event_key, keyState;
+	int			i, keyCode, event_key, keyState, nKeyboard = gameOpts->input.keyboard.nType;
 	tKeyInfo*	keyP;
 	ubyte			temp;
 
@@ -349,25 +349,11 @@ keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 
 for (i = 255; i >= 0; i--) {
 	keyCode = i;
-	if (gameOpts->input.keyboard.nType == 1) {
+	if (nKeyboard == 1) {
 		if (i == KEY_Z)
 			keyCode = KEY_Y;
 		else if (i == KEY_Z)
 			keyCode = KEY_Z;
-		}
-	else if (gameOpts->input.keyboard.nType == 2) {
-		if (i == KEY_SEMICOLON) {
-			keyP->flags |= ubyte (KEY_ALTGRED / 256);
-			continue;
-			}
-		if (i == KEY_A)
-			keyCode = KEY_Q;
-		else if (i == KEY_Q)
-			keyCode = KEY_A;
-		else if (i == KEY_W)
-			keyCode = KEY_Z;
-		else if (i == KEY_Z)
-			keyCode = KEY_W;
 		else if (i == KEY_LBRACKET)
 			continue;
 		else if (i == KEY_RBRACKET)
@@ -380,7 +366,9 @@ for (i = 255; i >= 0; i--) {
 			else if (i == KEY_0)
 				keyCode = KEY_EQUALS;
 			}
-		else if (keyP->flags & ubyte (KEY_ALTGRED / 256)) {
+		else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {
+			gameStates.input.keys.pressed [KEY_LCTRL] =
+			gameStates.input.keys.pressed [KEY_RALT] = 0;
 			if ((i == KEY_7) || (i == KEY_8))
 				keyCode = KEY_LBRACKET;
 			else if ((i == KEY_9) || (i == KEY_0))
@@ -389,7 +377,20 @@ for (i = 255; i >= 0; i--) {
 				keyCode = KEY_EQUALS;
 			else if (i == KEY_MINUS)
 				keyCode = KEY_SLASH;
+			else
+				gameStates.input.keys.pressed [KEY_LCTRL] =
+				gameStates.input.keys.pressed [KEY_RALT] = 1;
 			}
+		}
+	else if (nKeyboard == 2) {
+		if (i == KEY_A)
+			keyCode = KEY_Q;
+		else if (i == KEY_Q)
+			keyCode = KEY_A;
+		else if (i == KEY_W)
+			keyCode = KEY_Z;
+		else if (i == KEY_Z)
+			keyCode = KEY_W;
 		}
 
 	keyP = keyData.keys + keyCode;
@@ -408,7 +409,7 @@ for (i = 255; i >= 0; i--) {
 				keyP->flags |= ubyte (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 				keyP->flags |= ubyte (KEY_ALTED / 256);
-			if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
+			if (((nKeyboard != 1) && gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
 				keyP->flags |= ubyte (KEY_CTRLED / 256);
 			}
 		}
@@ -426,7 +427,7 @@ for (i = 255; i >= 0; i--) {
 				keyP->flags |= ubyte (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 				keyP->flags |= ubyte (KEY_ALTED / 256);
-			if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
+			if (((nKeyboard != 1) && gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
 				keyP->flags |= ubyte (KEY_CTRLED / 256);
 //				keyP->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			}
@@ -444,7 +445,7 @@ for (i = 255; i >= 0; i--) {
 			keyCode |= KEY_SHIFTED;
 		if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 			keyCode |= KEY_ALTED;
-		if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
+		if (((nKeyboard != 1) && gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
 			keyCode |= KEY_CTRLED;
 		if (gameStates.input.keys.pressed [KEY_LCMD] || gameStates.input.keys.pressed [KEY_RCMD])
 			keyCode |= KEY_COMMAND;
