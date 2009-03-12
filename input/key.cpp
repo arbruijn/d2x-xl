@@ -339,15 +339,21 @@ if (i == KEY_Z)
 	return KEY_Y;
 else if (i == KEY_Z)
 	return KEY_Z;
+else if (i == KEY_SEMICOLON)
+	return -1;
+else if (i == KEY_RAPOSTRO)
+	return -1;
 else if (i == KEY_LBRACKET)
 	return -1;
 else if (i == KEY_RBRACKET)
 	return KEY_EQUALS;
 else if (i == KEY_SLASH)
 	return KEY_MINUS;
+else if (i == KEY_BACKSLASH)
+	return KEY_RAPOSTRO;
 else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
 	if (i == KEY_7)
-		return KEY_SLASH;
+		return KEY_BACKSLASH;
 	else if (i == KEY_0)
 		return KEY_EQUALS;
 	}
@@ -361,7 +367,7 @@ else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pres
 	else if (i == KEY_0)
 		return KEY_EQUALS;
 	else if (i == KEY_MINUS)
-		return KEY_SLASH;
+		return KEY_BACKSLASH;
 	else
 		gameStates.input.keys.pressed [KEY_LCTRL] =
 		gameStates.input.keys.pressed [KEY_RALT] = 1;
@@ -477,7 +483,14 @@ for (i = 255; i >= 0; i--) {
 		if (temp >= KEY_BUFFER_SIZE) 
 			temp = 0;
 		if (temp != keyData.nKeyHead) {
-			keyData.keyBuffer [keyData.nKeyTail] = keyCode;
+#if DBG
+			if ((i == KEY_LSHIFT) || (i == KEY_RSHIFT) || 
+				 (i == KEY_LALT) || (i == KEY_RALT) || 
+				 (i == KEY_RCTRL) || (i == KEY_LCTRL))
+				keyData.keyBuffer [keyData.nKeyTail] = keyCode;
+			else
+#endif
+				keyData.keyBuffer [keyData.nKeyTail] = keyCode;
 			keyData.xTimePressed [keyData.nKeyTail] = gameStates.input.keys.xLastPressTime;
 			keyData.nKeyTail = temp;
 			}

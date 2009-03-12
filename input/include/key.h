@@ -136,9 +136,9 @@ extern const char * pszKeyText[256];
 #define KEY_MINUS       0x0C
 #define KEY_EQUALS      0x0D
 //Note: this is what we normally think of as slash:
-#define KEY_DIVIDE      0x35
+#define KEY_SLASH       0x35
 //Note: this is BACKslash:
-#define KEY_SLASH       0x2B
+#define KEY_BACKSLASH   0x2B
 #define KEY_COMMA       0x33
 #define KEY_PERIOD      0x34
 #define KEY_SEMICOLON   0x27
