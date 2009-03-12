@@ -444,12 +444,14 @@ int CAudioChannel::Start (short nSound, int nSoundClass, fix nVolume, int nPan, 
 								  const char *pszWAV, CFixVector* vPos)
 {
 	CSoundSample*	soundP = NULL;
-	int			bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
+	int				bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
 
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
 		return -1;
-	soundP = gameData.pig.sound.sounds [gameStates.sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
+	if (!gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound])
+		return -1;
+	soundP = gameData.pig.sound.sounds [] +  % gameData.pig.sound.nSoundFiles [gameStates.sound.bD1Sound];
 	if (!(soundP->data [soundP->bCustom].Buffer () && soundP->nLength [soundP->bCustom]))
 		return -1;
 	}
