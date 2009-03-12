@@ -256,8 +256,8 @@ return bUseJoystick;
 
 void ControlsSetFCSButton (int btn, int button)
 {
-	int state, timeDown, upcount, downcount;
-	state = timeDown = upcount = downcount = 0;
+	int state, timeDown, upCount, downCount;
+	state = timeDown = upCount = downCount = 0;
 
 if (JoyGetButtonState (btn)) {
 	if (btn == button) {
@@ -265,16 +265,16 @@ if (JoyGetButtonState (btn)) {
 		timeDown = gameData.time.xFrame;
 		} 
 	else
-		upcount=1;
+		upCount=1;
 	}
 else {
 	if (btn == button) {
 		state = 1;
 		timeDown = gameData.time.xFrame;
-		downcount = 1;
+		downCount = 1;
 		}
 	else
-		upcount=1;
+		upCount=1;
 	}			
 }
 

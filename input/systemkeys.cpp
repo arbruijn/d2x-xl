@@ -447,10 +447,11 @@ if (!gameStates.app.bPlayerIsDead)
 
 if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 	switch (key) {
+/*
 		case KEY_SHIFTED + KEY_ESC:
 			console.Show ();
 			break;
-
+*/
 		case KEY_COMMAND + KEY_P:
 		case KEY_CTRLED + KEY_P:
 		case KEY_PAUSE:
@@ -1125,7 +1126,7 @@ char OldHomingState [20];
 
 //------------------------------------------------------------------------------
 
-int ReadControls ()
+int ReadControls (void)
 {
 	int key, skipControls = 0;
 	fix keyTime;

@@ -160,7 +160,7 @@ void JoySetCenFake (int channel);
 ubyte JoyReadStick (ubyte masks, int *axis);
 void JoyGetCalVals (tJoyAxisCal *cal, int nAxes);
 void JoySetCalVals (tJoyAxisCal *cal, int nAxes);
-void JoySetBtnValues (int btn, int state, fix timedown, int downcount, int upcount);
+void JoySetBtnValues (int btn, int state, fix timedown, int downCount, int upCount);
 int JoyGetScaledReading (int raw, int axn);
 void JoySetSlowReading (int flag);
 int JoySetDeadzone (int nRelZone, int nAxis);

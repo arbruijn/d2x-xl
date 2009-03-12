@@ -18,7 +18,7 @@ typedef struct {
 	char	description[100];
 	char 	* buttontext[17];
 	int	numkeys;
-	short keycode [100];
+	short keyCode [100];
 	int 	function_number[100];
 } UI_KEYPAD;
 
