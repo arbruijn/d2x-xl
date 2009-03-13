@@ -648,7 +648,7 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			nSize = bmP->Size ();
 			nFrames = (bmP->Height () % bmP->Width ()) ? 1 : bmP->Height () / bmP->Width ();
 			bmP->SetFrameCount ((ubyte) nFrames);
-			nOffset = cfP->Tell ();
+			nOffset = -1;
 			if (nIndex >= 0) {
 				nFlags &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 				nFlags |= BM_FLAG_TGA;
@@ -703,7 +703,7 @@ if (bRedone) {
 	}
 
 bRedone = 1;
-if (cfP->Seek (nOffset, SEEK_SET)) {
+if ((nOffset >= 0) && (cfP->Seek (nOffset, SEEK_SET))) {
 	bRedone = 2;
 	goto reloadTextures;
 	}
