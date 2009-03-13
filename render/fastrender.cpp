@@ -681,7 +681,7 @@ return 1;
 short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadlight)
 {
 	tFaceListItem*	fliP;
-	CSegFace*			faceP;
+	CSegFace*		faceP;
 	short				i, j, nFaces = 0, nSegment = -1;
 	int				bAutomap = (nType == 0);
 

@@ -247,10 +247,17 @@ if (gameStates.app.bMultiThreaded) {
 
 void StartRenderThreads (void)
 {
-memset (&tiRender, 0, sizeof (tiRender));
+	static bool bInitialized = false;
+
+if (!bInitialized) {
+	memset (&tiRender, 0, sizeof (tiRender));
+	bInitialized = true;
+	}
 for (int i = 0; i < 2; i++) {
-	tiRender.ti [i].nId = i;
-	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
+	if (!tiRender.ti [i].pThread) {
+		tiRender.ti [i].nId = i;
+		tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
+		}
 	}
 }
 

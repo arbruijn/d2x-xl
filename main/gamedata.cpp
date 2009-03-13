@@ -434,9 +434,11 @@ fAttScale [1] = 0.005f;
 fAttScale [0] = 0.0f;
 fAttScale [1] = 0.003333f;
 #endif
+#if 1
 for (int i = 0; i < 2; i++)
 	faceIndex [i].Init ();
 faceList.Clear ();
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -548,9 +550,11 @@ Init ();
 
 void CFaceListIndex::Init (void)
 {
-roots.Clear ();
-tails.Clear ();
-usedKeys.Clear ();
+#if 1
+roots.Clear (-1);
+tails.Clear (-1);
+usedKeys.Clear (0);
+#endif
 }
 
 //------------------------------------------------------------------------------

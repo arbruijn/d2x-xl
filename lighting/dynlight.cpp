@@ -672,6 +672,8 @@ PrintLog ("Computing static lighting\n");
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.nState = 0;
 m_data.renderLights.Clear ();
+for (i = 0; i < MAX_THREADS; i++)
+	m_data.active [i].Clear (0);
 Transform (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	m_data.variableVertLights [i] = VariableVertexLights (i);
