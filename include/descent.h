@@ -1543,6 +1543,7 @@ class CFaceListIndex {
 		short						nUsedKeys;
 	public:
 		CFaceListIndex ();
+		void Init (void);
 	};
 
 #include "sphere.h"

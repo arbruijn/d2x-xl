@@ -565,6 +565,7 @@ altBmP->DestroyFrames ();
 altBmP->FreeData ();
 altBmP->SetPalette (NULL);
 altBmP->SetType (0);
+altBmP->NeedSetup ();
 return 1;
 }
 

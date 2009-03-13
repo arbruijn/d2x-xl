@@ -434,6 +434,9 @@ fAttScale [1] = 0.005f;
 fAttScale [0] = 0.0f;
 fAttScale [1] = 0.003333f;
 #endif
+for (int i = 0; i < 2; i++)
+	faceIndex [i].Init ();
+faceList.Clear ();
 }
 
 // ----------------------------------------------------------------------------
@@ -538,6 +541,16 @@ nUsedKeys = 0;
 roots.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 tails.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 usedKeys.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+Init ();
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceListIndex::Init (void)
+{
+roots.Clear ();
+tails.Clear ();
+usedKeys.Clear ();
 }
 
 //------------------------------------------------------------------------------
