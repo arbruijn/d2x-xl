@@ -566,7 +566,6 @@ int PageInBitmap (CBitmap *bmP, const char *bmName, int nIndex, int bD1, bool bH
 	bool				bDefault = false;
 	CFile				cf, *cfP = &cf;
 	char				fn [6][FILENAME_LEN];
-	tTgaHeader		h;
 
 #if DBG
 if (!bmName)
@@ -631,6 +630,7 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 	MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
 
 	if (0 <= (nFile = OpenBitmapFile (fn, cfP))) {
+		cfP->Close ();
 		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn [nFile], min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 		if (nFile < 2)	//was level specific mod folder
 			MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
@@ -641,35 +641,38 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
 		altBmP->SetType (BM_TYPE_ALT);
 		bmP->SetOverride (altBmP);
-		bmP = altBmP;
-		ReadTGAHeader (*cfP, &h, bmP);
-		nSize = (int) h.width * (int) h.height * bmP->BPP ();
-		nFrames = (h.height % h.width) ? 1 : h.height / h.width;
-		bmP->SetFrameCount ((ubyte) nFrames);
-		nOffset = cfP->Tell ();
-		if (nIndex >= 0) {
-			nFlags &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-			nFlags |= BM_FLAG_TGA;
-			if (bmP->Height () > bmP->Width ()) {
-				tEffectClip	*ecP = NULL;
-				tWallClip *wcP;
-				tVideoClip *vcP;
-				while ((ecP = FindEffect (ecP, nIndex))) {
-					//e->vc.nFrameCount = nFrames;
-					ecP->flags |= EF_ALTFMT;
-					//ecP->vc.flags |= WCF_ALTFMT;
-					}
-				if (!ecP) {
-					if ((wcP = FindWallAnim (nIndex))) {
-					//w->nFrameCount = nFrames;
-						wcP->flags |= WCF_ALTFMT;
+		if (!ReadTGA (fn [nFile], "", altBmP)) 
+			altBmP = NULL;
+		else {
+			bmP = altBmP;
+			nSize = bmP->Size ();
+			nFrames = (bmP->Height () % bmP->Width ()) ? 1 : bmP->Height () / bmP->Width ();
+			bmP->SetFrameCount ((ubyte) nFrames);
+			nOffset = cfP->Tell ();
+			if (nIndex >= 0) {
+				nFlags &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+				nFlags |= BM_FLAG_TGA;
+				if (bmP->Height () > bmP->Width ()) {
+					tEffectClip	*ecP = NULL;
+					tWallClip *wcP;
+					tVideoClip *vcP;
+					while ((ecP = FindEffect (ecP, nIndex))) {
+						//e->vc.nFrameCount = nFrames;
+						ecP->flags |= EF_ALTFMT;
+						//ecP->vc.flags |= WCF_ALTFMT;
 						}
-					else if ((vcP = FindVClip (nIndex))) {
-						//v->nFrameCount = nFrames;
-						vcP->flags |= WCF_ALTFMT;
-						}
-					else {
-						PrintLog ("   couldn't find animation for '%s'\n", bmName);
+					if (!ecP) {
+						if ((wcP = FindWallAnim (nIndex))) {
+						//w->nFrameCount = nFrames;
+							wcP->flags |= WCF_ALTFMT;
+							}
+						else if ((vcP = FindVClip (nIndex))) {
+							//v->nFrameCount = nFrames;
+							vcP->flags |= WCF_ALTFMT;
+							}
+						else {
+							PrintLog ("   couldn't find animation for '%s'\n", bmName);
+							}
 						}
 					}
 				}
@@ -740,7 +743,7 @@ else
 if (!bmP->Compressed ())
 #endif
 	{
-	ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
+	//ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
 	if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 		bmP->AddFlags (BM_FLAG_SEE_THRU);
 	bmP->SetType (BM_TYPE_ALT);
@@ -758,6 +761,13 @@ if (!bmP->Compressed ())
 		if ((nBestShrinkFactor > 1) && ShrinkTGA (bmP, nBestShrinkFactor, nBestShrinkFactor, 1)) {
 			nSize /= (nBestShrinkFactor * nBestShrinkFactor);
 			if (gameStates.app.bCacheTextures) {
+				tTgaHeader	h;
+
+				memset (&h, 0, sizeof (h));
+				h.bits = bmP->BPP () * 8;
+				h.width = bmP->Width ();
+				h.height = bmP->Height ();
+				h.imageType = 2;
 				// nFile < 2: mod level texture folder
 				// nFile < 4: mod texture folder
 				// otherwise standard D1 or D2 texture folder

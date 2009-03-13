@@ -46,8 +46,7 @@ int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *pb, int alpha,
 						double brightness, int bGrayScale, int bRedBlueFlip);
 int LoadTGA (CFile& cf, CBitmap *pb, int alpha, double brightness, 
 				 int bGrayScale, int bRedBlueFlip);
-int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *pb, int alpha, 
-				 double brightness, int bGrayScale, int bRedBlueFlip);
+int ReadTGA (const char* pszFile, const char* pszFolder, CBitmap* bmP, int alpha = -1, double brightness = 1.0, int bGrayScale = 0, int bRedBlueFlip = 0);
 CBitmap *CreateAndReadTGA (const char *szFile);
 int SaveTGA (const char *pszFile, const char *pszFolder, tTgaHeader *ph, CBitmap *bmP);
 double TGABrightness (CBitmap *bmP);
