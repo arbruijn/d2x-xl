@@ -634,20 +634,20 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 		PrintLog ("loading hires texture '%s' (quality: %d)\n", fn [nFile], min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality));
 		if (nFile < 2)	//was level specific mod folder
 			MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);
-		bTGA = 1;
 		if (nIndex < 0)
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
 		else
 			altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
-		altBmP->SetType (BM_TYPE_ALT);
-		bmP->SetOverride (altBmP);
 		if (!ReadTGA (fn [nFile], "", altBmP)) 
 			altBmP = NULL;
 		else {
+			bTGA = 1;
+			altBmP->SetType (BM_TYPE_ALT);
+			bmP->SetOverride (altBmP);
 			bmP = altBmP;
 			nSize = bmP->Size ();
 			nFrames = (bmP->Height () % bmP->Width ()) ? 1 : bmP->Height () / bmP->Width ();
-			bmP->SetFrameCount ((ubyte) nFrames);
+			bmP->SetFrameCount (ubyte (nFrames));
 			nOffset = -1;
 			if (nIndex >= 0) {
 				nFlags &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -716,7 +716,7 @@ if (bmP->Compressed ())
 else
 #endif
 	{
-	if (bmP->CreateBuffer ())
+	if (bTGA || bmP->CreateBuffer ())
 		UseBitmapCache (bmP, nSize);
 	}
 if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
