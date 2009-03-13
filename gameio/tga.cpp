@@ -446,7 +446,9 @@ int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha
 	char	szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN], szImage [FILENAME_LEN];
 
 cf.SplitPath (pszFile, szFolder, szFile, szExt);
-if (pszFolder || !*szFolder)
+if (!pszFolder)
+	pszFolder = gameFolders.szDataDir;
+if (!*szFolder)
 	strcpy (szFolder, pszFolder);
 sprintf (szImage, "%s%s%s", szFolder, szFile, *szExt ? szExt : ".png");
 if (!cf.Exist (szImage, NULL, 0)) {
