@@ -457,7 +457,9 @@ if (l && ((szFolder [l - 1] == '/') || (szFolder [l - 1] == '\\')))
 	szFolder [l - 1] = '\0';
 sprintf (szImage, "%s/%s%s", szFolder, szFile, *szExt ? szExt : ".png");
 if (!cf.Exist (szImage, NULL, 0)) {
-	sprintf (szImage, "%s%s%s", szFolder, szFile, *szExt ? szExt : ".tga");
+	if (*szExt)
+		return 0;
+	sprintf (szImage, "%s/%s%s", szFolder, szFile, *szExt ? szExt : ".tga");
 	if (!cf.Exist (szImage, NULL, 0))
 		return 0;
 	}

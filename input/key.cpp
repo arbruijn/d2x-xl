@@ -337,98 +337,98 @@ return shifted ? static_cast<ubyte> (keyProperties [keyCode].shiftedAsciiValue) 
 
 #if UNICODE_KEYS == 0
 
-static int KeyGerman (int i, tKeyInfo* keyP)
+static int KeyGerman (int keyCode)
 {
-if (i == KEY_Z)
+if (keyCode == KEY_Z)
 	return KEY_Y;
-else if (i == KEY_Z)
+else if (keyCode == KEY_Z)
 	return KEY_Z;
-else if (i == KEY_SEMICOLON)
+else if (keyCode == KEY_SEMICOLON)
 	return -1;
-else if (i == KEY_EQUALS)
+else if (keyCode == KEY_EQUALS)
 	return KEY_RAPOSTRO;
-else if (i == KEY_RAPOSTRO)
+else if (keyCode == KEY_RAPOSTRO)
 	return -1;
-else if (i == KEY_LBRACKET)
+else if (keyCode == KEY_LBRACKET)
 	return -1;
-else if (i == KEY_RBRACKET)
+else if (keyCode == KEY_RBRACKET)
 	return KEY_EQUALS;
-else if (i == KEY_SLASH)
+else if (keyCode == KEY_SLASH)
 	return KEY_MINUS;
-else if (i == KEY_BACKSLASH)
+else if (keyCode == KEY_BACKSLASH)
 	return KEY_RAPOSTRO;
-else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
-	if (i == KEY_7)
+else if (keyCode & KEY_SHIFTED) {
+	if (keyCode == KEY_7)
 		return KEY_BACKSLASH;
-	else if (i == KEY_0)
+	else if (keyCode == KEY_0)
 		return KEY_EQUALS;
-	else if (i == KEY_COMMA)
+	else if (keyCode == KEY_COMMA)
 		return KEY_SEMICOLON;
 	}
 else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
-	if ((i == KEY_7) || (i == KEY_8))
+	if ((keyCode == KEY_7) || (keyCode == KEY_8))
 		return KEY_LBRACKET;
-	else if ((i == KEY_9) || (i == KEY_0))
+	else if ((keyCode == KEY_9) || (keyCode == KEY_0))
 		return KEY_RBRACKET;
-	else if (i == KEY_0)
+	else if (keyCode == KEY_0)
 		return KEY_EQUALS;
-	else if (i == KEY_MINUS)
+	else if (keyCode == KEY_MINUS)
 		return KEY_BACKSLASH;
 	}
-return i;
+return keyCode;
 }
 
 //------------------------------------------------------------------------------
 
-static int KeyFrench (int i, tKeyInfo* keyP)
+static int KeyFrench (int keyCode)
 {
-if (i == KEY_A)
+if (keyCode == KEY_A)
 	return KEY_Q;
-else if (i == KEY_Q)
+else if (keyCode == KEY_Q)
 	return KEY_A;
-else if (i == KEY_W)
+else if (keyCode == KEY_W)
 	return KEY_Z;
-else if (i == KEY_Z)
+else if (keyCode == KEY_Z)
 	return KEY_W;
-else if (i == KEY_COMMA)
+else if (keyCode == KEY_COMMA)
 	return KEY_SEMICOLON;
-else if (i == KEY_PERIOD)
+else if (keyCode == KEY_PERIOD)
 	return KEY_SEMICOLON;
-else if (i == KEY_SEMICOLON)
+else if (keyCode == KEY_SEMICOLON)
 	return KEY_M;
-else if (i == KEY_M)
+else if (keyCode == KEY_M)
 	return KEY_COMMA;
-else if (i == KEY_RBRACKET)
+else if (keyCode == KEY_RBRACKET)
 	return KEY_EQUALS;
-else if (i == KEY_BACKSLASH)
+else if (keyCode == KEY_BACKSLASH)
 	return -1;
-else if (i == KEY_RAPOSTRO)
+else if (keyCode == KEY_RAPOSTRO)
 	return -1;
-else if (i == KEY_SLASH)
+else if (keyCode == KEY_SLASH)
 	return -1;
-else if (i == KEY_LBRACKET)
+else if (keyCode == KEY_LBRACKET)
 	return -1;
-else if (i == KEY_SLASH)
+else if (keyCode == KEY_SLASH)
 	return -1;
-else if (keyP->flags & ubyte (KEY_SHIFTED / 256)) {
-	if (i == KEY_COMMA)
+else if (keyCode & KEY_SHIFTED) {
+	if (keyCode == KEY_COMMA)
 		return KEY_PERIOD;
-	else if (i == KEY_PERIOD)
+	else if (keyCode == KEY_PERIOD)
 		return KEY_SLASH;
-	else if (i == KEY_COMMA)
+	else if (keyCode == KEY_COMMA)
 		return KEY_SEMICOLON;
 	}
 else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
-	if ((i == KEY_4) || (i == KEY_5))
+	if ((keyCode == KEY_4) || (keyCode == KEY_5))
 		return KEY_LBRACKET;
-	else if ((i == KEY_MINUS) || (i == KEY_EQUALS))
+	else if ((keyCode == KEY_MINUS) || (keyCode == KEY_EQUALS))
 		return KEY_RBRACKET;
-	else if (i == KEY_0)
+	else if (keyCode == KEY_0)
 		return KEY_EQUALS;
-	else if (i == KEY_8)
+	else if (keyCode == KEY_8)
 		return KEY_BACKSLASH;
 	}
-return i;
+return keyCode;
 }
 
 #endif
@@ -527,7 +527,7 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 		if (gameStates.input.keys.pressed [KEY_LCMD] || gameStates.input.keys.pressed [KEY_RCMD])
 			keyCode |= KEY_COMMAND;
 #if DBG
-   if (gameStates.input.keys.pressed [KEY_DELETE])
+	   if (gameStates.input.keys.pressed [KEY_DELETE])
 			keyCode |= KEYDBGGED;
 #endif			
 		temp = keyData.nKeyTail + 1;
@@ -536,11 +536,11 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 		if (temp != keyData.nKeyHead) {
 #if UNICODE_KEYS == 0
 			if (nKeyboard == 1) {
-				if (0 > (keyCode = KeyGerman (i, keyP)))
+				if (-1 == (keyCode = KeyGerman (keyCode)))
 					continue;
 				}
 			else if (nKeyboard == 2) {
-				if (0 > (keyCode = KeyFrench (i, keyP)))
+				if (-1 == (keyCode = KeyFrench (keyCode)))
 					continue;
 				}
 #endif

@@ -881,9 +881,17 @@ while ((i >= 0) && (szFullPath [i] != '/'))
 #endif
 	i--;
 i++;
-j = l - 1;
+j = l;
 while ((j > i) && (szFullPath [j] != '.'))
 	j--;
+if (szExt) {
+	if (szFullPath [j] != '.')
+		*szExt = '\0';
+	else {
+		strncpy (szExt, szFullPath + j, l - j + 1);
+		szExt [l - j + 1] = '\0';
+		}
+	}
 if (szFolder) {
 	if (i > 0)
 		strncpy (szFolder, szFullPath, i);
@@ -893,11 +901,6 @@ if (szFile) {
 	if (!j || (j > i))
 		strncpy (szFile, szFullPath + i, h = (j ? j : l + 1) - i);
 	szFile [h] = '\0';
-	}
-if (szExt) {
-	if (j && (j <= l))
-		strncpy (szExt, szFullPath + j, l - j + 1);
-	szExt [l - j + 1] = '\0';
 	}
 }
 
