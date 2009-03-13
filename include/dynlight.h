@@ -173,7 +173,10 @@ class CDynLightData {
 		bool Create (void);
 		void Init (void);
 		void Destroy (void);
-		inline void ResetIndex (void) { memset (index, 0, sizeof (index)); }
+		inline void ResetIndex (void) { 
+			index [0].Clear ();
+			index [1].Clear ();
+			}
 
 };
 

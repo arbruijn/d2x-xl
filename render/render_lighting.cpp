@@ -217,12 +217,13 @@ gameStates.ogl.bUseTransform = 0;
 
 void ComputeDynamicQuadLight (int nStart, int nEnd, int nThread)
 {
+#if 0
 	static int bSemaphore [2] = {0, 0};
 
 while (bSemaphore [nThread])
 	G3_SLEEP (0);
 bSemaphore [nThread] = 1;
-
+#endif
 PROF_START
 	CSegment		*segP;
 	tSegFaces	*segFaceP;
@@ -356,8 +357,9 @@ if (gameStates.ogl.bVertexLighting)
 #endif
 PROF_END(ptLighting)
 gameStates.ogl.bUseTransform = 0;
-
+#if 0
 bSemaphore [nThread] = 0;
+#endif
 }
 
 //------------------------------------------------------------------------------

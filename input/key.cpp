@@ -459,6 +459,11 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 #if UNICODE_KEYS
 	if (unicode && (keyProperties [i].asciiValue != wchar_t (255))) {
 		if ((keyProperties [i].asciiValue == unicode) || (keyProperties [i].shiftedAsciiValue == unicode))
+#	if DBG
+			if (keyP->lastState)
+				state = keyState;
+			else
+#	endif
 			state = keyState;
 		else
 			state = keyP->lastState;
