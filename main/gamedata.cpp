@@ -187,6 +187,11 @@ CREATE (nearestSegLights, LEVEL_SEGMENTS * MAX_NEAREST_LIGHTS, 0xff);
 CREATE (nearestVertLights, LEVEL_VERTICES * MAX_NEAREST_LIGHTS, 0xff);
 CREATE (variableVertLights, LEVEL_VERTICES, 0xff);
 CREATE (owners, LEVEL_OBJECTS, (char) 0xff);
+int i;
+for (i = 0; i < MAX_THREADS; i++)
+	CREATE (active [i], MAX_OGL_LIGHTS, 0);
+for (i = 0; i < 2; i++)
+	CREATE (index [i], MAX_THREADS, 0);
 return true;
 }
 
@@ -198,6 +203,11 @@ DESTROY (nearestSegLights);
 DESTROY (nearestVertLights);
 DESTROY (variableVertLights);
 DESTROY (owners);
+int i;
+for (i = 0; i < MAX_THREADS; i++)
+	DESTROY (active [i]);
+for (i = 0; i < 2; i++)
+	DESTROY (index [i]);
 }
 
 // ----------------------------------------------------------------------------
