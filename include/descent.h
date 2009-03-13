@@ -36,6 +36,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "vld.h"
 #endif
 
+#define USE_SDL_IMAGE	1
+
 #define SHOW_EXIT_PATH  1
 
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model

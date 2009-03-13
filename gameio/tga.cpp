@@ -7,6 +7,10 @@
 #include "gr.h"
 #include "tga.h"
 
+#if USE_SDL_IMAGE
+#	include <SDL_image.h>
+#endif
+
 //------------------------------------------------------------------------------
 
 int CompressTGA (CBitmap *bmP)
@@ -22,6 +26,91 @@ if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 if (bmP->LoadTexture (0, 0, 0))
 	return 0;
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightness)
+{
+	int				i, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = bmP->BPP ();
+	int				h = bmP->Height ();
+	int				w = bmP->Width ();
+	tRgbColorf		avgColor;
+	tRgbColorb		avgColorb;
+	float				a, avgAlpha = 0;
+
+bmP->SetTranspType (-1);
+memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
+memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
+avgColor.red = avgColor.green = avgColor.blue = 0;
+
+if (bmP->BPP () == 3) {
+	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (h - 1);
+
+	for (i = h * w; i; i--, p++) {
+		avgColor.red += p->red;
+		avgColor.green += p->green;
+		avgColor.blue += p->blue;
+		}
+
+	}
+else {
+	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (h - 1);
+	int nSuperTransp;
+
+	bmP->AddFlags (BM_FLAG_SEE_THRU);
+	nFrames = h / w - 1;
+	for (n = nFrames - 1; n >= 0; n--) {
+		nSuperTransp = 0;
+		for (i = w * w; i; i--, p++) {
+			if (bGrayScale) {
+				p->red =
+				p->green =
+				p->blue = (ubyte) (((int) p->red + (int) p->green + (int) p->blue) / 3 * brightness);
+				}
+			if ((p->red == 120) && (p->green == 88) && (p->blue == 128)) {
+				nSuperTransp++;
+				p->alpha = 0;
+				}
+			else {
+				if (alpha >= 0)
+					p->alpha = alpha;
+				if (!p->alpha)
+					p->red =		//avoid colored transparent areas interfering with visible image edges
+					p->green =
+					p->blue = 0;
+				}
+			if (p->alpha < 196) {
+				if (!n) {
+					bmP->AddFlags (BM_FLAG_TRANSPARENT);
+					if (p->alpha)
+						bmP->DelFlags (BM_FLAG_SEE_THRU);
+					}
+				bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
+				avgAlpha += p->alpha;
+				nAlpha++;
+				}
+			nVisible += p->alpha;
+			a = float (p->alpha) / 255.0f;
+			avgColor.red += p->red * a;
+			avgColor.green += p->green * a;
+			avgColor.blue += p->blue * a;
+			}
+		if (nSuperTransp > w * w / 2000) {
+			if (!n)
+				bmP->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
+			bmP->AddFlags (BM_FLAG_SEE_THRU);
+			bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
+			}
+		}
+	}
+a = (float) nVisible / 255.0f;
+avgColorb.red = (ubyte) (avgColor.red / a);
+avgColorb.green = (ubyte) (avgColor.green / a);
+avgColorb.blue = (ubyte) (avgColor.blue / a);
+bmP->SetAvgColor (avgColorb);
+if (!nAlpha)
+	bmP->DelFlags (BM_FLAG_SEE_THRU);
 }
 
 //------------------------------------------------------------------------------
@@ -351,24 +440,56 @@ int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha
 				 double brightness, int bGrayScale, int bReverse)
 {
 	CFile	cf;
-	char	fn [FILENAME_LEN], *psz;
+
+#if USE_SDL_IMAGE
+
+	char	szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN], szImage [FILENAME_LEN];
+
+cf.SplitPath (pszFile, szFolder, szFile, szExt);
+if (pszFolder || !*szFolder)
+	strcpy (szFolder, pszFolder);
+sprintf (szImage, "%s%s%s", szFolder, szFile, *szExt ? szExt : ".png");
+if (!cf.Exist (szImage, NULL, 0)) {
+	sprintf (szImage, "%s%s%s", szFolder, szFile, *szExt ? szExt : ".tga");
+	if (!cf.Exist (szImage, NULL, 0))
+		return 0;
+	}
+
+SDL_Surface*	imageP;
+
+if (!(imageP = IMG_Load (szImage)))
+	return 0;
+bmP->SetWidth (imageP->w);
+bmP->SetHeight (imageP->h);
+bmP->SetBPP (imageP->format->BytesPerPixel);
+if (!bmP->CreateBuffer ())
+	return 0;
+memcpy (bmP->Buffer (), imageP->pixels, bmP->Size ());
+SDL_FreeSurface (imageP);
+SetTGAProperties (bmP, alpha, bGrayScale, brightness);
+return 1;
+
+#else
+
+	char	szFile [FILENAME_LEN], *psz;
 	int	r;
 
 if (!pszFolder) {
-	cf.SplitPath (pszFile, fn, NULL, NULL);
-	if (!*fn)
+	cf.SplitPath (pszFile, szFile, NULL, NULL);
+	if (!*szFile)
 		pszFolder = gameFolders.szDataDir;
 	}
+
 #if TEXTURE_COMPRESSION
 if (bmP->ReadS3TC (pszFolder, pszFile))
 	return 1;
 #endif
 if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
-	strcpy (fn, pszFile);
-	if ((psz = strchr (fn, '.')))
+	strcpy (szFile, pszFile);
+	if ((psz = strchr (szFile, '.')))
 		*psz = '\0';
-	strcat (fn, ".tga");
-	pszFile = fn;
+	strcat (szFile, ".tga");
+	pszFile = szFile;
 	cf.Open (pszFile, pszFolder, "rb", 0);
 	}
 r = (cf.File() != NULL) && LoadTGA (cf, bmP, alpha, brightness, bGrayScale, bReverse);
@@ -377,7 +498,6 @@ if (r && CompressTGA (bmP))
 	bmP->SaveS3TC (pszFolder, pszFile);
 #endif
 cf.Close ();
-#if 1//def _DEBUG
 char szName [20];
 strncpy (szName, pszFile, sizeof (szName));
 if ((psz = strrchr (szName, '.')))
@@ -385,8 +505,10 @@ if ((psz = strrchr (szName, '.')))
 else
 	szName [sizeof (szName) - 1] = '\0';
 bmP->SetName (szName);
-#endif
 return r;
+
+#endif //USE_SDL_IMAGE
+
 }
 
 //	-----------------------------------------------------------------------------
