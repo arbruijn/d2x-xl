@@ -549,7 +549,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	CFloatVector3					lightColor, colorSum, vertColor = {{0.0f, 0.0f, 0.0f}};
 	CDynLight			*prl;
 	CDynLightIndex		*sliP = &lightManager.Index (0) [nThread];
-	CActiveDynLight	*activeLightsP = lightManager.Active [nThread] + sliP->nFirst;
+	CActiveDynLight	*activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData			vcd = *vcdP;
 
 colorSum = *pColorSum;

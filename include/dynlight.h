@@ -150,10 +150,10 @@ class CHeadlightManager {
 
 class CDynLightData {
 	public:
-		CDynLight			lights [MAX_OGL_LIGHTS];
-		CDynLight*			renderLights [MAX_OGL_LIGHTS];
-		CActiveDynLight	active [MAX_THREADS][MAX_OGL_LIGHTS];
-		CDynLightIndex		index [2][MAX_THREADS];
+		CStaticArray< CDynLight, MAX_OGL_LIGHTS >			lights; // [MAX_OGL_LIGHTS];
+		CStaticArray< CDynLight*, MAX_OGL_LIGHTS >		renderLights; // [MAX_OGL_LIGHTS];
+		CStaticArray< CActiveDynLight, MAX_OGL_LIGHTS >	active [MAX_THREADS]; //[MAX_OGL_LIGHTS];
+		CStaticArray< CDynLightIndex, MAX_THREADS >		index [2]; //[MAX_THREADS];
 		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment
 		CShortArray			nearestVertLights;	//the 8 nearest static lights for every vertex
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
@@ -228,12 +228,12 @@ class CLightManager {
 		void ResetActive (int nThread, int nActive);
 		void ResetAllUsed (int bVariable, int nThread);
 
-		inline CDynLight* Lights (void) { return m_data.lights; }
+		inline CDynLight* Lights (void) { return m_data.lights.Buffer (); }
 		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }
-		inline CDynLight** RenderLights (void) { return m_data.renderLights; }
+		inline CDynLight** RenderLights (void) { return m_data.renderLights.Buffer (); }
 		inline int LightCount (uint i) { return m_data.nLights [i]; }
-		inline CActiveDynLight* Active (uint i) { return m_data.active [i]; }
-		inline CDynLightIndex* Index (uint i) { return m_data.index [i]; }
+		inline CActiveDynLight* Active (uint i) { return m_data.active [i].Buffer (); }
+		inline CDynLightIndex* Index (uint i) { return m_data.index [i].Buffer (); }
 		inline CFBO& FBO (void) { return m_data.fbo; }
 		inline CHeadlightManager& Headlights (void) { return m_headlights; }
 		inline CShortArray& NearestSegLights (void) { return m_data.nearestSegLights; }

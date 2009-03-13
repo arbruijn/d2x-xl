@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void CLightManager::Transform (int bStatic, int bVariable)
 {
 	int			i;
-	CDynLight*	pl = m_data.lights;
+	CDynLight*	pl = &m_data.lights [0];
 
 m_data.nLights [1] = 0;
 for (i = 0; i < m_data.nLights [0]; i++, pl++) {
@@ -218,7 +218,7 @@ if (bStatic || m_data.variableVertLights [nVertex]) {
 	CDynLightIndex*	sliP = &m_data.index [0][nThread];
 	short					i, j, nActiveLightI = sliP->nActive;
 	CDynLight*			prl;
-	CActiveDynLight*	activeLightsP = m_data.active [nThread];
+	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
 	CFixVector			vVertex = gameData.segs.vertices [nVertex], vLightDir;
 	fix					xLightDist, xMaxLightRange = (gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE;
 
@@ -342,7 +342,7 @@ if (gameStates.render.nLightingMethod) {
 	short*				pnl = m_data.nearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short					i, j;
 	CDynLight*			prl;
-	CActiveDynLight*	activeLightsP = m_data.active [nThread];
+	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
 
 	//m_data.iStaticLights [nThread] = m_data.index [0][nThread].nActive;
 	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
@@ -387,7 +387,7 @@ if (gameStates.render.nLightingMethod) {
 	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	CDynLight*				prl;
 	CFixVector				c;
-	CActiveDynLight*		activeLightsP = m_data.active [nThread];
+	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
 
 	c = SEGMENTS [nSegment].Center ();
 	lightManager.ResetAllUsed (1, nThread);
@@ -477,7 +477,7 @@ if (gameStates.render.nLightingMethod) {
 	fix						xLightDist, xMaxLightRange = F2X (fLightRad) + ((gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 : MAX_LIGHT_RANGE);
 	CDynLight*				prl;
 	CFixVector				vLightDir;
-	CActiveDynLight*		activeLightsP = m_data.active [nThread];
+	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
 
 	ResetActive (nThread, 0);
 	ResetAllUsed (0, nThread);

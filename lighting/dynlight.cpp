@@ -123,7 +123,7 @@ if (SHOW_DYN_LIGHT) {
 short CLightManager::Find (short nSegment, short nSide, short nObject)
 {
 if (gameStates.render.nLightingMethod && !gameStates.app.bNostalgia) {
-	CDynLight*	pl = m_data.lights;
+	CDynLight*	pl = &m_data.lights [0];
 
 	if (nObject >= 0)
 		return m_data.owners [nObject];
@@ -180,11 +180,9 @@ if (pl1 != pl2) {
 	pl2->handle = (unsigned) (GL_LIGHT0 + (pl2 - m_data.lights [0]));
 #endif
 	if (pl1->info.nObject >= 0)
-		m_data.owners [pl1->info.nObject] =
-			(short) (pl1 - m_data.lights);
+		m_data.owners [pl1->info.nObject] =	short (m_data.lights.Index (pl1));
 	if (pl2->info.nObject >= 0)
-		m_data.owners [pl2->info.nObject] =
-			(short) (pl2 - m_data.lights);
+		m_data.owners [pl2->info.nObject] =	short (m_data.lights.Index (pl2));
 	}
 }
 
@@ -491,7 +489,7 @@ return 1;
 
 void CLightManager::DeleteLightnings (void)
 {
-	CDynLight* pl = m_data.lights;
+	CDynLight* pl = &m_data.lights [0];
 
 for (short i = 0; i < m_data.nLights [0]; )
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide < 0)) {
@@ -564,7 +562,7 @@ return 0;
 void CLightManager::Sort (void)
 {
 CQuickSort<CDynLight> qs;
-qs.SortAscending (m_data.lights, 0, m_data.nLights [0] - 1);
+qs.SortAscending (m_data.lights.Buffer (), 0, m_data.nLights [0] - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -673,6 +671,7 @@ int i, j, bColorize = !gameStates.render.nLightingMethod;
 PrintLog ("Computing static lighting\n");
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameStates.render.nState = 0;
+m_data.renderLights.Clear ();
 Transform (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	m_data.variableVertLights [i] = VariableVertexLights (i);
