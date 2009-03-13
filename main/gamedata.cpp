@@ -172,8 +172,11 @@ nTexHandle = 0;
 nVariable = 0;
 material.bValid = 0;
 memset (nHeadlights, 0xff, sizeof (nHeadlights));
-CLEAR (active);
-CLEAR (index);
+int i;
+for (i = 0; i < MAX_THREADS; i++)
+	active [i].Clear ();
+for (i = 0; i < 2; i++)
+	index [i].Clear ();
 }
 
 // ----------------------------------------------------------------------------

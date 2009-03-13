@@ -218,6 +218,10 @@ xEffectTime += gameData.time.xFrame;
 		if (!(ft = EffectFrameTime (ecP)))
 			continue;
 		nFrames = ecP->vc.nFrameCount;
+#if DBG
+		if (i == 15)
+			i = 15;
+#endif
 		if (ecP->flags & EF_ALTFMT) {
 			if (ecP->flags & EF_INITIALIZED) {
 				bmP = gameData.pig.tex.bitmapP [ecP->vc.frames [0].index].Override ();
