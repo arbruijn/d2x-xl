@@ -70,7 +70,7 @@ else {
 				p->green =
 				p->blue = (ubyte) (((int) p->red + (int) p->green + (int) p->blue) / 3 * brightness);
 				}
-			if ((p->red == 120) && (p->green == 88) && (p->blue == 128)) {
+			else if ((p->red == 120) && (p->green == 88) && (p->blue == 128)) {
 				nSuperTransp++;
 				p->alpha = 0;
 				}
