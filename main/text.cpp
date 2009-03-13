@@ -1797,7 +1797,7 @@ const char *defaultGameTexts [][2] = {
  {"tuerkis", "cyan"},
  {"Einzelspieler-Schiffsfarbe:", "single player ship color:"},
  {"%s", "%s"},
- {"unerforschte Bereiche schwarz/weiss", "gra~Y out unexplored areas"},
+ {"unerforschte ~Bereiche schwarz/weiss", "gra~Y out unexplored areas"},
  {"Initialisiere...", "Initializing..."},
  {"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
  {"Geometrie-~Verbesserung: %s", "Mesh impro~Vement: %s"},
