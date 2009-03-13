@@ -895,9 +895,9 @@ if (szFile) {
 	szFile [h] = '\0';
 	}
 if (szExt) {
-	if (j && (j < l))
-		strncpy (szExt, szFullPath + j, l - j);
-	szExt [l - j] = '\0';
+	if (j && (j <= l))
+		strncpy (szExt, szFullPath + j, l - j + 1);
+	szExt [l - j + 1] = '\0';
 	}
 }
 

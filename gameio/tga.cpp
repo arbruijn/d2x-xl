@@ -45,9 +45,10 @@ memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;
 
 if (bmP->BPP () == 3) {
-	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (h - 1);
+	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 
 	for (i = h * w; i; i--, p++) {
+		::Swap (p->red, p->blue);
 		avgColor.red += p->red;
 		avgColor.green += p->green;
 		avgColor.blue += p->blue;
@@ -55,14 +56,15 @@ if (bmP->BPP () == 3) {
 
 	}
 else {
-	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + w * (h - 1);
+	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 	int nSuperTransp;
 
 	bmP->AddFlags (BM_FLAG_SEE_THRU);
-	nFrames = h / w - 1;
-	for (n = nFrames - 1; n >= 0; n--) {
+	nFrames = h / w;
+	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
 		for (i = w * w; i; i--, p++) {
+			::Swap (p->red, p->blue);
 			if (bGrayScale) {
 				p->red =
 				p->green =
@@ -450,7 +452,10 @@ if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
 if (!*szFolder)
 	strcpy (szFolder, pszFolder);
-sprintf (szImage, "%s%s%s", szFolder, szFile, *szExt ? szExt : ".png");
+int l = strlen (szFolder);
+if (l && ((szFolder [l - 1] == '/') || (szFolder [l - 1] == '\\')))
+	szFolder [l - 1] = '\0';
+sprintf (szImage, "%s/%s%s", szFolder, szFile, *szExt ? szExt : ".png");
 if (!cf.Exist (szImage, NULL, 0)) {
 	sprintf (szImage, "%s%s%s", szFolder, szFile, *szExt ? szExt : ".tga");
 	if (!cf.Exist (szImage, NULL, 0))
