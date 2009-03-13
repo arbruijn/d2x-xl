@@ -358,11 +358,12 @@ else if (keyCode == KEY_SLASH)
 else if (keyCode == KEY_BACKSLASH)
 	return KEY_RAPOSTRO;
 else if (keyCode & KEY_SHIFTED) {
-	if (keyCode == KEY_7)
+	int h = keyCode & 0xFF;
+	if (h == KEY_7)
 		return KEY_BACKSLASH;
-	else if (keyCode == KEY_0)
+	else if (h == KEY_0)
 		return KEY_EQUALS;
-	else if (keyCode == KEY_COMMA)
+	else if (h == KEY_COMMA)
 		return KEY_SEMICOLON;
 	}
 else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
@@ -411,11 +412,12 @@ else if (keyCode == KEY_LBRACKET)
 else if (keyCode == KEY_SLASH)
 	return -1;
 else if (keyCode & KEY_SHIFTED) {
-	if (keyCode == KEY_COMMA)
+	int h = keyCode & 0xFF;
+	if (h == KEY_COMMA)
 		return KEY_PERIOD;
-	else if (keyCode == KEY_PERIOD)
+	else if (h == KEY_PERIOD)
 		return KEY_SLASH;
-	else if (keyCode == KEY_COMMA)
+	else if (h == KEY_COMMA)
 		return KEY_SEMICOLON;
 	}
 else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
