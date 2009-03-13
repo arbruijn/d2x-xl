@@ -53,7 +53,7 @@ if (bmP->BPP () == 3) {
 		avgColor.green += p->green;
 		avgColor.blue += p->blue;
 		}
-
+	nVisible = w * h * 255;
 	}
 else {
 	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());

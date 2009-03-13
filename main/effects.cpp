@@ -254,13 +254,19 @@ xEffectTime += gameData.time.xFrame;
 			}
 		if (ecP->flags & EF_CRITICAL)
 			continue;
+#if DBG
+		if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && bmP->FrameCount () && !bmP->Frames ())
+			bmP = bmP;
+#endif
 		if ((ecP->nCritClip != -1) && gameData.reactor.bDestroyed) {
 			int n = ecP->nCritClip;
 			bmi = gameData.eff.effectP [n].vc.frames [gameData.eff.effectP [n].nCurFrame];
 			gameData.pig.tex.bmIndexP [t] = bmi;
 			}
-		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (bmP->FrameCount () > 1)) {
+		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT)) {
 			bmP->SetTranspType (-1);
+			if (!bmP->Frames ())
+				bmP->NeedSetup ();
 			bmP->SetupTexture (1, 1);
 			CBitmap* bmfP = bmP->SetCurFrame (bmP->Frames () + min (ecP->nCurFrame, bmP->FrameCount () - 1));
 			bmfP->SetTranspType (-1);
