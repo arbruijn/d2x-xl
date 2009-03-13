@@ -673,6 +673,7 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 void UnloadLevelData (int bRestore)
 {
+EndRenderThreads ();
 ResetModFolders ();
 textureManager.Destroy ();
 gameOpts->render.textures.bUseHires [0] = gameOpts->render.textures.bUseHires [1];

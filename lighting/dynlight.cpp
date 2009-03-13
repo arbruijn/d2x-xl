@@ -686,7 +686,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 		CSegment*	segP;
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
-	//if (!RunRenderThreads (rtStaticVertLight))
+	if (!RunRenderThreads (rtStaticVertLight))
 		lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
 	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, segP++) {

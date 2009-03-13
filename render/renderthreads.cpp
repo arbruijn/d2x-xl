@@ -213,8 +213,14 @@ void StartTranspRenderThread (void)
 {
 #if !UNIFY_THREADS
 if (gameData.app.bUseMultiThreading [rtTranspRender]) {
-	memset (&tiTranspRender, 0, sizeof (tiTranspRender));
-	tiTranspRender.ti [0].pThread = SDL_CreateThread (TranspRenderThread, NULL);
+	static bool bInitialized = false;
+
+	if (!bInitialized) {
+		memset (&tiTranspRender, 0, sizeof (tiTranspRender));
+		bInitialized = true;
+		}
+	if (!tiTranspRender.ti [0].pThread)
+		tiTranspRender.ti [0].pThread = SDL_CreateThread (TranspRenderThread, NULL);
 	}
 #endif
 }
@@ -318,8 +324,13 @@ void StartEffectsThread (void)
 {
 #if !UNIFY_THREADS
 if (gameData.app.bUseMultiThreading [rtEffects]) {
-	memset (&tiEffects, 0, sizeof (tiEffects));
-	if	(!(tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL)))
+	static bool bInitialized = false;
+
+	if (!bInitialized) {
+		memset (&tiEffects, 0, sizeof (tiEffects));
+		bInitialized = true;
+		}
+	if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
 		gameData.app.bUseMultiThreading [rtEffects] = 0;
 	}
 #endif
