@@ -965,7 +965,14 @@ if ((c == 'F') || (c == 'B')) {
 	}
 else {
 	m_info.nCurrentColor = ParseMessageInt (m_info.message);
+#if 0
 	Assert ((m_info.nCurrentColor >= 0) && (m_info.nCurrentColor < MAX_BRIEFING_COLORS));
+#else
+	if (m_info.nCurrentColor < 0)
+		m_info.nCurrentColor = 0;
+	else if (m_info.nCurrentColor >= MAX_BRIEFING_COLORS)
+		m_info.nCurrentColor = MAX_BRIEFING_COLORS - 1;
+#endif
 	}
 m_info.prevCh = 10;
 return 1;

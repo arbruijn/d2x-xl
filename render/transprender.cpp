@@ -898,10 +898,10 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
-if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
+if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3,
 	 (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
-	 ((bDecal < 1) || LoadImage (bmTop, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
-	 (!mask || LoadImage (mask, 0, 0, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
+	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
+	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
 		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
@@ -1040,7 +1040,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, 0, item->nWrap, 1, 3,
 	}
 else
 #endif
-if (LoadImage (bmBot, item->nColors, 0, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
+if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
 		ResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE);
@@ -1197,7 +1197,7 @@ void CTransparencyRenderer::FlushSparkBuffer (void)
 {
 	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
-if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, 0, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
+if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
 	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	bmpSparks->Texture ()->Bind ();
@@ -1362,7 +1362,7 @@ glBlendFunc (GL_ONE, GL_ONE);
 glDisable (GL_CULL_FACE);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 #if 1
-if (LoadImage (item->bmP, 1, 0, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
+if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 	glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->bTrail)
@@ -1371,7 +1371,7 @@ if (LoadImage (item->bmP, 1, 0, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	}
 else
 #endif
-if (LoadImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
+if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	int i;
 	if (item->bTrail) {
 		glBegin (GL_TRIANGLES);

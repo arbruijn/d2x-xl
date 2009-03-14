@@ -163,7 +163,7 @@ class CBitmap : public CArray< ubyte > {
 				return this;
 			if (iFrame < 0)
 				return m_info.frames.currentP ? m_info.frames.currentP : this;
-			m_info.frames.nCurrent = int (iFrame % m_info.frames.nCount);
+			m_info.frames.nCurrent = m_info.frames.nCount ? int (iFrame % m_info.frames.nCount) : 0;
 			return m_info.frames.bmP ? m_info.frames.currentP = m_info.frames.bmP + m_info.frames.nCurrent : this;
 			}
 
