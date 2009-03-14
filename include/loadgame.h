@@ -69,7 +69,7 @@ void DoPlayerDead (void);
 void SetPosFromReturnSegment (int bRelink);
 // load a level off disk. level numbers start at 1.
 // Secret levels are -1,-2,-3
-void UnloadLevelData (int bRestore = 0);
+void UnloadLevelData (int bRestore = 0, bool bQuit = true);
 void AddPlayerLoadout (void);
 
 void GameStartRemoveUnusedPlayers ();

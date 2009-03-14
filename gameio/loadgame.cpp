@@ -671,9 +671,10 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 //------------------------------------------------------------------------------
 
-void UnloadLevelData (int bRestore)
+void UnloadLevelData (int bRestore, bool bQuit)
 {
-EndRenderThreads ();
+if (bQuit)
+	EndRenderThreads ();
 ResetModFolders ();
 textureManager.Destroy ();
 gameOpts->render.textures.bUseHires [0] = gameOpts->render.textures.bUseHires [1];
@@ -854,7 +855,6 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
 /*---*/PrintLog ("Loading level...\n");
-ControlRenderThreads ();
 gameData.Destroy ();
 srand (SDL_GetTicks ());
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
@@ -906,7 +906,8 @@ CGenericCockpit::Rewind (false);
 cockpit->Init ();
 gameData.multiplayer.bMoving = -1;
 gameData.missions.nCurrentLevel = nLevel;
-UnloadLevelData (bRestore);
+UnloadLevelData (bRestore, false);
+ControlRenderThreads ();
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultModels ();
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);

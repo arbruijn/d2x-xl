@@ -219,6 +219,8 @@ if (gameData.app.bUseMultiThreading [rtTranspRender]) {
 		memset (&tiTranspRender, 0, sizeof (tiTranspRender));
 		bInitialized = true;
 		}
+	tiTranspRender.ti [0].bDone =
+	tiTranspRender.ti [1].bDone = 0;
 	if (!tiTranspRender.ti [0].pThread)
 		tiTranspRender.ti [0].pThread = SDL_CreateThread (TranspRenderThread, NULL);
 	}
@@ -231,7 +233,8 @@ void EndTranspRenderThread (void)
 {
 if (!tiTranspRender.ti [0].pThread)
 	return;
-tiTranspRender.ti [0].bDone = 0;
+tiTranspRender.ti [0].bDone =
+tiTranspRender.ti [1].bDone = 1;
 G3_SLEEP (10);
 //SDL_KillThread (tiTranspRender.ti [0].pThread);
 tiTranspRender.ti [0].pThread = NULL;
@@ -261,6 +264,7 @@ if (!bInitialized) {
 	}
 for (int i = 0; i < 2; i++) {
 	if (!tiRender.ti [i].pThread) {
+		tiRender.ti [i].bDone = 0;
 		tiRender.ti [i].nId = i;
 		tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 		}
@@ -291,7 +295,7 @@ void EndRenderThreads (void)
 	int	i;
 
 for (i = 0; i < 2; i++)
-	tiRender.ti [i].bDone = 0;
+	tiRender.ti [i].bDone = 1;
 G3_SLEEP (10);
 for (i = 0; i < 2; i++) {
 	if (tiRender.ti [i].pThread) {
@@ -330,6 +334,7 @@ if (gameData.app.bUseMultiThreading [rtEffects]) {
 		memset (&tiEffects, 0, sizeof (tiEffects));
 		bInitialized = true;
 		}
+	tiEffects.bDone = 0;
 	if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
 		gameData.app.bUseMultiThreading [rtEffects] = 0;
 	}
@@ -342,7 +347,7 @@ void EndEffectsThread (void)
 {
 if (!tiEffects.pThread)
 	return;
-tiEffects.bDone = 0;
+tiEffects.bDone = 1;
 G3_SLEEP (100);
 //SDL_KillThread (tiEffects.pThread);
 tiEffects.pThread = NULL;
