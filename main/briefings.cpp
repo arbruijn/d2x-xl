@@ -686,7 +686,14 @@ if (!tText)
 	tText = SDL_GetTicks ();
 
 fontManager.Current ()->StringSize (message, w, h, aw);
+#if 0
 Assert ((m_info.nCurrentColor >= 0) && (m_info.nCurrentColor < MAX_BRIEFING_COLORS));
+#else
+if (m_info.nCurrentColor < 0)
+	m_info.nCurrentColor = 0;
+else if (m_info.nCurrentColor >= MAX_BRIEFING_COLORS)
+	m_info.nCurrentColor = MAX_BRIEFING_COLORS - 1;
+#endif
 
 //	Draw cursor if there is some delay and caller says to draw cursor
 if (m_info.bFlashingCursor && !m_info.bRedraw) {

@@ -64,7 +64,7 @@ else {
 	nFrames = h / w;
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
-		for (i = w * w; i; i--, p++) {
+		for (i = w * (h / nFrames); i; i--, p++) {
 			::Swap (p->red, p->blue);
 			if (bGrayScale) {
 				p->red =
@@ -438,12 +438,12 @@ return WriteTGAHeader (cf, ph, bmP) && WriteTGAImage (cf, ph, bmP);
 
 //---------------------------------------------------------------
 
-int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha, 
-				 double brightness, int bGrayScale, int bReverse)
+#if USE_SDL_IMAGE
+
+int ReadImage (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha, 
+				   double brightness, int bGrayScale, int bReverse)
 {
 	CFile	cf;
-
-#if USE_SDL_IMAGE
 
 	char	szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN], szImage [FILENAME_LEN];
 
@@ -477,8 +477,23 @@ memcpy (bmP->Buffer (), imageP->pixels, bmP->Size ());
 SDL_FreeSurface (imageP);
 SetTGAProperties (bmP, alpha, bGrayScale, brightness);
 return 1;
+}
 
-#else
+#endif
+
+//---------------------------------------------------------------
+
+int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha, 
+				 double brightness, int bGrayScale, int bReverse)
+{
+	CFile	cf;
+
+#if USE_SDL_IMAGE
+
+if (ReadImage (pszFile, pszFolder, bmP, alpha, brightness, bGrayScale, bReverse))
+	return 1;
+
+#endif //USE_SDL_IMAGE
 
 	char	szFile [FILENAME_LEN], *psz;
 	int	r;
@@ -515,8 +530,6 @@ else
 	szName [sizeof (szName) - 1] = '\0';
 bmP->SetName (szName);
 return r;
-
-#endif //USE_SDL_IMAGE
 
 }
 
