@@ -93,6 +93,7 @@ if (m_info.texP == &m_info.texture)
 	ReleaseTexture ();
 else
 	m_info.texP = NULL;
+m_info.texture.SetBitmap (NULL);
 }
 
 //------------------------------------------------------------------------------
