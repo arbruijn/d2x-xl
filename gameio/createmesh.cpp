@@ -516,11 +516,8 @@ do {
 	while ((m_triangles [r].nFace > m) || ((m_triangles [r].nFace == m) && (m_triangles [r].nId > i)))
 		r--;
 	if (l <= r) {
-		if (l < r) {
-			tTriangle h = m_triangles [l];
-			m_triangles [l] = m_triangles [r];
-			m_triangles [r] = h;
-			}
+		if (l < r)
+			::Swap (m_triangles [l], m_triangles [r]);
 		l++;
 		r--;
 		}
@@ -535,8 +532,8 @@ if (left < r)
 
 void CTriMeshBuilder::SetupVertexNormals (void)
 {
-	tFaceTriangle		*triP;
-	g3sPoint			*pointP;
+	tFaceTriangle*	triP;
+	g3sPoint*		pointP;
 	int				h, i, nVertex;
 
 for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i--, pointP++) {
@@ -567,12 +564,12 @@ ComputeVertexNormals ();
 
 int CTriMeshBuilder::InsertTriangles (void)
 {
-	tTriangle	*triP = &m_triangles [0];
-	tFaceTriangle	*grsTriP = TRIANGLES.Buffer ();
-	CSegFace			*m_faceP = NULL;
-	CFixVector	vNormal;
-	int			h, i, nFace = -1;
-	GLuint		nIndex = 0;
+	tTriangle*		triP = &m_triangles [0];
+	tFaceTriangle*	grsTriP = TRIANGLES.Buffer ();
+	CSegFace*		m_faceP = NULL;
+	CFixVector		vNormal;
+	int				h, i, nFace = -1;
+	GLuint			nIndex = 0;
 
 PrintLog ("   inserting new triangles\n");
 QSortTriangles (0, m_nTriangles - 1);
@@ -602,13 +599,10 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 	grsTriP->nIndex = nIndex;
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
 	for (i = 0; i < 3; i++)
-		FACES.vertices [nIndex + i] = *gameData.segs.fVertices [triP->index [i]].V3();
-	FACES.normals [nIndex] = CFloatVector3::Normal (
-					 FACES.vertices [nIndex],
-					 FACES.vertices [nIndex + 1],
-					 FACES.vertices [nIndex + 2]);
+		FACES.vertices [nIndex + i].Assign (gameData.segs.fVertices [triP->index [i]]);
+	FACES.normals [nIndex] = CFloatVector3::Normal (FACES.vertices [nIndex], FACES.vertices [nIndex + 1], FACES.vertices [nIndex + 2]);
 #if DBG
-	if (FACES.normals [nIndex].Mag() == 0)
+	if (FACES.normals [nIndex].Mag () == 0)
 		m_faceP = m_faceP;
 #endif
 	vNormal.Assign (FACES.normals [nIndex]);
@@ -754,18 +748,14 @@ if (bOk)
 	bOk = (mdh.nVersion == MESH_DATA_VERSION) &&
 			(mdh.nSegments == gameData.segs.nSegments) &&
 			(mdh.nFaces == gameData.segs.nFaces);
+	uint	nTriVerts = mdh.nTris * 3;
 if (bOk)
 	nSize =
-		(sizeof (gameData.segs.vertices [0]) + 
-		 sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
+		(sizeof (gameData.segs.vertices [0]) + sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
 		 sizeof (FACES.faces [0]) * mdh.nFaces +
 		 sizeof (FACES.tris [0]) * mdh.nTris +
-		(sizeof (FACES.vertices [0]) +
-		 sizeof (FACES.normals [0]) +
-		 sizeof (FACES.texCoord [0]) +
-		 sizeof (FACES.ovlTexCoord [0]) +
-		 sizeof (FACES.color [0])) * mdh.nTris * 3 +
-		 sizeof (FACES.lMapTexCoord [0]) * mdh.nTris * 3 +
+		(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) + 
+		 sizeof (FACES.ovlTexCoord [0]) + sizeof (FACES.color [0]) + sizeof (FACES.lMapTexCoord [0])) * nTriVerts +
 		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts;
 if (bOk)
 	bOk = ((ioBuffer = new char [nSize]) != NULL);
@@ -775,37 +765,37 @@ if (bOk) {
 	bufP = ioBuffer;
 	FACES.Destroy ();
 	gameData.segs.vertices.Create (mdh.nVertices);
-	memcpy (gameData.segs.vertices.Buffer (), bufP, sizeof (gameData.segs.vertices [0]) * mdh.nVertices);
-	bufP += sizeof (gameData.segs.vertices [0]) * mdh.nVertices;
+	memcpy (gameData.segs.vertices.Buffer (), bufP, nSize = sizeof (gameData.segs.vertices [0]) * mdh.nVertices);
+	bufP += nSize;
 	gameData.segs.fVertices.Create (mdh.nVertices);
-	memcpy (gameData.segs.fVertices.Buffer (), bufP, sizeof (gameData.segs.fVertices [0]) * mdh.nVertices);
-	bufP += sizeof (gameData.segs.fVertices [0]) * mdh.nVertices;
+	memcpy (gameData.segs.fVertices.Buffer (), bufP, nSize = sizeof (gameData.segs.fVertices [0]) * mdh.nVertices);
+	bufP += nSize;
 	FACES.faces.Create (mdh.nFaces);
-	memcpy (FACES.faces.Buffer (), bufP, sizeof (FACES.faces [0]) * mdh.nFaces);
-	bufP += sizeof (FACES.faces [0]) * mdh.nFaces;
+	memcpy (FACES.faces.Buffer (), bufP, nSize = sizeof (FACES.faces [0]) * mdh.nFaces);
+	bufP += nSize;
 	FACES.tris.Create (mdh.nTris);
-	memcpy (FACES.tris.Buffer (), bufP, sizeof (FACES.tris [0]) * mdh.nTris);
-	bufP += sizeof (FACES.tris [0]) * mdh.nTris;
-	FACES.vertices.Create (mdh.nTris * 3);
-	memcpy (FACES.vertices.Buffer (), bufP, sizeof (FACES.vertices [0]) * mdh.nTris * 3);
-	bufP +=  sizeof (FACES.vertices [0]) * mdh.nTris * 3;
-	FACES.normals.Create (mdh.nTris * 3);
-	memcpy (FACES.normals.Buffer (), bufP, sizeof (FACES.normals [0]) * mdh.nTris * 3);
-	bufP += sizeof (FACES.normals [0]) * mdh.nTris * 3;
-	FACES.texCoord.Create (mdh.nTris * 3);
-	memcpy (FACES.texCoord.Buffer (), bufP, sizeof (FACES.texCoord [0]) * mdh.nTris * 3);
-	bufP += sizeof (FACES.texCoord [0]) * mdh.nTris * 3;
-	FACES.ovlTexCoord.Create (mdh.nTris * 3);
-	memcpy (FACES.ovlTexCoord.Buffer (), bufP, sizeof (FACES.ovlTexCoord [0]) * mdh.nTris * 3);
-	bufP += sizeof (FACES.ovlTexCoord [0]) * mdh.nTris * 3;
-	FACES.color.Create (mdh.nTris * 3);
-	memcpy (FACES.color.Buffer (), bufP, sizeof (FACES.color [0]) * mdh.nTris * 3);
-	bufP += sizeof (FACES.color [0]) * mdh.nTris * 3;
-	FACES.lMapTexCoord.Create (mdh.nTris * 3);
-	memcpy (FACES.lMapTexCoord.Buffer (), bufP, sizeof (FACES.lMapTexCoord [0]) * mdh.nTris * 3);
-	bufP += sizeof (FACES.lMapTexCoord [0]) * mdh.nFaces * 2;
+	memcpy (FACES.tris.Buffer (), bufP, nSize = sizeof (FACES.tris [0]) * mdh.nTris);
+	bufP += nSize;
+	FACES.vertices.Create (nTriVerts);
+	memcpy (FACES.vertices.Buffer (), bufP, nSize = sizeof (FACES.vertices [0]) * nTriVerts);
+	bufP += nSize;
+	FACES.normals.Create (nTriVerts);
+	memcpy (FACES.normals.Buffer (), bufP, nSize = sizeof (FACES.normals [0]) * nTriVerts);
+	bufP += nSize;
+	FACES.texCoord.Create (nTriVerts);
+	memcpy (FACES.texCoord.Buffer (), bufP, nSize = sizeof (FACES.texCoord [0]) * nTriVerts);
+	bufP += nSize;
+	FACES.ovlTexCoord.Create (nTriVerts);
+	memcpy (FACES.ovlTexCoord.Buffer (), bufP, nSize = sizeof (FACES.ovlTexCoord [0]) * nTriVerts);
+	bufP += nSize;
+	FACES.color.Create (nTriVerts);
+	memcpy (FACES.color.Buffer (), bufP, nSize = sizeof (FACES.color [0]) * nTriVerts);
+	bufP += nSize;
+	FACES.lMapTexCoord.Create (nTriVerts);
+	memcpy (FACES.lMapTexCoord.Buffer (), bufP, nSize = sizeof (FACES.lMapTexCoord [0]) * nTriVerts);
+	bufP += nSize;
 	FACES.faceVerts.Create (mdh.nFaceVerts);
-	memcpy (FACES.faceVerts.Buffer (), bufP, sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
+	memcpy (FACES.faceVerts.Buffer (), bufP, nSize = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
 	gameData.segs.points.Resize (mdh.nVertices);
 	}
 if (ioBuffer) {
@@ -818,6 +808,8 @@ if (bOk) {
 	SetupVertexNormals ();
 	}
 cf.Close ();
+if (!gameStates.app.bCacheMeshes)
+	cf.Delete (DataFilename (szFilename, nLevel), gameFolders.szCacheDir);
 CreateSegFaceList ();
 CreateFaceVertLists ();
 return bOk;
@@ -827,16 +819,17 @@ return bOk;
 
 bool CTriMeshBuilder::Save (int nLevel)
 {
-	CFile					cf;
-	bool					bOk;
-	char					szFilename [FILENAME_LEN];
-
 	tMeshDataHeader mdh = {MESH_DATA_VERSION,
 								  gameData.segs.nSegments,
 								  gameData.segs.nVertices,
 								  gameData.segs.nFaceVerts,
 								  gameData.segs.nFaces,
 								  gameData.segs.nTris};
+
+	CFile					cf;
+	bool					bOk;
+	char					szFilename [FILENAME_LEN];
+	uint					nTriVerts = uint (mdh.nTris * 3);
 
 if (!(gameStates.render.bTriangleMesh /*&& gameStates.app.bCacheMeshes*/))
 	return 0;
@@ -847,13 +840,13 @@ bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.segs.fVertices.Write (cf, mdh.nVertices) == uint (mdh.nVertices)) &&
 		(FACES.faces.Write (cf, mdh.nFaces) == uint (mdh.nFaces)) &&
 		(FACES.tris.Write (cf, mdh.nTris) == uint (mdh.nTris)) &&
-		(FACES.vertices.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
-		(FACES.normals.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
-		(FACES.texCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
-		(FACES.ovlTexCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3) &&
-		(FACES.color.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
-		(FACES.lMapTexCoord.Write (cf, mdh.nTris * 3) == uint (mdh.nTris * 3)) &&
-		(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == uint (mdh.nFaceVerts)));
+		(FACES.vertices.Write (cf, nTriVerts) == nTriVerts) &&
+		(FACES.normals.Write (cf, nTriVerts) == nTriVerts) &&
+		(FACES.texCoord.Write (cf, nTriVerts) == nTriVerts) &&
+		(FACES.ovlTexCoord.Write (cf, nTriVerts) == nTriVerts) &&
+		(FACES.color.Write (cf, nTriVerts) == nTriVerts) &&
+		(FACES.lMapTexCoord.Write (cf, nTriVerts) == nTriVerts) &&
+		(FACES.faceVerts.Write (cf, mdh.nFaceVerts) == uint (mdh.nFaceVerts));
 cf.Close ();
 return bOk;
 }
@@ -1175,7 +1168,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 			m_faceColorP [j] = m_colorP->color;
 			}
 		RotateTexCoord2f (*m_ovlTexCoordP, m_texCoordP [j], (ubyte) m_sideP->m_nOvlOrient);
-		//m_faceP->texCoord [j] = *m_ovlTexCoordP++;
+		m_ovlTexCoordP++;
 		}
 	m_normalP = SetTriNormals (m_triP, m_normalP);
 	m_texCoordP += 3;
@@ -1392,11 +1385,11 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		m_faceColorP += m_nOvlTexCount * FACE_VERTS;
 		}
 	}
-
+#if 1
 // any additional vertices have been stored, so prune the buffers to the minimally required size
 if (!(gameData.segs.Resize () && gameData.render.lights.Resize () && gameData.render.color.Resize ()))
 	return 0;
-
+#endif
 for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVertices; i; i--, m_colorP++)
 	if (m_colorP->color.alpha > 1) {
 		m_colorP->color.red /= m_colorP->color.alpha;
@@ -1406,10 +1399,10 @@ for (m_colorP = gameData.render.color.ambient.Buffer (), i = gameData.segs.nVert
 		}
 if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStates.render.nMeshQuality))
 	return 0;
-
+#if 1
 if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ()))
 	return 0;
-
+#endif
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();

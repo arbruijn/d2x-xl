@@ -703,7 +703,8 @@ if (!IS_WALL (nWall))
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-wallP = WALLS + nWall;
+if (!(wallP = WALLS + nWall))
+	return 1;
 *bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
 if (*bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
