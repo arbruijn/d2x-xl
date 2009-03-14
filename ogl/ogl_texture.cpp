@@ -279,8 +279,10 @@ void CTexture::Release (void)
 if (m_info.handle && (m_info.handle != GLuint (-1))) {
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
+#if 0
 	if (m_info.bmP)
 		m_info.bmP->NeedSetup ();
+#endif
 	}
 }
 

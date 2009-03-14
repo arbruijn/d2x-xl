@@ -645,13 +645,13 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			altBmP->SetType (BM_TYPE_ALT);
 			bmP->SetOverride (altBmP);
 			bmP = altBmP;
+			bmP->DelFlags (BM_FLAG_RLE);
 			nSize = bmP->Size ();
 			nFrames = (bmP->Height () % bmP->Width ()) ? 1 : bmP->Height () / bmP->Width ();
 			bmP->SetFrameCount (ubyte (nFrames));
 			nOffset = -1;
 			if (nIndex >= 0) {
-				nFlags &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-				nFlags |= BM_FLAG_TGA;
+				nFlags = bmP->Flags ();
 				if (bmP->Height () > bmP->Width ()) {
 					tEffectClip	*ecP = NULL;
 					tWallClip *wcP;

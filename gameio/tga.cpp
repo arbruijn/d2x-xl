@@ -39,6 +39,7 @@ void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightnes
 	tRgbColorb		avgColorb;
 	float				a, avgAlpha = 0;
 
+bmP->AddFlags (BM_FLAG_TGA);
 bmP->SetTranspType (-1);
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
@@ -59,7 +60,7 @@ else {
 	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 	int nSuperTransp;
 
-	bmP->AddFlags (BM_FLAG_SEE_THRU);
+	bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	nFrames = h / w;
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
@@ -127,6 +128,7 @@ int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha,
 	tRgbColorb		avgColorb;
 	float				a, avgAlpha = 0;
 
+bmP->AddFlags (BM_FLAG_TGA);
 bmP->SetBPP (nBytes);
 if (!(bmP->Buffer () || bmP->CreateBuffer ()))
 	 return 0;
@@ -163,7 +165,7 @@ if (ph->bits == 24) {
 		}
 	}
 else {
-	bmP->AddFlags (BM_FLAG_SEE_THRU);
+	bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	if (bReverse) {
 		tRGBA	c;
 		tRgbaColorb	*p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
@@ -217,7 +219,6 @@ else {
 			if (nSuperTransp > 50) {
 				if (!n)
 					bmP->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
-				bmP->AddFlags (BM_FLAG_SEE_THRU);
 				bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 				}
 			}
@@ -274,7 +275,6 @@ else {
 			if (nSuperTransp > w * w / 2000) {
 				if (!n)
 					bmP->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
-				bmP->AddFlags (BM_FLAG_SEE_THRU);
 				bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 				}
 			p -= 2 * w;

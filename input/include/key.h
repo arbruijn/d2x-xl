@@ -218,6 +218,6 @@ extern const char * pszKeyText[256];
 #else
 #	define KEY_PRINT_SCREEN	0xB7
 #endif
-#define KEY_PAUSE			SDLK_PRINT //0x61
+#define KEY_PAUSE			0x61
 
 #endif
