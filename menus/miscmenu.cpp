@@ -191,6 +191,7 @@ do {
 	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
 	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
 	m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 	if (gameStates.app.bNostalgia < 2) {
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
 			m.AddText ("", 0);
@@ -220,7 +221,7 @@ do {
 		}
 	gameOpts->gameplay.bEscortHotKeys = m [optEscort].m_value;
 	gameOpts->multi.bUseMacros = m [optUseMacros].m_value;
-	for (int j = 0; j < 3; j++)
+	for (int j = 0; j < 4; j++)
 		if (m [optKeyboard + j].m_value != 0) {
 			gameOpts->input.keyboard.nType = j;
 			break;

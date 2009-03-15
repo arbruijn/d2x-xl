@@ -1848,9 +1848,10 @@ const char *defaultGameTexts [][2] = {
  {"M~Ods aktivieren", "enable m~Ods"},
  {"3D-Sch~Ild-Powerups", "3D Sh~Ield Powerups"},
  {"Bildaufbau: V-Sync", "Framecap: V-Sync"},
- {"qwerty (~Englisch)", "qwerty (~English)"},
- {"qwertz (~Deutsch)", "qwertz (~German)"},
- {"azerty (~Franzoesisch)", "azerty (~French)"},
+ {"~Englisch (qwerty)", "~English (qwerty)"},
+ {"~Deutsch (qwertz)", "~German (qwertz)"},
+ {"~Franzoesisch (azerty)", "~French (azerty)"},
+ {"D~Vorak (U.S.)", "~Dvorak (U.S.)"},
  {"Tastaturlayout", "Keyboard layout"},
 #if 0
  {"", ""},

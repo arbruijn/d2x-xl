@@ -1902,11 +1902,11 @@ void LoadGameTexts(void);
 #define TXT_QWERTY						GT(1105)
 #define TXT_QWERTZ						GT(1106)
 #define TXT_AZERTY						GT(1107)
-#define TXT_KEYBOARD_LAYOUT			GT(1108)
+#define TXT_DVORAK						GT(1108)
+#define TXT_KEYBOARD_LAYOUT			GT(1109)
 
 #if 0
 
-#define TXT_					GT(1109)
 #define TXT_					GT(1110)
 #define TXT_					GT(1111)
 #define TXT_					GT(1112)

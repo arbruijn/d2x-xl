@@ -433,6 +433,69 @@ else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pres
 return keyCode;
 }
 
+//------------------------------------------------------------------------------
+
+typedef struct tKeyMap {
+	SDLKey	inKey, outKey;
+} tKeyMap;
+
+static int KeyDvorak (int keyCode)
+{
+	int keyMap [] = {
+		KEY_A,
+		KEY_X,
+		KEY_J,
+		KEY_E,
+		KEY_PERIOD,
+		KEY_U,
+		KEY_I,
+		KEY_D,
+		KEY_C,
+		KEY_H,
+		KEY_T,
+		KEY_N,
+		KEY_M,
+		KEY_B,
+		KEY_R,
+		KEY_L,
+		KEY_LAPOSTRO,
+		KEY_P,
+		KEY_O,
+		KEY_Y,
+		KEY_G,
+		KEY_K,
+		KEY_COMMA,
+		KEY_Q,
+		KEY_F,
+		KEY_SEMICOLON
+		};
+
+	int flags = keyCode & 0xff00;
+
+keyCode &= 0xff;
+if ((keyCode >= KEY_A) && (keyCode <= KEY_Z))
+	return keyMap [keyCode];
+else if (keyCode == KEY_COMMA)
+	return KEY_W;
+else if (keyCode == KEY_PERIOD)
+	return KEY_W;
+else if (keyCode == KEY_SLASH)
+	return KEY_Z;
+else if (keyCode == KEY_SEMICOLON)
+	return KEY_S;
+else if (keyCode == KEY_LAPOSTRO)
+	return KEY_MINUS;
+else if (keyCode == KEY_LBRACKET)
+	return KEY_SLASH;
+else if (keyCode == KEY_RBRACKET)
+	return KEY_EQUALS;
+else if (keyCode == KEY_MINUS)
+	return KEY_LBRACKET;
+else if (keyCode == KEY_EQUALS)
+	return KEY_RBRACKET;
+return keyCode | flags;
+}
+
 #endif
 
 //------------------------------------------------------------------------------
@@ -543,6 +606,10 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 				}
 			else if (nKeyboard == 2) {
 				if (-1 == (keyCode = KeyFrench (keyCode)))
+					continue;
+				}
+			else if (nKeyboard == 3) {
+				if (-1 == (keyCode = KeyDvorak (keyCode)))
 					continue;
 				}
 #endif
