@@ -187,11 +187,6 @@ do {
 		miscOpts.nExpertMode = m.AddCheck (TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
 		optDemoFmt = m.AddCheck (TXT_OLD_DEMO_FORMAT, gameOpts->demo.bOldFormat, KEY_C, HTX_OLD_DEMO_FORMAT);
 		}
-	m.AddText ("", 0);
-	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 	if (gameStates.app.bNostalgia < 2) {
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
 			m.AddText ("", 0);
@@ -209,6 +204,11 @@ do {
 		*szScreenShots = *(TXT_SCREENSHOTS - 1);
 		miscOpts.nScreenshots = m.AddSlider (szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 		}
+	m.AddText ("", 0);
+	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
 	} while (i >= 0);
