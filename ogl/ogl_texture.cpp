@@ -279,7 +279,7 @@ void CTexture::Release (void)
 if (m_info.handle && (m_info.handle != GLuint (-1))) {
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
-#if 0
+#if 1
 	if (m_info.bmP)
 		m_info.bmP->NeedSetup ();
 #endif
@@ -601,9 +601,9 @@ for (y = 0; y < m_info.h; y++) {
 			}
 		}
 #if DBG
-memset (bufP, 0, (m_info.tw - m_info.w) * bpp);	//erase the entire unused rightmost part of the line
+	memset (bufP, 0, (m_info.tw - m_info.w) * bpp);	//erase the entire unused rightmost part of the line
 #else
-memset (bufP, 0, bpp); //erase one pixel to compensate for rounding problems with the u coordinate
+	memset (bufP, 0, bpp); //erase one pixel to compensate for rounding problems with the u coordinate
 #endif
 	bufP += (m_info.tw - m_info.w) * bpp;
 	}

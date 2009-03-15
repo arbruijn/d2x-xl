@@ -32,11 +32,11 @@ return 1;
 
 void ConvertToRGB (CBitmap* bmP)
 {
-if (bmP->BPP () == 3) {
+if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 	tRgbColorb *rgbP = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 
-	for (int i = bmP->Size (); i; i--, rgbP++, rgbaP++) {
+	for (int i = bmP->Length (); i; i--, rgbP++, rgbaP++) {
 		rgbP->red = rgbaP->red;
 		rgbP->green = rgbaP->blue;
 		rgbP->blue = rgbaP->blue;
