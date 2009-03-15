@@ -205,10 +205,10 @@ else
 
     AC_CHECK_HEADERS(netipx/ipx.h)
 
-  # don't! Check for SDL_image
-  #  AC_CHECK_LIB(SDL_image, IMG_ReadXPMFromArray,
-  #      LIBS="-lSDL_image $LIBS",
-  #      AC_DEFINE(SDL_IMAGE,,[Define if you have the SDL_image library]))
+  # Check for SDL_image
+    AC_CHECK_LIB(SDL_image, IMG_Load,
+        LIBS="-lSDL_image $LIBS",
+        AC_DEFINE(USE_SDL_IMAGE,1,[Define if you have the SDL_image library]))
 
   	# Check for SDL_mixer
    	AC_CHECK_LIB(
