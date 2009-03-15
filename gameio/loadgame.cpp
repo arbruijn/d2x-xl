@@ -673,7 +673,7 @@ return gameStates.app.bAutoRunMission ? 0 :
 
 void UnloadLevelData (int bRestore, bool bQuit)
 {
-//if (bQuit)
+if (bQuit)
 	EndRenderThreads ();
 ResetModFolders ();
 textureManager.Destroy ();
