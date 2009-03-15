@@ -142,6 +142,7 @@ if (ph->bits == 24) {
 	tBGRA	c;
 	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (h - 1);
 
+	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	for (i = h; i; i--) {
 		for (j = w; j; j--, p++) {
 			if (cf.Read (&c, 1, 3) != (size_t) 3)
@@ -288,7 +289,7 @@ avgColorb.green = (ubyte) (avgColor.green / a);
 avgColorb.blue = (ubyte) (avgColor.blue / a);
 bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
-	bmP->DelFlags (BM_FLAG_SEE_THRU);
+	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 #if 0
 if (nAlpha && ((ubyte) (avgAlpha / nAlpha) < 2))
 	bmP->Flags |= BM_FLAG_SEE_THRU;

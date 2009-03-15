@@ -939,6 +939,10 @@ if (cf.Open (szFilename, gameFolders.szDataDir, "rb", 0)) {
 			bm.SetId (j);
 			}
 		else {
+#if DBG
+			if (j == nDbgTexture)
+				nDbgTexture = nDbgTexture;
+#endif
 			ReadBitmap (&bm, int (bm.Width ()) * int (bm.Height ()), &cf, true, false);
 			j = indices [i];
 			bm.SetId (j);
