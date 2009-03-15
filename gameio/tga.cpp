@@ -30,6 +30,25 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void ConvertToRGB (CBitmap* bmP)
+{
+if (bmP->BPP () == 3) {
+	tRgbColorb *rgbP = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
+	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
+
+	for (int i = bmP->Size (); i; i--, rgbP++, rgbaP++) {
+		rgbP->red = rgbaP->red;
+		rgbP->green = rgbaP->blue;
+		rgbP->blue = rgbaP->blue;
+		}
+	bmP->Resize (3 * bmP->Length ());
+	bmP->SetBPP (3);
+	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightness)
 {
 	int				i, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = bmP->BPP ();
@@ -114,7 +133,7 @@ avgColorb.green = (ubyte) (avgColor.green / a);
 avgColorb.blue = (ubyte) (avgColor.blue / a);
 bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
-	bmP->DelFlags (BM_FLAG_SEE_THRU);
+	ConvertToRGB (bmP);
 }
 
 //------------------------------------------------------------------------------
@@ -289,7 +308,7 @@ avgColorb.green = (ubyte) (avgColor.green / a);
 avgColorb.blue = (ubyte) (avgColor.blue / a);
 bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
-	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+	ConvertToRGB (bmP);
 #if 0
 if (nAlpha && ((ubyte) (avgAlpha / nAlpha) < 2))
 	bmP->Flags |= BM_FLAG_SEE_THRU;
