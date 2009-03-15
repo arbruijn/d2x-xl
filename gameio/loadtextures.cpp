@@ -724,7 +724,7 @@ if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
 	UnloadTextures ();
 	goto reloadTextures;
 	}
-if (nIndex >= 0)
+if (!bTGA && (nIndex >= 0))
 	bmP->SetFlags (nFlags);
 bmP->SetId (nIndex);
 #if DBG

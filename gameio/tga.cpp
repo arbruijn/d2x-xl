@@ -48,6 +48,7 @@ avgColor.red = avgColor.green = avgColor.blue = 0;
 if (bmP->BPP () == 3) {
 	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 
+	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	for (i = h * w; i; i--, p++) {
 		::Swap (p->red, p->blue);
 		avgColor.red += p->red;
