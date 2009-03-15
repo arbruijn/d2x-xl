@@ -436,63 +436,55 @@ return keyCode;
 //------------------------------------------------------------------------------
 
 typedef struct tKeyMap {
-	SDLKey	inKey, outKey;
+	int	inKey, outKey;
 } tKeyMap;
 
 static int KeyDvorak (int keyCode)
 {
-	int keyMap [] = {
-		KEY_A,
-		KEY_X,
-		KEY_J,
-		KEY_E,
-		KEY_PERIOD,
-		KEY_U,
-		KEY_I,
-		KEY_D,
-		KEY_C,
-		KEY_H,
-		KEY_T,
-		KEY_N,
-		KEY_M,
-		KEY_B,
-		KEY_R,
-		KEY_L,
-		KEY_LAPOSTRO,
-		KEY_P,
-		KEY_O,
-		KEY_Y,
-		KEY_G,
-		KEY_K,
-		KEY_COMMA,
-		KEY_Q,
-		KEY_F,
-		KEY_SEMICOLON
+	static tKeyMap keyMap [] = {
+		{KEY_A, KEY_A},
+		{KEY_B, KEY_X},
+		{KEY_C, KEY_J},
+		{KEY_D, KEY_E},
+		{KEY_E, KEY_PERIOD},
+		{KEY_F, KEY_U},
+		{KEY_G, KEY_I},
+		{KEY_H, KEY_D},
+		{KEY_I, KEY_C},
+		{KEY_J, KEY_H},
+		{KEY_K, KEY_T},
+		{KEY_L, KEY_N},
+		{KEY_M, KEY_M},
+		{KEY_N, KEY_B},
+		{KEY_O, KEY_R},
+		{KEY_P, KEY_L},
+		{KEY_Q, KEY_RAPOSTRO},
+		{KEY_R, KEY_P},
+		{KEY_S, KEY_O},
+		{KEY_T, KEY_Y},
+		{KEY_U, KEY_G},
+		{KEY_V, KEY_K},
+		{KEY_W, KEY_COMMA},
+		{KEY_X, KEY_Q},
+		{KEY_Y, KEY_F},
+		{KEY_Z, KEY_SEMICOLON},
+		{KEY_COMMA, KEY_W},
+		{KEY_PERIOD, KEY_V},
+		{KEY_SLASH, KEY_Z},
+		{KEY_SEMICOLON, KEY_S},
+		{KEY_LAPOSTRO, KEY_MINUS},
+		{KEY_LBRACKET, KEY_SLASH},
+		{KEY_RBRACKET, KEY_EQUALS},
+		{KEY_MINUS, KEY_LBRACKET},
+		{KEY_EQUALS, KEY_RBRACKET}
 		};
 
 	int flags = keyCode & 0xff00;
 
 keyCode &= 0xff;
-if ((keyCode >= KEY_A) && (keyCode <= KEY_Z))
-	return keyMap [keyCode];
-else if (keyCode == KEY_COMMA)
-	return KEY_W;
-else if (keyCode == KEY_PERIOD)
-	return KEY_W;
-else if (keyCode == KEY_SLASH)
-	return KEY_Z;
-else if (keyCode == KEY_SEMICOLON)
-	return KEY_S;
-else if (keyCode == KEY_LAPOSTRO)
-	return KEY_MINUS;
-else if (keyCode == KEY_LBRACKET)
-	return KEY_SLASH;
-else if (keyCode == KEY_RBRACKET)
-	return KEY_EQUALS;
-else if (keyCode == KEY_MINUS)
-	return KEY_LBRACKET;
-else if (keyCode == KEY_EQUALS)
-	return KEY_RBRACKET;
+for (int i = 0, j = sizeofa (keyMap); i < j; i++)
+	if (keyCode == keyMap [i].inKey)
+		return keyMap [i].outKey;
 return keyCode | flags;
 }
 
