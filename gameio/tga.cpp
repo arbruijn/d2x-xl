@@ -33,15 +33,17 @@ return 1;
 void ConvertToRGB (CBitmap* bmP)
 {
 if ((bmP->BPP () == 4) && bmP->Buffer ()) {
+#if 1
 	tRgbColorb *rgbP = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 
-	for (int i = bmP->Length (); i; i--, rgbP++, rgbaP++) {
+	for (int i = bmP->Length () / 4; i; i--, rgbP++, rgbaP++) {
 		rgbP->red = rgbaP->red;
-		rgbP->green = rgbaP->blue;
+		rgbP->green = rgbaP->green;
 		rgbP->blue = rgbaP->blue;
 		}
-	bmP->Resize (3 * bmP->Length ());
+#endif
+	bmP->Resize (3 * bmP->Size () / 4);
 	bmP->SetBPP (3);
 	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	}
@@ -81,7 +83,8 @@ else {
 	int nSuperTransp;
 
 	bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
-	nFrames = h / w;
+	if (!(nFrames = h / w))
+		nFrames = 1;
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
 		for (i = w * (h / nFrames); i; i--, p++) {
