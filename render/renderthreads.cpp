@@ -31,7 +31,8 @@ COPYRIGHT 0993-0999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 #include "lightmap.h"
 
-#define KILL_RENDER_THREADS 0
+#define KILL_RENDER_THREADS	0
+#define TRANSPRENDER_THREADS	0
 
 tRenderThreadInfo tiRender;
 tTranspRenderThreadInfo tiTranspRender;
@@ -140,6 +141,7 @@ do {
 				ComputeFaceLight (0, gameData.segs.nFaces / 2, nId);
 			}
 		}
+#if UNIFY_THREADS
 	else if (tiRender.nTask == rtEffects) {
 		if (!nId) {
 			DoParticleFrame ();
@@ -154,6 +156,7 @@ do {
 										  tiTranspRender.itemData [nId].nDepth, 
 										  tiTranspRender.itemData [nId].nIndex);
 		}
+#endif
 	else if (tiRender.nTask == rtPolyModel) {
 		short	iVerts, nVerts, iFaceVerts, nFaceVerts;
 
@@ -212,6 +215,7 @@ return 0;
 void StartTranspRenderThread (void)
 {
 #if !UNIFY_THREADS
+#	if TRANSPRENDER_THREADS
 if (gameData.app.bUseMultiThreading [rtTranspRender]) {
 	static bool bInitialized = false;
 
@@ -219,11 +223,17 @@ if (gameData.app.bUseMultiThreading [rtTranspRender]) {
 		memset (&tiTranspRender, 0, sizeof (tiTranspRender));
 		bInitialized = true;
 		}
-	tiTranspRender.ti [0].bDone =
-	tiTranspRender.ti [1].bDone = 0;
-	if (!tiTranspRender.ti [0].pThread)
-		tiTranspRender.ti [0].pThread = SDL_CreateThread (TranspRenderThread, NULL);
+	for (int i = 0; i < 2; i++) {
+	if (!tiTranspRender.ti [i].pThread)
+		tiTranspRender.ti [i].bDone =
+		tiTranspRender.ti [i].bExec = 0;
+		tiTranspRender.ti [i].nId = i;
+		tiTranspRender.ti [i].pThread = SDL_CreateThread (TranspRenderThread, NULL);
+		}
 	}
+#	else
+gameData.app.bUseMultiThreading [rtTranspRender] = 0;
+#	endif
 #endif
 }
 
@@ -231,27 +241,35 @@ if (gameData.app.bUseMultiThreading [rtTranspRender]) {
 
 void EndTranspRenderThread (void)
 {
-if (!tiTranspRender.ti [0].pThread)
-	return;
+#if !UNIFY_THREADS && TRANSPRENDER_THREADS
 tiTranspRender.ti [0].bDone =
 tiTranspRender.ti [1].bDone = 1;
-tiTranspRender.ti [0].bExec =
-tiTranspRender.ti [1].bExec = 0;
 G3_SLEEP (10);
-//SDL_KillThread (tiTranspRender.ti [0].pThread);
-tiTranspRender.ti [0].pThread = NULL;
+for (int i = 0; i < 2; i++) {
+	if (tiTranspRender.ti [i].pThread) {
+		//SDL_KillThread (tiTranspRender.ti [0].pThread);
+		tiTranspRender.ti [i].pThread = NULL;
+		}
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void ControlTranspRenderThread (void)
 {
+#if !UNIFY_THREADS 
+#	if TRANSPRENDER_THREADS
 if (gameStates.app.bMultiThreaded) {
 	if (gameData.app.bUseMultiThreading [rtTranspRender])
 		StartTranspRenderThread ();
 	else
 		EndTranspRenderThread ();
 	}
+#	else
+gameData.app.bUseMultiThreading [rtTranspRender] = 0;
+#	endif
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -266,7 +284,7 @@ if (!bInitialized) {
 	}
 for (int i = 0; i < 2; i++) {
 	if (!tiRender.ti [i].pThread) {
-		tiRender.ti [i].bDone = 0;
+		tiRender.ti [i].bDone =
 		tiRender.ti [i].bExec = 0;
 		tiRender.ti [i].nId = i;
 		tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
@@ -281,8 +299,10 @@ void ControlRenderThreads (void)
 if (gameStates.app.bMultiThreaded) {
 	if (gameData.app.bUseMultiThreading [rtInitSegZRef] ||
 		 gameData.app.bUseMultiThreading [rtSortSegZRef] ||
+#if !UNIFY_THREADS
 		 gameData.app.bUseMultiThreading [rtTranspRender] ||
 		 gameData.app.bUseMultiThreading [rtEffects] ||
+#endif
 		 gameData.app.bUseMultiThreading [rtPolyModel] ||
 		 gameData.app.bUseMultiThreading [rtLightmap])
 		StartRenderThreads ();
@@ -295,12 +315,10 @@ if (gameStates.app.bMultiThreaded) {
 
 void EndRenderThreads (void)
 {
-	int	i;
-
-for (i = 0; i < 2; i++)
-	tiRender.ti [i].bDone = 1;
+tiRender.ti [0].bDone =
+tiRender.ti [1].bDone = 1;
 G3_SLEEP (10);
-for (i = 0; i < 2; i++) {
+for (int i = 0; i < 2; i++) {
 	if (tiRender.ti [i].pThread) {
 		//SDL_KillThread (tiRender.ti [0].pThread);
 		tiRender.ti [i].pThread = NULL;
