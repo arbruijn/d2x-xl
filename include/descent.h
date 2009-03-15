@@ -36,7 +36,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "vld.h"
 #endif
 
-#define USE_SDL_IMAGE	1
+#ifdef _WIN32
+#	define USE_SDL_IMAGE	1
+#endif
 
 #define SHOW_EXIT_PATH  1
 
