@@ -675,6 +675,10 @@ void UnloadLevelData (int bRestore, bool bQuit)
 {
 if (bQuit)
 	EndRenderThreads ();
+else {
+	EndTranspRenderThread ();
+	EndEffectsThread ();
+	}
 ResetModFolders ();
 textureManager.Destroy ();
 gameOpts->render.textures.bUseHires [0] = gameOpts->render.textures.bUseHires [1];
