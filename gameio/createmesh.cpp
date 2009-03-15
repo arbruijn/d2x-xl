@@ -287,12 +287,13 @@ tTriangle *triP;
 int i, nFace = -1;
 short nId = 0;
 
+#if 0
 if (gameStates.render.nMeshQuality) {
 	i = LEVEL_VERTICES + ((gameData.segs.nTris ? gameData.segs.nTris / 2 : gameData.segs.nFaces) << (abs (gameStates.render.nMeshQuality)));
 	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
 		return 0;
 	}
-
+#endif
 for (i = gameData.segs.nTris, grsTriP = TRIANGLES.Buffer (); i; i--, grsTriP++) {
 	if (!(triP = AddTriangle (NULL, grsTriP->index, grsTriP))) {
 		FreeData ();
@@ -425,6 +426,12 @@ int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
 
 memcpy (tris, edgeP->tris, sizeof (tris));
 memcpy (verts, edgeP->verts, sizeof (verts));
+int i = gameData.segs.fVertices.Length ();
+if (gameData.segs.nVertices >= i) {
+	i *= 2;
+	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
+		return 0;
+	}
 gameData.segs.fVertices [gameData.segs.nVertices] = 
 	CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
 gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
