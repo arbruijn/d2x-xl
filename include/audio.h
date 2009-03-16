@@ -381,6 +381,7 @@ class CAudio {
 extern CAudio audio;
 
 void Mix_VolPan (int nChannel, int nVolume, int nPan);
+void SetSoundSources (void);
 
 //------------------------------------------------------------------------------
 

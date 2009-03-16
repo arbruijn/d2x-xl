@@ -568,67 +568,6 @@ if (LOCALPLAYER.timeTotal > I2X (3600)) {
 	}
 }
 
-//------------------------------------------------------------------------------
-
-inline void SetD1Sound (void)
-{
-gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1Sounds && (gameStates.app.bHaveD1Data || gameOpts->sound.bHires [0]);
-}
-
-//------------------------------------------------------------------------------
-
-//go through this level and start any effect sounds
-void SetSoundSources (void)
-{
-	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
-	CSegment*	segP, * connSegP;
-	CObject*		objP;
-	int			nOvlTex, nEffect;
-	//int			i;
-
-SetD1Sound ();
-audio.InitSounds ();		//clear old sounds
-gameStates.sound.bDontStartObjects = 1;
-for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
-			continue;
-		nEffect = (nOvlTex = segP->m_sides [nSide].m_nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
-		if (nEffect < 0)
-			nEffect = gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].nEffectClip;
-		if (nEffect < 0)
-			continue;
-		if ((nSound = gameData.eff.effectP [nEffect].nSound) == -1)
-			continue;
-		nConnSeg = segP->m_children [nSide];
-
-		//check for sound on other CSide of CWall.  Don't add on
-		//both walls if sound travels through CWall.  If sound
-		//does travel through CWall, add sound for lower-numbered
-		//CSegment.
-
-		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
-			 (segP->IsDoorWay (nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
-			connSegP = SEGMENTS + segP->m_children [nSide];
-			nConnSide = segP->ConnectedSide (connSegP);
-			if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)
-				continue;		//skip this one
-			}
-		audio.CreateSegmentSound (nSound, nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / 2);
-		}
-
-if (0 <= (nSound = audio.GetSoundByName ("explode2"))) {
-	FORALL_STATIC_OBJS (objP, i)
-		if (objP->info.nType == OBJ_EXPLOSION) {
-			objP->info.renderType = RT_POWERUP;
-			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
-			audio.CreateObjectSound (nSound, SOUNDCLASS_GENERIC, objP->Index ());
-			}
-	}
-//gameStates.sound.bD1Sound = 0;
-gameStates.sound.bDontStartObjects = 0;
-}
-
 //	------------------------------------------------------------------------------
 
 void SetVertigoRobotFlags (void)
