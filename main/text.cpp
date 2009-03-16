@@ -1852,7 +1852,7 @@ const char *defaultGameTexts [][2] = {
  {"~Deutsch (qwertz)", "~German (qwertz)"},
  {"~Franzoesisch (azerty)", "~French (azerty)"},
  {"D~Vorak (U.S.)", "~Dvorak (U.S.)"},
- {"Tastaturlayout", "Keyboard layout"},
+ {"Tastaturlayout:", "Keyboard layout:"},
 #if 0
  {"", ""},
 #endif
