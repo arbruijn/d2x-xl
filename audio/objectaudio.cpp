@@ -834,7 +834,7 @@ Process ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-inline void SetD1Sound (void)
+void SetD1Sound (void)
 {
 gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1Sounds && (gameStates.app.bHaveD1Data || gameOpts->sound.bHires [0]);
 }
