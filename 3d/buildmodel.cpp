@@ -352,6 +352,10 @@ else
 	memcpy (m_sortedVerts.Buffer (), m_faceVerts.Buffer (), m_sortedVerts.Size ());
 m_bValid = 1;
 if (gameStates.ogl.bHaveVBOs) {
+#if 1
+	m_vertBuf [1].SetBuffer (NULL);
+	m_index [1].SetBuffer (NULL);
+#endif
 	glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 	glUnmapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB);

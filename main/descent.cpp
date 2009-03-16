@@ -425,6 +425,13 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 	switch (gameStates.app.nFunctionMode) {
 		case FMODE_MENU:
 			SetScreenMode (SCREEN_MENU);
+			if (gameStates.app.bAutoRunMission) {
+				if (StartNewGame (1))
+					gameStates.app.nFunctionMode = FMODE_GAME;
+				gameStates.app.bAutoRunMission = 0;
+				if (gameStates.app.nFunctionMode == FMODE_GAME)
+					break;
+				}
 			if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 				NDStartPlayback (NULL);		// Randomly pick a file
 				if (gameData.demo.nState != ND_STATE_PLAYBACK)
@@ -762,10 +769,6 @@ if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) ||
 	Error (TXT_NO_HOG2);
 	}
 LoadGameTexts ();
-if (*szAutoHogFile && *szAutoMission) {
-	hogFileManager.UseMission (szAutoHogFile);
-	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
-	}
 /*---*/PrintLog ("Reading configuration file\n");
 ReadConfigFile ();
 if (!InitGraphics ())
@@ -836,11 +839,6 @@ if (Initialize (argc, argv))
 DoSelectPlayer ();
 StartSoundThread (); //needs to be repeated here due to dependency on data read in DoSelectPlayer()
 paletteManager.DisableEffect ();
-// handle direct loading and starting of a mission specified via the command line
-if (gameStates.app.bAutoRunMission) {
-	gameStates.app.nFunctionMode = StartNewGame (1) ? FMODE_GAME : FMODE_MENU;
-	gameStates.app.bAutoRunMission = 0;
-	}
 // handle automatic launch of a demo playback
 if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 	NDStartPlayback (gameData.demo.fnAuto);	
@@ -850,10 +848,15 @@ if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 //do this here because the demo code can do a __asm int 3; longjmp when trying to
 //autostart a demo from the main menu, never having gone into the game
 setjmp (gameExitPoint);
-/*---*/PrintLog ("Invoking main menu\n");
 if (gameStates.app.bNostalgia)
 	backgroundManager.Rebuild ();
 gameStates.app.bInitialized = 1;
+// handle direct loading and starting of a mission specified via the command line
+if (*szAutoHogFile && *szAutoMission) {
+	hogFileManager.UseMission (szAutoHogFile);
+	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
+	}	
+/*---*/PrintLog ("Invoking main menu\n");
 MainLoop ();
 CleanUp ();
 return 0;		//presumably successful exit

@@ -663,10 +663,11 @@ return pszFilename;
 
 char *LevelSongName (int nLevel)
 {
-return gameStates.app.bAutoRunMission ? 0 :
-			(nLevel < 0) ?
-			gameData.missions.szSongNames [-nLevel-1] :
-			gameData.missions.szSongNames [nLevel-1];
+return gameStates.app.bAutoRunMission 
+		 ? "" 
+		 : (nLevel < 0) 
+			? gameData.missions.szSongNames [-nLevel-1] 
+			: gameData.missions.szSongNames [nLevel-1];
 }
 
 //------------------------------------------------------------------------------
@@ -1108,8 +1109,10 @@ gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
 InitMultiPlayerObject (0);
-if (!StartNewLevel (nLevel, true))
+if (!StartNewLevel (nLevel, true)) {
+	gameStates.app.bAutoRunMission = 0;
 	return 0;
+	}
 LOCALPLAYER.startingLevel = nLevel;		// Mark where they started
 GameDisableCheats ();
 InitSeismicDisturbances ();

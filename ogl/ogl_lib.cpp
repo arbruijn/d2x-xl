@@ -808,19 +808,19 @@ backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Show ("Setting up renderer...");
 ResetTextures (1, bGame);
-gameData.models.Destroy ();
-gameData.models.Prepare ();
 InitShaders ();
-#if LIGHTMAPS
-if (lightmapManager.HaveLightmaps ())
-	lightmapManager.BindAll ();
-#endif
-gpgpuLighting.End ();
-gpgpuLighting.Begin ();
-OglCreateDrawBuffer ();
-cameraManager.Create ();
-InitSpheres ();
-cockpit->Rebuild ();
+if (bGame) {
+	gameData.models.Destroy ();
+	gameData.models.Prepare ();
+	if (bGame && lightmapManager.HaveLightmaps ())
+		lightmapManager.BindAll ();
+	gpgpuLighting.End ();
+	gpgpuLighting.Begin ();
+	OglCreateDrawBuffer ();
+	cameraManager.Create ();
+	InitSpheres ();
+	cockpit->Rebuild ();
+	}
 //gameData.models.Prepare ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Clear ();

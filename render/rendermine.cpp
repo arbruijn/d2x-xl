@@ -980,7 +980,7 @@ if (SHOW_SHADOWS &&
 	}
 else
 #endif
- {
+	{
 	if (gameStates.render.nRenderPass < 0)
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 	else {
@@ -1429,45 +1429,38 @@ gameStates.render.bDoLightmaps = gameStates.render.color.bLightmapsOk &&
 											!IsMultiGame;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 PROF_END(ptAux)
+
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
+
 	if (RENDERPATH) {
-	//PrintLog  ("ResetSegmentLights\n");
 		lightManager.ResetSegmentLights ();
-#if 1
 		if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting ||
-			 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight))
-#endif
-		 {
-		//PrintLog  ("ComputeFaceLight\n");
+			 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight)) {
 			if (gameStates.render.bTriangleMesh || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 			else
 				ComputeFaceLight (0, gameData.segs.nFaces, 0);
 			}
 		PROF_START
-		//PrintLog  ("UpdateSlidingFaces\n");
 		UpdateSlidingFaces ();
 		PROF_END(ptAux);
 		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 			meshBuilder.BuildVBOs ();
 
-		//PrintLog  ("transparencyRenderer.InitBuffer\n");
 		transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
 		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
 												  !(gameStates.render.bFullBright || automap.m_bDisplay);
 		}
 	}
-//PrintLog  ("RenderSegmentList (0,1)\n");
+
 RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !RENDERPATH)
 	RenderSkyBox (nWindow);
-//PrintLog  ("RenderSegmentList (1,1)\n");
 RenderSegmentList (1, 1);		// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
 		glDepthFunc (GL_LEQUAL);
-		//PrintLog  ("RenderSegmentList (2,1)\n");
 		RenderSegmentList (2, 1);	// render transparent geometry
 		glDepthFunc (GL_LESS);
 		}
@@ -1482,7 +1475,6 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		glDepthFunc (GL_LEQUAL);
 		if (!nWindow) {
 			glDepthMask (0);
-			//PrintLog  ("RenderSegmentList (3,1)\n");
 			RenderSegmentList (3, 1);
 			glDepthMask (1);
 			}

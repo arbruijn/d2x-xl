@@ -472,6 +472,10 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
+#if DBG
+		if (!pmf)
+			return;
+#endif
 		if (bTextured && (nBitmap != pmf->m_nBitmap)) {
 			if (0 > (nBitmap = pmf->m_nBitmap))
 				glDisable (GL_TEXTURE_2D);
@@ -753,7 +757,9 @@ int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp,
 
 if (!objP)
 	return 0;
-#if 1//def _DEBUG
+#ifdef _DEBUG
+if (nModel != 134)
+	return 1;
 if (nModel == nDbgModel)
 	nDbgModel = nModel;
 #endif
@@ -840,8 +846,7 @@ if (bUseVBO) {
 	if (pm->m_vboIndexHandle)
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->m_vboIndexHandle);
 	}
-else
- {
+else {
 	if (!gameStates.render.bCloaked) {
 		glTexCoordPointer (2, GL_FLOAT, 0, pm->m_vbTexCoord.Buffer ());
 		if (gameOpts->ogl.bObjLighting)
