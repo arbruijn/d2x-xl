@@ -472,10 +472,6 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
-#if DBG
-		if (!pmf)
-			return;
-#endif
 		if (bTextured && (nBitmap != pmf->m_nBitmap)) {
 			if (0 > (nBitmap = pmf->m_nBitmap))
 				glDisable (GL_TEXTURE_2D);
