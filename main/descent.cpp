@@ -106,7 +106,7 @@ CGameData		gameData;
 
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
 
-void check_joystick_calibration (void);
+void checkjoystickcalibration (void);
 
 void ShowOrderForm (void);
 void quit_request ();
@@ -438,7 +438,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				Error ("No demo files were found for autodemo mode!");
 				}
 			else {
-				check_joystick_calibration ();
+				checkjoystickcalibration ();
 				paletteManager.ClearEffect ();		//I'm not sure why we need this, but we do
 				//SetRenderQuality (0);
 				MainMenu ();
@@ -864,7 +864,7 @@ return 0;		//presumably successful exit
 
 // ----------------------------------------------------------------------------
 
-void check_joystick_calibration ()
+void checkjoystickcalibration (void)
 {
 #if 0//ndef _WIN32
 	int x1, y1, x2, y2, c;
