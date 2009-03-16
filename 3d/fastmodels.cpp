@@ -758,8 +758,6 @@ int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp,
 if (!objP)
 	return 0;
 #ifdef _DEBUG
-if (nModel != 134)
-	return 1;
 if (nModel == nDbgModel)
 	nDbgModel = nModel;
 #endif

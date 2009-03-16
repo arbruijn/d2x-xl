@@ -538,24 +538,24 @@ if (m_bDisplay < 0) {
 	m_data.viewTarget = playerP->info.position.vPos;
 	t1 = xEntryTime = TimerGetFixedSeconds ();
 	t2 = t1;
-	BuildEdgeList ();
-	//Fill in m_visited [0] from OBJECTS [LOCALPLAYER.nObject].nSegment
-	if (m_bRadar) {
-		for (i = 0; i < gameData.segs.nSegments; i++)
-			automap.m_visible [i] = 1;
-		}
-	else if (automap.m_bFull) {
-		for (i = 0; i < gameData.segs.nSegments; i++)
-			automap.m_visible [i] = 1;
-		}
-	else
-		memcpy (automap.m_visible.Buffer (), m_visited [0].Buffer (), m_visited [0].Size ());
-	//m_visited [0][OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
-	m_nSegmentLimit =
-	m_nMaxSegsAway = 
-		SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
-	AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 	}
+BuildEdgeList ();
+//Fill in m_visited [0] from OBJECTS [LOCALPLAYER.nObject].nSegment
+if (m_bRadar) {
+	for (i = 0; i < gameData.segs.nSegments; i++)
+		automap.m_visible [i] = 1;
+	}
+else if (automap.m_bFull) {
+	for (i = 0; i < gameData.segs.nSegments; i++)
+		automap.m_visible [i] = 1;
+	}
+else
+	memcpy (automap.m_visible.Buffer (), m_visited [0].Buffer (), m_visited [0].Size ());
+//m_visited [0][OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
+m_nSegmentLimit =
+m_nMaxSegsAway = 
+	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
+AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 m_bDisplay++;
 return gameData.app.bGamePaused;
 }
