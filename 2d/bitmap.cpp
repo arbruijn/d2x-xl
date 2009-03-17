@@ -93,6 +93,7 @@ if (m_info.texP == &m_info.texture)
 	ReleaseTexture ();
 else
 	m_info.texP = NULL;
+m_info.texture.Init ();
 m_info.texture.SetBitmap (NULL);
 }
 
@@ -502,6 +503,23 @@ if ((w <= 0) || (w > Width ()))
 if ((h <= 0) || (h > Height ()))
 	h = Height ();
 Render (dest ? dest : CCanvas::Current (), x, y, w, h, 0, 0, w, h); 
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::NeedSetup (void)
+{ 
+m_info.bSetup = false; 
+m_info.nMasks = 0; 
+if (m_info.overrideP)
+	m_info.overrideP->NeedSetup ();
+else {
+	CBitmap* bmfP = m_info.frames.bmP;
+
+	if (bmfP)
+		for (int i = m_info.frames.nCount; i; i--, bmfP++)
+			bmfP->NeedSetup ();
+	}
 }
 
 //------------------------------------------------------------------------------

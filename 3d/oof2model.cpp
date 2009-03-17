@@ -159,8 +159,8 @@ m_nModel = nModel;
 m_textures = po->m_textures.m_bitmaps;
 m_nTextures = po->m_textures.m_nBitmaps;
 for (i = 0, bmP = m_textures.Buffer (); i < m_nTextures; i++, bmP++) {
+	bmP->Texture ()->SetBitmap (bmP);
 	po->m_textures.m_bitmaps [i].ShareBuffer (*bmP);
-	bmP->SetupTexture ();
 	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = -1;

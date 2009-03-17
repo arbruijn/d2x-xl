@@ -272,10 +272,7 @@ class CBitmap : public CArray< ubyte > {
 			}
 		inline void SetTexture (CTexture *texP) { m_info.texP = texP; }
 		inline void ResetTexture (void) { m_info.texP = &m_info.texture; }
-		inline void NeedSetup (void) { 
-			m_info.bSetup = false; 
-			m_info.nMasks = 0; 
-			}
+		void NeedSetup (void);
 		inline CPalette* Palette (void) { return m_info.palette ? m_info.palette : paletteManager.Default (); }
 
 		CBitmap *CreateMask (void);
