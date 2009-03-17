@@ -954,8 +954,9 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 			if (dist < damage/2) {
 				dist = FindConnectedDistance (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
-				if ((dist > 0) && (dist < damage / 2))
-					segP->CheckEffectBlowup (nSide, pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
+				if ((dist > 0) && (dist < damage / 2) &&
+					 segP->CheckEffectBlowup (nSide, pnt, OBJECTS + objP->cType.laserInfo.parent.nObject, 1))
+						segP->OperateTrigger (nSide, OBJECTS + objP->cType.laserInfo.parent.nObject, 1);
 				}
 			}
 		}
