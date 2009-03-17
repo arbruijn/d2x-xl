@@ -72,10 +72,10 @@ void SetPosFromReturnSegment (int bRelink);
 void UnloadLevelData (int bRestore = 0, bool bQuit = true);
 void AddPlayerLoadout (void);
 
-void GameStartRemoveUnusedPlayers ();
+void GameStartRemoveUnusedPlayers (void);
 
-extern void ShowHelp();
-extern void UpdatePlayerStats();
+void ShowHelp (void);
+void UpdatePlayerStats (void);
 
 // from scores.c
 
