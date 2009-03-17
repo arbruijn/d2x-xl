@@ -1009,7 +1009,7 @@ if (!(m_names.Create (nBitmaps)))
 if (!(m_nTeam.Create (nBitmaps)))
 	return false;
 m_nBitmaps = nBitmaps;
-m_bitmaps.Clear ();
+//m_bitmaps.Clear ();
 m_names.Clear ();
 m_nTeam.Clear ();
 return true;

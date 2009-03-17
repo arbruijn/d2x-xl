@@ -147,7 +147,9 @@ if (gameStates.ogl.bHaveVBOs && m_vboDataHandle)
 	glDeleteBuffersARB (1, &m_vboDataHandle);
 if (gameStates.ogl.bHaveVBOs && m_vboIndexHandle)
 	glDeleteBuffersARB (1, &m_vboIndexHandle);
-
+#if DBG
+if (m_textures.Buffer ())
+#endif
 m_textures.Destroy ();
 m_sortedVerts.Destroy ();
 m_index [0].Destroy ();

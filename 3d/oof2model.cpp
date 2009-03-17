@@ -139,6 +139,8 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 int CModel::BuildFromOOF (CObject *objP, int nModel)
 {
 	OOF::CModel*	po = gameData.models.modelToOOF [1][nModel];
+	CBitmap*			bmP;
+	int				i;
 
 if (!po) {
 	po = gameData.models.modelToOOF [0][nModel];
@@ -155,8 +157,11 @@ if (!Create ())
 GetOOFModelItems (nModel, po, /*((nModel == 108) || (nModel == 110)) ? 0.805f :*/ 1.0f);
 m_nModel = nModel;
 m_textures = po->m_textures.m_bitmaps;
-for (int i = 0; i < po->m_textures.m_nBitmaps; i++)
-	po->m_textures.m_bitmaps [i].ShareBuffer (m_textures [i]);
+m_nTextures = po->m_textures.m_nBitmaps;
+for (i = 0, bmP = m_textures.Buffer (); i < m_nTextures; i++, bmP++) {
+	bmP->Texture ()->SetBitmap (bmP);
+	po->m_textures.m_bitmaps [i].ShareBuffer (*bmP);
+	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = -1;
 gameData.models.polyModels [0][nModel].SetRad (Size (objP, 1));

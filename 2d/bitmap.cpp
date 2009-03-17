@@ -125,6 +125,7 @@ void CBitmap::Init (void)
 
 memset (&m_info, 0, sizeof (m_info));
 m_info.texP = &m_info.texture;
+m_info.texture.SetBitmap (this);
 sprintf (szSignature, "Bitmap %d", nSignature++);
 SetName (szSignature);
 }
