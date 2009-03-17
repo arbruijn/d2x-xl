@@ -553,7 +553,27 @@
 		A46A14920F4CABBC009E4719 /* netmisc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012770F3F93EA00D04D61 /* netmisc.cpp */; };
 		A48165DA0E21F3C900F8360E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A48165D80E21F3C900F8360E /* InfoPlist.strings */; };
 		A4A347700F59471B00A5943E /* hmpfile.h in Headers */ = {isa = PBXBuildFile; fileRef = A4A3476F0F59471B00A5943E /* hmpfile.h */; };
+		A4C050F50F6F41070054A743 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70723358093CAC7300601454 /* SDL.framework */; };
+		A4C050F60F6F41070054A743 /* SDL_mixer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A44E22020F63862400271B39 /* SDL_mixer.framework */; };
+		A4C051060F6F41FD0054A743 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4C051050F6F41FD0054A743 /* SDL_image.framework */; };
+		A4C051090F6F42010054A743 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A4C051050F6F41FD0054A743 /* SDL_image.framework */; };
+		A4C0512D0F6F4FA40054A743 /* SDL_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A44E22020F63862400271B39 /* SDL_mixer.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A4C051000F6F411A0054A743 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A4C050F50F6F41070054A743 /* SDL.framework in CopyFiles */,
+				A4C050F60F6F41070054A743 /* SDL_mixer.framework in CopyFiles */,
+				A4C051090F6F42010054A743 /* SDL_image.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -1121,6 +1141,7 @@
 		A46A13FD0F4CA2A4009E4719 /* udp_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = udp_interface.cpp; sourceTree = "<group>"; };
 		A48165D90E21F3C900F8360E /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = io/macosx/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A4A3476F0F59471B00A5943E /* hmpfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmpfile.h; sourceTree = "<group>"; };
+		A4C051050F6F41FD0054A743 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_image.framework; path = /Library/Frameworks/SDL_image.framework; sourceTree = "<absolute>"; };
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		B2F67F1E04C773E400A80002 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -1134,6 +1155,8 @@
 				705340B409321DDF006BD186 /* OpenGL.framework in Frameworks */,
 				705340B509321DDF006BD186 /* GLUT.framework in Frameworks */,
 				70723359093CAC7300601454 /* SDL.framework in Frameworks */,
+				A4C051060F6F41FD0054A743 /* SDL_image.framework in Frameworks */,
+				A4C0512D0F6F4FA40054A743 /* SDL_mixer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1144,6 +1167,7 @@
 			isa = PBXGroup;
 			children = (
 				70723358093CAC7300601454 /* SDL.framework */,
+				A4C051050F6F41FD0054A743 /* SDL_image.framework */,
 				A44E22020F63862400271B39 /* SDL_mixer.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				B2F67ED704C74A3F00A80002 /* OpenGL.framework */,
@@ -2304,6 +2328,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 705340B609321DDF006BD186 /* Build configuration list for PBXNativeTarget "d2x-xl" */;
 			buildPhases = (
+				A4C051000F6F411A0054A743 /* CopyFiles */,
 				70533F8E09321DDF006BD186 /* Headers */,
 				7053402009321DDF006BD186 /* Resources */,
 				7053402209321DDF006BD186 /* Sources */,
@@ -2722,14 +2747,15 @@
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					"/Library/Frameworks/SDL.framework//**",
+					"/Library/Frameworks/SDL_image.framework//**",
+					"/Library/Frameworks/SDL_mixer.framework//**",
+				);
 				INFOPLIST_FILE = io/macosx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = (
-					"-weak_framework",
-					SDL_mixer,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "d2x-xl";
 				USER_HEADER_SEARCH_PATHS = "";
 				WARNING_CFLAGS = (
@@ -2748,14 +2774,15 @@
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = (
+					"/Library/Frameworks/SDL.framework//**",
+					"/Library/Frameworks/SDL_image.framework//**",
+					"/Library/Frameworks/SDL_mixer.framework//**",
+				);
 				INFOPLIST_FILE = io/macosx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = (
-					"-weak_framework",
-					SDL_mixer,
-				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "d2x-xl";
 				STRIP_INSTALLED_PRODUCT = YES;
 				USER_HEADER_SEARCH_PATHS = "";

@@ -3,6 +3,8 @@
 /* Set to 1 to use SDL Mixer */
 #define USE_SDL_MIXER 1
 
+#define USE_SDL_IMAGE 1
+
 /* Define to enable console */
 #define CONSOLE
 #define TRACE 1
