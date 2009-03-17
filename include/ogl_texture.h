@@ -100,6 +100,7 @@ class CTexture {
 		inline int TH (void) { return m_info.th; }
 		inline bool Registered (void) { return m_bRegistered; }
 		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
+		inline CBitmap* Bitmap (void) { return m_info.bmP; }
 		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 
 		inline void SetHandle (GLuint handle) { m_info.handle = handle; }
