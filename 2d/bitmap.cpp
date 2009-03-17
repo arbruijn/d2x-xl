@@ -511,6 +511,9 @@ void CBitmap::NeedSetup (void)
 { 
 m_info.bSetup = false; 
 m_info.nMasks = 0; 
+if (m_info.parentP && (m_info.parentP != this))
+	m_info.parentP->NeedSetup ();
+#if 0
 if (m_info.overrideP)
 	m_info.overrideP->NeedSetup ();
 else {
@@ -520,6 +523,7 @@ else {
 		for (int i = m_info.frames.nCount; i; i--, bmfP++)
 			bmfP->NeedSetup ();
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

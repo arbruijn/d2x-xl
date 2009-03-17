@@ -1341,7 +1341,7 @@ bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 	CBitmap *bmP;
 
 #if DBG
-if (strstr (m_info.szName, "slowmo"))
+if (strstr (m_info.szName, "pwr02"))
 	nDbgTexture = nDbgTexture;
 #endif
 
