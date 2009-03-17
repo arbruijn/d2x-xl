@@ -125,6 +125,10 @@ int CModel::BuildFromASE (CObject *objP, int nModel)
 	CBitmap*			bmP;
 	int				i, j;
 
+#if DBG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 if (!pa) {
 	pa = gameData.models.modelToASE [0][nModel];
 	if (!pa)
@@ -142,8 +146,8 @@ m_nModel = nModel;
 m_textures = pa->m_textures.m_bitmaps;
 m_nTextures = pa->m_textures.m_nBitmaps;
 for (i = 0, bmP = m_textures.Buffer (); i < m_nTextures; i++, bmP++) {
-	bmP->Texture ()->SetBitmap (bmP);
 	pa->m_textures.m_bitmaps [i].ShareBuffer (*bmP);
+	bmP->SetupTexture ();
 	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 for (i = 0; i < m_nTextures; i++)
