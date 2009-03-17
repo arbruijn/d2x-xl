@@ -1815,8 +1815,11 @@ transformation.Push ();
 nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = I2X (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
-	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
+	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP)) {
+		automap.m_bDisplay = -1;
 		automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
+		automap.m_bDisplay = 0;
+		}
 	else
 		RenderFrame (0, nWindow + 1);
 	}

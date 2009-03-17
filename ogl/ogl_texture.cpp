@@ -1183,6 +1183,8 @@ else {
 #if DBG
 	if (!strcmp (m_info.szName, "sparks.tga"))
 		nDbgSeg = nDbgSeg;
+	if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
+		nDbgTexture = nDbgTexture;
 #endif
 	m_info.frames.bmP = new CBitmap [nFrames];
 

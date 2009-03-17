@@ -296,19 +296,23 @@ for (int i = 0; i < 2; i++) {
 
 void ControlRenderThreads (void)
 {
+#if 0
 if (gameStates.app.bMultiThreaded) {
 	if (gameData.app.bUseMultiThreading [rtInitSegZRef] ||
 		 gameData.app.bUseMultiThreading [rtSortSegZRef] ||
-#if !UNIFY_THREADS
+#	if !UNIFY_THREADS
 		 gameData.app.bUseMultiThreading [rtTranspRender] ||
 		 gameData.app.bUseMultiThreading [rtEffects] ||
-#endif
+#	endif
 		 gameData.app.bUseMultiThreading [rtPolyModel] ||
 		 gameData.app.bUseMultiThreading [rtLightmap])
 		StartRenderThreads ();
 	else
 		EndRenderThreads ();
 	}
+#else
+StartRenderThreads ();
+#endif
 }
 
 //------------------------------------------------------------------------------
