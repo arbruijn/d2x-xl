@@ -1339,6 +1339,11 @@ bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
 	CBitmap *bmP;
 
+#if DBG
+if (strstr (m_info.szName, "slowmo"))
+	nDbgTexture = nDbgTexture;
+#endif
+
 if ((bmP = HasOverride ()))
 	return bmP->SetupTexture (bMipMaps, bLoad);
 

@@ -529,8 +529,8 @@ if ((mask = Mask ())) {
 
 int CBitmap::FreeHiresFrame (int bD1)
 {
-
-gameData.pig.tex.bitmaps [bD1][Id ()].SetOverride (NULL);
+if (m_info.nId < 0x8000)
+	gameData.pig.tex.bitmaps [bD1][m_info.nId].SetOverride (NULL);
 ReleaseTexture ();
 FreeMask ();
 SetType (0);
