@@ -1195,14 +1195,12 @@ else {
 		bmfP->InitChild (this, 0, i * w, w, w);
 		bmfP->SetType (BM_TYPE_FRAME);
 		bmfP->SetTop (0);
-		nFlags = 0;
+		nFlags = BM_FLAG_TGA;
 		if (m_info.transparentFrames [i / 32] & (1 << (i % 32)))
-			nFlags |= BM_FLAG_TRANSPARENT;
+			nFlags |= BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU;
 		if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
-			nFlags |= BM_FLAG_SUPER_TRANSPARENT;
-		if (nFlags)
-			nFlags |= BM_FLAG_SEE_THRU;
-		bmfP->SetFlags (nFlags | BM_FLAG_TGA);
+			nFlags |= BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU;
+		bmfP->SetFlags (nFlags);
 		bmfP->SetTranspType (m_info.nTranspType);
 		bmfP->NeedSetup ();
 		if (bLoad)
