@@ -50,25 +50,25 @@ extern int Num_effects [2];
 extern tEffectClip Effects [2][MAX_EFFECTS];
 
 // Set up special effects.
-extern fix EffectFrameTime (tEffectClip *ec);
+extern fix EffectFrameTime (tEffectClip* ecP);
 
 // Set up special effects.
-extern void InitSpecialEffects();
+extern void InitSpecialEffects (void);
 
 // Clear any active one-shots
-void ResetSpecialEffects();
+void ResetSpecialEffects (void);
 
 // Function called in game loop to do effects.
-extern void DoSpecialEffects();
+extern void DoSpecialEffects (bool bSetup = false);
 
 // Restore bitmap
-extern void RestoreEffectBitmapIcons();
+extern void RestoreEffectBitmapIcons (void);
 
 //stop an effect from animating.  Show first frame.
 void StopEffect(int effect_num);
 
 //restart a stopped effect
-void RestartEffect(int effect_num);
+void RestartEffect (int nEffect);
 
 /*
  * reads n tEffectClip structs from a CFILE

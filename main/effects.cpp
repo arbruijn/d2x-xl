@@ -194,15 +194,15 @@ return bmP;
 
 // ----------------------------------------------------------------------------
 
-void DoSpecialEffects (void)
+void DoSpecialEffects (bool bSetup)
 {
 	static fix xEffectTime = 0;
 
 xEffectTime += gameData.time.xFrame;
 //if (gameStates.app.tick40fps.bTick) 
  {
-		CBitmap		*bmP = NULL;
-		tEffectClip				*ecP;
+		CBitmap*			bmP = NULL;
+		tEffectClip*	ecP;
 		tBitmapIndex	bmi;
 		fix				ft;
 		int				i, t, nFrames;
@@ -210,18 +210,16 @@ xEffectTime += gameData.time.xFrame;
 	for (i = 0, ecP = gameData.eff.effectP.Buffer (); i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++, ecP++) {
 		if ((t = ecP->changingWallTexture) == -1)
 			continue;
-		if (ecP->flags & EF_STOPPED)
-			continue;
-		ecP->time_left -= (fix) (xEffectTime /  gameStates.gameplay.slowmo [0].fSpeed);
-		if (ecP->time_left > 0)
-			continue;
-		if (!(ft = EffectFrameTime (ecP)))
-			continue;
+		if (!bSetup) {
+			if (ecP->flags & EF_STOPPED)
+				continue;
+			ecP->time_left -= (fix) (xEffectTime /  gameStates.gameplay.slowmo [0].fSpeed);
+			if (ecP->time_left > 0)
+				continue;
+			if (!(ft = EffectFrameTime (ecP)))
+				continue;
+			}
 		nFrames = ecP->vc.nFrameCount;
-#if DBG
-		if (i == 15)
-			i = 15;
-#endif
 		if (ecP->flags & EF_ALTFMT) {
 			if (ecP->flags & EF_INITIALIZED) {
 				bmP = gameData.pig.tex.bitmapP [ecP->vc.frames [0].index].Override ();
@@ -287,10 +285,12 @@ xEffectTime += gameData.time.xFrame;
 	for (i = 0, ecP = gameData.eff.effects [0].Buffer (); i < gameData.eff.nEffects [0]; i++, ecP++) {
 		if ((t = ecP->changingObjectTexture) == -1)
 			continue;
-		if (ecP->flags & EF_STOPPED)
-			continue;
-		ecP->time_left -= xEffectTime;
-		ft = EffectFrameTime (ecP);
+		if (!bSetup) {
+			if (ecP->flags & EF_STOPPED)
+				continue;
+			ecP->time_left -= xEffectTime;
+			ft = EffectFrameTime (ecP);
+			}
 		nFrames = ecP->vc.nFrameCount;
 		if (ecP->flags & EF_ALTFMT) {
 			if (ecP->flags & EF_INITIALIZED) {
