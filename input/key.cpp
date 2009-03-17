@@ -341,7 +341,7 @@ static int KeyGerman (int keyCode)
 {
 if (keyCode == KEY_Z)
 	return KEY_Y;
-else if (keyCode == KEY_Z)
+else if (keyCode == KEY_Y)
 	return KEY_Z;
 else if (keyCode == KEY_SEMICOLON)
 	return -1;
@@ -411,7 +411,7 @@ else if (keyCode == KEY_LBRACKET)
 	return -1;
 else if (keyCode == KEY_SLASH)
 	return -1;
-else if (keyCode & KEY_SHIFTED) {
+else if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]) {
 	int h = keyCode & 0xFF;
 	if (h == KEY_COMMA)
 		return KEY_PERIOD;
@@ -510,7 +510,22 @@ keyState = (event->state == SDL_PRESSED); //  !(wInfo & KF_UP);
 //=====================================================
 
 for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
-	keyCode = i;
+#if UNICODE_KEYS == 0
+	if (nKeyboard == 1) {
+		if (-1 == (keyCode = KeyGerman (i)))
+			continue;
+		}
+	else if (nKeyboard == 2) {
+		if (-1 == (keyCode = KeyFrench (i)))
+			continue;
+		}
+	else if (nKeyboard == 3) {
+		if (-1 == (keyCode = KeyDvorak (i)))
+			continue;
+		}
+	else
+#endif
+		keyCode = i;
 	keyP = keyData.keys + keyCode;
 
 #if UNICODE_KEYS
@@ -591,20 +606,6 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 		if (temp >= KEY_BUFFER_SIZE) 
 			temp = 0;
 		if (temp != keyData.nKeyHead) {
-#if UNICODE_KEYS == 0
-			if (nKeyboard == 1) {
-				if (-1 == (keyCode = KeyGerman (keyCode)))
-					continue;
-				}
-			else if (nKeyboard == 2) {
-				if (-1 == (keyCode = KeyFrench (keyCode)))
-					continue;
-				}
-			else if (nKeyboard == 3) {
-				if (-1 == (keyCode = KeyDvorak (keyCode)))
-					continue;
-				}
-#endif
 #if DBG
 			if ((i == KEY_LSHIFT) || (i == KEY_RSHIFT) || 
 				 (i == KEY_LALT) || (i == KEY_RALT) || 

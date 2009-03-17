@@ -967,7 +967,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const ch
 	k = KeyInKey ();
 	if (k == KEY_ESC)
 		return KCAssignControl (item, BT_NONE, 255);
-	if (k == KEY_ALTED+KEY_F9) {
+	if (k == KEY_PRINT_SCREEN) {
 		SaveScreenShot (NULL, 0);
 		return KCAssignControl (item, BT_NONE, 255);
 		}
