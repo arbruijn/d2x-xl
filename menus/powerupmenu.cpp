@@ -119,15 +119,13 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (gameOpts->render.powerups.b3D) {
-		if (optShieldSpheres >= 0)
-			gameOpts->render.powerups.b3DShields = m [optShieldSpheres].m_value != 0;
-		if (optSpin >= 0) {
-			for (j = 0; j < 4; j++)
-				if (m [optSpin + j].m_value) {
-					gameOpts->render.powerups.nSpin = j;
-					break;
-				}
+	if (optShieldSpheres >= 0)
+		gameOpts->render.powerups.b3DShields = m [optShieldSpheres].m_value != 0;
+	if (optSpin >= 0) {
+		for (j = 0; j < 4; j++)
+			if (m [optSpin + j].m_value) {
+				gameOpts->render.powerups.nSpin = j;
+				break;
 			}
 		}
 	} while (i == -2);

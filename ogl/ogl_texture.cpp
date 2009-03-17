@@ -315,6 +315,7 @@ if (m_bRegistered) {
 	}
 else if (m_prev || m_next)
 	m_prev = m_next = NULL;
+m_info.bmP = NULL;
 Init ();
 }
 
