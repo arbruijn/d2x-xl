@@ -393,9 +393,11 @@ if (!bmBot)
 	return faceP->color.alpha < 1.0f;
 if (faceP->bTransparent || faceP->bAdditive)
 	return 1;
-if (bmTop && (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT))
+if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU)))
+	return 0;
+if (!bmTop)
 	return 1;
-if (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU))
+if (bmTop->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU))
 	return 1;
 return 0;
 }

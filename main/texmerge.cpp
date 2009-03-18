@@ -474,7 +474,7 @@ const char *texMergeFS [6] = {
 	"void main(void){" \
 	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
 	"decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
-	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
+	"texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
 	"gl_FragColor = bMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*gl_Color;\r\n" \
 	"}"
 	};
@@ -542,10 +542,10 @@ if (!(gameStates.ogl.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 int G3SetupTexMergeShader (int bColorKey, int bColored, int nType)
 {
-int nShader = nType - 1;
+int nShader = nType - 1 + bColored * 3;
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
-	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader + bColored * 3]);
+	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader]);
 	}
 glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 0);
 glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1);

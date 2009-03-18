@@ -749,8 +749,10 @@ else {
 	if (gameStates.app.bD1Mission) {
 		/*---*/PrintLog ("   loading Descent 1 textures\n");
 		LoadD1Textures ();
+#if 0
 		if (bLoadTextures)
 			LoadLevelTextures ();
+#endif
 		}
 	else {
 		if (bLoadTextures)

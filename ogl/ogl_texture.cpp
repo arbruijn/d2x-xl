@@ -1351,8 +1351,8 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 		return false;
 	}
 else if (!Frames ()) {
-	h = CreateMasks ();
 	CreateFrames (bMipMaps, bLoad);
+	h = CreateMasks ();
 	if (h) {
 		if (bLoad) {
 			CBitmap*	bmfP = Frames ();
@@ -1377,6 +1377,8 @@ bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 #if DBG
 if (strstr (m_info.szName, "pwr02"))
 	nDbgTexture = nDbgTexture;
+if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
+	nDbgTexture = nDbgTexture;
 #endif
 
 switch (m_info.nType) {
@@ -1389,10 +1391,12 @@ switch (m_info.nType) {
 		break;
 
 	case BM_TYPE_ALT:	// alternative (hires) textures
-		if (!(m_info.bSetup || SetupFrames (bMipMaps, bLoad)))
+		if (!(m_info.bSetup || SetupFrames (bMipMaps, bLoad)))	
 			return false;
 		if ((bmP = HasOverride ()))
 			return bmP->SetupTexture (bMipMaps, bLoad);
+		if (bLoad)
+			return Prepared () || !PrepareTexture (bMipMaps, bLoad);
 		return true;
 
 	case BM_TYPE_FRAME:	// hires frame

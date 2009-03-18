@@ -1188,8 +1188,8 @@ gameData.app.bGamePaused = 0;
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (i) {
-	RebuildRenderContext (1);
 	SetRenderQuality ();
+	RebuildRenderContext (1);
 	if (bQuick)
 		HUDInitMessage (TXT_QUICKLOAD);
 	}

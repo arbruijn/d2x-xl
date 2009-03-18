@@ -1023,7 +1023,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3,
 				ResetShader ();
 			}
 		else
-			G3SetupShader (faceP, 0, 0, bDecal > 0, bmBot != NULL,
+			G3SetupShader (faceP, 0, mask != NULL, bDecal > 0, bmBot != NULL,
 								(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
 								m_data.bTextured ? NULL : faceP ? &faceP->color : item->color);
 #if 0
