@@ -169,7 +169,7 @@ if (!gameData.hoard.bInitialized) {
 	ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip;
 	*ecP = gameData.eff.effects [0][94];        //copy from blue goal
 	ecP->changingWallTexture = gameData.pig.tex.nTextures [0];
-	ecP->vc.nFrameCount = gameData.hoard.goal.nFrames;
+	ecP->vClipInfo.nFrameCount = gameData.hoard.goal.nFrames;
 	ecP->flags &= ~EF_INITIALIZED;
 
 	i = gameData.pig.tex.nTextures [0];
@@ -183,7 +183,7 @@ if (!gameData.hoard.bInitialized) {
 	gameData.hoard.goal.bm.SetBuffer (bmDataP, 0, gameData.hoard.goal.nSize);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
-		ecP->vc.frames [i].index = nBitmap;
+		ecP->vClipInfo.frames [i].index = nBitmap;
 		InitHoardBitmap (gameData.pig.tex.bitmaps [0] + nBitmap, 
 							  gameData.hoard.goal.nWidth, 
 							  gameData.hoard.goal.nHeight, 
@@ -219,7 +219,7 @@ palette.Read (cf);
 gameData.hoard.goal.palette = paletteManager.Add (palette);
 bmDataP = gameData.hoard.goal.bm.Buffer ();
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
-	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
+	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + ecP->vClipInfo.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
 	bmP->Read (cf, gameData.hoard.goal.nFrameSize);

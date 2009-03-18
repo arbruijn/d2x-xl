@@ -211,8 +211,8 @@ gameData.eff.nEffects [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
 ReadEffectClips (gameData.eff.effects [0], gameData.eff.nEffects [0], cf);
 // red glow texture animates way too fast
-gameData.eff.effects [0][32].vc.xTotalTime *= 10;
-gameData.eff.effects [0][32].vc.xFrameTime *= 10;
+gameData.eff.effects [0][32].vClipInfo.xTotalTime *= 10;
+gameData.eff.effects [0][32].vClipInfo.xFrameTime *= 10;
 gameData.walls.nAnims [0] = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d CWall animations\n", gameData.walls.nAnims [0]);
 ReadWallClips (gameData.walls.anims [0], gameData.walls.nAnims [0], cf);

@@ -71,15 +71,15 @@ void LoadWallEffectTextures (int nTexture)
 
 for (int i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
-		LoadVClipTextures (&ecP->vc, gameStates.app.bD1Data);
+		LoadVClipTextures (&ecP->vClipInfo, gameStates.app.bD1Data);
 		if (ecP->nDestBm>= 0)
 			LoadBitmap (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->nDestVClip>= 0)
 			LoadVClipTextures (&gameData.eff.vClipP [ecP->nDestVClip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->nDestEClip>= 0)
-			LoadVClipTextures (&gameData.eff.effectP [ecP->nDestEClip].vc, gameStates.app.bD1Data); //what tEffectClip to play when exploding
+			LoadVClipTextures (&gameData.eff.effectP [ecP->nDestEClip].vClipInfo, gameStates.app.bD1Data); //what tEffectClip to play when exploding
 		if (ecP->nCritClip>= 0)
-			LoadVClipTextures (&gameData.eff.effectP [ecP->nCritClip].vc, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
+			LoadVClipTextures (&gameData.eff.effectP [ecP->nCritClip].vClipInfo, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
 		}
 	}
 }
@@ -92,7 +92,7 @@ void LoadObjectEffectTextures (int nTexture)
 
 for (int i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 	if (ecP->changingObjectTexture == nTexture)
-		LoadVClipTextures (&ecP->vc, 0);
+		LoadVClipTextures (&ecP->vClipInfo, 0);
 }
 
 //------------------------------------------------------------------------------
