@@ -84,12 +84,12 @@ int CCamera::DisableBuffer (void)
 #if RENDER2TEXTURE == 1
 if (!OglDisablePBuffer (&m_info.pb))
 	return 0;
-if (!m_info.buffer.glTexture)
+if (!m_info.buffer.Prepared ())
 	PrepareTexture (&m_info.buffer, 0, -1, 0, &m_info.pb);
 #elif RENDER2TEXTURE == 2
 if (!m_info.fbo.Disable ())
 	return 0;
-if (!m_info.buffer.Texture ()) {
+if (!m_info.buffer.Prepared ()) {
 	m_info.buffer.SetTranspType (-1);
 	m_info.buffer.PrepareTexture (0, 0, &m_info.fbo);
 	}
