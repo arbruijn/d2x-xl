@@ -1400,7 +1400,7 @@ switch (m_info.nType) {
 
 	case BM_TYPE_FRAME:	// hires frame
 		if (m_info.bSetup)
-			return Prepared () || !PrepareTexture (bMipMaps);
+			return Prepared () || !PrepareTexture (bMipMaps, bLoad);
 		break;
 	}
 return false;
