@@ -1371,7 +1371,7 @@ return m_info.bSetup = true;
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::SetupTexture (int bMipMaps, int bLoad, int nDepth)
+bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
 	CBitmap *bmP;
 
@@ -1382,25 +1382,25 @@ if (strstr (m_info.szName, "pwr02"))
 
 bmP = HasOverride ();
 
-switch (nDepth) {
-	case 0: // primary (low res) texture
+switch (m_info.nType) {
+	case BM_TYPE_STD: // primary (low res) texture
 		if (bmP)
-			return bmP->SetupTexture (bMipMaps, bLoad, 1);
+			return bmP->SetupTexture (bMipMaps, bLoad);
 		if (m_info.bSetup)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
 		return SetupFrames (bMipMaps, bLoad);
 		break;
 
-	case 1:	// alternative (hires) textures
+	case BM_TYPE_ALT:	// alternative (hires) textures
 		if (!m_info.bSetup)
 			return SetupFrames (bMipMaps, bLoad);
 		if (bmP)
-			return bmP->SetupTexture (bMipMaps, bLoad, 2);
+			return bmP->SetupTexture (bMipMaps, bLoad);
 		break;
 
-	case 2:	// hires frame
+	case BM_TYPE_FRAME:	// hires frame
 		if (m_info.bSetup)
-			return Prepared () || !PrepareTexture (bMipMaps, 0);
+			return Prepared () || !PrepareTexture (bMipMaps);
 		break;
 	}
 return false;

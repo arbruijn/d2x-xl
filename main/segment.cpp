@@ -899,7 +899,7 @@ int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blowerP, 
 	CBitmap*			bmP;
 	CWall*			wallP;
 	CTrigger*		trigP;
-	CObject*			parentP = (blowerP->cType.laserInfo.parent.nObject < 0) ? NULL : OBJECTS + blowerP->cType.laserInfo.parent.nObject;
+	CObject*			parentP = (!blowerP || (blowerP->cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + blowerP->cType.laserInfo.parent.nObject;
 	//	If this CWall has a CTrigger and the blowerP-upper is not the CPlayerData or the buddy, abort!
 
 if (parentP) {

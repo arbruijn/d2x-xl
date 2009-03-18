@@ -279,7 +279,7 @@ class CBitmap : public CArray< ubyte > {
 		int CreateMasks (void);
 		int CreateFrames (int bMipMaps, int bLoad);
 		bool SetupFrames (int bMipMaps, int bLoad);
-		bool SetupTexture (int bMipMaps, int bLoad, int nDepth = 0);
+		bool SetupTexture (int bMipMaps, int bLoad);
 		int LoadTexture (int dxo, int dyo, int superTransp);
 #if RENDER2TEXTURE == 1
 		int PrepareTexture (int bMipMap, int bMask, CBO *renderBuffer = NULL);
