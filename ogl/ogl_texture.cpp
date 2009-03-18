@@ -1351,7 +1351,7 @@ if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	}
 else if (!Frames ()) {
 	h = CreateMasks ();
-	SetupFrames (bMipMaps, bLoad);
+	CreateFrames (bMipMaps, bLoad);
 	if (h) {
 		if (bLoad) {
 			CBitmap*	bmfP = Frames ();
@@ -1364,6 +1364,7 @@ else if (!Frames ()) {
 			}
 		}
 	}
+return m_info.bSetup = true;
 }
 
 //------------------------------------------------------------------------------
