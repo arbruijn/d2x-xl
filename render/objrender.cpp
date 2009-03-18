@@ -288,7 +288,7 @@ return fScale;
 
 void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
-	CBitmap*		bmP;
+	CBitmap*		bmP, * bmoP;
 	CTexture*	texP;
 	tRgbaColorf	color;
 	int			nType = objP->info.nType;
@@ -350,10 +350,10 @@ else {
 	}
 if (!bmP->SetupTexture (1, 1))
 	return;
-if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && bmP->Override ())) {
+if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))) {
 	//bmoP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
-	bmP = bmP->Override (iFrame);
+	bmP = bmoP->SetCurFrame (iFrame);
 	//fAlpha = 1;
 	}
 if (!bmP)
@@ -404,10 +404,10 @@ else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 	color.alpha = fAlpha;
 	if (bmP->Width () > bmP->Height ())
 		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), 
-						 iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
 		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, 
-						 iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	}
 else {
 	if (bmP->Width () > bmP->Height ())

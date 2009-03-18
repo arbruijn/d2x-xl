@@ -104,6 +104,8 @@ void *pickupHandler [MAX_POWERUP_TYPES];
 
 //------------------------------------------------------------------------------
 
+static int nDbgMinFrame = 0;
+
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 {
 if (vcP) {
@@ -121,11 +123,15 @@ if (vcP) {
 			vciP->nCurFrame -= h;
 		else
 			vciP->nCurFrame += h;
-		if (vciP->nCurFrame < 0)
+		if (vciP->nCurFrame < nDbgMinFrame)
 			vciP->nCurFrame = nFrames - (-vciP->nCurFrame % nFrames);
 		else 
 			vciP->nCurFrame %= nFrames;
 		}
+#if DBG
+	if (vciP->nCurFrame < nDbgMinFrame)
+		vciP->nCurFrame = nDbgMinFrame;
+#endif
 	vciP->xFrameTime = xTime;
 	xPowerupTime = 0;
 	}
@@ -152,6 +158,10 @@ else {
 		else 
 			vciP->nCurFrame %= nFrames;
 		}
+#if DBG
+	if (vciP->nCurFrame < nDbgMinFrame)
+		vciP->nCurFrame = nDbgMinFrame;
+#endif
 	}
 }
 

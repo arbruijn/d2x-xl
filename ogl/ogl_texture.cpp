@@ -1205,7 +1205,6 @@ else {
 		bmfP->SetFlags (nFlags);
 		bmfP->SetTranspType (m_info.nTranspType);
 		bmfP->SetStatic (1);	// don't unload because this is just a child texture
-		bmfP->NeedSetup ();
 		if (bLoad)
 			bmfP->PrepareTexture (bMipMaps, 0, NULL);
 		}
@@ -1380,11 +1379,9 @@ if (strstr (m_info.szName, "pwr02"))
 	nDbgTexture = nDbgTexture;
 #endif
 
-bmP = HasOverride ();
-
 switch (m_info.nType) {
 	case BM_TYPE_STD: // primary (low res) texture
-		if (bmP)
+		if ((bmP = HasOverride ()))
 			return bmP->SetupTexture (bMipMaps, bLoad);
 		if (m_info.bSetup)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
@@ -1392,16 +1389,18 @@ switch (m_info.nType) {
 		break;
 
 	case BM_TYPE_ALT:	// alternative (hires) textures
-		if (!m_info.bSetup)
-			return SetupFrames (bMipMaps, bLoad);
-		if (bmP)
+		if (!(m_info.bSetup || SetupFrames (bMipMaps, bLoad)))
+			return false;
+		if ((bmP = HasOverride ()))
 			return bmP->SetupTexture (bMipMaps, bLoad);
-		break;
+		return true;
 
 	case BM_TYPE_FRAME:	// hires frame
-		if (m_info.bSetup)
+		if (m_info.parentP->m_info.frames.currentP - m_info.parentP->m_info.frames.bmP >= m_info.parentP->m_info.frames.nCount)
+			return false;
+		if (bLoad)
 			return Prepared () || !PrepareTexture (bMipMaps, bLoad);
-		break;
+		return true;
 	}
 return false;
 }
