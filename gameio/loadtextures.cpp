@@ -584,7 +584,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "targ01b#0"))
+if (strstr (bmName, "pwr02#0"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
@@ -595,7 +595,7 @@ else {
 bTGA = 0;
 nFlags = (nIndex < 0) ? 0 : gameData.pig.tex.bitmapFlags [bD1][nIndex];
 if (bmP->Texture ())
-	bmP->Texture ()->Destroy ();
+	bmP->Texture ()->Release ();
 bmP->SetBPP (1);
 
 if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0])) &&
@@ -800,7 +800,7 @@ return 1;
 
 int PiggyBitmapPageIn (int bmi, int bD1, bool bHires)
 {
-	CBitmap*	bmP;
+	CBitmap*	bmP, * bmoP;
 	int		i, bmiSave;
 
 	//bD1 = gameStates.app.bD1Mission;
@@ -824,7 +824,9 @@ if (bitmapOffsets [bD1][bmi] == 0)
 if (bmi == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
-bmP = gameData.pig.tex.bitmaps [bD1][bmi].Override (-1);
+bmP = &gameData.pig.tex.bitmaps [bD1][bmi];
+if (bmoP = bmP->Override ())
+	bmP = bmoP;
 while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1, bHires)))
 	G3_SLEEP (0);
 if (!i)

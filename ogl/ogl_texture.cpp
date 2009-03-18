@@ -315,7 +315,7 @@ if (m_bRegistered) {
 	}
 else if (m_prev || m_next)
 	m_prev = m_next = NULL;
-m_info.bmP = NULL;
+//m_info.bmP = NULL;
 Init ();
 }
 
@@ -1192,6 +1192,7 @@ else {
 	int		i, w = m_info.props.w;
 	CBitmap* bmfP = m_info.frames.currentP = m_info.frames.bmP;
 
+	m_info.frames.nCurrent = 0;
 	for (i = 0; i < nFrames; i++, bmfP++) {
 		bmfP->InitChild (this, 0, i * w, w, w);
 		bmfP->SetType (BM_TYPE_FRAME);
@@ -1203,6 +1204,7 @@ else {
 			nFlags |= BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU;
 		bmfP->SetFlags (nFlags);
 		bmfP->SetTranspType (m_info.nTranspType);
+		bmfP->SetStatic (1);	// don't unload because this is just a child texture
 		bmfP->NeedSetup ();
 		if (bLoad)
 			bmfP->PrepareTexture (bMipMaps, 0, NULL);
@@ -1369,7 +1371,7 @@ return m_info.bSetup = true;
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::SetupTexture (int bMipMaps, int bLoad, bool bSetup)
+bool CBitmap::SetupTexture (int bMipMaps, int bLoad, int nDepth)
 {
 	CBitmap *bmP;
 
@@ -1378,17 +1380,30 @@ if (strstr (m_info.szName, "pwr02"))
 	nDbgTexture = nDbgTexture;
 #endif
 
-if (bSetup) {
-	if (m_info.bSetup)
-		return Prepared () || !PrepareTexture (bMipMaps, 0);
-	if (!SetupFrames (bMipMaps, bLoad))
-		return false;
+bmP = HasOverride ();
+
+switch (nDepth) {
+	case 0: // primary (low res) texture
+		if (bmP)
+			return bmP->SetupTexture (bMipMaps, bLoad, 1);
+		if (m_info.bSetup)
+			return Prepared () || !PrepareTexture (bMipMaps, 0);
+		return SetupFrames (bMipMaps, bLoad);
+		break;
+
+	case 1:	// alternative (hires) textures
+		if (!m_info.bSetup)
+			return SetupFrames (bMipMaps, bLoad);
+		if (bmP)
+			return bmP->SetupTexture (bMipMaps, bLoad, 2);
+		break;
+
+	case 2:	// hires frame
+		if (m_info.bSetup)
+			return Prepared () || !PrepareTexture (bMipMaps, 0);
+		break;
 	}
-if ((bmP = HasOverride ()))
-	return bmP->SetupTexture (bMipMaps, bLoad, true);
-else if (!(bSetup || SetupFrames (bMipMaps, bLoad)))
-	return false;
-return true;
+return false;
 }
 
 //------------------------------------------------------------------------------
