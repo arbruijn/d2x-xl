@@ -953,7 +953,7 @@ if (!bPermaTrigger)
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordEffectBlowup (Index (), nSide, vHit);
 if (nSwitchType) {
-	xDestSize = ecP->dest_size;
+	xDestSize = ecP->xDestSize;
 	vc = ecP->nDestVClip;
 	}
 else {
@@ -969,7 +969,7 @@ if (nSwitchType) {
 	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.eff.effectP [ecP->nDestEClip].nSegment == -1)) {
 		tEffectClip	*newEcP = gameData.eff.effectP + ecP->nDestEClip;
 		int nNewBm = newEcP->changingWallTexture;
-		newEcP->time_left = EffectFrameTime (newEcP);
+		newEcP->xTimeLeft = EffectFrameTime (newEcP);
 		newEcP->nCurFrame = 0;
 		newEcP->nSegment = Index ();
 		newEcP->nSide = nSide;
