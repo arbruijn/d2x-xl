@@ -430,10 +430,10 @@ if (objP->info.xLifeLeft > 0)
 //what tVideoClip does this explode with?
 short GetExplosionVClip (CObject *objP, int stage)
 {
-if (objP->info.nType==OBJ_ROBOT) {
-	if (stage==0 && ROBOTINFO (objP->info.nId).nExp1VClip>-1)
+if (objP->info.nType == OBJ_ROBOT) {
+	if ((stage == 0) && (ROBOTINFO (objP->info.nId).nExp1VClip > -1))
 		return ROBOTINFO (objP->info.nId).nExp1VClip;
-	else if (stage==1 && ROBOTINFO (objP->info.nId).nExp2VClip>-1)
+	else if ((stage == 1) && (ROBOTINFO (objP->info.nId).nExp2VClip > -1))
 		return ROBOTINFO (objP->info.nId).nExp2VClip;
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))

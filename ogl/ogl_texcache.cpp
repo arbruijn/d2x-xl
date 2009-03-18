@@ -53,12 +53,13 @@ if (modelP)
 
 //------------------------------------------------------------------------------
 
-static void OglCacheVClipTextures (tVideoClip* vc, int nTranspType)
+static void OglCacheVClipTextures (tVideoClip* vcP, int nTranspType)
 {
 	int	h;
 
-for (int i = 0; i < vc->nFrameCount; i++) {
-	LoadBitmap (h = vc->frames [i].index, 0);
+SetupHiresVClip (vcP, NULL);
+for (int i = 0; i < vcP->nFrameCount; i++) {
+	LoadBitmap (h = vcP->frames [i].index, 0);
 	gameData.pig.tex.bitmaps [0][h].SetTranspType (nTranspType);
 	gameData.pig.tex.bitmaps [0][h].SetupTexture (1, bLoadTextures);
 	}

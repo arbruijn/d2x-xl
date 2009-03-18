@@ -29,19 +29,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_INITIALIZED	32
 
 typedef struct tEffectClip {
-	tVideoClip   vc;             //embedded tVideoClip
-	fix     time_left;      //for sequencing
-	int     nCurFrame;      //for sequencing
-	short   changingWallTexture;      //Which element of Textures array to replace.
-	short   changingObjectTexture;    //Which element of ObjBitmapPtrs array to replace.
-	int     flags;          //see above
-	int     nCritClip;      //use this clip instead of above one when mine critical
-	int     nDestBm;    //use this bitmap when monitor destroyed
-	int     nDestVClip;     //what tVideoClip to play when exploding
-	int     nDestEClip;     //what tEffectClip to play when exploding
-	fix     dest_size;      //3d size of explosion
-	int     nSound;      //what sound this makes
-	int     nSegment,nSide; //what seg & CSide, for one-shot clips
+	tVideoClip	vClipInfo;             //embedded tVideoClip
+	fix			xTimeLeft;      //for sequencing
+	int			nCurFrame;      //for sequencing
+	short			changingWallTexture;      //Which element of Textures array to replace.
+	short			changingObjectTexture;    //Which element of ObjBitmapPtrs array to replace.
+	int			flags;          //see above
+	int			nCritClip;      //use this clip instead of above one when mine critical
+	int			nDestBm;    //use this bitmap when monitor destroyed
+	int			nDestVClip;     //what tVideoClip to play when exploding
+	int			nDestEClip;     //what tEffectClip to play when exploding
+	fix			xDestSize;      //3d size of explosion
+	int			nSound;      //what sound this makes
+	int			nSegment,nSide; //what seg & CSide, for one-shot clips
 } __pack__ tEffectClip;
 
 typedef tEffectClip D1_eclip;
