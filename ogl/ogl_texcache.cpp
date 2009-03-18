@@ -59,16 +59,17 @@ static void OglCacheVClipTextures (tVideoClip* vcP, int nTranspType)
 	int		h;
 
 for (int i = 0; i < vcP->nFrameCount; i++) {
-	LoadBitmap (h = vcP->frames [i].index, 0);
 #if DBG
+	h = vcP->frames [i].index;
 	if ((nDbgTexture >= 0) && (h == nDbgTexture))
 		nDbgTexture = nDbgTexture;
 #endif
+	LoadBitmap (h = vcP->frames [i].index, 0);
 	bmP = &gameData.pig.tex.bitmaps [0][h];
 	bmP->SetTranspType (nTranspType);
 	bmP->SetupTexture (1, bLoadTextures);
 	if (!i && bmP->Override ())
-		SetupHiresVClip (vcP, NULL, bmP);
+		SetupHiresVClip (vcP, NULL, bmP->Override ());
 	}
 }
 

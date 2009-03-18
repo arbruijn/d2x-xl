@@ -137,7 +137,7 @@ return NULL;
 
 CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObject, int *pnFrames, CBitmap* bmP)
 {
-	CBitmap*	hbmP, * pBitmaps;
+	CBitmap*	hbmP, * bitmapP;
 	int		h, i, j, iBaseFrame, nBmFrames, nFrameStep;
 
 if (!(bmP || (bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame))))
@@ -147,10 +147,10 @@ if (bmP->FrameCount () < 2)
 bmP->SetTranspType (-1);
 bmP->SetupTexture (1, 1);
 if (gameOpts->ogl.bGlTexMerge) {
-	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0].Buffer () : gameData.pig.tex.bitmapP.Buffer ();
+	bitmapP = bObject ? gameData.pig.tex.bitmaps [0].Buffer () : gameData.pig.tex.bitmapP.Buffer ();
 	for (i = 0; i < nFrames; i++) {
-		j = BM_INDEX (frameP, i, bIndirect, bObject);
-		hbmP = pBitmaps + j;
+		j = BM_INDEX (frameP, i, bIndirect, bObject > 0);
+		hbmP = bitmapP + j;
 		if (hbmP->Override () != bmP) {
 			hbmP->FreeHiresAnimation (gameStates.app.bD1Data && !bObject);
 			hbmP->SetOverride (bmP);

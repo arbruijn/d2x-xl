@@ -81,7 +81,7 @@ if (vcP->flags & WCF_ALTFMT) {
 		nFrames = ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent ()) ? bmP->Parent ()->FrameCount () : bmP->FrameCount ();
 		}
 	else {
-		bmP = SetupHiresAnim (reinterpret_cast<short*> (vcP->frames), nFrames, -1, 0, 1, &nFrames, bmP);
+		bmP = SetupHiresAnim (reinterpret_cast<short*> (vcP->frames), nFrames, -1, 0, vciP ? 1 : -1, &nFrames, bmP);
 		if (!bmP)
 			vcP->flags &= ~WCF_ALTFMT;
 		else if (!gameOpts->ogl.bGlTexMerge)

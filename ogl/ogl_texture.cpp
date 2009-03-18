@@ -1173,7 +1173,7 @@ return m_info.texP->Handle () == 0;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::SetupFrames (int bMipMaps, int bLoad)
+int CBitmap::CreateFrames (int bMipMaps, int bLoad)
 {
 	int	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.frames.nCount : 0;
 	ubyte	nFlags;
@@ -1336,29 +1336,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
+bool CBitmap::SetupFrames (int bMipMaps, int bLoad)
 {
-	CBitmap *bmP;
-
-#if DBG
-if (strstr (m_info.szName, "pwr02"))
-	nDbgTexture = nDbgTexture;
-#endif
-
-if ((bmP = HasOverride ()))
-	return bmP->SetupTexture (bMipMaps, bLoad);
-
-if (m_info.bSetup)
-	return Prepared () || !PrepareTexture (bMipMaps, 0);
-m_info.bSetup = true;
-
-	int	h, w, nFrames;
-
-h = m_info.props.h;
-w = m_info.props.w;
+int h = m_info.props.h;
+int w = m_info.props.w;
 if (!(h * w))
 	return false;
-nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
+int nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (bLoad && PrepareTexture (bMipMaps, 0, NULL))
 		return false;
@@ -1380,7 +1364,30 @@ else if (!Frames ()) {
 			}
 		}
 	}
-return m_info.bSetup = true;
+}
+
+//------------------------------------------------------------------------------
+
+bool CBitmap::SetupTexture (int bMipMaps, int bLoad, bool bSetup)
+{
+	CBitmap *bmP;
+
+#if DBG
+if (strstr (m_info.szName, "pwr02"))
+	nDbgTexture = nDbgTexture;
+#endif
+
+if (bSetup) {
+	if (m_info.bSetup)
+		return Prepared () || !PrepareTexture (bMipMaps, 0);
+	if (!SetupFrames (bMipMaps, bLoad))
+		return false;
+	}
+if ((bmP = HasOverride ()))
+	return bmP->SetupTexture (bMipMaps, bLoad, true);
+else if (!(bSetup || SetupFrames (bMipMaps, bLoad)))
+	return false;
+return true;
 }
 
 //------------------------------------------------------------------------------
