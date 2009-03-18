@@ -260,7 +260,7 @@ else {
 	i = 0;
 	}
 for (h = gameData.eff.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
-	for (j = ecP->vc.nFrameCount, frameP = ecP->vc.frames; j > 0; j--, frameP++)
+	for (j = ecP->vClipInfo.nFrameCount, frameP = ecP->vClipInfo.frames; j > 0; j--, frameP++)
 		if (frameP->index == tNum) {
 #if 0
 			int t = FindTextureByIndex (tNum);
@@ -659,7 +659,7 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 					while ((ecP = FindEffect (ecP, nIndex))) {
 						//e->vc.nFrameCount = nFrames;
 						ecP->flags |= EF_ALTFMT;
-						//ecP->vc.flags |= WCF_ALTFMT;
+						//ecP->vClipInfo.flags |= WCF_ALTFMT;
 						}
 					if (!ecP) {
 						if ((wcP = FindWallAnim (nIndex))) {

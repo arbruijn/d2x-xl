@@ -209,7 +209,7 @@ for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 int OglCacheLevelTextures (void)
 {
 	int				i, j, bD1;
-	tEffectClip*	ec;
+	tEffectClip*	ecP;
 	int				max_efx = 0, ef;
 	int				nSegment, nSide;
 	short				nBaseTex, nOvlTex;
@@ -229,14 +229,14 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0, ec = gameData.eff.effects [bD1].Buffer (); i < gameData.eff.nEffects [bD1]; i++, ec++) {
 		if ((ec->changingWallTexture == -1) && (ec->changingObjectTexture == -1))
 			continue;
-		if (ec->vc.nFrameCount > max_efx)
-			max_efx = ec->vc.nFrameCount;
+		if (ecP->vClipInfo.nFrameCount > max_efx)
+			max_efx = ecP->vClipInfo.nFrameCount;
 		}
 	for (ef = 0; ef < max_efx; ef++)
 		for (i = 0, ec = gameData.eff.effects [bD1].Buffer (); i < gameData.eff.nEffects [bD1]; i++, ec++) {
 			if ((ec->changingWallTexture == -1) && (ec->changingObjectTexture == -1))
 				continue;
-			ec->time_left = -1;
+			ec->xTimeLeft = -1;
 			}
 	}
 
