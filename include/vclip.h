@@ -54,7 +54,7 @@ void DrawVClipObject (CObject *objP, fix timeleft, int lighted, int vclip_num, t
 void DrawWeaponVClip (CObject *objP);
 void DrawExplBlast (CObject *objP);
 void ConvertWeaponToVClip (CObject *objP);
-int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP = NULL);
+int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP, CBitmap* bmP = NULL);
 tRgbColorb *VClipColor (CObject *objP);
 
 void ReadVideoClip (tVideoClip& vc, CFile& cf);

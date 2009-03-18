@@ -55,13 +55,20 @@ if (modelP)
 
 static void OglCacheVClipTextures (tVideoClip* vcP, int nTranspType)
 {
-	int	h;
+	CBitmap*	bmP;
+	int		h;
 
-SetupHiresVClip (vcP, NULL);
 for (int i = 0; i < vcP->nFrameCount; i++) {
 	LoadBitmap (h = vcP->frames [i].index, 0);
-	gameData.pig.tex.bitmaps [0][h].SetTranspType (nTranspType);
-	gameData.pig.tex.bitmaps [0][h].SetupTexture (1, bLoadTextures);
+#if DBG
+	if ((nDbgTexture >= 0) && (h == nDbgTexture))
+		nDbgTexture = nDbgTexture;
+#endif
+	bmP = &gameData.pig.tex.bitmaps [0][h];
+	bmP->SetTranspType (nTranspType);
+	bmP->SetupTexture (1, bLoadTextures);
+	if (!i && bmP->Override ())
+		SetupHiresVClip (vcP, NULL, bmP);
 	}
 }
 
@@ -71,6 +78,10 @@ static void OglCacheVClipTextures (int i, int nTransp)
 {
 if ((i >= 0) && !bVClipLoaded [i]) {
 	bVClipLoaded [i] = true;
+#if DBG
+	if (i == 19)
+		i = i;
+#endif
 	OglCacheVClipTextures (&gameData.eff.vClips [0][i], nTransp);
 	}
 }

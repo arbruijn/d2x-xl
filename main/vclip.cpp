@@ -71,18 +71,17 @@ return bmP->GetAvgColor ();
 
 //------------------------------------------------------------------------------
 
-int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP)
+int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP, CBitmap* bmP)
 {
 	int nFrames = vcP->nFrameCount;
 
 if (vcP->flags & WCF_ALTFMT) {
-	CBitmap	*bmP;
 	if (vcP->flags & WCF_INITIALIZED) {
 		bmP = gameData.pig.tex.bitmaps [0][vcP->frames [0].index].Override ();
 		nFrames = ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent ()) ? bmP->Parent ()->FrameCount () : bmP->FrameCount ();
 		}
 	else {
-		bmP = SetupHiresAnim (reinterpret_cast<short*> (vcP->frames), nFrames, -1, 0, 1, &nFrames);
+		bmP = SetupHiresAnim (reinterpret_cast<short*> (vcP->frames), nFrames, -1, 0, 1, &nFrames, bmP);
 		if (!bmP)
 			vcP->flags &= ~WCF_ALTFMT;
 		else if (!gameOpts->ogl.bGlTexMerge)

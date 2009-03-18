@@ -135,12 +135,12 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObject, int *pnFrames)
+CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObject, int *pnFrames, CBitmap* bmP)
 {
-	CBitmap*	bmP, * hbmP, * pBitmaps;
+	CBitmap*	hbmP, * pBitmaps;
 	int		h, i, j, iBaseFrame, nBmFrames, nFrameStep;
 
-if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
+if (!(bmP || (bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame))))
 	return NULL;
 if (bmP->FrameCount () < 2)
 	return NULL;

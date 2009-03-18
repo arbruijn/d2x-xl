@@ -76,7 +76,7 @@ void RestartEffect (int nEffect);
 void ReadEffectClip (tEffectClip& ec, CFile& cf);
 int ReadEffectClips (CArray<tEffectClip>& ec, int n, CFile& cf);
 
-CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);
+CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames, CBitmap* bmP = NULL);
 void ResetPogEffects (void);
 void CacheObjectEffects (void);
 
