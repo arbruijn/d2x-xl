@@ -2927,7 +2927,7 @@ typedef struct tHoardItem {
 class CHoardData {
 	public:
 		int			bInitialized;
-		int			nBitmaps;
+		int			nTextures;
 		tHoardItem	orb;
 		tHoardItem	icon [2];
 		tHoardItem	goal;

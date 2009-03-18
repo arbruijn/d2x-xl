@@ -135,7 +135,8 @@ if (!gameData.hoard.bInitialized) {
 	gameData.hoard.goal.nHeight = 64;
 	CalcHoardItemSizes (gameData.hoard.goal);
 	nBitmap = gameData.pig.tex.nBitmaps [0];
-	//Create orb tVideoClip
+	
+	//Create orb animation clip
 	gameData.hoard.orb.nClip = gameData.eff.nClips [0]++;
 	Assert (gameData.eff.nClips [0] <= MAX_VCLIPS);
 	vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
@@ -157,13 +158,15 @@ if (!gameData.hoard.bInitialized) {
 							  bmDataP);
 		bmDataP += gameData.hoard.orb.nFrameSize;
 		}
+	
 	//Create hoard orb powerup
 	ptP = gameData.objs.pwrUp.info + POW_HOARD_ORB;
 	ptP->nClipIndex = gameData.hoard.orb.nClip;
 	ptP->hitSound = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
 	ptP->size = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size;
 	ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
-	//Create orb goal CWall effect
+	
+	//Create orb goal wall effect
 	gameData.hoard.goal.nClip = gameData.eff.nEffects [0]++;
 	Assert (gameData.eff.nEffects [0] < MAX_EFFECTS);
 	ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip;
@@ -177,20 +180,19 @@ if (!gameData.hoard.bInitialized) {
 		gameData.pig.tex.tMapInfoP [i] = gameData.pig.tex.tMapInfoP [j];
 	gameData.pig.tex.tMapInfoP [i].nEffectClip = gameData.hoard.goal.nClip;
 	gameData.pig.tex.tMapInfoP [i].flags = TMI_GOAL_HOARD;
-	gameData.pig.tex.nTextures [0]++;
+	gameData.hoard.nTextures = gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
 	bmDataP = new ubyte [gameData.hoard.goal.nSize];
 	gameData.hoard.goal.bm.SetBuffer (bmDataP, 0, gameData.hoard.goal.nSize);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		ecP->vClipInfo.frames [i].index = nBitmap;
-		InitHoardBitmap (gameData.pig.tex.bitmaps [0] + nBitmap, 
+		InitHoardBitmap (&gameData.pig.tex.bitmaps [0][nBitmap], 
 							  gameData.hoard.goal.nWidth, 
 							  gameData.hoard.goal.nHeight, 
 							  0, 
 							  bmDataP);
 		bmDataP += gameData.hoard.goal.nFrameSize;
-		gameData.hoard.nBitmaps = nBitmap;
 		}
 	nBitmap = InitMonsterball (nBitmap);
 	}
@@ -203,12 +205,12 @@ paletteManager.Game ();
 palette.Read (cf);
 gameData.hoard.orb.palette = paletteManager.Add (palette);
 vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
+gameData.hoard.orb.bm.Read (cf);
 bmDataP = gameData.hoard.orb.bm.Buffer ();
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	CBitmap* bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	bmP->Read (cf, gameData.hoard.orb.nFrameSize);
 	bmP->Remap (gameData.hoard.orb.palette, 255, -1);
 	}
 
@@ -217,12 +219,12 @@ cf.ReadShort ();        //skip frame count
 paletteManager.Game ();
 palette.Read (cf);
 gameData.hoard.goal.palette = paletteManager.Add (palette);
+gameData.hoard.goal.bm.Read (cf);
 bmDataP = gameData.hoard.goal.bm.Buffer ();
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
 	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + ecP->vClipInfo.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	bmP->Read (cf, gameData.hoard.goal.nFrameSize);
 	bmP->Remap (gameData.hoard.goal.palette, 255, -1);
 	}
 
@@ -254,14 +256,15 @@ if (!gameData.hoard.bInitialized) {
 			cf.Seek (len, SEEK_CUR);     //skip over 11k sample
 			len = cf.ReadInt ();    //get 22k len
 			}
-		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength [0] = len;
-		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0].Create (len);
-		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0].Read (cf);
+		j = gameData.pig.sound.nSoundFiles [0] + i;
+		gameData.pig.sound.sounds [0][j].nLength [0] = len;
+		gameData.pig.sound.sounds [0][j].data [0].Create (2 * len);
+		gameData.pig.sound.sounds [0][j].data [0].Read (cf);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
 			len = cf.ReadInt ();    //get 22k len
 			cf.Seek (len, SEEK_CUR);     //skip over 22k sample
 			}
-		Sounds [0][SOUND_YOU_GOT_ORB + i] = gameData.pig.sound.nSoundFiles [0] + i;
+		Sounds [0][SOUND_YOU_GOT_ORB + i] = j;
 		AltSounds [0][SOUND_YOU_GOT_ORB + i] = Sounds [0][SOUND_YOU_GOT_ORB + i];
 		}
 	gameData.pig.sound.nSoundFiles [0] += 4;
@@ -315,6 +318,7 @@ for (i = 1; i <= 4; i++) {
 gameData.eff.vClips [0][gameData.hoard.monsterball.nClip].nFrameCount = 
 gameData.eff.vClips [0][gameData.hoard.orb.nClip].nFrameCount = 0;
 gameData.eff.nClips [0] = gameData.hoard.orb.nClip;
+gameData.pig.tex.nTextures [0] = gameData.hoard.nTextures;
 gameData.hoard.bInitialized = 0;
 }
 
