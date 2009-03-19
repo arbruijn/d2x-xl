@@ -806,7 +806,7 @@ void RebuildRenderContext (int bGame)
 gameStates.ogl.bRebuilding = 1;
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
-	messageBox.Show ("Setting up renderer...");
+	messageBox.Show (" Setting up renderer...");
 ResetTextures (1, bGame);
 InitShaders ();
 if (bGame) {
