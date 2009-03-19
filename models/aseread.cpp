@@ -698,6 +698,9 @@ if (nModel == nDbgModel)
 if (m_nModel >= 0)
 	return 0;
 
+if (!bCustom && gameStates.app.bCacheModelData && ReadBinary (nModel))
+	return 1;
+
 	CFile		cf;
 	int		nResult = 1;
 
@@ -730,6 +733,8 @@ if (!nResult)
 else {
 	LinkSubModels ();
 	gameData.models.bHaveHiresModel [this - gameData.models.aseModels [bCustom != 0].Buffer ()] = 1;
+	if (!bCustom && gameStates.app.bCacheModelData)
+		SaveBinary ();
 	}
 aseFile = NULL;
 return nResult;
