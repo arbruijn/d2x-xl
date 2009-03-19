@@ -1574,7 +1574,7 @@ int NDReadDemoStart (int bRandom)
 
 c = NDReadByte ();
 if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
-	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_CORRUPT);
+	sprintf (szMsg, "%s\n%s", TXT_CANT_PLAYBACK, TXT_DEMO_CORRUPT);
 	return NDErrorMsg (szMsg, NULL, NULL);
 	}
 if (bRevertFormat > 0)
