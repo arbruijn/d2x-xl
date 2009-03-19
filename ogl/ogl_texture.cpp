@@ -990,9 +990,18 @@ if (bCompressed) {
 else 
 #endif
 	{
-	glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
-	if (gameStates.ogl.bLowMemory && m_info.bMipMaps && (!m_info.bmP->Static () || (m_info.format == GL_RGB)))
-		m_info.bmP->FreeData ();
+	try {
+		glTexImage2D (GL_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0, m_info.format, GL_UNSIGNED_BYTE, buffer);
+	}
+	catch (...) {
+		Release ();
+		}	
+	try {
+		if (gameStates.ogl.bLowMemory && m_info.bMipMaps && (!m_info.bmP->Static () || (m_info.format == GL_RGB)))
+			m_info.bmP->FreeData ();
+		}
+	catch (...) {
+		}
 	OglClearError (1);
 #if TEXTURE_COMPRESSION
 	Compress ();
@@ -1165,7 +1174,8 @@ if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 
 if (!m_info.texP)
 	m_info.texP = &m_info.texture;
-//m_info.texP->SetBitmap (this);
+if (!m_info.texP->Bitmap ())
+	m_info.texP->SetBitmap (this);
 if (m_info.texP->Register ()) {
 	m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	m_info.texP->SetRenderBuffer (renderBuffer);
