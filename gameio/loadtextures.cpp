@@ -638,8 +638,12 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
 		else
 			altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
-		if (!ReadTGA (fn [nFile], "", altBmP)) 
+		if (!ReadTGA (fn [nFile], "", altBmP)) {
 			altBmP = NULL;
+			if (!bDefault)
+				cfP->Close ();
+			throw (EX_OUT_OF_MEMORY);
+			}
 		else {
 			bTGA = 1;
 			altBmP->SetType (BM_TYPE_ALT);
@@ -679,6 +683,7 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			}
 		}
 	}
+
 if (!altBmP) {
 	if (nIndex < 0) {
 		StartTime (0);
@@ -689,23 +694,11 @@ if (!altBmP) {
 	bDefault = true;
 	}
 
-reloadTextures:
-
-if (bRedone) {
-	if (bRedone == 1)
-		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
-	else
-		Error ("Cannot read textures.\nCheck your Descent installation.");
-	StartTime (0);
+bRedone = 1;
+if ((nOffset >= 0) && cfP->Seek (nOffset, SEEK_SET)) {
 	if (!bDefault)
 		cfP->Close ();
-	return 0;
-	}
-
-bRedone = 1;
-if ((nOffset >= 0) && (cfP->Seek (nOffset, SEEK_SET))) {
-	bRedone = 2;
-	goto reloadTextures;
+	throw (EX_OUT_OF_MEMORY);
 	}
 #if 1//def _DEBUG
 bmP->SetName (bmName);
@@ -720,9 +713,9 @@ else
 		UseBitmapCache (bmP, nSize);
 	}
 if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize)) {
-	Int3 ();
-	UnloadTextures ();
-	goto reloadTextures;
+	if (!bDefault)
+		cfP->Close ();
+	throw (EX_OUT_OF_MEMORY);
 	}
 if (!bTGA && (nIndex >= 0))
 	bmP->SetFlags (nFlags);
@@ -734,8 +727,9 @@ if (nIndex == nDbgTexture)
 int i = ReadBitmap (bmP, nSize, cfP, bDefault, bD1 != 0, bHires);
 if (i) {
 	if (i < 0) {
-		bRedone = -i;
-		goto reloadTextures;
+		if (!bDefault)
+			cfP->Close ();
+		throw (EX_IO_ERROR);
 		}
 	}
 else
@@ -779,10 +773,6 @@ if (!bmP->Compressed ())
 	}
 #endif
 
-if (nDescentCriticalError) {
-	PiggyCriticalError ();
-	goto reloadTextures;
-	}
 #if DBG
 nPrevIndex = nIndex;
 strcpy (szPrevBm, bmName);

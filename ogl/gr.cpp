@@ -182,7 +182,24 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		OOF_ReleaseTextures ();
 		ASE_ReleaseTextures ();
 		if (bReload) {
-			OglCacheLevelTextures ();
+			for (;;) {
+				try {
+					OglCacheLevelTextures ();
+				}
+				catch (int e) {
+					if (e == EX_OUT_OF_MEMORY) {
+						if (!gameOpts->render.textures.nQuality) {
+							throw (e);
+							}
+						textureManager.Destroy ();
+						UnloadTextures ();
+						--gameOpts->render.textures.nQuality;
+						}
+					else {
+						throw (e);
+						}
+					}
+				}
 			OOF_ReloadTextures ();
 			ASE_ReloadTextures ();
 			}

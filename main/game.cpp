@@ -863,6 +863,40 @@ if (gameStates.app.nFunctionMode != newFuncMode) {
 	}
 }
 
+//	------------------------------------------------------------------------------------
+
+static void CleanupAfterGame (void)
+{
+#ifdef MWPROFILE
+ProfilerSetStatus (0);
+#endif
+audio.StopAll ();
+if (gameStates.sound.bD1Sound) {
+	gameStates.sound.bD1Sound = 0;
+	//audio.Shutdown ();
+	//audio.Setup ();
+	}
+if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+	NDStopRecording ();
+#ifdef NETWORK
+MultiLeaveGame ();
+#endif
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
+	NDStopPlayback ();
+CGenericCockpit::Rewind (false);
+ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
+StopPlayerMovement ();
+GameDisableCheats ();
+UnloadCamBot ();
+#ifdef APPLE_DEMO
+SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
+#endif
+if (pfnTIRStop)
+	pfnTIRStop ();
+meshBuilder.DestroyVBOs ();
+UnloadLevelData ();
+gameData.Destroy ();
+}
 
 //	------------------------------------------------------------------------------------
 //this function is the game.  called when game mode selected.  runs until
@@ -878,6 +912,7 @@ ProfilerSetStatus (1);
 
 if (pfnTIRStart)
 	pfnTIRStart ();
+
 if (!setjmp (gameExitPoint)) {
 	for (;;) {
 		PROF_START
@@ -896,10 +931,32 @@ if (!setjmp (gameExitPoint)) {
 			}
 		playerShields = LOCALPLAYER.shields;
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
-		if (!GameLoop (1, 1)) {		// Do game loop with rendering and reading controls.
-			PROF_END(ptFrame);
-			continue;
+
+		try {
+			if (!GameLoop (1, 1)) {		// Do game loop with rendering and reading controls.
+				PROF_END(ptFrame);
+				continue;
+				}
 			}
+		catch (int e) {
+			if (e == EX_OUT_OF_MEMORY) {
+				Error ("Out of memory.");
+				break;
+				}
+			else if (e == EX_IO_ERROR) {
+				Error ("Couldn't load game data.");
+				break;
+				}
+			else ) {
+				Error ("Well ... something went wrong.");
+				break;
+				}
+			}
+		catch (...) {
+			Error ("Well ... something went really really wrong.");
+			break;
+			}
+
 		if (gameStates.app.bSingleStep) {
 			while (!(c = KeyInKey ()))
 				;
@@ -974,35 +1031,7 @@ if (!setjmp (gameExitPoint)) {
 			break; //longjmp (gameExitPoint, 0);
 		}
 	}
-#ifdef MWPROFILE
-ProfilerSetStatus (0);
-#endif
-audio.StopAll ();
-if (gameStates.sound.bD1Sound) {
-	gameStates.sound.bD1Sound = 0;
-	//audio.Shutdown ();
-	//audio.Setup ();
-	}
-if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
-	NDStopRecording ();
-#ifdef NETWORK
-MultiLeaveGame ();
-#endif
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	NDStopPlayback ();
-CGenericCockpit::Rewind (false);
-ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
-StopPlayerMovement ();
-GameDisableCheats ();
-UnloadCamBot ();
-#ifdef APPLE_DEMO
-SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
-#endif
-if (pfnTIRStop)
-	pfnTIRStop ();
-meshBuilder.DestroyVBOs ();
-UnloadLevelData ();
-gameData.Destroy ();
+CleanupAfterGame ();
 }
 
 //-----------------------------------------------------------------------------
