@@ -695,14 +695,14 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 
+	CFile		cf;
+	int		nResult = 1;
+
 if (m_nModel >= 0)
 	return 0;
 
 if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom, cf.Date (filename, "", 0)))
 	return 1;
-
-	CFile		cf;
-	int		nResult = 1;
 
 if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
 	return 0;
