@@ -870,6 +870,7 @@ void CleanupAfterGame (void)
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
+G3EndFrame ();
 audio.StopAll ();
 if (gameStates.sound.bD1Sound) {
 	gameStates.sound.bD1Sound = 0;
@@ -896,6 +897,7 @@ if (pfnTIRStop)
 meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
 gameData.Destroy ();
+SetFunctionMode (FMODE_MENU);	
 }
 
 //	------------------------------------------------------------------------------------
@@ -939,22 +941,24 @@ if (!setjmp (gameExitPoint)) {
 				}
 			}
 		catch (int e) {
+			ClearWarnFunc (ShowInGameWarning);
 			if (e == EX_OUT_OF_MEMORY) {
 				Warning ("Out of memory.");
-				break;
+				goto errorExit;
 				}
 			else if (e == EX_IO_ERROR) {
 				Warning ("Couldn't load game data.");
-				break;
+				goto errorExit;
 				}
 			else {
 				Warning ("Well ... something went wrong.");
-				break;
+				goto errorExit;
 				}
 			}
 		catch (...) {
-			Warning ("Well ... something went really really wrong.");
-			break;
+			ClearWarnFunc (ShowInGameWarning);
+			Warning ("Well ... something went really wrong.");
+			goto errorExit;
 			}
 
 		if (gameStates.app.bSingleStep) {
@@ -1031,6 +1035,9 @@ if (!setjmp (gameExitPoint)) {
 			break; //longjmp (gameExitPoint, 0);
 		}
 	}
+
+errorExit:
+
 CleanupAfterGame ();
 }
 

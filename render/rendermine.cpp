@@ -1372,7 +1372,6 @@ extern int bLog;
 
 void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
-throw (EX_OUT_OF_MEMORY);
 PROF_START
 #if DBG
 if (nWindow)
