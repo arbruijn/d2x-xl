@@ -669,6 +669,11 @@ do {
 		} while (i == -2);
 	if (i == -1)
 		return;
+	for (int j = 0; j < 4; j++)
+		if (m [optKeyboard + j].m_value != 0) {
+			gameOpts->input.keyboard.nType = j;
+			break;
+			}
 	if (choice == nCustKbdOpt)
 		KConfig (0, TXT_CFG_KBD);
 	else if (choice == nCustHotKeysOpt)

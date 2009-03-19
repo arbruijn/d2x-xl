@@ -137,7 +137,7 @@ void MiscellaneousMenu (void)
 {
 	CMenu m;
 	int	i, choice;
-	int	optHeadlight, optEscort, optUseMacros,	optAutoLevel, optEnableMods, optKeyboard,
+	int	optHeadlight, optAutoLevel, optEnableMods,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
@@ -165,16 +165,6 @@ do {
 		optHeadlight = 
 		optAutoLevel = -1;
 		}
-	gameOpts->gameplay.bEscortHotKeys = 1;
-	gameOpts->multi.bUseMacros = 1;
-	gameOpts->menus.bSmartFileSearch = 1;
-	gameOpts->menus.bShowLevelVersion = 1;
-	gameOpts->demo.bOldFormat = gameStates.app.bNostalgia != 0;
-	if (!gameStates.app.bNostalgia) {
-			}
-		else
-		miscOpts.nExpertMode = m.AddCheck (TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
-		}
 	if (gameStates.app.bNostalgia < 2) {
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
 			m.AddText ("", 0);
@@ -192,12 +182,6 @@ do {
 		*szScreenShots = *(TXT_SCREENSHOTS - 1);
 		miscOpts.nScreenshots = m.AddSlider (szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 		}
-	m.AddText ("", 0);
-	m.AddText (TXT_KEYBOARD_LAYOUT, 0);
-	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
 	} while (i >= 0);
@@ -208,38 +192,16 @@ do {
 		gameOpts->render.cockpit.bGuidedInMainView = m [optGuided].m_value;
 		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m [optHeadlight].m_value;
 		}
-	gameOpts->gameplay.bEscortHotKeys = m [optEscort].m_value;
-	gameOpts->multi.bUseMacros = m [optUseMacros].m_value;
-	for (int j = 0; j < 4; j++)
-		if (m [optKeyboard + j].m_value != 0) {
-			gameOpts->input.keyboard.nType = j;
-			break;
-			}
+
+	gameOpts->gameplay.bEscortHotKeys = 1;
+	gameOpts->multi.bUseMacros = 1;
+	gameOpts->menus.bSmartFileSearch = 1;
+	gameOpts->menus.bShowLevelVersion = 1;
+	gameOpts->gameplay.bFastRespawn = 0;
+	gameOpts->demo.bOldFormat = gameStates.app.bNostalgia != 0;
+
 	if (!gameStates.app.bNostalgia) {
-		gameOpts->app.bExpertMode = m [miscOpts.nExpertMode].m_value;
-		gameOpts->demo.bOldFormat = m [optDemoFmt].m_value;
-		if (gameOpts->app.bExpertMode) {
-#if UDP_SAFEMODE
-			if (!gameStates.app.bGameRunning)
-				GET_VAL (extraGameInfo [0].bSafeUDP, optSafeUDP);
-#endif
-#if 0
-			GET_VAL (gameOpts->gameplay.bFastRespawn, optFastResp);
-#endif
-			GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
-			GET_VAL (gameOpts->menus.bSmartFileSearch, optSmartSearch);
-			GET_VAL (gameOpts->menus.bShowLevelVersion, optLevelVer);
-			}
-		else {
-#if EXPMODE_DEFAULTS
-			extraGameInfo [0].bWiggle = 1;
-#if 0
-			gameOpts->gameplay.bFastRespawn = 0;
-#endif
-			gameOpts->menus.bSmartFileSearch = 1;
-			gameOpts->menus.bShowLevelVersion = 1;
-#endif
-			}
+		GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
 		}
 	if (gameStates.app.bNostalgia > 1)
 		extraGameInfo [0].bAutoDownload = 0;
@@ -307,12 +269,6 @@ do {
 		*szScreenShots = *(TXT_SCREENSHOTS - 1);
 		miscOpts.nScreenshots = m.AddSlider (szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 		}
-	m.AddText ("", 0);
-	m.AddText (TXT_KEYBOARD_LAYOUT, 0);
-	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
-	m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
 	} while (i >= 0);
@@ -325,11 +281,6 @@ do {
 		}
 	gameOpts->gameplay.bEscortHotKeys = m [optEscort].m_value;
 	gameOpts->multi.bUseMacros = m [optUseMacros].m_value;
-	for (int j = 0; j < 4; j++)
-		if (m [optKeyboard + j].m_value != 0) {
-			gameOpts->input.keyboard.nType = j;
-			break;
-			}
 	if (!gameStates.app.bNostalgia) {
 		gameOpts->app.bExpertMode = m [miscOpts.nExpertMode].m_value;
 		gameOpts->demo.bOldFormat = m [optDemoFmt].m_value;

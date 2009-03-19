@@ -3270,10 +3270,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\input\joydefs.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\input\key.cpp"
 						>
 					</File>
@@ -4126,6 +4122,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\menus\inputdevicemenu.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\menus\lightmenu.cpp"
 						>
 					</File>
@@ -4301,11 +4301,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
