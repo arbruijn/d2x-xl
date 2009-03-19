@@ -698,7 +698,7 @@ if (nModel == nDbgModel)
 if (m_nModel >= 0)
 	return 0;
 
-if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom))
+if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom, cf.Date (filename, "", 0)))
 	return 1;
 
 	CFile		cf;
@@ -848,13 +848,19 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadBinary (short nModel, int bCustom)
+int CModel::ReadBinary (short nModel, int bCustom, time_t tASE)
 {
 	CFile		cf;
 	int		h, i, nResult = 1;
 	char		szFilename [FILENAME_LEN];
 
 sprintf (szFilename, "model%03d.bin", nModel);
+
+time_t tBIN = cf.Date (szFilename, gameFolders.szModelDir [bCustom], 0);
+
+if (tBIN < tASE)
+	return 0;
+
 if (!cf.Open (szFilename, gameFolders.szModelDir [bCustom], "rb", 0))
 	return 0;
 m_nModel = cf.ReadInt ();
