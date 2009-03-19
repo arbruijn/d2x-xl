@@ -136,11 +136,8 @@ return nCurItem;
 void MiscellaneousMenu (void)
 {
 	CMenu m;
-	int	i, choice,
-#if 0
-			optFastResp, 
-#endif
-			optHeadlight, optEscort, optUseMacros,	optAutoLevel, optEnableMods, optKeyboard,
+	int	i, choice;
+	int	optHeadlight, optEscort, optUseMacros,	optAutoLevel, optEnableMods, optKeyboard,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
@@ -148,6 +145,112 @@ void MiscellaneousMenu (void)
 	char  szDlTimeout [50];
 	char	szScreenShots [50];
 
+#if SIMPLE_MENUS
+
+do {
+	i = 0;
+	m.Destroy ();
+	m.Create (20);
+	memset (&miscOpts, 0xff, sizeof (miscOpts));
+	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = -1;
+	if (gameStates.app.bNostalgia) {
+		optAutoLevel = m.AddCheck (TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
+		optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
+		optMissileView = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
+		optGuided = m.AddCheck (TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
+		optHeadlight = m.AddCheck (TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
+		}
+	else {
+		optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
+		optHeadlight = 
+		optAutoLevel = -1;
+		}
+	gameOpts->gameplay.bEscortHotKeys = 1;
+	gameOpts->multi.bUseMacros = 1;
+	gameOpts->menus.bSmartFileSearch = 1;
+	gameOpts->menus.bShowLevelVersion = 1;
+	gameOpts->demo.bOldFormat = gameStates.app.bNostalgia != 0;
+	if (!gameStates.app.bNostalgia) {
+			}
+		else
+		miscOpts.nExpertMode = m.AddCheck (TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
+		}
+	if (gameStates.app.bNostalgia < 2) {
+		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
+			m.AddText ("", 0);
+		miscOpts.nAutoDl = m.AddCheck (TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
+		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
+			sprintf (szDlTimeout + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
+			*szDlTimeout = *(TXT_AUTODL_TO - 1);
+			miscOpts.nDlTimeout = m.AddSlider (szDlTimeout + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
+			}
+		m.AddText ("", 0);
+		if (gameOpts->app.nScreenShotInterval)
+			sprintf (szScreenShots + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
+		else
+			strcpy (szScreenShots + 1, TXT_NO_SCREENSHOTS);
+		*szScreenShots = *(TXT_SCREENSHOTS - 1);
+		miscOpts.nScreenshots = m.AddSlider (szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
+		}
+	m.AddText ("", 0);
+	m.AddText (TXT_KEYBOARD_LAYOUT, 0);
+	optKeyboard = m.AddRadio (TXT_QWERTY, gameOpts->input.keyboard.nType == 0, KEY_E, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_QWERTZ, gameOpts->input.keyboard.nType == 1, KEY_G, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
+	m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
+	do {
+		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
+	} while (i >= 0);
+	if (gameStates.app.bNostalgia) {
+		gameOpts->gameplay.nAutoLeveling = m [optAutoLevel].m_value;
+		gameOpts->render.cockpit.bReticle = m [optReticle].m_value;
+		gameOpts->render.cockpit.bMissileView = m [optMissileView].m_value;
+		gameOpts->render.cockpit.bGuidedInMainView = m [optGuided].m_value;
+		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m [optHeadlight].m_value;
+		}
+	gameOpts->gameplay.bEscortHotKeys = m [optEscort].m_value;
+	gameOpts->multi.bUseMacros = m [optUseMacros].m_value;
+	for (int j = 0; j < 4; j++)
+		if (m [optKeyboard + j].m_value != 0) {
+			gameOpts->input.keyboard.nType = j;
+			break;
+			}
+	if (!gameStates.app.bNostalgia) {
+		gameOpts->app.bExpertMode = m [miscOpts.nExpertMode].m_value;
+		gameOpts->demo.bOldFormat = m [optDemoFmt].m_value;
+		if (gameOpts->app.bExpertMode) {
+#if UDP_SAFEMODE
+			if (!gameStates.app.bGameRunning)
+				GET_VAL (extraGameInfo [0].bSafeUDP, optSafeUDP);
+#endif
+#if 0
+			GET_VAL (gameOpts->gameplay.bFastRespawn, optFastResp);
+#endif
+			GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
+			GET_VAL (gameOpts->menus.bSmartFileSearch, optSmartSearch);
+			GET_VAL (gameOpts->menus.bShowLevelVersion, optLevelVer);
+			}
+		else {
+#if EXPMODE_DEFAULTS
+			extraGameInfo [0].bWiggle = 1;
+#if 0
+			gameOpts->gameplay.bFastRespawn = 0;
+#endif
+			gameOpts->menus.bSmartFileSearch = 1;
+			gameOpts->menus.bShowLevelVersion = 1;
+#endif
+			}
+		}
+	if (gameStates.app.bNostalgia > 1)
+		extraGameInfo [0].bAutoDownload = 0;
+	else
+		extraGameInfo [0].bAutoDownload = m [miscOpts.nAutoDl].m_value;
+	} while (i == -2);
+
+#else
+
+	int	optHeadlight, optEscort, optUseMacros,	optAutoLevel, optKeyboard,
+			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 do {
 	i = 0;
 	m.Destroy ();
@@ -258,6 +361,9 @@ do {
 	else
 		extraGameInfo [0].bAutoDownload = m [miscOpts.nAutoDl].m_value;
 	} while (i == -2);
+
+#endif
+
 }
 
 //------------------------------------------------------------------------------
