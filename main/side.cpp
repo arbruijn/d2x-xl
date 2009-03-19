@@ -362,7 +362,7 @@ return (m_nFaces < 2) || (Height () <= PLANE_DIST_TOLERANCE);
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, short sideBit, short& faceBit)
+CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, short sideBit, short& faceBit, bool bCheckPoke)
 {
 	CSegMasks	masks;
 	fix			xDist;
@@ -375,11 +375,11 @@ if (m_nFaces == 2) {
 	CFixVector minVertex = MinVertex ();
 	for (int nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 		xDist = refPoint.DistToPlane (Normal (nFace), minVertex);
-		if (xDist - xRad < -PLANE_DIST_TOLERANCE) {	// xRad must be >= 0!
+		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
+			nCenterCount++;
+		if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (!bCheckPoke || (xDist + xRad >= -PLANE_DIST_TOLERANCE))) {
 			masks.m_face |= faceBit;
 			nSideCount++;
-			if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
-				nCenterCount++;
 			}
 		}
 	if (IsPlanar ()) {	//must be behind both faces
@@ -397,11 +397,11 @@ if (m_nFaces == 2) {
 	}
 else {	
 	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
-	if (xDist - xRad < -PLANE_DIST_TOLERANCE) {	// xRad must be >= 0!
+	if (xDist < -PLANE_DIST_TOLERANCE)
+		masks.m_center |= sideBit;
+	if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (!bCheckPoke || (xDist + xRad >= -PLANE_DIST_TOLERANCE))) {
 		masks.m_face |= faceBit;
 		masks.m_side |= sideBit;
-		if (xDist < -PLANE_DIST_TOLERANCE)
-			masks.m_center |= sideBit;
 		}
 	faceBit <<= 2;
 	}

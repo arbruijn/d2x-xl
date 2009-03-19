@@ -768,8 +768,7 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 //			Assert(doorP->nPartCount == 1);
 		if (IS_WALL (doorP->nBackWall [0]))
 			WALLS [doorP->nBackWall [0]].state = WALL_DOOR_CLOSING;
-		if ((doorP->time > DOOR_WAIT_TIME) &&
-			 !SEGMENTS [wallP->nSegment].DoorIsBlocked (wallP->nSide)) {
+		if ((doorP->time > DOOR_WAIT_TIME) && !SEGMENTS [wallP->nSegment].DoorIsBlocked (wallP->nSide)) {
 			wallP->state = WALL_DOOR_CLOSING;
 			doorP->time = 0;
 			}

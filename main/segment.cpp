@@ -412,7 +412,7 @@ int CSegment::PokesThrough (int nObject, int nSide)
 {
 	CObject *objP = OBJECTS + nObject;
 
-return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->info.xSize).m_side);
+return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->info.xSize, true).m_side);
 }
 
 //-----------------------------------------------------------------
