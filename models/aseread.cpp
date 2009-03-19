@@ -832,7 +832,9 @@ m_nGunPoint = cf.ReadByte ();
 m_nBullets = cf.ReadByte ();
 m_bBarrel = cf.ReadByte ();
 cf.ReadVector (m_vOffset);
-if (!(m_faces.Create (m_nFaces) && m_verts.Create (m_nVerts) && m_texCoord.Create (m_nTexCoord)))
+if ((m_nFaces && !m_faces.Create (m_nFaces)) ||
+	 (m_nVerts && !m_verts.Create (m_nVerts)) ||
+	 (m_nTexCoord && !m_texCoord.Create (m_nTexCoord)))
 	return 0;
 m_faces.Read (cf);
 m_verts.Read (cf);
