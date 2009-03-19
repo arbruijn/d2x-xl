@@ -173,7 +173,7 @@ void HUDClearMessages (); // From hud.c
 #endif
 
 void SetFunctionMode (int);
-void InitHoardData ();
+void InitHoardData (void);
 void FreeHoardData (void);
 
 extern int nLastLevelPathCreated;

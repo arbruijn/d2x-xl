@@ -136,7 +136,7 @@ void InitHoardData (void)
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)))
 	return;
 #endif
-if (gameStates.app.bDemoData) {
+if (gameStates.app.bDemoData || gameStates.app.bD1Mission) {
 #if !DBG
 	Warning ("Hoard data not available with demo data.");
 #endif
