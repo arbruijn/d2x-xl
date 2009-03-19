@@ -859,30 +859,28 @@ m_bCustom = cf.ReadInt ();
 
 m_subModels = NULL;
 m_textures.m_nBitmaps = cf.ReadInt ();
-if (!m_textures.m_bitmaps.Create (m_textures.m_nBitmaps)) {
+if (!(m_textures.m_bitmaps.Create (m_textures.m_nBitmaps) &&
+	   m_textures.m_names.Create (m_textures.m_nBitmaps) &&
+		m_textures.m_nTeam.Create (m_textures.m_nBitmaps))) {
 	cf.Close ();
 	Destroy ();
 	return 0;
 	}
 
 for (i = 0; i < m_textures.m_nBitmaps; i++) {
-	h = cf.ReadInt ();
-	if (!m_textures.m_names [i].Create (h)) {
-		cf.Close ();
-		Destroy ();
-		return 0;
+	if (h = cf.ReadInt ()) {
+		if (!m_textures.m_names [i].Create (h)) {
+			cf.Close ();
+			Destroy ();
+			return 0;
+			}
+		m_textures.m_names [i].Read (cf);
+		if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, m_bCustom)) {
+			cf.Close ();
+			Destroy ();
+			return 0;
+			}
 		}
-	m_textures.m_names [i].Read (cf);
-	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, m_bCustom)) {
-		cf.Close ();
-		Destroy ();
-		return 0;
-		}
-	}
-if (!m_textures.m_nTeam.Create (m_textures.m_nBitmaps)) {
-	cf.Close ();
-	Destroy ();
-	return 0;
 	}
 m_textures.m_nTeam.Read (cf);
 
