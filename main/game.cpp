@@ -865,7 +865,7 @@ if (gameStates.app.nFunctionMode != newFuncMode) {
 
 //	------------------------------------------------------------------------------------
 
-static void CleanupAfterGame (void)
+void CleanupAfterGame (void)
 {
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
@@ -947,7 +947,7 @@ if (!setjmp (gameExitPoint)) {
 				Error ("Couldn't load game data.");
 				break;
 				}
-			else ) {
+			else {
 				Error ("Well ... something went wrong.");
 				break;
 				}

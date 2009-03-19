@@ -638,7 +638,7 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
 		else
 			altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
-		if (!ReadTGA (fn [nFile], "", altBmP)) {
+		if (ReadTGA (fn [nFile], "", altBmP)) {
 			altBmP = NULL;
 			if (!bDefault)
 				cfP->Close ();
@@ -698,7 +698,7 @@ bRedone = 1;
 if ((nOffset >= 0) && cfP->Seek (nOffset, SEEK_SET)) {
 	if (!bDefault)
 		cfP->Close ();
-	throw (EX_OUT_OF_MEMORY);
+	throw (EX_IO_ERROR);
 	}
 #if 1//def _DEBUG
 bmP->SetName (bmName);

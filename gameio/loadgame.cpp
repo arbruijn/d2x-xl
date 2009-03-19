@@ -1576,10 +1576,17 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 if (IsMultiGame)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.
 SetWarnFunc (ShowInGameWarning);
-funcRes = LoadLevel (nLevel, bLoadTextures, bRestore);
+try {
+	funcRes = LoadLevel (nLevel, bLoadTextures, bRestore);
+	}
+catch (...) {
+	funcRes = 0;
+	}
 ClearWarnFunc (ShowInGameWarning);
-if (!funcRes)
+if (!funcRes) {
+	CleanupAfterGame ();
 	return 0;
+	}
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
 
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
