@@ -1131,7 +1131,7 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
-#if DBG
+#if 0 //DBG
 //SetClientState (0, 0, 0, 0, 0);
 ResetShader ();
 m_data.bTextured = 0;

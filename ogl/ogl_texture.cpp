@@ -1242,7 +1242,7 @@ return 1;
 
 CBitmap *CBitmap::CreateMask (void)
 {
-	int		i = (int) Width () * (int) Height ();
+	int		nTranspType, i = (int) Width () * (int) Height ();
 	ubyte		*pi;
 	ubyte		*pm;
 
@@ -1252,6 +1252,7 @@ if (!Buffer ())
 	return NULL;
 if (m_info.maskP)
 	return m_info.maskP;
+nTranspType = m_info.nTranspType;
 SetBPP (4);
 if (!(m_info.maskP = CBitmap::Create (0, (Width ()  + 1) / 2, (Height () + 1) / 2, 4)))
 	return NULL;
@@ -1261,7 +1262,7 @@ sprintf (m_info.szName, "{%s}", Name ());
 m_info.maskP->SetWidth (m_info.props.w);
 m_info.maskP->SetHeight (m_info.props.w);
 m_info.maskP->SetBPP (1);
-m_info.nTranspType = -1;
+m_info.nTranspType = nTranspType;
 UseBitmapCache (m_info.maskP, (int) m_info.maskP->Width () * (int) m_info.maskP->RowSize ());
 if (m_info.props.flags & BM_FLAG_TGA) {
 	for (pi = Buffer (), pm = m_info.maskP->Buffer (); i; i--, pi += 4, pm++)
@@ -1415,20 +1416,19 @@ switch (m_info.nType) {
 		if (m_info.bSetup)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
 		return SetupFrames (bMipMaps, bLoad);
-		break;
 
 	case BM_TYPE_ALT:	// alternative (hires) textures
-		if (!(m_info.bSetup || SetupFrames (bMipMaps, bLoad)))	
+		if (!(m_info.bSetup || SetupFrames (bMipMaps, 0)))	
 			return false;
 		if ((bmP = HasOverride ()))
 			return bmP->SetupTexture (bMipMaps, bLoad);
 		if (bLoad)
-			return Prepared () || !PrepareTexture (bMipMaps, bLoad);
+			return Prepared () || !PrepareTexture (bMipMaps, 0);
 		return true;
 
 	case BM_TYPE_FRAME:	// hires frame
 		if (bLoad)
-			return Prepared () || !PrepareTexture (bMipMaps, bLoad);
+			return Prepared () || !PrepareTexture (bMipMaps, 0);
 		return true;
 	}
 return false;

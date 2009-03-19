@@ -599,6 +599,7 @@ void CBitmap::Unload (int i, int bD1)
 {
 m_info.bSetup = false;
 m_info.nMasks = 0;
+m_info.nTranspType = 0;
 if (i < 0)
 	i = int (this - gameData.pig.tex.bitmaps [bD1]);
 FreeMask ();

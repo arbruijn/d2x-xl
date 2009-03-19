@@ -364,7 +364,7 @@ if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))) {
 	}
 if (!bmP)
 	return;
-#if 1
+#if 0
 if (!bmP->Prepared () && bmP->PrepareTexture (1, 0))
 	return;
 #endif
