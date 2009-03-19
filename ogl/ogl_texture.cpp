@@ -1174,6 +1174,11 @@ if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 
 if (!m_info.texP)
 	m_info.texP = &m_info.texture;
+#if DBG
+if (m_info.texP->Bitmap () && (m_info.texP->Bitmap () != this))
+	m_info.texP->SetBitmap (this);
+else
+#endif
 //if (!m_info.texP->Bitmap ())
 	m_info.texP->SetBitmap (this);
 if (m_info.texP->Register ()) {
