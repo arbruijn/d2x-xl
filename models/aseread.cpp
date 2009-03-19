@@ -698,7 +698,7 @@ if (nModel == nDbgModel)
 if (m_nModel >= 0)
 	return 0;
 
-if (!bCustom && gameStates.app.bCacheModelData && ReadBinary (nModel))
+if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom))
 	return 1;
 
 	CFile		cf;
@@ -733,7 +733,7 @@ if (!nResult)
 else {
 	LinkSubModels ();
 	gameData.models.bHaveHiresModel [this - gameData.models.aseModels [bCustom != 0].Buffer ()] = 1;
-	if (!bCustom && gameStates.app.bCacheModelData)
+	if (gameStates.app.bCacheModelData)
 		SaveBinary ();
 	}
 aseFile = NULL;
@@ -781,7 +781,7 @@ int CModel::SaveBinary (void)
 	char		szFilename [FILENAME_LEN];
 
 sprintf (szFilename, "model%03d.bin", m_nModel);
-if (!cf.Open (szFilename, gameFolders.szCacheDir, "wb", 0))
+if (!cf.Open (szFilename, gameFolders.szModelDir [m_bCustom], "wb", 0))
 	return 0;
 cf.WriteInt (m_nModel);
 cf.WriteInt (m_nSubModels);
@@ -840,14 +840,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadBinary (short nModel)
+int CModel::ReadBinary (short nModel, int bCustom)
 {
 	CFile		cf;
 	int		h, i, nResult = 1;
 	char		szFilename [FILENAME_LEN];
 
 sprintf (szFilename, "model%03d.bin", nModel);
-if (!cf.Open (szFilename, gameFolders.szCacheDir, "rb", 0))
+if (!cf.Open (szFilename, gameFolders.szModelDir [bCustom], "rb", 0))
 	return 0;
 m_nModel = cf.ReadInt ();
 m_nSubModels = cf.ReadInt ();
