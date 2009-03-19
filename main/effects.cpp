@@ -145,7 +145,7 @@ if (!(bmP || (bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBase
 if (bmP->FrameCount () < 2)
 	return NULL;
 bmP->SetTranspType (-1);
-bmP->SetupTexture (1, 1);
+bmP->SetupTexture (1, bObject >= 0);
 if (gameOpts->ogl.bGlTexMerge) {
 	bitmapP = bObject ? gameData.pig.tex.bitmaps [0].Buffer () : gameData.pig.tex.bitmapP.Buffer ();
 	for (i = 0; i < nFrames; i++) {

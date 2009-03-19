@@ -36,6 +36,8 @@
 #include "texmerge.h"
 #include "fbuffer.h"
 
+CStaticArray< ubyte, 65536 > usedHandles;
+
 //------------------------------------------------------------------------------
 
 #define TEXTURE_LIST_SIZE 5000
@@ -83,6 +85,7 @@ m_textures.Create (TEXTURE_LIST_SIZE);
 for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 	m_textures [i].SetIndex (i);
 #endif
+usedHandles.Clear ();
 }
 
 //------------------------------------------------------------------------------
@@ -277,6 +280,12 @@ return m_bRegistered = true;
 void CTexture::Release (void)
 {
 if (m_info.handle && (m_info.handle != GLuint (-1))) {
+#if DBG
+	if (usedHandles [m_info.handle])
+		usedHandles [m_info.handle] = 0;
+	else
+		TextureError ();
+#endif
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
 #if 1
@@ -953,6 +962,12 @@ if (!m_info.handle) {
 	OglClearError (0);
 	return 1;
 	}
+#if DBG
+	if (!usedHandles [m_info.handle])
+		usedHandles [m_info.handle] = 1;
+	else
+		TextureError ();
+#endif
 #if 0
 m_info.prio = m_info.bMipMaps ? (m_info.h == m_info.w) ? 1.0f : 0.5f : 0.1f;
 glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
@@ -1141,9 +1156,16 @@ int CBitmap::PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer)
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, bMask, renderBuffer);
 
+#if DBG
+if (strstr (m_info.szName, "pwr02"))
+	nDbgTexture = nDbgTexture;
+if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
+	nDbgTexture = nDbgTexture;
+#endif
+
 if (!m_info.texP)
 	m_info.texP = &m_info.texture;
-m_info.texP->SetBitmap (this);
+//m_info.texP->SetBitmap (this);
 if (m_info.texP->Register ()) {
 	m_info.texP->Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP, bMask, bMipMap, 0, this);
 	m_info.texP->SetRenderBuffer (renderBuffer);
@@ -1194,7 +1216,11 @@ else {
 
 	m_info.frames.nCurrent = 0;
 	for (i = 0; i < nFrames; i++, bmfP++) {
+#if 0 //DBG
+		bmfP->InitChild (this, 0, 0, w, w);
+#else
 		bmfP->InitChild (this, 0, i * w, w, w);
+#endif
 		bmfP->SetType (BM_TYPE_FRAME);
 		bmfP->SetTop (0);
 		nFlags = BM_FLAG_TGA;
@@ -1345,23 +1371,24 @@ if (!(h * w))
 	return false;
 int nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
-	if (bLoad && PrepareTexture (bMipMaps, 0, NULL))
-		return false;
-	if ((CreateMasks () > 0) && Mask ()->PrepareTexture (0, 1, NULL))
-		return false;
+	CreateMasks ();
+	if (bLoad) {
+		if (!PrepareTexture (bMipMaps, 0, NULL))
+			return false;
+		if (Mask () && Mask ()->PrepareTexture (0, 1, NULL))
+			return false;
+		}
 	}
 else if (!Frames ()) {
 	CreateFrames (bMipMaps, bLoad);
-	h = CreateMasks ();
-	if (h) {
-		if (bLoad) {
-			CBitmap*	bmfP = Frames ();
-			for (int i = nFrames; i; i--, bmfP++) {
-				if (bmfP->PrepareTexture (bMipMaps, 1))
-					return false;
-				if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, 1, NULL)))
-					return false;
-				}
+	CreateMasks ();
+	if (bLoad) {
+		CBitmap*	bmfP = Frames ();
+		for (int i = nFrames; i; i--, bmfP++) {
+			if (bmfP->PrepareTexture (bMipMaps, 1))
+				return false;
+			if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, 1, NULL)))
+				return false;
 			}
 		}
 	}

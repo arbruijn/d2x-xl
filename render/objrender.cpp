@@ -289,7 +289,6 @@ return fScale;
 void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
 	CBitmap*		bmP, * bmoP;
-	CTexture*	texP;
 	tRgbaColorf	color;
 	int			nType = objP->info.nType;
 	int			nId = objP->info.nId;
@@ -334,6 +333,8 @@ else {
 	nTransp = 3;
 	fAlpha = 1.0f;
 	}
+
+#if 0
 if (bmi < 0) {
 	PageInAddonBitmap (bmi);
 	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
@@ -348,8 +349,13 @@ else {
 	LoadBitmap (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
-if (!bmP->SetupTexture (1, 1))
-	return;
+#else
+if (bmi < 0)
+	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
+else
+	bmP = gameData.pig.tex.bitmaps [0] + bmi;
+#endif
+
 if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))) {
 	//bmoP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
@@ -358,11 +364,11 @@ if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))) {
 	}
 if (!bmP)
 	return;
+#if 1
 if (!bmP->Prepared () && bmP->PrepareTexture (1, 0))
 	return;
+#endif
 fScale = ObjectBlobColor (objP, bmP, &color);
-if (!((texP = bmP->Texture ()) && texP->Handle ()))
-	return;
 if (colorP /*&& (bmi >= 0)*/)
 	*colorP = color;
 	//memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
@@ -380,7 +386,8 @@ if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
 		objP->info.movementType = MT_SPINNING;
 		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);
 		}
-	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4);	//the actual shield in the sprite texture has 3/4 of the textures size
+	//the actual shield in the sprite texture has 3/4 of the textures size
+	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4);	
 	}
 else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 	if (bAdditive) {
@@ -411,11 +418,9 @@ else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 	}
 else {
 	if (bmP->Width () > bmP->Height ())
-		G3DrawBitmap (objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), bmP,
-						  NULL, fAlpha, nTransp);
+		G3DrawBitmap (objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), bmP, NULL, fAlpha, nTransp);
 	else
-		G3DrawBitmap (objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, bmP,
-						  NULL, fAlpha, nTransp);
+		G3DrawBitmap (objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, bmP, NULL, fAlpha, nTransp);
 	}
 gameData.render.nTotalSprites++;
 }
