@@ -797,8 +797,10 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	}
 cf.Write (m_textures.m_nTeam.Buffer (), 1, m_textures.m_nBitmaps);
 
-for (i = 0; i < m_nSubModels; i++)
-	m_subModels [i].SaveBinary (cf);
+CSubModel*	smP = m_subModels;
+
+for (i = 0; i < m_nSubModels; i++, smP = smP->m_next)
+	smP->SaveBinary (cf);
 cf.Close ();
 return 1;
 }
