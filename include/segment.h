@@ -287,7 +287,7 @@ class CSegment {
 
 		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
 		CSegMasks Masks (const CFixVector& refP, fix xRad);
-		CSegMasks SideMasks (int nSide, const CFixVector& refP, fix xRad);
+		CSegMasks SideMasks (int nSide, const CFixVector& refP, fix xRad, bool bCheckPoke = false);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
 		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
 		 { m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }

@@ -246,11 +246,11 @@ return masks;
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSegment::SideMasks (int nSide, const CFixVector& refP, fix xRad)
+CSegMasks CSegment::SideMasks (int nSide, const CFixVector& refP, fix xRad, bool bCheckPoke)
 {
 	short faceBit = 1;
 
-return m_sides [nSide].Masks (refP, xRad, 1, faceBit);
+return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 }
 
 // -------------------------------------------------------------------------------
