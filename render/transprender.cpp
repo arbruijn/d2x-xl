@@ -1131,6 +1131,15 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
+#if DBG
+//SetClientState (0, 0, 0, 0, 0);
+ResetShader ();
+m_data.bTextured = 0;
+m_data.bClientState = 0;
+m_data.bClientTexCoord = 0;
+m_data.bClientColor = 0;
+ResetBitmaps ();
+#endif
 if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend, 0, 0, 0)) {
 	float		h, w, u, v;
 	CFloatVector	fPos = item->position;

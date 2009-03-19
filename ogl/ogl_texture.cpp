@@ -1400,8 +1400,6 @@ switch (m_info.nType) {
 		return true;
 
 	case BM_TYPE_FRAME:	// hires frame
-		if (m_info.parentP->m_info.frames.currentP - m_info.parentP->m_info.frames.bmP >= m_info.parentP->m_info.frames.nCount)
-			return false;
 		if (bLoad)
 			return Prepared () || !PrepareTexture (bMipMaps, bLoad);
 		return true;
