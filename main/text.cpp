@@ -1322,7 +1322,7 @@ const char *defaultGameTexts [][2] = {
  {"kicken", "kick"},
  {"bannen", "ban"},
  {"verschieben", "move"},
- {"%s ist angeschlagen...schnappt ihn!", "%s is crippled...get him!"},
+ {"%s ist angeschlagen...schnappt ihn Euch!", "%s is crippled...get him!"},
  {"\nAudio-Geraet konnte nicht geoeffnet werden\n(%s)", "\nCouldn't open audio\n(%s)"},
  {"Konnte SDL-Bibliothek nicht initialisieren\n(%s)", "SDL library initialisation failed\n(%s)"},
  {"Keine CD-Laufwerke gefunden!\n", "No cdrom drives found!\n"},
