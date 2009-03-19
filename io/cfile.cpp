@@ -650,6 +650,15 @@ v [Z] = ReadFix ();
 
 // ----------------------------------------------------------------------------
 
+void CFile::ReadVector (CFloatVector3& v) 
+{
+v [X] = ReadFloat ();
+v [Y] = ReadFloat ();
+v [Z] = ReadFloat ();
+}
+
+// ----------------------------------------------------------------------------
+
 void CFile::ReadAngVec (CAngleVector& v)
 {
 v [PA] = ReadFixAng ();
@@ -746,6 +755,15 @@ void CFile::WriteVector (const CFixVector& v)
 WriteFix (v [X]);
 WriteFix (v [Y]);
 WriteFix (v [Z]);
+}
+
+// ----------------------------------------------------------------------------
+
+void CFile::WriteVector (const CFloatVector3& v)
+{
+WriteFloat (v [X]);
+WriteFloat (v [Y]);
+WriteFloat (v [Z]);
 }
 
 // ----------------------------------------------------------------------------

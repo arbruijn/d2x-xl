@@ -52,6 +52,8 @@ class CSubModel {
 		void Init (void);
 		void Destroy (void);
 		int Read (CFile& cf, int& nVerts, int& nFaces);
+		int SaveBinary (CFile& cf);
+		int ReadBinary (CFile& cf);
 
 	private:
 		int ReadNode (CFile& cf);
@@ -80,6 +82,8 @@ class CModel {
 		bool Create (void);
 		void Destroy (void);
 		int Read (const char* filename, short nModel, int bCustom);
+		int SaveBinary (void);
+		int ReadBinary (short nModel);
 		int ReloadTextures (void);
 		int ReleaseTextures (void);
 		int FreeTextures (void);

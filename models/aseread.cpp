@@ -650,7 +650,6 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-
 int CModel::ReadSubModel (CFile& cf)
 {
 	CSubModel	*psm;
@@ -736,6 +735,169 @@ aseFile = NULL;
 return nResult;
 }
 
+//------------------------------------------------------------------------------
+
+int CSubModel::SaveBinary (CFile& cf)
+{
+cf.Write (m_szName, 1, sizeof (m_szName));
+cf.Write (m_szParent, 1, sizeof (m_szParent));
+cf.WriteShort (m_nSubModel);
+cf.WriteShort (m_nParent);
+cf.WriteShort (m_nBitmap);
+cf.WriteShort (m_nFaces);
+cf.WriteShort (m_nVerts);
+cf.WriteShort (m_nTexCoord);
+cf.WriteShort (m_nIndex);
+cf.WriteByte (sbyte (m_bRender));
+cf.WriteByte (sbyte (m_bGlow));
+cf.WriteByte (sbyte (m_bThruster));
+cf.WriteByte (sbyte (m_bWeapon));
+cf.WriteByte (m_nGun);
+cf.WriteByte (m_nBomb);
+cf.WriteByte (m_nMissile);
+cf.WriteByte (m_nType);
+cf.WriteByte (m_nWeaponPos);
+cf.WriteByte (m_nGunPoint);
+cf.WriteByte (m_nBullets);
+cf.WriteByte (m_bBarrel);
+cf.WriteVector (m_vOffset);
+m_faces.Write (cf);
+m_verts.Write (cf);
+m_texCoord.Write (cf);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CModel::SaveBinary (void)
+{
+	CFile		cf;
+	int		h, i, nResult = 1;
+	char		szFilename [FILENAME_LEN];
+
+sprintf (szFilename, "model%03d.bin", m_nModel);
+if (!cf.Open (szFilename, gameFolders.szCacheDir, "wb", 0))
+	return 0;
+cf.WriteInt (m_nModel);
+cf.WriteInt (m_nSubModels);
+cf.WriteInt (m_nVerts);
+cf.WriteInt (m_nFaces);
+cf.WriteInt (m_bCustom);
+cf.WriteInt (m_textures.m_nBitmaps);
+
+for (i = 0; i < m_textures.m_nBitmaps; i++) {
+	h = int (m_textures.m_names [i].Length ());
+	cf.WriteInt (h);
+	cf.Write (m_textures.m_names [i].Buffer (), 1, h);
+	}
+cf.Write (m_textures.m_nTeam.Buffer (), 1, m_textures.m_nBitmaps);
+
+for (i = 0; i < m_nSubModels; i++)
+	m_subModels [i].SaveBinary (cf);
+cf.Close ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CSubModel::ReadBinary (CFile& cf)
+{
+m_next = NULL;
+cf.Read (m_szName, 1, sizeof (m_szName));
+cf.Read (m_szParent, 1, sizeof (m_szParent));
+m_nSubModel = cf.ReadShort ();
+m_nParent = cf.ReadShort ();
+m_nBitmap = cf.ReadShort ();
+m_nFaces = cf.ReadShort ();
+m_nVerts = cf.ReadShort ();
+m_nTexCoord = cf.ReadShort ();
+m_nIndex = cf.ReadShort ();
+m_bRender = ubyte (cf.ReadByte ());
+m_bGlow = ubyte (cf.ReadByte ());
+m_bThruster = ubyte (cf.ReadByte ());
+m_bWeapon = ubyte (cf.ReadByte ());
+m_nGun = cf.ReadByte ();
+m_nBomb = cf.ReadByte ();
+m_nMissile = cf.ReadByte ();
+m_nType = cf.ReadByte ();
+m_nWeaponPos = cf.ReadByte ();
+m_nGunPoint = cf.ReadByte ();
+m_nBullets = cf.ReadByte ();
+m_bBarrel = cf.ReadByte ();
+cf.ReadVector (m_vOffset);
+if (!(m_faces.Create (m_nFaces) && m_verts.Create (m_nVerts) && m_texCoord.Create (m_nTexCoord)))
+	return 0;
+m_faces.Read (cf);
+m_verts.Read (cf);
+m_texCoord.Read (cf);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CModel::ReadBinary (short nModel)
+{
+	CFile		cf;
+	int		h, i, nResult = 1;
+	char		szFilename [FILENAME_LEN];
+
+sprintf (szFilename, "model%03d.bin", nModel);
+if (!cf.Open (szFilename, gameFolders.szCacheDir, "rb", 0))
+	return 0;
+m_nModel = cf.ReadInt ();
+m_nSubModels = cf.ReadInt ();
+m_nVerts = cf.ReadInt ();
+m_nFaces = cf.ReadInt ();
+m_bCustom = cf.ReadInt ();
+
+m_subModels = NULL;
+m_textures.m_nBitmaps = cf.ReadInt ();
+if (!m_textures.m_bitmaps.Create (m_textures.m_nBitmaps)) {
+	cf.Close ();
+	Destroy ();
+	return 0;
+	}
+
+for (i = 0; i < m_textures.m_nBitmaps; i++) {
+	h = cf.ReadInt ();
+	if (!m_textures.m_names [i].Create (h)) {
+		cf.Close ();
+		Destroy ();
+		return 0;
+		}
+	m_textures.m_names [i].Read (cf);
+	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, m_bCustom)) {
+		cf.Close ();
+		Destroy ();
+		return 0;
+		}
+	}
+if (!m_textures.m_nTeam.Create (m_textures.m_nBitmaps)) {
+	cf.Close ();
+	Destroy ();
+	return 0;
+	}
+m_textures.m_nTeam.Read (cf);
+
+CSubModel*	smP, * tailP = NULL;
+
+m_subModels = NULL;
+for (i = 0; i < m_nSubModels; i++) {
+	if (!(smP = new CSubModel)) {
+		cf.Close ();
+		Destroy ();
+		return NULL;
+		}
+	if (m_subModels)
+		tailP->m_next = smP;
+	else
+		m_subModels = smP;
+	tailP = smP;
+	smP->ReadBinary (cf);
+	}
+
+return 1;
+}
 
 //------------------------------------------------------------------------------
 //eof
