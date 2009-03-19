@@ -360,8 +360,7 @@ void CockpitOptionsMenu (void)
 			nPosition = gameOpts->render.cockpit.nWindowPos / 3, 
 			nAlignment = gameOpts->render.cockpit.nWindowPos % 3, 
 			choice = 0;
-	int	optGauges, optHUD, optReticle, optGuided, optPosition, optAlignment, optWideDisplays,
-			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs, optTgtInd, optWeaponIcons;
+	int	optGauges, optHUD, optPosition, optAlignment, optTgtInd, optWeaponIcons;
 
 	char szCockpitWindowZoom [40];
 
@@ -371,6 +370,74 @@ szCWS [2] = TXT_CWS_LARGE;
 szCWS [3] = TXT_CWS_HUGE;
 optPosition = optAlignment = nCWSopt = nCWZopt = optTextGauges = optWeaponIcons = optIconAlpha = -1;
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
+
+#if SIMPLE_MENUS
+
+do {
+	m.Destroy ();
+	m.Create (20);
+
+	if (gameOpts->app.bExpertMode) {
+		nCWSopt = m.AddSlider (szCWS [gameOpts->render.cockpit.nWindowSize], gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_S, HTX_CPIT_WINSIZE);
+		sprintf (szCockpitWindowZoom, TXT_CW_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
+		nCWZopt = m.AddSlider (szCockpitWindowZoom, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
+		m.AddText ("", 0);
+		m.AddText (TXT_AUXWIN_POSITION, 0);
+		optPosition = m.AddRadio (TXT_POS_BOTTOM, nPosition == 0, KEY_B, HTX_AUXWIN_POSITION);
+		m.AddRadio (TXT_POS_TOP, nPosition == 1, KEY_T, HTX_AUXWIN_POSITION);
+		m.AddText ("", 0);
+		m.AddText (TXT_AUXWIN_ALIGNMENT, 0);
+		optAlignment = m.AddRadio (TXT_ALIGN_CORNERS, nAlignment == 0, KEY_O, HTX_AUXWIN_ALIGNMENT);
+		m.AddRadio (TXT_ALIGN_MIDDLE, nAlignment == 1, KEY_I, HTX_AUXWIN_ALIGNMENT);
+		m.AddRadio (TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, HTX_AUXWIN_ALIGNMENT);
+		m.AddText ("", 0);
+		optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
+		}
+	else {
+		optHUD = -1;
+		gameOpts->render.cockpit.nWindowSize = 0;
+		gameOpts->render.cockpit.nWindowZoom = 0;
+		gameOpts->render.cockpit.nWindowPos = 1;
+		}
+	optTgtInd = m.AddMenu (TXT_TGTIND_MENUCALL, KEY_T, "");
+	optWeaponIcons = m.AddMenu (TXT_WPNICON_MENUCALL, KEY_W, "");
+	optGauges = m.AddMenu (TXT_GAUGES_MENUCALL, KEY_G, "");
+	do {
+		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		if ((optTgtInd >= 0) && (i == optTgtInd))
+			TgtIndOptionsMenu ();
+		else if ((optWeaponIcons >= 0) && (i == optWeaponIcons))
+			WeaponIconOptionsMenu ();
+		else if ((optGauges >= 0) && (i == optGauges))
+			GaugeOptionsMenu ();
+	} while (i >= 0);
+	gameOpts->render.cockpit.bReticle = 1;
+	gameOpts->render.cockpit.bMissileView = 1;
+	gameOpts->render.cockpit.bGuidedInMainView = 1;
+	gameOpts->render.cockpit.bMouseIndicator = 1;
+	gameOpts->render.cockpit.bHUDMsgs = 1;
+	gameOpts->render.cockpit.bSplitHUDMsgs = 1;
+	gameOpts->render.cockpit.bWideDisplays = 1;
+	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
+	if (gameOpts->app.bExpertMode) {
+		if ((optAlignment >= 0) && (optPosition >= 0)) {
+			for (nPosition = 0; nPosition < 2; nPosition++)
+				if (m [optPosition + nPosition].m_value)
+					break;
+			for (nAlignment = 0; nAlignment < 3; nAlignment++)
+				if (m [optAlignment + nAlignment].m_value)
+					break;
+			gameOpts->render.cockpit.nWindowPos = nPosition * 3 + nAlignment;
+			}
+		}
+	} while (i == -2);
+
+#else
+
+	int	optGauges, optHUD, optReticle, optGuided, optPosition, optAlignment, optWideDisplays,
+			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs, optTgtInd, optWeaponIcons;
 do {
 	m.Destroy ();
 	m.Create (30);
@@ -440,6 +507,9 @@ do {
 		gameOpts->render.cockpit.nWindowPos = nPosition * 3 + nAlignment;
 		}
 	} while (i == -2);
+
+#endif
+
 }
 
 //------------------------------------------------------------------------------
