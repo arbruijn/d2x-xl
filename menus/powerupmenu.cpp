@@ -95,7 +95,26 @@ return nCurItem;
 void PowerupOptionsMenu (void)
 {
 	CMenu m;
-	int	i, j, choice = 0;
+	int	i, choice = 0;
+
+#if SIMPLE_MENUS
+
+do {
+	m.Destroy ();
+	m.Create (10);
+	nOpt3D = m.AddCheck (TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);
+	for (;;) {
+		i = m.Menu (NULL, TXT_POWERUP_MENUTITLE, PowerupOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	gameOpts->render.powerups.b3DShields = gameOpts->render.powerups.b3D;
+	gameOpts->render.powerups.nSpin = 1;
+	} while (i == -2);
+
+#else
+
+	int	j;
 	int	optSpin, optShieldSpheres;
 
 do {
@@ -129,6 +148,9 @@ do {
 			}
 		}
 	} while (i == -2);
+
+#endif
+
 }
 
 //------------------------------------------------------------------------------
