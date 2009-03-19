@@ -164,7 +164,7 @@ while (h--) {
 	bufP -= w;
 	cf.Read (bufP, 1, w);
 	}
-SetTGAProperties (bmP, alpha, bGrayScale, brightness, bReverse == 1);
+SetTGAProperties (bmP, alpha, bGrayScale, brightness, bReverse == 0);
 #else
 	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
 	int				h = bmP->Height ();
