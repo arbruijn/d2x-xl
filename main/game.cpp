@@ -944,21 +944,21 @@ if (!setjmp (gameExitPoint)) {
 			ClearWarnFunc (ShowInGameWarning);
 			if (e == EX_OUT_OF_MEMORY) {
 				Warning ("Out of memory.");
-				goto errorExit;
+				break;
 				}
 			else if (e == EX_IO_ERROR) {
 				Warning ("Couldn't load game data.");
-				goto errorExit;
+				break;
 				}
 			else {
 				Warning ("Well ... something went wrong.");
-				goto errorExit;
+				break;
 				}
 			}
 		catch (...) {
 			ClearWarnFunc (ShowInGameWarning);
 			Warning ("Well ... something went really wrong.");
-			goto errorExit;
+			break;
 			}
 
 		if (gameStates.app.bSingleStep) {
@@ -1035,9 +1035,6 @@ if (!setjmp (gameExitPoint)) {
 			break; //longjmp (gameExitPoint, 0);
 		}
 	}
-
-errorExit:
-
 CleanupAfterGame ();
 }
 
