@@ -141,7 +141,7 @@ int LoadSoundReplacements (const char *pszFilename)
 	int					i, j, l;
 	int					b11K = (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K);
 	tPIGSoundHeader	dsh;
-	CSoundSample			*dsP;
+	CSoundSample*		dsP;
 	size_t				nHeaderOffs, nDataOffs;
 	char					szFilename [SHORT_FILENAME_LEN];
 
@@ -225,7 +225,7 @@ return 1;
 int SetupSounds (CFile& cf, int nSoundNum, int nSoundStart, bool bCustom, bool bUseLowRes)
 {
 	tPIGSoundHeader	sndh;
-	CSoundSample*			soundP;
+	CSoundSample*		soundP;
 	int					i, j;
 	int 					nHeaderSize = nSoundNum * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];

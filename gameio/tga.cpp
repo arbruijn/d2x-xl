@@ -51,7 +51,7 @@ if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 
 //------------------------------------------------------------------------------
 
-void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightness)
+void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightness, bool bSwapRB = true)
 {
 	int				i, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = bmP->BPP ();
 	int				h = bmP->Height ();
@@ -88,7 +88,8 @@ else {
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
 		for (i = w * (h / nFrames); i; i--, p++) {
-			::Swap (p->red, p->blue);
+			if (bSwapRB)
+				::Swap (p->red, p->blue);
 			if (bGrayScale) {
 				p->red =
 				p->green =
@@ -144,12 +145,7 @@ if (!nAlpha)
 int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha, 
 						double brightness, int bGrayScale, int bReverse)
 {
-	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = ph->bits / 8;
-	int				h = bmP->Height ();
-	int				w = bmP->Width ();
-	tRgbColorf		avgColor;
-	tRgbColorb		avgColorb;
-	float				a, avgAlpha = 0;
+	int				nBytes = ph->bits / 8;
 
 bmP->AddFlags (BM_FLAG_TGA);
 bmP->SetBPP (nBytes);
@@ -158,8 +154,26 @@ if (!(bmP->Buffer () || bmP->CreateBuffer ()))
 bmP->SetTranspType (-1);
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
-avgColor.red = avgColor.green = avgColor.blue = 0;
 //bReverse = (ph->descriptor & (1 << 5)) != 0;
+#if 1
+	int				h = bmP->Height ();
+	int				w = bmP->RowSize ();
+	ubyte*			bufP = bmP->Buffer () + w * h;
+
+while (h--) {
+	bufP -= w;
+	cf.Read (bufP, 1, w);
+	}
+SetTGAProperties (bmP, alpha, bGrayScale, brightness, bReverse == 1);
+#else
+	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
+	int				h = bmP->Height ();
+	int				w = bmP->Width ();
+	tRgbColorf		avgColor;
+	tRgbColorb		avgColorb;
+	float				a, avgAlpha = 0;
+
+avgColor.red = avgColor.green = avgColor.blue = 0;
 if (ph->bits == 24) {
 	tBGRA	c;
 	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (h - 1);
@@ -315,6 +329,7 @@ if (!nAlpha)
 #if 0
 if (nAlpha && ((ubyte) (avgAlpha / nAlpha) < 2))
 	bmP->Flags |= BM_FLAG_SEE_THRU;
+#endif
 #endif
 return 1;
 }
@@ -479,6 +494,11 @@ if (!*szFolder)
 int l = strlen (szFolder);
 if (l && ((szFolder [l - 1] == '/') || (szFolder [l - 1] == '\\')))
 	szFolder [l - 1] = '\0';
+#	if 1
+sprintf (szImage, "%s/%s.png", szFolder, szFile);
+if (!cf.Exist (szImage, NULL, 0)) {
+	return 0;
+#	else
 sprintf (szImage, "%s/%s%s", szFolder, szFile, *szExt ? szExt : ".png");
 if (!cf.Exist (szImage, NULL, 0)) {
 	if (*szExt)
@@ -486,6 +506,7 @@ if (!cf.Exist (szImage, NULL, 0)) {
 	sprintf (szImage, "%s/%s%s", szFolder, szFile, *szExt ? szExt : ".tga");
 	if (!cf.Exist (szImage, NULL, 0))
 		return 0;
+#	endif
 	}
 
 SDL_Surface*	imageP;
@@ -554,7 +575,6 @@ else
 	szName [sizeof (szName) - 1] = '\0';
 bmP->SetName (szName);
 return r;
-
 }
 
 //	-----------------------------------------------------------------------------
