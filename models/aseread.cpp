@@ -744,6 +744,10 @@ return nResult;
 
 int CSubModel::SaveBinary (CFile& cf)
 {
+#if DBG
+if (!strcmp (m_szName, "$WINGTIP2-0"))
+	nDbgModel = nDbgModel;
+#endif
 cf.Write (m_szName, 1, sizeof (m_szName));
 cf.Write (m_szParent, 1, sizeof (m_szParent));
 cf.WriteShort (m_nSubModel);
@@ -885,6 +889,9 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 		}
 	}
 m_textures.m_nTeam.Read (cf);
+
+for (i = 0; i < m_textures.m_nBitmaps; i++) 
+	m_textures.m_bitmaps [i].SetTeam (m_textures.m_nTeam [i]);
 
 CSubModel*	smP, * tailP = NULL;
 
