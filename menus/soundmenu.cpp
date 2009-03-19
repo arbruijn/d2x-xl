@@ -199,9 +199,9 @@ void SoundMenu (void)
 {
    CMenu	m;
 	char	szChannels [50], szVolume [50];
-	int	i, choice = 0, 
-			optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, 
-			bSongPlaying = (gameConfig.nMidiVolume > 0);
+	int	i, choice = 0;
+	int	optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, optShieldWarn = -1;
+	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 gameStates.sound.nSoundChannels = SoundChannelIndex ();
 do {
@@ -237,6 +237,7 @@ do {
 		soundOpts.nGatling = m.AddCheck (TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_G, HTX_GATLING_SOUND);
 		if (gameOpts->sound.bGatling)
 			optSpeedUpSound = m.AddCheck (TXT_SPINUP_SOUND, extraGameInfo [0].bGatlingSpeedUp, KEY_U, HTX_SPINUP_SOUND);
+		optShieldWarn = m.AddCheck (TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
 		}
 	m.AddText ("", 0);
 	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Playing (), KEY_C, HTX_ONLINE_MANUAL);
@@ -259,6 +260,7 @@ if (!gameStates.app.bNostalgia) {
 	GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
 	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
 	GET_VAL (extraGameInfo [0].bGatlingSpeedUp, optSpeedUpSound);
+	GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
 	if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 		audio.DestroyObjectSound (LOCALPLAYER.nObject);
 	}

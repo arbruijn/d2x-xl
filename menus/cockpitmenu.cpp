@@ -185,6 +185,70 @@ void WeaponIconOptionsMenu (void)
 {
 	CMenu m (35);
 	int	i, j, choice = 0;
+
+#if SIMPLE_MENUS
+
+	int	optIconPos, optHiliteColor;
+
+bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
+do {
+	m.Destroy ();
+	m.Create (35);
+	optWeaponIcons = m.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
+	if (bShowWeaponIcons) {
+		m.AddText ("", 0);
+		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
+		m.AddText ("", 0);
+		optHiliteColor = m.AddRadio (TXT_HUD_HILITE_YELLOW, 0, KEY_Y, HTX_HUD_HILITE_COLOR);
+		m.AddRadio (TXT_HUD_HILITE_BLUE, 0, KEY_B, HTX_HUD_HILITE_COLOR);
+		m [optHiliteColor + NMCLAMP (gameOpts->render.weaponIcons.nHiliteColor, 0, 1)].m_value = 1;
+		m.AddText ("", 0);
+		}
+	else
+		optIconPos = -1;
+	do {
+		i = m.Menu (NULL, TXT_WPNICON_MENUTITLE, &WeaponIconOptionsCallback, &choice);
+	} while (i >= 0);
+	if (bShowWeaponIcons) {
+		if (gameOpts->app.bExpertMode) {
+			if (optIconPos >= 0) {
+				for (j = 0; j < 4; j++)
+					if (m [optIconPos + j].m_value) {
+						extraGameInfo [0].nWeaponIcons = j + 1;
+						break;
+						}
+				}
+			if (optHiliteColor >= 0)
+				gameOpts->render.weaponIcons.nHiliteColor = m [optHiliteColor + 1].m_value != 0;
+			GET_VAL (gameOpts->render.weaponIcons.alpha, optIconAlpha);
+			}
+		else {
+#if EXPMODE_DEFAULTS
+			gameOpts->render.weaponIcons.bEquipment = 1;
+			gameOpts->render.weaponIcons.bSmall = 1;
+			gameOpts->render.weaponIcons.nSort = 1;
+			gameOpts->render.weaponIcons.bShowAmmo = 1;
+			gameOpts->render.weaponIcons.alpha = 3;
+#endif
+			}
+		}
+	else
+		extraGameInfo [0].nWeaponIcons = 0;
+	} while (i == -2);
+
+gameOpts->render.weaponIcons.bEquipment = bShowWeaponIcons;
+gameOpts->render.weaponIcons.bSmall = 1;
+gameOpts->render.weaponIcons.nSort = 1;
+gameOpts->render.weaponIcons.bShowAmmo = 1;
+gameOpts->render.weaponIcons.bBoldHighlight = 1;
+gameOpts->render.weaponIcons.alpha = 3;
+
+#else
+
 	int	optSmallIcons, optIconSort, optIconAmmo, optIconPos, optEquipIcons, optBoldHilite, optHiliteColor;
 
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
@@ -253,6 +317,9 @@ do {
 	else
 		extraGameInfo [0].nWeaponIcons = 0;
 	} while (i == -2);
+
+#endif
+
 }
 
 //------------------------------------------------------------------------------
@@ -276,6 +343,8 @@ return nCurItem;
 }
 
 //------------------------------------------------------------------------------
+
+#if !SIMPLE_MENUS
 
 void GaugeOptionsMenu (void)
 {
@@ -321,6 +390,9 @@ do {
 	} while (i == -2);
 }
 
+#endif
+
+
 //------------------------------------------------------------------------------
 
 int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
@@ -360,7 +432,7 @@ void CockpitOptionsMenu (void)
 			nPosition = gameOpts->render.cockpit.nWindowPos / 3, 
 			nAlignment = gameOpts->render.cockpit.nWindowPos % 3, 
 			choice = 0;
-	int	optGauges, optHUD, optPosition, optAlignment, optTgtInd, optWeaponIcons;
+	int	optTextGauges, optHUD, optPosition, optAlignment, optTgtInd, optWeaponIcons;
 
 	char szCockpitWindowZoom [40];
 
@@ -368,7 +440,7 @@ szCWS [0] = TXT_CWS_SMALL;
 szCWS [1] = TXT_CWS_MEDIUM;
 szCWS [2] = TXT_CWS_LARGE;
 szCWS [3] = TXT_CWS_HUGE;
-optPosition = optAlignment = nCWSopt = nCWZopt = optTextGauges = optWeaponIcons = optIconAlpha = -1;
+optPosition = optAlignment = nCWSopt = nCWZopt = optTextGauges = optWeaponIcons = -1;
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 
 #if SIMPLE_MENUS
@@ -391,17 +463,18 @@ do {
 		m.AddRadio (TXT_ALIGN_MIDDLE, nAlignment == 1, KEY_I, HTX_AUXWIN_ALIGNMENT);
 		m.AddRadio (TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, HTX_AUXWIN_ALIGNMENT);
 		m.AddText ("", 0);
-		optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
 		}
 	else {
-		optHUD = -1;
 		gameOpts->render.cockpit.nWindowSize = 0;
 		gameOpts->render.cockpit.nWindowZoom = 0;
 		gameOpts->render.cockpit.nWindowPos = 1;
 		}
+	optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
+	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
+	m.AddText ("", 0);
+
 	optTgtInd = m.AddMenu (TXT_TGTIND_MENUCALL, KEY_T, "");
 	optWeaponIcons = m.AddMenu (TXT_WPNICON_MENUCALL, KEY_W, "");
-	optGauges = m.AddMenu (TXT_GAUGES_MENUCALL, KEY_G, "");
 	do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
 		if (i < 0)
@@ -410,17 +483,11 @@ do {
 			TgtIndOptionsMenu ();
 		else if ((optWeaponIcons >= 0) && (i == optWeaponIcons))
 			WeaponIconOptionsMenu ();
-		else if ((optGauges >= 0) && (i == optGauges))
-			GaugeOptionsMenu ();
 	} while (i >= 0);
-	gameOpts->render.cockpit.bReticle = 1;
-	gameOpts->render.cockpit.bMissileView = 1;
-	gameOpts->render.cockpit.bGuidedInMainView = 1;
-	gameOpts->render.cockpit.bMouseIndicator = 1;
-	gameOpts->render.cockpit.bHUDMsgs = 1;
-	gameOpts->render.cockpit.bSplitHUDMsgs = 1;
-	gameOpts->render.cockpit.bWideDisplays = 1;
+
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
+	gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value;
+
 	if (gameOpts->app.bExpertMode) {
 		if ((optAlignment >= 0) && (optPosition >= 0)) {
 			for (nPosition = 0; nPosition < 2; nPosition++)
@@ -434,10 +501,25 @@ do {
 		}
 	} while (i == -2);
 
+
+gameOpts->render.cockpit.bScaleGauges = 1;
+gameOpts->render.cockpit.bFlashGauges = 1;
+gameOpts->gameplay.bShieldWarning = 0;
+gameOpts->render.cockpit.bObjectTally = 1;
+gameOpts->render.cockpit.bPlayerStats = 0;
+
+gameOpts->render.cockpit.bReticle = 1;
+gameOpts->render.cockpit.bMissileView = 1;
+gameOpts->render.cockpit.bGuidedInMainView = 1;
+gameOpts->render.cockpit.bMouseIndicator = 1;
+gameOpts->render.cockpit.bHUDMsgs = 1;
+gameOpts->render.cockpit.bSplitHUDMsgs = 1;
+gameOpts->render.cockpit.bWideDisplays = 1;
+
 #else
 
-	int	optGauges, optHUD, optReticle, optGuided, optPosition, optAlignment, optWideDisplays,
-			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs, optTgtInd, optWeaponIcons;
+	int	optGauges, optReticle, optGuided, optWideDisplays,
+			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs;
 do {
 	m.Destroy ();
 	m.Create (30);
