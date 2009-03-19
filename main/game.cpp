@@ -940,20 +940,20 @@ if (!setjmp (gameExitPoint)) {
 			}
 		catch (int e) {
 			if (e == EX_OUT_OF_MEMORY) {
-				Error ("Out of memory.");
+				Warning ("Out of memory.");
 				break;
 				}
 			else if (e == EX_IO_ERROR) {
-				Error ("Couldn't load game data.");
+				Warning ("Couldn't load game data.");
 				break;
 				}
 			else {
-				Error ("Well ... something went wrong.");
+				Warning ("Well ... something went wrong.");
 				break;
 				}
 			}
 		catch (...) {
-			Error ("Well ... something went really really wrong.");
+			Warning ("Well ... something went really really wrong.");
 			break;
 			}
 

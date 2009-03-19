@@ -194,11 +194,13 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 						textureManager.Destroy ();
 						UnloadTextures ();
 						--gameOpts->render.textures.nQuality;
+						continue;
 						}
 					else {
 						throw (e);
 						}
 					}
+				break;
 				}
 			OOF_ReloadTextures ();
 			ASE_ReloadTextures ();

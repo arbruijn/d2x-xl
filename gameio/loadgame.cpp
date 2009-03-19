@@ -1579,7 +1579,17 @@ SetWarnFunc (ShowInGameWarning);
 try {
 	funcRes = LoadLevel (nLevel, bLoadTextures, bRestore);
 	}
+catch (int e) {
+	if (e == EX_OUT_OF_MEMORY)
+		Warning ("Couldn't load the level:\nNot enough memory.");
+	else if (e == EX_OUT_OF_MEMORY)
+		Warning ("Couldn't load the level:\nReading some data failed.");
+	else if (e == EX_OUT_OF_MEMORY)
+		Warning ("Couldn't load the level.");
+	funcRes = 0;
+	}
 catch (...) {
+	Warning ("Couldn't load the level.");
 	funcRes = 0;
 	}
 ClearWarnFunc (ShowInGameWarning);

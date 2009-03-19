@@ -638,7 +638,7 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			altBmP = &gameData.pig.tex.addonBitmaps [-nIndex - 1];
 		else
 			altBmP = &gameData.pig.tex.altBitmaps [bD1][nIndex];
-		if (ReadTGA (fn [nFile], "", altBmP)) {
+		if (!ReadTGA (fn [nFile], "", altBmP)) {
 			altBmP = NULL;
 			if (!bDefault)
 				cfP->Close ();
