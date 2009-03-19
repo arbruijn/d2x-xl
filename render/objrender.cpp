@@ -357,7 +357,7 @@ else
 #endif
 
 if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))) {
-	//bmoP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
+	bmoP->SetupTexture (1, 1);
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	bmP = bmoP->SetCurFrame (iFrame);
 	//fAlpha = 1;

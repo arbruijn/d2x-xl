@@ -96,22 +96,10 @@ if (nState)
 	CMenuItem	*m;
 	int			v;
 
-m = menu + effectOpts.nLightTrails;
-v = m->m_value;
-if (extraGameInfo [0].bLightTrails != v) {
-	extraGameInfo [0].bLightTrails = v;
-	key = -2;
-	}
 m = menu + effectOpts.nCoronas;
 v = m->m_value;
 if (gameOpts->render.coronas.bUse != v) {
 	gameOpts->render.coronas.bUse = v;
-	key = -2;
-	}
-m = menu + effectOpts.nShotCoronas;
-v = m->m_value;
-if (gameOpts->render.coronas.bShots != v) {
-	gameOpts->render.coronas.bShots = v;
 	key = -2;
 	}
 if (effectOpts.nCoronaStyle >= 0) {
@@ -122,6 +110,19 @@ if (effectOpts.nCoronaStyle >= 0) {
 		sprintf (m->m_text, TXT_CORONA_QUALITY, pszCoronaQual [v]);
 		m->m_bRebuild = -1;
 		}
+	}
+#if 0
+m = menu + effectOpts.nLightTrails;
+v = m->m_value;
+if (extraGameInfo [0].bLightTrails != v) {
+	extraGameInfo [0].bLightTrails = v;
+	key = -2;
+	}
+m = menu + effectOpts.nShotCoronas;
+v = m->m_value;
+if (gameOpts->render.coronas.bShots != v) {
+	gameOpts->render.coronas.bShots = v;
+	key = -2;
 	}
 if (effectOpts.nCoronaIntensity >= 0) {
 	m = menu + effectOpts.nCoronaIntensity;
@@ -141,6 +142,7 @@ if (effectOpts.nObjCoronaIntensity >= 0) {
 		m->m_bRebuild = -1;
 		}
 	}
+#endif
 return nCurItem;
 }
 
@@ -160,6 +162,37 @@ pszCoronaInt [3] = TXT_HIGH;
 pszCoronaQual [0] = TXT_LOW;
 pszCoronaQual [1] = TXT_MEDIUM;
 pszCoronaQual [2] = TXT_HIGH;
+
+#if SIMPLE_MENUS
+
+do {
+	m.Destroy ();
+	m.Create (5);
+
+	effectOpts.nCoronas = m.AddCheck (TXT_RENDER_CORONAS, gameOpts->render.coronas.bUse, KEY_C, HTX_ADVRND_CORONAS);
+	if (gameOpts->render.coronas.bUse) {
+		sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.coronas.nStyle]);
+		*szCoronaQual = *(TXT_CORONA_QUALITY - 1);
+		effectOpts.nCoronaStyle = m.AddSlider (szCoronaQual + 1, gameOpts->render.coronas.nStyle, 0, 1 + gameStates.ogl.bDepthBlending, KEY_Q, HTX_CORONA_QUALITY);
+		m.AddText ("", 0);
+		}
+	else
+		effectOpts.nCoronaStyle = -1;
+	for (;;) {
+		i = m.Menu (NULL, TXT_CORONA_MENUTITLE, CoronaOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	if (optTrailType >= 0)
+		gameOpts->render.particles.bPlasmaTrails = (m [optTrailType].m_value == 0);
+	} while (i == -2);
+	gameOpts->render.coronas.bShots = 1;
+	gameOpts->render.coronas.bPowerups = 1;
+	gameOpts->render.coronas.bWeapons = 0;
+	gameOpts->render.coronas.bAdditive = 1;
+	gameOpts->render.coronas.bAdditiveObjs = 1;
+
+#else
 
 do {
 	m.Destroy ();
@@ -210,6 +243,8 @@ do {
 	if (optTrailType >= 0)
 		gameOpts->render.particles.bPlasmaTrails = (m [optTrailType].m_value == 0);
 	} while (i == -2);
+
+#endif
 }
 
 //------------------------------------------------------------------------------

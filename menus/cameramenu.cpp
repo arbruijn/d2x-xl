@@ -121,10 +121,39 @@ void CameraOptionsMenu (void)
 	CMenu	m;
 	int	i, choice = 0;
 	int	bFSCameras = gameOpts->render.cameras.bFitToWall;
-	int	optFSCameras, optTeleCams, optHiresCams;
+	int	optHiresCams;
 #if 0
 	int checks;
 #endif
+
+#if SIMPLE_MENUS
+
+do {
+	m.Destroy ();
+	m.Create (10);
+	camOpts.nUse = m.AddCheck (TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
+	if (gameStates.app.bGameRunning) 
+		optHiresCams = -1;
+	else
+		optHiresCams = m.AddCheck (TXT_HIRES_CAMERAS, gameOpts->render.cameras.bHires, KEY_H, HTX_HIRES_CAMERAS);
+
+	do {
+		i = m.Menu (NULL, TXT_CAMERA_MENUTITLE, &CameraOptionsCallback, &choice);
+	} while (i >= 0);
+
+	if ((extraGameInfo [0].bUseCameras = m [camOpts.nUse].m_value)) {
+		if (!gameStates.app.bGameRunning)
+			GET_VAL (gameOpts->render.cameras.bHires, optHiresCams);
+		}
+	extraGameInfo [0].bTeleporterCams = 0;
+	gameOpts->render.cameras.bFitToWall = 0;
+	gameOpts->render.cameras.nSpeed = 5000;
+	gameOpts->render.cameras.nFPS = 0;
+	} while (i == -2);
+
+#else
+
+	int	optFSCameras, optTeleCams;
 
 	char szCameraFps [50];
 	char szCameraSpeed [50];
@@ -171,6 +200,9 @@ do {
 		cameraManager.Create ();
 		}
 	} while (i == -2);
+
+#endif
+
 }
 
 //------------------------------------------------------------------------------

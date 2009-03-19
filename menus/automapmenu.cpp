@@ -114,26 +114,96 @@ return nCurItem;
 void AutomapOptionsMenu (void)
 {
 	CMenu	m;
-	int	i, j, choice = 0;
-	int	optBright, optGrayOut, optShowRobots, optShowPowerups, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
+	int	i, choice = 0;
+	int	optBright, optGrayOut, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
 	char	szRadarRange [50];
 
 pszRadarRange [0] = TXT_SHORT;
 pszRadarRange [1] = TXT_MEDIUM;
 pszRadarRange [2] = TXT_FAR;
 *szRadarRange = '\0';
+
+#if SIMPLE_MENUS
+
 do {
 	m.Destroy ();
-	m.Create (30);
-	automapOpts.nOptTextured = m.AddCheck (TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured & 1, KEY_T, HTX_AUTOMAP_TEXTURED);
-	if (gameOpts->render.automap.bTextured & 1) {
-		optBright = m.AddCheck (TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
+	m.Create (10);
+	//automapOpts.nOptTextured = m.AddCheck (TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured & 1, KEY_T, HTX_AUTOMAP_TEXTURED);
+	optBright = m.AddCheck (TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
+	if (gameOpts->app.bExpertMode) {
 		optGrayOut = m.AddCheck (TXT_AUTOMAP_GRAYOUT, gameOpts->render.automap.bGrayOut, KEY_Y, HTX_AUTOMAP_GRAYOUT);
 		optCoronas = m.AddCheck (TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
 		optSparks = m.AddCheck (TXT_RENDER_SPARKS, gameOpts->render.automap.bSparks, KEY_P, HTX_RENDER_SPARKS);
 		optSmoke = m.AddCheck (TXT_AUTOMAP_SMOKE, gameOpts->render.automap.bParticles, KEY_S, HTX_AUTOMAP_SMOKE);
 		optLightnings = m.AddCheck (TXT_AUTOMAP_LIGHTNINGS, gameOpts->render.automap.bLightnings, KEY_S, HTX_AUTOMAP_LIGHTNINGS);
 		optSkybox = m.AddCheck (TXT_AUTOMAP_SKYBOX, gameOpts->render.automap.bSkybox, KEY_K, HTX_AUTOMAP_SKYBOX);
+		}
+	else
+		optGrayOut =
+		optCoronas =
+		optSparks =
+		optSmoke =
+		optLightnings =
+		optSkybox = -1;
+	m.AddText ("", 0);
+	automapOpts.nOptRadar = m.AddRadio (TXT_RADAR_OFF, 0, KEY_R, HTX_AUTOMAP_RADAR);
+	m.AddRadio (TXT_RADAR_TOP, 0, KEY_T, HTX_AUTOMAP_RADAR);
+	m.AddRadio (TXT_RADAR_BOTTOM, 0, KEY_O, HTX_AUTOMAP_RADAR);
+	if (extraGameInfo [0].nRadar) {
+		m.AddText ("", 0);
+		sprintf (szRadarRange + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
+		*szRadarRange = *(TXT_RADAR_RANGE - 1);
+		automapOpts.nOptRadarRange = m.AddSlider (szRadarRange + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
+		m.AddText ("", 0);
+		}
+	else
+		automapOpts.nOptRadarRange =
+		optColor = -1;
+	for (;;) {
+		i = m.Menu (NULL, TXT_AUTOMAP_MENUTITLE, AutomapOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	//gameOpts->render.automap.bTextured = m [automapOpts.nOptTextured].m_value;
+	GET_VAL (gameOpts->render.automap.bBright, optBright);
+	GET_VAL (gameOpts->render.automap.bGrayOut, optGrayOut);
+	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
+	GET_VAL (gameOpts->render.automap.bSparks, optSparks);
+	GET_VAL (gameOpts->render.automap.bParticles, optSmoke);
+	GET_VAL (gameOpts->render.automap.bLightnings, optLightnings);
+	GET_VAL (gameOpts->render.automap.bSkybox, optSkybox);
+	if (automapOpts.nOptRadarRange >= 0)
+		gameOpts->render.automap.nRange = m [automapOpts.nOptRadarRange].m_value;
+	extraGameInfo [0].bPowerupsOnRadar = 1;
+	extraGameInfo [0].bRobotsOnRadar = 1;
+	gameOpts->render.automap.nColor = 1;
+	gameOpts->render.automap.bGrayOut = 1;
+	gameOpts->render.automap.bCoronas = 0;
+	gameOpts->render.automap.bSparks = 1;
+	gameOpts->render.automap.bParticles = 0;
+	gameOpts->render.automap.bLightnings = 0;
+	gameOpts->render.automap.bSkybox = 0;
+	} while (i == -2);
+
+#else
+
+	int	optBright, optGrayOut, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
+	int	j;
+
+do {
+	m.Destroy ();
+	m.Create (30);
+	//automapOpts.nOptTextured = m.AddCheck (TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured & 1, KEY_T, HTX_AUTOMAP_TEXTURED);
+	if (gameOpts->render.automap.bTextured & 1) {
+		optBright = m.AddCheck (TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
+		if (gameOpts->app.bExpertMode) {
+			optGrayOut = m.AddCheck (TXT_AUTOMAP_GRAYOUT, gameOpts->render.automap.bGrayOut, KEY_Y, HTX_AUTOMAP_GRAYOUT);
+			optCoronas = m.AddCheck (TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
+			optSparks = m.AddCheck (TXT_RENDER_SPARKS, gameOpts->render.automap.bSparks, KEY_P, HTX_RENDER_SPARKS);
+			optSmoke = m.AddCheck (TXT_AUTOMAP_SMOKE, gameOpts->render.automap.bParticles, KEY_S, HTX_AUTOMAP_SMOKE);
+			optLightnings = m.AddCheck (TXT_AUTOMAP_LIGHTNINGS, gameOpts->render.automap.bLightnings, KEY_S, HTX_AUTOMAP_LIGHTNINGS);
+			optSkybox = m.AddCheck (TXT_AUTOMAP_SKYBOX, gameOpts->render.automap.bSkybox, KEY_K, HTX_AUTOMAP_SKYBOX);
+			}
 		}
 	else
 		optGrayOut =
@@ -202,6 +272,9 @@ do {
 				}
 		}
 	} while (i == -2);
+
+#endif
+
 }
 
 //------------------------------------------------------------------------------
