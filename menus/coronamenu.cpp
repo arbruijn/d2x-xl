@@ -151,13 +151,12 @@ return nCurItem;
 void CoronaOptionsMenu (void)
 {
 	CMenu m;
-	int	i, choice = 0, optTrailType;
-	char	szCoronaQual [50], szCoronaInt [50], szObjCoronaInt [50];
+	int	i, choice = 0;
+	char	szCoronaQual [50];
 
-pszCoronaInt [0] = TXT_VERY_LOW;
-pszCoronaInt [1] = TXT_LOW;
-pszCoronaInt [2] = TXT_MEDIUM;
-pszCoronaInt [3] = TXT_HIGH;
+pszCoronaQual [0] = TXT_LOW;
+pszCoronaQual [1] = TXT_MEDIUM;
+pszCoronaQual [2] = TXT_HIGH;
 
 pszCoronaQual [0] = TXT_LOW;
 pszCoronaQual [1] = TXT_MEDIUM;
@@ -183,16 +182,23 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (optTrailType >= 0)
-		gameOpts->render.particles.bPlasmaTrails = (m [optTrailType].m_value == 0);
 	} while (i == -2);
 	gameOpts->render.coronas.bShots = 1;
 	gameOpts->render.coronas.bPowerups = 1;
 	gameOpts->render.coronas.bWeapons = 0;
 	gameOpts->render.coronas.bAdditive = 1;
 	gameOpts->render.coronas.bAdditiveObjs = 1;
+	gameOpts->render.particles.bPlasmaTrails = 0;	//move to effects menu
 
 #else
+
+	int	optTrailType;
+	char	szCoronaInt [50], szObjCoronaInt [50];
+
+pszCoronaInt [0] = TXT_VERY_LOW;
+pszCoronaInt [1] = TXT_LOW;
+pszCoronaInt [2] = TXT_MEDIUM;
+pszCoronaInt [3] = TXT_HIGH;
 
 do {
 	m.Destroy ();
