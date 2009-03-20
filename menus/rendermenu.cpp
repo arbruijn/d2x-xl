@@ -78,6 +78,7 @@ static struct {
 	int	nTexQual;
 	int	nMeshQual;
 	int	nCoronas;
+	int	nLightning;
 	int	nSmoke;
 	int	nShadows;
 	int	nPowerups;
@@ -277,6 +278,14 @@ if (renderOpts.nShadows >= 0) {
 		}
 	}
 
+m = menu + renderOpts.nLightning;
+v = m->m_value;
+if (extraGameInfo [0].bUseLightning != v) {
+	extraGameInfo [0].bUseLightning = v;
+	sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [extraGameInfo [0].bUseLightning]);
+	m->m_bRebuild = -1;
+	}
+
 m = menu + renderOpts.nCoronas;
 v = m->m_value;
 if (nCoronas != v) {
@@ -416,6 +425,10 @@ do {
 	*szSlider = *(TXT_CORONAS - 1);
 	renderOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_O, HTX_CORONAS);
 
+	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [extraGameInfo [0].bUseLightning]);
+	*szSlider = *(TXT_LIGHTNING - 1);
+	renderOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_O, HTX_LIGHTNING);
+
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	*szSlider = *(TXT_CAMERAS - 1);
 	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_C, HTX_CAMERAS);
@@ -459,8 +472,6 @@ do {
 		if (gameOpts->app.bExpertMode) {
 			if ((optLightOpts >= 0) && (i == optLightOpts))
 				i = -2, LightOptionsMenu ();
-			else if ((optLightningOpts >= 0) && (i == optLightningOpts))
-				i = -2, LightningOptionsMenu ();
 			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
 				i = -2, EffectOptionsMenu ();
 			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))

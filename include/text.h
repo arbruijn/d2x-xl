@@ -1920,10 +1920,10 @@ void LoadGameTexts(void);
 #define TXT_THRUSTER_FLAMES			GT(1123)
 #define TXT_2D								GT(1124)
 #define TXT_3D								GT(1125)
+#define TXT_LIGHTNING					GT(1126)
 
 #if 0
 
-#define TXT_					GT(1126)
 #define TXT_					GT(1127)
 #define TXT_					GT(1128)
 #define TXT_					GT(1129)
@@ -2516,6 +2516,7 @@ void LoadGameTexts(void);
 #define HTX_LIGHTING						HT(397)			
 #define HTX_CAMERAS						HT(398)			
 #define HTX_THRUSTER_FLAMES			HT(399)			
+#define HTX_LIGHTNING					HT(500)			
 
 #if 0
 

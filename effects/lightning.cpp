@@ -1423,18 +1423,18 @@ void CLightningManager::Init (void)
 {
 if (!(m_objects.Buffer () || m_objects.Create (LEVEL_OBJECTS))) {
 	Shutdown (1);
-	extraGameInfo [0].bUseLightnings = 0;
+	extraGameInfo [0].bUseLightning = 0;
 	return;
 	}
 m_objects.Clear (0xff);
 if (!(m_lights.Buffer () || m_lights.Create (2 * LEVEL_SEGMENTS))) {
 	Shutdown (1);
-	extraGameInfo [0].bUseLightnings = 0;
+	extraGameInfo [0].bUseLightning = 0;
 	return;
 	}
 if (!m_systems.Create (MAX_LIGHTNING_SYSTEMS)) {
 	Shutdown (1);
-	extraGameInfo [0].bUseLightnings = 0;
+	extraGameInfo [0].bUseLightning = 0;
 	return;
 	}	
 int i = 0;

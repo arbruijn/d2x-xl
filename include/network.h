@@ -215,7 +215,7 @@ typedef struct tExtraGameInfo {
 	char		bSafeUDP;
 	char		bFastPitch;
 	char		bUseParticles;
-	char		bUseLightnings;
+	char		bUseLightning;
 	char		bDamageExplosions;
 	char		bThrusterFlames;
 	char		bShadows;

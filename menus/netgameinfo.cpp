@@ -96,12 +96,12 @@ if (!*AXI.szGameName) {
 else 
 #endif
  {
-	if (AXI.bShadows || AXI.bUseParticles || AXI.bBrightObjects || (!AXI.bCompetition && AXI.bUseLightnings)) {
+	if (AXI.bShadows || AXI.bUseParticles || AXI.bBrightObjects || (!AXI.bCompetition && AXI.bUseLightning)) {
 		INITFLAGS ("Graphics Fx: "); 
 		ADDFLAG (AXI.bShadows, "Shadows");
 		ADDFLAG (AXI.bUseParticles, "Smoke");
 		if (!AXI.bCompetition)
-			ADDFLAG (AXI.bUseLightnings, "Lightnings");
+			ADDFLAG (AXI.bUseLightning, "Lightnings");
 		ADDFLAG (AXI.bBrightObjects, "Bright Objects");
 		}
 	else

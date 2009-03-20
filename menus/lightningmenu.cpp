@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 static struct {
 	int	nUse;
 	int	nQuality;
@@ -90,13 +92,13 @@ if (nState)
 
 m = menu + lightningOpts.nUse;
 v = m->m_value;
-if (v != extraGameInfo [0].bUseLightnings) {
-	if (!(extraGameInfo [0].bUseLightnings = v))
+if (v != extraGameInfo [0].bUseLightning) {
+	if (!(extraGameInfo [0].bUseLightning = v))
 		lightningManager.Shutdown (0);
 	key = -2;
 	return nCurItem;
 	}
-if (extraGameInfo [0].bUseLightnings) {
+if (extraGameInfo [0].bUseLightning) {
 	m = menu + lightningOpts.nQuality;
 	v = m->m_value;
 	if (gameOpts->render.lightnings.nQuality != v) {
@@ -152,8 +154,8 @@ do {
 	optAuxViews = 
 	optMonitors = -1;
 
-	lightningOpts.nUse = m.AddCheck (TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightnings, KEY_U, HTX_LIGHTNING_ENABLE);
-	if (extraGameInfo [0].bUseLightnings) {
+	lightningOpts.nUse = m.AddCheck (TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightning, KEY_U, HTX_LIGHTNING_ENABLE);
+	if (extraGameInfo [0].bUseLightning) {
 		sprintf (szQuality + 1, TXT_LIGHTNING_QUALITY, pszLightningQuality [gameOpts->render.lightnings.nQuality]);
 		*szQuality = *(TXT_LIGHTNING_QUALITY - 1);
 		lightningOpts.nQuality = m.AddSlider (szQuality + 1, gameOpts->render.lightnings.nQuality, 0, 1, KEY_R, HTX_LIGHTNING_QUALITY);
@@ -178,7 +180,7 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (extraGameInfo [0].bUseLightnings) {
+	if (extraGameInfo [0].bUseLightning) {
 		GET_VAL (gameOpts->render.lightnings.bPlasma, optPlasma);
 		GET_VAL (gameOpts->render.lightnings.bDamage, optDamage);
 		GET_VAL (gameOpts->render.lightnings.bExplosions, optExplosions);
@@ -199,6 +201,8 @@ if (gameStates.app.bGameRunning) {
 		lightningManager.DestroyStatic ();
 	}
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof

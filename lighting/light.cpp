@@ -646,7 +646,7 @@ if (!gameStates.render.nLightingMethod) {
 	}
 CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
 gameData.render.lights.newObjects.Clear ();
-if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameStates.render.nLightingMethod) {
+if (EGI_FLAG (bUseLightning, 0, 0, 1) && !gameStates.render.nLightingMethod) {
 	tLightningLight	*pll;
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];

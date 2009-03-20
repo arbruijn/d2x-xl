@@ -1712,6 +1712,24 @@ extraGameInfo [0].bDamageExplosions = 0;
 
 // ----------------------------------------------------------------------------
 
+void DefaultLightningSettings (void)
+{
+gameOpts->render.lightnings.nQuality = 0;
+gameOpts->render.lightnings.nStyle = 1;
+gameOpts->render.lightnings.bPlasma = 0;
+gameOpts->render.lightnings.bDamage = 1;
+gameOpts->render.lightnings.bExplosions = (extraGameInfo [0].bUseLightning > 1);
+gameOpts->render.lightnings.bPlayers = (extraGameInfo [0].bUseLightning > 1);
+gameOpts->render.lightnings.bRobots = (extraGameInfo [0].bUseLightning > 1);
+gameOpts->render.lightnings.bStatic = 1;
+gameOpts->render.lightnings.bOmega = 1;
+gameOpts->render.lightnings.bRobotOmega = 1;
+gameOpts->render.lightnings.bAuxViews = 0;
+gameOpts->render.lightnings.bMonitors = 1;
+}
+
+// ----------------------------------------------------------------------------
+
 void DefaultCameraSettings (void)
 {
 extraGameInfo [0].bTeleporterCams = 0;
@@ -1766,6 +1784,7 @@ DefaultShipSettings ();
 DefaultMovieSettings ();
 DefaultEffectSettings ();
 DefaultLightSettings ();
+DefaultLightningSettings ();
 DefaultCameraSettings ();
 DefaultAutomapSettings ();
 }

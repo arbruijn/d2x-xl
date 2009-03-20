@@ -1869,6 +1869,7 @@ const char *defaultGameTexts [][2] = {
  {"~Abgasstrahl", "~Thruster flames: %s"},
  {"2D", "2D"},
  {"3D", "3D"},
+ {"bl~Itze: %s", "l~Ightning: %s"},
 #if 0
  {"", ""},
 #endif
@@ -2548,6 +2549,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier koennen Verwendung und Aufloesung von Kameras\neingestellt werden.", "Chose the camera usage and resolution here."},
  {"Hier kann Verwendung und Aussehen des Abgasstrahls von Spieler-\nschiffen, Robotern und Raketen ausgewaehlt werden.", 
   "Chose the appearance of thruster flames from player ships,\nrobots and missiles here."},
+ {"Hier kann die Verwendung von Blitzen ausgewaehlt werden.", "Adjust the usage of lightning here."},
 #if 0
  {"", ""},
 #endif

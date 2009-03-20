@@ -111,7 +111,7 @@ if (gameStates.app.nCompSpeed == 0) {
 	gameOpts->ogl.nMaxLightsPerObject = 4;
 	extraGameInfo [0].bShadows = 0;
 	extraGameInfo [0].bUseParticles = 0;
-	extraGameInfo [0].bUseLightnings = 0;
+	extraGameInfo [0].bUseLightning = 0;
 	extraGameInfo [0].bUseCameras = 0;
 	extraGameInfo [0].bPlayerShield = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
@@ -170,7 +170,7 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.shadows.nReach = 0;
 	extraGameInfo [0].bShadows = 1;
 	extraGameInfo [0].bUseParticles = 1;
-	extraGameInfo [0].bUseLightnings = 1;
+	extraGameInfo [0].bUseLightning = 1;
 	extraGameInfo [0].bPlayerShield = 0;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 0;
@@ -233,7 +233,7 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
 	extraGameInfo [0].bUseParticles = 1;
-	extraGameInfo [0].bUseLightnings = 1;
+	extraGameInfo [0].bUseLightning = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 1;
@@ -296,7 +296,7 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
 	extraGameInfo [0].bUseParticles = 1;
-	extraGameInfo [0].bUseLightnings = 1;
+	extraGameInfo [0].bUseLightning = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 1;
@@ -359,7 +359,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
 	extraGameInfo [0].bUseParticles = 1;
-	extraGameInfo [0].bUseLightnings = 1;
+	extraGameInfo [0].bUseLightning = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 1;

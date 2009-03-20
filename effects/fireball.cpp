@@ -91,7 +91,7 @@ CObject *CreateLighting (CObject *parentObjP)
 	short		nObject;
 	CObject	*objP;
 
-if (!EGI_FLAG (bUseLightnings, 0, 0, 1))
+if (!EGI_FLAG (bUseLightning, 0, 0, 1))
 	return NULL;
 nObject = CreateFireball (0, parentObjP->info.nSegment, parentObjP->info.position.vPos, 2 * parentObjP->info.xSize, RT_LIGHTNING);
 if (nObject < 0)

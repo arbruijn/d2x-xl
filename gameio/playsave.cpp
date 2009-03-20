@@ -385,7 +385,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bTracers, 0, 0);
 		RP (extraGameInfo [i].bUseCameras, 0, 0);
 		RP (extraGameInfo [i].bUseParticles, 0, 0);
-		RP (extraGameInfo [i].bUseLightnings, 0, 0);
+		RP (extraGameInfo [i].bUseLightning, 0, 0);
 		RP (extraGameInfo [i].bUseHitAngles, 0, 0);
 		RP (extraGameInfo [i].bWiggle, 0, 0);
 		RP (extraGameInfo [i].bGatlingSpeedUp, i, 0);
@@ -849,7 +849,7 @@ tParamValue defaultParams [] = {
  {"extraGameInfo[0].bTracers", "1"},
  {"extraGameInfo[0].bUseCameras", "1"},
  {"extraGameInfo[0].bUseParticles", "1"},
- {"extraGameInfo[0].bUseLightnings", "1"},
+ {"extraGameInfo[0].bUseLightning", "1"},
  {"extraGameInfo[0].bUseHitAngles", "0"},
  {"extraGameInfo[0].bGatlingSpeedUp", "0"},
  {"extraGameInfo[0].bRotateMarkers", "0"},
