@@ -75,6 +75,8 @@ static const char *szCWS [4];
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 int TgtIndOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
@@ -158,6 +160,8 @@ do {
 	GET_VAL (extraGameInfo [0].bTagOnlyHitObjs, optHitInd);
 	} while (i == -2);
 }
+
+#endif //SIMPLE_MENUS
 
 //------------------------------------------------------------------------------
 
@@ -324,6 +328,8 @@ do {
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 int GaugeOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
@@ -343,8 +349,6 @@ return nCurItem;
 }
 
 //------------------------------------------------------------------------------
-
-#if !SIMPLE_MENUS
 
 void GaugeOptionsMenu (void)
 {
@@ -470,22 +474,21 @@ do {
 		gameOpts->render.cockpit.nWindowPos = 1;
 		}
 	optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
+	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
 	m.AddText ("", 0);
 
-	optTgtInd = m.AddMenu (TXT_TGTIND_MENUCALL, KEY_T, "");
 	optWeaponIcons = m.AddMenu (TXT_WPNICON_MENUCALL, KEY_W, "");
 	do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
 		if (i < 0)
 			break;
-		if ((optTgtInd >= 0) && (i == optTgtInd))
-			TgtIndOptionsMenu ();
-		else if ((optWeaponIcons >= 0) && (i == optWeaponIcons))
+		if ((optWeaponIcons >= 0) && (i == optWeaponIcons))
 			WeaponIconOptionsMenu ();
 	} while (i >= 0);
 
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
+	GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);
 	gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value;
 
 	if (gameOpts->app.bExpertMode) {
@@ -501,13 +504,6 @@ do {
 		}
 	} while (i == -2);
 
-
-gameOpts->render.cockpit.bScaleGauges = 1;
-gameOpts->render.cockpit.bFlashGauges = 1;
-gameOpts->gameplay.bShieldWarning = 0;
-gameOpts->render.cockpit.bObjectTally = 1;
-gameOpts->render.cockpit.bPlayerStats = 0;
-
 gameOpts->render.cockpit.bReticle = 1;
 gameOpts->render.cockpit.bMissileView = 1;
 gameOpts->render.cockpit.bGuidedInMainView = 1;
@@ -515,6 +511,18 @@ gameOpts->render.cockpit.bMouseIndicator = 1;
 gameOpts->render.cockpit.bHUDMsgs = 1;
 gameOpts->render.cockpit.bSplitHUDMsgs = 1;
 gameOpts->render.cockpit.bWideDisplays = 1;
+
+extraGameInfo [0].bDamageIndicators = extraGameInfo [0].bTargetIndicators;
+extraGameInfo [0].bTagOnlyHitObjs = 1;
+extraGameInfo [0].bMslLockIndicators = 1;
+gameOpts->render.cockpit.bRotateMslLockInd = 1;
+extraGameInfo [0].bCloakedIndicators = 0;
+
+gameOpts->render.cockpit.bScaleGauges = 1;
+gameOpts->render.cockpit.bFlashGauges = 1;
+gameOpts->gameplay.bShieldWarning = 0;
+gameOpts->render.cockpit.bObjectTally = 1;
+gameOpts->render.cockpit.bPlayerStats = 0;
 
 #else
 

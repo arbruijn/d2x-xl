@@ -166,15 +166,37 @@ return nCurItem;
 void ShadowOptionsMenu (void)
 {
 	CMenu	m;
-	int	i, j, choice = 0;
-	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, 
-			optPowerupShadows, optReactorShadows;
+	int	i, choice = 0;
+
+#if SIMPLE_MENUS
+
+do {
+	m.Destroy ();
+	m.Create (30);
+
+	if (extraGameInfo [0].bShadows)
+		m.AddText ("", 0);
+	shadowOpts.nUse = m.AddCheck (TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
+	for (;;) {
+		i = m.Menu (NULL, TXT_SHADOW_MENUTITLE, ShadowOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	} while (i == -2);
+
+gameOpts->render.shadows.nLights = 2;
+gameOpts->render.shadows.nReach = 2;	//TODO: tie to render quality
+gameOpts->render.shadows.nClip = 2;		//TODO: tie to render quality
+gameOpts->render.shadows.bPlayers = 1;
+gameOpts->render.shadows.bRobots = 1;
+gameOpts->render.shadows.bMissiles = 0;
+gameOpts->render.shadows.bPowerups = 0;
+gameOpts->render.shadows.bReactors = 0;
+
+#else
+
+	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, optPowerupShadows, optReactorShadows;
 	char	szMaxLightsPerFace [50], szReach [50];
-#if DBG_SHADOWS
-	char	szShadowTest [50];
-	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optWallShadows,
-			optFastShadows;
-#endif
 
 pszReach [0] = TXT_PRECISE;
 pszReach [1] = TXT_SHORT;
@@ -185,6 +207,11 @@ pszClip [0] = TXT_OFF;
 pszClip [1] = TXT_FAST;
 pszClip [2] = TXT_MEDIUM;
 pszClip [3] = TXT_PRECISE;
+
+#if DBG_SHADOWS
+	char	szShadowTest [50];
+	int	optFrontCap, optRearCap, optFrontFaces, optBackFaces, optSWCulling, optWallShadows,	optFastShadows;
+#endif
 
 do {
 	m.Destroy ();
@@ -254,7 +281,7 @@ do {
 			break;
 		} 
 	if (optClipShadows >= 0) {
-		for (j = 0; j < 4; j++)
+		for (int j = 0; j < 4; j++)
 			if (m [optClipShadows + j].m_value) {
 				gameOpts->render.shadows.nClip = j;
 				break;
@@ -279,6 +306,9 @@ do {
 		}
 #endif
 	} while (i == -2);
+
+#endif
+
 }
 
 #endif
