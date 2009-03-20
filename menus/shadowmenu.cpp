@@ -97,6 +97,8 @@ static struct {
 
 #if SHADOWS
 
+#if !SIMPLE_MENUS
+
 static const char *pszReach [4];
 static const char *pszClip [4];
 
@@ -161,6 +163,8 @@ if (extraGameInfo [0].bShadows) {
 return nCurItem;
 }
 
+#endif //SIMPLE_MENUS
+
 //------------------------------------------------------------------------------
 
 void ShadowOptionsMenu (void)
@@ -172,13 +176,13 @@ void ShadowOptionsMenu (void)
 
 do {
 	m.Destroy ();
-	m.Create (30);
+	m.Create (1);
 
 	if (extraGameInfo [0].bShadows)
 		m.AddText ("", 0);
 	shadowOpts.nUse = m.AddCheck (TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
 	for (;;) {
-		i = m.Menu (NULL, TXT_SHADOW_MENUTITLE, ShadowOptionsCallback, &choice);
+		i = m.Menu (NULL, TXT_SHADOW_MENUTITLE, NULL, &choice);
 		if (i < 0)
 			break;
 		} 

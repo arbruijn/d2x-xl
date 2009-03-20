@@ -143,7 +143,7 @@ do {
 
 	if ((extraGameInfo [0].bUseCameras = m [camOpts.nUse].m_value)) {
 		if (!gameStates.app.bGameRunning)
-			GET_VAL (gameOpts->render.cameras.bHires, optHiresCams);
+			GET_VAL (gameOpts->render.cameras.bHires, optHiresCams);	//TODO: Tie to render quality
 		}
 	extraGameInfo [0].bTeleporterCams = 0;
 	gameOpts->render.cameras.bFitToWall = 0;

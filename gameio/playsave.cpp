@@ -1086,7 +1086,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.shadows.nReach", "2"},
  {"gameOptions[0].render.ship.nWingtip", "1"},
  {"gameOptions[0].render.ship.bBullets", "1"},
- {"gameOptions[0].render.ship.nColor", "1"},
+ {"gameOptions[0].render.ship.nColor", "0"},
  {"gameOptions[0].render.particles.bAuxViews", "0"},
  {"gameOptions[0].render.particles.bMonitors", "0"},
  {"gameOptions[0].render.particles.bPlasmaTrails", "0"},

@@ -102,7 +102,7 @@ void PowerupOptionsMenu (void)
 do {
 	m.Destroy ();
 	m.Create (10);
-	nOpt3D = m.AddCheck (TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);
+	nOpt3D = m.AddCheck (TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);	//TODO: Tie to render quality
 	for (;;) {
 		i = m.Menu (NULL, TXT_POWERUP_MENUTITLE, PowerupOptionsCallback, &choice);
 		if (i < 0)

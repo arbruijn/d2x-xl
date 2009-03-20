@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 static struct {
-	int	nMaxFPS;
+	int	nFrameCap;
 	int	nRenderQual;
 	int	nTexQual;
 	int	nMeshQual;
@@ -78,7 +78,11 @@ static struct {
 	int	nBrightness;
 } renderOpts;
 
+#if DBG || !SIMPLE_MENUS
 static int fpsTable [16] = {-1, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250};
+#else
+static int fpsTable [2] = {0, 60};
+#endif
 
 static const char *pszTexQual [4];
 static const char *pszMeshQual [5];
@@ -99,7 +103,7 @@ int FindTableFps (int nFps)
 {
 	int	i, j = 0, d, dMin = 0x7fffffff;
 
-for (i = 0; i < 16; i++) {
+for (i = 0; i < sizeofa (fpsTable); i++) {
 	d = abs (nFps - fpsTable [i]);
 	if (d < dMin) {
 		j = i;
@@ -181,7 +185,7 @@ if (!gameStates.app.bNostalgia) {
 	if (v != paletteManager.GetGamma ())
 		paletteManager.SetGamma (v);
 	}
-m = menu + renderOpts.nMaxFPS;
+m = menu + renderOpts.nFrameCap;
 v = fpsTable [m->m_value];
 if (gameOpts->render.nMaxFPS != v) {
 	if (v > 0)
@@ -251,6 +255,211 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+#if SIMPLE_MENUS
+
+void RenderOptionsMenu (void)
+{
+	CMenu	m;
+	int	i, choice = 0;
+	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightOpts, optMovieOpts,
+			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts,
+			optColoredWalls, optDepthSort, optCoronaOpts, optShipRenderOpts;
+#if DBG
+	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
+#endif
+
+	char szMaxFps [50];
+	char szRendQual [50];
+	char szTexQual [50];
+	char szMeshQual [50];
+
+	int nRendQualSave = gameOpts->render.nQuality;
+
+	pszRendQual [0] = TXT_QUALITY_LOW;
+	pszRendQual [1] = TXT_QUALITY_MED;
+	pszRendQual [2] = TXT_QUALITY_HIGH;
+	pszRendQual [3] = TXT_VERY_HIGH;
+	pszRendQual [4] = TXT_QUALITY_MAX;
+
+	pszTexQual [0] = TXT_QUALITY_LOW;
+	pszTexQual [1] = TXT_QUALITY_MED;
+	pszTexQual [2] = TXT_QUALITY_HIGH;
+	pszTexQual [3] = TXT_QUALITY_MAX;
+
+	pszMeshQual [0] = TXT_NONE;
+	pszMeshQual [1] = TXT_SMALL;
+	pszMeshQual [2] = TXT_MEDIUM;
+	pszMeshQual [3] = TXT_HIGH;
+	pszMeshQual [4] = TXT_EXTREME;
+
+do {
+	m.Destroy ();
+	m.Create (50);
+	optPowerupOpts = optAutomapOpts = -1;
+	if (!gameStates.app.bNostalgia) {
+		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
+		}
+#if DBG
+	if (gameOpts->render.nMaxFPS > 1)
+		sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+	else if (gameOpts->render.nMaxFPS < 0)
+		sprintf (szMaxFps + 1, TXT_VSYNC, gameOpts->render.nMaxFPS);
+	else
+		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
+	*szMaxFps = *(TXT_FRAMECAP - 1);
+	renderOpts.nFrameCap = m.AddSlider (szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
+#endif
+
+	sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
+	*szRendQual = *(TXT_RENDQUAL - 1);
+	renderOpts.nRenderQual = m.AddSlider (szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
+	if (gameStates.app.bGameRunning)
+		renderOpts.nTexQual =
+		renderOpts.nMeshQual = -1;
+	else {
+		sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
+		*szTexQual = *(TXT_TEXQUAL + 1);
+		renderOpts.nTexQual = m.AddSlider (szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
+		if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
+			sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
+			*szMeshQual = *(TXT_MESH_QUALITY + 1);
+			renderOpts.nMeshQual = m.AddSlider (szMeshQual + 1, gameOpts->render.nMeshQuality, 0, 3, KEY_V, HTX_MESH_QUALITY);
+			}
+		else
+			renderOpts.nMeshQual = -1;
+		}
+	m.AddText ("", 0);
+#if !DBG
+	renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
+	m.AddText ("", 0);
+#endif
+	if (gameOpts->app.bExpertMode) {
+		m.AddText ("", 0);
+		optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
+		optSmokeOpts = m.AddMenu (TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
+		optLightningOpts = m.AddMenu (TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
+		if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
+			optShadowOpts = -1;
+		else
+			optShadowOpts = m.AddMenu (TXT_SHADOW_OPTIONS, KEY_A, HTX_RENDER_SHADOWOPTS);
+		optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
+		optCoronaOpts = m.AddMenu (TXT_CORONA_OPTIONS, KEY_O, HTX_RENDER_CORONAOPTS);
+		optCameraOpts = m.AddMenu (TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);
+		optPowerupOpts = m.AddMenu (TXT_POWERUP_OPTIONS, KEY_P, HTX_RENDER_PRUPOPTS);
+		optAutomapOpts = m.AddMenu (TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
+		optShipRenderOpts = m.AddMenu (TXT_SHIP_RENDEROPTIONS, KEY_H, HTX_RENDER_SHIPOPTS);
+		optMovieOpts = m.AddMenu (TXT_MOVIE_OPTIONS, KEY_M, HTX_RENDER_MOVIEOPTS);
+		}
+	else
+		renderOpts.nRenderQual =
+		renderOpts.nTexQual =
+		renderOpts.nMeshQual =
+		renderOpts.nWallTransp = 
+		optColoredWalls =
+		optDepthSort =
+		renderOpts.nContrast =
+		optLightOpts =
+		optLightningOpts =
+		optSmokeOpts =
+		optShadowOpts =
+		optEffectOpts =
+		optCoronaOpts =
+		optCameraOpts = 
+		optMovieOpts = 
+		optShipRenderOpts =
+		optAdvOpts = -1;
+
+#if DBG
+	m.AddText ("", 0);
+	optWireFrame = m.AddCheck ("Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
+	optTextures = m.AddCheck ("Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
+	optWalls = m.AddCheck ("Draw walls", gameOpts->render.debug.bWalls, 0, NULL);
+	optObjects = m.AddCheck ("Draw objects", gameOpts->render.debug.bObjects, 0, NULL);
+	optDynLight = m.AddCheck ("Dynamic Light", gameOpts->render.debug.bDynamicLight, 0, NULL);
+#endif
+
+	do {
+		i = m.Menu (NULL, TXT_RENDER_OPTS, RenderOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		if (gameOpts->app.bExpertMode) {
+			if ((optLightOpts >= 0) && (i == optLightOpts))
+				i = -2, LightOptionsMenu ();
+			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
+				i = -2, SmokeOptionsMenu ();
+			else if ((optLightningOpts >= 0) && (i == optLightningOpts))
+				i = -2, LightningOptionsMenu ();
+			else if ((optShadowOpts >= 0) && (i == optShadowOpts))
+				i = -2, ShadowOptionsMenu ();
+			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
+				i = -2, EffectOptionsMenu ();
+			else if ((optCoronaOpts >= 0) && (i == optCoronaOpts))
+				i = -2, CoronaOptionsMenu ();
+			else if ((optCameraOpts >= 0) && (i == optCameraOpts))
+				i = -2, CameraOptionsMenu ();
+			else if ((optPowerupOpts >= 0) && (i == optPowerupOpts))
+				i = -2, PowerupOptionsMenu ();
+			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))
+				i = -2, AutomapOptionsMenu ();
+			else if ((optMovieOpts >= 0) && (i == optMovieOpts))
+				i = -2, MovieOptionsMenu ();
+			}
+		} while (i >= 0);
+	if (!gameStates.app.bNostalgia)
+		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
+	if (gameOpts->app.bExpertMode) {
+		gameOpts->render.color.bWalls = m [optColoredWalls].m_value;
+		GET_VAL (gameOpts->render.bDepthSort, optDepthSort);
+		if (renderOpts.nContrast >= 0)
+			gameStates.ogl.nContrast = m [renderOpts.nContrast].m_value;
+		if (nRendQualSave != gameOpts->render.nQuality)
+			SetRenderQuality ();
+		}
+#if EXPMODE_DEFAULTS
+	else {
+		gameOpts->render.nMaxFPS = 250;
+		gameOpts->render.color.nLightmapRange = 5;
+		gameOpts->render.color.bMix = 1;
+		gameOpts->render.nQuality = 3;
+		gameOpts->render.color.bWalls = 1;
+		gameOpts->render.effects.bTransparent = 1;
+		gameOpts->render.particles.bPlayers = 0;
+		gameOpts->render.particles.bRobots =
+		gameOpts->render.particles.bMissiles = 1;
+		gameOpts->render.particles.bCollisions = 0;
+		gameOpts->render.particles.bDisperse = 0;
+		gameOpts->render.particles.nDens = 2;
+		gameOpts->render.particles.nSize = 3;
+		gameOpts->render.cameras.bFitToWall = 0;
+		gameOpts->render.cameras.nSpeed = 5000;
+		gameOpts->render.cameras.nFPS = 0;
+		gameOpts->movies.nQuality = 0;
+		gameOpts->movies.bResize = 1;
+		gameStates.ogl.nContrast = 8;
+		gameOpts->ogl.bSetGammaRamp = 0;
+		}
+#endif
+#if DBG
+	gameOpts->render.debug.bWireFrame = m [optWireFrame].m_value;
+	gameOpts->render.debug.bTextures = m [optTextures].m_value;
+	gameOpts->render.debug.bObjects = m [optObjects].m_value;
+	gameOpts->render.debug.bWalls = m [optWalls].m_value;
+	gameOpts->render.debug.bDynamicLight = m [optDynLight].m_value;
+#endif
+	} while (i == -2);
+
+extraGameInfo [0].grWallTransparency = (6 * FADE_LEVELS * + 5) / 10;
+gameOpts->render.color.bWalls = 1;
+// ship render option defaults
+extraGameInfo [0].bShowWeapons = 1;
+gameOpts->render.ship.bBullets = 1;
+gameOpts->render.ship.nWingtip = 1;
+gameOpts->render.ship.nColor = 0;
+
+}
+
+#else //SIMPLE_MENUS
+
 void RenderOptionsMenu (void)
 {
 	CMenu	m;
@@ -261,6 +470,9 @@ void RenderOptionsMenu (void)
 #if DBG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
+
+	char szWallTransp [50];
+	char szContrast [50];
 
 	char szMaxFps [50];
 	char szWallTransp [50];
@@ -302,7 +514,7 @@ do {
 	else
 		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
 	*szMaxFps = *(TXT_FRAMECAP - 1);
-	renderOpts.nMaxFPS = m.AddSlider (szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
+	renderOpts.nFrameCap = m.AddSlider (szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
 
 	renderOpts.nContrast = -1;
 	if (gameOpts->app.bExpertMode) {
@@ -460,7 +672,10 @@ do {
 	gameOpts->render.debug.bDynamicLight = m [optDynLight].m_value;
 #endif
 	} while (i == -2);
+
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof
