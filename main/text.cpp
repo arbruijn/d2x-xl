@@ -1870,6 +1870,9 @@ const char *defaultGameTexts [][2] = {
  {"2D", "2D"},
  {"3D", "3D"},
  {"bl~Itze: %s", "l~Ightning: %s"},
+ {"~Radar: %s", "~Radar: %s"},
+ {"oben", "top"},
+ {"unten", "bottom"},
 #if 0
  {"", ""},
 #endif

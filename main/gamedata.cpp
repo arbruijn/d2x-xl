@@ -1760,13 +1760,15 @@ void DefaultAutomapSettings (void)
 {
 extraGameInfo [0].bPowerupsOnRadar = 1;
 extraGameInfo [0].bRobotsOnRadar = 1;
-gameOpts->render.automap.nColor = 1;
-gameOpts->render.automap.bGrayOut = 1;
-gameOpts->render.automap.bCoronas = 0;
-gameOpts->render.automap.bSparks = 1;
-gameOpts->render.automap.bParticles = 0;
-gameOpts->render.automap.bLightnings = 0;
-gameOpts->render.automap.bSkybox = 0;
+if (!gameOpts->app.bExpertMode) {
+	gameOpts->render.automap.nColor = 1;
+	gameOpts->render.automap.bGrayOut = 1;
+	gameOpts->render.automap.bCoronas = 0;
+	gameOpts->render.automap.bSparks = 1;
+	gameOpts->render.automap.bParticles = 0;
+	gameOpts->render.automap.bLightnings = 0;
+	gameOpts->render.automap.bSkybox = 0;
+	}
 }
 
 // ----------------------------------------------------------------------------

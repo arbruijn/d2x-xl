@@ -79,6 +79,7 @@ static struct {
 //------------------------------------------------------------------------------
 
 static const char *pszRadarRange [3];
+static const char *pszRadar [3];
 
 int AutomapOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -88,6 +89,22 @@ if (nState)
 	CMenuItem * m;
 	int			v;
 
+#if SIMPLE_MENUS
+
+m = menu + automapOpts.nOptRadar;
+v = m->m_value;
+if (v != extraGameInfo [0].nRadar) {
+	if (!v || !extraGameInfo [0].nRadar)
+		key = -2;
+	else
+		m->m_bRebuild = 1;
+	extraGameInfo [0].nRadar = v;
+	sprintf (m->m_text, TXT_RADAR, pszRadar [v]);
+	return nCurItem;
+	}
+
+#else
+
 m = menu + automapOpts.nOptTextured;
 v = m->m_value;
 if (v != (gameOpts->render.automap.bTextured & 1)) {
@@ -95,10 +112,9 @@ if (v != (gameOpts->render.automap.bTextured & 1)) {
 	key = -2;
 	return nCurItem;
 	}
-if (!m [automapOpts.nOptRadar + extraGameInfo [0].nRadar].m_value) {
-	key = -2;
-	return nCurItem;
-	}
+
+#endif
+
 if (automapOpts.nOptRadarRange >= 0) {
 	m = menu + automapOpts.nOptRadarRange;
 	v = m->m_value;
@@ -118,21 +134,24 @@ void AutomapOptionsMenu (void)
 	CMenu	m;
 	int	i, choice = 0;
 	int	optBright, optGrayOut, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
-	char	szRadarRange [50];
+	char	szSlider [50];
+
+pszRadar [0] = TXT_OFF;
+pszRadar [1] = TXT_TOP;
+pszRadar [2] = TXT_BOTTOM;
 
 pszRadarRange [0] = TXT_SHORT;
 pszRadarRange [1] = TXT_MEDIUM;
 pszRadarRange [2] = TXT_FAR;
-*szRadarRange = '\0';
+*szSlider = '\0';
 
 #if SIMPLE_MENUS
 
 do {
 	m.Destroy ();
 	m.Create (10);
-	//automapOpts.nOptTextured = m.AddCheck (TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured & 1, KEY_T, HTX_AUTOMAP_TEXTURED);
 	optBright = m.AddCheck (TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
-	if (gameOpts->app.bExpertMode) {
+	if (0 && gameOpts->app.bExpertMode) {
 		optGrayOut = m.AddCheck (TXT_AUTOMAP_GRAYOUT, gameOpts->render.automap.bGrayOut, KEY_Y, HTX_AUTOMAP_GRAYOUT);
 		optCoronas = m.AddCheck (TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
 		optSparks = m.AddCheck (TXT_RENDER_SPARKS, gameOpts->render.automap.bSparks, KEY_P, HTX_RENDER_SPARKS);
@@ -148,14 +167,14 @@ do {
 		optLightnings =
 		optSkybox = -1;
 	m.AddText ("", 0);
-	automapOpts.nOptRadar = m.AddRadio (TXT_RADAR_OFF, 0, KEY_R, HTX_AUTOMAP_RADAR);
-	m.AddRadio (TXT_RADAR_TOP, 0, KEY_T, HTX_AUTOMAP_RADAR);
-	m.AddRadio (TXT_RADAR_BOTTOM, 0, KEY_O, HTX_AUTOMAP_RADAR);
+
+	sprintf (szSlider + 1, TXT_RADAR, pszRadar [extraGameInfo [0].nRadar]);
+	*szSlider = *(TXT_RADAR - 1);
+	automapOpts.nOptRadar = m.AddSlider (szSlider + 1, extraGameInfo [0].nRadar, 0, 2, KEY_R, HTX_RADAR);
 	if (extraGameInfo [0].nRadar) {
-		m.AddText ("", 0);
-		sprintf (szRadarRange + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
-		*szRadarRange = *(TXT_RADAR_RANGE - 1);
-		automapOpts.nOptRadarRange = m.AddSlider (szRadarRange + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
+		sprintf (szSlider + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
+		*szSlider = *(TXT_RADAR_RANGE - 1);
+		automapOpts.nOptRadarRange = m.AddSlider (szSlider + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
 		m.AddText ("", 0);
 		}
 	else
@@ -220,9 +239,9 @@ do {
 	m.AddRadio (TXT_RADAR_BOTTOM, 0, KEY_O, HTX_AUTOMAP_RADAR);
 	if (extraGameInfo [0].nRadar) {
 		m.AddText ("", 0);
-		sprintf (szRadarRange + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
-		*szRadarRange = *(TXT_RADAR_RANGE - 1);
-		automapOpts.nOptRadarRange = m.AddSlider (szRadarRange + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
+		sprintf (szSlider + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
+		*szSlider = *(TXT_RADAR_RANGE - 1);
+		automapOpts.nOptRadarRange = m.AddSlider (szSlider + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
 		m.AddText ("", 0);
 		optColor = m.AddRadio (TXT_RADAR_WHITE, 0, KEY_W);
 		m.AddRadio (TXT_RADAR_BLACK, 0, KEY_L);
