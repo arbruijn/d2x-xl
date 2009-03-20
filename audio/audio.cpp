@@ -627,7 +627,7 @@ m_info.nFormat = AUDIO_S16LSB;
 #else
 m_info.nFormat = AUDIO_U8;
 #endif
-m_info.nMaxChannels = 128;
+m_info.nMaxChannels = MAX_SOUND_CHANNELS;
 m_info.nFreeChannel = 0;
 m_info.nVolume = SOUND_MAX_VOLUME;
 m_info.bInitialized = 0;
@@ -815,7 +815,7 @@ int CAudio::SoundClassCount (int nSoundClass)
 	CAudioChannel	*channelP;
 	int			h, i;
 
-for (h = 0, i = m_info.nMaxChannels, channelP = audio.m_channels.Buffer (); i; i--, channelP++)
+for (h = 0, i = MAX_SOUND_CHANNELS, channelP = audio.m_channels.Buffer (); i; i--, channelP++)
 	if (channelP->Playing () && (channelP->SoundClass () == nSoundClass))
 		h++;
 return h;
@@ -827,7 +827,7 @@ CAudioChannel* CAudio::FindFreeChannel (int nSoundClass)
 {
 	CAudioChannel*	channelP, * channelMinVolP [2] = {NULL, NULL};
 	int				nStartChannel;
-	int				bUseClass = SoundClassCount (nSoundClass) >= m_info.nMaxChannels / 2;
+	int				bUseClass = SoundClassCount (nSoundClass) >= MAX_SOUND_CHANNELS / 2;
 
 nStartChannel = m_info.nFreeChannel;
 DestroyObjectSound (-1); // destroy all 
@@ -838,7 +838,7 @@ do {
 	if ((!bUseClass || (channelP->SoundClass () == nSoundClass)) &&
 	    (!channelMinVolP [channelP->Persistent ()] || (channelMinVolP [channelP->Persistent ()]->Volume () > channelP->Volume ())))
 		channelMinVolP [channelP->Persistent ()] = channelP;
-	m_info.nFreeChannel = (m_info.nFreeChannel + 1) % m_info.nMaxChannels;
+	m_info.nFreeChannel = (m_info.nFreeChannel + 1) % MAX_SOUND_CHANNELS;
 	} while (m_info.nFreeChannel != nStartChannel);
 return channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1];
 }
@@ -864,7 +864,7 @@ if (0 > channelP->Start (nSound, nSoundClass, nVolume, nPan, bLooping, nLoopStar
 	return -1;
 	}
 int i = m_info.nFreeChannel;
-if (++m_info.nFreeChannel >= m_info.nMaxChannels)
+if (++m_info.nFreeChannel >= MAX_SOUND_CHANNELS)
 	m_info.nFreeChannel = 0;
 return i;
 }
@@ -956,7 +956,7 @@ audio.StopAllChannels ();
 
 int CAudio::GetMaxChannels (void) 
 { 
-return m_info.nMaxChannels; 
+return MAX_SOUND_CHANNELS; 
 }
 // end edit by adb
 
@@ -1059,7 +1059,7 @@ void CAudio::Debug (void)
 
 if (!m_info.bAvailable)
 	return;
-for (i = 0; i < m_info.nMaxChannels; i++) {
+for (i = 0; i < MAX_SOUND_CHANNELS; i++) {
 	if (ChannelIsPlaying (i))
 		n_voices++;
 	}

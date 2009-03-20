@@ -362,7 +362,7 @@ class CAudio {
 		inline void SetFormat (int nFormat) { m_info.nFormat = nFormat; }
 		inline int Available (void) { return m_info.bAvailable; }
 		inline int ActiveObjects (void) { return m_info.nActiveObjects; }
-		inline int& MaxChannels (void) { return m_info.nMaxChannels; }
+		inline int MaxChannels (void) { return MAX_SOUND_CHANNELS; }
 		inline int FreeChannel (void) { return m_info.nFreeChannel; }
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
 		inline CStack<CSoundObject>& Objects (void) { return m_objects; }
