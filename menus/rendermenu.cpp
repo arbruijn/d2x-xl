@@ -193,6 +193,7 @@ static int nCoronas, nSmoke, nShadows, nPowerups, nCameras, nLighting, nPasses;
 
 static const char* pszNoneBasicAdv [3];
 static const char* pszNoneBasicFull [3];
+static const char* pszNoneBasicStdFull [4];
 static const char *pszQuality [4];
 
 int RenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
@@ -267,7 +268,7 @@ m = menu + renderOpts.nSmoke;
 v = m->m_value;
 if (nSmoke != v) {
 	nSmoke = v;
-	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicFull [nSmoke]);
+	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicStdFull [nSmoke]);
 	m->m_bRebuild = -1;
 	}
 
@@ -385,6 +386,11 @@ pszNoneBasicFull [0] = TXT_NONE;
 pszNoneBasicFull [1] = TXT_BASIC;
 pszNoneBasicFull [2] = TXT_FULL;
 
+pszNoneBasicStdFull [0] = TXT_NONE;
+pszNoneBasicStdFull [1] = TXT_BASIC;
+pszNoneBasicStdFull [2] = TXT_STANDARD;
+pszNoneBasicStdFull [3] = TXT_FULL;
+
 pszRendQual [0] = TXT_QUALITY_LOW;
 pszRendQual [1] = TXT_QUALITY_MED;
 pszRendQual [2] = TXT_QUALITY_HIGH;
@@ -414,7 +420,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps) + 1;
 nPasses = (gameOpts->ogl.nMaxLightsPerFace + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
 nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 ? 2 : 1 : 0;
-nSmoke = extraGameInfo [0].bUseParticles ? gameOpts->render.particles.bStatic ? 2 : 1 : 0;
+nSmoke = extraGameInfo [0].bUseParticles ? gameOpts->render.particles.bStatic ? 3 : gameOpts->render.particles.bPlayers ? 2 : 1 : 0;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
@@ -489,9 +495,9 @@ do {
 		}
 
 	m.AddText ("");
-	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [nSmoke]);
+	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicStdFull [nSmoke]);
 	*szSlider = *(TXT_SMOKE - 1);
-	renderOpts.nSmoke = m.AddSlider (szSlider + 1, nSmoke, 0, 2, KEY_S, HTX_SMOKE);
+	renderOpts.nSmoke = m.AddSlider (szSlider + 1, nSmoke, 0, 3, KEY_S, HTX_SMOKE);
 
 	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 		renderOpts.nShadows = -1;
@@ -551,9 +557,11 @@ do {
 			}
 		} while (i >= 0);
 
-	if ((extraGameInfo [0].bUseParticles == nSmoke != 0))
+	if ((extraGameInfo [0].bUseParticles == (nSmoke != 0))) {
+		gameOpts->render.particles.bPlayers = (nSmoke == 2);
 		gameOpts->render.particles.bStatic = 
-		gameOpts->render.particles.bBubbles = nSmoke == 2;
+		gameOpts->render.particles.bBubbles = (nSmoke == 3);
+		}
 
 	if (renderOpts.nShadows >= 0) {
 		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
