@@ -1596,3 +1596,117 @@ gameData.bots.info [gameStates.app.bD1Data].ShareBuffer (gameData.bots.infoP);
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+void DefaultPowerupSettings (void)
+{
+// powerup render option defaults
+gameOpts->render.powerups.b3DShields = gameOpts->render.powerups.b3D;
+gameOpts->render.powerups.nSpin = 1;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultShipSettings (void)
+{
+// ship render option defaults
+extraGameInfo [0].bShowWeapons = 1;
+gameOpts->render.ship.bBullets = 1;
+gameOpts->render.ship.nWingtip = 1;
+gameOpts->render.ship.nColor = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultMovieSettings (void)
+{
+// movie render option defaults
+gameOpts->movies.bSubTitles = 1;
+gameOpts->movies.nQuality = 1;	//TODO: Tie to render quality
+gameOpts->movies.bResize = 1;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultShadowSettings (void)
+{
+// shadow render option defaults
+gameOpts->render.shadows.nLights = 2;
+gameOpts->render.shadows.nReach = 2;	//TODO: tie to render quality
+gameOpts->render.shadows.nClip = 2;		//TODO: tie to render quality
+gameOpts->render.shadows.bPlayers = 1;
+gameOpts->render.shadows.bRobots = 1;
+gameOpts->render.shadows.bMissiles = 0;
+gameOpts->render.shadows.bPowerups = 0;
+gameOpts->render.shadows.bReactors = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultCoronaSettings (void)
+{
+// corona render option defaults
+gameOpts->render.coronas.bShots = 1;
+gameOpts->render.coronas.bPowerups = 1;
+gameOpts->render.coronas.bWeapons = 0;
+gameOpts->render.coronas.bAdditive = 1;
+gameOpts->render.coronas.bAdditiveObjs = 1;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultSmokeSettings (void)
+{
+// smoke render option defaults
+gameOpts->render.particles.bPlayers = 1;
+gameOpts->render.particles.bRobots = 1;
+gameOpts->render.particles.bMissiles = 1;
+gameOpts->render.particles.bDebris = 1;
+gameOpts->render.particles.bStatic = 1;
+gameOpts->render.particles.bCollisions = 0;
+gameOpts->render.particles.bDisperse = 1;	//TODO: Tie to render quality
+gameOpts->render.particles.bRotate = 1;
+gameOpts->render.particles.bDecreaseLag = 1;
+gameOpts->render.particles.bAuxViews = 0;
+gameOpts->render.particles.bMonitors = 1;	//TODO: Tie to render quality
+gameOpts->render.particles.bBubbles = 1;
+gameOpts->render.particles.bWiggleBubbles = 1;
+gameOpts->render.particles.bWobbleBubbles = 1;
+// player ships
+gameOpts->render.particles.nSize [1] = 1;
+gameOpts->render.particles.nDens [1] = 1;
+gameOpts->render.particles.nLife [1] = 0;
+gameOpts->render.particles.nAlpha [1] = 0;
+// robots
+gameOpts->render.particles.nSize [2] = 1;
+gameOpts->render.particles.nDens [2] = 2;
+gameOpts->render.particles.nLife [2] = 0;
+gameOpts->render.particles.nAlpha [2] = 0;
+// missiles
+gameOpts->render.particles.nSize [3] = 2;
+gameOpts->render.particles.nDens [3] = 1;
+gameOpts->render.particles.nLife [3] = 1;
+gameOpts->render.particles.nAlpha [3] = 1;
+// debris
+gameOpts->render.particles.nSize [4] = 1;
+gameOpts->render.particles.nDens [4] = 2;
+gameOpts->render.particles.nLife [4] = 0;
+gameOpts->render.particles.nAlpha [4] = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultRenderSettings (void)
+{
+extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
+gameOpts->render.color.bWalls = 1;
+DefaultSmokeSettings ();
+DefaultShadowSettings ();
+DefaultCoronaSettings ();
+DefaultPowerupSettings ();
+DefaultShipSettings ();
+DefaultMovieSettings ();
+}
+
+// ----------------------------------------------------------------------------
