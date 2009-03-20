@@ -1606,7 +1606,7 @@ const char *defaultGameTexts [][2] = {
  {"Weit", "Far"},
  {"Lade Modelle...", "Loading Models..."},
  {"~Wettkampf-Modus", "~Competition mode"},
- {"~Flackernde Lichter verwenden", "use ~Flickering lights"},
+ {"~Flackernde Lichter verwenden", "use fl~Ickering lights"},
  {"~Rauchgranaten verwenden", "use ~Smoke grenades"},
  {"Rauchgranate", "Smoke Grenade"},
  {"Rauchgranaten", "Smoke Grenades"},

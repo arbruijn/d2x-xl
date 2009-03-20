@@ -196,19 +196,19 @@ do {
 	if (nLighting >= 2) {
 		sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
 		*szSlider = *(TXT_LMAP_QUALITY + 1);
-		lightOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
+		lightOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_Q, HTX_LMAP_QUALITY);
 
 		if (nLighting == 3) {
 			sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
-			lightOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_S, HTX_MAX_LIGHTS_PER_PASS);
+			lightOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
 
 			sprintf (szSlider + 1, TXT_MAX_PASSES_PER_FACE, nPasses);
 			*szSlider = *(TXT_MAX_PASSES_PER_FACE - 1);
-			lightOpts.nPasses = m.AddSlider (szSlider + 1, nPasses - 1, 0, min (15, 32 / gameOpts->ogl.nMaxLightsPerPass - 1), KEY_P, HTX_MAX_PASSES_PER_FACE);
+			lightOpts.nPasses = m.AddSlider (szSlider + 1, nPasses - 1, 0, min (15, 32 / gameOpts->ogl.nMaxLightsPerPass - 1), KEY_F, HTX_MAX_PASSES_PER_FACE);
 			}
 		}
-	optFlickerLights = m.AddCheck (TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
+	optFlickerLights = m.AddCheck (TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_I, HTX_FLICKERLIGHTS);
 
 	for (;;) {
 		i = m.Menu (NULL, TXT_LIGHTING_MENUTITLE, LightOptionsCallback, &choice);
