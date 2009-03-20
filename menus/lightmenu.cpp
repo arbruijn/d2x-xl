@@ -136,7 +136,7 @@ if (lightOpts.nLights >= 0) {
 	if (v != gameOpts->ogl.nMaxLightsPerPass) {
 		gameOpts->ogl.nMaxLightsPerPass = v;
 		sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
-		m->m_bRebuild = 1;
+		key = -2;
 		return nCurItem;
 		}
 	}
@@ -205,7 +205,7 @@ do {
 
 			sprintf (szSlider + 1, TXT_MAX_PASSES_PER_FACE, nPasses);
 			*szSlider = *(TXT_MAX_PASSES_PER_FACE - 1);
-			lightOpts.nPasses = m.AddSlider (szSlider + 1, nPasses - 1, 0, min (15, 32 / gameOpts->ogl.nMaxLightsPerPass), KEY_P, HTX_MAX_PASSES_PER_FACE);
+			lightOpts.nPasses = m.AddSlider (szSlider + 1, nPasses - 1, 0, min (15, 32 / gameOpts->ogl.nMaxLightsPerPass - 1), KEY_P, HTX_MAX_PASSES_PER_FACE);
 			}
 		}
 	optFlickerLights = m.AddCheck (TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
