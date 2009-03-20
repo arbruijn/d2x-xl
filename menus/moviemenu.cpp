@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 void MovieOptionsMenu (void)
 {
 	CMenu m;
@@ -98,6 +100,8 @@ do {
 		}
 	} while (i == -2);
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof

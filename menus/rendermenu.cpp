@@ -401,8 +401,6 @@ do {
 				i = -2, PowerupOptionsMenu ();
 			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))
 				i = -2, AutomapOptionsMenu ();
-			else if ((optMovieOpts >= 0) && (i == optMovieOpts))
-				i = -2, MovieOptionsMenu ();
 			}
 		} while (i >= 0);
 	if (!gameStates.app.bNostalgia)
@@ -455,6 +453,10 @@ extraGameInfo [0].bShowWeapons = 1;
 gameOpts->render.ship.bBullets = 1;
 gameOpts->render.ship.nWingtip = 1;
 gameOpts->render.ship.nColor = 0;
+// movie render option defaults
+gameOpts->movies.bSubTitles = 1;
+gameOpts->movies.nQuality = 1;	//TODO: Tie to render quality
+gameOpts->movies.bResize = 1;
 
 }
 
