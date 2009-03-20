@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 static const char *pszAggressivities [5];
 
+void DefaultGameplaySettings (void);
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -205,6 +207,168 @@ AddPlayerLoadout ();
 
 //------------------------------------------------------------------------------
 
+#if SIMPLE_MENUS
+
+static int nAIAggressivity;
+
+int GameplayOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
+{
+if (nState)
+	return nCurItem;
+
+	CMenuItem	*m;
+	int			v;
+
+m = menu + gplayOpts.nDifficulty;
+v = m->m_value;
+if (gameStates.app.nDifficultyLevel != v) {
+	gameStates.app.nDifficultyLevel = v;
+	if (!IsMultiGame) {
+		gameStates.app.nDifficultyLevel = v;
+		gameData.bosses.InitGateIntervals ();
+		}
+	sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+	m->m_bRebuild = 1;
+	}
+
+m = menu + gplayOpts.nHeadlightAvailable;
+v = m->m_value;
+if (extraGameInfo [0].headlight.bAvailable != v) {
+	extraGameInfo [0].headlight.bAvailable = v;
+	key = -2;
+	return nCurItem;
+	}
+
+if (gameOpts->app.bExpertMode) {
+	m = menu + gplayOpts.nSpawnDelay;
+	v = (m->m_value - 1) * 5;
+	if (extraGameInfo [0].nSpawnDelay != v * 1000) {
+		extraGameInfo [0].nSpawnDelay = v * 1000;
+		sprintf (m->m_text, TXT_RESPAWN_DELAY, (v < 0) ? -1 : v);
+		m->m_bRebuild = 1;
+		}
+
+	m = menu + gplayOpts.nSmokeGrens;
+	v = m->m_value;
+	if (extraGameInfo [0].bSmokeGrenades != v) {
+		extraGameInfo [0].bSmokeGrenades = v;
+		key = -2;
+		return nCurItem;
+		}
+
+	m = menu + gplayOpts.nAIAggressivity;
+	v = m->m_value;
+	if (nAIAggressivity != v) {
+		nAIAggressivity = v;
+		sprintf (m->m_text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
+		m->m_bRebuild = 1;
+		}
+
+	if (gplayOpts.nMaxSmokeGrens >= 0) {
+		m = menu + gplayOpts.nMaxSmokeGrens;
+		v = m->m_value + 1;
+		if (extraGameInfo [0].nMaxSmokeGrenades != v) {
+			extraGameInfo [0].nMaxSmokeGrenades = v;
+			sprintf (m->m_text, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+			m->m_bRebuild = 1;
+			}
+		}
+	}
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+void GameplayOptionsMenu (void)
+{
+	CMenu m;
+	int	i, j, choice = 0;
+	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
+			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
+			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
+			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
+			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
+	char	szSlider [50];
+
+pszAggressivities [0] = TXT_STANDARD;
+pszAggressivities [1] = TXT_MODERATE;
+pszAggressivities [2] = TXT_MEDIUM;
+pszAggressivities [3] = TXT_HIGH;
+pszAggressivities [4] = TXT_VERY_HIGH;
+pszAggressivities [5] = TXT_EXTREME;
+
+nAIAggressivity = (gameOpts->gameplay.nAIAggressivity && gameOpts->gameplay.nAIAwareness) ? 5 :  gameOpts->gameplay.nAIAggressivity;
+do {
+	m.Destroy ();
+	m.Create (20);
+	sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+	*szSlider = *(TXT_DIFFICULTY2 - 1);
+	gplayOpts.nDifficulty = m.AddSlider (szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	sprintf (szSlider + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [nAIAggressivity]);
+	*szSlider = *(TXT_AI_AGGRESSIVITY - 1);
+	gplayOpts.nAIAggressivity = m.AddSlider (szSlider + 1, nAIAggressivity, 0, 5, KEY_G, HTX_AI_AGGRESSIVITY);
+	m.AddText ("", 0);
+#if 0	//TODO: Move to D2X-XL multiplayer options menu
+	gplayOpts.nSmokeGrens = m.AddCheck (TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
+	if (extraGameInfo [0].bSmokeGrenades) {
+		sprintf (szSlider + 1, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+		*szSlider = *(TXT_MAX_SMOKEGRENS - 1);
+		gplayOpts.nMaxSmokeGrens = m.AddSlider (szSlider + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
+		}
+	else
+		gplayOpts.nMaxSmokeGrens = -1;
+	m.AddText ("", 0);
+#endif
+	m.AddText ("", 0);
+	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_L, HTX_HEADLIGHT_BUILTIN);
+	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_W, HTX_HEADLIGHT_POWERDRAIN);
+	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
+	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
+	m.AddText ("");
+	optAutoSel = m.AddRadio (TXT_WPNSEL_NEVER, 0, KEY_N, HTX_GPLAY_WSELNEVER);
+	m.AddRadio (TXT_WPNSEL_EMPTY, 0, KEY_Y, HTX_GPLAY_WSELEMPTY);
+	m.AddRadio (TXT_WPNSEL_ALWAYS, 0, KEY_T, HTX_GPLAY_WSELALWAYS);
+	m.AddText ("", 0);
+	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
+	for (;;) {
+		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
+			break;
+		if (choice == optLoadout)
+			LoadoutOptions ();
+		};
+	} while (i == -2);
+if (nAIAggressivity == 5) {
+	gameOpts->gameplay.nAIAwareness = 1;
+	gameOpts->gameplay.nAIAggressivity = nAIAggressivity - 1;
+	}
+else {
+	gameOpts->gameplay.nAIAwareness = 0;
+	gameOpts->gameplay.nAIAggressivity = nAIAggressivity;
+	}
+
+extraGameInfo [0].headlight.bAvailable = m [gplayOpts.nHeadlightAvailable].m_value;
+extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].m_value;
+GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
+GET_VAL (gameOpts->gameplay.bUseD1AI, optUseD1AI);
+GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
+GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
+GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);
+for (j = 0; j < 3; j++)
+	if (m [optAutoSel + j].m_value) {
+		gameOpts->gameplay.nAutoSelectWeapon = j;
+		break;
+		}
+DefaultGameplaySettings ();
+if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
+if (IsMultiGame)
+	NetworkSendExtraGameInfo (NULL);
+}
+
+#else //SIMPLE_MENUS
+
+//------------------------------------------------------------------------------
+
 int GameplayOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
@@ -283,7 +447,7 @@ void GameplayOptionsMenu (void)
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
 			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
 	char	szRespawnDelay [60];
-	char	szDifficulty [50], szMaxSmokeGrens [50], szAggressivity [50];
+	char	szSlider [50], szSlider [50], szSlider [50];
 
 pszAggressivities [0] = TXT_STANDARD;
 pszAggressivities [1] = TXT_MODERATE;
@@ -294,9 +458,9 @@ pszAggressivities [4] = TXT_VERY_HIGH;
 do {
 	m.Destroy ();
 	m.Create (40);
-	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
-	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
-	gplayOpts.nDifficulty = m.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+	*szSlider = *(TXT_DIFFICULTY2 - 1);
+	gplayOpts.nDifficulty = m.AddSlider (szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	if (gameOpts->app.bExpertMode) {
 		sprintf (szRespawnDelay + 1, TXT_RESPAWN_DELAY, (extraGameInfo [0].nSpawnDelay < 0) ? -1 : extraGameInfo [0].nSpawnDelay / 1000);
 		*szRespawnDelay = *(TXT_RESPAWN_DELAY - 1);
@@ -315,9 +479,9 @@ do {
 		optIdleAnims = m.AddCheck (TXT_IDLE_ANIMS, gameOpts->gameplay.bIdleAnims, KEY_D, HTX_GPLAY_IDLEANIMS);
 		optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 		optAwareness = m.AddCheck (TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_AI_AWARENESS);
-		sprintf (szAggressivity + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
-		*szAggressivity = *(TXT_AI_AGGRESSIVITY - 1);
-		gplayOpts.nAIAggressivity = m.AddSlider (szAggressivity + 1, gameOpts->gameplay.nAIAggressivity, 0, 4, KEY_G, HTX_AI_AGGRESSIVITY);
+		sprintf (szSlider + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [gameOpts->gameplay.nAIAggressivity]);
+		*szSlider = *(TXT_AI_AGGRESSIVITY - 1);
+		gplayOpts.nAIAggressivity = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAIAggressivity, 0, 4, KEY_G, HTX_AI_AGGRESSIVITY);
 		m.AddText ("", 0);
 		optImmortal = m.AddCheck (TXT_ALWAYS_RESPAWN, extraGameInfo [0].bImmortalPowerups, KEY_P, HTX_GPLAY_ALWAYSRESP);
 		optFixedSpawn = m.AddCheck (TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
@@ -331,9 +495,9 @@ do {
 			m.AddText ("", 0);
 		gplayOpts.nSmokeGrens = m.AddCheck (TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
 		if (extraGameInfo [0].bSmokeGrenades) {
-			sprintf (szMaxSmokeGrens + 1, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
-			*szMaxSmokeGrens = *(TXT_MAX_SMOKEGRENS - 1);
-			gplayOpts.nMaxSmokeGrens = m.AddSlider (szMaxSmokeGrens + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
+			sprintf (szSlider + 1, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+			*szSlider = *(TXT_MAX_SMOKEGRENS - 1);
+			gplayOpts.nMaxSmokeGrens = m.AddSlider (szSlider + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
 			}
 		else
 			gplayOpts.nMaxSmokeGrens = -1;
@@ -410,6 +574,8 @@ if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 }
+
+#endif //SIMPLE_MENUS
 
 //------------------------------------------------------------------------------
 //eof

@@ -1801,6 +1801,22 @@ void DefaultPhysicsSettings (void)
 
 void DefaultGameplaySettings (void)
 {
+extraGameInfo [0].nSpawnDelay = -1;
+extraGameInfo [0].headlight.bAvailable = 1;
+gameOpts->gameplay.bHeadlightOnWhenPickedUp = 0;
+gameOpts->gameplay.bInventory = 1;
+extraGameInfo [0].bRotateMarkers = 1;
+extraGameInfo [0].bMultiBosses = 1;
+gameOpts->gameplay.bIdleAnims = 1;
+extraGameInfo [0].bImmortalPowerups = 0;
+extraGameInfo [0].bFixedRespawns = 0;
+extraGameInfo [0].bDropAllMissiles = 1;
+extraGameInfo [0].nWeaponDropMode = 1;
+extraGameInfo [0].bDualMissileLaunch = 0;
+extraGameInfo [0].bTripleFusion = 1;
+extraGameInfo [0].bEnhancedShakers = 1;
+gameOpts->gameplay.bUseD1AI = 1;
+extraGameInfo [0].nZoomMode = 1;
 }
 
 // ----------------------------------------------------------------------------
