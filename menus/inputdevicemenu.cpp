@@ -54,7 +54,6 @@ static struct {
 	int	nCustomize;
 	int	nRamp;
 	int	nRampValues;
-	int	nUseHotkeys;
 } kbdOpts;
 
 int nCustomizeAboveOpt;
@@ -584,17 +583,8 @@ if (nState)
 	return nCurItem;
 
 	int			i, v;
-	CMenuItem	*m;
+	CMenuItem*	m;
 
-if (!gameStates.app.bNostalgia) { 
-	m = menu + kbdOpts.nUseHotkeys;
-	v = m->m_value;
-	if (gameOpts->input.bUseHotKeys != v) {
-		gameOpts->input.bUseHotKeys = v;
-		key = -2;
-		return nCurItem;
-		}
-	}
 
 if (gameOpts->app.bExpertMode) {
 	m = menu + kbdOpts.nRamp;
@@ -621,6 +611,8 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+void DefaultKeyboardSettings (void);
+
 void KeyboardConfigMenu (void)
 {
 	CMenu	m;
@@ -641,6 +633,7 @@ do {
 			gameOpts->input.bUseHotKeys = 0;
 			}
 		else {
+			nCustHotKeysOpt = m.AddMenu (TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
 			if (gameOpts->app.bExpertMode) {
 				m.AddText ("", 0);
 				sprintf (szKeyRampScale + 1, TXT_KBD_RAMP, gameOpts->input.keyboard.nRamp, HTX_CONF_KBDRAMP);
@@ -652,10 +645,6 @@ do {
 					m.AddCheck (TXT_RAMP_SLIDE, gameOpts->input.keyboard.bRamp [2], KEY_D, HTX_CONF_RAMPSLD);
 					}
 				}
-			m.AddText ("", 0);
-			kbdOpts.nUseHotkeys = m.AddCheck (TXT_USE_HOTKEYS, gameOpts->input.bUseHotKeys, KEY_H, HTX_CONF_HOTKEYS);
-			if (gameOpts->input.bUseHotKeys)
-				nCustHotKeysOpt = m.AddMenu (TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
 			}
 		m.AddText ("", 0);
 		m.AddText (TXT_KEYBOARD_LAYOUT, 0);
@@ -664,8 +653,6 @@ do {
 		m.AddRadio (TXT_AZERTY, gameOpts->input.keyboard.nType == 2, KEY_F, HTX_KEYBOARD_LAYOUT);
 		m.AddRadio (TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 		i = m.Menu (NULL, TXT_KEYBOARD_CONFIG, KeyboardConfigCallback, &choice);
-		if (!gameStates.app.bNostalgia)
-			gameOpts->input.bUseHotKeys = m [kbdOpts.nUseHotkeys].m_value;
 		} while (i == -2);
 	if (i == -1)
 		return;
@@ -679,6 +666,7 @@ do {
 	else if (choice == nCustHotKeysOpt)
 		KConfig (4, TXT_CFG_HOTKEYS);
 	} while (i >= 0);
+DefaultKeyboardSettings ();
 }
 
 //------------------------------------------------------------------------------
