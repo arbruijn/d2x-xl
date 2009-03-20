@@ -68,6 +68,61 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#if SIMPLE_MENUS
+
+void SmokeOptionsMenu (void)
+{
+	CMenu m;
+	int	i, j, choice = 0;
+
+do {
+	m.Destroy ();
+	m.Create (5);
+	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
+
+	smokeOpts.nUse = m.AddCheck (TXT_USE_SMOKE, extraGameInfo [0].bUseParticles, KEY_U, HTX_ADVRND_USESMOKE);
+	} while (i == -2);
+
+gameOpts->render.particles.bPlayers = 1;
+gameOpts->render.particles.bRobots = 1;
+gameOpts->render.particles.bMissiles = 1;
+gameOpts->render.particles.bDebris = 1;
+gameOpts->render.particles.bStatic = 1;
+gameOpts->render.particles.bCollisions = 0;
+gameOpts->render.particles.bDisperse = 1;	//TODO: Tie to render quality
+gameOpts->render.particles.bRotate = 1;
+gameOpts->render.particles.bDecreaseLag = 1;
+gameOpts->render.particles.bAuxViews = 0;
+gameOpts->render.particles.bMonitors = 1;
+gameOpts->render.particles.bBubbles = 1;
+gameOpts->render.particles.bWiggleBubbles = 1;
+gameOpts->render.particles.bWobbleBubbles = 1;
+// player ships
+gameOpts->render.particles.nSize [1] = 1;
+gameOpts->render.particles.nDens [1] = 1;
+gameOpts->render.particles.nLife [1] = 0;
+gameOpts->render.particles.nAlpha [1] = 0;
+// robots
+gameOpts->render.particles.nSize [2] = 1;
+gameOpts->render.particles.nDens [2] = 2;
+gameOpts->render.particles.nLife [2] = 0;
+gameOpts->render.particles.nAlpha [2] = 0;
+// missiles
+gameOpts->render.particles.nSize [3] = 2;
+gameOpts->render.particles.nDens [3] = 1;
+gameOpts->render.particles.nLife [3] = 1;
+gameOpts->render.particles.nAlpha [3] = 1;
+// debris
+gameOpts->render.particles.nSize [4] = 1;
+gameOpts->render.particles.nDens [4] = 2;
+gameOpts->render.particles.nLife [4] = 0;
+gameOpts->render.particles.nAlpha [4] = 0;
+}
+
+//------------------------------------------------------------------------------
+
+#else
+
 static struct {
 	int	nUse;
 	int	nPlayer;
@@ -401,6 +456,8 @@ do {
 		}
 	} while (i == -2);
 }
+
+#endif //SIMPLE_MENUS
 
 //------------------------------------------------------------------------------
 //eof

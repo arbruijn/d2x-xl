@@ -264,7 +264,7 @@ void RenderOptionsMenu (void)
 {
 	CMenu	m;
 	int	i, choice = 0;
-	int	optSmokeOpts, optShadows, optCameraOpts, optLightOpts, optMovieOpts,
+	int	optSmoke, optShadows, optCameraOpts, optLightOpts, optMovieOpts,
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts,
 			optColoredWalls, optDepthSort, optShipRenderOpts;
 #if DBG
@@ -344,6 +344,8 @@ do {
 #if !DBG
 	renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
+	optSmoke = m.AddCheck (TXT_USE_SMOKE, extraGameInfo [0].bUseParticles, KEY_U, HTX_ADVRND_USESMOKE);
+
 	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 		optShadows = -1;
 	else {
@@ -407,6 +409,7 @@ do {
 			}
 		} while (i >= 0);
 
+	GET_VAL (extraGameInfo [0].bUseParticles, optSmoke);
 	GET_VAL (extraGameInfo [0].bShadows, optShadows);
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);

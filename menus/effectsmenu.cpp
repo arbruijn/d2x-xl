@@ -89,12 +89,14 @@ if (nState)
 	CMenuItem	*m;
 	int			v;
 
-m = menu + effectOpts.nExplShrapnels;
-v = m->m_value;
-if (gameOpts->render.effects.nShrapnels != v) {
-	gameOpts->render.effects.nShrapnels = v;
-	sprintf (m->m_text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
-	m->m_bRebuild = -1;
+if (effectOpts.nExplShrapnels >= 0) {
+	m = menu + effectOpts.nExplShrapnels;
+	v = m->m_value;
+	if (gameOpts->render.effects.nShrapnels != v) {
+		gameOpts->render.effects.nShrapnels = v;
+		sprintf (m->m_text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
+		m->m_bRebuild = -1;
+		}
 	}
 m = menu + effectOpts.nLightTrails;
 v = m->m_value;
@@ -135,16 +137,23 @@ do {
 	m.Destroy ();
 	m.Create (30);
 
-	sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
-	*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
-	effectOpts.nExplShrapnels = m.AddSlider (szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+	if (extraGameInfo [0].bUseParticles) {
+		sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
+		*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
+		effectOpts.nExplShrapnels = m.AddSlider (szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+		}
+	else
+		effectOpts.nExplShrapnels = -1;
 
 	sprintf (szLightTrails + 1, TXT_LIGHTTRAIL_QUAL, pszLightTrails [gameOpts->render.effects.nShrapnels]);
 	*szLightTrails = *(TXT_LIGHTTRAIL_QUAL - 1);
-	effectOpts.nLightTrails = m.AddSlider (szLightTrails + 1, nLightTrails, 0, 4, KEY_P, HTX_LIGHTTRAIL_QUAL);
+	effectOpts.nLightTrails = m.AddSlider (szLightTrails + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_P, HTX_LIGHTTRAIL_QUAL);
 
 	m.AddText ("");
-	optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
+	if (extraGameInfo [0].bUseParticles)
+		optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
+	else
+		optGatlingTrails = -1;
 	optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, (gameOpts->render.effects.bSoftParticles & 1) != 0, KEY_I, HTX_SOFT_SPRITES);
 	optSoftParticles [1] = m.AddCheck (TXT_SOFT_SPARKS, (gameOpts->render.effects.bSoftParticles & 2) != 0, KEY_A, HTX_SOFT_SPARKS);
 	if (extraGameInfo [0].bUseParticles)
