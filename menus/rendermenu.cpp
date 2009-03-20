@@ -70,6 +70,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void DefaultRenderSettings (void);
 
+#define EXPERTMODE	0 //gameOpts->app.bExpertMode
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -146,7 +148,7 @@ if (renderOpts.nContrast >= 0) {
 		m->m_bRebuild = 1;
 		}
 	}
-if (gameOpts->app.bExpertMode) {
+if (EXPERTMODE) {
 	m = menu + renderOpts.nRenderQual;
 	v = m->m_value;
 	if (gameOpts->render.nQuality != v) {
@@ -208,7 +210,7 @@ if (!gameStates.app.bNostalgia) {
 		paletteManager.SetGamma (v);
 	}
 
-if (0 && gameOpts->app.bExpertMode) {
+if (EXPERTMODE) {
 	m = menu + renderOpts.nFrameCap;
 	v = fpsTable [m->m_value];
 	if (gameOpts->render.nMaxFPS != v) {
@@ -422,14 +424,14 @@ do {
 	m.Create (50);
 	optAutomapOpts = -1;
 
-	if (1 || !gameOpts->app.bExpertMode) {
+	if (1 || !EXPERTMODE) {
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 		}
 	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 	m.AddText ("");
 
-	if (0 && gameOpts->app.bExpertMode) {
+	if (EXPERTMODE) {
 		if (gameOpts->render.nMaxFPS > 1)
 			sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
 		else if (gameOpts->render.nMaxFPS < 0)
@@ -518,11 +520,11 @@ do {
 	m.AddText ("", 0);
 	//optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
 	optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
-	if (gameOpts->app.bExpertMode)
+	if (EXPERTMODE)
 		optAutomapOpts = m.AddMenu (TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
 
 #if DBG
-	if (0 && gameOpts->app.bExpertMode) {
+	if (EXPERTMODE) {
 		m.AddText ("", 0);
 		optWireFrame = m.AddCheck ("Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
 		optTextures = m.AddCheck ("Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
@@ -536,7 +538,7 @@ do {
 		i = m.Menu (NULL, TXT_RENDER_OPTS, RenderOptionsCallback, &choice);
 		if (i < 0)
 			break;
-		if (gameOpts->app.bExpertMode) {
+		if (EXPERTMODE) {
 #if 0
 			if ((optLightOpts >= 0) && (i == optLightOpts))
 				i = -2, LightOptionsMenu ();
@@ -568,7 +570,7 @@ do {
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 
-	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 60 : 1;
+	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 60;
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
 	if (nRendQualSave != gameOpts->render.nQuality)
@@ -582,7 +584,7 @@ do {
 		}
 
 #if DBG
-	if (0 && gameOpts->app.bExpertMode) {
+	if (EXPERTMODE) {
 		gameOpts->render.debug.bWireFrame = m [optWireFrame].m_value;
 		gameOpts->render.debug.bTextures = m [optTextures].m_value;
 		gameOpts->render.debug.bObjects = m [optObjects].m_value;
@@ -648,7 +650,7 @@ if (gameOpts->render.nMaxFPS != v) {
 	gameStates.render.bVSync = (v < 0);
 	m->m_bRebuild = 1;
 	}
-if (gameOpts->app.bExpertMode) {
+if (EXPERTMODE) {
 	if (renderOpts.nContrast >= 0) {
 		m = menu + renderOpts.nContrast;
 		v = m->m_value;
@@ -753,7 +755,7 @@ do {
 	renderOpts.nFrameCap = m.AddSlider (szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
 
 	renderOpts.nContrast = -1;
-	if (gameOpts->app.bExpertMode) {
+	if (EXPERTMODE) {
 		if ((gameOpts->render.nLightingMethod < 2) && !gameOpts->render.bUseLightmaps) {
 			sprintf (szContrast, TXT_CONTRAST, ContrastText ());
 			renderOpts.nContrast = m.AddSlider (szContrast, gameStates.ogl.nContrast, 0, 16, KEY_C, HTX_ADVRND_CONTRAST);
@@ -840,7 +842,7 @@ do {
 		i = m.Menu (NULL, TXT_RENDER_OPTS, RenderOptionsCallback, &choice);
 		if (i < 0)
 			break;
-		if (gameOpts->app.bExpertMode) {
+		if (EXPERTMODE) {
 			if ((optLightOpts >= 0) && (i == optLightOpts))
 				i = -2, LightOptionsMenu ();
 			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
@@ -867,7 +869,7 @@ do {
 		} while (i >= 0);
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
-	if (gameOpts->app.bExpertMode) {
+	if (EXPERTMODE) {
 		gameOpts->render.color.bWalls = m [optColoredWalls].m_value;
 		GET_VAL (gameOpts->render.bDepthSort, optDepthSort);
 		GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);

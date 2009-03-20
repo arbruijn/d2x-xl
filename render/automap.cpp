@@ -350,9 +350,13 @@ if (gameStates.app.bNostalgia)
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 
-strcpy (szInfo, "ALT+T: Toggle textures/wireframe   ALT+B: Toggle brightness   CTRL+T: Teleport to marker");
+
+if (CCanvas::Current ()->Width () < 1024)
+	strcpy (szInfo, "ALT+T: Textures/wireframe   ALT+B: Bright   CTRL+T: Teleport");
+else
+	strcpy (szInfo, "ALT+T: Toggle textures/wireframe   ALT+B: Toggle brightness   CTRL+T: Teleport to marker");
 fontManager.Current ()->StringSize (szInfo, w, h, aw);
-GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, offs, szInfo);
+GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - h, szInfo);
 
 if (gameOpts->render.cockpit.bHUD) {
 	GrPrintF (NULL, offs, offs, m_szLevelNum);
@@ -751,7 +755,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_F2:
-			if (!gameStates.menus.nInMenu)
+			if (gameOpts->app.bExpertMode && !gameStates.menus.nInMenu)
 				AutomapOptionsMenu ();
 			break;
 		}
