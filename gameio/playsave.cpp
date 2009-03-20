@@ -70,6 +70,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 CPlayerProfile profile;
 
+void DefaultAllSettings (void);
+
 //------------------------------------------------------------------------------
 
 #define SAVE_FILE_ID			MAKE_SIG('D','P','L','R')
@@ -2210,6 +2212,8 @@ gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
+extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
+DefaultAllSettings ();
 #if WIN32
 if (gameStates.render.bVSyncOk)
 	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
