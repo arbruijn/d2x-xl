@@ -66,6 +66,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 
+void DefaultAutomapSettings (void);
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -174,16 +176,9 @@ do {
 	GET_VAL (gameOpts->render.automap.bSkybox, optSkybox);
 	if (automapOpts.nOptRadarRange >= 0)
 		gameOpts->render.automap.nRange = m [automapOpts.nOptRadarRange].m_value;
-	extraGameInfo [0].bPowerupsOnRadar = 1;
-	extraGameInfo [0].bRobotsOnRadar = 1;
-	gameOpts->render.automap.nColor = 1;
-	gameOpts->render.automap.bGrayOut = 1;
-	gameOpts->render.automap.bCoronas = 0;
-	gameOpts->render.automap.bSparks = 1;
-	gameOpts->render.automap.bParticles = 0;
-	gameOpts->render.automap.bLightnings = 0;
-	gameOpts->render.automap.bSkybox = 0;
 	} while (i == -2);
+
+DefaultAutomapSettings ();
 
 #else
 

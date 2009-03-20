@@ -1694,6 +1694,31 @@ gameOpts->render.particles.nAlpha [4] = 0;
 
 // ----------------------------------------------------------------------------
 
+void DefaultEffectSettings (void)
+{
+gameOpts->render.effects.bAutoTransparency = 1;
+gameOpts->render.effects.bTransparent = 1;
+gameOpts->render.effects.bExplBlasts = 1;
+gameOpts->render.effects.bEnergySparks = 1;	//TODO: Tie to render quality
+gameOpts->render.effects.bMovingSparks = 1;
+extraGameInfo [0].bPlayerShield = 1;
+gameOpts->render.effects.bRobotShields = 1;
+gameOpts->render.effects.bOnlyShieldHits = 1;
+extraGameInfo [0].bTracers = 1;
+gameOpts->render.particles.bPlasmaTrails = 0;	//move to effects menu
+//extraGameInfo [0].bGatlingTrails = 1;	//TODO: Tie to render quality
+extraGameInfo [0].bShockwaves = 0; 
+extraGameInfo [0].bDamageExplosions = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultLightSettings (void)
+{
+}
+
+// ----------------------------------------------------------------------------
+
 void DefaultRenderSettings (void)
 {
 extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
@@ -1704,6 +1729,31 @@ DefaultCoronaSettings ();
 DefaultPowerupSettings ();
 DefaultShipSettings ();
 DefaultMovieSettings ();
+DefaultEffectSettings ();
+DefaultLightSettings ();
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultAutomapSettings (void)
+{
+extraGameInfo [0].bPowerupsOnRadar = 1;
+extraGameInfo [0].bRobotsOnRadar = 1;
+gameOpts->render.automap.nColor = 1;
+gameOpts->render.automap.bGrayOut = 1;
+gameOpts->render.automap.bCoronas = 0;
+gameOpts->render.automap.bSparks = 1;
+gameOpts->render.automap.bParticles = 0;
+gameOpts->render.automap.bLightnings = 0;
+gameOpts->render.automap.bSkybox = 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultSettings (void)
+{
+DefaultRenderSettings ();
+DefaultAutomapSettings ();
 }
 
 // ----------------------------------------------------------------------------

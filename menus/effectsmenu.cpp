@@ -66,6 +66,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 
+void DefaultEffectSettings (void);
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -182,25 +184,12 @@ do {
 			break;
 			}
 		}
+	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
+		gameOpts->render.particles.bPlasmaTrails = (nLightTrails == 2);
 	} while (i == -2);
 
 SetDebrisCollisions ();
-
-if ((extraGameInfo [0].bLightTrails = nLightTrails != 0))
-	gameOpts->render.particles.bPlasmaTrails = nLightTrails == 2;
-gameOpts->render.effects.bAutoTransparency = 1;
-gameOpts->render.effects.bTransparent = 1;
-gameOpts->render.effects.bExplBlasts = 1;
-gameOpts->render.effects.bEnergySparks = 1;	//TODO: Tie to render quality
-gameOpts->render.effects.bMovingSparks = 1;
-extraGameInfo [0].bPlayerShield = 1;
-gameOpts->render.effects.bRobotShields = 1;
-gameOpts->render.effects.bOnlyShieldHits = 1;
-extraGameInfo [0].bTracers = 1;
-gameOpts->render.particles.bPlasmaTrails = 0;	//move to effects menu
-//extraGameInfo [0].bGatlingTrails = 1;	//TODO: Tie to render quality
-extraGameInfo [0].bShockwaves = 0; 
-extraGameInfo [0].bDamageExplosions = 0;
+DefaultEffectSettings ();
 if (gameOpts->render.effects.bEnergySparks && gameStates.app.bGameRunning && !sparkManager.HaveSparks ())
 	sparkManager.Setup ();
 }
