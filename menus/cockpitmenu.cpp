@@ -409,43 +409,54 @@ int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-	CMenuItem	*m;
+	CMenuItem*	m;
 	int			v;
 
-if (gameOpts->app.bExpertMode) {
-	m = menu + optWindowSize;
-	v = m->m_value;
-	if (gameOpts->render.cockpit.nWindowSize != v) {
-		gameOpts->render.cockpit.nWindowSize = v;
-		m->SetText (szWindowSize [v]);
-		sprintf (m->m_text, TXT_AUXWIN_SIZE, szWindowSize [v]);
-		m->m_bRebuild = 1;
-		}
+#if SIMPLE_MENUS
 
-	m = menu + optWindowZoom;
-	v = m->m_value;
-	if (gameOpts->render.cockpit.nWindowZoom != v) {
-		gameOpts->render.cockpit.nWindowZoom = v;
-		sprintf (m->m_text, TXT_AUXWIN_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
-		m->m_bRebuild = 1;
-		}
-
-	m = menu + optWindowPos;
-	v = m->m_value;
-	if (nWindowPos != v) {
-		nWindowPos = v;
-		sprintf (m->m_text, TXT_AUXWIN_POSITION, szWindowPos [v]);
-		m->m_bRebuild = 1;
-		}
-
-	m = menu + optWindowAlign;
-	v = m->m_value;
-	if (nWindowAlign != v) {
-		nWindowAlign = v;
-		sprintf (m->m_text, TXT_AUXWIN_ALIGNMENT, szWindowAlign [v]);
-		m->m_bRebuild = 1;
-		}
+m = menu + optWeaponIcons;
+v = m->m_value;
+if (v != bShowWeaponIcons) {
+	bShowWeaponIcons = v;
+	key = -2;
+	return nCurItem;
 	}
+
+#endif
+
+m = menu + optWindowSize;
+v = m->m_value;
+if (gameOpts->render.cockpit.nWindowSize != v) {
+	gameOpts->render.cockpit.nWindowSize = v;
+	m->SetText (szWindowSize [v]);
+	sprintf (m->m_text, TXT_AUXWIN_SIZE, szWindowSize [v]);
+	m->m_bRebuild = 1;
+	}
+
+m = menu + optWindowZoom;
+v = m->m_value;
+if (gameOpts->render.cockpit.nWindowZoom != v) {
+	gameOpts->render.cockpit.nWindowZoom = v;
+	sprintf (m->m_text, TXT_AUXWIN_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
+	m->m_bRebuild = 1;
+	}
+
+m = menu + optWindowPos;
+v = m->m_value;
+if (nWindowPos != v) {
+	nWindowPos = v;
+	sprintf (m->m_text, TXT_AUXWIN_POSITION, szWindowPos [v]);
+	m->m_bRebuild = 1;
+	}
+
+m = menu + optWindowAlign;
+v = m->m_value;
+if (nWindowAlign != v) {
+	nWindowAlign = v;
+	sprintf (m->m_text, TXT_AUXWIN_ALIGNMENT, szWindowAlign [v]);
+	m->m_bRebuild = 1;
+	}
+
 return nCurItem;
 }
 
@@ -457,7 +468,7 @@ void CockpitOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optTextGauges, optHUD, optPosition, optAlignment, optTgtInd, optWeaponIcons;
+	int	optTextGauges, optHUD, optPosition, optAlignment, optTgtInd;
 
 	char	szSlider [40];
 
@@ -481,6 +492,8 @@ bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 
 #if SIMPLE_MENUS
 
+	int	optIconPos;
+
 do {
 	m.Destroy ();
 	m.Create (15);
@@ -489,7 +502,21 @@ do {
 	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
 	m.AddText ("", 0);
-	if (gameOpts->app.bExpertMode) {
+
+	optWeaponIcons = m.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
+	if (bShowWeaponIcons) {
+		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_BTM, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRB, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m.AddRadio (TXT_WPNICONS_LRT, 0, KEY_I, HTX_CPIT_ICONPOS);
+		m [optIconPos + NMCLAMP (extraGameInfo [0].nWeaponIcons - 1, 0, 3)].m_value = 1;
+		}
+	else
+		optIconPos = -1;
+	m.AddText ("", 0);
+
+	//if (gameOpts->app.bExpertMode) 
+		{
 		m.AddText (TXT_COCKPIT_WINDOWS, 0);
 		sprintf (szSlider, TXT_AUXWIN_SIZE, szWindowSize [gameOpts->render.cockpit.nWindowSize]);
 		optWindowSize = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_S, HTX_CPIT_WINSIZE);
@@ -505,7 +532,6 @@ do {
 		m.AddText ("", 0);
 		}
 
-	optWeaponIcons = m.AddMenu (TXT_WPNICON_MENUCALL, KEY_W, "");
 	do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
 		if (i < 0)
@@ -517,17 +543,16 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);
 	gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value;
-
-	if (gameOpts->app.bExpertMode) {
-		if ((optAlignment >= 0) && (optPosition >= 0)) {
-			for (nWindowPos = 0; nWindowPos < 2; nWindowPos++)
-				if (m [optPosition + nWindowPos].m_value)
+	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
+	if (bShowWeaponIcons) {
+		if (optIconPos >= 0) {
+			for (int j = 0; j < 4; j++)
+				if (m [optIconPos + j].m_value) {
+					extraGameInfo [0].nWeaponIcons = j + 1;
 					break;
-			for (nWindowAlign = 0; nWindowAlign < 3; nWindowAlign++)
-				if (m [optAlignment + nWindowAlign].m_value)
-					break;
-			gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
-			}
+					}
+				}
+		GET_VAL (gameOpts->render.weaponIcons.alpha, optIconAlpha);
 		}
 	} while (i == -2);
 

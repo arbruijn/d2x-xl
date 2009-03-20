@@ -1829,11 +1829,14 @@ void DefaultSettings (void)
 
 void DefaultCockpitSettings (void)
 {
+#if 0
 if (!gameOpts->app.bExpertMode) {
 	gameOptions [0].render.cockpit.nWindowSize = 0;
 	gameOptions [0].render.cockpit.nWindowZoom = 0;
 	gameOptions [0].render.cockpit.nWindowPos = 1;
+	gameOptions [0].render.cockpit.nWindowAlign = 1;
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------

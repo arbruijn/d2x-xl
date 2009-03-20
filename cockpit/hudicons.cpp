@@ -183,7 +183,7 @@ void CHUDIcons::DrawWeapons (void)
 	int	nWeaponIcons = /*(gameStates.render.cockpit.nType == CM_STATUS_BAR) ? 3 :*/ extraGameInfo [0].nWeaponIcons;
 	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 4 : 3;
 	int	nIconPos = nWeaponIcons - 1;
-	int	nHiliteColor = gameOpts->render.weaponIcons.nHiliteColor;
+	int	nHiliteColor = gameOpts->app.bColorblindFriendly;
 	int	nMaxAutoSelect;
 	int	fw, fh, faw, 
 			i, j, ll, n, 
@@ -482,7 +482,7 @@ void CHUDIcons::DrawInventory (void)
 	char		szCount [20];
 	int		nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
 	int		nIconPos = extraGameInfo [0].nWeaponIcons & 1;
-	int		nHiliteColor = gameOpts->render.weaponIcons.nHiliteColor;
+	int		nHiliteColor = gameOpts->app.bColorblindFriendly;
 	int		fw, fh, faw;
 	int		j, n, firstItem, 
 				oy = 6, 
