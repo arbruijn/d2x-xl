@@ -142,8 +142,13 @@ do {
 		optPerformance = -1;
 	optScrRes = menu.AddMenu (TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	menu.AddText ("", 0);
-	optReorderPrim = menu.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
-	optReorderSec = menu.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
+	if (gameStates.app.bNostalgia) {
+		optReorderPrim = menu.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
+		optReorderSec = menu.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
+		}
+	else
+		optReorderPrim = 
+		optReorderSec = -1;
 	optMiscellaneous = menu.AddMenu (gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISCELLANEOUS, gameStates.app.bNostalgia ? KEY_T : KEY_I, HTX_OPTIONS_MISC);
 	if (!gameStates.app.bNostalgia) {
 		optCockpit = menu.AddMenu (TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
@@ -174,9 +179,9 @@ do {
 			}
 		else if (i == optScrRes)
 			ScreenResMenu ();	
-		else if (i == optReorderPrim)
+		else if ((optReorderPrim >= 0) && (i == optReorderPrim))
 			ReorderPrimary ();		
-		else if (i == optReorderSec)
+		else if ((optReorderSec >= 0) && (i == optReorderSec))
 			ReorderSecondary ();	
 		else if (i == optMiscellaneous)
 			MiscellaneousMenu ();		

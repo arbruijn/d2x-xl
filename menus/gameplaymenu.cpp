@@ -256,13 +256,16 @@ return nCurItem;
 
 void GameplayOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu m;
-	int	i, j, choice = 0;
+	int	i;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
 			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
-			optRotateMarkers = -1, optLoadout, optUseD1AI = -1, optNoThief = -1;
+			optRotateMarkers = -1, optUseD1AI = -1, optNoThief = -1;
+	int	optReorderPrim, optReorderSec;
 	char	szSlider [50];
 
 pszAggressivities [0] = TXT_STANDARD;
@@ -310,11 +313,15 @@ do {
 	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_W, HTX_HEADLIGHT_POWERDRAIN);
 	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 	m.AddText ("");
+	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
+	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 	for (;;) {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
-		if (choice == optLoadout)
-			LoadoutOptionsMenu ();
+		if (choice == optReorderPrim)
+			ReorderPrimary ();		
+		else if (choice == optReorderSec)
+			ReorderSecondary ();	
 		};
 	} while (i == -2);
 if (nAIAggressivity == 5) {
