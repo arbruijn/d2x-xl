@@ -206,7 +206,7 @@ if (!gameStates.app.bNostalgia) {
 		paletteManager.SetGamma (v);
 	}
 
-if (gameOpts->app.bExpertMode) {
+if (0 && gameOpts->app.bExpertMode) {
 	m = menu + renderOpts.nFrameCap;
 	v = fpsTable [m->m_value];
 	if (gameOpts->render.nMaxFPS != v) {
@@ -368,7 +368,7 @@ do {
 	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 
-	if (gameOpts->app.bExpertMode) {
+	if (0 && gameOpts->app.bExpertMode) {
 		if (gameOpts->render.nMaxFPS > 1)
 			sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
 		else if (gameOpts->render.nMaxFPS < 0)
@@ -442,7 +442,7 @@ do {
 		optAdvOpts = -1;
 
 #if DBG
-	if (gameOpts->app.bExpertMode) {
+	if (0 && gameOpts->app.bExpertMode) {
 		m.AddText ("", 0);
 		optWireFrame = m.AddCheck ("Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
 		optTextures = m.AddCheck ("Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
@@ -519,7 +519,7 @@ do {
 		}
 #endif
 #if DBG
-	if (gameOpts->app.bExpertMode) {
+	if (0 && gameOpts->app.bExpertMode) {
 		gameOpts->render.debug.bWireFrame = m [optWireFrame].m_value;
 		gameOpts->render.debug.bTextures = m [optTextures].m_value;
 		gameOpts->render.debug.bObjects = m [optObjects].m_value;

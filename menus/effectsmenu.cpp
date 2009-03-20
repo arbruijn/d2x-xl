@@ -131,9 +131,11 @@ return nCurItem;
 
 void EffectOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu	m;
-	int	i, j, choice = 0;
-	int	optThrusterFlame, optGatlingTrails, optSoftParticles [3];
+	int	i, j;
+	int	optGatlingTrails, optSoftParticles [3];
 #if 0
 	int	optShockwaves;
 #endif
@@ -147,10 +149,14 @@ pszExplShrapnels [3] = TXT_MANY;
 pszExplShrapnels [4] = TXT_EXTREME;
 
 pszLightTrails [0] = TXT_NONE;
-pszLightTrails [1] = TXT_LOW;
-pszLightTrails [2] = TXT_HIGH;
+pszLightTrails [1] = TXT_BASIC;
+pszLightTrails [2] = TXT_ADVANCED;
 
-nLightTrails = extraGameInfo [0].bLightTrails ? (gameOpts->render.particles.bPlasmaTrails << 1) : 0;
+pszThrusters [0] = TXT_NONE;
+pszThrusters [1] = TXT_2D;
+pszThrusters [2] = TXT_3D;
+
+nLightTrails = extraGameInfo [0].bLightTrails ? gameOpts->render.particles.bPlasmaTrails ? 2 : 1 : 0;
 do {
 	m.Destroy ();
 	m.Create (30);
@@ -182,7 +188,6 @@ do {
 		optSoftParticles [2] = m.AddCheck (TXT_SOFT_SMOKE, (gameOpts->render.effects.bSoftParticles & 4) != 0, KEY_O, HTX_SOFT_SMOKE);
 	else
 		optSoftParticles [2] = -1;
-	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].m_value = 1;
 	for (;;) {
 		i = m.Menu (NULL, TXT_EFFECT_MENUTITLE, EffectOptionsCallback, &choice);
 		if (i < 0)
@@ -194,10 +199,6 @@ do {
 				gameOpts->render.effects.bSoftParticles |= 1 << j;
 			else
 				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
-			}
-		if (m [optThrusterFlame + j].m_value) {
-			extraGameInfo [0].bThrusterFlames = j;
-			break;
 			}
 		}
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))

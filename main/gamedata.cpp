@@ -1705,7 +1705,6 @@ extraGameInfo [0].bPlayerShield = 1;
 gameOpts->render.effects.bRobotShields = 1;
 gameOpts->render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
-gameOpts->render.particles.bPlasmaTrails = 0;	//move to effects menu
 //extraGameInfo [0].bGatlingTrails = 1;	//TODO: Tie to render quality
 extraGameInfo [0].bShockwaves = 0; 
 extraGameInfo [0].bDamageExplosions = 0;
