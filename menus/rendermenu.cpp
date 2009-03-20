@@ -268,7 +268,7 @@ void RenderOptionsMenu (void)
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts,
 			optShipRenderOpts;
 #if DBG
-	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
+	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight, opt3DPowerups;
 #endif
 
 	int nRendQualSave = gameOpts->render.nQuality;
@@ -345,6 +345,7 @@ do {
 	renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
 	optSmoke = m.AddCheck (TXT_USE_SMOKE, extraGameInfo [0].bUseParticles, KEY_U, HTX_ADVRND_USESMOKE);
+	opt3DPowerups = m.AddCheck (TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);	//TODO: Tie to render quality
 
 	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 		optShadows = -1;
@@ -398,8 +399,6 @@ do {
 				i = -2, EffectOptionsMenu ();
 			else if ((optCameraOpts >= 0) && (i == optCameraOpts))
 				i = -2, CameraOptionsMenu ();
-			else if ((optPowerupOpts >= 0) && (i == optPowerupOpts))
-				i = -2, PowerupOptionsMenu ();
 			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))
 				i = -2, AutomapOptionsMenu ();
 			}
@@ -407,6 +406,8 @@ do {
 
 	GET_VAL (extraGameInfo [0].bUseParticles, optSmoke);
 	GET_VAL (extraGameInfo [0].bShadows, optShadows);
+	GET_VAL (gameOpts->render.powerups.b3D, nOpt3DPowerups);
+
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
 	if (nRendQualSave != gameOpts->render.nQuality)
@@ -444,8 +445,12 @@ do {
 #endif
 	} while (i == -2);
 
+
 extraGameInfo [0].grWallTransparency = (6 * FADE_LEVELS * + 5) / 10;
 gameOpts->render.color.bWalls = 1;
+// powerup render option defaults
+gameOpts->render.powerups.b3DShields = gameOpts->render.powerups.b3D;
+gameOpts->render.powerups.nSpin = 1;
 // ship render option defaults
 extraGameInfo [0].bShowWeapons = 1;
 gameOpts->render.ship.bBullets = 1;
