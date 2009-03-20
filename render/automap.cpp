@@ -340,14 +340,21 @@ glLineWidth (1);
 
 void CAutomap::DrawLevelId (void)
 {
-if (gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) {
-	int offs = m_data.bHires ? 10 : 5;
+if (gameStates.app.bNostalgia)
+	return;
 
-	CFont	*curFont = CCanvas::Current ()->Font ();
-	int		w, h, aw;
+	CFont*	curFont = CCanvas::Current ()->Font ();
+	int		w, h, aw, offs = m_data.bHires ? 10 : 5;
+	char		szInfo [100];
 
-	fontManager.SetCurrent (SMALL_FONT);
-	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+fontManager.SetCurrent (SMALL_FONT);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+
+strcpy (szInfo, "ALT+T: Toggle textures/wireframe   ALT+B: Toggle brightness   CTRL+T: Teleport to marker");
+fontManager.Current ()->StringSize (szInfo, w, h, aw);
+GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, offs, szInfo);
+
+if (gameOpts->render.cockpit.bHUD) {
 	GrPrintF (NULL, offs, offs, m_szLevelNum);
 	fontManager.Current ()->StringSize (m_szLevelName, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, m_szLevelName);
@@ -708,7 +715,7 @@ while ((c = KeyInKey ())) {
 			gameStates.render.bShowProfiler = !gameStates.render.bShowProfiler;
 			break;
 
-		case KEY_ALTED + KEY_R:
+		case KEY_ALTED + KEY_F:
 			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 

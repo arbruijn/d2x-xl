@@ -166,7 +166,7 @@ do {
 		optLightnings =
 		optSkybox = -1;
 	m.AddText ("", 0);
-#if 0
+
 	sprintf (szSlider + 1, TXT_RADAR, pszRadar [extraGameInfo [0].nRadar]);
 	*szSlider = *(TXT_RADAR - 1);
 	automapOpts.nOptRadar = m.AddSlider (szSlider + 1, extraGameInfo [0].nRadar, 0, 2, KEY_R, HTX_RADAR);
@@ -177,7 +177,7 @@ do {
 		m.AddText ("", 0);
 		}
 	else
-#endif
+
 		automapOpts.nOptRadarRange =
 		optColor = -1;
 	for (;;) {
