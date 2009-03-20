@@ -1746,7 +1746,7 @@ const char *defaultGameTexts [][2] = {
  {"Scheinwerfer ~Zulassen", "~Allow headlights"},
  {"eingebauter schein~Werfer", "built-in head~Light"},
  {"Scheinwerfer verbraucht s~Trom", "headlight drains po~Wer"},
- {"korona-~Qualitaet: %s", "corona ~Quality: %s"},
+ {"~Korona-qualitaet: %s", "~Corona quality: %s"},
  {"Cockpit-Fenster-Position", "cockpit window position"},
  {"~Oben", "~Top"},
  {"~Unten", "~Bottom"},

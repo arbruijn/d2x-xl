@@ -86,7 +86,9 @@ static struct {
 //------------------------------------------------------------------------------
 
 static const char* pszCoronaInt [4];
+#if !SIMPLE_MENUS
 static const char* pszCoronaQual [4];
+#endif
 
 int CoronaOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
