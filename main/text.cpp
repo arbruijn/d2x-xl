@@ -2564,6 +2564,8 @@ const char *defaultHelpTexts [][2] = {
   "Chose the appearance of thruster flames from player ships,\nrobots and missiles here."},
  {"Hier kann die Verwendung von Blitzen ausgewaehlt werden.", "Adjust the usage of lightning here."},
  {"Hier kann eingestellt werden, wann und ob das Spiel automatisch\ndie Waffe umschaltet.", "Adjust whether and when the game will automatically switch\nweapons for you."},
+ {"Wenn angekreuzt, werden blinkende Lichter und Blinkeffekte reduziert.", "If checked flashing lights and flash effects will be reduced."},
+ {"Wenn angekreuzt, erhalten einige Cockpitelemente eine andere Farbe.", "If checked some cockpit elements get a different color."},
 #if 0
  {"", ""},
 #endif

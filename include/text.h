@@ -1933,10 +1933,10 @@ void LoadGameTexts(void);
 #define TXT_AUXWIN_SIZE					GT(1136)
 #define TXT_EPILEPTIC_FRIENDLY		GT(1137)
 #define TXT_COLORBLIND_FRIENDLY		GT(1138)
-#define TXT_MISC_AND_ACCESS			GT(1139)
 
 #if 0
 
+#define TXT_					GT(1139)
 #define TXT_					GT(1140)
 #define TXT_					GT(1141)
 #define TXT_					GT(1142)
@@ -2519,11 +2519,11 @@ void LoadGameTexts(void);
 #define HTX_LIGHTNING					HT(500)			
 #define HTX_RADAR							HT(501)			
 #define HTX_WEAPON_SWITCH				HT(502)			
+#define HTX_EPILEPTIC_FRIENDLY		HT(503)
+#define HTX_COLORBLIND_FRIENDLY		HT(504)
 
 #if 0
 
-#define HTX_						HT(503)			
-#define HTX_						HT(504)			
 #define HTX_						HT(505)			
 #define HTX_						HT(506)			
 #define HTX_						HT(507)			

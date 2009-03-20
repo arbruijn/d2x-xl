@@ -840,7 +840,7 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 		flP->m_mask = ((flP->m_mask & 0x80000000) ? 1 : 0) + (flP->m_mask << 1);
 		if (flP->m_mask & 1)
 			AddLight (nSegment, nSide);
-		else if (EGI_FLAG (bFlickerLights, 1, 0, 1))
+		else if (!gameOpts->app.bEpilepticFriendly /*EGI_FLAG (bFlickerLights, 1, 0, 1)*/)
 			SubtractLight (nSegment, nSide);
 		}
 	}
