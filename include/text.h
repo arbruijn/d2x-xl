@@ -1916,10 +1916,10 @@ void LoadGameTexts(void);
 #define TXT_SHADOWS						GT(1119)
 #define TXT_LIGHTING						GT(1120)
 #define TXT_LIGHTMAPS					GT(1121)
+#define TXT_CAMERAS						GT(1122)
 
 #if 0
 
-#define TXT_					GT(1122)
 #define TXT_					GT(1123)
 #define TXT_					GT(1124)
 #define TXT_					GT(1125)
@@ -2514,10 +2514,10 @@ void LoadGameTexts(void);
 #define HTX_SHADOWS						HT(395)			
 #define HTX_POWERUPS						HT(396)			
 #define HTX_LIGHTING						HT(397)			
+#define HTX_CAMERAS						HT(398)			
 
 #if 0
 
-#define HTX_						HT(398)			
 #define HTX_						HT(399)			
 
 #define HTX_						HT(400)			

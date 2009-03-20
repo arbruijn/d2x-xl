@@ -81,6 +81,11 @@ static struct {
 	int	nSmoke;
 	int	nShadows;
 	int	nPowerups;
+	int	nLighting;
+	int	nLightmaps;
+	int	nCameras;
+	int	nLights;
+	int	nPasses;
 	int	nWallTransp;
 	int	nContrast;
 	int	nBrightness;
@@ -181,9 +186,9 @@ return nCurItem;
 
 #if SIMPLE_MENUS
 
-static int nCoronas, nSmoke, nShadows, nPowerups;
+static int nCoronas, nSmoke, nShadows, nPowerups, nCameras;
 
-static const char* pszCoronaQual [3];
+static const char* pszNoneBasicAdv [3];
 static const char* pszNoneBasicFull [3];
 
 int RenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
@@ -275,7 +280,15 @@ m = menu + renderOpts.nCoronas;
 v = m->m_value;
 if (nCoronas != v) {
 	nCoronas = v;
-	sprintf (m->m_text, TXT_CORONAS, pszCoronaQual [nCoronas]);
+	sprintf (m->m_text, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
+	m->m_bRebuild = -1;
+	}
+
+m = menu + renderOpts.nCameras;
+v = m->m_value;
+if (nCameras != v) {
+	nCameras = v;
+	sprintf (m->m_text, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	m->m_bRebuild = -1;
 	}
 
@@ -310,9 +323,9 @@ void RenderOptionsMenu (void)
 	char szMeshQual [50];
 	char szSlider [50];
 
-pszCoronaQual [0] = TXT_NONE;
-pszCoronaQual [1] = TXT_BASIC;
-pszCoronaQual [2] = TXT_ADVANCED;
+pszNoneBasicAdv [0] = TXT_NONE;
+pszNoneBasicAdv [1] = TXT_BASIC;
+pszNoneBasicAdv [2] = TXT_ADVANCED;
 
 pszNoneBasicFull [0] = TXT_NONE;
 pszNoneBasicFull [1] = TXT_BASIC;
@@ -339,14 +352,20 @@ nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 
 nSmoke = extraGameInfo [0].bUseParticles ? gameOpts->render.particles.bStatic ? 2 : 1 : 0;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
+nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
 
 do {
 	m.Destroy ();
 	m.Create (50);
 	optAutomapOpts = -1;
-	if (!gameStates.app.bNostalgia) {
+#if 1//!DBG
+	renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
+	m.AddText ("", 0);
+#endif
+
+	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
-		}
+
 #if DBG
 	if (gameOpts->render.nMaxFPS > 1)
 		sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
@@ -391,25 +410,23 @@ do {
 		renderOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_A, HTX_SHADOWS);
 		}
 
-	sprintf (szSlider + 1, TXT_CORONAS, pszCoronaQual [nCoronas]);
+	sprintf (szSlider + 1, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
 	*szSlider = *(TXT_CORONAS - 1);
-	renderOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_C, HTX_CORONAS);
+	renderOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_O, HTX_CORONAS);
+
+	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
+	*szSlider = *(TXT_CAMERAS - 1);
+	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_C, HTX_CAMERAS);
 
 	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_P, HTX_POWERUPS);
-
-	m.AddText ("", 0);
-#if 1//!DBG
-	renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
-#endif
 
 	if (gameOpts->app.bExpertMode) {
 		m.AddText ("", 0);
 		optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
 		optLightningOpts = m.AddMenu (TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
 		optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
-		optCameraOpts = m.AddMenu (TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);
 		optAutomapOpts = m.AddMenu (TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
 		}
 	else
@@ -453,14 +470,17 @@ do {
 		gameOpts->render.particles.bStatic = 
 		gameOpts->render.particles.bBubbles = nSmoke == 2;
 
-	if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
-		gameOpts->render.coronas.nStyle = nCoronas;
-
 	if (renderOpts.nShadows >= 0) {
 		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
 			gameOpts->render.shadows.nReach =
 			gameOpts->render.shadows.nClip = nShadows;
 		}	
+
+	if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
+		gameOpts->render.coronas.nStyle = nCoronas;
+
+	if ((extraGameInfo [0].bUseCameras = (nCameras != 0))) 
+		gameOpts->render.cameras.bHires = (nCameras == 2);
 
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);

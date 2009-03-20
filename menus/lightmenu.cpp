@@ -108,7 +108,7 @@ int LightOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-	CMenuItem	*m;
+	CMenuItem*	m;
 	int			v;
 
 m = menu + lightOpts.nLighting;

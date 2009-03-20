@@ -1713,6 +1713,16 @@ extraGameInfo [0].bDamageExplosions = 0;
 
 // ----------------------------------------------------------------------------
 
+void DefaultCameraSettings (void)
+{
+extraGameInfo [0].bTeleporterCams = 0;
+gameOpts->render.cameras.bFitToWall = 0;
+gameOpts->render.cameras.nSpeed = 5000;
+gameOpts->render.cameras.nFPS = 0;
+}
+
+// ----------------------------------------------------------------------------
+
 void DefaultLightSettings (void)
 {
 gameOpts->render.color.bAmbientLight = 1;
@@ -1757,6 +1767,7 @@ DefaultShipSettings ();
 DefaultMovieSettings ();
 DefaultEffectSettings ();
 DefaultLightSettings ();
+DefaultCameraSettings ();
 DefaultAutomapSettings ();
 }
 

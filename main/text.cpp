@@ -1860,11 +1860,12 @@ const char *defaultGameTexts [][2] = {
  {"verbessert", "advanced"},
  {"voll", "full"},
  {"beste", "best"},
- {"~Koronas: %s", "~Coronas: %s"},
+ {"k~Oronas: %s", "c~Oronas: %s"},
  {"~Rauch: %s", "~Smoke: %s"},
  {"~Schatten: %s", "sh~Adows: %s"},
  {"~Beleuchtung: %s", "~Lighting: %s"},
  {"~Lightmaps: %s", "light~Maps: %s"},
+ {"~Kameras", "~Cameras"},
 #if 0
  {"", ""},
 #endif
@@ -2541,6 +2542,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Qualitaet der Schattendarstellung ausgewaehlt werden.", "Chose the quality of shadow appearance here."},
  {"Hier kann die Art der Beleuchtung eingestellt werden:\n\n- Basis: althergebrachte Methode\n- Standard: Dynamisch (Per Vertex)\n- Fortgeschritten: Dynamisch + Lightmaps\n- Beste: Per Pixel", 
  "Chose the lighting method here:\n\n- basic: old style\nstandard: dynamic (per vertex)\n-advanced: dynamic + lightmaps\nbest: per pixel"},
+ {"Hier koennen Verwendung und Aufloesung von Kameras\neingestellt werden.", "Chose the camera usage and resolution here."},
 #if 0
  {"", ""},
 #endif

@@ -91,6 +91,9 @@ if (v != extraGameInfo [0].bUseCameras) {
 	key = -2;
 	return nCurItem;
 	}
+
+#if !SIMPLE_MENUS
+
 if (extraGameInfo [0].bUseCameras) {
 	if (camOpts.nFPS >= 0) {
 		m = menu + camOpts.nFPS;
@@ -111,6 +114,9 @@ if (extraGameInfo [0].bUseCameras) {
 			}
 		}
 	}
+
+#endif
+
 return nCurItem;
 }
 
@@ -132,7 +138,7 @@ do {
 	m.Destroy ();
 	m.Create (10);
 	camOpts.nUse = m.AddCheck (TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
-	if (gameStates.app.bGameRunning) 
+	if (!extraGameInfo [0].bUseCameras || gameStates.app.bGameRunning) 
 		optHiresCams = -1;
 	else
 		optHiresCams = m.AddCheck (TXT_HIRES_CAMERAS, gameOpts->render.cameras.bHires, KEY_H, HTX_HIRES_CAMERAS);
@@ -145,10 +151,6 @@ do {
 		if (!gameStates.app.bGameRunning)
 			GET_VAL (gameOpts->render.cameras.bHires, optHiresCams);	//TODO: Tie to render quality
 		}
-	extraGameInfo [0].bTeleporterCams = 0;
-	gameOpts->render.cameras.bFitToWall = 0;
-	gameOpts->render.cameras.nSpeed = 5000;
-	gameOpts->render.cameras.nFPS = 0;
 	} while (i == -2);
 
 #else
