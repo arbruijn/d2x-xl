@@ -1913,11 +1913,11 @@ void LoadGameTexts(void);
 #define TXT_CORONAS						GT(1116)
 #define TXT_SMOKE							GT(1117)
 #define TXT_SHADOWS						GT(1118)
+#define TXT_LIGHTING						GT(1119)
+#define TXT_BEST							GT(1120)
 
 #if 0
 
-#define TXT_					GT(1119)
-#define TXT_					GT(1120)
 #define TXT_					GT(1121)
 #define TXT_					GT(1122)
 #define TXT_					GT(1123)

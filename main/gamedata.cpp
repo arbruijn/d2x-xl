@@ -1715,22 +1715,16 @@ extraGameInfo [0].bDamageExplosions = 0;
 
 void DefaultLightSettings (void)
 {
-}
-
-// ----------------------------------------------------------------------------
-
-void DefaultRenderSettings (void)
-{
-extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
-gameOpts->render.color.bWalls = 1;
-DefaultSmokeSettings ();
-DefaultShadowSettings ();
-DefaultCoronaSettings ();
-DefaultPowerupSettings ();
-DefaultShipSettings ();
-DefaultMovieSettings ();
-DefaultEffectSettings ();
-DefaultLightSettings ();
+gameOpts->render.color.bAmbientLight = 1;
+gameOpts->render.color.bGunLight = 1;
+gameOpts->render.color.bMix = 1;
+gameOpts->render.color.nSaturation = 1;
+extraGameInfo [0].bPowerupLights = 0;
+extraGameInfo [0].bBrightObjects = 0;
+gameOpts->ogl.nMaxLightsPerObject = 8;
+gameOpts->ogl.bHeadlight = 1;
+gameOpts->ogl.bObjLighting = 1;
+gameOpts->ogl.bLightObjects = 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -1750,10 +1744,45 @@ gameOpts->render.automap.bSkybox = 0;
 
 // ----------------------------------------------------------------------------
 
+void DefaultRenderSettings (void)
+{
+extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
+gameOpts->render.color.bWalls = 1;
+gameStates.ogl.nContrast = 8;
+DefaultSmokeSettings ();
+DefaultShadowSettings ();
+DefaultCoronaSettings ();
+DefaultPowerupSettings ();
+DefaultShipSettings ();
+DefaultMovieSettings ();
+DefaultEffectSettings ();
+DefaultLightSettings ();
+DefaultAutomapSettings ();
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultPhysicsSettings (void)
+{
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultGameplaySettings (void)
+{
+}
+
+// ----------------------------------------------------------------------------
+
 void DefaultSettings (void)
 {
+}
+
+// ----------------------------------------------------------------------------
+
+void DefaultAllSettings (void)
+{
 DefaultRenderSettings ();
-DefaultAutomapSettings ();
 }
 
 // ----------------------------------------------------------------------------

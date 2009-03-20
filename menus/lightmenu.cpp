@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 static struct {
-	int	nMethod;
+	int	nLighting;
 	int	nHWObjLighting;
 	int	nHWHeadlight;
 	int	nMaxLightsPerFace;
@@ -83,9 +83,25 @@ static struct {
 
 static int nMaxLightsPerFaceTable [] = {3,4,5,6,7,8,12,16,20,24,32};
 
-static const char *pszLMapQual [5];
+//------------------------------------------------------------------------------
+
+static int LightTableIndex (int nValue)
+{
+	int i, h = (int) sizeofa (nMaxLightsPerFaceTable);
+
+for (i = 0; i < h; i++)
+	if (nValue < nMaxLightsPerFaceTable [i])
+		break;
+return i ? i - 1 : 0;
+}
 
 //------------------------------------------------------------------------------
+
+#if SIMPLE_MENUS
+
+static int nLighting;
+
+static const char *pszQuality [4];
 
 int LightOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -95,9 +111,127 @@ if (nState)
 	CMenuItem	*m;
 	int			v;
 
-if (lightOpts.nMethod >= 0) {
+m = menu + lightOpts.nLighting;
+v = m->m_value;
+if (nLighting != v) {
+	nLighting = v;
+	sprintf (m->m_text, TXT_LIGHTING, pszQuality [nLighting]);
+	m->m_bRebuild = 1;
+	}
+
+if (lightOpts.nLightmaps >= 0) {
+	m = menu + lightOpts.nLightmaps;
+	v = m->m_value;
+	if (gameOpts->render.nLightmapQuality != v) {
+		gameOpts->render.nLightmapQuality = v;
+		sprintf (m->m_text, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+		m->m_bRebuild = 1;
+		}
+	}
+
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+void LightOptionsMenu (void)
+{
+if (gameStates.app.bGameRunning)
+	return;
+
+	CMenu m;
+	int	i, choice = 0;
+	int	optFlickerLights;
+#if 0
+	int checks;
+#endif
+
+	char szSlider [50];
+
+	pszQuality [0] = TXT_BASIC;
+	pszQuality [1] = TXT_STANDARD;
+	pszQuality [2] = TXT_HIGH;
+	pszQuality [3] = TXT_BEST;
+
+nLighting = (gameOpts->render.nLightingMethod == 0) 
+				? 0 
+				: (gameOpts->render.nLightingMethod == 2) 
+					? 3 
+					: (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps) + 1;
+
+do {
+	m.Destroy ();
+	m.Create (10);
+	memset (&lightOpts, 0xff, sizeof (lightOpts));
+
+	sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
+	*szSlider = *(TXT_LIGHTING + 1);
+	lightOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
+	gameOpts->ogl.nMaxLightsPerFace = LightTableIndex (gameOpts->ogl.nMaxLightsPerFace);
+	if (nLighting >= 2) {
+		sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+		*szSlider = *(TXT_LMAP_QUALITY + 1);
+		lightOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
+		if (nLighting == 3) {
+			sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace]);
+			*szSlider = *(TXT_MAX_LIGHTS_PER_FACE - 1);
+			lightOpts.nMaxLightsPerFace = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerFace, 0,  (int) sizeofa (nMaxLightsPerFaceTable) - 1, KEY_A, HTX_MAX_LIGHTS_PER_FACE);
+			sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
+			*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
+			lightOpts.nMaxLightsPerPass = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_S, HTX_MAX_LIGHTS_PER_PASS);
+			}
+		}
+	optFlickerLights = m.AddCheck (TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
+
+	for (;;) {
+		i = m.Menu (NULL, TXT_LIGHTING_MENUTITLE, LightOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+
+	if (nLighting == 0)
+		gameOpts->render.nLightingMethod = 0;
+	else {
+		gameOpts->render.color.bUseLightmaps = (nLighting > 1);
+		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.color.bUseLightmaps;
+		}
+	extraGameInfo [0].bFlickerLights = m [optFlickerLights].m_value;
+	gameOpts->ogl.nMaxLightsPerFace = nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace];
+
+	} while (i == -2);
+
+gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
+if (gameStates.render.nLightingMethod == 2)
+	gameStates.render.bPerPixelLighting = 2;
+else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)
+	gameStates.render.bPerPixelLighting = 1;
+else
+	gameStates.render.bPerPixelLighting = 0;
+if (gameStates.render.bPerPixelLighting == 2) {
+	gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
+	gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
+	}
+gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
+gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
+}
+
+#else
+
+//------------------------------------------------------------------------------
+
+static const char *pszLMapQual [5];
+
+int LightOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
+{
+if (nState)
+	return nCurItem;
+
+	CMenuItem	*m;
+	int			v;
+
+if (lightOpts.nLighting >= 0) {
 	for (v = 0; v < 3; v++)
-		if (menu [lightOpts.nMethod + v].m_value)
+		if (menu [lightOpts.nLighting + v].m_value)
 			break;
 	if (v > 2)
 		v = 0;
@@ -187,18 +321,6 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int LightTableIndex (int nValue)
-{
-	int i, h = (int) sizeofa (nMaxLightsPerFaceTable);
-
-for (i = 0; i < h; i++)
-	if (nValue < nMaxLightsPerFaceTable [i])
-		break;
-return i ? i - 1 : 0;
-}
-
-//------------------------------------------------------------------------------
-
 void LightOptionsMenu (void)
 {
 	CMenu m;
@@ -231,7 +353,7 @@ do {
 		if ((gameOpts->render.nLightingMethod == 2) && 
 			 !(gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk))
 			gameOpts->render.nLightingMethod = 1;
-		lightOpts.nMethod = m.AddRadio (TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, NULL);
+		lightOpts.nLighting = m.AddRadio (TXT_STD_LIGHTING, gameOpts->render.nLightingMethod == 0, KEY_S, NULL);
 		m.AddRadio (TXT_VERTEX_LIGHTING, gameOpts->render.nLightingMethod == 1, KEY_V, HTX_VERTEX_LIGHTING);
 		if (gameStates.render.bUsePerPixelLighting && gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)
 			m.AddRadio (TXT_PER_PIXEL_LIGHTING, gameOpts->render.nLightingMethod == 2, KEY_P, HTX_PER_PIXEL_LIGHTING);
@@ -355,6 +477,8 @@ if (gameStates.render.bPerPixelLighting == 2) {
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
 }
+
+#endif //SIMPLE_MENUS
 
 //------------------------------------------------------------------------------
 //eof
