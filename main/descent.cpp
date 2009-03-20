@@ -106,10 +106,10 @@ CGameData		gameData;
 
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
 
+void DefaultAllSettings (void);
 void CheckJoystickCalibration (void);
-
 void ShowOrderForm (void);
-void quit_request ();
+void SetMaxPitch (int nMinTurnRate);
 
 tGameOptions *gameOpts = gameOptions;
 
@@ -120,7 +120,6 @@ void InitGameStates (void);
 char szAutoMission [255];
 char szAutoHogFile [255];
 
-extern void SetMaxPitch (int nMinTurnRate);
 
 int nDescentCriticalError = 0;
 unsigned descent_critical_deverror = 0;
@@ -760,6 +759,7 @@ error_init (NULL, NULL);
 *szAutoMission = '\0';
 EvalArgs ();
 InitGameOptions (1);
+DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 /*---*/PrintLog ("Loading text resources\n");
 /*---*/PrintLog ("Loading main hog file\n");
@@ -925,13 +925,6 @@ void ShowOrderForm ()
 		Int3 ();		//can't load order screen
 
 	KeyFlush ();
-}
-
-// ----------------------------------------------------------------------------
-
-void quit_request ()
-{
-exit (0);
 }
 
 // ----------------------------------------------------------------------------

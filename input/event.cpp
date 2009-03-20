@@ -45,7 +45,6 @@ int PollEvent (SDL_Event *event, ulong mask)
 	return (SDL_PeepEvents(event, 1, SDL_GETEVENT, mask) > 0);
 }
 
-void quit_request();
 
 void event_poll(ulong mask)
 {
@@ -96,7 +95,6 @@ void event_poll(ulong mask)
 				break;
 #endif
 			case SDL_QUIT: {
-				quit_request();
 			} break;
 		}
 #if TO_EVENT_POLL

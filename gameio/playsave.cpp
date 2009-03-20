@@ -592,7 +592,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nMaxFPS, i, 0);
 		RP (gameOptions [i].render.nQuality, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
-		RP (gameOptions [i].app.bExpertMode, i, 0);
 		RP (gameOptions [i].app.nVersionFilter, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
 		RP (gameOptions [i].app.bEnableMods, i, 0);
@@ -1118,7 +1117,6 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].sound.bMissiles", "0"},
  {"gameOptions[0].sound.bShip", "0"},
  {"gameOptions[0].sound.xCustomVolume", "5"},
- {"gameOptions[0].app.bExpertMode", "1"},
  {"gameOptions[0].app.nVersionFilter", "3"},
  {"gameOptions[0].demo.bOldFormat", "0"},
  {"gameOptions[0].gameplay.bIdleAnims", "1"},
