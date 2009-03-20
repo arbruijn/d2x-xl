@@ -145,7 +145,7 @@ do {
 	else
 		effectOpts.nExplShrapnels = -1;
 
-	sprintf (szLightTrails + 1, TXT_LIGHTTRAIL_QUAL, pszLightTrails [gameOpts->render.effects.nShrapnels]);
+	sprintf (szLightTrails + 1, TXT_LIGHTTRAIL_QUAL, pszLightTrails [nLightTrails]);
 	*szLightTrails = *(TXT_LIGHTTRAIL_QUAL - 1);
 	effectOpts.nLightTrails = m.AddSlider (szLightTrails + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_P, HTX_LIGHTTRAIL_QUAL);
 

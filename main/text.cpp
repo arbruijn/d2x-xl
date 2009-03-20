@@ -1597,7 +1597,7 @@ const char *defaultGameTexts [][2] = {
  {"~Spiel starten", "~Launch Game"},
  {"~Kompatibles Demo-Format", "use ~Compatible demo format"},
  {"Roboter", "Robots"},
- {"Powerups", "Powerups"},
+ {"3D-~Powerups: %s", "3D ~Powerups: %s"},
  {"Objekt-Zaehler anzeigen", "show object ~Tally"},
  {"Traeume werden wahr...", "Dreams are coming true..."},
  {"D2~X-Einstellungen...", "D2~X options..."},
@@ -1854,7 +1854,14 @@ const char *defaultGameTexts [][2] = {
  {"D~Vorak (U.S.)", "~Dvorak (U.S.)"},
  {"Tastaturlayout:", "Keyboard layout:"},
  {"~Zielmarkierungen", "~Target indicators"},
- {"~Leuchtspur-Qualitaet: %s", "~Light trail quality: %s"},
+ {"~Leuchtspuren: %s", "~Light trails: %s"},
+ {"standard", "basic"},
+ {"simple", "einfach"},
+ {"verbessert", "advanced"},
+ {"voll", "full"},
+ {"~Koronas: %s", "~Coronas: %s"},
+ {"~Rauch: %s", "~Smoke: %s"},
+ {"~Schatten: %s", "sh~Adows: %s"},
 #if 0
  {"", ""},
 #endif
@@ -2524,7 +2531,11 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt werden Mod-Daten verwendet;\nandernfalls werden sie ignoriert.", "If checked mod data will be used;\notherwise it will be ignored."},
  {"Wenn angekreuzt werden Schild-Powerups dreidimensional dargestellt.", "If check shield powerups will be rendered in 3D."},
  {"Hier kann das Tastaturlayout ausgewaehlt werden.", "Chose your keyboard layout here."},
- {"Hier kann die Art der Leuchtspuren von Energieschuessen\nausgewaehlt werden.", "Chose the appearance of energy shot light\ntrails here."},
+ {"Hier kann das Aussehen von Energie-Leuchtspuren ausgewaehlt werden.", "Chose the appearance of energy shot light\ntrails here."},
+ {"Hier kann das Aussehen von Lichthoefen ausgewaehlt werden.", "Chose the appearance of light coronas here."},
+ {"Hier kann die Menge an Rauchquellen eingestellt werden\n(kein Rauch, nur Spieler, Roboter und Raketen,\noder auch Umgebungsrauch und Luftblasen).", 
+  "Chose the amount of smoke sources here (no smoke, just\nplayers, robots and missiles, additionally\nenvironment smoke and air bubbles)."},
+ {"Hier kann die Qualitaet der Schattendarstellung ausgewaehlt werden.", "Chose the quality of shadow appearance here."},
 #if 0
  {"", ""},
 #endif

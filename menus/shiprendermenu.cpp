@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 static struct {
 	int	nWeapons;
 	int	nColor;
@@ -104,8 +106,6 @@ return nCurItem;
 }
 
 //------------------------------------------------------------------------------
-
-#if !SIMPLE_MENUS
 
 void ShipRenderOptionsMenu (void)
 {

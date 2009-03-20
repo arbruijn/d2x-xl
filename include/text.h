@@ -1906,16 +1906,16 @@ void LoadGameTexts(void);
 #define TXT_KEYBOARD_LAYOUT			GT(1109)
 #define TXT_TARGET_INDICATORS			GT(1110)
 #define TXT_LIGHTTRAIL_QUAL			GT(1111)
+#define TXT_BASIC							GT(1112)
+#define TXT_SIMPLE						GT(1113)
+#define TXT_ADVANCED						GT(1114)
+#define TXT_FULL							GT(1115)
+#define TXT_CORONAS						GT(1116)
+#define TXT_SMOKE							GT(1117)
+#define TXT_SHADOWS						GT(1118)
 
 #if 0
 
-#define TXT_					GT(1112)
-#define TXT_					GT(1113)
-#define TXT_					GT(1114)
-#define TXT_					GT(1115)
-#define TXT_					GT(1116)
-#define TXT_					GT(1117)
-#define TXT_					GT(1118)
 #define TXT_					GT(1119)
 #define TXT_					GT(1120)
 #define TXT_					GT(1121)
@@ -2509,13 +2509,13 @@ void LoadGameTexts(void);
 #define HTX_3D_SHIELDS					HT(390)			
 #define HTX_KEYBOARD_LAYOUT			HT(391)			
 #define HTX_LIGHTTRAIL_QUAL			HT(392)			
+#define HTX_CORONAS						HT(393)			
+#define HTX_SMOKE							HT(394)			
+#define HTX_SHADOWS						HT(395)			
+#define HTX_POWERUPS						HT(396)			
 
 #if 0
 
-#define HTX_						HT(393)			
-#define HTX_						HT(394)			
-#define HTX_						HT(395)			
-#define HTX_						HT(396)			
 #define HTX_						HT(397)			
 #define HTX_						HT(398)			
 #define HTX_						HT(399)			
