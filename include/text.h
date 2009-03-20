@@ -1928,10 +1928,10 @@ void LoadGameTexts(void);
 #define TXT_NEVER							GT(1131)
 #define TXT_WHEN_EMPTY					GT(1132)
 #define TXT_CHOSE_BEST					GT(1133)
+#define TXT_HLP_RADAR					GT(1134)
 
 #if 0
 
-#define TXT_					GT(1134)
 #define TXT_					GT(1135)
 #define TXT_					GT(1136)
 #define TXT_					GT(1137)

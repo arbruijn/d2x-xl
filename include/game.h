@@ -160,7 +160,7 @@ CCanvas* CurrentGameScreen();
 void FlyInit(CObject *obj);
 
 // put up the help message
-void DoShowHelp();
+void ShowHelp();
 
 // show a message in a nice little box
 // turns off rear view & rear view cockpit

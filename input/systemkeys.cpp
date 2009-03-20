@@ -254,7 +254,7 @@ return SetFreeCam (!gameStates.render.bFreeCam);
 
 void ToggleRadar (void)
 {
-if (gameOpts->render.automap.nRange < 2)
+if (extraGameInfo [0].nRadar && (gameOpts->render.automap.nRange < 2))
 	gameOpts->render.automap.nRange++;
 else {
 	extraGameInfo [0].nRadar = (extraGameInfo [0].nRadar + 1) % 3;
@@ -482,7 +482,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		case KEY_F1:
-			DoShowHelp ();
+			ShowHelp ();
 			break;
 
 		case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;

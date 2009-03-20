@@ -1877,6 +1877,7 @@ const char *defaultGameTexts [][2] = {
  {"nie", "never"},
  {"wenn leer", "when empty"},
  {"beste waehlen", "chose best"},
+ {"Alt-R\t  Radar umschalten.", "Alt-F12\t  toggle radar"},
 #if 0
  {"", ""},
 #endif

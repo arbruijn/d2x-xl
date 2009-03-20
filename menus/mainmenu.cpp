@@ -358,7 +358,7 @@ else if (nChoice == mainOpts.nCredits) {
 	creditsManager.Show (NULL); 
 	}
 else if (nChoice == mainOpts.nHelp) 
-	DoShowHelp ();
+	ShowHelp ();
 else if (nChoice == mainOpts.nQuit) {
 	paletteManager.DisableEffect ();
 	SetFunctionMode (FMODE_EXIT);

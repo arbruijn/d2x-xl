@@ -590,14 +590,6 @@ void FlyInit (CObject *objP)
 
 //	------------------------------------------------------------------------------------
 
-//put up the help message
-void DoShowHelp ()
-{
-ShowHelp ();
-}
-
-//	------------------------------------------------------------------------------------
-
 void DoCloakStuff (void)
 {
 	int i;
@@ -752,6 +744,7 @@ void ShowHelp (void)
 	m.AddText (TXT_HLP_DROP_PRIM);
 	m.AddText (TXT_HLP_DROP_SEC);
 	m.AddText (TXT_HLP_CHASECAM);
+	m.AddText (TXT_HLP_RADAR);
 	m.AddText (TXT_HLP_GBCMDS);
 #ifdef MACINTOSH
 	sprintf (pixel_double_help, "%c-D\t  Toggle Pixel Double Mode", 133);
