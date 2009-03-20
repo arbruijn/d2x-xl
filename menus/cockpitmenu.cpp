@@ -453,9 +453,10 @@ return nCurItem;
 
 void CockpitOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu m;
-	int	i, 
-			choice = 0;
+	int	i;
 	int	optTextGauges, optHUD, optPosition, optAlignment, optTgtInd, optWeaponIcons;
 
 	char	szSlider [40];
@@ -497,10 +498,10 @@ do {
 		optWindowZoom = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
 
 		sprintf (szSlider, TXT_AUXWIN_POSITION, szWindowPos [nWindowPos]);
-		optWindowPos = m.AddSlider (szSlider, nWindowPos, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
+		optWindowPos = m.AddSlider (szSlider, nWindowPos, 0, 1, KEY_P, HTX_AUXWIN_POSITION);
 
 		sprintf (szSlider, TXT_AUXWIN_ALIGNMENT, szWindowAlign [nWindowAlign]);
-		optWindowPos = m.AddSlider (szSlider, nWindowAlign, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
+		optWindowAlign = m.AddSlider (szSlider, nWindowAlign, 0, 2, KEY_A, HTX_AUXWIN_ALIGNMENT);
 		m.AddText ("", 0);
 		}
 
