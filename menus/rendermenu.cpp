@@ -253,27 +253,11 @@ if (renderOpts.nMeshQual > 0) {
 		}
 	}
 
-m = menu + renderOpts.nCoronas;
-v = m->m_value;
-if (nCoronas != v) {
-	nCoronas = v;
-	sprintf (m->m_text, TXT_CORONAS, pszCoronaQual [nCoronas]);
-	m->m_bRebuild = -1;
-	}
-
 m = menu + renderOpts.nSmoke;
 v = m->m_value;
 if (nSmoke != v) {
 	nSmoke = v;
 	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicFull [nSmoke]);
-	m->m_bRebuild = -1;
-	}
-
-m = menu + renderOpts.nPowerups;
-v = m->m_value;
-if (nPowerups != v) {
-	nPowerups = v;
-	sprintf (m->m_text, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
 	m->m_bRebuild = -1;
 	}
 
@@ -287,11 +271,19 @@ if (renderOpts.nShadows >= 0) {
 		}
 	}
 
+m = menu + renderOpts.nCoronas;
+v = m->m_value;
+if (nCoronas != v) {
+	nCoronas = v;
+	sprintf (m->m_text, TXT_CORONAS, pszCoronaQual [nCoronas]);
+	m->m_bRebuild = -1;
+	}
+
 m = menu + renderOpts.nPowerups;
 v = m->m_value;
-if (nSmoke != v) {
-	nSmoke = v;
-	sprintf (m->m_text, TXT_CORONA_QUALITY, pszNoneBasicFull [nSmoke]);
+if (nPowerups != v) {
+	nPowerups = v;
+	sprintf (m->m_text, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
 	m->m_bRebuild = -1;
 	}
 
@@ -316,7 +308,7 @@ void RenderOptionsMenu (void)
 	char szRendQual [50];
 	char szTexQual [50];
 	char szMeshQual [50];
-	char szNoneBasicFull [50];
+	char szSlider [50];
 
 pszCoronaQual [0] = TXT_NONE;
 pszCoronaQual [1] = TXT_BASIC;
@@ -385,25 +377,26 @@ do {
 			renderOpts.nMeshQual = -1;
 		}
 
-	sprintf (szNoneBasicFull + 1, TXT_CORONAS, pszNoneBasicFull [nCoronas]);
-	*szNoneBasicFull = *(TXT_CORONAS - 1);
-	renderOpts.nCoronas = m.AddSlider (szNoneBasicFull + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_C, HTX_CORONAS);
-
-	sprintf (szNoneBasicFull + 1, TXT_SMOKE, pszNoneBasicFull [nSmoke]);
-	*szNoneBasicFull = *(TXT_SMOKE - 1);
-	renderOpts.nSmoke = m.AddSlider (szNoneBasicFull + 1, nSmoke, 0, 2, KEY_S, HTX_SMOKE);
+	m.AddText ("");
+	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [nSmoke]);
+	*szSlider = *(TXT_SMOKE - 1);
+	renderOpts.nSmoke = m.AddSlider (szSlider + 1, nSmoke, 0, 2, KEY_S, HTX_SMOKE);
 
 	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 		renderOpts.nShadows = -1;
 	else {
-		sprintf (szNoneBasicFull + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
-		*szNoneBasicFull = *(TXT_SHADOWS - 1);
-		renderOpts.nShadows = m.AddSlider (szNoneBasicFull + 1, nShadows, 0, 2, KEY_A, HTX_SHADOWS);
+		sprintf (szSlider + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
+		*szSlider = *(TXT_SHADOWS - 1);
+		renderOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_A, HTX_SHADOWS);
 		}
 
-	sprintf (szNoneBasicFull + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
-	*szNoneBasicFull = *(TXT_POWERUPS - 1);
-	renderOpts.nPowerups = m.AddSlider (szNoneBasicFull + 1, nSmoke, 0, 2, KEY_P, HTX_POWERUPS);
+	sprintf (szSlider + 1, TXT_CORONAS, pszCoronaQual [nCoronas]);
+	*szSlider = *(TXT_CORONAS - 1);
+	renderOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_C, HTX_CORONAS);
+
+	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
+	*szSlider = *(TXT_POWERUPS - 1);
+	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_P, HTX_POWERUPS);
 
 	m.AddText ("", 0);
 #if 1//!DBG
@@ -459,17 +452,17 @@ do {
 		gameOpts->render.particles.bStatic = 
 		gameOpts->render.particles.bBubbles = nSmoke == 2;
 
-	if ((gameOpts->render.coronas.bUse = nCoronas != 0))
+	if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
 		gameOpts->render.coronas.nStyle = nCoronas;
 
 	if (renderOpts.nShadows >= 0) {
-		if ((extraGameInfo [0].bShadows = nShadows != 0))
+		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
 			gameOpts->render.shadows.nReach =
 			gameOpts->render.shadows.nClip = nShadows;
 		}	
 
-	if ((gameOpts->render.powerups.b3D = nPowerups != 0))
-		gameOpts->render.powerups.b3DShields = nPowerups == 2;
+	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
+		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 
 	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 60 : 0;
 	if (!gameStates.app.bNostalgia)
