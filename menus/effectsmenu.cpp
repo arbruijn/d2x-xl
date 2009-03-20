@@ -103,6 +103,84 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+#if SIMPLE_MENUS
+
+void EffectOptionsMenu (void)
+{
+	CMenu	m;
+	int	i, j, choice = 0;
+	int	optThrusterFlame, optGatlingTrails, optSoftParticles [3];
+#if 0
+	int	optShockwaves;
+#endif
+	int	bEnergySparks = gameOpts->render.effects.bEnergySparks;
+	char	szExplShrapnels [50];
+
+pszExplShrapnels [0] = TXT_NONE;
+pszExplShrapnels [1] = TXT_FEW;
+pszExplShrapnels [2] = TXT_MEDIUM;
+pszExplShrapnels [3] = TXT_MANY;
+pszExplShrapnels [4] = TXT_EXTREME;
+
+do {
+	m.Destroy ();
+	m.Create (30);
+
+	sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
+	*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
+	effectOpts.nExplShrapnels = m.AddSlider (szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+	m.AddText ("");
+	optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
+	optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, (gameOpts->render.effects.bSoftParticles & 1) != 0, KEY_I, HTX_SOFT_SPRITES);
+	optSoftParticles [1] = m.AddCheck (TXT_SOFT_SPARKS, (gameOpts->render.effects.bSoftParticles & 2) != 0, KEY_A, HTX_SOFT_SPARKS);
+	if (extraGameInfo [0].bUseParticles)
+		optSoftParticles [2] = m.AddCheck (TXT_SOFT_SMOKE, (gameOpts->render.effects.bSoftParticles & 4) != 0, KEY_O, HTX_SOFT_SMOKE);
+	else
+		optSoftParticles [2] = -1;
+	m.AddText ("");
+	optThrusterFlame = m.AddRadio (TXT_NO_THRUSTER_FLAME, 0, KEY_F, HTX_RENDER_THRUSTER);
+	m.AddRadio (TXT_2D_THRUSTER_FLAME, 0, KEY_2, HTX_RENDER_THRUSTER);
+	m.AddRadio (TXT_3D_THRUSTER_FLAME, 0, KEY_3, HTX_RENDER_THRUSTER);
+	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].m_value = 1;
+	for (;;) {
+		i = m.Menu (NULL, TXT_EFFECT_MENUTITLE, EffectOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	for (j = 0; j < 3; j++) {
+		if (optSoftParticles [j] >= 0) {
+			if (m [optSoftParticles [j]].m_value)
+				gameOpts->render.effects.bSoftParticles |= 1 << j;
+			else
+				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
+			}
+		if (m [optThrusterFlame + j].m_value) {
+			extraGameInfo [0].bThrusterFlames = j;
+			break;
+			}
+		}
+	} while (i == -2);
+
+SetDebrisCollisions ();
+
+gameOpts->render.effects.bAutoTransparency = 1;
+gameOpts->render.effects.bTransparent = 1;
+gameOpts->render.effects.bExplBlasts = 1;
+gameOpts->render.effects.bEnergySparks = 1;	//TODO: Tie to render quality
+gameOpts->render.effects.bMovingSparks = 1;
+extraGameInfo [0].bPlayerShield = 1;
+gameOpts->render.effects.bRobotShields = 1;
+gameOpts->render.effects.bOnlyShieldHits = 1;
+extraGameInfo [0].bTracers = 1;
+//extraGameInfo [0].bGatlingTrails = 1;	//TODO: Tie to render quality
+extraGameInfo [0].bShockwaves = 0; 
+extraGameInfo [0].bDamageExplosions = 0;
+if (gameOpts->render.effects.bEnergySparks && gameStates.app.bGameRunning && !sparkManager.HaveSparks ())
+	sparkManager.Setup ();
+}
+
+#else
+
 void EffectOptionsMenu (void)
 {
 	CMenu	m;
@@ -213,6 +291,8 @@ do {
 	} while (i == -2);
 SetDebrisCollisions ();
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof

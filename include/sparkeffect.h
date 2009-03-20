@@ -62,6 +62,7 @@ class CSparkManager {
 		void Destroy (void);
 		void Create (void);
 		void DoFrame (void);
+		inline bool HaveSparks (void) { return m_nSegments > 0; }
 
 	private:
 		inline int Type (short nMatCen);
