@@ -696,11 +696,11 @@ while ((c = KeyInKey ())) {
 				}
 		break;
 
-		case KEY_D+KEY_CTRLED:
+		case KEY_CTRLED + KEY_D:
 			DeleteMarker (0);
 			break;
 
-		case KEY_T+KEY_CTRLED:
+		case KEY_CTRLED + KEY_T:
 			TeleportToMarker ();
 			break;
 
@@ -710,6 +710,12 @@ while ((c = KeyInKey ())) {
 
 		case KEY_ALTED + KEY_R:
 			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
+			break;
+
+
+		case KEY_ALTED + KEY_B:
+			if (gameOpts->render.automap.bTextured & 1)
+				gameOpts->render.automap.bBright = !gameOpts->render.automap.bBright;
 			break;
 
 		case KEY_ALTED + KEY_T:

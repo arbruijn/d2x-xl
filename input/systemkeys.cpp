@@ -252,6 +252,18 @@ return SetFreeCam (!gameStates.render.bFreeCam);
 
 //------------------------------------------------------------------------------
 
+void ToggleRadar (void)
+{
+if (gameOpts->render.automap.nRange < 2)
+	gameOpts->render.automap.nRange++;
+else {
+	extraGameInfo [0].nRadar = (extraGameInfo [0].nRadar + 1) % 3;
+	gameOpts->render.automap.nRange = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void HandleEndlevelKey (int key)
 {
 if (key == (KEY_COMMAND + KEY_SHIFTED + KEY_P))
@@ -268,8 +280,8 @@ if (key == KEY_PAUSE)
 
 if (key == KEY_ESC) {
 	StopEndLevelSequence ();
-	gameStates.render.cockpit.nLastDrawn[0] =
-	gameStates.render.cockpit.nLastDrawn[1] = -1;
+	gameStates.render.cockpit.nLastDrawn [0] =
+	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	return;
 	}
 #if DBG
@@ -809,8 +821,12 @@ void HandleGameKey(int key)
 #endif
 			break;
 
-		case KEY_ALTED + KEY_R:
+		case KEY_ALTED + KEY_F:
 			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
+			break;
+
+		case KEY_ALTED + KEY_R:
+			ToggleRadar ();
 			break;
 
 		case KEY_ALTED + KEY_T:
