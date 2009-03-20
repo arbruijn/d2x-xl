@@ -564,6 +564,8 @@ typedef struct tApplicationOptions {
 	int bSinglePlayer;
 	int bEnableMods;
 	int bExpertMode;
+	int bEpilepticFriendly;
+	int bColorblindFriendly;
 	int nScreenShotInterval;
 } tApplicationOptions;
 
