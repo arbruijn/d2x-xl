@@ -1873,6 +1873,10 @@ const char *defaultGameTexts [][2] = {
  {"~Radar: %s", "~Radar: %s"},
  {"oben", "top"},
  {"unten", "bottom"},
+ {"~Waffenwechsel: %s", "~Weapon switch: %s"},
+ {"nie", "never"},
+ {"wenn leer", "when empty"},
+ {"beste waehlen", "chose best"},
 #if 0
  {"", ""},
 #endif
@@ -2553,6 +2557,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann Verwendung und Aussehen des Abgasstrahls von Spieler-\nschiffen, Robotern und Raketen ausgewaehlt werden.", 
   "Chose the appearance of thruster flames from player ships,\nrobots and missiles here."},
  {"Hier kann die Verwendung von Blitzen ausgewaehlt werden.", "Adjust the usage of lightning here."},
+ {"Hier kann eingestellt werden, wann und ob das Spiel automatisch\ndie Waffe umschaltet.", "Adjust whether and when the game will automatically switch\nweapons for you."},
 #if 0
  {"", ""},
 #endif

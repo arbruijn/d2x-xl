@@ -66,7 +66,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 
-static const char *pszAggressivities [5];
+static const char *pszAggressivities [6];
+static const char *pszWeaponSwitch [3];
 
 void DefaultGameplaySettings (void);
 
@@ -79,6 +80,7 @@ static struct {
 	int	nMaxSmokeGrens;
 	int	nAIAggressivity;
 	int	nHeadlightAvailable;
+	int	nWeaponSwitch;
 } gplayOpts;
 
 //------------------------------------------------------------------------------
@@ -216,7 +218,7 @@ int GameplayOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-	CMenuItem	*m;
+	CMenuItem*	m;
 	int			v;
 
 m = menu + gplayOpts.nDifficulty;
@@ -236,6 +238,14 @@ v = m->m_value;
 if (nAIAggressivity != v) {
 	nAIAggressivity = v;
 	sprintf (m->m_text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
+	m->m_bRebuild = 1;
+	}
+
+m = menu + gplayOpts.nWeaponSwitch;
+v = m->m_value;
+if (gameOpts->gameplay.nAutoSelectWeapon != v) {
+	gameOpts->gameplay.nAutoSelectWeapon = v;
+	sprintf (m->m_text, TXT_WEAPON_SWITCH, pszWeaponSwitch [v]);
 	m->m_bRebuild = 1;
 	}
 
@@ -262,16 +272,27 @@ pszAggressivities [3] = TXT_HIGH;
 pszAggressivities [4] = TXT_VERY_HIGH;
 pszAggressivities [5] = TXT_EXTREME;
 
+pszWeaponSwitch [0] = TXT_NEVER;
+pszWeaponSwitch [1] = TXT_WHEN_EMPTY;
+pszWeaponSwitch [2] = TXT_CHOSE_BEST;
+
 nAIAggressivity = (gameOpts->gameplay.nAIAggressivity && gameOpts->gameplay.nAIAwareness) ? 5 :  gameOpts->gameplay.nAIAggressivity;
 do {
 	m.Destroy ();
 	m.Create (20);
+
 	sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szSlider = *(TXT_DIFFICULTY2 - 1);
 	gplayOpts.nDifficulty = m.AddSlider (szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+
 	sprintf (szSlider + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [nAIAggressivity]);
 	*szSlider = *(TXT_AI_AGGRESSIVITY - 1);
 	gplayOpts.nAIAggressivity = m.AddSlider (szSlider + 1, nAIAggressivity, 0, 5, KEY_G, HTX_AI_AGGRESSIVITY);
+
+	sprintf (szSlider + 1, TXT_WEAPON_SWITCH, pszWeaponSwitch [gameOpts->gameplay.nAutoSelectWeapon]);
+	*szSlider = *(TXT_WEAPON_SWITCH - 1);
+	gplayOpts.nWeaponSwitch = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoSelectWeapon, 0, 2, KEY_G, HTX_WEAPON_SWITCH);
+
 	m.AddText ("", 0);
 #if 0	//TODO: Move to D2X-XL multiplayer options menu
 	gplayOpts.nSmokeGrens = m.AddCheck (TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
@@ -284,15 +305,11 @@ do {
 		gplayOpts.nMaxSmokeGrens = -1;
 	m.AddText ("", 0);
 #endif
+	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
 	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_L, HTX_HEADLIGHT_BUILTIN);
 	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_W, HTX_HEADLIGHT_POWERDRAIN);
 	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
-	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
 	m.AddText ("");
-	optAutoSel = m.AddRadio (TXT_WPNSEL_NEVER, 0, KEY_N, HTX_GPLAY_WSELNEVER);
-	m.AddRadio (TXT_WPNSEL_EMPTY, 0, KEY_Y, HTX_GPLAY_WSELEMPTY);
-	m.AddRadio (TXT_WPNSEL_ALWAYS, 0, KEY_T, HTX_GPLAY_WSELALWAYS);
-	m.AddText ("", 0);
 	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
 	for (;;) {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
@@ -312,16 +329,9 @@ else {
 
 extraGameInfo [0].headlight.bAvailable = m [gplayOpts.nHeadlightAvailable].m_value;
 extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].m_value;
-GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
-GET_VAL (gameOpts->gameplay.bUseD1AI, optUseD1AI);
 GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);
-for (j = 0; j < 3; j++)
-	if (m [optAutoSel + j].m_value) {
-		gameOpts->gameplay.nAutoSelectWeapon = j;
-		break;
-		}
 DefaultGameplaySettings ();
 if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;

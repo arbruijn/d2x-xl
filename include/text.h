@@ -1924,13 +1924,13 @@ void LoadGameTexts(void);
 #define TXT_RADAR							GT(1127)
 #define TXT_TOP							GT(1128)
 #define TXT_BOTTOM						GT(1129)
+#define TXT_WEAPON_SWITCH				GT(1130)
+#define TXT_NEVER							GT(1131)
+#define TXT_WHEN_EMPTY					GT(1132)
+#define TXT_CHOSE_BEST					GT(1133)
 
 #if 0
 
-#define TXT_					GT(1130)
-#define TXT_					GT(1131)
-#define TXT_					GT(1132)
-#define TXT_					GT(1133)
 #define TXT_					GT(1134)
 #define TXT_					GT(1135)
 #define TXT_					GT(1136)
@@ -2518,10 +2518,10 @@ void LoadGameTexts(void);
 #define HTX_THRUSTER_FLAMES			HT(399)			
 #define HTX_LIGHTNING					HT(500)			
 #define HTX_RADAR							HT(501)			
+#define HTX_WEAPON_SWITCH				HT(502)			
 
 #if 0
 
-#define HTX_						HT(502)			
 #define HTX_						HT(503)			
 #define HTX_						HT(504)			
 #define HTX_						HT(505)			
