@@ -1602,7 +1602,6 @@ gameData.bots.info [gameStates.app.bD1Data].ShareBuffer (gameData.bots.infoP);
 void DefaultPowerupSettings (void)
 {
 // powerup render option defaults
-gameOpts->render.powerups.b3DShields = gameOpts->render.powerups.b3D;
 gameOpts->render.powerups.nSpin = 1;
 }
 
@@ -1663,14 +1662,12 @@ gameOpts->render.particles.bPlayers = 1;
 gameOpts->render.particles.bRobots = 1;
 gameOpts->render.particles.bMissiles = 1;
 gameOpts->render.particles.bDebris = 1;
-gameOpts->render.particles.bStatic = 1;
 gameOpts->render.particles.bCollisions = 0;
 gameOpts->render.particles.bDisperse = 1;	//TODO: Tie to render quality
 gameOpts->render.particles.bRotate = 1;
 gameOpts->render.particles.bDecreaseLag = 1;
 gameOpts->render.particles.bAuxViews = 0;
 gameOpts->render.particles.bMonitors = 1;	//TODO: Tie to render quality
-gameOpts->render.particles.bBubbles = 1;
 gameOpts->render.particles.bWiggleBubbles = 1;
 gameOpts->render.particles.bWobbleBubbles = 1;
 // player ships
