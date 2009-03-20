@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 static struct {
 	int	nCoronas;
 	int	nCoronaStyle;
@@ -86,9 +88,7 @@ static struct {
 //------------------------------------------------------------------------------
 
 static const char* pszCoronaInt [4];
-#if !SIMPLE_MENUS
 static const char* pszCoronaQual [4];
-#endif
 
 int CoronaOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -97,18 +97,6 @@ if (nState)
 
 	CMenuItem	*m;
 	int			v;
-
-#if SIMPLE_MENUS
-
-m = menu + effectOpts.nCoronaStyle;
-v = m->m_value - 1;
-if ((gameOpts->render.coronas.bUse = v > 0) && (gameOpts->render.coronas.nStyle != v - 1)) {
-	gameOpts->render.coronas.nStyle = v - 1;
-	sprintf (m->m_text, TXT_CORONA_QUALITY, pszCoronaQual [v]);
-	m->m_bRebuild = -1;
-	}
-
-#else
 
 m = menu + effectOpts.nCoronas;
 v = m->m_value;
@@ -125,8 +113,6 @@ if (effectOpts.nCoronaStyle >= 0) {
 		m->m_bRebuild = -1;
 		}
 	}
-
-#endif
 
 #if 0
 m = menu + effectOpts.nLightTrails;
@@ -175,30 +161,6 @@ pszCoronaQual [0] = TXT_NONE;
 pszCoronaQual [1] = TXT_LOW;
 pszCoronaQual [2] = TXT_MEDIUM;
 pszCoronaQual [3] = TXT_HIGH;
-
-#if SIMPLE_MENUS
-
-do {
-	m.Destroy ();
-	m.Create (5);
-
-	sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.coronas.nStyle]);
-	*szCoronaQual = *(TXT_CORONA_QUALITY - 1);
-	effectOpts.nCoronaStyle = m.AddSlider (szCoronaQual + 1, gameOpts->render.coronas.nStyle, 0, 1 + gameStates.ogl.bDepthBlending, KEY_Q, HTX_CORONA_QUALITY);
-	for (;;) {
-		i = m.Menu (NULL, TXT_CORONA_MENUTITLE, CoronaOptionsCallback, &choice);
-		if (i < 0)
-			break;
-		} 
-	} while (i == -2);
-
-gameOpts->render.coronas.bShots = 1;
-gameOpts->render.coronas.bPowerups = 1;
-gameOpts->render.coronas.bWeapons = 0;
-gameOpts->render.coronas.bAdditive = 1;
-gameOpts->render.coronas.bAdditiveObjs = 1;
-
-#else
 
 	int	optTrailType;
 	char	szCoronaInt [50], szObjCoronaInt [50];
@@ -257,9 +219,9 @@ do {
 	if (optTrailType >= 0)
 		gameOpts->render.particles.bPlasmaTrails = (m [optTrailType].m_value == 0);
 	} while (i == -2);
-
-#endif
 }
+
+#endif //SIMPLE_MENUS
 
 //------------------------------------------------------------------------------
 //eof

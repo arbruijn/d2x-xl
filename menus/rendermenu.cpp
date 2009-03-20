@@ -406,7 +406,7 @@ do {
 
 	GET_VAL (extraGameInfo [0].bUseParticles, optSmoke);
 	GET_VAL (extraGameInfo [0].bShadows, optShadows);
-	GET_VAL (gameOpts->render.powerups.b3D, nOpt3DPowerups);
+	GET_VAL (gameOpts->render.powerups.b3D, opt3DPowerups);
 
 	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 60 : 0;
 	if (!gameStates.app.bNostalgia)
