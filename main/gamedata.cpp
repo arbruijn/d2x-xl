@@ -1837,7 +1837,8 @@ gameOptions [0].input.bUseHotKeys = 1;
 void DefaultApplicationSettings (void)
 {
 gameOptions [0].app.nVersionFilter = 3;
- 
+}
+
 // ----------------------------------------------------------------------------
 
 void DefaultAllSettings (void)
