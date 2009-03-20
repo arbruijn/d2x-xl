@@ -61,8 +61,10 @@ int RunRenderThreads (int nTask, int nThreads)
 
 if (!gameStates.app.bMultiThreaded)
 	return 0;
+#if 0
 if ((nTask < rtTaskCount) && !gameData.app.bUseMultiThreading [nTask])
 	return 0;
+#endif
 tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec = 1;
 if (nThreads == 2)

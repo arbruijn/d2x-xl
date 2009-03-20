@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 void MultiThreadingOptionsMenu (void)
 {
 	CMenu	m (10);
@@ -90,6 +92,8 @@ if (gameStates.app.bGameRunning) {
 	ControlEffectsThread ();
 	}
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -153,7 +157,9 @@ do {
 			optGameplay = menu.AddMenu (TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
 			optPhysics = menu.AddMenu (TXT_PHYSICS_MENUCALL, KEY_Y, HTX_OPTIONS_PHYSICS);
 			}
+#if 0
 		optMultiThreading = menu.AddMenu (TXT_MT_MENU_OPTION, KEY_U, HTX_MULTI_THREADING);
+#endif
 		}
 
 	i = menu.Menu (NULL, TXT_OPTIONS, ConfigMenuCallback, &choice);
@@ -187,8 +193,10 @@ do {
 				GameplayOptionsMenu ();        
 			else if ((optPhysics >= 0) && (i == optPhysics))
 				PhysicsOptionsMenu ();        
+#if 0
 			else if ((optMultiThreading >= 0) && (i == optMultiThreading))
 				MultiThreadingOptionsMenu ();        
+#endif
 			}
 		}
 	} while (i > -1);
