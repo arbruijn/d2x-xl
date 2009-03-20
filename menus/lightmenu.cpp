@@ -166,9 +166,9 @@ do {
 
 	sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
 	*szSlider = *(TXT_LIGHTING + 1);
-	lightOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
-	gameOpts->ogl.nMaxLightsPerFace = LightTableIndex (gameOpts->ogl.nMaxLightsPerFace);
+	lightOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, 4, KEY_L, HTX_LIGHTING);
 	if (nLighting >= 2) {
+		gameOpts->ogl.nMaxLightsPerFace = LightTableIndex (gameOpts->ogl.nMaxLightsPerFace);
 		sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
 		*szSlider = *(TXT_LMAP_QUALITY + 1);
 		lightOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);

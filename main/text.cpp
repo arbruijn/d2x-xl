@@ -2538,6 +2538,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Menge an Rauchquellen eingestellt werden\n(kein Rauch, nur Spieler, Roboter und Raketen,\noder auch Umgebungsrauch und Luftblasen).", 
   "Chose the amount of smoke sources here (no smoke, just\nplayers, robots and missiles, additionally\nenvironment smoke and air bubbles)."},
  {"Hier kann die Qualitaet der Schattendarstellung ausgewaehlt werden.", "Chose the quality of shadow appearance here."},
+ {"Hier kann die Art der Beleuchtung eingestellt werden:\n\n- Basis: althergebrachte Methode\n- Standard: Dynamisch (Per Vertex)\n- Fortgeschritten: Dynamisch + Lightmaps\n- Beste: Per Pixel", 
+ "Chose the lighting method here:\n\n- basic: old style\nstandard: dynamic (per vertex)\n-advanced: dynamic + lightmaps\nbest: per pixel"},
 #if 0
  {"", ""},
 #endif

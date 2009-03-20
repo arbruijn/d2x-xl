@@ -2513,10 +2513,10 @@ void LoadGameTexts(void);
 #define HTX_SMOKE							HT(394)			
 #define HTX_SHADOWS						HT(395)			
 #define HTX_POWERUPS						HT(396)			
+#define HTX_LIGHTING						HT(397)			
 
 #if 0
 
-#define HTX_						HT(397)			
 #define HTX_						HT(398)			
 #define HTX_						HT(399)			
 
