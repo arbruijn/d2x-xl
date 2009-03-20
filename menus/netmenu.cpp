@@ -978,7 +978,7 @@ else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optCon
 	return 1;
 	}
 else if (!gameStates.app.bNostalgia && (optLoadoutMenu >= 0) && (choice == optLoadoutMenu)) {
-	LoadoutMenu ();
+	LoadoutOptionsMenu ();
 	return 1;
 	}
 else if (choice == optMission) {

@@ -123,7 +123,7 @@ void ConfigMenu (void)
 do {
 	menu.Destroy ();
 	menu.Create (20);
-	optRender = optGameplay = optCockpit = optPerformance = -1;
+	optRender = optGameplay = optCockpit = -1;
 	optSound = menu.AddMenu (TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND);
 	menu.AddText ("", 0);
 	optConfig = menu.AddMenu (TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);
@@ -138,10 +138,8 @@ do {
 	
 	if (gameStates.app.bNostalgia)
 		optPerformance = menu.AddMenu (TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
-	else if (gameStates.app.bGameRunning)
-		optPerformance = -1;
 	else 
-		optPerformance = menu.AddMenu (TXT_SETPERF_OPTION, KEY_E, HTX_PERFORMANCE_SETTINGS);
+		optPerformance = -1;
 	optScrRes = menu.AddMenu (TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	menu.AddText ("", 0);
 	optReorderPrim = menu.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
@@ -173,8 +171,6 @@ do {
 		else if (i == optPerformance) {
 			if (gameStates.app.bNostalgia)
 				DetailLevelMenu (); 
-			else
-				PerformanceSettingsMenu ();
 			}
 		else if (i == optScrRes)
 			ScreenResMenu ();	
