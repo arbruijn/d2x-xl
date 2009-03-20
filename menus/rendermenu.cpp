@@ -266,7 +266,7 @@ void RenderOptionsMenu (void)
 	int	i, choice = 0;
 	int	optSmoke, optShadows, optCameraOpts, optLightOpts, optMovieOpts,
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts,
-			optColoredWalls, optDepthSort, optShipRenderOpts;
+			optShipRenderOpts;
 #if DBG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
@@ -356,7 +356,6 @@ do {
 	if (gameOpts->app.bExpertMode) {
 		m.AddText ("", 0);
 		optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
-		optSmokeOpts = m.AddMenu (TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optLightningOpts = m.AddMenu (TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
 		optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 		optCameraOpts = m.AddMenu (TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);
@@ -371,7 +370,6 @@ do {
 		renderOpts.nMeshQual =
 		optLightOpts =
 		optLightningOpts =
-		optSmokeOpts =
 		optEffectOpts =
 		optCameraOpts = 
 		optMovieOpts = 
@@ -394,8 +392,6 @@ do {
 		if (gameOpts->app.bExpertMode) {
 			if ((optLightOpts >= 0) && (i == optLightOpts))
 				i = -2, LightOptionsMenu ();
-			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
-				i = -2, SmokeOptionsMenu ();
 			else if ((optLightningOpts >= 0) && (i == optLightningOpts))
 				i = -2, LightningOptionsMenu ();
 			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
@@ -468,6 +464,41 @@ gameOpts->render.shadows.bRobots = 1;
 gameOpts->render.shadows.bMissiles = 0;
 gameOpts->render.shadows.bPowerups = 0;
 gameOpts->render.shadows.bReactors = 0;
+// smoke render option defaults
+gameOpts->render.particles.bPlayers = 1;
+gameOpts->render.particles.bRobots = 1;
+gameOpts->render.particles.bMissiles = 1;
+gameOpts->render.particles.bDebris = 1;
+gameOpts->render.particles.bStatic = 1;
+gameOpts->render.particles.bCollisions = 0;
+gameOpts->render.particles.bDisperse = 1;	//TODO: Tie to render quality
+gameOpts->render.particles.bRotate = 1;
+gameOpts->render.particles.bDecreaseLag = 1;
+gameOpts->render.particles.bAuxViews = 0;
+gameOpts->render.particles.bMonitors = 1;	//TODO: Tie to render quality
+gameOpts->render.particles.bBubbles = 1;
+gameOpts->render.particles.bWiggleBubbles = 1;
+gameOpts->render.particles.bWobbleBubbles = 1;
+// player ships
+gameOpts->render.particles.nSize [1] = 1;
+gameOpts->render.particles.nDens [1] = 1;
+gameOpts->render.particles.nLife [1] = 0;
+gameOpts->render.particles.nAlpha [1] = 0;
+// robots
+gameOpts->render.particles.nSize [2] = 1;
+gameOpts->render.particles.nDens [2] = 2;
+gameOpts->render.particles.nLife [2] = 0;
+gameOpts->render.particles.nAlpha [2] = 0;
+// missiles
+gameOpts->render.particles.nSize [3] = 2;
+gameOpts->render.particles.nDens [3] = 1;
+gameOpts->render.particles.nLife [3] = 1;
+gameOpts->render.particles.nAlpha [3] = 1;
+// debris
+gameOpts->render.particles.nSize [4] = 1;
+gameOpts->render.particles.nDens [4] = 2;
+gameOpts->render.particles.nLife [4] = 0;
+gameOpts->render.particles.nAlpha [4] = 0;
 }
 
 #else //SIMPLE_MENUS
