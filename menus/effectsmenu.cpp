@@ -74,6 +74,7 @@ static struct {
 	int	nExplShrapnels;
 	int	nLightTrails;
 	int	nSparks;
+	int	nThrusters;
 } effectOpts;
 
 //------------------------------------------------------------------------------
@@ -82,6 +83,7 @@ static int nLightTrails;
 
 static const char* pszExplShrapnels [5];
 static const char* pszLightTrails [3];
+static const char* pszThrusters [3];
 
 int EffectOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -100,12 +102,26 @@ if (effectOpts.nExplShrapnels >= 0) {
 		m->m_bRebuild = -1;
 		}
 	}
+
+#if SIMPLE_MENUS
+
+m = menu + effectOpts.nThrusters;
+v = m->m_value;
+if (extraGameInfo [0].bThrusterFlames != v) {
+	extraGameInfo [0].bThrusterFlames = v;
+	sprintf (m->m_text, TXT_THRUSTER_FLAMES, pszThrusters [v]);
+	m->m_bRebuild = 1;
+	}
+
 m = menu + effectOpts.nLightTrails;
 v = m->m_value;
 if (nLightTrails != v) {
 	nLightTrails = v;
 	key = -2;
 	}
+
+#endif
+
 return nCurItem;
 }
 
@@ -122,7 +138,7 @@ void EffectOptionsMenu (void)
 	int	optShockwaves;
 #endif
 	int	bEnergySparks = gameOpts->render.effects.bEnergySparks;
-	char	szExplShrapnels [50], szLightTrails [50];
+	char	szSlider [50];
 
 pszExplShrapnels [0] = TXT_NONE;
 pszExplShrapnels [1] = TXT_FEW;
@@ -140,16 +156,20 @@ do {
 	m.Create (30);
 
 	if (extraGameInfo [0].bUseParticles) {
-		sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
-		*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
-		effectOpts.nExplShrapnels = m.AddSlider (szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+		sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
+		*szSlider = *(TXT_EXPLOSION_SHRAPNELS - 1);
+		effectOpts.nExplShrapnels = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
 		}
 	else
 		effectOpts.nExplShrapnels = -1;
 
-	sprintf (szLightTrails + 1, TXT_LIGHTTRAIL_QUAL, pszLightTrails [nLightTrails]);
-	*szLightTrails = *(TXT_LIGHTTRAIL_QUAL - 1);
-	effectOpts.nLightTrails = m.AddSlider (szLightTrails + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_P, HTX_LIGHTTRAIL_QUAL);
+	sprintf (szSlider + 1, TXT_LIGHTTRAIL_QUAL, pszLightTrails [nLightTrails]);
+	*szSlider = *(TXT_LIGHTTRAIL_QUAL - 1);
+	effectOpts.nLightTrails = m.AddSlider (szSlider + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_P, HTX_LIGHTTRAIL_QUAL);
+
+	sprintf (szSlider + 1, TXT_THRUSTER_FLAMES, pszThrusters [extraGameInfo [0].bThrusterFlames]);
+	*szSlider = *(TXT_THRUSTER_FLAMES - 1);
+	effectOpts.nThrusters = m.AddSlider (szSlider + 1, extraGameInfo [0].bThrusterFlames, 0, 2, KEY_T, HTX_THRUSTER_FLAMES);
 
 	m.AddText ("");
 	if (extraGameInfo [0].bUseParticles)
@@ -162,10 +182,6 @@ do {
 		optSoftParticles [2] = m.AddCheck (TXT_SOFT_SMOKE, (gameOpts->render.effects.bSoftParticles & 4) != 0, KEY_O, HTX_SOFT_SMOKE);
 	else
 		optSoftParticles [2] = -1;
-	m.AddText ("");
-	optThrusterFlame = m.AddRadio (TXT_NO_THRUSTER_FLAME, 0, KEY_F, HTX_RENDER_THRUSTER);
-	m.AddRadio (TXT_2D_THRUSTER_FLAME, 0, KEY_2, HTX_RENDER_THRUSTER);
-	m.AddRadio (TXT_3D_THRUSTER_FLAME, 0, KEY_3, HTX_RENDER_THRUSTER);
 	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].m_value = 1;
 	for (;;) {
 		i = m.Menu (NULL, TXT_EFFECT_MENUTITLE, EffectOptionsCallback, &choice);
@@ -206,7 +222,7 @@ void EffectOptionsMenu (void)
 	int	optShockwaves;
 #endif
 	int	bEnergySparks = gameOpts->render.effects.bEnergySparks;
-	char	szExplShrapnels [50];
+	char	szSlider [50];
 
 pszExplShrapnels [0] = TXT_NONE;
 pszExplShrapnels [1] = TXT_FEW;
@@ -218,9 +234,9 @@ do {
 	m.Destroy ();
 	m.Create (30);
 
-	sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
-	*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
-	effectOpts.nExplShrapnels = m.AddSlider (szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+	sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
+	*szSlider = *(TXT_EXPLOSION_SHRAPNELS - 1);
+	effectOpts.nExplShrapnels = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
 	optExplBlast = m.AddCheck (TXT_EXPLOSION_BLAST, gameOpts->render.effects.bExplBlasts, KEY_B, HTX_EXPLOSION_BLAST);
 	optDmgExpl = m.AddCheck (TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optThrusterFlame = m.AddRadio (TXT_NO_THRUSTER_FLAME, 0, KEY_F, HTX_RENDER_THRUSTER);

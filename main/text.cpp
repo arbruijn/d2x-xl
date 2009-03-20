@@ -1866,6 +1866,9 @@ const char *defaultGameTexts [][2] = {
  {"~Beleuchtung: %s", "~Lighting: %s"},
  {"~Lightmaps: %s", "light~Maps: %s"},
  {"~Kameras: %s", "~Cameras: %s"},
+ {"~Abgasstrahl", "~Thruster flames: %s"},
+ {"2D", "2D"},
+ {"3D", "3D"},
 #if 0
  {"", ""},
 #endif
@@ -2543,6 +2546,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Art der Beleuchtung eingestellt werden:\n\n- Basis: althergebrachte Methode\n- Standard: Dynamisch (Per Vertex)\n- Fortgeschritten: Dynamisch + Lightmaps\n- Beste: Per Pixel", 
  "Chose the lighting method here:\n\n- basic: old style\nstandard: dynamic (per vertex)\n-advanced: dynamic + lightmaps\nbest: per pixel"},
  {"Hier koennen Verwendung und Aufloesung von Kameras\neingestellt werden.", "Chose the camera usage and resolution here."},
+ {"Hier kann Verwendung und Aussehen des Abgasstrahls von Spieler-\nschiffen, Robotern und Raketen ausgewaehlt werden.", 
+  "Chose the appearance of thruster flames from player ships,\nrobots and missiles here."},
 #if 0
  {"", ""},
 #endif
