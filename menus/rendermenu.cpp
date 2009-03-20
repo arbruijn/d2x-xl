@@ -222,6 +222,7 @@ if (gameOpts->render.nQuality != v) {
 	sprintf (m->m_text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
 	m->m_bRebuild = 1;
 	}
+
 if (renderOpts.nTexQual > 0) {
 	m = menu + renderOpts.nTexQual;
 	v = m->m_value;
@@ -231,6 +232,7 @@ if (renderOpts.nTexQual > 0) {
 		m->m_bRebuild = 1;
 		}
 	}
+
 if (renderOpts.nMeshQual > 0) {
 	m = menu + renderOpts.nMeshQual;
 	v = m->m_value;
@@ -240,13 +242,7 @@ if (renderOpts.nMeshQual > 0) {
 		m->m_bRebuild = 1;
 		}
 	}
-m = menu + renderOpts.nWallTransp;
-v = (FADE_LEVELS * m->m_value + 5) / 10;
-if (extraGameInfo [0].grWallTransparency != v) {
-	extraGameInfo [0].grWallTransparency = v;
-	sprintf (m->m_text, TXT_WALL_TRANSP, m->m_value * 10, '%');
-	m->m_bRebuild = 1;
-	}
+
 m = menu + renderOpts.nCoronaStyle;
 v = m->m_value - 1;
 if ((gameOpts->render.coronas.bUse = v > 0) && (gameOpts->render.coronas.nStyle != v - 1)) {
@@ -346,13 +342,10 @@ do {
 #endif
 	optSmoke = m.AddCheck (TXT_USE_SMOKE, extraGameInfo [0].bUseParticles, KEY_U, HTX_ADVRND_USESMOKE);
 	opt3DPowerups = m.AddCheck (TXT_3D_POWERUPS, gameOpts->render.powerups.b3D, KEY_D, HTX_3D_POWERUPS);	//TODO: Tie to render quality
-
 	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 		optShadows = -1;
-	else {
+	else
 		optShadows = m.AddCheck (TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
-		m.AddText ("", 0);
-		}
 
 	if (gameOpts->app.bExpertMode) {
 		m.AddText ("", 0);
