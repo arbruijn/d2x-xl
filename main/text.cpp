@@ -1865,7 +1865,7 @@ const char *defaultGameTexts [][2] = {
  {"~Schatten: %s", "sh~Adows: %s"},
  {"~Beleuchtung: %s", "~Lighting: %s"},
  {"~Lightmaps: %s", "light~Maps: %s"},
- {"~Kameras", "~Cameras"},
+ {"~Kameras: %s", "~Cameras: %s"},
 #if 0
  {"", ""},
 #endif

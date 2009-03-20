@@ -205,30 +205,31 @@ if (!gameStates.app.bNostalgia) {
 	if (v != paletteManager.GetGamma ())
 		paletteManager.SetGamma (v);
 	}
-#if DBG
-m = menu + renderOpts.nFrameCap;
-v = fpsTable [m->m_value];
-if (gameOpts->render.nMaxFPS != v) {
-	if (v > 0)
-		sprintf (m->m_text, TXT_FRAMECAP, v);
-	else if (v < 0) {
-		if (!gameStates.render.bVSyncOk) {
-			m->m_value = 1;
-			return nCurItem;
+
+if (gameOpts->app.bExpertMode) {
+	m = menu + renderOpts.nFrameCap;
+	v = fpsTable [m->m_value];
+	if (gameOpts->render.nMaxFPS != v) {
+		if (v > 0)
+			sprintf (m->m_text, TXT_FRAMECAP, v);
+		else if (v < 0) {
+			if (!gameStates.render.bVSyncOk) {
+				m->m_value = 1;
+				return nCurItem;
+				}
+			sprintf (m->m_text, TXT_VSYNC);
 			}
-		sprintf (m->m_text, TXT_VSYNC);
-		}
-	else
-		sprintf (m->m_text, TXT_NO_FRAMECAP);
+		else
+			sprintf (m->m_text, TXT_NO_FRAMECAP);
 #if WIN32
-	if (gameStates.render.bVSyncOk)
-		wglSwapIntervalEXT (v < 0);
+		if (gameStates.render.bVSyncOk)
+			wglSwapIntervalEXT (v < 0);
 #endif
-	gameOpts->render.nMaxFPS = v;
-	gameStates.render.bVSync = (v < 0);
-	m->m_bRebuild = 1;
+		gameOpts->render.nMaxFPS = v;
+		gameStates.render.bVSync = (v < 0);
+		m->m_bRebuild = 1;
+		}
 	}
-#endif
 
 m = menu + renderOpts.nRenderQual;
 v = m->m_value;
@@ -358,24 +359,25 @@ do {
 	m.Destroy ();
 	m.Create (50);
 	optAutomapOpts = -1;
-#if 1//!DBG
-	renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
-	m.AddText ("", 0);
-#endif
+
+	if (!gameOpts->app.bExpertMode) {
+		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
+		m.AddText ("", 0);
+		}
 
 	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 
-#if DBG
-	if (gameOpts->render.nMaxFPS > 1)
-		sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
-	else if (gameOpts->render.nMaxFPS < 0)
-		sprintf (szMaxFps + 1, TXT_VSYNC, gameOpts->render.nMaxFPS);
-	else
-		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
-	*szMaxFps = *(TXT_FRAMECAP - 1);
-	renderOpts.nFrameCap = m.AddSlider (szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
-#endif
+	if (gameOpts->app.bExpertMode) {
+		if (gameOpts->render.nMaxFPS > 1)
+			sprintf (szMaxFps + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+		else if (gameOpts->render.nMaxFPS < 0)
+			sprintf (szMaxFps + 1, TXT_VSYNC, gameOpts->render.nMaxFPS);
+		else
+			sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
+		*szMaxFps = *(TXT_FRAMECAP - 1);
+		renderOpts.nFrameCap = m.AddSlider (szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
+		}
 
 	sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
 	*szRendQual = *(TXT_RENDQUAL - 1);
@@ -440,12 +442,14 @@ do {
 		optAdvOpts = -1;
 
 #if DBG
-	m.AddText ("", 0);
-	optWireFrame = m.AddCheck ("Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
-	optTextures = m.AddCheck ("Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
-	optWalls = m.AddCheck ("Draw walls", gameOpts->render.debug.bWalls, 0, NULL);
-	optObjects = m.AddCheck ("Draw objects", gameOpts->render.debug.bObjects, 0, NULL);
-	optDynLight = m.AddCheck ("Dynamic Light", gameOpts->render.debug.bDynamicLight, 0, NULL);
+	if (gameOpts->app.bExpertMode) {
+		m.AddText ("", 0);
+		optWireFrame = m.AddCheck ("Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
+		optTextures = m.AddCheck ("Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
+		optWalls = m.AddCheck ("Draw walls", gameOpts->render.debug.bWalls, 0, NULL);
+		optObjects = m.AddCheck ("Draw objects", gameOpts->render.debug.bObjects, 0, NULL);
+		optDynLight = m.AddCheck ("Dynamic Light", gameOpts->render.debug.bDynamicLight, 0, NULL);
+		}
 #endif
 
 	do {
@@ -515,11 +519,13 @@ do {
 		}
 #endif
 #if DBG
-	gameOpts->render.debug.bWireFrame = m [optWireFrame].m_value;
-	gameOpts->render.debug.bTextures = m [optTextures].m_value;
-	gameOpts->render.debug.bObjects = m [optObjects].m_value;
-	gameOpts->render.debug.bWalls = m [optWalls].m_value;
-	gameOpts->render.debug.bDynamicLight = m [optDynLight].m_value;
+	if (gameOpts->app.bExpertMode) {
+		gameOpts->render.debug.bWireFrame = m [optWireFrame].m_value;
+		gameOpts->render.debug.bTextures = m [optTextures].m_value;
+		gameOpts->render.debug.bObjects = m [optObjects].m_value;
+		gameOpts->render.debug.bWalls = m [optWalls].m_value;
+		gameOpts->render.debug.bDynamicLight = m [optDynLight].m_value;
+		}
 #endif
 	} while (i == -2);
 
