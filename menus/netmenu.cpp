@@ -419,7 +419,7 @@ int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
 int optDarkness, optTeamDoors, optMultiCheats, optTgtInd;
 int optDmgIndicator, optMslLockIndicator, optFriendlyIndicator, optHitIndicator;
-int optHeadlights, optPowerupLights, optSpotSize;
+int optHeadlights, optPowerupLights, optSpotSize, optSmokeGrenades, optMaxSmokeGrens;
 int optShowNames, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
 
@@ -630,6 +630,23 @@ if (optSpotSize >= 0) {
 		return nCurItem;
 		}
 	}
+
+v = menu [optSmokeGrenades].m_value;
+if (extraGameInfo [0].bSmokeGrenades != v) {
+	extraGameInfo [0].bSmokeGrenades = v;
+	key = -2;
+	return nCurItem;
+	}
+
+if (optMaxSmokeGrens >= 0) {
+	v = menu [optMaxSmokeGrens].m_value;
+	if (extraGameInfo [0].nMaxSmokeGrenades != v) {
+		extraGameInfo [0].nMaxSmokeGrenades = v;
+		sprintf (menu [optMaxSmokeGrens].m_text, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+		menu [optMaxSmokeGrens].m_bRebuild = 1;
+		}
+	}
+
 return nCurItem;
 }
 
@@ -637,9 +654,8 @@ return nCurItem;
 
 void NetworkD2XOptions (void)
  {
-  int		i, j, choice = 0, optCheckPort = -1;
-  char	szSpotSize [50];
-  char	szPenalty [50];
+  int		i, choice = 0, optCheckPort = -1;
+  char	szSlider [50];
   CMenu	m;
 
 do {
@@ -691,10 +707,10 @@ do {
 		optPowerupLights = m.AddCheck (TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
 		optHeadlights = m.AddCheck (TXT_HEADLIGHTS, !extraGameInfo [1].headlight.bAvailable, KEY_H, HTX_HEADLIGHTS);
 		if (extraGameInfo [1].headlight.bAvailable) {
-			sprintf (szSpotSize + 1, TXT_SPOTSIZE, GT (664 + extraGameInfo [1].nSpotSize));
-			strupr (szSpotSize + 1);
-			*szSpotSize = *(TXT_SPOTSIZE - 1);
-			optSpotSize = m.AddSlider (szSpotSize + 1, extraGameInfo [1].nSpotSize, 0, 2, KEY_O, HTX_SPOTSIZE); 
+			sprintf (szSlider + 1, TXT_SPOTSIZE, GT (664 + extraGameInfo [1].nSpotSize));
+			strupr (szSlider + 1);
+			*szSlider = *(TXT_SPOTSIZE - 1);
+			optSpotSize = m.AddSlider (szSlider + 1, extraGameInfo [1].nSpotSize, 0, 2, KEY_O, HTX_SPOTSIZE); 
 			}
 		else
 			optSpotSize = -1;
@@ -706,16 +722,14 @@ do {
 	m.AddText ("", 0);
 	if (!extraGameInfo [1].bCompetition) {
 		if (mpParams.nGameMode == NETGAME_COOPERATIVE) {
-			sprintf (szPenalty + 1, TXT_COOP_PENALTY, nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty], '%');
-			strupr (szPenalty + 1);
-			*szPenalty = *(TXT_COOP_PENALTY - 1);
-			optPenalty = m.AddSlider (szPenalty + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
+			sprintf (szSlider + 1, TXT_COOP_PENALTY, nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty], '%');
+			strupr (szSlider + 1);
+			*szSlider = *(TXT_COOP_PENALTY - 1);
+			optPenalty = m.AddSlider (szSlider + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
 			}
 		else
 			optPenalty = -1;
-		optTgtInd = m.AddRadio (TXT_TGTIND_NONE, 0, KEY_A, HTX_CPIT_TGTIND);
-		m.AddRadio (TXT_TGTIND_SQUARE, 0, KEY_R, HTX_CPIT_TGTIND);
-		m.AddRadio (TXT_TGTIND_TRIANGLE, 0, KEY_T, HTX_CPIT_TGTIND);
+		optTgtInd = m.AddCheck (TXT_MULTI_TGTIND, extraGameInfo [1].bTargetIndicators, KEY_A, HTX_CPIT_TGTIND);
 		m [optTgtInd + extraGameInfo [1].bTargetIndicators].m_value = 1;
 		if (extraGameInfo [1].bTargetIndicators)
 			optFriendlyIndicator = m.AddCheck (TXT_FRIENDLY_INDICATOR, extraGameInfo [1].bFriendlyIndicators, KEY_F, HTX_FRIENDLY_INDICATOR);
@@ -736,6 +750,17 @@ do {
 		optTgtInd =
 		optDmgIndicator =
 		optMslLockIndicator = -1;
+
+	optSmokeGrenades = m.AddCheck (TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
+	if (extraGameInfo [0].bSmokeGrenades) {
+		sprintf (szSlider + 1, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
+		*szSlider = *(TXT_MAX_SMOKEGRENS - 1);
+		optMaxSmokeGrens = m.AddSlider (szSlider + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
+		}
+	else
+		optMaxSmokeGrens = -1;
+	m.AddText ("", 0);
+
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);
   //mpParams.nReactorLife = atoi (szInvul)*I2X (60);
 	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].m_value;
@@ -765,17 +790,11 @@ do {
 			extraGameInfo [1].bFastPitch = m [optFastPitch].m_value ? 1 : 2;
 		GET_VAL (extraGameInfo [1].bDualMissileLaunch, optDualMiss);
 		GET_VAL (extraGameInfo [1].bDisableReactor, optDisableReactor);
-		if (optTgtInd >= 0) {
-			for (j = 0; j < 3; j++)
-				if (m [optTgtInd + j].m_value) {
-					extraGameInfo [1].bTargetIndicators = j;
-					break;
-					}
-			GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyIndicator);
-			}
-		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgIndicator);
-		GET_VAL (extraGameInfo [1].bMslLockIndicators, optMslLockIndicator);
-		GET_VAL (extraGameInfo [1].bTagOnlyHitObjs, optHitIndicator);
+		GET_VAL (extraGameInfo [1].bTargetIndicators, optTgtInd);
+		extraGameInfo [1].bDamageIndicators = extraGameInfo [1].bTargetIndicators;
+		extraGameInfo [1].bMslLockIndicators = extraGameInfo [1].bTargetIndicators;
+		extraGameInfo [1].bFriendlyIndicators = 0;
+		extraGameInfo [1].bTagOnlyHitObjs = 0;
 		}
 	} while (i == -2);
 }
@@ -822,7 +841,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int optGameName, optLevel, optLevelText, optMoreOpts, optMission, optMissionName, optD2XOpts, optConfigMenu;
+static int optGameName, optLevel, optLevelText, optMoreOpts, optMission, optMissionName, optD2XOpts, optConfigMenu, optLoadoutMenu;
 
 void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxNet, int nNewMission)
 {
@@ -902,6 +921,7 @@ if (!gameStates.app.bNostalgia) {
 	if (m [optMonsterball].m_value)
 		optMBallOpts = m.AddMenu (TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);
 	optConfigMenu = m.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
+	optLoadoutMenu = m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
 	}
 }
 
@@ -955,6 +975,10 @@ else if (!gameStates.app.bNostalgia && (optMBallOpts >= 0) && (choice == optMBal
 	}
 else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optConfigMenu)) {
 	ConfigMenu ();
+	return 1;
+	}
+else if (!gameStates.app.bNostalgia && (optLoadoutMenu >= 0) && (choice == optLoadoutMenu)) {
+	LoadoutMenu ();
 	return 1;
 	}
 else if (choice == optMission) {

@@ -374,6 +374,7 @@ void ShadowOptionsMenu (void);
 void ShipRenderOptionsMenu (void);
 void SmokeOptionsMenu (void);
 void SoundMenu (void);
+void LoadoutOptionsMenu (void);
 
 int MainMenu (void);
 void ConfigMenu (void);

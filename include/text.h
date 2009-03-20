@@ -1580,7 +1580,7 @@ void LoadGameTexts(void);
 #define TXT_TEAMDOORS					GT(783)
 #define TXT_MULTICHEATS					GT(784)
 #define TXT_PLAYER_CHEATED				GT(785)
-#define TXT_TGTIND_NONE					GT(786)
+#define TXT_MULTI_TGTIND				GT(786)
 #define TXT_TGTIND_SQUARE				GT(787)
 #define TXT_TGTIND_TRIANGLE			GT(788)
 #define TXT_DMG_INDICATOR				GT(789)

@@ -1528,7 +1528,7 @@ const char *defaultGameTexts [][2] = {
  {"~Team-Tueren", "~Team Doors"},
  {"~Cheat Codes zulassen", "Enable ~Cheat Codes"},
  {"Spieler %s schummelt", "Player %s is cheating"},
- {"keine ~Zielmarkierungen", "no T~Arget Indicators"},
+ {"~Zielmarkierungen verwenden", "use t~Arget indicators"},
  {"~Rechteckige Zielmarkierungen", "~Rectangular Target Indicators"},
  {"~Dreieckige Zielmarkierungen", "~Triangular Target Indicators"},
  {"~Schadensanzeigen aktivieren", "show ~Damage Indicators"},

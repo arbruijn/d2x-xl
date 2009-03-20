@@ -234,7 +234,6 @@ if (!StartNewGame (nNewLevel))
 
 //------------------------------------------------------------------------------
 
-static int nOptVerFilter = -1;
 static int nOptDifficulty = -1;
 
 int NewGameMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
@@ -242,8 +241,8 @@ int NewGameMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-	CMenuItem	*m;
-	int			i, v;
+	CMenuItem*	m;
+	int			v;
 
 m = menu + nOptDifficulty;
 v = m->m_value;
@@ -254,11 +253,6 @@ if (gameStates.app.nDifficultyLevel != v) {
 	sprintf (m->m_text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	m->m_bRebuild = 1;
 	}
-for (i = 0; i < 3; i++)
-	if (menu [nOptVerFilter + i].m_value) {
-		gameOpts->app.nVersionFilter = i + 1;
-		break;
-		}
 return nCurItem;
 }
 
@@ -267,7 +261,7 @@ return nCurItem;
 void NewGameMenu (void)
 {
 	CMenu				menu;
-	int				optSelMsn, optMsnName, optLevelText, optLevel, optLaunch;
+	int				optSelMsn, optMsnName, optLevelText, optLevel, optLaunch, optLoadout;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0;
 	char				szDifficulty [50];
@@ -287,6 +281,7 @@ if (gameStates.app.bNostalgia) {
 	}
 gameStates.app.bD1Mission = 0;
 gameStates.app.bD1Data = 0;
+gameOpts->app.nVersionFilter = 3;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
@@ -318,10 +313,8 @@ for (;;) {
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	nOptDifficulty = menu.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	menu.AddText ("", 0);
-	nOptVerFilter = menu.AddRadio (TXT_PLAY_D1MISSIONS, 0, KEY_1, HTX_LEVEL_VERSION_FILTER);
-	menu.AddRadio (TXT_PLAY_D2MISSIONS, 0, KEY_2, HTX_LEVEL_VERSION_FILTER);
-	menu.AddRadio (TXT_PLAY_ALL_MISSIONS, 0, KEY_A, HTX_LEVEL_VERSION_FILTER);
-	menu [nOptVerFilter + gameOpts->app.nVersionFilter - 1].m_value = 1;
+	optLoadout = menu.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
+
 	if (nMission >= 0) {
 		menu.AddText ("", 0);
 		optLaunch = menu.AddMenu (TXT_LAUNCH_GAME, KEY_L, "");
@@ -335,7 +328,9 @@ for (;;) {
 		SetFunctionMode (FMODE_MENU);
 		return;
 		}
-	if (choice == optSelMsn) {
+	if (choice == optLoadout)
+		LoadoutOptionsMenu ();
+	else if (choice == optSelMsn) {
 		i = SelectAndLoadMission (0, NULL);
 		if (i >= 0) {
 			bMsnLoaded = 1;

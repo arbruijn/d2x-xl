@@ -177,7 +177,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void LoadoutOptions (void)
+void LoadoutOptionsMenu (void)
 {
 	CMenu	m (25);
 	int	i, nOptions = 0;
@@ -310,12 +310,11 @@ do {
 	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_W, HTX_HEADLIGHT_POWERDRAIN);
 	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 	m.AddText ("");
-	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
 	for (;;) {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
 		if (choice == optLoadout)
-			LoadoutOptions ();
+			LoadoutOptionsMenu ();
 		};
 	} while (i == -2);
 if (nAIAggressivity == 5) {
@@ -380,20 +379,20 @@ if (gameOpts->app.bExpertMode) {
 		m->m_bRebuild = 1;
 		}
 
-	m = menu + gplayOpts.nSmokeGrens;
-	v = m->m_value;
-	if (extraGameInfo [0].bSmokeGrenades != v) {
-		extraGameInfo [0].bSmokeGrenades = v;
-		key = -2;
-		return nCurItem;
-		}
-
 	m = menu + gplayOpts.nAIAggressivity;
 	v = m->m_value;
 	if (gameOpts->gameplay.nAIAggressivity != v) {
 		gameOpts->gameplay.nAIAggressivity = v;
 		sprintf (m->m_text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
 		m->m_bRebuild = 1;
+		}
+
+	m = menu + gplayOpts.nSmokeGrens;
+	v = m->m_value;
+	if (extraGameInfo [0].bSmokeGrenades != v) {
+		extraGameInfo [0].bSmokeGrenades = v;
+		key = -2;
+		return nCurItem;
 		}
 
 	if (gplayOpts.nMaxSmokeGrens >= 0) {
@@ -493,7 +492,7 @@ do {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
 		if (choice == optLoadout)
-			LoadoutOptions ();
+			LoadoutOptionsMenu ();
 		};
 	} while (i == -2);
 if (gameOpts->app.bExpertMode) {
