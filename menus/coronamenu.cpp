@@ -100,9 +100,7 @@ if (nState)
 
 m = menu + effectOpts.nCoronaStyle;
 v = m->m_value - 1;
-if (v < 0)
-if gameOpts->render.coronas.bUse = v > 0) {
-if (gameOpts->render.coronas.nStyle != v - 1) {
+if ((gameOpts->render.coronas.bUse = v > 0) && (gameOpts->render.coronas.nStyle != v - 1)) {
 	gameOpts->render.coronas.nStyle = v - 1;
 	sprintf (m->m_text, TXT_CORONA_QUALITY, pszCoronaQual [v]);
 	m->m_bRebuild = -1;
@@ -182,15 +180,9 @@ do {
 	m.Destroy ();
 	m.Create (5);
 
-	effectOpts.nCoronas = m.AddCheck (TXT_RENDER_CORONAS, gameOpts->render.coronas.bUse, KEY_C, HTX_ADVRND_CORONAS);
-	if (gameOpts->render.coronas.bUse) {
-		sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.coronas.nStyle]);
-		*szCoronaQual = *(TXT_CORONA_QUALITY - 1);
-		effectOpts.nCoronaStyle = m.AddSlider (szCoronaQual + 1, gameOpts->render.coronas.nStyle, 0, 1 + gameStates.ogl.bDepthBlending, KEY_Q, HTX_CORONA_QUALITY);
-		m.AddText ("", 0);
-		}
-	else
-		effectOpts.nCoronaStyle = -1;
+	sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.coronas.nStyle]);
+	*szCoronaQual = *(TXT_CORONA_QUALITY - 1);
+	effectOpts.nCoronaStyle = m.AddSlider (szCoronaQual + 1, gameOpts->render.coronas.nStyle, 0, 1 + gameStates.ogl.bDepthBlending, KEY_Q, HTX_CORONA_QUALITY);
 	for (;;) {
 		i = m.Menu (NULL, TXT_CORONA_MENUTITLE, CoronaOptionsCallback, &choice);
 		if (i < 0)
