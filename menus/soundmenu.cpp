@@ -76,7 +76,6 @@ static struct {
 	int	nDigiVol;
 	int	nMusicVol;
 	int	nRedbook;
-	int	nChannels;
 	int	nVolume;
 	int	nGatling;
 } soundOpts;
@@ -114,12 +113,6 @@ if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	gameConfig.nDigiVolume = menu [soundOpts.nDigiVol].m_value;
 	audio.SetFxVolume ((gameConfig.nDigiVolume * 32768) / 8);
 	audio.PlaySound (SOUND_DROP_BOMB);
-	}
-if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != menu [soundOpts.nChannels].m_value)) {
-	gameStates.sound.nSoundChannels = menu [soundOpts.nChannels].m_value;
-	audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels]);
-	sprintf (menu [soundOpts.nChannels].m_text, TXT_SOUND_CHANNEL_COUNT, audio.MaxChannels ());
-	menu [soundOpts.nChannels].m_bRebuild = 1;
 	}
 if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [soundOpts.nVolume].m_value)) {
 	if (!gameOpts->sound.xCustomSoundVolume || !menu [soundOpts.nVolume].m_value)
@@ -198,7 +191,7 @@ return nCurItem;		//kill warning
 void SoundMenu (void)
 {
    CMenu	m;
-	char	szChannels [50], szVolume [50];
+	char	szVolume [50];
 	int	i, choice = 0;
 	int	optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, optShieldWarn = -1;
 	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
@@ -212,14 +205,6 @@ do {
 	soundOpts.nMusicVol = m.AddSlider (redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 												  redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 												  0, 8, KEY_M, HTX_ONLINE_MANUAL);
-	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
-		soundOpts.nChannels = -1;
-	else {
-		sprintf (szChannels + 1, TXT_SOUND_CHANNEL_COUNT, audio.MaxChannels ());
-		*szChannels = *(TXT_SOUND_CHANNEL_COUNT - 1);
-		soundOpts.nChannels = m.AddSlider (szChannels + 1, gameStates.sound.nSoundChannels, 0, 
-													  (int) sizeofa (detailData.nSoundChannels) - 1, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
-		}
 	if (!gameStates.app.bNostalgia) {
 		sprintf (szVolume + 1, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
 		*szVolume = *(TXT_CUSTOM_SOUNDVOL - 1);

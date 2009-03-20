@@ -116,7 +116,8 @@ v = m->m_value;
 if (nLighting != v) {
 	nLighting = v;
 	sprintf (m->m_text, TXT_LIGHTING, pszQuality [nLighting]);
-	m->m_bRebuild = 1;
+	key = -2;
+	return nCurItem;
 	}
 
 if (lightOpts.nLightmaps >= 0) {
@@ -124,8 +125,30 @@ if (lightOpts.nLightmaps >= 0) {
 	v = m->m_value;
 	if (gameOpts->render.nLightmapQuality != v) {
 		gameOpts->render.nLightmapQuality = v;
-		sprintf (m->m_text, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+		sprintf (m->m_text, TXT_LIGHTMAPS, pszQuality [gameOpts->render.nLightmapQuality]);
 		m->m_bRebuild = 1;
+		}
+	}
+
+if (lightOpts.nMaxLightsPerFace >= 0) {
+	m = menu + lightOpts.nMaxLightsPerFace;
+	v = m->m_value;
+	if (v != gameOpts->ogl.nMaxLightsPerFace) {
+		gameOpts->ogl.nMaxLightsPerFace = v;
+		sprintf (m->m_text, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [v]);
+		m->m_bRebuild = 1;
+		return nCurItem;
+		}
+	}
+
+if (lightOpts.nMaxLightsPerPass >= 0) {
+	m = menu + lightOpts.nMaxLightsPerPass;
+	v = m->m_value + 1;
+	if (v != gameOpts->ogl.nMaxLightsPerPass) {
+		gameOpts->ogl.nMaxLightsPerPass = v;
+		sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, v);
+		m->m_bRebuild = 1;
+		return nCurItem;
 		}
 	}
 
@@ -166,11 +189,13 @@ do {
 
 	sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
 	*szSlider = *(TXT_LIGHTING + 1);
-	lightOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, 4, KEY_L, HTX_LIGHTING);
+	lightOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, 3, KEY_L, HTX_LIGHTING);
+	lightOpts.nMaxLightsPerFace = 
+	lightOpts.nMaxLightsPerPass = -1;
 	if (nLighting >= 2) {
 		gameOpts->ogl.nMaxLightsPerFace = LightTableIndex (gameOpts->ogl.nMaxLightsPerFace);
-		sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
-		*szSlider = *(TXT_LMAP_QUALITY + 1);
+		sprintf (szSlider + 1, TXT_LIGHTMAPS, pszQuality [gameOpts->render.nLightmapQuality]);
+		*szSlider = *(TXT_LIGHTMAPS + 1);
 		lightOpts.nLightmaps = m.AddSlider (szSlider + 1, gameOpts->render.nLightmapQuality, 0, 4, KEY_Q, HTX_LMAP_QUALITY);
 		if (nLighting == 3) {
 			sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_FACE, nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace]);

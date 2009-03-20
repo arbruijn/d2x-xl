@@ -361,6 +361,7 @@ do {
 	sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
 	*szRendQual = *(TXT_RENDQUAL - 1);
 	renderOpts.nRenderQual = m.AddSlider (szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
+
 	if (gameStates.app.bGameRunning)
 		renderOpts.nTexQual =
 		renderOpts.nMeshQual = -1;
