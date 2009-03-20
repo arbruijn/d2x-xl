@@ -319,7 +319,7 @@ void RenderOptionsMenu (void)
 {
 	CMenu	m;
 	int	i;
-	int	optCameraOpts, optLightOpts, optAdvOpts, optEffectOpts, optAutomapOpts, optLightningOpts;
+	int	optLightOpts, optEffectOpts, optAutomapOpts;
 #if DBG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
@@ -399,6 +399,7 @@ do {
 		sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
 		*szTexQual = *(TXT_TEXQUAL + 1);
 		renderOpts.nTexQual = m.AddSlider (szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
+
 		if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
 			sprintf (szMeshQual + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 			*szMeshQual = *(TXT_MESH_QUALITY + 1);
@@ -427,7 +428,7 @@ do {
 
 	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [extraGameInfo [0].bUseLightning]);
 	*szSlider = *(TXT_LIGHTNING - 1);
-	renderOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_O, HTX_LIGHTNING);
+	renderOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_I, HTX_LIGHTNING);
 
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	*szSlider = *(TXT_CAMERAS - 1);
@@ -437,22 +438,10 @@ do {
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_P, HTX_POWERUPS);
 
-	if (gameOpts->app.bExpertMode) {
-		m.AddText ("", 0);
-		optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
-		optLightningOpts = m.AddMenu (TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
-		optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
-		optAutomapOpts = m.AddMenu (TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
-		}
-	else
-		renderOpts.nRenderQual =
-		renderOpts.nTexQual =
-		renderOpts.nMeshQual =
-		optLightOpts =
-		optLightningOpts =
-		optEffectOpts =
-		optCameraOpts = 
-		optAdvOpts = -1;
+	m.AddText ("", 0);
+	optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
+	optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
+	optAutomapOpts = m.AddMenu (TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
 
 #if DBG
 	if (0 && gameOpts->app.bExpertMode) {
