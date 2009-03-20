@@ -195,7 +195,6 @@ gameOpts->render.coronas.bPowerups = 1;
 gameOpts->render.coronas.bWeapons = 0;
 gameOpts->render.coronas.bAdditive = 1;
 gameOpts->render.coronas.bAdditiveObjs = 1;
-gameOpts->render.particles.bPlasmaTrails = 0;	//move to effects menu
 
 #else
 

@@ -1905,10 +1905,10 @@ void LoadGameTexts(void);
 #define TXT_DVORAK						GT(1108)
 #define TXT_KEYBOARD_LAYOUT			GT(1109)
 #define TXT_TARGET_INDICATORS			GT(1110)
+#define TXT_LIGHTTRAIL_QUAL			GT(1111)
 
 #if 0
 
-#define TXT_					GT(1111)
 #define TXT_					GT(1112)
 #define TXT_					GT(1113)
 #define TXT_					GT(1114)
@@ -2508,10 +2508,10 @@ void LoadGameTexts(void);
 #define HTX_ENABLE_MODS					HT(389)			
 #define HTX_3D_SHIELDS					HT(390)			
 #define HTX_KEYBOARD_LAYOUT			HT(391)			
+#define HTX_LIGHTTRAIL_QUAL			HT(392)			
 
 #if 0
 
-#define HTX_						HT(392)			
 #define HTX_						HT(393)			
 #define HTX_						HT(394)			
 #define HTX_						HT(395)			

@@ -1854,6 +1854,7 @@ const char *defaultGameTexts [][2] = {
  {"D~Vorak (U.S.)", "~Dvorak (U.S.)"},
  {"Tastaturlayout:", "Keyboard layout:"},
  {"~Zielmarkierungen", "~Target indicators"},
+ {"~Leuchtspur-Qualitaet: %s", "~Light trail quality: %s"},
 #if 0
  {"", ""},
 #endif
@@ -2523,6 +2524,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt werden Mod-Daten verwendet;\nandernfalls werden sie ignoriert.", "If checked mod data will be used;\notherwise it will be ignored."},
  {"Wenn angekreuzt werden Schild-Powerups dreidimensional dargestellt.", "If check shield powerups will be rendered in 3D."},
  {"Hier kann das Tastaturlayout ausgewaehlt werden.", "Chose your keyboard layout here."},
+ {"Hier kann die Art der Leuchtspuren von Energieschuessen\nausgewaehlt werden.", "Chose the appearance of energy shot light\ntrails here."},
 #if 0
  {"", ""},
 #endif

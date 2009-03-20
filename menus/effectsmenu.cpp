@@ -70,12 +70,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 static struct {
 	int	nExplShrapnels;
+	int	nLightTrails;
 	int	nSparks;
 } effectOpts;
 
 //------------------------------------------------------------------------------
 
+static int nLightTrails;
+
 static const char* pszExplShrapnels [5];
+static const char* pszLightTrails [3];
 
 int EffectOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -92,10 +96,10 @@ if (gameOpts->render.effects.nShrapnels != v) {
 	sprintf (m->m_text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
 	m->m_bRebuild = -1;
 	}
-m = menu + effectOpts.nSparks;
+m = menu + effectOpts.nLightTrails;
 v = m->m_value;
-if (gameOpts->render.effects.bEnergySparks != v) {
-	gameOpts->render.effects.bEnergySparks = v;
+if (nLightTrails != v) {
+	nLightTrails = v;
 	key = -2;
 	}
 return nCurItem;
@@ -114,7 +118,7 @@ void EffectOptionsMenu (void)
 	int	optShockwaves;
 #endif
 	int	bEnergySparks = gameOpts->render.effects.bEnergySparks;
-	char	szExplShrapnels [50];
+	char	szExplShrapnels [50], szLightTrails [50];
 
 pszExplShrapnels [0] = TXT_NONE;
 pszExplShrapnels [1] = TXT_FEW;
@@ -122,6 +126,11 @@ pszExplShrapnels [2] = TXT_MEDIUM;
 pszExplShrapnels [3] = TXT_MANY;
 pszExplShrapnels [4] = TXT_EXTREME;
 
+pszLightTrails [0] = TXT_NONE;
+pszLightTrails [1] = TXT_LOW;
+pszLightTrails [2] = TXT_HIGH;
+
+nLightTrails = extraGameInfo [0].bLightTrails ? (gameOpts->render.particles.bPlasmaTrails << 1) : 0;
 do {
 	m.Destroy ();
 	m.Create (30);
@@ -129,6 +138,11 @@ do {
 	sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
 	*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
 	effectOpts.nExplShrapnels = m.AddSlider (szExplShrapnels + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+
+	sprintf (szLightTrails + 1, TXT_LIGHTTRAIL_QUAL, pszLightTrails [gameOpts->render.effects.nShrapnels]);
+	*szLightTrails = *(TXT_LIGHTTRAIL_QUAL - 1);
+	effectOpts.nLightTrails = m.AddSlider (szLightTrails + 1, nLightTrails, 0, 4, KEY_P, HTX_LIGHTTRAIL_QUAL);
+
 	m.AddText ("");
 	optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
 	optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, (gameOpts->render.effects.bSoftParticles & 1) != 0, KEY_I, HTX_SOFT_SPRITES);
@@ -163,6 +177,8 @@ do {
 
 SetDebrisCollisions ();
 
+if ((extraGameInfo [0].bLightTrails = nLightTrails != 0))
+	gameOpts->render.particles.bPlasmaTrails = nLightTrails == 2;
 gameOpts->render.effects.bAutoTransparency = 1;
 gameOpts->render.effects.bTransparent = 1;
 gameOpts->render.effects.bExplBlasts = 1;
@@ -172,6 +188,7 @@ extraGameInfo [0].bPlayerShield = 1;
 gameOpts->render.effects.bRobotShields = 1;
 gameOpts->render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
+gameOpts->render.particles.bPlasmaTrails = 0;	//move to effects menu
 //extraGameInfo [0].bGatlingTrails = 1;	//TODO: Tie to render quality
 extraGameInfo [0].bShockwaves = 0; 
 extraGameInfo [0].bDamageExplosions = 0;
