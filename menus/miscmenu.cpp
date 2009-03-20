@@ -100,6 +100,9 @@ if (!gameStates.app.bNostalgia) {
 		key = -2;
 		return nCurItem;
 		}
+
+#if !SIMPLE_MENUS
+
 	m = menu + miscOpts.nExpertMode;
 	v = m->m_value;
 	if (gameOpts->app.bExpertMode != v) {
@@ -107,7 +110,13 @@ if (!gameStates.app.bNostalgia) {
 		key = -2;
 		return nCurItem;
 		}
-	if (gameOpts->app.bExpertMode) {
+	if (!gameOpts->app.bExpertMode) 
+		downloadManager.SetTimeoutIndex (15);
+	else
+
+#endif
+
+		{
 		m = menu + miscOpts.nAutoDl;
 		v = m->m_value;
 		if (extraGameInfo [0].bAutoDownload != v) {
@@ -125,8 +134,6 @@ if (!gameStates.app.bNostalgia) {
 				}
 			}
 		}
-	else
-		downloadManager.SetTimeoutIndex (15);
 	}
 return nCurItem;
 }
@@ -142,8 +149,7 @@ void MiscellaneousMenu (void)
 #if UDP_SAFEMODE
 	int	optSafeUDP;
 #endif
-	char  szDlTimeout [50];
-	char	szScreenShots [50];
+	char  szSlider [50];
 
 #if SIMPLE_MENUS
 
@@ -170,17 +176,17 @@ do {
 			m.AddText ("", 0);
 		miscOpts.nAutoDl = m.AddCheck (TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
-			sprintf (szDlTimeout + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
-			*szDlTimeout = *(TXT_AUTODL_TO - 1);
-			miscOpts.nDlTimeout = m.AddSlider (szDlTimeout + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
+			sprintf (szSlider + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
+			*szSlider = *(TXT_AUTODL_TO - 1);
+			miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
 			}
 		m.AddText ("", 0);
 		if (gameOpts->app.nScreenShotInterval)
-			sprintf (szScreenShots + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
+			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
 		else
-			strcpy (szScreenShots + 1, TXT_NO_SCREENSHOTS);
-		*szScreenShots = *(TXT_SCREENSHOTS - 1);
-		miscOpts.nScreenshots = m.AddSlider (szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
+			strcpy (szSlider + 1, TXT_NO_SCREENSHOTS);
+		*szSlider = *(TXT_SCREENSHOTS - 1);
+		miscOpts.nScreenshots = m.AddSlider (szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 		}
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
@@ -257,17 +263,17 @@ do {
 			m.AddText ("", 0);
 		miscOpts.nAutoDl = m.AddCheck (TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
-			sprintf (szDlTimeout + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
-			*szDlTimeout = *(TXT_AUTODL_TO - 1);
-			miscOpts.nDlTimeout = m.AddSlider (szDlTimeout + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
+			sprintf (szSlider + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
+			*szSlider = *(TXT_AUTODL_TO - 1);
+			miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
 			}
 		m.AddText ("", 0);
 		if (gameOpts->app.nScreenShotInterval)
-			sprintf (szScreenShots + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
+			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
 		else
-			strcpy (szScreenShots + 1, TXT_NO_SCREENSHOTS);
-		*szScreenShots = *(TXT_SCREENSHOTS - 1);
-		miscOpts.nScreenshots = m.AddSlider (szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
+			strcpy (szSlider + 1, TXT_NO_SCREENSHOTS);
+		*szSlider = *(TXT_SCREENSHOTS - 1);
+		miscOpts.nScreenshots = m.AddSlider (szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 		}
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
