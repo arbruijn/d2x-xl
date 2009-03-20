@@ -468,7 +468,6 @@
 		A45016D70F3F93EC00D04D61 /* mouse.h in Headers */ = {isa = PBXBuildFile; fileRef = A45014680F3F93EC00D04D61 /* mouse.h */; };
 		A45016D80F3F93EC00D04D61 /* input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014690F3F93EC00D04D61 /* input.cpp */; };
 		A45016D90F3F93EC00D04D61 /* joy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450146A0F3F93EC00D04D61 /* joy.cpp */; };
-		A45016DA0F3F93EC00D04D61 /* joydefs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450146B0F3F93EC00D04D61 /* joydefs.cpp */; };
 		A45016DB0F3F93EC00D04D61 /* key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450146C0F3F93EC00D04D61 /* key.cpp */; };
 		A45016DD0F3F93EC00D04D61 /* mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450146E0F3F93EC00D04D61 /* mouse.cpp */; };
 		A45016DE0F3F93EC00D04D61 /* systemkeys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450146F0F3F93EC00D04D61 /* systemkeys.cpp */; };
@@ -558,6 +557,7 @@
 		A4C051060F6F41FD0054A743 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4C051050F6F41FD0054A743 /* SDL_image.framework */; };
 		A4C051090F6F42010054A743 /* SDL_image.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A4C051050F6F41FD0054A743 /* SDL_image.framework */; };
 		A4C0512D0F6F4FA40054A743 /* SDL_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A44E22020F63862400271B39 /* SDL_mixer.framework */; };
+		A4C053150F7333110054A743 /* inputdevicemenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4C053140F7333110054A743 /* inputdevicemenu.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1061,7 +1061,6 @@
 		A45014680F3F93EC00D04D61 /* mouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mouse.h; sourceTree = "<group>"; };
 		A45014690F3F93EC00D04D61 /* input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = input.cpp; sourceTree = "<group>"; };
 		A450146A0F3F93EC00D04D61 /* joy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = joy.cpp; sourceTree = "<group>"; };
-		A450146B0F3F93EC00D04D61 /* joydefs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = joydefs.cpp; sourceTree = "<group>"; };
 		A450146C0F3F93EC00D04D61 /* key.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = key.cpp; sourceTree = "<group>"; };
 		A450146E0F3F93EC00D04D61 /* mouse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mouse.cpp; sourceTree = "<group>"; };
 		A450146F0F3F93EC00D04D61 /* systemkeys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = systemkeys.cpp; sourceTree = "<group>"; };
@@ -1142,6 +1141,7 @@
 		A48165D90E21F3C900F8360E /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = io/macosx/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A4A3476F0F59471B00A5943E /* hmpfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmpfile.h; sourceTree = "<group>"; };
 		A4C051050F6F41FD0054A743 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_image.framework; path = /Library/Frameworks/SDL_image.framework; sourceTree = "<absolute>"; };
+		A4C053140F7333110054A743 /* inputdevicemenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = inputdevicemenu.cpp; sourceTree = "<group>"; };
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		B2F67F1E04C773E400A80002 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = /System/Library/Frameworks/GLUT.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -1861,6 +1861,7 @@
 				A45014360F3F93EC00D04D61 /* entropymenu.cpp */,
 				A45014370F3F93EC00D04D61 /* fileselector.cpp */,
 				A45014380F3F93EC00D04D61 /* gameplaymenu.cpp */,
+				A4C053140F7333110054A743 /* inputdevicemenu.cpp */,
 				A45014390F3F93EC00D04D61 /* lightmenu.cpp */,
 				A450143A0F3F93EC00D04D61 /* lightningmenu.cpp */,
 				A450143B0F3F93EC00D04D61 /* listbox.cpp */,
@@ -1915,7 +1916,6 @@
 				A45014610F3F93EC00D04D61 /* include */,
 				A45014690F3F93EC00D04D61 /* input.cpp */,
 				A450146A0F3F93EC00D04D61 /* joy.cpp */,
-				A450146B0F3F93EC00D04D61 /* joydefs.cpp */,
 				A450146C0F3F93EC00D04D61 /* key.cpp */,
 				A450146E0F3F93EC00D04D61 /* mouse.cpp */,
 				A450146F0F3F93EC00D04D61 /* systemkeys.cpp */,
@@ -2594,7 +2594,6 @@
 				A45016D10F3F93EC00D04D61 /* event.cpp in Sources */,
 				A45016D80F3F93EC00D04D61 /* input.cpp in Sources */,
 				A45016D90F3F93EC00D04D61 /* joy.cpp in Sources */,
-				A45016DA0F3F93EC00D04D61 /* joydefs.cpp in Sources */,
 				A45016DB0F3F93EC00D04D61 /* key.cpp in Sources */,
 				A45016DD0F3F93EC00D04D61 /* mouse.cpp in Sources */,
 				A45016DE0F3F93EC00D04D61 /* systemkeys.cpp in Sources */,
@@ -2673,6 +2672,7 @@
 				A40ADF170F48E0D00018DA6C /* trigger.cpp in Sources */,
 				A46A13FE0F4CA2A4009E4719 /* udp_interface.cpp in Sources */,
 				A46A14920F4CABBC009E4719 /* netmisc.cpp in Sources */,
+				A4C053150F7333110054A743 /* inputdevicemenu.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
