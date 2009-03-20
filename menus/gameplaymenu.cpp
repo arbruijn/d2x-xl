@@ -231,49 +231,14 @@ if (gameStates.app.nDifficultyLevel != v) {
 	m->m_bRebuild = 1;
 	}
 
-m = menu + gplayOpts.nHeadlightAvailable;
+m = menu + gplayOpts.nAIAggressivity;
 v = m->m_value;
-if (extraGameInfo [0].headlight.bAvailable != v) {
-	extraGameInfo [0].headlight.bAvailable = v;
-	key = -2;
-	return nCurItem;
+if (nAIAggressivity != v) {
+	nAIAggressivity = v;
+	sprintf (m->m_text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
+	m->m_bRebuild = 1;
 	}
 
-if (gameOpts->app.bExpertMode) {
-	m = menu + gplayOpts.nSpawnDelay;
-	v = (m->m_value - 1) * 5;
-	if (extraGameInfo [0].nSpawnDelay != v * 1000) {
-		extraGameInfo [0].nSpawnDelay = v * 1000;
-		sprintf (m->m_text, TXT_RESPAWN_DELAY, (v < 0) ? -1 : v);
-		m->m_bRebuild = 1;
-		}
-
-	m = menu + gplayOpts.nSmokeGrens;
-	v = m->m_value;
-	if (extraGameInfo [0].bSmokeGrenades != v) {
-		extraGameInfo [0].bSmokeGrenades = v;
-		key = -2;
-		return nCurItem;
-		}
-
-	m = menu + gplayOpts.nAIAggressivity;
-	v = m->m_value;
-	if (nAIAggressivity != v) {
-		nAIAggressivity = v;
-		sprintf (m->m_text, TXT_AI_AGGRESSIVITY, pszAggressivities [v]);
-		m->m_bRebuild = 1;
-		}
-
-	if (gplayOpts.nMaxSmokeGrens >= 0) {
-		m = menu + gplayOpts.nMaxSmokeGrens;
-		v = m->m_value + 1;
-		if (extraGameInfo [0].nMaxSmokeGrenades != v) {
-			extraGameInfo [0].nMaxSmokeGrenades = v;
-			sprintf (m->m_text, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
-			m->m_bRebuild = 1;
-			}
-		}
-	}
 return nCurItem;
 }
 
@@ -319,7 +284,6 @@ do {
 		gplayOpts.nMaxSmokeGrens = -1;
 	m.AddText ("", 0);
 #endif
-	m.AddText ("", 0);
 	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_L, HTX_HEADLIGHT_BUILTIN);
 	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_W, HTX_HEADLIGHT_POWERDRAIN);
 	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
