@@ -201,6 +201,7 @@ do {
 				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
 			}
 		}
+	GET_VAL (extraGameInfo [0].bGatlingTrails, optGatlingTrails);
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
 		gameOpts->render.particles.bPlasmaTrails = (nLightTrails == 2);
 	} while (i == -2);

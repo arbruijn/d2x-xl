@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 static struct {
 	int	nUse;
 	int	nSpeed;
@@ -92,8 +94,6 @@ if (v != extraGameInfo [0].bUseCameras) {
 	return nCurItem;
 	}
 
-#if !SIMPLE_MENUS
-
 if (extraGameInfo [0].bUseCameras) {
 	if (camOpts.nFPS >= 0) {
 		m = menu + camOpts.nFPS;
@@ -114,9 +114,6 @@ if (extraGameInfo [0].bUseCameras) {
 			}
 		}
 	}
-
-#endif
-
 return nCurItem;
 }
 
@@ -131,29 +128,6 @@ void CameraOptionsMenu (void)
 #if 0
 	int checks;
 #endif
-
-#if SIMPLE_MENUS
-
-do {
-	m.Destroy ();
-	m.Create (10);
-	camOpts.nUse = m.AddCheck (TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
-	if (!extraGameInfo [0].bUseCameras || gameStates.app.bGameRunning) 
-		optHiresCams = -1;
-	else
-		optHiresCams = m.AddCheck (TXT_HIRES_CAMERAS, gameOpts->render.cameras.bHires, KEY_H, HTX_HIRES_CAMERAS);
-
-	do {
-		i = m.Menu (NULL, TXT_CAMERA_MENUTITLE, &CameraOptionsCallback, &choice);
-	} while (i >= 0);
-
-	if ((extraGameInfo [0].bUseCameras = m [camOpts.nUse].m_value)) {
-		if (!gameStates.app.bGameRunning)
-			GET_VAL (gameOpts->render.cameras.bHires, optHiresCams);	//TODO: Tie to render quality
-		}
-	} while (i == -2);
-
-#else
 
 	int	optFSCameras, optTeleCams;
 
@@ -202,10 +176,10 @@ do {
 		cameraManager.Create ();
 		}
 	} while (i == -2);
-
-#endif
-
 }
+
+#endif //SIMPLE_MENUS
+
 
 //------------------------------------------------------------------------------
 //eof

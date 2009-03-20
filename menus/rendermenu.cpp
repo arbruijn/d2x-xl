@@ -360,8 +360,8 @@ do {
 	m.Create (50);
 	optAutomapOpts = -1;
 
-	if (!gameOpts->app.bExpertMode) {
-		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
+	if (1 || !gameOpts->app.bExpertMode) {
+		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 		m.AddText ("", 0);
 		}
 
@@ -463,8 +463,6 @@ do {
 				i = -2, LightningOptionsMenu ();
 			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
 				i = -2, EffectOptionsMenu ();
-			else if ((optCameraOpts >= 0) && (i == optCameraOpts))
-				i = -2, CameraOptionsMenu ();
 			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))
 				i = -2, AutomapOptionsMenu ();
 			}
@@ -489,7 +487,7 @@ do {
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 
-	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 60 : 0;
+	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 60 : 1;
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
 	if (nRendQualSave != gameOpts->render.nQuality)
