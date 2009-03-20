@@ -167,38 +167,12 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+#if !SIMPLE_MENUS
+
 void ShadowOptionsMenu (void)
 {
 	CMenu	m;
 	int	i, choice = 0;
-
-#if SIMPLE_MENUS
-
-do {
-	m.Destroy ();
-	m.Create (1);
-
-	if (extraGameInfo [0].bShadows)
-		m.AddText ("", 0);
-	shadowOpts.nUse = m.AddCheck (TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
-	for (;;) {
-		i = m.Menu (NULL, TXT_SHADOW_MENUTITLE, NULL, &choice);
-		if (i < 0)
-			break;
-		} 
-	} while (i == -2);
-
-gameOpts->render.shadows.nLights = 2;
-gameOpts->render.shadows.nReach = 2;	//TODO: tie to render quality
-gameOpts->render.shadows.nClip = 2;		//TODO: tie to render quality
-gameOpts->render.shadows.bPlayers = 1;
-gameOpts->render.shadows.bRobots = 1;
-gameOpts->render.shadows.bMissiles = 0;
-gameOpts->render.shadows.bPowerups = 0;
-gameOpts->render.shadows.bReactors = 0;
-
-#else
-
 	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, optPowerupShadows, optReactorShadows;
 	char	szMaxLightsPerFace [50], szReach [50];
 
@@ -310,12 +284,11 @@ do {
 		}
 #endif
 	} while (i == -2);
-
-#endif
-
 }
 
-#endif
+#endif //SIMPLE_MENUS
+
+#endif //SHADOWS
 
 //------------------------------------------------------------------------------
 //eof

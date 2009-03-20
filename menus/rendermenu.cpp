@@ -261,7 +261,7 @@ void RenderOptionsMenu (void)
 {
 	CMenu	m;
 	int	i, choice = 0;
-	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightOpts, optMovieOpts,
+	int	optSmokeOpts, optShadows, optCameraOpts, optLightOpts, optMovieOpts,
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts,
 			optColoredWalls, optDepthSort, optCoronaOpts, optShipRenderOpts;
 #if DBG
@@ -331,17 +331,19 @@ do {
 	m.AddText ("", 0);
 #if !DBG
 	renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 0, KEY_V, HTX_RENDER_FRAMECAP);
-	m.AddText ("", 0);
 #endif
+	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
+		optShadows = -1;
+	else {
+		optShadows = m.AddCheck (TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
+		m.AddText ("", 0);
+		}
+
 	if (gameOpts->app.bExpertMode) {
 		m.AddText ("", 0);
 		optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
 		optSmokeOpts = m.AddMenu (TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optLightningOpts = m.AddMenu (TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
-		if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
-			optShadowOpts = -1;
-		else
-			optShadowOpts = m.AddMenu (TXT_SHADOW_OPTIONS, KEY_A, HTX_RENDER_SHADOWOPTS);
 		optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 		optCoronaOpts = m.AddMenu (TXT_CORONA_OPTIONS, KEY_O, HTX_RENDER_CORONAOPTS);
 		optCameraOpts = m.AddMenu (TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);
@@ -354,10 +356,6 @@ do {
 		renderOpts.nRenderQual =
 		renderOpts.nTexQual =
 		renderOpts.nMeshQual =
-		renderOpts.nWallTransp = 
-		optColoredWalls =
-		optDepthSort =
-		renderOpts.nContrast =
 		optLightOpts =
 		optLightningOpts =
 		optSmokeOpts =
@@ -389,8 +387,6 @@ do {
 				i = -2, SmokeOptionsMenu ();
 			else if ((optLightningOpts >= 0) && (i == optLightningOpts))
 				i = -2, LightningOptionsMenu ();
-			else if ((optShadowOpts >= 0) && (i == optShadowOpts))
-				i = -2, ShadowOptionsMenu ();
 			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
 				i = -2, EffectOptionsMenu ();
 			else if ((optCoronaOpts >= 0) && (i == optCoronaOpts))
@@ -403,16 +399,12 @@ do {
 				i = -2, AutomapOptionsMenu ();
 			}
 		} while (i >= 0);
+
+	GET_VAL (extraGameInfo [0].bShadows, optShadows);
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
-	if (gameOpts->app.bExpertMode) {
-		gameOpts->render.color.bWalls = m [optColoredWalls].m_value;
-		GET_VAL (gameOpts->render.bDepthSort, optDepthSort);
-		if (renderOpts.nContrast >= 0)
-			gameStates.ogl.nContrast = m [renderOpts.nContrast].m_value;
-		if (nRendQualSave != gameOpts->render.nQuality)
-			SetRenderQuality ();
-		}
+	if (nRendQualSave != gameOpts->render.nQuality)
+		SetRenderQuality ();
 #if EXPMODE_DEFAULTS
 	else {
 		gameOpts->render.nMaxFPS = 250;
@@ -457,7 +449,15 @@ gameOpts->render.ship.nColor = 0;
 gameOpts->movies.bSubTitles = 1;
 gameOpts->movies.nQuality = 1;	//TODO: Tie to render quality
 gameOpts->movies.bResize = 1;
-
+// shadow render option defaults
+gameOpts->render.shadows.nLights = 2;
+gameOpts->render.shadows.nReach = 2;	//TODO: tie to render quality
+gameOpts->render.shadows.nClip = 2;		//TODO: tie to render quality
+gameOpts->render.shadows.bPlayers = 1;
+gameOpts->render.shadows.bRobots = 1;
+gameOpts->render.shadows.bMissiles = 0;
+gameOpts->render.shadows.bPowerups = 0;
+gameOpts->render.shadows.bReactors = 0;
 }
 
 #else //SIMPLE_MENUS
