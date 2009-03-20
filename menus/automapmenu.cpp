@@ -136,16 +136,16 @@ void AutomapOptionsMenu (void)
 	int	optBright, optGrayOut, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
 	char	szSlider [50];
 
-pszRadar [0] = TXT_OFF;
-pszRadar [1] = TXT_TOP;
-pszRadar [2] = TXT_BOTTOM;
-
 pszRadarRange [0] = TXT_SHORT;
 pszRadarRange [1] = TXT_MEDIUM;
 pszRadarRange [2] = TXT_FAR;
 *szSlider = '\0';
 
 #if SIMPLE_MENUS
+
+pszRadar [0] = TXT_OFF;
+pszRadar [1] = TXT_TOP;
+pszRadar [2] = TXT_BOTTOM;
 
 do {
 	m.Destroy ();

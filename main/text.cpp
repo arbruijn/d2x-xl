@@ -1641,7 +1641,7 @@ const char *defaultGameTexts [][2] = {
  {"Radar unten", "Radar at b~Ottom"},
  {"~Weisses Radar", "~White radar"},
  {"~Schwarzes Radar", "b~Lack radar"},
- {"r~Adar-Reichweite: %s", "radar r~Ange: %s"},
+ {"reich~Weite: %s", "r~Ange: %s"},
  {"~Rauch zeichnen", "render ~Smoke"},
  {"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d secs"},
  {"Powerups auf Karte ~Und Radar zeigen", "Show powerups on automap ~And radar"},

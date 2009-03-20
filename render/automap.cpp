@@ -739,7 +739,7 @@ while ((c = KeyInKey ())) {
 
 		case KEY_F2:
 			if (!gameStates.menus.nInMenu)
-				ConfigMenu ();
+				AutomapOptionsMenu ();
 			break;
 		}
 	}

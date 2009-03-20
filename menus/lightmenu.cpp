@@ -223,12 +223,9 @@ do {
 		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.color.bUseLightmaps;
 		}
 	extraGameInfo [0].bFlickerLights = m [optFlickerLights].m_value;
-	gameOpts->ogl.nMaxLightsPerFace = nMaxLightsPerFaceTable [gameOpts->ogl.nMaxLightsPerFace];
-
 	} while (i == -2);
 
 gameOpts->ogl.nMaxLightsPerFace = nPasses * gameOpts->ogl.nMaxLightsPerPass;
-
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 if (gameStates.render.nLightingMethod == 2)
 	gameStates.render.bPerPixelLighting = 2;
