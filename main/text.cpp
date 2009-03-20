@@ -1880,6 +1880,10 @@ const char *defaultGameTexts [][2] = {
  {"Alt-R\t  Radar umschalten.", "Alt-F12\t  toggle radar"},
  {"Cockpit-Anzeigen", "Cockpit Windows"},
  {"Groesse: %s", "Size: %s"},
+ {"~Epileptikerfreundlicher Modus", "~Epileptic-friendly mode"},
+ {"Farbenblindenfreundlicher Modus", "~Colorblind-friendly mode"},
+ {"~Verschiedenes und Barrierefreiheit", "m~Iscellaneous and accessibility"},
+ {"", ""},
 #if 0
  {"", ""},
 #endif

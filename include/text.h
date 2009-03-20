@@ -1931,12 +1931,12 @@ void LoadGameTexts(void);
 #define TXT_HLP_RADAR					GT(1134)
 #define TXT_COCKPIT_WINDOWS			GT(1135)
 #define TXT_AUXWIN_SIZE					GT(1136)
+#define TXT_EPILEPTIC_FRIENDLY		GT(1137)
+#define TXT_COLORBLIND_FRIENDLY		GT(1138)
+#define TXT_MISC_AND_ACCESS			GT(1139)
 
 #if 0
 
-#define TXT_					GT(1137)
-#define TXT_					GT(1138)
-#define TXT_					GT(1139)
 #define TXT_					GT(1140)
 #define TXT_					GT(1141)
 #define TXT_					GT(1142)
