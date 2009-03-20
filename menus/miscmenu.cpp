@@ -140,11 +140,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+void DefaultMiscSettings (void);
+
 void MiscellaneousMenu (void)
 {
 	CMenu m;
 	int	i, choice;
-	int	optHeadlight, optAutoLevel, optEnableMods,
+	int	optHeadlight, optAutoLevel, optEnableMods, optEpileptic, optColorblind,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
@@ -158,7 +160,7 @@ do {
 	m.Destroy ();
 	m.Create (20);
 	memset (&miscOpts, 0xff, sizeof (miscOpts));
-	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = -1;
+	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = optEpileptic = optColorblind = -1;
 	if (gameStates.app.bNostalgia) {
 		optAutoLevel = m.AddCheck (TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
 		optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
@@ -167,6 +169,8 @@ do {
 		optHeadlight = m.AddCheck (TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
 		}
 	else {
+		optEpileptic = m.AddCheck (TXT_EPILEPTIC_FRIENDLY, gameOpts->app.bEpilepticFriendly, KEY_E, HTX_EPILEPTIC_FRIENDLY);
+		optColorblind = m.AddCheck (TXT_COLORBLIND_FRIENDLY, gameOpts->app.bColorblindFriendly, KEY_E, HTX_COLORBLIND_FRIENDLY);
 		optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 		optHeadlight = 
 		optAutoLevel = -1;
@@ -199,14 +203,9 @@ do {
 		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m [optHeadlight].m_value;
 		}
 
-	gameOpts->gameplay.bEscortHotKeys = 1;
-	gameOpts->multi.bUseMacros = 1;
-	gameOpts->menus.bSmartFileSearch = 1;
-	gameOpts->menus.bShowLevelVersion = 1;
-	gameOpts->gameplay.bFastRespawn = 0;
-	gameOpts->demo.bOldFormat = gameStates.app.bNostalgia != 0;
-
 	if (!gameStates.app.bNostalgia) {
+		GET_VAL (gameOpts->app.bEpilepticFriendly, optEpileptic);
+		GET_VAL (gameOpts->app.bColorblindFriendly, optColorblind);
 		GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
 		}
 	if (gameStates.app.bNostalgia > 1)
@@ -215,6 +214,7 @@ do {
 		extraGameInfo [0].bAutoDownload = m [miscOpts.nAutoDl].m_value;
 	} while (i == -2);
 
+DefaultMiscSettings ();
 #else
 
 	int	optHeadlight, optEscort, optUseMacros,	optAutoLevel, optKeyboard,

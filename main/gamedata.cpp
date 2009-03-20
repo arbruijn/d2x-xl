@@ -1827,6 +1827,18 @@ void DefaultSettings (void)
 
 // ----------------------------------------------------------------------------
 
+void DefaultMiscSettings (void)
+{
+gameOptions [0].gameplay.bEscortHotKeys = 1;
+gameOptions [0].multi.bUseMacros = 1;
+gameOptions [0].menus.bSmartFileSearch = 1;
+gameOptions [0].menus.bShowLevelVersion = 1;
+gameOptions [0].gameplay.bFastRespawn = 0;
+gameOptions [0].demo.bOldFormat = gameStates.app.bNostalgia != 0;
+}
+
+// ----------------------------------------------------------------------------
+
 void DefaultCockpitSettings (void)
 {
 #if 0
