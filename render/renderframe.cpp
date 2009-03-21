@@ -466,7 +466,7 @@ return 0;
 void FlashMine (void)
 {
 if (gameOpts->app.bEpilepticFriendly || 
-	 !(gameOpts->app.bEpilepticFriendly/*extraGameInfo [0].bFlickerLights*/ && gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
+	 !(/*extraGameInfo [0].bFlickerLights &&*/ gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
 	return;
 
 	int	bDepthTest, bBlend;
