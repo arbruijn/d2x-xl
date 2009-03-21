@@ -212,6 +212,8 @@ return nCurItem;
 
 #if SIMPLE_MENUS
 
+void DefaultPhysicsSettings (void);
+
 void PhysicsOptionsMenu (void)
 {
 	CMenu	m;
