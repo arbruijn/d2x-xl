@@ -522,8 +522,7 @@ do {
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_P, HTX_POWERUPS);
 
 	m.AddText ("", 0);
-	//optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
-	optEffectOpts = m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
+	optEffectOpts = -1; //m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 	if (EXPERTMODE)
 		optAutomapOpts = m.AddMenu (TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
 
@@ -542,17 +541,10 @@ do {
 		i = m.Menu (NULL, TXT_RENDER_OPTS, RenderOptionsCallback, &choice);
 		if (i < 0)
 			break;
-		if (EXPERTMODE) {
-#if 0
-			if ((optLightOpts >= 0) && (i == optLightOpts))
-				i = -2, LightOptionsMenu ();
-			else 
-#endif
-			if ((optEffectOpts >= 0) && (i == optEffectOpts))
-				i = -2, EffectOptionsMenu ();
-			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))
-				i = -2, AutomapOptionsMenu ();
-			}
+		if (EXPERTMODE && (optAutomapOpts >= 0) && (i == optAutomapOpts))
+			i = -2, AutomapOptionsMenu ();
+		else if ((optEffectOpts >= 0) && (i == optEffectOpts))
+			i = -2, EffectOptionsMenu ();
 		} while (i >= 0);
 
 	if ((extraGameInfo [0].bUseParticles == (nSmoke != 0))) {

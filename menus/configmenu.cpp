@@ -117,7 +117,7 @@ void ConfigMenu (void)
 {
 	CMenu	menu;
 	int	i, choice = 0;
-	int	optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, 
+	int	optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, optEffects,
 			optMiscellaneous, optMultiThreading = -1, optRender, optGameplay, optCockpit, optPhysics = -1;
 
 do {
@@ -153,6 +153,7 @@ do {
 	if (!gameStates.app.bNostalgia) {
 		optCockpit = menu.AddMenu (TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
 		optRender = menu.AddMenu (TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
+		optEffects = menu.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 		if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame) 
 			optPhysics =
 			optGameplay = -1;
@@ -190,6 +191,8 @@ do {
 				CockpitOptionsMenu ();		
 			else if (i == optRender)
 				RenderOptionsMenu ();		
+			else if (i == optEffects)
+				EffectOptionsMenu ();
 			else if ((optGameplay >= 0) && (i == optGameplay))
 				GameplayOptionsMenu ();        
 			else if ((optPhysics >= 0) && (i == optPhysics))
