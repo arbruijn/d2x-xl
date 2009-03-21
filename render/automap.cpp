@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "menubackground.h"
 #include "systemkeys.h"
+#include "menu.h"
 #include "automap.h"
 
 #ifndef Pi
