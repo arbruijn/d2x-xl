@@ -191,7 +191,9 @@ return nCurItem;		//kill warning
 void SoundMenu (void)
 {
    CMenu	m;
+#if 0
 	char	szVolume [50];
+#endif
 	int	i, choice = 0;
 	int	optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, optShieldWarn = -1;
 	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
@@ -205,12 +207,14 @@ do {
 	soundOpts.nMusicVol = m.AddSlider (redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 												  redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 												  0, 8, KEY_M, HTX_ONLINE_MANUAL);
+#if 0
 	if (!gameStates.app.bNostalgia) {
 		sprintf (szVolume + 1, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
 		*szVolume = *(TXT_CUSTOM_SOUNDVOL - 1);
 		soundOpts.nVolume = m.AddSlider (szVolume + 1, gameOpts->sound.xCustomSoundVolume, 0, 10, KEY_C, HTX_CUSTOM_SOUNDVOL);  
 		}
-	if (gameStates.app.bNostalgia || !gameOpts->sound.xCustomSoundVolume) 
+#endif
+	if (gameStates.app.bNostalgia) 
 		optShipSound = 
 		optMissileSound =
 		optSpeedUpSound =
@@ -249,6 +253,7 @@ if (!gameStates.app.bNostalgia) {
 	if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 		audio.DestroyObjectSound (LOCALPLAYER.nObject);
 	}
+gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nDigiVolume) * 10.0f / 8.0f + 0.5f);
 }
 
 //------------------------------------------------------------------------------
