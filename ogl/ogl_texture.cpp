@@ -1389,7 +1389,7 @@ int nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	CreateMasks ();
 	if (bLoad) {
-		if (!PrepareTexture (bMipMaps, 0, NULL))
+		if (PrepareTexture (bMipMaps, 0, NULL))
 			return false;
 		if (Mask () && Mask ()->PrepareTexture (0, 1, NULL))
 			return false;

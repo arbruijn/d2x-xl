@@ -209,10 +209,6 @@ do {
 		GET_VAL (gameOpts->app.bColorblindFriendly, optColorblind);
 		GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
 		}
-	if (gameStates.app.bNostalgia > 1)
-		extraGameInfo [0].bAutoDownload = 0;
-	else
-		extraGameInfo [0].bAutoDownload = m [miscOpts.nAutoDl].m_value;
 	} while (i == -2);
 
 DefaultMiscSettings ();
