@@ -558,8 +558,10 @@ int CDownloadManager::DownloadMission (char *pszMission)
 
 PrintLog ("   trying to download mission '%s'\n", pszMission);
 gameStates.multi.bTryAutoDL = 0;
+#if 0
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))
 	return 0;
+#endif
 m.AddText ("", 0);
 sprintf (szProgress, "0%c done", '%');
 m_nOptPercentage = m.AddText (szProgress, 0);
