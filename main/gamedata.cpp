@@ -1622,7 +1622,7 @@ void DefaultMovieSettings (void)
 {
 // movie render option defaults
 gameOptions [0].movies.bSubTitles = 1;
-gameOptions [0].movies.nQuality = 1;	//TODO: Tie to render quality
+gameOptions [0].movies.nQuality = gameOptions [0].render.nQuality > 1;
 gameOptions [0].movies.bResize = 1;
 }
 
@@ -1632,8 +1632,8 @@ void DefaultShadowSettings (void)
 {
 // shadow render option defaults
 gameOptions [0].render.shadows.nLights = 2;
-gameOptions [0].render.shadows.nReach = 2;	//TODO: tie to render quality
-gameOptions [0].render.shadows.nClip = 2;		//TODO: tie to render quality
+gameOptions [0].render.shadows.nReach = (gameOptions [0].render.nQuality > 1) ? 2 : 1;
+gameOptions [0].render.shadows.nClip = (gameOptions [0].render.nQuality > 1) ? 2 : 1;
 gameOptions [0].render.shadows.bPlayers = 1;
 gameOptions [0].render.shadows.bRobots = 1;
 gameOptions [0].render.shadows.bMissiles = 0;
@@ -1663,11 +1663,11 @@ gameOptions [0].render.particles.bRobots = 1;
 gameOptions [0].render.particles.bMissiles = 1;
 gameOptions [0].render.particles.bDebris = 1;
 gameOptions [0].render.particles.bCollisions = 0;
-gameOptions [0].render.particles.bDisperse = 1;	//TODO: Tie to render quality
+gameOptions [0].render.particles.bDisperse = (gameOptions [0].render.nQuality > 0);
 gameOptions [0].render.particles.bRotate = 1;
 gameOptions [0].render.particles.bDecreaseLag = 1;
 gameOptions [0].render.particles.bAuxViews = 0;
-gameOptions [0].render.particles.bMonitors = 1;	//TODO: Tie to render quality
+gameOptions [0].render.particles.bMonitors = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.particles.bWiggleBubbles = 1;
 gameOptions [0].render.particles.bWobbleBubbles = 1;
 // player ships
@@ -1699,13 +1699,12 @@ void DefaultEffectSettings (void)
 gameOptions [0].render.effects.bAutoTransparency = 1;
 gameOptions [0].render.effects.bTransparent = 1;
 gameOptions [0].render.effects.bExplBlasts = 1;
-gameOptions [0].render.effects.bEnergySparks = 1;	//TODO: Tie to render quality
+gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 0);
 gameOptions [0].render.effects.bMovingSparks = 1;
 extraGameInfo [0].bPlayerShield = 1;
 gameOptions [0].render.effects.bRobotShields = 1;
 gameOptions [0].render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
-//extraGameInfo [0].bGatlingTrails = 1;	//TODO: Tie to render quality
 extraGameInfo [0].bShockwaves = 0; 
 extraGameInfo [0].bDamageExplosions = 0;
 }
@@ -1748,7 +1747,7 @@ gameOptions [0].render.color.bMix = 1;
 gameOptions [0].render.color.nSaturation = 1;
 extraGameInfo [0].bPowerupLights = 0;
 extraGameInfo [0].bBrightObjects = 0;
-gameOptions [0].ogl.nMaxLightsPerObject = 16; //TODO: Tie to render quality
+gameOptions [0].ogl.nMaxLightsPerObject = (gameOptions [0].render.nQuality + 1) * 8;
 gameOptions [0].ogl.bHeadlight = 1;
 gameOptions [0].ogl.bObjLighting = 1;
 gameOptions [0].ogl.bLightObjects = 1;
@@ -1778,7 +1777,7 @@ void DefaultRenderSettings (void)
 extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
 gameOptions [0].render.color.bWalls = 1;
 gameStates.ogl.nContrast = 8;
-gameOptions [0].render.texture.nQuality = gameOptions [0].render.nQuality;
+gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;
 DefaultSmokeSettings ();
 DefaultShadowSettings ();
 DefaultCoronaSettings ();
