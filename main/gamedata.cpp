@@ -551,8 +551,8 @@ Init ();
 void CFaceListIndex::Init (void)
 {
 #if 1
-roots.Clear (-1);
-tails.Clear (-1);
+roots.Clear (short (-1));
+tails.Clear (short (-1));
 usedKeys.Clear (0);
 #endif
 }

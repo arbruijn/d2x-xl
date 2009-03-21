@@ -112,11 +112,7 @@ if (!gameStates.app.bNostalgia) {
 		}
 	if (!gameOpts->app.bExpertMode) 
 		downloadManager.SetTimeoutIndex (15);
-	else
-
-#endif
-
-		{
+	else {
 		m = menu + miscOpts.nAutoDl;
 		v = m->m_value;
 		if (extraGameInfo [0].bAutoDownload != v) {
@@ -134,6 +130,9 @@ if (!gameStates.app.bNostalgia) {
 				}
 			}
 		}
+
+#endif
+
 	}
 return nCurItem;
 }
