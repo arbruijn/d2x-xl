@@ -337,14 +337,14 @@ if (!gameStates.app.bGameRunning) {
 	if (renderOpts.nLights >= 0) {
 		m = menu + renderOpts.nLights;
 		v = m->m_value + 1;
-		if (v != gameOpts->ogl.nMaxLightsPerPass) {
-			gameOpts->ogl.nMaxLightsPerPass = v;
+		if (v != gameOpts->ogl.nMaxLightsPerPass - 4) {
+			gameOpts->ogl.nMaxLightsPerPass = v + 4;
 			sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			key = -2;
 			return nCurItem;
 			}
 		}
-
+#if 0
 	if (renderOpts.nPasses >= 0) {
 		m = menu + renderOpts.nPasses;
 		v = m->m_value + 1;
@@ -355,6 +355,7 @@ if (!gameStates.app.bGameRunning) {
 			return nCurItem;
 			}
 		}
+#endif
 	}
 
 return nCurItem;
@@ -427,7 +428,7 @@ do {
 	m.Create (50);
 	optAutomapOpts = -1;
 
-	if (1 || !EXPERTMODE) {
+	if (!EXPERTMODE) {
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 		}
 	if (!gameStates.app.bNostalgia)
@@ -448,7 +449,7 @@ do {
 	renderOpts.nLightmaps = 
 	renderOpts.nLights = 
 	renderOpts.nPasses = -1;
-	if (gameStates.app.bGameRunning)
+	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
 		renderOpts.nLighting = -1;
 	else {
 		sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
@@ -462,11 +463,12 @@ do {
 			if (nLighting == 3) {
 				sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 				*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
-				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 7, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
-
+				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 4, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
+#if 0
 				sprintf (szSlider + 1, TXT_MAX_PASSES_PER_FACE, nPasses);
 				*szSlider = *(TXT_MAX_PASSES_PER_FACE - 1);
 				renderOpts.nPasses = m.AddSlider (szSlider + 1, nPasses - 1, 0, min (15, 32 / gameOpts->ogl.nMaxLightsPerPass - 1), KEY_F, HTX_MAX_PASSES_PER_FACE);
+#endif
 				}
 			}
 		m.AddText ("", 0);
@@ -548,7 +550,7 @@ do {
 			i = -2, EffectOptionsMenu ();
 		} while (i >= 0);
 
-	extraGameInfo [0].bUseParticles == (gameOpts->render.particles.nQuality != 0);
+	extraGameInfo [0].bUseParticles = (gameOpts->render.particles.nQuality != 0);
 
 	if (renderOpts.nShadows >= 0) {
 		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
@@ -571,7 +573,7 @@ do {
 	if (nRendQualSave != gameOpts->render.nImageQuality)
 		SetRenderQuality ();
 
-	if (nLighting == 0)
+	if (gameStates.app.bNostalgia || (nLighting == 0))
 		gameOpts->render.nLightingMethod = 0;
 	else {
 		gameOpts->render.color.bUseLightmaps = (nLighting > 1);
@@ -589,8 +591,9 @@ do {
 #endif
 	} while (i == -2);
 
+nPasses = (16 + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
 gameOpts->ogl.nMaxLightsPerFace = nPasses * gameOpts->ogl.nMaxLightsPerPass;
-gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
+
 if (gameStates.render.nLightingMethod == 2)
 	gameStates.render.bPerPixelLighting = 2;
 else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)
