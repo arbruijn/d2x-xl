@@ -179,7 +179,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 				? 0 
 				: (gameOpts->render.nLightingMethod == 2) 
 					? 3 
-					: (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps) + 1;
+					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 
 nPasses = (gameOpts->ogl.nMaxLightsPerFace + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
 
@@ -464,7 +464,7 @@ do {
 		if (lightOpts.nGunColor >= 0)
 			gameOpts->render.color.bGunLight = m [lightOpts.nGunColor].m_value;
 		if (gameOpts->app.bExpertMode) {
-			if (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps)
+			if (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps)
 			gameStates.ogl.nContrast = 8;
 			if (gameOpts->render.color.bGunLight)
 				GET_VAL (gameOpts->render.color.bMix, optMixColors);

@@ -97,8 +97,8 @@ extern CLightmapManager lightmapManager;
 
 
 #define	USE_LIGHTMAPS \
-			(gameStates.render.color.bLightmapsOk && \
-			 gameOpts->render.color.bUseLightmaps && \
+			(gameStates.render.bLightmapsOk && \
+			 gameOpts->render.bUseLightmaps && \
 			 !IsMultiGame && \
 			 (gameOpts->render.nLightingMethod == 0))
 

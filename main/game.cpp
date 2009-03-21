@@ -181,11 +181,7 @@ automap.Init ();
 InitDefaultPlayerShip ();
 nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
-gameStates.render.color.bRenderLightmaps =
-	gameStates.render.color.bLightmapsOk &&
-	gameStates.render.bAmbientColor &&
-	gameOpts->render.color.bUseLightmaps;
-fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
+fpDrawTexPolyMulti = G3DrawTexPolyMulti;
 return true;
 }
 

@@ -416,7 +416,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 				? 0 
 				: (gameOpts->render.nLightingMethod == 2) 
 					? 3 
-					: (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps) + 1;
+					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nPasses = (gameOpts->ogl.nMaxLightsPerFace + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
 nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 ? 2 : 1 : 0;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
@@ -576,8 +576,8 @@ do {
 	if (gameStates.app.bNostalgia || (nLighting == 0))
 		gameOpts->render.nLightingMethod = 0;
 	else {
-		gameOpts->render.color.bUseLightmaps = (nLighting > 1);
-		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.color.bUseLightmaps;
+		gameOpts->render.bUseLightmaps = (nLighting > 1);
+		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.bUseLightmaps;
 		}
 
 #if DBG

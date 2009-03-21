@@ -241,7 +241,6 @@ gameStates.render.grAlpha = 1.0f;
 gameStates.render.bShowFrameRate = 0;
 gameStates.render.bShowTime = 0;
 gameStates.render.cameras.bActive = 0;
-gameStates.render.color.bLightmapsOk = 1;
 gameStates.render.nZoomFactor = I2X (1);
 gameStates.render.nMinZoomFactor = I2X (1);
 gameStates.render.nMaxZoomFactor = I2X (5);

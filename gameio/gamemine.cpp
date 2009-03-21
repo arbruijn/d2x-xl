@@ -631,7 +631,7 @@ if (nState)
 	int	bLightmaps = 0, bShadows = 0;
 
 #if LIGHTMAPS
-if (gameStates.app.bD2XLevel && gameStates.render.color.bLightmapsOk)
+if (gameStates.app.bD2XLevel && gameStates.render.bLightmapsOk)
 	bLightmaps = 1;
 #endif
 #if SHADOWS
@@ -708,7 +708,7 @@ int LoadMineGaugeSize (void)
 	int	bLightmaps = 0, bShadows = 0;
 
 #if LIGHTMAPS
-	if (gameStates.render.color.bLightmapsOk)
+	if (gameStates.render.bLightmapsOk)
 		bLightmaps = 1;
 #endif
 #if SHADOWS

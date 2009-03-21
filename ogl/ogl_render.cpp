@@ -426,13 +426,13 @@ console.printf (CON_DBG, "DrawTexPolyFlat: unhandled\n");//should never get call
 
 int G3DrawTexPolyFlat (
 	int			nVertices,
-	g3sPoint		**pointList,
-	tUVL			*uvlList,
-	tUVL			*uvlLMap,
-	CBitmap	*bmBot,
-	CBitmap	*bmTop,
-	tLightmap	*lightmap,
-	CFixVector	*pvNormal,
+	g3sPoint**	pointList,
+	tUVL*			uvlList,
+	tUVL*			uvlLMap,
+	CBitmap*		bmBot,
+	CBitmap*		bmTop,
+	tLightmap*	lightmap,
+	CFixVector*	pvNormal,
 	int			orient,
 	int			bBlend,
 	short			nSegment)
@@ -810,13 +810,13 @@ return 0;
 
 int G3DrawTexPolyLightmap (
 	int			nVertices,
-	g3sPoint		**pointList,
-	tUVL			*uvlList,
-	tUVL			*uvlLMap,
-	CBitmap	*bmBot,
-	CBitmap	*bmTop,
-	tLightmap	*lightmap,
-	CFixVector	*pvNormal,
+	g3sPoint**	pointList,
+	tUVL*			uvlList,
+	tUVL*			uvlLMap,
+	CBitmap*		bmBot,
+	CBitmap*		bmTop,
+	tLightmap*	lightmap,
+	CFixVector*	pvNormal,
 	int			orient,
 	int			bBlend,
 	short			nSegment)
@@ -848,7 +848,7 @@ else {
 	}
 glDepthFunc (GL_LEQUAL);
 bmBot = bmBot->Override (-1);
-if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
 	bmP = bmTop;
 	bmTop = bmTop->CurFrame ();
@@ -856,7 +856,7 @@ if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 else
 	nFrame = -1;
 if (!lightmap) //lightmapping enabled
-	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightmap, pvNormal, orient, bBlend, nSegment);
+	return G3DrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightmap, pvNormal, orient, bBlend, nSegment);
 // chose shaders depending on whether overlay bitmap present or not
 if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	lmProg = lmShaderProgs [(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0];

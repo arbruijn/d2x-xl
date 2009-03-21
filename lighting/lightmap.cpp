@@ -674,7 +674,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		lightManager.Transform (1, 0);
 		int nSaturation = gameOpts->render.color.nSaturation;
 		gameOpts->render.color.nSaturation = 1;
-		gameStates.render.bLightmaps = 1;
+		gameStates.render.bHaveLightmaps = 1;
 		//gameData.render.fAttScale [0] = 2.0f;
 		lightManager.Index (0)[0].nFirst = MAX_SHADER_LIGHTS;
 		lightManager.Index (0)[0].nLast = 0;
@@ -685,7 +685,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		else
 			BuildAll (-1);
 		//gameData.render.fAttScale [0] = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
-		gameStates.render.bLightmaps = 0;
+		gameStates.render.bHaveLightmaps = 0;
 		gameStates.render.nState = 0;
 		gameOpts->render.color.nSaturation = nSaturation;
 		Realloc ((m_list.nLightmaps + LIGHTMAP_BUFSIZE - 1) / LIGHTMAP_BUFSIZE);

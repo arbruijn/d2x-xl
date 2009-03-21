@@ -1423,10 +1423,7 @@ else
 gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras &&
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) &&
 										 !gameStates.render.cameras.bActive;
-gameStates.render.bDoLightmaps = gameStates.render.color.bLightmapsOk &&
-											gameOpts->render.color.bUseLightmaps &&
-											gameStates.render.bAmbientColor &&
-											!IsMultiGame;
+gameStates.render.bDoLightmaps = 0;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 PROF_END(ptAux)
 

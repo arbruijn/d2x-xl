@@ -809,13 +809,6 @@ typedef struct tCameraStates {
 
 //------------------------------------------------------------------------------
 
-typedef struct tColorStates {
-	int bLightmapsOk;
-	int bRenderLightmaps;
-} tColorStates;
-
-//------------------------------------------------------------------------------
-
 typedef struct tTextureStates {
 	int bGlTexMergeOk;
 	int bHaveMaskShader;
@@ -912,7 +905,8 @@ typedef struct tRenderStates {
 	int bPointSprites;
 	int bVertexArrays;
 	int bAutoMap;
-	int bLightmaps;
+	int bLightmapsOk;
+	int bHaveLightmaps;
 	int bUseLightmaps;
 	int bDisableFades;
 	int bBlendBackground;
@@ -990,7 +984,6 @@ typedef struct tRenderStates {
 	tCameraStates cameras;
 	tCockpitStates cockpit;
 	tVRStates vr;
-	tColorStates color;
 	tFontStates fonts;
 	tTextureStates textures;
 	fix nZoomFactor;

@@ -324,8 +324,7 @@ if (gameStates.ogl.bShadersOk) {
 	if (!gameStates.ogl.bShadersOk)
 		PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
 	}
-if (gameStates.render.color.bLightmapsOk)
-	gameStates.render.color.bLightmapsOk = (nTMUs > 2);
+gameStates.render.bLightmapsOk = (nTMUs > 2);
 PrintLog ("   initializing texture merging shader programs\n");
 InitTexMergeShaders ();
 gameData.render.ogl.nHeadlights = 0;

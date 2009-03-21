@@ -588,7 +588,7 @@ else {
 								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
 								objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
 								light, glow, NULL, NULL);
-	fpDrawTexPolyMulti = gameStates.render.color.bRenderLightmaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
+	fpDrawTexPolyMulti = G3DrawTexPolyMulti;
 	gameStates.render.grAlpha = 1.0f;
 	gameStates.render.bCloaked = 0;
 	}

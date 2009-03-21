@@ -491,8 +491,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
 			}
 		}
-	if ((nSaturation < 2) || gameStates.render.bLightmaps) {//sum up color components
-		colorSum = colorSum + vertColor * (1.0f/fAttenuation);
+	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps) {//sum up color components
+		colorSum = colorSum + vertColor * (1.0f / fAttenuation);
 		}
 	else {	//use max. color components
 		vertColor = vertColor * fAttenuation;
@@ -513,7 +513,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	j++;
 	}
 if (j) {
-	if ((nSaturation == 1) || gameStates.render.bLightmaps) { //if a color component is > 1, cap color components using highest component value
+	if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) { //if a color component is > 1, cap color components using highest component value
 		float	cMax = colorSum [R];
 		if (cMax < colorSum [G])
 			cMax = colorSum [G];
@@ -724,7 +724,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		vertColor [Z] += lightColor [Z] * vcd.matSpecular [Z];
 #endif
 		}
-	if ((nSaturation < 2) || gameStates.render.bLightmaps) {//sum up color components
+	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps) {//sum up color components
 #if VECMAT_CALLS
 		VmVecScaleAdd (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
 #else
@@ -754,7 +754,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	j++;
 	}
 if (j) {
-	if ((nSaturation == 1) || gameStates.render.bLightmaps) { //if a color component is > 1, cap color components using highest component value
+	if ((nSaturation == 1) || gameStates.render.bHaveLightmaps) { //if a color component is > 1, cap color components using highest component value
 		float	cMax = colorSum [R];
 		if (cMax < colorSum [G])
 			cMax = colorSum [G];
