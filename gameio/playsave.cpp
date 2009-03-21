@@ -478,7 +478,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nLightingMethod, i, 0);
 		RP (gameOptions [i].render.nDebrisLife, i, 0);
 
-		RP (gameOptions [i].render.textures.nQuality, i, 0);
+		RP (gameOptions [i].render.nQuality, i, 0);
 		RP (gameOptions [i].render.effects.bAutoTransparency, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
 		RP (gameOptions [i].render.effects.bMovingSparks, i, 0);
@@ -1014,7 +1014,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].ogl.nMaxLightsPerObject", "8"},
  {"gameOptions[0].render.nLightingMethod", "0"},
  {"gameOptions[0].render.nDebrisLife", "0"},
- {"gameOptions[0].render.textures.nQuality", "2"},
+ {"gameOptions[0].render.nQuality", "2"},
  {"gameOptions[0].render.effects.bAutoTransparency", "1"},
  {"gameOptions[0].render.effects.bSoftParticles", "0"},
  {"gameOptions[0].render.effects.bMovingSparks", "0"},
@@ -1115,7 +1115,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.weaponIcons.bBoldHighlight", "0"},
  {"gameOptions[0].render.weaponIcons.nSort", "1"},
  {"gameOptions[0].render.weaponIcons.nHiliteColor", "0"},
- {"gameOptions[0].render.nMaxFPS", "250"},
+ {"gameOptions[0].render.nMaxFPS", "60"},
  {"gameOptions[0].render.nImageQuality", "3"},
  {"gameOptions[0].render.cockpit.bFlashGauges", "1"},
  {"gameOptions[0].sound.bFadeMusic", "1"},
