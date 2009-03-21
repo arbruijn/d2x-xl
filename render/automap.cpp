@@ -55,6 +55,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define Pi 3.141592653589793240
 #endif
 
+void AutomapOptionsMenu (void);
+
 //------------------------------------------------------------------------------
 
 #define RESCALE_X(x) ((x) * m_nWidth / 640)
