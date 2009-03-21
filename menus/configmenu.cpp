@@ -158,7 +158,7 @@ do {
 			optGameplay = -1;
 		else {
 			optGameplay = menu.AddMenu (TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
-			optPhysics = menu.AddMenu (TXT_PHYSICS_MENUCALL, KEY_Y, HTX_OPTIONS_PHYSICS);
+			optPhysics = menu.AddMenu (TXT_PHYSICS_MENUCALL, KEY_P, HTX_OPTIONS_PHYSICS);
 			}
 #if 0
 		optMultiThreading = menu.AddMenu (TXT_MT_MENU_OPTION, KEY_U, HTX_MULTI_THREADING);
