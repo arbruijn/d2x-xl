@@ -1657,8 +1657,7 @@ gameOptions [0].render.coronas.bAdditiveObjs = 1;
 
 void DefaultSmokeSettings (void)
 {
-// smoke render option defaults
-gameOptions [0].render.particles.bPlayers = 1;
+gameOptions [0].render.particles.bPlayers = (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.bRobots = 1;
 gameOptions [0].render.particles.bMissiles = 1;
 gameOptions [0].render.particles.bDebris = 1;
@@ -1677,19 +1676,22 @@ gameOptions [0].render.particles.nLife [1] = 0;
 gameOptions [0].render.particles.nAlpha [1] = 0;
 // robots
 gameOptions [0].render.particles.nSize [2] = 1;
-gameOptions [0].render.particles.nDens [2] = 2;
+gameOptions [0].render.particles.nDens [2] = 1 + (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nLife [2] = 0;
 gameOptions [0].render.particles.nAlpha [2] = 0;
 // missiles
-gameOptions [0].render.particles.nSize [3] = 2;
-gameOptions [0].render.particles.nDens [3] = 1;
+gameOptions [0].render.particles.nSize [3] = 1 + (gameOpts->render.particles.nQuality > 1);
+gameOptions [0].render.particles.nDens [3] = (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nLife [3] = 1;
-gameOptions [0].render.particles.nAlpha [3] = 1;
+gameOptions [0].render.particles.nAlpha [3] = (gameOpts->render.particles.nQuality > 1);
 // debris
 gameOptions [0].render.particles.nSize [4] = 1;
 gameOptions [0].render.particles.nDens [4] = 2;
 gameOptions [0].render.particles.nLife [4] = 0;
 gameOptions [0].render.particles.nAlpha [4] = 0;
+// static smoke
+gameOptions [0].render.particles.bStatic = 
+gameOptions [0].render.particles.bBubbles = (gameOptions [0].render.particles.nQuality > 2);
 }
 
 // ----------------------------------------------------------------------------

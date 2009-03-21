@@ -242,6 +242,7 @@ typedef struct tTextureOptions {
 //------------------------------------------------------------------------------
 
 typedef struct tParticleOptions {
+	int nQuality;
 	int nDens [5];
 	int nSize [5];
 	int nLife [5];

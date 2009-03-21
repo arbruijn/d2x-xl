@@ -189,7 +189,7 @@ return nCurItem;
 
 #if SIMPLE_MENUS
 
-static int nCoronas, nSmoke, nShadows, nPowerups, nCameras, nLighting, nPasses;
+static int nCoronas, nShadows, nPowerups, nCameras, nLighting, nPasses;
 
 static const char* pszNoneBasicAdv [3];
 static const char* pszNoneBasicFull [3];
@@ -266,9 +266,9 @@ if (renderOpts.nMeshQual > 0) {
 
 m = menu + renderOpts.nSmoke;
 v = m->m_value;
-if (nSmoke != v) {
-	nSmoke = v;
-	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicStdFull [nSmoke]);
+if (gameOpts->render.particles.nQuality != v) {
+	gameOpts->render.particles.nQuality = v;
+	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicStdFull [gameOpts->render.particles.nQuality]);
 	m->m_bRebuild = -1;
 	}
 
@@ -314,44 +314,46 @@ if (nPowerups != v) {
 	m->m_bRebuild = -1;
 	}
 
-m = menu + renderOpts.nLighting;
-v = m->m_value;
-if (nLighting != v) {
-	nLighting = v;
-	sprintf (m->m_text, TXT_LIGHTING, pszQuality [nLighting]);
-	key = -2;
-	return nCurItem;
-	}
-
-if (renderOpts.nLightmaps >= 0) {
-	m = menu + renderOpts.nLightmaps;
+if (!gameStates.app.bGameRunning) {
+	m = menu + renderOpts.nLighting;
 	v = m->m_value;
-	if (gameOpts->render.nLightmapQuality != v) {
-		gameOpts->render.nLightmapQuality = v;
-		sprintf (m->m_text, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
-		m->m_bRebuild = 1;
-		}
-	}
-
-if (renderOpts.nLights >= 0) {
-	m = menu + renderOpts.nLights;
-	v = m->m_value + 1;
-	if (v != gameOpts->ogl.nMaxLightsPerPass) {
-		gameOpts->ogl.nMaxLightsPerPass = v;
-		sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
+	if (nLighting != v) {
+		nLighting = v;
+		sprintf (m->m_text, TXT_LIGHTING, pszQuality [nLighting]);
 		key = -2;
 		return nCurItem;
 		}
-	}
 
-if (renderOpts.nPasses >= 0) {
-	m = menu + renderOpts.nPasses;
-	v = m->m_value + 1;
-	if (v != nPasses) {
-		nPasses = v;
-		sprintf (m->m_text, TXT_MAX_PASSES_PER_FACE, v);
-		m->m_bRebuild = 1;
-		return nCurItem;
+	if (renderOpts.nLightmaps >= 0) {
+		m = menu + renderOpts.nLightmaps;
+		v = m->m_value;
+		if (gameOpts->render.nLightmapQuality != v) {
+			gameOpts->render.nLightmapQuality = v;
+			sprintf (m->m_text, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+			m->m_bRebuild = 1;
+			}
+		}
+
+	if (renderOpts.nLights >= 0) {
+		m = menu + renderOpts.nLights;
+		v = m->m_value + 1;
+		if (v != gameOpts->ogl.nMaxLightsPerPass) {
+			gameOpts->ogl.nMaxLightsPerPass = v;
+			sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
+			key = -2;
+			return nCurItem;
+			}
+		}
+
+	if (renderOpts.nPasses >= 0) {
+		m = menu + renderOpts.nPasses;
+		v = m->m_value + 1;
+		if (v != nPasses) {
+			nPasses = v;
+			sprintf (m->m_text, TXT_MAX_PASSES_PER_FACE, v);
+			m->m_bRebuild = 1;
+			return nCurItem;
+			}
 		}
 	}
 
@@ -416,7 +418,6 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.color.bLightmapsOk && gameOpts->render.color.bUseLightmaps) + 1;
 nPasses = (gameOpts->ogl.nMaxLightsPerFace + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
 nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 ? 2 : 1 : 0;
-nSmoke = extraGameInfo [0].bUseParticles ? gameOpts->render.particles.bStatic ? 3 : gameOpts->render.particles.bPlayers ? 2 : 1 : 0;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
@@ -493,9 +494,9 @@ do {
 		}
 
 	m.AddText ("");
-	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicStdFull [nSmoke]);
+	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicStdFull [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
-	renderOpts.nSmoke = m.AddSlider (szSlider + 1, nSmoke, 0, 3, KEY_S, HTX_SMOKE);
+	renderOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 3, KEY_S, HTX_SMOKE);
 
 	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 		renderOpts.nShadows = -1;
@@ -547,11 +548,7 @@ do {
 			i = -2, EffectOptionsMenu ();
 		} while (i >= 0);
 
-	if ((extraGameInfo [0].bUseParticles == (nSmoke != 0))) {
-		gameOpts->render.particles.bPlayers = (nSmoke == 2);
-		gameOpts->render.particles.bStatic = 
-		gameOpts->render.particles.bBubbles = (nSmoke == 3);
-		}
+	extraGameInfo [0].bUseParticles == (gameOpts->render.particles.nQuality != 0);
 
 	if (renderOpts.nShadows >= 0) {
 		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
