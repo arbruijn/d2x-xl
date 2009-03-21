@@ -1795,6 +1795,19 @@ DefaultAutomapSettings ();
 
 void DefaultPhysicsSettings (void)
 {
+extraGameInfo [0].nSpeedBoost = 100;
+extraGameInfo [0].bRobotsHitRobots = 1;
+extraGameInfo [0].bKillMissiles = 1;
+extraGameInfo [0].bFluidPhysics = 1;
+extraGameInfo [0].nHitboxes = 0;
+gameOpts->render.nDebrisLife = 0;
+if (gameOpts->app.bExpertMode != 9773) {
+	extraGameInfo [0].bWiggle = 1;
+	extraGameInfo [0].nOmegaRamp = 0;
+	extraGameInfo [0].nMslTurnSpeed = 2;
+	extraGameInfo [0].nMslStartSpeed = 0;
+	gameOpts->gameplay.nSlowMotionSpeedup = 6;
+	}
 }
 
 // ----------------------------------------------------------------------------

@@ -1933,11 +1933,11 @@ void LoadGameTexts(void);
 #define TXT_AUXWIN_SIZE					GT(1136)
 #define TXT_EPILEPTIC_FRIENDLY		GT(1137)
 #define TXT_COLORBLIND_FRIENDLY		GT(1138)
+#define TXT_HIT_DETECTION				GT(1139)
+#define TXT_AUTOLEVEL					GT(1140)
 
 #if 0
 
-#define TXT_					GT(1139)
-#define TXT_					GT(1140)
 #define TXT_					GT(1141)
 #define TXT_					GT(1142)
 #define TXT_					GT(1143)
@@ -2407,7 +2407,7 @@ void LoadGameTexts(void);
 #define HTX_TRACKIR_AIM					HT(289)			
 #define HTX_TRACKIR_STEER				HT(290)			
 #define HTX_TRACKIR_LOOK				HT(291)			
-#define HTX_AUTO_LEVELLING				HT(292)			
+#define HTX_AUTO_LEVELING				HT(292)			
 #define HTX_PLAYER_DRAG					HT(293)			
 #define HTX_LIGHTTRAIL_TYPE			HT(294)			
 #define HTX_EXPLOSION_BLAST			HT(295)			
@@ -2520,10 +2520,10 @@ void LoadGameTexts(void);
 #define HTX_WEAPON_SWITCH				HT(401)			
 #define HTX_EPILEPTIC_FRIENDLY		HT(402)
 #define HTX_COLORBLIND_FRIENDLY		HT(403)
+#define HTX_HIT_DETECTION				HT(404)			
 
 #if 0
 
-#define HTX_						HT(404)			
 #define HTX_						HT(405)			
 #define HTX_						HT(406)			
 #define HTX_						HT(407)			
