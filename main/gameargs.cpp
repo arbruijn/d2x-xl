@@ -432,11 +432,11 @@ void EvalRenderArgs (void)
 	int	t;
 
 if ((t = FindArg ("-render_quality")) && *pszArgList [t+1]) {
-	gameOpts->render.nQuality = NumArg (t, 3);
-	if (gameOpts->render.nQuality < 0)
-		gameOpts->render.nQuality = 0;
-	else if (gameOpts->render.nQuality > 3)
-		gameOpts->render.nQuality = 3;
+	gameOpts->render.nImageQuality = NumArg (t, 3);
+	if (gameOpts->render.nImageQuality < 0)
+		gameOpts->render.nImageQuality = 0;
+	else if (gameOpts->render.nImageQuality > 3)
+		gameOpts->render.nImageQuality = 3;
 	}
 #if FBO_DRAW_BUFFER
 if ((t = FindArg ("-render_indirect")))

@@ -66,8 +66,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "soundthreads.h"
 #include "menubackground.h"
 
-#define SUPERUSER 9773
-
 //------------------------------------------------------------------------------
 
 static struct {
@@ -139,7 +137,7 @@ if (gameOpts->app.bExpertMode == SUPERUSER) {
 	v = m->m_value;
 	if (nHitDetection != v) {
 		nHitDetection = v;
-		sprintf (m->m_text, TXT_HIT_DETECTION, pszAutoLevel [v]);
+		sprintf (m->m_text, TXT_HIT_DETECTION, pszHitDetection [v]);
 		m->m_bRebuild = 1;
 		}
 
@@ -279,7 +277,7 @@ do {
 
 	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszHitDetection [nHitDetection]);
 	*szSlider = *(TXT_HIT_DETECTION - 1);
-	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, nHitDetection, 0, 3, KEY_H, HTX_GPLAY_HITBOXES);
+	physOpts.nHitDetection = m.AddSlider (szSlider + 1, nHitDetection, 0, 3, KEY_H, HTX_GPLAY_HITBOXES);
 
 	do {
 		i = m.Menu (NULL, TXT_PHYSICS_MENUTITLE, PhysicsOptionsCallback, &choice);

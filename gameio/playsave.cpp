@@ -592,7 +592,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
 		RP (gameOptions [i].render.weaponIcons.nHiliteColor, i, 0);
 		RP (gameOptions [i].render.nMaxFPS, i, 0);
-		RP (gameOptions [i].render.nQuality, i, 0);
+		RP (gameOptions [i].render.nImageQuality, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].app.nVersionFilter, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
@@ -1116,7 +1116,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.weaponIcons.nSort", "1"},
  {"gameOptions[0].render.weaponIcons.nHiliteColor", "0"},
  {"gameOptions[0].render.nMaxFPS", "250"},
- {"gameOptions[0].render.nQuality", "3"},
+ {"gameOptions[0].render.nImageQuality", "3"},
  {"gameOptions[0].render.cockpit.bFlashGauges", "1"},
  {"gameOptions[0].sound.bFadeMusic", "1"},
  {"gameOptions[0].sound.bGatling", "0"},
@@ -1681,7 +1681,7 @@ for (i = 0; i < 2; i++) {
 			extraGameInfo [0].bFluidPhysics = (int) cf.ReadByte ();
 		}
 	if (gameStates.input.nPlrFileVersion >= 70) {
-		gameOptions [i].render.nQuality = (int) cf.ReadByte ();
+		gameOptions [i].render.nImageQuality = (int) cf.ReadByte ();
 		SetRenderQuality ();
 		}
 	if (gameStates.input.nPlrFileVersion >= 71)

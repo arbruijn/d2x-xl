@@ -116,7 +116,7 @@ void SetRenderQuality (int nQuality)
 	static int nCurQual = -1;
 
 if (nQuality < 0)
-	nQuality = gameOpts->render.nQuality;
+	nQuality = gameOpts->render.nImageQuality;
 if (nCurQual == nQuality)
 	return;
 nCurQual = nQuality;

@@ -40,6 +40,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define USE_SDL_IMAGE	1
 #endif
 
+#define SUPERUSER			9773
+
 #define SHOW_EXIT_PATH  1
 
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
@@ -379,7 +381,7 @@ typedef struct tRenderOptions {
 	short nMaxFPS;
 	int nPath;
 	int nQuality;
-	int nTextureQuality;
+	int nImageQuality;
 	int nDebrisLife;
 	int bDepthSort;
 	tCameraOptions cameras;

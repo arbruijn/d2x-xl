@@ -92,7 +92,7 @@ gameOpts->ogl.bSetGammaRamp = 0;
 gameStates.ogl.nContrast = 8;
 if (gameStates.app.nCompSpeed == 0) {
 	gameOpts->render.bUseLightmaps = 0;
-	gameOpts->render.nQuality = 1;
+	gameOpts->render.nImageQuality = 1;
 	gameOpts->render.cockpit.bTextGauges = 1;
 	gameOpts->render.nLightingMethod = 0;
 	gameOpts->ogl.bLightObjects = 0;
@@ -118,7 +118,7 @@ if (gameStates.app.nCompSpeed == 0) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	}
 else if (gameStates.app.nCompSpeed == 1) {
-	gameOpts->render.nQuality = 2;
+	gameOpts->render.nImageQuality = 2;
 	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 0;
 	gameOpts->render.particles.bRobots = 1;
@@ -176,7 +176,7 @@ else if (gameStates.app.nCompSpeed == 1) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	}
 else if (gameStates.app.nCompSpeed == 2) {
-	gameOpts->render.nQuality = 2;
+	gameOpts->render.nImageQuality = 2;
 	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 0;
 	gameOpts->render.particles.bRobots = 1;
@@ -239,7 +239,7 @@ else if (gameStates.app.nCompSpeed == 2) {
 	extraGameInfo [0].bDamageExplosions = 1;
 	}
 else if (gameStates.app.nCompSpeed == 3) {
-	gameOpts->render.nQuality = 3;
+	gameOpts->render.nImageQuality = 3;
 	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 1;
 	gameOpts->render.particles.bRobots = 1;
@@ -302,7 +302,7 @@ else if (gameStates.app.nCompSpeed == 3) {
 	extraGameInfo [0].bDamageExplosions = 1;
 	}
 else if (gameStates.app.nCompSpeed == 4) {
-	gameOpts->render.nQuality = 4;
+	gameOpts->render.nImageQuality = 4;
 	extraGameInfo [0].bUseParticles = 1;
 	gameOpts->render.particles.bPlayers = 1;
 	gameOpts->render.particles.bRobots = 1;

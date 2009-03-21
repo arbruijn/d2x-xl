@@ -114,7 +114,7 @@ if (i) {
 	gameOptions [1].render.textures.bUseHires [0] =
 	gameOptions [1].render.textures.bUseHires [1] = 0;
 	if (gameStates.app.bNostalgia > 2)
-		gameOptions [1].render.nQuality = 0;
+		gameOptions [1].render.nImageQuality = 0;
 	gameOptions [1].render.coronas.bUse = 0;
 	gameOptions [1].render.coronas.nStyle = 1;
 	gameOptions [1].render.coronas.bShots = 0;
@@ -247,7 +247,7 @@ else {
 	gameOptions [0].render.effects.bTransparent = 1;
 	gameOptions [0].render.bAllSegs = 1;
 	gameOptions [0].render.debug.bDynamicLight = 1;
-	gameOptions [0].render.nQuality = 3;
+	gameOptions [0].render.nImageQuality = 3;
 	gameOptions [0].render.debug.bWireFrame = 0;
 	gameOptions [0].render.debug.bTextures = 1;
 	gameOptions [0].render.debug.bObjects = 1;

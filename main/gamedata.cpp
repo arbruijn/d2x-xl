@@ -1748,7 +1748,7 @@ gameOptions [0].render.color.bMix = 1;
 gameOptions [0].render.color.nSaturation = 1;
 extraGameInfo [0].bPowerupLights = 0;
 extraGameInfo [0].bBrightObjects = 0;
-gameOptions [0].ogl.nMaxLightsPerObject = 32; //8;
+gameOptions [0].ogl.nMaxLightsPerObject = 16; //TODO: Tie to render quality
 gameOptions [0].ogl.bHeadlight = 1;
 gameOptions [0].ogl.bObjLighting = 1;
 gameOptions [0].ogl.bLightObjects = 1;
@@ -1778,6 +1778,7 @@ void DefaultRenderSettings (void)
 extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
 gameOptions [0].render.color.bWalls = 1;
 gameStates.ogl.nContrast = 8;
+gameOptions [0].render.texture.nQuality = gameOptions [0].render.nQuality;
 DefaultSmokeSettings ();
 DefaultShadowSettings ();
 DefaultCoronaSettings ();
@@ -1799,9 +1800,8 @@ extraGameInfo [0].nSpeedBoost = 100;
 extraGameInfo [0].bRobotsHitRobots = 1;
 extraGameInfo [0].bKillMissiles = 1;
 extraGameInfo [0].bFluidPhysics = 1;
-extraGameInfo [0].nHitboxes = 0;
 gameOpts->render.nDebrisLife = 0;
-if (gameOpts->app.bExpertMode != 9773) {
+if (gameOpts->app.bExpertMode != SUPERUSER) {
 	extraGameInfo [0].bWiggle = 1;
 	extraGameInfo [0].nOmegaRamp = 0;
 	extraGameInfo [0].nMslTurnSpeed = 2;
