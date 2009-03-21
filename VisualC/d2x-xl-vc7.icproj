@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.0"
+	Name="d2x-xl"
+	ProjectGUID="{7221CA6C-9B62-46B4-B1B1-14912249C902}"
+	VCNestedProjectGUID="{1C9AA6BF-147B-4027-848A-B33038B49BFE}"
+	VCNestedProjectFileName="d2x-xl-vc7.vcproj">
+	<Configurations>
+		<Configuration
+			Name="Release|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				GenerateAlternateCodePaths="0"
+				UseProcessorExtensions="6"
+				Parallelization="TRUE"/>
+		</Configuration>
+	</Configurations>
+	<Files/>
+</VisualStudioProject>

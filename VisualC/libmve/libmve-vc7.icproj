@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Intel C++ Project"
+	Version="11.0"
+	Name="libmve"
+	ProjectGUID="{9CCBAB1E-0771-45CB-9DB8-2E8053D1C22E}"
+	VCNestedProjectGUID="{D27227AC-13CC-4901-9F73-A184D7CB24AD}"
+	VCNestedProjectFileName="libmve-vc7.vcproj">
+	<Configurations/>
+	<Files/>
+</VisualStudioProject>
