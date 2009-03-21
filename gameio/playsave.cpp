@@ -2155,7 +2155,7 @@ else {
 	ReadBinD2XParams (cf);
 	KCSetControls (0);
 	}
-
+DefaultAllSettings ();
 //post processing of parameters
 if (gameStates.input.nPlrFileVersion >= 23) {
 	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
@@ -2449,6 +2449,7 @@ for (;;) {
 	break;
 	}
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
+DefaultAllSettings ();
 SavePlayerProfile ();
 return 1;
 }
