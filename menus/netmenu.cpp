@@ -418,7 +418,6 @@ int LastKillGoal;
 int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
 int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optAutoDL, optDLTimeout;
-int optDmgIndicator, optMslLockIndicator, optFriendlyIndicator, optHitIndicator;
 int optHeadlights, optPowerupLights, optSpotSize, optSmokeGrenades, optMaxSmokeGrens;
 int optShowNames, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
@@ -475,11 +474,13 @@ return nCurItem;
 //------------------------------------------------------------------------------
 
 void NetworkMoreGameOptions (void)
- {
-  int		i, choice = 0;
-  char	szPlayTime [80], szKillGoal [80], szInvul [50],
-			szSocket [6], szPPS [6];
-  CMenu	m;
+{
+	static int choice = 0;
+
+	int		i;
+	char		szPlayTime [80], szKillGoal [80], szInvul [50],
+				szSocket [6], szPPS [6];
+	CMenu		m;
 
 do {
 	m.Destroy ();
@@ -602,7 +603,7 @@ int NetworkD2XOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-	int	v, j;
+	int	v;
 
 v = menu [optCompetition].m_value;
 if (v != extraGameInfo [1].bCompetition) {
@@ -610,6 +611,7 @@ if (v != extraGameInfo [1].bCompetition) {
 	key = -2;
 	return nCurItem;
 	}
+
 if (optPenalty > 0) {
 	v = menu [optPenalty].m_value;
 	if (v != extraGameInfo [1].nCoopPenalty) {
@@ -619,32 +621,23 @@ if (optPenalty > 0) {
 		return nCurItem;
 		}
 	}
+
 v = menu [optDarkness].m_value;
 if (v != extraGameInfo [1].bDarkness) {
 	extraGameInfo [1].bDarkness = v;
 	key = -2;
 	return nCurItem;
 	}
+
 if (optTgtInd >= 0) {
 	v = menu [optTgtInd].m_value;
 	if (v != (extraGameInfo [1].bTargetIndicators == 0)) {
-		for (j = 0; j < 3; j++)
-			if (menu [optTgtInd + j].m_value) {
-				extraGameInfo [1].bTargetIndicators = j;
-				break;
-				}
+		extraGameInfo [1].bTargetIndicators = v;
 		key = -2;
 		return nCurItem;
 		}
 	}
-if (optDmgIndicator >= 0) {
-	v = menu [optDmgIndicator].m_value;
-	if (v != extraGameInfo [1].bDamageIndicators) {
-		extraGameInfo [1].bDamageIndicators = v;
-		key = -2;
-		return nCurItem;
-		}
-	}
+
 if (optHeadlights >= 0) {
 	v = menu [optHeadlights].m_value;
 	if (v == extraGameInfo [1].headlight.bAvailable) {
@@ -653,6 +646,7 @@ if (optHeadlights >= 0) {
 		return nCurItem;
 		}
 	}
+
 if (optSpotSize >= 0) {
 	v = menu [optSpotSize].m_value;
 	if (v != extraGameInfo [1].nSpotSize) {
@@ -671,7 +665,7 @@ if (extraGameInfo [0].bSmokeGrenades != v) {
 	return nCurItem;
 	}
 
-if (optMaxSmokeGrens >= 0) {
+if (extraGameInfo [0].bSmokeGrenades && (optMaxSmokeGrens >= 0)) {
 	v = menu [optMaxSmokeGrens].m_value;
 	if (extraGameInfo [0].nMaxSmokeGrenades != v) {
 		extraGameInfo [0].nMaxSmokeGrenades = v;
@@ -686,10 +680,12 @@ return nCurItem;
 //------------------------------------------------------------------------------
 
 void NetworkD2XOptions (void)
- {
-  int		i, choice = 0, optCheckPort = -1;
-  char	szSlider [50];
-  CMenu	m;
+{
+	static int choice = 0;
+
+	int		i, optCheckPort = -1;
+	char		szSlider [50];
+	CMenu		m;
 
 do {
 	m.Destroy ();
@@ -762,27 +758,11 @@ do {
 			}
 		else
 			optPenalty = -1;
-		optTgtInd = m.AddCheck (TXT_MULTI_TGTIND, extraGameInfo [1].bTargetIndicators, KEY_A, HTX_CPIT_TGTIND);
-		m [optTgtInd + extraGameInfo [1].bTargetIndicators].m_value = 1;
-		if (extraGameInfo [1].bTargetIndicators)
-			optFriendlyIndicator = m.AddCheck (TXT_FRIENDLY_INDICATOR, extraGameInfo [1].bFriendlyIndicators, KEY_F, HTX_FRIENDLY_INDICATOR);
-		else
-			optFriendlyIndicator = -1;
-		optDmgIndicator = m.AddCheck (TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
-		optMslLockIndicator = m.AddCheck (TXT_MSLLOCK_INDICATOR, extraGameInfo [1].bMslLockIndicators, KEY_G, HTX_CPIT_MSLLOCKIND);
-		if (extraGameInfo [1].bTargetIndicators || extraGameInfo [1].bDamageIndicators)
-			optHitIndicator = m.AddCheck (TXT_HIT_INDICATOR, extraGameInfo [1].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);
-		else {
-			optPenalty =
-			optHitIndicator = -1;
-			extraGameInfo [1].nCoopPenalty = 0;
-			}
+		optTgtInd = m.AddCheck (TXT_MULTI_TGTIND, extraGameInfo [1].bTargetIndicators != 0, KEY_A, HTX_CPIT_TGTIND);
 		m.AddText ("", 0);
 		}
 	else
-		optTgtInd =
-		optDmgIndicator =
-		optMslLockIndicator = -1;
+		optTgtInd = -1;
 
 	optSmokeGrenades = m.AddCheck (TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
 	if (extraGameInfo [0].bSmokeGrenades) {
@@ -826,8 +806,8 @@ do {
 		GET_VAL (extraGameInfo [1].bTargetIndicators, optTgtInd);
 		extraGameInfo [1].bDamageIndicators = extraGameInfo [1].bTargetIndicators;
 		extraGameInfo [1].bMslLockIndicators = extraGameInfo [1].bTargetIndicators;
-		extraGameInfo [1].bFriendlyIndicators = 0;
-		extraGameInfo [1].bTagOnlyHitObjs = 0;
+		extraGameInfo [1].bFriendlyIndicators = 1;
+		extraGameInfo [1].bTagOnlyHitObjs = 1;
 		}
 	} while (i == -2);
 }
