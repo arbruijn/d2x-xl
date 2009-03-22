@@ -1935,7 +1935,7 @@ void LoadGameTexts(void);
 #define TXT_COLORBLIND_FRIENDLY		GT(1138)
 #define TXT_HIT_DETECTION				GT(1139)
 #define TXT_AUTOLEVEL					GT(1140)
-#define TXT_HLP_HUDICONS				GT(1141)
+#define TXT_NOTEBOOK_FRIENDLY			GT(1141)
 
 #if 0
 
@@ -2521,10 +2521,10 @@ void LoadGameTexts(void);
 #define HTX_EPILEPTIC_FRIENDLY		HT(402)
 #define HTX_COLORBLIND_FRIENDLY		HT(403)
 #define HTX_HIT_DETECTION				HT(404)			
+#define HTX_NOTEBOOK_FRIENDLY			HT(405)			
 
 #if 0
 
-#define HTX_						HT(405)			
 #define HTX_						HT(406)			
 #define HTX_						HT(407)			
 #define HTX_						HT(408)			

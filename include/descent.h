@@ -569,6 +569,7 @@ typedef struct tApplicationOptions {
 	int bExpertMode;
 	int bEpilepticFriendly;
 	int bColorblindFriendly;
+	int bNotebookFriendly;
 	int nScreenShotInterval;
 } tApplicationOptions;
 

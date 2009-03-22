@@ -1884,7 +1884,7 @@ const char *defaultGameTexts [][2] = {
  {"Farbenblindenfreundlicher Modus", "~Colorblind-friendly mode"},
  {"~Treffer-Erkennung: %s", "~Hit detection: %s"},
  {"~Automatische Ausrichtung: %s", "ship ~Auto-leveling: %s"},
- {"Alt-H\t  HUD-Icons umschalten.", "Alt-H\t  toggle HUD icons"},
+ {"~Notebookfreundlicher Modus", "Notebook-friendly mode"},
 #if 0
  {"", ""},
 #endif
@@ -2572,6 +2572,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann eingestellt werden, wann und ob das Spiel automatisch\ndie Waffe umschaltet.", "Adjust whether and when the game will automatically switch\nweapons for you."},
  {"Wenn angekreuzt, werden blinkende Lichter und Blinkeffekte reduziert.", "If checked flashing lights and flash effects will be reduced."},
  {"Wenn angekreuzt, erhalten einige Cockpitelemente eine andere Farbe.", "If checked some cockpit elements get a different color."},
+ {"Wenn angekreuzt, erscheinen in einigen Menues zusaetzliche\nEinstellungsmoeglichkeiten.", "If checked, additional settings are displayed in some menus."},
 #if 0
  {"", ""},
 #endif

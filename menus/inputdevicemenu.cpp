@@ -634,7 +634,7 @@ do {
 			}
 		else {
 			nCustHotKeysOpt = m.AddMenu (TXT_CUST_HOTKEYS, KEY_W, HTX_CONF_CUSTHOT);
-			if (gameOpts->app.bExpertMode) {
+			if (gameOpts->app.bExpertMode || gameOpts->app.bNotebookFriendly) {
 				m.AddText ("", 0);
 				sprintf (szKeyRampScale + 1, TXT_KBD_RAMP, gameOpts->input.keyboard.nRamp, HTX_CONF_KBDRAMP);
 				*szKeyRampScale = *(TXT_KBD_RAMP - 1);
