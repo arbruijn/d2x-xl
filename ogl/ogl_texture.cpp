@@ -885,7 +885,7 @@ if (!data)
 memset (data, 0, nSize); 	
 OglGenTextures (1, &m_info.handle); 
 if (!m_info.handle) {
-	OglClearError ();
+	OglClearError (0);
 	return 0;
 	}
 #if DBG
