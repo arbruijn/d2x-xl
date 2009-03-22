@@ -114,6 +114,7 @@ if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	audio.SetFxVolume ((gameConfig.nDigiVolume * 32768) / 8);
 	audio.PlaySound (SOUND_DROP_BOMB);
 	}
+#if 0
 if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [soundOpts.nVolume].m_value)) {
 	if (!gameOpts->sound.xCustomSoundVolume || !menu [soundOpts.nVolume].m_value)
 		nKey = -2;
@@ -123,6 +124,7 @@ if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [sou
 	sprintf (menu [soundOpts.nVolume].m_text, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
 	return nCurItem;
 	}
+#endif
 if (menu [soundOpts.nRedbook].m_value != redbook.Enabled ()) {
 	if (menu [soundOpts.nRedbook].m_value && !gameOpts->sound.bUseRedbook) {
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);

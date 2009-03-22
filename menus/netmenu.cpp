@@ -631,7 +631,7 @@ if (v != extraGameInfo [1].bDarkness) {
 
 if (optTgtInd >= 0) {
 	v = menu [optTgtInd].m_value;
-	if (v != (extraGameInfo [1].bTargetIndicators == 0)) {
+	if (v != (extraGameInfo [1].bTargetIndicators != 0)) {
 		extraGameInfo [1].bTargetIndicators = v;
 		key = -2;
 		return nCurItem;
@@ -748,7 +748,6 @@ do {
 		optHeadlights =
 		optPowerupLights =
 		optSpotSize = -1;
-	m.AddText ("", 0);
 	if (!extraGameInfo [1].bCompetition) {
 		if (mpParams.nGameMode == NETGAME_COOPERATIVE) {
 			sprintf (szSlider + 1, TXT_COOP_PENALTY, nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty], '%');
@@ -759,7 +758,6 @@ do {
 		else
 			optPenalty = -1;
 		optTgtInd = m.AddCheck (TXT_MULTI_TGTIND, extraGameInfo [1].bTargetIndicators != 0, KEY_A, HTX_CPIT_TGTIND);
-		m.AddText ("", 0);
 		}
 	else
 		optTgtInd = -1;
