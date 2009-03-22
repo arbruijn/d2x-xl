@@ -1813,6 +1813,7 @@ if (gameOpts->app.bExpertMode != SUPERUSER) {
 	extraGameInfo [0].nMslTurnSpeed = 2;
 	extraGameInfo [0].nMslStartSpeed = 0;
 	gameOpts->gameplay.nSlowMotionSpeedup = 6;
+	extraGameInfo [0].nDrag = 10;
 	}
 }
 
