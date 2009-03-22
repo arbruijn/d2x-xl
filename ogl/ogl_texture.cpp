@@ -287,7 +287,7 @@ if (m_info.handle && (m_info.handle != GLuint (-1))) {
 #if DBG
 	if (usedHandles [m_info.handle])
 		usedHandles [m_info.handle] = 0;
-	else
+	else if (!m_info.bRenderBuffer)
 		TextureError ();
 #endif
 	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
@@ -884,6 +884,13 @@ if (!data)
 	return 0;
 memset (data, 0, nSize); 	
 OglGenTextures (1, &m_info.handle); 
+if (!m_info.handle) {
+	OglClearError ();
+	return 0;
+	}
+#if DBG
+usedHandles [m_info.handle] = 1;
+#endif
 OGL_BINDTEX  (m_info.handle); 		
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, 4, w, h, 0, gameStates.ogl.nRGBAFormat, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
