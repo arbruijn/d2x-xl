@@ -164,12 +164,12 @@ gameData.demo.xJasonPlaybackTotal = 0;
 
 //	-----------------------------------------------------------------------------
 
-int NDGetPercentDone () 
+float NDGetPercentDone (void) 
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	return (ndInFile.Tell () * 100) / gameData.demo.nSize;
+	return float (ndInFile.Tell ()) * 100.0f / float (gameData.demo.nSize);
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	return ndOutFile.Tell ();
+	return float (ndOutFile.Tell ());
 return 0;
 }
 
@@ -925,7 +925,7 @@ NDWriteByte (ND_EVENT_START_DEMO);
 NDWriteByte ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat) ? DEMO_VERSION : DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
-if (gameData.demo.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	NDWriteInt (gameData.app.nGameMode | (gameData.multiplayer.nLocalPlayer << 16));
 else
 	// NOTE LINK TO ABOVE!!!
@@ -935,8 +935,8 @@ if (IsTeamGame) {
 	NDWriteString (netGame.szTeamName [0]);
 	NDWriteString (netGame.szTeamName [1]);
 	}
-if (gameData.demo.nGameMode & GM_MULTI) {
-	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
+if (IsMultiGame) {
+	NDWriteByte (sbyte (gameData.multiplayer.nPlayers));
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NDWriteString (gameData.multiplayer.players [i].callsign);
 		NDWriteByte (gameData.multiplayer.players [i].connected);
@@ -1616,8 +1616,7 @@ if (gameData.demo.nGameMode & GM_TEAM) {
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	MultiNewGame ();
-	c = NDReadByte ();
-	gameData.multiplayer.nPlayers = (int)c;
+	gameData.multiplayer.nPlayers = int (NDReadByte ());
 	// changed this to above two lines -- breaks on the mac because of
 	// endian issues
 	//		NDReadByte (reinterpret_cast<sbyte*> (&gameData.multiplayer.nPlayers);
@@ -1625,7 +1624,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 		gameData.multiplayer.players [i].cloakTime = 0;
 		gameData.multiplayer.players [i].invulnerableTime = 0;
 		NDReadString (gameData.multiplayer.players [i].callsign);
-		gameData.multiplayer.players [i].connected = (sbyte) NDReadByte ();
+		gameData.multiplayer.players [i].connected = sbyte (NDReadByte ());
 		if (IsCoopGame)
 			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {
@@ -1642,7 +1641,7 @@ else
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	LOCALPLAYER.primaryAmmo [i] = NDReadShort ();
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-		LOCALPLAYER.secondaryAmmo [i] = NDReadShort ();
+	LOCALPLAYER.secondaryAmmo [i] = NDReadShort ();
 laserLevel = NDReadByte ();
 if (laserLevel != LOCALPLAYER.laserLevel) {
 	LOCALPLAYER.laserLevel = laserLevel;
@@ -1678,7 +1677,7 @@ gameData.weapons.nSecondary = NDReadByte ();
 // not, then we must shift all bytes up by one.
 LOCALPLAYER.energy = I2X (energy);
 LOCALPLAYER.shields = I2X (shield);
-bJustStartedPlayback=1;
+bJustStartedPlayback = 1;
 return 0;
 }
 
@@ -3122,6 +3121,7 @@ else {
 NDWriteShort (byteCount);
 NDWriteByte ((sbyte) gameData.missions.nCurrentLevel);
 NDWriteByte (ND_EVENT_EOF);
+gameData.demo.nState = ND_STATE_NORMAL;
 ndOutFile.Close ();
 }
 
@@ -3174,7 +3174,7 @@ do {
 			exit = m.Menu (NULL, NULL);
 			} 
 		else if (gameData.demo.bNoSpace == 2) {
-			m.Create (2);
+			m.Create (3);
 			m.AddText (const_cast<char*> (TXT_DEMO_SAVE_NOSPACE));
 			m.AddInput (filename, 8);
 			exit = m.Menu (NULL, NULL);
@@ -3231,7 +3231,7 @@ do {
 
 //	-----------------------------------------------------------------------------
 //returns the number of demo files on the disk
-int NDCountDemos ()
+int NDCountDemos (void)
 {
 	FFS	ffs;
 	int 	nFiles=0;

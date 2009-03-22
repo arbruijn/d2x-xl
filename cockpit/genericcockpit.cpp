@@ -282,13 +282,14 @@ if (!gameStates.render.bRearView &&
 void CGenericCockpit::DrawRecording (int y)
 {
 if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_STATE_RECORDING)) {
+#if 0
 	char message [128];
 	int h, w, aw;
 
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		if (gameData.demo.nVcrState != ND_STATE_PRINTSCREEN) {
 			sprintf (message, "%s (%d%%%% %s)",
-						gameOpts->demo.bRevertFormat ? TXT_DEMO_CONVERSION : TXT_DEMO_PLAYBACK, NDGetPercentDone (), TXT_DONE);
+						gameOpts->demo.bRevertFormat ? TXT_DEMO_CONVERSION : TXT_DEMO_PLAYBACK, int (NDGetPercentDone ()), TXT_DONE);
 			}
 		else {
 			sprintf (message, " ");
@@ -299,6 +300,18 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
 	fontManager.Current ()->StringSize (message, w, h, aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - y - h - 2, message);
+#else
+	CCanvas::Current ()->SetColorRGB (PAL2RGBA (27), PAL2RGBA (0), PAL2RGBA (0), 255);
+	int x = CCanvas::Current ()->Width () / 3;
+	int h = int (8 * GLfloat (screen.Height ()) / 480.0f + 0.5f);
+	y = CCanvas::Current ()->Height () - y - 2;
+	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (0), PAL2RGBA (0), 200);
+	OglDrawFilledRect (x, y - h, x + int (NDGetPercentDone () * float (x) / 100.0f), y);
+	glLineWidth (GLfloat (screen.Width ()) / 640.0f);
+	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (0), PAL2RGBA (0), 100);
+	OglDrawEmptyRect (x, y - h, 2 * x, y);
+	glLineWidth (1);
+#endif
 	}
 }
 
