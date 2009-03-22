@@ -117,7 +117,7 @@ void ConfigMenu (void)
 {
 	CMenu	menu;
 	int	i, choice = 0;
-	int	optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, optEffects,
+	int	optSound, optConfig, optPerformance, optScrRes, optReorderPrim, optReorderSec, optEffects,
 			optMiscellaneous, optMultiThreading = -1, optRender, optGameplay, optCockpit, optPhysics = -1;
 
 do {
@@ -127,11 +127,6 @@ do {
 	optSound = menu.AddMenu (TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND);
 	menu.AddText ("", 0);
 	optConfig = menu.AddMenu (TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);
-#if defined (_WIN32) || defined (__linux__)
-	optJoyCal = -1;
-#else
-	optJoyCal = menu.AddMenu (TXT_CAL_JOYSTICK, KEY_J, HTX_OPTIONS_CALSTICK);
-#endif
 	menu.AddText ("", 0);
 	if (gameStates.app.bNostalgia)
 		optBrightness = menu.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
@@ -172,8 +167,6 @@ do {
 			SoundMenu ();		
 		else if (i == optConfig)
 			InputDeviceConfig ();		
-		else if (i == optJoyCal)
-			JoyDefsCalibrate ();	
 		else if (i == optPerformance) {
 			if (gameStates.app.bNostalgia)
 				DetailLevelMenu (); 
