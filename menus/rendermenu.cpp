@@ -95,9 +95,9 @@ static struct {
 } renderOpts;
 
 #if DBG || !SIMPLE_MENUS
-static int fpsTable [16] = {-1, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250};
+static int fpsTable [] = {-1, 0, 10, 20, 30, 60}; //40, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250};
 #else
-static int fpsTable [2] = {0, 60};
+static int fpsTable [] = {0, 60};
 #endif
 
 static const char *pszRendQual [4];
