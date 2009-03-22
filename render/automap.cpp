@@ -778,11 +778,6 @@ while ((c = KeyInKey ())) {
 		case KEY_ALTED+KEY_PADENTER:
 			GrToggleFullScreenGame ();
 			break;
-
-		case KEY_F2:
-			if (gameOpts->app.bExpertMode && !gameStates.menus.nInMenu)
-				AutomapOptionsMenu ();
-			break;
 		}
 	}
 return bDone;

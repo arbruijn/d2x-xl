@@ -466,7 +466,7 @@ do {
 			if (nLighting == 3) {
 				sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 				*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
-				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 1, 0, 4, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
+				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 4, 0, 4, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
 #if 0
 				sprintf (szSlider + 1, TXT_MAX_PASSES_PER_FACE, nPasses);
 				*szSlider = *(TXT_MAX_PASSES_PER_FACE - 1);
@@ -591,11 +591,16 @@ do {
 #endif
 	} while (i == -2);
 
-nPasses = (16 + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
-gameOpts->ogl.nMaxLightsPerFace = nPasses * gameOpts->ogl.nMaxLightsPerPass;
 
-if (gameStates.render.nLightingMethod == 2)
+if (gameStates.render.nLightingMethod == 2) {
 	gameStates.render.bPerPixelLighting = 2;
+	if (gameOpts->ogl.nMaxLightsPerPass < 4)
+		gameOpts->ogl.nMaxLightsPerPass = 4;
+	else if (gameOpts->ogl.nMaxLightsPerPass > 8)
+		gameOpts->ogl.nMaxLightsPerPass = 8;
+	nPasses = (16 + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
+	gameOpts->ogl.nMaxLightsPerFace = nPasses * gameOpts->ogl.nMaxLightsPerPass;
+	}
 else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)
 	gameStates.render.bPerPixelLighting = 1;
 else
