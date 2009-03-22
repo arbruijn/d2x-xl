@@ -211,7 +211,10 @@ if (!gameStates.app.bNostalgia) {
 		paletteManager.SetGamma (v);
 	}
 
-if (EXPERTMODE) {
+#if !DBG
+if (EXPERTMODE) 
+#endif
+{
 	m = menu + renderOpts.nFrameCap;
 	v = fpsTable [m->m_value];
 	if (gameOpts->render.nMaxFPS != v) {

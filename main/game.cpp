@@ -744,7 +744,6 @@ void ShowHelp (void)
 	if (!gameStates.app.bNostalgia) {
 		m.AddText (TXT_HLP_CHASECAM);
 		m.AddText (TXT_HLP_RADAR);
-		m.AddText (TXT_HLP_HUDICONS);
 		}
 	m.AddText (TXT_HLP_GBCMDS);
 #ifdef MACINTOSH
