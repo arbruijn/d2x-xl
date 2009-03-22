@@ -103,16 +103,16 @@ if (bDotBased && (dot < I2X (3)/4)) {
 	//	This funny code is supposed to slow down the robot and move his velocity towards his direction
 	//	more quickly than the general code
 	t = gameData.time.xFrame * 32;
-	pptr->velocity[X] = pptr->velocity[X]/2 + FixMul ((*vGoalVec)[X], t);
-	pptr->velocity[Y] = pptr->velocity[Y]/2 + FixMul ((*vGoalVec)[Y], t);
-	pptr->velocity[Z] = pptr->velocity[Z]/2 + FixMul ((*vGoalVec)[Z], t);
+	pptr->velocity [X] = pptr->velocity [X] / 2 + FixMul ((*vGoalVec) [X], t);
+	pptr->velocity [Y] = pptr->velocity [Y] / 2 + FixMul ((*vGoalVec) [Y], t);
+	pptr->velocity [Z] = pptr->velocity [Z] / 2 + FixMul ((*vGoalVec) [Z], t);
 	}
 else {
 	t = gameData.time.xFrame * 64;
 	d = (gameStates.app.nDifficultyLevel + 5) / 4;
-	pptr->velocity[X] += FixMul ((*vGoalVec)[X], t) * d;
-	pptr->velocity[Y] += FixMul ((*vGoalVec)[Y], t) * d;
-	pptr->velocity[Z] += FixMul ((*vGoalVec)[Z], t) * d;
+	pptr->velocity [X] += FixMul ((*vGoalVec) [X], t) * d;
+	pptr->velocity [Y] += FixMul ((*vGoalVec) [Y], t) * d;
+	pptr->velocity [Z] += FixMul ((*vGoalVec) [Z], t) * d;
 	}
 speed = pptr->velocity.Mag();
 xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
@@ -120,9 +120,9 @@ xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
 if ((botInfoP->attackType == 1) || botInfoP->thief || botInfoP->kamikaze)
 	xMaxSpeed *= 2;
 if (speed > xMaxSpeed) {
-	pptr->velocity[X] = (pptr->velocity[X] * 3) / 4;
-	pptr->velocity[Y] = (pptr->velocity[Y] * 3) / 4;
-	pptr->velocity[Z] = (pptr->velocity[Z] * 3) / 4;
+	pptr->velocity [X] = (pptr->velocity [X] * 3) / 4;
+	pptr->velocity [Y] = (pptr->velocity [Y] * 3) / 4;
+	pptr->velocity [Z] = (pptr->velocity [Z] * 3) / 4;
 	}
 }
 
