@@ -448,7 +448,7 @@ do {
 		else
 			sprintf (szSlider + 1, TXT_NO_FRAMECAP);
 		*szSlider = *(TXT_FRAMECAP - 1);
-		renderOpts.nFrameCap = m.AddSlider (szSlider + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
+		renderOpts.nFrameCap = m.AddSlider (szSlider + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, sizeofa (fpsTable) - 1, KEY_F, HTX_RENDER_FRAMECAP);
 		}
 
 	renderOpts.nLightmaps = 
@@ -572,6 +572,9 @@ do {
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 
+#if !DBG
+	if (!EXPERTMODE)
+#endif
 	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 60;
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
