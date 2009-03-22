@@ -190,11 +190,13 @@ return nCurItem;		//kill warning
 
 void SoundMenu (void)
 {
-   CMenu	m;
+	static int choice = 0;
+
+	CMenu	m;
 #if 0
 	char	szVolume [50];
 #endif
-	int	i, choice = 0;
+	int	i;
 	int	optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, optShieldWarn = -1;
 	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
 

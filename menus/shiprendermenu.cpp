@@ -109,8 +109,10 @@ return nCurItem;
 
 void ShipRenderOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu m;
-	int	i, j, choice = 0;
+	int	i, j;
 	int	optBullets, optWingtips;
 	char	szShipColor [50];
 

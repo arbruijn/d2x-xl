@@ -163,16 +163,14 @@ if (extraGameInfo [0].bShadows) {
 return nCurItem;
 }
 
-#endif //SIMPLE_MENUS
-
 //------------------------------------------------------------------------------
-
-#if !SIMPLE_MENUS
 
 void ShadowOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu	m;
-	int	i, choice = 0;
+	int	i;
 	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, optPowerupShadows, optReactorShadows;
 	char	szMaxLightsPerFace [50], szReach [50];
 

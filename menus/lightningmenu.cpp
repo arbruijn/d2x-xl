@@ -128,8 +128,10 @@ return nCurItem;
 
 void LightningOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu m;
-	int	i, choice = 0;
+	int	i;
 	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optRobotOmega, optPlasma, optAuxViews, optMonitors;
 	char	szQuality [50], szStyle [100];
 

@@ -149,6 +149,8 @@ return i;
 
 void NetworkMonsterballOptions (void)
 {
+	static int choice = 0;
+
 	CMenu					m (35);
 	int					h, i, j, opt = 0, optDefaultForces;
 	char					szBonus [60], szSize [60], szPyroForce [60];
@@ -177,7 +179,7 @@ m.AddText ("", 0);
 optDefaultForces = m.AddMenu ("Set default values", 0, NULL);
 
 for (;;) {
-	i = m.Menu (NULL, "Monsterball Impact Forces", MonsterballMenuCallback, 0);
+	i = m.Menu (NULL, "Monsterball Impact Forces", MonsterballMenuCallback, &choice);
 	if (i == -1)
 		break;
 	if (i != optDefaultForces)

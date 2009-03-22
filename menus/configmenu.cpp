@@ -115,8 +115,10 @@ return nCurItem;
 
 void ConfigMenu (void)
 {
+	static int choice = 0;
+
 	CMenu	menu;
-	int	i, choice = 0;
+	int	i;
 	int	optSound, optConfig, optPerformance, optScrRes, optReorderPrim, optReorderSec, optEffects,
 			optMiscellaneous, optMultiThreading = -1, optRender, optGameplay, optCockpit, optPhysics = -1;
 

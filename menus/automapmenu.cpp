@@ -131,8 +131,10 @@ return nCurItem;
 
 void AutomapOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu	m;
-	int	i, choice = 0;
+	int	i;
 	int	optGrayOut, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
 	char	szSlider [50];
 

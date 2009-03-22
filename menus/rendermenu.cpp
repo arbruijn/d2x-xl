@@ -370,9 +370,8 @@ void RenderOptionsMenu (void)
 {
 	CMenu	m;
 	int	i;
-	int	optEffectOpts, optAutomapOpts;
 #if DBG
-	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
+	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight, optSubTitles;
 #endif
 	int nRendQualSave = gameOpts->render.nImageQuality;
 
@@ -429,7 +428,6 @@ nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 :
 do {
 	m.Destroy ();
 	m.Create (50);
-	optAutomapOpts = -1;
 #if !DBG
 	if (!EXPERTMODE)
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
@@ -529,10 +527,8 @@ do {
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_P, HTX_POWERUPS);
 
-	m.AddText ("", 0);
-	optEffectOpts = -1; //m.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
-	if (EXPERTMODE)
-		optAutomapOpts = m.AddMenu (TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
+	m.AddText ("");
+	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_O, HTX_RENDER_SUBTTL);
 
 #if DBG
 	if (EXPERTMODE) {
@@ -547,12 +543,6 @@ do {
 
 	do {
 		i = m.Menu (NULL, TXT_RENDER_OPTS, RenderOptionsCallback, &choice);
-		if (i < 0)
-			break;
-		if (EXPERTMODE && (optAutomapOpts >= 0) && (i == optAutomapOpts))
-			i = -2, AutomapOptionsMenu ();
-		else if ((optEffectOpts >= 0) && (i == optEffectOpts))
-			i = -2, EffectOptionsMenu ();
 		} while (i >= 0);
 
 	extraGameInfo [0].bUseParticles = (gameOpts->render.particles.nQuality != 0);
@@ -571,6 +561,8 @@ do {
 
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
+
+	gameOpts->movies.bSubTitles = (m [optSubTitles].m_value != 0);
 
 #if !DBG
 	if (!EXPERTMODE)

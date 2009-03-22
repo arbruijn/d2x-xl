@@ -143,8 +143,10 @@ void DefaultMiscSettings (void);
 
 void MiscellaneousMenu (void)
 {
+	static int choice = 0;
+
 	CMenu m;
-	int	i, choice;
+	int	i;
 	int	optHeadlight, optAutoLevel, optEnableMods, optEpileptic, optColorblind, optNotebook,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
@@ -169,8 +171,8 @@ do {
 		}
 	else {
 		optEpileptic = m.AddCheck (TXT_EPILEPTIC_FRIENDLY, gameOpts->app.bEpilepticFriendly, KEY_E, HTX_EPILEPTIC_FRIENDLY);
-		optColorblind = m.AddCheck (TXT_COLORBLIND_FRIENDLY, gameOpts->app.bColorblindFriendly, KEY_E, HTX_COLORBLIND_FRIENDLY);
-		optNotebook = m.AddCheck (TXT_NOTEBOOK_FRIENDLY, gameOpts->app.bNotebookFriendly, KEY_E, HTX_COLORBLIND_FRIENDLY);
+		optColorblind = m.AddCheck (TXT_COLORBLIND_FRIENDLY, gameOpts->app.bColorblindFriendly, KEY_C, HTX_COLORBLIND_FRIENDLY);
+		optNotebook = m.AddCheck (TXT_NOTEBOOK_FRIENDLY, gameOpts->app.bNotebookFriendly, KEY_N, HTX_COLORBLIND_FRIENDLY);
 		optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 		optHeadlight = 
 		optAutoLevel = -1;

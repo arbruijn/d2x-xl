@@ -4082,23 +4082,11 @@
 					Name="Source Files"
 					>
 					<File
-						RelativePath="..\menus\automapmenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\cameramenu.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\menus\cockpitmenu.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\menus\configmenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\coronamenu.cpp"
 						>
 					</File>
 					<File
@@ -4123,14 +4111,6 @@
 					</File>
 					<File
 						RelativePath="..\menus\inputdevicemenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\lightmenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\lightningmenu.cpp"
 						>
 					</File>
 					<File
@@ -4166,10 +4146,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\menus\moviemenu.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\menus\msgbox.cpp"
 						>
 					</File>
@@ -4198,15 +4174,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\menus\performancemenu.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\menus\physicsmenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\powerupmenu.cpp"
 						>
 					</File>
 					<File
@@ -4215,18 +4183,6 @@
 					</File>
 					<File
 						RelativePath="..\menus\screenresmenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\shadowmenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\shiprendermenu.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\menus\smokemenu.cpp"
 						>
 					</File>
 					<File
@@ -4301,11 +4257,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

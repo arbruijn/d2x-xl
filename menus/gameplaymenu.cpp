@@ -179,6 +179,8 @@ return nCurItem;
 
 void LoadoutOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu	m (25);
 	int	i, nOptions = 0;
 
@@ -192,7 +194,7 @@ optDevices = m.ToS ();
 for (i = 0; i < (int) sizeofa (pszDevices); i++, nOptions++)
 	m.AddCheck (pszDevices [i], (extraGameInfo [0].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
 do {
-	i = m.Menu (NULL, TXT_LOADOUT_MENUTITLE, LoadoutCallback, 0);
+	i = m.Menu (NULL, TXT_LOADOUT_MENUTITLE, LoadoutCallback, &choice);
 	} while (i != -1);
 extraGameInfo [0].loadout.nGuns = 0;
 for (i = 0; i < (int) sizeofa (pszGuns); i++) {

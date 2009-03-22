@@ -216,8 +216,10 @@ void DefaultPhysicsSettings (void);
 
 void PhysicsOptionsMenu (void)
 {
+	static int choice = 0;
+
 	CMenu	m;
-	int	i, choice = 0;
+	int	i;
 	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
 			optFluidPhysics = -1, optHitAngles = -1, optKillMissiles = -1, optHitboxes = -1;
 	char	szSlider [50];

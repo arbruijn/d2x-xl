@@ -1611,7 +1611,7 @@ void DefaultShipSettings (void)
 {
 // ship render option defaults
 extraGameInfo [0].bShowWeapons = 1;
-gameOptions [0].render.ship.bBullets = 1;
+gameOptions [0].render.ship.bBullets = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.ship.nWingtip = 1;
 gameOptions [0].render.ship.nColor = 0;
 }
@@ -1621,8 +1621,8 @@ gameOptions [0].render.ship.nColor = 0;
 void DefaultMovieSettings (void)
 {
 // movie render option defaults
-gameOptions [0].movies.bSubTitles = 1;
-gameOptions [0].movies.nQuality = gameOptions [0].render.nQuality > 1;
+//gameOptions [0].movies.bSubTitles = 1;
+gameOptions [0].movies.nQuality = gameOptions [0].render.nQuality > 2;
 gameOptions [0].movies.bResize = 1;
 }
 
