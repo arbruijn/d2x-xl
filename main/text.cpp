@@ -1877,13 +1877,14 @@ const char *defaultGameTexts [][2] = {
  {"nie", "never"},
  {"wenn leer", "when empty"},
  {"beste waehlen", "chose best"},
- {"Alt-R\t  Radar umschalten.", "Alt-F12\t  toggle radar"},
+ {"Alt-R\t  Radar umschalten.", "Alt-R\t  toggle radar"},
  {"Cockpit-Anzeigen", "Cockpit Windows"},
  {"Groesse: %s", "Size: %s"},
  {"~Epileptikerfreundlicher Modus", "~Epileptic-friendly mode"},
  {"Farbenblindenfreundlicher Modus", "~Colorblind-friendly mode"},
  {"~Treffer-Erkennung: %s", "~Hit detection: %s"},
  {"~Automatische Ausrichtung: %s", "ship ~Auto-leveling: %s"},
+ {"Alt-H\t  HUD-Icons umschalten.", "Alt-H\t  toggle HUD icons"},
 #if 0
  {"", ""},
 #endif

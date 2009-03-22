@@ -732,15 +732,20 @@ void ShowHelp (void)
 	m.AddText (TXT_HELP_6TO10);
 	m.AddText (TXT_HLP_CYCLE_LEFT_WIN);
 	m.AddText (TXT_HLP_CYCLE_RIGHT_WIN);
-	m.AddText (TXT_HLP_RESIZE_WIN);
-	m.AddText (TXT_HLP_REPOS_WIN);
-	m.AddText (TXT_HLP_ZOOM_WIN);
+	if (!gameStates.app.bNostalgia) {
+		m.AddText (TXT_HLP_RESIZE_WIN);
+		m.AddText (TXT_HLP_REPOS_WIN);
+		m.AddText (TXT_HLP_ZOOM_WIN);
+		}
 	m.AddText (TXT_HLP_GUIDEBOT);
 	m.AddText (TXT_HLP_RENAMEGB);
 	m.AddText (TXT_HLP_DROP_PRIM);
 	m.AddText (TXT_HLP_DROP_SEC);
-	m.AddText (TXT_HLP_CHASECAM);
-	m.AddText (TXT_HLP_RADAR);
+	if (!gameStates.app.bNostalgia) {
+		m.AddText (TXT_HLP_CHASECAM);
+		m.AddText (TXT_HLP_RADAR);
+		m.AddText (TXT_HLP_HUDICONS);
+		}
 	m.AddText (TXT_HLP_GBCMDS);
 #ifdef MACINTOSH
 	sprintf (pixel_double_help, "%c-D\t  Toggle Pixel Double Mode", 133);
