@@ -36,7 +36,9 @@
 #include "texmerge.h"
 #include "fbuffer.h"
 
+#if DBG
 CStaticArray< ubyte, 65536 > usedHandles;
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -85,7 +87,9 @@ m_textures.Create (TEXTURE_LIST_SIZE);
 for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
 	m_textures [i].SetIndex (i);
 #endif
+#if DBG
 usedHandles.Clear ();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -963,6 +967,8 @@ if (!m_info.handle) {
 	return 1;
 	}
 #if DBG
+	if (m_info.handle == 228)
+		m_info.handle = m_info.handle;
 	if (!usedHandles [m_info.handle])
 		usedHandles [m_info.handle] = 1;
 	else

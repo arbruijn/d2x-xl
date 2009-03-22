@@ -32,18 +32,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //----------------- Variables for video clips -------------------
 
-inline int CurFrame (CObject *objP, int nClip, fix timeToLive)
+inline int CurFrame (CObject *objP, int nClip, fix timeToLive, int nFrames = -1)
 {
-tVideoClip	*pvc = gameData.eff.vClips [0] + nClip;
-int nFrames = pvc->nFrameCount;
-//	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, pvc->xTotalTime))) - 1;
+tVideoClip	*vcP = gameData.eff.vClips [0] + nClip;
+if (nFrames < 0)
+	nFrames = vcP->nFrameCount;
+//	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, vcP->xTotalTime))) - 1;
 int iFrame;
-if (timeToLive > pvc->xTotalTime)
-	timeToLive = timeToLive % pvc->xTotalTime;
+if (timeToLive > vcP->xTotalTime)
+	timeToLive = timeToLive % vcP->xTotalTime;
 if ((nClip == VCLIP_AFTERBURNER_BLOB) && objP->rType.vClipInfo.xFrameTime)
 	iFrame = (objP->rType.vClipInfo.xTotalTime - timeToLive) / objP->rType.vClipInfo.xFrameTime;
 else
-	iFrame = (pvc->xTotalTime - timeToLive) / pvc->xFrameTime;
+	iFrame = (vcP->xTotalTime - timeToLive) / vcP->xFrameTime;
 return (iFrame < nFrames) ? iFrame : nFrames - 1;
 }
 
@@ -105,9 +106,9 @@ return nFrames;
 void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, tRgbaColorf *color)
 {
 	double		ta = 0, alpha = 0;
-	tVideoClip	*vcP = gameData.eff.vClips [0] + nVClip;
+	tVideoClip*	vcP = gameData.eff.vClips [0] + nVClip;
 	int			nFrames = SetupHiresVClip (vcP, &objP->rType.vClipInfo);
-	int			iFrame = CurFrame (objP, nVClip, timeToLive);
+	int			iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
 	int			bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
@@ -133,10 +134,8 @@ if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
 #endif
 if (vcP->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], bLit, iFrame);
-else {
-	Assert(bLit == 0);		//blob cannot now be bLit
+else
 	DrawObjectBlob (objP, vcP->frames [0].index, vcP->frames [iFrame].index, iFrame, color, (float) alpha);
-	}
 #if 1
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
 	glDepthMask (1);
