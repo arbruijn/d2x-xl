@@ -147,7 +147,6 @@ gameStates.menus.bReordering = 0;
 void InitMovieStates (void)
 {
 gameStates.movies.bIntroPlayed = 0;
-gameStates.movies.bMac = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -213,8 +212,6 @@ gameStates.ogl.nRGBAFormat = GL_RGBA;
 gameStates.ogl.nRGBFormat = GL_RGB;
 gameStates.ogl.bIntensity4 = 1;
 gameStates.ogl.bLuminance4Alpha4 = 1;
-gameStates.ogl.bReadPixels = 1;
-gameStates.ogl.bGetTexLevelParam = 1;
 gameStates.ogl.nDrawBuffer = -1;
 #ifdef GL_ARB_multitexture
 gameStates.ogl.bArbMultiTexture = 0;
@@ -232,10 +229,9 @@ gameStates.render.xZoom = 0x9000;
 gameStates.render.xZoomScale = 1;
 gameStates.render.nFrameCount = -1;
 gameStates.render.bQueryOcclusion = 0;
-gameStates.render.bPointSprites = 0;
 gameStates.render.bVertexArrays = 1;
 gameStates.render.bChaseCam = 0;
-gameStates.render.bDisableFades = 0;
+gameStates.render.bLoResShadows = 1;
 gameStates.render.bDropAfterburnerBlob = 0;
 gameStates.render.grAlpha = 1.0f;
 gameStates.render.bShowFrameRate = 0;
@@ -246,7 +242,6 @@ gameStates.render.nMinZoomFactor = I2X (1);
 gameStates.render.nMaxZoomFactor = I2X (5);
 gameStates.render.textures.bGlTexMergeOk = 0;
 gameStates.render.textures.bHaveMaskShader = 0;
-gameStates.render.bBlendBackground = 0;
 gameStates.render.fonts.bHires = 0;
 gameStates.render.fonts.bHiresAvailable = 0;
 gameStates.render.fonts.bInstalled = 0;
@@ -340,7 +335,6 @@ gameStates.app.bGameSuspended = 0;
 gameStates.app.bEnterGame = 0;
 gameStates.app.bUseSound = 1;
 gameStates.app.bLunacy = 0;
-gameStates.app.bEnableShadows = 1;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks = -1;

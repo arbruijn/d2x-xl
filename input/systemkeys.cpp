@@ -243,7 +243,7 @@ return 1;
 
 int ToggleFreeCam (void)
 {
-if (!gameStates.app.bEnableFreeCam || (IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))) {
+if ((IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))) {
 	HUDMessage (0, "Free camera is not available");
 	return 0;
 	}

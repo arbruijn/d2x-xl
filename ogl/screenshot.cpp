@@ -134,11 +134,6 @@ void SaveScreenShot (ubyte *buf, int bAutomap)
 if (!gameStates.app.bSaveScreenshot)
 	return;
 gameStates.app.bSaveScreenshot = 0;
-if (!gameStates.ogl.bReadPixels) {
-	if (!bAutomap)
-		HUDMessage (MSGC_GAME_FEEDBACK, "Screenshots not supported on your configuration");
-	return;
-	}
 for (i = j = 0; gameData.missions.szCurrentLevel [i]; i++)
 	if (isalnum (gameData.missions.szCurrentLevel [i]))
 		szLevelName [j++] = gameData.missions.szCurrentLevel [i];

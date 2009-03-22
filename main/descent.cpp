@@ -109,7 +109,6 @@ CGameData		gameData;
 void DefaultAllSettings (void);
 void CheckJoystickCalibration (void);
 void ShowOrderForm (void);
-void SetMaxPitch (int nMinTurnRate);
 
 tGameOptions *gameOpts = gameOptions;
 

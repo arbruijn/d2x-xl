@@ -441,17 +441,7 @@ if (gameStates.app.bNostalgia)
 	return 0;
 if (gameStates.app.bMultiThreaded)
 	return 0;
-if (!(gameStates.render.nLightingMethod ||
-	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
-	   gameStates.app.bEnableShadows))
-	return 0;
-return
-#if !SHADOWS
-	(!SHOW_DYN_LIGHT && gameStates.app.bD2XLevel) ? 0 :
-#endif
-	PROGRESS_STEPS (gameData.segs.nSegments) * 2 +
-	PROGRESS_STEPS (gameData.segs.nVertices)
-	;
+return PROGRESS_STEPS (gameData.segs.nSegments) * 2 + PROGRESS_STEPS (gameData.segs.nVertices);
 }
 
 //------------------------------------------------------------------------------
@@ -590,7 +580,7 @@ if (gameStates.app.bNostalgia)
 	return;
 if (!(SHOW_DYN_LIGHT ||
 	  (gameStates.render.bAmbientColor && !gameStates.render.bColored) ||
-	   (gameStates.app.bEnableShadows && !COMPETITION)))
+	   !COMPETITION))
 	return;
 loadOp = 0;
 loadIdx = 0;

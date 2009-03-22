@@ -353,7 +353,7 @@ else {
 	m_nHeight = nRad;
 	m_nRad = nRad / 2;
 	}
-nFrames = nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.particles.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
+nFrames = nParticleFrames [0][nType];
 if (nType == BULLET_PARTICLES) {
 	m_nFrame = 0;
 	m_nRotFrame = 0;
@@ -595,8 +595,7 @@ int CParticle::Render (float brightness)
 	tTexCoord2f				texCoord [4];
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
-	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive,
-								bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort && (gameOpts->render.bDepthSort <= 0);
+	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive;
 	float						decay = (nType == BUBBLE_PARTICLES) ? 1.0f : (float) m_nLife / (float) m_nTTL;
 
 	static int				nFrames = 1;
@@ -645,7 +644,7 @@ else if (gameOpts->render.particles.bSort) {
 		particleManager.SetLastType (nType);
 		if (bmP->Bind (0))
 			return 0;
-		nFrames = nParticleFrames [bPointSprites][nType];
+		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
 		if (m_bEmissive)
 			glBlendFunc (GL_ONE, GL_ONE);
@@ -1242,8 +1241,6 @@ int CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOr
 if (nSide >= 0)
 	SEGMENTS [nSegment].GetCorners (nSide, vEmittingFace);
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
-if (gameStates.render.bPointSprites)
-	nMaxParts *= 2;
 if (!m_emitters.Create (nMaxEmitters)) {
 	//PrintLog ("cannot create m_systems\n");
 	return 0;
@@ -1760,19 +1757,17 @@ return -1;
 
 void CParticleImageManager::Animate (int nType)
 {
-	int	bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort,
-			nFrames = nParticleFrames [bPointSprites][nType];
+	int	nFrames = nParticleFrames [0][nType];
 
 if (nFrames > 1) {
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0};
 
 	time_t	t = gameStates.app.nSDLTicks;
-	int		iFrame = iParticleFrames [bPointSprites][nType];
+	int		iFrame = iParticleFrames [0][nType];
 #if 0
-	int		iFrameIncr = iPartFrameIncr [bPointSprites][nType];
+	int		iFrameIncr = iPartFrameIncr [0][nType];
 #endif
-	int		bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort;
-	CBitmap*	bmP = bmpParticle [bPointSprites][GetType (nType)];
+	CBitmap*	bmP = bmpParticle [0][GetType (nType)];
 
 	if (!bmP->Frames ())
 		return;
@@ -1783,14 +1778,14 @@ if (nFrames > 1) {
 	 {
 		t0 [nType] = t;
 #if 1
-		iParticleFrames [bPointSprites][nType] = (iFrame + 1) % nFrames;
+		iParticleFrames [0][nType] = (iFrame + 1) % nFrames;
 #else
 		iFrame += iFrameIncr;
 		if ((iFrame < 0) || (iFrame >= nFrames)) {
-			iPartFrameIncr [bPointSprites][nType] = -iFrameIncr;
+			iPartFrameIncr [0][nType] = -iFrameIncr;
 			iFrame += -2 * iFrameIncr;
 			}
-		iParticleFrames [bPointSprites][nType] = iFrame;
+		iParticleFrames [0][nType] = iFrame;
 #endif
 		}
 	}
@@ -1824,14 +1819,13 @@ delete[] fFrameBright;
 
 int CParticleImageManager::Load (int nType)
 {
-	int		h,
-				bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.particles.bSort;
+	int		h;
 	CBitmap	*bmP = NULL;
 
 nType = particleImageManager.GetType (nType);
-if (bHavePartImg [bPointSprites][nType])
+if (bHavePartImg [0][nType])
 	return 1;
-if (!LoadExtraBitmap (bmpParticle [bPointSprites] + nType, szParticleImg [bPointSprites][nType], bHavePartImg [bPointSprites] + nType))
+if (!LoadExtraBitmap (bmpParticle [0] + nType, szParticleImg [0][nType], bHavePartImg [0] + nType))
 	return 0;
 #if MAKE_SMOKE_IMAGE
 {
@@ -1840,11 +1834,11 @@ if (!LoadExtraBitmap (bmpParticle [bPointSprites] + nType, szParticleImg [bPoint
 TGAInterpolate (bmP, 2);
 if (TGAMakeSquare (bmP)) {
 	memset (&h, 0, sizeof (h));
-	SaveTGA (szParticleImg [bPointSprites][nType], gameFolders.szDataDir, &h, bmP);
+	SaveTGA (szParticleImg [0][nType], gameFolders.szDataDir, &h, bmP);
 	}
 }
 #endif
-bmP = bmpParticle [bPointSprites][nType];
+bmP = bmpParticle [0][nType];
 bmP->SetFrameCount ();
 bmP->SetupTexture (0, 1);
 if (nType == SMOKE_PARTICLES)
@@ -1853,7 +1847,7 @@ else if (nType == BUBBLE_PARTICLES)
 	h = 4;
 else
 	h = bmP->FrameCount ();
-nParticleFrames [bPointSprites][nType] = h;
+nParticleFrames [0][nType] = h;
 return 1;
 }
 

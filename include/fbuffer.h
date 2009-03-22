@@ -69,7 +69,4 @@ class CFBO {
 
 #endif //RENDER2TEXTURE
 
-extern int bRender2TextureOk;
-extern int bUseRender2Texture;
-
 #endif //_FBUFFER_H_

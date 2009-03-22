@@ -70,13 +70,6 @@ static int	nMaxTurnRate;
 
 //------------------------------------------------------------------------------
 
-void SetMaxPitch (int nMinTurnRate)
-{
-gameOpts->input.nMaxPitch = (int) ((MIN_TIME_360 * 10) / (nMinTurnRate ? nMinTurnRate : 20));
-}
-
-//------------------------------------------------------------------------------
-
 #define	PH_SCALE	1
 
 #define	JOYSTICK_READ_TIME	 (I2X (1)/40)		//	Read joystick at 40 Hz.

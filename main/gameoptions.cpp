@@ -109,7 +109,6 @@ if (i) {
 	gameOptions [1].render.nMaxFPS = 150;
 	gameOptions [1].render.bDepthSort = 0;
 	gameOptions [1].render.effects.bTransparent = 0;
-	gameOptions [1].render.bAllSegs = 0;
 	gameOptions [1].render.debug.bDynamicLight = 1;
 	gameOptions [1].render.textures.bUseHires [0] =
 	gameOptions [1].render.textures.bUseHires [1] = 0;
@@ -140,8 +139,8 @@ if (i) {
 	gameOptions [1].render.bUseLightmaps = 0;
 	gameOptions [1].render.effects.bAutoTransparency = 0;
 	gameOptions [1].render.nMeshQuality = 0;
-	gameOptions [1].render.nMathFormat = 0;
-	gameOptions [1].render.nDefMathFormat = 0;
+	gameOptions [1].render.nMathFormat = 2;
+	gameOptions [1].render.nDefMathFormat = 2;
 	gameOptions [1].render.nDebrisLife = 0;
 	gameOptions [1].render.shadows.nLights = 0;
 	gameOptions [1].render.cameras.bFitToWall = 0;
@@ -245,7 +244,6 @@ else {
 	gameOptions [0].render.nMaxFPS = 150;
 	gameOptions [1].render.bDepthSort = 1;
 	gameOptions [0].render.effects.bTransparent = 1;
-	gameOptions [0].render.bAllSegs = 1;
 	gameOptions [0].render.debug.bDynamicLight = 1;
 	gameOptions [0].render.nImageQuality = 3;
 	gameOptions [0].render.debug.bWireFrame = 0;
@@ -257,8 +255,8 @@ else {
 	gameOptions [0].render.bHiresModels [1] = 1;
 	gameOptions [0].render.bUseLightmaps = 0;
 	gameOptions [0].render.effects.bAutoTransparency = 1;
-	gameOptions [0].render.nMathFormat = 0;
-	gameOptions [0].render.nDefMathFormat = 0;
+	gameOptions [0].render.nMathFormat = 2;
+	gameOptions [0].render.nDefMathFormat = 2;
 	gameOptions [0].render.nDebrisLife = 0;
 	gameOptions [0].render.particles.bAuxViews = 0;
 	gameOptions [0].render.lightnings.bAuxViews = 0;
@@ -494,6 +492,7 @@ gameOptions [i].sound.bHires [1] = 0;
 gameOptions [i].sound.bShip = 0;
 gameOptions [i].sound.bMissiles = 0;
 gameOptions [i].sound.bFadeMusic = 1;
+gameOptions [1].sound.bUseD1Sounds = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -532,7 +531,6 @@ if (i) {
 else {
 	gameOptions [0].input.bLimitTurnRate = 1;
 	gameOptions [0].input.nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
-	gameOptions [0].input.nMaxPitch = 0;
 	gameOptions [0].input.joystick.bLinearSens = 0;
 	gameOptions [0].input.keyboard.nRamp = 100;
 	gameOptions [0].input.keyboard.bRamp [0] =
@@ -583,13 +581,13 @@ if (i) {
 	gameOptions [1].multi.bNoRankings = 0;
 	gameOptions [1].multi.bTimeoutPlayers = 1;
 	gameOptions [1].multi.bUseMacros = 0;
-	gameOptions [1].multi.bNoRedundancy = 0;
+	gameOptions [1].multi.bNoRedundancy = 1;
 	}
 else {
 	gameOptions [0].multi.bNoRankings = 0;
 	gameOptions [0].multi.bTimeoutPlayers = 1;
 	gameOptions [0].multi.bUseMacros = 0;
-	gameOptions [0].multi.bNoRedundancy = 0;
+	gameOptions [0].multi.bNoRedundancy = 1;
 	}
 }
 

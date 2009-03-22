@@ -319,22 +319,14 @@ void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, 
 	int	wScreen = screen.Width ();
 	int	hScreen = screen.Height ();
 
-if (gameStates.ogl.bReadPixels > 0) {
-	glDisable (GL_TEXTURE_2D);
-	OglSetReadBuffer (GL_FRONT, 1);
-	if (bTGA)
-		glReadPixels (0, 0, wScreen, hScreen, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
-//			glReadPixels (sx, screen.Height () - (sy + h), w, h, GL_RGBA, GL_UNSIGNED_BYTE, dest->Buffer ());
-	else {
-		if (wScreen * hScreen * 3 > OGLTEXBUFSIZE)
-			Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
-		glReadPixels (0, 0, wScreen, hScreen, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
-		}
-//		glReadPixels (sx, screen.Height ()- (sy+h), w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
-//		glReadPixels (sx, sy, w+sx, h+sy, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
-	}
+glDisable (GL_TEXTURE_2D);
+OglSetReadBuffer (GL_FRONT, 1);
+if (bTGA)
+	glReadPixels (0, 0, wScreen, hScreen, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
 else {
-	memset (gameData.render.ogl.buffer, 0, wScreen * hScreen * (3 + bTGA));
+	if (wScreen * hScreen * 3 > OGLTEXBUFSIZE)
+		Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
+	glReadPixels (0, 0, wScreen, hScreen, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
 	}
 
 ubyte* buffer = dest->Buffer ();

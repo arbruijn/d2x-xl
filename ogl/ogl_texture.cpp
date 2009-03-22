@@ -669,9 +669,6 @@ int CTexture::FormatSupported (void)
 {
 	GLint nFormat = 0;
 
-if (!gameStates.ogl.bGetTexLevelParam)
-	return 1;
-
 switch (m_info.format) {
 	case GL_RGB:
 		if (m_info.internalFormat == 3)
@@ -800,29 +797,22 @@ void CTexture::SetSize (void)
 {
 	GLint	w, h;
 	int	nBits = 16, a = 0;
+	GLint texP;
 
-if (gameStates.ogl.bGetTexLevelParam) {
-		GLint texP;
-
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_LUMINANCE_SIZE, &texP);
-	a += texP;
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_INTENSITY_SIZE, &texP);
-	a += texP;
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_RED_SIZE, &texP);
-	a += texP;
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_GREEN_SIZE, &texP);
-	a += texP;
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_BLUE_SIZE, &texP);
-	a += texP;
-	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_ALPHA_SIZE, &texP);
-	a += texP;
-	}
-else {
-	w = m_info.tw;
-	h = m_info.th;
-	}
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_LUMINANCE_SIZE, &texP);
+a += texP;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_INTENSITY_SIZE, &texP);
+a += texP;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_RED_SIZE, &texP);
+a += texP;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_GREEN_SIZE, &texP);
+a += texP;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_BLUE_SIZE, &texP);
+a += texP;
+glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_ALPHA_SIZE, &texP);
+a += texP;
 switch (m_info.format) {
 	case GL_LUMINANCE:
 		nBits = 8;

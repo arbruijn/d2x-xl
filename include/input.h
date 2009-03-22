@@ -11,7 +11,6 @@ int ControlsReadAll (void);
 void FlushInput (void);
 void ResetCruise (void);
 char GetKeyValue (char key);
-void SetMaxPitch (int nMinTurnRate);
 void SetControlType (void);
 int CalcDeadzone (int d, int nDeadzone);
 

@@ -496,7 +496,6 @@ typedef struct tKeyboardInputOptions {
 typedef struct tInputOptions {
 	int bLimitTurnRate;
 	int nMinTurnRate;
-	int nMaxPitch;
 	int bUseHotKeys;
 	tMouseInputOptions mouse;
 	tJoystickInputOptions joystick;
@@ -690,7 +689,6 @@ typedef struct tMenuStates {
 
 typedef struct tMovieStates {
 	int bIntroPlayed;
-	int bMac;
 } tMovieStates;
 
 //------------------------------------------------------------------------------
@@ -782,13 +780,11 @@ typedef struct tOglStates {
 	int nRGBFormat;
 	int bIntensity4;
 	int bLuminance4Alpha4;
-	int bReadPixels;
 	int bOcclusionQuery;
 	int bDepthBlending;
 	int bUseDepthBlending;
 	int bHaveDepthBuffer;
 	int bHaveBlur;
-	int bGetTexLevelParam;
 	int nDrawBuffer;
 	int nStencil;
 #ifdef GL_ARB_multitexture
@@ -903,14 +899,11 @@ typedef struct tRenderStates {
 	int bChaseCam;
 	int bFreeCam;
 	int bQueryOcclusion;
-	int bPointSprites;
 	int bVertexArrays;
 	int bAutoMap;
 	int bLightmapsOk;
 	int bHaveLightmaps;
 	int bUseLightmaps;
-	int bDisableFades;
-	int bBlendBackground;
 	int bDropAfterburnerBlob;
 	int bOutsideMine;
 	int bExtExplPlaying;
@@ -919,7 +912,6 @@ typedef struct tRenderStates {
 	int bColored;
 	int bBriefing;
 	int bRearView;
-	int bEnableSSE;
 	int nInterpolationMethod;
 	int bTMapFlat;
 	int bCloaked;
@@ -1127,8 +1119,6 @@ typedef struct tApplicationStates {
 	int bUsingConverter;
 	int bFixModels;
 	int bAltModels;
-	int bEnableShadows;
-	int bEnableFreeCam;
 	int bCacheTextures;
 	int bCacheLights;
 	int bCacheMeshes;

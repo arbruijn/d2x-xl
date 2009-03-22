@@ -610,11 +610,7 @@ void CBitmap::RenderFullScreen (void)
 	CBitmap * const dest = CCanvas::Current ();
 
 if ((Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
-	if (!gameStates.render.bBlendBackground)
-		glDisable (GL_BLEND);
 	Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), 0, 0);
-	if (!gameStates.render.bBlendBackground)
-		glEnable (GL_BLEND);
 	}
 else if (dest->Mode () != BM_LINEAR) {
 	CBitmap *tmp = CBitmap::Create (0, dest->Width (), dest->Height (), 1);

@@ -503,7 +503,7 @@ do {
 	*szSlider = *(TXT_SMOKE - 1);
 	renderOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 2, KEY_S, HTX_SMOKE);
 
-	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
+	if (!gameStates.render.bHaveStencilBuffer)
 		renderOpts.nShadows = -1;
 	else {
 		sprintf (szSlider + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
@@ -800,7 +800,7 @@ do {
 		optLightOpts = m.AddMenu (TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
 		optSmokeOpts = m.AddMenu (TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optLightningOpts = m.AddMenu (TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
-		if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
+		if (!gameStates.render.bHaveStencilBuffer)
 			optShadowOpts = -1;
 		else
 			optShadowOpts = m.AddMenu (TXT_SHADOW_OPTIONS, KEY_A, HTX_RENDER_SHADOWOPTS);

@@ -1225,7 +1225,6 @@ extern ubyte bIsMissile [];
 
 #define	SHOW_SHADOWS \
 			(!gameStates.render.bRenderIndirect && \
-			 gameStates.app.bEnableShadows && \
 			 EGI_FLAG (bShadows, 0, 1, 0) && \
 			 !COMPETITION)
 

@@ -307,7 +307,7 @@ nFrame = 0;
 
 bool CShadowData::Create (void)
 {
-if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows) {
+if (!gameStates.app.bNostalgia) {
 	CREATE (objLights, LEVEL_OBJECTS * MAX_SHADOW_LIGHTS, 0);
 	}
 Init ();

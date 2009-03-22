@@ -516,8 +516,9 @@ if (gameData.pig.tex.nHamFileVersion >= 3) {
 /*---*/PrintLog ("   Loading sound file\n");
 	bSoundOk = ReadSoundFile ();
 	}
-if (gameStates.app.bFixModels)
-	gameStates.app.bFixModels = gameStates.app.bDemoData ? 0 : LoadRobotReplacements ("d2x-xl", NULL, 0, 1) > 0;
+//if (gameStates.app.bFixModels)
+gameStates.app.bAltModels = 
+gameStates.app.bFixModels = gameStates.app.bDemoData ? 0 : LoadRobotReplacements ("d2x-xl", NULL, 0, 1) > 0;
 LoadTextureBrightness ("descent2", gameData.pig.tex.defaultBrightness [0].Buffer ());
 LoadTextureBrightness ("descent", gameData.pig.tex.defaultBrightness [1].Buffer ());
 LoadTextureColors ("descent2", gameData.render.color.defaultTextures [0].Buffer ());

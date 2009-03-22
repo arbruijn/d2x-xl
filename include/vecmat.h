@@ -75,7 +75,6 @@ class __pack__ CFixVector {
 		static const fixang DeltaAngle (const CFixVector& v0, const CFixVector& v1, CFixVector *fVec);		//computes the delta angle between two normalized vectors.
 		static const fixang DeltaAngleNorm (const CFixVector& v0, const CFixVector& v1, CFixVector *fVec);
 		static const fix Dist (const CFixVector& vec0, const CFixVector& vec1);
-		static const fix SSEDot (CFixVector *v0, CFixVector *v1);
 		static const fix Dot (const CFixVector& v0, const CFixVector& v1);
 		static const fix Dot (const fix x, const fix y, const fix z, const CFixVector& v);
 		static const fix Normalize (CFixVector& v);
@@ -732,37 +731,6 @@ inline const fixang CFixVector::DeltaAngleNorm (const CFixVector& v0, const CFix
 
 inline const fix CFixVector::Dist (const CFixVector& vec0, const CFixVector& vec1) {
 	return (vec0-vec1).Mag ();
-}
-
-inline const fix CFixVector::SSEDot (CFixVector *v0, CFixVector *v1) {
-	#if ENABLE_SSE
-	if (gameStates.render.bEnableSSE) {
-			CFloatVector	v0h, v1h;
-
-		v0h.Assign (v0);
-		v1h.Assign (v1);
-	#if defined (_WIN32)
-		_asm {
-			movups	xmm0,v0h
-			movups	xmm1,v1h
-			mulps		xmm0,xmm1
-			movups	v0h,xmm0
-			}
-	#elif defined (__unix__)
-		asm (
-			"movups	%0,%%xmm0\n\t"
-			"movups	%1,%%xmm1\n\t"
-			"mulps	%%xmm1,%%xmm0\n\t"
-			"movups	%%xmm0,%0\n\t"
-			: "=m" (v0h)
-			: "m" (v0h), "m" (v1h)
-			);
-	#endif
-		return (fix) ((v0h [X] + v0h [Y] + v0h [Z]) * 65536);
-		}
-	#else
-	return 0;
-	#endif
 }
 
 inline const fix CFixVector::Dot (const CFixVector& v0, const CFixVector& v1) {

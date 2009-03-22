@@ -665,7 +665,6 @@ for (i = 0; i < 2; i++) {
 
 	RP (gameOptions [i].ogl.bSetGammaRamp, i, 0);
 
-	RP (gameOptions [i].render.bAllSegs, i, 0);
 	RP (gameOptions [i].render.nMeshQuality, i, 0);
 	RP (gameOptions [i].render.bUseLightmaps, i, 0);
 	RP (gameOptions [i].render.nLightmapQuality, i, 0);
@@ -1187,7 +1186,6 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].menus.bSmartFileSearch", "1"},
  {"gameOptions[0].multi.bUseMacros", "1"},
  {"gameOptions[0].ogl.bSetGammaRamp", "0"},
- {"gameOptions[0].render.bAllSegs", "0"},
  {"gameOptions[0].render.nMeshQuality", "0"},
  {"gameOptions[0].render.bUseLightmaps", "0"},
  {"gameOptions[0].render.nLightmapQuality", "1"},
@@ -1241,7 +1239,6 @@ tParamValue defaultParams [] = {
  {"gameOptions[1].menus.bSmartFileSearch", "1"},
  {"gameOptions[1].multi.bUseMacros", "0"},
  {"gameOptions[1].ogl.bSetGammaRamp", "0"},
- {"gameOptions[1].render.bAllSegs", "0"},
  {"gameOptions[1].render.nMeshQuality", "0"},
  {"gameOptions[1].render.nLightmapQuality", "1"},
  {"gameOptions[1].render.cockpit.bMissileView", "0"},
@@ -1635,7 +1632,7 @@ for (i = 0; i < 2; i++) {
 	if (!i && (gameStates.input.nPlrFileVersion >= 49))
 		extraGameInfo [0].bRobotsOnRadar = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 50)
-		gameOptions [i].render.bAllSegs = (int) cf.ReadByte ();
+		cf.ReadByte ();
 	if (!i && (gameStates.input.nPlrFileVersion >= 51))
 		extraGameInfo [0].grWallTransparency = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 52)

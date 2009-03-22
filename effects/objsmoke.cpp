@@ -751,10 +751,6 @@ particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 int DoObjectSmoke (CObject *objP)
 {
 int t = objP->info.nType;
-#if 0
-if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
-	return;
-#endif
 if (gameStates.render.bQueryCoronas)
 	return 0;
 if (t == OBJ_PLAYER)
