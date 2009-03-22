@@ -348,19 +348,26 @@ if (gameStates.app.bNostalgia)
 
 	CFont*	curFont = CCanvas::Current ()->Font ();
 	int		w, h, aw, offs = m_data.bHires ? 10 : 5;
-	char		szInfo [100];
+	char		szInfo [2][200];
 
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 
 
-if (CCanvas::Current ()->Width () < 1024)
-	strcpy (szInfo, "ALT+T: Textures/wireframe   ALT+B: Bright   CTRL+T: Teleport");
-else
-	strcpy (szInfo, "ALT+T: Toggle textures/wireframe   ALT+B: Toggle brightness   CTRL+T: Teleport to marker");
-fontManager.Current ()->StringSize (szInfo, w, h, aw);
-GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - h, szInfo);
-
+if (CCanvas::Current ()->Width () >= 1024) {
+	strcpy (szInfo [0], "ALT+T: Textures/wireframe   ALT+B: Brightness   ALT+C: Coronas   ALT+L: Lightnings   ALT+S: Smoke   CTRL+T: Teleport");
+	*szInfo [1] = '\0';
+	}
+else {
+	strcpy (szInfo [0], "ALT+L: Lightnings   ALT+S: Smoke   CTRL+T: Teleport");
+	strcpy (szInfo [1], "ALT+T: Textures/wireframe   ALT+B: Brightness   ALT+C: Coronas");
+	}
+fontManager.Current ()->StringSize (szInfo [0], w, h, aw);
+GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - h, szInfo [0]);
+if (*szInfo [1]) {
+	fontManager.Current ()->StringSize (szInfo [1], w, h, aw);
+	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - 2 * h - 2, szInfo [1]);
+	}
 if (gameOpts->render.cockpit.bHUD) {
 	GrPrintF (NULL, offs, offs, m_szLevelNum);
 	fontManager.Current ()->StringSize (m_szLevelName, w, h, aw);
