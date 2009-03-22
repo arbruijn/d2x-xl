@@ -718,18 +718,33 @@ while ((c = KeyInKey ())) {
 			TeleportToMarker ();
 			break;
 
-		case KEY_ALTED + KEY_P:
-			gameStates.render.bShowProfiler = !gameStates.render.bShowProfiler;
+		case KEY_ALTED + KEY_B:
+			if (gameOpts->render.automap.bTextured & 1)
+				gameOpts->render.automap.bBright = !gameOpts->render.automap.bBright;
+			break;
+
+		case KEY_ALTED + KEY_C:
+			gameOpts->render.automap.bCoronas = !gameOpts->render.automap.bCoronas;
 			break;
 
 		case KEY_ALTED + KEY_F:
 			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 
+		case KEY_ALTED + KEY_G:
+			gameOpts->render.automap.bGrayOut = !gameOpts->render.automap.bGrayOut;
+			break;
 
-		case KEY_ALTED + KEY_B:
-			if (gameOpts->render.automap.bTextured & 1)
-				gameOpts->render.automap.bBright = !gameOpts->render.automap.bBright;
+		case KEY_ALTED + KEY_L:
+			gameOpts->render.automap.bLightnings = !gameOpts->render.automap.bLightnings;
+			break;
+
+		case KEY_ALTED + KEY_P:
+			gameStates.render.bShowProfiler = !gameStates.render.bShowProfiler;
+			break;
+
+		case KEY_ALTED + KEY_S:
+			gameOpts->render.automap.bParticles = !gameOpts->render.automap.bParticles;
 			break;
 
 		case KEY_ALTED + KEY_T:
