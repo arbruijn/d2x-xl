@@ -572,12 +572,8 @@ do {
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 
-#if DBG
-		gameOpts->render.nMaxFPS = fpsTable [gameOpts->render.nMaxFPS];
-#else
-	if (EXPERTMODE)
-		gameOpts->render.nMaxFPS = fpsTable [gameOpts->render.nMaxFPS];
-	else
+#if !DBG
+	if (!EXPERTMODE)
 		gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 60;
 #endif
 	if (!gameStates.app.bNostalgia)
