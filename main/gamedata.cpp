@@ -1688,7 +1688,7 @@ gameOptions [0].render.particles.nAlpha [3] = 2;
 gameOptions [0].render.particles.nSize [4] = 1;
 gameOptions [0].render.particles.nDens [4] = 1 + (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nLife [4] = 0;
-gameOptions [0].render.particles.nAlpha [4] = 20;
+gameOptions [0].render.particles.nAlpha [4] = 2;
 // static smoke
 #if 0
 gameOptions [0].render.particles.bStatic = 
