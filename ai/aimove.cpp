@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	AI_TURN_SCALE	1
 #define	BABY_SPIDER_ID	14
 
-//-------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 fix AITurnTowardsVector (CFixVector *vGoal, CObject *objP, fix rate)
 {
@@ -79,7 +79,7 @@ objP->info.position.mOrient = CFixMatrix::CreateFR(new_fvec, objP->info.position
 return dot;
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //	vGoalVec must be normalized, or close to it.
 //	if bDotBased set, then speed is based on direction of movement relative to heading
 void MoveTowardsVector (CObject *objP, CFixVector *vGoalVec, int bDotBased)
@@ -126,7 +126,7 @@ if (speed > xMaxSpeed) {
 	}
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToPlayer)
 {
@@ -192,7 +192,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 	}
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void MoveTowardsPlayer (CObject *objP, CFixVector *vVecToPlayer)
 //	gameData.ai.vVecToPlayer must be normalized, or close to it.
@@ -201,7 +201,7 @@ MoveAwayFromOtherRobots (objP, *vVecToPlayer);
 MoveTowardsVector (objP, vVecToPlayer, 1);
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //	I am ashamed of this: fastFlag == -1 means Normal slide about.  fastFlag = 0 means no evasion.
 void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 {
@@ -297,7 +297,8 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 	}
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToPlayer, int attackType)
 {
 	fix				speed;
@@ -338,10 +339,9 @@ void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToPlayer, int attackType
 		pptr->velocity[Y] = (pptr->velocity[Y]*3)/4;
 		pptr->velocity[Z] = (pptr->velocity[Z]*3)/4;
 	}
-
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
 //	If the flag bEvadeOnly is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
@@ -437,7 +437,7 @@ else {
 	}
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 fix MoveObjectToLegalPoint (CObject *objP, CFixVector *vGoal)
 {
@@ -451,7 +451,7 @@ objP->info.position.vPos += vGoalDir;
 return xDistToGoal;
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //	Move the CObject objP to a spot in which it doesn't intersect a CWall.
 //	It might mean moving it outside its current CSegment.
 void MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
@@ -495,7 +495,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 	}
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //	Move CObject one CObject radii from current position towards CSegment center.
 //	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsPoint (CObject *objP, CFixVector *vGoal, fix xMinDist)
@@ -538,7 +538,7 @@ UnstickObject (objP);
 return xDistToGoal;
 }
 
-// --------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //	Move CObject one CObject radii from current position towards CSegment center.
 //	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsSegmentCenter (CObject *objP)
@@ -549,6 +549,6 @@ return MoveTowardsPoint (objP, &vSegCenter, 0);
 
 //int	Buddy_got_stuck = 0;
 
-//	---------------------------------------------------------------
+//	-----------------------------------------------------------------------------
 // eof
 
