@@ -599,7 +599,7 @@ if (bmP->Texture ())
 bmP->SetBPP (1);
 
 if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0])) &&
-	 !(gameOpts->render.powerups.b3D && IsWeapon (bmName))) {
+	 !(gameOpts->render.powerups.b3D && IsWeapon (bmName) && !gameStates.app.bHaveMod)) {
 #if 0
 	if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureCacheDir [bD1], bmName)) {
 		altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
