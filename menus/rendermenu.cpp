@@ -336,7 +336,7 @@ if (!gameStates.app.bGameRunning) {
 
 	if (renderOpts.nLights >= 0) {
 		m = menu + renderOpts.nLights;
-		v = m->m_value + 1;
+		v = m->m_value;
 		if (v != gameOpts->ogl.nMaxLightsPerPass - 4) {
 			gameOpts->ogl.nMaxLightsPerPass = v + 4;
 			sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
@@ -427,15 +427,17 @@ do {
 	m.Destroy ();
 	m.Create (50);
 	optAutomapOpts = -1;
-
-	if (!EXPERTMODE) {
+#if DBG
+	if (!EXPERTMODE)
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
-		}
+#endif
 	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 	m.AddText ("");
-
-	if (EXPERTMODE) {
+#if !DBG
+	if (EXPERTMODE) 
+#endif
+		{
 		if (gameOpts->render.nMaxFPS > 1)
 			sprintf (szSlider + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
 		else if (gameOpts->render.nMaxFPS < 0)
