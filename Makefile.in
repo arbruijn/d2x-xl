@@ -60,9 +60,9 @@ am__DEPENDENCIES_1 = $(LD_KLUDGE) 2d/lib2d.a main/libmain.a \
 	libmve/libmve.a lighting/liblighting.a maths/libmaths.a \
 	misc/libmisc.a models/libmodels.a network/libnetwork.a \
 	menus/libmenus.a objects/libobjects.a ogl/libogl.a \
-	physics/libphysics.a render/librender.a weapons/libweapons.a \
-	2d/lib2d.a 3d/lib3d.a ai/libai.a main/libmain.a ogl/libogl.a \
-	$(CONSOLE_LIBS)
+	physics/libphysics.a render/librender.a menus/libmenus.a \
+	weapons/libweapons.a 2d/lib2d.a 3d/lib3d.a ai/libai.a \
+	main/libmain.a ogl/libogl.a $(CONSOLE_LIBS)
 @MINGW32_FALSE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 @MINGW32_TRUE@@USE_NETWORK_FALSE@am__DEPENDENCIES_2 =  \
 @MINGW32_TRUE@@USE_NETWORK_FALSE@	$(am__DEPENDENCIES_1)
@@ -255,6 +255,7 @@ d2x_LDADD = \
 	ogl/libogl.a \
 	physics/libphysics.a \
 	render/librender.a \
+	menus/libmenus.a \
 	weapons/libweapons.a \
 	2d/lib2d.a \
 	3d/lib3d.a \
