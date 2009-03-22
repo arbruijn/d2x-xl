@@ -1106,6 +1106,7 @@ typedef struct tApplicationStates {
 	int bD1Mission;
 	int bHaveD1Data;
 	int bHaveD1Textures;
+	int bHaveMod;
 	int bEndLevelDataLoaded;
 	int bEndLevelSequence;
 	int bFirstSecretVisit;

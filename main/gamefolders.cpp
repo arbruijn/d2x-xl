@@ -338,6 +338,8 @@ CFile::MkDir (gameFolders.szMissionDownloadDir);
 
 void ResetModFolders (void)
 {
+gameStates.app.bHaveMod = 1;
+*gameFolders.szModName = 
 *gameFolders.szMusicDir =
 *gameFolders.szSoundDir [4] =
 *gameFolders.szSoundDir [5] =
@@ -390,6 +392,7 @@ if (gameOpts->app.bEnableMods) {
 			*gameFolders.szMusicDir = '\0';
 		MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
 		MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
+		gameStates.app.bHaveMod = 1;
 		}
 	else
 		*gameFolders.szModName = '\0';

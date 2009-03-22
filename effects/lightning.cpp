@@ -2185,7 +2185,7 @@ int COmegaLightnings::Update (CObject* parentObjP, CObject* targetObjP)
 	CWeaponState				*wsP;
 	int							i, j, nHandle, nLightning;
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega && !gameStates.app.bHaveMod))
 	return -1;
 if (m_nHandles < 1)
 	return 0;
@@ -2235,9 +2235,9 @@ int COmegaLightnings::Create (CFixVector *vTargetPos, CObject* parentObjP, CObje
 	tOmegaLightningHandles	*handleP;
 	int							nObject;
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega && !gameStates.app.bHaveMod))
 	return 0;
-if ((parentObjP->info.nType == OBJ_ROBOT) && !gameOpts->render.lightnings.bRobotOmega)
+if ((parentObjP->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightnings.bRobotOmega || gameStates.app.bHaveMod))
 	return 0;
 nObject = OBJ_IDX (parentObjP);
 if (Update (parentObjP, targetObjP)) {
