@@ -305,10 +305,10 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	int x = CCanvas::Current ()->Width () / 3;
 	int h = int (8 * GLfloat (screen.Height ()) / 480.0f + 0.5f);
 	y = CCanvas::Current ()->Height () - y - 2;
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (0), PAL2RGBA (0), 200);
+	CCanvas::Current ()->SetColorRGB (255, 0, 0, 200);
 	OglDrawFilledRect (x, y - h, x + int (NDGetPercentDone () * float (x) / 100.0f), y);
 	glLineWidth (GLfloat (screen.Width ()) / 640.0f);
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (0), PAL2RGBA (0), 100);
+	CCanvas::Current ()->SetColorRGB (255, 0, 0, 100);
 	OglDrawEmptyRect (x, y - h, 2 * x, y);
 	glLineWidth (1);
 #endif
