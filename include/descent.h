@@ -3329,7 +3329,7 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 
 #define G3_INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 
-#define MAX_LIGHT_RANGE	I2X (125)
+#define MAX_LIGHT_RANGE	I2X (250)
 
 #define SEGVIS(_i,_j)	((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
 

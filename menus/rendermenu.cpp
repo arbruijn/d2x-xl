@@ -430,7 +430,7 @@ do {
 	m.Destroy ();
 	m.Create (50);
 	optAutomapOpts = -1;
-#if DBG
+#if !DBG
 	if (!EXPERTMODE)
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
