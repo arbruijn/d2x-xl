@@ -572,10 +572,14 @@ do {
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 
-#if !DBG
-	if (!EXPERTMODE)
+#if DBG
+		gameOpts->render.nMaxFPS = fpsTable [gameOpts->render.nMaxFPS];
+#else
+	if (EXPERTMODE)
+		gameOpts->render.nMaxFPS = fpsTable [gameOpts->render.nMaxFPS];
+	else
+		gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 60;
 #endif
-	gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 60;
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
 	if (nRendQualSave != gameOpts->render.nImageQuality)

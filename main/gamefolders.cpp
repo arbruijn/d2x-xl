@@ -338,7 +338,7 @@ CFile::MkDir (gameFolders.szMissionDownloadDir);
 
 void ResetModFolders (void)
 {
-gameStates.app.bHaveMod = 1;
+gameStates.app.bHaveMod = 0;
 *gameFolders.szModName = 
 *gameFolders.szMusicDir =
 *gameFolders.szSoundDir [4] =
