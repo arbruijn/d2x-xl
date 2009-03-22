@@ -121,8 +121,6 @@ if (extraGameInfo [0].nFusionRamp != v) {
 	m->m_bRebuild = 1;
 	}
 
-if (gameOpts->app.bExpertMode == SUPERUSER) {
-
 #if SIMPLE_MENUS
 
 	m = menu + physOpts.nAutoLevel;
@@ -141,7 +139,11 @@ if (gameOpts->app.bExpertMode == SUPERUSER) {
 		m->m_bRebuild = 1;
 		}
 
-#else
+#endif
+
+if (gameOpts->app.bExpertMode == SUPERUSER) {
+
+#if !SIMPLE_MENUS
 
 	m = menu + physOpts.nOmegaRamp;
 	v = m->m_value;
