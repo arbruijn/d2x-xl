@@ -1690,8 +1690,10 @@ gameOptions [0].render.particles.nDens [4] = 1 + (gameOpts->render.particles.nQu
 gameOptions [0].render.particles.nLife [4] = 0;
 gameOptions [0].render.particles.nAlpha [4] = 20;
 // static smoke
+#if 0
 gameOptions [0].render.particles.bStatic = 
 gameOptions [0].render.particles.bBubbles = (gameOptions [0].render.particles.nQuality > 2);
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1709,6 +1711,9 @@ gameOptions [0].render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
 extraGameInfo [0].bShockwaves = 0; 
 extraGameInfo [0].bDamageExplosions = 0;
+#if 1
+gameOptions [0].render.particles.bBubbles = gameOptions [0].render.particles.bStatic;
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1855,14 +1860,26 @@ gameOptions [0].demo.bOldFormat = gameStates.app.bNostalgia != 0;
 
 void DefaultCockpitSettings (void)
 {
-#if 0
-if (!gameOpts->app.bExpertMode) {
-	gameOptions [0].render.cockpit.nWindowSize = 0;
-	gameOptions [0].render.cockpit.nWindowZoom = 0;
-	gameOptions [0].render.cockpit.nWindowPos = 1;
-	gameOptions [0].render.cockpit.nWindowAlign = 1;
-	}
-#endif
+gameOpts->render.cockpit.bReticle = 1;
+gameOpts->render.cockpit.bMissileView = 1;
+gameOpts->render.cockpit.bGuidedInMainView = 1;
+gameOpts->render.cockpit.bMouseIndicator = 1;
+gameOpts->render.cockpit.bHUDMsgs = 1;
+gameOpts->render.cockpit.bSplitHUDMsgs = 1;
+gameOpts->render.cockpit.bWideDisplays = 1;
+
+extraGameInfo [0].bDamageIndicators = extraGameInfo [0].bTargetIndicators;
+extraGameInfo [0].bTagOnlyHitObjs = 1;
+extraGameInfo [0].bMslLockIndicators = 1;
+gameOpts->render.cockpit.bRotateMslLockInd = 1;
+extraGameInfo [0].bCloakedIndicators = 0;
+
+gameOpts->render.cockpit.bScaleGauges = 1;
+gameOpts->render.cockpit.bFlashGauges = 1;
+gameOpts->gameplay.bShieldWarning = 0;
+gameOpts->render.cockpit.bObjectTally = 1;
+gameOpts->render.cockpit.bPlayerStats = 0;
+
 }
 
 // ----------------------------------------------------------------------------

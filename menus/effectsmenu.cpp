@@ -135,7 +135,7 @@ void EffectOptionsMenu (void)
 
 	CMenu	m;
 	int	i, j;
-	int	optGatlingTrails, optSoftParticles [3];
+	int	optGatlingTrails, optStaticSmoke, optSoftParticles [3];
 #if 0
 	int	optShockwaves;
 #endif
@@ -178,9 +178,12 @@ do {
 	effectOpts.nThrusters = m.AddSlider (szSlider + 1, extraGameInfo [0].bThrusterFlames, 0, 2, KEY_T, HTX_THRUSTER_FLAMES);
 
 	m.AddText ("");
-	if (extraGameInfo [0].bUseParticles)
+	if (extraGameInfo [0].bUseParticles) {
+		optStaticSmoke = m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_S, HTX_ADVRND_STATICSMOKE);
 		optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
+		}
 	else
+		optStaticSmoke =
 		optGatlingTrails = -1;
 	optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, (gameOpts->render.effects.bSoftParticles & 1) != 0, KEY_I, HTX_SOFT_SPRITES);
 	optSoftParticles [1] = m.AddCheck (TXT_SOFT_SPARKS, (gameOpts->render.effects.bSoftParticles & 2) != 0, KEY_A, HTX_SOFT_SPARKS);
@@ -201,6 +204,7 @@ do {
 				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
 			}
 		}
+	GET_VAL (gameOpts->render.particles.bStatic, optStaticSmoke);
 	GET_VAL (extraGameInfo [0].bGatlingTrails, optGatlingTrails);
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
 		gameOpts->render.particles.bPlasmaTrails = (nLightTrails == 2);

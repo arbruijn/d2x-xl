@@ -447,6 +447,7 @@ for (i = 0; i < 2; i++) {
 			RP (gameOptions [i].input.trackIR.sensitivity [j], 0, j);
 			}
 		RP (gameOptions [i].render.particles.nQuality, i, 0);
+		RP (gameOptions [i].render.particles.bStatic, i, 0);
 #if 0
 		for (j = 0; j < 5; j++) {
 			RP (gameOptions [i].render.particles.nDens [j], i, j);
@@ -464,7 +465,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.particles.bMissiles, i, 0);
 		RP (gameOptions [i].render.particles.bPlayers, i, 0);
 		RP (gameOptions [i].render.particles.bRobots, i, 0);
-		RP (gameOptions [i].render.particles.bStatic, i, 0);
 		RP (gameOptions [i].render.particles.bBubbles, i, 0);
 		RP (gameOptions [i].render.particles.bWobbleBubbles, i, 1);
 		RP (gameOptions [i].render.particles.bWiggleBubbles, i, 1);
@@ -963,6 +963,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].input.mouse.sensitivity[2]", "8"},
  {"gameOptions[0].input.trackIR.sensitivity[2]", "4"},
  {"gameOptions[0].render.particles.nQuality", "2"},
+ {"gameOptions[0].render.particles.bStatic", "1"},
 #if 0
  {"gameOptions[0].render.particles.nDens[0]", "1"},
  {"gameOptions[0].render.particles.nSize [0]", "1"},
@@ -984,7 +985,7 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.particles.nSize [4]", "1"},
  {"gameOptions[0].render.particles.nLife [4]", "1"},
  {"gameOptions[0].render.particles.nAlpha[4]", "1"},
-{"gameOptions[0].render.particles.bAuxViews", "0"},
+ {"gameOptions[0].render.particles.bAuxViews", "0"},
  {"gameOptions[0].render.particles.bMonitors", "0"},
  {"gameOptions[0].render.particles.bPlasmaTrails", "0"},
  {"gameOptions[0].render.particles.bDecreaseLag", "0"},
@@ -994,7 +995,6 @@ tParamValue defaultParams [] = {
  {"gameOptions[0].render.particles.bMissiles", "1"},
  {"gameOptions[0].render.particles.bPlayers", "1"},
  {"gameOptions[0].render.particles.bRobots", "1"},
- {"gameOptions[0].render.particles.bStatic", "1"},
  {"gameOptions[0].render.particles.bBubbles", "1"},
  {"gameOptions[0].render.particles.bWiggleBubbles", "1"},
  {"gameOptions[0].render.particles.bWobbleBubbles", "1"},

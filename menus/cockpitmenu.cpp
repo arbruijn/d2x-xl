@@ -253,7 +253,7 @@ gameOpts->render.weaponIcons.bEquipment = bShowWeaponIcons;
 gameOpts->render.weaponIcons.bSmall = 1;
 gameOpts->render.weaponIcons.nSort = 1;
 gameOpts->render.weaponIcons.bShowAmmo = 1;
-gameOpts->render.weaponIcons.bBoldHighlight = 1;
+gameOpts->render.weaponIcons.bBoldHighlight = 0;
 gameOpts->render.weaponIcons.alpha = 3;
 
 #else
@@ -462,6 +462,8 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+void DefaultCockpitSettings (void);
+
 void CockpitOptionsMenu (void)
 {
 	static int choice = 0;
@@ -536,8 +538,13 @@ do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
 		if (i < 0)
 			break;
-		if ((optWeaponIcons >= 0) && (i == optWeaponIcons))
-			WeaponIconOptionsMenu ();
+		if (bShowWeaponIcons && (optIconPos >= 0)) {
+			for (int j = 0; j < 4; j++)
+				if (m [optIconPos + j].m_value) {
+					extraGameInfo [0].nWeaponIcons = j + 1;
+					break;
+					}
+				}
 	} while (i >= 0);
 
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
@@ -556,25 +563,7 @@ do {
 		}
 	} while (i == -2);
 
-gameOpts->render.cockpit.bReticle = 1;
-gameOpts->render.cockpit.bMissileView = 1;
-gameOpts->render.cockpit.bGuidedInMainView = 1;
-gameOpts->render.cockpit.bMouseIndicator = 1;
-gameOpts->render.cockpit.bHUDMsgs = 1;
-gameOpts->render.cockpit.bSplitHUDMsgs = 1;
-gameOpts->render.cockpit.bWideDisplays = 1;
-
-extraGameInfo [0].bDamageIndicators = extraGameInfo [0].bTargetIndicators;
-extraGameInfo [0].bTagOnlyHitObjs = 1;
-extraGameInfo [0].bMslLockIndicators = 1;
-gameOpts->render.cockpit.bRotateMslLockInd = 1;
-extraGameInfo [0].bCloakedIndicators = 0;
-
-gameOpts->render.cockpit.bScaleGauges = 1;
-gameOpts->render.cockpit.bFlashGauges = 1;
-gameOpts->gameplay.bShieldWarning = 0;
-gameOpts->render.cockpit.bObjectTally = 1;
-gameOpts->render.cockpit.bPlayerStats = 0;
+DefaultCockpitSettings ();
 
 #else
 

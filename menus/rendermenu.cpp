@@ -268,7 +268,7 @@ m = menu + renderOpts.nSmoke;
 v = m->m_value;
 if (gameOpts->render.particles.nQuality != v) {
 	gameOpts->render.particles.nQuality = v;
-	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicStdFull [gameOpts->render.particles.nQuality]);
+	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
 	m->m_bRebuild = -1;
 	}
 
@@ -496,9 +496,9 @@ do {
 		}
 
 	m.AddText ("");
-	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicStdFull [gameOpts->render.particles.nQuality]);
+	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
-	renderOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 3, KEY_S, HTX_SMOKE);
+	renderOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 2, KEY_S, HTX_SMOKE);
 
 	if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 		renderOpts.nShadows = -1;
