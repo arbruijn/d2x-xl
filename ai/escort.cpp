@@ -272,7 +272,7 @@ if (gameData.escort.nSpecialGoal != -1) {
 
 dega_ok: ;
 if (bDetected) {
-	if (!BuddyMayTalk ())
+	if (BuddyMayTalk ())
 		audio.PlaySound (SOUND_BUDDY_MET_GOAL);
 	gameData.escort.nGoalIndex = -1;
 	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
