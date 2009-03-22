@@ -220,7 +220,7 @@ if (bStatic || m_data.variableVertLights [nVertex]) {
 	CDynLight*			prl;
 	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
 	CFixVector			vVertex = gameData.segs.vertices [nVertex], vLightDir;
-	fix					xLightDist, xMaxLightRange = /*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE;
+	fix					xLightDist, xMaxLightRange = /*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE * 2;
 
 #if DBG
 if (nVertex == nDbgVertex)
@@ -384,7 +384,7 @@ if (gameStates.render.nLightingMethod) {
 	short						i = m_data.nLights [1],
 								nLightSeg;
 	int						bSkipHeadlight = !gameStates.render.nState && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
-	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
+	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE * 2);
 	CDynLight*				prl;
 	CFixVector				c;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
@@ -474,7 +474,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameStates.render.nLightingMethod) {
 	int						nLightSeg;
 	short						i, n = m_data.nLights [1];
-	fix						xLightDist, xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
+	fix						xLightDist, xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE * 2);
 	CDynLight*				prl;
 	CFixVector				vLightDir;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
