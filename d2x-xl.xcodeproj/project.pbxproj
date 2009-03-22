@@ -415,18 +415,13 @@
 		A450169F0F3F93EC00D04D61 /* playsave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450142B0F3F93EC00D04D61 /* playsave.cpp */; };
 		A45016A00F3F93EC00D04D61 /* state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450142C0F3F93EC00D04D61 /* state.cpp */; };
 		A45016A10F3F93EC00D04D61 /* tga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450142D0F3F93EC00D04D61 /* tga.cpp */; };
-		A45016A20F3F93EC00D04D61 /* automapmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450142F0F3F93EC00D04D61 /* automapmenu.cpp */; };
-		A45016A30F3F93EC00D04D61 /* cameramenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014300F3F93EC00D04D61 /* cameramenu.cpp */; };
 		A45016A40F3F93EC00D04D61 /* cockpitmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014310F3F93EC00D04D61 /* cockpitmenu.cpp */; };
 		A45016A50F3F93EC00D04D61 /* configmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014320F3F93EC00D04D61 /* configmenu.cpp */; };
-		A45016A60F3F93EC00D04D61 /* coronamenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014330F3F93EC00D04D61 /* coronamenu.cpp */; };
 		A45016A70F3F93EC00D04D61 /* detailsmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014340F3F93EC00D04D61 /* detailsmenu.cpp */; };
 		A45016A80F3F93EC00D04D61 /* effectsmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014350F3F93EC00D04D61 /* effectsmenu.cpp */; };
 		A45016A90F3F93EC00D04D61 /* entropymenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014360F3F93EC00D04D61 /* entropymenu.cpp */; };
 		A45016AA0F3F93EC00D04D61 /* fileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014370F3F93EC00D04D61 /* fileselector.cpp */; };
 		A45016AB0F3F93EC00D04D61 /* gameplaymenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014380F3F93EC00D04D61 /* gameplaymenu.cpp */; };
-		A45016AC0F3F93EC00D04D61 /* lightmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014390F3F93EC00D04D61 /* lightmenu.cpp */; };
-		A45016AD0F3F93EC00D04D61 /* lightningmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450143A0F3F93EC00D04D61 /* lightningmenu.cpp */; };
 		A45016AE0F3F93EC00D04D61 /* listbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450143B0F3F93EC00D04D61 /* listbox.cpp */; };
 		A45016AF0F3F93EC00D04D61 /* mainmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450143C0F3F93EC00D04D61 /* mainmenu.cpp */; };
 		A45016B10F3F93EC00D04D61 /* menu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450143E0F3F93EC00D04D61 /* menu.cpp */; };
@@ -434,7 +429,6 @@
 		A45016B30F3F93EC00D04D61 /* menuitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014400F3F93EC00D04D61 /* menuitem.cpp */; };
 		A45016B40F3F93EC00D04D61 /* miscmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014410F3F93EC00D04D61 /* miscmenu.cpp */; };
 		A45016B50F3F93EC00D04D61 /* monsterballmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014420F3F93EC00D04D61 /* monsterballmenu.cpp */; };
-		A45016B60F3F93EC00D04D61 /* moviemenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014430F3F93EC00D04D61 /* moviemenu.cpp */; };
 		A45016B70F3F93EC00D04D61 /* msgbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014440F3F93EC00D04D61 /* msgbox.cpp */; };
 		A45016B80F3F93EC00D04D61 /* netgamebrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014450F3F93EC00D04D61 /* netgamebrowser.cpp */; };
 		A45016B90F3F93EC00D04D61 /* netgamehelp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014460F3F93EC00D04D61 /* netgamehelp.cpp */; };
@@ -442,14 +436,9 @@
 		A45016BB0F3F93EC00D04D61 /* netmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014480F3F93EC00D04D61 /* netmenu.cpp */; };
 		A45016BC0F3F93EC00D04D61 /* netplayerbrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014490F3F93EC00D04D61 /* netplayerbrowser.cpp */; };
 		A45016BD0F3F93EC00D04D61 /* newgamemenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450144A0F3F93EC00D04D61 /* newgamemenu.cpp */; };
-		A45016BE0F3F93EC00D04D61 /* performancemenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450144B0F3F93EC00D04D61 /* performancemenu.cpp */; };
 		A45016BF0F3F93EC00D04D61 /* physicsmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450144C0F3F93EC00D04D61 /* physicsmenu.cpp */; };
-		A45016C00F3F93EC00D04D61 /* powerupmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450144D0F3F93EC00D04D61 /* powerupmenu.cpp */; };
 		A45016C10F3F93EC00D04D61 /* rendermenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450144E0F3F93EC00D04D61 /* rendermenu.cpp */; };
 		A45016C20F3F93EC00D04D61 /* screenresmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A450144F0F3F93EC00D04D61 /* screenresmenu.cpp */; };
-		A45016C30F3F93EC00D04D61 /* shadowmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014500F3F93EC00D04D61 /* shadowmenu.cpp */; };
-		A45016C40F3F93EC00D04D61 /* shiprendermenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014510F3F93EC00D04D61 /* shiprendermenu.cpp */; };
-		A45016C50F3F93EC00D04D61 /* smokemenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014520F3F93EC00D04D61 /* smokemenu.cpp */; };
 		A45016C60F3F93EC00D04D61 /* soundmenu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014530F3F93EC00D04D61 /* soundmenu.cpp */; };
 		A45016C70F3F93EC00D04D61 /* decoder16.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014550F3F93EC00D04D61 /* decoder16.cpp */; };
 		A45016C80F3F93EC00D04D61 /* decoder8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014560F3F93EC00D04D61 /* decoder8.cpp */; };
@@ -1007,18 +996,13 @@
 		A450142B0F3F93EC00D04D61 /* playsave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = playsave.cpp; sourceTree = "<group>"; };
 		A450142C0F3F93EC00D04D61 /* state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state.cpp; sourceTree = "<group>"; };
 		A450142D0F3F93EC00D04D61 /* tga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tga.cpp; sourceTree = "<group>"; };
-		A450142F0F3F93EC00D04D61 /* automapmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = automapmenu.cpp; sourceTree = "<group>"; };
-		A45014300F3F93EC00D04D61 /* cameramenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cameramenu.cpp; sourceTree = "<group>"; };
 		A45014310F3F93EC00D04D61 /* cockpitmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cockpitmenu.cpp; sourceTree = "<group>"; };
 		A45014320F3F93EC00D04D61 /* configmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = configmenu.cpp; sourceTree = "<group>"; };
-		A45014330F3F93EC00D04D61 /* coronamenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coronamenu.cpp; sourceTree = "<group>"; };
 		A45014340F3F93EC00D04D61 /* detailsmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = detailsmenu.cpp; sourceTree = "<group>"; };
 		A45014350F3F93EC00D04D61 /* effectsmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = effectsmenu.cpp; sourceTree = "<group>"; };
 		A45014360F3F93EC00D04D61 /* entropymenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = entropymenu.cpp; sourceTree = "<group>"; };
 		A45014370F3F93EC00D04D61 /* fileselector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fileselector.cpp; sourceTree = "<group>"; };
 		A45014380F3F93EC00D04D61 /* gameplaymenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gameplaymenu.cpp; sourceTree = "<group>"; };
-		A45014390F3F93EC00D04D61 /* lightmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lightmenu.cpp; sourceTree = "<group>"; };
-		A450143A0F3F93EC00D04D61 /* lightningmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lightningmenu.cpp; sourceTree = "<group>"; };
 		A450143B0F3F93EC00D04D61 /* listbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = listbox.cpp; sourceTree = "<group>"; };
 		A450143C0F3F93EC00D04D61 /* mainmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mainmenu.cpp; sourceTree = "<group>"; };
 		A450143E0F3F93EC00D04D61 /* menu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menu.cpp; sourceTree = "<group>"; };
@@ -1026,7 +1010,6 @@
 		A45014400F3F93EC00D04D61 /* menuitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = menuitem.cpp; sourceTree = "<group>"; };
 		A45014410F3F93EC00D04D61 /* miscmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = miscmenu.cpp; sourceTree = "<group>"; };
 		A45014420F3F93EC00D04D61 /* monsterballmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monsterballmenu.cpp; sourceTree = "<group>"; };
-		A45014430F3F93EC00D04D61 /* moviemenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = moviemenu.cpp; sourceTree = "<group>"; };
 		A45014440F3F93EC00D04D61 /* msgbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = msgbox.cpp; sourceTree = "<group>"; };
 		A45014450F3F93EC00D04D61 /* netgamebrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = netgamebrowser.cpp; sourceTree = "<group>"; };
 		A45014460F3F93EC00D04D61 /* netgamehelp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = netgamehelp.cpp; sourceTree = "<group>"; };
@@ -1034,14 +1017,9 @@
 		A45014480F3F93EC00D04D61 /* netmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = netmenu.cpp; sourceTree = "<group>"; };
 		A45014490F3F93EC00D04D61 /* netplayerbrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = netplayerbrowser.cpp; sourceTree = "<group>"; };
 		A450144A0F3F93EC00D04D61 /* newgamemenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = newgamemenu.cpp; sourceTree = "<group>"; };
-		A450144B0F3F93EC00D04D61 /* performancemenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = performancemenu.cpp; sourceTree = "<group>"; };
 		A450144C0F3F93EC00D04D61 /* physicsmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = physicsmenu.cpp; sourceTree = "<group>"; };
-		A450144D0F3F93EC00D04D61 /* powerupmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = powerupmenu.cpp; sourceTree = "<group>"; };
 		A450144E0F3F93EC00D04D61 /* rendermenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rendermenu.cpp; sourceTree = "<group>"; };
 		A450144F0F3F93EC00D04D61 /* screenresmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = screenresmenu.cpp; sourceTree = "<group>"; };
-		A45014500F3F93EC00D04D61 /* shadowmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shadowmenu.cpp; sourceTree = "<group>"; };
-		A45014510F3F93EC00D04D61 /* shiprendermenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shiprendermenu.cpp; sourceTree = "<group>"; };
-		A45014520F3F93EC00D04D61 /* smokemenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = smokemenu.cpp; sourceTree = "<group>"; };
 		A45014530F3F93EC00D04D61 /* soundmenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = soundmenu.cpp; sourceTree = "<group>"; };
 		A45014550F3F93EC00D04D61 /* decoder16.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder16.cpp; sourceTree = "<group>"; };
 		A45014560F3F93EC00D04D61 /* decoder8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = decoder8.cpp; sourceTree = "<group>"; };
@@ -1851,19 +1829,14 @@
 		A450142E0F3F93EC00D04D61 /* menus */ = {
 			isa = PBXGroup;
 			children = (
-				A450142F0F3F93EC00D04D61 /* automapmenu.cpp */,
-				A45014300F3F93EC00D04D61 /* cameramenu.cpp */,
 				A45014310F3F93EC00D04D61 /* cockpitmenu.cpp */,
 				A45014320F3F93EC00D04D61 /* configmenu.cpp */,
-				A45014330F3F93EC00D04D61 /* coronamenu.cpp */,
 				A45014340F3F93EC00D04D61 /* detailsmenu.cpp */,
 				A45014350F3F93EC00D04D61 /* effectsmenu.cpp */,
 				A45014360F3F93EC00D04D61 /* entropymenu.cpp */,
 				A45014370F3F93EC00D04D61 /* fileselector.cpp */,
 				A45014380F3F93EC00D04D61 /* gameplaymenu.cpp */,
 				A4C053140F7333110054A743 /* inputdevicemenu.cpp */,
-				A45014390F3F93EC00D04D61 /* lightmenu.cpp */,
-				A450143A0F3F93EC00D04D61 /* lightningmenu.cpp */,
 				A450143B0F3F93EC00D04D61 /* listbox.cpp */,
 				A450143C0F3F93EC00D04D61 /* mainmenu.cpp */,
 				A450143E0F3F93EC00D04D61 /* menu.cpp */,
@@ -1872,7 +1845,6 @@
 				A40ADF140F48E0A40018DA6C /* messagebox.cpp */,
 				A45014410F3F93EC00D04D61 /* miscmenu.cpp */,
 				A45014420F3F93EC00D04D61 /* monsterballmenu.cpp */,
-				A45014430F3F93EC00D04D61 /* moviemenu.cpp */,
 				A45014440F3F93EC00D04D61 /* msgbox.cpp */,
 				A45014450F3F93EC00D04D61 /* netgamebrowser.cpp */,
 				A45014460F3F93EC00D04D61 /* netgamehelp.cpp */,
@@ -1880,14 +1852,9 @@
 				A45014480F3F93EC00D04D61 /* netmenu.cpp */,
 				A45014490F3F93EC00D04D61 /* netplayerbrowser.cpp */,
 				A450144A0F3F93EC00D04D61 /* newgamemenu.cpp */,
-				A450144B0F3F93EC00D04D61 /* performancemenu.cpp */,
 				A450144C0F3F93EC00D04D61 /* physicsmenu.cpp */,
-				A450144D0F3F93EC00D04D61 /* powerupmenu.cpp */,
 				A450144E0F3F93EC00D04D61 /* rendermenu.cpp */,
 				A450144F0F3F93EC00D04D61 /* screenresmenu.cpp */,
-				A45014500F3F93EC00D04D61 /* shadowmenu.cpp */,
-				A45014510F3F93EC00D04D61 /* shiprendermenu.cpp */,
-				A45014520F3F93EC00D04D61 /* smokemenu.cpp */,
 				A45014530F3F93EC00D04D61 /* soundmenu.cpp */,
 			);
 			path = menus;
@@ -2550,18 +2517,13 @@
 				A450169F0F3F93EC00D04D61 /* playsave.cpp in Sources */,
 				A45016A00F3F93EC00D04D61 /* state.cpp in Sources */,
 				A45016A10F3F93EC00D04D61 /* tga.cpp in Sources */,
-				A45016A20F3F93EC00D04D61 /* automapmenu.cpp in Sources */,
-				A45016A30F3F93EC00D04D61 /* cameramenu.cpp in Sources */,
 				A45016A40F3F93EC00D04D61 /* cockpitmenu.cpp in Sources */,
 				A45016A50F3F93EC00D04D61 /* configmenu.cpp in Sources */,
-				A45016A60F3F93EC00D04D61 /* coronamenu.cpp in Sources */,
 				A45016A70F3F93EC00D04D61 /* detailsmenu.cpp in Sources */,
 				A45016A80F3F93EC00D04D61 /* effectsmenu.cpp in Sources */,
 				A45016A90F3F93EC00D04D61 /* entropymenu.cpp in Sources */,
 				A45016AA0F3F93EC00D04D61 /* fileselector.cpp in Sources */,
 				A45016AB0F3F93EC00D04D61 /* gameplaymenu.cpp in Sources */,
-				A45016AC0F3F93EC00D04D61 /* lightmenu.cpp in Sources */,
-				A45016AD0F3F93EC00D04D61 /* lightningmenu.cpp in Sources */,
 				A45016AE0F3F93EC00D04D61 /* listbox.cpp in Sources */,
 				A45016AF0F3F93EC00D04D61 /* mainmenu.cpp in Sources */,
 				A45016B10F3F93EC00D04D61 /* menu.cpp in Sources */,
@@ -2569,7 +2531,6 @@
 				A45016B30F3F93EC00D04D61 /* menuitem.cpp in Sources */,
 				A45016B40F3F93EC00D04D61 /* miscmenu.cpp in Sources */,
 				A45016B50F3F93EC00D04D61 /* monsterballmenu.cpp in Sources */,
-				A45016B60F3F93EC00D04D61 /* moviemenu.cpp in Sources */,
 				A45016B70F3F93EC00D04D61 /* msgbox.cpp in Sources */,
 				A45016B80F3F93EC00D04D61 /* netgamebrowser.cpp in Sources */,
 				A45016B90F3F93EC00D04D61 /* netgamehelp.cpp in Sources */,
@@ -2577,14 +2538,9 @@
 				A45016BB0F3F93EC00D04D61 /* netmenu.cpp in Sources */,
 				A45016BC0F3F93EC00D04D61 /* netplayerbrowser.cpp in Sources */,
 				A45016BD0F3F93EC00D04D61 /* newgamemenu.cpp in Sources */,
-				A45016BE0F3F93EC00D04D61 /* performancemenu.cpp in Sources */,
 				A45016BF0F3F93EC00D04D61 /* physicsmenu.cpp in Sources */,
-				A45016C00F3F93EC00D04D61 /* powerupmenu.cpp in Sources */,
 				A45016C10F3F93EC00D04D61 /* rendermenu.cpp in Sources */,
 				A45016C20F3F93EC00D04D61 /* screenresmenu.cpp in Sources */,
-				A45016C30F3F93EC00D04D61 /* shadowmenu.cpp in Sources */,
-				A45016C40F3F93EC00D04D61 /* shiprendermenu.cpp in Sources */,
-				A45016C50F3F93EC00D04D61 /* smokemenu.cpp in Sources */,
 				A45016C60F3F93EC00D04D61 /* soundmenu.cpp in Sources */,
 				A45016C70F3F93EC00D04D61 /* decoder16.cpp in Sources */,
 				A45016C80F3F93EC00D04D61 /* decoder8.cpp in Sources */,
