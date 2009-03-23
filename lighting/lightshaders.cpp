@@ -163,6 +163,11 @@ else {
 			}
 		}
 	}
+if (!(gameStates.ogl.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
+	gameStates.ogl.bLowMemory = 0;
+	gameStates.ogl.bHaveTexCompression = 0;
+	PrintLog ("+++++ OpenGL shader texture merging has been disabled! +++++\n");
+	}
 }
 
 // ----------------------------------------------------------------------------------------------

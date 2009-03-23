@@ -644,7 +644,7 @@ if (i) {
 	gameOptions [1].ogl.bObjLighting = 0;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
 	gameOptions [1].ogl.bVoodooHack = 0;
-	gameOptions [1].ogl.bGlTexMerge = 0;
+	gameOptions [1].ogl.bGlTexMerge = 1;
 	}
 else {
 #if DBG
@@ -658,7 +658,7 @@ else {
 	gameOptions [0].ogl.bObjLighting = 0;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bVoodooHack = 0;
-	gameOptions [0].ogl.bGlTexMerge = 0;
+	gameOptions [0].ogl.bGlTexMerge = 1;
 	}
 }
 

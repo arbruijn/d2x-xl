@@ -294,8 +294,6 @@ void EvalOglArgs (void)
 {
 	int	t;
 
-if ((t = FindArg ("-gl_alttexmerge")))
-	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
 if ((t = FindArg ("-lowmem")))
 	gameStates.ogl.bLowMemory = NumArg (t, 1);
 if ((t = FindArg ("-preload_textures")))
