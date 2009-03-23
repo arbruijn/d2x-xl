@@ -267,7 +267,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		if ((nOvlTex = sideP->m_nOvlTex)) {
 			bmTop = LoadFaceBitmap (nOvlTex, sideP->m_nFrame, bLoadTextures);
 			bmTop->SetTranspType (3);
-			if (!(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
+			if (!(bmTop->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) || gameOpts->ogl.bGlTexMerge)
 				bmTop->SetupTexture (1, bLoadTextures);
 			else if ((bmm = TexMergeGetCachedBitmap (nBaseTex, nOvlTex, sideP->m_nOvlOrient)))
 				bmBot = bmm;

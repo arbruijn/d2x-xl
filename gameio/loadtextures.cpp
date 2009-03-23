@@ -326,7 +326,7 @@ void UnloadTextures (void)
 console.printf (CON_VERBOSE, "Unloading textures\n");
 #endif
 gameData.pig.tex.bPageFlushed++;
-TexMergeFlush ();
+TexMergeClose ();
 RLECacheFlush ();
 for (bD1 = 0; bD1 < 2; bD1++) {
 	bitmapCacheNext [bD1] = 0;

@@ -35,13 +35,12 @@ class CTextureCache {
 		CBitmap* 	bmBot;
 		CBitmap* 	bmTop;
 		int 			nOrient;
-		int			last_frame_used;
+		int			nLastFrameUsed;
 };
 
 CStaticArray < CTextureCache, MAX_NUM_CACHE_BITMAPS > texCache;
 
 static int nCacheEntries = 0;
-
 static int nCacheHits = 0;
 static int nCacheMisses = 0;
 
@@ -58,7 +57,7 @@ int TexMergeInit (int nCacheSize)
 
 nCacheEntries = ((nCacheSize > 0) && (nCacheSize <= MAX_NUM_CACHE_BITMAPS)) ? nCacheSize  : MAX_NUM_CACHE_BITMAPS;
 for (i = 0; i < nCacheEntries; i++, cacheP++) {
-	cacheP->last_frame_used = -1;
+	cacheP->nLastFrameUsed = -1;
 	cacheP->bmTop =
 	cacheP->bmBot =
 	cacheP->bitmap = NULL;
@@ -72,10 +71,8 @@ return 1;
 
 void TexMergeFlush (void)
 {
-	int i;
-
-for (i = 0; i < nCacheEntries; i++) {
-	texCache [i].last_frame_used = -1;
+for (int i = 0; i < nCacheEntries; i++) {
+	texCache [i].nLastFrameUsed = -1;
 	texCache [i].nOrient = -1;
 	texCache [i].bmTop =
 	texCache [i].bmBot = NULL;
@@ -86,10 +83,9 @@ for (i = 0; i < nCacheEntries; i++) {
 
 void _CDECL_ TexMergeClose (void)
 {
-	int i;
-
 PrintLog ("shutting down merged textures cache\n");
-for (i = 0; i < nCacheEntries; i++) {
+TexMergeFlush ();
+for (int i = 0; i < nCacheEntries; i++) {
 	if (texCache [i].bitmap) {
 		delete texCache [i].bitmap;
 		texCache [i].bitmap = NULL;
@@ -108,24 +104,24 @@ CBitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
 	CTextureCache*	cacheP;
 
 nLRU = 0;
-nLowestFrame = texCache [0].last_frame_used;
+nLowestFrame = texCache [0].nLastFrameUsed;
 bmTop = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapTop].index].Override (-1);
 bmBot = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapBot].index].Override (-1);
 
 for (i = 0, cacheP = &texCache [0]; i < nCacheEntries; i++, cacheP++) {
 #if 1//ndef _DEBUG
-	if ((cacheP->last_frame_used > -1) && 
+	if ((cacheP->nLastFrameUsed > -1) && 
 		 (cacheP->bmTop == bmTop) && 
 		 (cacheP->bmBot == bmBot) && 
 		 (cacheP->nOrient == nOrient) &&
 		  cacheP->bitmap) {
 		nCacheHits++;
-		cacheP->last_frame_used = gameData.app.nFrameCount;
+		cacheP->nLastFrameUsed = gameData.app.nFrameCount;
 		return cacheP->bitmap;
 	}
 #endif
-	if (cacheP->last_frame_used < nLowestFrame) {
-		nLowestFrame = cacheP->last_frame_used;
+	if (cacheP->nLastFrameUsed < nLowestFrame) {
+		nLowestFrame = cacheP->nLastFrameUsed;
 		nLRU = i;
 		}
 	}
@@ -188,7 +184,7 @@ if (!gameOpts->ogl.bGlTexMerge) {
 cacheP->bitmap = bmP;
 cacheP->bmTop = bmTop;
 cacheP->bmBot = bmBot;
-cacheP->last_frame_used = gameData.app.nFrameCount;
+cacheP->nLastFrameUsed = gameData.app.nFrameCount;
 cacheP->nOrient = nOrient;
 bmP->SetStatic (1);
 bmP->SetTranspType ((bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
