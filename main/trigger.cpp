@@ -358,7 +358,7 @@ for (int i = 0; i < nLinks; i++) {
 #endif
 		continue;
 		}
-#if 1
+#if 0
 	connWallP = connSegP->Wall (nConnSide);
 #else
 	connWallP = NULL;	// avoid changing walls on opposite side that should stay unaffected
