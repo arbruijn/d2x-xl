@@ -114,17 +114,7 @@ if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	audio.SetFxVolume ((gameConfig.nDigiVolume * 32768) / 8);
 	audio.PlaySound (SOUND_DROP_BOMB);
 	}
-#if 0
-if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != menu [soundOpts.nVolume].m_value)) {
-	if (!gameOpts->sound.xCustomSoundVolume || !menu [soundOpts.nVolume].m_value)
-		nKey = -2;
-	else
-		menu [soundOpts.nVolume].m_bRebuild = 1;
-	gameOpts->sound.xCustomSoundVolume = menu [soundOpts.nVolume].m_value;
-	sprintf (menu [soundOpts.nVolume].m_text, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
-	return nCurItem;
-	}
-#endif
+
 if (menu [soundOpts.nRedbook].m_value != redbook.Enabled ()) {
 	if (menu [soundOpts.nRedbook].m_value && !gameOpts->sound.bUseRedbook) {
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);
@@ -211,13 +201,6 @@ do {
 	soundOpts.nMusicVol = m.AddSlider (redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 												  redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 												  0, 8, KEY_M, HTX_ONLINE_MANUAL);
-#if 0
-	if (!gameStates.app.bNostalgia) {
-		sprintf (szVolume + 1, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
-		*szVolume = *(TXT_CUSTOM_SOUNDVOL - 1);
-		soundOpts.nVolume = m.AddSlider (szVolume + 1, gameOpts->sound.xCustomSoundVolume, 0, 10, KEY_C, HTX_CUSTOM_SOUNDVOL);  
-		}
-#endif
 	if (gameStates.app.bNostalgia) 
 		optShipSound = 
 		optMissileSound =
