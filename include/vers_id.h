@@ -8,7 +8,7 @@
 
 //#ifndef HAVE_CONFIG_H
 #	ifndef VERSION
-#		define VERSION		"1.14.RC4"
+#		define VERSION		"1.14.RC5"
 #	endif
 //#endif
 

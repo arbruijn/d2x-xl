@@ -716,8 +716,12 @@ if (gameStates.render.nLightingMethod == 2) {
 	else if (gameOpts->ogl.nMaxLightsPerPass > 8)
 		gameOpts->ogl.nMaxLightsPerPass = 8;
 	gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
+#if 1
+	gameOpts->ogl.nMaxLightsPerFace = 3 * gameStates.render.nMaxLightsPerPass;
+#else
 	int nPasses = (16 + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass;
 	gameOpts->ogl.nMaxLightsPerFace = nPasses * gameStates.render.nMaxLightsPerPass;
+#endif
 	gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 	}
 else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)

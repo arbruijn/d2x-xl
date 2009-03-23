@@ -1688,7 +1688,7 @@ const char *defaultGameTexts [][2] = {
  {"Schiff zur naechsten ~Flaeche ausrichten", "align ship with nearest ~Side"},
  {"Schiff zum ~Boden ausrichten", "align ship with ~Floor"},
  {"Schiff zur ~Mine ausrichten", "align ship to ~Mine"},
- {"~Reibung Spielerschiff: %d%c", "player ship dra~G: %d%c"},
+ {"~Reibung Spielerschiff: %S", "player ship dra~G: %s"},
  {"~Solide Leuchtspuren", "~Solid light trails"},
  {"~Partikel-Leuchtspuren", "~Particle light trails"},
  {"Detonations-~Blitze", "explosion ~Blasts"},

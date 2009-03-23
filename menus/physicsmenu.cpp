@@ -88,8 +88,9 @@ static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
 static const char *pszAutoLevel [3];
 static const char *pszHitDetection [4];
+static const char *pszDrag [4];
 
-static int nHitDetection;
+static int nHitDetection, nDrag;
 
 //------------------------------------------------------------------------------
 
@@ -137,15 +138,15 @@ if (extraGameInfo [0].nFusionRamp != v) {
 		m->m_bRebuild = 1;
 		}
 
-if (gameOpts->app.bExpertMode == SUPERUSER) {
 	m = menu + physOpts.nDrag;
 	v = m->m_value;
-	if (extraGameInfo [0].nDrag != v) {
-		extraGameInfo [0].nDrag = v;
-		sprintf (m->m_text, TXT_PLAYER_DRAG, extraGameInfo [0].nDrag * 10, '%');
+	if (nDrag != v) {
+		nDrag = v;
+		sprintf (m->m_text, TXT_PLAYER_DRAG, pszDrag [v]);
 		m->m_bRebuild = 1;
 		}
 
+if (gameOpts->app.bExpertMode == SUPERUSER) {
 	m = menu + physOpts.nMslTurnSpeed;
 	v = m->m_value;
 	if (extraGameInfo [0].nMslTurnSpeed != v) {
@@ -180,6 +181,7 @@ void DefaultPhysicsSettings (void);
 
 void PhysicsOptionsMenu (void)
 {
+	static char nDragTable [] = {0, 3, 6, 10};
 	static int choice = 0;
 
 	CMenu	m;
@@ -206,10 +208,17 @@ pszHitDetection [1] = TXT_STANDARD;
 pszHitDetection [2] = TXT_ADVANCED;
 pszHitDetection [3] = TXT_BEST;
 
+pszDrag [0] = TXT_OFF;
+pszDrag [1] = TXT_LOW;
+pszDrag [2] = TXT_MEDIUM;
+pszDrag [3] = TXT_STANDARD;
+
 gameOpts->gameplay.nAutoLeveling = NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 2);
 extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2);
-
 nHitDetection = (extraGameInfo [0].nHitboxes ? 2 : 0) + extraGameInfo [0].bUseHitAngles;
+for (nDrag = sizeofa (nDragTable); nDrag; )
+	if (extraGameInfo [0].nDrag >= nDragTable [--nDrag])
+		break;
 
 do {
 	m.Destroy ();
@@ -217,6 +226,9 @@ do {
 	sprintf (szSlider + 1, TXT_FUSION_RAMP, extraGameInfo [0].nFusionRamp * 50, '%');
 	*szSlider = *(TXT_FUSION_RAMP - 1);
 	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, extraGameInfo [0].nFusionRamp - 2, 0, 6, KEY_U, HTX_FUSION_RAMP);
+	sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
+	*szSlider = *(TXT_PLAYER_DRAG - 1);
+	physOpts.nDrag = m.AddSlider (szSlider + 1, extraGameInfo [0].nDrag, 0, 4, KEY_G, HTX_PLAYER_DRAG);
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
 		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int (extraGameInfo [0].nMslTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
@@ -227,9 +239,6 @@ do {
 		sprintf (szSlider + 1, TXT_SLOWMOTION_SPEEDUP, float (gameOpts->gameplay.nSlowMotionSpeedup) / 2);
 		*szSlider = *(TXT_SLOWMOTION_SPEEDUP - 1);
 		physOpts.nSlomoSpeedup = m.AddSlider (szSlider + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
-		sprintf (szSlider + 1, TXT_PLAYER_DRAG, extraGameInfo [0].nDrag * 10, '%');
-		*szSlider = *(TXT_PLAYER_DRAG - 1);
-		physOpts.nDrag = m.AddSlider (szSlider + 1, extraGameInfo [0].nDrag, 0, 10, KEY_G, HTX_PLAYER_DRAG);
 		m.AddText ("", 0);
 		if (extraGameInfo [0].nDrag)
 			optWiggle = m.AddCheck (TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
@@ -254,6 +263,7 @@ do {
 
 extraGameInfo [0].bUseHitAngles = nHitDetection & 1;
 extraGameInfo [0].nHitboxes = nHitDetection & 2;
+extraGameInfo [0].nDrag = nDragTable [nDrag];
 if (gameOpts->app.bExpertMode == SUPERUSER) {
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].m_value;
 	if (optWiggle >= 0)

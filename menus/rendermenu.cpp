@@ -72,6 +72,8 @@ void DefaultRenderSettings (void);
 
 #define EXPERTMODE	0 //gameOpts->app.bExpertMode
 
+#define MIN_LIGHTS_PER_PASS 5
+
 //------------------------------------------------------------------------------
 
 static struct {
@@ -338,8 +340,8 @@ if (!gameStates.app.bGameRunning) {
 	if (renderOpts.nLights >= 0) {
 		m = menu + renderOpts.nLights;
 		v = m->m_value;
-		if (v != gameOpts->ogl.nMaxLightsPerPass - 4) {
-			gameOpts->ogl.nMaxLightsPerPass = v + 4;
+		if (v != gameOpts->ogl.nMaxLightsPerPass - MIN_LIGHTS_PER_PASS) {
+			gameOpts->ogl.nMaxLightsPerPass = v + MIN_LIGHTS_PER_PASS;
 			sprintf (m->m_text, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 			key = -2;
 			return nCurItem;
@@ -464,7 +466,7 @@ do {
 			if (nLighting == 3) {
 				sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 				*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
-				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 4, 0, 4, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
+				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 5, 0, 8 - MIN_LIGHTS_PER_PASS, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
 #if 0
 				sprintf (szSlider + 1, TXT_MAX_PASSES_PER_FACE, nPasses);
 				*szSlider = *(TXT_MAX_PASSES_PER_FACE - 1);
