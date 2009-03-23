@@ -1809,7 +1809,7 @@ DefaultAutomapSettings ();
 
 void DefaultPhysicsSettings (void)
 {
-extraGameInfo [0].nSpeedBoost = 100;
+extraGameInfo [0].nSpeedBoost = 10;
 extraGameInfo [0].bRobotsHitRobots = 1;
 extraGameInfo [0].bKillMissiles = 1;
 extraGameInfo [0].bFluidPhysics = 1;
