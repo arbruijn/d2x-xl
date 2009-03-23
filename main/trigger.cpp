@@ -316,11 +316,11 @@ return 1;
 // Changes walls pointed to by a CTrigger. returns true if any walls changed
 int CTrigger::DoChangeWalls (void)
 {
-	int 			bChanged = 0;
-	short 		nSide, nConnSide;
-	int 			nNewWallType;
 	CSegment*	segP, * connSegP;
 	CWall*		wallP, * connWallP;
+	int 			nNewWallType, bChanged = 0;
+	short 		nSide, nConnSide;
+	bool			bForceField;
 
 for (int i = 0; i < nLinks; i++) {
 	segP = SEGMENTS + segments [i];
@@ -352,24 +352,21 @@ for (int i = 0; i < nLinks; i++) {
 			break;
 		}
 
+	bForceField = ((gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0);
 	if (!(wallP = segP->Wall (nSide))) {
 #if DBG
 		PrintLog ("WARNING: Wall trigger %d targets non-existant wall @ %d,%d\n", Index (), segP->Index (), nSide);
 #endif
 		continue;
 		}
-#if 0
 	connWallP = connSegP->Wall (nConnSide);
-#else
-	connWallP = NULL;	// avoid changing walls on opposite side that should stay unaffected
-#endif
-	if ((wallP->nType == nNewWallType) && (!connWallP || (connWallP->nType == nNewWallType)))
+	if ((wallP->nType == nNewWallType) && (!connWallP || !bForceField || (connWallP->nType == nNewWallType)))
 		continue;		//already in correct state, so skip
 
 	bChanged = 1;
 	switch (nType) {
 		case TT_OPEN_WALL:
-			if (!(gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD)) 
+			if (!bForceField) 
 				segP->StartCloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
@@ -384,11 +381,11 @@ for (int i = 0; i < nLinks; i++) {
 			break;
 
 		case TT_CLOSE_WALL:
-			if (!(gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD)) 
+			if (!bForceField) 
 				segP->StartDecloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
-				audio.CreateSegmentSound (SOUND_FORCEFIELD_HUM, segP->Index (), nSide, vPos, 1, I2X (1)/2);
+				audio.CreateSegmentSound (SOUND_FORCEFIELD_HUM, segP->Index (), nSide, vPos, 1, I2X (1) / 2);
 				wallP->nType = nNewWallType;
 				if (connWallP)
 					connWallP->nType = nNewWallType;
