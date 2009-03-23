@@ -602,8 +602,12 @@ m_info.nMasks = 0;
 m_info.nTranspType = 0;
 if (i < 0)
 	i = int (this - gameData.pig.tex.bitmaps [bD1]);
+#if DBG
+if ((nDbgTexture >= 0) && (i == nDbgTexture))
+	nDbgTexture = nDbgTexture;
+#endif
 FreeMask ();
-if (!FreeHiresAnimation (0))
+if (!FreeHiresAnimation (bD1))
 	ReleaseTexture ();
 if (bitmapOffsets [bD1][i] > 0)
 	AddFlags (BM_FLAG_PAGED_OUT);

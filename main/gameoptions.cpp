@@ -492,7 +492,7 @@ gameOptions [i].sound.bHires [1] = 0;
 gameOptions [i].sound.bShip = 0;
 gameOptions [i].sound.bMissiles = 0;
 gameOptions [i].sound.bFadeMusic = 1;
-gameOptions [1].sound.bUseD1Sounds = 1;
+gameOptions [i].sound.bUseD1Sounds = 1;
 }
 
 //------------------------------------------------------------------------------

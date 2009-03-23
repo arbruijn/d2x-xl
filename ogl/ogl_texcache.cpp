@@ -278,9 +278,6 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 		bmBot->SetupTexture (1, bLoadTextures);
 		}
 	}
-ResetSpecialEffects ();
-InitSpecialEffects ();
-DoSpecialEffects ();
 
 PrintLog ("   caching addon textures\n");
 CacheAddonTextures ();
@@ -324,6 +321,10 @@ for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
 			LoadBitmap (gameData.cockpit.gauges [i][j].index, 0);
+
+ResetSpecialEffects ();
+InitSpecialEffects ();
+DoSpecialEffects (true);
 return 0;
 }
 

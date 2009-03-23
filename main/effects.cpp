@@ -170,10 +170,10 @@ else {
 	nBmFrames = bmP->FrameCount ();
 	if ((bmfP = bmP->Frames ())) {
 		nFrameStep = (nBmFrames > nFrames) ? nBmFrames / nFrames : 1;
-		h = min(nFrames, nBmFrames);
+		h = min (nFrames, nBmFrames);
 		for (i = 0; i < h; i++) {
 			j = BM_INDEX (frameP, i, bIndirect, bObject);
-			hbmP = gameData.pig.tex.bitmapP + j;
+			hbmP = (bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.bitmapP) + j;
 			if (hbmP->Override () == bmP)
 				hbmP->SetOverride (NULL);	//prevent the root texture from being deleted
 			hbmP->Unload (j, gameStates.app.bD1Data);
@@ -210,8 +210,10 @@ xEffectTime += gameData.time.xFrame;
 	for (i = 0, ecP = gameData.eff.effectP.Buffer (); i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++, ecP++) {
 #if DBG
 		for (int j = 0; j < VCLIP_MAX_FRAMES; j++)
-			if ((nDbgTexture >= 0) && (ecP->vClipInfo.frames [j].index == nDbgTexture))
+			if ((nDbgTexture >= 0) && (ecP->vClipInfo.frames [j].index == nDbgTexture)) {
 				nDbgTexture = nDbgTexture;
+				break;
+				}
 #endif
 		if ((t = ecP->changingWallTexture) == -1)
 			continue;
@@ -243,6 +245,8 @@ xEffectTime += gameData.time.xFrame;
 					ecP->flags |= EF_INITIALIZED;
 				}
 			}
+		if (bSetup)
+			continue;
 		while (ft && (ecP->xTimeLeft < 0)) {
 			ecP->xTimeLeft += ft;
 			if (++(ecP->nCurFrame) >= nFrames) {
@@ -313,6 +317,8 @@ xEffectTime += gameData.time.xFrame;
 	   			ecP->flags |= EF_INITIALIZED;
 	   		}
 			}
+		if (bSetup)
+			continue;
 		while (ft && (ecP->xTimeLeft < 0)) {
 			ecP->xTimeLeft += ft;
 			ecP->nCurFrame++;

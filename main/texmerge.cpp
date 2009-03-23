@@ -29,15 +29,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //static CBitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
 
-typedef struct {
-	CBitmap*		bitmap;
-	CBitmap* 	bmBot;
-	CBitmap* 	bmTop;
-	int 			nOrient;
-	int			last_frame_used;
-} TEXTURE_CACHE;
+class CTextureCache {
+	public:
+		CBitmap*		bitmap;
+		CBitmap* 	bmBot;
+		CBitmap* 	bmTop;
+		int 			nOrient;
+		int			last_frame_used;
+};
 
-static TEXTURE_CACHE texCache [MAX_NUM_CACHE_BITMAPS];
+CStaticArray < CTextureCache, MAX_NUM_CACHE_BITMAPS > texCache;
 
 static int nCacheEntries = 0;
 
@@ -53,7 +54,7 @@ void _CDECL_ TexMergeClose (void);
 int TexMergeInit (int nCacheSize)
 {
 	int i;
-	TEXTURE_CACHE *cacheP = texCache;
+	CTextureCache *cacheP = &texCache [0];
 
 nCacheEntries = ((nCacheSize > 0) && (nCacheSize <= MAX_NUM_CACHE_BITMAPS)) ? nCacheSize  : MAX_NUM_CACHE_BITMAPS;
 for (i = 0; i < nCacheEntries; i++, cacheP++) {
@@ -103,14 +104,15 @@ CBitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
 {
 	CBitmap*			bmTop, * bmBot, * bmP;
 	int				i, nLowestFrame, nLRU;
-	TEXTURE_CACHE*	cacheP;
+	char				szName [20];
+	CTextureCache*	cacheP;
 
 nLRU = 0;
 nLowestFrame = texCache [0].last_frame_used;
 bmTop = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapTop].index].Override (-1);
 bmBot = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapBot].index].Override (-1);
 
-for (i = 0, cacheP = texCache; i < nCacheEntries; i++,cacheP++) {
+for (i = 0, cacheP = &texCache [0]; i < nCacheEntries; i++, cacheP++) {
 #if 1//ndef _DEBUG
 	if ((cacheP->last_frame_used > -1) && 
 		 (cacheP->bmTop == bmTop) && 
@@ -179,8 +181,6 @@ if (!gameOpts->ogl.bGlTexMerge) {
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
 		if (bmBot->Flags () & bmTop->Flags () & BM_FLAG_TRANSPARENT)
 			bmP->AddFlags (BM_FLAG_TRANSPARENT);
-		else
-			bmP->DelFlags (BM_FLAG_TRANSPARENT);
 		bmP->AddFlags (bmBot->Flags () & (~BM_FLAG_RLE));
 		bmP->SetAvgColorIndex (bmBot->AvgColorIndex ());
 		}
@@ -192,6 +192,10 @@ cacheP->last_frame_used = gameData.app.nFrameCount;
 cacheP->nOrient = nOrient;
 bmP->SetStatic (1);
 bmP->SetTranspType ((bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
+bmP->NeedSetup ();
+bmP->SetStatic (1);
+sprintf (szName, "Merged %3d,%3d", tMapBot, tMapTop);
+bmP->SetName (szName);
 return bmP;
 }
 

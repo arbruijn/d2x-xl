@@ -165,8 +165,10 @@ if (gameOpts->ogl.bGlTexMerge) {
 else {
 	if (faceP->nOvlTex != 0) {
 		faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
+		if (faceP->bmBot)
+			faceP->bmBot->SetupTexture (1, 1);
 #if DBG
-		if (!faceP->bmBot)
+		else
 			faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
 #endif
 		faceP->bmTop = NULL;
