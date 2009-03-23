@@ -532,8 +532,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 #endif
 			}
 		}
-	Mix_VolPan (audio.FreeChannel (), nVolume, nPan);
-	Mix_PlayChannel (audio.FreeChannel (), m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
+	Mix_VolPan (m_info.nChannel, nVolume, nPan);
+	Mix_PlayChannel (m_info.nChannel, m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
 	}
 else 
 #else
