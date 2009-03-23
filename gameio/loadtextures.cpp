@@ -1017,6 +1017,10 @@ return ((texP = bmP->Texture ()) && (texP->Handle ())) || (bmP->Buffer () != 0);
 
 void LoadBitmap (int bmi, int bD1, bool bHires)
 {
+#if DBG
+if ((nDbgTexture >= 0) && (bmi == nDbgTexture))
+	nDbgTexture = nDbgTexture;
+#endif
 if (!BitmapLoaded (bmi, bD1))
 	PiggyBitmapPageIn (bmi, bD1, bHires);
 }

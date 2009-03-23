@@ -324,6 +324,8 @@ glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 gameStates.ogl.bShadersOk = (nTMUs >= 4);
 if (!gameStates.ogl.bShadersOk) {
 	PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
+	gameStates.ogl.bLowMemory = 0;
+	gameStates.ogl.bHaveTexCompression = 0;
 	return;
 	}
 gameStates.render.bLightmapsOk = (nTMUs >= 4);

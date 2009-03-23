@@ -163,7 +163,8 @@ if (gameOpts->ogl.bGlTexMerge) {
 		faceP->bmTop = NULL;
 	}
 else {
-	if (faceP->nOvlTex != 0) {
+	//if (faceP->nOvlTex != 0) {
+	if (faceP->bmTop && (faceP->bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT)) {
 		faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
 		if (faceP->bmBot)
 			faceP->bmBot->SetupTexture (1, 1);

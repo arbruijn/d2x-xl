@@ -269,7 +269,10 @@ OglInitPBuffer ();
 #elif RENDER2TEXTURE == 2
 CFBO::Setup ();
 #endif
-//InitShaders ();
+if (!gameStates.ogl.bShadersOk) {
+	gameStates.ogl.bLowMemory = 0;
+	gameStates.ogl.bHaveTexCompression = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
