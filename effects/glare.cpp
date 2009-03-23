@@ -859,7 +859,7 @@ gameStates.ogl.bDepthBlending = 0;
 #if SHADER_SOFT_CORONAS
 PrintLog ("building corona blending shader program\n");
 DeleteShaderProg (NULL);
-if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && RENDERPATH) {
+if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk) {
 	gameStates.ogl.bDepthBlending = 1;
 	if (hGlareShader)
 		DeleteShaderProg (&hGlareShader);

@@ -255,8 +255,8 @@ else
 void OglInitExtensions (void)
 {
 pszOglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
-OglInitShaders ();
 OglInitMultiTexturing ();
+OglInitShaders ();
 OglInitOcclusionQuery ();
 OglInitPointSprites ();
 OglInitTextureCompression ();

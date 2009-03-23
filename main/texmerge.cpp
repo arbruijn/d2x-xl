@@ -25,7 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_shader.h"
 #include "ogl_render.h"
 
-#define MAX_NUM_CACHE_BITMAPS 200
+#define MAX_NUM_CACHE_BITMAPS 100
 
 //static CBitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
 

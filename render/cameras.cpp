@@ -335,7 +335,7 @@ else
 	if (bHaveBuffer) {
 		duImage = (float) CCanvas::Current ()->Width () / (float) m_info.buffer.Width () / nScale;
 		dvImage = (float) CCanvas::Current ()->Height () / (float) m_info.buffer.Height () / nScale;
-		if (!bFitToWall && RENDERPATH) {
+		if (!bFitToWall) {
 			aImage = (float) CCanvas::Current ()->Height () / (float) CCanvas::Current ()->Width ();
 			if (vertexP)
 				aFace = CFloatVector::Dist(*reinterpret_cast<CFloatVector*> (vertexP), *reinterpret_cast<CFloatVector*> (vertexP + 1)) / 

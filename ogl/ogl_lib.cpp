@@ -808,8 +808,8 @@ backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (" Setting up renderer...");
 ResetTextures (1, bGame);
-InitShaders ();
 if (bGame) {
+	InitShaders ();
 	gameData.models.Destroy ();
 	gameData.models.Prepare ();
 	if (bGame && lightmapManager.HaveLightmaps ())
