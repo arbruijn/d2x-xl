@@ -578,8 +578,12 @@ if (bmP->Buffer ())
 
 StopTime ();
 nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
-if ((nShrinkFactor > 3) && (IsPowerup (bmName) || IsWeapon (bmName)))	// force downscaling of powerup hires textures
-	nShrinkFactor <<= 1;
+if (nShrinkFactor < 4) {
+	if (nShrinkFactor == 1)
+		nShrinkFactor = 2;	// cap texture quality at 256x256 (x frame#)
+	else if (IsPowerup (bmName) || IsWeapon (bmName))	// force downscaling of powerup hires textures
+		nShrinkFactor <<= 1;
+	}
 nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
