@@ -411,7 +411,7 @@ pszMeshQual [4] = TXT_EXTREME;
 
 pszQuality [0] = TXT_BASIC;
 pszQuality [1] = TXT_STANDARD;
-pszQuality [2] = TXT_ADVANCED;
+pszQuality [2] = TXT_HIGH;
 pszQuality [3] = TXT_BEST;
 
 nLighting = (gameOpts->render.nLightingMethod == 0) 

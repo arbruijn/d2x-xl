@@ -213,9 +213,11 @@ pszDrag [3] = TXT_STANDARD;
 gameOpts->gameplay.nAutoLeveling = NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 2);
 extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2);
 nHitDetection = (extraGameInfo [0].nHitboxes ? 2 : 0) + extraGameInfo [0].bUseHitAngles;
-for (nDrag = sizeofa (nDragTable); nDrag; )
-	if (extraGameInfo [0].nDrag >= nDragTable [--nDrag])
+for (nDrag = sizeofa (nDragTable); nDrag; ) {
+	nDrag--;
+	if (extraGameInfo [0].nDrag >= nDragTable [nDrag])
 		break;
+	}
 
 do {
 	m.Destroy ();
@@ -225,7 +227,7 @@ do {
 	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, extraGameInfo [0].nFusionRamp - 2, 0, 6, KEY_U, HTX_FUSION_RAMP);
 	sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
 	*szSlider = *(TXT_PLAYER_DRAG - 1);
-	physOpts.nDrag = m.AddSlider (szSlider + 1, extraGameInfo [0].nDrag, 0, 4, KEY_G, HTX_PLAYER_DRAG);
+	physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_G, HTX_PLAYER_DRAG);
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
 		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int (extraGameInfo [0].nMslTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
