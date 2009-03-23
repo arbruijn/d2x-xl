@@ -189,7 +189,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int nCoronas, nShadows, nPowerups, nCameras, nLighting, nPasses;
+static int nCoronas, nShadows, nPowerups, nCameras, nLighting;
 
 static const char* pszNoneBasicAdv [3];
 static const char* pszNoneBasicFull [3];
@@ -347,18 +347,6 @@ if (!gameStates.app.bGameRunning) {
 			return nCurItem;
 			}
 		}
-#if 0
-	if (renderOpts.nPasses >= 0) {
-		m = menu + renderOpts.nPasses;
-		v = m->m_value + 1;
-		if (v != nPasses) {
-			nPasses = v;
-			sprintf (m->m_text, TXT_MAX_PASSES_PER_FACE, v);
-			m->m_bRebuild = 1;
-			return nCurItem;
-			}
-		}
-#endif
 	}
 
 return nCurItem;
@@ -414,12 +402,16 @@ pszQuality [1] = TXT_STANDARD;
 pszQuality [2] = TXT_HIGH;
 pszQuality [3] = TXT_BEST;
 
+if (!gameOpts->ogl.bGlTexMerge) {
+	if (gameOpts->render.nLightingMethod > 1)
+		gameOpts->render.nLightingMethod = 1;
+	gameOpts->render.bUseLightmaps = 0;
+	}
 nLighting = (gameOpts->render.nLightingMethod == 0) 
 				? 0 
 				: (gameOpts->render.nLightingMethod == 2) 
 					? 3 
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
-nPasses = (gameOpts->ogl.nMaxLightsPerFace + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
 nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 ? 2 : 1 : 0;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
@@ -457,7 +449,7 @@ do {
 	else {
 		sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
 		*szSlider = *(TXT_LIGHTING + 1);
-		renderOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, 3, KEY_L, HTX_LIGHTING);
+		renderOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, gameOpts->ogl.bGlTexMerge ? 3 : 1, KEY_L, HTX_LIGHTING);
 		if (nLighting >= 2) {
 			sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
 			*szSlider = *(TXT_LMAP_QUALITY + 1);
@@ -467,11 +459,6 @@ do {
 				sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 				*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
 				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 5, 0, 8 - MIN_LIGHTS_PER_PASS, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
-#if 0
-				sprintf (szSlider + 1, TXT_MAX_PASSES_PER_FACE, nPasses);
-				*szSlider = *(TXT_MAX_PASSES_PER_FACE - 1);
-				renderOpts.nPasses = m.AddSlider (szSlider + 1, nPasses - 1, 0, min (15, 32 / gameOpts->ogl.nMaxLightsPerPass - 1), KEY_F, HTX_MAX_PASSES_PER_FACE);
-#endif
 				}
 			}
 		m.AddText ("", 0);
