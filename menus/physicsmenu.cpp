@@ -82,8 +82,6 @@ static struct {
 
 //------------------------------------------------------------------------------
 
-static int nOptDebrisLife;
-
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
 static const char *pszAutoLevel [3];
