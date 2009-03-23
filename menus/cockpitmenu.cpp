@@ -88,8 +88,6 @@ if (nState)
 	CMenuItem*	m;
 	int			v;
 
-#if SIMPLE_MENUS
-
 m = menu + optWeaponIcons;
 v = m->m_value;
 if (v != bShowWeaponIcons) {
@@ -97,8 +95,6 @@ if (v != bShowWeaponIcons) {
 	key = -2;
 	return nCurItem;
 	}
-
-#endif
 
 m = menu + optWindowSize;
 v = m->m_value;

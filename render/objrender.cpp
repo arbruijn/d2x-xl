@@ -356,7 +356,10 @@ else
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 #endif
 
-bmP->SetupTexture (1, 1);
+#if DBG
+CBitmap* bmP2 = bmP;
+#endif
+//bmP->SetupTexture (1, 1);
 if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))) {
 	//fScale = ObjectBlobColor (objP, bmP, &color);
 	bmP = bmoP->SetCurFrame (iFrame);

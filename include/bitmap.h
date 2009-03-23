@@ -200,7 +200,7 @@ class CBitmap : public CArray< ubyte > {
 		int RLECompress (void);
 		void ExpandTo (CBitmap *destP);
 	
-		inline ubyte FrameCount (void) { return ((Type () != BM_TYPE_ALT) && Parent ()) ? Parent ()->FrameCount () : m_info.frames.nCount; }
+		inline ubyte FrameCount (void) { return ((m_info.nType != BM_TYPE_ALT) && Parent ()) ? m_info.parentP->FrameCount () : m_info.frames.nCount; }
 		inline ubyte FrameIndex (void) { return m_info.frames.nCurrent; }
 		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bmP : NULL; }
 		inline CBitmap *CurFrame (void) { return m_info.frames.currentP; }
@@ -220,6 +220,8 @@ class CBitmap : public CArray< ubyte > {
 			return m_info.frames.currentP;
 			}
 		CBitmap* SetCurFrame (int nFrame) { 
+			if (m_info.nType != BM_TYPE_ALT)
+				return this;
 			m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame); 
 			return m_info.frames.currentP;
 			}
