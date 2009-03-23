@@ -533,7 +533,7 @@ const char *headlightFS [2][8] = {
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.15) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
-	" 	      spotBrightness += pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
+	" 	      spotBrightness += pow ((spotEffect + (1.0 - spotEffect) / 2) * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
@@ -560,7 +560,7 @@ const char *headlightFS [2][8] = {
 	"      float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"      if (spotEffect >= 0.15) {\r\n" \
 	"   	   float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
-	" 	      spotBrightness += pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
+	" 	      spotBrightness += pow ((spotEffect + (1.0 - spotEffect) / 2) * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
@@ -591,7 +591,7 @@ const char *headlightFS [2][8] = {
 	"	       float spotEffect = dot (gl_LightSource [i].spotDirection, lvNorm);\r\n" \
 	"         if (spotEffect >= 0.15) {\r\n" \
 	"            float attenuation = min (400.0 / lightDist, 1.0);\r\n" \
-	" 	          spotBrightness += pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
+	" 	          spotBrightness += pow ((spotEffect + (1.0 - spotEffect) / 2) * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	" 		       }\r\n" \
 	" 		    }\r\n" \
 	" 		 }\r\n" \

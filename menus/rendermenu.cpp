@@ -402,11 +402,7 @@ pszQuality [1] = TXT_STANDARD;
 pszQuality [2] = TXT_HIGH;
 pszQuality [3] = TXT_BEST;
 
-if (!gameOpts->ogl.bGlTexMerge) {
-	if (gameOpts->render.nLightingMethod > 1)
-		gameOpts->render.nLightingMethod = 1;
-	gameOpts->render.bUseLightmaps = 0;
-	}
+lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0) 
 				? 0 
 				: (gameOpts->render.nLightingMethod == 2) 

@@ -709,6 +709,11 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 int CLightManager::SetMethod (void)
 {
 gameStates.render.nLightingMethod = (gameStates.app.bNostalgia > 1) ? 0 : gameOpts->render.nLightingMethod;
+if (!gameStates.ogl.bShadersOk) {
+	if (gameOpts->render.nLightingMethod > 1)
+		gameOpts->render.nLightingMethod = 1;
+	gameOpts->render.bUseLightmaps = 0;
+	}
 if (gameStates.render.nLightingMethod == 2) {
 	gameStates.render.bPerPixelLighting = 2;
 	if (gameOpts->ogl.nMaxLightsPerPass < 4)

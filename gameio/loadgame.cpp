@@ -860,6 +860,7 @@ ControlRenderThreads ();
 RestoreDefaultModels ();
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+lightManager.SetMethod ();
 #if 1
 if (LoadModData (NULL, 0, 0) < 0) {
 	gameStates.app.bBetweenLevels = 0;

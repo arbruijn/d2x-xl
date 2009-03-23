@@ -1755,9 +1755,9 @@ gameOptions [0].render.color.nSaturation = 1;
 extraGameInfo [0].bPowerupLights = 0;
 extraGameInfo [0].bBrightObjects = 0;
 gameOptions [0].ogl.nMaxLightsPerObject = (gameOptions [0].render.nQuality  / 2 + 1) * 8;
-gameOptions [0].ogl.bHeadlight = 1;
-gameOptions [0].ogl.bObjLighting = 1;
-gameOptions [0].ogl.bLightObjects = 1;
+gameOptions [0].ogl.bHeadlight = gameStates.ogl.bShadersOk;
+gameOptions [0].ogl.bObjLighting = gameStates.ogl.bShadersOk;
+gameOptions [0].ogl.bLightObjects = gameStates.ogl.bShadersOk;
 }
 
 // ----------------------------------------------------------------------------

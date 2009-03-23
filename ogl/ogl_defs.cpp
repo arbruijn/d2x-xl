@@ -255,6 +255,7 @@ else
 void OglInitExtensions (void)
 {
 pszOglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
+OglInitShaders ();
 OglInitMultiTexturing ();
 OglInitOcclusionQuery ();
 OglInitPointSprites ();
@@ -263,7 +264,6 @@ OglInitStencilOps ();
 OglInitRefreshSync ();
 OglInitAntiAliasing ();
 OglInitVBOs ();
-OglInitShaders ();
 #if RENDER2TEXTURE == 1
 OglInitPBuffer ();
 #elif RENDER2TEXTURE == 2

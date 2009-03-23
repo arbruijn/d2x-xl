@@ -317,14 +317,16 @@ void InitShaders (void)
 {
 	GLint	nTMUs;
 
+if (!gameStates.ogl.bShadersOk)
+	return;
 PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
-if (gameStates.ogl.bShadersOk) {
-	gameStates.ogl.bShadersOk = (nTMUs > 1);
-	if (!gameStates.ogl.bShadersOk)
-		PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
+gameStates.ogl.bShadersOk = (nTMUs >= 4);
+if (!gameStates.ogl.bShadersOk) {
+	PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
+	return;
 	}
-gameStates.render.bLightmapsOk = (nTMUs > 2);
+gameStates.render.bLightmapsOk = (nTMUs >= 4);
 PrintLog ("   initializing texture merging shader programs\n");
 InitTexMergeShaders ();
 gameData.render.ogl.nHeadlights = 0;
