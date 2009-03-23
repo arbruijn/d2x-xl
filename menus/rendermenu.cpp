@@ -478,7 +478,6 @@ do {
 	sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 	*szSlider = *(TXT_IMAGE_QUALITY - 1);
 	renderOpts.nImageQual = m.AddSlider (szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
-
 	if (gameStates.app.bGameRunning)
 		renderOpts.nRenderQual =
 		renderOpts.nMeshQual = -1;
@@ -495,12 +494,10 @@ do {
 		else
 			renderOpts.nMeshQual = -1;
 		}
-
 	m.AddText ("");
 	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
 	renderOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 2, KEY_S, HTX_SMOKE);
-
 	if (!gameStates.render.bHaveStencilBuffer)
 		renderOpts.nShadows = -1;
 	else {
@@ -508,19 +505,15 @@ do {
 		*szSlider = *(TXT_SHADOWS - 1);
 		renderOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_A, HTX_SHADOWS);
 		}
-
 	sprintf (szSlider + 1, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
 	*szSlider = *(TXT_CORONAS - 1);
 	renderOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_O, HTX_CORONAS);
-
 	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [extraGameInfo [0].bUseLightning]);
 	*szSlider = *(TXT_LIGHTNING - 1);
 	renderOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_I, HTX_LIGHTNING);
-
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	*szSlider = *(TXT_CAMERAS - 1);
 	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_C, HTX_CAMERAS);
-
 	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_P, HTX_POWERUPS);
@@ -544,22 +537,17 @@ do {
 		} while (i >= 0);
 
 	extraGameInfo [0].bUseParticles = (gameOpts->render.particles.nQuality != 0);
-
 	if (renderOpts.nShadows >= 0) {
 		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
 			gameOpts->render.shadows.nReach =
 			gameOpts->render.shadows.nClip = nShadows;
 		}	
-
 	if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
 		gameOpts->render.coronas.nStyle = nCoronas;
-
 	if ((extraGameInfo [0].bUseCameras = (nCameras != 0))) 
 		gameOpts->render.cameras.bHires = (nCameras == 2);
-
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
-
 	gameOpts->movies.bSubTitles = (m [optSubTitles].m_value != 0);
 
 #if !DBG
