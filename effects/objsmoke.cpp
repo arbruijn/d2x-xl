@@ -163,7 +163,7 @@ if (i >= 0) {
 
 void DoPlayerBullets (CObject *objP)
 {
-if (RENDERPATH && gameOpts->render.ship.bBullets) {
+if (gameOpts->render.ship.bBullets) {
 		int	nModel = objP->rType.polyObjInfo.nModel;
 		int	bHires = G3HaveModel (nModel) - 1;
 

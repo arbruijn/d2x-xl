@@ -666,7 +666,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (RENDERPATH && gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
+if (gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 #if 1
 	if (gameStates.ogl.bUseDepthBlending && (CoronaStyle () == 2)) {

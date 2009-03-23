@@ -1114,7 +1114,7 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 		nSegment = nSegment;
 #endif
 	lightManager.SetNearestStatic (nSegment, 1, 1, 0);
-	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
+	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
 	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
@@ -1386,10 +1386,12 @@ if (gameStates.app.bNostalgia) {
 	gameOptions [1].render.debug.bDynamicLight = 1;
 	}
 #endif
+
+#if 0
 if (gameStates.app.bNostalgia > 1)
 	gameStates.render.nLightingMethod =
 	gameStates.render.bPerPixelLighting = 0;
-else if (!(RENDERPATH && lightmapManager.HaveLightmaps ()))
+else if (!(lightmapManager.HaveLightmaps ()))
 	gameStates.render.bPerPixelLighting = 0;
 else {
 	if (gameStates.render.nLightingMethod == 2)
@@ -1399,6 +1401,8 @@ else {
 	else
 		gameStates.render.bPerPixelLighting = 0;
 	}
+#endif
+
 gameStates.ogl.bHaveDepthBuffer =
 gameData.render.nTotalFaces =
 gameData.render.nTotalObjects =

@@ -576,7 +576,7 @@ int CLightmapManager::Save (int nLevel)
 	char				szFilename [FILENAME_LEN];
 	CSegFace			*faceP;
 
-if (!(RENDERPATH && gameStates.app.bCacheLightmaps && m_list.nLights && m_list.nBuffers))
+if (!(gameStates.app.bCacheLightmaps && m_list.nLights && m_list.nBuffers))
 	return 0;
 if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
@@ -609,7 +609,7 @@ int CLightmapManager::Load (int nLevel)
 	char				szFilename [FILENAME_LEN];
 	CSegFace			*faceP;
 
-if (!(RENDERPATH && gameStates.app.bCacheLightmaps))
+if (!(gameStates.app.bCacheLightmaps))
 	return 0;
 if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return 0;
@@ -655,7 +655,7 @@ memset (&m_data, 0, sizeof (m_data));
 
 int CLightmapManager::Create (int nLevel)
 {
-if (!(RENDERPATH && gameStates.render.bUsePerPixelLighting))
+if (!(gameStates.render.bUsePerPixelLighting))
 	return 0;
 if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 	return gameStates.render.bUsePerPixelLighting = 0;

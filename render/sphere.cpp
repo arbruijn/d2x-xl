@@ -695,7 +695,7 @@ if (!CreateShieldSphere ())
 if (gameData.render.shield.nFaces > 0)
 #endif
  {
-	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
+	if ((gameOpts->render.bDepthSort > 0) || (!gameOpts->render.bDepthSort))
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize);
 	else {
 		float	fScale;
@@ -733,7 +733,7 @@ if (!gameData.render.monsterball.sphereP) {
 if (gameData.render.monsterball.nFaces > 0)
 #endif
  {
-	if ((gameOpts->render.bDepthSort > 0) || (RENDERPATH && !gameOpts->render.bDepthSort))
+	if ((gameOpts->render.bDepthSort > 0) || (!gameOpts->render.bDepthSort))
 		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		float r = X2F (objP->info.xSize);

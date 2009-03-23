@@ -753,7 +753,7 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
 		return 0;
 	//First, get static light for this CSegment
 fix light;
-if (gameStates.render.nLightingMethod && !((RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
+if (gameStates.render.nLightingMethod && !((gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
 	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	light = I2X (1);
 	}

@@ -571,7 +571,7 @@ do {
 	if (nRendQualSave != gameOpts->render.nImageQuality)
 		SetRenderQuality ();
 
-	if (gameStates.app.bNostalgia || (nLighting == 0))
+	if ((gameStates.app.bNostalgia > 1) || (nLighting == 0))
 		gameOpts->render.nLightingMethod = 0;
 	else {
 		gameOpts->render.bUseLightmaps = (nLighting > 1);
@@ -589,27 +589,7 @@ do {
 #endif
 	} while (i == -2);
 
-
-if (gameStates.render.nLightingMethod == 2) {
-	gameStates.render.bPerPixelLighting = 2;
-	if (gameOpts->ogl.nMaxLightsPerPass < 4)
-		gameOpts->ogl.nMaxLightsPerPass = 4;
-	else if (gameOpts->ogl.nMaxLightsPerPass > 8)
-		gameOpts->ogl.nMaxLightsPerPass = 8;
-	nPasses = (16 + gameOpts->ogl.nMaxLightsPerPass - 1) / gameOpts->ogl.nMaxLightsPerPass;
-	gameOpts->ogl.nMaxLightsPerFace = nPasses * gameOpts->ogl.nMaxLightsPerPass;
-	}
-else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)
-	gameStates.render.bPerPixelLighting = 1;
-else
-	gameStates.render.bPerPixelLighting = 0;
-if (gameStates.render.bPerPixelLighting == 2) {
-	gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
-	gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
-	}
-gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
-gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
-
+lightManager.SetMethod ();
 DefaultRenderSettings ();
 }
 

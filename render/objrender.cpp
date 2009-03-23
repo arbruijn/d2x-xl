@@ -794,7 +794,7 @@ return bOk;
 
 static int RenderPlayerModel (CObject* objP, int bDepthSort, int bSpectate)
 {
-int bDynObjLight = (RENDERPATH && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
+int bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
 if (automap.m_bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
 	return 0;
 tObjTransformation savePos;

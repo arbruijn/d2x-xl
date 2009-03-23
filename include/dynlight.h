@@ -230,6 +230,7 @@ class CLightManager {
 		void ResetUsed (CDynLight* prl, int nThread);
 		void ResetActive (int nThread, int nActive);
 		void ResetAllUsed (int bVariable, int nThread);
+		int SetMethod (void);
 
 		inline CDynLight* Lights (void) { return m_data.lights.Buffer (); }
 		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }

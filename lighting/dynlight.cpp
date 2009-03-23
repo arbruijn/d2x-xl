@@ -677,7 +677,7 @@ for (i = 0; i < MAX_THREADS; i++)
 Transform (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	m_data.variableVertLights [i] = VariableVertexLights (i);
-if (RENDERPATH && gameStates.render.bPerPixelLighting && lightmapManager.HaveLightmaps ()) {
+if (gameStates.render.bPerPixelLighting && lightmapManager.HaveLightmaps ()) {
 	gameData.render.color.ambient.Clear ();
 	return;
 	}
@@ -706,15 +706,34 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 
 // ----------------------------------------------------------------------------------------------
 
-void CLightManager::Setup (int nLevel)
+int CLightManager::SetMethod (void)
 {
-gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
-if (gameStates.render.nLightingMethod == 2)
+gameStates.render.nLightingMethod = (gameStates.app.bNostalgia > 1) ? 0 : gameOpts->render.nLightingMethod;
+if (gameStates.render.nLightingMethod == 2) {
 	gameStates.render.bPerPixelLighting = 2;
+	if (gameOpts->ogl.nMaxLightsPerPass < 4)
+		gameOpts->ogl.nMaxLightsPerPass = 4;
+	else if (gameOpts->ogl.nMaxLightsPerPass > 8)
+		gameOpts->ogl.nMaxLightsPerPass = 8;
+	gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
+	int nPasses = (16 + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass;
+	gameOpts->ogl.nMaxLightsPerFace = nPasses * gameStates.render.nMaxLightsPerPass;
+	gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
+	}
 else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps)
 	gameStates.render.bPerPixelLighting = 1;
 else
 	gameStates.render.bPerPixelLighting = 0;
+gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
+gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
+return gameStates.render.bPerPixelLighting;
+}
+
+// ----------------------------------------------------------------------------------------------
+
+void CLightManager::Setup (int nLevel)
+{
+SetMethod ();
 if (!gameStates.app.bNostalgia) {
 	lightManager.AddGeometryLights ();
 	ComputeNearestLights (nLevel);
