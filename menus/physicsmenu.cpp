@@ -186,8 +186,7 @@ void PhysicsOptionsMenu (void)
 
 	CMenu	m;
 	int	i;
-	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
-			optFluidPhysics = -1, optHitAngles = -1, optKillMissiles = -1, optHitboxes = -1;
+	int	optWiggle = -1;
 	char	szSlider [50];
 
 pszMslTurnSpeeds [0] = TXT_SLOW;
@@ -244,7 +243,6 @@ do {
 			optWiggle = m.AddCheck (TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
 		else
 			optWiggle = -1;
-		optHitAngles = m.AddCheck (TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_H, HTX_GPLAY_HITANGLES);
 		}
 	m.AddText ("", 0);
 
@@ -265,7 +263,6 @@ extraGameInfo [0].bUseHitAngles = nHitDetection & 1;
 extraGameInfo [0].nHitboxes = nHitDetection & 2;
 extraGameInfo [0].nDrag = nDragTable [nDrag];
 if (gameOpts->app.bExpertMode == SUPERUSER) {
-	extraGameInfo [0].bUseHitAngles = m [optHitAngles].m_value;
 	if (optWiggle >= 0)
 		extraGameInfo [0].bWiggle = m [optWiggle].m_value;
 	}
