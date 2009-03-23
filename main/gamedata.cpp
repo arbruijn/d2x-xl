@@ -1785,6 +1785,13 @@ extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
 gameOptions [0].render.color.bWalls = 1;
 gameStates.ogl.nContrast = 8;
 gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;
+
+gameOptions [0].weaponIcons.bEquipment = 1;
+gameOptions [0].weaponIcons.bSmall = 1;
+gameOptions [0].weaponIcons.nSort = 1;
+gameOptions [0].weaponIcons.bShowAmmo = 1;
+gameOptions [0].weaponIcons.alpha = 4;
+
 DefaultSmokeSettings ();
 DefaultShadowSettings ();
 DefaultCoronaSettings ();

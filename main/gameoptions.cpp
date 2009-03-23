@@ -301,7 +301,7 @@ else {
 	gameOptions [0].render.color.bUseLightmaps = 0;
 	gameOptions [0].render.color.bWalls = 0;
 	gameOptions [0].render.color.nLightmapRange = 5;
-	gameOptions [0].render.weaponIcons.bSmall = 0;
+	gameOptions [0].render.weaponIcons.bSmall = 1;
 	gameOptions [0].render.weaponIcons.bShowAmmo = 1;
 	gameOptions [0].render.weaponIcons.bEquipment = 1;
 	gameOptions [0].render.weaponIcons.nSort = 1;
