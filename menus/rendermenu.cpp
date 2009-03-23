@@ -369,9 +369,9 @@ void RenderOptionsMenu (void)
 	CMenu	m;
 	int	i;
 #if DBG
-	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight, optSubTitles;
+	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
-	int nRendQualSave = gameOpts->render.nImageQuality;
+	int nRendQualSave = gameOpts->render.nImageQuality, optSubTitles;
 
 	static int choice = 0;
 
