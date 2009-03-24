@@ -581,7 +581,7 @@ for (i = 0; i < 3; i++) {
 	sprite [3][i] = v [i] - s [i] + t [i];
 	}
 cosine = CFloatVector::Dot (e, n);
-return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity];
+return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nIntensity]);
 }
 
 // -----------------------------------------------------------------------------------
@@ -611,6 +611,8 @@ else
 	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
+if (gameOptions [0].render.coronas.nStyle == 1) 
+	fIntensity = sqrt (fIntensity);
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
@@ -648,10 +650,10 @@ if (gameStates.render.bQueryCoronas != 2) {
 
 void RenderCorona (short nSegment, short nSide, float fIntensity, float fSize)
 {
-	CFloatVector		sprite [4], vNormal, vCenter = CFloatVector::ZERO, vEye = CFloatVector::ZERO;
-	int			nTexture, bAdditive;
-	tIntervalf	zRange;
-	float			fAngle, fLight;
+	CFloatVector	sprite [4], vNormal, vCenter = CFloatVector::ZERO, vEye = CFloatVector::ZERO;
+	int				nTexture, bAdditive;
+	tIntervalf		zRange;
+	float				fAngle, fLight;
 
 if (fIntensity < 0.01f)
 	return;

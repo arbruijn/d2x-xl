@@ -1653,6 +1653,13 @@ gameOptions [0].render.coronas.bPowerups = 1;
 gameOptions [0].render.coronas.bWeapons = 0;
 gameOptions [0].render.coronas.bAdditive = 1;
 gameOptions [0].render.coronas.bAdditiveObjs = 1;
+if (gameOptions [0].render.coronas.nStyle == 2) 
+	gameOptions [0].render.coronas.nIntensity = 2;
+else if (gameOptions [0].render.coronas.nStyle == 1) 
+	gameOptions [0].render.coronas.nIntensity = 1;
+else
+	gameOptions [0].render.coronas.nIntensity = 1;
+gameOptions [0].render.coronas.nObjIntensity = 1;
 }
 
 // ----------------------------------------------------------------------------

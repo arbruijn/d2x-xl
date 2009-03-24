@@ -123,7 +123,7 @@ if (i) {
 	gameOptions [1].render.coronas.bAdditiveObjs = 0;
 	gameOptions [1].render.effects.bRobotShields = 0;
 	gameOptions [1].render.effects.bOnlyShieldHits = 0;
-	gameOptions [1].render.coronas.nIntensity = 2;
+	gameOptions [1].render.coronas.nIntensity = 1;
 	gameOptions [1].render.coronas.nObjIntensity = 1;
 	gameOptions [1].render.effects.bExplBlasts = 1;
 	gameOptions [1].render.effects.nShrapnels = 1;
@@ -267,7 +267,7 @@ else {
 	gameOptions [0].render.coronas.bWeapons = 0;
 	gameOptions [0].render.coronas.bAdditive = 0;
 	gameOptions [0].render.coronas.bAdditiveObjs = 0;
-	gameOptions [0].render.coronas.nIntensity = 2;
+	gameOptions [0].render.coronas.nIntensity = 1;
 	gameOptions [0].render.coronas.nObjIntensity = 1;
 	gameOptions [0].render.effects.bRobotShields = 0;
 	gameOptions [0].render.effects.bOnlyShieldHits = 0;
