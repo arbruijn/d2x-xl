@@ -1735,6 +1735,7 @@ gameOptions [0].render.lightnings.bRobotOmega = 1;
 gameOptions [0].render.lightnings.bAuxViews = 0;
 gameOptions [0].render.lightnings.bMonitors = 1;
 extraGameInfo [0].bFlickerLights = 1;
+extraGameInfo [0].bBrightObjects = 0;
 }
 
 // ----------------------------------------------------------------------------
