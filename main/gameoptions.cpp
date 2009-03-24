@@ -480,7 +480,7 @@ if (i) {
 	}
 else {
 	gameOptions [0].sound.bUseRedbook = 1;
-	gameOptions [1].sound.digiSampleRate = SAMPLE_RATE_22K;
+	gameOptions [0].sound.digiSampleRate = SAMPLE_RATE_22K;
 #if USE_SDL_MIXER
 	gameOptions [0].sound.bUseSDLMixer = 1;
 #else
