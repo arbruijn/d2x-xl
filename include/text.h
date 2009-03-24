@@ -1936,10 +1936,10 @@ void LoadGameTexts(void);
 #define TXT_HIT_DETECTION				GT(1139)
 #define TXT_AUTOLEVEL					GT(1140)
 #define TXT_NOTEBOOK_FRIENDLY			GT(1141)
+#define TXT_BAD_HARDWARE				GT(1142)
 
 #if 0
 
-#define TXT_					GT(1142)
 #define TXT_					GT(1143)
 #define TXT_					GT(1144)
 #define TXT_					GT(1145)

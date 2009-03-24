@@ -1885,6 +1885,7 @@ const char *defaultGameTexts [][2] = {
  {"~Treffer-Erkennung: %s", "~Hit detection: %s"},
  {"~Automatische Ausrichtung: %s", "ship ~Auto-leveling: %s"},
  {"~Notebookfreundlicher Modus", "Notebook-friendly mode"},
+ {"Unzureichende Grafik-Hardware.\nD2X-XL laeuft mit reduzierten\nEinstellungen.", "Insufficient graphics hardware.\nD2X-XL will run at reduced settings."},
 #if 0
  {"", ""},
 #endif

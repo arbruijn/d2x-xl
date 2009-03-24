@@ -843,11 +843,11 @@ if (!gameStates.ogl.bShadersOk) {
 	gameOpts->menus.nFade = 250;
 #if 0
 	for (int i = 0; i < 2; i++) {	// make the message flash a few times
-		messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
+		messageBox.Show (TXT_BAD_HARDWARE);
 		messageBox.Clear ();
 		}
 #endif
-	messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
+	messageBox.Show (TXT_BAD_HARDWARE);
 	G3_SLEEP (3500);
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
