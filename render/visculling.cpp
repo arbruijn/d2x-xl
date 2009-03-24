@@ -578,7 +578,7 @@ gameData.render.zMax = vCenter [Z] + d1 + r;
 
 void BuildRenderSegList (short nStartSeg, int nWindow)
 {
-	int			nCurrent, nHead, nTail, nRestart, nSide;
+	int			nCurrent, nHead, nTail, nSide;
 	int			l, i, j;
 	short			nChild;
 	short			nChildSeg;
@@ -622,7 +622,6 @@ VISIT (nStartSeg);
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
 nHead = nTail = 0;
 nCurrent = 1;
-nRestart = 32767;
 
 renderPortals [0].left =
 renderPortals [0].top = 0;
@@ -631,7 +630,7 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 
 int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
 for (l = 0; l < nRenderDepth; l++) {
-	for (nHead = ((nRestart == 32767) ? 0 : nRestart), nTail = nCurrent; nHead < nTail; nHead++) {
+	for (nHead = 0, nTail = nCurrent; nHead < nTail; nHead++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
@@ -772,8 +771,6 @@ for (l = 0; l < nRenderDepth; l++) {
 							gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
 						*oldPortal = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
-						if (nRestart > nPos)
-							nRestart = nPos;
 						}
 					}
 				}
