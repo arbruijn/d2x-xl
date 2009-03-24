@@ -868,7 +868,7 @@ if (!gameStates.ogl.bShadersOk) {
 	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;
 #if 0
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 2; i++) {	// make the message flash a few times
 		messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
 		messageBox.Clear ();
 		}
