@@ -510,7 +510,7 @@ void InitTexMergeShaders (void)
 {
 	int	i, b;
 
-if (!gameStates.ogl.bShadersOk)
+if (!(gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building texturing shader programs\n");

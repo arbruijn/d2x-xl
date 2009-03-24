@@ -269,7 +269,8 @@ OglInitPBuffer ();
 #elif RENDER2TEXTURE == 2
 CFBO::Setup ();
 #endif
-if (!gameStates.ogl.bShadersOk) {
+if (!(gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk)) {
+	gameOpts->ogl.bGlTexMerge = 0;
 	gameStates.ogl.bLowMemory = 0;
 	gameStates.ogl.bHaveTexCompression = 0;
 	}

@@ -836,7 +836,7 @@ return 0;
 
 void BadHardwareNotification (void)
 {
-#if 1
+#if !DBG
 if (!gameStates.ogl.bShadersOk) {
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
@@ -848,7 +848,7 @@ if (!gameStates.ogl.bShadersOk) {
 		}
 #endif
 	messageBox.Show (TXT_BAD_HARDWARE);
-	G3_SLEEP (3500);
+	G3_SLEEP (3250);
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;

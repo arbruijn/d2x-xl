@@ -317,7 +317,7 @@ void InitShaders (void)
 {
 	GLint	nTMUs;
 
-if (!gameStates.ogl.bShadersOk)
+if (!(gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk))
 	return;
 PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
@@ -352,7 +352,7 @@ LinkShaderProg (NULL);
 void OglInitShaders (void)
 {
 PrintLog ("Checking shaders ...\n");
-gameStates.ogl.bShadersOk = 1;
+gameStates.ogl.bShadersOk = 0;
 if (!gameOpts->render.bUseShaders)
 	PrintLog ("   Shaders have been disabled in d2x.ini\n");
 else if (!gameStates.ogl.bMultiTexturingOk)

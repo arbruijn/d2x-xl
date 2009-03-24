@@ -144,7 +144,7 @@ for (int i = 0; i < 2; i++) {
 
 void InitGrayScaleShader (void)
 {
-if (!gameStates.ogl.bShadersOk)
+if (!(gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building grayscale shader programs\n");
