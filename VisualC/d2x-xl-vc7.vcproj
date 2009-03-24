@@ -121,11 +121,11 @@
 				StructMemberAlignment="1"
 				BufferSecurityCheck="FALSE"
 				EnableFunctionLevelLinking="TRUE"
-				EnableEnhancedInstructionSet="1"
+				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
+				AssemblerListingLocation=".\Release-vc7/"
+				ObjectFile=".\Release-vc7/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -141,7 +141,7 @@
 				OutputFile="\programs\d2\d2x-xl-intel.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Release&quot;;&quot;..\..\..\d2x\sdl-1.2.13\Release&quot;;&quot;..\..\..\SDL_mixer-1.2.8\VisualC\Release&quot;"
+				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Release&quot;;&quot;..\..\..\d2x\sdl-1.2.13\Release-vc7&quot;;&quot;..\..\..\SDL_mixer-1.2.8\VisualC\Release-vc7&quot;"
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="FALSE"
 				ProgramDatabaseFile=".\Release/d2x-xl.pdb"
@@ -2452,9 +2452,6 @@
 						RelativePath="..\input\joy.cpp">
 					</File>
 					<File
-						RelativePath="..\input\joydefs.cpp">
-					</File>
-					<File
 						RelativePath="..\input\key.cpp">
 					</File>
 					<File
@@ -3083,6 +3080,9 @@
 					</File>
 					<File
 						RelativePath="..\menus\gameplaymenu.cpp">
+					</File>
+					<File
+						RelativePath="..\menus\inputdevicemenu.cpp">
 					</File>
 					<File
 						RelativePath="..\menus\listbox.cpp">

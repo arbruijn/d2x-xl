@@ -218,7 +218,10 @@ void StartTranspRenderThread (void)
 {
 #if !UNIFY_THREADS
 #	if TRANSPRENDER_THREADS
-if (gameData.app.bUseMultiThreading [rtTranspRender]) {
+#		if 0
+if (gameData.app.bUseMultiThreading [rtTranspRender]) 
+#		endif
+	{
 	static bool bInitialized = false;
 
 	if (!bInitialized) {
@@ -262,7 +265,10 @@ void ControlTranspRenderThread (void)
 {
 #if !UNIFY_THREADS 
 #	if TRANSPRENDER_THREADS
-if (gameStates.app.bMultiThreaded) {
+#		if 0
+if (gameStates.app.bMultiThreaded) 
+#		endif
+	{
 	if (gameData.app.bUseMultiThreading [rtTranspRender])
 		StartTranspRenderThread ();
 	else
@@ -354,7 +360,10 @@ return 0;
 void StartEffectsThread (void)
 {
 #if !UNIFY_THREADS
-if (gameData.app.bUseMultiThreading [rtEffects]) {
+#	if 0
+if (gameData.app.bUseMultiThreading [rtEffects]) 
+#	endif
+	{
 	static bool bInitialized = false;
 
 	if (!bInitialized) {
@@ -386,10 +395,14 @@ tiEffects.pThread = NULL;
 void ControlEffectsThread (void)
 {
 if (gameStates.app.bMultiThreaded) {
+#if 1
+StartEffectsThread ();
+#else
 	if (gameData.app.bUseMultiThreading [rtEffects])
 		StartEffectsThread ();
 	else
 		EndEffectsThread ();
+#endif
 	}
 }
 
@@ -398,7 +411,7 @@ if (gameStates.app.bMultiThreaded) {
 bool WaitForEffectsThread (void)
 {
 #if !UNIFY_THREADS
-if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects] && tiEffects.pThread) {
+if (gameStates.app.bMultiThreaded && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);
 	return true;

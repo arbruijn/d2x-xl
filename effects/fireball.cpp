@@ -110,9 +110,6 @@ return objP;
 CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize,
 								  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
 {
-if (nVClip < 0)
-	return NULL;
-
 	short			nObject;
 	CObject		*explObjP, *objP;
 	fix			dist, force, damage;

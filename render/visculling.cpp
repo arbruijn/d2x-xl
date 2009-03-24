@@ -631,7 +631,7 @@ renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
 
 int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
 for (l = 0; l < nRenderDepth; l++) {
-	for (nHead = (nRestart = 32767) ? 0 : nRestart, nRestart = 32767, nTail = nCurrent; nHead < nTail; nHead++) {
+	for (nHead = ((nRestart == 32767) ? 0 : nRestart), nTail = nCurrent; nHead < nTail; nHead++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;

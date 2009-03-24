@@ -6,6 +6,14 @@
 	ProjectGUID="{9CCBAB1E-0771-45CB-9DB8-2E8053D1C22E}"
 	VCNestedProjectGUID="{D27227AC-13CC-4901-9F73-A184D7CB24AD}"
 	VCNestedProjectFileName="libmve-vc7.vcproj">
-	<Configurations/>
+	<Configurations>
+		<Configuration
+			Name="Release|Win32">
+			<Tool
+				Name="CppCmplrTool"
+				GenerateAlternateCodePaths="5"
+				UseProcessorExtensions="6"/>
+		</Configuration>
+	</Configurations>
 	<Files/>
 </VisualStudioProject>
