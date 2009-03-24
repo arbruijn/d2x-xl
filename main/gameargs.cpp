@@ -366,12 +366,12 @@ if ((t = FindArg ("-cache_lightmaps")))
 if ((t = FindArg ("-cache_lights")))
 	gameStates.app.bCacheLights = NumArg (t, 1);
 #else
-#	if 1 //DBG
+#	if DBG
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 else
 #	endif
-	gameOptions [0].render.bUseShaders = 1;
+gameOptions [0].render.bUseShaders = 1;
 gameStates.app.bCacheTextures = 1;
 gameStates.app.bCacheModelData = 1;
 gameStates.app.bCacheMeshes = 1;
