@@ -834,6 +834,30 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
+void BadHardwareNotification (void)
+{
+#if 1
+if (!gameStates.ogl.bShadersOk) {
+	SetScreenMode (SCREEN_MENU);
+	int nFade = gameOpts->menus.nFade;
+	gameOpts->menus.nFade = 250;
+#if 0
+	for (int i = 0; i < 2; i++) {	// make the message flash a few times
+		messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
+		messageBox.Clear ();
+		}
+#endif
+	messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
+	G3_SLEEP (3500);
+	gameOpts->menus.nFade = 500;
+	messageBox.Clear ();
+	gameOpts->menus.nFade = nFade;
+	}
+#endif
+}
+
+// ----------------------------------------------------------------------------
+
 int SDLCALL main (int argc, char *argv[])
 {
 gameStates.app.bInitialized = 0;
@@ -862,24 +886,7 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}	
-#if 1
-if (!gameStates.ogl.bShadersOk) {
-	SetScreenMode (SCREEN_MENU);
-	int nFade = gameOpts->menus.nFade;
-	gameOpts->menus.nFade = 250;
-#if 0
-	for (int i = 0; i < 2; i++) {	// make the message flash a few times
-		messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
-		messageBox.Clear ();
-		}
-#endif
-	messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
-	G3_SLEEP (3500);
-	gameOpts->menus.nFade = 500;
-	messageBox.Clear ();
-	gameOpts->menus.nFade = nFade;
-	}
-#endif
+BadHardwareNotification ();
 /*---*/PrintLog ("Invoking main menu\n");
 MainLoop ();
 CleanUp ();
