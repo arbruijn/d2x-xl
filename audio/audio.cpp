@@ -759,6 +759,8 @@ if (gameOpts->sound.bUseOpenAL) {
 	}
 else
 #endif
+StopAll ();
+songManager.StopAll ();
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	Mix_CloseAudio ();
@@ -773,8 +775,6 @@ else
 void CAudio::Shutdown (void)
 {
 if (m_info.bAvailable) {
-	StopAll ();
-	songManager.StopAll ();
 	int nVolume = m_info.nVolume;
 	SetFxVolume (0);
 	m_info.nVolume = nVolume;

@@ -321,7 +321,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 	if (!gameOpts->sound.bUseRedbook)
 		redbook.Enable (0);
 	else {	// use redbook
-			RBAInit ();
+		RBAInit ();
 		if (RBAEnabled ()) {
 			redbook.SetVolume (gameConfig.nRedbookVolume);
 			redbook.ForceRegister ();

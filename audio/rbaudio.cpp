@@ -42,7 +42,7 @@ if (initialised) {
 	}
 }
 
-void RBAInit()
+void RBAInit (void)
 {
 	int	d, i, j;
 	char	szDrive [FILENAME_LEN], sz [FILENAME_LEN];
