@@ -698,7 +698,7 @@ if (nStage == 0) {
 #else
 	if (gameStates.app.bD1Mission)
 		LoadD1Sounds (false);
-	if (gameStates.app.bD1Mission ? LoadD1Sounds (true) : ReadSoundFile (true)) {
+	if (gameStates.app.bHaveMod && (gameStates.app.bD1Mission ? LoadD1Sounds (true) : ReadSoundFile (true))) {
 		gameStates.app.bCustomSounds = true;
 		if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
 			WaitForSoundThread ();
@@ -711,7 +711,7 @@ if (nStage == 0) {
 		gameStates.app.bCustomSounds = false;
 		}
 #endif
-	if (*gameFolders.szModName) {
+	if (gameStates.app.bHaveMod) {
 		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
 		LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0, true);
 		}
@@ -719,7 +719,7 @@ if (nStage == 0) {
 		char szFile [FILENAME_LEN];
 
 		/*---*/PrintLog ("   reading additional robots\n");
-		if ((gameData.missions.nEnhancedMission < 3) || !*gameFolders.szModName)
+		if ((gameData.missions.nEnhancedMission < 3) || !gameStates.app.bHaveMod)
 			nLoadRes = 0;
 		else {
 			sprintf (szFile, "%s.vham", gameFolders.szModName);
