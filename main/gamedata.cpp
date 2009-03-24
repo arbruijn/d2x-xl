@@ -1683,7 +1683,7 @@ gameOptions [0].render.particles.nLife [2] = 0;
 gameOptions [0].render.particles.nAlpha [2] = 2;
 // missiles
 gameOptions [0].render.particles.nSize [3] = 1 + (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nDens [3] = (gameOpts->render.particles.nQuality > 1);
+gameOptions [0].render.particles.nDens [3] = 1 + (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nLife [3] = (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nAlpha [3] = 2;
 // debris
@@ -1734,6 +1734,7 @@ gameOptions [0].render.lightnings.bOmega = 1;
 gameOptions [0].render.lightnings.bRobotOmega = 1;
 gameOptions [0].render.lightnings.bAuxViews = 0;
 gameOptions [0].render.lightnings.bMonitors = 1;
+extraGameInfo [0].bFlickerLights = 1;
 }
 
 // ----------------------------------------------------------------------------
