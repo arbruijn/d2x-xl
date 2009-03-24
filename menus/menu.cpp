@@ -513,7 +513,7 @@ gameStates.render.grAlpha = 1.0f;
 void CMenu::FadeIn (void)
 {
 if (gameOpts->menus.nFade) {
-	if (m_tEnter < 0)
+	if (m_tEnter == uint (-1))
 		m_tEnter = SDL_GetTicks ();
 	int t = int (SDL_GetTicks () - m_tEnter);
 	if (t < 0)

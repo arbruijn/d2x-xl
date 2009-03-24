@@ -247,6 +247,13 @@ fontManager.Current ()->StringSize (VERSION, ws, hs, aw);
 fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
+#if 0
+if (!gameStates.ogl.bShadersOk) {
+	fontManager.SetColorRGBi (RGB_PAL (63, 0, 0), 1, 0, 0);
+	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 5 * (fontManager.Current ()->Height () + 2), "due to insufficient graphics hardware,");
+	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 4 * (fontManager.Current ()->Height () + 2), "D2X-XL will run at reduced settings.");
+	}
+#endif
 fontManager.SetColorRGBi (RGB_PAL (6, 6, 6), 1, 0, 0);
 CCanvas::Pop ();
 gameStates.render.grAlpha = grAlpha;
@@ -855,6 +862,24 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}	
+#if 1
+if (!gameStates.ogl.bShadersOk) {
+	SetScreenMode (SCREEN_MENU);
+	int nFade = gameOpts->menus.nFade;
+	gameOpts->menus.nFade = 250;
+#if 0
+	for (int i = 0; i < 2; i++) {
+		messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
+		messageBox.Clear ();
+		}
+#endif
+	messageBox.Show ("Insufficient graphics hardware.\nD2X-XL will run at reduced settings.");
+	G3_SLEEP (3500);
+	gameOpts->menus.nFade = 500;
+	messageBox.Clear ();
+	gameOpts->menus.nFade = nFade;
+	}
+#endif
 /*---*/PrintLog ("Invoking main menu\n");
 MainLoop ();
 CleanUp ();

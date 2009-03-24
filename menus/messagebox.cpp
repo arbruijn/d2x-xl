@@ -62,6 +62,7 @@ gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
 		Render ();
+//		G3_SLEEP (33);
 	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
 }
 
@@ -70,8 +71,10 @@ if (bFade)
 void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
+#if 0
 if (!gameStates.app.bGameRunning)
 	OglSetDrawBuffer (GL_FRONT, 0);
+#endif
 CCanvas::SetCurrent (backgroundManager.Canvas (1));
 FadeIn ();
 backgroundManager.Redraw ();
