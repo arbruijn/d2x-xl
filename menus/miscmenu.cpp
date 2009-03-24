@@ -87,7 +87,7 @@ if (nState)
 	CMenuItem * m;
 	int			v;
 
-if (!gameStates.app.bNostalgia) {
+if (miscOpts.nScreenshots >= 0) {
 	m = menu + miscOpts.nScreenshots;
 	v = m->m_value;
 	if (gameOpts->app.nScreenShotInterval != v) {
@@ -100,39 +100,6 @@ if (!gameStates.app.bNostalgia) {
 		key = -2;
 		return nCurItem;
 		}
-
-#if !SIMPLE_MENUS
-
-	m = menu + miscOpts.nExpertMode;
-	v = m->m_value;
-	if (gameOpts->app.bExpertMode != v) {
-		gameOpts->app.bExpertMode = v;
-		key = -2;
-		return nCurItem;
-		}
-	if (!gameOpts->app.bExpertMode) 
-		downloadManager.SetTimeoutIndex (15);
-	else {
-		m = menu + miscOpts.nAutoDl;
-		v = m->m_value;
-		if (extraGameInfo [0].bAutoDownload != v) {
-			extraGameInfo [0].bAutoDownload = v;
-			key = -2;
-			return nCurItem;
-			}
-		if (extraGameInfo [0].bAutoDownload) {
-			m = menu + miscOpts.nDlTimeout;
-			v = m->m_value;
-			if (downloadManager.GetTimeoutIndex () != v) {
-				v = downloadManager.SetTimeoutIndex (v);
-				sprintf (m->m_text, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
-				m->m_bRebuild = 1;
-				}
-			}
-		}
-
-#endif
-
 	}
 return nCurItem;
 }
@@ -153,8 +120,6 @@ void MiscellaneousMenu (void)
 	int	optSafeUDP;
 #endif
 	char  szSlider [50];
-
-#if SIMPLE_MENUS
 
 do {
 	i = 0;
@@ -177,17 +142,7 @@ do {
 		optHeadlight = 
 		optAutoLevel = -1;
 		}
-	if (gameStates.app.bNostalgia < 2) {
-#if 0
-		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
-			m.AddText ("", 0);
-		miscOpts.nAutoDl = m.AddCheck (TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
-		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
-			sprintf (szSlider + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
-			*szSlider = *(TXT_AUTODL_TO - 1);
-			miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
-			}
-#endif
+	if (gameStates.app.bExpertMode && (gameStates.app.bNostalgia < 2)) {
 		m.AddText ("", 0);
 		if (gameOpts->app.nScreenShotInterval)
 			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
@@ -196,6 +151,8 @@ do {
 		*szSlider = *(TXT_SCREENSHOTS - 1);
 		miscOpts.nScreenshots = m.AddSlider (szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
 		}
+	else
+		miscOpts.nScreenshots = -1;
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
 	} while (i >= 0);
@@ -216,112 +173,6 @@ do {
 	} while (i == -2);
 
 DefaultMiscSettings ();
-#else
-
-	int	optHeadlight, optEscort, optUseMacros,	optAutoLevel, optKeyboard,
-			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
-do {
-	i = 0;
-	m.Destroy ();
-	m.Create (20);
-	memset (&miscOpts, 0xff, sizeof (miscOpts));
-	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = -1;
-	if (gameStates.app.bNostalgia) {
-		optAutoLevel = m.AddCheck (TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
-		optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
-		optMissileView = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
-		optGuided = m.AddCheck (TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
-		optHeadlight = m.AddCheck (TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
-		}
-	else
-		optHeadlight = 
-		optAutoLevel = -1;
-	optEscort = m.AddCheck (TXT_ESCORT_KEYS, gameOpts->gameplay.bEscortHotKeys, KEY_K, HTX_MISC_ESCORTKEYS);
-#if 0
-	optFastResp = m.AddCheck (TXT_FAST_RESPAWN, gameOpts->gameplay.bFastRespawn, KEY_W, HTX_MISC_FASTRESPAWN);
-#endif
-	optUseMacros = m.AddCheck (TXT_USE_MACROS, gameOpts->multi.bUseMacros, KEY_M, HTX_MISC_USEMACROS);
-	if (!(gameStates.app.bNostalgia || gameStates.app.bGameRunning)) {
-#if UDP_SAFEMODE
-		optSafeUDP = m.AddCheck (TXT_UDP_QUAL, extraGameInfo [0].bSafeUDP, KEY_Q, HTX_MISC_UDPQUAL);
-#endif
-		}
-	if (!gameStates.app.bNostalgia) {
-		if (gameOpts->app.bExpertMode) {
-			optSmartSearch = m.AddCheck (TXT_SMART_SEARCH, gameOpts->menus.bSmartFileSearch, KEY_S, HTX_MISC_SMARTSEARCH);
-			optLevelVer = m.AddCheck (TXT_SHOW_LVL_VERSION, gameOpts->menus.bShowLevelVersion, KEY_V, HTX_MISC_SHOWLVLVER);
-			optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
-			}
-		else
-			optEnableMods = 
-			optSmartSearch =
-			optLevelVer = -1;
-		miscOpts.nExpertMode = m.AddCheck (TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
-		optDemoFmt = m.AddCheck (TXT_OLD_DEMO_FORMAT, gameOpts->demo.bOldFormat, KEY_C, HTX_OLD_DEMO_FORMAT);
-		}
-	if (gameStates.app.bNostalgia < 2) {
-		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)
-			m.AddText ("", 0);
-		miscOpts.nAutoDl = m.AddCheck (TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
-		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
-			sprintf (szSlider + 1, TXT_AUTODL_TO, downloadManager.GetTimeoutSecs ());
-			*szSlider = *(TXT_AUTODL_TO - 1);
-			miscOpts.nDlTimeout = m.AddSlider (szSlider + 1, downloadManager.GetTimeoutIndex (), 0, downloadManager.MaxTimeoutIndex (), KEY_T, HTX_MISC_AUTODLTO);  
-			}
-		m.AddText ("", 0);
-		if (gameOpts->app.nScreenShotInterval)
-			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
-		else
-			strcpy (szSlider + 1, TXT_NO_SCREENSHOTS);
-		*szSlider = *(TXT_SCREENSHOTS - 1);
-		miscOpts.nScreenshots = m.AddSlider (szSlider + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
-		}
-	do {
-		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
-	} while (i >= 0);
-	if (gameStates.app.bNostalgia) {
-		gameOpts->gameplay.nAutoLeveling = m [optAutoLevel].m_value;
-		gameOpts->render.cockpit.bReticle = m [optReticle].m_value;
-		gameOpts->render.cockpit.bMissileView = m [optMissileView].m_value;
-		gameOpts->render.cockpit.bGuidedInMainView = m [optGuided].m_value;
-		gameOpts->gameplay.bHeadlightOnWhenPickedUp = m [optHeadlight].m_value;
-		}
-	gameOpts->gameplay.bEscortHotKeys = m [optEscort].m_value;
-	gameOpts->multi.bUseMacros = m [optUseMacros].m_value;
-	if (!gameStates.app.bNostalgia) {
-		gameOpts->app.bExpertMode = m [miscOpts.nExpertMode].m_value;
-		gameOpts->demo.bOldFormat = m [optDemoFmt].m_value;
-		if (gameOpts->app.bExpertMode) {
-#if UDP_SAFEMODE
-			if (!gameStates.app.bGameRunning)
-				GET_VAL (extraGameInfo [0].bSafeUDP, optSafeUDP);
-#endif
-#if 0
-			GET_VAL (gameOpts->gameplay.bFastRespawn, optFastResp);
-#endif
-			GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
-			GET_VAL (gameOpts->menus.bSmartFileSearch, optSmartSearch);
-			GET_VAL (gameOpts->menus.bShowLevelVersion, optLevelVer);
-			}
-		else {
-#if EXPMODE_DEFAULTS
-			extraGameInfo [0].bWiggle = 1;
-#if 0
-			gameOpts->gameplay.bFastRespawn = 0;
-#endif
-			gameOpts->menus.bSmartFileSearch = 1;
-			gameOpts->menus.bShowLevelVersion = 1;
-#endif
-			}
-		}
-	if (gameStates.app.bNostalgia > 1)
-		extraGameInfo [0].bAutoDownload = 0;
-	else
-		extraGameInfo [0].bAutoDownload = m [miscOpts.nAutoDl].m_value;
-	} while (i == -2);
-
-#endif
-
 }
 
 //------------------------------------------------------------------------------
