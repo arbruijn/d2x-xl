@@ -445,7 +445,7 @@ do {
 	else {
 		sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
 		*szSlider = *(TXT_LIGHTING + 1);
-		renderOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, gameOpts->ogl.bGlTexMerge ? 3 : 1, KEY_L, HTX_LIGHTING);
+		renderOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, (gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk) ? 3 : 1, KEY_L, HTX_LIGHTING);
 		if (nLighting >= 2) {
 			sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
 			*szSlider = *(TXT_LMAP_QUALITY + 1);

@@ -658,7 +658,7 @@ else {
 	gameOptions [0].ogl.bObjLighting = 0;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bVoodooHack = 0;
-	//gameOptions [0].ogl.bGlTexMerge = 1;
+	gameOptions [0].ogl.bGlTexMerge = 1;
 	}
 }
 
