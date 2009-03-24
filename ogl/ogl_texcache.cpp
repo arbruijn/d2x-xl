@@ -151,7 +151,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if ((tMap2 = sideP->m_nOvlTex)) {
 		bm2 = LoadFaceBitmap (tMap1, sideP->m_nFrame, bLoadTextures);
 		bm2->SetTranspType (3);
-		if (!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) || gameOpts->ogl.bGlTexMerge)
+		if (/*!(bm2->Flags () & BM_FLAG_SUPER_TRANSPARENT) ||*/ gameOpts->ogl.bGlTexMerge)
 			bm2->SetupTexture (1, bLoadTextures);
 		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->m_nOvlOrient)))
 			bmP = bmm;
