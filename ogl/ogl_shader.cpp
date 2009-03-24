@@ -365,7 +365,7 @@ else if (!strstr (pszOglExtensions, "GL_ARB_shader_objects"))
 	PrintLog ("   Shader objects not supported by the OpenGL driver\n");
 else {
 #ifndef GL_VERSION_20
-	else if (!(glCreateProgramObject = (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glCreateProgramObjectARB")))
+	if (!(glCreateProgramObject = (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glCreateProgramObjectARB")))
 		PrintLog ("   glCreateProgramObject not supported by the OpenGL driver\n");
 	else if (!(glDeleteObject = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress ("glDeleteObjectARB")))
 		PrintLog ("   glDeleteObject not supported by the OpenGL driver\n");
