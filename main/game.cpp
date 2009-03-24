@@ -1046,11 +1046,12 @@ bGameClosed = 1;
 if (gameStates.app.bMultiThreaded) {
 	EndRenderThreads ();
 	}
-EndSoundThread ();
 GrClose ();
 PrintLog ("unloading addon sounds\n");
 FreeAddonSounds ();
-audio.Shutdown ();
+if (!RunSoundThread (stCloseAudio))
+	audio.Shutdown ();
+EndSoundThread ();
 RLECacheClose ();
 FreeObjExtensionBitmaps ();
 FreeModelExtensions ();

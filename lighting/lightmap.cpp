@@ -682,8 +682,11 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 			nFace = 0;
 			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (gameData.segs.nFaces), CreatePoll);
 			}
-		else
+		else {
+			messageBox.Show (TXT_CALC_LIGHTMAPS);
 			BuildAll (-1);
+			messageBox.Clear ();
+			}
 		//gameData.render.fAttScale [0] = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
 		gameStates.render.bHaveLightmaps = 0;
 		gameStates.render.nState = 0;

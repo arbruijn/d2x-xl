@@ -19,8 +19,10 @@ int _CDECL_ SoundThread (void *pThreadId)
 do {
 	while (!tiSound.ti.bExec) {
 		G3_SLEEP (1);
-		if (tiSound.ti.bDone)
+		if (tiSound.ti.bDone) {
+			tiSound.ti.bDone = 0;
 			return 0;
+			}
 		}
 	if (tiSound.nTask == stOpenAudio) {
 		audio.Setup (tiSound.fSlowDown);
@@ -45,6 +47,7 @@ do {
 		}
 	tiSound.ti.bExec = 0;
 	} while (!tiSound.ti.bDone);
+tiSound.ti.bDone = 0;
 return 0;
 }
 
@@ -61,7 +64,11 @@ while (tiSound.ti.pThread && tiSound.ti.bExec /*&& (SDL_GetTicks () - t1 < 1000)
 
 void StartSoundThread (void)
 {
-if (/*gameData.app.bUseMultiThreading [rtSound] &&*/ !tiSound.ti.pThread) {
+#if 1
+if (!tiSound.ti.pThread) {
+#else
+if (gameData.app.bUseMultiThreading [rtSound] && !tiSound.ti.pThread) {
+#endif
 	memset (&tiSound, 0, sizeof (tiSound));
 	tiSound.ti.nId = 0;
 	tiSound.ti.pThread = SDL_CreateThread (SoundThread, &tiSound.ti.nId);
@@ -75,7 +82,9 @@ void EndSoundThread (void)
 if (tiSound.ti.pThread) {
 	WaitForSoundThread ();
 	tiSound.ti.bDone = 1;
-	G3_SLEEP (100);
+	do {
+		G3_SLEEP (1);
+		} while (tiSound.ti.bDone);
 	//SDL_KillThread (tiSound.ti.pThread);
 	tiSound.ti.pThread = NULL;
 	}	
@@ -101,15 +110,20 @@ if (gameStates.app.bMultiThreaded) {
 
 int RunSoundThread (tSoundTask nTask)
 {
+#if 1
+if (tiSound.ti.pThread) {
+#else
 if (tiSound.ti.pThread && gameData.app.bUseMultiThreading [rtSound]) {
+#endif
 	WaitForSoundThread ();
 	tiSound.nTask = nTask;
 	tiSound.ti.bExec = 1;
 #if 0
 	PrintLog ("running render threads (task: %d)\n", nTask);
 #endif
+	return 1;
 	}
-return 1;
+return 0;
 }
 
 //------------------------------------------------------------------------------

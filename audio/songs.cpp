@@ -193,8 +193,10 @@ if (m_bPlaying) {		//fade out volume
 		RBASetVolume (newVolume);
 	} while (newVolume > 0);
 }
-RBAStop ();              	// Stop CD, if playing
-RBASetVolume (oldVolume);	//restore volume
+if (audio.Available ()) {
+	RBAStop ();              	// Stop CD, if playing
+	RBASetVolume (oldVolume);	//restore volume
+	}
 m_bPlaying = 0;
 }
 

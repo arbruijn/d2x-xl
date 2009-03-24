@@ -471,8 +471,6 @@ m_info.tAnimate = t;
 	//	Only plot every nth frame.
 if (!bRedraw && m_info.nDoorDivCount) {
 	m_info.nDoorDivCount--;
-	if (!gameOpts->menus.nStyle)
-		return;
 	}
 
 if (*m_info.szBitmapName) {
@@ -555,8 +553,6 @@ if (*m_info.szBitmapName) {
 	G3DrawBitmap (p, I2X (w), I2X (h), bmP, NULL, 1.0, 3);
 	glDepthFunc (depthFunc);
 	G3EndFrame ();
-	if (!gameOpts->menus.nStyle)
-		GrUpdate (0);
 	paletteManager.LoadEffect ();
 	CCanvas::SetCurrent (curCanvSave);
 	delete bitmapCanv;
@@ -699,9 +695,7 @@ else if (m_info.nCurrentColor >= MAX_BRIEFING_COLORS)
 if (m_info.bFlashingCursor && !m_info.bRedraw) {
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 	GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
-	if (!gameOpts->menus.nStyle)
-		GrUpdate (0);
-}
+	}
 
 if ((delay > 0) && !m_info.bRedraw) {
 	delay = tText + 1000 / 15;
@@ -722,9 +716,6 @@ if (m_info.bFlashingCursor && (delay > 0) && !m_info.bRedraw) {
 //draw the character
 fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, message);
-
-if (!(m_info.bRedraw || gameOpts->menus.nStyle)) 
-	GrUpdate (0);
 return w;
 }
 

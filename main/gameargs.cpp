@@ -239,9 +239,12 @@ void EvalMenuArgs (void)
 {
 	int	t;
 
-if (!gameStates.app.bNostalgia)
+if (!gameStates.app.bNostalgia) {
 	if ((t = FindArg ("-menustyle")))
 		gameOptions [0].menus.nStyle = NumArg (t, 1);
+	else
+		gameOptions [0].menus.nStyle = 1;
+	}
 if ((t = FindArg ("-fademenus")))
 	gameOptions [0].menus.nFade = NumArg (t, 0);
 if ((t = FindArg ("-altbg_alpha")) && *pszArgList [t+1]) {
@@ -339,28 +342,39 @@ void EvalRenderArgs (void)
 if ((t = FindArg ("-render_indirect")))
 	gameStates.render.bRenderIndirect = NumArg (t, 1);
 #endif
-if ((t = FindArg ("-use_shaders")))
-	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if ((t = FindArg ("-hires_textures")))
 	gameOptions [0].render.textures.bUseHires [0] =
 	gameOptions [0].render.textures.bUseHires [1] = NumArg (t, 1);
 if ((t = FindArg ("-hires_models")))
 	gameOptions [0].render.bHiresModels [0] = 
 	gameOptions [0].render.bHiresModels [1] = NumArg (t, 1);
-if ((t = FindArg ("-cache_textures")))
-	gameStates.app.bCacheTextures = NumArg (t, 1);
-if ((t = FindArg ("-cache_models")))
-	gameStates.app.bCacheModelData = NumArg (t, 1);
 if ((t = FindArg ("-model_quality")) && *pszArgList [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
 if ((t = FindArg ("-gl_texcompress")))
 	gameStates.ogl.bTextureCompression = NumArg (t, 1);
 #endif
+#if 0 //DBG
+if ((t = FindArg ("-use_shaders")))
+	gameOptions [0].render.bUseShaders = NumArg (t, 1);
+if ((t = FindArg ("-cache_textures")))
+	gameStates.app.bCacheTextures = NumArg (t, 1);
+if ((t = FindArg ("-cache_models")))
+	gameStates.app.bCacheModelData = NumArg (t, 1);
 if ((t = FindArg ("-cache_meshes")))
 	gameStates.app.bCacheMeshes = NumArg (t, 1);
 if ((t = FindArg ("-cache_lightmaps")))
 	gameStates.app.bCacheLightmaps = NumArg (t, 1);
+if ((t = FindArg ("-cache_lights")))
+	gameStates.app.bCacheLights = NumArg (t, 1);
+#else
+gameOptions [0].render.bUseShaders = 1;
+gameStates.app.bCacheTextures = 1;
+gameStates.app.bCacheModelData = 1;
+gameStates.app.bCacheMeshes = 1;
+gameStates.app.bCacheLightmaps = 1; 
+gameStates.app.bCacheLights = 1;
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -375,8 +389,6 @@ if ((t = FindArg ("-gpgpu_lights")))
 #endif
 if ((t = FindArg ("-expertmode")))
 	gameOpts->app.bExpertMode = NumArg (t, 1);
-if ((t = FindArg ("-cache_lights")))
-	gameStates.app.bCacheLights = NumArg (t, 1);
 if ((t = FindArg ("-pured2")))
 	SetNostalgia (3);
 else if ((t = FindArg ("-nostalgia")))
