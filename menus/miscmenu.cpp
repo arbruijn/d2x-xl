@@ -142,7 +142,7 @@ do {
 		optHeadlight = 
 		optAutoLevel = -1;
 		}
-	if (gameStates.app.bExpertMode && (gameStates.app.bNostalgia < 2)) {
+	if (gameOpts->app.bExpertMode && (gameStates.app.bNostalgia < 2)) {
 		m.AddText ("", 0);
 		if (gameOpts->app.nScreenShotInterval)
 			sprintf (szSlider + 1, TXT_SCREENSHOTS, screenShotIntervals [gameOpts->app.nScreenShotInterval]);
