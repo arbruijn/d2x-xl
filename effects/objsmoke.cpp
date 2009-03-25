@@ -812,8 +812,10 @@ void ObjectParticleFrame (void)
 	int		i;
 	CObject	*objP;
 
+#if 0
 if (!SHOW_SMOKE)
 	return;
+#endif
 for (i = 0, objP = OBJECTS.Buffer (); i <= gameData.objs.nLastObject [1]; i++, objP++) {
 	if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~DESTROY_SMOKE;
