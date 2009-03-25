@@ -172,7 +172,6 @@ int ComputeNearestVertexLights (int nVertex)
 	CFixVector			vLightToVert;
 	struct tLightDist	*pDists;
 
-PrintLog ("computing nearest vertex lights (%d)\n", nVertex);
 if (!lightManager.LightCount (0))
 	return 0;
 if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
