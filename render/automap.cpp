@@ -370,12 +370,12 @@ else
 	if (CCanvas::Current ()->Width () >= 1024) {
 		*szInfo [2] =
 		*szInfo [1] = '\0';
-		strcpy (szInfo [0], "ALT+E: Effects   ALT+O: Objects   ALT+T: Textures/Wireframe   ALT+V: Color   CTRL+T: Teleport");
+		strcpy (szInfo [0], "ALT+C: Color   ALT+E: Effects   ALT+O: Objects   ALT+T: Textures/Wireframe   CTRL+T: Teleport");
 		}
 	else {
 		*szInfo [2] = '\0';
-		strcpy (szInfo [1], "ALT+E: Effects   ALT+O: Objects   ALT+T: Textures/Wireframe");
-		strcpy (szInfo [0], "ALT+V: Color   CTRL+T: Teleport");
+		strcpy (szInfo [1], "ALT+C: Color   ALT+E: Effects   ALT+O: Objects");
+		strcpy (szInfo [0], "ALT+T: Textures/Wireframe   CTRL+T: Teleport");
 		}
 	}
 for (int i = 0; (i < 3) && *szInfo [i]; i++) {
@@ -752,7 +752,7 @@ while ((c = KeyInKey ())) {
 				  gameOpts->render.automap.bParticles);
 			break;
 
-		case KEY_ALTED + KEY_V:
+		case KEY_ALTED + KEY_C:
 			if (gameOpts->render.automap.bTextured & 1) {
 				nColor = (nColor + 1) % 3;
 				gameOpts->render.automap.bBright = (nColor & 1) != 0;
