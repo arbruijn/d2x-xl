@@ -86,9 +86,9 @@ FadeIn ();
 fontManager.SetCurrent (NORMAL_FONT);
 GrString (0x8000, m_yOffset - m_nTitleHeight, pszTitle, NULL);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
+for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, y;
-	y = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_yOffset;
+	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_yOffset;
 	if (i >= int (m_items->ToS ())) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		OglDrawFilledRect (m_xOffset, y - 1, m_xOffset + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);

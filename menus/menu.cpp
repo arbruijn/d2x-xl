@@ -399,15 +399,14 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 {
 	static	int t0 = 0;
 
-	int	i, sx, sy;
+	int	sx, sy, i = SDL_GetTicks ();
 
-if (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade) {
-	i = SDL_GetTicks ();
+if (i - m_tEnter > gameOpts->menus.nFade) {
 	if (i - t0 < 25) {
 		G3_SLEEP (0);
 		return;
 		}
-	t0 = 0;
+	t0 = i;
 	}
 
 m_bRedraw = 0;
@@ -416,12 +415,14 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 	CCanvas::Push ();
 	CCanvas::SetCurrent (gameCanvasP);
 	if (!gameStates.app.bShowError) {
-		if (automap.m_bDisplay)
+		if (automap.m_bDisplay) {
 			automap.DoFrame (0, 0);
+			CalcFrameTime ();
+			}
 		else if (gameData.app.bGamePaused /*|| timer_paused*/) {
 			GameRenderFrame ();
 			gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-			G3_SLEEP (0);
+			CalcFrameTime ();
 			}
 		else {
 			GameLoop (1, 0);
@@ -431,7 +432,7 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 	}
 else {
 	console.Draw ();
-	G3_SLEEP (0);
+	CalcFrameTime ();
 	}
 
 FadeIn ();

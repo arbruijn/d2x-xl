@@ -805,6 +805,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 /*---*/PrintLog ("Loading level...\n");
 gameData.Destroy ();
 srand (SDL_GetTicks ());
+gameData.time.tLast = 0;
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 gameStates.app.bBetweenLevels = 1;
 gameStates.render.bFreeCam = 0;

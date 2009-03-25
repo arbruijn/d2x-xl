@@ -380,6 +380,8 @@ int Movie_fixed_frametime;
 #endif
 
 
+#define EXACT_FRAME_TIME	1
+
 void CalcFrameTime (void)
 {
 
@@ -393,7 +395,33 @@ if (gameData.app.bGamePaused) {
 fix 	timerValue,
 		xLastFrameTime = gameData.time.xFrame;
 GetSlowTicks ();
-#if 1
+
+#if EXACT_FRAME_TIME
+
+	static float fSlack = 0;
+
+	int	nFrameTime, nMinFrameTime, nDeltaTime;
+
+if (MAXFPS > 1) {
+	if (!gameData.time.tLast)
+		nDeltaTime = 0;
+	else {
+		nFrameTime = gameStates.app.nSDLTicks - gameData.time.tLast;
+		nMinFrameTime = 1000 / MAXFPS;
+		nDeltaTime = nMinFrameTime - nFrameTime;
+		fSlack += 1000.0f / MAXFPS - nMinFrameTime;
+		if (fSlack >= 1) {
+			nDeltaTime += int (fSlack);
+			fSlack -= int (fSlack);
+			}
+		if (0 < nDeltaTime)
+			G3_SLEEP (nDeltaTime);
+		}
+	}
+timerValue = SECS2X (gameStates.app.nSDLTicks);
+
+#else
+
 fix xMinFrameTime = ((MAXFPS > 1) ? I2X (1) / MAXFPS : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
@@ -402,24 +430,7 @@ do {
 		break;
 	G3_SLEEP (1);
 	} while (gameData.time.xFrame < xMinFrameTime);
-#else
-int	tFrameTime, txMinFrameTime;
 
-if (MAXFPS > 1) {
-	txMinFrameTime = 1000 / MAXFPS;
-#	if 1
-	static float tSlack = 0;
-	tSlack += 1000.0f / MAXFPS - txMinFrameTime;
-	if (tSlack >= 1) {
-		txMinFrameTime += (int) tSlack;
-		tSlack -= (int) tSlack;
-		}
-#	endif
-	tFrameTime = gameStates.app.nSDLTicks - gameData.time.tLast;
-	if (tFrameTime < txMinFrameTime)
-		G3_SLEEP (txMinFrameTime - tFrameTime);
-	}
-timerValue = SECS2X (gameStates.app.nSDLTicks);
 #endif
 
 gameData.time.xFrame = timerValue - gameData.time.xLast;
@@ -427,7 +438,19 @@ gameData.time.xRealFrame = gameData.time.xFrame;
 if (gameStates.app.cheats.bTurboMode)
 	gameData.time.xFrame *= 2;
 gameData.time.xLast = timerValue;
+
+#if EXACT_FRAME_TIME
+
+gameData.time.tLast = gameStates.app.nSDLTicks;
+if (nDeltaTime > 0)
+	gameData.time.tLast += nDeltaTime;
+
+#else
+
 gameData.time.tLast = SDL_GetTicks ();
+
+#endif
+
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.xFrame = xLastFrameTime;		//d:\temp\dm_test.then use time from last frame
 #if Arcade_mode
