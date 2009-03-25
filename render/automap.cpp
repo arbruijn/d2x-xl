@@ -643,9 +643,7 @@ return h ? h : 1;
 
 int CAutomap::ReadControls (int nLeaveMode, int bDone, int& bPauseGame)
 {
-	static int nColor = 2;	// fully lit, grayed out
-
-	int	c, nMarker, nMaxDrop;
+	int	c, nMarker, nMaxDrop, nColor = gameOpts->render.automap.bBright | (gameOpts->render.automap.bGrayOut << 1);
 
 ControlsReadAll ();	
 if (Controls [0].automapDownCount && !nLeaveMode)
