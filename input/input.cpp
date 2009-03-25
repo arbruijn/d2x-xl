@@ -1182,8 +1182,6 @@ nMaxTurnRate = (int) gameStates.input.kcFrameTime;
 #else
 nMaxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - X2F (gameData.pig.ship.player->maxRotThrust)));
 #endif
-if (CheckGameConfig ())
-	SDL_Delay (gameData.app.nFrameCount % 100);
 return 0;
 }
 

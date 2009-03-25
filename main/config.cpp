@@ -48,7 +48,7 @@ static const char* pszVrType = "VRType";
 static const char* pszVrResolution = "VR_resolution";
 static const char* pszVrTracking = "VR_tracking";
 static const char* pszHiresMovies = "Hires Movies";
-static const char* pszVersion = "D2XVersion";
+static const char* pszD2XVersion = "D2XVersion";
 
 int digi_driver_board_16;
 int digi_driver_dma_16;
@@ -273,11 +273,6 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	cf.Close ();
 	}
 JoySetCalVals (cal, sizeofa (cal));
-CfgInitHashs ();
-#if 0
-if (CheckGameConfig ())
-	SetNostalgia (3);
-#endif
 return 0;
 }
 

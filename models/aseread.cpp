@@ -842,13 +842,12 @@ m_nGunPoint = cf.ReadByte ();
 m_nBullets = cf.ReadByte ();
 m_bBarrel = cf.ReadByte ();
 cf.ReadVector (m_vOffset);
-if ((m_nFaces > 100000) || (m_nVerts > 100000) || (m_nTexCoord > 100000))
+if ((m_nFaces > 100000) || (m_nVerts > 100000) || (m_nTexCoord > 100000))	//probably invalid
 	return 0;
-	if ((m_nFaces && !m_faces.Create (m_nFaces)) ||
-		 (m_nVerts && !m_verts.Create (m_nVerts)) ||
-		(m_nTexCoord && !m_texCoord.Create (m_nTexCoord)))
-		return 0;
-	}
+if ((m_nFaces && !m_faces.Create (m_nFaces)) ||
+	 (m_nVerts && !m_verts.Create (m_nVerts)) ||
+	(m_nTexCoord && !m_texCoord.Create (m_nTexCoord)))
+	return 0;
 m_faces.Read (cf);
 m_verts.Read (cf);
 m_texCoord.Read (cf);
@@ -880,6 +879,12 @@ m_bCustom = cf.ReadInt ();
 
 m_subModels = NULL;
 m_textures.m_nBitmaps = cf.ReadInt ();
+if (m_textures.m_nBitmaps > 100) {	//probably invalid
+	cf.Close ();
+	Destroy ();
+	return 0;
+	}
+
 if (!(m_textures.m_bitmaps.Create (m_textures.m_nBitmaps) &&
 	   m_textures.m_names.Create (m_textures.m_nBitmaps) &&
 		m_textures.m_nTeam.Create (m_textures.m_nBitmaps))) {
@@ -922,7 +927,19 @@ for (i = 0; i < m_nSubModels; i++) {
 	else
 		m_subModels = smP;
 	tailP = smP;
-	smP->ReadBinary (cf);
+	try {
+		if (!smP->ReadBinary (cf)) {
+			cf.Close ();
+			Destroy ();
+			return 0;
+			}
+		}
+	catch(...) {
+		PrintLog ("Compiled model file 'model%03d.bin' is damaged and will be replaced\n", m_nModel);
+		cf.Close ();
+		Destroy ();
+		return 0;
+		}
 	}
 
 return 1;
