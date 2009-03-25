@@ -346,25 +346,41 @@ if (gameStates.app.bNostalgia)
 
 	CFont*	curFont = CCanvas::Current ()->Font ();
 	int		w, h, aw, offs = m_data.bHires ? 10 : 5;
-	char		szInfo [2][200];
+	char		szInfo [3][200];
 
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 
-
-if (CCanvas::Current ()->Width () >= 1024) {
-	strcpy (szInfo [0], "ALT+T: Textures/wireframe   ALT+B: Brightness   ALT+C: Coronas   ALT+L: Lightnings   ALT+S: Smoke   CTRL+T: Teleport");
-	*szInfo [1] = '\0';
+#if 0
+if (gameOpts->app.bExpertMode) {
+	if (CCanvas::Current ()->Width () >= 1024) {
+		*szInfo [2] = '\0';
+		strcpy (szInfo [1], "ALT+A: Sparks   ALT+B: Bright   ALT+C: Coronas   ALT+G: Grayout ALT+L: Lightnings");
+		strcpy (szInfo [0], "ALT+P: Powerups   ALT+R: Robots   ALT+S: Smoke   ALT+T: Textures/Wireframe   CTRL+T: Teleport");
+		}
+	else {
+		strcpy (szInfo [2], "ALT+A: Sparks   ALT+B: Bright   ALT+C: Coronas   ALT+G: Grayout");
+		strcpy (szInfo [1], "ALT+L: Lightnings   ALT+P: Powerups   ALT+R: Robots");
+		strcpy (szInfo [0], "ALT+S: Smoke   ALT+T: Textures/wireframe   CTRL+T: Teleport");
+		}
 	}
-else {
-	strcpy (szInfo [0], "ALT+L: Lightnings   ALT+S: Smoke   CTRL+T: Teleport");
-	strcpy (szInfo [1], "ALT+T: Textures/wireframe   ALT+B: Brightness   ALT+C: Coronas");
+else 
+#endif
+	{
+	if (CCanvas::Current ()->Width () >= 1024) {
+		*szInfo [2] =
+		*szInfo [1] = '\0';
+		strcpy (szInfo [0], "ALT+E: Effects   ALT+O: Objects   ALT+T: Textures/Wireframe   ALT+V: Color   CTRL+T: Teleport");
+		}
+	else {
+		*szInfo [2] = '\0';
+		strcpy (szInfo [1], "ALT+E: Effects   ALT+O: Objects   ALT+T: Textures/Wireframe");
+		strcpy (szInfo [0], "ALT+V: Color   CTRL+T: Teleport");
+		}
 	}
-fontManager.Current ()->StringSize (szInfo [0], w, h, aw);
-GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - h, szInfo [0]);
-if (*szInfo [1]) {
-	fontManager.Current ()->StringSize (szInfo [1], w, h, aw);
-	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - 2 * h - 2, szInfo [1]);
+for (int i = 0; (i < 3) && *szInfo [i]; i++) {
+	fontManager.Current ()->StringSize (szInfo [i], w, h, aw);
+	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - (i + 1) * h - i * 2, szInfo [0]);
 	}
 if (gameOpts->render.cockpit.bHUD) {
 	GrPrintF (NULL, offs, offs, m_szLevelNum);
@@ -627,6 +643,8 @@ return h ? h : 1;
 
 int CAutomap::ReadControls (int nLeaveMode, int bDone, int& bPauseGame)
 {
+	static int nColor = 2;	// fully lit, grayed out
+
 	int	c, nMarker, nMaxDrop;
 
 ControlsReadAll ();	
@@ -640,7 +658,7 @@ while ((c = KeyInKey ())) {
 		case KEY_BACKSPACE: Int3 (); 
 			break;
 #endif
-		case KEY_CTRLED + KEY_P:
+		case KEY_PAUSE:
 			if (gameOpts->menus.nStyle && !IsMultiGame) {
 				if (gameData.app.bGamePaused)
 					ResumeGame ();
@@ -723,6 +741,54 @@ while ((c = KeyInKey ())) {
 			TeleportToMarker ();
 			break;
 
+		case KEY_ALTED + KEY_E:
+			gameOpts->render.automap.bSparks = 
+			gameOpts->render.automap.bCoronas = 
+			gameOpts->render.automap.bLightnings = 
+			gameOpts->render.automap.bParticles =
+				!(gameOpts->render.automap.bSparks || 
+				  gameOpts->render.automap.bCoronas || 
+				  gameOpts->render.automap.bLightnings || 
+				  gameOpts->render.automap.bParticles);
+			break;
+
+		case KEY_ALTED + KEY_V:
+			if (gameOpts->render.automap.bTextured & 1) {
+				nColor = (nColor + 1) % 3;
+				gameOpts->render.automap.bBright = (nColor & 1) != 0;
+				gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
+				}
+
+		case KEY_ALTED + KEY_O:
+			extraGameInfo [IsMultiGame].bPowerupsOnRadar =
+			extraGameInfo [IsMultiGame].bRobotsOnRadar = 
+				!(extraGameInfo [IsMultiGame].bPowerupsOnRadar || extraGameInfo [IsMultiGame].bRobotsOnRadar);
+			break;
+
+		case KEY_ALTED + KEY_F:
+			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
+			break;
+
+		case KEY_ALTED + KEY_T:
+			if (gameOpts->render.automap.bTextured == 1)
+				gameOpts->render.automap.bTextured = 3;
+			else if (gameOpts->render.automap.bTextured == 3)
+				gameOpts->render.automap.bTextured = 2;
+			else
+				gameOpts->render.automap.bTextured = 1;
+			break;
+
+#if PROFILING
+		case KEY_ALTED + KEY_Z:
+			gameStates.render.bShowProfiler = !gameStates.render.bShowProfiler;
+			break;
+#endif
+
+#if 0
+		case KEY_ALTED + KEY_A:
+			gameOpts->render.automap.bSparks = !gameOpts->render.automap.bSparks;
+			break;
+
 		case KEY_ALTED + KEY_B:
 			if (gameOpts->render.automap.bTextured & 1)
 				gameOpts->render.automap.bBright = !gameOpts->render.automap.bBright;
@@ -730,10 +796,6 @@ while ((c = KeyInKey ())) {
 
 		case KEY_ALTED + KEY_C:
 			gameOpts->render.automap.bCoronas = !gameOpts->render.automap.bCoronas;
-			break;
-
-		case KEY_ALTED + KEY_F:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 
 		case KEY_ALTED + KEY_G:
@@ -745,21 +807,17 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_P:
-			gameStates.render.bShowProfiler = !gameStates.render.bShowProfiler;
+			extraGameInfo [IsMultiGame].bPowerupsOnRadar = !extraGameInfo [IsMultiGame].bPowerupsOnRadar;
+			break;
+
+		case KEY_ALTED + KEY_R:
+			extraGameInfo [IsMultiGame].bRobotsOnRadar = !extraGameInfo [IsMultiGame].bRobotsOnRadar;
 			break;
 
 		case KEY_ALTED + KEY_S:
 			gameOpts->render.automap.bParticles = !gameOpts->render.automap.bParticles;
 			break;
-
-		case KEY_ALTED + KEY_T:
-			if (gameOpts->render.automap.bTextured == 1)
-				gameOpts->render.automap.bTextured = 3;
-			else if (gameOpts->render.automap.bTextured == 3)
-				gameOpts->render.automap.bTextured = 2;
-			else
-				gameOpts->render.automap.bTextured = 1;
-			break;
+#endif
 
 #if DBG
 		case KEY_COMMA:
