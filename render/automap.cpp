@@ -370,12 +370,12 @@ else
 	if (CCanvas::Current ()->Width () >= 1024) {
 		*szInfo [2] =
 		*szInfo [1] = '\0';
-		strcpy (szInfo [0], "ALT+C: Color   ALT+E: Effects   ALT+O: Objects   ALT+T: Textures/Wireframe   CTRL+T: Teleport");
+		strcpy (szInfo [0], "F1: Textures/Wireframe   F2: Color   F3: Effects   F4: Objects   F9: Teleport");
 		}
 	else {
 		*szInfo [2] = '\0';
-		strcpy (szInfo [1], "ALT+C: Color   ALT+E: Effects   ALT+O: Objects");
-		strcpy (szInfo [0], "ALT+T: Textures/Wireframe   CTRL+T: Teleport");
+		strcpy (szInfo [1], "F1: Textures/Wireframe   F2: Color");
+		strcpy (szInfo [0], "F3: Effects   F4: Objects   F9: Teleport");
 		}
 	}
 for (int i = 0; (i < 3) && *szInfo [i]; i++) {
@@ -737,11 +737,23 @@ while ((c = KeyInKey ())) {
 			DeleteMarker (0);
 			break;
 
-		case KEY_CTRLED + KEY_T:
-			TeleportToMarker ();
+		case KEY_F1:
+			if (gameOpts->render.automap.bTextured == 1)
+				gameOpts->render.automap.bTextured = 3;
+			else if (gameOpts->render.automap.bTextured == 3)
+				gameOpts->render.automap.bTextured = 2;
+			else
+				gameOpts->render.automap.bTextured = 1;
 			break;
 
-		case KEY_ALTED + KEY_E:
+		case KEY_F2:
+			if (gameOpts->render.automap.bTextured & 1) {
+				nColor = (nColor + 1) % 3;
+				gameOpts->render.automap.bBright = (nColor & 1) != 0;
+				gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
+				}
+
+		case KEY_F3:
 			gameOpts->render.automap.bSparks = 
 			gameOpts->render.automap.bCoronas = 
 			gameOpts->render.automap.bLightnings = 
@@ -752,30 +764,18 @@ while ((c = KeyInKey ())) {
 				  gameOpts->render.automap.bParticles);
 			break;
 
-		case KEY_ALTED + KEY_C:
-			if (gameOpts->render.automap.bTextured & 1) {
-				nColor = (nColor + 1) % 3;
-				gameOpts->render.automap.bBright = (nColor & 1) != 0;
-				gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
-				}
-
-		case KEY_ALTED + KEY_O:
+		case KEY_F4:
 			extraGameInfo [IsMultiGame].bPowerupsOnRadar =
 			extraGameInfo [IsMultiGame].bRobotsOnRadar = 
 				!(extraGameInfo [IsMultiGame].bPowerupsOnRadar || extraGameInfo [IsMultiGame].bRobotsOnRadar);
 			break;
 
-		case KEY_ALTED + KEY_F:
-			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
+		case KEY_F9:
+			TeleportToMarker ();
 			break;
 
-		case KEY_ALTED + KEY_T:
-			if (gameOpts->render.automap.bTextured == 1)
-				gameOpts->render.automap.bTextured = 3;
-			else if (gameOpts->render.automap.bTextured == 3)
-				gameOpts->render.automap.bTextured = 2;
-			else
-				gameOpts->render.automap.bTextured = 1;
+		case KEY_ALTED + KEY_F:
+			gameStates.render.bShowFrameRate = ++gameStates.render.bShowFrameRate % (6 + (gameStates.render.bPerPixelLighting == 2));
 			break;
 
 #if PROFILING
