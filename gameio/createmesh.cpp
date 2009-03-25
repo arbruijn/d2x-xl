@@ -983,10 +983,6 @@ void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 	 {{LMAP_SIZE, 1.0f - LMAP_SIZE}}
 	};
 #endif
-#if DBG
-if (texCoordP >= FACES.lMapTexCoord.Buffer () + FACES.lMapTexCoord.Length ())
-	return;
-#endif
 int i = m_faceP->nLightmap % LIGHTMAP_BUFSIZE;
 float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);
