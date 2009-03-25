@@ -385,7 +385,7 @@ nSoundNum = cf.ReadInt ();
 nSounds = SetupSounds (cf, nSoundNum, cf.Tell (), bCustom, bUseLowRes);
 if (bCustom)
 	gameOpts->sound.bHires [0] = (nSounds & 0xffff) ? 0 : 2;
-else if (gameOpts->sound.bHires [0] && !(nSounds & 0xffff0000))
+else if (gameOpts->sound.bHires [0] && ((nSounds & 0xffff0000) < nSoundNum))
 	gameOpts->sound.bHires [0] = 0;
 
 LoadSounds (cf, false);
