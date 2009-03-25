@@ -612,7 +612,7 @@ else
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
 if (gameOptions [0].render.coronas.nStyle == 1) 
-	fIntensity = sqrt (fIntensity);
+	fIntensity = float (sqrt (fIntensity));
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
