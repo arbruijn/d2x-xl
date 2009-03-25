@@ -848,7 +848,7 @@ if (!gameStates.ogl.bShadersOk && (gameConfig.nVersion != D2X_IVER)) {
 		}
 #endif
 	messageBox.Show (TXT_BAD_HARDWARE);
-	G3_SLEEP (3250);
+	G3_SLEEP (4000);
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
