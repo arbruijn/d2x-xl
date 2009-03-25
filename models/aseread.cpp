@@ -701,8 +701,14 @@ if (nModel == nDbgModel)
 if (m_nModel >= 0)
 	return 0;
 
-if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom, cf.Date (filename, "", 0)))
-	return 1;
+try {
+	if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom, cf.Date (filename, "", 0)))
+		return 1;
+	}
+catch(...) {
+	PrintLog ("Compiled model file 'model%03d.bin' is damaged and will be replaced\n", nModel);
+	Destroy ();
+	}
 
 if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
 	return 0;
@@ -836,10 +842,13 @@ m_nGunPoint = cf.ReadByte ();
 m_nBullets = cf.ReadByte ();
 m_bBarrel = cf.ReadByte ();
 cf.ReadVector (m_vOffset);
-if ((m_nFaces && !m_faces.Create (m_nFaces)) ||
-	 (m_nVerts && !m_verts.Create (m_nVerts)) ||
-	 (m_nTexCoord && !m_texCoord.Create (m_nTexCoord)))
+if ((m_nFaces > 100000) || (m_nVerts > 100000) || (m_nTexCoord > 100000))
 	return 0;
+	if ((m_nFaces && !m_faces.Create (m_nFaces)) ||
+		 (m_nVerts && !m_verts.Create (m_nVerts)) ||
+		(m_nTexCoord && !m_texCoord.Create (m_nTexCoord)))
+		return 0;
+	}
 m_faces.Read (cf);
 m_verts.Read (cf);
 m_texCoord.Read (cf);

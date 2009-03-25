@@ -32,23 +32,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "error.h"
 
-static const char *pszDigiVolume = "DigiVolume";
-static const char *pszMidiVolume = "MidiVolume";
-static const char *pszRedbookEnabled = "RedbookEnabled";
-static const char *pszRedbookVolume = "RedbookVolume";
-static const char *pszDetailLevel = "DetailLevel";
-static const char *pszGammaLevel = "GammaLevel";
-static const char *pszStereoRev = "StereoReverse";
-static const char *pszJoystickMin = "JoystickMin";
-static const char *pszJoystickMax = "JoystickMax";
-static const char *pszJoystickCen = "JoystickCen";
-static const char *pszLastPlayer = "LastPlayer";
-static const char *pszLastMission = "LastMission";
-static const char *pszVrType = "VRType";
-static const char *pszVrResolution = "VR_resolution";
-static const char *pszVrTracking = "VR_tracking";
-static const char *pszHiresMovies = "Hires Movies";
-static const char *pszCfgDataHash = "ConfigDataHash";
+static const char* pszDigiVolume = "DigiVolume";
+static const char* pszMidiVolume = "MidiVolume";
+static const char* pszRedbookEnabled = "RedbookEnabled";
+static const char* pszRedbookVolume = "RedbookVolume";
+static const char* pszDetailLevel = "DetailLevel";
+static const char* pszGammaLevel = "GammaLevel";
+static const char* pszStereoRev = "StereoReverse";
+static const char* pszJoystickMin = "JoystickMin";
+static const char* pszJoystickMax = "JoystickMax";
+static const char* pszJoystickCen = "JoystickCen";
+static const char* pszLastPlayer = "LastPlayer";
+static const char* pszLastMission = "LastMission";
+static const char* pszVrType = "VRType";
+static const char* pszVrResolution = "VR_resolution";
+static const char* pszVrTracking = "VR_tracking";
+static const char* pszHiresMovies = "Hires Movies";
+static const char* pszVersion = "D2XVersion";
 
 int digi_driver_board_16;
 int digi_driver_dma_16;
@@ -96,119 +96,6 @@ FFC (&ffs);
 return hashList.nHashs;
 }
 
-//------------------------------------------------------------------------------
-
-static uint cfgHashs [] = {
-	3935244969, 
-	1087444571, 
-	3915091710, 
-	3393194754, 
-	3871670399, 
-	3035723711, 
-	586367371, 
-	3391413563, 
-	2405653309, 
-	3915091710,
-	2943260375,
-	891560507,
-	2042098877,
-	2405671997,
-	2124113385,
-	1461184298,
-	17673152,
-	3007579330,
-	3684198094,
-	1260878687,
-	3612316049,
-	3090073029,
-	1347391164,
-	1032917202,
-	0};
-
-int CfgLoadHashs (char *pszFilter, char *pszFolder)
-{
-	static ubyte szDefaultHash [] = {'m', '4', 'd', '1'};
-	
-nDefaultHash = Crc32 (0, szDefaultHash, 4);
-if (hashList.nHashs)
-	return hashList.nHashs;
-if (!CfgCountHashs (pszFilter, pszFolder))
-	return 0;
-hashList.hashs.Create (hashList.nHashs);
-
-	FFS	f;
-	char	szTag [FILENAME_LEN];
-
-sprintf (szTag, "%s/%s", pszFolder, pszFilter);
-
-	int i;
-
-for (i = 0; i ? !FFN (&f, 0) : !FFF (szTag, &f, 0); i++) {
-	f.name [4] = '\0';
-	strlwr (f.name);
-	strcompress (f.name);
-	hashList.hashs [i] = Crc16 (0, reinterpret_cast<const ubyte*> (&f.name [0]), 4);
-	}
-return i;
-}
-
-//------------------------------------------------------------------------------
-
-char *CfgFileTag (void)
-{
-	char szMask [6] = {4, 1, 19, 10, 31, 0};
-	char szKey [6] = {'.', '/', 'c', 'f', 'g', '\0'};
-	static char szTag [6] = {0, 0, 0, 0, 0, 0};
-
-for (int i = 0; i < 6; i++)
-	szTag [i] = szKey [i] ^ szMask [i];
-return szTag;
-}
-
-//------------------------------------------------------------------------------
-
-int GetCfgHash (void)
-{
-if (!CfgLoadHashs (CfgFileTag (), gameFolders.szProfDir))
-	return -1;
-for (int i = 0; i < hashList.nHashs; i++)
-	for (int j = 0; cfgHashs [j]; j++)
-		if (hashList.hashs [i] == cfgHashs [j])
-			return hashList.hashs [i];
-return nDefaultHash;
-}
-
-//------------------------------------------------------------------------------
-
-bool CfgCreateHashs (void)
-{
-gameConfig.cfgDataHash = GetCfgHash ();
-return WriteConfigFile () == 0;
-}
-
-//------------------------------------------------------------------------------
-
-bool HaveCfgHashs (void)
-{
-return (gameConfig.cfgDataHash != (uint) -1) && (gameConfig.cfgDataHash != nDefaultHash);
-}
-
-//------------------------------------------------------------------------------
-
-bool CfgInitHashs (void)
-{
-if (!(HaveCfgHashs () || CfgCreateHashs ()))
-	return false;
-return true;
-}
-
-//------------------------------------------------------------------------------
-
-bool CheckGameConfig (void)
-{
-return !gameStates.app.bNostalgia && (nDefaultHash != gameConfig.cfgDataHash);
-}
-
 // ----------------------------------------------------------------------------
 
 void InitGameConfig (void)
@@ -226,50 +113,8 @@ gameConfig.nMidiVolume = 8;
 gameConfig.nRedbookVolume = 8;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
+gameConfig.nVersion = 0;
 }
-
-// ----------------------------------------------------------------------------
-
-#if 0
-
-#define CL_MC0 0xF8F
-#define CL_MC1 0xF8D
-
-void CrystalLakeWriteMCP(ushort mc_addr, ubyte mc_data)
-{
-	_disable();
-	outp (CL_MC0, 0xE2);				// Write password
-	outp (mc_addr, mc_data);		// Write data
-	_enable();
-}
-
-ubyte CrystalLakeReadMCP(ushort mc_addr)
-{
-	ubyte value;
-	_disable();
-	outp (CL_MC0, 0xE2);		// Write password
-	value = inp (mc_addr);		// Read data
-	_enable();
-	return value;
-}
-
-void CrystalLakeSetSB()
-{
-	ubyte tmp;
-	tmp = CrystalLakeReadMCP(CL_MC1);
-	tmp = 0x7F;
-	CrystalLakeWriteMCP(CL_MC1, tmp);
-}
-
-void CrystalLakeSetWSS ()
-{
-	ubyte tmp;
-	tmp = CrystalLakeReadMCP(CL_MC1);
-	tmp |= 0x80;
-	CrystalLakeWriteMCP(CL_MC1, tmp);
-}
-
-#endif
 
 // ----------------------------------------------------------------------------
 //gameOpts->movies.bHires might be changed by -nohighres, so save a "real" copy of it
@@ -294,7 +139,6 @@ gameConfig.nMidiVolume = 8;
 gameConfig.nRedbookVolume = 8;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
-gameConfig.cfgDataHash = (uint) -1;
 
 //set these here in case no cfg file
 bHiresMoviesSave = gameOpts->movies.bHires;
@@ -372,8 +216,8 @@ while (!cf.EoF ()) {
 			gameConfig.vrResolution = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszVrTracking))
 			gameConfig.vrTracking = strtol (value, NULL, 10);
-		else if (!strcmp (token, pszCfgDataHash))
-			gameConfig.cfgDataHash = strtoul (value, NULL, 10);
+		else if (!strcmp (token, pszD2XVersion))
+			gameConfig.nVersion = strtoul (value, NULL, 10);
 		else if (!strcmp (token, pszHiresMovies) && gameStates.app.bNostalgia)
 			bHiresMoviesSave = gameOpts->movies.bHires = strtol (value, NULL, 10);
 	}
@@ -453,7 +297,7 @@ JoyGetCalVals(cal, sizeofa (cal));
 
 if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
-sprintf (str, "%s=%u\n", pszCfgDataHash, gameConfig.cfgDataHash);
+sprintf (str, "%s=%u\n", pszD2XVersion, D2X_IVER);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
 cf.PutS (str);

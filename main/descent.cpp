@@ -836,12 +836,12 @@ return 0;
 
 void BadHardwareNotification (void)
 {
-#if !DBG
-if (!gameStates.ogl.bShadersOk) {
+#if 1//!DBG
+if (!gameStates.ogl.bShadersOk && (gameConfig.nVersion != D2X_IVER)) {
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;
-#if 0
+#if 1
 	for (int i = 0; i < 2; i++) {	// make the message flash a few times
 		messageBox.Show (TXT_BAD_HARDWARE);
 		messageBox.Clear ();
@@ -852,6 +852,7 @@ if (!gameStates.ogl.bShadersOk) {
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
+	gameConfig.nVersion = D2X_IVER;
 	}
 #endif
 }

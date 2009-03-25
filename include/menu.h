@@ -17,8 +17,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 // returns number of item chosen
 
-#define SIMPLE_MENUS	1
-
 //------------------------------------------------------------------------------
 
 extern char *menu_difficulty_text[];

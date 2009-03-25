@@ -42,7 +42,7 @@ typedef struct tGameConfig {
 	int		vrType;
 	int		vrResolution;
 	int		vrTracking;
-	uint		cfgDataHash;
+	uint		nVersion;
 } tGameConfig;
 
 extern tGameConfig gameConfig;
