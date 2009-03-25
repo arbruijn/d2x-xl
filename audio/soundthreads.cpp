@@ -94,16 +94,16 @@ if (tiSound.ti.pThread) {
 
 void ControlSoundThread (void)
 {
-if (gameStates.app.bMultiThreaded) {
 #if 1
-	StartSoundThread ();
+StartSoundThread ();
 #else
+if (gameStates.app.bMultiThreaded) {
 	if (gameData.app.bUseMultiThreading [rtSound])
 		StartSoundThread ();
 	else
 		EndSoundThread ();
-#endif
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
