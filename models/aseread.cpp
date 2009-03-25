@@ -237,7 +237,7 @@ while ((pszToken = ReadLine (cf))) {
 			return CModel::Error ("invalid vertex number");
 		pv = m_verts + i;
 		ReadVector (cf, &pv->m_vertex);
-		}	
+		}
 	}
 return CModel::Error ("unexpected end of file");
 }
@@ -302,7 +302,7 @@ while ((pszToken = ReadLine (cf))) {
 		for (i = 0; i < 2; i++)
 			pt->a [i] = FloatTok (" \t");
 #endif
-		}	
+		}
 	}
 return CModel::Error ("unexpected end of file");
 }
@@ -328,7 +328,7 @@ while ((pszToken = ReadLine (cf))) {
 		pf = m_faces + i;
 		for (i = 0; i < 3; i++)
 			pf->m_nTexCoord [i] = IntTok (" \t");
-		}	
+		}
 	}
 return CModel::Error ("unexpected end of file");
 }
@@ -445,7 +445,7 @@ while ((pszToken = ReadLine (cf))) {
 			m_nGunPoint = atoi (m_szName + 8);
 		if (strstr (m_szName, "$BULLETS"))
 			m_nBullets = 1;
-		else if (strstr (m_szName, "GLOW") != NULL) 
+		else if (strstr (m_szName, "GLOW") != NULL)
 			m_bGlow = 1;
 		else if (strstr (m_szName, "$DUMMY") != NULL)
 			m_bRender = 0;
@@ -546,7 +546,7 @@ return 0;
 
 int CModel::ReloadTextures (void)
 {
-return m_textures.Bind (m_bCustom); 
+return m_textures.Bind (m_bCustom);
 }
 
 //------------------------------------------------------------------------------
@@ -787,7 +787,7 @@ return 1;
 int CModel::SaveBinary (void)
 {
 	CFile		cf;
-	int		h, i, nResult = 1;
+	int		h, i;
 	char		szFilename [FILENAME_LEN];
 
 sprintf (szFilename, "model%03d.bin", m_nModel);
@@ -859,7 +859,7 @@ return 1;
 int CModel::ReadBinary (short nModel, int bCustom, time_t tASE)
 {
 	CFile		cf;
-	int		h, i, nResult = 1;
+	int		h, i;
 	char		szFilename [FILENAME_LEN];
 
 sprintf (szFilename, "model%03d.bin", nModel);
@@ -894,7 +894,7 @@ if (!(m_textures.m_bitmaps.Create (m_textures.m_nBitmaps) &&
 	}
 
 for (i = 0; i < m_textures.m_nBitmaps; i++) {
-	if (h = cf.ReadInt ()) {
+	if ((h = cf.ReadInt ())) {
 		if (!m_textures.m_names [i].Create (h)) {
 			cf.Close ();
 			Destroy ();
@@ -910,7 +910,7 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	}
 m_textures.m_nTeam.Read (cf);
 
-for (i = 0; i < m_textures.m_nBitmaps; i++) 
+for (i = 0; i < m_textures.m_nBitmaps; i++)
 	m_textures.m_bitmaps [i].SetTeam (m_textures.m_nTeam [i]);
 
 CSubModel*	smP, * tailP = NULL;

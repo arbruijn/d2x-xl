@@ -44,7 +44,7 @@ void DoShowNetgameHelp (void)
 {
 	CMenu		m (30);
    char		szText [MENU_MAX_TEXTLEN];
-	int		i, nTexts = 0, eff;
+	int		i, eff;
 #if DBG
 	int pl;
 #endif
@@ -76,28 +76,28 @@ sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl);
 m.AddText (szText);
 #endif
 if (netGame.KillGoal)
-	sprintf (szText, TXT_INFO_KILLGOAL, netGame.KillGoal*5); 
-sprintf (szText, " "); 
-sprintf (szText, TXT_INFO_PLRSCONN); 
+	sprintf (szText, TXT_INFO_KILLGOAL, netGame.KillGoal*5);
+sprintf (szText, " ");
+sprintf (szText, TXT_INFO_PLRSCONN);
 netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected) {		  
+	if (gameData.multiplayer.players [i].connected) {
 		if (!gameOpts->multi.bNoRankings) {
 			if (i == gameData.multiplayer.nLocalPlayer)
-				sprintf (szText, "%s%s (%d/%d)", 
-							pszRankStrings [netPlayers.players [i].rank], 
-							gameData.multiplayer.players [i].callsign, 
-							networkData.nNetLifeKills, 
-							networkData.nNetLifeKilled); 
+				sprintf (szText, "%s%s (%d/%d)",
+							pszRankStrings [netPlayers.players [i].rank],
+							gameData.multiplayer.players [i].callsign,
+							networkData.nNetLifeKills,
+							networkData.nNetLifeKilled);
 			else
-				sprintf (szText, "%s%s %d/%d", 
-							pszRankStrings[netPlayers.players [i].rank], 
-							gameData.multiplayer.players [i].callsign, 
-							gameData.multigame.kills.matrix[gameData.multiplayer.nLocalPlayer][i], 
-							gameData.multigame.kills.matrix[i][gameData.multiplayer.nLocalPlayer]); 
+				sprintf (szText, "%s%s %d/%d",
+							pszRankStrings[netPlayers.players [i].rank],
+							gameData.multiplayer.players [i].callsign,
+							gameData.multigame.kills.matrix[gameData.multiplayer.nLocalPlayer][i],
+							gameData.multigame.kills.matrix[i][gameData.multiplayer.nLocalPlayer]);
 			}
 		else
-			sprintf (szText, "%s", gameData.multiplayer.players [i].callsign); 
+			sprintf (szText, "%s", gameData.multiplayer.players [i].callsign);
 		m.AddText (szText);
 		}
 	m.AddText ("");
@@ -106,19 +106,19 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		eff = 0;
 	if (gameData.app.nGameMode & GM_HOARD) {
 		if (gameData.score.nPhallicMan == -1)
-			sprintf (szText, TXT_NO_RECORD2); 
+			sprintf (szText, TXT_NO_RECORD2);
 		else
-			sprintf (szText, TXT_RECORD3, gameData.multiplayer.players [gameData.score.nPhallicMan].callsign, gameData.score.nPhallicLimit); 
+			sprintf (szText, TXT_RECORD3, gameData.multiplayer.players [gameData.score.nPhallicMan].callsign, gameData.score.nPhallicLimit);
 		}
 	else if (!gameOpts->multi.bNoRankings) {
-		sprintf (szText, TXT_EFF_LIFETIME, eff); 
+		sprintf (szText, TXT_EFF_LIFETIME, eff);
 	m.AddText (szText);
 	if (eff < 60)
-		sprintf (szText, TXT_EFF_INFLUENCE, GT(546 + eff / 10)); 
+		sprintf (szText, TXT_EFF_INFLUENCE, GT(546 + eff / 10));
 	else
 		sprintf (szText, TXT_EFF_SERVEWELL);
 	m.AddText (szText);
-	}  
+	}
 paletteManager.SaveEffectAndReset();
 bPauseableMenu = 1;
 m.TinyMenu (NULL, "Netgame Information");

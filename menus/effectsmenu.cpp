@@ -133,7 +133,6 @@ void EffectOptionsMenu (void)
 #if 0
 	int	optShockwaves;
 #endif
-	int	bEnergySparks = gameOpts->render.effects.bEnergySparks;
 	char	szSlider [50];
 
 pszExplShrapnels [0] = TXT_NONE;
@@ -167,7 +166,7 @@ do {
 	*szSlider = *(TXT_LIGHTTRAIL_QUAL - 1);
 	effectOpts.nLightTrails = m.AddSlider (szSlider + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_P, HTX_LIGHTTRAIL_QUAL);
 
-	sprintf (szSlider + 1, TXT_THRUSTER_FLAMES, pszThrusters [extraGameInfo [0].bThrusterFlames]);
+	sprintf (szSlider + 1, TXT_THRUSTER_FLAMES, pszThrusters [int (extraGameInfo [0].bThrusterFlames)]);
 	*szSlider = *(TXT_THRUSTER_FLAMES - 1);
 	effectOpts.nThrusters = m.AddSlider (szSlider + 1, extraGameInfo [0].bThrusterFlames, 0, 2, KEY_T, HTX_THRUSTER_FLAMES);
 
@@ -189,7 +188,7 @@ do {
 		i = m.Menu (NULL, TXT_EFFECT_MENUTITLE, EffectOptionsCallback, &choice);
 		if (i < 0)
 			break;
-		} 
+		}
 	for (j = 0; j < 3; j++) {
 		if (optSoftParticles [j] >= 0) {
 			if (m [optSoftParticles [j]].m_value)

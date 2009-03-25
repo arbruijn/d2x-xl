@@ -120,7 +120,7 @@ void ConfigMenu (void)
 	CMenu	menu;
 	int	i;
 	int	optSound, optConfig, optPerformance, optScrRes, optReorderPrim, optReorderSec, optEffects,
-			optMiscellaneous, optMultiThreading = -1, optRender, optGameplay, optCockpit, optPhysics = -1;
+			optMiscellaneous, optRender, optGameplay, optCockpit, optPhysics = -1;
 
 do {
 	menu.Destroy ();
@@ -132,10 +132,10 @@ do {
 	menu.AddText ("", 0);
 	if (gameStates.app.bNostalgia)
 		optBrightness = menu.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
-	
+
 	if (gameStates.app.bNostalgia)
 		optPerformance = menu.AddMenu (TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
-	else 
+	else
 		optPerformance = -1;
 	optScrRes = menu.AddMenu (TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	menu.AddText ("", 0);
@@ -144,14 +144,14 @@ do {
 		optReorderSec = menu.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 		}
 	else
-		optReorderPrim = 
+		optReorderPrim =
 		optReorderSec = -1;
 	optMiscellaneous = menu.AddMenu (gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISCELLANEOUS, gameStates.app.bNostalgia ? KEY_T : KEY_I, HTX_OPTIONS_MISC);
 	if (!gameStates.app.bNostalgia) {
 		optCockpit = menu.AddMenu (TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
 		optRender = menu.AddMenu (TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
 		optEffects = menu.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
-		if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame) 
+		if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
 			optPhysics =
 			optGameplay = -1;
 		else {
@@ -166,35 +166,35 @@ do {
 	i = menu.Menu (NULL, TXT_OPTIONS, ConfigMenuCallback, &choice);
 	if (i >= 0) {
 		if (i == optSound)
-			SoundMenu ();		
+			SoundMenu ();
 		else if (i == optConfig)
-			InputDeviceConfig ();		
+			InputDeviceConfig ();
 		else if (i == optPerformance) {
 			if (gameStates.app.bNostalgia)
-				DetailLevelMenu (); 
+				DetailLevelMenu ();
 			}
 		else if (i == optScrRes)
-			ScreenResMenu ();	
+			ScreenResMenu ();
 		else if ((optReorderPrim >= 0) && (i == optReorderPrim))
-			ReorderPrimary ();		
+			ReorderPrimary ();
 		else if ((optReorderSec >= 0) && (i == optReorderSec))
-			ReorderSecondary ();	
+			ReorderSecondary ();
 		else if (i == optMiscellaneous)
-			MiscellaneousMenu ();		
+			MiscellaneousMenu ();
 		else if (!gameStates.app.bNostalgia) {
 			if (i == optCockpit)
-				CockpitOptionsMenu ();		
+				CockpitOptionsMenu ();
 			else if (i == optRender)
-				RenderOptionsMenu ();		
+				RenderOptionsMenu ();
 			else if (i == optEffects)
 				EffectOptionsMenu ();
 			else if ((optGameplay >= 0) && (i == optGameplay))
-				GameplayOptionsMenu ();        
+				GameplayOptionsMenu ();
 			else if ((optPhysics >= 0) && (i == optPhysics))
-				PhysicsOptionsMenu ();        
+				PhysicsOptionsMenu ();
 #if 0
 			else if ((optMultiThreading >= 0) && (i == optMultiThreading))
-				MultiThreadingOptionsMenu ();        
+				MultiThreadingOptionsMenu ();
 #endif
 			}
 		}

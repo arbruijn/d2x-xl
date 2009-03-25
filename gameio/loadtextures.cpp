@@ -819,7 +819,7 @@ if (bmi == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
 bmP = &gameData.pig.tex.bitmaps [bD1][bmi];
-if (bmoP = bmP->Override ())
+if ((bmoP = bmP->Override ()))
 	bmP = bmoP;
 while (0 > (i = PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1, bHires)))
 	G3_SLEEP (0);

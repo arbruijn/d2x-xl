@@ -399,7 +399,7 @@ if (bNewGame) {
 		else
 			playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 		}
-	if (nPlayer = gameData.multiplayer.nLocalPlayer)
+	if ((nPlayer = gameData.multiplayer.nLocalPlayer))
 		gameStates.app.bFirstSecretVisit = 1;
 	}
 else {
@@ -604,10 +604,10 @@ char *LevelSongName (int nLevel)
 {
 	char *szNoSong = "";
 
-return gameStates.app.bAutoRunMission 
+return gameStates.app.bAutoRunMission
 		 ? szNoSong
-		 : (nLevel < 0) 
-			? gameData.missions.szSongNames [-nLevel-1] 
+		 : (nLevel < 0)
+			? gameData.missions.szSongNames [-nLevel-1]
 			: gameData.missions.szSongNames [nLevel-1];
 }
 
@@ -767,7 +767,7 @@ else {
 	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
 	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 	/*---*/PrintLog ("   loading replacement robots\n");
-	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true)) 
+	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true))
 		return -1;
 
 	if (*gameFolders.szModelDir [1]) {
@@ -1850,18 +1850,18 @@ rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][rType.vClipInfo.nClipIndex]
 
 //------------------------------------------------------------------------------
 
-void CObject::BashToShield (bool bBash) 
-{ 
-if (bBash) 
-	Bash (POW_SHIELD_BOOST); 
+void CObject::BashToShield (bool bBash)
+{
+if (bBash)
+	Bash (POW_SHIELD_BOOST);
 }
 
 //------------------------------------------------------------------------------
 
-void CObject::BashToEnergy (bool bBash) 
-{ 
-if (bBash) 
-	Bash (POW_ENERGY); 
+void CObject::BashToEnergy (bool bBash)
+{
+if (bBash)
+	Bash (POW_ENERGY);
 }
 
 //------------------------------------------------------------------------------
@@ -1952,8 +1952,8 @@ if (!IsMultiGame) {
 
 //	---------------------------------------------------------------------------
 // If a player enters a level listed in the mission's secret level table,
-// all secret levels he can reach from now on are ones he hasn't been able 
-// to reach before (in other words: No secret exits yet to come lead to 
+// all secret levels he can reach from now on are ones he hasn't been able
+// to reach before (in other words: No secret exits yet to come lead to
 // secret levels he's been to before), so set the proper flag.
 
 void MaybeSetFirstSecretVisit (int nLevel)

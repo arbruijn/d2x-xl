@@ -69,8 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 static int	optWindowSize, optWindowZoom, optWindowPos, optWindowAlign,
-				optTextGauges, optWeaponIcons, bShowWeaponIcons, 
-				optIconAlpha, optTgtInd, optDmgInd, optHitInd, optMslLockInd;
+				optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 
 static int nWindowPos, nWindowAlign;
 
@@ -187,7 +186,7 @@ do {
 		optIconPos = -1;
 	m.AddText ("", 0);
 
-	//if (gameOpts->app.bExpertMode) 
+	//if (gameOpts->app.bExpertMode)
 		{
 		m.AddText (TXT_COCKPIT_WINDOWS, 0);
 		sprintf (szSlider, TXT_AUXWIN_SIZE, szWindowSize [gameOpts->render.cockpit.nWindowSize]);

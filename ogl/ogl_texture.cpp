@@ -53,7 +53,7 @@ int Pow2ize (int x)
 	int i;
 
 for (i = 2; i <= 4096; i *= 2)
-	if (x <= i) 
+	if (x <= i)
 		return i;
 return i;
 }
@@ -225,7 +225,7 @@ m_info.th = 0;
 m_info.lw = 0;
 m_info.bMipMaps = 0;
 m_info.bSmoothe = 0;
-m_info.u = 
+m_info.u =
 m_info.v = 0;
 m_info.bRenderBuffer = 0;
 m_info.prio = 0.3f;
@@ -275,7 +275,7 @@ bool CTexture::Register (void)
 {
 if (m_bRegistered)
 	return false;	// already registered
-textureManager.Register (this); 
+textureManager.Register (this);
 return m_bRegistered = true;
 }
 
@@ -322,7 +322,7 @@ if (m_bRegistered) {
 			}
 		textureManager.Check ();
 		}
-	m_prev = 
+	m_prev =
 	m_next = NULL;
 	m_bRegistered = false;
 	}
@@ -461,11 +461,11 @@ switch (m_info.format) {
 	case GL_LUMINANCE_ALPHA:
 	case GL_RGB5:
 	case GL_RGBA4:
-		bpp = 2; 
+		bpp = 2;
 		break;
 
 	case GL_RGB:
-		bpp = 3; 
+		bpp = 3;
 		break;
 
 	default:
@@ -495,7 +495,7 @@ for (y = 0; y < m_info.h; y++) {
 
 				case GL_LUMINANCE_ALPHA:
 					*reinterpret_cast<GLushort*> (bufP) = 0;
-					bufP += 2; 
+					bufP += 2;
 					break;
 
 				case GL_RGB:
@@ -508,7 +508,7 @@ for (y = 0; y < m_info.h; y++) {
 					*reinterpret_cast<GLuint*> (bufP) = (nTransp ? 0 : 0xffffffff);
 					bufP += 4;
 					break;
-				
+
 				case GL_RGBA4:
 					*reinterpret_cast<GLushort*> ( bufP) = (nTransp ? 0 : 0xffff);
 					bufP += 2;
@@ -538,8 +538,8 @@ for (y = 0; y < m_info.h; y++) {
 						r = colorP [c].red * 4;
 						g = colorP [c].green * 4;
 						b = colorP [c].blue * 4;
-						if ((r < gameStates.ogl.nTransparencyLimit) && 
-							 (g < gameStates.ogl.nTransparencyLimit) && 
+						if ((r < gameStates.ogl.nTransparencyLimit) &&
+							 (g < gameStates.ogl.nTransparencyLimit) &&
 							 (b < gameStates.ogl.nTransparencyLimit)) {
 							m_info.format = gameStates.ogl.nRGBAFormat;
 							goto restart;
@@ -581,8 +581,8 @@ for (y = 0; y < m_info.h; y++) {
 						r = colorP [c].red * 4;
 						g = colorP [c].green * 4;
 						b = colorP [c].blue * 4;
-						if ((r < gameStates.ogl.nTransparencyLimit) && 
-							 (g < gameStates.ogl.nTransparencyLimit) && 
+						if ((r < gameStates.ogl.nTransparencyLimit) &&
+							 (g < gameStates.ogl.nTransparencyLimit) &&
 							 (b < gameStates.ogl.nTransparencyLimit))
 							a = 0;
 						else if (nTransp == 1) {
@@ -685,19 +685,19 @@ switch (m_info.format) {
 		if (m_info.internalFormat == 2)
 			return 1;
 		break;
-	
+
 	case GL_INTENSITY4:
-		if (gameStates.ogl.bIntensity4 == -1) 
-			return 1; 
-		if (!gameStates.ogl.bIntensity4) 
-			return 0; 
+		if (gameStates.ogl.bIntensity4 == -1)
+			return 1;
+		if (!gameStates.ogl.bIntensity4)
+			return 0;
 		break;
 
 	case GL_LUMINANCE4_ALPHA4:
-		if (gameStates.ogl.bLuminance4Alpha4 == -1) 
-			return 1; 
-		if (!gameStates.ogl.bLuminance4Alpha4) 
-			return 0; 
+		if (gameStates.ogl.bLuminance4Alpha4 == -1)
+			return 1;
+		if (!gameStates.ogl.bLuminance4Alpha4)
+			return 0;
 		break;
 	}
 
@@ -725,7 +725,7 @@ switch (m_info.format) {
 	case GL_RGBA4:
 		m_info.internalFormat = 2;
 		break;
-	
+
 	case GL_INTENSITY4:
 		gameStates.ogl.bIntensity4 = (nFormat == m_info.internalFormat) ? -1 : 0;
 		break;
@@ -767,7 +767,7 @@ while (!FormatSupported ()) {
 			m_info.internalFormat = 3;
 			m_info.format = GL_RGB;
 			break;
-		
+
 		case GL_RGBA4:
 			m_info.internalFormat = 4;
 			m_info.format = GL_RGBA;
@@ -865,15 +865,15 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, state);
 
 //------------------------------------------------------------------------------
 
-GLuint CTexture::Create (int w, int h)			
+GLuint CTexture::Create (int w, int h)
 {
-	int		nSize = w * h * sizeof (uint); 
-	ubyte		*data = new ubyte [nSize]; 
+	int		nSize = w * h * sizeof (uint);
+	ubyte		*data = new ubyte [nSize];
 
 if (!data)
 	return 0;
-memset (data, 0, nSize); 	
-OglGenTextures (1, &m_info.handle); 
+memset (data, 0, nSize);
+OglGenTextures (1, &m_info.handle);
 if (!m_info.handle) {
 	OglClearError (0);
 	return 0;
@@ -881,13 +881,13 @@ if (!m_info.handle) {
 #if DBG
 usedHandles [m_info.handle] = 1;
 #endif
-OGL_BINDTEX  (m_info.handle); 		
+OGL_BINDTEX  (m_info.handle);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, 4, w, h, 0, gameStates.ogl.nRGBAFormat, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-delete[] data; 							
-return m_info.handle; 						
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+delete[] data;
+return m_info.handle;
 }
 
 //------------------------------------------------------------------------------
@@ -990,7 +990,7 @@ else {
 if (bCompressed) {
 	glCompressedTexImage2D (GL_TEXTURE_2D, 0, m_info.format, m_info.tw, m_info.th, 0, nBufSize, buffer);
 	}
-else 
+else
 #endif
 	{
 	try {
@@ -998,7 +998,7 @@ else
 	}
 	catch (...) {
 		Release ();
-		}	
+		}
 	try {
 		if (gameStates.ogl.bLowMemory && m_info.bMipMaps && (!m_info.bmP->Static () || (m_info.format == GL_RGB)))
 			m_info.bmP->FreeData ();
@@ -1115,7 +1115,7 @@ m_info.texP->Prepare (m_info.compressed.bCompressed);
 #	ifndef __macosx__
 if (!(m_info.compressed.bCompressed || Parent ())) {
 	if (gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression &&
-		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) && 
+		 ((m_info.texP->Format () == GL_RGBA) || (m_info.texP->Format () == GL_RGB)) &&
 		 (m_info.texP->TW () >= 64) && (m_info.texP->TH () >= 64))
 		m_info.texP->SetInternalFormat (GL_COMPRESSED_RGBA);
 	if (m_info.texP->Verify ())
@@ -1128,7 +1128,7 @@ m_info.texP->Prepare ();
 
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
-if (!m_info.texP->IsRenderBuffer ()) 
+if (!m_info.texP->IsRenderBuffer ())
 #endif
  {
 	if (data) {
@@ -1137,7 +1137,7 @@ if (!m_info.texP->IsRenderBuffer ())
 			bufP = CompressedBuffer ().Buffer ();
 		else
 #endif
-		if (m_info.nTranspType < 0) 
+		if (m_info.nTranspType < 0)
 			bufP = m_info.texP->Copy (dxo, dyo, data);
 		else
 			bufP = m_info.texP->Convert (dxo, dyo, this, m_info.nTranspType, superTransp);
@@ -1411,7 +1411,7 @@ else if (!Frames ()) {
 			}
 		}
 	}
-return m_info.bSetup = true;
+return (m_info.bSetup = true);
 }
 
 //------------------------------------------------------------------------------
@@ -1436,7 +1436,7 @@ switch (m_info.nType) {
 		return SetupFrames (bMipMaps, bLoad);
 
 	case BM_TYPE_ALT:	// alternative (hires) textures
-		if (!(m_info.bSetup || SetupFrames (bMipMaps, 0)))	
+		if (!(m_info.bSetup || SetupFrames (bMipMaps, 0)))
 			return false;
 		if ((bmP = HasOverride ()))
 			return bmP->SetupTexture (bMipMaps, bLoad);

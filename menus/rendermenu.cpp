@@ -110,8 +110,8 @@ static const char *pszImgQual [5];
 
 static inline const char *ContrastText (void)
 {
-return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD : 
-		 (gameStates.ogl.nContrast < 8) ? TXT_LOW : 
+return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD :
+		 (gameStates.ogl.nContrast < 8) ? TXT_LOW :
 		 TXT_HIGH;
 }
 
@@ -121,7 +121,7 @@ int FindTableFps (int nFps)
 {
 	int	i, j = 0, d, dMin = 0x7fffffff;
 
-for (i = 0; i < sizeofa (fpsTable); i++) {
+for (i = 0; i < int (sizeofa (fpsTable)); i++) {
 	d = abs (nFps - fpsTable [i]);
 	if (d < dMin) {
 		j = i;
@@ -212,7 +212,7 @@ if (!gameStates.app.bNostalgia) {
 	}
 
 #if !DBG
-if (EXPERTMODE) 
+if (EXPERTMODE)
 #endif
 {
 	m = menu + renderOpts.nFrameCap;
@@ -289,7 +289,7 @@ m = menu + renderOpts.nLightning;
 v = m->m_value;
 if (extraGameInfo [0].bUseLightning != v) {
 	extraGameInfo [0].bUseLightning = v;
-	sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [extraGameInfo [0].bUseLightning]);
+	sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
 	m->m_bRebuild = -1;
 	}
 
@@ -403,10 +403,10 @@ pszQuality [2] = TXT_HIGH;
 pszQuality [3] = TXT_BEST;
 
 lightManager.SetMethod ();
-nLighting = (gameOpts->render.nLightingMethod == 0) 
-				? 0 
-				: (gameOpts->render.nLightingMethod == 2) 
-					? 3 
+nLighting = (gameOpts->render.nLightingMethod == 0)
+				? 0
+				: (gameOpts->render.nLightingMethod == 2)
+					? 3
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 ? 2 : 1 : 0;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
@@ -424,7 +424,7 @@ do {
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 	m.AddText ("");
 #if !DBG
-	if (EXPERTMODE) 
+	if (EXPERTMODE)
 #endif
 		{
 		if (gameOpts->render.nMaxFPS > 1)
@@ -437,8 +437,8 @@ do {
 		renderOpts.nFrameCap = m.AddSlider (szSlider + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, sizeofa (fpsTable) - 1, KEY_F, HTX_RENDER_FRAMECAP);
 		}
 
-	renderOpts.nLightmaps = 
-	renderOpts.nLights = 
+	renderOpts.nLightmaps =
+	renderOpts.nLights =
 	renderOpts.nPasses = -1;
 	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
 		renderOpts.nLighting = -1;
@@ -493,7 +493,7 @@ do {
 	sprintf (szSlider + 1, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
 	*szSlider = *(TXT_CORONAS - 1);
 	renderOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_O, HTX_CORONAS);
-	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [extraGameInfo [0].bUseLightning]);
+	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
 	renderOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_I, HTX_LIGHTNING);
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
@@ -526,10 +526,10 @@ do {
 		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
 			gameOpts->render.shadows.nReach =
 			gameOpts->render.shadows.nClip = nShadows;
-		}	
+		}
 	if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
 		gameOpts->render.coronas.nStyle = nCoronas;
-	if ((extraGameInfo [0].bUseCameras = (nCameras != 0))) 
+	if ((extraGameInfo [0].bUseCameras = (nCameras != 0)))
 		gameOpts->render.cameras.bHires = (nCameras == 2);
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);

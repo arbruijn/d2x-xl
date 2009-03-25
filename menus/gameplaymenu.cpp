@@ -87,7 +87,7 @@ static struct {
 
 static const char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
 static const char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight", "Slow Motion", "Bullet Time"};
-static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, 
+static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS,
 										PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_SLOWMOTION, PLAYER_FLAGS_BULLETTIME};
 
 static int optGuns, optDevices;
@@ -260,11 +260,7 @@ void GameplayOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
-			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
-			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
-			optAwareness = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optHeadlightOnWhenPickedUp = -1,
-			optRotateMarkers = -1, optUseD1AI = -1, optNoThief = -1;
+	int	optSmartWeaponSwitch = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optNoThief = -1;
 	int	optReorderPrim, optReorderSec;
 	char	szSlider [50];
 
@@ -308,9 +304,9 @@ do {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
 		if (choice == optReorderPrim)
-			ReorderPrimary ();		
+			ReorderPrimary ();
 		else if (choice == optReorderSec)
-			ReorderSecondary ();	
+			ReorderSecondary ();
 		};
 	} while (i == -2);
 if (nAIAggressivity == 5) {

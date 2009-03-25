@@ -241,7 +241,7 @@ if (!m_bRadar) {
 		fontManager.SetCurrent (SMALL_FONT);
 		GrString (5, 20, msg, NULL);
 		}
-	}			
+	}
 // Draw player(s)...
 if (AM_SHOW_PLAYERS) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -310,16 +310,16 @@ FORALL_OBJS (objP, i) {
 		case OBJ_POWERUP:
 			if (AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])) {
 				switch (objP->info.nId) {
-					case POW_KEY_RED:	
+					case POW_KEY_RED:
 						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
 						size *= 4;
 						break;
 					case POW_KEY_BLUE:
-						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 63)); 
+						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 63));
 						size *= 4;
 						break;
 					case POW_KEY_GOLD:
-						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 63, 10)); 
+						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 63, 10));
 						size *= 4;
 						break;
 					default:
@@ -364,7 +364,7 @@ if (gameOpts->app.bExpertMode) {
 		strcpy (szInfo [0], "ALT+S: Smoke   ALT+T: Textures/wireframe   CTRL+T: Teleport");
 		}
 	}
-else 
+else
 #endif
 	{
 	if (CCanvas::Current ()->Width () >= 1024) {
@@ -398,8 +398,8 @@ void CAutomap::Draw (void)
 {
 #if 1
 PROF_START
-	int	bAutomapFrame = !m_bRadar && 
-								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) && 
+	int	bAutomapFrame = !m_bRadar &&
+								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
 								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 	CFixMatrix	mRadar;
 
@@ -425,7 +425,7 @@ if ((m_bRadar = m_bRadar) == 2) {
 	}
 CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 if (bAutomapFrame) {
-	if (InitBackground ()) 
+	if (InitBackground ())
 		m_background.RenderFullScreen ();
 	fontManager.SetCurrent (HUGE_FONT);
 	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
@@ -494,10 +494,10 @@ if (gameData.missions.nCurrentLevel > 0)
 	sprintf (m_szLevelNum, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
 else
 	sprintf (m_szLevelNum, "Secret Level %i", -gameData.missions.nCurrentLevel);
-if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
+if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 		(gameData.missions.nCurrentLevel > 0))		//built-in mission
 	sprintf (m_szLevelName,"%s %d: ",
-				pszSystemNames [(gameData.missions.nCurrentLevel - 1) / 4], 
+				pszSystemNames [(gameData.missions.nCurrentLevel - 1) / 4],
 				((gameData.missions.nCurrentLevel - 1) % 4) + 1);
 else
 	strcpy (m_szLevelName, " ");
@@ -522,18 +522,18 @@ int CAutomap::Setup (int bPauseGame, fix& xEntryTime)
 
 if (m_bDisplay < 0) {
 	m_bDisplay = 0;
-	if (m_bChaseCam = gameStates.render.bChaseCam)
+	if ((m_bChaseCam = gameStates.render.bChaseCam))
 		SetChaseCam (0);
-	if (m_bFreeCam = gameStates.render.bFreeCam)
+	if ((m_bFreeCam = gameStates.render.bFreeCam))
 		SetFreeCam (0);
 
 	gameStates.ogl.nContrast = 8;
 	InitColors ();
 	if (!m_bRadar)
 		SlowMotionOff ();
-	if (m_bRadar || 
-		 (IsMultiGame && 
-		  (gameStates.app.nFunctionMode == FMODE_GAME) && 
+	if (m_bRadar ||
+		 (IsMultiGame &&
+		  (gameStates.app.nFunctionMode == FMODE_GAME) &&
 		  (!gameStates.app.bEndLevelSequence)))
 		bPauseGame = 0;
 	if (bPauseGame)
@@ -588,7 +588,7 @@ else
 	memcpy (automap.m_visible.Buffer (), m_visited [0].Buffer (), m_visited [0].Size ());
 //m_visited [0][OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
 m_nSegmentLimit =
-m_nMaxSegsAway = 
+m_nMaxSegsAway =
 	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
 AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 m_bDisplay++;
@@ -611,7 +611,7 @@ if (Controls [0].firePrimaryDownCount) {
 	m_data.viewTarget = playerP->info.position.vPos;
 	}
 if (Controls [0].forwardThrustTime)
-	m_data.viewTarget += m_data.viewMatrix.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR); 
+	m_data.viewTarget += m_data.viewMatrix.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
 m_vTAngles [PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
 m_vTAngles [HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
 m_vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
@@ -623,9 +623,9 @@ if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
 	m_data.viewTarget += m_data.viewMatrix.RVec () * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
 m_data.viewMatrix = playerP->info.position.mOrient * m;
-if (m_data.nViewDist < ZOOM_MIN_VALUE) 
+if (m_data.nViewDist < ZOOM_MIN_VALUE)
 	m_data.nViewDist = ZOOM_MIN_VALUE;
-if (m_data.nViewDist > ZOOM_MAX_VALUE) 
+if (m_data.nViewDist > ZOOM_MAX_VALUE)
 	m_data.nViewDist = ZOOM_MAX_VALUE;
 return 1;
 }
@@ -645,7 +645,7 @@ int CAutomap::ReadControls (int nLeaveMode, int bDone, int& bPauseGame)
 {
 	int	c, nMarker, nMaxDrop, nColor = gameOpts->render.automap.bBright | (gameOpts->render.automap.bGrayOut << 1);
 
-ControlsReadAll ();	
+ControlsReadAll ();
 if (Controls [0].automapDownCount && !nLeaveMode)
 	return 1;
 while ((c = KeyInKey ())) {
@@ -653,7 +653,7 @@ while ((c = KeyInKey ())) {
 		MultiDoFrame();
 		switch (c) {
 #if DBG
-		case KEY_BACKSPACE: Int3 (); 
+		case KEY_BACKSPACE: Int3 ();
 			break;
 #endif
 		case KEY_PAUSE:
@@ -685,8 +685,8 @@ while ((c = KeyInKey ())) {
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
 				automap.m_visible [i] = 1;
 			BuildEdgeList ();
-			m_nSegmentLimit = 
-			m_nMaxSegsAway = 
+			m_nSegmentLimit =
+			m_nMaxSegsAway =
 				SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
 			AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 			}
@@ -752,19 +752,19 @@ while ((c = KeyInKey ())) {
 				}
 
 		case KEY_F3:
-			gameOpts->render.automap.bSparks = 
-			gameOpts->render.automap.bCoronas = 
-			gameOpts->render.automap.bLightnings = 
+			gameOpts->render.automap.bSparks =
+			gameOpts->render.automap.bCoronas =
+			gameOpts->render.automap.bLightnings =
 			gameOpts->render.automap.bParticles =
-				!(gameOpts->render.automap.bSparks || 
-				  gameOpts->render.automap.bCoronas || 
-				  gameOpts->render.automap.bLightnings || 
+				!(gameOpts->render.automap.bSparks ||
+				  gameOpts->render.automap.bCoronas ||
+				  gameOpts->render.automap.bLightnings ||
 				  gameOpts->render.automap.bParticles);
 			break;
 
 		case KEY_F4:
 			extraGameInfo [IsMultiGame].bPowerupsOnRadar =
-			extraGameInfo [IsMultiGame].bRobotsOnRadar = 
+			extraGameInfo [IsMultiGame].bRobotsOnRadar =
 				!(extraGameInfo [IsMultiGame].bPowerupsOnRadar || extraGameInfo [IsMultiGame].bRobotsOnRadar);
 			break;
 
@@ -880,7 +880,7 @@ bPauseGame = Setup (bPauseGame, xEntryTime);
 bRedrawScreen = 0;
 if (bRadar) {
 	Draw ();
-	
+
 	gameStates.ogl.nContrast = nContrast;
 	if (!--m_bDisplay) {
 		if (m_bChaseCam)
@@ -914,9 +914,9 @@ do {
 	PROF_END(ptFrame)
 	} while (!bDone);
 #if 0
-GrFreeCanvas (levelNumCanv);  
+GrFreeCanvas (levelNumCanv);
 levelNumCanv = NULL;
-GrFreeCanvas (levelNameCanv);  
+GrFreeCanvas (levelNameCanv);
 levelNameCanv = NULL;
 #endif
 if (!gameStates.menus.nInMenu) {
@@ -924,7 +924,7 @@ if (!gameStates.menus.nInMenu) {
 	if (gameData.app.bGamePaused)
 		ResumeGame ();
 	gameStates.ogl.nContrast = nContrast;
-	}	
+	}
 if (!--m_bDisplay) {
 	if (m_bChaseCam)
 		SetChaseCam (1);
@@ -971,9 +971,9 @@ glLineWidth (GLfloat (screen.Width ()) / 640.0f);
 for (i = 0; i <= m_nLastEdge; i++) {
 	//edgeP = &m_edges [Edge_used_list [i]];
 	edgeP = m_edges + i;
-	if (!(edgeP->flags & EF_USED)) 
+	if (!(edgeP->flags & EF_USED))
 		continue;
-	if (edgeP->flags & EF_TOO_FAR) 
+	if (edgeP->flags & EF_TOO_FAR)
 		continue;
 	if (edgeP->flags & EF_FRONTIER) {		// A line that is between what we have seen and what we haven't
 		if ((!(edgeP->flags & EF_SECRET)) && (edgeP->color == m_colors.walls.nNormal))
@@ -1015,7 +1015,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		}
 	}
 
-if (minDistance < 0) 
+if (minDistance < 0)
 	minDistance = 0;
 
 // Sort the bright ones using a shell sort
@@ -1053,9 +1053,9 @@ for (i = 0; i < nbright; i++) {
 	p2 = gameData.segs.points + edgeP->verts [1];
 	dist = p1->p3_vec [Z] - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
-	if (dist < 0) 
+	if (dist < 0)
 		dist = 0;
-	if (dist >= m_data.nMaxDist) 
+	if (dist >= m_data.nMaxDist)
 		continue;
 
 	if (edgeP->flags & EF_NO_FADE)
@@ -1094,12 +1094,12 @@ while (ret == -1) {
 	ev1 = (int) (m_edges [hash].verts [1]);
 	evv = (ev1<<16)+ev0;
 	if (m_edges [hash].nFaces == 0) ret=0;
-	else if (evv == vv) 
+	else if (evv == vv)
 		ret=1;
 	else {
-		if (++hash==MAX_EDGES) 
+		if (++hash==MAX_EDGES)
 			hash=0;
-		if (hash==oldhash) 
+		if (hash==oldhash)
 			Error ("Edge list full!");
 		}
 	}
@@ -1145,7 +1145,7 @@ if (found == -1) {
 	if (EDGE_IDX (edgeP) > m_nLastEdge)
 		m_nLastEdge = EDGE_IDX (edgeP);
 	m_nEdges++;
-	} 
+	}
 else {
 	//Assert (edgeP->nFaces < 8);
 	if ((color != m_colors.walls.nNormal) && (color != m_colors.walls.nRevealed))
@@ -1249,15 +1249,15 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 							switch (connWallP->keys) {
 								case KEY_BLUE:
 									color = m_colors.walls.nDoorBlue;
-									bNoFade = 1; 
+									bNoFade = 1;
 									break;
 								case KEY_GOLD:
 									color = m_colors.walls.nDoorGold;
-									bNoFade = 1; 
+									bNoFade = 1;
 									break;
 								case KEY_RED:
 									color = m_colors.walls.nDoorRed;
-									bNoFade = 1; 
+									bNoFade = 1;
 									break;
 								default:
 									color = m_colors.walls.nDoor;
@@ -1290,7 +1290,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
-		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) && 
+		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) &&
 				!(gameStates.render.bAllVisited || automap.m_visited [0][nSegment]))
 			color = m_colors.walls.nRevealed;
 
@@ -1350,7 +1350,7 @@ if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 	// Cheating, add all edges as visited
 	for (s = 0; s <= gameData.segs.nLastSegment; s++)
 		AddSegmentEdges (&SEGMENTS [s]);
-	} 
+	}
 else {
 	// Not cheating, add visited edges, and then unvisited edges
 	for (s = 0; s <= gameData.segs.nLastSegment; s++)
@@ -1372,7 +1372,7 @@ else {
 		for (e1 = 0; e1 < e->nFaces; e1++) {
 			for (e2 = 1; e2 < e->nFaces; e2++) {
 				if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2])) {
-					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0], 
+					if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0],
 												SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (I2X (1)- (I2X (1)/10))) {
 						e->flags &= (~EF_DEFINING);
 						break;

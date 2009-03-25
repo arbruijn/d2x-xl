@@ -102,7 +102,7 @@ PROF_START
 	CFloatVector	fScale;
 	bool				bScale;
 
-if (bScale = !gameData.models.vScale.IsZero ())
+if ((bScale = !gameData.models.vScale.IsZero ()))
 	fScale.Assign (gameData.models.vScale);
 
 dest += o;

@@ -53,7 +53,7 @@ if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 
 void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightness, bool bSwapRB = true)
 {
-	int				i, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = bmP->BPP ();
+	int				i, n, nAlpha = 0, nVisible = 0, nFrames;
 	int				h = bmP->Height ();
 	int				w = bmP->Width ();
 	tRgbColorf		avgColor;
@@ -142,7 +142,7 @@ if (!nAlpha)
 
 //------------------------------------------------------------------------------
 
-int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha, 
+int ReadTGAImage (CFile& cf, tTgaHeader *ph, CBitmap *bmP, int alpha,
 						double brightness, int bGrayScale, int bReverse)
 {
 	int				nBytes = ph->bits / 8;
@@ -459,7 +459,7 @@ return 1;
 
 //---------------------------------------------------------------
 
-int LoadTGA (CFile& cf, CBitmap *bmP, int alpha, double brightness, 
+int LoadTGA (CFile& cf, CBitmap *bmP, int alpha, double brightness,
 				 int bGrayScale, int bReverse)
 {
 	tTgaHeader	h;
@@ -479,7 +479,7 @@ return WriteTGAHeader (cf, ph, bmP) && WriteTGAImage (cf, ph, bmP);
 
 #if USE_SDL_IMAGE
 
-int ReadImage (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha, 
+int ReadImage (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha,
 				   double brightness, int bGrayScale, int bReverse)
 {
 	CFile	cf;
@@ -528,7 +528,7 @@ return 1;
 
 //---------------------------------------------------------------
 
-int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha, 
+int ReadTGA (const char *pszFile, const char *pszFolder, CBitmap *bmP, int alpha,
 				 double brightness, int bGrayScale, int bReverse)
 {
 	CFile	cf;
@@ -698,7 +698,7 @@ else {
 				for (i = 0, bSuperTransp = 1; i < bpp; i++)
 					pDest [i] = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
 				if (!(bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)) {
-					for (i = 0; i < 3; i++) 
+					for (i = 0; i < 3; i++)
 						if (pDest [i] != superTranspKeys [i])
 							break;
 					if (i == 3)
@@ -728,7 +728,7 @@ return 1;
 
 double TGABrightness (CBitmap *bmP)
 {
-if (!bmP) 
+if (!bmP)
 	return 0;
 else {
 		int		bAlpha = bmP->BPP () == 4, i, j;
@@ -915,7 +915,7 @@ CFile::SplitPath (pszFile, NULL, fn, NULL);
 if (nShrinkFactor > 1) {
 	CFile	cf;
 	sprintf (fnBase, "%s.tga", fn);
-	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir [bCustom], 512 / nShrinkFactor); 
+	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir [bCustom], 512 / nShrinkFactor);
 	tBase = cf.Date (fnBase, gameFolders.szModelDir [bCustom], 0);
 	tShrunk = cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && ReadTGA (fnBase, szShrunkFolder, bmP, -1, 1.0, 0, 0)) {
@@ -929,7 +929,7 @@ if (nShrinkFactor > 1) {
 if (!ReadTGA (pszFile, gameFolders.szModelDir [bCustom], bmP, -1, 1.0, 0, 0))
 	return 0;
 UseBitmapCache (bmP, (int) bmP->Height () * (int) bmP->RowSize ());
-if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) && 
+if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) &&
 	 (bmP->Width () == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	tTgaHeader	h;
 	CFile			cf;
@@ -1002,7 +1002,7 @@ void CModelTextures::Destroy (void)
 	int	i;
 
 if (m_names.Buffer ()) {
-	for (i = 0; i < m_nBitmaps; i++) 
+	for (i = 0; i < m_nBitmaps; i++)
 		m_names [i].Destroy ();
 if (m_bitmaps.Buffer ())
 	for (i = 0; i < m_nBitmaps; i++) {

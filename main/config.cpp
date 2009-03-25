@@ -67,8 +67,6 @@ class CHashList {
 
 CHashList hashList;
 
-static uint nDefaultHash = 0xba61cc0b;
-
 //------------------------------------------------------------------------------
 
 void SetNostalgia (int nLevel)
@@ -91,7 +89,7 @@ if (!FFF (szTag, &ffs, 0)) {
 	hashList.nHashs++;
 	while (!FFN (&ffs, 0))
 		hashList.nHashs++;
-	}	
+	}
 FFC (&ffs);
 return hashList.nHashs;
 }
@@ -207,9 +205,9 @@ while (!cf.EoF ()) {
 			int j = MsnHasGameVer (value) ? 4 : 0;
 			strncpy (gameConfig.szLastMission, value + j, MISSION_NAME_LEN);
 			char *p = strchr (gameConfig.szLastMission, '\n');
-			if (p) 
+			if (p)
 				*p = 0;
-			} 
+			}
 		else if (!strcmp (token, pszVrType))
 			gameConfig.vrType = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszVrResolution))
@@ -227,20 +225,20 @@ cf.Close ();
 i = FindArg ("-volume");
 if (i > 0) {
 	i = atoi (pszArgList [i + 1]);
-	if (i < 0) 
+	if (i < 0)
 		i = 0;
-	else if (i > 100) 
+	else if (i > 100)
 		i = 100;
-	gameConfig.nDigiVolume = 
-	gameConfig.nMidiVolume = 
+	gameConfig.nDigiVolume =
+	gameConfig.nMidiVolume =
 	gameConfig.nRedbookVolume = (i * 8) / 100;
 	}
 
-if (gameConfig.nDigiVolume > 8) 
+if (gameConfig.nDigiVolume > 8)
 	gameConfig.nDigiVolume = 8;
-if (gameConfig.nMidiVolume > 8) 
+if (gameConfig.nMidiVolume > 8)
 	gameConfig.nMidiVolume = 8;
-if (gameConfig.nRedbookVolume > 8) 
+if (gameConfig.nRedbookVolume > 8)
 	gameConfig.nRedbookVolume = 8;
 audio.SetVolumes ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
@@ -259,14 +257,14 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 				}
 			if (value [strlen(value)-1] == '\n')
 				value [strlen(value)-1] = 0;
-			if (!strcmp (token, pszJoystickMin)) 
-				sscanf (value, "%d,%d,%d,%d,%d,%d,%d", 
+			if (!strcmp (token, pszJoystickMin))
+				sscanf (value, "%d,%d,%d,%d,%d,%d,%d",
 						  &cal [0].nMin, &cal [1].nMin, &cal [2].nMin, &cal [3].nMin, &cal [4].nMin, &cal [5].nMin, &cal [6].nMin);
-			else if (!strcmp (token, pszJoystickMax)) 
-				sscanf (value, "%d,%d,%d,%d,%d,%d,%d", 
+			else if (!strcmp (token, pszJoystickMax))
+				sscanf (value, "%d,%d,%d,%d,%d,%d,%d",
 						  &cal [0].nMax, &cal [1].nMax, &cal [2].nMax, &cal [3].nMax, &cal [4].nMax, &cal [5].nMax, &cal [6].nMax);
 			else if (!strcmp (token, pszJoystickCen))
-				sscanf (value, "%d,%d,%d,%d,%d,%d,%d", 
+				sscanf (value, "%d,%d,%d,%d,%d,%d,%d",
 						  &cal [0].nCenter, &cal [1].nCenter, &cal [2].nCenter, &cal [3].nCenter, &cal [4].nCenter, &cal [5].nCenter, &cal [6].nCenter);
 			}
 		}
@@ -307,8 +305,8 @@ cf.PutS (str);
 sprintf (str, "%s=%d\n", pszGammaLevel, gamma);
 cf.PutS (str);
 if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
-	sprintf (str, "%s=%d,%d,%d,%d,%d,%d,%d\n", 
-				pszDetailLevel, 
+	sprintf (str, "%s=%d,%d,%d,%d,%d,%d,%d\n",
+				pszDetailLevel,
 				gameStates.app.nDetailLevel,
 				gameStates.render.detail.nObjectComplexity,
 				gameStates.render.detail.nObjectDetail,
@@ -349,7 +347,7 @@ sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg ("-nohires") || FindArg ("-noh
 cf.PutS (str);
 cf.Close ();
 return 0;
-}	
+}
 
 // ----------------------------------------------------------------------------
 //eof

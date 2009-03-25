@@ -237,7 +237,7 @@ if (objP && SHOW_DYN_LIGHT) {
 		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
 			if (!HeadlightIsOn (objP->info.nId))
 				lightManager.Headlights ().Remove (objP);
-			else 
+			else
 				lightManager.Headlights ().Add (objP);
 			}
 		else {
@@ -475,7 +475,7 @@ switch (nObjType) {
 				bmP->GetAvgColor (colorP);
 				*pbGotColor = 1;
 				}
-			else 
+			else
 #endif
 				{
 				colorP->red =
@@ -483,7 +483,7 @@ switch (nObjType) {
 				colorP->blue = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
 					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
-					if (bmoP = bmP->HasOverride ())
+					if ((bmoP = bmP->HasOverride ()))
 						bmP = bmoP;
 					tRgbaColorf avgRGB;
 					bmP->GetAvgColor (&avgRGB);
@@ -513,7 +513,7 @@ switch (nObjType) {
 				maxColor = colorP->green;
 			if (maxColor < colorP->blue)
 				maxColor = colorP->blue;
-			//if (maxColor > 1) 
+			//if (maxColor > 1)
 				{
 				colorP->red /= maxColor;
 				colorP->green /= maxColor;
@@ -600,7 +600,7 @@ void SetDynamicLight (void)
 	CFixVector	*objPos;
 	fix			xObjIntensity;
 	tRgbaColorf	color;
-	
+
 if (!gameOpts->render.debug.bDynamicLight)
 	return;
 gameData.render.lights.vertexFlags.Clear ();
@@ -814,10 +814,10 @@ if (objP->info.nType == OBJ_PLAYER) {
 void FlickerLights (void)
 {
 	CVariableLight	*flP;
-	
+
 if (!(flP = gameData.render.lights.flicker.Buffer ()))
 	return;
-	
+
 	int				l;
 	CSide				*sideP;
 	short				nSegment, nSide;
@@ -850,7 +850,7 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 CVariableLight *FindVariableLight (int nSegment,int nSide)
 {
 	CVariableLight	*flP;
-	
+
 if ((flP = gameData.render.lights.flicker.Buffer ()))
 	for (int l = gameData.render.lights.flicker.Length (); l; l--, flP++)
 		if ((flP->m_nSegment == nSegment) && (flP->m_nSide == nSide))	//found it!
