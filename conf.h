@@ -1,9 +1,6 @@
 /* conf.h.  Generated from conf.h.in by configure.  */
 /* conf.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define if building universal (internal helper macro) */
-/* #undef AC_APPLE_UNIVERSAL_BUILD */
-
 /* Define to enable console */
 /* #undef CONSOLE */
 
@@ -134,17 +131,9 @@
 /* Version number of package */
 #define VERSION "1.14.0"
 
-/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
-   significant byte first (like Motorola and SPARC, unlike Intel). */
-#if defined AC_APPLE_UNIVERSAL_BUILD
-# if defined __BIG_ENDIAN__
-#  define WORDS_BIGENDIAN 1
-# endif
-#else
-# ifndef WORDS_BIGENDIAN
-/* #  undef WORDS_BIGENDIAN */
-# endif
-#endif
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+/* #undef WORDS_BIGENDIAN */
 
 /* Define if your processor needs data to be word-aligned */
 /* #undef WORDS_NEED_ALIGNMENT */

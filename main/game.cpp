@@ -287,7 +287,7 @@ GameInitRenderSubBuffers (0, 0, render_w, render_h);
 
 //------------------------------------------------------------------------------
 
-void StopTime ()
+void StopTime (void)
 {
 if (pfnTIRStop)
 	pfnTIRStop ();
@@ -344,7 +344,7 @@ return gameData.time.nPaused > 0;
 
 //------------------------------------------------------------------------------
 
-void GameFlushInputs ()
+void GameFlushInputs (void)
 {
 	int dx,dy;
 #if 1
@@ -363,7 +363,7 @@ void GameFlushInputs ()
 
 //------------------------------------------------------------------------------
 
-void ResetTime ()
+void ResetTime (void)
 {
 gameData.time.xFrame = 0;
 gameData.time.xLast = TimerGetFixedSeconds ();
@@ -403,6 +403,9 @@ GetSlowTicks ();
 	int	nFrameTime, nMinFrameTime, nDeltaTime;
 
 if (MAXFPS > 1) {
+#ifdef RELEASE
+	gameOpts->render.nMaxFPS = 60;
+#endif
 	if (!gameData.time.tLast)
 		nDeltaTime = 0;
 	else {
