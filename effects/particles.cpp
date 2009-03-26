@@ -1494,8 +1494,21 @@ for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); syst
 int CParticleManager::Destroy (int i)
 {
 m_systems [i].Destroy ();
-m_systems.Push (i);
+//m_systems.Push (i);
 return i;
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleManager::Cleanup (void)
+{
+WaitForEffectsThread ();
+CParticleSystem* nextP = NULL;
+for (CParticleSystem* systemP = GetFirst (); systemP; systemP = nextP) {
+	nextP = GetNext ();
+	if (!systemP->m_emitters.Buffer ())
+		m_systems.Push (systemP->m_nId);
+	}
 }
 
 //------------------------------------------------------------------------------

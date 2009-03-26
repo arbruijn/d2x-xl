@@ -834,12 +834,12 @@ void RenderEffects (int nWindow)
 	int bLightnings, bParticles, bSparks;
 
 PROF_START
-OglSetLibFlags (1);
 #if UNIFY_THREADS
 WaitForRenderThreads ();
 #else
 WaitForEffectsThread ();
 #endif
+particleManager.Cleanup ();
 if (automap.m_bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;
 	bParticles = gameOpts->render.automap.bParticles;

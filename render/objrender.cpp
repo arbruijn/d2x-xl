@@ -44,6 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_render.h"
 #include "marker.h"
 #include "hiresmodels.h"
+#include "renderthreads.h"
 
 //------------------------------------------------------------------------------
 
