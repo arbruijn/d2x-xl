@@ -752,7 +752,7 @@ const char *defaultGameTexts [][2] = {
  {"~Grafische Skalen anzeigen", "Show graPhical gauges"},
  {"~Skalen an Aufloesung anpassen", "SCale gauges to screen resolution"},
  {"Skalen blinken wenn fast ~Leer", "Flash gauges on low values"},
- {"~Raketensicht zeigen", "Show MIssile View"},
+ {"~Raketensicht zeigen", "Show ~MIssile View"},
  {"~Vollbild-Lenkraketensicht", "~Fullscreen Guided Missile View"},
  {"~Powerups auf Uebersichtskarte zeigen", "Show ~Powerups on automap"},
  {"~Robots auf Uebersichtskarte zeigen", "Show ~Robots on automap"},

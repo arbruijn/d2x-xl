@@ -1884,7 +1884,7 @@ gameOptions [0].demo.bOldFormat = gameStates.app.bNostalgia != 0;
 void DefaultCockpitSettings (void)
 {
 gameOpts->render.cockpit.bReticle = 1;
-gameOpts->render.cockpit.bMissileView = 1;
+//gameOpts->render.cockpit.bMissileView = 1;
 gameOpts->render.cockpit.bGuidedInMainView = 1;
 gameOpts->render.cockpit.bMouseIndicator = 1;
 gameOpts->render.cockpit.bHUDMsgs = 1;

@@ -2153,7 +2153,7 @@ void LoadGameTexts(void);
 #define HTX_CPIT_SCALEGAUGES			HT(46)			
 #define HTX_CPIT_FLASHGAUGES			HT(47)			
 #define HTX_CPIT_SHIELDWARN			HT(48)			
-#define HTX_CPITMSLVIEW					HT(49)			
+#define HTX_CPIT_MSLVIEW				HT(49)			
 #define HTX_CPIT_GUIDEDVIEW			HT(50)			
 #define HTX_AUTOMAP_POWERUPS			HT(51)			
 #define HTX_AUTOMAP_ROBOTS				HT(52)			
