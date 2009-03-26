@@ -402,7 +402,9 @@ GetSlowTicks ();
 
 	int	nFrameTime, nMinFrameTime, nDeltaTime;
 
-if (MAXFPS > 1) {
+if (MAXFPS <= 1) 
+	nDeltaTime = 0;
+else {
 #ifdef RELEASE
 	if (!gameOpts->app.bExpertMode)
 		gameOpts->render.nMaxFPS = MAX_FRAMERATE;
