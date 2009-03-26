@@ -87,6 +87,7 @@ if (nState)
 	CMenuItem*	m;
 	int			v;
 
+#if WEAPON_ICONS
 m = menu + optWeaponIcons;
 v = m->m_value;
 if (v != bShowWeaponIcons) {
@@ -94,6 +95,7 @@ if (v != bShowWeaponIcons) {
 	key = -2;
 	return nCurItem;
 	}
+#endif
 
 m = menu + optWindowSize;
 v = m->m_value;
@@ -163,7 +165,9 @@ nWindowAlign = gameOpts->render.cockpit.nWindowPos % 3;
 optPosition = optAlignment = optWindowSize = optWindowZoom = optTextGauges = optWeaponIcons = -1;
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 
-	int	optIconPos;
+#if WEAPON_ICONS
+	int	optIconPos = -1;
+#endif
 
 do {
 	m.Destroy ();
@@ -173,7 +177,7 @@ do {
 	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
 	m.AddText ("", 0);
-
+#if WEAPON_ICONS
 	optWeaponIcons = m.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
 	if (bShowWeaponIcons) {
 		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
@@ -185,7 +189,7 @@ do {
 	else
 		optIconPos = -1;
 	m.AddText ("", 0);
-
+#endif
 	//if (gameOpts->app.bExpertMode)
 		{
 		m.AddText (TXT_COCKPIT_WINDOWS, 0);
@@ -207,6 +211,7 @@ do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
 		if (i < 0)
 			break;
+#if WEAPON_ICONS
 		if (bShowWeaponIcons && (optIconPos >= 0)) {
 			for (int j = 0; j < 4; j++)
 				if (m [optIconPos + j].m_value) {
@@ -214,12 +219,14 @@ do {
 					break;
 					}
 				}
+#endif
 	} while (i >= 0);
 
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);
 	gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value;
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
+#if WEAPON_ICONS
 	if (bShowWeaponIcons) {
 		if (optIconPos >= 0) {
 			for (int j = 0; j < 4; j++)
@@ -230,6 +237,7 @@ do {
 				}
 		GET_VAL (gameOpts->render.weaponIcons.alpha, optIconAlpha);
 		}
+#endif
 	} while (i == -2);
 
 DefaultCockpitSettings ();
