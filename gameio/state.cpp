@@ -138,6 +138,7 @@ void MultiInitiateRestoreGame ();
 void ApplyAllChangedLight (void);
 void DoLunacyOn (void);
 void DoLunacyOff (void);
+void FixWalls (void);
 
 int m_nLastSlot= 0;
 
@@ -1990,6 +1991,7 @@ gameData.render.lights.subtracted.Read (m_cf, j);
 if (h > j)
 	m_cf.Seek ((h - j) * sizeof (gameData.render.lights.subtracted [0]), SEEK_CUR);
 ApplyAllChangedLight ();
+FixWalls ();
 gameStates.app.bFirstSecretVisit = m_cf.ReadInt ();
 if (m_bSecret || (nCurrentLevel < 0))
 	gameStates.app.bFirstSecretVisit = 0;

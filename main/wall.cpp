@@ -747,13 +747,10 @@ void WallFrameProcess (void)
 	CCloakingWall*	cloakWallP;
 	CActiveDoor*	doorP = gameData.walls.activeDoors.Buffer ();
 	CWall*			wallP, *backWallP;
-	uint				i, j;
-	ubyte				bActive [MAX_WALLS];
+	uint				i;
 
-memset (bActive, 0, sizeof (bActive));
 for (i = 0; i < gameData.walls.activeDoors.ToS (); i++) {
 	doorP = &gameData.walls.activeDoors [i];
-	bActive [doorP->nFrontWall [0]] = 1;
 	backWallP = NULL,
 	wallP = WALLS + doorP->nFrontWall [0];
 	if (wallP->state == WALL_DOOR_OPENING) {
@@ -793,7 +790,6 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++) {
 
 cloakWallP = gameData.walls.cloaking.Buffer ();
 for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
-	bActive [cloakWallP->nFrontWall] |= 2;
 	ubyte s = WALLS [cloakWallP->nFrontWall].state;
 	if (s == WALL_DOOR_CLOAKING) {
 		if (DoCloakingWallFrame (i))
@@ -806,51 +802,14 @@ for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
 		Int3();	//unexpected CWall state
 #endif
 	}
-
-wallP = gameData.walls.walls.Buffer ();
-for (i = 0, j = gameData.walls.walls.Length (); i < j; i++, wallP++) {
-	switch (wallP->state) {
-		case WALL_DOOR_OPENING:
-		case WALL_DOOR_WAITING:
-			if (bActive [i] & 1)
-				continue;
-			wallP->state = WALL_DOOR_CLOSED;
-			SEGMENTS [wallP->nSegment].OpenDoor (wallP->nSide);
-			break;
-
-		case WALL_DOOR_CLOSING:
-			if (bActive [i] & 1)
-				continue;
-			wallP->state = WALL_DOOR_OPEN;
-			SEGMENTS [wallP->nSegment].CloseDoor (wallP->nSide);
-			break;
-
-		case WALL_DOOR_CLOAKING:
-			if (bActive [i] & 2)
-				continue;
-			wallP->state = 0;
-			SEGMENTS [wallP->nSegment].StartCloak (wallP->nSide);
-			break;
-
-		case WALL_DOOR_DECLOAKING:
-			if (bActive [i] & 2)
-				continue;
-			wallP->state = 0;
-			SEGMENTS [wallP->nSegment].StartDecloak (wallP->nSide);
-			break;
-
-		default:
-			continue;
-		}
-	}
 }
-
-int				nStuckObjects = 0;
-tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
 
 //------------------------------------------------------------------------------
 //	An CObject got stuck in a door (like a flare).
 //	Add global entry.
+int				nStuckObjects = 0;
+tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
+
 void AddStuckObject (CObject *objP, short nSegment, short nSide)
 {
 	int				i;
@@ -1403,6 +1362,59 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 		gameData.walls.exploding.Delete (i);
 	else
 		i++;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void FixWalls (void)
+{
+	CWall*			wallP;
+	uint				i, j;
+	ubyte				bActive [MAX_WALLS];
+
+memset (bActive, 0, sizeof (bActive));
+for (i = 0; i < gameData.walls.activeDoors.ToS (); i++)
+	bActive [gameData.walls.activeDoors [i].nFrontWall [0]] = 1;
+
+for (i = 0; i < gameData.walls.cloaking.ToS (); i++)
+	bActive [gameData.walls.cloaking [i].nFrontWall] |= 2;
+
+wallP = gameData.walls.walls.Buffer ();
+for (i = 0, j = gameData.walls.walls.Length (); i < j; i++, wallP++) {
+	switch (wallP->state) {
+		case WALL_DOOR_OPENING:
+			if (bActive [i] & 1)
+				continue;
+			wallP->state = WALL_DOOR_CLOSED;
+			SEGMENTS [wallP->nSegment].OpenDoor (wallP->nSide);
+			break;
+
+		case WALL_DOOR_WAITING:
+		case WALL_DOOR_CLOSING:
+			if (bActive [i] & 1)
+				continue;
+			wallP->state = WALL_DOOR_OPEN;
+			SEGMENTS [wallP->nSegment].CloseDoor (wallP->nSide);
+			break;
+
+		case WALL_DOOR_CLOAKING:
+			if (bActive [i] & 2)
+				continue;
+			wallP->state = 0;
+			SEGMENTS [wallP->nSegment].StartCloak (wallP->nSide);
+			break;
+
+		case WALL_DOOR_DECLOAKING:
+			if (bActive [i] & 2)
+				continue;
+			wallP->state = 0;
+			SEGMENTS [wallP->nSegment].StartDecloak (wallP->nSide);
+			break;
+
+		default:
+			continue;
+		}
 	}
 }
 
