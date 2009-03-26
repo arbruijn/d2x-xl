@@ -749,7 +749,7 @@ const char *defaultGameTexts [][2] = {
  {"Zoom: %dx", "Zoom: %dx"},
  {"~HUD anzeigen", "Show HUD"},
  {"~Fadenkreuz anzeigen", "Show Reticle"},
- {"~Grafische Skalen anzeigen", "Show graPhical gauges"},
+ {"~Grafische Skalen anzeigen", "Show ~Graphical gauges"},
  {"~Skalen an Aufloesung anpassen", "SCale gauges to screen resolution"},
  {"Skalen blinken wenn fast ~Leer", "Flash gauges on low values"},
  {"~Raketensicht zeigen", "Show ~MIssile View"},
