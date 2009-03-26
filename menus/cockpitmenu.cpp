@@ -158,7 +158,7 @@ void CockpitOptionsMenu (void)
 	int	i;
 	int	optTextGauges, optHUD, optPosition, optAlignment;
 
-	char	szSlider [40];
+	char	szSlider [50];
 
 szWindowSize [0] = TXT_AUXWIN_SMALL;
 szWindowSize [1] = TXT_AUXWIN_MEDIUM;
@@ -186,7 +186,7 @@ optWeaponIcons = -1;
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 #endif
 
-nTgtInd = extraGameInfo [0].bMslLockIndicators | (extraGameInfo [0].bTargetIndicators << 1);
+nTgtInd = extraGameInfo [0].bMslLockIndicators ? extraGameInfo [0].bTargetIndicators ? 2 : 1 : 0;
 
 do {
 	m.Destroy ();
@@ -262,8 +262,8 @@ do {
 #endif
 	} while (i == -2);
 
-extraGameInfo [0].bMslLockIndicators = nTgtInd & 1;
-extraGameInfo [0].bTargetIndicators = (nTgtInd >> 1) & 1;
+extraGameInfo [0].bMslLockIndicators = (nTgtInd > 0);
+extraGameInfo [0].bTargetIndicators = (nTgtInd > 1);
 
 DefaultCockpitSettings ();
 }
