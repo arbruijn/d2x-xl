@@ -155,8 +155,16 @@ class CArray : public CQuickSort < _T > {
 		_T *Create (uint length) {
 			if (m_data.length != length) {
 				Destroy ();
-				if ((m_data.buffer = new _T [length]))
-					m_data.length = length;
+				try {
+					if ((m_data.buffer = new _T [length]))
+						m_data.length = length;
+					}
+				catch(...) {
+#if DBG
+					ArrayError ("invalid buffer size\n");
+#endif
+					m_data_buffer = NULL;
+					}
 				}
 			return m_data.buffer;
 			}
@@ -179,7 +187,15 @@ class CArray : public CQuickSort < _T > {
 				return m_data.buffer;
 			if (!m_data.buffer)
 				return Create (length);
+			try {
 			_T* p = new _T [length];
+				}
+			catch(...) {
+#if DBG
+				ArrayError ("invalid buffer size\n");
+#endif
+				p = NULL;
+				}
 			if (!p)
 				return m_data.buffer;
 			if (bCopy)
