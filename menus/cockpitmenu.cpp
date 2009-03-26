@@ -154,7 +154,7 @@ void CockpitOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optTextGauges, optHUD, optPosition, optAlignment, optTgtInd;
+	int	optTextGauges, optHUD, optPosition, optAlignment;
 
 	char	szSlider [40];
 
@@ -196,7 +196,7 @@ do {
 	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
 	m.AddText ("", 0);
-	sprintf (szSlider, TXT_TARGET_INDICATORS, nTgtInd);
+	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
 	optTgtInd = m.AddSlider (szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
 #endif
 #if WEAPON_ICONS
@@ -243,7 +243,7 @@ do {
 	} while (i >= 0);
 
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
-	GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);
+	//GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);
 	gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value;
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
 #if WEAPON_ICONS
