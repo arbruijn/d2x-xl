@@ -1588,7 +1588,7 @@ const char *defaultGameTexts [][2] = {
  {"stehende roboter an~Imieren", "animate i~Dling robots"},
  {"Bambi macht Godzilla platt!", "Bambi stomps Godzilla!"},
  {"exakt", "precise"},
- {"Zielmarkierungen", "Target Indicators"},
+ {"Zielmarkierungen: %s", "Target Indicators: %s"},
  {"~Zielmarkierungen...", "~Target Indicators..."},
  {"Waffensymbole", "Weapon Icons"},
  {"~Waffensymbole...", "~Weapon Icons..."},
@@ -1886,6 +1886,7 @@ const char *defaultGameTexts [][2] = {
  {"~Automatische Ausrichtung: %s", "ship ~Auto-leveling: %s"},
  {"~Notebookfreundlicher Modus", "Notebook-friendly mode"},
  {"Unzureichende Grafik-Hardware.\nD2X-XL laeuft mit reduzierten\nEinstellungen.", "Insufficient graphics hardware.\nD2X-XL will run at reduced settings."},
+ {"Raketen", "Missiles"},
 #if 0
  {"", ""},
 #endif

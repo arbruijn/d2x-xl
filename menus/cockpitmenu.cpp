@@ -68,14 +68,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-static int	optWindowSize, optWindowZoom, optWindowPos, optWindowAlign,
-				optWeaponIcons, bShowWeaponIcons, optIconAlpha;
+static int	optWindowSize, optWindowZoom, optWindowPos, optWindowAlign,	optTgtInd;
+#if WEAPON_ICONS
+static int	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
+#endif
 
-static int nWindowPos, nWindowAlign;
+static int nWindowPos, nWindowAlign, nTgtInd;
 
 static const char *szWindowSize [4];
 static const char *szWindowPos [2];
 static const char *szWindowAlign [3];
+static const char *szTgtInd [3];
 
 //------------------------------------------------------------------------------
 
@@ -130,6 +133,14 @@ if (nWindowAlign != v) {
 	m->m_bRebuild = 1;
 	}
 
+m = menu + optTgtInd;
+v = m->m_value;
+if (nTgtInd != v) {
+	nTgtInd = v;
+	sprintf (m->m_text, TXT_TARGET_INDICATORS, szTgtInd [v]);
+	m->m_bRebuild = 1;
+	}
+
 return nCurItem;
 }
 
@@ -159,25 +170,37 @@ szWindowAlign [0] = TXT_ALIGN_CORNERS;
 szWindowAlign [1] = TXT_ALIGN_MIDDLE;
 szWindowAlign [2] = TXT_ALIGN_CENTER;
 
+szTgtInd [0] = TXT_NONE;
+szTgtInd [1] = TXT_MISSILES;
+szTgtInd [2] = TXT_FULL;
+
 nWindowPos = gameOpts->render.cockpit.nWindowPos / 3;
 nWindowAlign = gameOpts->render.cockpit.nWindowPos % 3;
 
-optPosition = optAlignment = optWindowSize = optWindowZoom = optTextGauges = optWeaponIcons = -1;
-bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
-
+optPosition = optAlignment = optWindowSize = optWindowZoom = optTextGauges = -1;
 #if WEAPON_ICONS
-	int	optIconPos = -1;
+int optIconPos = -1;
+optWeaponIcons = -1;
+bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 #endif
+
+nTgtInd = extraGameInfo [0].bMslLockIndicators | (extraGameInfo [0].bTargetIndicators << 1);
 
 do {
 	m.Destroy ();
 	m.Create (15);
 
 	optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
-	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_P, HTX_CPIT_GFXGAUGES);
+#if 0
+	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
+#else
 	m.AddText ("", 0);
+	sprintf (szSlider, TXT_TARGET_INDICATORS, nTgtInd);
+	optTgtInd = m.AddSlider (szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
+#endif
 #if WEAPON_ICONS
+	m.AddText ("", 0);
 	optWeaponIcons = m.AddCheck (TXT_SHOW_WEAPONICONS, bShowWeaponIcons, KEY_W, HTX_CPIT_WPNICONS);
 	if (bShowWeaponIcons) {
 		optIconPos = m.AddRadio (TXT_WPNICONS_TOP, 0, KEY_I, HTX_CPIT_ICONPOS);
@@ -188,24 +211,21 @@ do {
 		}
 	else
 		optIconPos = -1;
-	m.AddText ("", 0);
 #endif
-	//if (gameOpts->app.bExpertMode)
-		{
-		m.AddText (TXT_COCKPIT_WINDOWS, 0);
-		sprintf (szSlider, TXT_AUXWIN_SIZE, szWindowSize [gameOpts->render.cockpit.nWindowSize]);
-		optWindowSize = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_S, HTX_CPIT_WINSIZE);
+	m.AddText ("", 0);
+	m.AddText (TXT_COCKPIT_WINDOWS, 0);
+	sprintf (szSlider, TXT_AUXWIN_SIZE, szWindowSize [gameOpts->render.cockpit.nWindowSize]);
+	optWindowSize = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_S, HTX_CPIT_WINSIZE);
 
-		sprintf (szSlider, TXT_AUXWIN_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
-		optWindowZoom = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
+	sprintf (szSlider, TXT_AUXWIN_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
+	optWindowZoom = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
 
-		sprintf (szSlider, TXT_AUXWIN_POSITION, szWindowPos [nWindowPos]);
-		optWindowPos = m.AddSlider (szSlider, nWindowPos, 0, 1, KEY_P, HTX_AUXWIN_POSITION);
+	sprintf (szSlider, TXT_AUXWIN_POSITION, szWindowPos [nWindowPos]);
+	optWindowPos = m.AddSlider (szSlider, nWindowPos, 0, 1, KEY_P, HTX_AUXWIN_POSITION);
 
-		sprintf (szSlider, TXT_AUXWIN_ALIGNMENT, szWindowAlign [nWindowAlign]);
-		optWindowAlign = m.AddSlider (szSlider, nWindowAlign, 0, 2, KEY_A, HTX_AUXWIN_ALIGNMENT);
-		m.AddText ("", 0);
-		}
+	sprintf (szSlider, TXT_AUXWIN_ALIGNMENT, szWindowAlign [nWindowAlign]);
+	optWindowAlign = m.AddSlider (szSlider, nWindowAlign, 0, 2, KEY_A, HTX_AUXWIN_ALIGNMENT);
+	m.AddText ("", 0);
 
 	do {
 		i = m.Menu (NULL, TXT_COCKPIT_OPTS, &CockpitOptionsCallback, &choice);
@@ -239,6 +259,9 @@ do {
 		}
 #endif
 	} while (i == -2);
+
+extraGameInfo [0].bMslLockIndicators = nTgtInd & 1;
+extraGameInfo [0].bTargetIndicators = (nTgtInd >> 1) & 1;
 
 DefaultCockpitSettings ();
 }

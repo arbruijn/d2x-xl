@@ -1688,8 +1688,8 @@ gameOptions [0].render.particles.nDens [1] = 1;
 gameOptions [0].render.particles.nLife [1] = 0;
 gameOptions [0].render.particles.nAlpha [1] = 2;
 // robots
-gameOptions [0].render.particles.nSize [2] = 1;
-gameOptions [0].render.particles.nDens [2] = 1 + (gameOpts->render.particles.nQuality > 1);
+gameOptions [0].render.particles.nSize [2] = 1 + (gameOpts->render.particles.nQuality > 1);
+gameOptions [0].render.particles.nDens [2] = (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nLife [2] = 0;
 gameOptions [0].render.particles.nAlpha [2] = 2;
 // missiles
