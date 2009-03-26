@@ -1711,26 +1711,6 @@ gameOptions [0].render.particles.bBubbles = (gameOptions [0].render.particles.nQ
 
 // ----------------------------------------------------------------------------
 
-void DefaultEffectSettings (void)
-{
-gameOptions [0].render.effects.bAutoTransparency = 1;
-gameOptions [0].render.effects.bTransparent = 1;
-gameOptions [0].render.effects.bExplBlasts = 1;
-gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 0);
-gameOptions [0].render.effects.bMovingSparks = 1;
-extraGameInfo [0].bPlayerShield = 1;
-gameOptions [0].render.effects.bRobotShields = 1;
-gameOptions [0].render.effects.bOnlyShieldHits = 1;
-extraGameInfo [0].bTracers = 1;
-extraGameInfo [0].bShockwaves = 0; 
-extraGameInfo [0].bDamageExplosions = 0;
-#if 1
-gameOptions [0].render.particles.bBubbles = gameOptions [0].render.particles.bStatic;
-#endif
-}
-
-// ----------------------------------------------------------------------------
-
 void DefaultLightningSettings (void)
 {
 gameOptions [0].render.lightnings.nQuality = 0;
@@ -1794,6 +1774,32 @@ if (!gameOptions [0].app.bExpertMode) {
 
 // ----------------------------------------------------------------------------
 
+void DefaultEffectSettings (void)
+{
+gameOptions [0].render.effects.bAutoTransparency = 1;
+gameOptions [0].render.effects.bTransparent = 1;
+gameOptions [0].render.effects.bExplBlasts = 1;
+gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 0);
+gameOptions [0].render.effects.bMovingSparks = 1;
+extraGameInfo [0].bPlayerShield = 1;
+gameOptions [0].render.effects.bRobotShields = 1;
+gameOptions [0].render.effects.bOnlyShieldHits = 1;
+extraGameInfo [0].bTracers = 1;
+extraGameInfo [0].bShockwaves = 0; 
+extraGameInfo [0].bDamageExplosions = 0;
+if (gameOptions [0].render.nQuality < 2)
+	gameOptions [0].render.effects.bSoftParticles = 0;
+#if 1
+gameOptions [0].render.particles.bBubbles = gameOptions [0].render.particles.bStatic;
+#endif
+DefaultSmokeSettings ();
+DefaultShadowSettings ();
+DefaultCoronaSettings ();
+DefaultLightningSettings ();
+}
+
+// ----------------------------------------------------------------------------
+
 void DefaultRenderSettings (void)
 {
 extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
@@ -1807,15 +1813,11 @@ gameOptions [0].render.weaponIcons.nSort = 1;
 gameOptions [0].render.weaponIcons.bShowAmmo = 1;
 gameOptions [0].render.weaponIcons.alpha = 4;
 
-DefaultSmokeSettings ();
-DefaultShadowSettings ();
-DefaultCoronaSettings ();
 DefaultPowerupSettings ();
 DefaultShipSettings ();
 DefaultMovieSettings ();
 DefaultEffectSettings ();
 DefaultLightSettings ();
-DefaultLightningSettings ();
 DefaultCameraSettings ();
 DefaultAutomapSettings ();
 }

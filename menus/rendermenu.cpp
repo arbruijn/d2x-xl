@@ -81,10 +81,6 @@ static struct {
 	int	nImageQual;
 	int	nRenderQual;
 	int	nMeshQual;
-	int	nCoronas;
-	int	nLightning;
-	int	nSmoke;
-	int	nShadows;
 	int	nPowerups;
 	int	nLighting;
 	int	nLightmaps;
@@ -189,7 +185,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int nCoronas, nShadows, nPowerups, nCameras, nLighting;
+static int nPowerups, nCameras, nLighting;
 
 static const char* pszNoneBasicAdv [3];
 static const char* pszNoneBasicFull [3];
@@ -265,40 +261,6 @@ if (renderOpts.nMeshQual > 0) {
 		sprintf (m->m_text, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 		m->m_bRebuild = 1;
 		}
-	}
-
-m = menu + renderOpts.nSmoke;
-v = m->m_value;
-if (gameOpts->render.particles.nQuality != v) {
-	gameOpts->render.particles.nQuality = v;
-	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
-	m->m_bRebuild = -1;
-	}
-
-if (renderOpts.nShadows >= 0) {
-	m = menu + renderOpts.nShadows;
-	v = m->m_value;
-	if (nShadows != v) {
-		nShadows = v;
-		sprintf (m->m_text, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
-		m->m_bRebuild = -1;
-		}
-	}
-
-m = menu + renderOpts.nLightning;
-v = m->m_value;
-if (extraGameInfo [0].bUseLightning != v) {
-	extraGameInfo [0].bUseLightning = v;
-	sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
-	m->m_bRebuild = -1;
-	}
-
-m = menu + renderOpts.nCoronas;
-v = m->m_value;
-if (nCoronas != v) {
-	nCoronas = v;
-	sprintf (m->m_text, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
-	m->m_bRebuild = -1;
 	}
 
 m = menu + renderOpts.nCameras;
@@ -408,8 +370,6 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 				: (gameOpts->render.nLightingMethod == 2)
 					? 3
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
-nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 ? 2 : 1 : 0;
-nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
 
@@ -479,23 +439,6 @@ do {
 		else
 			renderOpts.nMeshQual = -1;
 		}
-	m.AddText ("");
-	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
-	*szSlider = *(TXT_SMOKE - 1);
-	renderOpts.nSmoke = m.AddSlider (szSlider + 1, gameOpts->render.particles.nQuality, 0, 2, KEY_S, HTX_SMOKE);
-	if (!gameStates.render.bHaveStencilBuffer)
-		renderOpts.nShadows = -1;
-	else {
-		sprintf (szSlider + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
-		*szSlider = *(TXT_SHADOWS - 1);
-		renderOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_A, HTX_SHADOWS);
-		}
-	sprintf (szSlider + 1, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
-	*szSlider = *(TXT_CORONAS - 1);
-	renderOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_O, HTX_CORONAS);
-	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
-	*szSlider = *(TXT_LIGHTNING - 1);
-	renderOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_I, HTX_LIGHTNING);
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	*szSlider = *(TXT_CAMERAS - 1);
 	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_C, HTX_CAMERAS);
@@ -521,14 +464,6 @@ do {
 		i = m.Menu (NULL, TXT_RENDER_OPTS, RenderOptionsCallback, &choice);
 		} while (i >= 0);
 
-	extraGameInfo [0].bUseParticles = (gameOpts->render.particles.nQuality != 0);
-	if (renderOpts.nShadows >= 0) {
-		if ((extraGameInfo [0].bShadows = (nShadows != 0)))
-			gameOpts->render.shadows.nReach =
-			gameOpts->render.shadows.nClip = nShadows;
-		}
-	if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
-		gameOpts->render.coronas.nStyle = nCoronas;
 	if ((extraGameInfo [0].bUseCameras = (nCameras != 0)))
 		gameOpts->render.cameras.bHires = (nCameras == 2);
 	if ((gameOpts->render.powerups.b3D = (nPowerups != 0)))
