@@ -338,7 +338,7 @@ for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--,
 
 int LoadD2Sounds (bool bCustom)
 {
-if (!(gameData.pig.tex.sound.nType || bCustom))
+if (!(gameData.pig.sound.nType || bCustom))
 	return 1;
 
 	CFile		cf;
