@@ -82,9 +82,12 @@ class CDataPool {
 				m_buffer [e.prev].next = e.next;
 			if (e.next >= 0)
 				m_buffer [e.next].prev = e.prev;
+			if (m_current == i)
+				m_current = (e.prev >= 0) ? e.prev : e.next;
 			e.prev = -1;
 			e.next = m_free;
-			m_buffer [m_free].prev = i;
+			if (m_free >= 0)
+				m_buffer [m_free].prev = i;
 			m_free = i;
 			}
 
@@ -93,9 +96,18 @@ class CDataPool {
 		inline _T* GetNext (void) { 
 			if (m_current < 0)
 				return NULL;
-			CPoolElem<_T>& e = m_buffer [m_current]; 
-			m_current = e.next;
-			return &e.data;
+			CPoolElem<_T>* e;
+			try {
+				e = &m_buffer [m_current]; 
+				}
+			catch(...) {
+#if DBG
+				ArrayError ("Data pool element chain broken.");
+#endif
+				return NULL;
+				}
+			m_current = e->next;
+			return &e->data;
 			}
 
 		inline _T* GetFirst (int i = -1) { 

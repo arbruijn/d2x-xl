@@ -1422,7 +1422,7 @@ if ((m_nObject == 0x7fffffff) && (m_nType == SMOKE_PARTICLES) &&
 	 (gameStates.app.nSDLTicks - m_nBirth > (MAX_SHRAPNEL_LIFE / I2X (1)) * 1000))
 	SetLife (0);
 #if DBG
-if ((m_nObject < 0x70000000) && (OBJECTS [m_nObject].info.nType == 255))
+if ((m_nObject >= 0) && (m_nObject < 0x70000000) && (OBJECTS [m_nObject].info.nType == 255))
 	i = i;
 #endif
 if ((emitterP = m_emitters.Buffer ())) {
@@ -1554,8 +1554,11 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 	int	h = 0;
 
-for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
+CParticleSystem* nextP = NULL;
+for (CParticleSystem* systemP = GetFirst (); systemP; systemP = nextP) {
+	nextP = GetNext ();
 	h += systemP->Update ();
+	}
 return h;
 }
 

@@ -20,6 +20,7 @@
 #include "objsmoke.h"
 #include "shrapnel.h"
 #include "automap.h"
+#include "renderthreads.h"
 
 static tRgbaColorf smokeColors [3] = {
  {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, 2.0f},
