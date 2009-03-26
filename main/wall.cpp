@@ -747,9 +747,13 @@ void WallFrameProcess (void)
 	CCloakingWall*	cloakWallP;
 	CActiveDoor*	doorP = gameData.walls.activeDoors.Buffer ();
 	CWall*			wallP, *backWallP;
-	uint			i;
+	uint				i, j;
+	ubyte				bActive [MAX_WALLS];
 
-for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
+memset (bActive, 0, sizeof (bActive));
+for (i = 0; i < gameData.walls.activeDoors.ToS (); i++) {
+	doorP = &gameData.walls.activeDoors [i];
+	bActive [doorP->nFrontWall [0]] = 1;
 	backWallP = NULL,
 	wallP = WALLS + doorP->nFrontWall [0];
 	if (wallP->state == WALL_DOOR_OPENING) {
@@ -778,7 +782,7 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 				backWallP->flags |= WALL_DOOR_OPENED;
 			}
 		}
-	else if (wallP->state == WALL_DOOR_CLOSED || wallP->state == WALL_DOOR_OPEN) {
+	else if ((wallP->state == WALL_DOOR_CLOSED) || (wallP->state == WALL_DOOR_OPEN)) {
 		//this shouldn't happen.  if the CWall is in one of these states,
 		//there shouldn't be an activedoor entry for it.  So we'll kill
 		//the activedoor entry.  Tres simple.
@@ -789,6 +793,7 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++, doorP++) {
 
 cloakWallP = gameData.walls.cloaking.Buffer ();
 for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
+	bActive [cloakWallP->nFrontWall] |= 2;
 	ubyte s = WALLS [cloakWallP->nFrontWall].state;
 	if (s == WALL_DOOR_CLOAKING) {
 		if (DoCloakingWallFrame (i))
@@ -800,6 +805,39 @@ for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
 	else
 		Int3();	//unexpected CWall state
 #endif
+	}
+
+for (i = 0, j = gameData.walls.walls.Length (); i < j; i++, wallP++) {
+	switch (wallP->state) {
+		case WALL_DOOR_OPENING:
+		case WALL_DOOR_WAITING:
+			if (bActive [i] & 1)
+				continue;
+			wallP->OpenDoor ();
+			break;
+
+		case WALL_DOOR_CLOSING:
+			if (bActive [i] & 1)
+				continue;
+			wallP->CloseDoor ();
+			break;
+
+		case WALL_DOOR_CLOAKING:
+			if (bActive [i] & 2)
+				continue;
+			wallP->StartCloak ();
+			break;
+
+		case WALL_DOOR_DECLOAKING:
+			if (bActive [i] & 2)
+				continue;
+			wallP->StartDecloak ();
+			break;
+
+		default:
+			continue;
+		}
+	wallP->state = 0;
 	}
 }
 
@@ -1364,4 +1402,4 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 	}
 }
 
-// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
