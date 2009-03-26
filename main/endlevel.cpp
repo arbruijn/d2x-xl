@@ -776,7 +776,7 @@ transformation.End ();
 G3TransformAndEncodePoint (&p, gameData.endLevel.satellite.vPos);
 transformation.RotateScaled (vDelta, gameData.endLevel.satellite.vUp);
 G3AddDeltaVec (&pTop, &p, &vDelta);
-if (!(p.p3_codes & CC_BEHIND)&& !(p.p3_flags & PF_OVERFLOW)) {
+if (!(p.p3_codes & CC_BEHIND) && !(p.p3_flags & PF_OVERFLOW)) {
 	int imSave = gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 0;
 	gameData.endLevel.satellite.bmP->SetTranspType (0);
@@ -792,10 +792,11 @@ RenderTerrain (&gameData.endLevel.exit.vGroundExit, nExitPointBmX, nExitPointBmY
 DrawExitModel ();
 if (gameStates.render.bExtExplPlaying)
 	DrawFireball (&externalExplosion);
+int nLighting = gameStates.render.nLighting;
 gameStates.render.nLighting = 0;
 RenderObject (gameData.objs.consoleP, 0, 0);
 transparencyRenderer.Render ();
-gameStates.render.nLighting = 1;
+gameStates.render.nLighting = nLighting;
 }
 
 //------------------------------------------------------------------------------
@@ -860,7 +861,7 @@ else {
 if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	CFixMatrix headm, viewm;
 	CAngleVector angles = CAngleVector::Create(0, 0, 0x7fff);
-	headm = CFixMatrix::Create(angles);
+	headm = CFixMatrix::Create (angles);
 	viewm = gameData.objs.viewerP->info.position.mOrient * headm;
 	G3SetViewMatrix (gameData.render.mine.viewerEye, viewm, gameStates.render.xZoom, 1);
 	}

@@ -545,11 +545,11 @@ void CTriMeshBuilder::SetupVertexNormals (void)
 
 for (i = gameData.segs.nVertices, pointP = gameData.segs.points.Buffer (); i; i--, pointP++) {
 /*
-	(*pointP->p3_normal.vNormal.V3()) [X] =
-	(*pointP->p3_normal.vNormal.V3()) [Y] =
-	(*pointP->p3_normal.vNormal.V3()) [Z] = 0;
+	(*pointP->p3_normal.vNormal.XYZ()) [X] =
+	(*pointP->p3_normal.vNormal.XYZ()) [Y] =
+	(*pointP->p3_normal.vNormal.XYZ()) [Z] = 0;
 */
-	pointP->p3_normal.vNormal.V3()->SetZero ();
+	pointP->p3_normal.vNormal.XYZ()->SetZero ();
 
 	pointP->p3_normal.nFaces = 0;
 	}
@@ -560,7 +560,7 @@ for (h = 0, triP = FACES.tris.Buffer (); h < gameData.segs.nTris; h++, triP++) {
 		if (nVertex == nDbgVertex)
 			nVertex = nVertex;
 #endif
-		*gameData.segs.points [nVertex].p3_normal.vNormal.V3() += FACES.normals [3 * h];
+		*gameData.segs.points [nVertex].p3_normal.vNormal.XYZ() += FACES.normals [3 * h];
 		gameData.segs.points [nVertex].p3_normal.nFaces++;
 		}
 	}
@@ -900,9 +900,9 @@ CFloatVector3 *CQuadMeshBuilder::SetTriNormals (tFaceTriangle *triP, CFloatVecto
 
 vNormalf = CFloatVector::Normal (gameData.segs.fVertices [triP->index [0]],
 				 gameData.segs.fVertices [triP->index [1]], gameData.segs.fVertices [triP->index [2]]);
-*m_normalP++ = *vNormalf.V3();
-*m_normalP++ = *vNormalf.V3();
-*m_normalP++ = *vNormalf.V3();
+*m_normalP++ = *vNormalf.XYZ();
+*m_normalP++ = *vNormalf.XYZ();
+*m_normalP++ = *vNormalf.XYZ();
 return m_normalP;
 }
 
@@ -1009,7 +1009,7 @@ vNormal *= I2X (1) / 2;
 vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
 	j = m_sideVerts [i];
-	*m_vertexP++ = *gameData.segs.fVertices [j].V3();
+	*m_vertexP++ = *gameData.segs.fVertices [j].XYZ();
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->m_uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->m_uvls [i].v);
@@ -1058,7 +1058,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
-		*m_vertexP++ = *gameData.segs.fVertices [v].V3();
+		*m_vertexP++ = *gameData.segs.fVertices [v].XYZ();
 		m_texCoordP->v.u = X2F (m_sideP->m_uvls [k].u);
 		m_texCoordP->v.v = X2F (m_sideP->m_uvls [k].v);
 		RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (ubyte) m_sideP->m_nOvlOrient);
@@ -1159,7 +1159,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
-		*m_vertexP++ = *gameData.segs.fVertices [v].V3();
+		*m_vertexP++ = *gameData.segs.fVertices [v].XYZ();
 		if (j == 2) {
 			m_texCoordP [2] = texCoord;
 			m_faceColorP [2] = color;

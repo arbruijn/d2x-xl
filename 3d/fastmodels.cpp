@@ -87,7 +87,7 @@ if (!gameStates.render.bBrightObject) {
 		  i++, pv++, pn++, pc++) {
 		pc->index = 0;
 		vVertex = vPos + *reinterpret_cast<CFloatVector*> (pv);
-		G3VertexColor (reinterpret_cast<CFloatVector3*> (pn), vVertex.V3(), i, pc, NULL, 1, 0, 0);
+		G3VertexColor (reinterpret_cast<CFloatVector3*> (pn), vVertex.XYZ(), i, pc, NULL, 1, 0, 0);
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->m_faceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {

@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"
 #include "ogl_render.h"
+#include "endlevel.h"
 //from gauges.c
 
 // Flags for gauges/hud stuff
@@ -246,7 +247,7 @@ class CGenericCockpit {
 			}
 		
 		inline bool Hide (void) {
-			return gameStates.app.bEndLevelSequence || 
+			return (gameStates.app.bEndLevelSequence >= EL_LOOKBACK) || 
 					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN));
 			}
 

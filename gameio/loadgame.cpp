@@ -687,6 +687,8 @@ int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
 
 // try to read mod files, and load default files if that fails
 if (nStage == 0) {
+	SetD1Sound ();
+	SetDataVersion (-1);
 	if (ReadHamFile (false))
 		gameStates.app.bCustomData = true;
 	else if (gameStates.app.bCustomData) {

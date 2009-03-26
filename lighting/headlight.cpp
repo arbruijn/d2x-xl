@@ -104,7 +104,7 @@ for (int i = 0; i < MAX_PLAYERS; i++) {
 		pl->info.vDirf.Assign (pl->vDir);
 		if (bHWHeadlight) {
 			pos [i] = pl->render.vPosf [0];
-			dir [i] = *pl->info.vDirf.V3 ();
+			dir [i] = *pl->info.vDirf.XYZ ();
 			brightness [i] = 100.0f;
 			}
 		else if (pl->bTransform && !gameStates.ogl.bUseTransform)

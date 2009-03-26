@@ -190,7 +190,7 @@ class CFloatVector {
 		const float Mag (void) const;
 		CFloatVector& Neg (void);
 		CFloatVector& Scale (CFloatVector& scale);
-		CFloatVector3* V3 (void);
+		CFloatVector3* XYZ (void);
 
 		const CFloatVector operator- (void) const;
 		const bool operator== (const CFloatVector& other);
@@ -410,7 +410,7 @@ inline CFloatVector& CFloatVector::Neg (void) {
 	return *this; 
 	}
 
-inline CFloatVector3* CFloatVector::V3 (void) { return reinterpret_cast<CFloatVector3*> (v); }
+inline CFloatVector3* CFloatVector::XYZ (void) { return reinterpret_cast<CFloatVector3*> (v); }
 
 inline const CFloatVector CFloatVector::operator- (void) const {
 	return Create (-v [X], -v [Y], -v [Z]);
@@ -1241,9 +1241,9 @@ inline const CFloatVector CFloatMatrix::operator* (const CFloatVector& v) {
 }
 
 inline const CFloatVector3 CFloatMatrix::operator* (const CFloatVector3& v) {
-	return CFloatVector3::Create (CFloatVector3::Dot (v, *m_data.mat [RVEC].V3 ()),
-											CFloatVector3::Dot (v, *m_data.mat [UVEC].V3 ()),
-											CFloatVector3::Dot (v, *m_data.mat [FVEC].V3 ()));
+	return CFloatVector3::Create (CFloatVector3::Dot (v, *m_data.mat [RVEC].XYZ ()),
+											CFloatVector3::Dot (v, *m_data.mat [UVEC].XYZ ()),
+											CFloatVector3::Dot (v, *m_data.mat [FVEC].XYZ ()));
 }
 
 inline const CFloatMatrix CFloatMatrix::Transpose (void) {
@@ -1307,8 +1307,8 @@ const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, c
 const int VmPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp);
 const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int bClamp);
 const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp);
-const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& V3, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb);
-const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& V3, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb);
+const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& XYZ, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb);
+const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& XYZ, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb);
 
 float TriangleSize (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2);
 

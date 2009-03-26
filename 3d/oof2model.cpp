@@ -97,9 +97,9 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 		pfv = pof->m_verts;
 		h = pfv->m_nIndex;
 		if (nModel > 200) {
-			vNormal = CFloatVector3::Normal (*pso->m_verts [pfv [0].m_nIndex].V3 (), 
-														*pso->m_verts [pfv [1].m_nIndex].V3 (), 
-														*pso->m_verts [pfv [2].m_nIndex].V3 ());
+			vNormal = CFloatVector3::Normal (*pso->m_verts [pfv [0].m_nIndex].XYZ (), 
+														*pso->m_verts [pfv [1].m_nIndex].XYZ (), 
+														*pso->m_verts [pfv [2].m_nIndex].XYZ ());
 			}
 		else
 			vNormal.Assign (pof->m_vNormal);

@@ -105,7 +105,7 @@ return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.Handle
 
 static inline CFloatVector3* G3GetNormal (g3sPoint *pPoint, CFloatVector *pvNormal)
 {
-return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.V3() : pvNormal->V3();
+return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.XYZ() : pvNormal->XYZ();
 }
 
 //------------------------------------------------------------------------------

@@ -763,7 +763,7 @@ paletteManager.ClearEffect (paletteManager.Game ());
 FillBackground ();
 transparencyRenderer.Reset ();
 //if (gameStates.render.vr.nRenderMode == VR_NONE)
-	RenderMonoFrame ();
+RenderMonoFrame ();
 //StopTime ();
 paletteManager.EnableEffect ();
 //StartTime (0);
