@@ -1284,6 +1284,7 @@ m_bDestroy = false;
 
 void CParticleSystem::Destroy (void)
 {
+m_bDestroy = false;
 if (m_emitters.Buffer ()) {
 	m_emitters.Destroy ();
 	if ((m_nObject >= 0) && (m_nObject < 0x70000000))
@@ -1524,11 +1525,9 @@ for (CParticleSystem* systemP = GetFirst (); systemP; systemP = nextP) {
 int CParticleManager::Shutdown (void)
 {
 SEM_ENTER (SEM_SMOKE)
-
-for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ()) {
+for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
 	systemP->Destroy ();
-	m_systems.Push (systemP->Id ());
-	}
+Cleanup ();
 particleImageManager.FreeAll ();
 SEM_LEAVE (SEM_SMOKE)
 return 1;
@@ -1575,11 +1574,8 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 	int	h = 0;
 
-CParticleSystem* nextP = NULL;
-for (CParticleSystem* systemP = GetFirst (); systemP; systemP = nextP) {
-	nextP = GetNext ();
+for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ()) 
 	h += systemP->Update ();
-	}
 return h;
 }
 

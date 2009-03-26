@@ -345,13 +345,19 @@ EndEffectsThread ();
 int _CDECL_ EffectsThread (void *pThreadId)
 {
 do {
-	while (!tiEffects.bExec)
+	while (!tiEffects.bExec) {
 		G3_SLEEP (0);
+		if (tiEffects.bDone) {
+			tiEffects.bDone = 0;
+			return 0;
+			}
+		}
 	DoParticleFrame ();
 	sparkManager.DoFrame ();
 	lightningManager.DoFrame ();
 	tiEffects.bExec = 0;
 	} while (!tiEffects.bDone);
+tiEffects.bDone = 0;
 return 0;
 }
 
@@ -385,8 +391,8 @@ void EndEffectsThread (void)
 if (!tiEffects.pThread)
 	return;
 tiEffects.bDone = 1;
-G3_SLEEP (100);
-//SDL_KillThread (tiEffects.pThread);
+while (tiEffects.bDone)
+	G3_SLEEP (0);
 tiEffects.pThread = NULL;
 }
 

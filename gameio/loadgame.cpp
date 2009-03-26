@@ -803,6 +803,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
 /*---*/PrintLog ("Loading level...\n");
+EndRenderThreads ();
 gameData.Destroy ();
 srand (SDL_GetTicks ());
 gameData.time.tLast = 0;
