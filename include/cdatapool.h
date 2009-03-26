@@ -82,7 +82,7 @@ class CDataPool {
 				m_buffer [e.prev].next = e.next;
 			if (e.next >= 0)
 				m_buffer [e.next].prev = e.prev;
-			if (m_current == i)
+			if (m_current == int (i))
 				m_current = (e.prev >= 0) ? e.prev : e.next;
 			e.prev = -1;
 			e.next = m_free;
