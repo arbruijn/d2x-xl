@@ -423,8 +423,7 @@ if ((m_bRadar = m_bRadar) == 2) {
 	mRadar.uVec.p.z = po->fVec.p.z;
 #endif
 	}
-//CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
-G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar);
+CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 if (bAutomapFrame) {
 	if (InitBackground ())
 		m_background.RenderFullScreen ();
@@ -441,7 +440,7 @@ if (bAutomapFrame) {
 
 if (!gameOpts->render.automap.bTextured)
 	gameOpts->render.automap.bTextured = 1;
-//G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), 0); //!m_bRadar);
+G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), 0); //!m_bRadar);
 
 if (bAutomapFrame)
 	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
