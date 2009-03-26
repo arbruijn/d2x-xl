@@ -42,6 +42,8 @@ void WiggleObject (CObject *objP)
 
 if (gameStates.render.nShadowPass == 2)
 	return;
+if (gameOpts->app.bEpilepticFriendly)
+	return;
 if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWiggle, 1, 0, 1)))
 	return;
 nParent = gameData.objs.parentObjs [objP->Index ()];
