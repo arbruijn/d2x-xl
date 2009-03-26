@@ -348,9 +348,6 @@ if (gameStates.app.bNostalgia)
 	int		w, h, aw, offs = m_data.bHires ? 10 : 5;
 	char		szInfo [3][200];
 
-fontManager.SetCurrent (SMALL_FONT);
-fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-
 #if 0
 if (gameOpts->app.bExpertMode) {
 	if (CCanvas::Current ()->Width () >= 1024) {
@@ -378,10 +375,21 @@ else
 		strcpy (szInfo [0], "F3: Effects   F4: Objects   F9: Teleport");
 		}
 	}
+fontManager.SetCurrent (SMALL_FONT);
+if ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || (gameStates.render.cockpit.nType == CM_LETTERBOX)) {
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+	}
+else {
+	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
+	offs /= 2;
+	}
 for (int i = 0; (i < 3) && *szInfo [i]; i++) {
 	fontManager.Current ()->StringSize (szInfo [i], w, h, aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - (i + 1) * h - i * 2, szInfo [0]);
 	}
+fontManager.SetCurrent (SMALL_FONT);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+offs = m_data.bHires ? 10 : 5;
 if (gameOpts->render.cockpit.bHUD) {
 	GrPrintF (NULL, offs, offs, m_szLevelNum);
 	fontManager.Current ()->StringSize (m_szLevelName, w, h, aw);
@@ -398,8 +406,7 @@ void CAutomap::Draw (void)
 {
 #if 1
 PROF_START
-	int	bAutomapFrame = !m_bRadar &&
-								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
+	int	bAutomapFrame = (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
 								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 	CFixMatrix	mRadar;
 
@@ -423,6 +430,7 @@ if ((m_bRadar = m_bRadar) == 2) {
 	mRadar.uVec.p.z = po->fVec.p.z;
 #endif
 	}
+#if 0
 CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 if (bAutomapFrame) {
 	if (InitBackground ())
@@ -437,10 +445,10 @@ if (bAutomapFrame) {
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
 	//GrUpdate (0);
 	}
-
+#endif
 if (!gameOpts->render.automap.bTextured)
 	gameOpts->render.automap.bTextured = 1;
-G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), 0); //!m_bRadar);
+G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar);
 
 if (bAutomapFrame)
 	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
@@ -468,6 +476,22 @@ gameData.app.nFrameCount++;
 if (m_bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
+	}
+if (bAutomapFrame) {
+	if (InitBackground ()) {
+		m_background.SetTranspType (2);
+		m_background.AddFlags (BM_FLAG_TRANSPARENT);
+		m_background.RenderFullScreen ();
+		}
+	fontManager.SetCurrent (HUGE_FONT);
+	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
+	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
+	fontManager.SetCurrent (SMALL_FONT);
+	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
+	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
+	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
+	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
+	//GrUpdate (0);
 	}
 DrawLevelId ();
 PROF_END(ptRenderFrame)
