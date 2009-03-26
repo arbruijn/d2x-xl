@@ -464,6 +464,7 @@ void CLightmapManager::BuildAll (int nFace)
 	int			i; 
 	int			nBlackLightmaps = 0, nWhiteLightmaps = 0; 
 
+gameStates.render.nState = 0;
 for (i = 0; i < LM_W; i++)
 	m_data.fOffset [i] = (double) i / (double) (LM_W - 1);
 InitVertColorData (m_data.vcd);

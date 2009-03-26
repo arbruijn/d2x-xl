@@ -709,7 +709,7 @@ else
 	else if (bLight) {
 		if (bOverlay) {
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || !RENDERPATH || gameStates.app.bEndLevelSequence)
+				if (gameStates.render.nState || gameStates.app.bEndLevelSequence)
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;

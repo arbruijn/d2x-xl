@@ -1114,9 +1114,9 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 		nSegment = nSegment;
 #endif
 	lightManager.SetNearestStatic (nSegment, 1, 1, 0);
-	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && ((gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
+	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0) && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
-	gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
+	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 	//gameData.render.lights.dynamic.shader.index [0][0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 	}
 else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
@@ -1288,7 +1288,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
 			lightManager.ResetNearestStatic (nSegment, 0);
 			}
-		gameStates.render.bApplyDynLight = gameStates.render.nLightingMethod != 0;
+		gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
 	else if (nType == 2)	// render objects containing transparency, like explosions

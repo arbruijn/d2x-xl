@@ -250,8 +250,7 @@ if (IsMultiGame) {
 	NetworkDoFrame (1, 1);
 	}
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
-		((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) &&
-		movieManager.m_bHaveExtras)) {
+	 ((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) && movieManager.m_bHaveExtras)) {
 	// only play movie for built-in mission
 	if (!IsMultiGame)
 		nMoviePlayed = StartEndLevelMovie ();
@@ -492,7 +491,7 @@ if (!gameStates.render.bOutsideMine) {
 		nSegment = FindSegByPos (tpnt, gameData.objs.consoleP->info.nSegment, 1, 0);
 		if (nSegment != -1) {
 			expl = /*Object*/CreateExplosion (nSegment, tpnt, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
-			if (d_rand ()<10000 || ++soundCount==7) {		//pseudo-random
+			if ((d_rand () < 10000) || (++soundCount == 7)) {		//pseudo-random
 				audio.CreateSegmentSound (SOUND_TUNNEL_EXPLOSION, nSegment, 0, tpnt, 0, I2X (1));
 				soundCount=0;
 				}
@@ -593,7 +592,7 @@ switch (gameStates.app.bEndLevelSequence) {
 #ifndef SLEW_ON
 		CAngleVector cam_angles;
 #endif
-		gameData.objs.consoleP->info.position.vPos += gameData.objs.consoleP->info.position.mOrient.FVec() * (FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
+		gameData.objs.consoleP->info.position.vPos += gameData.objs.consoleP->info.position.mOrient.FVec () * (FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
 #ifndef SLEW_ON
 		gameData.objs.endLevelCamera->info.position.vPos +=
 							gameData.objs.endLevelCamera->info.position.mOrient.FVec() *
@@ -744,8 +743,8 @@ vModelPos = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient.FV
 vModelPos += gameData.endLevel.exit.mOrient.UVec() * (I2X (u));
 gameStates.app.bD1Model = gameStates.app.bD1Mission && gameStates.app.bD1Data;
 DrawPolyModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL,
-						gameStates.gameplay.bMineDestroyed ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
-						0, I2X (1), NULL, NULL, NULL);
+					gameStates.gameplay.bMineDestroyed ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel,
+					0, I2X (1), NULL, NULL, NULL);
 gameStates.app.bD1Model = 0;
 }
 
@@ -795,6 +794,7 @@ if (gameStates.render.bExtExplPlaying)
 int nLighting = gameStates.render.nLighting;
 gameStates.render.nLighting = 0;
 RenderObject (gameData.objs.consoleP, 0, 0);
+gameStates.render.nState = 0;
 transparencyRenderer.Render ();
 gameStates.render.nLighting = nLighting;
 }

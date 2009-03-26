@@ -191,7 +191,7 @@ if (!flags) {	//draw entire CObject
 			}
 		gameStates.ogl.bUseTransform = 
 			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
-			!(SHOW_DYN_LIGHT && ((gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
+			!(SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects));
 		transformation.Begin (*pos, *orient);
 		G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		transformation.End ();
