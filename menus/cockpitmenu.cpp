@@ -68,6 +68,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#define WEAPON_ICONS 0
+
 static int	optWindowSize, optWindowZoom, optWindowPos, optWindowAlign,	optTgtInd;
 #if WEAPON_ICONS
 static int	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
