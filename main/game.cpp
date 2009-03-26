@@ -404,7 +404,7 @@ GetSlowTicks ();
 
 if (MAXFPS > 1) {
 #ifdef RELEASE
-	gameOpts->render.nMaxFPS = 60;
+	gameOpts->render.nMaxFPS = MAX_FRAMERATE;
 #endif
 	if (!gameData.time.tLast)
 		nDeltaTime = 0;
@@ -1341,7 +1341,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, 60};
+int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, MAX_FRAMERATE};
 
 void AutoScreenshot (void)
 {

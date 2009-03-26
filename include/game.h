@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "object.h"
 
-//#include "segment.h"
+#define MAX_FRAMERATE		60
 
 // from mglobal.c
 #define CV_NONE             0
