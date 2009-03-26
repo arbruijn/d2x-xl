@@ -29,7 +29,9 @@ class CStack : public CArray< _T > {
 
 		inline bool Grow (const uint i = 1) {
 			if ((m_tos + i > this->m_data.length) && (!(m_growth && this->Resize (this->m_data.length + m_growth)))) {
+#if DBG
 				ArrayError ("invalid stack operation\n");
+#endif
 				return false;
 				}
 			m_tos += i;
@@ -38,7 +40,9 @@ class CStack : public CArray< _T > {
 
 		inline bool Push (const _T elem) { 
 			if ((m_tos >= this->m_data.length) && (!(m_growth && this->Resize (this->m_data.length + m_growth)))) {
+#if DBG
 				ArrayError ("invalid stack operation\n");
+#endif
 				return false;
 				}
 			this->m_data.buffer [m_tos++] = elem;
@@ -64,7 +68,9 @@ class CStack : public CArray< _T > {
 
 		inline bool Delete (uint i) {
 			if (i >= m_tos) {
+#if DBG
 				ArrayError ("invalid stack access\n");
+#endif
 				return false;
 				}
 			if (i < --m_tos)
