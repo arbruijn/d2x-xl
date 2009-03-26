@@ -273,7 +273,7 @@ if (!(po->Read (szModel [1], nModel, replacementModels [i].bFlipV, bCustom) ||
 	   po->Read (szModel [0], nModel, replacementModels [i].bFlipV, bCustom)))
 	return 0;
 do {
-	gameData.models.modelToOOF [bCustom != 0][nModel] = po;
+	gameData.models.modelToOOF [bCustom != 0][replacementModels [i].nModel] = po;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 if (bCustom)
@@ -287,6 +287,10 @@ short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
 {
 	short nModel = replacementModels [i].nModel;
 
+#if DBG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 if (gameData.models.modelToASE [bCustom != 0][nModel])
 	return i + 1;
 
@@ -306,7 +310,7 @@ if (!(pa->Read (szModel [1], nModel, bCustom) ||
 	   pa->Read (szModel [0], nModel, bCustom)))
 	return 0;
 do {
-	gameData.models.modelToASE [bCustom != 0][nModel] = pa;
+	gameData.models.modelToASE [bCustom != 0][replacementModels [i].nModel] = pa;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 if (bCustom)
