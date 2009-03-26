@@ -750,6 +750,7 @@ while ((c = KeyInKey ())) {
 				gameOpts->render.automap.bBright = (nColor & 1) != 0;
 				gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
 				}
+			break;
 
 		case KEY_F3:
 			gameOpts->render.automap.bSparks =
