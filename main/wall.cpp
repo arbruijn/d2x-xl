@@ -807,37 +807,41 @@ for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
 #endif
 	}
 
+wallP = gameData.walls.walls.Buffer ();
 for (i = 0, j = gameData.walls.walls.Length (); i < j; i++, wallP++) {
 	switch (wallP->state) {
 		case WALL_DOOR_OPENING:
 		case WALL_DOOR_WAITING:
 			if (bActive [i] & 1)
 				continue;
-			wallP->OpenDoor ();
+			wallP->state = WALL_DOOR_CLOSED;
+			SEGMENTS [wallP->nSegment].OpenDoor (wallP->nSide);
 			break;
 
 		case WALL_DOOR_CLOSING:
 			if (bActive [i] & 1)
 				continue;
-			wallP->CloseDoor ();
+			wallP->state = WALL_DOOR_OPEN;
+			SEGMENTS [wallP->nSegment].CloseDoor (wallP->nSide);
 			break;
 
 		case WALL_DOOR_CLOAKING:
 			if (bActive [i] & 2)
 				continue;
-			wallP->StartCloak ();
+			wallP->state = 0;
+			SEGMENTS [wallP->nSegment].StartCloak (wallP->nSide);
 			break;
 
 		case WALL_DOOR_DECLOAKING:
 			if (bActive [i] & 2)
 				continue;
-			wallP->StartDecloak ();
+			wallP->state = 0;
+			SEGMENTS [wallP->nSegment].StartDecloak (wallP->nSide);
 			break;
 
 		default:
 			continue;
 		}
-	wallP->state = 0;
 	}
 }
 
