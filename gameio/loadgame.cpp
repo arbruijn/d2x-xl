@@ -696,11 +696,13 @@ if (nStage == 0) {
 		gameStates.app.bCustomData = false;
 		}
 #if 0
-	ReadSoundFile (true);
+	LoadD2Sounds (true);
 #else
 	if (gameStates.app.bD1Mission)
 		LoadD1Sounds (false);
-	if (gameStates.app.bHaveMod && (gameStates.app.bD1Mission ? LoadD1Sounds (true) : ReadSoundFile (true))) {
+	else
+		LoadD2Sounds (false);
+	if (gameStates.app.bHaveMod && (gameStates.app.bD1Mission ? LoadD1Sounds (true) : LoadD2Sounds (true))) {
 		gameStates.app.bCustomSounds = true;
 		if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
 			WaitForSoundThread ();
@@ -709,7 +711,7 @@ if (nStage == 0) {
 			}
 		}
 	else if (gameStates.app.bCustomSounds) {
-		ReadSoundFile ();
+		LoadD2Sounds ();
 		gameStates.app.bCustomSounds = false;
 		}
 #endif

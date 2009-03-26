@@ -512,9 +512,10 @@ if (FindArg ("-bigpig"))
 PiggyInitPigFile (DefaultPigFile ());
 /*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
+gameData.pig.tex.sound.nType = -1; //none loaded
 if (gameData.pig.tex.nHamFileVersion >= 3) {
 /*---*/PrintLog ("   Loading sound file\n");
-	bSoundOk = ReadSoundFile ();
+	bSoundOk = LoadD2Sounds ();
 	}
 //if (gameStates.app.bFixModels)
 gameStates.app.bAltModels = 
@@ -723,8 +724,6 @@ if (pSoundNum)
 
 //------------------------------------------------------------------------------
 
-static int bHaveD1Sounds = 0;
-
 CBitmap bmTemp;
 
 #define D1_BITMAPS_SIZE (128 * 1024 * 1024)
@@ -746,10 +745,10 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
 	SetD1Sound ();
-	if (!bHaveD1Sounds || bCustom) {
+	if ((gameData.pig.tex.sound.nType != 1) || bCustom) {
 		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		LoadSounds (cfPiggy [1]);
-		bHaveD1Sounds = 1;
+		gameData.pig.tex.sound.nType = 1;
 		}
 	}
 return nSounds > 0;

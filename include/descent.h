@@ -1995,6 +1995,7 @@ typedef struct tOpenALData {
 
 class CSoundData {
 	public:
+		int						nType;	// 0: D2, 1: D1
 		CArray<ubyte>			data [2];
 		CArray<CSoundSample>	sounds [2]; //[MAX_SOUND_FILES];
 		int						nSoundFiles [2];
