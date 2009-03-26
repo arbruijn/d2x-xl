@@ -163,7 +163,7 @@ class CArray : public CQuickSort < _T > {
 #if DBG
 					ArrayError ("invalid buffer size\n");
 #endif
-					m_data_buffer = NULL;
+					m_data.buffer = NULL;
 					}
 				}
 			return m_data.buffer;
@@ -187,8 +187,9 @@ class CArray : public CQuickSort < _T > {
 				return m_data.buffer;
 			if (!m_data.buffer)
 				return Create (length);
+			_T* p;
 			try {
-			_T* p = new _T [length];
+			p = new _T [length];
 				}
 			catch(...) {
 #if DBG
