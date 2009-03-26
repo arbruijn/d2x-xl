@@ -1277,6 +1277,7 @@ m_nObject = -1;
 m_nObjType = -1;
 m_nObjId = -1;
 m_nSignature = -1;
+m_bDestroy = false;
 }
 
 //------------------------------------------------------------------------------
@@ -1433,7 +1434,8 @@ if ((emitterP = m_emitters.Buffer ())) {
 			return 0;
 		if (emitterP->IsDead (gameStates.app.nSDLTicks)) {
 			if (!RemoveEmitter (i)) {
-				particleManager.Destroy (m_nId);
+				//particleManager.Destroy (m_nId);
+				m_bDestroy = true;
 				break;
 				}
 			}
@@ -1493,8 +1495,12 @@ for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); syst
 
 int CParticleManager::Destroy (int i)
 {
+#if 1
+m_systems [i].m_bDestroy = true;
+#else
 m_systems [i].Destroy ();
-//m_systems.Push (i);
+m_systems.Push (i);
+#endif
 return i;
 }
 
@@ -1506,8 +1512,10 @@ WaitForEffectsThread ();
 CParticleSystem* nextP = NULL;
 for (CParticleSystem* systemP = GetFirst (); systemP; systemP = nextP) {
 	nextP = GetNext ();
-	if (!systemP->m_emitters.Buffer ())
+	if (systemP->m_bDestroy) {
+		systemP->Destroy ();
 		m_systems.Push (systemP->m_nId);
+		}
 	}
 }
 
