@@ -326,9 +326,9 @@ FORALL_OBJS (objP, i) {
 						continue;
 					CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
 					break;
-				G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
-				G3DrawSphere (&spherePoint, size, !m_bRadar);
 				}
+			G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
+			G3DrawSphere (&spherePoint, size, !m_bRadar);
 			break;
 		}
 	}
