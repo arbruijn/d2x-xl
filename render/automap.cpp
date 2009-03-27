@@ -308,24 +308,24 @@ FORALL_OBJS (objP, i) {
 			break;
 
 		case OBJ_POWERUP:
-				switch (objP->info.nId) {
-					case POW_KEY_RED:
-						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
-						size *= 4;
-						break;
-					case POW_KEY_BLUE:
-						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 63));
-						size *= 4;
-						break;
-					case POW_KEY_GOLD:
-						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 63, 10));
-						size *= 4;
-						break;
-					default:
-						if (!(AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])))
-							continue;
-						CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
-					}
+			switch (objP->info.nId) {
+				case POW_KEY_RED:
+					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
+					size *= 4;
+					break;
+				case POW_KEY_BLUE:
+					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 63));
+					size *= 4;
+					break;
+				case POW_KEY_GOLD:
+					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 63, 10));
+					size *= 4;
+					break;
+				default:
+					if (!(AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])))
+						continue;
+					CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
+					break;
 				G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 				G3DrawSphere (&spherePoint, size, !m_bRadar);
 				}
