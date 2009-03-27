@@ -879,7 +879,7 @@ if (!trigP)
 if (trigP->Operate (objP->Index (), (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, bShot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordTrigger (Index (), nSide, objP->Index (), shot);
+	NDRecordTrigger (Index (), nSide, objP->Index (), bShot);
 if (IsMultiGame)
 	MultiSendTrigger (Index (), objP->Index ());
 }
