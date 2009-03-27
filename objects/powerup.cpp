@@ -1103,19 +1103,20 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 		continue;
 	if (nType == 2)
 		h += playerP->secondaryAmmo [nWeapon];
-	else {
+	else if (!(extraGameInfo [0].loadout.nGuns & 1)) {
 		if (nWeapon == LASER_INDEX) {
-			if (playerP->laserLevel > MAX_LASER_LEVEL)
-				h = MAX_LASER_LEVEL + 1;
-			else
-				h += playerP->laserLevel + 1;
+			if ((playerP->laserLevel <= MAX_LASER_LEVEL) && !(extraGameInfo [0].loadout.nGuns & (1 << 5)))
+				h += playerP->laserLevel;
 			}
 		else if (nWeapon == SUPER_LASER_INDEX) {
 			if (playerP->laserLevel > MAX_LASER_LEVEL)
 				h += playerP->laserLevel - MAX_LASER_LEVEL;
 			}
-		else if (playerP->primaryWeaponFlags & (1 << nWeapon))
+		else if (playerP->primaryWeaponFlags & (1 << nWeapon)) {
 			h++;
+			if ((nWeapon == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)
+				h++;
+			}
 		}
 	}
 return h;

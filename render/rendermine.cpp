@@ -846,7 +846,7 @@ if (automap.m_bDisplay) {
 	bSparks = gameOpts->render.automap.bSparks;
 	}
 else {
-	bSparks = 1;
+	bSparks = (gameOptions [0].render.nQuality > 0);
 	bLightnings = (!nWindow || gameOpts->render.lightnings.bAuxViews) && 
 					  (!gameStates.render.cameras.bActive || gameOpts->render.lightnings.bMonitors);
 	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&

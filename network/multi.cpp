@@ -2052,14 +2052,13 @@ extern ubyte primaryWeaponToPowerup [];
 
 void MultiCapObjects (void)
 {
-	char nType, flagtype;
-	int nIndex;
+	int	nIndex, nType, nFlagType;
 
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
-	nType = primaryWeaponToPowerup [nIndex];
-	if (gameData.multiplayer.powerupsInMine [(int)nType] >= gameData.multiplayer.maxPowerupsAllowed [(int)nType])
+	nType = int (primaryWeaponToPowerup [nIndex]);
+	if (gameData.multiplayer.powerupsInMine [nType] >= gameData.multiplayer.maxPowerupsAllowed [nType])
 		if (LOCALPLAYER.primaryWeaponFlags &(1 << nIndex))
 			LOCALPLAYER.primaryWeaponFlags &= (~(1 << nIndex));
 	}
@@ -2081,14 +2080,11 @@ for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 			continue;
 		}
 	nType = secondaryWeaponToPowerup [nIndex];
-	if ((LOCALPLAYER.secondaryAmmo [nIndex] +
-		  gameData.multiplayer.powerupsInMine [(int)nType]) >
-		  gameData.multiplayer.maxPowerupsAllowed [(int)nType]) {
-		if (gameData.multiplayer.maxPowerupsAllowed [(int)nType] - gameData.multiplayer.powerupsInMine [(int)nType] < 0)
+	if ((LOCALPLAYER.secondaryAmmo [nIndex] + gameData.multiplayer.powerupsInMine [nType]) > gameData.multiplayer.maxPowerupsAllowed [nType]) {
+		if (gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType] < 0)
 			LOCALPLAYER.secondaryAmmo [nIndex] = 0;
 		else
-			LOCALPLAYER.secondaryAmmo [nIndex] =
-				(gameData.multiplayer.maxPowerupsAllowed [(int)nType] - gameData.multiplayer.powerupsInMine [(int)nType]);
+			LOCALPLAYER.secondaryAmmo [nIndex] = (gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType]);
 		}
 	}
 
@@ -2131,10 +2127,10 @@ if (PlayerHasHeadlight (-1))
 if (gameData.app.nGameMode & GM_CAPTURE) {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED)
-			flagtype = POW_BLUEFLAG;
+			nFlagType = POW_BLUEFLAG;
 		else
-			flagtype = POW_REDFLAG;
-		if (gameData.multiplayer.powerupsInMine [(int)flagtype] + 1 > gameData.multiplayer.maxPowerupsAllowed [(int)flagtype])
+			nFlagType = POW_REDFLAG;
+		if (gameData.multiplayer.powerupsInMine [(int)nFlagType] + 1 > gameData.multiplayer.maxPowerupsAllowed [(int)nFlagType])
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_FLAG);
 		}
 	}
@@ -2145,38 +2141,42 @@ if (gameData.app.nGameMode & GM_CAPTURE) {
 
 void MultiAdjustCapForPlayer (int nPlayer)
 {
-	char nType;
-	int nIndex;
+	int	i, nType;
 
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
-for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
-	nType = primaryWeaponToPowerup [nIndex];
-	if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags &(1 << nIndex))
-	    gameData.multiplayer.maxPowerupsAllowed [(int) nType]++;
-	if (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion)
-		gameData.multiplayer.maxPowerupsAllowed [primaryWeaponToPowerup [FUSION_INDEX]]++;
+for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
+	nType = int (primaryWeaponToPowerup [i]);
+	if (extraGameInfo [0].loadout.nGuns & (1 << i))	// weapon is standard loadout
+		continue;
+	if (i == 0) {// laser
+		if (extraGameInfo [0].loadout.nGuns & 1)	// lasers or superlasers are standard loadout
+			continue;
+		if (extraGameInfo [0].loadout.nGuns & (1 | (i << 5)))	// lasers or superlasers are standard loadout
+			continue;
+		if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
+			gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER] += gameData.multiplayer.players [nPlayer].laserLevel - MAX_LASER_LEVEL;
+		else
+			gameData.multiplayer.maxPowerupsAllowed [POW_LASER] += gameData.multiplayer.players [nPlayer].laserLevel;
+		}
+	else if (i != 5) { // super laser
+		if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << i))
+		    gameData.multiplayer.maxPowerupsAllowed [nType]++;
+		if ((nType == POW_FUSION) && gameData.multiplayer.weaponStates [nPlayer].bTripleFusion)
+			gameData.multiplayer.maxPowerupsAllowed [primaryWeaponToPowerup [FUSION_INDEX]]++;
+		}
 	}
-for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
-	nType = secondaryWeaponToPowerup [nIndex];
-	gameData.multiplayer.maxPowerupsAllowed [(int)nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex];
+for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
+	nType = int (secondaryWeaponToPowerup [i]);
+	gameData.multiplayer.maxPowerupsAllowed [nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [i];
 	}
-if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
-	gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER]++;
-if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL + 1)
-	gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-	gameData.multiplayer.maxPowerupsAllowed [POW_QUADLASER]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
-	gameData.multiplayer.maxPowerupsAllowed [POW_CLOAK]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FULLMAP)
-	gameData.multiplayer.maxPowerupsAllowed [POW_FULL_MAP]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
-	gameData.multiplayer.maxPowerupsAllowed [POW_AFTERBURNER]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
-	gameData.multiplayer.maxPowerupsAllowed [POW_AMMORACK]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CONVERTER)
-	gameData.multiplayer.maxPowerupsAllowed [POW_CONVERTER]++;
+
+static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER};
+static int nDevicePowerups [] = {POW_FULL_MAP, POW_AMMORACK, POW_CONVERTER, POW_QUADLASER, POW_AFTERBURNER};
+
+for (0; i < sizeofa (nDeviceFlags); i++)
+	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [0].loadout.nDevices  & nDeviceFlags [i]))
+		gameData.multiplayer.maxPowerupsAllowed [nDevicePowerups [i]]++;
 if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 	gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT]++;
 }
@@ -2195,16 +2195,16 @@ if (!(gameData.app.nGameMode & GM_NETWORK) || (gameStates.multi.nGameType == UDP
 for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
 	nType = primaryWeaponToPowerup [nIndex];
 	if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags &(1 << nIndex))
-	   gameData.multiplayer.powerupsInMine [(int)nType]++;
+	   gameData.multiplayer.powerupsInMine [nType]++;
 	}
 for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 	nType = secondaryWeaponToPowerup [nIndex];
 	if ((gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)) && nIndex == 2)
 		continue;
 	if (nIndex == 2 || nIndex == 7) // PROX or SMARTMINES? Those bastards...
-		gameData.multiplayer.powerupsInMine [(int)nType] += (gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex]/4);
+		gameData.multiplayer.powerupsInMine [nType] += (gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex]/4);
 	else
-		gameData.multiplayer.powerupsInMine [(int)nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex];
+		gameData.multiplayer.powerupsInMine [nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex];
 	}
 if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
 	gameData.multiplayer.powerupsInMine [POW_SUPERLASER]++;
