@@ -1087,11 +1087,11 @@ return weaponToModel [nWeapon];
 
 short PowerupsOnShips (int nPowerup)
 {
-	int	nType;
-	short h, i, nWeapon = PowerupToWeapon (nPowerup, &nType);
-	CPlayerData	*playerP = gameData.multiplayer.players;
+	CPlayerData*	playerP = gameData.multiplayer.players;
+	int				nClass;
+	short				h, i, nWeapon = PowerupToWeapon (nPowerup, &nClass);
 
-if (nWeapon < 0)
+if (!nClass || ((nClass < 3) && (nWeapon < 0)))
 	return 0;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if ((i == gameData.multiplayer.nLocalPlayer) && 
@@ -1101,21 +1101,27 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 		continue;
 	if (!playerP->connected)
 		continue;
-	if (nType == 2)
+	if (nClass == 3) {	// some device
+		if (!(extraGameInfo [0].loadout.nDevice & 1)) {
 		h += playerP->secondaryAmmo [nWeapon];
-	else if (!(extraGameInfo [0].loadout.nGuns & 1)) {
-		if (nWeapon == LASER_INDEX) {
-			if ((playerP->laserLevel <= MAX_LASER_LEVEL) && !(extraGameInfo [0].loadout.nGuns & (1 << 5)))
-				h += playerP->laserLevel;
-			}
-		else if (nWeapon == SUPER_LASER_INDEX) {
-			if (playerP->laserLevel > MAX_LASER_LEVEL)
-				h += playerP->laserLevel - MAX_LASER_LEVEL;
-			}
-		else if (playerP->primaryWeaponFlags & (1 << nWeapon)) {
-			h++;
-			if ((nWeapon == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)
+		}
+	if (nClass == 2)	// missiles
+		h += playerP->secondaryAmmo [nWeapon];
+	else {	// guns
+		if (!(extraGameInfo [0].loadout.nGuns & 1)) {
+			if (nWeapon == LASER_INDEX) {
+				if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
+					h += min (playerP->laserLevel, MAX_LASER_LEVEL);
+				}
+			else if (nWeapon == SUPER_LASER_INDEX) {
+				if (playerP->laserLevel > MAX_LASER_LEVEL)
+					h += playerP->laserLevel - MAX_LASER_LEVEL;
+				}
+			else if (playerP->primaryWeaponFlags & (1 << nWeapon)) {
 				h++;
+				if ((nWeapon == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)
+					h++;
+				}
 			}
 		}
 	}

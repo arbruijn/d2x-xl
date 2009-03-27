@@ -2047,82 +2047,76 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 extern ubyte secondaryWeaponToPowerup [];
 extern ubyte primaryWeaponToPowerup [];
 
+static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER};
+static int nDevicePowerups [] = {POW_FULL_MAP, POW_AMMORACK, POW_CONVERTER, POW_QUADLASER, POW_AFTERBURNER};
+
 // put a lid on how many OBJECTS will be spewed by an exploding CPlayerData
 // to prevent rampant powerups in netgames
 
 void MultiCapObjects (void)
 {
-	int	nIndex, nType, nFlagType;
+	int	h, i, nType, nFlagType;
 
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
-for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
-	nType = int (primaryWeaponToPowerup [nIndex]);
-	if (gameData.multiplayer.powerupsInMine [nType] >= gameData.multiplayer.maxPowerupsAllowed [nType])
-		if (LOCALPLAYER.primaryWeaponFlags &(1 << nIndex))
-			LOCALPLAYER.primaryWeaponFlags &= (~(1 << nIndex));
+for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
+	nType = int (primaryWeaponToPowerup [i]);
+	if (!LOCALPLAYER.primaryWeaponFlags & (1 << i))
+		continue;
+	h = gameData.multiplayer.maxPowerupsAllowed [nType] + PowerupsOnShips (nType) - gameData.multiplayer.powerupsInMine [nType];
+	if (i == LASER_INDEX) {
+		if ((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) && (h < MAX_LASER_LEVEL))
+			LOCALPLAYER.laserLevel = h;
+		}
+	else if (i == SUPER_LASER_INDEX) {
+		if (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) 
+			LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + h;
+		}
+	else {
+		if ((i == FUSION_INDEX) && (h < 2))
+			gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
+		if (h < 1)
+			LOCALPLAYER.primaryWeaponFlags &= (~(1 << i));
+		}
 	}
 // Don't do the adjustment stuff for Hoard mode
-if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
+if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] /= 4;
 if (gameData.app.nGameMode & GM_ENTROPY)
 	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] = 0;
 else
 	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] /= 4;
 
-for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
+for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	if (gameData.app.nGameMode & GM_HOARD) {
-		if (nIndex == PROXMINE_INDEX)
+		if (i == PROXMINE_INDEX)
 			continue;
 		}
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
-		if ((nIndex == PROXMINE_INDEX) || (nIndex == SMARTMINE_INDEX))
+		if ((i == PROXMINE_INDEX) || (i == SMARTMINE_INDEX))
 			continue;
 		}
-	nType = secondaryWeaponToPowerup [nIndex];
-	if ((LOCALPLAYER.secondaryAmmo [nIndex] + gameData.multiplayer.powerupsInMine [nType]) > gameData.multiplayer.maxPowerupsAllowed [nType]) {
-		if (gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType] < 0)
-			LOCALPLAYER.secondaryAmmo [nIndex] = 0;
-		else
-			LOCALPLAYER.secondaryAmmo [nIndex] = (gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType]);
-		}
+	nType = int (secondaryWeaponToPowerup [i]);
+	h = gameData.multiplayer.maxPowerupsAllowed [nType] + PowerupsOnShips (nType) - gameData.multiplayer.powerupsInMine [nType];
+	if (LOCALPLAYER.secondaryAmmo [i] > h)
+		LOCALPLAYER.secondaryAmmo [i] = max (h, 0);
 	}
 
 if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
 	LOCALPLAYER.secondaryAmmo [2] *= 4;
 LOCALPLAYER.secondaryAmmo [7] *= 4;
 
-if (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL)
-	if (gameData.multiplayer.powerupsInMine [POW_SUPERLASER] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER])
-		LOCALPLAYER.laserLevel = 0;
+for (i = 0; i < sizeofa (nDeviceFlags); i++) {
+	if (LOCALPLAYER.flags & nDeviceFlags [i]) {
+		nType = nDevicePowerups [i];
+		if (0 >= gameData.multiplayer.maxPowerupsAllowed [nType] + PowerupsOnShips (nType) - gameData.multiplayer.powerupsInMine [nType])
+			LOCALPLAYER.flags &= (~PLAYER_FLAGS_CLOAKED);
+		}
+	}
 
-if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
-	if (gameData.multiplayer.powerupsInMine [POW_QUADLASER] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_QUADLASER])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_QUAD_LASERS);
-
-if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
-	if (gameData.multiplayer.powerupsInMine [POW_CLOAK] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_CLOAK])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_CLOAKED);
-
-if (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)
-	if (gameData.multiplayer.powerupsInMine [POW_FULL_MAP] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_FULL_MAP])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_FULLMAP);
-
-if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
-	if (gameData.multiplayer.powerupsInMine [POW_AFTERBURNER] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_AFTERBURNER])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_AFTERBURNER);
-
-if (LOCALPLAYER.flags & PLAYER_FLAGS_AMMO_RACK)
-	if (gameData.multiplayer.powerupsInMine [POW_AMMORACK] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_AMMORACK])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_AMMO_RACK);
-
-if (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER)
-	if (gameData.multiplayer.powerupsInMine [POW_CONVERTER] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_CONVERTER])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_CONVERTER);
-
-if (PlayerHasHeadlight (-1))
-	if (gameData.multiplayer.powerupsInMine [POW_HEADLIGHT] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
+if (PlayerHasHeadlight (-1) &&
+	 (0 >= gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT] + PowerupsOnShips (POW_HEADLIGHT) - gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]))
+	LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
 
 if (gameData.app.nGameMode & GM_CAPTURE) {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG) {
@@ -2130,7 +2124,7 @@ if (gameData.app.nGameMode & GM_CAPTURE) {
 			nFlagType = POW_BLUEFLAG;
 		else
 			nFlagType = POW_REDFLAG;
-		if (gameData.multiplayer.powerupsInMine [(int)nFlagType] + 1 > gameData.multiplayer.maxPowerupsAllowed [(int)nFlagType])
+		if (gameData.multiplayer.powerupsInMine [nFlagType] + 1 > gameData.multiplayer.maxPowerupsAllowed [nFlagType])
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_FLAG);
 		}
 	}
@@ -2141,6 +2135,7 @@ if (gameData.app.nGameMode & GM_CAPTURE) {
 
 void MultiAdjustCapForPlayer (int nPlayer)
 {
+#if 0
 	int	i, nType;
 
 if (!(gameData.app.nGameMode & GM_NETWORK))
@@ -2171,14 +2166,12 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	gameData.multiplayer.maxPowerupsAllowed [nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [i];
 	}
 
-static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER};
-static int nDevicePowerups [] = {POW_FULL_MAP, POW_AMMORACK, POW_CONVERTER, POW_QUADLASER, POW_AFTERBURNER};
-
 for (0; i < sizeofa (nDeviceFlags); i++)
-	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [0].loadout.nDevices  & nDeviceFlags [i]))
+	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [0].loadout.nDevice  & nDeviceFlags [i]))
 		gameData.multiplayer.maxPowerupsAllowed [nDevicePowerups [i]]++;
 if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 	gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT]++;
+#endif
 }
 
 //-----------------------------------------------------------------------------

@@ -114,16 +114,16 @@ return (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0;
 static inline void SetDeviceLoadoutFlag (int i, int v)
 {
 if (v)
-	extraGameInfo [0].loadout.nDevices |= nDeviceFlags [i];
+	extraGameInfo [0].loadout.nDevice |= nDeviceFlags [i];
 else
-	extraGameInfo [0].loadout.nDevices &= ~nDeviceFlags [i];
+	extraGameInfo [0].loadout.nDevice &= ~nDeviceFlags [i];
 }
 
 //------------------------------------------------------------------------------
 
 static inline int GetDeviceLoadoutFlag (int i)
 {
-return (extraGameInfo [0].loadout.nDevices & nDeviceFlags [i]) != 0;
+return (extraGameInfo [0].loadout.nDevice & nDeviceFlags [i]) != 0;
 }
 
 //------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ m.AddText ("", 0);
 m.AddText (TXT_DEVICE_LOADOUT, 0);
 optDevices = m.ToS ();
 for (i = 0; i < (int) sizeofa (pszDevices); i++, nOptions++)
-	m.AddCheck (pszDevices [i], (extraGameInfo [0].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
+	m.AddCheck (pszDevices [i], (extraGameInfo [0].loadout.nDevice & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
 do {
 	i = m.Menu (NULL, TXT_LOADOUT_MENUTITLE, LoadoutCallback, &choice);
 	} while (i != -1);
@@ -201,10 +201,10 @@ for (i = 0; i < (int) sizeofa (pszGuns); i++) {
 	if (m [optGuns + i].m_value)
 		extraGameInfo [0].loadout.nGuns |= (1 << i);
 	}
-extraGameInfo [0].loadout.nDevices = 0;
+extraGameInfo [0].loadout.nDevice = 0;
 for (i = 0; i < (int) sizeofa (pszDevices); i++) {
 	if (m [optDevices + i].m_value)
-		extraGameInfo [0].loadout.nDevices |= nDeviceFlags [i];
+		extraGameInfo [0].loadout.nDevice |= nDeviceFlags [i];
 	}
 AddPlayerLoadout ();
 }

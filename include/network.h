@@ -175,7 +175,7 @@ typedef struct tHeadlightInfo {
 
 typedef struct tLoadoutInfo {
 	uint					nGuns;
-	uint					nDevices;
+	uint					nDevice;
 	ubyte					nMissiles [10];
 } tLoadoutInfo;
 

@@ -463,7 +463,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
 	if (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
 		LOCALPLAYER.primaryAmmo [1] = GAUSS_WEAPON_AMMO_AMOUNT;
-	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
+	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevice;
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
 	if (gameStates.app.bD1Mission)

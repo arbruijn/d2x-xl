@@ -98,7 +98,7 @@ return nObject;
 
 static inline int IsBuiltInDevice (int nDeviceFlag)
 {
-return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nDevices & nDeviceFlag) != 0);
+return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag) != 0);
 }
 
 //	-----------------------------------------------------------------------------

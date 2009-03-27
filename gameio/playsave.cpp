@@ -429,7 +429,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].entropy.bPlayerHandicap, 0, 0);
 
 		RP (extraGameInfo [i].loadout.nGuns, 0, 0);
-		RP (extraGameInfo [i].loadout.nDevices, 0, 0);
+		RP (extraGameInfo [i].loadout.nDevice, 0, 0);
 
 		RP (extraGameInfo [i].headlight.bAvailable, i, 0);
 		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
@@ -951,7 +951,7 @@ tParamValue defaultParams [] = {
  {"extraGameInfo[0].headlight.bDrainPower", "1"},
  {"extraGameInfo[0].headlight.bBuiltIn", "0"},
  {"extraGameInfo[0].loadout.nGuns", "0"},
- {"extraGameInfo[0].loadout.nDevices", "0"},
+ {"extraGameInfo[0].loadout.nDevice", "0"},
  {"extraGameInfo [0].bShowWeapons", "1"},
  {"extraGameInfo [0].bBrightObjects", "0"},
  {"gameOptions[0].input.keyboard.bRamp[0]", "0"},
