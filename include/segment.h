@@ -314,7 +314,7 @@ class CSegment {
 
 		int TexturedSides (void);
 
-		void OperateTrigger (int nSide, CObject *objP, int shot);
+		void OperateTrigger (int nSide, CObject *objP, int bShot);
 
 	private:
 		inline int PokesThrough (int nObject, int nSide);

@@ -308,7 +308,6 @@ FORALL_OBJS (objP, i) {
 			break;
 
 		case OBJ_POWERUP:
-			if (AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])) {
 				switch (objP->info.nId) {
 					case POW_KEY_RED:
 						CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 5, 5));
@@ -323,8 +322,9 @@ FORALL_OBJS (objP, i) {
 						size *= 4;
 						break;
 					default:
+						if (!(AM_SHOW_POWERUPS (1) && (gameStates.render.bAllVisited || m_visited [0][objP->info.nSegment])))
+							continue;
 						CCanvas::Current ()->SetColorRGBi (ORANGE_RGBA); //orange
-						//Error ("Illegal key nType: %i", objP->info.nId);
 					}
 				G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 				G3DrawSphere (&spherePoint, size, !m_bRadar);

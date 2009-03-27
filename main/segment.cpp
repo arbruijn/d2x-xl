@@ -869,14 +869,14 @@ return wallP->ProcessHit (nPlayer, objP);
 
 //-----------------------------------------------------------------
 // Checks for a CTrigger whenever an CObject hits a CTrigger nSide.
-void CSegment::OperateTrigger (int nSide, CObject *objP, int shot)
+void CSegment::OperateTrigger (int nSide, CObject *objP, int bShot)
 {
 CTrigger* trigP = Trigger (nSide);
 
 if (!trigP)
 	return;
 
-if (trigP->Operate (objP->Index (), (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, shot, 0))
+if (trigP->Operate (objP->Index (), (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1, bShot, 0))
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (Index (), nSide, objP->Index (), shot);

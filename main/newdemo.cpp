@@ -1138,14 +1138,14 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordTrigger (int nSegment, int nSide, int nObject, int shot)
+void NDRecordTrigger (int nSegment, int nSide, int nObject, int bShot)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_TRIGGER);
 NDWriteInt (nSegment);
 NDWriteInt (nSide);
 NDWriteInt (nObject);
-NDWriteInt (shot);
+NDWriteInt (bShot);
 StartTime (0);
 }
 
@@ -1736,7 +1736,7 @@ void NDRenderExtras (ubyte, CObject *); extern void MultiApplyGoalTextures ();
 
 int NDReadFrameInfo ()
 {
-	int bDone, nSegment, nTexture, nSide, nObject, soundno, angle, volume, i, shot;
+	int bDone, nSegment, nTexture, nSide, nObject, soundno, angle, volume, i, bShot;
 	CObject *objP;
 	ubyte nTag, nPrevTag, WhichWindow;
 	static sbyte saved_letter_cockpit;
@@ -1918,7 +1918,7 @@ while (!bDone) {
 			nSegment = NDReadInt ();
 			nSide = NDReadInt ();
 			nObject = NDReadInt ();
-			shot = NDReadInt ();
+			bShot = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				CSegment*	segP = SEGMENTS + nSegment;
@@ -1930,10 +1930,10 @@ while (!bDone) {
 					Assert (nTag == ND_EVENT_SECRET_THINGY);
 					truth = NDReadInt ();
 					if (!truth)
-						segP->OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
+						segP->OperateTrigger ((short) nSide, OBJECTS + nObject, bShot);
 					} 
 				else
-					segP->OperateTrigger ((short) nSide, OBJECTS + nObject, shot);
+					segP->OperateTrigger ((short) nSide, OBJECTS + nObject, bShot);
 				}
 			break;
 

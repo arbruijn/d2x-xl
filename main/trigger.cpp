@@ -154,7 +154,7 @@ for (int i = 0; i < nLinks; i++)
 
 //------------------------------------------------------------------------------
 //turns lighting on.  returns true if lights were actually turned on. (they
-//would not be if they had previously been shot out).
+//would not be if they had previously been bShot out).
 int CTrigger::DoLightOn (void)
 {
 	int ret = 0;
@@ -175,7 +175,7 @@ return ret;
 
 //------------------------------------------------------------------------------
 //turns lighting off.  returns true if lights were actually turned off. (they
-//would not be if they had previously been shot out).
+//would not be if they had previously been bShot out).
 int CTrigger::DoLightOff (void)
 {
 	int ret = 0;
@@ -407,12 +407,12 @@ return bChanged;
 
 //------------------------------------------------------------------------------
 
-void CTrigger::PrintMessage (int nPlayer, int shot, const char *message)
+void CTrigger::PrintMessage (int nPlayer, int bShot, const char *message)
 {
 	static char	pl [2][2] = {"", "s"};		//points to 's' or nothing for plural word
 
 if (!gameStates.app.bD1Mission && ((nPlayer < 0) || (nPlayer == gameData.multiplayer.nLocalPlayer))) {
-	if (!((flags & TF_NO_MESSAGE) && shot))
+	if (!(flags & TF_NO_MESSAGE) && bShot)	// only display if not a silent trigger and the trigger has been shot (not flown through)
 		HUDInitMessage (message, pl [nLinks > 1]);
 	}
 }
@@ -794,7 +794,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CTrigger::Operate (short nObject, int nPlayer, int shot, bool bObjTrigger)
+int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 {
 if (flags & TF_DISABLED) 
 	return 1;		//1 means don't send trigger hit to other players
@@ -834,7 +834,7 @@ if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 	gameData.trigs.delay [nTrigger] = t;
 	}
 
-if (flags & TF_ONE_SHOT)		//if this is a one-shot...
+if (flags & TF_ONE_SHOT)		//if this is a one-bShot...
 	flags |= TF_DISABLED;		//..then don't let it happen again
 
 PrintLog ("operating trigger %d (%d)\n", this - gameData.trigs.triggers.Buffer ());
@@ -855,46 +855,46 @@ switch (nType) {
 
 	case TT_OPEN_DOOR:
 		DoLink ();
-		PrintMessage (nPlayer, shot, "Door%s opened!");
+		PrintMessage (nPlayer, bShot, "Door%s opened!");
 		break;
 
 	case TT_CLOSE_DOOR:
 		DoCloseDoor ();
-		PrintMessage (nPlayer, shot, "Door%s closed!");
+		PrintMessage (nPlayer, bShot, "Door%s closed!");
 		break;
 
 	case TT_UNLOCK_DOOR:
 		DoUnlockDoors ();
-		PrintMessage (nPlayer, shot, "Door%s unlocked!");
+		PrintMessage (nPlayer, bShot, "Door%s unlocked!");
 		break;
 
 	case TT_LOCK_DOOR:
 		DoLockDoors ();
-		PrintMessage (nPlayer, shot, "Door%s locked!");
+		PrintMessage (nPlayer, bShot, "Door%s locked!");
 		break;
 
 	case TT_OPEN_WALL:
 		if (DoChangeWalls ()) {
 			if (WallIsForceField ())
-				PrintMessage (nPlayer, shot, "Force field%s deactivated!");
+				PrintMessage (nPlayer, bShot, "Force field%s deactivated!");
 			else
-				PrintMessage (nPlayer, shot, "Wall%s opened!");
+				PrintMessage (nPlayer, bShot, "Wall%s opened!");
 			}
 		break;
 
 	case TT_CLOSE_WALL:
 		if (DoChangeWalls ()) {
 			if (WallIsForceField ())
-				PrintMessage (nPlayer, shot, "Force field%s activated!");
+				PrintMessage (nPlayer, bShot, "Force field%s activated!");
 			else
-				PrintMessage (nPlayer, shot, "Wall%s closed!");
+				PrintMessage (nPlayer, bShot, "Wall%s closed!");
 		}
 		break;
 
 	case TT_ILLUSORY_WALL:
 		//don't know what to say, so say nothing
 		DoChangeWalls ();
-		PrintMessage (nPlayer, shot, "Creating Illusion!");
+		PrintMessage (nPlayer, bShot, "Creating Illusion!");
 		break;
 
 	case TT_MATCEN:
@@ -904,28 +904,28 @@ switch (nType) {
 
 	case TT_ILLUSION_ON:
 		DoIllusionOn ();
-		PrintMessage (nPlayer, shot, "Illusion%s on!");
+		PrintMessage (nPlayer, bShot, "Illusion%s on!");
 		break;
 
 	case TT_ILLUSION_OFF:
 		DoIllusionOff ();
-		PrintMessage (nPlayer, shot, "Illusion%s off!");
+		PrintMessage (nPlayer, bShot, "Illusion%s off!");
 		break;
 
 	case TT_LIGHT_OFF:
 		if (DoLightOff ())
-			PrintMessage (nPlayer, shot, "Lights off!");
+			PrintMessage (nPlayer, bShot, "Lights off!");
 		break;
 
 	case TT_LIGHT_ON:
 		if (DoLightOn ())
-			PrintMessage (nPlayer, shot, "Lights on!");
+			PrintMessage (nPlayer, bShot, "Lights on!");
 		break;
 
 	case TT_TELEPORT:
 		if (bObjTrigger) {
 			DoTeleportBot (objP);
-			PrintMessage (nPlayer, shot, "Robot is fleeing!");
+			PrintMessage (nPlayer, bShot, "Robot is fleeing!");
 			}
 		else {
 			if (bIsPlayer) {
@@ -938,7 +938,7 @@ switch (nType) {
 			audio.PlaySound (SOUND_SECRET_EXIT, I2X (1));
 			DoTeleport (nObject);
 			if (bIsPlayer)
-				PrintMessage (nPlayer, shot, "Teleport!");
+				PrintMessage (nPlayer, bShot, "Teleport!");
 			}
 		break;
 
@@ -952,7 +952,7 @@ switch (nType) {
 			}
 		DoSpeedBoost (nObject);
 		if (bIsPlayer)
-			PrintMessage (nPlayer, shot, "Speed Boost!");
+			PrintMessage (nPlayer, bShot, "Speed Boost!");
 		break;
 
 	case TT_SHIELD_DAMAGE:
@@ -1088,7 +1088,7 @@ while ((i >= 0) && (j < 256)) {
 	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
 		break;
 	if (OBJTRIGGERS [i].DoExecObjTrigger (nObject, bDamage)) {
-		OBJTRIGGERS [i].Operate (nObject, -1, 1, 1);
+		OBJTRIGGERS [i].Operate (nObject, -1, 0, 1);
 		if (IsMultiGame)
 			MultiSendObjTrigger (i);
 		}
