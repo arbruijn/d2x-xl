@@ -372,9 +372,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			DelDropInfo (nObject);
 			}
 		}
-	nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject,
-											 1, OBJ_POWERUP, nPowerupType);
-	if (nObject < 0)
+	if (0 > (nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType)))
 		return 0;
 	nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState);
 	OBJECTS [nObject].mType.physInfo.velocity.SetZero ();
@@ -440,7 +438,7 @@ return ObjectNearbyAux (objP->info.nSegment, OBJ_POWERUP, weapon_id, 3);
 
 void MaybeReplacePowerupWithEnergy (CObject *delObjP)
 {
-	int	nWeapon=-1;
+	int	nWeapon = -1;
 
 if (delObjP->info.contains.nType != OBJ_POWERUP)
 	return;
@@ -535,37 +533,36 @@ if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->info.contains.nId == POW_EX
 
 //------------------------------------------------------------------------------
 
-int DropPowerup (ubyte nType, ubyte id, short owner, int num, const CFixVector& init_vel, const CFixVector& pos, short nSegment)
+int DropPowerup (ubyte nType, ubyte id, short owner, int num, const CFixVector& vInitVel, const CFixVector& pos, short nSegment)
 {
-	short			nObject=-1;
+	short			nObject = -1;
 	CObject		*objP;
-	CFixVector	new_velocity, vNewPos;
-	fix			old_mag;
+	CFixVector	vNewVel, vNewPos;
+	fix			xOldMag;
    int			count;
 
 switch (nType) {
 	case OBJ_POWERUP:
 		for (count = 0; count < num; count++) {
-			int	rand_scale;
-			new_velocity = init_vel;
-			old_mag = init_vel.Mag();
+			int	nRandScale;
+			vNewVel = vInitVel;
+			xOldMag = vInitVel.Mag();
 
 			//	We want powerups to move more in network mode.
-			if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
-				rand_scale = 4;
+			if (IsMultiGame && !(gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
+				nRandScale = 4;
 				//	extra life powerups are converted to invulnerability in multiplayer, for what is an extra life, anyway?
 				if (id == POW_EXTRA_LIFE)
 					id = POW_INVUL;
 				}
 			else
-				rand_scale = 2;
-			new_velocity[X] += FixMul (old_mag+I2X (32), d_rand ()*rand_scale - 16384*rand_scale);
-			new_velocity[Y] += FixMul (old_mag+I2X (32), d_rand ()*rand_scale - 16384*rand_scale);
-			new_velocity[Z] += FixMul (old_mag+I2X (32), d_rand ()*rand_scale - 16384*rand_scale);
+				nRandScale = 2;
+			vNewVel [X] += FixMul (xOldMag + I2X (32), d_rand () * nRandScale - 16384 * nRandScale);
+			vNewVel [Y] += FixMul (xOldMag + I2X (32), d_rand () * nRandScale - 16384 * nRandScale);
+			vNewVel [Z] += FixMul (xOldMag + I2X (32), d_rand () * nRandScale - 16384 * nRandScale);
 			// Give keys zero velocity so they can be tracked better in multi
-			if ((gameData.app.nGameMode & GM_MULTI) &&
-				 (( (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
-				new_velocity.SetZero ();
+			if (IsMultiGame && (((id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
+				vNewVel.SetZero ();
 			vNewPos = pos;
 
 			if (IsMultiGame) {
@@ -583,7 +580,7 @@ switch (nType) {
 			if (IsMultiGame)
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
 			objP = OBJECTS + nObject;
-			objP->mType.physInfo.velocity = new_velocity;
+			objP->mType.physInfo.velocity = vNewVel;
 			objP->mType.physInfo.drag = 512;	//1024;
 			objP->mType.physInfo.mass = I2X (1);
 			objP->mType.physInfo.flags = PF_BOUNCE;
@@ -609,18 +606,18 @@ switch (nType) {
 		break;
 
 	case OBJ_ROBOT:
-		for (count=0; count<num; count++) {
-			int	rand_scale;
-			new_velocity = init_vel;
-			old_mag = init_vel.Mag();
-			CFixVector::Normalize(new_velocity);
+		for (count = 0; count < num; count++) {
+			int	nRandScale;
+			vNewVel = vInitVel;
+			xOldMag = vInitVel.Mag();
+			CFixVector::Normalize(vNewVel);
 			//	We want powerups to move more in network mode.
-			rand_scale = 2;
-			new_velocity[X] += (d_rand ()-16384)*2;
-			new_velocity[Y] += (d_rand ()-16384)*2;
-			new_velocity[Z] += (d_rand ()-16384)*2;
-			CFixVector::Normalize(new_velocity);
-			new_velocity *= ((I2X (32) + old_mag) * rand_scale);
+			nRandScale = 2;
+			vNewVel [X] += (d_rand () - 16384) * 2;
+			vNewVel [Y] += (d_rand () - 16384) * 2;
+			vNewVel [Z] += (d_rand () - 16384) * 2;
+			CFixVector::Normalize(vNewVel);
+			vNewVel *= ((I2X (32) + xOldMag) * nRandScale);
 			vNewPos = pos;
 			//	This is dangerous, could be outside mine.
 //				vNewPos.x += (d_rand ()-16384)*8;
@@ -641,7 +638,7 @@ switch (nType) {
 			objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
 			objP->rType.polyObjInfo.nSubObjFlags = 0;
 			//set Physics info
-			objP->mType.physInfo.velocity = new_velocity;
+			objP->mType.physInfo.velocity = vNewVel;
 			objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId).mass;
 			objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
 			objP->mType.physInfo.flags |= (PF_LEVELLING);
@@ -658,7 +655,7 @@ switch (nType) {
 		// At JasenW's request, robots which contain robots
 		// sometimes drop shields.
 		if (d_rand () > 16384)
-			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, init_vel, pos, nSegment);
+			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, pos, nSegment);
 		break;
 
 	default:
@@ -770,7 +767,7 @@ void DropAfterburnerBlobs (CObject *objP, int count, fix xSizeScale, fix xLifeTi
 
 nThrusters = CalcThrusterPos (objP, &ti, 1);
 for (i = 0; i < nThrusters; i++) {
-	nSegment = FindSegByPos (ti.vPos[i], objP->info.nSegment, 1, 0);
+	nSegment = FindSegByPos (ti.vPos [i], objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		continue;
 	if (!(blobObjP = /*Object*/CreateExplosion (nSegment, ti.vPos [i], xSizeScale, VCLIP_AFTERBURNER_BLOB)))

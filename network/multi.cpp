@@ -1071,7 +1071,7 @@ if (gameStates.app.nFunctionMode != FMODE_EXIT)
 
 //-----------------------------------------------------------------------------
 
-void MultiShowPlayerList ()
+void MultiShowPlayerList (void)
 {
 if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP))
 	return;
@@ -2065,7 +2065,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = int (primaryWeaponToPowerup [i]);
 	if (!LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		continue;
-	h = gameData.multiplayer.maxPowerupsAllowed [nType] + PowerupsOnShips (nType) - gameData.multiplayer.powerupsInMine [nType];
+	h = gameData.multiplayer.maxPowerupsAllowed [nType] /*+ PowerupsOnShips (nType)*/ - gameData.multiplayer.powerupsInMine [nType];
 	if (i == LASER_INDEX) {
 		if ((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) && (h < MAX_LASER_LEVEL))
 			LOCALPLAYER.laserLevel = h;
@@ -2099,7 +2099,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 			continue;
 		}
 	nType = int (secondaryWeaponToPowerup [i]);
-	h = gameData.multiplayer.maxPowerupsAllowed [nType] + PowerupsOnShips (nType) - gameData.multiplayer.powerupsInMine [nType];
+	h = gameData.multiplayer.maxPowerupsAllowed [nType] /*+ PowerupsOnShips (nType)*/ - gameData.multiplayer.powerupsInMine [nType];
 	if (LOCALPLAYER.secondaryAmmo [i] > h)
 		LOCALPLAYER.secondaryAmmo [i] = max (h, 0);
 	}
@@ -2111,13 +2111,13 @@ LOCALPLAYER.secondaryAmmo [7] *= 4;
 for (i = 0; i < sizeofa (nDeviceFlags); i++) {
 	if (LOCALPLAYER.flags & nDeviceFlags [i]) {
 		nType = nDevicePowerups [i];
-		if (0 >= gameData.multiplayer.maxPowerupsAllowed [nType] + PowerupsOnShips (nType) - gameData.multiplayer.powerupsInMine [nType])
+		if (0 >= gameData.multiplayer.maxPowerupsAllowed [nType] /*+ PowerupsOnShips (nType)*/ - gameData.multiplayer.powerupsInMine [nType])
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_CLOAKED);
 		}
 	}
 
 if (PlayerHasHeadlight (-1) &&
-	 (0 >= gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT] + PowerupsOnShips (POW_HEADLIGHT) - gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]))
+	 (0 >= gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT] /*+ PowerupsOnShips (POW_HEADLIGHT)*/ - gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]))
 	LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
 
 if (gameData.app.nGameMode & GM_CAPTURE) {
@@ -3033,7 +3033,7 @@ void MultiSetRobotAI (void)
 
 //-----------------------------------------------------------------------------
 
-int MultiDeleteExtraObjects ()
+int MultiDeleteExtraObjects (void)
 {
 	int 		nType, nnp = 0;
 	CObject *objP;
@@ -3075,7 +3075,7 @@ gameData.multiplayer.nLocalPlayer = nLocalPlayer;
 
 //-----------------------------------------------------------------------------
 
-int MultiAllPlayersAlive ()
+int MultiAllPlayersAlive (void)
 {
 	int i;
 
@@ -3087,7 +3087,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-void MultiInitiateSaveGame ()
+void MultiInitiateSaveGame (void)
 {
 	uint game_id;
 	int i;
@@ -3117,7 +3117,7 @@ MultiSaveGame (slot, game_id, saveGameManager.Description ());
 
 //-----------------------------------------------------------------------------
 
-void MultiInitiateRestoreGame ()
+void MultiInitiateRestoreGame (void)
 {
 	ubyte slot;
 

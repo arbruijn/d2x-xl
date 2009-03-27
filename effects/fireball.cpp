@@ -586,30 +586,32 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 													 nVClip, I2X (xBadAss), I2X (4) * xBadAss, I2X (35) * xBadAss, -1);
 	else
 		explObjP = /*Object*/CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
-	if ((delObjP->info.contains.nCount > 0) && !IsMultiGame) { // Multiplayer handled outside of this code!!
-		//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
-		if (delObjP->info.contains.nType == OBJ_POWERUP)
-			MaybeReplacePowerupWithEnergy (delObjP);
-		if ((delObjP->info.contains.nType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))
-			ObjectCreateEgg (delObjP);
-		}
-	if ((delObjP->info.nType == OBJ_ROBOT) && !IsMultiGame) { // Multiplayer handled outside this code!!
-		tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
-		if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
-			if (d_rand () % 16 + 1 < botInfoP->containsProb) {
-				delObjP->info.contains.nCount = (d_rand () % botInfoP->containsCount) + 1;
-				delObjP->info.contains.nType = botInfoP->containsType;
-				delObjP->info.contains.nId = botInfoP->containsId;
+	if (!IsMultiGame) { // Multiplayer handled outside of this code!!
+		if (delObjP->info.contains.nCount > 0) {
+			//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
+			if (delObjP->info.contains.nType == OBJ_POWERUP)
 				MaybeReplacePowerupWithEnergy (delObjP);
+			if ((delObjP->info.contains.nType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))
 				ObjectCreateEgg (delObjP);
-				}
 			}
-		if (botInfoP->thief)
-			DropStolenItems (delObjP);
+		if (delObjP->info.nType == OBJ_ROBOT) {
+			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
+			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
+				if (d_rand () % 16 + 1 < botInfoP->containsProb) {
+					delObjP->info.contains.nCount = (d_rand () % botInfoP->containsCount) + 1;
+					delObjP->info.contains.nType = botInfoP->containsType;
+					delObjP->info.contains.nId = botInfoP->containsId;
+					MaybeReplacePowerupWithEnergy (delObjP);
+					ObjectCreateEgg (delObjP);
+					}
+				}
+			if (botInfoP->thief)
+				DropStolenItems (delObjP);
 #if !DBG
-		if (botInfoP->companion)
-			DropBuddyMarker (delObjP);
+			if (botInfoP->companion)
+				DropBuddyMarker (delObjP);
 #endif
+			}
 		}
 	if (ROBOTINFO (delObjP->info.nId).nExp2Sound > -1)
 		audio.CreateSegmentSound (ROBOTINFO (delObjP->info.nId).nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, I2X (1));
