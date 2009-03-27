@@ -112,7 +112,7 @@ glEnd ();
 
 //------------------------------------------------------------------------------
 
-void OglDrawLine (int left,int top, int right, int bot, tCanvasColor *colorP)
+void OglDrawLine (int left, int top, int right, int bot, tCanvasColor *colorP)
 {
 GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
 GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);

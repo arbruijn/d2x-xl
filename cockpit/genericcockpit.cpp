@@ -967,6 +967,17 @@ else if (m_info.weaponBoxUser [1] == WBU_STATIC)
 	DrawStatic (1);
 }
 
+//------------------------------------------------------------------------------
+
+static inline bool GuidedMissileActive (void)
+{
+CObject *gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
+return gmObjP &&
+		 (gmObjP->info.nType == OBJ_WEAPON) &&
+		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
+		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
+}
+
 //	-----------------------------------------------------------------------------
 
 tRgbColorb playerColors [] = {
@@ -999,7 +1010,8 @@ if (cockpit->Hide ())
 	int nCrossBm, nPrimaryBm, nSecondaryBm;
 	int bHiresReticle, bSmallReticle, ofs;
 
-if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
+if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
+	 (gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided)) {
 	DrawGuidedCrosshair ();
 	return;
 	}

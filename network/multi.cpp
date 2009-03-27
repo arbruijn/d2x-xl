@@ -1001,7 +1001,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && lasttime!=X2I (gameStates.app.xThisLevelTime)) {
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected) {
 			if (i == gameData.multiplayer.nLocalPlayer) {
@@ -2179,7 +2179,7 @@ if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 void MultiAdjustPowerupCap (void)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected && gameData.multiplayer.bAdjustPowerupCap [i]) {
+	if ((i != gameData.multiplayer.nLocalPlayer) && gameData.multiplayer.players [i].connected && gameData.multiplayer.bAdjustPowerupCap [i]) {
 		MultiAdjustCapForPlayer (i);
 		gameData.multiplayer.bAdjustPowerupCap [i] = false;
 	}

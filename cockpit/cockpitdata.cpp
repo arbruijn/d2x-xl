@@ -45,8 +45,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SHOW_PLAYER_IP		0
 
-void DrawGuidedCrosshair (void);
-
 #if 0
 CCanvas *Canv_LeftEnergyGauge;
 CCanvas *Canv_AfterburnerGauge;

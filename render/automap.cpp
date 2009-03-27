@@ -385,7 +385,7 @@ else {
 	}
 for (int i = 0; (i < 3) && *szInfo [i]; i++) {
 	fontManager.Current ()->StringSize (szInfo [i], w, h, aw);
-	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - (i + 1) * h - i * 2, szInfo [0]);
+	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - (i + 1) * h - i * 2, szInfo [i]);
 	}
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);

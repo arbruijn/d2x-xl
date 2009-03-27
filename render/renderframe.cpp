@@ -70,23 +70,23 @@ return gmObjP &&
 void DrawGuidedCrosshair (void)
 {
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
-int w = CCanvas::Current ()->Width ()>>5;
+int w = CCanvas::Current ()->Width () >> 5;
 if (w < 5)
 	w = 5;
 int h = I2X (w) / screen.Aspect ();
 int x = CCanvas::Current ()->Width () / 2;
 int y = CCanvas::Current ()->Height () / 2;
+glLineWidth (float (screen.Width ()) / 640.0f);
 #if 1
-	x = I2X (x);
-	y = I2X (y);
-	w = I2X (w / 2);
-	h = I2X (h / 2);
+	w /= 2;
+	h /= 2;
 	OglDrawLine (x - w, y, x + w, y);
 	OglDrawLine (x, y - h, x, y + h);
 #else
 	OglDrawLine (I2X (x-w/2), I2X (y), I2X (x+w/2), I2X (y));
 	OglDrawLine (I2X (x), I2X (y-h/2), I2X (x), I2X (y+h/2));
 #endif
+glLineWidth (1.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -538,7 +538,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	fontManager.Current ()->StringSize (msg, w, h, aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, 3, msg);
-	DrawGuidedCrosshair ();
+	//DrawGuidedCrosshair ();
 	HUDRenderMessageFrame ();
 	bExtraInfo = 0;
 	}
