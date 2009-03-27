@@ -3054,7 +3054,7 @@ FORALL_OBJS (objP, i) {
 				(nType != OBJ_HOSTAGE) &&((nType != OBJ_WEAPON) || (objP->info.nId != SMALLMINE_ID))) {
 		// Before deleting CObject, if it's a robot, drop it's special powerup, if any
 		if (nType == OBJ_ROBOT)
-			if (objP->info.contains.nCount &&(objP->info.contains.nType == OBJ_POWERUP))
+			if (objP->info.contains.nCount && (objP->info.contains.nType == OBJ_POWERUP))
 				ObjectCreateEgg (objP);
 		objP->Die ();
 		}

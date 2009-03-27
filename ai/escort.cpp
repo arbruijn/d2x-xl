@@ -490,20 +490,15 @@ if (nObject != -1) {
 				;
 			else if (objid == -1) {
 				id = curObjP->info.nId;
-				if ((objtype == OBJ_POWERUP) && (id != POW_KEY_BLUE) && (id != POW_KEY_GOLD) && (id != POW_KEY_RED))
-					return nObject;
-				else
-					return nObject;
-			} else if (curObjP->info.nId == objid)
+				return nObject;
+				}
+			else if (curObjP->info.nId == objid)
 				return nObject;
 		}
 
 		if (objtype == OBJ_POWERUP)
-			if (curObjP->info.contains.nCount)
-				if (curObjP->info.contains.nType == OBJ_POWERUP)
-					if (curObjP->info.contains.nId == objid)
-						return nObject;
-
+			if (curObjP->info.contains.nCount && (curObjP->info.contains.nType == OBJ_POWERUP) && (curObjP->info.contains.nId == objid))
+				return nObject;
 		nObject = curObjP->info.nNextInSeg;
 		}
 	}

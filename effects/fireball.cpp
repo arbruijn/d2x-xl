@@ -588,7 +588,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		explObjP = /*Object*/CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);
 	if (!IsMultiGame) { // Multiplayer handled outside of this code!!
 		if (delObjP->info.contains.nCount > 0) {
-			//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
+			//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 			if (delObjP->info.contains.nType == OBJ_POWERUP)
 				MaybeReplacePowerupWithEnergy (delObjP);
 			if ((delObjP->info.contains.nType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))

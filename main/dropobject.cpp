@@ -485,8 +485,7 @@ if (( (nWeapon == VULCAN_INDEX) || (delObjP->info.contains.nId == POW_VULCAN_AMM
 else if (( (nWeapon == GAUSS_INDEX) || (delObjP->info.contains.nId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 	delObjP->info.contains.nCount = 0;
 else if (nWeapon != -1) {
-	if ((PlayerHasWeapon (nWeapon, 0, -1, 1) & HAS_WEAPON_FLAG) ||
-			WeaponNearby (delObjP, delObjP->info.contains.nId)) {
+	if ((PlayerHasWeapon (nWeapon, 0, -1, 1) & HAS_WEAPON_FLAG) || WeaponNearby (delObjP, delObjP->info.contains.nId)) {
 		if (d_rand () > 16384) {
 			delObjP->info.contains.nType = OBJ_POWERUP;
 			if (nWeapon == VULCAN_INDEX) {
@@ -671,7 +670,7 @@ int ObjectCreateEgg (CObject *objP)
 {
 	int	nObject;
 
-if (!IsMultiGame & (objP->info.nType != OBJ_PLAYER)) {
+if (!IsMultiGame && (objP->info.nType != OBJ_PLAYER)) {
 	if (objP->info.contains.nType == OBJ_POWERUP) {
 		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
 			if (LOCALPLAYER.shields >= I2X (100)) {
