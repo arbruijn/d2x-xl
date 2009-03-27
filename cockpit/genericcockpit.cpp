@@ -301,16 +301,27 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	fontManager.Current ()->StringSize (message, w, h, aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - y - h - 2, message);
 #else
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (27), PAL2RGBA (0), PAL2RGBA (0), 255);
-	int x = CCanvas::Current ()->Width () / 3;
-	int h = int (8 * GLfloat (screen.Height ()) / 480.0f + 0.5f);
-	y = CCanvas::Current ()->Height () - y - 2;
-	CCanvas::Current ()->SetColorRGB (255, 0, 0, 200);
-	OglDrawFilledRect (x, y - h, x + int (NDGetPercentDone () * float (x) / 100.0f), y);
-	glLineWidth (GLfloat (screen.Width ()) / 640.0f);
-	CCanvas::Current ()->SetColorRGB (255, 0, 0, 100);
-	OglDrawEmptyRect (x, y - h, 2 * x, y);
-	glLineWidth (1);
+	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+		CCanvas::Current ()->SetColorRGB (PAL2RGBA (27), PAL2RGBA (0), PAL2RGBA (0), 255);
+		int x = CCanvas::Current ()->Width () / 3;
+		int h = int (8 * GLfloat (screen.Height ()) / 480.0f + 0.5f);
+		y = CCanvas::Current ()->Height () - y - 2;
+		CCanvas::Current ()->SetColorRGB (255, 0, 0, 200);
+		OglDrawFilledRect (x, y - h, x + int (NDGetPercentDone () * float (x) / 100.0f), y);
+		glLineWidth (GLfloat (screen.Width ()) / 640.0f);
+		CCanvas::Current ()->SetColorRGB (255, 0, 0, 100);
+		OglDrawEmptyRect (x, y - h, 2 * x, y);
+		glLineWidth (1);
+		}
+	else {
+		char message [128];
+		int h, w, aw;
+
+		sprintf (message, TXT_DEMO_RECORDING);
+		fontManager.SetColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
+		fontManager.Current ()->StringSize (message, w, h, aw);
+		GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - y - h - 2, message);
+		}
 #endif
 	}
 }
