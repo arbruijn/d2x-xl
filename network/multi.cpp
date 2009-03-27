@@ -79,6 +79,7 @@ void MultiSendRanking (void);
 void MultiDoPlayByPlay (char *buf);
 void MultiDoConquerRoom (char *buf);
 void MultiDoConquerWarning (char *buf);
+void MultiAdjustPowerupCap (void);
 
 //
 // Local macros and prototypes
@@ -1021,6 +1022,7 @@ if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameSt
 	gameData.multigame.bQuitGame = 0;
 	longjmp (gameExitPoint, 0);
 	}
+MultiAdjustPowerupCap ();
 }
 
 //-----------------------------------------------------------------------------
@@ -2135,7 +2137,6 @@ if (gameData.app.nGameMode & GM_CAPTURE) {
 
 void MultiAdjustCapForPlayer (int nPlayer)
 {
-#if 0
 	int	i, nType;
 
 if (!(gameData.app.nGameMode & GM_NETWORK))
@@ -2171,7 +2172,17 @@ for (0; i < sizeofa (nDeviceFlags); i++)
 		gameData.multiplayer.maxPowerupsAllowed [nDevicePowerups [i]]++;
 if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 	gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT]++;
-#endif
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiAdjustPowerupCap (void)
+{
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if (gameData.multiplayer.players [i].connected && gameData.multiplayer.bAdjustPowerupCap [i]) {
+		MultiAdjustCapForPlayer (i);
+		gameData.multiplayer.bAdjustPowerupCap [i] = false;
+	}
 }
 
 //-----------------------------------------------------------------------------

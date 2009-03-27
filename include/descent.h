@@ -2291,6 +2291,7 @@ class CMultiplayerData {
 		CStaticArray< ubyte, MAX_POWERUP_TYPES >	powerupsInMine; //[MAX_POWERUP_TYPES];
 		CStaticArray< ubyte, MAX_POWERUP_TYPES >	powerupsOnShip; //[MAX_POWERUP_TYPES];
 		CStaticArray< ubyte, MAX_POWERUP_TYPES >	maxPowerupsAllowed; //[MAX_POWERUP_TYPES];
+		bool								bAdjustPowerupCap [MAX_PLAYERS];
 		CArray<tLeftoverPowerup>	leftoverPowerups;
 		CAutoNetGame					autoNG;
 		fix								xStartAbortMenuTime;

@@ -255,11 +255,13 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		}
 	}
 
+for (i = 0; i < nMaxPlayers; i++)
+	gameData.multiplayer.bAdjustPowerupCap [i] = true;
+
 // the following code takes care of team players being assigned the proper start locations
 // in enhanced CTF
 for (i = 0; i < nPlayers; i++) {
-// find a CPlayerData CObject that resides in a CSegment of proper nType for the current
-// CPlayerData start info
+// find a player object that resides in a segment of proper type for the current player start info
 	for (j = 0; j < nPlayers; j++) {
 		segNum = startSegs [j];
 		if (segNum < 0)

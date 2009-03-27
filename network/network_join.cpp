@@ -153,8 +153,6 @@ for (short i = 0; i < networkData.nJoining; i++)
 
 void NetworkDisconnectPlayer (int nPlayer)
 {
-	// A CPlayerData has disconnected from the net game, take whatever steps are
-	// necessary 
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	Int3 (); // Weird, see Rob
@@ -349,7 +347,7 @@ static tNetworkSyncData *AcceptJoinRequest (tSequencePacket *player)
 // ignore since they'll request again later
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 #if 1      
-	console.printf (CON_DBG, "Ignored request from new CPlayerData to join during endgame.\n");
+console.printf (CON_DBG, "Ignored request from new player to join during endgame.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -361,7 +359,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 
 if (player->player.connected != gameData.missions.nCurrentLevel) {
 #if 1      
-	console.printf (CON_DBG, "Dumping CPlayerData due to old level number.\n");
+	console.printf (CON_DBG, "Dumping player due to old level number.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -389,7 +387,7 @@ return syncP;
 }
 
 //------------------------------------------------------------------------------
-// Add a CPlayerData to a game already in progress
+// Add a player to a game already in progress
 
 void NetworkWelcomePlayer (tSequencePacket *player)
 {
