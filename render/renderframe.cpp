@@ -445,7 +445,7 @@ else {
 		if (gameOpts->render.cockpit.bMissileView &&
 			 (gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
 			 (gameData.objs.missileViewerP->info.nSignature == mslViewerSig)) {
-			HUDMessage (0, "missile view");
+			//HUDMessage (0, "missile view");
   			gameStates.render.nRenderingType = 2 + (1 << 4);
 			cockpit->RenderWindow (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
 			return 1;
