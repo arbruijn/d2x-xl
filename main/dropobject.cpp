@@ -670,28 +670,36 @@ int ObjectCreateEgg (CObject *objP)
 {
 	int	nObject;
 
-if (!IsMultiGame && (objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
-	if (objP->info.contains.nId == POW_SHIELD_BOOST) {
-		if (LOCALPLAYER.shields >= I2X (100)) {
-			if (d_rand () > 16384) {
-				return -1;
-				}
-			} 
-		else  if (LOCALPLAYER.shields >= I2X (150)) {
-			if (d_rand () > 8192) {
-				return -1;
+if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
+	if (IsMultiGame) {
+		if (MultiPowerupIs4Pack (objP->info.contains.nId))
+			gameData.multiplayer.maxPowerupsAllowed [objP->info.contains.nId] += 4;
+		else
+			gameData.multiplayer.maxPowerupsAllowed [objP->info.contains.nId]++;
+		}
+	else {
+		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
+			if (LOCALPLAYER.shields >= I2X (100)) {
+				if (d_rand () > 16384) {
+					return -1;
+					}
+				} 
+			else  if (LOCALPLAYER.shields >= I2X (150)) {
+				if (d_rand () > 8192) {
+					return -1;
+					}
 				}
 			}
-		}
-	else if (objP->info.contains.nId == POW_ENERGY) {
-		if (LOCALPLAYER.energy >= I2X (100)) {
-			if (d_rand () > 16384) {
-				return -1;
-				}
-			} 
-		else if (LOCALPLAYER.energy >= I2X (150)) {
-			if (d_rand () > 8192) {
-				return -1;
+		else if (objP->info.contains.nId == POW_ENERGY) {
+			if (LOCALPLAYER.energy >= I2X (100)) {
+				if (d_rand () > 16384) {
+					return -1;
+					}
+				} 
+			else if (LOCALPLAYER.energy >= I2X (150)) {
+				if (d_rand () > 8192) {
+					return -1;
+					}
 				}
 			}
 		}

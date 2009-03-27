@@ -222,13 +222,6 @@ else if (nType == OBJ_POWERUP)
 	nType = nType;
 #endif
 
-if (IsMultiGame && (nType == OBJ_POWERUP) && (OBJECTS [nCreator].info.nType == OBJ_ROBOT)) {
-	if (MultiPowerupIs4Pack (nId))
-		gameData.multiplayer.maxPowerupsAllowed [nId] += 4;
-	else
-		gameData.multiplayer.maxPowerupsAllowed [nId]++;
-	}
-
 //if (GetSegMasks (vPos, nSegment, 0).m_center))
 if (nSegment < -1)
 	nSegment = -nSegment - 2;
