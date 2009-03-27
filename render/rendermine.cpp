@@ -917,9 +917,12 @@ PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 //PrintLog ("SetRenderView\n");
 SetRenderView (nEyeOffset, &nStartSeg, 1);
-gameStates.render.nStartSeg = nStartSeg;
 PROF_END(ptAux)
 }
+if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
+	G3EndFrame ();
+	return;
+	}
 #if CLEAR_WINDOW == 1
 if (!nClearWindowColor)
 	nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);

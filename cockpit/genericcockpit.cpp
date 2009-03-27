@@ -1088,6 +1088,9 @@ extern int bSavingMovieFrames;
 
 int CGenericCockpit::CanSeeObject (int nObject, int bCheckObjs)
 {
+if (nObject < 0)
+	return 0;
+
 	tFVIQuery fq;
 	int nHitType;
 	tFVIData hit_data;
@@ -1150,6 +1153,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		//if this is a demo, the nObject in the CPlayerData struct is wrong,
 		//so we search the CObject list for the nObject
 		CObject *objP;
+		nObject = -1;
 		FORALL_PLAYER_OBJS (objP, nObject)
 			if (objP->info.nId == nPlayer) {
 				nObject = objP->Index ();

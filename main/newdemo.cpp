@@ -973,6 +973,8 @@ StartTime (0);
 
 void NDRecordStartFrame (int nFrameNumber, fix xFrameTime)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 if (gameData.demo.bNoSpace) {
 	NDStopPlayback ();
 	return;
@@ -995,6 +997,8 @@ StartTime (0);
 
 void NDRecordRenderObject (CObject * objP)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 if (gameData.demo.bViewWasRecorded [objP->Index ()])
 	return;
 //if (obj==&OBJECTS [LOCALPLAYER.nObject] && !gameStates.app.bPlayerIsDead)
@@ -1009,8 +1013,12 @@ StartTime (0);
 
 void NDRecordViewerObject (CObject * objP)
 {
+if (gameStates.render.cameras.bActive)
+	return;
+
 	int	i = objP->Index ();
 	int	h = gameData.demo.bViewWasRecorded [i];
+
 if (h && (h - 1 == gameStates.render.nRenderingType))
 	return;
 //if (gameData.demo.bWasRecorded [objP->Index ()])
@@ -1030,6 +1038,8 @@ StartTime (0);
 
 void NDRecordSound (int soundno)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_SOUND);
 NDWriteInt (soundno);
@@ -1040,6 +1050,8 @@ StartTime (0);
 
 void NDRecordCockpitChange (int mode)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_CHANGE_COCKPIT);
 NDWriteInt (mode);
@@ -1050,6 +1062,8 @@ StartTime (0);
 
 void NDRecordSound3D (int soundno, int angle, int volume)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_SOUND_3D);
 NDWriteInt (soundno);
@@ -1062,6 +1076,8 @@ StartTime (0);
 
 void NDRecordSound3DOnce (int soundno, int angle, int volume)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_SOUND_3D_ONCE);
 NDWriteInt (soundno);
@@ -1074,6 +1090,8 @@ StartTime (0);
 
 void NDRecordCreateObjectSound (int soundno, short nObject, fix maxVolume, fix  maxDistance, int loop_start, int loop_end)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_LINK_SOUND_TO_OBJ);
 NDWriteInt (soundno);
@@ -1089,6 +1107,8 @@ StartTime (0);
 
 void NDRecordDestroyObjectSound (int nObject)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_KILL_SOUND_TO_OBJ);
 NDWriteInt (OBJECTS [nObject].info.nSignature);
@@ -1099,6 +1119,8 @@ StartTime (0);
 
 void NDRecordWallHitProcess (int nSegment, int nSide, int damage, int playernum)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 //nSegment = nSegment;
 //nSide = nSide;
@@ -1116,6 +1138,8 @@ StartTime (0);
 
 void NDRecordGuidedStart (void)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 NDWriteByte (ND_EVENT_START_GUIDED);
 }
 
@@ -1123,6 +1147,8 @@ NDWriteByte (ND_EVENT_START_GUIDED);
 
 void NDRecordGuidedEnd (void)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 NDWriteByte (ND_EVENT_END_GUIDED);
 }
 
@@ -1130,6 +1156,8 @@ NDWriteByte (ND_EVENT_END_GUIDED);
 
 void NDRecordSecretExitBlown (int truth)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_SECRET_THINGY);
 NDWriteInt (truth);
@@ -1140,6 +1168,8 @@ StartTime (0);
 
 void NDRecordTrigger (int nSegment, int nSide, int nObject, int bShot)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_TRIGGER);
 NDWriteInt (nSegment);
@@ -1153,6 +1183,8 @@ StartTime (0);
 
 void NDRecordHostageRescued (int hostage_number) 
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_HOSTAGE_RESCUED);
 NDWriteInt (hostage_number);
@@ -1163,6 +1195,8 @@ StartTime (0);
 
 void NDRecordMorphFrame (tMorphInfo *md)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MORPH_FRAME);
 NDWriteObject (md->objP);
@@ -1173,6 +1207,8 @@ StartTime (0);
 
 void NDRecordWallToggle (int nSegment, int nSide)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_WALL_TOGGLE);
 NDWriteInt (nSegment);
@@ -1184,6 +1220,8 @@ StartTime (0);
 
 void NDRecordControlCenterDestroyed ()
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_CONTROL_CENTER_DESTROYED);
 NDWriteInt (gameData.reactor.countdown.nSecsLeft);
@@ -1204,6 +1242,8 @@ StartTime (0);
 
 void NDRecordPaletteEffect (short r, short g, short b)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PALETTE_EFFECT);
 NDWriteShort (r);
@@ -1216,6 +1256,8 @@ StartTime (0);
 
 void NDRecordPlayerEnergy (int old_energy, int energy)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_ENERGY);
 NDWriteByte ((sbyte) old_energy);
@@ -1227,6 +1269,8 @@ StartTime (0);
 
 void NDRecordPlayerAfterburner (fix old_afterburner, fix afterburner)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_AFTERBURNER);
 NDWriteByte ((sbyte) (old_afterburner>>9));
@@ -1238,6 +1282,8 @@ StartTime (0);
 
 void NDRecordPlayerShields (int old_shield, int shield)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_SHIELD);
 NDWriteByte ((sbyte)old_shield);
@@ -1249,6 +1295,8 @@ StartTime (0);
 
 void NDRecordPlayerFlags (uint oflags, uint flags)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_FLAGS);
 NDWriteInt (( (short)oflags << 16) | (short)flags);
@@ -1259,6 +1307,8 @@ StartTime (0);
 
 void NDRecordPlayerWeapon (int nWeaponType, int weapon_num)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_WEAPON);
 NDWriteByte ((sbyte)nWeaponType);
@@ -1274,6 +1324,8 @@ StartTime (0);
 
 void NDRecordEffectBlowup (short CSegment, int nSide, CFixVector& vPos)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_EFFECT_BLOWUP);
 NDWriteShort (CSegment);
@@ -1286,6 +1338,8 @@ StartTime (0);
 
 void NDRecordHomingDistance (fix distance)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_HOMING_DISTANCE);
 NDWriteShort ((short) (distance>>16));
@@ -1296,6 +1350,8 @@ StartTime (0);
 
 void NDRecordLetterbox (void)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_LETTERBOX);
 StartTime (0);
@@ -1305,6 +1361,8 @@ StartTime (0);
 
 void NDRecordRearView (void)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_REARVIEW);
 StartTime (0);
@@ -1314,6 +1372,8 @@ StartTime (0);
 
 void NDRecordRestoreCockpit (void)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_RESTORE_COCKPIT);
 StartTime (0);
@@ -1323,6 +1383,8 @@ StartTime (0);
 
 void NDRecordRestoreRearView (void)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_RESTORE_REARVIEW);
 StartTime (0);
@@ -1332,6 +1394,8 @@ StartTime (0);
 
 void NDRecordWallSetTMapNum1 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap, int nAnim, int nFrame)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_WALL_SET_TMAP_NUM1);
 NDWriteShort (nSegment);
@@ -1351,6 +1415,8 @@ StartTime (0);
 
 void NDRecordWallSetTMapNum2 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap, int nAnim, int nFrame)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_WALL_SET_TMAP_NUM2);
 NDWriteShort (nSegment);
@@ -1370,6 +1436,8 @@ StartTime (0);
 
 void NDRecordMultiCloak (int nPlayer)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_CLOAK);
 NDWriteByte ((sbyte)nPlayer);
@@ -1380,6 +1448,8 @@ StartTime (0);
 
 void NDRecordMultiDeCloak (int nPlayer)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DECLOAK);
 NDWriteByte ((sbyte)nPlayer);
@@ -1390,6 +1460,8 @@ StartTime (0);
 
 void NDRecordMultiDeath (int nPlayer)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DEATH);
 NDWriteByte ((sbyte)nPlayer);
@@ -1400,6 +1472,8 @@ StartTime (0);
 
 void NDRecordMultiKill (int nPlayer, sbyte kill)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_KILL);
 NDWriteByte ((sbyte)nPlayer);
@@ -1411,6 +1485,8 @@ StartTime (0);
 
 void NDRecordMultiConnect (int nPlayer, int nNewPlayer, char *pszNewCallsign)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_CONNECT);
 NDWriteByte ((sbyte)nPlayer);
@@ -1428,6 +1504,8 @@ StartTime (0);
 
 void NDRecordMultiReconnect (int nPlayer)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_RECONNECT);
 NDWriteByte ((sbyte)nPlayer);
@@ -1438,6 +1516,8 @@ StartTime (0);
 
 void NDRecordMultiDisconnect (int nPlayer)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DISCONNECT);
 NDWriteByte ((sbyte)nPlayer);
@@ -1448,6 +1528,8 @@ StartTime (0);
 
 void NDRecordPlayerScore (int score)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_SCORE);
 NDWriteInt (score);
@@ -1458,6 +1540,8 @@ StartTime (0);
 
 void NDRecordMultiScore (int nPlayer, int score)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_SCORE);
 NDWriteByte ((sbyte)nPlayer);
@@ -1469,6 +1553,8 @@ StartTime (0);
 
 void NDRecordPrimaryAmmo (int nOldAmmo, int nNewAmmo)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_PRIMARY_AMMO);
 if (nOldAmmo < 0)
@@ -1483,6 +1569,8 @@ StartTime (0);
 
 void NDRecordSecondaryAmmo (int nOldAmmo, int nNewAmmo)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_SECONDARY_AMMO);
 if (nOldAmmo < 0)
@@ -1497,6 +1585,8 @@ StartTime (0);
 
 void NDRecordDoorOpening (int nSegment, int nSide)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_DOOR_OPENING);
 NDWriteShort ((short)nSegment);
@@ -1508,6 +1598,8 @@ StartTime (0);
 
 void NDRecordLaserLevel (sbyte oldLevel, sbyte newLevel)
 {
+if (gameStates.render.cameras.bActive)
+	return;
 StopTime ();
 NDWriteByte (ND_EVENT_LASER_LEVEL);
 NDWriteByte (oldLevel);
@@ -1519,7 +1611,9 @@ StartTime (0);
 
 void NDRecordCloakingWall (int nFrontWall, int nBackWall, ubyte nType, ubyte state, fix cloakValue, fix l0, fix l1, fix l2, fix l3)
 {
-Assert (nFrontWall <= 255 && nBackWall <= 255);
+if (gameStates.render.cameras.bActive)
+	return;
+Assert (IS_WALL (nFrontWall) && IS_WALL (nBackWall));
 StopTime ();
 NDWriteByte (ND_EVENT_CLOAKING_WALL);
 NDWriteByte ((sbyte) nFrontWall);
@@ -1742,7 +1836,7 @@ int NDReadFrameInfo ()
 	static sbyte saved_letter_cockpit;
 	static sbyte saved_rearview_cockpit;
 	CObject extraobj;
-	static char LastReadValue=101;
+	static char LastReadValue = 101;
 	CSegment *segP;
 
 bDone = 0;
@@ -1750,6 +1844,10 @@ nTag = 255;
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 	ResetSegObjLists ();
 ResetObjects (1);
+/*
+cameraManager.Destroy ();
+cameraManager.Create ();
+*/
 LOCALPLAYER.homingObjectDist = -I2X (1);
 prevObjP = NULL;
 while (!bDone) {
@@ -2254,7 +2352,8 @@ while (!bDone) {
 				nAnim = NDReadShort ();
 				nFrame = NDReadShort ();
 				}
-			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) && 
+			if ((nConnSeg >= 0) &&
+				 (gameData.demo.nVcrState != ND_STATE_PAUSED) && 
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
 				if (gameData.demo.nVersion >= 18)

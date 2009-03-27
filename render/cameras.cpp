@@ -14,6 +14,7 @@
 #include "u_mem.h"
 #include "gameseg.h"
 #include "cockpit.h"
+#include "newdemo.h"
 
 #define CAMERA_READPIXELS	0
 #define TELEPORT_CAMERAS	1
@@ -633,6 +634,10 @@ int CCameraManager::Create (void)
 
 if (!(gameStates.app.bD2XLevel && SEGMENTS.Buffer () && OBJECTS.Buffer ()))
 	return 0;
+#if 0
+if (gameData.demo.nState == ND_STATE_PLAYBACK)
+	return 0;
+#endif
 PrintLog ("   creating cameras\n");
 if (!m_faceCameras.Create (LEVEL_FACES))
 	return 0;

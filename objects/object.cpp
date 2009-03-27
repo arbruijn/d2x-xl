@@ -1141,6 +1141,8 @@ for (i = 0; i < nObjects; i++, objP++)
 	if (objP->info.nType != OBJ_DEBRIS)
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 for (; i < LEVEL_OBJECTS; i++, objP++) {
+	if ((gameData.demo.nState == ND_STATE_PLAYBACK) && (objP->info.nType == OBJ_CAMBOT))
+		continue;
 	gameData.objs.freeList [i] = i;
 	objP->info.nType = OBJ_NONE;
 	objP->info.nSegment =
