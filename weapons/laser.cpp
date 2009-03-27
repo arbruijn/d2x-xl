@@ -1624,7 +1624,8 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		nGun += (gunFlag = (gameData.laser.nMissileGun & 1));
 		gameData.laser.nMissileGun++;
 		}
-	nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1);
+	if (0 > (nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1)))
+		return;
 	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			if (++gameData.laser.nProximityDropped == 4) {
