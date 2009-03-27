@@ -188,7 +188,7 @@ switch (info.renderType) {
 		break;
 
 	case RT_POWERUP:
-		if (PowerupToWeapon ())
+		if (PowerupToDevice ())
 			LoadTextures ();
 		else if (rType.vClipInfo.nClipIndex >= gameData.eff.nClips [0])
 			rType.vClipInfo.nClipIndex = -MAX_ADDON_BITMAP_FILES - 1;

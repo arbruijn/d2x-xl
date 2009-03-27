@@ -137,7 +137,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int CObject::PowerupToWeapon (void)
+int CObject::PowerupToDevice (void)
 {
 	CAngleVector	a;
 	short				nModel, nId;
@@ -212,7 +212,7 @@ void ConvertAllPowerupsToWeapons (void)
 
 FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POWERUP) {
-		objP->PowerupToWeapon ();
+		objP->PowerupToDevice ();
 		objP->LoadTextures ();
 		}
 }
@@ -1061,7 +1061,7 @@ if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (gameStates.render.nType != 1)
 	return 0;
-if (objP->PowerupToWeapon ()) {
+if (objP->PowerupToDevice ()) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	DrawPolygonObject (objP, bDepthSort, 0);
 	}

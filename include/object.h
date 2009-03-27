@@ -766,7 +766,7 @@ class CObject : public CObjectInfo {
 		void LoadState (CFile& cf);
 		void SaveState (CFile& cf);
 		void LoadTextures (void);
-		int PowerupToWeapon (void);
+		int PowerupToDevice (void);
 		void HandleSpecialSegment (void);
 		void SetupSmoke (void);
 

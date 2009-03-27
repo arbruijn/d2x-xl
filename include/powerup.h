@@ -137,7 +137,7 @@ int ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int n, CFile& cf);
 int ApplyCloak (int bForce, int nPlayer);
 int ApplyInvul (int bForce, int nPlayer);
 
-char PowerupToWeapon (short nPowerup, int *nType);
+int PowerupToDevice (short nPowerup, int *nType);
 char PowerupToWeaponCount (short nPowerup);
 char PowerupClass (short nPowerup);
 char PowerupToObject (short nPowerup);

@@ -93,7 +93,7 @@ const char *pszPowerup [MAX_POWERUP_TYPES] = {
 
 #define	MAX_INV_ITEMS	((5 - gameStates.app.nDifficultyLevel) * ((playerP->flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1))
 
-char powerupToWeapon [MAX_POWERUP_TYPES];
+int powerupToDevice [MAX_POWERUP_TYPES];
 char powerupToWeaponCount [MAX_POWERUP_TYPES];
 char powerupClass [MAX_POWERUP_TYPES];
 char powerupToObject [MAX_POWERUP_TYPES];
@@ -670,7 +670,7 @@ nId = objP->info.nId;
 
 nType = powerupType [nId];
 if (nType == POWERUP_IS_GUN) {
-	bUsed = ((pPickupGun) (pickupHandler [nId])) (objP, powerupToWeapon [nId], nPlayer);
+	bUsed = ((pPickupGun) (pickupHandler [nId])) (objP, powerupToDevice [nId], nPlayer);
 	if ((bUsed < 0) && ((nId == POW_VULCAN) || (nId == POW_GAUSS))) {
 		bUsed = -bUsed - 1;
 		bSpecialUsed = 1;
@@ -678,7 +678,7 @@ if (nType == POWERUP_IS_GUN) {
 		}
 	}
 else if (nType == POWERUP_IS_MISSILE) {
-	bUsed = ((pPickupMissile) (pickupHandler [nId])) (objP, powerupToWeapon [nId], PowerupCount (nId), nPlayer);
+	bUsed = ((pPickupMissile) (pickupHandler [nId])) (objP, powerupToDevice [nId], PowerupCount (nId), nPlayer);
 	}
 else if (nType == POWERUP_IS_KEY) {
 	int nKey = nId - POW_KEY_BLUE;
@@ -758,33 +758,50 @@ if (SpawnPowerup (objP, POW_INVUL, playerP->nInvuls - MAX_INV_ITEMS))
 
 void InitPowerupTables (void)
 {
-memset (powerupToWeapon, 0xff, sizeof (powerupToWeapon));
+memset (powerupToDevice, 0xff, sizeof (powerupToDevice));
 
-powerupToWeapon [POW_LASER] = LASER_INDEX;
-powerupToWeapon [POW_VULCAN] = VULCAN_INDEX;
-powerupToWeapon [POW_SPREADFIRE] = SPREADFIRE_INDEX;
-powerupToWeapon [POW_PLASMA] = PLASMA_INDEX;
-powerupToWeapon [POW_FUSION] = FUSION_INDEX;
-powerupToWeapon [POW_GAUSS] = GAUSS_INDEX;
-powerupToWeapon [POW_HELIX] = HELIX_INDEX;
-powerupToWeapon [POW_PHOENIX] = PHOENIX_INDEX;
-powerupToWeapon [POW_OMEGA] = OMEGA_INDEX;
-powerupToWeapon [POW_SUPERLASER] = SUPER_LASER_INDEX;
-powerupToWeapon [POW_CONCUSSION_1] = 
-powerupToWeapon [POW_CONCUSSION_4] = CONCUSSION_INDEX;
-powerupToWeapon [POW_PROXMINE] = PROXMINE_INDEX;
-powerupToWeapon [POW_HOMINGMSL_1] = 
-powerupToWeapon [POW_HOMINGMSL_4] = HOMING_INDEX;
-powerupToWeapon [POW_SMARTMSL] = SMART_INDEX;
-powerupToWeapon [POW_MEGAMSL] = MEGA_INDEX;
-powerupToWeapon [POW_FLASHMSL_1] = 
-powerupToWeapon [POW_FLASHMSL_4] = FLASHMSL_INDEX;
-powerupToWeapon [POW_GUIDEDMSL_1] = 
-powerupToWeapon [POW_GUIDEDMSL_4] = GUIDED_INDEX;
-powerupToWeapon [POW_SMARTMINE] = SMARTMINE_INDEX;
-powerupToWeapon [POW_MERCURYMSL_1] = 
-powerupToWeapon [POW_MERCURYMSL_4] = MERCURY_INDEX;
-powerupToWeapon [POW_EARTHSHAKER] = EARTHSHAKER_INDEX;
+powerupToDevice [POW_LASER] = LASER_INDEX;
+powerupToDevice [POW_VULCAN] = VULCAN_INDEX;
+powerupToDevice [POW_SPREADFIRE] = SPREADFIRE_INDEX;
+powerupToDevice [POW_PLASMA] = PLASMA_INDEX;
+powerupToDevice [POW_FUSION] = FUSION_INDEX;
+powerupToDevice [POW_GAUSS] = GAUSS_INDEX;
+powerupToDevice [POW_HELIX] = HELIX_INDEX;
+powerupToDevice [POW_PHOENIX] = PHOENIX_INDEX;
+powerupToDevice [POW_OMEGA] = OMEGA_INDEX;
+powerupToDevice [POW_SUPERLASER] = SUPER_LASER_INDEX;
+powerupToDevice [POW_CONCUSSION_1] = 
+powerupToDevice [POW_CONCUSSION_4] = CONCUSSION_INDEX;
+powerupToDevice [POW_PROXMINE] = PROXMINE_INDEX;
+powerupToDevice [POW_HOMINGMSL_1] = 
+powerupToDevice [POW_HOMINGMSL_4] = HOMING_INDEX;
+powerupToDevice [POW_SMARTMSL] = SMART_INDEX;
+powerupToDevice [POW_MEGAMSL] = MEGA_INDEX;
+powerupToDevice [POW_FLASHMSL_1] = 
+powerupToDevice [POW_FLASHMSL_4] = FLASHMSL_INDEX;
+powerupToDevice [POW_GUIDEDMSL_1] = 
+powerupToDevice [POW_GUIDEDMSL_4] = GUIDED_INDEX;
+powerupToDevice [POW_SMARTMINE] = SMARTMINE_INDEX;
+powerupToDevice [POW_MERCURYMSL_1] = 
+powerupToDevice [POW_MERCURYMSL_4] = MERCURY_INDEX;
+powerupToDevice [POW_EARTHSHAKER] = EARTHSHAKER_INDEX;
+
+powerupToDevice [POW_CLOAK] = PLAYER_FLAGS_CLOAKED;
+powerupToDevice [POW_INVUL] = PLAYER_FLAGS_INVULNERABLE;
+powerupToDevice [POW_KEY_BLUE] = PLAYER_FLAGS_BLUE_KEY;
+powerupToDevice [POW_KEY_RED] = PLAYER_FLAGS_RED_KEY;
+powerupToDevice [POW_KEY_GOLD] = PLAYER_FLAGS_GOLD_KEY;
+powerupToDevice [POW_FULL_MAP] = PLAYER_FLAGS_FULLMAP;
+powerupToDevice [POW_AMMORACK] = PLAYER_FLAGS_AMMO_RACK;
+powerupToDevice [POW_CONVERTER] = PLAYER_FLAGS_CONVERTER;
+powerupToDevice [POW_QUADLASER] = PLAYER_FLAGS_QUAD_LASERS;
+powerupToDevice [POW_AFTERBURNER] = PLAYER_FLAGS_AFTERBURNER;
+powerupToDevice [POW_HEADLIGHT] = PLAYER_FLAGS_HEADLIGHT;
+powerupToDevice [POW_SLOWMOTION] = PLAYER_FLAGS_SLOWMOTION;
+powerupToDevice [POW_BULLETTIME] = PLAYER_FLAGS_BULLETTIME;
+powerupToDevice [POW_BLUEFLAG] = 
+powerupToDevice [POW_REDFLAG] = PLAYER_FLAGS_FLAG;
+
 
 memset (powerupToWeaponCount, 0, sizeof (powerupToWeaponCount));
 
@@ -1042,10 +1059,10 @@ powerupType [POW_EARTHSHAKER] = (ubyte) POWERUP_IS_MISSILE;
 
 //-----------------------------------------------------------------------------
 
-char PowerupToWeapon (short nPowerup, int *nType)
+int PowerupToDevice (short nPowerup, int *nType)
 {
 *nType = powerupClass [nPowerup];
-return powerupToWeapon [nPowerup];
+return powerupToDevice [nPowerup];
 }
 
 //-----------------------------------------------------------------------------
@@ -1089,9 +1106,9 @@ short PowerupsOnShips (int nPowerup)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players;
 	int				nClass;
-	short				h, i, nWeapon = PowerupToWeapon (nPowerup, &nClass);
+	short				h, i, nIndex = PowerupToDevice (nPowerup, &nClass);
 
-if (!nClass || ((nClass < 3) && (nWeapon < 0)))
+if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if ((i == gameData.multiplayer.nLocalPlayer) && 
@@ -1102,24 +1119,24 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if (!playerP->connected)
 		continue;
 	if (nClass == 3) {	// some device
-		if (!(extraGameInfo [0].loadout.nDevice & 1)) {
-		h += playerP->secondaryAmmo [nWeapon];
+		if (!(extraGameInfo [0].loadout.nDevice & 1))
+			h += (playerP->flags & nIndex) != 0;
 		}
 	if (nClass == 2)	// missiles
-		h += playerP->secondaryAmmo [nWeapon];
+		h += playerP->secondaryAmmo [nIndex];
 	else {	// guns
 		if (!(extraGameInfo [0].loadout.nGuns & 1)) {
-			if (nWeapon == LASER_INDEX) {
+			if (nIndex == LASER_INDEX) {
 				if (!(extraGameInfo [0].loadout.nGuns & (1 << 5)))
 					h += min (playerP->laserLevel, MAX_LASER_LEVEL);
 				}
-			else if (nWeapon == SUPER_LASER_INDEX) {
+			else if (nIndex == SUPER_LASER_INDEX) {
 				if (playerP->laserLevel > MAX_LASER_LEVEL)
 					h += playerP->laserLevel - MAX_LASER_LEVEL;
 				}
-			else if (playerP->primaryWeaponFlags & (1 << nWeapon)) {
+			else if (playerP->primaryWeaponFlags & (1 << nIndex)) {
 				h++;
-				if ((nWeapon == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)
+				if ((nIndex == FUSION_INDEX) && gameData.multiplayer.weaponStates [i].bTripleFusion)
 					h++;
 				}
 			}
