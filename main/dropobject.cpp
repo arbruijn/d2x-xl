@@ -533,17 +533,17 @@ if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->info.contains.nId == POW_EX
 
 //------------------------------------------------------------------------------
 
-int DropPowerup (ubyte nType, ubyte id, short owner, int num, const CFixVector& vInitVel, const CFixVector& pos, short nSegment)
+int DropPowerup (ubyte nType, ubyte id, short owner, int nCount, const CFixVector& vInitVel, const CFixVector& pos, short nSegment)
 {
 	short			nObject = -1;
 	CObject		*objP;
 	CFixVector	vNewVel, vNewPos;
 	fix			xOldMag;
-   int			count;
+   int			i;
 
 switch (nType) {
 	case OBJ_POWERUP:
-		for (count = 0; count < num; count++) {
+		for (i = 0; i < nCount; i++) {
 			int	nRandScale;
 			vNewVel = vInitVel;
 			xOldMag = vInitVel.Mag();
@@ -606,7 +606,7 @@ switch (nType) {
 		break;
 
 	case OBJ_ROBOT:
-		for (count = 0; count < num; count++) {
+		for (i = 0; i < nCount; i++) {
 			int	nRandScale;
 			vNewVel = vInitVel;
 			xOldMag = vInitVel.Mag();
