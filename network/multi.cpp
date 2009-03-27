@@ -3836,13 +3836,10 @@ DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [(int) buf [1]].nOb
 
 void MultiSendPowerupUpdate ()
 {
-	int i;
-
-
 gameData.multigame.msg.buf [0] = MULTI_POWERUP_UPDATE;
-for (i = 0; i < MAX_POWERUP_TYPES; i++)
+for (int i = 0; i < MAX_POWERUP_TYPES; i++)
 	gameData.multigame.msg.buf [i+1] = gameData.multiplayer.maxPowerupsAllowed [i];
-MultiSendData (gameData.multigame.msg.buf, MAX_POWERUP_TYPES+1, 1);
+MultiSendData (gameData.multigame.msg.buf, MAX_POWERUP_TYPES + 1, 1);
 }
 
 //-----------------------------------------------------------------------------

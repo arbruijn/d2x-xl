@@ -679,8 +679,8 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0])) { // Objnum in ran
 	}
 if (OBJECTS [nRobot].info.nType != OBJ_ROBOT) // Object is robotP?
 	return 0;
-	if (OBJECTS [nRobot].info.nFlags & OF_EXPLODING) // Object not already exploding
-		return 0;
+if (OBJECTS [nRobot].info.nFlags & OF_EXPLODING) // Object not already exploding
+	return 0;
 // Data seems valid, explode the sucker
 NetworkResetObjSync (nRobot);
 robotP = OBJECTS + nRobot;
@@ -691,12 +691,14 @@ if ((robotP->info.contains.nCount > 0) &&
 	 (robotP->info.contains.nId >= POW_KEY_BLUE) && 
 	 (robotP->info.contains.nId <= POW_KEY_GOLD))
 	ObjectCreateEgg (robotP);
-else if (robotP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
+/*else*/ if (robotP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
 	MultiDropRobotPowerups (OBJ_IDX (robotP));
 	MultiDeleteControlledRobot (OBJ_IDX (robotP));
 	}
-else if (robotP->cType.aiInfo.REMOTE_OWNER == -1 && NetworkIAmMaster ()) {
+else if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && NetworkIAmMaster ()) {
+	robotP->cType.aiInfo.REMOTE_OWNER = gameData.multiplayer.nLocalPlayer;
 	MultiDropRobotPowerups (OBJ_IDX (robotP));
+	robotP->cType.aiInfo.REMOTE_OWNER = -1;
 	//MultiDeleteControlledRobot (OBJ_IDX (robotP));
 	}
 if (bIsThief || ROBOTINFO (robotP->info.nId).thief)
@@ -936,7 +938,7 @@ void MultiDropRobotPowerups (int nObject)
 {
 	CObject		*delObjP;
 	int			nEggObj = -1;
-	tRobotInfo	*robotP; 
+	tRobotInfo	*botInfoP; 
 
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 ();  // See rob
@@ -947,7 +949,7 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 	Int3 (); // dropping powerups for non-robot, Rob's fault
 	return;
 	}
-robotP = &ROBOTINFO (delObjP->info.nId);
+botInfoP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nLoc = 0;
 if (delObjP->info.contains.nCount > 0) { 
 	//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
@@ -966,15 +968,15 @@ if (delObjP->info.contains.nCount > 0) {
 	}
 else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robots we weren't in control of
 	return;
-else if (robotP->containsCount) {
-	if (((d_rand () * 16) >> 15) < robotP->containsProb) {
-		delObjP->info.contains.nCount = ((d_rand () * robotP->containsCount) >> 15) + 1;
-		delObjP->info.contains.nType = robotP->containsType;
-		delObjP->info.contains.nId = robotP->containsId;
+else if (botInfoP->containsCount) {
+	if (((d_rand () * 16) >> 15) < botInfoP->containsProb) {
+		delObjP->info.contains.nCount = ((d_rand () * botInfoP->containsCount) >> 15) + 1;
+		delObjP->info.contains.nType = botInfoP->containsType;
+		delObjP->info.contains.nId = botInfoP->containsId;
 		if (delObjP->info.contains.nType == OBJ_POWERUP) {
 			MaybeReplacePowerupWithEnergy (delObjP);
 			if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
-				delObjP->info.contains.nId=POW_SHIELD_BOOST;
+				delObjP->info.contains.nId = POW_SHIELD_BOOST;
 			 }
 		if (delObjP->info.contains.nCount > 0)
 			nEggObj = ObjectCreateEgg (delObjP);

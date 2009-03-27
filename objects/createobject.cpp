@@ -222,6 +222,13 @@ else if (nType == OBJ_POWERUP)
 	nType = nType;
 #endif
 
+if (IsMultiGame && (nType == OBJ_POWERUP) && (OBJECTS [nCreator].info.nType == OBJ_ROBOT)) {
+	if (MultiPowerupIs4Pack (nId))
+		gameData.multiplayer.maxPowerupsAllowed [nId] += 4;
+	else
+		gameData.multiplayer.maxPowerupsAllowed [nId]++;
+	}
+
 //if (GetSegMasks (vPos, nSegment, 0).m_center))
 if (nSegment < -1)
 	nSegment = -nSegment - 2;
@@ -248,15 +255,19 @@ objP->info.vLastPos =
 objP->info.position.vPos = vPos;
 objP->SetOrigin (vPos);
 objP->info.xSize = xSize;
-objP->info.nCreator = (sbyte) nCreator;
+objP->info.nCreator = sbyte (nCreator);
+objP->info.xLifeLeft = IMMORTAL_TIME;
+if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
+	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER))
+		objP->info.nCreator = sbyte (GetTeam (OBJECTS [nCreator].info.nId) + 1);
+	if (extraGameInfo [1].entropy.nVirusLifespan > 0)
+		objP->info.xLifeLeft = I2X (extraGameInfo [1].entropy.nVirusLifespan);
+	}
 objP->info.position.mOrient = mOrient;
 objP->info.controlType = cType;
 objP->info.movementType = mType;
 objP->info.renderType = rType;
 objP->info.contains.nType = -1;
-objP->info.xLifeLeft = 
-	((gameData.app.nGameMode & GM_ENTROPY) && (nType == OBJ_POWERUP) && (nId == POW_HOARD_ORB) && (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
-	I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME;
 objP->info.nAttachedObj = -1;
 if (objP->info.controlType == CT_POWERUP)
 	objP->cType.powerupInfo.nCount = 1;

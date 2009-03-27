@@ -630,7 +630,7 @@ switch (nType) {
 				Int3 ();
 				return nObject;
 				}
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
 			objP = &OBJECTS [nObject];
 			//Set polygon-CObject-specific data
@@ -664,48 +664,34 @@ return nObject;
 }
 
 // ----------------------------------------------------------------------------
-// Returns created CObject number.
-// If CObject dropped by CPlayerData, set flag.
+// Returns created CObject number. If object dropped by player, set flag.
+
 int ObjectCreateEgg (CObject *objP)
 {
 	int	nObject;
 
-if (!IsMultiGame && (objP->info.nType != OBJ_PLAYER)) {
-	if (objP->info.contains.nType == OBJ_POWERUP) {
-		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
-			if (LOCALPLAYER.shields >= I2X (100)) {
-				if (d_rand () > 16384) {
-#if TRACE
-					console.printf (CON_DBG, "Not dropping shield!\n");
-#endif
-					return -1;
-					}
-				} 
-			else  if (LOCALPLAYER.shields >= I2X (150)) {
-				if (d_rand () > 8192) {
-#if TRACE
-					console.printf (CON_DBG, "Not dropping shield!\n");
-#endif
-					return -1;
-					}
+if (!IsMultiGame && (objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
+	if (objP->info.contains.nId == POW_SHIELD_BOOST) {
+		if (LOCALPLAYER.shields >= I2X (100)) {
+			if (d_rand () > 16384) {
+				return -1;
+				}
+			} 
+		else  if (LOCALPLAYER.shields >= I2X (150)) {
+			if (d_rand () > 8192) {
+				return -1;
 				}
 			}
-		else if (objP->info.contains.nId == POW_ENERGY) {
-			if (LOCALPLAYER.energy >= I2X (100)) {
-				if (d_rand () > 16384) {
-#if TRACE
-					console.printf (CON_DBG, "Not dropping energy!\n");
-#endif
-					return -1;
-					}
-				} 
-			else if (LOCALPLAYER.energy >= I2X (150)) {
-				if (d_rand () > 8192) {
-#if TRACE
-					console.printf (CON_DBG, "Not dropping energy!\n");
-#endif
-					return -1;
-					}
+		}
+	else if (objP->info.contains.nId == POW_ENERGY) {
+		if (LOCALPLAYER.energy >= I2X (100)) {
+			if (d_rand () > 16384) {
+				return -1;
+				}
+			} 
+		else if (LOCALPLAYER.energy >= I2X (150)) {
+			if (d_rand () > 8192) {
+				return -1;
 				}
 			}
 		}
@@ -713,14 +699,8 @@ if (!IsMultiGame && (objP->info.nType != OBJ_PLAYER)) {
 
 nObject = DropPowerup (
 	objP->info.contains.nType,
-	 (ubyte) objP->info.contains.nId,
-	 (short) (
-		 ((gameData.app.nGameMode & GM_ENTROPY) &&
-		 (objP->info.contains.nType == OBJ_POWERUP) &&
-		 (objP->info.contains.nId == POW_ENTROPY_VIRUS) &&
-		 (objP->info.nType == OBJ_PLAYER)) ?
-		GetTeam (objP->info.nId) + 1 : -1
-		),
+   (ubyte) objP->info.contains.nId,
+	ObjIdx (objP),
 	objP->info.contains.nCount,
 	objP->mType.physInfo.velocity,
 	objP->info.position.vPos, objP->info.nSegment);
