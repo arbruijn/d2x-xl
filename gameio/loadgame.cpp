@@ -788,6 +788,8 @@ else {
 		LoadHiresModels (2);
 		LoadHiresModels (1);
 		}
+	else
+		LoadHiresModels (1);
 	/*---*/PrintLog ("   initializing cambot\n");
 	InitCamBots (0);
 	/*---*/PrintLog ("   loading mod texts\n");

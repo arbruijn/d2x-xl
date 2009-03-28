@@ -630,7 +630,7 @@ if (!Create (i)) {
 	return 0;
 	}
 for (i = 0; i < static_cast<int> (Length ()); i++)
-	if (!(*this).Read (cf)) {
+	if (!this->CArray::Read (cf)) {
 		Destroy ();
 		nIndent -= 2;
 		return 0;
