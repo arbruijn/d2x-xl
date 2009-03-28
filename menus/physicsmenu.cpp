@@ -92,6 +92,8 @@ static int nHitDetection, nDrag;
 
 //------------------------------------------------------------------------------
 
+if 0
+
 static const char *OmegaRampStr (void)
 {
 	static char szRamp [20];
@@ -101,6 +103,8 @@ if (extraGameInfo [0].nOmegaRamp == 0)
 sprintf (szRamp, "%d secs", nOmegaDuration [(int) extraGameInfo [0].nOmegaRamp]);
 return szRamp;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 

@@ -2108,7 +2108,7 @@ if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
 	LOCALPLAYER.secondaryAmmo [2] *= 4;
 LOCALPLAYER.secondaryAmmo [7] *= 4;
 
-for (i = 0; i < sizeofa (nDeviceFlags); i++) {
+for (i = 0; i < int (sizeofa (nDeviceFlags)); i++) {
 	if (LOCALPLAYER.flags & nDeviceFlags [i]) {
 		nType = nDevicePowerups [i];
 		if (0 >= gameData.multiplayer.maxPowerupsAllowed [nType] /*+ PowerupsOnShips (nType)*/ - gameData.multiplayer.powerupsInMine [nType])
@@ -2168,7 +2168,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	gameData.multiplayer.maxPowerupsAllowed [nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [i];
 	}
 
-for (0; i < sizeofa (nDeviceFlags); i++)
+for (i = 0; i < int (sizeofa (nDeviceFlags)); i++)
 	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [0].loadout.nDevice  & nDeviceFlags [i]))
 		gameData.multiplayer.maxPowerupsAllowed [nDevicePowerups [i]]++;
 if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
