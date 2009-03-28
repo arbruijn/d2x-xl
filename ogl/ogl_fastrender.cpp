@@ -111,7 +111,7 @@ void G3FlushFaceBuffer (int bForce)
 if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 	if (gameStates.render.bFullBright)
 		glColor3f (1,1,1);
-#if 0
+#if 1
 	if (!gameStates.render.bTriangleMesh)
 		glDrawElements (GL_TRIANGLE_FAN, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
 	else
@@ -132,14 +132,19 @@ void G3FillFaceBuffer (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTex
 if (!gameOpts->render.debug.bTextures)
 	return;
 #endif
-
-if (!gameStates.render.bTriangleMesh)
-	glDrawArrays (GL_TRIANGLES, (faceP)->nIndex, 4);
-else {
+#if 0
+if (!gameStates.render.bTriangleMesh) {
+	if (gameStates.render.bFullBright)
+		glColor3f (1,1,1);
+	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+	}
+else 
+#endif
+	{
 	int	i = faceP->nIndex,
 			j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
 
-	if (/*!gameStates.render.bTriangleMesh ||*/ (faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)) {
+	if (!gameStates.render.bTriangleMesh || (faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)) {
 		if (faceBuffer.nFaces)
 			G3FlushFaceBuffer (1);
 		faceBuffer.bmBot = bmBot;
