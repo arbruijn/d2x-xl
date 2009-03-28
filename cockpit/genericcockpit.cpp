@@ -1022,7 +1022,7 @@ if (cockpit->Hide ())
 	int bHiresReticle, bSmallReticle, ofs;
 
 if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
-	 (gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided)) {
+	 ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided))) {
 	DrawGuidedCrosshair ();
 	return;
 	}
