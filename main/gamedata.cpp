@@ -1802,7 +1802,7 @@ DefaultLightningSettings ();
 
 void DefaultRenderSettings (void)
 {
-extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS * + 5) / 10;
+extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS + 5) / 10;
 gameOptions [0].render.color.bWalls = 1;
 gameStates.ogl.nContrast = 8;
 gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;

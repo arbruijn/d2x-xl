@@ -156,13 +156,16 @@ memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 //bReverse = (ph->descriptor & (1 << 5)) != 0;
 #if 1
-	int				h = bmP->Height ();
-	int				w = bmP->RowSize ();
-	ubyte*			bufP = bmP->Buffer () + w * h;
-
-while (h--) {
-	bufP -= w;
-	cf.Read (bufP, 1, w);
+if (bReverse)
+	bmP->Read (cf);
+else {
+	int		h = bmP->Height ();
+	int		w = bmP->RowSize ();
+	ubyte*	bufP = bmP->Buffer () + w * h;
+	while (h--) {
+		bufP -= w;
+		cf.Read (bufP, 1, w);
+		}
 	}
 SetTGAProperties (bmP, alpha, bGrayScale, brightness, bReverse == 0);
 #else
