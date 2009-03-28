@@ -227,37 +227,6 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 
 //------------------------------------------------------------------------------
 
-void FixTriangleFan (CSegment *segP, CSegFace *faceP)
-{
-if (((faceP->nType = segP->Type (faceP->nSide)) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
- {
-	short	h = faceP->index [0];
-	memcpy (faceP->index, faceP->index + 1, 3 * sizeof (short));
-	faceP->index [3] = h;
-	}
- {
-	CFloatVector3 h = FACES.vertices [faceP->nIndex];
-	memcpy (FACES.vertices + faceP->nIndex, FACES.vertices + faceP->nIndex + 1, 3 * sizeof (CFloatVector3));
-	FACES.vertices [faceP->nIndex + 3] = h;
-	}
- {
-	tTexCoord2f h = FACES.texCoord [faceP->nIndex];
-	memcpy (FACES.texCoord + faceP->nIndex, FACES.texCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
-	FACES.texCoord [faceP->nIndex + 3] = h;
-	h = FACES.lMapTexCoord [faceP->nIndex];
-	memcpy (FACES.lMapTexCoord + faceP->nIndex, FACES.lMapTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
-	FACES.lMapTexCoord [faceP->nIndex + 3] = h;
-	if (faceP->nOvlTex) {
-		h = FACES.ovlTexCoord [faceP->nIndex];
-		memcpy (FACES.ovlTexCoord + faceP->nIndex, FACES.ovlTexCoord + faceP->nIndex + 1, 3 * sizeof (tTexCoord2f));
-		FACES.ovlTexCoord [faceP->nIndex + 3] = h;
-		}
-	}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 bool RenderSolidFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->widFlags & WID_RENDER_FLAG))

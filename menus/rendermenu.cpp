@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void DefaultRenderSettings (void);
 
-#define EXPERTMODE	0 //gameOpts->app.bExpertMode
+#define EXPERTMODE	gameOpts->app.bExpertMode
 
 #define MIN_LIGHTS_PER_PASS 5
 
@@ -106,9 +106,11 @@ static const char *pszImgQual [5];
 
 static inline const char *ContrastText (void)
 {
-return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD :
-		 (gameStates.ogl.nContrast < 8) ? TXT_LOW :
-		 TXT_HIGH;
+return (gameStates.ogl.nContrast == 8) 
+		 ? TXT_STANDARD 
+		 : (gameStates.ogl.nContrast < 8) 
+			? TXT_LOW 
+			: TXT_HIGH;
 }
 
 //------------------------------------------------------------------------------

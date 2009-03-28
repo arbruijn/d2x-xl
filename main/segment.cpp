@@ -259,8 +259,13 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 //		create new vector normals
 void CSegment::Setup (void)
 {
-for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+#if DBG
+	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	m_sides [i].Setup (m_verts, sideVertIndex [i], m_children [i] < 0);
+	}
 }
 
 //	--------------------------------------------------------------------------------

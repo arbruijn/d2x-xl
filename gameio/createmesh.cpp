@@ -1046,6 +1046,10 @@ void CQuadMeshBuilder::SplitIn2Tris (void)
 	short			*triVertP;
 	tTexCoord2f	lMapTexCoord [4];
 
+#if DBG
+if ((m_faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 SetupLMapTexCoord (lMapTexCoord);
 h = (m_sideP->m_nType == SIDE_IS_TRI_13);
 for (i = 0; i < 2; i++, m_triP++) {
@@ -1058,7 +1062,7 @@ for (i = 0; i < 2; i++, m_triP++) {
 		k = triVertP [j];
 		v = m_sideVerts [k];
 		m_triP->index [j] = v;
-		*m_vertexP++ = *gameData.segs.fVertices [v].XYZ();
+		*m_vertexP++ = *gameData.segs.fVertices [v].XYZ ();
 		m_texCoordP->v.u = X2F (m_sideP->m_uvls [k].u);
 		m_texCoordP->v.v = X2F (m_sideP->m_uvls [k].v);
 		RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (ubyte) m_sideP->m_nOvlOrient);
@@ -1301,7 +1305,7 @@ if (gameStates.render.nLightingMethod) {
 		gameStates.render.nMeshQuality = 0;
 		}
 	else 
-		gameStates.render.bTriangleMesh = (gameStates.render.nMeshQuality > 0);
+		gameStates.render.bTriangleMesh = (gameStates.render.nMeshQuality > 0) ? 1 : -1;
 	}
 else
 	gameStates.render.bTriangleMesh = 0;

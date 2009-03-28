@@ -198,10 +198,10 @@ void CSide::SetupAsTriangles (bool bSolid, short* verts, int* index)
 	CFixVector	vec_13;		//	vector from vertex 1 to vertex 3
 
 	//	Choose how to triangulate.
-	//	If a CWall, then
+	//	If a wall, then
 	//		Always triangulate so CSegment is convex.
-	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on CSide, a is face formed by A, B, C, Na is Normal from face a.
-	//	If not a CWall, then triangulate so whatever is on the other CSide is triangulated the same (ie, between the same absoluate vertices)
+	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on side, a is face formed by A, B, C, Na is Normal from face a.
+	//	If not a wall, then triangulate so whatever is on the other CSide is triangulated the same (ie, between the same absolute vertices)
 if (bSolid) {
 	vNormal = CFixVector::Normal (gameData.segs.vertices [m_corners [0]],
 	                              gameData.segs.vertices [m_corners [1]],

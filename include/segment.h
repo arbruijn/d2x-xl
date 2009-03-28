@@ -132,6 +132,7 @@ class CSide {
 		void LoadTextures (void);
 		inline ushort WallNum (void) { return m_nWall; }
 		inline sbyte Type (void) { return m_nType; }
+		inline void SetType (sbyte nType) { m_nType = nType; }
 		bool IsWall (void);
 		CWall* Wall (void);
 		CTrigger* Trigger (void);
@@ -262,6 +263,7 @@ class CSegment {
 		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
 		inline CTrigger* Trigger (int nSide) { return m_sides [nSide].Trigger (); }
 		inline sbyte Type (int nSide) { return m_sides [nSide].m_nType; }
+		inline void SetType (int nSide, sbyte nType) { m_sides [nSide].SetType (nType); }
 		inline void SetTextures (int nSide, int nBaseTex, int nOvlTex) { m_sides [nSide].SetTextures (nBaseTex, nOvlTex); }
 
 		void ComputeSideRads (void);

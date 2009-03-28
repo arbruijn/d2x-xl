@@ -111,10 +111,12 @@ void G3FlushFaceBuffer (int bForce)
 if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 	if (gameStates.render.bFullBright)
 		glColor3f (1,1,1);
-	if (gameStates.render.bTriangleMesh)
-		glDrawElements (GL_TRIANGLES, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
+#if 0
+	if (!gameStates.render.bTriangleMesh)
+		glDrawElements (GL_TRIANGLE_FAN, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
 	else
-		glDrawElements (GL_QUADS, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
+#endif
+		glDrawElements (GL_TRIANGLES, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
 	faceBuffer.nFaces = 
 	faceBuffer.nElements = 0;
 	//gameStates.render.history.nShader = -1;
@@ -131,19 +133,23 @@ if (!gameOpts->render.debug.bTextures)
 	return;
 #endif
 
-int	i = faceP->nIndex,
-		j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
+if (!gameStates.render.bTriangleMesh)
+	glDrawArrays (GL_TRIANGLES, (faceP)->nIndex, 4);
+else {
+	int	i = faceP->nIndex,
+			j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
 
-if ((faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)) {
-	if (faceBuffer.nFaces)
-		G3FlushFaceBuffer (1);
-	faceBuffer.bmBot = bmBot;
-	faceBuffer.bmTop = bmTop;
+	if (/*!gameStates.render.bTriangleMesh ||*/ (faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)) {
+		if (faceBuffer.nFaces)
+			G3FlushFaceBuffer (1);
+		faceBuffer.bmBot = bmBot;
+		faceBuffer.bmTop = bmTop;
+		}
+	faceBuffer.bTextured = bTextured;
+	for (; j; j--)
+		faceBuffer.index [faceBuffer.nElements++] = i++;
+	faceBuffer.nFaces++;
 	}
-faceBuffer.bTextured = bTextured;
-for (; j; j--)
-	faceBuffer.index [faceBuffer.nElements++] = i++;
-faceBuffer.nFaces++;
 }
 
 //------------------------------------------------------------------------------
