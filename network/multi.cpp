@@ -2156,10 +2156,11 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 			gameData.multiplayer.maxPowerupsAllowed [POW_LASER] += gameData.multiplayer.players [nPlayer].laserLevel;
 		}
 	else if (i != 5) { // super laser
-		if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << i))
+		if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << i)) {
 		    gameData.multiplayer.maxPowerupsAllowed [nType]++;
-		if ((nType == POW_FUSION) && gameData.multiplayer.weaponStates [nPlayer].bTripleFusion)
-			gameData.multiplayer.maxPowerupsAllowed [primaryWeaponToPowerup [FUSION_INDEX]]++;
+			if ((nType == POW_FUSION) && (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion > 0))
+				gameData.multiplayer.maxPowerupsAllowed [primaryWeaponToPowerup [FUSION_INDEX]]++;
+			}
 		}
 	}
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {

@@ -61,7 +61,7 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 newPos = posP->vPos + posP->mOrient.FVec () * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
-nObject = CreatePowerup (id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), (short) OBJSEG (spitterP), newPos,  1);
+nObject = CreatePowerup (id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), (short) OBJSEG (spitterP), newPos, 0);
 if (nObject < 0) {
 	Int3();
 	return nObject;
@@ -121,7 +121,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		nObject = SpitPowerup (gameData.objs.consoleP, POW_QUADLASER, seed);
-		if (nObject == -1) {
+		if (nObject < 0) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 			return;
 			}
@@ -130,7 +130,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltInGun (SUPER_LASER_INDEX)) {
 		LOCALPLAYER.laserLevel--;
 		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER, seed);
-		if (nObject == -1) {
+		if (nObject < 0) {
 			LOCALPLAYER.laserLevel++;
 			return;
 			}
@@ -144,7 +144,7 @@ else {
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
 		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
 		}
-	if (nObject == -1) {
+	if (nObject >= 0) {
 		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
 			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);
 		return;
@@ -158,12 +158,12 @@ if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary ==
 	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(VULCAN_INDEX)) && (gameData.weapons.nPrimary == GAUSS_INDEX))
 		ammo /= 2;		//if both vulcan & gauss, drop half
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
-	if (nObject != -1)
+	if (nObject >= 0)
 		OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
 	}
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
-	if (nObject != -1)
+	if (nObject >= 0)
 		OBJECTS [nObject].cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
 	}
 if (IsMultiGame) {
