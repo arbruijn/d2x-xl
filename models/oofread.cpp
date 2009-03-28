@@ -616,20 +616,20 @@ return 1;
 
 int CArmament::Read (CFile& cf)
 {
-	int	i;
+	int	l;
 
 nIndent += 2;
 OOF_PrintLog ("reading armament\n");
-if (!(i = OOF_ReadInt (cf, "nBatts"))) {
+if (!(l = OOF_ReadInt (cf, "nBatts"))) {
 	nIndent -= 2;
 	return 1;
 	}
-if (!Create (i)) {
+if (!Create (l)) {
 	Destroy ();
 	nIndent -= 2;
 	return 0;
 	}
-for (i = 0; i < static_cast<int> (Length ()); i++)
+for (int i = 0; i < l; i++)
 	if (cf.Read (Buffer (), Size (), 1) != 1) {
 		Destroy ();
 		nIndent -= 2;

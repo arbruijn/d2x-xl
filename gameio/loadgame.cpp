@@ -786,10 +786,8 @@ else {
 			sprintf (gameFolders.szModelCacheDir [2], "%s/level%02d", gameFolders.szModelCacheDir [1], gameData.missions.nCurrentLevel);
 			}
 		LoadHiresModels (2);
-		LoadHiresModels (1);
 		}
-	else
-		LoadHiresModels (1);
+	LoadHiresModels (1);
 	/*---*/PrintLog ("   initializing cambot\n");
 	InitCamBots (0);
 	/*---*/PrintLog ("   loading mod texts\n");

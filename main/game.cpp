@@ -406,7 +406,7 @@ if (MAXFPS <= 1)
 	nDeltaTime = 0;
 else {
 #ifdef RELEASE
-	if (!gameOpts->app.bExpertMode)
+	if (!gameOpts->app.bExpertMode && (gameOpts->render.nMaxFPS > 1))
 		gameOpts->render.nMaxFPS = MAX_FRAMERATE;
 #endif
 	if (!gameData.time.tLast)
