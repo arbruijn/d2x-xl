@@ -92,7 +92,7 @@ static int nHitDetection, nDrag;
 
 //------------------------------------------------------------------------------
 
-if 0
+#if 0
 
 static const char *OmegaRampStr (void)
 {
