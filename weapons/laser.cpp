@@ -288,7 +288,7 @@ else if (gameStates.app.bD2XLevel &&
 if ((nParent == LOCALPLAYER.nObject) &&
 	 (nWeaponType == PROXMINE_ID) &&
 	 (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
-	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 1);
+	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;
 		if (IsMultiGame)
