@@ -430,8 +430,9 @@ if ((m_bRadar = m_bRadar) == 2) {
 	mRadar.uVec.p.z = po->fVec.p.z;
 #endif
 	}
+if (m_bRadar)
+	CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 #if 0
-CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 if (bAutomapFrame) {
 	if (InitBackground ())
 		m_background.RenderFullScreen ();
