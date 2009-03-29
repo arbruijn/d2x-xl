@@ -215,7 +215,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	5,  // MULTI_TRIGGER_EXT
 	16, // MULTI_SYNC_KILLS
 	5,	 // MULTI_COUNTDOWN
-	22	 // MULTI_PLAYER_WEAPONS
+	22, // MULTI_PLAYER_WEAPONS
+	97  // MULTI_SYNC_MONSTERBALL
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -620,7 +621,7 @@ MultiSendSetTeam (nPlayer);
 
 //-----------------------------------------------------------------------------
 
-void AutoBalanceTeams ()
+void AutoBalanceTeams (void)
 {
 if (gameStates.app.bHaveExtraGameInfo &&
 	 extraGameInfo [1].bAutoBalanceTeams &&
@@ -744,21 +745,17 @@ MultiResetPlayerObject (objP);
 }
 
 //-----------------------------------------------------------------------------
+// Returns the number of active net players and their sorted order of kills
 
 int MultiGetKillList (int *plist)
 {
-	// Returns the number of active net players and their
-	// sorted order of kills
-	int i;
-	int n = 0;
-
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	plist [n++] = gameData.multigame.kills.nSorted [i];
-return  n;
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+	plist [i] = gameData.multigame.kills.nSorted [i];
+return  gameData.multiplayer.nPlayers;
 }
 
 //-----------------------------------------------------------------------------
-	// Sort the kills list each time a new kill is added
+// Sort the kills list each time a new kill is added
 
 void MultiSortKillList (void)
 {
@@ -991,6 +988,63 @@ pKilled->flags &= (~(PLAYER_FLAGS_HEADLIGHT_ON));  // clear the nKilled guys fla
 
 //-----------------------------------------------------------------------------
 
+void MultiSyncMonsterball (void)
+{
+if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && NetworkIAmMaster ()) {
+	static time_t	t0 = 0;
+
+	if (gameStates.app.nSDLTicks - t0 > 100) {
+		t0 = gameStates.app.nSDLTicks;
+		int i = 1;
+		gameData.multigame.msg.buf [0] = (char) MULTI_SYNC_MONSTERBALL;
+		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->info.position.vPos, sizeof (gameData.hoard.monsterballP->info.position.vPos));
+		i += sizeof (gameData.hoard.monsterballP->info.position.vPos);
+		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->info.position.mOrient, sizeof (gameData.hoard.monsterballP->info.position.mOrient));
+		i += sizeof (gameData.hoard.monsterballP->info.position.mOrient);
+		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->mType.physInfo.velocity, sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity);
+		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->mType.physInfo.thrust, sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust);
+		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->mType.physInfo.rotVel, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel);
+		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->mType.physInfo.rotThrust, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+		MultiSendData (gameData.multigame.msg.buf, i, 0);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiDoSyncMonsterball (char* buf)
+{
+if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && !NetworkIAmMaster ()) {
+	int i = 1;
+	memcpy (&gameData.hoard.monsterballP->info.position.vPos, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->info.position.vPos));
+	i += sizeof (gameData.hoard.monsterballP->info.position.vPos);
+	memcpy (&gameData.hoard.monsterballP->info.position.mOrient, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->info.position.mOrient));
+	i += sizeof (gameData.hoard.monsterballP->info.position.mOrient);
+	memcpy (&gameData.hoard.monsterballP->mType.physInfo.velocity, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity));
+	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity);
+	memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotThrust, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust));
+	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust);
+	memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotVel, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel));
+	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel);
+	memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotThrust, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust));
+	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
+	INTEL_VECTOR (gameData.hoard.monsterballP->info.position.vPos);
+	INTEL_MATRIX (gameData.hoard.monsterballP->info.position.mOrient);
+	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.velocity);
+	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotVel);
+	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+#endif
+	}
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiDoFrame (void)
 {
 	static int lasttime = 0;
@@ -1023,6 +1077,7 @@ if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameSt
 	longjmp (gameExitPoint, 0);
 	}
 MultiAdjustPowerupCap ();
+MultiSyncMonsterball ();
 }
 
 //-----------------------------------------------------------------------------
@@ -1151,8 +1206,7 @@ Assert (nPlayer < gameData.multiplayer.nPlayers);
 if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
-	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject,
-						  FLARE_ID, 6, 1, 0, -1);
+	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, FLARE_ID, 6, 1, 0, -1);
 else if (weapon >= MISSILE_ADJUST) {
 	int h = weapon - MISSILE_ADJUST;
 	ubyte weapon_id = secondaryWeaponToWeaponInfo [h];
@@ -1162,8 +1216,7 @@ else if (weapon >= MISSILE_ADJUST) {
 		gameData.multigame.bIsGuided = 1;
 	if (playerP->secondaryAmmo [h] > 0)
 		playerP->secondaryAmmo [h]--;
-	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject,
-						  weapon_id, weapon_gun, 1, 0, -1);
+	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, weapon_id, weapon_gun, 1, 0, -1);
 	}
 else {
 	fix xSaveCharge = gameData.fusion.xCharge;
@@ -4865,91 +4918,92 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 //-----------------------------------------------------------------------------
 
 tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
- {MultiDoPosition, 1},
- {MultiDoReappear, 1},
- {MultiDoFire, 1},
- {MultiDoKill, 0},
- {MultiDoRemObj, 1},
- {MultiDoPlayerExplode, 1},
- {MultiDoMsg, 1},
- {MultiDoQuit, 1},
- {MultiDoPlaySound, 1},
- {NULL, 1},
- {MultiDoDestroyReactor, 1},
- {MultiDoClaimRobot, 1},
- {NULL, 1},
- {MultiDoCloak, 1},
- {MultiDoEscape, 1},
- {MultiDoDoorOpen, 1},
- {MultiDoCreateExplosion, 1},
- {MultiDoCtrlcenFire, 1},
- {MultiDoPlayerExplode, 1},
- {MultiDoCreatePowerup, 1},
- {NULL, 1},
- {MultiDoDeCloak, 1},
- {NULL, 1},
- {MultiDoRobotPosition, 1},
- {MultiDoRobotExplode, 1},
- {MultiDoReleaseRobot, 1},
- {MultiDoRobotFire, 1},
- {MultiDoScore, 1},
- {MultiDoCreateRobot, 1},
- {MultiDoTrigger, 1},
- {MultiDoBossActions, 1},
- {MultiDoCreateRobotPowerups, 1},
- {MultiDoHostageDoorStatus, 1},
+	{MultiDoPosition, 1},
+	{MultiDoReappear, 1},
+	{MultiDoFire, 1},
+	{MultiDoKill, 0},
+	{MultiDoRemObj, 1},
+	{MultiDoPlayerExplode, 1},
+	{MultiDoMsg, 1},
+	{MultiDoQuit, 1},
+	{MultiDoPlaySound, 1},
+	{NULL, 1},
+	{MultiDoDestroyReactor, 1},
+	{MultiDoClaimRobot, 1},
+	{NULL, 1},
+	{MultiDoCloak, 1},
+	{MultiDoEscape, 1},
+	{MultiDoDoorOpen, 1},
+	{MultiDoCreateExplosion, 1},
+	{MultiDoCtrlcenFire, 1},
+	{MultiDoPlayerExplode, 1},
+	{MultiDoCreatePowerup, 1},
+	{NULL, 1},
+	{MultiDoDeCloak, 1},
+	{NULL, 1},
+	{MultiDoRobotPosition, 1},
+	{MultiDoRobotExplode, 1},
+	{MultiDoReleaseRobot, 1},
+	{MultiDoRobotFire, 1},
+	{MultiDoScore, 1},
+	{MultiDoCreateRobot, 1},
+	{MultiDoTrigger, 1},
+	{MultiDoBossActions, 1},
+	{MultiDoCreateRobotPowerups, 1},
+	{MultiDoHostageDoorStatus, 1},
 
- {MultiDoSaveGame, 1},
- {MultiDoRestoreGame, 1},
+	{MultiDoSaveGame, 1},
+	{MultiDoRestoreGame, 1},
 
- {MultiDoReqPlayer, 1},
- {MultiDoSendPlayer, 1},
- {MultiDoDropMarker, 1},
- {MultiDoDropWeapon, 1},
- {MultiDoGuided, 1},
- {MultiDoStolenItems, 1},
- {MultiDoWallStatus, 1},
- {MultiDoHeartBeat, 1},
- {MultiDoKillGoalCounts, 1},
- {MultiDoSeismic, 1},
- {MultiDoLight, 1},
- {MultiDoStartTrigger, 1},
- {MultiDoFlags, 1},
- {MultiDoDropBlob, 1},
- {MultiDoPowerupUpdate, 1},
- {MultiDoActiveDoor, 1},
- {MultiDoSoundFunction, 1},
- {MultiDoCaptureBonus, 1},
- {MultiDoGotFlag, 1},
- {MultiDoDropFlag, 1},
- {MultiDoRobotControls, 1},
- {MultiDoFinishGame, 1},
- {MultiDoRanking, 1},
- {MultiSendModemPingReturn, 1},
- {MultiDoModemPingReturn, 1},
- {MultiDoOrbBonus, 1},
- {MultiDoGotOrb, 1},
- {NULL, 1},
- {MultiDoPlayByPlay, 1},
- {MultiDoReturnFlagHome, 1},
- {MultiDoConquerRoom, 1},
- {MultiDoConquerWarning, 1},
- {MultiDoStopConquerWarning, 1},
- {MultiDoTeleport, 1},
- {MultiDoSetTeam, 1},
- {MultiDoStartTyping, 1},
- {MultiDoQuitTyping, 1},
- {MultiDoObjTrigger, 1},
- {MultiDoShields, 1},
- {MultiDoInvul, 1},
- {MultiDoDeInvul, 1},
- {MultiDoWeapons, 1},
- {MultiDoMonsterball, 1},
- {MultiDoCheating, 1},
- {MultiDoTrigger, 1},
- {MultiDoSyncKills, 1},
- {MultiDoCountdown, 1},
- {MultiDoPlayerWeapons, 1}
+	{MultiDoReqPlayer, 1},
+	{MultiDoSendPlayer, 1},
+	{MultiDoDropMarker, 1},
+	{MultiDoDropWeapon, 1},
+	{MultiDoGuided, 1},
+	{MultiDoStolenItems, 1},
+	{MultiDoWallStatus, 1},
+	{MultiDoHeartBeat, 1},
+	{MultiDoKillGoalCounts, 1},
+	{MultiDoSeismic, 1},
+	{MultiDoLight, 1},
+	{MultiDoStartTrigger, 1},
+	{MultiDoFlags, 1},
+	{MultiDoDropBlob, 1},
+	{MultiDoPowerupUpdate, 1},
+	{MultiDoActiveDoor, 1},
+	{MultiDoSoundFunction, 1},
+	{MultiDoCaptureBonus, 1},
+	{MultiDoGotFlag, 1},
+	{MultiDoDropFlag, 1},
+	{MultiDoRobotControls, 1},
+	{MultiDoFinishGame, 1},
+	{MultiDoRanking, 1},
+	{MultiSendModemPingReturn, 1},
+	{MultiDoModemPingReturn, 1},
+	{MultiDoOrbBonus, 1},
+	{MultiDoGotOrb, 1},
+	{NULL, 1},
+	{MultiDoPlayByPlay, 1},
+	{MultiDoReturnFlagHome, 1},
+	{MultiDoConquerRoom, 1},
+	{MultiDoConquerWarning, 1},
+	{MultiDoStopConquerWarning, 1},
+	{MultiDoTeleport, 1},
+	{MultiDoSetTeam, 1},
+	{MultiDoStartTyping, 1},
+	{MultiDoQuitTyping, 1},
+	{MultiDoObjTrigger, 1},
+	{MultiDoShields, 1},
+	{MultiDoInvul, 1},
+	{MultiDoDeInvul, 1},
+	{MultiDoWeapons, 1},
+	{MultiDoMonsterball, 1},
+	{MultiDoCheating, 1},
+	{MultiDoTrigger, 1},
+	{MultiDoSyncKills, 1},
+	{MultiDoCountdown, 1},
+	{MultiDoPlayerWeapons, 1},
+	{MultiDoSyncMonsterball, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5286,6 +5340,10 @@ switch (nType) {
 	case MULTI_PLAYER_WEAPONS:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoPlayerWeapons (buf);
+		break;
+	case MULTI_SYNC_MONSTERBALL:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoSyncMonsterball (buf);
 		break;
 	default:
 		Int3 ();
