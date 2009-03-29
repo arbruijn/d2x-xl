@@ -685,11 +685,8 @@ if (OBJECTS [nRobot].info.nFlags & OF_EXPLODING) // Object not already exploding
 NetworkResetObjSync (nRobot);
 robotP = OBJECTS + nRobot;
 // Drop non-Random KEY powerups locally only!
-if ((robotP->info.contains.nCount > 0) && 
-	 (robotP->info.contains.nType == OBJ_POWERUP) && 
-	 (gameData.app.nGameMode & GM_MULTI_COOP) && 
-	 (robotP->info.contains.nId >= POW_KEY_BLUE) && 
-	 (robotP->info.contains.nId <= POW_KEY_GOLD))
+if (IsCoopGame && (robotP->info.contains.nCount > 0) && (robotP->info.contains.nType == OBJ_POWERUP) && 
+	 (robotP->info.contains.nId >= POW_KEY_BLUE) && (robotP->info.contains.nId <= POW_KEY_GOLD))
 	ObjectCreateEgg (robotP);
 /*else*/ if (robotP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
 	MultiDropRobotPowerups (OBJ_IDX (robotP));
@@ -958,7 +955,7 @@ if (delObjP->info.contains.nCount > 0) {
 		if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
 			delObjP->info.contains.nId=POW_SHIELD_BOOST;
 		// No key drops in non-coop games!
-		if (! (gameData.app.nGameMode & GM_MULTI_COOP)) {
+		if (!IsCoopGame) {
 			if ((delObjP->info.contains.nId >= POW_KEY_BLUE) && (delObjP->info.contains.nId <= POW_KEY_GOLD))
 				delObjP->info.contains.nCount = 0;
 			}
