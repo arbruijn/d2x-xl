@@ -1,7 +1,7 @@
 #ifndef _MONSTERBALL_H
 #define _MONSTERBALL_H
 
-int ResetMonsterball (void);
+int ResetMonsterball (bool bCreate = true);
 int CreateMonsterball (void);
 void RemoveMonsterball (void);
 int CheckMonsterballScore (void);

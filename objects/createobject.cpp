@@ -218,8 +218,11 @@ else if (nType == OBJ_MARKER)
 	nType = nType;
 else if (nType == OBJ_PLAYER)
 	nType = nType;
-else if (nType == OBJ_POWERUP)
+else if (nType == OBJ_POWERUP) {
 	nType = nType;
+	if (nId == POW_MONSTERBALL)
+		nId = nId;
+	}
 #endif
 
 //if (GetSegMasks (vPos, nSegment, 0).m_center))

@@ -849,44 +849,46 @@ int LoadMission (int nMission)
 	int		i, bFoundHogFile = 0;
 
 gameData.missions.nEnhancedMission = 0;
-if (nMission == gameData.missions.nD1BuiltinMission) {
-	hogFileManager.UseD1 ("descent.hog");
-	switch (gameData.missions.nD1BuiltinHogSize) {
-	default:
-		Int3(); // fall through
-	case D1_MISSION_HOGSIZE:
-	case D1_10_MISSION_HOGSIZE:
-	case D1_15_MISSION_HOGSIZE:
-	case D1_3DFX_MISSION_HOGSIZE:
-	case D1_MAC_MISSION_HOGSIZE:
-	case D1_OEM_MISSION_HOGSIZE:
-	case D1_OEM_10_MISSION_HOGSIZE:
-	case D1_SHAREWARE_MISSION_HOGSIZE:
-	case D1_SHAREWARE_10_MISSION_HOGSIZE:
-	case D1_MAC_SHARE_MISSION_HOGSIZE:
-		return load_mission_d1(nMission);
-		break;
+if (nMission >= 0) {
+	if (nMission == gameData.missions.nD1BuiltinMission) {
+		hogFileManager.UseD1 ("descent.hog");
+		switch (gameData.missions.nD1BuiltinHogSize) {
+		default:
+			Int3(); // fall through
+		case D1_MISSION_HOGSIZE:
+		case D1_10_MISSION_HOGSIZE:
+		case D1_15_MISSION_HOGSIZE:
+		case D1_3DFX_MISSION_HOGSIZE:
+		case D1_MAC_MISSION_HOGSIZE:
+		case D1_OEM_MISSION_HOGSIZE:
+		case D1_OEM_10_MISSION_HOGSIZE:
+		case D1_SHAREWARE_MISSION_HOGSIZE:
+		case D1_SHAREWARE_10_MISSION_HOGSIZE:
+		case D1_MAC_SHARE_MISSION_HOGSIZE:
+			return load_mission_d1(nMission);
+			}
+		}
+
+	if (nMission == gameData.missions.nBuiltinMission) {
+		switch (gameData.missions.nBuiltinHogSize) {
+		case SHAREWARE_MISSION_HOGSIZE:
+		case MAC_SHARE_MISSION_HOGSIZE:
+			return load_mission_shareware(nMission);
+			break;
+		case OEM_MISSION_HOGSIZE:
+			return load_mission_oem(nMission);
+			break;
+		default:
+			Int3(); // fall through
+		case FULL_MISSION_HOGSIZE:
+		case FULL_10_MISSION_HOGSIZE:
+		case MAC_FULL_MISSION_HOGSIZE:
+			// continue on... (use d2.mn2 from tHogFile)
+			break;
+			}
 		}
 	}
 
-if (nMission == gameData.missions.nBuiltinMission) {
-	switch (gameData.missions.nBuiltinHogSize) {
-	case SHAREWARE_MISSION_HOGSIZE:
-	case MAC_SHARE_MISSION_HOGSIZE:
-		return load_mission_shareware(nMission);
-		break;
-	case OEM_MISSION_HOGSIZE:
-		return load_mission_oem(nMission);
-		break;
-	default:
-		Int3(); // fall through
-	case FULL_MISSION_HOGSIZE:
-	case FULL_10_MISSION_HOGSIZE:
-	case MAC_FULL_MISSION_HOGSIZE:
-		// continue on... (use d2.mn2 from tHogFile)
-		break;
-		}
-	}
 gameData.missions.nCurrentMission = nMission;
 #if TRACE
 console.printf (CON_VERBOSE, "Loading mission %d\n", nMission);

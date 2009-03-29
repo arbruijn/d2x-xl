@@ -718,6 +718,10 @@ else if (i < 0)
 					MapObjnumLocalToRemote (nObject, nRemoteObj, nObjOwner);
 				else
 					gameData.multigame.nObjOwner [nObject] = -1;
+				if (objP->Type () == OBJ_MONSTERBALL) {
+					gameData.hoard.monsterballP = objP;
+					gameData.hoard.nMonsterballSeg = nSegment;
+					}
 				}
 			}
 		} // For a standard onbject

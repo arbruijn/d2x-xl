@@ -128,6 +128,7 @@ netGame.monitorVector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (syncP->player [1].player.network.ipx.server, syncP->player [1].player.network.ipx.node);
 	SendNetPlayersPacket (syncP->player [1].player.network.ipx.server, syncP->player [1].player.network.ipx.node);
+	MultiSendMonsterball (1, 1);
 	}
 }
 
@@ -624,7 +625,7 @@ if (len + nakedData.nLength>networkData.nMaxXDataSize) {
 			nakedData.nLength, 
 			netPlayers.players [who].network.ipx.server, 
 			netPlayers.players [who].network.ipx.node, gameData.multiplayer.players [who].netAddress);
-	nakedData.nLength=2;
+	nakedData.nLength = 2;
 	memcpy (&nakedData.buf [nakedData.nLength], buf, len);     
 	nakedData.nLength+=len;
 	nakedData.nDestPlayer=who;

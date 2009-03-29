@@ -245,6 +245,8 @@ else if (syncP->nExtras == 7)
 	NetworkSendPlayerFlags ();    
 else if (syncP->nExtras == 8)
 	MultiSendPowerupUpdate ();  
+else if (syncP->nExtras == 9)
+	MultiSendMonsterball (1, 1);  
 else {
 	syncP->nExtras = 0;
 	syncP->nState = 0;
@@ -528,9 +530,9 @@ int NetworkWaitForPlayerInfo (void)
 {
 	int						size = 0, retries = 0;
 	ubyte						packet [MAX_PACKETSIZE];
-	tAllNetPlayersInfo	*tempPlayerP;
-	uint			xTimeout;
-	ubyte id = 0;
+	tAllNetPlayersInfo*	tempPlayerP;
+	uint						xTimeout;
+	ubyte						id = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tAllNetPlayersInfo info_struct;

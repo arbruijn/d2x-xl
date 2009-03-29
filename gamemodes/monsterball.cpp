@@ -54,6 +54,7 @@ else {
 	}
 #endif
 if (nDropSeg >= 0) {
+	ResetMonsterball (false);
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, CFixVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.render.monsterball.SetupPulse (0.005f, 0.9f);
@@ -95,7 +96,7 @@ return gameData.hoard.monsterballP;
 
 //------------------------------------------------------------------------------
 
-int ResetMonsterball (void)
+int ResetMonsterball (bool bCreate)
 {
 	//short		i;
 	CObject	*objP;
@@ -115,9 +116,11 @@ FORALL_STATIC_OBJS (objP, i)
 if (!(NetworkIAmMaster () && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
 	return 0;
 #endif
-if (!CreateMonsterball ())
-	return 0;
-MultiSendMonsterball (1, 1);
+if (bCreate) {
+	if (!CreateMonsterball ())
+		return 0;
+	MultiSendMonsterball (1, 1);
+	}
 return 1;
 }
 

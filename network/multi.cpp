@@ -1090,7 +1090,7 @@ if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameSt
 	longjmp (gameExitPoint, 0);
 	}
 MultiAdjustPowerupCap ();
-MultiSyncMonsterball ();
+//MultiSyncMonsterball ();
 }
 
 //-----------------------------------------------------------------------------
@@ -2961,7 +2961,7 @@ FORALL_STATIC_OBJS (objP, i) {
 if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 #endif
 	InitHoardData ();
-if (gameData.app.nGameMode &(GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
+if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
 ResetMonsterball ();	//will simply delete all Monsterballs for non-Monsterball games
 MultiSortKillList ();
