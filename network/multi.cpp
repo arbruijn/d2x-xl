@@ -216,7 +216,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	16, // MULTI_SYNC_KILLS
 	5,	 // MULTI_COUNTDOWN
 	22, // MULTI_PLAYER_WEAPONS
-	97  // MULTI_SYNC_MONSTERBALL
+	99  // MULTI_SYNC_MONSTERBALL
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -993,10 +993,12 @@ void MultiSyncMonsterball (void)
 if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && NetworkIAmMaster ()) {
 	static time_t	t0 = 0;
 
-	if (gameStates.app.nSDLTicks - t0 > 100) {
+	if (gameStates.app.nSDLTicks - t0 > 200) {
 		t0 = gameStates.app.nSDLTicks;
-		int i = 1;
 		gameData.multigame.msg.buf [0] = (char) MULTI_SYNC_MONSTERBALL;
+		int i = 1;
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + i, gameData.hoard.monsterballP->info.nSegment);
+		i += sizeof (short);
 		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->info.position.vPos, sizeof (gameData.hoard.monsterballP->info.position.vPos));
 		i += sizeof (gameData.hoard.monsterballP->info.position.vPos);
 		memcpy (gameData.multigame.msg.buf + i, &gameData.hoard.monsterballP->info.position.mOrient, sizeof (gameData.hoard.monsterballP->info.position.mOrient));
@@ -1018,28 +1020,33 @@ if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && 
 
 void MultiDoSyncMonsterball (char* buf)
 {
-if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && !NetworkIAmMaster ()) {
+if ((gameData.app.nGameMode & GM_MONSTERBALL) && !NetworkIAmMaster () && (FindMonsterball () || CreateMonsterball ())) {
 	int i = 1;
-	memcpy (&gameData.hoard.monsterballP->info.position.vPos, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->info.position.vPos));
-	i += sizeof (gameData.hoard.monsterballP->info.position.vPos);
-	memcpy (&gameData.hoard.monsterballP->info.position.mOrient, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->info.position.mOrient));
-	i += sizeof (gameData.hoard.monsterballP->info.position.mOrient);
-	memcpy (&gameData.hoard.monsterballP->mType.physInfo.velocity, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity));
-	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity);
-	memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotThrust, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust));
-	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust);
-	memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotVel, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel));
-	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel);
-	memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotThrust, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust));
-	i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+	short nSegment = GET_INTEL_SHORT (buf + i);
+	if (nSegment >= 0) {
+		i += sizeof (short);
+		memcpy (&gameData.hoard.monsterballP->info.position.vPos, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->info.position.vPos));
+		i += sizeof (gameData.hoard.monsterballP->info.position.vPos);
+		memcpy (&gameData.hoard.monsterballP->info.position.mOrient, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->info.position.mOrient));
+		i += sizeof (gameData.hoard.monsterballP->info.position.mOrient);
+		memcpy (&gameData.hoard.monsterballP->mType.physInfo.velocity, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.velocity);
+		memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotThrust, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.thrust);
+		memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotVel, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotVel);
+		memcpy (&gameData.hoard.monsterballP->mType.physInfo.rotThrust, gameData.multigame.msg.buf + i, sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust));
+		i += sizeof (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	INTEL_VECTOR (gameData.hoard.monsterballP->info.position.vPos);
-	INTEL_MATRIX (gameData.hoard.monsterballP->info.position.mOrient);
-	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.velocity);
-	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
-	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotVel);
-	INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+		INTEL_VECTOR (gameData.hoard.monsterballP->info.position.vPos);
+		INTEL_MATRIX (gameData.hoard.monsterballP->info.position.mOrient);
+		INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.velocity);
+		INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
+		INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotVel);
+		INTEL_VECTOR (gameData.hoard.monsterballP->mType.physInfo.rotThrust);
 #endif
+		gameData.hoard.monsterballP->RelinkToSeg (nSegment);
+		}
 	}
 }
 
@@ -2950,7 +2957,7 @@ if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	InitHoardData ();
 if (gameData.app.nGameMode &(GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
-FindMonsterball ();	//will simply delete all Monsterballs for non-Monsterball games
+ResetMonsterball ();	//will simply delete all Monsterballs for non-Monsterball games
 MultiSortKillList ();
 MultiShowPlayerList ();
 gameData.objs.consoleP->info.controlType = CT_FLYING;

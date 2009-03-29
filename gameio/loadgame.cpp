@@ -1295,7 +1295,7 @@ void PlayerFinishedLevel (int bSecret)
 LOCALPLAYER.hostages.nRescued += LOCALPLAYER.hostages.nOnBoard;
 if (gameData.app.nGameMode & GM_NETWORK)
 	LOCALPLAYER.connected = 2; // Finished but did not die
-gameStates.render.cockpit.nLastDrawn [0] = -1;
+gameStates.render.cockpit.nLastDrawn [0] =
 gameStates.render.cockpit.nLastDrawn [1] = -1;
 if (gameData.missions.nCurrentLevel < 0)
 	ExitSecretLevel ();
@@ -1649,7 +1649,7 @@ if (IsCoopGame && networkData.nJoinState) {
 if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
-	FindMonsterball (); //will simply remove all Monsterballs
+	ResetMonsterball (); //will simply remove all Monsterballs
 GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
@@ -2212,7 +2212,7 @@ if (gameData.reactor.bDestroyed) {
 	LOCALPLAYER.connected = 3;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
-if (bSecret) {
+if (bSecret && !gameStates.app.bD1Mission) {
 	ExitSecretLevel ();
 	ResetShipData ();
 	gameStates.render.cockpit.nLastDrawn [0] =

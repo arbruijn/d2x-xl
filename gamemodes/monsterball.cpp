@@ -78,7 +78,23 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int FindMonsterball (void)
+CObject* FindMonsterball (void)
+{
+if (!gameData.hoard.monsterballP) {
+	CObject	*objP;
+
+	FORALL_STATIC_OBJS (objP, i)
+		if ((objP->info.nType == OBJ_MONSTERBALL) || ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_MONSTERBALL))) {
+			gameData.hoard.monsterballP = objP;
+			break;
+			}
+	}
+return gameData.hoard.monsterballP;
+}
+
+//------------------------------------------------------------------------------
+
+int ResetMonsterball (void)
 {
 	//short		i;
 	CObject	*objP;
