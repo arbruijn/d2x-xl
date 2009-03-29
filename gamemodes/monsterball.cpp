@@ -101,7 +101,10 @@ int ResetMonsterball (bool bCreate)
 	//short		i;
 	CObject	*objP;
 
-gameData.hoard.monsterballP = NULL;
+if (gameData.hoard.monsterballP) {
+	//ReleaseObject (gameData.hoard.monsterballP->Index ());
+	gameData.hoard.monsterballP = NULL;
+	}	
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
 FORALL_STATIC_OBJS (objP, i)

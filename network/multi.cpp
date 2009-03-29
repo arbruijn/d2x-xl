@@ -2963,7 +2963,7 @@ if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	InitHoardData ();
 if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
-ResetMonsterball ();	//will simply delete all Monsterballs for non-Monsterball games
+ResetMonsterball (NetworkIAmMaster () != 0);	//will simply delete all Monsterballs for non-Monsterball games
 MultiSortKillList ();
 MultiShowPlayerList ();
 gameData.objs.consoleP->info.controlType = CT_FLYING;
@@ -3808,11 +3808,6 @@ void MultiDoMonsterball (char *buf)
 
 bCreate = (int) buf [bufP++];
 nSegment = GET_INTEL_SHORT (buf + bufP);
-if (bCreate) {
-	gameData.hoard.nMonsterballSeg = nSegment;
-	CreateMonsterball ();
-	return;
-	}
 bufP += 2;
 v [X] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
@@ -3820,8 +3815,9 @@ v [Y] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 v [Z] = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-if (!gameData.hoard.monsterballP) {
+if (bCreate || !gameData.hoard.monsterballP) {
 	gameData.hoard.nMonsterballSeg = FindSegByPos (v, nSegment, 1, 0);
+	gameData.hoard.vMonsterballPos = v;
 	CreateMonsterball ();
 	gameData.hoard.monsterballP->info.position.vPos = v;
 	}
