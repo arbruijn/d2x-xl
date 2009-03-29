@@ -1038,7 +1038,7 @@ if ((gameData.app.nGameMode & GM_MONSTERBALL) && !NetworkIAmMaster ()) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		INTEL_VECTOR (vPos);
 #endif
-		if (bSync || (CFixVector::Dist (vPos, gameData.hoard.monsterballP->info.position.vPos) > I2X (10))) {
+		if (bSync || (CFixVector::Dist (vPos, gameData.hoard.monsterballP->info.position.vPos) > I2X (20))) {
 			gameData.hoard.monsterballP->info.position.vPos = vPos;
 			i += sizeof (gameData.hoard.monsterballP->info.position.vPos);
 			memcpy (&gameData.hoard.monsterballP->info.position.mOrient, buf + i, sizeof (gameData.hoard.monsterballP->info.position.mOrient));
