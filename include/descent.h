@@ -2478,6 +2478,8 @@ class CTimeData {
 		fix					xFrame;	//  since last frame, in seconds
 		fix					xRealFrame;
 		fix					xGame;	//	 in game, in seconds
+		fix					xGameStart;
+		fix					xMaxOnline;
 		fix					xLast;
 		int					tLast;
 		fix					xSlack;

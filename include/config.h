@@ -43,6 +43,7 @@ typedef struct tGameConfig {
 	int		vrResolution;
 	int		vrTracking;
 	uint		nVersion;
+	int		nMicroPayments;
 } tGameConfig;
 
 extern tGameConfig gameConfig;

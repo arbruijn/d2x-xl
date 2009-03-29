@@ -293,6 +293,13 @@ for (;;) {
 	}
 }
 
+//-----------------------------------------------------------------------------
+
+static int CheckMicroPayments (void)
+{
+return !gameConfig.nMicroPayments || (gameStates.app.nSDLTicks - gameData.time.xGameStart >= gameData.time.xMaxOnline);
+}
+
 //------------------------------------------------------------------------------
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
@@ -329,8 +336,10 @@ else if (nChoice == mainOpts.nLoadDirect) {
 		}
 	}
 #endif
-else if (nChoice == mainOpts.nMulti)
-	MultiplayerMenu ();
+else if (nChoice == mainOpts.nMulti) {
+	if (CheckMicroPayments ())
+		MultiplayerMenu ();
+	}
 else if (nChoice == mainOpts.nConfig) 
 	ConfigMenu ();
 else if (nChoice == mainOpts.nPilots) {

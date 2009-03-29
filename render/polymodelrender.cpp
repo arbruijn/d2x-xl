@@ -176,13 +176,9 @@ gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 if (!flags) {	//draw entire CObject
-	if (!G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
+	if (gameStates.app.bNostalgia || !G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		if (bHires)
 			return 0;
-#if 0//def _DEBUG
-		if (objP && (objP->info.nType == OBJ_ROBOT))
-			G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP);
-#endif
 		if (objP && (objP->info.nType == OBJ_POWERUP)) {
 			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
 				gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));

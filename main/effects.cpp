@@ -166,6 +166,8 @@ else {
 		bmP->SetTranspType (3);
 		bmP->SetupTexture (1, 1);
 		}
+	if (nBaseTex == nDbgTexture)
+		nDbgTexture = nDbgTexture;
 #endif
 	nBmFrames = bmP->FrameCount ();
 	if ((bmfP = bmP->Frames ())) {

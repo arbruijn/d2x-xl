@@ -586,7 +586,7 @@ if (nState)
 	CMenuItem*	m;
 
 
-if (gameOpts->app.bExpertMode) {
+if (gameOpts->app.bExpertMode || gameOpts->app.bNotebookFriendly) {
 	m = menu + kbdOpts.nRamp;
 	v = m->m_value * 10;
 	if (gameOpts->input.keyboard.nRamp != v) {

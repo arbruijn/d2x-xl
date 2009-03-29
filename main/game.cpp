@@ -868,6 +868,7 @@ gameData.time.xFrame = 0;			//make first frame zero
 //console.printf (CON_DBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
 GameFlushInputs ();
+gameData.time.xGameStart = SDL_GetTicks ();
 }
 
 //------------------------------------------------------------------------------
@@ -927,7 +928,7 @@ SetFunctionMode (FMODE_MENU);
 //editor mode or exit selected
 void RunGame (void)
 {
-	int c;
+	int i, c;
 
 GameSetup ();								// Replaces what was here earlier.
 #ifdef MWPROFILE
@@ -957,10 +958,7 @@ if (!setjmp (gameExitPoint)) {
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
 		try {
-			if (!GameLoop (1, 1)) {		// Do game loop with rendering and reading controls.
-				PROF_END(ptFrame);
-				continue;
-				}
+			i = GameLoop (1, 1);
 			}
 		catch (int e) {
 			ClearWarnFunc (ShowInGameWarning);
@@ -982,6 +980,12 @@ if (!setjmp (gameExitPoint)) {
 			Warning ("Well ... something went really wrong.");
 			break;
 			}
+
+		PROF_END (ptFrame);
+		if (i < 0)
+			break;
+		if (i == 0)
+			continue;
 
 		if (gameStates.app.bSingleStep) {
 			while (!(c = KeyInKey ()))
@@ -1383,11 +1387,30 @@ else
 }
 
 //-----------------------------------------------------------------------------
+
+static int CheckMicroPayments (void)
+{
+if (!gameConfig.nMicroPayments)
+	return 1;
+if (IsMultiGame && (gameStates.app.nSDLTicks - gameData.time.xGameStart >= gameData.time.xMaxOnline)) {
+	messageBox.Show ("Your available online time has expired.");
+	G3_SLEEP (4000);
+	messageBox.Clear ();
+	gameData.time.xGameStart = gameStates.app.nSDLTicks;
+	return 0;
+	}
+LOCALPLAYER.primaryWeaponFlags &= LASER_INDEX;
+LOCALPLAYER.laserLevel = 0;
+LOCALPLAYER.secondaryWeaponFlags &= CONCUSSION_INDEX;
+return -1;
+}
+
+//-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
-void GameRenderFrame ();
+void GameRenderFrame (void);
 void OmegaChargeFrame (void);
-void FlickerLights ();
+void FlickerLights (void);
 
 //int bLog = 0;
 
@@ -1396,14 +1419,15 @@ int GameLoop (int bRenderFrame, int bReadControls)
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
-if (!MultiProtectGame ()) {
-	SetFunctionMode (FMODE_MENU);
-	return 1;
-	}
 if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
 	GasolineCheat (0);
 	}
+if (!(MultiProtectGame () && CheckMicroPayments ())) {
+	SetFunctionMode (FMODE_MENU);
+	return -1;
+	}
+CheckMicroPayments ();
 AutoBalanceTeams ();
 MultiSendTyping ();
 MultiSendWeapons (0);

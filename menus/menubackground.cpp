@@ -463,7 +463,7 @@ return filename && !strcmp (filename, m_filename [0]);
 
 CBitmap* CBackgroundManager::LoadCustomBackground (void)
 {
-if (m_background [0]|| (gameStates.app.bNostalgia || !MODERN_STYLE))
+if ((gameConfig.nMicroPayments < 0) || m_background [0] || (gameStates.app.bNostalgia || !MODERN_STYLE))
 	return m_background [0];
 
 CBitmap* bmP;
