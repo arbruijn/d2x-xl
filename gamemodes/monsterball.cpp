@@ -43,7 +43,7 @@ int CreateMonsterball (void)
 	short			nDropSeg, nObject;
 
 RemoveMonsterball ();
-#if DBG
+#if 0 //DBG
 nDropSeg = gameData.hoard.nMonsterballSeg;
 #else
 if (gameData.hoard.nMonsterballSeg >= 0)
@@ -72,7 +72,8 @@ if (nDropSeg >= 0) {
 #if !DBG
 Warning (TXT_NO_MONSTERBALL);
 #endif
-gameData.app.nGameMode &= ~GM_MONSTERBALL;
+if (NetworkIAmMaster ())
+	gameData.app.nGameMode &= ~GM_MONSTERBALL;
 return 0;
 }
 
