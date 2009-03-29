@@ -653,10 +653,12 @@ return nStringHeight;
 
 void CMenuItem::SetText (const char* pszSrc, char* pszDest)
 {
-if (!pszDest)
-	pszDest = m_text;
-strncpy (pszDest, pszSrc, MENU_MAX_TEXTLEN);
-pszDest [MENU_MAX_TEXTLEN] = '\0';
+if (pszSrc) {
+	if (!pszDest)
+		pszDest = m_text;
+	strncpy (pszDest, pszSrc, MENU_MAX_TEXTLEN);
+	pszDest [MENU_MAX_TEXTLEN] = '\0';
+	}
 }
 
 //------------------------------------------------------------------------------

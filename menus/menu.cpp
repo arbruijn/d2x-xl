@@ -1318,7 +1318,7 @@ launchOption:
 			 	case KEY_MINUS:
 				case KEY_MINUS + KEY_SHIFTED:
 				case KEY_PADMINUS:
-					Item (m_nChoice).m_value -= 1;
+					Item (m_nChoice).m_value--;
 					break;
 			 	case KEY_RIGHT:
 				case KEY_PAD6:
@@ -1338,7 +1338,9 @@ launchOption:
 					Item (m_nChoice).m_value -= 10;
 					break;
 				}
-			if (ov!= Item (m_nChoice).m_value)
+			if ((Item (m_nChoice).m_nType == NM_TYPE_SLIDER) || (Item (m_nChoice).m_nType == NM_TYPE_NUMBER))
+				Item (m_nChoice).m_value = NMCLAMP (Item (m_nChoice).m_value, Item (m_nChoice).m_minValue, Item (m_nChoice).m_maxValue);
+			if (ov != Item (m_nChoice).m_value)
 				Item (m_nChoice).m_bRedraw = 1;
 			}
 		}
