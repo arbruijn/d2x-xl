@@ -109,6 +109,7 @@ CGameData		gameData;
 void DefaultAllSettings (void);
 void CheckJoystickCalibration (void);
 void ShowOrderForm (void);
+void MicroPaymentNotification (void);
 
 tGameOptions *gameOpts = gameOptions;
 
@@ -834,150 +835,6 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-void MicroPaymentNotification (void)
-{
-	CMenu	m (20);
-
-gameData.menu.colorOverride = RGB_PAL (63, 47, 0);
-
-m.AddText ("\x01\xFF\xC0\x80" "Preamble");
-m.AddText ("");
-m.AddText ("Since donations have never really worked with D2X-XL, I have");
-m.AddText ("decided to stay up-to-date and implement a micro-payment");
-m.AddText ("system as a new, effective business model.  Going forward,");
-m.AddText ("level 1 lasers and concussion missiles will be default");
-m.AddText ("equipment, and small, reasonable fees will be charged for");
-m.AddText ("each other missile and gun you collect.");
-m.AddText ("");
-m.AddText ("\x01\xFF\xC0\x80" "Fees");
-m.AddText ("");
-#if 0
-m.AddText ("Following is a list of fees you can expect to be charged when");
-m.AddText ("using the newest version of D2X-XL: An earth shaker will cost");
-m.AddText ("$0.05, a mega missile costs $0.03, smart missiles and  mines");
-m.AddText ("are $0.02 each and all other missiles and mines cost $0.01");
-m.AddText ("apiece. Each tier-one gun costs $0.01, tier-two guns are");
-m.AddText ("available for $0.02 per piece with the exception of Gauss");
-m.AddText ("guns which will cost $0.10 (ammo will, however, be free).");
-m.AddText ("All other equipment will be free.");
-#else
-m.AddText ("Following is a list of fees you can expect to be charged when");
-m.AddText ("using the newest version of D2X-XL:");
-m.AddText ("");
-m.AddText ("   \x01\xE0\xE0\xE0 Earth Shaker: $0.05");
-m.AddText ("   \x01\xE0\xE0\xE0 Mega Missile: $0.03");
-m.AddText ("   \x01\xE0\xE0\xE0 Smart Missile/Mine: $0.02");
-m.AddText ("   \x01\xE0\xE0\xE0 Other missiles/mines: $0.01");
-m.AddText ("   \x01\xE0\xE0\xE0 Tier 1 guns: $0.01");
-m.AddText ("   \x01\xE0\xE0\xE0 Tier 2 guns: $0.02");
-m.AddText ("   \x01\xE0\xE0\xE0 Gauss gun: $0.10 (ammo will however be free)");
-m.AddText ("");
-m.AddText ("All other equipment will be free.");
-#endif
-m.TinyMenu (NULL, "New Business Model");
-
-m.Destroy ();
-m.AddText ("\x01\xFF\xC0\x80" "Online Services");
-m.AddText ("");
-m.AddText ("Online gaming will be supported by a new subscription model");
-m.AddText ("aptly named \"D2X Live\", with a $15 monthly fee. Lifetime");
-m.AddText ("subscriptions are available for $999; please contact me for");
-m.AddText ("details. You can win annual and lifetime subscriptions in");
-m.AddText ("lotteries that will be held on a monthly basis; see the");
-m.AddText ("D2X-XL forum for more information.");
-m.AddText ("");
-m.AddText ("\x01\xFF\xC0\x80" "Support");
-m.AddText ("");
-m.AddText ("Support will be free. Bug reports lacking the information");
-m.AddText ("necessary and required to process the report, as well");
-m.AddText ("as support requests suggesting the user didn't follow the");
-m.AddText ("guidelines  for posting these or didn't read the installation");
-m.AddText ("instructions and FAQ will cause extra support fees to be");
-m.AddText ("charged the amount of which are entirely up to my disposition.");
-m.TinyMenu (NULL, "New Business Model");
-
-m.Destroy ();
-m.AddText ("\x01\xFF\xC0\x80" "Exchange Rates");
-m.AddText ("");
-m.AddText ("As I am not Valve Software and this is not Steam, users from");
-m.AddText ("the Euro zone will not be charged more and thus actually");
-m.AddText ("benefit from their currency exchange rate. :)");
-m.AddText ("");
-m.AddText ("\x01\xFF\xC0\x80" "Mac OS X");
-m.AddText ("");
-m.AddText ("Due to the additional debugging time, man power and more");
-m.AddText ("expensive hardware required for the Mac version, Mac users");
-m.AddText ("will be charged 50% more. This  will allow the Mac port to");
-m.AddText ("continue to be developed; You as a Mac user are certainly");
-m.AddText ("able and willing to pay a slightly increased price for an");
-m.AddText ("unparalleled D2X-XL experience; above which you will be able");
-m.AddText ("to feel as an elite in this area too.");
-m.AddText ("");
-m.AddText ("\x01\xFF\xC0\x80" "Linux");
-m.AddText ("");
-m.AddText ("Since D2X-XL is delivered as source code to Linux, and Linux");
-m.AddText ("users would hence find a way to circumvent this new system,");
-m.AddText ("I have had no choice but to remove the related code from the");
-m.AddText ("source (I made sure it cannot be retrieved from the source");
-m.AddText ("repository either, I am not that dumb), and Linux users will");
-m.AddText ("either have to buy an OS that deserves the name or settle for");
-m.AddText ("less as they're used to anyway.");
-m.TinyMenu (NULL, "New Business Model");
-
-m.Destroy ();
-m.AddText ("\x01\xFF\xC0\x80" "Conclusion");
-m.AddText ("");
-m.AddText ("The next dialog will ask you for your credit card number. If");
-m.AddText ("you don't have a credit card, ask your parents or friends");
-m.AddText ("for theirs. If your friends won't hand it to you, you may");
-m.AddText ("want to find yourself better friends.");
-m.AddText ("");
-m.AddText ("\x01\xFF\xC0\x80" "Legal Information");
-m.AddText ("");
-m.AddText ("Once entered, D2X-XL will automatically charge your credit");
-m.AddText ("card with all fees that you have accumulated on a month-to-");
-m.AddText ("month basis.  You will be sent a monthly receipt detailing");
-m.AddText ("the items you have used and the fees assessed; no refunds");
-m.AddText ("will be made. You agree to accept all charges the moment you");
-m.AddText ("pick up any primary weapons other than level 1 lasers or any");
-m.AddText ("secondary weapon other than concussion missiles. There is no");
-m.AddText ("warranty on the utility or accuracy of any weapons, whether");
-m.AddText ("expressed or implied.  All legal affairs related to the new");
-m.AddText ("business model will be handled in Karlsruhe, Germany.");
-m.TinyMenu (NULL, "New Business Model");
-
-gameData.menu.colorOverride = RGB_PAL (63, 47, 0);
-
-m.Destroy ();
-m.AddText ("If you agree press Escape to be forwarded");
-m.AddText ("to the credit card data input form.");
-m.AddText ("");
-m.AddText ("Otherwise please reboot now to avoid additionally");
-m.AddText ("required support modules being installed.");
-m.TinyMenu (NULL, "New Business Model");
-
-char szCCInfo [25];
-*szCCInfo = '\0';
-
-gameData.menu.colorOverride = RGB_PAL (63, 47, 0);
-
-m.Destroy ();
-m.AddText ("Please enter your credit card information");
-m.AddText ("below. Leaving the field empty or entering");
-m.AddText ("invalid credit card information will disable");
-m.AddText ("all advanced guns and missiles and limit");
-m.AddText ("online gameplay time to three minutes.");
-m.AddText ("");
-m.AddInput (szCCInfo, sizeof (szCCInfo) - 1);
-m.AddText ("");
-m.AddText ("Press Escape to continue.");
-m.TinyMenu (NULL, "Credit Card Information");
-
-gameData.menu.colorOverride = 0;
-}
-
-// ----------------------------------------------------------------------------
-
 void BadHardwareNotification (void)
 {
 #if 1//!DBG
@@ -1074,7 +931,7 @@ void CheckJoystickCalibration (void)
 
 // ----------------------------------------------------------------------------
 
-void ShowOrderForm ()
+void ShowOrderForm (void)
 {
 	int 	pcx_error;
 	char	exit_screen[16];

@@ -293,16 +293,10 @@ for (;;) {
 	}
 }
 
-//-----------------------------------------------------------------------------
-
-static int CheckMicroPayments (void)
-{
-return !gameConfig.nMicroPayments || (gameStates.app.nSDLTicks - gameData.time.xGameStart >= gameData.time.xMaxOnline);
-}
-
 //------------------------------------------------------------------------------
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
+int CheckMicroPayments (int nMode);
 
 //returns flag, true means quit menu
 int ExecMainMenuOption (int nChoice) 
@@ -337,7 +331,7 @@ else if (nChoice == mainOpts.nLoadDirect) {
 	}
 #endif
 else if (nChoice == mainOpts.nMulti) {
-	if (CheckMicroPayments ())
+	if (CheckMicroPayments (1))
 		MultiplayerMenu ();
 	}
 else if (nChoice == mainOpts.nConfig) 

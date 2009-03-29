@@ -1242,6 +1242,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\main\micropayment.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\main\movie.cpp"
 						>
 						<FileConfiguration

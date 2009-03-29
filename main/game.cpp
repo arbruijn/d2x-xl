@@ -1387,30 +1387,12 @@ else
 }
 
 //-----------------------------------------------------------------------------
-
-static int CheckMicroPayments (void)
-{
-if (!gameConfig.nMicroPayments)
-	return 1;
-if (IsMultiGame && (gameStates.app.nSDLTicks - gameData.time.xGameStart >= gameData.time.xMaxOnline)) {
-	messageBox.Show ("Your available online time has expired.");
-	G3_SLEEP (4000);
-	messageBox.Clear ();
-	gameData.time.xGameStart = gameStates.app.nSDLTicks;
-	return 0;
-	}
-LOCALPLAYER.primaryWeaponFlags &= LASER_INDEX;
-LOCALPLAYER.laserLevel = 0;
-LOCALPLAYER.secondaryWeaponFlags &= CONCUSSION_INDEX;
-return -1;
-}
-
-//-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
 void GameRenderFrame (void);
 void OmegaChargeFrame (void);
 void FlickerLights (void);
+int CheckMicroPayments (int nMode);
 
 //int bLog = 0;
 
@@ -1423,11 +1405,10 @@ if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
 	GasolineCheat (0);
 	}
-if (!(MultiProtectGame () && CheckMicroPayments ())) {
+if (!(MultiProtectGame () && CheckMicroPayments (0))) {
 	SetFunctionMode (FMODE_MENU);
 	return -1;
 	}
-CheckMicroPayments ();
 AutoBalanceTeams ();
 MultiSendTyping ();
 MultiSendWeapons (0);
