@@ -46,6 +46,8 @@ static void (*ErrorPrintFunc) (const char *);
 char szExitMsg[MAX_MSG_LEN]="";
 char szWarnMsg[MAX_MSG_LEN];
 
+int nLogDate = 0;
+
 void ShowInGameWarning (const char *s);
 
 //------------------------------------------------------------------------------
@@ -216,13 +218,26 @@ gameStates.app.bShowError = 0;
 }
 
 //------------------------------------------------------------------------------
+
+static void SetLogDate (void)
+{
+   time_t      t;
+   struct tm*	h;
+
+time (&t);
+h = localtime (&t);
+nLogDate = int (h->tm_year + 1900) * 65536 + int (h->tm_mon) * 256 + h->tm_mday;
+}
+
+//------------------------------------------------------------------------------
 //initialize error handling system, and set default message. returns 0=ok
 int _CDECL_ error_init (void (*func)(const char *), const char *fmt, ...)
 {
 	va_list arglist;
 	int len;
 
-atexit(print_exit_message);		//last thing at exit is print message
+atexit (print_exit_message);		//last thing at exit is print message
+SetLogDate ();
 ErrorPrintFunc = func;          // Set Error Print Functions
 if (fmt != NULL) {
 	va_start(arglist,fmt);
