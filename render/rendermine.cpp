@@ -1414,8 +1414,6 @@ gameData.render.nTotalLights =
 gameData.render.nMaxLights =
 gameData.render.nStateChanges =
 gameData.render.nShaderChanges = 0;
-if (!gameStates.app.bNostalgia)
-	OglSetLibFlags (1);
 SetFaceDrawer (-1);
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;

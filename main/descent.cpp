@@ -308,7 +308,7 @@ if (!gameData.demo.bAuto)  {
 
 // ----------------------------------------------------------------------------
 
-#define MENU_HIRES_MODE SM (640, 480)
+#define MENU_HIRES_MODE SM (800, 600)
 
 // ----------------------------------------------------------------------------
 
@@ -394,7 +394,7 @@ else {
 	GrSetMode (
 		gameStates.menus.bHires ? 
 			(gameStates.gfx.nStartScrMode < 0) ? 
-				SM (640, 480) 
+				SM (800, 600) 
 				: SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y) 
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);

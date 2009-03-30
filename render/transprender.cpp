@@ -1500,7 +1500,6 @@ if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFr
 	}
 PROF_START
 gameStates.render.nType = 5;
-OglSetLibFlags (1);
 ResetShader ();
 bStencil = StencilOff ();
 m_data.bTextured = -1;

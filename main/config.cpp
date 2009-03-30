@@ -63,16 +63,6 @@ bool (*mpActivate) (void) = NULL;
 int (*mpCheck) (int) = NULL;
 void (*mpNotify) (void) = NULL;
 
-class CHashList {
-	public:
-		int				nHashs;
-		CArray<uint>	hashs;
-	public:
-		CHashList () { nHashs = 0; }
-};
-
-CHashList hashList;
-
 //------------------------------------------------------------------------------
 
 void SetNostalgia (int nLevel)
@@ -80,24 +70,6 @@ void SetNostalgia (int nLevel)
 gameStates.app.bNostalgia = (nLevel < 0) ? 0 : (nLevel > 3) ? 3 : nLevel;
 gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
 gameOpts = gameOptions + gameStates.app.iNostalgia;
-}
-
-//------------------------------------------------------------------------------
-
-int CfgCountHashs (char *pszFilter, char *pszFolder)
-{
-	FFS	ffs;
-	char	szTag [FILENAME_LEN];
-
-hashList.nHashs = 0;
-sprintf (szTag, "%s/%s", pszFolder, pszFilter);
-if (!FFF (szTag, &ffs, 0)) {
-	hashList.nHashs++;
-	while (!FFN (&ffs, 0))
-		hashList.nHashs++;
-	}
-FFC (&ffs);
-return hashList.nHashs;
 }
 
 // ----------------------------------------------------------------------------

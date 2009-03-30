@@ -226,7 +226,7 @@ return -1;
 
 int GrInit (void)
 {
-	int mode = SM (640, 480);
+	int mode = SM (800, 600);
 	int retcode, t;
 
 // Only do this function once!
@@ -429,14 +429,13 @@ int SetMenuScreenMode (u_int32_t sm)
 	u_int32_t nMenuMode;
 
 gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
-nMenuMode = 
-	gameStates.gfx.bOverride ?
-		gameStates.gfx.nStartScrSize
-		: gameStates.menus.bHires ?
-			 (gameStates.render.vr.nScreenSize >= SM (640,480)) ?
-				gameStates.render.vr.nScreenSize
-				: SM (640,480)
-			: SM (320,200);
+nMenuMode = gameStates.gfx.bOverride 
+		? gameStates.gfx.nStartScrSize
+		: gameStates.menus.bHires 
+			? (gameStates.render.vr.nScreenSize >= SM (640, 480)) 
+				? gameStates.render.vr.nScreenSize
+				: SM (800, 600)
+			: SM (320, 200);
 gameStates.video.nLastScreenMode = -1;
 if (nCurrentVGAMode != nMenuMode) {
 	if (GrSetMode (nMenuMode))

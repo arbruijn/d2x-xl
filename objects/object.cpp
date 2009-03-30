@@ -520,13 +520,15 @@ SetNext (NULL);
 
 void CObject::UnlinkFromSeg (void)
 {
-if (info.nPrevInSeg == -1)
-	SEGMENTS [info.nSegment].m_objects = info.nNextInSeg;
-else
-	OBJECTS [info.nPrevInSeg].info.nNextInSeg = info.nNextInSeg;
-if (info.nNextInSeg != -1)
-	OBJECTS [info.nNextInSeg].info.nPrevInSeg = info.nPrevInSeg;
-info.nSegment = info.nNextInSeg = info.nPrevInSeg = -1;
+if (info.nSegment >= 0) {
+	if (info.nPrevInSeg == -1)
+		SEGMENTS [info.nSegment].m_objects = info.nNextInSeg;
+	else
+		OBJECTS [info.nPrevInSeg].info.nNextInSeg = info.nNextInSeg;
+	if (info.nNextInSeg != -1)
+		OBJECTS [info.nNextInSeg].info.nPrevInSeg = info.nPrevInSeg;
+	info.nSegment = info.nNextInSeg = info.nPrevInSeg = -1;
+	}
 }
 
 //------------------------------------------------------------------------------
