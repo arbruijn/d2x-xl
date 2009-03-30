@@ -283,7 +283,7 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	cf.Close ();
 	}
 JoySetCalVals (cal, sizeofa (cal));
-#if DBG
+#if 0 //DBG
 if (mpStatus)
 	*mpStatus = -1;
 #endif

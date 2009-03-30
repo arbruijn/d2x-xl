@@ -406,7 +406,8 @@ void CAutomap::Draw (void)
 {
 #if 1
 PROF_START
-	int	bAutomapFrame = (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
+	int	bAutomapFrame = !m_bRadar &&
+								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
 								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 	CFixMatrix	mRadar;
 

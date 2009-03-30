@@ -1242,10 +1242,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\main\micropayment.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\main\movie.cpp"
 						>
 						<FileConfiguration
@@ -1827,6 +1823,10 @@
 					</File>
 					<File
 						RelativePath="..\network\win32\ipx_win.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\network\mpstatus.cpp"
 						>
 					</File>
 					<File
@@ -4261,11 +4261,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
