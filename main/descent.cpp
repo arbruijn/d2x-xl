@@ -199,7 +199,7 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 void PrintVersionInfo (void)
 {
-if (mpStatus && (*mpStatus < 0) || gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
+if ((mpStatus && (*mpStatus < 0)) || gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
 	return;
 
 	static int bVertigo = -1;
