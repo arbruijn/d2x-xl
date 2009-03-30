@@ -126,15 +126,15 @@ class CMenuItem {
 		CMenuItem () { memset (this, 0, sizeof (*this)); }
 		~CMenuItem () { Destroy (); }
 		void Destroy (void);
-		int GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers);
+		int GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers, int bTiny);
 		short SetColor (int bIsCurrent, int bTiny);
 
 		void DrawHotKeyString (int bIsCurrent, int bTiny, int bCreateTextBms, int nDepth);
 		void DrawString (int bIsCurrent, int bTiny);
 		void DrawSlider (int bIsCurrent, int bTiny);
 		void DrawRightString (int bIsCurrent, int bTiny, char* s);
-		void DrawInputBox (int w, int x, int y, char* text, int current);
-		void DrawBlackBox (int w1, int x, int y, const char* s);
+		void DrawInputBox (int w, int x, int y, char* text, int current, int bTiny);
+		void DrawBlackBox (int w1, int x, int y, const char* s, int bTiny);
 		void DrawGauge (int w, int x, int y, int val, int maxVal, int current);
 		void Draw (int bIsCurrent, int bTiny);
 

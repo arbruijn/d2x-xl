@@ -255,10 +255,6 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	cf.Close ();
 	}
 JoySetCalVals (cal, sizeofa (cal));
-#if 0 //DBG
-if (mpStatus)
-	*mpStatus = -1;
-#endif
 return 0;
 }
 
@@ -280,10 +276,12 @@ if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
 sprintf (str, "%s=%u\n", pszD2XVersion, D2X_IVER);
 cf.PutS (str);
+#if !DBG
 if (mpActivate && mpActivate ()) {
 	sprintf (str, "%s=1\n", pszMPStatus);
 	cf.PutS (str);
 	}
+#endif
 sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);

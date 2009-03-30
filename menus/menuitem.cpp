@@ -373,11 +373,15 @@ m_x = h;
 
 //------------------------------------------------------------------------------ 
 
-void CMenuItem::DrawBlackBox (int w1, int x, int y, const char* s)
+void CMenuItem::DrawBlackBox (int w1, int x, int y, const char* s, int bTiny)
 {
 	int w, h, aw;
 
 fontManager.Current ()->StringSize (s, w, h, aw);
+if (bTiny) {
+	h += 4;
+	y -= 2;
+	}
 if (w1 == 0) 
 	w1 = w;
 
@@ -394,7 +398,7 @@ GrString (x + 1, y + 1, s, NULL);
 
 //------------------------------------------------------------------------------ 
 
-void CMenuItem::DrawInputBox (int w, int x, int y, char* text, int current)
+void CMenuItem::DrawInputBox (int w, int x, int y, char* text, int current, int bTiny)
 {
 	int w1, h1, aw;
 
@@ -407,7 +411,7 @@ while (*text) {
 	}
 if (!*text)
 	w1 = 0;
-DrawBlackBox (w, x, y, text);
+DrawBlackBox (w, x, y, text, bTiny);
 if (current)	
 	GrString (x + w1 + 1, y, CURSOR_STRING, NULL);
 }
@@ -524,13 +528,13 @@ switch (m_nType) {
 
 	case NM_TYPE_INPUT_MENU:
 		if (m_group)
-			DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent);
+			DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent, bTiny);
 		else
 			DrawString (bIsCurrent, bTiny);
 		break;
 
 	case NM_TYPE_INPUT:
-		DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent);
+		DrawInputBox (m_w, m_x, m_y, m_text, bIsCurrent, bTiny);
 		break;
 
 	case NM_TYPE_GAUGE:
@@ -565,7 +569,7 @@ switch (m_nType) {
 
 //------------------------------------------------------------------------------ 
 
-int CMenuItem::GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers)
+int CMenuItem::GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers, int bTiny)
 {
 if (!gameStates.app.bEnglish)
 	m_nKey = *(m_text - 1);
@@ -580,6 +584,7 @@ if (m_nKey) {
 m_bRedraw = 1;
 m_y = h;
 fontManager.Current ()->StringSize (m_text, nStringWidth, nStringHeight, nAverageWidth);
+nStringHeight += 2 * bTiny;
 m_rightOffset = 0;
 
 if (gameStates.multi.bSurfingNet)

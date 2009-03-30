@@ -226,12 +226,12 @@ if ((gameOpts->menus.nHotKeys > 0) && !gameStates.app.bEnglish)
 	gameOpts->menus.nHotKeys = -1;
 #endif
 for (uint i = 0; i < ToS (); i++) {
-	Item (i).GetSize (h, aw, nStringWidth, nStringHeight, nAverageWidth, nMenus, nOthers);
+	Item (i).GetSize (h, aw, nStringWidth, nStringHeight, nAverageWidth, nMenus, nOthers, m_props.bTinyMode);
 	if (w < nStringWidth)
 		w = nStringWidth;		// Save maximum width
 	if (aw < nAverageWidth)
 		aw = nAverageWidth;
-	h += nStringHeight + 1;		// Find the height of all strings
+	h += nStringHeight + 1 + m_props.bTinyMode;		// Find the height of all strings
 	}
 return nStringHeight;
 }
@@ -289,7 +289,7 @@ fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 
 m_props.h = m_props.th;
 m_props.nMenus = m_props.nOthers = 0;
-m_props.nStringHeight = GetSize (m_props.w, m_props.h, m_props.aw, m_props.nMenus, m_props.nOthers);
+m_props.nStringHeight = GetSize (m_props.w, m_props.h, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2;
 m_props.nMaxOnMenu = (((MODERN_STYLE && (m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - LHY (8)) / m_props.nStringHeight - 2;
 if (/*!m_props.bTinyMode && */ (m_props.h > (m_props.nMaxOnMenu * (m_props.nStringHeight + 1)) + gap)) {
  m_props.bIsScrollBox = 1;
