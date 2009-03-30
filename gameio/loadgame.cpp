@@ -1649,7 +1649,7 @@ if (IsCoopGame && networkData.nJoinState) {
 if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
-	ResetMonsterball (); //will simply remove all Monsterballs
+	ResetMonsterball (false); //will simply remove all Monsterballs
 GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
