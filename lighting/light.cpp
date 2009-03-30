@@ -136,6 +136,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	fq.thisObjNum		= nObject;
 	fq.ignoreObjList	= NULL;
 	fq.flags				= FQ_TRANSWALL;
+	fq.bCheckVisibility = false;
 	hitType = FindVectorIntersection (&fq, &hit_data);
 	// gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 	// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
@@ -329,6 +330,7 @@ if (xObjIntensity) {
 					fq.thisObjNum		= nObject;
 					fq.ignoreObjList	= NULL;
 					fq.flags				= FQ_TRANSWALL;
+					fq.bCheckVisibility = false;
 					fate = FindVectorIntersection (&fq, &hit_data);
 					if (fate != HIT_NONE) {
 						tvec = hit_data.hit.vPoint - *vObjPos;

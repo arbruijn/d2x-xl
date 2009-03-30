@@ -112,6 +112,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		fq.thisObjNum		= objP->Index ();
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
+		fq.bCheckVisibility = false;
 		FindVectorIntersection (&fq, &hit_data);
 
 		if (hit_data.hit.nType == HIT_NONE)

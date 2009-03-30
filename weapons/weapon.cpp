@@ -782,8 +782,9 @@ FORALL_WEAPON_OBJS (bombP, i) {
 				fq.thisObjNum = i;
 				fq.ignoreObjList = NULL;
 				fq.flags	= 0;
+				fq.bCheckVisibility = false;
 
-				fate = FindVectorIntersection(&fq, &hit_data);
+				fate = FindVectorIntersection (&fq, &hit_data);
 				if (fate != HIT_WALL)
 					bombP->info.xLifeLeft = 1;
 				}

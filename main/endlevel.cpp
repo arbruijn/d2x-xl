@@ -523,6 +523,7 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		fq.thisObjNum		= 0;
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
+		fq.bCheckVisibility = false;
 		FindVectorIntersection (&fq, &hit_data);
 		if ((hit_data.hit.nType == HIT_WALL) && (hit_data.hit.nSegment != -1))
 			/*Object*/CreateExplosion ((short) hit_data.hit.nSegment, hit_data.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);

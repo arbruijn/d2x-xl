@@ -301,6 +301,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	fq.thisObjNum = OBJ_IDX (parentObjP);
 	fq.ignoreObjList = NULL;
 	fq.flags = FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS;		//what about trans walls???
+	fq.bCheckVisibility = false;
 	fate = FindVectorIntersection (&fq, &hit_data);
 	if (fate != HIT_NONE) {
 		Assert (hit_data.hit.nSegment != -1);		//	How can this be?  We went from inside the mine to outside without hitting anything?

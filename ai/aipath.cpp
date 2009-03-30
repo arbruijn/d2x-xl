@@ -223,6 +223,7 @@ for (i = 1, --j; i < j; i++) {
 		fq.thisObjNum		= objP->Index ();
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
+		fq.bCheckVisibility = false;
 		nHitType = FindVectorIntersection (&fq, &hitData);
 		if (nHitType == HIT_NONE)
 			count = 0;
@@ -345,6 +346,7 @@ while (nCurSeg != nEndSeg) {
 			fq.thisObjNum		= objP->Index ();
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0;
+			fq.bCheckVisibility = false;
 			hitType = FindVectorIntersection (&fq, &hitData);
 			if (hitType != HIT_NONE)
 				continue;
@@ -486,6 +488,7 @@ fq.radP1				= objP->info.xSize;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= 0;
+fq.bCheckVisibility = false;
 for (i = 0; i < 2; i++) {
 	fq.p1 = &pointSegP [i].point;
 	hitType = FindVectorIntersection (&fq, &hitData);
@@ -1102,6 +1105,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			fq.thisObjNum		= objP->Index ();
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0; 				//what about trans walls???
+			fq.bCheckVisibility = false;
 			fate = FindVectorIntersection (&fq, &hitData);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!

@@ -576,11 +576,16 @@ fq.radP0				=
 fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
-hitType = FindVectorIntersection (&fq,&hitData);
+fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER;		//what about trans walls???
+fq.bCheckVisibility = false;
+#if DBG
+if (fq.thisObjNum == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
+hitType = FindVectorIntersection (&fq, &hitData);
 Hit_pos = hitData.hit.vPoint;
 Hit_seg = hitData.hit.nSegment;
-if ((hitType == HIT_NONE) || ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
+if (/*(hitType == HIT_NONE) ||*/ ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
 	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
 	return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 	} 
@@ -754,7 +759,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 	int			nObject = objP->Index ();
 	tAILocalInfo		*ailP = &gameData.ai.localInfo [nObject];
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][objP->info.nId];
-	CFixVector	fire_vec;
+	CFixVector	vFire;
 	CFixVector	bpp_diff;
 
 	if (!gameStates.app.cheats.bRobotsFiring)
@@ -784,25 +789,6 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 			}
 	}
 
-//--	//	Find CSegment containing laser fire position.  If the robotP is straddling a CSegment, the position from
-//--	//	which it fires may be in a different CSegment, which is bad news for FindVectorIntersection.  So, cast
-//--	//	a ray from the CObject center (whose CSegment we know) to the laser position.  Then, in the call to Laser_create_new
-//--	//	use the data returned from this call to FindVectorIntersection.
-//--	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
-//--	//	in the same CSegment as the source point.
-//--
-//--	fq.p0						= &objP->info.position.vPos;
-//--	fq.startseg				= objP->info.nSegment;
-//--	fq.p1						= fire_point;
-//--	fq.rad					= 0;
-//--	fq.thisobjnum			= objP->Index ();
-//--	fq.ignore_obj_list	= NULL;
-//--	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
-//--
-//--	fate = FindVectorIntersection(&fq, &hit_data);
-//--	if (fate != HIT_NONE)
-//--		return;
-
 	//	Set position to fire at based on difficulty level.
 	bpp_diff [X] = gameData.ai.vBelievedPlayerPos [X] + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
 	bpp_diff [Y] = gameData.ai.vBelievedPlayerPos [Y] + (rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
@@ -811,39 +797,41 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 	//	Half the time fire at the playerP, half the time lead the playerP.
 	if (rand() > 16384) {
 
-		CFixVector::NormalizedDir(fire_vec, bpp_diff, *fire_point);
+		CFixVector::NormalizedDir(vFire, bpp_diff, *fire_point);
 
-	} else {
-		CFixVector	player_direction_vector = bpp_diff - bpp_diff;
+		}
+	else {
+		CFixVector	vPlayerDirection = bpp_diff - bpp_diff;
 
 		// If playerP is not moving, fire right at him!
 		//	Note: If the robotP fires in the direction of its forward vector, this is bad because the weapon does not
 		//	come out from the center of the robotP; it comes out from the side.  So it is common for the weapon to miss
 		//	its target.  Ideally, we want to point the guns at the playerP.  For now, just fire right at the playerP.
-		if ((abs(player_direction_vector [X] < 0x10000)) && (abs(player_direction_vector [Y] < 0x10000)) && (abs(player_direction_vector [Z] < 0x10000))) {
+		if ((abs(vPlayerDirection [X] < 0x10000)) && (abs(vPlayerDirection [Y] < 0x10000)) && (abs(vPlayerDirection [Z] < 0x10000))) {
 
-			CFixVector::NormalizedDir(fire_vec, bpp_diff, *fire_point);
+			CFixVector::NormalizedDir (vFire, bpp_diff, *fire_point);
 
 		// Player is moving.  Determine where the playerP will be at the end of the next frame if he doesn't change his
 		//	behavior.  Fire at exactly that point.  This isn't exactly what you want because it will probably take the laser
 		//	a different amount of time to get there, since it will probably be a different distance from the playerP.
 		//	So, that's why we write games, instead of guiding missiles...
-		} else {
-			fire_vec = bpp_diff - *fire_point;
-			fire_vec *= FixMul(WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel), gameData.time.xFrame);
+			} 
+		else {
+			vFire = bpp_diff - *fire_point;
+			vFire *= FixMul (WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel), gameData.time.xFrame);
 
-			fire_vec += player_direction_vector;
-			CFixVector::Normalize(fire_vec);
+			vFire += vPlayerDirection;
+			CFixVector::Normalize (vFire);
 
 		}
 	}
 
-	CreateNewLaserEasy ( &fire_vec, fire_point, objP->Index (), botInfoP->nWeaponType, 1);
+	CreateNewLaserEasy ( &vFire, fire_point, objP->Index (), botInfoP->nWeaponType, 1);
 
 	if (IsMultiGame)
  {
 		ai_multi_send_robot_position(nObject, -1);
-		MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &fire_vec);
+		MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &vFire);
 	}
 
 	CreateAwarenessEvent (objP, D1_PA_NEARBY_ROBOT_FIRED);
@@ -2147,23 +2135,23 @@ if (nObject == nDbgObj)
 			//	(Note, only drop if playerP is visible.  This prevents the bombs from being a giveaway, and
 			//	also ensures that the robotP is moving while it is dropping.  Also means fewer will be dropped.)
 			if ((ailP->nextPrimaryFire <= 0) && (player_visibility)) {
-				CFixVector	fire_vec, fire_pos;
+				CFixVector	vFire, fire_pos;
 
 				if (!ai_multiplayer_awareness(objP, 75))
 					return;
 
-				fire_vec = objP->info.position.mOrient.FVec ();
-				fire_vec = -fire_vec;
-				fire_pos = objP->info.position.vPos + fire_vec;
+				vFire = objP->info.position.mOrient.FVec ();
+				vFire = -vFire;
+				fire_pos = objP->info.position.vPos + vFire;
 
-				CreateNewLaserEasy( &fire_vec, &fire_pos, objP->Index (), PROXMINE_ID, 1);
+				CreateNewLaserEasy( &vFire, &fire_pos, objP->Index (), PROXMINE_ID, 1);
 				ailP->nextPrimaryFire = I2X (5);		//	Drop a proximity bomb every 5 seconds.
 
 				#ifdef NETWORK
 				if (IsMultiGame)
 			 {
 					ai_multi_send_robot_position(objP->Index (), -1);
-					MultiSendRobotFire(objP->Index (), -1, &fire_vec);
+					MultiSendRobotFire(objP->Index (), -1, &vFire);
 				}
 				#endif
 			}

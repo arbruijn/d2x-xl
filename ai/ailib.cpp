@@ -75,11 +75,12 @@ fq.radP0				=
 fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL;
+fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER;
+fq.bCheckVisibility = true;
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
-if (gameData.ai.nHitType != HIT_NONE)
+if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != LOCALPLAYER.nObject))
 	return 0;
 dot = CFixVector::Dot (*vVecToPlayer, objP->info.position.mOrient.FVec ());
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
@@ -124,6 +125,7 @@ fq.radP1				= I2X (1);
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= ignoreObjs;
 fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
+fq.bCheckVisibility = false;
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
 #if DBG
 if (gameData.ai.nHitType == 0)
@@ -133,7 +135,7 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 objP->rType.polyObjInfo.nModel = nModel;
 objP->info.xSize = nSize;
-return (gameData.ai.nHitType != HIT_OBJECT);
+return (gameData.ai.nHitType == HIT_NONE);
 }
 
 // --------------------------------------------------------------------------------------------------------------------

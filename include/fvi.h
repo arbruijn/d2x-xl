@@ -61,6 +61,7 @@ typedef struct tFVIData {
 #define FQ_IGNORE_POWERUPS	16		//ignore powerups
 #define FQ_SEE_OBJS			32
 #define FQ_ANY_OBJECT		64
+#define FQ_CHECK_PLAYER		128
 
 //intersection types
 #define IT_ERROR	-1
@@ -77,6 +78,7 @@ typedef struct tFVIQuery {
 	short			thisObjNum;
 	short			*ignoreObjList;
 	int			flags;
+	bool			bCheckVisibility;
 } tFVIQuery;
 
 //Find out if a vector intersects with anything.

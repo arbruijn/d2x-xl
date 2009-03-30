@@ -333,6 +333,7 @@ fq.radP1 = objP->info.xSize;
 fq.thisObjNum = objP->Index ();
 fq.ignoreObjList = NULL;
 fq.flags = 0;
+fq.bCheckVisibility = false;
 fviResult = FindVectorIntersection (&fq, &hi);
 if (fviResult == HIT_WALL)
 #if 1
@@ -598,6 +599,7 @@ retryMove:
 	fq.thisObjNum = nObject;
 	fq.ignoreObjList = gameData.physics.ignoreObjs.Buffer ();
 	fq.flags = FQ_CHECK_OBJS;
+	fq.bCheckVisibility = false;
 
 	if (info.nType == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;
@@ -858,7 +860,7 @@ retryMove:
 		//if (bSpeedBoost && (this == gameData.objs.consoleP))
 		//	break;
 #if DBG
-		tFVIData				_hi;
+		tFVIData	_hi;
 		memset (&_hi, 0, sizeof (_hi));
 		FindVectorIntersection (&fq, &_hi);
 #endif

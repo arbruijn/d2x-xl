@@ -536,9 +536,9 @@ int CreateNewLaserEasy (CFixVector * vDirection, CFixVector * vPosition, short p
 	CObject		*parentObjP = OBJECTS + parent;
 	int			fate;
 
-	//	Find CSegment containing laser fire vPosition.  If the robot is straddling a CSegment, the vPosition from
-	//	which it fires may be in a different CSegment, which is bad news for FindVectorIntersection.  So, cast
-	//	a ray from the CObject center (whose CSegment we know) to the laser vPosition.  Then, in the call to CreateNewWeapon
+	//	Find segment containing laser fire vPosition.  If the robot is straddling a segment, the vPosition from
+	//	which it fires may be in a different segment, which is bad news for FindVectorIntersection.  So, cast
+	//	a ray from the object center (whose segment we know) to the laser position.  Then, in the call to CreateNewWeapon
 	//	use the data returned from this call to FindVectorIntersection.
 	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
 	//	in the same CSegment as the source point.
@@ -551,6 +551,7 @@ fq.radP1				= 0;
 fq.thisObjNum		= OBJ_IDX (parentObjP);
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
+fq.bCheckVisibility = false;
 
 fate = FindVectorIntersection (&fq, &hitData);
 if (fate != HIT_NONE  || hitData.hit.nSegment==-1)
@@ -709,6 +710,7 @@ fq.radP1				= 0x10;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
+fq.bCheckVisibility = false;
 nFate = FindVectorIntersection (&fq, &hitData);
 nLaserSeg = hitData.hit.nSegment;
 if (nLaserSeg == -1) {	//some sort of annoying error

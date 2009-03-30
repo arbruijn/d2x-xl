@@ -1036,6 +1036,7 @@ fq.rad			  = 0;
 fq.thisObjNum	  = nObject;
 fq.ignoreObjList = NULL;
 fq.flags			  = FQ_TRANSWALL;
+fq.bCheckVisibility = false;
 if (FindVectorIntersection (&fq, &fi) != HIT_WALL)
 	return G3_INFINITY;
 return //fScale ? X2F (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale :

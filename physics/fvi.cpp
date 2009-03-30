@@ -731,7 +731,7 @@ return (t == nObject);
 
 int FVICompute (CFixVector *vIntP, short *intS, CFixVector *p0, short nStartSeg, CFixVector *p1,
 					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
-					 short *nSegments, int nEntrySeg)
+					 short *nSegments, int nEntrySeg, bool bCheckVisibility)
 {
 	CSegment		*segP;				//the CSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
@@ -746,6 +746,7 @@ int FVICompute (CFixVector *vIntP, short *intS, CFixVector *p0, short nStartSeg,
 	int			nHitNoneSegs = 0;
 	int			hitNoneSegList [MAX_FVI_SEGS];
 	int			nCurNestLevel = gameData.collisions.hitData.nNestCount;
+	int			nChildSide;
 #if FVI_NEWCODE
 	int			nFudgedRad;
 	int			nFaces;
@@ -808,6 +809,8 @@ restart:
 				}
 #endif
 			nOtherType = otherObjP->info.nType;
+			if ((flags & FQ_CHECK_PLAYER) && (nOtherType != OBJ_PLAYER))
+				continue;
 			if (otherObjP->info.nFlags & OF_SHOULD_BE_DEAD)
 				continue;
 			if (nThisObject == nObject)
@@ -878,22 +881,33 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 
 	//for each face we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (endMask >= bit); nSide++) {
+		nChildSide = segP->m_children [nSide];
+#if 1
+		if (bCheckVisibility && (0 > nChildSide))	// poking through a wall into the void around the level?
+			continue;
+#endif
 		if (!(nFaces = segP->FaceCount (nSide)))
 			nFaces = 1;
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
-			if (segP->m_children [nSide] == nEntrySeg)	//must be executed here to have bit shifted
+			if (nChildSide == nEntrySeg)	//must be executed here to have bit shifted
 				continue;		//don't go back through entry nSide
 			if (!(endMask & bit))	//on the back of this face?
 				continue;
 			if (iFace >= nFaces)
 				continue;
-			//did we go through this CWall/door?
+			//did we go through this wall/door?
 			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
 				segP->SpecialCheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace) :
 				segP->CheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace);
-#if 0
-			if (!nFaceHitType)
-				continue;
+#if 1
+			if (!nFaceHitType) {
+#	if DBG
+				if (0 > nChildSide)	// poking through a wall into the void around the level?
+					nFaceHitType = HIT_WALL;
+			else
+#	endif
+					continue;
+				}
 #endif
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
@@ -903,9 +917,8 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			//PrintLog ("done\n");
 			//if what we have hit is a door, check the adjoining segP
 			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55)) {
-				int childSide = segP->m_children [nSide];
-				if (childSide >= 0) {
-					int nType = SEGMENTS [childSide].m_nType;
+				if (nChildSide >= 0) {
+					int nType = SEGMENTS [nChildSide].m_nType;
 					if (((nType != SEGMENT_IS_BLOCKED) && (nType != SEGMENT_IS_SKYBOX)) ||
 							(gameData.objs.speedBoost [nThisObject].bBoosted &&
 							((SEGMENTS [nStartSeg].m_nType != SEGMENT_IS_SPEEDBOOST) ||
@@ -936,7 +949,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
 					subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg,
 													 p1, radP0, radP1, nThisObject, ignoreObjList, flags,
-													 tempSegList, &nTempSegs, nStartSeg);
+													 tempSegList, &nTempSegs, nStartSeg, bCheckVisibility);
 					if (subHitType != HIT_NONE) {
 						d = CFixVector::Dist(subHitPoint, *p0);
 						if (d < dMin) {
@@ -992,8 +1005,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 					}
 				}
 			else {//a wall
-				if (nFaceHitType)
-				 {
+				if (nFaceHitType) {
 					//is this the closest hit?
 					d = CFixVector::Dist (vHitPoint, *p0);
 					if (d < dMin) {
@@ -1109,13 +1121,13 @@ gameData.collisions.hitData.nNestCount = 0;
 nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
 nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1,
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
-							  hitData->segList, &hitData->nSegments, -2);
-//!!nHitSegment = FindSegByPos(&vHitPoint, fq->startSeg, 1, 0);
+							  hitData->segList, &hitData->nSegments, -2, fq->bCheckVisibility);
+
 if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].Masks (vHitPoint, 0).m_center)
 	nHitSegment = nHitSegment2;
-else {
+else
 	nHitSegment = FindSegByPos (vHitPoint, fq->startSeg, 1, 0);
-	}
+
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
 	if ((gameData.collisions.hitData.nSegment2 != -1) && !SEGMENTS [gameData.collisions.hitData.nSegment2].Masks (vHitPoint, 0).m_center)
@@ -1123,14 +1135,14 @@ if ((nHitType == HIT_WALL) && (nHitSegment == -1))
 
 if (nHitSegment == -1) {
 	//int nNewHitType;
-	short nNewHitSeg2=-1;
+	short nNewHitSeg2 = -1;
 	CFixVector vNewHitPoint;
 
-	//because of code that deal with CObject with non-zero radius has
-	//problems, try using zero radius and see if we hit a CWall
+	//because the code that deals with objects with non-zero radius has
+	//problems, try using zero radius and see if we hit a wall
 	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
 								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList,
-									  &hitData->nSegments, -2);
+									  &hitData->nSegments, -2, fq->bCheckVisibility);
 	if (nNewHitSeg2 != -1) {
 		nHitType = nNewHitType;
 		nHitSegment = nNewHitSeg2;
@@ -1318,6 +1330,7 @@ if (SPECTATOR (objP))
 else
 	fq.startSeg = objP ? objP->info.nSegment : nSegment;
 fq.ignoreObjList = NULL;
+fq.bCheckVisibility = false;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return nHitType != HIT_WALL;
 }
@@ -1344,6 +1357,7 @@ do {
 	fq.thisObjNum		= OBJ_IDX (objP1);
 	fq.ignoreObjList	= NULL;
 	fq.flags				= transType;
+	fq.bCheckVisibility = false;
 	fate = FindVectorIntersection (&fq, &hit_data);
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));

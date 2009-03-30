@@ -180,6 +180,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 				fq.thisObjNum		= objP->Index ();
 				fq.ignoreObjList	= NULL;
 				fq.flags				= 0;
+				fq.bCheckVisibility = false;
 				hitType = FindVectorIntersection (&fq, &hitData);
 				if (hitType != HIT_NONE)
 					continue;

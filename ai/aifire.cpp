@@ -254,6 +254,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		fq.thisObjNum		= objP->Index ();
 		fq.ignoreObjList	= NULL;
 		fq.flags				= FQ_TRANSWALL;
+		fq.bCheckVisibility = false;
 
 		fate = FindVectorIntersection (&fq, &hit_data);
 		if (fate != HIT_NONE) {
