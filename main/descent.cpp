@@ -109,7 +109,7 @@ CGameData		gameData;
 void DefaultAllSettings (void);
 void CheckJoystickCalibration (void);
 void ShowOrderForm (void);
-void MicroPaymentNotification (void);
+void InitMPStatus (void);
 
 tGameOptions *gameOpts = gameOptions;
 
@@ -743,6 +743,7 @@ gameData.Init ();
 InitExtraGameInfo ();
 InitNetworkData ();
 InitGameOptions (0);
+InitMPStatus ();
 InitArgs (argc, argv);
 GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
