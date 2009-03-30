@@ -901,7 +901,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				segP->CheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace);
 #if 1
 			if (!nFaceHitType) {
-#	if DBG
+#	if 1 //DBG
 				if (0 > nChildSide)	// poking through a wall into the void around the level?
 					nFaceHitType = HIT_WALL;
 			else
