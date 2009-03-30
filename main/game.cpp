@@ -1392,7 +1392,7 @@ else
 void GameRenderFrame (void);
 void OmegaChargeFrame (void);
 void FlickerLights (void);
-int CheckMicroPayments (int nMode);
+
 
 //int bLog = 0;
 
@@ -1405,10 +1405,11 @@ if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
 	GasolineCheat (0);
 	}
-if (!(MultiProtectGame () && CheckMicroPayments (0))) {
+if (!(MultiProtectGame () && mpCheck && mpCheck (0))) {
 	SetFunctionMode (FMODE_MENU);
 	return -1;
 	}
+
 AutoBalanceTeams ();
 MultiSendTyping ();
 MultiSendWeapons (0);

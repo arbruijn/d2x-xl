@@ -49,7 +49,7 @@ static const char* pszVrResolution = "VR_resolution";
 static const char* pszVrTracking = "VR_tracking";
 static const char* pszHiresMovies = "Hires Movies";
 static const char* pszD2XVersion = "D2XVersion";
-static const char* pszMicroPayments = "MicroPayments";
+static const char* pszMPStatus = "MPStatus";
 
 int digi_driver_board_16;
 int digi_driver_dma_16;
@@ -57,6 +57,11 @@ int digi_driver_dma_16;
 void InitCustomDetails(void);
 
 tGameConfig gameConfig;
+
+int*	mpStatus = NULL;
+bool (*mpActivate) (void) = NULL;
+int (*mpCheck) (int) = NULL;
+void (*mpNotify) (void) = NULL;
 
 class CHashList {
 	public:
@@ -116,22 +121,6 @@ gameConfig.nVersion = 0;
 }
 
 // ----------------------------------------------------------------------------
-
-bool ActivateMicroPayments (void)
-{
-#if 0 //DBG
-return true;
-#else
-   time_t      t;
-   struct tm*	h;
-
-time (&t);
-h = localtime (&t);
-return ((h->tm_mon == 3) && (h->tm_mday == 1));
-#endif
-}
-
-// ----------------------------------------------------------------------------
 //gameOpts->movies.bHires might be changed by -nohighres, so save a "real" copy of it
 int bHiresMoviesSave;
 int bRedbookEnabledSave;
@@ -154,7 +143,8 @@ gameConfig.nMidiVolume = 8;
 gameConfig.nRedbookVolume = 8;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
-gameConfig.nMicroPayments = ActivateMicroPayments () ? -1 : 0;
+if (mpActivate && mpStatus)
+	*mpStatus = mpActivate () ? -1 : 0;
 
 //set these here in case no cfg file
 bHiresMoviesSave = gameOpts->movies.bHires;
@@ -234,8 +224,10 @@ while (!cf.EoF ()) {
 			gameConfig.vrTracking = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszD2XVersion))
 			gameConfig.nVersion = strtoul (value, NULL, 10);
-		else if (!strcmp (token, pszMicroPayments))
-			gameConfig.nMicroPayments = (gameConfig.nMicroPayments < 0) ? strtoul (value, NULL, 10) : 0;
+		else if (!strcmp (token, pszMPStatus)) {
+			if (mpStatus)
+				*mpStatus = (*mpStatus < 0) ? strtoul (value, NULL, 10) : 0;
+			}
 		else if (!strcmp (token, pszHiresMovies) && gameStates.app.bNostalgia)
 			bHiresMoviesSave = gameOpts->movies.bHires = strtol (value, NULL, 10);
 	}
@@ -291,8 +283,9 @@ if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	cf.Close ();
 	}
 JoySetCalVals (cal, sizeofa (cal));
-#if 0 //DBG
-gameConfig.nMicroPayments = -1;
+#if 1 //DBG
+if (mpStatus)
+	*mpStatus = -1;
 #endif
 return 0;
 }
@@ -315,8 +308,8 @@ if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
 sprintf (str, "%s=%u\n", pszD2XVersion, D2X_IVER);
 cf.PutS (str);
-if (ActivateMicroPayments ()) {
-	sprintf (str, "%s=1\n", pszMicroPayments);
+if (mpActivate && mpActivate ()) {
+	sprintf (str, "%s=1\n", pszMPStatus);
 	cf.PutS (str);
 	}
 sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);

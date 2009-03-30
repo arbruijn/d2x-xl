@@ -199,7 +199,7 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 void PrintVersionInfo (void)
 {
-if ((gameConfig.nMicroPayments < 0) || gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
+if (mpStatus && (*mpStatus < 0) || gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
 	return;
 
 	static int bVertigo = -1;
@@ -308,7 +308,7 @@ if (!gameData.demo.bAuto)  {
 
 // ----------------------------------------------------------------------------
 
-#define MENU_HIRES_MODE SM (640, 480)
+#define MENU_HIRES_MODE SM (800, 600)
 
 // ----------------------------------------------------------------------------
 
@@ -394,7 +394,7 @@ else {
 	GrSetMode (
 		gameStates.menus.bHires ? 
 			(gameStates.gfx.nStartScrMode < 0) ? 
-				SM (640, 480) 
+				SM (800, 600) 
 				: SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y) 
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);
@@ -888,10 +888,8 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}	
-if (gameConfig.nMicroPayments < 0) {
-	MicroPaymentNotification ();
-	gameConfig.nMicroPayments = 1;
-	}
+if (mpNotify && mpStatus && (*mpStatus < 0))
+	mpNotify ();
 BadHardwareNotification ();
 /*---*/PrintLog ("Invoking main menu\n");
 MainLoop ();

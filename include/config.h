@@ -43,10 +43,14 @@ typedef struct tGameConfig {
 	int		vrResolution;
 	int		vrTracking;
 	uint		nVersion;
-	int		nMicroPayments;
 } tGameConfig;
 
 extern tGameConfig gameConfig;
+
+extern int*	mpStatus;
+extern bool (*mpActivate) (void);
+extern int (*mpCheck) (int);
+extern void (*mpNotify) (void);
 
 //values for Config_controlType
 #define CONTROL_NONE 0

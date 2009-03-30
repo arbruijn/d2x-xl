@@ -167,8 +167,8 @@ gameStates.multi.bSurfingNet = 0;
 void InitGfxStates (void)
 {
 gameStates.gfx.bInstalled = 0;
-gameStates.gfx.nStartScrMode = 2;
-gameStates.gfx.nStartScrSize = 2;
+gameStates.gfx.nStartScrMode = 3;
+gameStates.gfx.nStartScrSize = 3;
 }
 
 // ----------------------------------------------------------------------------

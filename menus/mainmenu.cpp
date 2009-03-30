@@ -296,7 +296,6 @@ for (;;) {
 //------------------------------------------------------------------------------
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
-int CheckMicroPayments (int nMode);
 
 //returns flag, true means quit menu
 int ExecMainMenuOption (int nChoice) 
@@ -331,7 +330,7 @@ else if (nChoice == mainOpts.nLoadDirect) {
 	}
 #endif
 else if (nChoice == mainOpts.nMulti) {
-	if (CheckMicroPayments (1))
+	if (mpCheck && mpCheck (1))
 		MultiplayerMenu ();
 	}
 else if (nChoice == mainOpts.nConfig) 
