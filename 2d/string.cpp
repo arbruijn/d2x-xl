@@ -595,8 +595,8 @@ x = 0;
 					hc.red = colorP->red * 4;
 					hc.green = colorP->green * 4;
 					hc.blue = colorP->blue * 4;
-					hc.alpha = 255;
 					}
+				hc.alpha = 255;
 				}
 			for (hy = 0; hy < bmfP->Height (); hy++) {
 				pc = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + (y + hy) * w + x;
