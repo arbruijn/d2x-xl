@@ -1369,6 +1369,9 @@
 						RelativePath="..\network\win32\ipx_win.cpp">
 					</File>
 					<File
+						RelativePath="..\network\mpstatus.cpp">
+					</File>
+					<File
 						RelativePath="..\network\multi.cpp">
 						<FileConfiguration
 							Name="Debug|Win32">
@@ -3193,10 +3196,10 @@
 				RelativePath="..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\icon1.ico">
