@@ -406,24 +406,19 @@ return nLoadedSounds != 0;
 #		include <SDL_mixer.h>
 #	endif
 
-typedef struct tAddonSound {
-	Mix_Chunk		*chunkP;
-	/*const*/ char		szSoundFile [FILENAME_LEN];
-} tAddonSound;
-
 tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
- {NULL, "00:missileflight-small.wav"},
- {NULL, "01:missileflight-big.wav"},
- {NULL, "02:vulcan-firing.wav"},
- {NULL, "03:gauss-firing.wav"},
- {NULL, "04:gatling-speedup.wav"},
- {NULL, "05:flareburning.wav"},
- {NULL, "06:lowping.wav"},
- {NULL, "07:highping.wav"},
- {NULL, "08:lightng.wav"},
- {NULL, "09:slowdown.wav"},
- {NULL, "10:speedup.wav"},
- {NULL, "11:airbubbles.wav"}
+	 {NULL, "00:missileflight-small.wav"},
+	 {NULL, "01:missileflight-big.wav"},
+	 {NULL, "02:vulcan-firing.wav"},
+	 {NULL, "03:gauss-firing.wav"},
+	 {NULL, "04:gatling-speedup.wav"},
+	 {NULL, "05:flareburning.wav"},
+	 {NULL, "06:lowping.wav"},
+	 {NULL, "07:highping.wav"},
+	 {NULL, "08:lightng.wav"},
+	 {NULL, "09:slowdown.wav"},
+	 {NULL, "10:speedup.wav"},
+	 {NULL, "11:airbubbles.wav"}
 	};
 
 //------------------------------------------------------------------------------

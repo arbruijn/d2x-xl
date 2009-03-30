@@ -675,9 +675,7 @@ else {
 	bEnergyWeapon = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [id] && !gameData.objs.bIsMissile [id];
 	}
 #if SHADOWS
-if (!bForce && FAST_SHADOWS &&
-	 !gameOpts->render.shadows.bSoft &&
-	 (gameStates.render.nShadowPass == 3))
+if (!bForce && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass == 3))
 	return 1;
 #endif
 if (gameStates.render.bBuildModels)

@@ -749,8 +749,10 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
 	int nObject = objP->Index ();
 	if (nObject < 0)
 		return I2X (1);
-	if (nObject >= gameData.objs.nLastObject [0])
+#if DBG
+	if (nObject > gameData.objs.nLastObject [0])
 		return 0;
+#endif
 	//First, get static light for this CSegment
 fix light;
 if (gameStates.render.nLightingMethod && !((gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {

@@ -274,4 +274,13 @@ char* DefaultSoundFile (void);
 
 //------------------------------------------------------------------------------
 
+typedef struct tAddonSound {
+	Mix_Chunk		*chunkP;
+	/*const*/ char		szSoundFile [FILENAME_LEN];
+} tAddonSound;
+
+extern tAddonSound addonSounds [MAX_ADDON_SOUND_FILES];
+
+//------------------------------------------------------------------------------
+
 #endif //_PIGGY_H
