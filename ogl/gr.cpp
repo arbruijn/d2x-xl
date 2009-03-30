@@ -226,7 +226,7 @@ return -1;
 
 int GrInit (void)
 {
-	int mode = SM (800, 600);
+	int mode = SM (640, 480);
 	int retcode, t;
 
 // Only do this function once!
