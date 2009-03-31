@@ -916,15 +916,13 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			widResult = segP->IsDoorWay (nSide, (nThisObject < 0) ? NULL : OBJECTS + nThisObject);
 			//PrintLog ("done\n");
 			//if what we have hit is a door, check the adjoining segP
-			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55)) {
-				if (nChildSide >= 0) {
-					int nType = SEGMENTS [nChildSide].m_nType;
-					if (((nType != SEGMENT_IS_BLOCKED) && (nType != SEGMENT_IS_SKYBOX)) ||
-							(gameData.objs.speedBoost [nThisObject].bBoosted &&
-							((SEGMENTS [nStartSeg].m_nType != SEGMENT_IS_SPEEDBOOST) ||
-							(nType == SEGMENT_IS_SPEEDBOOST))))
- 						widResult |= WID_FLY_FLAG;
-					}
+			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nChildSide >= 0)) {
+				int nType = SEGMENTS [nChildSide].m_nType;
+				if (((nType != SEGMENT_IS_BLOCKED) && (nType != SEGMENT_IS_SKYBOX)) ||
+						(gameData.objs.speedBoost [nThisObject].bBoosted &&
+						((SEGMENTS [nStartSeg].m_nType != SEGMENT_IS_SPEEDBOOST) ||
+						(nType == SEGMENT_IS_SPEEDBOOST))))
+					widResult |= WID_FLY_FLAG;
 				}
 			if ((widResult & WID_FLY_FLAG) ||
 				 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
