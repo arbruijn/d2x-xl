@@ -218,10 +218,12 @@ do {
 	m.AddText ("", 0);
 	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Playing (), KEY_C, HTX_ONLINE_MANUAL);
 	optReverse = m.AddCheck (TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
+#if 0
 	if (redbook.Enabled () || !gameConfig.nMidiVolume)
 		optFadeMusic = -1;
 	else
 		optFadeMusic = m.AddCheck (TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
+#endif
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
 	redbook.Enable (m [soundOpts.nRedbook].m_value);
 	gameConfig.bReverseChannels = m [optReverse].m_value;
@@ -231,7 +233,9 @@ if (gameConfig.nMidiVolume < 1)
 else if (!bSongPlaying)
 	songManager.PlayCurrent (1);
 if (!gameStates.app.bNostalgia) {
+#if 0
 	GET_VAL (gameOpts->sound.bFadeMusic, optFadeMusic);
+#endif
 	GET_VAL (gameOpts->sound.bShip, optShipSound);
 	GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
 	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);

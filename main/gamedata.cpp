@@ -1727,8 +1727,6 @@ gameOptions [0].render.lightnings.bOmega = 1;
 gameOptions [0].render.lightnings.bRobotOmega = 1;
 gameOptions [0].render.lightnings.bAuxViews = 0;
 gameOptions [0].render.lightnings.bMonitors = 1;
-extraGameInfo [0].bFlickerLights = 1;
-extraGameInfo [0].bBrightObjects = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1755,6 +1753,8 @@ gameOptions [0].ogl.nMaxLightsPerObject = (gameOptions [0].render.nQuality  / 2 
 gameOptions [0].ogl.bHeadlight = gameStates.ogl.bShadersOk;
 gameOptions [0].ogl.bObjLighting = gameStates.ogl.bShadersOk;
 gameOptions [0].ogl.bLightObjects = gameStates.ogl.bShadersOk;
+extraGameInfo [0].bFlickerLights = !gameOptions [0].app.bEpilepticFriendly;
+extraGameInfo [0].bBrightObjects = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1763,15 +1763,14 @@ void DefaultAutomapSettings (void)
 {
 extraGameInfo [0].bPowerupsOnRadar = 1;
 extraGameInfo [0].bRobotsOnRadar = 1;
-if (!gameOptions [0].app.bExpertMode) {
-	gameOptions [0].render.automap.nColor = 1;
-	gameOptions [0].render.automap.bGrayOut = 1;
-	gameOptions [0].render.automap.bCoronas = 0;
-	//gameOptions [0].render.automap.bSparks = (gameOptions [0].render.nQuality > 0);
-	gameOptions [0].render.automap.bParticles = 0;
-	gameOptions [0].render.automap.bLightnings = 0;
-	gameOptions [0].render.automap.bSkybox = 0;
-	}
+gameOptions [0].render.automap.nColor = 1;
+//gameOptions [0].render.automap.bBright = 0;
+gameOptions [0].render.automap.bGrayOut = 1;
+gameOptions [0].render.automap.bCoronas = 0;
+gameOptions [0].render.automap.bSparks = 0; 
+gameOptions [0].render.automap.bParticles = 0;
+gameOptions [0].render.automap.bLightnings = 0;
+gameOptions [0].render.automap.bSkybox = 0;
 }
 
 // ----------------------------------------------------------------------------

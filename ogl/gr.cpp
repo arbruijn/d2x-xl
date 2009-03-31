@@ -243,11 +243,15 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 	Error ("SDL library video initialisation failed: %s.", SDL_GetError());
 }
 #endif
+#if DBG
+	gameStates.ogl.bFullScreen = 0;
+#else
 if ((t = FindArg ("-fullscreen"))) {
 	/***/PrintLog ("   switching to fullscreen\n");
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
 	//GrToggleFullScreen();
 	}
+#endif
 if ((t=FindArg ("-gl_reticle")))
 	gameStates.ogl.nReticle = atoi (pszArgList [t + 1]);
 /***/PrintLog ("   initializing internal texture list\n");
