@@ -882,7 +882,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 	//for each face we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (endMask >= bit); nSide++) {
 		nChildSide = segP->m_children [nSide];
-#if 1
+#if 0
 		if (bCheckVisibility && (0 > nChildSide))	// poking through a wall into the void around the level?
 			continue;
 #endif
@@ -901,7 +901,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 				segP->CheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace);
 #if 1
 			if (!nFaceHitType) {
-#	if 1 //DBG
+#	if 0 //DBG
 				if (bCheckVisibility && (0 > nChildSide))	// poking through a wall into the void around the level?
 					nFaceHitType = HIT_WALL;
 			else
