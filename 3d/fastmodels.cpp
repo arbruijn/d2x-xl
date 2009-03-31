@@ -649,14 +649,23 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
 					glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&prl->info.vDirf));
 #endif
-					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
-					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
-					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
+					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
+					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
+					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
 					}
 				else {
-					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / fBrightness);
-					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / fBrightness);
-					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / fBrightness);
+					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
+#if 1
+					if (X2F (CFixVector::Dist (objP->info.position.vPos, prl->info.vPos)) <= prl->info.fRad) {
+						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
+						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
+						}
+					else 
+#endif
+						{
+						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
+						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
+						}
 					}
 				nLights--;
 				}
@@ -753,9 +762,11 @@ int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp,
 
 if (!objP)
 	return 0;
-#ifdef _DEBUG
+#if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nModel;
+if (objP && (ObjIdx (objP) == nDbgObj))
+	nDbgObj = nDbgObj;
 #endif
 if (gameStates.render.bQueryCoronas &&
 	 (((objP->info.nType == OBJ_WEAPON) && (objP->info.nId < MAX_WEAPONS) &&

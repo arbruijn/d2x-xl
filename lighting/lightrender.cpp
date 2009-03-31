@@ -345,7 +345,7 @@ if (gameStates.render.nLightingMethod) {
 	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
 
 	//m_data.iStaticLights [nThread] = m_data.index [0][nThread].nActive;
-	for (i = gameStates.render.nMaxLightsPerFace; i; i--, pnl++) {
+	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
 		if (!(prl = RenderLights (j)))
