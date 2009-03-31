@@ -125,7 +125,7 @@ fq.radP1				= I2X (1);
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= ignoreObjs;
 fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
-fq.bCheckVisibility = false;
+fq.bCheckVisibility = true;
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
 #if DBG
 if (gameData.ai.nHitType == 0)
