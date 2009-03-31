@@ -572,7 +572,7 @@ if (fq.startSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
-fq.radP0				=
+fq.radP0				= 0;
 fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
