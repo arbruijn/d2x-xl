@@ -902,7 +902,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 #if 1
 			if (!nFaceHitType) {
 #	if 1 //DBG
-				if (0 > nChildSide)	// poking through a wall into the void around the level?
+				if (bCheckVisibility && (0 > nChildSide))	// poking through a wall into the void around the level?
 					nFaceHitType = HIT_WALL;
 			else
 #	endif

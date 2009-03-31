@@ -577,7 +577,7 @@ fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER;		//what about trans walls???
-fq.bCheckVisibility = false;
+fq.bCheckVisibility = true;
 #if DBG
 if (fq.thisObjNum == nDbgObj)
 	nDbgObj = nDbgObj;

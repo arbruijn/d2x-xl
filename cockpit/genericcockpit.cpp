@@ -1105,7 +1105,7 @@ fq.thisObjNum = gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.
 fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
-fq.bCheckVisibility = false;
+fq.bCheckVisibility = true;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
