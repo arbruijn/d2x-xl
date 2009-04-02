@@ -719,7 +719,8 @@ if (nStage == 0) {
 #endif
 	if (gameStates.app.bHaveMod) {
 		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0, true);
+		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0, true))
+			gameStates.app.bCustomData = true;
 		}
 	if (gameData.missions.nEnhancedMission) {
 		char szFile [FILENAME_LEN];
