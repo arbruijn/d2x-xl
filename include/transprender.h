@@ -169,7 +169,9 @@ class CTransparencyRenderer {
 		inline int ItemCount (void) { return m_data.nItems; }
 		int Add (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 		int AddMT (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread);
-		int AddFace (CSegFace *faceP);
+		inline int AddFace (CSegFace *faceP) {
+			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);
+			}
 		int AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
 							CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color,
 							tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
@@ -190,6 +192,7 @@ class CTransparencyRenderer {
 
 	private:
 		int AddFaceTris (CSegFace *faceP);
+		int AddFaceQuads (CSegFace *faceP);
 		void ResetBitmaps (void);
 		void EnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU);
 		void DisableClientState (int nTMU, char bDecal, char bFull);

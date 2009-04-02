@@ -430,11 +430,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddFace (CSegFace *faceP)
+int CTransparencyRenderer::AddFaceQuads (CSegFace *faceP)
 {
-if (gameStates.render.bTriangleMesh)
-	return AddFaceTris (faceP);
-
 	CFloatVector	vertices [4];
 	int				i, j, bAdditive = FaceIsAdditive (faceP);
 	CBitmap*			bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
@@ -456,10 +453,10 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 #endif
 	}
 return AddPoly (faceP, NULL, bmP,
-						vertices, 4, FACES.texCoord + faceP->nIndex,
-						FACES.color + faceP->nIndex,
-						NULL, 4, (bmP != NULL) && !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
-						bAdditive, faceP->nSegment) > 0;
+					 vertices, 4, FACES.texCoord + faceP->nIndex,
+					 FACES.color + faceP->nIndex,
+					 NULL, 4, (bmP != NULL) && !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
+					 bAdditive, faceP->nSegment) > 0;
 }
 
 //------------------------------------------------------------------------------
@@ -585,7 +582,7 @@ void CTransparencyRenderer::EnableClientState (char bClientState, char bTexCoord
 {
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
-if (!bDecal && (bColor != m_data.bClientColor)) {
+if ((bDecal < 1) && (bColor != m_data.bClientColor)) {
 	if ((m_data.bClientColor = bColor))
 		glEnableClientState (GL_COLOR_ARRAY);
 	else
@@ -735,7 +732,7 @@ if (bClientState) {
 		m_data.bDecal = 0;
 		}
 #endif
-	EnableClientState (bClientState, bTexCoord, bColor, 0, GL_TEXTURE0 + bUseLightmaps);
+	EnableClientState (bClientState, bTexCoord, bColor, -bDecal, GL_TEXTURE0 + bUseLightmaps);
 	}
 else {
 #if RENDER_TRANSP_DECALS
@@ -824,7 +821,7 @@ void CTransparencyRenderer::SetRenderPointers (int nTMU, int nIndex, int bDecal)
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
 if (m_data.bTextured)
-	glTexCoordPointer (2, GL_FLOAT, 0, (bDecal ? FACES.ovlTexCoord : FACES.texCoord) + nIndex);
+	glTexCoordPointer (2, GL_FLOAT, 0, bDecal ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
 glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 }
 
@@ -898,20 +895,19 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
-if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3,
-	 (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
+if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
-		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
-		if (!bLightmaps)
-			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		if (bDecal > 0) {
 			SetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (mask)
 				SetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
 			}
+		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
+		if (!bLightmaps)
+			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		}
 	else {
 		glActiveTexture (GL_TEXTURE0);
