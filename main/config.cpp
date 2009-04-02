@@ -49,7 +49,7 @@ static const char* pszVrResolution = "VR_resolution";
 static const char* pszVrTracking = "VR_tracking";
 static const char* pszHiresMovies = "Hires Movies";
 static const char* pszD2XVersion = "D2XVersion";
-static const char* pszMPStatus = "MPStatus";
+static const char* pszTotalGameTime = "TotalGameTime";
 
 int digi_driver_board_16;
 int digi_driver_dma_16;
@@ -57,11 +57,6 @@ int digi_driver_dma_16;
 void InitCustomDetails(void);
 
 tGameConfig gameConfig;
-
-int*	mpStatus = NULL;
-bool (*mpActivate) (void) = NULL;
-int (*mpCheck) (int) = NULL;
-void (*mpNotify) (void) = NULL;
 
 //------------------------------------------------------------------------------
 
@@ -115,8 +110,6 @@ gameConfig.nMidiVolume = 8;
 gameConfig.nRedbookVolume = 8;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
-if (mpActivate && mpStatus)
-	*mpStatus = mpActivate () ? -1 : 0;
 
 //set these here in case no cfg file
 bHiresMoviesSave = gameOpts->movies.bHires;
@@ -196,10 +189,8 @@ while (!cf.EoF ()) {
 			gameConfig.vrTracking = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszD2XVersion))
 			gameConfig.nVersion = strtoul (value, NULL, 10);
-		else if (!strcmp (token, pszMPStatus)) {
-			if (mpStatus)
-				*mpStatus = (*mpStatus < 0) ? strtoul (value, NULL, 10) : 0;
-			}
+		else if (!strcmp (token, pszTotalGameTime))
+			gameConfig.nTotalTime = strtol (value, NULL, 10);
 		else if (!strcmp (token, pszHiresMovies) && gameStates.app.bNostalgia)
 			bHiresMoviesSave = gameOpts->movies.bHires = strtol (value, NULL, 10);
 	}
@@ -260,7 +251,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int WriteConfigFile (void)
+int WriteConfigFile (bool bExitProgram)
 {
 	CFile cf;
 	char str [256];
@@ -276,12 +267,6 @@ if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
 sprintf (str, "%s=%u\n", pszD2XVersion, D2X_IVER);
 cf.PutS (str);
-#if !DBG
-if (mpActivate && mpActivate ()) {
-	sprintf (str, "%s=1\n", pszMPStatus);
-	cf.PutS (str);
-	}
-#endif
 sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);
@@ -293,6 +278,10 @@ cf.PutS (str);
 sprintf (str, "%s=%d\n", pszStereoRev, gameConfig.bReverseChannels);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszGammaLevel, gamma);
+cf.PutS (str);
+if (bExitProgram && (gameData.time.xGameTotal > 0) && (gameConfig.nTotalTime >= 0))
+	gameConfig.nTotalTime += gameData.time.xGameTotal / 60;
+sprintf (str, "%s=%d\n", pszTotalGameTime, gameConfig.nTotalTime);
 cf.PutS (str);
 if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
 	sprintf (str, "%s=%d,%d,%d,%d,%d,%d,%d\n",

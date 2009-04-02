@@ -1006,7 +1006,7 @@ typedef struct {
 } xy;
 
 //offsets for reticle parts: high-big  high-sml  low-big  low-sml
-xy cross_offsets [4] = 	 {{-8, -5},  {-4, -2},  {-4, -2}, {-2, -1}};
+xy cross_offsets [4] = 	{{-8, -5},  {-4, -2},  {-4, -2}, {-2, -1}};
 xy primary_offsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
 xy secondary_offsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 
@@ -1056,20 +1056,16 @@ if (gameStates.render.bChaseCam && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 
 #endif
 	return;
 m_info.xScale *= float (HUD_ASPECT);
-if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && CCanvas::Current ()->Width () > 320))
-   OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
-else {
-	bHiresReticle = (gameStates.render.fonts.bHires != 0);
-	bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.window.wMax * 2);
-	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
+bHiresReticle = (gameStates.render.fonts.bHires != 0);
+bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.window.wMax * 2);
+ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
-	BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-			  (x + ScaleX (cross_offsets [ofs].x)), (y + ScaleY (cross_offsets [ofs].y)), false, true);
-	BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-			  (x + ScaleX (primary_offsets [ofs].x)), (y + ScaleY (primary_offsets [ofs].y)), false, true);
-	BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-			  (x + ScaleX (secondary_offsets [ofs].x)), (y + ScaleY (secondary_offsets [ofs].y)), false, true);
-  }
+BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
+		  (x + ScaleX (cross_offsets [ofs].x)), (y + ScaleY (cross_offsets [ofs].y)), false, true);
+BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
+		  (x + ScaleX (primary_offsets [ofs].x)), (y + ScaleY (primary_offsets [ofs].y)), false, true);
+BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
+		  (x + ScaleX (secondary_offsets [ofs].x)), (y + ScaleY (secondary_offsets [ofs].y)), false, true);
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);

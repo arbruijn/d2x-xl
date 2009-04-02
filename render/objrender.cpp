@@ -577,9 +577,9 @@ if (ci.bFading < 0) {
 	glow [0] = FixMul (glow [0], ci.xLightScale);
 	gameData.models.nLightScale = ci.xLightScale;
 	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
-									reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
-									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
-									xNewLight, glow, altTextures, NULL);
+								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
+								objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
+								xNewLight, glow, altTextures, NULL);
 	gameData.models.nLightScale = 0;
 	glow [0] = xSaveGlow;
 	}
@@ -707,14 +707,14 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 	for (i = 0; i < MAX_MODEL_TEXTURES; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = bm;
 	bOk = DrawPolyModel (objP, &objP->info.position.vPos,
-									&objP->info.position.mOrient,
-									reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
-									objP->rType.polyObjInfo.nModel,
-									objP->rType.polyObjInfo.nSubObjFlags,
-									xLight,
-									xEngineGlow,
-									bmiP,
-									NULL);
+								&objP->info.position.mOrient,
+								reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
+								objP->rType.polyObjInfo.nModel,
+								objP->rType.polyObjInfo.nSubObjFlags,
+								xLight,
+								xEngineGlow,
+								bmiP,
+								NULL);
 	}
 else {
 	if (bCloaked) {
@@ -750,30 +750,28 @@ else {
 				fix xDistToEye = CFixVector::Dist(gameData.objs.viewerP->info.position.vPos, objP->info.position.vPos);
 				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * I2X (2))
 #endif
-					bOk = DrawPolyModel (
-						objP, &objP->info.position.vPos, &objP->info.position.mOrient,
-						objP->rType.polyObjInfo.animAngles,
-						gameData.weapons.info [id].nInnerModel,
-						objP->rType.polyObjInfo.nSubObjFlags,
-						bBrightPolys ? I2X (1) : xLight,
-						xEngineGlow,
-						bmiAltTex,
-						NULL);
+					bOk = DrawPolyModel (objP, &objP->info.position.vPos, &objP->info.position.mOrient,
+												objP->rType.polyObjInfo.animAngles,
+												gameData.weapons.info [id].nInnerModel,
+												objP->rType.polyObjInfo.nSubObjFlags,
+												bBrightPolys ? I2X (1) : xLight,
+												xEngineGlow,
+												bmiAltTex,
+												NULL);
 				}
 			if (bEnergyWeapon)
 				gameStates.render.grAlpha = GrAlpha (4 * FADE_LEVELS / 5);
 			else if (!bBlendPolys)
 				gameStates.render.grAlpha = 1.0f;
 			}
-		bOk = DrawPolyModel (
-			objP, &objP->info.position.vPos, &objP->info.position.mOrient,
-			objP->rType.polyObjInfo.animAngles,
-			objP->rType.polyObjInfo.nModel,
-			objP->rType.polyObjInfo.nSubObjFlags,
-			(bGatling || bBrightPolys) ? I2X (1) : xLight,
-			xEngineGlow,
-			bmiAltTex,
-			(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
+		bOk = DrawPolyModel (objP, &objP->info.position.vPos, &objP->info.position.mOrient,
+									objP->rType.polyObjInfo.animAngles,
+									objP->rType.polyObjInfo.nModel,
+									objP->rType.polyObjInfo.nSubObjFlags,
+									(bGatling || bBrightPolys) ? I2X (1) : xLight,
+									xEngineGlow,
+									bmiAltTex,
+									(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender)
 				OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

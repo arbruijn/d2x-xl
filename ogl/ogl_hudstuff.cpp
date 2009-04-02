@@ -38,7 +38,7 @@
 
 void OglDrawMouseIndicator (void)
 {
-	float 	scale = (float) screen.Width () / (float) screen.Height ();
+	float 	scale = float (screen.Width ()) / float (screen.Height ());
 
 	static tSinCosf sinCos30 [30];
 	static tSinCosf sinCos12 [12];
@@ -124,122 +124,6 @@ else {
 	glEndList ();
    }
 #endif
-}
-
-//------------------------------------------------------------------------------
-
-float bright_g [4]={32.0f/256, 252.0f/256, 32.0f/256, 1.0f};
-float dark_g  [4]={32.0f/256, 148.0f/256, 32.0f/256, 1.0f};
-float darker_g [4]={32.0f/256, 128.0f/256, 32.0f/256, 1.0f};
-
-void OglDrawReticle (int cross, int primary, int secondary)
-{
-	float scale = float (CCanvas::Current ()->Width ()) / float (screen.Height ());
-
-	static tSinCosf sinCos8 [8];
-	static tSinCosf sinCos12 [12];
-	static tSinCosf sinCos16 [16];
-	static int bInitSinCos = 1;
-
-if (bInitSinCos) {
-	OglComputeSinCos (sizeofa (sinCos8), sinCos8);
-	OglComputeSinCos (sizeofa (sinCos12), sinCos12);
-	OglComputeSinCos (sizeofa (sinCos16), sinCos16);
-	bInitSinCos = 0;
-	}
-glPushMatrix ();
-//	glTranslated (0.5, 0.5, 0);
-glTranslated (
-	(CCanvas::Current ()->Width () / 2 + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW), 
-	1.0f - (CCanvas::Current ()->Height () / 2 +	CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH), 
-	0);
-glScaled (scale / 320.0f, scale / 200.0f, scale);	// the positions are based upon the standard reticle at 320x200 res.
-glDisable (GL_TEXTURE_2D);
-
-glLineWidth (GLfloat (gameStates.ogl.nReticle));
-glEnable (GL_LINE_SMOOTH);
-if (cross_lh [cross])
-	glCallList (cross_lh [cross]);
-else {
-	cross_lh [cross] = glGenLists (1);
-	glNewList (cross_lh [cross], GL_COMPILE_AND_EXECUTE);
-	glBegin (GL_LINES);
-	//cross top left
-	glColor3fv (darker_g);
-	glVertex2f (-4.0f, 4.0f);
-	glColor3fv (cross ? bright_g : dark_g);
-	glVertex2f (-2.0f, 2.0f);
-	//cross bottom left
-	glColor3fv (dark_g);
-	glVertex2f (-3.0f, -2.0f);
-	if (cross)
-		glColor3fv (bright_g);
-	glVertex2f (-2.0f, -1.0f);
-	//cross top right
-	glColor3fv (darker_g);
-	glVertex2f (4.0f, 4.0f);
-	glColor3fv (cross ? bright_g : dark_g);
-	glVertex2f (2.0f, 2.0f);
-	//cross bottom right
-	glColor3fv (dark_g);
-	glVertex2f (3.0f, -2.0f);
-	if (cross)
-		glColor3fv (bright_g);
-	glVertex2f (2.0f, -1.0f);
-	glEnd ();
-	glEndList ();
-	}
-
-if (primary_lh [primary])
-	glCallList (primary_lh [primary]);
-else {
-	primary_lh [primary] = glGenLists (1);
-	glNewList (primary_lh [primary], GL_COMPILE_AND_EXECUTE);
-	glColor3fv (dark_g);
-	glBegin (GL_LINES);
-	//left primary bar
-	glVertex2f (-14.0f, -8.0f);
-	glVertex2f (-8.0f, -5.0f);
-	//right primary bar
-	glVertex2f (14.0f, -8.0f);
-	glVertex2f (8.0f, -5.0f);
-	glEnd ();
-	glColor3fv (primary ? bright_g : dark_g);
-	//left upper
-	OglDrawEllipse (12, GL_POLYGON, 1.5, -7.0f, 1.5, -5.0f, sinCos12);
-	//right upper
-	OglDrawEllipse (12, GL_POLYGON, 1.5, 7.0f, 1.5, -5.0f, sinCos12);
-	glColor3fv ((primary == 2) ? bright_g : dark_g);
-	//left lower
-	OglDrawEllipse (8, GL_POLYGON, 1.0f, -14.0f, 1.0f, -8.0f, sinCos8);
-	//right lower
-	OglDrawEllipse (8, GL_POLYGON, 1.0f, 14.0f, 1.0f, -8.0f, sinCos8);
-	glEndList ();
-	}
-
-if (!secondary_lh [secondary])
-	glCallList (secondary_lh [secondary]);
-else {
-	secondary_lh [secondary] = glGenLists (1);
-	glNewList (secondary_lh [secondary], GL_COMPILE_AND_EXECUTE);
-	if (secondary <= 2) {
-		//left secondary
-		glColor3fv ((secondary == 1) ? bright_g : darker_g);
-		OglDrawEllipse (16, GL_LINE_LOOP, 2.0f, -10.0f, 2.0f, -1.0f, sinCos16);
-		//right secondary
-		glColor3fv ((secondary == 2) ? bright_g : darker_g);
-		OglDrawEllipse (16, GL_LINE_LOOP, 2.0f, 10.0f, 2.0f, -1.0f, sinCos16);
-		}
-	else {
-		//bottom/middle secondary
-		glColor3fv ((secondary == 4) ? bright_g : darker_g);
-		OglDrawEllipse (16, GL_LINE_LOOP, 2.0f, 0.0f, 2.0f, -7.0f, sinCos16);
-		}
-	glEndList ();
-	}
-glDisable (GL_LINE_SMOOTH);
-glLineWidth (1);
-glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------

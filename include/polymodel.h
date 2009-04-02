@@ -149,7 +149,7 @@ int LoadPolyModel (const char* filename, int nTextures, int nFirstTexture, tRobo
 
 // draw a polygon model
 int DrawPolyModel (CObject* objP, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int nModel, int flags, fix light, 
-							 fix* glowValues, tBitmapIndex nAltTextures[], tRgbaColorf* obj_color);
+						 fix* glowValues, tBitmapIndex nAltTextures[], tRgbaColorf* obj_color);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders

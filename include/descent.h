@@ -769,7 +769,6 @@ typedef struct tOglStates {
 	int iLight;
 	int nFirstLight;
 	int bCurFullScreen;
-	int nReticle;
 	int bpp;
 	int bScaleLight;
 	int bDynObjLight;
@@ -2479,6 +2478,7 @@ class CTimeData {
 		fix					xRealFrame;
 		fix					xGame;	//	 in game, in seconds
 		fix					xGameStart;
+		fix					xGameTotal;
 		fix					xMaxOnline;
 		fix					xLast;
 		int					tLast;

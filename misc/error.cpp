@@ -240,13 +240,13 @@ atexit (print_exit_message);		//last thing at exit is print message
 SetLogDate ();
 ErrorPrintFunc = func;          // Set Error Print Functions
 if (fmt != NULL) {
-	va_start(arglist,fmt);
-	len = vsprintf(szExitMsg,fmt,arglist);
-	va_end(arglist);
-	if (len==-1 || len>MAX_MSG_LEN) 
-		Error("Message too long in error_init (len=%d, max=%d)",len,MAX_MSG_LEN);
+	va_start (arglist,fmt);
+	len = vsprintf (szExitMsg, fmt, arglist);
+	va_end (arglist);
+	if ((len == -1) || (len > MAX_MSG_LEN)) 
+		PrintLog ("Message too long in error_init (len=%d, max=%d)", len, MAX_MSG_LEN);
 	}
-err_initialized=1;
+err_initialized = 1;
 return 0;
 }
 

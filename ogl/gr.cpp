@@ -252,8 +252,6 @@ if ((t = FindArg ("-fullscreen"))) {
 	//GrToggleFullScreen();
 	}
 #endif
-if ((t=FindArg ("-gl_reticle")))
-	gameStates.ogl.nReticle = atoi (pszArgList [t + 1]);
 /***/PrintLog ("   initializing internal texture list\n");
 textureManager.Init ();
 /***/PrintLog ("   allocating screen buffer\n");

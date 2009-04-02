@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 
 extern int ReadConfigFile(void);
-extern int WriteConfigFile(void);
+extern int WriteConfigFile(bool bExitProgram = false);
 
 typedef struct tGameConfig {
 	char		szLastPlayer [CALLSIGN_LEN+1];
@@ -43,14 +43,10 @@ typedef struct tGameConfig {
 	int		vrResolution;
 	int		vrTracking;
 	uint		nVersion;
+	int		nTotalTime;
 } tGameConfig;
 
 extern tGameConfig gameConfig;
-
-extern int*	mpStatus;
-extern bool (*mpActivate) (void);
-extern int (*mpCheck) (int);
-extern void (*mpNotify) (void);
 
 //values for Config_controlType
 #define CONTROL_NONE 0

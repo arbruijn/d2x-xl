@@ -136,8 +136,9 @@ void SlideTextures (void);
 void PowerupGrabCheatAll (void);
 
 //	Other functions
-void MultiCheckForKillGoalWinner ();
-void MultiCheckForEntropyWinner ();
+void MultiCheckForKillGoalWinner (void);
+void MultiCheckForEntropyWinner (void);
+void DefaultAllSettings (void);
 
 // text functions
 
@@ -180,6 +181,7 @@ LoadGameBackground ();
 automap.Init ();
 InitDefaultPlayerShip ();
 nClearWindow = 2;		//	do portal only window clear.
+DefaultAllSettings ();
 InitDetailLevels (gameStates.app.nDetailLevel);
 fpDrawTexPolyMulti = G3DrawTexPolyMulti;
 return true;
@@ -730,62 +732,62 @@ void ShowHelp (void)
 	char command_help[64], pixel_double_help[64], save_help[64], restore_help[64];
 #endif
 
-	m.AddText (TXT_HELP_ESC);
+m.AddText (TXT_HELP_ESC);
 #ifndef MACINTOSH
-	m.AddText (TXT_HELP_ALT_F2);
-	m.AddText (TXT_HELP_ALT_F3);
+m.AddText (TXT_HELP_ALT_F2);
+m.AddText (TXT_HELP_ALT_F3);
 #else
-	sprintf (save_help, TXT_HLP_SAVE, 133);
-	sprintf (restore_help, TXT_HLP_LOAD, 133);
-	m.AddText (save_help);
-	m.AddText (restore_help);
+sprintf (save_help, TXT_HLP_SAVE, 133);
+sprintf (restore_help, TXT_HLP_LOAD, 133);
+m.AddText (save_help);
+m.AddText (restore_help);
 #endif
-	m.AddText (TXT_HELP_QUICKSAVE);
-	m.AddText (TXT_HELP_QUICKLOAD);
-	m.AddText (TXT_HELP_F2);
-	m.AddText (TXT_HELP_F3);
-	m.AddText (TXT_HELP_F4);
-	m.AddText (TXT_HELP_F5);
+m.AddText (TXT_HELP_QUICKSAVE);
+m.AddText (TXT_HELP_QUICKLOAD);
+m.AddText (TXT_HELP_F2);
+m.AddText (TXT_HELP_F3);
+m.AddText (TXT_HELP_F4);
+m.AddText (TXT_HELP_F5);
 #ifndef MACINTOSH
-	m.AddText (TXT_HELP_PAUSE_D2X);
+m.AddText (TXT_HELP_PAUSE_D2X);
 #else
-	m.AddText (TXT_HLP_PAUSE);
+m.AddText (TXT_HLP_PAUSE);
 #endif
-	m.AddText (TXT_HELP_MINUSPLUS);
+m.AddText (TXT_HELP_MINUSPLUS);
 #ifndef MACINTOSH
-	m.AddText (TXT_HELP_PRTSCN_D2X);
+m.AddText (TXT_HELP_PRTSCN_D2X);
 #else
-	m.AddText (TXT_HLP_SCREENIE);
+m.AddText (TXT_HLP_SCREENIE);
 #endif
-	m.AddText (TXT_HELP_1TO5);
-	m.AddText (TXT_HELP_6TO10);
-	m.AddText (TXT_HLP_CYCLE_LEFT_WIN);
-	m.AddText (TXT_HLP_CYCLE_RIGHT_WIN);
-	if (!gameStates.app.bNostalgia) {
-		m.AddText (TXT_HLP_RESIZE_WIN);
-		m.AddText (TXT_HLP_REPOS_WIN);
-		m.AddText (TXT_HLP_ZOOM_WIN);
-		}
-	m.AddText (TXT_HLP_GUIDEBOT);
-	m.AddText (TXT_HLP_RENAMEGB);
-	m.AddText (TXT_HLP_DROP_PRIM);
-	m.AddText (TXT_HLP_DROP_SEC);
-	if (!gameStates.app.bNostalgia) {
-		m.AddText (TXT_HLP_CHASECAM);
-		m.AddText (TXT_HLP_RADAR);
-		}
-	m.AddText (TXT_HLP_GBCMDS);
+m.AddText (TXT_HELP_1TO5);
+m.AddText (TXT_HELP_6TO10);
+m.AddText (TXT_HLP_CYCLE_LEFT_WIN);
+m.AddText (TXT_HLP_CYCLE_RIGHT_WIN);
+if (!gameStates.app.bNostalgia) {
+	m.AddText (TXT_HLP_RESIZE_WIN);
+	m.AddText (TXT_HLP_REPOS_WIN);
+	m.AddText (TXT_HLP_ZOOM_WIN);
+	}
+m.AddText (TXT_HLP_GUIDEBOT);
+m.AddText (TXT_HLP_RENAMEGB);
+m.AddText (TXT_HLP_DROP_PRIM);
+m.AddText (TXT_HLP_DROP_SEC);
+if (!gameStates.app.bNostalgia) {
+	m.AddText (TXT_HLP_CHASECAM);
+	m.AddText (TXT_HLP_RADAR);
+	}
+m.AddText (TXT_HLP_GBCMDS);
 #ifdef MACINTOSH
-	sprintf (pixel_double_help, "%c-D\t  Toggle Pixel Double Mode", 133);
-	m.AddText (pixel_double_help);
-	m.AddText ("");
-	sprintf (command_help, " (Use %c-# for F#. i.e. %c-1 for F1)", 133, 133);
-	m.AddText (command_help);
+sprintf (pixel_double_help, "%c-D\t  Toggle Pixel Double Mode", 133);
+m.AddText (pixel_double_help);
+m.AddText ("");
+sprintf (command_help, " (Use %c-# for F#. i.e. %c-1 for F1)", 133, 133);
+m.AddText (command_help);
 #endif
-	nitems = opt;
-	paletteManager.SaveEffectAndReset ();
-	m.TinyMenu (NULL, TXT_KEYS);
-	paletteManager.LoadEffect ();
+nitems = opt;
+paletteManager.SaveEffectAndReset ();
+m.TinyMenu (NULL, TXT_KEYS);
+paletteManager.LoadEffect ();
 }
 
 //------------------------------------------------------------------------------
@@ -893,6 +895,7 @@ void CleanupAfterGame (void)
 #ifdef MWPROFILE
 ProfilerSetStatus (0);
 #endif
+gameData.time.xGameTotal = (SDL_GetTicks () - gameData.time.xGameStart) / 1000;
 G3EndFrame ();
 audio.StopAll ();
 if (gameStates.sound.bD1Sound) {
@@ -1405,7 +1408,7 @@ if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
 	GasolineCheat (0);
 	}
-if (!(MultiProtectGame () && mpCheck && mpCheck (0))) {
+if (!MultiProtectGame ()) {
 	SetFunctionMode (FMODE_MENU);
 	return -1;
 	}

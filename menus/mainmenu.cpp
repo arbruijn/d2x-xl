@@ -329,10 +329,8 @@ else if (nChoice == mainOpts.nLoadDirect) {
 		}
 	}
 #endif
-else if (nChoice == mainOpts.nMulti) {
-	if (mpCheck && mpCheck (1))
+else if (nChoice == mainOpts.nMulti)
 		MultiplayerMenu ();
-	}
 else if (nChoice == mainOpts.nConfig) 
 	ConfigMenu ();
 else if (nChoice == mainOpts.nPilots) {

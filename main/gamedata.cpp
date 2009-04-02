@@ -1886,25 +1886,25 @@ gameOptions [0].demo.bOldFormat = gameStates.app.bNostalgia != 0;
 
 void DefaultCockpitSettings (void)
 {
-gameOpts->render.cockpit.bReticle = 1;
-//gameOpts->render.cockpit.bMissileView = 1;
-gameOpts->render.cockpit.bGuidedInMainView = 1;
-gameOpts->render.cockpit.bMouseIndicator = 1;
-gameOpts->render.cockpit.bHUDMsgs = 1;
-gameOpts->render.cockpit.bSplitHUDMsgs = 1;
-gameOpts->render.cockpit.bWideDisplays = 1;
+gameOptions [0].render.cockpit.bReticle = 1;
+//gameOptions [0].render.cockpit.bMissileView = 1;
+gameOptions [0].render.cockpit.bGuidedInMainView = 1;
+gameOptions [0].render.cockpit.bMouseIndicator = 1;
+gameOptions [0].render.cockpit.bHUDMsgs = 1;
+gameOptions [0].render.cockpit.bSplitHUDMsgs = 1;
+gameOptions [0].render.cockpit.bWideDisplays = 1;
 
 extraGameInfo [0].bDamageIndicators = extraGameInfo [0].bTargetIndicators;
 extraGameInfo [0].bTagOnlyHitObjs = 1;
 extraGameInfo [0].bMslLockIndicators = 1;
-gameOpts->render.cockpit.bRotateMslLockInd = 1;
+gameOptions [0].render.cockpit.bRotateMslLockInd = 1;
 extraGameInfo [0].bCloakedIndicators = 0;
 
-gameOpts->render.cockpit.bScaleGauges = 1;
-gameOpts->render.cockpit.bFlashGauges = 1;
-gameOpts->gameplay.bShieldWarning = 0;
-gameOpts->render.cockpit.bObjectTally = 1;
-gameOpts->render.cockpit.bPlayerStats = 0;
+gameOptions [0].render.cockpit.bScaleGauges = 1;
+gameOptions [0].render.cockpit.bFlashGauges = 1;
+gameOptions [0].gameplay.bShieldWarning = 0;
+gameOptions [0].render.cockpit.bObjectTally = 1;
+gameOptions [0].render.cockpit.bPlayerStats = 0;
 
 }
 
@@ -1926,11 +1926,13 @@ gameOptions [0].app.nVersionFilter = 3;
 
 void DefaultAllSettings (void)
 {
-DefaultRenderSettings ();
-DefaultGameplaySettings ();
-DefaultPhysicsSettings ();
-DefaultKeyboardSettings ();
 DefaultApplicationSettings ();
+DefaultCockpitSettings ();
+DefaultGameplaySettings ();
+DefaultKeyboardSettings ();
+DefaultMiscSettings ();
+DefaultPhysicsSettings ();
+DefaultRenderSettings ();
 //DefaultSettings ();
 }
 

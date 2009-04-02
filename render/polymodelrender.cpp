@@ -177,8 +177,10 @@ G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 if (!flags) {	//draw entire CObject
 	if (gameStates.app.bNostalgia || !G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
-		if (bHires)
+		if (bHires) {
+			gameStates.ogl.bUseTransform = 0;
 			return 0;
+			}
 		if (objP && (objP->info.nType == OBJ_POWERUP)) {
 			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
 				gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
@@ -193,33 +195,29 @@ if (!flags) {	//draw entire CObject
 		transformation.End ();
 		}
 	}
-else {
-	int i;
+else {	
+	CFixVector vOffset;
 
-	//transformation.Begin (pos, orient);
-	for (i = 0; flags > 0; flags >>= 1, i++)
-		if (flags & 1) {
-			CFixVector vOffset;
-
-			//Assert (i < modelP->nModels);
-			if (i < modelP->ModelCount ()) {
+	for (int i = 0; flags > 0; flags >>= 1, i++) {
+		if ((flags & 1) && (i < modelP->ModelCount ())) {
 			//if submodel, rotate around its center point, not pivot point
-				vOffset = CFixVector::Avg (modelP->SubModels ().mins [i], modelP->SubModels ().maxs [i]);
-				vOffset.Neg();
-				if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
-					if (bHires)
-						return 0;
-#if DBG
-					G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
-#endif
-					transformation.Begin (vOffset);
-					G3DrawPolyModel (objP, modelP->Data () + modelP->SubModels ().ptrs [i], gameData.models.textures,
-										  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-					transformation.End ();
+			vOffset = CFixVector::Avg (modelP->SubModels ().mins [i], modelP->SubModels ().maxs [i]);
+			vOffset.Neg ();
+			if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
+				if (bHires) {
+					gameStates.ogl.bUseTransform = 0;
+					return 0;
 					}
+#if DBG
+				G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
+#endif
+				transformation.Begin (vOffset);
+				G3DrawPolyModel (objP, modelP->Data () + modelP->SubModels ().ptrs [i], gameData.models.textures,
+									  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+				transformation.End ();
 				}
 			}
-	//transformation.End ();
+		}
 	}
 gameStates.ogl.bUseTransform = 0;
 gameData.render.vertP = NULL;

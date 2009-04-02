@@ -1414,46 +1414,33 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	if (count > 2 * gameStates.app.nDifficultyLevel + 3) {
 		gameData.bosses [0].m_nLastGateTime = gameData.time.xGame - 3 * gameData.bosses [0].m_nGateInterval / 4;
 		return 0;
-	}
-
+		}
 	vObjPos = segP->RandomPoint ();
-
 	//	See if legal to place CObject here.  If not, move about in CSegment and try again.
 	if (CheckObjectObjectIntersection(&vObjPos, objsize, segP)) {
 		gameData.bosses [0].m_nLastGateTime = gameData.time.xGame - 3*gameData.bosses [0].m_nGateInterval/4;
 		return 0;
-	}
-
+		}
 	nObject = CreateRobot (nObjId, nSegment, vObjPos);
-
 	if (nObject < 0) {
 		gameData.bosses [0].m_nLastGateTime = gameData.time.xGame - 3*gameData.bosses [0].m_nGateInterval/4;
 		return -1;
-	}
+		}
 
 	objP = &OBJECTS [nObject];
-
 	//Set polygon-CObject-specific data
-
 	objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
-
 	//set Physics info
-
 	objP->mType.physInfo.mass = botInfoP->mass;
 	objP->mType.physInfo.drag = botInfoP->drag;
-
 	objP->mType.physInfo.flags |= (PF_LEVELLING);
-
 	objP->info.xShields = botInfoP->strength;
 	objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robotP as having been created by the boss.
-
 	default_behavior = D1_AIB_NORMAL;
 	if (nObjId == 10)						//	This is a toaster guy!
 		default_behavior = D1_AIB_RUN_FROM;
-
 	InitAIObject (objP->Index (), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
-
 	/*Object*/CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
 	audio.CreateSegmentSound (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
 	objP->MorphStart ();

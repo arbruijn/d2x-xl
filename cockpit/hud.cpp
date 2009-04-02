@@ -675,8 +675,8 @@ void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
-if (gameOpts->render.cockpit.bWideDisplays)
-	w = w * screen.Width () / screen.Height ();
+if (!gameStates.app.bNostalgia) //(gameOpts->render.cockpit.bWideDisplays)
+	w = int (float (w) * float (screen.Width ()) / float (screen.Height ()) * 0.75f);
 	//w = int (w / HUD_ASPECT);
 switch (gameOpts->render.cockpit.nWindowPos) {
 	case 0:

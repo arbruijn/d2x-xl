@@ -313,7 +313,7 @@ for (;;) {
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	nOptDifficulty = menu.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	menu.AddText ("", 0);
-	optLoadout = menu.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
+	optLoadout = menu.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 
 	if (nMission >= 0) {
 		menu.AddText ("", 0);

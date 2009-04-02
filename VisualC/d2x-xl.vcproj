@@ -1826,10 +1826,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\network\mpstatus.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\network\multi.cpp"
 						>
 						<FileConfiguration
@@ -4261,11 +4257,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

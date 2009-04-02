@@ -53,8 +53,6 @@ extern int bSavingMovieFrames;
 #define bSavingMovieFrames 0
 #endif
 
-extern int nLogDate;
-
 //------------------------------------------------------------------------------
 
 static inline bool GuidedMissileActive (void)
@@ -518,13 +516,6 @@ PROF_START
 lightningManager.SetLights ();
 PROF_END(ptLighting)
 }
-if (nLogDate == 0x07d90301) {
-	LOCALPLAYER.primaryWeaponFlags &= LASER_INDEX;
-	LOCALPLAYER.laserLevel = 0;
-	LOCALPLAYER.secondaryWeaponFlags &= CONCUSSION_INDEX;
-	memset (&LOCALPLAYER.primaryAmmo [1], 0, sizeof (LOCALPLAYER.primaryAmmo) - sizeof (LOCALPLAYER.primaryAmmo [0]));
-	memset (&LOCALPLAYER.secondaryAmmo [1], 0, sizeof (LOCALPLAYER.secondaryAmmo) - sizeof (LOCALPLAYER.secondaryAmmo [0]));
-	}
 if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	int w, h, aw;
 	const char *msg = "Guided Missile View";

@@ -1887,6 +1887,8 @@ const char *defaultGameTexts [][2] = {
  {"~Notebookfreundlicher Modus", "Notebook-friendly mode"},
  {"Unzureichende Grafik-Hardware.\nD2X-XL laeuft mit reduzierten\nEinstellungen.", "Insufficient graphics hardware.\nD2X-XL will run at reduced settings."},
  {"Raketen", "Missiles"},
+ {"Du hast D2X-XL jetzt\nschon einige Zeit genutzt.\n\nWenn Du es noch nicht getan hast,\nunterstuetze seine Weiterentwicklung\nbitte mit einer Spende.", 
+  "You have been using D2X-XL\nfor quite a while now.\n\nPlease support its future development\nwith a donation if you haven't\ndone so already."},
 #if 0
  {"", ""},
 #endif
