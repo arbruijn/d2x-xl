@@ -305,8 +305,9 @@ if (psm->m_bWeapon) {
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
 	int		bQuadLasers = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bQuadLasers;
 	int		bCenter = bCenterGuns [nGunId];
-	int		nWingtip = gameOpts->render.ship.nWingtip;
+	int		nWingtip = bQuadLasers ? bSuperLasers : 2; //gameOpts->render.ship.nWingtip;
 
+	gameOpts->render.ship.nWingtip = nWingtip;
 	if (nWingtip == 0)
 		nWingtip = bLasers && bSuperLasers && bQuadLasers;
 	else if (nWingtip == 1)
