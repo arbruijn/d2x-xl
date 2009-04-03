@@ -22,9 +22,13 @@
 #include "automap.h"
 #include "renderthreads.h"
 
-static tRgbaColorf smokeColors [3] = {
+static tRgbaColorf smokeColors [] = {
  {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, 2.0f},
  {2.0f / 3.0f, 2.0f / 3.0f, 2.0f / 3.0f, 2.0f},
+#if 0
+ {3.0f / 4.0f, 3.0f / 4.0f, 3.0f / 4.0f, 2.0f},
+ {4.0f / 5.0f, 4.0f / 5.0f, 4.0f / 5.0f, 2.0f},
+#endif
  {1.0f, 1.0f, 1.0f, 2.0f}
 	};
 

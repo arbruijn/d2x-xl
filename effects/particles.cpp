@@ -344,9 +344,10 @@ else if (nType == BUBBLE_PARTICLES)
 else
 	nRad *= 2;
 if ((m_bBlowUp = bBlowUp)) {
-	m_nRad = nRad;
+	m_nRad = nRad / 2;
 	m_nWidth =
-	m_nHeight = nRad / 2;
+	m_nHeight = m_nRad;
+	m_nRad += m_nRad / bBlowUp;
 	}
 else {
 	m_nWidth =

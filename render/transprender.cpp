@@ -900,14 +900,14 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
+		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
+		if (!bLightmaps)
+			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		if (bDecal > 0) {
 			SetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (mask)
 				SetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
 			}
-		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
-		if (!bLightmaps)
-			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		}
 	else {
 		glActiveTexture (GL_TEXTURE0);
