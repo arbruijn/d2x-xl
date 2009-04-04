@@ -1174,6 +1174,7 @@ return nLights;
 
 void CLightningSystem::Init (int nId)
 {
+m_bValid = 0;
 m_nId = nId;
 }
 
@@ -1221,6 +1222,7 @@ return true;
 
 void CLightningSystem::Destroy (void)
 {
+m_bValid = 0;
 DestroySound ();
 #if 0
 if (m_lightnings.Buffer ()) {
@@ -1265,6 +1267,9 @@ if ((m_bSound > 0) & (m_nObject >= 0))
 
 void CLightningSystem::Animate (int nStart, int nLightnings)
 {
+if (!m_bValid)
+	return;
+
 	CLightning *lightningP = m_lightnings + nStart;
 
 if (nLightnings < 0)
@@ -1277,6 +1282,9 @@ for (; nLightnings; nLightnings--, lightningP++)
 
 int CLightningSystem::SetLife (void)
 {
+if (!m_bValid)
+	return 0;
+
 	CLightning	*lightningP = m_lightnings.Buffer ();
 	int			i;
 
@@ -1304,6 +1312,10 @@ if (m_bDestroy) {
 	Destroy ();
 	return -1;
 	}
+
+if (!m_bValid)
+	return 0;
+
 if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
@@ -1323,11 +1335,14 @@ return m_nLightnings;
 
 void CLightningSystem::UpdateSound (void)
 {
+if (!m_bValid)
+	return;
+if (!m_bSound)
+	return;
+
 	CLightning	*lightningP;
 	int			i;
 
-if (!m_bSound)
-	return;
 for (i = m_nLightnings, lightningP = m_lightnings.Buffer (); i > 0; i--, lightningP++)
 	if (lightningP->m_nNodes > 0) {
 		if (m_bSound < 0)
@@ -1344,6 +1359,8 @@ m_bSound = -1;
 
 void CLightningSystem::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
 {
+if (!m_bValid)
+	return;
 if (nSegment < 0)
 	return;
 if (!m_lightnings.Buffer ())
@@ -1358,6 +1375,9 @@ if (SHOW_LIGHTNINGS) {
 
 void CLightningSystem::MoveForObject (void)
 {
+if (!m_bValid)
+	return;
+
 	CObject* objP = OBJECTS + m_nObject;
 
 Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
@@ -1367,7 +1387,10 @@ Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 
 void CLightningSystem::Render (int nStart, int nLightnings, int bDepthSort, int nThread)
 {
-if (automap.m_bDisplay && !gameStates.render.bAllVisited) {
+if (!m_bValid)
+	return;
+
+if (automap.m_bDisplay && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 	if (m_nObject >= 0) {
 		if (!automap.m_visited [0][OBJECTS [m_nObject].Segment ()])
 			return;
@@ -1391,6 +1414,9 @@ for (; nLightnings; nLightnings--, lightningP++)
 
 int CLightningSystem::SetLight (void)
 {
+if (!m_bValid)
+	return 0;
+
 	int nLights = 0;
 
 if (m_lightnings.Buffer ())
@@ -1469,6 +1495,7 @@ if (!(systemP->Create (nLightnings, vPos, vEnd, vDelta, nObject, nLife, nDelay, 
 	SEM_LEAVE (SEM_LIGHTNING)
 	return -1;
 	}
+systemP->m_bValid = 1;
 SEM_LEAVE (SEM_LIGHTNING)
 return systemP->Id ();
 }
@@ -1492,7 +1519,7 @@ CLightningSystem* nextP = NULL;
 int nCurrent = -1;
 for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
 	nextP = m_systems.GetNext (nCurrent);
-	if (0 > systemP->m_bDestroy) {
+	if (systemP->m_bDestroy) {
 		systemP->Destroy ();
 		m_systems.Push (systemP->Id ());
 		}

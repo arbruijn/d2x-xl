@@ -140,11 +140,12 @@ typedef struct tLightningSystem {
 	char						m_bSound;
 	char						m_bForcefield;
 	char						m_bDestroy;
+	char						m_bValid;
 } tLightningSystem;
 
 class CLightningSystem : public tLightningSystem {
 	public:
-		CLightningSystem () { m_lightnings = NULL, m_nLightnings = 0, m_nObject = -1; };
+		CLightningSystem () { m_bValid = 0, m_lightnings = NULL, m_nLightnings = 0, m_nObject = -1; };
 		~CLightningSystem () { Destroy (); };
 		void Init (int nId);
 		bool Create (int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
@@ -160,6 +161,7 @@ class CLightningSystem : public tLightningSystem {
 		int SetLight (void);
 		inline CLightning* Lightnings (void) { return m_lightnings.Buffer (); }
 		inline int Id (void) { return m_nId; }
+		inline void SetValid (char bValid) { m_bValid = bValid; }
 	private:
 		void CreateSound (int bSound);
 		void DestroySound (void);

@@ -1827,7 +1827,8 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void NDRenderExtras (ubyte, CObject *); extern void MultiApplyGoalTextures ();
+void NDRenderExtras (ubyte, CObject *); 
+void MultiApplyGoalTextures ();
 
 int NDReadFrameInfo ()
 {
