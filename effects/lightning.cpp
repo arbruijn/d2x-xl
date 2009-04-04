@@ -1515,7 +1515,6 @@ else
 void CLightningManager::Cleanup (void)
 {
 SEM_ENTER (SEM_LIGHTNING)
-CLightningSystem* nextP = NULL;
 int nCurrent = -1;
 for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
 	nextP = m_systems.GetNext (nCurrent);
