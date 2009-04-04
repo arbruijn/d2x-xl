@@ -1266,7 +1266,7 @@ for (i = 0; i < nMaxEmitters; i++)
 		return -1;
 		}
 m_nType = nType;
-m_bValid = True;
+m_bValid = true;
 return 1;
 }
 
