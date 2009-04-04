@@ -1309,7 +1309,7 @@ if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nLightnings);
 		if (!(m_nLightnings = SetLife ()))
-			lightningManager.Destroy (this, NULL, true);
+			lightningManager.Destroy (this, NULL);
 		else if (m_nObject >= 0) {
 			UpdateSound ();
 			MoveForObject ();
@@ -1474,18 +1474,28 @@ return systemP->Id ();
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::Destroy (CLightningSystem* systemP, CLightning *lightningP, bool bDestroy)
+void CLightningManager::Destroy (CLightningSystem* systemP, CLightning *lightningP)
 {
 if (lightningP)
 	lightningP->Destroy ();
-else {
-	if (!bDestroy)
-		systemP->m_bDestroy = 1;
-	else {
+else
+	systemP->m_bDestroy = 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningManager::Cleanup (void)
+{
+SEM_ENTER (SEM_LIGHTNING)
+CLightningSystem* nextP = NULL;
+for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = nextP) {
+	nextP = m_systems.GetNext ();
+	if (0 > systemP->m_bDestroy) {
 		systemP->Destroy ();
 		m_systems.Push (systemP->Id ());
 		}
 	}
+SEM_LEAVE (SEM_LIGHTNING)
 }
 
 //------------------------------------------------------------------------------
@@ -1498,8 +1508,10 @@ else {
 	uint bSem = gameData.app.semaphores [SEM_LIGHTNING];
 	if (!bSem)
 		SEM_ENTER (SEM_LIGHTNING)
-	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ()) {
-		Destroy (systemP, NULL, true);
+	CLightningSystem* nextP = NULL;
+	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = nextP) {
+		nextP = m_systems.GetNext ();
+		Destroy (systemP, NULL);
 		m_systems.Push (systemP->Id ());
 		}
 	ResetLights (1);
@@ -1579,7 +1591,6 @@ if (SHOW_LIGHTNINGS) {
 		return 0;
 #	endif
 #endif
-	SEM_ENTER (SEM_LIGHTNING)
 	for (i = 0, objP = OBJECTS.Buffer (); i < gameData.objs.nLastObject [1]; i++, objP++) {
 		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
 			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
@@ -1590,10 +1601,8 @@ if (SHOW_LIGHTNINGS) {
 	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = nextP) {
 		nextP = m_systems.GetNext ();
 		if (0 > systemP->Update ())
-			Destroy (systemP, NULL, true);
+			Destroy (systemP, NULL);
 		}
-
-	SEM_LEAVE (SEM_LIGHTNING)
 
 	FORALL_OBJS (objP, i) {
 		i = objP->Index ();
@@ -1647,7 +1656,7 @@ void CLightningManager::DestroyForObject (CObject* objP)
 	int i = objP->Index ();
 
 if (m_objects [i] >= 0) {
-	Destroy (m_systems + m_objects [i], NULL, 0);
+	Destroy (m_systems + m_objects [i], NULL);
 	m_objects [i] = -1;
 	}
 }
@@ -1776,6 +1785,7 @@ else {
 	Update ();
 	omegaLightnings.Update (NULL, NULL);
 	StaticFrame ();
+	Cleanup ();
 	}
 }
 
@@ -2003,7 +2013,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 			MoveForObject (objP);
 			return;
 			}
-		Destroy (m_systems + h, NULL, 0);
+		Destroy (m_systems + h, NULL);
 		}
 	h = Create (n, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 4000,
 					objP->info.xSize, objP->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, colorP);
@@ -2110,7 +2120,7 @@ if (i >= 0) {
 	if (systemP->Lightnings () && (systemP->m_nLightnings = systemP->Lightnings ()->Update (0)))
 		systemP->Render (0, -1, 0, -1);
 	else
-		Destroy (m_systems + i, NULL, 1);
+		Destroy (m_systems + i, NULL);
 	}
 }
 
@@ -2133,7 +2143,7 @@ return -1;
 void COmegaLightnings::Delete (short nHandle)
 {
 if (m_nHandles) {
-	lightningManager.Destroy (lightningManager.m_systems + m_handles [nHandle].nLightning, NULL, 0);
+	lightningManager.Destroy (lightningManager.m_systems + m_handles [nHandle].nLightning, NULL);
 	if (nHandle < --m_nHandles)
 		m_handles [nHandle] = m_handles [m_nHandles];
 	memset (m_handles + m_nHandles, 0xff, sizeof (tOmegaLightningHandles));

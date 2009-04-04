@@ -143,22 +143,6 @@ do {
 				ComputeFaceLight (0, gameData.segs.nFaces / 2, nId);
 			}
 		}
-#if UNIFY_THREADS
-	else if (tiRender.nTask == rtEffects) {
-		if (!nId) {
-			DoParticleFrame ();
-			sparkManager.DoFrame ();
-			lightningManager.DoFrame ();
-			}
-		}
-	else if (tiRender.nTask == rtTranspRender) {
-		transparencyRenderer.Add ((tTranspItemType) tiTranspRender.itemData [nId].nType, 
-										  &tiTranspRender.itemData [nId].item, 
-										  tiTranspRender.itemData [nId].nSize, 
-										  tiTranspRender.itemData [nId].nDepth, 
-										  tiTranspRender.itemData [nId].nIndex);
-		}
-#endif
 	else if (tiRender.nTask == rtPolyModel) {
 		short	iVerts, nVerts, iFaceVerts, nFaceVerts;
 
@@ -191,7 +175,6 @@ return 0;
 
 int _CDECL_ TranspRenderThread (void *pThreadId)
 {
-#if !UNIFY_THREADS
 	int	i;
 
 do {
@@ -209,36 +192,28 @@ do {
 		}
 	} while (!(tiTranspRender.ti [0].bDone && tiTranspRender.ti [1].bDone));
 return 0;
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 void StartTranspRenderThread (void)
 {
-#if !UNIFY_THREADS
-#	if TRANSPRENDER_THREADS
-#		if 0
-if (gameData.app.bUseMultiThreading [rtTranspRender]) 
-#		endif
-	{
-	static bool bInitialized = false;
+#if TRANSPRENDER_THREADS
+static bool bInitialized = false;
 
-	if (!bInitialized) {
-		memset (&tiTranspRender, 0, sizeof (tiTranspRender));
-		bInitialized = true;
-		}
-	for (int i = 0; i < 2; i++) {
-	if (!tiTranspRender.ti [i].pThread)
-		tiTranspRender.ti [i].bDone =
-		tiTranspRender.ti [i].bExec = 0;
-		tiTranspRender.ti [i].nId = i;
-		tiTranspRender.ti [i].pThread = SDL_CreateThread (TranspRenderThread, NULL);
-		}
+if (!bInitialized) {
+	memset (&tiTranspRender, 0, sizeof (tiTranspRender));
+	bInitialized = true;
 	}
-#	else
+for (int i = 0; i < 2; i++) {
+if (!tiTranspRender.ti [i].pThread)
+	tiTranspRender.ti [i].bDone =
+	tiTranspRender.ti [i].bExec = 0;
+	tiTranspRender.ti [i].nId = i;
+	tiTranspRender.ti [i].pThread = SDL_CreateThread (TranspRenderThread, NULL);
+	}
+#else
 gameData.app.bUseMultiThreading [rtTranspRender] = 0;
-#	endif
 #endif
 }
 
@@ -246,7 +221,7 @@ gameData.app.bUseMultiThreading [rtTranspRender] = 0;
 
 void EndTranspRenderThread (void)
 {
-#if !UNIFY_THREADS && TRANSPRENDER_THREADS
+#if TRANSPRENDER_THREADS
 tiTranspRender.ti [0].bDone =
 tiTranspRender.ti [1].bDone = 1;
 G3_SLEEP (10);
@@ -263,20 +238,13 @@ for (int i = 0; i < 2; i++) {
 
 void ControlTranspRenderThread (void)
 {
-#if !UNIFY_THREADS 
-#	if TRANSPRENDER_THREADS
-#		if 0
-if (gameStates.app.bMultiThreaded) 
-#		endif
-	{
-	if (gameData.app.bUseMultiThreading [rtTranspRender])
-		StartTranspRenderThread ();
-	else
-		EndTranspRenderThread ();
-	}
-#	else
+#if TRANSPRENDER_THREADS
+if (gameData.app.bUseMultiThreading [rtTranspRender])
+	StartTranspRenderThread ();
+else
+	EndTranspRenderThread ();
+#else
 gameData.app.bUseMultiThreading [rtTranspRender] = 0;
-#	endif
 #endif
 }
 
@@ -304,23 +272,7 @@ for (int i = 0; i < 2; i++) {
 
 void ControlRenderThreads (void)
 {
-#if 0
-if (gameStates.app.bMultiThreaded) {
-	if (gameData.app.bUseMultiThreading [rtInitSegZRef] ||
-		 gameData.app.bUseMultiThreading [rtSortSegZRef] ||
-#	if !UNIFY_THREADS
-		 gameData.app.bUseMultiThreading [rtTranspRender] ||
-		 gameData.app.bUseMultiThreading [rtEffects] ||
-#	endif
-		 gameData.app.bUseMultiThreading [rtPolyModel] ||
-		 gameData.app.bUseMultiThreading [rtLightmap])
-		StartRenderThreads ();
-	else
-		EndRenderThreads ();
-	}
-#else
 StartRenderThreads ();
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -352,15 +304,9 @@ do {
 			return 0;
 			}
 		}
-	SEM_ENTER (SEM_LIGHTNING)
-	lightningManager.DoFrame ();
-	SEM_LEAVE (SEM_LIGHTNING)
-	SEM_ENTER (SEM_SMOKE)
 	DoParticleFrame ();
-	SEM_LEAVE (SEM_SMOKE)
-	SEM_ENTER (SEM_SPARKS)
+	lightningManager.DoFrame ();
 	sparkManager.DoFrame ();
-	SEM_LEAVE (SEM_SPARKS)
 	tiEffects.bExec = 0;
 	} while (!tiEffects.bDone);
 tiEffects.bDone = 0;
@@ -371,23 +317,16 @@ return 0;
 
 void StartEffectsThread (void)
 {
-#if !UNIFY_THREADS
-#	if 0
-if (gameData.app.bUseMultiThreading [rtEffects]) 
-#	endif
-	{
-	static bool bInitialized = false;
+static bool bInitialized = false;
 
-	if (!bInitialized) {
-		memset (&tiEffects, 0, sizeof (tiEffects));
-		bInitialized = true;
-		}
-	tiEffects.bDone = 0;
-	tiEffects.bExec = 0;
-	if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
-		gameData.app.bUseMultiThreading [rtEffects] = 0;
+if (!bInitialized) {
+	memset (&tiEffects, 0, sizeof (tiEffects));
+	bInitialized = true;
 	}
-#endif
+tiEffects.bDone = 0;
+tiEffects.bExec = 0;
+if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
+	gameData.app.bUseMultiThreading [rtEffects] = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -406,29 +345,19 @@ tiEffects.pThread = NULL;
 
 void ControlEffectsThread (void)
 {
-if (gameStates.app.bMultiThreaded) {
-#if 1
-StartEffectsThread ();
-#else
-	if (gameData.app.bUseMultiThreading [rtEffects])
-		StartEffectsThread ();
-	else
-		EndEffectsThread ();
-#endif
-	}
+if (gameStates.app.bMultiThreaded)
+	StartEffectsThread ();
 }
 
 //------------------------------------------------------------------------------
 
 bool WaitForEffectsThread (void)
 {
-#if !UNIFY_THREADS
 if (gameStates.app.bMultiThreaded && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);
 	return true;
 	}
-#endif
 return false;
 }
 

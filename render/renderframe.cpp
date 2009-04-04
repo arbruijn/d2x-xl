@@ -514,7 +514,16 @@ CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 {
 PROF_START
 SEM_ENTER (SEM_LIGHTNING)
-lightningManager.SetLights ();
+bool bRetry;
+do {
+	bRetry = false;
+	try {
+		lightningManager.SetLights ();
+	}
+	catch(...) {
+		bRetry = true;
+		}
+	} while (bRetry);
 SEM_LEAVE (SEM_LIGHTNING)
 PROF_END(ptLighting)
 }

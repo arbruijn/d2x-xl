@@ -202,7 +202,8 @@ class CLightningManager : public tLightningData {
 						short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
-		void Destroy (CLightningSystem* systemP, CLightning *lightningP, bool bDestroy);
+		void Destroy (CLightningSystem* systemP, CLightning *lightningP);
+		void Cleanup (void);
 		int Shutdown (bool bForce);
 		void Render (void);
 		void Update (void);
