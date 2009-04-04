@@ -1489,7 +1489,8 @@ if (!m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
 	return;
 	}
 int i = 0;
-for (CParticleSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = GetNext ())
+int nCurrent = m_systems.FreeList ();
+for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Init (i++);
 }
 
@@ -1511,9 +1512,9 @@ return i;
 void CParticleManager::Cleanup (void)
 {
 WaitForEffectsThread ();
-CParticleSystem* nextP = NULL;
-for (CParticleSystem* systemP = GetFirst (); systemP; systemP = nextP) {
-	nextP = GetNext ();
+int nCurrent = -1;
+for (CParticleSystem* systemP = GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
+	nextP = GetNext (nCurrent);
 	if (systemP->m_bDestroy) {
 		systemP->Destroy ();
 		m_systems.Push (systemP->m_nId);
@@ -1526,7 +1527,8 @@ for (CParticleSystem* systemP = GetFirst (); systemP; systemP = nextP) {
 int CParticleManager::Shutdown (void)
 {
 SEM_ENTER (SEM_SMOKE)
-for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
+int nCurrent = -1;
+for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Destroy ();
 Cleanup ();
 particleImageManager.FreeAll ();
@@ -1575,7 +1577,8 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 	int	h = 0;
 
-for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ()) 
+int nCurrent = -1;
+for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent)) 
 	h += systemP->Update ();
 return h;
 }
@@ -1584,7 +1587,8 @@ return h;
 
 void CParticleManager::Render (void)
 {
-for (CParticleSystem* systemP = GetFirst (); systemP; systemP = GetNext ())
+int nCurrent = -1;
+for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent)) 
 	systemP->Render ();
 }
 

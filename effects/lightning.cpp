@@ -1438,7 +1438,8 @@ if (!m_systems.Create (MAX_LIGHTNING_SYSTEMS)) {
 	return;
 	}	
 int i = 0;
-for (CLightningSystem* systemP = m_systems.GetFirst (m_systems.FreeList ()); systemP; systemP = m_systems.GetNext ())
+int nCurrent = m_systems.FreeList ();
+for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 	systemP->Init (i++);
 m_nFirstLight = -1;
 m_bDestroy = 0;
@@ -1488,8 +1489,9 @@ void CLightningManager::Cleanup (void)
 {
 SEM_ENTER (SEM_LIGHTNING)
 CLightningSystem* nextP = NULL;
-for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = nextP) {
-	nextP = m_systems.GetNext ();
+int nCurrent = -1;
+for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
+	nextP = m_systems.GetNext (nCurrent);
 	if (0 > systemP->m_bDestroy) {
 		systemP->Destroy ();
 		m_systems.Push (systemP->Id ());
@@ -1508,9 +1510,9 @@ else {
 	uint bSem = gameData.app.semaphores [SEM_LIGHTNING];
 	if (!bSem)
 		SEM_ENTER (SEM_LIGHTNING)
-	CLightningSystem* nextP = NULL;
-	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = nextP) {
-		nextP = m_systems.GetNext ();
+	int nCurrent = -1;
+	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
+		nextP = m_systems.GetNext (nCurrent);
 		Destroy (systemP, NULL);
 		m_systems.Push (systemP->Id ());
 		}
@@ -1597,9 +1599,9 @@ if (SHOW_LIGHTNINGS) {
 			DestroyForObject (objP);
 			}
 		}
-	CLightningSystem* nextP = NULL;
-	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = nextP) {
-		nextP = m_systems.GetNext ();
+	int nCurrent = -1;
+	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
+		nextP = m_systems.GetNext (nCurrent);
 		if (0 > systemP->Update ())
 			Destroy (systemP, NULL);
 		}
@@ -1706,7 +1708,8 @@ void CLightningManager::Render (void)
 if (SHOW_LIGHTNINGS) {
 		int bStencil = StencilOff ();
 
-	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ())
+	int nCurrent = -1;
+	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
 			systemP->Render (0, systemP->m_nLightnings, gameOpts->render.bDepthSort > 0, 0);
 	StencilOn (bStencil);
@@ -1859,7 +1862,8 @@ if (SHOW_LIGHTNINGS) {
 		int					i, n, bDynLighting = gameStates.render.nLightingMethod;
 
 	m_nFirstLight = -1;
-	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ())
+	int nCurrent = -1;
+	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 		nLights += systemP->SetLight ();
 	if (!nLights)
 		return;
@@ -2026,7 +2030,8 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 
 int CLightningManager::FindDamageLightning (short nObject, int *pKey)
 {
-for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ())
+int nCurrent = -1;
+for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 	if ((systemP->m_nObject == nObject) && (systemP->m_nKey [0] == pKey [0]) && (systemP->m_nKey [1] == pKey [1]))
 		return systemP->Id ();
 return -1;

@@ -23,7 +23,6 @@ class CDataPool {
 		//_T*				m_null;
 		int				m_free;
 		int				m_used;
-		int				m_current;
 
 	public:
 		CDataPool () { Init (); }
@@ -34,8 +33,7 @@ class CDataPool {
 		inline void Init (void) { 
 			m_buffer.Init ();
 			m_free = 
-			m_used =
-			m_current = -1; 
+			m_used = -1; 
 			}
 
 		inline void Destroy (void) { 
@@ -82,8 +80,6 @@ class CDataPool {
 				m_buffer [e.prev].next = e.next;
 			if (e.next >= 0)
 				m_buffer [e.next].prev = e.prev;
-			if (m_current == int (i))
-				m_current = (e.prev >= 0) ? e.prev : e.next;
 			e.prev = -1;
 			e.next = m_free;
 			if (m_free >= 0)
@@ -93,12 +89,12 @@ class CDataPool {
 
 		inline int LastIndex (void) { return m_used; }
 
-		inline _T* GetNext (void) { 
-			if (m_current < 0)
+		inline _T* GetNext (int& nCurrent) { 
+			if (nCurrent < 0)
 				return NULL;
 			CPoolElem<_T>* e;
 			try {
-				e = &m_buffer [m_current]; 
+				e = &m_buffer [nCurrent]; 
 				}
 			catch(...) {
 #if DBG
@@ -106,13 +102,14 @@ class CDataPool {
 #endif
 				return NULL;
 				}
-			m_current = e->next;
+			nCurrent = e->next;
 			return &e->data;
 			}
 
-		inline _T* GetFirst (int i = -1) { 
-			m_current = (i < 0) ? m_used : i;
-			return GetNext ();
+		inline _T* GetFirst (int& nCurrent) { 
+			if (nCurrent < 0)
+				nCurrent = m_used;
+			return GetNext (nCurrent);
 			}
 
 		inline int Size (void) { return m_buffer.Size (); }
