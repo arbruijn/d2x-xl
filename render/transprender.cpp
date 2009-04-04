@@ -1104,7 +1104,7 @@ PROF_END(ptRenderFaces)
 
 void CTransparencyRenderer::RenderObject (tTranspObject *item)
 {
-//SEM_LEAVE (SEM_LIGHTNINGS)	//might lockup otherwise when creating damage lightnings on cloaked objects
+//SEM_LEAVE (SEM_LIGHTNING)	//might lockup otherwise when creating damage lightnings on cloaked objects
 //SEM_LEAVE (SEM_SPARKS)
 SetClientState (0, 0, 0, 0, 0);
 ResetShader ();
@@ -1117,7 +1117,7 @@ m_data.bClientState = 0;
 m_data.bClientTexCoord = 0;
 m_data.bClientColor = 0;
 ResetBitmaps ();
-//SEM_ENTER (SEM_LIGHTNINGS)
+//SEM_ENTER (SEM_LIGHTNING)
 //SEM_ENTER (SEM_SPARKS)
 }
 

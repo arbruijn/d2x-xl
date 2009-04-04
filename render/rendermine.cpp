@@ -865,13 +865,13 @@ if (bParticles) {
 	//SEM_LEAVE (SEM_SMOKE)
 	}
 if (bLightnings) {
-	SEM_ENTER (SEM_LIGHTNINGS)
+	SEM_ENTER (SEM_LIGHTNING)
 	//PrintLog ("RenderLightnings\n");
 	lightningManager.Render ();
 	}
 //PrintLog ("transparencyRenderer.Render\n");
 if (bLightnings)
-	SEM_LEAVE (SEM_LIGHTNINGS)
+	SEM_LEAVE (SEM_LIGHTNING)
 transparencyRenderer.Render ();
 #if 1
 if (bParticles)

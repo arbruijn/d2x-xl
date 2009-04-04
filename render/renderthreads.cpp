@@ -352,9 +352,15 @@ do {
 			return 0;
 			}
 		}
-	DoParticleFrame ();
-	sparkManager.DoFrame ();
+	SEM_ENTER (SEM_LIGHTNING)
 	lightningManager.DoFrame ();
+	SEM_LEAVE (SEM_LIGHTNING)
+	SEM_ENTER (SEM_SMOKE)
+	DoParticleFrame ();
+	SEM_LEAVE (SEM_SMOKE)
+	SEM_ENTER (SEM_SPARKS)
+	sparkManager.DoFrame ();
+	SEM_LEAVE (SEM_SPARKS)
 	tiEffects.bExec = 0;
 	} while (!tiEffects.bDone);
 tiEffects.bDone = 0;

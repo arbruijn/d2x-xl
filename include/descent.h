@@ -3431,7 +3431,7 @@ int TIRUnload (void);
 #define HW_GEO_LIGHTING 0 //gameOpts->ogl.bGeoLighting
 
 #define SEM_SMOKE			0
-#define SEM_LIGHTNINGS	1
+#define SEM_LIGHTNING	1
 #define SEM_SPARKS		2
 #define SEM_SHRAPNEL		3
 
@@ -3472,11 +3472,11 @@ else
 	PrintLog ("asymmetric SemLeave (%d) @ %s:%d\n", sem, pszFile, nLine);
 }
 
-#define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemWait (_sem);
+#define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded) SemWait (_sem);
 
-#define SEM_ENTER(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemEnter (_sem, __FILE__, __LINE__);
+#define SEM_ENTER(_sem)	if (gameStates.app.bMultiThreaded) SemEnter (_sem, __FILE__, __LINE__);
 
-#define SEM_LEAVE(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemLeave (_sem, __FILE__, __LINE__);
+#define SEM_LEAVE(_sem)	if (gameStates.app.bMultiThreaded) SemLeave (_sem, __FILE__, __LINE__);
 
 #else
 
@@ -3493,11 +3493,11 @@ if (gameData.app.semaphores [sem])
 	gameData.app.semaphores [sem]--;
 }
 
-#define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemWait (_sem);
+#define SEM_WAIT(_sem)	if (gameStates.app.bMultiThreaded) SemWait (_sem);
 
-#define SEM_ENTER(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemEnter (_sem);
+#define SEM_ENTER(_sem)	if (gameStates.app.bMultiThreaded) SemEnter (_sem);
 
-#define SEM_LEAVE(_sem)	if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtEffects]) SemLeave (_sem);
+#define SEM_LEAVE(_sem)	if (gameStates.app.bMultiThreaded) SemLeave (_sem);
 
 #endif
 

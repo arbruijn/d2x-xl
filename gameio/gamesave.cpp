@@ -935,9 +935,6 @@ CheckAndFixWalls ();
 CheckAndFixTriggers ();
 gameData.matCens.nBotCenters = gameFileInfo.botGen.count;
 FixObjectSegs ();
-#if DBG
-dump_mine_info ();
-#endif
 if ((gameTopFileInfo.fileinfoVersion < GAME_VERSION) && 
 	 ((gameTopFileInfo.fileinfoVersion != 25) || (GAME_VERSION != 26)))
 	return 1;		//means old version
@@ -946,9 +943,8 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int CheckSegmentConnections(void);
-
-extern void	SetAmbientSoundFlags(void);
+int CheckSegmentConnections (void);
+void	SetAmbientSoundFlags (void);
 
 
 #define LEVEL_FILE_VERSION      8

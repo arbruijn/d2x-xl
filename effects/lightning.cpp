@@ -1456,7 +1456,7 @@ if (!(SHOW_LIGHTNINGS && colorP))
 	return -1;
 if (!nLightnings)
 	return -1;
-SEM_ENTER (SEM_LIGHTNINGS)
+SEM_ENTER (SEM_LIGHTNING)
 CLightningSystem* systemP = m_systems.Pop ();
 if (!systemP)
 	return -1;
@@ -1465,10 +1465,10 @@ if (!(systemP->Create (nLightnings, vPos, vEnd, vDelta, nObject, nLife, nDelay, 
 							  nStyle, colorP))) {
 	m_systems.Push (systemP->Id ());
 	systemP->Destroy ();
-	SEM_LEAVE (SEM_LIGHTNINGS)
+	SEM_LEAVE (SEM_LIGHTNING)
 	return -1;
 	}
-SEM_LEAVE (SEM_LIGHTNINGS)
+SEM_LEAVE (SEM_LIGHTNING)
 return systemP->Id ();
 }
 
@@ -1495,9 +1495,9 @@ int CLightningManager::Shutdown (bool bForce)
 if (!bForce && (m_bDestroy >= 0))
 	m_bDestroy = 1;
 else {
-	uint bSem = gameData.app.semaphores [SEM_LIGHTNINGS];
+	uint bSem = gameData.app.semaphores [SEM_LIGHTNING];
 	if (!bSem)
-		SEM_ENTER (SEM_LIGHTNINGS)
+		SEM_ENTER (SEM_LIGHTNING)
 	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ()) {
 		Destroy (systemP, NULL, true);
 		m_systems.Push (systemP->Id ());
@@ -1507,7 +1507,7 @@ else {
 	m_objects.Destroy ();
 	m_lights.Destroy ();
 	if (!bSem)
-		SEM_LEAVE (SEM_LIGHTNINGS)
+		SEM_LEAVE (SEM_LIGHTNING)
 	}
 return 1;
 }
@@ -1579,18 +1579,21 @@ if (SHOW_LIGHTNINGS) {
 		return 0;
 #	endif
 #endif
-	SEM_ENTER (SEM_LIGHTNINGS)
+	SEM_ENTER (SEM_LIGHTNING)
 	for (i = 0, objP = OBJECTS.Buffer (); i < gameData.objs.nLastObject [1]; i++, objP++) {
 		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
 			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
 			DestroyForObject (objP);
 			}
 		}
-	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = m_systems.GetNext ())
+	CLightningSystem* nextP = NULL;
+	for (CLightningSystem* systemP = m_systems.GetFirst (); systemP; systemP = nextP) {
+		nextP = m_systems.GetNext ();
 		if (0 > systemP->Update ())
 			Destroy (systemP, NULL, true);
+		}
 
-	SEM_LEAVE (SEM_LIGHTNINGS)
+	SEM_LEAVE (SEM_LIGHTNING)
 
 	FORALL_OBJS (objP, i) {
 		i = objP->Index ();
@@ -1632,9 +1635,9 @@ if (SHOW_LIGHTNINGS) {
 #if 0
 void MoveForObject (CObject* objP)
 {
-SEM_ENTER (SEM_LIGHTNINGS)
+SEM_ENTER (SEM_LIGHTNING)
 MoveForObjectInternal (objP);
-SEM_LEAVE (SEM_LIGHTNINGS)
+SEM_LEAVE (SEM_LIGHTNING)
 }
 #endif
 //------------------------------------------------------------------------------

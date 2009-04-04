@@ -513,7 +513,9 @@ gameStates.render.vr.buffers.screenPages [0].SetupPane (
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 {
 PROF_START
+SEM_ENTER (SEM_LIGHTNING)
 lightningManager.SetLights ();
+SEM_LEAVE (SEM_LIGHTNING)
 PROF_END(ptLighting)
 }
 if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {

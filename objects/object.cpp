@@ -869,9 +869,9 @@ OBJECTS [nObject].RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNINGS);
 SEM_ENTER (SEM_SMOKE)
 KillObjectSmoke (nObject);
 SEM_LEAVE (SEM_SMOKE)
-SEM_ENTER (SEM_LIGHTNINGS)
+SEM_ENTER (SEM_LIGHTNING)
 lightningManager.DestroyForObject (OBJECTS + nObject);
-SEM_LEAVE (SEM_LIGHTNINGS)
+SEM_LEAVE (SEM_LIGHTNING)
 #endif
 lightManager.Delete (-1, -1, nObject);
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
