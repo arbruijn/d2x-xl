@@ -161,12 +161,13 @@ typedef struct tParticleSystem {
 	short								m_nObjType;
 	short								m_nObjId;
 	bool								m_bDestroy;
+	bool								m_bValid;
 	char								m_nType;				//black or white
 } tParticleSystem;
 
 class CParticleSystem : public tParticleSystem {
 	public:
-		CParticleSystem () {};
+		CParticleSystem () { m_bValid = m_bDestroy = false; }
 		~CParticleSystem () { Destroy (); };
 		void Init (int nId);
 		int Create (CFixVector *pPos, CFixVector *pDir, CFixMatrix *pOrient,

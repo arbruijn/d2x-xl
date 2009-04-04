@@ -1266,6 +1266,7 @@ for (i = 0; i < nMaxEmitters; i++)
 		return -1;
 		}
 m_nType = nType;
+m_bValid = True;
 return 1;
 }
 
@@ -1278,6 +1279,7 @@ m_nObject = -1;
 m_nObjType = -1;
 m_nObjId = -1;
 m_nSignature = -1;
+m_bValid =
 m_bDestroy = false;
 }
 
@@ -1285,6 +1287,7 @@ m_bDestroy = false;
 
 void CParticleSystem::Destroy (void)
 {
+m_bValid = 
 m_bDestroy = false;
 if (m_emitters.Buffer ()) {
 	m_emitters.Destroy ();
@@ -1301,6 +1304,9 @@ if (m_emitters.Buffer ()) {
 
 int CParticleSystem::Render (void)
 {
+if (!m_bValid)
+	return 0;
+
 	int	h = 0;
 
 if (m_emitters.Buffer ()) {
@@ -1326,7 +1332,7 @@ return h;
 
 void CParticleSystem::SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment)
 {
-if (m_emitters.Buffer ())
+if (m_bValid && m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetPos (vPos, mOrient, nSegment);
 }
@@ -1335,7 +1341,7 @@ if (m_emitters.Buffer ())
 
 void CParticleSystem::SetDensity (int nMaxParts, int nDensity)
 {
-if (m_emitters.Buffer ()) {
+if (m_bValid && m_emitters.Buffer ()) {
 	nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetDensity (nMaxParts, nDensity);
@@ -1346,7 +1352,7 @@ if (m_emitters.Buffer ()) {
 
 void CParticleSystem::SetScale (float fScale)
 {
-if (m_emitters.Buffer ())
+if (m_bValid && m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetScale (fScale);
 }
@@ -1355,7 +1361,7 @@ if (m_emitters.Buffer ())
 
 void CParticleSystem::SetLife (int nLife)
 {
-if (m_emitters.Buffer () && (m_nLife != nLife)) {
+if (m_bValid && m_emitters.Buffer () && (m_nLife != nLife)) {
 	m_nLife = nLife;
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetLife (nLife);
@@ -1366,7 +1372,7 @@ if (m_emitters.Buffer () && (m_nLife != nLife)) {
 
 void CParticleSystem::SetBrightness (int nBrightness)
 {
-if (m_emitters.Buffer ())
+if (m_bValid && m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetBrightness (nBrightness);
 }
@@ -1375,7 +1381,7 @@ if (m_emitters.Buffer ())
 
 void CParticleSystem::SetType (int nType)
 {
-if (m_emitters.Buffer () && (m_nType != nType)) {
+if (m_bValid && m_emitters.Buffer () && (m_nType != nType)) {
 	m_nType = nType;
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetType (nType);
@@ -1386,7 +1392,7 @@ if (m_emitters.Buffer () && (m_nType != nType)) {
 
 void CParticleSystem::SetSpeed (int nSpeed)
 {
-if (m_emitters.Buffer () && (m_nSpeed != nSpeed)) {
+if (m_bValid && m_emitters.Buffer () && (m_nSpeed != nSpeed)) {
 	m_nSpeed = nSpeed;
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetSpeed (nSpeed);
@@ -1397,7 +1403,7 @@ if (m_emitters.Buffer () && (m_nSpeed != nSpeed)) {
 
 void CParticleSystem::SetDir (CFixVector *vDir)
 {
-if (m_emitters.Buffer ())
+if (m_bValid && m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetDir (vDir);
 }
@@ -1406,7 +1412,7 @@ if (m_emitters.Buffer ())
 
 int CParticleSystem::RemoveEmitter (int i)
 {
-if (m_emitters.Buffer () && (i < m_nEmitters)) {
+if (m_bValid && m_emitters.Buffer () && (i < m_nEmitters)) {
 	m_emitters [i].Destroy ();
 	if (i < --m_nEmitters)
 		m_emitters [i] = m_emitters [m_nEmitters];
@@ -1418,6 +1424,9 @@ return m_nEmitters;
 
 int CParticleSystem::Update (void)
 {
+if (!m_bValid)
+	return 0;
+
 	CParticleEmitter	*emitterP;
 	int					i = 0;
 
