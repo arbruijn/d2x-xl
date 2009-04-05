@@ -1444,7 +1444,7 @@ if (OBJ_IDX (this) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 if (info.nId == PROXMINE_ID) {
-	if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+	if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 		return 1;
 	}
 else if (info.nId == OMEGA_ID) {
@@ -1728,7 +1728,7 @@ int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
 if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return 1;
-if ((info.nId == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+if ((info.nId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
 if (info.nId == OMEGA_ID)
 	if (!OkToDoOmegaDamage (this))
@@ -1951,7 +1951,7 @@ int CObject::CollideWeaponAndWeapon (CObject* other, CFixVector& vHitPt)
 
 if (id1 == SMALLMINE_ID && id2 == SMALLMINE_ID)
 	return 1;		//these can't blow each other up
-if ((id1 == PROXMINE_ID || id2 == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+if ((id1 == PROXMINE_ID || id2 == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
 if (((id1 == OMEGA_ID) && !OkToDoOmegaDamage (this)) ||
     ((id2 == OMEGA_ID) && !OkToDoOmegaDamage (other)))

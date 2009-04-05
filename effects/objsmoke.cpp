@@ -771,7 +771,7 @@ else if (t == OBJ_WEAPON) {
 		DoMissileSmoke (objP);
 	else if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))
 		DoParticleTrail (objP);
-	else if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->info.nId == PROXMINE_ID))
+	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->info.nId == PROXMINE_ID))
 		DoBombSmoke (objP);
 	else if (gameOpts->render.particles.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
 				gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsSlowWeapon [objP->info.nId])

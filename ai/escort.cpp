@@ -283,10 +283,10 @@ if (bDetected) {
 
 //	-------------------------------------------------------------------------------------------------
 
-void ChangeGuidebotName ()
+void ChangeGuidebotName (void)
 {
 	CMenu	m;
-	char	text [GUIDEBOT_NAME_LEN+1]="";
+	char	text [GUIDEBOT_NAME_LEN+1] = "";
 	int	item;
 
 strcpy (text,gameData.escort.szName);
@@ -1086,16 +1086,19 @@ return m.TinyMenu (NULL, "Guide-Bot Commands");
 
 void DoEscortMenu (void)
 {
+if (gameData.app.nGameMode & GM_MULTI) {
+	HUDInitMessage (TXT_GB_MULTIPLAYER);
+	return;
+	}
+
+if (gameStates.app.bD1Mission)
+	return;
+
 	int		i;
 	int		paused;
 	int		next_goal;
 	char		szGoal [32], tstr [32];
 	CObject	*objP;
-
-if (gameData.app.nGameMode & GM_MULTI) {
-	HUDInitMessage (TXT_GB_MULTIPLAYER);
-	return;
-	}
 
 FORALL_ROBOT_OBJS (objP, i) {
 	if (ROBOTINFO (objP->info.nId).companion)

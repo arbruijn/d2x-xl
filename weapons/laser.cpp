@@ -1608,7 +1608,7 @@ if (gameStates.app.bPlayerIsDead || (playerP->secondaryAmmo [gameData.weapons.nS
 	return;
 
 nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
-if ((nWeaponId == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) &&
+if ((nWeaponId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) &&
 	 (CountPlayerObjects (gameData.multiplayer.nLocalPlayer, OBJ_WEAPON, PROXMINE_ID) >= extraGameInfo [IsMultiGame].nMaxSmokeGrenades))
 	return;
 if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)

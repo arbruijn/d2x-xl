@@ -324,7 +324,7 @@ GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);
 DefaultGameplaySettings ();
-if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);

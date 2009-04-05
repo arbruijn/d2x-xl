@@ -611,12 +611,14 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 
 
 		case KEY_F4 + KEY_SHIFTED:
-			DoEscortMenu ();
+			if (!gameStates.app.bD1Mission)
+				DoEscortMenu ();
 			break;
 
 
 		case KEY_F4 + KEY_SHIFTED + KEY_ALTED:
-			ChangeGuidebotName ();
+			if (!gameStates.app.bD1Mission)
+				ChangeGuidebotName ();
 			break;
 
 		case KEY_MINUS + KEY_ALTED:

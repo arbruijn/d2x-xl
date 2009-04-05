@@ -483,7 +483,7 @@ if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
 else if (!LOCALPLAYER.secondaryAmmo [bomb]) {
 	audio.PlaySound (SOUND_BAD_SELECTION);
 	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMARTMINE_INDEX)? TXT_SMART_MINES : 
-						 !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
+						 IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
 	}
 else {
 	bLastSecondaryWasSuper [PROXMINE_INDEX] = !bLastSecondaryWasSuper [PROXMINE_INDEX];

@@ -80,7 +80,7 @@ int PickupSecondary (CObject *objP, int nWeaponIndex, int nAmount, int nPlayer)
 	int		nCutPoint, bEmpty = 0, bSmokeGrens;
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
-if ((nWeaponIndex == PROXMINE_INDEX) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
+if ((nWeaponIndex == PROXMINE_INDEX) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
 	bSmokeGrens = 1;
 	nMaxAmount = 4;
 	}
