@@ -472,11 +472,7 @@ gameOpts->menus.altBg.bHave = 0;
 if (!(bmP = CBitmap::Create (0, 0, 0, 1)))
 	return NULL;
 if (!ReadTGA (gameOpts->menus.altBg.szName, 
-#ifdef __linux__
-				  gameFolders.szCacheDir,
-#else
-				  NULL, 
-#endif
+				  gameFolders.szWallpaperDir,
 				  bmP, 
 				 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255), 
 				 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale, 0)) {

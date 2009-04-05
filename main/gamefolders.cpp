@@ -143,6 +143,7 @@ if (*pszParentFolder) {
 #	define	MODDIR			"Mods"
 #	define	MUSICDIR			"Music"
 #	define	DOWNLOADDIR		"Downloads"
+#	define	WALLPAPERDIR	"Wallpapers"
 #else
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
@@ -165,6 +166,7 @@ if (*pszParentFolder) {
 #	define	MODDIR			"mods"
 #	define	MUSICDIR			"music"
 #	define	DOWNLOADDIR		"downloads"
+#	define	WALLPAPERDIR	"wallpapers"
 #endif
 
 void GetAppFolders (void)
@@ -320,6 +322,11 @@ GetAppFolder (szDataRootDir, gameFolders.szScrShotDir, SCRSHOTDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szDemoDir, DEMODIR, "");
 if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.ini"))
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
+#ifdef __unix__
+GetAppFolder (szDataRootDir, gameFolders.szWallpaperDir, WALLPAPERDIR, "");
+#else
+GetAppFolder (gameFolders.szTextureDir [0], gameFolders.szWallpaperDir, WALLPAPERDIR, "");
+#endif
 #ifdef WIN32
 sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_DIR);
 #else
