@@ -243,7 +243,7 @@ do {
 		optStaticSmoke =
 		optGatlingTrails = -1;
 
-	if (gameOptions [0].render.nQuality < 3) 
+	if ((gameOptions [0].render.nQuality < 3) || (gameOpts->app.bExpertMode != SUPERUSER))
 		optSoftParticles [0] = 
 		optSoftParticles [1] = 
 		optSoftParticles [2] = -1;
