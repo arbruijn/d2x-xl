@@ -126,9 +126,12 @@ if (nLightTrails != v) {
 m = menu + effectOpts.nSmoke;
 v = m->m_value;
 if (gameOpts->render.particles.nQuality != v) {
+	if (!gameOpts->render.particles.nQuality || !v)
+		key = -2;
+	else
+		m->m_bRebuild = -1;
 	gameOpts->render.particles.nQuality = v;
 	sprintf (m->m_text, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
-	m->m_bRebuild = -1;
 	}
 
 if (effectOpts.nShadows >= 0) {
