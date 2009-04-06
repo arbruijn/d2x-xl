@@ -43,6 +43,8 @@ int CreateMonsterball (void)
 	short			nDropSeg, nObject;
 
 RemoveMonsterball ();
+if (!IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL))
+	return 0;
 #if 0 //DBG
 nDropSeg = gameData.hoard.nMonsterballSeg;
 #else
@@ -115,8 +117,8 @@ FORALL_STATIC_OBJS (objP, i)
 			}
 		ReleaseObject (objP->Index ());
 		}
-#if !DBG
-if (!(NetworkIAmMaster () && IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
+#if 1 //!DBG
+if (!NetworkIAmMaster ())
 	return 0;
 #endif
 if (bCreate) {
