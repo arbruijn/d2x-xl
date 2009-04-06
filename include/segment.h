@@ -315,6 +315,7 @@ class CSegment {
 		int Physics (fix& xDamage);
 
 		int TexturedSides (void);
+		CBitmap* ChangeTextures (short nBaseTex, short nOvlTex);
 
 		void OperateTrigger (int nSide, CObject *objP, int bShot);
 

@@ -142,6 +142,10 @@ CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect
 
 if (!(bmP || (bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame))))
 	return NULL;
+#if DBG
+if (strstr (bmP->Name (), "misc068"))
+	bmP = bmP;
+#endif
 if (bmP->FrameCount () < 2)
 	return NULL;
 bmP->SetTranspType (-1);
@@ -211,6 +215,8 @@ xEffectTime += gameData.time.xFrame;
 
 	for (i = 0, ecP = gameData.eff.effectP.Buffer (); i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++, ecP++) {
 #if DBG
+		if (i == 39)
+			i = i;
 		for (int j = 0; j < VCLIP_MAX_FRAMES; j++)
 			if ((nDbgTexture >= 0) && (ecP->vClipInfo.frames [j].index == nDbgTexture)) {
 				nDbgTexture = nDbgTexture;
@@ -219,6 +225,10 @@ xEffectTime += gameData.time.xFrame;
 #endif
 		if ((t = ecP->changingWallTexture) == -1)
 			continue;
+#if DBG
+		if ((nDbgTexture > 0) && (t == nDbgTexture))
+			nDbgTexture = nDbgTexture;
+#endif
 		if (!bSetup) {
 			if (ecP->flags & EF_STOPPED)
 				continue;
@@ -230,8 +240,7 @@ xEffectTime += gameData.time.xFrame;
 			}
 		nFrames = ecP->vClipInfo.nFrameCount;
 		if (ecP->flags & EF_ALTFMT) {
-			if (ecP->flags & EF_INITIALIZED) {
-				bmP = gameData.pig.tex.bitmapP [ecP->vClipInfo.frames [0].index].Override ();
+			if ((ecP->flags & EF_INITIALIZED) && (bmP = gameData.pig.tex.bitmapP [ecP->vClipInfo.frames [0].index].Override ())) {
 				if (gameOpts->ogl.bGlTexMerge)
 					nFrames = bmP->FrameCount ();
 				}

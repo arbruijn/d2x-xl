@@ -8,6 +8,7 @@
 #include "newdemo.h"
 #include "wall.h"
 #include "fireball.h"
+#include "renderlib.h"
 #include "text.h"
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
@@ -974,15 +975,18 @@ if (nSwitchType) {
 	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.eff.effectP [ecP->nDestEClip].nSegment == -1)) {
 		tEffectClip	*newEcP = gameData.eff.effectP + ecP->nDestEClip;
 		int nNewBm = newEcP->changingWallTexture;
-		newEcP->xTimeLeft = EffectFrameTime (newEcP);
-		newEcP->nCurFrame = 0;
-		newEcP->nSegment = Index ();
-		newEcP->nSide = nSide;
-		newEcP->flags |= EF_ONE_SHOT;
-		newEcP->nDestBm = ecP->nDestBm;
+		if (ChangeTextures (-1, nNewBm)) {
+			newEcP->xTimeLeft = EffectFrameTime (newEcP);
+			newEcP->nCurFrame = 0;
+			newEcP->nSegment = Index ();
+			newEcP->nSide = nSide;
+			newEcP->flags |= EF_ONE_SHOT | ecP->flags;
+			newEcP->flags &= ~EF_INITIALIZED;
+			newEcP->nDestBm = ecP->nDestBm;
 
-		Assert ((nNewBm != 0) && (m_sides [nSide].m_nOvlTex != 0));
-		m_sides [nSide].m_nOvlTex = nNewBm;		//replace with destoyed
+			Assert ((nNewBm != 0) && (m_sides [nSide].m_nOvlTex != 0));
+			m_sides [nSide].m_nOvlTex = nNewBm;		//replace with destoyed
+			}
 		}
 	else {
 		Assert ((nBitmap != 0) && (m_sides [nSide].m_nOvlTex != 0));
@@ -1016,6 +1020,24 @@ return nSides;
 void CSegment::CreateSound (short nSound, int nSide)
 {
 audio.CreateSegmentSound (nSound, Index (), nSide, SideCenter (nSide));
+}
+
+//------------------------------------------------------------------------------
+
+CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex)
+{
+	CBitmap*		bmBot = (nBaseTex < 0) ? NULL : LoadFaceBitmap (nBaseTex, 0, 1);
+	CBitmap*		bmTop = (nOvlTex <= 0) ? NULL : LoadFaceBitmap (nOvlTex, 0, 1);
+	tSegFaces*	segFaceP = SEGFACES + Index ();
+	CSegFace	*	faceP = segFaceP->faceP;
+
+for (int i = segFaceP->nFaces; i; i--, faceP++) {
+	if (bmBot)
+		faceP->bmBot = bmBot;
+		if (nOvlTex >= 0)
+			faceP->bmTop = bmTop;
+	}
+return bmBot ? bmBot : bmTop;
 }
 
 //------------------------------------------------------------------------------
