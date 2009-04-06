@@ -1032,9 +1032,10 @@ CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex)
 	CSegFace	*	faceP = segFaceP->faceP;
 
 for (int i = segFaceP->nFaces; i; i--, faceP++) {
-	if (bmBot) 
+	if (bmBot) {
 		faceP->bmBot = bmBot;
 		faceP->nBaseTex = nBaseTex;
+		}
 	if (nOvlTex >= 0) {
 		faceP->bmTop = bmTop;
 		faceP->nOvlTex = nOvlTex;
