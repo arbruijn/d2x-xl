@@ -870,6 +870,7 @@ gameData.time.xFrame = 0;			//make first frame zero
 //console.printf (CON_DBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
 GameFlushInputs ();
+lightManager.SetMethod ();
 gameData.time.xGameStart = SDL_GetTicks ();
 }
 

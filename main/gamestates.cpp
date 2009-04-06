@@ -178,7 +178,7 @@ void InitOglStates (void)
 gameStates.ogl.bInitialized = 0;
 gameStates.ogl.bShadersOk = 0;
 gameStates.ogl.bRender2TextureOk = 0;
-gameStates.ogl.bPerPixelLightingOk = 1;
+gameStates.ogl.bPerPixelLightingOk = 2;
 gameStates.ogl.bUseRender2Texture = 1;
 gameStates.ogl.bVoodooHack = 0;
 gameStates.ogl.bBrightness = 0;

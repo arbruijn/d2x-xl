@@ -1126,7 +1126,7 @@ int CreatePerPixelLightingShader (int nType, int nLights)
 	char	*pszFS, *pszVS;
 	const char	**fsP, **vsP;
 
-if (!(gameStates.ogl.bShadersOk && gameStates.render.bUsePerPixelLighting))
+if (!(gameStates.ogl.bShadersOk && gameStates.render.bUsePerPixelLighting && (gameStates.ogl.bPerPixelLightingOk == 2)))
 	gameStates.ogl.bPerPixelLightingOk =
 	gameStates.render.bPerPixelLighting = 0;
 if (!gameStates.render.bPerPixelLighting)
@@ -1178,7 +1178,7 @@ for (h = 0; h <= 3; h++) {
 			delete[] pszFS;
 			delete[] pszVS;
 			if (!bOk) {
-				gameStates.ogl.bPerPixelLightingOk =
+				gameStates.ogl.bPerPixelLightingOk = 1;
 				gameStates.render.bPerPixelLighting = 0;
 				for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
 					for (j = 0; j < 4; j++)
@@ -1224,7 +1224,7 @@ int CreateLightmapShader (int nType)
 {
 	int	h, j, bOk;
 
-if (!gameStates.ogl.bShadersOk) {
+if (!(gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
@@ -1238,6 +1238,7 @@ for (h = 0; h <= 3; h++) {
 			CreateShaderFunc (lightmapShaderProgs + h, lmLfs + h, lmLvs + h, pszLMLightingFS [h], pszLMLightingVS [h], 1) &&
 			LinkShaderProg (lightmapShaderProgs + h);
 	if (!bOk) {
+		gameStates.ogl.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)
 			DeleteShaderProg (lightmapShaderProgs + j);
