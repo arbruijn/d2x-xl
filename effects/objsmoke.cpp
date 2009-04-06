@@ -867,7 +867,6 @@ if (!gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEn
 #endif
 ObjectParticleFrame ();
 //StaticParticlesFrame ();
-SEM_LEAVE (SEM_SMOKE)
 shrapnelManager.DoFrame ();
 particleManager.Update ();
 SEM_LEAVE (SEM_SMOKE)
