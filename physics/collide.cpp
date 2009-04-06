@@ -1746,7 +1746,7 @@ damage = FixMul (damage, cType.laserInfo.xScale);
 if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (info.nId == FUSION_ID))
 	damage *= extraGameInfo [IsMultiGame].nFusionRamp / 2;
 if (IsMultiGame)
-	damage = FixMul (damage, gameData.weapons.info [info.nId].multi_damage_scale);
+	damage = FixMul (damage, gameData.weapons.info [info.nId].xMultiDamageScale);
 if (mType.physInfo.flags & PF_PERSISTENT) {
 	if (AddHitObject (this, OBJ_IDX (playerObjP)) < 0)
 		return 1;

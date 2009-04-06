@@ -34,6 +34,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tactile.h"
 #endif
 
+#define PRINT_WEAPON_INFO	0
+
 //	Note, only Vulcan cannon requires ammo.
 // NOTE: Now Vulcan and Gauss require ammo. -5/3/95 Yuan
 //ubyte	DefaultPrimaryAmmoLevel [MAX_PRIMARY_WEAPONS] = {255, 0, 255, 255, 255};
@@ -963,9 +965,9 @@ else
 xEnergyUsage = cf.ReadFix ();
 xFireWait = cf.ReadFix ();
 if (fileVersion >= 3)
-	multi_damage_scale = cf.ReadFix ();
+	xMultiDamageScale = cf.ReadFix ();
 else /* FIXME: hack this to set the real values */
-	multi_damage_scale = I2X (1);
+	xMultiDamageScale = I2X (1);
 ReadBitmapIndex (&bitmap, cf);
 blob_size = cf.ReadFix ();
 xFlashSize = cf.ReadFix ();
@@ -993,6 +995,55 @@ if (fileVersion >= 3)
 	ReadBitmapIndex (&hiresPicture, cf);
 else
 	hiresPicture.index = picture.index;
+
+#if PRINT_WEAPON_INFO
+PrintLog ("   {%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
+	renderType,
+	persistent,
+	nModel,
+	nInnerModel,
+	nFlashVClip,
+	nRobotHitVClip,
+	flashSound,
+	nWallHitVClip,
+	fireCount,
+	nRobotHitSound,
+	nAmmoUsage,
+	nVClipIndex,
+	nWallHitSound,
+	destructible,
+	matter,
+	bounce,
+	homingFlag,
+	speedvar,
+	flags,
+	flash,
+	nAfterburnerSize);
+PrintLog ("%d,%d,%d,%d,{%d},%d,%d,%d,{",
+	children,
+	xEnergyUsage,
+	xFireWait,
+	xMultiDamageScale,
+	bitmap.index,
+	blob_size,
+	xFlashSize,
+	xImpactSize);
+for (i = 0; i < NDL; i++)
+	PrintLog ("%s%d", i ? "," : "", strength [i]);
+PrintLog ("},{");
+for (i = 0; i < NDL; i++)
+	PrintLog ("%s%d", i ? "," : "", speed [i]);
+PrintLog ("},%d,%d,%d,%d,%d,%d,%d,{%d},{%d}}\n",
+	mass,
+	drag,
+	thrust,
+	poLenToWidthRatio,
+	light,
+	lifetime,
+	xDamageRadius,
+	picture.index,
+	hiresPicture.index);
+#endif
 }
 
 //	-----------------------------------------------------------------------------
@@ -1001,8 +1052,14 @@ int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion)
 {
 	int i;
 
+#if PRINT_WEAPON_INFO
+PrintLog ("\nCWeaponInfo defaultWeaponInfosD2 [] = {\n");
+#endif
 for (i = nOffset; i < nOffset + nCount; i++)
 	gameData.weapons.info [i].Read (cf, fileVersion);
+#if PRINT_WEAPON_INFO
+PrintLog ("}\n\n");
+#endif
 return i;
 }
 

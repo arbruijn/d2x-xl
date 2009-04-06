@@ -54,6 +54,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "byteswap.h"
 
+#define PRINT_WEAPON_INFO	0
+
 ubyte Sounds [2][MAX_SOUNDS];
 ubyte AltSounds [2][MAX_SOUNDS];
 
@@ -334,6 +336,50 @@ wiP->light = cf.ReadFix ();
 wiP->lifetime = cf.ReadFix ();
 wiP->xDamageRadius = cf.ReadFix ();
 wiP->picture.index = cf.ReadShort ();
+
+#if PRINT_WEAPON_INFO
+PrintLog ("%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,{",
+	wiP->renderType,
+	wiP->nModel,
+	wiP->nInnerModel,
+	wiP->persistent,
+	wiP->nFlashVClip,
+	wiP->flashSound,
+	wiP->nRobotHitVClip,
+	wiP->nRobotHitSound,
+	wiP->nWallHitVClip,
+	wiP->nWallHitSound,
+	wiP->fireCount,
+	wiP->nAmmoUsage,
+	wiP->nVClipIndex,
+	wiP->destructible,
+	wiP->matter,
+	wiP->bounce,
+	wiP->homingFlag,
+	wiP->dum1, 
+	wiP->dum2,
+	wiP->dum3,
+	wiP->xEnergyUsage,
+	wiP->xFireWait,
+	wiP->bitmap.index,
+	wiP->blob_size,
+	wiP->xFlashSize,
+	wiP->xImpactSize);
+for (i = 0; i < NDL; i++)
+	PrintLog ("%s%d", i ? "," : "", wiP->strength [i]);
+PrintLog ("},{");
+for (i = 0; i < NDL; i++)
+	PrintLog ("%s%d", i ? "," : "", wiP->speed [i]);
+PrintLog ("},%d,%d,%d,%d,%d,%d,%d,{%d}},\n",
+	wiP->mass,
+	wiP->drag,
+	wiP->thrust,
+	wiP->poLenToWidthRatio,
+	wiP->light,
+	wiP->lifetime,
+	wiP->xDamageRadius,
+	wiP->picture.index);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -379,7 +425,7 @@ void BMReadGameDataD1 (CFile& cf)
 	D1_tmap_info	t;
 	//D1Robot_info	r;
 #endif
-	tWallClip		*pw;
+	tWallClip		*pw;	
 	tTexMapInfo		*pt;
 	tRobotInfo		*pr;
 	CPolyModel		model;
@@ -576,8 +622,14 @@ cf.Seek (
 	sizeof (tJointPos) * D1_MAX_ROBOT_JOINTS,
 	SEEK_CUR);
 gameData.weapons.nTypes [1] = cf.ReadInt ();
+#if PRINT_WEAPON_INFO
+PrintLog ("\nCD1WeaponInfo defaultWeaponInfosD1 [] = {\n");
+#endif
 for (int i = 0; i < gameData.weapons.nTypes [1]; i++)
 	BMReadWeaponInfoD1N (cf, i);
+#if PRINT_WEAPON_INFO
+PrintLog ("};\n\n");
+#endif
 }
 
 //------------------------------------------------------------------------------
