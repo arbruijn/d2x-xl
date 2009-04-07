@@ -1168,25 +1168,22 @@ for (h = 0; h <= 3; h++) {
 				}
 			}
 		PrintLog ("building lighting shader programs\n");
-		if ((gameStates.ogl.bPerPixelLightingOk = (gameStates.ogl.bShadersOk))) {
-			pszFS = BuildLightingShader (fsP [h], i);
-			pszVS = BuildLightingShader (vsP [h], i);
-			bOk = (pszFS != NULL) && (pszVS != NULL) &&
-					CreateShaderProg (perPixelLightingShaderProgs [i] + h) &&
-					CreateShaderFunc (perPixelLightingShaderProgs [i] + h, ppLfs [i] + h, ppLvs [i] + h, pszFS, pszVS, 1) &&
-					LinkShaderProg (perPixelLightingShaderProgs [i] + h);
-			delete[] pszFS;
-			delete[] pszVS;
-			if (!bOk) {
-				gameStates.ogl.bPerPixelLightingOk = 1;
-				gameStates.render.bPerPixelLighting = 0;
-				for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
-					for (j = 0; j < 4; j++)
-						DeleteShaderProg (perPixelLightingShaderProgs [i] + j);
-				nLights = 0;
-				return -1;
-				}
-
+		pszFS = BuildLightingShader (fsP [h], i);
+		pszVS = BuildLightingShader (vsP [h], i);
+		bOk = (pszFS != NULL) && (pszVS != NULL) &&
+				CreateShaderProg (perPixelLightingShaderProgs [i] + h) &&
+				CreateShaderFunc (perPixelLightingShaderProgs [i] + h, ppLfs [i] + h, ppLvs [i] + h, pszFS, pszVS, 1) &&
+				LinkShaderProg (perPixelLightingShaderProgs [i] + h);
+		delete[] pszFS;
+		delete[] pszVS;
+		if (!bOk) {
+			gameStates.ogl.bPerPixelLightingOk = 1;
+			gameStates.render.bPerPixelLighting = 1;
+			for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
+				for (j = 0; j < 4; j++)
+					DeleteShaderProg (perPixelLightingShaderProgs [i] + j);
+			nLights = 0;
+			return -1;
 			}
 		}
 	}
