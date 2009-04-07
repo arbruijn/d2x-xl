@@ -306,7 +306,7 @@ if ((t = FindArg ("-lowmem")))
 if ((t = FindArg ("-preload_textures")))
 	gameStates.ogl.nPreloadTextures = NumArg (t, 3);
 else
-	gameStates.ogl.nPreloadTextures = 3;
+	gameStates.ogl.nPreloadTextures = 5;
 if ((t = FindArg ("-FSAA")))
 	gameStates.ogl.bFSAA = NumArg (t, 1);
 
