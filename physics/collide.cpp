@@ -495,8 +495,10 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {
 
 		paletteManager.BumpEffect (X2I (xDamage * 4), 0, 0);	//flash red
 		}
-	mType.physInfo.rotVel [X] = (d_rand () - 16384) / 2;
-	mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 2;
+	if (xDamage || !mType.physInfo.velocity.IsZero ()) {
+		mType.physInfo.rotVel [X] = (d_rand () - 16384) / 2;
+		mType.physInfo.rotVel [Z] = (d_rand () - 16384) / 2;
+		}
 	}
 return nType;
 }
