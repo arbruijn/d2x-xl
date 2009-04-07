@@ -220,7 +220,7 @@ class CBitmap : public CArray< ubyte > {
 			return m_info.frames.currentP;
 			}
 		CBitmap* SetCurFrame (int nFrame) { 
-			if (m_info.nType != BM_TYPE_ALT)
+			if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP)
 				return this;
 			m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame); 
 			return m_info.frames.currentP;
