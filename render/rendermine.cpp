@@ -839,7 +839,6 @@ WaitForRenderThreads ();
 #else
 WaitForEffectsThread ();
 #endif
-particleManager.Cleanup ();
 if (automap.m_bDisplay) {
 	bLightnings = gameOpts->render.automap.bLightnings;
 	bParticles = gameOpts->render.automap.bParticles;
@@ -850,7 +849,7 @@ else {
 	bLightnings = (!nWindow || gameOpts->render.lightnings.bAuxViews) && 
 					  (!gameStates.render.cameras.bActive || gameOpts->render.lightnings.bMonitors);
 	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
-				(!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
+					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
 	}
 if (bSparks) {
 	SEM_ENTER (SEM_SPARKS)
@@ -861,6 +860,7 @@ if (bSparks) {
 if (bParticles) {
 	SEM_ENTER (SEM_SMOKE)
 	//PrintLog ("RenderSmoke\n");
+	particleManager.Cleanup ();
 	particleManager.Render ();
 	//SEM_LEAVE (SEM_SMOKE)
 	}
