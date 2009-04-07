@@ -131,62 +131,6 @@ return j;
 
 //------------------------------------------------------------------------------
 
-int AdvancedRenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
-{
-if (nState)
-	return nCurItem;
-
-	CMenuItem*	m;
-	int			v;
-
-if (renderOpts.nContrast >= 0) {
-	m = menu + renderOpts.nContrast;
-	v = m->m_value;
-	if (v != gameStates.ogl.nContrast) {
-		gameStates.ogl.nContrast = v;
-		sprintf (m->m_text, TXT_CONTRAST, ContrastText ());
-		m->m_bRebuild = 1;
-		}
-	}
-if (EXPERTMODE) {
-	m = menu + renderOpts.nImageQual;
-	v = m->m_value;
-	if (gameOpts->render.nImageQuality != v) {
-		gameOpts->render.nImageQuality = v;
-		sprintf (m->m_text, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
-		m->m_bRebuild = 1;
-		}
-	if (renderOpts.nRenderQual > 0) {
-		m = menu + renderOpts.nRenderQual;
-		v = m->m_value;
-		if (gameOpts->render.nQuality != v) {
-			gameOpts->render.nQuality = v;
-			sprintf (m->m_text, TXT_RENDER_QUALITY, pszRendQual [gameOpts->render.nQuality]);
-			m->m_bRebuild = 1;
-			}
-		}
-	if (renderOpts.nMeshQual > 0) {
-		m = menu + renderOpts.nMeshQual;
-		v = m->m_value;
-		if (gameOpts->render.nMeshQuality != v) {
-			gameOpts->render.nMeshQuality = v;
-			sprintf (m->m_text, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
-			m->m_bRebuild = 1;
-			}
-		}
-	m = menu + renderOpts.nWallTransp;
-	v = (FADE_LEVELS * m->m_value + 5) / 10;
-	if (extraGameInfo [0].grWallTransparency != v) {
-		extraGameInfo [0].grWallTransparency = v;
-		sprintf (m->m_text, TXT_WALL_TRANSP, m->m_value * 10, '%');
-		m->m_bRebuild = 1;
-		}
-	}
-return nCurItem;
-}
-
-//------------------------------------------------------------------------------
-
 static int nPowerups, nCameras, nLighting;
 
 static const char* pszNoneBasicAdv [3];
