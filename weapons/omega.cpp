@@ -50,7 +50,7 @@ int nOmegaDuration [7] = {1, 2, 3, 5, 7, 10, 15};
 
 void SetMaxOmegaCharge (void)
 {
-gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE * nOmegaDuration [(int) extraGameInfo [0].nOmegaRamp];
+gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE * nOmegaDuration [int (extraGameInfo [0].nOmegaRamp)];
 if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
 	LOCALPLAYER.energy += OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - gameData.omega.xMaxCharge);
 	gameData.omega.xCharge [IsMultiGame] = gameData.omega.xMaxCharge;

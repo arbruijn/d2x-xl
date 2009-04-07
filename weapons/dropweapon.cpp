@@ -144,7 +144,7 @@ else {
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
 		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
 		}
-	if (nObject >= 0) {
+	if (nObject < 0) {	// couldn't drop
 		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
 			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);
 		return;
