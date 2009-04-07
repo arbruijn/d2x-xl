@@ -1222,7 +1222,8 @@ return true;
 
 void CLightningSystem::Destroy (void)
 {
-m_bValid = 0;
+m_bValid = 
+m_bDestroy = 0;
 DestroySound ();
 #if 0
 if (m_lightnings.Buffer ()) {
