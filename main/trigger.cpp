@@ -837,8 +837,6 @@ if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 if (flags & TF_ONE_SHOT)		//if this is a one-bShot...
 	flags |= TF_DISABLED;		//..then don't let it happen again
 
-PrintLog ("operating trigger %d (%d)\n", this - gameData.trigs.triggers.Buffer ());
-
 tOperated = gameData.time.xGame;
 
 switch (nType) {

@@ -345,7 +345,7 @@ tiEffects.pThread = NULL;
 
 void ControlEffectsThread (void)
 {
-if (gameStates.app.bMultiThreaded)
+if (gameStates.app.bMultiThreaded == 2)
 	StartEffectsThread ();
 }
 
@@ -353,7 +353,7 @@ if (gameStates.app.bMultiThreaded)
 
 bool WaitForEffectsThread (void)
 {
-if (gameStates.app.bMultiThreaded && tiEffects.pThread) {
+if ((gameStates.app.bMultiThreaded == 2) && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);
 	return true;
