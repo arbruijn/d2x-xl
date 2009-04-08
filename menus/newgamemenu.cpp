@@ -273,7 +273,7 @@ void NewGameMenu (void)
 #endif
 
 	static int		nPlayerMaxLevel = 1;
-	static int		nLevel = 1;
+	static int		nLevel = 0;
 
 if (gameStates.app.bNostalgia) {
 	LegacyNewGameMenu ();
@@ -286,6 +286,7 @@ SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
 hogFileManager.UseMission ("");
+
 for (;;) {
 	menu.Destroy ();
 	menu.Create (15);
@@ -294,7 +295,7 @@ for (;;) {
 	optMsnName = menu.AddText ((nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
-		Assert (strlen (szLevelText) < 32);
+		Assert (strlen (szLevelText) < 100);
 		optLevelText = menu.AddText (szLevelText, 0); 
 		menu [optLevelText].m_bRebuild = 1;
 		sprintf (szLevel, "%d", nLevel);
@@ -355,8 +356,14 @@ for (;;) {
 		else
 			nLevel = i;
 		}
-	else if (nMission >= 0)
-		break;
+	else if (nMission >= 0) {
+		if ((optLevel > 0) && !(nLevel = atoi (menu [optLevel].m_text))) {
+			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+			nLevel = 1;
+			}
+		else
+			break;
+		}
 #if DBG
 	else {
 		i = atoi (menu [optLives].m_text);
@@ -372,8 +379,7 @@ if (gameStates.app.nDifficultyLevel != i) {
 	gameData.bosses.InitGateIntervals ();
 	}
 SavePlayerProfile ();
-if (optLevel > 0)
-	nLevel = atoi (menu [optLevel].m_text);
+
 paletteManager.DisableEffect ();
 if (!bMsnLoaded)
 	LoadMission (nMission);
