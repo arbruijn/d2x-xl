@@ -85,8 +85,7 @@ void CreateOmegaBlobs (short nFiringSeg, CFixVector *vMuzzle, CFixVector *vTarge
 
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
-if (omegaLightnings.Create (vTargetPos, parentObjP, targetObjP))
-	return;	// either lightnings or little white orbs
+omegaLightnings.Create (vTargetPos, parentObjP, targetObjP);
 vGoal = *vTargetPos - *vMuzzle;
 xGoalDist = CFixVector::Normalize (vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
@@ -279,7 +278,7 @@ if (parentObjP == gameData.objs.viewerP)
 	audio.PlaySound (gameData.weapons.info [weaponObjP->info.nId].flashSound);
 else
 	audio.CreateSegmentSound (gameData.weapons.info [weaponObjP->info.nId].flashSound,
-							  weaponObjP->info.nSegment, 0, weaponObjP->info.position.vPos, 0, I2X (1));
+									  weaponObjP->info.nSegment, 0, weaponObjP->info.position.vPos, 0, I2X (1));
 //	Delete the original CObject.  Its only purpose in life was to determine which CObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
