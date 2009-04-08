@@ -1366,7 +1366,7 @@ if (nSegment < 0)
 	return;
 if (!m_lightnings.Buffer ())
 	return;
-if (SHOW_LIGHTNINGS) {
+if (SHOW_LIGHTNING) {
 	for (int i = 0; i < m_nLightnings; i++)
 		m_lightnings [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
 	}
@@ -1480,7 +1480,7 @@ int CLightningManager::Create (int nLightnings, CFixVector *vPos, CFixVector *vE
 										 short nSmoothe, char bClamp, char bPlasma, char bSound, char bLight,
 										 char nStyle, tRgbaColorf *colorP)
 {
-if (!(SHOW_LIGHTNINGS && colorP))
+if (!(SHOW_LIGHTNING && colorP))
 	return -1;
 if (!nLightnings)
 	return -1;
@@ -1559,7 +1559,7 @@ void CLightningManager::Move (int i, CFixVector *vNewPos, short nSegment, bool b
 {
 if (nSegment < 0)
 	return;
-if (SHOW_LIGHTNINGS)
+if (SHOW_LIGHTNING)
 	m_systems [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
 }
 
@@ -1601,7 +1601,7 @@ return NULL;
 
 void CLightningManager::Update (void)
 {
-if (SHOW_LIGHTNINGS) {
+if (SHOW_LIGHTNING) {
 
 		CObject	*objP;
 		ubyte		h;
@@ -1732,7 +1732,7 @@ DestroyForAllObjects (OBJ_EFFECT, LIGHTNING_ID);
 
 void CLightningManager::Render (void)
 {
-if (SHOW_LIGHTNINGS) {
+if (SHOW_LIGHTNING) {
 		int bStencil = StencilOff ();
 
 	int nCurrent = -1;
@@ -1769,7 +1769,7 @@ void CLightningManager::StaticFrame (void)
 	tLightningInfo	*pli;
 	tRgbaColorf		color;
 
-if (!SHOW_LIGHTNINGS)
+if (!SHOW_LIGHTNING)
 	return;
 if (!gameOpts->render.lightning.bStatic)
 	return;
@@ -1852,7 +1852,7 @@ else {
 
 void CLightningManager::ResetLights (int bForce)
 {
-if ((SHOW_LIGHTNINGS || bForce) && m_lights.Buffer ()) {
+if ((SHOW_LIGHTNING || bForce) && m_lights.Buffer ()) {
 		tLightningLight	*llP;
 		int					i;
 
@@ -1884,7 +1884,7 @@ void CLightningManager::SetLights (void)
 	int nLights = 0;
 
 ResetLights (0);
-if (SHOW_LIGHTNINGS) {
+if (SHOW_LIGHTNING) {
 		tLightningLight	*llP = NULL;
 		int					i, n, bDynLighting = gameStates.render.nLightingMethod;
 
@@ -1927,7 +1927,7 @@ if (SHOW_LIGHTNINGS) {
 
 void CLightningManager::CreateForExplosion (CObject* objP, tRgbaColorf *colorP, int nRods, int nRad, int nTTL)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bExplosions) {
+if (SHOW_LIGHTNING && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
 			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
@@ -1995,7 +1995,7 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 
 void CLightningManager::CreateForRobot (CObject* objP, tRgbaColorf *colorP)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)) {
 		int h, i = objP->Index ();
 
 	if (0 <= m_objects [i])
@@ -2013,7 +2013,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP
 
 void CLightningManager::CreateForPlayer (CObject* objP, tRgbaColorf *colorP)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP)) {
 	int h, i = objP->Index ();
 
 	if (0 <= m_objects [i])
@@ -2031,7 +2031,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (obj
 
 void CLightningManager::CreateForDamage (CObject* objP, tRgbaColorf *colorP)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)) {
 		int h, n, i = objP->Index ();
 
 	n = X2IR (RobotDefaultShields (objP));
@@ -2086,7 +2086,7 @@ void CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, Re
 
 	static tRgbaColorf color = {0.2f, 0.2f, 1.0f, 1.0f};
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightning.bDamage))
+if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
 	return;
 if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_PLAYER))
 	return;
@@ -2230,7 +2230,7 @@ int COmegaLightnings::Update (CObject* parentObjP, CObject* targetObjP)
 	CWeaponState				*wsP;
 	int							i, j, nHandle, nLightning;
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightning.bOmega && !gameStates.app.bHaveMod))
+if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.app.bHaveMod))
 	return -1;
 if (m_nHandles < 1)
 	return 0;
@@ -2280,7 +2280,7 @@ int COmegaLightnings::Create (CFixVector *vTargetPos, CObject* parentObjP, CObje
 	tOmegaLightningHandles	*handleP;
 	int							nObject;
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightning.bOmega && !gameStates.app.bHaveMod))
+if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.app.bHaveMod))
 	return 0;
 if ((parentObjP->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightning.bRobotOmega || gameStates.app.bHaveMod))
 	return 0;

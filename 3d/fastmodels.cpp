@@ -709,7 +709,7 @@ OglResetTransform (1);
 void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
 										 CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires)
 {
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightning.bDamage))
+if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
 	return;
 
 	RenderModel::CModel*		pm;
