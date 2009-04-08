@@ -846,8 +846,8 @@ if (automap.m_bDisplay) {
 	}
 else {
 	bSparks = (gameOptions [0].render.nQuality > 0);
-	bLightnings = (!nWindow || gameOpts->render.lightnings.bAuxViews) && 
-					  (!gameStates.render.cameras.bActive || gameOpts->render.lightnings.bMonitors);
+	bLightnings = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
+					  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
 	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
 					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
 	}

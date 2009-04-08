@@ -37,8 +37,8 @@
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
 
-#define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightnings.nStyle < m_nStyle)) ? \
-					 gameOpts->render.lightnings.nStyle : m_nStyle)
+#define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightning.nStyle < m_nStyle)) ? \
+					 gameOpts->render.lightning.nStyle : m_nStyle)
 
 CLightningManager lightningManager;
 COmegaLightnings	omegaLightnings;
@@ -488,7 +488,7 @@ else {
 m_parent = parentP;
 m_nNode = nNode;
 m_nNodes = nNodes;
-m_nChildren = gameOpts->render.lightnings.nQuality ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
+m_nChildren = gameOpts->render.lightning.nQuality ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
 if (vEnd) {
 	m_vRefEnd = *vEnd;
 	m_vEnd = *vEnd;
@@ -530,7 +530,7 @@ if (m_bRandom) {
 if (m_nAmplitude < 0)
 	m_nAmplitude = m_nLength / 6;
 Setup (true);
-if (gameOpts->render.lightnings.nQuality && nDepth && m_nChildren) {
+if (gameOpts->render.lightning.nQuality && nDepth && m_nChildren) {
 	int			h, l, n, nNode;
 	double		nStep, j;
 
@@ -1049,7 +1049,7 @@ OglClearError (0);
 
 int CLightning::SetupPlasma (void)
 {
-if (!(gameOpts->render.lightnings.bPlasma && m_bPlasma && G3EnableClientStates (1, 0, 0, GL_TEXTURE0)))
+if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && G3EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
 glActiveTexture (GL_TEXTURE0);
 glClientActiveTexture (GL_TEXTURE0);
@@ -1102,7 +1102,7 @@ if (gameStates.app.bMultiThreaded && !nThread) { //thread 0 will wait for thread
 	while (tiRender.ti [1].bBlock)
 		G3_SLEEP (0);
 	}
-if (gameOpts->render.lightnings.nQuality)
+if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->RenderBuffered (nDepth + 1, nThread);
@@ -1121,7 +1121,7 @@ if (bDepthSort > 0) {
 	if (!MayBeVisible ())
 		return;
 	transparencyRenderer.AddLightning (this, nDepth);
-	if (gameOpts->render.lightnings.nQuality)
+	if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->Render (nDepth + 1, 1, nThread);
@@ -1583,7 +1583,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 		return &color;
 		}
 	}
-else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
+else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	int s = SEGMENTS [objP->info.nSegment].m_nType;
 	if (s == SEGMENT_IS_FUELCEN) {
 		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
@@ -1771,7 +1771,7 @@ void CLightningManager::StaticFrame (void)
 
 if (!SHOW_LIGHTNINGS)
 	return;
-if (!gameOpts->render.lightnings.bStatic)
+if (!gameOpts->render.lightning.bStatic)
 	return;
 FORALL_EFFECT_OBJS (objP, i) {
 	if (objP->info.nId != LIGHTNING_ID)
@@ -1927,7 +1927,7 @@ if (SHOW_LIGHTNINGS) {
 
 void CLightningManager::CreateForExplosion (CObject* objP, tRgbaColorf *colorP, int nRods, int nRad, int nTTL)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bExplosions) {
+if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
 			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
@@ -1995,7 +1995,7 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 
 void CLightningManager::CreateForRobot (CObject* objP, tRgbaColorf *colorP)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)) {
 		int h, i = objP->Index ();
 
 	if (0 <= m_objects [i])
@@ -2013,7 +2013,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 
 void CLightningManager::CreateForPlayer (CObject* objP, tRgbaColorf *colorP)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP)) {
 	int h, i = objP->Index ();
 
 	if (0 <= m_objects [i])
@@ -2031,7 +2031,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (ob
 
 void CLightningManager::CreateForDamage (CObject* objP, tRgbaColorf *colorP)
 {
-if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (objP)) {
+if (SHOW_LIGHTNINGS && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)) {
 		int h, n, i = objP->Index ();
 
 	n = X2IR (RobotDefaultShields (objP));
@@ -2086,7 +2086,7 @@ void CLightningManager::RenderForDamage (CObject* objP, g3sPoint **pointList, Re
 
 	static tRgbaColorf color = {0.2f, 0.2f, 1.0f, 1.0f};
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightning.bDamage))
 	return;
 if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_PLAYER))
 	return;
@@ -2230,7 +2230,7 @@ int COmegaLightnings::Update (CObject* parentObjP, CObject* targetObjP)
 	CWeaponState				*wsP;
 	int							i, j, nHandle, nLightning;
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega && !gameStates.app.bHaveMod))
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightning.bOmega && !gameStates.app.bHaveMod))
 	return -1;
 if (m_nHandles < 1)
 	return 0;
@@ -2280,9 +2280,9 @@ int COmegaLightnings::Create (CFixVector *vTargetPos, CObject* parentObjP, CObje
 	tOmegaLightningHandles	*handleP;
 	int							nObject;
 
-if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega && !gameStates.app.bHaveMod))
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightning.bOmega && !gameStates.app.bHaveMod))
 	return 0;
-if ((parentObjP->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightnings.bRobotOmega || gameStates.app.bHaveMod))
+if ((parentObjP->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightning.bRobotOmega || gameStates.app.bHaveMod))
 	return 0;
 nObject = OBJ_IDX (parentObjP);
 if (Update (parentObjP, targetObjP)) {
@@ -2300,7 +2300,7 @@ else {
 	handleP->nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	vTarget = targetObjP ? &targetObjP->info.position.vPos : vTargetPos;
 #if OMEGA_PLASMA
-	color.alpha = gameOpts->render.lightnings.bPlasma ? 0.5f : 0.3f;
+	color.alpha = gameOpts->render.lightning.bPlasma ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning = 
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -OBJSEG (parentObjP) - 1,

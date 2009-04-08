@@ -545,18 +545,18 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.effects.bOnlyShieldHits, 0, 0);
 		RP (gameOptions [i].render.effects.bTransparent, i, 0);
 		RP (gameOptions [i].render.bDepthSort, i, 0);
-		RP (gameOptions [i].render.lightnings.bAuxViews, i, 0);
-		RP (gameOptions [i].render.lightnings.bMonitors, i, 0);
-		RP (gameOptions [i].render.lightnings.bPlasma, i, 0);
-		RP (gameOptions [i].render.lightnings.bDamage, i, 0);
-		RP (gameOptions [i].render.lightnings.bExplosions, i, 0);
-		RP (gameOptions [i].render.lightnings.bOmega, i, 0);
-		RP (gameOptions [i].render.lightnings.bRobotOmega, i, 0);
-		RP (gameOptions [i].render.lightnings.bPlayers, i, 0);
-		RP (gameOptions [i].render.lightnings.bRobots, i, 0);
-		RP (gameOptions [i].render.lightnings.bStatic, i, 0);
-		RP (gameOptions [i].render.lightnings.nStyle, i, 0);
-		RP (gameOptions [i].render.lightnings.nQuality, i, 0);
+		RP (gameOptions [i].render.lightning.bAuxViews, i, 0);
+		RP (gameOptions [i].render.lightning.bMonitors, i, 0);
+		RP (gameOptions [i].render.lightning.bPlasma, i, 0);
+		RP (gameOptions [i].render.lightning.bDamage, i, 0);
+		RP (gameOptions [i].render.lightning.bExplosions, i, 0);
+		RP (gameOptions [i].render.lightning.bOmega, i, 0);
+		RP (gameOptions [i].render.lightning.bRobotOmega, i, 0);
+		RP (gameOptions [i].render.lightning.bPlayers, i, 0);
+		RP (gameOptions [i].render.lightning.bRobots, i, 0);
+		RP (gameOptions [i].render.lightning.bStatic, i, 0);
+		RP (gameOptions [i].render.lightning.nStyle, i, 0);
+		RP (gameOptions [i].render.lightning.nQuality, i, 0);
 		RP (gameOptions [i].render.cameras.bFitToWall, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cameras.nFPS, i, 0);
@@ -1386,18 +1386,18 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.color.bMix", "1"},
 	 {"gameOptions[0].render.color.nColorSaturation", "0"},
 	 {"gameOptions[0].render.color.bWalls", "1"},
-	 {"gameOptions[0].render.lightnings.bAuxViews", "0"},
-	 {"gameOptions[0].render.lightnings.bMonitors", "0"},
-	 {"gameOptions[0].render.lightnings.bDamage", "1"},
-	 {"gameOptions[0].render.lightnings.bExplosions", "1"},
-	 {"gameOptions[0].render.lightnings.bOmega", "1"},
-	 {"gameOptions[0].render.lightnings.bRobotOmega", "0"},
-	 {"gameOptions[0].render.lightnings.bPlayers", "1"},
-	 {"gameOptions[0].render.lightnings.bRobots", "1"},
-	 {"gameOptions[0].render.lightnings.bStatic", "1"},
-	 {"gameOptions[0].render.lightnings.bCoronas", "1"},
-	 {"gameOptions[0].render.lightnings.nQuality", "1"},
-	 {"gameOptions[0].render.lightnings.nStyle", "1"},
+	 {"gameOptions[0].render.lightning.bAuxViews", "0"},
+	 {"gameOptions[0].render.lightning.bMonitors", "0"},
+	 {"gameOptions[0].render.lightning.bDamage", "1"},
+	 {"gameOptions[0].render.lightning.bExplosions", "1"},
+	 {"gameOptions[0].render.lightning.bOmega", "1"},
+	 {"gameOptions[0].render.lightning.bRobotOmega", "0"},
+	 {"gameOptions[0].render.lightning.bPlayers", "1"},
+	 {"gameOptions[0].render.lightning.bRobots", "1"},
+	 {"gameOptions[0].render.lightning.bStatic", "1"},
+	 {"gameOptions[0].render.lightning.bCoronas", "1"},
+	 {"gameOptions[0].render.lightning.nQuality", "1"},
+	 {"gameOptions[0].render.lightning.nStyle", "1"},
 	 {"gameOptions[0].render.powerups.nSpin", "1"},
 	 {"gameOptions[0].render.shadows.bFast", "1"},
 	 {"gameOptions[0].render.shadows.bMissiles", "1"},

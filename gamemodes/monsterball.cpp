@@ -43,7 +43,7 @@ int CreateMonsterball (void)
 	short			nDropSeg, nObject;
 
 RemoveMonsterball ();
-if (!IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL))
+if (!(IsMultiGame && (gameData.app.nGameMode & GM_MONSTERBALL)))
 	return 0;
 #if 0 //DBG
 nDropSeg = gameData.hoard.nMonsterballSeg;

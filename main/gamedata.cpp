@@ -1715,18 +1715,18 @@ gameOptions [0].render.particles.bBubbles = (gameOptions [0].render.particles.nQ
 
 void DefaultLightningSettings (void)
 {
-gameOptions [0].render.lightnings.nQuality = 0;
-gameOptions [0].render.lightnings.nStyle = 1;
-gameOptions [0].render.lightnings.bPlasma = (gameOptions [0].render.nQuality > 1);
-gameOptions [0].render.lightnings.bDamage = 1;
-gameOptions [0].render.lightnings.bExplosions = (extraGameInfo [0].bUseLightning > 1);
-gameOptions [0].render.lightnings.bPlayers = (extraGameInfo [0].bUseLightning > 1);
-gameOptions [0].render.lightnings.bRobots = (extraGameInfo [0].bUseLightning > 1);
-gameOptions [0].render.lightnings.bStatic = 1;
-gameOptions [0].render.lightnings.bOmega = 1;
-gameOptions [0].render.lightnings.bRobotOmega = 1;
-gameOptions [0].render.lightnings.bAuxViews = 0;
-gameOptions [0].render.lightnings.bMonitors = 1;
+gameOptions [0].render.lightning.nQuality = 0;
+gameOptions [0].render.lightning.nStyle = 1;
+gameOptions [0].render.lightning.bPlasma = (gameOptions [0].render.nQuality > 1);
+gameOptions [0].render.lightning.bDamage = 1;
+gameOptions [0].render.lightning.bExplosions = (extraGameInfo [0].bUseLightning > 1);
+gameOptions [0].render.lightning.bPlayers = (extraGameInfo [0].bUseLightning > 1);
+gameOptions [0].render.lightning.bRobots = (extraGameInfo [0].bUseLightning > 1);
+gameOptions [0].render.lightning.bStatic = 1;
+gameOptions [0].render.lightning.bOmega = 1;
+gameOptions [0].render.lightning.bRobotOmega = 1;
+gameOptions [0].render.lightning.bAuxViews = 0;
+gameOptions [0].render.lightning.bMonitors = 1;
 }
 
 // ----------------------------------------------------------------------------

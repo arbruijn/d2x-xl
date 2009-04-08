@@ -483,7 +483,7 @@ if (info.nType == OBJ_ROBOT) {
 		RequestEffects (ROBOT_LIGHTNINGS);
 		}
 	}
-else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
+else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	int nType = SEGMENTS [info.nSegment].m_nType;
 	if (nType == SEGMENT_IS_FUELCEN)
 		RequestEffects (PLAYER_LIGHTNINGS);

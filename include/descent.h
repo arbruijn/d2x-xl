@@ -391,7 +391,7 @@ typedef struct tRenderOptions {
 	tTextureOptions textures;
 	tWeaponIconOptions weaponIcons;
 	tParticleOptions particles;
-	tLightningOptions lightnings;
+	tLightningOptions lightning;
 	tShadowOptions shadows;
 	tPowerupOptions powerups;
 	tAutomapOptions automap;
