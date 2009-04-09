@@ -198,6 +198,8 @@ return nObject;
 //	Return nObject if robot successfully created, else return -1
 int GateInRobot (short nObject, ubyte nType, short nSegment)
 {
+if (!gameData.bosses.ToS ())
+	return -1;
 if (nSegment < 0) {
 	int nBoss = gameData.bosses.Find (nObject);
 	if (nBoss < 0)

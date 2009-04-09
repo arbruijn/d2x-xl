@@ -1458,6 +1458,8 @@ int CreateGatedRobot (int nSegment, int nObjId)
 //	Return true if robotP successfully created, else return false
 int gate_in_robot(int type, int nSegment)
 {
+if (!gameData.bosses.ToS ())
+	return -1;
 if (nSegment < 0) {
 	if (!(gameData.bosses [0].m_gateSegs.Buffer () && gameData.bosses [0].m_nGateSegs))
 		return -1;
