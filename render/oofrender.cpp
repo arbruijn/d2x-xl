@@ -538,7 +538,7 @@ for (i = 0; i < m_nChildren; i++) {
 	pso = po->m_subModels + (j = m_children [i]);
 	Assert (j >= 0 && j < po->m_nSubModels);
 	if (pso->m_nParent == m_nIndex)
-		if (!Render (objP, po, vo, j, fLight))
+		if (!pso->Render (objP, po, vo, j, fLight))
 			return 0;
 	}
 #endif

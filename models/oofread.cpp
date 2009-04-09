@@ -630,7 +630,7 @@ if (!Create (l)) {
 	return 0;
 	}
 for (int i = 0; i < l; i++)
-	if (cf.Read (Buffer (), Size (), 1) != 1) {
+	if (!m_data.buffer [i].Read (cf)) {
 		Destroy ();
 		nIndent -= 2;
 		return 0;
