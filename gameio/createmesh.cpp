@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -432,7 +419,7 @@ if (gameData.segs.nVertices >= i) {
 	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
 		return 0;
 	}
-gameData.segs.fVertices [gameData.segs.nVertices] =
+gameData.segs.fVertices [gameData.segs.nVertices] = 
 	CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
 gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
 #if 0
@@ -761,7 +748,7 @@ if (bOk)
 		(sizeof (gameData.segs.vertices [0]) + sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
 		 sizeof (FACES.faces [0]) * mdh.nFaces +
 		 sizeof (FACES.tris [0]) * mdh.nTris +
-		(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) +
+		(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) + 
 		 sizeof (FACES.ovlTexCoord [0]) + sizeof (FACES.color [0]) + sizeof (FACES.lMapTexCoord [0])) * nTriVerts +
 		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts;
 if (bOk)
@@ -936,7 +923,7 @@ m_faceP->fRads [1] = X2F (SEGMENTS [nSegment].Side (nSide)->m_rads [1]); //(floa
 void CQuadMeshBuilder::InitTexturedFace (void)
 {
 	static char szEmpty [] = "";
-
+	
 m_faceP->nBaseTex = m_sideP->m_nBaseTex;
 if ((m_faceP->nOvlTex = m_sideP->m_nOvlTex))
 	m_nOvlTexCount++;
@@ -1025,8 +1012,8 @@ for (i = 0; i < 4; i++) {
 	if (!gameStates.app.bNostalgia)
 		*m_faceColorP = gameData.render.color.ambient [j].color;
 	else {
-		m_faceColorP->red =
-		m_faceColorP->green =
+		m_faceColorP->red = 
+		m_faceColorP->green = 
 		m_faceColorP->blue = X2F (m_sideP->m_uvls [i].l);
 		m_faceColorP->alpha = 1;
 		}
@@ -1304,7 +1291,7 @@ if (gameStates.render.nLightingMethod) {
 		gameStates.render.bTriangleMesh = -1;
 		gameStates.render.nMeshQuality = 0;
 		}
-	else
+	else 
 		gameStates.render.bTriangleMesh = (gameStates.render.nMeshQuality > 0) ? 1 : -1;
 	}
 else

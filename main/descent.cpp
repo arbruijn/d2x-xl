@@ -109,7 +109,6 @@ CGameData		gameData;
 void DefaultAllSettings (void);
 void CheckJoystickCalibration (void);
 void ShowOrderForm (void);
-void MicroPaymentNotification (void);
 
 tGameOptions *gameOpts = gameOptions;
 
@@ -199,7 +198,7 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 void PrintVersionInfo (void)
 {
-if (mpStatus && (*mpStatus < 0) || gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
+if (gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
 	return;
 
 	static int bVertigo = -1;
@@ -728,6 +727,7 @@ ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
 int Initialize (int argc, char *argv[])
 {
 /*---*/PrintLog ("Initializing data\n");
+gameData.time.xGameTotal = 0;
 signal (SIGABRT, D2SignalHandler);
 signal (SIGFPE, D2SignalHandler);
 signal (SIGILL, D2SignalHandler);
@@ -819,7 +819,7 @@ songManager.StopAll ();
 audio.StopCurrentSong ();
 SaveModelData ();
 /*---*/PrintLog ("Saving configuration file\n");
-WriteConfigFile ();
+WriteConfigFile (true);
 /*---*/PrintLog ("Saving player profile\n");
 SavePlayerProfile ();
 /*---*/PrintLog ("Releasing tracker list\n");
@@ -831,6 +831,23 @@ if (!FindArg ("-notitles"))
 	//ShowOrderForm ();
 OglDestroyDrawBuffer ();
 return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+void DonationNotification (void)
+{
+if (gameConfig.nTotalTime > (25 * 60)) {	// played for more than 25 hours
+	SetScreenMode (SCREEN_MENU);
+	int nFade = gameOpts->menus.nFade;
+	gameOpts->menus.nFade = 250;
+	messageBox.Show (TXT_PLEASE_DONATE);
+	G3_SLEEP (10000);
+	gameOpts->menus.nFade = 500;
+	messageBox.Clear ();
+	gameOpts->menus.nFade = nFade;
+	gameConfig.nTotalTime = 0;	// only display after another 25 hours
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -888,8 +905,7 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}	
-if (mpNotify && mpStatus && (*mpStatus < 0))
-	mpNotify ();
+DonationNotification ();
 BadHardwareNotification ();
 /*---*/PrintLog ("Invoking main menu\n");
 MainLoop ();
