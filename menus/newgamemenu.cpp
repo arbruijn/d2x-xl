@@ -283,8 +283,13 @@ gameStates.app.bD1Mission = 0;
 gameStates.app.bD1Data = 0;
 gameOpts->app.nVersionFilter = 3;
 SetDataVersion (-1);
-if ((nMission < 0) || gameOpts->app.bSinglePlayer)
+if (nMission < 0)
 	gameFolders.szMsnSubDir [0] = '\0';
+else if (gameOpts->app.bSinglePlayer) {
+	if (!strstr (gameFolders.szMsnSubDir, "single/"))
+		nMission = -1;
+	gameFolders.szMsnSubDir [0] = '\0';
+	}
 hogFileManager.UseMission ("");
 
 for (;;) {
