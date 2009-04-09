@@ -1,6 +1,9 @@
 /* conf.h.  Generated from conf.h.in by configure.  */
 /* conf.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define if building universal (internal helper macro) */
+/* #undef AC_APPLE_UNIVERSAL_BUILD */
+
 /* Define to enable console */
 /* #undef CONSOLE */
 
@@ -8,7 +11,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 0
+#define D2XMICRO 11
 
 /* d2x minor version */
 #define D2XMINOR 14
@@ -99,13 +102,13 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "d2x-xl 1.14.0"
+#define PACKAGE_STRING "d2x-xl 1.14.11"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.14.0"
+#define PACKAGE_VERSION "1.14.11"
 
 /* Define for a "release" build */
 #define RELEASE /**/
@@ -129,11 +132,19 @@
 #define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.14.0"
+#define VERSION "1.14.11"
 
-/* Define to 1 if your processor stores words with the most significant byte
-   first (like Motorola and SPARC, unlike Intel and VAX). */
-/* #undef WORDS_BIGENDIAN */
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+/* #  undef WORDS_BIGENDIAN */
+# endif
+#endif
 
 /* Define if your processor needs data to be word-aligned */
 /* #undef WORDS_NEED_ALIGNMENT */
@@ -144,7 +155,7 @@
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.14.0"
+#define PACKAGE_STRING "d2x-xl 1.14.11"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1

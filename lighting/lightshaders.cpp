@@ -152,7 +152,7 @@ else {
 		for (int j = 0; j < 3; j++) {
 			if (gsShaderProg [i][j])
 				DeleteShaderProg (&gsShaderProg [i][j]);
-			gameStates.render.textures.bHaveGrayScaleShader = 
+			gameStates.render.textures.bHaveGrayScaleShader =
 				CreateShaderProg (&gsShaderProg [i][j]) &&
 				CreateShaderFunc (&gsShaderProg [i][j], &gsf [i][j], &gsv [i][j], grayScaleFS [i][j], grayScaleVS [i][j], 1) &&
 				LinkShaderProg (&gsShaderProg [i][j]);
@@ -533,7 +533,7 @@ const char *pszPPLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-	
+
 //-------------------------------------------------------------------------
 
 const char *pszLightingFS [] = {
@@ -595,7 +595,7 @@ const char *pszLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-	
+
 // ----------------------------------------------------------------------------------------------
 
 const char *pszPPXLMLightingFS [] = {
@@ -955,7 +955,7 @@ const char *pszPPLMLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-	
+
 //-------------------------------------------------------------------------
 
 const char *pszPP0LMLightingFS [] = {
@@ -1084,7 +1084,7 @@ const char *pszLMLightingVS [] = {
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
 	};
-	
+
 //-------------------------------------------------------------------------
 
 char *BuildLightingShader (const char *pszTemplate, int nLights)

@@ -432,7 +432,7 @@ if (gameData.segs.nVertices >= i) {
 	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.points.Resize (i)))
 		return 0;
 	}
-gameData.segs.fVertices [gameData.segs.nVertices] = 
+gameData.segs.fVertices [gameData.segs.nVertices] =
 	CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
 gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
 #if 0
@@ -761,7 +761,7 @@ if (bOk)
 		(sizeof (gameData.segs.vertices [0]) + sizeof (gameData.segs.fVertices [0])) * mdh.nVertices +
 		 sizeof (FACES.faces [0]) * mdh.nFaces +
 		 sizeof (FACES.tris [0]) * mdh.nTris +
-		(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) + 
+		(sizeof (FACES.vertices [0]) + sizeof (FACES.normals [0]) + sizeof (FACES.texCoord [0]) +
 		 sizeof (FACES.ovlTexCoord [0]) + sizeof (FACES.color [0]) + sizeof (FACES.lMapTexCoord [0])) * nTriVerts +
 		 sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts;
 if (bOk)
@@ -936,7 +936,7 @@ m_faceP->fRads [1] = X2F (SEGMENTS [nSegment].Side (nSide)->m_rads [1]); //(floa
 void CQuadMeshBuilder::InitTexturedFace (void)
 {
 	static char szEmpty [] = "";
-	
+
 m_faceP->nBaseTex = m_sideP->m_nBaseTex;
 if ((m_faceP->nOvlTex = m_sideP->m_nOvlTex))
 	m_nOvlTexCount++;
@@ -1025,8 +1025,8 @@ for (i = 0; i < 4; i++) {
 	if (!gameStates.app.bNostalgia)
 		*m_faceColorP = gameData.render.color.ambient [j].color;
 	else {
-		m_faceColorP->red = 
-		m_faceColorP->green = 
+		m_faceColorP->red =
+		m_faceColorP->green =
 		m_faceColorP->blue = X2F (m_sideP->m_uvls [i].l);
 		m_faceColorP->alpha = 1;
 		}
@@ -1304,7 +1304,7 @@ if (gameStates.render.nLightingMethod) {
 		gameStates.render.bTriangleMesh = -1;
 		gameStates.render.nMeshQuality = 0;
 		}
-	else 
+	else
 		gameStates.render.bTriangleMesh = (gameStates.render.nMeshQuality > 0) ? 1 : -1;
 	}
 else
