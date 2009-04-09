@@ -276,7 +276,7 @@ class CAudio {
 		CStack<CSoundObject>		m_objects;
 
 	public:
-		CAudio () { Init (); }
+		CAudio ();
 		~CAudio () { Destroy (); }
 		void Init (void);
 #ifndef _WIN32

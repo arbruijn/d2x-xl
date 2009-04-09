@@ -621,7 +621,7 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CAudio::Init (void)
+CAudio::CAudio ()
 {
 memset (&m_info, 0, sizeof (m_info));
 #if 0
@@ -629,9 +629,16 @@ m_info.nFormat = AUDIO_S16LSB;
 #else
 m_info.nFormat = AUDIO_U8;
 #endif
+m_info.nVolume = SOUND_MAX_VOLUME;
+Init ();
+}
+
+//------------------------------------------------------------------------------
+
+void CAudio::Init (void)
+{
 m_info.nMaxChannels = MAX_SOUND_CHANNELS;
 m_info.nFreeChannel = 0;
-m_info.nVolume = SOUND_MAX_VOLUME;
 m_info.bInitialized = 0;
 m_info.nNextSignature = 0;
 m_info.nActiveObjects = 0;
