@@ -885,6 +885,7 @@ if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPAREN
 	bmBot = bmTop;
 	bmTop = mask = NULL;
 	bDecal = -1;
+	faceP->nRenderType = gameStates.render.history.nType = 1;
 	}
 #if RENDER_TRANSP_DECALS
 else {
