@@ -202,6 +202,8 @@ if (nSegment < 0) {
 	int nBoss = gameData.bosses.Find (nObject);
 	if (nBoss < 0)
 		return -1;
+	if (!(gameData.bosses [nBoss].m_gateSegs.Buffer () && gameData.bosses [nBoss].m_nGateSegs))
+		return -1;
 	nSegment = gameData.bosses [nBoss].m_gateSegs [(d_rand () * gameData.bosses [nBoss].m_nGateSegs) >> 15];
 	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));

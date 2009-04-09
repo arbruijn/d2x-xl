@@ -211,7 +211,7 @@ const char *headlightFS [2][8] = {
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.15) {\r\n" \
-	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
+	"	    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
 	"      }\r\n" \
@@ -230,7 +230,7 @@ const char *headlightFS [2][8] = {
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.15) {\r\n" \
-	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
+	"	    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
 	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
@@ -252,7 +252,7 @@ const char *headlightFS [2][8] = {
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.15) {\r\n" \
-	"      float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
+	"      float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
 	"      spotColor = min (spotColor, matColor.rgb);\r\n" \

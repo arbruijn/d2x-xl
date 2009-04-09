@@ -1458,12 +1458,12 @@ int CreateGatedRobot (int nSegment, int nObjId)
 //	Return true if robotP successfully created, else return false
 int gate_in_robot(int type, int nSegment)
 {
-	if (nSegment < 0)
-		nSegment = gameData.bosses [0].m_gateSegs [(d_rand() * gameData.bosses [0].m_nGateSegs) >> 15];
-
-	Assert((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
-
-	return CreateGatedRobot(nSegment, type);
+if (nSegment < 0) {
+	if (!(gameData.bosses [0].m_gateSegs.Buffer () && gameData.bosses [0].m_nGateSegs))
+		return -1;
+	nSegment = gameData.bosses [0].m_gateSegs [(d_rand () * gameData.bosses [0].m_nGateSegs) >> 15];
+	}
+return CreateGatedRobot (nSegment, type);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
