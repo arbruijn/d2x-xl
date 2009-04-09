@@ -986,7 +986,8 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 					if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) ||
 						 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
 						break;
-					if (bAdditive && (bAdditive != 2)) {
+					//if (bAdditive && (bAdditive != 2)) 
+						{
 						bAdditive = 2;
 						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 						}

@@ -211,7 +211,7 @@ const char *pszPPXLightingFS [] = {
 	"		*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb), matColor.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -251,7 +251,7 @@ const char *pszPPXLightingFS [] = {
 	"		*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -293,7 +293,7 @@ const char *pszPPXLightingFS [] = {
 	"		*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -339,7 +339,7 @@ const char *pszPPXLightingFS [] = {
 	"		*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}\r\n" \
 	"}"
 	};
@@ -353,7 +353,7 @@ const char *pszPP1LightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
+	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -362,22 +362,22 @@ const char *pszPP1LightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation), color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation), colorSum.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex;\r\n" \
@@ -385,7 +385,7 @@ const char *pszPP1LightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
+	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
@@ -395,22 +395,22 @@ const char *pszPP1LightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -418,7 +418,7 @@ const char *pszPP1LightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
+	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -430,22 +430,22 @@ const char *pszPP1LightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
@@ -457,7 +457,7 @@ const char *pszPP1LightingFS [] = {
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 color = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
+	"	vec4 colorSum = vec4 (gl_Color.rgb * fLightScale, gl_Color.a);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -469,22 +469,22 @@ const char *pszPP1LightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * fLightScale);}\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a)/* * fLightScale*/;}\r\n" \
 	"	}"
 	};
 
@@ -606,7 +606,7 @@ const char *pszPPXLMLightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -635,7 +635,7 @@ const char *pszPPXLMLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb), matColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -644,7 +644,7 @@ const char *pszPPXLMLightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	int i;\r\n" \
@@ -674,7 +674,7 @@ const char *pszPPXLMLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -683,7 +683,7 @@ const char *pszPPXLMLightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -715,7 +715,7 @@ const char *pszPPXLMLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -728,7 +728,7 @@ const char *pszPPXLMLightingFS [] = {
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -760,7 +760,7 @@ const char *pszPPXLMLightingFS [] = {
 	"		<<<<< specular highlight*/\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a * fLightScale);}\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a)/* * fLightScale*/;}\r\n" \
 	"	}"
 	};
 
@@ -774,7 +774,7 @@ const char *pszPP1LMLightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -783,23 +783,23 @@ const char *pszPP1LMLightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	color *= gl_LightSource [0].constantAttenuation;\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	colorSum *= gl_LightSource [0].constantAttenuation;\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
@@ -807,7 +807,7 @@ const char *pszPP1LMLightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
@@ -817,22 +817,22 @@ const char *pszPP1LMLightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -840,7 +840,7 @@ const char *pszPP1LMLightingFS [] = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -852,22 +852,22 @@ const char *pszPP1LMLightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -879,7 +879,7 @@ const char *pszPP1LMLightingFS [] = {
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
@@ -891,22 +891,22 @@ const char *pszPP1LMLightingFS [] = {
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
 	"	if ((NdotL >= nMinDot) && (dist == 0.0))\r\n" \
-	"		color += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
 	"	else {\r\n" \
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		color += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	/*specular highlight >>>>>\r\n" \
 	"	if (NdotL >= 0.0) {\r\n" \
 	"		vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"		float NdotHV = max (dot (n, halfV), 0.0);\r\n" \
-	"		color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"		colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"		}\r\n" \
 	"	<<<<< specular highlight*/\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a * fLightScale);}\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a)/* * fLightScale*/;}\r\n" \
 	"	}"
 	};
 
@@ -965,7 +965,7 @@ const char *pszPP0LMLightingFS [] = {
 	"uniform float fLightScale;\r\n" \
 	"uniform int nLights;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
+	"gl_FragColor = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
 	"}"
 #else
 	"uniform sampler2D lMapTex;\r\n" \
@@ -973,8 +973,8 @@ const char *pszPP0LMLightingFS [] = {
 	"uniform float fLightScale;\r\n" \
 	"uniform int nLights;\r\n" \
 	"void main() {\r\n" \
-	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
-	"gl_FragColor = /*min (texColor,*/ vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a * fLightScale);\r\n" \
+	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy)/* * fLightScale*/;\r\n" \
+	"gl_FragColor = /*min (texColor,*/ vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"}"
 #endif
 	,
