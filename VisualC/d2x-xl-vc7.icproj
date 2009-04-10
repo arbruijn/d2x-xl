@@ -13,7 +13,7 @@
 				Name="CppCmplrTool"
 				GenerateAlternateCodePaths="5"
 				UseProcessorExtensions="6"
-				Parallelization="TRUE"/>
+				Parallelization="FALSE"/>
 		</Configuration>
 	</Configurations>
 	<Files/>

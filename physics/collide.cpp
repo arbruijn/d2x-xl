@@ -2145,7 +2145,7 @@ switch (collisionType) {
 	NO_COLLISION		(OBJ_MARKER, 	OBJ_POWERUP, 	NULL)
 	NO_COLLISION		(OBJ_MARKER, 	OBJ_DEBRIS, 	NULL)
 
-	DO_COLLISION		(OBJ_CAMBOT, 	OBJ_WEAPON, 	CollideWeaponAndRobot)
+	DO_COLLISION		(OBJ_WEAPON, 	OBJ_CAMBOT, 	CollideWeaponAndRobot)
 	DO_COLLISION		(OBJ_CAMBOT, 	OBJ_PLAYER, 	CollideRobotAndPlayer)
 	NO_COLLISION		(OBJ_FIREBALL, OBJ_CAMBOT, 	CollideFireballAndRobot)
 	default:
