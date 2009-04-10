@@ -1228,6 +1228,7 @@ char* CBriefing::SkipPage (void)
 	char	ch;
 	const char* pEnd = NextPage (m_info.message);
 
+m_info.nScreen++;
 while (*m_info.message && (!pEnd || (m_info.message < pEnd))) {
 	ch = *m_info.message++;
 	if (ch == '$') {
@@ -1254,9 +1255,10 @@ if (ch != '$')
 ch = *(++m_info.message);
 if (ch == 'S')
 	return NULL;
-do {
-	m_info.message++;
-	} while (::isdigit (*m_info.message) || ::isspace (*m_info.message));
+if (ch != 'P')
+	do {
+		m_info.message++;
+		} while (::isdigit (*m_info.message) || ::isspace (*m_info.message));
 return m_info.message;
 }
 
@@ -1301,7 +1303,8 @@ if (keypress == KEY_ESC)
 if (m_info.bOnlyRobots) {
 	*m_info.szBriefScreen = *m_info.szBriefScreenB = '\0';
 	while (m_info.message && !PageHasRobot (m_info.message))
-		SkipPage (); //.message, &m_info.curScreen, &m_info.x, &m_info.y, &m_info.nScreen);
+		if (!SkipPage ())
+			return NULL;
 	if (!m_info.message)
 		return 0;
 	}
@@ -1332,27 +1335,27 @@ if (gameStates.app.bNostalgia)
 m_info.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
 							 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
 m_info.bOnlyRobots = movieManager.m_bHaveExtras && m_info.bExtraSounds && (m_info.nLevel == 1) && (m_info.nScreen < 4);
-if (!songManager.Playing ())
-	m_info.nHumChannel = StartHum (m_info.nHumChannel, m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
 
 fontManager.SetCurrent (GAME_FONT);
 
+if (m_info.bOnlyRobots) {
+	while (m_info.message && !PageHasRobot (m_info.message))
+		SkipPage ();
+	if (!m_info.message)
+		goto done;
+	}
+m_info.pi = m_info.pj = m_info.message;
+
+if (!songManager.Playing ())
+	m_info.nHumChannel = StartHum (m_info.nHumChannel, m_info.nLevel, m_info.nScreen, m_info.bExtraSounds);
 m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
 m_info.bsP = &m_info.curScreen;
 if (gameStates.app.bD1Mission)
 	m_info.bGotZ = 1;
 InitCharPos (m_info.bsP, gameStates.app.bD1Mission);
-
 m_info.x = m_info.briefingTextX;
 m_info.y = m_info.briefingTextY;
 *m_info.szBriefScreen = *m_info.szBriefScreenB = '\0';
-if (m_info.bOnlyRobots) {
-	while (m_info.message && !PageHasRobot (m_info.message))
-		SkipPage (); //.message, &m_info.curScreen, &m_info.x, &m_info.y, &m_info.nScreen);
-	if (!m_info.message)
-		goto done;
-	}
-m_info.pi = m_info.pj = m_info.message;
 
 redrawPage:
 
