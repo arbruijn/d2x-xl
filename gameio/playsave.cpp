@@ -493,6 +493,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].gameplay.nAIAggressivity, i, 0);
 		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
 		RP (gameOptions [i].gameplay.nSlowMotionSpeedup, i, 0);
+		RP (gameOptions [i].render.cameras.bHires, i, 0);
 #if 0
 		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
 		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
@@ -558,7 +559,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.lightning.nStyle, i, 0);
 		RP (gameOptions [i].render.lightning.nQuality, i, 0);
 		RP (gameOptions [i].render.cameras.bFitToWall, i, 0);
-		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cameras.nFPS, i, 0);
 		RP (gameOptions [i].render.cameras.nSpeed, i, 0);
 		RP (gameOptions [i].render.automap.bCoronas, i, 0);
