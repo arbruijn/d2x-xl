@@ -849,6 +849,7 @@ do {
 		channelMinVolP [channelP->Persistent ()] = channelP;
 	m_info.nFreeChannel = (m_info.nFreeChannel + 1) % MAX_SOUND_CHANNELS;
 	} while (m_info.nFreeChannel != nStartChannel);
+m_info.nFreeChannel = audio.m_channels.Index (channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1]);
 return channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1];
 }
 
