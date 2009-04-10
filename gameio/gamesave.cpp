@@ -654,7 +654,7 @@ if (gameFileInfo.botGen.offset > -1) {
 		}
 		else
 			MatCenInfoRead (gameData.matCens.botGens + i, cf);
-		gameData.matCens.botGens [i].nFuelCen = i;
+
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = gameData.segs.nSegments, segP = SEGMENTS.Buffer (); j; j--, segP++)
 			if ((segP->m_nType == SEGMENT_IS_ROBOTMAKER) && (segP->m_nMatCen == i)) {
