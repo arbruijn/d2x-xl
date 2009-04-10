@@ -1086,7 +1086,7 @@ int FindVectorIntersection (tFVIQuery *fq, tFVIData *hitData)
 	int			nHitType, nNewHitType;
 	short			nHitSegment, nHitSegment2;
 	CFixVector	vHitPoint;
-	int			i;
+	int			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes;
 	CSegMasks	masks;
 
 Assert(fq->ignoreObjList != reinterpret_cast<short*> (-1));
@@ -1117,9 +1117,12 @@ gameData.collisions.segsVisited [0] = fq->startSeg;
 gameData.collisions.nSegsVisited = 1;
 gameData.collisions.hitData.nNestCount = 0;
 nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
+if (fq->bCheckVisibility)
+	extraGameInfo [IsMultiGame].nHitboxes = 0;
 nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1,
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
 							  hitData->segList, &hitData->nSegments, -2, fq->bCheckVisibility);
+extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 
 if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].Masks (vHitPoint, 0).m_center)
 	nHitSegment = nHitSegment2;
@@ -1138,9 +1141,12 @@ if (nHitSegment == -1) {
 
 	//because the code that deals with objects with non-zero radius has
 	//problems, try using zero radius and see if we hit a wall
+	if (fq->bCheckVisibility)
+		extraGameInfo [IsMultiGame].nHitboxes = 0;
 	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
 								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList,
 									  &hitData->nSegments, -2, fq->bCheckVisibility);
+	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 	if (nNewHitSeg2 != -1) {
 		nHitType = nNewHitType;
 		nHitSegment = nNewHitSeg2;
