@@ -780,7 +780,8 @@ retryMove:
 #endif
 		vMoved = info.position.vPos - vSavePos;
 		xWallPart = CFixVector::Dot (vMoved, hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
-		if ((info.nType == OBJ_WEAPON) || ((xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)))) {
+		xHitSpeed = -FixDiv (xWallPart, xMovedTime);
+		if ((info.nType == OBJ_WEAPON) || ((xWallPart && (xMovedTime > 0) && (xHitSpeed > 0)))) {
 			CollideObjectAndWall (xHitSpeed, nWallHitSeg, nWallHitSide, hi.hit.vPoint);
 #if 0//def _DEBUG
 			if (info.nType == OBJ_PLAYER)
