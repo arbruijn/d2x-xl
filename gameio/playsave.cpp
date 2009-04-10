@@ -434,6 +434,7 @@ for (i = 0; i < 2; i++) {
 			}
 		RP (gameOptions [i].render.particles.nQuality, i, 0);
 		RP (gameOptions [i].render.particles.bStatic, i, 0);
+		RP (gameOptions [i].render.particles.bPlasmaTrails, i, 0);
 		for (j = 0; j < 5; j++) {
 			RP (gameOptions [i].input.joystick.deadzones [j], 0, j);
 			RP (gameOptions [i].input.joystick.sensitivity [j], 0, j);
@@ -511,7 +512,6 @@ for (i = 0; i < 2; i++) {
 			}
 		RP (gameOptions [i].render.particles.bAuxViews, i, 0);
 		RP (gameOptions [i].render.particles.bMonitors, i, 0);
-		RP (gameOptions [i].render.particles.bPlasmaTrails, i, 0);
 		RP (gameOptions [i].render.particles.bDecreaseLag, i, 0);
 		RP (gameOptions [i].render.particles.bDebris, i, 0);
 		RP (gameOptions [i].render.particles.bDisperse, i, 0);

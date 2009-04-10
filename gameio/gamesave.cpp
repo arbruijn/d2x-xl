@@ -632,7 +632,8 @@ return 0;
 static int ReadBotGenInfo (CFile& cf)
 {
 if (gameFileInfo.botGen.offset > -1) {
-	int	i, j;
+	int		i, j;
+	CSegment	*segP;
 
 	if (cf.Seek (gameFileInfo.botGen.offset, SEEK_SET)) {
 		Error ("Error seeking to robot generator data\n(file damaged or invalid)");
@@ -653,14 +654,20 @@ if (gameFileInfo.botGen.offset > -1) {
 		}
 		else
 			MatCenInfoRead (gameData.matCens.botGens + i, cf);
-
+		gameData.matCens.botGens [i].nFuelCen = i;
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
-		for (j = 0; j <= gameData.segs.nLastSegment; j++)
-			if ((SEGMENTS [j].m_nType == SEGMENT_IS_ROBOTMAKER) &&
-					(SEGMENTS [j].m_nMatCen == i)) {
-				gameData.matCens.botGens [i].nFuelCen = SEGMENTS [j].m_value;
+		for (j = gameData.segs.nSegments, segP = SEGMENTS.Buffer (); j; j--, segP++)
+			if ((segP->m_nType == SEGMENT_IS_ROBOTMAKER) && (segP->m_nMatCen == i)) {
+				gameData.matCens.botGens [i].nFuelCen = segP->m_value;
 				break;
 				}
+		if (!j) {
+#if DBG
+			PrintLog ("Invalid robot generator data found\n");
+#endif
+			gameData.matCens.nBotCenters--;
+			i--;
+			}
 		}
 	}
 return 0;
@@ -878,6 +885,16 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 				}
 			}
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CreateGenerators (void)
+{
+gameData.matCens.nRepairCenters = 0;
+for (int i = 0; i < gameData.segs.nSegments; i++) {
+	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_nType);
 	}
 }
 
