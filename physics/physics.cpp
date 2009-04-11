@@ -474,21 +474,29 @@ if (mType.physInfo.drag) {
 	fix		xDrag = mType.physInfo.drag;
 	fix		r = xSimTime % FT;
 	fix		k = FixDiv (r, FT);
-	fix		d = I2X (1) - xDrag;
 	fix		a;
 
 	if (this == gameData.objs.consoleP)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
+
+	fix		d = I2X (1) - xDrag;
+
 	if (mType.physInfo.flags & PF_USES_THRUST) {
 		accel = mType.physInfo.thrust * FixDiv (I2X (1), mType.physInfo.mass);
 		a = !accel.IsZero();
 		if (bDoSpeedBoost && !(a || gameStates.input.bControlsSkipFrame))
 			vel = sbd.vVel;
 		else {
-			while (nTries--) {
-				if (a)
+			if (a) {
+				while (nTries--) {
 					vel += accel;
-				vel *= d;
+					vel *= d;
+					}
+				}
+			else {
+				while (nTries--) {
+					vel *= d;
+					}
 			}
 			//do linear scale on remaining bit of time
 			vel += accel * k;
