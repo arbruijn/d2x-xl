@@ -239,7 +239,7 @@ do {
 
 	m.AddText ("");
 	if (extraGameInfo [0].bUseParticles) {
-		optStaticSmoke = m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_S, HTX_ADVRND_STATICSMOKE);
+		optStaticSmoke = m.AddCheck (TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_A, HTX_ADVRND_STATICSMOKE);
 		optGatlingTrails = m.AddCheck (TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
 		}
 	else

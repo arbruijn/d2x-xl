@@ -1614,7 +1614,7 @@ const char *defaultGameTexts [][2] = {
  {"~Wendigkeit von Raketen: %s", "missile ~Turn speed: %s"},
  {"Ctrl+P\t  Pause", "Ctrl+P\t  Pause"},
  {"Druck\t  Bildschirmabzug speichern", "PrtScrn\t  save screenshot"},
- {"s~Tatischer Rauch", "s~Tatic smoke"},
+ {"st~Atischer Rauch", "st~Atic smoke"},
  {"~Aufmerksamkeit der Roboter erhoehen", "increase robot ~Awareness"},
  {"~Ports eingehender Verbindungen pruefen", "check ~Ports of incoming connections"},
  {"Ausruestungsgenerator%n aktiviert", "equipment generator%s activated"},
