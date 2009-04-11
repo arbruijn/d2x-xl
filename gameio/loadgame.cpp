@@ -704,6 +704,7 @@ if (nStage == 0) {
 		LoadD1Sounds (false);
 	else
 		LoadD2Sounds (false);
+	gameStates.app.bCustomSounds = false;
 	if (gameStates.app.bHaveMod && (gameStates.app.bD1Mission ? LoadD1Sounds (true) : LoadD2Sounds (true))) {
 		gameStates.app.bCustomSounds = true;
 		if (gameOpts->sound.bHires [0] != gameOpts->sound.bHires [1]) {
@@ -711,10 +712,6 @@ if (nStage == 0) {
 			audio.Reset ();
 			songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 			}
-		}
-	else if (gameStates.app.bCustomSounds) {
-		LoadD2Sounds ();
-		gameStates.app.bCustomSounds = false;
 		}
 #endif
 	if (gameStates.app.bHaveMod) {

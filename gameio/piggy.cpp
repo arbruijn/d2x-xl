@@ -745,7 +745,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
 	SetD1Sound ();
-	if ((gameData.pig.sound.nType != 1) || bCustom) {
+	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
 		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		LoadSounds (cfPiggy [1]);
 		gameData.pig.sound.nType = 1;
