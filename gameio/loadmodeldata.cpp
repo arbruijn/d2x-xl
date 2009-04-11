@@ -470,8 +470,7 @@ int LoadExitModels (void)
 
 	start_num = gameData.pig.tex.nObjBitmaps;
 	for (i = 0; szExitBm [i]; i++) 
-		if (!LoadExitModelBitmap (szExitBm [i]))
-	 {
+		if (!LoadExitModelBitmap (szExitBm [i])) {
 #if TRACE
 		console.printf (CON_NORMAL, "Can't load exit models!\n");
 #endif

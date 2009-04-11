@@ -712,6 +712,7 @@ switch (cf.Length ()) {
 cf.Seek (nPigDataStart, SEEK_SET);
 nBitmapNum = cf.ReadInt ();
 nSoundNum = int (cf.ReadShort ());
+cf.Seek (sizeof (short), SEEK_CUR);	//skip another 2 bytes
 nHeaderSize = nBitmapNum * PIGBITMAPHEADER_D1_SIZE + nSoundNum * sizeof (tPIGSoundHeader);
 nBmHdrOffs = nPigDataStart + 2 * sizeof (int);
 nBmDataOffs = nBmHdrOffs + nHeaderSize;
