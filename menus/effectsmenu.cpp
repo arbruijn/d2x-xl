@@ -224,7 +224,7 @@ do {
 	if (extraGameInfo [0].bUseParticles) {
 		sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);
 		*szSlider = *(TXT_EXPLOSION_SHRAPNELS - 1);
-		effectOpts.nExplShrapnels = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+		effectOpts.nExplShrapnels = m.AddSlider (szSlider + 1, gameOpts->render.effects.nShrapnels, 0, 4, KEY_E, HTX_EXPLOSION_SHRAPNELS);
 		}
 	else
 		effectOpts.nExplShrapnels = -1;
