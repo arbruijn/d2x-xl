@@ -228,10 +228,10 @@ do {
 	m.Create (30);
 	sprintf (szSlider + 1, TXT_FUSION_RAMP, extraGameInfo [0].nFusionRamp * 50, '%');
 	*szSlider = *(TXT_FUSION_RAMP - 1);
-	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, extraGameInfo [0].nFusionRamp - 2, 0, 6, KEY_U, HTX_FUSION_RAMP);
+	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, extraGameInfo [0].nFusionRamp - 2, 0, 6, KEY_F, HTX_FUSION_RAMP);
 	sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
 	*szSlider = *(TXT_PLAYER_DRAG - 1);
-	physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_G, HTX_PLAYER_DRAG);
+	physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
 		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int (extraGameInfo [0].nMslTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
@@ -252,7 +252,7 @@ do {
 
 	sprintf (szSlider + 1, TXT_AUTOLEVEL, pszAutoLevel [gameOpts->gameplay.nAutoLeveling]);
 	*szSlider = *(TXT_AUTOLEVEL - 1);
-	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 2, KEY_A, HTX_AUTO_LEVELING);
+	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 2, KEY_S, HTX_AUTO_LEVELING);
 
 	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszHitDetection [nHitDetection]);
 	*szSlider = *(TXT_HIT_DETECTION - 1);

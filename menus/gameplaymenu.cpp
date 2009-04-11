@@ -286,16 +286,16 @@ do {
 
 	sprintf (szSlider + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [nAIAggressivity]);
 	*szSlider = *(TXT_AI_AGGRESSIVITY - 1);
-	gplayOpts.nAIAggressivity = m.AddSlider (szSlider + 1, nAIAggressivity, 0, 5, KEY_G, HTX_AI_AGGRESSIVITY);
+	gplayOpts.nAIAggressivity = m.AddSlider (szSlider + 1, nAIAggressivity, 0, 5, KEY_A, HTX_AI_AGGRESSIVITY);
 
 	sprintf (szSlider + 1, TXT_WEAPON_SWITCH, pszWeaponSwitch [gameOpts->gameplay.nAutoSelectWeapon]);
 	*szSlider = *(TXT_WEAPON_SWITCH - 1);
-	gplayOpts.nWeaponSwitch = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoSelectWeapon, 0, 2, KEY_G, HTX_WEAPON_SWITCH);
+	gplayOpts.nWeaponSwitch = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoSelectWeapon, 0, 2, KEY_W, HTX_WEAPON_SWITCH);
 
 	m.AddText ("", 0);
-	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_W, HTX_GPLAY_SMARTSWITCH);
-	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_L, HTX_HEADLIGHT_BUILTIN);
-	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_W, HTX_HEADLIGHT_POWERDRAIN);
+	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_S, HTX_GPLAY_SMARTSWITCH);
+	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_B, HTX_HEADLIGHT_BUILTIN);
+	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_H, HTX_HEADLIGHT_POWERDRAIN);
 	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
