@@ -124,22 +124,23 @@ if (extraGameInfo [0].nFusionRamp != v) {
 	m->m_bRebuild = 1;
 	}
 
-	m = menu + physOpts.nAutoLevel;
-	v = m->m_value;
-	if (gameOpts->gameplay.nAutoLeveling != v) {
-		gameOpts->gameplay.nAutoLeveling = v;
-		sprintf (m->m_text, TXT_AUTOLEVEL, pszAutoLevel [v]);
-		m->m_bRebuild = 1;
-		}
+m = menu + physOpts.nAutoLevel;
+v = m->m_value;
+if (gameOpts->gameplay.nAutoLeveling != v) {
+	gameOpts->gameplay.nAutoLeveling = v;
+	sprintf (m->m_text, TXT_AUTOLEVEL, pszAutoLevel [v]);
+	m->m_bRebuild = 1;
+	}
 
-	m = menu + physOpts.nHitDetection;
-	v = m->m_value;
-	if (nHitDetection != v) {
-		nHitDetection = v;
-		sprintf (m->m_text, TXT_HIT_DETECTION, pszHitDetection [v]);
-		m->m_bRebuild = 1;
-		}
+m = menu + physOpts.nHitDetection;
+v = m->m_value;
+if (nHitDetection != v) {
+	nHitDetection = v;
+	sprintf (m->m_text, TXT_HIT_DETECTION, pszHitDetection [v]);
+	m->m_bRebuild = 1;
+	}
 
+if (gameOpts->app.bExpertMode == SUPERUSER) {
 	m = menu + physOpts.nDrag;
 	v = m->m_value;
 	if (nDrag != v) {
@@ -148,7 +149,6 @@ if (extraGameInfo [0].nFusionRamp != v) {
 		m->m_bRebuild = 1;
 		}
 
-if (gameOpts->app.bExpertMode == SUPERUSER) {
 	m = menu + physOpts.nMslTurnSpeed;
 	v = m->m_value;
 	if (extraGameInfo [0].nMslTurnSpeed != v) {
@@ -229,10 +229,10 @@ do {
 	sprintf (szSlider + 1, TXT_FUSION_RAMP, extraGameInfo [0].nFusionRamp * 50, '%');
 	*szSlider = *(TXT_FUSION_RAMP - 1);
 	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, extraGameInfo [0].nFusionRamp - 2, 0, 6, KEY_F, HTX_FUSION_RAMP);
-	sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
-	*szSlider = *(TXT_PLAYER_DRAG - 1);
-	physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
+		sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
+		*szSlider = *(TXT_PLAYER_DRAG - 1);
+		physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
 		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int (extraGameInfo [0].nMslTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
 		physOpts.nMslTurnSpeed = m.AddSlider (szSlider + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
