@@ -955,6 +955,7 @@ typedef struct tRenderStates {
 	int bShowTime;
 	int bShowProfiler;
 	int bTriangleMesh;
+	int bOmegaModded;
 	int nFrameFlipFlop;
 	int nModelQuality;
 	int nMeshQuality;

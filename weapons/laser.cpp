@@ -356,7 +356,7 @@ if (nWeaponType == OMEGA_ID) {
 //	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient.UVec () : &parentP->info.position.mOrient.UVec (), NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
-		if (weaponInfoP->nFlashVClip > -1)
+		if ((weaponInfoP->nFlashVClip > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
 			CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
 		}
 	DoOmegaStuff (OBJECTS + nParent, vPosition, objP);

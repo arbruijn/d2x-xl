@@ -1024,7 +1024,7 @@ if (gameStates.render.nShadowPass != 2) {
 			if (!DoObjectSmoke (objP))
 				DrawWeaponVClip (objP);
 			}
-		else if ((objP->info.nId != OMEGA_ID) || !(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.app.bHaveMod)) {
+		else if ((objP->info.nId != OMEGA_ID) || !(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded)) {
 			DrawWeaponVClip (objP);
 			if (objP->info.nId != OMEGA_ID) {
 				RenderLightTrail (objP);

@@ -1206,6 +1206,7 @@ StencilOn (bStencil);
 void RenderLaserCorona (CObject *objP, tRgbaColorf *colorP, float alpha, float fScale)
 {
 	int	bAdditive = 1; //gameOpts->render.bAdditive
+
 if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
