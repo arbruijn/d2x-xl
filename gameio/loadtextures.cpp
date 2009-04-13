@@ -650,7 +650,7 @@ if ((*bmName && ((nIndex < 0) || IsCockpit (bmName) || bHires || gameOpts->rende
 			}
 		else {
 			bTGA = 1;
-			if ((nIndex == 1215) && strstr (fn [nFile], "/mods/"))
+			if (strstr (fn [nFile], "omegblob#") && strstr (fn [nFile], "/mods/"))
 				gameStates.render.bOmegaModded = 1;
 			altBmP->SetType (BM_TYPE_ALT);
 			bmP->SetOverride (altBmP);

@@ -158,7 +158,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		objP->mType.physInfo.velocity *= (I2X (4));
 		objP->info.xSize = gameData.weapons.info [objP->info.nId].blob_size;
-		objP->info.xShields = FixMul (OMEGA_DAMAGE_SCALE*gameData.time.xFrame, WI_strength (objP->info.nId,gameStates.app.nDifficultyLevel));
+		objP->info.xShields = FixMul (OMEGA_DAMAGE_SCALE * gameData.time.xFrame, WI_strength (objP->info.nId,gameStates.app.nDifficultyLevel));
 		objP->cType.laserInfo.parent.nType = parentObjP->info.nType;
 		objP->cType.laserInfo.parent.nSignature = parentObjP->info.nSignature;
 		objP->cType.laserInfo.parent.nObject = OBJ_IDX (parentObjP);
@@ -170,7 +170,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 	//	Make last one move faster, but it's already moving at speed = I2X (4).
 if (nLastCreatedObj != -1) {
 	OBJECTS [nLastCreatedObj].mType.physInfo.velocity *=
-		gameData.weapons.info [OMEGA_ID].speed [gameStates.app.nDifficultyLevel]/4;
+		gameData.weapons.info [OMEGA_ID].speed [gameStates.app.nDifficultyLevel] / 4;
 	OBJECTS [nLastCreatedObj].info.movementType = MT_PHYSICS;
 	}
 }
