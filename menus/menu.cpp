@@ -425,7 +425,7 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 			CalcFrameTime ();
 			}
 		else {
-			GameLoop (1, 0);
+			GameFrame (1, 0);
 			}
 		}
 	CCanvas::Pop ();

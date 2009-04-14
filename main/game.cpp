@@ -962,7 +962,7 @@ if (!setjmp (gameExitPoint)) {
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
 		try {
-			i = GameLoop (1, 1);
+			i = GameFrame (1, 1);
 			}
 		catch (int e) {
 			ClearWarnFunc (ShowInGameWarning);
@@ -1400,7 +1400,7 @@ void FlickerLights (void);
 
 //int bLog = 0;
 
-int GameLoop (int bRenderFrame, int bReadControls)
+int GameFrame (int bRenderFrame, int bReadControls)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;

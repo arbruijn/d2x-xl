@@ -963,7 +963,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const ch
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();
 //		if (gameData.app.nGameMode & GM_MULTI)
-//			GameLoop (0, 0);				// Continue
+//			GameFrame (0, 0);				// Continue
 	k = KeyInKey ();
 	if (k == KEY_ESC)
 		return KCAssignControl (item, BT_NONE, 255);

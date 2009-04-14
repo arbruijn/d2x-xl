@@ -881,7 +881,7 @@ if (!bPauseGame) {
 	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 	if (MultiMenuPoll ())
 		bDone = 1;
-	GameLoop (0, 0);		// Do game loop with no rendering and no reading controls.
+	GameFrame (0, 0);		// Do game loop with no rendering and no reading controls.
 	gameData.objs.consoleP->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
 	Controls [0] = controlInfoSave;
 	}

@@ -187,7 +187,7 @@ void TurnCheatsOff ();
 void GetSlowTicks (void);
 
 void SetFunctionMode (int newFuncMode);
-int GameLoop (int RenderFlag, int bReadControls);
+int GameFrame (int RenderFlag, int bReadControls);
 
 void FullPaletteSave (void);
 
