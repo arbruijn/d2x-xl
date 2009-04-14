@@ -689,9 +689,9 @@ return !gameStates.app.bD1Mission &&
 //------------------------------------------------------------------------------
 
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  tRgbaColorf *colorP, int *nColor, ubyte *bTextured, ubyte *bCloaked)
+					  tRgbaColorf *colorP, int *nColor, ubyte *bTextured, ubyte *bCloaked, ubyte* bTransparent)
 {
-	static tRgbaColorf cloakColor = {0, 0, 0, 0};
+	static tRgbaColorf cloakColor = {1, 1, 1, 0};
 
 	CWall	*wallP;
 	float fAlpha, fMaxColor;
@@ -705,16 +705,23 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 if (!(wallP = WALLS + nWall))
 	return 1;
-*bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
-if (*bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
+*bCloaked = ((widFlags & WID_CLOAKED_FLAG) != 0);
+*bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
+if (*bCloaked || &bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
 		return 1;
 	c = wallP->cloakValue;
-	if (*bCloaked) {
+	if (*bCloaked || *bTransparent) {
 		*colorP = cloakColor;
 		*nColor = 1;
 		*bTextured = 0;
-		return colorP->alpha = (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS);
+		HUDMessage (0, "%1.2f", (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS));
+		colorP->alpha = (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS);
+		if (*bTransparent)
+			colorP->red = 
+			colorP->green = 
+			colorP->blue = colorP->alpha;
+		return colorP->alpha;
 		}
 	if (!gameOpts->render.color.bWalls)
 		c = 0;

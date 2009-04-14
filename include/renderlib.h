@@ -83,7 +83,7 @@ char IsColoredSegFace (short nSegment, short nSide);
 tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor);
 int IsMonitorFace (short nSegment, short nSide, int bForce);
 float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  tRgbaColorf *pc, int *bCloaking, ubyte *bTextured, ubyte* bCloaked);
+					  tRgbaColorf *pc, int *bCloaking, ubyte *bTextured, ubyte* bCloaked, ubyte* bTransparent);
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP);
 CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures = 1);
 void DrawOutline (int nVertices, g3sPoint **pointList);

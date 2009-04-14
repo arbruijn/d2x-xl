@@ -50,7 +50,7 @@ return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 
 int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
 {
-	ubyte	bTextured, bCloaked, bWall;
+	ubyte	bTextured, bCloaked, bTransparent, bWall;
 	int	nColor = 0;
 
 #if DBG
@@ -72,11 +72,12 @@ bTextured = 1;
 bCloaked = 0;
 if (bWall)
 	*pfAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, faceP->bAdditive,
-								 &pFaceColor [1].color, &nColor, &bTextured, &bCloaked);
+								 &pFaceColor [1].color, &nColor, &bTextured, &bCloaked, &bTransparent);
 else
 	*pfAlpha = 1;
 faceP->bTextured = bTextured;
 faceP->bCloaked = bCloaked;
+faceP->bTransparent |= bTransparent;
 if (!gameData.app.nFrameCount) {
 	if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		pFaceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
