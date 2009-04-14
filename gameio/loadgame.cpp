@@ -164,7 +164,6 @@ void FilterObjectsFromLevel (void);
 // Global variables telling what sort of game we have
 
 //	Extra prototypes declared for the sake of LINT
-void ResetShipData (bool bRestore = false);
 void CopyDefaultsToRobotsAll (void);
 
 //	HUDClearMessages external, declared in cockpit.h

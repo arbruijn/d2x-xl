@@ -71,6 +71,7 @@ void SetPosFromReturnSegment (int bRelink);
 // Secret levels are -1,-2,-3
 void UnloadLevelData (int bRestore = 0, bool bQuit = true);
 void AddPlayerLoadout (bool bRestore = false);
+void ResetShipData (bool bRestore = false);
 
 void GameStartRemoveUnusedPlayers (void);
 

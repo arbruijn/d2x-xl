@@ -129,7 +129,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 22- gameData.omega.xCharge
 
 void SetFunctionMode (int);
-void ResetShipData (void);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
 void CopyDefaultsToRobot (CObject *objP);
@@ -1798,7 +1797,7 @@ if (!m_bBetweenLevels) {
 	if (m_bSecret && (gameData.missions.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
-			ResetShipData ();
+			ResetShipData (true);
 		}
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
@@ -2101,7 +2100,7 @@ if (!m_bBetweenLevels) {
 	if (m_bSecret && (gameData.missions.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
-			ResetShipData ();
+			ResetShipData (true);
 		}
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
