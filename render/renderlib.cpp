@@ -705,8 +705,14 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 if (!(wallP = WALLS + nWall))
 	return 1;
-*bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
-*bCloaked = !*bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
+if (SHOW_DYN_LIGHT) {
+	*bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
+	*bCloaked = !*bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
+	}
+else {
+	*bTransparent = 0;
+	*bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
+	}
 if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
 		return 1;
