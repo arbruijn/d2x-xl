@@ -359,7 +359,7 @@ void CCreditsManager::Destroy (void)
 m_cf.Close ();
 for (int i = 0; i < 3; i++)
 	fontManager.Unload (m_fonts [i]);
-m_bmBackdrop.DestroyBuffer ();
+m_bmBackdrop.Destroy ();
 }
 
 //-----------------------------------------------------------------------------
