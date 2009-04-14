@@ -474,11 +474,11 @@ if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
 	}
 G3EndFrame ();
 
-gameData.app.nFrameCount++;
 if (m_bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
 	}
+gameData.app.nFrameCount++;
 if (bAutomapFrame) {
 	if (InitBackground ()) {
 		m_background.SetTranspType (2);
