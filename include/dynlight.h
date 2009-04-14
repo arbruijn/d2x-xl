@@ -248,7 +248,7 @@ class CLightManager {
 
 
 	private:
-		static int IsTriggered (short nSegment, short nSide);
+		static int IsTriggered (short nSegment, short nSide, bool bOppSide = false);
 		static int IsFlickering (short nSegment, short nSide);
 		int IsDestructible (short nTexture);
 		void DeleteFromList (CDynLight* pl, short nLight);

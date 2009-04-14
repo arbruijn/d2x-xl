@@ -377,6 +377,11 @@ for (int i = 0; i < nLinks; i++) {
 					connWallP->nType = nNewWallType;
 					audio.DestroySegmentSound (SEG_IDX (connSegP), nConnSide, SOUND_FORCEFIELD_HUM);
 					}
+				if (SHOW_DYN_LIGHT) {
+					lightManager.Toggle (segP->Index (), nSide, -1, 0);
+					if (connWallP)
+						lightManager.Toggle (SEG_IDX (connSegP), nConnSide, -1, 0);
+					}
 				}
 			break;
 
@@ -389,6 +394,11 @@ for (int i = 0; i < nLinks; i++) {
 				wallP->nType = nNewWallType;
 				if (connWallP)
 					connWallP->nType = nNewWallType;
+				if (SHOW_DYN_LIGHT) {
+					lightManager.Toggle (segP->Index (), nSide, -1, 1);
+					if (connWallP)
+						lightManager.Toggle (SEG_IDX (connSegP), nConnSide, -1, 1);
+					}
 				}
 			break;
 

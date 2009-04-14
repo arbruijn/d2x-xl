@@ -708,11 +708,7 @@ else {
 	bEscort = 0;
 	nPlayer = (wObjP->info.nType == OBJ_PLAYER) ? wObjP->info.nId : -1;
 	}
-if (bBlewUp) {		//could be a CWall switch
-	//for CWall triggers, always say that the CPlayerData shot it out.  This is
-	//because robots can shoot out CWall triggers, and so the CTrigger better
-	//take effect
-	//	NO -- Changed by MK, 10/18/95.  We don't want robots blowing puzzles.  Only CPlayerData or buddy can open!
+if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate it
 	segP->OperateTrigger (nHitWall, OBJECTS + cType.laserInfo.parent.nObject, 1);
 	}
 if (info.nId == EARTHSHAKER_ID)

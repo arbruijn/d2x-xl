@@ -225,20 +225,31 @@ if (!colorP || colorP->index) {
 
 //-----------------------------------------------------------------------------
 
-int CLightManager::IsTriggered (short nSegment, short nSide)
+int CLightManager::IsTriggered (short nSegment, short nSide, bool bOppSide)
 {
+if ((nSegment < 0) || (nSide < 0))
+	return 0;
+
 	CTrigger*	trigP;
 	int			i = 0;
+	bool			bForceField = (gameData.pig.tex.tMapInfoP [SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
 
 while ((i = FindTriggerTarget (nSegment, nSide, i))) {
 	if (i < 0)
 		trigP = &OBJTRIGGERS [-i - 1];
 	else
 		trigP = &TRIGGERS [i - 1];
-	if ((trigP->nType == TT_LIGHT_OFF) || (trigP->nType == TT_LIGHT_ON))
+	if ((trigP->nType == TT_OPEN_WALL) || (trigP->nType == TT_CLOSE_WALL))
 		return 1;
+	if (!bForceField) {
+		if ((trigP->nType == TT_LIGHT_OFF) || (trigP->nType == TT_LIGHT_ON))
+			return 1;
+		}
 	}
-return 0;
+if (bOppSide || !bForceField)
+	return 0;
+short nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+return (nConnSeg >= 0) && IsTriggered (nConnSeg, SEGMENTS [nSegment].ConnectedSide (SEGMENTS + nConnSeg), true);
 }
 
 //-----------------------------------------------------------------------------

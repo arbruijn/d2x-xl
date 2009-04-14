@@ -501,9 +501,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 								pvc->index = gameStates.render.nFrameFlipFlop + 1;
 								}
 							else {
-								G3VertexColor (FACES.normals + nIndex, 
-													FACES.vertices + nIndex, nVertex, 
-													NULL, &c, 1, 0, nThread);
+								G3VertexColor (FACES.normals + nIndex, FACES.vertices + nIndex, nVertex, NULL, &c, 1, 0, nThread);
 								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
