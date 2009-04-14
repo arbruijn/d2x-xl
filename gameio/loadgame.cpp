@@ -984,8 +984,6 @@ gameData.render.lights.segDeltas.Clear ();
 InitDoorAnims ();
 LOCALPLAYER = savePlayer;
 gameData.hoard.nMonsterballSeg = -1;
-/*---*/PrintLog ("   initializing sound sources\n");
-SetSoundSources ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 //songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
@@ -1682,6 +1680,10 @@ if (!bRestore) {
 	InitReactorForLevel (0);
 	InitAIObjects ();
 	gameData.models.Prepare ();
+	}
+if (!bRestore) {
+	/*---*/PrintLog ("   initializing sound sources\n");
+	SetSoundSources ();
 	}
 #if 0
 LOCALPLAYER.nInvuls =

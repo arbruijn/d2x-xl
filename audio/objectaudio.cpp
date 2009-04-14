@@ -857,6 +857,10 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (!(segP->IsDoorWay (nSide, NULL) & WID_RENDER_FLAG))
 			continue;
+#if DBG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 		nEffect = (nOvlTex = segP->m_sides [nSide].m_nOvlTex) ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
 		if (nEffect < 0)
 			nEffect = gameData.pig.tex.tMapInfoP [segP->m_sides [nSide].m_nBaseTex].nEffectClip;

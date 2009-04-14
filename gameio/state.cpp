@@ -2010,6 +2010,8 @@ if (m_nVersion >= 37) {
 	if (!h)
 		memcpy (gameData.multiplayer.playerInit, playerInitSave, sizeof (playerInitSave));
 	}
+/*---*/PrintLog ("   initializing sound sources\n");
+SetSoundSources ();
 return 1;
 }
 
