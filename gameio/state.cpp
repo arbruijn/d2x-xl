@@ -1246,9 +1246,6 @@ else {
 	gameData.multiplayer.nPlayers = 1;
 	if (!m_bSecret) {
 		InitMultiPlayerObject (0);	//make sure CPlayerData's CObject set up
-#if 0
-		ResetPlayerData (true, false);		//clear all stats
-#endif
 		}
 	}
 }

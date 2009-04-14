@@ -164,7 +164,7 @@ void FilterObjectsFromLevel (void);
 // Global variables telling what sort of game we have
 
 //	Extra prototypes declared for the sake of LINT
-void ResetShipData (void);
+void ResetShipData (bool bRestore = false);
 void CopyDefaultsToRobotsAll (void);
 
 //	HUDClearMessages external, declared in cockpit.h
@@ -364,7 +364,7 @@ if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 //------------------------------------------------------------------------------
 
 // Setup CPlayerData for new game
-void ResetPlayerData (bool bNewGame, bool bSecret, int nPlayer)
+void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer)
 {
 CPlayerData* playerP = gameData.multiplayer.players + ((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer);
 
@@ -394,7 +394,7 @@ if (bNewGame) {
 	playerP->flags = 0;
 	playerP->nCloaks =
 	playerP->nInvuls = 0;
-	ResetShipData ();
+	ResetShipData (bRestore);
 	if (IsMultiGame && !IsCoopGame) {
 		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
 			playerP->flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
@@ -453,7 +453,7 @@ gameData.objs.nSoundPlaying [nPlayer] = 0;
 
 //------------------------------------------------------------------------------
 
-void AddPlayerLoadout (void)
+void AddPlayerLoadout (bool bRestore)
 {
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
@@ -463,13 +463,12 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
 	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX))
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
-	if (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
+	if (!bRestore && (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX))))
 		LOCALPLAYER.primaryAmmo [1] = GAUSS_WEAPON_AMMO_AMOUNT;
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevice;
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
-	if (gameStates.app.bD1Mission)
-	 {
+	if (gameStates.app.bD1Mission) {
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
 	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_FULLMAP | PLAYER_FLAGS_AMMO_RACK | PLAYER_FLAGS_CONVERTER | PLAYER_FLAGS_AFTERBURNER | PLAYER_FLAGS_HEADLIGHT);
 	   }
@@ -479,7 +478,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 //------------------------------------------------------------------------------
 
 // Setup CPlayerData for a brand-new ship
-void ResetShipData (void)
+void ResetShipData (bool bRestore)
 {
 	int	i;
 
@@ -1221,7 +1220,7 @@ Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
 automap.ClearVisited ();
-ResetPlayerData (false, true);
+ResetPlayerData (false, true, false);
 gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
@@ -1639,7 +1638,7 @@ HUDClearMessages ();
 automap.ClearVisited ();
 
 for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	ResetPlayerData (bNewGame, bSecret, i);
+	ResetPlayerData (bNewGame, bSecret, bRestore, i);
 if (IsCoopGame && networkData.nJoinState) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];

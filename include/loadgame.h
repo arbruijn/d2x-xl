@@ -48,7 +48,7 @@ int StartNewGame (int nStartLevel);
 int StartNewLevel (int nLevel, bool bNewGame);
 
 // Actually does the work to start new level
-void ResetPlayerData (bool bNewGame, bool bSecret, int nPlayer = -1);      //clear all stats
+void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer = -1);      //clear all stats
 
 int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame);
 void StartLevel (int bRandom);
@@ -70,7 +70,7 @@ void SetPosFromReturnSegment (int bRelink);
 // load a level off disk. level numbers start at 1.
 // Secret levels are -1,-2,-3
 void UnloadLevelData (int bRestore = 0, bool bQuit = true);
-void AddPlayerLoadout (void);
+void AddPlayerLoadout (bool bRestore = false);
 
 void GameStartRemoveUnusedPlayers (void);
 
