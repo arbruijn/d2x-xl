@@ -648,21 +648,26 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 	}
 else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 	int oldType = frontWallP->nType;
+#if 1
+	frontWallP->cloakValue = fix (FADE_LEVELS * X2F (cloakWallP->time) + 0.5f);
+#else
 	if (SHOW_DYN_LIGHT)
-		frontWallP->cloakValue = (FADE_LEVELS * (CLOAKING_WALL_TIME - cloakWallP->time)) / CLOAKING_WALL_TIME;
+		frontWallP->cloakValue = fix (FADE_LEVELS * X2F (cloakWallP->time) + 0.5f);
 	else
 		frontWallP->cloakValue = ((cloakWallP->time - CLOAKING_WALL_TIME / 2) * (FADE_LEVELS - 2)) / (CLOAKING_WALL_TIME / 2);
+#endif
 	if (backWallP)
 		backWallP->cloakValue = frontWallP->cloakValue;
 	if (oldType != WALL_CLOAKED) {		//just switched
-		int i;
 		frontWallP->nType = WALL_CLOAKED;
 		if (backWallP)
 			backWallP->nType = WALL_CLOAKED;
-		for (i = 0; i < 4; i++) {
-			SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
-			if (backWallP)
-				SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
+		if (!SHOW_DYN_LIGHT) {
+			for (int i = 0; i < 4; i++) {
+				SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
+				if (backWallP)
+					SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
+				}
 			}
 		}
 	}

@@ -520,7 +520,7 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
-AddPlayerLoadout ();
+AddPlayerLoadout (bRestore);
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//CPlayerData no longer dead
