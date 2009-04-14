@@ -1501,15 +1501,14 @@ else {
 	parent.nObject = 0;
 	}
 
-if (nObjId == EARTHSHAKER_ID)
-	BlastNearbyGlass (objP, gameData.weapons.info [EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
-
-if ((nObjType == OBJ_WEAPON) &&
-		((nObjId == SMARTMSL_ID) || (nObjId == SMARTMINE_ID) || (nObjId == ROBOT_SMARTMINE_ID) || (nObjId == EARTHSHAKER_ID)) &&
-		(gameData.weapons.info [nObjId].children == -1))
-	return;
-
-if ((nObjType != OBJ_ROBOT) && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
+if (nObjType == OBJ_WEAPON) {
+	if (gameData.weapons.info [nObjId].children < 1)
+	//if ((nObjId == SMARTMSL_ID) || (nObjId == SMARTMINE_ID) || (nObjId == ROBOT_SMARTMINE_ID) || (nObjId == EARTHSHAKER_ID)) &&
+		return;
+	if (nObjId == EARTHSHAKER_ID)
+		BlastNearbyGlass (objP, gameData.weapons.info [EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
+	}
+else if (nObjType != OBJ_ROBOT) // && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
 	return;
 
 int		i, nObject;
