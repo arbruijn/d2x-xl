@@ -70,6 +70,7 @@ else
 faceP->nCamera = IsMonitorFace (nSegment, nSide, 0);
 bTextured = 1;
 bCloaked = 0;
+bTransparent = 0;
 if (bWall)
 	*pfAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, faceP->bAdditive,
 								 &pFaceColor [1].color, &nColor, &bTextured, &bCloaked, &bTransparent);
@@ -468,7 +469,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 #endif
 		faceP->color = faceColor [nColor].color;
 #if 1
-		if (!bNeedLight && faceP->bHasColor)
+		if (!(bNeedLight || nColor) && faceP->bHasColor)
 			continue;
 		faceP->bHasColor = 1;
 #endif

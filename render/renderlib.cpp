@@ -705,22 +705,25 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 if (!(wallP = WALLS + nWall))
 	return 1;
-*bCloaked = ((widFlags & WID_CLOAKED_FLAG) != 0);
 *bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
-if (*bCloaked || &bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
+*bCloaked = !*bTransparent && ((widFlags & WID_CLOAKED_FLAG) != 0);
+if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
 		return 1;
 	c = wallP->cloakValue;
 	if (*bCloaked || *bTransparent) {
 		*colorP = cloakColor;
 		*nColor = 1;
-		*bTextured = 0;
-		HUDMessage (0, "%1.2f", (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS));
+		*bTextured = !*bCloaked;
 		colorP->alpha = (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS);
 		if (*bTransparent)
 			colorP->red = 
 			colorP->green = 
 			colorP->blue = colorP->alpha;
+#if DBG
+		if (colorP->alpha < 1)
+			return colorP->alpha;
+#endif
 		return colorP->alpha;
 		}
 	if (!gameOpts->render.color.bWalls)

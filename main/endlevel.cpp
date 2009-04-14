@@ -1180,7 +1180,8 @@ while (cf.GetS (line, LINE_LEN)) {
 			iff_error = iff.ReadBitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
 #if DBG
-				Warning (TXT_EXIT_TERRAIN, p, iff.ErrorMsg (iff_error));
+				PrintLog (TXT_EXIT_TERRAIN, p, iff.ErrorMsg (iff_error));
+				PrintLog ("\n");
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				return;
