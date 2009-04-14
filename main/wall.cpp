@@ -649,8 +649,7 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 	int oldType = frontWallP->nType;
 #if 1
-	float c = float (FADE_LEVELS) * X2F (cloakWallP->time);
-	frontWallP->cloakValue = fix (c * c + 0.5f);
+	frontWallP->cloakValue = fix (float (FADE_LEVELS) * X2F (cloakWallP->time));
 #else
 	if (SHOW_DYN_LIGHT)
 		frontWallP->cloakValue = fix (FADE_LEVELS * X2F (cloakWallP->time) + 0.5f);
