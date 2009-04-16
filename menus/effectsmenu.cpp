@@ -104,7 +104,7 @@ if (effectOpts.nExplShrapnels >= 0) {
 	if (gameOpts->render.effects.nShrapnels != v) {
 		gameOpts->render.effects.nShrapnels = v;
 		sprintf (m->m_text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
-		m->m_bRebuild = -1;
+		m->m_bRebuild = 1;
 		}
 	}
 

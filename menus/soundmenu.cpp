@@ -216,7 +216,7 @@ do {
 	if (gameOpts->app.bNotebookFriendly) {
 		sprintf (szSlider + 1, TXT_SOUND_CHANNEL_COUNT, pszLowMediumHigh [gameStates.sound.nSoundChannels - 2]);
 		*szSlider = *(TXT_SOUND_CHANNEL_COUNT - 1);
-		soundOpts.nChannels = m.AddSlider (TXT_SOUND_CHANNEL_COUNT, 0, 2, gameStates.sound.nSoundChannels - 2, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
+		soundOpts.nChannels = m.AddSlider (szSlider + 1, gameStates.sound.nSoundChannels - 2, 0, 2, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
 		}
 	else
 		soundOpts.nChannels = -1;

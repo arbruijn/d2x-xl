@@ -1759,7 +1759,7 @@ const char *defaultGameTexts [][2] = {
  {"~Omega zerstoert Raketen", "Omega ~Kills missiles"},
  {"~Schiffsgeraeusch erzeugen", "play ~Ship sound"},
  {"Raketengeraeusche erzeugen", "play ~Missile sounds"},
- {"~Klangkanaele: %d", "sound ~Channels: %d"},
+ {"~Klangkanaele: %s", "sound ~Channels: %s"},
  {"Leistungs-Einstellungen", "Performance Settings"},
  {"~Leistungs-Einstellungen...", "p~Erformance Settings..."},
  {"Lautstaerke ~Zusatzklaenge: %d%c", "~Custom sound volume: %d%c"},
