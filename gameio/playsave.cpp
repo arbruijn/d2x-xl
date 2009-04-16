@@ -494,9 +494,9 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
 		RP (gameOptions [i].gameplay.nSlowMotionSpeedup, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
+		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
 #if 0
 		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
-		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
 		RP (extraGameInfo [i].bRotateMarkers, i, 0);
 		RP (extraGameInfo [i].bBrightObjects, i, 0);
@@ -744,7 +744,7 @@ if (!m_cf.Open (fn, gameFolders.szProfDir, "rt", 0))
 while (!m_cf.EoF ())
 	LoadParam ();
 // call this before closing the file to prevent the profile being overwritten
-audio.SetMaxChannels (gameStates.sound.audio.nMaxChannels);
+audio.SetMaxChannels (NMCLAMP (gameStates.sound.audio.nMaxChannels, MIN_SOUND_CHANNELS, MAX_SOUND_CHANNELS));
 cockpit->Activate (gameStates.render.cockpit.nType);	
 downloadManager.SetTimeoutIndex (gameStates.app.iDownloadTimeout);
 return m_cf.Close ();

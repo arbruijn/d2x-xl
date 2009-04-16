@@ -78,7 +78,10 @@ static struct {
 	int	nRedbook;
 	int	nVolume;
 	int	nGatling;
+	int	nChannels;
 } soundOpts;
+
+static const char* pszLowMediumHigh [3];
 
 //------------------------------------------------------------------------------
 
@@ -102,6 +105,14 @@ int SoundMenuCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
+
+if (soundOpts.nChannels >= 0) {
+	if (gameStates.sound.nSoundChannels != menu [soundOpts.nChannels].m_value + 2) {
+		gameStates.sound.nSoundChannels = menu [soundOpts.nChannels].m_value + 2;
+		sprintf (menu [soundOpts.nChannels].m_text, TXT_SOUND_CHANNEL_COUNT, pszLowMediumHigh [gameStates.sound.nSoundChannels - 2]);
+		menu [soundOpts.nChannels].m_bRebuild = 1;
+		}
+	}
 
 if (soundOpts.nGatling >= 0) {
 	if (gameOpts->sound.bGatling != menu [soundOpts.nGatling].m_value) {
@@ -183,6 +194,7 @@ return nCurItem;		//kill warning
 void SoundMenu (void)
 {
 	static int choice = 0;
+	char szSlider [50];
 
 	CMenu	m;
 #if 0
@@ -192,11 +204,22 @@ void SoundMenu (void)
 	int	optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, optFadeMusic = -1, optShieldWarn = -1;
 	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
 
+pszLowMediumHigh [0] = TXT_LOW;
+pszLowMediumHigh [1] = TXT_MEDIUM;
+pszLowMediumHigh [2] = TXT_HIGH;
+
 gameStates.sound.nSoundChannels = SoundChannelIndex ();
 do {
 	m.Destroy ();
 	m.Create (20);
 	soundOpts.nGatling = -1;
+	if (gameOpts->app.bNotebookFriendly) {
+		sprintf (szSlider + 1, TXT_SOUND_CHANNEL_COUNT, pszLowMediumHigh [gameStates.sound.nSoundChannels - 2]);
+		*szSlider = *(TXT_SOUND_CHANNEL_COUNT - 1);
+		soundOpts.nChannels = m.AddSlider (TXT_SOUND_CHANNEL_COUNT, 0, 2, gameStates.sound.nSoundChannels - 2, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
+		}
+	else
+		soundOpts.nChannels = -1;
 	soundOpts.nDigiVol = m.AddSlider (TXT_FX_VOLUME, gameConfig.nDigiVolume, 0, 8, KEY_F, HTX_ONLINE_MANUAL);
 	soundOpts.nMusicVol = m.AddSlider (redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 												  redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
@@ -245,6 +268,7 @@ if (!gameStates.app.bNostalgia) {
 		audio.DestroyObjectSound (LOCALPLAYER.nObject);
 	}
 gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nDigiVolume) * 10.0f / 8.0f + 0.5f);
+audio.SetMaxChannels (32 << (gameStates.sound.nSoundChannels - 2));
 }
 
 //------------------------------------------------------------------------------

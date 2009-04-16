@@ -630,6 +630,7 @@ m_info.nFormat = AUDIO_S16LSB;
 m_info.nFormat = AUDIO_U8;
 #endif
 m_info.nVolume = SOUND_MAX_VOLUME;
+m_info.nMaxChannels = MAX_SOUND_CHANNELS;
 Init ();
 }
 
@@ -637,7 +638,6 @@ Init ();
 
 void CAudio::Init (void)
 {
-m_info.nMaxChannels = MAX_SOUND_CHANNELS;
 m_info.nFreeChannel = 0;
 m_info.bInitialized = 0;
 m_info.nNextSignature = 0;
@@ -648,7 +648,7 @@ m_info.nLoopingStart = -1;
 m_info.nLoopingEnd = -1;
 m_info.nLoopingChannel = -1;
 m_info.fSlowDown = 1.0f;
-m_channels.Create (MAX_SOUND_CHANNELS);
+m_channels.Create (m_info.nMaxChannels);
 m_objects.Create (MAX_SOUND_OBJECTS);
 InitSounds ();
 }
@@ -724,7 +724,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	Mix_Resume (-1);
 	Mix_ResumeMusic ();
 #endif
-	Mix_AllocateChannels (MAX_SOUND_CHANNELS);
+	Mix_AllocateChannels (m_info.nMaxChannels);
 	Mix_ChannelFinished (Mix_FinishChannel);
 	}
 else 
@@ -810,7 +810,7 @@ void CAudio::StopAllChannels (void)
 StopLoopingSound ();
 StopObjectSounds ();
 #endif
-for (int i = 0; i < MAX_SOUND_CHANNELS; i++)
+for (int i = 0; i < m_info.nMaxChannels; i++)
 	audio.StopSound (i);
 gameData.multiplayer.bMoving = -1;
 gameData.weapons.firing [0].bSound = 0;
@@ -824,7 +824,7 @@ int CAudio::SoundClassCount (int nSoundClass)
 	CAudioChannel	*channelP;
 	int			h, i;
 
-for (h = 0, i = MAX_SOUND_CHANNELS, channelP = audio.m_channels.Buffer (); i; i--, channelP++)
+for (h = 0, i = m_info.nMaxChannels, channelP = audio.m_channels.Buffer (); i; i--, channelP++)
 	if (channelP->Playing () && (channelP->SoundClass () == nSoundClass))
 		h++;
 return h;
@@ -836,7 +836,7 @@ CAudioChannel* CAudio::FindFreeChannel (int nSoundClass)
 {
 	CAudioChannel*	channelP, * channelMinVolP [2] = {NULL, NULL};
 	int				nStartChannel;
-	int				bUseClass = SoundClassCount (nSoundClass) >= MAX_SOUND_CHANNELS / 2;
+	int				bUseClass = SoundClassCount (nSoundClass) >= m_info.nMaxChannels / 2;
 
 nStartChannel = m_info.nFreeChannel;
 DestroyObjectSound (-1); // destroy all 
@@ -847,7 +847,7 @@ do {
 	if ((!bUseClass || (channelP->SoundClass () == nSoundClass)) &&
 	    (!channelMinVolP [channelP->Persistent ()] || (channelMinVolP [channelP->Persistent ()]->Volume () > channelP->Volume ())))
 		channelMinVolP [channelP->Persistent ()] = channelP;
-	m_info.nFreeChannel = (m_info.nFreeChannel + 1) % MAX_SOUND_CHANNELS;
+	m_info.nFreeChannel = (m_info.nFreeChannel + 1) % m_info.nMaxChannels;
 	} while (m_info.nFreeChannel != nStartChannel);
 m_info.nFreeChannel = audio.m_channels.Index (channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1]);
 return channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1];
@@ -874,7 +874,7 @@ if (0 > channelP->Start (nSound, nSoundClass, nVolume, nPan, bLooping, nLoopStar
 	return -1;
 	}
 int i = m_info.nFreeChannel;
-if (++m_info.nFreeChannel >= MAX_SOUND_CHANNELS)
+if (++m_info.nFreeChannel >= m_info.nMaxChannels)
 	m_info.nFreeChannel = 0;
 return i;
 }
@@ -934,7 +934,7 @@ int CAudio::SoundIsPlaying (short nSound)
 	int i;
 
 nSound = XlatSound (nSound);
-for (i = 0; i < MAX_SOUND_CHANNELS; i++)
+for (i = 0; i < m_info.nMaxChannels; i++)
   //changed on 980905 by adb: added audio.m_channels[i].bPlaying &&
   if (audio.m_channels [i].Playing () && (audio.m_channels [i].Sound () == nSound)) {
   //end changes by adb
@@ -954,8 +954,8 @@ if (m_info.nMaxChannels	== nChannels)
 m_info.nMaxChannels = nChannels;
 if (m_info.nMaxChannels < 1) 
 	m_info.nMaxChannels = 1;
-if (m_info.nMaxChannels > MAX_SOUND_CHANNELS) 
-	m_info.nMaxChannels = MAX_SOUND_CHANNELS;
+if (m_info.nMaxChannels > m_info.nMaxChannels) 
+	m_info.nMaxChannels = m_info.nMaxChannels;
 gameStates.sound.audio.nMaxChannels = m_info.nMaxChannels;
 if (!m_info.bAvailable) 
 	return;
@@ -966,7 +966,7 @@ audio.StopAllChannels ();
 
 int CAudio::GetMaxChannels (void) 
 { 
-return MAX_SOUND_CHANNELS; 
+return m_info.nMaxChannels; 
 }
 // end edit by adb
 
@@ -1069,7 +1069,7 @@ void CAudio::Debug (void)
 
 if (!m_info.bAvailable)
 	return;
-for (i = 0; i < MAX_SOUND_CHANNELS; i++) {
+for (i = 0; i < m_info.nMaxChannels; i++) {
 	if (ChannelIsPlaying (i))
 		n_voices++;
 	}

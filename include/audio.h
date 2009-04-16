@@ -85,6 +85,7 @@ class CSoundSample {
 
 //------------------------------------------------------------------------------
 
+#define MIN_SOUND_CHANNELS			32
 #define MAX_SOUND_CHANNELS			128
 #define MAX_SOUND_OBJECTS			150
 

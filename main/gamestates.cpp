@@ -299,7 +299,7 @@ void InitSoundStates (void)
 gameStates.sound.bWasRecording = 0;
 gameStates.sound.bDontStartObjects = 0;
 gameStates.sound.nConquerWarningSoundChannel = -1;
-gameStates.sound.nSoundChannels = 2;
+gameStates.sound.nSoundChannels = MIN_SOUND_CHANNELS;
 gameStates.sound.audio.bSoundsInitialized = 0;
 gameStates.sound.audio.bLoMem = 0;
 }
