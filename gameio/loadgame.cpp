@@ -722,7 +722,7 @@ if (nStage == 0) {
 		char szFile [FILENAME_LEN];
 
 		/*---*/PrintLog ("   reading additional robots\n");
-		if ((gameData.missions.nEnhancedMission < 3) || !gameStates.app.bHaveMod)
+		if (gameData.missions.nEnhancedMission < 3)
 			nLoadRes = 0;
 		else {
 			sprintf (szFile, "%s.vham", gameFolders.szModName);

@@ -115,11 +115,8 @@ bVertigoData = !strcmp (fname, "d2x.ham");
 if (!cf.Open (fname, folder, "rb", 0))
 	return 0;
 
-//if (bVertigoData) 
- {
-	FreeModelExtensions ();
-	FreeObjExtensionBitmaps ();
-	}
+FreeModelExtensions ();
+FreeObjExtensionBitmaps ();
 
 if (nType > 1) {
 	int sig;

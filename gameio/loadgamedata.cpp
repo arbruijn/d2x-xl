@@ -190,7 +190,7 @@ for (i = 0; i < n; i++)
 
 //------------------------------------------------------------------------------
 
-void BMReadAll (CFile& cf)
+void BMReadAll (CFile& cf, bool bDefault)
 {
 	int i, t;
 
@@ -243,14 +243,18 @@ ReadPowerupTypeInfos (gameData.objs.pwrUp.info.Buffer (), gameData.objs.pwrUp.nT
 gameData.models.nPolyModels = cf.ReadInt ();
 /*---*/PrintLog ("      Loading %d CPolyModel descriptions\n", gameData.models.nPolyModels);
 ReadPolyModels (gameData.models.polyModels [0], gameData.models.nPolyModels, cf);
-gameData.models.nDefPolyModels = gameData.models.nPolyModels;
-memcpy (gameData.models.polyModels [1].Buffer (), gameData.models.polyModels [0].Buffer (), gameData.models.nPolyModels * sizeof (CPolyModel));
+if (bDefault) {
+	gameData.models.nDefPolyModels = gameData.models.nPolyModels;
+	memcpy (gameData.models.polyModels [1].Buffer (), gameData.models.polyModels [0].Buffer (), gameData.models.nPolyModels * sizeof (CPolyModel));
+	}
 
 /*---*/PrintLog ("      Loading poly model data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [0][i].SetBuffer (NULL);
-	gameData.models.polyModels [1][i].SetBuffer (NULL);
-	gameData.models.polyModels [0][i].ReadData (gameData.models.polyModels [1] + i, cf);
+	if (bDefault)
+		gameData.models.polyModels [1][i].SetBuffer (NULL);
+	gameData.models.polyModels [0][i].SetCustom (!bDefault);
+	gameData.models.polyModels [0][i].ReadData (bDefault ? gameData.models.polyModels [1] + i : NULL, cf);
 	}
 
 for (i = 0; i < gameData.models.nPolyModels; i++)
