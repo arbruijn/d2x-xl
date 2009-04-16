@@ -435,7 +435,7 @@ if (nHAMId != HAMFILE_ID)
 	Error ("Cannot open ham file %s\n", DefaultHamFile ());
 if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
-BMReadAll (cf. bDefault);
+BMReadAll (cf, bDefault);
 /*---*/PrintLog ("      Loading bitmap index translation table\n");
 	gameData.pig.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
 if (gameData.pig.tex.nHamFileVersion < 3) {
