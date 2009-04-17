@@ -685,6 +685,7 @@ FreeModTexts ();
 int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
 {
 	int	nLoadRes = 0;
+	char	szFile [FILENAME_LEN];
 
 // try to read mod files, and load default files if that fails
 if (nStage == 0) {
@@ -713,14 +714,17 @@ if (nStage == 0) {
 			}
 		}
 #endif
+	if (gameData.missions.nEnhancedMission) {
+		sprintf (szFile, "d2x.ham");
+		/*---*/PrintLog ("		trying vertigo custom robots (d2x.ham)\n");
+		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission);
+		}
 	if (gameStates.app.bHaveMod) {
 		/*---*/PrintLog ("		trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0, true))
+		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0, true, false))
 			gameStates.app.bCustomData = true;
 		}
 	if (gameData.missions.nEnhancedMission) {
-		char szFile [FILENAME_LEN];
-
 		/*---*/PrintLog ("   reading additional robots\n");
 		if (gameData.missions.nEnhancedMission < 3)
 			nLoadRes = 0;
@@ -733,11 +737,6 @@ if (nStage == 0) {
 			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
 			/*---*/PrintLog ("		trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
 			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission);
-			}
-		if (nLoadRes == 0) {
-			sprintf (szFile, "d2x.ham");
-			/*---*/PrintLog ("		trying vertigo custom robots (d2x.ham)\n");
-			nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission);
 			}
 		if (nLoadRes > 0) {
 			strncpy (szFile, gameStates.app.szCurrentMissionFile, 6);

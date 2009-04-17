@@ -304,7 +304,7 @@ return mkdir (pathname, 0755);
 
 // ----------------------------------------------------------------------------
 
-int CFile::Open (const char *filename, const char *folder, const char *mode, int bUseD1Hog) 
+int CFile::Open (const char *filename, const char *folder, const char *mode, int nHogType) 
 {
 	int	length = -1;
 	FILE	*fp = NULL;
@@ -313,7 +313,7 @@ int CFile::Open (const char *filename, const char *folder, const char *mode, int
 m_cf.file = NULL;
 if (!(filename && *filename))
 	return 0;
-if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
+if (*filename != '\x01') {
 	fp = GetFileHandle (filename, folder, mode);		// Check for non-hogP file first...
 	if (!fp && 
 		 ((pszFileExt = strstr (filename, ".rdl")) || (pszFileExt = strstr (filename, ".rl2"))) &&
@@ -326,12 +326,11 @@ else {
 	filename++;
 	}
 
-if (!fp) {
-	if ((fp = hogFileManager.Find (filename, &length, bUseD1Hog)))
-		if (stricmp (mode, "rb")) {
-			::Error ("Cannot read hogP file\n (wrong file io mode).\n");
-			return 0;
-			}
+if (!fp && (nHogType >= 0) && (fp = hogFileManager.Find (filename, &length, nHogType == 1))) {
+	if (stricmp (mode, "rb")) {
+		::Error ("Cannot read hog file\n (wrong file io mode).\n");
+		return 0;
+		}
 	}
 if (!fp) 
 	return 0;
