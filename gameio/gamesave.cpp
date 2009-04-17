@@ -666,6 +666,7 @@ if (gameFileInfo.botGen.offset > -1) {
 			PrintLog ("Invalid robot generator data found\n");
 #endif
 			gameData.matCens.nBotCenters--;
+			gameFileInfo.botGen.count--;
 			i--;
 			}
 		}
