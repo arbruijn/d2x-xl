@@ -190,7 +190,7 @@ switch (info.renderType) {
 	case RT_POWERUP:
 		if (PowerupToDevice ())
 			LoadTextures ();
-		else if (rType.vClipInfo.nClipIndex >= gameData.eff.nClips [0])
+		else if ((info.nId >= MAX_POWERUP_TYPES_D2) && (rType.vClipInfo.nClipIndex >= gameData.eff.nClips [0]))
 			rType.vClipInfo.nClipIndex = -MAX_ADDON_BITMAP_FILES - 1;
 		break;
 

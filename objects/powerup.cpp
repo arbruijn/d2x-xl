@@ -183,7 +183,7 @@ void CObject::DoPowerupFrame (void)
 //if (gameStates.app.tick40fps.bTick) 
 if (info.renderType != RT_POLYOBJ) {
 	tVClipInfo	*vciP = &rType.vClipInfo;
-	tVideoClip	*vcP = (vciP->nClipIndex < 0) ? NULL : gameData.eff.vClips [0] + vciP->nClipIndex;
+	tVideoClip	*vcP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_VCLIPS)) ? NULL : gameData.eff.vClips [0] + vciP->nClipIndex;
 	UpdatePowerupClip (vcP, vciP, i);
 	}
 if (info.xLifeLeft <= 0) {
@@ -202,14 +202,20 @@ void DrawPowerup (CObject *objP)
 #endif
 if (objP->info.nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
-else if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
-		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
-		int				iFrame = objP->rType.vClipInfo.nCurFrame;
-	DrawObjectBlob (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
+else if ((objP->rType.vClipInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.vClipInfo.nClipIndex < MAX_VCLIPS)) {
+	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
+			tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
+			int				iFrame = objP->rType.vClipInfo.nCurFrame;
+		DrawObjectBlob (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
+		}
+	else {
+		DrawObjectBlob (objP, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nCurFrame, NULL, 1);
+		}
 	}
-else {
-	DrawObjectBlob (objP, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nCurFrame, NULL, 1);
-	}
+#if DBG
+else
+	PrintLog ("invalid powerup clip index\n");
+#endif
 }
 
 //------------------------------------------------------------------------------
