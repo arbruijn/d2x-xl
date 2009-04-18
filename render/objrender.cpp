@@ -289,7 +289,7 @@ return fScale;
 
 void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
-	CBitmap*		bmP, * bmoP;
+	CBitmap*		bmP;
 	tRgbaColorf	color;
 	int			nType = objP->info.nType;
 	int			nId = objP->info.nId;
@@ -351,21 +351,23 @@ else {
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
 #else
-if (bmi < 0)
+if (bmi < 0) {
 	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
-else
+	bmP = bmP->SetCurFrame (iFrame);
+	}
+else {
+	CBitmap* bmoP;
+
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
+	if ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))
+		bmP = bmoP->SetCurFrame (iFrame);
+	}
 #endif
 
 #if DBG
 CBitmap* bmP2 = bmP;
 #endif
 //bmP->SetupTexture (1, 1);
-if ((bmi < 0) || ((bmP->Type () == BM_TYPE_STD) && (bmoP = bmP->Override ()))) {
-	//fScale = ObjectBlobColor (objP, bmP, &color);
-	bmP = bmoP->SetCurFrame (iFrame);
-	//fAlpha = 1;
-	}
 if (!bmP)
 	return;
 #if 0
