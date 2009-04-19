@@ -282,11 +282,11 @@ gameStates.render.vr.nLowRes = 3;
 gameStates.render.vr.bShowHUD	= 1;
 gameStates.render.vr.nSensitivity = 1;
 gameStates.render.detail.nRenderDepth = DEFAULT_RENDER_DEPTH;
-gameStates.render.detail.nObjectComplexity = 2; 
-gameStates.render.detail.nObjectDetail = 2;
-gameStates.render.detail.nWallDetail = 2; 
-gameStates.render.detail.nWallRenderDepth = 2; 
-gameStates.render.detail.nDebrisAmount = 2; 
+gameStates.render.detail.nObjectComplexity = 4; 
+gameStates.render.detail.nObjectDetail = 4;
+gameStates.render.detail.nWallDetail = 4; 
+gameStates.render.detail.nWallRenderDepth = 4; 
+gameStates.render.detail.nDebrisAmount = 4; 
 gameStates.render.bUsePerPixelLighting = 1;
 gameStates.render.nMaxLightsPerPass = 8;
 gameStates.render.nMaxLightsPerFace = 16;
@@ -299,7 +299,7 @@ void InitSoundStates (void)
 gameStates.sound.bWasRecording = 0;
 gameStates.sound.bDontStartObjects = 0;
 gameStates.sound.nConquerWarningSoundChannel = -1;
-gameStates.sound.nSoundChannels = MIN_SOUND_CHANNELS;
+gameStates.sound.nSoundChannels = 4;
 gameStates.sound.audio.bSoundsInitialized = 0;
 gameStates.sound.audio.bLoMem = 0;
 }

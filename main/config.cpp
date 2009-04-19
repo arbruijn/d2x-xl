@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "midi.h"
 #include "songs.h"
 #include "error.h"
+#include "menu.h"
 
 static const char* pszDigiVolume = "DigiVolume";
 static const char* pszMidiVolume = "MidiVolume";
@@ -79,9 +80,9 @@ gameConfig.vrTracking = 0;
 gameConfig.nDigiType = 0;
 gameConfig.nDigiDMA = 0;
 gameConfig.nMidiType = 0;
-gameConfig.nDigiVolume = 8;
-gameConfig.nMidiVolume = 8;
-gameConfig.nRedbookVolume = 8;
+gameConfig.nDigiVolume = 4;
+gameConfig.nMidiVolume = 0;
+gameConfig.nRedbookVolume = 0;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
 gameConfig.nVersion = 0;
@@ -105,9 +106,9 @@ int ReadConfigFile (void)
 strcpy (gameConfig.szLastPlayer, "");
 memset (cal, 0, sizeof (cal));
 JoySetCalVals (cal, sizeofa (cal));
-gameConfig.nDigiVolume = 8;
-gameConfig.nMidiVolume = 8;
-gameConfig.nRedbookVolume = 8;
+gameConfig.nDigiVolume = 4;
+gameConfig.nMidiVolume = 0;
+gameConfig.nRedbookVolume = 0;
 gameConfig.nControlType = 0;
 gameConfig.bReverseChannels = 0;
 
@@ -152,12 +153,12 @@ while (!cf.EoF ()) {
 				int count,dummy,oc,od,wd,wrd,da,sc;
 				count = sscanf (value, "%d,%d,%d,%d,%d,%d,%d\n", &dummy, &oc, &od, &wd, &wrd, &da, &sc);
 				if (count == 7) {
-					gameStates.render.detail.nObjectComplexity = oc;
-					gameStates.render.detail.nObjectDetail = od;
-					gameStates.render.detail.nWallDetail = wd;
-					gameStates.render.detail.nWallRenderDepth = wrd;
-					gameStates.render.detail.nDebrisAmount = da;
-					gameStates.sound.nSoundChannels = sc;
+					gameStates.render.detail.nObjectComplexity = NMCLAMP (oc, 0, 4);
+					gameStates.render.detail.nObjectDetail = NMCLAMP (od, 0, 4);
+					gameStates.render.detail.nWallDetail = NMCLAMP (wd, 0, 4);
+					gameStates.render.detail.nWallRenderDepth = NMCLAMP (wrd, 0, 4);
+					gameStates.render.detail.nDebrisAmount = NMCLAMP (da, 0, 4);
+					gameStates.sound.nSoundChannels = NMCLAMP (sc, 2, 4);
 					InitCustomDetails ();
 					}
 				}
