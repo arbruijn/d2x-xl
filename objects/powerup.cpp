@@ -1125,10 +1125,10 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if (!playerP->connected)
 		continue;
 	if (nClass == 3) {	// some device
-		if (!(extraGameInfo [0].loadout.nDevice & 1))
+		if (!(extraGameInfo [0].loadout.nDevice & nIndex))
 			h += (playerP->flags & nIndex) != 0;
 		}
-	if (nClass == 2)	// missiles
+	else if (nClass == 2)	// missiles
 		h += playerP->secondaryAmmo [nIndex];
 	else {	// guns
 		if (!(extraGameInfo [0].loadout.nGuns & 1)) {

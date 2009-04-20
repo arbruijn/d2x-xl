@@ -69,6 +69,7 @@ void MultiSaveGame (ubyte slot, uint id, char *desc);
 void MultiRestoreGame (ubyte slot, uint id);
 void MultiSetRobotAI (void);
 void MultiSendPowerupUpdate (void);
+void FreeHoardData (void);
 void InitHoardData (void);
 void MultiApplyGoalTextures (void);
 void MultiBadRestore (void);
@@ -3038,7 +3039,10 @@ FORALL_STATIC_OBJS (objP, i) {
 #if !DBG
 if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 #endif
+	{
+	FreeHoardData ();
 	InitHoardData ();
+	}
 if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
 ResetMonsterball (NetworkIAmMaster () != 0);	//will simply delete all Monsterballs for non-Monsterball games

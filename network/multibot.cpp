@@ -174,7 +174,7 @@ int MultiAddControlledRobot (int nObject, int agitation)
 	int first_freeRobot = -1;
 
 if (ROBOTINFO (OBJECTS [nObject].info.nId).bossFlag) // this is a boss, so make sure he gets a slot
-	agitation= (agitation*3)+gameData.multiplayer.nLocalPlayer;  
+	agitation = (agitation * 3) + gameData.multiplayer.nLocalPlayer;  
 if (OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM > 0) {
 	OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM -= 1;
 	return 0;
@@ -953,7 +953,7 @@ if (delObjP->info.contains.nCount > 0) {
 	if (delObjP->info.contains.nType == OBJ_POWERUP) {
 		MaybeReplacePowerupWithEnergy (delObjP);
 		if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
-			delObjP->info.contains.nId=POW_SHIELD_BOOST;
+			delObjP->info.contains.nId = POW_SHIELD_BOOST;
 		// No key drops in non-coop games!
 		if (!IsCoopGame) {
 			if ((delObjP->info.contains.nId >= POW_KEY_BLUE) && (delObjP->info.contains.nId <= POW_KEY_GOLD))
