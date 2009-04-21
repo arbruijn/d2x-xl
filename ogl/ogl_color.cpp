@@ -426,7 +426,15 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 				float dot = -6.0f * CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
 				if (dot <= 0) {
 					nMinDot = 0;
-					lightRad *= 1.0f + max (-1.0f, dot);
+					dot += 1;
+					if (dot <= 0) {
+						fLightDist *= 1e6f;
+						lightRad = 0;
+						}
+					else {
+						fLightDist /= dot;
+						lightRad *= dot;
+						}
 					}
 				}
 			fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
