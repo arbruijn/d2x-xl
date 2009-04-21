@@ -312,7 +312,7 @@ if (faceP - FACES.faces == nDbgFace)
 #endif
 #if 1//!DBG
 if (m_data.index [0][0].nActive < 0)
-	lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
+lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 else {
 #if 0//def _DEBUG
 	CheckUsedLights2 ();
@@ -367,6 +367,9 @@ nActiveLights [nThread] = m_data.index [0][nThread].nActive;
 }
 
 //------------------------------------------------------------------------------
+// Retrieve closest variable (from objects and destructible/flickering geometry) lights.
+// If bVariable == 0, only retrieve light emitting objects (will be stored in light buffer
+// after all geometry lights).
 
 short CLightManager::SetNearestToSegment (int nSegment, int nFace, int bVariable, int nType, int nThread)
 {
@@ -404,7 +407,7 @@ if (gameStates.render.nLightingMethod) {
 			if (bSkipHeadlight)
 				continue;
 			}
-		if (nType < 2) {
+		if (nType < 2) {	// all light emitting objects scanned
 			if (!bVariable)
 				break;
 			if (!(prl->info.bVariable && prl->info.bOn))

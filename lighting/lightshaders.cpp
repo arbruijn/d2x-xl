@@ -188,7 +188,8 @@ const char *pszPPXLightingFS [] = {
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -228,7 +229,8 @@ const char *pszPPXLightingFS [] = {
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -270,7 +272,8 @@ const char *pszPPXLightingFS [] = {
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -316,7 +319,8 @@ const char *pszPPXLightingFS [] = {
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -357,7 +361,8 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -390,7 +395,8 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -425,7 +431,8 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -464,7 +471,8 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -613,7 +621,8 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -652,7 +661,8 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -693,7 +703,8 @@ const char *pszPPXLMLightingFS [] = {
 	"     vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -738,7 +749,8 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
-	"		float lightRad = gl_LightSource [i].specular.a;\r\n" \
+	"		float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [i].spotDirection));\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 + lightAngle);\r\n" \
 	"	   float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"     float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"     float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -778,7 +790,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -812,7 +825,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -847,7 +861,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \
@@ -886,7 +901,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 n = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
-	"	float lightRad = gl_LightSource [0].specular.a;\r\n" \
+	"	float lightAngle = min (0.0, dot (lightVec / -lightDist, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 + lightAngle);\r\n" \
 	"	float dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"  float att = 1.0, NdotL = dot (n, lightVec / lightDist);\r\n" \
 	"  float nMinDot = ((NdotL <= 0.0) && (dot (n, lightVec) <= 0.0)) ? 0.0 : -0.1;\r\n" \

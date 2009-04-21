@@ -407,7 +407,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	bInRad = 0;
 	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
 	CFloatVector3::Normalize (lightDir);
-	if (vcd.vertNorm.IsZero())
+	if (vcd.vertNorm.IsZero ())
 		NdotL = 1.0f;
 	else
 		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
@@ -418,13 +418,23 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist = 0;
 		else
 #endif
+		if (nType < 2) {
+			float lightRad = prl->info.fRad;
+			if (NdotL < 0) {
+				// lights with angles < -15 deg towards this vertex have already been excluded
+				// now dim the light if it's falling "backward" using the angle as a scale
+				float dot = -6.0f * CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
+				if (dot <= 0) {
+					nMinDot = 0;
+					lightRad *= 1.0f + max (-1.0f, dot);
+					}
+				}
+			fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
+			}
+		else
 			fLightDist -= prl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		if (fLightDist < 0)
 			fLightDist = 0;
-#if 1 //don't directly light faces turning their back side towards the light source
-		if ((NdotL < 0) && (CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ()) <= 0))
-			nMinDot = 0;
-#endif
 		}
 	if	(((NdotL >= nMinDot) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, prl)) {
 		bInRad = 1;
@@ -449,7 +459,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (prl->info.bSpot) {
 		if (NdotL <= 0)
 			continue;
-		spotDir = *prl->info.vDirf.XYZ (); CFloatVector3::Normalize (spotDir);
+		spotDir = *prl->info.vDirf.XYZ (); 
+		CFloatVector3::Normalize (spotDir);
 		lightDir = -lightDir;
 		/*
 		lightDir [Y] = -lightDir [Y];

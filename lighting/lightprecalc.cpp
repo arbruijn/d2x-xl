@@ -206,14 +206,25 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			if (!VERTVIS (h, nVertex))
 				continue;
 			vLightToVert = *vertP - pl->info.vPos;
-			h = CFixVector::Normalize(vLightToVert) - (int) (pl->info.fRad * 6553.6f);
+			h = CFixVector::Normalize (vLightToVert) - (int) (pl->info.fRad * 6553.6f);
 			if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 				continue;
 			if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0)) {
 				sideP = SEGMENTS [pl->info.nSegment].m_sides + pl->info.nSide;
-				if ((CFixVector::Dot (sideP->m_normals[0], vLightToVert) < -I2X (1) / 6) &&
-					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals[1], vLightToVert) < -I2X (1) / 6)))
+#if DBG
+				fix xDot = CFixVector::Dot (sideP->m_normals [0], vLightToVert);
+				if (xDot < -I2X (1) / 6) {
+					if (sideP->m_nType == SIDE_IS_QUAD) 
+						continue;
+					xDot = CFixVector::Dot (sideP->m_normals [1], vLightToVert);
+					if (xDot < -I2X (1) / 6)
+						continue;
+					}
+#else
+				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < -I2X (1) / 6) &&
+					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < -I2X (1) / 6)))
 					continue;
+#endif
 				}
 			}
 		pDists [n].nDist = h;
