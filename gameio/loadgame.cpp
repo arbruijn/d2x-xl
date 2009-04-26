@@ -635,6 +635,7 @@ gameData.render.mine.Destroy ();
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 /*---*/PrintLog ("   stopping sounds\n");
 audio.StopAllChannels ();
+songManager.FreeUserSongs (1);
 /*---*/PrintLog ("   reconfiguring audio\n");
 if (!bRestore) {
 	gameStates.gameplay.slowmo [0].fSpeed =

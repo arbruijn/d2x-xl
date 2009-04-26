@@ -255,7 +255,8 @@ return 0;
 void CSongManager::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
-m_user.nLevelSongs = 0;
+m_user.nLevelSongs [0] =
+m_user.nLevelSongs [1] = 0;
 m_user.nCurrentSong = 0;
 m_user.bMP3 = 0;
 *m_user.szIntroSong = '\0';
@@ -268,7 +269,8 @@ m_user.bMP3 = 0;
 
 void CSongManager::Destroy (void)
 {
-songManager.FreeUserSongs ();
+songManager.FreeUserSongs (false);
+songManager.FreeUserSongs (true);
 }
 
 //------------------------------------------------------------------------------
@@ -450,7 +452,9 @@ if (*gameFolders.szMusicDir) {
 
 // try the standard music
 if ((nLevel > 0) && m_user.nLevelSongs) {
-	if (midi.PlaySong (m_user.levelSongs [(nLevel - 1) % m_user.nLevelSongs], NULL, NULL, 1, 0))
+	if (gameStates.app.bHaveMod && midi.PlaySong (m_user.levelSongs [1][(nLevel - 1) % m_user.nLevelSongs [1]], NULL, NULL, 1, 0))
+		return;
+	if (midi.PlaySong (m_user.levelSongs [0][(nLevel - 1) % m_user.nLevelSongs [0]], NULL, NULL, 1, 0))
 		return;
 	}
 if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) > 1)	//try to play redbook
@@ -488,7 +492,7 @@ if (m_info.nLevel > 1)
 
 //------------------------------------------------------------------------------
 
-int CSongManager::LoadPlayList (char *pszPlayList)
+int CSongManager::LoadPlayList (char* pszPlayList, int bMod)
 {
 	CFile	cf;
 	char	szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN], *pszSong;
@@ -513,6 +517,8 @@ for (bRead = 0; bRead < 2; bRead++) {
 					*pszSong = '\0';
 				l = (int) strlen (szSong) + 1;
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
+				if (bMod)
+					strcpy (szSongFolder, gameFolders.szMusicDir);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
 				if (!(pszSong = new char [l])) {
@@ -523,30 +529,29 @@ for (bRead = 0; bRead < 2; bRead++) {
 					memcpy (pszSong, szSong, l);
 				else
 					sprintf (pszSong, "%s%s", szListFolder, szSong);
-				m_user.levelSongs [nSongs] = pszSong;
+				m_user.levelSongs [bMod][nSongs] = pszSong;
 				}
 			nSongs++;
 			}
 		}
 	cf.Close ();
 	if (!bRead) {
-		if (!m_user.levelSongs.Create (nSongs))
+		m_user.levelSongs [bMod].Destroy ();
+		if (!m_user.levelSongs [bMod].Create (nSongs))
 			return 0;
 		}
 	}
-return m_user.nLevelSongs = nSongs;
+return m_user.nLevelSongs [bMod] = nSongs;
 }
 
 //------------------------------------------------------------------------------
 
-void CSongManager::FreeUserSongs (void)
+void CSongManager::FreeUserSongs (int bMod)
 {
-	int	i;
-
-for (i = 0; i < m_user.nLevelSongs; i++)
-	delete[] m_user.levelSongs [i];
-m_user.levelSongs.Destroy ();
-m_user.nLevelSongs = 0;
+for (int i = 0; i < m_user.nLevelSongs [bMod]; i++)
+	delete[] m_user.levelSongs [bMod][i];
+m_user.levelSongs [bMod].Destroy ();
+m_user.nLevelSongs [bMod] = 0;
 }
 
 //------------------------------------------------------------------------------

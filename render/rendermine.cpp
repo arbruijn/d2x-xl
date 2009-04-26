@@ -780,7 +780,10 @@ else {
 				case 1:
 					if (ZoomKeyPressed ()) {
 						if (!bStopZoom) {
-							gameStates.render.nZoomFactor = (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? (gameStates.render.nZoomFactor * 7) / 5 : (gameStates.render.nZoomFactor * 5) / 3;
+							gameStates.render.nZoomFactor = 
+								(gameStates.render.cockpit.nType == CM_FULL_COCKPIT) 
+									? (gameStates.render.nZoomFactor * 7) / 5 
+									: (gameStates.render.nZoomFactor * 5) / 3;
 							if (gameStates.render.nZoomFactor > gameStates.render.nMaxZoomFactor)
 								gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
 							bStopZoom = 1;
