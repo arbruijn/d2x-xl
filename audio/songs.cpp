@@ -498,7 +498,10 @@ int CSongManager::LoadPlayList (char* pszPlayList, int bMod)
 	char	szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN], *pszSong;
 	int	l, bRead, nSongs, bMP3;
 
-CFile::SplitPath (pszPlayList, szListFolder, NULL, NULL);
+if (bMod)
+	strcpy (szListFolder, gameFolders.szModDir [1]);
+else
+	CFile::SplitPath (pszPlayList, szListFolder, NULL, NULL);
 for (l = (int) strlen (pszPlayList) - 1; (l >= 0) && isspace (pszPlayList [l]); l--)
 	;
 pszPlayList [++l] = '\0';

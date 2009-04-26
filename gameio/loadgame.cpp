@@ -698,6 +698,8 @@ if (nStage == 0) {
 		ReadHamFile ();
 		gameStates.app.bCustomData = false;
 		}
+	if (gameStates.app.bHaveMod)
+		songManager.LoadPlayList ("playlist.txt", 1);
 #if 0
 	LoadD2Sounds (true);
 #else
