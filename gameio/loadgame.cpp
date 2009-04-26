@@ -698,8 +698,6 @@ if (nStage == 0) {
 		ReadHamFile ();
 		gameStates.app.bCustomData = false;
 		}
-	if (gameStates.app.bHaveMod)
-		songManager.LoadPlayList ("playlist.txt", 1);
 #if 0
 	LoadD2Sounds (true);
 #else
@@ -807,6 +805,8 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 	CPlayerData	savePlayer;
 	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
 
+	static char szDefaultPlayList [] = "playlist.txt";
+
 /*---*/PrintLog ("Loading level...\n");
 EndRenderThreads ();
 gameData.Destroy ();
@@ -866,6 +866,8 @@ ControlRenderThreads ();
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultModels ();
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
+if (gameStates.app.bHaveMod)
+	songManager.LoadPlayList (szDefaultPlayList, 1);
 songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 lightManager.SetMethod ();
 #if 1

@@ -442,6 +442,11 @@ if (bFromHog) {
 
 // try the missions mod music folder next
 if (*gameFolders.szMusicDir) {
+	if (m_user.nLevelSongs [1]) {
+		sprintf (szFilename, "%s/%s", gameFolders.szMusicDir, m_user.levelSongs [1][(nLevel - 1) % m_user.nLevelSongs [1]]);
+		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
+			return;
+		}
 	if (nLevel < 0)
 		sprintf (szFilename, "%s/slevel%02d.ogg", gameFolders.szMusicDir, -nLevel);
 	else
@@ -452,9 +457,7 @@ if (*gameFolders.szMusicDir) {
 
 // try the standard music
 if ((nLevel > 0) && m_user.nLevelSongs) {
-	if (gameStates.app.bHaveMod && midi.PlaySong (m_user.levelSongs [1][(nLevel - 1) % m_user.nLevelSongs [1]], NULL, NULL, 1, 0))
-		return;
-	if (midi.PlaySong (m_user.levelSongs [0][(nLevel - 1) % m_user.nLevelSongs [0]], NULL, NULL, 1, 0))
+	if (m_user.nLevelSongs [0] && midi.PlaySong (m_user.levelSongs [0][(nLevel - 1) % m_user.nLevelSongs [0]], NULL, NULL, 1, 0))
 		return;
 	}
 if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) > 1)	//try to play redbook
@@ -506,7 +509,7 @@ for (l = (int) strlen (pszPlayList) - 1; (l >= 0) && isspace (pszPlayList [l]); 
 	;
 pszPlayList [++l] = '\0';
 for (bRead = 0; bRead < 2; bRead++) {
-	if (!cf.Open (pszPlayList, "", "rt", 0))
+	if (!cf.Open (pszPlayList, bMod ? szListFolder : "", "rt", 0))
 		return 0;
 	nSongs = 0;
 	while (cf.GetS (szSong, sizeof (szSong))) {
