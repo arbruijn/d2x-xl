@@ -224,6 +224,15 @@ do {
 	soundOpts.nMusicVol = m.AddSlider (redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 												  redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 												  0, 8, KEY_M, HTX_ONLINE_MANUAL);
+	m.AddText ("", 0);
+	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Playing (), KEY_C, HTX_ONLINE_MANUAL);
+	optReverse = m.AddCheck (TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
+#if 1
+	if (redbook.Enabled () || !gameConfig.nMidiVolume)
+		optFadeMusic = -1;
+	else
+		optFadeMusic = m.AddCheck (TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
+#endif
 	if (gameStates.app.bNostalgia) 
 		optShipSound = 
 		optMissileSound =
@@ -238,15 +247,7 @@ do {
 			optSpeedUpSound = m.AddCheck (TXT_SPINUP_SOUND, extraGameInfo [0].bGatlingSpeedUp, KEY_U, HTX_SPINUP_SOUND);
 		optShieldWarn = m.AddCheck (TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
 		}
-	m.AddText ("", 0);
-	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Playing (), KEY_C, HTX_ONLINE_MANUAL);
-	optReverse = m.AddCheck (TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
-#if 1
-	if (redbook.Enabled () || !gameConfig.nMidiVolume)
-		optFadeMusic = -1;
-	else
-		optFadeMusic = m.AddCheck (TXT_FADE_MUSIC, gameOpts->sound.bFadeMusic, KEY_F, HTX_FADE_MUSIC);
-#endif
+
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
 	redbook.Enable (m [soundOpts.nRedbook].m_value);
 	gameConfig.bReverseChannels = m [optReverse].m_value;
