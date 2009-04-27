@@ -1861,7 +1861,7 @@ extraGameInfo [0].bDualMissileLaunch = 0;
 extraGameInfo [0].bTripleFusion = 1;
 extraGameInfo [0].bEnhancedShakers = 1;
 gameOptions [0].gameplay.bUseD1AI = 1;
-if (!gameOpts->app.bExpertMode)
+//if (!gameOpts->app.bExpertMode)
 	extraGameInfo [0].nZoomMode = 1;
 }
 

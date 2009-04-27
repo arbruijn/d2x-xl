@@ -294,7 +294,7 @@ do {
 
 	m.AddText ("", 0);
 	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_S, HTX_GPLAY_SMARTSWITCH);
-	if (gameOpts->app.bExpertMode)
+	//if (gameOpts->app.bExpertMode)
 		optZoomType = m.AddCheck (TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_Z, HTX_GPLAY_ZOOMSMOOTH);
 	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_B, HTX_HEADLIGHT_BUILTIN);
 	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_H, HTX_HEADLIGHT_POWERDRAIN);
@@ -322,7 +322,7 @@ else {
 
 extraGameInfo [0].headlight.bAvailable = m [gplayOpts.nHeadlightAvailable].m_value;
 extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].m_value;
-if (gameOpts->app.bExpertMode)
+//if (gameOpts->app.bExpertMode)
 	extraGameInfo [IsMultiGame].nZoomMode = m [optZoomType].m_value + 1;
 GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
