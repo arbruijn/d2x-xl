@@ -484,6 +484,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].app.bEpilepticFriendly, i, 0);
 		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
 		RP (gameOptions [i].app.bNotebookFriendly, i, 0);
+		RP (gameOptions [i].sound.bFadeMusic, i, 1);
 		RP (gameOptions [i].sound.bGatling, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
 		RP (gameOptions [i].sound.bShip, i, 0);
@@ -600,7 +601,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
 		RP (gameOptions [i].render.weaponIcons.nHiliteColor, i, 0);
 		RP (gameOptions [i].app.nVersionFilter, i, 0);
-		RP (gameOptions [i].sound.bFadeMusic, i, 1);
 		RP (gameOptions [i].sound.xCustomSoundVolume, i, 0);
 		RP (gameOptions [i].gameplay.bIdleAnims, i, 0);
 		RP (gameOptions [i].gameplay.bInventory, i, 0);
@@ -973,6 +973,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nMaxFPS", "60"},
 	 {"gameOptions[0].render.nImageQuality", "3"},
 	 {"gameOptions[0].render.cockpit.bFlashGauges", "1"},
+	 {"gameOptions[0].sound.bFadeMusic", "1"},
 	 {"gameOptions[0].sound.bGatling", "0"},
 	 {"gameOptions[0].sound.bMissiles", "0"},
 	 {"gameOptions[0].sound.bShip", "0"},
@@ -1416,7 +1417,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.weaponIcons.bBoldHighlight", "0"},
 	 {"gameOptions[0].render.weaponIcons.nSort", "1"},
 	 {"gameOptions[0].render.weaponIcons.nHiliteColor", "0"},
-	 {"gameOptions[0].sound.bFadeMusic", "1"},
 	 {"gameOptions[0].gameplay.bIdleAnims", "1"},
 	 {"gameOptions[0].gameplay.bInventory", "1"},
 	 {"gameOptions[0].gameplay.bShieldWarning", "1"},

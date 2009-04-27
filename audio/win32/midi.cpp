@@ -42,8 +42,7 @@ void CMidi::Fadeout (void)
 if (!audio.Available ()) 
 	return;
 if (gameOpts->sound.bUseSDLMixer) {
-	//if (gameOpts->sound.bFadeMusic) 
-		{
+	if (gameOpts->sound.bFadeMusic) {
 		Mix_FadeOutMusic (300);
 		SDL_Delay (330);
 #if 0
