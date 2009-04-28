@@ -430,7 +430,7 @@ redbook.Register ();
 // try the hog file first
 if (bFromHog) {
 	CFile	cf;
-	strcpy (szFilename, LevelSongName (nLevel));
+	strcpy (szFilename, LevelSongName (nSong));
 	if (*szFilename && cf.Extract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 
@@ -443,21 +443,18 @@ if (bFromHog) {
 // try the missions mod music folder next
 if (*gameFolders.szMusicDir) {
 	if (m_user.nLevelSongs [1]) {
-		sprintf (szFilename, "%s/%s", gameFolders.szMusicDir, m_user.levelSongs [1][(nLevel - 1) % m_user.nLevelSongs [1]]);
+		sprintf (szFilename, "%s/%s", gameFolders.szMusicDir, m_user.levelSongs [1][nSong % m_user.nLevelSongs [1]]);
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}
-	if (nLevel < 0)
-		sprintf (szFilename, "%s/slevel%02d.ogg", gameFolders.szMusicDir, -nLevel);
-	else
-		sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicDir, nLevel);
+	sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicDir, nSong);
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return;
 	}
 
 // try the standard music
 if ((nLevel > 0) && m_user.nLevelSongs) {
-	if (m_user.nLevelSongs [0] && midi.PlaySong (m_user.levelSongs [0][(nLevel - 1) % m_user.nLevelSongs [0]], NULL, NULL, 1, 0))
+	if (m_user.nLevelSongs [0] && midi.PlaySong (m_user.levelSongs [0][nSong % m_user.nLevelSongs [0]], NULL, NULL, 1, 0))
 		return;
 	}
 if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) > 1)	//try to play redbook

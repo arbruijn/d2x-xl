@@ -604,11 +604,7 @@ char *LevelSongName (int nLevel)
 {
 	char *szNoSong = "";
 
-return gameStates.app.bAutoRunMission
-		 ? szNoSong
-		 : (nLevel < 0)
-			? gameData.missions.szSongNames [-nLevel-1]
-			: gameData.missions.szSongNames [nLevel-1];
+return gameStates.app.bAutoRunMission ? szNoSong : gameData.missions.szSongNames [nLevel];
 }
 
 //------------------------------------------------------------------------------
