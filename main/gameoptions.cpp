@@ -472,21 +472,18 @@ void InitSoundOptions (int i)
 if (i) {
 	gameOptions [1].sound.bUseRedbook = 1;
 	gameOptions [1].sound.digiSampleRate = SAMPLE_RATE_22K;
-#if USE_SDL_MIXER
-	gameOptions [1].sound.bUseSDLMixer = 1;
-#else
-	gameOptions [1].sound.bUseSDLMixer = 0;
-#endif
 	}
 else {
 	gameOptions [0].sound.bUseRedbook = 1;
 	gameOptions [0].sound.digiSampleRate = SAMPLE_RATE_22K;
-#if USE_SDL_MIXER
-	gameOptions [0].sound.bUseSDLMixer = 1;
-#else
-	gameOptions [0].sound.bUseSDLMixer = 0;
-#endif
 	}
+#if 0
+#	if USE_SDL_MIXER
+	gameOptions [1].sound.bUseSDLMixer = 1;
+#	else
+	gameOptions [1].sound.bUseSDLMixer = 0;
+#	endif
+#endif
 gameOptions [i].sound.bHires [0] =
 gameOptions [i].sound.bHires [1] = 0;
 gameOptions [i].sound.bShip = 0;
