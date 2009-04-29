@@ -3274,7 +3274,7 @@ return gameData.objs.objects.IsElement (objP) ? gameData.objs.objects.Index (obj
 //	-----------------------------------------------------------------------------------------------------------
 
 #define	NO_WALL					(gameStates.app.bD2XLevel ? 2047 : 255)
-#define  IS_WALL(_wallnum)		(ushort (_wallnum) < gameData.walls.nWalls)
+#define  IS_WALL(_wallnum)		((ushort (_wallnum) != NO_WALL) && (ushort (_wallnum) < gameFileInfo.walls.count))
 
 #define SEG_IDX(_segP)			((short) ((_segP) - SEGMENTS))
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - SEGMENTS))
