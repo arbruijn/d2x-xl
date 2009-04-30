@@ -71,11 +71,11 @@ typedef struct tPolyModelInfo {
 		int				nModels;
 		int				nDataSize;
 		CSubModelData	subModels;
-		CFixVector		mins, maxs;                       // min,max for whole model
-		fix				rad;
+		CFixVector		mins, maxs;		// min,max for whole model
+		fix				rad [2];			// 0: recomputed rad, 1: original rad from Descent data
 		ubyte				nTextures;
 		ushort			nFirstTexture;
-		ubyte				nSimplerModel;                      // alternate model with less detail (0 if none, nModel+1 else)
+		ubyte				nSimplerModel;	// alternate model with less detail (0 if none, nModel+1 else)
 		bool				bCustom;
 } tPolyModelInfo;
 
@@ -102,8 +102,8 @@ class CPolyModel : public CByteArray {
 		inline int DataSize (void) { return m_info.nDataSize; }
 		inline void SetDataSize (int nDataSize) { m_info.nDataSize = nDataSize; }
 		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
-		inline fix Rad (void) { return m_info.rad; }
-		inline void SetRad (fix rad) { m_info.rad = rad; }
+		inline fix Rad (int i = 0) { return m_info.rad [i]; }
+		inline void SetRad (fix rad) { m_info.rad [0] = rad; }
 		inline ubyte* Data (void) { return Buffer (); }
 		inline int ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }

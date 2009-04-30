@@ -239,7 +239,8 @@ void CPolyModel::Init (void)
 m_info.nType = 0;
 m_info.nModels = 0;
 m_info.nDataSize = 0;
-m_info.rad = 0;
+m_info.rad [0] = 
+m_info.rad [1] = 0;
 m_info.nTextures = 0;
 m_info.nFirstTexture = 0;
 m_info.nSimplerModel = 0;
@@ -283,7 +284,7 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 		case ID_OHDR: {		//Object header
 			CFixVector pmmin, pmmax;
 			m_info.nModels = POF_ReadInt (modelBuf);
-			m_info.rad = POF_ReadInt (modelBuf);
+			m_info.rad [1] = POF_ReadInt (modelBuf);
 			Assert (m_info.nModels <= MAX_SUBMODELS);
 			POF_ReadVecs (&pmmin, 1, modelBuf);
 			POF_ReadVecs (&pmmax, 1, modelBuf);
@@ -638,7 +639,7 @@ for (i = 0; i < MAX_SUBMODELS; i++)
 	cf.ReadVector (m_info.subModels.maxs [i]);
 cf.ReadVector (m_info.mins);
 cf.ReadVector (m_info.maxs);
-m_info.rad = cf.ReadFix ();
+m_info.rad [1] = cf.ReadFix ();
 m_info.nTextures = cf.ReadByte ();
 m_info.nFirstTexture = cf.ReadShort ();
 m_info.nSimplerModel = cf.ReadByte ();
