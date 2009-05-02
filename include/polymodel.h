@@ -102,8 +102,8 @@ class CPolyModel : public CByteArray {
 		inline int DataSize (void) { return m_info.nDataSize; }
 		inline void SetDataSize (int nDataSize) { m_info.nDataSize = nDataSize; }
 		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
-		inline fix Rad (int i = 0) { return m_info.rad [i]; }
-		inline void SetRad (fix rad) { m_info.rad [0] = rad; }
+		inline fix Rad (int i = 0) { return m_info.rad [i] ? m_info.rad [i] : m_info.rad [!i]; }
+		inline void SetRad (fix rad, int i = 0) { m_info.rad [i] = rad; }
 		inline ubyte* Data (void) { return Buffer (); }
 		inline int ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }

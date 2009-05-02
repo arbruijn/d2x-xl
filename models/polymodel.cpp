@@ -284,6 +284,7 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 		case ID_OHDR: {		//Object header
 			CFixVector pmmin, pmmax;
 			m_info.nModels = POF_ReadInt (modelBuf);
+			m_info.rad [0] =
 			m_info.rad [1] = POF_ReadInt (modelBuf);
 			Assert (m_info.nModels <= MAX_SUBMODELS);
 			POF_ReadVecs (&pmmin, 1, modelBuf);
