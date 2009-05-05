@@ -899,8 +899,10 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
 				segP->SpecialCheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace) :
 				segP->CheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace);
-			if (!nFaceHitType)
+#if 1
+			if (bCheckVisibility && !nFaceHitType)
 					continue;
+#endif
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
 				nDbgSeg = nDbgSeg;
