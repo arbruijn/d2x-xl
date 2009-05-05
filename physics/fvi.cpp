@@ -899,16 +899,8 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
 				segP->SpecialCheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace) :
 				segP->CheckLineToFace (vHitPoint, p0, p1, radP1, nSide, iFace);
-#if 1
-			if (!nFaceHitType) {
-#	if 0 //DBG
-				if (bCheckVisibility && (0 > nChildSide))	// poking through a wall into the void around the level?
-					nFaceHitType = HIT_WALL;
-			else
-#	endif
+			if (!nFaceHitType)
 					continue;
-				}
-#endif
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
 				nDbgSeg = nDbgSeg;

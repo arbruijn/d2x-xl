@@ -1743,13 +1743,15 @@ gameOptions [0].render.cameras.nFPS = 0;
 
 void DefaultLightSettings (void)
 {
+	static int nMaxLightsPerObject [] = {8, 8, 16, 24};
+
 gameOptions [0].render.color.bAmbientLight = 1;
 gameOptions [0].render.color.bGunLight = 1;
 gameOptions [0].render.color.bMix = 1;
 gameOptions [0].render.color.nSaturation = 1;
 extraGameInfo [0].bPowerupLights = 0;
 extraGameInfo [0].bBrightObjects = 0;
-gameOptions [0].ogl.nMaxLightsPerObject = int (float (gameOptions [0].render.nQuality)  / 2.0f + 1) * 8;
+gameOptions [0].ogl.nMaxLightsPerObject = nMaxLightsPerObject [gameOptions [0].render.nQuality];
 gameOptions [0].ogl.bHeadlight = gameStates.ogl.bShadersOk;
 gameOptions [0].ogl.bObjLighting = gameStates.ogl.bShadersOk;
 gameOptions [0].ogl.bLightObjects = gameStates.ogl.bShadersOk;

@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //Global variables for physics system
 //#define _DEBUG
-#define UNSTICK_OBJS		0
+#define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
