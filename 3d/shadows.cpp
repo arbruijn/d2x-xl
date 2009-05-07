@@ -856,6 +856,8 @@ glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
 for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->m_adjFaces + pf->m_nAdjFaces;
+	// walk through all edges of the current lit face and check whether the adjacent face does not face the light source
+	// if so, that edge is a contour edge: Use it to render a shadow volume face ("side wall" of the shadow volume)
 	for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
 		h = *paf++;
 		if ((h < 0) || !m_faces [h].m_bFacingLight) {

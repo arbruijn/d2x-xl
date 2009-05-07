@@ -229,7 +229,6 @@ gameStates.render.xZoom = 0x9000;
 gameStates.render.xZoomScale = 1;
 gameStates.render.nFrameCount = -1;
 gameStates.render.bQueryOcclusion = 0;
-gameStates.render.bVertexArrays = 1;
 gameStates.render.bChaseCam = 0;
 gameStates.render.bLoResShadows = 1;
 gameStates.render.bDropAfterburnerBlob = 0;

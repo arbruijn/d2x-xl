@@ -593,7 +593,6 @@ int CParticle::Render (float brightness)
 	GLfloat					d, u, v;
 	CBitmap*					bmP;
 	tRgbaColorf				pc;
-	tTexCoord2f				texCoord [4];
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
 	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive;
@@ -616,8 +615,7 @@ if (bmP->CurFrame ())
 if (gameOpts->render.bDepthSort > 0) {
 	hp = m_vTransPos;
 	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness) || (bBufferEmissive != bEmissive)) {
-		if (gameStates.render.bVertexArrays)
-			particleManager.FlushBuffer (brightness);
+		particleManager.FlushBuffer (brightness);
 		particleManager.SetLastType (nType);
 		bBufferEmissive = bEmissive;
 		glActiveTexture (GL_TEXTURE0);
@@ -632,16 +630,11 @@ if (gameOpts->render.bDepthSort > 0) {
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
-	if (!gameStates.render.bVertexArrays)
-		glBegin (GL_QUADS);
 	}
 else if (gameOpts->render.particles.bSort) {
 	hp = m_vTransPos;
 	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness)) {
-		if (gameStates.render.bVertexArrays)
-			particleManager.FlushBuffer (brightness);
-		else
-			glEnd ();
+		particleManager.FlushBuffer (brightness);
 		particleManager.SetLastType (nType);
 		if (bmP->Bind (0))
 			return 0;
@@ -651,8 +644,6 @@ else if (gameOpts->render.particles.bSort) {
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		if (!gameStates.render.bVertexArrays)
-			glBegin (GL_QUADS);
 		}
 	}
 else
@@ -759,89 +750,68 @@ else {
 	vOffset [X] = X2F (m_nWidth) * decay;
 	vOffset [Y] = X2F (m_nHeight) * decay;
 	}
-if (gameStates.render.bVertexArrays) {
-	vOffset [Z] = 0;
-	pb = particleBuffer + iBuffer;
-	pb [i].texCoord.v.u =
-	pb [(i + 3) % 4].texCoord.v.u = u;
-	pb [i].texCoord.v.v =
-	pb [(i + 1) % 4].texCoord.v.v = v;
-	pb [(i + 1) % 4].texCoord.v.u =
-	pb [(i + 2) % 4].texCoord.v.u = u + d;
-	pb [(i + 2) % 4].texCoord.v.v =
-	pb [(i + 3) % 4].texCoord.v.v = v + d;
-	pb [0].color =
-	pb [1].color =
-	pb [2].color =
-	pb [3].color = pc;
-	if ((nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-		vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
-	if (!nType && gameOpts->render.particles.bRotate) {
-		if (bInitSinCos) {
-			OglComputeSinCos (sizeofa (sinCosPart), sinCosPart);
-			bInitSinCos = 0;
-			mRot.RVec()[Z] =
-			mRot.UVec()[Z] =
-			mRot.FVec()[X] =
-			mRot.FVec()[Y] = 0;
-			mRot.FVec()[Z] = 1;
-			}
-		nFrame = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-		mRot.RVec()[X] =
-		mRot.UVec()[Y] = sinCosPart [nFrame].fCos;
-		mRot.UVec()[X] = sinCosPart [nFrame].fSin;
-		mRot.RVec()[Y] = -mRot.UVec()[X];
-		vOffset = mRot * vOffset;
-		pb [0].vertex [X] = vCenter [X] - vOffset [X];
-		pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
-		pb [1].vertex [X] = vCenter [X] + vOffset [Y];
-		pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
-		pb [2].vertex [X] = vCenter [X] + vOffset [X];
-		pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
-		pb [3].vertex [X] = vCenter [X] - vOffset [Y];
-		pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
-		pb [0].vertex [Z] =
-		pb [1].vertex [Z] =
-		pb [2].vertex [Z] =
-		pb [3].vertex [Z] = vCenter [Z];
+vOffset [Z] = 0;
+pb = particleBuffer + iBuffer;
+pb [i].texCoord.v.u =
+pb [(i + 3) % 4].texCoord.v.u = u;
+pb [i].texCoord.v.v =
+pb [(i + 1) % 4].texCoord.v.v = v;
+pb [(i + 1) % 4].texCoord.v.u =
+pb [(i + 2) % 4].texCoord.v.u = u + d;
+pb [(i + 2) % 4].texCoord.v.v =
+pb [(i + 3) % 4].texCoord.v.v = v + d;
+pb [0].color =
+pb [1].color =
+pb [2].color =
+pb [3].color = pc;
+if ((nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
+	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
+if (!nType && gameOpts->render.particles.bRotate) {
+	if (bInitSinCos) {
+		OglComputeSinCos (sizeofa (sinCosPart), sinCosPart);
+		bInitSinCos = 0;
+		mRot.RVec()[Z] =
+		mRot.UVec()[Z] =
+		mRot.FVec()[X] =
+		mRot.FVec()[Y] = 0;
+		mRot.FVec()[Z] = 1;
 		}
-	else {
-		pb [0].vertex [X] =
-		pb [3].vertex [X] = vCenter [X] - vOffset [X];
-		pb [1].vertex [X] =
-		pb [2].vertex [X] = vCenter [X] + vOffset [X];
-		pb [0].vertex [Y] =
-		pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
-		pb [2].vertex [Y] =
-		pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
-		pb [0].vertex [Z] =
-		pb [1].vertex [Z] =
-		pb [2].vertex [Z] =
-		pb [3].vertex [Z] = vCenter [Z];
-		}
-	iBuffer += 4;
-	if (iBuffer >= VERT_BUF_SIZE)
-		particleManager.FlushBuffer (brightness);
+	nFrame = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
+	mRot.RVec()[X] =
+	mRot.UVec()[Y] = sinCosPart [nFrame].fCos;
+	mRot.UVec()[X] = sinCosPart [nFrame].fSin;
+	mRot.RVec()[Y] = -mRot.UVec()[X];
+	vOffset = mRot * vOffset;
+	pb [0].vertex [X] = vCenter [X] - vOffset [X];
+	pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
+	pb [1].vertex [X] = vCenter [X] + vOffset [Y];
+	pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
+	pb [2].vertex [X] = vCenter [X] + vOffset [X];
+	pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
+	pb [3].vertex [X] = vCenter [X] - vOffset [Y];
+	pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
+	pb [0].vertex [Z] =
+	pb [1].vertex [Z] =
+	pb [2].vertex [Z] =
+	pb [3].vertex [Z] = vCenter [Z];
 	}
 else {
-	texCoord [0].v.u =
-	texCoord [3].v.u = u;
-	texCoord [0].v.v =
-	texCoord [1].v.v = v;
-	texCoord [1].v.u =
-	texCoord [2].v.u = u + d;
-	texCoord [2].v.v =
-	texCoord [3].v.v = v + d;
-	glColor4fv (reinterpret_cast<GLfloat*> (&pc));
-	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + i));
-	glVertex3f (vCenter[X] - vOffset[X], vCenter[Y] + vOffset[Y], vCenter[Z]);
-	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + (i + 1) % 4));
-	glVertex3f (vCenter[X] + vOffset[X], vCenter[Y] + vOffset[Y], vCenter[Z]);
-	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + (i + 2) % 4));
-	glVertex3f (vCenter[X] + vOffset[X], vCenter[Y] - vOffset[Y], vCenter[Z]);
-	glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoord + (i + 3) % 4));
-	glVertex3f (vCenter[X] - vOffset[X], vCenter[Y] - vOffset[Y], vCenter[Z]);
+	pb [0].vertex [X] =
+	pb [3].vertex [X] = vCenter [X] - vOffset [X];
+	pb [1].vertex [X] =
+	pb [2].vertex [X] = vCenter [X] + vOffset [X];
+	pb [0].vertex [Y] =
+	pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
+	pb [2].vertex [Y] =
+	pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
+	pb [0].vertex [Z] =
+	pb [1].vertex [Z] =
+	pb [2].vertex [Z] =
+	pb [3].vertex [Z] = vCenter [Z];
 	}
+iBuffer += 4;
+if (iBuffer >= VERT_BUF_SIZE)
+	particleManager.FlushBuffer (brightness);
 if (particleManager.Animate ()) {
 	m_nFrame = (m_nFrame + 1) % (nFrames * nFrames);
 	if (!(nType || (m_nFrame & 1)))
@@ -1605,22 +1575,18 @@ for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext 
 
 int CParticleManager::InitBuffer (int bLightmaps)
 {
-if (gameStates.render.bVertexArrays) {
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
-	if (bLightmaps) {
-		OGL_BINDTEX (0);
-		glDisable (GL_TEXTURE_2D);
-		G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
-		}
-	G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+if (bLightmaps) {
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 	}
-if (gameStates.render.bVertexArrays) {
-	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
-	glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
-	glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
-	}
-return gameStates.render.bVertexArrays;
+G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
+glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
+glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
+glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1638,7 +1604,7 @@ if (iBuffer) {
 	glDepthFunc (GL_LEQUAL);
 	glDepthMask (0);
 	if (gameStates.ogl.bShadersOk) {
-		if (InitBuffer (bLightmaps)) { //gameStates.render.bVertexArrays) {
+		if (InitBuffer (bLightmaps)) {
 #if 1
 			CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
 			if (!bmP)
@@ -1692,8 +1658,6 @@ if (iBuffer) {
 
 int CParticleManager::CloseBuffer (void)
 {
-if (!gameStates.render.bVertexArrays)
-	return 0;
 FlushBuffer (-1);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
 return 1;
@@ -1725,8 +1689,6 @@ if (gameOpts->render.bDepthSort <= 0) {
 	glDepthFunc (GL_LESS);
 	glDepthMask (0);
 	iBuffer = 0;
-	if (!gameStates.render.bVertexArrays)
-		glBegin (GL_QUADS);
 	}
 particleManager.SetLastType (-1);
 if (gameStates.app.nSDLTicks - t0 < 33)

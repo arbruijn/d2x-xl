@@ -549,35 +549,31 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void EndRenderFaces (int nType, int bVertexArrays, int bDepthOnly)
+void EndRenderFaces (int nType, int bDepthOnly)
 {
 #if 1
 G3FlushFaceBuffer (1);
 #endif
-//if (bVertexArrays) 
-	{
-	if (!bDepthOnly) {
-		G3DisableClientStates (1, 1, 0, GL_TEXTURE3);
-		glEnable (GL_TEXTURE_2D);
-		OGL_BINDTEX (0);
-		glDisable (GL_TEXTURE_2D);
+if (!bDepthOnly) {
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE3);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
 
-		G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
-		glEnable (GL_TEXTURE_2D);
-		OGL_BINDTEX (0);
-		glDisable (GL_TEXTURE_2D);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
 
-		G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
-		glEnable (GL_TEXTURE_2D);
-		OGL_BINDTEX (0);
-		glDisable (GL_TEXTURE_2D);
-		}
-	G3DisableClientStates (!bDepthOnly, !bDepthOnly, 1, GL_TEXTURE0);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	}
-//if (gameStates.render.history.bOverlay > 0)
+G3DisableClientStates (!bDepthOnly, !bDepthOnly, 1, GL_TEXTURE0);
+glEnable (GL_TEXTURE_2D);
+OGL_BINDTEX (0);
+glDisable (GL_TEXTURE_2D);
 if (gameStates.ogl.bShadersOk) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
@@ -604,13 +600,13 @@ void RenderSkyBoxFaces (void)
 	tSegFaces*	segFaceP;
 	CSegFace*		faceP;
 	short*		segP;
-	int			i, j, nSegment, bVertexArrays, bFullBright = gameStates.render.bFullBright;
+	int			i, j, nSegment, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
 	glDepthMask (1);
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
-	bVertexArrays = BeginRenderFaces (4, 0);
+	BeginRenderFaces (4, 0);
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
@@ -621,7 +617,7 @@ if (gameStates.render.bHaveSkyBox) {
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
-	EndRenderFaces (4, bVertexArrays, 0);
+	EndRenderFaces (4, 0);
 	}
 }
 
@@ -751,8 +747,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 
 void QueryCoronas (short nFaces, int nPass)
 {
-	int	bVertexArrays = BeginRenderFaces (3, 0);
-
+BeginRenderFaces (3, 0);
 glDepthMask (0);
 glColorMask (1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
@@ -778,7 +773,7 @@ glDepthMask (1);
 glClearColor (0,0,0,0);
 glClearDepth (0xffffffff);
 glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-EndRenderFaces (3, bVertexArrays, 0);
+EndRenderFaces (3, 0);
 gameStates.render.bQueryCoronas = 0;
 }
 
@@ -816,7 +811,7 @@ return gameData.render.lights.nCoronas;
 
 //------------------------------------------------------------------------------
 
-static short RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bAutomap, int bHeadlight)
+static short RenderSegmentFaces (int nType, short nSegment, int bDepthOnly, int bAutomap, int bHeadlight)
 {
 if (nSegment < 0)
 	return 0;
@@ -851,7 +846,7 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-short RenderSegments (int nType, int bVertexArrays, int bDepthOnly, int bHeadlight)
+short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
 	int	i, nFaces = 0, bAutomap = (nType == 0);
 
@@ -864,7 +859,7 @@ if (nType) {
 		}
 	else {
 		for (i = gameData.render.mine.nRenderSegs; i; )
-			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bAutomap, bHeadlight);
+			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bDepthOnly, bAutomap, bHeadlight);
 		}
 	}
 else {
@@ -874,7 +869,7 @@ else {
 		nFaces += RenderFaceList (gameData.render.faceIndex [1], nType, bDepthOnly, bHeadlight);
 #else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
-		nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bAutomap, bHeadlight);
+		nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bDepthOnly, bAutomap, bHeadlight);
 #endif
 	}
 return nFaces;
@@ -882,12 +877,12 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-void RenderHeadlights (int nType, int bVertexArrays)
+void RenderHeadlights (int nType)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	g3FaceDrawer = lightmapManager.HaveLightmaps () ? G3DrawHeadlightsPPLM : G3DrawHeadlights;
-	RenderSegments (nType, bVertexArrays, 0, 1);
+	RenderSegments (nType, 0, 1);
 	SetFaceDrawer (-1);
 	}
 }
@@ -905,9 +900,9 @@ if (gameStates.ogl.bOcclusionQuery) {
 	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 	QueryCoronas (0, 1);
 	}
-int bVertexArrays = BeginRenderFaces (0, 1);
-short nFaces = RenderSegments (nType, bVertexArrays, 1, 0);
-EndRenderFaces (0, bVertexArrays, 1);
+BeginRenderFaces (0, 1);
+short nFaces = RenderSegments (nType, 1, 0);
+EndRenderFaces (0, 1);
 if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
 	gameStates.render.nType = 1;
@@ -915,7 +910,7 @@ if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.
 	gameStates.render.nType = 0;
 	QueryCoronas (nFaces, 2);
 	}
-EndRenderFaces (0, bVertexArrays, 1);
+EndRenderFaces (0, 1);
 return nFaces;
 }
 
@@ -923,9 +918,9 @@ return nFaces;
 
 int SetupDepthBuffer (int nType)
 {
-int bVertexArrays = BeginRenderFaces (0, 1);
-RenderSegments (nType, bVertexArrays, 1, 0);
-EndRenderFaces (0, bVertexArrays, 1);
+BeginRenderFaces (0, 1);
+RenderSegments (nType, 1, 0);
+EndRenderFaces (0, 1);
 return SortFaces ();
 }
 
@@ -933,27 +928,27 @@ return SortFaces ();
 
 void RenderFaceList (int nType)
 {
-	int	j, bVertexArrays;
+	int	j;
 
 if (nType) {	//back to front
-	bVertexArrays = BeginRenderFaces (nType, 0);
-	RenderSegments (nType, bVertexArrays, 0, 0);
+	BeginRenderFaces (nType, 0);
+	RenderSegments (nType, 0, 0);
 	if (nType < 2)
-		RenderHeadlights (nType, bVertexArrays);
+		RenderHeadlights (nType);
 	}
 else {	//front to back
 	if (!gameStates.render.nWindow)
 		j = SetupCoronas (nType);
 	else
 		j = 0;
-	bVertexArrays = BeginRenderFaces (0, 0);
+	BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
 	gameData.render.mine.nVisited++;
-	RenderSegments (nType, bVertexArrays, 0, 0);
+	RenderSegments (nType, 0, 0);
 	glDepthMask (1);
-	RenderHeadlights (0, bVertexArrays);
+	RenderHeadlights (0);
 	}
-EndRenderFaces (nType, bVertexArrays, 0);
+EndRenderFaces (nType, 0);
 }
 
 //------------------------------------------------------------------------------
