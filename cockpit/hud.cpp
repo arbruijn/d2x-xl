@@ -671,52 +671,35 @@ void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
 {
 	static int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-	int x, y;
+	int x, y, nWindowPos;
 
 int w = (int) (gameStates.render.vr.buffers.render [0].Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
 int h = I2X (w) / screen.Aspect ();
 if (!gameStates.app.bNostalgia) //(gameOpts->render.cockpit.bWideDisplays)
 	w = int (float (w) * float (screen.Width ()) / float (screen.Height ()) * 0.75f);
 	//w = int (w / HUD_ASPECT);
-switch (gameOpts->render.cockpit.nWindowPos) {
-	case 0:
-		x = nWindow
-			 ? gameStates.render.vr.buffers.render [0].Width () - w - h / 10
-			 : h / 10;
-		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
-		break;
-	case 1:
-		x = nWindow
-			 ? gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3
-			 : gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
-		break;
-	case 2:	// only makes sense if there's only one cockpit window
-		x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-		y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
-		break;
-	case 3:
-		x = nWindow 
-			 ? gameStates.render.vr.buffers.render [0].Width () - w - h / 10 
-			 : h / 10;
-		y = h / 10;
-		break;
-	case 4:
-		x = nWindow
-			 ? gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3
-			 : gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
-		y = h / 10;
-		break;
-	case 5:	// only makes sense if there's only one cockpit window
-		x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
-		y = h / 10;
-		break;
-	}
-if ((gameOpts->render.cockpit.nWindowPos < 3) &&
-		extraGameInfo [0].nWeaponIcons &&
-		(extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
-		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
+nWindowPos = gameOpts->render.cockpit.nWindowPos % 3;
+if ((nWindowPos == 2) && gameStates.render.cockpit.n3DView [0] && gameStates.render.cockpit.n3DView [1])
+	nWindowPos = 1;
+if (nWindowPos == 0)	// near corners
+	x = nWindow
+		 ? gameStates.render.vr.buffers.render [0].Width () - w - h / 10
+		 : h / 10;
+else if (nWindowPos == 1)	// near middle
+	x = nWindow
+		 ? gameStates.render.vr.buffers.render [0].Width () / 3 * 2 - w / 3
+		 : gameStates.render.vr.buffers.render [0].Width () / 3 - 2 * w / 3;
+else 	// middle
+	x = gameStates.render.vr.buffers.render [0].Width () / 2 - w / 2;
 
+if (gameOpts->render.cockpit.nWindowPos > 2) 
+	y = h / 10;
+else {
+	y = gameStates.render.vr.buffers.render [0].Height () - h - h / 10;
+	if (extraGameInfo [0].nWeaponIcons &&
+		 (extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
+		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
+	}
 //copy these vars so stereo code can get at them
 SW_drawn [nWindow] = 1;
 SW_x [nWindow] = x;

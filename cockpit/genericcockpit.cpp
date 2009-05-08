@@ -1814,6 +1814,10 @@ void CGenericCockpit::RenderWindow (int nWindow, CObject *viewerP, int bRearView
 {
 if (Hide ())
 	return;
+if (gameStates.app.bPlayerIsDead)
+	return;
+if (gameStates.app.bEndLevelSequence >= EL_LOOKBACK)
+	return;
 
 	CCanvas windowCanv, * cockpitCanv;
 	static CCanvas overlapCanv;
