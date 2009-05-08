@@ -1041,6 +1041,7 @@ gameData.objs.bIsWeapon [ROBOT_GREEN_LASER_ID] =
 gameData.objs.bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
 
 gameData.objs.bIsSlowWeapon.Clear (0);
+gameData.objs.bIsSlowWeapon [OMEGA_ID] =
 gameData.objs.bIsSlowWeapon [VULCAN_ID] =
 gameData.objs.bIsSlowWeapon [GAUSS_ID] =
 gameData.objs.bIsSlowWeapon [ROBOT_VULCAN_ID] = 1;
