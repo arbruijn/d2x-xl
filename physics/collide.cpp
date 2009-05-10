@@ -173,15 +173,19 @@ void CObject::Bump (CObject* otherObjP, CFixVector vForce, int bDamage)
 	fix			xForceMag;
 	CFixVector	vRotForce;
 
+#if DBG
+if (vForce.Mag () > I2X (1) * 1000)
+	return;
+#endif
 if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 	if (info.nType == OBJ_PLAYER) {
 		if (otherObjP->info.nType == OBJ_MONSTERBALL) {
 			double mq;
 
-			mq = (double) otherObjP->mType.physInfo.mass / ((double) mType.physInfo.mass * (double) nMonsterballPyroForce);
-			vRotForce [X] = (fix) ((double) vForce [X] * mq);
-			vRotForce [Y] = (fix) ((double) vForce [Y] * mq);
-			vRotForce [Z] = (fix) ((double) vForce [Z] * mq);
+			mq = double (otherObjP->mType.physInfo.mass) / (double (mType.physInfo.mass) * double (nMonsterballPyroForce));
+			vRotForce [X] = (fix) (double (vForce [X] * mq));
+			vRotForce [Y] = (fix) (double (vForce [Y] * mq));
+			vRotForce [Z] = (fix) (double (vForce [Z] * mq));
 			ApplyForce (vForce);
 			}
 		else {
@@ -196,7 +200,7 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 							VmVecMag (&force2) / 65536.0);
 #endif
 			if (bDamage && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)) {
-				xForceMag = force2.Mag();
+				xForceMag = force2.Mag ();
 				ApplyForceDamage (xForceMag, otherObjP);
 				}
 			}
@@ -257,6 +261,7 @@ int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vH
 {
 	CFixVector	vForce, p0, p1, v0, v1, vh, vr, vn0, vn1;
 	fix			mag, dot, m0, m1;
+	float		d;
 	CObject		*t;
 
 if (thisP->info.movementType != MT_PHYSICS)
@@ -268,10 +273,8 @@ else
 if (t) {
 	Assert (t->info.movementType == MT_PHYSICS);
 	vForce = t->mType.physInfo.velocity * (-t->mType.physInfo.mass);
-#if 1//def _DEBUG
-	if (!vForce.IsZero())
-#endif
-	t->ApplyForce (vForce);
+	if (!vForce.IsZero ())
+		t->ApplyForce (vForce);
 	return 1;
 	}
 #if DBG
@@ -281,35 +284,43 @@ p0 = thisP->info.position.vPos;
 p1 = otherP->info.position.vPos;
 v0 = thisP->mType.physInfo.velocity;
 v1 = otherP->mType.physInfo.velocity;
+#if DBG
+if ((m0 = v0.Mag ()) > I2X (1) * 1000)
+	return 1;
+if ((m1 = v1.Mag ()) > I2X (1) * 1000)
+	return 1;
 mag = CFixVector::Dot (v0, v1);
+if (mag > I2X (1) * 1000)
+	mag = 100;
+#endif
 vn0 = v0;
 m0 = CFixVector::Normalize (vn0);
 vn1 = v1;
 m1 = CFixVector::Normalize (vn1);
 if (m0 && m1) {
 	if (m0 > m1) {
-		double d = (double)m1 / (double)m0;
-		vn0 *= (fix)(d * 65536.0);
-		vn1 *= (fix)(d * 65536.0);
+		float d = float (m1) / float (m0);
+		vn0 *= fix (d * 65536.0);
+		vn1 *= fix (d * 65536.0);
 //		VmVecScaleFrac (&vn0, m1, m0);
 //		VmVecScaleFrac (&vn1, m1, m0);
 		}
 	else {
-		double d = (double)m1 / (double)m0;
-		vn0 *= (fix)(d * 65536.0);
-		vn1 *= (fix)(d * 65536.0);
+		float d = (float) m1 / (float) m0;
+		vn0 *= fix (d * 65536.0);
+		vn1 *= fix (d * 65536.0);
 //		VmVecScaleFrac (&vn0, m0, m1);
 //		VmVecScaleFrac (&vn1, m0, m1);
 		}
 	}
 vh = p0 - p1;
 if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
-	m0 = vh.Mag();
+	m0 = vh.Mag ();
 	if (m0 > ((thisP->info.xSize + otherP->info.xSize) * 3) / 4) {
 		p0 += vn0;
 		p1 += vn1;
 		vh = p0 - p1;
-		m1 = vh.Mag();
+		m1 = vh.Mag ();
 		if (m1 > m0) {
 #if 0//def _DEBUG
 			HUDMessage (0, "moving away (%d, %d)", m0, m1);
@@ -324,19 +335,15 @@ HUDMessage (0, "colliding (%1.2f, %1.2f)", X2F (m0), X2F (m1));
 vForce = v0 - v1;
 m0 = thisP->mType.physInfo.mass;
 m1 = otherP->mType.physInfo.mass;
-if (!((m0 + m1) && FixMul (m0, m1))) {
+d = float (FixMul (m0, m1));
+if (d == 0) {
 #if 0//def _DEBUG
 	HUDMessage (0, "Invalid Mass!!!");
 #endif
 	return 0;
 	}
-mag = vForce.Mag();
-double d = (double)(2 * FixMul (m0, m1)) / (double)(m0 + m1);
-vForce *= (fix)(d * 65536.0);
-//VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
-mag = vForce.Mag();
 #if 0//def _DEBUG
-if (fabs (X2F (mag) > 10000))
+if (fabs (X2F (mag) > 1000))
 	;//goto redo;
 HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce [X]) * SIGN (vForce [Y]) * SIGN (vForce [Z])) ? '-' : '+', X2F (mag));
 #endif
@@ -369,12 +376,16 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 		vr *= mag;
 		vr = -vr;
 		thisP->Bump (otherP, vr, bDamage);
-		return 1;
 		}
 	}
-otherP->Bump (thisP, vForce, 0);
-vForce = -vForce;
-thisP->Bump (otherP, vForce, 0);
+else {
+	d = 2 * d / float (m0 + m1);
+	vForce *= fix (d * 65536.0);
+	mag = vForce.Mag ();
+	otherP->Bump (thisP, vForce, 0);
+	vForce = -vForce;
+	thisP->Bump (otherP, vForce, 0);
+	}
 return 1;
 }
 

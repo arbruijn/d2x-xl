@@ -1028,8 +1028,15 @@ if ((automap.m_bDisplay && (this == gameData.objs.consoleP)) || SPECTATOR (this)
 	Tactile_apply_force (vForce, &info.position.mOrient);
 #endif
 //Add in acceleration due to force
-if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objs.consoleP))
-	mType.physInfo.velocity += vForce * FixDiv (I2X (1), mType.physInfo.mass);
+if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.objs.consoleP)) {
+#if 0 //DBG
+	fix xScale = FixDiv (I2X (1), mType.physInfo.mass);
+	vForce *= xScale;
+	mType.physInfo.velocity += vForce;
+#else
+	mType.physInfo.velocity += (vForce * FixDiv (I2X (1), mType.physInfo.mass));
+#endif
+	}
 }
 
 //	----------------------------------------------------------------

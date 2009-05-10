@@ -795,9 +795,6 @@ m_cf.WriteInt (stateP->nDeadObj);
 
 void CSaveGameManager::SaveSpawnPoint (int i)
 {
-#if DBG
-i = m_cf.Tell ();
-#endif
 m_cf.WriteVector (gameData.multiplayer.playerInit [i].position.vPos);     
 m_cf.WriteMatrix (gameData.multiplayer.playerInit [i].position.mOrient);  
 m_cf.WriteShort (gameData.multiplayer.playerInit [i].nSegment);
