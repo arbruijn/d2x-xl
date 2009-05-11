@@ -259,9 +259,9 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 
 int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vHitPt)
 {
-	CFixVector	vForce, p0, p1, v0, v1, vh, vr, vn0, vn1;
-	fix			mag, dot, m0, m1;
-	float		d;
+	CFixVector	vForce, pos0, pos1, vel0, vel1, vh, vn0, vn1;
+	fix			mag, speed0, speed1, mass0, mass1;
+	float			d;
 	CObject		*t;
 
 if (thisP->info.movementType != MT_PHYSICS)
@@ -279,63 +279,65 @@ if (t) {
 	}
 #if DBG
 //redo:
+vel0 = thisP->mType.physInfo.velocity;
+vel1 = otherP->mType.physInfo.velocity;
+if (CFixVector::Dot (vel0, vel1) <= 0)
+	return 0;
 #endif
-p0 = thisP->info.position.vPos;
-p1 = otherP->info.position.vPos;
-v0 = thisP->mType.physInfo.velocity;
-v1 = otherP->mType.physInfo.velocity;
+pos0 = thisP->info.position.vPos;
+pos1 = otherP->info.position.vPos;
 #if DBG
-if ((m0 = v0.Mag ()) > I2X (1) * 1000)
+if ((speed0 = vel0.Mag ()) > I2X (1) * 1000)
 	return 1;
-if ((m1 = v1.Mag ()) > I2X (1) * 1000)
+if ((speed1 = vel1.Mag ()) > I2X (1) * 1000)
 	return 1;
-mag = CFixVector::Dot (v0, v1);
+mag = CFixVector::Dot (vel0, vel1);
 if (mag > I2X (1) * 1000)
 	mag = 100;
 #endif
-vn0 = v0;
-m0 = CFixVector::Normalize (vn0);
-vn1 = v1;
-m1 = CFixVector::Normalize (vn1);
-if (m0 && m1) {
-	if (m0 > m1) {
-		float d = float (m1) / float (m0);
+vn0 = vel0;
+speed0 = CFixVector::Normalize (vn0);
+vn1 = vel1;
+speed1 = CFixVector::Normalize (vn1);
+if (speed0 && speed1) {
+	if (speed0 > speed1) {
+		float d = float (speed1) / float (speed0);
 		vn0 *= fix (d * 65536.0);
 		vn1 *= fix (d * 65536.0);
-//		VmVecScaleFrac (&vn0, m1, m0);
-//		VmVecScaleFrac (&vn1, m1, m0);
+//		VmVecScaleFrac (&vn0, speed1, speed0);
+//		VmVecScaleFrac (&vn1, speed1, speed0);
 		}
 	else {
-		float d = (float) m1 / (float) m0;
+		float d = (float) speed1 / (float) speed0;
 		vn0 *= fix (d * 65536.0);
 		vn1 *= fix (d * 65536.0);
-//		VmVecScaleFrac (&vn0, m0, m1);
-//		VmVecScaleFrac (&vn1, m0, m1);
+//		VmVecScaleFrac (&vn0, speed0, speed1);
+//		VmVecScaleFrac (&vn1, speed0, speed1);
 		}
 	}
-vh = p0 - p1;
+vh = pos0 - pos1;
 if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
-	m0 = vh.Mag ();
-	if (m0 > ((thisP->info.xSize + otherP->info.xSize) * 3) / 4) {
-		p0 += vn0;
-		p1 += vn1;
-		vh = p0 - p1;
-		m1 = vh.Mag ();
-		if (m1 > m0) {
+	speed0 = vh.Mag ();
+	if (speed0 > ((thisP->info.xSize + otherP->info.xSize) * 3) / 4) {
+		pos0 += vn0;
+		pos1 += vn1;
+		vh = pos0 - pos1;
+		speed1 = vh.Mag ();
+		if (speed1 > speed0) {
 #if 0//def _DEBUG
-			HUDMessage (0, "moving away (%d, %d)", m0, m1);
+			HUDMessage (0, "moving away (%d, %d)", speed0, speed1);
 #endif
 			return 0;
 			}
 		}
 	}
 #if 0//def _DEBUG
-HUDMessage (0, "colliding (%1.2f, %1.2f)", X2F (m0), X2F (m1));
+HUDMessage (0, "colliding (%1.2f, %1.2f)", X2F (speed0), X2F (speed1));
 #endif
-vForce = v0 - v1;
-m0 = thisP->mType.physInfo.mass;
-m1 = otherP->mType.physInfo.mass;
-d = float (FixMul (m0, m1));
+vForce = vel0 - vel1;
+mass0 = thisP->mType.physInfo.mass;
+mass1 = otherP->mType.physInfo.mass;
+d = float (FixMul (mass0, mass1));
 if (d == 0) {
 #if 0//def _DEBUG
 	HUDMessage (0, "Invalid Mass!!!");
@@ -347,7 +349,7 @@ if (fabs (X2F (mag) > 1000))
 	;//goto redo;
 HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce [X]) * SIGN (vForce [Y]) * SIGN (vForce [Z])) ? '-' : '+', X2F (mag));
 #endif
-if (mag < (m0 + m1) / 200) {
+if (mag < (mass0 + mass1) / 200) {
 #if 0//def _DEBUG
 	HUDMessage (0, "bump force too low");
 #endif
@@ -358,28 +360,51 @@ if (mag < (m0 + m1) / 200) {
 HUDMessage (0, "%d %d", mag, (thisP->mType.physInfo.mass + otherP->mType.physInfo.mass) / 200);
 #endif
 if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
-	// exert force in the direction of the hit point to the object's center
-	vh = vHitPt - otherP->info.position.vPos;
-	if (CFixVector::Normalize (vh) > I2X (1) / 16) {
-		vr = vh;
-		vh = -vh;
-		vh *= mag;
-		otherP->Bump (thisP, vh, bDamage);
-		// compute reflection vector. The vector from the other object's center to the hit point
-		// serves as Normal.
-		v1 = v0;
-		CFixVector::Normalize (v1);
-		dot = CFixVector::Dot (v1, vr);
-		vr *= (2 * dot);
-		//VmVecNegate (VmVecDec (&vr, &v0));
-		CFixVector::Normalize (vr);
-		vr *= mag;
-		vr = -vr;
-		thisP->Bump (otherP, vr, bDamage);
+	CFixVector	vDist, vDistNorm, vVelNorm, vForce0, vForce1, vRotForce0, vRotForce1, vRes0, vRes1, vRot0, vRot1;
+	fix			dot0, dot1, totalMass = mass0 + mass1, diffMass = mass0 - mass1;
+
+	vDist = pos1 - pos0;
+	vDistNorm = vDist;
+	CFixVector::Normalize (vDistNorm);
+	vVelNorm = vel0;
+	CFixVector::Normalize (vVelNorm);
+	dot0 = CFixVector::Dot (vVelNorm, vDistNorm);
+	vForce0 = vDist * dot0;
+	vRotForce0 = vDist - vForce0;
+	vRotForce0 *= (1 - dot0);
+
+	vVelNorm = vel1;
+	CFixVector::Normalize (vVelNorm);
+	dot1 = CFixVector::Dot (vVelNorm, vDistNorm);
+	vForce1 = vDist * -dot1;
+	vRotForce1 = vDist - vForce1;
+	vRotForce1 *= (1 - dot1);
+
+	vRes0 = (vForce0 * diffMass + vForce1 * 2 * mass1) / totalMass;
+	vRes1 = (vForce1 * diffMass + vForce0 * 2 * mass0) / totalMass;
+	vRot0 = (vRotForce0 * diffMass + vRotForce1 * 2 * mass1) / totalMass;
+	vRot1 = (vRotForce1 * diffMass + vRotForce0 * 2 * mass0) / totalMass;
+
+	vRes0 -= vForce0;
+	vRes1 -= vForce1;
+
+	if (!gameData.objs.speedBoost [OBJ_IDX (thisP)].bBoosted || (thisP != gameData.objs.consoleP)) {
+		thisP->ApplyForce (vForce0);
+		thisP->ApplyRotForce (vRot0);
+		if (bDamage)
+			thisP->ApplyForceDamage (vForce0.Mag (), otherP);
+		}
+
+	if (!gameData.objs.speedBoost [OBJ_IDX (otherP)].bBoosted || (otherP != gameData.objs.consoleP)) {
+		otherP->ApplyForce (vForce1);
+		otherP->ApplyRotForce (vRot1);
+		if (bDamage)
+			otherP->ApplyForceDamage (vForce1.Mag (), thisP);
+
 		}
 	}
 else {
-	d = 2 * d / float (m0 + m1);
+	d = 2 * d / float (mass0 + mass1);
 	vForce *= fix (d * 65536.0);
 	mag = vForce.Mag ();
 	otherP->Bump (thisP, vForce, 0);
