@@ -78,6 +78,7 @@ static struct {
 	int	nDrag;
 	int	nAutoLevel;
 	int	nHitDetection;
+	int	nCollHandling;
 } physOpts;
 
 //------------------------------------------------------------------------------
@@ -85,10 +86,10 @@ static struct {
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
 static const char *pszAutoLevel [3];
-static const char *pszHitDetection [4];
+static const char *pszStdAdv [2];
 static const char *pszDrag [4];
 
-static int nHitDetection, nDrag;
+static int nDrag;
 
 //------------------------------------------------------------------------------
 
@@ -134,9 +135,17 @@ if (extraGameInfo [0].nFusionRamp != v) {
 
 	m = menu + physOpts.nHitDetection;
 	v = m->m_value;
-	if (nHitDetection != v) {
-		nHitDetection = v;
-		sprintf (m->m_text, TXT_HIT_DETECTION, pszHitDetection [v]);
+	if (extraGameInfo [0].nHitboxes != v) {
+		extraGameInfo [0].nHitboxes = v;
+		sprintf (m->m_text, TXT_HIT_DETECTION, pszStdAdv [v]);
+		m->m_bRebuild = 1;
+		}
+
+	m = menu + physOpts.nCollHandling;
+	v = m->m_value;
+	if (extraGameInfo [0].bUseHitAngles != v) {
+		extraGameInfo [0].bUseHitAngles = v;
+		sprintf (m->m_text, TXT_COLLISION_HANDLING, pszStdAdv [v]);
 		m->m_bRebuild = 1;
 		}
 
@@ -204,10 +213,8 @@ pszAutoLevel [0] = TXT_NONE;
 pszAutoLevel [1] = TXT_STANDARD;
 pszAutoLevel [2] = TXT_ADVANCED;
 
-pszHitDetection [0] = TXT_BASIC;
-pszHitDetection [1] = TXT_STANDARD;
-pszHitDetection [2] = TXT_ADVANCED;
-pszHitDetection [3] = TXT_BEST;
+pszStdAdv [0] = TXT_STANDARD;
+pszStdAdv [1] = TXT_ADVANCED;
 
 pszDrag [0] = TXT_OFF;
 pszDrag [1] = TXT_LOW;
@@ -215,8 +222,7 @@ pszDrag [2] = TXT_MEDIUM;
 pszDrag [3] = TXT_STANDARD;
 
 gameOpts->gameplay.nAutoLeveling = NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 2);
-extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2);
-nHitDetection = (extraGameInfo [0].nHitboxes ? 2 : 0) + extraGameInfo [0].bUseHitAngles;
+extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2) >> 1;
 for (nDrag = sizeofa (nDragTable); nDrag; ) {
 	nDrag--;
 	if (extraGameInfo [0].nDrag >= nDragTable [nDrag])
@@ -254,17 +260,20 @@ do {
 	*szSlider = *(TXT_AUTOLEVEL - 1);
 	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 2, KEY_S, HTX_AUTO_LEVELING);
 
-	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszHitDetection [nHitDetection]);
+	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszStdAdv [extraGameInfo [0].nHitboxes]);
 	*szSlider = *(TXT_HIT_DETECTION - 1);
-	physOpts.nHitDetection = m.AddSlider (szSlider + 1, nHitDetection, 0, 3, KEY_H, HTX_GPLAY_HITBOXES);
+	physOpts.nHitDetection = m.AddSlider (szSlider + 1, extraGameInfo [0].nHitboxes, 0, 1, KEY_H, HTX_GPLAY_HITBOXES);
+
+	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [extraGameInfo [0].bUseHitAngles]);
+	*szSlider = *(TXT_COLLISION_HANDLING - 1);
+	physOpts.nHitDetection = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
 
 	do {
 		i = m.Menu (NULL, TXT_PHYSICS_MENUTITLE, PhysicsOptionsCallback, &choice);
 		} while (i >= 0);
 	} while (i == -2);
 
-extraGameInfo [0].bUseHitAngles = nHitDetection & 1;
-extraGameInfo [0].nHitboxes = nHitDetection & 2;
+extraGameInfo [0].nHitboxes <<= 1;
 extraGameInfo [0].nDrag = nDragTable [nDrag];
 if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if (optWiggle >= 0)
