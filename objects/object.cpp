@@ -785,8 +785,10 @@ else if (nType != OBJ_REACTOR) {
 	if (nType == OBJ_CAMBOT)
 		nType = nType;
 #endif
-	Link (gameData.objs.lists.statics, 2);
-	return;
+	if (nType != OBJ_MONSTERBALL) {
+		Link (gameData.objs.lists.statics, 2);
+		return;
+		}
 	}
 Link (gameData.objs.lists.actors, 2);
 }

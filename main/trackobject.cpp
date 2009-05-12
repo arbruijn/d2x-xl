@@ -63,7 +63,7 @@ int CallFindHomingObjectComplete (CObject *trackerP, CFixVector *vCurPos)
 if (!IsMultiGame)
 	return FindHomingObjectComplete (vCurPos, trackerP, OBJ_ROBOT, -1);
 if ((trackerP->info.nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER)) {
-	//	It's fired by a CPlayerData, so if robots present, track robot, else track player.
+	//	It's fired by a player, so if robots present, track robot, else track player.
 	return IsCoopGame ? 
 			 FindHomingObjectComplete (vCurPos, trackerP, OBJ_ROBOT, -1) :
 			 FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, OBJ_ROBOT);
@@ -231,7 +231,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 	fix			dot, dist;
 	CFixVector	vecToCurObj;
 
-	if ((curObjP->info.nType != trackObjType1) && (curObjP->info.nType != trackObjType2)) {
+	if ((curObjP->info.nType != trackObjType1) && (curObjP->info.nType != trackObjType2) && (curObjP->info.nType != OBJ_MONSTERBALL)) {
 		if (curObjP->info.nType != OBJ_WEAPON) 
 			continue;
 		if (!WeaponIsPlayerMine (curObjP->info.nId))
@@ -255,12 +255,17 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 			}
 		}
 
+#if DBG
+	if (curObjP->info.nType == OBJ_MONSTERBALL)
+		curObjP = curObjP;
+#endif
 	//	Can't track AI CObject if he's cloaked.
-	if ((curObjP->info.nType == OBJ_ROBOT) && (curObjP->cType.aiInfo.CLOAKED))
-		continue;
-	//	Your missiles don't track your escort.
-	if (ROBOTINFO (curObjP->info.nId).companion && (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER))
-		continue;
+	if (curObjP->info.nType == OBJ_ROBOT) {
+		if (curObjP->cType.aiInfo.CLOAKED)
+			continue;
+		if (ROBOTINFO (curObjP->info.nId).companion && (trackerP->cType.laserInfo.parent.nType == OBJ_PLAYER))
+			continue;	//	player missiles don't track the guidebot.
+		}
 
 	vecToCurObj = curObjP->info.position.vPos - *vCurPos;
 	dist = vecToCurObj.Mag();
@@ -324,7 +329,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			} 
 		else {
 			goalType = OBJECTS [trackerP->cType.laserInfo.nHomingTarget].info.nType;
-			if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT))
+			if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT) || (goalType == OBJ_MONSTERBALL))
 				rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, goalType, -1);
 			else
 				rVal = -1;

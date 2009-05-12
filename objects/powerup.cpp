@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "rendermine.h"
 #include "newdemo.h"
+#include "objeffects.h"
 #include "sphere.h"
 
 int ReturnFlagHome (CObject *pObj);
@@ -200,8 +201,10 @@ void DrawPowerup (CObject *objP)
 #if DBG
 //return;
 #endif
-if (objP->info.nType == OBJ_MONSTERBALL)
+if (objP->info.nType == OBJ_MONSTERBALL) {
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
+	RenderMslLockIndicator (objP);
+	}
 else if ((objP->rType.vClipInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.vClipInfo.nClipIndex < MAX_VCLIPS)) {
 	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
 			tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;

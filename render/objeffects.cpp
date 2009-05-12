@@ -472,7 +472,7 @@ PolyObjPos (objP, &vPos);
 fPos.Assign (vPos);
 transformation.Transform (fPos, fPos, 0);
 r = X2F (objP->info.xSize);
-if (bMarker)
+if (bMarker || (objP->info.nType == OBJ_MONSTERBALL))
 	r = 17 * r / 12;
 r2 = r / 4;
 
