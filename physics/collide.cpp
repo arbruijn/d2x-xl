@@ -259,9 +259,8 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 
 int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vHitPt)
 {
-	CFixVector	vForce, pos0, pos1, vel0, vel1, vh, vn0, vn1;
+	CFixVector	vForce, pos0, pos1, vel0, vel1, vh, vn, vn0, vn1;
 	fix			mag, speed0, speed1, mass0, mass1;
-	float			d;
 	CObject		*t;
 
 if (thisP->info.movementType != MT_PHYSICS)
@@ -277,15 +276,16 @@ if (t) {
 		t->ApplyForce (vForce);
 	return 1;
 	}
-#if DBG
-//redo:
 vel0 = thisP->mType.physInfo.velocity;
 vel1 = otherP->mType.physInfo.velocity;
-if (CFixVector::Dot (vel0, vel1) <= 0)
+#if DBG
+if (!(vel0.IsZero () || vel1.IsZero ()) && CFixVector::Dot (vel0, vel1) <= 0)
 	return 0;
 #endif
 pos0 = thisP->info.position.vPos;
 pos1 = otherP->info.position.vPos;
+
+#if 0
 #if DBG
 if ((speed0 = vel0.Mag ()) > I2X (1) * 1000)
 	return 1;
@@ -304,15 +304,11 @@ if (speed0 && speed1) {
 		float d = float (speed1) / float (speed0);
 		vn0 *= fix (d * 65536.0);
 		vn1 *= fix (d * 65536.0);
-//		VmVecScaleFrac (&vn0, speed1, speed0);
-//		VmVecScaleFrac (&vn1, speed1, speed0);
 		}
 	else {
 		float d = (float) speed1 / (float) speed0;
 		vn0 *= fix (d * 65536.0);
 		vn1 *= fix (d * 65536.0);
-//		VmVecScaleFrac (&vn0, speed0, speed1);
-//		VmVecScaleFrac (&vn1, speed0, speed1);
 		}
 	}
 vh = pos0 - pos1;
@@ -334,82 +330,118 @@ if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
 #if 0//def _DEBUG
 HUDMessage (0, "colliding (%1.2f, %1.2f)", X2F (speed0), X2F (speed1));
 #endif
-vForce = vel0 - vel1;
-mass0 = thisP->mType.physInfo.mass;
-mass1 = otherP->mType.physInfo.mass;
-d = float (FixMul (mass0, mass1));
-if (d == 0) {
-#if 0//def _DEBUG
-	HUDMessage (0, "Invalid Mass!!!");
-#endif
-	return 0;
-	}
 #if 0//def _DEBUG
 if (fabs (X2F (mag) > 1000))
 	;//goto redo;
 HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce [X]) * SIGN (vForce [Y]) * SIGN (vForce [Z])) ? '-' : '+', X2F (mag));
 #endif
-if (mag < (mass0 + mass1) / 200) {
-#if 0//def _DEBUG
-	HUDMessage (0, "bump force too low");
-#endif
-	if (EGI_FLAG (bUseHitAngles, 0, 0, 0))
-		return 0;	// don't bump if force too low
-	}
 #if 0//def _DEBUG
 HUDMessage (0, "%d %d", mag, (thisP->mType.physInfo.mass + otherP->mType.physInfo.mass) / 200);
 #endif
-if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
-	CFixVector	vDist, vDistNorm, vVelNorm, vForce0, vForce1, vRotForce0, vRotForce1, vRes0, vRes1, vRot0, vRot1;
-	fix			dot0, dot1, totalMass = mass0 + mass1, diffMass = mass0 - mass1;
+#endif
 
-	vDist = pos1 - pos0;
+#if 1
+if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
+	mass0 = thisP->mType.physInfo.mass;
+	mass1 = otherP->mType.physInfo.mass;
+
+	CFixVector	vDist, vDistNorm, vVelNorm, vForce0, vForce1, vRotForce0, vRotForce1, vRes0, vRes1, vRot0, vRot1;
+	fix			mag, dot0, dot1, totalMass = mass0 + mass1, diffMass = mass0 - mass1;
+
+	vDist = pos1 - pos0;	// vector between the centers of the two objects
 	vDistNorm = vDist;
 	CFixVector::Normalize (vDistNorm);
-	vVelNorm = vel0;
-	CFixVector::Normalize (vVelNorm);
-	dot0 = CFixVector::Dot (vVelNorm, vDistNorm);
-	vForce0 = vDist * dot0;
-	vRotForce0 = vDist - vForce0;
-	vRotForce0 *= (1 - dot0);
+	if (vel0.IsZero ())
+		vForce0.SetZero (), vRotForce0.SetZero ();
+	else {
+		//vVelNorm = vel0;
+		//mag = CFixVector::Normalize (vVelNorm);
+		dot0 = CFixVector::Dot (vel0, vDistNorm);	// angle between objects movement vector and vector to other object
+		vForce0 = vDistNorm * (mag * dot0);	// scale objects movement vector with the angle to calculate the impulse on the other object
+		vel0 -= vForce0;
+		if (dot0 < 0)
+			dot0 = -I2X (1) - dot0;
+		else
+			dot0 = I2X (1) - dot0;
+		vRotForce0 = vel0 * dot0;
+		}
 
-	vVelNorm = vel1;
-	CFixVector::Normalize (vVelNorm);
-	dot1 = CFixVector::Dot (vVelNorm, vDistNorm);
-	vForce1 = vDist * -dot1;
-	vRotForce1 = vDist - vForce1;
-	vRotForce1 *= (1 - dot1);
+	if (vel1.IsZero ())
+		vForce1.SetZero (), vRotForce1.SetZero ();
+	else {
+		vDistNorm.Neg ();
+		vVelNorm = vel1;
+		//mag = CFixVector::Normalize (vVelNorm);
+		dot1 = CFixVector::Dot (vel1, vDistNorm);
+		vForce1 = vDistNorm * dot1; 
+		vel1 -= vForce1;
+		if (dot1 < 0)
+			dot1 = -I2X (1) - dot1;
+		else
+			dot1 = I2X (1) - dot1;
+		vRotForce1 = vel1 * -dot1;
+		}
 
 	vRes0 = (vForce0 * diffMass + vForce1 * 2 * mass1) / totalMass;
-	vRes1 = (vForce1 * diffMass + vForce0 * 2 * mass0) / totalMass;
+	vRes1 = (vForce1 * -diffMass + vForce0 * 2 * mass0) / totalMass;
 	vRot0 = (vRotForce0 * diffMass + vRotForce1 * 2 * mass1) / totalMass;
-	vRot1 = (vRotForce1 * diffMass + vRotForce0 * 2 * mass0) / totalMass;
+	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * 2 * mass0) / totalMass;
 
-	vRes0 -= vForce0;
-	vRes1 -= vForce1;
+	//vRes0 -= vForce0;
+	//vRes1 -= vForce1;
 
-	if (!gameData.objs.speedBoost [OBJ_IDX (thisP)].bBoosted || (thisP != gameData.objs.consoleP)) {
-		thisP->ApplyForce (vForce0);
+	if (!(thisP->mType.physInfo.flags & PF_PERSISTENT) && !gameData.objs.speedBoost [OBJ_IDX (thisP)].bBoosted || (thisP != gameData.objs.consoleP)) {
+		//thisP->ApplyForce (vRes0);
+		thisP->mType.physInfo.velocity = vel0 + vRes0;
 		thisP->ApplyRotForce (vRot0);
 		if (bDamage)
 			thisP->ApplyForceDamage (vForce0.Mag (), otherP);
 		}
 
-	if (!gameData.objs.speedBoost [OBJ_IDX (otherP)].bBoosted || (otherP != gameData.objs.consoleP)) {
-		otherP->ApplyForce (vForce1);
+	if (!(otherP->mType.physInfo.flags & PF_PERSISTENT) && !gameData.objs.speedBoost [OBJ_IDX (otherP)].bBoosted || (otherP != gameData.objs.consoleP)) {
+		//otherP->ApplyForce (vRes1);
+		otherP->mType.physInfo.velocity = vel1 + vRes1;
 		otherP->ApplyRotForce (vRot1);
 		if (bDamage)
 			otherP->ApplyForceDamage (vForce1.Mag (), thisP);
 
 		}
 	}
-else {
-	d = 2 * d / float (mass0 + mass1);
-	vForce *= fix (d * 65536.0);
-	mag = vForce.Mag ();
-	otherP->Bump (thisP, vForce, 0);
-	vForce = -vForce;
-	thisP->Bump (otherP, vForce, 0);
+else 
+#endif
+	{
+	vForce = vel0 - vel1;
+	mass0 = thisP->mType.physInfo.mass;
+	mass1 = otherP->mType.physInfo.mass;
+	fix massProd = FixMul (mass0, mass1) * 2;
+	fix massTotal = mass0 + mass1;
+	fix impulse = FixDiv (massProd, massTotal);
+	if (impulse == 0)
+		return 0;
+	vForce *= impulse;
+	if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
+		vh = vForce;
+		CFixVector::Normalize (vh);
+		vn = vHitPt - thisP->info.position.vPos;
+		CFixVector::Normalize (vn);
+		fix dot = CFixVector::Dot (vh, vn);
+		dot = FixMul (impulse, dot);
+		CFixVector vForce0 = vn * dot;
+		//vForce0 = CFixVector::Reflect (vForce0, vn);
+		vn = vHitPt - otherP->info.position.vPos;
+		CFixVector::Normalize (vn);
+		dot = -CFixVector::Dot (vh, vn);
+		dot = FixMul (impulse, dot);
+		CFixVector vForce1 = vForce * dot;
+		//vForce1 = CFixVector::Reflect (vForce1, vn);
+		otherP->Bump (thisP, vForce0, 0);
+		thisP->Bump (otherP, vForce1, 0);
+		}
+	else {
+		otherP->Bump (thisP, vForce, 0);
+		vForce = -vForce;
+		thisP->Bump (otherP, vForce, 0);
+		}
 	}
 return 1;
 }
@@ -693,9 +725,9 @@ if (info.nId == GUIDEDMSL_ID) {
 	else {
 		CFixVector	vReflect;
 		CAngleVector	va;
-		vReflect = CFixVector::Reflect(info.position.mOrient.FVec (), sideP->m_normals[0]);
+		vReflect = CFixVector::Reflect (info.position.mOrient.FVec (), sideP->m_normals[0]);
 		va = vReflect.ToAnglesVec();
-		info.position.mOrient = CFixMatrix::Create(va);
+		info.position.mOrient = CFixMatrix::Create (va);
 		}
 	}
 
