@@ -183,9 +183,9 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 			double mq;
 
 			mq = double (otherObjP->mType.physInfo.mass) / (double (mType.physInfo.mass) * double (nMonsterballPyroForce));
-			vRotForce [X] = (fix) (double (vForce [X] * mq));
-			vRotForce [Y] = (fix) (double (vForce [Y] * mq));
-			vRotForce [Z] = (fix) (double (vForce [Z] * mq));
+			vForce [X] = (fix) (double (vForce [X] * mq));
+			vForce [Y] = (fix) (double (vForce [Y] * mq));
+			vForce [Z] = (fix) (double (vForce [Z] * mq));
 			ApplyForce (vForce);
 			}
 		else {
@@ -194,11 +194,6 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 			force2 [Y] = vForce [Y] / 4;
 			force2 [Z] = vForce [Z] / 4;
 			ApplyForce (force2);
-#if 0
-			HUDMessage (0, "%1.2f   %1.2f",
-							VmVecMag (&mType.physInfo.velocity) / 65536.0,
-							VmVecMag (&force2) / 65536.0);
-#endif
 			if (bDamage && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)) {
 				xForceMag = force2.Mag ();
 				ApplyForceDamage (xForceMag, otherObjP);
@@ -228,15 +223,18 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 
 			if (otherObjP->info.nType == OBJ_PLAYER) {
 				gameData.hoard.nLastHitter = OBJ_IDX (otherObjP);
-				mq = ((double) otherObjP->mType.physInfo.mass * (double) nMonsterballPyroForce) / (double) mType.physInfo.mass;
+				mq = double (nMonsterballPyroForce) / 10.0 * double (otherObjP->mType.physInfo.mass) / double (mType.physInfo.mass);
 				}
 			else {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
-				mq = (double) nMonsterballForces [otherObjP->info.nId] * ((double) I2X (1) / (double) otherObjP->mType.physInfo.mass) / 40.0;
+				mq = double (I2X (nMonsterballForces [otherObjP->info.nId]) / 10) / double (mType.physInfo.mass);
 				}
-			vRotForce [X] = (fix) ((double) vForce [X] * mq);
-			vRotForce [Y] = (fix) ((double) vForce [Y] * mq);
-			vRotForce [Z] = (fix) ((double) vForce [Z] * mq);
+			vForce [X] = (fix) (double (vForce [X]) * mq);
+			vForce [Y] = (fix) (double (vForce [Y]) * mq);
+			vForce [Z] = (fix) (double (vForce [Z]) * mq);
+			vRotForce [X] = vForce [X] / h;
+			vRotForce [Y] = vForce [Y] / h;
+			vRotForce [Z] = vForce [Z] / h;
 			ApplyForce (vForce);
 			ApplyRotForce (vRotForce);
 			if (gameData.hoard.nLastHitter == LOCALPLAYER.nObject)
@@ -253,14 +251,35 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 }
 
 //	-----------------------------------------------------------------------------
+
+void CObject::Bump (CObject* otherObjP, CFixVector vForce, CFixVector vRotForce, int bDamage)
+{
+if (mType.physInfo.flags & PF_PERSISTENT)
+	return;
+
+if (info.nType == OBJ_PLAYER) {
+	if ((this == gameData.objs.consoleP) && gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted)
+		return;
+	vForce *= (I2X (1) / 4);
+	vRotForce *= (I2X (1) / 4);
+	}
+else if (info.nType == OBJ_MONSTERBALL) {
+	gameData.hoard.nLastHitter = (otherObjP->info.nType == OBJ_PLAYER) ? OBJ_IDX (otherObjP) : otherObjP->cType.laserInfo.parent.nObject;
+	}
+mType.physInfo.velocity = vForce;
+ApplyRotForce (vRotForce);
+//TurnTowardsVector (vRotForce, I2X (1));
+}
+
+//	-----------------------------------------------------------------------------
 //deal with two OBJECTS bumping into each other.  Apply vForce from collision
 //to each robotP.  The flags tells whether the objects should take damage from
 //the collision.
 
 int BumpTwoObjects (CObject* thisP, CObject* otherP, int bDamage, CFixVector& vHitPt)
 {
-	CFixVector	vForce, pos0, pos1, vel0, vel1, vh, vn, vn0, vn1;
-	fix			mag, speed0, speed1, mass0, mass1;
+	CFixVector	vDist, vForce, pos0, pos1, vel0, vel1;
+	fix			speed0, speed1, mass0, mass1, offset0, offset1;
 	CObject		*t;
 
 if (thisP->info.movementType != MT_PHYSICS)
@@ -278,92 +297,40 @@ if (t) {
 	}
 vel0 = thisP->mType.physInfo.velocity;
 vel1 = otherP->mType.physInfo.velocity;
-#if DBG
-if (!(vel0.IsZero () || vel1.IsZero ()) && CFixVector::Dot (vel0, vel1) <= 0)
-	return 0;
-#endif
 pos0 = thisP->info.position.vPos;
 pos1 = otherP->info.position.vPos;
 
-#if 0
-#if DBG
-if ((speed0 = vel0.Mag ()) > I2X (1) * 1000)
-	return 1;
-if ((speed1 = vel1.Mag ()) > I2X (1) * 1000)
-	return 1;
-mag = CFixVector::Dot (vel0, vel1);
-if (mag > I2X (1) * 1000)
-	mag = 100;
-#endif
-vn0 = vel0;
-speed0 = CFixVector::Normalize (vn0);
-vn1 = vel1;
-speed1 = CFixVector::Normalize (vn1);
-if (speed0 && speed1) {
-	if (speed0 > speed1) {
-		float d = float (speed1) / float (speed0);
-		vn0 *= fix (d * 65536.0);
-		vn1 *= fix (d * 65536.0);
-		}
-	else {
-		float d = (float) speed1 / (float) speed0;
-		vn0 *= fix (d * 65536.0);
-		vn1 *= fix (d * 65536.0);
-		}
-	}
-vh = pos0 - pos1;
-if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
-	speed0 = vh.Mag ();
-	if (speed0 > ((thisP->info.xSize + otherP->info.xSize) * 3) / 4) {
-		pos0 += vn0;
-		pos1 += vn1;
-		vh = pos0 - pos1;
-		speed1 = vh.Mag ();
-		if (speed1 > speed0) {
-#if 0//def _DEBUG
-			HUDMessage (0, "moving away (%d, %d)", speed0, speed1);
-#endif
-			return 0;
-			}
-		}
-	}
-#if 0//def _DEBUG
-HUDMessage (0, "colliding (%1.2f, %1.2f)", X2F (speed0), X2F (speed1));
-#endif
-#if 0//def _DEBUG
-if (fabs (X2F (mag) > 1000))
-	;//goto redo;
-HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce [X]) * SIGN (vForce [Y]) * SIGN (vForce [Z])) ? '-' : '+', X2F (mag));
-#endif
-#if 0//def _DEBUG
-HUDMessage (0, "%d %d", mag, (thisP->mType.physInfo.mass + otherP->mType.physInfo.mass) / 200);
-#endif
-#endif
-
-#if 1
-if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
+// check if objects are penetrating and move apart
+if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)) {
 	mass0 = thisP->mType.physInfo.mass;
 	mass1 = otherP->mType.physInfo.mass;
 
-	CFixVector	vDist, vDistNorm, vVelNorm, vForce0, vForce1, vRotForce0, vRotForce1, vRes0, vRes1, vRot0, vRot1;
-	fix			mag, dot0, dot1, totalMass = mass0 + mass1, diffMass = mass0 - mass1;
+	if (otherP->info.nType == OBJ_MONSTERBALL) {
+		if (thisP->info.nType == OBJ_WEAPON)
+			mass0 = I2X (nMonsterballForces [thisP->info.nId]) / 10;
+		else if (thisP->info.nType == OBJ_PLAYER)
+			mass0 *= nMonsterballPyroForce;
+		}
 
-	vDist = pos1 - pos0;	// vector between the centers of the two objects
+	CFixVector	vDistNorm, vVelNorm, vForce0, vForce1, vRotForce0, vRotForce1, vRes0, vRes1, vRot0, vRot1;
+	fix			mag, dot, totalMass = mass0 + mass1, diffMass = mass0 - mass1;
+
+	vDist = pos1 - pos0;
 	vDistNorm = vDist;
 	CFixVector::Normalize (vDistNorm);
 	if (vel0.IsZero ())
 		vForce0.SetZero (), vRotForce0.SetZero ();
 	else {
-		//vVelNorm = vel0;
-		//mag = CFixVector::Normalize (vVelNorm);
-		dot0 = CFixVector::Dot (vel0, vDistNorm);	// angle between objects movement vector and vector to other object
-		vForce0 = vDistNorm * dot0;	// scale objects movement vector with the angle to calculate the impulse on the other object
+		vVelNorm = vel0;
+		mag = CFixVector::Normalize (vVelNorm);
+		dot = CFixVector::Dot (vVelNorm, vDistNorm);	// angle between objects movement vector and vector to other object
+		if (dot > I2X (1))
+			dot = I2X (1);
+		else if (dot < -I2X (1))
+			dot = -I2X (1);
+		vForce0 = vDistNorm * FixMul (dot, mag);	// scale objects movement vector with the angle to calculate the impulse on the other object
+		vRotForce0 = vVelNorm * FixMul (dot, I2X (1) - mag);
 		vel0 -= vForce0;
-		if (dot0 < 0)
-			dot0 = -I2X (1) - dot0;
-		else
-			dot0 = I2X (1) - dot0;
-		vRotForce0 = vel0 * dot0;
 		}
 
 	if (vel1.IsZero ())
@@ -371,40 +338,26 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 	else {
 		vDistNorm.Neg ();
 		vVelNorm = vel1;
-		//mag = CFixVector::Normalize (vVelNorm);
-		dot1 = CFixVector::Dot (vel1, vDistNorm);
-		vForce1 = vDistNorm * dot1; 
+		mag = CFixVector::Normalize (vVelNorm);
+		dot = CFixVector::Dot (vVelNorm, vDistNorm);
+		if (dot > I2X (1))
+			dot = I2X (1);
+		else if (dot < -I2X (1))
+			dot = -I2X (1);
+		vForce1 = vDistNorm * FixMul (dot, mag); 
+		vRotForce1 = vVelNorm * FixMul (dot, I2X (1) - mag);
 		vel1 -= vForce1;
-		if (dot1 < 0)
-			dot1 = -I2X (1) - dot1;
-		else
-			dot1 = I2X (1) - dot1;
-		vRotForce1 = vel1 * -dot1;
 		}
 
-	vRes0 = (vForce0 * diffMass + vForce1 * 2 * mass1) / totalMass;
-	vRes1 = (vForce1 * -diffMass + vForce0 * 2 * mass0) / totalMass;
-	vRot0 = (vRotForce0 * diffMass + vRotForce1 * 2 * mass1) / totalMass;
-	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * 2 * mass0) / totalMass;
+	vRes0 = (vForce0 * diffMass + vForce1 * (2 * mass1)) / totalMass;
+	vRes1 = (vForce1 * -diffMass + vForce0 * (2 * mass0)) / totalMass;
+	vRot0 = (vRotForce0 * diffMass + vRotForce1 * (2 * mass1)) / totalMass;
+	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * (2 * mass0)) / totalMass;
 
-	if (!(thisP->mType.physInfo.flags & PF_PERSISTENT) && !gameData.objs.speedBoost [OBJ_IDX (thisP)].bBoosted || (thisP != gameData.objs.consoleP)) {
-		thisP->mType.physInfo.velocity = vel0 + vRes0;
-		thisP->ApplyRotForce (vRot0);
-		if (bDamage)
-			thisP->ApplyForceDamage (vForce0.Mag (), otherP);
-		}
-
-	if (!(otherP->mType.physInfo.flags & PF_PERSISTENT) && !gameData.objs.speedBoost [OBJ_IDX (otherP)].bBoosted || (otherP != gameData.objs.consoleP)) {
-		otherP->mType.physInfo.velocity = vel1 + vRes1;
-		otherP->ApplyRotForce (vRot1);
-		if (bDamage)
-			otherP->ApplyForceDamage (vForce1.Mag (), thisP);
-
-		}
+	thisP->Bump (otherP, vel0 + vRes0, vRot0, bDamage);
+	otherP->Bump (thisP, vel1 + vRes1, vRot1, bDamage);
 	}
-else 
-#endif
-	{
+else {
 	vForce = vel0 - vel1;
 	mass0 = thisP->mType.physInfo.mass;
 	mass1 = otherP->mType.physInfo.mass;
@@ -418,6 +371,32 @@ else
 	vForce = -vForce;
 	thisP->Bump (otherP, vForce, 0);
 	}
+
+offset0 = offset1 = 0;
+pos0 += thisP->mType.physInfo.velocity;
+pos1 += otherP->mType.physInfo.velocity;
+vDist = pos1 - pos0;
+if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
+	fix dist = vDist.Mag ();
+	fix intrusion = (thisP->info.xSize + otherP->info.xSize) - dist;
+	if (intrusion > 0) {
+		HUDMessage (0, "Unsticking objects (dist = %1.2f)", X2F (dist));
+		speed0 = vel0.Mag ();
+		speed1 = vel1.Mag ();
+		float d = float (speed0) / float (speed0 + speed1);
+		offset0 = F2X (d);
+		offset1 = I2X (1) - offset0;
+		fix scale = FixDiv (intrusion, dist);
+		pos0 -= vDist * FixMul (offset0, scale);
+		pos1 += vDist * FixMul (offset1, scale);
+		vDist = pos1 - pos0;
+		OBJPOS (thisP)->vPos = pos0;
+		thisP->RelinkToSeg (FindSegByPos (pos0, thisP->info.nSegment, 0, 0));
+		OBJPOS (otherP)->vPos = pos1;
+		otherP->RelinkToSeg (FindSegByPos (pos1, otherP->info.nSegment, 0, 0));
+		}
+	}
+
 return 1;
 }
 

@@ -158,7 +158,7 @@ typedef struct tEntropyGameInfo {
 
 typedef struct tMonsterballForce {
 	ubyte		nWeaponId;
-	ubyte		nForce;
+	short		nForce;
 } tMonsterballForce;
 
 typedef struct tMonsterballInfo {

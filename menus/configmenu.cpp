@@ -151,10 +151,13 @@ do {
 		optCockpit = menu.AddMenu (TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
 		optRender = menu.AddMenu (TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
 		optEffects = menu.AddMenu (TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
+#ifndef DBG
 		if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
 			optPhysics =
 			optGameplay = -1;
-		else {
+		else 
+#endif
+			{
 			optGameplay = menu.AddMenu (TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
 			optPhysics = menu.AddMenu (TXT_PHYSICS_MENUCALL, KEY_P, HTX_OPTIONS_PHYSICS);
 			}

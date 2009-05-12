@@ -57,6 +57,7 @@ else {
 #endif
 if (nDropSeg >= 0) {
 	ResetMonsterball (false);
+	gameData.hoard.nMonsterballSeg = nDropSeg;
 	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, CFixVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.render.monsterball.SetupPulse (0.005f, 0.9f);
@@ -168,7 +169,7 @@ void SetMonsterballForces (void)
 
 memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
 for (i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
-	nMonsterballForces [forceP->nWeaponId] = 	forceP->nForce;
+	nMonsterballForces [forceP->nWeaponId] = forceP->nForce;
 nMonsterballPyroForce = forceP->nForce;
 gameData.objs.pwrUp.info [POW_MONSTERBALL].size =
 	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [IsMultiGame].monsterball.nSizeMod) / 2;

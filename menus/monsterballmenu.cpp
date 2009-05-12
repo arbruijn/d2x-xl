@@ -39,13 +39,57 @@
 
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
+static const char *szWeaponTexts [] = {
+	"Laser 1: %1.1f", 
+	"Laser 2: %1.1f", 
+	"Laser 3: %1.1f", 
+	"Laser 4: %1.1f", 
+	"Spreadfire: %1.1f", 
+	"Vulcan: %1.1f", 
+	"Plasma: %1.1f", 
+	"Fusion: %1.1f", 
+	"Superlaser 1: %1.1f", 
+	"Superlaser 2: %1.1f", 
+	"Helix: %1.1f", 
+	"Gauss: %1.1f", 
+	"Phoenix: %1.1f", 
+	"Omega: %1.1f", 
+	"Flare: %1.1f", 
+	"Concussion: %1.1f", 
+	"Homing: %1.1f", 
+	"Smart: %1.1f", 
+	"Mega: %1.1f", 
+	"Flash: %1.1f", 
+	"Guided: %1.1f", 
+	"Mercury: %1.1f", 
+	"Earthshaker: %1.1f", 
+	"Shaker Bomblet: %1.1f"
+	};
+
+short nOptionToForce [] = {1, 2, 3, 5, 8, 10, 20, 30, 50, 100, 250, 500, 1000};
+
+
 int MonsterballMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
 
-	CMenuItem	*m;
-	int			v;
+	CMenuItem			*m;
+	int					h,i, j, v;
+	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
+
+h = sizeofa (szWeaponTexts);
+for (i = j = 0; i <= h; i++, j++, pf++) {
+	m = menu + i;
+	v = m->m_value;
+	if (pf->nForce != nOptionToForce [v]) {
+		pf->nForce = nOptionToForce [v];
+		sprintf (m->m_text, szWeaponTexts [j], float (pf->nForce) / 10.0f);
+		m->m_bRebuild = 1;
+		}
+	if (pf->nWeaponId == FLARE_ID)
+		i++;
+	}
 
 m = menu + nPyroForceOpt;
 v = m->m_value + 1;
@@ -105,38 +149,6 @@ static int optionToWeaponId [] = {
 	EARTHSHAKER_MEGA_ID
 	};
 
-ubyte nOptionToForce [] = {
-	5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 
-	60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 175, 200, 250
-	};
-
-static const char *szWeaponTexts [] = {
-	"Laser 1", 
-	"Laser 2", 
-	"Laser 3", 
-	"Laser 4", 
-	"Spreadfire", 
-	"Vulcan", 
-	"Plasma", 
-	"Fusion", 
-	"Superlaser 1", 
-	"Superlaser 2", 
-	"Helix", 
-	"Gauss", 
-	"Phoenix", 
-	"Omega", 
-	"Flare", 
-	"Concussion", 
-	"Homing", 
-	"Smart", 
-	"Mega", 
-	"Flash", 
-	"Guided", 
-	"Mercury", 
-	"Earthshaker", 
-	"Shaker Bomblet"
-	};
-
 static inline int ForceToOption (double dForce)
 {
 	int	i, h = (int) sizeofa (nOptionToForce);
@@ -153,28 +165,29 @@ void NetworkMonsterballOptions (void)
 
 	CMenu					m (35);
 	int					h, i, j, opt = 0, optDefaultForces;
-	char					szBonus [60], szSize [60], szPyroForce [60];
+	char					szSlider [60];
 	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
 
 h = (int) sizeofa (optionToWeaponId);
 j = (int) sizeofa (nOptionToForce);
 for (i = opt = 0; i < h; i++, opt++, pf++) {
-	m.AddSlider (szWeaponTexts [i], ForceToOption (pf->nForce), 0, j - 1, 0, NULL);
+	sprintf (szSlider, szWeaponTexts [i], float (pf->nForce) / 10.0f);
+	m.AddSlider (szSlider, ForceToOption (pf->nForce), 0, j - 1, 0, NULL);
 	if (pf->nWeaponId == FLARE_ID)
 		m.AddText ("", 0);
 	}
 m.AddText ("", 0);
-sprintf (szPyroForce + 1, TXT_MBALL_PYROFORCE, pf->nForce);
-*szPyroForce = *(TXT_MBALL_PYROFORCE - 1);
-nPyroForceOpt = m.AddSlider (szPyroForce + 1, pf->nForce - 1, 0, 9, 0, NULL);
+sprintf (szSlider + 1, TXT_MBALL_PYROFORCE, pf->nForce);
+*szSlider = *(TXT_MBALL_PYROFORCE - 1);
+nPyroForceOpt = m.AddSlider (szSlider + 1, pf->nForce - 1, 0, 9, 0, NULL);
 m.AddText ("", 0);
-sprintf (szBonus + 1, TXT_GOAL_BONUS, extraGameInfo [0].monsterball.nBonus);
-*szBonus = *(TXT_GOAL_BONUS - 1);
-nBonusOpt = m.AddSlider (szBonus + 1, extraGameInfo [0].monsterball.nBonus - 1, 0, 9, 0, HTX_GOAL_BONUS);
+sprintf (szSlider + 1, TXT_GOAL_BONUS, extraGameInfo [0].monsterball.nBonus);
+*szSlider = *(TXT_GOAL_BONUS - 1);
+nBonusOpt = m.AddSlider (szSlider + 1, extraGameInfo [0].monsterball.nBonus - 1, 0, 9, 0, HTX_GOAL_BONUS);
 i = extraGameInfo [0].monsterball.nSizeMod;
-sprintf (szSize + 1, TXT_MBALL_SIZE, i / 2, (i & 1) ? 5 : 0);
-*szSize = *(TXT_MBALL_SIZE - 1);
-nSizeModOpt = m.AddSlider (szSize + 1, extraGameInfo [0].monsterball.nSizeMod - 2, 0, 8, 0, HTX_MBALL_SIZE);
+sprintf (szSlider + 1, TXT_MBALL_SIZE, i / 2, (i & 1) ? 5 : 0);
+*szSlider = *(TXT_MBALL_SIZE - 1);
+nSizeModOpt = m.AddSlider (szSlider + 1, extraGameInfo [0].monsterball.nSizeMod - 2, 0, 8, 0, HTX_MBALL_SIZE);
 m.AddText ("", 0);
 optDefaultForces = m.AddMenu ("Set default values", 0, NULL);
 
@@ -186,17 +199,19 @@ for (;;) {
 		break;
 	InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	pf = extraGameInfo [0].monsterball.forces;
-	for (i = 0; i < h + 1; i++, pf++) {
-		m [i].m_value = ForceToOption (pf->nForce);
+	for (i = 0; i <= h; i++, pf++) {
+		m [i].m_value = ForceToOption (10);
 		if (pf->nWeaponId == FLARE_ID)
 			i++;
 		}
 	m [nPyroForceOpt].m_value = NMCLAMP (pf->nForce - 1, 0, 9);
 	m [nSizeModOpt].m_value = extraGameInfo [0].monsterball.nSizeMod - 2;
 	}
+#if 0
 pf = extraGameInfo [0].monsterball.forces;
 for (i = 0; i < h; i++, pf++)
 	pf->nForce = nOptionToForce [m [i].m_value];
+#endif
 pf->nForce = m [nPyroForceOpt].m_value + 1;
 extraGameInfo [0].monsterball.nBonus = m [nBonusOpt].m_value + 1;
 extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].m_value + 2;

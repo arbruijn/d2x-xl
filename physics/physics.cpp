@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //Global variables for physics system
 //#define _DEBUG
-#define UNSTICK_OBJS		0
+#define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -326,6 +326,10 @@ if ((objP->info.nType == OBJ_PLAYER) &&
 	 (objP->info.nId == gameData.multiplayer.nLocalPlayer) &&
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
 	return;
+#if UNSTICK_OBJS < 2
+if (objP->info.nType != OBJ_MONSTERBALL)
+	return;
+#endif
 fq.p0 = fq.p1 = &objP->info.position.vPos;
 fq.startSeg = objP->info.nSegment;
 fq.radP0 = 0;
@@ -1078,8 +1082,8 @@ if (vGoal.IsZero())
 if (info.controlType == CT_MORPH)
 	rate *= 2;
 
-dest_angles = vGoal.ToAnglesVec();
-cur_angles = info.position.mOrient.FVec ().ToAnglesVec();
+dest_angles = vGoal.ToAnglesVec ();
+cur_angles = info.position.mOrient.FVec ().ToAnglesVec ();
 delta_p = (dest_angles [PA] - cur_angles [PA]);
 delta_h = (dest_angles [HA] - cur_angles [HA]);
 if (delta_p > I2X (1)/2)
@@ -1101,8 +1105,8 @@ if (!IsMultiGame) {
 		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
-PhysicsSetRotVelAndSaturate(&pvRotVel [X], delta_p);
-PhysicsSetRotVelAndSaturate(&pvRotVel [Y], delta_h);
+PhysicsSetRotVelAndSaturate (&pvRotVel [X], delta_p);
+PhysicsSetRotVelAndSaturate (&pvRotVel [Y], delta_h);
 pvRotVel [Z] = 0;
 }
 

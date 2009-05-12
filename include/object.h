@@ -786,6 +786,7 @@ class CObject : public CObjectInfo {
 		void SetThrustFromVelocity (void);
 		void Bump (CFixVector vForce, fix xDamage);
 		void Bump (CObject *otherObjP, CFixVector vForce, int bDamage);
+		void Bump (CObject *otherObjP, CFixVector vForce, CFixVector vRotForce, int bDamage);
 		void ApplyForceDamage (fix vForce, CObject *otherObjP);
 		int ApplyDamageToRobot (fix damage, int nKillerObj);
 		void ApplyDamageToPlayer (CObject *killerObjP, fix damage);
