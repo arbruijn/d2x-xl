@@ -357,7 +357,7 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 		//vVelNorm = vel0;
 		//mag = CFixVector::Normalize (vVelNorm);
 		dot0 = CFixVector::Dot (vel0, vDistNorm);	// angle between objects movement vector and vector to other object
-		vForce0 = vDistNorm * (mag * dot0);	// scale objects movement vector with the angle to calculate the impulse on the other object
+		vForce0 = vDistNorm * dot0;	// scale objects movement vector with the angle to calculate the impulse on the other object
 		vel0 -= vForce0;
 		if (dot0 < 0)
 			dot0 = -I2X (1) - dot0;
@@ -387,11 +387,7 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 	vRot0 = (vRotForce0 * diffMass + vRotForce1 * 2 * mass1) / totalMass;
 	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * 2 * mass0) / totalMass;
 
-	//vRes0 -= vForce0;
-	//vRes1 -= vForce1;
-
 	if (!(thisP->mType.physInfo.flags & PF_PERSISTENT) && !gameData.objs.speedBoost [OBJ_IDX (thisP)].bBoosted || (thisP != gameData.objs.consoleP)) {
-		//thisP->ApplyForce (vRes0);
 		thisP->mType.physInfo.velocity = vel0 + vRes0;
 		thisP->ApplyRotForce (vRot0);
 		if (bDamage)
@@ -399,7 +395,6 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 		}
 
 	if (!(otherP->mType.physInfo.flags & PF_PERSISTENT) && !gameData.objs.speedBoost [OBJ_IDX (otherP)].bBoosted || (otherP != gameData.objs.consoleP)) {
-		//otherP->ApplyForce (vRes1);
 		otherP->mType.physInfo.velocity = vel1 + vRes1;
 		otherP->ApplyRotForce (vRot1);
 		if (bDamage)
@@ -419,29 +414,9 @@ else
 	if (impulse == 0)
 		return 0;
 	vForce *= impulse;
-	if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
-		vh = vForce;
-		CFixVector::Normalize (vh);
-		vn = vHitPt - thisP->info.position.vPos;
-		CFixVector::Normalize (vn);
-		fix dot = CFixVector::Dot (vh, vn);
-		dot = FixMul (impulse, dot);
-		CFixVector vForce0 = vn * dot;
-		//vForce0 = CFixVector::Reflect (vForce0, vn);
-		vn = vHitPt - otherP->info.position.vPos;
-		CFixVector::Normalize (vn);
-		dot = -CFixVector::Dot (vh, vn);
-		dot = FixMul (impulse, dot);
-		CFixVector vForce1 = vForce * dot;
-		//vForce1 = CFixVector::Reflect (vForce1, vn);
-		otherP->Bump (thisP, vForce0, 0);
-		thisP->Bump (otherP, vForce1, 0);
-		}
-	else {
-		otherP->Bump (thisP, vForce, 0);
-		vForce = -vForce;
-		thisP->Bump (otherP, vForce, 0);
-		}
+	otherP->Bump (thisP, vForce, 0);
+	vForce = -vForce;
+	thisP->Bump (otherP, vForce, 0);
 	}
 return 1;
 }
