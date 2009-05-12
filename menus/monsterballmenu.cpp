@@ -40,33 +40,33 @@
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
 static const char *szWeaponTexts [] = {
-	"Laser 1: %1.1f", 
-	"Laser 2: %1.1f", 
-	"Laser 3: %1.1f", 
-	"Laser 4: %1.1f", 
-	"Spreadfire: %1.1f", 
-	"Vulcan: %1.1f", 
-	"Plasma: %1.1f", 
-	"Fusion: %1.1f", 
-	"Superlaser 1: %1.1f", 
-	"Superlaser 2: %1.1f", 
-	"Helix: %1.1f", 
-	"Gauss: %1.1f", 
-	"Phoenix: %1.1f", 
-	"Omega: %1.1f", 
-	"Flare: %1.1f", 
-	"Concussion: %1.1f", 
-	"Homing: %1.1f", 
-	"Smart: %1.1f", 
-	"Mega: %1.1f", 
-	"Flash: %1.1f", 
-	"Guided: %1.1f", 
-	"Mercury: %1.1f", 
-	"Earthshaker: %1.1f", 
-	"Shaker Bomblet: %1.1f"
+	"Laser 1: %1.2f", 
+	"Laser 2: %1.2f", 
+	"Laser 3: %1.2f", 
+	"Laser 4: %1.2f", 
+	"Spreadfire: %1.2f", 
+	"Vulcan: %1.2f", 
+	"Plasma: %1.2f", 
+	"Fusion: %1.2f", 
+	"Superlaser 1: %1.2f", 
+	"Superlaser 2: %1.2f", 
+	"Helix: %1.2f", 
+	"Gauss: %1.2f", 
+	"Phoenix: %1.2f", 
+	"Omega: %1.2f", 
+	"Flare: %1.2f", 
+	"Concussion: %1.2f", 
+	"Homing: %1.2f", 
+	"Smart: %1.2f", 
+	"Mega: %1.2f", 
+	"Flash: %1.2f", 
+	"Guided: %1.2f", 
+	"Mercury: %1.2f", 
+	"Earthshaker: %1.2f", 
+	"Shaker Bomblet: %1.2f"
 	};
 
-short nOptionToForce [] = {1, 2, 3, 5, 8, 10, 20, 30, 50, 100, 250, 500, 1000};
+short nOptionToForce [] = {1, 3, 5, 10, 20, 30, 50, 75, 100, 200, 300, 500, 1000, 2500, 5000, 10000};
 
 
 int MonsterballMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
@@ -84,7 +84,7 @@ for (i = j = 0; i <= h; i++, j++, pf++) {
 	v = m->m_value;
 	if (pf->nForce != nOptionToForce [v]) {
 		pf->nForce = nOptionToForce [v];
-		sprintf (m->m_text, szWeaponTexts [j], float (pf->nForce) / 10.0f);
+		sprintf (m->m_text, szWeaponTexts [j], float (pf->nForce) / 100.0f);
 		m->m_bRebuild = 1;
 		}
 	if (pf->nWeaponId == FLARE_ID)
@@ -149,6 +149,12 @@ static int optionToWeaponId [] = {
 	EARTHSHAKER_MEGA_ID
 	};
 
+static short defaultForces [] = {
+	10, 20, 30, 50, 100, 20, 100, 500, 75, 100, 200, 30, 200, 1, // guns
+	1,	// flare
+	0, // dummy
+	500, 500, 1000, 5000, 500, 500, 400, 10000, 2500};	// missiles
+
 static inline int ForceToOption (double dForce)
 {
 	int	i, h = (int) sizeofa (nOptionToForce);
@@ -171,7 +177,7 @@ void NetworkMonsterballOptions (void)
 h = (int) sizeofa (optionToWeaponId);
 j = (int) sizeofa (nOptionToForce);
 for (i = opt = 0; i < h; i++, opt++, pf++) {
-	sprintf (szSlider, szWeaponTexts [i], float (pf->nForce) / 10.0f);
+	sprintf (szSlider, szWeaponTexts [i], float (pf->nForce) / 100.0f);
 	m.AddSlider (szSlider, ForceToOption (pf->nForce), 0, j - 1, 0, NULL);
 	if (pf->nWeaponId == FLARE_ID)
 		m.AddText ("", 0);
@@ -200,12 +206,12 @@ for (;;) {
 	InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	pf = extraGameInfo [0].monsterball.forces;
 	for (i = 0; i <= h; i++, pf++) {
-		m [i].m_value = ForceToOption (10);
+		m [i].m_value = ForceToOption (defaultForces [i]);
 		if (pf->nWeaponId == FLARE_ID)
 			i++;
 		}
-	m [nPyroForceOpt].m_value = NMCLAMP (pf->nForce - 1, 0, 9);
-	m [nSizeModOpt].m_value = extraGameInfo [0].monsterball.nSizeMod - 2;
+	m [nPyroForceOpt].m_value = 3;
+	m [nSizeModOpt].m_value = 5;
 	}
 #if 0
 pf = extraGameInfo [0].monsterball.forces;

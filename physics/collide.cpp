@@ -227,7 +227,7 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 				}
 			else {
 				gameData.hoard.nLastHitter = otherObjP->cType.laserInfo.parent.nObject;
-				mq = double (I2X (nMonsterballForces [otherObjP->info.nId]) / 10) / double (mType.physInfo.mass);
+				mq = double (I2X (nMonsterballForces [otherObjP->info.nId]) / 100) / double (mType.physInfo.mass);
 				}
 			vForce [X] = (fix) (double (vForce [X]) * mq);
 			vForce [Y] = (fix) (double (vForce [Y]) * mq);
@@ -300,6 +300,29 @@ vel1 = otherP->mType.physInfo.velocity;
 pos0 = thisP->info.position.vPos;
 pos1 = otherP->info.position.vPos;
 
+if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
+	vDist = pos1 - pos0;
+	fix dist = vDist.Mag ();
+	fix intrusion = (thisP->info.xSize + otherP->info.xSize) - dist;
+	if (intrusion > 0) {
+#if DBG
+		HUDMessage (0, "Unsticking objects (dist = %1.2f)", X2F (dist));
+#endif
+		speed0 = vel0.Mag ();
+		speed1 = vel1.Mag ();
+		float d = float (speed0) / float (speed0 + speed1);
+		offset0 = F2X (d);
+		offset1 = I2X (1) - offset0;
+		fix scale = FixDiv (intrusion, dist);
+		pos0 -= vDist * FixMul (offset0, scale);
+		pos1 += vDist * FixMul (offset1, scale);
+		OBJPOS (thisP)->vPos = pos0;
+		thisP->RelinkToSeg (FindSegByPos (pos0, thisP->info.nSegment, 0, 0));
+		OBJPOS (otherP)->vPos = pos1;
+		otherP->RelinkToSeg (FindSegByPos (pos1, otherP->info.nSegment, 0, 0));
+		}
+	}
+
 // check if objects are penetrating and move apart
 if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)) {
 	mass0 = thisP->mType.physInfo.mass;
@@ -307,7 +330,7 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)
 
 	if (otherP->info.nType == OBJ_MONSTERBALL) {
 		if (thisP->info.nType == OBJ_WEAPON)
-			mass0 = I2X (nMonsterballForces [thisP->info.nId]) / 10;
+			mass0 = I2X (nMonsterballForces [thisP->info.nId]) / 100;
 		else if (thisP->info.nType == OBJ_PLAYER)
 			mass0 *= nMonsterballPyroForce;
 		}
@@ -370,31 +393,6 @@ else {
 	otherP->Bump (thisP, vForce, 0);
 	vForce = -vForce;
 	thisP->Bump (otherP, vForce, 0);
-	}
-
-offset0 = offset1 = 0;
-pos0 += thisP->mType.physInfo.velocity;
-pos1 += otherP->mType.physInfo.velocity;
-vDist = pos1 - pos0;
-if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
-	fix dist = vDist.Mag ();
-	fix intrusion = (thisP->info.xSize + otherP->info.xSize) - dist;
-	if (intrusion > 0) {
-		HUDMessage (0, "Unsticking objects (dist = %1.2f)", X2F (dist));
-		speed0 = vel0.Mag ();
-		speed1 = vel1.Mag ();
-		float d = float (speed0) / float (speed0 + speed1);
-		offset0 = F2X (d);
-		offset1 = I2X (1) - offset0;
-		fix scale = FixDiv (intrusion, dist);
-		pos0 -= vDist * FixMul (offset0, scale);
-		pos1 += vDist * FixMul (offset1, scale);
-		vDist = pos1 - pos0;
-		OBJPOS (thisP)->vPos = pos0;
-		thisP->RelinkToSeg (FindSegByPos (pos0, thisP->info.nSegment, 0, 0));
-		OBJPOS (otherP)->vPos = pos1;
-		otherP->RelinkToSeg (FindSegByPos (pos1, otherP->info.nSegment, 0, 0));
-		}
 	}
 
 return 1;
