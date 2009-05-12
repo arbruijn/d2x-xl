@@ -266,7 +266,7 @@ do {
 
 	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [extraGameInfo [0].bUseHitAngles]);
 	*szSlider = *(TXT_COLLISION_HANDLING - 1);
-	physOpts.nHitDetection = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
+	physOpts.nCollHandling = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
 
 	do {
 		i = m.Menu (NULL, TXT_PHYSICS_MENUTITLE, PhysicsOptionsCallback, &choice);
