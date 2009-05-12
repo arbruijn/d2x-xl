@@ -33,6 +33,7 @@
 #include "tracker.h"
 #include "gamefont.h"
 #include "netmenu.h"
+#include "monsterball.h"
 #include "menubackground.h"
 
 //------------------------------------------------------------------------------
@@ -149,12 +150,6 @@ static int optionToWeaponId [] = {
 	EARTHSHAKER_MEGA_ID
 	};
 
-static short defaultForces [] = {
-	10, 20, 30, 50, 100, 20, 100, 500, 75, 100, 200, 30, 200, 1, // guns
-	1,	// flare
-	0, // dummy
-	500, 500, 1000, 5000, 500, 500, 400, 10000, 2500};	// missiles
-
 static inline int ForceToOption (double dForce)
 {
 	int	i, h = (int) sizeofa (nOptionToForce);
@@ -206,12 +201,12 @@ for (;;) {
 	InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	pf = extraGameInfo [0].monsterball.forces;
 	for (i = 0; i <= h; i++, pf++) {
-		m [i].m_value = ForceToOption (defaultForces [i]);
+		m [i].m_value = ForceToOption (pf->nForce);
 		if (pf->nWeaponId == FLARE_ID)
 			i++;
 		}
-	m [nPyroForceOpt].m_value = 3;
-	m [nSizeModOpt].m_value = 5;
+	m [nPyroForceOpt].m_value = pf->nForce - 1;
+	m [nSizeModOpt].m_value = extraGameInfo [0].monsterball.nSizeMod - 2;
 	}
 #if 0
 pf = extraGameInfo [0].monsterball.forces;
@@ -219,8 +214,8 @@ for (i = 0; i < h; i++, pf++)
 	pf->nForce = nOptionToForce [m [i].m_value];
 #endif
 pf->nForce = m [nPyroForceOpt].m_value + 1;
-extraGameInfo [0].monsterball.nBonus = m [nBonusOpt].m_value + 1;
 extraGameInfo [0].monsterball.nSizeMod = m [nSizeModOpt].m_value + 2;
+extraGameInfo [0].monsterball.nBonus = m [nBonusOpt].m_value + 1;
 }
 
 //------------------------------------------------------------------------------

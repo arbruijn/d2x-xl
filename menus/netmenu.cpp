@@ -33,6 +33,7 @@
 #include "tracker.h"
 #include "gamefont.h"
 #include "netmenu.h"
+#include "monsterball.h"
 #include "menubackground.h"
 
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
@@ -929,8 +930,10 @@ if (!gameStates.app.bNostalgia) {
 	optD2XOpts = m.AddMenu (TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);
 	if (m [optEntropy].m_value)
 		optEntOpts = m.AddMenu (TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
-	if (m [optMonsterball].m_value)
+	if (m [optMonsterball].m_value && (gameOpts->app.bExpertMode == SUPERUSER))
 		optMBallOpts = m.AddMenu (TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);
+	else
+		InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	optConfigMenu = m.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
 	optLoadoutMenu = m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
 	}

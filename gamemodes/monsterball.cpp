@@ -22,9 +22,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "fireball.h"
 #include "objeffects.h"
-#include "monsterball.h"
 #include "dropobject.h"
 #include "network.h"
+#include "monsterball.h"
 
 //------------------------------------------------------------------------------
 
