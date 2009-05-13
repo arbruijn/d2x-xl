@@ -133,12 +133,14 @@ if (extraGameInfo [0].nFusionRamp != v) {
 		m->m_bRebuild = 1;
 		}
 
-	m = menu + physOpts.nHitDetection;
-	v = m->m_value;
-	if (extraGameInfo [0].nHitboxes != v) {
-		extraGameInfo [0].nHitboxes = v;
-		sprintf (m->m_text, TXT_HIT_DETECTION, pszStdAdv [v]);
-		m->m_bRebuild = 1;
+	if (physOpts.nHitDetection >= 0) {
+		m = menu + physOpts.nHitDetection;
+		v = m->m_value;
+		if (extraGameInfo [0].nHitboxes != v) {
+			extraGameInfo [0].nHitboxes = v;
+			sprintf (m->m_text, TXT_HIT_DETECTION, pszStdAdv [v]);
+			m->m_bRebuild = 1;
+			}
 		}
 
 	m = menu + physOpts.nCollHandling;
@@ -222,7 +224,7 @@ pszDrag [2] = TXT_MEDIUM;
 pszDrag [3] = TXT_STANDARD;
 
 gameOpts->gameplay.nAutoLeveling = NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 2);
-extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2) >> 1;
+//extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2) >> 1;
 for (nDrag = sizeofa (nDragTable); nDrag; ) {
 	nDrag--;
 	if (extraGameInfo [0].nDrag >= nDragTable [nDrag])
@@ -260,20 +262,22 @@ do {
 	*szSlider = *(TXT_AUTOLEVEL - 1);
 	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 2, KEY_S, HTX_AUTO_LEVELING);
 
+#if 0
 	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszStdAdv [extraGameInfo [0].nHitboxes]);
 	*szSlider = *(TXT_HIT_DETECTION - 1);
 	physOpts.nHitDetection = m.AddSlider (szSlider + 1, extraGameInfo [0].nHitboxes, 0, 1, KEY_H, HTX_GPLAY_HITBOXES);
-
+#else
+	physOpts.nHitDetection = -1;
+#endif
 	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [extraGameInfo [0].bUseHitAngles]);
 	*szSlider = *(TXT_COLLISION_HANDLING - 1);
 	physOpts.nCollHandling = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
-
 	do {
 		i = m.Menu (NULL, TXT_PHYSICS_MENUTITLE, PhysicsOptionsCallback, &choice);
 		} while (i >= 0);
 	} while (i == -2);
 
-extraGameInfo [0].nHitboxes <<= 1;
+extraGameInfo [0].nHitboxes = extraGameInfo [0].bUseHitAngles << 1;
 extraGameInfo [0].nDrag = nDragTable [nDrag];
 if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if (optWiggle >= 0)
