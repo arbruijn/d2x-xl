@@ -344,7 +344,7 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, g
 
 //------------------------------------------------------------------------------
 
-int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits)
+int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits, bool bForce)
 {
 if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 #if 0//def _DEBUG
@@ -353,6 +353,8 @@ if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 #endif
 	return -2;
 	}
+if (gameStates.gameplay.bMineMineCheat && !bForce)
+	return -1;
 short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size, 
 										CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) {

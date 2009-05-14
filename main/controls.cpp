@@ -73,82 +73,76 @@ void ReadFlyingControls (CObject *objP)
 	fix	forwardThrustTime;
 	CObject *gmObjP;
 	int	bMulti;
-#if 0
-	Assert(gameData.time.xFrame > 0); 		//Get MATT if hit this!
-#else
-	if (gameData.time.xFrame <= 0)
-		return;
-#endif
 
-	if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
-		StopPlayerMovement ();
-		FlushInput ();
+if (gameData.time.xFrame <= 0)
+	return;
+
+if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
+	StopPlayerMovement ();
+	FlushInput ();
 /*
-		VmVecZero(&objP->mType.physInfo.rotThrust);
-		VmVecZero(&objP->mType.physInfo.thrust);
-		VmVecZero(&objP->mType.physInfo.velocity);
+	VmVecZero(&objP->mType.physInfo.rotThrust);
+	VmVecZero(&objP->mType.physInfo.thrust);
+	VmVecZero(&objP->mType.physInfo.velocity);
 */
-		gameStates.app.bEnterGame--;
-		return;
+	gameStates.app.bEnterGame--;
+	return;
 	}
 
-	if ((objP->info.nType != OBJ_PLAYER) || (objP->info.nId != gameData.multiplayer.nLocalPlayer))
-		return;	//references to CPlayerShip require that this obj be the CPlayerData
+if ((objP->info.nType != OBJ_PLAYER) || (objP->info.nId != gameData.multiplayer.nLocalPlayer))
+	return;	//references to CPlayerShip require that this obj be the CPlayerData
 
-   tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
-	gmObjP = gmiP->objP;
-	if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
-		CAngleVector rotangs;
-		CFixMatrix rotmat,tempm;
-		fix speed;
+tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
+gmObjP = gmiP->objP;
+if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
+	CAngleVector rotangs;
+	CFixMatrix rotmat,tempm;
+	fix speed;
 
-		//this is a horrible hack.  guided missile stuff should not be
-		//handled in the middle of a routine that is dealing with the CPlayerData
-		objP->mType.physInfo.rotThrust.SetZero ();
-		rotangs[PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-		rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
-		rotangs[HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-		rotmat = CFixMatrix::Create(rotangs);
-		tempm = gmObjP->info.position.mOrient * rotmat;
-		gmObjP->info.position.mOrient = tempm;
-		speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);
-		gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient.FVec () * speed;
-		if(IsMultiGame)
-			MultiSendGuidedInfo (gmObjP, 0);
+	//this is a horrible hack.  guided missile stuff should not be
+	//handled in the middle of a routine that is dealing with the CPlayerData
+	objP->mType.physInfo.rotThrust.SetZero ();
+	rotangs[PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
+	rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
+	rotangs[HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
+	rotmat = CFixMatrix::Create(rotangs);
+	tempm = gmObjP->info.position.mOrient * rotmat;
+	gmObjP->info.position.mOrient = tempm;
+	speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);
+	gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient.FVec () * speed;
+	if(IsMultiGame)
+		MultiSendGuidedInfo (gmObjP, 0);
+	}
+else {
+#if DBG
+	if (Controls [0].headingTime)
+		Controls [0].headingTime = Controls [0].headingTime;
+#endif
+	objP->mType.physInfo.rotThrust = CFixVector::Create (Controls[0].pitchTime,
+	                                                     Controls[0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
+	                                                     Controls[0].bankTime);
+	}
+forwardThrustTime = Controls [0].forwardThrustTime;
+if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) {
+	if (Controls [0].afterburnerState) {			//CPlayerData has key down
+		fix afterburner_scale;
+		int oldCount,newCount;
+
+		//add in value from 0..1
+		afterburner_scale = I2X (1) + min(I2X (1)/2, gameData.physics.xAfterburnerCharge) * 2;
+		forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
+		oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
+		if (!gameStates.gameplay.bAfterburnerCheat)
+			gameData.physics.xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
+		if (gameData.physics.xAfterburnerCharge < 0)
+			gameData.physics.xAfterburnerCharge = 0;
+		newCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
+		if (gameStates.app.bNostalgia && (oldCount != newCount))
+			gameStates.render.bDropAfterburnerBlob = 1;	//drop blob (after physics called)
 		}
 	else {
-#if DBG
-		if (Controls [0].headingTime)
-			Controls [0].headingTime = Controls [0].headingTime;
-#endif
-		objP->mType.physInfo.rotThrust = CFixVector::Create (Controls[0].pitchTime,
-		                                                     Controls[0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
-		                                                     Controls[0].bankTime);
-		}
-	forwardThrustTime = Controls [0].forwardThrustTime;
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) {
-		if (Controls [0].afterburnerState) {			//CPlayerData has key down
-			//if (forwardThrustTime >= 0) { 		//..ccAnd isn't moving backward
-		 {
-				fix afterburner_scale;
-				int oldCount,newCount;
-
-				//add in value from 0..1
-				afterburner_scale = I2X (1) + min(I2X (1)/2, gameData.physics.xAfterburnerCharge) * 2;
-				forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
-				oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
-				if (!gameStates.gameplay.bAfterburnerCheat)
-					gameData.physics.xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
-				if (gameData.physics.xAfterburnerCharge < 0)
-					gameData.physics.xAfterburnerCharge = 0;
-				newCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
-				if (gameStates.app.bNostalgia && (oldCount != newCount))
-					gameStates.render.bDropAfterburnerBlob = 1;	//drop blob (after physics called)
-			}
-		}
-		else {
-			fix xChargeUp = min (gameData.time.xFrame / 8, I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
-			if (xChargeUp > 0) {
+		fix xChargeUp = min (gameData.time.xFrame / 8, I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
+		if (xChargeUp > 0) {
 			fix xCurEnergy = LOCALPLAYER.energy - I2X (10);
 			xCurEnergy = max (xCurEnergy, 0) / 10;	//don't drop below 10
 			if (xCurEnergy > 0) {	//maybe limit charge up by energy
@@ -161,19 +155,19 @@ void ReadFlyingControls (CObject *objP)
 			}
 		}
 	}
-	// Set CObject's thrust vector for forward/backward
-	objP->mType.physInfo.thrust = objP->info.position.mOrient.FVec () * forwardThrustTime;
-	// slide left/right
-	objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * Controls [0].sidewaysThrustTime;
-	// slide up/down
-	objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * Controls [0].verticalThrustTime;
-	if (!gameStates.input.bSkipControls)
-		memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
-	bMulti = IsMultiGame;
-	if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [objP->Index ()].bBoosted) {
+// Set CObject's thrust vector for forward/backward
+objP->mType.physInfo.thrust = objP->info.position.mOrient.FVec () * forwardThrustTime;
+// slide left/right
+objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * Controls [0].sidewaysThrustTime;
+// slide up/down
+objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * Controls [0].verticalThrustTime;
+if (!gameStates.input.bSkipControls)
+	memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
+bMulti = IsMultiGame;
+if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [objP->Index ()].bBoosted) {
 #if 1//ndef _DEBUG
-		wiggleTime = gameData.time.xFrame;
-		WiggleObject (objP);
+	wiggleTime = gameData.time.xFrame;
+	WiggleObject (objP);
 #endif
 	}
 	// As of now, objP->mType.physInfo.thrust & objP->mType.physInfo.rotThrust are
@@ -184,18 +178,15 @@ void ReadFlyingControls (CObject *objP)
 
 	//	Prevent divide overflows on high frame rates.
 	//	In a signed divide, you get an overflow if num >= div<<15
- {
-		fix	ft = gameData.time.xFrame;
+fix	ft = gameData.time.xFrame;
 
-		//	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
-		if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
-			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
-		objP->mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
-		if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
-			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
-		objP->mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
-	}
-
+//	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
+if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
+	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
+objP->mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
+if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
+	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
+objP->mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 }
 
 // ----------------------------------------------------------------------------

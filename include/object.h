@@ -1033,7 +1033,7 @@ int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const 
 					   fix xSize, ubyte cType, ubyte mType, ubyte rType);
 int CloneObject (CObject *objP);
 int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos);
-int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits);
+int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits, bool bForce = false);
 int CreateWeapon (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType);
 int CreateFireball (ubyte nId, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType);
 int CreateDebris (CObject *parentP, short nSubModel);

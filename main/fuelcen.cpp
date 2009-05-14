@@ -464,7 +464,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 		return;
 	vPos = SEGMENTS [matCenP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
-	nObject = CreatePowerup (nType, -1, (short) matCenP->nSegment, vPos, 1);
+	nObject = CreatePowerup (nType, -1, (short) matCenP->nSegment, vPos, 1, true);
 	if (nObject < 0)
 		return;
 	objP = OBJECTS + nObject;

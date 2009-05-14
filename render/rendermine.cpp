@@ -647,8 +647,7 @@ return 1;
 void DoRenderObject (int nObject, int nWindow)
 {
 	CObject*					objP = OBJECTS + nObject;
-	tWindowRenderedData*	wrd = windowRenderedData + nWindow;
-	int						nType, count = 0;
+	int						count = 0;
 
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
@@ -663,22 +662,26 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
   		return;
 		}
 	}
-nType = objP->info.nType;
-if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
-	 ((nType == OBJ_WEAPON) && (WeaponIsPlayerMine (objP->info.nId) || (gameData.objs.bIsMissile [objP->info.nId] && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
-	if (wrd->nObjects >= MAX_RENDERED_OBJECTS) {
-		Int3();
-		wrd->nObjects /= 2;
-		}
-	wrd->renderedObjects [wrd->nObjects++] = nObject;
-	}
 if ((count++ > LEVEL_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
 	Int3();					// infinite loop detected
 	objP->info.nNextInSeg = -1;		// won't this clean things up?
 	return;					// get out of this infinite loop!
 	}
-if (RenderObject (objP, nWindow, 0))
+if (RenderObject (objP, nWindow, 0)) {
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
+	if (!gameStates.render.cameras.bActive) {
+		tWindowRenderedData*	wrd = windowRenderedData + nWindow;
+		int nType = objP->info.nType;
+		if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
+			 ((nType == OBJ_WEAPON) && (WeaponIsPlayerMine (objP->info.nId) || (gameData.objs.bIsMissile [objP->info.nId] && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
+			if (wrd->nObjects >= MAX_RENDERED_OBJECTS) {
+				Int3();
+				wrd->nObjects /= 2;
+				}
+			wrd->renderedObjects [wrd->nObjects++] = nObject;
+			}
+		}
+	}
 for (int i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
 	objP = OBJECTS + i;
 	Assert (objP->info.nType == OBJ_FIREBALL);
@@ -1143,8 +1146,9 @@ PROF_START
 #endif
 
 if (!nWindow)
-	GetPlayerMslLock ();
-windowRenderedData [nWindow].nObjects = 0;
+	GetPlayerMslLock ();	// uses rendered object info from previous frame stored in windowRenderedData
+if (!gameStates.render.cameras.bActive)
+	windowRenderedData [nWindow].nObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;
 #endif

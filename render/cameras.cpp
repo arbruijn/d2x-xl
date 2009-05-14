@@ -731,7 +731,7 @@ nCamsRendered = 0;
 t = SDL_GetTicks ();
 for (i = 0; i < m_nCameras; i++) {
 	nWaitFrames = m_cameras [i].Ready (t);
-	if (nMaxWaitFrames < nWaitFrames) {
+	if (nWaitFrames && (nMaxWaitFrames < nWaitFrames)) {
 		nMaxWaitFrames = nWaitFrames;
 		cameraP = m_cameras + i;
 		}
