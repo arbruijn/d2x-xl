@@ -383,6 +383,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void CAudio::DeleteObjectSound (int i)
+{
+if ((i < m_objects.ToS () - 1) && (m_objects.Top ()->m_channel >= 0))
+	m_channels [m_objects.Top ()->m_channel].SetSoundObj (i);
+m_objects.Delete (i);
+}
+
+//------------------------------------------------------------------------------
+
 int CAudio::DestroyObjectSound (int nObject)
 {
 
@@ -412,13 +421,13 @@ for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 	if (soundObjP->m_channel > -1) {
 		StopSound (soundObjP->m_channel);
 		m_info.nActiveObjects--;
+		soundObjP->m_channel = -1;
 		}
 	soundObjP->m_linkType.obj.nObject = -1;
 	soundObjP->m_linkType.obj.nObjSig = -1;
-	soundObjP->m_channel = -1;
 	soundObjP->m_flags = 0;	// Mark as dead, so some other sound can use this sound
 	nKilled++;
-	m_objects.Delete (i);
+	DeleteObjectSound (i);
 	i--, soundObjP--; // stack top has been moved here, so compensate for loop increment
 	}
 return (nKilled > 0);
@@ -518,7 +527,7 @@ for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 			soundObjP->m_channel = -1;
 			soundObjP->m_flags = 0;	// Mark as dead, so some other sound can use this sound
 			nKilled++;
-			m_objects.Delete (i);
+			DeleteObjectSound (i);
 			i--, soundObjP--;
 			}
 		}
@@ -544,6 +553,7 @@ for (uint i = 0; i < m_objects.ToS (); i++) {
 void CAudio::SyncSounds (void)
 {
 	int				oldvolume, oldpan;
+	uint				i;
 	CSoundObject*	soundObjP = m_objects.Buffer ();
 	CObject*			objP;
 
@@ -555,14 +565,17 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 else
 	gameStates.sound.bWasRecording = 0;
 soundQueue.Process ();
-for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
+for (i = 0; i < m_channels.Length (); i++)
+	if (m_channels [i].Playing () && (m_channels [i].SoundObject () >= int (m_objects.ToS ())))
+		m_channels [i].Stop ();
+for (i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 	if (soundObjP->m_flags & SOF_USED) {
 		oldvolume = soundObjP->m_volume;
 		oldpan = soundObjP->m_pan;
 		// Check if its done.
 		if (!(soundObjP->m_flags & SOF_PLAY_FOREVER) && (soundObjP->m_channel > -1) && !ChannelIsPlaying (soundObjP->m_channel)) {
 			StopActiveSound (soundObjP->m_channel);
-			m_objects.Delete (i);
+			DeleteObjectSound (i);
 			i--, soundObjP--;
 			m_info.nActiveObjects--;
 			continue;		// Go on to next sound...
@@ -593,7 +606,7 @@ for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 						StopActiveSound (soundObjP->m_channel);
 					m_info.nActiveObjects--;
 					}
-				m_objects.Delete (i);
+				DeleteObjectSound (i);
 				i--, soundObjP--;
 				continue;		// Go on to next sound...
 				}
@@ -620,7 +633,7 @@ for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 					soundObjP->m_channel = -1;
 					}
 				if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
-					m_objects.Delete (i);
+					DeleteObjectSound (i);
 					i--, soundObjP--;
 					continue;
 					}
@@ -652,7 +665,7 @@ for (uint i = 0; i < m_objects.ToS (); i++) {
 		else 
 #endif
 			{
-			m_objects.Delete (i);
+			DeleteObjectSound (i);
 			i--;
 			}
 		m_info.nActiveObjects--;

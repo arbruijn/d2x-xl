@@ -195,6 +195,8 @@ class CAudioChannel {
 		void Mix (ubyte* stream, int len);
 		inline int Playing (void) { return m_info.bPlaying; }
 		inline void SetPlaying (int bPlaying) { m_info.bPlaying = bPlaying; }
+		inline int SoundObject (void) { return m_info.nSoundObj; }
+		inline void SetSoundObj (int nSoundObj) { m_info.nSoundObj = nSoundObj; }
 		inline int Sound (void) { return m_info.nSound; }
 		inline int SoundClass (void) { return m_info.nSoundClass; }
 		inline int Volume (void) { return m_info.nVolume; }
@@ -326,6 +328,7 @@ class CAudio {
 									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0);
 		int ChangeObjectSound (int nObject, fix nVolume);
 		int DestroyObjectSound (int nObject);
+		void DeleteObjectSound (int i);
 
 		int CreateSegmentSound (short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0, 
 										fix maxVolume = I2X (1), fix maxDistance = I2X (256), const char *pszSound = NULL);
