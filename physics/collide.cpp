@@ -297,6 +297,8 @@ if (t) {
 	}
 vel0 = thisP->mType.physInfo.velocity;
 vel1 = otherP->mType.physInfo.velocity;
+if (CFixVector::Dot (vel0, vel1) < 0)	//objects separating already
+	return 0;
 pos0 = thisP->info.position.vPos;
 pos1 = otherP->info.position.vPos;
 

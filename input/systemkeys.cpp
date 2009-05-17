@@ -243,10 +243,12 @@ return 1;
 
 int ToggleFreeCam (void)
 {
+#if !DBG
 if ((IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))) {
 	HUDMessage (0, "Free camera is not available");
 	return 0;
 	}
+#endif
 return SetFreeCam (!gameStates.render.bFreeCam);
 }
 

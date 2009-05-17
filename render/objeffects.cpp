@@ -127,11 +127,11 @@ for (i = 0; i < 8; i++) {
 
 void RenderHitbox (CObject *objP, float red, float green, float blue, float alpha)
 {
-	CFloatVector		vertList [8], v;
-	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-	tCloakInfo	ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
-	int			i, j, iBox, nBoxes, bHit = 0;
-	float			fFade;
+	CFloatVector	vertList [8], v;
+	tHitbox*			pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes.Buffer ();
+	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
+	int				i, j, iBox, nBoxes, bHit = 0;
+	float				fFade;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -181,7 +181,7 @@ glColor4f (red, green, blue, alpha / 2);
 transformation.Begin(objP->info.position.vPos, objP->info.position.mOrient);
 for (; iBox <= nBoxes; iBox++) {
 	if (iBox)
-		transformation.Begin(pmhb [iBox].vOffset, &CAngleVector::ZERO);
+		transformation.Begin (pmhb [iBox].vOffset, CAngleVector::ZERO);
 	TransformHitboxf (objP, vertList, iBox);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
@@ -204,7 +204,7 @@ for (; iBox <= nBoxes; iBox++) {
 		transformation.End ();
 	}
 transformation.End ();
-float r = X2F (VmVecDist (&pmhb->vMin, &pmhb->vMax) / 2);
+float r = X2F (CFixVector::Dist (pmhb->vMin, pmhb->vMax) / 2);
 #if 0//def _DEBUG	//display collision point
 if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
 	CObject	o;
@@ -260,8 +260,10 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.4f);
 			}
 		}
+#if !RENDER_HITBOX
 	if (gameOpts->render.effects.bOnlyShieldHits && !gameData.multiplayer.bWasHit [i])
 		return;
+#endif
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 		nColor = 2;
 	else if (gameData.multiplayer.bWasHit [i])
