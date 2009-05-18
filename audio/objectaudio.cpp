@@ -400,7 +400,7 @@ for (i = int (m_usedChannels.ToS ()); i; ) {
 soundObjP = m_objects.Buffer () + h;
 while (h) {
 	i = m_objects [--h].m_channel;
-	if ((i >= 0) && (m_channels [i].SoundObject () != i))
+	if ((i >= 0) && (m_channels [i].SoundObject () != h))
 		DeleteSoundObject (h);
 	}
 }
@@ -598,6 +598,9 @@ void CAudio::SyncSounds (void)
 {
 	int				oldvolume, oldpan;
 	CObject*			objP;
+	CFixVector		vListenerPos = OBJPOS (gameData.objs.viewerP)->vPos;
+	CFixMatrix		mListenerOrient = OBJPOS (gameData.objs.viewerP)->mOrient;
+	short				nListenerSeg = OBJSEG (gameData.objs.viewerP);
 
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (!gameStates.sound.bWasRecording)
@@ -625,7 +628,7 @@ while (i) {
 			}
 		if (soundObjP->m_flags & SOF_LINK_TO_POS) {
 			GetVolPan (
-				gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment,
+				mListenerOrient, vListenerPos, nListenerSeg,
 				soundObjP->m_linkType.pos.position, soundObjP->m_linkType.pos.nSegment, soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #if USE_SDL_MIXER
@@ -645,8 +648,8 @@ while (i) {
 				continue;		
 				}
 			GetVolPan (
-				gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
-				gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
+				mListenerOrient, vListenerPos, nListenerSeg,
+				objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #if USE_SDL_MIXER
 			if (gameOpts->sound.bUseSDLMixer)

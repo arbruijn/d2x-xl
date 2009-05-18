@@ -807,14 +807,14 @@ void SuperWowieCheat (int bVerbose)
 {
 if (gameStates.gameplay.bMineMineCheat) {
 	gameStates.gameplay.bMineMineCheat = 0;
-	LOCALPLAYER.flags &= ~(PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE);
+	LOCALPLAYER.flags &= ~(/*PLAYER_FLAGS_CLOAKED |*/ PLAYER_FLAGS_INVULNERABLE);
 	LOCALPLAYER.invulnerableTime =
 	LOCALPLAYER.cloakTime = 0;
 	}
 else {
 	AccessoryCheat (bVerbose);
 	WowieCheat (bVerbose);
-	LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE;
+	LOCALPLAYER.flags |= /*PLAYER_FLAGS_CLOAKED |*/ PLAYER_FLAGS_INVULNERABLE;
 	LOCALPLAYER.invulnerableTime =
 	LOCALPLAYER.cloakTime = 0x7fffffff;
 	gameStates.app.cheats.bSpeed = 1;
