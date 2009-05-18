@@ -367,7 +367,7 @@ int CAudio::ChangeObjectSound (int nObject, fix nVolume)
 
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordDestroyObjectSound (nObject);
+	NDRecordDestroySoundObject (nObject);
 #endif
 
 for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
@@ -401,13 +401,13 @@ soundObjP = m_objects.Buffer () + h;
 while (h) {
 	i = m_objects [--h].m_channel;
 	if ((i >= 0) && (m_channels [i].SoundObject () != i))
-		DeleteObjectSound (h);
+		DeleteSoundObject (h);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CAudio::DeleteObjectSound (int i)
+void CAudio::DeleteSoundObject (int i)
 {
 	int	h;
 
@@ -424,8 +424,15 @@ if ((i < int (m_objects.ToS ()) - 1) && ((h = m_objects.Top ()->m_channel) >= 0)
 	m_channels [h].SetSoundObj (i);
 	}
 
-if (m_objects [i].m_channel >= 0)
-	m_channels [m_objects [i].m_channel].SetSoundObj (-1);
+	CSoundObject*	soundObjP = m_objects + i;
+
+if ((h = soundObjP->m_channel) >= 0) {
+	m_channels [h].Stop ();
+	soundObjP->m_channel = -1;
+	}
+soundObjP->m_linkType.obj.nObject = -1;
+soundObjP->m_linkType.obj.nObjSig = -1;
+soundObjP->m_flags = 0;	// Mark as dead, so some other sound can use this sound
 m_objects.Delete (i);
 }
 
@@ -438,7 +445,7 @@ int CAudio::DestroyObjectSound (int nObject)
 
 #ifdef NEWDEMO
 if ((nObject >= 0) && (gameData.demo.nState == ND_STATE_RECORDING))
-	NDRecordDestroyObjectSound (nObject);
+	NDRecordDestroySoundObject (nObject);
 #endif
 
 if (nObject == LOCALPLAYER.nObject)
@@ -468,11 +475,8 @@ while (i) {
 		}
 	if ((nObject < 0) && (soundObjP->m_flags & SOF_PLAY_FOREVER))
 		continue;
-	soundObjP->m_linkType.obj.nObject = -1;
-	soundObjP->m_linkType.obj.nObjSig = -1;
-	soundObjP->m_flags = 0;	// Mark as dead, so some other sound can use this sound
+	DeleteSoundObject (i);
 	nKilled++;
-	DeleteObjectSound (i);
 	}
 return (nKilled > 0);
 }
@@ -554,12 +558,10 @@ return soundObjP->m_nSignature;
 //if nSound==-1, kill any sound
 int CAudio::DestroySegmentSound (short nSegment, short nSide, short nSound)
 {
-	int				nKilled;
-
 if (nSound != -1)
 	nSound = XlatSound (nSound);
-nKilled = 0;
 
+	int nKilled = 0;
 	uint i = m_objects.ToS ();
 	CSoundObject*	soundObjP = m_objects.Buffer () + i;
 
@@ -569,14 +571,8 @@ while (i) {
 	if ((soundObjP->m_flags & (SOF_USED | SOF_LINK_TO_POS)) == (SOF_USED | SOF_LINK_TO_POS)) {
 		if ((soundObjP->m_linkType.pos.nSegment == nSegment) && (soundObjP->m_linkType.pos.nSide == nSide) &&
 			 ((nSound == -1) || (soundObjP->m_nSound == nSound))) {
-			if (soundObjP->m_channel > -1) {
-				StopSound (soundObjP->m_channel);
-				m_info.nActiveObjects--;
-				}
-			soundObjP->m_channel = -1;
-			soundObjP->m_flags = 0;	// Mark as dead, so some other sound can use this sound
+			DeleteSoundObject (i);
 			nKilled++;
-			DeleteObjectSound (i);
 			}
 		}
 	}
@@ -624,8 +620,7 @@ while (i) {
 		// Check if its done.
 		if (!(soundObjP->m_flags & SOF_PLAY_FOREVER) && ((soundObjP->m_channel < 0) && !ChannelIsPlaying (soundObjP->m_channel))) {
 			StopSound (soundObjP->m_channel);
-			DeleteObjectSound (i);
-			m_info.nActiveObjects--;
+			DeleteSoundObject (i);
 			continue;		// Go on to next sound...
 			}
 		if (soundObjP->m_flags & SOF_LINK_TO_POS) {
@@ -646,13 +641,8 @@ while (i) {
 			else
 				objP = OBJECTS + soundObjP->m_linkType.obj.nObject;
 			if ((objP->info.nType == OBJ_NONE) || (objP->info.nSignature != soundObjP->m_linkType.obj.nObjSig)) {
-			// The object that this is linked to is dead, so just end this sound if it is looping.
-				if (soundObjP->m_channel > -1) {
-					StopSound (soundObjP->m_channel);
-					m_info.nActiveObjects--;
-					}
-				DeleteObjectSound (i);
-				continue;		// Go on to next sound...
+				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
+				continue;		
 				}
 			GetVolPan (
 				gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
@@ -664,17 +654,14 @@ while (i) {
 #endif
 			}
 		if ((oldvolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
-			if (soundObjP->m_volume < 1) {
-			// Sound is too far away, so stop it from playing.
-				if (soundObjP->m_channel > -1) {
-					//if (soundObjP->m_flags & SOF_PLAY_FOREVER)
-						StopSound (soundObjP->m_channel);
-					m_info.nActiveObjects--;
-					soundObjP->m_channel = -1;
-					}
+			if (soundObjP->m_volume < 1) {	// Sound is too far away, so stop it from playing.
 				if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
-					DeleteObjectSound (i);
+					DeleteSoundObject (i);
 					continue;
+					}
+				if (soundObjP->m_channel > -1) {	
+					StopSound (soundObjP->m_channel);
+					soundObjP->m_channel = -1;
 					}
 				}
 			else {
@@ -711,7 +698,7 @@ while (i) {
 		else 
 #endif
 			{
-			DeleteObjectSound (i);
+			DeleteSoundObject (i);
 			}
 		m_info.nActiveObjects--;
 		}
@@ -752,21 +739,22 @@ StartTriggeredSounds ();
 // slot because the sound was done playing.
 void CAudio::EndSoundObject (int i)
 {
-Assert (m_objects [i].m_flags & SOF_USED);
-Assert (m_objects [i].m_channel > -1);
-m_info.nActiveObjects--;
-m_objects [i].m_channel = -1;
+if (m_objects [i].m_flags & SOF_PLAY_FOREVER)
+	m_objects [i].m_channel = -1;
+else
+	DeleteSoundObject (i);
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::StopObjectSounds (void)
 {
-for (uint i = 0; i < m_objects.ToS (); i++) {
-	if (m_objects [i].m_flags & SOF_USED) {
+	uint i = m_objects.ToS ();
+
+while (i) {
+	if (m_objects [--i].m_flags & SOF_USED) {
 		if (m_objects [i].m_channel > -1) {
 			StopSound (m_objects [i].m_channel);
-			m_info.nActiveObjects--;
 			}
 		m_objects [i].m_flags = 0;	// Mark as dead, so some other sound can use this sound
 		}

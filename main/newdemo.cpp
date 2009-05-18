@@ -1105,7 +1105,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordDestroyObjectSound (int nObject)
+void NDRecordDestroySoundObject (int nObject)
 {
 if (gameStates.render.cameras.bActive)
 	return;

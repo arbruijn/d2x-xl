@@ -157,6 +157,7 @@ if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
 void CAudioChannel::Init (void)
 {
 m_info.nSound = -1;
+m_info.nIndex = -1;
 m_info.nPan = 0;				
 m_info.nVolume = 0;			
 m_info.nLength = 0;			
@@ -443,6 +444,18 @@ return alcGetError (gameData.pig.sound.openAL.device) != AL_NO_ERROR;
 //------------------------------------------------------------------------------
 
 // Volume 0-I2X (1)
+void CAudioChannel::SetPlaying (int bPlaying)
+{ 
+if ((m_info.bPlaying != bPlaying) && !(m_info.bPlaying = bPlaying)) {
+	audio.UnregisterChannel (m_info.nIndex);
+	if (m_info.nSoundObj >= 0)
+		audio.EndSoundObject (m_info.nSoundObj);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+// Volume 0-I2X (1)
 int CAudioChannel::Start (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping, 
 								  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
 								  const char *pszWAV, CFixVector* vPos)
@@ -464,9 +477,7 @@ if ((nDbgSound >= 0) && (nSound == nDbgSound))
 	nDbgSound = nDbgSound;
 #endif
 if (m_info.bPlaying) {
-	m_info.bPlaying = 0;
-	if (m_info.nSoundObj > -1)
-		audio.EndSoundObject (m_info.nSoundObj);
+	SetPlaying (0);
 	if (soundQueue.Channel () == audio.FreeChannel ())
 		soundQueue.End ();
 	}
@@ -576,7 +587,8 @@ m_info.nSound = nSound;
 m_info.bPersistent = 0;
 m_info.bPlaying = 1;
 m_info.bPersistent = bPersistent;
-m_info.nIndex = audio.RegisterChannel (this);
+if (m_info.nIndex < 0)
+	m_info.nIndex = audio.RegisterChannel (this);
 return audio.FreeChannel ();
 }
 
@@ -585,9 +597,6 @@ return audio.FreeChannel ();
 void CAudioChannel::Mix (ubyte* stream, int len)
 {
 if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
-#if 0
-	MixSoundchannelPot (channelP, m_info.sample + m_info.nPosition, stream, len);
-#else
 	ubyte* streamEnd = stream + len;
 	ubyte* channelData = reinterpret_cast<ubyte*> (m_info.sample.Buffer () + m_info.nPosition);
 	ubyte* channelEnd = reinterpret_cast<ubyte*> (m_info.sample.Buffer () + m_info.nLength);
@@ -622,7 +631,6 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 		*streamPos++ = mix8 [s + FixMul (v, vr) + 0x80];
 		}
 	m_info.nPosition = int (channelData - m_info.sample.Buffer ());
-#endif
 	}
 }
 
