@@ -246,6 +246,7 @@ class CSoundObject {
 		~CSoundObject () {Init (); }
 		void Init (void);
 		bool Start (void);
+		void Stop (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -374,6 +375,8 @@ class CAudio {
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
 		inline CStack<CSoundObject>& Objects (void) { return m_objects; }
 		inline float SlowDown (void) { return m_info.fSlowDown; }
+		inline void ActivateObject (void) { m_info.nActiveObjects++; }
+		inline void DeactivateObject (void) { m_info.nActiveObjects--; }
 		int RegisterChannel (CAudioChannel* channelP);
 		void UnregisterChannel (int nIndex);
 

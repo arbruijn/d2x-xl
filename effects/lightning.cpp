@@ -1570,7 +1570,7 @@ void CLightningManager::MoveForObject (CObject* objP)
 	int i = objP->Index ();
 
 if (m_objects [i] >= 0)
-	Move (m_objects [i], &OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
+	Move (m_objects [i], &OBJPOS (objP)->vPos, OBJSEG (objP), 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -2019,7 +2019,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (4 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -5000, 1000,
+		h = Create (4 * objP->info.xSize / I2X (1), &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -5000, 1000,
 						4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, 0, 1, 1, 1, colorP);
 		if (h >= 0)
 			m_objects [i] = h;

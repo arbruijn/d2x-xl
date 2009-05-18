@@ -44,6 +44,17 @@ m_channel = -1;
 }
 
 //------------------------------------------------------------------------------
+
+void CSoundObject::Stop (void)
+{
+if (m_channel > -1) {	
+	audio.StopSound (m_channel);
+	m_channel = -1;
+	audio.DeactivateObject ();
+	}
+}
+
+//------------------------------------------------------------------------------
 //hack to not start CObject when loading level
 
 bool CSoundObject::Start (void)
@@ -65,6 +76,7 @@ m_channel =
 							(m_flags & SOF_LINK_TO_OBJ) ? &OBJECTS [m_linkType.obj.nObject].info.position.vPos : &m_linkType.pos.position);
 if (m_channel < 0)
 	return false;
+audio.ActivateObject ();
 return true;
 }
 
@@ -353,7 +365,6 @@ else {
 		m_objects.Pop ();
 		return -1;
 		}
-	m_info.nActiveObjects++;
 	}
 return soundObjP->m_nSignature;
 }
@@ -426,10 +437,7 @@ if ((i < int (m_objects.ToS ()) - 1) && ((h = m_objects.Top ()->m_channel) >= 0)
 
 	CSoundObject*	soundObjP = m_objects + i;
 
-if ((h = soundObjP->m_channel) >= 0) {
-	m_channels [h].Stop ();
-	soundObjP->m_channel = -1;
-	}
+soundObjP->Stop ();
 soundObjP->m_linkType.obj.nObject = -1;
 soundObjP->m_linkType.obj.nObjSig = -1;
 soundObjP->m_flags = 0;	// Mark as dead, so some other sound can use this sound
@@ -468,15 +476,12 @@ while (i) {
 		if (soundObjP->m_linkType.obj.nObject != nObject)
 			continue;
 		}
-	if (soundObjP->m_channel > -1) {
-		StopSound (soundObjP->m_channel);
-		m_info.nActiveObjects--;
-		soundObjP->m_channel = -1;
-		}
 	if ((nObject < 0) && (soundObjP->m_flags & SOF_PLAY_FOREVER))
-		continue;
-	DeleteSoundObject (i);
-	nKilled++;
+		soundObjP->Stop ();
+	else {
+		DeleteSoundObject (i);
+		nKilled++;
+		}
 	}
 return (nKilled > 0);
 }
@@ -549,7 +554,6 @@ else {
 		m_objects.Pop ();
 		return -1;
 		}
-	m_info.nActiveObjects++;
 	}
 return soundObjP->m_nSignature;
 }
@@ -596,11 +600,14 @@ for (uint i = 0; i < m_objects.ToS (); i++) {
 
 void CAudio::SyncSounds (void)
 {
+if (!OBJECTS.Buffer ())
+	return;
+
 	int				oldvolume, oldpan;
 	CObject*			objP;
-	CFixVector		vListenerPos = OBJPOS (gameData.objs.viewerP)->vPos;
-	CFixMatrix		mListenerOrient = OBJPOS (gameData.objs.viewerP)->mOrient;
-	short				nListenerSeg = OBJSEG (gameData.objs.viewerP);
+	CFixVector		vListenerPos = gameData.objs.viewerP->info.position.vPos;
+	CFixMatrix		mListenerOrient = gameData.objs.viewerP->info.position.mOrient;
+	short				nListenerSeg = gameData.objs.viewerP->info.nSegment;
 
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (!gameStates.sound.bWasRecording)
@@ -622,7 +629,6 @@ while (i) {
 		oldpan = soundObjP->m_pan;
 		// Check if its done.
 		if (!(soundObjP->m_flags & SOF_PLAY_FOREVER) && ((soundObjP->m_channel < 0) && !ChannelIsPlaying (soundObjP->m_channel))) {
-			StopSound (soundObjP->m_channel);
 			DeleteSoundObject (i);
 			continue;		// Go on to next sound...
 			}
@@ -649,7 +655,7 @@ while (i) {
 				}
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
-				objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
+				OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #if USE_SDL_MIXER
 			if (gameOpts->sound.bUseSDLMixer)
@@ -662,13 +668,10 @@ while (i) {
 					DeleteSoundObject (i);
 					continue;
 					}
-				if (soundObjP->m_channel > -1) {	
-					StopSound (soundObjP->m_channel);
-					soundObjP->m_channel = -1;
-					}
+				soundObjP->Stop ();
 				}
 			else {
-				if (soundObjP->m_channel < 0)
+				if (soundObjP->m_channel < 0) 
 					soundObjP->Start ();
 				else
 					SetVolume (soundObjP->m_channel, soundObjP->m_volume);
@@ -694,16 +697,12 @@ while (i) {
 	i--;
 	soundObjP--;
 	if ((soundObjP->m_flags & SOF_USED) && (soundObjP->m_channel > -1)) {
-		StopSound (soundObjP->m_channel);
 #if 0
 		if ((m_objects [i].m_flags & SOF_PLAY_FOREVER))
-			m_objects [i].m_channel = -1;	// channel will be closed by StopAllChannels() call below
+			soundObjP->Stop ();
 		else 
 #endif
-			{
 			DeleteSoundObject (i);
-			}
-		m_info.nActiveObjects--;
 		}
 	}
 StopAllChannels ();
@@ -754,15 +753,8 @@ void CAudio::StopObjectSounds (void)
 {
 	uint i = m_objects.ToS ();
 
-while (i) {
-	if (m_objects [--i].m_flags & SOF_USED) {
-		if (m_objects [i].m_channel > -1) {
-			StopSound (m_objects [i].m_channel);
-			}
-		m_objects [i].m_flags = 0;	// Mark as dead, so some other sound can use this sound
-		}
-	}
-m_objects.Reset ();
+while (i)
+	DeleteSoundObject (--i);
 }
 
 //------------------------------------------------------------------------------
