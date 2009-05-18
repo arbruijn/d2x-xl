@@ -582,7 +582,7 @@ for (i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 		oldpan = soundObjP->m_pan;
 		// Check if its done.
 		if (!(soundObjP->m_flags & SOF_PLAY_FOREVER) && (soundObjP->m_channel > -1) && !ChannelIsPlaying (soundObjP->m_channel)) {
-			StopActiveSound (soundObjP->m_channel);
+			StopSound (soundObjP->m_channel);
 			DeleteObjectSound (i);
 			i--, soundObjP--;
 			m_info.nActiveObjects--;
@@ -606,28 +606,23 @@ for (i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 			else
 				objP = OBJECTS + soundObjP->m_linkType.obj.nObject;
 			if ((objP->info.nType == OBJ_NONE) || (objP->info.nSignature != soundObjP->m_linkType.obj.nObjSig)) {
-			// The CObject that this is linked to is dead, so just end this sound if it is looping.
+			// The object that this is linked to is dead, so just end this sound if it is looping.
 				if (soundObjP->m_channel > -1) {
-					if (soundObjP->m_flags & SOF_PLAY_FOREVER)
-						StopSound (soundObjP->m_channel);
-					else
-						StopActiveSound (soundObjP->m_channel);
+					StopSound (soundObjP->m_channel);
 					m_info.nActiveObjects--;
 					}
 				DeleteObjectSound (i);
 				i--, soundObjP--;
 				continue;		// Go on to next sound...
 				}
-			else {
-				GetVolPan (
-					gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
-					gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
-					&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
+			GetVolPan (
+				gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
+				gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
+				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #if USE_SDL_MIXER
-				if (gameOpts->sound.bUseSDLMixer)
-					Mix_VolPan (soundObjP->m_channel, soundObjP->m_volume, soundObjP->m_pan);
+			if (gameOpts->sound.bUseSDLMixer)
+				Mix_VolPan (soundObjP->m_channel, soundObjP->m_volume, soundObjP->m_pan);
 #endif
-				}
 			}
 		if ((oldvolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
 			if (soundObjP->m_volume < 1) {
@@ -635,8 +630,6 @@ for (i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 				if (soundObjP->m_channel > -1) {
 					if (soundObjP->m_flags & SOF_PLAY_FOREVER)
 						StopSound (soundObjP->m_channel);
-					else
-						StopActiveSound (soundObjP->m_channel);
 					m_info.nActiveObjects--;
 					soundObjP->m_channel = -1;
 					}

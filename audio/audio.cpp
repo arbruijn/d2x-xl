@@ -100,6 +100,8 @@ CAudio audio;
 
 static SDL_AudioSpec waveSpec;
 
+int nDbgSound = -1;
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -455,6 +457,10 @@ if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (!(soundP->data [soundP->bCustom].Buffer () && soundP->nLength [soundP->bCustom]))
 		return -1;
 	}
+#if DBG
+if ((nDbgSound >= 0) && (nSound == nDbgSound))
+	nDbgSound = nDbgSound;
+#endif
 if (m_info.bPlaying) {
 	m_info.bPlaying = 0;
 	if (m_info.nSoundObj > -1)
