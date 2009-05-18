@@ -385,8 +385,16 @@ return 0;
 
 void CAudio::DeleteObjectSound (int i)
 {
-if ((i < m_objects.ToS () - 1) && (m_objects.Top ()->m_channel >= 0))
+if ((i < int (m_objects.ToS ()) - 1) && (m_objects.Top ()->m_channel >= 0)) {
+#if DBG
+	if (m_channels [m_objects.Top ()->m_channel].SoundObject () != i)
+		i = i;
+	else
+#endif
 	m_channels [m_objects.Top ()->m_channel].SetSoundObj (i);
+	}
+if (m_objects [i].m_channel >= 0)
+	m_channels [m_objects [i].m_channel].SetSoundObj (-1);
 m_objects.Delete (i);
 }
 
