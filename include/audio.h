@@ -164,6 +164,7 @@ class CAudioChannel {
 				uint				nPosition;		// Position we are at at the moment.
 				int				nSoundObj;		// Which soundobject is on this nChannel
 				int				nSoundClass;
+				int				nIndex;
 				ubyte				bPlaying;		// Is there a sample playing on this nChannel?
 				ubyte				bLooped;			// Play this sample looped?
 				ubyte				bPersistent;	// This can't be pre-empted
@@ -277,6 +278,7 @@ class CAudio {
 		CAudioInfo					m_info;
 		CArray<CAudioChannel>	m_channels;
 		CStack<CSoundObject>		m_objects;
+		CStack<int>					m_usedChannels;
 
 	public:
 		CAudio ();
@@ -287,6 +289,7 @@ class CAudio {
 #endif
 		void Destroy (void);
 		int Setup (float fSlowDown, int nFormat = -1);
+		void Cleanup (void);
 		void Shutdown (void);
 		void Close (void);
 		void Reset (void);
@@ -371,6 +374,8 @@ class CAudio {
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
 		inline CStack<CSoundObject>& Objects (void) { return m_objects; }
 		inline float SlowDown (void) { return m_info.fSlowDown; }
+		int RegisterChannel (CAudioChannel* channelP);
+		void UnregisterChannel (int nIndex);
 
 		void RecordSoundObjects (void);
 #if DBG

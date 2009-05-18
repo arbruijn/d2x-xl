@@ -218,6 +218,8 @@ if (m_info.bPlaying) {
 
 void CAudioChannel::Stop (void)
 {
+audio.UnregisterChannel (m_info.nIndex);
+m_info.nIndex = -1;
 m_info.bPlaying = 0;
 m_info.nSoundObj = -1;
 m_info.bPersistent = 0;
@@ -446,7 +448,7 @@ int CAudioChannel::Start (short nSound, int nSoundClass, fix nVolume, int nPan, 
 								  const char *pszWAV, CFixVector* vPos)
 {
 	CSoundSample*	soundP = NULL;
-	int			bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
+	int				bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
 
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
@@ -574,6 +576,7 @@ m_info.nSound = nSound;
 m_info.bPersistent = 0;
 m_info.bPlaying = 1;
 m_info.bPersistent = bPersistent;
+m_info.nIndex = audio.RegisterChannel (this);
 return audio.FreeChannel ();
 }
 
@@ -655,6 +658,7 @@ m_info.nLoopingEnd = -1;
 m_info.nLoopingChannel = -1;
 m_info.fSlowDown = 1.0f;
 m_channels.Create (m_info.nMaxChannels);
+m_usedChannels.Create (m_info.nMaxChannels);
 m_objects.Create (MAX_SOUND_OBJECTS);
 InitSounds ();
 }
@@ -806,6 +810,21 @@ void CAudio::Reset (void)
 audio.Shutdown ();
 audio.Setup (1);
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+int CAudio::RegisterChannel (CAudioChannel* channelP)
+{
+return m_usedChannels.Push (channelP - m_channels.Buffer ()) ? m_usedChannels.ToS () - 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CAudio::UnregisterChannel (int nIndex)
+{
+if ((nIndex >= 0) && (nIndex < int (m_usedChannels.ToS ())))
+	m_usedChannels.Delete (nIndex);
 }
 
 //------------------------------------------------------------------------------
@@ -1017,6 +1036,8 @@ m_channels [nChannel].SetPan (nPan);
 void CAudio::StopSound (int nChannel)
 {
 if (!gameStates.app.bUseSound)
+	return;
+if (nChannel < 0)
 	return;
 m_channels [nChannel].Stop ();
 }
