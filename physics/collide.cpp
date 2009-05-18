@@ -260,7 +260,6 @@ if (mType.physInfo.flags & PF_PERSISTENT)
 if (info.nType == OBJ_PLAYER) {
 	if ((this == gameData.objs.consoleP) && gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted)
 		return;
-	vForce *= (I2X (1) / 4);
 	vRotForce *= (I2X (1) / 4);
 	}
 else if (info.nType == OBJ_MONSTERBALL) {
@@ -297,13 +296,13 @@ if (t) {
 	}
 vel0 = thisP->mType.physInfo.velocity;
 vel1 = otherP->mType.physInfo.velocity;
-if (CFixVector::Dot (vel0, vel1) < 0)	//objects separating already
-	return 0;
 pos0 = thisP->info.position.vPos;
 pos1 = otherP->info.position.vPos;
+vDist = pos1 - pos0;
+if ((CFixVector::Dot (vel0, vDist) <= 0) && (CFixVector::Dot (vel1, vDist) >= 0))
+	return 0;	//objects separating already
 
 if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
-	vDist = pos1 - pos0;
 	fix dist = vDist.Mag ();
 	fix intrusion = (thisP->info.xSize + otherP->info.xSize) - dist;
 	if (intrusion > 0) {
@@ -349,13 +348,15 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)
 		vVelNorm = vel0;
 		mag = CFixVector::Normalize (vVelNorm);
 		dot = CFixVector::Dot (vVelNorm, vDistNorm);	// angle between objects movement vector and vector to other object
-		if (dot > I2X (1))
-			dot = I2X (1);
-		else if (dot < -I2X (1))
-			dot = -I2X (1);
-		vForce0 = vDistNorm * FixMul (dot, mag);	// scale objects movement vector with the angle to calculate the impulse on the other object
-		vRotForce0 = vVelNorm * FixMul (dot, I2X (1) - mag);
-		vel0 -= vForce0;
+		if (dot < 0)	// moving parallel to or away from other object
+			vForce0.SetZero (), vRotForce0.SetZero ();
+		else {
+			if (dot > I2X (1))
+				dot = I2X (1);
+			vForce0 = vDistNorm * FixMul (dot, mag);	// scale objects movement vector with the angle to calculate the impulse on the other object
+			vRotForce0 = vVelNorm * FixMul (dot, I2X (1) - mag);
+			vel0 -= vForce0;
+			}
 		}
 
 	if (vel1.IsZero ())
@@ -365,19 +366,26 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL)
 		vVelNorm = vel1;
 		mag = CFixVector::Normalize (vVelNorm);
 		dot = CFixVector::Dot (vVelNorm, vDistNorm);
-		if (dot > I2X (1))
-			dot = I2X (1);
-		else if (dot < -I2X (1))
-			dot = -I2X (1);
-		vForce1 = vDistNorm * FixMul (dot, mag); 
-		vRotForce1 = vVelNorm * FixMul (dot, I2X (1) - mag);
-		vel1 -= vForce1;
+		if (dot < 0)
+			vForce1.SetZero (), vRotForce1.SetZero ();
+		else {
+			if (dot > I2X (1))
+				dot = I2X (1);
+			vForce1 = vDistNorm * FixMul (dot, mag); 
+			vRotForce1 = vVelNorm * FixMul (dot, I2X (1) - mag);
+			vel1 -= vForce1;
+			}
 		}
 
 	vRes0 = (vForce0 * diffMass + vForce1 * (2 * mass1)) / totalMass;
 	vRes1 = (vForce1 * -diffMass + vForce0 * (2 * mass0)) / totalMass;
 	vRot0 = (vRotForce0 * diffMass + vRotForce1 * (2 * mass1)) / totalMass;
 	vRot1 = (vRotForce1 * -diffMass + vRotForce0 * (2 * mass0)) / totalMass;
+
+	if (thisP == gameData.objs.consoleP)
+		vRes0 *= (I2X (1) / 4);
+	else if (otherP == gameData.objs.consoleP)
+		vRes1 *= (I2X (1) / 4);
 
 	thisP->Bump (otherP, vel0 + vRes0, vRot0, bDamage);
 	otherP->Bump (thisP, vel1 + vRes1, vRot1, bDamage);
