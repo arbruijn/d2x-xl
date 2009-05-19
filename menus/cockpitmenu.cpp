@@ -156,7 +156,7 @@ void CockpitOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optTextGauges, optHUD, optMissiles, optPosition, optAlignment;
+	int	optTextGauges, optHUD, optMissiles, optPosition, optAlignment, optZoomType = -1;
 
 	char	szSlider [50];
 
@@ -195,6 +195,8 @@ do {
 	optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
 	optMissiles = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
+	//if (gameOpts->app.bExpertMode)
+		optZoomType = m.AddCheck (TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_Z, HTX_GPLAY_ZOOMSMOOTH);
 #if 0
 	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
@@ -250,6 +252,8 @@ do {
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);
 	gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value;
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
+//if (gameOpts->app.bExpertMode)
+	extraGameInfo [IsMultiGame].nZoomMode = m [optZoomType].m_value + 1;
 #if WEAPON_ICONS
 	if (bShowWeaponIcons) {
 		if (optIconPos >= 0) {
