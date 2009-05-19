@@ -1009,6 +1009,8 @@ int CAudio::ChannelIsPlaying (int nChannel)
 {
 if (!m_info.bAvailable) 
 	return 0;
+if (nChannel < 0)
+	return 0;
 #ifdef _WIN32
 return audio.m_channels [nChannel].Playing ();
 #else

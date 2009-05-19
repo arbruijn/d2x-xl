@@ -725,6 +725,7 @@ void HandleZoom (void)
 
 	static int nZoomState = 0;
 	static int nDestZoomFactor = 0;
+	static int nZoomChannel = -1;
 	static float nZoomStep = 0;
 	static float nZoomFactor = 0;
 	static time_t tZoom = 0;
@@ -734,7 +735,9 @@ if (extraGameInfo [IsMultiGame].nZoomMode == 0)
 else if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
 	if (!nZoomState) {
 		if (ZoomKeyPressed ()) {
-			audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM1));
+			if (audio.ChannelIsPlaying (nZoomChannel))
+				audio.StopSound (nZoomChannel);
+			nZoomChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM1));
 			if (gameStates.render.nZoomFactor >= gameStates.render.nMaxZoomFactor)
 				nDestZoomFactor = gameStates.render.nMinZoomFactor;
 			else
@@ -750,7 +753,9 @@ else if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
 else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
 	if (ZoomKeyPressed ()) {
 		if ((nZoomState <= 0) && (gameStates.render.nZoomFactor < gameStates.render.nMaxZoomFactor)) {
-			audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+			if (audio.ChannelIsPlaying (nZoomChannel))
+				audio.StopSound (nZoomChannel);
+			nZoomChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
 			nDestZoomFactor = gameStates.render.nMaxZoomFactor;
 			nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 25.0f;
 			nZoomFactor = float (gameStates.render.nZoomFactor);
@@ -759,7 +764,9 @@ else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
 			}
 		}
 	else if ((nZoomState >= 0) && (gameStates.render.nZoomFactor > gameStates.render.nMinZoomFactor)) {
-		audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+		if (audio.ChannelIsPlaying (nZoomChannel))
+			audio.StopSound (nZoomChannel);
+		nZoomChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
 		nDestZoomFactor = gameStates.render.nMinZoomFactor;
 		nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 25.0f;
 		nZoomFactor = float (gameStates.render.nZoomFactor);
@@ -767,7 +774,9 @@ else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
 		nZoomState = -1;
 		}
 	}
-if (nZoomState && (gameStates.app.nSDLTicks - tZoom >= 40)) {
+if (!nZoomState)
+	nZoomChannel = -1;
+else if (gameStates.app.nSDLTicks - tZoom >= 40) {
 	tZoom += 40;
 	nZoomFactor += nZoomStep;
 	gameStates.render.nZoomFactor = fix (nZoomFactor);
@@ -775,6 +784,7 @@ if (nZoomState && (gameStates.app.nSDLTicks - tZoom >= 40)) {
 		 ((nZoomState < 0) && (gameStates.render.nZoomFactor < nDestZoomFactor))) {
 		gameStates.render.nZoomFactor = nDestZoomFactor;
 		nZoomState = 0;
+		nZoomChannel = -1;
 		}
 	}
 }
