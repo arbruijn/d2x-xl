@@ -157,6 +157,7 @@ class CLightningSystem : public tLightningSystem {
 		void Render (int nStart, int nLightnings, int bDepthSort, int nThread);
 		int Update (void);
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
+		void Mute (void);
 		int SetLife (void);
 		int SetLight (void);
 		inline CLightning* Lightnings (void) { return m_lightnings.Buffer (); }
@@ -210,6 +211,7 @@ class CLightningManager : public tLightningData {
 		void Render (void);
 		void Update (void);
 		void Move (int i, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
+		void Mute (void);
 		void MoveForObject (CObject *objP);
 		void Render (tLightning *pl, int nLightnings, short nDepth, int bDepthSort);
 		void RenderBuffered (tLightning *plRoot, int nStart, int nLightnings, int nDepth, int nThread);

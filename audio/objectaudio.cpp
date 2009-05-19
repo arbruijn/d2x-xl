@@ -34,6 +34,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "midi.h"
 #include "audio.h"
+#include "network.h"
+#include "lightning.h"
 
 //------------------------------------------------------------------------------
 
@@ -361,7 +363,7 @@ else {
 	soundObjP->Start ();
 	// If it's a one-shot sound effect, and it can't start right away, then
 	// just cancel it and be done with it.
-	if ((soundObjP->m_channel < 0) && (! (soundObjP->m_flags & SOF_PLAY_FOREVER))) {
+	if ((soundObjP->m_channel < 0) && (!(soundObjP->m_flags & SOF_PLAY_FOREVER))) {
 		m_objects.Pop ();
 		return -1;
 		}
@@ -653,6 +655,10 @@ while (i) {
 				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
 				continue;		
 				}
+			else if ((objP->info.nType == OBJ_EFFECT) && (objP->info.nId == LIGHTNING_ID) && !SHOW_LIGHTNING) {
+				soundObjP->Stop ();
+				continue;		
+				}
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
 				OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
@@ -697,7 +703,7 @@ while (i) {
 	i--;
 	soundObjP--;
 	if ((soundObjP->m_flags & SOF_USED) && (soundObjP->m_channel > -1)) {
-#if 0
+#if 1
 		if ((m_objects [i].m_flags & SOF_PLAY_FOREVER))
 			soundObjP->Stop ();
 		else 
@@ -705,7 +711,7 @@ while (i) {
 			DeleteSoundObject (i);
 		}
 	}
-StopAllChannels ();
+StopAllChannels (true);
 soundQueue.Pause ();
 }
 
@@ -722,7 +728,7 @@ PauseSounds ();
 
 void CAudio::ResumeSounds (void)
 {
-SetSoundSources ();
+//SetSoundSources ();
 SyncSounds ();	//don't think we really need to do this, but can't hurt
 ResumeLoopingSound ();
 }

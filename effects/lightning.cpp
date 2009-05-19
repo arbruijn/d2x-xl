@@ -1334,6 +1334,13 @@ return m_nLightnings;
 
 //------------------------------------------------------------------------------
 
+void CLightningSystem::Mute (void)
+{
+m_bSound = -1;
+}
+
+//------------------------------------------------------------------------------
+
 void CLightningSystem::UpdateSound (void)
 {
 if (!m_bValid)
@@ -1740,6 +1747,17 @@ if (SHOW_LIGHTNING) {
 		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
 			systemP->Render (0, systemP->m_nLightnings, gameOpts->render.bDepthSort > 0, 0);
 	StencilOn (bStencil);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningManager::Mute (void)
+{
+if (SHOW_LIGHTNING) {
+	int nCurrent = -1;
+	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
+		systemP->Mute ();
 	}
 }
 

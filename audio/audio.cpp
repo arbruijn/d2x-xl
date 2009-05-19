@@ -21,6 +21,7 @@
 #include "songs.h"
 #include "midi.h"
 #include "audio.h"
+#include "lightning.h"
 #include "soundthreads.h"
 
 //end changes by adb
@@ -837,17 +838,18 @@ if ((nIndex >= 0) && (nIndex < int (m_usedChannels.ToS ())))
 
 //------------------------------------------------------------------------------
 
-void CAudio::StopAllChannels (void)
+void CAudio::StopAllChannels (bool bPause)
 {
-#if 1
-StopLoopingSound ();
-StopObjectSounds ();
-#endif
+if (!bPause) {
+	StopLoopingSound ();
+	StopObjectSounds ();
+	}
+soundQueue.Init ();
+lightningManager.Mute ();
 for (int i = 0; i < m_info.nMaxChannels; i++)
 	audio.StopSound (i);
 gameData.multiplayer.bMoving = -1;
 gameData.weapons.firing [0].bSound = 0;
-soundQueue.Init ();
 }
 
 //------------------------------------------------------------------------------
@@ -964,15 +966,10 @@ midi.SetVolume (midiVolume);
 
 int CAudio::SoundIsPlaying (short nSound)
 {
-	int i;
-
 nSound = XlatSound (nSound);
-for (i = 0; i < m_info.nMaxChannels; i++)
-  //changed on 980905 by adb: added audio.m_channels[i].bPlaying &&
-  if (audio.m_channels [i].Playing () && (audio.m_channels [i].Sound () == nSound)) {
-  //end changes by adb
-	return 1;
-	}
+for (int i = 0; i < m_info.nMaxChannels; i++)
+  if (audio.m_channels [i].Playing () && (audio.m_channels [i].Sound () == nSound)) 
+		return 1;
 return 0;
 }
 

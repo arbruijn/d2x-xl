@@ -2186,7 +2186,7 @@ gameStates.app.bGameRunning = 0;
 paletteManager.ResetEffect ();
 paletteManager.LoadEffect ();
 StopTriggeredSounds ();
-audio.StopAllChannels ();		//kill any continuing sounds (eg. forcefield hum)
+audio.PauseAll ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 	LOCALPLAYER.score =
@@ -2227,10 +2227,7 @@ else {
 		StartLevel (1);
 		}
 	}
-SetSoundSources ();
-StartTriggeredSounds ();
-audio.SyncSounds ();	//don't think we really need to do this, but can't hurt
-audio.ResumeLoopingSound ();
+audio.ResumeAll ();
 }
 
 //------------------------------------------------------------------------------
