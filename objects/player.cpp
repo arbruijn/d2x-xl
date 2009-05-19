@@ -107,7 +107,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
 			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [i].nObject, 0, 
-								 I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
+											 I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
 			fP->bSound = 0;
 			}
 		}

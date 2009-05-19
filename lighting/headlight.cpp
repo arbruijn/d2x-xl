@@ -48,6 +48,7 @@ void CHeadlightManager::Toggle (void)
 {
 if (PlayerHasHeadlight (-1)) {
 	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;
+	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 	if (IsMultiGame)
 		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 	}
@@ -909,6 +910,7 @@ if (bOn)
 	gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 else
 	gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 }
 
 //-----------------------------------------------------------------------------
@@ -926,6 +928,7 @@ LOCALPLAYER.energy -= (gameData.time.xFrame * 3 / 8);
 if (LOCALPLAYER.energy < I2X (10)) {
 	if (!bTurnedOff) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+		audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 		bTurnedOff = 1;
 		if (IsMultiGame)
 			MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);

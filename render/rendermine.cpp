@@ -720,9 +720,70 @@ return (Controls [0].zoomDownCount > 0);
 
 //------------------------------------------------------------------------------
 
+void HandleZoom (void)
+{
+
+	static int nZoomState = 0;
+	static int nDestZoomFactor = 0;
+	static float nZoomStep = 0;
+	static float nZoomFactor = 0;
+	static time_t tZoom = 0;
+
+if (extraGameInfo [IsMultiGame].nZoomMode == 0)
+	return;
+else if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
+	if (!nZoomState) {
+		if (ZoomKeyPressed ()) {
+			audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM1));
+			if (gameStates.render.nZoomFactor >= gameStates.render.nMaxZoomFactor)
+				nDestZoomFactor = gameStates.render.nMinZoomFactor;
+			else
+				nDestZoomFactor = (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) 
+										? (gameStates.render.nZoomFactor * 7) / 5 
+										: (gameStates.render.nZoomFactor * 5) / 3;
+			nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 6.25f;
+			nZoomFactor = float (gameStates.render.nZoomFactor);
+			tZoom = gameStates.app.nSDLTicks - 40;
+			nZoomState = (nZoomStep > 0) ? 1 : -1;
+			}
+		}
+	}
+else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
+	if (ZoomKeyPressed ()) {
+		if ((nZoomState <= 0) && (gameStates.render.nZoomFactor < gameStates.render.nMaxZoomFactor)) {
+			audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+			nDestZoomFactor = gameStates.render.nMaxZoomFactor;
+			nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 25.0f;
+			nZoomFactor = float (gameStates.render.nZoomFactor);
+			tZoom = gameStates.app.nSDLTicks - 40;
+			nZoomState = 1;
+			}
+		}
+	else if ((nZoomState >= 0) && (gameStates.render.nZoomFactor > gameStates.render.nMinZoomFactor)) {
+		audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+		nDestZoomFactor = gameStates.render.nMinZoomFactor;
+		nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 25.0f;
+		nZoomFactor = float (gameStates.render.nZoomFactor);
+		tZoom = gameStates.app.nSDLTicks - 40;
+		nZoomState = -1;
+		}
+	}
+if (nZoomState && (gameStates.app.nSDLTicks - tZoom >= 40)) {
+	tZoom += 40;
+	nZoomFactor += nZoomStep;
+	gameStates.render.nZoomFactor = fix (nZoomFactor);
+	if (((nZoomState > 0) && (gameStates.render.nZoomFactor > nDestZoomFactor)) || 
+		 ((nZoomState < 0) && (gameStates.render.nZoomFactor < nDestZoomFactor))) {
+		gameStates.render.nZoomFactor = nDestZoomFactor;
+		nZoomState = 0;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale)
 {
-	static int bStopZoom;
 	short nStartSeg;
 
 gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
@@ -776,40 +837,8 @@ else {
 		gameStates.render.nMaxZoomFactor = gameStates.render.nMinZoomFactor * 5;
 		if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
 			gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor; //(fix) (((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
-		else {
-			switch (extraGameInfo [IsMultiGame].nZoomMode) {
-				case 0:
-					break;
-				case 1:
-					if (ZoomKeyPressed ()) {
-						if (!bStopZoom) {
-							gameStates.render.nZoomFactor = 
-								(gameStates.render.cockpit.nType == CM_FULL_COCKPIT) 
-									? (gameStates.render.nZoomFactor * 7) / 5 
-									: (gameStates.render.nZoomFactor * 5) / 3;
-							if (gameStates.render.nZoomFactor > gameStates.render.nMaxZoomFactor)
-								gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
-							bStopZoom = 1;
-							}
-						}
-					else {
-						bStopZoom = 0;
-						}
-					break;
-				case 2:
-					if (ZoomKeyPressed ()) {
-						gameStates.render.nZoomFactor += gameData.time.xFrame * 4;
-						if (gameStates.render.nZoomFactor > gameStates.render.nMaxZoomFactor)
-							gameStates.render.nZoomFactor = gameStates.render.nMaxZoomFactor;
-						}
-					else {
-						gameStates.render.nZoomFactor -= gameData.time.xFrame * 4;
-						if (gameStates.render.nZoomFactor < gameStates.render.nMinZoomFactor)
-							gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
-						}
-					break;
-				}
-			}
+		else
+			HandleZoom ();
 		if ((gameData.objs.viewerP == gameData.objs.consoleP) &&
 #if DBG
 			 gameStates.render.bChaseCam) {

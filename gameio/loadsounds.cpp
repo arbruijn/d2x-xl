@@ -418,7 +418,10 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 	 {NULL, "08:lightng.wav"},
 	 {NULL, "09:slowdown.wav"},
 	 {NULL, "10:speedup.wav"},
-	 {NULL, "11:airbubbles.wav"}
+	 {NULL, "11:airbubbles.wav"},
+	 {NULL, "12:zoom1.wav"},
+	 {NULL, "13:zoom2.wav"},
+	 {NULL, "14:headlight.wav"}
 	};
 
 //------------------------------------------------------------------------------
