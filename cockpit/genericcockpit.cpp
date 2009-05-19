@@ -1982,6 +1982,7 @@ else if (nType == CM_REAR_VIEW) {
 else
 	return;
 gameStates.render.cockpit.nType = nType;
+gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
 cockpit->Setup (false);

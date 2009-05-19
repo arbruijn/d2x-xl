@@ -196,6 +196,8 @@ if ((gameStates.render.bChaseCam = bOn)) {
 	CGenericCockpit::Save ();
 	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
 		cockpit->Activate (CM_FULL_SCREEN);
+	else
+		gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
 	}
 else
 	CGenericCockpit::Restore ();
@@ -230,6 +232,8 @@ if ((gameStates.render.bFreeCam = bOn)) {
 	CGenericCockpit::Save ();
 	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
 		cockpit->Activate (CM_FULL_SCREEN);
+	else
+		gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
 	}
 else {
 	gameData.objs.viewerP->info.position = gameStates.app.playerPos;

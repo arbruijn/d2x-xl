@@ -738,9 +738,8 @@ else if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
 			if (gameStates.render.nZoomFactor >= gameStates.render.nMaxZoomFactor)
 				nDestZoomFactor = gameStates.render.nMinZoomFactor;
 			else
-				nDestZoomFactor = (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) 
-										? (gameStates.render.nZoomFactor * 7) / 5 
-										: (gameStates.render.nZoomFactor * 5) / 3;
+				nDestZoomFactor = fix (double (gameStates.render.nZoomFactor) * 
+											  pow (double (gameStates.render.nMaxZoomFactor) / double (gameStates.render.nMinZoomFactor), 0.25) + 0.5);
 			nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 6.25f;
 			nZoomFactor = float (gameStates.render.nZoomFactor);
 			tZoom = gameStates.app.nSDLTicks - 40;
