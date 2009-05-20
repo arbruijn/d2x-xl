@@ -388,7 +388,7 @@ if (nType == OBJ_POWERUP) {
 	}
 if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) && 
 	 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields) {
-	if (objP->info.movementType != MT_SPINNING) {
+	if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
 		objP->info.movementType = MT_SPINNING;
 		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);
 		}
