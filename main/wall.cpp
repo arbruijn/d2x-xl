@@ -1330,8 +1330,11 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 		short nConnSide = segP->ConnectedSide (connSegP);
 		segP->SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 		segP->Wall (nSide)->flags |= WALL_BLASTED;
-		if (nConnSide >= 0)
-			connSegP->Wall (nConnSide)->flags |= WALL_BLASTED;
+		if (nConnSide >= 0) {
+			CWall* wallP = connSegP->Wall (nConnSide);
+			if (wallP)
+				wallP->flags |= WALL_BLASTED;
+			}
 		}
 	newfrac = FixDiv (gameData.walls.exploding [i].time, EXPL_WALL_TIME);
 	oldCount = X2I (EXPL_WALL_TOTAL_FIREBALLS * FixMul (oldfrac, oldfrac));
