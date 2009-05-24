@@ -529,7 +529,7 @@ else {	//	---------------------------------------------------------------
 							return;
 						}
 					else {
-						if (gameData.ai.vGunPoint.IsZero())
+						if (gameData.ai.vGunPoint.IsZero ())
 							;
 						else {
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))

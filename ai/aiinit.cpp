@@ -234,7 +234,7 @@ void InitAIFrame (void)
 
 if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
 	gameData.ai.vLastPlayerPosFiredAt.SetZero ();
-if (!gameData.ai.vLastPlayerPosFiredAt.IsZero())
+if (!gameData.ai.vLastPlayerPosFiredAt.IsZero ())
 	gameData.ai.nDistToLastPlayerPosFiredAt =
 		CFixVector::Dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedPlayerPos);
 else

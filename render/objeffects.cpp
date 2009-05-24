@@ -788,29 +788,29 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 
 // -----------------------------------------------------------------------------
 
-#define	RING_SIZE		16
-#define	THRUSTER_SEGS	14
+#define	THRUSTER_SEGS	14	// number of rings the thruster flame is composed of
+#define	RING_SEGS		16	// number of segments each ring is composed of
 
-static CFloatVector	vFlame [THRUSTER_SEGS][RING_SIZE];
-static int			bHaveFlame = 0;
+static CFloatVector	vFlame [THRUSTER_SEGS][RING_SEGS];
+static int				bHaveFlame = 0;
 
-static CFloatVector	vRing [RING_SIZE] = {
-	CFloatVector::Create(-0.5f, -0.5f, 0.0f, 1.0f),
-	CFloatVector::Create(-0.6533f, -0.2706f, 0.0f, 1.0f),
-	CFloatVector::Create(-0.7071f, 0.0f, 0.0f, 1.0f),
-	CFloatVector::Create(-0.6533f, 0.2706f, 0.0f, 1.0f),
-	CFloatVector::Create(-0.5f, 0.5f, 0.0f, 1.0f),
-	CFloatVector::Create(-0.2706f, 0.6533f, 0.0f, 1.0f),
-	CFloatVector::Create(0.0f, 0.7071f, 0.0f, 1.0f),
-	CFloatVector::Create(0.2706f, 0.6533f, 0.0f, 1.0f),
-	CFloatVector::Create(0.5f, 0.5f, 0.0f, 1.0f),
-	CFloatVector::Create(0.6533f, 0.2706f, 0.0f, 1.0f),
-	CFloatVector::Create(0.7071f, 0.0f, 0.0f, 1.0f),
-	CFloatVector::Create(0.6533f, -0.2706f, 0.0f, 1.0f),
-	CFloatVector::Create(0.5f, -0.5f, 0.0f, 1.0f),
-	CFloatVector::Create(0.2706f, -0.6533f, 0.0f, 1.0f),
-	CFloatVector::Create(0.0f, -0.7071f, 0.0f, 1.0f),
-	CFloatVector::Create(-0.2706f, -0.6533f, 0.0f, 1.0f)
+static CFloatVector	vRingVerts [RING_SEGS] = {
+	CFloatVector::Create (-0.5f, -0.5f, 0.0f, 1.0f),
+	CFloatVector::Create (-0.6533f, -0.2706f, 0.0f, 1.0f),
+	CFloatVector::Create (-0.7071f, 0.0f, 0.0f, 1.0f),
+	CFloatVector::Create (-0.6533f, 0.2706f, 0.0f, 1.0f),
+	CFloatVector::Create (-0.5f, 0.5f, 0.0f, 1.0f),
+	CFloatVector::Create (-0.2706f, 0.6533f, 0.0f, 1.0f),
+	CFloatVector::Create (0.0f, 0.7071f, 0.0f, 1.0f),
+	CFloatVector::Create (0.2706f, 0.6533f, 0.0f, 1.0f),
+	CFloatVector::Create (0.5f, 0.5f, 0.0f, 1.0f),
+	CFloatVector::Create (0.6533f, 0.2706f, 0.0f, 1.0f),
+	CFloatVector::Create (0.7071f, 0.0f, 0.0f, 1.0f),
+	CFloatVector::Create (0.6533f, -0.2706f, 0.0f, 1.0f),
+	CFloatVector::Create (0.5f, -0.5f, 0.0f, 1.0f),
+	CFloatVector::Create (0.2706f, -0.6533f, 0.0f, 1.0f),
+	CFloatVector::Create (0.0f, -0.7071f, 0.0f, 1.0f),
+	CFloatVector::Create (-0.2706f, -0.6533f, 0.0f, 1.0f)
 };
 
 static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
@@ -818,34 +818,28 @@ static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
 void CreateThrusterFlame (void)
 {
 if (!bHaveFlame) {
-		CFloatVector		*pv;
-		int			i, j, m, n;
-		double		phi, sinPhi;
-		float			z = 0,
-						fScale = 2.0f / 3.0f,
-						fStep [2] = {1.0f / 4.0f, 1.0f / 3.0f};
+		CFloatVector*	pv;
+		int				i, j, m, n;
+		double			phi, sinPhi;
+		float				z = 0,
+							fScale = 2.0f / 3.0f,
+							fStep [2] = {1.0f / 4.0f, 1.0f / 3.0f};
 
+	// first part with increasing diameter
 	pv = &vFlame [0][0];
-	for (i = 0, phi = 0; i < 5; i++, phi += Pi / 8, z -= fStep [0]) {
+	for (i = 0, phi = 0; i < 5; i++, phi += Pi / 10, z -= fStep [0]) {
 		sinPhi = (1 + sin (phi) / 2) * fScale;
-		for (j = 0; j < RING_SIZE; j++, pv++) {
-/*
-			pv->x() = vRing [j][X] * (float) sinPhi;
-			pv->y() = vRing [j][Y] * (float) sinPhi;
-*/
-			*pv = vRing [j] * (float)sinPhi;
+		for (j = 0; j < RING_SEGS; j++, pv++) {
+			*pv = vRingVerts [j] * float (sinPhi);
 			(*pv) [Z] = z;
 			}
 		}
+	// second part with decreasing diameter
 	m = n = THRUSTER_SEGS - i + 1;
-	for (phi = Pi / 2; i < THRUSTER_SEGS; i++, phi += Pi / 8, z -= fStep [1], m--) {
-		sinPhi = (1 + sin (phi) / 2) * fScale * m / n;
-		for (j = 0; j < RING_SIZE; j++, pv++) {
-/*
-			pv->x() = vRing [j][X] * (float) sinPhi;
-			pv->y() = vRing [j][Y] * (float) sinPhi;
-*/
-			*pv = vRing [j] * (float)sinPhi;
+	for (phi = Pi / 2; i < THRUSTER_SEGS; i++, phi += Pi / 12, z -= fStep [1], m--) {
+		sinPhi = (1 + sin (phi) / 2) * fScale /** m / n*/;
+		for (j = 0; j < RING_SEGS; j++, pv++) {
+			*pv = vRingVerts [j] * float (sinPhi);
 			(*pv) [Z] = z;
 			}
 		}
@@ -969,10 +963,11 @@ return nThrusters;
 
 // -----------------------------------------------------------------------------
 
+
 void CreateLightTrail (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CBitmap *bmP, tRgbaColorf *colorP)
 {
-	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
+	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	static CFloatVector	vEye = CFloatVector::ZERO;
 
 	CFloatVector	v, vPosf, vNormf, vTrail [3], vCorona [4], fVecf;
@@ -1036,6 +1031,8 @@ void RenderThrusterFlames (CObject *objP)
 	static time_t		tPulse = 0;
 	static int			nPulse = 10;
 
+	static tTexCoord2f	tcThruster [4] = {{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,1.0f}},{{0.0f,1.0f}}};
+
 if (gameStates.app.bNostalgia)
 	return;
 #if SHADOWS
@@ -1082,7 +1079,7 @@ if (!LoadThruster ()) {
 	extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 	glDisable (GL_TEXTURE_2D);
 	}
-else if (gameOpts->render.bDepthSort <= 0) {
+else if ((gameOpts->render.bDepthSort <= 0) || (nStyle == 1)) {
 	glEnable (GL_TEXTURE_2D);
 	bmpThruster [nStyle]->SetTranspType (-1);
 	if (bmpThruster [nStyle]->Bind (1)) {
@@ -1111,13 +1108,10 @@ if (nThrusters > 1) {
 	}
 glEnable (GL_BLEND);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
-//		static tTexCoord2f	tcThruster [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-//		static tTexCoord2f	tcFlame [3] = {{{0,0}},{{1,1}},{{1,0}}};
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
-		CFloatVector	/*vPosf, vNormf, vFlame [3], vThruster [4],*/ fVecf;
-//		float		c = 1/*0.7f + 0.03f * fPulse, dotFlame, dotThruster*/;
+		CFloatVector	fVecf;
 
 	if (!gameData.models.vScale.IsZero ())
 		ti.fSize *= X2F (gameData.models.vScale [Z]);
@@ -1134,10 +1128,12 @@ else {
 	tTexCoord3f	tTexCoord2fl, tTexCoord2flStep;
 
 	CreateThrusterFlame ();
-	glLineWidth (3);
-	OglCullFace (1);
-	tTexCoord2flStep.v.u = 1.0f / RING_SIZE;
-	tTexCoord2flStep.v.v = 0.5f / THRUSTER_SEGS;
+	//OglCullFace (1);
+	glDisable (GL_CULL_FACE);
+	glBlendFunc (GL_ONE, GL_ONE);
+
+	tTexCoord2flStep.v.u = 1.0f / RING_SEGS;
+	tTexCoord2flStep.v.v = 1.0f /*0.75f*/ / THRUSTER_SEGS;
 	for (h = 0; h < nThrusters; h++) {
 		if (bTextured) {
 			float c = 1; //0.8f + 0.02f * fPulse;
@@ -1151,7 +1147,6 @@ else {
 			}
 		transformation.Begin (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
-#if 1
 			if (!bTextured) {
 				color [0] = color [1];
 				color [1].red *= 0.975f;
@@ -1159,8 +1154,8 @@ else {
 				color [1].alpha *= fFade [i / 4];
 				}
 			glBegin (GL_QUAD_STRIP);
-			for (j = 0; j < RING_SIZE + 1; j++) {
-				k = j % RING_SIZE;
+			for (j = 0; j <= RING_SEGS; j++) {
+				k = j % RING_SEGS;
 				tTexCoord2fl.v.u = j * tTexCoord2flStep.v.u;
 				for (l = 0; l < 2; l++) {
 					v = vFlame [i + l][k];
@@ -1169,34 +1164,57 @@ else {
 					v [Z] *= ti.fLength;
 					transformation.Transform (v, v, 0);
 					if (bTextured) {
-						tTexCoord2fl.v.v = 0.25f + tTexCoord2flStep.v.v * (i + l);
+						tTexCoord2fl.v.v = /*0.125f +*/ tTexCoord2flStep.v.v * (i + l);
 						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
 						}
 					else
-						glColor4fv (reinterpret_cast<GLfloat*> (color + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
+						glColor4fv (reinterpret_cast<GLfloat*> (color + l)); 
 					glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 					}
 				}
 			glEnd ();
-#else
-			glBegin (GL_LINE_LOOP);
-			glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
-			for (j = 0; j < RING_SIZE; j++) {
-				transformation.Transform (&v, vFlame [i] + j);
+			}
+		if (bTextured && (bTextured = LoadThruster (1))) {
+			bmpThruster [0]->SetTranspType (-1);
+			if (bmpThruster [0]->Bind (1)) {
+				bTextured = 0;
+				glDisable (GL_TEXTURE_2D);
+				}
+			else {
+				bmpThruster [0]->Texture ()->Wrap (GL_CLAMP);
+				bTextured = 1;
+				}
+			}
+		if (bTextured) {
+			glBegin (GL_QUADS);
+			for (j = 0; j < 4; j++) {
+				v = vFlame [5][j * 4];
+				v [X] *= ti.fSize * 1.5f;
+				v [Y] *= ti.fSize * 1.5f;
+				v [Z] = vFlame [0][k][Z] * ti.fLength;
+				transformation.Transform (v, v, 0);
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (&tcThruster [j]));
 				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 				}
 			glEnd ();
-#endif
 			}
-		glBegin (GL_TRIANGLE_STRIP);
-		for (j = 0; j < RING_SIZE; j++) {
-			transformation.Transform(v, vFlame [0][nStripIdx [j]], 0);
-			glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+		else {
+			color [0] = color [1];
+			color [1].red *= 0.975f;
+			color [1].green *= 0.8f;
+			color [1].alpha *= fFade [i / 4];
+			glColor4fv (reinterpret_cast<GLfloat*> (color)); 
+			glBegin (GL_TRIANGLE_STRIP);
+			for (j = 0; j < RING_SEGS; j++) {
+				transformation.Transform (v, vFlame [0][nStripIdx [j]], 0);
+				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+				}
+			glEnd ();
 			}
-		glEnd ();
 		transformation.End ();
 		}
-	glLineWidth (1);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable (GL_CULL_FACE);
 	OglCullFace (0);
 	}
 glDepthMask (1);
@@ -1500,12 +1518,12 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 		alpha = 0.15f;
 		for (h = 0; h < 3; h++) {
 			glBegin (GL_QUAD_STRIP);
-			for (i = 0; i < RING_SIZE + 1; i++) {
-				j = i % RING_SIZE;
+			for (i = 0; i < RING_SEGS + 1; i++) {
+				j = i % RING_SEGS;
 				for (k = 0; k < 2; k++) {
 					n = h + k;
 					glColor4f (pc->red, pc->green, pc->blue, (n == 3) ? 0.0f : alpha);
-					vPosf = vRing [j];
+					vPosf = vRingVerts [j];
 					vPosf [X] *= r [n];
 					vPosf [Y] *= r [n];
 					vPosf [Z] = -l [n];
@@ -1520,8 +1538,8 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			glCullFace (h ? GL_FRONT : GL_BACK);
 			glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
 			glBegin (GL_TRIANGLE_STRIP);
-			for (j = 0; j < RING_SIZE; j++) {
-				vPosf = vRing [nStripIdx [j]];
+			for (j = 0; j < RING_SEGS; j++) {
+				vPosf = vRingVerts [nStripIdx [j]];
 				vPosf [X] *= r [h];
 				vPosf [Y] *= r [h];
 				vPosf [Z] = -l [h];
@@ -1572,12 +1590,12 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	transformation.Transform (vPosf [0], vPosf [0], 0);
 	transformation.Transform (vPosf [1], vPosf [1], 0);
 	vDirf = vPosf [0] - vPosf [1];
-	if (vDirf.IsZero()) {
+	if (vDirf.IsZero ()) {
 		//return;
 		vPosf [1].Assign (OBJECTS [objP->cType.laserInfo.parent.nObject].info.position.vPos);
 		transformation.Transform(vPosf [1], vPosf [1], 0);
 		vDirf = vPosf [0] - vPosf [1];
-		if(vDirf.IsZero())
+		if(vDirf.IsZero ())
 			return;
 		}
 	bStencil = StencilOff ();

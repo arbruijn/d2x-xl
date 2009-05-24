@@ -233,6 +233,10 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 Assert (xLaserRadius != -1);
 Assert (rType != -1);
 nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
+#if DBG
+if (nObject == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 objP = OBJECTS + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
@@ -472,32 +476,46 @@ if (bMakeSound && (weaponInfoP->flashSound > -1)) {
 	else if (nWeaponType == FLARE_ID)
 		audio.CreateObjectSound (nObject, SOUNDCLASS_GENERIC, -1, 0, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_FLARE));
 	}
+//	Here's where to fix the problem with OBJECTS which are moving backwards imparting higher velocity to their weaponfire.
+//	Find out if moving backwards.
+if (!WeaponIsMine (nWeaponType))
+	xParentSpeed = 0;
+else {
+	xParentSpeed = parentP->mType.physInfo.velocity.Mag ();
+	if (CFixVector::Dot (parentP->mType.physInfo.velocity, parentP->info.position.mOrient.FVec ()) < 0)
+		xParentSpeed = -xParentSpeed;
+	}
+
 //	Fire the laser from the gun tip so that the back end of the laser bolt is at the gun tip.
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
 // This also jitters the laser a bit so that it doesn't alias.
 //	Don't do for weapons created by weapons.
 if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID)) {
-	CFixVector	vEndPos;
-	int			nEndSeg;
+#if 1
+	objP->mType.physInfo.velocity = *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
+#if DBG
+	CFixVector	vEndPos = *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
+	vEndPos += objP->info.position.vPos;
+#endif
+	fix xTime = gameData.physics.xTime;
+	gameData.physics.xTime = I2X (1);	// make it move the entire velocity vector
+	objP->Update ();
+	gameData.physics.xTime = xTime;
+	if (objP->info.nFlags & OF_SHOULD_BE_DEAD) {
+		ReleaseObject (objP->Index ());
+		return -1;
+		}
+#else
+	CFixVector	vEndPos = objP->info.position.vPos + *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
+	int			nEndSeg = FindSegByPos (vEndPos, objP->info.nSegment, 1, 0);
 
-	vEndPos = objP->info.position.vPos + *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
-	nEndSeg = FindSegByPos (vEndPos, objP->info.nSegment, 1, 0);
 	if (nEndSeg == objP->info.nSegment)
 		objP->info.position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
 		objP->info.position.vPos = vEndPos;
 		objP->RelinkToSeg (nEndSeg);
 		}
-	}
-
-//	Here's where to fix the problem with OBJECTS which are moving backwards imparting higher velocity to their weaponfire.
-//	Find out if moving backwards.
-if (!WeaponIsMine (nWeaponType))
-	xParentSpeed = 0;
-else {
-	xParentSpeed = parentP->mType.physInfo.velocity.Mag();
-	if (CFixVector::Dot (parentP->mType.physInfo.velocity, parentP->info.position.mOrient.FVec ()) < 0)
-		xParentSpeed = -xParentSpeed;
+#endif
 	}
 
 xWeaponSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
@@ -524,6 +542,7 @@ if (WIThrust (nWeaponType) != 0) {
 	}
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
 	objP->info.xLifeLeft += (d_rand () - 16384) << 2;		//	add in -2..2 seconds
+
 return nObject;
 }
 
@@ -1226,7 +1245,9 @@ int LaserHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 
 gameData.laser.nOffset = (I2X (2) * (d_rand () % 8)) / 8;
 LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj);
+#if !DBG
 LaserPlayerFire (objP, nLaser, 1, 0, 0, nLightObj);
+#endif
 if (nFlags & LASER_QUAD) {
 	//	hideous system to make quad laser 1.5x powerful as Normal laser, make every other quad laser bolt bHarmless
 	LaserPlayerFire (objP, nLaser, 2, 0, 0, nLightObj);

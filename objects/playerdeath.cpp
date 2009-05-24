@@ -89,7 +89,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	tFVIData		hit_data;
 	CFixVector	local_p1;
 
-	if (vPlayerCameraOffs.IsZero())
+	if (vPlayerCameraOffs.IsZero ())
 		vPlayerCameraOffs[X] += I2X (1)/16;
 
 	hit_data.hit.nType = HIT_WALL;

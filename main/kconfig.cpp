@@ -1823,7 +1823,7 @@ else if (m_version > 0)  {
 
 			Kconfig_abs_movement = reinterpret_cast<CAngleVector*> ((size_t) m_info + sizeof (ext_control_info));
 
-			if (!Kconfig_abs_movement->IsZero()) {
+			if (!Kconfig_abs_movement->IsZero ()) {
 				tempm = CFixMatrix::Create(*Kconfig_abs_movement);
 				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient * tempm;
 				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	

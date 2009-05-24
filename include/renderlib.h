@@ -49,7 +49,7 @@ void FreeExplBlast (void);
 int LoadCorona (void);
 int LoadGlare (void);
 int LoadHalo (void);
-int LoadThruster (void);
+int LoadThruster (int nStyle = -1);
 int LoadShield (void);
 int LoadDeadzone (void);
 void LoadExtraImages (void);

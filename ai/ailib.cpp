@@ -95,7 +95,7 @@ int AICanFireAtPlayer (CObject *objP, CFixVector *vGun, CFixVector *vPlayer)
 	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.consoleP), -1};
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
-if (vGun->IsZero())
+if (vGun->IsZero ())
 	return 0;
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
@@ -193,7 +193,7 @@ else {
 	else {
 		//	Compute expensive stuff -- gameData.ai.vVecToPlayer and gameData.ai.nPlayerVisibility
 		CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, *pos);
-		if (gameData.ai.vVecToPlayer.IsZero()) {
+		if (gameData.ai.vVecToPlayer.IsZero ()) {
 			gameData.ai.vVecToPlayer[X] = I2X (1);
 			}
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);

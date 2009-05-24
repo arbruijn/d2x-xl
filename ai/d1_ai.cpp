@@ -1225,7 +1225,7 @@ if (!*flag) {
 	else {
 		//	Compute expensive stuff -- vec_to_player and player_visibility
 		CFixVector::NormalizedDir (*vec_to_player, gameData.ai.vBelievedPlayerPos, *pos);
-		if (vec_to_player->IsZero()) {
+		if (vec_to_player->IsZero ()) {
 			(*vec_to_player) [X] = I2X (1);
 			}
 		*player_visibility = player_is_visible_from_object(objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], vec_to_player);
@@ -1646,7 +1646,7 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 							return;
 						}
 					} else {
-						if (vGunPoint->IsZero()) {
+						if (vGunPoint->IsZero ()) {
 							;
 						} else {
 							if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))

@@ -349,7 +349,7 @@ else {
 		nParts *= 25;
 		nParts += 75;
 		}
-	nParts = objP->mType.physInfo.thrust.IsZero() ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
+	nParts = objP->mType.physInfo.thrust.IsZero () ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
 	if (SHOW_SMOKE && nParts && gameOpts->render.particles.bPlayers) {
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
