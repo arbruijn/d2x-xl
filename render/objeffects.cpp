@@ -1047,7 +1047,7 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 fSpeed = X2F (objP->mType.physInfo.velocity.Mag());
-ti.fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
+ti.fLength = fSpeed / 60.0f + 0.5f + float (rand () % 100) / 1000.0f;
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
 	fFade [1] = 0.85f;
@@ -1068,7 +1068,7 @@ if (gameStates.app.nSDLTicks - tPulse > 10) {
 	tPulse = gameStates.app.nSDLTicks;
 	nPulse = d_rand () % 11;
 	}
-fPulse = (float) nPulse / 10.0f;
+fPulse = float (nPulse) / 10.0f;
 ti.pp = NULL;
 nThrusters = CalcThrusterPos (objP, &ti, 0);
 bStencil = StencilOff ();
@@ -1128,13 +1128,59 @@ else {
 	tTexCoord3f	tTexCoord2fl, tTexCoord2flStep;
 
 	CreateThrusterFlame ();
-	//OglCullFace (1);
 	glDisable (GL_CULL_FACE);
+	glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE, GL_ONE);
+	gameStates.ogl.bUseTransform = 1;
 
 	tTexCoord2flStep.v.u = 1.0f / RING_SEGS;
 	tTexCoord2flStep.v.v = 1.0f /*0.75f*/ / THRUSTER_SEGS;
 	for (h = 0; h < nThrusters; h++) {
+		transformation.Begin (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
+#if 1
+		// render a cap for the thruster flame at its base
+		if (bTextured && (bTextured = LoadThruster (1))) {
+			bmpThruster [0]->SetTranspType (-1);
+			if (bmpThruster [0]->Bind (1)) {
+				bTextured = 0;
+				glDisable (GL_TEXTURE_2D);
+				}
+			else {
+				bmpThruster [0]->Texture ()->Wrap (GL_CLAMP);
+				bTextured = 1;
+				}
+			}
+		if (bTextured) {
+			glBegin (GL_QUADS);
+			float z = (vFlame [0][0][Z] + vFlame [1][0][Z]) / 2.0f * ti.fLength;
+			for (j = 0; j < 4; j++) {
+				k = j * 4;
+				v = vFlame [5][k];
+				v [X] *= ti.fSize * 1.5f;
+				v [Y] *= ti.fSize * 1.5f;
+				v [Z] = z;
+				//transformation.Transform (v, v, 0);
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (&tcThruster [j]));
+				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+				}
+			glEnd ();
+			bmpThruster [1]->Bind (1);
+			}
+		else {
+			color [0] = color [1];
+			color [1].red *= 0.975f;
+			color [1].green *= 0.8f;
+			color [1].alpha *= fFade [i / 4];
+			glColor4fv (reinterpret_cast<GLfloat*> (color)); 
+			glBegin (GL_TRIANGLE_STRIP);
+			for (j = 0; j < RING_SEGS; j++) {
+				//transformation.Transform (v, vFlame [0][nStripIdx [j]], 0);
+				//glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+				glVertex3fv (reinterpret_cast<GLfloat*> (&vFlame [0][nStripIdx [j]]));
+				}
+			glEnd ();
+			}
+#endif
 		if (bTextured) {
 			float c = 1; //0.8f + 0.02f * fPulse;
 			glColor3f (c, c, c); //, 0.9f);
@@ -1145,7 +1191,7 @@ else {
 			color [1].blue = 0.0f;
 			color [1].alpha = 0.9f;
 			}
-		transformation.Begin (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
+#if 1
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 			if (!bTextured) {
 				color [0] = color [1];
@@ -1162,7 +1208,7 @@ else {
 					v [X] *= ti.fSize;
 					v [Y] *= ti.fSize;
 					v [Z] *= ti.fLength;
-					transformation.Transform (v, v, 0);
+					//transformation.Transform (v, v, 0);
 					if (bTextured) {
 						tTexCoord2fl.v.v = /*0.125f +*/ tTexCoord2flStep.v.v * (i + l);
 						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
@@ -1174,45 +1220,10 @@ else {
 				}
 			glEnd ();
 			}
-		if (bTextured && (bTextured = LoadThruster (1))) {
-			bmpThruster [0]->SetTranspType (-1);
-			if (bmpThruster [0]->Bind (1)) {
-				bTextured = 0;
-				glDisable (GL_TEXTURE_2D);
-				}
-			else {
-				bmpThruster [0]->Texture ()->Wrap (GL_CLAMP);
-				bTextured = 1;
-				}
-			}
-		if (bTextured) {
-			glBegin (GL_QUADS);
-			for (j = 0; j < 4; j++) {
-				v = vFlame [5][j * 4];
-				v [X] *= ti.fSize * 1.5f;
-				v [Y] *= ti.fSize * 1.5f;
-				v [Z] = vFlame [0][k][Z] * ti.fLength;
-				transformation.Transform (v, v, 0);
-				glTexCoord2fv (reinterpret_cast<GLfloat*> (&tcThruster [j]));
-				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
-				}
-			glEnd ();
-			}
-		else {
-			color [0] = color [1];
-			color [1].red *= 0.975f;
-			color [1].green *= 0.8f;
-			color [1].alpha *= fFade [i / 4];
-			glColor4fv (reinterpret_cast<GLfloat*> (color)); 
-			glBegin (GL_TRIANGLE_STRIP);
-			for (j = 0; j < RING_SEGS; j++) {
-				transformation.Transform (v, vFlame [0][nStripIdx [j]], 0);
-				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
-				}
-			glEnd ();
-			}
+#endif
 		transformation.End ();
 		}
+	gameStates.ogl.bUseTransform = 0;
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_CULL_FACE);
 	OglCullFace (0);
