@@ -1047,7 +1047,11 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 fSpeed = X2F (objP->mType.physInfo.velocity.Mag());
+#if 0// DBG
+ti.fLength = fSpeed / 60.0f + 0.5f;
+#else
 ti.fLength = fSpeed / 60.0f + 0.5f + float (rand () % 100) / 1000.0f;
+#endif
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
 	fFade [1] = 0.85f;
@@ -1072,7 +1076,6 @@ fPulse = float (nPulse) / 10.0f;
 ti.pp = NULL;
 nThrusters = CalcThrusterPos (objP, &ti, 0);
 bStencil = StencilOff ();
-//glDepthMask (0);
 bTextured = 0;
 nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
 if (!LoadThruster ()) {
@@ -1129,9 +1132,9 @@ else {
 
 	CreateThrusterFlame ();
 	glDisable (GL_CULL_FACE);
-	glEnable (GL_BLEND);
 	glBlendFunc (GL_ONE, GL_ONE);
 	gameStates.ogl.bUseTransform = 1;
+	glDepthMask (0);
 
 	tTexCoord2flStep.v.u = 1.0f / RING_SEGS;
 	tTexCoord2flStep.v.v = 1.0f /*0.75f*/ / THRUSTER_SEGS;
@@ -1227,8 +1230,8 @@ else {
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_CULL_FACE);
 	OglCullFace (0);
+	glDepthMask (1);
 	}
-glDepthMask (1);
 StencilOn (bStencil);
 }
 
