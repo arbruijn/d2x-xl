@@ -1046,12 +1046,7 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 #endif
 if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED))
 	return;
-fSpeed = X2F (objP->mType.physInfo.velocity.Mag());
-#if 0// DBG
-ti.fLength = fSpeed / 60.0f + 0.5f;
-#else
-ti.fLength = fSpeed / 60.0f + 0.5f + float (rand () % 100) / 1000.0f;
-#endif
+fSpeed = X2F (objP->mType.physInfo.velocity.Mag ());
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
 	fFade [1] = 0.85f;
@@ -1075,6 +1070,10 @@ if (gameStates.app.nSDLTicks - tPulse > 10) {
 fPulse = float (nPulse) / 10.0f;
 ti.pp = NULL;
 nThrusters = CalcThrusterPos (objP, &ti, 0);
+ti.fLength = fSpeed / 60.0f + 0.5f;
+if (ti.fLength < ti.fSize / 2)
+	ti.fLength = ti.fSize / 2;
+ti.fLength += float (rand () % 100) / 1000.0f;
 bStencil = StencilOff ();
 bTextured = 0;
 nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
