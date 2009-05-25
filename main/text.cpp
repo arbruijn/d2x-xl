@@ -815,7 +815,7 @@ const char *defaultGameTexts [][2] = {
  {"~Immer beste Waffe aktivieren", "Always Auto-SelecT"},
  {"Kein ~Waffenzoom", "Zoom Disabled"},
  {"Feste ~Zoomstufen", "FiXed Zoom Stages"},
- {"stufenlose ~Vergroesserung", "smooth ~Zoom"},
+ {"stufenlose ~Vergroesserung", "sm~Ooth zoom"},
  {"Spiel-Optionen", "Gameplay options"},
  {"~Klaenge und Musik...", "Sound Effects & ~Music..."},
  {"~Bildschirm-Aufloesung...", "Screen ~Resolution..."},

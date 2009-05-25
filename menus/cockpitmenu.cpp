@@ -196,7 +196,7 @@ do {
 	optMissiles = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
 	//if (gameOpts->app.bExpertMode)
-		optZoomType = m.AddCheck (TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_Z, HTX_GPLAY_ZOOMSMOOTH);
+		optZoomType = m.AddCheck (TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
 #if 0
 	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
