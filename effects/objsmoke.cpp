@@ -509,7 +509,7 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
-	float				nScale = 1.5f;
+	float				nScale = 1.0f;
 	tThrusterInfo	ti;
 
 nObject = objP->Index ();

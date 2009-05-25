@@ -265,8 +265,8 @@ else {
 nSpeed *= I2X (1);
 if (vDir) {
 	CAngleVector	a;
-	CFixMatrix	m;
-	float			d;
+	CFixMatrix		m;
+	float				d;
 	a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
 	a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
 	a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
@@ -318,7 +318,7 @@ else {
 	}
 if ((nType != BUBBLE_PARTICLES) && mOrient) {
 		CAngleVector	vRot;
-		CFixMatrix	mRot;
+		CFixMatrix		mRot;
 
 	vRot [BA] = 0;
 	vRot [PA] = 2048 - ((d_rand () % 9) * 512);

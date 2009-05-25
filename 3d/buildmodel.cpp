@@ -99,6 +99,7 @@ for (short i = 0; i < m_nSubModels; i++)
 
 if (gameStates.ogl.bHaveVBOs) {
 	int i;
+	OglClearError (0);
 	glGenBuffersARB (1, &m_vboDataHandle);
 	if ((i = glGetError ())) {
 		glGenBuffersARB (1, &m_vboDataHandle);
