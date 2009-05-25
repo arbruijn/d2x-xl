@@ -509,7 +509,7 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
-	float				nScale = 1.0f;
+	float				nScale = 2.0f;
 	tThrusterInfo	ti;
 
 nObject = objP->Index ();
@@ -541,7 +541,7 @@ if (nParts) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale);
 			}
-		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
+		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, 4 * nParts / 3, nScale,
 													gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
 													1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
 		if (nSmoke < 0)

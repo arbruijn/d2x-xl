@@ -89,11 +89,38 @@ glLineWidth (float (screen.Width ()) / 640.0f);
 glLineWidth (1.0f);
 }
 
+//	-----------------------------------------------------------------------------
+
+int TargetInLineOfFire (void)
+{
+	tFVIQuery	fq;
+	int			nHitType;
+	tFVIData		hit_data;
+	CFixVector	vEndPos;
+
+	//see if we can see this CPlayerData
+
+fq.p0 = &gameData.objs.viewerP->info.position.vPos;
+vEndPos = *fq.p0 + gameData.objs.viewerP->info.position.mOrient.FVec () * I2X (10000);
+fq.p1 = &vEndPos;
+fq.radP0 = 0;
+fq.radP1 = 0;
+fq.thisObjNum = OBJ_IDX (gameData.objs.viewerP);
+fq.flags = FQ_CHECK_OBJS | FQ_TRANSWALL;
+fq.startSeg = gameData.objs.viewerP->info.nSegment;
+fq.ignoreObjList = NULL;
+fq.bCheckVisibility = true;
+nHitType = FindVectorIntersection (&fq, &hit_data);
+return (nHitType == HIT_OBJECT);
+}
+
 //------------------------------------------------------------------------------
 
 //draw a crosshair for the zoom
 void DrawZoomCrosshair (void)
 {
+	int bHaveTarget = TargetInLineOfFire ();
+
 int w = CCanvas::Current ()->Width () >> 4;
 w += w >> 1;
 if (w < 5)
@@ -115,7 +142,10 @@ w += w >> 1;
 h >>= 4;
 h += h >> 1;
 
-CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 39, 0));
+if (bHaveTarget)
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (39, 0, 0));
+else
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 39, 0));
 for (i = 0, x1 = float (left); i < 11; i++) {
 	x1 += xStep;
 	if (i != 5)
@@ -131,7 +161,10 @@ for (i = 0, y1 = float (top); i < 11; i++) {
 w <<= 1;
 h <<= 1;
 
-CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 63, 0));
+if (bHaveTarget)
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (63, 0, 0));
+else
+	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 63, 0));
 OglDrawLine (left, y, right, y);
 OglDrawLine (x, top, x, bottom);
 OglDrawLine (left, y - h, left, y + h);
@@ -153,7 +186,10 @@ else {
 	}
 sprintf (szZoom, "X %d.%02d", r / 100, r % 100);
 fontManager.Current ()->StringSize (szZoom, w, h, aw);
-fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+if (bHaveTarget)
+	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
+else
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (NULL, x - w  / 2, bottom + h, szZoom);
 }
 

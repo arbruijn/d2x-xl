@@ -669,12 +669,14 @@ while (i) {
 #endif
 			}
 		if ((oldvolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
-			if (soundObjP->m_volume < 1) {	// Sound is too far away, so stop it from playing.
-				if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
-					DeleteSoundObject (i);
-					continue;
+			if (soundObjP->m_volume < 1) {	// Sound is too far away, so stop it playing.
+				if (soundObjP->m_channel > -1) {
+					if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
+						DeleteSoundObject (i);
+						continue;
+						}
+					soundObjP->Stop ();
 					}
-				soundObjP->Stop ();
 				}
 			else {
 				if (soundObjP->m_channel < 0) 

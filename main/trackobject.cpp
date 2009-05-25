@@ -206,20 +206,13 @@ int FindHomingObjectComplete (CFixVector *vCurPos, CObject *trackerP, int trackO
 	fix		minTrackableDot;
 	CObject	*curObjP;
 
-	//	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
-//Assert ((WI_homingFlag (trackerP->info.nId)) || (trackerP->info.nId == OMEGA_ID));
-
 maxTrackableDist = MAX_TRACKABLE_DIST;
 if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == EARTHSHAKER_MEGA_ID)) {
 	maxTrackableDist *= 2;
 	minTrackableDot = -I2X (1);
 	}
 else
-#if 0//def _DEBUG
-	minTrackableDot = -I2X (1);
-#else
 	minTrackableDot = MIN_TRACKABLE_DOT;
-#endif
 
 if ((trackerP->info.nType == OBJ_WEAPON) && (trackerP->info.nId == OMEGA_ID)) {
 	maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
