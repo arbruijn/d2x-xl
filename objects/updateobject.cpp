@@ -528,7 +528,7 @@ if ((info.xLifeLeft != IMMORTAL_TIME) &&
 	 (gameData.physics.xTime != I2X (1)))
 	info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
-if (UpdateControl ()) {
+if ((gameData.physics.xTime != I2X (1)) && UpdateControl ()) {
 	UpdateEffects ();
 	return 1;
 	}

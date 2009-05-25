@@ -895,7 +895,7 @@ if (!((gameData.app.nFrameCount ^ objP->info.nSignature) & 3) &&
 	return;
 	}
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FUSION_ID)) {		//always set fusion weapon to max vel
-	CFixVector::Normalize(objP->mType.physInfo.velocity);
+	CFixVector::Normalize (objP->mType.physInfo.velocity);
 	objP->mType.physInfo.velocity *= (WI_speed (objP->info.nId,gameStates.app.nDifficultyLevel));
 	}
 //	For homing missiles, turn towards target. (unless it's the guided missile)
