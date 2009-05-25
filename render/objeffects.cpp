@@ -1118,7 +1118,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 
 	if (!gameData.models.vScale.IsZero ())
 		ti.fSize *= X2F (gameData.models.vScale [Z]);
-	ti.fLength *= 2 * ti.fSize;
+	ti.fLength *= 4 * ti.fSize;
 	ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
 	if (!ti.mtP) 
@@ -1137,7 +1137,9 @@ else {
 	glDepthMask (0);
 
 	tTexCoord2flStep.v.u = 1.0f / RING_SEGS;
-	tTexCoord2flStep.v.v = 1.0f /*0.75f*/ / THRUSTER_SEGS;
+	tTexCoord2flStep.v.v = 0.9f / THRUSTER_SEGS;
+	ti.fLength /= 2;
+
 	for (h = 0; h < nThrusters; h++) {
 		transformation.Begin (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
 #if 1
@@ -1213,7 +1215,7 @@ else {
 					v [Z] *= ti.fLength;
 					//transformation.Transform (v, v, 0);
 					if (bTextured) {
-						tTexCoord2fl.v.v = /*0.125f +*/ tTexCoord2flStep.v.v * (i + l);
+						tTexCoord2fl.v.v = 0.1f + tTexCoord2flStep.v.v * (i + l);
 						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
 						}
 					else
