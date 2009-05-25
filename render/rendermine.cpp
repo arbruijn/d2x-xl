@@ -58,6 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textdata.h"
 #include "sparkeffect.h"
 #include "createmesh.h"
+#include "systemkeys.h"
 
 //------------------------------------------------------------------------------
 
@@ -704,93 +705,6 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 
 //------------------------------------------------------------------------------
 
-extern kcItem kcMouse [];
-
-inline int ZoomKeyPressed (void)
-{
-#if 1
-	int	v;
-
-return gameStates.input.keys.pressed [kcKeyboard [52].value] || gameStates.input.keys.pressed [kcKeyboard [53].value] ||
-		 (((v = kcMouse [30].value) < 255) && MouseButtonState (v));
-#else
-return (Controls [0].zoomDownCount > 0);
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void HandleZoom (void)
-{
-
-	static int nZoomState = 0;
-	static int nDestZoomFactor = 0;
-	static int nZoomChannel = -1;
-	static float nZoomStep = 0;
-	static float nZoomFactor = 0;
-	static time_t tZoom = 0;
-
-if (extraGameInfo [IsMultiGame].nZoomMode == 0)
-	return;
-else if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
-	if (!nZoomState) {
-		if (ZoomKeyPressed ()) {
-			if (audio.ChannelIsPlaying (nZoomChannel))
-				audio.StopSound (nZoomChannel);
-			nZoomChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM1));
-			if (gameStates.render.nZoomFactor >= gameStates.render.nMaxZoomFactor)
-				nDestZoomFactor = gameStates.render.nMinZoomFactor;
-			else
-				nDestZoomFactor = fix (double (gameStates.render.nZoomFactor) * 
-											  pow (double (gameStates.render.nMaxZoomFactor) / double (gameStates.render.nMinZoomFactor), 0.25) + 0.5);
-			nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 6.25f;
-			nZoomFactor = float (gameStates.render.nZoomFactor);
-			tZoom = gameStates.app.nSDLTicks - 40;
-			nZoomState = (nZoomStep > 0) ? 1 : -1;
-			}
-		}
-	}
-else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
-	if (ZoomKeyPressed ()) {
-		if ((nZoomState <= 0) && (gameStates.render.nZoomFactor < gameStates.render.nMaxZoomFactor)) {
-			if (audio.ChannelIsPlaying (nZoomChannel))
-				audio.StopSound (nZoomChannel);
-			nZoomChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
-			nDestZoomFactor = gameStates.render.nMaxZoomFactor;
-			nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 25.0f;
-			nZoomFactor = float (gameStates.render.nZoomFactor);
-			tZoom = gameStates.app.nSDLTicks - 40;
-			nZoomState = 1;
-			}
-		}
-	else if ((nZoomState >= 0) && (gameStates.render.nZoomFactor > gameStates.render.nMinZoomFactor)) {
-		if (audio.ChannelIsPlaying (nZoomChannel))
-			audio.StopSound (nZoomChannel);
-		nZoomChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
-		nDestZoomFactor = gameStates.render.nMinZoomFactor;
-		nZoomStep = float (nDestZoomFactor - gameStates.render.nZoomFactor) / 25.0f;
-		nZoomFactor = float (gameStates.render.nZoomFactor);
-		tZoom = gameStates.app.nSDLTicks - 40;
-		nZoomState = -1;
-		}
-	}
-if (!nZoomState)
-	nZoomChannel = -1;
-else if (gameStates.app.nSDLTicks - tZoom >= 40) {
-	tZoom += 40;
-	nZoomFactor += nZoomStep;
-	gameStates.render.nZoomFactor = fix (nZoomFactor);
-	if (((nZoomState > 0) && (gameStates.render.nZoomFactor > nDestZoomFactor)) || 
-		 ((nZoomState < 0) && (gameStates.render.nZoomFactor < nDestZoomFactor))) {
-		gameStates.render.nZoomFactor = nDestZoomFactor;
-		nZoomState = 0;
-		nZoomChannel = -1;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale)
 {
 	short nStartSeg;
@@ -839,15 +753,12 @@ else {
 		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
 #endif
 		G3SetViewMatrix (gameData.render.mine.viewerEye, mView,  //gameStates.render.xZoom, bOglScale);
-							  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
+							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale);
 		}
 	else if ((gameData.objs.viewerP == gameData.objs.consoleP) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
-		gameStates.render.nMinZoomFactor = I2X (gameStates.render.glAspect); //(((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
-		gameStates.render.nMaxZoomFactor = gameStates.render.nMinZoomFactor * 5;
-		if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
-			gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor; //(fix) (((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) ? I2X (2)  / 3 : I2X (1)) * glAspect);
-		else
-			HandleZoom ();
+		gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect); 
+		gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
+		HandleZoom ();
 		if ((gameData.objs.viewerP == gameData.objs.consoleP) &&
 #if DBG
 			 gameStates.render.bChaseCam) {
@@ -861,7 +772,7 @@ else {
 			}
 		else
 			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
-								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
+								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale);
 		}
 	else
 		G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,

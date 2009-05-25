@@ -422,7 +422,7 @@ if (!bShadowTest)
 								  gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 		else
 			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, 
-								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), 1);
+								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), 1);
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}
 	else {

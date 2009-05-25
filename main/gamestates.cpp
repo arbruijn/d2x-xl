@@ -223,6 +223,13 @@ gameStates.ogl.bSgisMultiTexture = 0;
 
 // ----------------------------------------------------------------------------
 
+void InitZoomStates (void)
+{
+gameStates.zoom.nChannel = -1;
+}
+
+// ----------------------------------------------------------------------------
+
 void InitRenderStates (void)
 {
 gameStates.render.xZoom = 0x9000;
@@ -236,9 +243,9 @@ gameStates.render.grAlpha = 1.0f;
 gameStates.render.bShowFrameRate = 0;
 gameStates.render.bShowTime = 0;
 gameStates.render.cameras.bActive = 0;
-gameStates.render.nZoomFactor = I2X (1);
-gameStates.render.nMinZoomFactor = I2X (1);
-gameStates.render.nMaxZoomFactor = I2X (5);
+gameStates.zoom.nFactor = I2X (1);
+gameStates.zoom.nMinFactor = I2X (1);
+gameStates.zoom.nMaxFactor = I2X (5);
 gameStates.render.textures.bGlTexMergeOk = 0;
 gameStates.render.textures.bHaveMaskShader = 0;
 gameStates.render.fonts.bHires = 0;

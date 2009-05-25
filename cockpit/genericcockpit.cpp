@@ -51,6 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SHOW_PLAYER_IP		0
 
 void DrawGuidedCrosshair (void);
+void DrawZoomCrosshair (void);
 
 #if 0
 CCanvas *Canv_LeftEnergyGauge;
@@ -1027,6 +1028,11 @@ if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
 	return;
 	}
 
+if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
+	DrawZoomCrosshair ();
+	return;
+	}
+
 x = CCanvas::Current ()->Width () / 2;
 y = CCanvas::Current ()->Height () / 2;
 bLaserReady = AllowedToFireLaser ();
@@ -1824,7 +1830,7 @@ if (gameStates.app.bEndLevelSequence >= EL_LOOKBACK)
 
 	CObject*	viewerSave = gameData.objs.viewerP;
 	int		bRearViewSave = gameStates.render.bRearView;
-	int		nZoomSave;
+	float		nZoomSave;
 
 	static int bOverlapDirty [2] = {0, 0};
 	static int y, x;
@@ -1853,8 +1859,8 @@ CCanvas::Push ();
 CCanvas::SetCurrent (&windowCanv);
 fontManager.SetCurrent (GAME_FONT);
 transformation.Push ();
-nZoomSave = gameStates.render.nZoomFactor;
-gameStates.render.nZoomFactor = I2X (gameOpts->render.cockpit.nWindowZoom + 1);					//the CPlayerData's zoom factor
+nZoomSave = gameStates.zoom.nFactor;
+gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the CPlayerData's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP)) {
 		automap.m_bDisplay = -1;
@@ -1866,7 +1872,7 @@ if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 	}
 else
 	RenderFrame (0, nWindow + 1);
-gameStates.render.nZoomFactor = nZoomSave;
+gameStates.zoom.nFactor = nZoomSave;
 transformation.Pop ();
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) {
@@ -1982,7 +1988,7 @@ else if (nType == CM_REAR_VIEW) {
 else
 	return;
 gameStates.render.cockpit.nType = nType;
-gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
+gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
 cockpit->Setup (false);

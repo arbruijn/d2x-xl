@@ -197,7 +197,7 @@ if ((gameStates.render.bChaseCam = bOn)) {
 	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
 		cockpit->Activate (CM_FULL_SCREEN);
 	else
-		gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
+		gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 	}
 else
 	CGenericCockpit::Restore ();
@@ -233,7 +233,7 @@ if ((gameStates.render.bFreeCam = bOn)) {
 	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
 		cockpit->Activate (CM_FULL_SCREEN);
 	else
-		gameStates.render.nZoomFactor = gameStates.render.nMinZoomFactor;
+		gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 	}
 else {
 	gameData.objs.viewerP->info.position = gameStates.app.playerPos;
@@ -307,7 +307,7 @@ void HandleDeathKey(int key)
 	doesn't work in the DOS version anyway.   -Samir
 */
 
-if (gameStates.app.bPlayerExploded && !key_isfunc(key) && !key_ismod(key))
+if (gameStates.app.bPlayerExploded && !key_isfunc (key) && !key_ismod (key))
 	gameStates.app.bDeathSequenceAborted  = 1;		//Any key but func or modifier aborts
 
 if (key == KEY_COMMAND + KEY_SHIFTED + KEY_P) {
@@ -593,7 +593,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 		case KEY_SHIFTED + KEY_F10:
 		case KEY_SHIFTED + KEY_F11:
 		case KEY_SHIFTED + KEY_F12:
-			MultiDefineMacro(key);
+			MultiDefineMacro (key);
 			bStopPlayerMovement = 0;
 			break;		// redefine taunt macros
 
@@ -670,7 +670,7 @@ return bScreenChanged;
 
 void HandleVRKey(int key)
 {
-	switch(key)   {
+	switch (key)   {
 
 		case KEY_ALTED + KEY_F5:
 			if (gameStates.render.vr.nRenderMode != VR_NONE) {
@@ -813,7 +813,7 @@ void HandleGameKey(int key)
 			if (IsMultiGame)
 				HUDInitMessage (TXT_GB_MULTIPLAYER);
 			else
-				EscortSetSpecialGoal(key);
+				EscortSetSpecialGoal (key);
 			break;
 			}
 
@@ -1214,26 +1214,108 @@ if(!console.Events (key))
 	continue;
 #endif
 if (gameStates.app.bPlayerIsDead)
-	HandleDeathKey(key);
+	HandleDeathKey (key);
 	if (gameStates.app.bEndLevelSequence)
-		HandleEndlevelKey(key);
+		HandleEndlevelKey (key);
 	else if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-		HandleDemoKey(key);
+		HandleDemoKey (key);
 #if DBG
-		HandleTestKey(key);
+		HandleTestKey (key);
 #endif
 		}
 	else {
-		FinalCheats(key);
-		HandleSystemKey(key);
-		HandleVRKey(key);
-		HandleGameKey(key);
+		FinalCheats (key);
+		HandleSystemKey (key);
+		HandleVRKey (key);
+		HandleGameKey (key);
 #if DBG
-		HandleTestKey(key);
+		HandleTestKey (key);
 #endif
 		}
 	}
 return skipControls;
+}
+
+//------------------------------------------------------------------------------
+
+extern kcItem kcMouse [];
+
+inline int ZoomKeyPressed (void)
+{
+#if 1
+	int	v;
+
+return gameStates.input.keys.pressed [kcKeyboard [52].value] || gameStates.input.keys.pressed [kcKeyboard [53].value] ||
+		 (((v = kcMouse [30].value) < 255) && MouseButtonState (v));
+#else
+return (Controls [0].zoomDownCount > 0);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void HandleZoom (void)
+{
+if (extraGameInfo [IsMultiGame].nZoomMode == 0)
+	return;
+
+	bool bAllow = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
+
+if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
+	if (!gameStates.zoom.nState) {
+		if (!bAllow || ZoomKeyPressed ()) {
+			if (!bAllow) {
+				if (gameStates.zoom.nFactor <= gameStates.zoom.nMinFactor)
+					return;
+				gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
+				}
+			else if (gameStates.zoom.nFactor >= gameStates.zoom.nMaxFactor)
+				gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
+			else
+				gameStates.zoom.nDestFactor = fix (gameStates.zoom.nFactor * pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f) + 0.5f);
+			gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 6.25f;
+			gameStates.zoom.nTime = gameStates.app.nSDLTicks - 40;
+			gameStates.zoom.nState = (gameStates.zoom.nStep > 0) ? 1 : -1;
+			if (audio.ChannelIsPlaying (gameStates.zoom.nChannel))
+				audio.StopSound (gameStates.zoom.nChannel);
+			gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM1));
+			}
+		}
+	}
+else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
+	if (bAllow && ZoomKeyPressed ()) {
+		if ((gameStates.zoom.nState <= 0) && (gameStates.zoom.nFactor < gameStates.zoom.nMaxFactor)) {
+			if (audio.ChannelIsPlaying (gameStates.zoom.nChannel))
+				audio.StopSound (gameStates.zoom.nChannel);
+			gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+			gameStates.zoom.nDestFactor = gameStates.zoom.nMaxFactor;
+			gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 25.0f;
+			gameStates.zoom.nTime = gameStates.app.nSDLTicks - 40;
+			gameStates.zoom.nState = 1;
+			}
+		}
+	else if ((gameStates.zoom.nState >= 0) && (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)) {
+		if (audio.ChannelIsPlaying (gameStates.zoom.nChannel))
+			audio.StopSound (gameStates.zoom.nChannel);
+		gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+		gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
+		gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 25.0f;
+		gameStates.zoom.nTime = gameStates.app.nSDLTicks - 40;
+		gameStates.zoom.nState = -1;
+		}
+	}
+if (!gameStates.zoom.nState)
+	gameStates.zoom.nChannel = -1;
+else if (gameStates.app.nSDLTicks - gameStates.zoom.nTime >= 40) {
+	gameStates.zoom.nTime += 40;
+	gameStates.zoom.nFactor += gameStates.zoom.nStep;
+	if (((gameStates.zoom.nState > 0) && (gameStates.zoom.nFactor > gameStates.zoom.nDestFactor)) || 
+		 ((gameStates.zoom.nState < 0) && (gameStates.zoom.nFactor < gameStates.zoom.nDestFactor))) {
+		gameStates.zoom.nFactor = float (gameStates.zoom.nDestFactor);
+		gameStates.zoom.nState = 0;
+		gameStates.zoom.nChannel = -1;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

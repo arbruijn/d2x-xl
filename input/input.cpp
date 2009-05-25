@@ -1340,16 +1340,12 @@ else {
 	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / FASTPITCH);
 	KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
 	}
-if (gameStates.render.nZoomFactor > I2X (1)) {
-		int r = (gameStates.render.nZoomFactor * 100) / I2X (1);
+if (gameStates.zoom.nFactor > I2X (1)) {
+		int r = (gameStates.zoom.nFactor * 100) / I2X (1);
 
 	Controls [0].headingTime = (Controls [0].headingTime * 100) / r;
 	Controls [0].pitchTime = (Controls [0].pitchTime * 100) / r;
 	Controls [0].bankTime = (Controls [0].bankTime * 100) / r;
-#if DBG
-	r = (int) ((double) gameStates.render.nZoomFactor * 100.0 / (double) I2X (1));
-	HUDMessage (0, "x %d.%02d", r / 100, r % 100);
-#endif
 	}
 //	KCCLAMP (Controls [0].afterburnerTime, gameStates.input.kcPollTime);
 #if DBG

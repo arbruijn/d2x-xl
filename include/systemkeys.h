@@ -17,5 +17,6 @@ int SetChaseCam (int bOn);
 int ToggleChaseCam (void);
 int SetFreeCam (int bOn);
 int ToggleFreeCam (void);
+void HandleZoom (void);
 
 #endif //__SYSTEMKEYS_H

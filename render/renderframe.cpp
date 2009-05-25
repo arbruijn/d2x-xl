@@ -91,6 +91,74 @@ glLineWidth (1.0f);
 
 //------------------------------------------------------------------------------
 
+//draw a crosshair for the zoom
+void DrawZoomCrosshair (void)
+{
+int w = CCanvas::Current ()->Width () >> 4;
+w += w >> 1;
+if (w < 5)
+	w = 5;
+int h = I2X (w) / screen.Aspect ();
+int x = CCanvas::Current ()->Width () / 2;
+int y = CCanvas::Current ()->Height () / 2;
+glLineWidth (float (screen.Width ()) / 640.0f);
+
+int left = x - w, right = x + w, top = y - h, bottom = y + h;
+float xStep, yStep, x1, y1;
+int	i;
+
+xStep = float (2 * w + 1) / 12.0f;
+yStep = float (2 * h + 1) / 12.0f;
+
+w >>= 4;
+w += w >> 1;
+h >>= 4;
+h += h >> 1;
+
+CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 39, 0));
+for (i = 0, x1 = float (left); i < 11; i++) {
+	x1 += xStep;
+	if (i != 5)
+		OglDrawLine (int (x1 + 0.5f), y - h, int (x1 + 0.5f), y + h);
+	}	
+
+for (i = 0, y1 = float (top); i < 11; i++) {
+	y1 += xStep;
+	if (i != 5)
+		OglDrawLine (x - w, int (y1 + 0.5f), x + w, int (y1 + 0.5f));
+	}
+
+w <<= 1;
+h <<= 1;
+
+CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 63, 0));
+OglDrawLine (left, y, right, y);
+OglDrawLine (x, top, x, bottom);
+OglDrawLine (left, y - h, left, y + h);
+OglDrawLine (right, y - h, right, y + h);
+OglDrawLine (x - w, top, x + w, top);
+OglDrawLine (x - w, bottom, x + w, bottom);
+glLineWidth (1.0f);
+
+char	szZoom [20];
+int	r, aw;
+if (extraGameInfo [IsMultiGame].nZoomMode == 2)
+	r = int (100.0f * gameStates.zoom.nFactor / float (gameStates.zoom.nMinFactor));
+else {
+	float s = pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f);
+	fix f = gameStates.zoom.nMinFactor;
+	for (r = 1; f < fix (gameStates.zoom.nFactor); r++)
+		f = fix (float (f) * s + 0.5f);
+	r *= 100;
+	}
+sprintf (szZoom, "X %d.%02d", r / 100, r % 100);
+fontManager.Current ()->StringSize (szZoom, w, h, aw);
+fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+GrPrintF (NULL, x - w  / 2, bottom + h, szZoom);
+}
+
+//------------------------------------------------------------------------------
+
 #if 0
 extern int gr_bitblt_dest_step_shift;
 extern int gr_wait_for_retrace;

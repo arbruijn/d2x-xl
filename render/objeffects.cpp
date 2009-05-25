@@ -1118,7 +1118,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 
 	if (!gameData.models.vScale.IsZero ())
 		ti.fSize *= X2F (gameData.models.vScale [Z]);
-	ti.fLength *= 4 * ti.fSize;
+	ti.fLength *= 2 * ti.fSize;
 	ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
 	if (!ti.mtP) 

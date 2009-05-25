@@ -894,6 +894,17 @@ typedef struct tRenderHistory {
 	int			nBlendMode;
 } tRenderHistory;
 
+typedef struct tZoomStates {
+	int			nState;
+	float			nFactor;
+	fix			nMinFactor;
+	fix			nMaxFactor;
+	fix			nDestFactor;
+	int			nChannel;
+	float			nStep;
+	time_t		nTime;
+} tZoomStates;
+
 typedef struct tRenderStates {
 	int bChaseCam;
 	int bFreeCam;
@@ -979,9 +990,6 @@ typedef struct tRenderStates {
 	tVRStates vr;
 	tFontStates fonts;
 	tTextureStates textures;
-	fix nZoomFactor;
-	fix nMinZoomFactor;
-	fix nMaxZoomFactor;
 	int bDetriangulation;
 	GLenum nFacePrimitive;
 	double glFOV;
@@ -1164,6 +1172,7 @@ typedef struct tGameStates {
 	tGfxStates				gfx;
 	tOglStates				ogl;
 	tRenderStates			render;
+	tZoomStates				zoom;
 	tSoundStates			sound;
 	tVideoStates			video;
 	tApplicationStates	app;
