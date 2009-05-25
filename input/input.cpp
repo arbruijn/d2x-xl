@@ -1341,7 +1341,7 @@ else {
 	KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
 	}
 if (gameStates.zoom.nFactor > I2X (1)) {
-		int r = (gameStates.zoom.nFactor * 100) / I2X (1);
+		int r = int (gameStates.zoom.nFactor * 100 / I2X (1));
 
 	Controls [0].headingTime = (Controls [0].headingTime * 100) / r;
 	Controls [0].pitchTime = (Controls [0].pitchTime * 100) / r;
