@@ -372,6 +372,10 @@ else {
 	xMax = LM_W / 2;
 	}
 
+#if DBG
+if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.pixelPos + xMin * LM_H;
 for (x = xMin; x < xMax; x++) {
@@ -472,7 +476,7 @@ void CLightmapManager::BuildAll (int nFace)
 gameStates.render.nState = 0;
 h = 1.0f / float (LM_W - 1);
 for (i = 0; i < LM_W; i++)
-	m_data.nOffset [i] = F2X (i * h + 0.5f);
+	m_data.nOffset [i] = F2X (i * h);
 InitVertColorData (m_data.vcd);
 m_data.vcd.vertPosP = &m_data.vcd.vertPos;
 m_data.vcd.fMatShininess = 4;

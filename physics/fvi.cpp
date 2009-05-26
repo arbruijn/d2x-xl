@@ -47,14 +47,12 @@ int ijTable [3][2] = {
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, CSide* sideP)
+bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts)
 {
 	CFloatVector	t, *v0, *v1;
 	int 				i, j, nEdge, biggest;
-	uint 				nEdgeMask;
 	float				check_i, check_j;
 	fvec2d 			vEdge, vCheck;
-	short*			nVerts = sideP->m_corners;
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
@@ -81,9 +79,9 @@ else {
 //now do the 2d problem in the i, j plane
 check_i = (*refP) [i];
 check_j = (*refP) [j];
-for (nEdge = nEdgeMask = 0; nEdge < 4; nEdge++) {
-	v0 = FVERTICES + nVerts [nEdge];
-	v1 = FVERTICES + nVerts [(nEdge + 1) % 4];
+for (nEdge = 0; nEdge < nVerts; nEdge++) {
+	v0 = FVERTICES + nVertIndex [nEdge];
+	v1 = FVERTICES + nVertIndex [(nEdge + 1) % 4];
 	vEdge.i = (*v1) [i] - (*v0) [i];
 	vEdge.j = (*v1) [j] - (*v0) [j];
 	vCheck.i = check_i - (*v0) [i];
@@ -99,23 +97,29 @@ return true;
 float DistToFace (CFloatVector3& vHit, CFloatVector3 refP, short nSegment, ubyte nSide)
 {
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
-	short*			nVerts = sideP->m_corners;
 	CFloatVector	h, n, v;
+	short*			nVerts = sideP->m_vertices;
 	float				dist, minDist = 1e30f;
+	int				i, j;
 
 v.Assign (refP);
 
 // compute intersection of perpendicular through refP with the plane spanned up by the face
-n.Assign (CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]));
-h = v - FVERTICES [nVerts [0]];
-dist = CFloatVector::Dot (h, v);
-h = v - n * dist;
-
-if (PointIsInFace (&h, n, sideP)) {
-	vHit.Assign (h);
-	return 0;
+for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
+	n.Assign (sideP->m_normals [i]);
+	h = v - FVERTICES [nVerts [j]];
+	dist = CFloatVector::Dot (h, n);
+	if (minDist > dist) {
+		h = v - n * dist;
+		if (PointIsInFace (&h, n, nVerts + j, (sideP->m_nFaces == 1) ? 4 : 3)) {
+			vHit.Assign (h);
+			minDist = dist;
+			}
+		}
 	}
 
+nVerts = sideP->m_corners;
+minDist = 1e30f;
 for (int i = 0; i < 4; i++) {
 	VmPointLineIntersection (h, FVERTICES [nVerts [i]], FVERTICES [nVerts [(i + 1) % 4]], v, 1);
 	dist = CFloatVector::Dist (h, v);
