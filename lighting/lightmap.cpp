@@ -404,7 +404,7 @@ if (m_data.nType) {
 				offset.y = (v0 - v1) * m_data.nOffset [x]; 
 				offset.x = (v2 - v0) * m_data.nOffset [y]; 
 				}
-			*pixelPosP = v0 + offset.x + offset.y; 
+			*pixelPosP = v1 + offset.x + offset.y; 
 			}
 		}
 	}
