@@ -404,8 +404,8 @@ for (x = xMin; x < xMax; x++) {
 				}
 			else {
 				v0 = m_data.sideVerts [2]; 
-				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [LM_W - 1 - y]);  
-				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [LM_W - 1 - x]); 
+				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [/*LM_W - 1 -*/ y]);  
+				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [/*LM_W - 1 -*/ x]); 
 				}
 			}
 		*pixelPosP = gameData.segs.vertices [v0] + offsetU + offsetV; 
