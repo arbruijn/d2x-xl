@@ -385,13 +385,13 @@ for (x = xMin; x < xMax; x++) {
 			v2 = m_data.sideVerts [2]; 
 			if (x >= y) {
 				v1 = m_data.sideVerts [1]; 
-				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [x]);
-				ComputePixelOffset (offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], m_data.nOffset [y]);
+				offsetU = (gameData.segs.vertices [v1] - gameData.segs.vertices [v0]) * m_data.nOffset [x];
+				offsetV = (gameData.segs.vertices [v2] - gameData.segs.vertices [v1]) * m_data.nOffset [y];
 				}
 			else {
 				v3 = m_data.sideVerts [3]; 
-				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [y]); 
-				ComputePixelOffset (offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], m_data.nOffset [x]); 
+				offsetV = (gameData.segs.vertices [v3], gameData.segs.vertices [v0]) * m_data.nOffset [y]; 
+				offsetU = (gameData.segs.vertices [v2], gameData.segs.vertices [v3]) * m_data.nOffset [x]; 
 				}
 			}
 		else {//SIDE_IS_TRI_02
@@ -399,13 +399,13 @@ for (x = xMin; x < xMax; x++) {
 			v3 = m_data.sideVerts [3]; 
 			if (LM_W - x >= y) {
 				v0 = m_data.sideVerts [0]; 
-				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [x]);  
-				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [y]);
+				offsetU = (gameData.segs.vertices [v1] - gameData.segs.vertices [v0]) * m_data.nOffset [x];  
+				offsetV = (gameData.segs.vertices [v3] - gameData.segs.vertices [v0]) * m_data.nOffset [y];
 				}
 			else {
 				v0 = m_data.sideVerts [2]; 
-				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [/*LM_W - 1 -*/ y]);  
-				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [/*LM_W - 1 -*/ x]); 
+				offsetV = (gameData.segs.vertices [v1] - gameData.segs.vertices [v0]) * m_data.nOffset [LM_W - 1 - y];  
+				offsetU = (gameData.segs.vertices [v3] - gameData.segs.vertices [v0]) * m_data.nOffset [LM_W - 1 - x]; 
 				}
 			}
 		*pixelPosP = gameData.segs.vertices [v0] + offsetU + offsetV; 

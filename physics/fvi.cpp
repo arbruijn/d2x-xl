@@ -108,12 +108,15 @@ v.Assign (refP);
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	n.Assign (sideP->m_normals [i]);
 	h = v - FVERTICES [nVerts [j]];
-	dist = fabs (CFloatVector::Dot (h, n));
-	if (minDist > dist) {
+	dist = CFloatVector::Dot (h, n);
+	if (minDist > fabs (dist)) {
 		h = v - n * dist;
 		if (PointIsInFace (&h, n, nVerts + j, (sideP->m_nFaces == 1) ? 4 : 3)) {
-			vHit.Assign (h);
-			minDist = dist;
+			if (fabs (dist) < 0.01)
+				vHit = refP;
+			else
+				vHit.Assign (h);
+			minDist = fabs (dist);
 			}
 		}
 	}

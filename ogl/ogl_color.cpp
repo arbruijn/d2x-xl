@@ -383,11 +383,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (!(prl = GetActiveRenderLight (activeLightsP, nThread)))
 #endif
 		continue;
+	nLights--;
 #if DBG
 	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	nLights--;
 	if (!prl->render.bState)
 		continue;
 #if 0
@@ -408,11 +408,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (nType < 2) {
 		bool bInFace = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 		lightDir = lightPos - *vcd.vertPosP;
-		fLightDist = lightDir.Mag ();
-		if (bInFace && (fLightDist <= 1.0f))
+		if (0 > (fLightDist = lightDir.Mag () - 10.0f))
 			fLightDist = 0;
 		else
-		fLightDist *= gameStates.ogl.fLightRange;
+			fLightDist *= gameStates.ogl.fLightRange;
 		bInRad = 0;
 		}
 	else 
