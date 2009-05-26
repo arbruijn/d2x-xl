@@ -388,8 +388,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if DBG
 	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
+#	if 0
 	else
 		continue;
+#	endif
 #endif
 	if (!prl->render.bState)
 		continue;
@@ -407,16 +409,18 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (prl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
+
 #if USE_FACE_DIST
-	if (nType < 2) {
-		bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
-		lightDir = lightPos - *vcd.vertPosP;
-		if (0 > (fLightDist = lightDir.Mag () - 10.0f))
-			fLightDist = 0;
-		else
-			fLightDist *= gameStates.ogl.fLightRange;
-		}
-	else 
+if ((nVertex < 0) && (nType < 2)) {
+	DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
+	lightDir = lightPos - *vcd.vertPosP;
+	if (0 > (fLightDist = lightDir.Mag () - 1.0f))
+		fLightDist = 0;
+	else
+		fLightDist *= gameStates.ogl.fLightRange;
+	bInRad = false;
+	}
+else 
 #endif
 	{
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
@@ -442,9 +446,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist = 0;
 		else
 #endif
-		if (nType < 2) {
+		if (nType > 1) 
+			fLightDist -= prl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 #if USE_FACE_DIST
-			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
+		else if (nVertex < 0) {
 			if (NdotL < 0) {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
@@ -458,7 +463,9 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 						fLightDist /= dot;
 					}
 				}
-#else
+			}
+#endif
+		else {
 			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
 			float lightRad = prl->info.fRad;
 			if (NdotL >= 0) 
@@ -481,10 +488,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 					}
 				}
 			fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
-#endif
 			}
-		else
-			fLightDist -= prl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 		if (fLightDist < 0)
 			fLightDist = 0;
 		}
