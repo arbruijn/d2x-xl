@@ -107,6 +107,7 @@ v.Assign (refP);
 // compute intersection of perpendicular through refP with the plane spanned up by the face
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	n.Assign (sideP->m_normals [i]);
+	n = CFloatVector::Normal (FVERTICES [nVerts [j]], FVERTICES [nVerts [j + 1]], FVERTICES [nVerts [j + 2]]);
 	h = v - FVERTICES [nVerts [j]];
 	dist = CFloatVector::Dot (h, n);
 	if (minDist > fabs (dist)) {
