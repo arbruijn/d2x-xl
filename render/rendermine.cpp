@@ -741,8 +741,8 @@ else {
 		CFixMatrix mView;
 
 		mView = gameData.objs.viewerP->info.position.mOrient;
-		mView.FVec().Neg();
-		mView.RVec().Neg();
+		mView.FVec().Neg ();
+		mView.RVec().Neg ();
 #else
 		CFixMatrix mHead, mView;
 

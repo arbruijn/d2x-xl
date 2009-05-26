@@ -60,7 +60,7 @@ if (dot < (I2X (1) - gameData.time.xFrame/2)) {
 		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
 	new_fvec *= new_scale;
 	new_fvec += objP->info.position.mOrient.FVec ();
-	mag = CFixVector::Normalize(new_fvec);
+	mag = CFixVector::Normalize (new_fvec);
 	if (mag < I2X (1)/256) {
 #if TRACE
 		console.printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", X2F (mag));
@@ -93,7 +93,7 @@ void MoveTowardsVector (CObject *objP, CFixVector *vGoalVec, int bDotBased)
 	//	bash velocity vector twice as much towards CPlayerData as usual.
 
 vel = pptr->velocity;
-CFixVector::Normalize(vel);
+CFixVector::Normalize (vel);
 dot = CFixVector::Dot (vel, objP->info.position.mOrient.FVec ());
 
 if (botInfoP->thief)
@@ -367,7 +367,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 
 		fieldOfView = ROBOTINFO (objP->info.nId).fieldOfView [gameStates.app.nDifficultyLevel];
 		vVecToLaser = dObjP->info.position.vPos - objP->info.position.vPos;
-		xDistToLaser = CFixVector::Normalize(vVecToLaser);
+		xDistToLaser = CFixVector::Normalize (vVecToLaser);
 		dot = CFixVector::Dot (vVecToLaser, objP->info.position.mOrient.FVec ());
 
 		if ((dot > fieldOfView) || (botInfoP->companion)) {
@@ -380,10 +380,10 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 				fVecLaser = dObjP->info.position.mOrient.FVec ();
 			else {		//	Not a polyobjP, get velocity and Normalize.
 				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->info.position.mOrient.FVec ();
-				CFixVector::Normalize(fVecLaser);
+				CFixVector::Normalize (fVecLaser);
 				}
 			vLaserToRobot = objP->info.position.vPos - dObjP->info.position.vPos;
-			CFixVector::Normalize(vLaserToRobot);
+			CFixVector::Normalize (vLaserToRobot);
 			dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
 
 			if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
@@ -446,7 +446,7 @@ fix MoveObjectToLegalPoint (CObject *objP, CFixVector *vGoal)
 	fix			xDistToGoal;
 
 vGoalDir = *vGoal - objP->info.position.vPos;
-xDistToGoal = CFixVector::Normalize(vGoalDir);
+xDistToGoal = CFixVector::Normalize (vGoalDir);
 vGoalDir *= (objP->info.xSize / 2);
 objP->info.position.vPos += vGoalDir;
 return xDistToGoal;
@@ -509,7 +509,7 @@ if ((nDbgSeg >= 0) && (objP->info.nSegment == nDbgSeg))
 	nDbgSeg = nDbgSeg;
 #endif
 vGoalDir = *vGoal - objP->info.position.vPos;
-xDistToGoal = CFixVector::Normalize(vGoalDir);
+xDistToGoal = CFixVector::Normalize (vGoalDir);
 if (xDistToGoal - objP->info.xSize <= xMinDist) {
 	//	Center is nearer than the distance we want to move, so move to center.
 	if (!xMinDist) {

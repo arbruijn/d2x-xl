@@ -30,6 +30,10 @@ typedef struct vec2d {
 	fix i, j;
 } vec2d;
 
+typedef struct fvec2d {
+	float i, j;
+} fvec2d;
+
 extern int ijTable [3][2];
 
 typedef struct tFVIHitInfo {
@@ -113,6 +117,8 @@ int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint
 										 CFixVector *p0, CFixVector *p1, fix rad);
 
 int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
+
+float DistToFace (CFloatVector3& vHit, CFloatVector3 refP, short nSegment, ubyte nSide);
 
 #endif
 

@@ -249,7 +249,7 @@ else {
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);
 		if (bFlip)
-			vNormal.Neg();
+			vNormal.Neg ();
 		}
 	}
 pvNormal->Assign (vNormal);

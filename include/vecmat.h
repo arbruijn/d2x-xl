@@ -892,55 +892,63 @@ inline const CFixVector CFixVector::operator+ (const CFixVector& other) const {
 	return Create (v [0]+other [0], v [1]+other [1], v [2]+other [2]);
 }
 
-inline const CFixVector CFixVector::operator+ (const CFloatVector& other) const {
-	return Create (v [0] + F2X (other [0]), v [1] + F2X (other [1]), v [2] + F2X (other [2]));
+inline const CFixVector CFixVector::operator+ (const CFloatVector& other) const 
+{
+return Create (v [0] + F2X (other [0]), v [1] + F2X (other [1]), v [2] + F2X (other [2]));
 }
 
-inline const CFixVector CFixVector::operator- (const CFixVector& other) const {
-	return Create (v [0]-other [0], v [1]-other [1], v [2]-other [2]);
+inline const CFixVector CFixVector::operator- (const CFixVector& other) const 
+{
+return Create (v [0]-other [0], v [1]-other [1], v [2]-other [2]);
 }
 
-inline const CFixVector CFixVector::operator- (const CFloatVector& other) const {
-	return Create (v [0] - F2X (other [0]), v [1] - F2X (other [1]), v [2] - F2X (other [2]));
+inline const CFixVector CFixVector::operator- (const CFloatVector& other) const 
+{
+return Create (v [0] - F2X (other [0]), v [1] - F2X (other [1]), v [2] - F2X (other [2]));
 }
 
 
 // compute intersection of a line through a point a, with the line being orthogonal relative
 // to the plane given by the Normal n and a point p lieing in the plane, and store it in i.
-inline const CFixVector CFixVector::PlaneProjection (const CFixVector& n, const CFixVector& p) const {
+inline const CFixVector CFixVector::PlaneProjection (const CFixVector& n, const CFixVector& p) const 
+{
 	CFixVector i;
-	double l = double (-CFixVector::Dot (n, p)) / double (CFixVector::Dot (n, *this));
-	i [X] = fix (l * double (v [X]));
-	i [Y] = fix (l * double (v [Y]));
-	i [Z] = fix (l * double (v [Z]));
-	return i;
+
+double l = double (-CFixVector::Dot (n, p)) / double (CFixVector::Dot (n, *this));
+i [X] = fix (l * double (v [X]));
+i [Y] = fix (l * double (v [Y]));
+i [Z] = fix (l * double (v [Z]));
+return i;
 }
 
 //compute the distance from a point to a plane.  takes the normalized Normal
 //of the plane (ebx), a point on the plane (edi), and the point to check (esi).
 //returns distance in eax
 //distance is signed, so Negative Dist is on the back of the plane
-inline const fix CFixVector::DistToPlane (const CFixVector& n, const CFixVector& p) const {
-	CFixVector t = *this - p;
-	return CFixVector::Dot (t, n);
+inline const fix CFixVector::DistToPlane (const CFixVector& n, const CFixVector& p) const 
+{
+CFixVector t = *this - p;
+return CFixVector::Dot (t, n);
 }
 
 //extract heading and pitch from a vector, assuming bank==0
-inline const CAngleVector CFixVector::ToAnglesVecNorm (void) const {
+inline const CAngleVector CFixVector::ToAnglesVecNorm (void) const 
+{
 	CAngleVector a;
-	a [BA] = 0;		//always zero bank
-	a [PA] = FixASin (-v [Y]);
-	a [HA] = (v [X] || v [Z]) ? FixAtan2 (v [Z], v [X]) : 0;
-	return a;
+
+a [BA] = 0;		//always zero bank
+a [PA] = FixASin (-v [Y]);
+a [HA] = (v [X] || v [Z]) ? FixAtan2 (v [Z], v [X]) : 0;
+return a;
 }
 
 //extract heading and pitch from a vector, assuming bank==0
-inline const CAngleVector CFixVector::ToAnglesVec (void) const {
+inline const CAngleVector CFixVector::ToAnglesVec (void) const 
+{
 	CFixVector t = *this;
 
-//			if (CFixVector::Normalize (t))
-	CFixVector::Normalize (t);
-	return t.ToAnglesVecNorm ();
+CFixVector::Normalize (t);
+return t.ToAnglesVecNorm ();
 }
 
 

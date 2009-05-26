@@ -164,20 +164,20 @@ for (i = 1, --j; i < j; i++) {
 
 	if (i == 1) {
 		a = ptSegs [i].point - ptSegs [i-1].point;
-		CFixVector::Normalize(a);
+		CFixVector::Normalize (a);
 		}
 	else
 		a = b;
 	b = ptSegs [i + 1].point - ptSegs [i].point;
 	c = ptSegs [i + 1].point - ptSegs [i-1].point;
-	CFixVector::Normalize(b);
+	CFixVector::Normalize (b);
 	if (abs (CFixVector::Dot (a, b)) > I2X (3)/4) {
 		if (abs (a[Z]) < I2X (1)/2) {
 			if (bRandom) {
 				e [X] = (d_rand ()- 16384) / 2;
 				e [Y] = (d_rand ()- 16384) / 2;
 				e [Z] = abs (e [X]) + abs (e [Y]) + 1;
-				CFixVector::Normalize(e);
+				CFixVector::Normalize (e);
 				}
 			else {
 				e [X] =
@@ -190,7 +190,7 @@ for (i = 1, --j; i < j; i++) {
 				e [Y] = (d_rand ()-16384)/2;
 				e [Z] = (d_rand ()-16384)/2;
 				e [X] = abs (e [Y]) + abs (e [Z]) + 1;
-				CFixVector::Normalize(e);
+				CFixVector::Normalize (e);
 				}
 			else {
 				e [X] = I2X (1);
@@ -202,7 +202,7 @@ for (i = 1, --j; i < j; i++) {
 	else {
 		d = CFixVector::Cross(a, b);
 		e = CFixVector::Cross(c, d);
-		CFixVector::Normalize(e);
+		CFixVector::Normalize (e);
 		}
 #if DBG
 	if (e.Mag () < I2X (1)/2)
@@ -1168,11 +1168,11 @@ xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
 if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = xMaxSpeed*3/2;
 vNormToGoal = *vGoalPoint - vCurPos;
-CFixVector::Normalize(vNormToGoal);
+CFixVector::Normalize (vNormToGoal);
 vNormCurVel = vCurVel;
-CFixVector::Normalize(vNormCurVel);
+CFixVector::Normalize (vNormCurVel);
 vNormFwd = objP->info.position.mOrient.FVec ();
-CFixVector::Normalize(vNormFwd);
+CFixVector::Normalize (vNormFwd);
 dot = CFixVector::Dot (vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
 if (dot < -I2X (15)/16) {
@@ -1183,7 +1183,7 @@ else {
 	vNormCurVel[Y] += vNormToGoal[Y]/2;
 	vNormCurVel[Z] += vNormToGoal[Z]/2;
 	}
-CFixVector::Normalize(vNormCurVel);
+CFixVector::Normalize (vNormCurVel);
 //	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 //	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
 //	Note that since I2X (3)/4 is added to dot product, it is possible for the robot to back up.

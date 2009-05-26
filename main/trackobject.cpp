@@ -159,7 +159,7 @@ else {
 		else if ((curObjP->info.nType != OBJ_PLAYER) && (curObjP->info.nType != OBJ_REACTOR))
 			continue;
 		vecToCurObj = curObjP->info.position.vPos - *vTrackerPos;
-		dist = CFixVector::Normalize(vecToCurObj);
+		dist = CFixVector::Normalize (vecToCurObj);
 		if (dist < maxTrackableDist) {
 			dot = CFixVector::Dot (vecToCurObj, bSpectate ? gameStates.app.playerPos.mOrient.FVec () : trackerP->info.position.mOrient.FVec ());
 
@@ -175,7 +175,7 @@ else {
 					}
 				} 
 			else if (dot > I2X (1) - (I2X (1) - curMinTrackableDot) * 2) {
-				CFixVector::Normalize(vecToCurObj);
+				CFixVector::Normalize (vecToCurObj);
 				dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
@@ -265,7 +265,7 @@ FORALL_ACTOR_OBJS (curObjP, nObject) {
 
 	if (dist >= maxTrackableDist)
 		continue;
-	CFixVector::Normalize(vecToCurObj);
+	CFixVector::Normalize (vecToCurObj);
 	dot = CFixVector::Dot (vecToCurObj, trackerP->info.position.mOrient.FVec ());
 	if (bIsProximity)
 		dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...

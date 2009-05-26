@@ -35,7 +35,97 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int CheckSphereToFace (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
 
-//#define _DEBUG
+//	-----------------------------------------------------------------------------
+
+//given largest component of Normal, return i & j
+//if largest component is negative, swap i & j
+int ijTable [3][2] = {
+	{2, 1},  //pos x biggest
+	{0, 2},  //pos y biggest
+	{1, 0}	//pos z biggest
+	};
+
+//	-----------------------------------------------------------------------------
+//see if a point is inside a face by projecting into 2d
+bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, CSide* sideP)
+{
+	CFloatVector	t, *v0, *v1;
+	int 				i, j, nEdge, biggest;
+	uint 				nEdgeMask;
+	float				check_i, check_j;
+	fvec2d 			vEdge, vCheck;
+	short*			nVerts = sideP->m_corners;
+
+//now do 2d check to see if refP is in side
+//project polygon onto plane by finding largest component of Normal
+t [X] = fabs (vNormal [0]);
+t [Y] = fabs (vNormal [1]);
+t [Z] = fabs (vNormal [2]);
+if (t [X] > t [Y])
+	if (t [X] > t [Z])
+		biggest = 0;
+	else
+		biggest = 2;
+else if (t [Y] > t [Z])
+	biggest = 1;
+else
+	biggest = 2;
+if (vNormal [biggest] > 0) {
+	i = ijTable [biggest][0];
+	j = ijTable [biggest][1];
+	}
+else {
+	i = ijTable [biggest][1];
+	j = ijTable [biggest][0];
+	}
+//now do the 2d problem in the i, j plane
+check_i = (*refP) [i];
+check_j = (*refP) [j];
+for (nEdge = nEdgeMask = 0; nEdge < 4; nEdge++) {
+	v0 = FVERTICES + nVerts [nEdge];
+	v1 = FVERTICES + nVerts [(nEdge + 1) % 4];
+	vEdge.i = (*v1) [i] - (*v0) [i];
+	vEdge.j = (*v1) [j] - (*v0) [j];
+	vCheck.i = check_i - (*v0) [i];
+	vCheck.j = check_j - (*v0) [j];
+	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < 0)
+		return false;
+	}
+return true;
+}
+
+//	-----------------------------------------------------------------------------
+
+float DistToFace (CFloatVector3& vHit, CFloatVector3 refP, short nSegment, ubyte nSide)
+{
+	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
+	short*			nVerts = sideP->m_corners;
+	CFloatVector	h, n, v;
+	float				dist, minDist = 1e30f;
+
+v.Assign (refP);
+
+// compute intersection of perpendicular through refP with the plane spanned up by the face
+n.Assign (CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]));
+h = v - FVERTICES [nVerts [0]];
+dist = CFloatVector::Dot (h, v);
+h = v - n * dist;
+
+if (PointIsInFace (&h, n, sideP)) {
+	vHit.Assign (h);
+	return 0;
+	}
+
+for (int i = 0; i < 4; i++) {
+	VmPointLineIntersection (h, FVERTICES [nVerts [i]], FVERTICES [nVerts [(i + 1) % 4]], v, 1);
+	dist = CFloatVector::Dist (h, v);
+	if (minDist > dist) {
+		minDist = dist;
+		vHit.Assign (h);
+		}
+	}
+return minDist;
+}
 
 //	-----------------------------------------------------------------------------
 
@@ -51,7 +141,8 @@ return dMax;
 }
 
 //	-----------------------------------------------------------------------------
-// Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
+// Given: p3
+// Find: intersection with p1,p2 of the line through p3 that is perpendicular on p1,p2
 
 int FindPointLineIntersectionf (CFixVector *pv1, CFixVector *pv2, CFixVector *pv3)
 {
@@ -67,13 +158,7 @@ if (!(m = d21 [X] * d21 [X] + d21 [Y] * d21 [Y] + d21 [Z] * d21 [Z]))
 d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);
 u /= m;
-/*
-h [X] = p1 [X] + u * d21 [X];
-h [Y] = p1 [Y] + u * d21 [Y];
-h [Z] = p1 [Z] + u * d21 [Z];
-*/
 h = p1 + u * d21;
-
 // limit the intersection to [p1,p2]
 v [0] = p1 - h;
 v [1] = p2 - h;
@@ -84,9 +169,9 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//find the refP on the specified plane where the line intersects
-//returns true if refP found, false if line parallel to plane
-//new_pnt is the found refP on the plane
+//find the intersection on the specified plane where the line intersects
+//returns true if intersection found, false if line parallel to plane
+//intersection is the found intersection on the plane
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
@@ -125,11 +210,12 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//find the refP on the specified plane where the line intersects
-//returns true if refP found, false if line parallel to plane
-//new_pnt is the found refP on the plane
-//vPlanePoint & vPlaneNorm describe the plane
-//p0 & p1 are the ends of the line
+// find the point on the specified plane where the line intersects
+// returns true if intersection found, false if line parallel to plane
+// intersection is the found intersection on the plane
+// vPlanePoint & vPlaneNorm describe the plane
+// p0 & p1 are the ends of the line
+
 int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
 										   CFixVector *p0, CFixVector *p1, fix rad)
 {
@@ -153,15 +239,13 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-// if vHit is inside the quad planeP, the perpendicular from vHit to each edge
+// if intersection is inside the rectangular (!) quad planeP, the perpendicular from intersection to each edge
 // of the quad must hit each edge between the edge's end points (provided vHit
 // is in the quad's plane).
 
 int CheckLineHitsQuad (CFixVector& intersection, CFixVector *planeP)
 {
-	int	i;
-
-for (i = 0; i < 4; i++)
+for (int i = 0; i < 4; i++)
 	if (FindPointLineIntersectionf (planeP + i, planeP + ((i + 1) % 4), &intersection))
 		return 0;	//doesn't hit
 return 1;	//hits
@@ -273,17 +357,7 @@ return nHits;
 }
 
 //	-----------------------------------------------------------------------------
-
-//given largest component of Normal, return i & j
-//if largest component is negative, swap i & j
-int ijTable [3][2] = {
- {2, 1},          //pos x biggest
- {0, 2},          //pos y biggest
- {1, 0},          //pos z biggest
-	};
-
-//	-----------------------------------------------------------------------------
-//see if a refP is inside a face by projecting into 2d
+//see if a point is inside a face by projecting into 2d
 uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal)
 {
 //	CFixVector	vNormal;
@@ -296,8 +370,7 @@ uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixV
 	vec2d 		vEdge, vCheck;
 	fix 			d;
 
-//VmVecNormal (&vNormal, vertList, vertList + 1, vertList + 2);
-//now do 2d check to see if refP is in CSide
+//now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
 t [X] = labs ((*vNormal) [0]);
 t [Y] = labs ((*vNormal) [1]);
@@ -472,7 +545,7 @@ int CheckVectorToSphere1 (CFixVector& intersection, CFixVector *p0, CFixVector *
 
 d = *p1 - *p0;
 w = *vSpherePos - *p0;
-dn = d; mag_d = CFixVector::Normalize(dn);
+dn = d; mag_d = CFixVector::Normalize (dn);
 if (mag_d == 0) {
 	intDist = w.Mag();
 	intersection = *p0;

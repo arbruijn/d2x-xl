@@ -69,7 +69,7 @@ for (i = 0; i < nGunCount; i++) {
 	CFixVector	vGun;
 
 	vGun = *vObjPos - vGunPos[i];
-	CFixVector::Normalize(vGun);
+	CFixVector::Normalize (vGun);
 	dot = CFixVector::Dot (vGunDir[i], vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
@@ -310,7 +310,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 			return;
 
 		vecToPlayer = OBJPOS (gameData.objs.consoleP)->vPos - objP->info.position.vPos;
-		xDistToPlayer = CFixVector::Normalize(vecToPlayer);
+		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
 		if (xDistToPlayer < I2X (200)) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
@@ -349,11 +349,11 @@ if ((rStatP->nNextFireTime < 0) &&
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 			vecToGoal = gameData.ai.vBelievedPlayerPos - rStatP->vGunPos[nBestGun];
-			xDistToPlayer = CFixVector::Normalize(vecToGoal);
+			xDistToPlayer = CFixVector::Normalize (vecToGoal);
 			} 
 		else {
 			vecToGoal = gameData.objs.consoleP->info.position.vPos - rStatP->vGunPos [nBestGun];
-			xDistToPlayer = CFixVector::Normalize(vecToGoal);
+			xDistToPlayer = CFixVector::Normalize (vecToGoal);
 			}
 		if (xDistToPlayer > I2X (300)) {
 			rStatP->bHit = 0;
@@ -371,7 +371,7 @@ if ((rStatP->nNextFireTime < 0) &&
 
 			vRand = CFixVector::Random();
 			vecToGoal += vRand * (I2X (1)/6);
-			CFixVector::Normalize(vecToGoal);
+			CFixVector::Normalize (vecToGoal);
 			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
 			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 0);

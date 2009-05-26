@@ -367,7 +367,7 @@ FORALL_OBJS (objP, h) {
 		if (!CanSeePoint (objP, &objP->info.position.vPos, &prl->info.vPos, objP->info.nSegment))
 			continue;
 		vLightDir = objP->info.position.vPos - prl->info.vPos;
-		CFixVector::Normalize(vLightDir);
+		CFixVector::Normalize (vLightDir);
 		if (n) {
 			for (j = 0; j < n; j++)
 				if (abs (CFixVector::Dot (vLightDir, gameData.render.shadows.vLightDir[j])) > I2X (2) / 3) // 60 deg

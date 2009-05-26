@@ -609,13 +609,13 @@ switch (nType) {
 			int	nRandScale;
 			vNewVel = vInitVel;
 			xOldMag = vInitVel.Mag();
-			CFixVector::Normalize(vNewVel);
+			CFixVector::Normalize (vNewVel);
 			//	We want powerups to move more in network mode.
 			nRandScale = 2;
 			vNewVel [X] += (d_rand () - 16384) * 2;
 			vNewVel [Y] += (d_rand () - 16384) * 2;
 			vNewVel [Z] += (d_rand () - 16384) * 2;
-			CFixVector::Normalize(vNewVel);
+			CFixVector::Normalize (vNewVel);
 			vNewVel *= ((I2X (32) + xOldMag) * nRandScale);
 			vNewPos = pos;
 			//	This is dangerous, could be outside mine.

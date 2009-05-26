@@ -133,11 +133,11 @@ int LeadPlayer (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelievedPlay
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	return 0;
 vPlayerMovementDir = gameData.objs.consoleP->mType.physInfo.velocity;
-xPlayerSpeed = CFixVector::Normalize(vPlayerMovementDir);
+xPlayerSpeed = CFixVector::Normalize (vPlayerMovementDir);
 if (xPlayerSpeed < MIN_LEAD_SPEED)
 	return 0;
 vVecToPlayer = *vBelievedPlayerPos - *vFirePoint;
-xDistToPlayer = CFixVector::Normalize(vVecToPlayer);
+xDistToPlayer = CFixVector::Normalize (vVecToPlayer);
 if (xDistToPlayer > MAX_LEAD_DISTANCE)
 	return 0;
 dot = CFixVector::Dot (vVecToPlayer, vPlayerMovementDir);
@@ -165,7 +165,7 @@ xProjectedTime = FixDiv (xDistToPlayer, xMaxWeaponSpeed);
 (*vFire)[X] = ComputeLeadComponent ((*vBelievedPlayerPos)[X], (*vFirePoint)[X], gameData.objs.consoleP->mType.physInfo.velocity[X], xProjectedTime);
 (*vFire)[Y] = ComputeLeadComponent ((*vBelievedPlayerPos)[Y], (*vFirePoint)[Y], gameData.objs.consoleP->mType.physInfo.velocity[Y], xProjectedTime);
 (*vFire)[Z] = ComputeLeadComponent ((*vBelievedPlayerPos)[Z], (*vFirePoint)[Z], gameData.objs.consoleP->mType.physInfo.velocity[Z], xProjectedTime);
-CFixVector::Normalize(*vFire);
+CFixVector::Normalize (*vFire);
 Assert (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (3)/2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
 if (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (1)/2) {

@@ -52,7 +52,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 18
+#define LIGHTMAP_DATA_VERSION 19
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -160,11 +160,9 @@ if (m_list.info.Buffer ()) {
 
 //------------------------------------------------------------------------------
 
-inline void CLightmapManager::ComputePixelPos (CFixVector *vPos, CFixVector v1, CFixVector v2, double fOffset)
+inline void CLightmapManager::ComputePixelOffset (CFixVector& vOffs, CFixVector& v1, CFixVector& v2, int nOffset)
 {
-(*vPos) [X] = (fix) (fOffset * (v2 [X] - v1 [X])); 
-(*vPos) [Y] = (fix) (fOffset * (v2 [Y] - v1 [Y])); 
-(*vPos) [Z] = (fix) (fOffset * (v2 [Z] - v1 [Z])); 
+vOffs = (v2 - v1) * nOffset;
 }
 
 //------------------------------------------------------------------------------
@@ -352,6 +350,14 @@ void CLightmapManager::Build (int nThread)
 	bool				bBlack, bWhite;
 	CVertColorData	vcd = m_data.vcd;
 
+
+#if 0// DBG
+if ((m_data.faceP->nSegment != nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide != nDbgSide))) {
+	m_data.nColor |= 1;
+	return;
+	}
+#endif
+
 if (nThread < 0) {
 	xMin = 0;
 	xMax = LM_W;
@@ -376,35 +382,33 @@ for (x = xMin; x < xMax; x++) {
 			if (x >= y) {
 				v1 = m_data.sideVerts [1]; 
 				//Next calculate this pixel's place in the world (tricky stuff)
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.fOffset [x]);
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], m_data.fOffset [y]);
+				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [x]);
+				ComputePixelOffset (offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], m_data.nOffset [y]);
 				*pixelPosP = offsetU + offsetV; 
-				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
 				}
 			else {
 				//Next calculate this pixel's place in the world (tricky stuff)
 				v3 = m_data.sideVerts [3]; 
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.fOffset [y]); 
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], m_data.fOffset [x]); 
-				*pixelPosP = offsetU + offsetV; 
-				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
+				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [y]); 
+				ComputePixelOffset (offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], m_data.nOffset [x]); 
 				}
+			*pixelPosP = gameData.segs.vertices [v0] + offsetU + offsetV; 
 			}
 		else {//SIDE_IS_TRI_02
 			v1 = m_data.sideVerts [1]; 
 			v3 = m_data.sideVerts [3]; 
 			if (LM_W - x >= y) {
 				v0 = m_data.sideVerts [0]; 
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.fOffset [x]);  
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.fOffset [y]);
+				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [x]);  
+				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [y]);
 				*pixelPosP = offsetU + offsetV; 
 				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
 				}
 			else {
 				v2 = m_data.sideVerts [2]; 
 				//Not certain this is correct, may need to subtract something
-				ComputePixelPos (&offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], m_data.fOffset [LM_W - 1 - y]);  
-				ComputePixelPos (&offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], m_data.fOffset [LM_W - 1 - x]); 
+				ComputePixelOffset (offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], m_data.nOffset [LM_W - 1 - y]);  
+				ComputePixelOffset (offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], m_data.nOffset [LM_W - 1 - x]); 
 				*pixelPosP = offsetU + offsetV; 
 				*pixelPosP += gameData.segs.vertices [v2];  //This should be the real world position of the pixel.
 				}
@@ -459,14 +463,16 @@ else
 
 void CLightmapManager::BuildAll (int nFace)
 {
-	CSide			*sideP; 
-	int			nLastFace; 
-	int			i; 
-	int			nBlackLightmaps = 0, nWhiteLightmaps = 0; 
+	CSide*	sideP; 
+	int		nLastFace; 
+	int		i; 
+	float		h;
+	int		nBlackLightmaps = 0, nWhiteLightmaps = 0; 
 
 gameStates.render.nState = 0;
+h = 1.0f / float (LM_W - 1);
 for (i = 0; i < LM_W; i++)
-	m_data.fOffset [i] = (double) i / (double) (LM_W - 1);
+	m_data.nOffset [i] = F2X (i * h + 0.5f);
 InitVertColorData (m_data.vcd);
 m_data.vcd.vertPosP = &m_data.vcd.vertPos;
 m_data.vcd.fMatShininess = 4;
@@ -494,7 +500,9 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));
 	m_data.nType = (sideP->m_nType == SIDE_IS_QUAD) || (sideP->m_nType == SIDE_IS_TRI_02);
 	m_data.vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+	CFixVector::Normalize (m_data.vNormal);
 	m_data.vcd.vertNorm.Assign (m_data.vNormal);
+	CFloatVector3::Normalize (m_data.vcd.vertNorm);
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 	if (!RunRenderThreads (rtLightmap))

@@ -115,11 +115,11 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-int CLightManager::SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread)
+int CLightManager::SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread, bool bForce)
 {
 if (prl->render.bUsed [nThread])
 	return 0;
-fix xDist = prl->info.bSpot ? 0 : (prl->render.xDistance / 2000 + 5) / 10;
+fix xDist = (bForce || prl->info.bSpot) ? 0 : (prl->render.xDistance / 2000 + 5) / 10;
 if (xDist >= MAX_SHADER_LIGHTS)
 	return 0;
 if (xDist < 0)
@@ -481,6 +481,7 @@ if (gameStates.render.nLightingMethod) {
 	CDynLight*				prl;
 	CFixVector				vLightDir;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
+	bool						bForce;
 
 	ResetActive (nThread, 0);
 	ResetAllUsed (0, nThread);
@@ -513,10 +514,12 @@ if (gameStates.render.nLightingMethod) {
 #endif
 		if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment))
 			continue;
-		prl->render.xDistance = (fix) ((CFixVector::Dist (*vPixelPos, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
-		if (prl->render.xDistance > xMaxLightRange)
-			continue;
-		SetActive (activeLightsP, prl, 1, nThread);
+		if (!(bForce = (prl->info.nSegment == nSegment) && (prl->info.nSide == nSide))) {
+			prl->render.xDistance = (fix) ((CFixVector::Dist (*vPixelPos, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
+			if (prl->render.xDistance > xMaxLightRange)
+				continue;
+			}
+		SetActive (activeLightsP, prl, 1, nThread, bForce);
 		}
 	}
 return m_data.index [0][nThread].nActive;

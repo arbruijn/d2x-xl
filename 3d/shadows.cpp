@@ -938,7 +938,7 @@ float NearestShadowedWallDist (short nObject, short nSegment, CFixVector *vPos, 
 if (0 > (nSegment = FindSegByPos (*vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 v = *vPos - vLightPos;
-CFixVector::Normalize(v);
+CFixVector::Normalize (v);
 v *= I2X (G3_INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (uint));
@@ -1030,7 +1030,7 @@ if (0 > (nSegment = FindSegByPos (vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
 fq.p0				  = vPos;
 VmVecSub (&v, fq.p0, &vLightPos);
-CFixVector::Normalize(v);
+CFixVector::Normalize (v);
 VmVecScale (&v, I2X (G3_INFINITY));
 fq.startSeg		  = nSegment;
 fq.p1				  = &v;

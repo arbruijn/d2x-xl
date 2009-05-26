@@ -423,7 +423,7 @@ void ai_turn_towards_vector(CFixVector *vGoal, CObject *objP, fix rate)
 		fix	new_scale = FixDiv(gameData.time.xFrame * D1_AI_TURN_SCALE, rate);
 		new_fVec *= new_scale;
 		new_fVec += objP->info.position.mOrient.FVec ();
-		mag = CFixVector::Normalize(new_fVec);
+		mag = CFixVector::Normalize (new_fVec);
 		if (mag < I2X (1)/256) {
 			new_fVec = *vGoal;		//	if degenerate vector, go right to goal
 		}
@@ -856,7 +856,7 @@ void move_towards_vector(CObject *objP, CFixVector *vec_goal)
 	//	bash velocity vector twice as much towards playerP as usual.
 
 	vel = piP->velocity;
-	CFixVector::Normalize(vel);
+	CFixVector::Normalize (vel);
 	dot = CFixVector::Dot (vel, objP->info.position.mOrient.FVec ());
 
 	if (dot < I2X (3)/4) {
@@ -1077,10 +1077,10 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 					laser_fVec = dangerObjP->info.position.mOrient.FVec ();
 				else {		//	Not a polyobj, get velocity and Normalize.
 					laser_fVec = dangerObjP->mType.physInfo.velocity;	//dangerObjP->info.position.mOrient.FVec ();
-					CFixVector::Normalize(laser_fVec);
+					CFixVector::Normalize (laser_fVec);
 				}
 				laser_vec_to_robot = objP->info.position.vPos - dangerObjP->info.position.vPos;
-				CFixVector::Normalize(laser_vec_to_robot);
+				CFixVector::Normalize (laser_vec_to_robot);
 				laser_robot_dot = CFixVector::Dot (laser_fVec, laser_vec_to_robot);
 
 				if ((laser_robot_dot > I2X (7) / 8) && (dist_to_laser < I2X (80))) {
@@ -1281,7 +1281,7 @@ void move_object_to_legal_spot(CObject *objP)
 
 			vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 			goal_dir = vSegCenter - objP->info.position.vPos;
-			dist_to_center = CFixVector::Normalize(goal_dir);
+			dist_to_center = CFixVector::Normalize (goal_dir);
 			goal_dir *= objP->info.xSize;
 			objP->info.position.vPos += goal_dir;
 			if (!ObjectIntersectsWall(objP)) {
@@ -1310,7 +1310,7 @@ void move_towards_segment_center(CObject *objP)
 
 	vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 	goal_dir = vSegCenter - objP->info.position.vPos;
-	dist_to_center = CFixVector::Normalize(goal_dir);
+	dist_to_center = CFixVector::Normalize (goal_dir);
 	if (dist_to_center < objP->info.xSize) {
 		//	Center is nearer than the distance we want to move, so move to center.
 		objP->info.position.vPos = vSegCenter;
@@ -2284,7 +2284,7 @@ if (nObject == nDbgObj)
 				return;
 			vCenter = SEGMENTS [objP->info.nSegment].SideCenter (aiP->GOALSIDE);
 			vGoal = vCenter - objP->info.position.vPos;
-			CFixVector::Normalize(vGoal);
+			CFixVector::Normalize (vGoal);
 			ai_turn_towards_vector(&vGoal, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 			move_towards_vector(objP, &vGoal);
 			ai_multi_send_robot_position(nObject, -1);

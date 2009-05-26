@@ -369,7 +369,7 @@ if (xObjIntensity) {
 							int			spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							CFixVector	vecToPoint;
 							vecToPoint = *vVertPos - *vObjPos;
-							CFixVector::Normalize(vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+							CFixVector::Normalize (vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = CFixVector::Dot (vecToPoint, objP->info.position.mOrient.FVec ());
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = I2X (1) / spotSize;

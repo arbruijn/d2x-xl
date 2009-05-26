@@ -262,7 +262,7 @@ vCenter = SEGMENTS [objP->info.nSegment].Center ();
 //don't bump CPlayerData towards center of reactor CSegment
 CFixVector::NormalizedDir (vBump, vCenter, objP->info.position.vPos);
 if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
-	vBump.Neg();
+	vBump.Neg ();
 objP->info.position.vPos += vBump * (objP->info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
 if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
@@ -696,7 +696,7 @@ retryMove:
 				vCenter = SEGMENTS [info.nSegment].Center ();
 				vCenter -= info.position.vPos;
 				if (vCenter.Mag() > I2X (1)) {
-					CFixVector::Normalize(vCenter);
+					CFixVector::Normalize (vCenter);
 					vCenter /= 10;
 					}
 				info.position.vPos -= vCenter;

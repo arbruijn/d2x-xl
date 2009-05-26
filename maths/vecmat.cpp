@@ -650,12 +650,12 @@ inline int VmBehindPlane (const CFixVector& n, const CFixVector& p1, const CFixV
 	fix			d;
 #endif
 
-	t = p1 - p2;
+t = p1 - p2;
 #if DBG
-	d = CFixVector::Dot (p1, t);
-	return CFixVector::Dot (i, t) < d;
+d = CFixVector::Dot (p1, t);
+return CFixVector::Dot (i, t) < d;
 #else
-	return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
+return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
 #endif
 }
 
@@ -664,59 +664,21 @@ inline int VmBehindPlane (const CFixVector& n, const CFixVector& p1, const CFixV
 // If intersection is not between p1 and p2 and vPos is given, return
 // further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
-const int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3,
-									  int bClampToFarthest)
+const int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClampToFarthest)
 {
 	CFixVector	d31, d21;
 	float			m, u;
 	int			bClamped = 0;
 
-	d21 = p2 - p1;
-	m = (float) fabs ((float) d21 [X] * (float) d21 [X] + (float) d21 [Y] * (float) d21 [Y] + (float) d21 [Z] * (float) d21 [Z]);
-	if (!m) {
-		//	if (hitP)
-		hitP = p1;
-		return 0;
-	}
-	d31 = p3 - p1;
-	u = (float) d31 [X] * (float) d21 [X] + (float) d31 [Y] * (float) d21 [Y] + (float) d31 [Z] * (float) d21 [Z];
-	u /= m;
-	if (u < 0)
-		bClamped = bClampToFarthest ? 2 : 1;
-	else if (u > 1)
-		bClamped = bClampToFarthest ? 1 : 2;
-	else
-		bClamped = 0;
-	if (bClamped == 2)
-		hitP = p2;
-	else if (bClamped == 1)
-		hitP = p1;
-	else {
-		hitP [X] = p1 [X] + (fix) (u * d21 [X]);
-		hitP [Y] = p1 [Y] + (fix) (u * d21 [Y]);
-		hitP [Z] = p1 [Z] + (fix) (u * d21 [Z]);
-
-//		hitP = p1 + F2X (u) * d21;
-	}
-	return bClamped;
-}
-
-/*
-int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, const CFixVector& vPos,
-									  int bClampToFarthest)
-{
-	CFixVector	d31, d21;
-	double		m, u;
-	int			bClamped = 0;
-
 d21 = p2 - p1;
-m = fabs (d21 [X] * d21 [X] + d21 [Y] * d21 [Y] + d21 [Z] * d21 [Z]);
+m = (float) fabs ((float) d21 [X] * (float) d21 [X] + (float) d21 [Y] * (float) d21 [Y] + (float) d21 [Z] * (float) d21 [Z]);
 if (!m) {
+	//	if (hitP)
 	hitP = p1;
 	return 0;
 }
 d31 = p3 - p1;
-u = d31 [X] * d21 [X] + d31 [Y] * d21 [Y] + d31 [Z] * d21 [Z];
+u = (float) d31 [X] * (float) d21 [X] + (float) d31 [Y] * (float) d21 [Y] + (float) d31 [Z] * (float) d21 [Z];
 u /= m;
 if (u < 0)
 	bClamped = bClampToFarthest ? 2 : 1;
@@ -729,13 +691,13 @@ if (bClamped == 2)
 else if (bClamped == 1)
 	hitP = p1;
 else {
-	hitP->p.x = p1->p.x + (fix) (u * d21.p.x);
-	hitP->p.y = p1->p.y + (fix) (u * d21.p.y);
-	hitP->p.z = p1->p.z + (fix) (u * d21.p.z);
+	hitP [X] = p1 [X] + (fix) (u * d21 [X]);
+	hitP [Y] = p1 [Y] + (fix) (u * d21 [Y]);
+	hitP [Z] = p1 [Z] + (fix) (u * d21 [Z]);
 	}
 return bClamped;
 }
-*/
+
 // ------------------------------------------------------------------------
 
 // Version with vPos
@@ -810,48 +772,41 @@ const int VmPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1,
 	float		m, u;
 	int		bClamped = 0;
 
-	d21 = p2 - p1;
-	m = (float) fabs (d21.SqrMag ());
-	if (!m) {
-	//	if (hitP)
-		hitP = p1;
-		return 0;
-		}
-	d31 = p3 - p1;
-	u = CFloatVector3::Dot (d31, d21);
-	u /= m;
-	if (u < 0)
-		bClamped = 2;
-	else if (u > 1)
-		bClamped = 1;
-	else
-		bClamped = 0;
-	// limit the intersection to [p1,p2]
-	//if (hitP) {
-	if (bClamp && bClamped) {
-		if (vPos)
-			bClamped = (CFloatVector3::Dist (*vPos, p1) < CFloatVector3::Dist (*vPos, p2)) ? 2 : 1;
-		hitP = (bClamped == 1) ? p1 : p2;
+d21 = p2 - p1;
+m = (float) fabs (d21.SqrMag ());
+if (!m) {
+	hitP = p1;
+	return 0;
 	}
-	else {
-/*
-		hitP [X] = p1 [X] + (fix) (u * d21 [X]);
-		hitP [Y] = p1 [Y] + (fix) (u * d21 [Y]);
-		hitP [Z] = p1 [Z] + (fix) (u * d21 [Z]);
-*/
-		hitP = p1 + u * d21;
+d31 = p3 - p1;
+u = CFloatVector3::Dot (d31, d21);
+u /= m;
+if (u < 0)
+	bClamped = 2;
+else if (u > 1)
+	bClamped = 1;
+else
+	bClamped = 0;
+// limit the intersection to [p1,p2]
+if (bClamp && bClamped) {
+	if (vPos)
+		bClamped = (CFloatVector3::Dist (*vPos, p1) < CFloatVector3::Dist (*vPos, p2)) ? 2 : 1;
+	hitP = (bClamped == 1) ? p1 : p2;
 	}
-	//	}
-	return bClamped;
+else {
+	hitP = p1 + u * d21;
+	}
+return bClamped;
 }
 
 // ------------------------------------------------------------------------
 
-const fix VmLinePointDist (const CFixVector& a, const CFixVector& b, const CFixVector& p) {
+const fix VmLinePointDist (const CFixVector& a, const CFixVector& b, const CFixVector& p) 
+{
 	CFixVector	h;
 
-	VmPointLineIntersection (h, a, b, p, 0);
-	return CFixVector::Dist (h, p);
+VmPointLineIntersection (h, a, b, p, 0);
+return CFixVector::Dist (h, p);
 }
 
 // ------------------------------------------------------------------------
@@ -860,8 +815,8 @@ const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const
 {
 	CFloatVector	h;
 
-	VmPointLineIntersection (h, a, b, p, bClamp);
-	return CFloatVector::Dist (h, p);
+VmPointLineIntersection (h, a, b, p, bClamp);
+return CFloatVector::Dist (h, p);
 }
 
 // ------------------------------------------------------------------------
@@ -870,13 +825,15 @@ const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, con
 {
 	CFloatVector3	h;
 
-	VmPointLineIntersection (h, a, b, p, NULL, bClamp);
-	return CFloatVector3::Dist (h, p);
+VmPointLineIntersection (h, a, b, p, NULL, bClamp);
+return CFloatVector3::Dist (h, p);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& v3, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb) {
+const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& v3, 
+												const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb) 
+{
    CFloatVector3	v13, v43, v21;
    float		d1343, d4321, d1321, d4343, d2121;
    float		num, den, mua, mub;

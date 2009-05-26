@@ -54,11 +54,11 @@ vDelta.p.y = FixDiv (vDelta.p.y, transformation.m_info.scale.p.y);
 //calc Perp vector
 //do lots of normalizing to prevent overflowing.  When this code works,
 //it should be optimized
-CFixVector::Normalize(vDelta);
+CFixVector::Normalize (vDelta);
 vTop = topPoint->p3_vec;
-CFixVector::Normalize(vTop);
+CFixVector::Normalize (vTop);
 vRodNorm = CFixVector::Cross(vDelta, vTop);
-CFixVector::Normalize(vRodNorm);
+CFixVector::Normalize (vRodNorm);
 //scale for aspect
 #if RESCALE_ROD
 vRodNorm.p.x = FixMul (vRodNorm.p.x, transformation.m_info.scale.p.x);

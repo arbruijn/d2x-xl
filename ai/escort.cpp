@@ -857,7 +857,7 @@ int MaybeBuddyFireMega (short nObject)
 	int			nWeaponObj;
 
 vVecToRobot = buddyObjP->info.position.vPos - objP->info.position.vPos;
-dist = CFixVector::Normalize(vVecToRobot);
+dist = CFixVector::Normalize (vVecToRobot);
 if (dist > I2X (100))
 	return 0;
 dot = CFixVector::Dot (vVecToRobot, buddyObjP->info.position.mOrient.FVec ());

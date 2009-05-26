@@ -425,7 +425,7 @@ else if (nSegment >= 0) {
 		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
 		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
 		CFixVector	vOffs;
-		vOffs = sideP->m_normals[0] + sideP->m_normals[1];
+		vOffs = sideP->m_normals [0] + sideP->m_normals [1];
 		pl->info.vDirf.Assign (vOffs);
 		pl->info.vDirf *= 0.5f;
 		if (gameStates.render.bPerPixelLighting) {

@@ -3347,6 +3347,8 @@ extern fix nDebrisLife [];
 #define CLEAR(_v)		memset (_v, 0, sizeof (_v))
 
 #define SEGMENTS		gameData.segs.segments
+#define VERTICES		gameData.segs.vertices
+#define FVERTICES		gameData.segs.fVertices
 #define SEGFACES		gameData.segs.segFaces
 #define OBJECTS		gameData.objs.objects
 #define WALLS			gameData.walls.walls

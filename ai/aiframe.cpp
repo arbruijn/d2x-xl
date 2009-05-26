@@ -514,7 +514,7 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	vRand = CFixVector::Random();
 	goal_point += vRand * I2X (8);
 	vec_to_goal = goal_point - objP->info.position.vPos;
-	CFixVector::Normalize(vec_to_goal);
+	CFixVector::Normalize (vec_to_goal);
 	MoveTowardsVector (objP, &vec_to_goal, 0);
 	AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 	AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
@@ -604,7 +604,7 @@ if (!AIMultiplayerAwareness (objP, 62))
 	return 1;
 vCenter = SEGMENTS [objP->info.nSegment].SideCenter (siP->aiP->GOALSIDE);
 vGoal = vCenter - objP->info.position.vPos;
-CFixVector::Normalize(vGoal);
+CFixVector::Normalize (vGoal);
 AITurnTowardsVector (&vGoal, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 MoveTowardsVector (objP, &vGoal, 0);
 AIMultiSendRobotPos (siP->nObject, -1);

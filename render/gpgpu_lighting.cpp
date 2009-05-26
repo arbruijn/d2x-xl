@@ -120,7 +120,7 @@ for (i = 0; i < m_vld.nLights; i++) {
 	brightness = lightColor [W];
 	lightDir = *lightPos - *vertPos;
 	lightDist = lightDir.Mag() / lightRange;
-	CFloatVector::Normalize(lightDir);
+	CFloatVector::Normalize (lightDir);
 	if (nType)
 		lightDist -= radius;
 	if (lightDist < 1.0f) {
@@ -140,7 +140,7 @@ for (i = 0; i < m_vld.nLights; i++) {
 	vertColor [G] = (matAmbient [G] + NdotL) * lightColor [G];
 	vertColor [B] = (matAmbient [B] + NdotL) * lightColor [B];
 	if (NdotL > 0.0f) {
-		vReflect = CFloatVector::Reflect (lightDir.Neg(), *vertNorm);
+		vReflect = CFloatVector::Reflect (lightDir.Neg (), *vertNorm);
 		CFloatVector::Normalize (vReflect);
 		lightPos->Neg ();
 		CFloatVector::Normalize (*lightPos);

@@ -197,7 +197,7 @@ if (gameOpts->render.ship.bBullets) {
 				vEmitter = *viewP * pm->m_vBullets;
 				vEmitter += posP->vPos;
 				vDir = posP->mOrient.UVec ();
-				vDir.Neg();
+				vDir.Neg ();
 				if (i < 0) {
 					gameData.multiplayer.bulletEmitters [nPlayer] =
 						particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, BULLET_MAX_PARTS, 15.0f, 1,
@@ -495,7 +495,7 @@ if (nParts > 0) {
 		vDir[X] = d_rand () - I2X (1) / 4;
 		vDir[Y] = d_rand () - I2X (1) / 4;
 		vDir[Z] = d_rand () - I2X (1) / 4;
-		CFixVector::Normalize(vDir);
+		CFixVector::Normalize (vDir);
 		vPos = objP->info.position.vPos + vDir * (-objP->info.xSize / 2);
 		particleManager.SetPos (nSmoke, &vPos, NULL, objP->info.nSegment);
 		}

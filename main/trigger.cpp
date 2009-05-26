@@ -608,14 +608,14 @@ v = 60 + (COMPETITION ? 100 : extraGameInfo [IsMultiGame].nSpeedBoost) * 4 * spe
 if (sbd.bBoosted) {
 	if (pSrcPt && pDestPt) {
 		n = *pDestPt - *pSrcPt;
-		CFixVector::Normalize(n);
+		CFixVector::Normalize (n);
 		}
 	else if (srcSegnum >= 0) {
 		sbd.vSrc = SEGMENTS [srcSegnum].SideCenter (srcSidenum);
 		sbd.vDest = SEGMENTS [destSegnum].SideCenter (destSidenum);
 		if (memcmp (&sbd.vSrc, &sbd.vDest, sizeof (CFixVector))) {
 			n = sbd.vDest - sbd.vSrc;
-			CFixVector::Normalize(n);
+			CFixVector::Normalize (n);
 			}
 		else {
 			Controls [0].verticalThrustTime =

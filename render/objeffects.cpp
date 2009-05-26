@@ -1286,7 +1286,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 	vh [1] = vPos + vNorm * fScale;
 	vh [3] = vPos + vNorm * (-fScale);
 	for (i = 0; i < 4; i++)
-		CFloatVector::Normalize(vh [i]);
+		CFloatVector::Normalize (vh [i]);
 	a1 = (float) fabs (CFloatVector::Dot (vh [2], vh [0]));
 	a2 = (float) fabs (CFloatVector::Dot (vh [3], vh [1]));
 #if 0
@@ -1410,7 +1410,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	if (xOffset) {
 		if (bViewerOffset) {
 			CFixVector o = gameData.render.mine.viewerEye - vPos;
-			CFixVector::Normalize(o);
+			CFixVector::Normalize (o);
 			vPos += o * xOffset;
 			}
 		else

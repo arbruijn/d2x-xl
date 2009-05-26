@@ -100,7 +100,7 @@ do {
 	vr [Y] = I2X (1) / 4 - d_rand ();
 	vr [Z] = I2X (1) / 4 - d_rand ();
 } while (!(vr [X] && vr [Y] && vr [Z]));
-CFixVector::Normalize(vr);
+CFixVector::Normalize (vr);
 *vRand = vr;
 return vRand;
 }
@@ -118,7 +118,7 @@ CFixVector *DirectedRandomVector (CFixVector *vRand, CFixVector *vDir, int nMinD
 	CFixVector	vr, vd = *vDir, vSign;
 	int			nDot, nSign, i = 0;
 
-CFixVector::Normalize(vd);
+CFixVector::Normalize (vd);
 vSign [X] = vd [X] ? vd [X] / abs(vd [X]) : 0;
 vSign [Y] = vd [Y] ? vd [Y] / abs(vd [Y]) : 0;
 vSign [Z] = vd [Z] ? vd [Z] / abs(vd [Z]) : 0;
@@ -244,7 +244,7 @@ CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
-CFixVector::Normalize(va);
+CFixVector::Normalize (va);
 if (!(va [X] && va [Y] && va [Z]))
 	i = 0;
 do {
@@ -420,7 +420,7 @@ if (m_bRandom) {
 	else {
 		int nMinDot = I2X (1) - I2X (m_nAngle) / 90;
 		vRefDir = m_vRefEnd - m_vPos;
-		CFixVector::Normalize(vRefDir);
+		CFixVector::Normalize (vRefDir);
 		do {
 			VmRandomVector (&vDir);
 		}
@@ -430,7 +430,7 @@ if (m_bRandom) {
 }
 else {
 	vDir = m_vEnd - m_vPos;
-	CFixVector::Normalize(vDir);
+	CFixVector::Normalize (vDir);
 	}
 m_vDir = vDir;
 if (m_nOffset) {
@@ -926,7 +926,7 @@ if (bStart) {
 	vPlasma [0] = vPosf [0] + vn [0];
 	vPlasma [1] = vPosf [0] - vn [0];
 	vd = vPosf [0] - vPosf [1];
-	CFloatVector::Normalize(vd);
+	CFloatVector::Normalize (vd);
 	if (bScale)
 		vd = vd * 0.5f;
 	vPlasma [0] += vd;

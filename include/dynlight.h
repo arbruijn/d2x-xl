@@ -225,7 +225,7 @@ class CLightManager {
 		tFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP);
 		void GatherStaticLights (int nLevel);
 		void GatherStaticVertexLights (int nVertex, int nMax, int nThread);
-		int SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread);
+		int SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread, bool bForce = false);
 		CDynLight* GetActive (CActiveDynLight* activeLightsP, int nThread);
 		void ResetUsed (CDynLight* prl, int nThread);
 		void ResetActive (int nThread, int nActive);

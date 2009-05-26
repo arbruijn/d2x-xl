@@ -2922,14 +2922,14 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 				fvec2 = objP->info.position.mOrient.FVec ();
 				fvec2 *= factor;
 				fvec1 += fvec2;
-				mag1 = CFixVector::Normalize(fvec1);
+				mag1 = CFixVector::Normalize (fvec1);
 				if (mag1 > I2X (1)/256) {
 					rvec1 = curObjP->info.position.mOrient.RVec ();
 					rvec1 *= (I2X (1)-factor);
 					rvec2 = objP->info.position.mOrient.RVec ();
 					rvec2 *= factor;
 					rvec1 += rvec2;
-					CFixVector::Normalize(rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
+					CFixVector::Normalize (rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
 					curObjP->info.position.mOrient = CFixMatrix::CreateFR(fvec1, rvec1);
 					//curObjP->info.position.mOrient = CFixMatrix::CreateFR(fvec1, NULL, &rvec1);
 					}

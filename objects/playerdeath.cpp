@@ -97,7 +97,7 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 
 	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
 		CFixVector	closer_p1;
-		CFixVector::Normalize(vPlayerCameraOffs);
+		CFixVector::Normalize (vPlayerCameraOffs);
 		vPlayerCameraOffs *= xCameraToPlayerDistGoal;
 
 		fq.p0 = &objP->info.position.vPos;

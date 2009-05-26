@@ -220,7 +220,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].Center ();
 				gameData.objs.consoleP->RelinkToSeg (nSegment);
 				gameData.objs.consoleP->info.position.mOrient.FVec () = SEGMENTS [nSegment].m_sides [WALLS [j].nSide].m_normals [0];
-				gameData.objs.consoleP->info.position.mOrient.FVec ().Neg();
+				gameData.objs.consoleP->info.position.mOrient.FVec ().Neg ();
 				return;
 				}
 			}

@@ -53,8 +53,8 @@ typedef struct tLightmapData {
 	CVertColorData		vcd;
 	tRgbColorb			texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
 	CFixVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
-	double				fOffset [MAX_LIGHTMAP_WIDTH];
-	CSegFace					*faceP;
+	int					nOffset [MAX_LIGHTMAP_WIDTH];
+	CSegFace				*faceP;
 	} tLightmapData;
 
 class CLightmapManager {
@@ -79,7 +79,7 @@ class CLightmapManager {
 
 	private:
 		int Init (int bVariable);
-		inline void ComputePixelPos (CFixVector *vPos, CFixVector v1, CFixVector v2, double fOffset);
+		inline void ComputePixelOffset (CFixVector& vPos, CFixVector& v1, CFixVector& v2, int nOffset);
 		double SideRad (int nSegment, int nSide);
 		int CountLights (int bVariable);
 		void Copy (tRgbColorb *texColorP, ushort nLightmap);

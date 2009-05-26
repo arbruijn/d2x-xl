@@ -208,7 +208,7 @@ else {
 		n[X] = -n[X];
 		n[Y] = -n[Y];
 		*/
-		n.Neg();
+		n.Neg ();
 		a = n.ToAnglesVec();
 		}
 	else

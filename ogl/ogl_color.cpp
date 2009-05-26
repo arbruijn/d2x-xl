@@ -25,10 +25,12 @@
 #include "endlevel.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
+#include "fvi.h"
 #include "palette.h"
 
-#define CHECK_LIGHT_VERT 1
-#define BRIGHT_SHOTS 0
+#define CHECK_LIGHT_VERT	1
+#define BRIGHT_SHOTS			0
+#define USE_FACE_DIST		1
 
 #if DBG
 #	define ONLY_HEADLIGHT 0
@@ -350,7 +352,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	int					nBrightness, nMaxBrightness = 0;
 	float					fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
-	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create(0.0f, 0.0f, 0.0f);
+	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 	CDynLight*			prl;
 	CDynLightIndex*	sliP = &lightManager.Index (0) [nThread];
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
@@ -364,8 +366,8 @@ if (nThread == 1)
 #endif
 colorSum = *pColorSum;
 vertPos = *vcd.vertPosP - *transformation.m_info.posf [1].XYZ ();
-vertPos.Neg();
-CFloatVector3::Normalize(vertPos);
+vertPos.Neg ();
+CFloatVector3::Normalize (vertPos);
 nLights = sliP->nActive;
 if (nLights > lightManager.LightCount (0))
 	nLights = lightManager.LightCount (0);
@@ -402,11 +404,26 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (prl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
+#if USE_FACE_DIST
+	if (nType < 2) {
+		DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
+		lightDir = lightPos - *vcd.vertPosP;
+		fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
+		bInRad = fLightDist == 0;
+		}
+	else 
+#endif
+	{
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
-	bInRad = 0;
 	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
-	CFloatVector3::Normalize (lightDir);
+	bInRad = 0;
+	}
+
+	if (lightDir.IsZero ())
+		lightDir = vcd.vertNorm;
+	else
+		CFloatVector3::Normalize (lightDir);
 	if (vcd.vertNorm.IsZero ())
 		NdotL = 1.0f;
 	else
@@ -419,11 +436,30 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		else
 #endif
 		if (nType < 2) {
-			float lightRad = prl->info.fRad;
+#if USE_FACE_DIST
+			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
 			if (NdotL < 0) {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
 				float dot = -6.0f * CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
+				if (dot <= 0) {
+					nMinDot = 0;
+					dot += 1;
+					if (dot <= 0)
+						fLightDist *= 1e6f;
+					else
+						fLightDist /= dot;
+					}
+				}
+#else
+			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
+			float lightRad = prl->info.fRad;
+			if (NdotL >= 0) 
+				lightRad *= 1.0f - sqrt (fabs (dot));
+			else {
+				// lights with angles < -15 deg towards this vertex have already been excluded
+				// now dim the light if it's falling "backward" using the angle as a scale
+				dot *= -6.0f;
 				if (dot <= 0) {
 					nMinDot = 0;
 					dot += 1;
@@ -438,6 +474,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 					}
 				}
 			fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
+#endif
 			}
 		else
 			fLightDist -= prl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
@@ -573,7 +610,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 
 colorSum = *pColorSum;
 VmVecSub (&vertPos, vcd.vertPosP, reinterpret_cast<CFloatVector3*> (&transformation.m_info.glPosf));
-CFixVector::Normalize(vertPos, VmVecNegate (&vertPos));
+CFixVector::Normalize (vertPos, VmVecNegate (&vertPos));
 nLights = sliP->nActive;
 if (nLights > lightManager.LightCount (0))
 	nLights = lightManager.LightCount (0);
@@ -604,7 +641,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	bInRad = 0;
 	NdotL = 1;
 #if VECMAT_CALLS
-	CFixVector::Normalize(lightDir, &lightDir);
+	CFixVector::Normalize (lightDir, &lightDir);
 #else
 	if ((fMag = VmVecMag (&lightDir))) {
 		lightDir [X] /= fMag;
@@ -661,7 +698,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (NdotL <= 0)
 			continue;
 #if VECMAT_CALLS
-		CFloatVector::Normalize(&spotDir, &prl->vDirf);
+		CFloatVector::Normalize (&spotDir, &prl->vDirf);
 #else
 		fMag = VmVecMag (&prl->info.vDirf);
 		spotDir.p.x = prl->info.vDirf.p.x / fMag;
@@ -715,7 +752,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			}
 		G3_REFLECT (vReflect, lightDir, vcd.vertNorm);
 #if VECMAT_CALLS
-		CFloatVector::Normalize(&vReflect, &vReflect);
+		CFloatVector::Normalize (&vReflect, &vReflect);
 #else
 		if ((fMag = VmVecMag (&vReflect))) {
 			vReflect [X] /= fMag;
@@ -894,7 +931,7 @@ if (gameStates.ogl.bUseTransform)
 #if 1
 	vcd.vertNorm = *pvVertNorm;
 #else
-	CFloatVector::Normalize(&vcd.vertNorm, pvVertNorm);
+	CFloatVector::Normalize (&vcd.vertNorm, pvVertNorm);
 #endif
 else {
 	if (gameStates.render.nState)
