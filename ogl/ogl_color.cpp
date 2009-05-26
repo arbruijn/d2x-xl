@@ -406,10 +406,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
 #if USE_FACE_DIST
 	if (nType < 2) {
-		DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
+		bool bInFace = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 		lightDir = lightPos - *vcd.vertPosP;
-		fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
-		bInRad = fLightDist == 0;
+		fLightDist = lightDir.Mag ();
+		if (bInFace && (fLightDist <= 1.0f))
+			fLightDist = 0;
+		else
+		fLightDist *= gameStates.ogl.fLightRange;
+		bInRad = 0;
 		}
 	else 
 #endif

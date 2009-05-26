@@ -117,6 +117,8 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 			}
 		}
 	}
+if (minDist < 1e30f)
+	return 0;
 
 nVerts = sideP->m_corners;
 minDist = 1e30f;

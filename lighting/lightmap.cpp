@@ -385,18 +385,14 @@ for (x = xMin; x < xMax; x++) {
 			v2 = m_data.sideVerts [2]; 
 			if (x >= y) {
 				v1 = m_data.sideVerts [1]; 
-				//Next calculate this pixel's place in the world (tricky stuff)
 				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [x]);
 				ComputePixelOffset (offsetV, gameData.segs.vertices [v1], gameData.segs.vertices [v2], m_data.nOffset [y]);
-				*pixelPosP = offsetU + offsetV; 
 				}
 			else {
-				//Next calculate this pixel's place in the world (tricky stuff)
 				v3 = m_data.sideVerts [3]; 
 				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [y]); 
 				ComputePixelOffset (offsetU, gameData.segs.vertices [v3], gameData.segs.vertices [v2], m_data.nOffset [x]); 
 				}
-			*pixelPosP = gameData.segs.vertices [v0] + offsetU + offsetV; 
 			}
 		else {//SIDE_IS_TRI_02
 			v1 = m_data.sideVerts [1]; 
@@ -405,18 +401,14 @@ for (x = xMin; x < xMax; x++) {
 				v0 = m_data.sideVerts [0]; 
 				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [x]);  
 				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [y]);
-				*pixelPosP = offsetU + offsetV; 
-				*pixelPosP += gameData.segs.vertices [v0];  //This should be the real world position of the pixel.
 				}
 			else {
-				v2 = m_data.sideVerts [2]; 
-				//Not certain this is correct, may need to subtract something
-				ComputePixelOffset (offsetV, gameData.segs.vertices [v2], gameData.segs.vertices [v1], m_data.nOffset [LM_W - 1 - y]);  
-				ComputePixelOffset (offsetU, gameData.segs.vertices [v2], gameData.segs.vertices [v3], m_data.nOffset [LM_W - 1 - x]); 
-				*pixelPosP = offsetU + offsetV; 
-				*pixelPosP += gameData.segs.vertices [v2];  //This should be the real world position of the pixel.
+				v0 = m_data.sideVerts [2]; 
+				ComputePixelOffset (offsetV, gameData.segs.vertices [v0], gameData.segs.vertices [v1], m_data.nOffset [LM_W - 1 - y]);  
+				ComputePixelOffset (offsetU, gameData.segs.vertices [v0], gameData.segs.vertices [v3], m_data.nOffset [LM_W - 1 - x]); 
 				}
 			}
+		*pixelPosP = gameData.segs.vertices [v0] + offsetU + offsetV; 
 		}
 	}
 
