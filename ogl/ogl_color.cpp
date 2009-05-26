@@ -345,11 +345,12 @@ float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
 int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread)
 {
-	int					i, j, nLights, nType, bInRad,
+	int					i, j, nLights, nType, 
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = gameStates.render.nState && !gameStates.ogl.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
 	int					nBrightness, nMaxBrightness = 0;
+	bool					bInRad;
 	float					fLightDist, fAttenuation, spotEffect, NdotL, RdotE, nMinDot;
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
@@ -408,13 +409,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
 #if USE_FACE_DIST
 	if (nType < 2) {
-		bool bInFace = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
+		bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 		lightDir = lightPos - *vcd.vertPosP;
 		if (0 > (fLightDist = lightDir.Mag () - 10.0f))
 			fLightDist = 0;
 		else
 			fLightDist *= gameStates.ogl.fLightRange;
-		bInRad = 0;
 		}
 	else 
 #endif
@@ -422,14 +422,16 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
 	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
-	bInRad = 0;
+	bInRad = false;
 	}
 
 	if (lightDir.IsZero ())
 		lightDir = vcd.vertNorm;
 	else
 		CFloatVector3::Normalize (lightDir);
-	if (vcd.vertNorm.IsZero ())
+	if (bInRad)
+		NdotL = 1.0f;
+	else if (vcd.vertNorm.IsZero ())
 		NdotL = 1.0f;
 	else
 		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
@@ -487,7 +489,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			fLightDist = 0;
 		}
 	if	(((NdotL >= nMinDot) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, prl)) {
-		bInRad = 1;
+		bInRad = true;
 		NdotL = 1;
 		fLightDist = 0;
 		fAttenuation = 1.0f / prl->info.fBrightness;

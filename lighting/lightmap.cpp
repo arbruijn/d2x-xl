@@ -395,13 +395,13 @@ if (m_data.nType) {
 			if (y >= x) {
 				i0 = m_data.sideVerts [1]; 
 				v0 = VERTICES [i0];
-				offset.x = (v1 - v0) * m_data.nOffset [y];
+				offset.x = (v0 - v1) * m_data.nOffset [y];
 				offset.y = (v2 - v0) * m_data.nOffset [x];
 				}
 			else {
 				i0 = m_data.sideVerts [3]; 
 				v0 = VERTICES [i0];
-				offset.y = (v1 - v0) * m_data.nOffset [x]; 
+				offset.y = (v0 - v1) * m_data.nOffset [x]; 
 				offset.x = (v2 - v0) * m_data.nOffset [y]; 
 				}
 			*pixelPosP = v0 + offset.x + offset.y; 
