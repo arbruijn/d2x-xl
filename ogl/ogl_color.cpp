@@ -387,6 +387,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if DBG
 	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
+	else
+		continue;
 #endif
 	if (!prl->render.bState)
 		continue;

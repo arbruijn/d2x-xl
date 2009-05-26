@@ -86,7 +86,7 @@ for (nEdge = 0; nEdge < nVerts; nEdge++) {
 	vEdge.j = (*v1) [j] - (*v0) [j];
 	vCheck.i = check_i - (*v0) [i];
 	vCheck.j = check_j - (*v0) [j];
-	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < 0)
+	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < -0.01)
 		return false;
 	}
 return true;

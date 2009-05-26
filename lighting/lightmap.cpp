@@ -384,13 +384,13 @@ if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSi
 	nDbgSeg = nDbgSeg;
 #endif
 vcd.vertPosP = &vcd.vertPos;
-pixelPosP = m_data.pixelPos + yMin * LM_W;
+pixelPosP = m_data.pixelPos + yMin * w;
 if (m_data.nType) {
 	i1 = m_data.sideVerts [0]; 
 	v1 = VERTICES [i1];
 	i2 = m_data.sideVerts [2]; 
 	v2 = VERTICES [i2];
-	for (y = yMin; y < yMax; x++) {
+	for (y = yMin; y < yMax; y++) {
 		for (x = 0; x < w; x++, pixelPosP++) {
 			if (y >= x) {
 				i0 = m_data.sideVerts [1]; 
@@ -415,7 +415,7 @@ else {//SIDE_IS_TRI_02
 	i2 = m_data.sideVerts [3]; 
 	v2 = VERTICES [i2];
 	for (y = yMin; y < yMax; y++) {
-		for (y = 0; y < w; x++, pixelPosP++) {
+		for (x = 0; x < w; x++, pixelPosP++) {
 			if (h - y >= x) {
 				i0 = m_data.sideVerts [0]; 
 				v0 = VERTICES [i0];
@@ -434,9 +434,9 @@ else {//SIDE_IS_TRI_02
 	}
 
 bBlack = bWhite = true;
-pixelPosP = m_data.pixelPos + yMin * LM_W;
-for (x = yMin; x < yMax; x++) {
-	for (y = 0; y < LM_H; y++, pixelPosP++) { 
+pixelPosP = m_data.pixelPos + yMin * w;
+for (y = yMin; y < yMax; y++) {
+	for (x = 0; x < w; x++, pixelPosP++) { 
 #if DBG
 		if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
@@ -461,7 +461,7 @@ for (x = yMin; x < yMax; x++) {
 				else
 					bWhite = false;
 				}
-			texColorP = m_data.texColor + y * LM_W + x;
+			texColorP = m_data.texColor + x * w + y;
 			texColorP->red = (ubyte) (255 * color [R]);
 			texColorP->green = (ubyte) (255 * color [G]);
 			texColorP->blue = (ubyte) (255 * color [B]);
