@@ -342,11 +342,15 @@ Copy (texColorP, nLightmap);
 
 void CLightmapManager::Build (int nThread)
 {
-	CFixVector		*pixelPosP, offsetU, offsetV;
+	CFixVector		*pixelPosP;
 	tRgbColorb		*texColorP;
 	CFloatVector3	color;
-	int				w, h, x, y, xMin, xMax;
-	int				v0, v1, v2; 
+	CFixVector		v0, v1, v2;
+	struct {
+		CFixVector	x, y;
+	} offset;
+	int				w, h, x, y, yMin, yMax;
+	int				i0, i1, i2; 
 	bool				bBlack, bWhite;
 	CVertColorData	vcd = m_data.vcd;
 
@@ -358,21 +362,21 @@ if ((m_data.faceP->nSegment != nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSi
 	}
 #endif
 
-w = LM_W;
 h = LM_H;
+w = LM_W;
 
 if (nThread < 0) {
-	xMin = 0;
-	xMax = w;
+	yMin = 0;
+	yMax = h;
 	nThread = 0;
 	}
 else if (nThread > 0) {
-	xMin = w / 2;
-	xMax = w;
+	yMin = h / 2;
+	yMax = h;
 	}
 else {
-	xMin = 0;
-	xMax = w / 2;
+	yMin = 0;
+	yMax = h / 2;
 	}
 
 #if DBG
@@ -380,50 +384,58 @@ if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSi
 	nDbgSeg = nDbgSeg;
 #endif
 vcd.vertPosP = &vcd.vertPos;
-pixelPosP = m_data.pixelPos + xMin * h;
+pixelPosP = m_data.pixelPos + yMin * LM_W;
 if (m_data.nType) {
-	v1 = m_data.sideVerts [0]; 
-	v2 = m_data.sideVerts [2]; 
-	for (x = xMin; x < xMax; x++) {
-		for (y = 0; y < h; y++, pixelPosP++) {
-			if (x >= y) {
-				v0 = m_data.sideVerts [1]; 
-				offsetU = (gameData.segs.vertices [v1] - gameData.segs.vertices [v0]) * m_data.nOffset [x];
-				offsetV = (gameData.segs.vertices [v2] - gameData.segs.vertices [v0]) * m_data.nOffset [y];
+	i1 = m_data.sideVerts [0]; 
+	v1 = VERTICES [i1];
+	i2 = m_data.sideVerts [2]; 
+	v2 = VERTICES [i2];
+	for (y = yMin; y < yMax; x++) {
+		for (x = 0; x < w; x++, pixelPosP++) {
+			if (y >= x) {
+				i0 = m_data.sideVerts [1]; 
+				v0 = VERTICES [i0];
+				offset.x = (v1 - v0) * m_data.nOffset [y];
+				offset.y = (v2 - v0) * m_data.nOffset [x];
 				}
 			else {
-				v0 = m_data.sideVerts [3]; 
-				offsetV = (gameData.segs.vertices [v1] - gameData.segs.vertices [v0]) * m_data.nOffset [y]; 
-				offsetU = (gameData.segs.vertices [v2] - gameData.segs.vertices [v0]) * m_data.nOffset [x]; 
+				i0 = m_data.sideVerts [3]; 
+				v0 = VERTICES [i0];
+				offset.y = (v1 - v0) * m_data.nOffset [x]; 
+				offset.x = (v2 - v0) * m_data.nOffset [y]; 
 				}
-			*pixelPosP = gameData.segs.vertices [v0] + offsetU + offsetV; 
+			*pixelPosP = v0 + offset.x + offset.y; 
 			}
 		}
 	}
 else {//SIDE_IS_TRI_02
-	w--;
-	v1 = m_data.sideVerts [1]; 
-	v2 = m_data.sideVerts [3]; 
-	for (x = xMin; x < xMax; x++) {
-		for (y = 0; y < h; y++, pixelPosP++) {
-			if (w - x >= y) {
-				v0 = m_data.sideVerts [0]; 
-				offsetU = (gameData.segs.vertices [v1] - gameData.segs.vertices [v0]) * m_data.nOffset [x];  
-				offsetV = (gameData.segs.vertices [v2] - gameData.segs.vertices [v0]) * m_data.nOffset [y];
+	h--;
+	i1 = m_data.sideVerts [1]; 
+	v1 = VERTICES [i1];
+	i2 = m_data.sideVerts [3]; 
+	v2 = VERTICES [i2];
+	for (y = yMin; y < yMax; y++) {
+		for (y = 0; y < w; x++, pixelPosP++) {
+			if (h - y >= x) {
+				i0 = m_data.sideVerts [0]; 
+				v0 = VERTICES [i0];
+				offset.x = (v1 - v0) * m_data.nOffset [y];  
+				offset.y = (v2 - v0) * m_data.nOffset [x];
 				}
 			else {
-				v0 = m_data.sideVerts [2]; 
-				offsetV = (gameData.segs.vertices [v1] - gameData.segs.vertices [v0]) * m_data.nOffset [w - y];  
-				offsetU = (gameData.segs.vertices [v2] - gameData.segs.vertices [v0]) * m_data.nOffset [w - x]; 
+				i0 = m_data.sideVerts [2]; 
+				v0 = VERTICES [i0];
+				offset.y = (v1 - v0) * m_data.nOffset [h - x];  
+				offset.x = (v2 - v0) * m_data.nOffset [h - y]; 
 				}
-			*pixelPosP = gameData.segs.vertices [v0] + offsetU + offsetV; 
+			*pixelPosP = v0 + offset.x + offset.y; 
 			}
 		}
 	}
 
 bBlack = bWhite = true;
-pixelPosP = m_data.pixelPos + xMin * LM_H;
-for (x = xMin; x < xMax; x++) {
+pixelPosP = m_data.pixelPos + yMin * LM_W;
+for (x = yMin; x < yMax; x++) {
 	for (y = 0; y < LM_H; y++, pixelPosP++) { 
 #if DBG
 		if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
