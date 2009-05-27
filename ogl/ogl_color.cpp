@@ -30,7 +30,7 @@
 
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
-#define USE_FACE_DIST		0
+#define USE_FACE_DIST		1
 
 #if DBG
 #	define ONLY_HEADLIGHT 0
@@ -412,13 +412,14 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 
 #if USE_FACE_DIST
 if ((nVertex < 0) && (nType < 2)) {
-	DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
+	bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 	lightDir = lightPos - *vcd.vertPosP;
 	if (0 > (fLightDist = lightDir.Mag () - 1.0f))
 		fLightDist = 0;
-	else
+	else {
 		fLightDist *= gameStates.ogl.fLightRange;
-	bInRad = false;
+		bInRad = false;
+		}
 	}
 else 
 #endif

@@ -143,9 +143,9 @@ h >>= 4;
 h += h >> 1;
 
 if (bHaveTarget)
-	CCanvas::Current ()->SetColorRGBi (RGB_PAL (39, 0, 0));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (39, 0, 0, 196));
 else
-	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 39, 0));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 39, 0, 196));
 for (i = 0, x1 = float (left); i < 11; i++) {
 	x1 += xStep;
 	if (i != 5)
@@ -162,9 +162,9 @@ w <<= 1;
 h <<= 1;
 
 if (bHaveTarget)
-	CCanvas::Current ()->SetColorRGBi (RGB_PAL (63, 0, 0));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 196));
 else
-	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 63, 0));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 196));
 OglDrawLine (left, y, right, y);
 OglDrawLine (x, top, x, bottom);
 OglDrawLine (left, y - h, left, y + h);

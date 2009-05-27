@@ -768,7 +768,7 @@ tParamValue defaultParams [] = {
 	 {"gameStates.render.cockpit.nType", "3"},
 	 {"gameStates.render.bShowFrameRate", "0"},
 	 {"gameStates.render.bShowTime", "1"},
-	 {"gameStates.sound.audio.nMaxChannels", "64"},
+	 {"gameStates.sound.audio.nMaxChannels", "128"},
 	 {"gameStates.video.nDefaultDisplayMode", "3"},
 	 {"gameOptions[0].render.cockpit.bGuidedInMainView", "1"},
 	 {"networkData.nNetLifeKills", "0"},

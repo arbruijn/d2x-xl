@@ -666,9 +666,9 @@ m_info.nLoopingStart = -1;
 m_info.nLoopingEnd = -1;
 m_info.nLoopingChannel = -1;
 m_info.fSlowDown = 1.0f;
-m_channels.Create (m_info.nMaxChannels);
-m_usedChannels.Create (m_info.nMaxChannels);
-m_objects.Create (MAX_SOUND_OBJECTS);
+m_channels.Resize (m_info.nMaxChannels);
+m_usedChannels.Resize (m_info.nMaxChannels);
+m_objects.Resize (MAX_SOUND_OBJECTS);
 InitSounds ();
 }
 
@@ -981,15 +981,11 @@ if (!gameStates.app.bUseSound)
 	return;
 if (m_info.nMaxChannels	== nChannels)
 	return;
-m_info.nMaxChannels = nChannels;
-if (m_info.nMaxChannels < 1) 
-	m_info.nMaxChannels = 1;
-if (m_info.nMaxChannels > m_info.nMaxChannels) 
-	m_info.nMaxChannels = m_info.nMaxChannels;
+if (m_info.bAvailable) 
+	audio.StopAllChannels ();
+m_info.nMaxChannels = (nChannels < 2) ? 2 : (nChannels > MAX_SOUND_CHANNELS) ? MAX_SOUND_CHANNELS : nChannels;
 gameStates.sound.audio.nMaxChannels = m_info.nMaxChannels;
-if (!m_info.bAvailable) 
-	return;
-audio.StopAllChannels ();
+Init ();
 }
 
 //------------------------------------------------------------------------------
@@ -1006,7 +1002,7 @@ int CAudio::ChannelIsPlaying (int nChannel)
 {
 if (!m_info.bAvailable) 
 	return 0;
-if (nChannel < 0)
+if ((nChannel < 0) || (nChannel >= m_info.nMaxChannels))
 	return 0;
 #ifdef _WIN32
 return audio.m_channels [nChannel].Playing ();
@@ -1035,6 +1031,8 @@ if (!gameStates.app.bUseSound)
 	return;
 if (!m_info.bAvailable) 
 	return;
+if ((nChannel < 0) || (nChannel >= m_info.nMaxChannels))
+	return;
 m_channels [nChannel].SetPan (nPan);
 }
 
@@ -1044,7 +1042,7 @@ void CAudio::StopSound (int nChannel)
 {
 if (!gameStates.app.bUseSound)
 	return;
-if (nChannel < 0)
+if ((nChannel < 0) || (nChannel >= m_info.nMaxChannels))
 	return;
 m_channels [nChannel].Stop ();
 }
@@ -1056,6 +1054,8 @@ void CAudio::StopActiveSound (int nChannel)
 if (!gameStates.app.bUseSound)
 	return;
 if (!m_info.bAvailable)
+	return;
+if ((nChannel < 0) || (nChannel >= m_info.nMaxChannels))
 	return;
 if (!audio.m_channels [nChannel].Playing ())
 	return;
