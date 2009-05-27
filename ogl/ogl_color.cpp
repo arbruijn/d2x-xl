@@ -30,7 +30,7 @@
 
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
-#define USE_FACE_DIST		1
+#define USE_FACE_DIST		0
 
 #if DBG
 #	define ONLY_HEADLIGHT 0
