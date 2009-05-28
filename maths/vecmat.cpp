@@ -667,18 +667,18 @@ return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
 const int VmPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClampToFarthest)
 {
 	CFixVector	d31, d21;
-	float			m, u;
+	double		m, u;
 	int			bClamped = 0;
 
 d21 = p2 - p1;
-m = (float) fabs ((float) d21 [X] * (float) d21 [X] + (float) d21 [Y] * (float) d21 [Y] + (float) d21 [Z] * (float) d21 [Z]);
+m = fabs (double (d21 [X]) * double (d21 [X]) + double (d21 [Y]) * double (d21 [Y]) + double (d21 [Z]) * double (d21 [Z]));
 if (!m) {
 	//	if (hitP)
 	hitP = p1;
 	return 0;
 }
 d31 = p3 - p1;
-u = (float) d31 [X] * (float) d21 [X] + (float) d31 [Y] * (float) d21 [Y] + (float) d31 [Z] * (float) d21 [Z];
+u = double (d31 [X]) * double (d21 [X]) + double (d31 [Y]) * double (d21 [Y]) + double (d31 [Z]) * double (d21 [Z]);
 u /= m;
 if (u < 0)
 	bClamped = bClampToFarthest ? 2 : 1;

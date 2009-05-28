@@ -660,6 +660,8 @@ else {
 	iModel = 1;
 	nModels = pmhb->nHitboxes;
 	}
+if (!vPos)
+	vPos = &objP->info.position.vPos;
 TransformHitboxes (objP, vPos, hb);
 for (; iModel <= nModels; iModel++) {
 	for (i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
@@ -670,8 +672,7 @@ for (; iModel <= nModels; iModel++) {
 #endif
 		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, 4, pf->n + 1);
 		if (h) {
-		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, 4, pf->n + 1);
-			v = vHit - *p0;
+			v = vHit - *vPos;
 			d = CFixVector::Normalize (v);
 #if 0
 			dot = CFixVector::Dot (pf->n + 1, pn);
@@ -743,16 +744,25 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
+#if DBG
+	{
+	CFixVector v0 = *p1 - *p0;
+	CFixVector v1 = vPos - *p0;
+	CFixVector::Normalize (v0);
+	CFixVector::Normalize (v1);
+	dist = CFixVector::Dot (v0, v1);
+	}
+#endif
 	dist = CFixVector::Dist (vHit, vPos);
 	if (dist > 2 * (thisObjP->info.xSize + otherObjP->info.xSize))
 		return 0;
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1))) {
-			if (!CFixVector::Dist(*p0, *p1))
+			if (!CFixVector::Dist (*p0, *p1))
 				return 0;
 			dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, 0);
-			if ((dist == 0x7fffffff) || (dist > otherObjP->info.xSize))
+			if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
 				return 0;
 			}
 		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1);
@@ -924,6 +934,10 @@ restart:
 				 ((nOtherType == OBJ_PLAYER) ||
 				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
 				nFudgedRad = radP1 / 2;
+#if DBG
+			if (nObject == nDbgObj)
+				nDbgObj = nDbgObj;
+#endif
 			d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
 #if DBG

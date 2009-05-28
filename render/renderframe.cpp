@@ -101,7 +101,7 @@ int TargetInLineOfFire (void)
 	//see if we can see this CPlayerData
 
 fq.p0 = &gameData.objs.viewerP->info.position.vPos;
-vEndPos = *fq.p0 + gameData.objs.viewerP->info.position.mOrient.FVec () * I2X (10000);
+vEndPos = *fq.p0 + gameData.objs.viewerP->info.position.mOrient.FVec () * I2X (2000);
 fq.p1 = &vEndPos;
 fq.radP0 = 0;
 fq.radP1 = 0;
@@ -109,7 +109,7 @@ fq.thisObjNum = OBJ_IDX (gameData.objs.viewerP);
 fq.flags = FQ_CHECK_OBJS | FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
-fq.bCheckVisibility = true;
+fq.bCheckVisibility = false;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return (nHitType == HIT_OBJECT);
 }
@@ -143,9 +143,9 @@ h >>= 4;
 h += h >> 1;
 
 if (bHaveTarget)
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (39, 0, 0, 196));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (39, 0, 0, 128));
 else
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 39, 0, 196));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 39, 0, 128));
 for (i = 0, x1 = float (left); i < 11; i++) {
 	x1 += xStep;
 	if (i != 5)
@@ -162,9 +162,9 @@ w <<= 1;
 h <<= 1;
 
 if (bHaveTarget)
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 196));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 128));
 else
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 196));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 128));
 OglDrawLine (left, y, right, y);
 OglDrawLine (x, top, x, bottom);
 OglDrawLine (left, y - h, left, y + h);
