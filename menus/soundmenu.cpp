@@ -245,28 +245,31 @@ do {
 		soundOpts.nGatling = m.AddCheck (TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_G, HTX_GATLING_SOUND);
 		if (gameOpts->sound.bGatling)
 			optSpeedUpSound = m.AddCheck (TXT_SPINUP_SOUND, extraGameInfo [0].bGatlingSpeedUp, KEY_U, HTX_SPINUP_SOUND);
-		optShieldWarn = m.AddCheck (TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
+		if (gameOpts->render.cockpit.bTextGauges)
+			optShieldWarn = -1;
+		else
+			optShieldWarn = m.AddCheck (TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
 		}
 
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
 	redbook.Enable (m [soundOpts.nRedbook].m_value);
 	gameConfig.bReverseChannels = m [optReverse].m_value;
+	if (!gameStates.app.bNostalgia) {
+		GET_VAL (gameOpts->sound.bFadeMusic, optFadeMusic);
+		GET_VAL (gameOpts->sound.bShip, optShipSound);
+		GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
+		GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
+		GET_VAL (extraGameInfo [0].bGatlingSpeedUp, optSpeedUpSound);
+		GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
+		if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
+			audio.DestroyObjectSound (LOCALPLAYER.nObject);
+		}
+	gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nDigiVolume) * 10.0f / 8.0f + 0.5f);
 } while (i == -2);
 if (gameConfig.nMidiVolume < 1)
 	midi.PlaySong (NULL, NULL, NULL, 0, 0);
 else if (!bSongPlaying)
 	songManager.PlayCurrent (1);
-if (!gameStates.app.bNostalgia) {
-	GET_VAL (gameOpts->sound.bFadeMusic, optFadeMusic);
-	GET_VAL (gameOpts->sound.bShip, optShipSound);
-	GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
-	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
-	GET_VAL (extraGameInfo [0].bGatlingSpeedUp, optSpeedUpSound);
-	GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
-	if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
-		audio.DestroyObjectSound (LOCALPLAYER.nObject);
-	}
-gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nDigiVolume) * 10.0f / 8.0f + 0.5f);
 audio.SetMaxChannels (32 << (gameStates.sound.nSoundChannels - 2));
 }
 
