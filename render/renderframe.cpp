@@ -162,9 +162,9 @@ w <<= 1;
 h <<= 1;
 
 if (bHaveTarget)
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 128));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 160));
 else
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 128));
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 160));
 OglDrawLine (left, y, right, y);
 OglDrawLine (x, top, x, bottom);
 OglDrawLine (left, y - h, left, y + h);
