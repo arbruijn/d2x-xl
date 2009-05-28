@@ -30,7 +30,11 @@
 
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
-#define USE_FACE_DIST		1
+#if DBG
+#	define USE_FACE_DIST		1
+#else
+#	define USE_FACE_DIST		0
+#endif
 
 #if DBG
 #	define ONLY_HEADLIGHT 0
@@ -470,7 +474,7 @@ else
 			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
 			float lightRad = prl->info.fRad;
 			if (NdotL >= 0) 
-				lightRad *= 1.0f - sqrt (fabs (dot));
+				lightRad *= 1.0f - 0.9f * sqrt (fabs (dot));
 			else {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
