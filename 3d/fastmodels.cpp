@@ -674,8 +674,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 		for (; iLight < 8; iLight++)
 			glDisable (GL_LIGHT0 + iLight);
 		}
-	//if (nSubModel < 0)
-		transformation.Begin(posP->vPos, posP->mOrient);
+	transformation.Begin (posP->vPos, posP->mOrient);
 	pm = gameData.models.renderModels [bHires] + nModel;
 	if (bHires) {
 		for (int i = 0; i < pm->m_nSubModels; i++)

@@ -860,7 +860,7 @@ class CObject : public CObjectInfo {
 		inline void SetHitPoint (CFixVector vHit) {
 			m_vHit = vHit - info.position.vPos;
 			CFixVector::Normalize (m_vHit);
-			m_vHit *= info.xSize / 2;
+			m_vHit *= info.xSize;
 			}
 
 		inline CFixVector HitPoint (void) { return m_vHit; }

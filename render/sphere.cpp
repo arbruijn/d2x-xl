@@ -54,20 +54,23 @@ OOF::CQuad baseSphereCube [6] = {
 
 const char *pszSphereFS =
 	"uniform sampler2D sphereTex;\r\n" \
-	"uniform vec3 vHit;\r\n" \
+	"uniform vec4 vHit;\r\n" \
 	"uniform float fRad;\r\n" \
+	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * clamp (1.0 - fabs (vHit - gl_Position).Length ()) / fRad, 0.0, 1.0);\r\n" \
+	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * /*gl_Color **/ (1.0 - clamp (length (vertPos - vec3 (gl_ModelViewMatrix * vHit)) / fRad, 0.0, 1.0));\r\n" \
 	"}"
 	;
 
 //------------------------------------------------------------------------------
 
 const char *pszSphereVS =
+	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
+	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	}"
 	;
 
@@ -102,6 +105,9 @@ return 1;
 
 // ----------------------------------------------------------------------------------------------
 
+static CFixVector vHit;
+static CFloatVector vHitf;
+
 int SetupSphereShader (CObject* objP, float fScale)
 {
 PROF_START
@@ -109,15 +115,26 @@ if (!CreateSphereShader ()) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
-CFloatVector vHitf;
-vHitf.Assign (objP->HitPoint ());
 if (100 != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
 	glUseProgramObject (sphereShaderProg);
 	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
 	}
+vHit = objP->HitPoint ();
+vHitf.Assign (vHit);
+CFloatVector::Normalize (vHitf);
+#if 0
+OglSetupTransform (0);
+tObjTransformation *posP = OBJPOS (objP);
+CFixVector vPos;
+transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
+float dist = X2F (vHit.Mag ());
+transformation.Transform (vHitf, vHitf);
+transformation.End ();
+OglResetTransform (1);
+#endif
 glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 1, reinterpret_cast<GLfloat*> (&vHitf));
-glUniform1f (glGetUniformLocation (sphereShaderProg, "fRad"), X2F (objP->Size ()) * fScale);
+glUniform1f (glGetUniformLocation (sphereShaderProg, "fRad"), X2F (objP->Size ()) * 4 * fScale/** fScale*/);
 OglClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = 100;
@@ -547,6 +564,12 @@ if (!Create (nRings, nTiles))
 	return;
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
+
+float dist, minDist = 1e30f;
+
+vHitf.Assign (vHit);
+transformation.Transform (vHitf, vHitf);
+
 if (gameStates.ogl.bUseTransform) {
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
@@ -578,6 +601,9 @@ else {
 			for (i = 0; i < nQuads; i++, svP [0]++) {
 				p [i] = svP [0]->vPos * fRadius;
 				transformation.Transform (p [i], p [i], 0);
+				dist = CFloatVector::Dist (p [i], vHitf);
+				if (minDist > dist)
+					minDist = dist;
 				if (bTextured)
 					tc [i] = svP [0]->uv;
 				}
@@ -601,7 +627,7 @@ else {
 			}
 		}
 	}
-	OglCullFace (0);
+OglCullFace (0);
 }
 
 //------------------------------------------------------------------------------
@@ -692,8 +718,16 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
-SetupSphereShader (objP, fScale);
+SetupSphereShader (objP, alpha);
+gameStates.ogl.bUseTransform = 1;
+OglSetupTransform (0);
+tObjTransformation *posP = OBJPOS (objP);
+CFixVector vPos;
+transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
+transformation.End ();
+OglResetTransform (1);
+gameStates.ogl.bUseTransform = 0;
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
@@ -784,11 +818,11 @@ if (gameData.render.shield.nFaces > 0)
 			bAdditive = 2;
 			}
 		float r = X2F (nSize);
+		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;
-		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
-		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		vPos.SetZero ();
+		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		transformation.End ();
 		}

@@ -115,18 +115,15 @@ if (gameStates.ogl.bUseTransform) {
 
 //step 1: subtract object position from view position
 vOffs = m_info.pos - vPos;
-
-	int i;
-	//step 2: rotate view vector through CObject matrix
-	m_info.pos = mOrient * vOffs;
-	//step 3: rotate CObject matrix through view_matrix (vm = ob * vm)
-	mTrans = mOrient.Transpose ();
-	for (i = 0; i < 2; i++) {
-		mRot = mTrans * m_info.view [i];
-		m_info.view [i] = mRot;
-		m_info.viewf [i].Assign (m_info.view [i]);
-		}
-
+//step 2: rotate view vector through CObject matrix
+m_info.pos = mOrient * vOffs;
+//step 3: rotate CObject matrix through view_matrix (vm = ob * vm)
+mTrans = mOrient.Transpose ();
+for (int i = 0; i < 2; i++) {
+	mRot = mTrans * m_info.view [i];
+	m_info.view [i] = mRot;
+	m_info.viewf [i].Assign (m_info.view [i]);
+	}
 m_info.posf [0].Assign (m_info.pos);
 }
 

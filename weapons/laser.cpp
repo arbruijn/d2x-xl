@@ -614,34 +614,34 @@ return vGunPoints;
 //-------------- Initializes a laser after Fire is pressed -----------------
 
 CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun,
-										fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
+										 fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
 {
-	int			bSpectate = SPECTATOR (objP);
-	tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-	CFixMatrix	m, *viewP;
-	CFixVector	v [2];
+	int						bSpectate = SPECTATOR (objP);
+	tObjTransformation*	posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+	CFixMatrix				m, *viewP;
+	CFixVector				v [2];
 #if FULL_COCKPIT_OFFS
-	int			bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
-									  (objP->Index () == LOCALPLAYER.nObject));
+	int						bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
+												  (objP->Index () == LOCALPLAYER.nObject));
 #else
-	int			bLaserOffs = 0;
+	int						bLaserOffs = 0;
 #endif
 
 if (nGun < 0) {	// use center between gunPoints nGun and nGun + 1
-	(*v) = vGunPoints[-nGun] + vGunPoints[-nGun-1];
+	*v = vGunPoints [-nGun] + vGunPoints [-nGun - 1];
 //	VmVecScale (VmVecAdd (v, vGunPoints - nGun, vGunPoints - nGun - 1), I2X (1) / 2);
-	(*v) *= (I2X (1) / 2);
+	*v *= (I2X (1) / 2);
 }
 else {
 	v [0] = vGunPoints [nGun];
 	if (bLaserOffs)
-		v[0] += posP->mOrient.UVec () * LASER_OFFS;
+		v [0] += posP->mOrient.UVec () * LASER_OFFS;
 	}
 if (!mP)
 	mP = &m;
 if (bSpectate) {
    viewP = mP;
-	*viewP = posP->mOrient.Transpose();
+	*viewP = posP->mOrient.Transpose ();
 }
 else
    viewP = ObjectView (objP);
@@ -652,7 +652,7 @@ if (nGun < 0)
 (*vMuzzle) = posP->vPos + v[1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
-	*vMuzzle += (*mP).FVec ()* (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+	*vMuzzle += mP->FVec () * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
 return vMuzzle;
 }
 
@@ -682,9 +682,9 @@ int LaserPlayerFireSpreadDelay (
 #else
 	int bLaserOffs = 0;
 #endif
-	CFixMatrix			m;
-	int					bSpectate = SPECTATOR (objP);
-	tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+	CFixMatrix				m;
+	int						bSpectate = SPECTATOR (objP);
+	tObjTransformation*	posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 
 #if DBG
 if (nLaserType == SMARTMINE_BLOB_ID)
@@ -736,7 +736,7 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}
 //SORT OF HACK... IF ABOVE WAS CORRECT THIS WOULDNT BE NECESSARY.
-if (CFixVector::Dist(vLaserPos, posP->vPos) > 3 * objP->info.xSize / 2) {
+if (CFixVector::Dist (vLaserPos, posP->vPos) > 3 * objP->info.xSize / 2) {
 	return -1;
 	}
 if (nFate == HIT_WALL)  {
@@ -767,10 +767,10 @@ if (nLaserType == OMEGA_ID)
 if (nObject == -1) {
 	return -1;
 	}
-if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
-	gameData.objs.guidedMissile [objP->info.nId].objP = OBJECTS + nObject;
-gameData.multigame.bIsGuided = 0;
 laserP = OBJECTS + nObject;
+if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
+	gameData.objs.guidedMissile [objP->info.nId].objP = laserP;
+gameData.multigame.bIsGuided = 0;
 if (gameData.objs.bIsMissile [nLaserType] && (nLaserType != GUIDEDMSL_ID)) {
 	if (!gameData.objs.missileViewerP && (objP->info.nId == gameData.multiplayer.nLocalPlayer))
 		gameData.objs.missileViewerP = laserP;
