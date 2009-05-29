@@ -56,7 +56,7 @@ while (nSubModel != 0) {
 	}
 //now instance for the entire CObject
 //VmVecInc (&vGunPos, gameData.models.offsets + botInfoP->nModel);
-*vGunPoint = *ObjectView(objP) * vGunPos;
+*vGunPoint = *objP->View () * vGunPos;
 *vGunPoint += objP->info.position.vPos;
 return 1;
 }

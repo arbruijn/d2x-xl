@@ -3372,7 +3372,7 @@ static inline CFixVector *PolyObjPos (CObject *objP, CFixVector *vPosP)
 {
 CFixVector vPos = OBJPOS (objP)->vPos;
 if (objP->info.renderType == RT_POLYOBJ) {
-	*vPosP = *ObjectView (objP) * gameData.models.offsets [objP->rType.polyObjInfo.nModel];
+	*vPosP = *objP->View () * gameData.models.offsets [objP->rType.polyObjInfo.nModel];
 	*vPosP += vPos;
 	return vPosP;
 	}

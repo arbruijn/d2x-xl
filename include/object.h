@@ -857,12 +857,9 @@ class CObject : public CObjectInfo {
 		void RotateCamera (void);
 		void RotateMarker (void);
 
-		inline void SetHitPoint (CFixVector vHit) {
-			m_vHit = vHit - info.position.vPos;
-			CFixVector::Normalize (m_vHit);
-			m_vHit *= info.xSize;
-			}
+		void SetHitPoint (CFixVector vHit);
 
+		CFixMatrix* View (void);
 		inline CFixVector HitPoint (void) { return m_vHit; }
 
 		void Bash (ubyte nId);
@@ -1209,7 +1206,6 @@ void InitWeaponFlags (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
-CFixMatrix *ObjectView (CObject *objP);
 
 CFixVector* PlayerSpawnPos (int nPlayer);
 CFixMatrix* PlayerSpawnOrient (int nPlayer);

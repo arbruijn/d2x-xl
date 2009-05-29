@@ -942,7 +942,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			m = posP->mOrient.Transpose ();
 			}
 		else
-			viewP = ObjectView (objP);
+			viewP = objP->View ();
 		for (i = 0; i < nThrusters; i++) {
 			ti.vPos [i] = *viewP * ti.mtP->vPos [i];
 			if (!gameData.models.vScale.IsZero ())

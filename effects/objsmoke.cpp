@@ -193,7 +193,7 @@ if (gameOpts->render.ship.bBullets) {
 					m = posP->mOrient.Transpose();
 				}
 				else
-					viewP = ObjectView (objP);
+					viewP = objP->View ();
 				vEmitter = *viewP * pm->m_vBullets;
 				vEmitter += posP->vPos;
 				vDir = posP->mOrient.UVec ();
@@ -253,7 +253,7 @@ if (bHires >= 0) {
 			}
 
 			else
-				viewP = ObjectView (objP);
+				viewP = objP->View ();
 			vEmitter = *viewP * vGunPoints[nGun];
 			vEmitter += posP->vPos;
 			//vDir = posP->mOrient.FVec ();

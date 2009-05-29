@@ -210,7 +210,7 @@ void TransformHitbox (CObject *objP, CFixVector *vPos, int iSubObj)
 	tHitbox			*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
 	tQuad				*pf = phb->faces;
 	CFixVector		rotVerts [8];
-	CFixMatrix		*viewP = ObjectView (objP);
+	CFixMatrix		*viewP = objP->View ();
 	int				i, j;
 
 if (!vPos)
@@ -270,7 +270,7 @@ void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 	tHitbox*		pmhb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
-	CFixMatrix*	viewP = ObjectView (objP);
+	CFixMatrix*	viewP = objP->View ();
 	int			i, j, iBox, nBoxes;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {

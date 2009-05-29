@@ -121,6 +121,10 @@ if (100 != gameStates.render.history.nShader) {
 	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
 	}
 vHit = objP->HitPoint ();
+CFixMatrix m = *objP->View ();
+m.Transpose ();
+m.Inverse ();
+vHit = m * vHit;
 vHitf.Assign (vHit);
 CFloatVector::Normalize (vHitf);
 #if 0

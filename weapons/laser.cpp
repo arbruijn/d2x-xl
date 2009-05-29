@@ -644,12 +644,12 @@ if (bSpectate) {
 	*viewP = posP->mOrient.Transpose ();
 }
 else
-   viewP = ObjectView (objP);
+   viewP = objP->View ();
 v[1] = *viewP * v[0];
 memcpy (mP, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
-	v[1] += (*mP).UVec () * (-2 * v->Mag());
-(*vMuzzle) = posP->vPos + v[1];
+	v[1] += (*mP).UVec () * (-2 * v->Mag ());
+(*vMuzzle) = posP->vPos + v [1];
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
 	*vMuzzle += mP->FVec () * (-FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
@@ -707,7 +707,7 @@ else {
 if (bSpectate)
    VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
 else
-   viewP = ObjectView (objP);
+   viewP = objP->View ();
 VmVecRotate (&vGunPoint, &v, viewP);
 memcpy (&m, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
@@ -1734,7 +1734,7 @@ else {
 	j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
 	h = gameData.laser.nMissileGun & 1;
 	}
-viewP = ObjectView (gameData.objs.consoleP);
+viewP = gameData.objs.consoleP->View ();
 for (i = 0; i < j; i++, h = !h) {
 	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
 	if ((vGunPoints = GetGunPoints (gameData.objs.consoleP, nGun))) {
