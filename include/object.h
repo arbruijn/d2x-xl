@@ -705,6 +705,7 @@ class CObject : public CObjectInfo {
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;
+		CFixVector		m_vHit;
 
 	public:
 		CObject ();
@@ -855,6 +856,14 @@ class CObject : public CObjectInfo {
 		void DoPowerupFrame (void);
 		void RotateCamera (void);
 		void RotateMarker (void);
+
+		inline void SetHitPoint (CFixVector vHit) {
+			m_vHit = vHit - info.position.vPos;
+			CFixVector::Normalize (m_vHit);
+			m_vHit *= info.xSize / 2;
+			}
+
+		inline CFixVector HitPoint (void) { return m_vHit; }
 
 		void Bash (ubyte nId);
 		void BashToShield (bool bBash);

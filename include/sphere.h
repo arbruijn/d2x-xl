@@ -40,7 +40,7 @@ class CSphere : private CSphereData {
 		void Init () { CSphereData::Init (); }
 		void Destroy ();
 		int Create (int nRings = 32, int nTiles = 1);
-		int Render (CFloatVector *pPos, float xScale, float yScale, float zScale,
+		int Render (CObject* objP, CFloatVector *pPos, float xScale, float yScale, float zScale,
 						float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive);
 		inline CPulseData* Pulse (void) { return m_pulseP ? m_pulseP : &m_pulse; }
 		void SetPulse (CPulseData* pulseP);

@@ -766,30 +766,27 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 				return 0;
 			}
 		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1);
-//		VmPointLineIntersection (vHit, *p0, *p1, vHit, thisObjP->info.position.vPos, 1);
 		VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 		}
 	else {
 		if (bThisPoly) {
-		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
-		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
+			// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
+			// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			vn = *p1-*p0;
 			CFixVector::Normalize (vn);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
 				return 0;
-//			VmPointLineIntersection (vHit, *p0, *p1, vHit, &otherObjP->info.position.vPos, 1);
 			VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 			}
 		else {
-		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere
-		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
+			// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere
+			// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
 			v0 = thisObjP->info.position.vPos;
 			vn = otherObjP->info.position.vPos - v0;
 			CFixVector::Normalize (vn);
 			v1 = v0 + vn * thisObjP->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
-//			VmPointLineIntersection (vHit, *p0, *p1, vHit, &thisObjP->info.position.vPos, 1);
 			VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 			}
 		}
@@ -803,6 +800,8 @@ else {
 		return 0;
 	}
 intersection = vHit;
+thisObjP->SetHitPoint (vHit);
+otherObjP->SetHitPoint (vHit);
 return dist;
 }
 

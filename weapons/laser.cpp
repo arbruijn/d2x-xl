@@ -1245,9 +1245,7 @@ int LaserHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 
 gameData.laser.nOffset = (I2X (2) * (d_rand () % 8)) / 8;
 LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj);
-#if !DBG
 LaserPlayerFire (objP, nLaser, 1, 0, 0, nLightObj);
-#endif
 if (nFlags & LASER_QUAD) {
 	//	hideous system to make quad laser 1.5x powerful as Normal laser, make every other quad laser bolt bHarmless
 	LaserPlayerFire (objP, nLaser, 2, 0, 0, nLightObj);

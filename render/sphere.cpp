@@ -15,6 +15,7 @@
 #include "u_mem.h"
 #include "glare.h"
 #include "ogl_lib.h"
+#include "ogl_shader.h"
 #include "objeffects.h"
 #include "objrender.h"
 #include "transprender.h"
@@ -48,6 +49,79 @@ OOF::CQuad baseSphereCube [6] = {
 };
 
 #endif
+
+//------------------------------------------------------------------------------
+
+const char *pszSphereFS =
+	"uniform sampler2D sphereTex;\r\n" \
+	"uniform vec3 vHit;\r\n" \
+	"uniform float fRad;\r\n" \
+	"void main() {\r\n" \
+	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * clamp (1.0 - fabs (vHit - gl_Position).Length ()) / fRad, 0.0, 1.0);\r\n" \
+	"}"
+	;
+
+//------------------------------------------------------------------------------
+
+const char *pszSphereVS =
+	"void main() {\r\n" \
+	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"	gl_Position = ftransform();\r\n" \
+   "	gl_FrontColor = gl_Color;\r\n" \
+	"	}"
+	;
+
+GLhandleARB sphereShaderProg = 0;
+GLhandleARB sphereFS = 0;
+GLhandleARB sphereVS = 0;
+
+//------------------------------------------------------------------------------
+
+int CreateSphereShader (void)
+{
+	int	bOk;
+
+if (!(gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)) {
+	gameStates.render.bPerPixelLighting = 0;
+	return 0;
+	}
+if (sphereShaderProg)
+	return 1;
+PrintLog ("building sphere shader program\n");
+bOk = CreateShaderProg (&sphereShaderProg) &&
+		CreateShaderFunc (&sphereShaderProg, &sphereFS, &sphereVS, pszSphereFS, pszSphereVS, 1) &&
+		LinkShaderProg (&sphereShaderProg);
+if (!bOk) {
+	gameStates.ogl.bPerPixelLightingOk = 0;
+	gameStates.render.bPerPixelLighting = 0;
+	DeleteShaderProg (&sphereShaderProg);
+	return -1;
+	}
+return 1;
+}
+
+// ----------------------------------------------------------------------------------------------
+
+int SetupSphereShader (CObject* objP, float fScale)
+{
+PROF_START
+if (!CreateSphereShader ()) {
+	PROF_END(ptShaderStates)
+	return 0;
+	}
+CFloatVector vHitf;
+vHitf.Assign (objP->HitPoint ());
+if (100 != gameStates.render.history.nShader) {
+	gameData.render.nShaderChanges++;
+	glUseProgramObject (sphereShaderProg);
+	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
+	}
+glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 1, reinterpret_cast<GLfloat*> (&vHitf));
+glUniform1f (glGetUniformLocation (sphereShaderProg, "fRad"), X2F (objP->Size ()) * fScale);
+OglClearError (0);
+PROF_END(ptShaderStates)
+return gameStates.render.history.nShader = 100;
+}
 
 //------------------------------------------------------------------------------
 
@@ -593,7 +667,7 @@ delete[] rotSphereP;
 
 //------------------------------------------------------------------------------
 
-int CSphere::Render (CFloatVector *vPosP, float xScale, float yScale, float zScale,
+int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
 							float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive)
 {
 	float	fScale = 1.0f;
@@ -618,7 +692,7 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
-//glTranslatef ((*vPosP) [X], (*vPosP) [Y], (*vPosP) [Z]);
+SetupSphereShader (objP, fScale);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
@@ -713,7 +787,7 @@ if (gameData.render.shield.nFaces > 0)
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;
 		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
-		gameData.render.shield.Render (NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
+		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		vPos.SetZero ();
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		transformation.End ();
@@ -742,7 +816,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		CFloatVector p;
 		p.SetZero ();
-		gameData.render.monsterball.Render (&p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
+		gameData.render.monsterball.Render (objP, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
 														&gameData.hoard.monsterball.bm, 4, 0);
 		transformation.End ();
 		OglResetTransform (1);
