@@ -121,10 +121,12 @@ if (100 != gameStates.render.history.nShader) {
 	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
 	}
 vHit = objP->HitPoint ();
+#if 0
 CFixMatrix m = *objP->View ();
 m.Transpose ();
 m.Inverse ();
 vHit = m * vHit;
+#endif
 vHitf.Assign (vHit);
 CFloatVector::Normalize (vHitf);
 #if 0
@@ -569,11 +571,6 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
-float dist, minDist = 1e30f;
-
-vHitf.Assign (vHit);
-transformation.Transform (vHitf, vHitf);
-
 if (gameStates.ogl.bUseTransform) {
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
@@ -605,9 +602,6 @@ else {
 			for (i = 0; i < nQuads; i++, svP [0]++) {
 				p [i] = svP [0]->vPos * fRadius;
 				transformation.Transform (p [i], p [i], 0);
-				dist = CFloatVector::Dist (p [i], vHitf);
-				if (minDist > dist)
-					minDist = dist;
 				if (bTextured)
 					tc [i] = svP [0]->uv;
 				}
@@ -821,10 +815,10 @@ if (gameData.render.shield.nFaces > 0)
 			fScale = gameData.render.shield.Pulse ()->fScale;
 			bAdditive = 2;
 			}
-		float r = X2F (nSize);
-		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		tObjTransformation *posP = OBJPOS (objP);
 		CFixVector vPos;
+		float r = X2F (nSize);
+		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		vPos.SetZero ();
 		transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
