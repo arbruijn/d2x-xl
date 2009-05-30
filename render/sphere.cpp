@@ -109,7 +109,7 @@ return 1;
 
 // ----------------------------------------------------------------------------------------------
 
-int SetupSphereShader (CObject* objP, float fScale)
+int SetupSphereShader (CObject* objP, float alpha)
 {
 PROF_START
 if (!CreateSphereShader ()) {
@@ -123,25 +123,22 @@ if (100 != gameStates.render.history.nShader) {
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = X2F (objP->Size ());
+	float fSize = X2F (objP->Size ()) * 2 * alpha;
 	float fScale [3];
 	CFloatVector vHitf [3];
 
+tObjTransformation *posP = OBJPOS (objP);
+CFixVector vPos;
+OglSetupTransform (0);
+CFixMatrix m = CFixMatrix::IDENTITY;
+transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
 for (int i = 0; i < 3; i++) {
-	fScale [i] = (gameStates.app.nSDLTicks - hitInfo.t [i] < 1000) ? fSize * float (cos (sqrt (float (dt) / 1000.0) * Pi / 2) : 1e30f;
-	vHitf.Assign (hitInfo.v [i]);
-	//CFloatVector::Normalize (vHitf);
-#if 1
-	tObjTransformation *posP = OBJPOS (objP);
-	CFixVector vPos;
-	OglSetupTransform (0);
-	CFixMatrix m = CFixMatrix::IDENTITY;
-	transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
-	transformation.Transform (vHitf, vHitf);
-	transformation.End ();
-	OglResetTransform (1);
-#endif
+	fScale [i] = (gameStates.app.nSDLTicks - hitInfo.t [i] < 1000) ? fSize * float (cos (sqrt (float (hitInfo.t [i]) / 1000.0) * Pi / 2)) : 1e30f;
+	vHitf [i].Assign (hitInfo.v [i]);
+	transformation.Transform (vHitf [i], vHitf [i]);
 	}
+transformation.End ();
+OglResetTransform (1);
 glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
 glUniform3fv (glGetUniformLocation (sphereShaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 OglClearError (0);
