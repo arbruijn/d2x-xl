@@ -313,6 +313,8 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void ResetSphereShaders (void);
+
 void InitShaders (void)
 {
 	GLint	nTMUs;
@@ -344,6 +346,7 @@ ResetPerPixelLightingShaders ();
 InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
+ResetSphereShaders ();
 LinkShaderProg (NULL);
 }
 
