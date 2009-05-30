@@ -59,9 +59,9 @@ const char *pszSphereFS =
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"vec3 scale;\r\n" \
-	"scale.x = 1.0 - clamp (length (vertPos - vec3 (vHit [0])) / fRad.x, 0.0, 1.0);\r\n" \
-	"scale.y = 1.0 - clamp (length (vertPos - vec3 (vHit [1])) / fRad.y, 0.0, 1.0);\r\n" \
-	"scale.z = 1.0 - clamp (length (vertPos - vec3 (vHit [2])) / fRad.z, 0.0, 1.0);\r\n" \
+	"scale.x = 1.0 - clamp (length (vertPos - vec3 (vHit [0])) * fRad.x, 0.0, 1.0);\r\n" \
+	"scale.y = 1.0 - clamp (length (vertPos - vec3 (vHit [1])) * fRad.y, 0.0, 1.0);\r\n" \
+	"scale.z = 1.0 - clamp (length (vertPos - vec3 (vHit [2])) * fRad.z, 0.0, 1.0);\r\n" \
 	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * gl_Color * max (scale.x, max (scale.y, scale.z));\r\n" \
 	"}"
 	;
@@ -123,7 +123,7 @@ if (100 != gameStates.render.history.nShader) {
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = X2F (objP->Size ()) * 2 * alpha;
+	float fSize = X2F (objP->Size ()) * alpha;
 	float fScale [3];
 	CFloatVector vHitf [3];
 
@@ -134,7 +134,7 @@ CFixMatrix m = CFixMatrix::IDENTITY;
 transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
-	fScale [i] = (dt < 1000) ? fSize * float (cos (sqrt (float (dt) / 1000.0) * Pi / 2)) : 1e30f;
+	fScale [i] = (dt < 1000) ? 1.0f / (fSize * float (cos (sqrt (float (dt) / 1000.0) * Pi / 2))) : 1e10f;
 	vHitf [i].Assign (hitInfo.v [i]);
 	transformation.Transform (vHitf [i], vHitf [i]);
 	}
