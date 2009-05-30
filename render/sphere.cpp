@@ -54,11 +54,15 @@ OOF::CQuad baseSphereCube [6] = {
 
 const char *pszSphereFS =
 	"uniform sampler2D sphereTex;\r\n" \
-	"uniform vec4 vHit;\r\n" \
-	"uniform float fRad;\r\n" \
+	"uniform vec4 vHit [3];\r\n" \
+	"uniform vec3 fRad;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * /*gl_Color **/ (1.0 - clamp (length (vertPos - vec3 (vHit)) / fRad, 0.0, 1.0));\r\n" \
+	"vec3 scale;\r\n" \
+	"scale.x = (1.0 - clamp (length (vertPos - vec3 (vHit [0])) / fRad.x, 0.0, 1.0);\r\n" \
+	"scale.y = (1.0 - clamp (length (vertPos - vec3 (vHit [1])) / fRad.y, 0.0, 1.0);\r\n" \
+	"scale.z = (1.0 - clamp (length (vertPos - vec3 (vHit [2])) / fRad.z, 0.0, 1.0);\r\n" \
+	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * gl_Color * max (max (scale.x, scale.y), scale.z));\r\n" \
 	"}"
 	;
 
@@ -117,21 +121,29 @@ if (100 != gameStates.render.history.nShader) {
 	glUseProgramObject (sphereShaderProg);
 	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
 	}
-CFloatVector vHitf, vPosf;
-vHitf.Assign (objP->HitPoint ());
-//CFloatVector::Normalize (vHitf);
+
+	CObjHitInfo	hitInfo = objP->HitInfo ();
+	float fSize = X2F (objP->Size ());
+	float fScale [3];
+	CFloatVector vHitf [3];
+
+for (int i = 0; i < 3; i++) {
+	fScale [i] = (gameStates.app.nSDLTicks - hitInfo.t [i] < 1000) ? fSize * float (cos (sqrt (float (dt) / 1000.0) * Pi / 2) : 1e30f;
+	vHitf.Assign (hitInfo.v [i]);
+	//CFloatVector::Normalize (vHitf);
 #if 1
-tObjTransformation *posP = OBJPOS (objP);
-CFixVector vPos;
-OglSetupTransform (0);
-CFixMatrix m = CFixMatrix::IDENTITY;
-transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
-transformation.Transform (vHitf, vHitf);
-transformation.End ();
-OglResetTransform (1);
+	tObjTransformation *posP = OBJPOS (objP);
+	CFixVector vPos;
+	OglSetupTransform (0);
+	CFixMatrix m = CFixMatrix::IDENTITY;
+	transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
+	transformation.Transform (vHitf, vHitf);
+	transformation.End ();
+	OglResetTransform (1);
 #endif
-glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 1, reinterpret_cast<GLfloat*> (&vHitf));
-glUniform1f (glGetUniformLocation (sphereShaderProg, "fRad"), X2F (objP->Size ()) * 2 * fScale/** fScale*/);
+	}
+glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
+glUniform3fv (glGetUniformLocation (sphereShaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 OglClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = 100;

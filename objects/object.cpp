@@ -1469,7 +1469,9 @@ void CObject::SetHitPoint (CFixVector vHit)
 HUDMessage (0, "set hit point %d,%d,%d", vHit [0], vHit [1], vHit [2]);
 vHit -= info.position.vPos;
 CFixVector::Normalize (vHit);
-m_vHit = vHit * info.xSize;
+m_hitInfo.v [m_hitInfo.i] = vHit * info.xSize;
+m_hitInfo.t [m_hitInfo.i] = gameStates.app.nSDLTicks;
+m_hitInfo.i = (m_hitInfo.i + 1) % 3;
 }
 
 //------------------------------------------------------------------------------

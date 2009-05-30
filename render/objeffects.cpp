@@ -313,8 +313,8 @@ if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	scale *= scale;
 	}
 dt = gameStates.app.nSDLTicks - objP->TimeLastHit ();
-if (dt < 3000) {
-	scale *= gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 3000.0) * Pi / 2) : 1;
+if (dt < 1000) {
+	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / 1000.0) * Pi / 2) : 1;
 	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
 	}
 else if (!gameOpts->render.effects.bOnlyShieldHits) {

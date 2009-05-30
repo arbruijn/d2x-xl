@@ -294,6 +294,8 @@ else if (objP->info.controlType == CT_EXPLOSION)
 objP->Link ();
 objP->LinkToSeg (nSegment);
 
+memset (m_hitInfo, 0, sizeof (m_hitInfo));
+
 if ((nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(int) nId] && IsMultiGame && IsCoopGame && (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
 		

@@ -693,6 +693,13 @@ typedef struct tObjListRef {
 } tObjListRef;
 
 
+class CObjHitInfo {
+	public:
+		CFixVector		v [3];
+		time_t			t [3];
+		int				i;
+};
+
 class CObject : public CObjectInfo {
 	private:
 		short				m_nId;
@@ -705,7 +712,7 @@ class CObject : public CObjectInfo {
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;
-		CFixVector		m_vHit;
+		CObjHitInfo		m_hitInfo;
 
 	public:
 		CObject ();
@@ -858,9 +865,10 @@ class CObject : public CObjectInfo {
 		void RotateMarker (void);
 
 		void SetHitPoint (CFixVector vHit);
+		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
+		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }
 
 		CFixMatrix* View (void);
-		inline CFixVector HitPoint (void) { return m_vHit; }
 
 		void Bash (ubyte nId);
 		void BashToShield (bool bBash);
