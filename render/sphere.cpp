@@ -154,7 +154,7 @@ if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = X2F (objP->Size ()) * alpha * 2;
+	float fSize = X2F (objP->Size ()) * alpha * 2.5f;
 	float fScale [3];
 	CFloatVector vHitf [3];
 
@@ -167,8 +167,8 @@ transformation.Begin (*PolyObjPos (objP, &vPos), m);
 HUDMessage (0, "Dist: %f", X2F (CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos)));
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
-	if (dt < 1500) {
-		fScale [i] = /*1.0f /*/ (fSize * float (cos (sqrt (float (dt) / 1500.0) * Pi / 2)));
+	if (dt < SHIELD_EFFECT_TIME) {
+		fScale [i] = /*1.0f /*/ (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
 		vHitf [i].Assign (hitInfo.v [i]);
 		transformation.Transform (vHitf [i], vHitf [i]);
 		}
