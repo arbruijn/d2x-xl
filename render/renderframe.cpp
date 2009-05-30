@@ -178,7 +178,7 @@ int	r, aw;
 if (extraGameInfo [IsMultiGame].nZoomMode == 2)
 	r = int (100.0f * gameStates.zoom.nFactor / float (gameStates.zoom.nMinFactor));
 else {
-	float s = pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f);
+	float s = float (pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f));
 	fix f = gameStates.zoom.nMinFactor;
 	for (r = 1; f < fix (gameStates.zoom.nFactor); r++)
 		f = fix (float (f) * s + 0.5f);

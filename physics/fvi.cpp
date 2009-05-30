@@ -56,9 +56,9 @@ bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex,
 
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t [X] = fabs (vNormal [0]);
-t [Y] = fabs (vNormal [1]);
-t [Z] = fabs (vNormal [2]);
+t [X] = float (fabs (vNormal [0]));
+t [Y] = float (fabs (vNormal [1]));
+t [Z] = float (fabs (vNormal [2]));
 if (t [X] > t [Y])
 	if (t [X] > t [Z])
 		biggest = 0;
@@ -125,7 +125,7 @@ if (minDist < 1e30f)
 
 nVerts = sideP->m_corners;
 minDist = 1e30f;
-for (int i = 0; i < 4; i++) {
+for (i = 0; i < 4; i++) {
 	VmPointLineIntersection (h, FVERTICES [nVerts [i]], FVERTICES [nVerts [(i + 1) % 4]], v, 1);
 	dist = CFloatVector::Dist (h, v);
 	if (minDist > dist) {

@@ -477,7 +477,7 @@ else
 			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
 			float lightRad = prl->info.fRad;
 			if (NdotL >= 0.0f) 
-				lightRad *= 1.0f - 0.9f * sqrt (fabs (dot));
+				lightRad *= 1.0f - 0.9f * float (sqrt (fabs (dot)));
 			else {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
