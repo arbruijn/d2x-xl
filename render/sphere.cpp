@@ -62,7 +62,7 @@ const char *pszSphereFS =
 	"scale.x = 1.0 - clamp (length (vertPos - vec3 (vHit [0])) / fRad.x, 0.0, 1.0);\r\n" \
 	"scale.y = 1.0 - clamp (length (vertPos - vec3 (vHit [1])) / fRad.y, 0.0, 1.0);\r\n" \
 	"scale.z = 1.0 - clamp (length (vertPos - vec3 (vHit [2])) / fRad.z, 0.0, 1.0);\r\n" \
-	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * gl_Color * max (scale.x, max (scale.y, scale.z));\r\n" \
+	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * /*gl_Color **/ max (scale.x, max (scale.y, scale.z));\r\n" \
 	"}"
 	;
 
