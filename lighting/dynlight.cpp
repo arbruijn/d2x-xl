@@ -137,6 +137,15 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+bool CLightManager::Ambient (short nSegment, short nSide)
+{
+	short i = Find (nSegment, nSide, -1);
+
+return (i < 0) ? false : m_data.lights [0].info.bAmbient != 0;
+}
+
+//------------------------------------------------------------------------------
+
 short CLightManager::Update (tRgbaColorf *colorP, float fBrightness, short nSegment, short nSide, short nObject)
 {
 	short	nLight = Find (nSegment, nSide, nObject);
@@ -307,7 +316,7 @@ return j ? i / j : 1;
 //------------------------------------------------------------------------------
 
 int CLightManager::Add (CSegFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
-							   short nSide, short nObject, short nTexture, CFixVector *vPos)
+							   short nSide, short nObject, short nTexture, CFixVector *vPos, ubyte bAmbient)
 {
 	CDynLight*	pl;
 	short			h, i;
@@ -368,6 +377,7 @@ pl->info.bState = 1;
 pl->info.bSpot = 0;
 pl->info.fBoost = 0;
 pl->info.bPowerup = 0;
+pl->info.bAmbient = bAmbient;
 //0: static light
 //2: object/lightning
 //3: headlight
@@ -616,7 +626,7 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 		continue;
 	colorP = gameData.render.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
-		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL);
+		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL, 1);
 	faceP->nOvlTex = SEGMENTS [faceP->nSegment].Side (faceP->nSide)->m_nOvlTex;
 	nTexture = faceP->nOvlTex;
 #if 0//def _DEBUG

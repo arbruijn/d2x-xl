@@ -74,7 +74,7 @@ class CDynLightInfo {
 		ubyte				bSpot;
 		ubyte				bVariable;
 		ubyte				bPowerup;
-		ubyte				bSelfIlluminate;
+		ubyte				bAmbient;
 	public:
 		CDynLightInfo () { Init (); }
 		void Init (void) { memset (this, 0, sizeof (*this)); }
@@ -199,13 +199,14 @@ class CLightManager {
 		void SetColor (short nLight, float red, float green, float blue, float fBrightness);
 		void SetPos (short nObject);
 		short Find (short nSegment, short nSide, short nObject);
+		bool Ambient (short nSegment, short nSide);
 		short Update (tRgbaColorf *colorP, float fBrightness, short nSegment, short nSide, short nObject);
 		int LastEnabled (void);
 		void Swap (CDynLight* pl1, CDynLight* pl2);
 		int Toggle (short nSegment, short nSide, short nObject, int bState);
 		void Register (tFaceColor *colorP, short nSegment, short nSide);
 		int Add (CSegFace* faceP, tRgbaColorf *colorP, fix xBrightness, short nSegment,
-				   short nSide, short nObject, short nTexture, CFixVector *vPos);
+				   short nSide, short nObject, short nTexture, CFixVector *vPos, ubyte bAmbient = 0);
 		void Delete (short nLight);
 		void DeleteLightnings (void);
 		int Delete (short nSegment, short nSide, short nObject);
