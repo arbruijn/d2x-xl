@@ -555,9 +555,10 @@ int CheckVectorToSphere1 (CFixVector& intersection, CFixVector *p0, CFixVector *
 
 d = *p1 - *p0;
 w = *vSpherePos - *p0;
-dn = d; mag_d = CFixVector::Normalize (dn);
+dn = d; 
+mag_d = CFixVector::Normalize (dn);
 if (mag_d == 0) {
-	intDist = w.Mag();
+	intDist = w.Mag ();
 	intersection = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
@@ -567,16 +568,14 @@ if (wDist < 0)
 if (wDist > mag_d + xSphereRad)
 	return 0;	//cannot hit
 vClosestPoint = *p0 + dn * wDist;
-dist = CFixVector::Dist(vClosestPoint, *vSpherePos);
+dist = CFixVector::Dist (vClosestPoint, *vSpherePos);
 if  (dist < xSphereRad) {
-	fix	dist2, radius2, nShorten;
-
-	dist2 = FixMul (dist, dist);
-	radius2 = FixMul (xSphereRad, xSphereRad);
-	nShorten = FixSqrt (radius2 - dist2);
+	fix dist2 = FixMul (dist, dist);
+	fix radius2 = FixMul (xSphereRad, xSphereRad);
+	fix nShorten = FixSqrt (radius2 - dist2);
 	intDist = wDist - nShorten;
 	if ((intDist > mag_d) || (intDist < 0)) {
-		//past one or the other end of vector, which means we're inside
+		//paste one or the other end of vector, which means we're inside
 		intersection = *p0;		//don't move at all
 		return 1;
 		}
@@ -713,7 +712,7 @@ return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POW
 //determine if a vector intersects with an CObject
 //if no intersects, returns 0, else fills in intP and returns dist
 fix CheckVectorToObject (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad,
-								 CObject *thisObjP, CObject *otherObjP)
+								 CObject *thisObjP, CObject *otherObjP, bool bCheckVisibility)
 {
 	fix			size, dist;
 	CFixVector	vHit, v0, v1, vn, vPos;
@@ -800,8 +799,10 @@ else {
 		return 0;
 	}
 intersection = vHit;
-thisObjP->SetHitPoint (vHit);
-otherObjP->SetHitPoint (vHit);
+if (!bCheckVisibility) {
+	thisObjP->SetHitPoint (vHit);
+	otherObjP->SetHitPoint (vHit);
+	}
 return dist;
 }
 
@@ -937,10 +938,10 @@ restart:
 			if (nObject == nDbgObj)
 				nDbgObj = nDbgObj;
 #endif
-			d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+			d = CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
 			if (d && (d < dMin)) {
 #if DBG
-				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
 #endif
 				gameData.collisions.hitData.nObject = nObject;
 				Assert(gameData.collisions.hitData.nObject != -1);
@@ -948,7 +949,7 @@ restart:
 				vClosestHitPoint = vHitPoint;
 				nHitType = HIT_OBJECT;
 #if DBG
-				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+				CheckVectorToObject (vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
 #endif
 				if (flags & FQ_ANY_OBJECT)
 					goto fviObjsDone;
