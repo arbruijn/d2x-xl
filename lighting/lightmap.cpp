@@ -438,8 +438,11 @@ pixelPosP = m_data.pixelPos + yMin * w;
 for (y = yMin; y < yMax; y++) {
 	for (x = 0; x < w; x++, pixelPosP++) { 
 #if DBG
-		if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
+		if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide))) {
 			nDbgSeg = nDbgSeg;
+			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
+				nDbgSeg = nDbgSeg;
+			}
 #endif
 		if (0 < lightManager.SetNearestToPixel (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
 															 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {

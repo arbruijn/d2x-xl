@@ -1466,7 +1466,9 @@ return &viewP->mView;
 
 void CObject::SetHitPoint (CFixVector vHit)
 {
+#if DBG
 HUDMessage (0, "set hit point %d,%d,%d", vHit [0], vHit [1], vHit [2]);
+#endif
 vHit -= info.position.vPos;
 CFixVector::Normalize (vHit);
 vHit *= info.xSize;

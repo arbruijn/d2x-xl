@@ -718,9 +718,9 @@ d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);
 u /= m;
 if (u < 0)
-	bClamped = 2;
-else if (u > 1)
 	bClamped = 1;
+else if (u > 1)
+	bClamped = 2;
 else
 	bClamped = 0;
 // limit the intersection to [p1,p2]
@@ -742,7 +742,7 @@ const int VmPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, c
 	int		bClamped = 0;
 
 d21 = p2 - p1;
-m = (float) fabs (d21.SqrMag ());
+m = (float) fabs (d21.SqrMag ());	// Dot (d21, d21)
 if (!m) {
 	hitP = p1;
 	return 0;
@@ -751,14 +751,14 @@ d31 = p3 - p1;
 u = CFloatVector::Dot (d31, d21);
 u /= m;
 if (u < 0)
-	bClamped = 2;
-else if (u > 1)
 	bClamped = 1;
+else if (u > 1)
+	bClamped = 2;
 else
 	bClamped = 0;
 // limit the intersection to [p1,p2]
 if (bClamp && bClamped)
-	hitP = (bClamped == 1) ? p1 : p2;
+	hitP = (CFloatVector::Dist (p3, p1) < CFloatVector::Dist (p3, p2)) ? p1 : p2;
 else
 	hitP = p1 + u * d21;
 return bClamped;
@@ -782,9 +782,9 @@ d31 = p3 - p1;
 u = CFloatVector3::Dot (d31, d21);
 u /= m;
 if (u < 0)
-	bClamped = 2;
-else if (u > 1)
 	bClamped = 1;
+else if (u > 1)
+	bClamped = 2;
 else
 	bClamped = 0;
 // limit the intersection to [p1,p2]

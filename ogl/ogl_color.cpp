@@ -418,8 +418,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 if ((nVertex < 0) && (nType < 2)) {
 	bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 	lightDir = lightPos - *vcd.vertPosP;
-	if (0 > (fLightDist = lightDir.Mag () - 1.0f))
-		fLightDist = 0;
+	if (0.0f > (fLightDist = lightDir.Mag () - 1.0f))
+		fLightDist = 0.0f;
 	else {
 		fLightDist *= gameStates.ogl.fLightRange;
 		bInRad = false;
@@ -442,8 +442,11 @@ else
 		NdotL = 1.0f;
 	else if (vcd.vertNorm.IsZero ())
 		NdotL = 1.0f;
-	else
+	else {
 		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
+		if (fabs (NdotL) < 1.0e-6f)
+			NdotL = 0.0f;
+		}
 	nMinDot = -0.1f;
 	if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT == 2
@@ -455,17 +458,16 @@ else
 			fLightDist -= prl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 #if USE_FACE_DIST
 		else if (nVertex < 0) {
-			if (NdotL < 0) {
+			if (NdotL < 0.0f) {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
 				float dot = -6.0f * CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
-				if (dot <= 0) {
-					nMinDot = 0;
-					dot += 1;
-					if (dot <= 0)
-						fLightDist *= 1e6f;
-					else
-						fLightDist /= dot;
+				if (dot <= 0.0f) {
+					if (dot < -1.0f)
+						continue;
+					nMinDot = 0.0f;
+					dot += 1.0f;
+					fLightDist /= dot;
 					}
 				}
 			}
@@ -473,34 +475,30 @@ else
 		else {
 			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
 			float lightRad = prl->info.fRad;
-			if (NdotL >= 0) 
+			if (NdotL >= 0.0f) 
 				lightRad *= 1.0f - 0.9f * sqrt (fabs (dot));
 			else {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
 				dot *= -6.0f;
-				if (dot <= 0) {
-					nMinDot = 0;
-					dot += 1;
-					if (dot <= 0) {
-						fLightDist *= 1e6f;
-						lightRad = 0;
-						}
-					else {
-						fLightDist /= dot;
-						lightRad *= dot;
-						}
+				if (dot <= 0.0f) {
+					if (dot < -1.0f)
+						continue;
+					nMinDot = 0.0f;
+					dot += 1.0f;
+					fLightDist /= dot;
+					lightRad *= dot;
 					}
 				}
 			fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
 			}
-		if (fLightDist < 0)
-			fLightDist = 0;
+		if (fLightDist < 0.0f)
+			fLightDist = 0.0f;
 		}
 	if	(((NdotL >= nMinDot) && (fLightDist <= 0.0f)) || IsLightVert (nVertex, prl)) {
 		bInRad = true;
-		NdotL = 1;
-		fLightDist = 0;
+		NdotL = 1.0f;
+		fLightDist = 0.0f;
 		fAttenuation = 1.0f / prl->info.fBrightness;
 		}
 	else {	//make it decay faster
@@ -513,12 +511,12 @@ else
 #if 0
 		NdotL = 1 - ((1 - NdotL) * 0.9f);
 #endif
-		if ((NdotL >= nMinDot) && (prl->info.fRad > 0))
+		if ((nVertex > -1) && (NdotL >= nMinDot) && (prl->info.fRad > 0.0f))
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= prl->info.fBrightness;
 		}
 	if (prl->info.bSpot) {
-		if (NdotL <= 0)
+		if (NdotL <= 0.0f)
 			continue;
 		spotDir = *prl->info.vDirf.XYZ (); 
 		CFloatVector3::Normalize (spotDir);
@@ -539,15 +537,15 @@ else
 		}
 	else {
 		vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
-		if (NdotL < 0)
-			NdotL = 0;
-		else
+		if (NdotL > 0.0f)
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
+		else
+			NdotL = 0.0f;
 		}
 	vertColor [R] *= lightColor [R];
 	vertColor [G] *= lightColor [G];
 	vertColor [B] *= lightColor [B];
-	if ((NdotL > 0.0) && (vcd.fMatShininess > 0) /* && vcd.bMatSpecular */) {
+	if ((NdotL > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
 		//RdotV = max (dot (Reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
 		if (!prl->info.bSpot)	//need direction from light to vertex now
 			lightDir.Neg ();
@@ -558,7 +556,7 @@ else
 			nDbgVertex = nDbgVertex;
 #endif
 		RdotE = CFloatVector3::Dot (vReflect, vertPos);
-		if (RdotE > 0) {
+		if (RdotE > 0.0f) {
 			//spec = pow (Reflect dot lightToEye, matShininess) * matSpecular * lightSpecular
 			vertColor += (lightColor * (float) pow (RdotE, vcd.fMatShininess));
 			}
