@@ -1473,7 +1473,8 @@ vHit -= info.position.vPos;
 CFixVector::Normalize (vHit);
 vHit *= info.xSize;
 for (int i = 0; i < 3; i++)
-	if (m_hitInfo.v [i] == vHit) {
+	if (CFixVector::Dist (m_hitInfo.v [i], vHit) < I2X (1) / 16) {
+		m_hitInfo.v [i] = CFixVector::Avg (m_hitInfo.v [i], vHit);
 		m_hitInfo.t [i] = gameStates.app.nSDLTicks;
 		return;
 		}

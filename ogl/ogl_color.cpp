@@ -33,7 +33,7 @@
 #if DBG
 #	define USE_FACE_DIST		1
 #else
-#	define USE_FACE_DIST		0
+#	define USE_FACE_DIST		1
 #endif
 
 #if DBG
