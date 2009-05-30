@@ -109,7 +109,7 @@ fq.thisObjNum = OBJ_IDX (gameData.objs.viewerP);
 fq.flags = FQ_CHECK_OBJS | FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
-fq.bCheckVisibility = false;
+fq.bCheckVisibility = true;
 nHitType = FindVectorIntersection (&fq, &hit_data);
 return (nHitType == HIT_OBJECT);
 }

@@ -630,7 +630,6 @@ retryMove:
 			}
 		}
 	else if (fviResult == HIT_WALL) {
-		SetHitPoint (hi.hit.vPoint);
 		if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
 			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].m_children [hi.hit.nSide];
