@@ -116,7 +116,7 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 				vHit = refP;
 			else
 				vHit.Assign (h);
-			minDist = fabs (dist);
+			minDist = float (fabs (dist));
 			}
 		}
 	}
