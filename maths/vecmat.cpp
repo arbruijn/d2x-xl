@@ -758,7 +758,7 @@ else
 	bClamped = 0;
 // limit the intersection to [p1,p2]
 if (bClamp && bClamped)
-	hitP = (CFloatVector::Dist (p3, p1) < CFloatVector::Dist (p3, p2)) ? p1 : p2;
+	hitP = (bClamped == 1) ? p1 : p2; //(CFloatVector::Dist (p3, p1) < CFloatVector::Dist (p3, p2)) ? p1 : p2;
 else
 	hitP = p1 + u * d21;
 return bClamped;
