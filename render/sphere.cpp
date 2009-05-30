@@ -59,10 +59,11 @@ const char *pszSphereFS =
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"vec3 scale;\r\n" \
-	"scale.x = (1.0 - clamp (length (vertPos - vec3 (vHit [0])) / fRad.x, 0.0, 1.0);\r\n" \
-	"scale.y = (1.0 - clamp (length (vertPos - vec3 (vHit [1])) / fRad.y, 0.0, 1.0);\r\n" \
-	"scale.z = (1.0 - clamp (length (vertPos - vec3 (vHit [2])) / fRad.z, 0.0, 1.0);\r\n" \
-	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * gl_Color * max (max (scale.x, scale.y), scale.z));\r\n" \
+	"scale.x = length (vertPos - vec3 (vHit [0]));\r\n" \
+	"scale.y = length (vertPos - vec3 (vHit [1]));\r\n" \
+	"scale.z = length (vertPos - vec3 (vHit [2]));\r\n" \
+	"float minDist = min (scale.x, min (scale.y, scale.z));\r\n" \
+	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * gl_Color * (1.0 - clamp (minDist / fRad.z, 0.0, 1.0);\r\n" \
 	"}"
 	;
 
