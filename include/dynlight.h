@@ -54,7 +54,7 @@ class CLightRenderData {
 
 class CDynLightInfo {
 	public:
-		CSegFace*			faceP;
+		CSegFace*		faceP;
 		CFixVector		vPos;
 		CFloatVector	vDirf;
 		tRgbaColorf		color;
@@ -74,6 +74,7 @@ class CDynLightInfo {
 		ubyte				bSpot;
 		ubyte				bVariable;
 		ubyte				bPowerup;
+		ubyte				bSelfIlluminate;
 	public:
 		CDynLightInfo () { Init (); }
 		void Init (void) { memset (this, 0, sizeof (*this)); }
