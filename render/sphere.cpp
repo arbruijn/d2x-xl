@@ -59,9 +59,9 @@ const char *pszSphereFS =
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"vec3 scale;\r\n" \
-	"scale.x = 1.0 - clamp (length (vertPos - vec3 (vHit [0])) / fRad.x, 0.0, 1.0);\r\n" \
-	"scale.y = 1.0 - clamp (length (vertPos - vec3 (vHit [1])) / fRad.y, 0.0, 1.0);\r\n" \
-	"scale.z = 1.0 - clamp (length (vertPos - vec3 (vHit [2])) / fRad.z, 0.0, 1.0);\r\n" \
+	"scale.x = 1.0 - clamp (length (vertPos - vec3 (vHit [0])) * fRad.x, 0.0, 1.0);\r\n" \
+	"scale.y = 1.0 - clamp (length (vertPos - vec3 (vHit [1])) * fRad.y, 0.0, 1.0);\r\n" \
+	"scale.z = 1.0 - clamp (length (vertPos - vec3 (vHit [2])) * fRad.z, 0.0, 1.0);\r\n" \
 	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * gl_Color * max (scale.x, max (scale.y, scale.z));\r\n" \
 	"}"
 	;
@@ -164,16 +164,15 @@ if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
 
 OglSetupTransform (0);
 transformation.Begin (*PolyObjPos (objP, &vPos), m); 
-HUDMessage (0, "Dist: %f", X2F (CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos)));
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
 	if (dt < SHIELD_EFFECT_TIME) {
-		fScale [i] = /*1.0f /*/ (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
+		fScale [i] = 1.0f / (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
 		vHitf [i].Assign (hitInfo.v [i]);
 		transformation.Transform (vHitf [i], vHitf [i]);
 		}
 	else {
-		fScale [i] = 1e-6f;
+		fScale [i] = 1e6f;
 		vHitf [i].SetZero ();
 		}
 	}

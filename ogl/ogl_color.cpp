@@ -419,7 +419,7 @@ if ((nVertex < 0) && (nType < 2)) {
 	bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 	lightDir = lightPos - *vcd.vertPosP;
 	fLightDist = lightDir.Mag ();
-	if (fLightDist < 1.0f)
+	if (fLightDist < 0.1f)
 		fLightDist = 0.0f;
 	else {
 		fLightDist *= gameStates.ogl.fLightRange;
