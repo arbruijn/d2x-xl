@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 #include <math.h>
 
@@ -50,7 +50,7 @@ OOF::CQuad baseSphereCube [6] = {
 
 #endif
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 const char *pszSphereFS =
 	"uniform sampler2D sphereTex;\r\n" \
@@ -66,10 +66,9 @@ const char *pszSphereFS =
 	"}"
 	;
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 const char *pszSphereVS [2] = {
-	"uniform int bOglTransform;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -78,7 +77,6 @@ const char *pszSphereVS [2] = {
 	"	vertPos = vec3 (gl_Vertex);\r\n" \
 	"	}"
 	,
-	"uniform int bOglTransform;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -89,11 +87,11 @@ const char *pszSphereVS [2] = {
 	}
 	;
 
-GLhandleARB sphereShaderProg [2] = {0, 0};
+GLhandleARB sphereShaderProgs [2] = {0, 0};
 GLhandleARB sphereFS [2] = {0, 0};
 GLhandleARB sphereVS [2] = {0, 0};
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 int CreateSphereShader (void)
 {
@@ -103,26 +101,36 @@ if (!(gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
-if (sphereShaderProg)
+if (sphereShaderProgs [0] && sphereShaderProgs [1])
 	return 1;
 PrintLog ("building sphere shader program\n");
-for (int i = 0; i < 2; i++)
-	bOk = CreateShaderProg (sphereShaderProg + i) &&
-			CreateShaderFunc (sphereShaderProg + i, sphereFS + i, sphereVS + i, pszSphereFS, pszSphereVS [i], 1) &&
-			LinkShaderProg (sphereShaderProg + i);
-if (!bOk) {
-	gameStates.ogl.bPerPixelLightingOk = 0;
-	gameStates.render.bPerPixelLighting = 0;
-	DeleteShaderProg (sphereShaderProg);
-	DeleteShaderProg (sphereShaderProg + 1);
-	return -1;
+for (int i = 0; i < 2; i++) {
+	if (!sphereShaderProgs [i]) {
+		bOk = CreateShaderProg (sphereShaderProgs + i) &&
+				CreateShaderFunc (sphereShaderProgs + i, sphereFS + i, sphereVS + i, pszSphereFS, pszSphereVS [i], 1) &&
+				LinkShaderProg (sphereShaderProgs + i);
+		if (!bOk) {
+			gameStates.ogl.bPerPixelLightingOk = 0;
+			gameStates.render.bPerPixelLighting = 0;
+			if (i)
+				DeleteShaderProg (sphereShaderProgs);
+			return -1;
+			}
+		}
 	}
 return 1;
 }
 
-// ----------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-void ResetSphereShader (void)
+void ResetSphereShaders (void)
+{
+memset (sphereShaderProgs, 0, sizeof (sphereShaderProgs));
+}
+
+// -----------------------------------------------------------------------------
+
+void UnloadSphereShader (void)
 {
 if (gameStates.render.history.nShader == 100) {
 	gameStates.render.history.nShader = -1;
@@ -130,19 +138,19 @@ if (gameStates.render.history.nShader == 100) {
 	}
 }
 
-// ----------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 int SetupSphereShader (CObject* objP, float alpha)
 {
 PROF_START
-if (!CreateSphereShader ()) {
+if (CreateSphereShader () < 1) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
 if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
-	glUseProgramObject (sphereShaderProg [gameStates.ogl.bUseTransform]);
-	glUniform1i (glGetUniformLocation (sphereShaderProg [gameStates.ogl.bUseTransform], "shaderTex"), 0);
+	glUseProgramObject (sphereShaderProgs [gameStates.ogl.bUseTransform]);
+	glUniform1i (glGetUniformLocation (sphereShaderProgs [gameStates.ogl.bUseTransform], "shaderTex"), 0);
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
@@ -155,7 +163,7 @@ if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
 	CFixVector vPos;
 
 OglSetupTransform (0);
-transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
+transformation.Begin (*PolyObjPos (objP, &vPos), m); 
 HUDMessage (0, "Dist: %f", X2F (CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos)));
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
@@ -171,14 +179,14 @@ for (int i = 0; i < 3; i++) {
 	}
 transformation.End ();
 OglResetTransform (1);
-glUniform4fv (glGetUniformLocation (sphereShaderProg [gameStates.ogl.bUseTransform], "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
-glUniform3fv (glGetUniformLocation (sphereShaderProg [gameStates.ogl.bUseTransform], "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
+glUniform4fv (glGetUniformLocation (sphereShaderProgs [gameStates.ogl.bUseTransform], "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
+glUniform3fv (glGetUniformLocation (sphereShaderProgs [gameStates.ogl.bUseTransform], "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 OglClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = 100 + gameStates.ogl.bUseTransform;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphereData::Init (void)
 {
@@ -190,7 +198,7 @@ m_nFaceNodes = 4; //tesselate using quads
 m_pulseP = NULL;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 #if !RINGED_SPHERE
 
@@ -200,7 +208,7 @@ pt->c = (pt->p [0] + pt->p [1] + pt->p [2]) / 3.0f;
 return &pt->c;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static int SplitTriangle (OOF::CTriangle *pDest, OOF::CTriangle *pSrc)
 {
@@ -223,7 +231,7 @@ for (i = 0; i < 6; i++, pDest++) {
 return 1;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static int TesselateSphereTri (OOF::CTriangle *pDest, OOF::CTriangle *pSrc, int nFaces)
 {
@@ -234,7 +242,7 @@ for (i = 0; i < nFaces; i++, pDest += 6, pSrc++)
 return 1;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static int BuildSphereTri (OOF::CTriangle **buf, int *pnFaces, int nTessDepth)
 {
@@ -257,7 +265,7 @@ for (i = 0, j = 1; i < nTessDepth; i++, nFaces *= 6, j = !j) {
 return !j;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static CFloatVector *OOF_QuadCenter (OOF::CQuad *pt)
 {
@@ -265,7 +273,7 @@ pt->c = (pt->p [0] + pt->p [1] + pt->p [2] + pt->p [3]) / 4.0f;
 return &pt->c;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static int SplitQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc)
 {
@@ -289,7 +297,7 @@ for (i = 0; i < 8; i += 2, pDest++) {
 return 1;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static int TesselateSphereQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc, int nFaces)
 {
@@ -300,7 +308,7 @@ for (i = 0; i < nFaces; i++, pDest += 4, pSrc++)
 return 1;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static int BuildSphereQuad (OOF::CQuad **buf, int *pnFaces, int nTessDepth)
 {
@@ -323,7 +331,7 @@ for (i = 0, j = 1; i < nTessDepth; i++, nFaces *= 4, j = !j) {
 return !j;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 int TesselateSphere (void)
 {
@@ -360,7 +368,7 @@ m_vertices.SetBuffer (buf [j]);
 return nFaces;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 OOF::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP, float xScale, float yScale, float zScale)
 {
@@ -382,7 +390,7 @@ for (nFaces = m_nFaces * (m_nFaceNodes + 1); nFaces; nFaces--, vertP++, rotSpher
 return (OOF::CTriangle *) s;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 OOF::CTriangle *SortSphere (OOF::CTriangle *sphereP, int left, int right)
 {
@@ -414,7 +422,7 @@ return sphereP;
 
 #endif //!RINGED_SPHERE
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 int CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale)
 {
@@ -485,7 +493,7 @@ glDepthMask (0);
 return bTextured;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 #if RINGED_SPHERE
 
@@ -541,7 +549,7 @@ for (j = 0; j < h; j++) {
 return 1;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphere::RenderRing (int nOffset, int nItems, int bTextured, int nPrimitive)
 {
@@ -563,7 +571,7 @@ else {
 	}
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nItems, int bTextured, int nPrimitive)
 {
@@ -585,7 +593,7 @@ else {
 	}
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphere::RenderRings (float fRadius, int nRings, float red, float green, float blue, float alpha, int bTextured, int nTiles)
 {
@@ -659,7 +667,7 @@ else {
 OglCullFace (0);
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 #else //!RINGED_SPHERE
 
@@ -720,7 +728,7 @@ delete[] rotSphereP;
 
 #endif
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
 							float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive)
@@ -749,7 +757,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
 if (gameStates.ogl.bUseTransform = !bEffect)
-	ResetSphereShader ();
+	UnloadSphereShader ();
 else
 	SetupSphereShader (objP, alpha);
 OglSetupTransform (0);
@@ -768,7 +776,7 @@ glDepthFunc (GL_LESS);
 return 0;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphere::Destroy (void)
 {
@@ -776,14 +784,14 @@ m_vertices.Destroy ();
 Init ();
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphere::SetPulse (CPulseData* pulseP)
 {
 m_pulseP = pulseP;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void CSphere::SetupPulse (float fSpeed, float fMin)
 {
@@ -793,7 +801,7 @@ m_pulse.fSpeed =
 m_pulse.fDir = fSpeed;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void SetupSpherePulse (CPulseData *pulseP, float fSpeed, float fMin)
 {
@@ -803,7 +811,7 @@ pulseP->fSpeed =
 pulseP->fDir = fSpeed;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 int CreateShieldSphere (void)
 {
@@ -825,7 +833,7 @@ gameData.render.shield.SetPulse (gameData.render.shield.Pulse ());
 return 1;
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, fix nSize)
 {
@@ -861,7 +869,7 @@ if (gameData.render.shield.nFaces > 0)
 	}
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha)
 {
@@ -891,21 +899,21 @@ if (gameData.render.monsterball.nFaces > 0)
 	}
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void DestroyShieldSphere (void)
 {
 gameData.render.shield.Destroy ();
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void DestroyMonsterball (void)
 {
 gameData.render.monsterball.Destroy ();
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 void InitSpheres (void)
 {
@@ -913,4 +921,4 @@ PrintLog ("   creating spheres\n");
 CreateShieldSphere ();
 }
 
-//------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
