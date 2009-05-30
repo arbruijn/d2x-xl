@@ -141,7 +141,7 @@ bool CLightManager::Ambient (short nSegment, short nSide)
 {
 	short i = Find (nSegment, nSide, -1);
 
-return (i < 0) ? false : m_data.lights [0].info.bAmbient != 0;
+return (i < 0) ? false : m_data.lights [i].info.bAmbient != 0;
 }
 
 //------------------------------------------------------------------------------
