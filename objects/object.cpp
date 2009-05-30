@@ -1468,10 +1468,7 @@ void CObject::SetHitPoint (CFixVector vHit)
 {
 vHit -= info.position.vPos;
 CFixVector::Normalize (vHit);
-CFixMatrix m = *View ();
-m.Transpose ();
-m.Inverse ();
-m_vHit = m * vHit;
+m_vHit = vHit * info.xSize;
 }
 
 //------------------------------------------------------------------------------

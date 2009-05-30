@@ -58,7 +58,7 @@ const char *pszSphereFS =
 	"uniform float fRad;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * /*gl_Color **/ (1.0 - clamp (length (vertPos - vec3 (gl_ModelViewMatrix * vHit)) / fRad, 0.0, 1.0));\r\n" \
+	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * /*gl_Color **/ (1.0 - clamp (length (vertPos - vec3 (vHit)) / fRad, 0.0, 1.0));\r\n" \
 	"}"
 	;
 
@@ -70,7 +70,7 @@ const char *pszSphereVS =
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
-	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"	vertPos = vec3 (/*gl_ModelViewMatrix **/ gl_Vertex);\r\n" \
 	"	}"
 	;
 
@@ -105,9 +105,6 @@ return 1;
 
 // ----------------------------------------------------------------------------------------------
 
-static CFixVector vHit;
-static CFloatVector vHitf;
-
 int SetupSphereShader (CObject* objP, float fScale)
 {
 PROF_START
@@ -120,27 +117,21 @@ if (100 != gameStates.render.history.nShader) {
 	glUseProgramObject (sphereShaderProg);
 	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
 	}
-vHit = objP->HitPoint ();
-#if 0
-CFixMatrix m = *objP->View ();
-m.Transpose ();
-m.Inverse ();
-vHit = m * vHit;
-#endif
-vHitf.Assign (vHit);
-CFloatVector::Normalize (vHitf);
-#if 0
-OglSetupTransform (0);
+CFloatVector vHitf, vPosf;
+vHitf.Assign (objP->HitPoint ());
+//CFloatVector::Normalize (vHitf);
+#if 1
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
-transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
-float dist = X2F (vHit.Mag ());
+OglSetupTransform (0);
+CFixMatrix m = CFixMatrix::IDENTITY;
+transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
 transformation.Transform (vHitf, vHitf);
 transformation.End ();
 OglResetTransform (1);
 #endif
 glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 1, reinterpret_cast<GLfloat*> (&vHitf));
-glUniform1f (glGetUniformLocation (sphereShaderProg, "fRad"), X2F (objP->Size ()) * 4 * fScale/** fScale*/);
+glUniform1f (glGetUniformLocation (sphereShaderProg, "fRad"), X2F (objP->Size ()) * 2 * fScale/** fScale*/);
 OglClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = 100;
@@ -717,7 +708,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
 SetupSphereShader (objP, alpha);
-gameStates.ogl.bUseTransform = 1;
+gameStates.ogl.bUseTransform = 0;
 OglSetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;

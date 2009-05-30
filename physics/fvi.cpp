@@ -800,8 +800,8 @@ else {
 		return 0;
 	}
 intersection = vHit;
-thisObjP->SetHitPoint (otherObjP->info.position.vPos);
-otherObjP->SetHitPoint (thisObjP->info.position.vPos);
+thisObjP->SetHitPoint (vHit);
+otherObjP->SetHitPoint (vHit);
 return dist;
 }
 
