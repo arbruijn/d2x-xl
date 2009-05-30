@@ -68,7 +68,17 @@ const char *pszSphereFS =
 
 //------------------------------------------------------------------------------
 
-const char *pszSphereVS =
+const char *pszSphereVS [2] = {
+	"uniform int bOglTransform;\r\n" \
+	"varying vec3 vertPos;\r\n" \
+	"void main() {\r\n" \
+	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"	gl_Position = ftransform();\r\n" \
+   "	gl_FrontColor = gl_Color;\r\n" \
+	"	vertPos = vec3 (gl_Vertex);\r\n" \
+	"	}"
+	,
+	"uniform int bOglTransform;\r\n" \
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
@@ -76,11 +86,12 @@ const char *pszSphereVS =
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	}"
+	}
 	;
 
-GLhandleARB sphereShaderProg = 0;
-GLhandleARB sphereFS = 0;
-GLhandleARB sphereVS = 0;
+GLhandleARB sphereShaderProg [2] = {0, 0};
+GLhandleARB sphereFS [2] = {0, 0};
+GLhandleARB sphereVS [2] = {0, 0};
 
 //------------------------------------------------------------------------------
 
@@ -95,13 +106,15 @@ if (!(gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)) {
 if (sphereShaderProg)
 	return 1;
 PrintLog ("building sphere shader program\n");
-bOk = CreateShaderProg (&sphereShaderProg) &&
-		CreateShaderFunc (&sphereShaderProg, &sphereFS, &sphereVS, pszSphereFS, pszSphereVS, 1) &&
-		LinkShaderProg (&sphereShaderProg);
+for (int i = 0; i < 2; i++)
+	bOk = CreateShaderProg (sphereShaderProg + i) &&
+			CreateShaderFunc (sphereShaderProg + i, sphereFS + i, sphereVS + i, pszSphereFS, pszSphereVS [i], 1) &&
+			LinkShaderProg (sphereShaderProg + i);
 if (!bOk) {
 	gameStates.ogl.bPerPixelLightingOk = 0;
 	gameStates.render.bPerPixelLighting = 0;
-	DeleteShaderProg (&sphereShaderProg);
+	DeleteShaderProg (sphereShaderProg);
+	DeleteShaderProg (sphereShaderProg + 1);
 	return -1;
 	}
 return 1;
@@ -126,14 +139,14 @@ if (!CreateSphereShader ()) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
-if (100 != gameStates.render.history.nShader) {
+if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
-	glUseProgramObject (sphereShaderProg);
-	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
+	glUseProgramObject (sphereShaderProg [gameStates.ogl.bUseTransform]);
+	glUniform1i (glGetUniformLocation (sphereShaderProg [gameStates.ogl.bUseTransform], "shaderTex"), 0);
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = X2F (objP->Size ()) * alpha * 200;
+	float fSize = X2F (objP->Size ()) * alpha * 2;
 	float fScale [3];
 	CFloatVector vHitf [3];
 
@@ -143,6 +156,7 @@ if (100 != gameStates.render.history.nShader) {
 
 OglSetupTransform (0);
 transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
+HUDMessage (0, "Dist: %f", X2F (CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos)));
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
 	if (dt < 1500) {
@@ -157,11 +171,11 @@ for (int i = 0; i < 3; i++) {
 	}
 transformation.End ();
 OglResetTransform (1);
-glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
-glUniform3fv (glGetUniformLocation (sphereShaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
+glUniform4fv (glGetUniformLocation (sphereShaderProg [gameStates.ogl.bUseTransform], "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
+glUniform3fv (glGetUniformLocation (sphereShaderProg [gameStates.ogl.bUseTransform], "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 OglClearError (0);
 PROF_END(ptShaderStates)
-return gameStates.render.history.nShader = 100;
+return gameStates.render.history.nShader = 100 + gameStates.ogl.bUseTransform;
 }
 
 //------------------------------------------------------------------------------
@@ -582,14 +596,13 @@ void CSphere::RenderRings (float fRadius, int nRings, float red, float green, fl
 
 if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;
-if (gameStates.ogl.bUseTransform)
-	glScalef (fRadius, fRadius, fRadius);
 if (!Create (nRings, nTiles))
 	return;
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
 if (gameStates.ogl.bUseTransform) {
+	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
 		glCullFace (nCull ? GL_FRONT : GL_BACK);
@@ -739,7 +752,6 @@ if (gameStates.ogl.bUseTransform = !bEffect)
 	ResetSphereShader ();
 else
 	SetupSphereShader (objP, alpha);
-gameStates.ogl.bUseTransform = 1;
 OglSetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
