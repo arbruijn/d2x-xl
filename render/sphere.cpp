@@ -59,9 +59,9 @@ const char *pszSphereFS =
 	"varying vec3 vertPos;\r\n" \
 	"void main() {\r\n" \
 	"vec3 scale;\r\n" \
-	"scale.x = 1.0 - clamp (length (vertPos - vec3 (vHit [0])) * fRad.x, 0.0, 1.0);\r\n" \
-	"scale.y = 1.0 - clamp (length (vertPos - vec3 (vHit [1])) * fRad.y, 0.0, 1.0);\r\n" \
-	"scale.z = 1.0 - clamp (length (vertPos - vec3 (vHit [2])) * fRad.z, 0.0, 1.0);\r\n" \
+	"scale.x = 1.0 - clamp (length (vertPos - vec3 (vHit [0])) / fRad.x, 0.0, 1.0);\r\n" \
+	"scale.y = 1.0 - clamp (length (vertPos - vec3 (vHit [1])) / fRad.y, 0.0, 1.0);\r\n" \
+	"scale.z = 1.0 - clamp (length (vertPos - vec3 (vHit [2])) / fRad.z, 0.0, 1.0);\r\n" \
 	"gl_FragColor = texture2D (sphereTex, gl_TexCoord [0].xy) * gl_Color * max (scale.x, max (scale.y, scale.z));\r\n" \
 	"}"
 	;
@@ -74,7 +74,7 @@ const char *pszSphereVS =
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
-	"	vertPos = vec3 (/*gl_ModelViewMatrix **/ gl_Vertex);\r\n" \
+	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"	}"
 	;
 
@@ -109,6 +109,16 @@ return 1;
 
 // ----------------------------------------------------------------------------------------------
 
+void ResetSphereShader (void)
+{
+if (gameStates.render.history.nShader == 100) {
+	gameStates.render.history.nShader = -1;
+	glUseProgramObject (0);
+	}
+}
+
+// ----------------------------------------------------------------------------------------------
+
 int SetupSphereShader (CObject* objP, float alpha)
 {
 PROF_START
@@ -123,20 +133,27 @@ if (100 != gameStates.render.history.nShader) {
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = X2F (objP->Size ()) * alpha;
+	float fSize = X2F (objP->Size ()) * alpha * 200;
 	float fScale [3];
 	CFloatVector vHitf [3];
 
-tObjTransformation *posP = OBJPOS (objP);
-CFixVector vPos;
+	CFixMatrix m = CFixMatrix::IDENTITY;
+	tObjTransformation *posP = OBJPOS (objP);
+	CFixVector vPos;
+
 OglSetupTransform (0);
-CFixMatrix m = CFixMatrix::IDENTITY;
 transformation.Begin (*PolyObjPos (objP, &vPos), m); //posP->mOrient);
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
-	fScale [i] = (dt < 1000) ? 1.0f / (fSize * float (cos (sqrt (float (dt) / 1000.0) * Pi / 2))) : 1e10f;
-	vHitf [i].Assign (hitInfo.v [i]);
-	transformation.Transform (vHitf [i], vHitf [i]);
+	if (dt < 1500) {
+		fScale [i] = /*1.0f /*/ (fSize * float (cos (sqrt (float (dt) / 1500.0) * Pi / 2)));
+		vHitf [i].Assign (hitInfo.v [i]);
+		transformation.Transform (vHitf [i], vHitf [i]);
+		}
+	else {
+		fScale [i] = 1e-6f;
+		vHitf [i].SetZero ();
+		}
 	}
 transformation.End ();
 OglResetTransform (1);
@@ -697,6 +714,7 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 {
 	float	fScale = 1.0f;
 	int	bTextured = 0;
+	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 
 glEnable (GL_BLEND);
 #if !RINGED_SPHERE
@@ -704,7 +722,7 @@ if (m_nFaceNodes == 3)
 	bmP = NULL;
 else
 #endif
-	bTextured = InitSurface (red, green, blue, alpha, bmP, &fScale);
+	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
 if (bAdditive == 2)
@@ -717,8 +735,11 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
-SetupSphereShader (objP, alpha);
-gameStates.ogl.bUseTransform = 0;
+if (gameStates.ogl.bUseTransform = !bEffect)
+	ResetSphereShader ();
+else
+	SetupSphereShader (objP, alpha);
+gameStates.ogl.bUseTransform = 1;
 OglSetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;

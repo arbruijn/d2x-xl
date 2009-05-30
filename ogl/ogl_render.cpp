@@ -1015,13 +1015,13 @@ return 0;
 
 int G3DrawSprite (
 	const CFixVector&	vPos,
-	fix			xWidth,
-	fix			xHeight,
-	CBitmap	*bmP,
-	tRgbaColorf	*colorP,
-	float			alpha,
-	int			bAdditive,
-	float			fSoftRad)
+	fix				xWidth,
+	fix				xHeight,
+	CBitmap*			bmP,
+	tRgbaColorf*	colorP,
+	float				alpha,
+	int				bAdditive,
+	float				fSoftRad)
 {
 	CFixVector	pv, v1;
 	GLdouble		h, w, u, v, x, y, z;

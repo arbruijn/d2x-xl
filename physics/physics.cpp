@@ -326,6 +326,8 @@ if ((objP->info.nType == OBJ_PLAYER) &&
 	 (objP->info.nId == gameData.multiplayer.nLocalPlayer) &&
 	 (gameStates.app.cheats.bPhysics == 0xBADA55))
 	return;
+if (objP->info.nType == OBJ_WEAPON) 
+	return;
 #if UNSTICK_OBJS < 2
 if (objP->info.nType != OBJ_MONSTERBALL)
 	return;
