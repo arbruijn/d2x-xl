@@ -219,17 +219,24 @@ OglDrawLine (x - w, top, x + w, top);
 OglDrawLine (x - w, bottom, x + w, bottom);
 glLineWidth (1.0f);
 
+w >>= 1;
+h >>= 1;
+w -= w >> 1;
+h -= h >> 1;
+glLineWidth (floor (2 * float (cw) / 640.0f));
 #if 1
+OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, float (w << 5) / float (cw), 0.5f, 
+					 float (h << 5) / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), sinCos);
+#else
 glPushMatrix ();
 glEnable (GL_LINE_SMOOTH);
-glLineWidth (3 * float (cw) / 640.0f);
 if (bHaveTarget)
-	glColor4f (1.0f, 0.0f, 0.0f, 0.33f);
+	glColor4f (1.0f, 0.0f, 0.0f, 0.25f);
 else
-	glColor4f (0.0f, 1.0f, 0.0f, 0.33f);
+	glColor4f (0.0f, 1.0f, 0.0f, 0.25f);
 glTranslatef (0.5f, 0.5f, 0.5f);
-glScalef (float (w << 3) / float (cw), float (h << 3) / float (ch), 0.1f);
-OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, 1.0f, 0, 1.0f, 0, NULL); //sinCos);
+glScalef (float (w << 5) / float (cw), float (h << 5) / float (ch), 0.1f);
+OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, 1.0f, 0, 1.0f, 0, sinCos);
 glDisable (GL_LINE_SMOOTH);
 glPopMatrix ();
 #endif

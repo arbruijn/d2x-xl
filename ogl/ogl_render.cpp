@@ -139,38 +139,53 @@ void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, floa
 	int		i;
 	double	ang;
 
-glBegin (nType);
+glPushMatrix ();
+glEnable (GL_LINE_SMOOTH);
+glTranslatef (xo, yo, 0.0f);
+glScalef (xsc, ysc, 1.0f);
 if (nType == GL_LINES) {	// implies a dashed circle
+	glBegin (nType);
 	if (sinCosP) {
 		for (i = 0; i < nSides; i++, sinCosP++) {
-			glVertex2f (sinCosP->fCos * xsc + xo, sinCosP->fSin * ysc + yo);
+			glVertex2f (sinCosP->fCos, sinCosP->fSin);
 			i++, sinCosP++;
-			glVertex2f (sinCosP->fCos * xsc + xo, sinCosP->fSin * ysc + yo);
+			glVertex2f (sinCosP->fCos, sinCosP->fSin);
 			}
 		}
 	else {
 		for (i = 0; i < nSides; i++) {
 			ang = 2.0 * Pi * i / nSides;
-			glVertex2f (float (cos (ang)) * xsc + xo, float (sin (ang)) * ysc + yo);
+			glVertex2f (float (cos (ang)), float (sin (ang)));
 			i++;
 			ang = 2.0 * Pi * i / nSides;
-			glVertex2f (float (cos (ang)) * xsc + xo, float (sin (ang)) * ysc + yo);
+			glVertex2f (float (cos (ang)), float (sin (ang)));
 			}
 		}
+	glEnd ();
 	}
 else {
 	if (sinCosP) {
+#if 1
+		G3EnableClientStates (0, 0, 0, GL_TEXTURE0);
+		glVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (sinCosP));
+		glDrawArrays (nType, 0, nSides);
+		G3DisableClientStates (0, 0, 0, GL_TEXTURE0);
+#else
 		for (i = 0; i < nSides; i++, sinCosP++)
-			glVertex2f (sinCosP->fCos * xsc + xo, sinCosP->fSin * ysc + yo);
+			glVertex2f (sinCosP->fCos, sinCosP->fSin);
+#endif
 		}
 	else {
+		glBegin (nType);
 		for (i = 0; i < nSides; i++) {
 			ang = 2.0 * Pi * i / nSides;
-			glVertex2f (float (cos (ang)) * xsc + xo, float (sin (ang)) * ysc + yo);
+			glVertex2f (float (cos (ang)), float (sin (ang)));
 			}
 		}
+	glEnd ();
 	}
-glEnd ();
+glDisable (GL_LINE_SMOOTH);
+glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------
