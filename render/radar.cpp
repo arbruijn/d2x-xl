@@ -75,16 +75,16 @@ else {
  	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 7.5f, 0, sinCosRadar);
 #endif
 	glColor4f (r, g, b, a);
- 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, NULL /*sinCosRadar*/);
+ 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
 	glColor4f (0.5f, 0.5f, 0.5f, 0.8f);
 	glLineWidth (fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, NULL /*sinCosRadar*/);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius, 0, fRadius / 3.0f, 0, sinCosRadar);
 	glColor4f (0.6f, 0.6f, 0.6f, 0.7f);
 	glLineWidth (1.5f * fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, NULL /*sinCosRadar*/);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 2 * fRadius / 3.0f, 0, 2 * fRadius / 9.0f, 0, sinCosRadar);
 	glColor4f (0.7f, 0.7f, 0.7f, 0.6f);
 	glLineWidth (2 * fLineWidth);
- 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, NULL /*sinCosRadar*/);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
 	glLineWidth (fLineWidth);
 	glBegin (GL_LINES);
 	float x = fRadius * 0.707f + 0.333f;

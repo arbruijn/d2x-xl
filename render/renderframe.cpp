@@ -116,12 +116,12 @@ return (nHitType == HIT_OBJECT);
 
 //------------------------------------------------------------------------------
 
-void DrawZoom (void)
+void DrawScope (void)
 {
 if (LoadScope ()) {
 	float sh = float (screen.Height ());
 	float ch = float (CCanvas::Current ()->Height ());
-	float w = 0.3f * float (CCanvas::Current ()->Width ()) / ch;
+	float w = 0.25f * float (CCanvas::Current ()->Width ()) / ch;
 	float y = 1.0f - float (CCanvas::Current ()->Top ()) / sh;
 	float h = ch / sh;
 
@@ -134,13 +134,13 @@ if (LoadScope ()) {
 	bmpScope->Texture ()->Wrap (GL_REPEAT);
 	glColor3f (1.0f, 1.0f, 1.0f);
 	glBegin (GL_QUADS);
-	glTexCoord2f (0.5f - w, 0.2f);
+	glTexCoord2f (0.5f - w, 0.25f);
 	glVertex2f (0, y);
-	glTexCoord2f (0.5f + w, 0.2f);
+	glTexCoord2f (0.5f + w, 0.25f);
 	glVertex2f (1, y);
-	glTexCoord2f (0.5f + w, 0.8f);
+	glTexCoord2f (0.5f + w, 0.75f);
 	glVertex2f (1, y - h);
-	glTexCoord2f (0.5f - w, 0.8f);
+	glTexCoord2f (0.5f - w, 0.75f);
 	glVertex2f (0, y - h);
 	glEnd ();
 	OGL_BINDTEX (0);
@@ -155,25 +155,35 @@ if (LoadScope ()) {
 //draw a crosshair for the zoom
 void DrawZoomCrosshair (void)
 {
+DrawScope ();
+
+	static tSinCosf sinCos [128];
+	static int bInitSinCos = 1;
+
+if (bInitSinCos) {
+	OglComputeSinCos (sizeofa (sinCos), sinCos);
+	bInitSinCos = 0;
+	}
+
 	int bHaveTarget = TargetInLineOfFire ();
-
-int h = CCanvas::Current ()->Height () >> 2;
-int w = X2I (h * screen.Aspect ());
-int x = CCanvas::Current ()->Width () / 2;
-int y = CCanvas::Current ()->Height () / 2;
-glLineWidth (float (screen.Width ()) / 640.0f);
-
-int left = x - w, right = x + w, top = y - h, bottom = y + h;
-float xStep, yStep, x1, y1;
-int	i;
-
-xStep = float (2 * w + 1) / 12.0f;
-yStep = float (2 * h + 1) / 12.0f;
+	int ch = CCanvas::Current ()->Height (); 
+	int cw = CCanvas::Current ()->Width (); 
+	int h = ch >> 2;
+	int w = X2I (h * screen.Aspect ());
+	int x = cw / 2;
+	int y = ch / 2;
+	int left = x - w, right = x + w, top = y - h, bottom = y + h;
+	float xStep = float (2 * w + 1) / 12.0f;
+	float	yStep = float (2 * h + 1) / 12.0f;
+	float	x1, y1;
+	int	i;
 
 w >>= 4;
 h >>= 4;
 //w += w >> 1;
 //h += h >> 1;
+
+glLineWidth (float (cw) / 640.0f);
 
 if (bHaveTarget)
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (39, 0, 0, 128));
@@ -200,6 +210,7 @@ if (bHaveTarget)
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 160));
 else
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 160));
+
 OglDrawLine (left, y, right, y);
 OglDrawLine (x, top, x, bottom);
 OglDrawLine (left, y - h, left, y + h);
@@ -207,6 +218,21 @@ OglDrawLine (right, y - h, right, y + h);
 OglDrawLine (x - w, top, x + w, top);
 OglDrawLine (x - w, bottom, x + w, bottom);
 glLineWidth (1.0f);
+
+#if 1
+glPushMatrix ();
+glEnable (GL_LINE_SMOOTH);
+glLineWidth (3 * float (cw) / 640.0f);
+if (bHaveTarget)
+	glColor4f (1.0f, 0.0f, 0.0f, 0.33f);
+else
+	glColor4f (0.0f, 1.0f, 0.0f, 0.33f);
+glTranslatef (0.5f, 0.5f, 0.5f);
+glScalef (float (w << 3) / float (cw), float (h << 3) / float (ch), 0.1f);
+OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, 1.0f, 0, 1.0f, 0, NULL); //sinCos);
+glDisable (GL_LINE_SMOOTH);
+glPopMatrix ();
+#endif
 
 char	szZoom [20];
 int	r, aw;
@@ -226,7 +252,6 @@ if (bHaveTarget)
 else
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (NULL, x - w  / 2, bottom + h, szZoom);
-DrawZoom ();
 }
 
 //------------------------------------------------------------------------------

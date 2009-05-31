@@ -130,7 +130,7 @@ int bHaveScope = 0;
 
 int LoadScope (void)
 {
-return LoadAddonBitmap (&bmpScope, "zoomscope.tga", &bHaveScope);
+return LoadAddonBitmap (&bmpScope, "scope.tga", &bHaveScope);
 }
 
 //------------------------------------------------------------------------------

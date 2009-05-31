@@ -151,10 +151,10 @@ if (nType == GL_LINES) {	// implies a dashed circle
 	else {
 		for (i = 0; i < nSides; i++) {
 			ang = 2.0 * Pi * i / nSides;
-			glVertex2f ((float) cos (ang) * xsc + xo, (float) sin (ang) * ysc + yo);
+			glVertex2f (float (cos (ang)) * xsc + xo, float (sin (ang)) * ysc + yo);
 			i++;
 			ang = 2.0 * Pi * i / nSides;
-			glVertex2f ((float) cos (ang) * xsc + xo, (float) sin (ang) * ysc + yo);
+			glVertex2f (float (cos (ang)) * xsc + xo, float (sin (ang)) * ysc + yo);
 			}
 		}
 	}
@@ -166,7 +166,7 @@ else {
 	else {
 		for (i = 0; i < nSides; i++) {
 			ang = 2.0 * Pi * i / nSides;
-			glVertex2f ((float) cos (ang) * xsc + xo, (float) sin (ang) * ysc + yo);
+			glVertex2f (float (cos (ang)) * xsc + xo, float (sin (ang)) * ysc + yo);
 			}
 		}
 	}
