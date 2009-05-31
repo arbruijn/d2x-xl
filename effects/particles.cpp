@@ -93,7 +93,7 @@ static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
 #if 0
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 #endif
-static float alphaScale [5] = {5.0f / 5.0f, 5.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
+static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
 
 #define PART_BUF_SIZE	4096
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
@@ -109,7 +109,7 @@ static float bufferBrightness = -1;
 static char bBufferEmissive = 0;
 static int iBuffer = 0;
 
-#define SMOKE_START_ALPHA		(gameOpts->render.particles.bDisperse ? 96 : 128)
+#define SMOKE_START_ALPHA		(gameOpts->render.particles.bDisperse ? 64 : 96) //96 : 128)
 
 CParticleManager particleManager;
 CParticleImageManager particleImageManager;
@@ -725,7 +725,7 @@ else if (m_nType != BUBBLE_PARTICLES) {
 	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2 + 0.5f;
 	pc.alpha *= fFade;
 #endif
-	pc.alpha *= alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : m_nClass]];
+	pc.alpha *= 0.6f; //alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : m_nClass]];
 	}
 if (pc.alpha < 1.0 / 255.0) {
 	m_nLife = 0;
