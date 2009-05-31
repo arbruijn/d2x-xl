@@ -52,13 +52,14 @@ int LoadHalo (void);
 int LoadThruster (int nStyle = -1);
 int LoadShield (void);
 int LoadDeadzone (void);
-void LoadExtraImages (void);
+int LoadScope (void);
+void FreeScope (void);
+void LoadAddonImages (void);
 void FreeExtraImages (void);
-int LoadDeadzone (void);
 void FreeDeadzone (void);
 int LoadJoyMouse (void);
 void FreeJoyMouse (void);
-int LoadExtraBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP);
+int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP);
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
@@ -111,6 +112,7 @@ extern CBitmap *bmpShield;
 extern CBitmap *bmpExplBlast;
 extern CBitmap *bmpSparks;
 extern CBitmap *bmpDeadzone;
+extern CBitmap *bmpScope;
 extern CBitmap *bmpJoyMouse;
 
 extern int bHaveDeadzone;

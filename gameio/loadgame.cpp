@@ -1023,7 +1023,7 @@ if (!bRestore) {
 //	lightManager.Setup (nLevel);
 	gameData.time.nPaused = 0;
 	}
-LoadExtraImages ();
+LoadAddonImages ();
 CreateShieldSphere ();
 PrintLog ("   initializing energy spark render data\n");
 sparkManager.Setup ();

@@ -1693,6 +1693,9 @@ fontManager.SetCurrent (GAME_FONT);
 
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
 
+if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
+	DrawReticle (0);
+
 if (!bLimited) {
 	DrawPlayerNames ();
 	RenderWindows ();
@@ -1740,8 +1743,6 @@ if (bExtraInfo) {
 	DrawCountdown ();
 	DrawRecording ();
 	}
-if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
-	DrawReticle (0);
 
 CCanvas::SetCurrent (CurrentGameScreen ());
 

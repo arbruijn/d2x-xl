@@ -1821,7 +1821,7 @@ int CParticleImageManager::Load (int nType)
 nType = particleImageManager.GetType (nType);
 if (bHavePartImg [0][nType])
 	return 1;
-if (!LoadExtraBitmap (bmpParticle [0] + nType, szParticleImg [0][nType], bHavePartImg [0] + nType))
+if (!LoadAddonBitmap (bmpParticle [0] + nType, szParticleImg [0][nType], bHavePartImg [0] + nType))
 	return 0;
 #if MAKE_SMOKE_IMAGE
 {

@@ -67,16 +67,16 @@ else {
 		color.color.alpha = 96;
 		}
 	else {
-	glPushMatrix ();
-	glTranslatef ((float) (mouseData.x) / (float) screen.Width (), 1.0f - (float) (mouseData.y) / (float) screen.Height (), 0);
-	glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
-	glDisable (GL_TEXTURE_2D);
-	glEnable (GL_LINE_SMOOTH);
-	glColor4f (1.0f, 0.8f, 0.0f, 0.9f);
-	glLineWidth (3);
-	OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (screen.Height ()) / float (screen.Width ()), 0, sinCos12);
-	glPopMatrix ();
-	}
+		glPushMatrix ();
+		glTranslatef ((float) (mouseData.x) / (float) screen.Width (), 1.0f - (float) (mouseData.y) / (float) screen.Height (), 0);
+		glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
+		glDisable (GL_TEXTURE_2D);
+		glEnable (GL_LINE_SMOOTH);
+		glColor4f (1.0f, 0.8f, 0.0f, 0.9f);
+		glLineWidth (3);
+		OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (screen.Height ()) / float (screen.Width ()), 0, sinCos12);
+		glPopMatrix ();
+		}
 	if (LoadDeadzone ()) {
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (float) screen.Width ();

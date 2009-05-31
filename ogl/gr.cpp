@@ -177,7 +177,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		//ResetHoardData ();
 		particleImageManager.FreeAll ();
 		FreeExtraImages ();
-		LoadExtraImages ();
+		LoadAddonImages ();
 		FreeStringPool ();
 		OOF_ReleaseTextures ();
 		ASE_ReleaseTextures ();

@@ -116,16 +116,49 @@ return (nHitType == HIT_OBJECT);
 
 //------------------------------------------------------------------------------
 
+void DrawZoom (void)
+{
+if (LoadScope ()) {
+	float sh = float (screen.Height ());
+	float ch = float (CCanvas::Current ()->Height ());
+	float w = 0.3f * float (CCanvas::Current ()->Width ()) / ch;
+	float y = 1.0f - float (CCanvas::Current ()->Top ()) / sh;
+	float h = ch / sh;
+
+	glEnable (GL_TEXTURE_2D);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable (GL_DEPTH_TEST);
+	if (bmpScope->Bind (1)) 
+		return;
+	bmpScope->Texture ()->Wrap (GL_REPEAT);
+	glColor3f (1.0f, 1.0f, 1.0f);
+	glBegin (GL_QUADS);
+	glTexCoord2f (0.5f - w, 0.2f);
+	glVertex2f (0, y);
+	glTexCoord2f (0.5f + w, 0.2f);
+	glVertex2f (1, y);
+	glTexCoord2f (0.5f + w, 0.8f);
+	glVertex2f (1, y - h);
+	glTexCoord2f (0.5f - w, 0.8f);
+	glVertex2f (0, y - h);
+	glEnd ();
+	OGL_BINDTEX (0);
+	glEnable (GL_DEPTH_TEST);
+	glDisable (GL_TEXTURE_2D);
+	glPopMatrix ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
 //draw a crosshair for the zoom
 void DrawZoomCrosshair (void)
 {
 	int bHaveTarget = TargetInLineOfFire ();
 
-int w = CCanvas::Current ()->Width () >> 4;
-w += w >> 1;
-if (w < 5)
-	w = 5;
-int h = I2X (w) / screen.Aspect ();
+int h = CCanvas::Current ()->Height () >> 2;
+int w = X2I (h * screen.Aspect ());
 int x = CCanvas::Current ()->Width () / 2;
 int y = CCanvas::Current ()->Height () / 2;
 glLineWidth (float (screen.Width ()) / 640.0f);
@@ -138,9 +171,9 @@ xStep = float (2 * w + 1) / 12.0f;
 yStep = float (2 * h + 1) / 12.0f;
 
 w >>= 4;
-w += w >> 1;
 h >>= 4;
-h += h >> 1;
+//w += w >> 1;
+//h += h >> 1;
 
 if (bHaveTarget)
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (39, 0, 0, 128));
@@ -158,6 +191,8 @@ for (i = 0, y1 = float (top); i < 11; i++) {
 		OglDrawLine (x - w, int (y1 + 0.5f), x + w, int (y1 + 0.5f));
 	}
 
+w += w >> 1;
+h += h >> 1;
 w <<= 1;
 h <<= 1;
 
@@ -191,6 +226,7 @@ if (bHaveTarget)
 else
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 GrPrintF (NULL, x - w  / 2, bottom + h, szZoom);
+DrawZoom ();
 }
 
 //------------------------------------------------------------------------------

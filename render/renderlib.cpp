@@ -100,7 +100,7 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-int LoadExtraBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
+int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP)
 {
 if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];
@@ -125,12 +125,32 @@ return *bHaveP > 0;
 
 //------------------------------------------------------------------------------
 
+CBitmap *bmpScope = NULL;
+int bHaveScope = 0;
+
+int LoadScope (void)
+{
+return LoadAddonBitmap (&bmpScope, "zoomscope.tga", &bHaveScope);
+}
+
+//------------------------------------------------------------------------------
+
+void FreeScope (void)
+{
+if (bmpScope) {
+	delete bmpScope;
+	bHaveScope = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 CBitmap *bmpDeadzone = NULL;
 int bHaveDeadzone = 0;
 
 int LoadDeadzone (void)
 {
-return LoadExtraBitmap (&bmpDeadzone, "deadzone.tga", &bHaveDeadzone);
+return LoadAddonBitmap (&bmpDeadzone, "deadzone.tga", &bHaveDeadzone);
 }
 
 //------------------------------------------------------------------------------
@@ -150,7 +170,7 @@ int bHaveJoyMouse = 0;
 
 int LoadJoyMouse (void)
 {
-return LoadExtraBitmap (&bmpJoyMouse, "joymouse.tga", &bHaveJoyMouse);
+return LoadAddonBitmap (&bmpJoyMouse, "joymouse.tga", &bHaveJoyMouse);
 }
 
 //------------------------------------------------------------------------------
@@ -170,7 +190,7 @@ int bHaveExplBlast = 0;
 
 int LoadExplBlast (void)
 {
-return LoadExtraBitmap (&bmpExplBlast, "blast.tga", &bHaveExplBlast);
+return LoadAddonBitmap (&bmpExplBlast, "blast.tga", &bHaveExplBlast);
 }
 
 //------------------------------------------------------------------------------
@@ -190,7 +210,7 @@ int bHaveSparks = 0;
 
 int LoadSparks (void)
 {
-return LoadExtraBitmap (&bmpSparks, "sparks.tga", &bHaveSparks);
+return LoadAddonBitmap (&bmpSparks, "sparks.tga", &bHaveSparks);
 }
 
 //------------------------------------------------------------------------------
@@ -211,7 +231,7 @@ int bHaveCorona = 0;
 
 int LoadCorona (void)
 {
-return LoadExtraBitmap (&bmpCorona, "corona.tga", &bHaveCorona);
+return LoadAddonBitmap (&bmpCorona, "corona.tga", &bHaveCorona);
 }
 
 //------------------------------------------------------------------------------
@@ -232,7 +252,7 @@ int bHaveGlare = 0;
 
 int LoadGlare (void)
 {
-return LoadExtraBitmap (&bmpGlare, "glare.tga", &bHaveGlare);
+return LoadAddonBitmap (&bmpGlare, "glare.tga", &bHaveGlare);
 }
 
 //------------------------------------------------------------------------------
@@ -253,7 +273,7 @@ int bHaveHalo = 0;
 
 int LoadHalo (void)
 {
-return LoadExtraBitmap (&bmpHalo, "halo.tga", &bHaveHalo);
+return LoadAddonBitmap (&bmpHalo, "halo.tga", &bHaveHalo);
 }
 
 //------------------------------------------------------------------------------
@@ -281,7 +301,7 @@ int LoadThruster (int nStyle)
 	int b3D = (nStyle == 2);
 	char *pszTex = szThruster [nStyle == 1];
 
-return LoadExtraBitmap (&bmpThruster [b3D], pszTex, bHaveThruster + b3D);
+return LoadAddonBitmap (&bmpThruster [b3D], pszTex, bHaveThruster + b3D);
 }
 
 //------------------------------------------------------------------------------
@@ -305,7 +325,7 @@ int bHaveShield = 0;
 
 int LoadShield (void)
 {
-return LoadExtraBitmap (&bmpShield, "shield.tga", &bHaveShield);
+return LoadAddonBitmap (&bmpShield, "shield.tga", &bHaveShield);
 }
 
 //------------------------------------------------------------------------------
@@ -321,26 +341,28 @@ if (bmpShield) {
 
 //------------------------------------------------------------------------------
 
-void LoadExtraImages (void)
+void LoadAddonImages (void)
 {
 PrintLog ("Loading extra images\n");
-PrintLog ("   Loading corona images\n");
+PrintLog ("   Loading corona image\n");
 LoadCorona ();
-PrintLog ("   Loading glare images\n");
+PrintLog ("   Loading glare image\n");
 LoadGlare ();
-PrintLog ("   Loading halo images\n");
+PrintLog ("   Loading halo image\n");
 LoadHalo ();
-PrintLog ("   Loading thruster images\n");
+PrintLog ("   Loading thruster image\n");
 LoadThruster ();
-PrintLog ("   Loading shield images\n");
+PrintLog ("   Loading shield image\n");
 LoadShield ();
-PrintLog ("   Loading explosion blast images\n");
+PrintLog ("   Loading explosion blast image\n");
 LoadExplBlast ();
-PrintLog ("   Loading spark images\n");
+PrintLog ("   Loading spark image\n");
 LoadSparks ();
-PrintLog ("   Loading deadzone images\n");
+PrintLog ("   Loading deadzone image\n");
 LoadDeadzone ();
-PrintLog ("   Loading joystick emulator images\n");
+PrintLog ("   Loading zoom image\n");
+LoadScope ();
+PrintLog ("   Loading joystick emulator image\n");
 LoadJoyMouse ();
 }
 
@@ -356,6 +378,7 @@ FreeShield ();
 FreeExplBlast ();
 FreeSparks ();
 FreeDeadzone ();
+FreeScope ();
 FreeJoyMouse ();
 }
 
