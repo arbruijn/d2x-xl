@@ -481,7 +481,7 @@ if (gameStates.render.nLightingMethod) {
 	CDynLight*				prl;
 	CFixVector				vLightDir;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
-	bool						bForce, bAmbient = Ambient (nSegment, nSide);
+	bool						bForce, bLight = Find (nSegment, nSide, -1) >= 0;
 
 	ResetActive (nThread, 0);
 	ResetAllUsed (0, nThread);
@@ -496,7 +496,7 @@ if (gameStates.render.nLightingMethod) {
 			break;
 		if (prl->info.bVariable)
 			continue;
-		if (bAmbient && prl->info.bAmbient && ((prl->info.nSegment != nSegment) || (prl->info.nSide != nSide)))
+		if (bLight && prl->info.bAmbient && ((prl->info.nSegment != nSegment) || (prl->info.nSide != nSide)))
 			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg))
