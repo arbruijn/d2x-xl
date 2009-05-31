@@ -141,7 +141,7 @@ if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = alpha * 2.5f;
+	float fSize = alpha * 2.0f;
 	float fScale [3];
 	CFloatVector vHitf [3];
 
@@ -501,6 +501,8 @@ return bTextured;
 
 #if RINGED_SPHERE
 
+#define UV_SCALE	4.0f
+
 int CSphere::Create (int nRings, int nTiles)
 {
 	int				h, i, j;
@@ -523,30 +525,30 @@ m_nRings =
 m_nTiles = 0;
 m_nVertices = h;
 h = nRings / 2;
-a = (float) (2 * Pi / nRings);
+a = float (2 * Pi / nRings);
 svP = m_vertices.Buffer ();
 for (j = 0; j < h; j++) {
-	t1 = (float) (j * a - Pi / 2);
+	t1 = float (j * a - Pi / 2);
 	t2 = t1 + a;
-	sint1 = (float) sin (t1);
-	cost1 = (float) cos (t1);
-	sint2 = (float) sin (t2);
-	cost2 = (float) cos (t2);
+	sint1 = float (sin (t1));
+	cost1 = float (cos (t1));
+	sint2 = float (sin (t2));
+	cost2 = float (cos (t2));
 	for (i = 0; i <= nRings; i++) {
 		t3 = i * a;
-		sint3 = (float) sin (t3);
-		cost3 = (float) cos (t3);
+		sint3 = float (sin (t3));
+		cost3 = float (cos (t3));
 		svP->vPos [X] = cost2 * cost3;
 		svP->vPos [Y] = sint2;
 		svP->vPos [Z] = cost2 * sint3;
-		svP->uv.v.u = (1 - (float) i / nRings) * nTiles;
-		svP->uv.v.v = ((float) (2 * j + 2) / nRings) * nTiles;
+		svP->uv.v.u = (1 - float (i) / nRings) * nTiles * UV_SCALE;
+		svP->uv.v.v = (float (2 * j + 2) / nRings) * nTiles * UV_SCALE;
 		svP++;
 		svP->vPos [X] = cost1 * cost3;
 		svP->vPos [Y] = sint1;
 		svP->vPos [Z] = cost1 * sint3;
-		svP->uv.v.u = (1 - (float) i / nRings) * nTiles;
-		svP->uv.v.v = ((float) (2 * j) / nRings) * nTiles;
+		svP->uv.v.u = (1 - float (i) / nRings) * nTiles * UV_SCALE;
+		svP->uv.v.v = (float (2 * j) / nRings) * nTiles * UV_SCALE;
 		svP++;
 		}
 	}
