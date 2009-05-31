@@ -538,7 +538,7 @@ else
 		}
 	else {
 		vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
-		if (NdotL > 0.0f)
+		if (NdotL >= 0.0f)
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 		else
 			NdotL = 0.0f;
