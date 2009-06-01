@@ -157,7 +157,7 @@ void DrawZoomCrosshair (void)
 {
 DrawScope ();
 
-	static tSinCosf sinCos [128];
+	static tSinCosf sinCos [124];
 	static int bInitSinCos = 1;
 
 if (bInitSinCos) {
@@ -166,6 +166,7 @@ if (bInitSinCos) {
 	}
 
 	int bHaveTarget = TargetInLineOfFire ();
+	int sh = screen.Height (); 
 	int ch = CCanvas::Current ()->Height (); 
 	int cw = CCanvas::Current ()->Width (); 
 	int h = ch >> 2;
@@ -175,6 +176,8 @@ if (bInitSinCos) {
 	int left = x - w, right = x + w, top = y - h, bottom = y + h;
 	float xStep = float (2 * w + 1) / 12.0f;
 	float	yStep = float (2 * h + 1) / 12.0f;
+	float xScale = float (w + (w >> 1)) / float (cw);
+	float yScale = float (h + (h >> 1)) / float (sh);
 	float	x1, y1;
 	int	i;
 
@@ -201,15 +204,45 @@ for (i = 0, y1 = float (top); i < 11; i++) {
 		OglDrawLine (x - w, int (y1 + 0.5f), x + w, int (y1 + 0.5f));
 	}
 
+if (bHaveTarget)
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 160));
+else
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 160));
+
+glLineWidth (floor (2 * float (cw) / 640.0f));
+
+glPushMatrix ();
+glEnable (GL_LINE_SMOOTH);
+glTranslatef (0.5f, 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), 0.0f);
+glScalef (xScale, yScale, 1.0f);
+float fh = 2.0f * float (h) / float (sh);
+float fw = 2.0f * float (w) / float (cw);
+glBegin (GL_LINES);
+glVertex2f (0.0f, -1.0f);
+glVertex2f (0.0f, -1.125f);
+glVertex2f (sinCos [15].fCos, sinCos [15].fSin);
+glVertex2f (sinCos [15].fCos * 1.0625f, sinCos [15].fSin * 1.0625f);
+glVertex2f (0.0f, 1.0f);
+glVertex2f (0.0f, 1.125f);
+glVertex2f (sinCos [46].fCos, sinCos [46].fSin);
+glVertex2f (sinCos [46].fCos * 1.0625f, sinCos [46].fSin * 1.0625f);
+glVertex2f (-1.125f, 0.0f);
+glVertex2f (-1.0f, 0.0f);
+glVertex2f (sinCos [77].fCos, sinCos [77].fSin);
+glVertex2f (sinCos [77].fCos * 1.0625f, sinCos [77].fSin * 1.0625f);
+glVertex2f (1.125f, 0.0f);
+glVertex2f (1.0f, 0.0f);
+glVertex2f (sinCos [108].fCos, sinCos [108].fSin);
+glVertex2f (sinCos [108].fCos * 1.0625f, sinCos [108].fSin * 1.0625f);
+glEnd ();
+glPopMatrix ();
+
 w += w >> 1;
 h += h >> 1;
 w <<= 1;
 h <<= 1;
 
-if (bHaveTarget)
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (63, 0, 0, 160));
-else
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 160));
+glLineWidth (float (cw) / 640.0f);
 
 OglDrawLine (left, y, right, y);
 OglDrawLine (x, top, x, bottom);
@@ -225,8 +258,9 @@ w -= w >> 1;
 h -= h >> 1;
 glLineWidth (floor (2 * float (cw) / 640.0f));
 #if 1
-OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, float (w << 5) / float (cw), 0.5f, 
-					 float (h << 5) / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), sinCos);
+//float xScale = float (w << 5) / float (cw);
+//float yScale = float (h << 5) / float (screen.Height ());
+OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f, yScale, 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), sinCos);
 #else
 glPushMatrix ();
 glEnable (GL_LINE_SMOOTH);
