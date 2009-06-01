@@ -209,10 +209,10 @@ else {
 		n[Y] = -n[Y];
 		*/
 		n.Neg ();
-		a = n.ToAnglesVec();
+		a = n.ToAnglesVec ();
 		}
 	else
-		a = SEGMENTS [srcSeg].m_sides [srcSide].m_normals [0].ToAnglesVec();
+		a = SEGMENTS [srcSeg].m_sides [srcSide].m_normals [0].ToAnglesVec ();
 	m_info.obj.info.position.mOrient = CFixMatrix::Create(a);
 #if 1
 	if (bTeleport)

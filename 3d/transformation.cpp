@@ -131,9 +131,9 @@ m_info.posf [0].Assign (m_info.pos);
 //delta rotation functions
 CFixVector CTransformation::RotateScaledX (CFixVector& dest, fix scale)
 {
-dest [X] = m_info.view [0].RVec() [X];
-dest [Y] = m_info.view [0].UVec() [X];
-dest [Z] = m_info.view [0].FVec() [X];
+dest [X] = m_info.view [0].RVec () [X];
+dest [Y] = m_info.view [0].UVec () [X];
+dest [Z] = m_info.view [0].FVec () [X];
 dest *= scale;
 return dest;
 }
@@ -142,9 +142,9 @@ return dest;
 
 CFixVector CTransformation::RotateScaledY (CFixVector& dest, fix scale)
 {
-dest [X] = m_info.view [0].RVec() [Y];
-dest [Y] = m_info.view [0].UVec() [Y];
-dest [Z] = m_info.view [0].FVec() [Y];
+dest [X] = m_info.view [0].RVec () [Y];
+dest [Y] = m_info.view [0].UVec () [Y];
+dest [Z] = m_info.view [0].FVec () [Y];
 dest *= scale;
 return dest;
 }
@@ -153,9 +153,9 @@ return dest;
 
 CFixVector CTransformation::RotateScaledZ (CFixVector& dest, fix scale)
 {
-dest [X] = m_info.view [0].RVec() [Z];
-dest [Y] = m_info.view [0].UVec() [Z];
-dest [Z] = m_info.view [0].FVec() [Z];
+dest [X] = m_info.view [0].RVec () [Z];
+dest [Y] = m_info.view [0].UVec () [Z];
+dest [Z] = m_info.view [0].FVec () [Z];
 dest *= scale;
 return dest;
 }

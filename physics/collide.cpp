@@ -688,7 +688,7 @@ if (info.nId == GUIDEDMSL_ID) {
 		CFixVector	vReflect;
 		CAngleVector	va;
 		vReflect = CFixVector::Reflect (info.position.mOrient.FVec (), sideP->m_normals[0]);
-		va = vReflect.ToAnglesVec();
+		va = vReflect.ToAnglesVec ();
 		info.position.mOrient = CFixMatrix::Create (va);
 		}
 	}

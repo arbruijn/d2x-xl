@@ -1041,7 +1041,7 @@ int G3DrawSprite (
 	CFixVector	pv, v1;
 	GLdouble		h, w, u, v, x, y, z;
 
-if ((gameOpts->render.bDepthSort > 0) /*|| (gameOpts->render.effects.bSoftParticles & 1)*/) { //&& ((colorP && (colorP->alpha < 0)) || (alpha < 0))) {
+if (gameOpts->render.bDepthSort > 0) {
 	tRgbaColorf color;
 	if (!colorP) {
 		color.red =

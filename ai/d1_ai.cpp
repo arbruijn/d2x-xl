@@ -416,7 +416,7 @@ void ai_turn_towards_vector(CFixVector *vGoal, CObject *objP, fix rate)
 
 	new_fVec = *vGoal;
 
-	dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec());
+	dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.FVec ());
 
 	if (dot < (I2X (1) - gameData.time.xFrame/2)) {
 		fix	mag;
@@ -1065,7 +1065,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 
 			vec_to_laser = dangerObjP->info.position.vPos - objP->info.position.vPos;
 			dist_to_laser = CFixVector::Normalize (vec_to_laser);
-			dot = CFixVector::Dot (vec_to_laser, objP->info.position.mOrient.FVec());
+			dot = CFixVector::Dot (vec_to_laser, objP->info.position.mOrient.FVec ());
 
 			if (dot > fieldOfView) {
 				fix			laser_robot_dot;

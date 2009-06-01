@@ -522,8 +522,8 @@ if (nStep <= 0) {
 	}
 else
 	n = gameStates.gameplay.vTgtDir;
-an = n.ToAnglesVec();
-av = objP->mType.physInfo.velocity.ToAnglesVec();
+an = n.ToAnglesVec ();
+av = objP->mType.physInfo.velocity.ToAnglesVec ();
 av [PA] -= an [PA];
 av [BA] -= an [BA];
 av [HA] -= an [HA];

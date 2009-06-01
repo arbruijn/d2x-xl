@@ -76,11 +76,11 @@ void CFlightPath::GetViewPoint (void)
 	tPathPoint		*p = GetPoint ();
 
 if (!p)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.FVec() * PP_DELTAZ;
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.FVec () * PP_DELTAZ;
 else {
 	gameData.render.mine.viewerEye = p->vPos;
-	gameData.render.mine.viewerEye += p->mOrient.FVec() * (PP_DELTAZ * 2 / 3);
-	gameData.render.mine.viewerEye += p->mOrient.UVec() * (PP_DELTAY * 2 / 3);
+	gameData.render.mine.viewerEye += p->mOrient.FVec () * (PP_DELTAZ * 2 / 3);
+	gameData.render.mine.viewerEye += p->mOrient.UVec () * (PP_DELTAY * 2 / 3);
 	}
 }
 

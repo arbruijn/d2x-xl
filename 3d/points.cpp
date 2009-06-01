@@ -98,17 +98,17 @@ return G3EncodePoint (dest);
 fix G3CalcPointDepth (const CFixVector& pnt)
 {
 #ifdef _WIN32
-	QLONG q = mul64 (pnt [X] - transformation.m_info.pos [X], transformation.m_info.view [0].FVec() [X]);
-	q += mul64 (pnt [Y] - transformation.m_info.pos [Y], transformation.m_info.view [0].FVec() [Y]);
-	q += mul64 (pnt [Z] - transformation.m_info.pos [Z], transformation.m_info.view [0].FVec() [Z]);
+	QLONG q = mul64 (pnt [X] - transformation.m_info.pos [X], transformation.m_info.view [0].FVec () [X]);
+	q += mul64 (pnt [Y] - transformation.m_info.pos [Y], transformation.m_info.view [0].FVec () [Y]);
+	q += mul64 (pnt [Z] - transformation.m_info.pos [Z], transformation.m_info.view [0].FVec () [Z]);
 	return (fix) (q >> 16);
 #else
 	tQuadInt q;
 
 	q.low=q.high=0;
-	FixMulAccum (&q, (pnt [X] - transformation.m_info.pos [X]),transformation.m_info.view [0].FVec() [X]);
-	FixMulAccum (&q, (pnt [Y] - transformation.m_info.pos [Y]),transformation.m_info.view [0].FVec() [Y]);
-	FixMulAccum (&q, (pnt [Z] - transformation.m_info.pos [Z]),transformation.m_info.view [0].FVec() [Z]);
+	FixMulAccum (&q, (pnt [X] - transformation.m_info.pos [X]),transformation.m_info.view [0].FVec () [X]);
+	FixMulAccum (&q, (pnt [Y] - transformation.m_info.pos [Y]),transformation.m_info.view [0].FVec () [Y]);
+	FixMulAccum (&q, (pnt [Z] - transformation.m_info.pos [Z]),transformation.m_info.view [0].FVec () [Z]);
 	return FixQuadAdjust (&q);
 #endif
 }

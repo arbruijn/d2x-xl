@@ -669,9 +669,9 @@ v [HA] = ReadFixAng ();
 
 void CFile::ReadMatrix (CFixMatrix& m)
 {
-ReadVector (m.RVec());
-ReadVector (m.UVec());
-ReadVector (m.FVec());
+ReadVector (m.RVec ());
+ReadVector (m.UVec ());
+ReadVector (m.FVec ());
 }
 
 
@@ -778,9 +778,9 @@ WriteFixAng (v [HA]);
 
 void CFile::WriteMatrix (const CFixMatrix& m)
 {
-WriteVector (m.RVec());
-WriteVector (m.UVec());
-WriteVector (m.FVec());
+WriteVector (m.RVec ());
+WriteVector (m.UVec ());
+WriteVector (m.FVec ());
 }
 
 

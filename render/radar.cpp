@@ -163,6 +163,8 @@ if (cockpit->Hide ())
 	return;
 if (automap.m_bDisplay)
 	return;
+if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
+	return;
 if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 	return;
 bStencil = StencilOff ();
