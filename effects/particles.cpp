@@ -722,7 +722,7 @@ else if (m_nType != BUBBLE_PARTICLES) {
 	pc.alpha = (float) pow (pc.alpha * pc.alpha, 1.0 / 3.0);
 #	endif
 #else
-	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2 + 0.5f;
+	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2.0f + 0.5f;
 	pc.alpha *= fFade;
 #endif
 	pc.alpha *= 0.6f; //alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : m_nClass]];

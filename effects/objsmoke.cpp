@@ -524,7 +524,7 @@ else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
 	nLife = gameOpts->render.particles.nLife [3] + 1;
 #if 1
-	nParts = int (MSL_MAX_PARTS * X2F (nSpeed) / (35.0f * (4 - nLife)));
+	nParts = int (MSL_MAX_PARTS * X2F (nSpeed) / (34.0f * (4 - nLife)));
 	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
 		nParts /= 2;
 
