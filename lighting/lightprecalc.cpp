@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 12
+#define LIGHT_DATA_VERSION 13
 
 
 #define	VERTVIS(_nSegment, _nVertex) \
@@ -354,7 +354,7 @@ for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 #endif
 	gameStates.render.nShadowPass = 1;
-	BuildRenderSegList (nStartSeg, 0);
+	BuildRenderSegList (nStartSeg, 0, true);
 	gameStates.render.nShadowPass = 0;
 	G3EndFrame ();
 	//PrintLog ("   flagging visible segments\n");

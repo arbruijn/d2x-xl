@@ -85,10 +85,8 @@ void RenderEffects (int nWindow);
 void InitSegZRef (int i, int j, int nThread);
 void QSortSegZRef (short left, short right);
 
-void BuildRenderSegList (short nStartSeg, int nWindow);
-
 void BuildRenderObjLists (int nSegCount);
-void BuildRenderSegList (short nStartSeg, int nWindow);
+void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors = false);
 void BuildRenderSegListFast (short nStartSeg, int nWindow);
 
 #if SORT_RENDER_FACES > 1

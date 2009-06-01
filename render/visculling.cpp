@@ -576,7 +576,7 @@ gameData.render.zMax = vCenter [Z] + d1 + r;
 
 //-----------------------------------------------------------------
 
-void BuildRenderSegList (short nStartSeg, int nWindow)
+void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors)
 {
 	int			nCurrent, nHead, nTail, nSide;
 	int			l, i, j;
@@ -653,7 +653,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			nChildSeg = segP->m_children [nChild];
 			if (nChildSeg < 0)
 				continue;
-			if (!(segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG))
+			if (!(segP->IsDoorWay (nChild, NULL, bIgnoreDoors) & WID_RENDPAST_FLAG))
 				continue;
 #if DBG
 			if (nChildSeg == nDbgSeg)

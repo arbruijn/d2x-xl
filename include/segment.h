@@ -305,7 +305,7 @@ class CSegment {
 
 		CFixVector RandomPoint (void);
 
-		int IsDoorWay (int nSide, CObject* objP);
+		int IsDoorWay (int nSide, CObject* objP, bool bIgnoreDoors = false);
 		int HasOpenableDoor (void);
 
 		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 

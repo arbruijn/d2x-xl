@@ -209,7 +209,7 @@ if (bHaveTarget)
 else
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL (0, 63, 0, 160));
 
-glLineWidth (floor (2 * float (cw) / 640.0f));
+glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 
 glPushMatrix ();
 glEnable (GL_LINE_SMOOTH);
@@ -256,7 +256,7 @@ w >>= 1;
 h >>= 1;
 w -= w >> 1;
 h -= h >> 1;
-glLineWidth (floor (2 * float (cw) / 640.0f));
+glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 #if 1
 //float xScale = float (w << 5) / float (cw);
 //float yScale = float (h << 5) / float (screen.Height ());

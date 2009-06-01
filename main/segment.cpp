@@ -291,7 +291,7 @@ return -1;
 }
 //-----------------------------------------------------------------
 
-int CSegment::IsDoorWay (int nSide, CObject *objP)
+int CSegment::IsDoorWay (int nSide, CObject *objP, bool bIgnoreDoors)
 {
 	int	nChild = m_children [nSide];
 
@@ -314,17 +314,17 @@ if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
 	 (m_nType == SEGMENT_IS_SPEEDBOOST) && (childP->m_nType != SEGMENT_IS_SPEEDBOOST) &&
 	 (!wallP || (TRIGGERS [wallP->nTrigger].nType != TT_SPEEDBOOST)))
-	return objP ? WID_RENDER_FLAG : wallP ? wallP->IsDoorWay (objP) : WID_RENDPAST_FLAG;
+	return objP ? WID_RENDER_FLAG : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_RENDPAST_FLAG;
 
 if ((childP->m_nType == SEGMENT_IS_BLOCKED) || (childP->m_nType == SEGMENT_IS_SKYBOX))
 	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)))
 			 ? WID_RENDER_FLAG
-			 : wallP ? wallP->IsDoorWay (objP) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
+			 : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
 
 if (!wallP)
 	return WID_FLY_FLAG | WID_RENDPAST_FLAG;
 
-return wallP->IsDoorWay (objP);
+return wallP->IsDoorWay (objP, bIgnoreDoors);
 }
 
 //------------------------------------------------------------------------------

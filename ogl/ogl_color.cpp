@@ -419,7 +419,7 @@ if ((nVertex < 0) && (nType < 2)) {
 	bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 	lightDir = lightPos - *vcd.vertPosP;
 	fLightDist = lightDir.Mag ();
-	if (fLightDist < 0.1f)
+	if (fabs (fLightDist) < 0.1f)
 		fLightDist = 0.0f;
 	else {
 		fLightDist *= gameStates.ogl.fLightRange;
@@ -445,7 +445,7 @@ else
 		NdotL = 1.0f;
 	else {
 		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
-		if (fabs (NdotL) < 1.0e-3f)
+		if (fabs (NdotL) < 0.001f)
 			NdotL = 0.0f;
 		}
 	nMinDot = -0.1f;

@@ -116,7 +116,7 @@ return NULL;
 //		WID_ILLUSORY_WALL			3	//	1/1/0		illusory CWall
 //		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory CWall
 //		WID_NO_WALL					5	//	1/0/1		no CWall, can fly through
-int CWall::IsDoorWay (CObject *objP)
+int CWall::IsDoorWay (CObject *objP, bool bIgnoreDoors)
 {
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -153,6 +153,8 @@ if (nType == WALL_TRANSPARENT)
 			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG;
 
 if (nType == WALL_DOOR) {
+	if (bIgnoreDoors)
+		return WID_TRANSPARENT_WALL;
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
 	if ((cloakValue && (cloakValue < FADE_LEVELS)) || SEGMENTS [nSegment].CheckTransparency (nSide))

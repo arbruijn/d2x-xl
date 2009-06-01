@@ -206,7 +206,7 @@ class CWall {
 		void Init (void);
 		void Read (CFile& cf);
 		void LoadTextures (void);
-		int IsDoorWay (CObject* objP);
+		int IsDoorWay (CObject* objP, bool bIgnoreDoors = false);
 		bool IsOpenableDoor (void);
 		bool IsTriggerTarget (void);
 		bool IsVolatile (void);
