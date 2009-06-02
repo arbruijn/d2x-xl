@@ -128,6 +128,9 @@ for (i = 0; i < 8; i++) {
 
 void RenderHitbox (CObject *objP, float red, float green, float blue, float alpha)
 {
+if (objP->rType.polyObjInfo.nModel < 0)
+	return;
+
 	CFloatVector	vertList [8], v;
 	tHitbox*			pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes.Buffer ();
 	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
@@ -230,7 +233,7 @@ for (; iBox <= nBoxes; iBox++) {
 	}
 //transformation.End ();
 float r = X2F (CFixVector::Dist (pmhb->vMin, pmhb->vMax) / 2);
-#if DBG//def _DEBUG	//display collision point
+#if 0 //DBG //display collision point
 if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
 	CObject	o;
 
