@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "objeffects.h"
 #include "hiresmodels.h"
+#include "hitbox.h"
 
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
@@ -108,10 +109,10 @@ void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj)
 {
 
 	CFloatVector		hv;
-	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
-	CFixVector	vMin = phb->vMin;
-	CFixVector	vMax = phb->vMax;
-	int			i;
+	tHitbox*				phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
+	CFixVector			vMin = phb->vMin;
+	CFixVector			vMax = phb->vMax;
+	int					i;
 
 for (i = 0; i < 8; i++) {
 	hv [X] = X2F (hitBoxOffsets [i][X] ? vMin [X] : vMax [X]);
@@ -177,41 +178,66 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
 glDepthMask (0);
-glColor4f (red, green, blue, alpha / 2);
-transformation.Begin(objP->info.position.vPos, objP->info.position.mOrient);
+
+tBox hb [MAX_HITBOXES + 1];
+TransformHitboxes (objP, &objP->info.position.vPos, hb);
+
+//transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 for (; iBox <= nBoxes; iBox++) {
+#if 0
 	if (iBox)
 		transformation.Begin (pmhb [iBox].vOffset, CAngleVector::ZERO);
 	TransformHitboxf (objP, vertList, iBox);
+#endif
+	glColor4f (red, green, blue, alpha / 2);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
-		for (j = 0; j < 4; j++)
-			glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
+		for (j = 0; j < 4; j++) {
+			v.Assign (hb [iBox].faces [i].v [j]);
+			transformation.Transform (v, v, 0);
+			glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+		//	glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
+			}
 		}
 	glEnd ();
-	glLineWidth (2);
+	glLineWidth (3);
+	glColor4f (red, green, blue, alpha);
 	for (i = 0; i < 6; i++) {
+		CFixVector c;
+		c.SetZero ();
+		glColor4f (red, green, blue, alpha / 2);
 		glBegin (GL_LINES);
-		v.SetZero ();
 		for (j = 0; j < 4; j++) {
-			glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
-			v += vertList [hitboxFaceVerts [i][j]];
+			c += hb [iBox].faces [i].v [j];
+			v.Assign (hb [iBox].faces [i].v [j]);
+			transformation.Transform (v, v, 0);
+			glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+			//glVertex3fv (reinterpret_cast<GLfloat*> (vertList + hitboxFaceVerts [i][j]));
 			}
+		c /= I2X (4);
+		v.Assign (c);
+		glColor4f (1.0f, 0.5f, 0.0f, alpha);
+		transformation.Transform (v, v, 0);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+		v.Assign (c + hb [iBox].faces [i].n [1] * I2X (5));
+		transformation.Transform (v, v, 0);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 		glEnd ();
 		}
 	glLineWidth (1);
-	if (iBox)
-		transformation.End ();
+//	if (iBox)
+//		transformation.End ();
 	}
-transformation.End ();
+//transformation.End ();
 float r = X2F (CFixVector::Dist (pmhb->vMin, pmhb->vMax) / 2);
-#if 0//def _DEBUG	//display collision point
+#if DBG//def _DEBUG	//display collision point
 if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
 	CObject	o;
 
-	o.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
-	o.position.mOrient = objP->info.position.mOrient;
-	o.size = I2X (2);
+	o.info.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
+	o.info.position.mOrient = objP->info.position.mOrient;
+	o.info.xSize = I2X (2);
+	objP->rType.polyObjInfo.nModel = -1;
 	//SetRenderView (0, NULL);
 	DrawShieldSphere (&o, 1, 0, 0, 0.33f);
 	}

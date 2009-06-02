@@ -864,7 +864,9 @@ if (gameData.render.shield.nFaces > 0)
 			bAdditive = 0;
 			}
 		else {
-			nSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
+			nSize = (objP->rType.polyObjInfo.nModel < 0) 
+					  ? objP->info.xSize 
+					  : gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
 			fScale = gameData.render.shield.Pulse ()->fScale;
 			bAdditive = 2;
 			}

@@ -192,12 +192,12 @@ void ComputeHitbox (int nModel, int iHitbox)
 	int				i;
 
 for (i = 0; i < 8; i++) {
-	pv [i][X] = (hitBoxOffsets [i][X] ? vMin[X] : vMax[X]) + vOffset[X];
-	pv [i][Y] = (hitBoxOffsets [i][Y] ? vMin[Y] : vMax[Y]) + vOffset[Y];
-	pv [i][Z] = (hitBoxOffsets [i][Z] ? vMin[Z] : vMax[Z]) + vOffset[Z];
+	pv [i][X] = (hitBoxOffsets [i][X] ? vMin [X] : vMax [X]) + vOffset [X];
+	pv [i][Y] = (hitBoxOffsets [i][Y] ? vMin [Y] : vMax [Y]) + vOffset [Y];
+	pv [i][Z] = (hitBoxOffsets [i][Z] ? vMin [Z] : vMax [Z]) + vOffset [Z];
 	}
 for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
-	*pf->n = CFixVector::Normal (pv[hitboxFaceVerts [i][0]], pv[hitboxFaceVerts [i][1]], pv[hitboxFaceVerts [i][2]]);
+	*pf->n = CFixVector::Normal (pv [hitboxFaceVerts [i][0]], pv [hitboxFaceVerts [i][1]], pv [hitboxFaceVerts [i][2]]);
 	}
 }
 
@@ -285,13 +285,13 @@ if (!vPos)
 	vPos = &objP->info.position.vPos;
 for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
-		rotVerts[i] = *viewP * pmhb->box.vertices[i];
-		rotVerts[i] += *vPos;
+		rotVerts [i] = *viewP * pmhb->box.vertices [i];
+		rotVerts [i] += *vPos;
 		}
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
 		for (j = 0; j < 4; j++)
 			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
-		pf->n[1] = CFixVector::Normal (pf->v[0], pf->v[1], pf->v[2]);
+		pf->n [1] = CFixVector::Normal (pf->v [0], pf->v [1], pf->v [2]);
 		}
 	}
 }

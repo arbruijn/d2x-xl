@@ -193,8 +193,6 @@ return true;
 
 fix DistToQuad (CFixVector vRef, CFixVector* vertP, CFixVector vNormal)
 {
-	int			i, j;
-
 // compute intersection of perpendicular through vRef with the plane spanned up by the face
 if (PointIsInQuad (vRef, vertP, vNormal))
 	return 0;
@@ -203,7 +201,7 @@ if (PointIsInQuad (vRef, vertP, vNormal))
 	fix			dist, minDist = 0x7fffffff;
 
 for (int i = 0; i < 4; i++) {
-	VmPointLineIntersection (vRef, vertP [i], vertP [(i + 1) % 4], v, 1);
+	VmPointLineIntersection (v, vertP [i], vertP [(i + 1) % 4], vRef, 0);
 	dist = CFixVector::Dist (vRef, v);
 	if (minDist > dist)
 		minDist = dist;
@@ -332,16 +330,38 @@ return 1;	//hits
 
 int FindLineQuadIntersection (CFixVector& intersection, CFixVector *planeP, CFixVector *planeNormP, CFixVector *p0, CFixVector *p1, fix rad)
 {
-	CFixVector	vHit, d [2];
+	CFixVector	vHit;
+	fix			dist;
 
+dist = CFixVector::Dist (*p0, *p1);
+if (CFixVector::Dot (*p1 - *p0, *planeNormP) >= 0)
+	return 0x7fffffff;
+#if 0
+if (CFixVector::Dot (*p0 - *planeP, *p1 - *planeP) > 0)
+	return 0x7fffffff;
+#endif
 if (!FindLineQuadIntersectionSub (vHit, planeP, planeNormP, p0, p1, 0))
 	return 0x7fffffff;
-d [0] = vHit - *p0;
-d [1] = vHit - *p1;
-if (CFixVector::Dot (d [0], d [1]) >= 0)
+fix dist1 = CFixVector::Dist (*p0, planeP [0]);
+fix dist2 = CFixVector::Dist (*p0, planeP [1]);
+fix dist3 = CFixVector::Dist (*p0, planeP [2]);
+fix dist4 = CFixVector::Dist (*p0, planeP [3]);
+fix dist5 = CFixVector::Dist (*p1, planeP [0]);
+fix dist6 = CFixVector::Dist (*p1, planeP [1]);
+fix dist7 = CFixVector::Dist (*p1, planeP [2]);
+fix dist8 = CFixVector::Dist (*p1, planeP [3]);
+fix dist9 = CFixVector::Dist (vHit, planeP [0]);
+fix dist10 = CFixVector::Dist (vHit, planeP [1]);
+fix dist11 = CFixVector::Dist (vHit, planeP [2]);
+fix dist12 = CFixVector::Dist (vHit, planeP [3]);
+fix dist13 = CFixVector::Dist (vHit, *p0);
+fix dist14 = CFixVector::Dist (vHit, *p1);
+if (!rad && (CFixVector::Dot (vHit - *p0, vHit - *p1) > 0))
 	return 0x7fffffff;
-fix dist = DistToQuad (vHit, planeP, *planeNormP);
-if (rad ? rad > dist : dist < 0x7fffffff)
+dist = DistToQuad (vHit, planeP, *planeNormP);
+CFixVector h = vHit - *planeP;
+dist = CFixVector::Dot (h, *planeNormP);
+if (rad >= dist)
 	intersection = vHit;
 else
 	return 0x7fffffff;
@@ -368,19 +388,19 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindQuadQuadIntersection (CFixVector& intersection, CFixVector *p1, CFixVector *vn1, CFixVector *p2, CFixVector *vn2, CFixVector *vRef)
+int FindQuadQuadIntersection (CFixVector& intersection, CFixVector *p0, CFixVector *vn1, CFixVector *p1, CFixVector *vn2, CFixVector *vRef)
 {
 	CFixVector	vHit;
 	int			nHits = 0;
 	fix			dMin = 0x7fffffff;
 
-// test whether any edges of p1 penetrate p2
-if (FindQuadQuadIntersectionSub (vHit, p1, vn1, p2, vn2, vRef)) {
+// test whether any edges of p0 penetrate p1
+if (FindQuadQuadIntersectionSub (vHit, p0, vn1, p1, vn2, vRef)) {
 	dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
 	nHits++;
 	}
-// test whether any edges of p2 penetrate p1
-if (FindQuadQuadIntersectionSub (vHit, p2, vn2, p1, vn1, vRef)) {
+// test whether any edges of p1 penetrate p0
+if (FindQuadQuadIntersectionSub (vHit, p1, vn2, p0, vn1, vRef)) {
 	dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
 	nHits++;
 	}
@@ -398,7 +418,11 @@ int FindLineHitboxIntersection (CFixVector& intersection, tBox *phb, CFixVector 
 
 // create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
+#if DBG
+for (i = 0, pf = phb->faces; i < 1; i++, pf++) {
+#else
 for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
+#endif
 	dist = FindLineQuadIntersection (vHit, pf->v, pf->n + 1, p0, p1, rad);
 	if (dist < 0x7fffffff) {
 		dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
@@ -728,13 +752,13 @@ if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	}
 else {
 	iModel = 2;
-	nModels = pmhb->nHitboxes;
+	nModels = 2; //pmhb->nHitboxes;
 	}
 if (!vRef)
-	vRef = p0;
+	vRef = &objP->info.position.vPos;
 TransformHitboxes (objP, vRef, hb);
-for (; iModel <= 2 /*nModels*/; iModel++) {
-#if 1
+for (; iModel <= nModels; iModel++) {
+#if 1	
 	if (FindLineHitboxIntersection (vHit, hb + iModel, p0, p1, p0, rad))
 		xDist = 1;
 #else
@@ -816,9 +840,11 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	dist = CFixVector::Dot (v0, v1);
 	}
 #endif
+#if !DBG
 	dist = CFixVector::Dist (vHit, vPos);
 	if (dist > 2 * (thisObjP->info.xSize + otherObjP->info.xSize))
 		return 0;
+#endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1))) {
