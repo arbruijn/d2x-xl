@@ -1473,7 +1473,11 @@ vHit -= info.position.vPos;
 CFixVector::Normalize (vHit);
 vHit *= info.xSize;
 for (int i = 0; i < 3; i++)
-	if (CFixVector::Dist (m_hitInfo.v [i], vHit) < I2X (1) / 8) {
+#if 1
+	if (CFixVector::Dot (m_hitInfo.v [i], vHit) > I2X (1) - I2X (1) / 32) {
+#else
+	if (CFixVector::Dist (m_hitInfo.v [i], vHit) < I2X (1) / 32) {
+#endif
 		vHit = CFixVector::Avg (m_hitInfo.v [i], vHit);
 		CFixVector::Normalize (vHit);
 		vHit *= info.xSize;

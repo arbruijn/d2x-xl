@@ -101,27 +101,28 @@ class CObject;
 
 class CSide {
 	public:
-		sbyte   		m_nType;       // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
-		sbyte   		m_nFrame;      //keep us longword aligned
-		ushort  		m_nWall;
-		short   		m_nBaseTex;
+		sbyte   			m_nType;       // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
+		sbyte   			m_nFrame;      //keep us longword aligned
+		ushort  			m_nWall;
+		short   			m_nBaseTex;
 #ifdef WORDS_BIGENDIAN
-		ushort		m_nOvlOrient : 2;
-		ushort		m_nOvlTex : 14;
+		ushort			m_nOvlOrient : 2;
+		ushort			m_nOvlTex : 14;
 #else
-		ushort		m_nOvlTex : 14;
-		ushort		m_nOvlOrient : 2;
+		ushort			m_nOvlTex : 14;
+		ushort			m_nOvlOrient : 2;
 #endif
-		tUVL     	m_uvls [4];
-		CFixVector	m_normals [2];  // 2 normals, if quadrilateral, both the same.
-		CFixVector	m_rotNorms [2];
-		CFixVector	m_vCenter;
-		fix			m_rads [2];
-		short			m_vertices [6];
-		short			m_faceVerts [6];
-		short			m_corners [4];
-		short			m_nMinVertex [2];
-		ubyte			m_nFaces;
+		tUVL     		m_uvls [4];
+		CFixVector		m_normals [2];  // 2 normals, if quadrilateral, both the same.
+		CFloatVector	m_fNormals [2];
+		CFixVector		m_rotNorms [2];
+		CFixVector		m_vCenter;
+		fix				m_rads [2];
+		short				m_vertices [6];
+		short				m_faceVerts [6];
+		short				m_corners [4];
+		short				m_nMinVertex [2];
+		ubyte				m_nFaces;
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
@@ -182,7 +183,7 @@ class CSide {
 		void SetupCorners (short* verts, int* index);
 		void SetupVertexList (short* verts, int* index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuad (CFixVector& vNormal, short* verts, int* index);
+		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, int* index);
 		void SetupAsTriangles (bool bSolid, short* verts, int* index);
 	};
 

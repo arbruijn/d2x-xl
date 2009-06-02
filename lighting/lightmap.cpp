@@ -442,6 +442,8 @@ for (y = yMin; y < yMax; y++) {
 			nDbgSeg = nDbgSeg;
 			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
 				nDbgSeg = nDbgSeg;
+			if (y == 6)
+				nDbgSeg = nDbgSeg;
 			}
 #endif
 		if (0 < lightManager.SetNearestToPixel (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 

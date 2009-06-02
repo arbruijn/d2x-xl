@@ -762,7 +762,7 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
-#if 1
+#if 0
 gameStates.ogl.bUseTransform = 1;
 if (!bEffect)
 #else

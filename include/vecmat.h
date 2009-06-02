@@ -335,9 +335,9 @@ inline CFloatVector& CFloatVector::Cross (CFloatVector& dest, const CFloatVector
 }
 
 inline const CFloatVector CFloatVector::Cross (const CFloatVector& v0, const CFloatVector& v1) {
-	return Create (v0 [Y]*v1 [Z] - v0 [Z]*v1 [Y],
-	               v0 [Z]*v1 [X] - v0 [X]*v1 [Z],
-	               v0 [X]*v1 [Y] - v0 [Y]*v1 [X]);
+	return Create (v0 [Y] * v1 [Z] - v0 [Z] * v1 [Y],
+	               v0 [Z] * v1 [X] - v0 [X] * v1 [Z],
+	               v0 [X] * v1 [Y] - v0 [Y] * v1 [X]);
 }
 
 inline const float CFloatVector::Dist (const CFloatVector& v0, const CFloatVector& v1) {
@@ -393,7 +393,7 @@ inline void CFloatVector::Set (const float *vec) {
 }
 
 inline const float CFloatVector::SqrMag (void) const {
-	return v [X]*v [X] + v [Y]*v [Y] + v [Z]*v [Z];
+	return v [X] * v [X] + v [Y] * v [Y] + v [Z] * v [Z];
 }
 
 inline const float CFloatVector::Mag (void) const {
@@ -493,11 +493,11 @@ inline const float operator* (const CFloatVector& v0, const CFloatVector& v1) {
 }
 
 inline const CFloatVector operator* (const CFloatVector& v, const float s) {
-	return CFloatVector::Create (v [X]*s, v [Y]*s, v [Z]*s, 1);
+	return CFloatVector::Create (v [X] * s, v [Y] * s, v [Z] * s, 1);
 }
 
 inline const CFloatVector operator* (const float s, const CFloatVector& v) {
-	return CFloatVector::Create (v [X]*s, v [Y]*s, v [Z]*s, 1);
+	return CFloatVector::Create (v [X] * s, v [Y] * s, v [Z] * s, 1);
 }
 
 inline const CFloatVector operator/ (const CFloatVector& v, const float s) {
@@ -523,16 +523,16 @@ inline const CFloatVector3 CFloatVector3::Avg (const CFloatVector3& src0, const 
 }
 
 inline CFloatVector3& CFloatVector3::Cross (CFloatVector3& dest, const CFloatVector3& v0, const CFloatVector3& v1) {
-	dest.Set (v0 [Y]*v1 [Z] - v0 [Z]*v1 [Y],
-	          v0 [Z]*v1 [X] - v0 [X]*v1 [Z],
-	          v0 [X]*v1 [Y] - v0 [Y]*v1 [X]);
+	dest.Set (v0 [Y] * v1 [Z] - v0 [Z] * v1 [Y],
+	          v0 [Z] * v1 [X] - v0 [X] * v1 [Z],
+	          v0 [X] * v1 [Y] - v0 [Y] * v1 [X]);
 	return dest;
 }
 
 inline const CFloatVector3 CFloatVector3::Cross (const CFloatVector3& v0, const CFloatVector3& v1) {
-	return Create (v0 [Y]*v1 [Z] - v0 [Z]*v1 [Y],
-	               v0 [Z]*v1 [X] - v0 [X]*v1 [Z],
-	               v0 [X]*v1 [Y] - v0 [Y]*v1 [X]);
+	return Create (v0 [Y] * v1 [Z] - v0 [Z] * v1 [Y],
+	               v0 [Z] * v1 [X] - v0 [X] * v1 [Z],
+	               v0 [X] * v1 [Y] - v0 [Y] * v1 [X]);
 }
 
 inline const float CFloatVector3::Dist (const CFloatVector3& v0, const CFloatVector3& v1) {
@@ -540,7 +540,7 @@ inline const float CFloatVector3::Dist (const CFloatVector3& v0, const CFloatVec
 }
 
 inline const float CFloatVector3::Dot (const CFloatVector3& v0, const CFloatVector3& v1) {
-	return v0 [X]*v1 [X] + v0 [Y]*v1 [Y] + v0 [Z]*v1 [Z];
+	return v0 [X] * v1 [X] + v0 [Y] * v1 [Y] + v0 [Z] * v1 [Z];
 }
 
 inline const float CFloatVector3::Normalize (CFloatVector3& vec) {
@@ -598,7 +598,7 @@ inline CFloatVector3& CFloatVector3::Neg (void) {
 	}
 
 inline const float CFloatVector3::SqrMag (void) const {
-	return v [X]*v [X] + v [Y]*v [Y] + v [Z]*v [Z];
+	return v [X] * v [X] + v [Y] * v [Y] + v [Z] * v [Z];
 }
 
 inline const float CFloatVector3::Mag (void) const {
@@ -669,11 +669,11 @@ inline const float operator* (const CFloatVector3& v0, const CFloatVector3& v1) 
 }
 
 inline const CFloatVector3 operator* (const CFloatVector3& v, float s) {
-	return CFloatVector3::Create (v [X]*s, v [Y]*s, v [Z]*s);
+	return CFloatVector3::Create (v [X] * s, v [Y] * s, v [Z] * s);
 }
 
 inline const CFloatVector3 operator* (float s, const CFloatVector3& v) {
-	return CFloatVector3::Create (v [X]*s, v [Y]*s, v [Z]*s);
+	return CFloatVector3::Create (v [X] * s, v [Y] * s, v [Z] * s);
 }
 
 inline const CFloatVector3 operator/ (const CFloatVector3& v, float s) {

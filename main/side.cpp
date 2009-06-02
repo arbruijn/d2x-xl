@@ -46,10 +46,10 @@ return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace];
 //	The center point is defined to be the average of the 4 points defining the CSide.
 void CSide::ComputeCenter (void)
 {
-m_vCenter = gameData.segs.vertices [m_vertices [0]];
-m_vCenter += gameData.segs.vertices [m_vertices [1]];
-m_vCenter += gameData.segs.vertices [m_vertices [2]];
-m_vCenter += gameData.segs.vertices [m_vertices [3]];
+m_vCenter = VERTICES [m_vertices [0]];
+m_vCenter += VERTICES [m_vertices [1]];
+m_vCenter += VERTICES [m_vertices [2]];
+m_vCenter += VERTICES [m_vertices [3]];
 m_vCenter [X] /= 4;
 m_vCenter [Y] /= 4;
 m_vCenter [Z] /= 4;
@@ -65,11 +65,11 @@ void CSide::ComputeRads (void)
 m_rads [0] = 0x7fffffff;
 m_rads [1] = 0;
 for (int i = 0; i < 4; i++) {
-	v = CFixVector::Avg (gameData.segs.vertices [m_vertices [i]], gameData.segs.vertices [m_vertices [(i + 1) % 4]]);
+	v = CFixVector::Avg (VERTICES [m_vertices [i]], VERTICES [m_vertices [(i + 1) % 4]]);
 	d = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [0] > d)
 		m_rads [0] = d;
-	d = CFixVector::Dist (m_vCenter, gameData.segs.vertices [m_vertices [i]]);
+	d = CFixVector::Dist (m_vCenter, VERTICES [m_vertices [i]]);
 	if (m_rads [1] < d)
 		m_rads [1] = d;
 	}
@@ -181,11 +181,13 @@ else if (m_nType == SIDE_IS_TRI_13) {
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsQuad (CFixVector& vNormal, short* verts, int* index)
+void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, short* verts, int* index)
 {
 m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
 m_normals [1] = vNormal;
+m_fNormals [0] = 
+m_fNormals [1] = vNormalf;
 SetupVertexList (verts, index);
 }
 
@@ -193,9 +195,9 @@ SetupVertexList (verts, index);
 
 void CSide::SetupAsTriangles (bool bSolid, short* verts, int* index)
 {
-	CFixVector	vNormal;
-	fix			dot;
-	CFixVector	vec_13;		//	vector from vertex 1 to vertex 3
+	CFixVector		vNormal;
+	fix				dot;
+	CFixVector		vec_13;		//	vector from vertex 1 to vertex 3
 
 	//	Choose how to triangulate.
 	//	If a wall, then
@@ -203,10 +205,8 @@ void CSide::SetupAsTriangles (bool bSolid, short* verts, int* index)
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on side, a is face formed by A, B, C, Na is Normal from face a.
 	//	If not a wall, then triangulate so whatever is on the other CSide is triangulated the same (ie, between the same absolute vertices)
 if (bSolid) {
-	vNormal = CFixVector::Normal (gameData.segs.vertices [m_corners [0]],
-	                              gameData.segs.vertices [m_corners [1]],
-	                              gameData.segs.vertices [m_corners [2]]);
-	vec_13 = gameData.segs.vertices [m_corners [3]] - gameData.segs.vertices [m_corners [1]];
+	vNormal = CFixVector::Normal (VERTICES [m_corners [0]], VERTICES [m_corners [1]], VERTICES [m_corners [2]]);
+	vec_13 = VERTICES [m_corners [3]] - VERTICES [m_corners [1]];
 	dot = CFixVector::Dot (vNormal, vec_13);
 
 	//	Now, signify whether to triangulate from 0:2 or 1:3
@@ -215,22 +215,20 @@ if (bSolid) {
 	if (m_nType == SIDE_IS_TRI_02) {
 #if 0
 		VmVecNormalChecked (&vNormal, 
-								  gameData.segs.vertices + m_corners [0], 
-								  gameData.segs.vertices + m_corners [1], 
-								  gameData.segs.vertices + m_corners [2]);
+								  VERTICES + m_corners [0], 
+								  VERTICES + m_corners [1], 
+								  VERTICES + m_corners [2]);
 #endif
 		m_normals [0] = vNormal;
-		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [m_corners [0]], 
-														gameData.segs.vertices [m_corners [2]], 
-														gameData.segs.vertices [m_corners [3]]);
+		m_normals [1] = CFixVector::Normal (VERTICES [m_corners [0]], VERTICES [m_corners [2]], VERTICES [m_corners [3]]);
+		m_fNormals [0] = CFloatVector::Normal (FVERTICES [m_corners [0]], FVERTICES [m_corners [1]], FVERTICES [m_corners [2]]);
+		m_fNormals [1] = CFloatVector::Normal (FVERTICES [m_corners [0]], FVERTICES [m_corners [2]], FVERTICES [m_corners [3]]);
 		}
 	else {
-		m_normals [0] = CFixVector::Normal (gameData.segs.vertices [m_corners [0]], 
-														gameData.segs.vertices [m_corners [1]], 
-														gameData.segs.vertices [m_corners [3]]);
-		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [m_corners [1]], 
-														gameData.segs.vertices [m_corners [2]], 
-														gameData.segs.vertices [m_corners [3]]);
+		m_normals [0] = CFixVector::Normal (VERTICES [m_corners [0]], VERTICES [m_corners [1]], VERTICES [m_corners [3]]);
+		m_normals [1] = CFixVector::Normal (VERTICES [m_corners [1]], VERTICES [m_corners [2]], VERTICES [m_corners [3]]);
+		m_fNormals [0] = CFloatVector::Normal (FVERTICES [m_corners [0]], FVERTICES [m_corners [1]], FVERTICES [m_corners [3]]);
+		m_fNormals [1] = CFloatVector::Normal (FVERTICES [m_corners [1]], FVERTICES [m_corners [2]], FVERTICES [m_corners [3]]);
 		}
 	}
 else {
@@ -242,15 +240,15 @@ else {
 		m_nType = SIDE_IS_TRI_02;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 32767, vSorted);
-		m_normals [0] = CFixVector::Normal (gameData.segs.vertices [vSorted [0]], 
-														gameData.segs.vertices [vSorted [1]], 
-														gameData.segs.vertices [vSorted [2]]);
+		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], 
+														VERTICES [vSorted [1]], 
+														VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
-		m_normals [1] = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
-														gameData.segs.vertices [vSorted [1]],
-														gameData.segs.vertices [vSorted [2]]);
+		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]],
+														VERTICES [vSorted [1]],
+														VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
 		GetVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 32767, vSorted);
@@ -259,16 +257,16 @@ else {
 		m_nType = SIDE_IS_TRI_13;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 32767, vSorted);
-		m_normals [0] = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
-														gameData.segs.vertices [vSorted [1]],
-														gameData.segs.vertices [vSorted [2]]);
+		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]],
+														VERTICES [vSorted [1]],
+														VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [0].Neg ();
 		bFlip = GetVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 32767, vSorted);
 		m_normals [1] = CFixVector::Normal (
-						 gameData.segs.vertices [vSorted [0]],
-						 gameData.segs.vertices [vSorted [1]],
-						 gameData.segs.vertices [vSorted [2]]);
+						 VERTICES [vSorted [0]],
+						 VERTICES [vSorted [1]],
+						 VERTICES [vSorted [2]]);
 		if (bFlip)
 			m_normals [1].Neg ();
 		}
@@ -291,30 +289,32 @@ return 0;
 
 void CSide::Setup (short* verts, int* index, bool bSolid)
 {
-	short			vSorted [4], bFlip;
-	int			i;
-	CFixVector	vNormal;
-	fix			xDistToPlane;
+	short				vSorted [4], bFlip;
+	int				i;
+	CFixVector		vNormal;
+	CFloatVector	vNormalf;
+	fix				xDistToPlane;
 
 SetupCorners (verts, index);
 bFlip = GetVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
-vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]], gameData.segs.vertices [vSorted [1]], gameData.segs.vertices [vSorted [2]]);
-xDistToPlane = abs (gameData.segs.vertices [vSorted [3]].DistToPlane (vNormal, gameData.segs.vertices [vSorted [0]]));
+vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
+vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
+xDistToPlane = abs (VERTICES [vSorted [3]].DistToPlane (vNormal, VERTICES [vSorted [0]]));
 if (bFlip)
 	vNormal.Neg ();
 if (xDistToPlane <= PLANE_DIST_TOLERANCE)
-	SetupAsQuad (vNormal, verts, index);
+	SetupAsQuad (vNormal, vNormalf, verts, index);
 else {
 	SetupAsTriangles (bSolid, verts, index);
 	//this code checks to see if we really should be triangulated, and
 	//de-triangulates if we shouldn't be.
 	Assert (m_nFaces == 2);
-	fix dist0 = gameData.segs.vertices [m_vertices [1]].DistToPlane (m_normals [1], gameData.segs.vertices [m_nMinVertex [0]]);
-	fix dist1 = gameData.segs.vertices [m_vertices [4]].DistToPlane (m_normals [0], gameData.segs.vertices [m_nMinVertex [0]]);
+	fix dist0 = VERTICES [m_vertices [1]].DistToPlane (m_normals [1], VERTICES [m_nMinVertex [0]]);
+	fix dist1 = VERTICES [m_vertices [4]].DistToPlane (m_normals [0], VERTICES [m_nMinVertex [0]]);
 	int s0 = sign (dist0);
 	int s1 = sign (dist1);
 	if (s0 == 0 || s1 == 0 || s0 != s1)
-		SetupAsQuad (vNormal, verts, index);
+		SetupAsQuad (vNormal, vNormalf, verts, index);
 	}
 if (m_nType == SIDE_IS_QUAD) {
 	AddToVertexNormal (m_vertices [0], vNormal);
@@ -334,7 +334,7 @@ else {
 
 CFixVector& CSide::Vertex (int nVertex)
 {
-return gameStates.render.bRendering ? gameData.segs.points [nVertex].p3_vec : gameData.segs.vertices [nVertex];
+return gameStates.render.bRendering ? gameData.segs.points [nVertex].p3_vec : VERTICES [nVertex];
 }
 
 // -------------------------------------------------------------------------------
@@ -505,8 +505,8 @@ for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 		v1 = &gameData.segs.points [m_vertices [h + ((nEdge + 1) % nVerts)]].p3_vec;
 		}
 	else {
-		v0 = gameData.segs.vertices + m_vertices [h + nEdge];
-		v1 = gameData.segs.vertices + m_vertices [h + ((nEdge + 1) % nVerts)];
+		v0 = VERTICES + m_vertices [h + nEdge];
+		v1 = VERTICES + m_vertices [h + ((nEdge + 1) % nVerts)];
 		}
 	vEdge.i = (*v1) [i] - (*v0) [i];
 	vEdge.j = (*v1) [j] - (*v0) [j];
@@ -545,8 +545,8 @@ if (gameStates.render.bRendering) {
 	v1 = &gameData.segs.points [m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)]].p3_vec;
 	}
 else {
-	v0 = gameData.segs.vertices + m_vertices [iFace * 3 + nEdge];
-	v1 = gameData.segs.vertices + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
+	v0 = VERTICES + m_vertices [iFace * 3 + nEdge];
+	v1 = VERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
 	}
 //check if we are touching an edge or refP
 vCheck = intersection - *v0;
@@ -618,7 +618,7 @@ if (m_nFaces == 1) {
 pli = FindPlaneLineIntersection (intersection,
 											gameStates.render.bRendering 
 											? &gameData.segs.points [nVertex].p3_vec 
-											: gameData.segs.vertices + nVertex,
+											: VERTICES + nVertex,
 											&vNormal, p0, p1, rad);
 //PrintLog ("done\n");
 if (!pli)
@@ -633,10 +633,10 @@ if (bCheckRad) {
 	int			i, d;
 	CFixVector	*a, *b;
 
-	b = gameData.segs.vertices + m_vertices [0];
+	b = VERTICES + m_vertices [0];
 	for (i = 1; i <= 4; i++) {
 		a = b;
-		b = gameData.segs.vertices + m_vertices [i % 4];
+		b = VERTICES + m_vertices [i % 4];
 		d = VmLinePointDist (*a, *b, *p0);
 		if (d < bCheckRad)
 			return IT_POINT;
@@ -670,8 +670,8 @@ if (!(nEdgeMask = CheckPointToFace (*p0, iFace, vNormal))) {
 for (nEdge = 0; !(nEdgeMask & 1); nEdgeMask >>= 1, nEdge++)
 	;
 nVerts = 5 - m_nFaces;
-edge_v0 = gameData.segs.vertices + m_vertices [iFace * 3 + nEdge];
-edge_v1 = gameData.segs.vertices + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
+edge_v0 = VERTICES + m_vertices [iFace * 3 + nEdge];
+edge_v1 = VERTICES + m_vertices [iFace * 3 + ((nEdge + 1) % nVerts)];
 vEdge = *edge_v1 - *edge_v0;
 //is the start refP already touching the edge?
 //first, find refP of closest approach of vec & edge
@@ -737,16 +737,16 @@ jj = (biggest == 2) ? 1 : 2;
 //2. compute u, v of intersection refP
 //vec from 1 -> 0
 h = iFace * 3;
-vPoints = gameData.segs.vertices + m_vertices [h+1];
+vPoints = VERTICES + m_vertices [h+1];
 p1.i = (*vPoints) [ii];
 p1.j = (*vPoints) [jj];
 
-vPoints = gameData.segs.vertices + m_vertices [h];
+vPoints = VERTICES + m_vertices [h];
 vec0.i = (*vPoints) [ii] - p1.i;
 vec0.j = (*vPoints) [jj] - p1.j;
 
 //vec from 1 -> 2
-vPoints = gameData.segs.vertices + m_vertices [h+2];
+vPoints = VERTICES + m_vertices [h+2];
 vec1.i = (*vPoints) [ii] - p1.i;
 vec1.j = (*vPoints) [jj] - p1.j;
 
@@ -787,7 +787,7 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 CFixVector* CSide::GetCorners (CFixVector* vertices) 
 { 
 for (int i = 0; i < 4; i++)
-	vertices [i] = gameData.segs.vertices [m_corners [i]];
+	vertices [i] = VERTICES [m_corners [i]];
 return vertices;
 }
 

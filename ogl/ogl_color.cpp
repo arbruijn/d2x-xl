@@ -414,11 +414,13 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
 
+lightPos = *prl->render.vPosf [bTransform].XYZ ();
+lightDir = lightPos - *vcd.vertPosP;
 #if USE_FACE_DIST
 if ((nVertex < 0) && (nType < 2)) {
 	bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
-	lightDir = lightPos - *vcd.vertPosP;
-	fLightDist = lightDir.Mag ();
+	fLightDist = CFloatVector3::Dist (lightPos, *vcd.vertPosP);
+	//fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
 	if (fabs (fLightDist) < 0.1f)
 		fLightDist = 0.0f;
 	else {
@@ -429,8 +431,6 @@ if ((nVertex < 0) && (nType < 2)) {
 else 
 #endif
 	{
-	lightPos = *prl->render.vPosf [bTransform].XYZ ();
-	lightDir = lightPos - *vcd.vertPosP;
 	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
 	bInRad = false;
 	}
@@ -445,7 +445,7 @@ else
 		NdotL = 1.0f;
 	else {
 		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
-		if (fabs (NdotL) < 0.001f)
+		if ((NdotL < 0.0f) && (NdotL > -0.01f))
 			NdotL = 0.0f;
 		}
 	nMinDot = -0.1f;
@@ -503,16 +503,19 @@ else
 		fAttenuation = 1.0f / prl->info.fBrightness;
 		}
 	else {	//make it decay faster
-#if BRIGHT_SHOTS
-		if (nType == 2)
-			fAttenuation = (1.0f + OBJ_LIN_ATT * fLightDist + OBJ_QUAD_ATT * fLightDist * fLightDist);
+#if USE_FACE_DIST
+		if ((nType < 2) && (nVertex < 0)) {
+			fLightDist *= 0.75f;
+			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
+			}
 		else
 #endif
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-#if 0
-		NdotL = 1 - ((1 - NdotL) * 0.9f);
-#endif
+#if USE_FACE_DIST
+		if ((nType < 2) && (NdotL >= nMinDot) && (prl->info.fRad > 0.0f))
+#else
 		if ((nVertex > -1) && (NdotL >= nMinDot) && (prl->info.fRad > 0.0f))
+#endif
 			NdotL += (1.0f - NdotL) / (0.5f + fAttenuation / 2.0f);
 		fAttenuation /= prl->info.fBrightness;
 		}
@@ -538,8 +541,10 @@ else
 		}
 	else {
 		vertColor = *gameData.render.vertColor.matAmbient.XYZ ();
-		if (NdotL >= 0.0f)
+		if (NdotL > 0.1f)
 			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
+		else if (NdotL >= 0.0f)
+			vertColor += (*gameData.render.vertColor.matDiffuse.XYZ () * 0.1f);
 		else
 			NdotL = 0.0f;
 		}
