@@ -505,7 +505,7 @@ else
 	else {	//make it decay faster
 #if USE_FACE_DIST
 		if ((nType < 2) && (nVertex < 0)) {
-			fLightDist *= 0.75f;
+			fLightDist /= 1.5f;
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
 			}
 		else
