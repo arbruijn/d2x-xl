@@ -298,21 +298,30 @@ int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector *vPlanePoi
 										   CFixVector *p0, CFixVector *p1, fix rad)
 {
 	CFixVector	d, w;
-	fix			num, den;
+	double		num, den;
 
 w = *vPlanePoint - *p0;
 d = *p1 - *p0;
-num = CFixVector::Dot (*vPlaneNorm, w) /*- rad*/;
-den = CFixVector::Dot (*vPlaneNorm, d);
-if (!den)
+num = double (CFixVector::Dot (*vPlaneNorm, w) - rad) / 65536.0;
+den = double (CFixVector::Dot (*vPlaneNorm, d)) / 65536.0;
+if (fabs (den) < 1e-10)
 	return 0;
-if (labs (num) > labs (den))
+if (fabs (num) > fabs (den))
 	return 0;
+#if 0
 //do check for potential overflow
 if (labs (num) / (I2X (1) / 2) >= labs (den))
-	return 0;
+return 0;
+#endif
+#if 0
 d *= FixDiv (num, den);
 intersection = (*p0) + d;
+#else
+num /= den;
+intersection [0] = fix (double ((*p0) [0]) + double (d [0]) * num);
+intersection [1] = fix (double ((*p0) [1]) + double (d [1]) * num);
+intersection [2] = fix (double ((*p0) [2]) + double (d [2]) * num);
+#endif
 return 1;
 }
 
@@ -349,7 +358,7 @@ if (rad < dist)
 	return 0x7fffffff;
 intersection = vHit;
 #if DBG
-fix d = VmLinePointDist (*p0, *p1, vHit);
+fix d = vHit.DistToPlane (*planeNormP, *planeP);
 #endif
 return dist;
 }
@@ -721,7 +730,6 @@ return nHits ? dMin ? dMin : 1 : 0;
 
 fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vRef, CObject *objP, fix rad)
 {
-	CFixVector		vHit;
 	int				iModel, nModels;
 	fix				xDist = 0x7fffffff;
 	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
@@ -737,15 +745,15 @@ else {
 	}
 if (!vRef)
 	vRef = &objP->info.position.vPos;
-vHit.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
+intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
 TransformHitboxes (objP, vRef, hb);
 for (; iModel <= nModels; iModel++) {
 #if 1	
-	if (FindLineHitboxIntersection (vHit, hb + iModel, p0, p1, p0, rad))
+	if (FindLineHitboxIntersection (intersection, hb + iModel, p0, p1, p0, rad))
 		xDist = 1;
 #else
 	tQuad				*pf;
-	CFixVector		v;
+	CFixVector		vHit, v;
 	fix				h, d;
 
 	for (int i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
@@ -763,7 +771,7 @@ for (; iModel <= nModels; iModel++) {
 #endif
 	}
 #if DBG
-fix d = VmLinePointDist (*p0, *p1, vHit);
+fix d = VmLinePointDist (*p0, *p1, intersection);
 #endif
 return xDist;
 }
@@ -841,11 +849,8 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		if (bThisPoly) {
 			// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 			// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
-			vn = *p1-*p0;
-			CFixVector::Normalize (vn);
-			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, NULL, NULL, thisObjP, otherObjP->info.xSize)))
 				return 0;
-			//VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 			}
 		else {
 			// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere
@@ -856,7 +861,6 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			v1 = v0 + vn * thisObjP->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
-			//VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 			}
 		}
 	}
@@ -869,7 +873,7 @@ else {
 		return 0;
 	}
 intersection = vHit;
-#if DBG
+#if 0 //DBG
 CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, vHit, 1, 1);
 #endif
 if (!bCheckVisibility) {

@@ -1476,10 +1476,11 @@ CFixVector::Normalize (vHit);
 vHit *= info.xSize;
 for (int i = 0; i < 3; i++)
 #if 1
+#	if 0
 	if (CFixVector::Dot (m_hitInfo.v [i], vHit) > I2X (1) - I2X (1) / 32) {
-#else
+#	else
 	if (CFixVector::Dist (m_hitInfo.v [i], vHit) < I2X (1) / 32) {
-#endif
+#	endif
 		vHit = CFixVector::Avg (m_hitInfo.v [i], vHit);
 		CFixVector::Normalize (vHit);
 		vHit *= info.xSize;
@@ -1487,6 +1488,7 @@ for (int i = 0; i < 3; i++)
 		m_hitInfo.t [i] = gameStates.app.nSDLTicks;
 		return;
 		}
+#endif
 m_hitInfo.v [m_hitInfo.i] = vHit;
 m_hitInfo.t [m_hitInfo.i] = gameStates.app.nSDLTicks;
 m_hitInfo.i = (m_hitInfo.i + 1) % 3;
