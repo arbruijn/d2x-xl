@@ -333,8 +333,10 @@ int FindLineQuadIntersection (CFixVector& intersection, CFixVector *planeP, CFix
 	CFixVector	vHit;
 	fix			dist;
 
+#if 1
 if (CFixVector::Dot (*p1 - *p0, *planeNormP) >= 0)
 	return 0x7fffffff;
+#endif
 if (!FindLineQuadIntersectionSub (vHit, planeP, planeNormP, p0, p1, 0))
 	return 0x7fffffff;
 if (!rad && (CFixVector::Dot (vHit - *p0, vHit - *p1) > 0))

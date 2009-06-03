@@ -1657,7 +1657,7 @@ gameOptions [0].render.coronas.bWeapons = 0;
 gameOptions [0].render.coronas.bAdditive = 1;
 gameOptions [0].render.coronas.bAdditiveObjs = 1;
 #if 1
-gameOptions [0].render.coronas.nIntensity = 1;
+gameOptions [0].render.coronas.nIntensity = 0;
 #else
 if (gameOptions [0].render.coronas.nStyle == 2) 
 	gameOptions [0].render.coronas.nIntensity = 1;

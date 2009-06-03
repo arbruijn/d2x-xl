@@ -29,7 +29,7 @@
 #	define SHADER_SOFT_CORONAS 1
 #endif
 
-float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
+float coronaIntensities [] = {0.333f, 0.5f, 0.75f, 1};
 
 GLhandleARB hGlareShader = 0;
 GLhandleARB hGlareVS = 0;

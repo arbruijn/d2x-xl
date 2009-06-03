@@ -31,7 +31,7 @@
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
 #if DBG
-#	define USE_FACE_DIST		1
+#	define USE_FACE_DIST		0
 #else
 #	define USE_FACE_DIST		1
 #endif
@@ -414,40 +414,46 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
 
-lightPos = *prl->render.vPosf [bTransform].XYZ ();
-lightDir = lightPos - *vcd.vertPosP;
-#if USE_FACE_DIST
-if ((nVertex < 0) && (nType < 2)) {
-	bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
-	fLightDist = CFloatVector3::Dist (lightPos, *vcd.vertPosP);
-	//fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
-	if (fabs (fLightDist) < 0.1f)
-		fLightDist = 0.0f;
-	else {
-		fLightDist *= gameStates.ogl.fLightRange;
-		bInRad = false;
-		}
-	}
-else 
-#endif
-	{
-	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
 	bInRad = false;
-	}
-
+	lightPos = *prl->render.vPosf [bTransform].XYZ ();
+	lightDir = lightPos - *vcd.vertPosP;
+	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
 	if (lightDir.IsZero ())
 		lightDir = vcd.vertNorm;
 	else
 		CFloatVector3::Normalize (lightDir);
-	if (bInRad)
-		NdotL = 1.0f;
-	else if (vcd.vertNorm.IsZero ())
+	if (vcd.vertNorm.IsZero ())
 		NdotL = 1.0f;
 	else {
 		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
 		if ((NdotL < 0.0f) && (NdotL > -0.01f))
 			NdotL = 0.0f;
 		}
+
+#if USE_FACE_DIST
+	if ((nVertex < 0) && (nType < 2)) {
+		bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
+	#if 1
+		CFloatVector dir = lightPos - *vcd.vertPosP;
+		fLightDist = dir.Mag () * gameStates.ogl.fLightRange;
+		float dot = bInRad ? 1.0f : CFloatVector3::Dot (vcd.vertNorm, dir);
+		if (NdotL <= dot) {
+			NdotL = dot;
+			lightDir = dir;
+			}
+	#else
+		fLightDist = CFloatVector3::Dist (lightPos, *vcd.vertPosP);
+	#endif
+		if (fabs (fLightDist) < 0.1f)
+			fLightDist = 0.0f;
+		else {
+			fLightDist *= gameStates.ogl.fLightRange;
+			bInRad = false;
+			}
+		}
+	else 
+#endif
+
 	nMinDot = -0.1f;
 	if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT == 2
@@ -455,10 +461,8 @@ else
 			fLightDist = 0;
 		else
 #endif
-		if (nType > 1) 
-			fLightDist -= prl->info.fRad * gameStates.ogl.fLightRange; //make light brighter close to light source
 #if USE_FACE_DIST
-		else if (nVertex < 0) {
+		if (nVertex < 0) {
 			if (NdotL < 0.0f) {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
@@ -472,12 +476,13 @@ else
 					}
 				}
 			}
+else 
 #endif
-		else {
+			{
 			float dot = CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ());
 			float lightRad = prl->info.fRad;
 			if (NdotL >= 0.0f) 
-				lightRad *= 1.0f - 0.9f * float (sqrt (fabs (dot)));
+				lightRad *= 1.0f - 0.9f * float (sqrt (fabs (dot)));	// make rad smaller the greater the angle 
 			else {
 				// lights with angles < -15 deg towards this vertex have already been excluded
 				// now dim the light if it's falling "backward" using the angle as a scale
@@ -505,13 +510,13 @@ else
 	else {	//make it decay faster
 #if USE_FACE_DIST
 		if ((nType < 2) && (nVertex < 0)) {
-			fLightDist /= 1.5f;
+			//fLightDist /= 1.5f;
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
 			}
 		else
 #endif
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-#if 0 //USE_FACE_DIST
+#if USE_FACE_DIST
 		if ((nType < 2) && (NdotL >= nMinDot) && (prl->info.fRad > 0.0f))
 #else
 		if ((nVertex > -1) && (NdotL >= nMinDot) && (prl->info.fRad > 0.0f))
