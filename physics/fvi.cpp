@@ -335,7 +335,7 @@ int FindLineQuadIntersection (CFixVector& intersection, CFixVector *planeP, CFix
 
 #if 1
 if (CFixVector::Dot (*p1 - *p0, *planeNormP) > 0)
-	return 0x7fffffff;
+	return 0x7fffffff;	// hit back of face
 #endif
 if (!FindLineQuadIntersectionSub (vHit, planeP, planeNormP, p0, p1, 0))
 	return 0x7fffffff;
@@ -399,11 +399,7 @@ int FindLineHitboxIntersection (CFixVector& intersection, tBox *phb, CFixVector 
 
 // create all faces of hitbox 2 and their normals before testing because they will
 // be used multiple times
-#if DBG
-for (i = 0, pf = phb->faces; i < 1; i++, pf++) {
-#else
 for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
-#endif
 	dist = FindLineQuadIntersection (vHit, pf->v, pf->n + 1, p0, p1, rad);
 	if (dist < 0x7fffffff) {
 		dMin = RegisterHit (&intersection, &vHit, vRef, dMin);

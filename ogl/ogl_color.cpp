@@ -31,7 +31,7 @@
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
 #if DBG
-#	define USE_FACE_DIST		0
+#	define USE_FACE_DIST		1
 #else
 #	define USE_FACE_DIST		1
 #endif
@@ -434,7 +434,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if ((nVertex < 0) && (nType < 2)) {
 		bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 	#if 1
-		CFloatVector dir = lightPos - *vcd.vertPosP;
+		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * gameStates.ogl.fLightRange;
 		float dot = bInRad ? 1.0f : CFloatVector3::Dot (vcd.vertNorm, dir);
 		if (NdotL <= dot) {
