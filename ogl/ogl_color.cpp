@@ -31,7 +31,7 @@
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
 #if DBG
-#	define USE_FACE_DIST		1
+#	define USE_FACE_DIST		0
 #else
 #	define USE_FACE_DIST		1
 #endif
@@ -437,6 +437,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	#if 1
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * gameStates.ogl.fLightRange;
+		CFloatVector3::Normalize (dir);
 		float dot = bInRad ? 1.0f : CFloatVector3::Dot (vcd.vertNorm, dir);
 		if (NdotL <= dot) {
 			NdotL = dot;
@@ -507,11 +508,11 @@ else
 		fAttenuation = 1.0f / prl->info.fBrightness;
 		}
 	else {	//make it decay faster
+		//if ((nType < 2) && (nVertex < 0))
+			fLightDist /= 1.25f;
 #if USE_FACE_DIST
-		if ((nType < 2) && (nVertex < 0)) {
-			//fLightDist /= 1.5f;
+		if ((nType < 2) && (nVertex < 0))
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-			}
 		else
 #endif
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
