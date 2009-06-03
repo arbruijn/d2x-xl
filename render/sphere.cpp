@@ -501,7 +501,7 @@ return bTextured;
 
 #if RINGED_SPHERE
 
-#define UV_SCALE	4.0f
+#define UV_SCALE	3.0f
 
 int CSphere::Create (int nRings, int nTiles)
 {
