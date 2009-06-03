@@ -33,7 +33,7 @@ void RenderTracers (CObject *objP);
 void RenderLightTrail (CObject *objP);
 void DrawDebrisCorona (CObject *objP);
 
-#define SHIELD_EFFECT_TIME		1750
+#define SHIELD_EFFECT_TIME		2000
 
 #endif //_OBJEFFECTS_H
 //eof

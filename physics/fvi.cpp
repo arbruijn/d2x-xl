@@ -357,9 +357,6 @@ dist = DistToQuad (vHit, planeP, *planeNormP);
 if (rad < dist)
 	return 0x7fffffff;
 intersection = vHit;
-#if DBG
-fix d = vHit.DistToPlane (*planeNormP, *planeP);
-#endif
 return dist;
 }
 
@@ -770,9 +767,6 @@ for (; iModel <= nModels; iModel++) {
 		}
 #endif
 	}
-#if DBG
-fix d = VmLinePointDist (*p0, *p1, intersection);
-#endif
 return xDist;
 }
 
