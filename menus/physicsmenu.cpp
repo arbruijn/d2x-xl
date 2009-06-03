@@ -277,7 +277,11 @@ do {
 		} while (i >= 0);
 	} while (i == -2);
 
+#if 0 //DBG
+extraGameInfo [0].nHitboxes = extraGameInfo [0].bUseHitAngles;
+#else
 extraGameInfo [0].nHitboxes = extraGameInfo [0].bUseHitAngles << 1;
+#endif
 extraGameInfo [0].nDrag = nDragTable [nDrag];
 if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if (optWiggle >= 0)

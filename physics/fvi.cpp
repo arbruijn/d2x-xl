@@ -140,10 +140,23 @@ return minDist;
 }
 
 //	-----------------------------------------------------------------------------
+
+inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix dMin)
+{
+   fix d = CFixVector::Dist (*vRef, *vCurHit);
+
+if (dMin > d) {
+	dMin = d;
+	*vBestHit = *vCurHit;
+	}
+return dMin;
+}
+
+//	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
 bool PointIsInQuad (CFixVector vRef, CFixVector* vertP, CFixVector vNormal)
 {
-	CFixVector	t, *v0, *v1;
+	CFixVector	t, v0, v1;
 	int 			i, j, iEdge, biggest;
 	fix			check_i, check_j;
 	vec2d 		vEdge, vCheck;
@@ -176,14 +189,14 @@ else {
 //now do the 2d problem in the i, j plane
 check_i = vRef [i];
 check_j = vRef [j];
-for (iEdge = 0; iEdge < 4; iEdge++) {
-	v0 = vertP + iEdge;
-	v1 = vertP + ((iEdge + 1) % 4);
-	vEdge.i = (*v1) [i] - (*v0) [i];
-	vEdge.j = (*v1) [j] - (*v0) [j];
-	vCheck.i = check_i - (*v0) [i];
-	vCheck.j = check_j - (*v0) [j];
-	if (vCheck.i * vEdge.j - vCheck.j * vEdge.i < 0)
+for (iEdge = 0; iEdge < 4; iEdge) {
+	v0 = vertP [iEdge++];
+	v1 = vertP [iEdge % 4];
+	vEdge.i = v1 [i] - v0 [i];
+	vEdge.j = v1 [j] - v0 [j];
+	vCheck.i = check_i - v0 [i];
+	vCheck.j = check_j - v0 [j];
+	if (FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i) < 0)
 		return false;
 	}
 return true;
@@ -207,19 +220,6 @@ for (int i = 0; i < 4; i++) {
 		minDist = dist;
 	}
 return minDist;
-}
-
-//	-----------------------------------------------------------------------------
-
-inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix dMin)
-{
-   fix d = CFixVector::Dist (*vRef, *vCurHit);
-
-if (dMin > d) {
-	dMin = d;
-	*vBestHit = *vCurHit;
-	}
-return dMin;
 }
 
 //	-----------------------------------------------------------------------------
@@ -279,7 +279,7 @@ else {
 //do check for potential overflow
 if (labs (num) / (I2X (1) / 2) >= labs (den))
 	return 0;
-d *= FixDiv(num, den);
+d *= FixDiv (num, den);
 intersection = (*p0) + d;
 return 1;
 }
@@ -299,7 +299,7 @@ int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector *vPlanePoi
 
 w = *vPlanePoint - *p0;
 d = *p1 - *p0;
-num = CFixVector::Dot (*vPlaneNorm, w);
+num = CFixVector::Dot (*vPlaneNorm, w) - rad;
 den = CFixVector::Dot (*vPlaneNorm, d);
 if (!den)
 	return 0;
@@ -333,34 +333,13 @@ int FindLineQuadIntersection (CFixVector& intersection, CFixVector *planeP, CFix
 	CFixVector	vHit;
 	fix			dist;
 
-dist = CFixVector::Dist (*p0, *p1);
 if (CFixVector::Dot (*p1 - *p0, *planeNormP) >= 0)
 	return 0x7fffffff;
-#if 0
-if (CFixVector::Dot (*p0 - *planeP, *p1 - *planeP) > 0)
-	return 0x7fffffff;
-#endif
 if (!FindLineQuadIntersectionSub (vHit, planeP, planeNormP, p0, p1, 0))
 	return 0x7fffffff;
-fix dist1 = CFixVector::Dist (*p0, planeP [0]);
-fix dist2 = CFixVector::Dist (*p0, planeP [1]);
-fix dist3 = CFixVector::Dist (*p0, planeP [2]);
-fix dist4 = CFixVector::Dist (*p0, planeP [3]);
-fix dist5 = CFixVector::Dist (*p1, planeP [0]);
-fix dist6 = CFixVector::Dist (*p1, planeP [1]);
-fix dist7 = CFixVector::Dist (*p1, planeP [2]);
-fix dist8 = CFixVector::Dist (*p1, planeP [3]);
-fix dist9 = CFixVector::Dist (vHit, planeP [0]);
-fix dist10 = CFixVector::Dist (vHit, planeP [1]);
-fix dist11 = CFixVector::Dist (vHit, planeP [2]);
-fix dist12 = CFixVector::Dist (vHit, planeP [3]);
-fix dist13 = CFixVector::Dist (vHit, *p0);
-fix dist14 = CFixVector::Dist (vHit, *p1);
 if (!rad && (CFixVector::Dot (vHit - *p0, vHit - *p1) > 0))
 	return 0x7fffffff;
 dist = DistToQuad (vHit, planeP, *planeNormP);
-CFixVector h = vHit - *planeP;
-dist = CFixVector::Dot (h, *planeNormP);
 if (rad >= dist)
 	intersection = vHit;
 else
@@ -751,8 +730,8 @@ if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	nModels = 0;
 	}
 else {
-	iModel = 2;
-	nModels = 2; //pmhb->nHitboxes;
+	iModel = 1;
+	nModels = pmhb->nHitboxes;
 	}
 if (!vRef)
 	vRef = &objP->info.position.vPos;
