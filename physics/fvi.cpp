@@ -334,7 +334,7 @@ int FindLineQuadIntersection (CFixVector& intersection, CFixVector *planeP, CFix
 	fix			dist;
 
 #if 1
-if (CFixVector::Dot (*p1 - *p0, *planeNormP) >= 0)
+if (CFixVector::Dot (*p1 - *p0, *planeNormP) > 0)
 	return 0x7fffffff;
 #endif
 if (!FindLineQuadIntersectionSub (vHit, planeP, planeNormP, p0, p1, 0))
@@ -817,7 +817,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
 #if 1 //!DBG
 	dist = VmLinePointDist (*p0, *p1, otherObjP->info.position.vPos);
-	if (dist > 11 * (thisObjP->info.xSize + otherObjP->info.xSize) / 10)
+	if (dist > 15 * (thisObjP->info.xSize + otherObjP->info.xSize) / 10)
 		return 0;
 #endif
 	// check hitbox collisions for all polygonal objects
