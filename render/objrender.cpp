@@ -828,7 +828,9 @@ gameData.models.vScale.SetZero ();
 if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
+#if !RENDER_HITBOX
 DrawPolygonObject (objP, bDepthSort, 0);
+#endif
 if (!gameStates.render.bQueryCoronas && objP->info.controlType) {
 	RenderThrusterFlames (objP);
 	if (gameStates.render.nShadowPass != 2) {

@@ -141,7 +141,10 @@ return minDist;
 
 //	-----------------------------------------------------------------------------
 
-inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix dMin)
+#if !DBG
+inline 
+#endif
+fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix dMin)
 {
    fix d = CFixVector::Dist (*vRef, *vCurHit);
 
@@ -299,7 +302,7 @@ int FindLineQuadIntersectionSub (CFixVector& intersection, CFixVector *vPlanePoi
 
 w = *vPlanePoint - *p0;
 d = *p1 - *p0;
-num = CFixVector::Dot (*vPlaneNorm, w) - rad;
+num = CFixVector::Dot (*vPlaneNorm, w) /*- rad*/;
 den = CFixVector::Dot (*vPlaneNorm, d);
 if (!den)
 	return 0;
@@ -342,10 +345,12 @@ if (!FindLineQuadIntersectionSub (vHit, planeP, planeNormP, p0, p1, 0))
 if (!rad && (CFixVector::Dot (vHit - *p0, vHit - *p1) > 0))
 	return 0x7fffffff;
 dist = DistToQuad (vHit, planeP, *planeNormP);
-if (rad >= dist)
-	intersection = vHit;
-else
+if (rad < dist)
 	return 0x7fffffff;
+intersection = vHit;
+#if DBG
+fix d = VmLinePointDist (*p0, *p1, vHit);
+#endif
 return dist;
 }
 
@@ -732,6 +737,7 @@ else {
 	}
 if (!vRef)
 	vRef = &objP->info.position.vPos;
+vHit.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
 TransformHitboxes (objP, vRef, hb);
 for (; iModel <= nModels; iModel++) {
 #if 1	
@@ -756,6 +762,9 @@ for (; iModel <= nModels; iModel++) {
 		}
 #endif
 	}
+#if DBG
+fix d = VmLinePointDist (*p0, *p1, vHit);
+#endif
 return xDist;
 }
 
@@ -836,7 +845,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			CFixVector::Normalize (vn);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, otherObjP->info.xSize)))
 				return 0;
-			VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
+			//VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 			}
 		else {
 			// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere
@@ -860,6 +869,9 @@ else {
 		return 0;
 	}
 intersection = vHit;
+#if DBG
+CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, vHit, 1, 1);
+#endif
 if (!bCheckVisibility) {
 	thisObjP->SetHitPoint (vHit);
 	otherObjP->SetHitPoint (vHit);

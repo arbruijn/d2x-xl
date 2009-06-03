@@ -1466,6 +1466,8 @@ return &viewP->mView;
 
 void CObject::SetHitPoint (CFixVector vHit)
 {
+if ((info.nType != OBJ_ROBOT) && (info.nType != OBJ_PLAYER) && (info.nType != OBJ_REACTOR))
+	return;
 #if DBG
 HUDMessage (0, "set hit point %d,%d,%d", vHit [0], vHit [1], vHit [2]);
 #endif

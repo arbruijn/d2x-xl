@@ -427,7 +427,7 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 	CBitmap*						bmP = NULL;
 	CAngleVector				va = pAnimAngles ? pAnimAngles [psm->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
-	int							h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
+	int							h, i, j, bTransparent, bAnimate, bTextured = gameOpts->render.debug.bTextures && !(gameStates.render.bCloaked /*|| nPass*/),
 									bGetThruster = !nPass && ObjectHasThruster (objP);
 	short							nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
@@ -531,11 +531,11 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		if (glDrawRangeElements)
 #endif
 			if (bUseVBO)
-				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 			else
-				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											pm->m_index [0] + nIndex);
 #ifdef _WIN32

@@ -329,6 +329,8 @@ void RenderRobotShield (CObject *objP)
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
+#endif
+#if 1
 	float			scale = 1;
 	tCloakInfo	ci;
 	fix			dt;
