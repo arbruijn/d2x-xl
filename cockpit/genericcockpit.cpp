@@ -1825,6 +1825,8 @@ if (gameStates.app.bPlayerIsDead)
 	return;
 if (gameStates.app.bEndLevelSequence >= EL_LOOKBACK)
 	return;
+if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor))
+	return;
 
 	CCanvas windowCanv, * cockpitCanv;
 	static CCanvas overlapCanv;
