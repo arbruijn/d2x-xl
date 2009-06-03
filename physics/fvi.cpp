@@ -847,7 +847,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			v1 = v0 + vn * thisObjP->info.xSize;
 			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
 				return 0;
-			VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
+			//VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 			}
 		}
 	}

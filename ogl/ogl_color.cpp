@@ -415,6 +415,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
 
 	bInRad = false;
+	nMinDot = -0.1f;
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
 	fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
@@ -453,8 +454,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else 
 #endif
-
-	nMinDot = -0.1f;
 	if (gameStates.render.nState || (nType < 2)) {
 #if CHECK_LIGHT_VERT == 2
 		if (IsLightVert (nVertex, prl))
