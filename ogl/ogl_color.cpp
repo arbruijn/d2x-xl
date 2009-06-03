@@ -446,7 +446,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	#else
 		fLightDist = CFloatVector3::Dist (lightPos, *vcd.vertPosP);
 	#endif
-		if (fabs (fLightDist) < 5.0f)
+		if (fabs (fLightDist) < 4.0f)
 			fLightDist = 0.0f;
 		else {
 			fLightDist *= gameStates.ogl.fLightRange;
@@ -509,7 +509,7 @@ else
 		}
 	else {	//make it decay faster
 		//if ((nType < 2) && (nVertex < 0))
-		fLightDist *= 0.9f;
+		//fLightDist *= 0.9f;
 #if USE_FACE_DIST
 		if ((nType < 2) && (nVertex < 0))
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
