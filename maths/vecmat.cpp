@@ -874,7 +874,9 @@ return CFloatVector3::Dist (va, vb);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& v3, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb) {
+const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& v3, 
+												const CFloatVector& v4, CFloatVector& va, CFloatVector& vb) 
+{
    CFloatVector	v13, v43, v21;
    float		d1343, d4321, d1321, d4343, d2121;
    float		num, den, mua, mub;

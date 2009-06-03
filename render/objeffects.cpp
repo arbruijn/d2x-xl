@@ -131,7 +131,7 @@ void RenderHitbox (CObject *objP, float red, float green, float blue, float alph
 if (objP->rType.polyObjInfo.nModel < 0)
 	return;
 
-	CFloatVector	vertList [8], v;
+	CFloatVector	v;
 	tHitbox*			pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes.Buffer ();
 	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
 	int				i, j, iBox, nBoxes, bHit = 0;

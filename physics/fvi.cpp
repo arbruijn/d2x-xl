@@ -718,10 +718,9 @@ return nHits ? dMin ? dMin : 1 : 0;
 
 fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vRef, CObject *objP, fix rad)
 {
-	tQuad				*pf;
-	CFixVector		vHit, v;
-	int				i, iModel, nModels;
-	fix				h, d, xDist = 0x7fffffff;
+	CFixVector		vHit;
+	int				iModel, nModels;
+	fix				xDist = 0x7fffffff;
 	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
 	tBox				hb [MAX_HITBOXES + 1];
 
@@ -741,7 +740,11 @@ for (; iModel <= nModels; iModel++) {
 	if (FindLineHitboxIntersection (vHit, hb + iModel, p0, p1, p0, rad))
 		xDist = 1;
 #else
-	for (i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
+	tQuad				*pf;
+	CFixVector		v;
+	fix				h, d;
+
+	for (int i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
 		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, 4, pf->n + 1);
 		if (h) {
 			v = vHit - *p0;
@@ -810,18 +813,9 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
-#if DBG
-	{
-	CFixVector v0 = *p1 - *p0;
-	CFixVector v1 = vPos - *p0;
-	CFixVector::Normalize (v0);
-	CFixVector::Normalize (v1);
-	dist = CFixVector::Dot (v0, v1);
-	}
-#endif
-#if !DBG
-	dist = CFixVector::Dist (vHit, vPos);
-	if (dist > 2 * (thisObjP->info.xSize + otherObjP->info.xSize))
+#if 1 //!DBG
+	dist = VmLinePointDist (*p0, *p1, otherObjP->info.position.vPos);
+	if (dist > 11 * (thisObjP->info.xSize + otherObjP->info.xSize) / 10)
 		return 0;
 #endif
 	// check hitbox collisions for all polygonal objects

@@ -511,7 +511,7 @@ else
 		else
 #endif
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
-#if USE_FACE_DIST
+#if 0 //USE_FACE_DIST
 		if ((nType < 2) && (NdotL >= nMinDot) && (prl->info.fRad > 0.0f))
 #else
 		if ((nVertex > -1) && (NdotL >= nMinDot) && (prl->info.fRad > 0.0f))
