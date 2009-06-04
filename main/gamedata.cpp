@@ -588,8 +588,8 @@ nSlideSegs = 0;
 
 bool CSegmentData::Create (int nSegments, int nVertices)
 {
-nSegments = nSegments;
-nVertices = nVertices;
+this->nSegments = nSegments;
+this->nVertices = nVertices;
 CREATE (vertices, LEVEL_VERTICES, 0);
 CREATE (fVertices, LEVEL_VERTICES, 0);
 CREATE (points, LEVEL_VERTICES, 0);
