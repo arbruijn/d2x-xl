@@ -1702,8 +1702,8 @@ class CSegmentData {
 		float						fRad;
 		CArray<CFixVector>	segCenters [2];
 		CArray<CFixVector>	sideCenters;
-		CArray<ubyte>			bVertVis [2];
 		CArray<ubyte>			bSegVis [2];
+		CArray<ubyte>			bVertVis;
 		int						nVertices;
 		int						nFaceVerts;
 		int						nLastVertex;

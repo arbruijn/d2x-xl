@@ -336,12 +336,12 @@ for (sideP = segP->m_sides + nFirstSide, nSide = nFirstSide; nSide <= nLastSide;
 #if 1
 	if (gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->m_children [nSide])) {
-			while (!SetSegVis (nStartSeg, nChildSeg))
+			while (!SetSegVis (nStartSeg, nChildSeg, bLights))
 				;
 			childP = SEGMENTS + nChildSeg;
 			for (nChildSide = 0; nChildSide < 6; nChildSide++) {
 				if (0 <= (nSegment = childP->m_children [nSide])) {
-					while (!SetSegVis (nChildSeg, nSegment))
+					while (!SetSegVis (nChildSeg, nSegment, bLights))
 						;
 					}
 				}
