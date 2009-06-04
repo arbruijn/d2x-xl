@@ -321,7 +321,7 @@ if (bLights) {
 		vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 		}
 	else {
-		viewer.info.position.vPos = CFixVector::Avg (VERTICES [sideP->m_corners [bLights - 1]], VERTICES [sideP->m_corners [bLights % 4]]);
+		viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
 		vNormal = sideP->Center () - viewer.info.position.vPos;
 		CFixVector::Normalize (vNormal);
 		}
