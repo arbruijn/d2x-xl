@@ -268,7 +268,7 @@ inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)
 if (bSemaphore)
 	return 0;
 bSemaphore = 1;
-gameData.segs.bSegVis [bLights][nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDestSeg & 7));
+gameData.segs.bSegVis [bLights != 0][nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDestSeg & 7));
 bSemaphore = 0;
 return 1;
 }
@@ -319,7 +319,6 @@ void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, shor
 	CSide*			sideP;
 	short				nSegment, nSide, nChildSeg, nChildSide, i;
 	CFixVector		vNormal;
-	CAngleVector	vAngles;
 	CObject			viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
@@ -338,7 +337,7 @@ viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if 1
-	if (gameStates.render.bPerPixelLighting) {
+	if (bLights && gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->m_children [nSide])) {
 			while (!SetSegVis (nStartSeg, nChildSeg, bLights))
 				;
@@ -354,12 +353,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	// view from segment center towards current side
 	vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 	vNormal.Neg ();
-	vAngles = vNormal.ToAnglesVec ();
-#if 1
 	viewer.info.position.mOrient = CFixMatrix::Create (&vNormal, 0);
-#else
-	viewer.info.position.mOrient = CFixMatrix::Create (vAngles);
-#endif
 	G3StartFrame (0, 0);
 	RenderStartFrame ();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
@@ -428,7 +422,7 @@ if (gameStates.app.bMultiThreaded) {
 	endI = startI ? lightManager.LightCount (0) : lightManager.LightCount (0)  / 2;
 	}
 else
-	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
+	INIT_PROGRESS_LOOP (startI, endI, lightManager.LightCount (0));
 if (startI < 0)
 	startI = 0;
 // every segment can see itself and its neighbours
@@ -460,7 +454,7 @@ if (loadOp == 1) {
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= lightManager.LightCount (0)) {
 		loadIdx = 0;
-		loadOp = 1;
+		loadOp = 2;
 		}
 	}
 else if (loadOp == 2) {
@@ -468,7 +462,7 @@ else if (loadOp == 2) {
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
-		loadOp = 2;
+		loadOp = 3;
 		}
 	}
 else if (loadOp == 3) {
@@ -476,7 +470,7 @@ else if (loadOp == 3) {
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nVertices) {
 		loadIdx = 0;
-		loadOp = 3;
+		loadOp = 4;
 		}
 	}
 if (loadOp == 4) {
@@ -499,7 +493,9 @@ if (gameStates.app.bNostalgia)
 	return 0;
 if (gameStates.app.bMultiThreaded)
 	return 0;
-return PROGRESS_STEPS (gameData.segs.nSegments) * 2 + PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (lightManager.LightCount (0));
+return PROGRESS_STEPS (gameData.segs.nSegments) * 2 + 
+		 PROGRESS_STEPS (gameData.segs.nVertices) + 
+		 PROGRESS_STEPS (lightManager.LightCount (0));
 }
 
 //------------------------------------------------------------------------------
