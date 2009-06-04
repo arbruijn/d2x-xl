@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 13
+#define LIGHT_DATA_VERSION 14
 
 
 #define	VERTVIS(_nSegment, _nVertex) \
@@ -421,7 +421,7 @@ if (startI <= 0) {
 else if (!gameData.segs.bVertVis)
 	return;
 if (gameStates.app.bMultiThreaded) {
-	endI = startI ? lightManager.LightCount () : lightManager.LightCount ()  / 2;
+	endI = startI ? lightManager.LightCount (0) : lightManager.LightCount (0)  / 2;
 	}
 else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
@@ -453,7 +453,7 @@ if (loadOp == 0) {
 if (loadOp == 1) {
 	ComputeLightVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= lightManager.LightCount ()) {
+	if (loadIdx >= lightManager.LightCount (0)) {
 		loadIdx = 0;
 		loadOp = 1;
 		}
@@ -494,7 +494,7 @@ if (gameStates.app.bNostalgia)
 	return 0;
 if (gameStates.app.bMultiThreaded)
 	return 0;
-return PROGRESS_STEPS (gameData.segs.nSegments) * 2 + PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (lightManager.LightCount ());
+return PROGRESS_STEPS (gameData.segs.nSegments) * 2 + PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (lightManager.LightCount (0));
 }
 
 //------------------------------------------------------------------------------
