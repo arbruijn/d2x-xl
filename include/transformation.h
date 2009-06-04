@@ -20,7 +20,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if DBG
 #	define _INLINE_
 #else
-#	define inline
+#	define _INLINE_	inline
 #endif
 //clipping codes flags
 

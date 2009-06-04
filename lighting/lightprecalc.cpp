@@ -316,13 +316,15 @@ if (nStartSeg == nDbgSeg)
 segP = SEGMENTS + nStartSeg;
 sideP = segP->m_sides + nFirstSide;
 if (bLights) {
+	vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 	if (bLights == 5) {
 		viewer.info.position.vPos = sideP->Center ();
-		vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 		}
 	else {
 		viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
-		vNormal = sideP->Center () - viewer.info.position.vPos;
+		CFixVector h = sideP->Center () - viewer.info.position.vPos;
+		CFixVector::Normalize (h);
+		vNormal = CFixVector::Avg (vNormal, h);
 		CFixVector::Normalize (vNormal);
 		}
 	}
