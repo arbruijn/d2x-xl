@@ -817,7 +817,7 @@ else {
 		if (nSegment == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
-		if (SEGVIS (nStartSeg, nSegment)) {
+		if (gameData.segs.SegVis (nStartSeg, nSegment)) {
 			gameData.render.mine.bVisible [nSegment] = gameData.render.mine.nVisible;
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = nSegment;
 			RotateVertexList (8, SEGMENTS [nSegment].m_verts);

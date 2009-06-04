@@ -588,28 +588,28 @@ nSlideSegs = 0;
 
 bool CSegmentData::Create (int nSegments, int nVertices)
 {
-gameData.segs.nSegments = nSegments;
-gameData.segs.nVertices = nVertices;
-CREATE (gameData.segs.vertices, LEVEL_VERTICES, 0);
-CREATE (gameData.segs.fVertices, LEVEL_VERTICES, 0);
-CREATE (gameData.segs.points, LEVEL_VERTICES, 0);
-CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
-CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
-CREATE (SEGMENTS, LEVEL_SEGMENTS, 0);
+nSegments = nSegments;
+nVertices = nVertices;
+CREATE (vertices, LEVEL_VERTICES, 0);
+CREATE (fVertices, LEVEL_VERTICES, 0);
+CREATE (points, LEVEL_VERTICES, 0);
+CREATE (segments, LEVEL_SEGMENTS, 0);
 #if CALC_SEGRADS
-CREATE (gameData.segs.segRads [0], LEVEL_SEGMENTS, 0);
-CREATE (gameData.segs.segRads [1], LEVEL_SEGMENTS, 0);
-CREATE (gameData.segs.extent, LEVEL_SEGMENTS, 0);
+CREATE (segRads [0], LEVEL_SEGMENTS, 0);
+CREATE (segRads [1], LEVEL_SEGMENTS, 0);
+CREATE (extent, LEVEL_SEGMENTS, 0);
 #endif
-CREATE (gameData.segs.segCenters [0], LEVEL_SEGMENTS, 0);
-CREATE (gameData.segs.segCenters [1], LEVEL_SEGMENTS, 0);
-CREATE (gameData.segs.sideCenters, LEVEL_SEGMENTS * 6, 0);
-CREATE (gameData.segs.bSegVis [0], LEVEL_SEGMENTS * LEVEL_SEGVIS_FLAGS, 0);
-CREATE (gameData.segs.bSegVis [1], LEVEL_SEGMENTS * LEVEL_SEGVIS_FLAGS, 0);
-CREATE (gameData.segs.slideSegs, LEVEL_SEGMENTS, 0);
-CREATE (gameData.segs.segFaces, LEVEL_SEGMENTS, 0);
+CREATE (segCenters [0], LEVEL_SEGMENTS, 0);
+CREATE (segCenters [1], LEVEL_SEGMENTS, 0);
+CREATE (sideCenters, LEVEL_SEGMENTS * 6, 0);
+// the following two arrays are bit arrays; (X + 7) / 8 ensures enough bytes are allocated for all bits
+// bSegVis [0] is a triangular matrix, x <= y always
+CREATE (bSegVis [0], SegVisSize (), 0);
+CREATE (bSegVis [1], LightVisSize (), 0);
+CREATE (slideSegs, LEVEL_SEGMENTS, 0);
+CREATE (segFaces, LEVEL_SEGMENTS, 0);
 for (int i = 0; i < LEVEL_SEGMENTS; i++)
-	SEGMENTS [i].m_objects = -1;
+	segments [i].m_objects = -1;
 Init ();
 return faces.Create ();
 }

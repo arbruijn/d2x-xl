@@ -1612,8 +1612,6 @@ typedef struct tSlideSegs {
 
 //------------------------------------------------------------------------------
 
-#define MAX_SEGVIS_FLAGS	((MAX_SEGMENTS + 7) >> 3)
-#define MAX_VERTVIS_FLAGS	((MAX_VERTICES + 7) >> 3)
 #define SEGVIS_FLAGS			((gameData.segs.nSegments + 7) >> 3)
 #define VERTVIS_FLAGS		((gameData.segs.nVertices + 7) >> 3)
 
@@ -1684,6 +1682,25 @@ class CSkyBox : public CStack< short > {
 		int CountSegments (void);
 };
 
+//	-----------------------------------------------------------------------------------------------------------
+
+#define LEVEL_SEGMENTS			gameData.segs.nSegments
+#define LEVEL_OBJECTS			(gameData.objs.nMaxObjects)
+#define LEVEL_VERTICES			(gameData.segs.nVertices)
+#define LEVEL_POINT_SEGS		(gameData.segs.nSegments * 4)
+#define LEVEL_SIDES				(LEVEL_SEGMENTS * 6)
+#define LEVEL_FACES				(LEVEL_SIDES * 2)
+#define LEVEL_TRIANGLES			(LEVEL_FACES * 16)
+#define LEVEL_DL_INDICES		(LEVEL_SEGMENTS / 2)
+#define LEVEL_DELTA_LIGHTS		(LEVEL_SEGMENTS * 10)
+#define LEVEL_SEGVIS_FLAGS		((LEVEL_SEGMENTS + 7) >> 3)
+#define LEVEL_VERTVIS_FLAGS	((LEVEL_VERTICES + 7) >> 3)
+
+#define QUADMATSIZE(_i)						((_i) * (_i))
+#define QUADMATIDX(_i,_j,_rowSize)		((_i) * (_rowSize) + (_j))
+#define TRIAMATSIZE(_i)						((_i) * ((_i) + 1) / 2)
+#define TRIAMATIDX(_i, _j)					(((_j) < (_i)) ? TRIAMATSIZE (_i) + (_j) : TRIAMATSIZE (_j) + (_i))
+
 class CSegmentData {
 	public:
 		int						nMaxSegments;
@@ -1724,6 +1741,54 @@ class CSegmentData {
 		bool Create (int nSegments, int nVertices);
 		bool Resize (void);
 		void Destroy (void);
+
+		inline int SegVisSize (int nElements = 0) {
+			if (!nElements)
+				nElements = nSegments;
+			return (TRIAMATSIZE (nSegments) + 7) / 8;
+			}
+
+		inline int SegVisIdx (int i, int j) {
+			return TRIAMATIDX (i, j);
+			}
+
+		inline int SegVis (int i, int j) {
+			i = SegVisIdx (i, j);	// index in triangular matrix, enforce j <= i
+			return (bSegVis [0][i >> 3] & (1 << (i & 7))) != 0;
+			}
+
+		inline int LightVisSize (int nElements = 0) {
+			if (!nElements)
+				nElements = nSegments;
+			return (QUADMATSIZE (nSegments) + 7) / 8;
+			}
+
+		inline int LightVisIdx (int i, int j) {
+			return QUADMATIDX (i, j, nSegments);
+			}
+
+		inline int LightVis (int i, int j) {
+			i = LightVisIdx (i, j);
+			return (bSegVis [1][i >> 3] & (1 << (i & 7))) != 0;
+			}
+
+		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
+			static int bSemaphore = 0;
+
+			if (bSemaphore)
+				return 0;
+			bSemaphore = 1;
+			if (bLights) {
+				int i = LightVisIdx (nSrcSeg, nDestSeg);
+				bSegVis [1][i >> 3] |= (1 << (i & 7));
+				}
+			else {
+				int i = SegVisIdx (nSrcSeg, nDestSeg);
+				bSegVis [0][i >> 3] |= (1 << (i & 7));
+				}
+			bSemaphore = 0;
+			return 1;
+			}
 };
 
 //------------------------------------------------------------------------------
@@ -3335,9 +3400,6 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 
 #define MAX_LIGHT_RANGE	I2X (250)
 
-#define SEGVIS(_i,_j)	((gameData.segs.bSegVis [0][SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
-#define LIGHTVIS(_i,_j)	((gameData.segs.bSegVis [1][SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
-
 //	-----------------------------------------------------------------------------------------------------------
 
 extern float fInfinity [];
@@ -3530,20 +3592,6 @@ inline void Swap (_T& a, _T& b) { _T h = a; a = b; b = h; }
 #endif
 
 void CheckEndian (void);
-
-//	-----------------------------------------------------------------------------------------------------------
-
-#define LEVEL_SEGMENTS			gameData.segs.nSegments
-#define LEVEL_OBJECTS			(gameData.objs.nMaxObjects)
-#define LEVEL_VERTICES			(gameData.segs.nVertices)
-#define LEVEL_POINT_SEGS		(gameData.segs.nSegments * 4)
-#define LEVEL_SIDES				(LEVEL_SEGMENTS * 6)
-#define LEVEL_FACES				(LEVEL_SIDES * 2)
-#define LEVEL_TRIANGLES			(LEVEL_FACES * 16)
-#define LEVEL_DL_INDICES		(LEVEL_SEGMENTS / 2)
-#define LEVEL_DELTA_LIGHTS		(LEVEL_SEGMENTS * 10)
-#define LEVEL_SEGVIS_FLAGS		((LEVEL_SEGMENTS + 7) >> 3)
-#define LEVEL_VERTVIS_FLAGS	((LEVEL_VERTICES + 7) >> 3)
 
 //	-----------------------------------------------------------------------------------------------------------
 

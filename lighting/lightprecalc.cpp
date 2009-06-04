@@ -136,7 +136,7 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	pl = lightManager.Lights ();
 	for (l = n = 0; l < lightManager.LightCount (0); l++, pl++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
-		if (!LIGHTVIS (m, i))
+		if (!gameData.segs.LightVis (m, i))
 			continue;
 		h = (int) (CFixVector::Dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
 		if (h > MAX_LIGHT_RANGE * pl->info.fRange)
@@ -261,25 +261,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)
-{
-	static int bSemaphore = 0;
-
-if (bSemaphore)
-	return 0;
-bSemaphore = 1;
-gameData.segs.bSegVis [bLights != 0][nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDestSeg & 7));
-bSemaphore = 0;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
 static void SetSegAndVertVis (short nStartSeg, short nSegment, int bLights)
 {
-if (SEGVIS (nStartSeg, nSegment))
+if (!bLights && gameData.segs.SegVis (nStartSeg, nSegment))
 	return;
-while (!SetSegVis (nStartSeg, nSegment, bLights))
+while (!gameData.segs.SetSegVis (nStartSeg, nSegment, bLights))
 	;
 if (!bLights)
 	return;
@@ -339,12 +325,12 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if 1
 	if (bLights && gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->m_children [nSide])) {
-			while (!SetSegVis (nStartSeg, nChildSeg, bLights))
+			while (!gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights))
 				;
 			childP = SEGMENTS + nChildSeg;
 			for (nChildSide = 0; nChildSide < 6; nChildSide++) {
 				if (0 <= (nSegment = childP->m_children [nSide])) {
-					while (!SetSegVis (nChildSeg, nSegment, bLights))
+					while (!gameData.segs.SetSegVis (nChildSeg, nSegment, bLights))
 						;
 					}
 				}
@@ -528,9 +514,8 @@ if (bOk)
 			(ldh.nMethod = LightingMethod () &&
 			((ldh.bPerPixelLighting != 0) == (gameStates.render.bPerPixelLighting != 0)));
 if (bOk)
-	bOk =
-			(gameData.segs.bSegVis [0].Read (cf, ldh.nSegments * SEGVIS_FLAGS, 0) == size_t (ldh.nSegments * SEGVIS_FLAGS)) &&
-			(gameData.segs.bSegVis [1].Read (cf, ldh.nSegments * SEGVIS_FLAGS, 0) == size_t (ldh.nSegments * SEGVIS_FLAGS)) &&
+	bOk = (gameData.segs.bSegVis [0].Read (cf, gameData.segs.SegVisSize (ldh.nSegments), 0) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
+			(gameData.segs.bSegVis [1].Read (cf, gameData.segs.LightVisSize (ldh.nSegments), 0) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
 			(lightManager.NearestSegLights  ().Read (cf, ldh.nSegments * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 			(lightManager.NearestVertLights ().Read (cf, ldh.nVertices * MAX_NEAREST_LIGHTS, 0) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();
@@ -557,8 +542,8 @@ if (!gameStates.app.bCacheLights)
 if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
-		(gameData.segs.bSegVis [0].Write (cf, ldh.nSegments * SEGVIS_FLAGS) == size_t (ldh.nSegments * SEGVIS_FLAGS)) &&
-		(gameData.segs.bSegVis [1].Write (cf, ldh.nSegments * SEGVIS_FLAGS) == size_t (ldh.nSegments * SEGVIS_FLAGS)) &&
+		(gameData.segs.bSegVis [0].Write (cf, gameData.segs.SegVisSize (ldh.nSegments)) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&
+		(gameData.segs.bSegVis [1].Write (cf, gameData.segs.LightVisSize (ldh.nSegments)) == size_t (gameData.segs.LightVisSize (ldh.nSegments))) &&
 		(lightManager.NearestSegLights  ().Write (cf, ldh.nSegments * MAX_NEAREST_LIGHTS) == size_t (ldh.nSegments * MAX_NEAREST_LIGHTS)) &&
 		(lightManager.NearestVertLights ().Write (cf, ldh.nVertices * MAX_NEAREST_LIGHTS) == size_t (ldh.nVertices * MAX_NEAREST_LIGHTS));
 cf.Close ();

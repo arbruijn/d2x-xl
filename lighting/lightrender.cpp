@@ -429,11 +429,11 @@ if (gameStates.render.nLightingMethod) {
 				nDbgObj = nDbgObj;
 #endif
 			if ((nLightSeg = prl->info.nSegment) >= 0) {
-				if (!LIGHTVIS (nLightSeg, nSegment))
+				if (!gameData.segs.LightVis (nLightSeg, nSegment))
 					continue;
 				}
 			else if ((prl->info.nObject >= 0) && ((nLightSeg = OBJECTS [prl->info.nObject].info.nSegment) >= 0)) {
-				if (!SEGVIS (nLightSeg, nSegment))
+				if (!gameData.segs.SegVis (nLightSeg, nSegment))
 					continue;
 				}
 			else
@@ -521,7 +521,7 @@ if (gameStates.render.nLightingMethod) {
 				continue;
 			}
 #endif
-		if ((nLightSeg < 0) || !LIGHTVIS (nLightSeg, nSegment))
+		if ((nLightSeg < 0) || !gameData.segs.LightVis (nLightSeg, nSegment))
 			continue;
 		if (!(bForce = (prl->info.nSegment == nSegment) && (prl->info.nSide == nSide))) {
 			prl->render.xDistance = (fix) ((CFixVector::Dist (*vPixelPos, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / prl->info.fRange);
