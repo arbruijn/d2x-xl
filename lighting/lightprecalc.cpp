@@ -313,7 +313,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 // Do this for each side of the current segment, using the side Normal (s) as forward vector
 // of the viewer
 
-void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, bool bLights = 0)
+void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, short nLastSide = 5, int bLights = 0)
 {
 	CSegment*		segP, *childP;
 	CSide*			sideP;
@@ -328,11 +328,15 @@ gameStates.ogl.bUseTransform = 1;
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-gameData.objs.viewerP = &viewer;
-viewer.info.nSegment = nStartSeg;
-viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
 segP = SEGMENTS + nStartSeg;
-for (sideP = segP->m_sides + nFirstSide, nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
+sideP = segP->m_sides + nFirstSide;
+if (bLights)
+	viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
+else
+	viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
+viewer.info.nSegment = nStartSeg;
+gameData.objs.viewerP = &viewer;
+for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #if 1
 	if (gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->m_children [nSide])) {
@@ -431,7 +435,8 @@ if (startI < 0)
 CDynLight* pl = lightManager.Lights () + startI;
 for (i = endI - startI; i; i--, pl++)
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0))
-		ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, 1);
+		for (int j = 1; j <= 4; j++)
+			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
 }
 
 //------------------------------------------------------------------------------
