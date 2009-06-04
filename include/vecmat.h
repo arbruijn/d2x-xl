@@ -793,103 +793,148 @@ inline fix& CFixVector::operator[] (size_t idx) { return v [idx]; }
 
 inline const fix CFixVector::operator[] (size_t idx) const { return v [idx]; }
 
-inline CFixVector& CFixVector::Assign (const CFloatVector3& other) {
-	v [0] = F2X (other [0]), v [1] = F2X (other [1]), v [2] = F2X (other [2]);
-	return *this;
+inline CFixVector& CFixVector::Assign (const CFloatVector3& other) 
+{
+v [0] = F2X (other [0]), v [1] = F2X (other [1]), v [2] = F2X (other [2]);
+return *this;
 }
 
-inline CFixVector& CFixVector::Assign (const CFloatVector& other) {
-	v [0] = F2X (other [0]), v [1] = F2X (other [1]), v [2] = F2X (other [2]);
-	return *this;
+inline CFixVector& CFixVector::Assign (const CFloatVector& other) 
+{
+v [0] = F2X (other [0]), v [1] = F2X (other [1]), v [2] = F2X (other [2]);
+return *this;
 }
 
-inline CFixVector& CFixVector::Assign (const CFixVector& other) {
-	v [0] = other [0], v [1] = other [1], v [2] = other [2];
-	return *this;
+inline CFixVector& CFixVector::Assign (const CFixVector& other) 
+{
+v [0] = other [0], v [1] = other [1], v [2] = other [2];
+return *this;
 }
 
-inline bool CFixVector::operator== (const CFixVector& other) const {
-	return v [X] == other [X] && v [Y] == other [Y] && v [Z] == other [Z];
+inline bool CFixVector::operator== (const CFixVector& other) const 
+{
+return v [X] == other [X] && v [Y] == other [Y] && v [Z] == other [Z];
 }
 
-inline const CFixVector& CFixVector::Set (fix x, fix y, fix z) { 
-	v [0] = x; v [1] = y; v [2] = z; return 
-	*this; 
-	}
-
-inline void CFixVector::Set (const fix *vec) {
-	v [X] = vec [0]; v [Y] = vec [1]; v [Z] = vec [2];
+inline const CFixVector& CFixVector::Set (fix x, fix y, fix z) 
+{ 
+v [0] = x; v [1] = y; v [2] = z; return 
+*this; 
 }
 
-inline bool CFixVector::IsZero (void) const { return ! (v [X] || v [Y] || v [Z]); }
+inline void CFixVector::Set (const fix *vec) 
+{
+v [X] = vec [0]; v [Y] = vec [1]; v [Z] = vec [2];
+}
 
-inline void CFixVector::SetZero (void) { memset (v, 0, 3 * sizeof (fix)); }
+inline bool CFixVector::IsZero (void) const 
+{ 
+return !(v [X] || v [Y] || v [Z]); 
+}
 
-inline const int CFixVector::Sign (void) const { return (v [X] * v [Y] * v [Z] < 0) ? -1 : 1; }
+inline void CFixVector::SetZero (void) 
+{ 
+memset (v, 0, 3 * sizeof (fix)); 
+}
 
-inline fix CFixVector::SqrMag (void) const {
-	return FixMul (v [X], v [X]) + FixMul (v [Y], v [Y]) + FixMul (v [Z], v [Z]);
-	}
+inline const int CFixVector::Sign (void) const 
+{ 
+return (v [X] * v [Y] * v [Z] < 0) ? -1 : 1; 
+}
+
+inline fix CFixVector::SqrMag (void) const 
+{
+return FixMul (v [X], v [X]) + FixMul (v [Y], v [Y]) + FixMul (v [Z], v [Z]);
+}
 
 inline float CFixVector::Sqr (float f) const { return f * f; }
 
-inline CFixVector& CFixVector::Scale (CFixVector& scale) { 
-	v [0] = FixMul (v [0], scale [0]), v [1] = FixMul (v [1], scale [1]), v [2] = FixMul (v [2], scale [2]);
-	return *this; 
-	}
-
-inline CFixVector& CFixVector::Neg (void) { 
-	v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; 
-	return *this; 
-	}
-
-inline const CFixVector CFixVector::operator- (void) const { return Create (-v [X], -v [Y], -v [Z]); }
-
-inline const bool CFixVector::operator== (const CFixVector& vec) {
-	return v [0] == vec [0] && v [1] == vec [1] && v [2] == vec [2];
+inline CFixVector& CFixVector::Scale (CFixVector& scale) 
+{ 
+v [0] = FixMul (v [0], scale [0]); 
+v [1] = FixMul (v [1], scale [1]);
+v [2] = FixMul (v [2], scale [2]);
+return *this; 
 }
 
-inline const bool CFixVector::operator!= (const CFixVector& vec) {
-	return v [0] != vec [0] || v [1] != vec [1] || v [2] != vec [2];
+inline CFixVector& CFixVector::Neg (void) 
+{ 
+v [0] = -v [0], v [1] = -v [1], v [2] = -v [2]; 
+return *this; 
 }
 
-inline const CFixVector& CFixVector::operator+= (const CFixVector& other) {
-	v [0] += other [0]; v [1] += other [1]; v [2] += other [2];
-	return *this;
+inline const CFixVector CFixVector::operator- (void) const 
+{ 
+return Create (-v [X], -v [Y], -v [Z]); 
 }
 
-inline const CFixVector& CFixVector::operator+= (const CFloatVector& other) {
-	v [0] += F2X (other [0]); v [1] += F2X (other [1]); v [2] += F2X (other [2]);
-	return *this;
+inline const bool CFixVector::operator== (const CFixVector& vec) 
+{
+return (v [0] == vec [0]) && (v [1] == vec [1]) && (v [2] == vec [2]);
+}
+
+inline const bool CFixVector::operator!= (const CFixVector& vec) 
+{
+return (v [0] != vec [0]) || (v [1] != vec [1]) || (v [2] != vec [2]);
+}
+
+inline const CFixVector& CFixVector::operator+= (const CFixVector& other) 
+{
+v [0] += other [0]; 
+v [1] += other [1]; 
+v [2] += other [2];
+return *this;
+}
+
+inline const CFixVector& CFixVector::operator+= (const CFloatVector& other) 
+{
+v [0] += F2X (other [0]); 
+v [1] += F2X (other [1]); 
+v [2] += F2X (other [2]);
+return *this;
 }
 
 inline const CFixVector& CFixVector::operator-= (const CFixVector& other) {
-	v [0] -= other [0]; v [1] -= other [1]; v [2] -= other [2];
+	v [0] -= other [0]; 
+	v [1] -= other [1]; 
+	v [2] -= other [2];
 	return *this;
 }
 
-inline const CFixVector& CFixVector::operator-= (const CFloatVector& other) {
-	v [0] -= F2X (other [0]); v [1] -= F2X (other [1]); v [2] -= F2X (other [2]);
-	return *this;
+inline const CFixVector& CFixVector::operator-= (const CFloatVector& other) 
+{
+v [0] -= F2X (other [0]); 
+v [1] -= F2X (other [1]);
+v [2] -= F2X (other [2]);
+return *this;
 }
 
-inline const CFixVector& CFixVector::operator*= (const fix s) {
-	v [0] = FixMul (v [0], s); v [1] = FixMul (v [1], s); v [2] = FixMul (v [2], s);
-	return *this;
+inline const CFixVector& CFixVector::operator*= (const fix s) 
+{
+v [0] = FixMul (v [0], s); 
+v [1] = FixMul (v [1], s); 
+v [2] = FixMul (v [2], s);
+return *this;
 }
 
-inline const CFixVector& CFixVector::operator*= (const CFixVector& s) {
-	v [0] = FixMul (v [0], s [0]); v [1] = FixMul (v [1], s [1]); v [2] = FixMul (v [2], s [2]);
-	return *this;
+inline const CFixVector& CFixVector::operator*= (const CFixVector& s) 
+{
+v [0] = FixMul (v [0], s [0]); 
+v [1] = FixMul (v [1], s [1]); 
+v [2] = FixMul (v [2], s [2]);
+return *this;
 }
 
-inline const CFixVector& CFixVector::operator/= (const fix s) {
-	v [0] = FixDiv (v [0], s); v [1] = FixDiv (v [1], s); v [2] = FixDiv (v [2], s);
-	return *this;
+inline const CFixVector& CFixVector::operator/= (const fix s) 
+{
+v [0] = FixDiv (v [0], s); 
+v [1] = FixDiv (v [1], s); 
+v [2] = FixDiv (v [2], s);
+return *this;
 }
 
 inline const CFixVector CFixVector::operator+ (const CFixVector& other) const {
-	return Create (v [0]+other [0], v [1]+other [1], v [2]+other [2]);
+	return Create (v [0] + other [0], v [1] + other [1], v [2] + other [2]);
 }
 
 inline const CFixVector CFixVector::operator+ (const CFloatVector& other) const 
@@ -899,7 +944,7 @@ return Create (v [0] + F2X (other [0]), v [1] + F2X (other [1]), v [2] + F2X (ot
 
 inline const CFixVector CFixVector::operator- (const CFixVector& other) const 
 {
-return Create (v [0]-other [0], v [1]-other [1], v [2]-other [2]);
+return Create (v [0] - other [0], v [1] - other [1], v [2] - other [2]);
 }
 
 inline const CFixVector CFixVector::operator- (const CFloatVector& other) const 

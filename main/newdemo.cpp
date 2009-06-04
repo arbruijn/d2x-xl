@@ -756,10 +756,11 @@ if (!bRevertFormat)
 void NDSetPowerupClip (CObject *objP)
 {
 //if (gameStates.app.tick40fps.bTick) 
-	tVClipInfo	*vciP = &objP->rType.vClipInfo;
+tVClipInfo	*vciP = &objP->rType.vClipInfo;
+if (vciP->nClipIndex >= 0) {
 	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
-
-vciP->nCurFrame = vcP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount : 0;
+	vciP->nCurFrame = vcP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount : 0;
+	}
 }
 
 //	-----------------------------------------------------------------------------

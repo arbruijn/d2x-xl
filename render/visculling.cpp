@@ -69,6 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define bPreDrawSegs			0
 
+#define VIS_CULLING			2
 #define OLD_SEGLIST			1
 #define SORT_RENDER_SEGS	0
 
@@ -578,19 +579,22 @@ gameData.render.zMax = vCenter [Z] + d1 + r;
 
 void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors)
 {
-	int			nCurrent, nHead, nTail, nSide;
+	int			nCurrent, nHead, nTail, nStart, nSide;
 	int			l, i, j;
 	short			nChild;
 	short			nChildSeg;
 	short*		sv;
 	int*			s2v;
 	ubyte			andCodes, andCodes3D;
-	int			bRotated, nSegment, bNotProjected;
+	int			bRotated, nSegment, bProjected;
 	tPortal*		curPortal;
 	short			childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
 	int			nChildren, bCullIfBehind;					//how many sides in childList
 	CSegment*	segP;
+	CFixVector	viewDir, viewPos;
 
+viewDir = transformation.m_info.view [0].FVec ();
+viewPos = transformation.m_info.pos;
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
 bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
@@ -620,17 +624,19 @@ gameData.render.mine.nSegRenderList [0] = nStartSeg;
 gameData.render.mine.nSegDepth [0] = 0;
 VISIT (nStartSeg);
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
-nHead = nTail = 0;
+nHead = nTail = nStart = 0;
 nCurrent = 1;
 
 renderPortals [0].left =
 renderPortals [0].top = 0;
 renderPortals [0].right = CCanvas::Current ()->Width () - 1;
 renderPortals [0].bot = CCanvas::Current ()->Height () - 1;
-
+#if DBG
+int nIterations = 0;
+#endif
 int nRenderDepth = min (gameStates.render.detail.nRenderDepth, gameData.segs.nSegments);
 for (l = 0; l < nRenderDepth; l++) {
-	for (nHead = 0, nTail = nCurrent; nHead < nTail; nHead++) {
+	for (nHead = nStart, nTail = nCurrent; nHead < nTail; nHead++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
@@ -643,6 +649,9 @@ for (l = 0; l < nRenderDepth; l++) {
 			continue;
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
+#endif
+#if DBG
+		nIterations++;
 #endif
 		segP = SEGMENTS + nSegment;
 		sv = segP->m_verts;
@@ -659,13 +668,13 @@ for (l = 0; l < nRenderDepth; l++) {
 			if (nChildSeg == nDbgSeg)
 				nChildSeg = nChildSeg;
 #endif
+			if (!bRotated) {
+				RotateVertexList (8, sv);
+				bRotated = 1;
+				}
 			if (bCullIfBehind) {
 				andCodes = 0xff;
 				s2v = sideVertIndex [nChild];
-				if (!bRotated) {
-					RotateVertexList (8, sv);
-					bRotated = 1;
-					}
 				if ((0xff & gameData.segs.points [sv [s2v [0]]].p3_codes
 							 & gameData.segs.points [sv [s2v [1]]].p3_codes
 					 	    & gameData.segs.points [sv [s2v [2]]].p3_codes
@@ -675,10 +684,6 @@ for (l = 0; l < nRenderDepth; l++) {
 			childList [nChildren++] = nChild;
 			}
 		//now order the sides in some magical way
-#if 0
-		if (bNewSegSorting && (nChildren > 1))
-			SortSegChildren (segP, nChildren, childList);
-#endif
 		for (nChild = 0; nChild < nChildren; nChild++) {
 			nSide = childList [nChild];
 			nChildSeg = segP->m_children [nSide];
@@ -688,22 +693,18 @@ for (l = 0; l < nRenderDepth; l++) {
 #endif
 			fix x, y;
 			tPortal p = {32767, -32767, 32767, -32767};
-			bNotProjected = 0;	//a point wasn't projected
-#if 0
-			if (bRotated < 2) {
-				if (!bRotated)
-					RotateVertexList (8, segP->m_verts);
-				ProjectVertexList (8, segP->m_verts);
-				bRotated = 2;
-				}
-#endif
+			bProjected = 4;	//a point wasn't projected
 			s2v = sideVertIndex [nSide];
 			andCodes3D = 0xff;
 			for (j = 0; j < 4; j++) {
 				g3sPoint *pnt = gameData.segs.points + sv [s2v [j]];
 				if (pnt->p3_codes & CC_BEHIND) {
-					bNotProjected = 1;
+#if VIS_CULLING == 2
+					bProjected--;
+#else
+					bProjected = 0;
 					break;
+#endif
 					}
 				if (!(pnt->p3_flags & PF_PROJECTED))
 					G3ProjectPoint (pnt);
@@ -723,11 +724,15 @@ for (l = 0; l < nRenderDepth; l++) {
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
-			if (bNotProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this segment
+#if VIS_CULLING == 2
+			if ((p.left < p.right) && (p.top < p.bot)) {
+#else
+			if (!bProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this segment
+#endif
 				int nPos = gameData.render.mine.nRenderPos [nChildSeg];
 				tPortal *newPortal = renderPortals + nCurrent;
 
-				if (bNotProjected)
+				if (!bProjected)
 					*newPortal = *curPortal;
 				else {
 					newPortal->left = max (curPortal->left, p.left);
@@ -771,6 +776,10 @@ for (l = 0; l < nRenderDepth; l++) {
 							gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
 						*oldPortal = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
+#if 0
+						if (!nStart || (nStart > nPos))
+							nStart = nPos;
+#endif
 						}
 					}
 				}

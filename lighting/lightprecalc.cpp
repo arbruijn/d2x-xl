@@ -345,15 +345,24 @@ for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 				}
 			}
 		}
+	// view from segment center towards current side
 	vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 	vNormal.Neg ();
 	vAngles = vNormal.ToAnglesVec ();
+#if 1
+	viewer.info.position.mOrient = CFixMatrix::Create (&vNormal, 0);
+#else
 	viewer.info.position.mOrient = CFixMatrix::Create (vAngles);
+#endif
 	G3StartFrame (0, 0);
 	RenderStartFrame ();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 #endif
-	gameStates.render.nShadowPass = 1;
+#if DBG
+if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+	gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
 	BuildRenderSegList (nStartSeg, 0, true);
 	gameStates.render.nShadowPass = 0;
 	G3EndFrame ();
@@ -362,6 +371,8 @@ for (sideP = segP->m_sides, nSide = 0; nSide < 6; nSide++, sideP++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
 #if DBG
+		if (nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif

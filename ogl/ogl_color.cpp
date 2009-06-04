@@ -438,11 +438,16 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * gameStates.ogl.fLightRange;
 		CFloatVector3::Normalize (dir);
-		float dot = bInRad ? 1.0f : CFloatVector3::Dot (vcd.vertNorm, dir);
+		float dot = CFloatVector3::Dot (vcd.vertNorm, dir);
 		if (NdotL <= dot) {
 			NdotL = dot;
 			lightDir = dir;
 			}
+		if (NdotL < -0.01f) {
+			fLightDist *= gameStates.ogl.fLightRange;
+			bInRad = false;
+			}
+		else
 	#else
 		fLightDist = CFloatVector3::Dist (lightPos, *vcd.vertPosP);
 	#endif
@@ -509,7 +514,7 @@ else
 		}
 	else {	//make it decay faster
 		//if ((nType < 2) && (nVertex < 0))
-		//fLightDist *= 0.9f;
+		fLightDist *= 0.9f;
 #if USE_FACE_DIST
 		if ((nType < 2) && (nVertex < 0))
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);

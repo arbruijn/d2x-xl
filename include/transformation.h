@@ -17,6 +17,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fix.h"
 #include "vecmat.h" 
 
+#if DBG
+#	define _INLINE_
+#else
+#	define inline
+#endif
 //clipping codes flags
 
 #define CC_OFF_LEFT     1
@@ -52,50 +57,50 @@ class CTransformation {
 		bool Push (void);
 		bool Pop (void);
 		void Begin (const CFixVector& vPos, CFixMatrix& mOrient);
-		inline void Begin (const CFixVector& pos, const CAngleVector& angles) {
+		_INLINE_ void Begin (const CFixVector& pos, const CAngleVector& angles) {
 			CFixMatrix m = CFixMatrix::Create (angles);
 			Begin (pos, m); 
 			}
-		inline void Begin (const CFixVector& pos) {
+		_INLINE_ void Begin (const CFixVector& pos) {
 			CFixMatrix m = CFixMatrix::IDENTITY;
 			Begin (pos, m); 
 			}
-		inline void End (void) { Pop (); }
-		inline void Move (CFloatVector& v) { glTranslatef (-v [X], -v [Y], -v [Z]); }
-		inline void Rotate (CFloatMatrix& m) { glMultMatrixf (m.Vec ()); }
+		_INLINE_ void End (void) { Pop (); }
+		_INLINE_ void Move (CFloatVector& v) { glTranslatef (-v [X], -v [Y], -v [Z]); }
+		_INLINE_ void Rotate (CFloatMatrix& m) { glMultMatrixf (m.Vec ()); }
 
-		inline void Move (const CFixVector& v) {
+		_INLINE_ void Move (const CFixVector& v) {
 			CFloatVector vf;
 			vf.Assign (v);
 			Move (vf);
 			}
-		inline void Rotate (CFixMatrix& m) {
+		_INLINE_ void Rotate (CFixMatrix& m) {
 			CFloatMatrix mf;
 			mf.Assign (m);
 			Rotate (mf);
 			}
 
-		inline CFixVector& Translate (CFixVector& dest, const CFixVector& src) 
+		_INLINE_ CFixVector& Translate (CFixVector& dest, const CFixVector& src) 
 		 { return dest = src - m_info.pos; }
 
-		inline CFixVector& Rotate (CFixVector& dest, const CFixVector& src, int bUnscaled = 0) 
+		_INLINE_ CFixVector& Rotate (CFixVector& dest, const CFixVector& src, int bUnscaled = 0) 
 		 { return dest = m_info.view [bUnscaled] * src; }
 
-		inline CFixVector& Transform (CFixVector& dest, const CFixVector& src, int bUnscaled = 0) {
+		_INLINE_ CFixVector& Transform (CFixVector& dest, const CFixVector& src, int bUnscaled = 0) {
 			CFixVector vTrans = src - m_info.pos;
 			return dest = m_info.view [bUnscaled] * vTrans;
 			}
 
-		inline CFloatVector& Translate (CFloatVector& dest, const CFloatVector& src) 
+		_INLINE_ CFloatVector& Translate (CFloatVector& dest, const CFloatVector& src) 
 		 { return dest = src - m_info.posf [0]; }
 
-		inline CFloatVector& Rotate (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) 
+		_INLINE_ CFloatVector& Rotate (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) 
 		 { return dest = m_info.viewf [bUnscaled] * src; }
 
-		inline CFloatVector3& Rotate (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) 
+		_INLINE_ CFloatVector3& Rotate (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) 
 		 { return dest = m_info.viewf [bUnscaled] * src; }
 
-		inline CFloatVector& Transform (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) {
+		_INLINE_ CFloatVector& Transform (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) {
 			CFloatVector vTrans = src - m_info.posf [0];
 			return dest = m_info.viewf [bUnscaled] * vTrans;
 			}
@@ -106,7 +111,7 @@ class CTransformation {
 
 		const CFixVector& RotateScaled (CFixVector& dest, const CFixVector& src);
 
-		inline ubyte Codes (CFixVector& v) {
+		_INLINE_ ubyte Codes (CFixVector& v) {
 			ubyte codes = 0;
 			fix z = v [Z];
 			fix x = FixMulDiv (v [X], m_info.scale [X], m_info.zoom);
@@ -124,7 +129,7 @@ class CTransformation {
 			return codes;
 			}
 
-		inline ubyte TransformAndEncode (CFixVector& dest, const CFixVector& src) {
+		_INLINE_ ubyte TransformAndEncode (CFixVector& dest, const CFixVector& src) {
 			Transform (dest, src, 0);
 			return Codes (dest);
 			}
@@ -137,6 +142,8 @@ class CTransformation {
 //------------------------------------------------------------------------------
 
 extern CTransformation	transformation;
+
+#undef _INLINE_
 
 #endif //_TRANSFORMATION_
 

@@ -57,15 +57,36 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 
 // -----------------------------------------------------------------------------------
 //projects a point
+
+#define VIS_CULLING 2
+
 void G3ProjectPoint (g3sPoint *p)
 {
+#if VIS_CULLING == 2
+if ((p->p3_flags & PF_PROJECTED))
+#else
 if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
+#endif
 	return;
 CFloatVector v;
 v.Assign (p->p3_vec);
+#if VIS_CULLING == 2
 v.Scale (transformation.m_info.scalef);
-p->p3_screen.x = (fix) (fxCanvW2 + v [X] * fxCanvW2 / v [Z]);
-p->p3_screen.y = (fix) (fxCanvH2 - v [Y] * fxCanvH2 / v [Z]);
+v [Z] = fabs (v [Z]);
+fix x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / double (v [Z]));
+fix y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / double (v [Z]));
+#if DBG
+if ((x < 0) || (x > CCanvas::Current ()->Width ()))
+	x = x;
+if ((y < 0) || (y > CCanvas::Current ()->Height ()))
+	y = y;
+#endif
+p->p3_screen.x = (x < 0) ? 0 : (x > CCanvas::Current ()->Width ()) ? CCanvas::Current ()->Width () : x;
+p->p3_screen.y = (y < 0) ? 0 : (y > CCanvas::Current ()->Height ()) ? CCanvas::Current ()->Height () : y;
+#else
+p->p3_screen.x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / double (v [Z]));
+p->p3_screen.y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / double (v [Z]));
+#endif
 p->p3_flags |= PF_PROJECTED;
 }
 
@@ -73,15 +94,15 @@ p->p3_flags |= PF_PROJECTED;
 //from a 2d point, compute the vector through that point
 void G3Point2Vec (CFixVector *v,short sx,short sy)
 {
-	CFixVector tempv;
-	CFixMatrix tempm;
+	CFixVector h;
+	CFixMatrix m;
 
-tempv [X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2,xCanvW2),transformation.m_info.scale [Z], transformation.m_info.scale [X]);
-tempv [Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2,xCanvH2),transformation.m_info.scale [Z], transformation.m_info.scale [Y]);
-tempv [Z] = I2X (1);
-CFixVector::Normalize (tempv);
-tempm = transformation.m_info.view [1].Transpose();
-*v = tempm * tempv;
+h [X] =  FixMulDiv (FixDiv ((sx<<16) - xCanvW2, xCanvW2), transformation.m_info.scale [Z], transformation.m_info.scale [X]);
+h [Y] = -FixMulDiv (FixDiv ((sy<<16) - xCanvH2, xCanvH2), transformation.m_info.scale [Z], transformation.m_info.scale [Y]);
+h [Z] = I2X (1);
+CFixVector::Normalize (h);
+m = transformation.m_info.view [1].Transpose();
+*v = m * h;
 }
 
 // -----------------------------------------------------------------------------------
