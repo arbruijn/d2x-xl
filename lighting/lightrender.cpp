@@ -514,7 +514,7 @@ if (gameStates.render.nLightingMethod) {
 				continue;
 			}
 #endif
-		if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment))
+		if ((nLightSeg < 0) || !LIGHTVIS (nLightSeg, nSegment))
 			continue;
 		if (!(bForce = (prl->info.nSegment == nSegment) && (prl->info.nSide == nSide))) {
 			prl->render.xDistance = (fix) ((CFixVector::Dist (*vPixelPos, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / prl->info.fRange);

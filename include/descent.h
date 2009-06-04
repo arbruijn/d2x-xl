@@ -1702,8 +1702,8 @@ class CSegmentData {
 		float						fRad;
 		CArray<CFixVector>	segCenters [2];
 		CArray<CFixVector>	sideCenters;
-		CArray<ubyte>			bVertVis;
-		CArray<ubyte>			bSegVis;
+		CArray<ubyte>			bVertVis [2];
+		CArray<ubyte>			bSegVis [2];
 		int						nVertices;
 		int						nFaceVerts;
 		int						nLastVertex;
@@ -3335,7 +3335,8 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 
 #define MAX_LIGHT_RANGE	I2X (250)
 
-#define SEGVIS(_i,_j)	((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
+#define SEGVIS(_i,_j)	((gameData.segs.bSegVis [0][SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
+#define LIGHTVIS(_i,_j)	((gameData.segs.bSegVis [1][SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
 
 //	-----------------------------------------------------------------------------------------------------------
 
