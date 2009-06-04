@@ -338,7 +338,8 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		}
 	// view from segment center towards current side
 	vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
-	vNormal.Neg ();
+	if (!bLights)
+		vNormal.Neg ();
 	viewer.info.position.mOrient = CFixMatrix::Create (&vNormal, 0);
 	G3StartFrame (0, 0);
 	RenderStartFrame ();
