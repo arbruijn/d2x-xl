@@ -315,8 +315,17 @@ if (nStartSeg == nDbgSeg)
 #endif
 segP = SEGMENTS + nStartSeg;
 sideP = segP->m_sides + nFirstSide;
-if (bLights)
-	viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
+if (bLights) {
+	if (bLights == 5) {
+		viewer.info.position.vPos = sideP->Center ();
+		vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
+		}
+	else {
+		viewer.info.position.vPos = CFixVector::Avg (VERTICES [sideP->m_corners [bLights - 1]], VERTICES [sideP->m_corners [bLights % 4]]);
+		vNormal = sideP->Center () - viewer.info.position.vPos;
+		CFixVector::Normalize (vNormal);
+		}
+	}
 else
 	viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();
 viewer.info.nSegment = nStartSeg;
@@ -337,9 +346,10 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 			}
 		}
 	// view from segment center towards current side
-	vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
-	if (!bLights)
+	if (!bLights) {
+		vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 		vNormal.Neg ();
+		}
 	viewer.info.position.mOrient = CFixMatrix::Create (&vNormal, 0);
 	G3StartFrame (0, 0);
 	RenderStartFrame ();
@@ -416,7 +426,7 @@ if (startI < 0)
 CDynLight* pl = lightManager.Lights () + startI;
 for (i = endI - startI; i; i--, pl++)
 	if ((pl->info.nSegment >= 0) && (pl->info.nSide >= 0))
-		for (int j = 1; j <= 4; j++)
+		for (int j = 1; j <= 5; j++)
 			ComputeSingleSegmentVisibility (pl->info.nSegment, pl->info.nSide, pl->info.nSide, j);
 }
 
