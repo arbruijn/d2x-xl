@@ -295,7 +295,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1)
+fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, short& nModel)
 {
 	CFixVector		vHit, vRef = objP2->info.position.vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
@@ -303,7 +303,7 @@ fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP
 	CModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->rType.polyObjInfo.nModel;
 	tBox				hb1 [MAX_HITBOXES + 1];
 	tBox				hb2 [MAX_HITBOXES + 1];
-	fix				dMin = 0x7fffffff;
+	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel1 =
@@ -326,8 +326,12 @@ TransformHitboxes (objP2, &vRef, hb2);
 for (; iModel1 <= nModels1; iModel1++) {
 	for (; iModel2 <= nModels2; iModel2++) {
 		if (FindHitboxIntersection (vHit, hb1 + iModel1, hb2 + iModel2, p0)) {
-			dMin = RegisterHit (&intersection, &vHit, &vRef, dMin);
 			nHits++;
+			xDist = RegisterHit (&intersection, &vHit, &vRef, dMin);
+			if (dMin > xDist) {
+				dMin = xDist;
+				nModel = iModel1;
+				}
 			}
 		}
 	}
@@ -350,7 +354,7 @@ return nHits ? dMin ? dMin : 1 : 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vRef, CObject *objP, fix rad, short& nModel)
+fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *objP, fix rad, short& nModel)
 {
 	int				iModel, nModels;
 	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;
@@ -371,7 +375,6 @@ if (!vRef)
 intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
 TransformHitboxes (objP, vRef, hb);
 for (; iModel <= nModels; iModel++) {
-#if 1	
 	if (FindLineHitboxIntersection (vHit, hb + iModel, p0, p1, p0, rad)) {
 		xDist = RegisterHit (&intersection, &vHit, vRef, dMin);
 		if (dMin > xDist) {
@@ -379,24 +382,6 @@ for (; iModel <= nModels; iModel++) {
 			nModel = iModel;
 			}
 		}
-#else
-	tQuad				*pf;
-	CFixVector		vHit, v;
-	fix				h, d;
-
-	for (int i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
-		h = CheckLineToFace (vHit, p0, p1, rad, pf->v, 4, pf->n + 1);
-		if (h) {
-			v = vHit - *p0;
-			d = CFixVector::Normalize (v);
-			if (xDist > d) {
-				intersection = vHit;
-				if (!(xDist = d))
-					return 0;
-				}
-			}
-		}
-#endif
 	}
 return xDist;
 }

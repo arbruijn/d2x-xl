@@ -280,15 +280,15 @@ int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegme
 
 #if DBG
 OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (
-	F2X (0.5 * float (pow (0.95, 10))), 
-	F2X (0.5 * float (pow (0.975, 10))), 
-	F2X (0.5 * float (pow (0.975, 10)))
+	F2X (0.5 * float (pow (0.95, 5))), 
+	F2X (0.5 * float (pow (0.975, 5))), 
+	F2X (0.5 * float (pow (0.975, 5)))
 	);
 #endif
 	if (d_rand () > parentP->GunDamage ())
 		return -1;
 
-	fix			damage = (I2X (1) / 2 - parentP->AimDamage ()) >> 3;
+	fix			damage = (I2X (1) / 2 - parentP->AimDamage ()) >> 2;
 
 if (damage > 0) {
 	CAngleVector	v;

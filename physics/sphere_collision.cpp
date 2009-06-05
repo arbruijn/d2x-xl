@@ -432,7 +432,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
-		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1))) {
+		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1, nModel))) {
 			if (!CFixVector::Dist (*p0, *p1))
 				return 0;
 			dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, 0, nModel);
@@ -446,7 +446,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		if (bThisPoly) {
 			// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 			// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
-			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, NULL, NULL, thisObjP, otherObjP->info.xSize, nModel)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, NULL, thisObjP, otherObjP->info.xSize, nModel)))
 				return 0;
 			}
 		else {
@@ -456,7 +456,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			vn = otherObjP->info.position.vPos - v0;
 			CFixVector::Normalize (vn);
 			v1 = v0 + vn * thisObjP->info.xSize;
-			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize, nModel)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, p1, otherObjP, thisObjP->info.xSize, nModel)))
 				return 0;
 			}
 		}
@@ -475,7 +475,7 @@ intersection = vHit;
 CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, vHit, 1, 1);
 #endif
 if (!bCheckVisibility) {
-	thisObjP->RegisterHit (vHit);
+	thisObjP->RegisterHit (vHit, nModel);
 	vHit = otherObjP->RegisterHit (vHit, nModel);
 	}
 return dist;
