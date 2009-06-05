@@ -1091,13 +1091,13 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 		if (nMinObj >= 0) {
 			gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + nMinObj)->vPos;
 			gameData.ai.nBelievedPlayerSeg = OBJSEG (OBJECTS + nMinObj);
-			CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, objP->info.position.vPos);
+			CFixVector::NormalizedDir (gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, objP->info.position.vPos);
 			return 0;
 			}
 		}
 	}
 siP->bVisAndVecComputed = 0;
-if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (d_rand () > objP->AimDamage ()))
 	gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO-1)].vLastPos;
 else
 	gameData.ai.vBelievedPlayerPos = OBJPOS (gameData.objs.consoleP)->vPos;

@@ -161,7 +161,7 @@ objP->mType.physInfo.thrust = objP->info.position.mOrient.FVec () * forwardThrus
 objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * Controls [0].sidewaysThrustTime;
 // slide up/down
 objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * Controls [0].verticalThrustTime;
-objP->mType.physInfo.thrust *= objP->DriveDamage ();
+objP->mType.physInfo.thrust *= 2 * objP->DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
 bMulti = IsMultiGame;
