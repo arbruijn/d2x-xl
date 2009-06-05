@@ -435,11 +435,11 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1, nModel))) {
 			if (!CFixVector::Dist (*p0, *p1))
 				return 0;
-			dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, 0, nModel);
+			dist = CheckVectorToHitbox (vHit, p0, p1, NULL, thisObjP, 0, nModel);
 			if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
 				return 0;
 			}
-		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1);
+		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1, nModel);
 		VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 		}
 	else {
