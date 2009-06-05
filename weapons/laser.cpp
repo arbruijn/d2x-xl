@@ -278,18 +278,25 @@ int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegme
 	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
-if (EGI_FLAG (nDamageModel, 0, 0, 0)) {
 	if (d_rand () > parentP->GunDamage ())
 		return -1;
-	fixang xAngle = d_rand () % (I2X (1) / 2 - parentP->AimDamage ());
-	if (xAngle) {
-		CFixMatrix	m;
-		m.Create (&vDir, xAngle);
-		CFixVector v = vDir - m * vDir;
-		m.Create (&v, 2 * (d_rand () - I2X (1)));
-		vDir += v;
-		CFixVector::Normalize (vDir);
-		}
+
+	fix				speed, damage = I2X (1) - 2 * parentP->AimDamage ();
+
+	//this is a horrible hack.  guided missile stuff should not be
+	//handled in the middle of a routine that is dealing with the CPlayerData
+objP->mType.physInfo.rotThrust.SetZero ();
+
+if (damage > 0) {
+	CAngleVector	v;
+	CFixMatrix		m;
+
+	v [PA] = damage - 2 * d_rand () % damage;
+	v [BA] = 0;
+	v [HA] = damage - 2 * d_rand () % damage;
+	m = CFixMatrix::Create (v);
+	vDir = m * vDir;
+	CFixVector::Normalize (vDir);
 	}
 
 Assert (nWeaponType < gameData.weapons.nTypes [0]);

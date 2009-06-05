@@ -1544,4 +1544,10 @@ return OBJ_IDX (this);
 }
 
 //------------------------------------------------------------------------------
+
+fix CObject::AimDamage (void) { return EGI_FLAG (nHitboxes, 0, 0, 0) ? m_damage.xAim : I2X (1) / 2; }
+fix CObject::GunDamage (void) { return EGI_FLAG (nHitboxes, 0, 0, 0) ? m_damage.xGuns : I2X (1) / 2; }
+fix CObject::DriveDamage (void) { return EGI_FLAG (nHitboxes, 0, 0, 0) ? m_damage.xDrives : I2X (1) / 2; }
+
+//------------------------------------------------------------------------------
 //eof

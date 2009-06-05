@@ -879,9 +879,9 @@ class CObject : public CObjectInfo {
 			m_damage.bCritical = false;	// reset when being queried
 			return bCritical;
 			}
-		inline fix AimDamage (void) { return m_damage.xAim; }
-		inline fix GunDamage (void) { return m_damage.xGuns; }
-		inline fix DriveDamage (void) { return m_damage.xDrives; }
+		fix AimDamage (void);
+		fix GunDamage (void);
+		fix DriveDamage (void);
 		inline void SetDamage (fix xAim, fix xDrives, fix xGuns) {
 			m_damage.xAim = xAim;
 			m_damage.xDrives = xDrives;

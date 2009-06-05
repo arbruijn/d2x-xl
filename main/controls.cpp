@@ -70,9 +70,9 @@ else {
 
 void ReadFlyingControls (CObject *objP)
 {
-	fix	forwardThrustTime;
-	CObject *gmObjP;
-	int	bMulti;
+	fix		forwardThrustTime;
+	CObject*	gmObjP;
+	int		bMulti;
 
 if (gameData.time.xFrame <= 0)
 	return;
@@ -95,19 +95,19 @@ if ((objP->info.nType != OBJ_PLAYER) || (objP->info.nId != gameData.multiplayer.
 tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
 gmObjP = gmiP->objP;
 if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
-	CAngleVector rotangs;
-	CFixMatrix rotmat,tempm;
-	fix speed;
+	CAngleVector	vRotAngs;
+	CFixMatrix		mRot, mOrient;
+	fix				speed;
 
 	//this is a horrible hack.  guided missile stuff should not be
 	//handled in the middle of a routine that is dealing with the CPlayerData
 	objP->mType.physInfo.rotThrust.SetZero ();
-	rotangs[PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-	rotangs[BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude/16;
-	rotangs[HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude/64;
-	rotmat = CFixMatrix::Create(rotangs);
-	tempm = gmObjP->info.position.mOrient * rotmat;
-	gmObjP->info.position.mOrient = tempm;
+	vRotAngs [PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
+	vRotAngs [BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
+	vRotAngs [HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
+	mRot = CFixMatrix::Create (vRotAngs);
+	mOrient = gmObjP->info.position.mOrient * mRot;
+	gmObjP->info.position.mOrient = mOrient;
 	speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);
 	gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient.FVec () * speed;
 	if(IsMultiGame)
@@ -123,7 +123,7 @@ else {
 	                                                     Controls [0].bankTime);
 	}
 forwardThrustTime = Controls [0].forwardThrustTime;
-if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) {
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [gameData.multiplayer.nLocalPlayer].DriveDamage ())) {
 	if (Controls [0].afterburnerState) {			//CPlayerData has key down
 		fix afterburner_scale;
 		int oldCount,newCount;
