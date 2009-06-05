@@ -7,6 +7,7 @@
 #include "network.h"
 #include "rendermine.h"
 #include "omega.h"
+#include "visibility.h"
 #include "trackobject.h"
 
 #define	OMEGA_MIN_TRACKABLE_DOT			 (I2X (15) / 16)		//	Larger values mean narrower cone.  I2X (1) means damn near impossible.  0 means 180 degree field of view.

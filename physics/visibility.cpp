@@ -125,7 +125,7 @@ return nTranspType;
 int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
 {
 	tCollisionQuery	fq;
-	int			nHitType;
+	int					nHitType;
 	tCollisionData		hitData;
 
 	//see if we can see this CPlayerData
@@ -151,9 +151,9 @@ return nHitType != HIT_WALL;
 
 int CanSeeObject (int nObject, int bCheckObjs)
 {
-	tFVIQuery fq;
-	int nHitType;
-	tFVIData hit_data;
+	tCollisionQuery	fq;
+	int					nHitType;
+	tCollisionData		hitData;
 
 	//see if we can see this CPlayerData
 
@@ -166,8 +166,8 @@ fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
 fq.bCheckVisibility = false;
-nHitType = FindVectorIntersection (&fq, &hit_data);
-return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);
+nHitType = FindHitpoint (&fq, &hitData);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

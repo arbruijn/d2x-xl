@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "rendermine.h"
 #include "rendershadows.h"
+#include "visibility.h"
 
 //------------------------------------------------------------------------------
 

@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "gameseg.h"
 #include "headlight.h"
+#include "visibility.h"
 
 void SayEscortGoal (int goal_num);
 void ShowEscortMenu (char *msg);

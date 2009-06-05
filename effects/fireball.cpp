@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightning.h"
 #include "dropobject.h"
 #include "cockpit.h"
+#include "visibility.h"
 
 //#define _DEBUG
 #define EXPLOSION_SCALE (I2X (5)/2)		//explosion is the obj size times this

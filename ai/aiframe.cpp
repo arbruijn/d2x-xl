@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "multibot.h"
 #include "headlight.h"
+#include "visibility.h"
 
 #include "string.h"
 //#define _DEBUG

@@ -3749,6 +3749,10 @@
 						RelativePath="..\include\slowmotion.h"
 						>
 					</File>
+					<File
+						RelativePath="..\include\visibility.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Source Files"

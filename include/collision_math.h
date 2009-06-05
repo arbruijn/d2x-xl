@@ -107,7 +107,7 @@ void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int nSi
 int ObjectIntersectsWall (CObject *objP);
 
 int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, 
-							short nSegment, short nSide, short iFace, int nv, fix rad);
+								short nSegment, short nSide, short iFace, int nv, fix rad);
 
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
 										 CFixVector *p0, CFixVector *p1, fix rad);

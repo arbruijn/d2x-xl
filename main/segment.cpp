@@ -9,6 +9,7 @@
 #include "wall.h"
 #include "fireball.h"
 #include "renderlib.h"
+#include "visibility.h"
 #include "text.h"
 
 // Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)

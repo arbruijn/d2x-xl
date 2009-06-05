@@ -34,6 +34,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "light.h"
 #include "lightning.h"
+#include "visibility.h"
 
 extern tFaceColor tMapColor;
 extern int bPrintLine;

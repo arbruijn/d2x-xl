@@ -44,15 +44,13 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
 int AICanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToPlayer)
 {
-	fix			dot;
+	fix					dot;
 	tCollisionQuery	fq;
 
 	//	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 fq.p0	= pos;
-if (((*pos)[X] != objP->info.position.vPos [X]) ||
-	 ((*pos)[Y] != objP->info.position.vPos [Y]) ||
-	 ((*pos)[Z] != objP->info.position.vPos [Y])) {
+if ((*pos) != objP->info.position.vPos) {
 	short nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
 		fq.startSeg = objP->info.nSegment;

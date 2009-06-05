@@ -18,6 +18,8 @@ int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v);
 
 int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad = 0);
 
+int CanSeeObject (int nObject, int bCheckObjs);
+
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 
 #endif //_VISIBILITY_H
