@@ -1491,11 +1491,11 @@ if ((nModel >= 0) && EGI_FLAG (nDamageModel, 0, 0, 0)) {	// check and handle cri
 			HUDMessage (0, "crit. hit GUNS\n", nModel);
 #endif
 		if (nModel < 2)
-			m_damage.xAim /= 2;
+			m_damage.xAim = 3 * m_damage.xAim / 4;
 		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 4)
-			m_damage.xDrives /= 2;
+			m_damage.xDrives = 3 * m_damage.xDrives / 4;
 		else
-			m_damage.xGuns /= 2;
+			m_damage.xGuns = 3 * m_damage.xGuns / 4;
 		return vHit;
 		}
 	}
