@@ -138,8 +138,10 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 		m = (pl->info.nSegment < 0) ? OBJECTS [pl->info.nObject].info.nSegment : pl->info.nSegment;
 		if (!gameData.segs.LightVis (m, i))
 			continue;
-		h = (int) (CFixVector::Dist (center, pl->info.vPos) - F2X (pl->info.fRad) / 10.0f);
-		if (h > MAX_LIGHT_RANGE * pl->info.fRange)
+		h = int (CFixVector::Dist (center, pl->info.vPos) - F2X (pl->info.fRad));
+		if (h < 0)
+			h = 0;
+		else if (h > MAX_LIGHT_RANGE * pl->info.fRange)
 			continue;
 		pDists [n].nDist = h;
 		pDists [n++].nIndex = l;
