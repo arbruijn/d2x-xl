@@ -166,12 +166,12 @@ xProjectedTime = FixDiv (xDistToPlayer, xMaxWeaponSpeed);
 (*vFire)[Y] = ComputeLeadComponent ((*vBelievedPlayerPos)[Y], (*vFirePoint)[Y], gameData.objs.consoleP->mType.physInfo.velocity[Y], xProjectedTime);
 (*vFire)[Z] = ComputeLeadComponent ((*vBelievedPlayerPos)[Z], (*vFirePoint)[Z], gameData.objs.consoleP->mType.physInfo.velocity[Z], xProjectedTime);
 CFixVector::Normalize (*vFire);
-Assert (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (3)/2);
+Assert (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (3) / 2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
-if (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (1)/2) {
+if (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (1) / 2) {
 	*vFire += vVecToPlayer;
-	*vFire *= I2X (1)/2;
-	if (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (1)/2) {
+	*vFire *= I2X (1) / 2;
+	if (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (1) / 2) {
 		return 0;
 		}
 	}
@@ -216,8 +216,8 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 //	If CPlayerData is cloaked, maybe don't fire based on how long cloaked and randomness.
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	fix	xCloakTime = gameData.ai.cloakInfo [nObject % MAX_AI_CLOAK_INFO].lastTime;
-	if ((gameData.time.xGame - xCloakTime > CLOAK_TIME_MAX/4) &&
-		 (d_rand () > FixDiv (gameData.time.xGame - xCloakTime, CLOAK_TIME_MAX)/2)) {
+	if ((gameData.time.xGame - xCloakTime > CLOAK_TIME_MAX / 4) &&
+		 (d_rand () > FixDiv (gameData.time.xGame - xCloakTime, CLOAK_TIME_MAX) / 2)) {
 		SetNextFireTime (objP, ailP, botInfoP, nGun);
 		return;
 		}
@@ -265,12 +265,12 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		}
 	}
 //	Set position to fire at based on difficulty level and robot's aiming ability
-aim = I2X (FIRE_K) - (FIRE_K-1)* (botInfoP->aim << 8);	//	I2X (1) in bitmaps.tbl = same as used to be.  Worst is 50% more error.
+aim = I2X (FIRE_K) - (FIRE_K - 1) * (botInfoP->aim << 8);	//	I2X (1) in bitmaps.tbl = same as used to be.  Worst is 50% more error.
 //	Robots aim more poorly during seismic disturbance.
 if (gameStates.gameplay.seismic.nMagnitude) {
 	fix temp = I2X (1) - abs (gameStates.gameplay.seismic.nMagnitude);
-	if (temp < I2X (1)/2)
-		temp = I2X (1)/2;
+	if (temp < I2X (1) / 2)
+		temp = I2X (1) / 2;
 	aim = FixMul (aim, temp);
 	}
 //	Lead the CPlayerData half the time.
@@ -284,14 +284,13 @@ if (d_rand () < 16384) {
 dot = 0;
 count = 0;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
 i = (NDL - gameStates.app.nDifficultyLevel - 1) * 4;
-while ((count < 4) && (dot < I2X (1)/4)) {
-	bpp_diff[X] = (*vBelievedPlayerPos)[X] + FixMul ((d_rand ()-16384) * i, aim);
-	bpp_diff[Y] = (*vBelievedPlayerPos)[Y] + FixMul ((d_rand ()-16384) * i, aim);
-	bpp_diff[Z] = (*vBelievedPlayerPos)[Z] + FixMul ((d_rand ()-16384) * i, aim);
-	CFixVector::NormalizedDir(vFire, bpp_diff, *vFirePoint);
+do {
+	bpp_diff [X] = (*vBelievedPlayerPos)[X] + FixMul ((d_rand () - 16384) * i, aim);
+	bpp_diff [Y] = (*vBelievedPlayerPos)[Y] + FixMul ((d_rand () - 16384) * i, aim);
+	bpp_diff [Z] = (*vBelievedPlayerPos)[Z] + FixMul ((d_rand () - 16384) * i, aim);
+	CFixVector::NormalizedDir (vFire, bpp_diff, *vFirePoint);
 	dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vFire);
-	count++;
-	}
+	} while ((--count < 4) && (dot < I2X (1) / 4));
 
 player_led:
 

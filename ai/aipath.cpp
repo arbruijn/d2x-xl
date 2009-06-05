@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	PATH_VALIDATION	1
 #endif
 
-void AIPathSetOrientAndVel (CObject *objP, CFixVector* vGoalPoint, int nPlayerVisibility, CFixVector *vec_to_player);
+void AIPathSetOrientAndVel (CObject *objP, CFixVector* vGoalPoint, int nPlayerVisibility, CFixVector *vecToPlayer);
 void MaybeAIPathGarbageCollect (void);
 void AICollectPathGarbage (void);
 #if PATH_VALIDATION
@@ -848,11 +848,11 @@ else
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, CFixVector *vec_to_player)
+void AIFollowPath (CObject *objP, int nPlayerVisibility, int nPrevVisibility, CFixVector *vecToPlayer)
 {
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 
-	CFixVector		vGoalPoint, new_vGoalPoint;
+	CFixVector		vGoalPoint, vNewGoalPoint;
 	fix				xDistToGoal;
 	tRobotInfo*		botInfoP = &ROBOTINFO (objP->info.nId);
 	int				forced_break, original_dir, original_index;
@@ -952,10 +952,10 @@ if (!(nPlayerVisibility || nPrevVisibility) && (xDistToPlayer > I2X (200)) && !I
 //	If running from CPlayerData, only run until can't be seen.
 if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 	if ((nPlayerVisibility == 0) && (ailP->playerAwarenessType == 0)) {
-		fix xVelScale = I2X (1) - gameData.time.xFrame/2;
-		if (xVelScale < I2X (1)/2)
-			xVelScale = I2X (1)/2;
-		objP->mType.physInfo.velocity *= xVelScale;
+		fix xVelScale = I2X (1) - gameData.time.xFrame / 2;
+		if (xVelScale < I2X (1) / 2)
+			xVelScale = I2X (1) / 2;
+		objP->mType.physInfo.velocity *= FixMul (xVelScale, objP->DriveDamage () * 2);
 		return;
 		}
 	else if (!(gameData.app.nFrameCount ^ ((objP->Index ()) & 0x07))) {		//	Done 1/8 frames.
@@ -1003,8 +1003,8 @@ vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 forced_break = 0;		//	Gets set for short paths.
 original_dir = aiP->PATH_DIR;
 original_index = aiP->nCurPathIndex;
-thresholdDistance = FixMul (objP->mType.physInfo.velocity.Mag(), gameData.time.xFrame)*2 + I2X (2);
-new_vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
+thresholdDistance = FixMul (objP->mType.physInfo.velocity.Mag (), gameData.time.xFrame) * 2 + I2X (2);
+vNewGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
 while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	//	Advance to next point on path.
 	aiP->nCurPathIndex += aiP->PATH_DIR;
@@ -1121,8 +1121,8 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 		break;
 		}
 	else {
-		new_vGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
-		vGoalPoint = new_vGoalPoint;
+		vNewGoalPoint = gameData.ai.routeSegs [aiP->nHideIndex + aiP->nCurPathIndex].point;
+		vGoalPoint = vNewGoalPoint;
 		xDistToGoal = CFixVector::Dist(vGoalPoint, objP->info.position.vPos);
 		//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 		}
@@ -1136,7 +1136,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	}	//	end while
 //	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->info.position.mOrient) for this CObject.
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
-AIPathSetOrientAndVel (objP, &vGoalPoint, nPlayerVisibility, vec_to_player);
+AIPathSetOrientAndVel (objP, &vGoalPoint, nPlayerVisibility, vecToPlayer);
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 }
 
@@ -1151,7 +1151,7 @@ class CObjPath {
 
 //	----------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nPlayerVisibility, CFixVector *vec_to_player)
+void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nPlayerVisibility, CFixVector *vecToPlayer)
 {
 	CFixVector	vCurVel = objP->mType.physInfo.velocity;
 	CFixVector	vNormCurVel;
@@ -1159,12 +1159,12 @@ void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nPlayerVi
 	CFixVector	vCurPos = objP->info.position.vPos;
 	CFixVector	vNormFwd;
 	fix			xSpeedScale;
+	fix			xMaxSpeed;
 	fix			dot;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
-	fix			xMaxSpeed;
 
 //	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
-xMaxSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel];
+xMaxSpeed = FixMul (botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel], 2 * objP->DriveDamage ());
 if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = xMaxSpeed*3/2;
 vNormToGoal = *vGoalPoint - vCurPos;
@@ -1175,14 +1175,10 @@ vNormFwd = objP->info.position.mOrient.FVec ();
 CFixVector::Normalize (vNormFwd);
 dot = CFixVector::Dot (vNormToGoal, vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
-if (dot < -I2X (15)/16) {
+if (dot < -I2X (15) / 16)
 	vNormCurVel = vNormToGoal;
-	}
-else {
-	vNormCurVel[X] += vNormToGoal[X]/2;
-	vNormCurVel[Y] += vNormToGoal[Y]/2;
-	vNormCurVel[Z] += vNormToGoal[Z]/2;
-	}
+else
+	vNormCurVel += vNormToGoal / (I2X (1) / 2);
 CFixVector::Normalize (vNormCurVel);
 //	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 //	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
@@ -1199,8 +1195,8 @@ vNormCurVel *= xSpeedScale;
 objP->mType.physInfo.velocity = vNormCurVel;
 if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (botInfoP->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (gameData.ai.localInfo [objP->Index ()].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
-		if ((nPlayerVisibility) && (vec_to_player != NULL))
-			vNormToGoal = *vec_to_player;
+		if ((nPlayerVisibility) && (vecToPlayer != NULL))
+			vNormToGoal = *vecToPlayer;
 		else
 			vNormToGoal = -vNormToGoal;
 		}

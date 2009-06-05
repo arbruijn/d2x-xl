@@ -93,33 +93,34 @@ void PlayTestSound(void);
 
 #define CONVERTER_SOUND_DELAY (I2X (1)/2)		//play every half second
 
-void TransferEnergyToShield(fix time)
+void TransferEnergyToShield (fix time)
 {
-	fix e;		//how much energy gets transfered
-	static fix last_playTime=0;
+	fix e;		//how much energy gets transferred
+	static fix last_playTime = 0;
 
-	if (time <= 0)
-		return;
-	e = min (time * CONVERTER_RATE, LOCALPLAYER.energy - INITIAL_ENERGY);
-	e = min (e, (MAX_SHIELDS - LOCALPLAYER.shields) * CONVERTER_SCALE);
-	if (e <= 0) {
-		if (LOCALPLAYER.energy <= INITIAL_ENERGY)
-			HUDInitMessage (TXT_TRANSFER_ENERGY, X2I(INITIAL_ENERGY));
-		else
-			HUDInitMessage (TXT_TRANSFER_SHIELDS);
-		return;
-	}
+if (time <= 0)
+	return;
+e = min (time * CONVERTER_RATE, LOCALPLAYER.energy - INITIAL_ENERGY);
+e = min (e, (MAX_SHIELDS - LOCALPLAYER.shields) * CONVERTER_SCALE);
+if (e <= 0) {
+	if (LOCALPLAYER.energy <= INITIAL_ENERGY)
+		HUDInitMessage (TXT_TRANSFER_ENERGY, X2I(INITIAL_ENERGY));
+	else
+		HUDInitMessage (TXT_TRANSFER_SHIELDS);
+	return;
+}
 
-	LOCALPLAYER.energy -= e;
-	LOCALPLAYER.shields += e / CONVERTER_SCALE;
-	MultiSendShields ();
-	gameStates.app.bUsingConverter = 1;
-	if (last_playTime > gameData.time.xGame)
-		last_playTime = 0;
+LOCALPLAYER.energy -= e;
+LOCALPLAYER.shields += e / CONVERTER_SCALE;
+OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+MultiSendShields ();
+gameStates.app.bUsingConverter = 1;
+if (last_playTime > gameData.time.xGame)
+	last_playTime = 0;
 
-	if (gameData.time.xGame > last_playTime+CONVERTER_SOUND_DELAY) {
-		audio.PlaySound(SOUND_CONVERT_ENERGY);
-		last_playTime = gameData.time.xGame;
+if (gameData.time.xGame > last_playTime+CONVERTER_SOUND_DELAY) {
+	audio.PlaySound (SOUND_CONVERT_ENERGY);
+	last_playTime = gameData.time.xGame;
 	}
 }
 

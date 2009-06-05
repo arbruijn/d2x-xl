@@ -118,9 +118,9 @@ else {
 	if (Controls [0].headingTime)
 		Controls [0].headingTime = Controls [0].headingTime;
 #endif
-	objP->mType.physInfo.rotThrust = CFixVector::Create (Controls[0].pitchTime,
-	                                                     Controls[0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
-	                                                     Controls[0].bankTime);
+	objP->mType.physInfo.rotThrust = CFixVector::Create (Controls [0].pitchTime,
+	                                                     Controls [0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
+	                                                     Controls [0].bankTime);
 	}
 forwardThrustTime = Controls [0].forwardThrustTime;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) {
@@ -129,7 +129,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) {
 		int oldCount,newCount;
 
 		//add in value from 0..1
-		afterburner_scale = I2X (1) + min(I2X (1)/2, gameData.physics.xAfterburnerCharge) * 2;
+		afterburner_scale = I2X (1) + min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
 		forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
 		oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 		if (!gameStates.gameplay.bAfterburnerCheat)
@@ -161,6 +161,7 @@ objP->mType.physInfo.thrust = objP->info.position.mOrient.FVec () * forwardThrus
 objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * Controls [0].sidewaysThrustTime;
 // slide up/down
 objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * Controls [0].verticalThrustTime;
+objP->mType.physInfo.thrust *= objP->DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
 bMulti = IsMultiGame;

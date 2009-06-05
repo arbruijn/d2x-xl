@@ -398,6 +398,7 @@ fix CheckVectorToObject (CFixVector& intersection, CFixVector *p0, CFixVector *p
 	fix			size, dist;
 	CFixVector	vHit, v0, v1, vn, vPos;
 	int			bThisPoly, bOtherPoly;
+	short			nModel = -1;
 
 if (rad < 0)
 	size = 0;
@@ -434,11 +435,11 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 		if (!(dist = CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1))) {
 			if (!CFixVector::Dist (*p0, *p1))
 				return 0;
-			dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, 0);
+			dist = CheckVectorToHitbox (vHit, p0, p1, &vn, NULL, thisObjP, 0, nModel);
 			if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
 				return 0;
 			}
-		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1);
+		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1, nModel);
 		VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 		}
 	else {
@@ -467,6 +468,7 @@ else {
 #endif
 	if (!(dist = CheckVectorToSphere1 (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
+	nModel = 0;
 	}
 intersection = vHit;
 #if 0 //DBG
@@ -474,7 +476,7 @@ CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, v
 #endif
 if (!bCheckVisibility) {
 	thisObjP->RegisterHit (vHit);
-	otherObjP->RegisterHit (vHit);
+	vHit = otherObjP->RegisterHit (vHit, nModel);
 	}
 return dist;
 }
@@ -496,8 +498,8 @@ return (t == nObject);
 #define FVI_NEWCODE 2
 
 int ComputeHitpoint (CFixVector *vIntP, short *intS, CFixVector *p0, short nStartSeg, CFixVector *p1,
-					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
-					 short *nSegments, int nEntrySeg, bool bCheckVisibility)
+							fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
+							short *nSegments, int nEntrySeg, bool bCheckVisibility)
 {
 	CSegment		*segP;				//the CSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces

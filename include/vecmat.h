@@ -63,15 +63,14 @@ class __pack__ CFixVector {
 
 		static const CFixVector Create (fix f0, fix f1, fix f2);
 		static const CFixVector Avg (const CFixVector& src0, const CFixVector& src1);
-		static const CFixVector Avg (CFixVector& src0, CFixVector& src1,
-								   CFixVector& src2, CFixVector& src3);
+		static const CFixVector Avg (CFixVector& src0, CFixVector& src1, CFixVector& src2, CFixVector& src3);
 		static const CFixVector Cross (const CFixVector& v0, const CFixVector& v1);
 		static CFixVector& Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1);
-		//computes the delta angle between two vectors.
-		//vectors need not be normalized. if they are, call CFixVector::DeltaAngleNorm ()
-		//the forward vector (third parameter) can be NULL, in which case the absolute
-		//value of the angle in returned.  Otherwise the angle around that vector is
-		//returned.
+		// computes the delta angle between two vectors.
+		// vectors need not be normalized. if they are, call CFixVector::DeltaAngleNorm ()
+		// the forward vector (third parameter) can be NULL, in which case the absolute
+		// value of the angle in returned.  Otherwise the angle around that vector is
+		// returned.
 		static const fixang DeltaAngle (const CFixVector& v0, const CFixVector& v1, CFixVector *fVec);		//computes the delta angle between two normalized vectors.
 		static const fixang DeltaAngleNorm (const CFixVector& v0, const CFixVector& v1, CFixVector *fVec);
 		static const fix Dist (const CFixVector& vec0, const CFixVector& vec1);
@@ -83,9 +82,9 @@ class __pack__ CFixVector {
 		static const CFixVector Normal (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2);
 		static const CFixVector Random (void);
 		static const CFixVector Reflect (const CFixVector& d, const CFixVector& n);
-		//return the normalized direction vector between two points
-		//dest = normalized (end - start).  Returns Mag of direction vector
-		//NOTE: the order of the parameters m_data.matches the vector subtraction
+		// return the normalized direction vector between two points
+		// dest = normalized (end - start).  Returns Mag of direction vector
+		// NOTE: the order of the parameters m_data.matches the vector subtraction
 		static const fix NormalizedDir (CFixVector& dest, const CFixVector& end, const CFixVector& start);
 
 		// access op for assignment
@@ -1100,101 +1099,115 @@ class __pack__ CFixMatrix {
 // -----------------------------------------------------------------------------
 // CFixMatrix static inlines
 
-inline const CFixMatrix CFixMatrix::Create (const CFixVector& r, const CFixVector& u, const CFixVector& f) {
+inline const CFixMatrix CFixMatrix::Create (const CFixVector& r, const CFixVector& u, const CFixVector& f) 
+{
 	CFixMatrix m;
-	m.m_data.mat [RVEC] = r;
-	m.m_data.mat [UVEC] = u;
-	m.m_data.mat [FVEC] = f;
-	return m;
+
+m.m_data.mat [RVEC] = r;
+m.m_data.mat [UVEC] = u;
+m.m_data.mat [FVEC] = f;
+return m;
 }
 
-inline const CFixMatrix CFixMatrix::Create (fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh) {
+inline const CFixMatrix CFixMatrix::Create (fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh) 
+{
 	CFixMatrix m;
 	fix sbsh, cbch, cbsh, sbch;
 
-	sbsh = FixMul (sinb, sinh);
-	cbch = FixMul (cosb, cosh);
-	cbsh = FixMul (cosb, sinh);
-	sbch = FixMul (sinb, cosh);
-	m.m_data.mat [RVEC][X] = cbch + FixMul (sinp, sbsh);		//m1
-	m.m_data.mat [UVEC][Z] = sbsh + FixMul (sinp, cbch);		//m8
-	m.m_data.mat [UVEC][X] = FixMul (sinp, cbsh) - sbch;		//m2
-	m.m_data.mat [RVEC][Z] = FixMul (sinp, sbch) - cbsh;		//m7
-	m.m_data.mat [FVEC][X] = FixMul (sinh, cosp);			//m3
-	m.m_data.mat [RVEC][Y] = FixMul (sinb, cosp);			//m4
-	m.m_data.mat [UVEC][Y] = FixMul (cosb, cosp);			//m5
-	m.m_data.mat [FVEC][Z] = FixMul (cosh, cosp);			//m9
-	m.m_data.mat [FVEC][Y] = -sinp;							//m6
-	return m;
+sbsh = FixMul (sinb, sinh);
+cbch = FixMul (cosb, cosh);
+cbsh = FixMul (cosb, sinh);
+sbch = FixMul (sinb, cosh);
+m.m_data.mat [RVEC][X] = cbch + FixMul (sinp, sbsh);		//m1
+m.m_data.mat [UVEC][Z] = sbsh + FixMul (sinp, cbch);		//m8
+m.m_data.mat [UVEC][X] = FixMul (sinp, cbsh) - sbch;		//m2
+m.m_data.mat [RVEC][Z] = FixMul (sinp, sbch) - cbsh;		//m7
+m.m_data.mat [FVEC][X] = FixMul (sinh, cosp);			//m3
+m.m_data.mat [RVEC][Y] = FixMul (sinb, cosp);			//m4
+m.m_data.mat [UVEC][Y] = FixMul (cosb, cosp);			//m5
+m.m_data.mat [FVEC][Z] = FixMul (cosh, cosp);			//m9
+m.m_data.mat [FVEC][Y] = -sinp;							//m6
+return m;
 }
 
 //computes a m_data.matrix from a Set of three angles.  returns ptr to m_data.matrix
-inline const CFixMatrix CFixMatrix::Create (const CAngleVector& a) {
+inline const CFixMatrix CFixMatrix::Create (const CAngleVector& a) 
+{
 	fix sinp, cosp, sinb, cosb, sinh, cosh;
-	FixSinCos (a [PA], &sinp, &cosp);
-	FixSinCos (a [BA], &sinb, &cosb);
-	FixSinCos (a [HA], &sinh, &cosh);
-	return Create (sinp, cosp, sinb, cosb, sinh, cosh);
+
+FixSinCos (a [PA], &sinp, &cosp);
+FixSinCos (a [BA], &sinb, &cosb);
+FixSinCos (a [HA], &sinh, &cosh);
+return Create (sinp, cosp, sinb, cosb, sinh, cosh);
 }
 
 //computes a m_data.matrix from a forward vector and an angle
-inline const CFixMatrix CFixMatrix::Create (CFixVector *v, fixang a) {
+inline const CFixMatrix CFixMatrix::Create (CFixVector *v, fixang a) 
+{
 	fix sinb, cosb, sinp, cosp;
 
-	FixSinCos (a, &sinb, &cosb);
-	sinp = - (*v) [Y];
-	cosp = FixSqrt (I2X (1) - FixMul (sinp, sinp));
-	return Create (sinp, cosp, sinb, cosb, FixDiv ((*v) [X], cosp), FixDiv ((*v) [Z], cosp));
+FixSinCos (a, &sinb, &cosb);
+sinp = - (*v) [Y];
+cosp = FixSqrt (I2X (1) - FixMul (sinp, sinp));
+return Create (sinp, cosp, sinb, cosb, FixDiv ((*v) [X], cosp), FixDiv ((*v) [Z], cosp));
 }
 
 
-inline CFixMatrix& CFixMatrix::Invert (CFixMatrix& m) {
+inline CFixMatrix& CFixMatrix::Invert (CFixMatrix& m) 
+{
 	// TODO implement?
 	return m;
 }
 
-inline CFixMatrix& CFixMatrix::Transpose (CFixMatrix& m) {
-	Swap (m [1], m [3]);
-	Swap (m [2], m [6]);
-	Swap (m [5], m [7]);
-	return m;
+inline CFixMatrix& CFixMatrix::Transpose (CFixMatrix& m) 
+{
+Swap (m [1], m [3]);
+Swap (m [2], m [6]);
+Swap (m [5], m [7]);
+return m;
 }
 
 // -----------------------------------------------------------------------------
 // CFixMatrix member ops
 
-inline fix& CFixMatrix::operator[] (size_t idx) {
-	return m_data.vec [idx];
+inline fix& CFixMatrix::operator[] (size_t idx) 
+{
+return m_data.vec [idx];
 }
 
-inline const fix CFixMatrix::operator[] (size_t idx) const {
-	return m_data.vec [idx];
+inline const fix CFixMatrix::operator[] (size_t idx) const 
+{
+return m_data.vec [idx];
 }
 
-inline CFixVector CFixMatrix::operator* (const CFixVector& v) {
-	return CFixVector::Create (CFixVector::Dot (v, m_data.mat [RVEC]),
-										CFixVector::Dot (v, m_data.mat [UVEC]),
-										CFixVector::Dot (v, m_data.mat [FVEC]));
+inline CFixVector CFixMatrix::operator* (const CFixVector& v) 
+{
+return CFixVector::Create (CFixVector::Dot (v, m_data.mat [RVEC]),
+									CFixVector::Dot (v, m_data.mat [UVEC]),
+									CFixVector::Dot (v, m_data.mat [FVEC]));
 }
 
 inline CFixMatrix CFixMatrix::operator* (const CFixMatrix& other) { return Mul (other); }
 
-inline CFixMatrix& CFixMatrix::Scale (CFixVector& scale) {
-	m_data.mat [RVEC] *= scale [X];
-	m_data.mat [UVEC] *= scale [Y];
-	m_data.mat [FVEC] *= scale [Z];
-	return *this;
+inline CFixMatrix& CFixMatrix::Scale (CFixVector& scale) 
+{
+m_data.mat [RVEC] *= scale [X];
+m_data.mat [UVEC] *= scale [Y];
+m_data.mat [FVEC] *= scale [Z];
+return *this;
 };
 
-const inline CFixMatrix CFixMatrix::Transpose (void) {
-	CFixMatrix dest;
-	Transpose (dest, *this);
-	return dest;
+const inline CFixMatrix CFixMatrix::Transpose (void) 
+{
+CFixMatrix dest;
+Transpose (dest, *this);
+return dest;
 }
 
 //make sure this m_data.matrix is orthogonal
-inline void CFixMatrix::CheckAndFix (void) {
-	*this = CreateFU (m_data.mat [FVEC], m_data.mat [UVEC]);
+inline void CFixMatrix::CheckAndFix (void) 
+{
+*this = CreateFU (m_data.mat [FVEC], m_data.mat [UVEC]);
 }
 
 

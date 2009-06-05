@@ -700,6 +700,14 @@ class CObjHitInfo {
 		int				i;
 };
 
+class CObjDamageInfo {
+	public:
+		fix				xGuns;
+		fix				xDrives;
+		fix				xAim;
+		bool				bCritical;
+};
+
 class CObject : public CObjectInfo {
 	private:
 		short				m_nId;
@@ -713,6 +721,7 @@ class CObject : public CObjectInfo {
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;
 		CObjHitInfo		m_hitInfo;
+		CObjDamageInfo	m_damage;
 
 	public:
 		CObject ();
@@ -864,7 +873,33 @@ class CObject : public CObjectInfo {
 		void RotateCamera (void);
 		void RotateMarker (void);
 
-		void RegisterHit (CFixVector vHit);
+		CFixVector RegisterHit (CFixVector vHit, short nModel = -1);
+		inline bool CriticalHit (void) {
+			bool bCritical = m_damage.bCritical;
+			m_damage.bCritical = false;	// reset when being queried
+			return bCritical;
+			}
+		inline fix AimDamage (void) { return m_damage.xAim; }
+		inline fix GunDamage (void) { return m_damage.xGuns; }
+		inline fix DriveDamage (void) { return m_damage.xDrives; }
+		inline bool ResetDamage (void) { 
+			bool bReset = false;
+			m_damage.bCritical = false;
+			if (m_damage.xAim < I2X (1) / 2) {
+				m_damage.xAim = I2X (1) / 2;
+				bReset = true;
+				}
+			if (m_damage.xDrives < I2X (1) / 2) {
+				m_damage.xDrives = I2X (1) / 2;
+				bReset = true;
+				}
+			if (m_damage.xGuns < I2X (1) / 2) {
+				m_damage.xGuns = I2X (1) / 2;
+				bReset = true;
+				}
+			return bReset;
+			}
+
 		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
 		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }
 

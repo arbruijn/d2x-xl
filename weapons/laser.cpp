@@ -194,8 +194,7 @@ void DoMuzzleStuff (int nSegment, CFixVector *pos)
 gameData.muzzle.info [gameData.muzzle.queueIndex].createTime = TimerGetFixedSeconds ();
 gameData.muzzle.info [gameData.muzzle.queueIndex].nSegment = nSegment;
 gameData.muzzle.info [gameData.muzzle.queueIndex].pos = *pos;
-gameData.muzzle.queueIndex++;
-if (gameData.muzzle.queueIndex >= MUZZLE_QUEUE_MAX)
+if (++gameData.muzzle.queueIndex >= MUZZLE_QUEUE_MAX)
 	gameData.muzzle.queueIndex = 0;
 }
 
@@ -266,8 +265,7 @@ return nObject;
 
 // Initializes a laser after Fire is pressed
 //	Returns CObject number.
-int CreateNewWeapon (CFixVector *vDirection, CFixVector *vPosition, short nSegment,
-						  short nParent, ubyte nWeaponType, int bMakeSound)
+int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegment, short nParent, ubyte nWeaponType, int bMakeSound)
 {
 	int			nObject, nViewer, bBigMsl;
 	CObject		*objP, *parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
@@ -275,9 +273,24 @@ int CreateNewWeapon (CFixVector *vDirection, CFixVector *vPosition, short nSegme
 	fix			xParentSpeed, xWeaponSpeed;
 	fix			volume;
 	fix			xLaserLength = 0;
+	CFixVector	vDir = *vDirection;
 
 	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
+
+if (gameOpts->gameplay.nDamageModel) {
+	if (d_rand () > parentP->GunDamage ())
+		return -1;
+	fixang xAngle = d_rand () % (I2X (1) / 2 - parentP->AimDamage ());
+	if (xAngle) {
+		CFixMatrix	m;
+		m.Create (&vDir, xAngle);
+		CFixVector v = vDir - m * vDir;
+		m.Create (&v, 2 * (d_rand () - I2X (1)));
+		vDir += v;
+		CFixVector::Normalize (vDir);
+		}
+	}
 
 Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
@@ -357,8 +370,8 @@ weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int bSpectator = SPECTATOR (parentP);
-	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, bSpectator ? gameStates.app.playerPos.mOrient.UVec () : parentP->info.position.mOrient.UVec ());
-//	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, bSpectator ? &gameStates.app.playerPos.mOrient.UVec () : &parentP->info.position.mOrient.UVec (), NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? gameStates.app.playerPos.mOrient.UVec () : parentP->info.position.mOrient.UVec ());
+//	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? &gameStates.app.playerPos.mOrient.UVec () : &parentP->info.position.mOrient.UVec (), NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
 		if ((weaponInfoP->nFlashVClip > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
@@ -438,8 +451,8 @@ if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->info.renderType == RT_POLYOBJ) || (WI_homingFlag (objP->info.nId)))
-	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, parentP->info.position.mOrient.UVec ());
-//	objP->info.position.mOrient = CFixMatrix::CreateFU (*vDirection, &parentP->info.position.mOrient.UVec (), NULL);
+	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, parentP->info.position.mOrient.UVec ());
+//	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, &parentP->info.position.mOrient.UVec (), NULL);
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
 	if (weaponInfoP->nFlashVClip > -1)
@@ -493,9 +506,9 @@ else {
 //	Don't do for weapons created by weapons.
 if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID)) {
 #if 1
-	objP->mType.physInfo.velocity = *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
+	objP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
 #if DBG
-	CFixVector	vEndPos = *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
+	CFixVector	vEndPos = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
 	vEndPos += objP->info.position.vPos;
 #endif
 	fix xTime = gameData.physics.xTime;
@@ -507,7 +520,7 @@ if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].
 		return -1;
 		}
 #else
-	CFixVector	vEndPos = objP->info.position.vPos + *vDirection * (gameData.laser.nOffset + (xLaserLength / 2));
+	CFixVector	vEndPos = objP->info.position.vPos + vDir * (gameData.laser.nOffset + (xLaserLength / 2));
 	int			nEndSeg = FindSegByPos (vEndPos, objP->info.nSegment, 1, 0);
 
 	if (nEndSeg == objP->info.nSegment)
@@ -533,7 +546,7 @@ if ((objP->info.nId == SMARTMSL_BLOB_ID) ||
 	xWeaponSpeed /= 4;
 if (WIThrust (objP->info.nId) != 0)
 	xWeaponSpeed /= 2;
-/*test*/objP->mType.physInfo.velocity = *vDirection * (xWeaponSpeed + xParentSpeed);
+/*test*/objP->mType.physInfo.velocity = vDir * (xWeaponSpeed + xParentSpeed);
 if (parentP)
 	objP->SetStartVel (&parentP->mType.physInfo.velocity);
 //	Set thrust
@@ -549,7 +562,7 @@ return nObject;
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
-int CreateNewLaserEasy (CFixVector * vDirection, CFixVector * vPosition, short parent, ubyte nWeaponType, int bMakeSound)
+int CreateNewLaserEasy (CFixVector* vDirection, CFixVector* vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
 	tCollisionQuery	fq;
 	tCollisionData		hitData;

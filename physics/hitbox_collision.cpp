@@ -350,12 +350,13 @@ return nHits ? dMin ? dMin : 1 : 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vRef, CObject *objP, fix rad)
+fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vRef, CObject *objP, fix rad, short& nModel)
 {
-	int				iModel, nModels;
-	fix				xDist = 0x7fffffff;
+	int				iModel, nModel, nModels;
+	fix				xDist, dMin = 0x7fffffff;
 	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
 	tBox				hb [MAX_HITBOXES + 1];
+	CFixVector		vHit;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
@@ -371,8 +372,13 @@ intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
 TransformHitboxes (objP, vRef, hb);
 for (; iModel <= nModels; iModel++) {
 #if 1	
-	if (FindLineHitboxIntersection (intersection, hb + iModel, p0, p1, p0, rad))
-		xDist = 1;
+	if (FindLineHitboxIntersection (vHit, hb + iModel, p0, p1, p0, rad)) {
+		xDist = RegisterHit (&intersection, &vHit, vRef, dMin);
+		if (dMin > xDist) {
+			dMin = xDist;
+			nModel = iModel;
+			}
+		}
 #else
 	tQuad				*pf;
 	CFixVector		vHit, v;

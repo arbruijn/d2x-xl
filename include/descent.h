@@ -443,6 +443,7 @@ typedef struct tGameplayOptions {
 	int bIdleAnims;
 	int nAIAwareness;
 	int nAIAggressivity;
+	int nDamageModel;
 	int nSlowMotionSpeedup;
 	int bUseD1AI;
 	int bNoThief;

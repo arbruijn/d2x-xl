@@ -1245,7 +1245,6 @@ if ((bIsBoss = ROBOTINFO (info.nId).bossFlag)) {
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.
 //	Also invulnerable if his cheat for firing weapons is in effect.
 if (ROBOTINFO (info.nId).companion) {
-//		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) || gameStates.app.cheats.bMadBuddy)
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;

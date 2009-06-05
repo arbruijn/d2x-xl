@@ -306,14 +306,17 @@ if (playerP->shields < MAX_SHIELDS) {
 	if (playerP->shields > MAX_SHIELDS)
 		playerP->shields = MAX_SHIELDS;
 	if (ISLOCALPLAYER (nPlayer)) {
-		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d",
-							TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->shields));
+		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->shields));
 		MultiSendShields ();
 		}
 	return 1;
 	}
 else if (ISLOCALPLAYER (nPlayer))
-	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
+	if (OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ())
+		return 1;
+	else
+		HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
+	}
 return 0;
 }
 

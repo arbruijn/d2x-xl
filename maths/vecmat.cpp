@@ -378,7 +378,8 @@ return dest;
 //computes a matrix from the forward vector, a bank of
 //zero is assumed.
 //returns matrix.
-const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec) {
+const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec) 
+{
 	CFixMatrix m;
 	CFixVector& xvec = m.m_data.mat [RVEC];
 	CFixVector& yvec = m.m_data.mat [UVEC];
@@ -407,8 +408,9 @@ const CFixMatrix CFixMatrix::CreateF (const CFixVector& fVec) {
 //	-----------------------------------------------------------------------------
 //computes a matrix from the forward and the up vector.
 //returns matrix.
-const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector& uVec) {
-	CFixMatrix m;
+const CFixMatrix CFixMatrix::CreateFU (const CFixVector& fVec, const CFixVector& uVec) 
+{
+	CFixMatrix	m;
 	CFixVector& xvec = m.m_data.mat [RVEC];
 	CFixVector& yvec = m.m_data.mat [UVEC];
 	CFixVector& zvec = m.m_data.mat [FVEC];
@@ -438,8 +440,11 @@ if (CFixVector::Normalize (xvec) == 0) {
 	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
 		m.m_data.mat [RVEC][X] = I2X (1);
 		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
-		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
-	}
+		m.m_data.mat [RVEC][Y] = 
+		m.m_data.mat [RVEC][Z] = 
+		m.m_data.mat [UVEC][X] = 
+		m.m_data.mat [UVEC][Y] = 0;
+		}
 	else { 		//not straight up or down
 		xvec [X] = zvec [Z];
 		xvec [Y] = 0;
@@ -455,7 +460,7 @@ yvec = CFixVector::Cross (zvec, xvec);
 return m;
 }
 
-
+//	-----------------------------------------------------------------------------
 //computes a matrix from the forward and the right vector.
 //returns matrix.
 const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector& rVec) {
@@ -474,7 +479,10 @@ if (CFixVector::Normalize (xvec) == 0) {
 	if ((zvec [X] == 0) && (zvec [Z] == 0)) {		//forward vec is straight up or down
 		m.m_data.mat [RVEC][X] = I2X (1);
 		m.m_data.mat [UVEC][Z] = (zvec [Y] < 0) ? I2X (1) : -I2X (1);
-		m.m_data.mat [RVEC][Y] = m.m_data.mat [RVEC][Z] = m.m_data.mat [UVEC][X] = m.m_data.mat [UVEC][Y] = 0;
+		m.m_data.mat [RVEC][Y] = 
+		m.m_data.mat [RVEC][Z] = 
+		m.m_data.mat [UVEC][X] = 
+		m.m_data.mat [UVEC][Y] = 0;
 		}
 	else { 		//not straight up or down
 		xvec [X] = zvec [Z];
@@ -509,7 +517,8 @@ return m;
 //	-----------------------------------------------------------------------------
 //computes a matrix from the forward and the up vector.
 //returns matrix.
-const CFloatMatrix CFloatMatrix::CreateFU (const CFloatVector& fVec, const CFloatVector& uVec) {
+const CFloatMatrix CFloatMatrix::CreateFU (const CFloatVector& fVec, const CFloatVector& uVec)
+{
 	CFloatMatrix m;
 	CFloatVector& xvec = m.m_data.mat [RVEC];
 	CFloatVector& yvec = m.m_data.mat [UVEC];
@@ -555,11 +564,11 @@ yvec = CFloatVector::Cross (zvec, xvec);
 return m;
 }
 
-
 //	-----------------------------------------------------------------------------
 //computes a matrix from the forward and the right vector.
 //returns matrix.
-const CFloatMatrix CFloatMatrix::CreateFR (const CFloatVector& fVec, const CFloatVector& rVec) {
+const CFloatMatrix CFloatMatrix::CreateFR (const CFloatVector& fVec, const CFloatVector& rVec) 
+{
 	CFloatMatrix m;
 	CFloatVector& xvec = m.m_data.mat [RVEC];
 	CFloatVector& yvec = m.m_data.mat [UVEC];

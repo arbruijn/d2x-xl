@@ -370,8 +370,7 @@ void BlueOrbCheat (int bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.shields, MAX_SHIELDS)) {
 	MultiSendShields ();
-	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, 
-						X2IR (LOCALPLAYER.shields));
+	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.shields));
 	}
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
@@ -452,8 +451,7 @@ if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segs.nLastSegment)) {
 void ElectroCheat (int bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
-	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, 
-						 X2IR (LOCALPLAYER.energy));
+	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.energy));
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 }
@@ -506,6 +504,7 @@ if (bVerbose)
 void GasolineCheat (int bVerbose)
 {
 LOCALPLAYER.shields = MAX_SHIELDS;
+OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 MultiSendShields ();
 LOCALPLAYER.energy = MAX_ENERGY;
 if (bVerbose)
@@ -538,8 +537,10 @@ void InvulCheat (int bVerbose)
 {
 	int	bInvul;
 
-if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
+	OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+	}
 else if (LOCALPLAYER.invulnerableTime == 0x7fffffff)
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
@@ -790,6 +791,7 @@ SetMaxOmegaCharge ();
 cockpit->UpdateLaserWeaponInfo ();
 if (bInitialize)
 	SetLastSuperWeaponStates ();
+OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 }
 
 //------------------------------------------------------------------------------
@@ -810,6 +812,7 @@ if (gameStates.gameplay.bMineMineCheat) {
 	LOCALPLAYER.flags &= ~(/*PLAYER_FLAGS_CLOAKED |*/ PLAYER_FLAGS_INVULNERABLE);
 	LOCALPLAYER.invulnerableTime =
 	LOCALPLAYER.cloakTime = 0;
+	OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 	}
 else {
 	AccessoryCheat (bVerbose);

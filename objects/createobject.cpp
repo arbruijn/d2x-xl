@@ -478,9 +478,7 @@ if (nSegment != -1) {
 		return;
 
 	explObjP->info.movementType = MT_PHYSICS;
-	explObjP->mType.physInfo.velocity [X] = objP->mType.physInfo.velocity [X] / 2;
-	explObjP->mType.physInfo.velocity [Y] = objP->mType.physInfo.velocity [Y] / 2;
-	explObjP->mType.physInfo.velocity [Z] = objP->mType.physInfo.velocity [Z] / 2;
+	explObjP->mType.physInfo.velocity = objP->mType.physInfo.velocity * (I2X (1) / 2);
 	}
 }
 

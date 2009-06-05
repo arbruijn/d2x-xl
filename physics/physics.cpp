@@ -423,8 +423,8 @@ void CObject::DoPhysicsSim (void)
 	int					nTries = 0;
 	short					nObject = OBJ_IDX (this);
 	short					nWallHitSeg, nWallHitSide;
-	tCollisionData				hi;
-	tCollisionQuery			fq;
+	tCollisionData		hi;
+	tCollisionQuery	fq;
 	CFixVector			vSavePos;
 	int					nSaveSeg;
 	fix					xSimTime, xOldSimTime, xTimeScale;
@@ -476,11 +476,11 @@ Assert (!(mType.physInfo.flags & PF_USES_THRUST) || mType.physInfo.drag);
 //do thrust & xDrag
 if (mType.physInfo.drag) {
 	CFixVector accel, &vel = mType.physInfo.velocity;
-	int		nTries = xSimTime / FT;
-	fix		xDrag = mType.physInfo.drag;
-	fix		r = xSimTime % FT;
-	fix		k = FixDiv (r, FT);
-	fix		a;
+	int			nTries = xSimTime / FT;
+	fix			xDrag = mType.physInfo.drag;
+	fix			r = xSimTime % FT;
+	fix			k = FixDiv (r, FT);
+	fix			a;
 
 	if (this == gameData.objs.consoleP)
 		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
@@ -1066,7 +1066,6 @@ void CObject::SetThrustFromVelocity (void)
 {
 fix k = FixMulDiv (mType.physInfo.mass, mType.physInfo.drag, (I2X (1) - mType.physInfo.drag));
 mType.physInfo.thrust = mType.physInfo.velocity * k;
-
 }
 
 

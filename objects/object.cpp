@@ -1464,16 +1464,43 @@ return &viewP->mView;
 
 //------------------------------------------------------------------------------
 
-void CObject::RegisterHit (CFixVector vHit)
+CFixVector CObject::RegisterHit (CFixVector vHit, short nModel)
 {
 if ((info.nType != OBJ_ROBOT) && (info.nType != OBJ_PLAYER) && (info.nType != OBJ_REACTOR))
-	return;
+	return vHit;
+
 #if DBG
 HUDMessage (0, "set hit point %d,%d,%d", vHit [0], vHit [1], vHit [2]);
 #endif
-vHit -= info.position.vPos;
-CFixVector::Normalize (vHit);
-vHit *= info.xSize;
+
+CFixVector vDir;
+vDir = vHit - info.position.vPos;
+CFixVector::Normalize (vDir);
+
+if ((nModel >= 0) && gameOpts->gameplay.nDamageModel) {	// check and handle critical hits
+	float fDamage = (1.0f - Damage ()) / 2.0f;
+	if ((m_damage.bCritical = d_rand () < F2X (fDamage * fDamage))) {
+		if (!extraGameInfo [0].nHitboxes)
+			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
+#if DBG
+		if (nModel < 2)
+			HUDMessage (0, "crit. hit AIM\n", nModel);
+		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 4)
+			HUDMessage (0, "crit. hit DRIVES\n", nModel);
+		else
+			HUDMessage (0, "crit. hit GUNS\n", nModel);
+#endif
+		if (nModel < 2)
+			m_damage.xAim /= 2;
+		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 4)
+			m_damage.xDrives /= 2;
+		else
+			m_damage.xGuns /= 2;
+		return vHit;
+		}
+	}
+
+vHit = vDir * info.xSize;
 for (int i = 0; i < 3; i++)
 #if 1
 #	if 0
@@ -1486,12 +1513,13 @@ for (int i = 0; i < 3; i++)
 		vHit *= info.xSize;
 		m_hitInfo.v [m_hitInfo.i] = vHit;
 		m_hitInfo.t [i] = gameStates.app.nSDLTicks;
-		return;
+		return m_hitInfo.v [m_hitInfo.i];
 		}
 #endif
 m_hitInfo.v [m_hitInfo.i] = vHit;
 m_hitInfo.t [m_hitInfo.i] = gameStates.app.nSDLTicks;
 m_hitInfo.i = (m_hitInfo.i + 1) % 3;
+return m_hitInfo.v [m_hitInfo.i];
 }
 
 //------------------------------------------------------------------------------
