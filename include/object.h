@@ -882,6 +882,12 @@ class CObject : public CObjectInfo {
 		inline fix AimDamage (void) { return m_damage.xAim; }
 		inline fix GunDamage (void) { return m_damage.xGuns; }
 		inline fix DriveDamage (void) { return m_damage.xDrives; }
+		inline void SetDamage (fix xAim, fix xDrives, fix xGuns) {
+			m_damage.xAim = xAim;
+			m_damage.xDrives = xDrives;
+			m_damage.xGuns = xGuns;
+			}
+
 		inline bool ResetDamage (void) { 
 			bool bReset = false;
 			m_damage.bCritical = false;

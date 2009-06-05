@@ -82,7 +82,7 @@ void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 	fix			xCameraPlayerDist;
 	fix			xFarScale;
 
-xCameraPlayerDist = vPlayerCameraOffs.Mag();
+xCameraPlayerDist = vPlayerCameraOffs.Mag ();
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	//	Camera is too close to CPlayerData CObject, so move it away.
 	tCollisionQuery	fq;
@@ -255,12 +255,12 @@ StopConquerWarning ();
 //Assert (gameStates.app.bPlayerIsDead == 0);
 //Assert (gameData.objs.deadPlayerCamera == NULL);
 ResetRearView ();
-if (!(gameData.app.nGameMode & GM_MULTI))
-	HUDClearMessages ();
 nKilledInFrame = gameData.app.nFrameCount;
 nKilledObjNum = OBJ_IDX (playerP);
 gameStates.app.bDeathSequenceAborted = 0;
-if (gameData.app.nGameMode & GM_MULTI) {
+if (!IsMultiGame)
+	HUDClearMessages ();
+else {
 	MultiSendKill (LOCALPLAYER.nObject);
 //		If Hoard, increase number of orbs by 1
 //    Only if you haven't killed yourself

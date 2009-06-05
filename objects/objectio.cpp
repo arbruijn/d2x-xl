@@ -54,6 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "gamesave.h"
 #include "multi.h"
+#include "state.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -367,6 +368,13 @@ switch (info.renderType) {
 	case RT_LASER:
 		break;
 	}
+if (saveGameManager.Version () < 45)
+	ResetDamage ();
+else {
+	m_damage.xAim = cf.ReadFix ();
+	m_damage.xDrives = cf.ReadFix ();
+	m_damage.xGuns = cf.ReadFix ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -479,6 +487,9 @@ switch (info.renderType) {
 	case RT_LASER:
 		break;
 	}
+cf.WriteFix (m_damage.xAim);
+cf.WriteFix (m_damage.xDrives);
+cf.WriteFix (m_damage.xGuns);
 }
 
 //------------------------------------------------------------------------------

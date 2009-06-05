@@ -358,6 +358,10 @@ if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 	SetMaxOmegaCharge ();
 if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 	LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
+OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
+#if DBG
+OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (8192, 8192, 8192);
+#endif
 }
 
 //------------------------------------------------------------------------------
