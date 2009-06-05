@@ -439,14 +439,14 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			if ((dist == 0x7fffffff) || (dist > thisObjP->info.xSize))
 				return 0;
 			}
-		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1, nModel);
+		CheckHitboxToHitbox (vHit, otherObjP, thisObjP, p0, p1);
 		VmPointLineIntersection (vHit, *p0, *p1, vHit, 1);
 		}
 	else {
 		if (bThisPoly) {
 			// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere
 			// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
-			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, NULL, NULL, thisObjP, otherObjP->info.xSize)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, p0, p1, NULL, NULL, thisObjP, otherObjP->info.xSize, nModel)))
 				return 0;
 			}
 		else {
@@ -456,7 +456,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 			vn = otherObjP->info.position.vPos - v0;
 			CFixVector::Normalize (vn);
 			v1 = v0 + vn * thisObjP->info.xSize;
-			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize)))
+			if (0x7fffffff == (dist = CheckVectorToHitbox (vHit, &v0, &v0, &vn, p1, otherObjP, thisObjP->info.xSize, nModel)))
 				return 0;
 			}
 		}

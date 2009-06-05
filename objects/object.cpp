@@ -1477,7 +1477,7 @@ CFixVector vDir;
 vDir = vHit - info.position.vPos;
 CFixVector::Normalize (vDir);
 
-if ((nModel >= 0) && gameOpts->gameplay.nDamageModel) {	// check and handle critical hits
+if ((nModel >= 0) && EGI_FLAG (nDamageModel, 0, 0, 0)) {	// check and handle critical hits
 	float fDamage = (1.0f - Damage ()) / 2.0f;
 	if ((m_damage.bCritical = d_rand () < F2X (fDamage * fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)

@@ -79,6 +79,7 @@ static struct {
 	int	nAutoLevel;
 	int	nHitDetection;
 	int	nCollHandling;
+	int	nDamageModel;
 } physOpts;
 
 //------------------------------------------------------------------------------
@@ -148,6 +149,14 @@ if (extraGameInfo [0].nFusionRamp != v) {
 	if (extraGameInfo [0].bUseHitAngles != v) {
 		extraGameInfo [0].bUseHitAngles = v;
 		sprintf (m->m_text, TXT_COLLISION_HANDLING, pszStdAdv [v]);
+		m->m_bRebuild = 1;
+		}
+
+	m = menu + physOpts.nDamageModel;
+	v = m->m_value;
+	if (extraGameInfo [0].nDamageModel != v) {
+		extraGameInfo [0].nDamageModel = v;
+		sprintf (m->m_text, TXT_DAMAGE_MODEL, pszStdAdv [v]);
 		m->m_bRebuild = 1;
 		}
 
@@ -272,6 +281,9 @@ do {
 	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [extraGameInfo [0].bUseHitAngles]);
 	*szSlider = *(TXT_COLLISION_HANDLING - 1);
 	physOpts.nCollHandling = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
+	sprintf (szSlider + 1, TXT_DAMAGE_MODEL, pszStdAdv [extraGameInfo [0].nDamageModel]);
+	*szSlider = *(TXT_DAMAGE_MODEL - 1);
+	physOpts.nDamageModel = m.AddSlider (szSlider + 1, extraGameInfo [0].nDamageModel, 0, 1, KEY_D, HTX_DAMAGE_MODEL);
 	do {
 		i = m.Menu (NULL, TXT_PHYSICS_MENUTITLE, PhysicsOptionsCallback, &choice);
 		} while (i >= 0);

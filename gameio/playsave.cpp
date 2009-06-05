@@ -628,6 +628,7 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].bTeamDoors, i, 0);
 	RP (extraGameInfo [i].nCoopPenalty, i, 0);
 	RP (extraGameInfo [i].nHitboxes, i, 0);
+	RP (extraGameInfo [i].nDamageModel, i, 0);
 	RP (gameOptions [i].input.joystick.bUse, i, 0);
 	RP (gameOptions [i].input.mouse.bUse, i, 0);
 	RP (gameOptions [i].input.trackIR.bUse, i, 0);
@@ -1007,6 +1008,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].bTeamDoors", "0"},
 	 {"extraGameInfo[0].nCoopPenalty", "0"},
 	 {"extraGameInfo[0].nHitboxes", "2"},
+	 {"extraGameInfo[0].nDamageModel", "0"},
 	 {"extraGameInfo[0].nSpotSize", "0"},
 	 {"gameOptions[0].input.joystick.bUse", "1"},
 	 {"gameOptions[0].input.mouse.bUse", "1"},

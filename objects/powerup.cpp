@@ -311,7 +311,7 @@ if (playerP->shields < MAX_SHIELDS) {
 		}
 	return 1;
 	}
-else if (ISLOCALPLAYER (nPlayer))
+else if (ISLOCALPLAYER (nPlayer)) {
 	if (OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ())
 		return 1;
 	else

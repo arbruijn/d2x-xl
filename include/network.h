@@ -252,6 +252,7 @@ typedef struct tExtraGameInfo {
 	char		bShowWeapons;
 	char		bGatlingSpeedUp;
 	char		nHitboxes;
+	char		nDamageModel;
 	char		nRadar;
 	char		nDrag;
 	char		nSpotSize;

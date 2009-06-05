@@ -352,7 +352,7 @@ return nHits ? dMin ? dMin : 1 : 0;
 
 fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vRef, CObject *objP, fix rad, short& nModel)
 {
-	int				iModel, nModel, nModels;
+	int				iModel, nModels;
 	fix				xDist, dMin = 0x7fffffff;
 	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
 	tBox				hb [MAX_HITBOXES + 1];

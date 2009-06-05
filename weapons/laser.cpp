@@ -278,7 +278,7 @@ int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegme
 	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
-if (gameOpts->gameplay.nDamageModel) {
+if (EGI_FLAG (nDamageModel, 0, 0, 0)) {
 	if (d_rand () > parentP->GunDamage ())
 		return -1;
 	fixang xAngle = d_rand () % (I2X (1) / 2 - parentP->AimDamage ());

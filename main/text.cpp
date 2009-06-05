@@ -1889,6 +1889,7 @@ const char *defaultGameTexts [][2] = {
  {"Raketen", "Missiles"},
  {"Du hast D2X-XL jetzt\nschon einige Zeit genutzt.\n\nWenn Du es noch nicht getan hast,\nunterstuetze seine Weiterentwicklung\nbitte mit einer Spende.", 
   "You have been using D2X-XL\nfor quite a while now.\n\nPlease support its future development\nwith a donation if you haven't\ndone so already."},
+ {"~Schadensmodell: %s", "~Damage Model: %s"},
 #if 0
  {"", ""},
 #endif
@@ -2578,6 +2579,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, werden blinkende Lichter und Blinkeffekte reduziert.", "If checked flashing lights and flash effects will be reduced."},
  {"Wenn angekreuzt, erhalten einige Cockpitelemente eine andere Farbe.", "If checked some cockpit elements get a different color."},
  {"Wenn angekreuzt, erscheinen in einigen Menues zusaetzliche\nEinstellungsmoeglichkeiten.", "If checked, additional settings are displayed in some menus."},
+ {"Beim Standardmodell werden einfach die Schutzschilde abgenutzt\nund schliesslich der Gegner zerstoert. Beim erweiterten\nModell koennen je nach Zustand des gegnerischen\nSchutzschildes kritische Treffer erzielt werden, die seine\nGeschwindigkeit, Zielsicherheit oder Feuerrate verringern.", 
+  "With the standard model shields are worn down until the opponent\nis destroyed. With the enhanced model you can score critical\nhits depending on the state of the opponent's shields and\nthus decrease his speed, aim and rate of fire."},
 #if 0
  {"", ""},
 #endif

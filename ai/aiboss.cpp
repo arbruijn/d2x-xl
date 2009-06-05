@@ -267,7 +267,7 @@ i = gameData.bosses.Find (nObject);
 if (i < 0)
 	return;
 // do not teleport if less than 1% of initial shield strength left or drives heavily damaged
-if ((objP->Damage () < 0.01) || (gameOpts->gameplay.nDamageModel && (d_rand () > objP->DriveDamage ()))) 
+if ((objP->Damage () < 0.01) || (EGI_FLAG (nDamageModel, 0, 0, 0) && (d_rand () > objP->DriveDamage ()))) 
 	return;
 //Assert (gameData.bosses [i].m_nTeleportSegs > 0);
 if (gameData.bosses [i].m_nTeleportSegs <= 0)

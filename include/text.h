@@ -1939,10 +1939,10 @@ void LoadGameTexts(void);
 #define TXT_BAD_HARDWARE				GT(1142)
 #define TXT_MISSILES						GT(1143)
 #define TXT_PLEASE_DONATE				GT(1144)
+#define TXT_DAMAGE_MODEL				GT(1145)
 
 #if 0
 
-#define TXT_					GT(1145)
 #define TXT_					GT(1146)
 #define TXT_					GT(1147)
 #define TXT_					GT(1148)
@@ -2522,10 +2522,10 @@ void LoadGameTexts(void);
 #define HTX_COLORBLIND_FRIENDLY		HT(403)
 #define HTX_HIT_DETECTION				HT(404)			
 #define HTX_NOTEBOOK_FRIENDLY			HT(405)			
+#define HTX_DAMAGE_MODEL				HT(406)			
 
 #if 0
 
-#define HTX_						HT(406)			
 #define HTX_						HT(407)			
 #define HTX_						HT(408)			
 #define HTX_						HT(409)			
