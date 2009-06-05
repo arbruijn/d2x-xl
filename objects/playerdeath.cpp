@@ -279,6 +279,7 @@ gameStates.app.bPlayerIsDead = 1;
 //LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
 playerP->mType.physInfo.rotThrust.SetZero ();
 playerP->mType.physInfo.thrust.SetZero ();
+playerP->ResetDamage ();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
 nObject = CreateCamera (playerP);
 viewerSaveP = gameData.objs.viewerP;
