@@ -473,8 +473,8 @@ intersection = vHit;
 CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, vHit, 1, 1);
 #endif
 if (!bCheckVisibility) {
-	thisObjP->SetHitPoint (vHit);
-	otherObjP->SetHitPoint (vHit);
+	thisObjP->RegisterHit (vHit);
+	otherObjP->RegisterHit (vHit);
 	}
 return dist;
 }

@@ -1464,7 +1464,7 @@ return &viewP->mView;
 
 //------------------------------------------------------------------------------
 
-void CObject::SetHitPoint (CFixVector vHit)
+void CObject::RegisterHit (CFixVector vHit)
 {
 if ((info.nType != OBJ_ROBOT) && (info.nType != OBJ_PLAYER) && (info.nType != OBJ_REACTOR))
 	return;

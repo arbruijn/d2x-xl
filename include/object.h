@@ -864,7 +864,7 @@ class CObject : public CObjectInfo {
 		void RotateCamera (void);
 		void RotateMarker (void);
 
-		void SetHitPoint (CFixVector vHit);
+		void RegisterHit (CFixVector vHit);
 		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
 		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }
 

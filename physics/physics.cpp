@@ -657,7 +657,7 @@ retryMove:
 			nTries--;
 		}
 
-	//SetHitPoint (hi.hit.vPoint);
+	//RegisterHit (hi.hit.vPoint);
 	if (bGetPhysSegs) {
 		if (gameData.physics.nSegments && (gameData.physics.segments [gameData.physics.nSegments-1] == hi.segList [0]))
 			gameData.physics.nSegments--;
