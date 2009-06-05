@@ -58,7 +58,7 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 // -----------------------------------------------------------------------------------
 //projects a point
 
-#define VIS_CULLING 2
+#define VIS_CULLING 1
 
 void G3ProjectPoint (g3sPoint *p)
 {

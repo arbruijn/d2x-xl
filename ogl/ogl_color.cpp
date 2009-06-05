@@ -434,7 +434,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 #if USE_FACE_DIST
 	if ((nVertex < 0) && (nType < 2)) {
 		bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
-	#if 1
+#	if 1
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * gameStates.ogl.fLightRange;
 		CFloatVector3::Normalize (dir);
@@ -443,18 +443,20 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			NdotL = dot;
 			lightDir = dir;
 			}
-		if (NdotL < -0.01f) {
-			fLightDist *= gameStates.ogl.fLightRange;
+#		if 1
+		if (NdotL < -0.166666f) {
+			//fLightDist *= gameStates.ogl.fLightRange;
 			bInRad = false;
 			}
 		else
-	#else
+#		endif
+#	else
 		fLightDist = CFloatVector3::Dist (lightPos, *vcd.vertPosP);
-	#endif
-		if (fabs (fLightDist) < 4.0f)
+#	endif
+		if (fabs (fLightDist) < 1.0f)
 			fLightDist = 0.0f;
 		else {
-			fLightDist *= gameStates.ogl.fLightRange;
+			//fLightDist *= gameStates.ogl.fLightRange;
 			bInRad = false;
 			}
 		}
