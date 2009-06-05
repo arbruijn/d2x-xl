@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 
 #include "object.h"
-#include "fvi.h"
+#include "collision_math.h"
 #include "robot.h"
 
 #define PLAYER_AWARENESS_INITIAL_TIME   (I2X (3))
@@ -88,7 +88,7 @@ void DoAIRobotHitAttack (CObject *robot, CObject *CPlayerData, CFixVector *colli
 void DoD1AIRobotHitAttack(CObject *robot, CObject *player, CFixVector *collision_point);
 void AIOpenDoorsInSegment (CObject *robot);
 int AIDoorIsOpenable (CObject *objP, CSegment *segp, short nSide);
-int ObjectCanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player);
+int AICanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player);
 void AIResetAllPaths (void);   // Reset all paths.  Call at the start of a level.
 int AIMultiplayerAwareness (CObject *objP, int awarenessLevel);
 
@@ -207,7 +207,7 @@ extern int  ai_evaded;
 extern sbyte Super_boss_gate_list [];
 #define MAX_GATE_INDEX  25
 
-// These globals are set by a call to FindVectorIntersection, which is a slow routine,
+// These globals are set by a call to FindHitpoint, which is a slow routine,
 // so we don't want to call it again (for this CObject) unless we have to.
 //extern CFixVector   Hit_pos;
 //extern int          HitType, Hit_seg;

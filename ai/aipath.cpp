@@ -148,8 +148,8 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, CObject *objP, int bRa
 	CFixVector	vGoalPos;
 	int			count;
 	int			nTempSeg;
-	tFVIQuery	fq;
-	tFVIData		hitData;
+	tCollisionQuery	fq;
+	tCollisionData		hitData;
 	int			nHitType;
 
 j = *nPoints;
@@ -224,7 +224,7 @@ for (i = 1, --j; i < j; i++) {
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
 		fq.bCheckVisibility = false;
-		nHitType = FindVectorIntersection (&fq, &hitData);
+		nHitType = FindHitpoint (&fq, &hitData);
 		if (nHitType == HIT_NONE)
 			count = 0;
 		else {
@@ -281,8 +281,8 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	CSegment			*segP;
 	CFixVector		vCenter;
 	int				nParentSeg, nDestSeg;
-	tFVIQuery		fq;
-	tFVIData			hitData;
+	tCollisionQuery		fq;
+	tCollisionData			hitData;
 	int				hitType;
 	int				bAvoidPlayer;
 
@@ -347,7 +347,7 @@ while (nCurSeg != nEndSeg) {
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0;
 			fq.bCheckVisibility = false;
-			hitType = FindVectorIntersection (&fq, &hitData);
+			hitType = FindHitpoint (&fq, &hitData);
 			if (hitType != HIT_NONE)
 				continue;
 			}
@@ -467,8 +467,8 @@ int SmoothPath (CObject *objP, tPointSeg *pointSegP, int numPoints)
 return numPoints;
 #else
 	int			i, nFirstPoint = 0;
-	tFVIQuery	fq;
-	tFVIData		hitData;
+	tCollisionQuery	fq;
+	tCollisionData		hitData;
 	int			hitType;
 
 
@@ -491,7 +491,7 @@ fq.flags				= 0;
 fq.bCheckVisibility = false;
 for (i = 0; i < 2; i++) {
 	fq.p1 = &pointSegP [i].point;
-	hitType = FindVectorIntersection (&fq, &hitData);
+	hitType = FindHitpoint (&fq, &hitData);
 	if (hitType != HIT_NONE)
 		break;
 	nFirstPoint = i + 1;
@@ -821,9 +821,9 @@ else
 // -- too much work -- int attackKillObject (CObject *objP)
 // -- too much work -- {
 // -- too much work -- 	CObject		*kill_objp;
-// -- too much work -- 	tFVIData		hitData;
+// -- too much work -- 	tCollisionData		hitData;
 // -- too much work -- 	int			fate;
-// -- too much work -- 	tFVIQuery	fq;
+// -- too much work -- 	tCollisionQuery	fq;
 // -- too much work --
 // -- too much work -- 	if (gameData.escort.nKillObject == -1)
 // -- too much work -- 		return 0;
@@ -838,7 +838,7 @@ else
 // -- too much work -- 	fq.ignoreObjList	= NULL;
 // -- too much work -- 	fq.flags					= 0;
 // -- too much work --
-// -- too much work -- 	fate = FindVectorIntersection (&fq, &hitData);
+// -- too much work -- 	fate = FindHitpoint (&fq, &hitData);
 // -- too much work --
 // -- too much work -- 	if (fate == HIT_NONE)
 // -- too much work -- 		return 1;
@@ -1082,9 +1082,9 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			//	If not, turn around.
 			int			nOppositeEndIndex;
 			CFixVector	*vOppositeEndPoint;
-			tFVIData		hitData;
+			tCollisionData		hitData;
 			int			fate;
-			tFVIQuery	fq;
+			tCollisionQuery	fq;
 
 			// See which end we're nearer and look at the opposite end point.
 			if (abs (aiP->nCurPathIndex - aiP->nPathLength) < aiP->nCurPathIndex) {
@@ -1106,7 +1106,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0; 				//what about trans walls???
 			fq.bCheckVisibility = false;
-			fate = FindVectorIntersection (&fq, &hitData);
+			fate = FindHitpoint (&fq, &hitData);
 			if (fate != HIT_WALL) {
 				//	We can be circular! Do it!
 				//	Path direction is unchanged.

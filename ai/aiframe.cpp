@@ -78,7 +78,7 @@ tBossProps bossProps [2][NUM_D2_BOSSES] = {
 	}
 };
 
-// These globals are set by a call to FindVectorIntersection, which is a slow routine,
+// These globals are set by a call to FindHitpoint, which is a slow routine,
 // so we don't want to call it again (for this CObject) unless we have to.
 
 #if DBG

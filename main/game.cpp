@@ -78,7 +78,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "SDL_syswm.h"
 #endif
 #include "renderthreads.h"
-#include "fvi.h"
+#include "collision_math.h"
 #include "banlist.h"
 #include "songs.h"
 #include "headlight.h"

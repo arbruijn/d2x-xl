@@ -85,17 +85,17 @@ void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 xCameraPlayerDist = vPlayerCameraOffs.Mag();
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	//	Camera is too close to CPlayerData CObject, so move it away.
-	tFVIQuery	fq;
-	tFVIData		hit_data;
+	tCollisionQuery	fq;
+	tCollisionData		hitData;
 	CFixVector	local_p1;
 
 	if (vPlayerCameraOffs.IsZero ())
 		vPlayerCameraOffs[X] += I2X (1)/16;
 
-	hit_data.hit.nType = HIT_WALL;
+	hitData.hit.nType = HIT_WALL;
 	xFarScale = I2X (1);
 
-	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
+	while ((hitData.hit.nType != HIT_NONE) && (count++ < 6)) {
 		CFixVector	closer_p1;
 		CFixVector::Normalize (vPlayerCameraOffs);
 		vPlayerCameraOffs *= xCameraToPlayerDistGoal;
@@ -113,9 +113,9 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
 		fq.bCheckVisibility = false;
-		FindVectorIntersection (&fq, &hit_data);
+		FindHitpoint (&fq, &hitData);
 
-		if (hit_data.hit.nType == HIT_NONE)
+		if (hitData.hit.nType == HIT_NONE)
 			*vCameraPos = closer_p1;
 		else {
 			vPlayerCameraOffs = CFixVector::Random();

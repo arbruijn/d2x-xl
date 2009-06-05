@@ -312,7 +312,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		vecToPlayer = OBJPOS (gameData.objs.consoleP)->vPos - objP->info.position.vPos;
 		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
 		if (xDistToPlayer < I2X (200)) {
-			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
+			rStatP->bSeenPlayer = AICanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
 			}
 		}		
@@ -330,7 +330,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < I2X (120)) {
-			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
+			rStatP->bSeenPlayer = AICanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			if (!rStatP->bSeenPlayer)
 				rStatP->bHit = 0;
 			}

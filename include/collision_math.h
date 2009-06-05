@@ -11,8 +11,8 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _FVI_H
-#define _FVI_H
+#ifndef _COLLISION_MATH_H
+#define _COLLISION_MATH_H
 
 #include "vecmat.h"
 #include "segment.h"
@@ -36,7 +36,7 @@ typedef struct fvec2d {
 
 extern int ijTable [3][2];
 
-typedef struct tFVIHitInfo {
+typedef struct tCollisionInfo {
 	int 			nType;						//what sort of intersection
 	short 		nSegment;					//what CSegment hit_pnt is in
 	short			nSegment2;
@@ -48,14 +48,14 @@ typedef struct tFVIHitInfo {
 	CFixVector 	vNormal;						//if hit CWall, ptr to its surface normal
 	int			nNormals;
 	int			nNestCount;
-} tFVIHitInfo;
+} tCollisionInfo;
 
 //this data structure gets filled in by FindHitpoint()
-typedef struct tFVIData {
-	tFVIHitInfo	hit;
-	short 		nSegments;					//how many segs we went through
-	short 		segList [MAX_FVI_SEGS];	//list of segs vector went through
-} tFVIData;
+typedef struct tCollisionData {
+	tCollisionInfo	hit;
+	short 			nSegments;					//how many segs we went through
+	short 			segList [MAX_FVI_SEGS];	//list of segs vector went through
+} tCollisionData;
 
 //flags for fvi query
 #define FQ_CHECK_OBJS		1		//check against objects?
@@ -75,7 +75,7 @@ typedef struct tFVIData {
 #define IT_POINT  3       //touches vertex
 
 //this data contains the parms to fvi()
-typedef struct tFVIQuery {
+typedef struct tCollisionQuery {
 	CFixVector	*p0, *p1;
 	short			startSeg;
 	fix			radP0, radP1;
@@ -83,10 +83,12 @@ typedef struct tFVIQuery {
 	short			*ignoreObjList;
 	int			flags;
 	bool			bCheckVisibility;
-} tFVIQuery;
+} tCollisionQuery;
+
+//	-----------------------------------------------------------------------------
 
 //Find out if a vector intersects with anything.
-//Fills in hit_data, an tFVIData structure (see above).
+//Fills in hitData, an tCollisionData structure (see above).
 //Parms:
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
@@ -94,24 +96,18 @@ typedef struct tFVIQuery {
 //  thisobjnum 		used to prevent an CObject with colliding with itself
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
-//Returns the hit_data->hitType
-int FindHitpoint(tFVIQuery *fq,tFVIData *hit_data);
+//Returns the hitData->hitType
+int FindHitpoint (tCollisionQuery *fq, tCollisionData *hitData);
 
 //finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV(fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int nSide,int facenum);
+void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int nSide,int facenum);
 
 //Returns true if the CObject is through any walls
 int ObjectIntersectsWall (CObject *objP);
 
-int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
-
 int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, 
 							short nSegment, short nSide, short iFace, int nv, fix rad);
-
-int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad = 0);
-
-int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 
 int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
 										 CFixVector *p0, CFixVector *p1, fix rad);
@@ -119,6 +115,44 @@ int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint
 int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
 
 float DistToFace (CFloatVector3& vHit, CFloatVector3 refP, short nSegment, ubyte nSide);
+
+fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *pn, CFixVector *vRef, CObject *objP, fix rad);
+
+fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1);
+
+//	-----------------------------------------------------------------------------
+
+static inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix dMin)
+{
+   fix d = CFixVector::Dist (*vRef, *vCurHit);
+
+if (dMin > d) {
+	dMin = d;
+	*vBestHit = *vCurHit;
+	}
+return dMin;
+}
+
+//	-----------------------------------------------------------------------------
+
+static inline int UseHitbox (CObject *objP)
+{
+return (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 
+		 ((objP->info.nType != OBJ_WEAPON) || ((objP->info.nId != GAUSS_ID) && (objP->info.nId != VULCAN_ID)));
+}
+
+//	-----------------------------------------------------------------------------
+
+static inline int UseSphere (CObject *objP)
+{
+	int nType = objP->info.nType;
+
+return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP);
+}
+
+//	-----------------------------------------------------------------------------
+
+extern int ijTable [3][2];
 
 #endif
 

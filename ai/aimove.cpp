@@ -135,8 +135,8 @@ void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToPlayer)
 	short				nStartSeg, nDestSeg, nObject, nSide, nAvoidObjs;
 	CObject			*avoidObjP;
 	CSegment			*segP;
-	tFVIQuery		fq;
-	tFVIData			hitData;
+	tCollisionQuery		fq;
+	tCollisionData			hitData;
 	int				hitType;
 
 vAvoidPos.SetZero ();
@@ -181,7 +181,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 				fq.ignoreObjList	= NULL;
 				fq.flags				= 0;
 				fq.bCheckVisibility = false;
-				hitType = FindVectorIntersection (&fq, &hitData);
+				hitType = FindHitpoint (&fq, &hitData);
 				if (hitType != HIT_NONE)
 					continue;
 				}

@@ -56,18 +56,18 @@ for (;;)
 			v = VECPTR (p + 4);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (hb.vMin[X] > hv[X])
-					hb.vMin[X] = hv[X];
-				else if (hb.vMax[X] < hv[X])
-					hb.vMax[X] = hv[X];
-				if (hb.vMin[Y] > hv[Y])
-					hb.vMin[Y] = hv[Y];
-				else if (hb.vMax[Y] < hv[Y])
-					hb.vMax[Y] = hv[Y];
-				if (hb.vMin[Z] > hv[Z])
-					hb.vMin[Z] = hv[Z];
-				else if (hb.vMax[Z] < hv[Z])
-					hb.vMax[Z] = hv[Z];
+				if (hb.vMin [X] > hv [X])
+					hb.vMin [X] = hv [X];
+				else if (hb.vMax [X] < hv [X])
+					hb.vMax [X] = hv [X];
+				if (hb.vMin [Y] > hv [Y])
+					hb.vMin [Y] = hv [Y];
+				else if (hb.vMax [Y] < hv [Y])
+					hb.vMax [Y] = hv [Y];
+				if (hb.vMin [Z] > hv [Z])
+					hb.vMin [Z] = hv [Z];
+				else if (hb.vMax [Z] < hv [Z])
+					hb.vMax [Z] = hv [Z];
 				}
 			p += n * sizeof (CFixVector) + 4;
 			break;
@@ -77,18 +77,18 @@ for (;;)
 			v = VECPTR (p + 8);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (hb.vMin[X] > hv[X])
-					hb.vMin[X] = hv[X];
-				else if (hb.vMax[X] < hv[X])
-					hb.vMax[X] = hv[X];
-				if (hb.vMin[Y] > hv[Y])
-					hb.vMin[Y] = hv[Y];
-				else if (hb.vMax[Y] < hv[Y])
-					hb.vMax[Y] = hv[Y];
-				if (hb.vMin[Z] > hv[Z])
-					hb.vMin[Z] = hv[Z];
-				else if (hb.vMax[Z] < hv[Z])
-					hb.vMax[Z] = hv[Z];
+				if (hb.vMin [X] > hv [X])
+					hb.vMin [X] = hv [X];
+				else if (hb.vMax [X] < hv [X])
+					hb.vMax [X] = hv [X];
+				if (hb.vMin [Y] > hv [Y])
+					hb.vMin [Y] = hv [Y];
+				else if (hb.vMax [Y] < hv [Y])
+					hb.vMax [Y] = hv [Y];
+				if (hb.vMin [Z] > hv [Z])
+					hb.vMin [Z] = hv [Z];
+				else if (hb.vMax [Z] < hv [Z])
+					hb.vMax [Z] = hv [Z];
 				}
 			p += n * sizeof (CFixVector) + 8;
 			break;
@@ -149,28 +149,16 @@ return nSubModels;
 
 //------------------------------------------------------------------------------
 
-#if 0
-	static		CFloatVector hitBoxOffsets [8] = {
-	 {-1.0f, +0.95f, -0.8f},
-	 {+1.0f, +0.95f, -0.8f},
-	 {+1.0f, -1.05f, -0.8f},
-	 {-1.0f, -1.05f, -0.8f},
-	 {-1.0f, +0.95f, +1.2f},
-	 {+1.0f, +0.95f, +1.2f},
-	 {+1.0f, -1.05f, +1.2f},
-	 {-1.0f, -1.05f, +1.2f}
-#else
-	CFixVector hitBoxOffsets [8] = {
-		CFixVector::Create(1, 0, 1),
-		CFixVector::Create(0, 0, 1),
-		CFixVector::Create(0, 1, 1),
-		CFixVector::Create(1, 1, 1),
-		CFixVector::Create(1, 0, 0),
-		CFixVector::Create(0, 0, 0),
-		CFixVector::Create(0, 1, 0),
-		CFixVector::Create(1, 1, 0)
-#endif
-		};
+CFixVector hitBoxOffsets [8] = {
+	CFixVector::Create(1, 0, 1),
+	CFixVector::Create(0, 0, 1),
+	CFixVector::Create(0, 1, 1),
+	CFixVector::Create(1, 1, 1),
+	CFixVector::Create(1, 0, 0),
+	CFixVector::Create(0, 0, 0),
+	CFixVector::Create(0, 1, 0),
+	CFixVector::Create(1, 1, 0)
+	};
 
 int hitboxFaceVerts [6][4] = {
  {0,1,2,3},
@@ -200,33 +188,6 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 	*pf->n = CFixVector::Normal (pv [hitboxFaceVerts [i][0]], pv [hitboxFaceVerts [i][1]], pv [hitboxFaceVerts [i][2]]);
 	}
 }
-
-//------------------------------------------------------------------------------
-
-#if 0
-
-void TransformHitbox (CObject *objP, CFixVector *vPos, int iSubObj)
-{
-	tHitbox			*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
-	tQuad				*pf = phb->faces;
-	CFixVector		rotVerts [8];
-	CFixMatrix		*viewP = objP->View ();
-	int				i, j;
-
-if (!vPos)
-	vPos = &objP->info.position.vPos;
-for (i = 0; i < 8; i++) {
-	VmVecRotate (rotVerts + i, phb->vertices + i, viewP);
-	VmVecInc (rotVerts + i, vPos);
-	}
-for (i = 0; i < 6; i++, pf++) {
-	for (j = 0; j < 4; j++)
-		pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
-	VmVecRotate (pf->n + 1, pf->n, &m);
-	}
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 

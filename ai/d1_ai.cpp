@@ -28,7 +28,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "d1_ai.h"
 #include "laser.h"
-#include "fvi.h"
+#include "collision_math.h"
 #include "polymodel.h"
 #include "loadgamedata.h"
 #include "weapon.h"
@@ -168,11 +168,11 @@ typedef struct awareness_event {
 } awareness_event;
 
 
-//	These globals are set by a call to FindVectorIntersection, which is a slow routine,
+//	These globals are set by a call to FindHitpoint, which is a slow routine,
 //	so we don't want to call it again (for this CObject) unless we have to.
 CFixVector	Hit_pos;
 int			hitType, Hit_seg;
-tFVIData		hitData;
+tCollisionData		hitData;
 
 #define	D1_AIS_MAX	8
 #define	D1_AIE_MAX	4
@@ -552,7 +552,7 @@ void john_cheat_func_4(int key)
 int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player)
 {
 	fix			dot;
-	tFVIQuery	fq;
+	tCollisionQuery	fq;
 
 fq.p0 = pos;
 if ((*pos) == objP->info.position.vPos)
@@ -582,7 +582,7 @@ fq.bCheckVisibility = true;
 if (fq.thisObjNum == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-hitType = FindVectorIntersection (&fq, &hitData);
+hitType = FindHitpoint (&fq, &hitData);
 Hit_pos = hitData.hit.vPoint;
 Hit_seg = hitData.hit.nSegment;
 if (/*(hitType == HIT_NONE) ||*/ ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {

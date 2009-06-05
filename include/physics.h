@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _PHYSICS_H
 
 #include "vecmat.h"
-#include "fvi.h"
+#include "collision_math.h"
 
 //#define FL_NORMAL  0
 //#define FL_TURBO   1
@@ -34,9 +34,9 @@ void DoPhysicsSim(CObject *obj);
 // the given time (in seconds) t.  Igores acceleration (sorry)
 // if checkObjects is set, check with objects, else just with walls
 // returns fate, fills in hit time.  If fate==HIT_NONE, hitTime undefined
-// Stuff hit_info with fvi data as set by FindVectorIntersection.
+// Stuff hit_info with fvi data as set by FindHitpoint.
 // for fviFlags, refer to fvi[HA] for the fvi query flags
-int physics_lookahead(CObject *obj, fix t, int fviFlags, fix *hitTime, tFVIData *hit_info);
+int physics_lookahead(CObject *obj, fix t, int fviFlags, fix *hitTime, tCollisionData *hit_info);
 
 // this routine will set the thrust for an CObject to a value that will
 // (hopefully) maintain the CObject's current velocity

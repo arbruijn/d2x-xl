@@ -504,8 +504,8 @@ if (!gameStates.render.bOutsideMine) {
 if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
 	if ((explosion_wait2 -= gameData.time.xFrame) < 0) {
 		CFixVector tpnt;
-		tFVIQuery fq;
-		tFVIData hit_data;
+		tCollisionQuery fq;
+		tCollisionData hitData;
 		//create little explosion on CWall
 		tpnt = gameData.objs.consoleP->info.position.mOrient.RVec () * ((d_rand ()-RAND_MAX/2)*100);
 		tpnt += gameData.objs.consoleP->info.position.mOrient.UVec () * ((d_rand ()-RAND_MAX/2)*100);
@@ -524,9 +524,9 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		fq.ignoreObjList	= NULL;
 		fq.flags				= 0;
 		fq.bCheckVisibility = false;
-		FindVectorIntersection (&fq, &hit_data);
-		if ((hit_data.hit.nType == HIT_WALL) && (hit_data.hit.nSegment != -1))
-			/*Object*/CreateExplosion ((short) hit_data.hit.nSegment, hit_data.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
+		FindHitpoint (&fq, &hitData);
+		if ((hitData.hit.nType == HIT_WALL) && (hitData.hit.nSegment != -1))
+			/*Object*/CreateExplosion ((short) hitData.hit.nSegment, hitData.hit.vPoint, I2X (3)+d_rand ()*6, VCLIP_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + d_rand ()/8)/2;
 		}
 

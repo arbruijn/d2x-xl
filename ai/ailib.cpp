@@ -42,10 +42,10 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //		2		Player is visible and in field of view.
 //	Note: Uses gameData.ai.vBelievedPlayerPos as CPlayerData's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int ObjectCanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToPlayer)
+int AICanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToPlayer)
 {
 	fix			dot;
-	tFVIQuery	fq;
+	tCollisionQuery	fq;
 
 	//	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
@@ -77,7 +77,7 @@ fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_CHECK_PLAYER;
 fq.bCheckVisibility = true;
-gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
+gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != LOCALPLAYER.nObject))
@@ -90,7 +90,7 @@ return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 
 int AICanFireAtPlayer (CObject *objP, CFixVector *vGun, CFixVector *vPlayer)
 {
-	tFVIQuery	fq;
+	tCollisionQuery	fq;
 	fix			nSize, h;
 	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.consoleP), -1};
 
@@ -126,10 +126,10 @@ fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= ignoreObjs;
 fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
 fq.bCheckVisibility = true;
-gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
+gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 #if DBG
 if (gameData.ai.nHitType == 0)
-	FindVectorIntersection (&fq, &gameData.ai.hitData);
+	FindHitpoint (&fq, &gameData.ai.hitData);
 #endif
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
@@ -149,7 +149,7 @@ if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToPlayer > xMaxVisibleDist) && (a
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Note: This function could be optimized.  Surely ObjectCanSeePlayer would benefit from the
+//	Note: This function could be optimized.  Surely AICanSeePlayer would benefit from the
 //	information of a normalized gameData.ai.vVecToPlayer.
 //	Return CPlayerData visibility:
 //		0		not visible
@@ -179,7 +179,7 @@ else {
 			gameData.ai.cloakInfo [cloak_index].vLastPos += vRand * (8*deltaTime);
 			}
 		dist = CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
-		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
+		gameData.ai.nPlayerVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
 #if DBG
 		if (gameData.ai.nPlayerVisibility == 2)
@@ -196,7 +196,7 @@ else {
 		if (gameData.ai.vVecToPlayer.IsZero ()) {
 			gameData.ai.vVecToPlayer[X] = I2X (1);
 			}
-		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
+		gameData.ai.nPlayerVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
 #if DBG
 		if (gameData.ai.nPlayerVisibility == 2)

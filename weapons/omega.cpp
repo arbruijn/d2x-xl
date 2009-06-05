@@ -284,8 +284,8 @@ ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
 	vTargetPos = OBJECTS [nTargetObj].info.position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
-	tFVIQuery	fq;
-	tFVIData		hit_data;
+	tCollisionQuery	fq;
+	tCollisionData		hitData;
 	int			fate;
 	CFixVector	vPerturb, perturbed_fvec;
 
@@ -302,10 +302,10 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	fq.ignoreObjList = NULL;
 	fq.flags = FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS;		//what about trans walls???
 	fq.bCheckVisibility = false;
-	fate = FindVectorIntersection (&fq, &hit_data);
+	fate = FindHitpoint (&fq, &hitData);
 	if (fate != HIT_NONE) {
-		Assert (hit_data.hit.nSegment != -1);		//	How can this be?  We went from inside the mine to outside without hitting anything?
-		vTargetPos = hit_data.hit.vPoint;
+		Assert (hitData.hit.nSegment != -1);		//	How can this be?  We went from inside the mine to outside without hitting anything?
+		vTargetPos = hitData.hit.vPoint;
 		}
 	}
 //	This is where we create a pile of omega blobs!

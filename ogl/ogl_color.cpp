@@ -25,7 +25,7 @@
 #include "endlevel.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
-#include "fvi.h"
+#include "collision_math.h"
 #include "palette.h"
 
 #define CHECK_LIGHT_VERT	1

@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "segment.h"
 #include "renderlib.h"
-#include "fvi.h"
+#include "collision_math.h"
 
 // How far a point can be from a plane, and still be "in" the plane
 

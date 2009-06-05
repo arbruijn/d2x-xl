@@ -241,9 +241,9 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 			}
 		}
 	else {
-		//	Well, they are not directly connected, so use FindVectorIntersection to see if they are unobstructed.
-		tFVIQuery	fq;
-		tFVIData		hit_data;
+		//	Well, they are not directly connected, so use FindHitpoint to see if they are unobstructed.
+		tCollisionQuery	fq;
+		tCollisionData		hitData;
 		int			fate;
 
 		fq.startSeg			= objP->info.nSegment;
@@ -256,7 +256,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		fq.flags				= FQ_TRANSWALL;
 		fq.bCheckVisibility = false;
 
-		fate = FindVectorIntersection (&fq, &hit_data);
+		fate = FindHitpoint (&fq, &hitData);
 		if (fate != HIT_NONE) {
 			Int3 ();		//	This bot's gun is poking through a CWall, so don't fire.
 			MoveTowardsSegmentCenter (objP);		//	And decrease chances it will happen again.

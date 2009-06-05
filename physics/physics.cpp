@@ -273,7 +273,7 @@ if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
 
 #if 1 //UNSTICK_OBJS
 
-int BounceObject (CObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
+int BounceObject (CObject *objP, tCollisionData	hi, float fOffs, fix *pxSideDists)
 {
 	fix	xSideDist, xSideDists [6];
 	short	nSegment;
@@ -318,8 +318,8 @@ return 0;
 
 void UnstickObject (CObject *objP)
 {
-	tFVIData			hi;
-	tFVIQuery		fq;
+	tCollisionData			hi;
+	tCollisionQuery		fq;
 	int				fviResult;
 
 if ((objP->info.nType == OBJ_PLAYER) &&
@@ -340,7 +340,7 @@ fq.thisObjNum = objP->Index ();
 fq.ignoreObjList = NULL;
 fq.flags = 0;
 fq.bCheckVisibility = false;
-fviResult = FindVectorIntersection (&fq, &hi);
+fviResult = FindHitpoint (&fq, &hi);
 if (fviResult == HIT_WALL)
 #if 1
 #	if 0
@@ -423,8 +423,8 @@ void CObject::DoPhysicsSim (void)
 	int					nTries = 0;
 	short					nObject = OBJ_IDX (this);
 	short					nWallHitSeg, nWallHitSide;
-	tFVIData				hi;
-	tFVIQuery			fq;
+	tCollisionData				hi;
+	tCollisionQuery			fq;
 	CFixVector			vSavePos;
 	int					nSaveSeg;
 	fix					xSimTime, xOldSimTime, xTimeScale;
@@ -609,7 +609,7 @@ retryMove:
 	vSaveP0 = *fq.p0;
 	vSaveP1 = *fq.p1;
 	memset (&hi, 0, sizeof (hi));
-	fviResult = FindVectorIntersection (&fq, &hi);
+	fviResult = FindHitpoint (&fq, &hi);
 	UpdateStats (this, fviResult);
 	vSavePos = info.position.vPos;			//save the CObject's position
 	nSaveSeg = info.nSegment;
@@ -619,13 +619,13 @@ retryMove:
 		HUDMessage (0, "BAD P0 %d", nBadP0++);
 #endif
 		memset (&hi, 0, sizeof (hi));
-		fviResult = FindVectorIntersection (&fq, &hi);
+		fviResult = FindHitpoint (&fq, &hi);
 		fq.startSeg = FindSegByPos (vNewPos, info.nSegment, 1, 0);
 		if ((fq.startSeg < 0) || (fq.startSeg == info.nSegment)) {
 			info.position.vPos = vSavePos;
 			break;
 			}
-		fviResult = FindVectorIntersection (&fq, &hi);
+		fviResult = FindHitpoint (&fq, &hi);
 		if (fviResult == HIT_BAD_P0) {
 			info.position.vPos = vSavePos;
 			break;
@@ -852,7 +852,7 @@ retryMove:
 		Int3 ();		// Unexpected collision nType: start point not in specified CSegment.
 		}
 	else {
-		Int3 ();		// Unknown collision nType returned from FindVectorIntersection!!
+		Int3 ();		// Unknown collision nType returned from FindHitpoint!!
 		break;
 		}
 #endif

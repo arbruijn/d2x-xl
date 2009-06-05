@@ -1171,7 +1171,7 @@ return FindSegByPos (info.position.vPos, info.nSegment, 1, 0);
 //------------------------------------------------------------------------------
 //If an CObject is in a CSegment, set its nSegment field and make sure it's
 //properly linked.  If not in any CSegment, returns 0, else 1.
-//callers should generally use FindVectorIntersection ()
+//callers should generally use FindHitpoint ()
 int UpdateObjectSeg (CObject * objP, bool bMove)
 {
 	int nNewSeg;

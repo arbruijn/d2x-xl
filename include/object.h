@@ -1123,7 +1123,7 @@ void InitPlayerObject();
 
 // check if CObject is in CObject->nSegment.  if not, check the adjacent
 // segs.  if not any of these, returns false, else sets obj->nSegment &
-// returns true callers should really use FindVectorIntersection()
+// returns true callers should really use FindHitpoint()
 // Note: this function is in gameseg.c
 int UpdateObjectSeg(CObject *objP, bool bMove = true);
 

@@ -1093,9 +1093,9 @@ int CGenericCockpit::CanSeeObject (int nObject, int bCheckObjs)
 if (nObject < 0)
 	return 0;
 
-	tFVIQuery fq;
+	tCollisionQuery fq;
 	int nHitType;
-	tFVIData hit_data;
+	tCollisionData hitData;
 
 	//see if we can see this CPlayerData
 
@@ -1108,8 +1108,8 @@ fq.flags = bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
 fq.bCheckVisibility = true;
-nHitType = FindVectorIntersection (&fq, &hit_data);
-return bCheckObjs ? (nHitType == HIT_OBJECT) && (hit_data.hit.nObject == nObject) : (nHitType != HIT_WALL);
+nHitType = FindHitpoint (&fq, &hitData);
+return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------

@@ -1040,10 +1040,10 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED  + KEY_F4: {
-			//tFVIData hit_data;
+			//tCollisionData hitData;
 			//CFixVector p0 = {-0x1d99a7, -0x1b20000, 0x186ab7f};
 			//CFixVector p1 = {-0x217865, -0x1b20000, 0x187de3e};
-			//FindVectorIntersection(&hit_data, &p0, 0x1b9, &p1, 0x40000, 0x0, NULL, -1);
+			//FindHitpoint(&hitData, &p0, 0x1b9, &p1, 0x40000, 0x0, NULL, -1);
 			break;
 		}
 

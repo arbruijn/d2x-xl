@@ -2781,7 +2781,7 @@ class CAIData {
 		CFixVector					vHitPos;
 		int							nHitType;
 		int							nHitSeg;
-		tFVIData						hitData;
+		tCollisionData						hitData;
 		short							nBelievedPlayerSeg;
 		CFixVector					vBelievedPlayerPos;
 		CFixVector					vLastPlayerPosFiredAt;
@@ -3159,7 +3159,7 @@ class CCollisionData {
 	public:
 		int			nSegsVisited;
 		CStaticArray< short, MAX_SEGS_VISITED >	segsVisited; // [MAX_SEGS_VISITED];
-		tFVIHitInfo hitData;
+		tCollisionInfo hitData;
 };
 
 //------------------------------------------------------------------------------

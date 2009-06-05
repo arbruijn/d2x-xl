@@ -117,8 +117,8 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, CFixVector *vO
 nCacheLookups++;
 if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFrameCount)) {
 	int			bApplyLight = 0;
-	tFVIQuery	fq;
-	tFVIData		hit_data;
+	tCollisionQuery	fq;
+	tCollisionData		hitData;
 	int			nSegment, hitType;
 	nSegment = -1;
 	#if DBG
@@ -137,7 +137,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	fq.ignoreObjList	= NULL;
 	fq.flags				= FQ_TRANSWALL;
 	fq.bCheckVisibility = false;
-	hitType = FindVectorIntersection (&fq, &hit_data);
+	hitType = FindHitpoint (&fq, &hitData);
 	// gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 	// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
 	if (hitType == HIT_OBJECT)
@@ -145,7 +145,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	if (hitType == HIT_NONE)
 		bApplyLight = 1;
 	else if (hitType == HIT_WALL) {
-		fix distDist = CFixVector::Dist(hit_data.hit.vPoint, *vObjPos);
+		fix distDist = CFixVector::Dist(hitData.hit.vPoint, *vObjPos);
 		if (distDist < I2X (1)/4) {
 			bApplyLight = 1;
 			// -- Int3 ();	//	Curious, did fvi detect intersection with CWall containing vertex?
@@ -318,8 +318,8 @@ if (xObjIntensity) {
 					}
 				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
 					CFixVector	tvec;
-					tFVIQuery	fq;
-					tFVIData		hit_data;
+					tCollisionQuery	fq;
+					tCollisionData		hitData;
 					int			fate;
 					tvec = *vObjPos + objP->info.position.mOrient.FVec () * I2X (200);
 					fq.startSeg			= objP->info.nSegment;
@@ -331,9 +331,9 @@ if (xObjIntensity) {
 					fq.ignoreObjList	= NULL;
 					fq.flags				= FQ_TRANSWALL;
 					fq.bCheckVisibility = false;
-					fate = FindVectorIntersection (&fq, &hit_data);
+					fate = FindHitpoint (&fq, &hitData);
 					if (fate != HIT_NONE) {
-						tvec = hit_data.hit.vPoint - *vObjPos;
+						tvec = hitData.hit.vPoint - *vObjPos;
 						maxHeadlightDist = tvec.Mag() + I2X (4);
 					}
 				}

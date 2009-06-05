@@ -550,16 +550,16 @@ return nObject;
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
 int CreateNewLaserEasy (CFixVector * vDirection, CFixVector * vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
-	tFVIQuery	fq;
-	tFVIData		hitData;
+	tCollisionQuery	fq;
+	tCollisionData		hitData;
 	CObject		*parentObjP = OBJECTS + parent;
 	int			fate;
 
 	//	Find segment containing laser fire vPosition.  If the robot is straddling a segment, the vPosition from
-	//	which it fires may be in a different segment, which is bad news for FindVectorIntersection.  So, cast
+	//	which it fires may be in a different segment, which is bad news for FindHitpoint.  So, cast
 	//	a ray from the object center (whose segment we know) to the laser position.  Then, in the call to CreateNewWeapon
-	//	use the data returned from this call to FindVectorIntersection.
-	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
+	//	use the data returned from this call to FindHitpoint.
+	//	Note that while FindHitpoint is pretty slow, it is not terribly slow if the destination point is
 	//	in the same CSegment as the source point.
 
 fq.p0					= &parentObjP->info.position.vPos;
@@ -572,7 +572,7 @@ fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 fq.bCheckVisibility = false;
 
-fate = FindVectorIntersection (&fq, &hitData);
+fate = FindHitpoint (&fq, &hitData);
 if (fate != HIT_NONE  || hitData.hit.nSegment==-1)
 	return -1;
 return CreateNewWeapon (vDirection, &hitData.hit.vPoint, (short) hitData.hit.nSegment, parent, nWeaponType, bMakeSound);
@@ -672,8 +672,8 @@ int LaserPlayerFireSpreadDelay (
 	short			nLaserSeg;
 	int			nFate;
 	CFixVector	vLaserPos, vLaserDir, *vGunPoints;
-	tFVIQuery	fq;
-	tFVIData		hitData;
+	tCollisionQuery	fq;
+	tCollisionData		hitData;
 	int			nObject;
 	CObject		*laserP;
 #if FULL_COCKPIT_OFFS
@@ -730,7 +730,7 @@ fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
 fq.bCheckVisibility = false;
-nFate = FindVectorIntersection (&fq, &hitData);
+nFate = FindHitpoint (&fq, &hitData);
 nLaserSeg = hitData.hit.nSegment;
 if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
@@ -1124,8 +1124,8 @@ return rVal;
 // -- int create_lightning_blobs (CFixVector *vDirection, CFixVector *start_pos, int start_segnum, int parent)
 // -- {
 // -- 	int			i;
-// -- 	tFVIQuery	fq;
-// -- 	tFVIData		hitData;
+// -- 	tCollisionQuery	fq;
+// -- 	tCollisionData		hitData;
 // -- 	CFixVector	vEndPos;
 // -- 	CFixVector	norm_dir;
 // -- 	int			fate;
@@ -1160,7 +1160,7 @@ return rVal;
 // -- 	fq.ignoreObjList	= NULL;
 // -- 	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;
 // --
-// -- 	fate = FindVectorIntersection (&fq, &hitData);
+// -- 	fate = FindHitpoint (&fq, &hitData);
 // -- 	if (hitData.hit.nSegment == -1) {
 // -- 		return -1;
 // -- 	}

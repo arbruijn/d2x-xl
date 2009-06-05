@@ -772,8 +772,8 @@ FORALL_WEAPON_OBJS (bombP, i) {
 			//	Object which is close enough to detonate smart mine is not in same CSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
 			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
-				tFVIQuery	fq;
-				tFVIData		hit_data;
+				tCollisionQuery	fq;
+				tCollisionData		hitData;
 				int			fate;
 
 				fq.startSeg = bombP->info.nSegment;
@@ -786,7 +786,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 				fq.flags	= 0;
 				fq.bCheckVisibility = false;
 
-				fate = FindVectorIntersection (&fq, &hit_data);
+				fate = FindHitpoint (&fq, &hitData);
 				if (fate != HIT_WALL)
 					bombP->info.xLifeLeft = 1;
 				}

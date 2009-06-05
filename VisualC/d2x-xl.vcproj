@@ -3738,7 +3738,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\fvi.h"
+						RelativePath="..\include\collision_math.h"
 						>
 					</File>
 					<File
@@ -3758,7 +3758,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\physics\fvi.cpp"
+						RelativePath="..\physics\hitbox_collision.cpp"
 						>
 					</File>
 					<File
@@ -3767,6 +3767,14 @@
 					</File>
 					<File
 						RelativePath="..\physics\slowmotion.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\physics\sphere_collision.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\physics\visibility.cpp"
 						>
 					</File>
 				</Filter>
@@ -4261,11 +4269,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

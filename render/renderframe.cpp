@@ -93,9 +93,9 @@ glLineWidth (1.0f);
 
 int TargetInLineOfFire (void)
 {
-	tFVIQuery	fq;
+	tCollisionQuery	fq;
 	int			nHitType;
-	tFVIData		hit_data;
+	tCollisionData		hitData;
 	CFixVector	vEndPos;
 
 	//see if we can see this CPlayerData
@@ -110,7 +110,7 @@ fq.flags = FQ_CHECK_OBJS | FQ_TRANSWALL;
 fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
 fq.bCheckVisibility = true;
-nHitType = FindVectorIntersection (&fq, &hit_data);
+nHitType = FindHitpoint (&fq, &hitData);
 return (nHitType == HIT_OBJECT);
 }
 
