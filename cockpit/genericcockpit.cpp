@@ -1331,7 +1331,7 @@ for (i = 0; i < nPlayers; i++) {
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [nPlayer].red, playerColors [nPlayer].green, playerColors [nPlayer].blue), 1, 0, 0);
 	if (gameData.multigame.kills.bShowList == 3) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
-#if 0//def _DEBUG
+#if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
 						teamInd [0], netGame.szTeamName [i],
 						netPlayers.players [i].network.ipx.node [0],
@@ -1362,7 +1362,7 @@ for (i = 0; i < nPlayers; i++) {
 			}
 		}
 	else
-#if 0//def _DEBUG
+#if 0//DBG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d",
 					gameData.multiplayer.players [nPlayer].callsign,
 					netPlayers.players [nPlayer].network.ipx.node [0],
@@ -1374,7 +1374,7 @@ for (i = 0; i < nPlayers; i++) {
 #else
 		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
 #endif
-#if 0//def _DEBUG
+#if 0//DBG
 	x1 += LHX (100);
 #endif
 	for (l = (int) strlen (name); l;) {
@@ -1414,7 +1414,7 @@ for (i = 0; i < nPlayers; i++) {
 		if (bGetPing)
 			PingPlayer (nPlayer);
 		if (pingStats [nPlayer].sent) {
-#if 0//def _DEBUG
+#if 0//DBG
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1 + xo, y0, "%lu %d %d",
 						  pingStats [nPlayer].ping,
 						  pingStats [nPlayer].sent,

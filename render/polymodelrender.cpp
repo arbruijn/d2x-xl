@@ -167,7 +167,7 @@ if (gameStates.render.nShadowPass == 2) {
 		}
 	return 1;
 	}
-#if 1//def _DEBUG
+#if 1//DBG
 if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif

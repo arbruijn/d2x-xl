@@ -333,7 +333,7 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1].Buffer ();
 		  i < gameData.pig.tex.nBitmaps [bD1];
 		  i++, bmP++) {
-#ifdef _DEBUG
+#if DBG
 		if (i == nDbgTexture)
 			nDbgTexture = nDbgTexture;
 #endif
@@ -706,7 +706,7 @@ if ((nOffset >= 0) && cfP->Seek (nOffset, SEEK_SET)) {
 		cfP->Close ();
 	throw (EX_IO_ERROR);
 	}
-#if 1//def _DEBUG
+#if 1//DBG
 bmP->SetName (bmName);
 #endif
 #if TEXTURE_COMPRESSION

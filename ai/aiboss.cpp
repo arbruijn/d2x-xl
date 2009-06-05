@@ -27,7 +27,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "multibot.h"
 
-//#define _DEBUG
 #if DBG
 #include "string.h"
 #include <time.h>

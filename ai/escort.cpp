@@ -1107,7 +1107,7 @@ FORALL_ROBOT_OBJS (objP, i) {
 	}
 
 if (!IS_OBJECT (objP, i)) {
-#if 1//def _DEBUG - always allow buddy bot creation
+#if 1//DBG - always allow buddy bot creation
 		//	If no buddy bot, create one!
 		HUDInitMessage (TXT_GB_CREATE);
 		CreateBuddyBot ();

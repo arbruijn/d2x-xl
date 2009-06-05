@@ -269,7 +269,7 @@ switch (info.controlType) {
 			mType.physInfo.thrust.SetZero ();
 			mType.physInfo.rotThrust.SetZero ();
 			DoAnyRobotDyingFrame (this);
-#if 1//ndef _DEBUG
+#if 1//!DBG
 			return 1;
 #endif
 			}

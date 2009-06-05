@@ -182,7 +182,7 @@ if (!m_vld.nLights)
 for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 	if (!(hBuffer [i] = CreateBuffer (i)))
 		return 0;
-#if 0 //def _DEBUG
+#if 0 //DBG
 	memset (m_vld.buffers [i] + m_vld.nLights, 0, (GPGPU_LIGHT_BUF_SIZE - m_vld.nLights) * sizeof (m_vld.buffers [i][0]));
 #endif
 	}

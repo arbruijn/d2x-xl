@@ -16,7 +16,7 @@ tReplacementModel replacementModels [] = {
 	// player ship
  {"pyrogl", "pyrogl.pol", 108, 0, 0, -1}, 
  {NULL, NULL, 110, 0, 0, -1}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
-#if 0//def _DEBUG	//D3 robots for testing
+#if 0//DBG	//D3 robots for testing
 /*
  {"thresherboss", NULL, 39, 1, 0, -1}, 
  {"orbot", NULL, 58, 1, 0, -1}, 
@@ -302,7 +302,7 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "%s.ase", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
-#if 0//def _DEBUG
+#if 0//DBG
 while (!ASE_ReadFile (szModel [1], pa, replacementModels [i].nType, bCustom))
 	;
 #endif

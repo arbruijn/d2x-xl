@@ -27,7 +27,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "network.h"
 
-//#define _DEBUG
 #if DBG
 #include "string.h"
 #include <time.h>

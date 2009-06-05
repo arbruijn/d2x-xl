@@ -166,7 +166,7 @@ if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
 bMulti = IsMultiGame;
 if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [objP->Index ()].bBoosted) {
-#if 1//ndef _DEBUG
+#if 1//!DBG
 	wiggleTime = gameData.time.xFrame;
 	WiggleObject (objP);
 #endif

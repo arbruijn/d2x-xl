@@ -636,7 +636,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#if defined (_WIN32) && !defined (_DEBUG)
+#if defined (_WIN32) && defined (RELEASE)
 typedef int (__fastcall * pPickupGun) (CObject *, int, int);
 typedef int (__fastcall * pPickupMissile) (CObject *, int, int, int);
 typedef int (__fastcall * pPickupEquipment) (CObject *, int);

@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
-//#define _DEBUG
+
 #define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000

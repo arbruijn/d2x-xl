@@ -203,7 +203,7 @@ glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 gameStates.ogl.bDrawBufferActive = 0;
 glBindTexture (GL_TEXTURE_2D, 0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-#if 1//def _DEBUG
+#if 1//DBG
 if (!Available ())
 	return 0;
 #endif
@@ -218,7 +218,7 @@ int CFBO::Disable (void)
 if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-#if 1//def _DEBUG
+#if 1//DBG
 if (!Available ())
 	return 0;
 #endif

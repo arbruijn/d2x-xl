@@ -259,7 +259,7 @@ for (i = 0; i < 2; i++) {
 	}
 if (bMsg)
 	SlowMotionMessage ();
-#if 0//def _DEBUG
+#if 0//DBG
 HUDMessage (0, "%1.2f %1.2f %d", 
 				gameStates.gameplay.slowmo [0].fSpeed, gameStates.gameplay.slowmo [1].fSpeed,
 				gameStates.gameplay.slowmo [1].bActive);

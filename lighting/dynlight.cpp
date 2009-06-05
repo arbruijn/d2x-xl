@@ -629,7 +629,7 @@ for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--
 		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL, 1);
 	faceP->nOvlTex = SEGMENTS [faceP->nSegment].Side (faceP->nSide)->m_nOvlTex;
 	nTexture = faceP->nOvlTex;
-#if 0//def _DEBUG
+#if 0//DBG
 	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light
 		continue;
 #endif

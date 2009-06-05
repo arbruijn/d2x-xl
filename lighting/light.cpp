@@ -530,7 +530,7 @@ switch (nObjType) {
 
 	case OBJ_ROBOT:
 		*pbGotColor = 1;
-#if 0//def _DEBUG
+#if 0//DBG
 		return ROBOTINFO (objP->info.nId).lighting;
 #else
 		return ROBOTINFO (objP->info.nId).lightcast ? ROBOTINFO (objP->info.nId).lighting ? ROBOTINFO (objP->info.nId).lighting : I2X (1) : 0;

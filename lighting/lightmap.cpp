@@ -98,13 +98,13 @@ if (lmP->handle)
 	return 1;
 OglGenTextures (1, &lmP->handle);
 if (!lmP->handle) {
-#if 0//def _DEBUG
+#if 0//DBG
 	nError = glGetError ();
 #endif
 	return 0;
 	}
 OGL_BINDTEX (lmP->handle); 
-#if 0//def _DEBUG
+#if 0//DBG
 if ((nError = glGetError ()))
 	return 0;
 #endif
@@ -442,7 +442,13 @@ for (y = yMin; y < yMax; y++) {
 			nDbgSeg = nDbgSeg;
 			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
 				nDbgSeg = nDbgSeg;
-			if (y == 6)
+			if (x == 0)
+				nDbgSeg = nDbgSeg;
+			if (x == w - 1)
+				nDbgSeg = nDbgSeg;
+			if (y == 0)
+				nDbgSeg = nDbgSeg;
+			if (y == w - 1)
 				nDbgSeg = nDbgSeg;
 			}
 #endif

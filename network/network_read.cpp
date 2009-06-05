@@ -687,7 +687,7 @@ else if (i < 0)
 		if (nObject != -1) {
 			Assert (nObject < LEVEL_OBJECTS);
 			objP = OBJECTS + nObject;
-#if 1//def _DEBUG
+#if 1//DBG
 			if (objP->info.nSegment >= 0)
 				nDbgObj = objP->Index ();
 #endif

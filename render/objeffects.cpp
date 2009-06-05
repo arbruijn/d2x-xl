@@ -1071,7 +1071,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-#if 1//ndef _DEBUG
+#if 1//!DBG
 if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 	return;
 #endif

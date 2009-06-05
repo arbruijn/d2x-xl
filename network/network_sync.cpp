@@ -396,7 +396,7 @@ if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit
 	key = -2;
 	return nCurItem;
 	}
-#if 1 //ndef _DEBUG
+#if 1 //!DBG
 if ((networkData.nStatus == NETSTAT_PLAYING) || (nPackets && networkData.nJoinState)) {
 	ResetSyncTimeout ();
 	return nCurItem;

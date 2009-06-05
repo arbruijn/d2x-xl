@@ -634,7 +634,7 @@ int CMovieManager::Play (const char* filename, int bRequired, int bForce, int bF
 	char name [FILENAME_LEN], *p;
 	int c, ret;
 
-#if 1//ndef _DEBUG
+#if 1//!DBG
 if (!bForce && (gameOpts->movies.nLevel < 2))
 	return MOVIE_NOT_PLAYED;
 #endif

@@ -1090,7 +1090,7 @@ PROF_START
 #if CLEAR_WINDOW == 2
 	tPortal	*oldPortal;
 #endif
-#if 0//def _DEBUG
+#if 0//DBG
 	int		i;
 #endif
 

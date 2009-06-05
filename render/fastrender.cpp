@@ -48,7 +48,7 @@ void ResetFaceList (int nThread)
 PROF_START
 	CFaceListIndex *flxP = gameData.render.faceIndex + nThread;
 #if SORT_RENDER_FACES == 2
-#	if 0//def _DEBUG
+#	if 0//DBG
 memset (flxP->roots, 0xff, sizeof (flxP->roots));
 #	else
 short *roots = flxP->roots,
@@ -57,7 +57,7 @@ for (int i = 0, h = flxP->nUsedKeys; i < h; i++)
 	roots [usedKeys [i]] = -1;
 #	endif
 #else
-#	if 0//def _DEBUG
+#	if 0//DBG
 memset (flxP->tails, 0xff, sizeof (flxP->tails));
 #	else
 short *tails = flxP->tails.Buffer (),

@@ -28,7 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "headlight.h"
 
-//#define _DEBUG
 #if DBG
 #include "string.h"
 #include <time.h>

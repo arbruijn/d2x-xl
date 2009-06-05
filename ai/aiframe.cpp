@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "visibility.h"
 
 #include "string.h"
-//#define _DEBUG
+
 #if DBG
 #include <time.h>
 #endif
@@ -1355,7 +1355,7 @@ if (si.aiP->SKIP_AI_COUNT) {
 	}
 
 Assert (si.botInfoP->always_0xabcd == 0xabcd);
-#if 0//def _DEBUG
+#if 0//DBG
 if (!si.botInfoP->bossFlag)
 	goto funcExit;
 #endif
@@ -1452,7 +1452,7 @@ if (!gameData.ai.nPlayerVisibility) {
 
 funcExit:
 
-#if 0//def _DEBUG
+#if 0//DBG
 HUDMessage (0, "%s %s %d %d %d",
 				pszAIState [si.aiP->flags [1]], pszAIState [si.aiP->flags [2]],
 				gameData.ai.xDistToPlayer / I2X (1),

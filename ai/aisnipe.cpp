@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 
 #include "string.h"
-//#define _DEBUG
+
 #if DBG
 #include <time.h>
 #endif

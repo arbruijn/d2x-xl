@@ -482,7 +482,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
 void MultiSetFlagPos (void)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players;
-#if 1//ndef _DEBUG
+#if 1//!DBG
 	int		i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
@@ -1543,7 +1543,7 @@ NetworkResetObjSync (nLocalObj);
 if (OBJECTS [nLocalObj].info.nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
 		id = OBJECTS [nLocalObj].info.nId;
-#if 0//def _DEBUG
+#if 0//DBG
 		HUDMessage (0, "removing %s (%d present)", pszPowerup [id], gameData.multiplayer.powerupsInMine [id]);
 #endif
 		if (gameData.multiplayer.powerupsInMine [id] > 0)
@@ -2502,7 +2502,7 @@ void MultiSendRemObj (int nObject)
 
 if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) &&(gameData.app.nGameMode & GM_NETWORK)) {
 	id = OBJECTS [nObject].info.nId;
-#if 0//def _DEBUG
+#if 0//DBG
 	HUDMessage (0, "requesting to remove %s (%d present)", pszPowerup [id], gameData.multiplayer.powerupsInMine [id]);
 #endif
 	if (gameData.multiplayer.powerupsInMine [id] > 0) {
@@ -5123,7 +5123,7 @@ if (nType <= MULTI_MAX_TYPE) {
 	if (pmh->fpMultiHandler && !(gameStates.app.bEndLevelSequence && pmh->noEndLevelSeq))
 		pmh->fpMultiHandler (buf);
 	}
-#else //_DEBUG
+#else //DBG
 switch (nType) {
 	case MULTI_POSITION:
 		if (!gameStates.app.bEndLevelSequence)
@@ -5439,7 +5439,7 @@ switch (nType) {
 	default:
 		Int3 ();
 	}
-#endif //_DEBUG
+#endif //DBG
 }
 
 //-----------------------------------------------------------------------------

@@ -42,8 +42,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "monsterball.h"
 
-//#define _DEBUG
-
 #ifdef TACTILE
 #include "tactile.h"
 #endif

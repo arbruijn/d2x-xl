@@ -345,7 +345,7 @@ return 0;
 
 float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
-#if 1//def _DEBUG
+#if 1//DBG
 
 int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread)
 {
@@ -563,7 +563,7 @@ else
 	vertColor [R] *= lightColor [R];
 	vertColor [G] *= lightColor [G];
 	vertColor [B] *= lightColor [B];
-	if ((NdotL > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
+	if ((NdotL > 0.0f) && (fLightDist > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
 		//RdotV = max (dot (Reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
 		if (!prl->info.bSpot)	//need direction from light to vertex now
 			lightDir.Neg ();
@@ -933,7 +933,7 @@ else
 	fScale *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 if (fScale > 1)
 	fScale = 1;
-#if 1//ndef _DEBUG //cache light values per frame
+#if 1//!DBG //cache light values per frame
 if (!(gameStates.render.nState || vcd.bExclusive || vcd.bMatEmissive) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {

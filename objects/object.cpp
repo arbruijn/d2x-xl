@@ -781,7 +781,7 @@ else if (nType != OBJ_REACTOR) {
 		Link (gameData.objs.lists.lights, 1);
 	else
 		m_links [1].prev = m_links [1].next = NULL;
-#ifdef _DEBUG
+#ifdef DBG
 	if (nType == OBJ_CAMBOT)
 		nType = nType;
 #endif

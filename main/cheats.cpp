@@ -721,7 +721,7 @@ else {
 
 void UnlockAllCheat (int bVerbose)
 {
-#if 1//def _DEBUG
+#if 1//DBG
 UnlockAllWalls (!gameStates.app.cheats.nUnlockLevel);
 if (bVerbose)
 	HUDInitMessage (!gameStates.app.cheats.nUnlockLevel ? TXT_ROBBING_BANK : TXT_LET_ME_OVER);

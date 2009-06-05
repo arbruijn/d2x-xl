@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	Length in segments of avoidance path
 #define	AVOID_SEG_LENGTH	7
-//#define _DEBUG
+
 #if !DBG
 #	define	PATH_VALIDATION	0
 #else

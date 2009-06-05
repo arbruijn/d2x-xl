@@ -349,7 +349,7 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, g
 int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits, bool bForce)
 {
 if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
-#if 0//def _DEBUG
+#if 0 //DBG
 	HUDInitMessage ("%c%c%c%cDiscarding excess %s!", 1, 127 + 128, 64 + 128, 128, pszPowerup [nId]);
 	TooManyPowerups (nId);
 #endif

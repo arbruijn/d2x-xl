@@ -530,6 +530,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #ifdef _WIN32
 		if (glDrawRangeElements)
 #endif
+#if DBG
 			if (bUseVBO)
 				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
@@ -538,6 +539,16 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											pm->m_index [0] + nIndex);
+#else
+			if (bUseVBO)
+				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
+			else
+				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											pm->m_index [0] + nIndex);
+#endif
 #ifdef _WIN32
 		else
 			if (bUseVBO)
@@ -879,11 +890,19 @@ if (gameStates.render.bCloaked)
 	G3DisableClientStates (0, 0, 0, -1);
 else
 	G3DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
+#if DBG
+if (gameOpts->render.debug.bWireFrame)
+	glLineWidth (2.0f);
+#endif
 if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
 	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 	transformation.End ();
 	}
+#if DBG
+if (gameOpts->render.debug.bWireFrame)
+	glLineWidth (1.0f);
+#endif
 pm->m_bRendered = 1;
 OglClearError (0);
 PROF_END(ptRenderObjectsFast)

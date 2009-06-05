@@ -584,7 +584,7 @@ int CSide::CheckLineToFace (CFixVector& intersection, CFixVector *p0, CFixVector
 	int			pli, nVertex, bCheckRad = 0;
 
 //use lowest refP number
-#if 1 //def _DEBUG
+#if 1 //DBG
 if (m_nFaces <= iFace) {
 	Error ("invalid face number in CSegment::CheckLineToFace()");
 	return IT_ERROR;

@@ -455,7 +455,7 @@ sprite [2] -= t;
 
 // -----------------------------------------------------------------------------------
 
-#if defined (_DEBUG) && CORONA_OUTLINE
+#if DBG && CORONA_OUTLINE
 
 void RenderCoronaOutline(CFloatVector *sprite, CFloatVector *vCenter)
 {
@@ -657,7 +657,7 @@ void RenderCorona (short nSegment, short nSide, float fIntensity, float fSize)
 
 if (fIntensity < 0.01f)
 	return;
-#if 0//def _DEBUG
+#if 0//DBG
 if ((nSegment != 6) || (nSide != 2))
 	return;
 #endif

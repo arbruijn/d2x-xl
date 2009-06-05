@@ -42,7 +42,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cockpit.h"
 #include "visibility.h"
 
-//#define _DEBUG
 #define EXPLOSION_SCALE (I2X (5)/2)		//explosion is the obj size times this
 
 int	PK1=1, PK2=8;
@@ -395,7 +394,7 @@ CFixVector::Normalize (debrisP->mType.physInfo.velocity);
 debrisP->mType.physInfo.velocity *= (I2X (10 + (30 * d_rand () / RAND_MAX)));
 debrisP->mType.physInfo.velocity += mType.physInfo.velocity;
 // -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
-#if 0//def _DEBUG
+#if 0//DBG
 VmVecZero (&debrisP->mType.physInfo.rotVel);
 #else
 debrisP->mType.physInfo.rotVel = CFixVector::Create(d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);

@@ -141,7 +141,7 @@ else if (!a)
 	return 0;
 else {
 		double	d;
-#if 0//def _DEBUG
+#if 0//DBG
 		double	p, h, e;
 #endif
 
@@ -149,7 +149,7 @@ else {
 		a = dMaxAxis;
 	else if (a < -dMaxAxis)
 		a = -dMaxAxis;
-#if 1//ndef _DEBUG
+#if 1//!DBG
 	d = dMaxAxis * pow (fabs ((double) a / dMaxAxis), (double) joy_sens_mod [nAxis % 4] / 16.0);
 #else
 	h = fabs ((double) a / dMaxAxis);
@@ -985,7 +985,7 @@ if (!pfnTIRQuery (&tirInfo)) {
 		pfnTIRStart ();
 	return 0;
 	}
-#if 0//def _DEBUG
+#if 0//DBG
 HUDMessage (0, "%1.0f %1.0f %1.0f", tirInfo.fvTrans.x, tirInfo.fvTrans.y, tirInfo.fvTrans.z);
 #endif
 return 1;
@@ -1009,7 +1009,7 @@ if (gameOpts->input.trackIR.nMode == 0) {
 #endif
 	x = gameData.trackIR.x;
 	y = gameData.trackIR.y;
-#if 0//def _DEBUG
+#if 0//DBG
 		HUDMessage (0, "%d/%d %d/%d", x, dx, y, dy);
 #endif
 	if (abs (dx - x) > gameOpts->input.trackIR.nDeadzone * 4) {
@@ -1062,7 +1062,7 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 		else
 			dy -= dz;
 		}
-#if 0//def _DEBUG
+#if 0//DBG
 	HUDMessage (0, "%d %d", dx, dy);
 #endif
 	dx = 640 * dx / (screen.Width () / (gameOpts->input.trackIR.sensitivity [0] + 1));

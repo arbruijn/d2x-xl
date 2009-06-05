@@ -109,7 +109,7 @@ bmTop = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapTop].index].Ove
 bmBot = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [tMapBot].index].Override (-1);
 
 for (i = 0, cacheP = &texCache [0]; i < nCacheEntries; i++, cacheP++) {
-#if 1//ndef _DEBUG
+#if 1//!DBG
 	if ((cacheP->nLastFrameUsed > -1) && 
 		 (cacheP->bmTop == bmTop) && 
 		 (cacheP->bmBot == bmBot) && 

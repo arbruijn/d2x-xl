@@ -41,7 +41,7 @@ void Assert(int expr);
 void _CDECL_ PrintLog (const char *fmt, ...);
 void Int3();
 
-#if 1//def _DEBUG
+#if 1//DBG
 
 extern short nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel;
 extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture;
