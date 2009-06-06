@@ -1489,9 +1489,8 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 	float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
 	if (fShieldScale < 1.0f)
 		fShieldScale = 1.0f;
-	else {
+	else
 		fDamage /= sqrt (fShieldScale);
-		}
 	if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)
 			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
@@ -1504,7 +1503,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 			HUDMessage (0, "crit. hit GUNS\n", nModel);
 #endif
 		if (nModel < 2)
-			m_damage.xAim = fix (float (m_damage.xAim) * (1.0f - 0.5f / fShieldScale));
+			m_damage.xAim = fix (float (m_damage.xAim) * (1.0f - 0.25f / fShieldScale));
 		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 8)
 			m_damage.xDrives = fix (float (m_damage.xDrives) * (1.0f - 0.25f / fShieldScale));
 		else
@@ -1517,7 +1516,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 
 #if DBG
 if ((gameStates.app.nSDLTicks - m_damage.tShield < SHIELD_EFFECT_TIME * 2) && 
-	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 10))
+	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4))
 	return vHit;
 #endif
 

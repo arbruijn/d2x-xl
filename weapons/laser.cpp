@@ -278,17 +278,17 @@ int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegme
 	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
-#if 0 //DBG
+#if 1 //DBG
 OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (
-	F2X (0.5 * float (pow (0.975, 100))), 
-	F2X (0.5 * float (pow (0.975, 100))), 
-	F2X (0.5 * float (pow (0.975, 100)))
+	F2X (0.5 * float (pow (1.0f - 0.25f / 2.0f, 5))), 
+	F2X (0.5 * float (pow (1.0f - 0.25f / 2.0f, 5))), 
+	F2X (0.5 * float (pow (1.0f - 0.25f / 2.0f, 5)))
 	);
 #endif
 	if (d_rand () > parentP->GunDamage ())
 		return -1;
 
-	fix			damage = (I2X (1) / 2 - parentP->AimDamage ()) >> 2;
+	fix			damage = (I2X (1) / 2 - parentP->AimDamage ()) >> 3;
 
 if (damage > 0) {
 	CAngleVector	v;
