@@ -1506,7 +1506,7 @@ for (int i = 0; i < 3; i++)
 #	if 0
 	if (CFixVector::Dot (m_hitInfo.v [i], vHit) > I2X (1) - I2X (1) / 32) {
 #	else
-	if (CFixVector::Dist (m_hitInfo.v [i], vHit) < I2X (1) / 32) {
+	if (CFixVector::Dist (m_hitInfo.v [i], vHit) < I2X (1) / 16) {
 #	endif
 		vHit = CFixVector::Avg (m_hitInfo.v [i], vHit);
 		CFixVector::Normalize (vHit);
