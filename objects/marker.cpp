@@ -107,7 +107,8 @@ void DrawMarkers (void)
 {
 	g3sPoint spherePoint;
 	int		i, j, nMaxDrop, bSpawn;
-	CObject	*objP;
+	CObject*	objP;
+	ubyte*	colorP;
 
 	static int cyc = 10, cycdir = 1;
 	static ubyte	colors [2][3] = {{20, 30, 40},{40, 50, 60}};
@@ -119,10 +120,11 @@ spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
 	if ((objP = MarkerObj (-1, i))) {
 		bSpawn = (objP == SpawnMarkerObject (-1));
+		colorP = &colors [bSpawn][0];
 		G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
-		for (j = 0; j < 3; j++) {
-			CCanvas::Current ()->SetColorRGB (PAL2RGBA (colors [bSpawn][j]), 0, 0, 255);
-			G3DrawSphere (&spherePoint, (int) (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
+		for (j = 0; j < 3; j++, colorP++) {
+			CCanvas::Current ()->SetColorRGB (PAL2RGBA (*colorP), 0, 0, 255);
+			G3DrawSphere (&spherePoint, int (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
 			}
 		DrawMarkerNumber (i);
 		}
