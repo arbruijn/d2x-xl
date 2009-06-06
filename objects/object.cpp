@@ -52,6 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hiresmodels.h"
 #include "loadgame.h"
+#include "objeffects.h"
 #include "multi.h"
 #ifdef TACTILE
 #	include "tactile.h"
@@ -1477,9 +1478,21 @@ CFixVector vDir;
 vDir = vHit - info.position.vPos;
 CFixVector::Normalize (vDir);
 
-if ((nModel >= 0) && EGI_FLAG (nDamageModel, 0, 0, 0)) {	// check and handle critical hits
+if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCritical)) {	// check and handle critical hits
 	float fDamage = 1.0f - Damage ();
-	if ((m_damage.bCritical = d_rand () < F2X (fDamage * fDamage))) {
+
+	// fShieldScale is a measure of the relative shield strength. A full player ship shield has a ratio of 1.0
+	// It is used to scale critical hit damage with a target's durability to avoid strong targets being disabled
+	// by critical hits too soon. This is necessary since strong targets take a lot of hits to be taken down,
+	// so will receive a lot of critical hits compared to weak targets.
+	// Player shields are given a ratio of 2 to reduce critical hit effects on them.
+	float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
+	if (fShieldScale < 1.0f)
+		fShieldScale = 1.0f;
+	else {
+		fDamage /= sqrt (fShieldScale);
+		}
+	if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)
 			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
 #if DBG
@@ -1491,15 +1504,22 @@ if ((nModel >= 0) && EGI_FLAG (nDamageModel, 0, 0, 0)) {	// check and handle cri
 			HUDMessage (0, "crit. hit GUNS\n", nModel);
 #endif
 		if (nModel < 2)
-			m_damage.xAim = fix (float (m_damage.xAim) * 0.95f);
+			m_damage.xAim = fix (float (m_damage.xAim) * (1.0f - 0.5f / fShieldScale));
 		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 8)
-			m_damage.xDrives = fix (float (m_damage.xDrives) * 0.975f);
+			m_damage.xDrives = fix (float (m_damage.xDrives) * (1.0f - 0.25f / fShieldScale));
 		else
-			m_damage.xGuns = fix (float (m_damage.xGuns) * 0.975f);
+			m_damage.xGuns = fix (float (m_damage.xGuns) * (1.0f - 0.25f / fShieldScale));
 		m_damage.tCritical = gameStates.app.nSDLTicks;
+		m_damage.nCritical++;
 		return vHit;
 		}
 	}
+
+#if DBG
+if ((gameStates.app.nSDLTicks - m_xTimeLastHit > SHIELD_EFFECT_TIME * 2) && 
+	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 10))
+	return vHit;
+#endif
 
 vHit = vDir * info.xSize;
 

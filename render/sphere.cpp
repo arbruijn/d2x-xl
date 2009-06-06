@@ -129,15 +129,12 @@ if (gameStates.render.history.nShader == 100) {
 
 int SetupSphereShader (CObject* objP, float alpha)
 {
+	int	nHits = 0;
+
 PROF_START
 if (CreateSphereShader () < 1) {
 	PROF_END(ptShaderStates)
 	return 0;
-	}
-if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
-	gameData.render.nShaderChanges++;
-	glUseProgramObject (sphereShaderProg);
-	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
@@ -168,6 +165,7 @@ for (int i = 0; i < 3; i++) {
 		if (gameStates.ogl.bUseTransform) {
 			vHitf [i].Assign (m * hitInfo.v [i]);
 			CFloatVector::Normalize (vHitf [i]);
+			nHits++;
 			}
 		else {
 			vHitf [i].Assign (hitInfo.v [i]);
@@ -182,6 +180,15 @@ for (int i = 0; i < 3; i++) {
 if (!gameStates.ogl.bUseTransform) {
 	transformation.End ();
 	OglResetTransform (1);
+	}
+
+if (!nHits)
+	return 0;
+
+if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
+	gameData.render.nShaderChanges++;
+	glUseProgramObject (sphereShaderProg);
+	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
 	}
 glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
 glUniform3fv (glGetUniformLocation (sphereShaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
@@ -769,8 +776,10 @@ if (!bEffect)
 if (gameStates.ogl.bUseTransform = !bEffect)
 #endif
 	UnloadSphereShader ();
-else
-	SetupSphereShader (objP, alpha);
+else {
+	if (!SetupSphereShader (objP, alpha))
+		return 0;
+	}
 OglSetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;

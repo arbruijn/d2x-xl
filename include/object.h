@@ -707,6 +707,7 @@ class CObjDamageInfo {
 		fix				xAim;
 		bool				bCritical;
 		int				tCritical;
+		int				nCritical;
 };
 
 class CObject : public CObjectInfo {
@@ -905,6 +906,8 @@ class CObject : public CObjectInfo {
 				m_damage.xGuns = I2X (1) / 2;
 				bReset = true;
 				}
+			m_damage.tCritical = 0;
+			m_damage.nCritical = 0;
 			return bReset;
 			}
 

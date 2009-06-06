@@ -426,7 +426,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
 #if 1 //!DBG
-	dist = VmLinePointDist (*p0, *p1, otherObjP->info.position.vPos);
+	dist = VmLinePointDist (*p0, *p1, thisObjP->info.position.vPos);
 	if (dist > 15 * (thisObjP->info.xSize + otherObjP->info.xSize) / 10)
 		return 0;
 #endif
@@ -475,8 +475,8 @@ intersection = vHit;
 CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, vHit, 1, 1);
 #endif
 if (!bCheckVisibility) {
-	thisObjP->RegisterHit (vHit, nModel);
-	vHit = otherObjP->RegisterHit (vHit, nModel);
+	vHit = thisObjP->RegisterHit (vHit, nModel);
+	//vHit = otherObjP->RegisterHit (vHit, nModel);
 	}
 return dist;
 }
