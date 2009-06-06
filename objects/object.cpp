@@ -1490,7 +1490,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 	if (fShieldScale < 1.0f)
 		fShieldScale = 1.0f;
 	else
-		fDamage /= sqrt (fShieldScale);
+		fDamage /= float (sqrt (fShieldScale));
 if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)
 			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling

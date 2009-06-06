@@ -294,9 +294,9 @@ if (damage > 0) {
 	CAngleVector	v;
 	CFixMatrix		m;
 
-	v [PA] = damage / 2 - d_rand () % damage;
+	v [PA] = fixang (damage / 2 - d_rand () % damage);
 	v [BA] = 0;
-	v [HA] = damage / 2 - d_rand () % damage;
+	v [HA] = fixang (damage / 2 - d_rand () % damage);
 	m = CFixMatrix::Create (v);
 	vDir = m * vDir;
 	CFixVector::Normalize (vDir);
