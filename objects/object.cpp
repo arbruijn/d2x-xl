@@ -1491,7 +1491,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 		fShieldScale = 1.0f;
 	else
 		fDamage /= sqrt (fShieldScale);
-	if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
+if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)
 			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
 #if DBG
@@ -1502,24 +1502,24 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 		else
 			HUDMessage (0, "crit. hit GUNS\n", nModel);
 #endif
+#if 1
 		if (nModel < 2)
 			m_damage.xAim = fix (float (m_damage.xAim) * (1.0f - 0.25f / fShieldScale));
 		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 8)
 			m_damage.xDrives = fix (float (m_damage.xDrives) * (1.0f - 0.25f / fShieldScale));
 		else
 			m_damage.xGuns = fix (float (m_damage.xGuns) * (1.0f - 0.25f / fShieldScale));
+#endif
 		m_damage.tCritical = gameStates.app.nSDLTicks;
 		m_damage.nCritical++;
-		Bump (8, I2X (4), true);
 		return vHit;
 		}
 	}
 
-#if DBG
+// avoid the shield effect lighting up to soon after a critical hit
 if ((gameStates.app.nSDLTicks - m_damage.tShield < SHIELD_EFFECT_TIME * 2) && 
 	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4))
 	return vHit;
-#endif
 
 vHit = vDir * info.xSize;
 m_damage.tShield = gameStates.app.nSDLTicks;
@@ -1570,12 +1570,16 @@ return bReset;
 
 //------------------------------------------------------------------------------
 
-void CObject::Bump (fix xRad, fix xScale, bool bSound)
+void CObject::RandomBump (fix xScale, fix xForce, bool bSound)
 {
-mType.physInfo.rotVel [X] += (d_rand () - 16384) / xRad;
-mType.physInfo.rotVel [Z] += (d_rand () - 16384) / xRad;
+	fix angle;
+
+angle = (d_rand () - I2X (1) / 4);
+mType.physInfo.rotVel [X] += FixMul (angle, xScale);
+angle = (d_rand () - I2X (1) / 4);
+mType.physInfo.rotVel [Z] += FixMul (angle, xScale);
 CFixVector vRand = CFixVector::Random ();
-(vRand, xScale);
+Bump (vRand, xForce);
 if (bSound)
 	audio.CreateObjectSound (SOUND_PLAYER_HIT_WALL, SOUNDCLASS_GENERIC, Index ());
 }

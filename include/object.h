@@ -805,7 +805,7 @@ class CObject : public CObjectInfo {
 		void ApplyRotForce (CFixVector vForce);
 		void SetThrustFromVelocity (void);
 		void Bump (CFixVector vForce, fix xDamage);
-		void Bump (fix xRad, fix xScale, bool bSound = false);
+		void RandomBump (fix xScale, fix xForce, bool bSound = false);
 		void Bump (CObject *otherObjP, CFixVector vForce, int bDamage);
 		void Bump (CObject *otherObjP, CFixVector vForce, CFixVector vRotForce, int bDamage);
 		void ApplyForceDamage (fix vForce, CObject *otherObjP);

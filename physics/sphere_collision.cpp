@@ -712,8 +712,8 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 						goto fviSegsDone;		//we've looked a long time, so give up
 					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
 					subHitType = ComputeHitpoint (&subHitPoint, &subHitSeg, p0, (short) nNewSeg,
-													 p1, radP0, radP1, nThisObject, ignoreObjList, flags,
-													 tempSegList, &nTempSegs, nStartSeg, bCheckVisibility);
+															p1, radP0, radP1, nThisObject, ignoreObjList, flags,
+															tempSegList, &nTempSegs, nStartSeg, bCheckVisibility);
 					if (subHitType != HIT_NONE) {
 						d = CFixVector::Dist(subHitPoint, *p0);
 						if (d < dMin) {
@@ -886,8 +886,8 @@ nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
 if (fq->bCheckVisibility)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
 nHitType = ComputeHitpoint (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1,
-							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
-							  hitData->segList, &hitData->nSegments, -2, fq->bCheckVisibility);
+									 fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags,
+									 hitData->segList, &hitData->nSegments, -2, fq->bCheckVisibility);
 extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 
 if ((nHitSegment2 != -1) && !SEGMENTS [nHitSegment2].Masks (vHitPoint, 0).m_center)

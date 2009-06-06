@@ -173,13 +173,10 @@ void CObject::DoPhysicsSimRot (void)
 {
 	CAngleVector	turnAngles;
 	CFixMatrix		mRotate, mNewOrient;
-	tPhysicsInfo*	pi;
 
 if (gameData.physics.xTime <= 0)
 	return;
-pi = &mType.physInfo;
-if (!(pi->rotVel [X] || pi->rotVel [Y] || pi->rotVel [Z] ||
-		pi->rotThrust [X] || pi->rotThrust [Y] || pi->rotThrust [Z]))
+if (mType.physInfo.rotVel.IsZero () && mType.physInfo.rotThrust.IsZero ())
 	return;
 if (mType.physInfo.drag) {
 	CFixVector	accel;
@@ -432,7 +429,6 @@ void CObject::DoPhysicsSim (void)
 	int					bGetPhysSegs, bObjStopped = 0;
 	fix					xMovedTime;			//how long objected moved before hit something
 	CFixVector			vSaveP0, vSaveP1;
-	tPhysicsInfo		*pi;
 	short					nOrigSegment = info.nSegment;
 	int					nBadSeg = 0, bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
@@ -449,19 +445,18 @@ if (bDontMoveAIObjects)
 #endif
 CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
 DoPhysicsSimRot ();
-pi = &mType.physInfo;
 gameData.physics.nSegments = 0;
 nIgnoreObjs = 0;
 xSimTime = gameData.physics.xTime;
 bSimpleFVI = (info.nType != OBJ_PLAYER);
 vStartPos = info.position.vPos;
-if (pi->velocity.IsZero ()) {
+if (mType.physInfo.velocity.IsZero ()) {
 #	if UNSTICK_OBJS
 	UnstickObject (this);
 #	endif
 	if (this == gameData.objs.consoleP)
 		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
-	if (pi->thrust.IsZero ())
+	if (mType.physInfo.thrust.IsZero ())
 		return;
 	}
 
@@ -917,6 +912,9 @@ if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 			Die ();
 		}
 	}
+
+if (CriticalHit ())
+	RandomBump (I2X (1), I2X (8), true);
 CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
 #if UNSTICK_OBJS
 UnstickObject (this);
