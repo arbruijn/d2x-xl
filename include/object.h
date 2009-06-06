@@ -706,6 +706,7 @@ class CObjDamageInfo {
 		fix				xDrives;
 		fix				xAim;
 		bool				bCritical;
+		int				tCritical;
 };
 
 class CObject : public CObjectInfo {
@@ -879,6 +880,7 @@ class CObject : public CObjectInfo {
 			m_damage.bCritical = false;	// reset when being queried
 			return bCritical;
 			}
+		inline int CritHitTime (void) { return m_damage.tCritical; }
 		fix AimDamage (void);
 		fix GunDamage (void);
 		fix DriveDamage (void);

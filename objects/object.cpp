@@ -1496,11 +1496,13 @@ if ((nModel >= 0) && EGI_FLAG (nDamageModel, 0, 0, 0)) {	// check and handle cri
 			m_damage.xDrives = fix (float (m_damage.xDrives) * 0.975f);
 		else
 			m_damage.xGuns = fix (float (m_damage.xGuns) * 0.975f);
+		m_damage.tCritical = gameStates.app.nSDLTicks;
 		return vHit;
 		}
 	}
 
 vHit = vDir * info.xSize;
+
 for (int i = 0; i < 3; i++)
 #if 1
 #	if 0

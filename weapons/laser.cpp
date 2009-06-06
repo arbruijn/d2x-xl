@@ -278,7 +278,7 @@ int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegme
 	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
-#if DBG
+#if 0 //DBG
 OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (
 	F2X (0.5 * float (pow (0.95, 5))), 
 	F2X (0.5 * float (pow (0.975, 5))), 
