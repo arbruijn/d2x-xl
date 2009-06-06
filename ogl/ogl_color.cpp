@@ -560,9 +560,7 @@ else
 		else
 			NdotL = 0.0f;
 		}
-	vertColor [R] *= lightColor [R];
-	vertColor [G] *= lightColor [G];
-	vertColor [B] *= lightColor [B];
+	vertColor *= lightColor;
 	if ((NdotL > 0.0f) && (fLightDist > 0.0f) && (vcd.fMatShininess > 0.0f) /* && vcd.bMatSpecular */) {
 		//RdotV = max (dot (Reflect (-Normalize (lightDir), Normal), Normalize (-vertPos)), 0.0);
 		if (!prl->info.bSpot)	//need direction from light to vertex now
