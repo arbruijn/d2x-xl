@@ -427,7 +427,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
 #if 1 //!DBG
 	dist = VmLinePointDist (*p0, *p1, thisObjP->info.position.vPos);
-	if (dist > 15 * (thisObjP->info.xSize + otherObjP->info.xSize) / 10)
+	if (dist > thisObjP->info.xSize + otherObjP->info.xSize + I2X (2))
 		return 0;
 #endif
 	// check hitbox collisions for all polygonal objects

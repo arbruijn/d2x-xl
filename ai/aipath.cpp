@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	PATH_VALIDATION	1
 #endif
 
-void AIPathSetOrientAndVel (CObject *objP, CFixVector* vGoalPoint, int nTargetVisibility, CFixVector *vecToPlayer);
+void AIPathSetOrientAndVel (CObject *objP, CFixVector* vGoalPoint, int nTargetVisibility, CFixVector *vecToTarget);
 void MaybeAIPathGarbageCollect (void);
 void AICollectPathGarbage (void);
 #if PATH_VALIDATION
@@ -847,7 +847,7 @@ else
 
 //	----------------------------------------------------------------------------------------------------------
 //	Optimization: If current velocity will take robot near goal, don't change velocity
-void AIFollowPath (CObject *objP, int nTargetVisibility, int nPrevVisibility, CFixVector *vecToPlayer)
+void AIFollowPath (CObject *objP, int nTargetVisibility, int nPrevVisibility, CFixVector *vecToTarget)
 {
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 
@@ -855,7 +855,7 @@ void AIFollowPath (CObject *objP, int nTargetVisibility, int nPrevVisibility, CF
 	fix				xDistToGoal;
 	tRobotInfo*		botInfoP = &ROBOTINFO (objP->info.nId);
 	int				forced_break, original_dir, original_index;
-	fix				gameData.ai.target.xDist;
+	fix				xDistToTarget;
 	short				nGoalSeg;
 	tAILocalInfo*	ailP = gameData.ai.localInfo + objP->Index ();
 	fix				thresholdDistance;
@@ -924,11 +924,11 @@ else {
 	xDistToGoal = CFixVector::Dist (vGoalPoint, objP->info.position.vPos);
 	}
 if (gameStates.app.bPlayerIsDead)
-	gameData.ai.target.xDist = CFixVector::Dist (objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
+	xDistToTarget = CFixVector::Dist (objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
 else
-	gameData.ai.target.xDist = CFixVector::Dist (objP->info.position.vPos, OBJPOS (gameData.ai.target.objP)->vPos);
+	xDistToTarget = CFixVector::Dist (objP->info.position.vPos, OBJPOS (gameData.ai.target.objP)->vPos);
 	//	Efficiency hack: If far away from CPlayerData, move in big quantized jumps.
-if (!(nTargetVisibility || nPrevVisibility) && (gameData.ai.target.xDist > I2X (200)) && !IsMultiGame) {
+if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !IsMultiGame) {
 	if (xDistToGoal && (xDistToGoal < I2X (2))) {
 		MoveObjectToGoal (objP, &vGoalPoint, nGoalSeg);
 		return;
@@ -1135,7 +1135,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 	}	//	end while
 //	Set velocity (objP->mType.physInfo.velocity) and orientation (objP->info.position.mOrient) for this CObject.
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
-AIPathSetOrientAndVel (objP, &vGoalPoint, nTargetVisibility, vecToPlayer);
+AIPathSetOrientAndVel (objP, &vGoalPoint, nTargetVisibility, vecToTarget);
 //--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 }
 
@@ -1150,7 +1150,7 @@ class CObjPath {
 
 //	----------------------------------------------------------------------------------------------------------
 //	Set orientation matrix and velocity for objP based on its desire to get to a point.
-void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nTargetVisibility, CFixVector *vecToPlayer)
+void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int nTargetVisibility, CFixVector *vecToTarget)
 {
 	CFixVector	vCurVel = objP->mType.physInfo.velocity;
 	CFixVector	vNormCurVel;
@@ -1194,8 +1194,8 @@ vNormCurVel *= xSpeedScale;
 objP->mType.physInfo.velocity = vNormCurVel;
 if ((gameData.ai.localInfo [objP->Index ()].mode == AIM_RUN_FROM_OBJECT) || (botInfoP->companion == 1) || (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 	if (gameData.ai.localInfo [objP->Index ()].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
-		if ((nTargetVisibility) && (vecToPlayer != NULL))
-			vNormToGoal = *vecToPlayer;
+		if ((nTargetVisibility) && (vecToTarget != NULL))
+			vNormToGoal = *vecToTarget;
 		else
 			vNormToGoal = -vNormToGoal;
 		}

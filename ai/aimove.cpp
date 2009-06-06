@@ -268,7 +268,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
 		dot = CFixVector::Dot (gameData.ai.target.vDir, objP->info.position.mOrient.FVec ());
-		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !gameData.ai.target.objP->Cloaked ())
+		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !gameData.ai.target.objP->Cloaked ()) {
 			fix	xDamageScale;
 
 			if (botInfoP->strength)
@@ -339,7 +339,7 @@ void MoveAwayFromTarget (CObject *objP, CFixVector *vVecToTarget, int attackType
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
 //	If the flag bEvadeOnly is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
-void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix gameData.ai.target.xDist,
+void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix xDistToTarget,
 									  CFixVector *vVecToTarget, fix circleDistance, int bEvadeOnly,
 									  int nTargetVisibility)
 {
@@ -399,7 +399,7 @@ objP->cType.aiInfo.nDangerLaser = -1;
 if (botInfoP->attackType == 1) {
 	if (!gameStates.app.bPlayerIsDead &&
 		 ((ailP->nextPrimaryFire <= botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) ||
-		  (gameData.ai.target.xDist >= I2X (30))))
+		  (xDistToTarget >= I2X (30))))
 		MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
 		//	1/4 of time, move around CPlayerData, 3/4 of time, move away from CPlayerData
 	else if (d_rand () < 8192)
@@ -415,9 +415,9 @@ else {
 	//	Changes here by MK, 12/29/95.  Trying to get rid of endless circling around bots in a large room.
 	if (botInfoP->kamikaze)
 		MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
-	else if (gameData.ai.target.xDist < circleDistance)
+	else if (xDistToTarget < circleDistance)
 		MoveAwayFromTarget (objP, &gameData.ai.target.vDir, 0);
-	else if ((gameData.ai.target.xDist < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -I2X (1)))
+	else if ((xDistToTarget < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -I2X (1)))
 		MoveAroundPlayer (objP, &gameData.ai.target.vDir, -1);
 	else
 		if ((-ailP->nextPrimaryFire > I2X (1) + (objval << 12)) && gameData.ai.nTargetVisibility)

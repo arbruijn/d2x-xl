@@ -123,7 +123,7 @@ return FixDiv (vTarget - vAttacker, elapsedTime) + player_vel;
 //		if firing a matter weapon, less leading, based on skill level.
 int LeadTarget (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelievedTargetPos, int nGuns, CFixVector *vFire)
 {
-	fix			dot, xTargetSpeed, gameData.ai.target.xDist, xMaxWeaponSpeed, xProjectedTime;
+	fix			dot, xTargetSpeed, xDistToTarget, xMaxWeaponSpeed, xProjectedTime;
 	CFixVector	vTargetMovementDir, vVecToTarget;
 	int			nWeaponType;
 	CWeaponInfo	*wiP;
@@ -136,8 +136,8 @@ xTargetSpeed = CFixVector::Normalize (vTargetMovementDir);
 if (xTargetSpeed < MIN_LEAD_SPEED)
 	return 0;
 vVecToTarget = *vBelievedTargetPos - *vFirePoint;
-gameData.ai.target.xDist = CFixVector::Normalize (vVecToTarget);
-if (gameData.ai.target.xDist > MAX_LEAD_DISTANCE)
+xDistToTarget = CFixVector::Normalize (vVecToTarget);
+if (xDistToTarget > MAX_LEAD_DISTANCE)
 	return 0;
 dot = CFixVector::Dot (vVecToTarget, vTargetMovementDir);
 if ((dot < -LEAD_RANGE) || (dot > LEAD_RANGE))
@@ -160,7 +160,7 @@ if (wiP->matter) {
 	else
 		xMaxWeaponSpeed *= (NDL-gameStates.app.nDifficultyLevel);
    }
-xProjectedTime = FixDiv (gameData.ai.target.xDist, xMaxWeaponSpeed);
+xProjectedTime = FixDiv (xDistToTarget, xMaxWeaponSpeed);
 (*vFire)[X] = ComputeLeadComponent ((*vBelievedTargetPos)[X], (*vFirePoint)[X], gameData.ai.target.objP->mType.physInfo.velocity[X], xProjectedTime);
 (*vFire)[Y] = ComputeLeadComponent ((*vBelievedTargetPos)[Y], (*vFirePoint)[Y], gameData.ai.target.objP->mType.physInfo.velocity[Y], xProjectedTime);
 (*vFire)[Z] = ComputeLeadComponent ((*vBelievedTargetPos)[Z], (*vFirePoint)[Z], gameData.ai.target.objP->mType.physInfo.velocity[Z], xProjectedTime);
@@ -429,7 +429,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 				if (botInfoP->attackType == 1) {
 					if ((gameData.ai.target.objP->Type () == OBJ_PLAYER) && gameStates.app.bPlayerExploded)
 						return;
-					if (gameData.ai.target.xDist >= objP->info.xSize + gameData.ai.target.objP->info.xSize + I2X (2)))
+					if (gameData.ai.target.xDist >= objP->info.xSize + gameData.ai.target.objP->info.xSize + I2X (2))
 						return;
 					if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION - 2))
 						return;

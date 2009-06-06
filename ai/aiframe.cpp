@@ -1341,6 +1341,7 @@ si.botInfoP = &ROBOTINFO (objP->info.nId);
 si.bMultiGame = !IsRobotGame;
 
 #if DBG
+gameData.ai.target.objP = NULL;
 if (si.aiP->behavior == AIB_STILL)
 	si.aiP = si.aiP;
 #endif
