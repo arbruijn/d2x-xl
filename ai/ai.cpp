@@ -33,16 +33,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoCloakStuff (void)
 {
-	int i;
-
-for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
+for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
+#if 0
 	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
 	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
+#else
+	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.ai.target.objP)->vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.ai.target.objP);
+#endif
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
 // Make work for control centers.
-gameData.ai.vBelievedTargetPos = gameData.ai.cloakInfo [0].vLastPos;
-gameData.ai.nBelievedPlayerSeg = gameData.ai.cloakInfo [0].nLastSeg;
+gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [0].vLastPos;
+gameData.ai.target.nBelievedSeg = gameData.ai.cloakInfo [0].nLastSeg;
 }
 
 // ----------------------------------------------------------------------------

@@ -74,13 +74,13 @@ int ReadyToFire (tRobotInfo *robptr, tAILocalInfo *ailp);
 int SmoothPath (CObject *objP, tPointSeg *psegs, int num_points);
 void MoveTowardsPlayer (CObject *objP, CFixVector *vec_to_player);
 
-int AICanFireAtPlayer (CObject *objP, CFixVector *vGun, CFixVector *vPlayer);
+int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vPlayer);
 
 void DoBossDyingFrame (CObject *objP);
 
 // max_length is maximum depth of path to create.
 // If -1, use default: MAX_DEPTH_TO_SEARCH_FOR_PLAYER
-void CreatePathToPlayer (CObject *objP, int max_length, int safetyFlag);
+void CreatePathToTarget (CObject *objP, int max_length, int safetyFlag);
 void AttemptToResumePath (CObject *objP);
 
 // When a robot and a CPlayerData collide, some robots attack!
@@ -88,7 +88,7 @@ void DoAIRobotHitAttack (CObject *robot, CObject *CPlayerData, CFixVector *colli
 void DoD1AIRobotHitAttack(CObject *robot, CObject *player, CFixVector *collision_point);
 void AIOpenDoorsInSegment (CObject *robot);
 int AIDoorIsOpenable (CObject *objP, CSegment *segp, short nSide);
-int AICanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player);
+int AICanSeeTarget (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player);
 void AIResetAllPaths (void);   // Reset all paths.  Call at the start of a level.
 int AIMultiplayerAwareness (CObject *objP, int awarenessLevel);
 
@@ -123,8 +123,8 @@ typedef struct {
 #define CHASE_TIME_LENGTH   (I2X (8))
 #define DEFAULT_ROBOT_SOUND_VOLUME I2X (1)
 
-extern fix xDistToLastPlayerPosFiredAt;
-extern CFixVector vLastPlayerPosFiredAt;
+extern fix xDistToLastTargetPosFiredAt;
+extern CFixVector vLastTargetPosFiredAt;
 
 #define MAX_AWARENESS_EVENTS 256
 typedef struct tAwarenessEvent {
@@ -236,8 +236,8 @@ void AIDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip, tAILocalInfo *ailp
 void DoSuperBossStuff (CObject *objP, fix dist_to_player, int player_visibility);
 void DoBossStuff (CObject *objP, int player_visibility);
 // -- unused, 08/07/95 -- void ai_turn_randomly (CFixVector *vec_to_player, CObject *obj, fix rate, int previousVisibility);
-void AIMoveRelativeToPlayer (CObject *objP, tAILocalInfo *ailp, fix dist_to_player, CFixVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
-void MoveAwayFromPlayer (CObject *objP, CFixVector *vec_to_player, int attackType);
+void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailp, fix dist_to_player, CFixVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
+void MoveAwayFromTarget (CObject *objP, CFixVector *vec_to_player, int attackType);
 void MoveTowardsVector (CObject *objP, CFixVector *vec_goal, int dot_based);
 void InitAIFrame (void);
 void MakeNearbyRobotSnipe (void);

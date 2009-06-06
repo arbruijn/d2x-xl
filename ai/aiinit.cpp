@@ -202,7 +202,7 @@ gameStates.app.nDifficultyLevel = nDiffSave;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Call this each time the CPlayerData starts a new ship.
+//	Call this each time the player starts a new ship.
 void InitAIForShip (void)
 {
 for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
@@ -232,12 +232,12 @@ void InitAIFrame (void)
 	int abState;
 
 if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
-	gameData.ai.vLastPlayerPosFiredAt.SetZero ();
-if (!gameData.ai.vLastPlayerPosFiredAt.IsZero ())
-	gameData.ai.nDistToLastPlayerPosFiredAt =
-		CFixVector::Dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedTargetPos);
+	gameData.ai.target.vLastPosFiredAt.SetZero ();
+if (!gameData.ai.target.vLastPosFiredAt.IsZero ())
+	gameData.ai.target.nDistToLastPosFiredAt =
+		CFixVector::Dist(gameData.ai.target.vLastPosFiredAt, gameData.ai.target.vBelievedPos);
 else
-	gameData.ai.nDistToLastPlayerPosFiredAt = I2X (10000);
+	gameData.ai.target.nDistToLastPosFiredAt = I2X (10000);
 abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState &&
 			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadlightIsOn (-1) || abState)

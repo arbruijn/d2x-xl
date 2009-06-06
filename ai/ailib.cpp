@@ -39,9 +39,9 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //		0		Player is not visible from CObject, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
-//	Note: Uses gameData.ai.vBelievedTargetPos as CPlayerData's position for cloak effect.
+//	Note: Uses gameData.ai.target.vBelievedPos as CPlayerData's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int AICanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToTarget)
+int AICanSeeTarget (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToTarget)
 {
 	fix					dot;
 	tCollisionQuery	fq;
@@ -67,7 +67,7 @@ if ((*pos) != objP->info.position.vPos) {
 	}
 else
 	fq.startSeg	= objP->info.nSegment;
-fq.p1					= &gameData.ai.vBelievedTargetPos;
+fq.p1					= &gameData.ai.target.vBelievedPos;
 fq.radP0				=
 fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
@@ -77,7 +77,7 @@ fq.bCheckVisibility = true;
 gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
-if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != LOCALPLAYER.nObject))
+if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != gameData.ai.target.objP->Index ()))
 	return 0;
 dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.FVec ());
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
@@ -85,11 +85,11 @@ return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 
 // ------------------------------------------------------------------------------------------------------------------
 
-int AICanFireAtPlayer (CObject *objP, CFixVector *vGun, CFixVector *vPlayer)
+int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vTarget)
 {
 	tCollisionQuery	fq;
 	fix			nSize, h;
-	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.consoleP), -1};
+	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.ai.target.objP), -1};
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 if (vGun->IsZero ())
@@ -110,13 +110,13 @@ else {
 	fq.startSeg = nSegment;
 	}
 h = CFixVector::Dist (*vGun, objP->info.position.vPos);
-h = CFixVector::Dist (*vGun, *vPlayer);
+h = CFixVector::Dist (*vGun, *vTarget);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
 objP->info.xSize = I2X (2);						//chose some meaningful small size to simulate a weapon
 fq.p0					= vGun;
-fq.p1					= vPlayer;
+fq.p1					= vTarget;
 fq.radP0				=
 fq.radP1				= I2X (1);
 fq.thisObjNum		= objP->Index ();
@@ -140,20 +140,20 @@ return (gameData.ai.nHitType == HIT_NONE);
 inline void LimitTargetVisibility (fix xMaxVisibleDist, tAILocalInfo *ailP)
 {
 #if 1
-if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToTarget > xMaxVisibleDist) && (ailP->targetAwarenessType < PA_RETURN_FIRE))
+if ((xMaxVisibleDist > 0) && (gameData.ai.target.xDist > xMaxVisibleDist) && (ailP->targetAwarenessType < PA_RETURN_FIRE))
 	gameData.ai.nTargetVisibility = 0;
 #endif
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Note: This function could be optimized.  Surely AICanSeePlayer would benefit from the
-//	information of a normalized gameData.ai.vVecToTarget.
+//	Note: This function could be optimized.  Surely AICanSeeTarget would benefit from the
+//	information of a normalized gameData.ai.target.vDir.
 //	Return CPlayerData visibility:
 //		0		not visible
 //		1		visible, but robot not looking at CPlayerData (ie, on an unobstructed vector)
 //		2		visible and in robot's field of view
 //		-1		CPlayerData is cloaked
-//	If the CPlayerData is cloaked, set gameData.ai.vVecToTarget based on time CPlayerData cloaked and last uncloaked position.
+//	If the CPlayerData is cloaked, set gameData.ai.target.vDir based on time CPlayerData cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if CPlayerData is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to gameData.ai.nTargetVisibility
 void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag, fix xMaxVisibleDist)
@@ -161,7 +161,7 @@ void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobo
 if (*flag)
 	LimitTargetVisibility (xMaxVisibleDist, ailP);
 else {
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
+	if (gameData.ai.target.objP->Cloaked ()) {
 		fix			deltaTime, dist;
 		int			nCloakIndex = (objP->Index ()) % MAX_AI_CLOAK_INFO;
 
@@ -173,8 +173,8 @@ else {
 			vRand = CFixVector::Random ();
 			gameData.ai.cloakInfo [nCloakIndex].vLastPos += vRand * (8 * deltaTime);
 			}
-		dist = CFixVector::NormalizedDir (gameData.ai.vVecToTarget, gameData.ai.cloakInfo [nCloakIndex].vLastPos, *pos);
-		gameData.ai.nTargetVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToTarget);
+		dist = CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.cloakInfo [nCloakIndex].vLastPos, *pos);
+		gameData.ai.nTargetVisibility = AICanSeeTarget (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.target.vDir);
 		LimitTargetVisibility (xMaxVisibleDist, ailP);
 #if DBG
 		if (gameData.ai.nTargetVisibility == 2)
@@ -186,12 +186,12 @@ else {
 			}
 		}
 	else {
-		//	Compute expensive stuff -- gameData.ai.vVecToTarget and gameData.ai.nTargetVisibility
-		CFixVector::NormalizedDir(gameData.ai.vVecToTarget, gameData.ai.vBelievedTargetPos, *pos);
-		if (gameData.ai.vVecToTarget.IsZero ()) {
-			gameData.ai.vVecToTarget[X] = I2X (1);
+		//	Compute expensive stuff -- gameData.ai.target.vDir and gameData.ai.nTargetVisibility
+		CFixVector::NormalizedDir(gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, *pos);
+		if (gameData.ai.target.vDir.IsZero ()) {
+			gameData.ai.target.vDir[X] = I2X (1);
 			}
-		gameData.ai.nTargetVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToTarget);
+		gameData.ai.nTargetVisibility = AICanSeeTarget (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.target.vDir);
 		LimitTargetVisibility (xMaxVisibleDist, ailP);
 #if DBG
 		if (gameData.ai.nTargetVisibility == 2)

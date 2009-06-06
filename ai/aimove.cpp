@@ -195,7 +195,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 // -----------------------------------------------------------------------------
 
 void MoveTowardsPlayer (CObject *objP, CFixVector *vVecToTarget)
-//	gameData.ai.vVecToTarget must be normalized, or close to it.
+//	gameData.ai.target.vDir must be normalized, or close to it.
 {
 MoveAwayFromOtherRobots (objP, *vVecToTarget);
 MoveTowardsVector (objP, vVecToTarget, 1);
@@ -237,24 +237,24 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 	ft = gameData.time.xFrame * 32;
 	switch (dir) {
 		case 0:
-			vEvade [X] = FixMul (gameData.ai.vVecToTarget[Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.vVecToTarget[Y], ft);
-			vEvade [Z] = FixMul (-gameData.ai.vVecToTarget[X], ft);
+			vEvade [X] = FixMul (gameData.ai.target.vDir[Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.target.vDir[Y], ft);
+			vEvade [Z] = FixMul (-gameData.ai.target.vDir[X], ft);
 			break;
 		case 1:
-			vEvade [X] = FixMul (-gameData.ai.vVecToTarget[Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.vVecToTarget[Y], ft);
-			vEvade [Z] = FixMul (gameData.ai.vVecToTarget[X], ft);
+			vEvade [X] = FixMul (-gameData.ai.target.vDir[Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.target.vDir[Y], ft);
+			vEvade [Z] = FixMul (gameData.ai.target.vDir[X], ft);
 			break;
 		case 2:
-			vEvade [X] = FixMul (-gameData.ai.vVecToTarget[Y], ft);
-			vEvade [Y] = FixMul (gameData.ai.vVecToTarget[X], ft);
-			vEvade [Z] = FixMul (gameData.ai.vVecToTarget[Z], ft);
+			vEvade [X] = FixMul (-gameData.ai.target.vDir[Y], ft);
+			vEvade [Y] = FixMul (gameData.ai.target.vDir[X], ft);
+			vEvade [Z] = FixMul (gameData.ai.target.vDir[Z], ft);
 			break;
 		case 3:
-			vEvade [X] = FixMul (gameData.ai.vVecToTarget[Y], ft);
-			vEvade [Y] = FixMul (-gameData.ai.vVecToTarget[X], ft);
-			vEvade [Z] = FixMul (gameData.ai.vVecToTarget[Z], ft);
+			vEvade [X] = FixMul (gameData.ai.target.vDir[Y], ft);
+			vEvade [Y] = FixMul (-gameData.ai.target.vDir[X], ft);
+			vEvade [Z] = FixMul (gameData.ai.target.vDir[Z], ft);
 			break;
 		default:
 			Error ("Function MoveAroundPlayer: Bad case.");
@@ -267,39 +267,33 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = CFixVector::Dot (gameData.ai.vVecToTarget, objP->info.position.mOrient.FVec ());
-		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) &&
-			 !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
-			fix	damage_scale;
+		dot = CFixVector::Dot (gameData.ai.target.vDir, objP->info.position.mOrient.FVec ());
+		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !gameData.ai.target.objP->Cloaked ())
+			fix	xDamageScale;
 
 			if (botInfoP->strength)
-				damage_scale = FixDiv (objP->info.xShields, botInfoP->strength);
+				xDamageScale = FixDiv (objP->info.xShields, botInfoP->strength);
 			else
-				damage_scale = I2X (1);
-			if (damage_scale > I2X (1))
-				damage_scale = I2X (1);		//	Just in cased:\temp\dm_test.
-			else if (damage_scale < 0)
-				damage_scale = 0;			//	Just in cased:\temp\dm_test.
+				xDamageScale = I2X (1);
+			if (xDamageScale > I2X (1))
+				xDamageScale = I2X (1);		//	Just in cased:\temp\dm_test.
+			else if (xDamageScale < 0)
+				xDamageScale = 0;			//	Just in cased:\temp\dm_test.
 
-			vEvade *= (I2X (fastFlag) + damage_scale);
+			vEvade *= (I2X (fastFlag) + xDamageScale);
 		}
 	}
 
-	pptr->velocity[X] += vEvade [X];
-	pptr->velocity[Y] += vEvade [Y];
-	pptr->velocity[Z] += vEvade [Z];
+	pptr->velocity += vEvade;
 
 	speed = pptr->velocity.Mag();
-	if ((objP->Index () != 1) && (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel])) {
-		pptr->velocity[X] = (pptr->velocity[X]*3)/4;
-		pptr->velocity[Y] = (pptr->velocity[Y]*3)/4;
-		pptr->velocity[Z] = (pptr->velocity[Z]*3)/4;
-	}
+	if ((objP->Index () != 1) && (speed > botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]))
+		pptr->velocity *= I2X (3) / 4;
 }
 
 // -----------------------------------------------------------------------------
 
-void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToTarget, int attackType)
+void MoveAwayFromTarget (CObject *objP, CFixVector *vVecToTarget, int attackType)
 {
 	fix				speed;
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
@@ -307,7 +301,7 @@ void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToTarget, int attackType
 	int				objref;
 	fix				ft = gameData.time.xFrame * 16;
 
-	pptr->velocity -= gameData.ai.vVecToTarget * ft;
+	pptr->velocity -= gameData.ai.target.vDir * ft;
 
 	if (attackType) {
 		//	Get value in 0d:\temp\dm_test3 to choose evasion direction.
@@ -345,7 +339,7 @@ void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToTarget, int attackType
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
 //	If the flag bEvadeOnly is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
-void AIMoveRelativeToPlayer (CObject *objP, tAILocalInfo *ailP, fix xDistToTarget,
+void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix gameData.ai.target.xDist,
 									  CFixVector *vVecToTarget, fix circleDistance, int bEvadeOnly,
 									  int nTargetVisibility)
 {
@@ -388,7 +382,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
 				int evadeSpeed = ROBOTINFO (objP->info.nId).evadeSpeed [gameStates.app.nDifficultyLevel];
 				gameData.ai.bEvaded = 1;
-				MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, evadeSpeed);
+				MoveAroundPlayer (objP, &gameData.ai.target.vDir, evadeSpeed);
 				}
 			}
 		return;
@@ -405,35 +399,35 @@ objP->cType.aiInfo.nDangerLaser = -1;
 if (botInfoP->attackType == 1) {
 	if (!gameStates.app.bPlayerIsDead &&
 		 ((ailP->nextPrimaryFire <= botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) ||
-		  (gameData.ai.xDistToTarget >= I2X (30))))
-		MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
+		  (gameData.ai.target.xDist >= I2X (30))))
+		MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
 		//	1/4 of time, move around CPlayerData, 3/4 of time, move away from CPlayerData
 	else if (d_rand () < 8192)
-		MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, -1);
+		MoveAroundPlayer (objP, &gameData.ai.target.vDir, -1);
 	else
-		MoveAwayFromPlayer (objP, &gameData.ai.vVecToTarget, 1);
+		MoveAwayFromTarget (objP, &gameData.ai.target.vDir, 1);
 	}
 else if (botInfoP->thief)
-	MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
+	MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
 else {
 	int	objval = ((objP->Index ()) & 0x0f) ^ 0x0a;
 
 	//	Changes here by MK, 12/29/95.  Trying to get rid of endless circling around bots in a large room.
 	if (botInfoP->kamikaze)
-		MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
-	else if (gameData.ai.xDistToTarget < circleDistance)
-		MoveAwayFromPlayer (objP, &gameData.ai.vVecToTarget, 0);
-	else if ((gameData.ai.xDistToTarget < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -I2X (1)))
-		MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, -1);
+		MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
+	else if (gameData.ai.target.xDist < circleDistance)
+		MoveAwayFromTarget (objP, &gameData.ai.target.vDir, 0);
+	else if ((gameData.ai.target.xDist < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -I2X (1)))
+		MoveAroundPlayer (objP, &gameData.ai.target.vDir, -1);
 	else
 		if ((-ailP->nextPrimaryFire > I2X (1) + (objval << 12)) && gameData.ai.nTargetVisibility)
 			//	Usually move away, but sometimes move around player.
 			if ((((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4)
-				MoveAwayFromPlayer (objP, &gameData.ai.vVecToTarget, 0);
+				MoveAwayFromTarget (objP, &gameData.ai.target.vDir, 0);
 			else
-				MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, -1);
+				MoveAroundPlayer (objP, &gameData.ai.target.vDir, -1);
 		else
-			MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
+			MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
 	}
 }
 

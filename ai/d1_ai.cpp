@@ -547,7 +547,7 @@ void john_cheat_func_4(int key)
 //		0		Player is not visible from CObject, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
-//	Note: Uses gameData.ai.vBelievedTargetPos as playerP's position for cloak effect.
+//	Note: Uses gameData.ai.target.vBelievedPos as playerP's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
 int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player)
 {
@@ -571,7 +571,7 @@ else {
 if (fq.startSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-fq.p1					= &gameData.ai.vBelievedTargetPos;
+fq.p1					= &gameData.ai.target.vBelievedPos;
 fq.radP0				= 0;
 fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
@@ -790,9 +790,9 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 	}
 
 	//	Set position to fire at based on difficulty level.
-	bpp_diff [X] = gameData.ai.vBelievedTargetPos [X] + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
-	bpp_diff [Y] = gameData.ai.vBelievedTargetPos [Y] + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
-	bpp_diff [Z] = gameData.ai.vBelievedTargetPos [Z] + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff [X] = gameData.ai.target.vBelievedPos [X] + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff [Y] = gameData.ai.target.vBelievedPos [Y] + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
+	bpp_diff [Z] = gameData.ai.target.vBelievedPos [Z] + (d_rand()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4;
 
 	//	Half the time fire at the playerP, half the time lead the playerP.
 	if (d_rand() > 16384) {
@@ -1224,7 +1224,7 @@ if (!*flag) {
 		} 
 	else {
 		//	Compute expensive stuff -- vec_to_player and player_visibility
-		CFixVector::NormalizedDir (*vec_to_player, gameData.ai.vBelievedTargetPos, *pos);
+		CFixVector::NormalizedDir (*vec_to_player, gameData.ai.target.vBelievedPos, *pos);
 		if (vec_to_player->IsZero ()) {
 			(*vec_to_player) [X] = I2X (1);
 			}
@@ -1656,7 +1656,8 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 					}
 
 					//	Wants to fire, so should go into chase mode, probably.
-					if ( (aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) && (aiP->behavior != D1_AIB_FOLLOW_PATH) && ((ailP->mode == D1_AIM_FOLLOW_PATH) || (ailP->mode == D1_AIM_STILL)))
+					if ((aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) && 
+						 (aiP->behavior != D1_AIB_FOLLOW_PATH) && ((ailP->mode == D1_AIM_FOLLOW_PATH) || (ailP->mode == D1_AIM_STILL)))
 						ailP->mode = D1_AIM_CHASE_OBJECT;
 				}
 
@@ -1671,7 +1672,8 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 		}
 	} else if (WI_homingFlag (objP->info.nId) == 1) {
 		//	Robots which fire homing weapons might fire even if they don't have a bead on the playerP.
-		if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) && (ailP->nextPrimaryFire <= 0) && (CFixVector::Dist(Hit_pos, objP->info.position.vPos) > I2X (40))) {
+		if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) && 
+			 (ailP->nextPrimaryFire <= 0) && (CFixVector::Dist(Hit_pos, objP->info.position.vPos) > I2X (40))) {
 			if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
 				return;
 			ai_fire_laser_at_player(objP, vGunPoint);
@@ -1693,6 +1695,7 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+
 void DoD1AIFrame (CObject *objP)
 {
 	int				nObject = objP->Index ();
@@ -1726,7 +1729,7 @@ if (nObject == nDbgObj)
 		aiP->GOAL_STATE = D1_AIS_FIRE;
 	}
 
-	gameData.ai.vBelievedTargetPos = gameData.ai.cloakInfo [nObject & (D1_MAX_AI_CLOAK_INFO-1)].vLastPos;
+	gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [nObject & (D1_MAX_AI_CLOAK_INFO-1)].vLastPos;
 
 	if (!((aiP->behavior >= MIN_BEHAVIOR) && (aiP->behavior <= MAX_BEHAVIOR))) {
 		aiP->behavior = D1_AIB_NORMAL;
@@ -1754,9 +1757,9 @@ if (nObject == nDbgObj)
 			aiP->CLOAKED = 0;
 		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-		gameData.ai.vBelievedTargetPos = OBJPOS (gameData.objs.consoleP)->vPos;
+		gameData.ai.target.vBelievedPos = OBJPOS (gameData.objs.consoleP)->vPos;
 
-	dist_to_player = CFixVector::Dist(gameData.ai.vBelievedTargetPos, objP->info.position.vPos);
+	dist_to_player = CFixVector::Dist(gameData.ai.target.vBelievedPos, objP->info.position.vPos);
 	//	If this robotP can fire, compute visibility from gun position.
 	//	Don't want to compute visibility twice, as it is expensive.  (So is call to calc_vGunPoint).
 	if ((ailP->nextPrimaryFire <= 0) && (dist_to_player < I2X (200)) && (botInfoP->nGuns) && !(botInfoP->attackType)) {
@@ -1774,7 +1777,7 @@ if (nObject == nDbgObj)
 		if (gameData.ai.nOverallAgitation > 70) {
 			if ((dist_to_player < I2X (200)) && (d_rand() < gameData.time.xFrame/4)) {
 				if (d_rand() * (gameData.ai.nOverallAgitation - 40) > I2X (5)) {
-					CreatePathToPlayer(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
+					CreatePathToTarget(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 					// -- show_path_and_other(objP);
 					return;
 				}
@@ -1792,7 +1795,7 @@ if (nObject == nDbgObj)
 		if (ailP->nConsecutiveRetries > 3) {
 			switch (ailP->mode) {
 				case D1_AIM_CHASE_OBJECT:
-					CreatePathToPlayer(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
+					CreatePathToTarget(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 					break;
 				case D1_AIM_STILL:
 					if (!((aiP->behavior == D1_AIB_STILL) || (aiP->behavior == D1_AIB_STATION)))	//	Behavior is still, so don't follow path.
@@ -1818,7 +1821,7 @@ if (nObject == nDbgObj)
 					objP->mType.physInfo.velocity [Y] = 0;
 					objP->mType.physInfo.velocity [Z] = 0;
 					if (gameData.ai.nOverallAgitation > (50 - gameStates.app.nDifficultyLevel*4))
-						CreatePathToPlayer(objP, 4 + gameData.ai.nOverallAgitation/8, 1);
+						CreatePathToTarget(objP, 4 + gameData.ai.nOverallAgitation/8, 1);
 					else {
 						CreateNSegmentPath(objP, 5, -1);
 					}
@@ -1877,7 +1880,7 @@ if (nObject == nDbgObj)
 					if (dist_to_player < I2X (30))
 						CreateNSegmentPath(objP, 5, 1);
 					else
-						CreatePathToPlayer(objP, 20, 1);
+						CreatePathToTarget(objP, 20, 1);
 					}
 			}
 		}
@@ -2027,7 +2030,7 @@ if (nObject == nDbgObj)
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 				}
-				CreatePathToPlayer(objP, 8, 1);
+				CreatePathToTarget(objP, 8, 1);
 				// -- show_path_and_other(objP);
 				ai_multi_send_robot_position(nObject, -1);
 			} else if ((player_visibility == 0) && (dist_to_player > I2X (80)) && (!(IsMultiGame))) {
@@ -2066,7 +2069,7 @@ if (nObject == nDbgObj)
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 				}
-				CreatePathToPlayer(objP, 10, 1);
+				CreatePathToTarget(objP, 10, 1);
 				// -- show_path_and_other(objP);
 				ai_multi_send_robot_position(nObject, -1);
 			} else if ((aiP->CURRENT_STATE != D1_AIS_REST) && (aiP->GOAL_STATE != D1_AIS_REST)) {
@@ -2466,7 +2469,7 @@ void ai_do_cloak_stuff(void)
 	}
 
 	//	Make work for control centers.
-	gameData.ai.vBelievedTargetPos = gameData.ai.cloakInfo [0].vLastPos;
+	gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [0].vLastPos;
 
 }
 

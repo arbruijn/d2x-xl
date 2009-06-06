@@ -605,14 +605,7 @@ return bOk;
 
 static inline int ObjectIsCloaked (CObject *objP)
 {
-if (gameStates.render.bBuildModels)
-	return 0;
-else if (objP->info.nType == OBJ_PLAYER)
-	return (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED) != 0;
-else if (objP->info.nType == OBJ_ROBOT)
-	return objP->cType.aiInfo.CLOAKED;
-else
-	return 0;
+return gameStates.render.bBuildModels ? 0 : objP->Cloaked ();
 }
 
 //------------------------------------------------------------------------------

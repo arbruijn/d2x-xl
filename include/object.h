@@ -895,6 +895,8 @@ class CObject : public CObjectInfo {
 
 		bool ResetDamage (void);
 
+		bool Cloaked (void);
+
 		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
 		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }
 

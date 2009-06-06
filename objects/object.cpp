@@ -1517,9 +1517,14 @@ if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
 	}
 
 // avoid the shield effect lighting up to soon after a critical hit
+#if 1
+if (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4)
+	return vHit;
+#else
 if ((gameStates.app.nSDLTicks - m_damage.tShield < SHIELD_EFFECT_TIME * 2) && 
 	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4))
 	return vHit;
+#endif
 
 vHit = vDir * info.xSize;
 m_damage.tShield = gameStates.app.nSDLTicks;
@@ -1596,6 +1601,18 @@ audio.CreateSegmentSound (nSound, info.nSegment, 0, info.position.vPos);
 int CObject::OpenableDoorsInSegment (void)
 {
 return SEGMENTS [info.nSegment].HasOpenableDoor ();
+}
+
+//------------------------------------------------------------------------------
+
+bool CObject::Cloaked (void)
+{ 
+if (info.nType == OBJ_PLAYER)
+	return (gameData.multiplayer.players [info.nId].flags & PLAYER_FLAGS_CLOAKED) != 0;
+else if (info.nType == OBJ_ROBOT)
+	return cType.aiInfo.CLOAKED != 0;
+else
+	return false;
 }
 
 //------------------------------------------------------------------------------

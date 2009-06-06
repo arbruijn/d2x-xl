@@ -554,7 +554,7 @@ return miP->objFlags [2] = gameData.objs.nVertigoBotFlags;
 
 void BotGenHandler (tFuelCenInfo * matCenP)
 {
-	fix			xDistToTarget;
+	fix			gameData.ai.target.xDist;
 	CFixVector	vPos, vDir;
 	int			nMatCen, nSegment, nObject;
 	CObject		*objP;
@@ -612,8 +612,8 @@ if (!matCenP->bFlag) {
 	if (IsMultiGame)
 		topTime = ROBOT_GEN_TIME;
 	else {
-		xDistToTarget = CFixVector::Dist(gameData.objs.consoleP->info.position.vPos, matCenP->vCenter);
-		topTime = xDistToTarget / 64 + d_rand () * 2 + I2X (2);
+		gameData.ai.target.xDist = CFixVector::Dist(gameData.objs.consoleP->info.position.vPos, matCenP->vCenter);
+		topTime = gameData.ai.target.xDist / 64 + d_rand () * 2 + I2X (2);
 		if (topTime > ROBOT_GEN_TIME)
 			topTime = ROBOT_GEN_TIME + d_rand ();
 		if (topTime < I2X (2))

@@ -40,7 +40,7 @@ void MakeNearbyRobotSnipe (void)
 	short			bfsList [MNRS_SEG_MAX];
 	int			nObject, nBfsLength, i;
 
-CreateBfsList (OBJSEG (gameData.objs.consoleP), bfsList, &nBfsLength, MNRS_SEG_MAX);
+CreateBfsList (OBJSEG (gameData.ai.target.objP), bfsList, &nBfsLength, MNRS_SEG_MAX);
 for (i = 0; i < nBfsLength; i++) {
 	nObject = SEGMENTS [bfsList [i]].m_objects;
 	//Assert (nObject >= 0);
@@ -68,13 +68,13 @@ void DoSnipeWait (CObject *objP, tAILocalInfo *ailP)
 {
 	fix xConnectedDist;
 
-if ((gameData.ai.xDistToTarget > I2X (50)) && (ailP->nextActionTime > 0))
+if ((gameData.ai.target.xDist > I2X (50)) && (ailP->nextActionTime > 0))
 	return;
 ailP->nextActionTime = SNIPE_WAIT_TIME;
-xConnectedDist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedTargetPos, 
-													 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
+xConnectedDist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.target.vBelievedPos, 
+													 gameData.ai.target.nBelievedSeg, 30, WID_FLY_FLAG, 0);
 if (xConnectedDist < MAX_SNIPE_DIST) {
-	CreatePathToPlayer (objP, 30, 1);
+	CreatePathToTarget (objP, 30, 1);
 	ailP->mode = AIM_SNIPE_ATTACK;
 	ailP->nextActionTime = SNIPE_ATTACK_TIME;	//	have up to 10 seconds to find player.
 	}
@@ -89,7 +89,7 @@ if (ailP->nextActionTime < 0) {
 	ailP->nextActionTime = SNIPE_WAIT_TIME;
 	}
 else {
-	AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
+	AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
 	if (gameData.ai.nTargetVisibility) {
 		ailP->mode = AIM_SNIPE_FIRE;
 		ailP->nextActionTime = SNIPE_FIRE_TIME;
@@ -105,7 +105,7 @@ void DoSnipeFire (CObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (gameData.objs.consoleP));
+	CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (gameData.ai.target.objP));
 	aiP->nPathLength = (aiP->nHideIndex < 0) ? 0 : SmoothPath (objP, &gameData.ai.routeSegs [aiP->nHideIndex], aiP->nPathLength);
 	if (d_rand () < 8192)
 		ailP->mode = AIM_SNIPE_RETREAT_BACKWARDS;
@@ -124,7 +124,7 @@ if (ailP->nextActionTime < 0) {
 	ailP->nextActionTime = SNIPE_WAIT_TIME;
 	}
 else if ((gameData.ai.nTargetVisibility == 0) || (ailP->nextActionTime > SNIPE_ABORT_RETREAT_TIME)) {
-	AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
+	AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
 	ailP->mode = AIM_SNIPE_RETREAT_BACKWARDS;
 	}
 else {
@@ -146,7 +146,7 @@ pAISnipeHandler aiSnipeHandlers [] = {DoSnipeAttack, DoSnipeFire, DoSnipeRetreat
 
 void DoSnipeFrame (CObject *objP)
 {
-if (gameData.ai.xDistToTarget <= MAX_SNIPE_DIST) {
+if (gameData.ai.target.xDist <= MAX_SNIPE_DIST) {
 	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
 	int			i = ailP->mode;
 

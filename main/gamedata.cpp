@@ -1414,7 +1414,7 @@ gameData.ai.bEvaded = 0;
 gameData.ai.bEnableAnimation = 1;
 gameData.ai.bInfoEnabled = 0;
 gameData.ai.nAwarenessEvents = 0;
-gameData.ai.nDistToLastPlayerPosFiredAt = 0;
+gameData.ai.target.nDistToLastPosFiredAt = 0;
 cloakInfo.Create (MAX_AI_CLOAK_INFO);
 awarenessEvents.Create (MAX_AWARENESS_EVENTS);
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();

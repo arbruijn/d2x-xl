@@ -2771,6 +2771,17 @@ class CReactorData {
 
 #include "ai.h"
 
+class CAITarget {
+	public:
+		short							nBelievedSeg;
+		CFixVector					vBelievedPos;
+		CFixVector					vLastPosFiredAt;
+		fix							nDistToLastPosFiredAt;
+		fix							xDist;
+		CFixVector					vDir;
+		CObject*						objP;
+};
+
 class CAIData {
 	public:
 		int							bInitialized;
@@ -2781,19 +2792,14 @@ class CAIData {
 		CFixVector					vHitPos;
 		int							nHitType;
 		int							nHitSeg;
-		tCollisionData						hitData;
-		short							nBelievedPlayerSeg;
-		CFixVector					vBelievedTargetPos;
-		CFixVector					vLastPlayerPosFiredAt;
-		fix							nDistToLastPlayerPosFiredAt;
+		tCollisionData				hitData;
+		CAITarget					target;
 		CArray<tAILocalInfo>		localInfo;
 		CArray<tAICloakInfo>		cloakInfo; // [MAX_AI_CLOAK_INFO];
 		CArray<tPointSeg>			routeSegs; // [MAX_POINT_SEGS];
 		tPointSeg*					freePointSegs;
 		int							nAwarenessEvents;
 		int							nMaxAwareness;
-		fix							xDistToTarget;
-		CFixVector					vVecToTarget;
 		CFixVector					vGunPoint;
 		int							nTargetVisibility;
 		int							bObjAnimates;
