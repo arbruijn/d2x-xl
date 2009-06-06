@@ -764,14 +764,14 @@ else {
 		if (aip->nPathLength > 3)
 			aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		if ((aip->nPathLength > 0) && (gameData.ai.routeSegs [aip->nHideIndex + aip->nPathLength - 1].nSegment != nGoalSeg)) {
-			fix	xDistToPlayer;
+			fix	xDistToTarget;
 			gameData.escort.xLastMsgTime = 0;	//	Force this message to get through.
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
-			xDistToPlayer = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
+			xDistToTarget = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedTargetPos, 
 																gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG, 0);
-			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
+			if (xDistToTarget > MIN_ESCORT_DISTANCE)
 				CreatePathToPlayer (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {
 				CreateNSegmentPath (objP, 8 + d_rand () * 8, -1);
@@ -940,7 +940,7 @@ if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
 
 //	-----------------------------------------------------------------------------
 //	Called every frame (or something).
-void DoEscortFrame (CObject *objP, fix xDistToPlayer, int player_visibility)
+void DoEscortFrame (CObject *objP, fix xDistToTarget, int player_visibility)
 {
 	int			nObject = objP->Index ();
 	tAIStaticInfo	*aip = &objP->cType.aiInfo;
@@ -966,7 +966,7 @@ if (gameData.escort.xSorryTime + I2X (1) > gameData.time.xGame) {
 	}
 //	If buddy not allowed to talk, then he is locked in his room.  Make him mostly do nothing unless you're nearby.
 if (!gameData.escort.bMayTalk)
-	if (xDistToPlayer > I2X (100))
+	if (xDistToTarget > I2X (100))
 		aip->SKIP_AI_COUNT = (sbyte) ((I2X (1) / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the CObject has been told to get lost and has come to the end of its path.
@@ -1017,7 +1017,7 @@ else if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY) {
 	//	This is to prevent buddy from looking for a goal, which he will do because we only allow path creation once/second.
 	return;
 	}
-else if ((ailp->mode == AIM_GOTO_PLAYER) && (xDistToPlayer < MIN_ESCORT_DISTANCE)) {
+else if ((ailp->mode == AIM_GOTO_PLAYER) && (xDistToTarget < MIN_ESCORT_DISTANCE)) {
 	gameData.escort.nGoalObject = EscortSetGoalObject ();
 	ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
 	EscortCreatePathToGoal (objP);
@@ -1027,7 +1027,7 @@ else if ((ailp->mode == AIM_GOTO_PLAYER) && (xDistToPlayer < MIN_ESCORT_DISTANCE
 	ailp->mode = AIM_GOTO_OBJECT;
 	}
 else if (gameData.escort.nGoalObject == ESCORT_GOAL_UNSPECIFIED) {
-	if ((ailp->mode != AIM_GOTO_PLAYER) || (xDistToPlayer < MIN_ESCORT_DISTANCE)) {
+	if ((ailp->mode != AIM_GOTO_PLAYER) || (xDistToTarget < MIN_ESCORT_DISTANCE)) {
 		gameData.escort.nGoalObject = EscortSetGoalObject ();
 		ailp->mode = AIM_GOTO_OBJECT;		//	May look stupid to be before path creation, but AIDoorIsOpenable uses mode to determine what doors can be got through
 		EscortCreatePathToGoal (objP);

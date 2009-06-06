@@ -338,7 +338,7 @@ if (rval) {
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
-void DoBossStuff (CObject *objP, int nPlayerVisibility)
+void DoBossStuff (CObject *objP, int nTargetVisibility)
 {
 	int	i, nBossId, nBossIndex, nObject;
 
@@ -367,7 +367,7 @@ if (gameData.bosses [i].m_nLastGateTime > gameData.time.xGame)
 //	@mk, 10/13/95:  Reason:
 //		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
 //		teleports out of there right away, and blasts CPlayerData right after first door.
-if (!gameData.ai.nPlayerVisibility && (gameData.time.xGame - gameData.bosses [i].m_nHitTime > I2X (2)))
+if (!gameData.ai.nTargetVisibility && (gameData.time.xGame - gameData.bosses [i].m_nHitTime > I2X (2)))
 	return;
 
 if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {

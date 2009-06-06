@@ -112,13 +112,13 @@ if (botInfoP->attackType) {
 	}
 objP->mType.physInfo.velocity.SetZero ();
 // -- ailP->waitTime = I2X (5);
-ailP->playerAwarenessTime = 0;
-ailP->playerAwarenessType = 0;
+ailP->targetAwarenessTime = 0;
+ailP->targetAwarenessType = 0;
 aiP->GOAL_STATE = AIS_SEARCH;
 aiP->CURRENT_STATE = AIS_REST;
-ailP->timePlayerSeen = gameData.time.xGame;
+ailP->timeTargetSeen = gameData.time.xGame;
 ailP->nextMiscSoundTime = gameData.time.xGame;
-ailP->timePlayerSoundAttacked = gameData.time.xGame;
+ailP->timeTargetSoundAttacked = gameData.time.xGame;
 if ((behavior == AIB_SNIPE) || (behavior == AIB_STATION) || (behavior == AIB_RUN_FROM) || (behavior == AIB_FOLLOW)) {
 	aiP->nHideSegment = nHideSegment;
 	ailP->nGoalSegment = nHideSegment;
@@ -235,7 +235,7 @@ if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
 	gameData.ai.vLastPlayerPosFiredAt.SetZero ();
 if (!gameData.ai.vLastPlayerPosFiredAt.IsZero ())
 	gameData.ai.nDistToLastPlayerPosFiredAt =
-		CFixVector::Dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedPlayerPos);
+		CFixVector::Dist(gameData.ai.vLastPlayerPosFiredAt, gameData.ai.vBelievedTargetPos);
 else
 	gameData.ai.nDistToLastPlayerPosFiredAt = I2X (10000);
 abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState &&

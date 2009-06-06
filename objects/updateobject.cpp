@@ -617,10 +617,10 @@ for (i = windowRenderedData [nWindow].nObjects; i; ) {
 		if (objP->info.nType == OBJ_ROBOT) {
 			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < I2X (100)) {
 				ailP = gameData.ai.localInfo + nObject;
-				if (ailP->playerAwarenessType == 0) {
+				if (ailP->targetAwarenessType == 0) {
 					objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_CAMERA_AWAKE;
-					ailP->playerAwarenessType = WEAPON_ROBOT_COLLISION;
-					ailP->playerAwarenessTime = I2X (3);
+					ailP->targetAwarenessType = WEAPON_ROBOT_COLLISION;
+					ailP->targetAwarenessTime = I2X (3);
 					ailP->nPrevVisibility = 2;
 					}
 				}

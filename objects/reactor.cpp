@@ -286,7 +286,7 @@ if (!gameStates.app.cheats.bRobotsFiring)
 if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 	if (gameStates.app.tick40fps.bTick) {		//	Do ever so often...
 		CFixVector	vecToPlayer;
-		fix			xDistToPlayer;
+		fix			xDistToTarget;
 		int			i;
 		CSegment		*segP = SEGMENTS + objP->info.nSegment;
 
@@ -299,7 +299,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		// center can spot cloaked dudes.
 
 		if (IsMultiGame)
-			gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + LOCALPLAYER.nObject)->vPos;
+			gameData.ai.vBelievedTargetPos = OBJPOS (OBJECTS + LOCALPLAYER.nObject)->vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -310,8 +310,8 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 			return;
 
 		vecToPlayer = OBJPOS (gameData.objs.consoleP)->vPos - objP->info.position.vPos;
-		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
-		if (xDistToPlayer < I2X (200)) {
+		xDistToTarget = CFixVector::Normalize (vecToPlayer);
+		if (xDistToTarget < I2X (200)) {
 			rStatP->bSeenPlayer = AICanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
 			}
@@ -324,12 +324,12 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 	if ((rStatP->xLastVisCheckTime + I2X (5) < gameData.time.xGame) || 
 		 (rStatP->xLastVisCheckTime > gameData.time.xGame)) {
 		CFixVector	vecToPlayer;
-		fix			xDistToPlayer;
+		fix			xDistToTarget;
 
 		vecToPlayer = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
-		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
+		xDistToTarget = CFixVector::Normalize (vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
-		if (xDistToPlayer < I2X (120)) {
+		if (xDistToTarget < I2X (120)) {
 			rStatP->bSeenPlayer = AICanSeePlayer (objP, &objP->info.position.vPos, 0, &vecToPlayer);
 			if (!rStatP->bSeenPlayer)
 				rStatP->bHit = 0;
@@ -340,22 +340,22 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 if ((rStatP->nNextFireTime < 0) && 
 	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (2)))) {
 	nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->info.nId].nGuns, rStatP->vGunPos, rStatP->vGunDir, 
-											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.vBelievedPlayerPos : &gameData.objs.consoleP->info.position.vPos);
+											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.vBelievedTargetPos : &gameData.objs.consoleP->info.position.vPos);
 	if (nBestGun != -1) {
 		int			nRandProb, count;
 		CFixVector	vecToGoal;
-		fix			xDistToPlayer;
+		fix			xDistToTarget;
 		fix			xDeltaFireTime;
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-			vecToGoal = gameData.ai.vBelievedPlayerPos - rStatP->vGunPos[nBestGun];
-			xDistToPlayer = CFixVector::Normalize (vecToGoal);
+			vecToGoal = gameData.ai.vBelievedTargetPos - rStatP->vGunPos[nBestGun];
+			xDistToTarget = CFixVector::Normalize (vecToGoal);
 			} 
 		else {
 			vecToGoal = gameData.objs.consoleP->info.position.vPos - rStatP->vGunPos [nBestGun];
-			xDistToPlayer = CFixVector::Normalize (vecToGoal);
+			xDistToTarget = CFixVector::Normalize (vecToGoal);
 			}
-		if (xDistToPlayer > I2X (300)) {
+		if (xDistToTarget > I2X (300)) {
 			rStatP->bHit = 0;
 			rStatP->bSeenPlayer = 0;
 			return;

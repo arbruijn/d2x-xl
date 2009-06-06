@@ -39,9 +39,9 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //		0		Player is not visible from CObject, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
-//	Note: Uses gameData.ai.vBelievedPlayerPos as CPlayerData's position for cloak effect.
+//	Note: Uses gameData.ai.vBelievedTargetPos as CPlayerData's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int AICanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToPlayer)
+int AICanSeePlayer (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToTarget)
 {
 	fix					dot;
 	tCollisionQuery	fq;
@@ -67,7 +67,7 @@ if ((*pos) != objP->info.position.vPos) {
 	}
 else
 	fq.startSeg	= objP->info.nSegment;
-fq.p1					= &gameData.ai.vBelievedPlayerPos;
+fq.p1					= &gameData.ai.vBelievedTargetPos;
 fq.radP0				=
 fq.radP1				= I2X (1) / 4;
 fq.thisObjNum		= objP->Index ();
@@ -79,7 +79,7 @@ gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != LOCALPLAYER.nObject))
 	return 0;
-dot = CFixVector::Dot (*vVecToPlayer, objP->info.position.mOrient.FVec ());
+dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.FVec ());
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
 }
 
@@ -137,50 +137,48 @@ return (gameData.ai.nHitType == HIT_NONE);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-inline void LimitPlayerVisibility (fix xMaxVisibleDist, tAILocalInfo *ailP)
+inline void LimitTargetVisibility (fix xMaxVisibleDist, tAILocalInfo *ailP)
 {
 #if 1
-if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToPlayer > xMaxVisibleDist) && (ailP->playerAwarenessType < PA_RETURN_FIRE))
-	gameData.ai.nPlayerVisibility = 0;
+if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToTarget > xMaxVisibleDist) && (ailP->targetAwarenessType < PA_RETURN_FIRE))
+	gameData.ai.nTargetVisibility = 0;
 #endif
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Note: This function could be optimized.  Surely AICanSeePlayer would benefit from the
-//	information of a normalized gameData.ai.vVecToPlayer.
+//	information of a normalized gameData.ai.vVecToTarget.
 //	Return CPlayerData visibility:
 //		0		not visible
 //		1		visible, but robot not looking at CPlayerData (ie, on an unobstructed vector)
 //		2		visible and in robot's field of view
 //		-1		CPlayerData is cloaked
-//	If the CPlayerData is cloaked, set gameData.ai.vVecToPlayer based on time CPlayerData cloaked and last uncloaked position.
+//	If the CPlayerData is cloaked, set gameData.ai.vVecToTarget based on time CPlayerData cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if CPlayerData is not cloaked, in which case the previous visibility is left unchanged
-//	and is copied to gameData.ai.nPlayerVisibility
-void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag,
-							  fix xMaxVisibleDist)
+//	and is copied to gameData.ai.nTargetVisibility
+void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag, fix xMaxVisibleDist)
 {
-if (*flag) {
-	LimitPlayerVisibility (xMaxVisibleDist, ailP);
-	}
+if (*flag)
+	LimitTargetVisibility (xMaxVisibleDist, ailP);
 else {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		fix			deltaTime, dist;
-		int			cloak_index = (objP->Index ()) % MAX_AI_CLOAK_INFO;
+		int			nCloakIndex = (objP->Index ()) % MAX_AI_CLOAK_INFO;
 
-		deltaTime = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
+		deltaTime = gameData.time.xGame - gameData.ai.cloakInfo [nCloakIndex].lastTime;
 		if (deltaTime > I2X (2)) {
 			CFixVector	vRand;
 
-			gameData.ai.cloakInfo [cloak_index].lastTime = gameData.time.xGame;
-			vRand = CFixVector::Random();
-			gameData.ai.cloakInfo [cloak_index].vLastPos += vRand * (8*deltaTime);
+			gameData.ai.cloakInfo [nCloakIndex].lastTime = gameData.time.xGame;
+			vRand = CFixVector::Random ();
+			gameData.ai.cloakInfo [nCloakIndex].vLastPos += vRand * (8 * deltaTime);
 			}
-		dist = CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.cloakInfo [cloak_index].vLastPos, *pos);
-		gameData.ai.nPlayerVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
-		LimitPlayerVisibility (xMaxVisibleDist, ailP);
+		dist = CFixVector::NormalizedDir (gameData.ai.vVecToTarget, gameData.ai.cloakInfo [nCloakIndex].vLastPos, *pos);
+		gameData.ai.nTargetVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToTarget);
+		LimitTargetVisibility (xMaxVisibleDist, ailP);
 #if DBG
-		if (gameData.ai.nPlayerVisibility == 2)
-			gameData.ai.nPlayerVisibility = gameData.ai.nPlayerVisibility;
+		if (gameData.ai.nTargetVisibility == 2)
+			gameData.ai.nTargetVisibility = gameData.ai.nTargetVisibility;
 #endif
 		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && ((ailP->nextPrimaryFire < I2X (1)) || (ailP->nextSecondaryFire < I2X (1))) && (dist < I2X (20))) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
@@ -188,70 +186,68 @@ else {
 			}
 		}
 	else {
-		//	Compute expensive stuff -- gameData.ai.vVecToPlayer and gameData.ai.nPlayerVisibility
-		CFixVector::NormalizedDir(gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, *pos);
-		if (gameData.ai.vVecToPlayer.IsZero ()) {
-			gameData.ai.vVecToPlayer[X] = I2X (1);
+		//	Compute expensive stuff -- gameData.ai.vVecToTarget and gameData.ai.nTargetVisibility
+		CFixVector::NormalizedDir(gameData.ai.vVecToTarget, gameData.ai.vBelievedTargetPos, *pos);
+		if (gameData.ai.vVecToTarget.IsZero ()) {
+			gameData.ai.vVecToTarget[X] = I2X (1);
 			}
-		gameData.ai.nPlayerVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
-		LimitPlayerVisibility (xMaxVisibleDist, ailP);
+		gameData.ai.nTargetVisibility = AICanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToTarget);
+		LimitTargetVisibility (xMaxVisibleDist, ailP);
 #if DBG
-		if (gameData.ai.nPlayerVisibility == 2)
-			gameData.ai.nPlayerVisibility = gameData.ai.nPlayerVisibility;
+		if (gameData.ai.nTargetVisibility == 2)
+			gameData.ai.nTargetVisibility = gameData.ai.nTargetVisibility;
 #endif
 		//	This horrible code added by MK in desperation on 12/13/94 to make robots wake up as soon as they
 		//	see you without killing frame rate.
-	 {
-			tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-		if ((gameData.ai.nPlayerVisibility == 2) && (ailP->nPrevVisibility != 2))
+		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
+		if ((gameData.ai.nTargetVisibility == 2) && (ailP->nPrevVisibility != 2))
 			if ((aiP->GOAL_STATE == AIS_REST) || (aiP->CURRENT_STATE == AIS_REST)) {
 				aiP->GOAL_STATE = AIS_FIRE;
 				aiP->CURRENT_STATE = AIS_FIRE;
 				}
-			}
 
-		if ((ailP->nPrevVisibility != gameData.ai.nPlayerVisibility) && (gameData.ai.nPlayerVisibility == 2)) {
+		if ((ailP->nPrevVisibility != gameData.ai.nTargetVisibility) && (gameData.ai.nTargetVisibility == 2)) {
 			if (ailP->nPrevVisibility == 0) {
-				if (ailP->timePlayerSeen + I2X (1)/2 < gameData.time.xGame) {
+				if (ailP->timeTargetSeen + I2X (1)/2 < gameData.time.xGame) {
 					// -- if (gameStates.app.bPlayerExploded)
 					// -- 	audio.CreateSegmentSound (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 					// -- else
-						audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
-					ailP->timePlayerSoundAttacked = gameData.time.xGame;
+						audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+					ailP->timeTargetSoundAttacked = gameData.time.xGame;
 					ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + d_rand ()*4;
 					}
 				}
-			else if (ailP->timePlayerSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
+			else if (ailP->timeTargetSoundAttacked + I2X (1) / 4 < gameData.time.xGame) {
 				// -- if (gameStates.app.bPlayerExploded)
 				// -- 	audio.CreateSegmentSound (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 				// -- else
-					audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
-				ailP->timePlayerSoundAttacked = gameData.time.xGame;
+					audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
+				ailP->timeTargetSoundAttacked = gameData.time.xGame;
 				}
 			}
 
-		if ((gameData.ai.nPlayerVisibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
+		if ((gameData.ai.nTargetVisibility == 2) && (ailP->nextMiscSoundTime < gameData.time.xGame)) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 2;
 			// -- if (gameStates.app.bPlayerExploded)
 			// -- 	audio.CreateSegmentSound (botInfoP->tauntSound, objP->info.nSegment, 0, pos, 0 , nRobotSoundVolume);
 			// -- else
 				audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
 			}
-		ailP->nPrevVisibility = gameData.ai.nPlayerVisibility;
+		ailP->nPrevVisibility = gameData.ai.nTargetVisibility;
 		}
 
 	*flag = 1;
 
 	//	@mk, 09/21/95: If CPlayerData view is not obstructed and awareness is at least as high as a nearby collision,
 	//	act is if robot is looking at player.
-	if (ailP->playerAwarenessType >= PA_NEARBY_ROBOT_FIRED)
-		if (gameData.ai.nPlayerVisibility == 1)
-			gameData.ai.nPlayerVisibility = 2;
-	if (gameData.ai.nPlayerVisibility)
-		ailP->timePlayerSeen = gameData.time.xGame;
+	if (ailP->targetAwarenessType >= PA_NEARBY_ROBOT_FIRED)
+		if (gameData.ai.nTargetVisibility == 1)
+			gameData.ai.nTargetVisibility = 2;
+	if (gameData.ai.nTargetVisibility)
+		ailP->timeTargetSeen = gameData.time.xGame;
 	}
 if (objP->Index () == nDbgObj) {
-	HUDMessage (0, "vis: %d", gameData.ai.nPlayerVisibility);
+	HUDMessage (0, "vis: %d", gameData.ai.nTargetVisibility);
 	}
 }
 

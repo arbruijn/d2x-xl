@@ -166,9 +166,9 @@ class CAIStaticInfo {
 // This is the stuff which doesn't need to be saved to disk.
 typedef struct tAILocalInfo {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
-// playerAwarenessType..nRapidFireCount used to be bytes
+// targetAwarenessType..nRapidFireCount used to be bytes
 // nGoalSegment used to be short.
-	int     playerAwarenessType;	// nType of awareness of CPlayerData
+	int     targetAwarenessType;	// nType of awareness of CPlayerData
 	int     nRetryCount;          // number of retries in physics last time this CObject got moved.
 	int     nConsecutiveRetries;  // number of retries in consecutive frames (ie, without a nRetryCount of 0)
 	int     mode;                 // current mode within behavior
@@ -181,9 +181,9 @@ typedef struct tAILocalInfo {
 	fix     nextActionTime;						// time in seconds until something happens, mode dependent
 	fix     nextPrimaryFire;               // time in seconds until can fire again
 	fix     nextSecondaryFire;             // time in seconds until can fire again from second weapon
-	fix     playerAwarenessTime;				// time in seconds robot will be aware of CPlayerData, 0 means not aware of CPlayerData
-	fix     timePlayerSeen;						// absolute time in seconds at which CPlayerData was last seen, might cause to go into follow_path mode
-	fix     timePlayerSoundAttacked;			// absolute time in seconds at which CPlayerData was last seen with visibility of 2.
+	fix     targetAwarenessTime;				// time in seconds robot will be aware of CPlayerData, 0 means not aware of CPlayerData
+	fix     timeTargetSeen;						// absolute time in seconds at which CPlayerData was last seen, might cause to go into follow_path mode
+	fix     timeTargetSoundAttacked;			// absolute time in seconds at which CPlayerData was last seen with visibility of 2.
 	fix     nextMiscSoundTime;					// absolute time in seconds at which this robot last made an angry or lurking sound.
 	fix     timeSinceProcessed;				// time since this robot last processed in DoAIFrame
 	CAngleVector goalAngles [MAX_SUBMODELS];  // angles for each subobject

@@ -1326,7 +1326,7 @@ int FusionBump (void)
 if (gameData.fusion.xAutoFireTime) {
 	if (gameData.weapons.nPrimary != FUSION_INDEX)
 		gameData.fusion.xAutoFireTime = 0;
-	else if (gameData.time.xGame + flFrameTime/2 >= gameData.fusion.xAutoFireTime) {
+	else if (gameData.time.xGame + flFrameTime / 2 >= gameData.fusion.xAutoFireTime) {
 		gameData.fusion.xAutoFireTime = 0;
 		gameData.laser.nGlobalFiringCount = 1;
 		}
@@ -1338,13 +1338,7 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objs.consoleP->mType.physInfo.rotVel [X] += (d_rand () - 16384) / 8;
-		gameData.objs.consoleP->mType.physInfo.rotVel [Z] += (d_rand () - 16384) / 8;
-		CFixVector vRand = CFixVector::Random ();
-		fix xBump = I2X (4);
-		if (gameData.fusion.xCharge > I2X (2))
-			xBump = gameData.fusion.xCharge * 4;
-		gameData.objs.consoleP->Bump (vRand, xBump);
+		gameData.objs.consoleP->Bump (8, (gameData.fusion.xCharge > I2X (2)) ? gameData.fusion.xCharge * 4 : I2X (4));
 		}
 	}
 return 1;

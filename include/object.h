@@ -805,6 +805,7 @@ class CObject : public CObjectInfo {
 		void ApplyRotForce (CFixVector vForce);
 		void SetThrustFromVelocity (void);
 		void Bump (CFixVector vForce, fix xDamage);
+		void Bump (fix xRad, fix xScale, bool bSound = false);
 		void Bump (CObject *otherObjP, CFixVector vForce, int bDamage);
 		void Bump (CObject *otherObjP, CFixVector vForce, CFixVector vRotForce, int bDamage);
 		void ApplyForceDamage (fix vForce, CObject *otherObjP);
@@ -892,25 +893,7 @@ class CObject : public CObjectInfo {
 			m_damage.xGuns = xGuns;
 			}
 
-		inline bool ResetDamage (void) { 
-			bool bReset = false;
-			m_damage.bCritical = false;
-			if (m_damage.xAim < I2X (1) / 2) {
-				m_damage.xAim = I2X (1) / 2;
-				bReset = true;
-				}
-			if (m_damage.xDrives < I2X (1) / 2) {
-				m_damage.xDrives = I2X (1) / 2;
-				bReset = true;
-				}
-			if (m_damage.xGuns < I2X (1) / 2) {
-				m_damage.xGuns = I2X (1) / 2;
-				bReset = true;
-				}
-			m_damage.tCritical = 0;
-			m_damage.nCritical = 0;
-			return bReset;
-			}
+		bool ResetDamage (void);
 
 		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
 		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }

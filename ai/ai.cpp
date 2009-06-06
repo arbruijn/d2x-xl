@@ -41,7 +41,7 @@ for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
 // Make work for control centers.
-gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [0].vLastPos;
+gameData.ai.vBelievedTargetPos = gameData.ai.cloakInfo [0].vLastPos;
 gameData.ai.nBelievedPlayerSeg = gameData.ai.cloakInfo [0].nLastSeg;
 }
 
@@ -132,12 +132,12 @@ FORALL_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {
 		i = objP->Index ();
 		nSegment = OBJECTS [i].info.nSegment;
-		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType) {
-			gameData.ai.localInfo [i].playerAwarenessType = newAwareness [nSegment];
-			gameData.ai.localInfo [i].playerAwarenessTime = PLAYER_AWARENESS_INITIAL_TIME;
+		if (newAwareness [nSegment] > gameData.ai.localInfo [i].targetAwarenessType) {
+			gameData.ai.localInfo [i].targetAwarenessType = newAwareness [nSegment];
+			gameData.ai.localInfo [i].targetAwarenessTime = PLAYER_AWARENESS_INITIAL_TIME;
 			}
 		// Clear the bit that says this robot is only awake because a camera woke it up.
-		if (newAwareness [nSegment] > gameData.ai.localInfo [i].playerAwarenessType)
+		if (newAwareness [nSegment] > gameData.ai.localInfo [i].targetAwarenessType)
 			objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		}
 }

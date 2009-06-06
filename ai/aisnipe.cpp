@@ -68,10 +68,10 @@ void DoSnipeWait (CObject *objP, tAILocalInfo *ailP)
 {
 	fix xConnectedDist;
 
-if ((gameData.ai.xDistToPlayer > I2X (50)) && (ailP->nextActionTime > 0))
+if ((gameData.ai.xDistToTarget > I2X (50)) && (ailP->nextActionTime > 0))
 	return;
 ailP->nextActionTime = SNIPE_WAIT_TIME;
-xConnectedDist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedPlayerPos, 
+xConnectedDist = FindConnectedDistance (objP->info.position.vPos, objP->info.nSegment, gameData.ai.vBelievedTargetPos, 
 													 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
 if (xConnectedDist < MAX_SNIPE_DIST) {
 	CreatePathToPlayer (objP, 30, 1);
@@ -89,8 +89,8 @@ if (ailP->nextActionTime < 0) {
 	ailP->nextActionTime = SNIPE_WAIT_TIME;
 	}
 else {
-	AIFollowPath (objP, gameData.ai.nPlayerVisibility, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
-	if (gameData.ai.nPlayerVisibility) {
+	AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
+	if (gameData.ai.nTargetVisibility) {
 		ailP->mode = AIM_SNIPE_FIRE;
 		ailP->nextActionTime = SNIPE_FIRE_TIME;
 		}
@@ -123,8 +123,8 @@ if (ailP->nextActionTime < 0) {
 	ailP->mode = AIM_SNIPE_WAIT;
 	ailP->nextActionTime = SNIPE_WAIT_TIME;
 	}
-else if ((gameData.ai.nPlayerVisibility == 0) || (ailP->nextActionTime > SNIPE_ABORT_RETREAT_TIME)) {
-	AIFollowPath (objP, gameData.ai.nPlayerVisibility, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
+else if ((gameData.ai.nTargetVisibility == 0) || (ailP->nextActionTime > SNIPE_ABORT_RETREAT_TIME)) {
+	AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
 	ailP->mode = AIM_SNIPE_RETREAT_BACKWARDS;
 	}
 else {
@@ -146,7 +146,7 @@ pAISnipeHandler aiSnipeHandlers [] = {DoSnipeAttack, DoSnipeFire, DoSnipeRetreat
 
 void DoSnipeFrame (CObject *objP)
 {
-if (gameData.ai.xDistToPlayer <= MAX_SNIPE_DIST) {
+if (gameData.ai.xDistToTarget <= MAX_SNIPE_DIST) {
 	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
 	int			i = ailP->mode;
 

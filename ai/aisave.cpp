@@ -112,7 +112,7 @@ void CSaveGameManager::SaveAILocalInfo (tAILocalInfo *ailP)
 {
 	int	i;
 
-m_cf.WriteInt (ailP->playerAwarenessType);
+m_cf.WriteInt (ailP->targetAwarenessType);
 m_cf.WriteInt (ailP->nRetryCount);
 m_cf.WriteInt (ailP->nConsecutiveRetries);
 m_cf.WriteInt (ailP->mode);
@@ -122,9 +122,9 @@ m_cf.WriteInt (ailP->nGoalSegment);
 m_cf.WriteFix (ailP->nextActionTime);
 m_cf.WriteFix (ailP->nextPrimaryFire);
 m_cf.WriteFix (ailP->nextSecondaryFire);
-m_cf.WriteFix (ailP->playerAwarenessTime);
-m_cf.WriteFix (ailP->timePlayerSeen);
-m_cf.WriteFix (ailP->timePlayerSoundAttacked);
+m_cf.WriteFix (ailP->targetAwarenessTime);
+m_cf.WriteFix (ailP->timeTargetSeen);
+m_cf.WriteFix (ailP->timeTargetSoundAttacked);
 m_cf.WriteFix (ailP->nextMiscSoundTime);
 m_cf.WriteFix (ailP->timeSinceProcessed);
 for (i = 0; i < MAX_SUBMODELS; i++) {
@@ -192,7 +192,7 @@ void CSaveGameManager::LoadAILocalInfo (tAILocalInfo *ailP)
 {
 	int	i;
 
-ailP->playerAwarenessType = m_cf.ReadInt ();
+ailP->targetAwarenessType = m_cf.ReadInt ();
 ailP->nRetryCount = m_cf.ReadInt ();
 ailP->nConsecutiveRetries = m_cf.ReadInt ();
 ailP->mode = m_cf.ReadInt ();
@@ -202,9 +202,9 @@ ailP->nGoalSegment = m_cf.ReadInt ();
 ailP->nextActionTime = m_cf.ReadFix ();
 ailP->nextPrimaryFire = m_cf.ReadFix ();
 ailP->nextSecondaryFire = m_cf.ReadFix ();
-ailP->playerAwarenessTime = m_cf.ReadFix ();
-ailP->timePlayerSeen = m_cf.ReadFix ();
-ailP->timePlayerSoundAttacked = m_cf.ReadFix ();
+ailP->targetAwarenessTime = m_cf.ReadFix ();
+ailP->timeTargetSeen = m_cf.ReadFix ();
+ailP->timeTargetSoundAttacked = m_cf.ReadFix ();
 ailP->nextMiscSoundTime = m_cf.ReadFix ();
 ailP->timeSinceProcessed = m_cf.ReadFix ();
 for (i = 0; i < MAX_SUBMODELS; i++) {

@@ -893,7 +893,7 @@ return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int) extraGameInfo [IsMultiGame]
 void LaserDoWeaponSequence (CObject *objP)
 {
 	CObject	*gmObjP;
-	fix		xWeaponSpeed, xScaleFactor, xDistToPlayer;
+	fix		xWeaponSpeed, xScaleFactor, xDistToTarget;
 
 Assert (objP->info.controlType == CT_WEAPON);
 //	Ok, this is a big hack by MK.
@@ -953,9 +953,9 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 		nHomingTarget = TrackHomingTarget (nHomingTarget, objP, &dot);
 		if (nHomingTarget != -1) {
 			if (nHomingTarget == LOCALPLAYER.nObject) {
-				xDistToPlayer = CFixVector::Dist (objP->info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
-				if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
-					LOCALPLAYER.homingObjectDist = xDistToPlayer;
+				xDistToTarget = CFixVector::Dist (objP->info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
+				if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
+					LOCALPLAYER.homingObjectDist = xDistToTarget;
 				}
 			vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - objP->info.position.vPos;
 			xDist = vVecToObject.Mag ();

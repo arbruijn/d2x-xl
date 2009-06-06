@@ -127,7 +127,7 @@ if (speed > xMaxSpeed) {
 
 // -----------------------------------------------------------------------------
 
-void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToPlayer)
+void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToTarget)
 {
 	CFixVector		vPos, vAvoidPos, vNewPos;
 	fix				xDist, xAvoidRad;
@@ -184,8 +184,8 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 				if (hitType != HIT_NONE)
 					continue;
 				}
-			vVecToPlayer = vNewPos - vAvoidPos;
-			CFixVector::Normalize (vVecToPlayer); //CFixVector::Avg (vVecToPlayer, vNewPos);
+			vVecToTarget = vNewPos - vAvoidPos;
+			CFixVector::Normalize (vVecToTarget); //CFixVector::Avg (vVecToTarget, vNewPos);
 			break;
 			}
 		}
@@ -194,16 +194,16 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 
 // -----------------------------------------------------------------------------
 
-void MoveTowardsPlayer (CObject *objP, CFixVector *vVecToPlayer)
-//	gameData.ai.vVecToPlayer must be normalized, or close to it.
+void MoveTowardsPlayer (CObject *objP, CFixVector *vVecToTarget)
+//	gameData.ai.vVecToTarget must be normalized, or close to it.
 {
-MoveAwayFromOtherRobots (objP, *vVecToPlayer);
-MoveTowardsVector (objP, vVecToPlayer, 1);
+MoveAwayFromOtherRobots (objP, *vVecToTarget);
+MoveTowardsVector (objP, vVecToTarget, 1);
 }
 
 // -----------------------------------------------------------------------------
 //	I am ashamed of this: fastFlag == -1 means Normal slide about.  fastFlag = 0 means no evasion.
-void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
+void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 {
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
 	fix				speed;
@@ -237,24 +237,24 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 	ft = gameData.time.xFrame * 32;
 	switch (dir) {
 		case 0:
-			vEvade [X] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade [Z] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
+			vEvade [X] = FixMul (gameData.ai.vVecToTarget[Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.vVecToTarget[Y], ft);
+			vEvade [Z] = FixMul (-gameData.ai.vVecToTarget[X], ft);
 			break;
 		case 1:
-			vEvade [X] = FixMul (-gameData.ai.vVecToPlayer[Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade [Z] = FixMul (gameData.ai.vVecToPlayer[X], ft);
+			vEvade [X] = FixMul (-gameData.ai.vVecToTarget[Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.vVecToTarget[Y], ft);
+			vEvade [Z] = FixMul (gameData.ai.vVecToTarget[X], ft);
 			break;
 		case 2:
-			vEvade [X] = FixMul (-gameData.ai.vVecToPlayer[Y], ft);
-			vEvade [Y] = FixMul (gameData.ai.vVecToPlayer[X], ft);
-			vEvade [Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
+			vEvade [X] = FixMul (-gameData.ai.vVecToTarget[Y], ft);
+			vEvade [Y] = FixMul (gameData.ai.vVecToTarget[X], ft);
+			vEvade [Z] = FixMul (gameData.ai.vVecToTarget[Z], ft);
 			break;
 		case 3:
-			vEvade [X] = FixMul (gameData.ai.vVecToPlayer[Y], ft);
-			vEvade [Y] = FixMul (-gameData.ai.vVecToPlayer[X], ft);
-			vEvade [Z] = FixMul (gameData.ai.vVecToPlayer[Z], ft);
+			vEvade [X] = FixMul (gameData.ai.vVecToTarget[Y], ft);
+			vEvade [Y] = FixMul (-gameData.ai.vVecToTarget[X], ft);
+			vEvade [Z] = FixMul (gameData.ai.vVecToTarget[Z], ft);
 			break;
 		default:
 			Error ("Function MoveAroundPlayer: Bad case.");
@@ -267,7 +267,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 		//	Only take evasive action if looking at player.
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
-		dot = CFixVector::Dot (gameData.ai.vVecToPlayer, objP->info.position.mOrient.FVec ());
+		dot = CFixVector::Dot (gameData.ai.vVecToTarget, objP->info.position.mOrient.FVec ());
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) &&
 			 !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
@@ -299,7 +299,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToPlayer, int fastFlag)
 
 // -----------------------------------------------------------------------------
 
-void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToPlayer, int attackType)
+void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToTarget, int attackType)
 {
 	fix				speed;
 	tPhysicsInfo	*pptr = &objP->mType.physInfo;
@@ -307,7 +307,7 @@ void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToPlayer, int attackType
 	int				objref;
 	fix				ft = gameData.time.xFrame * 16;
 
-	pptr->velocity -= gameData.ai.vVecToPlayer * ft;
+	pptr->velocity -= gameData.ai.vVecToTarget * ft;
 
 	if (attackType) {
 		//	Get value in 0d:\temp\dm_test3 to choose evasion direction.
@@ -345,14 +345,14 @@ void MoveAwayFromPlayer (CObject *objP, CFixVector *vVecToPlayer, int attackType
 //	Move towards, away_from or around player.
 //	Also deals with evasion.
 //	If the flag bEvadeOnly is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
-void AIMoveRelativeToPlayer (CObject *objP, tAILocalInfo *ailP, fix xDistToPlayer,
-									  CFixVector *vVecToPlayer, fix circleDistance, int bEvadeOnly,
-									  int nPlayerVisibility)
+void AIMoveRelativeToPlayer (CObject *objP, tAILocalInfo *ailP, fix xDistToTarget,
+									  CFixVector *vVecToTarget, fix circleDistance, int bEvadeOnly,
+									  int nTargetVisibility)
 {
 	CObject		*dObjP;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
 
-	Assert (gameData.ai.nPlayerVisibility != -1);
+	Assert (gameData.ai.nTargetVisibility != -1);
 
 	//	See if should take avoidance.
 
@@ -388,7 +388,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
 				int evadeSpeed = ROBOTINFO (objP->info.nId).evadeSpeed [gameStates.app.nDifficultyLevel];
 				gameData.ai.bEvaded = 1;
-				MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, evadeSpeed);
+				MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, evadeSpeed);
 				}
 			}
 		return;
@@ -405,35 +405,35 @@ objP->cType.aiInfo.nDangerLaser = -1;
 if (botInfoP->attackType == 1) {
 	if (!gameStates.app.bPlayerIsDead &&
 		 ((ailP->nextPrimaryFire <= botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) ||
-		  (gameData.ai.xDistToPlayer >= I2X (30))))
-		MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
+		  (gameData.ai.xDistToTarget >= I2X (30))))
+		MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
 		//	1/4 of time, move around CPlayerData, 3/4 of time, move away from CPlayerData
 	else if (d_rand () < 8192)
-		MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, -1);
+		MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, -1);
 	else
-		MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 1);
+		MoveAwayFromPlayer (objP, &gameData.ai.vVecToTarget, 1);
 	}
 else if (botInfoP->thief)
-	MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
+	MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
 else {
 	int	objval = ((objP->Index ()) & 0x0f) ^ 0x0a;
 
 	//	Changes here by MK, 12/29/95.  Trying to get rid of endless circling around bots in a large room.
 	if (botInfoP->kamikaze)
-		MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
-	else if (gameData.ai.xDistToPlayer < circleDistance)
-		MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 0);
-	else if ((gameData.ai.xDistToPlayer < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -I2X (1)))
-		MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, -1);
+		MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
+	else if (gameData.ai.xDistToTarget < circleDistance)
+		MoveAwayFromPlayer (objP, &gameData.ai.vVecToTarget, 0);
+	else if ((gameData.ai.xDistToTarget < (3+objval)*circleDistance/2) && (ailP->nextPrimaryFire > -I2X (1)))
+		MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, -1);
 	else
-		if ((-ailP->nextPrimaryFire > I2X (1) + (objval << 12)) && gameData.ai.nPlayerVisibility)
+		if ((-ailP->nextPrimaryFire > I2X (1) + (objval << 12)) && gameData.ai.nTargetVisibility)
 			//	Usually move away, but sometimes move around player.
 			if ((((gameData.time.xGame >> 18) & 0x0f) ^ objval) > 4)
-				MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 0);
+				MoveAwayFromPlayer (objP, &gameData.ai.vVecToTarget, 0);
 			else
-				MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, -1);
+				MoveAroundPlayer (objP, &gameData.ai.vVecToTarget, -1);
 		else
-			MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
+			MoveTowardsPlayer (objP, &gameData.ai.vVecToTarget);
 	}
 }
 

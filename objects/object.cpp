@@ -1510,6 +1510,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 			m_damage.xGuns = fix (float (m_damage.xGuns) * (1.0f - 0.25f / fShieldScale));
 		m_damage.tCritical = gameStates.app.nSDLTicks;
 		m_damage.nCritical++;
+		Bump (8, I2X (4), true);
 		return vHit;
 		}
 	}
@@ -1542,6 +1543,41 @@ m_hitInfo.v [m_hitInfo.i] = vHit;
 m_hitInfo.t [m_hitInfo.i] = gameStates.app.nSDLTicks;
 m_hitInfo.i = (m_hitInfo.i + 1) % 3;
 return m_hitInfo.v [m_hitInfo.i];
+}
+
+//------------------------------------------------------------------------------
+
+bool CObject::ResetDamage (void) 
+{ 
+bool bReset = false;
+m_damage.bCritical = false;
+if (m_damage.xAim < I2X (1) / 2) {
+	m_damage.xAim = I2X (1) / 2;
+	bReset = true;
+	}
+if (m_damage.xDrives < I2X (1) / 2) {
+	m_damage.xDrives = I2X (1) / 2;
+	bReset = true;
+	}
+if (m_damage.xGuns < I2X (1) / 2) {
+	m_damage.xGuns = I2X (1) / 2;
+	bReset = true;
+	}
+m_damage.tCritical = 0;
+m_damage.nCritical = 0;
+return bReset;
+}
+
+//------------------------------------------------------------------------------
+
+void CObject::Bump (fix xRad, fix xScale, bool bSound)
+{
+mType.physInfo.rotVel [X] += (d_rand () - 16384) / xRad;
+mType.physInfo.rotVel [Z] += (d_rand () - 16384) / xRad;
+CFixVector vRand = CFixVector::Random ();
+(vRand, xScale);
+if (bSound)
+	audio.CreateObjectSound (SOUND_PLAYER_HIT_WALL, SOUNDCLASS_GENERIC, Index ());
 }
 
 //------------------------------------------------------------------------------

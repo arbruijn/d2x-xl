@@ -37,9 +37,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tAIStateInfo {
 	short				nObject;
 	short				nObjRef;
-	tRobotInfo		*botInfoP;
-	tAIStaticInfo	*aiP;
-	tAILocalInfo	*ailP;
+	tRobotInfo*		botInfoP;
+	tAIStaticInfo*	aiP;
+	tAILocalInfo*	ailP;
 	CFixVector		vVisPos;
 	int				nPrevVisibility;
 	int				bVisAndVecComputed;
@@ -291,7 +291,7 @@ int AIMChaseObjectHandler2 (CObject *objP, tAIStateInfo *siP)
 if (siP->botInfoP->attackType != 1)
 	circleDistance += I2X (siP->nObject & 0xf) / 2;
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, -MAX_CHASE_DIST);
-if ((gameData.ai.nPlayerVisibility < 2) && (siP->nPrevVisibility == 2)) {
+if ((gameData.ai.nTargetVisibility < 2) && (siP->nPrevVisibility == 2)) {
 	if (!AIMultiplayerAwareness (objP, 53)) {
 		if (AIMaybeDoActualFiringStuff (objP, aiP))
 			AIDoActualFiringStuff (objP, aiP, siP->ailP, siP->botInfoP, aiP->CURRENT_GUN);
@@ -300,7 +300,7 @@ if ((gameData.ai.nPlayerVisibility < 2) && (siP->nPrevVisibility == 2)) {
 	CreatePathToPlayer (objP, 8, 1);
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
-else if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > MAX_CHASE_DIST) && !siP->bMultiGame) {
+else if (!gameData.ai.nTargetVisibility && (gameData.ai.xDistToTarget > MAX_CHASE_DIST) && !siP->bMultiGame) {
 	// If pretty far from the CPlayerData, CPlayerData cannot be seen
 	// (obstructed) and in chase mode, switch to follow path mode.
 	// This has one desirable benefit of avoiding physics retries.
@@ -312,9 +312,9 @@ else if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > MAX_CHAS
 	}
 
 if ((aiP->CURRENT_STATE == AIS_REST) && (aiP->GOAL_STATE == AIS_REST)) {
-	if (gameData.ai.nPlayerVisibility &&
-		 (d_rand () < gameData.time.xFrame * gameData.ai.nPlayerVisibility) &&
-		 (gameData.ai.xDistToPlayer / 256 < d_rand () * gameData.ai.nPlayerVisibility)) {
+	if (gameData.ai.nTargetVisibility &&
+		 (d_rand () < gameData.time.xFrame * gameData.ai.nTargetVisibility) &&
+		 (gameData.ai.xDistToTarget / 256 < d_rand () * gameData.ai.nTargetVisibility)) {
 		aiP->GOAL_STATE = AIS_SEARCH;
 		aiP->CURRENT_STATE = AIS_SEARCH;
 		}
@@ -322,9 +322,9 @@ if ((aiP->CURRENT_STATE == AIS_REST) && (aiP->GOAL_STATE == AIS_REST)) {
 		AIIdleAnimation (objP);
 	}
 
-if (gameData.time.xGame - siP->ailP->timePlayerSeen > CHASE_TIME_LENGTH) {
+if (gameData.time.xGame - siP->ailP->timeTargetSeen > CHASE_TIME_LENGTH) {
 	if (siP->bMultiGame)
-		if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > I2X (70))) {
+		if (!gameData.ai.nTargetVisibility && (gameData.ai.xDistToTarget > I2X (70))) {
 			siP->ailP->mode = AIM_IDLING;
 			return 1;
 			}
@@ -342,10 +342,10 @@ else if ((aiP->CURRENT_STATE != AIS_REST) && (aiP->GOAL_STATE != AIS_REST)) {
 			AIDoActualFiringStuff (objP, aiP, siP->ailP, siP->botInfoP, aiP->CURRENT_GUN);
 		return 1;
 		}
-	AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToPlayer, &gameData.ai.vVecToPlayer, circleDistance, 0, gameData.ai.nPlayerVisibility);
+	AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToTarget, &gameData.ai.vVecToTarget, circleDistance, 0, gameData.ai.nTargetVisibility);
 	if ((siP->nObjRef & 1) && ((aiP->GOAL_STATE == AIS_SEARCH) || (aiP->GOAL_STATE == AIS_LOCK))) {
-		if (gameData.ai.nPlayerVisibility) // == 2)
-			AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+		if (gameData.ai.nTargetVisibility) // == 2)
+			AITurnTowardsVector (&gameData.ai.vVecToTarget, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 		}
 	if (gameData.ai.bEvaded) {
 		AIMultiSendRobotPos (siP->nObject, 1);
@@ -353,7 +353,7 @@ else if ((aiP->CURRENT_STATE != AIS_REST) && (aiP->GOAL_STATE != AIS_REST)) {
 		}
 	else
 		AIMultiSendRobotPos (siP->nObject, -1);
-	DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
+	DoFiringStuff (objP, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
 	}
 return 0;
 }
@@ -364,14 +364,14 @@ int AIMRunFromObjectHandler2 (CObject *objP, tAIStateInfo *siP)
 	tAIStaticInfo *aiP = siP->aiP;
 
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-if (gameData.ai.nPlayerVisibility) {
-	if (siP->ailP->playerAwarenessType == 0)
-		siP->ailP->playerAwarenessType = PA_RETURN_FIRE;
+if (gameData.ai.nTargetVisibility) {
+	if (siP->ailP->targetAwarenessType == 0)
+		siP->ailP->targetAwarenessType = PA_RETURN_FIRE;
 	}
 // If in multiplayer, only do if CPlayerData visible.  If not multiplayer, do always.
-if (!(siP->bMultiGame) || gameData.ai.nPlayerVisibility)
+if (!(siP->bMultiGame) || gameData.ai.nTargetVisibility)
 	if (AIMultiplayerAwareness (objP, 75)) {
-		AIFollowPath (objP, gameData.ai.nPlayerVisibility, siP->nPrevVisibility, &gameData.ai.vVecToPlayer);
+		AIFollowPath (objP, gameData.ai.nTargetVisibility, siP->nPrevVisibility, &gameData.ai.vVecToTarget);
 		AIMultiSendRobotPos (siP->nObject, -1);
 		}
 if (aiP->GOAL_STATE != AIS_FLINCH)
@@ -380,11 +380,11 @@ else if (aiP->CURRENT_STATE == AIS_FLINCH)
 	aiP->GOAL_STATE = AIS_LOCK;
 
 // Bad to let run_from robot fire at CPlayerData because it will cause a war in which it turns towards the CPlayerData
-// to fire and then towards its goal to move. DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
+// to fire and then towards its goal to move. DoFiringStuff (objP, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
 // Instead, do this:
 // (Note, only drop if CPlayerData is visible.  This prevents the bombs from being a giveaway, and also ensures that
 // the robot is moving while it is dropping.  Also means fewer will be dropped.)
-if ((siP->ailP->nextPrimaryFire <= 0) && (gameData.ai.nPlayerVisibility)) {
+if ((siP->ailP->nextPrimaryFire <= 0) && (gameData.ai.nTargetVisibility)) {
 	CFixVector fire_vec, fire_pos;
 
 	if (!AIMultiplayerAwareness (objP, 75))
@@ -405,7 +405,7 @@ return 0;
 
 int AIMGotoHandler2 (CObject *objP, tAIStateInfo *siP)
 {
-AIFollowPath (objP, 2, siP->nPrevVisibility, &gameData.ai.vVecToPlayer);    // Follows path as if CPlayerData can see robot.
+AIFollowPath (objP, 2, siP->nPrevVisibility, &gameData.ai.vVecToTarget);    // Follows path as if CPlayerData can see robot.
 AIMultiSendRobotPos (siP->nObject, -1);
 return 0;
 }
@@ -422,7 +422,7 @@ if (aiP->behavior == AIB_STATION)
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
 if (gameData.app.nGameMode & (GM_MODEM | GM_SERIAL))
-	if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > I2X (70))) {
+	if (!gameData.ai.nTargetVisibility && (gameData.ai.xDistToTarget > I2X (70))) {
 		siP->ailP->mode = AIM_IDLING;
 		return 1;
 		}
@@ -437,23 +437,23 @@ if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->nGoalSegment == gameData.a
 	siP->ailP->mode = AIM_IDLING;
 	return 0;
 	}
-if (!gameData.ai.nPlayerVisibility &&	// lost player out of sight
+if (!gameData.ai.nTargetVisibility &&	// lost player out of sight
 	 (!gameOpts->gameplay.nAIAggressivity ||	// standard mode: stop immediately
 	  (siP->ailP->nGoalSegment == gameData.ai.nBelievedPlayerSeg) ||	// destination reached
-	  (I2X (gameOpts->gameplay.nAIAggressivity - 1) < gameData.time.xGame - siP->ailP->timePlayerSeen) ||	// too much time passed since player was lost out of sight
-	  (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) ||		// not trying to return fire (any more)
+	  (I2X (gameOpts->gameplay.nAIAggressivity - 1) < gameData.time.xGame - siP->ailP->timeTargetSeen) ||	// too much time passed since player was lost out of sight
+	  (siP->ailP->targetAwarenessType < PA_RETURN_FIRE) ||		// not trying to return fire (any more)
 	  (siP->ailP->mode != AIM_FOLLOW_PATH))) {	// not in chase mode
 	siP->ailP->mode = AIM_IDLING;
 	return 0;
 	}
-AIFollowPath (objP, gameData.ai.nPlayerVisibility, siP->nPrevVisibility, &gameData.ai.vVecToPlayer);
+AIFollowPath (objP, gameData.ai.nTargetVisibility, siP->nPrevVisibility, &gameData.ai.vVecToTarget);
 if (aiP->GOAL_STATE != AIS_FLINCH)
 	aiP->GOAL_STATE = AIS_LOCK;
 else if (aiP->CURRENT_STATE == AIS_FLINCH)
 	aiP->GOAL_STATE = AIS_LOCK;
 if (aiP->behavior != AIB_RUN_FROM)
-	DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
-if ((gameData.ai.nPlayerVisibility == 2) && 
+	DoFiringStuff (objP, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
+if ((gameData.ai.nTargetVisibility == 2) && 
 		(objP->info.nId != ROBOT_BRAIN) && !(siP->botInfoP->companion || siP->botInfoP->thief) &&
 		(aiP->behavior != AIB_STILL) && 
 		(aiP->behavior != AIB_SNIPE) && 
@@ -463,9 +463,9 @@ if ((gameData.ai.nPlayerVisibility == 2) &&
 		siP->ailP->mode = AIM_CHASE_OBJECT;
 	// This should not just be distance based, but also time-since-CPlayerData-seen based.
 	}
-else if ((gameData.ai.xDistToPlayer > MAX_PURSUIT_DIST (siP->botInfoP))
-			&& (gameData.time.xGame - siP->ailP->timePlayerSeen > ((I2X (1) / 2) * (gameStates.app.nDifficultyLevel + siP->botInfoP->pursuit)))
-			&& (gameData.ai.nPlayerVisibility == 0)
+else if ((gameData.ai.xDistToTarget > MAX_PURSUIT_DIST (siP->botInfoP))
+			&& (gameData.time.xGame - siP->ailP->timeTargetSeen > ((I2X (1) / 2) * (gameStates.app.nDifficultyLevel + siP->botInfoP->pursuit)))
+			&& (gameData.ai.nTargetVisibility == 0)
 			&& (aiP->behavior == AIB_NORMAL)
 			&& (siP->ailP->mode == AIM_FOLLOW_PATH)) {
 	siP->ailP->mode = AIM_IDLING;
@@ -487,22 +487,22 @@ if (!AIMultiplayerAwareness (objP, 71)) {
 	return 1;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-if (gameData.ai.nPlayerVisibility == 2) {
+if (gameData.ai.nTargetVisibility == 2) {
 	// Get behind the player.
 	// Method:
-	// If gameData.ai.vVecToPlayer dot player_rear_vector > 0, behind is goal.
+	// If gameData.ai.vVecToTarget dot player_rear_vector > 0, behind is goal.
 	// Else choose goal with larger dot from left, right.
 	CFixVector  goal_point, vGoal, vec_to_goal, vRand;
 	fix         dot;
 
-	dot = CFixVector::Dot (OBJPOS (gameData.objs.consoleP)->mOrient.FVec (), gameData.ai.vVecToPlayer);
+	dot = CFixVector::Dot (OBJPOS (gameData.objs.consoleP)->mOrient.FVec (), gameData.ai.vVecToTarget);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
 		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient.FVec ();
 		vGoal = -vGoal;
 		}
 	else {
 		fix dot;
-		dot = CFixVector::Dot (OBJPOS (gameData.objs.consoleP)->mOrient.RVec (), gameData.ai.vVecToPlayer);
+		dot = CFixVector::Dot (OBJPOS (gameData.objs.consoleP)->mOrient.RVec (), gameData.ai.vVecToTarget);
 		vGoal = OBJPOS (gameData.objs.consoleP)->mOrient.RVec ();
 		if (dot > 0) {
 			vGoal = -vGoal;
@@ -517,7 +517,7 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	vec_to_goal = goal_point - objP->info.position.vPos;
 	CFixVector::Normalize (vec_to_goal);
 	MoveTowardsVector (objP, &vec_to_goal, 0);
-	AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+	AITurnTowardsVector (&gameData.ai.vVecToTarget, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 	AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
 	}
 if (siP->aiP->GOAL_STATE != AIS_FLINCH)
@@ -531,22 +531,22 @@ return 0;
 
 int AIMIdlingHandler2 (CObject *objP, tAIStateInfo *siP)
 {
-if ((gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST) || (siP->ailP->playerAwarenessType >= PA_RETURN_FIRE - 1)) {
+if ((gameData.ai.xDistToTarget < MAX_WAKEUP_DIST) || (siP->ailP->targetAwarenessType >= PA_RETURN_FIRE - 1)) {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
 
 	// turn towards vector if visible this time or last time, or rand
 	// new!
-	if ((gameData.ai.nPlayerVisibility == 2) || (siP->nPrevVisibility == 2)) { // -- MK, 06/09/95:  || ((d_rand () > 0x4000) && !(siP->bMultiGame))) {
+	if ((gameData.ai.nTargetVisibility == 2) || (siP->nPrevVisibility == 2)) { // -- MK, 06/09/95:  || ((d_rand () > 0x4000) && !(siP->bMultiGame))) {
 		if (!AIMultiplayerAwareness (objP, 71)) {
 			if (AIMaybeDoActualFiringStuff (objP, siP->aiP))
 				AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
 			return 1;
 			}
-		AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+		AITurnTowardsVector (&gameData.ai.vVecToTarget, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 		AIMultiSendRobotPos (siP->nObject, -1);
 		}
-	DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
-	if (gameData.ai.nPlayerVisibility == 2) {  // Changed @mk, 09/21/95: Require that they be looking to evade.  Change, MK, 01/03/95 for Multiplayer reasons.  If robots can't see you (even with eyes on back of head), then don't do evasion.
+	DoFiringStuff (objP, gameData.ai.nTargetVisibility, &gameData.ai.vVecToTarget);
+	if (gameData.ai.nTargetVisibility == 2) {  // Changed @mk, 09/21/95: Require that they be looking to evade.  Change, MK, 01/03/95 for Multiplayer reasons.  If robots can't see you (even with eyes on back of head), then don't do evasion.
 		if (siP->botInfoP->attackType == 1) {
 			siP->aiP->behavior = AIB_NORMAL;
 			if (!AIMultiplayerAwareness (objP, 80)) {
@@ -554,7 +554,7 @@ if ((gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST) || (siP->ailP->playerAwareness
 					AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
 				return 1;
 				}
-			AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToPlayer, &gameData.ai.vVecToPlayer, 0, 0, gameData.ai.nPlayerVisibility);
+			AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToTarget, &gameData.ai.vVecToTarget, 0, 0, gameData.ai.nTargetVisibility);
 			if (gameData.ai.bEvaded) {
 				AIMultiSendRobotPos (siP->nObject, 1);
 				gameData.ai.bEvaded = 0;
@@ -570,7 +570,7 @@ if ((gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST) || (siP->ailP->playerAwareness
 				return 1;
 				}
 			if (siP->aiP->behavior != AIB_STILL)
-				AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToPlayer, &gameData.ai.vVecToPlayer, 0, 1, gameData.ai.nPlayerVisibility);
+				AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToTarget, &gameData.ai.vVecToTarget, 0, 1, gameData.ai.nTargetVisibility);
 			else
 				gameData.ai.bEvaded = 0;
 			if (gameData.ai.bEvaded) {
@@ -581,7 +581,7 @@ if ((gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST) || (siP->ailP->playerAwareness
 				AIMultiSendRobotPos (siP->nObject, -1);
 			}
 		}
-	else if ((objP->info.nSegment != siP->aiP->nHideSegment) && (gameData.ai.xDistToPlayer > MAX_CHASE_DIST) && !siP->bMultiGame) {
+	else if ((objP->info.nSegment != siP->aiP->nHideSegment) && (gameData.ai.xDistToTarget > MAX_CHASE_DIST) && !siP->bMultiGame) {
 		// If pretty far from the CPlayerData, CPlayerData cannot be
 		// seen (obstructed) and in chase mode, switch to
 		// follow path mode.
@@ -618,7 +618,7 @@ int AIMSnipeHandler2 (CObject *objP, tAIStateInfo *siP)
 if (AIMultiplayerAwareness (objP, 53)) {
 	AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
 	if (siP->botInfoP->thief)
-		AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToPlayer, &gameData.ai.vVecToPlayer, 0, 0, gameData.ai.nPlayerVisibility);
+		AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToTarget, &gameData.ai.vVecToTarget, 0, 0, gameData.ai.nTargetVisibility);
 	}
 return 0;
 }
@@ -637,7 +637,7 @@ int AISNoneHandler1 (CObject *objP, tAIStateInfo *siP)
 	fix	dot;
 
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer);
+dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToTarget);
 if ((dot >= I2X (1)/2) && (siP->aiP->GOAL_STATE == AIS_REST))
 	siP->aiP->GOAL_STATE = AIS_SEARCH;
 return 0;
@@ -648,7 +648,7 @@ int AISRestHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->aiP->GOAL_STATE == AIS_REST) {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-	if (gameData.ai.nPlayerVisibility && ReadyToFire (siP->botInfoP, siP->ailP))
+	if (gameData.ai.nTargetVisibility && ReadyToFire (siP->botInfoP, siP->ailP))
 		siP->aiP->GOAL_STATE = AIS_FIRE;
 	}
 return 0;
@@ -660,8 +660,8 @@ int AISSearchHandler1 (CObject *objP, tAIStateInfo *siP)
 if (!AIMultiplayerAwareness (objP, 60))
 	return 1;
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-if (gameData.ai.nPlayerVisibility == 2) {
-	AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+if (gameData.ai.nTargetVisibility == 2) {
+	AITurnTowardsVector (&gameData.ai.vVecToTarget, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
 return 0;
@@ -671,11 +671,11 @@ return 0;
 int AISLockHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-if (!siP->bMultiGame || (gameData.ai.nPlayerVisibility)) {
+if (!siP->bMultiGame || (gameData.ai.nTargetVisibility)) {
 	if (!AIMultiplayerAwareness (objP, 68))
 		return 1;
-	if (gameData.ai.nPlayerVisibility == 2) {   // @mk, 09/21/95, require that they be looking towards you to turn towards you.
-		AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+	if (gameData.ai.nTargetVisibility == 2) {   // @mk, 09/21/95, require that they be looking towards you to turn towards you.
+		AITurnTowardsVector (&gameData.ai.vVecToTarget, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 		AIMultiSendRobotPos (siP->nObject, -1);
 		}
 	}
@@ -686,14 +686,14 @@ return 0;
 int AISFireHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-if (gameData.ai.nPlayerVisibility == 2) {
+if (gameData.ai.nTargetVisibility == 2) {
 	if (!AIMultiplayerAwareness (objP, (ROBOT_FIRE_AGITATION - 1))) {
 		if (siP->bMultiGame) {
 			AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
 			return 1;
 			}
 		}
-	AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+	AITurnTowardsVector (&gameData.ai.vVecToTarget, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
 // Fire at CPlayerData, if appropriate.
@@ -715,11 +715,11 @@ int AISRecoverHandler1 (CObject *objP, tAIStateInfo *siP)
 if (siP->nObjRef & 3)
 	return 0;
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
-if (gameData.ai.nPlayerVisibility != 2)
+if (gameData.ai.nTargetVisibility != 2)
 	return 0;
 if (!AIMultiplayerAwareness (objP, 69))
 	return 1;
-AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+AITurnTowardsVector (&gameData.ai.vVecToTarget, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 AIMultiSendRobotPos (siP->nObject, -1);
 return 0;
 }
@@ -767,7 +767,7 @@ if (OBJSEG (gameData.objs.consoleP) == objP->info.nSegment) {
 	if (!AIMultiplayerAwareness (objP, 97))
 		return 1;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, I2X (10000));
-	MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 0);
+	MoveAwayFromPlayer (objP, &gameData.ai.vVecToTarget, 0);
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
 else if (siP->ailP->mode != AIM_IDLING) {
@@ -784,7 +784,7 @@ else if (siP->ailP->mode != AIM_IDLING) {
 		}
 	if (siP->ailP->nextActionTime < 0) {
 		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, I2X (10000));
-		if (gameData.ai.nPlayerVisibility) {
+		if (gameData.ai.nTargetVisibility) {
 			MakeNearbyRobotSnipe ();
 			siP->ailP->nextActionTime = (NDL - gameStates.app.nDifficultyLevel) * I2X (2);
 			}
@@ -792,7 +792,7 @@ else if (siP->ailP->mode != AIM_IDLING) {
 	}
 else {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, I2X (10000));
-	if (gameData.ai.nPlayerVisibility) {
+	if (gameData.ai.nTargetVisibility) {
 		if (!AIMultiplayerAwareness (objP, 50))
 			return 1;
 		CreateNSegmentPathToDoor (objP, 8+gameStates.app.nDifficultyLevel, -1);     // third parameter is avoid_seg, -1 means avoid nothing.
@@ -816,7 +816,7 @@ if (siP->aiP->behavior == AIB_SNIPE) {
 		ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 		// If this sniper is in still mode, if he was hit or can see CPlayerData, switch to snipe mode.
 		if (siP->ailP->mode == AIM_IDLING)
-			if (gameData.ai.nPlayerVisibility || (siP->ailP->playerAwarenessType == PA_RETURN_FIRE))
+			if (gameData.ai.nTargetVisibility || (siP->ailP->targetAwarenessType == PA_RETURN_FIRE))
 				siP->ailP->mode = AIM_SNIPE_ATTACK;
 		if (!siP->botInfoP->thief && (siP->ailP->mode != AIM_IDLING))
 			DoSnipeFrame (objP);
@@ -835,14 +835,14 @@ if (siP->botInfoP->companion) {
 		tAIStaticInfo	*aiP = siP->aiP;
 
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, I2X (10000));
-	DoEscortFrame (objP, gameData.ai.xDistToPlayer, gameData.ai.nPlayerVisibility);
+	DoEscortFrame (objP, gameData.ai.xDistToTarget, gameData.ai.nTargetVisibility);
 
 	if (objP->cType.aiInfo.nDangerLaser != -1) {
 		CObject *dObjP = &OBJECTS [objP->cType.aiInfo.nDangerLaser];
 
 		if ((dObjP->info.nType == OBJ_WEAPON) && (dObjP->info.nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
 			fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize;
-			AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToPlayer, &gameData.ai.vVecToPlayer, circleDistance, 1, gameData.ai.nPlayerVisibility);
+			AIMoveRelativeToPlayer (objP, siP->ailP, gameData.ai.xDistToTarget, &gameData.ai.vVecToTarget, circleDistance, 1, gameData.ai.nTargetVisibility);
 			}
 		}
 
@@ -859,13 +859,13 @@ if (siP->botInfoP->companion) {
 			else if (((nSegment = AIRouteSeg (uint (i + 2 * aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
-		if (!bDoStuff && (siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToPlayer < 3 * MIN_ESCORT_DISTANCE / 2)) {
+		if (!bDoStuff && (siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.xDistToTarget < 3 * MIN_ESCORT_DISTANCE / 2)) {
 			bDoStuff = 1;
 			}
 		else
 			;
 
-		if (bDoStuff && (CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToPlayer) < I2X (1) / 2)) {
+		if (bDoStuff && (CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.vVecToTarget) < I2X (1) / 2)) {
 			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = I2X (1)/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
@@ -918,24 +918,24 @@ int AIBumpHandler (CObject *objP, tAIStateInfo *siP)
 if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-if (gameData.ai.nPlayerVisibility != 1) // Only increase visibility if unobstructed, else claw guys attack through doors.
+if (gameData.ai.nTargetVisibility != 1) // Only increase visibility if unobstructed, else claw guys attack through doors.
 	return 0;
-if (siP->ailP->playerAwarenessType >= PA_PLAYER_COLLISION)
+if (siP->ailP->targetAwarenessType >= PA_PLAYER_COLLISION)
 	;
-else if ((siP->nObjRef & 3) || siP->nPrevVisibility || (gameData.ai.xDistToPlayer >= MAX_WAKEUP_DIST))
+else if ((siP->nObjRef & 3) || siP->nPrevVisibility || (gameData.ai.xDistToTarget >= MAX_WAKEUP_DIST))
 	return 0;
 else {
 	if (!HeadlightIsOn (-1)) {
 		fix rval = d_rand ();
-		fix sval = (gameData.ai.xDistToPlayer * (gameStates.app.nDifficultyLevel + 1)) / 64;
+		fix sval = (gameData.ai.xDistToTarget * (gameStates.app.nDifficultyLevel + 1)) / 64;
 		if	((FixMul (rval, sval) >= gameData.time.xFrame))
 			return 0;
 		}
-	siP->ailP->playerAwarenessType = PA_PLAYER_COLLISION;
-	siP->ailP->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][1];
+	siP->ailP->targetAwarenessType = PA_PLAYER_COLLISION;
+	siP->ailP->targetAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][1];
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-gameData.ai.nPlayerVisibility = 2;
+gameData.ai.nTargetVisibility = 2;
 return 0;
 }
 
@@ -944,7 +944,7 @@ return 0;
 int AIAnimationHandler (CObject *objP, tAIStateInfo *siP)
 {
 // Note: Should only do these two function calls for objects which animate
-if (gameData.ai.bEnableAnimation && (gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST / 2)) { // && !siP->bMultiGame)) {
+if (gameData.ai.bEnableAnimation && (gameData.ai.xDistToTarget < MAX_WAKEUP_DIST / 2)) { // && !siP->bMultiGame)) {
 	gameData.ai.bObjAnimates = DoSillyAnimation (objP);
 	if (gameData.ai.bObjAnimates)
 		AIFrameAnimation (objP);
@@ -964,14 +964,14 @@ int AIBossHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->botInfoP->bossFlag) {
 		int	pv;
-		fix	dtp = gameData.ai.xDistToPlayer / 4;
+		fix	dtp = gameData.ai.xDistToTarget / 4;
 
 	if (siP->aiP->GOAL_STATE == AIS_FLINCH)
 		siP->aiP->GOAL_STATE = AIS_FIRE;
 	if (siP->aiP->CURRENT_STATE == AIS_FLINCH)
 		siP->aiP->CURRENT_STATE = AIS_FIRE;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-	pv = gameData.ai.nPlayerVisibility;
+	pv = gameData.ai.nTargetVisibility;
 	// If CPlayerData cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		pv = 0;
@@ -992,15 +992,15 @@ if ((siP->aiP->behavior == AIB_SNIPE) && (siP->ailP->mode != AIM_SNIPE_WAIT))
 	return 0;
 if (siP->botInfoP->companion || siP->botInfoP->thief)
 	return 0;
-if (siP->ailP->playerAwarenessType >= PA_RETURN_FIRE - 1) // If robot got hit, he gets to attack CPlayerData always!
+if (siP->ailP->targetAwarenessType >= PA_RETURN_FIRE - 1) // If robot got hit, he gets to attack CPlayerData always!
 	return 0;
 if ((siP->aiP->behavior == AIB_STATION) && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->aiP->nHideSegment != objP->info.nSegment)) {
-	if (gameData.ai.xDistToPlayer > MAX_SNIPE_DIST / 2) {  // station guys not at home always processed until 250 units away.
+	if (gameData.ai.xDistToTarget > MAX_SNIPE_DIST / 2) {  // station guys not at home always processed until 250 units away.
 		AIIdleAnimation (objP);
 		return 1;
 		}
 	}
-else if ((siP->aiP->behavior != AIB_STILL) && !siP->ailP->nPrevVisibility && ((gameData.ai.xDistToPlayer >> 7) > siP->ailP->timeSinceProcessed)) {  // 128 units away (6.4 segments) processed after 1 second.
+else if ((siP->aiP->behavior != AIB_STILL) && !siP->ailP->nPrevVisibility && ((gameData.ai.xDistToTarget >> 7) > siP->ailP->timeSinceProcessed)) {  // 128 units away (6.4 segments) processed after 1 second.
 	AIIdleAnimation (objP);
 	return 1;
 	}
@@ -1034,9 +1034,9 @@ if ((siP->aiP->behavior == AIB_SNIPE) || (siP->aiP->behavior == AIB_RUN_FROM) ||
 	return 0;
 if (gameData.ai.nOverallAgitation < 71)
 	return 0;
-//if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH)) 
+//if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->targetAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH)) 
  {
-	if ((gameData.ai.xDistToPlayer >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4))
+	if ((gameData.ai.xDistToTarget >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4))
 		return 0;
 	if (d_rand () * (gameData.ai.nOverallAgitation - 40) <= I2X (5))
 		return 0;
@@ -1063,25 +1063,28 @@ return 1;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIPlayerPosHandler (CObject *objP, tAIStateInfo *siP)
+int AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
-	gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
+	gameData.ai.vBelievedTargetPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
 	}
-if (gameStates.app.cheats.bRobotsKillRobots) {
+if (gameStates.app.cheats.bRobotsKillRobots || (d_rand () > objP->AimDamage ())) {
 	siP->vVisPos = objP->info.position.vPos;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-	if (gameData.ai.nPlayerVisibility) {
-		int j, nMinObj = -1;
-		fix curDist, minDist = MAX_WAKEUP_DIST;
-		CObject *robotP;
+	if (gameData.ai.nTargetVisibility) {
+		int			j, nMinObj = -1;
+		fix			curDist, minDist = MAX_WAKEUP_DIST;
+		CObject*		robotP;
+		CFixVector	vPos = gameStates.app.cheats.bRobotsKillRobots 
+								 ? objP->info.position.vPos	// find robot closest to this robot
+								 : OBJPOS (OBJECTS + gameData.multiplayer.nLocalPlayer)->vPos;	// find robot closest to player
 		
 		FORALL_ROBOT_OBJS (robotP, j) {
 			j = robotP->Index ();
 			if (j == siP->nObject)
 				continue;
-			curDist = CFixVector::Dist(objP->info.position.vPos, OBJECTS [j].info.position.vPos);
+			curDist = CFixVector::Dist (vPos, OBJECTS [j].info.position.vPos);
 			if ((curDist < MAX_WAKEUP_DIST / 2) && (curDist < minDist) &&
 				 ObjectToObjectVisibility (objP, robotP, FQ_TRANSWALL)) {
 				nMinObj = j;
@@ -1089,18 +1092,18 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 				}
 			}
 		if (nMinObj >= 0) {
-			gameData.ai.vBelievedPlayerPos = OBJPOS (OBJECTS + nMinObj)->vPos;
+			gameData.ai.vBelievedTargetPos = OBJPOS (OBJECTS + nMinObj)->vPos;
 			gameData.ai.nBelievedPlayerSeg = OBJSEG (OBJECTS + nMinObj);
-			CFixVector::NormalizedDir (gameData.ai.vVecToPlayer, gameData.ai.vBelievedPlayerPos, objP->info.position.vPos);
+			CFixVector::NormalizedDir (gameData.ai.vVecToTarget, gameData.ai.vBelievedTargetPos, objP->info.position.vPos);
 			return 0;
 			}
 		}
 	}
 siP->bVisAndVecComputed = 0;
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (d_rand () > objP->AimDamage ()))
-	gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO-1)].vLastPos;
+	gameData.ai.vBelievedTargetPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO - 1)].vLastPos;
 else
-	gameData.ai.vBelievedPlayerPos = OBJPOS (gameData.objs.consoleP)->vPos;
+	gameData.ai.vBelievedTargetPos = OBJPOS (gameData.objs.consoleP)->vPos;
 return 0;
 }
 
@@ -1109,8 +1112,8 @@ return 0;
 int AIFireHandler (CObject *objP, tAIStateInfo *siP)
 {
 if ((siP->nPrevVisibility || !(siP->nObjRef & 3)) && ReadyToFire (siP->botInfoP, siP->ailP) &&
-		((siP->ailP->playerAwarenessType >= PA_RETURN_FIRE) ||//(siP->aiP->GOAL_STATE == AIS_FIRE) || //i.e. robot has been hit last frame
-		(gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST)) &&
+		((siP->ailP->targetAwarenessType >= PA_RETURN_FIRE) ||//(siP->aiP->GOAL_STATE == AIS_FIRE) || //i.e. robot has been hit last frame
+		(gameData.ai.xDistToTarget < MAX_WAKEUP_DIST)) &&
 		siP->botInfoP->nGuns && !siP->botInfoP->attackType) {
 	// Since we passed ReadyToFire (), either nextPrimaryFire or nextSecondaryFire <= 0.  CalcGunPoint from relevant one.
 	// If both are <= 0, we will deal with the mess in AIDoActualFiringStuff
@@ -1136,26 +1139,26 @@ int AIAwarenessHandler (CObject *objP, tAIStateInfo *siP)
 	tAIStaticInfo	*aiP = siP->aiP;
 	tAILocalInfo		*ailP = siP->ailP;
 
-if (ailP->playerAwarenessType) {
-	if ((ailP->playerAwarenessType < PA_RETURN_FIRE) || (siP->nPrevVisibility < 2)) {
-		if (ailP->playerAwarenessTime > 0) {
-			ailP->playerAwarenessTime -= gameData.time.xFrame;
-			if (ailP->playerAwarenessTime <= 0) {
-				ailP->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][0];   //new: 11/05/94
-				ailP->playerAwarenessType--;          //new: 11/05/94
+if (ailP->targetAwarenessType) {
+	if ((ailP->targetAwarenessType < PA_RETURN_FIRE) || (siP->nPrevVisibility < 2)) {
+		if (ailP->targetAwarenessTime > 0) {
+			ailP->targetAwarenessTime -= gameData.time.xFrame;
+			if (ailP->targetAwarenessTime <= 0) {
+				ailP->targetAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][0];   //new: 11/05/94
+				ailP->targetAwarenessType--;          //new: 11/05/94
 				}
 			}
 		else {
-			ailP->playerAwarenessType--;
-			ailP->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][0];
+			ailP->targetAwarenessType--;
+			ailP->targetAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][0];
 			//aiP->GOAL_STATE = AIS_REST;
 			}
 		}
 	}
 else
 	aiP->GOAL_STATE = AIS_REST;                     //new: 12/13/94
-if (gameData.ai.nMaxAwareness < ailP->playerAwarenessType)
-	gameData.ai.nMaxAwareness = ailP->playerAwarenessType;
+if (gameData.ai.nMaxAwareness < ailP->targetAwarenessType)
+	gameData.ai.nMaxAwareness = ailP->targetAwarenessType;
 return 0;
 }
 
@@ -1167,9 +1170,9 @@ int AIPlayerDeadHandler (CObject *objP, tAIStateInfo *siP)
 	tAIStaticInfo	*aiP = siP->aiP;
 	tAILocalInfo		*ailP = siP->ailP;
 
-if (!gameStates.app.bPlayerIsDead || ailP->playerAwarenessType)
+if (!gameStates.app.bPlayerIsDead || ailP->targetAwarenessType)
 	return 0;
-if ((gameData.ai.xDistToPlayer >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame / 8))
+if ((gameData.ai.xDistToTarget >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame / 8))
 	return 0;
 if ((aiP->behavior == AIB_STILL) || (aiP->behavior == AIB_RUN_FROM))
 	return 0;
@@ -1178,7 +1181,7 @@ if (!AIMultiplayerAwareness (objP, 30))
 AIMultiSendRobotPos (siP->nObject, -1);
 if (!((ailP->mode == AIM_FOLLOW_PATH) && (aiP->nCurPathIndex < aiP->nPathLength-1)))
 	if ((aiP->behavior != AIB_SNIPE) && (aiP->behavior != AIB_RUN_FROM)) {
-		if (gameData.ai.xDistToPlayer < I2X (30))
+		if (gameData.ai.xDistToTarget < I2X (30))
 			CreateNSegmentPath (objP, 5, 1);
 		else
 			CreatePathToPlayer (objP, 20, 1);
@@ -1189,23 +1192,23 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 // If the robot can see you, increase his awareness of you.
 // This prevents the problem of a robot looking right at you but doing nothing.
-// Assert (gameData.ai.nPlayerVisibility != -1); // Means it didn't get initialized!
+// Assert (gameData.ai.nTargetVisibility != -1); // Means it didn't get initialized!
 
 int AIWakeupHandler (CObject *objP, tAIStateInfo *siP)
 {
-if (!gameData.ai.nPlayerVisibility &&
-	 (siP->ailP->playerAwarenessType < PA_WEAPON_WALL_COLLISION) &&
-	 (gameData.ai.xDistToPlayer > MAX_WAKEUP_DIST)) {
+if (!gameData.ai.nTargetVisibility &&
+	 (siP->ailP->targetAwarenessType < PA_WEAPON_WALL_COLLISION) &&
+	 (gameData.ai.xDistToTarget > MAX_WAKEUP_DIST)) {
 	AIIdleAnimation (objP);
 	return 1;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
-if ((gameData.ai.nPlayerVisibility == 2) && (siP->aiP->behavior != AIB_FOLLOW) && !siP->botInfoP->thief) {
-	if (!siP->ailP->playerAwarenessType) {
+if ((gameData.ai.nTargetVisibility == 2) && (siP->aiP->behavior != AIB_FOLLOW) && !siP->botInfoP->thief) {
+	if (!siP->ailP->targetAwarenessType) {
 		if (siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
 			siP->aiP->SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		else
-			siP->ailP->playerAwarenessType = PA_PLAYER_COLLISION;
+			siP->ailP->targetAwarenessType = PA_PLAYER_COLLISION;
 		}
 	}
 return 0;
@@ -1219,16 +1222,16 @@ int AINewGoalHandler (CObject *objP, tAIStateInfo *siP)
 	tAIStaticInfo	*aiP = siP->aiP;
 	tAILocalInfo		*ailP = siP->ailP;
 
-if (ailP->playerAwarenessType) {
-	siP->nNewGoalState = aiTransitionTable [ailP->playerAwarenessType - 1][aiP->CURRENT_STATE][aiP->GOAL_STATE];
+if (ailP->targetAwarenessType) {
+	siP->nNewGoalState = aiTransitionTable [ailP->targetAwarenessType - 1][aiP->CURRENT_STATE][aiP->GOAL_STATE];
 #if DBG
 	if (siP->nNewGoalState == AIS_LOCK)
 		siP->nNewGoalState = siP->nNewGoalState;
 #endif
-	if (ailP->playerAwarenessType == PA_WEAPON_ROBOT_COLLISION) {
+	if (ailP->targetAwarenessType == PA_WEAPON_ROBOT_COLLISION) {
 		// Decrease awareness, else this robot will flinch every frame.
-		ailP->playerAwarenessType--;
-		ailP->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][2] * (gameStates.app.nDifficultyLevel + 1);
+		ailP->targetAwarenessType--;
+		ailP->targetAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][2] * (gameStates.app.nDifficultyLevel + 1);
 		}
 	if (siP->nNewGoalState == AIS_ERROR)
 		siP->nNewGoalState = AIS_REST;
@@ -1339,7 +1342,7 @@ si.bMultiGame = !IsRobotGame;
 if (si.aiP->behavior == AIB_STILL)
 	si.aiP = si.aiP;
 #endif
-gameData.ai.nPlayerVisibility = -1;
+gameData.ai.nTargetVisibility = -1;
 si.ailP->nextActionTime -= gameData.time.xFrame;
 
 if (si.aiP->SKIP_AI_COUNT) {
@@ -1365,7 +1368,7 @@ if (DoAnyRobotDyingFrame (objP))
 // Kind of a hack.  If a robot is flinching, but it is time for it to fire, unflinch it.
 // Else, you can turn a big nasty robot into a wimp by firing flares at it.
 // This also allows the CPlayerData to see the cool flinch effect for mechs without unbalancing the game.
-if (((si.aiP->GOAL_STATE == AIS_FLINCH) || (si.ailP->playerAwarenessType == PA_RETURN_FIRE)) &&
+if (((si.aiP->GOAL_STATE == AIS_FLINCH) || (si.ailP->targetAwarenessType == PA_RETURN_FIRE)) &&
 	 ReadyToFire (si.botInfoP, si.ailP)) {
 	si.aiP->GOAL_STATE = AIS_FIRE;
 	}
@@ -1377,9 +1380,9 @@ if (AINextFireHandler (objP, &si))
 
 si.nPrevVisibility = si.ailP->nPrevVisibility;    //  Must get this before we toast the master copy!
 // If only awake because of a camera, make that the believed CPlayerData position.
-if (AIPlayerPosHandler (objP, &si))
+if (AITargetPosHandler (objP, &si))
 	goto funcExit;
-gameData.ai.xDistToPlayer = CFixVector::Dist (gameData.ai.vBelievedPlayerPos, objP->info.position.vPos);
+gameData.ai.xDistToTarget = CFixVector::Dist (gameData.ai.vBelievedTargetPos, objP->info.position.vPos);
 // If this robot can fire, compute visibility from gun position.
 // Don't want to compute visibility twice, as it is expensive.  (So is call to CalcGunPoint).
 if (AIFireHandler (objP, &si))
@@ -1429,7 +1432,7 @@ if (AIWakeupHandler (objP, &si))
 if (!gameData.ai.bObjAnimates)
 	si.aiP->CURRENT_STATE = si.aiP->GOAL_STATE;
 
-Assert (si.ailP->playerAwarenessType <= AIE_MAX);
+Assert (si.ailP->targetAwarenessType <= AIE_MAX);
 Assert (si.aiP->CURRENT_STATE < AIS_MAX);
 Assert (si.aiP->GOAL_STATE < AIS_MAX);
 
@@ -1441,7 +1444,7 @@ if (AIFireGunsHandler (objP, &si))
 if (AIForceFireHandler (objP, &si))
 	goto funcExit;
 // Switch to next gun for next fire.
-if (!gameData.ai.nPlayerVisibility) {
+if (!gameData.ai.nTargetVisibility) {
 	if (++(si.aiP->CURRENT_GUN) >= ROBOTINFO (objP->info.nId).nGuns) {
 		if ((si.botInfoP->nGuns == 1) || (si.botInfoP->nSecWeaponType == -1))  // Two weapon types hack.
 			si.aiP->CURRENT_GUN = 0;
@@ -1455,8 +1458,8 @@ funcExit:
 #if 0//DBG
 HUDMessage (0, "%s %s %d %d %d",
 				pszAIState [si.aiP->flags [1]], pszAIState [si.aiP->flags [2]],
-				gameData.ai.xDistToPlayer / I2X (1),
-				si.ailP->playerAwarenessType, si.ailP->playerAwarenessTime);
+				gameData.ai.xDistToTarget / I2X (1),
+				si.ailP->targetAwarenessType, si.ailP->targetAwarenessTime);
 #else
 	;
 #endif

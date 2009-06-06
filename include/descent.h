@@ -2783,7 +2783,7 @@ class CAIData {
 		int							nHitSeg;
 		tCollisionData						hitData;
 		short							nBelievedPlayerSeg;
-		CFixVector					vBelievedPlayerPos;
+		CFixVector					vBelievedTargetPos;
 		CFixVector					vLastPlayerPosFiredAt;
 		fix							nDistToLastPlayerPosFiredAt;
 		CArray<tAILocalInfo>		localInfo;
@@ -2792,10 +2792,10 @@ class CAIData {
 		tPointSeg*					freePointSegs;
 		int							nAwarenessEvents;
 		int							nMaxAwareness;
-		fix							xDistToPlayer;
-		CFixVector					vVecToPlayer;
+		fix							xDistToTarget;
+		CFixVector					vVecToTarget;
 		CFixVector					vGunPoint;
-		int							nPlayerVisibility;
+		int							nTargetVisibility;
 		int							bObjAnimates;
 		int							nLastMissileCamera;
 		CArray<tAwarenessEvent>	awarenessEvents; //[MAX_AWARENESS_EVENTS];
