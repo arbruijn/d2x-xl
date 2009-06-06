@@ -304,7 +304,7 @@ if ((nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(int) nId] && IsMultiGame
 			gameData.multiplayer.maxPowerupsAllowed [i]--;
 		}
 	}
-
+OBJECTS [nObject].ResetDamage ();
 return nObject;
 }
 
