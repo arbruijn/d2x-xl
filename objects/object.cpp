@@ -1516,12 +1516,13 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 	}
 
 #if DBG
-if ((gameStates.app.nSDLTicks - m_xTimeLastHit > SHIELD_EFFECT_TIME * 2) && 
+if ((gameStates.app.nSDLTicks - m_damage.tShield < SHIELD_EFFECT_TIME * 2) && 
 	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 10))
 	return vHit;
 #endif
 
 vHit = vDir * info.xSize;
+m_damage.tShield = gameStates.app.nSDLTicks;
 
 for (int i = 0; i < 3; i++)
 #if 1

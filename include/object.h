@@ -706,8 +706,9 @@ class CObjDamageInfo {
 		fix				xDrives;
 		fix				xAim;
 		bool				bCritical;
-		int				tCritical;
 		int				nCritical;
+		int				tCritical;	// time of last critical hit
+		int				tShield;		// time of last non-critical hit
 };
 
 class CObject : public CObjectInfo {
