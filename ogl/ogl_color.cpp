@@ -451,7 +451,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		// decrease the distance between light and vertex by the light's radius
 		// check whether the vertex is behind the light or the light shines at the vertice's back
 		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
-		float lightAngle = (fLightDist > 0.1f) ? min (NdotL, -CFloatVector3::Dot (lightDir, spotDir) + 0.01) : 1.0f;
+		float lightAngle = (fLightDist > 0.1f) ? min (NdotL, -CFloatVector3::Dot (lightDir, spotDir) + 0.01f) : 1.0f;
 #if USE_FACE_DIST
 		if (nVertex >= 0) 
 #endif
@@ -467,7 +467,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {	//make it decay faster
 		if (NdotL < 0.0f)
-			fLightDist /= 1.666667 - NdotL;
+			fLightDist /= 1.000001f - NdotL;
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
 #if USE_FACE_DIST
