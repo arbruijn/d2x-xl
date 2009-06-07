@@ -411,6 +411,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
 
+	spotDir = *prl->info.vDirf.XYZ (); 
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
 	if (IsLightVert (nVertex, prl))
@@ -450,17 +451,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		// decrease the distance between light and vertex by the light's radius
 		// check whether the vertex is behind the light or the light shines at the vertice's back
 		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
-		float lightAngle = (fLightDist > 0.1f) ? min (NdotL, -CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ())) : 1.0f;
-		if (lightAngle < 0.0f) {
-			lightAngle *= -6.0f;
-			if (lightAngle >= 1.0f)
-				continue;
-			}
+		float lightAngle = (fLightDist > 0.1f) ? min (NdotL, -CFloatVector3::Dot (lightDir, spotDir) + 0.01) : 1.0f;
 #if USE_FACE_DIST
 		if (nVertex >= 0) 
 #endif
 		{
-		float lightRad = prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (lightAngle))));	// make rad smaller the greater the angle 
+		float lightRad = (lightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (lightAngle))));	// make rad smaller the greater the angle 
 		fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
 		}
 		}
@@ -470,6 +466,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		fAttenuation = 1.0f / prl->info.fBrightness;
 		}
 	else {	//make it decay faster
+		if (NdotL < 0.0f)
+			fLightDist /= 1.666667 - NdotL;
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
 #if USE_FACE_DIST
@@ -489,7 +487,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (prl->info.bSpot) {
 		if (NdotL <= 0.0f)
 			continue;
-		spotDir = *prl->info.vDirf.XYZ (); 
 		CFloatVector3::Normalize (spotDir);
 		lightDir = -lightDir;
 		/*

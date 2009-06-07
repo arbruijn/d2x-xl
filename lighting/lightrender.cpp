@@ -312,7 +312,7 @@ if (faceP - FACES.faces == nDbgFace)
 #endif
 #if 1//!DBG
 if (m_data.index [0][0].nActive < 0)
-lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
+	lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 else {
 #if 0//DBG
 	CheckUsedLights2 ();
