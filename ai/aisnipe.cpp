@@ -40,7 +40,7 @@ void MakeNearbyRobotSnipe (void)
 	short			bfsList [MNRS_SEG_MAX];
 	int			nObject, nBfsLength, i;
 
-CreateBfsList (OBJSEG (gameData.ai.target.objP), bfsList, &nBfsLength, MNRS_SEG_MAX);
+CreateBfsList (OBJSEG (TARGETOBJ), bfsList, &nBfsLength, MNRS_SEG_MAX);
 for (i = 0; i < nBfsLength; i++) {
 	nObject = SEGMENTS [bfsList [i]].m_objects;
 	//Assert (nObject >= 0);
@@ -105,7 +105,7 @@ void DoSnipeFire (CObject *objP, tAILocalInfo *ailP)
 {
 if (ailP->nextActionTime < 0) {
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (gameData.ai.target.objP));
+	CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (TARGETOBJ));
 	aiP->nPathLength = (aiP->nHideIndex < 0) ? 0 : SmoothPath (objP, &gameData.ai.routeSegs [aiP->nHideIndex], aiP->nPathLength);
 	if (d_rand () < 8192)
 		ailP->mode = AIM_SNIPE_RETREAT_BACKWARDS;

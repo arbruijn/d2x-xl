@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoCloakStuff (void)
 {
-	CObject*	objP = gameData.ai.target.objP ? gameData.ai.target.objP : gameData.objs.consoleP;
+	CObject*	objP = TARGETOBJ ? TARGETOBJ : gameData.objs.consoleP;
 
 for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (objP)->vPos;

@@ -2782,6 +2782,8 @@ class CAITarget {
 		CObject*						objP;
 };
 
+#define TARGETOBJ	(gameData.ai.target.objP ? gameData.ai.target.objP : gameData.objs.consoleP)
+
 class CAIData {
 	public:
 		int							bInitialized;

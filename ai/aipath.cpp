@@ -292,9 +292,9 @@ ValidateAllPaths ();
 
 if ((objP->info.nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_RUN_FROM) && (nAvoidSeg != -32767)) {
 	bRandom = 1;
-	nAvoidSeg = gameData.ai.target.objP->info.nSegment;
+	nAvoidSeg = TARGETOBJ->info.nSegment;
 	}
-bAvoidTarget = gameData.ai.target.objP->info.nSegment == nAvoidSeg;
+bAvoidTarget = TARGETOBJ->info.nSegment == nAvoidSeg;
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_PATH_LENGTH;
 lNumPoints = 0;
@@ -886,12 +886,12 @@ if ((aiP->nPathLength > 0) && (aiP->nHideIndex + aiP->nPathLength > int (gameDat
 
 if (aiP->nPathLength < 2) {
 	if ((aiP->behavior == AIB_SNIPE) || (ailP->mode == AIM_RUN_FROM_OBJECT)) {
-		if (gameData.ai.target.objP->info.nSegment == objP->info.nSegment) {
+		if (TARGETOBJ->info.nSegment == objP->info.nSegment) {
 			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, -1);			//	Can't avoid CSegment CPlayerData is in, robot is already in it!(That's what the -1 is for)
 			//--Int3_if ((aiP->nPathLength != 0);
 			}
 		else {
-			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.ai.target.objP->info.nSegment);
+			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, TARGETOBJ->info.nSegment);
 				//--Int3_if ((aiP->nPathLength != 0);
 			}
 		if (aiP->behavior == AIB_SNIPE) {
@@ -926,7 +926,7 @@ else {
 if (gameStates.app.bPlayerIsDead)
 	xDistToTarget = CFixVector::Dist (objP->info.position.vPos, gameData.objs.viewerP->info.position.vPos);
 else
-	xDistToTarget = CFixVector::Dist (objP->info.position.vPos, OBJPOS (gameData.ai.target.objP)->vPos);
+	xDistToTarget = CFixVector::Dist (objP->info.position.vPos, OBJPOS (TARGETOBJ)->vPos);
 	//	Efficiency hack: If far away from CPlayerData, move in big quantized jumps.
 if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !IsMultiGame) {
 	if (xDistToGoal && (xDistToGoal < I2X (2))) {
@@ -960,7 +960,7 @@ if (ailP->mode == AIM_RUN_FROM_OBJECT) {
 	else if (!(gameData.app.nFrameCount ^ ((objP->Index ()) & 0x07))) {		//	Done 1/8 frames.
 		//	If CPlayerData on path (beyond point robot is now at), then create a new path.
 		tPointSeg*	curPSP = &gameData.ai.routeSegs [aiP->nHideIndex];
-		short			nTargetSeg = gameData.ai.target.objP->info.nSegment;
+		short			nTargetSeg = TARGETOBJ->info.nSegment;
 		int			i;
 		//	This is xProbably being done every frame, which is wasteful.
 		for (i = aiP->nCurPathIndex; i < aiP->nPathLength; i++) {
@@ -985,7 +985,7 @@ if (aiP->nCurPathIndex < 0)
 	aiP->nCurPathIndex = 0;
 else if (aiP->nCurPathIndex >= aiP->nPathLength) {
 	if (ailP->mode == AIM_RUN_FROM_OBJECT) {
-		CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.ai.target.objP->info.nSegment);
+		CreateNSegmentPath (objP, AVOID_SEG_LENGTH, TARGETOBJ->info.nSegment);
 		ailP->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 		Assert (aiP->nPathLength != 0);
 		}
@@ -1037,7 +1037,7 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 				}
 			}
 		if (aiP->behavior == AIB_FOLLOW) {
-			CreateNSegmentPath (objP, 10, gameData.ai.target.objP->info.nSegment);
+			CreateNSegmentPath (objP, 10, TARGETOBJ->info.nSegment);
 			//--Int3_if (( (aiP->nCurPathIndex >= 0) && (aiP->nCurPathIndex < aiP->nPathLength));
 			}
 		else if (aiP->behavior == AIB_STATION) {
@@ -1063,10 +1063,10 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 				}
 			}
 		else if (ailP->mode == AIM_RUN_FROM_OBJECT) {
-			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.ai.target.objP->info.nSegment);
+			CreateNSegmentPath (objP, AVOID_SEG_LENGTH, TARGETOBJ->info.nSegment);
 			ailP->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 			if (aiP->nPathLength < 1) {
-				CreateNSegmentPath (objP, AVOID_SEG_LENGTH, gameData.ai.target.objP->info.nSegment);
+				CreateNSegmentPath (objP, AVOID_SEG_LENGTH, TARGETOBJ->info.nSegment);
 				ailP->mode = AIM_RUN_FROM_OBJECT;	//	It gets bashed in CreateNSegmentPath
 				if (aiP->nPathLength < 1) {
 					aiP->behavior = AIB_NORMAL;

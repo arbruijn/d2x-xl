@@ -114,7 +114,7 @@ void DoThiefFrame (CObject *objP)
 	if ((gameData.ai.target.xDist > I2X (500)) && (ailp->nextActionTime > 0))
 		return;
 
-	gameData.ai.target.objP = gameData.objs.consoleP;
+	TARGETOBJ = gameData.objs.consoleP;
 	if (gameStates.app.bPlayerIsDead)
 		ailp->mode = AIM_THIEF_RETREAT;
 

@@ -194,8 +194,8 @@ const char *pszPPXLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	   if (dist == 0.0)\r\n" \
@@ -238,8 +238,8 @@ const char *pszPPXLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		if (dist == 0.0)\r\n" \
@@ -285,8 +285,8 @@ const char *pszPPXLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		if (dist == 0.0)\r\n" \
@@ -336,8 +336,8 @@ const char *pszPPXLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		if (dist == 0.0)\r\n" \
@@ -382,8 +382,8 @@ const char *pszPP1LightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
@@ -420,8 +420,8 @@ const char *pszPP1LightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
@@ -460,8 +460,8 @@ const char *pszPP1LightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
@@ -504,8 +504,8 @@ const char *pszPP1LightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
@@ -658,8 +658,8 @@ const char *pszPPXLMLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		  if (dist == 0.0)\r\n" \
@@ -702,8 +702,8 @@ const char *pszPPXLMLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	   if (dist == 0.0)\r\n" \
@@ -748,8 +748,8 @@ const char *pszPPXLMLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		  if (dist == 0.0)\r\n" \
@@ -798,8 +798,8 @@ const char *pszPPXLMLightingFS [] = {
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"		float decay = min (NdotL, lightAngle);\r\n" \
 	"		if (decay < 0.0) {\r\n" \
-	"			decay += 1.0000001;\r\n" \
-	"			lightDist /= decay * decay;\r\n" \
+	"			/*decay += 1.0000001;*/\r\n" \
+	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"			}\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	   if (dist == 0.0)\r\n" \
@@ -843,8 +843,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \
@@ -882,8 +882,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \
@@ -922,8 +922,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \
@@ -966,8 +966,8 @@ const char *pszPP1LMLightingFS [] = {
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	float decay = min (NdotL, lightAngle);\r\n" \
 	"	if (decay < 0.0) {\r\n" \
-	"		decay += 1.0000001;\r\n" \
-	"		lightDist /= decay * decay;\r\n" \
+	"		/*decay += 1.0000001;*/\r\n" \
+	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
 	"		}\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \

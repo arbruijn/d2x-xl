@@ -285,7 +285,7 @@ return 0;
 int AIMChaseObjectHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo *aiP = siP->aiP;
-	fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.ai.target.objP->info.xSize;
+	fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + TARGETOBJ->info.xSize;
 
 // Green guy doesn't get his circle distance boosted, else he might never attack.
 if (siP->botInfoP->attackType != 1)
@@ -495,23 +495,23 @@ if (gameData.ai.nTargetVisibility == 2) {
 	CFixVector  goal_point, vGoal, vec_to_goal, vRand;
 	fix         dot;
 
-	dot = CFixVector::Dot (OBJPOS (gameData.ai.target.objP)->mOrient.FVec (), gameData.ai.target.vDir);
+	dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.FVec (), gameData.ai.target.vDir);
 	if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
-		vGoal = OBJPOS (gameData.ai.target.objP)->mOrient.FVec ();
+		vGoal = OBJPOS (TARGETOBJ)->mOrient.FVec ();
 		vGoal = -vGoal;
 		}
 	else {
 		fix dot;
-		dot = CFixVector::Dot (OBJPOS (gameData.ai.target.objP)->mOrient.RVec (), gameData.ai.target.vDir);
-		vGoal = OBJPOS (gameData.ai.target.objP)->mOrient.RVec ();
+		dot = CFixVector::Dot (OBJPOS (TARGETOBJ)->mOrient.RVec (), gameData.ai.target.vDir);
+		vGoal = OBJPOS (TARGETOBJ)->mOrient.RVec ();
 		if (dot > 0) {
 			vGoal = -vGoal;
 			}
 		else
 			;
 		}
-	vGoal *= (2* (gameData.ai.target.objP->info.xSize + objP->info.xSize + (((siP->nObject*4 + gameData.app.nFrameCount) & 63) << 12)));
-	goal_point = OBJPOS (gameData.ai.target.objP)->vPos + vGoal;
+	vGoal *= (2* (TARGETOBJ->info.xSize + objP->info.xSize + (((siP->nObject*4 + gameData.app.nFrameCount) & 63) << 12)));
+	goal_point = OBJPOS (TARGETOBJ)->vPos + vGoal;
 	vRand = CFixVector::Random();
 	goal_point += vRand * I2X (8);
 	vec_to_goal = goal_point - objP->info.position.vPos;
@@ -763,7 +763,7 @@ int AIBrainHandler (CObject *objP, tAIStateInfo *siP)
 // which time they will start wandering about opening doors.
 if (objP->info.nId != ROBOT_BRAIN)
 	return 0;
-if (OBJSEG (gameData.ai.target.objP) == objP->info.nSegment) {
+if (OBJSEG (TARGETOBJ) == objP->info.nSegment) {
 	if (!AIMultiplayerAwareness (objP, 97))
 		return 1;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, I2X (10000));
@@ -841,7 +841,7 @@ if (siP->botInfoP->companion) {
 		CObject *dObjP = &OBJECTS [objP->cType.aiInfo.nDangerLaser];
 
 		if ((dObjP->info.nType == OBJ_WEAPON) && (dObjP->info.nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
-			fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.ai.target.objP->info.xSize;
+			fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + TARGETOBJ->info.xSize;
 			AIMoveRelativeToTarget (objP, siP->ailP, gameData.ai.target.xDist, &gameData.ai.target.vDir, circleDistance, 1, gameData.ai.nTargetVisibility);
 			}
 		}
@@ -975,7 +975,7 @@ if (siP->botInfoP->bossFlag) {
 	// If CPlayerData cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		pv = 0;
-		dtp = CFixVector::Dist(OBJPOS (gameData.ai.target.objP)->vPos, objP->info.position.vPos) / 4;
+		dtp = CFixVector::Dist(OBJPOS (TARGETOBJ)->vPos, objP->info.position.vPos) / 4;
 		}
 	DoBossStuff (objP, pv);
 	}
@@ -1065,7 +1065,7 @@ return 1;
 
 int AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
-gameData.ai.target.objP = gameData.objs.consoleP;
+TARGETOBJ = gameData.objs.consoleP;
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
 	gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
@@ -1093,9 +1093,9 @@ if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand
 				}
 			}
 		if (nMinObj >= 0) {
-			gameData.ai.target.objP = OBJECTS + nMinObj;
-			gameData.ai.target.vBelievedPos = OBJPOS (gameData.ai.target.objP)->vPos;
-			gameData.ai.target.nBelievedSeg = OBJSEG (gameData.ai.target.objP);
+			TARGETOBJ = OBJECTS + nMinObj;
+			gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
+			gameData.ai.target.nBelievedSeg = OBJSEG (TARGETOBJ);
 			CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
 			return 0;
 			}
@@ -1341,7 +1341,7 @@ si.botInfoP = &ROBOTINFO (objP->info.nId);
 si.bMultiGame = !IsRobotGame;
 
 #if DBG
-gameData.ai.target.objP = NULL;
+TARGETOBJ = NULL;
 if (si.aiP->behavior == AIB_STILL)
 	si.aiP = si.aiP;
 #endif

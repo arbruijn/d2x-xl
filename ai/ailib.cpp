@@ -77,7 +77,7 @@ fq.bCheckVisibility = true;
 gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
-if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != gameData.ai.target.objP->Index ()))
+if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != TARGETOBJ->Index ()))
 	return 0;
 dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.FVec ());
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
@@ -89,7 +89,7 @@ int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vTarget)
 {
 	tCollisionQuery	fq;
 	fix			nSize, h;
-	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.ai.target.objP), -1};
+	short			nModel, ignoreObjs [2] = {OBJ_IDX (TARGETOBJ), -1};
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 if (vGun->IsZero ())
@@ -161,7 +161,7 @@ void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobo
 if (*flag)
 	LimitTargetVisibility (xMaxVisibleDist, ailP);
 else {
-	if (gameData.ai.target.objP->Cloaked ()) {
+	if (TARGETOBJ->Cloaked ()) {
 		fix			deltaTime, dist;
 		int			nCloakIndex = (objP->Index ()) % MAX_AI_CLOAK_INFO;
 

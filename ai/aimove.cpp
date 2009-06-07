@@ -268,7 +268,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
 
 		dot = CFixVector::Dot (gameData.ai.target.vDir, objP->info.position.mOrient.FVec ());
-		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !gameData.ai.target.objP->Cloaked ()) {
+		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !TARGETOBJ->Cloaked ()) {
 			fix	xDamageScale;
 
 			if (botInfoP->strength)

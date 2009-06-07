@@ -83,9 +83,9 @@ if (botInfoP->attackType != 1)
 	return;
 if (ailP->nextPrimaryFire > 0)
 	return;
-if (!gameData.ai.target.objP->Cloaked ()) {
-	if (CFixVector::Dist (OBJPOS (gameData.ai.target.objP)->vPos, robotP->info.position.vPos) <
-		 robotP->info.xSize + gameData.ai.target.objP->info.xSize + I2X (2)) {
+if (!TARGETOBJ->Cloaked ()) {
+	if (CFixVector::Dist (OBJPOS (TARGETOBJ)->vPos, robotP->info.position.vPos) <
+		 robotP->info.xSize + TARGETOBJ->info.xSize + I2X (2)) {
 		targetP->CollidePlayerAndNastyRobot (robotP, *vCollision);
 		if (botInfoP->energyDrain && LOCALPLAYER.energy) {
 			LOCALPLAYER.energy -= I2X (botInfoP->energyDrain);
@@ -129,9 +129,9 @@ int LeadTarget (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelievedTarg
 	CWeaponInfo	*wiP;
 	tRobotInfo	*botInfoP;
 
-if (gameData.ai.target.objP->Cloaked ())
+if (TARGETOBJ->Cloaked ())
 	return 0;
-vTargetMovementDir = gameData.ai.target.objP->mType.physInfo.velocity;
+vTargetMovementDir = TARGETOBJ->mType.physInfo.velocity;
 xTargetSpeed = CFixVector::Normalize (vTargetMovementDir);
 if (xTargetSpeed < MIN_LEAD_SPEED)
 	return 0;
@@ -161,9 +161,9 @@ if (wiP->matter) {
 		xMaxWeaponSpeed *= (NDL-gameStates.app.nDifficultyLevel);
    }
 xProjectedTime = FixDiv (xDistToTarget, xMaxWeaponSpeed);
-(*vFire)[X] = ComputeLeadComponent ((*vBelievedTargetPos)[X], (*vFirePoint)[X], gameData.ai.target.objP->mType.physInfo.velocity[X], xProjectedTime);
-(*vFire)[Y] = ComputeLeadComponent ((*vBelievedTargetPos)[Y], (*vFirePoint)[Y], gameData.ai.target.objP->mType.physInfo.velocity[Y], xProjectedTime);
-(*vFire)[Z] = ComputeLeadComponent ((*vBelievedTargetPos)[Z], (*vFirePoint)[Z], gameData.ai.target.objP->mType.physInfo.velocity[Z], xProjectedTime);
+(*vFire)[X] = ComputeLeadComponent ((*vBelievedTargetPos)[X], (*vFirePoint)[X], TARGETOBJ->mType.physInfo.velocity[X], xProjectedTime);
+(*vFire)[Y] = ComputeLeadComponent ((*vBelievedTargetPos)[Y], (*vFirePoint)[Y], TARGETOBJ->mType.physInfo.velocity[Y], xProjectedTime);
+(*vFire)[Z] = ComputeLeadComponent ((*vBelievedTargetPos)[Z], (*vFirePoint)[Z], TARGETOBJ->mType.physInfo.velocity[Z], xProjectedTime);
 CFixVector::Normalize (*vFire);
 Assert (CFixVector::Dot (*vFire, objP->info.position.mOrient.FVec ()) < I2X (3) / 2);
 //	Make sure not firing at especially strange angle.  If so, try to correct.  If still bad, give up after one try.
@@ -213,7 +213,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 		return;
 	}
 //	If CPlayerData is cloaked, maybe don't fire based on how long cloaked and randomness.
-if (gameData.ai.target.objP->Cloaked ()) {
+if (TARGETOBJ->Cloaked ()) {
 	fix	xCloakTime = gameData.ai.cloakInfo [nObject % MAX_AI_CLOAK_INFO].lastTime;
 	if ((gameData.time.xGame - xCloakTime > CLOAK_TIME_MAX / 4) &&
 		 (d_rand () > FixDiv (gameData.time.xGame - xCloakTime, CLOAK_TIME_MAX) / 2)) {
@@ -341,7 +341,7 @@ if ((gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)
 	 (gameData.ai.nTargetVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto CPlayerData
 	fix dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.target.vDir);
-	if ((dot >= I2X (7) / 8) || gameData.ai.target.objP->Cloaked ()) {
+	if ((dot >= I2X (7) / 8) || TARGETOBJ->Cloaked ()) {
 		tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 		tAILocalInfo*	ailP = gameData.ai.localInfo + objP->Index ();
 
@@ -439,13 +439,13 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 		if ((dot >= I2X (7) / 8) || ((dot > I2X (1) / 4) && botInfoP->bossFlag)) {
 			if (nGun < botInfoP->nGuns) {
 				if (botInfoP->attackType == 1) {
-					if ((gameData.ai.target.objP->Type () == OBJ_PLAYER) && gameStates.app.bPlayerExploded)
+					if ((TARGETOBJ->Type () == OBJ_PLAYER) && gameStates.app.bPlayerExploded)
 						return;
-					if (gameData.ai.target.xDist >= objP->info.xSize + gameData.ai.target.objP->info.xSize + I2X (2))
+					if (gameData.ai.target.xDist >= objP->info.xSize + TARGETOBJ->info.xSize + I2X (2))
 						return;
 					if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION - 2))
 						return;
-					DoAIRobotHitAttack (objP, gameData.ai.target.objP, &objP->info.position.vPos);
+					DoAIRobotHitAttack (objP, TARGETOBJ, &objP->info.position.vPos);
 					}
 				else {
 #if 1
@@ -531,10 +531,10 @@ else {	//	---------------------------------------------------------------
 			if (dot >= I2X (7) / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {
-						if (!gameStates.app.bPlayerExploded && (gameData.ai.target.xDist < objP->info.xSize + gameData.ai.target.objP->info.xSize + I2X (2))) {	
+						if (!gameStates.app.bPlayerExploded && (gameData.ai.target.xDist < objP->info.xSize + TARGETOBJ->info.xSize + I2X (2))) {	
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
 								return;
-							DoAIRobotHitAttack (objP, gameData.ai.target.objP, &objP->info.position.vPos);
+							DoAIRobotHitAttack (objP, TARGETOBJ, &objP->info.position.vPos);
 							}
 						else
 							return;

@@ -468,8 +468,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	else {	//make it decay faster
 		float decay = min (fLightAngle, NdotL);
 		if (decay < 0.0f) {
+#if 1
+			fLightDist -= 1e2f * decay;
+#else
 			decay += 1.0000001f;
-			fLightDist /= decay * decay;
+			fLightDist *= decay * decay;
+#endif
 			}	
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
