@@ -432,14 +432,17 @@ else if (nSegment >= 0) {
 		pl->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || 
 									SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
 		m_data.nVariable += pl->info.bVariable;
-		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
 		CSide* sideP = SEGMENTS [nSegment].m_sides + nSide;
+		pl->info.vPos = sideP->Center ();
 		CFixVector vOffs = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 		pl->info.vDirf.Assign (vOffs);
+		CFloatVector::Normalize (pl->info.vDirf);
+#if 0
 		if (gameStates.render.bPerPixelLighting) {
 			vOffs *= I2X (1) / 64;
 			pl->info.vPos += vOffs;
 			}
+#endif
 		}
 	}
 else {
