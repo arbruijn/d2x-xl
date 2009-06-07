@@ -447,7 +447,6 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (fabs (fLightDist) < 1.0f)
 			fLightDist = 0.0f;
 		}
-	else 
 #endif
 	if ((gameStates.render.nState || (nType < 2)) && (fLightDist > 0.0f)) {
 		// decrease the distance between light and vertex by the light's radius
@@ -459,6 +458,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
 #endif
 		}
+	else
+		fLightAngle = 1.0f;
 	if	(fLightDist <= 0.0f) {
 		NdotL = 1.0f;
 		fLightDist = 0.0f;
@@ -466,8 +467,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {	//make it decay faster
 		float decay = min (fLightAngle, NdotL);
-		if (decay < 0.0f)
-			fLightDist /= 1.000001f - decay;
+		if (decay < 0.0f) {
+			decay += 1.0000001f;
+			fLightDist /= decay * decay;
+			}	
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
 #if USE_FACE_DIST
