@@ -142,7 +142,7 @@ void InitAIObjects (void)
 	short		i, j;
 	CObject*	objP;
 
-TARGETOBJ = NULL;
+gameData.ai.target.objP = NULL;
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
 for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	if (objP->info.controlType == CT_AI)

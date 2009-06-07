@@ -1065,7 +1065,7 @@ return 1;
 
 int AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
-TARGETOBJ = gameData.objs.consoleP;
+gameData.ai.target.objP = gameData.objs.consoleP;
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
 	gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
@@ -1093,7 +1093,7 @@ if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand
 				}
 			}
 		if (nMinObj >= 0) {
-			TARGETOBJ = OBJECTS + nMinObj;
+			gameData.ai.target.objP = OBJECTS + nMinObj;
 			gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
 			gameData.ai.target.nBelievedSeg = OBJSEG (TARGETOBJ);
 			CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
@@ -1341,7 +1341,7 @@ si.botInfoP = &ROBOTINFO (objP->info.nId);
 si.bMultiGame = !IsRobotGame;
 
 #if DBG
-TARGETOBJ = NULL;
+gameData.ai.target.objP = NULL;
 if (si.aiP->behavior == AIB_STILL)
 	si.aiP = si.aiP;
 #endif
