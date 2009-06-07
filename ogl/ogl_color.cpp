@@ -482,7 +482,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		if (fLightDist < 0.0f)
 			fLightDist = 0.0f;
 		}
-	if	((fLightDist <= 0.0f)) || IsLightVert (nVertex, prl)) {
+	if	((fLightDist <= 0.0f) || IsLightVert (nVertex, prl)) {
 		bInRad = true;
 		NdotL = 1.0f;
 		fLightDist = 0.0f;
