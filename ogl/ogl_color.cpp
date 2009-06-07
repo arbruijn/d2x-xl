@@ -352,7 +352,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 							bTransform = gameStates.render.nState && !gameStates.ogl.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
 	int					nBrightness, nMaxBrightness = 0;
-	float					fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
+	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 	CDynLight*			prl;
@@ -453,23 +453,21 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		// decrease the distance between light and vertex by the light's radius
 		// check whether the vertex is behind the light or the light shines at the vertice's back
 		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
-		float lightAngle = (fLightDist > 0.1f) ? min (NdotL, -CFloatVector3::Dot (lightDir, spotDir) + 0.01f) : 1.0f;
-#if USE_FACE_DIST
-		if (0) //(nVertex >= 0) 
-#endif
-		{
-		float lightRad = (lightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (lightAngle))));	// make rad smaller the greater the angle 
+		fLightAngle = (fLightDist > 0.1f) ?-CFloatVector3::Dot (lightDir, spotDir) + 0.01f : 1.0f;
+#if !USE_FACE_DIST
+		float lightRad = (fLightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (fLightAngle))));	// make rad smaller the greater the angle 
 		fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
+#endif
 		}
-		}
-	if	((fLightDist <= 0.0f) || IsLightVert (nVertex, prl)) {
+	if	(fLightDist <= 0.0f) {
 		NdotL = 1.0f;
 		fLightDist = 0.0f;
 		fAttenuation = 1.0f / prl->info.fBrightness;
 		}
 	else {	//make it decay faster
-		if (NdotL < 0.0f)
-			fLightDist /= 1.000001f - NdotL;
+		float decay = min (fLightAngle, NdotL);
+		if (decay < 0.0f)
+			fLightDist /= 1.000001f - decay;
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
 #if USE_FACE_DIST
