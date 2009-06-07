@@ -508,7 +508,7 @@ else {
 //				VmVecScaleInc (&drift, &m_vDir, drag);
 			m_vPos += m_vDir * drag;
 			}
-		if (m_nTTL - m_nLife > I2X (1) / 16) {
+		if ((m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16)) {
 			nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 1);
 			if (nSegment < 0) {
 #if DBG
