@@ -326,9 +326,9 @@ TransformHitboxes (objP2, &vRef, hb2);
 for (; iModel1 <= nModels1; iModel1++) {
 	for (; iModel2 <= nModels2; iModel2++) {
 		if (FindHitboxIntersection (vHit, hb1 + iModel1, hb2 + iModel2, p0)) {
-			nHits++;
 			xDist = RegisterHit (&intersection, &vHit, &vRef, dMin);
 			if (dMin > xDist) {
+				nHits++;
 				dMin = xDist;
 				nModel = iModel1;
 				}
@@ -338,8 +338,12 @@ for (; iModel1 <= nModels1; iModel1++) {
 if (!nHits) {
 	for (; iModel2 <= nModels2; iModel2++) {
 		if (FindLineHitboxIntersection (vHit, hb2 + iModel2, p0, p1, p0, 0)) {
-			dMin = RegisterHit (&intersection, &vHit, &vRef, dMin);
-			nHits++;
+			xDist = RegisterHit (&intersection, &vHit, &vRef, dMin);
+			if (dMin > xDist) {
+				nHits++;
+				dMin = xDist;
+				nModel = iModel1;
+				}
 			}
 		}
 	}
