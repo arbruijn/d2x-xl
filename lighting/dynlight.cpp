@@ -433,13 +433,11 @@ else if (nSegment >= 0) {
 									SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
 		m_data.nVariable += pl->info.bVariable;
 		pl->info.vPos = SEGMENTS [nSegment].SideCenter (nSide);
-		CSide			*sideP = SEGMENTS [nSegment].m_sides + nSide;
-		CFixVector	vOffs;
-		vOffs = sideP->m_normals [0] + sideP->m_normals [1];
+		CSide* sideP = SEGMENTS [nSegment].m_sides + nSide;
+		CFixVector vOffs = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 		pl->info.vDirf.Assign (vOffs);
-		pl->info.vDirf *= 0.5f;
 		if (gameStates.render.bPerPixelLighting) {
-			vOffs *= FixDiv(1, 4);
+			vOffs *= I2X (1) / 64;
 			pl->info.vPos += vOffs;
 			}
 		}

@@ -420,7 +420,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		lightDir = vcd.vertNorm;
 	else
 		CFloatVector3::Normalize (lightDir);
-	if (vcd.vertNorm.IsZero ())
+	if ((fLightDist <= 0.1f) || vcd.vertNorm.IsZero ())
 		NdotL = 1.0f;
 	else {
 		NdotL = CFloatVector3::Dot (vcd.vertNorm, lightDir);
@@ -470,7 +470,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			// check whether the vertex is behind the light or the light shines at the vertice's back
 			// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
 			float lightRad = prl->info.fRad;
-			float lightAngle = min (NdotL, CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ()));
+			float lightAngle = (fLightDist > 0.1f) ? min (NdotL, CFloatVector3::Dot (lightDir, *prl->info.vDirf.XYZ ())) : 1.0f;
 			if (lightAngle < 0.0f) {
 				lightAngle *= -6.0f;
 				if (lightAngle >= 1.0f)
