@@ -427,7 +427,7 @@ else if (nSegment >= 0) {
 			nDbgSeg = nDbgSeg;
 #endif
 		pl->info.nType = 0;
-		pl->info.fRad = faceP ? sqrt (faceP->fRads [0] * faceP->fRads [0] + faceP->fRads [1] * faceP->fRads [1]) : 0;
+		pl->info.fRad = faceP ? sqrt (faceP->fRads [0] * faceP->fRads [0] + faceP->fRads [1] * faceP->fRads [1]) / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || 
 									SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
