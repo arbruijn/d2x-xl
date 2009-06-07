@@ -452,7 +452,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		// decrease the distance between light and vertex by the light's radius
 		// check whether the vertex is behind the light or the light shines at the vertice's back
 		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
-		fLightAngle = (fLightDist > 0.1f) ?-CFloatVector3::Dot (lightDir, spotDir) + 0.01f : 1.0f;
+		fLightAngle = (fLightDist > 0.1f) ? -CFloatVector3::Dot (lightDir, spotDir) + 0.01f : 1.0f;
 #if !USE_FACE_DIST
 		float lightRad = (fLightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (fLightAngle))));	// make rad smaller the greater the angle 
 		fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source

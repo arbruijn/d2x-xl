@@ -191,30 +191,29 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			if (NdotL < 0.0) lightDist /= 1.000001 + NdotL;\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		   if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"				if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	   if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"			if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
 	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"				}\r\n" \
-	"			*/\r\n" \
-	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"				}/*<<<<< specular highlight*/\r\n" \
 	"			}\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -236,30 +235,30 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			if (NdotL < 0.0) lightDist /= 1.000001 + NdotL;\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"			if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"				if (lightRad > 0.0)\r\n" \
-	"					NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"		if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"			if (lightRad > 0.0)\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
 	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"				}\r\n" \
-	"			*/\r\n" \
-	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"			/*<<<<< */\r\n" \
 	"			}\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -283,31 +282,30 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.1666666)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - float ((lightAngle < 0.0 ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			if (NdotL < 0.0) lightDist /= 1.000001 + NdotL;\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"			if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"				if (lightRad > 0.0)\r\n" \
-	"					NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"		if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"			if (lightRad > 0.0)\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
 	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"				}\r\n" \
-	"			*/\r\n" \
-	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"				}/*<<<<< specular highlight*/\r\n" \
 	"			}\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -335,31 +333,30 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			if (NdotL < 0.0) lightDist /= 1.000001 + NdotL;\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"			if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"				if (lightRad > 0.0)\r\n" \
-	"					NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"		if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			/*NdotL = 1.0 - ((1.0 - NdotL) * 0.95);*/\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"			if (lightRad > 0.0)\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
 	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"				}\r\n" \
-	"			*/\r\n" \
-	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"				}/*<<<<< specular highlight*/\r\n" \
 	"			}\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}\r\n" \
@@ -382,27 +379,27 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		if (dist == 0.0)\r\n" \
-	"			colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	if (dist == 0.0)\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation), colorSum.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -420,27 +417,27 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		if (dist == 0.0)\r\n" \
-	"			colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	if (dist == 0.0)\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
-	"		float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -460,27 +457,27 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		if (dist == 0.0)\r\n" \
-	"			colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	if (dist == 0.0)\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -504,27 +501,27 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		if (dist == 0.0)\r\n" \
-	"			colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	if (dist == 0.0)\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a)/* * fLightScale*/;}\r\n" \
 	"	}"
@@ -658,27 +655,27 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		   if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"					if (lightRad > 0.0)\r\n" \
-	"					NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"		  if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"				if (lightRad > 0.0)\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
-	"					vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
-	"			color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"				}\r\n" \
-	"			<<<<< specular highlight*/\r\n" \
+	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"				}/*<<<<< specular highlight*/\r\n" \
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
@@ -702,29 +699,29 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		   if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"				if (lightRad > 0.0)\r\n" \
-	"					NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	   if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"			if (lightRad > 0.0)\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
 	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"				}\r\n" \
-	"			<<<<< specular highlight*/\r\n" \
-	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"				}/*<<<<< specular highlight*/\r\n" \
 	"			}\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -748,29 +745,29 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		   if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"				if (lightRad > 0.0)\r\n" \
-	"					NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"		  if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"			if (lightRad > 0.0)\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
 	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"				}\r\n" \
-	"			<<<<< specular highlight*/\r\n" \
-	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"				}/*<<<<< specular highlight*/\r\n" \
 	"			}\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -798,29 +795,29 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"		/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"			/*if (lightAngle < 0.0)\r\n" \
-	"				lightAngle *= -2.0;*/\r\n" \
-	"			float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"			float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"		   if (dist == 0.0)\r\n" \
-	"				color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
-	"			else {\r\n" \
-	"				att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
-	"				NdotL = max (NdotL, 0.0);\r\n" \
-	"				if (lightRad > 0.0)\r\n" \
-	"					NdotL += (1.0 - NdotL) / att;\r\n" \
-	"				color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
-	"				}\r\n" \
-	"			/*specular highlight >>>>>\r\n" \
+	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"		float decay = min (NdotL, lightAngle);\r\n" \
+	"		if (decay < 0.0) {\r\n" \
+	"			decay += 1.0000001;\r\n" \
+	"			lightDist /= decay * decay;\r\n" \
+	"			}\r\n" \
+	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	   if (dist == 0.0)\r\n" \
+	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
+	"		else {\r\n" \
+	"			att += gl_LightSource [i].linearAttenuation * dist + gl_LightSource [i].quadraticAttenuation * dist * dist;\r\n" \
+	"			NdotL = max (NdotL, 0.0);\r\n" \
+	"			if (lightRad > 0.0)\r\n" \
+	"				NdotL += (1.0 - NdotL) / att;\r\n" \
+	"			color = (gl_LightSource [i].diffuse * NdotL + gl_LightSource [i].ambient) / att;\r\n" \
+	"			/*specular highlight >>>>>*/\r\n" \
 	"			if (NdotL >= 0.0) {\r\n" \
 	"				vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
 	"				float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"				color += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"				}\r\n" \
-	"			<<<<< specular highlight*/\r\n" \
-	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
+	"				}/*<<<<< specular highlight*/\r\n" \
 	"			}\r\n" \
+	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a)/* * fLightScale*/;}\r\n" \
 	"	}"
@@ -843,29 +840,29 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"	   if (dist == 0.0)\r\n" \
-	"			colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	  if (dist == 0.0)\r\n" \
+	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
-	"		colorSum *= gl_LightSource [0].constantAttenuation;\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
+	"	colorSum *= gl_LightSource [0].constantAttenuation;\r\n" \
 	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
 	,
@@ -882,27 +879,27 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"	   if (dist == 0.0)\r\n" \
-	"			colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	  if (dist == 0.0)\r\n" \
+	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -922,27 +919,27 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.166666f)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"	   if (dist == 0.0)\r\n" \
-	"			colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	  if (dist == 0.0)\r\n" \
+	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a)/* * fLightScale*/;\r\n" \
 	"	}"
@@ -966,27 +963,27 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
-	"	/*if (min (NdotL, lightAngle) >= -0.1666666)*/ {\r\n" \
-	"		/*if (lightAngle < 0.0)\r\n" \
-	"			lightAngle *= -2.0;*/\r\n" \
-	"		float lightRad = (lightAngle < -0.1666666) ? 0.0 : gl_LightSource [i].specular.a * (1.0 - ((lightAngle < 0.0) ? lightAngle * -6.0 : lightAngle));\r\n" \
-	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
-	"	   if (dist == 0.0)\r\n" \
-	"			colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
-	"		else {\r\n" \
-	"			att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
-	"			NdotL = max (NdotL, 0.0);\r\n" \
-	"			if (lightRad > 0.0)\r\n" \
-	"				NdotL += (1.0 - NdotL) / att;\r\n" \
-	"			colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
-	"			}\r\n" \
-	"		/*specular highlight >>>>>\r\n" \
+	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float decay = min (NdotL, lightAngle);\r\n" \
+	"	if (decay < 0.0) {\r\n" \
+	"		decay += 1.0000001;\r\n" \
+	"		lightDist /= decay * decay;\r\n" \
+	"		}\r\n" \
+	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
+	"	  if (dist == 0.0)\r\n" \
+	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
+	"	else {\r\n" \
+	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
+	"		NdotL = max (NdotL, 0.0);\r\n" \
+	"		if (lightRad > 0.0)\r\n" \
+	"			NdotL += (1.0 - NdotL) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
 	"			vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
 	"			colorSum += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;\r\n" \
-	"			}\r\n" \
-	"		<<<<< specular highlight*/\r\n" \
+	"			}/*<<<<< specular highlight*/\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a)/* * fLightScale*/;}\r\n" \
 	"	}"
