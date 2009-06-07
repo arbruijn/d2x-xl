@@ -414,8 +414,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	spotDir = *prl->info.vDirf.XYZ (); 
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
-	if (IsLightVert (nVertex, prl))
+	if (IsLightVert (nVertex, prl)) {
 		fLightDist = 0.0f;
+		NdotL = 1.0f;
+		}
 	else {
 		fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
 		if (lightDir.IsZero ())
@@ -432,7 +434,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 
 #if USE_FACE_DIST
-	if ((nVertex < 0) && (nType < 2)) {
+	if (/*(nVertex < 0) &&*/ (nType < 2)) {
 		bool bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * gameStates.ogl.fLightRange;
@@ -453,7 +455,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
 		float lightAngle = (fLightDist > 0.1f) ? min (NdotL, -CFloatVector3::Dot (lightDir, spotDir) + 0.01f) : 1.0f;
 #if USE_FACE_DIST
-		if (nVertex >= 0) 
+		if (0) //(nVertex >= 0) 
 #endif
 		{
 		float lightRad = (lightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (lightAngle))));	// make rad smaller the greater the angle 
@@ -471,7 +473,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
 #if USE_FACE_DIST
-		if ((nType < 2) && (nVertex < 0))
+		if (/*(nVertex < 0) &&*/ (nType < 2)) 
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
 		else
 #endif
