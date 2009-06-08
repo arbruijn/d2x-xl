@@ -150,7 +150,7 @@ int bHaveDamageIcon [9] = {0,0,0,0,0,0,0,0,0};
 
 char* szDamageIcon [9] = {
 	"aimdmg0.tga", "aimdmg1.tga", "aimdmg2.tga", 
-	"drivedmg0.tga", "drivedmg1.tga", "drivedmg2.tga"
+	"drivedmg0.tga", "drivedmg1.tga", "drivedmg2.tga",
 	"gundmg0.tga", "gundmg1.tga", "gundmg2.tga"
 };
 

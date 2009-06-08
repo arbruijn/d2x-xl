@@ -1442,13 +1442,15 @@ if (cockpit->Hide ())
 
 	int	nDamage = 0x7fffffff, h, i, j, w, aw, wMax = 0;
 
-#if !DBG
-for (i = 0; i < 3; i++) {
-	if (nDamage > m_info.nDamage [i])
-		nDamage = m_info.nDamage [i];
+#if 1 //!DBG
+if (gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) {
+	for (i = 0; i < 3; i++) {
+		if (nDamage > m_info.nDamage [i])
+			nDamage = m_info.nDamage [i];
+		}
+	if (nDamage >= I2X (1) / 2)
+		return;
 	}
-if (nDamage >= I2X (1) / 2)
-	return;
 #endif
 if (gameOpts->render.cockpit.bTextGauges) {
 	for (i = 0; i < 3; i++) {
@@ -1473,12 +1475,12 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		}
 	}
 else {
-	int y = CCanvas::Current ()->Height () / 2 - CCanvas::Current ()->Font ()->Height () - m_info.nLineSpacing;
+	fix scale = F2X (1.0f + 640.0f / float (CCanvas::Current ()->Width ()));
 	for (i = 0; i < 3; i++) {
 		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
 		j = 3 * i + nDamage;
 		if (LoadDamageIcon (j))
-			BitBlt (-1, 0, y, false, false, I2X (1), 0, bmpDamageIcon [j]);
+			BitBlt (-1, 8, 80, false, false, scale, 0, bmpDamageIcon [j]);
 		}
 	}
 }

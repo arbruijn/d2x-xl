@@ -1582,10 +1582,14 @@ void CObject::RepairDamage (void)
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return;
-if (gameStates.app.nSDLTicks - m_damage.tRepaired < 1000)
+if (gameStates.app.nSDLTicks - m_damage.tRepaired < 3000)
 	return;
+if ((m_damage.xAim >= I2X (1) / 2) && (m_damage.xDrives >= I2X (1) / 2) && (m_damage.xGuns >= I2X (1) / 2))
+	return;
+
 float fDamage = 1.0f - Damage ();
 float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
+
 if (fShieldScale < 1.0f)
 	fShieldScale = 1.0f;
 else
@@ -1600,6 +1604,7 @@ if (m_damage.xDrives > I2X (1) / 2)
 	m_damage.xDrives = I2X (1) / 2;
 if (m_damage.xGuns > I2X (1) / 2)
 	m_damage.xGuns = I2X (1) / 2;
+m_damage.tRepaired = gameStates.app.nSDLTicks;
 }
 
 //------------------------------------------------------------------------------
