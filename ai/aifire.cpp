@@ -292,15 +292,17 @@ if (gameStates.app.bNostalgia) {
 		} while (--count && (dot < I2X (1) / 4));
 	}
 else {	// this way it should always work
+	count = 10;
 	CFixVector	vRand;
 	vRand [X] = FixMul ((d_rand () - 16384), aim);
 	vRand [Y] = FixMul ((d_rand () - 16384), aim);
 	vRand [Z] = FixMul ((d_rand () - 16384), aim);
+	CFixVector vOffs = vRand * I2X (1) / 10;
 	do {
 		CFixVector::NormalizedDir (vFire, *vBelievedTargetPos + vRand, *vFirePoint);
 		dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vFire);
-		vRand *= I2X (9) / 10;
-		} while (dot < I2X (1) / 4);
+		vRand -= vOffs;
+		} while (--count && (dot < I2X (1) / 4));
 	}
 
 targetLed:
