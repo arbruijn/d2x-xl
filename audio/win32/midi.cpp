@@ -24,6 +24,9 @@ m_hmp = NULL;
 
 void CMidi::Shutdown (void)
 {
+if (gameStates.audio.bNoMusic)
+	return 0;
+
 #if (defined (_WIN32) || USE_SDL_MIXER)
 if (m_hmp) {
 	hmp_close (m_hmp);
@@ -38,6 +41,9 @@ Fadeout ();
 
 void CMidi::Fadeout (void)
 {
+if (gameStates.audio.bNoMusic)
+	return 0;
+
 #if USE_SDL_MIXER
 if (!audio.Available ()) 
 	return;
@@ -64,6 +70,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 int CMidi::SetVolume (int nVolume)
 {
+if (gameStates.audio.bNoMusic)
+	return 0;
+
 #if (defined (_WIN32) || USE_SDL_MIXER)
 	int nLastVolume = m_nVolume;
 
@@ -101,6 +110,9 @@ return 0;
 
 int CMidi::PlaySong (char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song)
 {
+if (gameStates.audio.bNoMusic)
+	return 0;
+
 #if (defined (_WIN32) || USE_SDL_MIXER)
 	int	bCustom;
 
@@ -187,10 +199,8 @@ return 1;
 
 void CMidi::Pause (void)
 {
-#if 0
-	if (!gameStates.sound.audio.bInitialized)
-		return;
-#endif
+if (gameStates.audio.bNoMusic)
+	return 0;
 
 if (!m_nPaused) {
 #if USE_SDL_MIXER
@@ -205,7 +215,9 @@ m_nPaused++;
 
 void CMidi::Resume (void)
 {
-Assert(m_nPaused > 0);
+if (gameStates.audio.bNoMusic)
+	return 0;
+
 if (m_nPaused == 1) {
 #if USE_SDL_MIXER
 	if (gameOpts->sound.bUseSDLMixer)

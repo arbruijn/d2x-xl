@@ -1002,6 +1002,7 @@ typedef struct tRenderStates {
 //------------------------------------------------------------------------------
 
 typedef struct tAudioStates {
+	int bNoMusic;
 	int bSoundsInitialized;
 	int bLoMem;
 	int nNextSignature;
