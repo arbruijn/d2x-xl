@@ -1556,7 +1556,7 @@ return m_hitInfo.v [m_hitInfo.i];
 bool CObject::ResetDamage (void) 
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
-	return;
+	return false;
 bool bReset = false;
 m_damage.bCritical = false;
 if (m_damage.xAim < I2X (1) / 2) {
@@ -1578,7 +1578,7 @@ return bReset;
 
 //------------------------------------------------------------------------------
 
-bool CObject::RepairDamage (void) 
+void CObject::RepairDamage (void) 
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return;
