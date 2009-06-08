@@ -83,9 +83,14 @@ nBestSide = 0;
 //find CSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
 	d = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals [0], objP->info.position.mOrient.UVec ());
-	if (d > largest_d) {largest_d = d; nBestSide=i;}
+	if (d > largest_d) {
+		largest_d = d; 
+		nBestSide = i;
+		}
 	}
-if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
+if (gameOpts->gameplay.nAutoLeveling == 1)	// old way: used floor's Normal as upvec
+	desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [3].m_normals [0];
+else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling code: use Normal of CSide closest to our up vec
 	CSide* sideP = SEGMENTS [objP->info.nSegment].m_sides + nBestSide;
 	if (sideP->FaceCount () == 2) {
 		desiredUpVec = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
@@ -94,8 +99,6 @@ if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new CPlayerData leveling code: 
 	else
 		desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [nBestSide].m_normals [0];
 	}
-else if (gameOpts->gameplay.nAutoLeveling == 2)	// old way: used floor's Normal as upvec
-	desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [3].m_normals [0];
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
 	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer)).UVec ();
 else

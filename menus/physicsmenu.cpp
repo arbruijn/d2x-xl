@@ -86,7 +86,7 @@ static struct {
 
 static const char *pszMslTurnSpeeds [3];
 static const char *pszMslStartSpeeds [4];
-static const char *pszAutoLevel [3];
+static const char *pszAutoLevel [4];
 static const char *pszStdAdv [2];
 static const char *pszDrag [4];
 
@@ -222,7 +222,8 @@ pszMslStartSpeeds [3] = TXT_STANDARD;
 
 pszAutoLevel [0] = TXT_NONE;
 pszAutoLevel [1] = TXT_STANDARD;
-pszAutoLevel [2] = TXT_ADVANCED;
+pszAutoLevel [2] = TXT_AUTOLEVEL_FACE;
+pszAutoLevel [3] = TXT_AUTOLEVEL_MINE;
 
 pszStdAdv [0] = TXT_STANDARD;
 pszStdAdv [1] = TXT_ADVANCED;
@@ -269,7 +270,7 @@ do {
 
 	sprintf (szSlider + 1, TXT_AUTOLEVEL, pszAutoLevel [gameOpts->gameplay.nAutoLeveling]);
 	*szSlider = *(TXT_AUTOLEVEL - 1);
-	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 2, KEY_S, HTX_AUTO_LEVELING);
+	physOpts.nAutoLevel = m.AddSlider (szSlider + 1, gameOpts->gameplay.nAutoLeveling, 0, 3, KEY_S, HTX_AUTO_LEVELING);
 
 #if 0
 	sprintf (szSlider + 1, TXT_HIT_DETECTION, pszStdAdv [extraGameInfo [0].nHitboxes]);

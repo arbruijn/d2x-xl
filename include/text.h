@@ -1940,11 +1940,11 @@ void LoadGameTexts(void);
 #define TXT_MISSILES						GT(1143)
 #define TXT_PLEASE_DONATE				GT(1144)
 #define TXT_DAMAGE_MODEL				GT(1145)
+#define TXT_AUTOLEVEL_FACE				GT(1146)
+#define TXT_AUTOLEVEL_MINE				GT(1147)
 
 #if 0
 
-#define TXT_					GT(1146)
-#define TXT_					GT(1147)
 #define TXT_					GT(1148)
 #define TXT_					GT(1149)
 #define TXT_					GT(1150)

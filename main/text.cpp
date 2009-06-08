@@ -1890,6 +1890,8 @@ const char *defaultGameTexts [][2] = {
  {"Du hast D2X-XL jetzt\nschon einige Zeit genutzt.\n\nWenn Du es noch nicht getan hast,\nunterstuetze seine Weiterentwicklung\nbitte mit einer Spende.", 
   "You have been using D2X-XL\nfor quite a while now.\n\nPlease support its future development\nwith a donation if you haven't\ndone so already."},
  {"~Schadensmodell: %s", "~Damage Model: %s"},
+ {"zur naechsten Flaeche", "to closest face"},
+ {"zur Mine", "to mine"},
 #if 0
  {"", ""},
 #endif
