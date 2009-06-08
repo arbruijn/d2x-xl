@@ -138,7 +138,7 @@ if (CreateSphereShader () < 1) {
 	}
 
 	CObjHitInfo	hitInfo = objP->HitInfo ();
-	float fSize = alpha * 2.0f;
+	float fSize = 1.0f + 2.0f / X2F (objP->Size ());
 	float fScale [3];
 	CFloatVector vHitf [3];
 
@@ -165,12 +165,12 @@ for (int i = 0; i < 3; i++) {
 		if (gameStates.ogl.bUseTransform) {
 			vHitf [i].Assign (m * hitInfo.v [i]);
 			CFloatVector::Normalize (vHitf [i]);
-			nHits++;
 			}
 		else {
 			vHitf [i].Assign (hitInfo.v [i]);
 			transformation.Transform (vHitf [i], vHitf [i]);
 			}
+		nHits++;
 		}
 	else {
 		fScale [i] = 1e6f;

@@ -426,7 +426,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) &&
 	 (bThisPoly || bOtherPoly)) {
 	VmPointLineIntersection (vHit, *p0, *p1, vPos, 0);
 #if 1 //!DBG
-	dist = VmLinePointDist (*p0, *p1, thisObjP->info.position.vPos);
+	dist = VmLinePointDist (*p0, *p1, OBJPOS (thisObjP)->vPos);
 	if (dist > thisObjP->info.xSize + otherObjP->info.xSize + I2X (2))
 		return 0;
 #endif

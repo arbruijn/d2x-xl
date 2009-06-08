@@ -297,7 +297,7 @@ return nHits;
 
 fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, short& nModel)
 {
-	CFixVector		vHit, vRef = objP2->info.position.vPos;
+	CFixVector		vHit, vRef = OBJPOS (objP2)->vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
 	CModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->rType.polyObjInfo.nModel;
 	CModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->rType.polyObjInfo.nModel;
@@ -375,7 +375,7 @@ else {
 	nModels = pmhb->nHitboxes;
 	}
 if (!vRef)
-	vRef = &objP->info.position.vPos;
+	vRef = &OBJPOS (objP)->vPos;
 intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
 TransformHitboxes (objP, vRef, hb);
 for (; iModel <= nModels; iModel++) {
