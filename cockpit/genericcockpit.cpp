@@ -1460,7 +1460,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		}
 	if (nDamage >= I2X (1) / 2)
 		return;
-	int y = CCanvas::Current ()->Height () / 2 - h - m_info.nLineSpacing;
+	int y = 40 - h - m_info.nLineSpacing;
 	for (i = 0; i < 3; i++) {
 		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f);
 #if !DBG
