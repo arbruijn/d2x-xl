@@ -1431,6 +1431,39 @@ for (i = 0; i < nPlayers; i++) {
 
 //	-----------------------------------------------------------------------------
 
+void CGenericCockpit::DrawDamage (void)
+{
+if (cockpit->Hide ())
+	return;
+
+	static int		nIdDamage [3] = {0, 0, 0};
+	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
+	static char*	szDamage [3] = {"AIM: %d", "DRIVES: %d", "GUNS: %d"};
+
+	int	nDamage, h, i, w, aw, wMax = 0;
+
+//	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
+if (gameOpts->render.cockpit.bTextGauges) {
+	for (i = 0; i < 3; i++) {
+		fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
+		if (wMax < w)
+			wMax = w;
+		}
+	int y = CCanvas::Current ()->Height () / 2 - h - m_info.nLineSpacing;
+	for (i = 0; i < 3; i++) {
+		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f);
+		if (nDamage < 100) {
+			fontManager.SetColorRGBi (nColor [nDamage / 33], 1, 0, 0);
+			fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
+			nIdDamage [i] = GrPrintF (&nIdDamage [i], 2 + wMax - w, y, szDamage [i], nDamage);
+			}
+		y += h - m_info.nLineSpacing;
+		}
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 void CGenericCockpit::DrawCockpit (int nCockpit, int y, bool bAlphaTest)
 {
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) {
@@ -1663,6 +1696,9 @@ m_info.yScale = screen.Scale (1);
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
 m_info.nEnergy = X2IR (LOCALPLAYER.energy);
 m_info.nShields = X2IR (LOCALPLAYER.shields);
+m_info.nDamage [0] = gameData.objs.consoleP->AimDamage ();
+m_info.nDamage [1] = gameData.objs.consoleP->DriveDamage ();
+m_info.nDamage [2] = gameData.objs.consoleP->GunDamage ();
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 m_info.nEnergy = X2IR (LOCALPLAYER.energy);
@@ -1723,6 +1759,7 @@ DrawShieldBar ();
 DrawEnergy ();
 DrawShield ();
 DrawAfterburner ();
+DrawDamage ();
 DrawWeapons ();
 DrawTimerCount ();
 DrawCloak ();

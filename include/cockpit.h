@@ -119,6 +119,7 @@ class CCockpitInfo {
 		int	nShields;
 		int	nEnergy;
 		int	bCloak;
+		int	nDamage [3];
 		fix	tInvul;
 		bool	bRebuild;
 
@@ -183,6 +184,7 @@ class CGenericCockpit {
 		void DrawOrbs (int x, int y);
 		void DrawFlag (int x, int y);
 		void DrawKillList (int x, int y);
+		void DrawDamage (void);
 		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
 		void UpdateLaserWeaponInfo (void);
 		void DrawReticle (int bForceBig);
