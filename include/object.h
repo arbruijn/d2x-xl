@@ -258,10 +258,10 @@ typedef struct nParentInfo {
 
 typedef struct tLaserInfo  {
 	tParentInfo	parent;
-	fix			xCreationTime;      // Absolute time of creation.
-	short			nLastHitObj;       // For persistent weapons (survive CObject collision), CObject it most recently hit.
-	short			nHomingTarget;				// Object this CObject is tracking.
-	fix			xScale;        // Power if this is a fusion bolt (or other super weapon to be added).
+	fix			xCreationTime;    // Absolute time of creation.
+	short			nLastHitObj;      // For persistent weapons (survive CObject collision), CObject it most recently hit.
+	short			nHomingTarget;		// Object this CObject is tracking.
+	fix			xScale;				// Power if this is a fusion bolt (or other super weapon to be added).
 } __pack__ tLaserInfo;
 
 class CLaserInfo {
@@ -709,12 +709,15 @@ class CObjDamageInfo {
 		int				nCritical;
 		int				tCritical;	// time of last critical hit
 		int				tShield;		// time of last non-critical hit
+		int				tRepaired;
 };
 
 class CObject : public CObjectInfo {
 	private:
 		short				m_nId;
-		CObject			*m_prev, *m_next;
+		CObject*			m_prev;
+		CObject*			m_next;
+		CObject*			m_target;
 		CObjListLink	m_links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
 		ubyte				m_nLinkedType;
 		ubyte				m_nTracers;
@@ -894,8 +897,13 @@ class CObject : public CObjectInfo {
 			}
 
 		bool ResetDamage (void);
+		void RepairDamage (void);
 
 		bool Cloaked (void);
+
+		inline void SetTarget (CObject* targetP) { m_target = targetP; }
+		CObject* Target (void);
+		CObject* Parent (void);
 
 		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
 		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }

@@ -522,6 +522,7 @@ if (info.nType == OBJ_ROBOT) {
 		}
 	}
 info.vLastPos = info.position.vPos;			// Save the current position
+RepairDamage ();
 HandleSpecialSegment ();
 if ((info.xLifeLeft != IMMORTAL_TIME) &&
 	 (info.xLifeLeft != ONE_FRAME_TIME) &&

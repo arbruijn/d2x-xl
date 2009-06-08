@@ -1477,6 +1477,7 @@ HUDMessage (0, "set hit point %d,%d,%d", vHit [0], vHit [1], vHit [2]);
 CFixVector vDir;
 vDir = vHit - info.position.vPos;
 CFixVector::Normalize (vDir);
+m_damage.tRepaired = gameStates.app.nSDLTicks;
 
 if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCritical)) {	// check and handle critical hits
 	float fDamage = 1.0f - Damage ();
@@ -1491,7 +1492,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 		fShieldScale = 1.0f;
 	else
 		fDamage /= float (sqrt (fShieldScale));
-if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
+	if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)
 			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
 #if DBG
@@ -1554,6 +1555,8 @@ return m_hitInfo.v [m_hitInfo.i];
 
 bool CObject::ResetDamage (void) 
 { 
+if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
+	return;
 bool bReset = false;
 m_damage.bCritical = false;
 if (m_damage.xAim < I2X (1) / 2) {
@@ -1571,6 +1574,32 @@ if (m_damage.xGuns < I2X (1) / 2) {
 m_damage.tCritical = 0;
 m_damage.nCritical = 0;
 return bReset;
+}
+
+//------------------------------------------------------------------------------
+
+bool CObject::RepairDamage (void) 
+{ 
+if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
+	return;
+if (gameStates.app.nSDLTicks - m_damage.tRepaired < 1000)
+	return;
+float fDamage = 1.0f - Damage ();
+float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
+if (fShieldScale < 1.0f)
+	fShieldScale = 1.0f;
+else
+	fDamage /= float (sqrt (fShieldScale));
+float fAmount = 1.0f + 0.25f / fShieldScale;
+m_damage.xAim = fix (float (m_damage.xAim) * fAmount);
+m_damage.xDrives = fix (float (m_damage.xDrives) * fAmount);
+m_damage.xGuns = fix (float (m_damage.xGuns) * fAmount);
+if (m_damage.xAim > I2X (1) / 2)
+	m_damage.xAim = I2X (1) / 2;
+if (m_damage.xDrives > I2X (1) / 2)
+	m_damage.xDrives = I2X (1) / 2;
+if (m_damage.xGuns > I2X (1) / 2)
+	m_damage.xGuns = I2X (1) / 2;
 }
 
 //------------------------------------------------------------------------------
@@ -1620,6 +1649,25 @@ else
 int CObject::Index (void)
 { 
 return OBJ_IDX (this); 
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CObject::Target (void) 
+{ 
+return m_target ? m_target : gameData.objs.consoleP; 
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CObject::Parent (void) 
+{ 
+if (cType.laserInfo.parent.nObject < 0)
+	return NULL;
+CObject*	objP = OBJECTS + cType.laserInfo.parent.nObject;
+if (objP->Signature () != cType.laserInfo.parent.nSignature)
+	return NULL;
+return objP; 
 }
 
 //------------------------------------------------------------------------------

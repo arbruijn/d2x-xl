@@ -73,7 +73,8 @@ if ((trackerP->info.nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parent.nT
 if ((trackerP->cType.laserInfo.parent.nType != OBJ_ROBOT) && (trackerP->cType.laserInfo.parent.nType != OBJ_PLAYER))
 	trackerP = trackerP;
 #endif
-return FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, gameStates.app.cheats.bRobotsKillRobots ? OBJ_ROBOT : -1);
+CObject* parentP = trackerP->Parent ();
+return FindHomingObjectComplete (vCurPos, trackerP, OBJ_PLAYER, (parentP && (parentP->Target ()->Type () == OBJ_ROBOT)) ? OBJ_ROBOT : -1);
 }
 
 //	--------------------------------------------------------------------------------------------
@@ -330,7 +331,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			}
 		} 
 	else {
-		if (gameStates.app.cheats.bRobotsKillRobots)
+		if (gameStates.app.cheats.bRobotsKillRobots || (trackerP->Parent () && (trackerP->Parent ()->Target ()->Type () == OBJ_ROBOT)))
 			goal2Type = OBJ_ROBOT;
 		if (nHomingTarget == -1)
 			rVal = FindHomingObjectComplete (&trackerP->info.position.vPos, trackerP, OBJ_PLAYER, goal2Type);

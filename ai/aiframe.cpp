@@ -1065,12 +1065,12 @@ return 1;
 
 int AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
-gameData.ai.target.objP = gameData.objs.consoleP;
+objP->SetTarget (gameData.ai.target.objP = gameData.objs.consoleP);
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
 	gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + gameData.ai.nLastMissileCamera)->vPos;
 	return 0;
 	}
-if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand () > objP->AimDamage ()))) {
+if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand () > 2 * objP->AimDamage ()))) {
 	siP->vVisPos = objP->info.position.vPos;
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 	if (gameData.ai.nTargetVisibility) {
@@ -1093,7 +1093,7 @@ if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand
 				}
 			}
 		if (nMinObj >= 0) {
-			gameData.ai.target.objP = OBJECTS + nMinObj;
+			objP->SetTarget (gameData.ai.target.objP = OBJECTS + nMinObj);
 			gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
 			gameData.ai.target.nBelievedSeg = OBJSEG (TARGETOBJ);
 			CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
