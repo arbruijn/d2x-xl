@@ -145,6 +145,50 @@ if (bmpScope) {
 
 //------------------------------------------------------------------------------
 
+CBitmap *bmpDamageIcon [9] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+int bHaveDamageIcon [9] = {0,0,0,0,0,0,0,0,0};
+
+char szDamageIcon [9] = {
+	"aimdmg0.tga", "aimdmg1.tga", "aimdmg2.tga", 
+	"drivedmg0.tga", "drivedmg1.tga", "drivedmg2.tga"
+	"gundmg0.tga", "gundmg1.tga", "gundmg2.tga"
+};
+
+//------------------------------------------------------------------------------
+
+int LoadDamageIcon (int i)
+{
+return LoadAddonBitmap (bmpDamageIcon + i, szDamageIcon [i], bHaveDamageIcon + i);
+}
+
+//------------------------------------------------------------------------------
+
+void FreeDamageIcon (int i)
+{
+if (bmpDamageIcon [i]) {
+	delete bmpDamageIcon [i];
+	bHaveDamageIcon [i] = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int FreeDamageIcons (void)
+{
+for (i = 0; i < 9; i++)
+	FreeDamageIcon (i);
+}
+
+//------------------------------------------------------------------------------
+
+int LoadDamageIcons (void)
+{
+for (i = 0; i < 9; i++)
+	LoadDamageIcon (i);
+}
+
+//------------------------------------------------------------------------------
+
 CBitmap *bmpDeadzone = NULL;
 int bHaveDeadzone = 0;
 
@@ -362,6 +406,8 @@ PrintLog ("   Loading deadzone image\n");
 LoadDeadzone ();
 PrintLog ("   Loading zoom image\n");
 LoadScope ();
+PrintLog ("   Loading damage icons\n");
+LoadDamageIcons ();
 PrintLog ("   Loading joystick emulator image\n");
 LoadJoyMouse ();
 }

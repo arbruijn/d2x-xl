@@ -1440,24 +1440,42 @@ if (cockpit->Hide ())
 	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
 	static char*	szDamage [3] = {"AIM: %d", "DRIVES: %d", "GUNS: %d"};
 
-	int	nDamage, h, i, w, aw, wMax = 0;
+	int	nDamage = 0x7fffffff, h, i, j, w, aw, wMax = 0;
 
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
+for (i = 0; i < 3; i++) {
+	if (nDamage > m_info.nDamage [i])
+		nDamage = m_info.nDamage [i];
+	}
+if (nDamage >= I2X (1) / 2)
+	return;
+
 if (gameOpts->render.cockpit.bTextGauges) {
 	for (i = 0; i < 3; i++) {
 		fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
 		if (wMax < w)
 			wMax = w;
 		}
+	if (nDamage >= I2X (1) / 2)
+		return;
 	int y = CCanvas::Current ()->Height () / 2 - h - m_info.nLineSpacing;
 	for (i = 0; i < 3; i++) {
 		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f);
 		if (nDamage < 100) {
-			fontManager.SetColorRGBi (nColor [nDamage / 33], 1, 0, 0);
+			fontManager.SetColorRGBi (nColor [nDamage / 34], 1, 0, 0);
 			fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
 			nIdDamage [i] = GrPrintF (&nIdDamage [i], 2 + wMax - w, y, szDamage [i], nDamage);
 			}
 		y += h - m_info.nLineSpacing;
+		}
+	}
+else {
+	int y = CCanvas::Current ()->Height () / 2 - h - m_info.nLineSpacing;
+	for (i = 0; i < 3; i++) {
+		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
+		j = 3 * i + nDamage;
+		if (LoadDamageIcon (j))
+			BitBlt (-1, 0, y, false, false, I2X (1), 0, bmpDamageIcon [j]);
 		}
 	}
 }
