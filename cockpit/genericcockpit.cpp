@@ -1442,14 +1442,14 @@ if (cockpit->Hide ())
 
 	int	nDamage = 0x7fffffff, h, i, j, w, aw, wMax = 0;
 
-//	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
+#if !DBG
 for (i = 0; i < 3; i++) {
 	if (nDamage > m_info.nDamage [i])
 		nDamage = m_info.nDamage [i];
 	}
 if (nDamage >= I2X (1) / 2)
 	return;
-
+#endif
 if (gameOpts->render.cockpit.bTextGauges) {
 	for (i = 0; i < 3; i++) {
 		fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
@@ -1461,7 +1461,10 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	int y = CCanvas::Current ()->Height () / 2 - h - m_info.nLineSpacing;
 	for (i = 0; i < 3; i++) {
 		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f);
-		if (nDamage < 100) {
+#if !DBG
+		if (nDamage < 100) 
+#endif
+			{
 			fontManager.SetColorRGBi (nColor [nDamage / 34], 1, 0, 0);
 			fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
 			nIdDamage [i] = GrPrintF (&nIdDamage [i], 2 + wMax - w, y, szDamage [i], nDamage);
@@ -1470,7 +1473,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		}
 	}
 else {
-	int y = CCanvas::Current ()->Height () / 2 - h - m_info.nLineSpacing;
+	int y = CCanvas::Current ()->Height () / 2 - CCanvas::Current ()->Font ()->Height () - m_info.nLineSpacing;
 	for (i = 0; i < 3; i++) {
 		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
 		j = 3 * i + nDamage;

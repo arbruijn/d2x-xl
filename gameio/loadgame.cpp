@@ -2120,7 +2120,8 @@ fix RobotDefaultShields (CObject *objP)
 	int			objId, i;
 	fix			shields;
 
-Assert (objP->info.nType == OBJ_ROBOT);
+if (objP->info.nType != OBJ_ROBOT)
+	return (objP->info.nType == OBJ_REACTOR) ? ReactorStrength () : 0;
 objId = objP->info.nId;
 //Assert (objId < gameData.bots.nTypes [0]);
 i = gameStates.app.bD1Mission && (objId < gameData.bots.nTypes [1]);

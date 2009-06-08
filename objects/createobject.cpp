@@ -305,6 +305,7 @@ if ((nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(int) nId] && IsMultiGame
 		}
 	}
 OBJECTS [nObject].ResetDamage ();
+OBJECTS [nObject].SetTarget (NULL);
 return nObject;
 }
 
