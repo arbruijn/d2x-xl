@@ -148,7 +148,7 @@ if (bmpScope) {
 CBitmap *bmpDamageIcon [9] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 int bHaveDamageIcon [9] = {0,0,0,0,0,0,0,0,0};
 
-char szDamageIcon [9] = {
+char* szDamageIcon [9] = {
 	"aimdmg0.tga", "aimdmg1.tga", "aimdmg2.tga", 
 	"drivedmg0.tga", "drivedmg1.tga", "drivedmg2.tga"
 	"gundmg0.tga", "gundmg1.tga", "gundmg2.tga"
@@ -175,7 +175,7 @@ if (bmpDamageIcon [i]) {
 
 int FreeDamageIcons (void)
 {
-for (i = 0; i < 9; i++)
+for (int i = 0; i < 9; i++)
 	FreeDamageIcon (i);
 }
 
@@ -183,7 +183,7 @@ for (i = 0; i < 9; i++)
 
 int LoadDamageIcons (void)
 {
-for (i = 0; i < 9; i++)
+for (int i = 0; i < 9; i++)
 	LoadDamageIcon (i);
 }
 
