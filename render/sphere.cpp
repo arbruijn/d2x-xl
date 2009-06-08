@@ -786,7 +786,7 @@ CFixVector vPos;
 transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
-OglResetTransform (1);
+OglResetTransform (0);
 gameStates.ogl.bUseTransform = 0;
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
@@ -884,8 +884,8 @@ if (gameData.render.shield.nFaces > 0)
 		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 		if (gameStates.render.history.nShader != 100) {	// full and not just partial sphere rendered
 			CFixVector vPos;
-			vPos.SetZero ();
 			transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
+			vPos.SetZero ();
 			RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 			transformation.End ();
 			}
