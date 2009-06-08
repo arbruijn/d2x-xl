@@ -24,7 +24,7 @@ m_hmp = NULL;
 
 void CMidi::Shutdown (void)
 {
-if (gameStates.audio.bNoMusic)
+if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 #if (defined (_WIN32) || USE_SDL_MIXER)
@@ -41,7 +41,7 @@ Fadeout ();
 
 void CMidi::Fadeout (void)
 {
-if (gameStates.audio.bNoMusic)
+if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 #if USE_SDL_MIXER
@@ -70,7 +70,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 int CMidi::SetVolume (int nVolume)
 {
-if (gameStates.audio.bNoMusic)
+if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 #if (defined (_WIN32) || USE_SDL_MIXER)
@@ -110,7 +110,7 @@ return 0;
 
 int CMidi::PlaySong (char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song)
 {
-if (gameStates.audio.bNoMusic)
+if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 #if (defined (_WIN32) || USE_SDL_MIXER)
@@ -199,7 +199,7 @@ return 1;
 
 void CMidi::Pause (void)
 {
-if (gameStates.audio.bNoMusic)
+if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 if (!m_nPaused) {
@@ -215,7 +215,7 @@ m_nPaused++;
 
 void CMidi::Resume (void)
 {
-if (gameStates.audio.bNoMusic)
+if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 if (m_nPaused == 1) {

@@ -221,8 +221,8 @@ void EvalMusicArgs (void)
 	int	t;
 	char	*p;
 
-if ((t = FindArg ("-nomusic")) 
-	gameStates.audio.bNoMusic = NumArg (t, 0) == 0;
+if ((t = FindArg ("-nomusic")))
+	gameStates.sound.audio.bNoMusic = NumArg (t, 0) == 0;
 if ((t = FindArg ("-playlist")) && (p = pszArgList [t+1]))
 	songManager.LoadPlayList (p);
 if ((t = FindArg ("-introsong")) && (p = pszArgList [t+1]))
