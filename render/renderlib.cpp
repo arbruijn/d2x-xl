@@ -173,7 +173,7 @@ if (bmpDamageIcon [i]) {
 
 //------------------------------------------------------------------------------
 
-int FreeDamageIcons (void)
+void FreeDamageIcons (void)
 {
 for (int i = 0; i < 9; i++)
 	FreeDamageIcon (i);
@@ -181,7 +181,7 @@ for (int i = 0; i < 9; i++)
 
 //------------------------------------------------------------------------------
 
-int LoadDamageIcons (void)
+void LoadDamageIcons (void)
 {
 for (int i = 0; i < 9; i++)
 	LoadDamageIcon (i);

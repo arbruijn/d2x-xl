@@ -52,7 +52,7 @@ int LoadHalo (void);
 int LoadThruster (int nStyle = -1);
 int LoadShield (void);
 int LoadDeadzone (void);
-int LoadDamageIcons (void);
+void LoadDamageIcons (void);
 void FreeDamageIcons (void);
 int LoadDamageIcon (int i);
 void FreeDamageIcon (int i);
