@@ -1701,11 +1701,11 @@ if (killerObjP == this) {
 	}
 else if (killerP && gameStates.app.bHaveExtraGameInfo [1] &&
 			!(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
-	if (gameData.app.nGameMode & GM_TEAM) {
+	if (IsTeamGame) {
 		if (GetTeam (info.nId) == GetTeam (killerObjP->info.nId))
 			return;
 		}
-	else if (gameData.app.nGameMode & GM_MULTI_COOP)
+	else if (IsCoopGame)
 		return;
 	}
 if (gameStates.app.bEndLevelSequence)

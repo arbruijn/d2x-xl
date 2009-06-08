@@ -1704,12 +1704,12 @@ gameData.bosses.ResetCloakTimes ();
 gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
-if (gameData.demo.nGameMode & GM_TEAM) {
+if (IsTeamGame) {
 	netGame.teamVector = NDReadByte ();
 	NDReadString (netGame.szTeamName [0]);
 	NDReadString (netGame.szTeamName [1]);
 	}
-if (gameData.demo.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	MultiNewGame ();
 	gameData.multiplayer.nPlayers = int (NDReadByte ());
 	// changed this to above two lines -- breaks on the mac because of
@@ -2454,14 +2454,14 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				gameData.multiplayer.players [nPlayer].netKillsTotal -= kill;
-				if (gameData.demo.nGameMode & GM_TEAM)
+				if (IsTeamGame)
 					gameData.multigame.kills.nTeam [GetTeam (nPlayer)] -= kill;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				gameData.multiplayer.players [nPlayer].netKillsTotal += kill;
-				if (gameData.demo.nGameMode & GM_TEAM)
+				if (IsTeamGame)
 					gameData.multigame.kills.nTeam [GetTeam (nPlayer)] += kill;
 				}
 			gameData.app.nGameMode = gameData.demo.nGameMode;

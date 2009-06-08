@@ -94,9 +94,10 @@ glLineWidth (1.0f);
 int TargetInLineOfFire (void)
 {
 	tCollisionQuery	fq;
-	int			nHitType;
+	int					nHitType, nType;
 	tCollisionData		hitData;
-	CFixVector	vEndPos;
+	CFixVector			vEndPos;
+	CObject*				objP;
 
 	//see if we can see this CPlayerData
 
@@ -111,7 +112,19 @@ fq.startSeg = gameData.objs.viewerP->info.nSegment;
 fq.ignoreObjList = NULL;
 fq.bCheckVisibility = true;
 nHitType = FindHitpoint (&fq, &hitData);
-return (nHitType == HIT_OBJECT);
+if (nHitType != HIT_OBJECT)
+	return 0;
+objP = OBJECTS + hitData.hit.nObject;
+nType = objP->Type ();
+if ((nType == OBJ_ROBOT) || (nType == OBJ_REACTOR))
+	return 1;
+if (nType != OBJ_PLAYER)
+	return 0;
+if (IsCoopGame)
+	return 0;
+if (!IsTeamGame)
+	return 1;
+return GetTeam (gameData.objs.consoleP->info.nId) != GetTeam (objP->info.nId);
 }
 
 //------------------------------------------------------------------------------

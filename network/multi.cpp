@@ -532,7 +532,7 @@ gameData.multiplayer.powerupsInMine.Clear (0);
 
 short GetTeam (int nPlayer)
 {
-return (netGame.teamVector &(1 << nPlayer)) ? 1 : 0;
+return (netGame.teamVector & (1 << nPlayer)) ? 1 : 0;
 }
 
 //-----------------------------------------------------------------------------
