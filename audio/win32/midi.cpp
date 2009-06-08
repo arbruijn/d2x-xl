@@ -25,7 +25,7 @@ m_hmp = NULL;
 void CMidi::Shutdown (void)
 {
 if (gameStates.sound.audio.bNoMusic)
-	return 0;
+	return;
 
 #if (defined (_WIN32) || USE_SDL_MIXER)
 if (m_hmp) {
@@ -42,7 +42,7 @@ Fadeout ();
 void CMidi::Fadeout (void)
 {
 if (gameStates.sound.audio.bNoMusic)
-	return 0;
+	return;
 
 #if USE_SDL_MIXER
 if (!audio.Available ()) 
@@ -200,7 +200,7 @@ return 1;
 void CMidi::Pause (void)
 {
 if (gameStates.sound.audio.bNoMusic)
-	return 0;
+	return;
 
 if (!m_nPaused) {
 #if USE_SDL_MIXER
@@ -216,7 +216,7 @@ m_nPaused++;
 void CMidi::Resume (void)
 {
 if (gameStates.sound.audio.bNoMusic)
-	return 0;
+	return;
 
 if (m_nPaused == 1) {
 #if USE_SDL_MIXER
