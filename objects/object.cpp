@@ -1582,7 +1582,7 @@ void CObject::RepairDamage (void)
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return;
-if (gameStates.app.nSDLTicks - m_damage.tRepaired < 3000)
+if (gameStates.app.nSDLTicks - m_damage.tRepaired < 2000)
 	return;
 
 float fDamage = 1.0f - Damage ();
