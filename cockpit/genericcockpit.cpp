@@ -1003,7 +1003,7 @@ tRgbColorb playerColors [] = {
  {29, 29, 0}};
 
 typedef struct {
-	sbyte x, y;
+	int x, y;
 } xy;
 
 //offsets for reticle parts: high-big  high-sml  low-big  low-sml
@@ -1067,11 +1067,11 @@ bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.ren
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-		  (x + ScaleX (cross_offsets [ofs].x)), (y + ScaleY (cross_offsets [ofs].y)), false, true);
+		  (x + ScaleX (cross_offsets [ofs].x - 1)), (y + ScaleY (cross_offsets [ofs].y - 1)), false, true);
 BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-		  (x + ScaleX (primary_offsets [ofs].x)), (y + ScaleY (primary_offsets [ofs].y)), false, true);
+		  (x + ScaleX (primary_offsets [ofs].x - 1)), (y + ScaleY (primary_offsets [ofs].y - 1)), false, true);
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-		  (x + ScaleX (secondary_offsets [ofs].x)), (y + ScaleY (secondary_offsets [ofs].y)), false, true);
+		  (x + ScaleX (secondary_offsets [ofs].x - 1)), (y + ScaleY (secondary_offsets [ofs].y - 1)), false, true);
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);
@@ -1442,6 +1442,12 @@ if (cockpit->Hide ())
 
 	int	nDamage = 0x7fffffff, h, i, j, w, aw, wMax = 0;
 
+	static int		dmgColors [9] = {
+							RGBA (192, 0, 0, 48), RGBA (255, 208, 0, 48), RGBA (0, 192, 0, 48), 
+							RGBA (255, 0, 0, 48), RGBA (255, 255, 0, 48), RGBA (0, 255, 0, 48), 
+							RGBA (255, 0, 0, 48), RGBA (255, 255, 0, 48), RGBA (0, 255, 0, 48)
+							};
+
 #if !DBG
 if (gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) {
 	for (i = 0; i < 3; i++) {
@@ -1483,35 +1489,47 @@ else {
 		bInitSinCos = 0;
 		}
 
-	int y = CCanvas::Current ()->Height () - 71;
+#if 1
+	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
+	int nRad = int (16.0f * fScale + 0.5f);
+	int y = /*CCanvas::Current ()->Top () +*/ CCanvas::Current ()->Height () / 2 + nRad;
+#else
+	int y = CCanvas::Current ()->Height () - 72;
 	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 			y -= cockpit->LHX (10);
+#endif
  	int x = CCanvas::Current ()->Width ();
 	x /= 2;
-	x -= 31;
+	x -= nRad;
 
-	glLineWidth (float (CCanvas::Current ()->Width ()) / 640.0f);
-#if 1
+	glLineWidth (fScale);
+#if 0
+	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
+#	if 0
 	CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
-	OglDrawFilledRect (x - 8, y - 8, x + 70, y + 70);
+	OglDrawFilledRect (x - 7, y - 7, x + 71, y + 71);
 	CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
-	OglDrawEmptyRect (x - 8, y - 8, x + 70, y + 70);
-#else
+	OglDrawEmptyRect (x - 7, y - 7, x + 71, y + 71);
+#	else
+	glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
 	OglDrawEllipse (
 		sizeofa (sinCos), GL_LINE_LOOP, 
 		40.0f / float (screen.Width ()), 0.5f, 
 		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
+#	endif
+	glLineWidth (1);
 #endif
 
-	glColor4f (1, 1, 1, 1);
+	nRad *= 2;
+	//CCanvas::Current ()->SetColorRGB (255, 255, 255, 48);
 	for (i = 0; i < 3; i++) {
-		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
-		j = 3 * i + nDamage;
-		if (LoadDamageIcon (j))
-			BitBlt (-1, x, y, false, false, I2X (1), 0, bmpDamageIcon [j]);
+		if (LoadDamageIcon (i)) {
+			nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
+			j = 3 * i + nDamage;
+			CCanvas::Current ()->SetColorRGBi (dmgColors [j]);
+			bmpDamageIcon [i]->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
+			}
 		}
-	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
-glLineWidth (1);
 	}
 }
 

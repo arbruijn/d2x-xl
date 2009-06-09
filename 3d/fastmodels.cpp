@@ -892,7 +892,7 @@ else
 	G3DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
 #if DBG
 if (gameOpts->render.debug.bWireFrame)
-	glLineWidth (2.0f);
+	glLineWidth (3.0f);
 #endif
 if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
 	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
