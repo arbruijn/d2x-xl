@@ -185,9 +185,12 @@ void CHUDIcons::DrawWeapons (void)
 	int	nIconPos = nWeaponIcons - 1;
 	int	nHiliteColor = gameOpts->app.bColorblindFriendly;
 	int	nMaxAutoSelect;
-	int	nDmgIconWidth = ((nWeaponIcons == 2) 
-								 /*&& ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
-								       gameData.objs.consoleP->CriticalDamage ()))*/) ? 32 : 0;
+	int	nDmgIconWidth = 0;
+#if 0
+								((nWeaponIcons == 2) 
+								 && ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+								     gameData.objs.consoleP->CriticalDamage ()))) ? 32 : 0;
+#endif
 	int	fw, fh, faw, 
 			i, j, ll, n, 
 			ox = 6, 
@@ -495,10 +498,12 @@ void CHUDIcons::DrawInventory (void)
 				h = bmpInventory->Width ();
 	int		wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
 				hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
-	int		nDmgIconWidth = (nIconPos
-									 /*&& ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
-									       gameData.objs.consoleP->CriticalDamage ()))*/) ? 80 : 0;
-	//float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
+	int		nDmgIconWidth = 0;
+#if 0
+									(nIconPos
+									 && ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+									     gameData.objs.consoleP->CriticalDamage ()))) ? 80 : 0;
+#endif
 	float		fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 	ubyte		alpha = gameOpts->render.weaponIcons.alpha;
 

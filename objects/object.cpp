@@ -1584,8 +1584,6 @@ if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OB
 	return;
 if (gameStates.app.nSDLTicks - m_damage.tRepaired < 3000)
 	return;
-if ((m_damage.xAim >= I2X (1) / 2) && (m_damage.xDrives >= I2X (1) / 2) && (m_damage.xGuns >= I2X (1) / 2))
-	return;
 
 float fDamage = 1.0f - Damage ();
 float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
@@ -1595,16 +1593,36 @@ if (fShieldScale < 1.0f)
 else
 	fDamage /= float (sqrt (fShieldScale));
 float fAmount = 1.0f + 0.25f / fShieldScale;
-m_damage.xAim = fix (float (m_damage.xAim) * fAmount);
-m_damage.xDrives = fix (float (m_damage.xDrives) * fAmount);
-m_damage.xGuns = fix (float (m_damage.xGuns) * fAmount);
-if (m_damage.xAim > I2X (1) / 2)
-	m_damage.xAim = I2X (1) / 2;
-if (m_damage.xDrives > I2X (1) / 2)
-	m_damage.xDrives = I2X (1) / 2;
-if (m_damage.xGuns > I2X (1) / 2)
-	m_damage.xGuns = I2X (1) / 2;
-m_damage.tRepaired = gameStates.app.nSDLTicks;
+
+if (m_damage.xAim < I2X (1) / 2) {
+	m_damage.tRepaired = gameStates.app.nSDLTicks;
+	m_damage.xAim = fix (float (m_damage.xAim) * fAmount);
+	if (m_damage.xAim > I2X (1) / 2)
+		m_damage.xAim = I2X (1) / 2;
+#if DBG
+	HUDMessage (0, "AIM repaired (%d)", m_damage.xAim);
+#endif
+	}
+
+if (m_damage.xDrives < I2X (1) / 2) {
+	m_damage.tRepaired = gameStates.app.nSDLTicks;
+	m_damage.xDrives = fix (float (m_damage.xDrives) * fAmount);
+	if (m_damage.xDrives > I2X (1) / 2)
+		m_damage.xDrives = I2X (1) / 2;	
+#if DBG
+	HUDMessage (0, "DRIVES repaired (%d)", m_damage.xDrives);
+#endif
+	}
+
+if (m_damage.xGuns < I2X (1) / 2) {
+	m_damage.tRepaired = gameStates.app.nSDLTicks;
+	m_damage.xGuns = fix (float (m_damage.xGuns) * fAmount);
+	if (m_damage.xGuns > I2X (1) / 2)
+		m_damage.xGuns = I2X (1) / 2;
+#if DBG
+	HUDMessage (0, "GUNS repaired (%d)", m_damage.xGuns);
+#endif
+	}
 }
 
 //------------------------------------------------------------------------------

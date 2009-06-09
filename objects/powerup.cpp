@@ -309,6 +309,7 @@ if (playerP->shields < MAX_SHIELDS) {
 		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->shields));
 		MultiSendShields ();
 		}
+	OBJECTS [nPlayer].ResetDamage ();
 	return 1;
 	}
 else if (ISLOCALPLAYER (nPlayer)) {
@@ -317,6 +318,8 @@ else if (ISLOCALPLAYER (nPlayer)) {
 	else
 		HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 	}
+else
+	OBJECTS [nPlayer].ResetDamage ();
 return 0;
 }
 

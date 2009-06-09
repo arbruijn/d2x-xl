@@ -148,7 +148,7 @@ if (bmpScope) {
 CBitmap *bmpDamageIcon [3] = {NULL, NULL, NULL};
 int bHaveDamageIcon [3] = {0,0,0};
 
-char* szDamageIcon [9] = {"aimdmg.tga", "drivedmg.tga", "gundmg.tga"};
+char* szDamageIcon [3] = {"aimdmg.tga", "drivedmg.tga", "gundmg.tga"};
 
 //------------------------------------------------------------------------------
 
@@ -156,7 +156,6 @@ int LoadDamageIcon (int i)
 {
 i %= sizeofa (bmpDamageIcon);
 return LoadAddonBitmap (bmpDamageIcon + i, szDamageIcon [i], bHaveDamageIcon + i);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -173,7 +172,7 @@ if (bmpDamageIcon [i]) {
 
 void FreeDamageIcons (void)
 {
-for (int i = 0; i < sizeofa (bmpDmgIcon); i++)
+for (int i = 0; i < sizeofa (bmpDamageIcon); i++)
 	FreeDamageIcon (i);
 }
 
@@ -181,7 +180,7 @@ for (int i = 0; i < sizeofa (bmpDmgIcon); i++)
 
 void LoadDamageIcons (void)
 {
-for (int i = 0; i < sizeofa (bmpDmgIcon); i++)
+for (int i = 0; i < sizeofa (bmpDamageIcon); i++)
 	LoadDamageIcon (i);
 }
 

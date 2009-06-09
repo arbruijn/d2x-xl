@@ -1440,95 +1440,59 @@ if (cockpit->Hide ())
 	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
 	static char*	szDamage [3] = {"AIM: %d%c", "DRIVES: %d%c", "GUNS: %d%c"};
 
-	int	nDamage = 0x7fffffff, h, i, j, w, aw, wMax = 0;
+	int	nDamage = 0x7fffffff, i, j, wMax = 0;
 
-	static int		dmgColors [9] = {
-							RGBA (192, 0, 0, 48), RGBA (255, 208, 0, 48), RGBA (0, 192, 0, 48), 
-							RGBA (255, 0, 0, 48), RGBA (255, 255, 0, 48), RGBA (0, 255, 0, 48), 
-							RGBA (255, 0, 0, 48), RGBA (255, 255, 0, 48), RGBA (0, 255, 0, 48)
+	static int		dmgColors [12] = {
+							RGBA (64, 16, 64, 64), RGBA (192, 0, 0, 64), RGBA (255, 208, 0, 64), RGBA (0, 192, 0, 64), 
+							RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64), 
+							RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64)
 							};
 
-#if !DBG
-if (gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) {
-	for (i = 0; i < 3; i++) {
-		if (nDamage > m_info.nDamage [i])
-			nDamage = m_info.nDamage [i];
-		}
-	if (nDamage >= I2X (1) / 2)
-		return;
-	}
+#if 1 //!DBG
+if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
+	return;
 #endif
-if (gameOpts->render.cockpit.bTextGauges) {
-	for (i = 0; i < 3; i++) {
-		fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
-		if (wMax < w)
-			wMax = w;
-		}
-	if (nDamage >= I2X (1) / 2)
-		return;
-	int y = 40 - h - m_info.nLineSpacing;
-	for (i = 0; i < 3; i++) {
-		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f);
-#if !DBG
-		if (nDamage < 100) 
-#endif
-			{
-			fontManager.SetColorRGBi (nColor [nDamage / 34], 1, 0, 0);
-			fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
-			nIdDamage [i] = GrPrintF (&nIdDamage [i], 2 + wMax - w, y, szDamage [i], nDamage, '%');
-			}
-		y += h - m_info.nLineSpacing;
-		}
+	static tSinCosf sinCos [32];
+	static int bInitSinCos = 1;
+
+if (bInitSinCos) {
+	OglComputeSinCos (sizeofa (sinCos), sinCos);
+	bInitSinCos = 0;
 	}
-else {
-		static tSinCosf sinCos [32];
-		static int bInitSinCos = 1;
 
-	if (bInitSinCos) {
-		OglComputeSinCos (sizeofa (sinCos), sinCos);
-		bInitSinCos = 0;
-		}
-
-#if 1
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
 	int nRad = int (16.0f * fScale + 0.5f);
-	int y = /*CCanvas::Current ()->Top () +*/ CCanvas::Current ()->Height () / 2 + nRad;
-#else
-	int y = CCanvas::Current ()->Height () - 72;
-	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
-			y -= cockpit->LHX (10);
-#endif
- 	int x = CCanvas::Current ()->Width ();
-	x /= 2;
-	x -= nRad;
+	int y = CCanvas::Current ()->Height () / 2 + nRad;
+	int x = CCanvas::Current ()->Width ();
 
-	glLineWidth (fScale);
+x /= 2;
+x -= nRad;
+glLineWidth (fScale);
+
 #if 0
-	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
+fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
 #	if 0
-	CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
-	OglDrawFilledRect (x - 7, y - 7, x + 71, y + 71);
-	CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
-	OglDrawEmptyRect (x - 7, y - 7, x + 71, y + 71);
+CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
+OglDrawFilledRect (x - 7, y - 7, x + 71, y + 71);
+CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
+OglDrawEmptyRect (x - 7, y - 7, x + 71, y + 71);
 #	else
-	glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
-	OglDrawEllipse (
-		sizeofa (sinCos), GL_LINE_LOOP, 
-		40.0f / float (screen.Width ()), 0.5f, 
-		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
+glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
+OglDrawEllipse (
+	sizeofa (sinCos), GL_LINE_LOOP, 
+	40.0f / float (screen.Width ()), 0.5f, 
+	40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
 #	endif
-	glLineWidth (1);
+glLineWidth (1);
 #endif
 
-	nRad *= 2;
-	//CCanvas::Current ()->SetColorRGB (255, 255, 255, 48);
-	for (i = 0; i < 3; i++) {
-		if (LoadDamageIcon (i)) {
-			nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
-			j = 3 * i + nDamage;
-			CCanvas::Current ()->SetColorRGBi (dmgColors [j]);
-			bmpDamageIcon [i]->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
-			}
+nRad *= 2;
+for (i = 0; i < 3; i++) {
+	if (LoadDamageIcon (i)) {
+		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 33;
+		j = 3 * i + nDamage;
+		CCanvas::Current ()->SetColorRGBi (dmgColors [nDamage]);
+		bmpDamageIcon [i]->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
 		}
 	}
 }
