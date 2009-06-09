@@ -897,6 +897,8 @@ class CObject : public CObjectInfo {
 			}
 
 		bool ResetDamage (void);
+		bool CriticalDamage (void) {
+			return (m_damage.xAim < I2X (1) / 2) || (m_damage.xDrives < I2X (1) / 2) || (m_damage.xGuns < I2X (1) / 2); }
 		void RepairDamage (void);
 		int TimeLastRepaired (void) { return m_damage.tRepaired; }
 

@@ -1438,11 +1438,11 @@ if (cockpit->Hide ())
 
 	static int		nIdDamage [3] = {0, 0, 0};
 	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
-	static char*	szDamage [3] = {"AIM: %d", "DRIVES: %d", "GUNS: %d"};
+	static char*	szDamage [3] = {"AIM: %d%c", "DRIVES: %d%c", "GUNS: %d%c"};
 
 	int	nDamage = 0x7fffffff, h, i, j, w, aw, wMax = 0;
 
-#if 1 //!DBG
+#if !DBG
 if (gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) {
 	for (i = 0; i < 3; i++) {
 		if (nDamage > m_info.nDamage [i])
@@ -1469,19 +1469,49 @@ if (gameOpts->render.cockpit.bTextGauges) {
 			{
 			fontManager.SetColorRGBi (nColor [nDamage / 34], 1, 0, 0);
 			fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
-			nIdDamage [i] = GrPrintF (&nIdDamage [i], 2 + wMax - w, y, szDamage [i], nDamage);
+			nIdDamage [i] = GrPrintF (&nIdDamage [i], 2 + wMax - w, y, szDamage [i], nDamage, '%');
 			}
 		y += h - m_info.nLineSpacing;
 		}
 	}
 else {
-	fix scale = F2X (1.0f + 640.0f / float (CCanvas::Current ()->Width ()));
+		static tSinCosf sinCos [32];
+		static int bInitSinCos = 1;
+
+	if (bInitSinCos) {
+		OglComputeSinCos (sizeofa (sinCos), sinCos);
+		bInitSinCos = 0;
+		}
+
+	int y = CCanvas::Current ()->Height () - 71;
+	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
+			y -= cockpit->LHX (10);
+ 	int x = CCanvas::Current ()->Width ();
+	x /= 2;
+	x -= 31;
+
+	glLineWidth (float (CCanvas::Current ()->Width ()) / 640.0f);
+#if 1
+	CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
+	OglDrawFilledRect (x - 8, y - 8, x + 70, y + 70);
+	CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
+	OglDrawEmptyRect (x - 8, y - 8, x + 70, y + 70);
+#else
+	OglDrawEllipse (
+		sizeofa (sinCos), GL_LINE_LOOP, 
+		40.0f / float (screen.Width ()), 0.5f, 
+		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
+#endif
+
+	glColor4f (1, 1, 1, 1);
 	for (i = 0; i < 3; i++) {
 		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
 		j = 3 * i + nDamage;
 		if (LoadDamageIcon (j))
-			BitBlt (-1, 8, 80, false, false, scale, 0, bmpDamageIcon [j]);
+			BitBlt (-1, x, y, false, false, I2X (1), 0, bmpDamageIcon [j]);
 		}
+	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
+glLineWidth (1);
 	}
 }
 

@@ -34,7 +34,7 @@ extern ubyte Reticle_on;
 #define gauge_message HUDInitMessage
 
 //valid modes for cockpit
-#define CM_FULL_COCKPIT    0	// normal screen with cockput
+#define CM_FULL_COCKPIT    0	// normal screen with cockpit
 #define CM_REAR_VIEW       1	// looking back with bitmap
 #define CM_STATUS_BAR      2	// small status bar, w/ reticle
 #define CM_FULL_SCREEN     3	// full screen, no cockpit (w/ reticle)

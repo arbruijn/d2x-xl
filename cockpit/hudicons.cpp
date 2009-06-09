@@ -185,6 +185,9 @@ void CHUDIcons::DrawWeapons (void)
 	int	nIconPos = nWeaponIcons - 1;
 	int	nHiliteColor = gameOpts->app.bColorblindFriendly;
 	int	nMaxAutoSelect;
+	int	nDmgIconWidth = ((nWeaponIcons == 2) 
+								 /*&& ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+								       gameData.objs.consoleP->CriticalDamage ()))*/) ? 32 : 0;
 	int	fw, fh, faw, 
 			i, j, ll, n, 
 			ox = 6, 
@@ -252,9 +255,9 @@ for (i = 0; i < 2; i++) {
 	else {
 		x = screen.Width () / 2;
 		if (i)
-			x += dx;
+			x += dx + nDmgIconWidth;
 		else
-			x -= dx + wIcon;
+			x -= dx + wIcon + nDmgIconWidth;
 		}
 	for (j = 0; j < n; j++) {
 		int bActive, bHave, bAvailable, l, m;
@@ -492,6 +495,9 @@ void CHUDIcons::DrawInventory (void)
 				h = bmpInventory->Width ();
 	int		wIcon = (int) ((w + nIconScale - 1) / nIconScale * xScale), 
 				hIcon = (int) ((h + nIconScale - 1) / nIconScale * yScale);
+	int		nDmgIconWidth = (nIconPos
+									 /*&& ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+									       gameData.objs.consoleP->CriticalDamage ()))*/) ? 80 : 0;
 	//float	fLineWidth = (CCanvas::Current ()->Width () >= 1200) ? 2.0f : 1.0f;
 	float		fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 	ubyte		alpha = gameOpts->render.weaponIcons.alpha;
@@ -522,12 +528,14 @@ else
 #endif
 n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_ITEMS : NUM_INV_ITEMS - 2;
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
-x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox) / 2;
+x = (screen.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bActive = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
+	if (j == (n - firstItem + 1) / 2)
+		x += nDmgIconWidth;
 	cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
 	//m = 9 - j;
 	*szCount = '\0';
