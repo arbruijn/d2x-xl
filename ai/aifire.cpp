@@ -280,7 +280,9 @@ if (d_rand () < 16384) {
 		goto targetLed;
 }
 
+#if 0
 if (gameStates.app.bNostalgia) {
+#endif
 	count = 4;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
 	i = (NDL - gameStates.app.nDifficultyLevel - 1) * 4 * aim;
 	do {
@@ -290,6 +292,7 @@ if (gameStates.app.bNostalgia) {
 		CFixVector::NormalizedDir (vFire, vRandTargetPos, *vFirePoint);
 		dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vFire);
 		} while (--count && (dot < I2X (1) / 4));
+#if 0
 	}
 else {	// this way it should always work
 	count = 10;
@@ -304,6 +307,7 @@ else {	// this way it should always work
 		vRand -= vOffs;
 		} while (--count && (dot < I2X (1) / 4));
 	}
+#endif
 
 targetLed:
 
