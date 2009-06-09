@@ -485,7 +485,9 @@ if (info.nType == OBJ_ROBOT) {
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	int nType = SEGMENTS [OBJSEG (this)].m_nType;
-	if (nType == SEGMENT_IS_FUELCEN)
+	if (gameData.fusion.xCharge > I2X (2))
+		RequestEffects (PLAYER_LIGHTNINGS);
+	else if (nType == SEGMENT_IS_FUELCEN)
 		RequestEffects (PLAYER_LIGHTNINGS);
 	else if (nType == SEGMENT_IS_REPAIRCEN)
 		RequestEffects (PLAYER_LIGHTNINGS);

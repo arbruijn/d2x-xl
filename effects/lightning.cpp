@@ -1591,12 +1591,16 @@ if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
+	if (gameData.fusion.xCharge > I2X (2)) {
+		static tRgbaColorf color = {0.666f, 0.0f, 0.75f, 0.2f};
+		return &color;
+		}
 	int s = SEGMENTS [objP->info.nSegment].m_nType;
 	if (s == SEGMENT_IS_FUELCEN) {
 		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 		return &color;
 		}
-	else if (s == SEGMENT_IS_REPAIRCEN) {
+	if (s == SEGMENT_IS_REPAIRCEN) {
 		static tRgbaColorf color = {0.3f, 0.5f, 0.1f, 0.2f};
 		return &color;
 		}
