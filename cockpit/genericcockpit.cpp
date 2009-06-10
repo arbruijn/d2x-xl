@@ -1478,6 +1478,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		dmgColor.color.blue = RGBA_BLUE (nColor);
 		CCanvas::Current ()->SetFontColor (dmgColor, 0);
 		GrPrintF (NULL, x, y, szDamage [i]);
+		x += w [i];
 		}
 	}
 else {
