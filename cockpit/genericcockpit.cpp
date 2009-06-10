@@ -1464,7 +1464,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
-		sprintf (szDamage [i], "%d%% ", nDamage, '%');
+		sprintf (szDamage [i], "%d%c ", nDamage [i], '%');
 		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
 		tw += w [i];
 		}
@@ -1474,7 +1474,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	y += nRad;
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
-		nColor = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f) / 33;
+		nColor = dmgColors [i][nDamage [i] / 33];
 		dmgColor.color.red = RGBA_RED (nColor);
 		dmgColor.color.green = RGBA_GREEN (nColor);
 		dmgColor.color.blue = RGBA_BLUE (nColor);
