@@ -1470,7 +1470,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		}
 	fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
 	tw -= w [3];
-	x += tw / 2;
+	x -= tw / 2;
 	y += nRad;
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
