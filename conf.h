@@ -1,9 +1,6 @@
 /* conf.h.  Generated from conf.h.in by configure.  */
 /* conf.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define if building universal (internal helper macro) */
-/* #undef AC_APPLE_UNIVERSAL_BUILD */
-
 /* Define to enable console */
 /* #undef CONSOLE */
 
@@ -11,7 +8,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 37
+#define D2XMICRO 49
 
 /* d2x minor version */
 #define D2XMINOR 14
@@ -20,7 +17,7 @@
 /* #undef EDITOR */
 
 /* Define for faster input device polling when using SDL */
-#define FAST_EVENTPOLL /**/
+#define FAST_EVENTPOLL 
 
 /* Define for faster i/o on little-endian cpus */
 /* #undef FAST_FILE_IO */
@@ -69,25 +66,25 @@
 #define HAVE_UNISTD_H 1
 
 /* Define to enable use of the KaliNix driver */
-#define KALINIX /**/
+#define KALINIX 
 
 /* Define if you want to build for mac datafiles */
 /* #undef MACDATA */
 
 /* Define to use the IPX support of the OS */
-#define NATIVE_IPX /**/
+#define NATIVE_IPX 
 
 /* Define to disable asserts, int3, etc. */
-#define NDEBUG /**/
+#define NDEBUG 
 
 /* Define if you want a network build */
-#define NETWORK /**/
+#define NETWORK 
 
 /* Define if you want an assembler free build */
-#define NO_ASM /**/
+#define NO_ASM 
 
 /* Define if you want an OpenGL build */
-#define OGL /**/
+#define OGL 
 
 /* Define if you want D2X to use Z-buffering */
 #define OGL_ZBUF 1
@@ -102,16 +99,16 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "d2x-xl 1.14.37"
+#define PACKAGE_STRING "d2x-xl 1.14.49"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.14.37"
+#define PACKAGE_VERSION "1.14.49"
 
 /* Define for a "release" build */
-#define RELEASE /**/
+#define RELEASE 
 
 /* Define this to be the shared game directory root */
 #define SHAREPATH "${prefix}/share/d2x-xl"
@@ -132,19 +129,11 @@
 #define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.14.37"
+#define VERSION "1.14.49"
 
-/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
-   significant byte first (like Motorola and SPARC, unlike Intel). */
-#if defined AC_APPLE_UNIVERSAL_BUILD
-# if defined __BIG_ENDIAN__
-#  define WORDS_BIGENDIAN 1
-# endif
-#else
-# ifndef WORDS_BIGENDIAN
-/* #  undef WORDS_BIGENDIAN */
-# endif
-#endif
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+/* #undef WORDS_BIGENDIAN */
 
 /* Define if your processor needs data to be word-aligned */
 /* #undef WORDS_NEED_ALIGNMENT */
@@ -155,7 +144,7 @@
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.14.37"
+#define PACKAGE_STRING "d2x-xl 1.14.49"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1
