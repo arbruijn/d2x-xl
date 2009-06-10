@@ -945,6 +945,9 @@ for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width 
 
 void CGenericCockpit::DrawWeapons (void)
 {
+if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+	fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
+
 if (m_info.weaponBoxUser [0] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (m_info.weaponBoxStates [0] == WS_SET)) {
 		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
@@ -980,6 +983,8 @@ if (m_info.weaponBoxUser [1] == WBU_WEAPON) {
 	}
 else if (m_info.weaponBoxUser [1] == WBU_STATIC)
 	DrawStatic (1);
+
+fontManager.SetScale (1.0f);
 }
 
 //------------------------------------------------------------------------------

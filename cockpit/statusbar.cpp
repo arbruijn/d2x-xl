@@ -97,6 +97,7 @@ void CStatusBar::DrawScore (void)
 	static int nIdLabel = 0, nIdScore = 0;
 
 CCanvas::Push ();
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
 strcpy (szScore, (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
 strcat (szScore, ":");
@@ -114,6 +115,7 @@ Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCur
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
 nIdScore = PrintF (&nIdScore, x, y, szScore);
 lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 
@@ -217,18 +219,19 @@ void CStatusBar::DrawLives (void)
 	int		w, h, aw;
 
 CCanvas::Push ();
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 strcpy (szLives, IsMultiGame ? TXT_DEATHS : TXT_LIVES);
 fontManager.Current ()->StringSize (szLives, w, h, aw);
-nIdLives [0] = PrintF (&nIdLives [0], -(ScaleX (SB_LIVES_LABEL_X + w) - w), -ScaleY (SB_LIVES_LABEL_Y + m_info.heightPad), szLives);
+nIdLives [0] = PrintF (&nIdLives [0], -(ScaleX (SB_LIVES_LABEL_X + w / fontManager.Scale ()) - w), -ScaleY (SB_LIVES_LABEL_Y + HeightPad ()), szLives);
 
 if (IsMultiGame) {
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
 
 	char	szKilled [20];
 	int	x = SB_LIVES_X, 
-			y = -(ScaleY (SB_LIVES_Y + 1) + m_info.heightPad);
+			y = -(ScaleY (SB_LIVES_Y + 1) + HeightPad ());
 
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
@@ -241,11 +244,12 @@ if (IsMultiGame) {
 	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 	}
 else if (LOCALPLAYER.lives > 1) {
-	int y = -ScaleY (SB_LIVES_Y + m_info.heightPad);
+	int y = -ScaleY (SB_LIVES_Y + HeightPad ());
 	fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 	CBitmap* bmP = BitBlt (GAUGE_LIVES, SB_LIVES_X, SB_LIVES_Y);
 	nIdLives [1] = PrintF (&nIdLives [1], SB_LIVES_X + bmP->Width () + m_info.fontWidth, y, "x %d", LOCALPLAYER.lives - 1);
 	}
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 
@@ -259,14 +263,16 @@ void CStatusBar::DrawEnergy (void)
 	char szEnergy [20];
 
 CCanvas::Push ();
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
 sprintf (szEnergy, "%d", m_info.nEnergy);
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergy = PrintF (&nIdEnergy, 
 						  -(ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (SB_ENERGY_GAUGE_W) - w) / 2), 
-						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + m_info.heightPad), 
+						  -(ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + HeightPad ()), 
 						  "%d", m_info.nEnergy);
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 
@@ -307,6 +313,7 @@ if (gameStates.app.bD1Mission)
 	char szAB [3] = "AB";
 
 CCanvas::Push ();
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
 	fontManager.SetColorRGBi (RGBA_PAL2 (45, 21, 0), 1, 0, 0);
@@ -317,8 +324,9 @@ int w, h, aw;
 fontManager.Current ()->StringSize (szAB, w, h, aw);
 nIdAfterBurner = PrintF (&nIdAfterBurner, 
 								 -(ScaleX (SB_AFTERBURNER_GAUGE_X) + (ScaleX (SB_AFTERBURNER_GAUGE_W) - w) / 2), 
-								 -(ScaleY (SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - m_info.nLineSpacing) + m_info.heightPad), 
+								 -(ScaleY (SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - m_info.nLineSpacing) + HeightPad ()), 
 								 "AB");
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 
@@ -332,6 +340,7 @@ if (gameStates.app.bD1Mission)
 	int nEraseHeight;
 
 CCanvas::Push ();
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
 BitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
 nEraseHeight = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
@@ -342,6 +351,7 @@ if (nEraseHeight > 0) {
 			SB_AFTERBURNER_GAUGE_X + SB_AFTERBURNER_GAUGE_W - 1, SB_AFTERBURNER_GAUGE_Y + nEraseHeight - 1);
 	glEnable (GL_BLEND);
 	}
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 
@@ -355,6 +365,7 @@ void CStatusBar::DrawShield (void)
 	char szShield [20];
 
 CCanvas::Push ();
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 CCanvas::SetCurrent (CurrentGameScreen ());
 //LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 fontManager.SetColorRGBi (BLACK_RGBA, 1, 0, 0);
@@ -364,8 +375,9 @@ fontManager.Current ()->StringSize (szShield, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 
 						  -(ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
-						  -(ScaleY (SB_SHIELD_NUM_Y) + m_info.heightPad), 
+						  -(ScaleY (SB_SHIELD_NUM_Y) + HeightPad ()), 
 						  "%d", m_info.nShields);
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 

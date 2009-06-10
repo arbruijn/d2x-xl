@@ -208,7 +208,7 @@ int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 nIdShield = PrintF (&nIdShield, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
-						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + m_info.heightPad, szShield);
+						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + HeightPad (), szShield);
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
