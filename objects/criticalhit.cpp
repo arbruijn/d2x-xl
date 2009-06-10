@@ -58,6 +58,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "tactile.h"
 #endif
 
+#define REPAIR_DELAY	1500
+
 //------------------------------------------------------------------------------
 
 CFixVector CObject::RegisterHit (CFixVector vHit, short nModel)
@@ -193,7 +195,7 @@ void CObject::RepairDamage (void)
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return;
-if (gameStates.app.nSDLTicks - m_damage.tRepaired < 2000)
+if (gameStates.app.nSDLTicks - m_damage.tRepaired < REPAIR_DELAY)
 	return;
 for (int i = 0; i < 3; i++)
 	RepairDamage (i);

@@ -1493,6 +1493,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		dmgColor.color.green = RGBA_GREEN (nColor);
 		dmgColor.color.blue = RGBA_BLUE (nColor);
 		CCanvas::Current ()->SetFontColor (dmgColor, 0);
+		szDamage [i][2] = '\0'; // remove the trailing blank, it causes rendering artifacts
 		GrPrintF (NULL, x, y, szDamage [i]);
 		x += w [i];
 		}
