@@ -1472,10 +1472,14 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	char				szDamage [3][10];
 	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
 
-	fontManager.SetScale (max (1.0f, floor (fScale / 2.0f + 0.5f)));
+	fontManager.SetScale (max (1.0f, floor (fScale + 0.5f)));
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
+#if 1
+		sprintf (szDamage [i], "%d ", szId [i]);
+#else
 		sprintf (szDamage [i], "%c:%d ", szId [i], nDamage [i]);
+#endif
 		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
 		tw += w [i];
 		}

@@ -166,8 +166,6 @@ float CObject::DamageRate (void)
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return 0.0f;
-if (gameStates.app.nSDLTicks - m_damage.tRepaired < 2000)
-	return 0.0f;
 float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
 if (fShieldScale < 1.0f)
 	fShieldScale = 1.0f;
@@ -207,7 +205,7 @@ fix CObject::SubSystemDamage (int i)
 { 
 	fix	nHits;
 
-return (EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) ? fix (nHits * pow (DamageRate (), nHits) + 0.5f) : I2X (1) / 2; 
+return (EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) ? fix ((I2X (1) / 2) * pow (DamageRate (), nHits) + 0.5f) : I2X (1) / 2; 
 }
 
 //------------------------------------------------------------------------------
