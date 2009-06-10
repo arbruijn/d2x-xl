@@ -1459,7 +1459,7 @@ if (cockpit->Hide ())
 	static char*	szId = "ADG";
 
 #if 1 //!DBG
-if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
+if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 2000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
 	return;
 #endif
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
