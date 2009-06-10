@@ -469,9 +469,9 @@ void CFont::StringSize (const char *s, int& stringWidth, int& stringHeight, int&
 	int i = 0, longestWidth = 0, nTab = 0;
 	int width, spacing;
 
-stringHeight = m_info.height;
+stringHeight = int (m_info.height * m_scale);
 stringWidth = 0;
-averageWidth = m_info.width;
+averageWidth = int (m_info.width * m_scale);
 
 if (!(s && *s))
 	return;
@@ -503,16 +503,16 @@ while (*s) {
 		s++;
 		}
 	}
-stringWidth = longestWidth;
+stringWidth = fix (longestWidth * m_scale);
 }
 
 //------------------------------------------------------------------------------
 
 void CFont::StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth)
 {
-stringHeight = m_info.height;
+stringHeight = int (m_info.height * m_scale);
 stringWidth = 0;
-averageWidth = m_info.width;
+averageWidth = int (m_info.width * m_scale);
 
 if (!(s && *s))
 	return;
@@ -552,6 +552,7 @@ void CFontManager::Init (void)
 {
 memset (m_fonts, 0, sizeof (m_fonts));
 m_save.Create (10);
+m_scale = 1.0f;
 }
 
 //------------------------------------------------------------------------------

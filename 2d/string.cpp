@@ -368,7 +368,7 @@ while (nextRowP != NULL) {
 				}
 
 			if (font.flags & FT_PROPORTIONAL)
-				fp = font.chars[letter];
+				fp = font.chars [letter];
 			else
 				fp = font.data + letter * BITS_TO_BYTES (width) * font.height;
 
@@ -417,7 +417,8 @@ int CFont::DrawString (int left, int top, const char *s)
 	const char*		textP, * nextRowP, * text_ptr1;
 	int				width, spacing, letter;
 	int				x, y;
-	int				origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
+	int				origColor = CCanvas::Current ()->FontColor (0).index; //to allow easy reseting to default string color with colored strings -MPM
+	float				fScale = fontManager.Scale ();
 	ubyte				c;
 	CBitmap*			bmf;
 	tCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
@@ -449,7 +450,7 @@ while (nextRowP != NULL) {
 		if (fontManager.Current ()->InFont (letter)) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
-			bmf->RenderScaled (x, y, 0, 0, I2X (1), 0, colorP);
+			bmf->RenderScaled (x, y, int (bmf->Width () * fScale), int (bmf->Height () * fScale), I2X (1), 0, colorP);
 			}
 		x += spacing;
 		textP++;

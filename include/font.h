@@ -132,6 +132,7 @@ class CFontManager {
 		CFont*			m_gameFonts [MAX_FONTS];
 		CFont*			m_current;
 		CStack<CFont*>	m_save;
+		float				m_scale;
 
 	public:
 		CFontManager () { Init (); }
@@ -143,6 +144,8 @@ class CFontManager {
 		void Unload (CFont* font);
 		inline CFont* Current (void) { return m_current; }
 		inline CFont* GameFont (int i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
+		inline void SetScale (float fScale) { m_scale = fScale; }
+		inline float Scale (void) { return m_scale; }
 		void SetCurrent (CFont* fontP);
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);

@@ -1460,11 +1460,12 @@ if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired (
 if (gameOpts->render.cockpit.bTextGauges) {
 	int				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
 	char				szDamage [3][10];
-	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
+	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 255}};
 
+	fontManager.SetScale (floor (fScale + 0.5f));
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
-		sprintf (szDamage [i], "%d%c ", nDamage [i], '%');
+		sprintf (szDamage [i], "%d ", nDamage [i]);
 		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
 		tw += w [i];
 		}
@@ -1482,6 +1483,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		GrPrintF (NULL, x, y, szDamage [i]);
 		x += w [i];
 		}
+	fontManager.SetScale (1.0f);
 	}
 else {
 		static tSinCosf sinCos [32];
@@ -1495,22 +1497,22 @@ else {
 	x -= nRad;
 	glLineWidth (fScale);
 
-	#if 0
+#if 0
 	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
-	#	if 0
+#	if 0
 	CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
 	OglDrawFilledRect (x - 7, y - 7, x + 71, y + 71);
 	CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
 	OglDrawEmptyRect (x - 7, y - 7, x + 71, y + 71);
-	#	else
+#	else
 	glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
 	OglDrawEllipse (
 		sizeofa (sinCos), GL_LINE_LOOP, 
 		40.0f / float (screen.Width ()), 0.5f, 
 		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
-	#	endif
+#	endif
 	glLineWidth (1);
-	#endif
+#endif
 
 	nRad *= 2;
 	for (i = 0; i < 3; i++) {
