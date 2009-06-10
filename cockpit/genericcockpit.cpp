@@ -1476,7 +1476,7 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
 #if 1
-		sprintf (szDamage [i], "%d ", szId [i]);
+		sprintf (szDamage [i], "%d ", nDamage [i]);
 #else
 		sprintf (szDamage [i], "%c:%d ", szId [i], nDamage [i]);
 #endif

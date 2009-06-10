@@ -58,8 +58,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "tactile.h"
 #endif
 
-#define REPAIR_DELAY	1500
-
 //------------------------------------------------------------------------------
 
 CFixVector CObject::RegisterHit (CFixVector vHit, short nModel)
@@ -168,6 +166,8 @@ float CObject::DamageRate (void)
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return 0.0f;
+if (gameStates.app.nSDLTicks - m_damage.tRepaired < 2000)
+	return 0.0f;
 float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
 if (fShieldScale < 1.0f)
 	fShieldScale = 1.0f;
@@ -183,8 +183,7 @@ if (!m_damage.nHits [i])
 m_damage.nHits [i]--;
 m_damage.tRepaired = gameStates.app.nSDLTicks;
 #if DBG
-static char* szSubSystem [] = {"AIM", "DRIVES", "GUNS"};
-HUDMessage (0, "%s repaired (%d)", szSubSystem [i], m_damage.nHits [i]);
+HUDMessage (0, "AIM repaired (%d)", m_damage.nHits [0]);
 #endif
 return true;
 }
@@ -195,7 +194,7 @@ void CObject::RepairDamage (void)
 { 
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return;
-if (gameStates.app.nSDLTicks - m_damage.tRepaired < REPAIR_DELAY)
+if (gameStates.app.nSDLTicks - m_damage.tRepaired < 2000)
 	return;
 for (int i = 0; i < 3; i++)
 	RepairDamage (i);
@@ -207,7 +206,7 @@ fix CObject::SubSystemDamage (int i)
 { 
 	fix	nHits;
 
-return (EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) ? fix ((I2X (1) / 2) * pow (DamageRate (), nHits) + 0.5f) : I2X (1) / 2; 
+return (EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) ? fix (nHits * pow (DamageRate (), nHits) + 0.5f) : I2X (1) / 2; 
 }
 
 //------------------------------------------------------------------------------
