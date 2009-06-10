@@ -468,10 +468,11 @@ void CFont::StringSize (const char *s, int& stringWidth, int& stringHeight, int&
 {
 	int i = 0, longestWidth = 0, nTab = 0;
 	int width, spacing;
+	float fScale = fontManager.Scale ();
 
-stringHeight = int (m_info.height * m_scale);
+stringHeight = int (m_info.height * fScale + 0.5f);
 stringWidth = 0;
-averageWidth = int (m_info.width * m_scale);
+averageWidth = int (m_info.width * fScale + 0.5f);
 
 if (!(s && *s))
 	return;
@@ -503,16 +504,18 @@ while (*s) {
 		s++;
 		}
 	}
-stringWidth = fix (longestWidth * m_scale);
+stringWidth = fix (longestWidth * fScale + 0.5f);
 }
 
 //------------------------------------------------------------------------------
 
 void CFont::StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth)
 {
-stringHeight = int (m_info.height * m_scale);
+	float fScale = fontManager.Scale ();
+
+stringHeight = int (m_info.height * fScale + 0.5f);
 stringWidth = 0;
-averageWidth = int (m_info.width * m_scale);
+averageWidth = int (m_info.width * fScale + 0.5f);
 
 if (!(s && *s))
 	return;
@@ -529,7 +532,7 @@ do {
 		*pj = '\0';
 	fontManager.Current ()->StringSize (pi, w, stringHeight, averageWidth);
 	if (nTab && nTabs) {
-		stringWidth = LHX (nTabs [nTab - 1]);
+		stringWidth = LHX (int (nTabs [nTab - 1] * fScale + 0.5f));
 		if (gameStates.multi.bSurfingNet)
 			stringWidth += w;
 		else
