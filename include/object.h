@@ -702,9 +702,7 @@ class CObjHitInfo {
 
 class CObjDamageInfo {
 	public:
-		fix				xGuns;
-		fix				xDrives;
-		fix				xAim;
+		fix				nHits [3];	// aim, drives, guns
 		bool				bCritical;
 		int				nCritical;
 		int				tCritical;	// time of last critical hit
@@ -887,20 +885,29 @@ class CObject : public CObjectInfo {
 			return bCritical;
 			}
 		inline int CritHitTime (void) { return m_damage.tCritical; }
-		fix AimDamage (void);
-		fix GunDamage (void);
-		fix DriveDamage (void);
 		inline void SetDamage (fix xAim, fix xDrives, fix xGuns) {
-			m_damage.xAim = xAim;
-			m_damage.xDrives = xDrives;
-			m_damage.xGuns = xGuns;
+			m_damage.nHits [0] = xAim;
+			m_damage.nHits [1] = xDrives;
+			m_damage.nHits [2] = xGuns;
 			}
 
+		inline bool CriticalDamage (void) { return m_damage.nHits [0] || m_damage.nHits [1] || m_damage.nHits [2]; }
+		float DamageRate (void);
+		fix SubSystemDamage (int i);
+		inline fix CObject::AimDamage (void) { SubSystemDamage (0); }
+		inline fix CObject::GunDamage (void) { SubSystemDamage (0); }
+		inline fix CObject::DriveDamage (void) { SubSystemDamage (0); }
+		inline bool CObject::ResetDamage (int i) { 
+			if (!m_damage.nHits [i])
+				return false;
+			m_damage.nHits [i] = 0;
+			return true;
+			}
 		bool ResetDamage (void);
-		bool CriticalDamage (void) {
-			return (m_damage.xAim < I2X (1) / 2) || (m_damage.xDrives < I2X (1) / 2) || (m_damage.xGuns < I2X (1) / 2); }
+		bool RepairDamage (int i);
 		void RepairDamage (void);
 		int TimeLastRepaired (void) { return m_damage.tRepaired; }
+
 
 		bool Cloaked (void);
 

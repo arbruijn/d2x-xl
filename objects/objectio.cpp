@@ -373,9 +373,9 @@ switch (info.renderType) {
 if (saveGameManager.Version () < 45)
 	ResetDamage ();
 else {
-	m_damage.xAim = cf.ReadFix ();
-	m_damage.xDrives = cf.ReadFix ();
-	m_damage.xGuns = cf.ReadFix ();
+	m_damage.nHits [0] = cf.ReadFix ();
+	m_damage.nHits [1] = cf.ReadFix ();
+	m_damage.nHits [2] = cf.ReadFix ();
 	}
 }
 
@@ -489,9 +489,9 @@ switch (info.renderType) {
 	case RT_LASER:
 		break;
 	}
-cf.WriteFix (m_damage.xAim);
-cf.WriteFix (m_damage.xDrives);
-cf.WriteFix (m_damage.xGuns);
+cf.WriteFix (m_damage.nHits [0]);
+cf.WriteFix (m_damage.nHits [1]);
+cf.WriteFix (m_damage.nHits [2]);
 }
 
 //------------------------------------------------------------------------------
