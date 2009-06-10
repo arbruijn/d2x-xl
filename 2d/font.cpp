@@ -106,25 +106,26 @@ if (!InFont (letter)) {				//not in font, draw as space
 		spacing = m_info.width / 2;
 	else
 		spacing = m_info.width;
-	return;
 	}
+else {
+	if (m_info.flags & FT_PROPORTIONAL)
+		width = m_info.widths [letter];
+	else
+		width = m_info.width;
+	spacing = width;
 
-if (m_info.flags & FT_PROPORTIONAL)
-	width = m_info.widths [letter];
-else
-	width = m_info.width;
-spacing = width;
-
-if (m_info.flags & FT_KERNED) {
-	if ((c2 != 0) && (c2 != '\n')) {
-		int letter2 = c2 - m_info.minChar;
-		if (InFont (letter2)) {
-				ubyte *p = FindKernEntry ((ubyte) letter, (ubyte) letter2);
-			if (p)
-				spacing = p [2];
+	if (m_info.flags & FT_KERNED) {
+		if ((c2 != 0) && (c2 != '\n')) {
+			int letter2 = c2 - m_info.minChar;
+			if (InFont (letter2)) {
+					ubyte *p = FindKernEntry ((ubyte) letter, (ubyte) letter2);
+				if (p)
+					spacing = p [2];
+				}
 			}
 		}
 	}
+spacing = int (spacing * fontManager.Scale ());
 }
 
 //------------------------------------------------------------------------------
@@ -470,41 +471,43 @@ void CFont::StringSize (const char *s, int& stringWidth, int& stringHeight, int&
 	int width, spacing;
 	float fScale = fontManager.Scale ();
 
-stringHeight = int (m_info.height * fScale + 0.5f);
+stringHeight = m_info.height;
 stringWidth = 0;
-averageWidth = int (m_info.width * fScale + 0.5f);
+averageWidth = int (m_info.width * fScale);
 
-if (!(s && *s))
-	return;
+if (s && *s) {
+	fontManager.SetScale (1.0f);
+	while (*s) {
+		while (*s == '\n') {
+			s++;
+			stringHeight += m_info.height + 2;
+			stringWidth = 0;
+			nTab = 0;
+			}
 
-while (*s) {
-	while (*s == '\n') {
-		s++;
-		stringHeight += m_info.height + 2;
-		stringWidth = 0;
-		nTab = 0;
+		if (*s == 0) 
+			break;
+
+		//	1 = next byte specifies color, so skip the 1 and the color value
+		if (*s == CC_COLOR)
+			s += 2;
+		else if (*s == CC_LSPACING) {
+			stringHeight += *(s + 1) - '0';
+			s += 2;
+			}
+		else {
+			GetCharWidth (s[0], s[1], width, spacing);
+			stringWidth += spacing;
+			if (stringWidth > longestWidth)
+				longestWidth = stringWidth;
+			i++;
+			s++;
+			}
 		}
-
-	if (*s == 0) 
-		break;
-
-	//	1 = next byte specifies color, so skip the 1 and the color value
-	if (*s == CC_COLOR)
-		s += 2;
-	else if (*s == CC_LSPACING) {
-		stringHeight += * (s+1)-'0';
-		s += 2;
-		}
-	else {
-		GetCharWidth (s[0], s[1], width, spacing);
-		stringWidth += spacing;
-		if (stringWidth > longestWidth)
-			longestWidth = stringWidth;
-		i++;
-		s++;
-		}
+	fontManager.SetScale (fScale);
 	}
-stringWidth = fix (longestWidth * fScale + 0.5f);
+stringHeight = int (stringHeight * fScale);
+stringWidth = int (longestWidth * fScale);
 }
 
 //------------------------------------------------------------------------------
@@ -513,9 +516,9 @@ void CFont::StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight
 {
 	float fScale = fontManager.Scale ();
 
-stringHeight = int (m_info.height * fScale + 0.5f);
+stringHeight = int (m_info.height * fScale);
 stringWidth = 0;
-averageWidth = int (m_info.width * fScale + 0.5f);
+averageWidth = int (m_info.width * fScale);
 
 if (!(s && *s))
 	return;
@@ -532,7 +535,7 @@ do {
 		*pj = '\0';
 	fontManager.Current ()->StringSize (pi, w, stringHeight, averageWidth);
 	if (nTab && nTabs) {
-		stringWidth = LHX (int (nTabs [nTab - 1] * fScale + 0.5f));
+		stringWidth = LHX (int (nTabs [nTab - 1] * fScale));
 		if (gameStates.multi.bSurfingNet)
 			stringWidth += w;
 		else

@@ -627,7 +627,10 @@ for (t = szBombCount; *t; t++)
 		*t = '\x84';	//convert to wide '1'
 m_history [gameStates.render.vr.nCurrentPage].bombCount = (bomb == PROXMINE_INDEX) ? nBombs : -nBombs;
 //ClearBombCount (bgColor);
+if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+	fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 nIdBombCount = DrawBombCount (nIdBombCount, x, y, nBombs ? (bomb == PROXMINE_INDEX) ? RED_RGBA : GOLD_RGBA : GREEN_RGBA, szBombCount);
+fontManager.SetScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1460,7 +1463,7 @@ if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired (
 if (gameOpts->render.cockpit.bTextGauges) {
 	int				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
 	char				szDamage [3][10];
-	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 255}};
+	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
 
 	fontManager.SetScale (floor (fScale + 0.5f));
 	for (i = 0; i < 3; i++) {
@@ -1470,12 +1473,11 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		tw += w [i];
 		}
 	fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
-	tw -= w [3];
-	x -= tw / 2;
-	y += nRad;
+	x -= (tw - w [3]) / 2;
+	y += nRad / 2;
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
-		nColor = dmgColors [i][nDamage [i] / 33];
+		nColor = dmgColors [1][nDamage [i] / 33];
 		dmgColor.color.red = RGBA_RED (nColor);
 		dmgColor.color.green = RGBA_GREEN (nColor);
 		dmgColor.color.blue = RGBA_BLUE (nColor);
@@ -2106,7 +2108,14 @@ int CGenericCockpit::WidthPad (char* pszText)
 	int	w, h, aw;
 
 fontManager.Current ()->StringSize (pszText, w, h, aw);
-return (ScaleX (w) - w) / 2;
+return (int (ScaleX (w) / fontManager.Scale () + 0.5f) - w) / 2;
+}
+
+//------------------------------------------------------------------------------
+
+int CGenericCockpit::HeightPad (void)
+{
+return int (m_info.heightPad / fontManager.Scale () + 0.5f);
 }
 
 //------------------------------------------------------------------------------

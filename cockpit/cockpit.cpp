@@ -151,7 +151,7 @@ int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* 
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (nColor, 1, 0, 1);
-int i = PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + m_info.heightPad), pszBombCount, nIdBombCount);
+int i = PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + HeightPad ()), pszBombCount, nIdBombCount);
 CCanvas::Pop ();
 return i;
 }
@@ -205,9 +205,11 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 sprintf (szShield, "%d", m_info.nShields);
 int w, h, aw;
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 nIdShield = PrintF (&nIdShield, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + m_info.heightPad, szShield);
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 
@@ -230,9 +232,11 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 sprintf (szEnergy, "%d", m_info.nEnergy);
 int w, h, aw;
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 nIdEnergy = PrintF (&nIdEnergy,-(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), szEnergy);
+fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
 

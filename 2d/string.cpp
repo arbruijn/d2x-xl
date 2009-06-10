@@ -624,7 +624,10 @@ if (gameOpts->render.coronas.nStyle < 2) {
 		grsString	*ps;
 
 	if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
-		ps->bmP->RenderScaled (x, y, 0, 0, I2X (1), 0, &CCanvas::Current ()->FontColor (0));
+		CBitmap* bmP = ps->bmP;
+		float		fScale = fontManager.Scale ();
+
+		ps->bmP->RenderScaled (x, y, int (bmP->Width () * fScale), int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0));
 		return (int) (ps - stringPool) + 1;
 		}
 	}

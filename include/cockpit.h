@@ -239,6 +239,7 @@ class CGenericCockpit {
 
 		int WidthPad (char* pszText);
 		int WidthPad (int nValue);
+		int HeightPad (void);
 
 		inline bool ShowAlways (void) { 
 			return (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR); 
