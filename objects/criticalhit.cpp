@@ -183,7 +183,8 @@ if (!m_damage.nHits [i])
 m_damage.nHits [i]--;
 m_damage.tRepaired = gameStates.app.nSDLTicks;
 #if DBG
-HUDMessage (0, "AIM repaired (%d)", m_damage.nHits [0]);
+static char* szSubSystem [] = {"AIM", "DRIVES", "GUNS"};
+HUDMessage (0, "%s repaired (%d)", szSubSystem [i], m_damage.nHits [i]);
 #endif
 return true;
 }

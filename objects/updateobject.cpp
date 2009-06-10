@@ -563,6 +563,11 @@ int UpdateAllObjects (void)
 	CObject *objP, *nextObjP;
 
 gameData.objs.nFrameCount++;
+#if DBG
+if (!OBJECTS [gameData.multiplayer.nLocalPlayer].CriticalDamage () && 
+	 (gameStates.app.nSDLTicks - OBJECTS [gameData.multiplayer.nLocalPlayer].TimeLastRepaired () > 5000))
+	OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (1 + d_rand () % 10, 1 + d_rand () % 10, 1 + d_rand () % 10);
+#endif
 if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
 	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
 #if LIMIT_PHYSICS_FPS

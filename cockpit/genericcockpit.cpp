@@ -1456,6 +1456,8 @@ if (cockpit->Hide ())
 							{RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64)}
 							};
 
+	static char*	szId = "ADG";
+
 #if 1 //!DBG
 if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
 	return;
@@ -1470,10 +1472,10 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	char				szDamage [3][10];
 	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
 
-	fontManager.SetScale (floor (fScale + 0.5f));
+	fontManager.SetScale (max (1.0f, floor (fScale / 2.0f + 0.5f)));
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
-		sprintf (szDamage [i], "%d ", nDamage [i]);
+		sprintf (szDamage [i], "%c:%d ", szId [i], nDamage [i]);
 		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
 		tw += w [i];
 		}
