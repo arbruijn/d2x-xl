@@ -894,9 +894,9 @@ class CObject : public CObjectInfo {
 		inline bool CriticalDamage (void) { return m_damage.nHits [0] || m_damage.nHits [1] || m_damage.nHits [2]; }
 		float DamageRate (void);
 		fix SubSystemDamage (int i);
-		inline fix CObject::AimDamage (void) { SubSystemDamage (0); }
-		inline fix CObject::GunDamage (void) { SubSystemDamage (0); }
-		inline fix CObject::DriveDamage (void) { SubSystemDamage (0); }
+		inline fix CObject::AimDamage (void) { return SubSystemDamage (0); }
+		inline fix CObject::GunDamage (void) { return SubSystemDamage (0); }
+		inline fix CObject::DriveDamage (void) { return SubSystemDamage (0); }
 		inline bool CObject::ResetDamage (int i) { 
 			if (!m_damage.nHits [i])
 				return false;
