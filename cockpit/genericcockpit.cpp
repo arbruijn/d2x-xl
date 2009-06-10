@@ -1454,11 +1454,11 @@ if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired (
 #endif
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
 	int	nRad = int (16.0f * fScale + 0.5f);
-	int	y = CCanvas::Current ()->Height () / 2 - nRad;
+	int	y = CCanvas::Current ()->Height () / 2 + nRad;
 	int	x = CCanvas::Current ()->Width () / 2;
 
 if (gameOpts->render.cockpit.bTextGauges) {
-	int				nColor, nDamage [3], h [4], w [4], aw [4];
+	int				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
 	char				szDamage [3][10];
 	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
 
@@ -1466,10 +1466,12 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
 		sprintf (szDamage [i], "%d%% ", nDamage, '%');
 		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
-		x -= w [i];
+		tw += w [i];
 		}
 	fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
-	x += w [3];
+	tw -= w [3];
+	x += tw / 2;
+	y += nRad;
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
 		nColor = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f) / 33;
