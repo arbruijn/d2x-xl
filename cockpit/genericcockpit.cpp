@@ -1440,59 +1440,81 @@ if (cockpit->Hide ())
 	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
 	static char*	szDamage [3] = {"AIM: %d%c", "DRIVES: %d%c", "GUNS: %d%c"};
 
-	int	nDamage = 0x7fffffff, i, j, wMax = 0;
+	int				i;
 
-	static int		dmgColors [12] = {
-							RGBA (64, 16, 64, 64), RGBA (192, 0, 0, 64), RGBA (255, 208, 0, 64), RGBA (0, 192, 0, 64), 
-							RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64), 
-							RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64)
+	static int		dmgColors [3][4] = {
+							{RGBA (64, 16, 64, 64), RGBA (192, 0, 0, 64), RGBA (255, 208, 0, 64), RGBA (0, 192, 0, 64)}, 
+							{RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64)}, 
+							{RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64)}
 							};
 
 #if 1 //!DBG
 if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
 	return;
 #endif
-	static tSinCosf sinCos [32];
-	static int bInitSinCos = 1;
-
-if (bInitSinCos) {
-	OglComputeSinCos (sizeofa (sinCos), sinCos);
-	bInitSinCos = 0;
-	}
-
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
-	int nRad = int (16.0f * fScale + 0.5f);
-	int y = CCanvas::Current ()->Height () / 2 + nRad;
-	int x = CCanvas::Current ()->Width ();
+	int	nRad = int (16.0f * fScale + 0.5f);
+	int	y = CCanvas::Current ()->Height () / 2 - nRad;
+	int	x = CCanvas::Current ()->Width () / 2;
 
-x /= 2;
-x -= nRad;
-glLineWidth (fScale);
+if (gameOpts->render.cockpit.bTextGauges) {
+	int				nColor, nDamage [3], h [4], w [4], aw [4];
+	char				szDamage [3][10];
+	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
 
-#if 0
-fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
-#	if 0
-CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
-OglDrawFilledRect (x - 7, y - 7, x + 71, y + 71);
-CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
-OglDrawEmptyRect (x - 7, y - 7, x + 71, y + 71);
-#	else
-glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
-OglDrawEllipse (
-	sizeofa (sinCos), GL_LINE_LOOP, 
-	40.0f / float (screen.Width ()), 0.5f, 
-	40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
-#	endif
-glLineWidth (1);
-#endif
+	for (i = 0; i < 3; i++) {
+		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
+		sprintf (szDamage [i], "%d%% ", nDamage, '%');
+		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
+		x -= w [i];
+		}
+	fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
+	x += w [3];
+	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
+	for (i = 0; i < 3; i++) {
+		nColor = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f) / 33;
+		dmgColor.color.red = RGBA_RED (nColor);
+		dmgColor.color.green = RGBA_GREEN (nColor);
+		dmgColor.color.blue = RGBA_BLUE (nColor);
+		CCanvas::Current ()->SetFontColor (dmgColor, 0);
+		GrPrintF (NULL, x, y, szDamage [i]);
+		}
+	}
+else {
+		static tSinCosf sinCos [32];
+		static int bInitSinCos = 1;
 
-nRad *= 2;
-for (i = 0; i < 3; i++) {
-	if (LoadDamageIcon (i)) {
-		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 33;
-		j = 3 * i + nDamage;
-		CCanvas::Current ()->SetColorRGBi (dmgColors [nDamage]);
-		bmpDamageIcon [i]->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
+	if (bInitSinCos) {
+		OglComputeSinCos (sizeofa (sinCos), sinCos);
+		bInitSinCos = 0;
+		}
+
+	x -= nRad;
+	glLineWidth (fScale);
+
+	#if 0
+	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
+	#	if 0
+	CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
+	OglDrawFilledRect (x - 7, y - 7, x + 71, y + 71);
+	CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
+	OglDrawEmptyRect (x - 7, y - 7, x + 71, y + 71);
+	#	else
+	glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
+	OglDrawEllipse (
+		sizeofa (sinCos), GL_LINE_LOOP, 
+		40.0f / float (screen.Width ()), 0.5f, 
+		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
+	#	endif
+	glLineWidth (1);
+	#endif
+
+	nRad *= 2;
+	for (i = 0; i < 3; i++) {
+		if (LoadDamageIcon (i)) {
+			CCanvas::Current ()->SetColorRGBi (dmgColors [i][int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f) / 33]);
+			bmpDamageIcon [i]->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
+			}
 		}
 	}
 }
