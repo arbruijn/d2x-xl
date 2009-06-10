@@ -627,7 +627,10 @@ for (t = szBombCount; *t; t++)
 		*t = '\x84';	//convert to wide '1'
 m_history [gameStates.render.vr.nCurrentPage].bombCount = (bomb == PROXMINE_INDEX) ? nBombs : -nBombs;
 //ClearBombCount (bgColor);
+if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+	fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 nIdBombCount = DrawBombCount (nIdBombCount, x, y, nBombs ? (bomb == PROXMINE_INDEX) ? RED_RGBA : GOLD_RGBA : GREEN_RGBA, szBombCount);
+fontManager.SetScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -942,6 +945,9 @@ for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width 
 
 void CGenericCockpit::DrawWeapons (void)
 {
+if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+	fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
+
 if (m_info.weaponBoxUser [0] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (m_info.weaponBoxStates [0] == WS_SET)) {
 		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
@@ -977,6 +983,8 @@ if (m_info.weaponBoxUser [1] == WBU_WEAPON) {
 	}
 else if (m_info.weaponBoxUser [1] == WBU_STATIC)
 	DrawStatic (1);
+
+fontManager.SetScale (1.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -1003,7 +1011,7 @@ tRgbColorb playerColors [] = {
  {29, 29, 0}};
 
 typedef struct {
-	sbyte x, y;
+	int x, y;
 } xy;
 
 //offsets for reticle parts: high-big  high-sml  low-big  low-sml
@@ -1067,11 +1075,11 @@ bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.ren
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-		  (x + ScaleX (cross_offsets [ofs].x)), (y + ScaleY (cross_offsets [ofs].y)), false, true);
+		  (x + ScaleX (cross_offsets [ofs].x - 1)), (y + ScaleY (cross_offsets [ofs].y - 1)), false, true);
 BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-		  (x + ScaleX (primary_offsets [ofs].x)), (y + ScaleY (primary_offsets [ofs].y)), false, true);
+		  (x + ScaleX (primary_offsets [ofs].x - 1)), (y + ScaleY (primary_offsets [ofs].y - 1)), false, true);
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-		  (x + ScaleX (secondary_offsets [ofs].x)), (y + ScaleY (secondary_offsets [ofs].y)), false, true);
+		  (x + ScaleX (secondary_offsets [ofs].x - 1)), (y + ScaleY (secondary_offsets [ofs].y - 1)), false, true);
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);
@@ -1440,39 +1448,49 @@ if (cockpit->Hide ())
 	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
 	static char*	szDamage [3] = {"AIM: %d%c", "DRIVES: %d%c", "GUNS: %d%c"};
 
-	int	nDamage = 0x7fffffff, h, i, j, w, aw, wMax = 0;
+	int				i;
 
-#if !DBG
-if (gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) {
-	for (i = 0; i < 3; i++) {
-		if (nDamage > m_info.nDamage [i])
-			nDamage = m_info.nDamage [i];
-		}
-	if (nDamage >= I2X (1) / 2)
-		return;
-	}
+	static int		dmgColors [3][4] = {
+							{RGBA (64, 16, 64, 64), RGBA (192, 0, 0, 64), RGBA (255, 208, 0, 64), RGBA (0, 192, 0, 64)}, 
+							{RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64)}, 
+							{RGBA (96, 32, 96, 64), RGBA (255, 0, 0, 64), RGBA (255, 255, 0, 64), RGBA (0, 255, 0, 64)}
+							};
+
+#if 1 //!DBG
+if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
+	return;
 #endif
+	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
+	int	nRad = int (16.0f * fScale + 0.5f);
+	int	y = CCanvas::Current ()->Height () / 2 + nRad;
+	int	x = CCanvas::Current ()->Width () / 2;
+
 if (gameOpts->render.cockpit.bTextGauges) {
+	int				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
+	char				szDamage [3][10];
+	tCanvasColor	dmgColor = {-1, 1, {0, 0, 0, 128}};
+
+	fontManager.SetScale (floor (fScale + 0.5f));
 	for (i = 0; i < 3; i++) {
-		fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
-		if (wMax < w)
-			wMax = w;
+		nDamage [i] = int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f);
+		sprintf (szDamage [i], "%d ", nDamage [i]);
+		fontManager.Current ()->StringSize (szDamage [i], w [i], h [i], aw [i]);
+		tw += w [i];
 		}
-	if (nDamage >= I2X (1) / 2)
-		return;
-	int y = 40 - h - m_info.nLineSpacing;
+	fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
+	x -= (tw - w [3]) / 2;
+	y += nRad / 2;
+	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
-		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f);
-#if !DBG
-		if (nDamage < 100) 
-#endif
-			{
-			fontManager.SetColorRGBi (nColor [nDamage / 34], 1, 0, 0);
-			fontManager.Current ()->StringSize (szDamage [i], w, h, aw);
-			nIdDamage [i] = GrPrintF (&nIdDamage [i], 2 + wMax - w, y, szDamage [i], nDamage, '%');
-			}
-		y += h - m_info.nLineSpacing;
+		nColor = dmgColors [1][nDamage [i] / 33];
+		dmgColor.color.red = RGBA_RED (nColor);
+		dmgColor.color.green = RGBA_GREEN (nColor);
+		dmgColor.color.blue = RGBA_BLUE (nColor);
+		CCanvas::Current ()->SetFontColor (dmgColor, 0);
+		GrPrintF (NULL, x, y, szDamage [i]);
+		x += w [i];
 		}
+	fontManager.SetScale (1.0f);
 	}
 else {
 		static tSinCosf sinCos [32];
@@ -1483,35 +1501,33 @@ else {
 		bInitSinCos = 0;
 		}
 
-	int y = CCanvas::Current ()->Height () - 71;
-	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
-			y -= cockpit->LHX (10);
- 	int x = CCanvas::Current ()->Width ();
-	x /= 2;
-	x -= 31;
+	x -= nRad;
+	glLineWidth (fScale);
 
-	glLineWidth (float (CCanvas::Current ()->Width ()) / 640.0f);
-#if 1
+#if 0
+	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
+#	if 0 // rectangular frame
 	CCanvas::Current ()->SetColorRGB (64, 32, 0, 64);
-	OglDrawFilledRect (x - 8, y - 8, x + 70, y + 70);
+	OglDrawFilledRect (x - 7, y - 7, x + 71, y + 71);
 	CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
-	OglDrawEmptyRect (x - 8, y - 8, x + 70, y + 70);
-#else
+	OglDrawEmptyRect (x - 7, y - 7, x + 71, y + 71);
+#	else // round frame
+	glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
 	OglDrawEllipse (
 		sizeofa (sinCos), GL_LINE_LOOP, 
 		40.0f / float (screen.Width ()), 0.5f, 
 		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
+#	endif
+	glLineWidth (1);
 #endif
 
-	glColor4f (1, 1, 1, 1);
+	nRad *= 2;
 	for (i = 0; i < 3; i++) {
-		nDamage = int (X2F (m_info.nDamage [i]) * 200.0f) / 34;
-		j = 3 * i + nDamage;
-		if (LoadDamageIcon (j))
-			BitBlt (-1, x, y, false, false, I2X (1), 0, bmpDamageIcon [j]);
+		if (LoadDamageIcon (i)) {
+			CCanvas::Current ()->SetColorRGBi (dmgColors [i][int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f) / 33]);
+			bmpDamageIcon [i]->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
+			}
 		}
-	fontManager.SetColorRGBi (nColor [2], 1, 0, 0);
-glLineWidth (1);
 	}
 }
 
@@ -2097,7 +2113,14 @@ int CGenericCockpit::WidthPad (char* pszText)
 	int	w, h, aw;
 
 fontManager.Current ()->StringSize (pszText, w, h, aw);
-return (ScaleX (w) - w) / 2;
+return (int (ScaleX (w) / fontManager.Scale () + 0.5f) - w) / 2;
+}
+
+//------------------------------------------------------------------------------
+
+int CGenericCockpit::HeightPad (void)
+{
+return int (m_info.heightPad / fontManager.Scale () + 0.5f);
 }
 
 //------------------------------------------------------------------------------
