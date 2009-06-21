@@ -527,7 +527,6 @@
 		A45017280F3F93EC00D04D61 /* screenshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014BF0F3F93EC00D04D61 /* screenshot.cpp */; };
 		A45017290F3F93EC00D04D61 /* sdlgl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014C00F3F93EC00D04D61 /* sdlgl.cpp */; };
 		A45017370F3F93EC00D04D61 /* collide.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014D40F3F93EC00D04D61 /* collide.cpp */; };
-		A45017380F3F93EC00D04D61 /* fvi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014D50F3F93EC00D04D61 /* fvi.cpp */; };
 		A450173A0F3F93EC00D04D61 /* physics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014D70F3F93EC00D04D61 /* physics.cpp */; };
 		A450173B0F3F93EC00D04D61 /* slowmotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014D80F3F93EC00D04D61 /* slowmotion.cpp */; };
 		A45017EB0F3F9B5100D04D61 /* midi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45017E70F3F9B5100D04D61 /* midi.cpp */; };
@@ -540,6 +539,10 @@
 		A46A13FE0F4CA2A4009E4719 /* udp_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A46A13FD0F4CA2A4009E4719 /* udp_interface.cpp */; };
 		A46A14920F4CABBC009E4719 /* netmisc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45012770F3F93EA00D04D61 /* netmisc.cpp */; };
 		A48165DA0E21F3C900F8360E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A48165D80E21F3C900F8360E /* InfoPlist.strings */; };
+		A4A1659C0FEE381B00AF2D6D /* visibility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A165990FEE381B00AF2D6D /* visibility.cpp */; };
+		A4A1659D0FEE381B00AF2D6D /* sphere_collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A1659A0FEE381B00AF2D6D /* sphere_collision.cpp */; };
+		A4A1659E0FEE381B00AF2D6D /* hitbox_collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A1659B0FEE381B00AF2D6D /* hitbox_collision.cpp */; };
+		A4A165A70FEE384700AF2D6D /* criticalhit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A4A165A60FEE384700AF2D6D /* criticalhit.cpp */; };
 		A4A347700F59471B00A5943E /* hmpfile.h in Headers */ = {isa = PBXBuildFile; fileRef = A4A3476F0F59471B00A5943E /* hmpfile.h */; };
 		A4C050F50F6F41070054A743 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70723358093CAC7300601454 /* SDL.framework */; };
 		A4C050F60F6F41070054A743 /* SDL_mixer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = A44E22020F63862400271B39 /* SDL_mixer.framework */; };
@@ -1110,13 +1113,16 @@
 		A45014BF0F3F93EC00D04D61 /* screenshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = screenshot.cpp; sourceTree = "<group>"; };
 		A45014C00F3F93EC00D04D61 /* sdlgl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sdlgl.cpp; sourceTree = "<group>"; };
 		A45014D40F3F93EC00D04D61 /* collide.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = collide.cpp; sourceTree = "<group>"; };
-		A45014D50F3F93EC00D04D61 /* fvi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fvi.cpp; sourceTree = "<group>"; };
 		A45014D70F3F93EC00D04D61 /* physics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = physics.cpp; sourceTree = "<group>"; };
 		A45014D80F3F93EC00D04D61 /* slowmotion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = slowmotion.cpp; sourceTree = "<group>"; };
 		A45017E40F3F9B5100D04D61 /* hmpfile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hmpfile.cpp; sourceTree = "<group>"; };
 		A45017E70F3F9B5100D04D61 /* midi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = midi.cpp; sourceTree = "<group>"; };
 		A46A13FD0F4CA2A4009E4719 /* udp_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = udp_interface.cpp; sourceTree = "<group>"; };
 		A48165D90E21F3C900F8360E /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = io/macosx/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A4A165990FEE381B00AF2D6D /* visibility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = visibility.cpp; sourceTree = "<group>"; };
+		A4A1659A0FEE381B00AF2D6D /* sphere_collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sphere_collision.cpp; sourceTree = "<group>"; };
+		A4A1659B0FEE381B00AF2D6D /* hitbox_collision.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hitbox_collision.cpp; sourceTree = "<group>"; };
+		A4A165A60FEE384700AF2D6D /* criticalhit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = criticalhit.cpp; sourceTree = "<group>"; };
 		A4A3476F0F59471B00A5943E /* hmpfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hmpfile.h; sourceTree = "<group>"; };
 		A4C051050F6F41FD0054A743 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_image.framework; path = /Library/Frameworks/SDL_image.framework; sourceTree = "<absolute>"; };
 		A4C053140F7333110054A743 /* inputdevicemenu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = inputdevicemenu.cpp; sourceTree = "<group>"; };
@@ -1564,6 +1570,7 @@
 			children = (
 				A45013360F3F93EB00D04D61 /* boss.cpp */,
 				A45013370F3F93EB00D04D61 /* createobject.cpp */,
+				A4A165A60FEE384700AF2D6D /* criticalhit.cpp */,
 				A45013380F3F93EB00D04D61 /* effectobject.cpp */,
 				A45013390F3F93EB00D04D61 /* hostage.cpp */,
 				A450133B0F3F93EB00D04D61 /* marker.cpp */,
@@ -2017,9 +2024,11 @@
 			isa = PBXGroup;
 			children = (
 				A45014D40F3F93EC00D04D61 /* collide.cpp */,
-				A45014D50F3F93EC00D04D61 /* fvi.cpp */,
+				A4A1659B0FEE381B00AF2D6D /* hitbox_collision.cpp */,
 				A45014D70F3F93EC00D04D61 /* physics.cpp */,
 				A45014D80F3F93EC00D04D61 /* slowmotion.cpp */,
+				A4A1659A0FEE381B00AF2D6D /* sphere_collision.cpp */,
+				A4A165990FEE381B00AF2D6D /* visibility.cpp */,
 			);
 			path = physics;
 			sourceTree = "<group>";
@@ -2618,7 +2627,6 @@
 				A45017280F3F93EC00D04D61 /* screenshot.cpp in Sources */,
 				A45017290F3F93EC00D04D61 /* sdlgl.cpp in Sources */,
 				A45017370F3F93EC00D04D61 /* collide.cpp in Sources */,
-				A45017380F3F93EC00D04D61 /* fvi.cpp in Sources */,
 				A450173A0F3F93EC00D04D61 /* physics.cpp in Sources */,
 				A450173B0F3F93EC00D04D61 /* slowmotion.cpp in Sources */,
 				A45017EB0F3F9B5100D04D61 /* midi.cpp in Sources */,
@@ -2629,6 +2637,10 @@
 				A46A13FE0F4CA2A4009E4719 /* udp_interface.cpp in Sources */,
 				A46A14920F4CABBC009E4719 /* netmisc.cpp in Sources */,
 				A4C053150F7333110054A743 /* inputdevicemenu.cpp in Sources */,
+				A4A1659C0FEE381B00AF2D6D /* visibility.cpp in Sources */,
+				A4A1659D0FEE381B00AF2D6D /* sphere_collision.cpp in Sources */,
+				A4A1659E0FEE381B00AF2D6D /* hitbox_collision.cpp in Sources */,
+				A4A165A70FEE384700AF2D6D /* criticalhit.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
