@@ -1315,18 +1315,18 @@ int SpreadfireHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot
 	short	nFired = 0;
 
 if (nFlags & LASER_SPREADFIRE_TOGGLED) {
-	if (0 >= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, I2X (1) / 16, 0, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, I2X (1) / 16, 0, 0, 0, nLightObj))
 		nFired++;
-	if (0 >= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -I2X (1) / 16, 0, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -I2X (1) / 16, 0, 0, 0, nLightObj))
 		nFired++;
 	}
 else {
-	if (0 >= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, I2X (1) / 16, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, I2X (1) / 16, 0, 0, nLightObj))
 		nFired++;
-	if (0 >= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -I2X (1) / 16, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -I2X (1) / 16, 0, 0, nLightObj))
 		nFired++;
 	}
-if (0 >= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
@@ -1348,9 +1348,9 @@ if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (objP);
-	if (0 >= LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
 		nFired++;
-	if (0 >= LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 		nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECTS [nLightObj].Die ();
@@ -1496,9 +1496,9 @@ if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (objP);
-	if (0 >= LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
 	nFired++;
-	if (0 >= LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 	nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECTS [nLightObj].Die ();
