@@ -119,7 +119,6 @@ weaponBoxFadeValues [0] =
 weaponBoxFadeValues [1] = 0;
 weaponBoxUser [0] =
 weaponBoxUser [1] = WBU_WEAPON;
-nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4;
 bRebuild = false;
 }
 
@@ -788,7 +787,7 @@ if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
 	memcpy (szName, pszName, i = p - pszName);
 	szName [i] = '\0';
 	nIdWeapon [nWeaponType][0] = PrintF (&nIdWeapon [nWeaponType][0], xText, yText, szName);
-	nIdWeapon [nWeaponType][1] = PrintF (&nIdWeapon [nWeaponType][1], xText, yText + m_info.fontHeight + 1, p + 1);
+	nIdWeapon [nWeaponType][1] = PrintF (&nIdWeapon [nWeaponType][1], xText, yText + m_info.fontHeight + int (fontManager.Scale ()), p + 1);
 	}
 else {
 	nIdWeapon [nWeaponType][2] = PrintF (&nIdWeapon [nWeaponType][2], xText, yText, pszName);
@@ -1771,6 +1770,9 @@ m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
 m_info.xScale = screen.Scale (0);
 m_info.yScale = screen.Scale (1);
+fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
+m_info.nLineSpacing = int (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
+fontManager.SetScale (1.0f);
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
 m_info.nEnergy = X2IR (LOCALPLAYER.energy);
 m_info.nShields = X2IR (LOCALPLAYER.shields);

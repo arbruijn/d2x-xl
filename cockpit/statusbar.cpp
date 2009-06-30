@@ -103,17 +103,19 @@ strcpy (szScore, (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
 strcat (szScore, ":");
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-nIdLabel = PrintF (&nIdLabel, -(ScaleX (SB_SCORE_LABEL_X + w) - w), SB_SCORE_Y, szScore);
+nIdLabel = PrintF (&nIdLabel, -(ScaleX (SB_SCORE_LABEL_X + int (w / fontManager.Scale ())) - w), SB_SCORE_Y, szScore);
 
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
-x = SB_SCORE_RIGHT - w - LHY (2);
+x = ScaleX (SB_SCORE_RIGHT) - w - LHY (2);
 y = SB_SCORE_Y;
+#if 0
 //erase old score
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage], y, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
+#endif
 fontManager.SetColorRGBi ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA, 1, 0, 0);
-nIdScore = PrintF (&nIdScore, x, y, szScore);
+nIdScore = PrintF (&nIdScore, -x, y, szScore);
 lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
@@ -224,7 +226,7 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
 strcpy (szLives, IsMultiGame ? TXT_DEATHS : TXT_LIVES);
 fontManager.Current ()->StringSize (szLives, w, h, aw);
-nIdLives [0] = PrintF (&nIdLives [0], -(ScaleX (SB_LIVES_LABEL_X + w / fontManager.Scale ()) - w), -ScaleY (SB_LIVES_LABEL_Y + HeightPad ()), szLives);
+nIdLives [0] = PrintF (&nIdLives [0], -(ScaleX (SB_LIVES_LABEL_X + int (w / fontManager.Scale ())) - w), -ScaleY (SB_LIVES_LABEL_Y + HeightPad ()), szLives);
 
 if (IsMultiGame) {
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};

@@ -564,15 +564,14 @@ int UpdateAllObjects (void)
 
 gameData.objs.nFrameCount++;
 #if DBG
-	static int bOnce = 1;
+	static int bOnce = 0;
 
-if (bOnce) {
-	if (bOnce > 0) {
+if (bOnce >= 0) {
+	if (bOnce > 0)
 		bOnce = -1;
-	if (!OBJECTS [gameData.multiplayer.nLocalPlayer].CriticalDamage () && 
-		 (gameStates.app.nSDLTicks - OBJECTS [gameData.multiplayer.nLocalPlayer].TimeLastRepaired () > 5000))
-		OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (1 + d_rand () % 10, 1 + d_rand () % 10, 1 + d_rand () % 10);
-		}
+if (!OBJECTS [gameData.multiplayer.nLocalPlayer].CriticalDamage () && 
+	 (gameStates.app.nSDLTicks - OBJECTS [gameData.multiplayer.nLocalPlayer].TimeLastRepaired () > 5000))
+	OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (1 + d_rand () % 10, 1 + d_rand () % 10, 1 + d_rand () % 10);
 	}
 #endif
 if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
