@@ -119,6 +119,7 @@ class CTrigger {
 		ubyte		nType;   //what this CTrigger does
 		sbyte		nLinks;  //how many doors, etc. linked to this
 		short		flags;   
+		short		flagsD1;
 		fix		value;
 		fix		time;
 		short		segments [MAX_TRIGGER_TARGETS];

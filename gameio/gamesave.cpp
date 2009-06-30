@@ -488,6 +488,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 		return -1;
 		}
 	for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
+		trigP->flagsD1 = 0;
 		if (gameTopFileInfo.fileinfoVersion >= 31) 
 			trigP->Read (cf, 0);
 		else {
@@ -498,7 +499,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 			else {
 				tTriggerV29 trig29;
 				V29TriggerRead (trig29, cf);
-				flags = trig29.flags;
+				trigP->flagsD1 = trig.flags = trig29.flags;
 				trig.nLinks	= (char) trig29.nLinks;
 				trig.value = trig29.value;
 				trig.time = trig29.time;

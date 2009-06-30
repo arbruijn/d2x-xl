@@ -828,7 +828,7 @@ int CTrigger::OperateD1 (short nObject, int nPlayer, int bShot)
 	int	h = 1;
 
 for (int i = 0; i < sizeofa (xlatTriggers); i++)
-	if (flags & xlatTriggers [i].nFlag) {
+	if (flagsD1 & xlatTriggers [i].nFlag) {
 		nType = xlatTriggers [i].nType;
 		if (!Operate (nObject, nPlayer, bShot, false))
 			h = 0;
