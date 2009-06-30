@@ -826,14 +826,19 @@ struct {
 int CTrigger::OperateD1 (short nObject, int nPlayer, int bShot)
 {
 	int	h = 1;
+	int	nTrigger = TRIGGERS.Index (this);
+
 
 for (int i = 0; i < sizeofa (xlatTriggers); i++)
 	if (flagsD1 & xlatTriggers [i].nFlag) {
 		nType = xlatTriggers [i].nType;
+		gameData.trigs.delay [nTrigger] = -1;
 		if (!Operate (nObject, nPlayer, bShot, false))
 			h = 0;
 		}
 nType = TT_DESCENT1;
+if (!h)
+	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks;
 return h;
 }
 
@@ -876,7 +881,7 @@ if (!bObjTrigger && (nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;
 	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
 		return 1;
-	gameData.trigs.delay [nTrigger] = t;
+	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks;
 	}
 
 if (flags & TF_ONE_SHOT)		//if this is a one-bShot...
@@ -1000,16 +1005,16 @@ switch (nType) {
 
 	case TT_SHIELD_DAMAGE:
 		if (gameStates.app.bD1Mission)
-			LOCALPLAYER.shields += TRIGGERS [nTrigger].value;
+			LOCALPLAYER.shields -= TRIGGERS [nTrigger].value;
 		else
-			LOCALPLAYER.shields += (fix) (LOCALPLAYER.shields * X2F (TRIGGERS [nTrigger].value) / 100);
+			LOCALPLAYER.shields -= (fix) (LOCALPLAYER.shields * X2F (TRIGGERS [nTrigger].value) / 100);
 		break;
 
 	case TT_ENERGY_DRAIN:
 		if (gameStates.app.bD1Mission)
-			LOCALPLAYER.energy += TRIGGERS [nTrigger].value;
+			LOCALPLAYER.energy -= TRIGGERS [nTrigger].value;
 		else
-			LOCALPLAYER.energy += (fix) (LOCALPLAYER.energy * X2F (TRIGGERS [nTrigger].value) / 100);
+			LOCALPLAYER.energy -= (fix) (LOCALPLAYER.energy * X2F (TRIGGERS [nTrigger].value) / 100);
 		break;
 
 	case TT_CHANGE_TEXTURE:
