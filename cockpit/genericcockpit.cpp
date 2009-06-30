@@ -2162,7 +2162,7 @@ if (!m_save.ToS ()) {
 	return false;
 	}
 cockpit->Activate (m_save.Pop ());
-gameStates.render.cockpit.nTypeSave = m_save.ToS () ? *m_save.Top () : -1;
+gameStates.render.cockpit.nTypeSave = m_save.ToS () ? * m_save.Top () : -1;
 return true;
 }
 
