@@ -1295,13 +1295,13 @@ int VulcanHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
-if (0 >= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1))
+if (0 <= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0, -1))
 	nFired++;
 if (nRoundsPerShot > 1) {
-	if (0 >= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
+	if (0 <= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
 	nFired++;
 	if (nRoundsPerShot > 2)
-		if (0 >= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
+		if (0 <= LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0, -1))
 	nFired++;
 	}
 return nFired ? nRoundsPerShot : 0;
@@ -1430,14 +1430,14 @@ int GaussHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
 	return 0;
 //	Only make sound for 1/4 of vulcan bullets.
-if (0 >= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,
+if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD,
 										  (objP->info.nId != gameData.multiplayer.nLocalPlayer) || (gameData.laser.xNextFireTime > gameData.time.xGame), 0, -1))
 	nFired++;
 if (nRoundsPerShot > 1) {
-	if (0 >= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
+	if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
 		nFired++;
 	if (nRoundsPerShot > 2)
-		if (0 >= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
+		if (0 <= LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0, -1))
 			nFired++;
 	}
 return nFired ? nRoundsPerShot : 0;

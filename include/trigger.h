@@ -57,6 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TT_SOUND				 30
 #define TT_MASTER				 31
 #define NUM_TRIGGER_TYPES   32
+#define TT_DESCENT1			 255
 
 // Trigger flags
 
@@ -116,8 +117,8 @@ typedef struct tTriggerV30 {
 class CTrigger {
 	public:
 		ubyte		nType;   //what this CTrigger does
-		short		flags;   //currently unused
 		sbyte		nLinks;  //how many doors, etc. linked to this
+		short		flags;   
 		fix		value;
 		fix		time;
 		short		segments [MAX_TRIGGER_TARGETS];
@@ -128,6 +129,7 @@ class CTrigger {
 	public:
 		void Read (CFile& cf, int bObjTrigger);
 		int Operate (short nObject, int nPlayer, int shot, bool bObjTrigger);
+		int OperateD1 (short nObject, int nPlayer, int shot);
 		void PrintMessage (int nPlayer, int shot, const char *message);
 		void DoLink (void);
 		void DoChangeTexture (void);

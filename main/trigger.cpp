@@ -804,6 +804,41 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+struct {
+	int	nFlag;
+	int	nType;
+} xlatTriggers [] = {
+	{TRIGGER_CONTROL_DOORS, TT_OPEN_DOOR},
+	{TRIGGER_SHIELD_DAMAGE, TT_SHIELD_DAMAGE},
+	{TRIGGER_ENERGY_DRAIN, TT_ENERGY_DRAIN},
+	{TRIGGER_EXIT, TT_EXIT},
+	{TRIGGER_MATCEN, TT_MATCEN},
+	{TRIGGER_ILLUSION_OFF, TT_ILLUSION_OFF},
+	{TRIGGER_ILLUSION_ON, TT_ILLUSION_ON},
+	{TRIGGER_SECRET_EXIT, TT_SECRET_EXIT},
+	{TRIGGER_UNLOCK_DOORS, TT_UNLOCK_DOOR},
+	{TRIGGER_OPEN_WALL, TT_OPEN_WALL},
+	{TRIGGER_CLOSE_WALL, TT_CLOSE_WALL},
+	{TRIGGER_ILLUSORY_WALL, TT_ILLUSORY_WALL}
+	};
+
+
+int CTrigger::OperateD1 (short nObject, int nPlayer, int bShot)
+{
+	int	h = 1;
+
+for (int i = 0; i < sizeofa (xlatTriggers); i++)
+	if (flags & xlatTriggers [i].nFlag) {
+		nType = xlatTriggers [i].nType;
+		if (!Operate (nObject, nPlayer, bShot, false))
+			h = 0;
+		}
+nType = TT_DESCENT1;
+return h;
+}
+
+//------------------------------------------------------------------------------
+
 int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 {
 if (flags & TF_DISABLED) 
@@ -1013,6 +1048,9 @@ switch (nType) {
 
 	case TT_MASTER:
 		DoMasterTrigger (nObject);
+
+	case TT_DESCENT1:
+		OperateD1 (nObject, nPlayer, bShot);
 
 	default:
 		Int3 ();

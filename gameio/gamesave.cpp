@@ -507,6 +507,10 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 					trig.sides [t] = trig29.sides [t];
 					}
 				}
+#if 1
+			if (gameStates.app.bD1Mission)
+				nType = TT_DESCENT1;
+#else
 			//Assert(trig.flags & TRIGGER_ON);
 			trig.flags &= ~TRIGGER_ON;
 			if (trig.flags & TRIGGER_CONTROL_DOORS)
@@ -525,6 +529,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 				nType = TT_SECRET_EXIT;
 			else if (trig.flags & TRIGGER_ILLUSION_ON)
 				nType = TT_ILLUSION_ON;
+#endif
 			else if (trig.flags & TRIGGER_UNLOCK_DOORS)
 				nType = TT_UNLOCK_DOOR;
 			else if (trig.flags & TRIGGER_OPEN_WALL)
