@@ -498,7 +498,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 			else {
 				tTriggerV29 trig29;
 				V29TriggerRead (trig29, cf);
-				trig.flags = trig29.flags;
+				flags = trig29.flags;
 				trig.nLinks	= (char) trig29.nLinks;
 				trig.value = trig29.value;
 				trig.time = trig29.time;
