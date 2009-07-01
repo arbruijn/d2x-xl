@@ -1340,9 +1340,9 @@ int PlasmaHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 	short	nLightObj = lightClusterManager.Create (objP);
 	short	nFired = 0;
 
-if (0 >= LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0, nLightObj))
 	nFired++;
-if (0 >= LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
@@ -1366,12 +1366,12 @@ int FusionHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 	short			nLightObj = lightClusterManager.Create (objP);
 	short			nFired = 0;
 
-if (0 >= LaserPlayerFire (objP, FUSION_ID, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, FUSION_ID, 0, 1, 0, nLightObj))
 	nFired++;
-if (0 >= LaserPlayerFire (objP, FUSION_ID, 1, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, FUSION_ID, 1, 1, 0, nLightObj))
 	nFired++;
 if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP->info.nId].bTripleFusion)
-	if (0 >= LaserPlayerFire (objP, FUSION_ID, 6, 1, 0, nLightObj))
+	if (0 <= LaserPlayerFire (objP, FUSION_ID, 6, 1, 0, nLightObj))
 		nFired++;
 nFlags = (sbyte) (gameData.fusion.xCharge >> 12);
 gameData.fusion.xCharge = 0;
@@ -1399,16 +1399,16 @@ int SuperlaserHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot
 	short	nLightObj = lightClusterManager.Create (objP);
 	short	nFired = 0;
 
-if (0 >= LaserPlayerFire (objP, nSuperLevel, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, nSuperLevel, 0, 1, 0, nLightObj))
 	nFired++;
-if (0 >= LaserPlayerFire (objP, nSuperLevel, 1, 0, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, nSuperLevel, 1, 0, 0, nLightObj))
 	nFired++;
 
 if (nFlags & LASER_QUAD) {
 	//	hideous system to make quad laser 1.5x powerful as Normal laser, make every other quad laser bolt bHarmless
-	if (0 >= LaserPlayerFire (objP, nSuperLevel, 2, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFire (objP, nSuperLevel, 2, 0, 0, nLightObj))
 		nFired++;
-	if (0 >= LaserPlayerFire (objP, nSuperLevel, 3, 0, 0, nLightObj))
+	if (0 <= LaserPlayerFire (objP, nSuperLevel, 3, 0, 0, nLightObj))
 		nFired++;
 	}
 if (!nFired && (nLightObj >= 0))
@@ -1466,15 +1466,15 @@ int HelixHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 	short		nLightObj = lightClusterManager.Create (objP);
 	short		nFired = 0;
 
-if (0 >= LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0, nLightObj))
 	nFired++;
-if (0 >= LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0, nLightObj))
 	nFired++;
-if (0 >= LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r, -spread.u, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r, -spread.u, 0, 0, nLightObj))
 	nFired++;
-if (0 >= LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0, nLightObj))
 	nFired++;
-if (0 >= LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj))
+if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
@@ -1488,9 +1488,9 @@ int PhoenixHandler (CObject *objP, int nLevel, int nFlags, int nRoundsPerShot)
 	short	nLightObj = lightClusterManager.Create (objP);
 	short	nFired = 0;
 
-if (0 >= LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0, nLightObj))
 	nFired++;;
-if (0 >= LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0, nLightObj))
+if (0 <= LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
