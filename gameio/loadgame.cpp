@@ -652,6 +652,8 @@ PrintLog ("unloading hoard data\n");
 UnloadTextures ();
 /*---*/PrintLog ("   unloading custom sounds\n");
 FreeSoundReplacements ();
+/*---*/PrintLog ("   unloading addon sounds\n");
+FreeAddonSounds ();
 /*---*/PrintLog ("   unloading hardware lights\n");
 lightManager.Reset ();
 /*---*/PrintLog ("   unloading hires models\n");
@@ -1600,7 +1602,12 @@ catch (...) {
 	}
 ClearWarnFunc (ShowInGameWarning);
 if (!funcRes) {
-	CleanupAfterGame ();
+	try {
+		CleanupAfterGame ();
+		}
+	catch (...) {
+		Warning ("Internal error when cleaning up.");
+		}
 	return 0;
 	}
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right

@@ -34,6 +34,7 @@ do {
 		FreeAddonSounds ();
 		audio.Shutdown ();
 		audio.Setup (tiSound.fSlowDown);
+		LoadAddonSounds ();
 		if (tiSound.fSlowDown == 1.0f) {
 			songManager.SetPos (songManager.SlowDown () - songManager.Start () + 
 									  2 * (SDL_GetTicks () - songManager.SlowDown ()) / gameOpts->gameplay.nSlowMotionSpeedup);
