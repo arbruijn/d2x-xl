@@ -702,6 +702,7 @@ if (nStage == 0) {
 		LoadD1Sounds (false);
 	else
 		LoadD2Sounds (false);
+	LoadAddonSounds ();
 	gameStates.app.bCustomSounds = false;
 	if (gameStates.app.bHaveMod && (gameStates.app.bD1Mission ? LoadD1Sounds (true) : LoadD2Sounds (true))) {
 		gameStates.app.bCustomSounds = true;

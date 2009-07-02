@@ -564,7 +564,7 @@ int UpdateAllObjects (void)
 
 gameData.objs.nFrameCount++;
 #if DBG
-	static int bOnce = 0;
+	static int bOnce = 1;
 
 if (bOnce >= 0) {
 	if (bOnce > 0)

@@ -446,7 +446,8 @@ else {
 	i = atoi (pszSoundFile);
 	if (i >= MAX_ADDON_SOUND_FILES)
 		return NULL;
-	*bBuiltIn = 1;
+	if (bBuiltIn)
+		*bBuiltIn = 1;
 	if ((chunkP = addonSounds [i].chunkP))
 		return chunkP;
 	pszSoundFile += 3;
@@ -459,8 +460,17 @@ if (!(chunkP = Mix_LoadWAV (szWAV)))
 	return NULL;
 if (i >= 0)
 	addonSounds [i].chunkP = chunkP;
-*bBuiltIn = (i >= 0);
+if (bBuiltIn)
+	*bBuiltIn = (i >= 0);
 return chunkP;
+}
+
+//------------------------------------------------------------------------------
+
+void LoadAddonSounds (void)
+{
+for (int i = 0; i < sizeofa (addonSounds); i++)
+	LoadAddonSound (AddonSoundName (i));
 }
 
 //------------------------------------------------------------------------------

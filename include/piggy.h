@@ -258,10 +258,12 @@ extern CHashTable soundNames [2];
 #	endif
 
 const char *AddonSoundName (int nSound);
-Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn);
+Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte* bBuiltIn = NULL);
+void LoadAddonSounds (void);
 void FreeAddonSounds (void);
 #else
 #	define AddonSoundName(_nSound)	NULL
+#	define LoadAddonSounds()
 #	define FreeAddonSounds()
 #endif
 
