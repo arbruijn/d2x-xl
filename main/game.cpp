@@ -1065,7 +1065,12 @@ if (!setjmp (gameExitPoint)) {
 			break; //longjmp (gameExitPoint, 0);
 		}
 	}
-CleanupAfterGame ();
+try {
+	CleanupAfterGame ();
+	}
+catch (...) {
+	Warning ("Internal error when cleaning up.");
+	}
 }
 
 //-----------------------------------------------------------------------------
