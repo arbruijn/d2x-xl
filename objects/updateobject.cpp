@@ -76,17 +76,19 @@ Controls [0].bankTime = 0;
 Controls [0].verticalThrustTime = 0;
 Controls [0].sidewaysThrustTime = 0;
 Controls [0].forwardThrustTime = 0;
-objP->mType.physInfo.rotThrust.SetZero ();
-objP->mType.physInfo.thrust.SetZero ();
-objP->mType.physInfo.velocity.SetZero ();
-objP->mType.physInfo.rotVel.SetZero ();
+if (objP) {
+	objP->mType.physInfo.rotThrust.SetZero ();
+	objP->mType.physInfo.thrust.SetZero ();
+	objP->mType.physInfo.velocity.SetZero ();
+	objP->mType.physInfo.rotVel.SetZero ();
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void StopPlayerMovement (void)
 {
-if (!(gameData.objs.speedBoost.Buffer () && gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted)) {
+if (OBJECTS.Buffer () && !(gameData.objs.speedBoost.Buffer () && gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted)) {
 	StopObjectMovement (OBJECTS + LOCALPLAYER.nObject);
 	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
 //	gameData.time.xFrame = I2X (1);

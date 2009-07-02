@@ -273,11 +273,12 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 	ubyte				c;
 
 	int h = m_info.nEnergy;
+	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 	if ((t = FlashGauge (h, &bFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * m_info.nLineSpacing - 1) * m_info.yGaugeScale);
+	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
 	glLineWidth (1);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
@@ -321,13 +322,12 @@ void CHUD::DrawAfterburnerBar (void)
 if (cockpit->Hide ())
 	return;
 	
-	int h, y;
-
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
-h = FixMul (gameData.physics.xAfterburnerCharge, 100);
+int h = FixMul (gameData.physics.xAfterburnerCharge, 100);
+int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 if (!gameOpts->render.cockpit.bTextGauges) {
-	y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * m_info.nLineSpacing - 1) * m_info.yGaugeScale);
+	int y = CCanvas::Current ()->Height () - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 	glLineWidth (1);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
@@ -571,7 +571,8 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 		bShow = !bShow;
 		}
 
-	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * m_info.nLineSpacing - 1) * m_info.yGaugeScale);
+	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
+	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
 	CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
 	glLineWidth (1);
 	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
