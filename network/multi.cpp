@@ -2288,12 +2288,12 @@ if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = int (primaryWeaponToPowerup [i]);
-	if (extraGameInfo [0].loadout.nGuns & (1 << i))	// weapon is standard loadout
+	if (extraGameInfo [IsMultiGame].loadout.nGuns & (1 << i))	// weapon is standard loadout
 		continue;
 	if (i == 0) {// laser
-		if (extraGameInfo [0].loadout.nGuns & 1)	// lasers or superlasers are standard loadout
+		if (extraGameInfo [IsMultiGame].loadout.nGuns & 1)	// lasers or superlasers are standard loadout
 			continue;
-		if (extraGameInfo [0].loadout.nGuns & (1 | (i << 5)))	// lasers or superlasers are standard loadout
+		if (extraGameInfo [IsMultiGame].loadout.nGuns & (1 | (i << 5)))	// lasers or superlasers are standard loadout
 			continue;
 		if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
 			gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER] += gameData.multiplayer.players [nPlayer].laserLevel - MAX_LASER_LEVEL;
@@ -2314,7 +2314,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	}
 
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++)
-	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [0].loadout.nDevice  & nDeviceFlags [i]))
+	if ((gameData.multiplayer.players [nPlayer].flags & nDeviceFlags [i]) && !(extraGameInfo [IsMultiGame].loadout.nDevice  & nDeviceFlags [i]))
 		gameData.multiplayer.maxPowerupsAllowed [nDevicePowerups [i]]++;
 if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 	gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT]++;
