@@ -44,6 +44,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 using namespace RenderModel;
 
+#define DIRECT_VBO	1
+
 //------------------------------------------------------------------------------
 
 void CModel::Init (void)
@@ -102,16 +104,14 @@ if (gameStates.ogl.bHaveVBOs) {
 	OglClearError (0);
 	glGenBuffersARB (1, &m_vboDataHandle);
 	if ((i = glGetError ())) {
-		glGenBuffersARB (1, &m_vboDataHandle);
-		if ((i = glGetError ())) {
 #	if DBG
-			HUDMessage (0, "glGenBuffersARB failed (%d)", i);
+		HUDMessage (0, "glGenBuffersARB failed (%d)", i);
 #	endif
-			gameStates.ogl.bHaveVBOs = 0;
-			Destroy ();
-			return false;
-			}
+		gameStates.ogl.bHaveVBOs = 0;
+		Destroy ();
+		return false;
 		}
+#if !DIRECT_VBO
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, m_vboDataHandle);
 	if ((i = glGetError ())) {
 #	if DBG
@@ -123,12 +123,15 @@ if (gameStates.ogl.bHaveVBOs) {
 		}
 	glBufferDataARB (GL_ARRAY_BUFFER, m_nFaceVerts * sizeof (CRenderVertex), NULL, GL_STATIC_DRAW_ARB);
 	m_vertBuf [1].SetBuffer (reinterpret_cast<CRenderVertex*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), 1, m_nFaceVerts);
+#endif
 	m_vboIndexHandle = 0;
 	glGenBuffersARB (1, &m_vboIndexHandle);
 	if (m_vboIndexHandle) {
+#if !DIRECT_VBO
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
 		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
 		m_index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), 1, m_nFaceVerts);
+#endif
 		}
 	}
 return true;
@@ -345,23 +348,39 @@ for (i = 0, j = m_nFaceVerts; i < j; i++, pmv++) {
 	pc [i] = pmv->m_baseColor;
 	pt [i] = pmv->m_texCoord;
 	}
-if (m_vertBuf [1].Buffer ()) // points to graphics driver buffer for VBO based rendering
+#if DIRECT_VBO
+if (m_vertBuf [0].Buffer ()) { // points to graphics driver buffer for VBO based rendering
+	glBindBufferARB (GL_ARRAY_BUFFER_ARB, m_vboDataHandle);
+	glEnableClientState (GL_VERTEX_ARRAY);
+	glBufferDataARB (GL_ARRAY_BUFFER, m_nFaceVerts * sizeof (CRenderVertex), reinterpret_cast<void*> (m_vertBuf [0].Buffer ()), GL_STATIC_DRAW_ARB);
+	int i = glGetError ();
+#else
+if (m_vertBuf [1].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	memcpy (m_vertBuf [1].Buffer (), m_vertBuf [0].Buffer (), m_vertBuf [1].Size ());
-if (m_index [1].Buffer ()) // points to graphics driver buffer for VBO based rendering
+	glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
+	m_vertBuf [1].SetBuffer (NULL);
+#endif
+	}
+#if DIRECT_VBO
+if (m_index [0].Buffer ()) { // points to graphics driver buffer for VBO based rendering
+	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
+	glEnableClientState (GL_VERTEX_ARRAY);
+	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), reinterpret_cast<void*> (m_index [0].Buffer ()), GL_STATIC_DRAW_ARB);
+	int i = glGetError ();
+#else
+if (m_index [1].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	memcpy (m_index [1].Buffer (), m_index [0].Buffer (), m_index [1].Size ());
+	glUnmapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB);
+	m_index [1].SetBuffer (NULL);
+#endif
+	}
 if (bSort)
 	memcpy (m_faceVerts.Buffer (), m_sortedVerts.Buffer (), m_faceVerts.Size ());
 else
 	memcpy (m_sortedVerts.Buffer (), m_faceVerts.Buffer (), m_sortedVerts.Size ());
 m_bValid = 1;
 if (gameStates.ogl.bHaveVBOs) {
-#if 1
-	m_vertBuf [1].SetBuffer (NULL);
-	m_index [1].SetBuffer (NULL);
-#endif
-	glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
-	glUnmapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB);
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 	}
 m_sortedVerts.Destroy ();

@@ -526,15 +526,21 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				i--;
 				} while (i && (pmf->m_nId == nId));
 			}
-
+#if 1 //!DBG
 #ifdef _WIN32
 		if (glDrawRangeElements)
 #endif
 #if DBG
 			if (bUseVBO)
+#if 1
 				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											0, pm->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
+#else
+				glDrawElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
+									 nVerts, GL_UNSIGNED_SHORT,
+									 G3_BUFFER_OFFSET (nIndex * sizeof (short)));
+#endif
 			else
 				glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 											nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
@@ -542,7 +548,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #else
 			if (bUseVBO)
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
-											0, nVerts - 1, nVerts, GL_UNSIGNED_SHORT,
+											0, pm->m_nFaceVerts - 1, nVerts, GL_UNSIGNED_SHORT,
 											G3_BUFFER_OFFSET (nIndex * sizeof (short)));
 			else
 				glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
@@ -557,6 +563,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			else
 				glDrawElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
 									 nVerts, GL_UNSIGNED_SHORT, pm->m_index + nIndex);
+#endif
 #endif
 		}
 	}
@@ -831,8 +838,10 @@ if (bUseVBO) {
 	int i;
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->m_vboDataHandle);
 	if ((i = glGetError ())) {
+#if DBG
 		glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->m_vboDataHandle);
 		if ((i = glGetError ()))
+#endif
 			return 0;
 		}
 	}
@@ -880,9 +889,11 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	else
 		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
+#if 1 //!DBG
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
 if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+#endif
 glDisable (GL_TEXTURE_2D);
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);

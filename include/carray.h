@@ -146,8 +146,12 @@ class CArray : public CQuickSort < _T > {
 
 		void Destroy (void) { 
 			if (m_data.buffer) {
-				if (!m_data.nMode)
+				if (!m_data.nMode) {
 					delete[] m_data.buffer;
+#if DBG
+					m_data.buffer = reinterpret_cast<_T *> (NULL); 
+#endif
+					}
 				Init ();
 				}
 			}
