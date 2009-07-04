@@ -1465,7 +1465,7 @@ if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired (
 #endif
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;
 	int	nRad = int (16.0f * fScale + 0.5f);
-	int	y = CCanvas::Current ()->Height () / 2 + nRad;
+	int	y = CCanvas::Current ()->Height () / 2 + 3 * nRad / 2;
 	int	x = CCanvas::Current ()->Width () / 2;
 
 if (gameOpts->render.cockpit.bTextGauges) {
@@ -1486,7 +1486,6 @@ if (gameOpts->render.cockpit.bTextGauges) {
 		}
 	fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
 	x -= (tw - w [3]) / 2;
-	y += nRad / 2;
 	CCanvas::Current ()->SetFontColor (dmgColor, 1);	// black background
 	for (i = 0; i < 3; i++) {
 		nColor = dmgColors [1][nDamage [i] / 33];
