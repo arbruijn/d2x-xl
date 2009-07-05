@@ -68,6 +68,10 @@ if (OBJ_IDX (this) == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 info.nType = cf.ReadByte ();
+#if DBG
+if (info.nType == 9)
+	info.nType = 9;
+#endif
 info.nId = cf.ReadByte ();
 info.controlType = cf.ReadByte ();
 info.movementType = cf.ReadByte ();

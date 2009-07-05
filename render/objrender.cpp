@@ -842,8 +842,10 @@ static int RenderReactorModel (CObject* objP, int bDepthSort, int bSpectate)
 if (gameStates.render.nType != 1)
 	return 0;
 DrawPolygonObject (objP, bDepthSort, 0);
-if (!gameStates.render.bQueryCoronas)
+if (!gameStates.render.bQueryCoronas && (gameStates.render.nShadowPass != 2)) {
+	RenderRobotShield (objP);
 	RenderTargetIndicator (objP, NULL);
+	}
 return 1;
 }
 
