@@ -977,7 +977,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 				G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType != 0, false);
 #	endif
 #	if 1 //DBG
-				if (item->nVertices < 0)
+				if ((item->nVertices < 3) || (item->nVertices > 4))
 					PrintLog ("invalid transparent render item\n");
 				else
 #endif
