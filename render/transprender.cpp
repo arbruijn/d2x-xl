@@ -976,6 +976,11 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 #	else
 				G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType != 0, false);
 #	endif
+#	if 1 //DBG
+				if (item->nVertices < 0)
+					PrintLog ("invalid transparent render item\n");
+				else
+#endif
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			else {
@@ -1451,31 +1456,36 @@ if (!pl->bRendered) {
 	pl->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
 	m_data.nCurType = pl->nType;
-	FlushBuffers (m_data.nCurType);
-	if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
-		RenderPoly (&pl->item.poly);
+	try {
+		FlushBuffers (m_data.nCurType);
+		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
+			RenderPoly (&pl->item.poly);
+			}
+		else if (m_data.nCurType == tiObject) {
+			RenderObject (&pl->item.object);
+			}
+		else if (m_data.nCurType == tiSprite) {
+			RenderSprite (&pl->item.sprite);
+			}
+		else if (m_data.nCurType == tiSpark) {
+			RenderSpark (&pl->item.spark);
+			}
+		else if (m_data.nCurType == tiSphere) {
+			RenderSphere (&pl->item.sphere);
+			}
+		else if (m_data.nCurType == tiParticle) {
+			if (m_data.bHaveParticles)
+				RenderParticle (&pl->item.particle);
+			}
+		else if (m_data.nCurType == tiLightning) {
+			RenderLightning (&pl->item.lightning);
+			}
+		else if (m_data.nCurType == tiThruster) {
+			RenderLightTrail (&pl->item.thruster);
+			}
 		}
-	else if (m_data.nCurType == tiObject) {
-		RenderObject (&pl->item.object);
-		}
-	else if (m_data.nCurType == tiSprite) {
-		RenderSprite (&pl->item.sprite);
-		}
-	else if (m_data.nCurType == tiSpark) {
-		RenderSpark (&pl->item.spark);
-		}
-	else if (m_data.nCurType == tiSphere) {
-		RenderSphere (&pl->item.sphere);
-		}
-	else if (m_data.nCurType == tiParticle) {
-		if (m_data.bHaveParticles)
-			RenderParticle (&pl->item.particle);
-		}
-	else if (m_data.nCurType == tiLightning) {
-		RenderLightning (&pl->item.lightning);
-		}
-	else if (m_data.nCurType == tiThruster) {
-		RenderLightTrail (&pl->item.thruster);
+	catch(...) {
+		PrintLog ("invalid transparent render item (type: %d)\n", m_data.nCurType);
 		}
 	if (pl->parentP)
 		RenderItem (pl->parentP);

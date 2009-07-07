@@ -565,7 +565,7 @@ int UpdateAllObjects (void)
 	CObject *objP, *nextObjP;
 
 gameData.objs.nFrameCount++;
-#if DBG
+#if 0 //DBG
 	static int bOnce = 1;
 
 if (bOnce >= 0) {
