@@ -48,10 +48,6 @@ void ComputeSinCosTable (int nSides, tSinCosf *sinCosP);
 int CircleListInit (int nSides, int nType, int mode);
 void G3Normal (g3sPoint **pointList, CFixVector *pvNormal);
 void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
-int ogl.EnableClientState (GLuint nState, int nTMU);
-int ogl.DisableClientState (GLuint nState, int nTMU);
-void ogl.DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
-int ogl.EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
 
 void RebuildRenderContext (int bGame);
 
@@ -220,6 +216,8 @@ class COGL {
 		inline int SetTransform (int bUseTransform) { m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }
 
+		int StencilOff (void);
+		void StencilOn (int bStencil);
 };
 
 extern COGL ogl;

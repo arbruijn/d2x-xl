@@ -1576,7 +1576,7 @@ OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (1);
-StencilOn (bStencil);
+ogl.StencilOn (bStencil);
 m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 m_data.nMaxOffs = 0;
 m_data.nFreeItems = ITEM_BUFFER_SIZE;

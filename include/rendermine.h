@@ -18,6 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "3d.h"
 #include "object.h"
+#include "ogl_lib.h"
 #include "renderlib.h"
 #include "flightpath.h"
 
@@ -117,25 +118,6 @@ if (!gameOpts->render.cockpit.bGuidedInMainView)
 CObject *objP;
 
 return GuidedMslView (&objP) ? objP : NULL;
-}
-
-//------------------------------------------------------------------------------
-
-static inline int StencilOff (void)
-{
-if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
-	return 0;
-glDisable (GL_STENCIL_TEST);
-ogl.m_states.nStencil--;
-return 1;
-}
-
-static inline void StencilOn (int bStencil)
-{
-if (bStencil) {
-	glEnable (GL_STENCIL_TEST);
-	ogl.m_states.nStencil++;
-	}
 }
 
 //------------------------------------------------------------------------------

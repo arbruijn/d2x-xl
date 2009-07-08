@@ -829,7 +829,7 @@ profile.Destroy ();
 if (!FindArg ("-notitles"))
 #endif
 	//ShowOrderForm ();
-OglDestroyDrawBuffer ();
+ogl.DestroyDrawBuffer ();
 return 0;
 }
 

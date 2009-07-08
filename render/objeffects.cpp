@@ -275,7 +275,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 		scale = (float) ci.nFadeValue / (float) FADE_LEVELS;
 		scale *= scale;
 		}
-	bStencil = StencilOff ();
+	bStencil = ogl.StencilOff ();
 	gameData.render.shield.SetPulse (gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
@@ -316,7 +316,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 #else
 	DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
 #endif
-	StencilOn (bStencil);
+	ogl.StencilOn (bStencil);
 	}
 }
 
@@ -404,7 +404,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
-	bStencil = StencilOff ();
+	bStencil = ogl.StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
 	fPos.Assign (vPos);
@@ -458,7 +458,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 		glEnd ();
 		}
-	StencilOn (bStencil);
+	ogl.StencilOn (bStencil);
 	}
 }
 
@@ -656,7 +656,7 @@ RenderMslLockIndicator (objP);
 if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
-	bStencil = StencilOff ();
+	bStencil = ogl.StencilOff ();
 	glDisable (GL_TEXTURE_2D);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
@@ -742,7 +742,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			glEnd ();
 			}
 		}
-	StencilOn (bStencil);
+	ogl.StencilOn (bStencil);
 	}
 RenderDamageIndicator (objP, pc);
 }
@@ -777,7 +777,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		CBitmap		*bmP;
 
 	if (pp) {
-		bStencil = StencilOff ();
+		bStencil = ogl.StencilOff ();
 		OglActiveTexture (GL_TEXTURE0, 0);
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -812,7 +812,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		glEnd ();
 		transformation.End ();
 		OGL_BINDTEX (0);
-		StencilOn (bStencil);
+		ogl.StencilOn (bStencil);
 		}
 	}
 }
@@ -1105,7 +1105,7 @@ ti.fLength = fSpeed / 60.0f + 0.5f;
 if (ti.fLength < ti.fSize / 2)
 	ti.fLength = ti.fSize / 2;
 ti.fLength += float (rand () % 100) / 1000.0f;
-bStencil = StencilOff ();
+bStencil = ogl.StencilOff ();
 bTextured = 0;
 nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
 if (!LoadThruster ()) {
@@ -1264,7 +1264,7 @@ else {
 	OglCullFace (0);
 	glDepthMask (1);
 	}
-StencilOn (bStencil);
+ogl.StencilOn (bStencil);
 }
 
 // -----------------------------------------------------------------------------
@@ -1350,7 +1350,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		G3DrawSprite (objP->info.position.vPos + objP->info.position.mOrient.FVec () * F2X (fLength), xSize, xSize, bmP, colorP, alpha, bAdditive, 1);
 		}
 	else {
-		bStencil = StencilOff ();
+		bStencil = ogl.StencilOff ();
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
@@ -1388,7 +1388,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		glLineWidth (1);
 #endif
 		glDepthMask (1);
-		StencilOn (bStencil);
+		ogl.StencilOn (bStencil);
 		}
 #endif
 	}
@@ -1467,7 +1467,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 #endif
 	if (bDepthSort)
 		return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
-	bStencil = StencilOff ();
+	bStencil = ogl.StencilOff ();
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
 	if (bSimple) {
@@ -1517,7 +1517,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		}
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (1);
-	StencilOn (bStencil);
+	ogl.StencilOn (bStencil);
 	}
 return 0;
 }
@@ -1540,7 +1540,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 		int			bStencil;
 
 	vPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (objP->info.xSize / 2);
-	bStencil = StencilOff ();
+	bStencil = ogl.StencilOff ();
 	if (EGI_FLAG (bShockwaves, 1, 1, 0) &&
 		 (objP->mType.physInfo.velocity [X] || objP->mType.physInfo.velocity [Y] || objP->mType.physInfo.velocity [Z])) {
 			CFloatVector	vPosf;
@@ -1604,7 +1604,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 		OglCullFace (0);
 		transformation.End ();
 		}
-	StencilOn (bStencil);
+	ogl.StencilOn (bStencil);
 	}
 }
 
@@ -1650,7 +1650,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		if(vDirf.IsZero ())
 			return;
 		}
-	bStencil = StencilOff ();
+	bStencil = ogl.StencilOff ();
 	glDepthMask (0);
 	glEnable (GL_LINE_STIPPLE);
 	glEnable (GL_BLEND);
@@ -1678,7 +1678,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glDisable (GL_LINE_STIPPLE);
 	glDisable (GL_LINE_SMOOTH);
 	glDepthMask (1);
-	StencilOn (bStencil);
+	ogl.StencilOn (bStencil);
 #endif
 	}
 }
@@ -1825,7 +1825,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glColor4fv (reinterpret_cast<GLfloat*> (&trailColor));
 			bDrawArrays = ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-			bStencil = StencilOff ();
+			bStencil = ogl.StencilOff ();
 			glDisable (GL_CULL_FACE);
 			glDepthMask (0);
 			glEnable (GL_TEXTURE_2D);
@@ -1861,7 +1861,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				glEnd ();
 #endif
 				}
-			StencilOn (bStencil);
+			ogl.StencilOn (bStencil);
 			glEnable (GL_CULL_FACE);
 			glDepthMask (1);
 			}

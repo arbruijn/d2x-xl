@@ -1138,6 +1138,27 @@ return hBuffer;
 
 //------------------------------------------------------------------------------
 
+int COGL::StencilOff (void) 
+{
+if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
+	return 0;
+glDisable (GL_STENCIL_TEST);
+m_states.nStencil--;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::StencilOn (int bStencil) 
+{
+if (bStencil) {
+	glEnable (GL_STENCIL_TEST);
+	m_states.nStencil++;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 #if DBG
 
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)

@@ -364,7 +364,6 @@ InitMenuStates ();
 InitMovieStates ();
 InitMultiplayerStates ();
 InitGfxStates ();
-InitOglStates ();
 InitRenderStates ();
 InitSoundStates ();
 InitVideoStates ();
