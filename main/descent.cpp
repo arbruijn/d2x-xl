@@ -803,7 +803,7 @@ if (FindArg ("-norun"))
 /*---*/PrintLog ("Loading hires models\n");
 LoadHiresModels (0);
 LoadModelData ();
-InitShaders (); //required for some menus to show all possible choices
+ogl.InitShaders (); //required for some menus to show all possible choices
 return 0;
 }
 

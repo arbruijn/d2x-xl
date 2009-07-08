@@ -1096,14 +1096,14 @@ const char *pszLMLightingFS [] = {
 	"uniform vec4 matColor;\r\n" \
 	"void main() {\r\n" \
 	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
-	"gl_FragColor = vec4 (0.0, 0.75, 1.0, 1.0); /*vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);*/\r\n" \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);\r\n" \
 	"}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	gl_FragColor = vec4 (0.0, 0.5, 1.0, 1.0); /*vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);*/\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -1112,7 +1112,7 @@ const char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
-	"	gl_FragColor = vec4 (1.0, 0.5, 0.0, 1.0); /*vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);*/\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -1125,7 +1125,7 @@ const char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
-	"	gl_FragColor =  vec4 (1.0, 0.5, 0.75, 1.0); /*vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);*/\r\n" \
+	"	gl_FragColor =  vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
 	"	}\r\n" \
 	"}"
 	};
