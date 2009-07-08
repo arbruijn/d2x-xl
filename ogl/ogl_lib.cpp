@@ -315,7 +315,7 @@ m_data.Initialize ();
 
 //------------------------------------------------------------------------------
 
-void COGL::InitpState (void)
+void COGL::InitState (void)
 {
 // select clearing (background) color
 glClearColor (0, 0, 0, 0);
@@ -913,7 +913,7 @@ else
 void COGL::RebuildContext (int bGame)
 {
 m_states.bRebuilding = 1;
-InitExtensions ();
+SetupExtensions ();
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (" Setting up renderer...");
