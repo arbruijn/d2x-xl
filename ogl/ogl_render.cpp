@@ -467,7 +467,7 @@ else {
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
 	}
-OglActiveTexture (GL_TEXTURE0, 0);
+ogl.SelectTMU (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
 glColor4d (0, 0, 0, gameStates.render.grAlpha);
 glBegin (GL_TRIANGLE_FAN);
@@ -768,7 +768,7 @@ else
 	}
 if (bOverlay > 0) {
 	r_tpolyc++;
-	OglActiveTexture (GL_TEXTURE0, 0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	if (bmTop->Bind (1))
 		return 1;
@@ -805,13 +805,13 @@ if (bOverlay > 0) {
 	}
 else if (bShaderMerge) {
 #if OGL_CLEANUP
-	OglActiveTexture (GL_TEXTURE1, bVertexArrays);
+	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
 #endif
 	glUseProgramObject (activeShaderProg = 0);
 	}
-OglActiveTexture (GL_TEXTURE0, bVertexArrays);
+ogl.SelectTMU (GL_TEXTURE0, bVertexArrays);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 tMapColor.index =
@@ -1053,7 +1053,7 @@ if (gameOpts->render.bDepthSort > 0) {
 	transparencyRenderer.AddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive, fSoftRad);
 	}
 else {
-	OglActiveTexture (GL_TEXTURE0, 0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	v1 = vPos - transformation.m_info.pos;
 	pv = transformation.m_info.view [0] * v1;
 	x = (double) X2F (pv[X]);

@@ -1435,7 +1435,7 @@ if (!gameStates.render.bShadowMaps) {
 	if (!POFGatherPolyModelItems (objP, modelDataP, animAngleP, po, 1))
 		return 0;
 	}
-OglActiveTexture (GL_TEXTURE0, 0);
+ogl.SelectTMU (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
 pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;

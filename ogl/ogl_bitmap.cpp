@@ -49,7 +49,7 @@ int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, t
 	GLfloat			h, w, u, v;
 
 r_bitmapc++;
-OglActiveTexture (GL_TEXTURE0, 0);
+ogl.SelectTMU (GL_TEXTURE0);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
@@ -222,7 +222,7 @@ if (m_render.bBlendState)
 	glEnable (GL_BLEND);
 else
 	glDisable (GL_BLEND);
-OglActiveTexture (GL_TEXTURE0, 0);
+ogl.SelectTMU (GL_TEXTURE0);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 }

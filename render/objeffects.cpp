@@ -778,7 +778,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 
 	if (pp) {
 		bStencil = ogl.StencilOff ();
-		OglActiveTexture (GL_TEXTURE0, 0);
+		ogl.SelectTMU (GL_TEXTURE0);
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadBitmap (pf->bmi.index, 0);

@@ -357,7 +357,7 @@ glBlendFunc (nSrcBlend, nDestBlend);
 
 void COGL::SelectTMU (int nTMU, bool bClient)
 {
-ogl.SelectTMU (nTMU);
+glActiveTexture (nTMU);
 m_states.nTMU [0] = nTMU - GL_TEXTURE0;
 if (bClient) {
 	glClientActiveTexture (nTMU);

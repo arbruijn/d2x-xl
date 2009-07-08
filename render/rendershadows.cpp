@@ -185,7 +185,7 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 glEnable (GL_TEXTURE_2D);
-OglActiveTexture (GL_TEXTURE0, 0);
+ogl.SelectTMU (GL_TEXTURE0);
 shadowBuf.SetTranspType (0);
 if (shadowBuf.Bind (0))
 	return;
@@ -296,7 +296,7 @@ void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow)
 	CCamera		*cameraP;
 
 #if 1
-OglActiveTexture (GL_TEXTURE0, 0);
+ogl.SelectTMU (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D); 
 
 glEnable (GL_TEXTURE_GEN_S);
@@ -331,7 +331,7 @@ glDisable (GL_TEXTURE_GEN_S);
 glDisable (GL_TEXTURE_GEN_T);
 glDisable (GL_TEXTURE_GEN_R);
 glDisable (GL_TEXTURE_GEN_Q);
-OglActiveTexture (GL_TEXTURE0, 0);	
+ogl.SelectTMU (GL_TEXTURE0);	
 glDisable (GL_TEXTURE_2D);
 #endif
 DestroyShadowMaps ();

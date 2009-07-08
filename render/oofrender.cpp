@@ -566,7 +566,7 @@ if (!ogl.m_states.bUseTransform)
 vPos.Assign (transformation.m_info.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
-OglActiveTexture (GL_TEXTURE0, 0);
+ogl.SelectTMU (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 	if (pso->m_nParent == -1) {
