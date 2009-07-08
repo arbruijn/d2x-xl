@@ -82,6 +82,16 @@ class COglData {
 };
 
 
+#if DBG
+
+typedef struct tClientBuffer {
+	const GLvoid*	buffer;
+	char*				pszFile;
+	int				nLine;
+} tClientBuffer;
+
+#endif
+
 class COglStates {
 	public:
 		int	bInitialized;
@@ -161,6 +171,9 @@ class COglStates {
 
 		int	nTMU [2];	//active driver and client TMUs
 		int	clientStates [4][6];	// client states for the first 4 TMUs
+#if DBG
+		tClientBuffer	clientBuffers [4][6];
+#endif
 
 	public:
 		COglStates () { Initialize (); }
@@ -222,9 +235,23 @@ class COGL {
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 
 #if DBG
+		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+		void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+		void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+		void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+
 		void GenTextures (GLsizei n, GLuint *hTextures);
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
 #else
+		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine) 
+			{ glVertexPointer (size, type, stride, pointer); }
+		inline void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+			{ glColorPointer (size, type, stride, pointer); }
+		inline void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+			{ glTexCoordPointer (size, type, stride, pointer); }
+		inline void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+			{ glNormalPointer (type, stride, pointer); }
+
 		inline void GenTextures (GLsizei n, GLuint *hTextures) { glGenTextures (n, hTextures); }
 		inline void DeleteTextures (GLsizei n, GLuint *hTextures) { glDeleteTextures (n, hTextures); }
 #endif
@@ -256,8 +283,16 @@ extern COGL ogl;
 
 #if 1 //DBG
 #define	OglDrawArrays(mode, first, count)	ogl.DrawArrays (mode, first, count)
+#define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglColorPointer(size, type, stride, pointer)	ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglNormalPointer(size, type, stride, pointer)	ogl.NormalPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #else
 #define	OglDrawArrays(mode, first, count)	glDrawArrays (mode, first, count)
+#define	OglVertexPointer(size, type, stride, pointer)	glVertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglColorPointer(size, type, stride, pointer)		glColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglNormalPointer(size, type, stride, pointer)	glNormalPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #endif
 
 //------------------------------------------------------------------------------

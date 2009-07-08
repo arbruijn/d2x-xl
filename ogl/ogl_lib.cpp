@@ -370,8 +370,11 @@ int COGL::EnableClientState (GLuint nState, int nTMU)
 if (nTMU >= 0)
 	SelectTMU (nTMU);
 glEnableClientState (nState);
+#if 1 //DBG
+memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
+#endif
 if (!glGetError ()) {
-	m_states.clientStates [m_states.nTMU [0] - GL_TEXTURE0][nState - GL_VERTEX_ARRAY] = 1;
+	m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 1;
 	return 1;
 	}
 DisableClientState (nState, nTMU);
@@ -385,7 +388,10 @@ int COGL::DisableClientState (GLuint nState, int nTMU)
 if (nTMU >= 0)
 	SelectTMU (nTMU);
 glDisableClientState (nState);
-m_states.clientStates [m_states.nTMU [0] - GL_TEXTURE0][nState - GL_VERTEX_ARRAY] = 0;
+m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
+#if 1 //DBG
+memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
+#endif
 return glGetError () == 0;
 }
 
@@ -897,8 +903,6 @@ else
 }
 
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
 void COGL::RebuildContext (int bGame)
 {
@@ -1186,6 +1190,50 @@ if (bStencil) {
 	m_states.nStencil++;
 	}
 }
+
+//------------------------------------------------------------------------------
+
+#if DBG
+
+void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine) 
+{ 
+m_states.clientBuffers [m_states.nTMU [0]][0].buffer = pointer;
+m_states.clientBuffers [m_states.nTMU [0]][0].pszFile = pszFile;
+m_states.clientBuffers [m_states.nTMU [0]][0].nLine = nLine;
+glVertexPointer (size, type, stride, pointer); 
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
+{ 
+m_states.clientBuffers [m_states.nTMU [0]][1].buffer = pointer;
+m_states.clientBuffers [m_states.nTMU [0]][1].pszFile = pszFile;
+m_states.clientBuffers [m_states.nTMU [0]][1].nLine = nLine;
+glNormalPointer (type, stride, pointer); 
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
+{
+m_states.clientBuffers [m_states.nTMU [0]][2].buffer = pointer;
+m_states.clientBuffers [m_states.nTMU [0]][2].pszFile = pszFile;
+m_states.clientBuffers [m_states.nTMU [0]][2].nLine = nLine;
+glColorPointer (size, type, stride, pointer); 
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
+{ 
+m_states.clientBuffers [m_states.nTMU [0]][4].buffer = pointer;
+m_states.clientBuffers [m_states.nTMU [0]][4].pszFile = pszFile;
+m_states.clientBuffers [m_states.nTMU [0]][4].nLine = nLine;
+glTexCoordPointer (size, type, stride, pointer); 
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 

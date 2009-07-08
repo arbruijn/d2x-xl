@@ -1583,9 +1583,9 @@ if (bLightmaps) {
 	ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 	}
 ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
-glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
-glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
-glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
+OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
+OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
+OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
 return 1;
 }
 
