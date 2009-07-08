@@ -498,7 +498,7 @@ if (bAutomapFrame) {
 DrawLevelId ();
 PROF_END(ptRenderFrame)
 #endif
-OglSwapBuffers (0, 0);
+ogl.SwapBuffers (0, 0);
 }
 
 //------------------------------------------------------------------------------

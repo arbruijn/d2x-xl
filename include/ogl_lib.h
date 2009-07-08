@@ -213,6 +213,20 @@ class COGL {
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
 #endif
 
+		inline void ClearError (int bTrapError) {
+#if DBG
+			GLenum nError = glGetError ();
+			if (nError) {
+				const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
+				if (bTrapError)
+					nError = nError;
+				}
+#else
+			glGetError();
+#endif
+			}
+
+
 		inline int SetTransform (int bUseTransform) { m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }
 
@@ -228,25 +242,6 @@ extern COGL ogl;
 #define	OglDrawArrays(mode, first, count)	ogl.DrawArrays (mode, first, count)
 #else
 #define	OglDrawArrays(mode, first, count)	glDrawArrays (mode, first, count)
-#endif
-
-#if DBG
-
-static inline void OglClearError (int bTrapError)
-{
-	GLenum nError = glGetError ();
-
-if (nError) {
-	const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
-	if (bTrapError)
-		nError = nError;
-	}
-}
-
-#else
-
-#define OglClearError(_bTrapError)	glGetError()
-
 #endif
 
 //------------------------------------------------------------------------------

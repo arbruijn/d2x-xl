@@ -1250,7 +1250,7 @@ if (objP->info.renderType != RT_NONE)
 #endif
 gameStates.render.detail.nMaxLinearDepth = mldSave;
 gameData.render.nTotalObjects++;
-OglClearError (0);
+ogl.ClearError (0);
 return 1;
 }
 

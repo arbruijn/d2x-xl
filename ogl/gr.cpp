@@ -112,7 +112,7 @@ if (ogl.m_states.bInitialized) {
 	if (ogl.m_states.nDrawBuffer == GL_FRONT)
 		glFlush ();
 	else
-		OglSwapBuffers (1, bClear);
+		ogl.SwapBuffers (1, bClear);
 	}
 }
 

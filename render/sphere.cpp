@@ -192,7 +192,7 @@ if (100 + ogl.m_states.bUseTransform != gameStates.render.history.nShader) {
 	}
 glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
 glUniform3fv (glGetUniformLocation (sphereShaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
-OglClearError (0);
+ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return gameStates.render.history.nShader = 100 + ogl.m_states.bUseTransform;
 }

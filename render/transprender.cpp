@@ -609,7 +609,7 @@ if (nTMU == GL_TEXTURE0)
 #endif
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
-OglClearError (0);
+ogl.ClearError (0);
 if (bFull) {
 	if (bDecal) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -658,7 +658,7 @@ PROF_START
 if (m_data.bUseLightmaps != bUseLightmaps) {
 	glActiveTexture (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
-	OglClearError (0);
+	ogl.ClearError (0);
 	if (bUseLightmaps) {
 		glEnable (GL_TEXTURE_2D);
 		glEnableClientState (GL_NORMAL_ARRAY);

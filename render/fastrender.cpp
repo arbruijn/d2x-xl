@@ -469,14 +469,14 @@ else {
 		}
 #endif
 	if ((nType < 4) && (gameStates.render.bPerPixelLighting == 2)) {
-		OglEnableLighting (1);
+		ogl.EnableLighting (1);
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);
 		glDisable (GL_LIGHTING);
 		glColor4f (1,1,1,1);
 		}
 	}
-OglSetupTransform (1);
+ogl.SetupTransform (1);
 ogl.EnableClientStates (!bDepthOnly, !(bDepthOnly || gameStates.render.bFullBright), bNormals, GL_TEXTURE0);
 #if GEOMETRY_VBOS
 if (bVBO) {
@@ -543,7 +543,7 @@ if (bNormals)
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ZERO);
-OglClearError (0);
+ogl.ClearError (0);
 return 1;
 }
 
@@ -580,8 +580,8 @@ if (ogl.m_states.bShadersOk) {
 	}
 if (nType != 3) {
 	if (gameStates.render.bPerPixelLighting == 2)
-		OglDisableLighting ();
-	OglResetTransform (1);
+		ogl.DisableLighting ();
+	ogl.ResetTransform (1);
 	if (FACES.vboDataHandle)
 		glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 	}
@@ -590,7 +590,7 @@ else 	if (CoronaStyle () == 2)
 else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-OglClearError (0);
+ogl.ClearError (0);
 }
 
 //------------------------------------------------------------------------------
@@ -733,11 +733,11 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #	endif
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
-			OglClearError (1);
+			ogl.ClearError (1);
 			RenderCorona (nSegment, faceP->nSide, 1, faceP->fRads [0]);
-			OglClearError (1);
+			ogl.ClearError (1);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
-			OglClearError (1);
+			ogl.ClearError (1);
 			}	
 		}
 	}

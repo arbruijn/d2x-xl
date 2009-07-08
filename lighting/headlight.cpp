@@ -819,7 +819,7 @@ if ((ogl.m_states.bHeadlight = (ogl.m_states.bShadersOk))) {
 			}
 		}
 	}
-OglClearError (0);
+ogl.ClearError (0);
 ogl.m_data.nHeadlights = nLights;
 }
 
@@ -873,7 +873,7 @@ if (nShader != gameStates.render.history.nShader) {
 		color.alpha = 1;
 		}
 	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
-	OglClearError (0);
+	ogl.ClearError (0);
 	}
 return gameStates.render.history.nShader = nShader;
 }

@@ -767,7 +767,7 @@ void LoadGlareShader (float dMax)
 {
 	static float dMaxPrev = -1;
 
-OglClearError (0);
+ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
 if (ogl.m_states.bDepthBlending) {
 	OglSetReadBuffer (GL_BACK, 1);
@@ -873,7 +873,7 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 		DeleteShaderProg (&hGlareShader);
 		return;
 		}
-	OglClearError (0);
+	ogl.ClearError (0);
 	}
 #endif
 }

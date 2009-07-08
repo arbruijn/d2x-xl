@@ -101,7 +101,7 @@ for (short i = 0; i < m_nSubModels; i++)
 
 if (ogl.m_states.bHaveVBOs) {
 	int i;
-	OglClearError (0);
+	ogl.ClearError (0);
 	glGenBuffersARB (1, &m_vboDataHandle);
 	if ((i = glGetError ())) {
 #	if DBG

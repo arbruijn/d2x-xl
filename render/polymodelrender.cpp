@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "buildmodel.h"
 #include "hitbox.h"
 #include "paging.h"
+#include "ogl_lib.h"
 
 //------------------------------------------------------------------------------
 

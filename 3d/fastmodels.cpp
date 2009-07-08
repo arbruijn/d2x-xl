@@ -915,7 +915,7 @@ if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (1.0f);
 #endif
 pm->m_bRendered = 1;
-OglClearError (0);
+ogl.ClearError (0);
 PROF_END(ptRenderObjectsFast)
 return 1;
 }

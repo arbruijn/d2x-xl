@@ -875,7 +875,7 @@ if (!data)
 memset (data, 0, nSize);
 OglGenTextures (1, &m_info.handle);
 if (!m_info.handle) {
-	OglClearError (0);
+	ogl.ClearError (0);
 	return 0;
 	}
 #if DBG
@@ -960,7 +960,7 @@ if (!buffer)
 	return 1;
 OglGenTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 if (!m_info.handle) {
-	OglClearError (0);
+	ogl.ClearError (0);
 	return 1;
 	}
 #if DBG
@@ -1005,7 +1005,7 @@ else
 		}
 	catch (...) {
 		}
-	OglClearError (1);
+	ogl.ClearError (1);
 #if TEXTURE_COMPRESSION
 	Compress ();
 #endif

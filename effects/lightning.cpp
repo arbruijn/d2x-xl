@@ -1042,7 +1042,7 @@ if (!ogl.m_states.bUseTransform)
 	OglResetTransform (1);
 glLineWidth ((GLfloat) 1);
 glDisable (GL_LINE_SMOOTH);
-OglClearError (0);
+ogl.ClearError (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1106,7 +1106,7 @@ if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->RenderBuffered (nDepth + 1, nThread);
-OglClearError (0);
+ogl.ClearError (0);
 }
 
 //------------------------------------------------------------------------------

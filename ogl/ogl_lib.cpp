@@ -330,7 +330,7 @@ void COGL::SelectTMU (int nTMU)
 glActiveTexture (nTMU);
 glClientActiveTexture (nTMU);
 m_states.nTMU [0] = m_states.nTMU [1] = nTMU - GL_TEXTURE0;
-OglClearError (0);
+ClearError (0);
 }
 
 //------------------------------------------------------------------------------

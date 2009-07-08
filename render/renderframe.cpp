@@ -793,7 +793,7 @@ PROF_END(ptCockpit)
 }
 console.Draw ();
 
-OglSwapBuffers (0, 0);
+ogl.SwapBuffers (0, 0);
 
 if (gameStates.app.bSaveScreenshot)
 	SaveScreenShot (NULL, 0);
