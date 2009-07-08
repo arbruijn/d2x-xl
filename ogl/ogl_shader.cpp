@@ -316,7 +316,7 @@ return 0;
 
 void ResetSphereShaders (void);
 
-void InitShaders (void)
+void COGL::InitShaders (void)
 {
 	GLint	nTMUs;
 
@@ -353,7 +353,7 @@ LinkShaderProg (NULL);
 
 //------------------------------------------------------------------------------
 
-void COGL::InitShaders (void)
+void COGL::SetupShaders (void)
 {
 PrintLog ("Checking shaders ...\n");
 ogl.m_states.bShadersOk = 0;

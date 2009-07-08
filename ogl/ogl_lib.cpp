@@ -315,7 +315,7 @@ m_data.Initialize ();
 
 //------------------------------------------------------------------------------
 
-void COGL::InitState (void)
+void COGL::InitpState (void)
 {
 // select clearing (background) color
 glClearColor (0, 0, 0, 0);
@@ -913,6 +913,7 @@ else
 void COGL::RebuildContext (int bGame)
 {
 m_states.bRebuilding = 1;
+InitExtensions ();
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (" Setting up renderer...");
@@ -1116,7 +1117,7 @@ GLuint COGL::CreateDepthTexture (int nTMU, int bFBO)
 {
 	GLuint	hBuffer;
 
-if (nTMU > 0)
+if (nTMU > GL_TEXTURE0)
 	ogl.SelectTMU (nTMU);
 glEnable (GL_TEXTURE_2D);
 ogl.GenTextures (1, &hBuffer);

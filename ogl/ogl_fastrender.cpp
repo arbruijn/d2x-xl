@@ -750,8 +750,6 @@ else if (gameStates.render.bFullBright) {
 		}
 	glColor3f (1,1,1);
 	RenderFacePP (faceP);
-	glColor3f (1,1,1);
-	RenderFacePP (faceP);
 	}
 else {
 	G3SetupLightmapShader (faceP, 0, gameStates.render.history.nType, false);	

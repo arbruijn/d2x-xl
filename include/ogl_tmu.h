@@ -147,7 +147,7 @@ else
 	g3InitTMU [3][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [3][bVertexArrays])
 		glNewList (g3InitTMU [3][bVertexArrays], GL_COMPILE);
-	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
+	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [3][bVertexArrays]) {

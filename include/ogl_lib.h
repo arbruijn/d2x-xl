@@ -189,24 +189,21 @@ class COGL {
 		COglStates	m_states;
 
 	public:
-		COGL () { Initialize (); }
-		~COGL () { Destroy (); }
-
 		void Initialize (void);
-		void Destroy (void) {}
 
-		void InitExtensions (void);
-		void InitMultiTexturing (void);
-		void InitShaders (void);
-		void InitOcclusionQuery (void);
-		void InitPointSprites (void);
-		void InitTextureCompression (void);
-		void InitStencilOps (void);
-		void InitRefreshSync (void);
-		void InitAntiAliasing (void);
-		void InitVBOs (void);
+		void SetupExtensions (void);
+		void SetupMultiTexturing (void);
+		void SetupShaders (void);
+		void SetupOcclusionQuery (void);
+		void SetupPointSprites (void);
+		void SetupTextureCompression (void);
+		void SetupStencilOps (void);
+		void SetupRefreshSync (void);
+		void SetupAntiAliasing (void);
+		void SetupVBOs (void);
 
 		void InitState (void);
+		void InitShaders (void);
 
 		void SetFOV (void);
 		void SelectTMU (int nTMU, bool bClient = false);

@@ -94,7 +94,7 @@ const char *pszOglExtensions = NULL;
 
 //------------------------------------------------------------------------------
 
-void COGL::InitOcclusionQuery (void)
+void COGL::SetupOcclusionQuery (void)
 {
 #if OGL_QUERY
 m_states.bOcclusionQuery = 0;
@@ -134,7 +134,7 @@ PrintLog (m_states.bOcclusionQuery ? (char *) "Occlusion query is available\n" :
 
 //------------------------------------------------------------------------------
 
-void COGL::InitPointSprites (void)
+void COGL::SetupPointSprites (void)
 {
 #if OGL_POINT_SPRITES
 #	ifdef _WIN32
@@ -146,7 +146,7 @@ glPointParameterfARB		= (PFNGLPOINTPARAMETERFARBPROC) wglGetProcAddress ("glPoin
 
 //------------------------------------------------------------------------------
 
-void COGL::InitStencilOps (void)
+void COGL::SetupStencilOps (void)
 {
 glEnable (GL_STENCIL_TEST);
 if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST)))
@@ -160,7 +160,7 @@ glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glA
 
 //------------------------------------------------------------------------------
 
-void COGL::InitVBOs (void)
+void COGL::SetupVBOs (void)
 {
 #ifndef GL_VERSION_20
 #	ifdef _WIN32
@@ -189,7 +189,7 @@ PrintLog (m_states.bHaveVBOs ? (char *) "VBOs are available\n" : (char *) "No VB
 
 //------------------------------------------------------------------------------
 
-void COGL::InitTextureCompression (void)
+void COGL::SetupTextureCompression (void)
 {
 #if TEXTURE_COMPRESSION
 m_states.bHaveTexCompression = 1;
@@ -207,7 +207,7 @@ m_states.bHaveTexCompression = 0;
 
 //------------------------------------------------------------------------------
 
-void COGL::InitMultiTexturing (void)
+void COGL::SetupMultiTexturing (void)
 {
 #ifndef GL_VERSION_20
 m_states.bMultiTexturingOk = 0;
@@ -233,14 +233,14 @@ PrintLog (m_states.bMultiTexturingOk ? (char *) "Multi-texturing is available\n"
 
 //------------------------------------------------------------------------------
 
-void COGL::InitAntiAliasing (void)
+void COGL::SetupAntiAliasing (void)
 {
 m_states.bAntiAliasingOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multisample"));
 }
 
 //------------------------------------------------------------------------------
 
-void COGL::InitRefreshSync (void)
+void COGL::SetupRefreshSync (void)
 {
 gameStates.render.bVSyncOk = 0;
 #ifdef _WIN32
@@ -253,20 +253,20 @@ else
 
 //------------------------------------------------------------------------------
 
-void COGL::InitExtensions (void)
+void COGL::SetupExtensions (void)
 {
 pszOglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
-InitMultiTexturing ();
-InitShaders ();
-InitOcclusionQuery ();
-InitPointSprites ();
-InitTextureCompression ();
-InitStencilOps ();
-InitRefreshSync ();
-InitAntiAliasing ();
-InitVBOs ();
+SetupMultiTexturing ();
+SetupShaders ();
+SetupOcclusionQuery ();
+SetupPointSprites ();
+SetupTextureCompression ();
+SetupStencilOps ();
+SetupRefreshSync ();
+SetupAntiAliasing ();
+SetupVBOs ();
 #if RENDER2TEXTURE == 1
-InitPBuffer ();
+SetupPBuffer ();
 #elif RENDER2TEXTURE == 2
 CFBO::Setup ();
 #endif
