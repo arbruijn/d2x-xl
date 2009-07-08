@@ -624,7 +624,7 @@ static int RenderSegmentFaces (short nSegment, int nWindow)
 	g3sCodes 	cc;
 	short			nSide;
 
-OglSetupTransform (0);
+ogl.SetupTransform (0);
 cc = RotateVertexList (8, segP->m_verts);
 gameData.render.vertP = gameData.segs.fVertices.Buffer ();
 //	return;
@@ -638,7 +638,7 @@ if (nSegment == nDbgSeg)
 lightManager.SetNearestToSegment (nSegment, -1, 0, 0, 0);
 for (nSide = 0; nSide < 6; nSide++) //segP->nFaces, faceP = segP->pFaces; nSide; nSide--, faceP++)
 	RenderSide (segP, nSide);
-OglResetTransform (0);
+ogl.ResetTransform (0);
 OGL_BINDTEX (0);
 return 1;
 }
@@ -900,9 +900,9 @@ if (SHOW_SHADOWS &&
 		if (gameOpts->render.shadows.bSoft = 1)
 			gameStates.render.nShadowBlurPass = 1;
 #endif
-		OglStartFrame (0, 0);
+		ogl.StartFrame (0, 0);
 #if SOFT_SHADOWS
-		OglViewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
+		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #if 1//!DBG
@@ -926,7 +926,7 @@ if (SHOW_SHADOWS &&
 			gameStates.render.nShadowBlurPass = 2;
 			gameStates.render.nShadowPass = 0;
 #if 1
-			OglStartFrame (0, 1);
+			ogl.StartFrame (0, 1);
 			SetRenderView (nEyeOffset, &nStartSeg, 1);
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif
@@ -943,7 +943,7 @@ else
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 	else {
 		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
-			OglStartFrame (0, 1);
+			ogl.StartFrame (0, 1);
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}

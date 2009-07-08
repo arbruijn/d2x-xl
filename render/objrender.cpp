@@ -738,7 +738,7 @@ else {
 				if (gameOpts->legacy.bRender)
 					gameStates.render.grAlpha = GrAlpha (FADE_LEVELS - 2);
 				else
-					OglBlendFunc (GL_ONE, GL_ONE);
+					ogl.BlendFunc (GL_ONE, GL_ONE);
 				}
 			if (bBlendPolys) {
 #if 0
@@ -769,7 +769,7 @@ else {
 									(bGatling || bEnergyWeapon) ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender)
-				OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				ogl.BlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			gameStates.render.grAlpha = 1.0f;
 			}
 		}

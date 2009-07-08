@@ -402,7 +402,7 @@ for (bShadowTest = 0; bShadowTest < 2; bShadowTest++)
 #endif
  {
 	gameStates.render.nShadowPass = 2;
-	OglStartFrame (0, 0);
+	ogl.StartFrame (0, 0);
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	//RenderObjectShadows ();
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
@@ -412,7 +412,7 @@ if (!bShadowTest)
 #endif
  {
 	gameStates.render.nShadowPass = 3;
-	OglStartFrame (0, 0);
+	ogl.StartFrame (0, 0);
 	if	(gameStates.render.bShadowMaps) {
 #if DBG
 		if (gameStates.render.bChaseCam)
@@ -449,13 +449,13 @@ for (i = 0; i < n; i++) {
 	prl->render.bExclusive = 1;
 #if 1
 	gameStates.render.nShadowPass = 2;
-	OglStartFrame (0, 0);
+	ogl.StartFrame (0, 0);
 	memcpy (&gameData.render.shadows.vLightPos, prl->render.vPosf + 1, sizeof (CFloatVector));
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif
 	gameStates.render.nShadowPass = 3;
-	OglStartFrame (0, 0);
+	ogl.StartFrame (0, 0);
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	RenderMine (nStartSeg, nEyeOffset, nWindow);
 	prl->render.bExclusive = 0;

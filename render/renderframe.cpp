@@ -900,7 +900,7 @@ if (gameData.render.window.x || gameData.render.window.y) {
 	CCanvas::Pop ();
 	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
 	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
-//	OglStartFrame (0, 0);
+//	ogl.StartFrame (0, 0);
 	}
 #else
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);

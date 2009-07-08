@@ -207,7 +207,7 @@ glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 if (!Available ())
 	return 0;
 #endif
-OglSetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
+ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
 return 1;
 }
 
@@ -223,7 +223,7 @@ if (!Available ())
 	return 0;
 #endif
 //glBindTexture (GL_TEXTURE_2D, m_info.hRenderBuffer);
-OglSetDrawBuffer (GL_BACK, 1);
+ogl.SetDrawBuffer (GL_BACK, 1);
 return 1;
 }
 

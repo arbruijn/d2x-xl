@@ -74,7 +74,7 @@ glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
 if (!ogl.m_states.hDepthBuffer)
 	ogl.m_states.bHaveDepthBuffer = 0;
-if (ogl.m_states.hDepthBuffer || (ogl.m_states.hDepthBuffer = OglCreateDepthTexture (-1, 0))) {
+if (ogl.m_states.hDepthBuffer || (ogl.m_states.hDepthBuffer = ogl.CreateDepthTexture (-1, 0))) {
 	glBindTexture (GL_TEXTURE_2D, ogl.m_states.hDepthBuffer);
 	if (!ogl.m_states.bHaveDepthBuffer) {
 #if 0
@@ -770,7 +770,7 @@ void LoadGlareShader (float dMax)
 ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
 if (ogl.m_states.bDepthBlending) {
-	OglSetReadBuffer (GL_BACK, 1);
+	ogl.SetReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
 		ogl.m_states.bUseDepthBlending = 1;
 		if (dMax < 1)

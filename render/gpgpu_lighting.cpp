@@ -209,7 +209,7 @@ for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 #endif
 OglDeleteTextures (VL_SHADER_BUFFERS, hBuffer);
 memset (hBuffer, 0, sizeof (hBuffer));
-OglSetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
+ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
 glReadPixels (0, 0, GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH, GL_RGBA, GL_FLOAT, m_vld.colors);
 #endif
 
@@ -304,8 +304,8 @@ if (nState == 0) {
 	glUniform3fv (glGetUniformLocation (m_hShaderProg, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matDiffuse));
 	glUniform3fv (glGetUniformLocation (m_hShaderProg, "matSpecular"), 1, reinterpret_cast<GLfloat*> (&matSpecular));
 #endif
-	OglSetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
-	OglSetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
+	ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
+	ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
 	glDisable (GL_CULL_FACE);
 	glDisable (GL_BLEND);
 	glDisable (GL_ALPHA_TEST);
@@ -375,7 +375,7 @@ else if (nState == 2) {
 	glMatrixMode (GL_MODELVIEW);                         
 	glPopMatrix ();
 	glPopAttrib ();
-	OglSetDrawBuffer (GL_BACK, 1);
+	ogl.SetDrawBuffer (GL_BACK, 1);
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 		ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0 + i);
 		glActiveTexture (GL_TEXTURE0 + i);
@@ -386,7 +386,7 @@ else if (nState == 2) {
 	glDepthFunc (GL_LESS);
 	glEnable (GL_ALPHA_TEST);
 	glAlphaFunc (GL_GEQUAL, (float) 0.01);	
-	OglSetDrawBuffer (GL_BACK, 1);
+	ogl.SetDrawBuffer (GL_BACK, 1);
 	}
 return 1;
 }

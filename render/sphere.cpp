@@ -148,7 +148,7 @@ if (CreateSphereShader () < 1) {
 
 if (!ogl.m_states.bUseTransform) {
 	fSize *= X2F (objP->Size ());
-	OglSetupTransform (0);
+	ogl.SetupTransform (0);
 	m = CFixMatrix::IDENTITY;
 	transformation.Begin (*PolyObjPos (objP, &vPos), m); 
 	}
@@ -179,7 +179,7 @@ for (int i = 0; i < 3; i++) {
 	}
 if (!ogl.m_states.bUseTransform) {
 	transformation.End ();
-	OglResetTransform (1);
+	ogl.ResetTransform (1);
 	}
 
 if (!nHits)
@@ -780,13 +780,13 @@ else {
 	if (!SetupSphereShader (objP, alpha))
 		return 0;
 	}
-OglSetupTransform (0);
+ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
 transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
-OglResetTransform (0);
+ogl.ResetTransform (0);
 ogl.m_states.bUseTransform = 0;
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
@@ -913,14 +913,14 @@ if (gameData.render.monsterball.nFaces > 0)
 	else {
 		float r = X2F (objP->info.xSize);
 		ogl.m_states.bUseTransform = 1;
-		OglSetupTransform (0);
+		ogl.SetupTransform (0);
 		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		CFloatVector p;
 		p.SetZero ();
 		gameData.render.monsterball.Render (objP, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
 														&gameData.hoard.monsterball.bm, 4, 0);
 		transformation.End ();
-		OglResetTransform (1);
+		ogl.ResetTransform (1);
 		ogl.m_states.bUseTransform = 0;
 		}
 	}

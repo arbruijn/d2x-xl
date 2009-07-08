@@ -1472,7 +1472,7 @@ if (CreatePerPixelLightingShader (nType, nLights) >= 0)
 	PROF_END(ptPerPixelLighting)
 	return nLights;
 	}
-OglDisableLighting ();
+ogl.DisableLighting ();
 ogl.ClearError (0);
 PROF_END(ptPerPixelLighting)
 return -1;

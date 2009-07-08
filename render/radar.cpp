@@ -167,7 +167,7 @@ if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
 	return;
 if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 	return;
-bStencil = StencilOff ();
+bStencil = ogl.StencilOff ();
 InitShipColors ();
 yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR)) ? yOffs : -yOffs;
 fRadius = 5.0f / transformation.m_info.scalef [X];
@@ -216,7 +216,7 @@ glDisable (GL_LINE_SMOOTH);
 glLineWidth (1);
 glDepthFunc (depthFunc);
 glEnable (GL_CULL_FACE);
-StencilOn (bStencil);
+ogl.StencilOn (bStencil);
 }
 
 //------------------------------------------------------------------------------

@@ -453,7 +453,7 @@ if (!gameOpts->render.automap.bTextured)
 G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar);
 
 if (bAutomapFrame)
-	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
+	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (m_bRadar == 2) {
 	m_data.viewPos = m_data.viewTarget + mRadar.FVec () * (-m_data.nViewDist);

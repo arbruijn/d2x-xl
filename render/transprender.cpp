@@ -917,7 +917,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 			glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 		glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 		}
-	OglSetupTransform (faceP != NULL);
+	ogl.SetupTransform (faceP != NULL);
 	if (item->nColors > 1) {
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
@@ -1037,7 +1037,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 #endif
 		glDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-	OglResetTransform (faceP != NULL);
+	ogl.ResetTransform (faceP != NULL);
 	if (faceP)
 		gameData.render.nTotalFaces++;
 	}
@@ -1509,7 +1509,7 @@ if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFr
 PROF_START
 gameStates.render.nType = 5;
 ResetShader ();
-bStencil = StencilOff ();
+bStencil = ogl.StencilOff ();
 m_data.bTextured = -1;
 m_data.bClientState = -1;
 m_data.bClientTexCoord = 0;
@@ -1524,7 +1524,7 @@ m_data.nFrame = -1;
 m_data.bmP [0] =
 m_data.bmP [1] = NULL;
 sparkBuffer.nSparks = 0;
-OglDisableLighting ();
+ogl.DisableLighting ();
 ogl.DisableClientStates (1, 1, 0, GL_TEXTURE2 + m_data.bLightmaps);
 ogl.DisableClientStates (1, 1, 0, GL_TEXTURE1 + m_data.bLightmaps);
 ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0 + m_data.bLightmaps);

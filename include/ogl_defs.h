@@ -260,7 +260,6 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #define OGL_TEXPARAM(p,m) OGL_SETSTATE(p,m,glTexParameteri(GL_TEXTURE_2D,p,m));
 
 void OglInitExtensions (void);
-void OglViewport (int x, int y, int w, int h);
 
 //------------------------------------------------------------------------------
 

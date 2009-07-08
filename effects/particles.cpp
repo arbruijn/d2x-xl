@@ -1676,7 +1676,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	if ((nType >= 0) && !gameOpts->render.particles.bSort)
 		particleImageManager.Animate (nType);
 	bmP = bmpParticle [0][nType];
-	particleManager.SetStencil (StencilOff ());
+	particleManager.SetStencil (ogl.StencilOff ());
 	InitBuffer (bLightmaps);
 	glActiveTexture (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
@@ -1710,7 +1710,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (1);
-	StencilOn (particleManager.Stencil ());
+	ogl.StencilOn (particleManager.Stencil ());
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 return 1;

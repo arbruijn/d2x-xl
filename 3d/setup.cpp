@@ -49,7 +49,7 @@ fxCanvW2 = X2F (xCanvW2);
 fxCanvH2 = X2F (xCanvH2);
 transformation.ComputeAspect ();
 InitFreePoints ();
-OglStartFrame (bFlat, bResetColorBuf);
+ogl.StartFrame (bFlat, bResetColorBuf);
 gameStates.render.bHeadlightOn = 1;
 if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;

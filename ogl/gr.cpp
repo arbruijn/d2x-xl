@@ -153,10 +153,10 @@ CCanvas::Current ()->SetFont (fontManager.Current ());
 if (!OglInitWindow (w, h, 0))	//platform specific code
 	return 0;
 /***/PrintLog ("   initializing OpenGL view port\n");
-OglViewport (0, 0, w, h);
+ogl.Viewport (0, 0, w, h);
 /***/PrintLog ("   initializing OpenGL screen mode\n");
-OglSetScreenMode ();
-OglGetVerInfo ();
+ogl.SetScreenMode ();
+ogl.GetVerInfo ();
 GrUpdate (0);
 return 0;
 }
@@ -273,11 +273,11 @@ gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
 /***/PrintLog ("   initializing OpenGL extensions\n");
-SetRenderQuality ();
+ogl.SetRenderQuality ();
 OglInitExtensions ();
-OglDestroyDrawBuffer ();
-OglCreateDrawBuffer ();
-OglSetDrawBuffer (GL_BACK, 1);
+ogl.DestroyDrawBuffer ();
+ogl.CreateDrawBuffer ();
+ogl.SetDrawBuffer (GL_BACK, 1);
 return 0;
 }
 

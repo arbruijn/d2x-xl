@@ -147,15 +147,6 @@ for (; n; n--, lp++) {
 
 //------------------------------------------------------------------------------
 
-void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend)
-{
-ogl.m_data.nSrcBlend = nSrcBlend;
-ogl.m_data.nDestBlend = nDestBlend;
-glBlendFunc (nSrcBlend, nDestBlend);
-}
-
-//------------------------------------------------------------------------------
-
 void ComputeSinCosTable (int nSides, tSinCosf *sinCosP)
 {
 	double	ang;
@@ -321,6 +312,15 @@ void COGL::Initialize (void)
 m_states.Initialize ();
 m_data.Initialize ();
 m_states.Initialize ();
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::BlendFunc (GLenum nSrcBlend, GLenum nDestBlend)
+{
+ogl.m_data.nSrcBlend = nSrcBlend;
+ogl.m_data.nDestBlend = nDestBlend;
+glBlendFunc (nSrcBlend, nDestBlend);
 }
 
 //------------------------------------------------------------------------------
@@ -620,7 +620,7 @@ else
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
-	OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	if (ogl.m_states.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),
@@ -681,7 +681,7 @@ nError = glGetError ();
 
 void COGL::EndFrame (void)
 {
-//	OglViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), );
+//	ogl.Viewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), );
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
@@ -704,7 +704,7 @@ OGL_BINDTEX (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-OglViewport (0, 0, screen.Width (), screen.Height ());
+ogl.Viewport (0, 0, screen.Width (), screen.Height ());
 #ifndef NMONO
 //	merge_textures_stats ();
 //	ogl_texture_stats ();

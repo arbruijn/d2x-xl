@@ -596,7 +596,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	CFloatVector			color;
 	tObjTransformation*	posP = OBJPOS (objP);
 
-OglSetupTransform (1);
+ogl.SetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
 	if (nLights > gameStates.render.nMaxLightsPerObject)
@@ -717,7 +717,7 @@ if (bLighting) {
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (1);
 	}
-OglResetTransform (1);
+ogl.ResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);
 }
 

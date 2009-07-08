@@ -27,6 +27,7 @@
 #endif
 
 #include "descent.h"
+#include "ogl_lib.h"
 #include "ogl_shader.h"
 
 //------------------------------------------------------------------------------
@@ -93,10 +94,10 @@ const char *pszOglExtensions = NULL;
 
 //------------------------------------------------------------------------------
 
-void OglInitOcclusionQuery (void)
+void COGL::InitOcclusionQuery (void)
 {
 #if OGL_QUERY
-ogl.m_states.bOcclusionQuery = 0;
+m_states.bOcclusionQuery = 0;
 PrintLog ("Checking occlusion query ...\n");
 if (!(pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_occlusion_query")))
 	PrintLog ("   Occlusion query not supported by the OpenGL driver\n");
@@ -121,19 +122,19 @@ else {
 	else {
 		GLint nBits;
       glGetQueryiv (GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS_ARB, &nBits);
-		ogl.m_states.bOcclusionQuery = nBits > 0;
+		m_states.bOcclusionQuery = nBits > 0;
 		}
 #	else
-	ogl.m_states.bOcclusionQuery = 1;
+	m_states.bOcclusionQuery = 1;
 #	endif
 	}
 #endif
-PrintLog (ogl.m_states.bOcclusionQuery ? (char *) "Occlusion query is available\n" : (char *) "No occlusion query available\n");
+PrintLog (m_states.bOcclusionQuery ? (char *) "Occlusion query is available\n" : (char *) "No occlusion query available\n");
 }
 
 //------------------------------------------------------------------------------
 
-void OglInitPointSprites (void)
+void COGL::InitPointSprites (void)
 {
 #if OGL_POINT_SPRITES
 #	ifdef _WIN32
@@ -145,7 +146,7 @@ glPointParameterfARB		= (PFNGLPOINTPARAMETERFARBPROC) wglGetProcAddress ("glPoin
 
 //------------------------------------------------------------------------------
 
-void OglInitStencilOps (void)
+void COGL::InitStencilOps (void)
 {
 glEnable (GL_STENCIL_TEST);
 if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST)))
@@ -159,12 +160,12 @@ glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glA
 
 //------------------------------------------------------------------------------
 
-void OglInitVBOs (void)
+void COGL::InitVBOs (void)
 {
 #ifndef GL_VERSION_20
 #	ifdef _WIN32
 PrintLog ("Checking VBOs ...\n");
-ogl.m_states.bHaveVBOs = 0;
+m_states.bHaveVBOs = 0;
 if (!(glGenBuffersARB = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("glGenBuffersARB")))
 	PrintLog ("   glGenBuffersARB not supported by the OpenGL driver\n");
 else if (!(glBindBufferARB = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("glBindBufferARB")))
@@ -182,34 +183,34 @@ else if (!(glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress 
 else
 #	endif
 #endif
-ogl.m_states.bHaveVBOs = 1;
-PrintLog (ogl.m_states.bHaveVBOs ? (char *) "VBOs are available\n" : (char *) "No VBOs available\n");
+m_states.bHaveVBOs = 1;
+PrintLog (m_states.bHaveVBOs ? (char *) "VBOs are available\n" : (char *) "No VBOs available\n");
 }
 
 //------------------------------------------------------------------------------
 
-void OglInitTextureCompression (void)
+void COGL::InitTextureCompression (void)
 {
 #if TEXTURE_COMPRESSION
-ogl.m_states.bHaveTexCompression = 1;
+m_states.bHaveTexCompression = 1;
 #	ifndef GL_VERSION_20
 #		ifdef _WIN32
 	glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC) wglGetProcAddress ("glGetCompressedTexImage");
 	glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) wglGetProcAddress ("glCompressedTexImage2D");
-	ogl.m_states.bHaveTexCompression = glGetCompressedTexImage && glCompressedTexImage2D;
+	m_states.bHaveTexCompression = glGetCompressedTexImage && glCompressedTexImage2D;
 #		endif
 #	endif
 #else
-ogl.m_states.bHaveTexCompression = 0;
+m_states.bHaveTexCompression = 0;
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-void OglInitMultiTexturing (void)
+void COGL::InitMultiTexturing (void)
 {
 #ifndef GL_VERSION_20
-ogl.m_states.bMultiTexturingOk = 0;
+m_states.bMultiTexturingOk = 0;
 PrintLog ("Checking multi-texturing ...\n");
 #	ifdef _WIN32
 if (!(glMultiTexCoord2d	= (PFNGLMULTITEXCOORD2DARBPROC) wglGetProcAddress ("glMultiTexCoord2dARB")))
@@ -226,20 +227,20 @@ else if (!(glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcA
 	PrintLog ("   glClientActiveTexture not supported by the OpenGL driver\n");
 else
 #endif
-ogl.m_states.bMultiTexturingOk = 1;
-PrintLog (ogl.m_states.bMultiTexturingOk ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
+m_states.bMultiTexturingOk = 1;
+PrintLog (m_states.bMultiTexturingOk ? (char *) "Multi-texturing is available\n" : (char *) "No multi-texturing available\n");
 }
 
 //------------------------------------------------------------------------------
 
-void OglInitAntiAliasing (void)
+void COGL::InitAntiAliasing (void)
 {
-ogl.m_states.bAntiAliasingOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multisample"));
+m_states.bAntiAliasingOk = (pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_multisample"));
 }
 
 //------------------------------------------------------------------------------
 
-void OglInitRefreshSync (void)
+void COGL::InitRefreshSync (void)
 {
 gameStates.render.bVSyncOk = 0;
 #ifdef _WIN32
@@ -252,27 +253,27 @@ else
 
 //------------------------------------------------------------------------------
 
-void OglInitExtensions (void)
+void COGL::InitExtensions (void)
 {
 pszOglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
-OglInitMultiTexturing ();
-OglInitShaders ();
-OglInitOcclusionQuery ();
-OglInitPointSprites ();
-OglInitTextureCompression ();
-OglInitStencilOps ();
-OglInitRefreshSync ();
-OglInitAntiAliasing ();
-OglInitVBOs ();
+InitMultiTexturing ();
+InitShaders ();
+InitOcclusionQuery ();
+InitPointSprites ();
+InitTextureCompression ();
+InitStencilOps ();
+InitRefreshSync ();
+InitAntiAliasing ();
+InitVBOs ();
 #if RENDER2TEXTURE == 1
-OglInitPBuffer ();
+InitPBuffer ();
 #elif RENDER2TEXTURE == 2
 CFBO::Setup ();
 #endif
-if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk)) {
+if (!(gameOpts->render.bUseShaders && m_states.bShadersOk)) {
 	gameOpts->ogl.bGlTexMerge = 0;
-	ogl.m_states.bLowMemory = 0;
-	ogl.m_states.bHaveTexCompression = 0;
+	m_states.bLowMemory = 0;
+	m_states.bHaveTexCompression = 0;
 	}
 }
 

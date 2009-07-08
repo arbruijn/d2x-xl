@@ -1021,7 +1021,7 @@ glEnable (GL_LINE_SMOOTH);
 for (i = 0; i < m_nNodes; i++)
 	vPosf [i].Assign (m_nodes [i].m_vPos);
 if (!ogl.m_states.bUseTransform)
-	OglSetupTransform (1);
+	ogl.SetupTransform (1);
 #if 1
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glDisable (GL_TEXTURE_2D);
@@ -1039,7 +1039,7 @@ else {
 	}
 #endif
 if (!ogl.m_states.bUseTransform)
-	OglResetTransform (1);
+	ogl.ResetTransform (1);
 glLineWidth ((GLfloat) 1);
 glDisable (GL_LINE_SMOOTH);
 ogl.ClearError (0);
@@ -1744,13 +1744,13 @@ DestroyForAllObjects (OBJ_EFFECT, LIGHTNING_ID);
 void CLightningManager::Render (void)
 {
 if (SHOW_LIGHTNING) {
-		int bStencil = StencilOff ();
+		int bStencil = ogl.StencilOff ();
 
 	int nCurrent = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
 			systemP->Render (0, systemP->m_nLightnings, gameOpts->render.bDepthSort > 0, 0);
-	StencilOn (bStencil);
+	ogl.StencilOn (bStencil);
 	}
 }
 

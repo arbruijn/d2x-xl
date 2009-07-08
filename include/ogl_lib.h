@@ -181,6 +181,18 @@ class COGL {
 
 		void Initialize (void);
 		void Destroy (void);
+
+		void InitExtensions (void);
+		void InitMultiTexturing (void);
+		void InitShaders (void);
+		void InitOcclusionQuery (void);
+		void InitPointSprites (void);
+		void InitTextureCompression (void);
+		void InitStencilOps (void);
+		void InitRefreshSync (void);
+		void InitAntiAliasing (void);
+		void InitVBOs (void);
+
 		void SetFOV (void);
 		void SelectTMU (int nTMU);
 		int EnableClientState (GLuint nState, int nTMU = -1);

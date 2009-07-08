@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "network.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "gameseg.h"
