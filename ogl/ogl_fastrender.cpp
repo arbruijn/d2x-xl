@@ -361,7 +361,7 @@ return 1;
 
 void G3SetupMonitor (CSegFace *faceP, CBitmap *bmTop, int bTextured, int bLightmaps)
 {
-ogl.SelectTexture ((bmTop ? GL_TEXTURE1 : GL_TEXTURE0) + bLightmaps, true);
+ogl.SelectTMU ((bmTop ? GL_TEXTURE1 : GL_TEXTURE0) + bLightmaps, true);
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, faceP->pTexCoord - faceP->nIndex);
 else {
@@ -375,13 +375,13 @@ else {
 void G3ResetMonitor (CBitmap *bmTop, int bLightmaps)
 {
 if (bmTop) {
-	ogl.SelectTexture ((GL_TEXTURE1 + bLightmaps, true);
+	ogl.SelectTMU (GL_TEXTURE1 + bLightmaps, true);
 	glEnable (GL_TEXTURE_2D);
 	OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.ovlTexCoord.Buffer ()));
 	gameStates.render.history.bmTop = NULL;
 	}
 else {
-	ogl.SelectTexture ((GL_TEXTURE0 + bLightmaps, true);
+	ogl.SelectTMU (GL_TEXTURE0 + bLightmaps, true);
 	OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.texCoord.Buffer ()));
 	gameStates.render.history.bmBot = NULL;
 	}

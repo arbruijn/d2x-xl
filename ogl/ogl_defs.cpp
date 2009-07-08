@@ -43,7 +43,7 @@ PFNGLCOMPRESSEDTEXIMAGE2DPROC		glCompressedTexImage2D = NULL;
 
 #if OGL_MULTI_TEXTURING
 #	ifndef GL_VERSION_20
-PFNGLACTIVETEXTUREARBPROC			ogl.SelectTMU = NULL;
+PFNGLACTIVETEXTUREARBPROC			glSetActiveTexture = NULL;
 #		ifdef _WIN32
 PFNGLMULTITEXCOORD2DARBPROC		glMultiTexCoord2d = NULL;
 PFNGLMULTITEXCOORD2FARBPROC		glMultiTexCoord2f = NULL;
@@ -221,8 +221,8 @@ else if (!(glMultiTexCoord2fv = (PFNGLMULTITEXCOORD2FVARBPROC) wglGetProcAddress
 	PrintLog ("   glMultiTexCoord2fv not supported by the OpenGL driver\n");
 else
 #	endif
-if (!(ogl.SelectTMU = (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB")))
-	PrintLog ("   ogl.SelectTMU not supported by the OpenGL driver\n");
+if (!(glSetActiveTexture = (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB")))
+	PrintLog ("   glSetActiveTexture not supported by the OpenGL driver\n");
 else if (!(glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress ("glClientActiveTextureARB")))
 	PrintLog ("   glClientActiveTexture not supported by the OpenGL driver\n");
 else
