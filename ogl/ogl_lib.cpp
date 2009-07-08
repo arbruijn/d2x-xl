@@ -362,12 +362,14 @@ void COGL::SelectTMU (int nTMU, bool bClient)
 if ((i < 0) || (i > 3))
 	return;
 #endif
-if (m_states.nTMU [0] != i) {
+//if (m_states.nTMU [0] != i) 
+	{
 	glActiveTexture (nTMU);
 	m_states.nTMU [0] = i;
 	}	
 if (bClient) {
-	if (m_states.nTMU [1] != i) {
+	//if (m_states.nTMU [1] != i) 
+		{
 		glClientActiveTexture (nTMU);
 		m_states.nTMU [1] = i;
 		}
@@ -920,6 +922,7 @@ if (!gameStates.app.bGameRunning)
 ResetTextures (1, bGame);
 if (bGame) {
 	InitShaders ();
+	ogl.ClearError (0);
 	gameData.models.Destroy ();
 	gameData.models.Prepare ();
 	if (bGame && lightmapManager.HaveLightmaps ())
