@@ -286,13 +286,13 @@ extern COGL ogl;
 #define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglNormalPointer(size, type, stride, pointer)	ogl.NormalPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglNormalPointer(type, stride, pointer)			ogl.NormalPointer (type, stride, pointer, __FILE__, __LINE__)
 #else
 #define	OglDrawArrays(mode, first, count)					glDrawArrays (mode, first, count)
 #define	OglVertexPointer(size, type, stride, pointer)	glVertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglColorPointer(size, type, stride, pointer)		glColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglNormalPointer(size, type, stride, pointer)	glNormalPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglNormalPointer(type, stride, pointer)			glNormalPointer (type, stride, pointer, __FILE__, __LINE__)
 #endif
 
 //------------------------------------------------------------------------------

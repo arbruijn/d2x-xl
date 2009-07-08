@@ -605,7 +605,7 @@ else {
 	fVerts [0][Y] = fPos [Y] + r2;
 	fVerts [1][Y] = fPos [Y] - r2;
 	fVerts [2][Y] = fPos [Y];
-	OOglDrawArrays (GL_TRIANGLES, 0, 3);
+	OglDrawArrays (GL_TRIANGLES, 0, 3);
 	fVerts [0][X] =
 	fVerts [1][X] = fPos [X] - r;
 	fVerts [2][X] = fPos [X] - r + r2;
