@@ -63,8 +63,7 @@ static inline void InitTMU0 (int bVertexArrays, int bLightmaps = 0)
 #else
 if (glIsList (g3InitTMU [0][bVertexArrays]))
 	glCallList (g3InitTMU [0][bVertexArrays]);
-else 
- {
+else {
 	g3InitTMU [0][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [0][bVertexArrays])
 		glNewList (g3InitTMU [0][bVertexArrays], GL_COMPILE);
@@ -117,8 +116,7 @@ static inline void InitTMU2 (int bVertexArrays, int bLightmaps = 0)
 #else
 if (glIsList (g3InitTMU [2][bVertexArrays]))
 	glCallList (g3InitTMU [2][bVertexArrays]);
-else 
- {
+else {
 	g3InitTMU [2][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [2][bVertexArrays])
 		glNewList (g3InitTMU [2][bVertexArrays], GL_COMPILE);
@@ -165,7 +163,10 @@ else
 static inline void ExitTMU (int bVertexArrays)
 {
 #if !USE_DISPLAY_LISTS
-	ogl.SelectTMU (GL_TEXTURE2_ARB, bVertexArrays != 0);
+	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
@@ -177,12 +178,14 @@ static inline void ExitTMU (int bVertexArrays)
 #else
 if (glIsList (g3ExitTMU [bVertexArrays]))
 	glCallList (g3ExitTMU [bVertexArrays]);
-else 
- {
+else {
 	g3ExitTMU [bVertexArrays] = glGenLists (1);
 	if (g3ExitTMU [bVertexArrays])
 		glNewList (g3ExitTMU [bVertexArrays], GL_COMPILE);
-	ogl.SelectTMU (GL_TEXTURE2_ARB, bVertexArrays != 0);
+	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
