@@ -104,14 +104,14 @@ void OglSetFOV (double fov);
 // multi texturing -------------------------------------------------------------
 
 #	if OGL_MULTI_TEXTURING
-#	define ogl.SelectTMU				pglActiveTextureARB
-#	define glClientActiveTexture		pglClientActiveTextureARB
+#	define glActiveTexture					pglActiveTextureARB
+#	define glClientActiveTexture			pglClientActiveTextureARB
 
 extern PFNGLACTIVETEXTUREARBPROC			pglActiveTextureARB;
 extern PFNGLMULTITEXCOORD2FARBPROC		pglMultiTexCoord2fARB;
 extern PFNGLCLIENTACTIVETEXTUREARBPROC pglClientActiveTextureARB;
 
-extern PFNGLACTIVETEXTUREARBPROC			ogl.SelectTMU;
+extern PFNGLACTIVETEXTUREARBPROC			glSetActiveTexture;
 #		ifdef _WIN32
 extern PFNGLMULTITEXCOORD2DARBPROC		glMultiTexCoord2d;
 extern PFNGLMULTITEXCOORD2FARBPROC		glMultiTexCoord2f;
