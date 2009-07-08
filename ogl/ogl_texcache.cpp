@@ -253,7 +253,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	}
 
 PrintLog ("   caching geometry textures\n");
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 0);
+bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->m_sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		nBaseTex = sideP->m_nBaseTex;
@@ -283,7 +283,7 @@ PrintLog ("   caching addon textures\n");
 CacheAddonTextures ();
 
 PrintLog ("   caching model textures\n");
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 1);
+bLoadTextures = (ogl.m_states.nPreloadTextures > 1);
 bModelLoaded.Clear ();
 bVClipLoaded.Clear ();
 FORALL_OBJS (objP, i) {
@@ -296,23 +296,23 @@ FORALL_OBJS (objP, i) {
 	}
 
 PrintLog ("   caching hostage sprites\n");
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 3);
+bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
 OglCacheVClipTextures (33, 3);    
 
 PrintLog ("   caching weapon sprites\n");
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 5);
+bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
 
 PrintLog ("   caching powerup sprites\n");
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 4);
+bLoadTextures = (ogl.m_states.nPreloadTextures > 4);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
 
 PrintLog ("   caching effect textures\n");
 CacheObjectEffects ();
-bLoadTextures = (gameStates.ogl.nPreloadTextures > 2);
+bLoadTextures = (ogl.m_states.nPreloadTextures > 2);
 for (i = 0; i < gameData.eff.nClips [0]; i++)
 	OglCacheVClipTextures (i, 1);
 

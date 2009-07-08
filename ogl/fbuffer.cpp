@@ -65,7 +65,7 @@ PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 
 int CFBO::Available (void)
 {
-if (!gameStates.ogl.bRender2TextureOk)
+if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 switch (m_info.nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {                                          
 	case GL_FRAMEBUFFER_COMPLETE_EXT:                       
@@ -90,7 +90,7 @@ int CFBO::Create (int nWidth, int nHeight, int nType)
 {
 	GLenum	nError;
 
-if (!gameStates.ogl.bRender2TextureOk)
+if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 Destroy ();
 glGenFramebuffersEXT (1, &m_info.hFBO);
@@ -166,7 +166,7 @@ return 1;
 
 void CFBO::Destroy (void)
 {
-if (!gameStates.ogl.bRender2TextureOk)
+if (!ogl.m_states.bRender2TextureOk)
 	return;
 if (m_info.hFBO) {
 	if (m_info.hRenderBuffer) {
@@ -196,11 +196,11 @@ if (m_info.hFBO) {
 
 int CFBO::Enable (void)
 {
-if (!gameStates.ogl.bRender2TextureOk)
+if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 glDrawBuffer (GL_BACK);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-gameStates.ogl.bDrawBufferActive = 0;
+ogl.m_states.bDrawBufferActive = 0;
 glBindTexture (GL_TEXTURE_2D, 0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 #if 1//DBG
@@ -215,7 +215,7 @@ return 1;
 
 int CFBO::Disable (void)
 {
-if (!gameStates.ogl.bRender2TextureOk)
+if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 #if 1//DBG
@@ -235,9 +235,9 @@ void CFBO::Setup (void)
 {
 PrintLog ("Checking rendering to texture ...\n");
 #if RENDER2TEXTURE
-if (gameStates.ogl.bUseRender2Texture) {
+if (ogl.m_states.bUseRender2Texture) {
 #	ifdef _WIN32
-	gameStates.ogl.bRender2TextureOk = 0;
+	ogl.m_states.bRender2TextureOk = 0;
 	if (!(glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) wglGetProcAddress ("glBindRenderbufferEXT")))
 		PrintLog ("   glBindRenderbufferEXT not supported by the OpenGL driver\n");
 	else if (!(glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC) wglGetProcAddress ("glIsRenderbufferEXT")))
@@ -274,10 +274,10 @@ if (gameStates.ogl.bUseRender2Texture) {
 		PrintLog ("   glGenerateMipmapEXT not supported by the OpenGL driver\n");
 	else
 #	endif
-gameStates.ogl.bRender2TextureOk = 2;
+ogl.m_states.bRender2TextureOk = 2;
 	}
 #endif
-PrintLog ((gameStates.ogl.bRender2TextureOk == 2) ? "Rendering to texture is available\n" : "No rendering to texture available\n");
+PrintLog ((ogl.m_states.bRender2TextureOk == 2) ? "Rendering to texture is available\n" : "No rendering to texture available\n");
 }
 
 //------------------------------------------------------------------------------

@@ -304,21 +304,21 @@ if ((t = FindArg ("-gl_alttexmerge")))
 	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
 #endif
 if ((t = FindArg ("-lowmem")))
-	gameStates.ogl.bLowMemory = NumArg (t, 1);
+	ogl.m_states.bLowMemory = NumArg (t, 1);
 if ((t = FindArg ("-preload_textures")))
-	gameStates.ogl.nPreloadTextures = NumArg (t, 3);
+	ogl.m_states.nPreloadTextures = NumArg (t, 3);
 else
-	gameStates.ogl.nPreloadTextures = 5;
+	ogl.m_states.nPreloadTextures = 5;
 if ((t = FindArg ("-FSAA")))
-	gameStates.ogl.bFSAA = NumArg (t, 1);
+	ogl.m_states.bFSAA = NumArg (t, 1);
 
 #ifdef GL_ARB_multitexture
 if (t = FindArg ("-gl_arb_multitexture_ok")))
-	gameStates.ogl.bArbMultiTexture = NumArg (t, 1);
+	ogl.m_states.bArbMultiTexture = NumArg (t, 1);
 #endif
 #ifdef GL_SGIS_multitexture
 if (t = FindArg ("-gl_sgis_multitexture_ok")))
-	gameStates.ogl.bSgisMultiTexture = NumArg (t, 1);
+	ogl.m_states.bSgisMultiTexture = NumArg (t, 1);
 #endif
 }
 
@@ -354,7 +354,7 @@ if ((t = FindArg ("-model_quality")) && *pszArgList [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
 if ((t = FindArg ("-gl_texcompress")))
-	gameStates.ogl.bTextureCompression = NumArg (t, 1);
+	ogl.m_states.bTextureCompression = NumArg (t, 1);
 #endif
 #if 0 //DBG
 if ((t = FindArg ("-cache_textures")))
@@ -390,7 +390,7 @@ void EvalAppArgs (void)
 
 #if 0
 if ((t = FindArg ("-gpgpu_lights")))
-	gameStates.ogl.bVertexLighting = NumArg (t, 1);
+	ogl.m_states.bVertexLighting = NumArg (t, 1);
 #endif
 if ((t = FindArg ("-expertmode")))
 	gameOpts->app.bExpertMode = NumArg (t, 1);

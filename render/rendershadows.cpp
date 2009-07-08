@@ -204,7 +204,7 @@ glVertex2d (0.5,0.5);
 glTexCoord2d (0,-1);
 glVertex2d (0,0.5);
 glEnd ();
-if (gameStates.ogl.bShadersOk)
+if (ogl.m_states.bShadersOk)
 	glUseProgramObject (0);
 glEnable (GL_DEPTH_TEST);
 glDepthMask (1);

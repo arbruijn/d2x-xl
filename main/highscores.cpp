@@ -410,7 +410,7 @@ if (bNetwork)
 	NetworkEndLevel (&key);
 backgroundManager.LoadStars (true);
 while (!done) {
-	if (!bRedraw || (gameStates.ogl.nDrawBuffer == GL_BACK)) {
+	if (!bRedraw || (ogl.m_states.nDrawBuffer == GL_BACK)) {
 		backgroundManager.Redraw ();
 		ScoreTableRedraw ();
 		bRedraw = 1;

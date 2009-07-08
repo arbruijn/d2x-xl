@@ -51,15 +51,15 @@ m_hFragShader = 0;
 
 void CGPGPULighting::Begin (void)
 {
-if (gameStates.ogl.bVertexLighting)
-	gameStates.ogl.bVertexLighting = lightManager.FBO ().Create (GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH, 2);
+if (ogl.m_states.bVertexLighting)
+	ogl.m_states.bVertexLighting = lightManager.FBO ().Create (GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH, 2);
 }
 
 //------------------------------------------------------------------------------
 
 void CGPGPULighting::End (void)
 {
-if (gameStates.ogl.bVertexLighting) {
+if (ogl.m_states.bVertexLighting) {
 	PrintLog ("unloading dynamic lighting buffers\n");
 	lightManager.FBO ().Destroy ();
 	}
@@ -175,7 +175,7 @@ int CGPGPULighting::Render (void)
 #endif
 
 #if 0
-ComputeFragLight (gameStates.ogl.fLightRange);
+ComputeFragLight (ogl.m_states.fLightRange);
 #else
 if (!m_vld.nLights)
 	return 1;
@@ -274,7 +274,7 @@ int CGPGPULighting::Compute (short nVertex, int nState, tFaceColor *colorP)
 	static CFloatVector3	matSpecular = {{1.0f, 1.0f, 1.0f}};
 #endif
 
-if (!gameStates.ogl.bVertexLighting)
+if (!ogl.m_states.bVertexLighting)
 	return 0;
 if (nState == 0) {
 	glMatrixMode (GL_PROJECTION);    
@@ -296,7 +296,7 @@ if (nState == 0) {
 			return 0;
 			}
 		}
-	glUniform1f (glGetUniformLocation (m_hShaderProg, "lightRange"), gameStates.ogl.fLightRange);
+	glUniform1f (glGetUniformLocation (m_hShaderProg, "lightRange"), ogl.m_states.fLightRange);
 #endif
 #if 0
 	glUniform1f (glGetUniformLocation (m_hShaderProg, "shininess"), 64.0f);
@@ -313,7 +313,7 @@ if (nState == 0) {
 	glColor3f (0,0,0);
 #if GPGPU_LIGHT_DRAWARRAYS
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
-		G3EnableClientStates (1, 0, 0, GL_TEXTURE0 + i);
+		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0 + i);
 		glTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 		glVertexPointer (2, GL_FLOAT, 0, quadCoord);
 		}
@@ -326,7 +326,7 @@ if (nState == 0) {
 	}
 else if (nState == 1) {
 	CDynLight*		psl;
-	int				bSkipHeadlight = gameStates.ogl.bHeadlight && (lightManager.Headlights ().nLights > 0) && !gameStates.render.nState;
+	int				bSkipHeadlight = ogl.m_states.bHeadlight && (lightManager.Headlights ().nLights > 0) && !gameStates.render.nState;
 	CFloatVector	vPos = gameData.segs.fVertices [nVertex],
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
@@ -377,7 +377,7 @@ else if (nState == 2) {
 	glPopAttrib ();
 	OglSetDrawBuffer (GL_BACK, 1);
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
-		G3DisableClientStates (1, 0, 0, GL_TEXTURE0 + i);
+		ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0 + i);
 		glActiveTexture (GL_TEXTURE0 + i);
 		glBindTexture (GL_TEXTURE_2D, 0);
 		}
@@ -445,20 +445,20 @@ void CGPGPULighting::InitShader (void)
 	int	bOk;
 #endif
 
-if (!gameStates.ogl.bVertexLighting)
+if (!ogl.m_states.bVertexLighting)
 	return;
-gameStates.ogl.bVertexLighting = 0;
+ogl.m_states.bVertexLighting = 0;
 #if GPGPU_VERTEX_LIGHTING
-if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk) {
+if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 	PrintLog ("building vertex lighting shader program\n");
-	gameStates.ogl.bVertexLighting = 1;
+	ogl.m_states.bVertexLighting = 1;
 	if (m_hShaderProg)
 		DeleteShaderProg (&m_hShaderProg);
 	bOk = CreateShaderProg (&m_hShaderProg) &&
 			CreateShaderFunc (&m_hShaderProg, &m_hFragShader, &m_hVertShader, gpgpuLightFS, vertLightVS, 1) &&
 			LinkShaderProg (&m_hShaderProg);
 	if (!bOk) {
-		gameStates.ogl.bVertexLighting = 0;
+		ogl.m_states.bVertexLighting = 0;
 		DeleteShaderProg (&m_hShaderProg);
 		}
 	}

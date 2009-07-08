@@ -846,7 +846,7 @@ if (!m_robotP)
 	int res;
 
 gameOpts->movies.bFullScreen = 1;
-if (gameStates.ogl.nDrawBuffer == GL_BACK)
+if (ogl.m_states.nDrawBuffer == GL_BACK)
 	paletteManager.LoadEffect ();
 res = MVE_rmStepMovie ();
 paletteManager.LoadEffect ();

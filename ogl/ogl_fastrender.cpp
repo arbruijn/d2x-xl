@@ -163,7 +163,7 @@ int G3SetupShader (CSegFace *faceP, int bDepthOnly, int bColorKey, int bMultiTex
 {
 	int	nType, nShader = gameStates.render.history.nShader;
 
-if (!gameStates.ogl.bShadersOk || (gameStates.render.nType == 4))
+if (!ogl.m_states.bShadersOk || (gameStates.render.nType == 4))
 	return -1;
 #if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -268,7 +268,7 @@ if (bTextured) {
 		gameStates.render.history.bmMask = mask;
 		if (mask) {
 		 {INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), 2, 0);}
-			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
+			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
 			glActiveTexture (GL_TEXTURE2);
@@ -331,7 +331,7 @@ if (bTextured) {
 		gameStates.render.history.bmMask = mask;
 		if (mask) {
 		 {INIT_TMU (InitTMU3, GL_TEXTURE3, mask, lightmapManager.Buffer (), 2, 0);}
-			G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
+			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
 			glActiveTexture (GL_TEXTURE3);
@@ -488,7 +488,7 @@ else {
 #else
 G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 #endif
-gameStates.ogl.iLight = 0;
+ogl.m_states.iLight = 0;
 //G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 if (bDepthOnly) {
 	if (gameStates.render.bTriangleMesh)
@@ -608,7 +608,7 @@ else {
 		}
 	}
 
-gameStates.ogl.iLight = 0;
+ogl.m_states.iLight = 0;
 if (gameStates.render.bFullBright)
 	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 else
@@ -647,8 +647,8 @@ else {
 	for (;;) {
 		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);	
 		RenderFacePP (faceP);
-		if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) || 
-			 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+		if ((ogl.m_states.iLight >= ogl.m_states.nLights) || 
+			 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
 		if (!bAdditive) {
 			bAdditive = true;
@@ -732,7 +732,7 @@ else {
 		}
 	}
 
-gameStates.ogl.iLight = 0;
+ogl.m_states.iLight = 0;
 if (gameStates.render.bFullBright)
 	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 else

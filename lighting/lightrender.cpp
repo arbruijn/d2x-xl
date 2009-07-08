@@ -51,7 +51,7 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 		nDbgSeg = nDbgSeg;
 #endif
 	pl->render.vPosf [0].Assign (pl->info.vPos);
-	if (gameStates.ogl.bUseTransform)
+	if (ogl.m_states.bUseTransform)
 		pl->render.vPosf [1] = pl->render.vPosf [0];
 	else {
 		transformation.Transform (pl->render.vPosf [1], pl->render.vPosf [0], 0);

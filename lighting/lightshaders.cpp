@@ -144,7 +144,7 @@ for (int i = 0; i < 2; i++) {
 
 void InitGrayScaleShader (void)
 {
-if (!(gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk))
+if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building grayscale shader programs\n");
@@ -163,9 +163,9 @@ else {
 			}
 		}
 	}
-if (!(gameStates.ogl.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
-	gameStates.ogl.bLowMemory = 0;
-	gameStates.ogl.bHaveTexCompression = 0;
+if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
+	ogl.m_states.bLowMemory = 0;
+	ogl.m_states.bHaveTexCompression = 0;
 	PrintLog ("+++++ OpenGL shader texture merging has been disabled! +++++\n");
 	}
 }
@@ -1205,8 +1205,8 @@ int CreatePerPixelLightingShader (int nType, int nLights)
 	char	*pszFS, *pszVS;
 	const char	**fsP, **vsP;
 
-if (!(gameStates.ogl.bShadersOk && gameStates.render.bUsePerPixelLighting && (gameStates.ogl.bPerPixelLightingOk == 2)))
-	gameStates.ogl.bPerPixelLightingOk =
+if (!(ogl.m_states.bShadersOk && gameStates.render.bUsePerPixelLighting && (ogl.m_states.bPerPixelLightingOk == 2)))
+	ogl.m_states.bPerPixelLightingOk =
 	gameStates.render.bPerPixelLighting = 0;
 if (!gameStates.render.bPerPixelLighting)
 	return -1;
@@ -1256,7 +1256,7 @@ for (h = 0; h <= 3; h++) {
 		delete[] pszFS;
 		delete[] pszVS;
 		if (!bOk) {
-			gameStates.ogl.bPerPixelLightingOk = 1;
+			ogl.m_states.bPerPixelLightingOk = 1;
 			gameStates.render.bPerPixelLighting = 1;
 			for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
 				for (j = 0; j < 4; j++)
@@ -1266,7 +1266,7 @@ for (h = 0; h <= 3; h++) {
 			}
 		}
 	}
-return gameData.render.ogl.nPerPixelLights [nType] = nLights;
+return ogl.m_data.nPerPixelLights [nType] = nLights;
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -1300,7 +1300,7 @@ int CreateLightmapShader (int nType)
 {
 	int	h, j, bOk;
 
-if (!(gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)) {
+if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
@@ -1314,7 +1314,7 @@ for (h = 0; h <= 3; h++) {
 			CreateShaderFunc (lightmapShaderProgs + h, lmLfs + h, lmLvs + h, pszLMLightingFS [h], pszLMLightingVS [h], 1) &&
 			LinkShaderProg (lightmapShaderProgs + h);
 	if (!bOk) {
-		gameStates.ogl.bPerPixelLightingOk = 0;
+		ogl.m_states.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)
 			DeleteShaderProg (lightmapShaderProgs + j);
@@ -1367,7 +1367,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 if (faceP - FACES.faces == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
-if (!gameStates.ogl.iLight) {
+if (!ogl.m_states.iLight) {
 #if DBG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -1375,25 +1375,25 @@ if (!gameStates.ogl.iLight) {
 		nDbgFace = nDbgFace;
 #endif
 #if ONLY_LIGHTMAPS == 2
-	gameStates.ogl.nLights = 0;
+	ogl.m_states.nLights = 0;
 #else
-	gameStates.ogl.nLights = lightManager.SetNearestToFace (faceP, nType != 0);
+	ogl.m_states.nLights = lightManager.SetNearestToFace (faceP, nType != 0);
 #endif
-	if (gameStates.ogl.nLights > gameStates.render.nMaxLightsPerFace)
-		gameStates.ogl.nLights = gameStates.render.nMaxLightsPerFace;
-	gameStates.ogl.nFirstLight = sliP->nFirst;
-	gameData.render.nTotalLights += gameStates.ogl.nLights;
-	if (gameData.render.nMaxLights < gameStates.ogl.nLights)
-		gameData.render.nMaxLights = gameStates.ogl.nLights;
+	if (ogl.m_states.nLights > gameStates.render.nMaxLightsPerFace)
+		ogl.m_states.nLights = gameStates.render.nMaxLightsPerFace;
+	ogl.m_states.nFirstLight = sliP->nFirst;
+	gameData.render.nTotalLights += ogl.m_states.nLights;
+	if (gameData.render.nMaxLights < ogl.m_states.nLights)
+		gameData.render.nMaxLights = ogl.m_states.nLights;
 #if DBG
 	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-		HUDMessage (0, "%d lights", gameStates.ogl.nLights);
+		HUDMessage (0, "%d lights", ogl.m_states.nLights);
 #endif
 	}
-activeLightsP = lightManager.Active (0) + gameStates.ogl.nFirstLight;
-nLightRange = sliP->nLast - gameStates.ogl.nFirstLight + 1;
+activeLightsP = lightManager.Active (0) + ogl.m_states.nFirstLight;
+nLightRange = sliP->nLast - ogl.m_states.nFirstLight + 1;
 for (nLights = 0;
-	  (gameStates.ogl.iLight < gameStates.ogl.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
+	  (ogl.m_states.iLight < ogl.m_states.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
 	  activeLightsP++, nLightRange--) {
 	if (!(psl = lightManager.GetActive (activeLightsP, 0)))
 		continue;
@@ -1455,14 +1455,14 @@ for (nLights = 0;
 	glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&specular));
 	glLightfv (hLight, GL_AMBIENT, reinterpret_cast<GLfloat*> (&ambient));
 	glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (psl->render.vPosf));
-	gameStates.ogl.iLight++;
+	ogl.m_states.iLight++;
 	}
 if (nLightRange <= 0) {
-	gameStates.ogl.iLight = gameStates.ogl.nLights;
+	ogl.m_states.iLight = ogl.m_states.nLights;
 	}
-gameStates.ogl.nFirstLight = activeLightsP - lightManager.Active (0);
+ogl.m_states.nFirstLight = activeLightsP - lightManager.Active (0);
 #if DBG
-if ((gameStates.ogl.iLight < gameStates.ogl.nLights) && !nLightRange)
+if ((ogl.m_states.iLight < ogl.m_states.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
 #if 0
@@ -1535,9 +1535,9 @@ glUniform1i (glGetUniformLocation (activeShaderProg, "nLights"), GLint (nLights)
 #endif
 glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"),
 #if 1
-				 (nLights ? float (nLights) / float (gameStates.ogl.nLights) : 1.0f));
+				 (nLights ? float (nLights) / float (ogl.m_states.nLights) : 1.0f));
 #else
-				 (nLights && gameStates.ogl.iLight) ? 0.0 : 1.0);
+				 (nLights && ogl.m_states.iLight) ? 0.0 : 1.0);
 #endif
 OglClearError (0);
 PROF_END(ptShaderStates)

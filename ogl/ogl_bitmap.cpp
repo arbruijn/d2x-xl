@@ -138,8 +138,8 @@ if (!h)
 else if (h < 0)
 	h = destP->Height ();
 
-float dx = float (destP->Left ()) / float (gameStates.ogl.nLastW);
-float dy = float (destP->Top ()) / float (gameStates.ogl.nLastH);
+float dx = float (destP->Left ()) / float (ogl.m_states.nLastW);
+float dy = float (destP->Top ()) / float (ogl.m_states.nLastH);
 
 if (orient & 1) {
 	::Swap (w, h);
@@ -147,10 +147,10 @@ if (orient & 1) {
 	}
 
 float fScale = X2F (scale);
-m_render.aspect = float (gameStates.ogl.nLastW * fScale);
+m_render.aspect = float (ogl.m_states.nLastW * fScale);
 m_render.x0 = dx + float (x) / m_render.aspect;
 m_render.x1 = dx + float (x + w) / m_render.aspect;
-m_render.aspect = float (gameStates.ogl.nLastH * fScale);
+m_render.aspect = float (ogl.m_states.nLastH * fScale);
 m_render.y0 = 1.0f - dy - float (y) / m_render.aspect;
 m_render.y1 = 1.0f - dy - float (y + h) / m_render.aspect;
 m_render.aspect = float (screen.Width ()) / float (screen.Height ());
@@ -322,11 +322,11 @@ void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, 
 glDisable (GL_TEXTURE_2D);
 OglSetReadBuffer (GL_FRONT, 1);
 if (bTGA)
-	glReadPixels (0, 0, wScreen, hScreen, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
+	glReadPixels (0, 0, wScreen, hScreen, GL_RGBA, GL_UNSIGNED_BYTE, ogl.m_data.buffer);
 else {
 	if (wScreen * hScreen * 3 > OGLTEXBUFSIZE)
 		Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
-	glReadPixels (0, 0, wScreen, hScreen, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.buffer);
+	glReadPixels (0, 0, wScreen, hScreen, GL_RGB, GL_UNSIGNED_BYTE, ogl.m_data.buffer);
 	}
 
 ubyte* buffer = dest->Buffer ();
@@ -337,7 +337,7 @@ if (bTGA) {
 	sy += Top ();
 	for (i = 0; i < h; i++) {
 		d = buffer + dx + (dy + i) * rowSize;
-		s = gameData.render.ogl.buffer + ((hScreen - (i + sy + 1)) * wScreen + sx) * 4;
+		s = ogl.m_data.buffer + ((hScreen - (i + sy + 1)) * wScreen + sx) * 4;
 		memcpy (d, s, w * 4);
 		}
 	}
@@ -346,7 +346,7 @@ else {
 	sy += Top ();
 	for (i = 0; i < h; i++) {
 		d = buffer + dx + (dy + i) * rowSize;
-		s = gameData.render.ogl.buffer + ((hScreen - (i + sy + 1)) * wScreen + sx) * 3;
+		s = ogl.m_data.buffer + ((hScreen - (i + sy + 1)) * wScreen + sx) * 3;
 		for (j = 0; j < w; j++) {
 			*d++ = dest->Palette ()->ClosestColor (s [0] / 4, s [1] / 4, s [2] / 4);
 			s += 3;

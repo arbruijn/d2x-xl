@@ -51,8 +51,8 @@ void OglDrawMouseIndicator (void)
 if (!gameOpts->input.mouse.nDeadzone)
 	return;
 if (bInitSinCos) {
-	OglComputeSinCos (sizeofa (sinCos30), sinCos30);
-	OglComputeSinCos (sizeofa (sinCos12), sinCos12);
+	ComputeSinCosTable (sizeofa (sinCos30), sinCos30);
+	ComputeSinCosTable (sizeofa (sinCos12), sinCos12);
 	bInitSinCos = 0;
 	}
 #if 0

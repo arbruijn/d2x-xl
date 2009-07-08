@@ -775,7 +775,7 @@ int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp,
 	RenderModel::CModel*	pm = gameData.models.renderModels [1] + nModel;
 	int						i, 
 								bHires = 1, 
-								bUseVBO = gameStates.ogl.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
+								bUseVBO = ogl.m_states.bHaveVBOs && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
 								nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)
@@ -831,8 +831,8 @@ if (pm->m_bValid < 1) {
 	}
 PROF_START
 if (!(gameStates.render.bCloaked ?
-	   G3EnableClientStates (0, 0, 0, GL_TEXTURE0) :
-		G3EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0)))
+	   ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0) :
+		ogl.EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0)))
 	return 0;
 if (bUseVBO) {
 	int i;
@@ -898,9 +898,9 @@ glDisable (GL_TEXTURE_2D);
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 if (gameStates.render.bCloaked)
-	G3DisableClientStates (0, 0, 0, -1);
+	ogl.DisableClientStates (0, 0, 0, -1);
 else
-	G3DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
+	ogl.DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
 #if DBG
 if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (3.0f);

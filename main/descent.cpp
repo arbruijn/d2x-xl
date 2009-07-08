@@ -248,7 +248,7 @@ fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
 #if 0
-if (!gameStates.ogl.bShadersOk) {
+if (!ogl.m_states.bShadersOk) {
 	fontManager.SetColorRGBi (RGB_PAL (63, 0, 0), 1, 0, 0);
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 5 * (fontManager.Current ()->Height () + 2), "due to insufficient graphics hardware,");
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 4 * (fontManager.Current ()->Height () + 2), "D2X-XL will run at reduced settings.");
@@ -417,7 +417,7 @@ void GrabMouse (int bGrab, int bForce)
 {
 #ifdef SDL_INPUT
 if (gameStates.input.bGrabMouse && (bForce || gameStates.app.bGameRunning))
-	SDL_WM_GrabInput ((bGrab || gameStates.ogl.bFullScreen) ? SDL_GRAB_ON : SDL_GRAB_OFF);
+	SDL_WM_GrabInput ((bGrab || ogl.m_states.bFullScreen) ? SDL_GRAB_ON : SDL_GRAB_OFF);
 #endif
 }
 
@@ -855,7 +855,7 @@ if (gameConfig.nTotalTime > (25 * 60)) {	// played for more than 25 hours
 void BadHardwareNotification (void)
 {
 #if 1//!DBG
-if (!gameStates.ogl.bShadersOk && (gameConfig.nVersion != D2X_IVER)) {
+if (!ogl.m_states.bShadersOk && (gameConfig.nVersion != D2X_IVER)) {
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;

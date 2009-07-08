@@ -1175,7 +1175,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 bool CQuadMeshBuilder::BuildVBOs (void)
 {
 #if GEOMETRY_VBOS
-if (!gameStates.ogl.bHaveVBOs)
+if (!ogl.m_states.bHaveVBOs)
 	return false;
 DestroyVBOs ();
 int h, i;
@@ -1186,7 +1186,7 @@ if ((i = glGetError ())) {
 #	if DBG
 		HUDMessage (0, "glGenBuffersARB failed (%d)", i);
 #	endif
-		gameStates.ogl.bHaveVBOs = 0;
+		ogl.m_states.bHaveVBOs = 0;
 		return false;
 		}
 	}
@@ -1195,7 +1195,7 @@ if ((i = glGetError ())) {
 #	if DBG
 	HUDMessage (0, "glBindBufferARB failed (%d)", i);
 #	endif
-	gameStates.ogl.bHaveVBOs = 0;
+	ogl.m_states.bHaveVBOs = 0;
 	return false;
 	}
 FACES.nVertices = gameStates.render.bTriangleMesh ? gameData.segs.nTris * 3 : gameData.segs.nFaces * 4;
@@ -1369,7 +1369,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 			}
 		}
 	if (!(gameStates.render.bTriangleMesh || gameStates.render.bPerPixelLighting) &&
-		 gameStates.ogl.bGlTexMerge && m_nOvlTexCount) { //allow for splitting multi-textured faces into two single textured ones
+		 ogl.m_states.bGlTexMerge && m_nOvlTexCount) { //allow for splitting multi-textured faces into two single textured ones
 		gameData.segs.nFaces += m_nOvlTexCount;
 		m_faceP += m_nOvlTexCount;
 		m_triP += 2;

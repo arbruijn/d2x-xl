@@ -768,7 +768,7 @@ if ((nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (!nType && gameOpts->render.particles.bRotate) {
 	if (bInitSinCos) {
-		OglComputeSinCos (sizeofa (sinCosPart), sinCosPart);
+		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 		bInitSinCos = 0;
 		mRot.RVec ()[Z] =
 		mRot.UVec ()[Z] =
@@ -1575,14 +1575,14 @@ for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext 
 
 int CParticleManager::InitBuffer (int bLightmaps)
 {
-G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
-G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
+ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
 if (bLightmaps) {
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
-	G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
+	ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 	}
-G3EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
+ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
 glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
 glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
 glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
@@ -1603,7 +1603,7 @@ if (iBuffer) {
 	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc (GL_LEQUAL);
 	glDepthMask (0);
-	if (gameStates.ogl.bShadersOk) {
+	if (ogl.m_states.bShadersOk) {
 		if (InitBuffer (bLightmaps)) {
 #if 1
 			CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
@@ -1647,7 +1647,7 @@ if (iBuffer) {
 		}
 	iBuffer = 0;
 	glEnable (GL_DEPTH_TEST);
-	if ((gameStates.ogl.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != 999)) {
+	if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != 999)) {
 		glUseProgramObject (0);
 		gameStates.render.history.nShader = -1;
 		}
@@ -1659,7 +1659,7 @@ if (iBuffer) {
 int CParticleManager::CloseBuffer (void)
 {
 FlushBuffer (-1);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
+ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
 return 1;
 }
 

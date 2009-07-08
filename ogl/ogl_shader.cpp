@@ -223,7 +223,7 @@ int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP,
 	GLhandleARB	fs, vs;
 	GLint bFragCompiled, bVertCompiled;
 
-if (!gameStates.ogl.bShadersOk)
+if (!ogl.m_states.bShadersOk)
 	return 0;
 if (!CreateShaderProg (progP))
 	return 0;
@@ -319,21 +319,21 @@ void InitShaders (void)
 {
 	GLint	nTMUs;
 
-if (!(gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk))
+if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	return;
 PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
-gameStates.ogl.bShadersOk = (nTMUs >= 4);
-if (!gameStates.ogl.bShadersOk) {
+ogl.m_states.bShadersOk = (nTMUs >= 4);
+if (!ogl.m_states.bShadersOk) {
 	PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
-	gameStates.ogl.bLowMemory = 0;
-	gameStates.ogl.bHaveTexCompression = 0;
+	ogl.m_states.bLowMemory = 0;
+	ogl.m_states.bHaveTexCompression = 0;
 	return;
 	}
 gameStates.render.bLightmapsOk = (nTMUs >= 4);
 PrintLog ("   initializing texture merging shader programs\n");
 InitTexMergeShaders ();
-gameData.render.ogl.nHeadlights = 0;
+ogl.m_data.nHeadlights = 0;
 PrintLog ("   initializing lighting shader programs\n");
 InitHeadlightShaders (1);
 PrintLog ("   initializing vertex lighting shader programs\n");
@@ -355,10 +355,10 @@ LinkShaderProg (NULL);
 void OglInitShaders (void)
 {
 PrintLog ("Checking shaders ...\n");
-gameStates.ogl.bShadersOk = 0;
+ogl.m_states.bShadersOk = 0;
 if (!gameOpts->render.bUseShaders)
 	PrintLog ("   Shaders have been disabled in d2x.ini\n");
-else if (!gameStates.ogl.bMultiTexturingOk)
+else if (!ogl.m_states.bMultiTexturingOk)
 	PrintLog ("   Multi-texturing not supported by the OpenGL driver\n");
 else if (!pszOglExtensions)
 	PrintLog ("   Required Extensions not supported by the OpenGL driver\n");
@@ -407,12 +407,12 @@ else {
 	else if (!(glUniform1i = (PFNGLUNIFORM1IARBPROC) wglGetProcAddress ("glUniform1iARB")))
 		PrintLog ("   glUniform1i not supported by the OpenGL driver\n");
 	else
-		gameStates.ogl.bShadersOk = 1;
+		ogl.m_states.bShadersOk = 1;
 #else
-	gameStates.ogl.bShadersOk = 1;
+	ogl.m_states.bShadersOk = 1;
 #endif
 	}
-PrintLog (gameStates.ogl.bShadersOk ? "Shaders are available\n" : "No shaders available\n");
+PrintLog (ogl.m_states.bShadersOk ? "Shaders are available\n" : "No shaders available\n");
 }
 
 //------------------------------------------------------------------------------

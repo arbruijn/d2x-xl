@@ -85,7 +85,7 @@ void CTransformation::Begin (const CFixVector& vPos, CFixMatrix& mOrient)
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
 if (!Push ())
 	return;
-if (gameStates.ogl.bUseTransform) {
+if (ogl.m_states.bUseTransform) {
 	CFixVector	h;
 
 	if (m_save.ToS () > 1) {

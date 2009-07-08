@@ -72,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------ 
 
-#define RETRO_STYLE	0 //gameStates.ogl.nDrawBuffer != GL_BACK
+#define RETRO_STYLE	0 //ogl.m_states.nDrawBuffer != GL_BACK
 #define MODERN_STYLE	1 //gameOpts->menus.nStyle
 #define FAST_MENUS	1 //gameOpts->menus.bFastMenus
 

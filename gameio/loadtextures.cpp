@@ -192,7 +192,7 @@ int CBitmap::ReadS3TC (const char *pszFolder, const char *pszFile)
 	CFile		cf;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
 
-if (!gameStates.ogl.bHaveTexCompression)
+if (!ogl.m_states.bHaveTexCompression)
 	return 0;
 if (!m_info.compressed.bCompressed)
 	return 0;

@@ -954,13 +954,13 @@ for (bScale = 0; bScale < 2; bScale++) {
 	nodeP = m_nodes.Buffer ();
 	vPosf [2].Assign (nodeP->m_vPos);
 	nodeP++;
-	if (!gameStates.ogl.bUseTransform)
+	if (!ogl.m_states.bUseTransform)
 		transformation.Transform (vPosf [2], vPosf [2], 0);
 	for (i = m_nNodes - 2, j = 0, nodeP = m_nodes.Buffer (); j <= i; j++) {
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
 		nodeP++;
 		vPosf [2].Assign (nodeP->m_vPos);
-		if (!gameStates.ogl.bUseTransform)
+		if (!ogl.m_states.bUseTransform)
 			transformation.Transform (vPosf [2], vPosf [2], 0);
 		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
 		}
@@ -978,7 +978,7 @@ void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
 	int				i, j;
 #endif
 
-if (!G3EnableClientStates (1, 0, 0, GL_TEXTURE0))
+if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 glBlendFunc (GL_ONE, GL_ONE);
 for (bScale = 0; bScale < 2; bScale++) {
@@ -1004,7 +1004,7 @@ for (bScale = 0; bScale < 2; bScale++) {
 		}
 #endif
 	}
-G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
+ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 }
 
 //------------------------------------------------------------------------------
@@ -1020,14 +1020,14 @@ glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glEnable (GL_LINE_SMOOTH);
 for (i = 0; i < m_nNodes; i++)
 	vPosf [i].Assign (m_nodes [i].m_vPos);
-if (!gameStates.ogl.bUseTransform)
+if (!ogl.m_states.bUseTransform)
 	OglSetupTransform (1);
 #if 1
-if (G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
+if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glDisable (GL_TEXTURE_2D);
 	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	glDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
-	G3DisableClientStates (0, 0, 0, -1);
+	ogl.DisableClientStates (0, 0, 0, -1);
 	}
 else {
 	glActiveTexture (GL_TEXTURE0);
@@ -1038,7 +1038,7 @@ else {
 	glEnd ();
 	}
 #endif
-if (!gameStates.ogl.bUseTransform)
+if (!ogl.m_states.bUseTransform)
 	OglResetTransform (1);
 glLineWidth ((GLfloat) 1);
 glDisable (GL_LINE_SMOOTH);
@@ -1049,7 +1049,7 @@ OglClearError (0);
 
 int CLightning::SetupPlasma (void)
 {
-if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && G3EnableClientStates (1, 0, 0, GL_TEXTURE0)))
+if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
 glActiveTexture (GL_TEXTURE0);
 glClientActiveTexture (GL_TEXTURE0);
@@ -1058,7 +1058,7 @@ if (LoadCorona () && !bmpCorona->Bind (1)) {
 	bmpCorona->Texture ()->Wrap (GL_CLAMP);
 	return 1;
 	}
-G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
+ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 return 0;
 }
 

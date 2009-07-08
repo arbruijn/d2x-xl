@@ -106,9 +106,9 @@ static const char *pszImgQual [5];
 
 static inline const char *ContrastText (void)
 {
-return (gameStates.ogl.nContrast == 8) 
+return (ogl.m_states.nContrast == 8) 
 		 ? TXT_STANDARD 
-		 : (gameStates.ogl.nContrast < 8) 
+		 : (ogl.m_states.nContrast < 8) 
 			? TXT_LOW 
 			: TXT_HIGH;
 }
@@ -351,7 +351,7 @@ do {
 	else {
 		sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
 		*szSlider = *(TXT_LIGHTING + 1);
-		renderOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, (gameOpts->render.bUseShaders && gameStates.ogl.bShadersOk) ? 3 : 1, KEY_L, HTX_LIGHTING);
+		renderOpts.nLighting = m.AddSlider (szSlider + 1, nLighting, 0, (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) ? 3 : 1, KEY_L, HTX_LIGHTING);
 		if (nLighting >= 2) {
 			sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
 			*szSlider = *(TXT_LMAP_QUALITY + 1);

@@ -115,11 +115,11 @@ PROF_START
 ResetFaceList (nThread);
 #endif
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
-gameStates.ogl.bUseTransform = 1;
+ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
-if (gameStates.ogl.bVertexLighting)
-	gameStates.ogl.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
+if (ogl.m_states.bVertexLighting)
+	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 
 for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
@@ -212,7 +212,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 	lightManager.Material ().bValid = 0;
 	}
 PROF_END(ptLighting)
-gameStates.ogl.bUseTransform = 0;
+ogl.m_states.bUseTransform = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -279,11 +279,11 @@ PROF_START
 ResetFaceList (nThread);
 #endif
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
-gameStates.ogl.bUseTransform = 1;
+ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
-if (gameStates.ogl.bVertexLighting)
-	gameStates.ogl.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
+if (ogl.m_states.bVertexLighting)
+	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i != nEnd; i += nStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
@@ -387,11 +387,11 @@ for (i = nStart; i != nEnd; i += nStep) {
 		}
 	}
 #	if GPGPU_VERTEX_LIGHTING
-if (gameStates.ogl.bVertexLighting)
+if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
 PROF_END(ptLighting)
-gameStates.ogl.bUseTransform = 0;
+ogl.m_states.bUseTransform = 0;
 #if 0
 bSemaphore [nThread] = 0;
 #endif
@@ -423,11 +423,11 @@ PROF_START
 ResetFaceList (nThread);
 #endif
 lightManager.ResetIndex ();
-gameStates.ogl.bUseTransform = 1;
+ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
-if (gameStates.ogl.bVertexLighting)
-	gameStates.ogl.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
+if (ogl.m_states.bVertexLighting)
+	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i != nEnd; i += nStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
@@ -526,11 +526,11 @@ for (i = nStart; i != nEnd; i += nStep) {
 		}
 	}
 #	if GPGPU_VERTEX_LIGHTING
-if (gameStates.ogl.bVertexLighting)
+if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
 PROF_END(ptLighting)
-gameStates.ogl.bUseTransform = 0;
+ogl.m_states.bUseTransform = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -557,7 +557,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 #if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
 #endif
-gameStates.ogl.bUseTransform = 1;
+ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
 for (i = nStart; i != nEnd; i += nStep) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
@@ -611,7 +611,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 			}
 		}
 	}
-gameStates.ogl.bUseTransform = 0;
+ogl.m_states.bUseTransform = 0;
 }
 
 //------------------------------------------------------------------------------

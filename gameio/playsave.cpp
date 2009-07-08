@@ -328,7 +328,7 @@ for (i = 0; i < 2; i++) {
 		RP (displayModeInfo [NUM_DISPLAY_MODES].h, NUM_DISPLAY_MODES, 0);
 
 		RP (gameStates.app.nDifficultyLevel, 0, 0);
-		RP (gameStates.ogl.nContrast, 0, 0);
+		RP (ogl.m_states.nContrast, 0, 0);
 		RP (gameStates.multi.nConnection, 0, 0);
 		RP (tracker.m_bUse, 0, 0);
 
@@ -783,7 +783,7 @@ tParamValue defaultParams [] = {
 	 {"displayModeInfo[21].w", "0"},
 	 {"displayModeInfo[21].h", "0"},
 	 {"gameStates.app.nDifficultyLevel", "2"},
-	 {"gameStates.ogl.nContrast", "8"},
+	 {"ogl.m_states.nContrast", "8"},
 	 {"gameStates.multi.nConnection", "1"},
 	 {"tracker.m_bUse", "0"},
 	 {"gameData.menu.alpha", "79"},
@@ -1829,7 +1829,7 @@ for (i = 0; i < 2; i++) {
 		}
 	if (gameStates.input.nPlrFileVersion >= 106)
 		if (!i)
-			gameStates.ogl.nContrast = cf.ReadInt ();
+			ogl.m_states.nContrast = cf.ReadInt ();
 	if (gameStates.input.nPlrFileVersion >= 107)
 		if (!i)
 			extraGameInfo [0].bPlayerShield = cf.ReadByte ();

@@ -93,7 +93,7 @@ int CPBO::Create (int nWidth, int nHeight)
 		WGL_TEXTURE_2D_ARB,
 		0};
 
-if (!gameStates.ogl.bRender2TextureOk)
+if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 Destroy ();
 hGlDC = wglGetCurrentDC ();
@@ -143,7 +143,7 @@ wglShareLists (hGlRC, m_info.hRC);
         None
     };
 
-if (!gameStates.ogl.bRender2TextureOk)
+if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 hGlWindow = glXGetCurrentDrawable ();
 hGlDC = glXGetCurrentDisplay ();
@@ -289,9 +289,9 @@ m_info.bBound = false;
 
 void CPBO::Setup (void)
 {
-gameStates.ogl.bUseRender2Texture = 1;
-gameStates.ogl.bRender2TextureOk = 0;
-if (gameStates.ogl.bUseRender2Texture) {
+ogl.m_states.bUseRender2Texture = 1;
+ogl.m_states.bRender2TextureOk = 0;
+if (ogl.m_states.bUseRender2Texture) {
 #ifdef _WIN32
 	wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC) wglGetProcAddress ("wglCreatePbufferARB");
 	wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC) wglGetProcAddress ("wglGetPbufferDCARB");
@@ -302,12 +302,12 @@ if (gameStates.ogl.bUseRender2Texture) {
 	wglMakeContextCurrentARB = (PFNWGLMAKECONTEXTCURRENTARBPROC) wglGetProcAddress ("wglMakeContextCurrentARB");
 	wglBindTexImageARB = (PFNWGLBINDTEXIMAGEARBPROC) wglGetProcAddress ("wglBindTexImageARB");
 	wglReleaseTexImageARB = (PFNWGLRELEASETEXIMAGEARBPROC) wglGetProcAddress ("wglReleaseTexImageARB");
-	gameStates.ogl.bRender2TextureOk =
+	ogl.m_states.bRender2TextureOk =
 		wglCreatePbufferARB && wglGetPbufferDCARB && wglReleasePbufferDCARB && wglDestroyPbufferARB && 
 		wglQueryPbufferARB && wglChoosePixelFormatARB && wglMakeContextCurrentARB &&
 		wglBindTexImageARB && wglReleaseTexImageARB;
 #else
-	gameStates.ogl.bRender2TextureOk = 1;
+	ogl.m_states.bRender2TextureOk = 1;
 #endif
 	}
 
@@ -320,7 +320,7 @@ if (gameStates.ogl.bUseRender2Texture) {
   hGlRC = glXGetCurrentContext ();
 #endif
   
-PrintLog ((gameStates.ogl.bRender2TextureOk == 1)  
+PrintLog ((ogl.m_states.bRender2TextureOk == 1)  
 		  ? "Rendering to pixel buffers is available\n" 
 		  : "No rendering to pixel buffers available\n");
 

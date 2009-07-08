@@ -176,9 +176,9 @@ void CAutomap::DrawPlayer (CObject* objP)
 	CFixVector	vArrowPos, vHeadPos;
 	g3sPoint		spherePoint, arrowPoint, headPoint;
 	int			size = objP->info.xSize * (m_bRadar ? 2 : 1);
-	int			bUseTransform = gameStates.ogl.bUseTransform;
+	int			bUseTransform = ogl.m_states.bUseTransform;
 
-//gameStates.ogl.bUseTransform = RENDERPATH;
+//ogl.m_states.bUseTransform = RENDERPATH;
 headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
@@ -211,7 +211,7 @@ G3DrawLine (&arrowPoint, &headPoint);
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.UVec () * (size*2);
 G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
-gameStates.ogl.bUseTransform = bUseTransform;
+ogl.m_states.bUseTransform = bUseTransform;
 }
 
 //------------------------------------------------------------------------------
@@ -475,7 +475,7 @@ if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
 G3EndFrame ();
 
 if (m_bRadar) {
-	gameStates.ogl.bEnableScissor = 0;
+	ogl.m_states.bEnableScissor = 0;
 	return;
 	}
 gameData.app.nFrameCount++;
@@ -553,7 +553,7 @@ if (m_bDisplay < 0) {
 	if ((m_bFreeCam = gameStates.render.bFreeCam))
 		SetFreeCam (0);
 
-	gameStates.ogl.nContrast = 8;
+	ogl.m_states.nContrast = 8;
 	InitColors ();
 	if (!m_bRadar)
 		SlowMotionOff ();
@@ -898,7 +898,7 @@ void CAutomap::DoFrame (int nKeyCode, int bRadar)
 	fix				xEntryTime;
 	int				bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix				t1 = 0, t2 = 0;
-	int				nContrast = gameStates.ogl.nContrast;
+	int				nContrast = ogl.m_states.nContrast;
 	int				bRedrawScreen = 0;
 
 	//static ubyte	automapPal [256*3];
@@ -911,7 +911,7 @@ bRedrawScreen = 0;
 if (bRadar) {
 	Draw ();
 
-	gameStates.ogl.nContrast = nContrast;
+	ogl.m_states.nContrast = nContrast;
 	if (!--m_bDisplay) {
 		if (m_bChaseCam)
 			SetChaseCam (1);
@@ -953,7 +953,7 @@ if (!gameStates.menus.nInMenu) {
 	GameFlushInputs ();
 	if (gameData.app.bGamePaused)
 		ResumeGame ();
-	gameStates.ogl.nContrast = nContrast;
+	ogl.m_states.nContrast = nContrast;
 	}
 if (!--m_bDisplay) {
 	if (m_bChaseCam)
@@ -994,9 +994,9 @@ void CAutomap::DrawEdges (void)
 	fix			distance;
 	fix			minDistance = 0x7fffffff;
 	g3sPoint		*p1, *p2;
-	int			bUseTransform = gameStates.ogl.bUseTransform;
+	int			bUseTransform = ogl.m_states.bUseTransform;
 
-gameStates.ogl.bUseTransform = RENDERPATH;
+ogl.m_states.bUseTransform = RENDERPATH;
 glLineWidth (GLfloat (screen.Width ()) / 640.0f);
 for (i = 0; i <= m_nLastEdge; i++) {
 	//edgeP = &m_edges [Edge_used_list [i]];
@@ -1098,7 +1098,7 @@ for (i = 0; i < nbright; i++) {
 	G3DrawLine (p1, p2);
 	}
 glLineWidth (1);
-gameStates.ogl.bUseTransform = bUseTransform;
+ogl.m_states.bUseTransform = bUseTransform;
 }
 
 

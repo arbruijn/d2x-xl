@@ -172,13 +172,13 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 nTextures = bHires ? 0 : modelP->LoadTextures (altTextures);
-gameStates.ogl.bUseTransform = 1;
+ogl.m_states.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 if (!flags) {	//draw entire CObject
 	if (gameStates.app.bNostalgia || !G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		if (bHires) {
-			gameStates.ogl.bUseTransform = 0;
+			ogl.m_states.bUseTransform = 0;
 			return 0;
 			}
 		if (objP && (objP->info.nType == OBJ_POWERUP)) {
@@ -187,7 +187,7 @@ if (!flags) {	//draw entire CObject
 			else
 				gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 			}
-		gameStates.ogl.bUseTransform = 
+		ogl.m_states.bUseTransform = 
 			(gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
 			!(SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects));
 		transformation.Begin (*pos, *orient);
@@ -205,7 +205,7 @@ else {
 			vOffset.Neg ();
 			if (!G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 				if (bHires) {
-					gameStates.ogl.bUseTransform = 0;
+					ogl.m_states.bUseTransform = 0;
 					return 0;
 					}
 #if DBG
@@ -219,7 +219,7 @@ else {
 			}
 		}
 	}
-gameStates.ogl.bUseTransform = 0;
+ogl.m_states.bUseTransform = 0;
 gameData.render.vertP = NULL;
 #if 0
 {
@@ -265,7 +265,7 @@ else
 o = CFixMatrix::Create (*orientAngles);
 DrawPolyModel (NULL, &p, &o, NULL, nModel, 0, I2X (1), NULL, NULL, NULL);
 G3EndFrame ();
-if (gameStates.ogl.nDrawBuffer != GL_BACK)
+if (ogl.m_states.nDrawBuffer != GL_BACK)
 	GrUpdate (0);
 }
 

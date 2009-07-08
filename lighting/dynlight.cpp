@@ -604,7 +604,7 @@ gameStates.render.bHaveDynLights = 1;
 if (gameStates.app.bD1Mission)
 	gameData.render.fAttScale [0] *= 2;
 #endif
-gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
+ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 m_headlights.Init ();
 if (gameStates.render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
@@ -731,12 +731,12 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 int CLightManager::SetMethod (void)
 {
 gameStates.render.nLightingMethod = (gameStates.app.bNostalgia > 1) ? 0 : gameOpts->render.nLightingMethod;
-if (gameStates.render.nLightingMethod && (gameStates.ogl.bPerPixelLightingOk < 2)) {
+if (gameStates.render.nLightingMethod && (ogl.m_states.bPerPixelLightingOk < 2)) {
 	gameStates.render.nLightingMethod = 1;
-	if (!gameStates.ogl.bPerPixelLightingOk)
+	if (!ogl.m_states.bPerPixelLightingOk)
 		gameOpts->render.bUseLightmaps = 0;
 	}
-if (!gameStates.ogl.bShadersOk) {
+if (!ogl.m_states.bShadersOk) {
 	if (gameOpts->render.nLightingMethod > 1)
 		gameOpts->render.nLightingMethod = 1;
 	gameOpts->render.bUseLightmaps = 0;

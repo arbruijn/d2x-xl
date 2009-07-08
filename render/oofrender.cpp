@@ -373,7 +373,7 @@ for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 		glFrontFace (GL_CCW);
 	pfv = pf->m_verts;
 #if 0
-	if (!(gameStates.ogl.bUseTransform || OOF_FrontFace (pso, pf)))
+	if (!(ogl.m_states.bUseTransform || OOF_FrontFace (pso, pf)))
 		continue;
 #endif
 	if (pf->m_bTextured) {
@@ -487,7 +487,7 @@ inline void CSubModel::TransformVertex (CFloatVector *prv, CFloatVector *pv, CFl
 {
 	CFloatVector	v;
 
-if (gameStates.ogl.bUseTransform)
+if (ogl.m_states.bUseTransform)
 	*prv = *pv + *vo;
 else {
 	v = *pv - vPos;
@@ -561,7 +561,7 @@ int CModel::Draw (CObject *objP, float *fLight)
 
 vo.SetZero ();
 transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-if (!gameStates.ogl.bUseTransform)
+if (!ogl.m_states.bUseTransform)
 	mView.Assign (transformation.m_info.view [0]);
 vPos.Assign (transformation.m_info.pos);
 if (IsMultiGame && netGame.BrightPlayers)

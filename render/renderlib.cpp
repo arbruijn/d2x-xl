@@ -898,7 +898,7 @@ void AdjustVertexColor (CBitmap *bmP, tFaceColor *colorP, fix xLight)
 	float s = 1.0f;
 
 #if SHADOWS
-if (gameStates.ogl.bScaleLight)
+if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 #endif
 if (!colorP->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
@@ -926,7 +926,7 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
 	G3TransformAndEncodePoint (p, gameData.segs.vertices [i]);
 	if (gameData.render.zMax < p->p3_vec [Z])
 		gameData.render.zMax = p->p3_vec [Z];
-	if (!gameStates.ogl.bUseTransform) {
+	if (!ogl.m_states.bUseTransform) {
 		gameData.segs.fVertices [i][X] = X2F (p->p3_vec [X]);
 		gameData.segs.fVertices [i][Y] = X2F (p->p3_vec [Y]);
 		gameData.segs.fVertices [i][Z] = X2F (p->p3_vec [Z]);

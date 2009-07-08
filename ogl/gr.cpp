@@ -108,8 +108,8 @@ tDisplayModeInfo displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 
 void GrUpdate (int bClear)
 {
-if (gameStates.ogl.bInitialized) {
-	if (gameStates.ogl.nDrawBuffer == GL_FRONT)
+if (ogl.m_states.bInitialized) {
+	if (ogl.m_states.nDrawBuffer == GL_FRONT)
 		glFlush ();
 	else
 		OglSwapBuffers (1, bClear);
@@ -165,7 +165,7 @@ return 0;
 
 void ResetTextures (int bReload, int bGame)
 {
-if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
+if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 	textureManager.Destroy (); 
 	if (lightmapManager.HaveLightmaps ())
 		lightmapManager.Release ();
@@ -244,11 +244,11 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 }
 #endif
 #if DBG
-	gameStates.ogl.bFullScreen = 0;
+	ogl.m_states.bFullScreen = 0;
 #else
 if ((t = FindArg ("-fullscreen"))) {
 	/***/PrintLog ("   switching to fullscreen\n");
-	gameStates.ogl.bFullScreen = NumArg (t, 1);
+	ogl.m_states.bFullScreen = NumArg (t, 1);
 	//GrToggleFullScreen();
 	}
 #endif
@@ -338,18 +338,18 @@ return -1;
 
 int GrCheckFullScreen (void)
 {
-return gameStates.ogl.bFullScreen;
+return ogl.m_states.bFullScreen;
 }
 
 //------------------------------------------------------------------------------
 
 void GrDoFullScreen (int f)
 {
-if (gameStates.ogl.bVoodooHack)
-	gameStates.ogl.bFullScreen = 1;//force fullscreen mode on voodoos.
+if (ogl.m_states.bVoodooHack)
+	ogl.m_states.bFullScreen = 1;//force fullscreen mode on voodoos.
 else
-	gameStates.ogl.bFullScreen = f;
-if (gameStates.ogl.bInitialized)
+	ogl.m_states.bFullScreen = f;
+if (ogl.m_states.bInitialized)
 	OglDoFullScreenInternal (0);
 }
 
@@ -543,8 +543,8 @@ return 1;
 
 int GrToggleFullScreen (void)
 {
-GrDoFullScreen (!gameStates.ogl.bFullScreen);
-return gameStates.ogl.bFullScreen;
+GrDoFullScreen (!ogl.m_states.bFullScreen);
+return ogl.m_states.bFullScreen;
 }
 
 //------------------------------------------------------------------------------

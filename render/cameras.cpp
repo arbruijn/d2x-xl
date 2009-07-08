@@ -255,7 +255,7 @@ if (m_info.buffer.Buffer ()) {
 	m_info.buffer.DestroyBuffer ();
 	}
 #if RENDER2TEXTURE
-if (gameStates.ogl.bRender2TextureOk)
+if (ogl.m_states.bRender2TextureOk)
 	DestroyBuffer ();
 #endif
 }
@@ -693,7 +693,7 @@ return m_nCameras;
 void CCameraManager::Destroy (void)
 {
 #if RENDER2TEXTURE == 1
-if (gameStates.ogl.bRender2TextureOk)
+if (ogl.m_states.bRender2TextureOk)
 #	ifdef _WIN32
 	wglMakeContextCurrentARB (hGlDC, hGlDC, hGlRC);
 #	else

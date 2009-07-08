@@ -51,8 +51,8 @@ void RenderRadarBlip (CObject *objP, float r, float g, float b, float a)
 	static int bInitSinCos = 1;
 
 if (bInitSinCos) {
-	OglComputeSinCos (sizeofa (sinCosRadar), sinCosRadar);
-	OglComputeSinCos (sizeofa (sinCosBlip), sinCosBlip);
+	ComputeSinCosTable (sizeofa (sinCosRadar), sinCosRadar);
+	ComputeSinCosTable (sizeofa (sinCosBlip), sinCosBlip);
 	bInitSinCos = 0;
 	}
 n = objP->info.position.vPos;

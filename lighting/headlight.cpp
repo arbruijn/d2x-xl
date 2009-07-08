@@ -96,7 +96,7 @@ if (automap.m_bDisplay)
 	return;
 
 	CDynLight*	pl;
-	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (gameStates.ogl.bHeadlight && gameOpts->ogl.bHeadlight);
+	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (ogl.m_states.bHeadlight && gameOpts->ogl.bHeadlight);
 
 for (int i = 0; i < MAX_PLAYERS; i++) {
 	if (lightIds [i] >= 0) {
@@ -108,7 +108,7 @@ for (int i = 0; i < MAX_PLAYERS; i++) {
 			dir [i] = *pl->info.vDirf.XYZ ();
 			brightness [i] = 100.0f;
 			}
-		else if (pl->bTransform && !gameStates.ogl.bUseTransform)
+		else if (pl->bTransform && !ogl.m_states.bUseTransform)
 			transformation.Rotate (pl->info.vDirf, pl->info.vDirf, 0);
 
 		}
@@ -786,14 +786,14 @@ void InitHeadlightShaders (int nLights)
 	char	*pszFS;
 
 if (nLights < 0) {
-	nLights = gameData.render.ogl.nHeadlights;
-	gameData.render.ogl.nHeadlights = 0;
+	nLights = ogl.m_data.nHeadlights;
+	ogl.m_data.nHeadlights = 0;
 	}
-if (nLights == gameData.render.ogl.nHeadlights)
+if (nLights == ogl.m_data.nHeadlights)
 	return;
 gameStates.render.bHaveDynLights = 0;
 PrintLog ("building lighting shader programs\n");
-if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk))) {
+if ((ogl.m_states.bHeadlight = (ogl.m_states.bShadersOk))) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < 4; j++) {
@@ -820,7 +820,7 @@ if ((gameStates.ogl.bHeadlight = (gameStates.ogl.bShadersOk))) {
 		}
 	}
 OglClearError (0);
-gameData.render.ogl.nHeadlights = nLights;
+ogl.m_data.nHeadlights = nLights;
 }
 
 //------------------------------------------------------------------------------

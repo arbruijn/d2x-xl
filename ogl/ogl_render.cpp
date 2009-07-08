@@ -166,10 +166,10 @@ if (nType == GL_LINES) {	// implies a dashed circle
 else {
 	if (sinCosP) {
 #if 1
-		G3EnableClientStates (0, 0, 0, GL_TEXTURE0);
+		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 		glVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (sinCosP));
 		glDrawArrays (nType, 0, nSides);
-		G3DisableClientStates (0, 0, 0, GL_TEXTURE0);
+		ogl.DisableClientStates (0, 0, 0, GL_TEXTURE0);
 #else
 		for (i = 0; i < nSides; i++, sinCosP++)
 			glVertex2f (sinCosP->fCos, sinCosP->fSin);
@@ -305,8 +305,8 @@ glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (
-			(X2F (xc1) + CCanvas::Current ()->Left ()) / (float) gameStates.ogl.nLastW,
-		1.0f - (X2F (yc1) + CCanvas::Current ()->Top ()) / (float) gameStates.ogl.nLastH, 0);
+			(X2F (xc1) + CCanvas::Current ()->Left ()) / (float) ogl.m_states.nLastW,
+		1.0f - (X2F (yc1) + CCanvas::Current ()->Top ()) / (float) ogl.m_states.nLastH, 0);
 glScalef (X2F (r1), X2F (r1), X2F (r1));
 if (r1<=I2X (5)){
 	if (!circleh5)
@@ -566,7 +566,7 @@ if (bmTop) {
       bSuperTransp = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	else
 		bSuperTransp = (bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
-	bShaderMerge = bSuperTransp && gameStates.ogl.bGlTexMerge;
+	bShaderMerge = bSuperTransp && ogl.m_states.bGlTexMerge;
 	bOverlay = !bShaderMerge;
 	}
 else
@@ -629,10 +629,10 @@ if (!bDepthSort) {
 		glColor3i (0,0,0);
 	if (!bLight)
 		bDynLight = 0;
-	gameStates.ogl.bDynObjLight = bDynLight;
+	ogl.m_states.bDynObjLight = bDynLight;
 	}
 
-gameStates.ogl.fAlpha = gameStates.render.grAlpha;
+ogl.m_states.fAlpha = gameStates.render.grAlpha;
 if (bVertexArrays || bDepthSort) {
 		CFloatVector	vertices [8];
 		tFaceColor		vertColors [8];
@@ -668,7 +668,7 @@ if (bVertexArrays || bDepthSort) {
 	}
 #if G3_DRAW_ARRAYS
 if (bVertexArrays) {
-	if (!G3EnableClientStates (1, 1, 0, GL_TEXTURE0)) {
+	if (!ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0)) {
 		bVertexArrays = 0;
 		goto retry;
 		}
@@ -678,8 +678,8 @@ if (bVertexArrays) {
 	if (bLight)
 		glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 	if (bmTop && !bOverlay) {
-		if (!G3EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
-			G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+		if (!ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
+			ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
 			bVertexArrays = 0;
 			goto retry;
 			}
@@ -690,9 +690,9 @@ if (bVertexArrays) {
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [1]);
 		}
 	glDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
 	if (bmTop && !bOverlay)
-		G3DisableClientStates (GL_TEXTURE1);
+		ogl.DisableClientStates (GL_TEXTURE1);
 	}
 else
 #endif
@@ -991,8 +991,8 @@ else if (!bLight)
 	glColor3i (0,0,0);
 if (!bLight)
 	bDynLight = 0;
-gameStates.ogl.bDynObjLight = bDynLight;
-gameStates.ogl.fAlpha = gameStates.render.grAlpha;
+ogl.m_states.bDynObjLight = bDynLight;
+ogl.m_states.fAlpha = gameStates.render.grAlpha;
 glBegin (GL_TRIANGLE_FAN);
 if (bDynLight) {
 	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
@@ -1115,7 +1115,7 @@ return 0;
 int OglRenderArrays (CBitmap *bmP, int nFrame, CFloatVector *vertexP, int nVertices, tTexCoord2f *texCoordP,
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
 {
-	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
+	int	bVertexArrays = ogl.EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
 
 if (bmP)
 	glEnable (GL_TEXTURE_2D);

@@ -54,9 +54,9 @@ switch (gameOpts->render.coronas.nStyle) {
 
 void DestroyGlareDepthTexture (void)
 {
-if (gameStates.ogl.hDepthBuffer) {
-	OglDeleteTextures (1, &gameStates.ogl.hDepthBuffer);
-	gameStates.ogl.hDepthBuffer = 0;
+if (ogl.m_states.hDepthBuffer) {
+	OglDeleteTextures (1, &ogl.m_states.hDepthBuffer);
+	ogl.m_states.hDepthBuffer = 0;
 	}
 }
 
@@ -72,11 +72,11 @@ if (nError)
 #endif
 glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
-if (!gameStates.ogl.hDepthBuffer)
-	gameStates.ogl.bHaveDepthBuffer = 0;
-if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepthTexture (-1, 0))) {
-	glBindTexture (GL_TEXTURE_2D, gameStates.ogl.hDepthBuffer);
-	if (!gameStates.ogl.bHaveDepthBuffer) {
+if (!ogl.m_states.hDepthBuffer)
+	ogl.m_states.bHaveDepthBuffer = 0;
+if (ogl.m_states.hDepthBuffer || (ogl.m_states.hDepthBuffer = OglCreateDepthTexture (-1, 0))) {
+	glBindTexture (GL_TEXTURE_2D, ogl.m_states.hDepthBuffer);
+	if (!ogl.m_states.bHaveDepthBuffer) {
 #if 0
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, screen.Width (), screen.Height (), 0);
 #else
@@ -86,14 +86,14 @@ if (gameStates.ogl.hDepthBuffer || (gameStates.ogl.hDepthBuffer = OglCreateDepth
 			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 			if ((nError = glGetError ())) {
 				DestroyGlareDepthTexture ();
-				return gameStates.ogl.hDepthBuffer = 0;
+				return ogl.m_states.hDepthBuffer = 0;
 				}
 			}
-		gameStates.ogl.bHaveDepthBuffer = 1;
+		ogl.m_states.bHaveDepthBuffer = 1;
 		gameData.render.nStateChanges++;
 		}
 	}
-return gameStates.ogl.hDepthBuffer;
+return ogl.m_states.hDepthBuffer;
 }
 
 // -----------------------------------------------------------------------------------
@@ -617,14 +617,14 @@ if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
 	glColor4f (color.red, color.green, color.blue, fIntensity);
-if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
+if (ogl.EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
 	if (!gameStates.render.bQueryCoronas) {
 		bmP->Bind (1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
 	glDrawArrays (GL_QUADS, 0, 4);
-	G3DisableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0);
+	ogl.DisableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0);
 	}
 else {
 	if (gameStates.render.bQueryCoronas == 0)
@@ -668,10 +668,10 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (gameStates.ogl.bOcclusionQuery && CoronaStyle ()) {
+if (ogl.m_states.bOcclusionQuery && CoronaStyle ()) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 #if 1
-	if (gameStates.ogl.bUseDepthBlending && (CoronaStyle () == 2)) {
+	if (ogl.m_states.bUseDepthBlending && (CoronaStyle () == 2)) {
 #	if !DBG
 		fSize *= 2;
 		if (fSize < 1)
@@ -721,7 +721,7 @@ float CoronaVisibility (int nQuery)
 	GLint		nError;
 #endif
 
-if (! (gameStates.ogl.bOcclusionQuery && nQuery) || (CoronaStyle () != 1))
+if (! (ogl.m_states.bOcclusionQuery && nQuery) || (CoronaStyle () != 1))
 	return 1;
 if (! (gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
 	return 0;
@@ -768,11 +768,11 @@ void LoadGlareShader (float dMax)
 	static float dMaxPrev = -1;
 
 OglClearError (0);
-gameStates.ogl.bUseDepthBlending = 0;
-if (gameStates.ogl.bDepthBlending) {
+ogl.m_states.bUseDepthBlending = 0;
+if (ogl.m_states.bDepthBlending) {
 	OglSetReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
-		gameStates.ogl.bUseDepthBlending = 1;
+		ogl.m_states.bUseDepthBlending = 1;
 		if (dMax < 1)
 			dMax = 1;
 		if (gameStates.render.history.nShader != 999) {
@@ -780,17 +780,17 @@ if (gameStates.ogl.bDepthBlending) {
 			gameStates.render.history.nShader = 999;
 			glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
-			glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, reinterpret_cast<GLfloat*> (&gameData.render.ogl.screenScale));
+			glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
 #if 0
 			if (automap.m_bDisplay)
-				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, reinterpret_cast<GLfloat*> (&gameData.render.ogl.depthScale));
+				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.depthScale));
 			else 
 #endif
 			 {
 #if 1
-				//glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) (gameData.render.ogl.depthScale [Z]));
+				//glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) (ogl.m_data.depthScale [Z]));
 #else
-				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) X2F (gameData.render.zMax) - gameData.render.ogl.zNear);
+				glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) X2F (gameData.render.zMax) - ogl.m_data.zNear);
 #endif
 				glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), (GLfloat) dMax);
 				}
@@ -812,7 +812,7 @@ if (gameStates.ogl.bDepthBlending) {
 
 void UnloadGlareShader (void)
 {
-if (gameStates.ogl.bDepthBlending) {
+if (ogl.m_states.bDepthBlending) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	//DestroyGlareDepthTexture ();
@@ -857,19 +857,19 @@ void InitGlareShader (void)
 {
 	int	bOk;
 
-gameStates.ogl.bDepthBlending = 0;
+ogl.m_states.bDepthBlending = 0;
 #if SHADER_SOFT_CORONAS
 PrintLog ("building corona blending shader program\n");
 DeleteShaderProg (NULL);
-if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk) {
-	gameStates.ogl.bDepthBlending = 1;
+if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
+	ogl.m_states.bDepthBlending = 1;
 	if (hGlareShader)
 		DeleteShaderProg (&hGlareShader);
 	bOk = CreateShaderProg (&hGlareShader) &&
 			CreateShaderFunc (&hGlareShader, &hGlareFS, &hGlareVS, glareFS, glareVS, 1) &&
 			LinkShaderProg (&hGlareShader);
 	if (!bOk) {
-		gameStates.ogl.bDepthBlending = 0;
+		ogl.m_states.bDepthBlending = 0;
 		DeleteShaderProg (&hGlareShader);
 		return;
 		}

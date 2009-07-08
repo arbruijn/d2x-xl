@@ -465,7 +465,7 @@ fpDrawTexPolyMulti (
 #endif
 	}
 gameStates.render.grAlpha = 1.0f;
-gameStates.ogl.fAlpha = 1;
+ogl.m_states.fAlpha = 1;
 	// render the CSegment the CPlayerData is in with a transparent color if it is a water or lava CSegment
 	//if (nSegment == OBJECTS->nSegment)
 #if DBG
@@ -863,7 +863,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
 
 //PrintLog ("StartLightingFrame\n");
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
-gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
+ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 if (!nWindow)
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 //PrintLog ("G3StartFrame\n");
@@ -1102,7 +1102,7 @@ if (!gameStates.render.cameras.bActive)
 nHackLasers = 0;
 #endif
 //set up for rendering
-gameStates.ogl.fAlpha = FADE_LEVELS;
+ogl.m_states.fAlpha = FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
@@ -1115,7 +1115,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 		RotateSideNorms ();
 	 }
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-	gameStates.ogl.bUseTransform = RENDERPATH;
+	ogl.m_states.bUseTransform = RENDERPATH;
 	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.nSegRenderList & gameData.render.mine.nRenderSegs
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildRenderObjLists (gameData.render.mine.nRenderSegs);
@@ -1124,7 +1124,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			SetDynamicLight ();
 #endif
 		}
-	gameStates.ogl.bUseTransform = 0;
+	ogl.m_states.bUseTransform = 0;
 	lightManager.Transform (0, 1);
 	}
 
@@ -1150,11 +1150,11 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 #endif //CLEAR_WINDOW
 
 gameStates.render.bFullBright = automap.m_bDisplay && gameOpts->render.automap.bBright;
-gameStates.ogl.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (gameStates.ogl.nContrast == 8);
+ogl.m_states.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (ogl.m_states.nContrast == 8);
 #if SHADOWS
-gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
+ogl.m_states.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
 #else
-gameStates.ogl.bScaleLight = 0;
+ogl.m_states.bScaleLight = 0;
 #endif
 gameStates.render.bUseCameras = USE_CAMERAS;
 PROF_END(ptAux);
@@ -1362,7 +1362,7 @@ else {
 	}
 #endif
 
-gameStates.ogl.bHaveDepthBuffer =
+ogl.m_states.bHaveDepthBuffer =
 gameData.render.nTotalFaces =
 gameData.render.nTotalObjects =
 gameData.render.nTotalSprites =
@@ -1385,7 +1385,7 @@ gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras &&
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) &&
 										 !gameStates.render.cameras.bActive;
 gameStates.render.bDoLightmaps = 0;
-gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
+ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 PROF_END(ptAux)
 
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {

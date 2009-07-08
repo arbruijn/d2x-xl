@@ -1009,7 +1009,7 @@ if (thumbCanv) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (thumbCanv);
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-	if (gameStates.ogl.nDrawBuffer == GL_BACK) {
+	if (ogl.m_states.nDrawBuffer == GL_BACK) {
 		gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 		GameRenderFrame ();
 		}

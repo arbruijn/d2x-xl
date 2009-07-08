@@ -88,7 +88,7 @@ int CreateSphereShader (void)
 {
 	int	bOk;
 
-if (!(gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk)) {
+if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
@@ -100,7 +100,7 @@ if (!sphereShaderProg) {
 			CreateShaderFunc (&sphereShaderProg, &sphereFS, &sphereVS, pszSphereFS, pszSphereVS, 1) &&
 			LinkShaderProg (&sphereShaderProg);
 	if (!bOk) {
-		gameStates.ogl.bPerPixelLightingOk = 0;
+		ogl.m_states.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		return -1;
 		}
@@ -146,7 +146,7 @@ if (CreateSphereShader () < 1) {
 	CFixMatrix m;
 	CFixVector vPos;
 
-if (!gameStates.ogl.bUseTransform) {
+if (!ogl.m_states.bUseTransform) {
 	fSize *= X2F (objP->Size ());
 	OglSetupTransform (0);
 	m = CFixMatrix::IDENTITY;
@@ -162,7 +162,7 @@ for (int i = 0; i < 3; i++) {
 	if (dt < SHIELD_EFFECT_TIME) {
 		fScale [i] = 1.0f / (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
 		vHitf [i][W] = 0.0f;
-		if (gameStates.ogl.bUseTransform) {
+		if (ogl.m_states.bUseTransform) {
 			vHitf [i].Assign (m * hitInfo.v [i]);
 			CFloatVector::Normalize (vHitf [i]);
 			}
@@ -177,7 +177,7 @@ for (int i = 0; i < 3; i++) {
 		vHitf [i].SetZero ();
 		}
 	}
-if (!gameStates.ogl.bUseTransform) {
+if (!ogl.m_states.bUseTransform) {
 	transformation.End ();
 	OglResetTransform (1);
 	}
@@ -185,7 +185,7 @@ if (!gameStates.ogl.bUseTransform) {
 if (!nHits)
 	return 0;
 
-if (100 + gameStates.ogl.bUseTransform != gameStates.render.history.nShader) {
+if (100 + ogl.m_states.bUseTransform != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
 	glUseProgramObject (sphereShaderProg);
 	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
@@ -194,7 +194,7 @@ glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 3, reinterpret_ca
 glUniform3fv (glGetUniformLocation (sphereShaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 OglClearError (0);
 PROF_END(ptShaderStates)
-return gameStates.render.history.nShader = 100 + gameStates.ogl.bUseTransform;
+return gameStates.render.history.nShader = 100 + ogl.m_states.bUseTransform;
 }
 
 // -----------------------------------------------------------------------------
@@ -566,12 +566,12 @@ return 1;
 
 void CSphere::RenderRing (int nOffset, int nItems, int bTextured, int nPrimitive)
 {
-if (G3EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
+if (ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
 	if (bTextured)
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
 	glVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
 	glDrawArrays (nPrimitive, 0, nItems);
-	G3DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 	}
 else {
 	glBegin (nPrimitive);
@@ -588,12 +588,12 @@ else {
 
 void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nItems, int bTextured, int nPrimitive)
 {
-if (G3EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
+if (ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
 	if (bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
 	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
 	glDrawArrays (nPrimitive, 0, nItems);
-	G3DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 	}
 else {
 	glBegin (nPrimitive);
@@ -622,7 +622,7 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
-if (gameStates.ogl.bUseTransform) {
+if (ogl.m_states.bUseTransform) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
@@ -770,10 +770,10 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
 #if 1
-gameStates.ogl.bUseTransform = 1;
+ogl.m_states.bUseTransform = 1;
 if (!bEffect)
 #else
-if (gameStates.ogl.bUseTransform = !bEffect)
+if (ogl.m_states.bUseTransform = !bEffect)
 #endif
 	UnloadSphereShader ();
 else {
@@ -787,7 +787,7 @@ transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 OglResetTransform (0);
-gameStates.ogl.bUseTransform = 0;
+ogl.m_states.bUseTransform = 0;
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
@@ -912,7 +912,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		float r = X2F (objP->info.xSize);
-		gameStates.ogl.bUseTransform = 1;
+		ogl.m_states.bUseTransform = 1;
 		OglSetupTransform (0);
 		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		CFloatVector p;
@@ -921,7 +921,7 @@ if (gameData.render.monsterball.nFaces > 0)
 														&gameData.hoard.monsterball.bm, 4, 0);
 		transformation.End ();
 		OglResetTransform (1);
-		gameStates.ogl.bUseTransform = 0;
+		ogl.m_states.bUseTransform = 0;
 		}
 	}
 }

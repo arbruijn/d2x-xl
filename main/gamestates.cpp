@@ -173,56 +173,6 @@ gameStates.gfx.nStartScrSize = 3;
 
 // ----------------------------------------------------------------------------
 
-void InitOglStates (void)
-{
-gameStates.ogl.bInitialized = 0;
-gameStates.ogl.bShadersOk = 0;
-gameStates.ogl.bRender2TextureOk = 0;
-gameStates.ogl.bPerPixelLightingOk = 2;
-gameStates.ogl.bUseRender2Texture = 1;
-gameStates.ogl.bVoodooHack = 0;
-gameStates.ogl.bBrightness = 0;
-gameStates.ogl.nContrast = 8;
-gameStates.ogl.bFullScreen = 0;
-gameStates.ogl.bUseTransform = 0;
-gameStates.ogl.nColorBits = 32;
-gameStates.ogl.nDepthBits = 24;
-gameStates.ogl.bEnableTexture2D = -1;
-gameStates.ogl.bEnableTexClamp = -1;
-gameStates.ogl.bEnableScissor = 0;
-gameStates.ogl.bNeedMipMaps = 0;
-gameStates.ogl.texMinFilter = GL_NEAREST;
-gameStates.ogl.texMinFilter = GL_NEAREST;
-gameStates.ogl.nTexMagFilterState = -1, 
-gameStates.ogl.nTexMinFilterState = -1;
-gameStates.ogl.nTexEnvModeState = -1, 
-gameStates.ogl.nTransparencyLimit = 0;
-gameStates.ogl.nLastX =
-gameStates.ogl.nLastY =
-gameStates.ogl.nLastW =
-gameStates.ogl.nLastH = 1;
-gameStates.ogl.nCurWidth =
-gameStates.ogl.nCurHeight = -1;
-gameStates.ogl.bCurFullScreen = -1;
-gameStates.ogl.bFSAA = 0;
-gameStates.ogl.bAntiAliasing = 0;
-gameStates.ogl.bAntiAliasingOk = 0;
-gameStates.ogl.bpp = 32;
-gameStates.ogl.nRGBAFormat = GL_RGBA;
-gameStates.ogl.nRGBFormat = GL_RGB;
-gameStates.ogl.bIntensity4 = 1;
-gameStates.ogl.bLuminance4Alpha4 = 1;
-gameStates.ogl.nDrawBuffer = -1;
-#ifdef GL_ARB_multitexture
-gameStates.ogl.bArbMultiTexture = 0;
-#endif
-#ifdef GL_SGIS_multitexture
-gameStates.ogl.bSgisMultiTexture = 0;
-#endif
-}
-
-// ----------------------------------------------------------------------------
-
 void InitZoomStates (void)
 {
 gameStates.zoom.nChannel = -1;

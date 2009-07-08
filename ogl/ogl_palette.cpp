@@ -105,8 +105,8 @@ if (!bForce && (m_data.flash.red == red) && (m_data.flash.green == green) && (m_
 m_data.flash.red = red;
 m_data.flash.green = green;
 m_data.flash.blue = blue;
-if (gameOpts->ogl.bSetGammaRamp && gameStates.ogl.bBrightness) {
-	gameStates.ogl.bBrightness = !OglSetBrightnessInternal ();
+if (gameOpts->ogl.bSetGammaRamp && ogl.m_states.bBrightness) {
+	ogl.m_states.bBrightness = !OglSetBrightnessInternal ();
 	m_data.bDoEffect = 0;
 	}
 else {
@@ -152,7 +152,7 @@ m_data.bAllowEffect = true;
 SetEffect (0, 0, 0);
 m_data.current = Add (*palette);
 return 1;
-//gameStates.ogl.bDoPalStep = !(gameOpts->ogl.bSetGammaRamp && gameStates.ogl.bBrightness);
+//ogl.m_states.bDoPalStep = !(gameOpts->ogl.bSetGammaRamp && ogl.m_states.bBrightness);
 }
 
 //------------------------------------------------------------------------------

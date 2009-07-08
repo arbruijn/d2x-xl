@@ -321,25 +321,6 @@ void CShadowData::Destroy (void)
 DESTROY (objLights);
 }
 
-// ----------------------------------------------------------------------------
-
-COglData::COglData ()
-{
-palette = NULL;
-nSrcBlend = GL_SRC_ALPHA;
-nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
-zNear = 1.0f;
-zFar = 5000.0f;
-depthScale.SetZero ();
-screenScale.x =
-screenScale.y = 0;
-CLEAR (nPerPixelLights);
-CLEAR (lightRads);
-CLEAR (lightPos);
-bLightmaps = 0;
-nHeadlights = 0;
-};
-
 //------------------------------------------------------------------------------
 
 CThrusterData::CThrusterData ()
@@ -1755,9 +1736,9 @@ gameOptions [0].render.color.nSaturation = 1;
 extraGameInfo [0].bPowerupLights = 0;
 extraGameInfo [0].bBrightObjects = 0;
 gameOptions [0].ogl.nMaxLightsPerObject = nMaxLightsPerObject [gameOptions [0].render.nQuality];
-gameOptions [0].ogl.bHeadlight = gameStates.ogl.bShadersOk;
-gameOptions [0].ogl.bObjLighting = gameStates.ogl.bShadersOk;
-gameOptions [0].ogl.bLightObjects = gameStates.ogl.bShadersOk;
+gameOptions [0].ogl.bHeadlight = ogl.m_states.bShadersOk;
+gameOptions [0].ogl.bObjLighting = ogl.m_states.bShadersOk;
+gameOptions [0].ogl.bLightObjects = ogl.m_states.bShadersOk;
 extraGameInfo [0].bFlickerLights = !gameOptions [0].app.bEpilepticFriendly;
 extraGameInfo [0].bBrightObjects = 0;
 }
@@ -1810,7 +1791,7 @@ void DefaultRenderSettings (void)
 {
 extraGameInfo [0].grWallTransparency = (5 * FADE_LEVELS + 5) / 10;
 gameOptions [0].render.color.bWalls = 1;
-gameStates.ogl.nContrast = 8;
+ogl.m_states.nContrast = 8;
 gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;
 
 gameOptions [0].render.weaponIcons.bEquipment = 1;

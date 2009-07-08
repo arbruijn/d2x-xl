@@ -614,9 +614,9 @@ if (m_info.bInitAnimate) {
 gameStates.render.bFullBright	= 1;
 
 CCanvas::Current ()->Clear (m_info.nEraseColor);
-gameStates.ogl.bEnableScissor = 1;
+ogl.m_states.bEnableScissor = 1;
 DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
-gameStates.ogl.bEnableScissor = 0;
+ogl.m_states.bEnableScissor = 0;
 gameStates.render.bFullBright = 0;
 CCanvas::Pop ();
 m_info.vRobotAngles [HA] += 15 * (t - m_info.tAnimate);
@@ -773,7 +773,7 @@ if ((TimerGetFixedSeconds () % (I2X (1)/2)) > (I2X (1)/4))
 else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
 GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
-if (gameStates.ogl.nDrawBuffer == GL_FRONT)
+if (ogl.m_states.nDrawBuffer == GL_FRONT)
 	GrUpdate (0);
 }
 
@@ -835,7 +835,7 @@ do {		//	Wait for a key
 	Animate ();
 	m_info.t0 = t;
 	keypress = InKey ();
-	if (gameStates.ogl.nDrawBuffer == GL_BACK)
+	if (ogl.m_states.nDrawBuffer == GL_BACK)
 		break;
 	GrUpdate (0);
 	} while (!keypress);
@@ -1309,7 +1309,7 @@ if (m_info.bOnlyRobots) {
 		return 0;
 	}
 m_info.pi = m_info.message;
-if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
+if (ogl.m_states.nDrawBuffer == GL_FRONT) {
 	LoadImage (m_info.nScreen);
 	GrUpdate (0);
 	}
@@ -1362,7 +1362,7 @@ redrawPage:
 for (;;) {
 	m_info.pj = m_info.message;
 	GrUpdate (0);
-	if (gameStates.ogl.nDrawBuffer == GL_FRONT)
+	if (ogl.m_states.nDrawBuffer == GL_FRONT)
 		m_info.pi = m_info.message;
 	else {
 		m_info.message = m_info.pi;

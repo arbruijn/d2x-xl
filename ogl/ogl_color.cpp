@@ -113,7 +113,7 @@ else if (colorP->rgb) {
 	fc [3] = float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha;
 	if (fc [3] < 1.0f) {
 		glEnable (GL_BLEND);
-		glBlendFunc (gameData.render.ogl.nSrcBlend, gameData.render.ogl.nDestBlend);
+		glBlendFunc (ogl.m_data.nSrcBlend, ogl.m_data.nDestBlend);
 		}
 	glColor4fv (fc);
 	}
@@ -139,7 +139,7 @@ else if (colorP->rgb) {
 		};
 	if (colorP->color.alpha < 1.0f) {
 		glEnable (GL_BLEND);
-		glBlendFunc (gameData.render.ogl.nSrcBlend, gameData.render.ogl.nDestBlend);
+		glBlendFunc (ogl.m_data.nSrcBlend, ogl.m_data.nDestBlend);
 		}
 	return color;
 	}
@@ -219,16 +219,16 @@ return (float) ((c < 0.5) ? pow (c, 1.0f / b) : pow (c, b));
 
 void OglColor4sf (float r, float g, float b, float s)
 {
-if (gameStates.ogl.bStandardContrast)
-	glColor4f (r * s, g * s, b * s, gameStates.ogl.fAlpha);
+if (ogl.m_states.bStandardContrast)
+	glColor4f (r * s, g * s, b * s, ogl.m_states.fAlpha);
 else {
-	float c = (float) gameStates.ogl.nContrast - 8.0f;
+	float c = (float) ogl.m_states.nContrast - 8.0f;
 
 	if (c > 0.0f)
 		c = 1.0f / (1.0f + c * (3.0f / 8.0f));
 	else
 		c = 1.0f - c * (3.0f / 8.0f);
-	glColor4f (BC (r, c) * s, BC (g, c) * s, BC (b, c) * s, gameStates.ogl.fAlpha);
+	glColor4f (BC (r, c) * s, BC (g, c) * s, BC (b, c) * s, ogl.m_states.fAlpha);
 	}
 }
 
@@ -241,7 +241,7 @@ void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tFaceCol
 	float s = 1.0f;
 
 #if SHADOWS
-if (gameStates.ogl.bScaleLight)
+if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 #endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)
@@ -349,7 +349,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 {
 	int					i, j, nLights, nType, 
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
-							bTransform = gameStates.render.nState && !gameStates.ogl.bUseTransform,
+							bTransform = gameStates.render.nState && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
 	int					nBrightness, nMaxBrightness = 0;
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
@@ -419,7 +419,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		NdotL = 1.0f;
 		}
 	else {
-		fLightDist = lightDir.Mag () * gameStates.ogl.fLightRange;
+		fLightDist = lightDir.Mag () * ogl.m_states.fLightRange;
 		if (lightDir.IsZero ())
 			lightDir = vcd.vertNorm;
 		else
@@ -437,7 +437,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (/*(nVertex < 0) &&*/ (nType < 2)) {
 		bool bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
-		fLightDist = dir.Mag () * gameStates.ogl.fLightRange;
+		fLightDist = dir.Mag () * ogl.m_states.fLightRange;
 		CFloatVector3::Normalize (dir);
 		float dot = CFloatVector3::Dot (vcd.vertNorm, dir);
 		if (NdotL <= dot) {
@@ -455,7 +455,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		fLightAngle = (fLightDist > 0.1f) ? -CFloatVector3::Dot (lightDir, spotDir) + 0.01f : 1.0f;
 #if !USE_FACE_DIST
 		float lightRad = (fLightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (fLightAngle))));	// make rad smaller the greater the angle 
-		fLightDist -= lightRad * gameStates.ogl.fLightRange; //make light darker if face behind light source
+		fLightDist -= lightRad * ogl.m_states.fLightRange; //make light darker if face behind light source
 #endif
 		}
 	else
@@ -507,7 +507,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			continue;
 		if (prl->info.fSpotExponent)
 			spotEffect = (float) pow (spotEffect, prl->info.fSpotExponent);
-		fAttenuation /= spotEffect * gameStates.ogl.fLightRange;
+		fAttenuation /= spotEffect * ogl.m_states.fLightRange;
 		vertColor = *gameData.render.vertColor.matAmbient.XYZ () + (*gameData.render.vertColor.matDiffuse.XYZ () * NdotL);
 		}
 	else {
@@ -679,7 +679,7 @@ PROF_END(ptVertexColor)
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
-if (gameStates.ogl.bUseTransform)
+if (ogl.m_states.bUseTransform)
 #if 1
 	vcd.vertNorm = *pvVertNorm;
 #else

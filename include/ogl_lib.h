@@ -43,36 +43,194 @@ typedef struct tSinCosf {
 
 //------------------------------------------------------------------------------
 
-void SetRenderQuality (int nQuality = -1);
 void OglDeleteLists (GLuint *lp, int n);
-void OglComputeSinCos (int nSides, tSinCosf *sinCosP);
+void ComputeSinCosTable (int nSides, tSinCosf *sinCosP);
 int CircleListInit (int nSides, int nType, int mode);
 void G3Normal (g3sPoint **pointList, CFixVector *pvNormal);
 void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
-CFloatVector *G3Reflect (CFloatVector *vReflect, CFloatVector *vLight, CFloatVector *vNormal);
-int G3EnableClientState (GLuint nState, int nTMU);
-int G3DisableClientState (GLuint nState, int nTMU);
-void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
-int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
-void OglSetFOV (void);
-void OglStartFrame (int bFlat, int bResetColorBuf);
-void OglEndFrame (void);
-void OglEnableLighting (int bSpecular);
-void OglDisableLighting (void);
-void OglSwapBuffers (int bForce, int bClear);
-void OglSetupTransform (int bForce);
-void OglResetTransform (int bForce);
-void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
+int ogl.EnableClientState (GLuint nState, int nTMU);
+int ogl.DisableClientState (GLuint nState, int nTMU);
+void ogl.DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
+int ogl.EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
+
 void RebuildRenderContext (int bGame);
-void OglSetScreenMode (void);
-void OglGetVerInfo (void);
-GLuint OglCreateDepthTexture (int nTMU, int bFBO);
-GLuint OglCreateStencilTexture (int nTMU, int bFBO);
-void OglCreateDrawBuffer (void);
-void OglDestroyDrawBuffer (void);
-void OglSetDrawBuffer (int nBuffer, int bFBO);
-void OglSetReadBuffer (int nBuffer, int bFBO);
-void OglFlushDrawBuffer (bool bAdditive = false);
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+#define OGLTEXBUFSIZE (4096 * 4096 * 4)
+
+typedef struct tScreenScale {
+	float x, y;
+} tScreenScale;
+
+class COglData {
+	public:
+		GLubyte			buffer [OGLTEXBUFSIZE];
+		CPalette*		palette;
+		GLenum			nSrcBlend;
+		GLenum			nDestBlend;
+		float				zNear;
+		float				zFar;
+		CFloatVector3	depthScale;
+		tScreenScale	screenScale;
+		CFBO				drawBuffer;
+		CFBO				glowBuffer;
+		int				nPerPixelLights [8];
+		float				lightRads [8];
+		CFloatVector	lightPos [8];
+		int				bLightmaps;
+		int				nHeadlights;
+	public:
+		COglData () { Initialize (); }
+		void Initialize (void);
+};
+
+
+class COglStates {
+	public:
+		int	bInitialized;
+		int	bRebuilding;
+		int	bShadersOk;
+		int	bMultiTexturingOk;
+		int	bRender2TextureOk;
+		int	bPerPixelLightingOk;
+		int	bUseRender2Texture;
+		int	bDrawBufferActive;
+		int	bReadBufferActive;
+		int	bFullScreen;
+		int	bLastFullScreen;
+		int	bUseTransform;
+		int	nTransformCalls;
+		int	bGlTexMerge;
+		int	bBrightness;
+		int	bLowMemory;
+		int	nColorBits;
+		int	nPreloadTextures;
+		ubyte	nTransparencyLimit;
+		GLint	nDepthBits;
+		GLint	nStencilBits;
+		int	bEnableTexture2D;
+		int	bEnableTexClamp;
+		int	bEnableScissor;
+		int	bNeedMipMaps;
+		int	bFSAA;
+		int	bAntiAliasing;
+		int	bAntiAliasingOk;
+		int	bVoodooHack;
+		int	bTextureCompression;
+		int	bHaveTexCompression;
+		int	bHaveVBOs;
+		int	texMinFilter;
+		int	texMagFilter;
+		int	nTexMagFilterState;
+		int	nTexMinFilterState;
+		int	nTexEnvModeState;
+		int	nContrast;
+		int	nLastX;
+		int	nLastY;
+		int	nLastW;
+		int	nLastH;
+		int	nCurWidth;
+		int	nCurHeight;
+		int	nLights;
+		int	iLight;
+		int	nFirstLight;
+		int	bCurFullScreen;
+		int	bpp;
+		int	bScaleLight;
+		int	bDynObjLight;
+		int	bVertexLighting;
+		int	bHeadlight;
+		int	bStandardContrast;
+		int	nRGBAFormat;
+		int	nRGBFormat;
+		int	bIntensity4;
+		int	bLuminance4Alpha4;
+		int	bOcclusionQuery;
+		int	bDepthBlending;
+		int	bUseDepthBlending;
+		int	bHaveDepthBuffer;
+		int	bHaveBlur;
+		int	nDrawBuffer;
+		int	nStencil;
+	#ifdef GL_ARB_multitexture
+		int	bArbMultiTexture;
+	#endif
+	#ifdef GL_SGIS_multitexture
+		int	bSgisMultiTexture;
+	#endif
+		float	fAlpha;
+		float	fLightRange;
+		GLuint hDepthBuffer; 
+
+		int	nTMU [2];	//active driver and client TMUs
+		int	clientStates [4][6];	// client states for the first 4 TMUs
+
+	public:
+		COglStates () { Initialize (); }
+		void Initialize (void);
+};
+
+
+class COGL {
+	public:
+		COglData		m_data;
+		COglStates	m_states;
+
+	public:
+		COGL () { Initialize (); }
+		~COGL () { Destroy (); }
+
+		void Initialize (void);
+		void Destroy (void);
+		void SetFOV (void);
+		void SelectTMU (int nTMU);
+		int EnableClientState (GLuint nState, int nTMU = -1);
+		int DisableClientState (GLuint nState, int nTMU = -1);
+		int EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
+		void DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
+		void StartFrame (int bFlat, int bResetColorBuf);
+		void EndFrame (void);
+		void EnableLighting (int bSpecular);
+		void DisableLighting (void);
+		void SetRenderQuality (int nQuality = -1);
+		void Viewport (int x, int y, int w, int h);
+		void SwapBuffers (int bForce, int bClear);
+		void SetupTransform (int bForce);
+		void ResetTransform (int bForce);
+		void BlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
+		void SetScreenMode (void);
+		void GetVerInfo (void);
+		GLuint CreateDepthTexture (int nTMU, int bFBO);
+		GLuint CreateStencilTexture (int nTMU, int bFBO);
+		void CreateDrawBuffer (void);
+		void DestroyDrawBuffer (void);
+		void SetDrawBuffer (int nBuffer, int bFBO);
+		void SetReadBuffer (int nBuffer, int bFBO);
+		void FlushDrawBuffer (bool bAdditive = false);
+		void DrawArrays (GLenum mode, GLint first, GLsizei count);
+
+#if DBG
+		void GenTextures (GLsizei n, GLuint *hTextures);
+		void DeleteTextures (GLsizei n, GLuint *hTextures);
+#endif
+
+		inline int SetTransform (int bUseTransform) { m_states.bUseTransform = bUseTransform; }
+		inline int UseTransform (void) { return m_states.bUseTransform; }
+
+};
+
+extern COGL ogl;
+
+//------------------------------------------------------------------------------
+
+#if 1 //DBG
+#define	OglDrawArrays(mode, first, count)	ogl.DrawArrays (mode, first, count)
+#else
+#define	OglDrawArrays(mode, first, count)	glDrawArrays (mode, first, count)
+#endif
 
 #if DBG
 
@@ -97,7 +255,7 @@ if (nError) {
 
 static inline int OglHaveDrawBuffer (void)
 {
-return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.Handle () && gameStates.ogl.bDrawBufferActive;
+return ogl.m_states.bRender2TextureOk && ogl.m_data.drawBuffer.Handle () && ogl.m_states.bDrawBufferActive;
 }
 
 //------------------------------------------------------------------------------

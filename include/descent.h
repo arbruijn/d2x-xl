@@ -1382,35 +1382,6 @@ class CMorphData {
 
 //------------------------------------------------------------------------------
 
-#define OGLTEXBUFSIZE (4096 * 4096 * 4)
-
-typedef struct tScreenScale {
-	float x, y;
-} tScreenScale;
-
-class COglData {
-	public:
-		GLubyte			buffer [OGLTEXBUFSIZE];
-		CPalette*		palette;
-		GLenum			nSrcBlend;
-		GLenum			nDestBlend;
-		float				zNear;
-		float				zFar;
-		CFloatVector3	depthScale;
-		tScreenScale	screenScale;
-		CFBO				drawBuffer;
-		CFBO				glowBuffer;
-		int				nPerPixelLights [8];
-		float				lightRads [8];
-		CFloatVector	lightPos [8];
-		int				bLightmaps;
-		int				nHeadlights;
-	public:
-		COglData ();
-};
-
-//------------------------------------------------------------------------------
-
 #define TERRAIN_GRID_MAX_SIZE   64
 #define TERRAIN_GRID_SCALE      I2X (2*20)
 #define TERRAIN_HEIGHT_SCALE    I2X (1)
@@ -1566,7 +1537,7 @@ class CRenderData {
 		CLightData					lights;
 		CMorphData					morph;
 		CShadowData					shadows;
-		COglData						ogl;
+		//COglData						ogl;
 		CTerrainRenderData		terrain;
 		CThrusterData				thrusters [MAX_PLAYERS];
 		CMineRenderData			mine;

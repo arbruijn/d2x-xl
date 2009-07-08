@@ -788,12 +788,12 @@ if (code == 255)
 for (i = 0, n = (int) (item - All_items); i < Num_items; i++) {
 	if ((i != n) && (All_items [i].nType == nType) && (All_items [i].value == code)) {
 		All_items [i].value = 255;
-		if (gameStates.ogl.nDrawBuffer == GL_FRONT)
+		if (ogl.m_states.nDrawBuffer == GL_FRONT)
 			KCDrawItem (All_items + i, 0);
 		}
 	}
 item->value = code;					 
-if (gameStates.ogl.nDrawBuffer == GL_FRONT) {
+if (ogl.m_states.nDrawBuffer == GL_FRONT) {
 	KCDrawItem (item, 1);
 	backgroundManager.Restore (xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->Height (), 0, KC_LHY (INFO_Y));
 	}
@@ -820,7 +820,7 @@ void KCDrawQuestion (kcItem *item)
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
 	GrString (x, KC_LHY (item->y), "?", NULL);
-if (gameStates.ogl.nDrawBuffer != GL_BACK)
+if (ogl.m_states.nDrawBuffer != GL_BACK)
 	GrUpdate (1);
 }
 
@@ -971,7 +971,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const ch
 		SaveScreenShot (NULL, 0);
 		return KCAssignControl (item, BT_NONE, 255);
 		}
-	if (gameStates.ogl.nDrawBuffer == GL_FRONT)
+	if (ogl.m_states.nDrawBuffer == GL_FRONT)
 		G3_SLEEP (10);
 	KCDrawQuestion (item);
 	}
@@ -1019,7 +1019,7 @@ int KCChangeInvert (kcItem * item)
 {
 GameFlushInputs ();
 item->value = !item->value;
-if (gameStates.ogl.nDrawBuffer == GL_FRONT) 
+if (ogl.m_states.nDrawBuffer == GL_FRONT) 
 	KCDrawItem (item, 1);
 return BT_NONE;
 }

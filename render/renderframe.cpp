@@ -174,7 +174,7 @@ DrawScope ();
 	static int bInitSinCos = 1;
 
 if (bInitSinCos) {
-	OglComputeSinCos (sizeofa (sinCos), sinCos);
+	ComputeSinCosTable (sizeofa (sinCos), sinCos);
 	bInitSinCos = 0;
 	}
 
@@ -892,14 +892,14 @@ if (gameData.render.window.x || gameData.render.window.y) {
 //	OglEndFrame ();
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
-	gameStates.ogl.nLastW = CCanvas::Current ()->Width ();
-	gameStates.ogl.nLastH = CCanvas::Current ()->Height ();
+	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
+	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
 	glDepthMask (0);
 	bmBackground.Render (CCanvas::Current (), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 0, 0, -bmBackground.Width (), -bmBackground.Height ());
 	glDepthMask (1);
 	CCanvas::Pop ();
-	gameStates.ogl.nLastW = CCanvas::Current ()->Width ();
-	gameStates.ogl.nLastH = CCanvas::Current ()->Height ();
+	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
+	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
 //	OglStartFrame (0, 0);
 	}
 #else

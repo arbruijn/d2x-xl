@@ -1000,5 +1000,13 @@ Normalize (v);
 return v;
 }
 
+//------------------------------------------------------------------------------
+
+CFloatVector *VmsReflect (CFloatVector *vReflect, CFloatVector *vLight, CFloatVector *vNormal)
+{
+*vReflect = *vNormal * 2 * CFloatVector::Dot (*vLight, *vNormal) - *vLight;
+return vReflect;
+}
+
 // ------------------------------------------------------------------------
 // eof

@@ -124,7 +124,7 @@ while (n--) {
 	else
 #endif
 		dest->p3_normal.nFaces = 0;
-	if (gameStates.ogl.bUseTransform) {
+	if (ogl.m_states.bUseTransform) {
 		pfv->Assign (*src);
 		if (bScale)
 			pfv->Scale (fScale);

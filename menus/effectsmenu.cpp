@@ -215,7 +215,7 @@ do {
 		}
 	sprintf (szSlider + 1, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
 	*szSlider = *(TXT_CORONAS - 1);
-	effectOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + gameStates.ogl.bDepthBlending, KEY_O, HTX_CORONAS);
+	effectOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + ogl.m_states.bDepthBlending, KEY_O, HTX_CORONAS);
 	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
 	effectOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_L, HTX_LIGHTNING);

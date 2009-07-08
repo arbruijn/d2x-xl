@@ -54,8 +54,8 @@ glBegin (GL_POINTS);
 if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
-glVertex2f (float (x + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW),
-				1.0f - float (y + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastW));
+glVertex2f (float (x + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW),
+				1.0f - float (y + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastW));
 //if (colorP->rgb)
 //	glDisable (GL_BLEND);
 glEnd ();
@@ -65,10 +65,10 @@ glEnd ();
 
 void OglDrawFilledRect (int left, int top, int right, int bot, tCanvasColor *colorP)
 {
-GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
-GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
-GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
-GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
+GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
+GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 
 glDisable (GL_TEXTURE_2D);
 if (!colorP)
@@ -102,8 +102,8 @@ for (int i = 0; i <= nVerts; i++) {
 	j = i % nVerts;
 	if (j < nColors)
 		OglCanvasColor (colorP + j);
-	glVertex2f (GLfloat (x [j] + left) / GLfloat (gameStates.ogl.nLastW),
-					1.0f - GLfloat (y [j] + top) / GLfloat (gameStates.ogl.nLastH));
+	glVertex2f (GLfloat (x [j] + left) / GLfloat (ogl.m_states.nLastW),
+					1.0f - GLfloat (y [j] + top) / GLfloat (ogl.m_states.nLastH));
 	}
 glEnd ();
 //if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
@@ -114,10 +114,10 @@ glEnd ();
 
 void OglDrawLine (int left, int top, int right, int bot, tCanvasColor *colorP)
 {
-GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
-GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
-GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
-GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
+GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
+GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 glDisable (GL_TEXTURE_2D);
 if (!colorP)
 	colorP = &COLOR;
@@ -134,10 +134,10 @@ glEnd();
 
 void OglDrawEmptyRect (int left, int top, int right, int bot, tCanvasColor* colorP)
 {
-GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
-GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (gameStates.ogl.nLastW);
-GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
-GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (gameStates.ogl.nLastH);
+GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
+GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 glDisable (GL_TEXTURE_2D);
 if (!colorP)
 	colorP = &COLOR;

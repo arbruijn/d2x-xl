@@ -190,7 +190,7 @@ void SplitFace (tSegFaces *segFaceP, CSegFace *faceP)
 
 if (gameStates.render.bPerPixelLighting)
 	return;
-if (!gameStates.ogl.bGlTexMerge)
+if (!ogl.m_states.bGlTexMerge)
 	return;
 if (faceP->bSolid)
 	return;
@@ -477,7 +477,7 @@ else {
 		}
 	}
 OglSetupTransform (1);
-G3EnableClientStates (!bDepthOnly, !(bDepthOnly || gameStates.render.bFullBright), bNormals, GL_TEXTURE0);
+ogl.EnableClientStates (!bDepthOnly, !(bDepthOnly || gameStates.render.bFullBright), bNormals, GL_TEXTURE0);
 #if GEOMETRY_VBOS
 if (bVBO) {
 	if (bNormals)
@@ -491,16 +491,16 @@ if (bVBO) {
 		}
 	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
 	if (bLightmaps) {
-		G3EnableClientStates (1, 1, bNormals, GL_TEXTURE1);
+		ogl.EnableClientStates (1, 1, bNormals, GL_TEXTURE1);
 		glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iTexCoord));
 		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iColor));
 		glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
 		}
-	G3EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightmaps);
+	ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1 + bLightmaps);
 	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iOvlTexCoord));
 	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iColor));
 	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
-	G3EnableClientStates (1, 1, 0, GL_TEXTURE2 + bLightmaps);
+	ogl.EnableClientStates (1, 1, 0, GL_TEXTURE2 + bLightmaps);
 	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iOvlTexCoord));
 	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iColor));
 	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iVertices));
@@ -522,25 +522,25 @@ else
 		}
 	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	if (bLightmaps) {
-		G3EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1);
+		ogl.EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1);
 		glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
 		if (!gameStates.render.bFullBright)
 			glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 		}
-	G3EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1 + bLightmaps);
+	ogl.EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1 + bLightmaps);
 	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 	if (!gameStates.render.bFullBright)
 		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (FACES.vertices.Buffer ()));
-	G3EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
+	ogl.EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
 	glTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 	if (!gameStates.render.bFullBright)
 		glColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	glVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
 if (bNormals)
-	G3EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
+	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ZERO);
 OglClearError (0);
@@ -555,26 +555,26 @@ void EndRenderFaces (int nType, int bDepthOnly)
 G3FlushFaceBuffer (1);
 #endif
 if (!bDepthOnly) {
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE3);
+	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE3);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
+	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE2);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
+	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE1);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	}
-G3DisableClientStates (!bDepthOnly, !bDepthOnly, 1, GL_TEXTURE0);
+ogl.DisableClientStates (!bDepthOnly, !bDepthOnly, 1, GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
-if (gameStates.ogl.bShadersOk) {
+if (ogl.m_states.bShadersOk) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}
@@ -587,7 +587,7 @@ if (nType != 3) {
 	}
 else 	if (CoronaStyle () == 2)
 	UnloadGlareShader ();
-else if (gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
+else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 OglClearError (0);
@@ -896,14 +896,14 @@ if (!SetupCoronaFaces ())
 int nCoronaStyle = CoronaStyle ();
 if (nCoronaStyle != 1)
 	return 0;
-if (gameStates.ogl.bOcclusionQuery) {
+if (ogl.m_states.bOcclusionQuery) {
 	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 	QueryCoronas (0, 1);
 	}
 BeginRenderFaces (0, 1);
 short nFaces = RenderSegments (nType, 1, 0);
 EndRenderFaces (0, 1);
-if (gameOpts->render.coronas.bUse && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
+if (gameOpts->render.coronas.bUse && ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
 	gameStates.render.nType = 1;
 	RenderMineObjects (1);

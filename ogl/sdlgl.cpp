@@ -37,7 +37,7 @@
 
 //------------------------------------------------------------------------------
 
-#define SDL_VIDEO_FLAGS	(SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE | (gameStates.ogl.bFullScreen ? SDL_FULLSCREEN : 0))
+#define SDL_VIDEO_FLAGS	(SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE | (ogl.m_states.bFullScreen ? SDL_FULLSCREEN : 0))
 
 //------------------------------------------------------------------------------
 
@@ -72,7 +72,7 @@ int nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VID
 PrintLog ("SDL suggests %d bits/pixel\n", nColorBits);
 if (!nColorBits)
 	return 0;
-gameStates.ogl.nColorBits = nColorBits;
+ogl.m_states.nColorBits = nColorBits;
 return 1;
 }
 
@@ -103,12 +103,12 @@ OglSetAttribute ("-gl_alpha", "SDL_GL_ALPHA_SIZE", SDL_GL_ALPHA_SIZE, 8);
 OglSetAttribute ("-gl_buffer", "SDL_GL_BUFFER_SIZE", SDL_GL_BUFFER_SIZE, 32);
 OglSetAttribute ("-gl_stencil", "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
 if ((t = FindArg ("-gl_depth")) && pszArgList [t+1]) {
-	gameStates.ogl.nDepthBits = atoi (pszArgList [t + 1]);
-	if (gameStates.ogl.nDepthBits <= 0)
-		gameStates.ogl.nDepthBits = 24;
-	else if (gameStates.ogl.nDepthBits > 24)
-		gameStates.ogl.nDepthBits = 24;
-	OglSetAttribute (NULL, "SDL_GL_DEPTH_SIZE", SDL_GL_DEPTH_SIZE, gameStates.ogl.nDepthBits);
+	ogl.m_states.nDepthBits = atoi (pszArgList [t + 1]);
+	if (ogl.m_states.nDepthBits <= 0)
+		ogl.m_states.nDepthBits = 24;
+	else if (ogl.m_states.nDepthBits > 24)
+		ogl.m_states.nDepthBits = 24;
+	OglSetAttribute (NULL, "SDL_GL_DEPTH_SIZE", SDL_GL_DEPTH_SIZE, ogl.m_states.nDepthBits);
 	OglSetAttribute (NULL, "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
 	}
 OglSetAttribute (NULL, "SDL_GL_ACCUM_RED_SIZE", SDL_GL_ACCUM_RED_SIZE, 5);
@@ -116,7 +116,7 @@ OglSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
 OglSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
 OglSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
 OglSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
-if (gameStates.ogl.bFSAA) {
+if (ogl.m_states.bFSAA) {
 	OglSetAttribute (NULL, "SDL_GL_MULTISAMPLEBUFFERS", SDL_GL_MULTISAMPLEBUFFERS, 1);
 	OglSetAttribute (NULL, "SDL_GL_MULTISAMPLESAMPLES", SDL_GL_MULTISAMPLESAMPLES, 4);
 	}
@@ -148,7 +148,7 @@ glDisable (GL_LIGHTING);
 glDisable (GL_COLOR_MATERIAL);
 glDepthMask (1);
 glColorMask (1,1,1,1);
-if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
+if (ogl.m_states.bAntiAliasingOk && ogl.m_states.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
 }
 
@@ -159,34 +159,34 @@ int OglInitWindow (int w, int h, int bForce)
 	int			bRebuild = 0;
 	GLint			i;
 
-if (gameStates.ogl.bInitialized) {
-	if (!bForce && (w == gameStates.ogl.nCurWidth) && (h == gameStates.ogl.nCurHeight) && (gameStates.ogl.bCurFullScreen == gameStates.ogl.bFullScreen))
+if (ogl.m_states.bInitialized) {
+	if (!bForce && (w == ogl.m_states.nCurWidth) && (h == ogl.m_states.nCurHeight) && (ogl.m_states.bCurFullScreen == ogl.m_states.bFullScreen))
 		return -1;
 	GrUpdate (1); // blank screen/window
 	GrUpdate (1);
-	if ((w != gameStates.ogl.nCurWidth) || (h != gameStates.ogl.nCurHeight) ||
-		 (gameStates.ogl.bCurFullScreen != gameStates.ogl.bFullScreen)) {
+	if ((w != ogl.m_states.nCurWidth) || (h != ogl.m_states.nCurHeight) ||
+		 (ogl.m_states.bCurFullScreen != ogl.m_states.bFullScreen)) {
 		textureManager.Destroy ();//if we are or were fullscreen, changing vid mode will invalidate current textures
 		bRebuild = 1;
 		}
 	}
 if (w < 0)
-	w = gameStates.ogl.nCurWidth;
+	w = ogl.m_states.nCurWidth;
 if (h < 0)
-	h = gameStates.ogl.nCurHeight;
+	h = ogl.m_states.nCurHeight;
 if ((w < 0) || (h < 0))
 	return -1;
 OglInitAttributes ();
 #if USE_IRRLICHT
-if (!IrrInit (w, h, (bool) gameStates.ogl.bFullScreen))
+if (!IrrInit (w, h, (bool) ogl.m_states.bFullScreen))
 	return 0;
 #else
 SDL_putenv ("SDL_VIDEO_CENTERED=1");
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
-				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
+				 w, h, ogl.m_states.nColorBits, ogl.m_states.bFullScreen ? "fullscreen" : "windowed");
 if (!OglVideoModeOK (w, h) ||
-	 !SDL_SetVideoMode (w, h, gameStates.ogl.nColorBits, SDL_VIDEO_FLAGS)) {
-	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, gameStates.ogl.nColorBits);
+	 !SDL_SetVideoMode (w, h, ogl.m_states.nColorBits, SDL_VIDEO_FLAGS)) {
+	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, ogl.m_states.nColorBits);
 	return 0;
 	}
 #endif
@@ -197,23 +197,23 @@ if (viP->video_mem) {
 	else if (viP->video_mem < 512 * 1024 * 1024)
 		gameStates.render.nMaxTextureQuality = 2;
 	}
-gameStates.ogl.nColorBits = 0;
+ogl.m_states.nColorBits = 0;
 glGetIntegerv (GL_RED_BITS, &i);
-gameStates.ogl.nColorBits += i;
+ogl.m_states.nColorBits += i;
 glGetIntegerv (GL_GREEN_BITS, &i);
-gameStates.ogl.nColorBits += i;
+ogl.m_states.nColorBits += i;
 glGetIntegerv (GL_BLUE_BITS, &i);
-gameStates.ogl.nColorBits += i;
+ogl.m_states.nColorBits += i;
 glGetIntegerv (GL_ALPHA_BITS, &i);
-gameStates.ogl.nColorBits += i;
-glGetIntegerv (GL_DEPTH_BITS, &gameStates.ogl.nDepthBits);
-glGetIntegerv (GL_STENCIL_BITS, &gameStates.ogl.nStencilBits);
-gameStates.render.bHaveStencilBuffer = (gameStates.ogl.nStencilBits > 0);
+ogl.m_states.nColorBits += i;
+glGetIntegerv (GL_DEPTH_BITS, &ogl.m_states.nDepthBits);
+glGetIntegerv (GL_STENCIL_BITS, &ogl.m_states.nStencilBits);
+gameStates.render.bHaveStencilBuffer = (ogl.m_states.nStencilBits > 0);
 SDL_ShowCursor (0);
-gameStates.ogl.nCurWidth = w;
-gameStates.ogl.nCurHeight = h;
-gameStates.ogl.bCurFullScreen = gameStates.ogl.bFullScreen;
-if (gameStates.ogl.bInitialized && bRebuild) {
+ogl.m_states.nCurWidth = w;
+ogl.m_states.nCurHeight = h;
+ogl.m_states.bCurFullScreen = ogl.m_states.bFullScreen;
+if (ogl.m_states.bInitialized && bRebuild) {
 	OglViewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {
 		paletteManager.LoadEffect ();
@@ -225,7 +225,7 @@ if (gameStates.ogl.bInitialized && bRebuild) {
 D2SetCaption ();
 OglCreateDrawBuffer ();
 OglInitState ();
-gameStates.ogl.bInitialized = 1;
+ogl.m_states.bInitialized = 1;
 return 1;
 }
 
@@ -233,7 +233,7 @@ return 1;
 
 void OglDestroyWindow (void)
 {
-if (gameStates.ogl.bInitialized) {
+if (ogl.m_states.bInitialized) {
 	ResetTextures (0, 0);
 #if !USE_IRRLICHT
 	SDL_ShowCursor (1);
@@ -245,7 +245,7 @@ if (gameStates.ogl.bInitialized) {
 
 void OglDoFullScreenInternal (int bForce)
 {
-OglInitWindow (gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, bForce);
+OglInitWindow (ogl.m_states.nCurWidth, ogl.m_states.nCurHeight, bForce);
 }
 
 //------------------------------------------------------------------------------

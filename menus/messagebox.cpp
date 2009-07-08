@@ -49,7 +49,7 @@ void CMessageBox::Show (const char *pszMsg, bool bFade)
 	int x, y;
 	
 m_tEnter = -1;
-m_nDrawBuffer = gameStates.ogl.nDrawBuffer;
+m_nDrawBuffer = ogl.m_states.nDrawBuffer;
 m_pszMsg = pszMsg;
 m_callback = NULL;
 Clear ();

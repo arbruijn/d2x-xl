@@ -1505,7 +1505,7 @@ else {
 		static int bInitSinCos = 1;
 
 	if (bInitSinCos) {
-		OglComputeSinCos (sizeofa (sinCos), sinCos);
+		ComputeSinCosTable (sizeofa (sinCos), sinCos);
 		bInitSinCos = 0;
 		}
 
@@ -1549,10 +1549,10 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nType != CM_FULL
 	LoadBitmap (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0, true);
 	if (bmP->HasOverride ())
 		bmP = bmP->Override (-1);
-	gameStates.ogl.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)
+	ogl.m_states.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)
 	bmP->SetTranspType (3);
 	bmP->SetupTexture (0, 1);
-	gameStates.ogl.nTransparencyLimit = 0;
+	ogl.m_states.nTransparencyLimit = 0;
 	CCanvas::Push ();
    CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);

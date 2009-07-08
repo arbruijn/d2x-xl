@@ -758,7 +758,7 @@ return 1;
 
 void CTransparencyRenderer::ResetShader (void)
 {
-if (gameStates.ogl.bShadersOk && (gameStates.render.history.nShader >= 0)) {
+if (ogl.m_states.bShadersOk && (gameStates.render.history.nShader >= 0)) {
 	gameData.render.nShaderChanges++;
 	if (gameStates.render.history.nShader == 999)
 		UnloadGlareShader ();
@@ -984,13 +984,13 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 				glDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			else {
-				gameStates.ogl.iLight = 0;
+				ogl.m_states.iLight = 0;
 				lightManager.Index (0)[0].nActive = -1;
 				for (;;) {
 					G3SetupPerPixelShader (faceP, 0, faceP->nRenderType, false);
 					glDrawArrays (item->nPrimitive, 0, item->nVertices);
-					if ((gameStates.ogl.iLight >= gameStates.ogl.nLights) ||
-						 (gameStates.ogl.iLight >= gameStates.render.nMaxLightsPerFace))
+					if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
+						 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 						break;
 					//if (bAdditive && (bAdditive != 2)) 
 						{
@@ -1210,7 +1210,7 @@ void CTransparencyRenderer::FlushSparkBuffer (void)
 	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
 if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
-	G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	bmpSparks->Texture ()->Bind ();
 	if (bSoftSparks)
@@ -1525,10 +1525,10 @@ m_data.bmP [0] =
 m_data.bmP [1] = NULL;
 sparkBuffer.nSparks = 0;
 OglDisableLighting ();
-G3DisableClientStates (1, 1, 0, GL_TEXTURE2 + m_data.bLightmaps);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE1 + m_data.bLightmaps);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0 + m_data.bLightmaps);
-G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+ogl.DisableClientStates (1, 1, 0, GL_TEXTURE2 + m_data.bLightmaps);
+ogl.DisableClientStates (1, 1, 0, GL_TEXTURE1 + m_data.bLightmaps);
+ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0 + m_data.bLightmaps);
+ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 glEnable (GL_BLEND);
@@ -1565,13 +1565,13 @@ for (int i = m_data.itemLists.Length (); i; i--, pl++)
 FlushBuffers (-1);
 particleManager.EndRender ();
 ResetShader ();
-G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
+ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OGL_BINDTEX (0);
-G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
 OGL_BINDTEX (0);
-G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
+ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
 OGL_BINDTEX (0);
-G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
+ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);

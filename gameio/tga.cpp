@@ -15,7 +15,7 @@
 
 int CompressTGA (CBitmap *bmP)
 {
-if (!(gameStates.ogl.bTextureCompression && gameStates.ogl.bHaveTexCompression))
+if (!(ogl.m_states.bTextureCompression && ogl.m_states.bHaveTexCompression))
 	return 0;
 #if 0
 if (bmP->Height () / bmP->Width () > 1)
