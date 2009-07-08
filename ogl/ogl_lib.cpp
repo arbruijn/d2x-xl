@@ -311,7 +311,6 @@ void COGL::Initialize (void)
 {
 m_states.Initialize ();
 m_data.Initialize ();
-m_states.Initialize ();
 }
 
 //------------------------------------------------------------------------------
@@ -359,6 +358,10 @@ void COGL::SelectTMU (int nTMU, bool bClient)
 {
 	int	i = nTMU - GL_TEXTURE0;
 
+#if DBG
+if ((i < 0) || (i > 3))
+	return;
+#endif
 if (m_states.nTMU [0] != i) {
 	glActiveTexture (nTMU);
 	m_states.nTMU [0] = i;
@@ -376,7 +379,7 @@ ClearError (0);
 
 int COGL::EnableClientState (GLuint nState, int nTMU)
 {
-if (nTMU >= 0)
+if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
 glEnableClientState (nState);
 #if DBG_OGL
@@ -394,7 +397,7 @@ return glGetError () == 0;
 
 int COGL::DisableClientState (GLuint nState, int nTMU)
 {
-if (nTMU >= 0)
+if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
 glDisableClientState (nState);
 m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
@@ -408,31 +411,25 @@ return glGetError () == 0;
 
 int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
-if (nTMU >= 0)
+if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
 if (!bNormals) 
 	DisableClientState (GL_NORMAL_ARRAY);
-else {
-	if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
-		DisableClientStates (0, 0, 0, -1);
-		return 0;
-		}
+else if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
+	DisableClientStates (0, 0, 0, -1);
+	return 0;
 	}
 if (!bTexCoord) 
 	DisableClientState (GL_TEXTURE_COORD_ARRAY);
-else {
-	if (!EnableClientState (GL_TEXTURE_COORD_ARRAY, -1)) {
-		DisableClientStates (0, 0, 0, -1);
-		return 0;
-		}
+else if (!EnableClientState (GL_TEXTURE_COORD_ARRAY, -1)) {
+	DisableClientStates (0, 0, 0, -1);
+	return 0;
 	}
 if (!bColor) 
 	DisableClientState (GL_COLOR_ARRAY);
-else {
-	if (!EnableClientState (GL_COLOR_ARRAY, -1)) {
-		DisableClientStates (bTexCoord, 0, 0, -1);
-		return 0;
-		}
+else if (!EnableClientState (GL_COLOR_ARRAY, -1)) {
+	DisableClientStates (bTexCoord, 0, 0, -1);
+	return 0;
 	}
 return EnableClientState (GL_VERTEX_ARRAY, -1);
 }
@@ -441,7 +438,7 @@ return EnableClientState (GL_VERTEX_ARRAY, -1);
 
 void COGL::DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
-if (nTMU >= 0)
+if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
 if (bNormals)
 	DisableClientState (GL_NORMAL_ARRAY);

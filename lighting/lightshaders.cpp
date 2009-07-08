@@ -590,7 +590,7 @@ const char *pszLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = texColor * gl_Color;\r\n" \
+	"	gl_FragColor = vec4 (0.0, 1.0, 0.0, 1.0); /*texColor * gl_Color;*/\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
@@ -1103,7 +1103,7 @@ const char *pszLMLightingFS [] = {
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	gl_FragColor = vec4 (0.0, 0.5, 1.0, 1.0); /*vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);*/\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -1112,7 +1112,7 @@ const char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	gl_FragColor = vec4 (1.0, 0.5, 0.0, 1.0); /*vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);*/\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -1125,7 +1125,7 @@ const char *pszLMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	gl_FragColor =  vec4 (1.0, 0.5, 0.75, 1.0); /*vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);*/\r\n" \
 	"	}\r\n" \
 	"}"
 	};
@@ -1508,7 +1508,7 @@ if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
 #if 1//DBG
 	if (lightmapManager.Bind (i))
 #endif
-	 {INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
+	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 	}
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
@@ -1572,6 +1572,7 @@ if (nShader != gameStates.render.history.nShader) {
 #else
 	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
 #endif
+	ogl.ClearError (0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
 	if (nType) {
 		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 1);
