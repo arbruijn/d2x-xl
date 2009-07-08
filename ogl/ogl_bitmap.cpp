@@ -320,7 +320,7 @@ void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, 
 	int	hScreen = screen.Height ();
 
 glDisable (GL_TEXTURE_2D);
-OglSetReadBuffer (GL_FRONT, 1);
+ogl.SetReadBuffer (GL_FRONT, 1);
 if (bTGA)
 	glReadPixels (0, 0, wScreen, hScreen, GL_RGBA, GL_UNSIGNED_BYTE, ogl.m_data.buffer);
 else {

@@ -193,6 +193,8 @@ class COGL {
 		void InitAntiAliasing (void);
 		void InitVBOs (void);
 
+		void InitState (void);
+
 		void SetFOV (void);
 		void SelectTMU (int nTMU);
 		int EnableClientState (GLuint nState, int nTMU = -1);

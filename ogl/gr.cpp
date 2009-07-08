@@ -120,7 +120,7 @@ if (ogl.m_states.bInitialized) {
 
 int GrVideoModeOK (u_int32_t mode)
 {
-return OglVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
+return SdlGlVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 }
 
 //------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ screen.Canvas ()->SetPalette (paletteManager.Default ()); //just need some valid
 CCanvas::SetCurrent (NULL);
 CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog ("   initializing OpenGL window\n");
-if (!OglInitWindow (w, h, 0))	//platform specific code
+if (!SdlGlInitWindow (w, h, 0))	//platform specific code
 	return 0;
 /***/PrintLog ("   initializing OpenGL view port\n");
 ogl.Viewport (0, 0, w, h);
@@ -286,7 +286,7 @@ return 0;
 void _CDECL_ GrClose (void)
 {
 PrintLog ("shutting down graphics subsystem\n");
-OglClose();//platform specific code
+SdlGlClose ();//platform specific code
 screen.Destroy ();
 #ifdef OGL_RUNTIME_LOAD
 if (ogl_rt_loaded)
@@ -350,7 +350,7 @@ if (ogl.m_states.bVoodooHack)
 else
 	ogl.m_states.bFullScreen = f;
 if (ogl.m_states.bInitialized)
-	OglDoFullScreenInternal (0);
+	SdlGlDoFullScreenInternal (0);
 }
 
 //------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ int SetScreenMode (u_int32_t sm)
 if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenSize) && 
 		(screen.Mode () == gameStates.render.vr.nScreenSize)) {
 	CCanvas::SetCurrent (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-	OglSetScreenMode ();
+	ogl.SetScreenMode ();
 	return 1;
 	}
 	gameStates.video.nScreenMode = sm;
@@ -535,7 +535,7 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 	}
 gameStates.render.vr.nCurrentPage = 0;
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-OglSetScreenMode ();
+ogl.SetScreenMode ();
 return 1;
 }
 

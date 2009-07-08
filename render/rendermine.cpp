@@ -948,7 +948,7 @@ else
 			}
 		}
 	}
-StencilOff ();
+ogl.StencilOff ();
 RenderSkyBox (nWindow);
 #if 1
 RenderEffects (nWindow);

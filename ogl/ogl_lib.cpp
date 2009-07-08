@@ -316,6 +316,36 @@ m_states.Initialize ();
 
 //------------------------------------------------------------------------------
 
+void COGL::InitState (void)
+{
+// select clearing (background) color
+glClearColor (0, 0, 0, 0);
+glShadeModel (GL_SMOOTH);
+// initialize viewing values
+glMatrixMode (GL_PROJECTION);
+glLoadIdentity ();
+glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+glMatrixMode (GL_MODELVIEW);
+glLoadIdentity ();//clear matrix
+glScalef (1.0f, -1.0f, 1.0f);
+glTranslatef (0.0f, -1.0f, 0.0f);
+glDisable (GL_CULL_FACE);
+SetDrawBuffer (GL_BACK, 1);
+glDisable (GL_SCISSOR_TEST);
+glDisable (GL_ALPHA_TEST);
+glDisable (GL_DEPTH_TEST);
+glDisable (GL_CULL_FACE);
+glDisable (GL_STENCIL_TEST);
+glDisable (GL_LIGHTING);
+glDisable (GL_COLOR_MATERIAL);
+glDepthMask (1);
+glColorMask (1,1,1,1);
+if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
+	glDisable (GL_MULTISAMPLE_ARB);
+}
+
+//------------------------------------------------------------------------------
+
 void COGL::BlendFunc (GLenum nSrcBlend, GLenum nDestBlend)
 {
 ogl.m_data.nSrcBlend = nSrcBlend;

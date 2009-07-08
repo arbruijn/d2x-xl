@@ -106,7 +106,7 @@ m_data.flash.red = red;
 m_data.flash.green = green;
 m_data.flash.blue = blue;
 if (gameOpts->ogl.bSetGammaRamp && ogl.m_states.bBrightness) {
-	ogl.m_states.bBrightness = !OglSetBrightnessInternal ();
+	ogl.m_states.bBrightness = !SdlGlSetBrightnessInternal ();
 	m_data.bDoEffect = 0;
 	}
 else {

@@ -423,7 +423,7 @@ do {
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
 	if (nRendQualSave != gameOpts->render.nImageQuality)
-		SetRenderQuality ();
+		ogl.SetRenderQuality ();
 
 	if ((gameStates.app.bNostalgia > 1) || (nLighting == 0))
 		gameOpts->render.nLightingMethod = 0;

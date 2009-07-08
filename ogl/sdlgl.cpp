@@ -78,7 +78,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglSetAttribute (const char *szSwitch, const char *szAttr, SDL_GLattr attr, int value)
+int SdlGlSetAttribute (const char *szSwitch, const char *szAttr, SDL_GLattr attr, int value)
 {
 	int	i;
 
@@ -91,70 +91,40 @@ return i;
 
 //------------------------------------------------------------------------------
 
-void OglInitAttributes (void)
+void SdlGlInitAttributes (void)
 {
 	int t;
 
 /***/PrintLog ("setting OpenGL attributes\n");
-OglSetAttribute ("-gl_red", "SDL_GL_RED_SIZE", SDL_GL_RED_SIZE, 8);
-OglSetAttribute ("-gl_green", "SDL_GL_GREEN_SIZE", SDL_GL_GREEN_SIZE, 8);
-OglSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
-OglSetAttribute ("-gl_alpha", "SDL_GL_ALPHA_SIZE", SDL_GL_ALPHA_SIZE, 8);
-OglSetAttribute ("-gl_buffer", "SDL_GL_BUFFER_SIZE", SDL_GL_BUFFER_SIZE, 32);
-OglSetAttribute ("-gl_stencil", "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
+SdlGlSetAttribute ("-gl_red", "SDL_GL_RED_SIZE", SDL_GL_RED_SIZE, 8);
+SdlGlSetAttribute ("-gl_green", "SDL_GL_GREEN_SIZE", SDL_GL_GREEN_SIZE, 8);
+SdlGlSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
+SdlGlSetAttribute ("-gl_alpha", "SDL_GL_ALPHA_SIZE", SDL_GL_ALPHA_SIZE, 8);
+SdlGlSetAttribute ("-gl_buffer", "SDL_GL_BUFFER_SIZE", SDL_GL_BUFFER_SIZE, 32);
+SdlGlSetAttribute ("-gl_stencil", "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
 if ((t = FindArg ("-gl_depth")) && pszArgList [t+1]) {
 	ogl.m_states.nDepthBits = atoi (pszArgList [t + 1]);
 	if (ogl.m_states.nDepthBits <= 0)
 		ogl.m_states.nDepthBits = 24;
 	else if (ogl.m_states.nDepthBits > 24)
 		ogl.m_states.nDepthBits = 24;
-	OglSetAttribute (NULL, "SDL_GL_DEPTH_SIZE", SDL_GL_DEPTH_SIZE, ogl.m_states.nDepthBits);
-	OglSetAttribute (NULL, "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
+	SdlGlSetAttribute (NULL, "SDL_GL_DEPTH_SIZE", SDL_GL_DEPTH_SIZE, ogl.m_states.nDepthBits);
+	SdlGlSetAttribute (NULL, "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
 	}
-OglSetAttribute (NULL, "SDL_GL_ACCUM_RED_SIZE", SDL_GL_ACCUM_RED_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
+SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_RED_SIZE", SDL_GL_ACCUM_RED_SIZE, 5);
+SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
+SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
+SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
+SdlGlSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
 if (ogl.m_states.bFSAA) {
-	OglSetAttribute (NULL, "SDL_GL_MULTISAMPLEBUFFERS", SDL_GL_MULTISAMPLEBUFFERS, 1);
-	OglSetAttribute (NULL, "SDL_GL_MULTISAMPLESAMPLES", SDL_GL_MULTISAMPLESAMPLES, 4);
+	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLEBUFFERS", SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLESAMPLES", SDL_GL_MULTISAMPLESAMPLES, 4);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void OglInitState (void)
-{
-// select clearing (background) color
-glClearColor (0, 0, 0, 0);
-glShadeModel (GL_SMOOTH);
-// initialize viewing values
-glMatrixMode (GL_PROJECTION);
-glLoadIdentity ();
-glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-glMatrixMode (GL_MODELVIEW);
-glLoadIdentity ();//clear matrix
-glScalef (1.0f, -1.0f, 1.0f);
-glTranslatef (0.0f, -1.0f, 0.0f);
-glDisable (GL_CULL_FACE);
-OglSetDrawBuffer (GL_BACK, 1);
-glDisable (GL_SCISSOR_TEST);
-glDisable (GL_ALPHA_TEST);
-glDisable (GL_DEPTH_TEST);
-glDisable (GL_CULL_FACE);
-glDisable (GL_STENCIL_TEST);
-glDisable (GL_LIGHTING);
-glDisable (GL_COLOR_MATERIAL);
-glDepthMask (1);
-glColorMask (1,1,1,1);
-if (ogl.m_states.bAntiAliasingOk && ogl.m_states.bAntiAliasing)
-	glDisable (GL_MULTISAMPLE_ARB);
-}
-
-//------------------------------------------------------------------------------
-
-int OglInitWindow (int w, int h, int bForce)
+int SdlGlInitWindow (int w, int h, int bForce)
 {
 	int			bRebuild = 0;
 	GLint			i;
@@ -176,7 +146,7 @@ if (h < 0)
 	h = ogl.m_states.nCurHeight;
 if ((w < 0) || (h < 0))
 	return -1;
-OglInitAttributes ();
+SdlGlInitAttributes ();
 #if USE_IRRLICHT
 if (!IrrInit (w, h, (bool) ogl.m_states.bFullScreen))
 	return 0;
@@ -223,15 +193,15 @@ if (ogl.m_states.bInitialized && bRebuild) {
 		fontManager.Remap ();
 	}
 D2SetCaption ();
-OglCreateDrawBuffer ();
-OglInitState ();
+ogl.CreateDrawBuffer ();
+ogl.InitState ();
 ogl.m_states.bInitialized = 1;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void OglDestroyWindow (void)
+void SdlGlDestroyWindow (void)
 {
 if (ogl.m_states.bInitialized) {
 	ResetTextures (0, 0);
@@ -243,14 +213,14 @@ if (ogl.m_states.bInitialized) {
 
 //------------------------------------------------------------------------------
 
-void OglDoFullScreenInternal (int bForce)
+void SdlGlDoFullScreenInternal (int bForce)
 {
-OglInitWindow (ogl.m_states.nCurWidth, ogl.m_states.nCurHeight, bForce);
+SdlGlInitWindow (ogl.m_states.nCurWidth, ogl.m_states.nCurHeight, bForce);
 }
 
 //------------------------------------------------------------------------------
 
-void OglSwapBuffersInternal (void)
+void SdlGlSwapBuffersInternal (void)
 {
 #if !USE_IRRLICHT
 SDL_GL_SwapBuffers ();
@@ -259,9 +229,9 @@ SDL_GL_SwapBuffers ();
 
 //------------------------------------------------------------------------------
 
-void OglClose (void)
+void SdlGlClose (void)
 {
-OglDestroyWindow ();
+SdlGlDestroyWindow ();
 }
 
 //------------------------------------------------------------------------------

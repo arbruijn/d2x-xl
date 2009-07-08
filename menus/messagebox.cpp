@@ -83,7 +83,7 @@ fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, 0x8000, BOX_BORDER / 2, m_pszMsg); //(h / 2 + BOX_BORDER) / 2
 GrUpdate (0);
 if (!gameStates.app.bGameRunning)
-	OglSetDrawBuffer (m_nDrawBuffer, 0);
+	ogl.SetDrawBuffer (m_nDrawBuffer, 0);
 gameStates.render.grAlpha = 1.0f;
 }
 
