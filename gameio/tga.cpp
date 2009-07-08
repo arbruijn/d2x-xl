@@ -5,6 +5,7 @@
 #include "descent.h"
 #include "u_mem.h"
 #include "gr.h"
+#include "ogl_lib.h"
 #include "tga.h"
 
 #if USE_SDL_IMAGE

@@ -1026,7 +1026,7 @@ if (thumbCanv) {
 	bm.SetBPP (3);
 	bm.CreateBuffer ();
 	//glDisable (GL_TEXTURE_2D);
-	OglSetReadBuffer (GL_FRONT, 1);
+	ogl.SetReadBuffer (GL_FRONT, 1);
 	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.Buffer ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 	ShrinkTGA (&bm, bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);
@@ -1185,8 +1185,8 @@ gameData.app.bGamePaused = 0;
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (i) {
-	SetRenderQuality ();
-	RebuildRenderContext (1);
+	ogl.SetRenderQuality ();
+	ogl.RebuildContext (1);
 	if (bQuick)
 		HUDInitMessage (TXT_QUICKLOAD);
 	}

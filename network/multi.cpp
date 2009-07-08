@@ -3334,7 +3334,7 @@ if (thisid != id) {
 	return;
 	}
 saveGameManager.LoadState (1, 0, filename);
-RebuildRenderContext (1);
+ogl.RebuildContext (1);
 gameData.app.bGamePaused = 0;
 }
 

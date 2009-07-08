@@ -49,8 +49,6 @@ int CircleListInit (int nSides, int nType, int mode);
 void G3Normal (g3sPoint **pointList, CFixVector *pvNormal);
 void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
-void RebuildRenderContext (int bGame);
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -220,6 +218,7 @@ class COGL {
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
 		void FlushDrawBuffer (bool bAdditive = false);
+		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 
 #if DBG

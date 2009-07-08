@@ -445,7 +445,7 @@ if (nCurrentVGAMode != nMenuMode) {
 	if (!paletteManager.EffectDisabled ())
 		paletteManager.LoadEffect ();
 	gameStates.menus.bInitBG = 1;
-	RebuildRenderContext (gameStates.app.bGameRunning);
+	ogl.RebuildContext (gameStates.app.bGameRunning);
 	}
 
 screen.Canvas ()->SetupPane (

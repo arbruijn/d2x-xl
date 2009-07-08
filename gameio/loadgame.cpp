@@ -997,8 +997,8 @@ paletteManager.LoadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore) {
-	SetRenderQuality ();
-	RebuildRenderContext (1);
+	ogl.SetRenderQuality ();
+	ogl.RebuildContext (1);
 	}
 ResetPingStats ();
 gameStates.gameplay.nDirSteps = 0;

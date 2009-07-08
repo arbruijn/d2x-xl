@@ -690,7 +690,7 @@ if (MVE_rmPrepMovie (reinterpret_cast<void*> (movieP ? &movieP->m_cf: &cf), dx, 
 	}
 nFrame = 0;
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && bHires;
-SetRenderQuality (gameOpts->movies.nQuality ? 5 : 0);
+ogl.SetRenderQuality (gameOpts->movies.nQuality ? 5 : 0);
 while ((result = MVE_rmStepMovie ()) == 0) {
 	subTitles.Draw (nFrame);
 	paletteManager.LoadEffect (); // moved this here because of flashing
@@ -720,7 +720,7 @@ if (movieP)
 else
 	cf.Close ();                           // Close Movie File
 // Restore old graphic state
-SetRenderQuality ();
+ogl.SetRenderQuality ();
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
 paletteManager.LoadEffect ();
 return (aborted ? MOVIE_ABORTED : MOVIE_PLAYED_FULL);

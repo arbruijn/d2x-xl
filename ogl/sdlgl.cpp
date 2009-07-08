@@ -187,7 +187,7 @@ if (ogl.m_states.bInitialized && bRebuild) {
 	ogl.Viewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {
 		paletteManager.LoadEffect ();
-		RebuildRenderContext (1);
+		ogl.RebuildContext (1);
 		}
 	else
 		fontManager.Remap ();

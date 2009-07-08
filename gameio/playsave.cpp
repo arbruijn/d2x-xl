@@ -1674,7 +1674,7 @@ for (i = 0; i < 2; i++) {
 		}
 	if (gameStates.input.nPlrFileVersion >= 70) {
 		gameOptions [i].render.nImageQuality = (int) cf.ReadByte ();
-		SetRenderQuality ();
+		ogl.SetRenderQuality ();
 		}
 	if (gameStates.input.nPlrFileVersion >= 71)
 		gameOptions [i].movies.bSubTitles = (int) cf.ReadByte ();

@@ -900,9 +900,9 @@ else
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void RebuildRenderContext (int bGame)
+void COGL::RebuildContext (int bGame)
 {
-ogl.m_states.bRebuilding = 1;
+m_states.bRebuilding = 1;
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (" Setting up renderer...");
@@ -915,7 +915,7 @@ if (bGame) {
 		lightmapManager.BindAll ();
 	gpgpuLighting.End ();
 	gpgpuLighting.Begin ();
-	ogl.CreateDrawBuffer ();
+	CreateDrawBuffer ();
 	cameraManager.Create ();
 	InitSpheres ();
 	cockpit->Rebuild ();
@@ -923,8 +923,8 @@ if (bGame) {
 //gameData.models.Prepare ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Clear ();
-ogl.SetDrawBuffer (ogl.m_states.nDrawBuffer, 1);
-ogl.m_states.bRebuilding = 0;
+SetDrawBuffer (m_states.nDrawBuffer, 1);
+m_states.bRebuilding = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -962,7 +962,7 @@ m_states.bLastFullScreen = m_states.bFullScreen;
 
 const char *oglVendor, *oglRenderer, *oglVersion, *oglExtensions;
 
-void OglGetVerInfo (void)
+void COGL::GetVerInfo (void)
 {
 oglVendor = reinterpret_cast<const char*> (glGetString (GL_VENDOR));
 oglRenderer = reinterpret_cast<const char*> (glGetString (GL_RENDERER));
