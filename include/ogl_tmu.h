@@ -73,9 +73,7 @@ else
 	g3InitTMU [1][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [1][bVertexArrays])
 		glNewList (g3InitTMU [1][bVertexArrays], GL_COMPILE);
-	if (bVertexArrays)
-		glClientActiveTexture (GL_TEXTURE1);
-	ogl.SelectTMU (GL_TEXTURE1);
+	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_MODULATE : GL_DECAL);
 	if (g3InitTMU [1][bVertexArrays]) {
