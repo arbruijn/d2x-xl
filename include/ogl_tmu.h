@@ -7,6 +7,8 @@
 #include <stddef.h>
 #endif
 
+#define	USE_DISPLAY_LISTS	0
+
 //------------------------------------------------------------------------------
 
 typedef void tInitTMU (int);
@@ -18,6 +20,16 @@ static inline void InitTMU (int i, int bVertexArrays)
 {
 	static GLuint tmuIds [] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2_ARB};
 
+#if !USE_DISPLAY_LISTS
+	ogl.SelectTMU (tmuIds [i], bVertexArrays != 0);
+	glEnable (GL_TEXTURE_2D);
+	if (i == 0)
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	else if (i == 1)
+		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	else
+		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#else
 if (glIsList (g3InitTMU [i][bVertexArrays]))
 	glCallList (g3InitTMU [i][bVertexArrays]);
 else {
@@ -37,12 +49,18 @@ else {
 		InitTMU (i, bVertexArrays);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 static inline void InitTMU0 (int bVertexArrays, int bLightmaps = 0)
 {
+#if !USE_DISPLAY_LISTS
+	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
+	glEnable (GL_TEXTURE_2D);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#else
 if (glIsList (g3InitTMU [0][bVertexArrays]))
 	glCallList (g3InitTMU [0][bVertexArrays]);
 else 
@@ -50,9 +68,7 @@ else
 	g3InitTMU [0][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [0][bVertexArrays])
 		glNewList (g3InitTMU [0][bVertexArrays], GL_COMPILE);
-	if (bVertexArrays)
-		glClientActiveTexture (GL_TEXTURE0);
-	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [0][bVertexArrays]) {
@@ -60,16 +76,22 @@ else
 		InitTMU0 (bVertexArrays);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 static inline void InitTMU1 (int bVertexArrays, int bLightmaps = 0)
 {
+#if !USE_DISPLAY_LISTS
+	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
+	glEnable (GL_TEXTURE_2D);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_MODULATE : GL_DECAL);
+#else
 if (glIsList (g3InitTMU [1][bVertexArrays]))
 	glCallList (g3InitTMU [1][bVertexArrays]);
 else 
- {
+	{
 	g3InitTMU [1][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [1][bVertexArrays])
 		glNewList (g3InitTMU [1][bVertexArrays], GL_COMPILE);
@@ -81,12 +103,18 @@ else
 		InitTMU1 (bVertexArrays);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 static inline void InitTMU2 (int bVertexArrays, int bLightmaps = 0)
 {
+#if !USE_DISPLAY_LISTS
+	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
+	glEnable (GL_TEXTURE_2D);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_DECAL : GL_MODULATE);
+#else
 if (glIsList (g3InitTMU [2][bVertexArrays]))
 	glCallList (g3InitTMU [2][bVertexArrays]);
 else 
@@ -94,9 +122,7 @@ else
 	g3InitTMU [2][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [2][bVertexArrays])
 		glNewList (g3InitTMU [2][bVertexArrays], GL_COMPILE);
-	if (bVertexArrays)
-		glClientActiveTexture (GL_TEXTURE2);
-	ogl.SelectTMU (GL_TEXTURE2);
+	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_DECAL : GL_MODULATE);
 	if (g3InitTMU [2][bVertexArrays]) {
@@ -104,12 +130,18 @@ else
 		InitTMU2 (bVertexArrays);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 static inline void InitTMU3 (int bVertexArrays, int bLightmaps = 0)
 {
+#if !USE_DISPLAY_LISTS
+	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
+	glEnable (GL_TEXTURE_2D);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+#else
 if (glIsList (g3InitTMU [3][bVertexArrays]))
 	glCallList (g3InitTMU [3][bVertexArrays]);
 else 
@@ -117,9 +149,7 @@ else
 	g3InitTMU [3][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [3][bVertexArrays])
 		glNewList (g3InitTMU [3][bVertexArrays], GL_COMPILE);
-	ogl.SelectTMU (GL_TEXTURE2_ARB);
-	if (bVertexArrays)
-		glClientActiveTexture (GL_TEXTURE2_ARB);
+	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [3][bVertexArrays]) {
@@ -127,12 +157,24 @@ else
 		InitTMU3 (bVertexArrays);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 static inline void ExitTMU (int bVertexArrays)
 {
+#if !USE_DISPLAY_LISTS
+	ogl.SelectTMU (GL_TEXTURE2_ARB, bVertexArrays != 0);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+#else
 if (glIsList (g3ExitTMU [bVertexArrays]))
 	glCallList (g3ExitTMU [bVertexArrays]);
 else 
@@ -140,19 +182,13 @@ else
 	g3ExitTMU [bVertexArrays] = glGenLists (1);
 	if (g3ExitTMU [bVertexArrays])
 		glNewList (g3ExitTMU [bVertexArrays], GL_COMPILE);
-	ogl.SelectTMU (GL_TEXTURE2_ARB);
-	if (bVertexArrays)
-		glClientActiveTexture (GL_TEXTURE2_ARB);
+	ogl.SelectTMU (GL_TEXTURE2_ARB, bVertexArrays != 0);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
-	ogl.SelectTMU (GL_TEXTURE1);
-	if (bVertexArrays)
-		glClientActiveTexture (GL_TEXTURE1);
+	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
-	ogl.SelectTMU (GL_TEXTURE0);
-	if (bVertexArrays)
-		glClientActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	if (g3ExitTMU [bVertexArrays]) {
@@ -160,6 +196,7 @@ else
 		ExitTMU (bVertexArrays);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

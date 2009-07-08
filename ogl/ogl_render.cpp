@@ -805,13 +805,13 @@ if (bOverlay > 0) {
 	}
 else if (bShaderMerge) {
 #if OGL_CLEANUP
-	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays);
+	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
 #endif
 	glUseProgramObject (activeShaderProg = 0);
 	}
-ogl.SelectTMU (GL_TEXTURE0, bVertexArrays);
+ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 tMapColor.index =
