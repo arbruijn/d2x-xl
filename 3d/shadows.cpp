@@ -775,13 +775,13 @@ v [2] /= fInf;
 #endif
 v [2] += v [1];
 v [3] += v [0];
-glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
 #if DBG_SHADOWS
 if (bShadowTest)
-	glDrawArrays (GL_LINES, 0, 4);
+	OglDrawArrays (GL_LINES, 0, 4);
 else
 #endif
-glDrawArrays (GL_QUADS, 0, 4);
+OglDrawArrays (GL_QUADS, 0, 4);
 }
 
 //------------------------------------------------------------------------------
@@ -853,7 +853,7 @@ else {
 #endif
 nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
 fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
-glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
 for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->m_adjFaces + pf->m_nAdjFaces;
@@ -880,7 +880,7 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 				v [2] += v [1];
 				v [3] += v [0];
 #if 1//!DBG
-				glDrawArrays (GL_QUADS, 0, 4);
+				OglDrawArrays (GL_QUADS, 0, 4);
 #else
 				glVertex3fv (reinterpret_cast<GLfloat*> (v));
 				glVertex3fv (reinterpret_cast<GLfloat*> (v+1));
@@ -1437,7 +1437,7 @@ if (!gameStates.render.bShadowMaps) {
 	}
 OglActiveTexture (GL_TEXTURE0, 0);
 glDisable (GL_TEXTURE_2D);
-glEnableClientState (GL_VERTEX_ARRAY);
+ogl.EnableClientState (GL_VERTEX_ARRAY);
 pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
@@ -1499,7 +1499,7 @@ else {
 		}
 	}
 #endif
-glDisableClientState (GL_VERTEX_ARRAY);
+ogl.DisableClientState (GL_VERTEX_ARRAY);
 return 1;
 }
 

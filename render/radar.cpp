@@ -173,13 +173,13 @@ yRadar = ((i == 1) || (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (g
 fRadius = 5.0f / transformation.m_info.scalef [X];
 fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 mRadar = CFixMatrix::Create (aRadar);
-glActiveTexture (GL_TEXTURE3);
+ogl.SelectTMU (GL_TEXTURE3);
 glDisable (GL_TEXTURE_2D);
-glActiveTexture (GL_TEXTURE2);
+ogl.SelectTMU (GL_TEXTURE2);
 glDisable (GL_TEXTURE_2D);
-glActiveTexture (GL_TEXTURE1);
+ogl.SelectTMU (GL_TEXTURE1);
 glDisable (GL_TEXTURE_2D);
-glActiveTexture (GL_TEXTURE0);
+ogl.SelectTMU (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
 glDisable (GL_CULL_FACE);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);

@@ -174,7 +174,7 @@ CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 {
 ogl.ClearError (1);
 glEnable (GL_TEXTURE_2D);
-glActiveTexture (GL_TEXTURE0);
+ogl.SelectTMU (GL_TEXTURE0);
 if (Bind (bMipMaps))
 	return NULL;
 m_info.texP->Wrap (GL_REPEAT);

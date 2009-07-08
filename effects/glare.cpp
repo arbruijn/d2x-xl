@@ -70,7 +70,7 @@ GLuint CopyDepthTexture (void)
 if (nError)
 	nError = nError;
 #endif
-glActiveTexture (GL_TEXTURE1);
+ogl.SelectTMU (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
 if (!ogl.m_states.hDepthBuffer)
 	ogl.m_states.bHaveDepthBuffer = 0;
@@ -620,10 +620,10 @@ else
 if (ogl.EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
 	if (!gameStates.render.bQueryCoronas) {
 		bmP->Bind (1);
-		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
+		OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}
-	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
-	glDrawArrays (GL_QUADS, 0, 4);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
+	OglDrawArrays (GL_QUADS, 0, 4);
 	ogl.DisableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0);
 	}
 else {
@@ -804,7 +804,7 @@ if (ogl.m_states.bDepthBlending) {
 		dMaxPrev = dMax;
 		glDisable (GL_DEPTH_TEST);
 		}
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	}
 }
 
@@ -817,11 +817,11 @@ if (ogl.m_states.bDepthBlending) {
 	gameStates.render.history.nShader = -1;
 	//DestroyGlareDepthTexture ();
 	glEnable (GL_TEXTURE_2D);
-	glActiveTexture (GL_TEXTURE1);
+	ogl.SelectTMU (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, 0);
-	glActiveTexture (GL_TEXTURE2);
+	ogl.SelectTMU (GL_TEXTURE2);
 	glBindTexture (GL_TEXTURE_2D, 0);
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glEnable (GL_DEPTH_TEST);
 	}
 }

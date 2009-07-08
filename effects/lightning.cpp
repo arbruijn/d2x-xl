@@ -986,9 +986,9 @@ for (bScale = 0; bScale < 2; bScale++) {
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
 		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
-	glTexCoordPointer (2, GL_FLOAT, 0, plasmaBuffers [nThread][bScale].texCoord);
-	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), plasmaBuffers [nThread][bScale].vertices);
-	glDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
+	OglTexCoordPointer (2, GL_FLOAT, 0, plasmaBuffers [nThread][bScale].texCoord);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), plasmaBuffers [nThread][bScale].vertices);
+	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	glDisable (GL_TEXTURE_2D);
 	glColor3f (1,1,1);
@@ -1025,12 +1025,12 @@ if (!ogl.m_states.bUseTransform)
 #if 1
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glDisable (GL_TEXTURE_2D);
-	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
-	glDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
+	OglVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
+	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
 else {
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glDisable (GL_TEXTURE_2D);
 	glBegin (GL_LINE_STRIP);
 	for (i = m_nNodes, vPosf = coreBuffer [nThread]; i; i--, vPosf++)
@@ -1051,7 +1051,7 @@ int CLightning::SetupPlasma (void)
 {
 if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
-glActiveTexture (GL_TEXTURE0);
+ogl.SelectTMU (GL_TEXTURE0);
 glClientActiveTexture (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);
 if (LoadCorona () && !bmpCorona->Bind (1)) {

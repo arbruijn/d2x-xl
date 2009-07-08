@@ -207,7 +207,7 @@ class COGL {
 		void InitState (void);
 
 		void SetFOV (void);
-		void SelectTMU (int nTMU);
+		void SelectTMU (int nTMU, bool bClient = false);
 		int EnableClientState (GLuint nState, int nTMU = -1);
 		int DisableClientState (GLuint nState, int nTMU = -1);
 		int EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
@@ -282,13 +282,13 @@ extern COGL ogl;
 //------------------------------------------------------------------------------
 
 #if 1 //DBG
-#define	OglDrawArrays(mode, first, count)	ogl.DrawArrays (mode, first, count)
+#define	OglDrawArrays(mode, first, count)					ogl.DrawArrays (mode, first, count)
 #define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglColorPointer(size, type, stride, pointer)	ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglNormalPointer(size, type, stride, pointer)	ogl.NormalPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #else
-#define	OglDrawArrays(mode, first, count)	glDrawArrays (mode, first, count)
+#define	OglDrawArrays(mode, first, count)					glDrawArrays (mode, first, count)
 #define	OglVertexPointer(size, type, stride, pointer)	glVertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglColorPointer(size, type, stride, pointer)		glColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)

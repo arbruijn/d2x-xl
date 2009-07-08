@@ -469,7 +469,7 @@ if (bmP && (bmP == bmpShield)) {
 	}
 #endif
 if (bmP) {
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	if (bmP->Bind (1))
@@ -568,9 +568,9 @@ void CSphere::RenderRing (int nOffset, int nItems, int bTextured, int nPrimitive
 {
 if (ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
 	if (bTextured)
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
-	glVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
-	glDrawArrays (nPrimitive, 0, nItems);
+		OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
+	OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
+	OglDrawArrays (nPrimitive, 0, nItems);
 	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 	}
 else {
@@ -590,9 +590,9 @@ void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nIt
 {
 if (ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
 	if (bTextured)
-		glTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
-	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
-	glDrawArrays (nPrimitive, 0, nItems);
+		OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
+	OglDrawArrays (nPrimitive, 0, nItems);
 	ogl.DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 	}
 else {

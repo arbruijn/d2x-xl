@@ -580,23 +580,23 @@ return Add (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
 
 void CTransparencyRenderer::EnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU)
 {
-glActiveTexture (nTMU);
+ogl.SelectTMU (nTMU);
 glClientActiveTexture (nTMU);
 if ((bDecal < 1) && (bColor != m_data.bClientColor)) {
 	if ((m_data.bClientColor = bColor))
-		glEnableClientState (GL_COLOR_ARRAY);
+		ogl.EnableClientState (GL_COLOR_ARRAY);
 	else
-		glDisableClientState (GL_COLOR_ARRAY);
+		ogl.DisableClientState (GL_COLOR_ARRAY);
 	}
 if (bDecal || (bTexCoord != m_data.bClientTexCoord)) {
 	if ((m_data.bClientTexCoord = bTexCoord))
-		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
 	else
-		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
 	}
 if (!m_data.bLightmaps)
-	glEnableClientState (GL_NORMAL_ARRAY);
-glEnableClientState (GL_VERTEX_ARRAY);
+	ogl.EnableClientState (GL_NORMAL_ARRAY);
+ogl.EnableClientState (GL_VERTEX_ARRAY);
 }
 
 //------------------------------------------------------------------------------
@@ -607,28 +607,28 @@ void CTransparencyRenderer::DisableClientState (int nTMU, char bDecal, char bFul
 if (nTMU == GL_TEXTURE0)
 	nTMU = nTMU;
 #endif
-glActiveTexture (nTMU);
+ogl.SelectTMU (nTMU);
 glClientActiveTexture (nTMU);
 ogl.ClearError (0);
 if (bFull) {
 	if (bDecal) {
-		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState (GL_COLOR_ARRAY);
+		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
+		ogl.DisableClientState (GL_COLOR_ARRAY);
 			m_data.bClientTexCoord = 0;
 			m_data.bClientColor = 0;
 		}
 	else {
 		m_data.bClientState = 0;
 		if (m_data.bClientTexCoord) {
-			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+			ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
 			m_data.bClientTexCoord = 0;
 			}
 		if (bDecal || m_data.bClientColor) {
-			glDisableClientState (GL_COLOR_ARRAY);
+			ogl.DisableClientState (GL_COLOR_ARRAY);
 			m_data.bClientColor = 0;
 			}
 		}
-	glDisableClientState (GL_VERTEX_ARRAY);
+	ogl.DisableClientState (GL_VERTEX_ARRAY);
 	}
 else {
 	OGL_BINDTEX (0);
@@ -656,20 +656,20 @@ int CTransparencyRenderer::SetClientState (char bClientState, char bTexCoord, ch
 PROF_START
 #if 1
 if (m_data.bUseLightmaps != bUseLightmaps) {
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
 	ogl.ClearError (0);
 	if (bUseLightmaps) {
 		glEnable (GL_TEXTURE_2D);
-		glEnableClientState (GL_NORMAL_ARRAY);
-		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
-		glEnableClientState (GL_COLOR_ARRAY);
-		glEnableClientState (GL_VERTEX_ARRAY);
+		ogl.EnableClientState (GL_NORMAL_ARRAY);
+		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
+		ogl.EnableClientState (GL_COLOR_ARRAY);
+		ogl.EnableClientState (GL_VERTEX_ARRAY);
 		m_data.bClientTexCoord =
 		m_data.bClientColor = 0;
 		}
 	else {
-		glDisableClientState (GL_NORMAL_ARRAY);
+		ogl.DisableClientState (GL_NORMAL_ARRAY);
 		DisableClientState (GL_TEXTURE1, 0, 0);
 		if (m_data.bDecal) {
 			DisableClientState (GL_TEXTURE2, 1, 0);
@@ -687,23 +687,23 @@ if (m_data.bUseLightmaps != bUseLightmaps) {
 #if 0
 if (m_data.bClientState == bClientState) {
 	if (bClientState) {
-		glActiveTexture (GL_TEXTURE0 + bUseLightmaps);
+		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps);
 		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps);
 		if (m_data.bClientColor != bColor) {
 			if ((m_data.bClientColor = bColor))
-				glEnableClientState (GL_COLOR_ARRAY);
+				ogl.EnableClientState (GL_COLOR_ARRAY);
 			else
-				glDisableClientState (GL_COLOR_ARRAY);
+				ogl.DisableClientState (GL_COLOR_ARRAY);
 			}
 		if (m_data.bClientTexCoord != bTexCoord) {
 			if ((m_data.bClientTexCoord = bTexCoord))
-				glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+				ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
 			else
-				glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+				ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
 			}
 		}
 	else
-		glActiveTexture (GL_TEXTURE0 + bUseLightmaps);
+		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps);
 	return 1;
 	}
 else
@@ -747,7 +747,7 @@ else {
 		}
 #endif
 	DisableClientState (GL_TEXTURE0 + bUseLightmaps, 0, 1);
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	}
 //m_data.bmP = NULL;
 PROF_END(ptRenderStates)
@@ -777,7 +777,7 @@ int CTransparencyRenderer::LoadImage (CBitmap *bmP, char nColors, char nFrame, i
 if (bmP) {
 	glEnable (GL_TEXTURE_2D);
 	if (bDecal || SetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (m_data.bTextured < 1)) {
-		glActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
+		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps + bDecal);
 		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		m_data.bTextured = 1;
@@ -818,11 +818,10 @@ return (m_data.bClientState == bClientState);
 
 void CTransparencyRenderer::SetRenderPointers (int nTMU, int nIndex, int bDecal)
 {
-glActiveTexture (nTMU);
-glClientActiveTexture (nTMU);
+ogl.SelectTMU (nTMU, true);
 if (m_data.bTextured)
-	glTexCoordPointer (2, GL_FLOAT, 0, bDecal ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
-glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
+	OglTexCoordPointer (2, GL_FLOAT, 0, bDecal ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
+OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 }
 
 //------------------------------------------------------------------------------
@@ -903,7 +902,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 	if (triP || faceP) {
 		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
 		if (!bLightmaps)
-			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
+			OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		if (bDecal > 0) {
 			SetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (mask)
@@ -911,25 +910,23 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 			}
 		}
 	else {
-		glActiveTexture (GL_TEXTURE0);
-		glClientActiveTexture (GL_TEXTURE0);
+		ogl.SelectTMU (GL_TEXTURE0, true);
 		if (m_data.bTextured)
-			glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
-		glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
+			OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
+		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 		}
 	ogl.SetupTransform (faceP != NULL);
 	if (item->nColors > 1) {
-		glActiveTexture (GL_TEXTURE0);
-		glClientActiveTexture (GL_TEXTURE0);
-		glEnableClientState (GL_COLOR_ARRAY);
+		ogl.SelectTMU (GL_TEXTURE0, true);
+		ogl.EnableClientState (GL_COLOR_ARRAY);
 		if (faceP || triP)
-			glColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
+			OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
 		else
-			glColorPointer (4, GL_FLOAT, 0, item->color);
+			OglColorPointer (4, GL_FLOAT, 0, item->color);
 		if (bLightmaps) {
-			glTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
-			glNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
-			glVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
+			OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
+			OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
+			OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 			}
 		}
 	else if (item->nColors == 1)
@@ -953,13 +950,13 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 	if (faceP && gameStates.render.bPerPixelLighting) {
 		if (!faceP->bColored) {
 			G3SetupGrayScaleShader ((int) faceP->nRenderType, &faceP->color);
-			glDrawArrays (item->nPrimitive, 0, item->nVertices);
+			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		else {
 #if 0
 			if (gameData.render.lights.dynamic.headlights.nLights && !automap.m_bDisplay) {
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
-				glDrawArrays (item->nPrimitive, 0, item->nVertices);
+				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				bAdditive = true;
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 				glDepthFunc (GL_LEQUAL);
@@ -981,14 +978,14 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 					PrintLog ("invalid transparent render item\n");
 				else
 #endif
-				glDrawArrays (item->nPrimitive, 0, item->nVertices);
+				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			else {
 				ogl.m_states.iLight = 0;
 				lightManager.Index (0)[0].nActive = -1;
 				for (;;) {
 					G3SetupPerPixelShader (faceP, 0, faceP->nRenderType, false);
-					glDrawArrays (item->nPrimitive, 0, item->nVertices);
+					OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 					if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 						 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 						break;
@@ -1013,7 +1010,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 					bAdditive = 2;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					}
-				glDrawArrays (item->nPrimitive, 0, item->nVertices);
+				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 #endif
 			}
@@ -1035,7 +1032,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 		else if (faceP)
 			glNormal3fv (reinterpret_cast<GLfloat*> (FACES.normals + faceP->nIndex));
 #endif
-		glDrawArrays (item->nPrimitive, 0, item->nVertices);
+		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	ogl.ResetTransform (faceP != NULL);
 	if (faceP)
@@ -1222,9 +1219,9 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 		}
 	glBlendFunc (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
-	glTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
-	glVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
-	glDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
+	OglVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
+	OglDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftSparks)
 		glEnable (GL_DEPTH_TEST);
@@ -1288,7 +1285,7 @@ if (item->nType == riSphereShield)
 if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 ResetBitmaps ();
-glActiveTexture (GL_TEXTURE0); // + m_data.bLightmaps);
+ogl.SelectTMU (GL_TEXTURE0); // + m_data.bLightmaps);
 glClientActiveTexture (GL_TEXTURE0); // + m_data.bLightmaps);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
@@ -1375,11 +1372,11 @@ glDisable (GL_CULL_FACE);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 #if 1
 if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
-	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
-	glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
+	OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->bTrail)
-		glDrawArrays (GL_TRIANGLES, 4, 3);
-	glDrawArrays (GL_QUADS, 0, 4);
+		OglDrawArrays (GL_TRIANGLES, 4, 3);
+	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 else
 #endif

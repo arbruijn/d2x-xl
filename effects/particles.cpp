@@ -618,7 +618,7 @@ if (gameOpts->render.bDepthSort > 0) {
 		particleManager.FlushBuffer (brightness);
 		particleManager.SetLastType (nType);
 		bBufferEmissive = bEmissive;
-		glActiveTexture (GL_TEXTURE0);
+		ogl.SelectTMU (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		if (bmP->Bind (0))
 			return 0;
@@ -1609,7 +1609,7 @@ if (iBuffer) {
 			CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
 			if (!bmP)
 				return;
-			glActiveTexture (GL_TEXTURE0);
+			ogl.SelectTMU (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
 			glEnable (GL_TEXTURE_2D);
 			if (bmP->CurFrame ())
@@ -1631,7 +1631,7 @@ if (iBuffer) {
 #endif
 			}
 		glNormal3f (0, 0, 0);
-		glDrawArrays (GL_QUADS, 0, iBuffer);
+		OglDrawArrays (GL_QUADS, 0, iBuffer);
 		}
 	else {
 		tParticleVertex *pb;
@@ -1678,7 +1678,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	bmP = bmpParticle [0][nType];
 	particleManager.SetStencil (ogl.StencilOff ());
 	InitBuffer (bLightmaps);
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glClientActiveTexture (GL_TEXTURE0);
 	glDisable (GL_CULL_FACE);
 	glEnable (GL_BLEND);

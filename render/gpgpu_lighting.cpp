@@ -79,7 +79,7 @@ GLuint CGPGPULighting::CreateBuffer (int i)
 ogl.GenTextures (1, &hBuffer);
 if (!hBuffer)
 	return 0;
-glActiveTexture (GL_TEXTURE0 + i);
+ogl.SelectTMU (GL_TEXTURE0 + i);
 glClientActiveTexture (GL_TEXTURE0 + i);
 glEnable (GL_TEXTURE_2D);
 glBindTexture (GL_TEXTURE_2D, hBuffer);
@@ -187,7 +187,7 @@ for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 #endif
 	}
 #if GPGPU_LIGHT_DRAWARRAYS
-glDrawArrays (GL_QUADS, 0, 4);
+OglDrawArrays (GL_QUADS, 0, 4);
 #else
 glBegin (GL_QUADS);
 for (i = 0; i < 4; i++) {
@@ -202,7 +202,7 @@ memset (m_vld.colors, 0, sizeof (m_vld.colors));
 #endif
 #if 0
 for (i = 0; i < VL_SHADER_BUFFERS; i++) {
-	glActiveTexture (GL_TEXTURE0 + i);
+	ogl.SelectTMU (GL_TEXTURE0 + i);
 	glClientActiveTexture (GL_TEXTURE0 + i);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	}
@@ -314,8 +314,8 @@ if (nState == 0) {
 #if GPGPU_LIGHT_DRAWARRAYS
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0 + i);
-		glTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-		glVertexPointer (2, GL_FLOAT, 0, quadCoord);
+		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+		OglVertexPointer (2, GL_FLOAT, 0, quadCoord);
 		}
 #endif
 	if ((j = glGetError ())) {
@@ -378,7 +378,7 @@ else if (nState == 2) {
 	ogl.SetDrawBuffer (GL_BACK, 1);
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 		ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0 + i);
-		glActiveTexture (GL_TEXTURE0 + i);
+		ogl.SelectTMU (GL_TEXTURE0 + i);
 		glBindTexture (GL_TEXTURE_2D, 0);
 		}
 	glDepthMask (1);

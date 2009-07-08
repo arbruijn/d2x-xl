@@ -355,11 +355,14 @@ glBlendFunc (nSrcBlend, nDestBlend);
 
 //------------------------------------------------------------------------------
 
-void COGL::SelectTMU (int nTMU)
+void COGL::SelectTMU (int nTMU, bool bClient)
 {
-glActiveTexture (nTMU);
-glClientActiveTexture (nTMU);
-m_states.nTMU [0] = m_states.nTMU [1] = nTMU - GL_TEXTURE0;
+ogl.SelectTMU (nTMU);
+m_states.nTMU [0] = nTMU - GL_TEXTURE0;
+if (bClient) {
+	glClientActiveTexture (nTMU);
+	m_states.nTMU [1] = m_states.nTMU [0];
+	}
 ClearError (0);
 }
 
@@ -368,7 +371,7 @@ ClearError (0);
 int COGL::EnableClientState (GLuint nState, int nTMU)
 {
 if (nTMU >= 0)
-	SelectTMU (nTMU);
+	SelectTMU (nTMU, true);
 glEnableClientState (nState);
 #if 1 //DBG
 memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
@@ -386,7 +389,7 @@ return glGetError () == 0;
 int COGL::DisableClientState (GLuint nState, int nTMU)
 {
 if (nTMU >= 0)
-	SelectTMU (nTMU);
+	SelectTMU (nTMU, true);
 glDisableClientState (nState);
 m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
 #if 1 //DBG
@@ -400,7 +403,7 @@ return glGetError () == 0;
 int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= 0)
-	SelectTMU (nTMU);
+	SelectTMU (nTMU, true);
 if (bNormals) {
 	if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
 		DisableClientStates (0, 0, 0, -1);
@@ -433,7 +436,7 @@ return EnableClientState (GL_VERTEX_ARRAY, -1);
 void COGL::DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= 0)
-	SelectTMU (nTMU);
+	SelectTMU (nTMU, true);
 if (bNormals)
 	DisableClientState (GL_NORMAL_ARRAY);
 if (bTexCoord)
@@ -1081,7 +1084,7 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 #if FBO_DRAW_BUFFER
 if (OglHaveDrawBuffer ()) {
 	SetDrawBuffer (GL_BACK, 0);
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	if (bAdditive) {
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_ONE, GL_ONE);
@@ -1111,7 +1114,7 @@ GLuint COGL::CreateDepthTexture (int nTMU, int bFBO)
 	GLuint	hBuffer;
 
 if (nTMU > 0)
-	glActiveTexture (nTMU);
+	ogl.SelectTMU (nTMU);
 glEnable (GL_TEXTURE_2D);
 ogl.GenTextures (1, &hBuffer);
 if (glGetError ())
@@ -1148,7 +1151,7 @@ GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 	GLuint	hBuffer;
 
 if (nTMU > 0)
-	glActiveTexture (nTMU);
+	ogl.SelectTMU (nTMU);
 glEnable (GL_TEXTURE_2D);
 ogl.GenTextures (1, &hBuffer);
 if (glGetError ())

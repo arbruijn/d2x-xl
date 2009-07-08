@@ -55,7 +55,7 @@ else
 		glNewList (g3InitTMU [0][bVertexArrays], GL_COMPILE);
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE0);
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [0][bVertexArrays]) {
@@ -78,7 +78,7 @@ else
 		glNewList (g3InitTMU [1][bVertexArrays], GL_COMPILE);
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE1);
-	glActiveTexture (GL_TEXTURE1);
+	ogl.SelectTMU (GL_TEXTURE1);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_MODULATE : GL_DECAL);
 	if (g3InitTMU [1][bVertexArrays]) {
@@ -101,7 +101,7 @@ else
 		glNewList (g3InitTMU [2][bVertexArrays], GL_COMPILE);
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE2);
-	glActiveTexture (GL_TEXTURE2);
+	ogl.SelectTMU (GL_TEXTURE2);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_DECAL : GL_MODULATE);
 	if (g3InitTMU [2][bVertexArrays]) {
@@ -122,7 +122,7 @@ else
 	g3InitTMU [3][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [3][bVertexArrays])
 		glNewList (g3InitTMU [3][bVertexArrays], GL_COMPILE);
-	glActiveTexture (GL_TEXTURE2_ARB);
+	ogl.SelectTMU (GL_TEXTURE2_ARB);
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE2_ARB);
 	glEnable (GL_TEXTURE_2D);
@@ -145,17 +145,17 @@ else
 	g3ExitTMU [bVertexArrays] = glGenLists (1);
 	if (g3ExitTMU [bVertexArrays])
 		glNewList (g3ExitTMU [bVertexArrays], GL_COMPILE);
-	glActiveTexture (GL_TEXTURE2_ARB);
+	ogl.SelectTMU (GL_TEXTURE2_ARB);
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE2_ARB);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
-	glActiveTexture (GL_TEXTURE1);
+	ogl.SelectTMU (GL_TEXTURE1);
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE1);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	if (bVertexArrays)
 		glClientActiveTexture (GL_TEXTURE0);
 	OGL_BINDTEX (0);
@@ -170,7 +170,7 @@ else
 //------------------------------------------------------------------------------
 
 #define	G3_BIND(_tmu,_bmP,_lmP,_bClient) \
-			glActiveTexture (_tmu); \
+			ogl.SelectTMU (_tmu); \
 			if (_bClient) \
 				glClientActiveTexture (_tmu); \
 			if (_bmP) {\

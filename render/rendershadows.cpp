@@ -46,22 +46,22 @@ for (i = 0; i < nVertices; i++) {
 		memcpy (v + i, gameData.render.vertP + p->p3_index, sizeof (CFloatVector));
 	}
 v [nVertices] = v [0];
-glEnableClientState (GL_VERTEX_ARRAY);
-glVertexPointer (3, GL_FLOAT, 0, v);
+ogl.EnableClientState (GL_VERTEX_ARRAY);
+OglVertexPointer (3, GL_FLOAT, 0, v);
 #if DBG_SHADOWS
 if (bShadowTest) {
 	if (bFrontCap)
-		glDrawArrays (GL_LINE_LOOP, 0, nVertices);
+		OglDrawArrays (GL_LINE_LOOP, 0, nVertices);
 	}
 else
 #endif
-glDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
+OglDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
 #if DBG_SHADOWS
 if (!bShadowTest || bShadowVolume)
 #endif
 for (i = 0; i < nVertices; i++)
 	G3RenderShadowVolumeFace (v + i);
-glDisableClientState (GL_VERTEX_ARRAY);
+ogl.DisableClientState (GL_VERTEX_ARRAY);
 #if DBG_SHADOWS
 if (!bShadowTest || bRearCap)
 #endif

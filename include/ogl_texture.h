@@ -13,7 +13,7 @@
 
 //------------------------------------------------------------------------------
 
-#define OglActiveTexture(i,b)	if (b) glClientActiveTexture (i); else glActiveTexture (i)
+#define OglActiveTexture(i,b)	if (b) glClientActiveTexture (i); else ogl.SelectTMU (i)
 
 #define OGL_BINDTEX(_handle)	glBindTexture (GL_TEXTURE_2D, _handle)
 

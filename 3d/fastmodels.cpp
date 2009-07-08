@@ -486,7 +486,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 						bmP = pm->m_textures + nBitmap;
 						}
 					}
-				glActiveTexture (GL_TEXTURE0);
+				ogl.SelectTMU (GL_TEXTURE0);
 				glClientActiveTexture (GL_TEXTURE0);
 				glEnable (GL_TEXTURE_2D);
 				bmP = bmP->Override (-1);
@@ -863,22 +863,22 @@ if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameState
 	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
 if (bUseVBO) {
 	if (!gameStates.render.bCloaked) {
-		glNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * sizeof (CFloatVector3)));
-		glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
-		glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * ((2 * sizeof (CFloatVector3) + sizeof (tRgbaColorf)))));
+		OglNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * sizeof (CFloatVector3)));
+		OglColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
+		OglTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * ((2 * sizeof (CFloatVector3) + sizeof (tRgbaColorf)))));
 		}
-	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
+	OglVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
 	if (pm->m_vboIndexHandle)
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->m_vboIndexHandle);
 	}
 else {
 	if (!gameStates.render.bCloaked) {
-		glTexCoordPointer (2, GL_FLOAT, 0, pm->m_vbTexCoord.Buffer ());
+		OglTexCoordPointer (2, GL_FLOAT, 0, pm->m_vbTexCoord.Buffer ());
 		if (gameOpts->ogl.bObjLighting)
-			glNormalPointer (GL_FLOAT, 0, pm->m_vbNormals.Buffer ());
-		glColorPointer (4, GL_FLOAT, 0, pm->m_vbColor.Buffer ());
+			OglNormalPointer (GL_FLOAT, 0, pm->m_vbNormals.Buffer ());
+		OglColorPointer (4, GL_FLOAT, 0, pm->m_vbColor.Buffer ());
 		}
-	glVertexPointer (3, GL_FLOAT, 0, pm->m_vbVerts.Buffer ());
+	OglVertexPointer (3, GL_FLOAT, 0, pm->m_vbVerts.Buffer ());
 	}
 nGunId = EquippedPlayerGun (objP);
 nBombId = EquippedPlayerBomb (objP);

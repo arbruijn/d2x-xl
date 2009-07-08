@@ -237,10 +237,10 @@ for (i = pso->m_edges.m_nContourEdges, pe = pso->m_edges.m_list.Buffer (); i; pe
 			v [2] += v [1];
 			v [3] += v [0];
 #if !DBG
-			glEnableClientState (GL_VERTEX_ARRAY);
-			glVertexPointer (3, GL_FLOAT, 0, v);
-			glDrawArrays (GL_QUADS, 0, 4);
-			glDisableClientState (GL_VERTEX_ARRAY);
+			ogl.EnableClientState (GL_VERTEX_ARRAY);
+			OglVertexPointer (3, GL_FLOAT, 0, v);
+			OglDrawArrays (GL_QUADS, 0, 4);
+			ogl.DisableClientState (GL_VERTEX_ARRAY);
 #else
 			glVertex3fv (reinterpret_cast<GLfloat*> (v));
 			glVertex3fv (reinterpret_cast<GLfloat*> (v+1));

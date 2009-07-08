@@ -351,7 +351,7 @@ for (i = 0, j = m_nFaceVerts; i < j; i++, pmv++) {
 #if DIRECT_VBO
 if (m_vertBuf [0].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, m_vboDataHandle);
-	glEnableClientState (GL_VERTEX_ARRAY);
+	ogl.EnableClientState (GL_VERTEX_ARRAY);
 	glBufferDataARB (GL_ARRAY_BUFFER, m_nFaceVerts * sizeof (CRenderVertex), reinterpret_cast<void*> (m_vertBuf [0].Buffer ()), GL_STATIC_DRAW_ARB);
 	int i = glGetError ();
 #else
@@ -364,7 +364,7 @@ if (m_vertBuf [1].Buffer ()) { // points to graphics driver buffer for VBO based
 #if DIRECT_VBO
 if (m_index [0].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
-	glEnableClientState (GL_VERTEX_ARRAY);
+	ogl.EnableClientState (GL_VERTEX_ARRAY);
 	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), reinterpret_cast<void*> (m_index [0].Buffer ()), GL_STATIC_DRAW_ARB);
 	int i = glGetError ();
 #else

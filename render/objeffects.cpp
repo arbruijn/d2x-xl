@@ -426,8 +426,8 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	glDisable (GL_TEXTURE_2D);
 #if 1
 	if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0))) {
-		glVertexPointer (4, GL_FLOAT, 0, fVerts);
-		glDrawArrays (GL_QUADS, 0, 4);
+		OglVertexPointer (4, GL_FLOAT, 0, fVerts);
+		OglDrawArrays (GL_QUADS, 0, 4);
 		}
 	else {
 		glBegin (GL_QUADS);
@@ -448,9 +448,9 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	fVerts [1][X] = fVerts [2][X] = fPos [X] + w;
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
 	if (bDrawArrays) {
-		glVertexPointer (4, GL_FLOAT, 0, fVerts);
-		glDrawArrays (GL_LINE_LOOP, 0, 4);
-		glDisableClientState (GL_VERTEX_ARRAY);
+		OglVertexPointer (4, GL_FLOAT, 0, fVerts);
+		OglDrawArrays (GL_LINE_LOOP, 0, 4);
+		ogl.DisableClientState (GL_VERTEX_ARRAY);
 		}
 	else {
 		glBegin (GL_LINE_LOOP);
@@ -512,7 +512,7 @@ r2 = r / 4;
 glDisable (GL_CULL_FACE);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 bVertexArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
-glActiveTexture (GL_TEXTURE0);
+ogl.SelectTMU (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
 glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
@@ -547,7 +547,7 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVerts [1][Y] = +r;
 	fVerts [2][Y] = +r - r2;
 	if (bVertexArrays)
-		glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), rotVerts);
+		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), rotVerts);
 	for (j = 0; j < 4; j++) {
 		for (i = 0; i < 3; i++) {
 			rotVerts [i] = mRot * fVerts [i];
@@ -557,7 +557,7 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 		if (bMarker)
 			glLineWidth (2);
 		if (bVertexArrays)
-			glDrawArrays (bMarker ? GL_LINE_LOOP : GL_TRIANGLES, 0, 3);
+			OglDrawArrays (bMarker ? GL_LINE_LOOP : GL_TRIANGLES, 0, 3);
 		else {
 			glBegin (bMarker ? GL_LINE_LOOP : GL_TRIANGLES);
 			for (h = 0; h < 3; h++)
@@ -584,7 +584,7 @@ else {
 	fVerts [0][X] = fPos [X] - r2;
 	fVerts [1][X] = fPos [X] + r2;
 	fVerts [2][X] = fPos [X];
-	glVertexPointer (4, GL_FLOAT, 0, fVerts);
+	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	nTgtInd = extraGameInfo [IsMultiGame].bTargetIndicators;
 	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) | (objP->Damage () < 1);
 	if (!nTgtInd ||
@@ -593,25 +593,25 @@ else {
 		fVerts [0][Y] =
 		fVerts [1][Y] = fPos [Y] + r;
 		fVerts [2][Y] = fPos [Y] + r - r2;
-		glDrawArrays (GL_TRIANGLES, 0, 3);
+		OglDrawArrays (GL_TRIANGLES, 0, 3);
 		}
 	fVerts [0][Y] =
 	fVerts [1][Y] = fPos [Y] - r;
 	fVerts [2][Y] = fPos [Y] - r + r2;
-	glDrawArrays (GL_TRIANGLES, 0, 3);
+	OglDrawArrays (GL_TRIANGLES, 0, 3);
 	fVerts [0][X] =
 	fVerts [1][X] = fPos [X] + r;
 	fVerts [2][X] = fPos [X] + r - r2;
 	fVerts [0][Y] = fPos [Y] + r2;
 	fVerts [1][Y] = fPos [Y] - r2;
 	fVerts [2][Y] = fPos [Y];
-	glDrawArrays (GL_TRIANGLES, 0, 3);
+	OOglDrawArrays (GL_TRIANGLES, 0, 3);
 	fVerts [0][X] =
 	fVerts [1][X] = fPos [X] - r;
 	fVerts [2][X] = fPos [X] - r + r2;
-	glDrawArrays (GL_TRIANGLES, 0, 3);
+	OglDrawArrays (GL_TRIANGLES, 0, 3);
 	}
-glDisableClientState (GL_VERTEX_ARRAY);
+ogl.DisableClientState (GL_VERTEX_ARRAY);
 glEnable (GL_CULL_FACE);
 }
 
@@ -667,7 +667,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	r = X2F (objP->info.xSize);
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
 	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
-	glVertexPointer (4, GL_FLOAT, 0, fVerts);
+	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
 		r2 = r * 2 / 3;
 		fVerts [0][X] = fVerts [3][X] = fPos [X] - r2;
@@ -679,7 +679,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [2][Z] =
 		fVerts [3][Z] = fPos [Z];
 		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
-			glDrawArrays (GL_LINE_STRIP, 0, 4);
+			OglDrawArrays (GL_LINE_STRIP, 0, 4);
 		else {
 			glBegin (GL_LINE_STRIP);
 			for (i = 0; i < 4; i++)
@@ -689,8 +689,8 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [0][X] = fVerts [3][X] = fPos [X] + r2;
 		fVerts [1][X] = fVerts [2][X] = fPos [X] + r;
 		if (bDrawArrays) {
-			glDrawArrays (GL_LINE_STRIP, 0, 4);
-			glDisableClientState (GL_VERTEX_ARRAY);
+			OglDrawArrays (GL_LINE_STRIP, 0, 4);
+			ogl.DisableClientState (GL_VERTEX_ARRAY);
 			}
 		else {
 			glBegin (GL_LINE_STRIP);
@@ -710,7 +710,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [1][Z] =
 		fVerts [2][Z] = fPos [Z];
 		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
-			glDrawArrays (GL_LINE_LOOP, 0, 3);
+			OglDrawArrays (GL_LINE_LOOP, 0, 3);
 		else {
 			glBegin (GL_LINE_LOOP);
 			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts));
@@ -732,8 +732,8 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			}
 		glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 		if (bDrawArrays) {
-			glDrawArrays (GL_TRIANGLES, 0, 3);
-			glDisableClientState (GL_VERTEX_ARRAY);
+			OglDrawArrays (GL_TRIANGLES, 0, 3);
+			ogl.DisableClientState (GL_VERTEX_ARRAY);
 			}
 		else {
 			glBegin (GL_TRIANGLES);
@@ -1362,9 +1362,9 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		if ((bDrawArrays = ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))) {
-			glTexCoordPointer (2, GL_FLOAT, 0, tcCorona);
-			glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vCorona);
-			glDrawArrays (GL_QUADS, 0, 4);
+			OglTexCoordPointer (2, GL_FLOAT, 0, tcCorona);
+			OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vCorona);
+			OglDrawArrays (GL_QUADS, 0, 4);
 			ogl.DisableClientStates (1, 0, 0, -1);
 			}
 		else {
@@ -1834,12 +1834,12 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				return;
 			bmP->Texture ()->Wrap (GL_CLAMP);
 			if (bDrawArrays) {
-				glTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
-				glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vTrailVerts);
-				glDrawArrays (GL_QUADS, 0, 4);
+				OglTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
+				OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vTrailVerts);
+				OglDrawArrays (GL_QUADS, 0, 4);
 #if 0 // render outline
 				glDisable (GL_TEXTURE_2D);
-				glDrawArrays (GL_LINE_LOOP, 0, 4);
+				OglDrawArrays (GL_LINE_LOOP, 0, 4);
 #endif
 				ogl.DisableClientStates (1, 0, 0, -1);
 				}

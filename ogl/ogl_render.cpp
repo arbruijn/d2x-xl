@@ -167,8 +167,8 @@ else {
 	if (sinCosP) {
 #if 1
 		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
-		glVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (sinCosP));
-		glDrawArrays (nType, 0, nSides);
+		OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (sinCosP));
+		OglDrawArrays (nType, 0, nSides);
 		ogl.DisableClientStates (0, 0, 0, GL_TEXTURE0);
 #else
 		for (i = 0; i < nSides; i++, sinCosP++)
@@ -595,7 +595,7 @@ if (bShaderMerge) {
 	}
 else if (!bDepthSort) {
 	if (bmBot == gameData.endLevel.satellite.bmP) {
-		glActiveTexture (GL_TEXTURE0);
+		ogl.SelectTMU (GL_TEXTURE0);
 		glEnable (GL_TEXTURE_2D);
 		}
 	else
@@ -672,24 +672,24 @@ if (bVertexArrays) {
 		bVertexArrays = 0;
 		goto retry;
 		}
-	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
-//	glIndexPointer (GL_INT, 0, colorIndex);
-	glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [0]);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
+//	OglIndexPointer (GL_INT, 0, colorIndex);
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [0]);
 	if (bLight)
-		glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
+		OglColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 	if (bmTop && !bOverlay) {
 		if (!ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
 			ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
 			bVertexArrays = 0;
 			goto retry;
 			}
-		glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
+		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
 		if (bLight)
-			glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
-//		glIndexPointer (GL_INT, 0, colorIndex);
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [1]);
+			OglColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
+//		OglIndexPointer (GL_INT, 0, colorIndex);
+		OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [1]);
 		}
-	glDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
+	OglDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
 	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
 	if (bmTop && !bOverlay)
 		ogl.DisableClientStates (GL_TEXTURE1);
@@ -959,7 +959,7 @@ else {
 glDepthFunc (GL_LEQUAL);
 bmP = bmP->Override (-1);
 if (bmP == gameData.endLevel.satellite.bmP) {
-	glActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	}
 else
@@ -1131,20 +1131,20 @@ if (bmP) {
 	}
 if (bVertexArrays) {
 	if (texCoordP)
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
+		OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
 	if (colorP) {
 		if (nColors == nVertices)
-			glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
+			OglColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
 		else
 			glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 		}
-	glVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
-	glDrawArrays (nPrimitive, 0, nVertices);
-	glDisableClientState (GL_VERTEX_ARRAY);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
+	OglDrawArrays (nPrimitive, 0, nVertices);
+	ogl.DisableClientState (GL_VERTEX_ARRAY);
 	if (texCoordP)
-		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
 	if (colorP)
-		glDisableClientState (GL_COLOR_ARRAY);
+		ogl.DisableClientState (GL_COLOR_ARRAY);
 	}
 else {
 	int i = nVertices;
