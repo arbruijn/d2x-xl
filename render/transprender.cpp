@@ -580,8 +580,7 @@ return Add (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
 
 void CTransparencyRenderer::EnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU)
 {
-ogl.SelectTMU (nTMU);
-glClientActiveTexture (nTMU);
+ogl.SelectTMU (nTMU, true);
 if ((bDecal < 1) && (bColor != m_data.bClientColor)) {
 	if ((m_data.bClientColor = bColor))
 		ogl.EnableClientState (GL_COLOR_ARRAY);
@@ -607,8 +606,7 @@ void CTransparencyRenderer::DisableClientState (int nTMU, char bDecal, char bFul
 if (nTMU == GL_TEXTURE0)
 	nTMU = nTMU;
 #endif
-ogl.SelectTMU (nTMU);
-glClientActiveTexture (nTMU);
+ogl.SelectTMU (nTMU, true);
 ogl.ClearError (0);
 if (bFull) {
 	if (bDecal) {
@@ -656,8 +654,7 @@ int CTransparencyRenderer::SetClientState (char bClientState, char bTexCoord, ch
 PROF_START
 #if 1
 if (m_data.bUseLightmaps != bUseLightmaps) {
-	ogl.SelectTMU (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.ClearError (0);
 	if (bUseLightmaps) {
 		glEnable (GL_TEXTURE_2D);
@@ -687,8 +684,7 @@ if (m_data.bUseLightmaps != bUseLightmaps) {
 #if 0
 if (m_data.bClientState == bClientState) {
 	if (bClientState) {
-		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps);
-		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps);
+		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps, true);
 		if (m_data.bClientColor != bColor) {
 			if ((m_data.bClientColor = bColor))
 				ogl.EnableClientState (GL_COLOR_ARRAY);
@@ -777,9 +773,7 @@ int CTransparencyRenderer::LoadImage (CBitmap *bmP, char nColors, char nFrame, i
 if (bmP) {
 	glEnable (GL_TEXTURE_2D);
 	if (bDecal || SetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (m_data.bTextured < 1)) {
-		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps + bDecal);
-		glClientActiveTexture (GL_TEXTURE0 + bUseLightmaps + bDecal);
-		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps + bDecal, true);
 		m_data.bTextured = 1;
 		}
 	if (bDecal == 1)
@@ -1285,8 +1279,7 @@ if (item->nType == riSphereShield)
 if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 ResetBitmaps ();
-ogl.SelectTMU (GL_TEXTURE0); // + m_data.bLightmaps);
-glClientActiveTexture (GL_TEXTURE0); // + m_data.bLightmaps);
+ogl.SelectTMU (GL_TEXTURE0, true);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

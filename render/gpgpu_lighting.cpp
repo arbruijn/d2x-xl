@@ -79,8 +79,7 @@ GLuint CGPGPULighting::CreateBuffer (int i)
 ogl.GenTextures (1, &hBuffer);
 if (!hBuffer)
 	return 0;
-ogl.SelectTMU (GL_TEXTURE0 + i);
-glClientActiveTexture (GL_TEXTURE0 + i);
+ogl.SelectTMU (GL_TEXTURE0 + i, true);
 glEnable (GL_TEXTURE_2D);
 glBindTexture (GL_TEXTURE_2D, hBuffer);
 // set up texture parameters, turn off filtering
@@ -202,8 +201,7 @@ memset (m_vld.colors, 0, sizeof (m_vld.colors));
 #endif
 #if 0
 for (i = 0; i < VL_SHADER_BUFFERS; i++) {
-	ogl.SelectTMU (GL_TEXTURE0 + i);
-	glClientActiveTexture (GL_TEXTURE0 + i);
+	ogl.SelectTMU (GL_TEXTURE0 + i, true);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	}
 #endif

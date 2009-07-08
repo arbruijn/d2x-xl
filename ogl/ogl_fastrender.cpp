@@ -256,8 +256,7 @@ if (bTextured) {
 		 {INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);}
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE1);
-			glClientActiveTexture (GL_TEXTURE1);
+			ogl.SelectTMU (GL_TEXTURE1, true);
 			OGL_BINDTEX (0);
 			mask = NULL;
 			}
@@ -267,12 +266,11 @@ if (bTextured) {
 		bStateChange = true;
 		gameStates.render.history.bmMask = mask;
 		if (mask) {
-		 {INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), 2, 0);}
+			{INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), 2, 0);}
 			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE2);
-			glClientActiveTexture (GL_TEXTURE2);
+			ogl.SelectTMU (GL_TEXTURE2, true);
 			OGL_BINDTEX (0);
 			bColorKey = 0;
 			}
@@ -289,8 +287,7 @@ if (bTextured) {
 	}
 else {
 	gameStates.render.history.bmBot = NULL;
-	ogl.SelectTMU (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	}
@@ -318,8 +315,7 @@ if (bTextured) {
 			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightmapManager.Buffer (), 1, 0);}
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE2);
-			glClientActiveTexture (GL_TEXTURE2);
+			ogl.SelectTMU (GL_TEXTURE2, true);
 			OGL_BINDTEX (0);
 			mask = NULL;
 			}
@@ -334,8 +330,7 @@ if (bTextured) {
 			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE3);
-			glClientActiveTexture (GL_TEXTURE3);
+			ogl.SelectTMU (GL_TEXTURE3, true);
 			OGL_BINDTEX (0);
 			bColorKey = 0;
 			}
@@ -348,8 +343,7 @@ if (bTextured) {
 	}
 else {
 	gameStates.render.history.bmBot = NULL;
-	ogl.SelectTMU (GL_TEXTURE1);
-	glClientActiveTexture (GL_TEXTURE1);
+	ogl.SelectTMU (GL_TEXTURE1, true);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	}

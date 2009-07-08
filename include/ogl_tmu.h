@@ -202,9 +202,7 @@ else
 //------------------------------------------------------------------------------
 
 #define	G3_BIND(_tmu,_bmP,_lmP,_bClient) \
-			ogl.SelectTMU (_tmu); \
-			if (_bClient) \
-				glClientActiveTexture (_tmu); \
+			ogl.SelectTMU (_tmu, _bClient != 0); \
 			if (_bmP) {\
 				if ((_bmP)->Bind (1)) \
 					return 1; \

@@ -469,8 +469,7 @@ if (bmP && (bmP == bmpShield)) {
 	}
 #endif
 if (bmP) {
-	ogl.SelectTMU (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	glEnable (GL_TEXTURE_2D);
 	if (bmP->Bind (1))
 		bmP = NULL;

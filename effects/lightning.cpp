@@ -1051,8 +1051,7 @@ int CLightning::SetupPlasma (void)
 {
 if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
-ogl.SelectTMU (GL_TEXTURE0);
-glClientActiveTexture (GL_TEXTURE0);
+ogl.SelectTMU (GL_TEXTURE0, true);
 glEnable (GL_TEXTURE_2D);
 if (LoadCorona () && !bmpCorona->Bind (1)) {
 	bmpCorona->Texture ()->Wrap (GL_CLAMP);

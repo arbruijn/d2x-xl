@@ -486,8 +486,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 						bmP = pm->m_textures + nBitmap;
 						}
 					}
-				ogl.SelectTMU (GL_TEXTURE0);
-				glClientActiveTexture (GL_TEXTURE0);
+				ogl.SelectTMU (GL_TEXTURE0, true);
 				glEnable (GL_TEXTURE_2D);
 				bmP = bmP->Override (-1);
 				if (bmP->Frames ())
