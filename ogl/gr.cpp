@@ -274,7 +274,7 @@ InitGammaRamp ();
 //atexit(GrClose);
 /***/PrintLog ("   initializing OpenGL extensions\n");
 ogl.SetRenderQuality ();
-OglInitExtensions ();
+ogl.InitExtensions ();
 ogl.DestroyDrawBuffer ();
 ogl.CreateDrawBuffer ();
 ogl.SetDrawBuffer (GL_BACK, 1);

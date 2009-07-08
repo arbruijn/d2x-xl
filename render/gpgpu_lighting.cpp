@@ -76,7 +76,7 @@ GLuint CGPGPULighting::CreateBuffer (int i)
 	GLuint	hBuffer;
 
 //create render texture
-OglGenTextures (1, &hBuffer);
+ogl.GenTextures (1, &hBuffer);
 if (!hBuffer)
 	return 0;
 glActiveTexture (GL_TEXTURE0 + i);
@@ -207,7 +207,7 @@ for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 	glBindTexture (GL_TEXTURE_2D, 0);
 	}
 #endif
-OglDeleteTextures (VL_SHADER_BUFFERS, hBuffer);
+ogl.DeleteTextures (VL_SHADER_BUFFERS, hBuffer);
 memset (hBuffer, 0, sizeof (hBuffer));
 ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
 glReadPixels (0, 0, GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH, GL_RGBA, GL_FLOAT, m_vld.colors);

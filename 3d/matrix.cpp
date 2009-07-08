@@ -49,7 +49,7 @@ transformation.m_info.view [0] = mOrient;
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 ScaleMatrix (bOglScale);
 CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);
-OglSetFOV ();
+ogl.SetFOV ();
 }
 
 //------------------------------------------------------------------------------

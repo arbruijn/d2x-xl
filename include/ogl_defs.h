@@ -259,8 +259,6 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #define OGL_TEXENV(p,m) OGL_SETSTATE(p,m,glTexEnvi(GL_TEXTURE_ENV, p,m));
 #define OGL_TEXPARAM(p,m) OGL_SETSTATE(p,m,glTexParameteri(GL_TEXTURE_2D,p,m));
 
-void OglInitExtensions (void);
-
 //------------------------------------------------------------------------------
 
 extern const char *pszOglExtensions;

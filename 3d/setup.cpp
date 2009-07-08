@@ -57,10 +57,9 @@ if (RENDERPATH)
 
 //------------------------------------------------------------------------------
 //this doesn't do anything, but is here for completeness
-void G3EndFrame(void)
+void G3EndFrame (void)
 {
-OglEndFrame();
-//	Assert(nFreePoints==0);
+ogl.EndFrame();
 nFreePoints = 0;
 }
 

@@ -73,7 +73,7 @@ void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 #if 0
 if (!gameStates.app.bGameRunning)
-	OglSetDrawBuffer (GL_FRONT, 0);
+	ogl.SetDrawBuffer (GL_FRONT, 0);
 #endif
 CCanvas::SetCurrent (backgroundManager.Canvas (1));
 FadeIn ();

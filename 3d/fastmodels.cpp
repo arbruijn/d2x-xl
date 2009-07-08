@@ -601,7 +601,7 @@ if (bLighting) {
 	nLights = sliP->nActive;
 	if (nLights > gameStates.render.nMaxLightsPerObject)
 		nLights = gameStates.render.nMaxLightsPerObject;
-	OglEnableLighting (0);
+	ogl.EnableLighting (0);
 	}
 else
 	nLights = 1;
@@ -713,7 +713,7 @@ if (!nLightRange && nLights)
 	nLights = 0;
 #endif
 if (bLighting) {
-	OglDisableLighting ();
+	ogl.DisableLighting ();
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (1);
 	}

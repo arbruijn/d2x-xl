@@ -246,7 +246,7 @@ return 1;
 void CCamera::Destroy (void)
 {
 m_info.buffer.ReleaseTexture ();
-OglDeleteTextures (1, &m_info.glTexId);
+ogl.DeleteTextures (1, &m_info.glTexId);
 if (m_info.screenBuf && (m_info.screenBuf != m_info.buffer.Buffer ())) {
 	delete m_info.screenBuf;
 	m_info.screenBuf = NULL;

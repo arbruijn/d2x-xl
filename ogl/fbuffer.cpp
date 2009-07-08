@@ -100,7 +100,7 @@ if (nWidth > 0)
 	m_info.nWidth = nWidth;
 if (nHeight > 0)
 	m_info.nHeight = nHeight;
-OglGenTextures (1, &m_info.hRenderBuffer);
+ogl.GenTextures (1, &m_info.hRenderBuffer);
 if (nType == 2) { //GPGPU
 	glBindTexture (GL_TEXTURE_2D, m_info.hRenderBuffer);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -170,13 +170,13 @@ if (!ogl.m_states.bRender2TextureOk)
 	return;
 if (m_info.hFBO) {
 	if (m_info.hRenderBuffer) {
-		OglDeleteTextures (1, &m_info.hRenderBuffer);
+		ogl.DeleteTextures (1, &m_info.hRenderBuffer);
 		m_info.hRenderBuffer = 0;
 		}
 	if (m_info.hDepthBuffer) {
 #if 1
 		if (m_info.nType == 1) {
-			OglDeleteTextures (1, &m_info.hDepthBuffer);
+			ogl.DeleteTextures (1, &m_info.hDepthBuffer);
 #if FBO_STENCIL_BUFFER
 			glDeleteRenderbuffersEXT (1, &m_info.hStencilBuffer);
 			m_info.hStencilBuffer = 0;

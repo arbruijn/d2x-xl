@@ -55,7 +55,7 @@ switch (gameOpts->render.coronas.nStyle) {
 void DestroyGlareDepthTexture (void)
 {
 if (ogl.m_states.hDepthBuffer) {
-	OglDeleteTextures (1, &ogl.m_states.hDepthBuffer);
+	ogl.DeleteTextures (1, &ogl.m_states.hDepthBuffer);
 	ogl.m_states.hDepthBuffer = 0;
 	}
 }

@@ -178,7 +178,7 @@ class COGL {
 		~COGL () { Destroy (); }
 
 		void Initialize (void);
-		void Destroy (void);
+		void Destroy (void) {}
 
 		void InitExtensions (void);
 		void InitMultiTexturing (void);
@@ -224,6 +224,9 @@ class COGL {
 #if DBG
 		void GenTextures (GLsizei n, GLuint *hTextures);
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
+#else
+		inline void GenTextures (GLsizei n, GLuint *hTextures) { glGenTextures (n, hTextures); }
+		inline void DeleteTextures (GLsizei n, GLuint *hTextures) { glDeleteTextures (n, hTextures); }
 #endif
 
 		inline void ClearError (int bTrapError) {
@@ -280,16 +283,6 @@ if (gameStates.render.bRearView /*&& (gameStates.render.nWindow != 0)*/)
 else
 	glCullFace (bFront ? GL_FRONT : GL_BACK);
 }
-
-//------------------------------------------------------------------------------
-
-#if DBG
-void OglGenTextures (GLsizei n, GLuint *hTextures);
-void OglDeleteTextures (GLsizei n, GLuint *hTextures);
-#else
-#	define OglGenTextures glGenTextures
-#	define OglDeleteTextures glDeleteTextures
-#endif
 
 //------------------------------------------------------------------------------
 

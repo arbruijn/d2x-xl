@@ -34,6 +34,7 @@
 #include "lightmap.h"
 #include "texmerge.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
@@ -218,7 +219,7 @@ if (progP && *progP) {
 //------------------------------------------------------------------------------
 
 int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP,
-		const char *fsName, const char *vsName, int bFromFile)
+							 const char *fsName, const char *vsName, int bFromFile)
 {
 	GLhandleARB	fs, vs;
 	GLint bFragCompiled, bVertCompiled;
@@ -352,7 +353,7 @@ LinkShaderProg (NULL);
 
 //------------------------------------------------------------------------------
 
-void OglInitShaders (void)
+void COGL::InitShaders (void)
 {
 PrintLog ("Checking shaders ...\n");
 ogl.m_states.bShadersOk = 0;

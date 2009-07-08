@@ -96,7 +96,7 @@ int CLightmapManager::Bind (int nLightmap)
 
 if (lmP->handle)
 	return 1;
-OglGenTextures (1, &lmP->handle);
+ogl.GenTextures (1, &lmP->handle);
 if (!lmP->handle) {
 #if 0//DBG
 	nError = glGetError ();
@@ -140,7 +140,7 @@ if (m_list.buffers.Buffer ()) {
 	tLightmapBuffer *lmP = &m_list.buffers [0];
 	for (int i = m_list.nBuffers; i; i--, lmP++)
 		if (lmP->handle) {
-			OglDeleteTextures (1, reinterpret_cast<GLuint*> (&lmP->handle));
+			ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&lmP->handle));
 			lmP->handle = 0;
 			}
 	} 

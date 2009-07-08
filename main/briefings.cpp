@@ -1330,7 +1330,7 @@ int CBriefing::ShowMessage (int nScreen, char* message, int nLevel)
 m_info.Setup (message, nLevel, nScreen);
 
 if (gameStates.app.bNostalgia)
-	OglSetDrawBuffer (GL_FRONT, 0);
+	ogl.SetDrawBuffer (GL_FRONT, 0);
 
 m_info.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
 							 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
@@ -1615,7 +1615,7 @@ if (!*fnBriefing) {
 	}
 
 if (gameStates.app.bNostalgia)
-	OglSetDrawBuffer (GL_FRONT, 0);
+	ogl.SetDrawBuffer (GL_FRONT, 0);
 
 if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.missions.nD1BuiltinMission)) {
 	FILE	*fp;
@@ -1674,7 +1674,7 @@ gameStates.render.bBriefing = 0;
 m_info.briefingText.Destroy ();
 KeyFlush ();
 if (gameStates.app.bNostalgia)
-	OglSetDrawBuffer (GL_BACK, 0);
+	ogl.SetDrawBuffer (GL_BACK, 0);
 backgroundManager.Redraw (true);
 }
 

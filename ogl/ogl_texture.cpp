@@ -290,7 +290,7 @@ if (m_info.handle && (m_info.handle != GLuint (-1))) {
 	else if (!m_info.bRenderBuffer)
 		TextureError ();
 #endif
-	OglDeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
+	ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 	m_info.handle = 0;
 #if 1
 	if (m_info.bmP)
@@ -873,7 +873,7 @@ GLuint CTexture::Create (int w, int h)
 if (!data)
 	return 0;
 memset (data, 0, nSize);
-OglGenTextures (1, &m_info.handle);
+ogl.GenTextures (1, &m_info.handle);
 if (!m_info.handle) {
 	ogl.ClearError (0);
 	return 0;
@@ -958,7 +958,7 @@ int CTexture::Load (ubyte* buffer)
 {
 if (!buffer)
 	return 1;
-OglGenTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
+ogl.GenTextures (1, reinterpret_cast<GLuint*> (&m_info.handle));
 if (!m_info.handle) {
 	ogl.ClearError (0);
 	return 1;

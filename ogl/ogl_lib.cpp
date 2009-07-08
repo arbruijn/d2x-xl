@@ -1109,7 +1109,7 @@ GLuint COGL::CreateDepthTexture (int nTMU, int bFBO)
 if (nTMU > 0)
 	glActiveTexture (nTMU);
 glEnable (GL_TEXTURE_2D);
-OglGenTextures (1, &hBuffer);
+ogl.GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hBuffer = 0;
 glBindTexture (GL_TEXTURE_2D, hBuffer);
@@ -1117,7 +1117,7 @@ glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_states.nCurWidth, m_states.nCurHeight,
 				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
 if (glGetError ()) {
-	OglDeleteTextures (1, &hBuffer);
+	ogl.DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;
 	}
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -1129,7 +1129,7 @@ if (!bFBO) {
 	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 	}
 if (glGetError ()) {
-	OglDeleteTextures (1, &hBuffer);
+	ogl.DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;
 	}
 return hBuffer;
@@ -1146,7 +1146,7 @@ GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 if (nTMU > 0)
 	glActiveTexture (nTMU);
 glEnable (GL_TEXTURE_2D);
-OglGenTextures (1, &hBuffer);
+ogl.GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;
 glBindTexture (GL_TEXTURE_2D, hBuffer);
@@ -1158,7 +1158,7 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 if (glGetError ()) {
-	OglDeleteTextures (1, &hBuffer);
+	ogl.DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;
 	}
 return hBuffer;

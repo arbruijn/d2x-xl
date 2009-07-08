@@ -57,7 +57,7 @@ memset (pg, 0xff, 256 * sizeof (*pg));
 
 //------------------------------------------------------------------------------
 
-int OglSetBrightnessInternal (void)
+int SdlGlSetBrightnessInternal (void)
 {
 return SDL_SetGammaRamp ((Uint16*) (gammaRamp + paletteManager.RedEffect () * 4),
 	                      (Uint16*) (gammaRamp + paletteManager.GreenEffect () * 4),
@@ -66,7 +66,7 @@ return SDL_SetGammaRamp ((Uint16*) (gammaRamp + paletteManager.RedEffect () * 4)
 
 //------------------------------------------------------------------------------
 
-int OglVideoModeOK (int w, int h)
+int SdlGlVideoModeOK (int w, int h)
 {
 int nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
 PrintLog ("SDL suggests %d bits/pixel\n", nColorBits);
@@ -154,7 +154,7 @@ if (!IrrInit (w, h, (bool) ogl.m_states.bFullScreen))
 SDL_putenv ("SDL_VIDEO_CENTERED=1");
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, ogl.m_states.nColorBits, ogl.m_states.bFullScreen ? "fullscreen" : "windowed");
-if (!OglVideoModeOK (w, h) ||
+if (!SdlGlVideoModeOK (w, h) ||
 	 !SDL_SetVideoMode (w, h, ogl.m_states.nColorBits, SDL_VIDEO_FLAGS)) {
 	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, ogl.m_states.nColorBits);
 	return 0;

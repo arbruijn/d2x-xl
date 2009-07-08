@@ -825,8 +825,6 @@ ogl.m_data.nHeadlights = nLights;
 
 //------------------------------------------------------------------------------
 
-extern int nOglTransformCalls;
-
 int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP)
 {
 	int			h, i, nShader, bTransform;
@@ -850,7 +848,7 @@ if (nShader != gameStates.render.history.nShader) {
 		}
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
 	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
-	if ((bTransform = !nOglTransformCalls))
+	if ((bTransform = !ogl.m_states.nTransformCalls))
 		ogl.SetupTransform (1);
 	for (h = i = 0; i < MAX_PLAYERS; i++) {
 		if (lightIds [i] >= 0) {
