@@ -373,7 +373,7 @@ int COGL::EnableClientState (GLuint nState, int nTMU)
 if (nTMU >= 0)
 	SelectTMU (nTMU, true);
 glEnableClientState (nState);
-#if 1 //DBG
+#if DBG_OGL
 memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 if (!glGetError ()) {
@@ -392,7 +392,7 @@ if (nTMU >= 0)
 	SelectTMU (nTMU, true);
 glDisableClientState (nState);
 m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
-#if 1 //DBG
+#if DBG_OGL
 memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 return glGetError () == 0;
@@ -1082,7 +1082,7 @@ glReadBuffer (nBuffer);
 void COGL::FlushDrawBuffer (bool bAdditive)
 {
 #if FBO_DRAW_BUFFER
-if (OglHaveDrawBuffer ()) {
+if (ogl.HaveDrawBuffer ()) {
 	SetDrawBuffer (GL_BACK, 0);
 	ogl.SelectTMU (GL_TEXTURE0);
 	if (bAdditive) {

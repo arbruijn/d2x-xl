@@ -10,6 +10,8 @@
 #include "descent.h"
 #include "vecmat.h"
 
+#define DBG_OGL	1
+
 //------------------------------------------------------------------------------
 
 extern GLuint hBigSphere;
@@ -82,7 +84,7 @@ class COglData {
 };
 
 
-#if DBG
+#if DBG_OGL
 
 typedef struct tClientBuffer {
 	const GLvoid*	buffer;
@@ -171,7 +173,7 @@ class COglStates {
 
 		int	nTMU [2];	//active driver and client TMUs
 		int	clientStates [4][6];	// client states for the first 4 TMUs
-#if DBG
+#if DBG_OGL
 		tClientBuffer	clientBuffers [4][6];
 #endif
 
@@ -234,7 +236,7 @@ class COGL {
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 
-#if DBG
+#if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
 		void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
 		void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
@@ -273,6 +275,10 @@ class COGL {
 		inline int SetTransform (int bUseTransform) { m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }
 
+		inline int HaveDrawBuffer (void) {
+			return m_states.bRender2TextureOk && m_data.drawBuffer.Handle () && m_states.bDrawBufferActive;
+			}
+
 		int StencilOff (void);
 		void StencilOn (int bStencil);
 };
@@ -281,7 +287,7 @@ extern COGL ogl;
 
 //------------------------------------------------------------------------------
 
-#if 1 //DBG
+#if DBG_OGL
 #define	OglDrawArrays(mode, first, count)					ogl.DrawArrays (mode, first, count)
 #define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
@@ -294,13 +300,6 @@ extern COGL ogl;
 #define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
 #define	OglNormalPointer(type, stride, pointer)			glNormalPointer (type, stride, pointer, __FILE__, __LINE__)
 #endif
-
-//------------------------------------------------------------------------------
-
-static inline int OglHaveDrawBuffer (void)
-{
-return ogl.m_states.bRender2TextureOk && ogl.m_data.drawBuffer.Handle () && ogl.m_states.bDrawBufferActive;
-}
 
 //------------------------------------------------------------------------------
 
