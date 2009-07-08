@@ -138,7 +138,7 @@ else
 static inline void InitTMU3 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
-	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
+	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #else

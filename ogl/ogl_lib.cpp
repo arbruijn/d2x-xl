@@ -380,7 +380,7 @@ if (!glGetError ()) {
 	m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 1;
 	return 1;
 	}
-DisableClientState (nState, nTMU);
+DisableClientState (nState, -1);
 return glGetError () == 0;
 }
 
@@ -404,30 +404,30 @@ int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= 0)
 	SelectTMU (nTMU, true);
-if (bNormals) {
+if (!bNormals) 
+	DisableClientState (GL_NORMAL_ARRAY);
+else {
 	if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
 		DisableClientStates (0, 0, 0, -1);
 		return 0;
 		}
 	}
-else
-	DisableClientState (GL_NORMAL_ARRAY);
-if (bTexCoord) {
+if (!bTexCoord) 
+	DisableClientState (GL_TEXTURE_COORD_ARRAY);
+else {
 	if (!EnableClientState (GL_TEXTURE_COORD_ARRAY, -1)) {
 		DisableClientStates (0, 0, 0, -1);
 		return 0;
 		}
 	}
-else
-	DisableClientState (GL_TEXTURE_COORD_ARRAY);
-if (bColor) {
+if (!bColor) 
+	DisableClientState (GL_COLOR_ARRAY);
+else {
 	if (!EnableClientState (GL_COLOR_ARRAY, -1)) {
 		DisableClientStates (bTexCoord, 0, 0, -1);
 		return 0;
 		}
 	}
-else
-	DisableClientState (GL_COLOR_ARRAY);
 return EnableClientState (GL_VERTEX_ARRAY, -1);
 }
 

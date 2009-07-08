@@ -247,13 +247,13 @@ if (bTextured) {
 	if (bmBot != gameStates.render.history.bmBot) {
 		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
-	 {INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);}
+		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);}
 		}
 	if (bmTop != gameStates.render.history.bmTop) {
 		bStateChange = true;
 		gameStates.render.history.bmTop = bmTop;
 		if (bmTop) {
-		 {INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);}
+			{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);}
 			}
 		else {
 			ogl.SelectTMU (GL_TEXTURE1, true);

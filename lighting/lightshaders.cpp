@@ -1564,7 +1564,7 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 #endif
 int i = faceP->nLightmap / LIGHTMAP_BUFSIZE;
 if (lightmapManager.Bind (i))
- {INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
+	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 if (nShader != gameStates.render.history.nShader) {
 	gameData.render.nShaderChanges++;
 #if CONST_LIGHT_COUNT
