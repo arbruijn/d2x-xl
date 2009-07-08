@@ -509,7 +509,7 @@ if (bVBO) {
 	}	
 else 
 #endif
- {
+	{
 	if (bNormals)
 		OglNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
 	if (!bDepthOnly) {

@@ -259,7 +259,7 @@ class COGL {
 #endif
 
 		inline void ClearError (int bTrapError) {
-#if DBG
+#if DBG_OGL
 			GLenum nError = glGetError ();
 			if (nError) {
 				const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
