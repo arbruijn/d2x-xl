@@ -244,11 +244,11 @@ class COGL {
 #else
 		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine) 
 			{ glVertexPointer (size, type, stride, pointer); }
-		inline void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+		inline void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
 			{ glColorPointer (size, type, stride, pointer); }
-		inline void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+		inline void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
 			{ glTexCoordPointer (size, type, stride, pointer); }
-		inline void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+		inline void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
 			{ glNormalPointer (type, stride, pointer); }
 
 		inline void GenTextures (GLsizei n, GLuint *hTextures) { glGenTextures (n, hTextures); }
