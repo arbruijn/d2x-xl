@@ -1203,7 +1203,7 @@ if (bStencil) {
 
 //------------------------------------------------------------------------------
 
-#if DBG
+#if DBG_OGL
 
 void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine) 
 { 
@@ -1247,7 +1247,7 @@ glTexCoordPointer (size, type, stride, pointer);
 
 //------------------------------------------------------------------------------
 
-#if DBG
+#if DBG_OGL
 
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)
 {
