@@ -269,7 +269,7 @@ class COGL {
 			}
 
 
-		inline int SetTransform (int bUseTransform) { m_states.bUseTransform = bUseTransform; }
+		inline int SetTransform (int bUseTransform) { return m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }
 
 		inline int HaveDrawBuffer (void) {
