@@ -10,7 +10,7 @@
 #include "descent.h"
 #include "vecmat.h"
 
-#define DBG_OGL	1
+#define DBG_OGL	DBG
 
 //------------------------------------------------------------------------------
 
