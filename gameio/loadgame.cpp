@@ -521,6 +521,7 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
+OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 AddPlayerLoadout (bRestore);
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
