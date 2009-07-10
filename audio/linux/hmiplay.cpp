@@ -587,7 +587,7 @@ int do_ipc(int qid, struct msgbuf *buf, int flags)
 				l = cf.Length(&cf);
 				data=realloc(data,(size_t) l);
 				cf.Read(data, l, 1);
-				cf.Close(&cf);
+				cf.Close ();
 				//printf ("good. fpr=%p l=%i data=%p\n", fptr, l, data);//##########3
 			}
 			stop = 0;
