@@ -92,7 +92,7 @@ static struct {
 	int	nBrightness;
 } renderOpts;
 
-#if DBG
+#if 1 //DBG
 static int fpsTable [] = {-1, 0, 10, 20, 30, 60}; //40, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250};
 #else
 static int fpsTable [] = {0, 60};
@@ -323,14 +323,14 @@ do {
 	m.Destroy ();
 	m.Create (50);
 #if !DBG
-	if (!EXPERTMODE)
+	if (!gameOpts->app.bNotebookFriendly)
 		renderOpts.nFrameCap = m.AddCheck (TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
 	if (!gameStates.app.bNostalgia)
 		renderOpts.nBrightness = m.AddSlider (TXT_BRIGHTNESS, paletteManager.GetGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 	m.AddText ("");
 #if !DBG
-	if (EXPERTMODE)
+	if (gameOpts->app.bNotebookFriendly)
 #endif
 		{
 		if (gameOpts->render.nMaxFPS > 1)
