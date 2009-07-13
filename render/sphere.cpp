@@ -160,17 +160,24 @@ else {
 for (int i = 0; i < 3; i++) {
 	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
 	if (dt < SHIELD_EFFECT_TIME) {
-		fScale [i] = 1.0f / (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
-		vHitf [i][W] = 0.0f;
-		if (ogl.m_states.bUseTransform) {
-			vHitf [i].Assign (m * hitInfo.v [i]);
-			CFloatVector::Normalize (vHitf [i]);
+		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
+		if (h > 1.0f / 1e6f) {
+			fScale [i] = 1.0f / h;
+			vHitf [i][W] = 0.0f;
+			if (ogl.m_states.bUseTransform) {
+				vHitf [i].Assign (m * hitInfo.v [i]);
+				CFloatVector::Normalize (vHitf [i]);
+				}
+			else {
+				vHitf [i].Assign (hitInfo.v [i]);
+				transformation.Transform (vHitf [i], vHitf [i]);
+				}
+			nHits++;
 			}
 		else {
-			vHitf [i].Assign (hitInfo.v [i]);
-			transformation.Transform (vHitf [i], vHitf [i]);
+			fScale [i] = 1e6f;
+			vHitf [i].SetZero ();
 			}
-		nHits++;
 		}
 	else {
 		fScale [i] = 1e6f;
