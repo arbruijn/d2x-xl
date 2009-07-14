@@ -1509,9 +1509,9 @@ typedef struct tFaceListItem {
 
 class CFaceListIndex {
 	public:
-		CShortArray				roots; // [MAX_WALL_TEXTURES * 3];
-		CShortArray				tails; // [MAX_WALL_TEXTURES * 3];
-		CShortArray				usedKeys; // [MAX_WALL_TEXTURES * 3];
+		CIntArray				roots; // [MAX_WALL_TEXTURES * 3];
+		CIntArray				tails; // [MAX_WALL_TEXTURES * 3];
+		CIntArray				usedKeys; // [MAX_WALL_TEXTURES * 3];
 		int						nUsedFaces;
 		int						nUsedKeys;
 	public:
