@@ -60,8 +60,8 @@ for (int i = 0, h = flxP->nUsedKeys; i < h; i++)
 #	if 0//DBG
 memset (flxP->tails, 0xff, sizeof (flxP->tails));
 #	else
-short *tails = flxP->tails.Buffer (),
-		*usedKeys = flxP->usedKeys.Buffer ();
+int* tails = flxP->tails.Buffer (),
+	* usedKeys = flxP->usedKeys.Buffer ();
 for (int i = 0, h = flxP->nUsedKeys; i < h; i++) 
 	tails [usedKeys [i]] = -1;
 #	endif
