@@ -85,7 +85,7 @@ if (faceP->nFrame == gameData.app.nMineRenderCount)
 if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
-short	i, j, nKey = faceP->nBaseTex;
+int	i, j, nKey = faceP->nBaseTex;
 
 if (nKey < 0)
 	return 0;
