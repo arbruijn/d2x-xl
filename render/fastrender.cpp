@@ -607,7 +607,6 @@ void RenderSkyBoxFaces (void)
 	int			i, j, nSegment, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
-	PrintLog ("\nrendering skybox\n");
 	glDepthMask (1);
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
@@ -618,13 +617,11 @@ if (gameStates.render.bHaveSkyBox) {
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 			if (!(faceP->bVisible = FaceIsVisible (nSegment, faceP->nSide)))
 				continue;
-			PrintLog ("   face %d,%d\n", faceP->nSegment, faceP->nSide);
 			RenderMineFace (SEGMENTS + nSegment, faceP, 4, 0);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
 	EndRenderFaces (4, 0);
-	PrintLog ("skybox done\n");
 	}
 }
 

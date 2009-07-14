@@ -1114,7 +1114,7 @@ void CLightning::Render (int nDepth, int bDepthSort, int nThread)
 {
 	int				i;
 
-if (bDepthSort > 0) {
+if ((bDepthSort > 0) && (gameStates.render.nType != 5)) {	// not in transparency renderer
 	if ((m_nNodes < 0) || (m_nSteps < 0))
 		return;
 	if (!MayBeVisible ())

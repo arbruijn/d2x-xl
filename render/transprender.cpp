@@ -771,11 +771,11 @@ int CTransparencyRenderer::LoadImage (CBitmap *bmP, char nColors, char nFrame, i
 												  int bHaveDecal, int bDecal)
 {
 if (bmP) {
-	glEnable (GL_TEXTURE_2D);
 	if (bDecal || SetClientState (bClientState, 1, nColors > 1, bUseLightmaps, bHaveDecal) || (m_data.bTextured < 1)) {
 		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps + bDecal, true);
 		m_data.bTextured = 1;
 		}
+	glEnable (GL_TEXTURE_2D);
 	if (bDecal == 1)
 		bmP = bmP->Override (-1);
 	if ((bmP != m_data.bmP [bDecal]) || (nFrame != m_data.nFrame) || (nWrap != m_data.nWrap)) {
@@ -889,12 +889,25 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
+ogl.SelectTMU (GL_TEXTURE3);
+glBindTexture (GL_TEXTURE_2D, 0);
+glDisable (GL_TEXTURE_2D);
+if (!bmTop) {
+	ogl.SelectTMU (GL_TEXTURE1 + bLightmaps);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glDisable (GL_TEXTURE_2D);
+	}
+if (!mask) {
+	ogl.SelectTMU (GL_TEXTURE2 + bLightmaps);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glDisable (GL_TEXTURE_2D);
+	}
+
 if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
-		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
 		if (!bLightmaps)
 			OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 		if (bDecal > 0) {
@@ -902,6 +915,7 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 			if (mask)
 				SetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
 			}
+		SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
 		}
 	else {
 		ogl.SelectTMU (GL_TEXTURE0, true);
@@ -956,22 +970,17 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 				glDepthFunc (GL_LEQUAL);
 				}
 #endif
-#if 1
-#	if 0
-			if (faceP)
-				lightManager.SetNearestToFace (faceP, m_data.bTextured);
-#	endif
 			if (gameStates.render.bPerPixelLighting == 1) {
 #	if RENDER_TRANSP_DECALS
 				G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType, false);
 #	else
 				G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType != 0, false);
 #	endif
-#	if 1 //DBG
+#	if DBG
 				if ((item->nVertices < 3) || (item->nVertices > 4))
 					PrintLog ("invalid transparent render item\n");
 				else
-#endif
+#	endif
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			else {
@@ -990,8 +999,6 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 						}
 					}
 				}
-#endif
-#if 1
 			if (gameStates.render.bHeadlights) {
 #	if DBG
 				if (faceP) {
@@ -1006,7 +1013,6 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 					}
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
-#endif
 			}
 		}
 	else {
@@ -1020,12 +1026,6 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 			G3SetupShader (faceP, 0, mask != NULL, bDecal > 0, bmBot != NULL,
 								(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
 								m_data.bTextured ? NULL : faceP ? &faceP->color : item->color);
-#if 0
-		if (triP)
-			glNormal3fv (reinterpret_cast<GLfloat*> (FACES.normals + triP->nIndex));
-		else if (faceP)
-			glNormal3fv (reinterpret_cast<GLfloat*> (FACES.normals + faceP->nIndex));
-#endif
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	ogl.ResetTransform (faceP != NULL);
@@ -1102,21 +1102,27 @@ PROF_END(ptRenderFaces)
 
 void CTransparencyRenderer::RenderObject (tTranspObject *item)
 {
+#if 1
 //SEM_LEAVE (SEM_LIGHTNING)	//might lockup otherwise when creating damage lightnings on cloaked objects
 //SEM_LEAVE (SEM_SPARKS)
-SetClientState (0, 0, 0, 0, 0);
 ResetShader ();
+for (int i = 0; i < 4; i++) {
+	ogl.SelectTMU (GL_TEXTURE3 - i);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glDisable (GL_TEXTURE_2D);
+	}
 gameData.models.vScale = item->vScale;
 DrawPolygonObject (item->objP, 0, 1);
 gameData.models.vScale.SetZero ();
-glDisable (GL_TEXTURE_2D);
 m_data.bTextured = 0;
 m_data.bClientState = 0;
 m_data.bClientTexCoord = 0;
 m_data.bClientColor = 0;
+SetClientState (0, 0, 0, 0, 0);
 ResetBitmaps ();
 //SEM_ENTER (SEM_LIGHTNING)
 //SEM_ENTER (SEM_SPARKS)
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1515,10 +1521,15 @@ m_data.bmP [0] =
 m_data.bmP [1] = NULL;
 sparkBuffer.nSparks = 0;
 ogl.DisableLighting ();
-ogl.DisableClientStates (1, 1, 0, GL_TEXTURE2 + m_data.bLightmaps);
-ogl.DisableClientStates (1, 1, 0, GL_TEXTURE1 + m_data.bLightmaps);
-ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0 + m_data.bLightmaps);
+if (m_data.bLightmaps)
+	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE3);
+ogl.DisableClientStates (1, 1, 0, GL_TEXTURE2);
+ogl.DisableClientStates (1, 1, 0, GL_TEXTURE1);
 ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
+if (ogl.m_states.bShadersOk) {
+	glUseProgramObject (0);
+	gameStates.render.history.nShader = -1;
+	}
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 glEnable (GL_BLEND);

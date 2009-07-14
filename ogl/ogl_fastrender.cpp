@@ -148,7 +148,7 @@ else
 			j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
 
 #if DBG
-		if (i + j > FACES.vertices.Length ()) {
+		if (i + j > int (FACES.vertices.Length ())) {
 			PrintLog ("invalid vertex index %d in G3FillFaceBuffer\n");
 			return;
 			}

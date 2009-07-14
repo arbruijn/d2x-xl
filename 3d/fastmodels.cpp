@@ -904,11 +904,13 @@ else
 if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (3.0f);
 #endif
+#if 1 //!DBG
 if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
 	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 	transformation.End ();
 	}
+#endif
 #if DBG
 if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (1.0f);

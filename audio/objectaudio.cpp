@@ -518,6 +518,8 @@ if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length 
 	PlaySound (nOrgSound, SOUNDCLASS_GENERIC, nVolume, nPan, 0, -1, pszSound, &vPos);
 	return -1;
 	}
+if (m_objects.Length () == MAX_SOUND_OBJECTS)
+	return -1;
 if (!m_objects.Grow ())
 	return -1;
 soundObjP = m_objects.Top ();
