@@ -165,10 +165,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
+				Optimization="0"
 				InlineFunctionExpansion="1"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
+				EnableIntrinsicFunctions="false"
+				FavorSizeOrSpeed="0"
 				OmitFramePointers="false"
 				EnableFiberSafeOptimizations="false"
 				AdditionalIncludeDirectories="&quot;..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\SDL_mixer-1.2.8&quot;;&quot;..\..\..\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include"
@@ -4277,11 +4277,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

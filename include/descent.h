@@ -1512,8 +1512,8 @@ class CFaceListIndex {
 		CShortArray				roots; // [MAX_WALL_TEXTURES * 3];
 		CShortArray				tails; // [MAX_WALL_TEXTURES * 3];
 		CShortArray				usedKeys; // [MAX_WALL_TEXTURES * 3];
-		short						nUsedFaces;
-		short						nUsedKeys;
+		int						nUsedFaces;
+		int						nUsedKeys;
 	public:
 		CFaceListIndex ();
 		void Init (void);
