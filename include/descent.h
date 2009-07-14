@@ -1504,7 +1504,7 @@ class CVertColorData {
 
 typedef struct tFaceListItem {
 	CSegFace*			faceP;
-	short					nNextItem;
+	int					nNextItem;
 } tFaceListItem;
 
 class CFaceListIndex {

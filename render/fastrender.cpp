@@ -653,7 +653,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 {
 	tFaceListItem*	fliP;
 	CSegFace*		faceP;
-	short				i, j, nFaces = 0, nSegment = -1;
+	int				i, j, nFaces = 0, nSegment = -1;
 	int				bAutomap = (nType == 0);
 
 for (i = 0; i < flx.nUsedKeys; i++) {
@@ -686,8 +686,8 @@ return nFaces;
 void RenderCoronaFaceList (CFaceListIndex& flx, int nPass)
 {
 	tFaceListItem*	fliP;
-	CSegFace*			faceP;
-	short				i, j, nSegment;
+	CSegFace*		faceP;
+	int				i, j, nSegment;
 
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
