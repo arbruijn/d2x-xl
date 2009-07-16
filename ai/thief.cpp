@@ -152,7 +152,7 @@ void DoThiefFrame (CObject *objP)
 				ailp->mode = AIM_THIEF_WAIT;
 				ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel];
 			} else if ((gameData.ai.target.xDist < I2X (100)) || gameData.ai.nTargetVisibility || (ailp->targetAwarenessType >= PA_PLAYER_COLLISION)) {
-				AIFollowPath(objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
+				AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
 				if ((gameData.ai.target.xDist < I2X (100)) || (ailp->targetAwarenessType >= PA_PLAYER_COLLISION)) {
 					tAIStaticInfo	*aip = &objP->cType.aiInfo;
 					if (((aip->nCurPathIndex <=1) && (aip->PATH_DIR == -1)) || ((aip->nCurPathIndex >= aip->nPathLength-1) && (aip->PATH_DIR == 1))) {
@@ -206,13 +206,13 @@ void DoThiefFrame (CObject *objP)
 							gameData.ai.localInfo[objP->Index ()].mode = AIM_THIEF_RETREAT;
 						}
 					}
-					AITurnTowardsVector(&gameData.ai.target.vDir, objP, I2X (1)/4);
-					MoveTowardsPlayer(objP, &gameData.ai.target.vDir);
+					AITurnTowardsVector (&gameData.ai.target.vDir, objP, I2X (1)/4);
+					MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
 				} else {
 					tAIStaticInfo	*aip = &objP->cType.aiInfo;
 					//	If path length == 0, then he will keep trying to create path, but he is probably stuck in his closet.
 					if ((aip->nPathLength > 1) || ((gameData.app.nFrameCount & 0x0f) == 0)) {
-						AIFollowPath(objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
+						AIFollowPath (objP, gameData.ai.nTargetVisibility, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
 						ailp->mode = AIM_THIEF_ATTACK;
 					}
 				}

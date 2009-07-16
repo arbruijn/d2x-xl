@@ -237,24 +237,24 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 	ft = gameData.time.xFrame * 32;
 	switch (dir) {
 		case 0:
-			vEvade [X] = FixMul (gameData.ai.target.vDir[Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.target.vDir[Y], ft);
-			vEvade [Z] = FixMul (-gameData.ai.target.vDir[X], ft);
+			vEvade [X] = FixMul (gameData.ai.target.vDir [Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.target.vDir [Y], ft);
+			vEvade [Z] = FixMul (-gameData.ai.target.vDir [X], ft);
 			break;
 		case 1:
-			vEvade [X] = FixMul (-gameData.ai.target.vDir[Z], ft);
-			vEvade [Y] = FixMul (gameData.ai.target.vDir[Y], ft);
-			vEvade [Z] = FixMul (gameData.ai.target.vDir[X], ft);
+			vEvade [X] = FixMul (-gameData.ai.target.vDir [Z], ft);
+			vEvade [Y] = FixMul (gameData.ai.target.vDir [Y], ft);
+			vEvade [Z] = FixMul (gameData.ai.target.vDir [X], ft);
 			break;
 		case 2:
-			vEvade [X] = FixMul (-gameData.ai.target.vDir[Y], ft);
-			vEvade [Y] = FixMul (gameData.ai.target.vDir[X], ft);
-			vEvade [Z] = FixMul (gameData.ai.target.vDir[Z], ft);
+			vEvade [X] = FixMul (-gameData.ai.target.vDir [Y], ft);
+			vEvade [Y] = FixMul (gameData.ai.target.vDir [X], ft);
+			vEvade [Z] = FixMul (gameData.ai.target.vDir [Z], ft);
 			break;
 		case 3:
-			vEvade [X] = FixMul (gameData.ai.target.vDir[Y], ft);
-			vEvade [Y] = FixMul (-gameData.ai.target.vDir[X], ft);
-			vEvade [Z] = FixMul (gameData.ai.target.vDir[Z], ft);
+			vEvade [X] = FixMul (gameData.ai.target.vDir [Y], ft);
+			vEvade [Y] = FixMul (-gameData.ai.target.vDir [X], ft);
+			vEvade [Z] = FixMul (gameData.ai.target.vDir [Z], ft);
 			break;
 		default:
 			Error ("Function MoveAroundPlayer: Bad case.");

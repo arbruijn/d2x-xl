@@ -48,8 +48,8 @@ vGunPos = vGunPoints [nGun];
 nSubModel = botInfoP->gunSubModels [nGun];
 //instance up the tree for this gun
 while (nSubModel != 0) {
-	m = CFixMatrix::Create(objP->rType.polyObjInfo.animAngles [nSubModel]);
-	CFixMatrix::Transpose(m);
+	m = CFixMatrix::Create (objP->rType.polyObjInfo.animAngles [nSubModel]);
+	CFixMatrix::Transpose (m);
 	vRot = m * vGunPos;
 	vGunPos = vRot + pm->SubModels ().offsets [nSubModel];
 	nSubModel = pm->SubModels ().parents [nSubModel];

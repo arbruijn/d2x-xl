@@ -121,7 +121,7 @@ fq.radP0				=
 fq.radP1				= I2X (1);
 fq.thisObjNum		= objP->Index ();
 fq.ignoreObjList	= ignoreObjs;
-fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
+fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRANSPOINT;		//what about trans walls???
 fq.bCheckVisibility = true;
 gameData.ai.nHitType = FindHitpoint (&fq, &gameData.ai.hitData);
 #if DBG
@@ -187,9 +187,9 @@ else {
 		}
 	else {
 		//	Compute expensive stuff -- gameData.ai.target.vDir and gameData.ai.nTargetVisibility
-		CFixVector::NormalizedDir(gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, *pos);
+		CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, *pos);
 		if (gameData.ai.target.vDir.IsZero ()) {
-			gameData.ai.target.vDir[X] = I2X (1);
+			gameData.ai.target.vDir [X] = I2X (1);
 			}
 		gameData.ai.nTargetVisibility = AICanSeeTarget (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.target.vDir);
 		LimitTargetVisibility (xMaxVisibleDist, ailP);
@@ -238,7 +238,7 @@ else {
 
 	*flag = 1;
 
-	//	@mk, 09/21/95: If CPlayerData view is not obstructed and awareness is at least as high as a nearby collision,
+	//	@mk, 09/21/95: If player view is not obstructed and awareness is at least as high as a nearby collision,
 	//	act is if robot is looking at player.
 	if (ailP->targetAwarenessType >= PA_NEARBY_ROBOT_FIRED)
 		if (gameData.ai.nTargetVisibility == 1)
@@ -420,14 +420,14 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Called for an AI CObject if it is fairly aware of the player.
-//	awarenessLevel is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at CPlayerData).
+//	awarenessLevel is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at player).
 //	In a given frame, might not get called for an CObject, or might be called more than once.
 //	The fact that this routine is not called for a given CObject does not mean that CObject is not interested in the player.
 //	OBJECTS are moved by physics, so they can move even if not interested in a player.  However, if their velocity or
 //	orientation is changing, this routine will be called.
 //	Return value:
-//		0	this CPlayerData IS NOT allowed to move this robot.
-//		1	this CPlayerData IS allowed to move this robot.
+//		0	this player IS NOT allowed to move this robot.
+//		1	this player IS allowed to move this robot.
 
 int AIMultiplayerAwareness (CObject *objP, int awarenessLevel)
 {

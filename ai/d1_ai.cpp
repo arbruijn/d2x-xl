@@ -1509,13 +1509,11 @@ int ai_multiplayer_awareness(CObject *objP, int awareness_level)
 {
 	int	rval=1;
 
-	if (IsMultiGame) {
-		if (awareness_level == 0)
-			return 0;
-		rval = MultiCanRemoveRobot(objP->Index (), awareness_level);
-	}
-	return rval;
-
+if (!IsMultiGame)
+	return 1;
+if (awareness_level == 0)
+	return 0;
+return MultiCanRemoveRobot(objP->Index (), awareness_level);
 }
 #if DBG
 fix	Prev_boss_shields = -1;
@@ -2023,27 +2021,27 @@ if (nObject == nDbgObj)
 
 			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
-			//	@mk, 12/27/94, structure here was strange.  Would do both clauses of what are now this if/then/else.  Used to be if/then, if/then.
 			if ((player_visibility < 2) && (nPrevVisibility == 2)) { // this is redundant: mk, 01/15/95: && (ailP->mode == D1_AIM_CHASE_OBJECT)) {
 				if (!ai_multiplayer_awareness(objP, 53)) {
 					if (maybe_ai_do_actual_firing_stuff(objP, aiP))
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
-				}
+					}
 				CreatePathToTarget(objP, 8, 1);
-				// -- show_path_and_other(objP);
 				ai_multi_send_robot_position(nObject, -1);
-			} else if ((player_visibility == 0) && (dist_to_player > I2X (80)) && (!(IsMultiGame))) {
+				}
+			else if ((player_visibility == 0) && (dist_to_player > I2X (80)) && (!(IsMultiGame))) {
 				//	If pretty far from the playerP, playerP cannot be seen (obstructed) and in chase mode, switch to follow path mode.
 				//	This has one desirable benefit of avoiding physics retries.
 				if (aiP->behavior == D1_AIB_STATION) {
 					ailP->nGoalSegment = aiP->nHideSegment;
 					CreatePathToStation(objP, 15);
 					// -- show_path_and_other(objP);
-				} else
+					}
+				else
 					CreateNSegmentPath(objP, 5, -1);
 				break;
-			}
+				}
 
 			if ((aiP->CURRENT_STATE == D1_AIS_REST) && (aiP->GOAL_STATE == D1_AIS_REST)) {
 				if (player_visibility) {
@@ -2051,10 +2049,10 @@ if (nObject == nDbgObj)
 						if (dist_to_player/256 < d_rand()*player_visibility) {
 							aiP->GOAL_STATE = D1_AIS_SRCH;
 							aiP->CURRENT_STATE = D1_AIS_SRCH;
+							}
 						}
 					}
 				}
-			}
 
 			if (gameData.time.xGame - ailP->timeTargetSeen > CHASE_TIME_LENGTH) {
 
@@ -2062,42 +2060,40 @@ if (nObject == nDbgObj)
 					if (!player_visibility && (dist_to_player > I2X (70))) {
 						ailP->mode = D1_AIM_STILL;
 						return;
-					}
-
+						}
 				if (!ai_multiplayer_awareness(objP, 64)) {
 					if (maybe_ai_do_actual_firing_stuff(objP, aiP))
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
-				}
+					}
 				CreatePathToTarget(objP, 10, 1);
 				// -- show_path_and_other(objP);
 				ai_multi_send_robot_position(nObject, -1);
-			} else if ((aiP->CURRENT_STATE != D1_AIS_REST) && (aiP->GOAL_STATE != D1_AIS_REST)) {
+				} 
+			else if ((aiP->CURRENT_STATE != D1_AIS_REST) && (aiP->GOAL_STATE != D1_AIS_REST)) {
 				if (!ai_multiplayer_awareness(objP, 70)) {
 					if (maybe_ai_do_actual_firing_stuff(objP, aiP))
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
-				}
+					}
 				ai_move_relative_to_player(objP, ailP, dist_to_player, &vec_to_player, circle_distance, 0);
-
 				if ((obj_ref & 1) && ((aiP->GOAL_STATE == D1_AIS_SRCH) || (aiP->GOAL_STATE == D1_AIS_LOCK))) {
 					if (player_visibility) // == 2)
 						ai_turn_towards_vector(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 					else
 						ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
-				}
-
+					}
 				if (D1_AI_evaded) {
 					ai_multi_send_robot_position(nObject, 1);
 					D1_AI_evaded = 0;
-				}
+					}
 				else
 					ai_multi_send_robot_position(nObject, -1);
 
 				do_firing_stuff(objP, player_visibility, &vec_to_player);
-			}
+				}
 			break;
-		}
+			}
 
 		case D1_AIM_RUN_FROM_OBJECT:
 			compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
