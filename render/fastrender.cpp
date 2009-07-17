@@ -897,6 +897,8 @@ int SetupCoronas (int nType)
 {
 if (!SetupCoronaFaces ())
 	return 0;
+if (automap.m_bDisplay || !gameOpts->render.automap.bCoronas)
+	return 0;
 int nCoronaStyle = CoronaStyle ();
 if (nCoronaStyle != 1)
 	return 0;

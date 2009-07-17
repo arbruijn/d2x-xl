@@ -44,6 +44,12 @@
 #include "gameseg.h"
 #include "automap.h"
 
+#if DBG
+#	define G3_BUFFER_FACES	1
+#else
+#	define G3_BUFFER_FACES	1
+#endif
+
 CRenderFaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
 //------------------------------------------------------------------------------
@@ -148,6 +154,8 @@ else
 			j = gameStates.render.bTriangleMesh ? faceP->nTris * 3 : 4;
 
 #if DBG
+		if (i == nDbgVertex)
+			nDbgVertex = nDbgVertex;
 		if (i + j > int (FACES.vertices.Length ())) {
 			PrintLog ("invalid vertex index %d in G3FillFaceBuffer\n");
 			return;
@@ -247,18 +255,18 @@ else
 
 //------------------------------------------------------------------------------
 
-int G3SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
+int G3SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored, bool bForce = false)
 {
 PROF_START
 if (bTextured) {
 	bool bStateChange = false;
 	CBitmap *mask = NULL;
-	if (bmBot != gameStates.render.history.bmBot) {
+	if (bForce || (bmBot != gameStates.render.history.bmBot)) {
 		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
 		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);}
 		}
-	if (bmTop != gameStates.render.history.bmTop) {
+	if (bForce || (bmTop != gameStates.render.history.bmTop)) {
 		bStateChange = true;
 		gameStates.render.history.bmTop = bmTop;
 		if (bmTop) {
@@ -267,11 +275,12 @@ if (bTextured) {
 		else {
 			ogl.SelectTMU (GL_TEXTURE1, true);
 			OGL_BINDTEX (0);
+			glDisable (GL_TEXTURE_2D);
 			mask = NULL;
 			}
 		}
 	mask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
-	if (mask != gameStates.render.history.bmMask) {
+	if (bForce || (mask != gameStates.render.history.bmMask)) {
 		bStateChange = true;
 		gameStates.render.history.bmMask = mask;
 		if (mask) {
@@ -281,6 +290,7 @@ if (bTextured) {
 		else {
 			ogl.SelectTMU (GL_TEXTURE2, true);
 			OGL_BINDTEX (0);
+			glDisable (GL_TEXTURE_2D);
 			bColorKey = 0;
 			}
 		}
@@ -419,7 +429,10 @@ return !automap.m_bDisplay || automap.m_visited [0][faceP->nSegment] || !gameOpt
 int G3DrawFaceArrays (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
-	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0, nBlendMode;
+	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
+#if G3_BUFFER_FACES
+	int			nBlendMode;
+#endif
 
 #if DBG
 if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -431,8 +444,15 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 
 if (!faceP->bTextured)
 	bmBot = NULL;
-else if (bmBot)
+else if (bmBot) {
 	bmBot = bmBot->Override (-1);
+#if 0 //DBG
+	if (strstr (bmBot->Name (), "rock327"))
+		bmBot = bmBot;
+	else
+		return 0;
+#endif
+	}
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
@@ -471,13 +491,11 @@ else {
 			gameStates.render.history.nBlendMode = nBlendMode;
 			G3FlushFaceBuffer (1);
 			G3SetBlendMode (faceP);
-			G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
 			}
-		else
-			G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
+		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
 		}
 	if (faceBuffer.nFaces <= 1)
-		G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+		G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored, true);
 	}
 #else
 G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);

@@ -639,7 +639,7 @@ lightManager.SetNearestToSegment (nSegment, -1, 0, 0, 0);
 for (nSide = 0; nSide < 6; nSide++) //segP->nFaces, faceP = segP->pFaces; nSide; nSide--, faceP++)
 	RenderSide (segP, nSide);
 ogl.ResetTransform (0);
-OGL_BINDTEX (0);
+//OGL_BINDTEX (0);
 return 1;
 }
 

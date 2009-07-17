@@ -7,7 +7,7 @@
 #include <stddef.h>
 #endif
 
-#define	USE_DISPLAY_LISTS	0
+#define	USE_DISPLAY_LISTS	1
 
 //------------------------------------------------------------------------------
 
