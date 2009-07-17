@@ -45,9 +45,9 @@
 #include "automap.h"
 
 #if DBG
-#	define G3_BUFFER_FACES	1
+#	define G3_BUFFER_FACES	0
 #else
-#	define G3_BUFFER_FACES	1
+#	define G3_BUFFER_FACES	0
 #endif
 
 CRenderFaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
