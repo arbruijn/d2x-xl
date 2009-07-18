@@ -70,7 +70,7 @@ if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && RENDERPATH)
 		DeleteShaderProg (&hBlurShader);
 		return;
 		}
-	OglClearError (0);
+	ogl.ClearError (0);
 	}
 }
 

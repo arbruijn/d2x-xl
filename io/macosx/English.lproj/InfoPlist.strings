@@ -1,6 +1,6 @@
 /* Localized versions of Info.plist keys */
 
 CFBundleName = "d2x-xl";
-CFBundleShortVersionString = "1.14.23";
-CFBundleGetInfoString = "D2X-XL v1.14.23, ported 2005-2009 Simone Manganelli and David Michael Bryson.";
+CFBundleShortVersionString = "1.14.60";
+CFBundleGetInfoString = "D2X-XL v1.14.60, ported 2005-2009 Simone Manganelli and David Michael Bryson.";
 NSHumanReadableCopyright = "Ported 2005-2009 Simone Manganelli and David Michael Bryson.";
