@@ -84,6 +84,45 @@ return QuadSqrt (q.low, q.high);
 
 // ------------------------------------------------------------------------
 
+void CFixVector::Check (void)
+{
+fix check = labs (v [X]) | labs(v [Y]) | labs(v [Z]);
+
+if (check == 0)
+	return;
+
+int cnt = 0;
+
+if (check & 0xfffc0000) {		//too big
+	while (check & 0xfff00000) {
+		cnt += 4;
+		check >>= 4;
+		}
+	while (check & 0xfffc0000) {
+		cnt += 2;
+		check >>= 2;
+		}
+	v [X] >>= cnt;
+	v [Y] >>= cnt;
+	v [Z] >>= cnt;
+	}
+else if ((check & 0xffff8000) == 0) {		//too small
+	while ((check & 0xfffff000) == 0) {
+		cnt += 4;
+		check <<= 4;
+		}
+	while ((check & 0xffff8000) == 0) {
+		cnt += 2;
+		check <<= 2;
+		}
+	v [X] >>= cnt;
+	v [Y] >>= cnt;
+	v [Z] >>= cnt;
+	}
+}
+
+// ------------------------------------------------------------------------
+
 CFixVector& CFixVector::Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1)
 {
 #if 0

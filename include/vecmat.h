@@ -64,6 +64,7 @@ class __pack__ CFixVector {
 		static const CFixVector Create (fix f0, fix f1, fix f2);
 		static const CFixVector Avg (const CFixVector& src0, const CFixVector& src1);
 		static const CFixVector Avg (CFixVector& src0, CFixVector& src1, CFixVector& src2, CFixVector& src3);
+		void Check (void);
 		static const CFixVector Cross (const CFixVector& v0, const CFixVector& v1);
 		static CFixVector& Cross (CFixVector& dest, const CFixVector& v0, const CFixVector& v1);
 		// computes the delta angle between two vectors.
@@ -765,15 +766,25 @@ inline const fix CFixVector::Normalize (CFixVector& v) {
 
 inline CFixVector& CFixVector::Perp (CFixVector& dest, const CFixVector& p0, const CFixVector& p1, const CFixVector& p2) {
 	CFixVector t0 = p1 - p0, t1 = p2 - p1;
+#if 0
 	Normalize (t0);
 	Normalize (t1);
+#else
+	t0.Check ();
+	t1.Check ();
+#endif
 	return Cross (dest, t0, t1);
 }
 
 inline const CFixVector CFixVector::Perp (const CFixVector& p0, const CFixVector& p1, const CFixVector& p2) {
 	CFixVector t0 = p1 - p0, t1 = p2 - p1;
+#if 0
 	Normalize (t0);
 	Normalize (t1);
+#else
+	t0.Check ();
+	t1.Check ();
+#endif
 	return Cross (t0, t1);
 }
 
