@@ -160,6 +160,11 @@ return dest;
 
 // ------------------------------------------------------------------------
 
+fix FixQuadAdjust (QLONG q)
+{
+return fix ((q >> 32) <<16) + fix ((q & 0xffffffff) >>16);
+}
+
 const CFixVector CFixVector::Cross (const CFixVector& v0, const CFixVector& v1) 
 {
 #if 0
@@ -190,7 +195,7 @@ y = mul64 (v0 [Z], v1 [X]);
 y += mul64 (-v0 [X], v1 [Z]);
 z = mul64 (v0 [X], v1 [Y]);
 z += mul64 (-v0 [Y], v1 [X]);
-return Create (fix (x / 65536), fix (y / 65536), fix (z / 65536));
+return Create (FixQuadAdjust (x), FixQuadAdjust (y), FixQuadAdjust (z));
 #endif
 }
 

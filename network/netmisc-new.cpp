@@ -520,7 +520,7 @@ void CSide::CheckSum (uint& sum1, uint& sum2)
 
 CalcCheckSum (reinterpret_cast<ubyte*> (&m_nType), 1, sum1, sum2);
 CalcCheckSum (reinterpret_cast<ubyte*> (&m_nFrame), 1, sum1, sum2);
-s = INTEL_SHORT (WallNum ());
+s = INTEL_SHORT (m_nWall);
 CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, sum1, sum2);
 s = INTEL_SHORT (m_nBaseTex);
 CalcCheckSum (reinterpret_cast<ubyte*> (&s), 2, sum1, sum2);
