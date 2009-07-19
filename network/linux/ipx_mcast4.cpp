@@ -349,7 +349,7 @@ struct ipx_driver ipx_mcast4 = {
 	ipx_mcast4_CloseSocket,
 	ipx_mcast4_SendPacket,
 	ipx_mcast4_ReceivePacket,
-	IxpGeneralPacketReady,
+	IPXGeneralPacketReady,
 	ipx_mcast4_InitNetgameAuxData,
 	ipx_mcast4_HandleNetgameAuxData,
 	ipx_mcast4_HandleLeaveGame,

@@ -1228,7 +1228,7 @@ struct ipx_driver ipx_udp = {
 #if 0//def _WIN32
 	UDPPacketReady,
 #else
-	IxpGeneralPacketReady,
+	IPXGeneralPacketReady,
 #endif
 	NULL,	// InitNetgameAuxData
 	NULL,	// HandleNetgameAuxData

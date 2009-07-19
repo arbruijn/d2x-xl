@@ -132,7 +132,7 @@ uint ipxNetworks [MAX_NETWORKS];
 
 								/*---------------------------*/
 
-int IxpGeneralPacketReady (ipx_socket_t *s) 
+int IPXGeneralPacketReady (ipx_socket_t *s) 
 {
 	fd_set set;
 	struct timeval tv;

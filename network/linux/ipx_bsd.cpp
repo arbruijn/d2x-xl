@@ -234,7 +234,7 @@ struct ipx_driver ipx_bsd = {
 	ipx_bsd_CloseSocket,
 	ipx_bsd_SendPacket,
 	ipx_bsd_ReceivePacket,
-	IxpGeneralPacketReady,
+	IPXGeneralPacketReady,
 	NULL,	// InitNetgameAuxData
 	NULL,	// HandleNetgameAuxData
 	NULL,	// HandleLeaveGame

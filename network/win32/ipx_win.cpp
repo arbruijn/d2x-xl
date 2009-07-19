@@ -20,8 +20,8 @@
 #include "mono.h"
 #include "error.h"
 
-extern int _CDECL_ Fail (const char *fmt, ...);
-extern ubyte *QueryHost(char *buf);
+int _CDECL_ Fail (const char *fmt, ...);
+ubyte *QueryHost(char *buf);
 
 #define FAIL	return Fail
 
@@ -217,7 +217,7 @@ struct ipx_driver ipx_win = {
 	ipx_win_CloseSocket,
 	ipx_win_SendPacket,
 	ipx_win_ReceivePacket,
-	IxpGeneralPacketReady,
+	IPXGeneralPacketReady,
 	NULL,	// InitNetgameAuxData
 	NULL,	// HandleNetgameAuxData
 	NULL,	// HandleLeaveGame

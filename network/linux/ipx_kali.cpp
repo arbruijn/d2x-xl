@@ -125,7 +125,7 @@ struct ipx_driver ipx_kali = {
 	ipx_kali_CloseSocket,
 	ipx_kali_SendPacket,
 	ipx_kali_ReceivePacket,
-	IxpGeneralPacketReady,
+	IPXGeneralPacketReady,
 	NULL,	// InitNetgameAuxData
 	NULL,	// HandleNetgameAuxData
 	NULL,	// HandleLeaveGame
