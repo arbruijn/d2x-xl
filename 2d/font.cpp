@@ -118,14 +118,15 @@ else {
 		if ((c2 != 0) && (c2 != '\n')) {
 			int letter2 = c2 - m_info.minChar;
 			if (InFont (letter2)) {
-					ubyte *p = FindKernEntry ((ubyte) letter, (ubyte) letter2);
+				ubyte *p = FindKernEntry ((ubyte) letter, (ubyte) letter2);
 				if (p)
 					spacing = p [2];
 				}
 			}
 		}
 	}
-spacing = int (spacing * fontManager.Scale ());
+if (!gameStates.app.bNostalgia)
+	spacing = int (spacing * fontManager.Scale ());
 }
 
 //------------------------------------------------------------------------------
