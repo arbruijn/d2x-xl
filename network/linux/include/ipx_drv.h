@@ -69,7 +69,7 @@ struct ipx_driver {
 	int (*SendGamePacket)(ipx_socket_t *s, u_char *data, int dataLen);
 };
 
-int IxpGeneralPacketReady(ipx_socket_t *s);
+int IPXGeneralPacketReady(ipx_socket_t *s);
 
 extern ubyte ipx_MyAddress[10];
 

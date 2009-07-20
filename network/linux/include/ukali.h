@@ -63,7 +63,7 @@ typedef struct kaliaddr_ipx_tag {
 //	ipx_kali_CloseSocket,
 //	ipx_kali_SendPacket,
 //	ipx_kali_ReceivePacket,
-//	IxpGeneralPacketReady
+//	IPXGeneralPacketReady
 // };
 
 int KaliGetNodeNum(kaliaddr_ipx *myaddr);
