@@ -59,6 +59,8 @@
 
 #define _WIN32_WINNT		0x0600 
 
+#define TRACK_STATES		0
+
 #ifdef _WIN32
 
 typedef struct tLibList {
@@ -383,14 +385,18 @@ int COGL::EnableClientState (GLuint nState, int nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
+#if TRACK_STATES
 if (m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY])
 	return 1;
+#endif
 glEnableClientState (nState);
 #if DBG_OGL
 memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 if (!glGetError ()) {
+#if TRACK_STATES
 	m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 1;
+#endif
 	return 1;
 	}
 DisableClientState (nState, -1);
@@ -403,9 +409,14 @@ int COGL::DisableClientState (GLuint nState, int nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
-if (!m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]) {
+#if TRACK_STATES
+if (!m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]) 
+#endif
+	{
 	glDisableClientState (nState);
+#if TRACK_STATES
 	m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
+#endif
 	}
 #if DBG_OGL
 //memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));

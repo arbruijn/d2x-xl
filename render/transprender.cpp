@@ -578,16 +578,9 @@ return Add (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::EnableClientState (char bTexCoord, char bColor, char bDecal, int nTMU)
+void CTransparencyRenderer::DisableTMU (int nTMU, char bFull)
 {
-ogl.EnableClientStates (bTexCoord, bColor, !m_data.bLightmaps, nTMU);
-}
-
-//------------------------------------------------------------------------------
-
-void CTransparencyRenderer::DisableClientState (int nTMU, char bFull)
-{
-ogl.DisableClientStates (1, 1, 0, nTMU);
+ogl.DisableClientStates (1, 1, 1, nTMU);
 if (bFull) {
 	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
@@ -612,21 +605,23 @@ m_data.bUseLightmaps = 0;
 void CTransparencyRenderer::SetDecalState (char bDecal, char bTexCoord, char bColor, char bUseLightmaps)
 {
 #if RENDER_TRANSP_DECALS
-if (bDecal) {
-	if (bDecal == 2)
-		EnableClientState (bTexCoord, 0, 1, GL_TEXTURE2 + bUseLightmaps);
-	EnableClientState (bTexCoord, bColor, 1, GL_TEXTURE1 + bUseLightmaps);
-	m_data.bDecal = bDecal;
-	}
-else {
-	if (m_data.bDecal == 2) {
-		DisableClientState (GL_TEXTURE2 + bUseLightmaps, 1);
-		m_data.bmP [2] = NULL;
+if (m_data.bDecal != bDecal) {
+	if (bDecal) {
+		if (bDecal == 2)
+			ogl.EnableClientStates (bTexCoord, 0, 0, GL_TEXTURE2 + bUseLightmaps);	// mask
+		ogl.EnableClientStates (bTexCoord, bColor, 0, GL_TEXTURE1 + bUseLightmaps);	// decal
+		m_data.bDecal = bDecal;
 		}
-	DisableClientState (GL_TEXTURE1 + bUseLightmaps, 1);
-	m_data.bmP [1] = NULL;
-	m_data.bDecal = 0;
-	}
+	else {
+		if (m_data.bDecal == 2) {
+			DisableTMU (GL_TEXTURE2 + bUseLightmaps, 1);
+			m_data.bmP [2] = NULL;
+			}
+		DisableTMU (GL_TEXTURE1 + bUseLightmaps, 1);
+		m_data.bmP [1] = NULL;
+		m_data.bDecal = 0;
+		}
+	}	
 #endif
 }
 
@@ -644,11 +639,11 @@ if (m_data.bUseLightmaps != bUseLightmaps) {
 
 if (bClientState) {
 	SetDecalState (bDecal, bTexCoord, bColor, bUseLightmaps);
-	EnableClientState (bTexCoord, bColor, -bDecal, GL_TEXTURE0 + bUseLightmaps);
+	ogl.EnableClientStates (bTexCoord, bColor, !bUseLightmaps, GL_TEXTURE0 + bUseLightmaps);
 	}
 else {
 	SetDecalState (0, bTexCoord, bColor, bUseLightmaps);
-	DisableClientState (GL_TEXTURE0 + bUseLightmaps, 1);
+	DisableTMU (GL_TEXTURE0 + bUseLightmaps, 0);
 	}
 ogl.SelectTMU (GL_TEXTURE0);
 PROF_END(ptRenderStates)
@@ -794,18 +789,13 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
-ogl.SelectTMU (GL_TEXTURE3);
-glBindTexture (GL_TEXTURE_2D, 0);
-glDisable (GL_TEXTURE_2D);
 if (!bmTop) {
-	ogl.SelectTMU (GL_TEXTURE1 + bLightmaps);
-	glBindTexture (GL_TEXTURE_2D, 0);
-	glDisable (GL_TEXTURE_2D);
+	DisableTMU (GL_TEXTURE1 + bLightmaps, 1);
+	m_data.bmP [1] = NULL;
 	}
 if (!mask) {
-	ogl.SelectTMU (GL_TEXTURE2 + bLightmaps);
-	glBindTexture (GL_TEXTURE_2D, 0);
-	glDisable (GL_TEXTURE_2D);
+	DisableTMU (GL_TEXTURE2 + bLightmaps, 1);
+	m_data.bmP [2] = NULL;
 	}
 
 if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
