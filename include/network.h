@@ -89,8 +89,9 @@ extern int nNetworkGameSubType;
 typedef struct tSequencePacket {
 	ubyte           nType;
 	int             nSecurity;
-	ubyte           pad1[3];
+	ubyte           pad1 [3];
 	tNetPlayerInfo  player;
+	ubyte           pad2 [3];
 } __pack__ tSequencePacket;
 
 #define NET_XDATA_SIZE 454

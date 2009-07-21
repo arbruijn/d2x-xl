@@ -759,8 +759,10 @@ if (faceP) {
 		nDbgSeg = nDbgSeg;
 		}
 	}
-else
+else {
 	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
+	return;
+	}
 //m_data.bUseLightmaps = 0;
 #endif
 #if 0
@@ -797,6 +799,8 @@ if (!mask) {
 	DisableTMU (GL_TEXTURE2 + bLightmaps, 1);
 	m_data.bmP [2] = NULL;
 	}
+if (!bLightmaps)
+	DisableTMU (GL_TEXTURE3, 1);
 
 if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
