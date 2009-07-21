@@ -1149,7 +1149,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		}
 #endif //CLEAR_WINDOW
 
-gameStates.render.bFullBright = automap.m_bDisplay && (gameOpts->render.automap.bBright = 1);
+gameStates.render.bFullBright = automap.m_bDisplay && gameOpts->render.automap.bBright;
 ogl.m_states.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (ogl.m_states.nContrast == 8);
 #if SHADOWS
 ogl.m_states.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
