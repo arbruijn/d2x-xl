@@ -26,6 +26,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_dpmi.h"
 #include "error.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "color.h"
 #include "palette.h"
 #include "pcx.h"

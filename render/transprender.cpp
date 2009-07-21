@@ -580,22 +580,7 @@ return Add (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
 
 void CTransparencyRenderer::EnableClientState (char bTexCoord, char bColor, char bDecal, int nTMU)
 {
-ogl.SelectTMU (nTMU, true);
-if (bDecal < 1) {
-	if (bColor)
-		ogl.EnableClientState (GL_COLOR_ARRAY);
-	else
-		ogl.DisableClientState (GL_COLOR_ARRAY);
-	}
-if (bDecal) {
-	if (bTexCoord)
-		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
-	else
-		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
-	}
-if (!m_data.bLightmaps)
-	ogl.EnableClientState (GL_NORMAL_ARRAY);
-ogl.EnableClientState (GL_VERTEX_ARRAY);
+ogl.EnableClientStates (bTexCoord, bColor, !m_data.bLightmaps, nTMU);
 }
 
 //------------------------------------------------------------------------------
