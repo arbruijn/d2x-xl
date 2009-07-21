@@ -394,7 +394,7 @@ glEnableClientState (nState);
 memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 if (!glGetError ()) {
-#if TRACK_STATES
+#if TRACK_STATES || DBG_OGL
 	m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 1;
 #endif
 	return 1;
@@ -414,7 +414,7 @@ if (!m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY])
 #endif
 	{
 	glDisableClientState (nState);
-#if TRACK_STATES
+#if TRACK_STATES || DBG_OGL
 	m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
 #endif
 	}
@@ -933,8 +933,10 @@ else if (count > 100000)
 	PrintLog ("glDrawArrays: suspiciously high count\n");
 else if ((mode < 0) || (mode > GL_POLYGON))
 	PrintLog ("glDrawArrays: invalid mode\n");
+#if TRACK_STATES || DBG_OGL
 else if (!m_states.clientStates [m_states.nTMU [0]][0])
 	PrintLog ("glDrawArrays: client data not enabled\n");
+#endif
 else
 	glDrawArrays (mode, first, count);
 }
