@@ -795,16 +795,18 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
-if (!bmTop) {
+if (!bmTop && m_data.bmP [1]) {
 	DisableTMU (GL_TEXTURE1 + bLightmaps, 1);
 	m_data.bmP [1] = NULL;
 	}
-if (!mask) {
+if (!mask && m_data.bmP [2]) {
 	DisableTMU (GL_TEXTURE2 + bLightmaps, 1);
 	m_data.bmP [2] = NULL;
 	}
+#if 0
 if (!bLightmaps)
 	DisableTMU (GL_TEXTURE3, 1);
+#endif
 
 if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
