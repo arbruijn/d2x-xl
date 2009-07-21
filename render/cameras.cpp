@@ -104,7 +104,7 @@ int CCamera::BindBuffer (void)
 {
 if ((HaveBuffer (0) != 1) && !CreateBuffer ())
 	return 0;
-OGL_BINDTEX (m_info.glTexId);
+OglBindTexture (m_info.glTexId);
 #if RENDER2TEXTURE == 1
 #	ifdef _WIN32
 return m_info.pbo.Bind ();

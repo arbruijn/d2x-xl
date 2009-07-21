@@ -1321,7 +1321,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) &&
-				!(gameStates.render.bAllVisited || automap.m_visited [0][nSegment]))
+				!(gameStates.render.bAllVisited || m_visited [0][nSegment]))
 			color = m_colors.walls.nRevealed;
 
 addEdge:
@@ -1384,12 +1384,12 @@ if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 else {
 	// Not cheating, add visited edges, and then unvisited edges
 	for (s = 0; s <= gameData.segs.nLastSegment; s++)
-		if (automap.m_visited [0][s]) {
+		if (m_visited [0][s]) {
 			h++;
 			AddSegmentEdges (&SEGMENTS [s]);
 			}
 		for (s = 0; s <= gameData.segs.nLastSegment; s++)
-			if (!automap.m_visited [0][s]) {
+			if (!m_visited [0][s]) {
 				AddUnknownSegmentEdges (&SEGMENTS [s]);
 				}
 		}

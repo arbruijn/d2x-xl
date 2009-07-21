@@ -7,6 +7,35 @@
 #endif  
 
 #ifdef _WIN32
+#	define OGL_MULTI_TEXTURING	1
+#	define VERTEX_LIGHTING		1
+#	define OGL_QUERY				1
+#elif defined(__unix__)
+#	define OGL_MULTI_TEXTURING	1
+#	define VERTEX_LIGHTING		1
+#	define OGL_QUERY				1
+#elif defined(__macosx__)
+#	define OGL_MULTI_TEXTURING	1
+#	define VERTEX_LIGHTING		1
+#	define OGL_QUERY				1
+#endif
+
+#define LIGHTMAPS					1
+
+#define TEXTURE_COMPRESSION	0
+
+#if DBG
+#	define DBG_SHADERS			0
+#	define DBG_OGL					1
+#else
+#	define DBG_SHADERS			0
+#	define DBG_OGL					0
+#endif
+
+#define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
+#define OGL_POINT_SPRITES		1
+
+#ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
 #else
@@ -33,33 +62,6 @@
 //kludge: since multi texture support has been rewritten
 #undef GL_ARB_multitexture
 #undef GL_SGIS_multitexture
-
-#ifdef _WIN32
-#	define OGL_MULTI_TEXTURING	1
-#	define VERTEX_LIGHTING		1
-#	define OGL_QUERY				1
-#elif defined(__unix__)
-#	define OGL_MULTI_TEXTURING	1
-#	define VERTEX_LIGHTING		1
-#	define OGL_QUERY				1
-#elif defined(__macosx__)
-#	define OGL_MULTI_TEXTURING	1
-#	define VERTEX_LIGHTING		1
-#	define OGL_QUERY				1
-#endif
-
-#define LIGHTMAPS					1
-
-#define TEXTURE_COMPRESSION	0
-
-#if DBG
-#	define DBG_SHADERS			0
-#else
-#	define DBG_SHADERS			0
-#endif
-
-#define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
-#define OGL_POINT_SPRITES		1
 
 #define DEFAULT_FOV				105.0
 #define FISHEYE_FOV				135.0
@@ -258,6 +260,24 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 
 #define OGL_TEXENV(p,m) OGL_SETSTATE(p,m,glTexEnvi(GL_TEXTURE_ENV, p,m));
 #define OGL_TEXPARAM(p,m) OGL_SETSTATE(p,m,glTexParameteri(GL_TEXTURE_2D,p,m));
+
+//------------------------------------------------------------------------------
+
+#if DBG_OGL
+#define	OglDrawArrays(mode, first, count)					ogl.DrawArrays (mode, first, count)
+#define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
+#define	OglNormalPointer(type, stride, pointer)			ogl.NormalPointer (type, stride, pointer, __FILE__, __LINE__)
+#define	OglBindTexture(_handle)									ogl.BindTexture (_handle)
+#else
+#define	OglDrawArrays(mode, first, count)					glDrawArrays (mode, first, count)
+#define	OglVertexPointer(size, type, stride, pointer)	glVertexPointer (size, type, stride, pointer)
+#define	OglColorPointer(size, type, stride, pointer)		glColorPointer (size, type, stride, pointer)
+#define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer)
+#define	OglNormalPointer(type, stride, pointer)			glNormalPointer (type, stride, pointer)
+#define	OglBindTexture(_handle)									glBindTexture (GL_TEXTURE_2D, _handle)
+#endif
 
 //------------------------------------------------------------------------------
 

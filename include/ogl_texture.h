@@ -13,10 +13,6 @@
 
 //------------------------------------------------------------------------------
 
-#define OGL_BINDTEX(_handle)	glBindTexture (GL_TEXTURE_2D, _handle)
-
-//------------------------------------------------------------------------------
-
 class CBitmap;
 class CTextureManager;
 
@@ -65,16 +61,7 @@ class CTexture {
 		bool Register (void);
 		void Release (void);
 		static void Wrap (int state);
-		inline void Bind (void) { 
-#if DBG
-			if (int (m_info.handle) <= 0)
-				return;
-#endif
-			if (m_info.bRenderBuffer)
-				BindRenderBuffer ();
-			else
-				OGL_BINDTEX (m_info.handle); 
-			}
+		void Bind (void);
 		int BindRenderBuffer (void);
 
 		inline CTexture* Prev (void) { return m_prev; }

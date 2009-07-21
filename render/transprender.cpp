@@ -578,17 +578,17 @@ return Add (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::EnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU)
+void CTransparencyRenderer::EnableClientState (char bTexCoord, char bColor, char bDecal, int nTMU)
 {
 ogl.SelectTMU (nTMU, true);
-if ((bDecal < 1) && (bColor != m_data.bClientColor)) {
-	if ((m_data.bClientColor = bColor))
+if (bDecal < 1) {
+	if (bColor)
 		ogl.EnableClientState (GL_COLOR_ARRAY);
 	else
 		ogl.DisableClientState (GL_COLOR_ARRAY);
 	}
-if (bDecal || (bTexCoord != m_data.bClientTexCoord)) {
-	if ((m_data.bClientTexCoord = bTexCoord))
+if (bDecal) {
+	if (bTexCoord)
 		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
 	else
 		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
@@ -600,36 +600,11 @@ ogl.EnableClientState (GL_VERTEX_ARRAY);
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::DisableClientState (int nTMU, char bDecal, char bFull)
+void CTransparencyRenderer::DisableClientState (int nTMU, char bFull)
 {
-#if DBG
-if (nTMU == GL_TEXTURE0)
-	nTMU = nTMU;
-#endif
-ogl.SelectTMU (nTMU, true);
-ogl.ClearError (0);
+ogl.DisableClientStates (1, 1, 0, nTMU);
 if (bFull) {
-	if (bDecal) {
-		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
-		ogl.DisableClientState (GL_COLOR_ARRAY);
-			m_data.bClientTexCoord = 0;
-			m_data.bClientColor = 0;
-		}
-	else {
-		m_data.bClientState = 0;
-		if (m_data.bClientTexCoord) {
-			ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
-			m_data.bClientTexCoord = 0;
-			}
-		if (bDecal || m_data.bClientColor) {
-			ogl.DisableClientState (GL_COLOR_ARRAY);
-			m_data.bClientColor = 0;
-			}
-		}
-	ogl.DisableClientState (GL_VERTEX_ARRAY);
-	}
-else {
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	}
 }
@@ -649,103 +624,48 @@ m_data.bUseLightmaps = 0;
 
 //------------------------------------------------------------------------------
 
+void CTransparencyRenderer::SetDecalState (char bDecal, char bTexCoord, char bColor, char bUseLightmaps)
+{
+#if RENDER_TRANSP_DECALS
+if (bDecal) {
+	if (bDecal == 2)
+		EnableClientState (bTexCoord, 0, 1, GL_TEXTURE2 + bUseLightmaps);
+	EnableClientState (bTexCoord, bColor, 1, GL_TEXTURE1 + bUseLightmaps);
+	m_data.bDecal = bDecal;
+	}
+else {
+	if (m_data.bDecal == 2) {
+		DisableClientState (GL_TEXTURE2 + bUseLightmaps, 1);
+		m_data.bmP [2] = NULL;
+		}
+	DisableClientState (GL_TEXTURE1 + bUseLightmaps, 1);
+	m_data.bmP [1] = NULL;
+	m_data.bDecal = 0;
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 int CTransparencyRenderer::SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal)
 {
 PROF_START
-#if 1
 if (m_data.bUseLightmaps != bUseLightmaps) {
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.ClearError (0);
-	if (bUseLightmaps) {
-		glEnable (GL_TEXTURE_2D);
-		ogl.EnableClientState (GL_NORMAL_ARRAY);
-		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
-		ogl.EnableClientState (GL_COLOR_ARRAY);
-		ogl.EnableClientState (GL_VERTEX_ARRAY);
-		m_data.bClientTexCoord =
-		m_data.bClientColor = 0;
-		}
-	else {
-		ogl.DisableClientState (GL_NORMAL_ARRAY);
-		DisableClientState (GL_TEXTURE1, 0, 0);
-		if (m_data.bDecal) {
-			DisableClientState (GL_TEXTURE2, 1, 0);
-			if (m_data.bDecal == 2)
-				DisableClientState (GL_TEXTURE3, 1, 0);
-			m_data.bDecal = 0;
-			}
-		m_data.bClientTexCoord =
-		m_data.bClientColor = 1;
-		}
+	ogl.ResetClientStates ();
 	ResetBitmaps ();
+	ogl.EnableClientStates (1, 1, bUseLightmaps, GL_TEXTURE0);
 	m_data.bUseLightmaps = bUseLightmaps;
 	}
-#endif
-#if 0
-if (m_data.bClientState == bClientState) {
-	if (bClientState) {
-		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps, true);
-		if (m_data.bClientColor != bColor) {
-			if ((m_data.bClientColor = bColor))
-				ogl.EnableClientState (GL_COLOR_ARRAY);
-			else
-				ogl.DisableClientState (GL_COLOR_ARRAY);
-			}
-		if (m_data.bClientTexCoord != bTexCoord) {
-			if ((m_data.bClientTexCoord = bTexCoord))
-				ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
-			else
-				ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
-			}
-		}
-	else
-		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps);
-	return 1;
-	}
-else
-#endif
+
 if (bClientState) {
-	m_data.bClientState = 1;
-#if RENDER_TRANSP_DECALS
-	if (bDecal) {
-		if (bDecal == 2) {
-			EnableClientState (bClientState, bTexCoord, 0, 1, GL_TEXTURE2 + bUseLightmaps);
-			}
-		EnableClientState (bClientState, bTexCoord, bColor, 1, GL_TEXTURE1 + bUseLightmaps);
-		m_data.bDecal = bDecal;
-		}
-	else /*if (m_data.bDecal)*/ {
-		if (m_data.bDecal == 2) {
-			DisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
-			OGL_BINDTEX (0);
-			glDisable (GL_TEXTURE_2D);
-			m_data.bmP [2] = NULL;
-			}
-		DisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
-		OGL_BINDTEX (0);
-		glDisable (GL_TEXTURE_2D);
-		m_data.bmP [1] = NULL;
-		m_data.bDecal = 0;
-		}
-#endif
-	EnableClientState (bClientState, bTexCoord, bColor, -bDecal, GL_TEXTURE0 + bUseLightmaps);
+	SetDecalState (bDecal, bTexCoord, bColor, bUseLightmaps);
+	EnableClientState (bTexCoord, bColor, -bDecal, GL_TEXTURE0 + bUseLightmaps);
 	}
 else {
-#if RENDER_TRANSP_DECALS
-	if (m_data.bDecal) {
-		if (m_data.bDecal == 2) {
-			DisableClientState (GL_TEXTURE2 + bUseLightmaps, 1, 1);
-			OGL_BINDTEX (0);
-			}
-		DisableClientState (GL_TEXTURE1 + bUseLightmaps, 1, 1);
-		OGL_BINDTEX (0);
-		m_data.bDecal = 0;
-		}
-#endif
-	DisableClientState (GL_TEXTURE0 + bUseLightmaps, 0, 1);
-	ogl.SelectTMU (GL_TEXTURE0);
+	SetDecalState (0, bTexCoord, bColor, bUseLightmaps);
+	DisableClientState (GL_TEXTURE0 + bUseLightmaps, 1);
 	}
-//m_data.bmP = NULL;
+ogl.SelectTMU (GL_TEXTURE0);
 PROF_END(ptRenderStates)
 return 1;
 }
@@ -792,20 +712,20 @@ if (bmP) {
 			m_data.nFrame = nFrame;
 			}
 		else
-			OGL_BINDTEX (0);
+			OglBindTexture (0);
 		m_data.bmP [bDecal] = bmP;
 		}
 	}
 else if (SetClientState (bClientState, 0, /*!m_data.bLightmaps &&*/ (nColors > 1), bUseLightmaps, 0) || m_data.bTextured) {
 	if (m_data.bTextured) {
-		OGL_BINDTEX (0);
+		OglBindTexture (0);
 		glDisable (GL_TEXTURE_2D);
 		ResetBitmaps ();
 		}
 	}
 if (!bShader)
 	ResetShader ();
-return (m_data.bClientState == bClientState);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1114,11 +1034,7 @@ for (int i = 0; i < 4; i++) {
 gameData.models.vScale = item->vScale;
 DrawPolygonObject (item->objP, 0, 1);
 gameData.models.vScale.SetZero ();
-m_data.bTextured = 0;
-m_data.bClientState = 0;
-m_data.bClientTexCoord = 0;
-m_data.bClientColor = 0;
-SetClientState (0, 0, 0, 0, 0);
+ogl.ResetClientStates ();
 ResetBitmaps ();
 //SEM_ENTER (SEM_LIGHTNING)
 //SEM_ENTER (SEM_SPARKS)
@@ -1131,15 +1047,6 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
-#if 0 //DBG
-//SetClientState (0, 0, 0, 0, 0);
-ResetShader ();
-m_data.bTextured = 0;
-m_data.bClientState = 0;
-m_data.bClientTexCoord = 0;
-m_data.bClientColor = 0;
-ResetBitmaps ();
-#endif
 if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend, 0, 0, 0)) {
 	float		h, w, u, v;
 	CFloatVector	fPos = item->position;
@@ -1286,7 +1193,7 @@ if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 ResetBitmaps ();
 ogl.SelectTMU (GL_TEXTURE0, true);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 glDisable (GL_TEXTURE_2D);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthMask (m_data.bDepthMask = 0);
@@ -1310,10 +1217,9 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSe
 	o.rType.polyObjInfo.nModel = BULLET_MODEL;
 	o.rType.polyObjInfo.nTexOverride = -1;
 	DrawPolygonObject (&o, 0, 1);
-	glDisable (GL_TEXTURE_2D);
-	m_data.bTextured = 0;
-	m_data.bClientState = 0;
 	gameData.models.vScale.SetZero ();
+	ogl.ResetClientStates ();
+	ResetBitmaps ();
 	}
 }
 
@@ -1349,12 +1255,12 @@ void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 if (m_data.nPrevType != m_data.nCurType) {
 	if (m_data.bDepthMask)
 		glDepthMask (m_data.bDepthMask = 0);
-	DisableClientState (GL_TEXTURE2, 1, 0);
-	SetClientState (1, 0, 0, 0, 0);
+	ogl.ResetClientStates ();
+	ResetBitmaps ();
 	ResetShader ();
 	}
 item->lightning->Render (item->nDepth, 0, 0);
-SetClientState (0, 0, 0, 0, 0);
+ogl.ResetClientStates ();
 ResetBitmaps ();
 m_data.bDepthMask = 1;
 }
@@ -1506,10 +1412,9 @@ PROF_START
 gameStates.render.nType = 5;
 ResetShader ();
 bStencil = ogl.StencilOff ();
+ogl.ResetClientStates ();
+ResetBitmaps ();
 m_data.bTextured = -1;
-m_data.bClientState = -1;
-m_data.bClientTexCoord = 0;
-m_data.bClientColor = 0;
 m_data.bDepthMask = 0;
 m_data.bUseLightmaps = 0;
 m_data.bDecal = 0;
@@ -1521,11 +1426,7 @@ m_data.bmP [0] =
 m_data.bmP [1] = NULL;
 sparkBuffer.nSparks = 0;
 ogl.DisableLighting ();
-if (m_data.bLightmaps)
-	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE3);
-ogl.DisableClientStates (1, 1, 0, GL_TEXTURE2);
-ogl.DisableClientStates (1, 1, 0, GL_TEXTURE1);
-ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
+ogl.ResetClientStates ();
 if (ogl.m_states.bShadersOk) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
@@ -1567,13 +1468,13 @@ FlushBuffers (-1);
 particleManager.EndRender ();
 ResetShader ();
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (1);

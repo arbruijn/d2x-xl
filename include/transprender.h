@@ -194,8 +194,9 @@ class CTransparencyRenderer {
 		int AddFaceTris (CSegFace *faceP);
 		int AddFaceQuads (CSegFace *faceP);
 		void ResetBitmaps (void);
-		void EnableClientState (char bClientState, char bTexCoord, char bColor, char bDecal, int nTMU);
-		void DisableClientState (int nTMU, char bDecal, char bFull);
+		void EnableClientState (char bTexCoord, char bColor, char bDecal, int nTMU);
+		void DisableClientState (int nTMU, char bFull);
+		void SetDecalState (char bDecal, char bTexCoord, char bColor, char bUseLightmaps);
 		int SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal);
 		void ResetShader (void);
 		int LoadImage (CBitmap *bmP, char nColors, char nFrame, int nWrap,

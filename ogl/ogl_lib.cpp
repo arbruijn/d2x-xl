@@ -383,6 +383,8 @@ int COGL::EnableClientState (GLuint nState, int nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
+if (m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY])
+	return 1;
 glEnableClientState (nState);
 #if DBG_OGL
 memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
@@ -401,10 +403,12 @@ int COGL::DisableClientState (GLuint nState, int nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
-glDisableClientState (nState);
-m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
+if (!m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]) {
+	glDisableClientState (nState);
+	m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY] = 0;
+	}
 #if DBG_OGL
-memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
+//memset (&m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_states.clientBuffers [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 return glGetError () == 0;
 }
@@ -449,6 +453,20 @@ if (bTexCoord)
 if (bColor)
 	DisableClientState (GL_COLOR_ARRAY);
 DisableClientState (GL_VERTEX_ARRAY);
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::ResetClientStates (void) 
+{ 
+for (int i = 4; i; i) {
+	DisableClientStates (1, 1, 1, GL_TEXTURE0 + --i);
+	glEnable (GL_TEXTURE_2D);
+	OglBindTexture (0);
+	if (i)
+		glDisable (GL_TEXTURE_2D);
+	}
+memset (m_states.clientStates, 0, sizeof (m_states.clientStates)); 
 }
 
 //------------------------------------------------------------------------------
@@ -740,13 +758,13 @@ DestroyGlareDepthTexture ();
 #endif
 glEnable (GL_TEXTURE_2D);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.Viewport (0, 0, screen.Width (), screen.Height ());
 #ifndef NMONO
@@ -919,6 +937,7 @@ SetupExtensions ();
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (" Setting up renderer...");
+ResetClientStates ();
 ResetTextures (1, bGame);
 if (bGame) {
 	InitShaders ();

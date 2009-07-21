@@ -156,7 +156,7 @@ if (LoadScope ()) {
 	glTexCoord2f (0.5f - w, 0.75f);
 	glVertex2f (0, y - h);
 	glEnd ();
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glEnable (GL_DEPTH_TEST);
 	glDisable (GL_TEXTURE_2D);
 	glPopMatrix ();

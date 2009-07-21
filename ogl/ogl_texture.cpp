@@ -375,11 +375,25 @@ else {
 
 //------------------------------------------------------------------------------
 
+void CTexture::Bind (void) 
+{ 
+#if DBG
+if (int (m_info.handle) <= 0)
+	return;
+#endif
+if (m_info.bRenderBuffer)
+	BindRenderBuffer ();
+else
+	OglBindTexture (m_info.handle); 
+}
+
+//------------------------------------------------------------------------------
+
 int CTexture::BindRenderBuffer (void)
 {
 #if RENDER2TEXTURE == 1
 #	if 1
-OGL_BINDTEX (m_info.pbuffer.texId);
+OglBindTexture (m_info.pbuffer.texId);
 #		if 1
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -391,7 +405,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 #		endif
-OGL_BINDTEX (m_info.pbuffer.texId);
+OglBindTexture (m_info.pbuffer.texId);
 #	endif
 #	ifdef _WIN32
 #		if DBG
@@ -405,7 +419,7 @@ if (!(m_info.pbo.Bind ())
 #		endif
 #	endif
 #elif RENDER2TEXTURE == 2
-OGL_BINDTEX (m_info.fbo.RenderBuffer ());
+OglBindTexture (m_info.fbo.RenderBuffer ());
 #endif
 return 0;
 }
@@ -881,7 +895,7 @@ if (!m_info.handle) {
 #if DBG
 usedHandles [m_info.handle] = 1;
 #endif
-OGL_BINDTEX  (m_info.handle);
+OglBindTexture  (m_info.handle);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, 4, w, h, 0, ogl.m_states.nRGBAFormat, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

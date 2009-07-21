@@ -174,7 +174,7 @@ if (!(m_info.hRC = glXCreateContext (hGlDC, vi, hGlRC, GL_TRUE))) {// Share disp
 XFree (pfd);
 #endif //!_WIN32
 glGenTextures (1, &m_info.texId);
-OGL_BINDTEX (m_info.texId);
+OglBindTexture (m_info.texId);
 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);

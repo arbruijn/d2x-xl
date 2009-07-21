@@ -447,6 +447,7 @@ gameStates.render.history.bmBot =
 gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
+ogl.ResetClientStates ();
 if (ogl.m_states.bShadersOk) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
@@ -558,26 +559,7 @@ void EndRenderFaces (int nType, int bDepthOnly)
 #if 1
 G3FlushFaceBuffer (1);
 #endif
-if (!bDepthOnly) {
-	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE3);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-
-	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE2);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-
-	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE1);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-	}
-ogl.DisableClientStates (!bDepthOnly, !bDepthOnly, 1, GL_TEXTURE0);
-glEnable (GL_TEXTURE_2D);
-OGL_BINDTEX (0);
-glDisable (GL_TEXTURE_2D);
+ogl.ResetClientStates ();
 if (ogl.m_states.bShadersOk) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;

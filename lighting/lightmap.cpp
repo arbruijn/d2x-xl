@@ -103,7 +103,7 @@ if (!lmP->handle) {
 #endif
 	return 0;
 	}
-OGL_BINDTEX (lmP->handle); 
+OglBindTexture (lmP->handle); 
 #if 0//DBG
 if ((nError = glGetError ()))
 	return 0;

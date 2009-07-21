@@ -223,7 +223,7 @@ if (m_render.bBlendState)
 else
 	glDisable (GL_BLEND);
 ogl.SelectTMU (GL_TEXTURE0);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 glDisable (GL_TEXTURE_2D);
 }
 

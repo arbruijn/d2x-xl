@@ -100,7 +100,7 @@ else {
 		glTexCoord2f (0, 1);
 		glVertex2f (-w, h);
 		glEnd ();
-		OGL_BINDTEX (0);
+		OglBindTexture (0);
 		glDisable (GL_TEXTURE_2D);
 		glPopMatrix ();
 		}

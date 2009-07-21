@@ -10,8 +10,6 @@
 #include "descent.h"
 #include "vecmat.h"
 
-#define DBG_OGL	1 //DBG
-
 //------------------------------------------------------------------------------
 
 extern GLuint hBigSphere;
@@ -48,7 +46,7 @@ typedef struct tSinCosf {
 void OglDeleteLists (GLuint *lp, int n);
 void ComputeSinCosTable (int nSides, tSinCosf *sinCosP);
 int CircleListInit (int nSides, int nType, int mode);
-void G3Normal (g3sPoint **pointList, CFixVector *pvNormal);
+void G3Normal (g3sPoint** pointList, CFixVector* pvNormal);
 void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
 //------------------------------------------------------------------------------
@@ -211,6 +209,7 @@ class COGL {
 		int DisableClientState (GLuint nState, int nTMU = -1);
 		int EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
 		void DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
+		void ResetClientStates (void);
 		void StartFrame (int bFlat, int bResetColorBuf);
 		void EndFrame (void);
 		void EnableLighting (int bSpecular);
@@ -241,6 +240,9 @@ class COGL {
 
 		void GenTextures (GLsizei n, GLuint *hTextures);
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
+		void BindTexture (GLuint handle) { glBindTexture (GL_TEXTURE_2D, handle); }
+
+
 #else
 		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine) 
 			{ glVertexPointer (size, type, stride, pointer); }
@@ -281,22 +283,6 @@ class COGL {
 };
 
 extern COGL ogl;
-
-//------------------------------------------------------------------------------
-
-#if DBG_OGL
-#define	OglDrawArrays(mode, first, count)					ogl.DrawArrays (mode, first, count)
-#define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglNormalPointer(type, stride, pointer)			ogl.NormalPointer (type, stride, pointer, __FILE__, __LINE__)
-#else
-#define	OglDrawArrays(mode, first, count)					glDrawArrays (mode, first, count)
-#define	OglVertexPointer(size, type, stride, pointer)	glVertexPointer (size, type, stride, pointer)
-#define	OglColorPointer(size, type, stride, pointer)		glColorPointer (size, type, stride, pointer)
-#define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer)
-#define	OglNormalPointer(type, stride, pointer)			glNormalPointer (type, stride, pointer)
-#endif
 
 //------------------------------------------------------------------------------
 

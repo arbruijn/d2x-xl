@@ -164,16 +164,16 @@ static inline void ExitTMU (int bVertexArrays)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 #else
 if (glIsList (g3ExitTMU [bVertexArrays]))
@@ -183,16 +183,16 @@ else {
 	if (g3ExitTMU [bVertexArrays])
 		glNewList (g3ExitTMU [bVertexArrays], GL_COMPILE);
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 	if (g3ExitTMU [bVertexArrays]) {
 		glEndList ();
@@ -213,7 +213,7 @@ else {
 				(_bmP)->Texture ()->Wrap (GL_REPEAT); \
 				} \
 			else { \
-				OGL_BINDTEX ((_lmP)->handle); \
+				OglBindTexture ((_lmP)->handle); \
 				CTexture::Wrap (GL_CLAMP); \
 				}
 

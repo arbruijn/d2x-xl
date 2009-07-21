@@ -811,7 +811,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 			}
 		glEnd ();
 		transformation.End ();
-		OGL_BINDTEX (0);
+		OglBindTexture (0);
 		ogl.StencilOn (bStencil);
 		}
 	}

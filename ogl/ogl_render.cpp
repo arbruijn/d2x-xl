@@ -105,7 +105,7 @@ inline int G3BindTex (CBitmap *bmP, GLint nTexId, GLhandleARB lmProg, char *pszT
 if (bmP || (nTexId >= 0)) {
 	initTMU (bVertexArrays);
 	if (nTexId >= 0)
-		OGL_BINDTEX (nTexId);
+		OglBindTexture (nTexId);
 	else {
 		if (bmP->Bind (1))
 			return 1;
@@ -799,20 +799,20 @@ if (bOverlay > 0) {
 	glEnd ();
 	glDepthFunc (GL_LESS);
 #if OGL_CLEANUP
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D);
 #endif
 	}
 else if (bShaderMerge) {
 #if OGL_CLEANUP
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
-	OGL_BINDTEX (0);
+	OglBindTexture (0);
 	glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
 #endif
 	glUseProgramObject (activeShaderProg = 0);
 	}
 ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
-OGL_BINDTEX (0);
+OglBindTexture (0);
 glDisable (GL_TEXTURE_2D);
 tMapColor.index =
 lightColor.index = 0;
@@ -894,7 +894,7 @@ if (bmTop) { // use render pipeline 1 for overlay texture
 	}
 // use render pipeline 2 for lightmap texture
 InitTMU2 (0);
-//OGL_BINDTEX (lightmap->handle);
+//OglBindTexture (lightmap->handle);
 if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "lMapTex"), 2);
 glBegin (GL_TRIANGLE_FAN);
