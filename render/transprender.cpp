@@ -795,7 +795,6 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
-PrintLog ("rendering transparent face %d,%d\n", faceP->nSegment, faceP->nSide);
 if (!bmTop) {
 	DisableTMU (GL_TEXTURE1 + bLightmaps, 1);
 	m_data.bmP [1] = NULL;
@@ -1364,7 +1363,6 @@ if (!pl->bRendered) {
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
 			RenderPoly (&pl->item.poly);
 			}
-#if 0
 		else if (m_data.nCurType == tiObject) {
 			RenderObject (&pl->item.object);
 			}
@@ -1374,13 +1372,9 @@ if (!pl->bRendered) {
 		else if (m_data.nCurType == tiSpark) {
 			RenderSpark (&pl->item.spark);
 			}
-#endif
 		else if (m_data.nCurType == tiSphere) {
-			if (automap.m_bDisplay)
-				PrintLog ("Rendering sphere for object %d\n", pl->item.sphere.objP->Index ());
 			RenderSphere (&pl->item.sphere);
 			}
-#if 0
 		else if (m_data.nCurType == tiParticle) {
 			if (m_data.bHaveParticles)
 				RenderParticle (&pl->item.particle);
@@ -1391,7 +1385,6 @@ if (!pl->bRendered) {
 		else if (m_data.nCurType == tiThruster) {
 			RenderLightTrail (&pl->item.thruster);
 			}
-#endif
 		}
 	catch(...) {
 		PrintLog ("invalid transparent render item (type: %d)\n", m_data.nCurType);

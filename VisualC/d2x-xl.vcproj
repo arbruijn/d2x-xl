@@ -3422,10 +3422,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\ogl_init.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\ogl_lib.h"
 						>
 					</File>
@@ -4277,11 +4273,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

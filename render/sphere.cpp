@@ -532,10 +532,10 @@ m_nTiles =
 m_nVertices = 0;
 m_vertices.Destroy ();
 h = nRings * (nRings + 1);
-if (!m_vertices.Create (2))
+if (!m_vertices.Create (h))
 	return 0;
-m_nRings =
-m_nTiles = 0;
+m_nRings = nRings;
+m_nTiles = nTiles;
 m_nVertices = h;
 h = nRings / 2;
 a = float (2 * Pi / nRings);
