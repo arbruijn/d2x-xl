@@ -509,7 +509,7 @@ item.color.blue = blue;
 item.color.alpha = alpha;
 item.nSize = nSize;
 item.objP = objP;
-transformation.Transform(vPos, objP->info.position.vPos, 0);
+transformation.Transform (vPos, objP->info.position.vPos, 0);
 return Add (tiSphere, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
@@ -712,6 +712,10 @@ return 1;
 
 void CTransparencyRenderer::SetRenderPointers (int nTMU, int nIndex, int bDecal)
 {
+#if DBG
+if (nIndex + 3 > FACES.vertices.Length ())
+	return;
+#endif
 ogl.SelectTMU (nTMU, true);
 if (m_data.bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, bDecal ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
@@ -791,6 +795,7 @@ else {
 bDecal = 0;
 mask = NULL;
 #endif
+PrintLog ("rendering transparent face %d,%d\n", faceP->nSegment, faceP->nSide);
 if (!bmTop) {
 	DisableTMU (GL_TEXTURE1 + bLightmaps, 1);
 	m_data.bmP [1] = NULL;
@@ -802,13 +807,15 @@ if (!mask) {
 if (!bLightmaps)
 	DisableTMU (GL_TEXTURE3, 1);
 
-if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
+if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
-		if (!bLightmaps)
+		if (!bLightmaps) {
+			ogl.SelectTMU (GL_TEXTURE0, true);
 			OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
+			}
 		if (bDecal > 0) {
 			SetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
 			if (mask)
@@ -823,7 +830,9 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 		}
 	ogl.SetupTransform (faceP != NULL);
-	if (item->nColors > 1) {
+	if (gameStates.render.bFullBright)
+		glColor3d (1, 1, 1);
+	else if (item->nColors > 1) {
 		ogl.SelectTMU (GL_TEXTURE0, true);
 		ogl.EnableClientState (GL_COLOR_ARRAY);
 		if (faceP || triP)
@@ -836,10 +845,23 @@ if (LoadImage (bmBot, bLightmaps ? 0 : item->nColors, -1, item->nWrap, 1, 3, (fa
 			OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 			}
 		}
-	else if (item->nColors == 1)
+	else if (item->nColors == 1) {
+#if 0
+		tRgbaColorf c [4];
+		c [0] = c [1] = c [2] = c [3] = item->color [0];
+		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<GLfloat*> (c));
+#else
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
-	else
+#endif
+		}
+	else {
+#if 0
+		tRgbaColorf c [4] = {{1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1}};
+		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<GLfloat*> (c));
+#else
 		glColor3d (1, 1, 1);
+#endif
+		}
 	bAdditive = item->bAdditive;
 	glEnable (GL_BLEND);
 	if (bAdditive == 1)
@@ -1164,15 +1186,15 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 	int bDepthSort = gameOpts->render.bDepthSort;
 
 gameOpts->render.bDepthSort = -1;
-SetClientState (0, 0, 0, 0, 0);
+ogl.ResetClientStates ();
 ResetShader ();
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
-if (item->nType == riMonsterball)
+else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 ResetBitmaps ();
-ogl.SelectTMU (GL_TEXTURE0, true);
-OglBindTexture (0);
+ResetShader ();
+ogl.ResetClientStates ();
 glDisable (GL_TEXTURE_2D);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthMask (m_data.bDepthMask = 0);
@@ -1342,6 +1364,7 @@ if (!pl->bRendered) {
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
 			RenderPoly (&pl->item.poly);
 			}
+#if 0
 		else if (m_data.nCurType == tiObject) {
 			RenderObject (&pl->item.object);
 			}
@@ -1351,9 +1374,13 @@ if (!pl->bRendered) {
 		else if (m_data.nCurType == tiSpark) {
 			RenderSpark (&pl->item.spark);
 			}
+#endif
 		else if (m_data.nCurType == tiSphere) {
+			if (automap.m_bDisplay)
+				PrintLog ("Rendering sphere for object %d\n", pl->item.sphere.objP->Index ());
 			RenderSphere (&pl->item.sphere);
 			}
+#if 0
 		else if (m_data.nCurType == tiParticle) {
 			if (m_data.bHaveParticles)
 				RenderParticle (&pl->item.particle);
@@ -1364,6 +1391,7 @@ if (!pl->bRendered) {
 		else if (m_data.nCurType == tiThruster) {
 			RenderLightTrail (&pl->item.thruster);
 			}
+#endif
 		}
 	catch(...) {
 		PrintLog ("invalid transparent render item (type: %d)\n", m_data.nCurType);

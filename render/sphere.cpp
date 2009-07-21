@@ -119,7 +119,7 @@ sphereShaderProg = 0;
 
 void UnloadSphereShader (void)
 {
-if (gameStates.render.history.nShader == 100) {
+if (gameStates.render.history.nShader != 1) {
 	gameStates.render.history.nShader = -1;
 	glUseProgramObject (0);
 	}
@@ -524,15 +524,15 @@ int CSphere::Create (int nRings, int nTiles)
 
 if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;
-if ((m_nRings == nRings) && (m_nTiles == nTiles))
-	return (m_vertices.Buffer () != NULL);
+if ((m_nRings == nRings) && (m_nTiles == nTiles) && (m_vertices.Buffer () != NULL))
+	return 1;
 
 m_nRings =
 m_nTiles = 
 m_nVertices = 0;
 m_vertices.Destroy ();
 h = nRings * (nRings + 1);
-if (!m_vertices.Create (h))
+if (!m_vertices.Create (2))
 	return 0;
 m_nRings =
 m_nTiles = 0;
@@ -844,7 +844,7 @@ int CreateShieldSphere (void)
 if (!LoadShield ())
 	return 0;
 #if RINGED_SPHERE
-gameData.render.shield.Destroy ();
+//gameData.render.shield.Destroy ();
 gameData.render.shield.Create (32, 1);
 #else
 if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
