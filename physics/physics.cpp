@@ -436,6 +436,7 @@ void CObject::DoPhysicsSim (void)
 	int					nBadSeg = 0, bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 	int					bDoSpeedBoost = sbd.bBoosted; // && (this == gameData.objs.consoleP);
+	int					bInitialize = gameData.physics.xTime < 0;
 
 Assert (info.nType != OBJ_NONE);
 Assert (info.movementType == MT_PHYSICS);
@@ -446,6 +447,8 @@ if (bDontMoveAIObjects)
 	if (info.controlType == CT_AI)
 		return;
 #endif
+if (bInitialize)
+	gameData.physics.xTime = I2X (1);
 CATCH_OBJ (this, mType.physInfo.velocity [Y] == 0);
 DoPhysicsSimRot ();
 gameData.physics.nSegments = 0;
@@ -551,8 +554,9 @@ else
 	xTimeScale = 100;
 nTries = 0;
 do {	//Move the object
-	float fScale = !gameStates.app.bNostalgia && (IS_MISSILE (this) && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) ?
-						MissileSpeedScale (this) : 1;
+	float fScale = !(gameStates.app.bNostalgia || bInitialize) && (IS_MISSILE (this) && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) 
+						? MissileSpeedScale (this) 
+						: 1;
 	bRetry = 0;
 	if (fScale < 1) {
 		CFixVector vStartVel = StartVel ();
@@ -565,7 +569,7 @@ do {	//Move the object
 		}
 	else
 		vFrame = mType.physInfo.velocity * FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1));
-	if (!IsMultiGame) {
+	if (!(IsMultiGame || bInitialize)) {
 		int i = (this != gameData.objs.consoleP) ? 0 : 1;
 		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
 			vFrame *= (fix) (I2X (1) / gameStates.gameplay.slowmo [i].fSpeed);

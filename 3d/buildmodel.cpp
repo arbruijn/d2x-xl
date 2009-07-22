@@ -733,8 +733,8 @@ for (uint i = 0; i < po->m_gunPoints.Length (); i++, pp++) {
 	psm = m_subModels + nGunSubModels [i];
 	pp->m_vPos [X] = (psm->m_vMax [X] + psm->m_vMin [X]) / 2;
 	if (3 == (pp->m_nParent = nGunSubModels [i])) {
-		pp->m_vPos [X] = (psm->m_vMax [Z] + 3 * psm->m_vMin [Y]) / 4;
-		pp->m_vPos [X] = 7 * (psm->m_vMax [Z] + psm->m_vMin [Z]) / 8;
+		pp->m_vPos [Y] = (psm->m_vMax [Y] + 3 * psm->m_vMin [Y]) / 4;
+		pp->m_vPos [Z] = 7 * (psm->m_vMax [Z] + psm->m_vMin [Z]) / 8;
 		}
 	else {
 		pp->m_vPos [Y] = (psm->m_vMax [Y] + psm->m_vMin [Y]) / 2;

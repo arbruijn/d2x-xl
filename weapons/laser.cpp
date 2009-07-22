@@ -512,27 +512,17 @@ else {
 if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID)) {
 #if 1
 	objP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
-#if DBG
+#if 0 //DBG
 	CFixVector	vEndPos = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
 	vEndPos += objP->info.position.vPos;
 #endif
 	fix xTime = gameData.physics.xTime;
-	gameData.physics.xTime = I2X (1);	// make it move the entire velocity vector
+	gameData.physics.xTime = -1;	// make it move the entire velocity vector
 	objP->Update ();
 	gameData.physics.xTime = xTime;
 	if (objP->info.nFlags & OF_SHOULD_BE_DEAD) {
 		ReleaseObject (objP->Index ());
 		return -1;
-		}
-#else
-	CFixVector	vEndPos = objP->info.position.vPos + vDir * (gameData.laser.nOffset + (xLaserLength / 2));
-	int			nEndSeg = FindSegByPos (vEndPos, objP->info.nSegment, 1, 0);
-
-	if (nEndSeg == objP->info.nSegment)
-		objP->info.position.vPos = vEndPos;
-	else if (nEndSeg != -1) {
-		objP->info.position.vPos = vEndPos;
-		objP->RelinkToSeg (nEndSeg);
 		}
 #endif
 	}
@@ -664,7 +654,7 @@ if (bSpectate) {
 }
 else
    viewP = objP->View ();
-v[1] = *viewP * v[0];
+v[1] = *viewP * v [0];
 memcpy (mP, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)
 	v[1] += (*mP).UVec () * (-2 * v->Mag ());
@@ -713,31 +703,7 @@ CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
 	return 0;
-#if 1
 TransformGunPoint (objP, vGunPoints, nGun, xDelay, nLaserType, &vLaserPos, &m);
-#else
-if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
-	VmVecScale (VmVecAdd (&v, vGunPoints - nGun, vGunPoints - nGun - 1), I2X (1) / 2);
-else {
-	v = vGunPoints [nGun];
-	if (bLaserOffs)
-		VmVecScaleInc (&v, &posP->mOrient.UVec (), LASER_OFFS);
-	}
-if (bSpectate)
-   VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
-else
-   viewP = objP->View ();
-VmVecRotate (&vGunPoint, &v, viewP);
-memcpy (&m, &posP->mOrient, sizeof (CFixMatrix));
-if (nGun < 0)
-	VmVecScaleInc (&vGunPoint, &m.UVec (), -2 * VmVecMag (&v));
-VmVecAdd (&vLaserPos, &posP->vPos, &vGunPoint);
-//	If supposed to fire at a delayed time (xDelay), then move this point backwards.
-if (xDelay)
-	VmVecScaleInc (&vLaserPos, &m.FVec (), -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
-#endif
-
-//	DoMuzzleStuff (objP, &Pos);
 
 //--------------- Find vLaserPos and nLaserSeg ------------------
 fq.p0					= &posP->vPos;
