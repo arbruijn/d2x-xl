@@ -2198,7 +2198,7 @@ if ((gameOpts->render.nLightingMethod > 1) && !ogl.m_states.bShadersOk)
 	gameOpts->render.nLightingMethod = 1;
 if (gameStates.render.nLightingMethod == 2)
 	gameStates.render.bPerPixelLighting = 2;
-else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps && !ogl.m_states.bShadersOk)
+else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightmaps && ogl.m_states.bShadersOk)
 	gameStates.render.bPerPixelLighting = 1;
 else
 	gameStates.render.bPerPixelLighting = 0;
