@@ -78,21 +78,21 @@ const char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 	"targ02b#0-green",
 	"targ02b#1-green",
 	"targ02b#2-green",
-	"targ02b#0-green",
-	"targ02b#1-green",
-	"targ02b#2-green",
-	"targ02b#3-green",
-	"targ02b#4-green",
+	"targ03b#0-green",
+	"targ03b#1-green",
+	"targ03b#2-green",
+	"targ03b#3-green",
+	"targ03b#4-green",
 	"targ01b#0-red",
 	"targ01b#1-red",
 	"targ02b#0-red",
 	"targ02b#1-red",
 	"targ02b#2-red",
-	"targ02b#0-red",
-	"targ02b#1-red",
-	"targ02b#2-red",
-	"targ02b#3-red",
-	"targ02b#4-red"
+	"targ03b#0-red",
+	"targ03b#1-red",
+	"targ03b#2-red",
+	"targ03b#3-red",
+	"targ03b#4-red"
 	};
 
 static short d2OpaqueDoors [] = {
