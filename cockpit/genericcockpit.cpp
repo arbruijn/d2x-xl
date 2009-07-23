@@ -45,6 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudmsgs.h"
 #include "hudicons.h"
 #include "radar.h"
+#include "visibility.h"
 #include "autodl.h"
 #include "key.h"
 
@@ -1026,7 +1027,7 @@ if (cockpit->Hide ())
 
 	int x, y;
 	int bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
-	int nCrossBm, nPrimaryBm, nSecondaryBm;
+	int nBmReticle, nCrossBm, nPrimaryBm, nSecondaryBm;
 	int bHiresReticle, bSmallReticle, ofs;
 
 if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
@@ -1072,13 +1073,19 @@ m_info.xScale *= float (HUD_ASPECT);
 bHiresReticle = (gameStates.render.fonts.bHires != 0);
 bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.window.wMax * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
-
+nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) ? BM_ADDON_RETICLE_RED : BM_ADDON_RETICLE_GREEN;
+#if 1
+BitBlt (-1, (x + ScaleX (cross_offsets [ofs].x - 1)), (y + ScaleY (cross_offsets [ofs].y - 1)), false, true, I2X (1), 0, BM_ADDON (nBmReticle + nCrossBm));
+BitBlt (1, (x + ScaleX (primary_offsets [ofs].x - 1)), (y + ScaleY (primary_offsets [ofs].y - 1)), false, true, I2X (1), 0, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
+BitBlt (-1, (x + ScaleX (secondary_offsets [ofs].x - 1)), (y + ScaleY (secondary_offsets [ofs].y - 1)), false, true, I2X (1), 0, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+#else
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 		  (x + ScaleX (cross_offsets [ofs].x - 1)), (y + ScaleY (cross_offsets [ofs].y - 1)), false, true);
 BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
 		  (x + ScaleX (primary_offsets [ofs].x - 1)), (y + ScaleY (primary_offsets [ofs].y - 1)), false, true);
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
 		  (x + ScaleX (secondary_offsets [ofs].x - 1)), (y + ScaleY (secondary_offsets [ofs].y - 1)), false, true);
+#endif
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);

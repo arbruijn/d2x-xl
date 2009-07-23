@@ -22,4 +22,7 @@ int CanSeeObject (int nObject, int bCheckObjs);
 
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType);
 
+int TargetInLineOfFire (void);
+
+
 #endif //_VISIBILITY_H

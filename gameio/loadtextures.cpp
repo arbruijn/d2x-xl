@@ -72,7 +72,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 const char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 	"slowmotion#0",
-	"bullettime#0"
+	"bullettime#0",
+	"targ01b#0-green",
+	"targ01b#1-green",
+	"targ02b#0-green",
+	"targ02b#1-green",
+	"targ02b#2-green",
+	"targ02b#0-green",
+	"targ02b#1-green",
+	"targ02b#2-green",
+	"targ02b#3-green",
+	"targ02b#4-green",
+	"targ01b#0-red",
+	"targ01b#1-red",
+	"targ02b#0-red",
+	"targ02b#1-red",
+	"targ02b#2-red",
+	"targ02b#0-red",
+	"targ02b#1-red",
+	"targ02b#2-red",
+	"targ02b#3-red",
+	"targ02b#4-red"
 	};
 
 static short d2OpaqueDoors [] = {

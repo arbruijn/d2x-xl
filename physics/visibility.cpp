@@ -200,4 +200,42 @@ return fate == HIT_NONE;
 }
 
 //	-----------------------------------------------------------------------------
+
+int TargetInLineOfFire (void)
+{
+	tCollisionQuery	fq;
+	int					nHitType, nType;
+	tCollisionData		hitData;
+	CFixVector			vEndPos;
+	CObject*				objP;
+
+	//see if we can see this CPlayerData
+
+fq.p0 = &gameData.objs.viewerP->info.position.vPos;
+vEndPos = *fq.p0 + gameData.objs.viewerP->info.position.mOrient.FVec () * I2X (2000);
+fq.p1 = &vEndPos;
+fq.radP0 = 0;
+fq.radP1 = 0;
+fq.thisObjNum = OBJ_IDX (gameData.objs.viewerP);
+fq.flags = FQ_CHECK_OBJS | FQ_TRANSWALL;
+fq.startSeg = gameData.objs.viewerP->info.nSegment;
+fq.ignoreObjList = NULL;
+fq.bCheckVisibility = true;
+nHitType = FindHitpoint (&fq, &hitData);
+if (nHitType != HIT_OBJECT)
+	return 0;
+objP = OBJECTS + hitData.hit.nObject;
+nType = objP->Type ();
+if ((nType == OBJ_ROBOT) || (nType == OBJ_REACTOR))
+	return 1;
+if (nType != OBJ_PLAYER)
+	return 0;
+if (IsCoopGame)
+	return 0;
+if (!IsTeamGame)
+	return 1;
+return GetTeam (gameData.objs.consoleP->info.nId) != GetTeam (objP->info.nId);
+}
+
+//	-----------------------------------------------------------------------------
 //eof

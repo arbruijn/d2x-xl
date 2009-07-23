@@ -62,7 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_ALIASES					20
 
-#define MAX_ADDON_BITMAP_FILES	2
+#define MAX_ADDON_BITMAP_FILES	22
 
 #define BM_ADDON_SLOWMOTION		0
 #define BM_ADDON_BULLETTIME		1
@@ -267,7 +267,9 @@ void FreeAddonSounds (void);
 #	define FreeAddonSounds()
 #endif
 
-#define BM_ADDON(_i)	(&gameData.pig.tex.addonBitmaps [_i])
+#define BM_ADDON(_i)					(&gameData.pig.tex.addonBitmaps [_i])
+#define BM_ADDON_RETICLE_GREEN	2
+#define BM_ADDON_RETICLE_RED		12
 
 void PageInAddonBitmap (int bmi);
 bool BitmapLoaded (int bmi, int bD1);
