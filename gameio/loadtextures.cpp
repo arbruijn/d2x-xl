@@ -613,8 +613,6 @@ if (strstr (bmName, "misc068b"))
 #endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
-else {
-	}
 
 bTGA = 0;
 nFlags = (nIndex < 0) ? 0 : gameData.pig.tex.bitmapFlags [bD1][nIndex];

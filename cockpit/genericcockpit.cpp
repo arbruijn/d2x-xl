@@ -138,8 +138,10 @@ if (!m_save.Buffer ())
 
 //	-----------------------------------------------------------------------------
 
-CBitmap* CGenericCockpit::BitBlt (int nGauge, int x, int y, bool bScalePos, bool bScaleSize, int scale, int orient, CBitmap* bmP)
+CBitmap* CGenericCockpit::BitBlt (int nGauge, int x, int y, bool bScalePos, bool bScaleSize, int scale, int orient, CBitmap* bmP, CBitmap* overrideP)
 {
+	CBitmap*	saveBmP = NULL;
+
 if (nGauge >= 0) {
 #if DBG
 	if (nGauge == nDbgGauge)
@@ -147,6 +149,8 @@ if (nGauge >= 0) {
 #endif
 	PageInGauge (nGauge);
 	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
+	if (overrideP)
+		saveBmP = bmP->SetOverride (overrideP);
 	}
 if (bmP) {
 #if 0
@@ -167,6 +171,8 @@ if (bmP) {
 	CCanvas::Current ()->SetColorRGBi (m_info.nColor);
 	bmP->RenderScaled (x, y, w * (gameStates.app.bDemoData + 1), h * (gameStates.app.bDemoData + 1), scale, orient, &CCanvas::Current ()->Color ());
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
+	if (saveBmP)
+		bmP->SetOverride (saveBmP);
 	}
 return bmP;
 }
@@ -1015,9 +1021,9 @@ typedef struct {
 } xy;
 
 //offsets for reticle parts: high-big  high-sml  low-big  low-sml
-xy cross_offsets [4] = 	{{-8, -5},  {-4, -2},  {-4, -2}, {-2, -1}};
-xy primary_offsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
-xy secondary_offsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
+xy crossOffsets [4] = 	{{-8, -5},  {-4, -2},  {-4, -2}, {-2, -1}};
+xy primaryOffsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
+xy secondaryOffsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 
 //draw the reticle
 void CGenericCockpit::DrawReticle (int bForceBig)
@@ -1025,10 +1031,10 @@ void CGenericCockpit::DrawReticle (int bForceBig)
 if (cockpit->Hide ())
 	return;
 
-	int x, y;
-	int bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
-	int nBmReticle, nCrossBm, nPrimaryBm, nSecondaryBm;
-	int bHiresReticle, bSmallReticle, ofs;
+	int		x, y;
+	int		bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
+	int		nBmReticle, nCrossBm, nPrimaryBm, nSecondaryBm;
+	int		bHiresReticle, bSmallReticle, ofs;
 
 if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
 	 ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided))) {
@@ -1074,18 +1080,17 @@ bHiresReticle = (gameStates.render.fonts.bHires != 0);
 bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.window.wMax * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) ? BM_ADDON_RETICLE_RED : BM_ADDON_RETICLE_GREEN;
-#if 1
-BitBlt (-1, (x + ScaleX (cross_offsets [ofs].x - 1)), (y + ScaleY (cross_offsets [ofs].y - 1)), false, true, I2X (1), 0, BM_ADDON (nBmReticle + nCrossBm));
-BitBlt (1, (x + ScaleX (primary_offsets [ofs].x - 1)), (y + ScaleY (primary_offsets [ofs].y - 1)), false, true, I2X (1), 0, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
-BitBlt (-1, (x + ScaleX (secondary_offsets [ofs].x - 1)), (y + ScaleY (secondary_offsets [ofs].y - 1)), false, true, I2X (1), 0, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
-#else
+
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-		  (x + ScaleX (cross_offsets [ofs].x - 1)), (y + ScaleY (cross_offsets [ofs].y - 1)), false, true);
+		  (x + ScaleX (crossOffsets [ofs].x - 1)), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true, 
+		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-		  (x + ScaleX (primary_offsets [ofs].x - 1)), (y + ScaleY (primary_offsets [ofs].y - 1)), false, true);
+		  (x + ScaleX (primaryOffsets [ofs].x - 1)), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true, 
+		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-		  (x + ScaleX (secondary_offsets [ofs].x - 1)), (y + ScaleY (secondary_offsets [ofs].y - 1)), false, true);
-#endif
+		  (x + ScaleX (secondaryOffsets [ofs].x - 1)), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true, 
+		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);

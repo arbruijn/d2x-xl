@@ -151,7 +151,7 @@ class CGenericCockpit {
 		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
 		inline void PageInGauge (int nGauge) { LoadBitmap (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
 		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
-		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL);
+		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);
 		int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);
 		void Rect (int left, int top, int width, int height) {
 			OglDrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
