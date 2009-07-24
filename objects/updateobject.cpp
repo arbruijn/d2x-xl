@@ -530,10 +530,10 @@ RepairDamage ();
 HandleSpecialSegment ();
 if ((info.xLifeLeft != IMMORTAL_TIME) &&
 	 (info.xLifeLeft != ONE_FRAME_TIME) &&
-	 (gameData.physics.xTime != I2X (1)))
+	 (gameData.physics.xTime > 0))
 	info.xLifeLeft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
-if ((gameData.physics.xTime != I2X (1)) && UpdateControl ()) {
+if ((gameData.physics.xTime > 0) && UpdateControl ()) {
 	UpdateEffects ();
 	return 1;
 	}
