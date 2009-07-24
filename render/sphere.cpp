@@ -782,7 +782,7 @@ if (!bEffect)
 if (ogl.m_states.bUseTransform = !bEffect)
 #endif
 	UnloadSphereShader ();
-else {
+else if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) {
 	if (!SetupSphereShader (objP, alpha))
 		return 0;
 	}

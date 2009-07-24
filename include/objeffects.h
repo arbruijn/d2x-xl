@@ -33,7 +33,7 @@ void RenderTracers (CObject *objP);
 void RenderLightTrail (CObject *objP);
 void DrawDebrisCorona (CObject *objP);
 
-#define SHIELD_EFFECT_TIME		2000
+#define SHIELD_EFFECT_TIME		((gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) ? 2000 : 500)
 
 #endif //_OBJEFFECTS_H
 //eof
