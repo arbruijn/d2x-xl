@@ -149,7 +149,7 @@ if (nGauge >= 0) {
 #endif
 	PageInGauge (nGauge);
 	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
-	if (overrideP)
+	if (overrideP && overrideP->Buffer ())
 		saveBmP = bmP->SetOverride (overrideP);
 	}
 if (bmP) {
