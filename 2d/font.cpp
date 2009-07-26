@@ -125,7 +125,10 @@ else {
 			}
 		}
 	}
-if (!gameStates.app.bNostalgia)
+//if (!gameStates.app.bNostalgia)
+#if DBG
+if (fontManager.Scale () != 1.0f)
+#endif
 	spacing = int (spacing * fontManager.Scale ());
 }
 

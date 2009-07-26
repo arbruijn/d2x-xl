@@ -475,14 +475,18 @@ CBitmap *CreateStringBitmap (
 	const char	*textP, *text_ptr1, *nextRowP;
 	int			letter;
 	CFont*		fontP = fontManager.Current ();
+	float			fScale = fontManager.Scale ();
 
 #if 0
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
 #endif
+fontManager.SetScale (1.0f);
 fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
-if (!(w && h))
+if (!(w && h)) {
+	fontManager.SetScale (fScale);
 	return NULL;
+	}
 if (bForce >= 0) {
 	for (i = 1; i < w; i <<= 2)
 		;
@@ -491,9 +495,12 @@ if (bForce >= 0) {
 		;
 	h = i;
 	}
-if (!(bmP = CBitmap::Create (0, w, h, 4))) 
+if (!(bmP = CBitmap::Create (0, w, h, 4))) {
+	fontManager.SetScale (fScale);
 	return NULL;
+	}
 if (!bmP->Buffer ()) {
+	fontManager.SetScale (fScale);
 	delete bmP;
 	return NULL;
 	}
@@ -613,6 +620,7 @@ x = 0;
 	}
 bmP->SetPalette (palP);
 bmP->SetTranspType (-1);
+fontManager.SetScale (fScale);
 return bmP;
 }
 
@@ -620,7 +628,8 @@ return bmP;
 
 int GrString (int x, int y, const char *s, int *idP)
 {
-if (gameOpts->render.coronas.nStyle < 2) {
+//if (gameOpts->render.coronas.nStyle < 2)	//why in all the earth did I query that here?
+	{
 		grsString	*ps;
 
 	if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
