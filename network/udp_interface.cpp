@@ -977,7 +977,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 	nUdpRes = sendto (mysock->fd, reinterpret_cast<const char*> (bufP), dataLen + extraDataLen, 0, reinterpret_cast<struct sockaddr*> (dest), sizeof (*dest));
 #if DBG && defined (_WIN32)
 	if (!gameStates.multi.bTrackerCall && (nUdpRes < extraDataLen + 8))
-		h = WSAGetLastError ();
+		int h = WSAGetLastError ();
 #endif
 	if (bBroadcast <= 0) {
 		if (gameStates.multi.bTrackerCall)

@@ -4255,6 +4255,50 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="libmve"
+				>
+				<Filter
+					Name="Source Files"
+					>
+					<File
+						RelativePath="..\libmve\decoder16.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\libmve\decoder8.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\libmve\mve_audio.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\libmve\mvelib.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\libmve\mveplay.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Header Files"
+					>
+					<File
+						RelativePath="..\libmve\decoders.h"
+						>
+					</File>
+					<File
+						RelativePath="..\libmve\mve_audio.h"
+						>
+					</File>
+					<File
+						RelativePath="..\libmve\mvelib.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -4273,11 +4317,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

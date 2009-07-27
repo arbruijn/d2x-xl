@@ -251,6 +251,7 @@ do {
 		optSoftParticles [1] = 
 		optSoftParticles [2] = -1;
 	else {
+		m.AddText ("");
 		optSoftParticles [0] = m.AddCheck (TXT_SOFT_SPRITES, (gameOpts->render.effects.bSoftParticles & 1) != 0, KEY_I, HTX_SOFT_SPRITES);
 		optSoftParticles [1] = m.AddCheck (TXT_SOFT_SPARKS, (gameOpts->render.effects.bSoftParticles & 2) != 0, KEY_A, HTX_SOFT_SPARKS);
 		if (extraGameInfo [0].bUseParticles)
