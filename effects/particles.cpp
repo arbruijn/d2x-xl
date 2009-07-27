@@ -1618,7 +1618,7 @@ if (iBuffer) {
 			if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
 				lightManager.Headlights ().SetupShader (1, 0, &color);
 			else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
-				LoadGlareShader (10);
+				LoadGlareShader (10, 0);
 			else if (gameStates.render.history.nShader >= 0) {
 				glUseProgramObject (0);
 				gameStates.render.history.nShader = -1;
