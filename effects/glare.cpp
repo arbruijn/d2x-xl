@@ -611,7 +611,7 @@ else
 	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
-if (gameOptions [0].render.coronas.nStyle == 1) 
+if (gameOptions [0].render.coronas.nStyle == 1)
 	fIntensity = float (sqrt (fIntensity));
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
@@ -784,7 +784,7 @@ if (ogl.m_states.bDepthBlending) {
 #if 0
 			if (automap.m_bDisplay)
 				glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.depthScale));
-			else 
+			else
 #endif
 			 {
 #if 1
@@ -834,11 +834,10 @@ const char *glareFS =
 	"uniform vec2 screenScale;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
-	"#define ZRANGE (ZFAR - ZNEAR)\r\n" \
-	"#define HOM(_x) ZFAR / (ZFAR - (_x) * ZRANGE)\r\n" \
+	"#define LinearDepth(_z) (2.0 * ZFAR) / (ZFAR + ZNEAR - (_z) * (ZFAR - ZNEAR))\r\n" \
 	"void main (void) {\r\n" \
-	"float texZ = HOM (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
-	"float fragZ = HOM (gl_FragCoord.z);\r\n" \
+	"float texZ = LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
+	"float fragZ = LinearDepth (gl_FragCoord.z);\r\n" \
 	"float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
