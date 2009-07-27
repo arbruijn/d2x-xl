@@ -2760,7 +2760,7 @@ void FreeModTexts (void)
 {
 for (int i = 0; i < BASE_TEXT_COUNT; i++)
 	if (d2GameTexts [i][1]) {
-		delete[] d2GameTexts [i][1];
+		delete[] (void*) (d2GameTexts [i][1]);
 		d2GameTexts [i][1] = NULL;
 		}
 }
