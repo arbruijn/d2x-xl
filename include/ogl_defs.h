@@ -4,7 +4,7 @@
 
 #ifdef HAVE_CONFIG_H
 #	include <conf.h>
-#endif  
+#endif
 
 #ifdef _WIN32
 #	define OGL_MULTI_TEXTURING	1
@@ -265,10 +265,10 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 
 #if DBG_OGL
 #define	OglDrawArrays(mode, first, count)					ogl.DrawArrays (mode, first, count)
-#define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, __FILE__, __LINE__)
-#define	OglNormalPointer(type, stride, pointer)			ogl.NormalPointer (type, stride, pointer, __FILE__, __LINE__)
+#define	OglVertexPointer(size, type, stride, pointer)	ogl.VertexPointer (size, type, stride, pointer, const_cast<char*>(__FILE__), __LINE__)
+#define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, const_cast<char*>(__FILE__), __LINE__)
+#define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, const_cast<char*>(__FILE__), __LINE__)
+#define	OglNormalPointer(type, stride, pointer)			ogl.NormalPointer (type, stride, pointer, const_cast<char*>(__FILE__), __LINE__)
 #define	OglBindTexture(_handle)									ogl.BindTexture (_handle)
 #else
 #define	OglDrawArrays(mode, first, count)					glDrawArrays (mode, first, count)

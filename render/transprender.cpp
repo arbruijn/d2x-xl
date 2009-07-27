@@ -47,7 +47,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #define TI_POLY_CENTER 1
 
 #if DBG
-static int nDbgPoly = -1, nDbgItem = -1;
+int nDbgPoly = -1, nDbgItem = -1;
 #endif
 
 CTransparencyRenderer transparencyRenderer;
@@ -621,7 +621,7 @@ if (m_data.bDecal != bDecal) {
 		m_data.bmP [1] = NULL;
 		m_data.bDecal = 0;
 		}
-	}	
+	}
 #endif
 }
 
@@ -713,7 +713,7 @@ return 1;
 void CTransparencyRenderer::SetRenderPointers (int nTMU, int nIndex, int bDecal)
 {
 #if DBG
-if (nIndex + 3 > FACES.vertices.Length ())
+if (nIndex + 3 > int (FACES.vertices.Length ()))
 	return;
 #endif
 ogl.SelectTMU (nTMU, true);
@@ -914,7 +914,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 					if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 						 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 						break;
-					//if (bAdditive && (bAdditive != 2)) 
+					//if (bAdditive && (bAdditive != 2))
 						{
 						bAdditive = 2;
 						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -1070,7 +1070,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	if (bSoftBlend)
 		LoadGlareShader (item->fSoftRad);
 	else //if (m_data.bDepthMask)
-		glDepthMask (m_data.bDepthMask = 0); 
+		glDepthMask (m_data.bDepthMask = 0);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;

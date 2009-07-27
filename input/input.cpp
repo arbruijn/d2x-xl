@@ -171,10 +171,10 @@ inline int ControlsReadJoyAxis (int i, int rawJoyAxis [])
 {
 int joyDeadzoneScaled = joyDeadzone [i % 4] / 128;
 int h = JoyGetScaledReading (rawJoyAxis [i], i);
-if (gameOpts->input.joystick.bSyncAxes && 
+if (gameOpts->input.joystick.bSyncAxes &&
 	 ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
 	joyDeadzoneScaled *= 2;				// Then use a larger dead-zone
-if (h > joyDeadzoneScaled) 
+if (h > joyDeadzoneScaled)
 	h = ((h - joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
 else if (h < -joyDeadzoneScaled)
 	h = ((h + joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
@@ -202,7 +202,7 @@ if (gameStates.limitFPS.bJoystick) {
 		if ((ctime < 0) && (LastReadTime >= 0))
 			LastReadTime = ctime;
 		bUseJoystick=1;
-		} 
+		}
 	else if (gameOpts->input.joystick.bUse) {
 		LastReadTime = ctime;
 		if	((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
@@ -212,10 +212,10 @@ if (gameStates.limitFPS.bJoystick) {
 #endif
 					if ((i == 3) && (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS))
 						ControlsReadFCS (rawJoyAxis [i]);
-					else 
+					else
 						joyAxis [i] = ControlsReadJoyAxis (i, rawJoyAxis);
 #ifndef SDL_INPUT
-					} 
+					}
 					else
 						joyAxis [i] = 0;
 #endif
@@ -256,7 +256,7 @@ if (JoyGetButtonState (btn)) {
 	if (btn == button) {
 		state = 1;
 		timeDown = gameData.time.xFrame;
-		} 
+		}
 	else
 		upCount=1;
 	}
@@ -268,7 +268,7 @@ else {
 		}
 	else
 		upCount=1;
-	}			
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ void ControlsReadFCS (int rawAxis)
 	int raw_button, button;
 	tJoyAxisCal	cal [4];
 
-if (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS) 
+if (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)
 	return;
 JoyGetCalVals (cal, sizeofa (cal));
 if (cal [3].nMax > 1)
@@ -300,7 +300,7 @@ ControlsSetFCSButton (15, button);
 ControlsSetFCSButton (11, button);
 ControlsSetFCSButton (7, button);
 }
-	
+
 //------------------------------------------------------------------------------
 
 int ControlsReadCyberman (int *mouseAxis, int *nMouseButtons)
@@ -350,7 +350,7 @@ if (v == 255)
 if (KeyFlags (v))
 	return 0;
 #if DBG
-if (v = KeyDownCount (v))
+if ((v = KeyDownCount (v)))
 	return v;
 return 0;
 #else
@@ -436,7 +436,7 @@ int ControlsLimitTurnRate (int bUseMouse)
 {
 if (!(gameOpts->input.bLimitTurnRate || IsMultiGame))
 	return 0;
-if (automap.m_bDisplay || 
+if (automap.m_bDisplay ||
 	 gameOpts->input.mouse.bJoystick ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
@@ -471,7 +471,7 @@ return h;
 
 void ControlsDoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
-	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) && 
+	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) &&
 									 (FASTPITCH == 1)) ? 2 * PH_SCALE : 1;
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
@@ -482,7 +482,7 @@ if (bGetSlideBank == 0) {
 			if (gameStates.input.keys.pressed [v])
 				*bSlideOn |= gameStates.input.keys.pressed [v];
 			}
-		if ((v = HaveKey (kcKeyboard, 18 + i)) < 255) 
+		if ((v = HaveKey (kcKeyboard, 18 + i)) < 255)
 			if (gameStates.input.keys.pressed [v])
 				*bBankOn |= gameStates.input.keys.pressed [v];
 		}
@@ -499,7 +499,7 @@ if (bGetSlideBank == 2) {
 			Controls [0].fireSecondaryState |= gameStates.input.keys.pressed [v];
 			Controls [0].fireSecondaryDownCount += KeyDownCount (v);
 			}
-		if ((v = HaveKey (kcKeyboard, 28 + i)) < 255) 
+		if ((v = HaveKey (kcKeyboard, 28 + i)) < 255)
 			Controls [0].fireFlareDownCount += KeyDownCount (v);
 		}
 
@@ -512,10 +512,10 @@ if (bGetSlideBank == 2) {
 		Controls [1].bankTime -= DELTACTRL (22 + i, 1);
 		Controls [0].forwardThrustTime += DELTACTRL (30 + i, 0);
 		Controls [0].forwardThrustTime -= DELTACTRL (32 + i, 0);
-		if ((v = HaveKey (kcKeyboard, 46 + i)) < 255) 
+		if ((v = HaveKey (kcKeyboard, 46 + i)) < 255)
 			Controls [0].afterburnerState |= gameStates.input.keys.pressed [v];
 		// count bomb drops
-		if ((v = HaveKey (kcKeyboard, 34 + i)) < 255) 
+		if ((v = HaveKey (kcKeyboard, 34 + i)) < 255)
 			Controls [0].dropBombDownCount += KeyDownCount (v);
 		// charge chield
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER) {
@@ -557,10 +557,10 @@ if (bGetSlideBank == 2) {
 
 	// cruise speed
 	for (i = 0; i < 4; i++)
-		if ((v = HaveKey (kcKeyboard, 38 + i)) < 255) 
+		if ((v = HaveKey (kcKeyboard, 38 + i)) < 255)
 			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcPollTime);
 	for (i = 0; i < 2; i++)
-		if (((v = HaveKey (kcKeyboard, 
+		if (((v = HaveKey (kcKeyboard,
  + i)) < 255) && KeyDownCount (v))
 			*nCruiseSpeed = 0;
 	}
@@ -636,7 +636,7 @@ void ControlsDoJoystick (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *head
 
 for (i = 0; i < 60; i += 30) {
 	if (bGetSlideBank == 0) {
-		if ((v = kcJoystick [i + 5].value) < 255) 
+		if ((v = kcJoystick [i + 5].value) < 255)
 			*bSlideOn |= JoyGetButtonState (v);
 		if ((v = kcJoystick [i + 10].value) < 255)
 			*bBankOn |= JoyGetButtonState (v);
@@ -652,47 +652,47 @@ for (i = 0; i < 60; i += 30) {
 			Controls [0].fireSecondaryState |= JoyGetButtonState (v);
 			Controls [0].fireSecondaryDownCount += JoyGetButtonDownCnt (v);
 			}
-		if ((v = kcJoystick [i + 2].value) < 255) 
+		if ((v = kcJoystick [i + 2].value) < 255)
 			Controls [0].forwardThrustTime += JoyGetButtonDownTime (v);
-		if ((v = kcJoystick [i + 3].value) < 255) 
+		if ((v = kcJoystick [i + 3].value) < 255)
 			Controls [0].forwardThrustTime -= JoyGetButtonDownTime (v);
-		if ((v = kcJoystick [i + 4].value) < 255) 
+		if ((v = kcJoystick [i + 4].value) < 255)
 			Controls [0].fireFlareDownCount += JoyGetButtonDownCnt (v);
-		if ((v = kcJoystick [i + 6].value) < 255) 
+		if ((v = kcJoystick [i + 6].value) < 255)
 			Controls [0].sidewaysThrustTime -= JoyGetButtonDownTime (v);
-		if ((v = kcJoystick [i + 7].value) < 255) 
+		if ((v = kcJoystick [i + 7].value) < 255)
 			Controls [0].sidewaysThrustTime += JoyGetButtonDownTime (v);
-		if ((v = kcJoystick [i + 8].value) < 255) 
+		if ((v = kcJoystick [i + 8].value) < 255)
 			Controls [0].verticalThrustTime += JoyGetButtonDownTime (v);
-		if ((v = kcJoystick [i + 9].value) < 255) 
+		if ((v = kcJoystick [i + 9].value) < 255)
 			Controls [0].verticalThrustTime -= JoyGetButtonDownTime (v);
-		if ((v = kcJoystick [i + 11].value) < 255) 
+		if ((v = kcJoystick [i + 11].value) < 255)
 			Controls [2].bankTime += JoyGetButtonDownTime (v);
-		if ((v = kcJoystick [i + 12].value) < 255) 
+		if ((v = kcJoystick [i + 12].value) < 255)
 			Controls [2].bankTime -= JoyGetButtonDownTime (v);
 		if ((v = kcJoystick [i + 19].value) < 255) {
 			Controls [0].rearViewDownCount += JoyGetButtonDownCnt (v);
 			Controls [0].rearViewDownState |= JoyGetButtonState (v);
 			}
-		if ((v = kcJoystick [i + 20].value) < 255) 
+		if ((v = kcJoystick [i + 20].value) < 255)
 			Controls [0].dropBombDownCount += JoyGetButtonDownCnt (v);
-		if ((v = kcJoystick [i + 21].value) < 255) 
+		if ((v = kcJoystick [i + 21].value) < 255)
 			Controls [0].afterburnerState |= JoyGetButtonState (v);
-		if ((v = kcJoystick [i + 22].value) < 255) 
+		if ((v = kcJoystick [i + 22].value) < 255)
 			Controls [0].cyclePrimaryCount += JoyGetButtonDownCnt (v);
-		if ((v = kcJoystick [i + 23].value) < 255) 
+		if ((v = kcJoystick [i + 23].value) < 255)
 			Controls [0].cycleSecondaryCount += JoyGetButtonDownCnt (v);
-		if ((v = kcJoystick [i + 24].value) < 255) 
+		if ((v = kcJoystick [i + 24].value) < 255)
 			Controls [0].headlightCount += JoyGetButtonDownCnt (v);
 		if (((v = kcJoystick [i + 25].value) < 255) && JoyGetButtonDownCnt (v))
 			ToggleBomb ();
-		if ((v = kcJoystick [i + 26].value) < 255) 
+		if ((v = kcJoystick [i + 26].value) < 255)
 			Controls [0].toggleIconsCount += JoyGetButtonDownCnt (v);
-		if ((v = kcJoystick [i + 27].value) < 255) 
+		if ((v = kcJoystick [i + 27].value) < 255)
 			Controls [0].automapDownCount += JoyGetButtonDownCnt (v);
-		if ((v = kcJoystick [i + 28].value) < 255) 
+		if ((v = kcJoystick [i + 28].value) < 255)
 			Controls [0].useCloakDownCount += JoyGetButtonDownCnt (v);
-		if ((v = kcJoystick [i + 29].value) < 255) 
+		if ((v = kcJoystick [i + 29].value) < 255)
 			Controls [0].useInvulDownCount += JoyGetButtonDownCnt (v);
 
 		// Axis movements
@@ -739,7 +739,7 @@ for (i = 0; i < 60; i += 30) {
 			if ((v = kcJoystick [i + 13].value) < 255) {
 				if (kcJoystick [60].value)		// If inverted...
 					Controls [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
-				else 
+				else
 					Controls [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
 				}
 			if (!*bBankOn) {
@@ -773,16 +773,16 @@ return (int) (r ? (d ? sqrt (fabs (r * r - d * d)) : r) : 0);
 
 //------------------------------------------------------------------------------
 
-void ControlsDoMouse (int *mouseAxis, int nMouseButtons, 
-							 int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, 
+void ControlsDoMouse (int *mouseAxis, int nMouseButtons,
+							 int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed,
 							 int bGetSlideBank)
 {
 	int	v, nMouseSensMod = 8;
 
 if (bGetSlideBank == 0) {
-	if ((v = kcMouse [5].value) < 255) 
+	if ((v = kcMouse [5].value) < 255)
 		*bSlideOn |= nMouseButtons & (1 << v);
-	if ((v = kcMouse [10].value) < 255) 
+	if ((v = kcMouse [10].value) < 255)
 		*bBankOn |= nMouseButtons & (1 << v);
 	return;
 	}
@@ -796,31 +796,31 @@ if (bGetSlideBank == 2) {
 		Controls [0].fireSecondaryState |= MouseButtonState (v);
 		Controls [0].fireSecondaryDownCount += MouseButtonDownCount (v);
 		}
-	if ((v = kcMouse [2].value) < 255) 
+	if ((v = kcMouse [2].value) < 255)
 		Controls [0].forwardThrustTime += MouseButtonDownTime (v);
-	if ((v = kcMouse [3].value) < 255) 
+	if ((v = kcMouse [3].value) < 255)
 		Controls [0].forwardThrustTime -= MouseButtonDownTime (v);
-	if ((v = kcMouse [4].value) < 255) 
+	if ((v = kcMouse [4].value) < 255)
 		Controls [0].fireFlareDownCount += MouseButtonDownCount (v);
-	if ((v = kcMouse [6].value) < 255) 
+	if ((v = kcMouse [6].value) < 255)
 		Controls [0].sidewaysThrustTime -= MouseButtonDownTime (v);
-	if ((v = kcMouse [7].value) < 255) 
+	if ((v = kcMouse [7].value) < 255)
 		Controls [0].sidewaysThrustTime += MouseButtonDownTime (v);
-	if ((v = kcMouse [8].value) < 255) 
+	if ((v = kcMouse [8].value) < 255)
 		Controls [0].verticalThrustTime += MouseButtonDownTime (v);
-	if ((v = kcMouse [9].value) < 255) 
+	if ((v = kcMouse [9].value) < 255)
 		Controls [0].verticalThrustTime -= MouseButtonDownTime (v);
-	if ((v = kcMouse [11].value) < 255) 
+	if ((v = kcMouse [11].value) < 255)
 		Controls [3].bankTime += MouseButtonDownTime (v);
-	if ((v = kcMouse [12].value) < 255) 
+	if ((v = kcMouse [12].value) < 255)
 		Controls [3].bankTime -= MouseButtonDownTime (v);
 	if ((v = kcMouse [25].value) < 255) {
 		Controls [0].rearViewDownCount += MouseButtonDownCount (v);
 		Controls [0].rearViewDownState |= MouseButtonState (v);
 		}
-	if ((v = kcMouse [26].value) < 255) 
+	if ((v = kcMouse [26].value) < 255)
 		Controls [0].dropBombDownCount += MouseButtonDownCount (v);
-	if ((v = kcMouse [27].value) < 255) 
+	if ((v = kcMouse [27].value) < 255)
 		Controls [0].afterburnerState |= MouseButtonState (v);
 	if (((v = kcMouse [28].value) < 255) && MouseButtonState (v))
 		Controls [0].cyclePrimaryCount += MouseButtonDownCount (v);
@@ -1081,7 +1081,7 @@ else {
 		transformation.m_info.playerHeadAngles[PA] = (fixang) tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1);
 		}
 	else
-		transformation.m_info.playerHeadAngles[HA] = 
+		transformation.m_info.playerHeadAngles[HA] =
 		transformation.m_info.playerHeadAngles[PA] = 0;
 	if (gameOpts->input.trackIR.bMove [1])
 		transformation.m_info.playerHeadAngles[BA] = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
@@ -1119,7 +1119,7 @@ if (gameOpts->input.trackIR.bMove [4] && ((float) fabs (tirInfo.fvTrans.z) > fDe
 
 void ControlsDoSlideBank (int bSlideOn, int bBankOn, fix pitchTime, fix headingTime)
 {
-if (bSlideOn) 
+if (bSlideOn)
 	Controls [0].headingTime =
 	Controls [0].pitchTime = 0;
 else {
@@ -1163,7 +1163,7 @@ int ControlsCapSampleRate (void)
 if (gameStates.limitFPS.bControls) {
 	// check elapsed time since last call to ControlsReadAll
 	// if less than 25 ms (i.e. 40 fps) return
-	if (gameOpts->legacy.bMouse) 
+	if (gameOpts->legacy.bMouse)
 		gameStates.input.kcPollTime = gameData.time.xFrame;
 	else {
 		if (gameData.app.bGamePaused)
@@ -1229,7 +1229,7 @@ Controls [0].cyclePrimaryCount = 0;
 Controls [0].cycleSecondaryCount = 0;
 Controls [0].toggleIconsCount = 0;
 Controls [0].zoomDownCount = 0;
-Controls [0].headlightCount = 0; 
+Controls [0].headlightCount = 0;
 Controls [0].fireFlareDownCount = 0;
 Controls [0].dropBombDownCount = 0;
 Controls [0].automapDownCount = 0;
@@ -1258,7 +1258,7 @@ if (gameOpts->input.mouse.bUse)
 		ReadOWL (externalControls.m_info);
 		CybermouseAdjust ();
 #endif
-		} 
+		}
 	else if (gameStates.input.nMouseType == CONTROL_CYBERMAN)
 		bUseMouse = ControlsReadCyberman (reinterpret_cast<int*> (&mouseAxis [0]), &nMouseButtons);
 	else
@@ -1277,7 +1277,7 @@ for (i = 0; i < 3; i++) {
 	if (bUseJoystick)
 		ControlsDoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	if (bUseMouse)
-		ControlsDoMouse (reinterpret_cast<int*> (&mouseAxis [0]), nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, 
+		ControlsDoMouse (reinterpret_cast<int*> (&mouseAxis [0]), nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime,
 							  reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	Controls [0].pitchTime = Controls [1].pitchTime + Controls [2].pitchTime + Controls [3].pitchTime;
 	Controls [0].headingTime = Controls [1].headingTime + Controls [2].headingTime + Controls [3].headingTime;
@@ -1292,9 +1292,9 @@ if (gameOpts->input.bUseHotKeys)
 if (ControlsReadTrackIR ())
 	ControlsDoTrackIR ();
 #endif
-if (gameStates.input.nCruiseSpeed > I2X (100)) 
+if (gameStates.input.nCruiseSpeed > I2X (100))
 	gameStates.input.nCruiseSpeed = I2X (100);
-else if (gameStates.input.nCruiseSpeed < 0) 
+else if (gameStates.input.nCruiseSpeed < 0)
 	gameStates.input.nCruiseSpeed = 0;
 if (!Controls [0].forwardThrustTime)
 	Controls [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcPollTime) /100;
@@ -1374,7 +1374,7 @@ void CybermouseAdjust ()
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_externalVersion > 0) {	
+		if (kc_externalVersion > 0) {
 			CFixMatrix tempm, ViewMatrix;
 			CAngleVector * Kconfig_abs_movement;
 			char * oem_message;
@@ -1384,7 +1384,7 @@ void CybermouseAdjust ()
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h) {
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
-				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
+				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;
 			}
 			oem_message = reinterpret_cast<char*> (((uint)Kconfig_abs_movement + sizeof (CAngleVector));
 			if (oem_message [0] != '\0')
@@ -1392,7 +1392,7 @@ void CybermouseAdjust ()
 		}
 	}*/
 
-	Controls [0].pitchTime += FixMul (externalControls.m_info->pitchTime,gameData.time.xFrame);					
+	Controls [0].pitchTime += FixMul (externalControls.m_info->pitchTime,gameData.time.xFrame);
 	Controls [0].verticalThrustTime += FixMul (externalControls.m_info->verticalThrustTime,gameData.time.xFrame);
 	Controls [0].headingTime += FixMul (externalControls.m_info->headingTime,gameData.time.xFrame);
 	Controls [0].sidewaysThrustTime += FixMul (externalControls.m_info->sidewaysThrustTime ,gameData.time.xFrame);
@@ -1408,7 +1408,7 @@ void CybermouseAdjust ()
 	Controls [0].dropBombDownCount += externalControls.m_info->dropBombDownCount;
 //	Controls [0].automapDownCount += externalControls.m_info->automapDownCount;
 // 	Controls [0].automapState |= externalControls.m_info->automapState;
-  } 
+  }
 
 //------------------------------------------------------------------------------
 

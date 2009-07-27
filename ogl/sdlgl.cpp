@@ -151,7 +151,7 @@ SdlGlInitAttributes ();
 if (!IrrInit (w, h, (bool) ogl.m_states.bFullScreen))
 	return 0;
 #else
-SDL_putenv ("SDL_VIDEO_CENTERED=1");
+SDL_putenv (const_cast<char*>("SDL_VIDEO_CENTERED=1"));
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, ogl.m_states.nColorBits, ogl.m_states.bFullScreen ? "fullscreen" : "windowed");
 if (!SdlGlVideoModeOK (w, h) ||

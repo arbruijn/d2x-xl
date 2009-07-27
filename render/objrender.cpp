@@ -364,9 +364,6 @@ else {
 	}
 #endif
 
-#if DBG
-CBitmap* bmP2 = bmP;
-#endif
 //bmP->SetupTexture (1, 1);
 if (!bmP)
 	return;
@@ -386,14 +383,14 @@ if (nType == OBJ_POWERUP) {
 		RenderPowerupCorona (objP, color.red, color.green, color.blue,
 									coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	}
-if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) && 
+if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
 	 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields) {
 	if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
 		objP->info.movementType = MT_SPINNING;
 		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);
 		}
 	//the actual shield in the sprite texture has 3/4 of the textures size
-	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4);	
+	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4);
 	}
 else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 	if (bAdditive) {
@@ -416,10 +413,10 @@ else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.blue = 1;
 	color.alpha = fAlpha;
 	if (bmP->Width () > bmP->Height ())
-		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), 
+		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()),
 												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
-		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, 
+		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize,
 												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	}
 else {
@@ -1144,7 +1141,7 @@ switch (objP->info.renderType) {
 	case RT_NONE:
 		if (gameStates.render.nType != 1)
 			return 0;
-		break;	
+		break;
 
 	case RT_POLYOBJ:
 		if (nType == OBJ_EFFECT) {

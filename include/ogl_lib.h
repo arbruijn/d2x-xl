@@ -86,7 +86,7 @@ class COglData {
 
 typedef struct tClientBuffer {
 	const GLvoid*	buffer;
-	char*				pszFile;
+	const char*		pszFile;
 	int				nLine;
 } tClientBuffer;
 
@@ -167,7 +167,7 @@ class COglStates {
 	#endif
 		float	fAlpha;
 		float	fLightRange;
-		GLuint hDepthBuffer; 
+		GLuint hDepthBuffer;
 
 		int	nTMU [2];	//active driver and client TMUs
 		int	clientStates [4][6];	// client states for the first 4 TMUs
@@ -233,10 +233,10 @@ class COGL {
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 
 #if DBG_OGL
-		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
-		void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
-		void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
-		void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine);
+		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
+		void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
+		void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
+		void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
 
 		void GenTextures (GLsizei n, GLuint *hTextures);
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
@@ -244,13 +244,13 @@ class COGL {
 
 
 #else
-		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine) 
+		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 			{ glVertexPointer (size, type, stride, pointer); }
-		inline void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
+		inline void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 			{ glColorPointer (size, type, stride, pointer); }
-		inline void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
+		inline void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 			{ glTexCoordPointer (size, type, stride, pointer); }
-		inline void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
+		inline void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 			{ glNormalPointer (type, stride, pointer); }
 
 		inline void GenTextures (GLsizei n, GLuint *hTextures) { glGenTextures (n, hTextures); }
@@ -262,6 +262,7 @@ class COGL {
 			GLenum nError = glGetError ();
 			if (nError) {
 				const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
+				PrintLog ("%s\n", pszError);
 				if (bTrapError)
 					nError = nError;
 				}

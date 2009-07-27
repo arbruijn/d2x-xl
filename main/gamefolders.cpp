@@ -97,7 +97,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void MakeTexSubFolders (char* pszParentFolder)
 {
 if (*pszParentFolder) {
-		static char *szTexSubFolders [] = {"256", "128", "64", "dxt"};
+		static char szTexSubFolders [4][4] = {"256", "128", "64", "dxt"};
 
 		char	szFolder [FILENAME_LEN];
 
@@ -177,7 +177,7 @@ void GetAppFolders (void)
 #ifdef _WIN32
 	char	c;
 #endif
-  
+
 *gameFolders.szHomeDir =
 *gameFolders.szGameDir =
 *gameFolders.szDataDir =
@@ -233,7 +233,7 @@ else {
 	}
 psz = strstr (gameFolders.szDataDir, DATADIR);
 if (psz && !*(psz + 4)) {
-	if (psz == gameFolders.szDataDir) 
+	if (psz == gameFolders.szDataDir)
 		sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
 	else {
 		*(psz - 1) = '\0';
@@ -241,7 +241,7 @@ if (psz && !*(psz + 4)) {
 		*(psz - 1) = '/';
 		}
 	}
-else 
+else
 	strcpy (szDataRootDir, gameFolders.szDataDir);
 /*---*/PrintLog ("expected game app folder = '%s'\n", gameFolders.szGameDir);
 /*---*/PrintLog ("expected game data folder = '%s'\n", gameFolders.szDataDir);
@@ -346,7 +346,7 @@ CFile::MkDir (gameFolders.szMissionDownloadDir);
 void ResetModFolders (void)
 {
 gameStates.app.bHaveMod = 0;
-*gameFolders.szModName = 
+*gameFolders.szModName =
 *gameFolders.szMusicDir =
 *gameFolders.szSoundDir [4] =
 *gameFolders.szSoundDir [5] =
@@ -355,9 +355,9 @@ gameStates.app.bHaveMod = 0;
 *gameFolders.szTextureCacheDir [2] =
 *gameFolders.szTextureDir [3] =
 *gameFolders.szTextureCacheDir [3] =
-*gameFolders.szModelDir [1] = 
+*gameFolders.szModelDir [1] =
 *gameFolders.szModelCacheDir [1] =
-*gameFolders.szModelDir [2] = 
+*gameFolders.szModelDir [2] =
 *gameFolders.szModelCacheDir [2] = '\0';
 }
 
@@ -382,20 +382,20 @@ if (gameOpts->app.bEnableMods) {
 		}
 	if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
 		sprintf (gameFolders.szSoundDir [4], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
-		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga")) 
+		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga"))
 			*gameFolders.szTextureDir [2] = '\0';
 		else {
 			sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], TEXTUREDIR);
 			gameOpts->render.textures.bUseHires [0] = 1;
 			}
 		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.ase") &&
-			 GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.oof")) 
+			 GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.oof"))
 			*gameFolders.szModelDir [1] = '\0';
 		else {
 			sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 			sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 			}
-		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg")) 
+		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg"))
 			*gameFolders.szMusicDir = '\0';
 		MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
 		MakeTexSubFolders (gameFolders.szModelCacheDir [1]);

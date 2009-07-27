@@ -49,7 +49,7 @@ m_channel = -1;
 
 void CSoundObject::Stop (void)
 {
-if (m_channel > -1) {	
+if (m_channel > -1) {
 	audio.StopSound (m_channel);
 	m_channel = -1;
 	audio.DeactivateObject ();
@@ -430,7 +430,7 @@ void CAudio::DeleteSoundObject (int i)
 
 if ((i < int (m_objects.ToS ()) - 1) && ((h = m_objects.Top ()->m_channel) >= 0)) {
 #if DBG
-	if (m_channels [h].SoundObject () != m_objects.ToS () - 1)
+	if (m_channels [h].SoundObject () != int (m_objects.ToS ()) - 1)
 		i = i;
 	else
 #endif
@@ -655,11 +655,11 @@ while (i) {
 				objP = OBJECTS + soundObjP->m_linkType.obj.nObject;
 			if ((objP->info.nType == OBJ_NONE) || (objP->info.nSignature != soundObjP->m_linkType.obj.nObjSig)) {
 				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
-				continue;		
+				continue;
 				}
 			else if ((objP->info.nType == OBJ_EFFECT) && (objP->info.nId == LIGHTNING_ID) && !SHOW_LIGHTNING) {
 				soundObjP->Stop ();
-				continue;		
+				continue;
 				}
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
@@ -681,7 +681,7 @@ while (i) {
 					}
 				}
 			else {
-				if (soundObjP->m_channel < 0) 
+				if (soundObjP->m_channel < 0)
 					soundObjP->Start ();
 				else
 					SetVolume (soundObjP->m_channel, soundObjP->m_volume);
@@ -710,7 +710,7 @@ while (i) {
 #if 1
 		if ((m_objects [i].m_flags & SOF_PLAY_FOREVER))
 			soundObjP->Stop ();
-		else 
+		else
 #endif
 			DeleteSoundObject (i);
 		}

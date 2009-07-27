@@ -54,8 +54,8 @@ CSegment *segP = SEGMENTS + nSegment;
 CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
 v = gameData.render.mine.viewerEye - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_verts [sideVertIndex [nSide][0]]);
-return (sideP->m_nType == SIDE_IS_QUAD) 
-		 ? CFixVector::Dot (sideP->m_normals [0], v) >= 0 
+return (sideP->m_nType == SIDE_IS_QUAD)
+		 ? CFixVector::Dot (sideP->m_normals [0], v) >= 0
 		 : (CFixVector::Dot (sideP->m_normals [0], v) >= 0) || (CFixVector::Dot (sideP->m_normals [1], v) >= 0);
 #else
 return 1;
@@ -148,7 +148,7 @@ if (bmpScope) {
 CBitmap *bmpDamageIcon [3] = {NULL, NULL, NULL};
 int bHaveDamageIcon [3] = {0,0,0};
 
-char* szDamageIcon [3] = {"aimdmg.tga", "drivedmg.tga", "gundmg.tga"};
+const char* szDamageIcon [3] = {"aimdmg.tga", "drivedmg.tga", "gundmg.tga"};
 
 //------------------------------------------------------------------------------
 
@@ -172,7 +172,7 @@ if (bmpDamageIcon [i]) {
 
 void FreeDamageIcons (void)
 {
-for (int i = 0; i < sizeofa (bmpDamageIcon); i++)
+for (int i = 0; i < int (sizeofa (bmpDamageIcon)); i++)
 	FreeDamageIcon (i);
 }
 
@@ -180,7 +180,7 @@ for (int i = 0; i < sizeofa (bmpDamageIcon); i++)
 
 void LoadDamageIcons (void)
 {
-for (int i = 0; i < sizeofa (bmpDamageIcon); i++)
+for (int i = 0; i < int (sizeofa (bmpDamageIcon)); i++)
 	LoadDamageIcon (i);
 }
 
@@ -336,7 +336,7 @@ int bHaveThruster [2] = {0, 0};
 int LoadThruster (int nStyle)
 {
 	static char szThruster [2][13] = {"thrust3d.tga", "thrust2d.tga"};
-	
+
 	if (nStyle < 0)
 		nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0);
 	int b3D = (nStyle == 2);
@@ -791,8 +791,8 @@ if (*bCloaked || *bTransparent || (widFlags & WID_TRANSPARENT_FLAG)) {
 		*bTextured = !*bCloaked;
 		colorP->alpha = (c >= FADE_LEVELS) ? 0 : 1.0f - float (c) / float (FADE_LEVELS);
 		if (*bTransparent)
-			colorP->red = 
-			colorP->green = 
+			colorP->red =
+			colorP->green =
 			colorP->blue = colorP->alpha;
 #if DBG
 		if (colorP->alpha < 1)
@@ -942,7 +942,7 @@ return p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-g3sCodes RotateVertexList (int nVertices, short* vertexIndexP) 
+g3sCodes RotateVertexList (int nVertices, short* vertexIndexP)
 {
 	int			i;
 	g3sPoint		*p;

@@ -120,7 +120,7 @@ extern CBitmap *bmpScope;
 extern CBitmap *bmpJoyMouse;
 extern CBitmap *bmpDamageIcon [3];
 extern int bHaveDamageIcon [3];
-extern char* szDamageIcon [3];
+extern const char* szDamageIcon [3];
 
 extern int bHaveDeadzone;
 extern int bHaveJoyMouse;

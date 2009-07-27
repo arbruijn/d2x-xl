@@ -353,7 +353,6 @@ if (m_vertBuf [0].Buffer ()) { // points to graphics driver buffer for VBO based
 	glBindBufferARB (GL_ARRAY_BUFFER_ARB, m_vboDataHandle);
 	ogl.EnableClientState (GL_VERTEX_ARRAY);
 	glBufferDataARB (GL_ARRAY_BUFFER, m_nFaceVerts * sizeof (CRenderVertex), reinterpret_cast<void*> (m_vertBuf [0].Buffer ()), GL_STATIC_DRAW_ARB);
-	int i = glGetError ();
 #else
 if (m_vertBuf [1].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	memcpy (m_vertBuf [1].Buffer (), m_vertBuf [0].Buffer (), m_vertBuf [1].Size ());
@@ -366,7 +365,6 @@ if (m_index [0].Buffer ()) { // points to graphics driver buffer for VBO based r
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
 	ogl.EnableClientState (GL_VERTEX_ARRAY);
 	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), reinterpret_cast<void*> (m_index [0].Buffer ()), GL_STATIC_DRAW_ARB);
-	int i = glGetError ();
 #else
 if (m_index [1].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	memcpy (m_index [1].Buffer (), m_index [0].Buffer (), m_index [1].Size ());
@@ -533,10 +531,10 @@ if (vertices.Create (m_nFaceVerts)) {
 			}
 		}
 	h = (short) (pv - vertices.Buffer ()) - 1;
-	
+
 	CQuickSort<CFloatVector3>	qs;
 	qs.SortAscending (vertices.Buffer (), 0, h, &RenderModel::CModel::CmpVerts);
-		
+
 	//G3SortModelVerts (vertices, 0, h);
 	h = FilterVertices (vertices, h);
 	for (i = 0, pvi = vertices.Buffer (); i < h - 1; i++, pvi++)
@@ -888,10 +886,10 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 pm->Init ();
-return bHires 
-		 ? GetASEModel (nModel) 
-			? pm->BuildFromASE (objP, nModel) 
-			: pm->BuildFromOOF (objP, nModel) 
+return bHires
+		 ? GetASEModel (nModel)
+			? pm->BuildFromASE (objP, nModel)
+			: pm->BuildFromOOF (objP, nModel)
 		 : pm->BuildFromPOF (objP, nModel, pp, modelBitmaps, pObjColor);
 }
 

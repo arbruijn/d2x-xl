@@ -2,18 +2,18 @@
 #define CON_console_H
 
 /*! \mainpage
- 
+
 \section intro Introduction
 SDL_Console is a console that can be added to any SDL application. It is similar to Quake and other games consoles.
-A console is meant to be a very simple way of interacting with a program and executing commands. You can also have 
-more than one console at a time. 
- 
+A console is meant to be a very simple way of interacting with a program and executing commands. You can also have
+more than one console at a time.
+
 \section docs Documentation
-For a detailed description of all functions see \ref CON_console.h. Remark that functions that have the mark "Internal" 
+For a detailed description of all functions see \ref CON_console.h. Remark that functions that have the mark "Internal"
 are only used internally. There's not much use of calling these functions.
- 
+
 Have Fun!
- 
+
 \author Garett Banuk <mongoose@mongeese.org> (Original Version)
 \author Clemens Wacha <reflex-2000@gmx.net> (Version 2.x, Documentation)
 \author Boris Lesner <talanthyr@tuxfamily.org> (Package Maintainer)
@@ -65,7 +65,7 @@ enum {
 
 class CConsole {
 	public:
-		static bool				m_bInitialized; 
+		static bool				m_bInitialized;
 		static CCvar*			m_threshold;
 
 		int						m_Visible;			//! enum that tells which visible state we are in CON_HIDE, CON_SHOW, CON_RAISE, CON_LOWER
@@ -106,7 +106,7 @@ class CConsole {
 		CConsole* Create (void);
 		void Destroy (void);
 		/*! Takes keys from the keyboard and inputs them to the console if the console isVisible ().
-			If the event was not handled (i.e. WM events or unknown ctrl- or alt-sequences) 
+			If the event was not handled (i.e. WM events or unknown ctrl- or alt-sequences)
 			the function returns the event for further processing. */
 		int Events (int event);
 		/*! Makes the console visible */
@@ -156,7 +156,7 @@ class CConsole {
 		void SetExecuteFunction (void ( _CDECL_ * CmdFunction) (char* command));
 		/*! Sets the callback tabulator completion function. char* my_tabcompletion (char* command). If Tab is
 			pressed, the function gets called with the already typed in command. my_tabcompletion then checks if if can
-			complete the command or if it should display a list of all matching commands (with Out ()). Returns the 
+			complete the command or if it should display a list of all matching commands (with Out ()). Returns the
 			completed command or NULL if no completion was made. */
 		void SetTabCompletion (char* ( _CDECL_ * TabFunction) (char* command));
 		/*! Internal: Gets called when TAB was pressed */

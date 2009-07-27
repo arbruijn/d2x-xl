@@ -194,7 +194,9 @@ class CExternalControls {
 
 	public:
 		CExternalControls () { memset (this, 0, sizeof (*this)); }
+		~CExternalControls () { Destroy (); }
 		void Init (int intno, int address);
+		void Destroy (void);
 		void Read (void);
 };
 
@@ -203,7 +205,7 @@ extern CExternalControls externalControls;
 
 typedef struct kcItem {
 	short id;				// The id of this item
-	short x, y;			
+	short x, y;
 	short w1;
 	short w2;
 	short u,d,l,r;

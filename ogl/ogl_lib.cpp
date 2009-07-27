@@ -57,7 +57,7 @@
 #include "cockpit.h"
 #include "gpgpu_lighting.h"
 
-#define _WIN32_WINNT		0x0600 
+#define _WIN32_WINNT		0x0600
 
 #define TRACK_STATES		0
 
@@ -266,9 +266,9 @@ ogl.m_states.bEnableTexture2D = -1;
 ogl.m_states.bEnableTexClamp = -1;
 ogl.m_states.texMinFilter = GL_NEAREST;
 ogl.m_states.texMinFilter = GL_NEAREST;
-ogl.m_states.nTexMagFilterState = -1, 
+ogl.m_states.nTexMagFilterState = -1,
 ogl.m_states.nTexMinFilterState = -1;
-ogl.m_states.nTexEnvModeState = -1, 
+ogl.m_states.nTexEnvModeState = -1,
 ogl.m_states.nLastX =
 ogl.m_states.nLastY =
 ogl.m_states.nLastW =
@@ -364,13 +364,13 @@ void COGL::SelectTMU (int nTMU, bool bClient)
 if ((i < 0) || (i > 3))
 	return;
 #endif
-//if (m_states.nTMU [0] != i) 
+//if (m_states.nTMU [0] != i)
 	{
 	glActiveTexture (nTMU);
 	m_states.nTMU [0] = i;
-	}	
+	}
 if (bClient) {
-	//if (m_states.nTMU [1] != i) 
+	//if (m_states.nTMU [1] != i)
 		{
 		glClientActiveTexture (nTMU);
 		m_states.nTMU [1] = i;
@@ -410,7 +410,7 @@ int COGL::DisableClientState (GLuint nState, int nTMU)
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
 #if TRACK_STATES
-if (!m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY]) 
+if (!m_states.clientStates [m_states.nTMU [0]][nState - GL_VERTEX_ARRAY])
 #endif
 	{
 	glDisableClientState (nState);
@@ -430,19 +430,19 @@ int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
-if (!bNormals) 
+if (!bNormals)
 	DisableClientState (GL_NORMAL_ARRAY);
 else if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
 	DisableClientStates (0, 0, 0, -1);
 	return 0;
 	}
-if (!bTexCoord) 
+if (!bTexCoord)
 	DisableClientState (GL_TEXTURE_COORD_ARRAY);
 else if (!EnableClientState (GL_TEXTURE_COORD_ARRAY, -1)) {
 	DisableClientStates (0, 0, 0, -1);
 	return 0;
 	}
-if (!bColor) 
+if (!bColor)
 	DisableClientState (GL_COLOR_ARRAY);
 else if (!EnableClientState (GL_COLOR_ARRAY, -1)) {
 	DisableClientStates (bTexCoord, 0, 0, -1);
@@ -468,16 +468,16 @@ DisableClientState (GL_VERTEX_ARRAY);
 
 //------------------------------------------------------------------------------
 
-void COGL::ResetClientStates (void) 
-{ 
-for (int i = 4; i; i) {
+void COGL::ResetClientStates (void)
+{
+for (int i = 4; i; ) {
 	DisableClientStates (1, 1, 1, GL_TEXTURE0 + --i);
 	glEnable (GL_TEXTURE_2D);
 	OglBindTexture (0);
 	if (i)
 		glDisable (GL_TEXTURE_2D);
 	}
-memset (m_states.clientStates, 0, sizeof (m_states.clientStates)); 
+memset (m_states.clientStates, 0, sizeof (m_states.clientStates));
 }
 
 //------------------------------------------------------------------------------
@@ -763,7 +763,7 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
 if (ogl.m_states.bShadersOk)
 	glUseProgramObject (0);
 #if 0
-// There's a weird effect of string pooling causing the renderer to stutter every time a 
+// There's a weird effect of string pooling causing the renderer to stutter every time a
 // new string texture is uploaded to the OpenGL driver when depth textures are used.
 DestroyGlareDepthTexture ();
 #endif
@@ -1214,7 +1214,7 @@ return hBuffer;
 
 //------------------------------------------------------------------------------
 
-int COGL::StencilOff (void) 
+int COGL::StencilOff (void)
 {
 if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
 	return 0;
@@ -1225,7 +1225,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void COGL::StencilOn (int bStencil) 
+void COGL::StencilOn (int bStencil)
 {
 if (bStencil) {
 	glEnable (GL_STENCIL_TEST);
@@ -1237,42 +1237,42 @@ if (bStencil) {
 
 #if DBG_OGL
 
-void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine) 
-{ 
+void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+{
 m_states.clientBuffers [m_states.nTMU [0]][0].buffer = pointer;
 m_states.clientBuffers [m_states.nTMU [0]][0].pszFile = pszFile;
 m_states.clientBuffers [m_states.nTMU [0]][0].nLine = nLine;
-glVertexPointer (size, type, stride, pointer); 
+glVertexPointer (size, type, stride, pointer);
 }
 
 //------------------------------------------------------------------------------
 
-void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
-{ 
+void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+{
 m_states.clientBuffers [m_states.nTMU [0]][1].buffer = pointer;
 m_states.clientBuffers [m_states.nTMU [0]][1].pszFile = pszFile;
 m_states.clientBuffers [m_states.nTMU [0]][1].nLine = nLine;
-glNormalPointer (type, stride, pointer); 
+glNormalPointer (type, stride, pointer);
 }
 
 //------------------------------------------------------------------------------
 
-void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
+void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 {
 m_states.clientBuffers [m_states.nTMU [0]][2].buffer = pointer;
 m_states.clientBuffers [m_states.nTMU [0]][2].pszFile = pszFile;
 m_states.clientBuffers [m_states.nTMU [0]][2].nLine = nLine;
-glColorPointer (size, type, stride, pointer); 
+glColorPointer (size, type, stride, pointer);
 }
 
 //------------------------------------------------------------------------------
 
-void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, char* pszFile, int nLine)
-{ 
+void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+{
 m_states.clientBuffers [m_states.nTMU [0]][4].buffer = pointer;
 m_states.clientBuffers [m_states.nTMU [0]][4].pszFile = pszFile;
 m_states.clientBuffers [m_states.nTMU [0]][4].nLine = nLine;
-glTexCoordPointer (size, type, stride, pointer); 
+glTexCoordPointer (size, type, stride, pointer);
 }
 
 #endif
@@ -1283,7 +1283,6 @@ glTexCoordPointer (size, type, stride, pointer);
 
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)
 {
-GLuint nError = glGetError ();
 glGenTextures (n, hTextures);
 if ((*hTextures == m_data.drawBuffer.RenderBuffer ()) &&
 	 (hTextures != &m_data.drawBuffer.RenderBuffer ()))

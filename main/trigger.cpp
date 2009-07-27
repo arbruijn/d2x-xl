@@ -205,15 +205,15 @@ for (int i = 0; i < nLinks; i++) {
 		wallP->flags &= ~WALL_DOOR_LOCKED;
 		wallP->keys = KEY_NONE;
 		}
-	}	
+	}
 }
 
 //------------------------------------------------------------------------------
 
 bool CTrigger::TargetsWall (int nWall)
 {
-for (int i = 0; i < nLinks; i++) 
-	if ((nWall == SEGMENTS [segments [i]].WallNum (sides [i]))) 
+for (int i = 0; i < nLinks; i++)
+	if ((nWall == SEGMENTS [segments [i]].WallNum (sides [i])))
 		return true;
 return false;
 }
@@ -243,7 +243,7 @@ void CTrigger::DoLockDoors (void)
 {
 	CWall*	wallP;
 
-for (int i = 0; i < nLinks; i++) 
+for (int i = 0; i < nLinks; i++)
 	if ((wallP = SEGMENTS [segments [i]].Wall (sides [i])))
 		wallP->flags |= WALL_DOOR_LOCKED;
 }
@@ -265,7 +265,7 @@ for (i = j = 0; i < MAX_PLAYERS; i++) {
 		MoveSpawnMarker (&gameData.multiplayer.playerInit [i].position, nSegment);
 	j = (j + 1) % nLinks;
 	}
-// delete any spawn markers that have been set before passing through this trigger to 
+// delete any spawn markers that have been set before passing through this trigger to
 // avoid players getting stuck when respawning at that marker
 if (0 <= (gameData.marker.nHighlight = SpawnMarkerIndex (-1)))
 	DeleteMarker (1);
@@ -338,13 +338,13 @@ for (int i = 0; i < nLinks; i++) {
 		}
 	switch (nType) {
 		case TT_OPEN_WALL:
-			nNewWallType = WALL_OPEN; 
+			nNewWallType = WALL_OPEN;
 			break;
-		case TT_CLOSE_WALL:	
-			nNewWallType = WALL_CLOSED; 
+		case TT_CLOSE_WALL:
+			nNewWallType = WALL_CLOSED;
 			break;
 		case TT_ILLUSORY_WALL:
-			nNewWallType = WALL_ILLUSION; 
+			nNewWallType = WALL_ILLUSION;
 			break;
 		default:
 			Assert (0); /* nNewWallType unset */
@@ -366,7 +366,7 @@ for (int i = 0; i < nLinks; i++) {
 	bChanged = 1;
 	switch (nType) {
 		case TT_OPEN_WALL:
-			if (!bForceField) 
+			if (!bForceField)
 				segP->StartCloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
@@ -386,7 +386,7 @@ for (int i = 0; i < nLinks; i++) {
 			break;
 
 		case TT_CLOSE_WALL:
-			if (!bForceField) 
+			if (!bForceField)
 				segP->StartDecloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
@@ -494,7 +494,7 @@ an = n.ToAnglesVec ();
 if (!nStep)
 	posP->mOrient = CFixMatrix::Create (an);
 if (bSetPos)
-	posP->vPos = SEGMENTS [nSegment].Center (); 
+	posP->vPos = SEGMENTS [nSegment].Center ();
 // rotate the ships vel vector accordingly
 //StopPlayerMovement ();
 }
@@ -588,7 +588,7 @@ return NULL;
 
 fix			speedBoostSpeed = 0;
 
-void SetSpeedBoostVelocity (short nObject, fix speed, 
+void SetSpeedBoostVelocity (short nObject, fix speed,
 									 short srcSegnum, short srcSidenum,
 									 short destSegnum, short destSidenum,
 									 CFixVector *pSrcPt, CFixVector *pDestPt,
@@ -730,7 +730,7 @@ void CTrigger::DoSpeedBoost (short nObject)
 if (!(COMPETITION || IsCoopGame) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* wallP = TriggerParentWall (Index ());
 	gameData.objs.speedBoost [nObject].bBoosted = (value && (nLinks > 0));
-	SetSpeedBoostVelocity ((short) nObject, value, 
+	SetSpeedBoostVelocity ((short) nObject, value,
 								  (short) (wallP ? wallP->nSegment : -1), (short) (wallP ? wallP->nSide : -1),
 								  segments [0], sides [0], NULL, NULL, (flags & TF_SET_ORIENT) != 0);
 	}
@@ -747,7 +747,7 @@ StopSpeedBoost (gameData.multiplayer.players [nPlayer].nObject);
 if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
 	StartEndLevelSequence (0);
 	return true;
-	} 
+	}
 else if (gameData.missions.nCurrentLevel < 0) {
 	if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
 		return false;
@@ -804,10 +804,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-struct {
+typedef struct {
 	int	nFlag;
 	int	nType;
-} xlatTriggers [] = {
+} tXlatTriggers;
+
+tXlatTriggers xlatTriggers [] = {
 	{TRIGGER_CONTROL_DOORS, TT_OPEN_DOOR},
 	{TRIGGER_SHIELD_DAMAGE, TT_SHIELD_DAMAGE},
 	{TRIGGER_ENERGY_DRAIN, TT_ENERGY_DRAIN},
@@ -829,7 +831,7 @@ int CTrigger::OperateD1 (short nObject, int nPlayer, int bShot)
 	int	nTrigger = TRIGGERS.Index (this);
 
 
-for (int i = 0; i < sizeofa (xlatTriggers); i++)
+for (int i = 0; i < int (sizeofa (xlatTriggers)); i++)
 	if (flagsD1 & xlatTriggers [i].nFlag) {
 		nType = xlatTriggers [i].nType;
 		gameData.trigs.delay [nTrigger] = -1;
@@ -846,7 +848,7 @@ return h;
 
 int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 {
-if (flags & TF_DISABLED) 
+if (flags & TF_DISABLED)
 	return 1;		//1 means don't send trigger hit to other players
 
 CObject*	objP = OBJECTS + nObject;
@@ -859,18 +861,18 @@ if (bIsPlayer) {
 else {
 	nPlayer = -1;
 	if ((nType != TT_TELEPORT) && (nType != TT_SPEEDBOOST)) {
-		if ((objP->info.nType != OBJ_ROBOT) && 
-			 (objP->info.nType != OBJ_REACTOR) && 
-			 (objP->info.nType != OBJ_HOSTAGE) && 
+		if ((objP->info.nType != OBJ_ROBOT) &&
+			 (objP->info.nType != OBJ_REACTOR) &&
+			 (objP->info.nType != OBJ_HOSTAGE) &&
 			 (objP->info.nType != OBJ_POWERUP))
 			return 1;
 		if (!bObjTrigger)
 			return 1;
 		}
 	else
-		if ((objP->info.nType != OBJ_ROBOT) && 
-			 (objP->info.nType != OBJ_REACTOR) && 
-			 (objP->info.nType != OBJ_HOSTAGE) && 
+		if ((objP->info.nType != OBJ_ROBOT) &&
+			 (objP->info.nType != OBJ_REACTOR) &&
+			 (objP->info.nType != OBJ_HOSTAGE) &&
 			 (objP->info.nType != OBJ_POWERUP))
 			return 1;
 		}
@@ -979,7 +981,7 @@ switch (nType) {
 			if (bIsPlayer) {
 				if (nPlayer != gameData.multiplayer.nLocalPlayer)
 					break;
-				if ((LOCALPLAYER.shields < 0) || 
+				if ((LOCALPLAYER.shields < 0) ||
 						gameStates.app.bPlayerIsDead)
 					break;
 				}
@@ -994,7 +996,7 @@ switch (nType) {
 		if (bIsPlayer) {
 			if (nPlayer != gameData.multiplayer.nLocalPlayer)
 				break;
-			if ((LOCALPLAYER.shields < 0) || 
+			if ((LOCALPLAYER.shields < 0) ||
 				 gameStates.app.bPlayerIsDead)
 				break;
 			}
@@ -1070,11 +1072,11 @@ return 0;
 
 void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
-nType = (ubyte) cf.ReadByte (); 
+nType = (ubyte) cf.ReadByte ();
 if (bObjTrigger && (saveGameManager.Version () >= 41))
-	flags = cf.ReadShort (); 
+	flags = cf.ReadShort ();
 else
-	flags = short (cf.ReadByte ()); 
+	flags = short (cf.ReadByte ());
 nLinks = cf.ReadByte ();
 value = cf.ReadFix ();
 time = cf.ReadFix ();
@@ -1090,11 +1092,11 @@ tOperated = (saveGameManager.Version () < 44) ? -1 : cf.ReadFix ();
 
 void CTrigger::SaveState (CFile& cf, bool bObjTrigger)
 {
-cf.WriteByte (sbyte (nType)); 
+cf.WriteByte (sbyte (nType));
 if (bObjTrigger)
-	cf.WriteShort (flags); 
+	cf.WriteShort (flags);
 else
-	cf.WriteByte (sbyte (flags)); 
+	cf.WriteByte (sbyte (flags));
 cf.WriteByte (nLinks);
 cf.WriteFix (value);
 cf.WriteFix (time);

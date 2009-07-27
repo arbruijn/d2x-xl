@@ -559,14 +559,14 @@ if ((*pos) == objP->info.position.vPos)
 	fq.startSeg	= objP->info.nSegment;
 else {
 	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
-	if (nSegment != -1) 
+	if (nSegment != -1)
 		fq.startSeg = nSegment;
 	else {
 		fq.startSeg = objP->info.nSegment;
 		*pos = objP->info.position.vPos;
 		move_towards_segment_center (objP);
-		} 
-	} 
+		}
+	}
 #if DBG
 if (fq.startSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
@@ -588,7 +588,7 @@ Hit_seg = hitData.hit.nSegment;
 if (/*(hitType == HIT_NONE) ||*/ ((hitType == HIT_OBJECT) && (hitData.hit.nObject == LOCALPLAYER.nObject))) {
 	dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
 	return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
-	} 
+	}
 return 0;
 }
 
@@ -646,7 +646,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 				gameData.ai.localInfo [nObject].deltaAngles [jointnum][nAngle] = delta2 / DELTA_ANG_SCALE;		// complete revolutions per second
 				}
 			}
-		}	
+		}
 
 	if (at_goal) {
 		tAILocalInfo* ailP = &gameData.ai.localInfo [objP->Index ()];
@@ -703,7 +703,7 @@ void SetNextPrimaryFireTime(tAILocalInfo *ailP, tRobotInfo *botInfoP)
 {
 	ailP->nRapidFireCount++;
 
-if (ailP->nRapidFireCount < botInfoP->nRapidFireCount [gameStates.app.nDifficultyLevel]) 
+if (ailP->nRapidFireCount < botInfoP->nRapidFireCount [gameStates.app.nDifficultyLevel])
 	ailP->nextPrimaryFire = min(I2X (1)/8, botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
 else {
 	ailP->nRapidFireCount = 0;
@@ -815,7 +815,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 		//	behavior.  Fire at exactly that point.  This isn't exactly what you want because it will probably take the laser
 		//	a different amount of time to get there, since it will probably be a different distance from the playerP.
 		//	So, that's why we write games, instead of guiding missiles...
-			} 
+			}
 		else {
 			vFire = bpp_diff - *fire_point;
 			vFire *= FixMul (WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel), gameData.time.xFrame);
@@ -1221,7 +1221,7 @@ if (!*flag) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand() + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
 			audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
-		} 
+		}
 	else {
 		//	Compute expensive stuff -- vec_to_player and player_visibility
 		CFixVector::NormalizedDir (*vec_to_player, gameData.ai.target.vBelievedPos, *pos);
@@ -1246,7 +1246,7 @@ if (!*flag) {
 					ailP->timeTargetSoundAttacked = gameData.time.xGame;
 					ailP->nextMiscSoundTime = gameData.time.xGame + I2X (1) + d_rand()*4;
 					}
-				} 
+				}
 			else if (ailP->timeTargetSoundAttacked + I2X (1)/4 < gameData.time.xGame) {
 				audio.CreateSegmentSound (botInfoP->attackSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 				ailP->timeTargetSoundAttacked = gameData.time.xGame;
@@ -1507,8 +1507,6 @@ return 0;
 //		1	this playerP IS allowed to move this robotP.
 int ai_multiplayer_awareness(CObject *objP, int awareness_level)
 {
-	int	rval=1;
-
 if (!IsMultiGame)
 	return 1;
 if (awareness_level == 0)
@@ -1594,7 +1592,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 				int	nObject;
 				int	randtype = (d_rand() * D1_MAX_GATE_INDEX) >> 15;
 
-				Assert(randtype < D1_MAX_GATE_INDEX);
+				Assert(randtype < int (D1_MAX_GATE_INDEX));
 				randtype = super_boss_gate_list [randtype];
 				Assert(randtype < gameData.bots.nTypes [1]);
 
@@ -1654,7 +1652,7 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 					}
 
 					//	Wants to fire, so should go into chase mode, probably.
-					if ((aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) && 
+					if ((aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) &&
 						 (aiP->behavior != D1_AIB_FOLLOW_PATH) && ((ailP->mode == D1_AIM_FOLLOW_PATH) || (ailP->mode == D1_AIM_STILL)))
 						ailP->mode = D1_AIM_CHASE_OBJECT;
 				}
@@ -1670,7 +1668,7 @@ void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *
 		}
 	} else if (WI_homingFlag (objP->info.nId) == 1) {
 		//	Robots which fire homing weapons might fire even if they don't have a bead on the playerP.
-		if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) && 
+		if (((!object_animates) || (ailP->achievedState [aiP->CURRENT_GUN] == D1_AIS_FIRE)) &&
 			 (ailP->nextPrimaryFire <= 0) && (CFixVector::Dist(Hit_pos, objP->info.position.vPos) > I2X (40))) {
 			if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION))
 				return;
@@ -2069,7 +2067,7 @@ if (nObject == nDbgObj)
 				CreatePathToTarget(objP, 10, 1);
 				// -- show_path_and_other(objP);
 				ai_multi_send_robot_position(nObject, -1);
-				} 
+				}
 			else if ((aiP->CURRENT_STATE != D1_AIS_REST) && (aiP->GOAL_STATE != D1_AIS_REST)) {
 				if (!ai_multiplayer_awareness(objP, 70)) {
 					if (maybe_ai_do_actual_firing_stuff(objP, aiP))

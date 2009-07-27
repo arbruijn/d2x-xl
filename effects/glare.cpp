@@ -730,7 +730,7 @@ for (;;) {
 	if (glGetError ()) {
 #if DBG
 		glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
-		if (nError = glGetError ())
+		if ((nError = glGetError ()))
 #endif
 			return 0;
 		}

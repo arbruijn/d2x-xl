@@ -107,7 +107,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int PiggyFindSound (const char * name)     
+int PiggyFindSound (const char * name)
 {
 	int i = soundNames [gameStates.app.bD1Mission].Search (name);
 if (i < 0)
@@ -322,7 +322,7 @@ void LoadSounds (CFile& cf, bool bCustom)
 
 for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--, soundP++) {
 	if (soundP->nOffset [bCustom] > 0) {
-		//if (PiggySoundIsNeeded (i)) 
+		//if (PiggySoundIsNeeded (i))
 			{
 			cf.Seek (soundP->nOffset [bCustom], SEEK_SET);
 			soundP->data [bCustom].Read (cf, soundP->nLength [bCustom]);
@@ -372,7 +372,7 @@ else {
 	pszFile = DefaultSoundFile ();
 	pszFolder = gameFolders.szDataDir;
 	}
-	
+
 if (!cf.Open (pszFile, pszFolder, "rb", 0))
 	return 0;
 
@@ -469,7 +469,7 @@ return chunkP;
 
 void LoadAddonSounds (void)
 {
-for (int i = 0; i < sizeofa (addonSounds); i++)
+for (int i = 0; i < int (sizeofa (addonSounds)); i++)
 	LoadAddonSound (AddonSoundName (i));
 }
 

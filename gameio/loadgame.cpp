@@ -604,7 +604,7 @@ return pszFilename;
 
 char *LevelSongName (int nLevel)
 {
-	char *szNoSong = "";
+	char szNoSong[] = "";
 
 return gameStates.app.bAutoRunMission ? szNoSong : gameData.missions.szSongNames [nLevel];
 }

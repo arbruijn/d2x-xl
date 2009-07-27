@@ -45,7 +45,7 @@ bool CConsole::m_bInitialized = false;
 CCvar* CConsole::m_threshold = NULL;
 
 /*  Takes keys from the keyboard and inputs them to the console
-    If the event was not handled (i.e. WM events or unknown ctrl-shift 
+    If the event was not handled (i.e. WM events or unknown ctrl-shift
     sequences) the function returns the event for further processing. */
 int CConsole::Events (int event)
 {
@@ -276,7 +276,7 @@ void CConsole::AlphaGL (SDL_Surface *s, int alpha) {
 //------------------------------------------------------------------------------
 
 /* Updates the console buffer */
-void CConsole::Update (void) 
+void CConsole::Update (void)
 {
 	int				loop;
 	int				loop2;
@@ -317,12 +317,12 @@ fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 for (loop = 0; loop < Screenlines-1 && loop < m_LineBuffer - m_ConsoleScrollBack; loop++) {
 	if (m_ConsoleScrollBack != 0 && loop == 0)
 		for (loop2 = 0; loop2 < (m_VChars / 5) + 1; loop2++) {
-			GrString (CON_CHAR_BORDER + (loop2*5*m_surface->Font ()->Width ()), 
-						 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_surface->Font ()->Height ()), 
+			GrString (CON_CHAR_BORDER + (loop2*5*m_surface->Font ()->Width ()),
+						 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_surface->Font ()->Height ()),
 						 CON_SCROLL_INDICATOR, NULL);
 			}
 	else {
-		GrString (CON_CHAR_BORDER, 
+		GrString (CON_CHAR_BORDER,
 					 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_surface->Font ()->Height ()),
 					 m_ConsoleLines [m_ConsoleScrollBack + loop].Buffer (), NULL);
 		}
@@ -338,7 +338,7 @@ if (m_output->flags & SDL_OPENGLBLIT)
 
 //------------------------------------------------------------------------------
 
-void CConsole::UpdateOffset (void) 
+void CConsole::UpdateOffset (void)
 {
 switch (m_Visible) {
 	case CON_CLOSING:
@@ -366,7 +366,7 @@ switch (m_Visible) {
 //------------------------------------------------------------------------------
 /* Draws the console buffer to the screen if the console is "visible" */
 
-void CConsole::Draw (void) 
+void CConsole::Draw (void)
 {
 	CBitmap *clip;
 
@@ -392,7 +392,7 @@ if (gameOpts->menus.nStyle)
 	backgroundManager.DrawBox (0, 0, m_surface->Width (), m_RaiseOffset, 1, 1.0f, 0);
 else {
 	clip = m_surface->CreateChild (
-		0, m_surface->Height () - m_RaiseOffset, 
+		0, m_surface->Height () - m_RaiseOffset,
 		m_surface->Width (), m_RaiseOffset);
 	clip->BlitClipped (m_DispX, m_DispY);
 	clip->Destroy ();
@@ -416,32 +416,32 @@ return new CConsole;
 
 void CConsole::Init (void)
 {
-m_Visible = 0;			
-m_RaiseOffset = 0;		
-m_HideKey = 0;			
+m_Visible = 0;
+m_RaiseOffset = 0;
+m_HideKey = 0;
 m_TotalConsoleLines = 0;
 m_ConsoleScrollBack = 0;
-m_TotalCommands = 0;	
-m_LineBuffer = 0;		
-m_VChars = 0;			
+m_TotalCommands = 0;
+m_LineBuffer = 0;
+m_VChars = 0;
 m_CursorPos = 0;
-m_Offset = 0;	
-m_InsMode = 0;	
+m_Offset = 0;
+m_InsMode = 0;
 m_DispX = 0;
-m_DispY = 0;	
-m_CommandScrollBack = 0;		
-m_Prompt= NULL;			
-m_surface = NULL;	
-m_output= NULL;	
-m_background = NULL;	
-m_input= NULL;	
-m_CmdFunction = NULL;	
-m_TabFunction = NULL;	
-memset (m_Command, 0, sizeof (m_Command));	
-memset (m_RCommand, 0, sizeof (m_RCommand));	
-memset (m_LCommand, 0, sizeof (m_LCommand));	
-memset (m_VCommand, 0, sizeof (m_VCommand));	
-m_threshold = CCvar::Register ("con_threshold", "0");
+m_DispY = 0;
+m_CommandScrollBack = 0;
+m_Prompt= NULL;
+m_surface = NULL;
+m_output= NULL;
+m_background = NULL;
+m_input= NULL;
+m_CmdFunction = NULL;
+m_TabFunction = NULL;
+memset (m_Command, 0, sizeof (m_Command));
+memset (m_RCommand, 0, sizeof (m_RCommand));
+memset (m_LCommand, 0, sizeof (m_LCommand));
+memset (m_VCommand, 0, sizeof (m_VCommand));
+m_threshold = CCvar::Register (const_cast<char*>("con_threshold"), const_cast<char*>("0"));
 }
 
 //------------------------------------------------------------------------------
@@ -468,7 +468,7 @@ m_InsMode = 1;
 m_CursorPos = 0;
 m_CommandScrollBack = 0;
 m_output = output;
-m_Prompt = CON_DEFAULT_PROMPT;
+m_Prompt = const_cast<char*>(CON_DEFAULT_PROMPT);
 m_HideKey = CON_DEFAULT_HIDEKEY;
 
 SetExecuteFunction (&CConsole::DefaultCmdFunction);
@@ -533,7 +533,7 @@ NewLineConsole ();
 
 //------------------------------------------------------------------------------
 /* Makes the console visible */
-void CConsole::Show (void) 
+void CConsole::Show (void)
 {
 m_Visible = CON_OPENING;
 Update ();
@@ -541,14 +541,14 @@ Update ();
 
 //------------------------------------------------------------------------------
 /* Hides the console (make it invisible) */
-void CConsole::Hide (void) 
+void CConsole::Hide (void)
 {
 m_Visible = CON_CLOSING;
 }
 
 //------------------------------------------------------------------------------
 /* tells wether the console is visible or not */
-int CConsole::IsVisible (void) 
+int CConsole::IsVisible (void)
 {
 return (m_Visible == CON_OPEN) || (m_Visible == CON_OPENING);
 }
@@ -556,7 +556,7 @@ return (m_Visible == CON_OPEN) || (m_Visible == CON_OPENING);
 //------------------------------------------------------------------------------
 /* Frees all the memory loaded by the console */
 /* Frees all the memory loaded by the console */
-void CConsole::Destroy (void) 
+void CConsole::Destroy (void)
 {
 	int i;
 
@@ -580,7 +580,7 @@ m_input = NULL;
 //------------------------------------------------------------------------------
 
 /* Increments the console lines */
-void CConsole::NewLineConsole (void) 
+void CConsole::NewLineConsole (void)
 {
 	int	loop;
 	char* temp;
@@ -604,7 +604,7 @@ if (m_ConsoleScrollBack > m_LineBuffer-1)
 //------------------------------------------------------------------------------
 
 /* Increments the command lines */
-void CConsole::NewLineCommand (void) 
+void CConsole::NewLineCommand (void)
 {
 	int	loop;
 	char*	temp;
@@ -621,7 +621,7 @@ if (m_TotalCommands < m_LineBuffer - 1)
 //------------------------------------------------------------------------------
 /* Draws the command line the user is typing in to the screen */
 /* completely rewritten by C.Wacha */
-void CConsole::DrawCommandLine (void) 
+void CConsole::DrawCommandLine (void)
 {
 	int x;
 	int commandbuffer;
@@ -670,7 +670,7 @@ if (!gameOpts->menus.nStyle) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (m_surface);
 	if (m_background)
-		m_background->Render (CCanvas::Current (), 
+		m_background->Render (CCanvas::Current (),
 									 m_surface->Width (), m_surface->Font ()->Height (),
 									 0, m_surface->Height () - m_surface->Font ()->Height (),
 									 m_surface->Width (), m_surface->Font ()->Height (),
@@ -732,7 +732,7 @@ if (m_output->flags & SDL_OPENGLBLIT) {
 
 //------------------------------------------------------------------------------
 /* Outputs text to the console (in game), up to CON_CHARS_PER_LINE chars can be entered */
-void _CDECL_ CConsole::Out (const char *str, ...) 
+void _CDECL_ CConsole::Out (const char *str, ...)
 {
 	va_list marker;
 	//keep some space free for stuff like CConsole::Out ("blablabla %s", m_Command);
@@ -792,8 +792,12 @@ void CConsole::LoadBackground (const char *filename)
 {
 	CBitmap bm;
 
+#if DBG
 int pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, 0);
 Assert(pcxError == PCX_ERROR_NONE);
+#else
+PCXReadBitmap (filename, &bm, BM_LINEAR, 0);
+#endif
 bm.Remap (NULL, -1, -1);
 SetBackground (&bm);
 }
@@ -835,7 +839,7 @@ CCanvas::Pop ();
 
 //------------------------------------------------------------------------------
 /* takes a new x and y of the top left of the console window */
-void CConsole::Position (int x, int y) 
+void CConsole::Position (int x, int y)
 {
 if (x < 0 || x > m_output->Width () - m_surface->Width ())
 	m_DispX = 0;
@@ -888,7 +892,7 @@ return Resize (x, y, w, h);
 
 //------------------------------------------------------------------------------
 /* Sets the Prompt for console */
-void CConsole::SetPrompt (char* newprompt) 
+void CConsole::SetPrompt (char* newprompt)
 {
 //check length so we can still see at least 1 char :-)
 if (strlen (newprompt) < (size_t) m_VChars)
@@ -899,35 +903,35 @@ else
 
 //------------------------------------------------------------------------------
 /* Sets the key that deactivates (hides) the console. */
-void CConsole::SetHideKey (int key) 
+void CConsole::SetHideKey (int key)
 {
 m_HideKey = key;
 }
 
 //------------------------------------------------------------------------------
 /* Executes the command entered */
-void CConsole::Execute (char* command) 
+void CConsole::Execute (char* command)
 {
 m_CmdFunction (command);
 }
 
 //------------------------------------------------------------------------------
 
-void CConsole::SetExecuteFunction (void ( _CDECL_ *CmdFunction) (char* command)) 
+void CConsole::SetExecuteFunction (void ( _CDECL_ *CmdFunction) (char* command))
 {
 m_CmdFunction = CmdFunction;
 }
 
 //------------------------------------------------------------------------------
 
-void CConsole::DefaultCmdFunction (char* command) 
+void CConsole::DefaultCmdFunction (char* command)
 {
 cmd_parse (command);
 }
 
 //------------------------------------------------------------------------------
 
-void CConsole::SetTabCompletion (char* (_CDECL_ *TabFunction) (char* command)) 
+void CConsole::SetTabCompletion (char* (_CDECL_ *TabFunction) (char* command))
 {
 m_TabFunction = TabFunction;
 }
@@ -961,14 +965,14 @@ m_LCommand [j+1] = '\0';
 
 //------------------------------------------------------------------------------
 
-char* CConsole::DefaultTabFunction (char* command) 
+char* CConsole::DefaultTabFunction (char* command)
 {
 return NULL;
 }
 
 //------------------------------------------------------------------------------
 
-void CConsole::CursorLeft (void) 
+void CConsole::CursorLeft (void)
 {
 	char temp [CON_CHARS_PER_LINE];
 
@@ -983,7 +987,7 @@ if (m_CursorPos > 0) {
 
 //------------------------------------------------------------------------------
 
-void CConsole::CursorRight (void) 
+void CConsole::CursorRight (void)
 {
 	char temp [CON_CHARS_PER_LINE];
 
@@ -997,7 +1001,7 @@ if (m_CursorPos < (int) strlen (m_Command)) {
 
 //------------------------------------------------------------------------------
 
-void CConsole::CursorHome (void) 
+void CConsole::CursorHome (void)
 {
 	char temp [CON_CHARS_PER_LINE];
 
@@ -1010,7 +1014,7 @@ memset (m_LCommand, 0, CON_CHARS_PER_LINE);
 
 //------------------------------------------------------------------------------
 
-void CConsole::CursorEnd (void) 
+void CConsole::CursorEnd (void)
 {
 m_CursorPos = (int) strlen (m_Command);
 strncat (m_LCommand, m_RCommand, strlen (m_RCommand));
@@ -1019,7 +1023,7 @@ memset (m_RCommand, 0, CON_CHARS_PER_LINE);
 
 //------------------------------------------------------------------------------
 
-void CConsole::CursorDel (void) 
+void CConsole::CursorDel (void)
 {
 	char temp [CON_CHARS_PER_LINE];
 
@@ -1031,7 +1035,7 @@ if (strlen (m_RCommand) > 0) {
 
 //------------------------------------------------------------------------------
 
-void CConsole::CursorBSpace (void) 
+void CConsole::CursorBSpace (void)
 {
 if (m_CursorPos > 0) {
 	m_CursorPos--;
@@ -1055,7 +1059,7 @@ if (strlen (m_Command) < CON_CHARS_PER_LINE - 1) {
 
 //------------------------------------------------------------------------------
 
-void CConsole::ClearCommand (void) 
+void CConsole::ClearCommand (void)
 {
 m_CursorPos = 0;
 memset (m_VCommand, 0, CON_CHARS_PER_LINE);
@@ -1066,7 +1070,7 @@ memset (m_RCommand, 0, CON_CHARS_PER_LINE);
 
 //------------------------------------------------------------------------------
 
-void CConsole::ClearHistory (void) 
+void CConsole::ClearHistory (void)
 {
 for (int loop = 0; loop <= m_LineBuffer - 1; loop++)
 	m_ConsoleLines [loop].Clear ();
@@ -1074,7 +1078,7 @@ for (int loop = 0; loop <= m_LineBuffer - 1; loop++)
 
 //------------------------------------------------------------------------------
 
-void CConsole::CommandUp (void) 
+void CConsole::CommandUp (void)
 {
 if (m_CommandScrollBack < m_TotalCommands - 1) {
 	/* move back a line in the command strings and copy the command to the current input string */
@@ -1089,7 +1093,7 @@ if (m_CommandScrollBack < m_TotalCommands - 1) {
 
 //------------------------------------------------------------------------------
 
-void CConsole::CommandDown (void) 
+void CConsole::CommandDown (void)
 {
 if (m_CommandScrollBack > -1) {
 	/* move forward a line in the command strings and copy the command to the current input string */
@@ -1109,10 +1113,10 @@ if (m_CommandScrollBack > -1) {
 void _CDECL_ CConsole::printf (int priority, const char *fmt, ...)
 {
 	va_list arglist;
-  
+
 	static char buffer[65536];
 
-if (!(fmt && *fmt)) 
+if (!(fmt && *fmt))
 	return;
 if (priority <= ((int) m_threshold->Value ())) {
 	va_start (arglist, fmt);
@@ -1127,7 +1131,7 @@ if (priority <= ((int) m_threshold->Value ())) {
 #endif
 	/* Produce a sanitised version and send it to the console */
 		char *p1, *p2;
-	
+
 	p1 = p2 = buffer;
 	do {
 		switch (*p1) {
@@ -1139,10 +1143,10 @@ if (priority <= ((int) m_threshold->Value ())) {
 			break;
 			default:
 				*p2++ = *p1++;
-			} 
+			}
 		} while (*p1);
 	*p2 = 0;
-	if (priority == CON_NORMAL) 
+	if (priority == CON_NORMAL)
 		::printf (buffer);
 	}
 }

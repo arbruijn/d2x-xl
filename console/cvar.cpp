@@ -55,7 +55,7 @@ delete this;
 
 //------------------------------------------------------------------------------
 
-CCvar* CCvar::Register (const char* name, char* value)
+CCvar* CCvar::Register (const char name[], char value[])
 {
 	CCvar*	ptr;
 
@@ -75,7 +75,7 @@ return ptr;
 
 //------------------------------------------------------------------------------
 
-CCvar* CCvar::Register (const char* name, double value)
+CCvar* CCvar::Register (const char name[], double value)
 {
 	char	szValue [100];
 
@@ -85,7 +85,7 @@ return Register (name, szValue);
 
 //------------------------------------------------------------------------------
 
-CCvar* CCvar::Find (const char* name)
+CCvar* CCvar::Find (const char name[])
 {
 if (!(name && *name))
 	return NULL;
@@ -93,14 +93,14 @@ if (!(name && *name))
 	CCvar *ptr;
 
 for (ptr = m_list; ptr != NULL; ptr = ptr->m_next)
-	if (!strcmp (name, ptr->m_name)) 
+	if (!strcmp (name, ptr->m_name))
 		return ptr;
 return NULL; // If we didn't find the cvar, give up
 }
 
 //------------------------------------------------------------------------------
 
-void CCvar::Set (char* value)
+void CCvar::Set (char value[])
 {
 	char*	text;
 
@@ -114,7 +114,7 @@ m_value = strtod (value, reinterpret_cast<char **> (NULL));
 
 //------------------------------------------------------------------------------
 
-void CCvar::Set (const char* name, char* value)
+void CCvar::Set (const char name[], char value[])
 {
 	CCvar *ptr;
 
@@ -124,7 +124,7 @@ if ((ptr = Find (name)))
 
 //------------------------------------------------------------------------------
 
-double CCvar::Value (const char* name)
+double CCvar::Value (const char name[])
 {
 	CCvar *ptr;
 
@@ -133,10 +133,10 @@ return ((ptr = Find (name))) ? ptr->m_value : 0.0;
 
 //------------------------------------------------------------------------------
 
-char* CCvar::Text (const char* name)
+char* CCvar::Text (const char name[])
 {
 	CCvar *ptr;
-	
+
 	static char szZero [] = "0.0";
 
 return ((ptr = Find (name))) ? ptr->m_text : szZero;

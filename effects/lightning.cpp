@@ -59,10 +59,12 @@ static CFloatVector3 coreBuffer [2][MAX_LIGHTNING_SEGMENTS];
 
 #if DBG
 
+static CLightningNode *dbgNodeP = NULL;
+
 void TRAP (CLightningNode *nodeP)
 {
 if (nodeP->m_child == reinterpret_cast<CLightning*> ((size_t) 0xfeeefeee))
-	int i = 0;
+	dbgNodeP = nodeP;
 }
 
 void CHECK (CLightning *lightningP, int i)
@@ -520,7 +522,7 @@ bool CLightning::Create (char nDepth)
 {
 if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
-if (!m_nodes.Create (m_nNodes)) 
+if (!m_nodes.Create (m_nNodes))
 	return false;
 m_nodes.Clear ();
 if (m_bRandom) {
@@ -938,7 +940,7 @@ else {
 	}
 vPlasma [3] = vPosf [1] + vn [1];
 vPlasma [2] = vPosf [1] - vn [1];
-memcpy (plasmaBuffers [nThread][bScale].texCoord + 4 * nSegment, 
+memcpy (plasmaBuffers [nThread][bScale].texCoord + 4 * nSegment,
 		  plasmaTexCoord [bStart + 2 * bEnd], 4 * sizeof (tTexCoord2f));
 }
 
@@ -1126,10 +1128,10 @@ if ((bDepthSort > 0) && (gameStates.render.nType != 5)) {	// not in transparency
 				m_nodes [i].GetChild ()->Render (nDepth + 1, 1, nThread);
 	}
 else {
-	if (!nDepth) 
+	if (!nDepth)
 		glDisable (GL_CULL_FACE);
 	RenderBuffered (0, nThread);
-	if (!nDepth) 
+	if (!nDepth)
 		glEnable (GL_CULL_FACE);
 	glLineWidth (1);
 	glDisable (GL_LINE_SMOOTH);
@@ -1201,7 +1203,7 @@ if (!m_lightnings.Create (nLightnings))
 	return false;
 m_lightnings.Clear ();
 CLightning l;
-l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude, 
+l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
 		  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
 for (int i = 0; i < nLightnings; i++) {
@@ -1221,7 +1223,7 @@ return true;
 
 void CLightningSystem::Destroy (void)
 {
-m_bValid = 
+m_bValid =
 m_bDestroy = 0;
 DestroySound ();
 #if 0
@@ -1436,17 +1438,17 @@ return nLights;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-CLightningManager::CLightningManager () 
+CLightningManager::CLightningManager ()
 {
 m_objects = NULL;
-m_lights = NULL; 
+m_lights = NULL;
 m_nFirstLight = -1;
 }
 
 //------------------------------------------------------------------------------
 
-CLightningManager::~CLightningManager () 
-{ 
+CLightningManager::~CLightningManager ()
+{
 Shutdown (true);
 }
 
@@ -1469,7 +1471,7 @@ if (!m_systems.Create (MAX_LIGHTNING_SYSTEMS)) {
 	Shutdown (1);
 	extraGameInfo [0].bUseLightning = 0;
 	return;
-	}	
+	}
 int i = 0;
 int nCurrent = m_systems.FreeList ();
 for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
@@ -2323,7 +2325,7 @@ else {
 #if OMEGA_PLASMA
 	color.alpha = gameOpts->render.lightning.bPlasma ? 0.5f : 0.3f;
 #endif
-	handleP->nLightning = 
+	handleP->nLightning =
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
 										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA

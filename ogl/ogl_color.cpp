@@ -87,7 +87,7 @@ tRgbaColorf GetPalColor (CPalette *palette, int c)
 {
 	tRgbaColorf color;
 
-if (c < 0) 
+if (c < 0)
 	color.red = color.green = color.blue = color.alpha = 1.0f;
 else {
 	if (!palette)
@@ -347,7 +347,7 @@ float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
 int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcdP, int nThread)
 {
-	int					i, j, nLights, nType, 
+	int					i, j, nLights, nType,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = gameStates.render.nState && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
@@ -411,7 +411,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
 
-	spotDir = *prl->info.vDirf.XYZ (); 
+	spotDir = *prl->info.vDirf.XYZ ();
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
 	if (IsLightVert (nVertex, prl)) {
@@ -435,7 +435,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 
 #if USE_FACE_DIST
 	if (/*(nVertex < 0) &&*/ (nType < 2)) {
-		bool bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
+		//bool bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * ogl.m_states.fLightRange;
 		CFloatVector3::Normalize (dir);
@@ -454,7 +454,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		// if any of these conditions apply, decrease the light radius, chosing the smaller negative angle
 		fLightAngle = (fLightDist > 0.1f) ? -CFloatVector3::Dot (lightDir, spotDir) + 0.01f : 1.0f;
 #if !USE_FACE_DIST
-		float lightRad = (fLightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (fLightAngle))));	// make rad smaller the greater the angle 
+		float lightRad = (fLightAngle < 0.0f) ? 0.0f : prl->info.fRad * (1.0f - 0.9f * float (sqrt (fabs (fLightAngle))));	// make rad smaller the greater the angle
 		fLightDist -= lightRad * ogl.m_states.fLightRange; //make light darker if face behind light source
 #endif
 		}
@@ -474,11 +474,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			decay += 1.0000001f;
 			fLightDist /= decay * decay;
 #endif
-			}	
+			}
 		//if ((nType < 2) && (nVertex < 0))
 		//fLightDist *= 0.9f;
 #if USE_FACE_DIST
-		if (/*(nVertex < 0) &&*/ (nType < 2)) 
+		if (/*(nVertex < 0) &&*/ (nType < 2))
 			fAttenuation = (1.0f + GEO_LIN_ATT * fLightDist + GEO_QUAD_ATT * fLightDist * fLightDist);
 		else
 #endif
@@ -689,7 +689,7 @@ else {
 	if (gameStates.render.nState)
 		transformation.Rotate (vcd.vertNorm, *pvVertNorm, 0);
 	else {
-		vcd.vertNorm = *pvVertNorm; 
+		vcd.vertNorm = *pvVertNorm;
 		CFloatVector3::Normalize (vcd.vertNorm);
 		}
 	}

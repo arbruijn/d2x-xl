@@ -1019,10 +1019,10 @@ vCorona [2] = vTrail [1];
 vCorona [1] = vPosf + vNormf * fSize;
 vCorona [3] = vPosf + vNormf * (-fSize);
 CFloatVector::Normalize (vPosf);
-v = vTrail [2]; 
+v = vTrail [2];
 CFloatVector::Normalize (v);
 dotTrail = CFloatVector::Dot (vPosf, v);
-v = *vCorona; 
+v = *vCorona;
 CFloatVector::Normalize (v);
 dotCorona = CFloatVector::Dot (vPosf, v);
 if (gameOpts->render.bDepthSort > 0)
@@ -1151,7 +1151,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	ti.fLength *= 4 * ti.fSize;
 	ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
-	if (!ti.mtP) 
+	if (!ti.mtP)
 		fVecf.Assign (ti.pp ? ti.pp->mOrient.FVec () : objP->info.position.mOrient.FVec ());
 #endif
 	for (h = 0; h < nThrusters; h++)
@@ -1206,7 +1206,7 @@ else {
 			color [1].red *= 0.975f;
 			color [1].green *= 0.8f;
 			color [1].alpha *= fFade [i / 4];
-			glColor4fv (reinterpret_cast<GLfloat*> (color)); 
+			glColor4fv (reinterpret_cast<GLfloat*> (color));
 			glBegin (GL_TRIANGLE_STRIP);
 			for (j = 0; j < RING_SEGS; j++) {
 				//transformation.Transform (v, vFlame [0][nStripIdx [j]], 0);
@@ -1249,7 +1249,7 @@ else {
 						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
 						}
 					else
-						glColor4fv (reinterpret_cast<GLfloat*> (color + l)); 
+						glColor4fv (reinterpret_cast<GLfloat*> (color + l));
 					glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 					}
 				}
@@ -1287,14 +1287,16 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 #endif
 	tHitbox*			phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
 	float				fLength = X2F (phb->vMax [Z] - phb->vMin [Z]) / 2;
+#if 0
 	float				dx = X2F (phb->vMax [X] - phb->vMin [X]);
 	float				dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
-	float				fRad = (float) (sqrt (dx * dx + dy * dy) / 2);
+#endif
+	//float				fRad = (float) (sqrt (dx * dx + dy * dy) / 2);
 	CBitmap*			bmP;
 	tRgbaColorf		color;
 
 	static CFloatVector	vEye = CFloatVector::ZERO;
-	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+	//static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;

@@ -31,17 +31,17 @@ class CCvar {
 		void Destroy (void);
 
 		static CCvar* Create (void);
-		static CCvar* Register (const char* name, char* value);
-		static CCvar* Register (const char* name, double value);
-		static void Set (const char* name, char* value);
-		static double Value (const char* name);
-		static char* Text (const char* name);
+		static CCvar* Register (const char name[], char value[]);
+		static CCvar* Register (const char name[], double value);
+		static void Set (const char name[], char value[]);
+		static double Value (const char name[]);
+		static char* Text (const char name[]);
 		inline double Value (void) { return m_value; }
 		inline char* Text (void) { return m_text; }
 
 	private:
-		static CCvar* Find (const char* name);
-		void Set (char* value);
+		static CCvar* Find (const char name[]);
+		void Set (char value[]);
 };
 
 extern CCvar	m_list;

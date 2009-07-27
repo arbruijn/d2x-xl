@@ -1082,13 +1082,13 @@ ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) ? BM_ADDON_RETICLE_RED : BM_ADDON_RETICLE_GREEN;
 
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-		  (x + ScaleX (crossOffsets [ofs].x - 1)), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true, 
+		  (x + ScaleX (crossOffsets [ofs].x - 1)), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
 		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-		  (x + ScaleX (primaryOffsets [ofs].x - 1)), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true, 
+		  (x + ScaleX (primaryOffsets [ofs].x - 1)), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
 		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-		  (x + ScaleX (secondaryOffsets [ofs].x - 1)), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true, 
+		  (x + ScaleX (secondaryOffsets [ofs].x - 1)), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
 		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
 
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
@@ -1456,20 +1456,19 @@ if (!EGI_FLAG (nDamageModel, 0, 0, 0))
 	return;
 if (cockpit->Hide ())
 	return;
-
+#if 0
 	static int		nIdDamage [3] = {0, 0, 0};
 	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
 	static char*	szDamage [3] = {"AIM: %d%c", "DRIVES: %d%c", "GUNS: %d%c"};
-
+	static char*	szId = "ADG";
+#endif
 	int				i;
 
 	static int		dmgColors [3][4] = {
-							{RGBA (64, 16, 64, 96), RGBA (192, 0, 0, 96), RGBA (255, 208, 0, 96), RGBA (0, 192, 0, 96)}, 
-							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)}, 
+							{RGBA (64, 16, 64, 96), RGBA (192, 0, 0, 96), RGBA (255, 208, 0, 96), RGBA (0, 192, 0, 96)},
+							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)},
 							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)}
 							};
-
-	static char*	szId = "ADG";
 
 #if 1 //!DBG
 if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 2000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
@@ -1534,8 +1533,8 @@ else {
 #	else // round frame
 	glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
 	OglDrawEllipse (
-		sizeofa (sinCos), GL_LINE_LOOP, 
-		40.0f / float (screen.Width ()), 0.5f, 
+		sizeofa (sinCos), GL_LINE_LOOP,
+		40.0f / float (screen.Width ()), 0.5f,
 		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
 #	endif
 	glLineWidth (1);
@@ -1583,65 +1582,64 @@ fix showViewTextTimer = -1;
 void DrawWindowLabel (void)
 {
 if (showViewTextTimer > 0) {
-	char *viewer_name, *control_name;
-	char	*viewer_id;
+	const char* viewer_name, * control_name, * viewer_id;
 	showViewTextTimer -= gameData.time.xFrame;
 
-	viewer_id = "";
+	viewer_id = const_cast<char*>("");
 	switch (gameData.objs.viewerP->info.nType) {
 		case OBJ_FIREBALL:
-			viewer_name = "Fireball";
+			viewer_name = const_cast<char*>("Fireball");
 			break;
 		case OBJ_ROBOT:
-			viewer_name = "Robot";
+			viewer_name = const_cast<char*>("Robot");
 			break;
 		case OBJ_HOSTAGE:
-			viewer_name = "Hostage";
+			viewer_name = const_cast<char*>("Hostage");
 			break;
 		case OBJ_PLAYER:
-			viewer_name = "Player";
+			viewer_name = const_cast<char*>("Player");
 			break;
 		case OBJ_WEAPON:
-			viewer_name = "Weapon";
+			viewer_name = const_cast<char*>("Weapon");
 			break;
 		case OBJ_CAMERA:
-			viewer_name = "Camera";
+			viewer_name = const_cast<char*>("Camera");
 			break;
 		case OBJ_POWERUP:
-			viewer_name = "Powerup";
+			viewer_name = const_cast<char*>("Powerup");
 			break;
 		case OBJ_DEBRIS:
-			viewer_name = "Debris";
+			viewer_name = const_cast<char*>("Debris");
 			break;
 		case OBJ_REACTOR:
-			viewer_name = "Reactor";
+			viewer_name = const_cast<char*>("Reactor");
 			break;
 		default:
-			viewer_name = "Unknown";
+			viewer_name = const_cast<char*>("Unknown");
 			break;
 		}
 
 	switch (gameData.objs.viewerP->info.controlType) {
 		case CT_NONE:
-			control_name = "Stopped";
+			control_name = const_cast<char*>("Stopped");
 			break;
 		case CT_AI:
-			control_name = "AI";
+			control_name = const_cast<char*>("AI");
 			break;
 		case CT_FLYING:
-			control_name = "Flying";
+			control_name = const_cast<char*>("Flying");
 			break;
 		case CT_SLEW:
-			control_name = "Slew";
+			control_name = const_cast<char*>("Slew");
 			break;
 		case CT_FLYTHROUGH:
-			control_name = "Flythrough";
+			control_name = const_cast<char*>("Flythrough");
 			break;
 		case CT_MORPH:
-			control_name = "Morphing";
+			control_name = const_cast<char*>("Morphing");
 			break;
 		default:
-			control_name = "Unknown";
+			control_name = const_cast<char*>("Unknown");
 			break;
 		}
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);

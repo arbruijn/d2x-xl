@@ -279,10 +279,10 @@ do {
 #else
 	physOpts.nHitDetection = -1;
 #endif
-	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [extraGameInfo [0].bUseHitAngles]);
+	sprintf (szSlider + 1, TXT_COLLISION_HANDLING, pszStdAdv [int (extraGameInfo [0].bUseHitAngles)]);
 	*szSlider = *(TXT_COLLISION_HANDLING - 1);
 	physOpts.nCollHandling = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseHitAngles, 0, 1, KEY_C, HTX_GPLAY_COLLHANDLING);
-	sprintf (szSlider + 1, TXT_DAMAGE_MODEL, pszStdAdv [extraGameInfo [0].nDamageModel]);
+	sprintf (szSlider + 1, TXT_DAMAGE_MODEL, pszStdAdv [int (extraGameInfo [0].nDamageModel)]);
 	*szSlider = *(TXT_DAMAGE_MODEL - 1);
 	physOpts.nDamageModel = m.AddSlider (szSlider + 1, extraGameInfo [0].nDamageModel, 0, 1, KEY_D, HTX_DAMAGE_MODEL);
 	do {

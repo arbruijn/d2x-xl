@@ -92,8 +92,8 @@ static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
 #if 0
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
-#endif
 static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
+#endif
 
 #define PART_BUF_SIZE	4096
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
@@ -214,7 +214,7 @@ m_nClass = nClass;
 m_nSegment = nSegment;
 m_nBounce = 0;
 color = colorP ? *colorP : defaultColor;
-m_color [0] = 
+m_color [0] =
 m_color [1] = color;
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 	m_bBright = 0;
@@ -239,7 +239,7 @@ else {
 	if (m_bEmissive)
 		m_color [0].alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
-		if (!colorP) 
+		if (!colorP)
 			m_color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 		else {
 			if (colorP->alpha < 0)
@@ -846,7 +846,7 @@ return 0;
 
 inline int CParticleEmitter::MayBeVisible (void)
 {
-return (m_nSegment < 0) || SegmentMayBeVisible (m_nSegment, 5, -1); 
+return (m_nSegment < 0) || SegmentMayBeVisible (m_nSegment, 5, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -1256,7 +1256,7 @@ m_bDestroy = false;
 
 void CParticleSystem::Destroy (void)
 {
-m_bValid = 
+m_bValid =
 m_bDestroy = false;
 if (m_emitters.Buffer ()) {
 	m_emitters.Destroy ();
@@ -1281,13 +1281,13 @@ if (!m_bValid)
 if (m_emitters.Buffer ()) {
 	if (!particleImageManager.Load (m_nType))
 		return 0;
-	if ((m_nObject >= 0) && (m_nObject < 0x70000000) && 
-		 ((OBJECTS [m_nObject].info.nType == OBJ_NONE) || 
-		  (OBJECTS [m_nObject].info.nSignature != m_nSignature) || 
+	if ((m_nObject >= 0) && (m_nObject < 0x70000000) &&
+		 ((OBJECTS [m_nObject].info.nType == OBJ_NONE) ||
+		  (OBJECTS [m_nObject].info.nSignature != m_nSignature) ||
 		  (particleManager.GetObjectSystem (m_nObject) < 0)))
 		SetLife (0);
 	CParticleEmitter *emitterP = m_emitters.Buffer ();
-	for (int i = m_nEmitters; i; i--, emitterP++) 
+	for (int i = m_nEmitters; i; i--, emitterP++)
 		h += emitterP->Render (-1);
 	}
 #if DBG
@@ -1407,7 +1407,7 @@ if ((m_nObject >= 0) && (m_nObject < 0x70000000) && (OBJECTS [m_nObject].info.nT
 	i = i;
 #endif
 if ((emitterP = m_emitters.Buffer ())) {
-	bool bKill = (m_nObject < 0) || ((m_nObject < 0x70000000) && 
+	bool bKill = (m_nObject < 0) || ((m_nObject < 0x70000000) &&
 					 ((OBJECTS [m_nObject].info.nSignature != m_nSignature) || (OBJECTS [m_nObject].info.nType == OBJ_NONE)));
 	for (i = 0; i < m_nEmitters; ) {
 		if (!m_emitters)
@@ -1531,7 +1531,7 @@ if (!particleImageManager.Load (nType))
 CParticleSystem *systemP = m_systems.Pop ();
 if (!systemP)
 	return -1;
-int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, nDensity, 
+int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, nDensity,
 								 nPartsPerPos, nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
 if (i < 1)
 	return i;
@@ -1556,7 +1556,7 @@ if (!gameStates.app.tick40fps.bTick)
 	int	h = 0;
 
 int nCurrent = -1;
-for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent)) 
+for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	h += systemP->Update ();
 return h;
 }
@@ -1566,7 +1566,7 @@ return h;
 void CParticleManager::Render (void)
 {
 int nCurrent = -1;
-for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent)) 
+for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Render ();
 }
 

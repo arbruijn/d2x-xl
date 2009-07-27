@@ -126,7 +126,7 @@ if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 	catch(...) {
 		PrintLog ("error calling glDrawElements (%d, %d) in G3FlushFaceBuffer\n", gameStates.render.bTriangleMesh ? "GL_TRIANGLES" : "GL_TRIANGLE_FAN");
 		}
-	faceBuffer.nFaces = 
+	faceBuffer.nFaces =
 	faceBuffer.nElements = 0;
 	//gameStates.render.history.nShader = -1;
 	}
@@ -147,7 +147,7 @@ if (!gameStates.render.bTriangleMesh) {
 		glColor3f (1,1,1);
 	OglDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	}
-else 
+else
 #endif
 	{
 	int	i = faceP->nIndex,
@@ -187,13 +187,13 @@ if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide ==
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
-if (!bColored && gameOpts->render.automap.bGrayOut) 
+if (!bColored && gameOpts->render.automap.bGrayOut)
 	nShader = G3SetupGrayScaleShader (nType, colorP);
 else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixelLighting == 2))
 	nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
 else if (gameStates.render.bHeadlights && !bDepthOnly)
 	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
-else if (bColorKey || bMultiTexture) 
+else if (bColorKey || bMultiTexture)
 	nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
 else if (gameStates.render.history.nShader >= 0) {
 	gameData.render.nShaderChanges++;
@@ -435,11 +435,12 @@ PROF_START
 #endif
 
 #if DBG
-if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide))) {
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
 	else
 		nDbgSeg = nDbgSeg;
+	}
 #endif
 
 if (!faceP->bTextured)
@@ -480,7 +481,7 @@ else {
 	}
 
 #if G3_BUFFER_FACES
-if (bDepthOnly) 
+if (bDepthOnly)
 	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 else {
 	if (bMonitor)
@@ -520,7 +521,7 @@ if (!gameOpts->render.debug.bTextures)
 if (bMonitor)
 	G3SetupMonitor (faceP, bmTop, bTextured, 0);
 #if G3_BUFFER_FACES
-else 
+else
 	return 0;
 #endif
 if (gameStates.render.bTriangleMesh) {
@@ -528,11 +529,11 @@ if (gameStates.render.bTriangleMesh) {
 	 {
 		GLsizei nElements = faceP->nTris * 3;
 		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
-		}	
+		}
 #else
 		OglDrawArrays (GL_TRIANGLES, faceP->nIndex, faceP->nTris * 3);
 #endif
-	}	
+	}
 else {
 #if 0
 	int	index [4];
@@ -578,11 +579,12 @@ PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
 #if DBG
-if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide))) {
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
 	else
 		nDbgSeg = nDbgSeg;
+	}
 #endif
 
 if (!faceP->bTextured)
@@ -657,9 +659,9 @@ else if (gameStates.render.bFullBright) {
 else {
 	bool bAdditive = false;
 	for (;;) {
-		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);	
+		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);
 		RenderFacePP (faceP);
-		if ((ogl.m_states.iLight >= ogl.m_states.nLights) || 
+		if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 			 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
 		if (!bAdditive) {
@@ -700,11 +702,12 @@ PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
 #if DBG
-if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide))) {
 	if (bDepthOnly)
 		nDbgSeg = nDbgSeg;
 	else
 		nDbgSeg = nDbgSeg;
+	}
 #endif
 
 if (!faceP->bTextured)
@@ -779,7 +782,7 @@ else if (gameStates.render.bFullBright) {
 	RenderFacePP (faceP);
 	}
 else {
-	G3SetupLightmapShader (faceP, 0, gameStates.render.history.nType, false);	
+	G3SetupLightmapShader (faceP, 0, gameStates.render.history.nType, false);
 	RenderFacePP (faceP);
 	}
 

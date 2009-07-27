@@ -112,7 +112,7 @@ class CSongManager {
 		void Setup (void);
 		void CheckRepeat (void);
 		void StopAll (void);
-		int PlayModSong (char* pszSong, int repeat);
+		int PlayModSong (char pszSong[], int repeat);
 		void Play (int nSong, int repeat);
 		void PlayLevelSong (int nLevel, int bFromHog, bool bWaitForThread = true);
 		void PlayCurrent (int repeat = 0);

@@ -83,11 +83,11 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 			nModel = d_rand () > 3 * I2X (1) / 8;	// 75% chance for a torso hit with sphere based collision handling
 #if DBG
 		if (nModel < 2)
-			HUDMessage (0, "crit. hit AIM\n", nModel);
+			HUDMessage (0, "crit. hit AIM\n");
 		else if (CFixVector::Dot (info.position.mOrient.FVec (), vDir) < -I2X (1) / 8)
-			HUDMessage (0, "crit. hit DRIVES\n", nModel);
+			HUDMessage (0, "crit. hit DRIVES\n");
 		else
-			HUDMessage (0, "crit. hit GUNS\n", nModel);
+			HUDMessage (0, "crit. hit GUNS\n");
 #endif
 #if 1
 		if (nModel < 2)
@@ -108,7 +108,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 if (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4)
 	return vHit;
 #else
-if ((gameStates.app.nSDLTicks - m_damage.tShield < SHIELD_EFFECT_TIME * 2) && 
+if ((gameStates.app.nSDLTicks - m_damage.tShield < SHIELD_EFFECT_TIME * 2) &&
 	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4))
 	return vHit;
 #endif
@@ -139,8 +139,8 @@ return m_hitInfo.v [m_hitInfo.i];
 
 //------------------------------------------------------------------------------
 
-bool CObject::ResetDamage (void) 
-{ 
+bool CObject::ResetDamage (void)
+{
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return false;
 
@@ -164,8 +164,8 @@ return bReset;
 // so will receive a lot of critical hits compared to weak targets.
 // Player shields are given a ratio of 2 to reduce critical hit effects on them.
 
-float CObject::DamageRate (void) 
-{ 
+float CObject::DamageRate (void)
+{
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return 0.0f;
 float	fShieldScale = (info.nType == OBJ_PLAYER) ? 2.0f : X2F (RobotDefaultShields (this)) / 100.0f;
@@ -176,14 +176,14 @@ return 1.0f - 0.25f / fShieldScale;
 
 //------------------------------------------------------------------------------
 
-bool CObject::RepairDamage (int i) 
-{ 
+bool CObject::RepairDamage (int i)
+{
 if (!m_damage.nHits [i])
 	return false;
 m_damage.nHits [i]--;
 m_damage.tRepaired = gameStates.app.nSDLTicks;
 #if DBG
-static char* szSubSystem [] = {"AIM", "DRIVES", "GUNS"};
+static const char* szSubSystem [3] = {"AIM", "DRIVES", "GUNS"};
 HUDMessage (0, "%s repaired (%d)", szSubSystem [i], m_damage.nHits [i]);
 #endif
 return true;
@@ -191,8 +191,8 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CObject::RepairDamage (void) 
-{ 
+void CObject::RepairDamage (void)
+{
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return;
 if (gameStates.app.nSDLTicks - m_damage.tRepaired < REPAIR_DELAY)
@@ -203,11 +203,11 @@ for (int i = 0; i < 3; i++)
 
 //------------------------------------------------------------------------------
 
-fix CObject::SubSystemDamage (int i) 
-{ 
+fix CObject::SubSystemDamage (int i)
+{
 	fix	nHits;
 
-return (EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) ? fix ((I2X (1) / 2) * pow (DamageRate (), nHits) + 0.5f) : I2X (1) / 2; 
+return (EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) ? fix ((I2X (1) / 2) * pow (DamageRate (), nHits) + 0.5f) : I2X (1) / 2;
 }
 
 //------------------------------------------------------------------------------

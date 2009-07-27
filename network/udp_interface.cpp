@@ -1,45 +1,45 @@
 //------------------------------------------------------------------------------
 /*
-The general proceedings of D2X-XL when establishing a UDP/IP communication between two peers 
+The general proceedings of D2X-XL when establishing a UDP/IP communication between two peers
 are as follows:
 
-The sender places the destination address (IP + port) right after the game data in the data 
+The sender places the destination address (IP + port) right after the game data in the data
 packet. This happens in UDPSendPacket in the following two lines:
 
 	memcpy (buf + 8 + dataLen, &dest->sin_addr, 4);
 	memcpy (buf + 12 + dataLen, &dest->sin_port, 2);
 
-The receiver that way gets to know the IP + port it is sending on. These are not always to be 
-determined by the sender itself, as it may sit behind a NAT or proxy, or be using port 0 
-(in which case the OS will chose a port for it). The sender's IP + port are stored in the global 
-variable ipx_udpSrc (happens in ipx_udp.c::UDPReceivePacket()), which is needed on some special 
+The receiver that way gets to know the IP + port it is sending on. These are not always to be
+determined by the sender itself, as it may sit behind a NAT or proxy, or be using port 0
+(in which case the OS will chose a port for it). The sender's IP + port are stored in the global
+variable ipx_udpSrc (happens in ipx_udp.c::UDPReceivePacket()), which is needed on some special
 occasions.
 
 That's my mechanism to make every participant in a game reliably know about its own IP + port.
 
-All this starts with a client connecting to a server: Consider this the bootstrapping part of 
-establishing the communication. This always works, as the client knows the servers' IP + port 
-(if it doesn't, no connection ;). The server receives a game info request from the client 
-(containing the server IP + port after the game data) and thus gets to know its IP + port. It 
+All this starts with a client connecting to a server: Consider this the bootstrapping part of
+establishing the communication. This always works, as the client knows the servers' IP + port
+(if it doesn't, no connection ;). The server receives a game info request from the client
+(containing the server IP + port after the game data) and thus gets to know its IP + port. It
 replies to the client, and puts the client's IP + port after the end of the game data.
 
-There is a message nType where the server tells all participants about all other participants; 
+There is a message nType where the server tells all participants about all other participants;
 that's how clients find out about each other in a game.
 
-When the server receives a participation request from a client, it adds its IP + port to a table 
-containing all participants of the game. When the server subsequently sends data to the client, 
-it uses that IP + port. 
+When the server receives a participation request from a client, it adds its IP + port to a table
+containing all participants of the game. When the server subsequently sends data to the client,
+it uses that IP + port.
 
-This however takes only part after the client has sent a game info request and received a game 
-info from the server. When the server sends that game info, it hasn't added that client to the 
-participants table. Therefore, some game data contains client address data. Unfortunately, this 
-address data is not valid in UDP/IP communications, and this is where we need ipx_udpSrc from 
-above: It's contents is patched into the game data address. This happens in 
+This however takes only part after the client has sent a game info request and received a game
+info from the server. When the server sends that game info, it hasn't added that client to the
+participants table. Therefore, some game data contains client address data. Unfortunately, this
+address data is not valid in UDP/IP communications, and this is where we need ipx_udpSrc from
+above: It's contents is patched into the game data address. This happens in
 main/network.c::NetworkProcessPacket()) and now is used by the function returning the game info.
 
-the following is the address mangling code from network.c::NetworkProcessPacket(). All packet 
-types that do not contain a network address are excluded by the lengthy if statement (I can 
-only hope I got the right ones and didn't forget any, but sofar everything seems to work, at 
+the following is the address mangling code from network.c::NetworkProcessPacket(). All packet
+types that do not contain a network address are excluded by the lengthy if statement (I can
+only hope I got the right ones and didn't forget any, but sofar everything seems to work, at
 least on LE machines, so ...)
 
 if	 ((gameStates.multi.nGameType == UDP_GAME) &&
@@ -49,7 +49,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_PDATA) &&
 		(pid != PID_NAKED_PDATA) &&
 		(pid != PID_OBJECT_DATA) &&
-		(pid != PID_ENDLEVEL) && 
+		(pid != PID_ENDLEVEL) &&
 		(pid != PID_ENDLEVEL_SHORT) &&
 		(pid != PID_UPLOAD) &&
 		(pid != PID_DOWNLOAD) &&
@@ -159,7 +159,7 @@ ubyte ipx_ServerAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0
 //------------------------------------------------------------------------------
 // OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
 
-static int HaveEmptyAddress (void) 
+static int HaveEmptyAddress (void)
 {
 for (int i = 0; i < 10; i++)
 	if (ipx_MyAddress [i])
@@ -177,7 +177,7 @@ static int _CDECL_ Fail (const char *fmt, ...)
 
 va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
-va_end (argP);   
+va_end (argP);
 #ifdef _WIN32
 PrintLog ("UDP Error %d (\"%s\")\n", WSAGetLastError (), szFailMsg);
 #else
@@ -300,10 +300,10 @@ return (a->sin_port != b->sin_port) ? 1 : 0;
 
 int CClientManager::Find (struct sockaddr_in *destAddr)
 {
-for (uint i = 0; i < m_nClients; i++) 
-	if ((i < m_nMasks) 
-		 ? !CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i) 
-		 : !CmpAddrs (destAddr, &m_clients [i].addr)) 
+for (uint i = 0; i < m_nClients; i++)
+	if ((i < m_nMasks)
+		 ? !CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i)
+		 : !CmpAddrs (destAddr, &m_clients [i].addr))
 	return i;
 return m_nClients;
 }
@@ -315,14 +315,14 @@ int CClientManager::Add (struct sockaddr_in *destAddr)
 	uint		h, i;
 	CClient*	clientP;
 
-if (!destAddr->sin_addr.s_addr) 
+if (!destAddr->sin_addr.s_addr)
 	return -1;
 if (destAddr->sin_addr.s_addr == htonl (INADDR_BROADCAST))
 	return m_nClients;
 
 for (i = 0; i < m_nClients; i++) {
-	h = (i < m_nMasks) 
-		 ? CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i) 
+	h = (i < m_nMasks)
+		 ? CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i)
 		 : CmpAddrs (destAddr, &m_clients [i].addr);
 	if (!h)
 		break;
@@ -380,8 +380,8 @@ if ((sock = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP)) < 0)
 	FAIL ("creating socket during broadcast detection");
 
 #ifdef SIOCGIFCOUNT
-if (ioctl (sock, SIOCGIFCOUNT, &m_nBroads)) { 
-	PrintLog ("getting interface count"); 
+if (ioctl (sock, SIOCGIFCOUNT, &m_nBroads)) {
+	PrintLog ("getting interface count");
 	return 0;
 	}
 else
@@ -413,7 +413,7 @@ for (i = j = 0; i < cnt; i++) {
 		FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIFNETMASK) error", i, ifconf.ifc_req [i].ifr_name);
 		}
 	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
-	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family != AF_INET))	
+	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family != AF_INET))
 		continue;
 	m_broads [j] = *sinp;
 	m_broads [j].sin_port = UDP_BASEPORT; //FIXME: No possibility to override from cmdline
@@ -522,7 +522,7 @@ for (i = j = 0; i < cnt; i++) {
 		FAIL ("ioctl (UDP (%d), \"%s\", SIOCGIFNETMASK)", i, ifconf.ifc_req [i].ifr_name);
 		}
 	sinmp = reinterpret_cast<struct sockaddr_in*> (&ifconf.ifc_req [i].ifr_addr);
-	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family != AF_INET)) 
+	if ((sinp->sin_family != AF_INET) || (sinmp->sin_family != AF_INET))
 		continue;
 	// Code common to both getifaddrs () and ioctl () approach
 	m_broads [j] = *sinp;
@@ -530,7 +530,7 @@ for (i = j = 0; i < cnt; i++) {
 	m_masks [j] = *sinmp;
 	j++;
 	}
-m_nBroads = 
+m_nBroads =
 m_nMasks = j;
 return m_nBroads;
 }
@@ -548,9 +548,9 @@ void CClientManager::Unify (void)
 
 for (s = 0; s < m_nBroads; s++) {
 	for (i = 0; i < s; i++)
-		if (CmpAddrs (m_broads + s, m_broads + i)) 
+		if (CmpAddrs (m_broads + s, m_broads + i))
 			break;
-	if (i >= s) 
+	if (i >= s)
 		m_broads [d++] = m_broads [s];
 	}
 m_nBroads = d;
@@ -567,7 +567,7 @@ ushort srcPort = 0;
 int port = atoi (pszPort);
 if ((port < -PORTSHIFT_TOLERANCE) || (port > +PORTSHIFT_TOLERANCE))
 	PrintLog ("Invalid PortShift in \"%s\", tolerance is +/-%d\n", pszPort, PORTSHIFT_TOLERANCE);
-else 
+else
 	srcPort = (ushort) htons (u_short (port));
 memcpy (qhbuf + 4, &srcPort, 2);
 }
@@ -576,10 +576,10 @@ memcpy (qhbuf + 4, &srcPort, 2);
 
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
- 
-#ifdef __macosx__ 
 
-static void SetupHints (struct addrinfo *hints) 
+#ifdef __macosx__
+
+static void SetupHints (struct addrinfo *hints)
 {
 hints->ai_family = PF_INET;
 hints->ai_protocol = IPPROTO_UDP;
@@ -596,7 +596,7 @@ ubyte *QueryHost (char *buf)
 {
     struct addrinfo*	info, * ip, hints;
     int error;
-    
+
 SetupHints (&hints);
 error = 0;
 if (error = getaddrinfo (buf, NULL, &hints, &info) != 0) {
@@ -608,7 +608,7 @@ if (error = getaddrinfo (buf, NULL, &hints, &info) != 0) {
 	}
 if (error)
 	return NULL;
-    
+
 // Here's another kludge: for some reason we have to filter out PF_INET6 protocol family
 // entries in the results list. Then we just grab the first regular IPv4 address we find
 // and cross our fingers.
@@ -619,7 +619,7 @@ for (ip = info; ip; ip = ip->ai_next)
 		break;
 if (!ip)
 	return NULL;
-    
+
 memcpy (qhbuf, & (reinterpret_cast<struct sockaddr_in*> (ip->ai_addr)->sin_addr), 4);
 memset (qhbuf + 4, 0, 2);
 freeaddrinfo (info);
@@ -639,10 +639,10 @@ if ((s = strrchr (buf, ':'))) {
 	*s = '\0';
 	PortShift (s + 1);
 	}
-else 
+else
 	memset (qhbuf + 4, 0, 2);
 he = gethostbyname (reinterpret_cast<char*> (buf));
-if (s) 
+if (s)
 	*s = c;
 if (!he) {
 	PrintLog ("Error resolving my hostname \"%s\"\n", buf);
@@ -699,15 +699,15 @@ DumpRawAddr (qhbuf);
 //------------------------------------------------------------------------------
 // Startup... Uninteresting parsing...
 
-int UDPGetMyAddress (void) 
+int UDPGetMyAddress (void)
 {
 	char			buf [256];
 
 if (!HaveEmptyAddress ())
 	return 0;
-if (gethostname (buf, sizeof (buf))) 
+if (gethostname (buf, sizeof (buf)))
 	FAIL ("error getting my hostname");
-if (!(QueryHost (buf))) 
+if (!(QueryHost (buf)))
 	FAIL ("querying my hostname \"%s\"", buf);
 memset (ipx_MyAddress, 0, 4);
 memcpy (ipx_MyAddress + 4, qhbuf, 6);
@@ -717,8 +717,8 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
- 
-static int UDPOpenSocket (ipx_socket_t *sk, int port) 
+
+static int UDPOpenSocket (ipx_socket_t *sk, int port)
 {
 	struct sockaddr_in sin;
 #ifdef _WIN32
@@ -790,7 +790,7 @@ return 0;
 //------------------------------------------------------------------------------
 // The same comment as in previous "UDPOpenSocket"...
 
-static void UDPCloseSocket (ipx_socket_t *mysock) 
+static void UDPCloseSocket (ipx_socket_t *mysock)
 {
 clientManager.Destroy ();
 gameStates.multi.bHaveLocalAddress = 0;
@@ -876,12 +876,9 @@ return 1;
 // we'll repeat the same data to each host in our broadcasting list.
 
 static int UDPSendPacket
-	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, u_char *data, int dataLen) 
+	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, u_char *data, int dataLen)
 {
  	struct sockaddr_in destAddr, *dest;
-#if DBG
-	int h;
-#endif
 	int				iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;
 	CClient*			clientP;
 #if UDP_SAFEMODE
@@ -896,7 +893,7 @@ PrintLog ("UDP interface: SendPacket enter, dataLen=%d",dataLen);
 #endif
 if ((dataLen < 0) || (dataLen > MAX_DATASIZE))
 	return -1;
-if (gameStates.multi.bTrackerCall) 
+if (gameStates.multi.bTrackerCall)
 	memcpy (buf, data, dataLen);
 else {
 	memcpy (buf, D2XUDP, 6);
@@ -916,7 +913,7 @@ if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
 	}
 else if (clientManager.ClientCount () <= (iDest = clientManager.Find (&destAddr)))
 	iDest = -1;
-for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) { 
+for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 	if (iDest < 0)
 		dest = &destAddr;
 	else {
@@ -943,7 +940,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 			if (clientP->numPackets) {
 				j = (clientP->firstPacket + clientP->numPackets - 1) % MAX_BUF_PACKETS;
 				ppp = clientP->packetProps + j;
-				if ((ppp->len == dataLen + extraDataLen) && 
+				if ((ppp->len == dataLen + extraDataLen) &&
 					!memcmp (ppp->data + 12, buf + 12, ppp->len - 22)) { //+12: skip header data
 					bufP = ppp->data;
 					bResend = 1;
@@ -1100,7 +1097,7 @@ return 1;
 // Here we will receive a new packet and place it in the buffer passed.
 
 static int UDPReceivePacket
-	(ipx_socket_t *s, ubyte *outBuf, int outBufSize, struct ipx_recv_data *rd) 
+	(ipx_socket_t *s, ubyte *outBuf, int outBufSize, struct ipx_recv_data *rd)
 {
 	struct sockaddr_in	fromAddr;
 	int						i, dataLen, bTracker;
@@ -1126,15 +1123,15 @@ if (0 > dataLen) {
 	return -1;
 	}
 bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port));
-if (fromAddr.sin_family != AF_INET) 
+if (fromAddr.sin_family != AF_INET)
 	return -1;
-if ((dataLen < 6) || (!bTracker && (memcmp (outBuf, D2XUDP, 6) 
+if ((dataLen < 6) || (!bTracker && (memcmp (outBuf, D2XUDP, 6)
 #if UDP_SAFEMODE
 	 || EvalSafeMode (s, &fromAddr, outBuf)
 #endif
 	 )))
 	return -1;
-if (!(bTracker 
+if (!(bTracker
 #if UDP_SAFEMODE
 	 || ResendData (&fromAddr, outBuf) || ForgetData (&fromAddr, outBuf)
 #endif
@@ -1163,7 +1160,7 @@ if (!(bTracker
 			bSafeMode = 1;
 			packetId = *(reinterpret_cast<int*> (outBuf + dataLen - 14));
 			packetId = INTEL_INT (packetId);
-			if (packetId == clientP->nReceived) 
+			if (packetId == clientP->nReceived)
 				clientP->nReceived++;
 			else if (packetId > clientP->nReceived) {
 				RequestResend (clientP, packetId);
@@ -1171,7 +1168,7 @@ if (!(bTracker
 				}
 			}
 #	if DBG
-		console.printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
+		console.printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d",
 						iptos (szIP, reinterpret_cast<char*> (&fromAddr), dataLen, packetId, clientP->bSafeMode, clientP->bOurSafeMode);
 #	endif
 #endif //UDP_SAFEMODE
@@ -1195,7 +1192,7 @@ memcpy (rd->src_node + 4, &fromAddr.sin_port, 2);
 rd->pktType = 0;
 #if 0//def UDPDEBUG
 //printf(MSGHDR "ReceivePacket: dataLen=%d,from=",dataLen);
-console.printf (0, "received %d bytes from %u.%u.%u.%u:%u\n", 
+console.printf (0, "received %d bytes from %u.%u.%u.%u:%u\n",
 				dataLen, rd->src_node [0], rd->src_node [1], rd->src_node [2], rd->src_node [3],
 				(signed short)ntohs (*reinterpret_cast<ushort*> (rd->src_node + 4)));
 //DumpRawAddr (rd->src_node);
@@ -1206,7 +1203,7 @@ return dataLen;
 
 //------------------------------------------------------------------------------
 
-int UDPPacketReady (ipx_socket_t *s) 
+int UDPPacketReady (ipx_socket_t *s)
 {
 	ulong nAvailBytes = 0;
 

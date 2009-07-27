@@ -344,7 +344,7 @@ if (IsMultiGame && !IsCoopGame) {
 	gameData.pig.ship.player->brakes = defaultPlayerShip.brakes;
 	gameData.pig.ship.player->wiggle = defaultPlayerShip.wiggle;
 
-	for (int i = 0; i < sizeofa (defaultWeaponInfoD2); i++)
+	for (int i = 0; i < int (sizeofa (defaultWeaponInfoD2)); i++)
 		gameData.weapons.info [i] = defaultWeaponInfoD2 [i];
 	}
 return 1;
@@ -1864,8 +1864,8 @@ position[Y] = GET_INTEL_INT (buf + 7);
 position[Z] = GET_INTEL_INT (buf + 11);
 memcpy (gameData.marker.szMessage + 2 * nPlayer + nMsg, buf + 15, 40);
 gameData.marker.point [nMarker] = position;
-if ((gameData.marker.objects [nMarker] != -1) && 
-	 (OBJECTS [gameData.marker.objects [nMarker]].info.nType != OBJ_NONE) && 
+if ((gameData.marker.objects [nMarker] != -1) &&
+	 (OBJECTS [gameData.marker.objects [nMarker]].info.nType != OBJ_NONE) &&
 	 (gameData.marker.objects [nMarker] != 0))
 	ReleaseObject (gameData.marker.objects [nMarker]);
 gameData.marker.objects [(nPlayer*2)+nMsg] =
@@ -2216,7 +2216,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 			LOCALPLAYER.laserLevel = h;
 		}
 	else if (i == SUPER_LASER_INDEX) {
-		if (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) 
+		if (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL)
 			LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + h;
 		}
 	else {
@@ -4079,7 +4079,7 @@ sound = buf [3];
 if (whichfunc == 0)
 	audio.DestroyObjectSound (gameData.multiplayer.players [nPlayer].nObject);
 else if (whichfunc == 3)
-	audio.CreateObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, I2X (1), I2X (256), 
+	audio.CreateObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, I2X (1), I2X (256),
 						 AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 }
 
@@ -4812,7 +4812,7 @@ void  MultiDoModemPingReturn (char *buf)
 if (pingStats [0].launchTime)
 	return;
 xPingReturnTime = TimerGetFixedSeconds ();
-HUDInitMessage (TXT_PINGTIME, 
+HUDInitMessage (TXT_PINGTIME,
 					 X2I (FixMul (xPingReturnTime - pingStats [0].launchTime, I2X (1000))));
 pingStats [0].launchTime = 0;
 }

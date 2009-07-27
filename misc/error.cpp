@@ -100,7 +100,7 @@ void _CDECL_ set_exit_message(const char *fmt,...)
 va_start (arglist,fmt);
 len = vsprintf (szExitMsg,fmt,arglist);
 va_end (arglist);
-if (len==-1 || len>MAX_MSG_LEN) 
+if (len==-1 || len>MAX_MSG_LEN)
 	Error("Message too long in set_exit_message (len=%d, max=%d)",len,MAX_MSG_LEN);
 }
 
@@ -149,7 +149,7 @@ gameData.app.bGamePaused = 1;
 if (screen.Width () && screen.Height () && pWarnFunc)
 	(*pWarnFunc)(pszMsg);
 #if defined (WIN32)
-else 
+else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined (__linux__)
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
@@ -178,7 +178,7 @@ gameStates.app.bShowError = 1;
 D2MsgBox (szExitMsg, MB_ICONERROR);
 gameStates.app.bShowError = 0;
 Int3();
-if (!err_initialized) 
+if (!err_initialized)
 	print_exit_message();
 #if !DBG
 exit (1);
@@ -192,7 +192,7 @@ void _CDECL_ PrintLog (const char *fmt, ...)
  if (fErr) {
 		va_list arglist;
 		static char	szErr [100000];
-    
+
 	va_start (arglist, fmt);
 	vsprintf (szErr, fmt, arglist);
 	va_end (arglist);
@@ -243,7 +243,7 @@ if (fmt != NULL) {
 	va_start (arglist,fmt);
 	len = vsprintf (szExitMsg, fmt, arglist);
 	va_end (arglist);
-	if ((len == -1) || (len > MAX_MSG_LEN)) 
+	if ((len == -1) || (len > MAX_MSG_LEN))
 		PrintLog ("Message too long in error_init (len=%d, max=%d)", len, MAX_MSG_LEN);
 	}
 err_initialized = 1;
@@ -272,7 +272,7 @@ int nDbgTexture = -1;
 
 int TrapSeg (short nSegment)
 {
-if (nSegment = nDbgSeg)
+if (nSegment == nDbgSeg)
 	return 1;
 return 0;
 }
@@ -280,7 +280,7 @@ return 0;
 
 int TrapSegSide (short nSegment, short nSide)
 {
-if ((nSegment = nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	return 1;
 return 0;
 }

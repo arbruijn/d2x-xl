@@ -84,7 +84,7 @@ tBossProps bossProps [2][NUM_D2_BOSSES] = {
 
 #if DBG
 // Index into this array with ailP->mode
-char *pszAIMode [18] = {
+const char* pszAIMode [18] = {
 	"STILL",
 	"WANDER",
 	"FOL_PATH",
@@ -453,11 +453,11 @@ else if (aiP->CURRENT_STATE == AIS_FLINCH)
 	aiP->GOAL_STATE = AIS_LOCK;
 if (aiP->behavior != AIB_RUN_FROM)
 	DoFiringStuff (objP, gameData.ai.nTargetVisibility, &gameData.ai.target.vDir);
-if ((gameData.ai.nTargetVisibility == 2) && 
+if ((gameData.ai.nTargetVisibility == 2) &&
 		(objP->info.nId != ROBOT_BRAIN) && !(siP->botInfoP->companion || siP->botInfoP->thief) &&
-		(aiP->behavior != AIB_STILL) && 
-		(aiP->behavior != AIB_SNIPE) && 
-		(aiP->behavior != AIB_FOLLOW) && 
+		(aiP->behavior != AIB_STILL) &&
+		(aiP->behavior != AIB_SNIPE) &&
+		(aiP->behavior != AIB_FOLLOW) &&
 		(aiP->behavior != AIB_RUN_FROM)) {
 	if (siP->botInfoP->attackType == 0)
 		siP->ailP->mode = AIM_CHASE_OBJECT;
@@ -1034,7 +1034,7 @@ if ((siP->aiP->behavior == AIB_SNIPE) || (siP->aiP->behavior == AIB_RUN_FROM) ||
 	return 0;
 if (gameData.ai.nOverallAgitation < 71)
 	return 0;
-//if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->targetAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH)) 
+//if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->targetAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH))
  {
 	if ((gameData.ai.target.xDist >= MAX_REACTION_DIST) || (d_rand () >= gameData.time.xFrame/4))
 		return 0;
@@ -1045,8 +1045,8 @@ if (gameData.ai.nOverallAgitation < 71)
 if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
-if (gameOpts->gameplay.nAIAggressivity && 
-	 (siP->ailP->mode == AIM_FOLLOW_PATH) && 
+if (gameOpts->gameplay.nAIAggressivity &&
+	 (siP->ailP->mode == AIM_FOLLOW_PATH) &&
 	 (siP->ailP->nGoalSegment == gameData.ai.target.nBelievedSeg)) {
 #if DBG
 	if (objP->Index () == nDbgObj)
@@ -1077,10 +1077,10 @@ if (gameStates.app.cheats.bRobotsKillRobots || (!siP->botInfoP->thief && (d_rand
 		int			j, nMinObj = -1;
 		fix			curDist, minDist = MAX_WAKEUP_DIST;
 		CObject*		robotP;
-		CFixVector	vPos = gameStates.app.cheats.bRobotsKillRobots 
+		CFixVector	vPos = gameStates.app.cheats.bRobotsKillRobots
 								 ? objP->info.position.vPos	// find robot closest to this robot
 								 : OBJPOS (OBJECTS + gameData.multiplayer.nLocalPlayer)->vPos;	// find robot closest to player
-		
+
 		FORALL_ROBOT_OBJS (robotP, j) {
 			j = robotP->Index ();
 			if (j == siP->nObject)

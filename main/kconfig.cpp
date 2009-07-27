@@ -73,13 +73,13 @@ sbyte fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26
 int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 
 #ifndef USE_LINUX_JOY
-	int joybutton_text [28] = 
+	int joybutton_text [28] =
  { TNUM_BTN_1, TNUM_BTN_2, TNUM_BTN_3, TNUM_BTN_4,
 	  -1, TNUM_TRIG, TNUM_LEFT, TNUM_HAT_L,
 	 TNUM_RIGHT, -1, TNUM_HAT2_D, TNUM_HAT_R,
 	 TNUM_MID, -1, TNUM_HAT2_R, TNUM_HAT_U,
 	 TNUM_HAT2_L, -1, TNUM_HAT2_U, TNUM_HAT_D,
-	 TNUM_TRIG, TNUM_LEFT, TNUM_RIGHT, -1, 
+	 TNUM_TRIG, TNUM_LEFT, TNUM_RIGHT, -1,
 	 TNUM_UP, TNUM_DOWN, TNUM_LEFT, TNUM_RIGHT };
 
 	int joyaxis_text [7] = { TNUM_X1, TNUM_Y1, TNUM_Z1, TNUM_R1, TNUM_P1,TNUM_R1,TNUM_YA1 };
@@ -135,12 +135,12 @@ tControlSettings controlSettings = {
  {
 	0x2 ,0xff,0x3 ,0xff,0x4 ,0xff,0x5 ,0xff,0x6 ,0xff,0x7 ,0xff,0x8 ,0xff,0x9 ,
 	0xff,0xa ,0xff,0xb ,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff 
+	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
 	},
  {
 	0x2 ,0xff,0x3 ,0xff,0x4 ,0xff,0x5 ,0xff,0x6 ,0xff,0x7 ,0xff,0x8 ,0xff,0x9 ,
 	0xff,0xa ,0xff,0xb ,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff 
+	0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
 	}
 };
 
@@ -599,22 +599,22 @@ if (item->value == 255)
 else {
 	switch (item->nType) {
 		case BT_KEY:
-			strncpy (szText, (size_t (item->value) < sizeofa (pszKeyText)) ? pszKeyText [item->value] : "", sizeof (szText)); 
+			strncpy (szText, (size_t (item->value) < sizeofa (pszKeyText)) ? pszKeyText [item->value] : "", sizeof (szText));
 			break;
 
 		case BT_MOUSE_BUTTON:
-			strncpy (szText, MouseButtonText (item->value), sizeof (szText)); 
+			strncpy (szText, MouseButtonText (item->value), sizeof (szText));
 			break;
 
 		case BT_MOUSE_AXIS:
-			strncpy (szText, MouseAxisText (item->value), sizeof (szText)); 
+			strncpy (szText, MouseAxisText (item->value), sizeof (szText));
 			break;
 
 		case BT_JOY_BUTTON:
 #if defined (USE_LINUX_JOY)
-			sprintf (szText, "J%d B%d", j_button [item->value].joydev, 
+			sprintf (szText, "J%d B%d", j_button [item->value].joydev,
 					  j_Get_joydev_button_number (item->value);
-#else 
+#else
 		 {
 				int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
 				int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
@@ -632,7 +632,7 @@ else {
 
 		case BT_JOY_AXIS:
 #if defined (USE_LINUX_JOY)
-			sprintf (szText, "J%d A%d", j_axis [item->value].joydev, 
+			sprintf (szText, "J%d A%d", j_axis [item->value].joydev,
 					  j_Get_joydev_axis_number (item->value);
 #else
 		 {
@@ -649,7 +649,7 @@ else {
 			break;
 
 		case BT_INVERT:
-			strncpy (szText, YesNoText (item->value), sizeof (szText)); 
+			strncpy (szText, YesNoText (item->value), sizeof (szText));
 			break;
 		}
 	}
@@ -694,19 +694,19 @@ if (items == kcKeyboard) {
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	OglDrawLine (KC_LHX (98), KC_LHY (42), KC_LHX (106), KC_LHY (42));
 	OglDrawLine (KC_LHX (120), KC_LHY (42), KC_LHX (128), KC_LHY (42));
-	kc_gr_pixel (KC_LHX (98), KC_LHY (43));					
-	kc_gr_pixel (KC_LHX (98), KC_LHY (44));					
-	kc_gr_pixel (KC_LHX (128), KC_LHY (43));					
-	kc_gr_pixel (KC_LHX (128), KC_LHY (44));					
+	kc_gr_pixel (KC_LHX (98), KC_LHY (43));
+	kc_gr_pixel (KC_LHX (98), KC_LHY (44));
+	kc_gr_pixel (KC_LHX (128), KC_LHY (43));
+	kc_gr_pixel (KC_LHX (128), KC_LHY (44));
 
 	GrString (KC_LHX (109), KC_LHY (40), "OR", NULL);
 
 	OglDrawLine (KC_LHX (253), KC_LHY (42), KC_LHX (261), KC_LHY (42));
 	OglDrawLine (KC_LHX (274), KC_LHY (42), KC_LHX (283), KC_LHY (42));
-	kc_gr_pixel (KC_LHX (253), KC_LHY (43));					
-	kc_gr_pixel (KC_LHX (253), KC_LHY (44));					
-	kc_gr_pixel (KC_LHX (283), KC_LHY (43));					
-	kc_gr_pixel (KC_LHX (283), KC_LHY (44));					
+	kc_gr_pixel (KC_LHX (253), KC_LHY (43));
+	kc_gr_pixel (KC_LHX (253), KC_LHY (44));
+	kc_gr_pixel (KC_LHX (283), KC_LHY (43));
+	kc_gr_pixel (KC_LHX (283), KC_LHY (44));
 
 	GrString (KC_LHX (264), KC_LHY (40), "OR", NULL);
 
@@ -792,7 +792,7 @@ for (i = 0, n = (int) (item - All_items); i < Num_items; i++) {
 			KCDrawItem (All_items + i, 0);
 		}
 	}
-item->value = code;					 
+item->value = code;
 if (ogl.m_states.nDrawBuffer == GL_FRONT) {
 	KCDrawItem (item, 1);
 	backgroundManager.Restore (xOffs, yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->Height (), 0, KC_LHY (INFO_Y));
@@ -813,9 +813,9 @@ void KCDrawQuestion (kcItem *item)
 
 	fontManager.Current ()->StringSize ("?", w, h, aw);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
-	if (++looper>63) 
+	if (++looper>63)
 		looper=0;
-	OglDrawFilledRect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1), 
+	OglDrawFilledRect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1),
 				KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
@@ -859,13 +859,13 @@ if (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS) {
 	int axis [JOY_MAX_AXES];
 	JoyReadRawAxis (JOY_ALL_AXIS, axis);
 	ControlsReadFCS (axis [3]);
-	if (JoyGetButtonState (19)) 
+	if (JoyGetButtonState (19))
 		code = 19;
-	else if (JoyGetButtonState (15)) 
+	else if (JoyGetButtonState (15))
 		code = 15;
-	else if (JoyGetButtonState (11)) 
+	else if (JoyGetButtonState (11))
 		code = 11;
-	else if (JoyGetButtonState (7)) 
+	else if (JoyGetButtonState (7))
 		code = 7;
 	for (i = 0; i < 4; i++)
 		if (JoyGetButtonState (i))
@@ -959,7 +959,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const ch
 
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
-{			
+{
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();
 //		if (gameData.app.nGameMode & GM_MULTI)
@@ -1019,7 +1019,7 @@ int KCChangeInvert (kcItem * item)
 {
 GameFlushInputs ();
 item->value = !item->value;
-if (ogl.m_states.nDrawBuffer == GL_FRONT) 
+if (ogl.m_states.nDrawBuffer == GL_FRONT)
 	KCDrawItem (item, 1);
 return BT_NONE;
 }
@@ -1028,7 +1028,7 @@ return BT_NONE;
 
 void QSortItemPos (tKCItemPos *pos, int left, int right)
 {
-	int			l = left, 
+	int			l = left,
 					r = right;
 	tKCItemPos	h, m = pos [(l + r) / 2];
 
@@ -1212,12 +1212,12 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 	}
 
 CCanvas::Push ();
-CCanvas::SetCurrent (NULL);	
+CCanvas::SetCurrent (NULL);
 font = CCanvas::Current ()->Font ();
 FlushInput ();
 backgroundManager.Setup (NULL, xOffs, yOffs, 640, 480);
 paletteManager.LoadEffect ();
-CCanvas::SetCurrent (NULL);	
+CCanvas::SetCurrent (NULL);
 
 nCurItem = 0;
 SDL_ShowCursor (1);
@@ -1305,7 +1305,7 @@ for (;;) {
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
 		case KEY_ALTED+KEY_F9:
 			SaveScreenShot (NULL, 0);
-			break;						
+			break;
 		case KEY_CTRLED+KEY_D:
 			items [nCurItem].value = 255;
 			KCDrawItem (items + nCurItem, 1);
@@ -1343,38 +1343,38 @@ for (;;) {
 			items [nCurItem].value = 255;
 			KCDrawItem (items + nCurItem, 1);
 			break;
-		case KEY_UP: 	
+		case KEY_UP:
 		case KEY_PAD8:
 #if TABLE_CREATION
-			if (items [nCurItem].u == -1) 
+			if (items [nCurItem].u == -1)
 				items [nCurItem].u=FindNextItemUp (items,nItems, nCurItem);
 #endif
-			nCurItem = items [nCurItem].u; 
+			nCurItem = items [nCurItem].u;
 			break;
-	
-		case KEY_DOWN: 
+
+		case KEY_DOWN:
 		case KEY_PAD2:
 #if TABLE_CREATION
-			if (items [nCurItem].d == -1) 
+			if (items [nCurItem].d == -1)
 				items [nCurItem].d=FindNextItemDown (items,nItems, nCurItem);
 #endif
-			nCurItem = items [nCurItem].d; 
+			nCurItem = items [nCurItem].d;
 			break;
-		case KEY_LEFT: 
+		case KEY_LEFT:
 		case KEY_PAD4:
 #if TABLE_CREATION
-			if (items [nCurItem].l == -1) 
+			if (items [nCurItem].l == -1)
 				items [nCurItem].l=FindNextItemLeft (items,nItems, nCurItem);
 #endif
-			nCurItem = items [nCurItem].l; 
+			nCurItem = items [nCurItem].l;
 			break;
-		case KEY_RIGHT: 
+		case KEY_RIGHT:
 		case KEY_PAD6:
 #if TABLE_CREATION
-			if (items [nCurItem].r == -1) 
+			if (items [nCurItem].r == -1)
 				items [nCurItem].r=FindNextItemRight (items,nItems, nCurItem);
 #endif
-			nCurItem = items [nCurItem].r; 
+			nCurItem = items [nCurItem].r;
 			break;
 		case KEY_ENTER:
 		case KEY_PADENTER:
@@ -1388,7 +1388,7 @@ for (;;) {
 #if TABLE_CREATION
 		case KEYDBGGED+KEY_F12: {
 			FILE *fp;
-#if TRACE	
+#if TRACE
 			console.printf (CON_DBG, "start table creation\n");
 #endif
 			LinkTableEntries (1 | 2 | 4 | 8);
@@ -1405,7 +1405,7 @@ for (;;) {
 
 			fprintf (fp, "\nkc_item kcKeyboard [NUM_KEY_CONTROLS] = {\n");
 			for (i=0; i<NUM_KEY_CONTROLS; i++) {
-				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
+				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n",
 					kcKeyboard [i].id, kcKeyboard [i].x, kcKeyboard [i].y, kcKeyboard [i].w1, kcKeyboard [i].w2,
 					kcKeyboard [i].u, kcKeyboard [i].d, kcKeyboard [i].l, kcKeyboard [i].r,
 													 34, kcKeyboard [i].text, 34, btype_text [kcKeyboard [i].nType]);
@@ -1415,12 +1415,12 @@ for (;;) {
 			fprintf (fp, "\nkc_item kcJoystick [NUM_JOY_CONTROLS] = {\n");
 			for (i=0; i<NUM_JOY_CONTROLS; i++) {
 				if (kcJoystick [i].nType == BT_JOY_BUTTON)
-					fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
+					fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n",
 						kcJoystick [i].id, kcJoystick [i].x, kcJoystick [i].y, kcJoystick [i].w1, kcJoystick [i].w2,
 						kcJoystick [i].u, kcJoystick [i].d, kcJoystick [i].l, kcJoystick [i].r,
 														 34, kcJoystick [i].text, 34, btype_text [kcJoystick [i].nType]);
 				else
-					fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
+					fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n",
 						kcJoystick [i].id, kcJoystick [i].x, kcJoystick [i].y, kcJoystick [i].w1, kcJoystick [i].w2,
 						kcJoystick [i].u, kcJoystick [i].d, kcJoystick [i].l, kcJoystick [i].r,
 														 34, kcJoystick [i].text, 34, btype_text [kcJoystick [i].nType]);
@@ -1429,14 +1429,14 @@ for (;;) {
 
 			fprintf (fp, "\nkc_item kcMouse [NUM_MOUSE_CONTROLS] = {\n");
 			for (i=0; i<NUM_MOUSE_CONTROLS; i++) {
-				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n", 
+				fprintf (fp, "\t{ %2d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%c%s%c, %s, 255 },\n",
 					kcMouse [i].id, kcMouse [i].x, kcMouse [i].y, kcMouse [i].w1, kcMouse [i].w2,
 					kcMouse [i].u, kcMouse [i].d, kcMouse [i].l, kcMouse [i].r,
 													 34, kcMouse [i].text, 34, btype_text [kcMouse [i].nType]);
 				}
 			fprintf (fp, "};");
 			fclose (fp);
-#if TRACE	
+#if TRACE
 			console.printf (CON_DBG, "end table creation\n");
 #endif
 			}
@@ -1464,7 +1464,7 @@ for (;;) {
 		}
 		else if (!mouseState && omouseState) {
 			int item_height;
-		
+
 			MouseGetPos (&mx, &my);
 			mx -= xOffs;
 			my -= yOffs;
@@ -1519,21 +1519,21 @@ if (bRedraw && MODERN_STYLE)
 		switch (item->nType) {
 			case BT_KEY:
 				if (size_t (item->value) < sizeofa (pszKeyText))
-					strncat (szText, pszKeyText [item->value], 10); 
+					strncat (szText, pszKeyText [item->value], 10);
 				break;
 
 			case BT_MOUSE_BUTTON:
 				//strncpy (szText, baseGameTexts [mouseButtonTextIndex [item->value]], 10); break;
-				strncpy (szText, MouseButtonText (item->value), 10); 
+				strncpy (szText, MouseButtonText (item->value), 10);
 				break;
 
 			case BT_MOUSE_AXIS:
-				strncpy (szText, MouseAxisText (item->value), 10); 
+				strncpy (szText, MouseAxisText (item->value), 10);
 				break;
 
 			case BT_JOY_BUTTON:
 #ifdef USE_LINUX_JOY
-				sprintf (szText, "J%d B%d", 
+				sprintf (szText, "J%d B%d",
 						  j_button [item->value].joydev, j_Get_joydev_button_number (item->value);
 #else
 			 {
@@ -1571,7 +1571,7 @@ if (bRedraw && MODERN_STYLE)
 				break;
 
 			case BT_INVERT:
-				strncpy (szText, YesNoText (item->value), 10); 
+				strncpy (szText, YesNoText (item->value), 10);
 				break;
 		}
 	}
@@ -1582,7 +1582,7 @@ if (bRedraw && MODERN_STYLE)
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 0, 24));
 		else
 			CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (16, 0, 19));
-		OglDrawFilledRect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1), 
+		OglDrawFilledRect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1),
 					KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
 		fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;
@@ -1623,14 +1623,14 @@ void KConfig (int n, const char *pszTitle)
 	else if (n == 1)
 		KConfigSub (kcJoystick, NUM_JOY_CONTROLS, pszTitle);
 	else if (n == 2)
-		KConfigSub (kcMouse, NUM_MOUSE_CONTROLS, pszTitle); 
+		KConfigSub (kcMouse, NUM_MOUSE_CONTROLS, pszTitle);
 #if 0
 	else if (n == 3)
-		KConfigSub (kcSuperJoy, NUM_JOY_CONTROLS, pszTitle); 
+		KConfigSub (kcSuperJoy, NUM_JOY_CONTROLS, pszTitle);
 #endif
 #ifdef D2X_KEYS
 	else if (n == 4)
-		KConfigSub (kcHotkeys, NUM_HOTKEY_CONTROLS, pszTitle); 
+		KConfigSub (kcHotkeys, NUM_HOTKEY_CONTROLS, pszTitle);
 	//end this section addition - VR
 #endif
  	else {
@@ -1700,7 +1700,7 @@ read_head_tracker ()
 	transformation.m_info.bUsePlayerHeadAngles = 0;
 	if (Last_angles_read) {
 		fix yaw1 = yaw;
-	
+
 		yaw1 = yaw;
 		if ((Last_angles_h < (I2X (1)/4)) && (yaw > ((I2X (3))/4)))
 			yaw1 -= I2X (1);
@@ -1730,13 +1730,13 @@ void CExternalControls::Init (int intno, int address)
 
 	i = FindArg ("-xname");
 	if (i)
-		m_name = pszArgList [i + 1];
+		m_name = strdup (pszArgList [i + 1]);
 	else
-		m_name = "External Controller";
- 
+		m_name = strdup ("External Controller");
+
    for (i = 0; i < (int) strlen (reinterpret_cast<char*> (m_name)); i++)
     if (m_name [i]=='_')
-	  m_name [i]=' '; 
+	  m_name [i]=' ';
 
 	i = FindArg ("-xver");
 	if (i)
@@ -1752,13 +1752,13 @@ void CExternalControls::Read (void)
 
 	if (!m_bEnable) return;
 
-if (m_version == 0) 
+if (m_version == 0)
 	memset (m_info, 0, sizeof (ext_control_info));
 else if (m_version > 0)  {
 
 	if (m_version>=4)
 		memset (m_info, 0, sizeof (advanced_ext_control_info));
-   else if (m_version>0)     
+   else if (m_version>0)
 		memset (m_info, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64);
 	else if (m_version>2)
 		memset (m_info, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix) +4);
@@ -1780,7 +1780,7 @@ else if (m_version > 0)  {
 		}
     if (m_version>=4) {
 	   advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (m_info);
- 
+
       temp_ptr->headlightState = PlayerHasHeadlight (-1);
 		temp_ptr->primaryWeaponFlags = LOCALPLAYER.primaryWeaponFlags;
 		temp_ptr->secondaryWeaponFlags = LOCALPLAYER.secondaryWeaponFlags;
@@ -1790,15 +1790,15 @@ else if (m_version > 0)  {
 	   temp_ptr->force_vector=ExtForceVec;
 		temp_ptr->force_matrix=ExtApplyForceMatrix;
 	   for (i=0;i<3;i++)
-       temp_ptr->joltinfo [i]=ExtJoltInfo [i];  
+       temp_ptr->joltinfo [i]=ExtJoltInfo [i];
       for (i=0;i<2;i++)
 		   temp_ptr->x_vibrate_info [i]=ExtXVibrateInfo [i];
 		temp_ptr->x_vibrate_clear=ExtXVibrateClear;
  	   temp_ptr->gameStatus=gameStates.app.nExtGameStatus;
-   
+
       memset (&ExtForceVec, 0, sizeof (CFixVector));
       memset (&ExtApplyForceMatrix, 0, sizeof (CFixMatrix));
-      
+
       for (i=0;i<3;i++)
 		 ExtJoltInfo [i]=0;
       for (i=0;i<2;i++)
@@ -1816,7 +1816,7 @@ else if (m_version > 0)  {
 		OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (m_version > 0) {	
+		if (m_version > 0) {
 			CFixMatrix tempm, ViewMatrix;
 			CAngleVector * Kconfig_abs_movement;
 			char * oem_message;
@@ -1826,7 +1826,7 @@ else if (m_version > 0)  {
 			if (!Kconfig_abs_movement->IsZero ()) {
 				tempm = CFixMatrix::Create(*Kconfig_abs_movement);
 				ViewMatrix = OBJECTS [LOCALPLAYER.nObject].info.position.mOrient * tempm;
-				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;	
+				OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;
 			}
 			oem_message = reinterpret_cast<char*> ((size_t) Kconfig_abs_movement + sizeof (CAngleVector));
 			if (oem_message [0] != '\0')
@@ -1834,7 +1834,7 @@ else if (m_version > 0)  {
 		}
 	}
 
-	Controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.time.xFrame);					
+	Controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.time.xFrame);
 	Controls [0].verticalThrustTime += FixMul (m_info->verticalThrustTime,gameData.time.xFrame);
 	Controls [0].headingTime += FixMul (m_info->headingTime,gameData.time.xFrame);
 	Controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime ,gameData.time.xFrame);
@@ -1855,7 +1855,7 @@ else if (m_version > 0)  {
 	 {
 		ubyte *temp_ptr = reinterpret_cast<ubyte*> (m_info);
 		temp_ptr += (sizeof (ext_control_info) + sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix));
-  
+
 	   if (* (temp_ptr))
 		 Controls [0].cyclePrimaryCount= (* (temp_ptr));
 	   if (* (temp_ptr+1))
@@ -1869,7 +1869,7 @@ else if (m_version > 0)  {
    if (m_version>=4)
 	 {
 	  advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (m_info);
-     
+
      if (temp_ptr->Reactor_blown)
       {
        if (gameData.app.nGameMode & GM_MULTI)
@@ -1877,6 +1877,16 @@ else if (m_version > 0)  {
 		 else
 			 DoReactorDestroyedStuff (ObjFindFirstOfType (OBJ_REACTOR));
 	   }
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CExternalControls::Destroy (void)
+{
+if (m_name) {
+	delete[] m_name;
+	m_name = NULL;
 	}
 }
 
@@ -1924,7 +1934,7 @@ if (gameOpts->input.mouse.bUse) {
 			}
 		}
 	}
-//else 
+//else
 if (gameConfig.nControlType == CONTROL_WINJOYSTICK) {
 	for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++) {
 		if (bGet)

@@ -74,11 +74,11 @@ CBackgroundManager backgroundManager;
 
 int bHiresBackground;
 
-//------------------------------------------------------------------------------ 
+//------------------------------------------------------------------------------
 
 #if DBG
 
-char *menuBgNames [4][2] = {
+const char* menuBgNames [4][2] = {
 	{"menu.pcx", "menub.pcx"},
 	{"menuo.pcx", "menuob.pcx"},
 	{"menud.pcx", "menud.pcx"},
@@ -87,7 +87,7 @@ char *menuBgNames [4][2] = {
 
 #else
 
-const char *menuBgNames [4][2] = {
+const char* menuBgNames [4][2] = {
 	{"\x01menu.pcx", "\x01menub.pcx"},
 	{"\x01menuo.pcx", "\x01menuob.pcx"},
 	{"\x01menud.pcx", "\x01menud.pcx"},
@@ -143,8 +143,8 @@ gameStates.app.bClearMessage = 0;
 
 void CBackground::Destroy (void)
 {
-if (m_background && 
-	 (m_background != backgroundManager.Background (0)) && 
+if (m_background &&
+	 (m_background != backgroundManager.Background (0)) &&
 	 (m_background != backgroundManager.Background (1)))
 	delete m_background;
 if (m_saved [0]) {
@@ -173,7 +173,7 @@ CBitmap* CBackground::Load (char* filename, int width, int height)
 m_filename = filename;
 if (!m_filename)
 	return (gameOpts->menus.nStyle && !backgroundManager.IsDefault (backgroundManager.Filename ()))
-			 ? backgroundManager.Background (0) 
+			 ? backgroundManager.Background (0)
 			 : backgroundManager.Background (1); //->CreateChild (0, 0, width, height);
 else if (backgroundManager.IsDefault (filename) || !(m_background = backgroundManager.LoadBackground (filename)))
 	return backgroundManager.Background (0);
@@ -248,11 +248,11 @@ if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager
 	CCanvas::SetCurrent (m_canvas [1]);
 	if (m_bMenuBox)
 		backgroundManager.DrawBox (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height (), gameData.menu.nLineWidth, 1.0f, 0);
-	else 
+	else
 		DrawArea (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height ());
 		CCanvas::Pop ();
 					//0, 0, CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
-		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
+		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (),
 		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 	}
 paletteManager.LoadEffect ();
@@ -266,12 +266,12 @@ if (bUpdate && !gameStates.app.bGameRunning)
 void CBackground::DrawArea (int left, int top, int right, int bottom)
 {
 #if 0
-if (MODERN_STYLE) 
+if (MODERN_STYLE)
 	Draw ();
-else 
+else
 #endif
 	{
-	if (left < 0) 
+	if (left < 0)
 		left = 0;
 	if (top < 0)
 		top = 0;
@@ -334,7 +334,7 @@ void CBackground::Restore (void)
 {
 if (!gameStates.app.bGameRunning) {
 	CCanvas::SetCurrent (m_canvas [0]);
-	if (MODERN_STYLE) 
+	if (MODERN_STYLE)
 		m_background->RenderStretched ();
 	else if (m_saved [1]) {
 		m_saved [1]->RenderFixed ();
@@ -347,19 +347,19 @@ if (!gameStates.app.bGameRunning) {
 
 void CBackground::Restore (int dx, int dy, int w, int h, int sx, int sy)
 {
-int x1 = sx; 
+int x1 = sx;
 int x2 = sx+w-1;
-int y1 = sy; 
+int y1 = sy;
 int y2 = sy+h-1;
 
-if (x1 < 0) 
+if (x1 < 0)
 	x1 = 0;
-if (y1 < 0) 
+if (y1 < 0)
 	y1 = 0;
 
-if (x2 >= m_background->Width ()) 
+if (x2 >= m_background->Width ())
 	x2 = m_background->Width () - 1;
-if (y2 >= m_background->Height ()) 
+if (y2 >= m_background->Height ())
 	y2 = m_background->Height () - 1;
 
 w = x2 - x1 + 1;
@@ -369,19 +369,19 @@ m_background->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
 
 //------------------------------------------------------------------------------
 
-CBackgroundManager::CBackgroundManager () 
-{ 
+CBackgroundManager::CBackgroundManager ()
+{
 Init ();
 }
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::Remove (void) 
+void CBackgroundManager::Remove (void)
 {
 if (m_nDepth >= 0) {
 	m_bg [m_nDepth--].Destroy ();
 	Redraw (true);
-	if (gameStates.app.bGameRunning) 
+	if (gameStates.app.bGameRunning)
 		paletteManager.LoadEffect ();
 	}
 }
@@ -394,7 +394,7 @@ m_background [0] = NULL;
 m_background [1] = NULL;
 m_filename [0] = BackgroundName (BG_MENU);
 m_filename [1] = BackgroundName (BG_SCORES);
-m_nDepth = -1; 
+m_nDepth = -1;
 m_bShadow = true;
 m_bValid = false;
 }
@@ -471,10 +471,10 @@ CBitmap* bmP;
 gameOpts->menus.altBg.bHave = 0;
 if (!(bmP = CBitmap::Create (0, 0, 0, 1)))
 	return NULL;
-if (!ReadTGA (gameOpts->menus.altBg.szName, 
+if (!ReadTGA (gameOpts->menus.altBg.szName,
 				  gameFolders.szWallpaperDir,
-				  bmP, 
-				 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255), 
+				  bmP,
+				 (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
 				 gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale, 0)) {
 	delete bmP;
 	gameOpts->menus.altBg.bHave = -1;

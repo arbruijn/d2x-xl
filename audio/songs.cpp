@@ -151,7 +151,7 @@ void CRedbook::CheckRepeat (void)
 {
 	fix currentTime;
 
-if (!m_bPlaying || (gameConfig.nRedbookVolume == 0)) 
+if (!m_bPlaying || (gameConfig.nRedbookVolume == 0))
 	return;
 
 currentTime = TimerGetFixedSeconds ();
@@ -344,7 +344,7 @@ redbook.Stop ();			// Stop CD, if playing
 
 //------------------------------------------------------------------------------
 
-int CSongManager::PlayModSong (char* pszSong, int bLoop)
+int CSongManager::PlayModSong (char pszSong[], int bLoop)
 {
 	char	szFilename [FILENAME_LEN];
 
@@ -369,21 +369,21 @@ WaitForSoundThread ();
 //do we want any of these to be redbook songs?
 m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
-	if (PlayModSong ("title", bLoop))
+	if (PlayModSong (const_cast<char*>("title"), bLoop))
 		return;
 	if (*m_user.szIntroSong && midi.PlaySong (m_user.szIntroSong, NULL, NULL, bLoop, 0))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
 	}
 else if (nSong == SONG_CREDITS) {
-	if (PlayModSong ("credits", bLoop))
+	if (PlayModSong (const_cast<char*>("credits"), bLoop))
 		return;
 	if (*m_user.szCreditsSong && midi.PlaySong (m_user.szCreditsSong, NULL, NULL, bLoop, 0))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 	}
 else if (nSong == SONG_BRIEFING) {
-	if (PlayModSong ("briefing", bLoop))
+	if (PlayModSong (const_cast<char*>("briefing"), bLoop))
 		return;
 	if (*m_user.szBriefingSong && midi.PlaySong (m_user.szBriefingSong, NULL, NULL, bLoop, 0))
 		return;

@@ -105,9 +105,9 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, nColor, nLights = 0, nStep = nStart ? -1 : 1,
-					bVertexLight = gameStates.render.bPerPixelLighting != 2,
-					bLightmaps = lightmapManager.HaveLightmaps ();
+	int			h, i, nColor, nLights = 0, nStep = nStart ? -1 : 1;
+	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
+	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -157,7 +157,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 	faceP->color = faceColor [nColor].color;
 	pc = FACES.color + faceP->nIndex;
 	for (h = 0; h < 4; h++, pc++) {
-		if (gameStates.render.bFullBright) 
+		if (gameStates.render.bFullBright)
 			*pc = nColor ? faceColor [nColor].color : brightColor.color;
 		else {
 			if (bLightmaps) {
@@ -171,7 +171,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 				if (nVertex == nDbgVertex)
 					nDbgVertex = nDbgVertex;
 #endif
-				if (gameStates.render.bPerPixelLighting == 2) 
+				if (gameStates.render.bPerPixelLighting == 2)
 					*pc = gameData.render.color.ambient [nVertex].color;
 				else {
 					c.color = gameData.render.color.ambient [nVertex].color;
@@ -186,8 +186,8 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 							if (nVertex == nDbgVertex)
 								nDbgVertex = nDbgVertex;
 #endif
-							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.XYZ(), 
-											  gameData.segs.fVertices[nVertex].XYZ(), nVertex, 
+							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.XYZ(),
+											  gameData.segs.fVertices[nVertex].XYZ(), nVertex,
 											  NULL, &c, 1, 0, nThread);
 							lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
 							lightManager.ResetNearestToVertex (nVertex, nThread);
@@ -328,7 +328,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 		pc = FACES.color + faceP->nIndex;
 		for (h = 0; h < 4; h++, pc++) {
-			if (gameStates.render.bFullBright) 
+			if (gameStates.render.bFullBright)
 				*pc = nColor ? faceColor [nColor].color : brightColor.color;
 			else {
 				c = faceColor [nColor];
@@ -340,13 +340,13 @@ for (i = nStart; i != nEnd; i += nStep) {
 					if (nVertex == nDbgVertex)
 						nDbgVertex = nDbgVertex;
 #endif
-					if (gameStates.render.bPerPixelLighting == 2) 
+					if (gameStates.render.bPerPixelLighting == 2)
 						*pc = gameData.render.color.ambient [nVertex].color;
 					else {
 						tFaceColor *pvc = gameData.render.color.vertices + nVertex;
 						if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
 #if DBG
-							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) 
+							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 								nSegment = nSegment;
 #endif
 							if (nLights + lightManager.VariableVertLights ()[nVertex] == 0) {
@@ -360,8 +360,8 @@ for (i = nStart; i != nEnd; i += nStep) {
 								if (nVertex == nDbgVertex)
 									nDbgVertex = nDbgVertex;
 #endif
-								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.XYZ(), 
-													gameData.segs.fVertices [nVertex].XYZ(), nVertex, 
+								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.XYZ(),
+													gameData.segs.fVertices [nVertex].XYZ(), nVertex,
 													NULL, &c, 1, 0, nThread);
 								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
 								lightManager.ResetNearestToVertex (nVertex, nThread);
@@ -478,7 +478,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 			nIndex = triP->nIndex;
 			pc = FACES.color + nIndex;
 			for (h = 0; h < 3; h++, pc++, nIndex++) {
-				if (gameStates.render.bFullBright) 
+				if (gameStates.render.bFullBright)
 					*pc = nColor ? faceColor [nColor].color : brightColor.color;
 				else {
 					c = faceColor [nColor];
@@ -549,7 +549,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	fix			xLight;
 	float			fAlpha;
 	tUVL			*uvlP;
-	int			h, i, j, uvi, nColor, 
+	int			h, i, j, uvi, nColor,
 					nStep = nStart ? -1 : 1;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -593,7 +593,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 		pc = FACES.color + faceP->nIndex;
 		uvlP = segP->m_sides [nSide].m_uvls;
 		for (h = 0, uvi = 0 /*(segP->m_sides [nSide].m_nType == SIDE_IS_TRI_13)*/; h < 4; h++, pc++, uvi++) {
-			if (gameStates.render.bFullBright) 
+			if (gameStates.render.bFullBright)
 				*pc = nColor ? faceColor [nColor].color : brightColor.color;
 			else {
 				c = faceColor [nColor];
@@ -663,7 +663,7 @@ nRenderVertices = 0;
 for (h = i = 0; h < gameData.render.mine.nRenderSegs; h++) {
 	nSegment = gameData.render.mine.nSegRenderList [h];
 	segFaceP = SEGFACES + nSegment;
-	if (!SegmentIsVisible (SEGMENTS + nSegment)) 
+	if (!SegmentIsVisible (SEGMENTS + nSegment))
 		gameData.render.mine.nSegRenderList [h] = -gameData.render.mine.nSegRenderList [i];
 	else {
 		for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {

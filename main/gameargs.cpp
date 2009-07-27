@@ -138,13 +138,13 @@ if ((t = FindArg ("-ngType")) && (p = pszArgList [t+1])) {
 if ((t = FindArg ("-ng_team")))
 	gameData.multiplayer.autoNG.bTeam = NumArg (t, 1);
 if (gameData.multiplayer.autoNG.bHost)
-	gameData.multiplayer.autoNG.bValid = 
+	gameData.multiplayer.autoNG.bValid =
 		*gameData.multiplayer.autoNG.szPlayer &&
 		*gameData.multiplayer.autoNG.szName &&
 		*gameData.multiplayer.autoNG.szFile &&
 		*gameData.multiplayer.autoNG.szMission;
 else
-	gameData.multiplayer.autoNG.bValid = 
+	gameData.multiplayer.autoNG.bValid =
 		*gameData.multiplayer.autoNG.szPlayer &&
 		bHaveIp;
 if (gameData.multiplayer.autoNG.bValid)
@@ -195,10 +195,10 @@ if (function_p == NULL) {
 	// the SDL_mixer framework is not present,
 	// so regardless of what conf.h or d2x.ini says,
 	// we don't want to use SDL_mixer
-	
+
 	gameOptions [0].sound.bUseSDLMixer = 0;
 	}
-else 
+else
 #	endif //__macosx__
 if ((t = FindArg ("-sdl_mixer")))
 	gameOptions [0].sound.bUseSDLMixer = NumArg (t, 1);
@@ -348,7 +348,7 @@ if ((t = FindArg ("-hires_textures")))
 	gameOptions [0].render.textures.bUseHires [0] =
 	gameOptions [0].render.textures.bUseHires [1] = NumArg (t, 1);
 if ((t = FindArg ("-hires_models")))
-	gameOptions [0].render.bHiresModels [0] = 
+	gameOptions [0].render.bHiresModels [0] =
 	gameOptions [0].render.bHiresModels [1] = NumArg (t, 1);
 if ((t = FindArg ("-model_quality")) && *pszArgList [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
@@ -377,7 +377,7 @@ gameOptions [0].render.bUseShaders = 1;
 gameStates.app.bCacheTextures = 1;
 gameStates.app.bCacheModelData = 1;
 gameStates.app.bCacheMeshes = 1;
-gameStates.app.bCacheLightmaps = 1; 
+gameStates.app.bCacheLightmaps = 1;
 gameStates.app.bCacheLights = 1;
 #endif
 }
@@ -429,11 +429,11 @@ if ((t = FindArg ("-auto_mission"))) {
 		strcat (szAutoMission, ".rl2");
 	}
 if (FindArg ("-debug"))
-	CCvar::Register ("con_threshold", "2.0");
+	CCvar::Register (const_cast<char*>("con_threshold"), 2.0);
 else if (FindArg ("-verbose"))
-	CCvar::Register ("con_threshold", "1.0");
+	CCvar::Register (const_cast<char*>("con_threshold"), 1.0);
 else
-	CCvar::Register ("con_threshold", "-1.0");
+	CCvar::Register (const_cast<char*>("con_threshold"), -1.0);
 if ((t = FindArg ("-autodemo"))) {
 	gameData.demo.bAuto = 1;
 	strncpy (gameData.demo.fnAuto, *pszArgList [t+1] ? pszArgList [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));

@@ -492,7 +492,7 @@ if (objP->info.nNextInSeg == nFirstObj)
 if ((nObject == nFirstObj) && (objP->info.nPrevInSeg >= 0))
 	return false;
 if (((objP->info.nNextInSeg >= 0) && (OBJECTS [objP->info.nNextInSeg].info.nPrevInSeg != nObject)) ||
-	 ((objP->info.nPrevInSeg >= 0) && (OBJECTS [objP->info.nPrevInSeg].info.nNextInSeg != nObject))) 
+	 ((objP->info.nPrevInSeg >= 0) && (OBJECTS [objP->info.nPrevInSeg].info.nNextInSeg != nObject)))
 	return false;
 return true;
 }
@@ -743,7 +743,7 @@ if (IsInList (ref, nLink)) {
 	return;
 	}
 CObject *objP;
-if (objP = ref.head) {
+if ((objP = ref.head)) {
 	if (objP->Links (nLink).next == objP)
 		nDbgObj = nDbgObj;
 	if (objP->Links (nLink).prev == objP)
@@ -1496,7 +1496,7 @@ return SEGMENTS [info.nSegment].HasOpenableDoor ();
 //------------------------------------------------------------------------------
 
 bool CObject::Cloaked (void)
-{ 
+{
 if (info.nType == OBJ_PLAYER)
 	return (gameData.multiplayer.players [info.nId].flags & PLAYER_FLAGS_CLOAKED) != 0;
 else if (info.nType == OBJ_ROBOT)
@@ -1508,27 +1508,27 @@ else
 //------------------------------------------------------------------------------
 
 int CObject::Index (void)
-{ 
-return OBJ_IDX (this); 
+{
+return OBJ_IDX (this);
 }
 
 //------------------------------------------------------------------------------
 
-CObject* CObject::Target (void) 
-{ 
-return m_target ? m_target : gameData.objs.consoleP; 
+CObject* CObject::Target (void)
+{
+return m_target ? m_target : gameData.objs.consoleP;
 }
 
 //------------------------------------------------------------------------------
 
-CObject* CObject::Parent (void) 
-{ 
+CObject* CObject::Parent (void)
+{
 if (cType.laserInfo.parent.nObject < 0)
 	return NULL;
 CObject*	objP = OBJECTS + cType.laserInfo.parent.nObject;
 if (objP->Signature () != cType.laserInfo.parent.nSignature)
 	return NULL;
-return objP; 
+return objP;
 }
 
 //------------------------------------------------------------------------------

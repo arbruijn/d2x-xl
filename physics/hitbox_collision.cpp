@@ -70,7 +70,7 @@ else {
 //now do the 2d problem in the i, j plane
 check_i = vRef [i];
 check_j = vRef [j];
-for (iEdge = 0; iEdge < 4; iEdge) {
+for (iEdge = 0; iEdge < 4; ) {
 	v0 = vertP [iEdge++];
 	v1 = vertP [iEdge % 4];
 	vEdge.i = v1 [i] - v0 [i];

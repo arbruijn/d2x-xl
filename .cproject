@@ -26,6 +26,7 @@
 <option id="gnu.cpp.compiler.exe.debug.option.debugging.level.517872047" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.option.preprocessor.def.1738373042" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="USE_SDL_IMAGE=1"/>
+<listOptionValue builtIn="false" value="DBG=1"/>
 <listOptionValue builtIn="false" value="HAVE_CONFIG_H"/>
 </option>
 <option id="gnu.cpp.compiler.option.include.paths.1690525078" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
