@@ -435,7 +435,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 
 #if USE_FACE_DIST
 	if (/*(nVertex < 0) &&*/ (nType < 2)) {
-		//bool bInRad = DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide)) == 0;
+		DistToFace (lightPos, *vcd.vertPosP, prl->info.nSegment, ubyte (prl->info.nSide));
 		CFloatVector3 dir = lightPos - *vcd.vertPosP;
 		fLightDist = dir.Mag () * ogl.m_states.fLightRange;
 		CFloatVector3::Normalize (dir);
