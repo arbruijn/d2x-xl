@@ -114,7 +114,7 @@ void MiscellaneousMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optHeadlight, optAutoLevel, optEnableMods, optEpileptic, optColorblind, optNotebook,
+	int	optHeadlight, optAutoLevel, optEpileptic, optColorblind, optNotebook,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
@@ -138,7 +138,6 @@ do {
 		optEpileptic = m.AddCheck (TXT_EPILEPTIC_FRIENDLY, gameOpts->app.bEpilepticFriendly, KEY_E, HTX_EPILEPTIC_FRIENDLY);
 		optColorblind = m.AddCheck (TXT_COLORBLIND_FRIENDLY, gameOpts->app.bColorblindFriendly, KEY_C, HTX_COLORBLIND_FRIENDLY);
 		optNotebook = m.AddCheck (TXT_NOTEBOOK_FRIENDLY, gameOpts->app.bNotebookFriendly, KEY_N, HTX_COLORBLIND_FRIENDLY);
-		optEnableMods = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 		optHeadlight = 
 		optAutoLevel = -1;
 		}
@@ -168,7 +167,6 @@ do {
 		GET_VAL (gameOpts->app.bEpilepticFriendly, optEpileptic);
 		GET_VAL (gameOpts->app.bColorblindFriendly, optColorblind);
 		GET_VAL (gameOpts->app.bNotebookFriendly, optNotebook);
-		GET_VAL (gameOpts->app.bEnableMods, optEnableMods);
 		}
 	} while (i == -2);
 

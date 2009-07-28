@@ -671,7 +671,7 @@ if (i) {
 	gameOptions [1].app.nScreenShotInterval = 0;
 	}
 else {
-	gameOptions [1].app.bEnableMods = 1;
+	gameOptions [1].app.bEnableMods = 0;
 	gameOptions [0].app.nVersionFilter = 2;
 	gameOptions [0].app.bSinglePlayer = 0;
 	gameOptions [0].app.bExpertMode = 1;

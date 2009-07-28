@@ -1845,7 +1845,7 @@ const char *defaultGameTexts [][2] = {
  {"hervorhebung ~Blau", "~Blue highlights"},
  {"Server-Portnummer", "\nEnter server port:"},
  {"Teilnehmer-Portnummer", "\nEnter client port:"},
- {"M~Ods aktivieren", "enable m~Ods"},
+ {"M~Od aktivieren", "enable m~Od"},
  {"3D-Sch~Ild-Powerups", "3D Sh~Ield Powerups"},
  {"Bildaufbau: ~V-Sync", "Framecap: ~V-Sync"},
  {"~Englisch (qwerty)", "~English (qwerty)"},

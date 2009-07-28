@@ -365,45 +365,50 @@ gameStates.app.bHaveMod = 0;
 
 void MakeModFolders (const char* pszMission)
 {
+int bDefault, bBuiltIn;
+
 ResetModFolders ();
-if (gameOpts->app.bEnableMods) {
-	if (*pszMission)
-		CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
+
+if ((bDefault = (*pszMission == '\0')))
+	pszMission = gameData.missions.list [gameData.missions.nCurrentMission].szMissionName;
+else
+	CFile::SplitPath (pszMission, NULL, gameFolders.szModName, NULL);
+
+if ((bBuiltIn = (strstr (pszMission, "Descent: First Strike") != NULL)))
+	strcpy (gameFolders.szModName, "descent");
+else if ((bBuiltIn = (strstr (pszMission, "Descent 2: Counterstrike!") != NULL)))
+	strcpy (gameFolders.szModName, "descent2");
+else if ((bBuiltIn = (strstr (pszMission, "Descent 2: Vertigo") != NULL)))
+	strcpy (gameFolders.szModName, "d2x");
+else if (bDefault)
+	return;
+
+if (bBuiltIn && !gameOpts->app.bEnableMods)
+	return;
+
+if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
+	sprintf (gameFolders.szSoundDir [4], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
+	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga"))
+		*gameFolders.szTextureDir [2] = '\0';
 	else {
-		pszMission = gameData.missions.list [gameData.missions.nCurrentMission].szMissionName;
-		if (strstr (pszMission, "Descent: First Strike"))
-			strcpy (gameFolders.szModName, "descent");
-		else if (strstr (pszMission, "Descent 2: Counterstrike!"))
-			strcpy (gameFolders.szModName, "descent2");
-		else if (strstr (pszMission, "Descent 2: Vertigo"))
-			strcpy (gameFolders.szModName, "d2x");
-		else
-			return;
+		sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], TEXTUREDIR);
+		gameOpts->render.textures.bUseHires [0] = 1;
 		}
-	if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolders.szModName, "")) {
-		sprintf (gameFolders.szSoundDir [4], "%s/%s", gameFolders.szModDir [1], SOUNDDIR);
-		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szTextureDir [2], TEXTUREDIR, "*.tga"))
-			*gameFolders.szTextureDir [2] = '\0';
-		else {
-			sprintf (gameFolders.szTextureCacheDir [2], "%s/%s", gameFolders.szModDir [1], TEXTUREDIR);
-			gameOpts->render.textures.bUseHires [0] = 1;
-			}
-		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.ase") &&
-			 GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.oof"))
-			*gameFolders.szModelDir [1] = '\0';
-		else {
-			sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
-			sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
-			}
-		if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg"))
-			*gameFolders.szMusicDir = '\0';
-		MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
-		MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
-		gameStates.app.bHaveMod = 1;
+	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.ase") &&
+		 GetAppFolder (gameFolders.szModDir [1], gameFolders.szModelDir [1], MODELDIR, "*.oof"))
+		*gameFolders.szModelDir [1] = '\0';
+	else {
+		sprintf (gameFolders.szModelDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
+		sprintf (gameFolders.szModelCacheDir [1], "%s/%s", gameFolders.szModDir [1], MODELDIR);
 		}
-	else
-		*gameFolders.szModName = '\0';
+	if (GetAppFolder (gameFolders.szModDir [1], gameFolders.szMusicDir, MUSICDIR, "*.ogg"))
+		*gameFolders.szMusicDir = '\0';
+	MakeTexSubFolders (gameFolders.szTextureCacheDir [2]);
+	MakeTexSubFolders (gameFolders.szModelCacheDir [1]);
+	gameStates.app.bHaveMod = 1;
 	}
+else
+	*gameFolders.szModName = '\0';
 }
 
 // ----------------------------------------------------------------------------

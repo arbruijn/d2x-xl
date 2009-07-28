@@ -1024,4 +1024,18 @@ return 0;		//couldn't ffs mission
 }
 
 //------------------------------------------------------------------------------
+
+bool IsBuiltInMission (char* pszMission)
+{
+if (*pszMission)
+	return false;
+
+pszMission = gameData.missions.list [gameData.missions.nCurrentMission].szMissionName;
+
+return (strstr (pszMission, "Descent: First Strike") != NULL) ||
+		 (strstr (pszMission, "Descent 2: Counterstrike!") != NULL) ||
+		 (strstr (pszMission, "Descent 2: Vertigo") != NULL);
+}
+
+//------------------------------------------------------------------------------
 // eof

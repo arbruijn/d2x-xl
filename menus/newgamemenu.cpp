@@ -260,10 +260,10 @@ return nCurItem;
 
 void NewGameMenu (void)
 {
-	CMenu				menu;
-	int				optSelMsn, optMsnName, optLevelText, optLevel, optLaunch, optLoadout;
+	CMenu				m;
+	int				optSelMsn, optMsnName, optLevelText, optLevel, optUseMod, optLaunch, optLoadout;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
-	int				i, choice = 0;
+	int				i, choice = 0, bEnableMod = gameOpts->app.bEnableMods;
 	char				szDifficulty [50];
 	char				szLevelText [32];
 	char				szLevel [5];
@@ -293,47 +293,64 @@ else if (gameOpts->app.bSinglePlayer) {
 hogFileManager.UseMission ("");
 
 for (;;) {
-	menu.Destroy ();
-	menu.Create (15);
+	m.Destroy ();
+	m.Create (15);
 
-	optSelMsn = menu.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-	optMsnName = menu.AddText ((nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
+	optLevel = 
+	optUseMod = -1;
+
+	optSelMsn = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
+	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 100);
-		optLevelText = menu.AddText (szLevelText, 0); 
-		menu [optLevelText].m_bRebuild = 1;
+		optLevelText = m.AddText (szLevelText, 0); 
+		m [optLevelText].m_bRebuild = 1;
 		sprintf (szLevel, "%d", nLevel);
-		optLevel = menu.AddInput (szLevel, 4, HTX_MULTI_LEVEL);
+		optLevel = m.AddInput (szLevel, 4, HTX_MULTI_LEVEL);
 		}
-	else
-		optLevel = -1;
-#if DBG
-	menu.AddText ("");
-	menu.AddText ("Initial Lives:");
-	sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
-	optLives = menu.AddInput (szLives, 4);
-#endif
-	menu.AddText ("                              ", 0);
-	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
-	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
-	nOptDifficulty = menu.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
-	menu.AddText ("", 0);
-	optLoadout = menu.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 
 	if (nMission >= 0) {
-		menu.AddText ("", 0);
-		optLaunch = menu.AddMenu (TXT_LAUNCH_GAME, KEY_L, "");
-		menu [optLaunch].m_bCentered = 1;
+		if (IsBuiltInMission (hogFileManager.m_files.MsnHogFiles.szName)) {
+			gameOpts->app.bEnableMods = 1;
+			MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
+			gameOpts->app.bEnableMods = bEnableMod;
+			if (gameStates.app.bHaveMod) {
+				m.AddText ("", 0);
+				optUseMod = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
+				}
+			}
+		}
+
+#if DBG
+	m.AddText ("");
+	m.AddText ("Initial Lives:");
+	sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
+	optLives = m.AddInput (szLives, 4);
+#endif
+
+	m.AddText ("                              ", 0);
+	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
+	nOptDifficulty = m.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	m.AddText ("", 0);
+	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+
+	if (nMission >= 0) {
+		m.AddText ("", 0);
+		optLaunch = m.AddMenu (TXT_LAUNCH_GAME, KEY_L, "");
+		m [optLaunch].m_bCentered = 1;
 		}
 	else
 		optLaunch = -1;
 
-	i = menu.Menu (NULL, TXT_NEWGAME_MENUTITLE, NewGameMenuCallback, &choice);
+	i = m.Menu (NULL, TXT_NEWGAME_MENUTITLE, NewGameMenuCallback, &choice);
+
 	if (i < 0) {
 		SetFunctionMode (FMODE_MENU);
 		return;
 		}
+	GET_VAL (gameOpts->app.bEnableMods, optUseMod);
 	if (choice == optLoadout)
 		LoadoutOptionsMenu ();
 	else if (choice == optSelMsn) {
@@ -349,7 +366,7 @@ for (;;) {
 			}
 		}
 	else if (choice == optLevel) {
-		i = atoi (menu [optLevel].m_text);
+		i = atoi (m [optLevel].m_text);
 #if DBG
 		if (!i || (i < -gameData.missions.nSecretLevels) || (i > nPlayerMaxLevel))
 #else
@@ -362,7 +379,7 @@ for (;;) {
 			nLevel = i;
 		}
 	else if (nMission >= 0) {
-		if ((optLevel > 0) && !(nLevel = atoi (menu [optLevel].m_text))) {
+		if ((optLevel > 0) && !(nLevel = atoi (m [optLevel].m_text))) {
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 			nLevel = 1;
 			}
@@ -371,14 +388,14 @@ for (;;) {
 		}
 #if DBG
 	else {
-		i = atoi (menu [optLives].m_text);
+		i = atoi (m [optLives].m_text);
 		if (i > 0)
 			gameStates.gameplay.nInitialLives = min (i, 255);
 		}
 #endif
 	}
 
-i = menu [nOptDifficulty].m_value;
+i = m [nOptDifficulty].m_value;
 if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
 	gameData.bosses.InitGateIntervals ();

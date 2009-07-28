@@ -761,7 +761,7 @@ typedef struct tParamValue {
 tParamValue defaultParams [] = {
 	 {"gameData.render.window.w", "640"},
 	 {"gameData.render.window.h", "480"},
-	 {"gameStates.app.bEnableMods", "1"},
+	 {"gameStates.app.bEnableMods[0]", "0"},
 	 {"gameStates.app.bEpilepticFriendly", "0"},
 	 {"gameStates.app.bColorblindFriendly", "0"},
 	 {"gameStates.app.bNotebookFriendly", "0"},
