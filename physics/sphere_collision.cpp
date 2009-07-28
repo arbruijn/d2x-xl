@@ -605,10 +605,16 @@ restart:
 					nFudgedRad = (radP1 * 3) / 4;
 				}
 			//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
-			if ((nThisType == OBJ_PLAYER) &&
-				 ((nOtherType == OBJ_PLAYER) ||
-				 (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))))
-				nFudgedRad = radP1 / 2;
+			if (nThisType == OBJ_PLAYER) {
+				if (nOtherType == OBJ_ROBOT) {
+					if ((flags & FQ_VISIBLE_OBJS) && otherObjP->Cloaked ())
+						continue;
+					}
+				else if (nOtherType == OBJ_PLAYER) {
+					if (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parent.nType == OBJ_PLAYER))
+						nFudgedRad = radP1 / 2;
+					}
+				}
 #if DBG
 			if (nObject == nDbgObj)
 				nDbgObj = nDbgObj;

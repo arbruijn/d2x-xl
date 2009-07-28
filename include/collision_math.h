@@ -63,7 +63,7 @@ typedef struct tCollisionData {
 #define FQ_TRANSPOINT		4		//go through trans CWall if hit point is transparent
 #define FQ_GET_SEGLIST		8		//build a list of segments
 #define FQ_IGNORE_POWERUPS	16		//ignore powerups
-#define FQ_SEE_OBJS			32
+#define FQ_VISIBLE_OBJS		32
 #define FQ_ANY_OBJECT		64
 #define FQ_CHECK_PLAYER		128
 

@@ -366,7 +366,7 @@ if (gameData.bosses [i].m_nLastGateTime > gameData.time.xGame)
 
 //	@mk, 10/13/95:  Reason:
 //		Level 4 boss behind locked door.  But he's allowed to teleport out of there.  So he
-//		teleports out of there right away, and blasts CPlayerData right after first door.
+//		teleports out of there right away, and blasts player right after first door.
 if (!gameData.ai.nTargetVisibility && (gameData.time.xGame - gameData.bosses [i].m_nHitTime > I2X (2)))
 	return;
 
@@ -392,14 +392,16 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 		else if (gameData.time.xGame - gameData.bosses [i].m_nHitTime > I2X (2)) {
 			gameData.bosses [i].m_nLastTeleportTime -= gameData.bosses [i].m_nTeleportInterval/4;
 			}
-	if (!gameData.bosses [i].m_nCloakDuration)
-		gameData.bosses [i].m_nCloakDuration = BOSS_CLOAK_DURATION;
-	if ((gameData.time.xGame > gameData.bosses [i].m_nCloakEndTime) ||
-			(gameData.time.xGame < gameData.bosses [i].m_nCloakStartTime))
-		objP->cType.aiInfo.CLOAKED = 0;
+		if (!gameData.bosses [i].m_nCloakDuration)
+			gameData.bosses [i].m_nCloakDuration = BOSS_CLOAK_DURATION;
+		if ((gameData.time.xGame > gameData.bosses [i].m_nCloakEndTime) ||
+			 (gameData.time.xGame < gameData.bosses [i].m_nCloakStartTime) || 
+			 (objP->Damage () < 0.01) || (d_rand () > objP->DriveDamage ()))
+			objP->cType.aiInfo.CLOAKED = 0;
 		}
-	else if ((gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime > gameData.bosses [i].m_nCloakInterval) ||
-				(gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime < -gameData.bosses [i].m_nCloakDuration)) {
+	else if (((gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime > gameData.bosses [i].m_nCloakInterval) ||
+				 (gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime < -gameData.bosses [i].m_nCloakDuration)) && 
+				 (objP->Damage () >= 0.01) && (d_rand () <= objP->DriveDamage ())) {
 		if (AIMultiplayerAwareness (objP, 95)) {
 			gameData.bosses [i].m_nCloakStartTime = gameData.time.xGame;
 			gameData.bosses [i].m_nCloakEndTime = gameData.time.xGame + gameData.bosses [i].m_nCloakDuration;
