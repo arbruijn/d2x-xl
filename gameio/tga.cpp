@@ -12,6 +12,8 @@
 #	include <SDL_image.h>
 #endif
 
+#define MIN_OPACITY	224
+
 //------------------------------------------------------------------------------
 
 int CompressTGA (CBitmap *bmP)
@@ -46,7 +48,7 @@ if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 #endif
 	bmP->Resize (3 * bmP->Size () / 4);
 	bmP->SetBPP (3);
-	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	}
 }
 
@@ -67,10 +69,10 @@ memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
 avgColor.red = avgColor.green = avgColor.blue = 0;
 
+bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (bmP->BPP () == 3) {
 	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 
-	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	for (i = h * w; i; i--, p++) {
 		::Swap (p->red, p->blue);
 		avgColor.red += p->red;
@@ -108,7 +110,7 @@ else {
 					p->green =
 					p->blue = 0;
 				}
-			if (p->alpha < 196) {
+			if (p->alpha < MIN_OPACITY) {
 				if (!n) {
 					bmP->AddFlags (BM_FLAG_TRANSPARENT);
 					if (p->alpha)
@@ -127,7 +129,7 @@ else {
 		if (nSuperTransp > w * w / 2000) {
 			if (!n)
 				bmP->AddFlags (BM_FLAG_SUPER_TRANSPARENT);
-			bmP->AddFlags (BM_FLAG_SEE_THRU);
+			//bmP->AddFlags (BM_FLAG_SEE_THRU);
 			bmP->SuperTranspFrames () [n / 32] |= (1 << (n % 32));
 			}
 		}
@@ -178,11 +180,11 @@ SetTGAProperties (bmP, alpha, bGrayScale, brightness, bReverse == 0);
 	float				a, avgAlpha = 0;
 
 avgColor.red = avgColor.green = avgColor.blue = 0;
+bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (ph->bits == 24) {
 	tBGRA	c;
 	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ()) + w * (h - 1);
 
-	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	for (i = h; i; i--) {
 		for (j = w; j; j--, p++) {
 			if (cf.Read (&c, 1, 3) != (size_t) 3)
@@ -241,7 +243,7 @@ else {
 						p->green =
 						p->blue = 0;
 					}
-				if (p->alpha < 196) {
+				if (p->alpha < MIN_OPACITY) {
 					if (!n) {
 						bmP->AddFlags (BM_FLAG_TRANSPARENT);
 						if (p->alpha)
@@ -298,7 +300,7 @@ else {
 						p->green =
 						p->blue = 0;
 					}
-				if (p->alpha < 196) {
+				if (p->alpha < MIN_OPACITY) {
 					if (!n) {
 						bmP->AddFlags (BM_FLAG_TRANSPARENT);
 						if (p->alpha)
@@ -330,10 +332,6 @@ avgColorb.blue = (ubyte) (avgColor.blue / a);
 bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB (bmP);
-#if 0
-if (nAlpha && ((ubyte) (avgAlpha / nAlpha) < 2))
-	bmP->Flags |= BM_FLAG_SEE_THRU;
-#endif
 #endif
 return 1;
 }

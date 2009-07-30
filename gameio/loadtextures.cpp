@@ -608,7 +608,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "misc068b"))
+if (strstr (bmName, "metl136"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
@@ -761,9 +761,6 @@ else
 if (!bmP->Compressed ())
 #endif
 	{
-	//ReadTGAImage (*cfP, &h, bmP, -1, 1.0, 0, 0);
-	if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
-		bmP->AddFlags (BM_FLAG_SEE_THRU);
 	bmP->SetType (BM_TYPE_ALT);
 	bmP->SetTranspType (-1);
 	if (IsOpaqueDoor (nIndex)) {

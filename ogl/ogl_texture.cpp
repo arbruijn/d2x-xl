@@ -1257,9 +1257,9 @@ else {
 		bmfP->SetTop (0);
 		nFlags = BM_FLAG_TGA;
 		if (m_info.transparentFrames [i / 32] & (1 << (i % 32)))
-			nFlags |= BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU;
+			nFlags |= BM_FLAG_TRANSPARENT;
 		if (m_info.supertranspFrames [i / 32] & (1 << (i % 32)))
-			nFlags |= BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_SEE_THRU;
+			nFlags |= BM_FLAG_SUPER_TRANSPARENT;
 		bmfP->SetFlags (nFlags);
 		bmfP->SetTranspType (m_info.nTranspType);
 		bmfP->SetStatic (1);	// don't unload because this is just a child texture
