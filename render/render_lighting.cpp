@@ -131,7 +131,7 @@ for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
+	if ((faceP->bSparks == 1) && gameOpts->render.effects.bEnergySparks) {
 		faceP->bVisible = 0;
 		continue;
 		}
@@ -309,7 +309,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 				nSegment = nSegment;
 			}
 #endif
-		if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
+		if ((faceP->bSparks == 1) && gameOpts->render.effects.bEnergySparks) {
 			faceP->bVisible = 0;
 			continue;
 			}
@@ -455,7 +455,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 #endif
 		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
 			continue;
-		if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
+		if ((faceP->bSparks == 1) && gameOpts->render.effects.bEnergySparks) {
 			faceP->bVisible = 0;
 			continue;
 			}
@@ -576,7 +576,7 @@ for (i = nStart; i != nEnd; i += nStep) {
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
-		if (faceP->bSparks && gameOpts->render.effects.bEnergySparks) {
+		if ((faceP->bSparks == 1) && gameOpts->render.effects.bEnergySparks) {
 			faceP->bVisible = 0;
 			continue;
 			}

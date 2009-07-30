@@ -937,7 +937,8 @@ int nTexture = m_faceP->nOvlTex ? m_faceP->nOvlTex : m_faceP->nBaseTex;
 char *pszName = (nTexture < MAX_WALL_TEXTURES)
 					 ? gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name
 					 : szEmpty;
-m_faceP->bSparks = (strstr (pszName, "misc17") != NULL);
+if (strstr (pszName, "misc17") != NULL)
+	m_faceP->bSparks = (nTexture == m_faceP->nBaseTex) ? 1 : 2;
 if (m_nWallType < 2)
 	m_faceP->bAdditive = 0;
 else if (WALLS [m_nWall].flags & WALL_RENDER_ADDITIVE)
