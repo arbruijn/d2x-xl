@@ -1055,9 +1055,11 @@ switch (nType) {
 
 	case TT_MASTER:
 		DoMasterTrigger (nObject);
+		break;
 
 	case TT_DESCENT1:
 		OperateD1 (nObject, nPlayer, bShot);
+		break;
 
 	default:
 		Int3 ();
