@@ -311,7 +311,7 @@ do {
 	} while (i == -2);
 if (nAIAggressivity == 5) {
 	gameOpts->gameplay.nAIAwareness = 1;
-	gameOpts->gameplay.nAIAggressivity = nAIAggressivity - 1;
+	gameOpts->gameplay.nAIAggressivity = 4;
 	}
 else {
 	gameOpts->gameplay.nAIAwareness = 0;

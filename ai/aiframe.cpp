@@ -1181,7 +1181,7 @@ if ((aiP->behavior == AIB_STILL) || (aiP->behavior == AIB_RUN_FROM))
 if (!AIMultiplayerAwareness (objP, 30))
 	return 1;
 AIMultiSendRobotPos (siP->nObject, -1);
-if (!((ailP->mode == AIM_FOLLOW_PATH) && (aiP->nCurPathIndex < aiP->nPathLength-1)))
+if (!((ailP->mode == AIM_FOLLOW_PATH) && (aiP->nCurPathIndex < aiP->nPathLength - 1)))
 	if ((aiP->behavior != AIB_SNIPE) && (aiP->behavior != AIB_RUN_FROM)) {
 		if (gameData.ai.target.xDist < I2X (30))
 			CreateNSegmentPath (objP, 5, 1);
@@ -1351,9 +1351,9 @@ si.ailP->nextActionTime -= gameData.time.xFrame;
 if (si.aiP->SKIP_AI_COUNT) {
 	si.aiP->SKIP_AI_COUNT--;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
-		objP->mType.physInfo.rotThrust[X] = 15 * objP->mType.physInfo.rotThrust[X] / 16;
-		objP->mType.physInfo.rotThrust[Y] = 15 * objP->mType.physInfo.rotThrust[Y] / 16;
-		objP->mType.physInfo.rotThrust[Z] = 15 * objP->mType.physInfo.rotThrust[Z] / 16;
+		objP->mType.physInfo.rotThrust [X] = 15 * objP->mType.physInfo.rotThrust [X] / 16;
+		objP->mType.physInfo.rotThrust [Y] = 15 * objP->mType.physInfo.rotThrust [Y] / 16;
+		objP->mType.physInfo.rotThrust [Z] = 15 * objP->mType.physInfo.rotThrust [Z] / 16;
 		if (!si.aiP->SKIP_AI_COUNT)
 			objP->mType.physInfo.flags &= ~PF_USES_THRUST;
 		}

@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "network.h"
 #include "multibot.h"
+#include "headlight.h"
 
 #if DBG
 #include "string.h"
@@ -36,24 +37,24 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns:
-//		0		Player is not visible from CObject, obstruction or something.
+//		0		Player is not visible from object, obstruction or something.
 //		1		Player is visible, but not in field of view.
 //		2		Player is visible and in field of view.
 //	Note: Uses gameData.ai.target.vBelievedPos as CPlayerData's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int AICanSeeTarget (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vVecToTarget)
+int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
 	fix					dot;
 	tCollisionQuery	fq;
 
 	//	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-fq.p0	= pos;
-if ((*pos) != objP->info.position.vPos) {
-	short nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
+fq.p0	= vPos;
+if ((*vPos) != objP->info.position.vPos) {
+	short nSegment = FindSegByPos (*vPos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
 		fq.startSeg = objP->info.nSegment;
-		*pos = objP->info.position.vPos;
+		*vPos = objP->info.position.vPos;
 #if TRACE
 		console.printf (1, "Object %i, gun is outside mine, moving towards center.\n", objP->Index ());
 #endif
@@ -80,7 +81,19 @@ gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
 if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitData.hit.nObject != TARGETOBJ->Index ()))
 	return 0;
 dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.FVec ());
-return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
+if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9))
+	return 2;
+if (gameOpts->gameplay.nAIAggressivity) {	// player visible at raised AI aggressivity when having headlight on
+	 if ((gameData.ai.target.objP->info.nType == OBJ_PLAYER) && 
+		  (gameData.ai.target.objP->info.nId == gameData.multiplayer.nLocalPlayer) && 
+		  HeadlightIsOn (-1))
+		return 2;
+	if (!gameData.ai.target.objP->Cloaked () &&
+		 (CFixVector::Dist (*vPos, OBJPOS (gameData.ai.target.objP)->vPos) < 
+		 ((3 + gameOpts->gameplay.nAIAggressivity) * (objP->info.xSize + gameData.ai.target.objP->info.xSize)) / 2))
+		return 2;
+	}
+return 1;
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -182,7 +195,7 @@ else {
 #endif
 		if ((ailP->nextMiscSoundTime < gameData.time.xGame) && ((ailP->nextPrimaryFire < I2X (1)) || (ailP->nextSecondaryFire < I2X (1))) && (dist < I2X (20))) {
 			ailP->nextMiscSoundTime = gameData.time.xGame + (d_rand () + I2X (1)) * (7 - gameStates.app.nDifficultyLevel) / 1;
-			audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0 , nRobotSoundVolume);
+			audio.CreateSegmentSound (botInfoP->seeSound, objP->info.nSegment, 0, *pos, 0, nRobotSoundVolume);
 			}
 		}
 	else {
