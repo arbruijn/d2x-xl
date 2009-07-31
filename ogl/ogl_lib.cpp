@@ -931,7 +931,7 @@ if (count < 1)
 	PrintLog ("glDrawArrays: invalid count\n");
 else if (count > 100000)
 	PrintLog ("glDrawArrays: suspiciously high count\n");
-else if ((mode < 0) || (mode > GL_POLYGON))
+else if (mode > GL_POLYGON)
 	PrintLog ("glDrawArrays: invalid mode\n");
 #if TRACK_STATES || DBG_OGL
 else if (!m_states.clientStates [m_states.nTMU [0]][0])

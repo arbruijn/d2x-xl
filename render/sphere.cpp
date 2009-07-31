@@ -799,7 +799,7 @@ RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
 glDepthMask (1);
 glDepthFunc (GL_LESS);
-return 0;
+return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -890,8 +890,8 @@ if (gameData.render.shield.nFaces > 0)
 			}
 		tObjTransformation *posP = OBJPOS (objP);
 		float r = X2F (nSize);
-		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
-		if (gameStates.render.history.nShader != 100) {	// full and not just partial sphere rendered
+		if (gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive) &&
+			 (gameStates.render.history.nShader != 100)) {	// full and not just partial sphere rendered
 			CFixVector vPos;
 			transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 			vPos.SetZero ();
