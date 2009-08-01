@@ -114,7 +114,7 @@ typedef struct tTriggerV30 {
 //the CTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.
 
-class CTrigger {
+class CTriggerInfo {
 	public:
 		ubyte		nType;   //what this CTrigger does
 		sbyte		nLinks;  //how many doors, etc. linked to this
@@ -124,13 +124,23 @@ class CTrigger {
 		fix		time;
 		short		segments [MAX_TRIGGER_TARGETS];
 		short		sides [MAX_TRIGGER_TARGETS];
+
 		int		nChannel;
+		int		nObject;
+		int		nPlayer;
+		int		bShot;
 		fix		tOperated;
+	};
+
+class CTrigger {
+	public:
+		CTriggerInfo	m_info;
 
 	public:
 		void Read (CFile& cf, int bObjTrigger);
 		int Operate (short nObject, int nPlayer, int shot, bool bObjTrigger);
 		int OperateD1 (short nObject, int nPlayer, int shot);
+		void Countdown (bool bObjTrigger);
 		void PrintMessage (int nPlayer, int shot, const char *message);
 		void DoLink (void);
 		void DoChangeTexture (void);
@@ -158,6 +168,7 @@ class CTrigger {
 		bool TargetsWall (int nWall);
 		inline int Index (void);
 		inline int HasTarget (short nSegment, short nSide);
+		int Delay (void);
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
 
