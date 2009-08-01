@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "segment.h"
 #include "dynlight.h"
+#include "gamesave.h"
 
 //	Special door on boss level which is locked if not in multiplayer...sorry for this awful solution --MK.
 #define	BOSS_LOCKED_DOOR_LEVEL	7
@@ -442,12 +443,13 @@ CSegment* segP = SEGMENTS + wallP->nSegment;
 	CSegment*	connSegP;
 
 //check for OBJECTS in doorway before closing
-if (wallP->flags & WALL_DOOR_AUTO)
-	if (segP->DoorIsBlocked (short (wallP->nSide))) {
+if (wallP->flags & WALL_DOOR_AUTO) {
+	if (segP->DoorIsBlocked (short (wallP->nSide), wallP->IgnoreMarker ())) {
 		audio.DestroySegmentSound (short (wallP->nSegment), short (wallP->nSide), -1);
 		segP->OpenDoor (short (wallP->nSide));		//re-open door
 		return false;
 		}
+	}
 
 for (i = 0; i < doorP->nPartCount; i++) {
 	wallP = WALLS + doorP->nFrontWall [i];
@@ -776,7 +778,7 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++) {
 //			Assert(doorP->nPartCount == 1);
 		if (IS_WALL (doorP->nBackWall [0]))
 			WALLS [doorP->nBackWall [0]].state = WALL_DOOR_CLOSING;
-		if ((doorP->time > DOOR_WAIT_TIME) && !SEGMENTS [wallP->nSegment].DoorIsBlocked (wallP->nSide)) {
+		if ((doorP->time > DOOR_WAIT_TIME) && !SEGMENTS [wallP->nSegment].DoorIsBlocked (wallP->nSide, wallP->IgnoreMarker ())) {
 			wallP->state = WALL_DOOR_CLOSING;
 			doorP->time = 0;
 			}
@@ -1118,7 +1120,10 @@ nSide = cf.ReadInt ();
 hps = cf.ReadFix ();
 nLinkedWall = cf.ReadInt ();
 nType = cf.ReadByte ();
-flags = cf.ReadByte ();
+if (gameTopFileInfo.fileinfoVersion < 37)
+	flags = ushort (cf.ReadByte ());
+else
+	flags = cf.ReadUShort ();
 state = cf.ReadByte ();
 nTrigger = (ubyte) cf.ReadByte ();
 nClip = cf.ReadByte ();
@@ -1136,8 +1141,8 @@ cf.WriteInt (nSide);
 cf.WriteFix (hps);    
 cf.WriteInt (nLinkedWall);
 cf.WriteByte ((sbyte) nType);       
-cf.WriteByte ((sbyte) flags);      
-cf.WriteByte ((sbyte) state);      
+cf.WriteShort (short (flags));      
+cf.WriteByte (state);      
 cf.WriteByte ((sbyte) nTrigger);    
 cf.WriteByte (nClip);   
 cf.WriteByte ((sbyte) keys);       
@@ -1154,7 +1159,7 @@ nSide = cf.ReadInt ();
 hps = cf.ReadFix ();    
 nLinkedWall = cf.ReadInt ();
 nType = (ubyte) cf.ReadByte ();       
-flags = (ubyte) cf.ReadByte ();      
+flags = ushort ((saveGameManager.Version () < 47) ? cf.ReadByte () : cf.ReadShort ());
 state = (ubyte) cf.ReadByte ();      
 nTrigger = (ubyte) cf.ReadByte ();    
 nClip = cf.ReadByte ();   

@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WALL_ILLUSION_OFF       32  // Illusionary CWall is shut off.
 #define WALL_WALL_SWITCH        64  // This CWall is openable by a CWall switch.
 #define WALL_BUDDY_PROOF        128 // Buddy assumes he cannot get through this CWall.
+#define WALL_IGNORE_MARKER		  256
 
 // Wall states
 #define WALL_DOOR_CLOSED        0       // Door is closed
@@ -189,18 +190,18 @@ typedef struct v19_door {
 
 class CWall {
 	public:
-		int	  nSegment, nSide;		// Seg & CSide for this CWall
-		fix     hps;						// "Hit points" of the CWall.
-		int     nLinkedWall;				// number of linked CWall
-		ubyte   nType;						// What kind of special CWall.
-		ubyte   flags;						// Flags for the CWall.
-		ubyte   state;						// Opening, closing, etc.
-		ubyte   nTrigger;					// Which CTrigger is associated with the CWall.
-		sbyte   nClip;						// Which animation associated with the CWall.
-		ubyte   keys;						// which keys are required
-		sbyte   controllingTrigger;	// which CTrigger causes something to happen here.  Not like "CTrigger" above, which is the CTrigger on this CWall.
+		int		nSegment, nSide;		// Seg & CSide for this CWall
+		fix		hps;						// "Hit points" of the CWall.
+		int		nLinkedWall;			// number of linked CWall
+		ubyte		nType;					// What kind of special CWall.
+		ushort	flags;					// Flags for the CWall.
+		ubyte		state;					// Opening, closing, etc.
+		ubyte		nTrigger;				// Which CTrigger is associated with the CWall.
+		sbyte		nClip;					// Which animation associated with the CWall.
+		ubyte		keys;						// which keys are required
+		sbyte		controllingTrigger;	// which CTrigger causes something to happen here.  Not like "CTrigger" above, which is the CTrigger on this CWall.
 												//  Note: This gets stuffed at load time in gamemine.c.  Don't try to use it in the editor.  You will be sorry!
-		sbyte   cloakValue;				// if this CWall is cloaked, the fade value
+		sbyte		cloakValue;				// if this CWall is cloaked, the fade value
 	
 	public:
 		void Init (void);
@@ -223,6 +224,7 @@ class CWall {
 		CTrigger* Trigger (void);
 		void LoadState (CFile& cf);
 		void SaveState (CFile& cf);
+		inline bool IgnoreMarker (void) { return (flags & WALL_IGNORE_MARKER) != 0; }
 	};
 
 inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }

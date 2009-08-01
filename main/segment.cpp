@@ -424,7 +424,7 @@ return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->in
 
 //-----------------------------------------------------------------
 //returns true of door in unobjstructed (& thus can close)
-int CSegment::DoorIsBlocked (int nSide)
+int CSegment::DoorIsBlocked (int nSide, bool bIgnoreMarker)
 {
 	short		nConnSide;
 	CSegment *connSegP;
@@ -439,7 +439,7 @@ Assert(nConnSide != -1);
 
 for (nObject = m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 	nType = OBJECTS [nObject].info.nType;
-	if ((nType == OBJ_WEAPON) || (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION) || (nType == OBJ_EFFECT))
+	if ((nType == OBJ_WEAPON) || (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION) || (nType == OBJ_EFFECT) || (bIgnoreMarker && (nType == OBJ_MARKER)))
 		continue;
 	if (PokesThrough (nObject, nSide) || connSegP->PokesThrough (nObject, nConnSide))
 		return 1;	//not free
@@ -623,7 +623,7 @@ if ((wallP->state == WALL_DOOR_CLOSING) ||		//already closing
 	 (wallP->state == WALL_DOOR_WAITING) ||		//open, waiting to close
 	 (wallP->state == WALL_DOOR_CLOSED))			//closed
 	return;
-if (DoorIsBlocked (nSide))
+if (DoorIsBlocked (nSide, wallP->IgnoreMarker ()))
 	return;
 
 	CActiveDoor*	doorP;

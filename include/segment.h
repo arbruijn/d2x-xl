@@ -240,7 +240,7 @@ class CSegment {
 		int AnimateClosingDoor (int nSide, fix xElapsedTime);
 		void ToggleWall (int nSide);
 		int ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP);
-		int DoorIsBlocked (int nSide);
+		int DoorIsBlocked (int nSide, bool bIgnoreMarker = false);
 		int CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
 		void CreateSound (short nSound, int nSide);
 

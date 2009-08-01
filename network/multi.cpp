@@ -2581,12 +2581,12 @@ MultiSendData (gameData.multigame.msg.buf, 2, 1);
 //-----------------------------------------------------------------------------
 // When we open a door make sure everyone else opens that door
 
-void MultiSendDoorOpen (int nSegment, int CSide, ubyte flag)
+void MultiSendDoorOpen (int nSegment, int CSide, ushort flags)
 {
 gameData.multigame.msg.buf [0] = MULTI_DOOR_OPEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nSegment);
 gameData.multigame.msg.buf [3] = (sbyte)CSide;
-gameData.multigame.msg.buf [4] = flag;
+gameData.multigame.msg.buf [4] = ubyte (flags);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
 }
 
