@@ -412,7 +412,7 @@ if ((this == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].obj
 		short	nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
-			if (trigP && (trigP->nType == TT_EXIT))
+			if (trigP && (trigP->m_info.nType == TT_EXIT))
 				gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP->info.xLifeLeft = 0;
 			}
 		}

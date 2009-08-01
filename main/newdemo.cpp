@@ -2024,7 +2024,7 @@ while (!bDone) {
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				CSegment*	segP = SEGMENTS + nSegment;
 				CTrigger*	trigP = segP->Trigger (nSide);
-				if (trigP && (trigP->nType == TT_SECRET_EXIT)) {
+				if (trigP && (trigP->m_info.nType == TT_SECRET_EXIT)) {
 					int truth;
 
 					nTag = NDReadByte ();

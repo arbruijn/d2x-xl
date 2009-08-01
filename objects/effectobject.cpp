@@ -69,26 +69,26 @@ objP->info.nId = SMOKE_ID;
 objP->info.renderType = RT_SMOKE;
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_LIFE, -1);
 #if 1
-j = (trigP && trigP->value) ? trigP->value : 5;
+j = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
 objP->rType.particleInfo.nLife = (j * (j + 1)) / 2;
 #else
-objP->rType.particleInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
+objP->rType.particleInfo.nLife = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
 #endif
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_BRIGHTNESS, -1);
-objP->rType.particleInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
+objP->rType.particleInfo.nBrightness = (trigP && trigP->m_info.value) ? trigP->m_info.value * 10 : 75;
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SPEED, -1);
-j = (trigP && trigP->value) ? trigP->value : 5;
+j = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
 #if 1
 objP->rType.particleInfo.nSpeed = (j * (j + 1)) / 2;
 #else
 objP->rType.particleInfo.nSpeed = j;
 #endif
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DENS, -1);
-objP->rType.particleInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
+objP->rType.particleInfo.nParts = j * ((trigP && trigP->m_info.value) ? trigP->m_info.value * 50 : STATIC_SMOKE_MAX_PARTS);
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_DRIFT, -1);
-objP->rType.particleInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->rType.particleInfo.nSpeed * 50;
+objP->rType.particleInfo.nDrift = (trigP && trigP->m_info.value) ? j * trigP->m_info.value * 50 : objP->rType.particleInfo.nSpeed * 50;
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_SIZE, -1);
-j = (trigP && trigP->value) ? trigP->value : 5;
+j = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
 objP->rType.particleInfo.nSize [0] = j + 1;
 objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
 }

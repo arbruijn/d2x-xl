@@ -184,8 +184,8 @@ else {
 
 void InitCountdown (CTrigger *trigP, int bReactorDestroyed, int nTimer)
 {
-if (trigP && (trigP->time > 0))
-	gameData.reactor.countdown.nTotalTime = trigP->time;
+if (trigP && (trigP->m_info.time > 0))
+	gameData.reactor.countdown.nTotalTime = trigP->m_info.time;
 else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME)
 	gameData.reactor.countdown.nTotalTime = 
 		gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL - gameStates.app.nDifficultyLevel - 1) / 2;

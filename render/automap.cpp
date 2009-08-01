@@ -1251,7 +1251,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	CWall* wallP = segP->Wall (nSide);
 	if (wallP) {
 		CTrigger* triggerP = wallP->Trigger ();
-		if (triggerP && (triggerP->nType == TT_SECRET_EXIT)) {
+		if (triggerP && (triggerP->m_info.nType == TT_SECRET_EXIT)) {
 	 		color = RGBA_PAL2 (29, 0, 31);
 			bNoFade=1;
 			goto addEdge;

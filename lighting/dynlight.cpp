@@ -249,10 +249,10 @@ while ((i = FindTriggerTarget (nSegment, nSide, i))) {
 		trigP = &OBJTRIGGERS [-i - 1];
 	else
 		trigP = &TRIGGERS [i - 1];
-	if ((trigP->nType == TT_OPEN_WALL) || (trigP->nType == TT_CLOSE_WALL))
+	if ((trigP->m_info.nType == TT_OPEN_WALL) || (trigP->m_info.nType == TT_CLOSE_WALL))
 		return 1;
 	if (!bForceField) {
-		if ((trigP->nType == TT_LIGHT_OFF) || (trigP->nType == TT_LIGHT_ON))
+		if ((trigP->m_info.nType == TT_LIGHT_OFF) || (trigP->m_info.nType == TT_LIGHT_ON))
 			return 1;
 		}
 	}

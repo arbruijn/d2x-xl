@@ -652,14 +652,14 @@ if (gameData.trigs.m_nTriggers) {
 		if (t >= gameData.trigs.m_nTriggers)
 			continue;
 		triggerP = TRIGGERS + t;
-		if (triggerP->nType == TT_CAMERA) {
-			for (j = 0; j < triggerP->nLinks; j++)
-				if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->segments [j], triggerP->sides [j], NULL, 0, 0))
-					SetFaceCamera (triggerP->segments [j] * 6 + triggerP->sides [j], (char) m_nCameras++);
+		if (triggerP->m_info.nType == TT_CAMERA) {
+			for (j = 0; j < triggerP->m_info.nLinks; j++)
+				if (m_cameras [m_nCameras].Create (m_nCameras, (short) wallP->nSegment, (short) wallP->nSide, triggerP->m_info.segments [j], triggerP->m_info.sides [j], NULL, 0, 0))
+					SetFaceCamera (triggerP->m_info.segments [j] * 6 + triggerP->m_info.sides [j], (char) m_nCameras++);
 			}
 #if TELEPORT_CAMERAS
-		else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->nType == TT_TELEPORT)) {
-			if (m_cameras [m_nCameras].Create (m_nCameras, triggerP->segments [0], triggerP->sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
+		else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->m_info.nType == TT_TELEPORT)) {
+			if (m_cameras [m_nCameras].Create (m_nCameras, triggerP->m_info.segments [0], triggerP->m_info.sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
 				SetFaceCamera (wallP->nSegment * 6 + wallP->nSide, (char) m_nCameras++);
 			}
 #endif
@@ -675,10 +675,10 @@ if (gameData.trigs.m_nObjTriggers) {
 #endif
 		for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h && (m_nCameras < MAX_CAMERAS); h--) {
 			triggerP = OBJTRIGGERS + j;
-			if (triggerP->nType == TT_CAMERA) {
-				for (k = 0; k < triggerP->nLinks; k++)
-					if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->segments [k], triggerP->sides [k], objP, 0, 0))
-						SetFaceCamera (triggerP->segments [k] * 6 + triggerP->sides [k], (char) m_nCameras++);
+			if (triggerP->m_info.nType == TT_CAMERA) {
+				for (k = 0; k < triggerP->m_info.nLinks; k++)
+					if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->m_info.segments [k], triggerP->m_info.sides [k], objP, 0, 0))
+						SetFaceCamera (triggerP->m_info.segments [k] * 6 + triggerP->m_info.sides [k], (char) m_nCameras++);
 				}
 			if (r == (j = gameData.trigs.objTriggerRefs [j].next))
 				break;

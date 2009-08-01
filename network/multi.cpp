@@ -4707,7 +4707,7 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, 2, nPlayer);
 
 void MultiDoStartTrigger (char *buf)
 {
-TRIGGERS [(int) ((ubyte) buf [1])].flags |= TF_DISABLED;
+TRIGGERS [(int) ((ubyte) buf [1])].m_info.flags |= TF_DISABLED;
 }
 
 //-----------------------------------------------------------------------------

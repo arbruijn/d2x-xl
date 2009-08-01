@@ -314,7 +314,7 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
 	 (m_nType == SEGMENT_IS_SPEEDBOOST) && (childP->m_nType != SEGMENT_IS_SPEEDBOOST) &&
-	 (!wallP || (TRIGGERS [wallP->nTrigger].nType != TT_SPEEDBOOST)))
+	 (!wallP || (TRIGGERS [wallP->nTrigger].m_info.nType != TT_SPEEDBOOST)))
 	return objP ? WID_RENDER_FLAG : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_RENDPAST_FLAG;
 
 if ((childP->m_nType == SEGMENT_IS_BLOCKED) || (childP->m_nType == SEGMENT_IS_SKYBOX))
@@ -954,7 +954,7 @@ if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
 //because we use the light value of the texture to change
 //the static light in the CSegment
 wallP = Wall (nSide);
-bPermaTrigger = (trigP = Trigger (nSide)) && (trigP->flags & TF_PERMANENT);
+bPermaTrigger = (trigP = Trigger (nSide)) && (trigP->m_info.flags & TF_PERMANENT);
 if (!bPermaTrigger)
 	SubtractLight (Index (), nSide);
 if (gameData.demo.nState == ND_STATE_RECORDING)

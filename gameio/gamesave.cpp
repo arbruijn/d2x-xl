@@ -488,7 +488,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 		return -1;
 		}
 	for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
-		trigP->flagsD1 = 0;
+		trigP->m_info.flagsD1 = 0;
 		if (gameTopFileInfo.fileinfoVersion >= 31) 
 			trigP->Read (cf, 0);
 		else {
@@ -499,7 +499,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 			else {
 				tTriggerV29 trig29;
 				V29TriggerRead (trig29, cf);
-				trigP->flagsD1 = trig.flags = trig29.flags;
+				trigP->m_info.flagsD1 = trig.flags = trig29.flags;
 				trig.nLinks	= (char) trig29.nLinks;
 				trig.value = trig29.value;
 				trig.time = trig29.time;
@@ -544,31 +544,31 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 			if (trig.flags & TRIGGER_ONE_SHOT)
 				flags = TF_ONE_SHOT;
 
-			trigP->nType = nType;
-			trigP->flags = flags;
-			trigP->nLinks = trig.nLinks;
-			trigP->nLinks = trig.nLinks;
-			trigP->value = trig.value;
-			trigP->time = trig.time;
+			trigP->m_info.nType = nType;
+			trigP->m_info.flags = flags;
+			trigP->m_info.nLinks = trig.nLinks;
+			trigP->m_info.nLinks = trig.nLinks;
+			trigP->m_info.value = trig.value;
+			trigP->m_info.time = trig.time;
 			for (t = 0; t < trig.nLinks; t++) {
-				trigP->segments [t] = trig.segments [t];
-				trigP->sides [t] = trig.sides [t];
+				trigP->m_info.segments [t] = trig.segments [t];
+				trigP->m_info.sides [t] = trig.sides [t];
 				}
 			}
-		if (trigP->nLinks < 0)
-			trigP->nLinks = 0;
-		else if (trigP->nLinks > MAX_TRIGGER_TARGETS)
-			trigP->nLinks = MAX_TRIGGER_TARGETS;
-		for (h = trigP->nLinks, j = 0; j < h; ) {
-			if ((trigP->segments [j] >= 0) && (trigP->segments [j] < gameData.segs.nSegments) &&
-				 (trigP->sides [j] >= 0) && (trigP->sides [j] < 6))
+		if (trigP->m_info.nLinks < 0)
+			trigP->m_info.nLinks = 0;
+		else if (trigP->m_info.nLinks > MAX_TRIGGER_TARGETS)
+			trigP->m_info.nLinks = MAX_TRIGGER_TARGETS;
+		for (h = trigP->m_info.nLinks, j = 0; j < h; ) {
+			if ((trigP->m_info.segments [j] >= 0) && (trigP->m_info.segments [j] < gameData.segs.nSegments) &&
+				 (trigP->m_info.sides [j] >= 0) && (trigP->m_info.sides [j] < 6))
 				j++;
 			else if (--h) {
-				trigP->segments [j] = trigP->segments [h];
-				trigP->sides [j] = trigP->sides [h];
+				trigP->m_info.segments [j] = trigP->m_info.segments [h];
+				trigP->m_info.sides [j] = trigP->m_info.sides [h];
 				}
 			}
-		trigP->nLinks = h;
+		trigP->m_info.nLinks = h;
 		}
 	}
 
@@ -874,17 +874,17 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 
 CTrigger* trigP = TRIGGERS.Buffer ();
 for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
-	for (j = 0; j < trigP->nLinks; j++) {
-		nSegment = trigP->segments [j];
-		nSide = trigP->sides [j];
+	for (j = 0; j < trigP->m_info.nLinks; j++) {
+		nSegment = trigP->m_info.segments [j];
+		nSide = trigP->m_info.sides [j];
 		nWall = SEGMENTS [nSegment].WallNum (nSide);
 		//check to see that if a CTrigger requires a CWall that it has one,
 		//and if it requires a botGen that it has one
-		if (trigP->nType == TT_MATCEN) {
+		if (trigP->m_info.nType == TT_MATCEN) {
 			if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
 				continue;		//botGen CTrigger doesn'i point to botGen
 			}
-		else if ((trigP->nType != TT_LIGHT_OFF) && (trigP->nType != TT_LIGHT_ON)) { //light triggers don't require walls
+		else if ((trigP->m_info.nType != TT_LIGHT_OFF) && (trigP->m_info.nType != TT_LIGHT_ON)) { //light triggers don't require walls
 			if (IS_WALL (nWall))
 				WALLS [nWall].controllingTrigger = i;
 			else {
