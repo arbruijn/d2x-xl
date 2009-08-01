@@ -273,7 +273,6 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-// Changes player spawns according to triggers m_info.segments,m_info.sides list
 
 int CTrigger::DoMasterTrigger (short nObject)
 {
@@ -282,6 +281,30 @@ int CTrigger::DoMasterTrigger (short nObject)
 for (int i = 0; i < m_info.nLinks; i++)
 	if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
 		trigP->Operate (nObject, gameData.multiplayer.nLocalPlayer, 0, 0);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CTrigger::DoEnableTrigger (void)
+{
+	CTrigger*	trigP;
+
+for (int i = 0; i < m_info.nLinks; i++)
+	if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
+		trigP->m_info.flags &= ~TF_DISABLED;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CTrigger::DoDisableTrigger (void)
+{
+	CTrigger*	trigP;
+
+for (int i = 0; i < m_info.nLinks; i++)
+	if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
+		trigP->m_info.flags |= TF_DISABLED;
 return 1;
 }
 
@@ -1062,6 +1085,14 @@ switch (m_info.nType) {
 
 	case TT_MASTER:
 		DoMasterTrigger (nObject);
+		break;
+
+	case TT_ENABLE_TRIGGER:
+		DoEnableTrigger (nObject);
+		break;
+
+	case TT_DISABLE_TRIGGER:
+		DoDisableTrigger (nObject);
 		break;
 
 	case TT_DESCENT1:

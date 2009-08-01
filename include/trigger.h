@@ -56,7 +56,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TT_MESSAGE			 29
 #define TT_SOUND				 30
 #define TT_MASTER				 31
-#define NUM_TRIGGER_TYPES   32
+#define TT_ENABLE_TRIGGER	 32
+#define TT_DISABLE_TRIGGER	 33
+#define NUM_TRIGGER_TYPES   34
 #define TT_DESCENT1			 255
 
 // Trigger flags
@@ -156,6 +158,8 @@ class CTrigger {
 		void DoLockDoors (void);
 		int DoSetSpawnPoints (void);
 		int DoMasterTrigger (short nObject);
+		int DoEnableTrigger (void);
+		int DoDisableTrigger (void);
 		void DoTeleport (short nObject);
 		int DoShowMessage (void);
 		int DoPlaySound (short nObject);
