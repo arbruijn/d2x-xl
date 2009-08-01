@@ -1088,11 +1088,11 @@ switch (m_info.nType) {
 		break;
 
 	case TT_ENABLE_TRIGGER:
-		DoEnableTrigger (nObject);
+		DoEnableTrigger ();
 		break;
 
 	case TT_DISABLE_TRIGGER:
-		DoDisableTrigger (nObject);
+		DoDisableTrigger ();
 		break;
 
 	case TT_DESCENT1:
