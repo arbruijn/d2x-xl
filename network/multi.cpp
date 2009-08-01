@@ -2595,13 +2595,13 @@ MultiSendData (gameData.multigame.msg.buf, 5, 2);
 
 extern void NetworkSendNakedPacket (char *, short, int);
 
-void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int CSide, ubyte flag)
+void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int CSide, ushort flags)
 {
 Assert (gameData.app.nGameMode & GM_NETWORK);
 gameData.multigame.msg.buf [0] = MULTI_DOOR_OPEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nSegment);
 gameData.multigame.msg.buf [3] = (sbyte)CSide;
-gameData.multigame.msg.buf [4] = flag;
+gameData.multigame.msg.buf [4] = ubyte (flags);
 NetworkSendNakedPacket (gameData.multigame.msg.buf, 5, nPlayer);
 }
 
@@ -3554,7 +3554,7 @@ for (i = 0; i < MAX_STOLEN_ITEMS; i++)
 
 //-----------------------------------------------------------------------------
 
-void MultiSendWallStatus (int wallnum, ubyte nType, ubyte flags, ubyte state)
+void MultiSendWallStatus (int wallnum, ubyte nType, ushort flags, ubyte state)
 {
 	int count = 0;
 
@@ -3562,7 +3562,7 @@ gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
 gameData.multigame.msg.buf [count++] = nType;
-gameData.multigame.msg.buf [count++] = flags;
+gameData.multigame.msg.buf [count++] = ubyte (flags);
 gameData.multigame.msg.buf [count++] = state;
 MultiSendData (gameData.multigame.msg.buf, count, 1); // twice, just to be sure
 MultiSendData (gameData.multigame.msg.buf, count, 1);
@@ -3570,7 +3570,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte flags, ubyte state)
+void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ushort flags, ubyte state)
 {
 	// Send CWall states a specific rejoining CPlayerData
 	short count = 0;
@@ -3580,7 +3580,7 @@ gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);
 count += 2;
 gameData.multigame.msg.buf [count++] = nType;
-gameData.multigame.msg.buf [count++] = flags;
+gameData.multigame.msg.buf [count++] = ubyte (flags);
 gameData.multigame.msg.buf [count++] = state;
 NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer); // twice, just to be sure
 NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);

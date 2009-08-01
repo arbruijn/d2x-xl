@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "dynlight.h"
 #include "gamesave.h"
+#include "state.h"
 
 //	Special door on boss level which is locked if not in multiplayer...sorry for this awful solution --MK.
 #define	BOSS_LOCKED_DOOR_LEVEL	7
@@ -1159,7 +1160,10 @@ nSide = cf.ReadInt ();
 hps = cf.ReadFix ();    
 nLinkedWall = cf.ReadInt ();
 nType = (ubyte) cf.ReadByte ();       
-flags = ushort ((saveGameManager.Version () < 47) ? cf.ReadByte () : cf.ReadShort ());
+if (saveGameManager.Version () < 47)
+	flags = ushort (cf.ReadByte ());
+else
+	flags = ushort (cf.ReadShort ());
 state = (ubyte) cf.ReadByte ();      
 nTrigger = (ubyte) cf.ReadByte ();    
 nClip = cf.ReadByte ();   
