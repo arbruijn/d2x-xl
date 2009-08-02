@@ -260,7 +260,7 @@ void GameplayOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optSmartWeaponSwitch = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optNoThief = -1;
+	int	optSmartWeaponSwitch = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optNoThief = -1, optLoadout = -1;
 	int	optReorderPrim, optReorderSec;
 	char	szSlider [50];
 
@@ -294,16 +294,20 @@ do {
 
 	m.AddText ("", 0);
 	optSmartWeaponSwitch = m.AddCheck (TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_S, HTX_GPLAY_SMARTSWITCH);
-	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_B, HTX_HEADLIGHT_BUILTIN);
-	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_H, HTX_HEADLIGHT_POWERDRAIN);
+	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
+	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
 	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
+	m.AddText ("", 0);
+	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 	for (;;) {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
-		if (choice == optReorderPrim)
+		if (choice == optLoadout)
+			LoadoutOptionsMenu ();
+		else if (choice == optReorderPrim)
 			ReorderPrimary ();
 		else if (choice == optReorderSec)
 			ReorderSecondary ();
