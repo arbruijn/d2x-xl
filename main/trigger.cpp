@@ -1244,7 +1244,7 @@ for (int i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
 	trigP->Countdown (false);	
 
 trigP = OBJTRIGGERS.Buffer ();
-for (int i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++)
+for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++)
 	trigP->Countdown (true);	
 }
 
