@@ -888,8 +888,8 @@ int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 if (m_info.flags & TF_DISABLED)
 	return 1;		//1 means don't send trigger hit to other players
 
-CObject*	objP = OBJECTS + nObject;
-bool bIsPlayer = (objP->info.nType == OBJ_PLAYER);
+CObject*	objP = (nObject >= 0) ? OBJECTS + nObject : NULL;
+bool bIsPlayer = objP && (objP->info.nType == OBJ_PLAYER);
 
 if (bIsPlayer) {
 	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject))
@@ -898,7 +898,8 @@ if (bIsPlayer) {
 else {
 	nPlayer = -1;
 	if ((m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
-		if ((objP->info.nType != OBJ_ROBOT) &&
+		if (objP &&
+			 (objP->info.nType != OBJ_ROBOT) &&
 			 (objP->info.nType != OBJ_REACTOR) &&
 			 (objP->info.nType != OBJ_HOSTAGE) &&
 			 (objP->info.nType != OBJ_POWERUP))
@@ -907,7 +908,8 @@ else {
 			return 1;
 		}
 	else
-		if ((objP->info.nType != OBJ_ROBOT) &&
+		if (objP &&
+			 (objP->info.nType != OBJ_ROBOT) &&
 			 (objP->info.nType != OBJ_REACTOR) &&
 			 (objP->info.nType != OBJ_HOSTAGE) &&
 			 (objP->info.nType != OBJ_POWERUP))
@@ -926,13 +928,14 @@ if (!bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBO
 if (m_info.flags & TF_ONE_SHOT)		//if this is a one-bShot...
 	m_info.flags |= TF_DISABLED;		//..then don't let it happen again
 
-if (m_info.tOperated < 0)
+if (m_info.tOperated < 0) {
 	m_info.tOperated = gameData.time.xGame;
-if (Delay ()) {
-	gameData.trigs.delay [nTrigger] = -1;
 	m_info.nObject = nObject;
 	m_info.nPlayer = nPlayer;
 	m_info.bShot = bShot;
+	}
+if (Delay () > 0) {
+	gameData.trigs.delay [nTrigger] = -1;
 	return 0;
 	}
 
@@ -1133,8 +1136,9 @@ return 0;
 
 int CTrigger::Delay (void) 
 { 
-return (m_info.nType != TT_COUNTDOWN) && (m_info.nType != TT_MESSAGE) && (m_info.nType != TT_SOUND) && 
-		 (m_info.time > 0) && (gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time)); 
+if ((m_info.nType == TT_COUNTDOWN) || (m_info.nType == TT_MESSAGE) || (m_info.nType == TT_SOUND))
+	return -1;
+return (m_info.time > 0) && (gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time)); 
 }
 
 //------------------------------------------------------------------------------
@@ -1475,6 +1479,8 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	m_info.segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	m_info.sides [i] = cf.ReadShort ();
+m_info.nObject = -1;
+m_info.nPlayer = -1;
 m_info.nChannel = -1;
 m_info.tOperated = -1;
 }
