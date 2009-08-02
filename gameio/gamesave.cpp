@@ -365,7 +365,7 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 	i = 0;
 	while (i < gameFileInfo.objects.count) {
 		objP->Read (cf);
-		if (!IsMultiGame || objP->Multiplayer ())
+		if (!IsMultiGame && objP->Multiplayer ())
 			gameFileInfo.objects.count--;
 		else {
 			objP->info.nSignature = gameData.objs.nNextSignature++;
