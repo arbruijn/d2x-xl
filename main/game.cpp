@@ -426,7 +426,7 @@ else {
 			G3_SLEEP (nDeltaTime);
 		}
 	}
-timerValue = SECS2X (gameStates.app.nSDLTicks);
+timerValue = MSEC2X (gameStates.app.nSDLTicks);
 
 #else
 

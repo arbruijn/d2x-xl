@@ -56,7 +56,7 @@ extern void timer_set_function( void _far * function );
 #define ApproxMSecToFSec(msec) ((msec) << 6)
 #define approx_fsec_to_msec(fsec) ((fsec) >> 6)
 
-#define SECS2X(s)	(I2X ((s) / 1000) | (I2X ((s) % 1000) / 1000))
+#define MSEC2X(_s)	fix (float (_s) * (float (I2X (1)) / 1000.0f))
 
 static inline fix TimerGetApproxSeconds (void)
 {
@@ -65,7 +65,7 @@ return ApproxMSecToFSec (SDL_GetTicks ());
 
 static inline fix TimerGetFixedSeconds (void)
 {
-return SECS2X (SDL_GetTicks ());
+return MSEC2X (SDL_GetTicks ());
 }
 
 static inline void TimerDelay (fix seconds)

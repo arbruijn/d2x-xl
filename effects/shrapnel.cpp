@@ -108,7 +108,7 @@ int CShrapnel::Update (void)
 if (m_info.xTTL <= 0)
 	return -1;	//dead
 Move ();
-if (0 < (m_info.xTTL -= (fix) (SECS2X (gameStates.app.tick40fps.nTime) / gameStates.gameplay.slowmo [0].fSpeed)))
+if (0 < (m_info.xTTL -= (fix) (MSEC2X (gameStates.app.tick40fps.nTime) / gameStates.gameplay.slowmo [0].fSpeed)))
 	return 1;	//alive
 Destroy ();
 return 0; //kill

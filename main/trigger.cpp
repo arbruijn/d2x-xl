@@ -929,6 +929,7 @@ if (m_info.flags & TF_ONE_SHOT)		//if this is a one-bShot...
 if (m_info.tOperated < 0)
 	m_info.tOperated = gameData.time.xGame;
 if (Delay ()) {
+	gameData.trigs.delay [nTrigger] = -1;
 	m_info.nObject = nObject;
 	m_info.nPlayer = nPlayer;
 	m_info.bShot = bShot;
@@ -1133,7 +1134,7 @@ return 0;
 int CTrigger::Delay (void) 
 { 
 return (m_info.nType != TT_COUNTDOWN) && (m_info.nType != TT_MESSAGE) && (m_info.nType != TT_SOUND) && 
-		 (m_info.time > 0) && (gameData.time.xGame - m_info.tOperated < SECS2X (m_info.time)); 
+		 (m_info.time > 0) && (gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time)); 
 }
 
 //------------------------------------------------------------------------------
@@ -1238,9 +1239,10 @@ while ((i >= 0) && (j < 256)) {
 void TriggersFrameProcess (void)
 {
 	CTrigger	*trigP;
+	int		i;
 
 trigP = TRIGGERS.Buffer ();
-for (int i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
+for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
 	trigP->Countdown (false);	
 
 trigP = OBJTRIGGERS.Buffer ();

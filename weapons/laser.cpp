@@ -828,7 +828,7 @@ void HomingMissileTurnTowardsVelocity (CObject *objP, CFixVector *vNormVel)
 	CFixVector	vNewDir;
 	fix 			frameTime;
 
-frameTime = gameStates.limitFPS.bHomers ? SECS2X (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
+frameTime = gameStates.limitFPS.bHomers ? MSEC2X (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 vNewDir = *vNormVel;
 vNewDir *= ((fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 vNewDir += objP->info.position.mOrient.FVec ();

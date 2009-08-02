@@ -581,7 +581,7 @@ if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
 #if LIMIT_PHYSICS_FPS
 if (!gameStates.app.tick60fps.bTick)
 	return 1;
-gameData.physics.xTime = SECS2X (gameStates.app.tick60fps.nTime);
+gameData.physics.xTime = MSEC2X (gameStates.app.tick60fps.nTime);
 #else
 gameData.physics.xTime = gameData.time.xFrame;
 #endif

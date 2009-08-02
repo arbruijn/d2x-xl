@@ -123,7 +123,7 @@ static int		bRevertFormat = -1;
 #define INTERPOLATE_PLAYBACK    2
 #define INTERPOL_FACTOR         (I2X (1) + (I2X (1)/5))
 
-#define DEMO_VERSION_D2X        18      // last D1 version was 13
+#define DEMO_VERSION_D2X        19      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
 
 #define DEMO_FILENAME           "tmpdemo.dem"
@@ -1646,7 +1646,10 @@ if (bJustStartedRecording == 1) {
 	NDWriteInt (gameData.walls.nWalls);
 	for (i = 0; i < gameData.walls.nWalls; i++) {
 		NDWriteByte (WALLS [i].nType);
-		NDWriteByte (WALLS [i].flags);
+		if (gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)
+			NDWriteByte (ubyte (WALLS [i].flags));
+		else
+			NDWriteShort (WALLS [i].flags);
 		NDWriteByte (WALLS [i].state);
 		segP = &SEGMENTS [WALLS [i].nSegment];
 		nSide = WALLS [i].nSide;
@@ -2695,7 +2698,10 @@ while (!bDone) {
 				gameData.walls.nWalls = NDReadInt ();
 				for (i = 0; i < gameData.walls.nWalls; i++) {   // restore the walls
 					WALLS [i].nType = NDReadByte ();
-					WALLS [i].flags = NDReadByte ();
+					if (gameData.demo.nVersion < 19)
+						WALLS [i].flags = ushort (NDReadByte ());
+					else
+						WALLS [i].flags = ushort (NDReadShort ());
 					WALLS [i].state = NDReadByte ();
 					segP = SEGMENTS + WALLS [i].nSegment;
 					nSide = WALLS [i].nSide;
