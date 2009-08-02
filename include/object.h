@@ -726,6 +726,7 @@ class CObject : public CObjectInfo {
 		CFixVector		m_vOrigin;
 		CObjHitInfo		m_hitInfo;
 		CObjDamageInfo	m_damage;
+		bool				m_bMultiplayer;
 
 	public:
 		CObject ();
@@ -736,6 +737,7 @@ class CObject : public CObjectInfo {
 						const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType);
 
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
+		inline bool Multiplayer (void) { return m_bMultiplayer; }
 		// unlinks an CObject from a CSegment's list of objects
 		void Init (void);
 		void Link (void);

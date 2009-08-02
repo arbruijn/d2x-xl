@@ -1126,7 +1126,7 @@ if (gameTopFileInfo.fileinfoVersion < 37)
 else
 	flags = cf.ReadUShort ();
 state = cf.ReadByte ();
-nTrigger = (ubyte) cf.ReadByte ();
+nTrigger = ubyte (cf.ReadByte ());
 nClip = cf.ReadByte ();
 keys = cf.ReadByte ();
 controllingTrigger = cf.ReadByte ();

@@ -362,17 +362,23 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 		return -1;
 		}
 	OBJECTS.Clear (0, gameFileInfo.objects.count);
-	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
+	i = 0;
+	while (i < gameFileInfo.objects.count) {
 		objP->Read (cf);
-		objP->info.nSignature = gameData.objs.nNextSignature++;
+		if (!IsMultiGame || objP->Multiplayer ())
+			gameFileInfo.objects.count--;
+		else {
+			objP->info.nSignature = gameData.objs.nNextSignature++;
 #if DBG
-		if (i == nDbgObj) {
-			extern int dbgObjInstances;
-			dbgObjInstances++;
-			}
+			if (i == nDbgObj) {
+				extern int dbgObjInstances;
+				dbgObjInstances++;
+				}
 #endif
-		VerifyObject (objP);
-		gameData.objs.init [i] = *objP;
+			VerifyObject (objP);
+			gameData.objs.init [i] = *objP;
+			i++, objP++;
+			}
 		}
 	}
 gameData.objs.GatherEffects ();

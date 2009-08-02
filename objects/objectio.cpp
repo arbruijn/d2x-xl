@@ -77,6 +77,10 @@ info.controlType = cf.ReadByte ();
 info.movementType = cf.ReadByte ();
 info.renderType = cf.ReadByte ();
 info.nFlags = cf.ReadByte ();
+if (gameTopFileInfo.fileinfoVersion > 37)
+	m_bMultiplayer = cf.ReadByte () != 0;
+else
+	m_bMultiplayer = false;
 info.nSegment = cf.ReadShort ();
 info.nAttachedObj = -1;
 cf.ReadVector (info.position.vPos);
