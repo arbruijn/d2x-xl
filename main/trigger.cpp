@@ -1138,14 +1138,14 @@ int CTrigger::Delay (void)
 { 
 if ((m_info.nType == TT_COUNTDOWN) || (m_info.nType == TT_MESSAGE) || (m_info.nType == TT_SOUND))
 	return -1;
-return (m_info.time > 0) && (gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time)); 
+return (m_info.time >= 100) && (gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time)); 
 }
 
 //------------------------------------------------------------------------------
 
 void CTrigger::Countdown (bool bObjTrigger)
 {
-if ((m_info.tOperated > 0) && (m_info.time > 0) && !Delay ()) {
+if ((m_info.tOperated > 0) && (m_info.time >= 100) && !Delay ()) {
 	Operate (m_info.nObject, m_info.nPlayer, m_info.bShot, bObjTrigger);
 	if (m_info.flags & TF_PERMANENT)
 		m_info.tOperated = -1;
