@@ -60,7 +60,21 @@ int oppTrigTypes  [] = {
 	TT_CAMERA,
 	TT_SHIELD_DAMAGE,
 	TT_ENERGY_DRAIN,
-	TT_CHANGE_TEXTURE
+	TT_CHANGE_TEXTURE,
+	TT_SMOKE_LIFE,
+	TT_SMOKE_SPEED,
+	TT_SMOKE_DENS,
+	TT_SMOKE_SIZE,
+	TT_SMOKE_DRIFT,
+	TT_COUNTDOWN,
+	TT_SPAWN_BOT,
+	TT_SMOKE_BRIGHTNESS,
+	TT_SET_SPAWN,
+	TT_MESSAGE,
+	TT_SOUND,
+	TT_MASTER,
+	TT_DISABLE_TRIGGER,
+	TT_ENABLE_TRIGGER
 	};
 
 //link Links [MAX_WALL_LINKS];
@@ -1089,10 +1103,16 @@ switch (m_info.nType) {
 
 	case TT_ENABLE_TRIGGER:
 		DoEnableTrigger ();
+#if DBG
+		PrintMessage (nPlayer, 2, "Triggers have been enabled!");
+#endif
 		break;
 
 	case TT_DISABLE_TRIGGER:
 		DoDisableTrigger ();
+#if DBG
+		PrintMessage (nPlayer, 2, "Triggers have been disabled!");
+#endif
 		break;
 
 	case TT_DESCENT1:
