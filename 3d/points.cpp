@@ -84,8 +84,8 @@ if ((y < 0) || (y > CCanvas::Current ()->Height ()))
 p->p3_screen.x = (x < 0) ? 0 : (x > CCanvas::Current ()->Width ()) ? CCanvas::Current ()->Width () : x;
 p->p3_screen.y = (y < 0) ? 0 : (y > CCanvas::Current ()->Height ()) ? CCanvas::Current ()->Height () : y;
 #else
-p->p3_screen.x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / double (v [Z]));
-p->p3_screen.y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / double (v [Z]));
+p->p3_screen.x = fix (fxCanvW2 + double (v [X]) * fxCanvW2 / (fFOVScale * v [Z]));
+p->p3_screen.y = fix (fxCanvH2 - double (v [Y]) * fxCanvH2 / v [Z]);
 #endif
 p->p3_flags |= PF_PROJECTED;
 }

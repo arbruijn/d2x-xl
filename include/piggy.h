@@ -271,6 +271,8 @@ void FreeAddonSounds (void);
 #define BM_ADDON_RETICLE_GREEN	2
 #define BM_ADDON_RETICLE_RED		12
 
+void PiggyCloseFile (void);
+
 void PageInAddonBitmap (int bmi);
 bool BitmapLoaded (int bmi, int bD1);
 void LoadBitmap (int bmi, int bD1, bool bHires = false);

@@ -23,7 +23,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_POINTS_IN_POLY 100
 
 extern fix xCanvW2,xCanvH2;				//fixed-point width,height/2
-extern double fxCanvW2, fxCanvH2;
+extern float fxCanvW2, fxCanvH2, fFOVScale;
 
 extern int nFreePoints;
 

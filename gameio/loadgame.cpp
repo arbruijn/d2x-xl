@@ -792,6 +792,7 @@ else {
 	InitCamBots (0);
 	/*---*/PrintLog ("   loading mod texts\n");
 	LoadModTexts ();
+	PiggyCloseFile ();
 	}
 return nLoadRes;
 }
