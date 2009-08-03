@@ -505,6 +505,7 @@ for (i = 1; i < MAX_SECONDARY_WEAPONS; i++) {
 	LOCALPLAYER.secondaryAmmo [i] = 0;
 	bLastSecondaryWasSuper [i] = 0;
 	}
+gameData.multiplayer.nBuiltinMissiles = 2 + NDL - gameStates.app.nDifficultyLevel;
 LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
 LOCALPLAYER.primaryWeaponFlags = HAS_LASER_FLAG;
 LOCALPLAYER.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;

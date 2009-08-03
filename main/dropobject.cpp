@@ -108,7 +108,7 @@ int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP)
 	int			nCurDepth;
 	int			nStartSeg;
 	int			nHead, nTail;
-	short			nSide, nChild;
+	short			i, j, nSide, nChild, sideList [6];
 	CSegment*	segP;
 	CWall*		wallP;
 	ubyte			bVisited [MAX_SEGMENTS_D2X];
@@ -131,8 +131,14 @@ while (nTail != nHead) {
 		}
 	segP = SEGMENTS + segQueue [nTail++];
 
-	//	to make Random, switch a pair of entries in rndSide.
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	//	select sides randomly
+	for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+		sideList [i] = i;
+	for (i = MAX_SIDES_PER_SEGMENT; i; ) {
+		j = d_rand () % i;
+		nSide = sideList [j];
+		if (j < --i)
+			sideList [j] = sideList [i];
 		if (0 > (nChild = segP->m_children [nSide]))
 			continue;
 		if (bVisited [nChild])
@@ -147,11 +153,11 @@ while (nTail != nHead) {
 #if TRACE
 console.printf (CON_DBG, "...failed at depth %i, returning -1\n", nCurDepth);
 #endif
-while ((nTail > 0) && (bVisited [segQueue [nTail]] == nCurDepth))
+while ((nTail > 0) && (bVisited [segQueue [nTail - 1]] == nCurDepth))
 	nTail--;
 if (nDepthP)
 	*nDepthP = nCurDepth + 1;
-return segQueue [nTail + d_rand () % (nHead - nTail + 1)];
+return segQueue [nTail + d_rand () % (nHead - nTail)];
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -187,16 +193,16 @@ if (bUseInitSgm) {
 	}
 if (pbFixedPos)
 	*pbFixedPos = 0;
-nDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
+nDepth = BASE_NET_DROP_DEPTH + d_rand () % (BASE_NET_DROP_DEPTH * 2);
 vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].info.nSegment;
 while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = gameData.multiplayer.nLocalPlayer;
-	else {
-		nPlayer = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
+	else {	// chose drop segment at required minimum distance from some random player
+		nPlayer = d_rand () % gameData.multiplayer.nPlayers;
 		count = 0;
-		while ((count < gameData.multiplayer.nPlayers) &&
+		while ((count < gameData.multiplayer.nPlayers) &&	// make sure player is not the local player or on his team
 				 (!gameData.multiplayer.players [nPlayer].connected ||
 				  (nPlayer == gameData.multiplayer.nLocalPlayer) ||
 				  ((gameData.app.nGameMode & (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer))))) {
@@ -207,7 +213,7 @@ while (nSegment == -1) {
 			nPlayer = gameData.multiplayer.nLocalPlayer;
 		}
 	nSegment = PickConnectedSegment (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
-#ifdef RELEASE
+#if 1
 	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
 		return -1;
 #endif
@@ -253,7 +259,7 @@ if (nSegment == -1) {
 #if TRACE
 	console.printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
 #endif
-	return (d_rand () * gameData.segs.nLastSegment) >> 15;
+	return (d_rand () % gameData.segs.nSegments);
 	}
 return nSegment;
 }
