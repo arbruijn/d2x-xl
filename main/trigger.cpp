@@ -764,7 +764,7 @@ SetSpeedBoostVelocity ((short) nObject, -1, -1, -1, -1, -1, NULL, NULL, 0);
 
 void CTrigger::DoSpeedBoost (short nObject)
 {
-if (!(COMPETITION || IsCoopGame) || extraGameInfo [IsMultiGame].nSpeedBoost) {
+if (!(COMPETITION /*|| IsCoopGame*/) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* wallP = TriggerParentWall (Index ());
 	gameData.objs.speedBoost [nObject].bBoosted = (m_info.value && (m_info.nLinks > 0));
 	SetSpeedBoostVelocity ((short) nObject, m_info.value,
@@ -1044,8 +1044,7 @@ switch (m_info.nType) {
 		if (bIsPlayer) {
 			if (nPlayer != gameData.multiplayer.nLocalPlayer)
 				break;
-			if ((LOCALPLAYER.shields < 0) ||
-				 gameStates.app.bPlayerIsDead)
+			if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
 				break;
 			}
 		DoSpeedBoost (nObject);

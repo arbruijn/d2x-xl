@@ -818,7 +818,7 @@ int CSide::Physics (fix& damage, bool bSolid)
 {
 if (!bSolid) {
 	CWall* wallP = Wall ();
-	if (!wallP || (wallP->nType != WALL_ILLUSION))
+	if (!wallP || (wallP->nType != WALL_ILLUSION) /*|| (wallP->flags & WALL_ILLUSION_OFF)*/)
 		return 0;
 	}
 if (gameData.pig.tex.tMapInfoP [m_nBaseTex].damage) {

@@ -1337,7 +1337,8 @@ return m_nLightnings;
 
 void CLightningSystem::Mute (void)
 {
-m_bSound = -1;
+if (m_bSound)
+	m_bSound = -1;
 }
 
 //------------------------------------------------------------------------------

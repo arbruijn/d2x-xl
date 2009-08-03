@@ -172,6 +172,7 @@ class CTrigger {
 		bool TargetsWall (int nWall);
 		inline int Index (void);
 		inline int HasTarget (short nSegment, short nSide);
+		inline bool ClientOnly (void) { return (m_info.nType == TT_SHIELD_DAMAGE) || (m_info.nType == TT_ENERGY_DRAIN); }
 		int Delay (void);
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
