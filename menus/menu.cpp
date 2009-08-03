@@ -560,6 +560,7 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback ca
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
 	int			mx = 0, my = 0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
+	int			exception = 0;
 
 if (gameStates.menus.nInMenu)
 	return - 1;
@@ -719,7 +720,14 @@ while (!done) {
 		}
 
 	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade))
-		m_nChoice = (*callback) (*this, m_nKey, m_nChoice, 0);
+		try {
+			m_nChoice = (*callback) (*this, m_nKey, m_nChoice, 0);
+			}
+		catch (int e) {
+			exception = e;
+			done = 1;
+			break;
+			}
 
 	if (!bTimeStopped){
 		// Save current menu box
@@ -1373,6 +1381,8 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 for (i = 0; i < int (ToS ()); i++)
 	Item (i).GetInput ();
 
+if (exception)
+	throw (exception);
 return m_nChoice;
 }
 

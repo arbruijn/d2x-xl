@@ -213,9 +213,10 @@ do {
 	i = m.Menu ("", NULL, AutoDemoMenuCheck, &nChoice, BackgroundName (BG_MENU));
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
-	SavePlayerProfile ();
-	if (i > -1)
+	if (i > -1) {
 		ExecMainMenuOption (nChoice);
+		SavePlayerProfile ();
+		}
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
 if (gameStates.app.nFunctionMode == FMODE_GAME)
 	paletteManager.DisableEffect ();
