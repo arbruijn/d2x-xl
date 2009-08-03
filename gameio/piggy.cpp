@@ -355,11 +355,15 @@ void PiggyInitPigFile (char *filename)
 
 	static char szPigName [FILENAME_LEN] = {'\0'};
 
-PiggyCloseFile ();             //close old pig if still open
-if (filename)
-	strcpy (szPigName, filename);
-else if (!*szPigName)
+if (filename) {
+	if (stricmp (szPigName, filename))
+		strcpy (szPigName, filename);
+	else if (cfP->File ())
+		return;
+	}
+else if (!*szPigName || cfP->File ())
 	return;
+PiggyCloseFile ();             //close old pig if still open
 //rename pigfile for shareware
 if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) && 
 	 !CFile::Exist (szPigName, gameFolders.szDataDir, 0))

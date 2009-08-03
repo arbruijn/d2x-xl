@@ -210,6 +210,7 @@ do {
 	if (nChoice < 0)
 		nChoice = 0;
 	gameStates.menus.bDrawCopyright = 1;
+	gameStates.menus.nInMenu = 0;
 	i = m.Menu ("", NULL, AutoDemoMenuCheck, &nChoice, BackgroundName (BG_MENU));
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
