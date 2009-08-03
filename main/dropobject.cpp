@@ -207,8 +207,10 @@ while (nSegment == -1) {
 			nPlayer = gameData.multiplayer.nLocalPlayer;
 		}
 	nSegment = PickConnectedSegment (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
+#ifdef RELEASE
 	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
 		return -1;
+#endif
 #if TRACE
 	console.printf (CON_DBG, " %d", nSegment);
 #endif
@@ -374,7 +376,8 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 		}
 	if (0 > (nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType)))
 		return 0;
-	nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState);
+	if (0 > (nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState)))
+		return 0;
 	OBJECTS [nObject].mType.physInfo.velocity.SetZero ();
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].info.position.vPos;

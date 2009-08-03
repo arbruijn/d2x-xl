@@ -295,7 +295,7 @@ objP->Link ();
 objP->LinkToSeg (nSegment);
 
 memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
-
+#if 1
 if ((nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(int) nId] && IsMultiGame && IsCoopGame && (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
 		
@@ -304,6 +304,7 @@ if ((nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(int) nId] && IsMultiGame
 			gameData.multiplayer.maxPowerupsAllowed [i]--;
 		}
 	}
+#endif
 OBJECTS [nObject].ResetDamage ();
 OBJECTS [nObject].SetTarget (NULL);
 return nObject;
