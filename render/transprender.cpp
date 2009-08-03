@@ -598,6 +598,7 @@ m_data.bDecal = 0;
 m_data.bTextured = 0;
 m_data.nFrame = -1;
 m_data.bUseLightmaps = 0;
+glDepthFunc (GL_LEQUAL);
 }
 
 //------------------------------------------------------------------------------
@@ -811,6 +812,7 @@ if (!bLightmaps)
 if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
+	glDepthFunc (GL_LEQUAL);
 	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
 	if (triP || faceP) {
 		if (!bLightmaps) {
@@ -918,6 +920,8 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 						{
 						bAdditive = 2;
 						glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+						//glDepthFunc (GL_EQUAL);
+						glDepthMask (0);
 						}
 					}
 				}
@@ -927,15 +931,23 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 					if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 						nDbgSeg = nDbgSeg;
 					}
+				glEnable (GL_BLEND);
 #	endif
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
 				if (bAdditive != 2) {
 					bAdditive = 2;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					//glDepthFunc (GL_EQUAL);
+					glDepthMask (0);
 					}
+				ogl.SelectTMU (GL_TEXTURE1, true);
+				ogl.EnableClientState (GL_NORMAL_ARRAY);
+				OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			}
+		glDepthFunc (GL_LEQUAL);
+		glDepthMask (m_data.bDepthMask);
 		}
 	else {
 		if (bAdditive && !automap.m_bDisplay) {
@@ -1305,6 +1317,7 @@ if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	glEnd ();
 	}
 glEnable (GL_CULL_FACE);
+glDepthFunc (GL_LEQUAL);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 

@@ -715,7 +715,7 @@ if (!altBmP) {
 		}
 	cfP = cfPiggy + bD1;
 	if (!cfP->File ())
-		cfP->Open (bD1 ? "descent.pig" : "groupa.pig", gameFolders.szDataDir, "rb", 0);
+		PiggyInitPigFile (NULL);
 	nOffset = bitmapOffsets [bD1][nIndex];
 	bDefault = true;
 	}

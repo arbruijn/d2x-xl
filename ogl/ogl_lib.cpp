@@ -909,15 +909,15 @@ if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 	glScalef (1, 1, -1);
 	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].Vec ()));
 	glTranslatef (-transformation.m_info.posf [1][0], -transformation.m_info.posf [1][1], -transformation.m_info.posf [1][2]);
+	++m_states.nTransformCalls;
 	}
-++m_states.nTransformCalls;
 }
 
 // -----------------------------------------------------------------------------------
 
 void COGL::ResetTransform (int bForce)
 {
-if ((m_states.nTransformCalls > 0) && !--m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
+if ((m_states.nTransformCalls > 0) && (m_states.bUseTransform || bForce) && !--m_states.nTransformCalls) {
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}

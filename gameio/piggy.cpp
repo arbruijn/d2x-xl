@@ -349,13 +349,17 @@ void PiggyInitPigFile (char *filename)
 	CFile					*cfP = cfPiggy + gameStates.app.bD1Data;
 	char					szName [16];
 	char					szNameRead [16];
-	char					szPigName [FILENAME_LEN];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
 	CBitmap				bm;
 	tPIGBitmapHeader	bmh;
 
+	static char szPigName [FILENAME_LEN] = {'\0'};
+
 PiggyCloseFile ();             //close old pig if still open
-strcpy (szPigName, filename);
+if (filename)
+	strcpy (szPigName, filename);
+else if (!*szPigName)
+	return;
 //rename pigfile for shareware
 if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) && 
 	 !CFile::Exist (szPigName, gameFolders.szDataDir, 0))

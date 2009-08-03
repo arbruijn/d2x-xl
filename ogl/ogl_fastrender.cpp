@@ -670,7 +670,7 @@ else {
 			break;
 		if (!bAdditive) {
 			bAdditive = true;
-			if (!faceP->bTransparent)
+			//if (!faceP->bTransparent)
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			glDepthFunc (GL_EQUAL);
 			glDepthMask (0);
