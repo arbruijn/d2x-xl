@@ -1171,13 +1171,13 @@ void object_render_targets(void);
 int UpdateObject(CObject * obj);
 
 // make object0 the CPlayerData, setting all relevant fields
-void InitPlayerObject();
+void InitPlayerObject(void);
 
 // check if CObject is in CObject->nSegment.  if not, check the adjacent
 // segs.  if not any of these, returns false, else sets obj->nSegment &
 // returns true callers should really use FindHitpoint()
 // Note: this function is in gameseg.c
-int UpdateObjectSeg(CObject *objP, bool bMove = true);
+int UpdateObjectSeg (CObject *objP, bool bMove = true);
 
 
 // go through all objects and make sure they have the correct CSegment

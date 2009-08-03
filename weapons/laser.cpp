@@ -1712,6 +1712,12 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		}
 	else if (gameData.weapons.nSecondary != CONCUSSION_INDEX)
 		MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
+	else {
+		if (gameData.multiplayer.nBuiltinMissiles)
+			gameData.multiplayer.nBuiltinMissiles--;
+		else
+			MaybeDropNetPowerup (nObject, secondaryWeaponToPowerup [gameData.weapons.nSecondary], INIT_DROP);
+		}
 	if ((gameData.weapons.nSecondary == GUIDED_INDEX) || (gameData.weapons.nSecondary == SMART_INDEX))
 		break;
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {

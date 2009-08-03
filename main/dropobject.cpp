@@ -383,6 +383,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 		vNewPos = OBJECTS [nObject].info.position.vPos;
 	else
 		vNewPos = SEGMENTS [nSegment].RandomPoint ();
+	nSegment = FindSegByPos (vNewPos, nSegment, 1, 0);
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
 		OBJECTS [nObject].info.position.vPos = vNewPos;

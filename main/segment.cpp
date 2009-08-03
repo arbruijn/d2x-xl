@@ -275,10 +275,10 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 //		From center, go up to 50% of way towards any of the 8 vertices.
 CFixVector CSegment::RandomPoint (void)
 {
-int nVertex = (d_rand () * MAX_VERTICES_PER_SEGMENT) >> 15;
+int nVertex = d_rand () % MAX_VERTICES_PER_SEGMENT;
 CFixVector v = gameData.segs.vertices [m_verts [nVertex]] - m_vCenter;
 v *= (d_rand ());
-return v;
+return v + m_vCenter;
 }
 
 //------------------------------------------------------------------------------

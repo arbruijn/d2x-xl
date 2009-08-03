@@ -2324,6 +2324,7 @@ class CMultiplayerData {
 		int								nMaxPlayers;
 		int 								nLocalPlayer;				
 		int								nPlayerPositions;
+		int								nBuiltinMissiles;
 		int								bMoving;
 		CPlayerData						players [MAX_PLAYERS + 4];  
 		tObjPosition					playerInit [MAX_PLAYERS];
