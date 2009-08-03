@@ -37,6 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textdata.h"
 #include "marker.h"
 #include "state.h"
+#include "playerdeath.h"
 
 #define MAX_ORIENT_STEPS	10
 
@@ -1029,8 +1030,7 @@ switch (m_info.nType) {
 			if (bIsPlayer) {
 				if (nPlayer != gameData.multiplayer.nLocalPlayer)
 					break;
-				if ((LOCALPLAYER.shields < 0) ||
-						gameStates.app.bPlayerIsDead)
+				if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
 					break;
 				}
 			audio.PlaySound (SOUND_SECRET_EXIT, I2X (1));
@@ -1053,17 +1053,25 @@ switch (m_info.nType) {
 		break;
 
 	case TT_SHIELD_DAMAGE:
-		if (gameStates.app.bD1Mission)
-			LOCALPLAYER.shields -= TRIGGERS [nTrigger].m_info.value;
-		else
-			LOCALPLAYER.shields -= (fix) (LOCALPLAYER.shields * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
+		if (!gameStates.app.bPlayerIsDead) {
+			if (gameStates.app.bD1Mission)
+				LOCALPLAYER.shields -= TRIGGERS [nTrigger].m_info.value;
+			else
+				LOCALPLAYER.shields -= (fix) (LOCALPLAYER.shields * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
+			if (LOCALPLAYER.shields < 0)
+				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+			}
 		break;
 
 	case TT_ENERGY_DRAIN:
-		if (gameStates.app.bD1Mission)
-			LOCALPLAYER.energy -= TRIGGERS [nTrigger].m_info.value;
-		else
-			LOCALPLAYER.energy -= (fix) (LOCALPLAYER.energy * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
+		if (!gameStates.app.bPlayerIsDead) {
+			if (gameStates.app.bD1Mission)
+				LOCALPLAYER.energy -= TRIGGERS [nTrigger].m_info.value;
+			else
+				LOCALPLAYER.energy -= (fix) (LOCALPLAYER.energy * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
+			if (LOCALPLAYER.energy < 0)
+				LOCALPLAYER.energy = 0;
+			}
 		break;
 
 	case TT_CHANGE_TEXTURE:
