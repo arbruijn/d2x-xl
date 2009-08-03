@@ -841,7 +841,7 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 	if ((flP->m_timer -= gameData.time.xFrame) < 0) {
 		while (flP->m_timer < 0)
 			flP->m_timer += flP->m_delay;
-		flP->m_mask = ((flP->m_mask & 0x80000000) ? 1 : 0) + (flP->m_mask << 1);
+		flP->m_mask = ((flP->m_mask & 1) ? 0x80000000 : 0) | (flP->m_mask >> 1);
 		if (flP->m_mask & 1)
 			AddLight (nSegment, nSide);
 		else if (!gameOpts->app.bEpilepticFriendly /*EGI_FLAG (bFlickerLights, 1, 0, 1)*/)
