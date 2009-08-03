@@ -1057,7 +1057,7 @@ switch (m_info.nType) {
 			if (gameStates.app.bD1Mission)
 				LOCALPLAYER.shields -= TRIGGERS [nTrigger].m_info.value;
 			else
-				LOCALPLAYER.shields -= (fix) (LOCALPLAYER.shields * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
+				LOCALPLAYER.shields -= (fix) ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].m_info.value)));
 			if (LOCALPLAYER.shields < 0)
 				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
 			}
