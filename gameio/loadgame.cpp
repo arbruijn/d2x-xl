@@ -1026,6 +1026,7 @@ if (!bRestore) {
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
 	SetEquipGenStates ();
+	SetupWalls ();
 	SetupEffects ();
 //	lightManager.Setup (nLevel);
 	gameData.time.nPaused = 0;

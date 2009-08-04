@@ -1386,6 +1386,25 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 
 //------------------------------------------------------------------------------
 
+void SetupWalls (void)
+{
+	CWall* wallP = WALLS.Buffer ();
+
+for (int i = 0; i < gameData.walls.nWalls; i++, wallP++) {
+	if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED)) {
+		if ((wallP->flags & WALL_DOOR_AUTO) && !FindActiveDoor (i)) {	// make sure pre-opened automatic doors will close after a while
+			wallP->flags &= ~WALL_DOOR_OPENED;
+			SEGMENTS [wallP->nSegment].OpenDoor (wallP->nSide);
+			}
+		SEGMENTS [wallP->nSegment].AnimateOpeningDoor (wallP->nSide, -1);
+		}
+	else if ((wallP->nType == WALL_BLASTABLE) && (wallP->flags & WALL_BLASTED))
+		SEGMENTS [wallP->nSegment].BlastWall (wallP->nSide);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void FixWalls (void)
 {
 	CWall*			wallP;

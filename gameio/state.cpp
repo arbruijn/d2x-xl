@@ -1874,12 +1874,7 @@ if (!m_bBetweenLevels) {
 		SEGMENTS [i].LoadState (m_cf);
 	IFDBG (fPos = m_cf.Tell ());
 	//Restore the fuelcen info
-	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
-		if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED))
-			SEGMENTS [wallP->nSegment].AnimateOpeningDoor (wallP->nSide, -1);
-		else if ((wallP->nType == WALL_BLASTABLE) && (wallP->flags & WALL_BLASTED))
-			SEGMENTS [wallP->nSegment].BlastWall (wallP->nSide);
-		}
+	SetupWalls ();
 	gameData.reactor.bDestroyed = m_cf.ReadInt ();
 	gameData.reactor.countdown.nTimer = m_cf.ReadFix ();
 	IFDBG (fPos = m_cf.Tell ());

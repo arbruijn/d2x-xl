@@ -330,5 +330,6 @@ CActiveDoor* FindActiveDoor (short nWall);
 void ExplodeWall (short nSegment, short nSide);
 void DoExplodingWallFrame (void);
 void InitExplodingWalls (void);
+void SetupWalls (void);
 
 #endif
