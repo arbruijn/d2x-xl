@@ -5,7 +5,7 @@ Installation Instructions
 1. Installing the game data
 ---------------------------
 
-The game root folder: /usr/local/games/d2x-xl
+Game root folder: /usr/local/games/d2x-xl
 Game data: /usr/local/games/d2x-xl/data
 Missions: /usr/local/games/d2x-xl/missions
 Hires models: /usr/local/games/d2x-xl/models
@@ -21,10 +21,10 @@ Demos: ~/.d2x-xl/demos
 Temporary files: ~/.d2x-xl/cache
 
 
-2.1 Installing the program
+2. Installing the program
 --------------------------
 
-1.1. Required packages
+2.1. Required packages
 
 You will need to have the following modules installed:
 
@@ -39,10 +39,10 @@ http://www.descent.de and to build and install SDL and SDL_mixer using these.
 This is safe as it mainly fixes bugs in these libraries.
 
 
-1.2. Building the program
+2.2. Building the program
 
-
-To build D2X-XL on Linux cd to the source root folder and invoke the following commands:
+To build D2X-XL on Linux cd to the source root folder and invoke the following
+commands:
 
 sh ./autogen.sh
 chmod 0755 ./configure
@@ -50,9 +50,10 @@ chmod 0755 ./configure
 make
 
 
-1.3 Updates
+2.3 Updates
 
-When updating the program, make sure to update the following files from the latest Windows release:
+When updating the program, make sure to update the following files from the
+latest Windows release:
 
 d2x-xl.hog -> /usr/local/games/d2x-xl/data and textures/d2x-xl 
 textures/d2x-xl/*.tga -> /usr/local/games/d2x-xl/textures/d2x-xl
