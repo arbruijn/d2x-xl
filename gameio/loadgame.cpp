@@ -869,6 +869,8 @@ ControlRenderThreads ();
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultModels ();
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
+if (!(gameStates.app.bHaveMod || IsBuiltInMission (hogFileManager.m_files.MsnHogFiles.szName)))
+	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!");
 if (gameStates.app.bHaveMod)
 	songManager.LoadPlayList (szDefaultPlayList, 1);
 songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);

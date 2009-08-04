@@ -1025,7 +1025,7 @@ return 0;		//couldn't ffs mission
 
 //------------------------------------------------------------------------------
 
-bool IsBuiltInMission (char* pszMission)
+int IsBuiltInMission (char* pszMission)
 {
 if (*pszMission)
 	return false;

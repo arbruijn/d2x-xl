@@ -311,14 +311,12 @@ for (;;) {
 		}
 
 	if (nMission >= 0) {
-		if (IsBuiltInMission (hogFileManager.m_files.MsnHogFiles.szName)) {
-			gameOpts->app.bEnableMods = 1;
-			MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
-			gameOpts->app.bEnableMods = bEnableMod;
-			if (gameStates.app.bHaveMod) {
-				m.AddText ("", 0);
-				optUseMod = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
-				}
+		gameOpts->app.bEnableMods = 1;
+		MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
+		gameOpts->app.bEnableMods = bEnableMod;
+		if (gameStates.app.bHaveMod == IsBuiltInMission (hogFileManager.m_files.MsnHogFiles.szName)) {
+			m.AddText ("", 0);
+			optUseMod = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 			}
 		}
 

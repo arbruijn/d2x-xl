@@ -91,7 +91,7 @@ int LoadMission (int nMission);
 int LoadMissionByName(char *szMissionName, int nSubFolder);
 int FindMissionByName(char *szMissionName, int nSubFolder);
 
-bool IsBuiltInMission (char* pszMission);
+int IsBuiltInMission (char* pszMission);
 
 static inline bool MsnHasGameVer (const char *pszMission)
 {
