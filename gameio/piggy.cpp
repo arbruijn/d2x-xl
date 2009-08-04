@@ -350,27 +350,28 @@ void PiggyInitPigFile (char *filename)
 	char					szName [16];
 	char					szNameRead [16];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
+	bool					bRegister = filename != NULL;
 	CBitmap				bm;
 	tPIGBitmapHeader	bmh;
 
-	static char szPigName [FILENAME_LEN] = {'\0'};
+	static char szPigName [2][FILENAME_LEN] = {'\0', '\0'};
 
 if (filename) {
-	if (stricmp (szPigName, filename))
-		strcpy (szPigName, filename);
+	if (stricmp (szPigName [gameStates.app.bD1Data], filename))
+		strcpy (szPigName [gameStates.app.bD1Data], filename);
 	else if (cfP->File ())
 		return;
 	}
-else if (!*szPigName || cfP->File ())
+else if (!*szPigName [gameStates.app.bD1Data] || cfP->File ())
 	return;
 PiggyCloseFile ();             //close old pig if still open
 //rename pigfile for shareware
 if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) && 
-	 !CFile::Exist (szPigName, gameFolders.szDataDir, 0))
-	strcpy (szPigName, DefaultPigFile (1));
-strlwr (szPigName);
-if (!cfP->Open (szPigName, gameFolders.szDataDir, "rb", 0)) {
-	if (!CopyPigFileFromCD (*cfP, szPigName))
+	 !CFile::Exist (szPigName [gameStates.app.bD1Data], gameFolders.szDataDir, 0))
+	strcpy (szPigName [gameStates.app.bD1Data], DefaultPigFile (1));
+strlwr (szPigName [gameStates.app.bD1Data]);
+if (!cfP->Open (szPigName [gameStates.app.bD1Data], gameFolders.szDataDir, "rb", 0)) {
+	if (!CopyPigFileFromCD (*cfP, szPigName [gameStates.app.bD1Data]))
 		return;
 	}
 int pig_id = cfP->ReadInt ();
@@ -379,7 +380,7 @@ if (pig_id != PIGFILE_ID || pigVersion != PIGFILE_VERSION) {
 	cfP->Close ();              //out of date pig
 	return;
 	}
-strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
+strncpy (szCurrentPigFile [0], szPigName [gameStates.app.bD1Data], sizeof (szCurrentPigFile [0]));
 nBitmapNum = cfP->ReadInt ();
 nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
 nDataStart = nHeaderSize + cfP->Tell ();
@@ -402,7 +403,8 @@ for (i = 0; i < nBitmapNum; i++) {
 	gameData.pig.tex.bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
-	PiggyRegisterBitmap (&bm, szName, 1);
+	if (bRegister)
+		PiggyRegisterBitmap (&bm, szName, 1);
 	}
 bPigFileInitialized = 1;
 }

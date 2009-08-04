@@ -924,6 +924,7 @@ if (pfnTIRStop)
 meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
 gameData.Destroy ();
+PiggyCloseFile ();
 SetFunctionMode (FMODE_MENU);	
 }
 

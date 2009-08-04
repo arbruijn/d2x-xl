@@ -313,6 +313,10 @@ xEffectTime += gameData.time.xFrame;
 			}
 		nFrames = ecP->vClipInfo.nFrameCount;
 		if (ecP->flags & EF_ALTFMT) {
+#if DBG
+			if (ecP->vClipInfo.frames [0].index == nDbgTexture)
+				nDbgTexture = nDbgTexture;
+#endif
 			if (ecP->flags & EF_INITIALIZED) {
 				bmP = gameData.pig.tex.bitmapP [ecP->vClipInfo.frames [0].index].Override ();
 				if (gameOpts->ogl.bGlTexMerge)

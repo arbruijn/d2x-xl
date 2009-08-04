@@ -1048,7 +1048,6 @@ ControlSoundThread ();
 if (RENDERPATH)
 	gameOpts->render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
-PiggyCloseFile ();
 return 1;
 }
 
