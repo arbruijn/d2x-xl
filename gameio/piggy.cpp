@@ -192,7 +192,7 @@ if (!bInFile) {
 	}
 int i = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 strncpy (gameData.pig.tex.bitmapFileP [i].name, name, 12);
-bitmapNames [gameStates.app.bD1Mission].Insert (gameData.pig.tex.bitmapFileP [i].name, i);
+bitmapNames [gameStates.app.bD1Data].Insert (gameData.pig.tex.bitmapFileP [i].name, i);
 bmP->Clone (gameData.pig.tex.bitmapP [i]);
 bmP->SetBuffer (NULL);	//avoid automatic destruction trying to delete the same buffer twice
 if (!bInFile) {
@@ -346,46 +346,54 @@ return bMemInited = 1;
 //returns the size of all the bitmap data
 void PiggyInitPigFile (char *filename)
 {
-	CFile					*cfP = cfPiggy + gameStates.app.bD1Data;
+	CFile					*cfP = cfPiggy;
 	char					szName [16];
 	char					szNameRead [16];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
+	int					bD1 = gameStates.app.bD1Data;
 	bool					bRegister = filename != NULL;
+	bool					bReload = true;
 	CBitmap				bm;
 	tPIGBitmapHeader	bmh;
 
-	static char szPigName [2][FILENAME_LEN] = {'\0', '\0'};
+	static char szPigName [FILENAME_LEN] = {'\0'};
 
 if (filename) {
-	if (stricmp (szPigName [gameStates.app.bD1Data], filename))
-		strcpy (szPigName [gameStates.app.bD1Data], filename);
+	if (stricmp (szPigName, filename))
+		strcpy (szPigName, filename);
 	else if (cfP->File ())
 		return;
+	else
+		bReload = false;
 	}
-else if (!*szPigName [gameStates.app.bD1Data] || cfP->File ())
+else if (!*szPigName || cfP->File ())
 	return;
-PiggyCloseFile ();             //close old pig if still open
+if (bRegister)
+	PiggyCloseFile ();             //close old pig if still open
 //rename pigfile for shareware
-if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) && 
-	 !CFile::Exist (szPigName [gameStates.app.bD1Data], gameFolders.szDataDir, 0))
-	strcpy (szPigName [gameStates.app.bD1Data], DefaultPigFile (1));
-strlwr (szPigName [gameStates.app.bD1Data]);
-if (!cfP->Open (szPigName [gameStates.app.bD1Data], gameFolders.szDataDir, "rb", 0)) {
-	if (!CopyPigFileFromCD (*cfP, szPigName [gameStates.app.bD1Data]))
+if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) && !CFile::Exist (szPigName, gameFolders.szDataDir, 0))
+	strcpy (szPigName, DefaultPigFile (1));
+strlwr (szPigName);
+if (!cfP->Open (szPigName, gameFolders.szDataDir, "rb", 0)) {
+	if (!CopyPigFileFromCD (*cfP, szPigName))
 		return;
 	}
+if (!bReload)
+	return;
+
 int pig_id = cfP->ReadInt ();
 int pigVersion = cfP->ReadInt ();
 if (pig_id != PIGFILE_ID || pigVersion != PIGFILE_VERSION) {
 	cfP->Close ();              //out of date pig
 	return;
 	}
-strncpy (szCurrentPigFile [0], szPigName [gameStates.app.bD1Data], sizeof (szCurrentPigFile [0]));
+strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
 nBitmapNum = cfP->ReadInt ();
 nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
 nDataStart = nHeaderSize + cfP->Tell ();
 nDataSize = cfP->Length () - nDataStart;
 gameData.pig.tex.nBitmaps [0] = 1;
+SetDataVersion (0);
 for (i = 0; i < nBitmapNum; i++) {
 	PIGBitmapHeaderRead (&bmh, *cfP);
 	memcpy (szNameRead, bmh.name, 8);
@@ -402,9 +410,10 @@ for (i = 0; i < nBitmapNum; i++) {
 	bm.SetAvgColorIndex (bmh.avgColor);
 	gameData.pig.tex.bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
-	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
-	if (bRegister)
+	if (bRegister) {
+		Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
 		PiggyRegisterBitmap (&bm, szName, 1);
+		}
 	}
 bPigFileInitialized = 1;
 }
@@ -773,6 +782,8 @@ void LoadD1Textures (void)
 	char					szNameRead [16];
 	int					i, nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
 
+PiggyInitPigFile ("groupa.pig");
+SetDataVersion (1);
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
 else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
@@ -783,9 +794,8 @@ else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataDir, "rb", 0)) {
 paletteManager.LoadD1 ();
 
 LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1);
+gameStates.app.bD1Data = 1;
 if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.bHaveD1Textures) {
-	gameStates.app.bD1Data = 1;
-	SetDataVersion (1);
 	cfPiggy [1].Seek (nBmHdrOffs, SEEK_SET);
 	gameData.pig.tex.nBitmaps [1] = 0;
 	PiggyRegisterBitmap (&bogusBitmap, "bogus", 1);
@@ -960,8 +970,8 @@ return bmP;
 
 void _CDECL_ PiggyClose (void)
 {
-	int			i, j;
-	CSoundSample	*dsP;
+	int				i, j;
+	CSoundSample*	dsP;
 
 PrintLog ("unloading textures\n");
 PiggyCloseFile ();
