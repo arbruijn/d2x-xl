@@ -1423,6 +1423,10 @@ void CTransparencyRenderer::Render (void)
 if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
+#if DBG
+if (!gameOpts->render.debug.bTextures)
+	return;
+#endif
 PROF_START
 gameStates.render.nType = 5;
 ResetShader ();
