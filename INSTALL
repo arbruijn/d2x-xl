@@ -52,8 +52,5 @@ make
 
 2.3 Updates
 
-When updating the program, make sure to update the following files from the
-latest Windows release:
-
-d2x-xl.hog -> /usr/local/games/d2x-xl/data and textures/d2x-xl 
-textures/d2x-xl/*.tga -> /usr/local/games/d2x-xl/textures/d2x-xl
+When updating the program, make sure to update the files from the latest D2X-XL
+data release.
