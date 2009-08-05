@@ -625,41 +625,46 @@ if (!bSubFolder && gameOpts->app.bSinglePlayer) {
 	strcpy (gameFolders.szMsnSubDir, "single/");
 //		bSubFolder = 1;
 	}
-if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubDir, "single"))) {
-	if (gameOpts->app.nVersionFilter & 2) {
-		AddBuiltinMissionToList (&count);  //read built-in first
-		if (gameOpts->app.bSinglePlayer)
-			AddBuiltinD2XMissionToList (&count);  //read built-in first
+if (gameStates.app.bDemoData) {
+	AddBuiltinMissionToList (&count);  //read built-in first
+	nBuiltIns = count;
+	}
+else {
+	if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubDir, "single"))) {
+		if (gameOpts->app.nVersionFilter & 2) {
+			AddBuiltinMissionToList (&count);  //read built-in first
+			if (gameOpts->app.bSinglePlayer)
+				AddBuiltinD2XMissionToList (&count);  //read built-in first
+			}
+		if (gameOpts->app.nVersionFilter & 1)
+			AddBuiltinD1MissionToList (&count);
 		}
-	if (gameOpts->app.nVersionFilter & 1)
-		AddBuiltinD1MissionToList (&count);
-	}
-nBuiltIns = count;
-sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubDir);
-bHaveSubFolders = 0;
-if (gameOpts->app.nVersionFilter & 2) {
-	AddMissionsToList (&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
-	bHaveSubFolders = 1;
-	}
-if (gameOpts->app.nVersionFilter & 1) {
-	AddMissionsToList (&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
-	bHaveSubFolders = 1;
-	}
-if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogDir, gameFolders.szGameDir)) {
+	nBuiltIns = count;
+	sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubDir);
 	bHaveSubFolders = 0;
-	sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_DIR, gameFolders.szMsnSubDir);
 	if (gameOpts->app.nVersionFilter & 2) {
-		AddMissionsToList (&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
+		AddMissionsToList (&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
 		bHaveSubFolders = 1;
 		}
 	if (gameOpts->app.nVersionFilter & 1) {
-		AddMissionsToList (&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
+		AddMissionsToList (&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
 		bHaveSubFolders = 1;
 		}
+	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogDir, gameFolders.szGameDir)) {
+		bHaveSubFolders = 0;
+		sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_DIR, gameFolders.szMsnSubDir);
+		if (gameOpts->app.nVersionFilter & 2) {
+			AddMissionsToList (&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
+			bHaveSubFolders = 1;
+			}
+		if (gameOpts->app.nVersionFilter & 1) {
+			AddMissionsToList (&count, anarchy_mode, 1, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
+			bHaveSubFolders = 1;
+			}
+		}
 	}
-
-// move original missions (in story-chronological order)
-// to top of mission list
+	// move original missions (in story-chronological order)
+	// to top of mission list
 nTopPlace = 0;
 if (bSubFolder) {
 	gameData.missions.nBuiltinMission =
@@ -674,16 +679,15 @@ else {
 	}
 if (count > nTopPlace)
 	qsort (gameData.missions.list + nTopPlace,
-		    count - nTopPlace,
-		    sizeof (*gameData.missions.list),
- 			 (int (_CDECL_ *)(const void *, const void *)) MLSortFunc);
+			 count - nTopPlace,
+			 sizeof (*gameData.missions.list),
+			 (int (_CDECL_ *)(const void *, const void *)) MLSortFunc);
 
 if (count > nTopPlace)
 	qsort(gameData.missions.list + nTopPlace,
-		   count - nTopPlace,
-		   sizeof(*gameData.missions.list),
-		   (int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
-
+			count - nTopPlace,
+			sizeof(*gameData.missions.list),
+			(int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
 //LoadMission(0);   //set built-in mission as default
 nMissionCount = count;
 return count;

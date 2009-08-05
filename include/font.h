@@ -68,8 +68,8 @@ class CFont {
 		void StringSize (const char *s, int& stringWidth, int& stringHeight, int& averageWidth);
 		void StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight, int& averageWidth, int *nTabs, int nMaxWidth);
 
-		inline short Width (void) { return m_info.width; }
-		inline short Height (void) { return m_info.height; }
+		short Width (void);
+		short Height (void);
 		inline short Flags (void) { return m_info.flags; }
 		inline short BaseLine (void) { return m_info.baseLine; }
 		inline ubyte MinChar (void) { return m_info.minChar; } 
@@ -144,8 +144,8 @@ class CFontManager {
 		void Unload (CFont* font);
 		inline CFont* Current (void) { return m_current; }
 		inline CFont* GameFont (int i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
-		inline void SetScale (float fScale) { m_scale = fScale; }
-		inline float Scale (void) { return m_scale; }
+		void SetScale (float fScale);
+		float Scale (void);
 		void SetCurrent (CFont* fontP);
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (tRgbaColorb *fgColor, tRgbaColorb *bgColor);

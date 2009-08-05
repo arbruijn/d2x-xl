@@ -59,12 +59,12 @@ CCanvas *Canv_LeftEnergyGauge;
 CCanvas *Canv_AfterburnerGauge;
 CCanvas *Canv_RightEnergyGauge;
 CCanvas *numericalGaugeCanv;
-#endif
 
 #define COCKPIT_PRIMARY_BOX		 (!gameStates.video.nDisplayMode ? 0 : 4)
 #define COCKPIT_SECONDARY_BOX		 (!gameStates.video.nDisplayMode ? 1 : 5)
 #define SB_PRIMARY_BOX				 (!gameStates.video.nDisplayMode ? 2 : 6)
 #define SB_SECONDARY_BOX			 (!gameStates.video.nDisplayMode ? 3 : 7)
+#endif
 
 CHUD			hudCockpit;
 CWideHUD		letterboxCockpit;
@@ -1076,7 +1076,7 @@ if (gameStates.render.bChaseCam && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 
 #endif
 	return;
 m_info.xScale *= float (HUD_ASPECT);
-bHiresReticle = (gameStates.render.fonts.bHires != 0);
+bHiresReticle = 1; //(gameStates.render.fonts.bHires != 0) && !gameStates.app.bDemoData;
 bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.window.wMax * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) ? BM_ADDON_RETICLE_RED : BM_ADDON_RETICLE_GREEN;

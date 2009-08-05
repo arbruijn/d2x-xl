@@ -371,7 +371,7 @@ else if (!*szPigName || cfP->File ())
 if (bRegister)
 	PiggyCloseFile ();             //close old pig if still open
 //rename pigfile for shareware
-if (!stricmp (DefaultPigFile (), DefaultPigFile (1)) && !CFile::Exist (szPigName, gameFolders.szDataDir, 0))
+if (stricmp (szPigName, DefaultPigFile (1)) && !CFile::Exist (szPigName, gameFolders.szDataDir, 0))
 	strcpy (szPigName, DefaultPigFile (1));
 strlwr (szPigName);
 if (!cfP->Open (szPigName, gameFolders.szDataDir, "rb", 0)) {
@@ -528,7 +528,7 @@ if (FindArg ("-bigpig"))
 	bBigPig = 1;
 
 /*---*/PrintLog ("   Loading game data\n");
-PiggyInitPigFile (DefaultPigFile ());
+PiggyInitPigFile (DefaultPigFile (-1));
 /*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
 gameData.pig.sound.nType = -1; //none loaded

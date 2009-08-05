@@ -81,6 +81,18 @@ m_info.parentBitmap.Init ();
 
 //------------------------------------------------------------------------------
 
+short CFont::Width (void) 
+{ 
+return short (m_info.width * fontManager.Scale ()); 
+}
+
+short CFont::Height (void) 
+{ 
+return short (m_info.height * fontManager.Scale ()); 
+}
+
+//------------------------------------------------------------------------------
+
 ubyte *CFont::FindKernEntry (ubyte first, ubyte second)
 {
 	ubyte *p = m_info.kernData;
@@ -480,7 +492,7 @@ stringWidth = 0;
 averageWidth = int (m_info.width * fScale);
 
 if (s && *s) {
-	fontManager.SetScale (1.0f);
+	fontManager.SetScale (1.0f / (gameStates.app.bDemoData + 1));
 	while (*s) {
 		while (*s == '\n') {
 			s++;
@@ -508,7 +520,7 @@ if (s && *s) {
 			s++;
 			}
 		}
-	fontManager.SetScale (fScale);
+	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
 	}
 stringHeight = int (stringHeight * fScale);
 stringWidth = int (longestWidth * fScale);
@@ -562,7 +574,7 @@ void CFontManager::Init (void)
 {
 memset (m_fonts, 0, sizeof (m_fonts));
 m_save.Create (10);
-m_scale = 1.0f;
+SetScale (1.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -588,7 +600,7 @@ if (!gameStates.render.fonts.bInstalled) {
 		int i;
 
 	gameStates.render.fonts.bInstalled = 1;
-	gameStates.render.fonts.bHiresAvailable = 1;
+	gameStates.render.fonts.bHiresAvailable = !gameStates.app.bDemoData;
 	// load lores fonts
 	for (i = 0; i < MAX_FONTS; i += 2)
 		m_gameFonts [i] = Load (gameFontFilenames [i]);
@@ -645,6 +657,20 @@ if (i >= MAX_OPEN_FONTS)
 delete m_fonts [i].data;
 m_fonts [i].data = NULL;
 m_fonts [i].font.Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+float CFontManager::Scale (void) 
+{ 
+return m_scale; 
+}
+
+//------------------------------------------------------------------------------
+
+void CFontManager::SetScale (float fScale) 
+{ 
+m_scale = fScale * (gameStates.app.bDemoData + 1); 
 }
 
 //------------------------------------------------------------------------------

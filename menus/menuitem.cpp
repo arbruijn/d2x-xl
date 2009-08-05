@@ -170,7 +170,8 @@ else
 	SetColor (bIsCurrent, bTiny);
 if (bCreateTextBms && FAST_MENUS && 
 	 (bmP || (bmP = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, 0)))) {
-	bmP->Render (CCanvas::Current (), m_x, m_y, bmP->Width (), bmP->Height (), 0, 0, bmP->Width (), bmP->Height (), 1, 0);
+	float	fScale = fontManager.Scale ();
+	bmP->Render (CCanvas::Current (), m_x, m_y, int (bmP->Width () * fScale), int (bmP->Height () * fScale), 0, 0, bmP->Width (), bmP->Height (), 1, 0);
 	m_bmText [bIsCurrent] = bmP;
 	}
 else {

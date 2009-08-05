@@ -67,10 +67,10 @@ CPalette* menuPalette;
 
 CBackgroundManager backgroundManager;
 
-#define MENU_PCX_FULL		menuBgNames [0][gameStates.menus.bHires]
-#define MENU_PCX_OEM			menuBgNames [1][gameStates.menus.bHires]
-#define MENU_PCX_SHAREWARE	menuBgNames [2][gameStates.menus.bHires]
-#define MENU_PCX_MAC_SHARE	menuBgNames [3][gameStates.menus.bHires]
+#define MENU_PCX_FULL		menuBgNames [0][!gameStates.app.bDemoData && gameStates.menus.bHires]
+#define MENU_PCX_OEM			menuBgNames [1][!gameStates.app.bDemoData && gameStates.menus.bHires]
+#define MENU_PCX_SHAREWARE	menuBgNames [2][!gameStates.app.bDemoData && gameStates.menus.bHires]
+#define MENU_PCX_MAC_SHARE	menuBgNames [3][!gameStates.app.bDemoData && gameStates.menus.bHires]
 
 int bHiresBackground;
 
@@ -118,7 +118,7 @@ return const_cast<char*> (MENU_PCX_MAC_SHARE);
 
 char *BackgroundName (int nType, int bHires)
 {
-return nType ? szBackgrounds [nType - 1][(bHires < 0) ? gameStates.menus.bHires : bHires] : MenuPCXName ();
+return nType ? szBackgrounds [nType - 1][gameStates.app.bDemoData ? 0 : ((bHires < 0) ? gameStates.menus.bHires : bHires)] : MenuPCXName ();
 }
 
 //------------------------------------------------------------------------------

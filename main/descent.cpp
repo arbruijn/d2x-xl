@@ -398,6 +398,7 @@ else {
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
+	backgroundManager.Init ();
 	backgroundManager.Setup (filename, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 	paletteManager.ClearEffect ();
 	paletteManager.EnableEffect ();
@@ -775,6 +776,7 @@ if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) ||
 	/*---*/PrintLog ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
+fontManager.SetScale (1.0f);
 LoadGameTexts ();
 /*---*/PrintLog ("Reading configuration file\n");
 ReadConfigFile ();

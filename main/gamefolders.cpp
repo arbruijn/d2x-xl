@@ -368,6 +368,8 @@ void MakeModFolders (const char* pszMission)
 int bDefault, bBuiltIn;
 
 ResetModFolders ();
+if (gameStates.app.bDemoData)
+	return;
 
 if ((bDefault = (*pszMission == '\0')))
 	pszMission = gameData.missions.list [gameData.missions.nCurrentMission].szMissionName;

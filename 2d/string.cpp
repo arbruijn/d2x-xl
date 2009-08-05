@@ -481,10 +481,10 @@ CBitmap *CreateStringBitmap (
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
 #endif
-fontManager.SetScale (1.0f);
+fontManager.SetScale (1.0f / (gameStates.app.bDemoData + 1));
 fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
 if (!(w && h)) {
-	fontManager.SetScale (fScale);
+	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
 	return NULL;
 	}
 if (bForce >= 0) {
@@ -496,11 +496,11 @@ if (bForce >= 0) {
 	h = i;
 	}
 if (!(bmP = CBitmap::Create (0, w, h, 4))) {
-	fontManager.SetScale (fScale);
+	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
 	return NULL;
 	}
 if (!bmP->Buffer ()) {
-	fontManager.SetScale (fScale);
+	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
 	delete bmP;
 	return NULL;
 	}
@@ -620,7 +620,7 @@ x = 0;
 	}
 bmP->SetPalette (palP);
 bmP->SetTranspType (-1);
-fontManager.SetScale (fScale);
+fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
 return bmP;
 }
 
