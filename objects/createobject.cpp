@@ -84,7 +84,7 @@ LinkToSeg (nSegment);
 
 //-----------------------------------------------------------------------------
 
-int CObject::Create (ubyte nType, ubyte nId, short nCreator, short nSegment, 
+int CObject::Create (ubyte nType, ubyte nId, short nCreator, short nSegment,
 							const CFixVector& vPos, const CFixMatrix& mOrient,
 							fix xSize, ubyte cType, ubyte mType, ubyte rType)
 {
@@ -247,7 +247,7 @@ objP->SetId (nObject);
 objP->info.nSignature = gameData.objs.nNextSignature++;
 objP->info.nType = nType;
 objP->info.nId = nId;
-objP->info.vLastPos = 
+objP->info.vLastPos =
 objP->info.position.vPos = vPos;
 objP->SetOrigin (vPos);
 objP->info.xSize = xSize;
@@ -298,7 +298,7 @@ memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
 #if 1
 if ((nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(int) nId] && IsMultiGame && IsCoopGame && (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
-		
+
 	for (int i = 0; i < MAX_POWERUP_TYPES; i++) {
 		if (powerupToObject [i] == nId)
 			gameData.multiplayer.maxPowerupsAllowed [i]--;
@@ -317,7 +317,7 @@ int CloneObject (CObject *objP)
 	short		nObject, nSegment;
 	int		nSignature;
 	CObject	*cloneP;
-	
+
 if (0 > (nObject = AllocObject ()))
 	return -1;
 cloneP = OBJECTS + nObject;
@@ -328,8 +328,8 @@ cloneP->info.nCreator = -1;
 cloneP->mType.physInfo.thrust.SetZero ();
 cloneP->SetCreationTime (gameData.time.xGame);
 nSegment = objP->info.nSegment;
-cloneP->info.nSegment = 
-cloneP->info.nPrevInSeg = 
+cloneP->info.nSegment =
+cloneP->info.nPrevInSeg =
 cloneP->info.nNextInSeg = -1;
 cloneP->InitLinks ();
 cloneP->SetLinkedType (OBJ_NONE);
@@ -342,7 +342,7 @@ return nObject;
 
 int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos)
 {
-return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (), 
+return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (),
 							CT_AI, MT_PHYSICS, RT_POLYOBJ);
 }
 
@@ -359,7 +359,7 @@ if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 	}
 if (gameStates.gameplay.bMineMineCheat && !bForce)
 	return -1;
-short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size, 
+short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size,
 										CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) {
 	gameData.multiplayer.powerupsInMine [(int) nId]++;
@@ -396,7 +396,7 @@ if (rType == 255) {
 			return -1;
 		}
 	}
-return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType); 
+return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_WEAPON, MT_PHYSICS, rType);
 }
 
 //------------------------------------------------------------------------------
@@ -419,7 +419,7 @@ return CreateObject (OBJ_DEBRIS, 0, -1, parentP->info.nSegment, parentP->info.po
 
 int CreateCamera (CObject *parentP)
 {
-return CreateObject (OBJ_CAMERA, 0, -1, parentP->info.nSegment, parentP->info.position.vPos, parentP->info.position.mOrient, 0, 
+return CreateObject (OBJ_CAMERA, 0, -1, parentP->info.nSegment, parentP->info.position.vPos, parentP->info.position.mOrient, 0,
 							CT_NONE, MT_NONE, RT_NONE);
 }
 
@@ -534,9 +534,9 @@ if (objP->info.nType == OBJ_DEBRIS)
 	gameData.objs.nDebris--;
 OBJECTS [nObject].UnlinkFromSeg ();
 Assert (OBJECTS [0].info.nNextInSeg != 0);
-if ((objP->info.nType == OBJ_ROBOT) || 
-	 (objP->info.nType == OBJ_REACTOR) || 
-	 (objP->info.nType == OBJ_POWERUP) || 
+if ((objP->info.nType == OBJ_ROBOT) ||
+	 (objP->info.nType == OBJ_REACTOR) ||
+	 (objP->info.nType == OBJ_POWERUP) ||
 	 (objP->info.nType == OBJ_HOSTAGE))
 	ExecObjTriggers (nObject, 0);
 objP->info.nType = OBJ_NONE;		//unused!
