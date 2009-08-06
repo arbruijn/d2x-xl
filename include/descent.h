@@ -512,7 +512,8 @@ typedef struct tSoundOptions {
 	int bUseSDLMixer;
 	int bUseOpenAL;
 	int bFadeMusic;
-	int digiSampleRate;
+	int audioSampleRate;	// what's used by the audio system
+	int soundSampleRate;	// what the default sounds are in
 	int bShip;
 	int bMissiles;
 	int bGatling;

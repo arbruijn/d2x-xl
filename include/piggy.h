@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PIGFILE_VERSION				2
 
 #define HAMFILE_ID					MAKE_SIG ('!','M','A','H') //HAM!
+#define DEMO_HAMFILE_VERSION		2
 #define HAMFILE_VERSION				3
 //version 1 -> 2:  save marker_model_num
 //version 2 -> 3:  removed sound files

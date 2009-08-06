@@ -140,7 +140,16 @@ static char szSndFiles [3][13] = {"descent2.s11", "descent2.s22", "d2demo.ham"};
 
 char* DefaultSoundFile (void)
 {
-return (gameData.pig.tex.nHamFileVersion < 3) ? szSndFiles [2] : szSndFiles [gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K];
+if (gameData.pig.tex.nHamFileVersion < 3) {
+	gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
+	return szSndFiles [2];
+	}
+if (gameOpts->sound.audioSampleRate == SAMPLE_RATE_11K) {
+	gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
+	return szSndFiles [0];
+	}
+gameOpts->sound.soundSampleRate = SAMPLE_RATE_22K;
+return szSndFiles [1];
 }
 
 //------------------------------------------------------------------------------
@@ -769,6 +778,8 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		LoadSounds (cfPiggy [1]);
 		gameData.pig.sound.nType = 1;
+		if (gameStates.sound.bD1Sound)
+			gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
 		}
 	}
 return nSounds > 0;

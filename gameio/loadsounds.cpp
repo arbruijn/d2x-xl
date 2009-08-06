@@ -139,7 +139,7 @@ int LoadSoundReplacements (const char *pszFilename)
 	char					szId [4];
 	int					nLoadedSounds;
 	int					i, j, l;
-	int					b11K = (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K);
+	int					b11K = (gameOpts->sound.audioSampleRate == SAMPLE_RATE_11K);
 	tPIGSoundHeader	dsh;
 	CSoundSample*		dsP;
 	size_t				nHeaderOffs, nDataOffs;
@@ -304,7 +304,7 @@ if (alGetError () != AL_NO_ERROR) {
 	gameOpts->sound.bUseOpenAL = 0;
 	return 0;
 	}
-alBufferData (soundP->buffer, AL_FORMAT_MONO8, soundP->data [0], soundP->nLength [0], gameOpts->sound.digiSampleRate);
+alBufferData (soundP->buffer, AL_FORMAT_MONO8, soundP->data [0], soundP->nLength [0], gameOpts->sound.audioSampleRate);
 if (alGetError () != AL_NO_ERROR) {
 	gameOpts->sound.bUseOpenAL = 0;
 	return 0;
@@ -356,7 +356,7 @@ else
 if (bCustom) {
 	if (!*gameFolders.szModName)
 		return 0;
-	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? ".s22" : ".s11");
+	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.audioSampleRate >= SAMPLE_RATE_22K) ? ".s22" : ".s11");
 	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
 	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
@@ -376,20 +376,24 @@ else {
 if (!cf.Open (pszFile, pszFolder, "rb", 0))
 	return 0;
 
-//make sure soundfile is valid nType file & is up-to-date
-sndId = cf.ReadInt ();
-sndVersion = cf.ReadInt ();
-if ((sndId != SNDFILE_ID) || (sndVersion != SNDFILE_VERSION)) {
-	cf.Close ();						//out of date sound file
-	return 0;
-	}
-nSounds = cf.ReadInt ();
+if (gameStates.app.bDemoData) 
+	gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
+else {
+	//make sure soundfile is valid nType file & is up-to-date
+	sndId = cf.ReadInt ();
+	sndVersion = cf.ReadInt ();
+	if ((sndId != SNDFILE_ID) || (sndVersion != SNDFILE_VERSION)) {
+		cf.Close ();						//out of date sound file
+		return 0;
+		}
+	nSounds = cf.ReadInt ();
 
-nLoadedSounds = SetupSounds (cf, nSounds, cf.Tell (), bCustom, bUseLowRes);
-if (bCustom)
-	gameOpts->sound.bHires [0] = (nLoadedSounds & 0xffff) ? 0 : 2;
-else if (gameOpts->sound.bHires [0] && ((nLoadedSounds >> 16) < nSounds))
-	gameOpts->sound.bHires [0] = 0;
+	nLoadedSounds = SetupSounds (cf, nSounds, cf.Tell (), bCustom, bUseLowRes);
+	if (bCustom)
+		gameOpts->sound.bHires [0] = (nLoadedSounds & 0xffff) ? 0 : 2;
+	else if (gameOpts->sound.bHires [0] && ((nLoadedSounds >> 16) < nSounds))
+		gameOpts->sound.bHires [0] = 0;
+	}
 
 LoadSounds (cf, false);
 cf.Close ();

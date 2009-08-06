@@ -210,9 +210,9 @@ objP->mType.physInfo.rotVel[X] = temp / 9;
 objP->mType.physInfo.rotVel[Y] = temp / 5;
 objP->mType.physInfo.rotVel[Z] = temp / 7;
 
-if (gameOpts->sound.digiSampleRate) {
+if (gameOpts->sound.audioSampleRate) {
 	soundP = gameData.pig.sound.soundP + audio.XlatSound (deathSound);
-	xSoundDuration = FixDiv (soundP->nLength [soundP->bHires], gameOpts->sound.digiSampleRate);
+	xSoundDuration = FixDiv (soundP->nLength [soundP->bHires], gameOpts->sound.audioSampleRate);
 	}
 else
 	xSoundDuration = I2X (1);

@@ -294,7 +294,7 @@ if (!gameData.hoard.bInitialized) {
 	//Load sounds for orb game
 	for (i = 0; i < 4; i++) {
 		int len = cf.ReadInt ();        //get 11k len
-		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) {
+		if (gameOpts->sound.audioSampleRate == SAMPLE_RATE_22K) {
 			cf.Seek (len, SEEK_CUR);     //skip over 11k sample
 			len = cf.ReadInt ();    //get 22k len
 			}
@@ -302,7 +302,7 @@ if (!gameData.hoard.bInitialized) {
 		gameData.pig.sound.sounds [0][j].nLength [0] = len;
 		gameData.pig.sound.sounds [0][j].data [0].Create (len);
 		gameData.pig.sound.sounds [0][j].data [0].Read (cf);
-		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
+		if (gameOpts->sound.audioSampleRate == SAMPLE_RATE_11K) {
 			len = cf.ReadInt ();    //get 22k len
 			cf.Seek (len, SEEK_CUR);     //skip over 22k sample
 			}

@@ -664,8 +664,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	}
 }
 
-#define AFTERBURNER_LOOP_START	 ((gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?32027: (32027/2))		//20098
-#define AFTERBURNER_LOOP_END		 ((gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?48452: (48452/2))		//25776
+#define AFTERBURNER_LOOP_START	 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?32027: (32027/2))		//20098
+#define AFTERBURNER_LOOP_END		 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?48452: (48452/2))		//25776
 
 int	Ab_scale = 4;
 

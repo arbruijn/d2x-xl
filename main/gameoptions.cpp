@@ -471,11 +471,11 @@ void InitSoundOptions (int i)
 {
 if (i) {
 	gameOptions [1].sound.bUseRedbook = 1;
-	gameOptions [1].sound.digiSampleRate = SAMPLE_RATE_22K;
+	gameOptions [1].sound.audioSampleRate = SAMPLE_RATE_22K;
 	}
 else {
 	gameOptions [0].sound.bUseRedbook = 1;
-	gameOptions [0].sound.digiSampleRate = SAMPLE_RATE_22K;
+	gameOptions [0].sound.audioSampleRate = SAMPLE_RATE_22K;
 	}
 #if 0
 #	if USE_SDL_MIXER

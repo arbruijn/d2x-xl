@@ -293,7 +293,7 @@ StartLoopingSound ();
 
 //------------------------------------------------------------------------------
 //sounds longer than this get their 3d aspects updated
-//#define SOUND_3D_THRESHHOLD  (gameOpts->sound.digiSampleRate * 3 / 2)	//1.5 seconds
+//#define SOUND_3D_THRESHHOLD  (gameOpts->sound.audioSampleRate * 3 / 2)	//1.5 seconds
 
 int CAudio::CreateObjectSound (
 	short nOrgSound, int nSoundClass, short nObject, int bForever, fix maxVolume, fix maxDistance,

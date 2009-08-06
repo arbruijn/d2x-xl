@@ -278,108 +278,116 @@ infoP->data.chunkSize = nLength;
 #endif
 
 //------------------------------------------------------------------------------
+
+static int ResampleFormat (ushort *destP, ubyte* srcP, int nSrcLen)
+{
+for (int i = nSrcLen; i; i--)
+	*destP++ = ushort (32767.0f / 255.0f * float (*srcP++));
+return nSrcLen;
+}
+
+//------------------------------------------------------------------------------
+
+static int ResampleRate (ushort* destP, ushort* srcP, int nSrcLen)
+{
+	ushort	nSound, nPrevSound;
+
+srcP += nSrcLen;
+destP += nSrcLen * 2;
+
+for (int i = 0; i < nSrcLen; i++) {
+	nSound = *(--srcP);
+	*(--destP) = i ? (nSound + nPrevSound) / 2 : nSound;
+	*(--destP) = nSound;
+	nPrevSound = nSound;
+	}
+return nSrcLen * 2;
+}
+
+//------------------------------------------------------------------------------
+
+static int ResampleRate (ubyte* destP, ubyte* srcP, int nSrcLen)
+{
+	ubyte	nSound, nPrevSound;
+
+srcP += nSrcLen;
+destP += nSrcLen * 2;
+
+for (int i = 0; i < nSrcLen; i++) {
+	nSound = *(--srcP);
+	*(--destP) = i ? (nSound + nPrevSound) / 2 : nSound;
+	*(--destP) = nSound;
+	nPrevSound = nSound;
+	}
+return nSrcLen * 2;
+}
+
+//------------------------------------------------------------------------------
+
+template<typename _T> 
+int ResampleChannels (_T* destP, _T* srcP, int nSrcLen)
+{
+	_T			nSound;
+	float		fFade;
+
+srcP += nSrcLen;
+destP += nSrcLen * 2;
+
+for (int i = nSrcLen; i; i--) {
+	nSound = *(--srcP);
+	fFade = float (i) / 500.0f;
+	if (fFade > 1.0f)
+		fFade = float (nSrcLen - i) / 500.0f;
+	if (fFade < 1.0f)
+		nSound = _T (float (nSound) * fFade);
+	*(--destP) = nSound;
+	*(--destP) = nSound;
+	}
+return nSrcLen * 2;
+}
+
+//------------------------------------------------------------------------------
 // resample to 16 bit stereo
 
 int CAudioChannel::Resample (CSoundSample *soundP, int bD1Sound, int bMP3)
 {
-	int		h, i, k, l, nFormat = audio.Format ();
-	float		fFade;
-	ushort*	ps, * ph, nSound, nPrevSound;
-	ubyte*	dataP = soundP->data [soundP->bCustom].Buffer ();
+	int	h, i, l;
 
 #if DBG
 if (soundP->bCustom)
 	soundP->bCustom = soundP->bCustom;
 #endif
-h = i = soundP->nLength [soundP->bCustom];
-l = 2 * i;
-if (bD1Sound) {
-	if (gameOpts->sound.bUseSDLMixer)
-		l *= 2;
-	else
-		bD1Sound = 0;
-	}
-if (bMP3) 
-	l = (l * 32) / 11;	//sample up to approx. 32 kHz
-else if (nFormat == AUDIO_S16LSB)
-	l *= 2;
-if (!m_info.sample.Create (l + WAVINFO_SIZE))
+l = soundP->nLength [soundP->bCustom];
+i = gameOpts->sound.audioSampleRate / gameOpts->sound.soundSampleRate;
+h = l * 2 * i;
+if (audio.Format () == AUDIO_S16LSB)
+	h *= 2;
+
+if (!m_info.sample.Create (h + WAVINFO_SIZE))
 	return -1;
 m_info.bResampled = 1;
-ps = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE);
-ph = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE + l);
-;
-for (i = k = 0; i < h; i++) {
-	nSound = ushort (dataP [i]);
-	if (bMP3) { //get as close to 32.000 Hz as possible
-		if (k < 700)
-			nSound <<= k / 100;
-		else if (i < 700)
-			nSound <<= i / 100;
-		else
-			nSound = (nSound - 1) << 8;
-		*ps++ = nSound;
-		if (ps >= ph)
-			break;
-		*ps++ = nSound;
-		if (ps >= ph)
-			break;
-		if (++k % 11) {
-			*ps++ = nSound;
-			if (ps >= ph)
-				break;
-			}
-		}
-	else {
-		if (nFormat == AUDIO_S16LSB) {
-			fFade = float (i) / 500.0f;
-			if (fFade > 1)
-				fFade = float (h - i) / 500.0f;
-			if (fFade > 1)
-				fFade = 1.0f;
-			nSound = ushort (32767.0f / 255.0f * float (nSound) * fFade);
-#if 1		// interpolate every 2nd sample
-			*ps = nSound;
-			if (i)
-				*(ps - 1) = ushort ((uint (nSound) + uint (nPrevSound)) / 2);
-			nPrevSound = nSound;
-			ps += 2;
-#else
-			*ps++ = nSound;
-			*ps++ = nSound;
-#endif
-			}
-		else {
-			nSound |= (nSound << 8);
-			*ps++ = nSound;
-			}
-		}
-	if (bD1Sound) {
-		if (bMP3) {
-			*ps++ = nSound;
-			if (ps >= ph)
-				break;
-			*ps++ = nSound;
-			if (ps >= ph)
-				break;
-			if (k % 11) {
-				*ps++ = nSound;
-				if (ps >= ph)
-					break;
-				}
-			}
-		else {
-			*ps++ = nSound;
-			if (nFormat == AUDIO_S16LSB)
-				*ps++ = nSound;
-			}
-		}
+
+if (audio.Format () == AUDIO_S16LSB) {
+	ushort* bufP = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE);
+	l = ResampleFormat (bufP, soundP->data [soundP->bCustom].Buffer (), l);
+	for (; i > 1; i >>= 1)
+		l = ResampleRate (bufP, bufP, l);
+	l = ResampleChannels (bufP, bufP, l);
 	}
-Assert (ps == ph);
+else {
+	ubyte* srcP = soundP->data [soundP->bCustom].Buffer ();
+	ubyte* destP = reinterpret_cast<ubyte*> (m_info.sample.Buffer () + WAVINFO_SIZE);
+	for (; i > 1; i >>= 1) {
+		l = ResampleRate (destP, srcP, l);
+		srcP = destP;
+		}
+	l = ResampleChannels (destP, srcP, l);
+	}
+
 #if MAKE_WAV
 SetupWAVInfo (m_info.sample.Buffer (), l);
 #endif
-return m_info.nLength = l;
+return m_info.nLength = h;
 }
 
 //------------------------------------------------------------------------------
@@ -542,7 +550,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			if (gameOpts->sound.bHires [0])
 				return -1;	//cannot mix hires and standard sounds
 #endif
-			l = Resample (soundP, gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K), songManager.MP3 ());
+			l = Resample (soundP, (gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K), songManager.MP3 ());
 			if (l <= 0)
 				return -1;
 			if (nSpeed < I2X (1))
@@ -563,7 +571,7 @@ if (pszWAV && *pszWAV)
 	return -1;
 #endif
  {
-	if (gameStates.sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) {
+	if ((gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K)) {
 		int l = Resample (soundP, 0, 0);
 		if (l <= 0)
 			return -1;
@@ -706,7 +714,7 @@ if (nFormat >= 0)
 if (gameStates.app.bNostalgia)
 	gameOpts->sound.bHires [0] = 0;
 if (gameStates.app.bDemoData)
-	gameOpts->sound.digiSampleRate = SAMPLE_RATE_11K;
+	gameOpts->sound.audioSampleRate = SAMPLE_RATE_11K;
 #if USE_OPENAL
 if (gameOpts->sound.bUseOpenAL) {
 	gameData.pig.sound.openAL.device = alcOpenDevice (NULL);
@@ -726,14 +734,19 @@ if (gameOpts->sound.bUseSDLMixer) {
 	if (fSlowDown <= 0)
 		fSlowDown = 1.0f;
 	m_info.fSlowDown = fSlowDown;
+#if 0
+	if (gameStates.app.bDemoData)
+		h = Mix_OpenAudio (int (gameOpts->sound.audioSampleRate / fSlowDown), m_info.nFormat = AUDIO_U8, 2, SOUND_BUFFER_SIZE);
+	else 
+#endif
 	if (gameOpts->sound.bHires [0] == 1)
-		h = Mix_OpenAudio (int (SAMPLE_RATE_22K / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_22K) / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (gameOpts->sound.bHires [0] == 2)
-		h = Mix_OpenAudio (int (SAMPLE_RATE_44K / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_44K) / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
 		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio (int (gameOpts->sound.digiSampleRate / fSlowDown), m_info.nFormat, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int (gameOpts->sound.audioSampleRate / fSlowDown), m_info.nFormat, 2, SOUND_BUFFER_SIZE);
 	if (h < 0) {
 		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
@@ -749,10 +762,10 @@ if (gameOpts->sound.bUseSDLMixer) {
 else 
 #endif
  {
-	waveSpec.freq = (int) (gameOpts->sound.digiSampleRate / fSlowDown);
+	waveSpec.freq = (int) (gameOpts->sound.audioSampleRate / fSlowDown);
 	waveSpec.format = AUDIO_U8;
 	waveSpec.channels = 2;
-	waveSpec.samples = SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K);
+	waveSpec.samples = SOUND_BUFFER_SIZE * (gameOpts->sound.audioSampleRate / SAMPLE_RATE_11K);
 	waveSpec.callback = CAudio::MixCallback;
 	if (SDL_OpenAudio (&waveSpec, NULL) < 0) {
 		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
