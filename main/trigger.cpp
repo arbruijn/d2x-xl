@@ -1143,9 +1143,11 @@ return 0;
 
 int CTrigger::Delay (void) 
 { 
+if (!gameStates.app.bD2XLevel)
+	return -1;
 if ((m_info.nType == TT_COUNTDOWN) || (m_info.nType == TT_MESSAGE) || (m_info.nType == TT_SOUND))
 	return -1;
-return (m_info.time >= 100) && (gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time)); 
+return (m_info.time >= 100) && (m_info.time >= 900000) && (gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time)); 
 }
 
 //------------------------------------------------------------------------------
