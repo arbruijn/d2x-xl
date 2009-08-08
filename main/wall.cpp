@@ -319,8 +319,7 @@ if ((state == WALL_DOOR_OPENING) ||
 			doorP->time = 0;
 		}
 	}
-else if ((state != WALL_DOOR_OPEN) && 
-			((state != WALL_DOOR_WAITING) || !(bForce && gameStates.app.bD2XLevel)))
+else if (state != WALL_DOOR_OPEN)
 	return NULL;
 if (!doorP) {
 	if (!gameData.walls.activeDoors.Grow ())
