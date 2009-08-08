@@ -164,7 +164,7 @@ if (m_info.nLinks) {
 void CTrigger::DoCloseDoor (void)
 {
 for (int i = 0; i < m_info.nLinks; i++)
-	SEGMENTS [m_info.segments [i]].CloseDoor (m_info.sides [i]);
+	SEGMENTS [m_info.segments [i]].CloseDoor (m_info.sides [i], true);
 }
 
 //------------------------------------------------------------------------------

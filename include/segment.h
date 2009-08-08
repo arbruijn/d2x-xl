@@ -231,7 +231,7 @@ class CSegment {
 		void DamageWall (int nSide, fix damage);
 		void BlastWall (int nSide);
 		void OpenDoor (int nSide);
-		void CloseDoor (int nSide);
+		void CloseDoor (int nSide, bool bForce = false);
 		void StartCloak (int nSide);
 		void StartDecloak (int nSide);
 		void IllusionOff (int nSide);

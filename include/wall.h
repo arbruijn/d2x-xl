@@ -213,7 +213,7 @@ class CWall {
 		bool IsVolatile (void);
 		bool IsInvisible (void);
 		CActiveDoor* OpenDoor (void);
-		CActiveDoor* CloseDoor (void);
+		CActiveDoor* CloseDoor (bool bForce = false);
 		CCloakingWall* StartCloak (void);
 		CCloakingWall* StartDecloak (void);
 		void CloseDoor (int nDoor);

@@ -307,18 +307,20 @@ if (wallP) {
 
 //------------------------------------------------------------------------------
 
-CActiveDoor* CWall::CloseDoor (void)
+CActiveDoor* CWall::CloseDoor (bool bForce)
 {
 	CActiveDoor* doorP = NULL;
 
-if (state == WALL_DOOR_OPENING) {	//reuse door
+if ((state == WALL_DOOR_OPENING) ||
+	 ((state == WALL_DOOR_WAITING) && bForce && gameStates.app.bD2XLevel)) {	//reuse door
 	if ((doorP = FindActiveDoor (this - WALLS))) {
 		doorP->time = (fix) (gameData.walls.animP [nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
 		if (doorP->time < 0)
 			doorP->time = 0;
 		}
 	}
-else if (state != WALL_DOOR_OPEN)
+else if ((state != WALL_DOOR_OPEN) && 
+			((state != WALL_DOOR_WAITING) || !(bForce && gameStates.app.bD2XLevel)))
 	return NULL;
 if (!doorP) {
 	if (!gameData.walls.activeDoors.Grow ())

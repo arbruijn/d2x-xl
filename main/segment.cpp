@@ -613,14 +613,14 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 
 //-----------------------------------------------------------------
 // Closes a door
-void CSegment::CloseDoor (int nSide)
+void CSegment::CloseDoor (int nSide, bool bForce)
 {
 	CWall*	wallP;
 
 if (!(wallP = Wall (nSide)))
 	return;
 if ((wallP->state == WALL_DOOR_CLOSING) ||		//already closing
-	 (wallP->state == WALL_DOOR_WAITING) ||		//open, waiting to close
+	 ((wallP->state == WALL_DOOR_WAITING) && !(bForce && gameStates.app.bD2XLevel)) ||		//open, waiting to close
 	 (wallP->state == WALL_DOOR_CLOSED))			//closed
 	return;
 if (DoorIsBlocked (nSide, wallP->IgnoreMarker ()))
@@ -628,7 +628,7 @@ if (DoorIsBlocked (nSide, wallP->IgnoreMarker ()))
 
 	CActiveDoor*	doorP;
 
-if (!(doorP = wallP->CloseDoor ()))
+if (!(doorP = wallP->CloseDoor (bForce)))
 	return;
 
 	CSegment*		connSegP;
@@ -644,9 +644,11 @@ doorP->nBackWall [0] = nConnWall;
 Assert(SEG_IDX (this) != -1);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening (SEG_IDX (this), nSide);
+#if 0
 if (IS_WALL (wallP->nLinkedWall))
 	Int3();		//don't think we ever used linked walls
 else
+#endif
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	if (gameData.walls.animP [wallP->nClip].openSound > -1)
