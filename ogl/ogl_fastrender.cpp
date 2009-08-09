@@ -391,12 +391,12 @@ if (bmTop) {
 	ogl.SelectTMU (GL_TEXTURE1 + bLightmaps, true);
 	glEnable (GL_TEXTURE_2D);
 	OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.ovlTexCoord.Buffer ()));
-	gameStates.render.history.bmTop = NULL;
+	//gameStates.render.history.bmTop = NULL;
 	}
 else {
 	ogl.SelectTMU (GL_TEXTURE0 + bLightmaps, true);
 	OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.texCoord.Buffer ()));
-	gameStates.render.history.bmBot = NULL;
+	//gameStates.render.history.bmBot = NULL;
 	}
 }
 

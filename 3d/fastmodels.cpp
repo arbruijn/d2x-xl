@@ -615,6 +615,7 @@ else if (bTransparency) {
 	}
 else
 	glBlendFunc (GL_ONE, GL_ZERO);
+glColor3f (1.0f, 1.0f, 1.0f);
 
 if (!bLighting || (sliP->nLast < 0))
 	nLightRange = 0;
@@ -648,6 +649,10 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				nLights = 0;
 				}
 			else if ((prl = lightManager.GetActive (activeLightsP, 0))) {
+#if DBG
+				if ((nDbgSeg >= 0) && (prl->info.nObject >= 0) && (OBJECTS [prl->info.nObject].info.nSegment == nDbgSeg))
+					nDbgSeg = nDbgSeg;
+#endif
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
 	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (prl->nObject >= 0) ? -prl->nObject : prl->nSegment);
@@ -784,6 +789,8 @@ if (nModel == nDbgModel)
 	nDbgModel = nModel;
 if (objP && (ObjIdx (objP) == nDbgObj))
 	nDbgObj = nDbgObj;
+if (objP->info.nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
 #endif
 if (gameStates.render.bQueryCoronas &&
 	 (((objP->info.nType == OBJ_WEAPON) && (objP->info.nId < MAX_WEAPONS) &&
@@ -829,9 +836,9 @@ if (pm->m_bValid < 1) {
 		}
 	}
 PROF_START
-if (!(gameStates.render.bCloaked ?
-	   ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0) :
-		ogl.EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0)))
+if (!(gameStates.render.bCloaked
+	   ? ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)
+		: ogl.EnableClientStates (1, 0 /*1*/, gameOpts->ogl.bObjLighting, GL_TEXTURE0)))
 	return 0;
 if (bUseVBO) {
 	int i;
@@ -847,7 +854,7 @@ if (bUseVBO) {
 else {
 	pm->m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (pm->m_vertBuf [0].Buffer ()), 1, pm->m_nFaceVerts);
 	pm->m_vbNormals.SetBuffer (pm->m_vbVerts.Buffer () + pm->m_nFaceVerts, 1, pm->m_nFaceVerts);
-	pm->m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (pm->m_vbNormals.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
+	//pm->m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (pm->m_vbNormals.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
 	pm->m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (pm->m_vbColor.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
 	}
 #if G3_SW_SCALING
@@ -863,7 +870,7 @@ if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameState
 if (bUseVBO) {
 	if (!gameStates.render.bCloaked) {
 		OglNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * sizeof (CFloatVector3)));
-		OglColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
+		//OglColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
 		OglTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * ((2 * sizeof (CFloatVector3) + sizeof (tRgbaColorf)))));
 		}
 	OglVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));

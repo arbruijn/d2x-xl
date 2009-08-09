@@ -1374,7 +1374,7 @@ if (!pl->bRendered) {
 	m_data.nPrevType = m_data.nCurType;
 	m_data.nCurType = pl->nType;
 #if DBG
-	if (gameOpts->render.debug.bTextures)
+	if (gameOpts->render.debug.bTextures && gameOpts->render.debug.bWalls)
 #endif
 	try {
 		FlushBuffers (m_data.nCurType);

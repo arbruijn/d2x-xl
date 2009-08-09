@@ -118,6 +118,13 @@ if (left < r)
 
 int CLightManager::SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread, bool bForce)
 {
+#if DBG
+if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+if ((nDbgObj >= 0) && (prl->info.nObject == nDbgObj))
+	nDbgObj = nDbgObj;
+#endif
+
 if (prl->render.bUsed [nThread])
 	return 0;
 fix xDist = (bForce || prl->info.bSpot) ? 0 : (prl->render.xDistance / 2000 + 5) / 10;
@@ -151,6 +158,14 @@ if (activeLightsP [xDist].info.nType) {
 		}
 	}
 #endif
+
+#if DBG
+if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+if ((nDbgObj >= 0) && (prl->info.nObject == nDbgObj))
+	nDbgObj = nDbgObj;
+#endif
+
 activeLightsP [xDist].nType = nType;
 activeLightsP [xDist].pl = prl;
 prl->render.activeLightsP [nThread] = activeLightsP + xDist;
@@ -394,7 +409,7 @@ if (gameStates.render.nLightingMethod) {
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
 
 	c = SEGMENTS [nSegment].Center ();
-	lightManager.ResetAllUsed (1, nThread);
+	lightManager.ResetAllUsed (0, nThread);
 	lightManager.ResetActive (nThread, 0);
 	while (i) {
 		if (!(prl = RenderLights (--i)))
@@ -754,12 +769,21 @@ void CLightManager::ResetAllUsed (int bVariable, int nThread)
 	int			i = m_data.nLights [1];
 	CDynLight*	prl;
 
-while (i) {
-	if (!(prl = RenderLights (--i)))
-		continue;
-	if (bVariable && (prl->info.nType < 2))
-		break;
-	ResetUsed (prl, nThread);
+if (bVariable) {
+	while (i) {
+		if (!(prl = RenderLights (--i)))
+			continue;
+		if (prl->info.nType < 2)
+			break;
+		ResetUsed (prl, nThread);
+		}
+	}
+else {
+	while (i) {
+		if (!(prl = RenderLights (--i)))
+			continue;
+		ResetUsed (prl, nThread);
+		}
 	}
 }
 

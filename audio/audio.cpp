@@ -469,8 +469,6 @@ int CAudioChannel::Start (short nSound, int nSoundClass, fix nVolume, int nPan, 
 								  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
 								  const char *pszWAV, CFixVector* vPos)
 {
-	return -1;
-
 	CSoundSample*	soundP = NULL;
 	int				bPersistent = (nSoundObj > -1) || bLooping || (nVolume > I2X (1));
 
