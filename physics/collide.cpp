@@ -498,7 +498,7 @@ fix	xLastVolatileScrapeSoundTime = 0;
 
 
 //see if CWall is volatile or water
-//if volatile, cause damage to CPlayerData
+//if volatile, damage player ship
 //returns 1=lava, 2=water
 int CObject::ApplyWallPhysics (short nSegment, short nSide)
 {
@@ -508,6 +508,8 @@ int CObject::ApplyWallPhysics (short nSegment, short nSide)
 if (!((nType = SEGMENTS [nSegment].Physics (nSide, xDamage)) || 
 		(nType = SEGMENTS [nSegment].Physics (xDamage))))
 	return 0;
+if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_NODAMAGE)
+	 xDamage = 0;
 if (info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (xDamage > 0) {
 		xDamage = FixMul (xDamage, gameData.time.xFrame);
