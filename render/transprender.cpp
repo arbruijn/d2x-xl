@@ -1373,6 +1373,9 @@ if (!pl->bRendered) {
 	pl->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
 	m_data.nCurType = pl->nType;
+#if DBG
+	if (gameOpts->render.debug.bTextures)
+#endif
 	try {
 		FlushBuffers (m_data.nCurType);
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
@@ -1423,10 +1426,6 @@ void CTransparencyRenderer::Render (void)
 if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
-#if DBG
-if (!gameOpts->render.debug.bTextures)
-	return;
-#endif
 PROF_START
 gameStates.render.nType = 5;
 ResetShader ();
