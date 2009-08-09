@@ -84,15 +84,13 @@ dot = CFixVector::Dot (*vVecToTarget, objP->info.position.mOrient.FVec ());
 if (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9))
 	return 2;
 if (gameOpts->gameplay.nAIAggressivity) {	// player visible at raised AI aggressivity when having headlight on
-	if (!gameData.ai.target.objP)
-		objP->SetTarget (gameData.ai.target.objP = gameData.objs.consoleP);
-	 if ((gameData.ai.target.objP->info.nType == OBJ_PLAYER) && 
-		  (gameData.ai.target.objP->info.nId == gameData.multiplayer.nLocalPlayer) && 
+	 if ((TARGETOBJ->info.nType == OBJ_PLAYER) && 
+		  (TARGETOBJ->info.nId == gameData.multiplayer.nLocalPlayer) && 
 		  HeadlightIsOn (-1))
 		return 2;
-	if (!gameData.ai.target.objP->Cloaked () &&
-		 (CFixVector::Dist (*vPos, OBJPOS (gameData.ai.target.objP)->vPos) < 
-		 ((3 + gameOpts->gameplay.nAIAggressivity) * (objP->info.xSize + gameData.ai.target.objP->info.xSize)) / 2))
+	if (!TARGETOBJ->Cloaked () &&
+		 (CFixVector::Dist (*vPos, OBJPOS (TARGETOBJ)->vPos) < 
+		 ((3 + gameOpts->gameplay.nAIAggressivity) * (objP->info.xSize + TARGETOBJ->info.xSize)) / 2))
 		return 2;
 	}
 return 1;
