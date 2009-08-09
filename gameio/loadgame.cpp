@@ -1241,8 +1241,8 @@ paletteManager.ResetEffect ();
 //	Called from switch.c when CPlayerData is on a secret level and hits exit to return to base level.
 void ExitSecretLevel (void)
 {
-if (gameData.demo.nState == ND_STATE_PLAYBACK)
-	return;
+if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+	NDStopRecording ();
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, 2, 0, SECRETC_FILENAME);
 if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
@@ -1296,7 +1296,6 @@ void PlayerFinishedLevel (int bSecret)
 {
 	Assert (!bSecret);
 
-	//credit the CPlayerData for hostages
 LOCALPLAYER.hostages.nRescued += LOCALPLAYER.hostages.nOnBoard;
 if (gameData.app.nGameMode & GM_NETWORK)
 	LOCALPLAYER.connected = 2; // Finished but did not die
@@ -1423,6 +1422,8 @@ if (!bFromSecret && ((gameData.missions.nCurrentLevel != gameData.missions.nLast
 		DoEndLevelScoreGlitz (0);		//give bonuses
 		}
 	}
+if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+	NDStopRecording ();
 gameData.reactor.bDestroyed = 0;
 if (IsMultiGame) {
 	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
