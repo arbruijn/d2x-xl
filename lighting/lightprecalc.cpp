@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "rendermine.h"
 #include "gameseg.h"
 #include "menu.h"
+#include "netmisc.h"
 #include "key.h"
 #include "u_mem.h"
 #include "paging.h"
@@ -39,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define LIGHT_DATA_VERSION 14
+#define LIGHT_DATA_VERSION 15
 
 
 #define	VERTVIS(_nSegment, _nVertex) \
@@ -49,6 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tLightDataHeader {
 	int	nVersion;
+	int	nCheckSum;
 	int	nSegments;
 	int	nVertices;
 	int	nLights;
@@ -522,6 +524,7 @@ if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "r
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)
 	bOk = (ldh.nVersion == LIGHT_DATA_VERSION) &&
+			(ldh.nCheckSum == CalcSegmentCheckSum ()) &&
 			(ldh.nSegments == gameData.segs.nSegments) &&
 			(ldh.nVertices == gameData.segs.nVertices) &&
 			(ldh.nLights == lightManager.LightCount (0)) &&
@@ -543,6 +546,7 @@ int SaveLightData (int nLevel)
 {
 	CFile				cf;
 	tLightDataHeader ldh = {LIGHT_DATA_VERSION,
+									CalcSegmentCheckSum (),
 								   gameData.segs.nSegments,
 								   gameData.segs.nVertices,
 								   lightManager.LightCount (0),

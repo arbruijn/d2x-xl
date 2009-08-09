@@ -41,6 +41,7 @@ there I just had it exit instead.
 #include "menu.h"
 #include "menu.h"
 #include "text.h"
+#include "netmisc.h"
 #include "gamepal.h"
 #include "gamemine.h"
 #include "renderthreads.h"
@@ -52,7 +53,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 22
+#define LIGHTMAP_DATA_VERSION 23
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -61,6 +62,7 @@ CLightmapManager lightmapManager;
 
 typedef struct tLightmapDataHeader {
 	int	nVersion;
+	int	nCheckSum;
 	int	nSegments;
 	int	nVertices;
 	int	nFaces;
@@ -603,6 +605,7 @@ int CLightmapManager::Save (int nLevel)
 {
 	CFile				cf;
 	tLightmapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
+										CalcSegmentCheckSum (),
 										gameData.segs.nSegments, 
 										gameData.segs.nVertices, 
 										gameData.segs.nFaces, 
@@ -653,6 +656,7 @@ if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)
 	bOk = (ldh.nVersion == LIGHTMAP_DATA_VERSION) && 
+			(ldh.nCheckSum == CalcSegmentCheckSum ()) &&
 			(ldh.nSegments == gameData.segs.nSegments) && 
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nFaces == gameData.segs.nFaces) && 

@@ -49,6 +49,7 @@
 #include "light.h"
 #include "dynlight.h"
 #include "renderlib.h"
+#include "netmisc.h"
 #include "createmesh.h"
 
 using namespace Mesh;
@@ -57,12 +58,13 @@ using namespace Mesh;
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 7
+#define MESH_DATA_VERSION 8
 
 //------------------------------------------------------------------------------
 
 typedef struct tMeshDataHeader {
 	int	nVersion;
+	int	nCheckSum;
 	int	nSegments;
 	int	nVertices;
 	int	nFaceVerts;
@@ -740,6 +742,7 @@ if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0
 bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
 	bOk = (mdh.nVersion == MESH_DATA_VERSION) &&
+			(mdh.nCheckSum == CalcSegmentCheckSum ()) &&
 			(mdh.nSegments == gameData.segs.nSegments) &&
 			(mdh.nFaces == gameData.segs.nFaces);
 	uint	nTriVerts = mdh.nTris * 3;
@@ -814,6 +817,7 @@ return bOk;
 bool CTriMeshBuilder::Save (int nLevel)
 {
 	tMeshDataHeader mdh = {MESH_DATA_VERSION,
+								  CalcSegmentCheckSum (),
 								  gameData.segs.nSegments,
 								  gameData.segs.nVertices,
 								  gameData.segs.nFaceVerts,
