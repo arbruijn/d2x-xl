@@ -261,7 +261,8 @@ if (nBrightness >= I2X (1) / 8) {
 else if ((nBrightness = IsLight (nTexture = sideP->m_nBaseTex))) {
 	if (fIntensityP)
 		*fIntensityP /= 2;
-	bAdditive = 0;
+	bAdditive = gameOpts->render.coronas.bAdditive;
+	//bAdditive = 0;
 	}
 else
 	return 0;
@@ -661,12 +662,12 @@ if (fIntensity < 0.01f)
 if ((nSegment != 6) || (nSide != 2))
 	return;
 #endif
-if (! (nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
-	return;
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
+if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
+	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 if (ogl.m_states.bOcclusionQuery && CoronaStyle ()) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
@@ -683,7 +684,7 @@ if (ogl.m_states.bOcclusionQuery && CoronaStyle ()) {
 		}
 #endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
-						  !automap.m_bDisplay || automap.m_visited [0][nSegment]);
+						  !automap.m_bDisplay || automap.m_visited [0][nSegment] || !gameOpts->render.automap.bGrayOut);
 	glDepthFunc (GL_LESS);
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -844,7 +845,7 @@ const char *glareFS [2] = {
 	"float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
-	"gl_FragColor = vec4 ((texColor.rgb * gl_Color.rgb) * dz, texColor.a * gl_Color.a);\r\n" \
+	"gl_FragColor = vec4 ((texColor.rgb * gl_Color.rgb) * dz, 1.0 /*texColor.a * gl_Color.a*/);\r\n" \
 	"}\r\n"
 	};
 
