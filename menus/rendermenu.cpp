@@ -154,7 +154,7 @@ if (!gameStates.app.bNostalgia) {
 	}
 
 #if !DBG
-if (EXPERTMODE)
+if (gameOpts->app.bNotebookFriendly)
 #endif
 {
 	m = menu + renderOpts.nFrameCap;
