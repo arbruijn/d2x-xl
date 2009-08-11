@@ -555,7 +555,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 			trigP->m_info.nLinks = trig.nLinks;
 			trigP->m_info.nLinks = trig.nLinks;
 			trigP->m_info.value = trig.value;
-			trigP->m_info.time = trig.time;
+			trigP->m_info.time [0] = trig.time;
 			for (t = 0; t < trig.nLinks; t++) {
 				trigP->m_info.segments [t] = trig.segments [t];
 				trigP->m_info.sides [t] = trig.sides [t];
