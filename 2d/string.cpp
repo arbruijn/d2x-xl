@@ -57,6 +57,7 @@ int GrInternalStringClippedM (int x, int y, const char *s);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#define STRINGPOOL		1
 #define GRS_MAX_STRINGS	1000
 
 grsString stringPool [GRS_MAX_STRINGS];
@@ -95,7 +96,7 @@ InitStringPool ();
 
 grsString *CreatePoolString (const char *s, int *idP)
 {
-	grsString	*ps;
+	grsString*	ps;
 	int			l, w, h, aw;
 
 if (*idP) {
@@ -190,7 +191,7 @@ if (CCanvas::Current ()->FontColor (1).rgb) {
 																							CCanvas::Current ()->FontColor (1).color.green, 
 																							CCanvas::Current ()->FontColor (1).color.blue);
 	}
-bits=0;
+bits = 0;
 videoOffset1 = y * rowSize + x;
 nextRowP = s;
 fontManager.Current ()->GetInfo (font);
@@ -628,25 +629,18 @@ return bmP;
 
 int GrString (int x, int y, const char *s, int *idP)
 {
-//if (gameOpts->render.coronas.nStyle < 2)	//why in all the earth did I query that here?
-	{
-		grsString	*ps;
+#if STRINGPOOL
+	grsString	*ps;
 
-	if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
-		CBitmap* bmP = ps->bmP;
-		float		fScale = fontManager.Scale ();
+if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
+	CBitmap* bmP = ps->bmP;
+	float		fScale = fontManager.Scale ();
 
-		ps->bmP->RenderScaled (x, y, int (bmP->Width () * fScale), int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0));
-		return (int) (ps - stringPool) + 1;
-		}
+	ps->bmP->RenderScaled (x, y, int (bmP->Width () * fScale), int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0));
+	return (int) (ps - stringPool) + 1;
 	}
-#if 0
-
-return fontManager.Current ()->DrawString (x, y, s);
-
-#else
-
-	int			w, h, aw, clipped = 0;
+#endif
+	int		w, h, aw, clipped = 0;
 
 Assert (fontManager.Current () != NULL);
 if (x == 0x8000) {
@@ -698,9 +692,6 @@ if (fontManager.Current ()->Flags () & FT_COLOR)
 if (CCanvas::Current ()->FontColor (1).index == -1)
 	return GrInternalStringClippedM (x, y, s);
 return GrInternalStringClipped (x, y, s);
-
-#endif
-
 }
 
 //------------------------------------------------------------------------------
