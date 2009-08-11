@@ -884,45 +884,57 @@ return h;
 
 //------------------------------------------------------------------------------
 
+static int nDbgTrigger = -1;
+static int nDbgType = -1;
+
 int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 {
+	static int nDepth = -1;
+#if DBG
+if (this - gameData.trigs.triggers.Buffer () == nDbgTrigger)
+	nDbgTrigger = nDbgTrigger;
+#endif
+
 if (m_info.flags & TF_DISABLED)
 	return 1;		//1 means don't send trigger hit to other players
+
+nDepth++;
 
 CObject*	objP = (nObject >= 0) ? OBJECTS + nObject : NULL;
 bool bIsPlayer = objP && (objP->info.nType == OBJ_PLAYER);
 
 if (bIsPlayer) {
-	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject))
+	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject))	{
+		nDepth--;
 		return 1;
+		}
 	}
 else {
 	nPlayer = -1;
+	if (objP &&
+		 (objP->info.nType != OBJ_ROBOT) &&
+		 (objP->info.nType != OBJ_REACTOR) &&
+		 (objP->info.nType != OBJ_HOSTAGE) &&
+		 (objP->info.nType != OBJ_POWERUP))	{		
+		nDepth--;
+		return 1;
+		}
 	if ((m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
-		if (objP &&
-			 (objP->info.nType != OBJ_ROBOT) &&
-			 (objP->info.nType != OBJ_REACTOR) &&
-			 (objP->info.nType != OBJ_HOSTAGE) &&
-			 (objP->info.nType != OBJ_POWERUP))
+		if (!bObjTrigger)	{
+			nDepth--;
 			return 1;
-		if (!bObjTrigger)
-			return 1;
+			}
 		}
-	else
-		if (objP &&
-			 (objP->info.nType != OBJ_ROBOT) &&
-			 (objP->info.nType != OBJ_REACTOR) &&
-			 (objP->info.nType != OBJ_HOSTAGE) &&
-			 (objP->info.nType != OBJ_POWERUP))
-			return 1;
-		}
+	}
 
 int nTrigger = bObjTrigger ? OBJTRIGGERS.Index (this) : TRIGGERS.Index (this);
 
-if (!bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
+if (!nDepth && !bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;
-	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750))
+	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750)) {
+		nDepth--;
 		return 1;
+		}
 	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks;
 	}
 
@@ -937,25 +949,34 @@ if (m_info.tOperated < 0) {
 	if (IsDelayed ()) {
 		if (m_info.time [0] > 0)
 			m_info.time [1] = m_info.time [0];
-		else
-			m_info.time [1] = FixMul (-m_info.time [0], I2X (1) - d_rand ());
+		else {
+			fix h = -m_info.time [0] / 5;
+			m_info.time [1] = h + FixMul (4 * h, I2X (1) / 2 - d_rand ());
+			}
+		PrintLog ("countdown %d: %d\n", this - gameData.trigs.triggers.Buffer (), m_info.time [1]);
 		}
 	}
 if (Delay () > 0) {
+	PrintLog ("delaying %d\n", this - gameData.trigs.triggers.Buffer ());
 	gameData.trigs.delay [nTrigger] = -1;
-	return 0;
+	nDepth--;
+	return 1;
 	}
 
 switch (m_info.nType) {
 
 	case TT_EXIT:
-		if (DoExit (nPlayer))
+		if (DoExit (nPlayer)) {
+			nDepth--;
 			return 1;
+			}
 		break;
 
 	case TT_SECRET_EXIT:
-		if (DoSecretExit (nPlayer))
+		if (DoSecretExit (nPlayer)) {
+			nDepth--;
 			return 1;
+			}
 		break;
 
 	case TT_OPEN_DOOR:
@@ -1115,10 +1136,12 @@ switch (m_info.nType) {
 		break;
 
 	case TT_MASTER:
+		PrintLog ("master %d\n", this - gameData.trigs.triggers.Buffer ());
 		DoMasterTrigger (nObject);
 		break;
 
 	case TT_ENABLE_TRIGGER:
+		PrintLog ("enable %d\n", this - gameData.trigs.triggers.Buffer ());
 		DoEnableTrigger ();
 #if DBG
 		PrintMessage (nPlayer, 2, "Triggers have been enabled!");
@@ -1126,6 +1149,7 @@ switch (m_info.nType) {
 		break;
 
 	case TT_DISABLE_TRIGGER:
+		PrintLog ("disable %d\n", this - gameData.trigs.triggers.Buffer ());
 		DoDisableTrigger ();
 #if DBG
 		PrintMessage (nPlayer, 2, "Triggers have been disabled!");
@@ -1142,6 +1166,12 @@ switch (m_info.nType) {
 	}
 if (m_info.flags & TF_ALTERNATE)
 	m_info.nType = oppTrigTypes [m_info.nType];
+#if DBG
+if ((this - gameData.trigs.triggers.Buffer () == nDbgTrigger) && (nDbgType == m_info.nType))
+	nDbgTrigger = nDbgTrigger;
+nDbgType = m_info.nType;
+#endif
+nDepth--;
 return 0;
 }
 
