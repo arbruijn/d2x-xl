@@ -1300,12 +1300,12 @@ void TriggersFrameProcess (void)
 
 trigP = TRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
-	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT)))
+	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT))) {
 		trigP->Operate (LOCALPLAYER.nObject, gameData.multiplayer.nLocalPlayer, 0, false);
-	if (trigP->IsDelayed ())
-		trigP->Countdown (false);	
-	else
-		trigP->m_info.flags |= TF_DISABLED;
+		if (!trigP->IsDelayed ())
+		}
+	trigP->m_info.flags |= TF_DISABLED;
+	trigP->Countdown (false);	
 	}
 
 trigP = OBJTRIGGERS.Buffer ();
