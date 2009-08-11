@@ -1147,7 +1147,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-unt CTrigger::IsDelayed (void) 
+bool CTrigger::IsDelayed (void) 
 {
 if (!gameStates.app.bD2XLevel)
 	return 0;
@@ -1273,8 +1273,8 @@ void TriggersFrameProcess (void)
 
 trigP = TRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
-	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->tOperated < 0))
-		trigP->Operate ();
+	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0))
+		trigP->Operate (-1, 0, 0, false);
 	trigP->Countdown (false);	
 	}
 
