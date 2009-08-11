@@ -72,6 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TF_ALTERNATE			 16
 #define TF_SET_ORIENT		 32
 #define TF_PLAYING_SOUND	 64
+#define TF_AUTOPLAY			128
 
 //old CTrigger structs
 
@@ -123,7 +124,7 @@ class CTriggerInfo {
 		short		flags;   
 		short		flagsD1;
 		fix		value;
-		fix		time;
+		fix		time [2];
 		short		segments [MAX_TRIGGER_TARGETS];
 		short		sides [MAX_TRIGGER_TARGETS];
 
@@ -174,6 +175,7 @@ class CTrigger {
 		inline int HasTarget (short nSegment, short nSide);
 		inline bool ClientOnly (void) { return (m_info.nType == TT_SHIELD_DAMAGE) || (m_info.nType == TT_ENERGY_DRAIN); }
 		int Delay (void);
+		bool IsDelayed (void);
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
 

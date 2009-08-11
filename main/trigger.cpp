@@ -327,7 +327,7 @@ return 1;
 
 int CTrigger::DoShowMessage (void)
 {
-ShowGameMessage (gameData.messages, X2I (m_info.value), m_info.time);
+ShowGameMessage (gameData.messages, X2I (m_info.value), m_info.time [0]);
 return 1;
 }
 
@@ -339,12 +339,12 @@ int CTrigger::DoPlaySound (short nObject)
 
 if (!indexP)
 	return 0;
-if (m_info.time < 0) {
+if (m_info.time [0] < 0) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText);
 	m_info.flags |= TF_PLAYING_SOUND;
 	}
-else if (gameData.time.xGame - m_info.tOperated < m_info.time) {
-	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, m_info.time - 1, -1, I2X (1), indexP->pszText);
+else if (gameData.time.xGame - m_info.tOperated < m_info.time [0]) {
+	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, m_info.time [0] - 1, -1, I2X (1), indexP->pszText);
 	m_info.flags |= TF_PLAYING_SOUND;
 	}
 return 1;
@@ -934,6 +934,12 @@ if (m_info.tOperated < 0) {
 	m_info.nObject = nObject;
 	m_info.nPlayer = nPlayer;
 	m_info.bShot = bShot;
+	if (IsDelayed ()) {
+		if (m_info.time [0] > 0)
+			m_info.time [1] = m_info.time [0];
+		else
+			m_info.time [1] = FixMul (-m_info.time [0], I2X (1) - d_rand ());
+		}
 	}
 if (Delay () > 0) {
 	gameData.trigs.delay [nTrigger] = -1;
@@ -1141,15 +1147,24 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+unt CTrigger::IsDelayed (void) 
+{
+if (!gameStates.app.bD2XLevel)
+	return 0;
+if ((m_info.nType == TT_COUNTDOWN) || (m_info.nType == TT_MESSAGE) || (m_info.nType == TT_SOUND))
+	return 0;
+if ((abs (m_info.time [0]) < 100) || (abs (m_info.time [0]) > 900000))
+	return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int CTrigger::Delay (void) 
 { 
-if (!gameStates.app.bD2XLevel)
+if (!IsDelayed ())
 	return -1;
-if ((m_info.nType == TT_COUNTDOWN) || (m_info.nType == TT_MESSAGE) || (m_info.nType == TT_SOUND))
-	return -1;
-if ((m_info.time < 100) || (m_info.time > 900000))
-	return -1;
-return gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time);
+return gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time [1]);
 }
 
 //------------------------------------------------------------------------------
@@ -1161,7 +1176,7 @@ if ((m_info.tOperated > 0) && !Delay ()) {
 	if (m_info.flags & TF_PERMANENT)
 		m_info.tOperated = -1;
 	else
-		m_info.time = 0;
+		m_info.time [0] = 0;
 	}
 }
 
@@ -1176,7 +1191,7 @@ else
 	m_info.flags = short (cf.ReadByte ());
 m_info.nLinks = cf.ReadByte ();
 m_info.value = cf.ReadFix ();
-m_info.time = cf.ReadFix ();
+m_info.time [0] = cf.ReadFix ();
 for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 	m_info.segments [i] = cf.ReadShort ();
 	m_info.sides [i] = cf.ReadShort ();
@@ -1196,7 +1211,7 @@ else
 	cf.WriteByte (sbyte (m_info.flags));
 cf.WriteByte (m_info.nLinks);
 cf.WriteFix (m_info.value);
-cf.WriteFix (m_info.time);
+cf.WriteFix (m_info.time [0]);
 for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 	cf.WriteShort (m_info.segments [i]);
 	cf.WriteShort (m_info.sides [i]);
@@ -1257,8 +1272,11 @@ void TriggersFrameProcess (void)
 	int		i;
 
 trigP = TRIGGERS.Buffer ();
-for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++)
+for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
+	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->tOperated < 0))
+		trigP->Operate ();
 	trigP->Countdown (false);	
+	}
 
 trigP = OBJTRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++)
@@ -1485,7 +1503,7 @@ else
 m_info.nLinks = cf.ReadByte ();
 cf.ReadByte ();
 m_info.value = cf.ReadFix ();
-m_info.time = cf.ReadFix ();
+m_info.time [0] = cf.ReadFix ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	m_info.segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
