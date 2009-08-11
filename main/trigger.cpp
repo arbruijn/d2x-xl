@@ -953,11 +953,9 @@ if (m_info.tOperated < 0) {
 			fix h = -m_info.time [0] / 5;
 			m_info.time [1] = h + FixMul (4 * h, I2X (1) / 2 - d_rand ());
 			}
-		PrintLog ("countdown %d: %d\n", this - gameData.trigs.triggers.Buffer (), m_info.time [1]);
 		}
 	}
 if (Delay () > 0) {
-	PrintLog ("delaying %d\n", this - gameData.trigs.triggers.Buffer ());
 	gameData.trigs.delay [nTrigger] = -1;
 	nDepth--;
 	return 1;
@@ -1136,12 +1134,10 @@ switch (m_info.nType) {
 		break;
 
 	case TT_MASTER:
-		PrintLog ("master %d\n", this - gameData.trigs.triggers.Buffer ());
 		DoMasterTrigger (nObject);
 		break;
 
 	case TT_ENABLE_TRIGGER:
-		PrintLog ("enable %d\n", this - gameData.trigs.triggers.Buffer ());
 		DoEnableTrigger ();
 #if DBG
 		PrintMessage (nPlayer, 2, "Triggers have been enabled!");
@@ -1149,7 +1145,6 @@ switch (m_info.nType) {
 		break;
 
 	case TT_DISABLE_TRIGGER:
-		PrintLog ("disable %d\n", this - gameData.trigs.triggers.Buffer ());
 		DoDisableTrigger ();
 #if DBG
 		PrintMessage (nPlayer, 2, "Triggers have been disabled!");
