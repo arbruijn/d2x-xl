@@ -962,6 +962,7 @@ if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 	return -1;
 	}
 #endif
+lightManager.Setup (nLevel); 
 /*---*/PrintLog ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);
 

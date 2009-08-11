@@ -70,7 +70,7 @@ return MSEC2X (SDL_GetTicks ());
 
 static inline void TimerDelay (fix seconds)
 {
-SDL_Delay (X2I (FixMul (seconds, I2X (1000))));
+G3_SLEEP (X2I (FixMul (seconds, I2X (1000))));
 }
 
 #endif

@@ -1116,8 +1116,7 @@ if (!(gameData.render.lights.Create () &&
 #endif	
 if (!gameData.render.mine.Create ())
 	return 4;
-lightManager.Setup (nLevel); //moved to loadgame.cpp::LoadLevel()
-
+//lightManager.Setup (nLevel); 
 SetAmbientSoundFlags ();
 return 0;
 }
