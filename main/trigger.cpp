@@ -950,8 +950,8 @@ if (m_info.tOperated < 0) {
 		if (m_info.time [0] > 0)
 			m_info.time [1] = m_info.time [0];
 		else {
-			fix h = -m_info.time [0] / 5;
-			m_info.time [1] = h + FixMul (4 * h, I2X (1) / 2 - d_rand ());
+			fix h = -m_info.time [0] / 10;
+			m_info.time [1] = h + h * (d_rand () % 10);
 			}
 		}
 	}
@@ -1200,8 +1200,10 @@ if ((m_info.tOperated > 0) && !Delay ()) {
 	Operate (m_info.nObject, m_info.nPlayer, m_info.bShot, bObjTrigger);
 	if (m_info.flags & TF_PERMANENT)
 		m_info.tOperated = -1;
-	else
+	else {
 		m_info.time [0] = 0;
+		m_info.flags &= TF_DISABLED;
+		}	
 	}
 }
 
@@ -1298,7 +1300,7 @@ void TriggersFrameProcess (void)
 
 trigP = TRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
-	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0))
+	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(m_info.flags & TF_PERMANENT)))
 		trigP->Operate (LOCALPLAYER.nObject, gameData.multiplayer.nLocalPlayer, 0, false);
 	trigP->Countdown (false);	
 	}
