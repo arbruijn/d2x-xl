@@ -1202,7 +1202,7 @@ if ((m_info.tOperated > 0) && !Delay ()) {
 		m_info.tOperated = -1;
 	else {
 		m_info.time [0] = 0;
-		m_info.flags &= TF_DISABLED;
+		m_info.flags |= TF_DISABLED;
 		}	
 	}
 }
@@ -1300,9 +1300,12 @@ void TriggersFrameProcess (void)
 
 trigP = TRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
-	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(m_info.flags & TF_PERMANENT)))
+	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT)))
 		trigP->Operate (LOCALPLAYER.nObject, gameData.multiplayer.nLocalPlayer, 0, false);
-	trigP->Countdown (false);	
+	if (trigP->IsDelayed ())
+		trigP->Countdown (false);	
+	else
+		trigP->m_info.flags |= TF_DISABLED;
 	}
 
 trigP = OBJTRIGGERS.Buffer ();
