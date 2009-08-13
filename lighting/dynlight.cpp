@@ -74,7 +74,7 @@ void CLightManager::SetColor (short nLight, float red, float green, float blue, 
 	CDynLight*	pl = m_data.lights + nLight;
 	int			i;
 
-if ((pl->info.nType == 1) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
+if ((pl->info.nType == 2) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
 	pl->info.color.red = red;
 	pl->info.color.green = green;
 	pl->info.color.blue = blue;
@@ -768,7 +768,7 @@ else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightm
 else
 	gameStates.render.bPerPixelLighting = 0;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
-gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || (gameOpts->render.color.nLevel == 2);
+gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (gameOpts->render.color.nLevel == 2);
 return gameStates.render.bPerPixelLighting;
 }
 

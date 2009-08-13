@@ -53,7 +53,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 24
+#define LIGHTMAP_DATA_VERSION 23
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -67,7 +67,6 @@ typedef struct tLightmapDataHeader {
 	int	nVertices;
 	int	nFaces;
 	int	nLights;
-	int	bColored;
 	int	nMaxLightRange;
 	int	nBuffers;
 	} tLightmapDataHeader;
@@ -587,7 +586,10 @@ return nCurItem;
 
 char *CLightmapManager::Filename (char *pszFilename, int nLevel)
 {
-return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality);
+if (gameOpts->render.color.nLevel == 2)
+	return GameDataFilename (pszFilename, "lmap", nLevel, gameOpts->render.nLightmapQuality);
+else
+	return GameDataFilename (pszFilename, "bw.lmap", nLevel, gameOpts->render.nLightmapQuality);
 }
 
 //------------------------------------------------------------------------------
@@ -611,7 +613,6 @@ int CLightmapManager::Save (int nLevel)
 										gameData.segs.nVertices, 
 										gameData.segs.nFaces, 
 										m_list.nLights, 
-										gameOpts->render.color.nLevel == 2,
 										MAX_LIGHT_RANGE,
 										m_list.nBuffers};
 	int				i, bOk;
@@ -645,11 +646,11 @@ return bOk;
 
 int CLightmapManager::Load (int nLevel)
 {
-	CFile				cf;
-	tLightmapDataHeader ldh;
-	int				i, bOk;
-	char				szFilename [FILENAME_LEN];
-	CSegFace			*faceP;
+	CFile						cf;
+	tLightmapDataHeader	ldh;
+	int						i, bOk;
+	char						szFilename [FILENAME_LEN];
+	CSegFace*				faceP;
 
 if (!(gameStates.app.bCacheLightmaps))
 	return 0;
@@ -663,7 +664,6 @@ if (bOk)
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nFaces == gameData.segs.nFaces) && 
 			(ldh.nLights == m_list.nLights) && 
-			(ldh.bColored == (gameOpts->render.color.nLevel == 2)) && 
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
