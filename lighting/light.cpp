@@ -541,7 +541,7 @@ switch (nObjType) {
 		fix tval = gameData.weapons.info [objP->info.nId].light;
 		if (gameData.objs.bIsMissile [objP->info.nId])
 			*colorP = missileColor;
-		else if (gameOpts->render.color.bGunLight)
+		else if (gameOpts->render.color.nLevel)
 			*colorP = gameData.weapons.color [objP->info.nId];
 		*pbGotColor = 1;
 		if (IsMultiGame)

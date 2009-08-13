@@ -201,8 +201,7 @@ typedef struct tWeaponIconOptions {
 
 typedef struct tColorOptions {
 	int bCap;
-	int bAmbientLight;
-	int bGunLight;
+	int nLevel;
 	int bWalls;
 	int bMix;
 	int bUseLightmaps;

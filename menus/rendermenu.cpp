@@ -84,6 +84,7 @@ static struct {
 	int	nPowerups;
 	int	nLighting;
 	int	nLightmaps;
+	int	nColorLevel;
 	int	nCameras;
 	int	nLights;
 	int	nPasses;
@@ -101,6 +102,7 @@ static int fpsTable [] = {0, 60};
 static const char *pszRendQual [4];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
+static const char *pszColorLevel [3];
 
 //------------------------------------------------------------------------------
 
@@ -179,6 +181,14 @@ if (gameOpts->app.bNotebookFriendly)
 		gameStates.render.bVSync = (v < 0);
 		m->m_bRebuild = 1;
 		}
+	}
+
+m = menu + renderOpts.nColorLevel;
+v = m->m_value;
+if (gameOpts->render.color.nLevel != v) {
+	gameOpts->render.color.nLevel = v;
+	sprintf (m->m_text, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
+	m->m_bRebuild = 1;
 	}
 
 m = menu + renderOpts.nImageQual;
@@ -310,6 +320,10 @@ pszQuality [1] = TXT_STANDARD;
 pszQuality [2] = TXT_HIGH;
 pszQuality [3] = TXT_BEST;
 
+pszColorLevel [0] = TXT_OFF;
+pszColorLevel [1] = TXT_DYNAMIC;
+pszColorLevel [2] = TXT_FULL;
+
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
 				? 0
@@ -347,7 +361,9 @@ do {
 	renderOpts.nLights =
 	renderOpts.nPasses = -1;
 	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
-		renderOpts.nLighting = -1;
+		renderOpts.nLighting = 
+		renderOpts.nColorLevel =
+		renderOpts.nLightmaps = -1;
 	else {
 		sprintf (szSlider + 1, TXT_LIGHTING, pszQuality [nLighting]);
 		*szSlider = *(TXT_LIGHTING + 1);
@@ -363,9 +379,11 @@ do {
 				renderOpts.nLights = m.AddSlider (szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 5, 0, 8 - MIN_LIGHTS_PER_PASS, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
 				}
 			}
+		sprintf (szSlider + 1, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
+		*szSlider = *(TXT_LIGHTCOLOR + 1);
+		renderOpts.nColorLevel = m.AddSlider (szSlider + 1, gameOpts->render.color.nLevel, 0, 2, KEY_C, HTX_RENDER_LIGHTCOLOR);
 		m.AddText ("", 0);
 		}
-
 	sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 	*szSlider = *(TXT_IMAGE_QUALITY - 1);
 	renderOpts.nImageQual = m.AddSlider (szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_I, HTX_ADVRND_RENDQUAL);
@@ -387,7 +405,7 @@ do {
 		}
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	*szSlider = *(TXT_CAMERAS - 1);
-	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_C, HTX_CAMERAS);
+	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_A, HTX_CAMERAS);
 	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);

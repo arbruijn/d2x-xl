@@ -74,15 +74,21 @@ void CLightManager::SetColor (short nLight, float red, float green, float blue, 
 	CDynLight*	pl = m_data.lights + nLight;
 	int			i;
 
-if ((pl->info.nType == 1) ? gameOpts->render.color.bGunLight : gameStates.render.bAmbientColor) {
+if ((pl->info.nType == 1) ? (gameOpts->render.color.nLevel >= 1) : (gameOpts->render.color.nLevel == 2)) {
 	pl->info.color.red = red;
 	pl->info.color.green = green;
 	pl->info.color.blue = blue;
 	}
-else
+else if (gameStates.app.bNostalgia) {
 	pl->info.color.red =
 	pl->info.color.green =
 	pl->info.color.blue = 1.0f;
+	}
+else {
+	pl->info.color.red =
+	pl->info.color.green =
+	pl->info.color.blue = (red + green + blue) / 3.0f;
+	}
 pl->info.color.alpha = 1.0;
 pl->info.fBrightness = fBrightness;
 pl->info.fRange = (float) sqrt (fBrightness / 2.0f);
@@ -762,7 +768,7 @@ else if ((gameStates.render.nLightingMethod == 1) && gameOpts->render.bUseLightm
 else
 	gameStates.render.bPerPixelLighting = 0;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
-gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
+gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || (gameOpts->render.color.nLevel == 2);
 return gameStates.render.bPerPixelLighting;
 }
 

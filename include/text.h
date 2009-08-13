@@ -849,7 +849,7 @@ void LoadGameTexts(void);
 #define TXT_LMAP_RANGE					GT(56)
 #define TXT_USE_LMAPS					GT(57)
 #define TXT_RENDER_ALL					GT(58)
-#define TXT_USE_COLOR					GT(59)
+#define TXT_LIGHTCOLOR					GT(59)
 #define TXT_USE_WPNCOLOR				GT(60)
 #define TXT_MIX_COLOR					GT(61)
 #define TXT_COLOR_WALLS					GT(62)
@@ -1942,10 +1942,10 @@ void LoadGameTexts(void);
 #define TXT_DAMAGE_MODEL				GT(1145)
 #define TXT_AUTOLEVEL_FACE				GT(1146)
 #define TXT_AUTOLEVEL_MINE				GT(1147)
+#define TXT_DYNAMIC						GT(1148)
 
 #if 0
 
-#define TXT_					GT(1148)
 #define TXT_					GT(1149)
 #define TXT_					GT(1150)
 #define TXT_					GT(1151)
@@ -2192,7 +2192,7 @@ void LoadGameTexts(void);
 #define HTX_RENDER_BRIGHTNESS			HT(82)
 #define HTX_RENDER_FRAMECAP			HT(83)
 #define HTX_RENDER_LIGHTMAPS			HT(84)
-#define HTX_RENDER_AMBICOLOR			HT(85)
+#define HTX_RENDER_LIGHTCOLOR			HT(85)
 #define HTX_RENDER_WPNCOLOR			HT(86)
 #define HTX_RENDER_DMGEXPL				HT(87)
 #define HTX_RENDER_THRUSTER			HT(88)

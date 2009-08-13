@@ -574,9 +574,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.bScaleGauges, i, 0);
 		RP (gameOptions [i].render.cockpit.bSplitHUDMsgs, i, 0);
 		RP (gameOptions [i].render.cockpit.bWideDisplays, i, !i);
-		RP (gameOptions [i].render.color.bAmbientLight, i, 0);
+		RP (gameOptions [i].render.color.nLevel, i, 0);
 		RP (gameOptions [i].render.color.bCap, i, 0);
-		RP (gameOptions [i].render.color.bGunLight, i, 0);
 		RP (gameOptions [i].render.color.bMix, i, 0);
 		RP (gameOptions [i].render.color.nSaturation, i, 0);
 		RP (gameOptions [i].render.color.bWalls, i, 0);
@@ -1383,9 +1382,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.cockpit.bRotateMslLockInd", "1"},
 	 {"gameOptions[0].render.cockpit.bScaleGauges", "1"},
 	 {"gameOptions[0].render.cockpit.bSplitHUDMsgs", "1"},
-	 {"gameOptions[0].render.color.bAmbientLight", "1"},
+	 {"gameOptions[0].render.color.nLevel", "2"},
 	 {"gameOptions[0].render.color.bCap", "0"},
-	 {"gameOptions[0].render.color.bGunLight", "1"},
 	 {"gameOptions[0].render.color.bMix", "1"},
 	 {"gameOptions[0].render.color.nColorSaturation", "0"},
 	 {"gameOptions[0].render.color.bWalls", "1"},
@@ -1583,7 +1581,7 @@ for (i = 0; i < 2; i++) {
 			gameOptions [i].input.keyboard.nRamp = 100;
 		}
 	if (gameStates.input.nPlrFileVersion >= 35)
-		gameOptions [i].render.color.bAmbientLight = (int) cf.ReadByte ();
+		gameOptions [i].render.color.nLevel = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 36)
 		gameOptions [i].ogl.bSetGammaRamp = (int) cf.ReadByte ();
 	if (!i && (gameStates.input.nPlrFileVersion >= 37))
@@ -1603,8 +1601,11 @@ for (i = 0; i < 2; i++) {
 		gameOptions [i].gameplay.nAutoSelectWeapon = (int) cf.ReadByte ();
 	if (!i && (gameStates.input.nPlrFileVersion >= 42))
 		extraGameInfo [0].bAutoDownload = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 43)
-		gameOptions [i].render.color.bGunLight = (int) cf.ReadByte ();
+	if (gameStates.input.nPlrFileVersion >= 43) {
+		if (cf.ReadByte ()) 
+			if (!gameOptions [i].render.color.nLevel)
+				gameOptions [i].render.color.nLevel = 1;
+		}
 	if (gameStates.input.nPlrFileVersion >= 44)
 		tracker.m_bUse = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 45)
@@ -2205,7 +2206,7 @@ else
 gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
-gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || gameOpts->render.color.bAmbientLight;
+gameStates.render.bAmbientColor = gameStates.render.bPerPixelLighting || (gameOpts->render.color.nLevel == 2);
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
 DefaultAllSettings ();
 #if WIN32

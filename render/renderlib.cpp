@@ -638,7 +638,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	if (gameData.render.lights.bGotDynColor [nVertex]) {
 		pdc = gameData.render.lights.dynamicColor + nVertex;
 		if (gameOpts->render.color.bMix) {
-			if (gameOpts->render.color.bGunLight) {
+			if (gameOpts->render.color.nLevel) {
 				if (gameStates.render.bAmbientColor) {
 					if ((fl != 0) && gameData.render.color.vertBright [nVertex]) {
 						hl = fl / gameData.render.color.vertBright [nVertex];
