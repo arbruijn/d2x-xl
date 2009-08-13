@@ -1729,7 +1729,7 @@ void DefaultLightSettings (void)
 {
 	static int nMaxLightsPerObject [] = {8, 8, 16, 24};
 
-gameOptions [0].render.color.nLevel = 2;
+//gameOptions [0].render.color.nLevel = 2;
 gameOptions [0].render.color.bMix = 1;
 gameOptions [0].render.color.nSaturation = 1;
 extraGameInfo [0].bPowerupLights = 0;
