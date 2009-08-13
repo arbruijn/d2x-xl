@@ -519,7 +519,7 @@ void InitTexColors (void)
 {
 	int			i;
 	tFaceColor	*pf = gameData.render.color.textures.Buffer ();
-	int			bBW = gameStates.app.bNostalgia || (gameOpts->render.color.nLevel < 2);
+	int			bBW = gameStates.app.bNostalgia; // || (gameOpts->render.color.nLevel < 2);
 
 for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 	pf->index = IsLight (i);

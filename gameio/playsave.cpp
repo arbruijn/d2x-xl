@@ -462,6 +462,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.automap.bTextured, i, 0);
 		RP (gameOptions [i].render.automap.bBright, i, 0);
 
+		RP (gameOptions [i].render.color.nLevel, i, 0);
+
 		RP (gameOptions [i].render.cockpit.bMouseIndicator, i, 0);
 		RP (gameOptions [i].render.cockpit.bObjectTally, i, 0);
 		RP (gameOptions [i].render.cockpit.bPlayerStats, i, 0);
@@ -574,7 +576,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.bScaleGauges, i, 0);
 		RP (gameOptions [i].render.cockpit.bSplitHUDMsgs, i, 0);
 		RP (gameOptions [i].render.cockpit.bWideDisplays, i, !i);
-		RP (gameOptions [i].render.color.nLevel, i, 0);
 		RP (gameOptions [i].render.color.bCap, i, 0);
 		RP (gameOptions [i].render.color.bMix, i, 0);
 		RP (gameOptions [i].render.color.nSaturation, i, 0);
@@ -1581,7 +1582,7 @@ for (i = 0; i < 2; i++) {
 			gameOptions [i].input.keyboard.nRamp = 100;
 		}
 	if (gameStates.input.nPlrFileVersion >= 35)
-		gameOptions [i].render.color.nLevel = (int) cf.ReadByte ();
+		cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 36)
 		gameOptions [i].ogl.bSetGammaRamp = (int) cf.ReadByte ();
 	if (!i && (gameStates.input.nPlrFileVersion >= 37))
@@ -1601,11 +1602,8 @@ for (i = 0; i < 2; i++) {
 		gameOptions [i].gameplay.nAutoSelectWeapon = (int) cf.ReadByte ();
 	if (!i && (gameStates.input.nPlrFileVersion >= 42))
 		extraGameInfo [0].bAutoDownload = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 43) {
-		if (cf.ReadByte ()) 
-			if (!gameOptions [i].render.color.nLevel)
-				gameOptions [i].render.color.nLevel = 1;
-		}
+	if (gameStates.input.nPlrFileVersion >= 43)
+		cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 44)
 		tracker.m_bUse = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 45)
