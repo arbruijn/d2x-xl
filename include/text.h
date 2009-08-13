@@ -1942,7 +1942,7 @@ void LoadGameTexts(void);
 #define TXT_DAMAGE_MODEL				GT(1145)
 #define TXT_AUTOLEVEL_FACE				GT(1146)
 #define TXT_AUTOLEVEL_MINE				GT(1147)
-#define TXT_DYNAMIC						GT(1148)
+#define TXT_WEAPONS						GT(1148)
 
 #if 0
 

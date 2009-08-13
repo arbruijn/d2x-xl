@@ -1892,7 +1892,7 @@ const char *defaultGameTexts [][2] = {
  {"~Schadensmodell: %s", "~Damage Model: %s"},
  {"zur naechsten Flaeche", "to closest face"},
  {"zur Mine", "to mine"},
- {"dynamisch", "dynamic"},
+ {"Waffen", "weapons"},
 #if 0
  {"", ""},
 #endif

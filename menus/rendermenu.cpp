@@ -321,7 +321,7 @@ pszQuality [2] = TXT_HIGH;
 pszQuality [3] = TXT_BEST;
 
 pszColorLevel [0] = TXT_OFF;
-pszColorLevel [1] = TXT_DYNAMIC;
+pszColorLevel [1] = TXT_WEAPONS;
 pszColorLevel [2] = TXT_FULL;
 
 lightManager.SetMethod ();
