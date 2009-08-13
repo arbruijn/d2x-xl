@@ -435,7 +435,7 @@ do {
 	gameOpts->movies.bSubTitles = (m [optSubTitles].m_value != 0);
 
 #if !DBG
-	if (!EXPERTMODE)
+	if (!gameOpts->app.bNotebookFriendly)
 		gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 60;
 #endif
 	if (!gameStates.app.bNostalgia)
