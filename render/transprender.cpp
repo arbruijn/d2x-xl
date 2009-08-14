@@ -770,7 +770,7 @@ else {
 	}
 //m_data.bUseLightmaps = 0;
 #endif
-#if 0
+#if 1
 if (m_data.bDepthMask)
 	glDepthMask (m_data.bDepthMask = 0);
 #else
@@ -1326,6 +1326,8 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
 if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
+	if (m_data.bDepthMask)
+		glDepthMask (m_data.bDepthMask = 0);
 	particleManager.FlushBuffer (-1.0f);
 	if (nType < 0)
 		particleManager.CloseBuffer ();
