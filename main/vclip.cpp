@@ -30,6 +30,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BLAST_TYPE 0
 #define MOVE_BLAST 1
 
+#define BLAST_SCALE	(I2X (6) / BLAST_LIFE)
+
 //----------------- Variables for video clips -------------------
 
 inline int CurFrame (CObject *objP, int nClip, fix timeToLive, int nFrames = -1)

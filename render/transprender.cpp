@@ -1074,7 +1074,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	else
 		glColor3f (1, 1, 1);
 	if (item->bAdditive == 2)
-		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	else if (item->bAdditive == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
