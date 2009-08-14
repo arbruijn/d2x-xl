@@ -1295,7 +1295,7 @@ extern ubyte bIsMissile [];
 			 !COMPETITION)
 
 #define	SHOW_OBJ_FX \
-			(!(gameStates.app.bNostalgia || COMPETITION))
+			(gameOpts->render.effects.bEnabled && !(gameStates.app.bNostalgia || COMPETITION))
 
 #define	IS_BOSS(_objP)			(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).bossFlag)
 #define	IS_GUIDEBOT(_objP)	(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).companion)

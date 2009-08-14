@@ -284,6 +284,6 @@ extern COmegaLightnings	omegaLightnings;
 //------------------------------------------------------------------------------
 
 #define	SHOW_LIGHTNING \
-			(!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bUseLightning, 1, 1, 0))
+			(gameOpts->render.effects.bEnabled && !(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bUseLightning, 1, 1, 0))
 
 #endif //__LIGHTNING_H

@@ -1943,10 +1943,10 @@ void LoadGameTexts(void);
 #define TXT_AUTOLEVEL_FACE				GT(1146)
 #define TXT_AUTOLEVEL_MINE				GT(1147)
 #define TXT_WEAPONS						GT(1148)
+#define TXT_ENABLE_EFFECTS				GT(1149)
 
 #if 0
 
-#define TXT_					GT(1149)
 #define TXT_					GT(1150)
 #define TXT_					GT(1151)
 #define TXT_					GT(1152)
@@ -2523,10 +2523,10 @@ void LoadGameTexts(void);
 #define HTX_HIT_DETECTION				HT(404)
 #define HTX_NOTEBOOK_FRIENDLY			HT(405)
 #define HTX_DAMAGE_MODEL				HT(406)
+#define HTX_ENABLE_EFFECTS				HT(407)
 
 #if 0
 
-#define HTX_						HT(407)
 #define HTX_						HT(408)
 #define HTX_						HT(409)
 #define HTX_						HT(410)

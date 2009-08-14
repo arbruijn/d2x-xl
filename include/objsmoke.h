@@ -6,7 +6,7 @@
 //------------------------------------------------------------------------------
 
 #define	SHOW_SMOKE	\
-			(!gameStates.app.bNostalgia && EGI_FLAG (bUseParticles, 1, 1, 0))
+			(gameOpts->render.effects.bEnabled && !gameStates.app.bNostalgia && EGI_FLAG (bUseParticles, 1, 1, 0))
 
 #define MAX_SHRAPNEL_LIFE			I2X (2)
 

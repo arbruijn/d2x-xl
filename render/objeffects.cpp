@@ -153,7 +153,7 @@ if (objP->info.nType == OBJ_PLAYER) {
 
 	}
 else if (objP->info.nType == OBJ_ROBOT) {
-	if (!gameOpts->render.effects.bRobotShields)
+	if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bRobotShields))
 		return;
 	if (objP->cType.aiInfo.CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
@@ -335,7 +335,7 @@ RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 	tCloakInfo	ci;
 	fix			dt;
 
-if (!gameOpts->render.effects.bRobotShields)
+if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bRobotShields))
 	return;
 if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	if (!GetCloakInfo (objP, 0, 0, &ci))
@@ -479,7 +479,7 @@ void RenderMslLockIndicator (CObject *objP)
 	static int			t0 [2] = {0, 0}, tDelay [2] = {25, 40};
 
 	CFixVector			vPos;
-	CFloatVector				fPos, fVerts [3];
+	CFloatVector		fPos, fVerts [3];
 	float					r, r2;
 	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->info.nType == OBJ_MARKER);
 
@@ -1065,6 +1065,8 @@ void RenderThrusterFlames (CObject *objP)
 	static tTexCoord2f	tcThruster [4] = {{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,1.0f}},{{0.0f,1.0f}}};
 
 if (gameStates.app.bNostalgia)
+	return;
+if (!gameOpts->render.effects.bEnabled)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
@@ -1911,17 +1913,15 @@ else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 
 //------------------------------------------------------------------------------
 
-fix flashDist=F2X (.9);
+fix flashDist = F2X (0.9f);
 
 //create flash for CPlayerData appearance
 void CObject::CreateAppearanceEffect (void)
 {
-	CFixVector	vPos;
+	CFixVector	vPos = info.position.vPos;
 
 if (this == gameData.objs.viewerP)
-	vPos = info.position.vPos + info.position.mOrient.FVec () * FixMul (info.xSize, flashDist);
-else
-	vPos = info.position.vPos;
+	vPos += info.position.mOrient.FVec () * FixMul (info.xSize, flashDist);
 CObject* effectObjP = /*Object*/CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->info.position.mOrient = info.position.mOrient;

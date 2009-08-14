@@ -573,7 +573,7 @@ if (nType != 3) {
 	if (FACES.vboDataHandle)
 		glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 	}
-else 	if (CoronaStyle () == 2)
+else if (CoronaStyle () == 2)
 	UnloadGlareShader ();
 else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
@@ -773,7 +773,7 @@ int SetupCoronaFaces (void)
 	CSegFace		*faceP;
 	int			i, j, nSegment;
 
-if (!gameOpts->render.coronas.bUse)
+if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
 	return 0;
 gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
@@ -893,7 +893,7 @@ if (ogl.m_states.bOcclusionQuery) {
 BeginRenderFaces (0, 1);
 short nFaces = RenderSegments (nType, 1, 0);
 EndRenderFaces (0, 1);
-if (gameOpts->render.coronas.bUse && ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
+if (gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse && ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
 	gameStates.render.nType = 1;
 	RenderMineObjects (1);

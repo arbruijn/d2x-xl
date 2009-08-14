@@ -1567,7 +1567,7 @@ const char *defaultGameTexts [][2] = {
  {"Re~Aktorschatten", "re~Actor shadows"},
  {"~Spielerschatten", "~Player shadows"},
  {"schnelle Schatten~Berechnung", "~Fast shadow rendering"},
- {"~Schatten...", "sh~Adow options..."},
+ {"~Schatten...", "s~Hadow options..."},
  {"Schatten", "Shadow Render Options"},
  {"~Kameras...", "~Camera options..."},
  {"Kameras", "Camera Options"},
@@ -1893,6 +1893,7 @@ const char *defaultGameTexts [][2] = {
  {"zur naechsten Flaeche", "to closest face"},
  {"zur Mine", "to mine"},
  {"Waffen", "weapons"},
+ {"~Effekte einschalten", "enable ~Effects"},
 #if 0
  {"", ""},
 #endif
@@ -2584,6 +2585,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, erscheinen in einigen Menues zusaetzliche\nEinstellungsmoeglichkeiten.", "If checked, additional settings are displayed in some menus."},
  {"Beim Standardmodell werden einfach die Schutzschilde abgenutzt\nund schliesslich der Gegner zerstoert. Beim erweiterten\nModell koennen je nach Zustand des gegnerischen\nSchutzschildes kritische Treffer erzielt werden, die seine\nGeschwindigkeit, Zielsicherheit oder Feuerrate verringern.",
   "With the standard model shields are worn down until the opponent\nis destroyed. With the enhanced model you can score critical\nhits depending on the state of the opponent's shields and\nthus decrease his speed, aim and rate of fire."},
+ {"Wenn angekreuzt, werden diverse optische Effekte (Rauch, Blitze, Leuchtspuren, Energieschilde, Zielmarkierungen etc.) gezeichnet. Andernfalls werden keine Effekte dargestellt.", 
+  "If checked, various optical effects (smoke, lightning, light trails, energy shields, target markers etc.) are displayed. Otherwise no effects are rendered."},
 #if 0
  {"", ""},
 #endif

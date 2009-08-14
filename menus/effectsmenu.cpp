@@ -171,7 +171,7 @@ void EffectOptionsMenu (void)
 
 	CMenu	m;
 	int	i, j;
-	int	optGatlingTrails, optStaticSmoke, optSoftParticles [3];
+	int	optEnableFx, optGatlingTrails, optStaticSmoke, optSoftParticles [3];
 #if 0
 	int	optShockwaves;
 #endif
@@ -202,6 +202,7 @@ do {
 	m.Destroy ();
 	m.Create (30);
 
+	optEnableFx = m.AddCheck (TXT_ENABLE_EFFECTS, (gameOpts->render.effects.bEnabled, KEY_F, HTX_ENABLE_EFFECTS);
 	m.AddText ("");
 	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
@@ -211,7 +212,7 @@ do {
 	else {
 		sprintf (szSlider + 1, TXT_SHADOWS, pszNoneBasicFull [nShadows]);
 		*szSlider = *(TXT_SHADOWS - 1);
-		effectOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_A, HTX_SHADOWS);
+		effectOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_H, HTX_SHADOWS);
 		}
 	sprintf (szSlider + 1, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
 	*szSlider = *(TXT_CORONAS - 1);
@@ -282,6 +283,7 @@ do {
 				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
 			}
 		}
+	GET_VAL (gameOpts->render.effects.bEnabled, optEnableFx);
 	GET_VAL (gameOpts->render.particles.bStatic, optStaticSmoke);
 	GET_VAL (extraGameInfo [0].bGatlingTrails, optGatlingTrails);
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
@@ -290,7 +292,7 @@ do {
 
 SetDebrisCollisions ();
 DefaultEffectSettings ();
-if (gameOpts->render.effects.bEnergySparks && gameStates.app.bGameRunning && !sparkManager.HaveSparks ())
+if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks && gameStates.app.bGameRunning && !sparkManager.HaveSparks ())
 	sparkManager.Setup ();
 }
 

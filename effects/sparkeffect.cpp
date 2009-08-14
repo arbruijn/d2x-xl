@@ -227,7 +227,7 @@ m_nSegments = 0;
 void CSparkManager::Setup (void)
 {
 SEM_ENTER (SEM_SPARKS)
-if ((gameStates.render.bHaveSparks = gameOpts->render.effects.bEnergySparks) && bmpSparks && (BuildSegList () > 0)) {
+if ((gameStates.render.bHaveSparks = gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks) && bmpSparks && (BuildSegList () > 0)) {
 	for (short i = 0; i < m_nSegments; i++)
 		SetupSparks (i);
 	}	

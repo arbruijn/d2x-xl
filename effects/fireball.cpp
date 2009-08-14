@@ -55,7 +55,7 @@ CObject *CObject::CreateExplBlast (void)
 	short		nObject, id;
 	CObject	*objP;
 
-if (!gameOpts->render.effects.bExplBlasts)
+if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bExplBlasts))
 	return NULL;
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, 2 * info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
