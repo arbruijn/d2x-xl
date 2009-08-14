@@ -1080,7 +1080,7 @@ else {
 		bmP->Texture ()->Wrap (GL_CLAMP);
 		glEnable (GL_BLEND);
 		if (bAdditive == 2)
-			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else if (bAdditive == 1)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
