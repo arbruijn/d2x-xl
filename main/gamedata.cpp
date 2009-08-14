@@ -1892,7 +1892,7 @@ extraGameInfo [0].bCloakedIndicators = 0;
 
 gameOptions [0].render.cockpit.bScaleGauges = 1;
 gameOptions [0].render.cockpit.bFlashGauges = 1;
-gameOptions [0].gameplay.bShieldWarning = 0;
+//gameOptions [0].gameplay.bShieldWarning = 0;
 gameOptions [0].render.cockpit.bObjectTally = 1;
 gameOptions [0].render.cockpit.bPlayerStats = 0;
 
