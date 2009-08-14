@@ -202,7 +202,7 @@ do {
 	m.Destroy ();
 	m.Create (30);
 
-	optEnableFx = m.AddCheck (TXT_ENABLE_EFFECTS, (gameOpts->render.effects.bEnabled, KEY_F, HTX_ENABLE_EFFECTS);
+	optEnableFx = m.AddCheck (TXT_ENABLE_EFFECTS, gameOpts->render.effects.bEnabled, KEY_F, HTX_ENABLE_EFFECTS);
 	m.AddText ("");
 	sprintf (szSlider + 1, TXT_SMOKE, pszNoneBasicFull [gameOpts->render.particles.nQuality]);
 	*szSlider = *(TXT_SMOKE - 1);
