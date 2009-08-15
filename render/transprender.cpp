@@ -770,9 +770,9 @@ else {
 	}
 //m_data.bUseLightmaps = 0;
 #endif
-#if 0
-if (m_data.bDepthMask)
-	glDepthMask (m_data.bDepthMask = 0);
+#if 1
+if (!m_data.bDepthMask)
+	glDepthMask (m_data.bDepthMask = 1);
 #else
 if (m_data.bDepthMask != item->bDepthMask)
 	glDepthMask (m_data.bDepthMask = item->bDepthMask);

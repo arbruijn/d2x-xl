@@ -1642,7 +1642,7 @@ else {
 	}
 iBuffer = 0;
 glDepthMask (1);
-if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != 999)) {
+if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != -1) && (gameStates.render.history.nShader != 999)) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}

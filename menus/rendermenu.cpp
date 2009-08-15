@@ -183,12 +183,14 @@ if (gameOpts->app.bNotebookFriendly)
 		}
 	}
 
-m = menu + renderOpts.nColorLevel;
-v = m->m_value;
-if (gameOpts->render.color.nLevel != v) {
-	gameOpts->render.color.nLevel = v;
-	sprintf (m->m_text, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
-	m->m_bRebuild = 1;
+if (renderOpts.nColorLevel >= 0) {
+	m = menu + renderOpts.nColorLevel;
+	v = m->m_value;
+	if (gameOpts->render.color.nLevel != v) {
+		gameOpts->render.color.nLevel = v;
+		sprintf (m->m_text, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
+		m->m_bRebuild = 1;
+		}
 	}
 
 m = menu + renderOpts.nImageQual;
