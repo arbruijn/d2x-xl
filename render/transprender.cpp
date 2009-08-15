@@ -635,7 +635,9 @@ if (m_data.bUseLightmaps != bUseLightmaps) {
 	ogl.ResetClientStates ();
 	ResetBitmaps ();
 	ogl.EnableClientStates (1, 1, bUseLightmaps, GL_TEXTURE0);
-	m_data.bUseLightmaps = bUseLightmaps;
+	glEnable (GL_TEXTURE_2D);
+	if (m_data.bUseLightmaps = bUseLightmaps)
+		ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 	}
 
 if (bClientState) {
@@ -817,6 +819,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	if (triP || faceP) {
 		if (!bLightmaps) {
 			ogl.SelectTMU (GL_TEXTURE0, true);
+			ogl.EnableClientState (GL_NORMAL_ARRAY);
 			OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 			}
 		if (bDecal > 0) {
@@ -844,6 +847,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			OglColorPointer (4, GL_FLOAT, 0, item->color);
 		if (bLightmaps) {
 			OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
+			ogl.EnableClientState (GL_NORMAL_ARRAY);
 			OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 			OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 			}
@@ -910,6 +914,11 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			else {
 				ogl.m_states.iLight = 0;
 				lightManager.Index (0)[0].nActive = -1;
+#if 0
+				ogl.SelectTMU (GL_TEXTURE0, true);
+				ogl.EnableClientState (GL_NORMAL_ARRAY);
+				OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
+#endif
 				for (;;) {
 					G3SetupPerPixelShader (faceP, 0, faceP->nRenderType, false);
 					OglDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -940,9 +949,11 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 					//glDepthFunc (GL_EQUAL);
 					glDepthMask (0);
 					}
+#if 0
 				ogl.SelectTMU (GL_TEXTURE1, true);
 				ogl.EnableClientState (GL_NORMAL_ARRAY);
 				OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
+#endif
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			}
