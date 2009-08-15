@@ -770,7 +770,7 @@ else {
 	}
 //m_data.bUseLightmaps = 0;
 #endif
-#if 1
+#if 0
 if (!m_data.bDepthMask)
 	glDepthMask (m_data.bDepthMask = 1);
 #else
