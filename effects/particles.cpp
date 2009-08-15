@@ -1590,62 +1590,63 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CParticleManager::FlushBuffer (float brightness)
+bool CParticleManager::FlushBuffer (float brightness)
 {
 if (bufferBrightness < 0)
 	bufferBrightness = brightness;
-if (iBuffer) {
-	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
-	int bLightmaps = lightmapManager.HaveLightmaps ();
-	bufferBrightness = brightness;
-	glEnable (GL_BLEND);
-	//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthFunc (GL_LEQUAL);
-	glDepthMask (0);
+if (!iBuffer)
+	return false;
 
-	CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
-	if (!bmP)
-		return;
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	glEnable (GL_TEXTURE_2D);
-	if (bmP->CurFrame ())
-		bmP = bmP->CurFrame ();
-	if (bmP->Bind (0))
-		return;
+CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
+if (!bmP)
+	return false;
+tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
+int bLightmaps = lightmapManager.HaveLightmaps ();
+bufferBrightness = brightness;
+glEnable (GL_BLEND);
+//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glDepthFunc (GL_LEQUAL);
+glDepthMask (0);
+ogl.SelectTMU (GL_TEXTURE0, true);
+glEnable (GL_TEXTURE_2D);
+if (bmP->CurFrame ())
+	bmP = bmP->CurFrame ();
+if (bmP->Bind (0))
+	return false;
 
-	if (InitBuffer (bLightmaps)) {
-		if (ogl.m_states.bShadersOk) {
-			if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
-				lightManager.Headlights ().SetupShader (1, 0, &color);
-			else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
-				LoadGlareShader (10, 0);
-			else if (gameStates.render.history.nShader >= 0) {
-				glUseProgramObject (0);
-				gameStates.render.history.nShader = -1;
-				}
+if (InitBuffer (bLightmaps)) {
+	if (ogl.m_states.bShadersOk) {
+		if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
+			lightManager.Headlights ().SetupShader (1, 0, &color);
+		else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
+			LoadGlareShader (10, 0);
+		else if (gameStates.render.history.nShader >= 0) {
+			glUseProgramObject (0);
+			gameStates.render.history.nShader = -1;
 			}
-		glNormal3f (0, 0, 0);
-		OglDrawArrays (GL_QUADS, 0, iBuffer);
 		}
-	else {
-		tParticleVertex *pb;
-		glEnd ();
-		glNormal3f (0, 0, 0);
-		glBegin (GL_QUADS);
-		for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
-			glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
-			glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));
-			}
-		glEnd ();
-		}
-	iBuffer = 0;
-	glEnable (GL_DEPTH_TEST);
-	if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != 999)) {
-		glUseProgramObject (0);
-		gameStates.render.history.nShader = -1;
-		}
+	glNormal3f (0, 0, 0);
+	OglDrawArrays (GL_QUADS, 0, iBuffer);
 	}
+else {
+	tParticleVertex *pb;
+	glEnd ();
+	glNormal3f (0, 0, 0);
+	glBegin (GL_QUADS);
+	for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
+		glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
+		glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
+		glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));
+		}
+	glEnd ();
+	}
+iBuffer = 0;
+glDepthMask (1);
+if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != 999)) {
+	glUseProgramObject (0);
+	gameStates.render.history.nShader = -1;
+	}
+return true;
 }
 
 //------------------------------------------------------------------------------

@@ -230,7 +230,7 @@ class CParticleManager {
 		int BeginRender (int nType, float fScale);
 		int EndRender (void);
 		int InitBuffer (int bLightmaps);
-		void FlushBuffer (float brightness);
+		bool FlushBuffer (float brightness);
 		int CloseBuffer (void);
 
 		void AdjustBrightness (CBitmap *bmP);
