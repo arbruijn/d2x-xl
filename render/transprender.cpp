@@ -1341,6 +1341,7 @@ if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))
 		m_data.bDepthMask = 1;
 	if (nType < 0)
 		particleManager.CloseBuffer ();
+	glEnable (GL_DEPTH_TEST);
 	ResetBitmaps ();
 	particleManager.SetLastType (-1);
 	m_data.bClientColor = 1;
