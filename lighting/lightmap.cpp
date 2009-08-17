@@ -491,7 +491,7 @@ void CLightmapManager::BuildAll (int nFace)
 {
 	CSide*	sideP; 
 	int		nLastFace; 
-	int		i, j; 
+	int		i; 
 	float		h;
 	int		nBlackLightmaps = 0, nWhiteLightmaps = 0; 
 
@@ -534,7 +534,7 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 #ifdef OPENMP
 	#pragma omp parallel
 		{
-		j = OMP_GetNumThreads ();
+		int j = OMP_GetNumThreads ();
 		#pragma omp for
 		for (i = 0; i < j; i++)
 			Build (i);
