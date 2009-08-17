@@ -122,7 +122,7 @@ if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 
-for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i += nStep) {
+for (i = nStart, nStep = (nStart > nEnd) ? -1 : 1; i != nEnd; i++) {
 	faceP = FACES.faces + i;
 	nSegment = faceP->nSegment;
 	nSide = faceP->nSide;
@@ -285,7 +285,7 @@ gameStates.render.nState = 0;
 if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
-for (i = nStart; i != nEnd; i += nStep) {
+for (i = nStart; i != nEnd; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
@@ -429,7 +429,7 @@ gameStates.render.nState = 0;
 if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
-for (i = nStart; i != nEnd; i += nStep) {
+for (i = nStart; i != nEnd; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
@@ -559,7 +559,7 @@ ResetFaceList (nThread);
 #endif
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
-for (i = nStart; i != nEnd; i += nStep) {
+for (i = nStart; i != nEnd; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;

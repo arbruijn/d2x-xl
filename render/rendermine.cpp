@@ -1393,8 +1393,12 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 
 	if (RENDERPATH) {
-			int nThreads = omp_get_num_threads ();
-
+			int nThreads;
+			
+		#pragma omp parallel
+			{
+			nThreads = omp_get_num_threads ();
+			}
 		lightManager.ResetSegmentLights ();
 		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (nThreads < 2)) {
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
@@ -1432,7 +1436,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 						if (r > nMax)
 							r = nMax;
 						}
-					ComputeFaceLight (l, r, i);
+					ComputeFaceLight (l, r - 1, i);
 					}
 				}
 			}
