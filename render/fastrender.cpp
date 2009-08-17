@@ -893,7 +893,7 @@ if (ogl.m_states.bOcclusionQuery) {
 BeginRenderFaces (0, 1);
 short nFaces = RenderSegments (nType, 1, 0);
 EndRenderFaces (0, 1);
-if (gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse && ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
+if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
 	gameStates.render.nType = 1;
 	RenderMineObjects (1);

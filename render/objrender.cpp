@@ -143,7 +143,7 @@ int CObject::PowerupToDevice (void)
 	short				nModel, nId;
 	int				bHasModel = 0;
 
-if (!SHOW_OBJ_FX)
+if (gameStates.app.bNostalgia)
 	return 0;
 if (!gameOpts->render.powerups.b3D)
 	return 0;
