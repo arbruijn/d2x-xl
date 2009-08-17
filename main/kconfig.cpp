@@ -1730,9 +1730,9 @@ void CExternalControls::Init (int intno, int address)
 
 	i = FindArg ("-xname");
 	if (i)
-		m_name = strdup (pszArgList [i + 1]);
+		m_name = StrDup (pszArgList [i + 1]);
 	else
-		m_name = strdup ("External Controller");
+		m_name = StrDup ("External Controller");
 
    for (i = 0; i < (int) strlen (reinterpret_cast<char*> (m_name)); i++)
     if (m_name [i]=='_')
