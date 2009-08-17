@@ -1428,7 +1428,7 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	RenderEffects (nWindow);
 #endif
 	if (!gameStates.app.bNostalgia &&
-		 (!automap.m_bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.coronas.bUse) {
+		 (!automap.m_bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
  		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
