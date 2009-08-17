@@ -368,4 +368,18 @@ return false;
 }
 
 //------------------------------------------------------------------------------
+
+int OMP_GetNumThreads (void)
+{
+#ifdef OPENMP
+#pragma omp parallel
+	{
+	return OMP_GetNumThreads ();
+	}
+#else
+return 2;
+#endif
+}
+
+//------------------------------------------------------------------------------
 // eof

@@ -373,8 +373,8 @@ if (nThread < 0) {
 	nThread = 0;
 	}
 else {
-	yMin = (h / omp_get_num_threads ()) * nThread;
-	yMax = (h / omp_get_num_threads ()) * (nThread + 1);
+	yMin = (h / OMP_GetNumThreads ()) * nThread;
+	yMax = (h / OMP_GetNumThreads ()) * (nThread + 1);
 	}
 
 #if DBG
@@ -531,10 +531,10 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 	CFloatVector3::Normalize (m_data.vcd.vertNorm);
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
-#if 1
+#ifdef OPENMP
 	#pragma omp parallel
 		{
-		j = omp_get_num_threads ();
+		j = OMP_GetNumThreads ();
 		#pragma omp for
 		for (i = 0; i < j; i++)
 			Build (i);

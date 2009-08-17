@@ -1396,10 +1396,18 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			
 		#pragma omp parallel
 			{
-			nThreads = omp_get_num_threads ();
+#ifdef OPENMP
+			nThreads = OMP_GetNumThreads ();
+#else
+			nThreads = 1;
+#endif
 			}
 		lightManager.ResetSegmentLights ();
-		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (nThreads < 2)) {
+		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (nThreads < 2)
+#ifndef OPENMP
+			 || !RunRenderThreads (rtComputeFaceLight)
+#endif
+			) {
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
@@ -1407,6 +1415,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			else
 				ComputeFaceLight (0, gameData.segs.nSegments, 0);
 			}
+#ifdef OPENMP
 		else {
 				int nMax, nPivot = nThreads / 2;
 
@@ -1439,6 +1448,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 					}
 				}
 			}
+#endif //OPENMP
 		PROF_START
 		UpdateSlidingFaces ();
 		PROF_END(ptAux);
