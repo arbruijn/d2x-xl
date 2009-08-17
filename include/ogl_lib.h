@@ -289,7 +289,7 @@ extern COGL ogl;
 
 static inline CFloatVector3* G3GetNormal (g3sPoint *pPoint, CFloatVector *pvNormal)
 {
-return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.XYZ() : pvNormal->XYZ();
+return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.XYZ () : pvNormal->XYZ ();
 }
 
 //------------------------------------------------------------------------------

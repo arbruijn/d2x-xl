@@ -20,7 +20,6 @@
 #include "objsmoke.h"
 #include "automap.h"
 #include "shrapnel.h"
-#include "omp.h"
 
 CShrapnelManager shrapnelManager;
 

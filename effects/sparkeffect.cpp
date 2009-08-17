@@ -149,8 +149,12 @@ if (!automap.m_bDisplay || automap.m_bFull || automap.m_visible [m_nSegment])
 void CSparks::Update (void)
 {
 if (m_bUpdate) {
-	for (int i = 0; i < m_nMaxSparks; i++)
-		m_sparks [i].Update ();
+	#pragma omp parallel
+		{
+		#pragma omp for
+		for (int i = 0; i < m_nMaxSparks; i++)
+			m_sparks [i].Update ();
+		}
 	Create ();
 	m_bUpdate = 0;
 	}
