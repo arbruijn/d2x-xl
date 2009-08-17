@@ -437,7 +437,7 @@ public:
 	int			nLength;
 	int			nAmplitude;
 	int			nOffset;
-	short			nLightnings;
+	short			nBolts;
 	short			nId;
 	short			nTarget;
 	short			nNodes;
@@ -464,7 +464,7 @@ class CLightningInfo {
 		inline int GetLength (void) { return m_info.nLength; }
 		inline int GetAmplitude (void) { return m_info.nAmplitude; }
 		inline int GetOffset (void) { return m_info.nOffset; }
-		inline short GetLightnings (void) { return m_info.nLightnings; }
+		inline short GetEmitters (void) { return m_info.nBolts; }
 		inline short GetId (void) { return m_info.nId; }
 		inline short GetTarget (void) { return m_info.nTarget; }
 		inline short GetNodes (void) { return m_info.nNodes; }

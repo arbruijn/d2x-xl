@@ -238,7 +238,7 @@ switch (info.renderType) {
 		rType.lightningInfo.nLength = cf.ReadInt ();
 		rType.lightningInfo.nAmplitude = cf.ReadInt ();
 		rType.lightningInfo.nOffset = cf.ReadInt ();
-		rType.lightningInfo.nLightnings = cf.ReadShort ();
+		rType.lightningInfo.nBolts = cf.ReadShort ();
 		rType.lightningInfo.nId = cf.ReadShort ();
 		rType.lightningInfo.nTarget = cf.ReadShort ();
 		rType.lightningInfo.nNodes = cf.ReadShort ();

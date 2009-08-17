@@ -148,13 +148,13 @@ class CLightningSystem : public tLightningSystem {
 		CLightningSystem () { m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
 		~CLightningSystem () { Destroy (); };
 		void Init (int nId);
-		bool Create (int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
+		bool Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						 short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						 short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						 char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
 		void Destroy (void);
-		void Animate (int nStart, int nLightnings);
-		void Render (int nStart, int nLightnings, int bDepthSort, int nThread);
+		void Animate (int nStart, int nBolts);
+		void Render (int nStart, int nBolts, int bDepthSort, int nThread);
 		int Update (void);
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		void Mute (void);
@@ -168,7 +168,7 @@ class CLightningSystem : public tLightningSystem {
 		void DestroySound (void);
 		void UpdateSound (void);
 		void MoveForObject (void);
-		void RenderBuffered (int nStart, int nLightnings, int nThread);
+		void RenderBuffered (int nStart, int nBolts, int nThread);
 };
 
 //------------------------------------------------------------------------------
@@ -201,7 +201,7 @@ class CLightningManager : public tLightningData {
 		CLightningManager ();
 		~CLightningManager ();
 		void Init (void);
-		int Create (int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
+		int Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
@@ -213,11 +213,11 @@ class CLightningManager : public tLightningData {
 		void Move (int i, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		void Mute (void);
 		void MoveForObject (CObject *objP);
-		void Render (tLightning *pl, int nLightnings, short nDepth, int bDepthSort);
-		void RenderBuffered (tLightning *plRoot, int nStart, int nLightnings, int nDepth, int nThread);
+		void Render (tLightning *pl, int nBolts, short nDepth, int bDepthSort);
+		void RenderBuffered (tLightning *plRoot, int nStart, int nBolts, int nDepth, int nThread);
 		void RenderSystem (void);
 		void RenderForDamage (CObject *objP, g3sPoint **pointList, RenderModel::CVertex *pVerts, int nVertices);
-		void Animate (tLightning *pl, int nStart, int nLightnings, int nDepth);
+		void Animate (tLightning *pl, int nStart, int nBolts, int nDepth);
 		int CreateForMissile (CObject *objP);
 		void CreateForShaker (CObject *objP);
 		void CreateForShakerMega (CObject *objP);
