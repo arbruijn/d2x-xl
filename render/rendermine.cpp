@@ -59,6 +59,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sparkeffect.h"
 #include "createmesh.h"
 #include "systemkeys.h"
+#include "omp.h"
 
 //------------------------------------------------------------------------------
 
@@ -1393,14 +1394,31 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 
 	if (RENDERPATH) {
 		lightManager.ResetSegmentLights ();
-		if (!gameStates.app.bMultiThreaded || gameStates.render.bPerPixelLighting ||
-			 (CountRenderFaces () < 16) || !RunRenderThreads (rtComputeFaceLight)) {
+		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16)) {
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 				ComputeFaceLight (0, gameData.segs.nFaces, 0);
 			else
 				ComputeFaceLight (0, gameData.segs.nSegments, 0);
+			}
+		else {
+			#pragma omp parallel
+				{
+				int nMax, nStep, h, j = omp_get_num_threads ();
+				#pragma omp for private (nMax, nStep, h)
+				for (int i = 0; i < j; i++) {
+					if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
+						nMax = gameData.render.mine.nRenderSegs;
+					else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
+						nMax = gameData.segs.nFaces;
+					else
+						nMax = gameData.segs.nSegments;
+					nStep = (nMax + j - 1) / j;
+					h = nStep * (i + 1);
+					ComputeFaceLight (nStep * i, (h < nMax) ? h : nMax, i);
+					}
+				}
 			}
 		PROF_START
 		UpdateSlidingFaces ();
