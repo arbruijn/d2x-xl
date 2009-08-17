@@ -790,11 +790,9 @@ return 1;
 
 void PlayerBulletFrame (void)
 {
-	int	i;
-
 if (!gameOpts->render.ship.bBullets)
 	return;
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 	DoPlayerBullets (OBJECTS + gameData.multiplayer.players [i].nObject);
 }
 
@@ -802,11 +800,9 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 
 void PlayerParticleFrame (void)
 {
-	int	i;
-
 if (!gameOpts->render.particles.bPlayers)
 	return;
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 	DoPlayerSmoke (OBJECTS + gameData.multiplayer.players [i].nObject, i);
 }
 
@@ -814,14 +810,13 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 
 void ObjectParticleFrame (void)
 {
-	int		i;
-	CObject	*objP;
-
 #if 0
 if (!SHOW_SMOKE)
 	return;
 #endif
-for (i = 0, objP = OBJECTS.Buffer (); i <= gameData.objs.nLastObject [1]; i++, objP++) {
+CObject	*objP = OBJECTS.Buffer ();
+
+for (int i = 0; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 	if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~DESTROY_SMOKE;
 		KillObjectSmoke (i);

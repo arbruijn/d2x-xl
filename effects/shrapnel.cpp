@@ -20,6 +20,7 @@
 #include "objsmoke.h"
 #include "automap.h"
 #include "shrapnel.h"
+#include "omp.h"
 
 CShrapnelManager shrapnelManager;
 
@@ -96,8 +97,11 @@ m_info.tUpdate = gameStates.app.nSDLTicks - nTicks;
 void CShrapnel::Draw (void)
 {
 if ((m_info.xTTL > 0) && LoadExplBlast ()) {
-	fix	xSize = I2X (1) / 2 + d_rand () % (I2X (1) / 4);
-	G3DrawSprite (m_info.vPos, xSize, xSize, bmpExplBlast, NULL, X2F (m_info.xTTL) / X2F (m_info.xLife) / 2, 0, 0);
+	fix xSize = I2X (1) / 2 + d_rand () % (I2X (1) / 4);
+	#pragma omp critical
+		{
+		G3DrawSprite (m_info.vPos, xSize, xSize, bmpExplBlast, NULL, X2F (m_info.xTTL) / X2F (m_info.xLife) / 2, 0, 0);
+		}
 	}
 }
 
@@ -120,13 +124,18 @@ return 0; //kill
 
 uint CShrapnelCloud::Update (void)
 {
-for (uint i = 0; i < m_tos; ) {
-	int j = m_data.buffer [i].Update ();
-	if (j == 1)
-		i++;
-	else if (j == 0)
-		Delete (i);
+	int i;
+#pragma omp parallel
+	{
+	#pragma omp for 
+	for (i = 0; i < int (m_tos); i++)
+		m_data.buffer [i].Update ();
 	}
+
+for (i = int (m_tos) - 1; i >= 0; i--)
+	if (m_data.buffer [i].TTL () < 0)
+		Delete (i);
+
 if (m_tos)
 	return m_tos;
 Destroy ();
@@ -137,8 +146,12 @@ return 0;
 
 void CShrapnelCloud::Draw (void)
 {
-for (uint i = 0; i < m_tos; i++)
-	m_data.buffer [i].Draw ();
+#pragma omp parallel
+	{
+	#pragma omp for
+	for (int i = 0; i < int (m_tos); i++)
+		m_data.buffer [i].Draw ();
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -154,10 +167,14 @@ objP->cType.explInfo.nDeleteTime = -1;
 h += d_rand () % h;
 if (!CStack<CShrapnel>::Create (h))
 	return 0;
-for (i = 0; i < h; i++) {
-	if (!Grow ())
-		break;
-	Top ()->Create (parentObjP, objP);
+if (!Grow (h))
+	return 0;
+#pragma omp parallel
+	{
+	#pragma omp for 
+	for (i = 0; i < h; i++) {
+		m_data.buffer [i].Create (parentObjP, objP);
+		}
 	}
 objP->info.xLifeLeft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;

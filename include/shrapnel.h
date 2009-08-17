@@ -31,6 +31,7 @@ class CShrapnel {
 		void Move (void);
 		void Draw (void);
 		int Update (void);
+		inline fix TTL (void) { return m_info.xTTL; }
 };
 
 class CShrapnelCloud : private CStack<CShrapnel> {

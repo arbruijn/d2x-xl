@@ -431,8 +431,8 @@ static CFixVector	*wallNorm;
 
 int CParticle::CollideWithWall (void)
 {
-	CSegment		*segP;
-	CSide			*sideP;
+	CSegment*	segP;
+	CSide*		sideP;
 	int			bInit, nSide, nChild, nFace, nInFront;
 	fix			nDist;
 	int			*vlP;
@@ -516,20 +516,22 @@ else {
 					nSegment = FindSegByPos (m_vPos, m_nSegment, 1, 0, 1);
 #endif
 				nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 1, 1);
-				if (nSegment < 0)
+				if (nSegment < 0) {
+					m_nLife = -1;
 					return 0;
+					}
 				}
-			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER))
+			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) {
+				m_nLife = -1;
 				return 0;
+				}
 			m_nSegment = nSegment;
 			}
 		if (gameOpts->render.particles.bCollisions && CollideWithWall ()) {	//Reflect the particle
-			if (m_nType == BUBBLE_PARTICLES)
+			if (j || (m_nType == BUBBLE_PARTICLES) ||!(dot = CFixVector::Dot (drift, *wallNorm))) {
+				m_nLife = -1;
 				return 0;
-			if (j)
-				return 0;
-			else if (!(dot = CFixVector::Dot (drift, *wallNorm)))
-				return 0;
+				}
 			else {
 				drift = m_vDrift + *wallNorm * (-2 * dot);
 				//VmVecScaleAdd (&m_vPos, &vPos, &drift, 2 * t);
@@ -982,7 +984,7 @@ if ((nThread < 0) && RunEmitterThread (emitterP, nCurTime, rtUpdateParticles)) {
 else
 #endif
  {
-		int				t, h, i, j;
+		int				t, h, i, j, bSkip;
 		float				fDist;
 		float				fBrightness = Brightness ();
 		CFixMatrix		mOrient = m_mOrient;
@@ -996,13 +998,24 @@ else
 	t = nCurTime - m_nMoved;
 #endif
 	nPartSeg = -1;
-	for (i = m_nParts, j = m_nFirstPart; i; i--, j = (j + 1) % m_nPartLimit)
-		if (!m_particles [j].Update (nCurTime)) {
+	j = m_nFirstPart;
+	#pragma omp parallel
+		{
+		#pragma omp for
+		for (i = 0; i < m_nParts; i++)
+			m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime);
+		}
+			
+	for (i = 0; i < m_nParts; i++) {
+		j = (m_nFirstPart + i) % m_nPartLimit;
+		if (m_particles [j].m_nLife <= 0) {
 			if (j != m_nFirstPart)
 				m_particles [j] = m_particles [m_nFirstPart];
 			m_nFirstPart = (m_nFirstPart + 1) % m_nPartLimit;
 			m_nParts--;
 			}
+		}
+
 	m_nTicks += t;
 	if ((m_nPartsPerPos = (int) (m_fPartsPerTick * m_nTicks)) >= 1) {
 		if (m_nType == BUBBLE_PARTICLES) {
@@ -1012,10 +1025,10 @@ else
 		m_nTicks = 0;
 		if (IsAlive (nCurTime)) {
 			vDelta = m_vPos - m_vPrevPos;
-			fDist = X2F (vDelta.Mag());
+			fDist = X2F (vDelta.Mag ());
 			h = m_nPartsPerPos;
-			if (h > m_nMaxParts - i)
-				h = m_nMaxParts - i;
+			if (h > m_nMaxParts - m_nParts)
+				h = m_nMaxParts - m_nParts;
 			if (h <= 0)
 				goto funcExit;
 			if (m_bHavePrevPos && (fDist > 0)) {
@@ -1040,19 +1053,28 @@ else
 				h = 1;
 #endif
 				}
-			for (; h; h--, j = (j + 1) % m_nPartLimit) {
-				vPosf += vDeltaf;
-				vPos.Assign (vPosf);
-/*
-				vPos[Y] = (fix) (vPosf [Y] * 65536.0f);
-				vPos[Z] = (fix) (vPosf [Z] * 65536.0f);
-*/
-				if (m_particles [j].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
-													 m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
-													 nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace))
-					m_nParts++;
-				if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
-					goto funcExit;
+			j = (m_nFirstPart + m_nParts) % m_nPartLimit;
+			bSkip = 0;
+			#pragma omp parallel
+				{
+				#pragma omp for private(vPos)
+				for (i = 0; i < h; i++) {
+#if 1
+					if (bSkip)
+						continue;
+#endif
+					vPos.Assign (vPosf + vDeltaf * float (i));
+					if (m_particles [(j + i) % m_nPartLimit].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
+																					 m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
+																					 nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace)) {
+						#pragma omp critical
+							{
+							m_nParts++;
+							}
+						}
+					if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
+						bSkip = 1;
+					}
 				}
 			}
 		}
