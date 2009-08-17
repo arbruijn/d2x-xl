@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "input.h"
 #include "menu.h"
+#include "strutil.h"
 #include "collide.h"
 #include "menubackground.h"
 #include "songs.h"
