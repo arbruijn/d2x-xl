@@ -45,6 +45,7 @@ there I just had it exit instead.
 #include "gamepal.h"
 #include "gamemine.h"
 #include "renderthreads.h"
+#include "omp.h"
 
 CLightmapManager lightmapManager;
 
@@ -372,13 +373,9 @@ if (nThread < 0) {
 	yMax = h;
 	nThread = 0;
 	}
-else if (nThread > 0) {
-	yMin = h / 2;
-	yMax = h;
-	}
 else {
-	yMin = 0;
-	yMax = h / 2;
+	yMin = (h / omp_get_num_threads ()) * nThread;
+	yMax = (h / omp_get_num_threads ()) * (nThread + 1);
 	}
 
 #if DBG
@@ -495,7 +492,7 @@ void CLightmapManager::BuildAll (int nFace)
 {
 	CSide*	sideP; 
 	int		nLastFace; 
-	int		i; 
+	int		i, j; 
 	float		h;
 	int		nBlackLightmaps = 0, nWhiteLightmaps = 0; 
 
@@ -535,8 +532,18 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 	CFloatVector3::Normalize (m_data.vcd.vertNorm);
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
+#if 1
+	#pragma omp parallel
+		{
+		j = omp_get_num_threads ();
+		#pragma omp for
+		for (i = 0; i < j; i++)
+			Build (i);
+		}
+#else
 	if (!RunRenderThreads (rtLightmap))
 		Build (-1);
+#endif
 #if DBG
 	if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
