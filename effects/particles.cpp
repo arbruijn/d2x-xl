@@ -984,7 +984,7 @@ if ((nThread < 0) && RunEmitterThread (emitterP, nCurTime, rtUpdateParticles)) {
 else
 #endif
  {
-		int				t, h, i, j, bSkip;
+		int				t, h, i, j, bSkip, nNewParts = 0;
 		float				fDist;
 		float				fBrightness = Brightness ();
 		CFixMatrix		mOrient = m_mOrient;
@@ -1057,7 +1057,7 @@ else
 			bSkip = 0;
 			#pragma omp parallel
 				{
-				#pragma omp for private(vPos)
+#pragma omp for private(vPos) reduction(+: nNewParts)
 				for (i = 0; i < h; i++) {
 #if 1
 					if (bSkip)
@@ -1067,15 +1067,13 @@ else
 					if (m_particles [(j + i) % m_nPartLimit].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
 																					 m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
 																					 nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace)) {
-						#pragma omp critical
-							{
-							m_nParts++;
-							}
+						nNewParts++;
 						}
 					if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
 						bSkip = 1;
 					}
 				}
+			m_nParts += nNewParts;
 			}
 		}
 

@@ -1459,14 +1459,9 @@ if (!m_bValid)
 if (m_lightning.Buffer ()) {
 	#pragma omp parallel
 		{
-			int h;
-		#pragma omp for private(h)
+		#pragma omp for reduction(+: nLights)
 		for (int i = 0; i < m_nBolts; i++) {
-			h = m_lightning [i].SetLight ();
-			#pragma omp critical
-				{
-				nLights += h;
-				}
+			nLights = m_lightning [i].SetLight ();
 			}
 		}
 	}
