@@ -45,7 +45,6 @@ there I just had it exit instead.
 #include "gamepal.h"
 #include "gamemine.h"
 #include "renderthreads.h"
-#include "omp.h"
 
 CLightmapManager lightmapManager;
 

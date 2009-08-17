@@ -59,7 +59,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sparkeffect.h"
 #include "createmesh.h"
 #include "systemkeys.h"
-#include "omp.h"
 
 //------------------------------------------------------------------------------
 
