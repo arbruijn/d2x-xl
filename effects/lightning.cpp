@@ -584,9 +584,7 @@ for (i = m_nNodes - 1, j = 0, pfi = m_nodes.Buffer (), plh = NULL; j < i; j++) {
 	pfj = plh;
 	plh = pfi++;
 	if (j) {
-		plh->m_vNewPos [X] = pfj->m_vNewPos [X] / 4 + plh->m_vNewPos [X] / 2 + pfi->m_vNewPos [X] / 4;
-		plh->m_vNewPos [Y] = pfj->m_vNewPos [Y] / 4 + plh->m_vNewPos [Y] / 2 + pfi->m_vNewPos [Y] / 4;
-		plh->m_vNewPos [Z] = pfj->m_vNewPos [Z] / 4 + plh->m_vNewPos [Z] / 2 + pfi->m_vNewPos [Z] / 4;
+		plh->m_vNewPos = pfj->m_vNewPos / 4 + plh->m_vNewPos / 2 + pfi->m_vNewPos / 4;
 		}
 	}
 }
@@ -1190,7 +1188,7 @@ bool CLightningSystem::Create (int nLightnings, CFixVector *vPos, CFixVector *vE
 m_nObject = nObject;
 if (!(nLife && nLength && (nNodes > 4)))
 	return false;
-m_nLightnings = nLightnings;
+m_nBolts = nLightnings;
 if (nObject >= 0)
 	m_nSegment [0] =
 	m_nSegment [1] = -1;
@@ -1199,18 +1197,30 @@ else {
 	m_nSegment [1] = FindSegByPos (*vEnd, -1, 1, 0);
 	}
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
-if (!m_lightnings.Create (nLightnings))
+if (!m_lightning.Create (nLightnings))
 	return false;
-m_lightnings.Clear ();
+m_lightning.Clear ();
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
 		  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
-for (int i = 0; i < nLightnings; i++) {
-	m_lightnings [i] = l;
-	if (!m_lightnings [i].Create (0))
-		return false;
+
+int bFail = 0;
+#pragma omp parallel
+	{
+	#pragma omp for
+	for (int i = 0; i < nLightnings; i++) {
+		if (bFail)
+			continue;
+		m_lightning [i] = l;
+		if (!m_lightning [i].Create (0))
+			bFail = 1;
+		}
 	}
+
+if (bFail)
+	return false;
+
 CreateSound (bSound);
 m_nKey [0] =
 m_nKey [1] = 0;
@@ -1227,15 +1237,15 @@ m_bValid =
 m_bDestroy = 0;
 DestroySound ();
 #if 0
-if (m_lightnings.Buffer ()) {
-	for (int i = 0; i < m_nLightnings; i++)
-		m_lightnings [i].Destroy ();
-	m_lightnings.Destroy ();
-	m_nLightnings = 0;
+if (m_lightning.Buffer ()) {
+	for (int i = 0; i < m_nBolts; i++)
+		m_lightning [i].Destroy ();
+	m_lightning.Destroy ();
+	m_nBolts = 0;
 	}
 #else
-m_lightnings.Destroy ();	//class and d-tors will handle everything gracefully
-m_nLightnings = 0;
+m_lightning.Destroy ();	//class and d-tors will handle everything gracefully
+m_nBolts = 0;
 #endif
 if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId))
 	lightningManager.SetObjectSystem (m_nObject, -1);
@@ -1267,17 +1277,21 @@ if ((m_bSound > 0) & (m_nObject >= 0))
 
 //------------------------------------------------------------------------------
 
-void CLightningSystem::Animate (int nStart, int nLightnings)
+void CLightningSystem::Animate (int nStart, int nBolts)
 {
 if (!m_bValid)
 	return;
 
-	CLightning *lightningP = m_lightnings + nStart;
+	CLightning *lightningP = m_lightning + nStart;
 
-if (nLightnings < 0)
-	nLightnings = m_nLightnings;
-for (; nLightnings; nLightnings--, lightningP++)
-	lightningP->Animate (0);
+if (nBolts < 0)
+	nBolts = m_nBolts;
+#pragma omp parallel
+	{
+	#pragma omp for
+	for (int i = 0; i < nBolts; i++)
+		m_lightning [nStart + i].Animate (0);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1287,23 +1301,23 @@ int CLightningSystem::SetLife (void)
 if (!m_bValid)
 	return 0;
 
-	CLightning	*lightningP = m_lightnings.Buffer ();
+	CLightning	*lightningP = m_lightning.Buffer ();
 	int			i;
 
-for (i = 0; i < m_nLightnings; ) {
+for (i = 0; i < m_nBolts; ) {
 	if (!lightningP->SetLife ()) {
 		lightningP->DestroyNodes ();
-		if (!--m_nLightnings)
+		if (!--m_nBolts)
 			return 0;
-		if (i < m_nLightnings) {
-			*lightningP = m_lightnings [m_nLightnings];
-			memset (m_lightnings + m_nLightnings, 0, sizeof (m_lightnings [m_nLightnings]));
+		if (i < m_nBolts) {
+			*lightningP = m_lightning [m_nBolts];
+			memset (m_lightning + m_nBolts, 0, sizeof (m_lightning [m_nBolts]));
 			continue;
 			}
 		}
 	i++, lightningP++;
 	}
-return m_nLightnings;
+return m_nBolts;
 }
 
 //------------------------------------------------------------------------------
@@ -1321,8 +1335,8 @@ if (!m_bValid)
 if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
-		Animate (0, m_nLightnings);
-		if (!(m_nLightnings = SetLife ()))
+		Animate (0, m_nBolts);
+		if (!(m_nBolts = SetLife ()))
 			lightningManager.Destroy (this, NULL);
 		else if (m_nObject >= 0) {
 			UpdateSound ();
@@ -1330,7 +1344,7 @@ if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 			}
 		}
 	}
-return m_nLightnings;
+return m_nBolts;
 }
 
 //------------------------------------------------------------------------------
@@ -1353,7 +1367,7 @@ if (!m_bSound)
 	CLightning	*lightningP;
 	int			i;
 
-for (i = m_nLightnings, lightningP = m_lightnings.Buffer (); i > 0; i--, lightningP++)
+for (i = m_nBolts, lightningP = m_lightning.Buffer (); i > 0; i--, lightningP++)
 	if (lightningP->m_nNodes > 0) {
 		if (m_bSound < 0)
 			CreateSound (1);
@@ -1373,11 +1387,11 @@ if (!m_bValid)
 	return;
 if (nSegment < 0)
 	return;
-if (!m_lightnings.Buffer ())
+if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING) {
-	for (int i = 0; i < m_nLightnings; i++)
-		m_lightnings [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
+	for (int i = 0; i < m_nBolts; i++)
+		m_lightning [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
 	}
 }
 
@@ -1395,7 +1409,7 @@ Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 
 //------------------------------------------------------------------------------
 
-void CLightningSystem::Render (int nStart, int nLightnings, int bDepthSort, int nThread)
+void CLightningSystem::Render (int nStart, int nBolts, int bDepthSort, int nThread)
 {
 if (!m_bValid)
 	return;
@@ -1412,12 +1426,17 @@ if (automap.m_bDisplay && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 		}
 	}
 
-CLightning *lightningP = m_lightnings + nStart;
+CLightning *lightningP = m_lightning + nStart;
 
-if (nLightnings < 0)
-	nLightnings = m_nLightnings;
-for (; nLightnings; nLightnings--, lightningP++)
-	lightningP->Render (0, bDepthSort, nThread);
+if (nBolts < 0)
+	nBolts = m_nBolts;
+
+#pragma omp parallel
+	{
+	#pragma omp for
+	for (int i = 0; i < nBolts; i++)
+		m_lightning [nStart + i].Render (0, bDepthSort, nThread);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1429,9 +1448,14 @@ if (!m_bValid)
 
 	int nLights = 0;
 
-if (m_lightnings.Buffer ())
-	for (int i = 0; i < m_nLightnings; i++)
-		nLights += m_lightnings [i].SetLight ();
+if (m_lightning.Buffer ()) {
+	#pragma omp parallel
+		{
+		#pragma omp for
+		for (int i = 0; i < m_nBolts; i++)
+			nLights += m_lightning [i].SetLight ();
+		}
+	}
 return nLights;
 }
 
@@ -1751,7 +1775,7 @@ if (SHOW_LIGHTNING) {
 	int nCurrent = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
-			systemP->Render (0, systemP->m_nLightnings, gameOpts->render.bDepthSort > 0, 0);
+			systemP->Render (0, systemP->m_nBolts, gameOpts->render.bDepthSort > 0, 0);
 	ogl.StencilOn (bStencil);
 	}
 }
@@ -2064,7 +2088,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)
 		return;
 	n = (5 - h / 10) * 2;
 	if (0 <= (h = m_objects [i])) {
-		if (m_systems [h].m_nLightnings == n) {
+		if (m_systems [h].m_nBolts == n) {
 			MoveForObject (objP);
 			return;
 			}
@@ -2173,7 +2197,7 @@ if (i >= 0) {
 		systemP->m_nKey [0] = key.i [0];
 		systemP->m_nKey [1] = key.i [1];
 		}
-	if (systemP->Lightnings () && (systemP->m_nLightnings = systemP->Lightnings ()->Update (0)))
+	if (systemP->Lightnings () && (systemP->m_nBolts = systemP->Lightnings ()->Update (0)))
 		systemP->Render (0, -1, 0, -1);
 	else
 		Destroy (m_systems + i, NULL);

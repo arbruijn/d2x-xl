@@ -130,8 +130,8 @@ class CLightning : public tLightning {
 
 typedef struct tLightningSystem {
 	int						m_nId;
-	CArray<CLightning>	m_lightnings;
-	int						m_nLightnings;
+	CArray<CLightning>	m_lightning;
+	int						m_nBolts;
 	short						m_nSegment [2];
 	short						m_nObject;
 	int						m_nKey [2];
@@ -145,7 +145,7 @@ typedef struct tLightningSystem {
 
 class CLightningSystem : public tLightningSystem {
 	public:
-		CLightningSystem () { m_bValid = 0, m_lightnings = NULL, m_nLightnings = 0, m_nObject = -1; };
+		CLightningSystem () { m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
 		~CLightningSystem () { Destroy (); };
 		void Init (int nId);
 		bool Create (int nLightnings, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
@@ -160,7 +160,7 @@ class CLightningSystem : public tLightningSystem {
 		void Mute (void);
 		int SetLife (void);
 		int SetLight (void);
-		inline CLightning* Lightnings (void) { return m_lightnings.Buffer (); }
+		inline CLightning* Lightnings (void) { return m_lightning.Buffer (); }
 		inline int Id (void) { return m_nId; }
 		inline void SetValid (char bValid) { m_bValid = bValid; }
 	private:
