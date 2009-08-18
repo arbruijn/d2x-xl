@@ -156,7 +156,7 @@ void CockpitOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optTextGauges, optHUD, optMissiles, optPosition, optAlignment, optZoomType = -1;
+	int	optTextGauges, optHUD, optReticle, optMissiles, optPosition, optAlignment, optZoomType = -1;
 
 	char	szSlider [50];
 
@@ -193,6 +193,7 @@ do {
 	m.Create (15);
 
 	optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
+	optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 	optMissiles = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
 	//if (gameOpts->app.bExpertMode)
@@ -247,6 +248,7 @@ do {
 #endif
 	} while (i >= 0);
 
+	GET_VAL (gameOpts->render.cockpit.bReticle, optReticle);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissiles);
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);

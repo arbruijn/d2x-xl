@@ -371,9 +371,9 @@ return false;
 
 int OMP_GetNumThreads (void)
 {
+#ifdef OPENMP
 	int nThreads;
 
-#ifdef OPENMP
 #pragma omp parallel
 	{
 	nThreads = OMP_GetNumThreads ();
