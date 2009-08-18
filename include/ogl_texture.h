@@ -27,7 +27,7 @@ typedef struct tTexture {
 	GLfloat			u, v;
 	GLclampf			prio;
 	ubyte				bMipMaps;
-	ubyte				bSmoothe;
+	char				bSmoothe;
 	ubyte				bRenderBuffer;
 	CBitmap*			bmP;
 #if RENDER2TEXTURE == 1

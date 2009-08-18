@@ -265,8 +265,8 @@ else {
 #endif
 	m_info.internalFormat = 4;
 	}
-m_info.bMipMaps = bMipMap && !bMask;
-m_info.bSmoothe = bSmoothe || m_info.bMipMaps;
+m_info.bMipMaps = (bMipMap > 0) && !bMask;
+m_info.bSmoothe = (bMipMap < 0) ? -1 : bSmoothe || m_info.bMipMaps;
 }
 
 //------------------------------------------------------------------------------
@@ -992,13 +992,17 @@ glPrioritizeTextures (1, (GLuint *) &m_info.handle, &m_info.prio);
 Bind ();
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GLint (m_info.bMipMaps && ogl.m_states.bNeedMipMaps));
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-if (m_info.bSmoothe) {
+if (m_info.bSmoothe > 0) {
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ogl.m_states.texMagFilter);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ogl.m_states.texMinFilter);
 	}
+else if (m_info.bSmoothe < 0) {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	}
 else {
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //GL_LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 #if TEXTURE_COMPRESSION
 if (bCompressed) {
@@ -1356,6 +1360,9 @@ nDepth++;
 
 if (!strcmp (m_info.szName, "sparks.tga"))
 	nDbgSeg = nDbgSeg;
+
+if (bMipMaps < 0)
+	bMipMaps = bMipMaps;
 #endif
 if ((bmP = HasOverride ())) {
 	int i = bmP->Bind (bMipMaps);
@@ -1439,6 +1446,8 @@ if (strstr (m_info.szName, "pwr02"))
 	nDbgTexture = nDbgTexture;
 if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 	nDbgTexture = nDbgTexture;
+if (bMipMaps < 0)
+	bMipMaps = bMipMaps;
 #endif
 
 switch (m_info.nType) {

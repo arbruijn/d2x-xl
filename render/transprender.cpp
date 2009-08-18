@@ -768,7 +768,6 @@ if (faceP) {
 	}
 else {
 	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
-	return;
 	}
 //m_data.bUseLightmaps = 0;
 #endif
@@ -1051,12 +1050,17 @@ void CTransparencyRenderer::RenderObject (tTranspObject *item)
 //SEM_LEAVE (SEM_LIGHTNING)	//might lockup otherwise when creating damage lightnings on cloaked objects
 //SEM_LEAVE (SEM_SPARKS)
 ResetShader ();
+#if 1
+ogl.ResetClientStates ();
+#else
 for (int i = 0; i < 4; i++) {
 	ogl.SelectTMU (GL_TEXTURE3 - i);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	glDisable (GL_TEXTURE_2D);
 	}
+#endif
 gameData.models.vScale = item->vScale;
+glDepthMask (m_data.bDepthMask = 0);
 DrawPolygonObject (item->objP, 0, 1);
 gameData.models.vScale.SetZero ();
 ogl.ResetClientStates ();

@@ -451,7 +451,7 @@ while (nextRowP != NULL) {
 		if (fontManager.Current ()->InFont (letter)) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
-			bmf->RenderScaled (x, y, int (bmf->Width () * fScale), int (bmf->Height () * fScale), I2X (1), 0, colorP);
+			bmf->RenderScaled (x, y, int (bmf->Width () * fScale), int (bmf->Height () * fScale), I2X (1), 0, colorP, !gameStates.app.bDemoData);
 			}
 		x += spacing;
 		textP++;
@@ -636,7 +636,7 @@ if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
 	CBitmap* bmP = ps->bmP;
 	float		fScale = fontManager.Scale ();
 
-	ps->bmP->RenderScaled (x, y, int (bmP->Width () * fScale), int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0));
+	ps->bmP->RenderScaled (x, y, int (bmP->Width () * fScale), int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
 	return (int) (ps - stringPool) + 1;
 	}
 #endif

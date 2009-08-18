@@ -229,15 +229,15 @@ glDisable (GL_TEXTURE_2D);
 
 //------------------------------------------------------------------------------
 
-int CBitmap::RenderScaled (int x, int y, int w, int h, int scale, int orient, tCanvasColor* colorP)
+int CBitmap::RenderScaled (int x, int y, int w, int h, int scale, int orient, tCanvasColor* colorP, int bSmoothe)
 {
 	CBitmap*		bmoP;
 	tRgbaColorf	color;
 
 if ((bmoP = HasOverride ()))
-	return bmoP->RenderScaled (x, y, w, h, scale, orient, colorP);
+	return bmoP->RenderScaled (x, y, w, h, scale, orient, colorP, bSmoothe);
 DelFlags (BM_FLAG_SUPER_TRANSPARENT);
-if (!OglBeginRender (true, 0, 3))
+if (!OglBeginRender (true, bSmoothe ? 0 : -1, 3))
 	return 1; // fail
 OglVertices (x, y, w, h, scale, orient);
 OglTexCoord ();
