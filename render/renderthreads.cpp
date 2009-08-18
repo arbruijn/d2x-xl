@@ -371,11 +371,14 @@ return false;
 
 int OMP_GetNumThreads (void)
 {
+	int nThreads;
+
 #ifdef OPENMP
 #pragma omp parallel
 	{
-	return OMP_GetNumThreads ();
+	nThreads = OMP_GetNumThreads ();
 	}
+return nThreads;
 #else
 return 2;
 #endif
