@@ -68,9 +68,10 @@ int RunRenderThreads (int nTask, int nThreads)
 {
 #if DBG
 	time_t	t0 = 0, t2 = 0;
+	int		nActive;
 	static	int nLockups = 0;
 #endif
-	int		i, nActive;
+	int		i;
 
 if (!gameStates.app.bMultiThreaded)
 	return 0;
