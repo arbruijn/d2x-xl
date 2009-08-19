@@ -294,6 +294,7 @@ gameStates.app.bLunacy = 0;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks = -1;
+gameStates.app.nThreads = 1;
 #if DBG
 gameStates.app.bEnglish = 1;
 #else

@@ -540,7 +540,7 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 			Build (i);
 		}
 #else
-	if (!RunRenderThreads (rtLightmap))
+	if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
 		Build (-1);
 #endif
 #if DBG

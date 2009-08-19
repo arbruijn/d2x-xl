@@ -25,21 +25,21 @@ typedef struct tRenderThreadInfo {
 	tRenderTask	nTask;
 	int						nMiddle;
 	int						nFaces;
-	int						zMax [2];
+	int						zMax [MAX_THREADS];
 	tLightning				*pl;
 	int						nLightnings;
 	CObject					*objP;
 	RenderModel::CModel	*pm;
-	tParticleEmitter		*particleEmitters [2];
-	int						nCurTime [2];
-	tThreadInfo				ti [2];
+	tParticleEmitter		*particleEmitters [MAX_THREADS];
+	int						nCurTime [MAX_THREADS];
+	tThreadInfo				ti [MAX_THREADS];
 	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;
 
 typedef struct tTranspRenderThreadInfo {
-	tTranspItemData	itemData [2];
-	tThreadInfo			ti [2];
+	tTranspItemData	itemData [MAX_THREADS];
+	tThreadInfo			ti [MAX_THREADS];
 	} tTranspRenderThreadInfo;
 
 extern tTranspRenderThreadInfo tiTranspRender;

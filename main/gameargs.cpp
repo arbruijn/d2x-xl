@@ -402,8 +402,16 @@ else
 	SetNostalgia (0);
 
 #if 1 //MULTI_THREADED
-if ((t = FindArg ("-multithreaded")))
-	gameStates.app.bMultiThreaded = NumArg (t, 1);
+if ((t = FindArg ("-multithreaded"))) {
+	gameStates.app.nThreads = NumArg (t, 1);
+	gameStates.app.bMultiThreaded = gameStates.app.nThreads > 0;
+	if (gameStates.app.nThreads == 0)
+		gameStates.app.nThreads = 1;
+	else if (gameStates.app.nThreads == 1)
+		gameStates.app.nThreads = 2;
+	else if (gameStates.app.nThreads > MAX_THREADS)
+		gameStates.app.nThreads = MAX_THREADS;
+	}
 #endif
 if ((t = FindArg ("-nosound")))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);

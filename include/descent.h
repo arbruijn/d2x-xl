@@ -1078,6 +1078,7 @@ typedef struct tApplicationStates {
 #if 1 //MULTI_THREADED
 	int bExit;
 	int bMultiThreaded;
+	int nThreads;
 #endif
 	int bDemoData;
 	int nSDLTicks;

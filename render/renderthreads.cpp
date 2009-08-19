@@ -52,12 +52,25 @@ return false;
 
 //------------------------------------------------------------------------------
 
+static inline int ThreadsActive (int nThreads)
+{
+	int	nActive = 0;
+
+for (int i = 0; i < nThreads; i++)
+	if (tiRender.ti [i].bExec)
+		nActive++;
+return nActive;
+}
+
+//------------------------------------------------------------------------------
+
 int RunRenderThreads (int nTask, int nThreads)
 {
 #if DBG
 	time_t	t0 = 0, t2 = 0;
 	static	int nLockups = 0;
 #endif
+	int		i, nActive;
 
 if (!gameStates.app.bMultiThreaded)
 	return 0;
@@ -66,23 +79,22 @@ if ((nTask < rtTaskCount) && !gameData.app.bUseMultiThreading [nTask])
 	return 0;
 #endif
 tiRender.nTask = (tRenderTask) nTask;
-tiRender.ti [0].bExec = 1;
-if (nThreads == 2)
-	tiRender.ti [1].bExec = 1;
+for (i = 0; i < nThreads; i++)
+	tiRender.ti [i].bExec = 1;
 #if DBG
 t0 = clock ();
-while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t0 < 1000)) {
+while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 	G3_SLEEP (0);
-	if (tiRender.ti [0].bExec != tiRender.ti [1].bExec) {
+	if (nActive < nThreads) {
 		if (!t2)
 			t2 = clock ();
-		else if (clock () - t2 > 33) {	//slower thread must not take more than 00 ms longer than faster one
+		else if (clock () - t2 > 33) {	//slower threads must not take more than 33 ms over the fastest one
 #if 0//!DBG
 			t2 = clock ();
 #else
 			PrintLog ("threads locked up (task: %d)\n", nTask);
-			tiRender.ti [0].bExec =
-			tiRender.ti [1].bExec = 0;
+			for (i = 0; i < nThreads; i++)
+				tiRender.ti [i].bExec = 0;
 			if (++nLockups > 100)
 				gameStates.app.bMultiThreaded = 0;
 #endif
@@ -90,7 +102,7 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t0 < 1000
 		}
 	}
 #else
-while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+while (ThreadsActive (nThreads))
 	G3_SLEEP (0);
 #endif
 return 1;
@@ -98,9 +110,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+static inline void ComputeThreadRange (int nId, int nMax, int& nStart, int& nEnd)
+{
+int nRange = (nMax + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
+nStart = nId * nRange;
+nEnd = nStart + nRange;
+if (nEnd > nMax)
+	nEnd = nMax;
+}
+
+//------------------------------------------------------------------------------
+
 int _CDECL_ RenderThread (void *pThreadId)
 {
 	int		nId = *reinterpret_cast<int*> (pThreadId);
+	int		nRange, nStart, nEnd;
 #ifdef _WIN32
 	HGLRC		myContext = 0;
 #endif
@@ -112,42 +136,44 @@ do {
 			return 0;
 		}
 	if (tiRender.nTask == rtSortSegZRef) {
-		if (nId)
-			QSortSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs - 0);
-		else
-			QSortSegZRef (0, gameData.render.mine.nRenderSegs / 2 - 0);
+		ComputeThreadRange (nId, gameData.render.mine.nRenderSegs, nStart, nEnd);
+		QSortSegZRef (nStart, nEnd);
 		}
 	else if (tiRender.nTask == rtInitSegZRef) {
-		if (nId)
-			InitSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs, nId);
-		else
-			InitSegZRef (0, gameData.render.mine.nRenderSegs / 2, nId);
+		ComputeThreadRange (nId, gameData.render.mine.nRenderSegs, nStart, nEnd);
+		InitSegZRef (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtStaticVertLight) {
-		if (nId)
-			lightManager.GatherStaticVertexLights (gameData.segs.nVertices / 2, gameData.segs.nVertices, nId);
-		else
-			lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices / 2, nId);
+		ComputeThreadRange (nId, gameData.segs.nVertices, nStart, nEnd);
+		lightManager.GatherStaticVertexLights (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
 		if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments)) {
-			if (nId)
-				ComputeFaceLight (gameData.render.mine.nRenderSegs - 1, tiRender.nMiddle - 1, nId);
-			else
-				ComputeFaceLight (0, tiRender.nMiddle, nId);
+			// special handling: 
+			// tiMiddle is the index at which an equal number of visible faces is both at indices below and above it
+			// use it to balance thread load
+			int nThreads2 = gameStates.app.nThreads / 2;
+			if (nId < nThreads2) {
+				nRange = (tiRender.nMiddle + nThreads2 - 1) / nThreads2;
+				nStart = nId * nRange;
+				nEnd = nStart + nRange;
+				if (nEnd > tiRender.nMiddle)
+					nEnd = tiRender.nMiddle;
+				}
+			else {
+				nRange = (gameData.render.mine.nRenderSegs - tiRender.nMiddle + nThreads2 - 1) / nThreads2;
+				nStart = (nId - nThreads2) * nRange;
+				nEnd = nStart + nRange;
+				if (nEnd > gameData.render.mine.nRenderSegs)
+					nEnd = gameData.render.mine.nRenderSegs;
+				}
+			ComputeFaceLight (nStart, nEnd, nId);
 			}
-		else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE) {
-			if (nId)
-				ComputeFaceLight (gameData.segs.nFaces / 2, gameData.segs.nFaces, nId);
-			else
-				ComputeFaceLight (0, gameData.segs.nFaces / 2, nId);
-			}
-		else {
-			if (nId)
-				ComputeFaceLight (gameData.segs.nSegments, gameData.segs.nSegments / 2, nId);
-			else
-				ComputeFaceLight (0, gameData.segs.nSegments / 2, nId);
-			}
+		else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE) 
+			ComputeThreadRange (nId, gameData.segs.nFaces, nStart, nEnd);
+		else 
+			ComputeThreadRange (nId, gameData.segs.nSegments, nStart, nEnd);
+		ComputeFaceLight (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtPolyModel) {
 		short	iVerts, nVerts, iFaceVerts, nFaceVerts;
@@ -376,7 +402,10 @@ int OMP_GetNumThreads (void)
 
 #pragma omp parallel
 	{
-	nThreads = OMP_GetNumThreads ();
+	nThreads = omp_get_num_threads ();
+	if (nThreads > MAX_THREADS)
+		omp_set_num_threads (MAX_THREADS);
+
 	}
 return nThreads;
 #else

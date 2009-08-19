@@ -154,7 +154,7 @@ class CDynLightData {
 		CStaticArray< CDynLight, MAX_OGL_LIGHTS >		lights; // [MAX_OGL_LIGHTS];
 		CStaticArray< CDynLight*, MAX_OGL_LIGHTS >	renderLights; // [MAX_OGL_LIGHTS];
 		CArray< CActiveDynLight >							active [MAX_THREADS]; //[MAX_OGL_LIGHTS];
-		CArray< CDynLightIndex >							index [2]; //[MAX_THREADS];
+		CArray< CDynLightIndex >							index [MAX_THREADS]; //[MAX_THREADS];
 		CShortArray			nearestSegLights;		//the 8 nearest static lights for every segment
 		CShortArray			nearestVertLights;	//the 8 nearest static lights for every vertex
 		CByteArray			variableVertLights;	//the 8 nearest veriable lights for every vertex
