@@ -85,7 +85,6 @@ else {
 	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 	int nSuperTransp;
 
-	bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	if (!(nFrames = h / w))
 		nFrames = 1;
 	for (n = 0; n < nFrames; n++) {
@@ -116,7 +115,6 @@ else {
 					if (p->alpha)
 						bmP->DelFlags (BM_FLAG_SEE_THRU);
 					}
-				bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
 				avgAlpha += p->alpha;
 				nAlpha++;
 				}
@@ -125,6 +123,11 @@ else {
 			avgColor.red += p->red * a;
 			avgColor.green += p->green * a;
 			avgColor.blue += p->blue * a;
+			}
+		if (nAlpha > w * w / 2000) {
+			if (!n)
+				bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+			bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
 			}
 		if (nSuperTransp > w * w / 2000) {
 			if (!n)

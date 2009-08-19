@@ -875,6 +875,9 @@ if (gameStates.app.bHaveMod)
 	songManager.LoadPlayList (szDefaultPlayList, 1);
 songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 lightManager.SetMethod ();
+/*---*/PrintLog ("   loading level data\n");
+gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
+									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 #if 1
 if (LoadModData (NULL, 0, 0) < 0) {
 	gameStates.app.bBetweenLevels = 0;
@@ -914,9 +917,6 @@ paletteManager.LoadEffect ();
 //	NMLoadBackground (NULL, NULL, 0);
 if (!gameStates.app.bProgressBars)
 	messageBox.Show (TXT_LOADING);
-/*---*/PrintLog ("   loading level data\n");
-gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
-									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 /*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 
