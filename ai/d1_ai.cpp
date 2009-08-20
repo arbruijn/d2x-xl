@@ -1718,6 +1718,21 @@ void DoD1AIFrame (CObject *objP)
 if (nObject == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
+if (objP->cType.aiInfo.SKIP_AI_COUNT) {
+	objP->cType.aiInfo.SKIP_AI_COUNT--;
+	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
+		objP->mType.physInfo.rotThrust [X] = 15 * objP->mType.physInfo.rotThrust [X] / 16;
+		objP->mType.physInfo.rotThrust [Y] = 15 * objP->mType.physInfo.rotThrust [Y] / 16;
+		objP->mType.physInfo.rotThrust [Z] = 15 * objP->mType.physInfo.rotThrust [Z] / 16;
+		if (!objP->cType.aiInfo.SKIP_AI_COUNT)
+			objP->mType.physInfo.flags &= ~PF_USES_THRUST;
+		}
+	return;
+	}
+
+if (DoAnyRobotDyingFrame (objP))
+	return;
+
 	//	Kind of a hack.  If a robotP is flinching, but it is time for it to fire, unflinch it.
 	//	Else, you can turn a big nasty robotP into a wimp by firing flares at it.
 	//	This also allows the playerP to see the cool flinch effect for mechs without unbalancing the game.

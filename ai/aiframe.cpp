@@ -1357,16 +1357,16 @@ if (si.aiP->SKIP_AI_COUNT) {
 		if (!si.aiP->SKIP_AI_COUNT)
 			objP->mType.physInfo.flags &= ~PF_USES_THRUST;
 		}
-	goto funcExit;
+	return;
 	}
 
 Assert (si.botInfoP->always_0xabcd == 0xabcd);
 #if 0//DBG
 if (!si.botInfoP->bossFlag)
-	goto funcExit;
+	return;
 #endif
 if (DoAnyRobotDyingFrame (objP))
-	goto funcExit;
+	return;
 
 // Kind of a hack.  If a robot is flinching, but it is time for it to fire, unflinch it.
 // Else, you can turn a big nasty robot into a wimp by firing flares at it.
@@ -1379,58 +1379,58 @@ if ((si.aiP->behavior < MIN_BEHAVIOR) || (si.aiP->behavior > MAX_BEHAVIOR))
 	si.aiP->behavior = AIB_NORMAL;
 //Assert (objP->info.nId < gameData.bots.nTypes [gameStates.app.bD1Data]);
 if (AINextFireHandler (objP, &si))
-	goto funcExit;
+	return;
 
 si.nPrevVisibility = si.ailP->nPrevVisibility;    //  Must get this before we toast the master copy!
 // If only awake because of a camera, make that the believed CPlayerData position.
 if (AITargetPosHandler (objP, &si))
-	goto funcExit;
+	return;
 gameData.ai.target.xDist = CFixVector::Dist (gameData.ai.target.vBelievedPos, objP->info.position.vPos);
 // If this robot can fire, compute visibility from gun position.
 // Don't want to compute visibility twice, as it is expensive.  (So is call to CalcGunPoint).
 if (AIFireHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIApproachHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIRetryHandler (objP, &si))
-	goto funcExit;
+	return;
 // If in materialization center, exit
 if (AIMatCenHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIAwarenessHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIPlayerDeadHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIBumpHandler (objP, &si))
-	goto funcExit;
+	return;
 if ((si.aiP->GOAL_STATE == AIS_FLINCH) && (si.aiP->CURRENT_STATE == AIS_FLINCH))
 	si.aiP->GOAL_STATE = AIS_LOCK;
 if (AIAnimationHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIBossHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIStationaryHandler (objP, &si))
-	goto funcExit;
+	return;
 // Reset time since processed, but skew OBJECTS so not everything
 // processed synchronously, else we get fast frames with the
 // occasional very slow frame.
 // AI_procTime = si.ailP->timeSinceProcessed;
 si.ailP->timeSinceProcessed = -((si.nObject & 0x03) * gameData.time.xFrame) / 2;
 if (AIBrainHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AISnipeHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIBuddyHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIThiefHandler (objP, &si))
-	goto funcExit;
+	return;
 // More special ability stuff, but based on a property of a robot, not its ID.
 if ((ushort) si.ailP->mode > AIM_THIEF_WAIT)
 	AIMDefaultHandler2 (objP, &si);
 else if (aimHandler2 [si.ailP->mode] (objP, &si))
-	goto funcExit;
+	return;
 if (AIWakeupHandler (objP, &si))
-	goto funcExit;
+	return;
 
 if (!gameData.ai.bObjAnimates)
 	si.aiP->CURRENT_STATE = si.aiP->GOAL_STATE;
@@ -1440,12 +1440,12 @@ Assert (si.aiP->CURRENT_STATE < AIS_MAX);
 Assert (si.aiP->GOAL_STATE < AIS_MAX);
 
 if (AINewGoalHandler (objP, &si))
-	goto funcExit;
+	return;
 // If new state = fire, then set all gun states to fire.
 if (AIFireGunsHandler (objP, &si))
-	goto funcExit;
+	return;
 if (AIForceFireHandler (objP, &si))
-	goto funcExit;
+	return;
 // Switch to next gun for next fire.
 if (!gameData.ai.nTargetVisibility) {
 	if (++(si.aiP->CURRENT_GUN) >= ROBOTINFO (objP->info.nId).nGuns) {
@@ -1455,17 +1455,6 @@ if (!gameData.ai.nTargetVisibility) {
 			si.aiP->CURRENT_GUN = 1;
 		}
 	}
-
-funcExit:
-
-#if 0//DBG
-HUDMessage (0, "%s %s %d %d %d",
-				pszAIState [si.aiP->flags [1]], pszAIState [si.aiP->flags [2]],
-				gameData.ai.target.xDist / I2X (1),
-				si.ailP->targetAwarenessType, si.ailP->targetAwarenessTime);
-#else
-	;
-#endif
 }
 
 //	-------------------------------------------------------------------------------------------------
