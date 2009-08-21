@@ -399,16 +399,9 @@ return false;
 int OMP_GetNumThreads (void)
 {
 #ifdef OPENMP
-	int nThreads;
-
-#pragma omp parallel
-	{
-	nThreads = omp_get_num_threads ();
-	if (nThreads > MAX_THREADS)
-		omp_set_num_threads (MAX_THREADS);
-
-	}
-return nThreads;
+	int nThreads = omp_get_num_threads ();
+	
+return (nThreads > MAX_THREADS) ? MAX_THREADS : nThreads;
 #else
 return 2;
 #endif
