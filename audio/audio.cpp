@@ -464,6 +464,20 @@ if ((m_info.bPlaying != bPlaying) && !(m_info.bPlaying = bPlaying)) {
 
 //------------------------------------------------------------------------------
 
+fix CAudioChannel::Duration (void)
+{
+if (!m_info.mixChunkP)
+	return 0;
+
+	fix	nTime = m_info.mixChunkP->allocated / 2;
+
+if (audio.Format () != AUDIO_U8)
+	nTime /= 2;
+return I2X (nTime) / gameOpts->sound.audioSampleRate;
+}
+
+//------------------------------------------------------------------------------
+
 // Volume 0-I2X (1)
 int CAudioChannel::Start (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping, 
 								  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
@@ -905,8 +919,8 @@ return channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1];
 
 // Volume 0-I2X (1)
 int CAudio::StartSound (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping, 
-								int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
-								const char *pszWAV, CFixVector* vPos)
+						int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
+						const char *pszWAV, CFixVector* vPos)
 {
 	CAudioChannel*	channelP;
 

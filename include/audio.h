@@ -196,6 +196,7 @@ class CAudioChannel {
 		void Mix (ubyte* stream, int len);
 		inline int Playing (void) { return m_info.bPlaying; }
 		void SetPlaying (int bPlaying);
+		fix CAudioChannel::Duration (void);
 		inline int SoundObject (void) { return m_info.nSoundObj; }
 		inline void SetSoundObj (int nSoundObj) { m_info.nSoundObj = nSoundObj; }
 		inline int Sound (void) { return m_info.nSound; }
@@ -203,7 +204,7 @@ class CAudioChannel {
 		inline int Volume (void) { return m_info.nVolume; }
 		inline int Persistent (void) { return m_info.bPersistent; }
 		inline int Resampled (void) { return m_info.bResampled; }
-
+		
 	private:
 		int Resample (CSoundSample *soundP, int bD1Sound, int bMP3);
 		int Speedup (CSoundSample *soundP, int speed);
