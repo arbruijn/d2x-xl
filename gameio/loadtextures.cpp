@@ -608,7 +608,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "metl136"))
+if (strstr (bmName, "metl139"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)

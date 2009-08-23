@@ -166,8 +166,8 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="&quot;..\..\..\libraries\SDL-1.2.13\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.8&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include"
-				PreprocessorDefinitions="OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="&quot;..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\SDL_mixer-1.2.8&quot;;&quot;..\..\..\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include"
+				PreprocessorDefinitions="DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
@@ -175,7 +175,6 @@
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="1"
-				OpenMP="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
 				AssemblerListingLocation=".\Release/"
@@ -4251,54 +4250,6 @@
 					</File>
 				</Filter>
 			</Filter>
-			<Filter
-				Name="libmve"
-				>
-				<Filter
-					Name="Header Files"
-					>
-					<File
-						RelativePath="..\libmve\decoders.h"
-						>
-					</File>
-					<File
-						RelativePath="..\include\libmve.h"
-						>
-					</File>
-					<File
-						RelativePath="..\libmve\mve_audio.h"
-						>
-					</File>
-					<File
-						RelativePath="..\libmve\mvelib.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Source Files"
-					>
-					<File
-						RelativePath="..\libmve\decoder16.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\libmve\decoder8.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\libmve\mve_audio.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\libmve\mvelib.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\libmve\mveplay.cpp"
-						>
-					</File>
-				</Filter>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -4317,11 +4268,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
@@ -4390,6 +4341,10 @@
 			</File>
 			<File
 				RelativePath="..\include\ibitblt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\libmve.h"
 				>
 			</File>
 			<File

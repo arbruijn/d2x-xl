@@ -61,7 +61,7 @@ void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightnes
 	int				w = bmP->Width ();
 	tRgbColorf		avgColor;
 	tRgbColorb		avgColorb;
-	float				a, avgAlpha = 0;
+	float			a, avgAlpha = 0;
 
 bmP->AddFlags (BM_FLAG_TGA);
 bmP->SetTranspType (-1);
@@ -110,11 +110,6 @@ else {
 					p->blue = 0;
 				}
 			if (p->alpha < MIN_OPACITY) {
-				if (!n) {
-					bmP->AddFlags (BM_FLAG_TRANSPARENT);
-					if (p->alpha)
-						bmP->DelFlags (BM_FLAG_SEE_THRU);
-					}
 				avgAlpha += p->alpha;
 				nAlpha++;
 				}
@@ -124,9 +119,13 @@ else {
 			avgColor.green += p->green * a;
 			avgColor.blue += p->blue * a;
 			}
-		if (nAlpha > w * w / 2000) {
-			if (!n)
-				bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+		if (nAlpha > w * w / 1000) {
+			if (!n) {
+				if (avgAlpha / nAlpha > 1.0f)
+					bmP->AddFlags (BM_FLAG_TRANSPARENT);
+				else
+					bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
+				}
 			bmP->TransparentFrames () [n / 32] |= (1 << (n % 32));
 			}
 		if (nSuperTransp > w * w / 2000) {
