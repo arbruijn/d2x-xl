@@ -295,7 +295,11 @@ if (!bInitialized) {
 	memset (&tiRender, 0, sizeof (tiRender));
 	bInitialized = true;
 	}
+#ifdef OPENMP
+for (int i = 0; i < 2; i++) {
+#else
 for (int i = 0; i < gameStates.app.nThreads; i++) {
+#endif
 	if (!tiRender.ti [i].pThread) {
 		tiRender.ti [i].bDone =
 		tiRender.ti [i].bExec = 0;
