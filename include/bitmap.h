@@ -220,7 +220,7 @@ class CBitmap : public CArray< ubyte > {
 			return oldOverrideP;
 			}
 		CBitmap* SetCurFrame (CBitmap *frameP) { 
-			m_info.frames.nCurrent = (m_info.frames.currentP = frameP) - m_info.frames.bmP;
+			m_info.frames.nCurrent = int ((m_info.frames.currentP = frameP) - m_info.frames.bmP);
 			return m_info.frames.currentP;
 			}
 		CBitmap* SetCurFrame (int nFrame) { 

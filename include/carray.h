@@ -129,7 +129,7 @@ class CArray : public CQuickSort < _T > {
 			return -1;
 			}
 #else
-		inline uint Index (_T* elem) { return elem - m_data.buffer; }
+		inline uint Index (_T* elem) { return uint (elem - m_data.buffer); }
 #endif
 
 #if DBG
@@ -385,7 +385,7 @@ inline int operator- (uint* v, CArray<uint>& a) { return a.Index (v); }
 class CCharArray : public CArray<char> {
 	public:
 		inline char* operator= (const char* source) { 
-			uint l = strlen (source) + 1;
+			uint l = uint (strlen (source) + 1);
 			if ((l > this->m_data.length) && !this->Resize (this->m_data.length + l))
 				return NULL;
 			memcpy (this->m_data.buffer, source, l);

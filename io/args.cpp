@@ -79,7 +79,7 @@ else {
 	if (FFF (fnIni, &ffs, 0) <= 0) {
 #endif
 	strcpy (fnIni, gameFolders.szConfigDir);
-	i = strlen (fnIni);
+	i = int (strlen (fnIni));
 	if (i) {
 		p = fnIni + i - 1;
 		if ((*p == '\\') || (*p == '/'))
