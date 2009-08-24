@@ -410,9 +410,8 @@ int OMP_GetNumThreads (void)
 gameStates.app.nThreads = omp_get_num_threads ();
 if (gameStates.app.nThreads > MAX_THREADS)
 	gameStates.app.nThreads = MAX_THREADS;
-#else
-return gameStates.app.nThreads;
 #endif
+return gameStates.app.nThreads;
 }
 
 //------------------------------------------------------------------------------
