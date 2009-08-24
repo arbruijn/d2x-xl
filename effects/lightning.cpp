@@ -2328,7 +2328,7 @@ for (handleP = m_handles + i; j; j--) {
 		if (parentObjP->info.nType == OBJ_PLAYER) {
 			wsP = gameData.multiplayer.weaponStates + parentObjP->info.nId;
 			if ((wsP->nPrimary != OMEGA_INDEX) || !wsP->firing [0].nStart) {
-				Delete (handleP - m_handles);
+				Delete (short (handleP - m_handles));
 				continue;
 				}
 			}

@@ -1306,7 +1306,7 @@ for (i = 0; i < m_textures.m_nBitmaps; i++) {
 		FreeTextures ();
 		return 0;
 		}
-	m_textures.m_names [i].SetBuffer (pszName, 0, strlen (pszName) + 1);
+	m_textures.m_names [i].SetBuffer (pszName, 0, uint (strlen (pszName) + 1));
 	if (!ReadModelTGA (m_textures.m_names [i].Buffer (), m_textures.m_bitmaps + i, m_bCustom)) {
 #if DBG
 		bOk = 0;
@@ -1705,7 +1705,7 @@ AssignChildren ();
 LinkBatteries ();
 BuildPosTickRemapList ();
 BuildRotTickRemapList ();
-gameData.models.bHaveHiresModel [this - gameData.models.oofModels [bCustom != 0].Buffer ()] = 1;
+gameData.models.bHaveHiresModel [uint (this - gameData.models.oofModels [bCustom != 0].Buffer ())] = 1;
 return 1;
 }
 

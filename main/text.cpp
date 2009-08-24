@@ -2747,7 +2747,7 @@ for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 		continue;
 	for (; *p && (isdigit (*p) || isspace (*p)); p++)
 		;
-	l = strlen (p);
+	l = int (strlen (p));
 	if (!l)
 		continue;
 	if (!(t = new char [l + 1]))

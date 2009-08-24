@@ -292,7 +292,7 @@ else if (syncP->nState == 4) {
 	if (syncP->nExtras) {
 		NetworkSyncExtras (syncP);
 		if ((syncP->bExtraGameInfo = (syncP->nExtras == 0))) {
-			DeleteSyncData (syncP - networkData.sync);
+			DeleteSyncData (short (syncP - networkData.sync));
 			}
 		}
 	}

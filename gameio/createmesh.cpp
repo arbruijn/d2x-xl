@@ -148,7 +148,7 @@ tEdge *edgeP;
 for (int i = -1;;) {
 	if (!(edgeP = FindEdge (nVert1, nVert2, i)))
 		break;
-	i = edgeP - &m_edges [0];
+	i = int (edgeP - &m_edges [0]);
 	if (edgeP->tris [0] < 0) {
 		edgeP->tris [0] = nTri;
 		return i;

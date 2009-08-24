@@ -674,7 +674,7 @@ if ((*bmName && /*!gameStates.app.bDemoData &&*/ ((nIndex < 0) || IsCockpit (bmN
 			bmP->SetOverride (altBmP);
 			bmP = altBmP;
 			bmP->DelFlags (BM_FLAG_RLE);
-			nSize = bmP->Size ();
+			nSize = int (bmP->Size ());
 			nFrames = (bmP->Height () % bmP->Width ()) ? 1 : bmP->Height () / bmP->Width ();
 			bmP->SetFrameCount (ubyte (nFrames));
 			nOffset = -1;

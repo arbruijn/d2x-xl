@@ -791,7 +791,7 @@ m_info.nColor = WHITE_RGBA;
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 if ((p = const_cast<char*> (strchr (pszName, '\n')))) {
-	memcpy (szName, pszName, i = p - pszName);
+	memcpy (szName, pszName, i = int (p - pszName));
 	szName [i] = '\0';
 	nIdWeapon [nWeaponType][0] = PrintF (&nIdWeapon [nWeaponType][0], xText, yText, szName);
 	nIdWeapon [nWeaponType][1] = PrintF (&nIdWeapon [nWeaponType][1], xText, yText + m_info.fontHeight + int (fontManager.Scale ()), p + 1);

@@ -1444,7 +1444,7 @@ char* CBriefing::GetMessage (int nScreen)
 for (int i = 0; i < m_info.nBriefingTextLen; ) {
 	if ((*pszMsg++ == '$') && (*pszMsg++ == 'S') && (ParseMessageInt (pszMsg) == nScreen))
 		return pszMsg;
-	i = pszMsg - m_info.briefingText.Buffer ();
+	i = int (pszMsg - m_info.briefingText.Buffer ());
 	}
 return NULL;
 }

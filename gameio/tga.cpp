@@ -46,7 +46,7 @@ if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 		rgbP->blue = rgbaP->blue;
 		}
 #endif
-	bmP->Resize (3 * bmP->Size () / 4);
+	bmP->Resize (uint (3 * bmP->Size () / 4));
 	bmP->SetBPP (3);
 	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	}
@@ -495,7 +495,7 @@ if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
 if (!*szFolder)
 	strcpy (szFolder, pszFolder);
-int l = strlen (szFolder);
+int l = int (strlen (szFolder));
 if (l && ((szFolder [l - 1] == '/') || (szFolder [l - 1] == '\\')))
 	szFolder [l - 1] = '\0';
 #	if 1

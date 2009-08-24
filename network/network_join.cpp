@@ -247,7 +247,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 			return i;
 			}
 		}
-	memset (&anyAddress, 0xFF, sizeof (newAddress));
+	memset (&anyAddress, 0xFF, sizeof (anyAddress));
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
 			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
@@ -432,7 +432,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	// Player is new to this game
 	if (0 > (nPlayer = FindPlayerSlot (player))) {
-		DeleteSyncData (syncP - networkData.sync);
+		DeleteSyncData (short (syncP - networkData.sync));
 		return;
 		}
 	}

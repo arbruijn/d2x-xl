@@ -1460,7 +1460,7 @@ for (nLights = 0;
 if (nLightRange <= 0) {
 	ogl.m_states.iLight = ogl.m_states.nLights;
 	}
-ogl.m_states.nFirstLight = activeLightsP - lightManager.Active (0);
+ogl.m_states.nFirstLight = int (activeLightsP - lightManager.Active (0));
 #if DBG
 if ((ogl.m_states.iLight < ogl.m_states.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;

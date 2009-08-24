@@ -152,7 +152,7 @@ gameData.hoard.orb.nWidth = cf.ReadShort ();
 gameData.hoard.orb.nHeight = cf.ReadShort ();
 CalcHoardItemSizes (gameData.hoard.orb);
 fPos = cf.Tell ();
-cf.Seek (palette.Size () + gameData.hoard.orb.nSize, SEEK_CUR);
+cf.Seek (long (palette.Size () + gameData.hoard.orb.nSize), SEEK_CUR);
 gameData.hoard.goal.nFrames = cf.ReadShort ();
 cf.Seek (fPos, SEEK_SET);
 

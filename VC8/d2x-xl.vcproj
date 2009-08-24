@@ -404,7 +404,7 @@
 				StructMemberAlignment="1"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
-				EnableEnhancedInstructionSet="1"
+				EnableEnhancedInstructionSet="0"
 				OpenMP="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/d2x-xl.pch"

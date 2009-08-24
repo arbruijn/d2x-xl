@@ -738,7 +738,7 @@ if (!nResult)
 	Destroy ();
 else {
 	LinkSubModels ();
-	gameData.models.bHaveHiresModel [this - gameData.models.aseModels [bCustom != 0].Buffer ()] = 1;
+	gameData.models.bHaveHiresModel [uint (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
 	if (gameStates.app.bCacheModelData)
 		SaveBinary ();
 	}

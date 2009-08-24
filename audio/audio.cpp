@@ -196,7 +196,7 @@ if (m_info.bPlaying) {
 	m_info.nVolume = FixMulDiv (nVolume, audio.Volume (), I2X (1));
 #if USE_SDL_MIXER
 	if (gameOpts->sound.bUseSDLMixer)
-		Mix_VolPan (this - audio.Channel (), m_info.nVolume, -1);
+		Mix_VolPan (int (this - audio.Channel ()), m_info.nVolume, -1);
 #endif
 	}
 }
@@ -852,7 +852,7 @@ audio.Setup (1);
 
 int CAudio::RegisterChannel (CAudioChannel* channelP)
 {
-return m_usedChannels.Push (channelP - m_channels.Buffer ()) ? m_usedChannels.ToS () - 1 : 0;
+return m_usedChannels.Push (int (channelP - m_channels.Buffer ())) ? m_usedChannels.ToS () - 1 : 0;
 }
 
 //------------------------------------------------------------------------------
