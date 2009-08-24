@@ -1419,8 +1419,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			if (gameStates.app.nThreads & 1) {
 				#pragma omp parallel
 					{
-					int l, r;
-					#pragma omp for private (l, r)
+					#pragma omp for private (nStart, nEnd)
 					for (int i = 0; i < gameStates.app.nThreads; i++) {
 						ComputeThreadRange (i, nMax, nStart, nEnd);
 						ComputeFaceLight (nStart, nEnd, i);
@@ -1431,14 +1430,14 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 				int	nPivot = gameStates.app.nThreads / 2;
 				#pragma omp parallel
 					{
-					#pragma omp for private (nOffset, nStart, nEnd)
+					#pragma omp for private (nStart, nEnd)
 					for (int i = 0; i < gameStates.app.nThreads; i++) {
 						if (i < nPivot) {
-							ComputeThreadRange (nId, tiRender.nMiddle, nStart, nEnd, nPivot);
+							ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
 							ComputeFaceLight (nStart, nEnd, i);
 							}
 						else {
-							ComputeThreadRange (nId, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
+							ComputeThreadRange (i, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
 							ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
 							}
 						}
