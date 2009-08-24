@@ -1449,9 +1449,9 @@ CLightning *lightningP = m_lightning + nStart;
 if (nBolts < 0)
 	nBolts = m_nBolts;
 
-//#pragma omp parallel
+#pragma omp parallel
 	{
-	//#pragma omp for
+	#pragma omp for
 	for (int i = 0; i < nBolts; i++)
 		lightningP [i].Render (0, bDepthSort, nThread);
 	}
@@ -1467,9 +1467,9 @@ if (!m_bValid)
 	int nLights = 0;
 
 if (m_lightning.Buffer ()) {
-	//#pragma omp parallel
+	#pragma omp parallel
 		{
-		//#pragma omp for reduction(+: nLights)
+		#pragma omp for reduction(+: nLights)
 		for (int i = 0; i < m_nBolts; i++) {
 			nLights = m_lightning [i].SetLight ();
 			}
