@@ -157,20 +157,24 @@ do {
 			// special handling: 
 			// tiMiddle is the index at which an equal number of visible faces is both at indices below and above it
 			// use it to balance thread load
-			int nThreads2 = gameStates.app.nThreads / 2;
-			if (nId < nThreads2) {
-				nRange = (tiRender.nMiddle + nThreads2 - 1) / nThreads2;
-				nStart = nId * nRange;
-				nEnd = nStart + nRange;
-				if (nEnd > tiRender.nMiddle)
-					nEnd = tiRender.nMiddle;
-				}
+			if (gameStates.app.nThreads & 1)
+				ComputeThreadRange (nId, gameData.render.mine.nRenderSegs, nStart, nEnd);
 			else {
-				nRange = (gameData.render.mine.nRenderSegs - tiRender.nMiddle + nThreads2 - 1) / nThreads2;
-				nStart = (nId - nThreads2) * nRange;
-				nEnd = nStart + nRange;
-				if (nEnd > gameData.render.mine.nRenderSegs)
-					nEnd = gameData.render.mine.nRenderSegs;
+				int nThreads2 = gameStates.app.nThreads / 2;
+				if (nId < nThreads2) {
+					nRange = (tiRender.nMiddle + nThreads2 - 1) / nThreads2;
+					nStart = nId * nRange;
+					nEnd = nStart + nRange;
+					if (nEnd > tiRender.nMiddle)
+						nEnd = tiRender.nMiddle;
+					}
+				else {
+					nRange = (gameData.render.mine.nRenderSegs - tiRender.nMiddle + nThreads2 - 1) / nThreads2;
+					nStart = (nId - nThreads2) * nRange;
+					nEnd = nStart + nRange;
+					if (nEnd > gameData.render.mine.nRenderSegs)
+						nEnd = gameData.render.mine.nRenderSegs;
+					}
 				}
 			ComputeFaceLight (nStart, nEnd, nId);
 			}
