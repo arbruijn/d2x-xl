@@ -343,11 +343,13 @@ if (m_info.time [0] < 0) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, -1, -1, -1, -1, I2X (1), indexP->pszText);
 	m_info.flags |= TF_PLAYING_SOUND;
 	}
-else if (gameData.time.xGame - m_info.tOperated < m_info.time [1]) {
+else if (gameData.time.xGame - m_info.tOperated > m_info.time [1]) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, m_info.time [0] - 1, -1, I2X (1), indexP->pszText);
 	m_info.time [1] = audio.Channel (m_info.nChannel)->Duration () * m_info.time [0];
 	m_info.flags |= TF_PLAYING_SOUND;
 	}
+else
+	return 0;
 return 1;
 }
 
@@ -956,6 +958,7 @@ if (m_info.tOperated < 0) {
 			}
 		}
 	}
+
 if (Delay () > 0) {
 	gameData.trigs.delay [nTrigger] = -1;
 	nDepth--;
@@ -1131,9 +1134,8 @@ switch (m_info.nType) {
 		break;
 
 	case TT_SOUND:
-		if ((m_info.flags | TF_PERMANENT) && (m_info.time [0] > 0) && (gameData.time.xGame - m_info.tOperated > m_info.time [0]))
+		if (DoPlaySound (nObject))
 			m_info.tOperated = gameData.time.xGame;
-		DoPlaySound (nObject);
 		break;
 
 	case TT_MASTER:

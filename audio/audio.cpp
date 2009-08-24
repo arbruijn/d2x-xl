@@ -469,7 +469,7 @@ fix CAudioChannel::Duration (void)
 if (!m_info.mixChunkP)
 	return 0;
 
-	fix	nTime = m_info.mixChunkP->allocated / 2;
+	fix	nTime = m_info.mixChunkP->alen / 2;
 
 if (audio.Format () != AUDIO_U8)
 	nTime /= 2;
