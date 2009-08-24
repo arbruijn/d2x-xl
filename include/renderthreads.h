@@ -69,4 +69,15 @@ return !(gameStates.app.bMultiThreaded && (tiRender.ti [0].bExec || tiRender.ti 
 
 //------------------------------------------------------------------------------
 
+static inline void ComputeThreadRange (int nId, int nMax, int& nStart, int& nEnd, int nThreads = gameStates.app.nThreads)
+{
+int nRange = (nMax + nThreads - 1) / nThreads;
+nStart = nId * nRange;
+nEnd = nStart + nRange;
+if (nEnd > nMax)
+	nEnd = nMax;
+}
+
+//------------------------------------------------------------------------------
+
 #endif // _RENDERTHREADS_H

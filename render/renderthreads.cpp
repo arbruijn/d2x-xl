@@ -115,21 +115,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static inline void ComputeThreadRange (int nId, int nMax, int& nStart, int& nEnd)
-{
-int nRange = (nMax + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
-nStart = nId * nRange;
-nEnd = nStart + nRange;
-if (nEnd > nMax)
-	nEnd = nMax;
-}
-
-//------------------------------------------------------------------------------
-
 int _CDECL_ RenderThread (void *pThreadId)
 {
 	int		nId = *reinterpret_cast<int*> (pThreadId);
-	int		nRange, nStart, nEnd;
+	int		nStart, nEnd;
 #ifdef _WIN32
 	HGLRC		myContext = 0;
 #endif
@@ -157,26 +146,21 @@ do {
 			// special handling: 
 			// tiMiddle is the index at which an equal number of visible faces is both at indices below and above it
 			// use it to balance thread load
-			if (gameStates.app.nThreads & 1)
+			if (gameStates.app.nThreads & 1) {
 				ComputeThreadRange (nId, gameData.render.mine.nRenderSegs, nStart, nEnd);
+				ComputeFaceLight (nStart, nEnd, nId);
+				}
 			else {
-				int nThreads2 = gameStates.app.nThreads / 2;
-				if (nId < nThreads2) {
-					nRange = (tiRender.nMiddle + nThreads2 - 1) / nThreads2;
-					nStart = nId * nRange;
-					nEnd = nStart + nRange;
-					if (nEnd > tiRender.nMiddle)
-						nEnd = tiRender.nMiddle;
+				int nPivot = gameStates.app.nThreads / 2;
+				if (nId < nPivot) {
+					ComputeThreadRange (nId, tiRender.nMiddle, nStart, nEnd, nPivot);
+					ComputeFaceLight (nStart, nEnd, nId);
 					}
 				else {
-					nRange = (gameData.render.mine.nRenderSegs - tiRender.nMiddle + nThreads2 - 1) / nThreads2;
-					nStart = (nId - nThreads2) * nRange;
-					nEnd = nStart + nRange;
-					if (nEnd > gameData.render.mine.nRenderSegs)
-						nEnd = gameData.render.mine.nRenderSegs;
+					ComputeThreadRange (nId, gameData.render.mine.nRenderSegs - tiRender.nMiddle, nStart, nEnd, nPivot);
+					ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, nId);
 					}
 				}
-			ComputeFaceLight (nStart, nEnd, nId);
 			}
 		else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE) 
 			ComputeThreadRange (nId, gameData.segs.nFaces, nStart, nEnd);

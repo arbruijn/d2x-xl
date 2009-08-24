@@ -1408,7 +1408,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			}
 #ifdef OPENMP
 		else {
-				int nMax, nPivot = gameStates.app.nThreads / 2;
+				int	nStart, nEnd, nMax;
 
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				nMax = gameData.render.mine.nRenderSegs;
@@ -1417,41 +1417,30 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			else
 				nMax = gameData.segs.nSegments;
 			if (gameStates.app.nThreads & 1) {
-				nStep = (nMax + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
 				#pragma omp parallel
 					{
 					int l, r;
 					#pragma omp for private (l, r)
 					for (int i = 0; i < gameStates.app.nThreads; i++) {
-						l = i * nStep;
-						r = l + nStep;
-						if (r > nMax)
-							r = nMax;
-						ComputeFaceLight (l, r, i);
+						ComputeThreadRange (i, nMax, nStart, nEnd);
+						ComputeFaceLight (nStart, nEnd, i);
 						}
 					}
 				}
 			else {
+				int	nPivot = gameStates.app.nThreads / 2;
 				#pragma omp parallel
 					{
-					int nStep, l, r;
-					#pragma omp for private (nStep, l, r)
+					#pragma omp for private (nOffset, nStart, nEnd)
 					for (int i = 0; i < gameStates.app.nThreads; i++) {
 						if (i < nPivot) {
-							nStep = (tiRender.nMiddle + nPivot - 1) / nPivot;
-							l = nStep * i;
-							r = l + nStep;
-							if (r > tiRender.nMiddle)
-								r = tiRender.nMiddle;
+							ComputeThreadRange (nId, tiRender.nMiddle, nStart, nEnd, nPivot);
+							ComputeFaceLight (nStart, nEnd, i);
 							}
 						else {
-							nStep = (nMax - tiRender.nMiddle + nPivot - 1) / nPivot;
-							l = tiRender.nMiddle + nStep * (i - nPivot);
-							r = l + nStep;
-							if (r > nMax)
-								r = nMax;
+							ComputeThreadRange (nId, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
+							ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
 							}
-						ComputeFaceLight (l, r, i);
 						}
 					}
 				}
