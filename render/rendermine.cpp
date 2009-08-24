@@ -1413,7 +1413,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			}
 #ifdef OPENMP
 		else {
-				int nMax, nPivot = nThreads / 2;
+				int nMax, nPivot = gameStates.app.nThreads / 2;
 
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				nMax = gameData.render.mine.nRenderSegs;
@@ -1425,7 +1425,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 				{
 				int nStep, l, r;
 				#pragma omp for private (nStep, l, r)
-				for (int i = 0; i < nThreads; i++) {
+				for (int i = 0; i < gameStates.app.nThreads; i++) {
 					if (i < nPivot) {
 						nStep = (tiRender.nMiddle + nPivot - 1) / nPivot;
 						l = nStep * i;
