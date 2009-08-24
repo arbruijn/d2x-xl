@@ -373,8 +373,11 @@ if (nThread < 0) {
 	nThread = 0;
 	}
 else {
-	yMin = (h / OMP_GetNumThreads ()) * nThread;
-	yMax = (h / OMP_GetNumThreads ()) * (nThread + 1);
+	int nStep = (h + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
+	yMin = nStep * nThread;
+	yMax = yMin + nStep;
+	if (yMax > h)
+		yMax = h;
 	}
 
 #if DBG
@@ -532,11 +535,11 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 #ifdef OPENMP
+	GetNumThreads ();
 	#pragma omp parallel
 		{
-		int j = OMP_GetNumThreads ();
 		#pragma omp for
-		for (i = 0; i < j; i++)
+		for (i = 0; i < gameStates.app.nThreads; i++)
 			Build (i);
 		}
 #else

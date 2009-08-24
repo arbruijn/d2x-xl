@@ -58,7 +58,7 @@ void ControlEffectsThread (void);
 bool WaitForEffectsThread (void);
 void ControlRenderThreads (void);
 
-int OMP_GetNumThreads (void);
+int GetNumThreads (void);
 
 //------------------------------------------------------------------------------
 

@@ -295,7 +295,7 @@ if (!bInitialized) {
 	memset (&tiRender, 0, sizeof (tiRender));
 	bInitialized = true;
 	}
-for (int i = 0; i < 2; i++) {
+for (int i = 0; i < gameStates.app.nThreads; i++) {
 	if (!tiRender.ti [i].pThread) {
 		tiRender.ti [i].bDone =
 		tiRender.ti [i].bExec = 0;
@@ -404,7 +404,7 @@ return false;
 
 //------------------------------------------------------------------------------
 
-int OMP_GetNumThreads (void)
+int GetNumThreads (void)
 {
 #ifdef OPENMP
 gameStates.app.nThreads = omp_get_num_threads ();
