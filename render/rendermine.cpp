@@ -1392,18 +1392,14 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 
 	if (RENDERPATH) {
-			int nThreads;
-			
 		#pragma omp parallel
 			{
 #ifdef OPENMP
-			nThreads = OMP_GetNumThreads ();
-#else
-			nThreads = 1;
+			OMP_GetNumThreads ();
 #endif
 			}
 		lightManager.ResetSegmentLights ();
-		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (nThreads < 2)
+		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
 #ifndef OPENMP
 			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
 #endif

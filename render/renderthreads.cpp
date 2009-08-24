@@ -42,11 +42,13 @@ tThreadInfo tiEffects;
 
 bool WaitForRenderThreads (void)
 {
+#ifndef OPENMP
 if (gameStates.app.bMultiThreaded) {
 	while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 		G3_SLEEP (0);	//already running, so wait
 	return true;
 	}
+#endif
 return false;
 }
 
@@ -96,8 +98,10 @@ while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 			PrintLog ("threads locked up (task: %d)\n", nTask);
 			for (i = 0; i < nThreads; i++)
 				tiRender.ti [i].bExec = 0;
-			if (++nLockups > 100)
+			if (++nLockups > 100) {
 				gameStates.app.bMultiThreaded = 0;
+				gameStates.app.nThreads = 1;
+				}
 #endif
 			}
 		}
@@ -378,19 +382,23 @@ tiEffects.pThread = NULL;
 
 void ControlEffectsThread (void)
 {
-if (gameStates.app.bMultiThreaded == 2)
+#ifndef OPENMP
+if (gameStates.app.bMultiThreaded > 1)
 	StartEffectsThread ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 bool WaitForEffectsThread (void)
 {
-if ((gameStates.app.bMultiThreaded == 2) && tiEffects.pThread) {
+#ifndef OPENMP
+if ((gameStates.app.bMultiThreaded > 1) && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);
 	return true;
 	}
+#endif
 return false;
 }
 
@@ -399,11 +407,11 @@ return false;
 int OMP_GetNumThreads (void)
 {
 #ifdef OPENMP
-	int nThreads = omp_get_num_threads ();
-	
-return (nThreads > MAX_THREADS) ? MAX_THREADS : nThreads;
+gameStates.app.nThreads = omp_get_num_threads ();
+if (gameStates.app.nThreads > MAX_THREADS)
+	gameStates.app.nThreads = MAX_THREADS;
 #else
-return 2;
+return gameStates.app.nThreads;
 #endif
 }
 

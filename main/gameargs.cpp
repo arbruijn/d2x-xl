@@ -404,7 +404,7 @@ else
 #if 1 //MULTI_THREADED
 if ((t = FindArg ("-multithreaded"))) {
 	gameStates.app.nThreads = NumArg (t, 1);
-	gameStates.app.bMultiThreaded = gameStates.app.nThreads > 0;
+	gameStates.app.bMultiThreaded = (gameStates.app.nThreads > 0);
 	if (gameStates.app.nThreads == 0)
 		gameStates.app.nThreads = 1;
 	else if (gameStates.app.nThreads == 1)

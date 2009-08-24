@@ -1065,6 +1065,19 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+static inline void WaitForRenderThread (void)
+{
+#ifndef OPENMP
+if (gameStates.app.bMultiThreaded && nThread) {	//thread 1 will always render after thread 0
+	tiRender.ti [1].bBlock = 0;
+	while (tiRender.ti [0].bBlock)
+		G3_SLEEP (0);
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 void CLightning::RenderBuffered (int nDepth, int nThread)
 {
 	int				i, bPlasma;
@@ -1072,8 +1085,10 @@ void CLightning::RenderBuffered (int nDepth, int nThread)
 
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
 	return;
+#ifndef OPENMP
 if (gameStates.app.bMultiThreaded)
 	tiRender.ti [nThread].bBlock = 1;
+#endif
 color = m_color;
 if (m_nLife > 0) {
 	if ((i = m_nLife - m_nTTL) < 250)
@@ -1088,21 +1103,13 @@ if (!(bPlasma = SetupPlasma ()))
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
-if (gameStates.app.bMultiThreaded && nThread) {	//thread 1 will always render after thread 0
-	tiRender.ti [1].bBlock = 0;
-	while (tiRender.ti [0].bBlock)
-		G3_SLEEP (0);
-	}
+WaitForRenderThread ();
 if (bPlasma) {
 	ComputePlasma (nDepth, nThread);
 	RenderPlasma (&color, nThread);
 	}
 RenderCore (&color, nDepth, nThread);
-if (gameStates.app.bMultiThreaded && !nThread) { //thread 0 will wait for thread 1 to complete its rendering
-	tiRender.ti [0].bBlock = 0;
-	while (tiRender.ti [1].bBlock)
-		G3_SLEEP (0);
-	}
+WaitForRenderThread ();
 if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
