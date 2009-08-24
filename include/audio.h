@@ -57,7 +57,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef ALLEGRO
 
 #include "allg_snd.h"
-typedef SAMPLE 
+typedef SAMPLE
 ;
 
 #else //!defined ALLEGRO
@@ -75,9 +75,9 @@ class CSoundSample {
 #endif
 
 	public:
-		CSoundSample () { 
-			bHires = bCustom = 0; 
-			nLength [0] = nLength [1] = 0; 
+		CSoundSample () {
+			bHires = bCustom = 0;
+			nLength [0] = nLength [1] = 0;
 		}
 	};
 
@@ -189,14 +189,14 @@ class CAudioChannel {
 		void Destroy (void);
 		void SetVolume (int nVolume);
 		void SetPan (int nPan);
-		int Start (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping, 
-					  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
+		int Start (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping,
+					  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed,
 					  const char *pszWAV, CFixVector* vPos);
 		void Stop (void);
 		void Mix (ubyte* stream, int len);
 		inline int Playing (void) { return m_info.bPlaying; }
 		void SetPlaying (int bPlaying);
-		fix CAudioChannel::Duration (void);
+		fix Duration (void);
 		inline int SoundObject (void) { return m_info.nSoundObj; }
 		inline void SetSoundObj (int nSoundObj) { m_info.nSoundObj = nSoundObj; }
 		inline int Sound (void) { return m_info.nSound; }
@@ -204,7 +204,7 @@ class CAudioChannel {
 		inline int Volume (void) { return m_info.nVolume; }
 		inline int Persistent (void) { return m_info.bPersistent; }
 		inline int Resampled (void) { return m_info.bResampled; }
-		
+
 	private:
 		int Resample (CSoundSample *soundP, int bD1Sound, int bMP3);
 		int Speedup (CSoundSample *soundP, int speed);
@@ -314,15 +314,15 @@ class CAudio {
 		void SetVolumes (int fxVolume, int midiVolume);
 		inline int Volume (void) { return m_info.nVolume; }
 
-		int StartSound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = DEFAULT_VOLUME, int nPan = DEFAULT_PAN, 
-							 int bLooping = 0, int nLoopStart = -1, int nLoopEnd = -1, int nSoundObj = -1, int nSpeed = I2X (1), 
+		int StartSound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = DEFAULT_VOLUME, int nPan = DEFAULT_PAN,
+							 int bLooping = 0, int nLoopStart = -1, int nLoopEnd = -1, int nSoundObj = -1, int nSpeed = I2X (1),
 							 const char *pszWAV = NULL, CFixVector* vPos = NULL);
 		void StopSound (int channel);
 		void StopActiveSound (int nChannel);
 		void StopObjectSounds (void);
 		void StopAllChannels (bool bPause = false);
 
-		int PlaySound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = I2X (1), int nPan = I2X (1) / 2 - 1, 
+		int PlaySound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = I2X (1), int nPan = I2X (1) / 2 - 1,
 						   int bNoDups = 0, int nLoops = -1, const char* pszWAV = NULL, CFixVector* vPos = NULL);
 
 		inline int PlayWAV (const char *pszWAV) {
@@ -335,7 +335,7 @@ class CAudio {
 		int DestroyObjectSound (int nObject);
 		void DeleteSoundObject (int i);
 
-		int CreateSegmentSound (short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0, 
+		int CreateSegmentSound (short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0,
 										fix maxVolume = I2X (1), fix maxDistance = I2X (256), const char *pszSound = NULL);
 		int DestroySegmentSound (short nSegment, short nSide, short nSound);
 
@@ -346,8 +346,8 @@ class CAudio {
 		void ResumeLoopingSound (void);
 		void StopLoopingSound (void);
 
-		void GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg, 
-							 CFixVector& vSoundPos, short nSoundSeg, 
+		void GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg,
+							 CFixVector& vSoundPos, short nSoundSeg,
 							 fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay);
 
 		void InitSounds (void);
