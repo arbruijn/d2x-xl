@@ -1068,16 +1068,18 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline void WaitForRenderThread (void)
-{
 #ifndef OPENMP
+
+static inline void WaitForRenderThread (int nThread)
+{
 if (gameStates.app.bMultiThreaded && nThread) {	//thread 1 will always render after thread 0
 	tiRender.ti [1].bBlock = 0;
 	while (tiRender.ti [0].bBlock)
 		G3_SLEEP (0);
 	}
-#endif
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1106,13 +1108,17 @@ if (!(bPlasma = SetupPlasma ()))
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
-WaitForRenderThread ();
+#ifndef OPENMP
+WaitForRenderThread (nThread);
+#endif
 if (bPlasma) {
 	ComputePlasma (nDepth, nThread);
 	RenderPlasma (&color, nThread);
 	}
 RenderCore (&color, nDepth, nThread);
-WaitForRenderThread ();
+#ifndef OPENMP
+WaitForRenderThread (nThread);
+#endif
 if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
