@@ -392,7 +392,10 @@ bool CLightningNode::SetLight (short nSegment, tRgbaColorf *colorP)
 {
 if (0 > (nSegment = FindSegByPos (m_vPos, nSegment, 0, 0)))
 	return false;
-lightningManager.SetSegmentLight (nSegment, &m_vPos, colorP);
+#pragma omp critical
+	{
+	lightningManager.SetSegmentLight (nSegment, &m_vPos, colorP);
+	}
 return true;
 }
 
@@ -1464,9 +1467,9 @@ if (!m_bValid)
 	int nLights = 0;
 
 if (m_lightning.Buffer ()) {
-	#pragma omp parallel
+	//#pragma omp parallel
 		{
-		#pragma omp for reduction(+: nLights)
+		//#pragma omp for reduction(+: nLights)
 		for (int i = 0; i < m_nBolts; i++) {
 			nLights = m_lightning [i].SetLight ();
 			}
