@@ -66,7 +66,7 @@ for (int i = 0, h = flxP->nUsedKeys; i < h; i++)
 	tails [usedKeys [i]] = -1;
 #	endif
 #endif
-flxP->nUsedFaces = nThread ? LEVEL_FACES : 0;
+flxP->nUsedFaces = 0; //(nThread & 1) ? LEVEL_FACES : 0;
 flxP->nUsedKeys = 0;
 PROF_END(ptFaceList)
 }
@@ -95,10 +95,9 @@ CFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
 
 if (faceP->nOvlTex)
 	nKey += MAX_WALL_TEXTURES + faceP->nOvlTex;
-if (nThread)
-	i = --flxP->nUsedFaces;
-else
-	i = flxP->nUsedFaces++;
+i = gameData.render.faceList.ToS ();
+gameData.render.faceList.Grow ();
+flxP->nUsedFaces++;
 #if SORT_RENDER_FACES == 2
 j = flxP->roots [nKey];
 if (j < 0)
