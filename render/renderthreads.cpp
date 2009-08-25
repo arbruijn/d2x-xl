@@ -157,7 +157,7 @@ do {
 					ComputeFaceLight (nStart, nEnd, nId);
 					}
 				else {
-					ComputeThreadRange (nId, gameData.render.mine.nRenderSegs - tiRender.nMiddle, nStart, nEnd, nPivot);
+					ComputeThreadRange (nId - nPivot, gameData.render.mine.nRenderSegs - tiRender.nMiddle, nStart, nEnd, nPivot);
 					ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, nId);
 					}
 				}

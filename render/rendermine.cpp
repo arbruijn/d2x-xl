@@ -1437,7 +1437,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 							ComputeFaceLight (nStart, nEnd, i);
 							}
 						else {
-							ComputeThreadRange (i, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
+							ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
 							ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
 							}
 						}

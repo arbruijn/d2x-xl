@@ -207,8 +207,7 @@
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="false"
-				ProgramDatabaseFile=".\Release/d2x-xl.pdb"
-				GenerateMapFile="true"
+				GenerateMapFile="false"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -4312,11 +4311,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

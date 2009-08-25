@@ -1527,7 +1527,7 @@ class CRenderData {
 	public:
 		CColorData					color;
 		int							transpColor;
-		CFaceListIndex				faceIndex [2];
+		CFaceListIndex				faceIndex [MAX_THREADS];
 		CVertColorData				vertColor;
 		CSphere						shield;
 		CSphere						monsterball;
