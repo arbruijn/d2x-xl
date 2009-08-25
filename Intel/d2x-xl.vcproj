@@ -10,6 +10,9 @@
 		<Platform
 			Name="Win32"
 		/>
+		<Platform
+			Name="x64"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
@@ -100,6 +103,118 @@
 				MapExports="false"
 				SubSystem="2"
 				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="3"
+				TypeLibraryName=".\Debug/d2x-xl.tlb"
+				HeaderFileName=""
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				FavorSizeOrSpeed="0"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="&quot;\projects\libraries\SDL-1.2.13\include&quot;;&quot;\projects\libraries\SDL_mixer-1.2.8&quot;;&quot;\projects\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;c:\programme\visual leak detector\include"
+				PreprocessorDefinitions="OPENMP;DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
+				StringPooling="true"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				StructMemberAlignment="1"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				EnableEnhancedInstructionSet="0"
+				OpenMP="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\Debug/d2x-xl.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="4"
+				CallingConvention="0"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+				ShowProgress="true"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
+				OutputFile="\programs\d2\d2x-xl-dbg.exe"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
+				IgnoreDefaultLibraryNames="msvcrt.lib"
+				GenerateDebugInformation="true"
+				ProgramDatabaseFile="/programs/d2/d2x-xl-dbg.pdb"
+				GenerateMapFile="true"
+				MapFileName="/programs/d2/d2x-xl-dbg.map"
+				MapExports="false"
+				SubSystem="2"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -239,6 +354,118 @@
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			ManagedExtensions="0"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="3"
+				TypeLibraryName=".\Release/d2x-xl.tlb"
+				HeaderFileName=""
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="true"
+				AdditionalIncludeDirectories="&quot;..\..\..\libraries\SDL-1.2.13\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.8&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include"
+				PreprocessorDefinitions="OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
+				StringPooling="true"
+				MinimalRebuild="false"
+				RuntimeLibrary="2"
+				StructMemberAlignment="1"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				OpenMP="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
+				AssemblerListingLocation=".\Release\x64/"
+				ObjectFile=".\Release\x64/"
+				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="0"
+				CallingConvention="1"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
+				OutputFile="\programs\d2\d2x-xl-x64-intel.exe"
+				LinkIncremental="2"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories=""
+				IgnoreDefaultLibraryNames="msvcrtd.lib"
+				GenerateDebugInformation="false"
+				ProgramDatabaseFile=".\Release-x64/d2x-xl.pdb"
+				GenerateMapFile="false"
+				SubSystem="2"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -301,7 +528,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -321,7 +564,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -341,7 +600,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -361,7 +636,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -381,7 +672,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -401,7 +708,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -421,7 +744,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -441,7 +780,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -461,7 +816,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -481,7 +852,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -501,7 +888,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -521,7 +924,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -541,7 +960,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -561,7 +996,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -581,7 +1032,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -661,7 +1128,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -685,7 +1168,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -705,7 +1204,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -725,7 +1240,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -745,7 +1276,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -910,7 +1457,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -930,7 +1493,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -950,7 +1529,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -970,7 +1565,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -990,7 +1601,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1014,7 +1641,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1034,7 +1677,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1054,7 +1713,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1074,7 +1749,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1094,7 +1785,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1114,7 +1821,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1138,7 +1861,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1170,7 +1909,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1194,7 +1949,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1214,7 +1985,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1234,7 +2021,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1254,7 +2057,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1274,7 +2093,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1294,7 +2129,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1314,7 +2165,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1342,7 +2209,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1362,7 +2245,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1382,7 +2281,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1402,7 +2317,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1422,7 +2353,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1442,7 +2389,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1466,7 +2429,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1486,7 +2465,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1514,7 +2509,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1534,7 +2545,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1554,7 +2581,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1574,7 +2617,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1594,7 +2653,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1614,7 +2689,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1634,7 +2725,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1654,7 +2761,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1674,7 +2797,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1694,7 +2833,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1714,7 +2869,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1738,7 +2909,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1758,7 +2945,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1814,7 +3017,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1838,7 +3057,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1858,7 +3093,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1878,7 +3129,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1898,7 +3165,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1918,7 +3201,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1938,7 +3237,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1958,7 +3273,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1978,7 +3309,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -1998,7 +3345,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2018,7 +3381,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2038,7 +3417,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2058,7 +3453,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2078,7 +3489,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2106,7 +3533,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2474,7 +3917,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2498,7 +3957,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2518,7 +3993,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2538,7 +4029,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2562,7 +4069,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2582,7 +4105,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2614,7 +4153,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2634,7 +4189,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2654,7 +4225,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2674,7 +4261,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2694,7 +4297,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2714,7 +4333,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2798,7 +4433,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2818,7 +4469,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2838,7 +4505,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2858,7 +4541,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2918,7 +4617,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2938,7 +4653,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -2982,7 +4713,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3002,7 +4749,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3030,7 +4793,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3050,7 +4829,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3106,7 +4901,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3126,7 +4937,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3146,7 +4973,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3166,7 +5009,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3186,7 +5045,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3206,7 +5081,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3226,7 +5117,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3490,7 +5397,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3510,7 +5433,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3530,7 +5469,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3674,7 +5629,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3698,7 +5669,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3838,7 +5825,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3858,7 +5861,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3878,7 +5897,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3898,7 +5933,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3918,7 +5969,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3938,7 +6005,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3958,7 +6041,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3978,7 +6077,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3998,7 +6113,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -4018,7 +6149,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -4038,7 +6185,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -4062,7 +6225,23 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
+							Name="Debug|x64"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
 							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|x64"
 							>
 							<Tool
 								Name="VCCLCompilerTool"

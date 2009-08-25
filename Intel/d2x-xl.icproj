@@ -17,6 +17,16 @@
 				UseProcessorExtensions="6"
 				Parallelization="true"/>
 		</Configuration>
+		<Configuration
+			Name="Release|x64">
+			<Tool
+				Name="CppCmplrTool"
+				GlobalOptimizations="true"
+				OptimizeForWindowsApplication="true"
+				GenerateAlternateCodePaths="0"
+				UseProcessorExtensions="6"
+				Parallelization="true"/>
+		</Configuration>
 	</Configurations>
 	<Files/>
 </VisualStudioProject>
