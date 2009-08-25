@@ -243,8 +243,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory="$(ConfigurationName)\$(PlatformName)\"
+			IntermediateDirectory="$(ConfigurationName)\$(PlatformName)\"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -294,8 +294,8 @@
 				OpenMP="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
+				AssemblerListingLocation="$(IntDir)/"
+				ObjectFile="$(IntDir)/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
@@ -324,7 +324,7 @@
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="false"
-				ProgramDatabaseFile=".\Release/d2x-xl.pdb"
+				ProgramDatabaseFile="$(TargetDir)$(TargetName).pdb"
 				GenerateMapFile="false"
 				SubSystem="2"
 				TargetMachine="1"
@@ -6497,11 +6497,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

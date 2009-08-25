@@ -182,8 +182,17 @@ void GetAppFolders (void)
 *gameFolders.szGameDir =
 *gameFolders.szDataDir =
 *szDataRootDir = '\0';
-if ((i = FindArg ("-userdir")) && GetAppFolder ("", gameFolders.szGameDir, pszArgList [i + 1], D2X_APPNAME))
-	*gameFolders.szGameDir = '\0';
+if ((i = FindArg ("-userdir"))) {
+	sprintf (gameFolders.szGameDir, "%s\\%s\\", pszArgList [i + 1], DATADIR);
+	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog"))
+		*gameFolders.szGameDir = '\0';
+	else {
+		strcpy (gameFolders.szGameDir, pszArgList [i + 1]);
+		int j = (int) strlen (gameFolders.szGameDir);
+		if (j && (gameFolders.szGameDir [j-1] != '\\') && (gameFolders.szGameDir [j-1] != '/'))
+			strcat (gameFolders.szGameDir, "/");
+		}
+	}
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, getenv ("DESCENT2"), D2X_APPNAME))
 	*gameFolders.szGameDir = '\0';
 #ifdef _WIN32
