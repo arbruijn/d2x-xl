@@ -1531,7 +1531,7 @@ class CRenderData {
 		CVertColorData				vertColor;
 		CSphere						shield;
 		CSphere						monsterball;
-		CStack<tFaceListItem>	faceList;
+		CArray<tFaceListItem>	faceList;
 		fix							xFlashEffect;
 		fix							xTimeFlashLastPlayed;
 		CFloatVector*				vertP;

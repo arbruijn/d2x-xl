@@ -1394,7 +1394,6 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	if (RENDERPATH) {
 		GetNumThreads ();
 		lightManager.ResetSegmentLights ();
-		gameData.render.faceList.Reset ();
 		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
 #ifndef OPENMP
 			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)

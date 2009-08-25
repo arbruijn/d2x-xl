@@ -95,9 +95,7 @@ CFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
 
 if (faceP->nOvlTex)
 	nKey += MAX_WALL_TEXTURES + faceP->nOvlTex;
-i = gameData.render.faceList.ToS ();
-gameData.render.faceList.Grow ();
-flxP->nUsedFaces++;
+i = nThread + gameStates.app.nThreads * flxP->nUsedFaces++;
 #if SORT_RENDER_FACES == 2
 j = flxP->roots [nKey];
 if (j < 0)
