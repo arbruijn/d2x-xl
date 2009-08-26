@@ -330,7 +330,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				OutputManifestFile="\programs\d2\d2x-xl-w32-omp.embed.manifest"
+				OutputManifestFile="\programs\d2\bin\win32-omp\d2x-xl-omp.embed.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

@@ -1072,7 +1072,7 @@ return 0;
 
 static inline void WaitForRenderThread (int nThread)
 {
-if (gameStates.app.bMultiThreaded && nThread) {	//thread 1 will always render after thread 0
+if (gameStates.app.bMultiThreaded && (nThread > 0)) {	//thread 1 will always render after thread 0
 	tiRender.ti [1].bBlock = 0;
 	while (tiRender.ti [0].bBlock)
 		G3_SLEEP (0);
@@ -1091,7 +1091,7 @@ void CLightning::RenderBuffered (int nDepth, int nThread)
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
 	return;
 #ifndef OPENMP
-if (gameStates.app.bMultiThreaded)
+if (gameStates.app.bMultiThreaded && (nThread > 0))
 	tiRender.ti [nThread].bBlock = 1;
 #endif
 color = m_color;
