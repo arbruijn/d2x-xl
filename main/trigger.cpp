@@ -1306,11 +1306,18 @@ void TriggersFrameProcess (void)
 
 trigP = TRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
-	if (gameStates.app.bD2XLevel && (trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT))) {
+	if (!gameStates.app.bD2XLevel)
+		continue;
+	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT))) {
 		trigP->Operate (LOCALPLAYER.nObject, gameData.multiplayer.nLocalPlayer, 0, false);
 		if (!trigP->IsDelayed ())
 			trigP->m_info.flags |= TF_DISABLED;
 		}
+	if ((trigP->m_info.nType == TT_SOUND) && 
+		 (trigP->m_info.flags & TF_PLAYING_SOUND) && 
+		 (trigP->m_info.time [1] > 0) &&
+		 (gameData.time.xGame - trigP->m_info.tOperated > trigP->m_info.time [1]))
+		trigP->m_info.flags &= ~TF_PLAYING_SOUND;
 	trigP->Countdown (false);	
 	}
 
