@@ -430,7 +430,7 @@
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="false"
-				GenerateMapFile="true"
+				GenerateMapFile="false"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -8667,11 +8667,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
