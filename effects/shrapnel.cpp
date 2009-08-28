@@ -124,9 +124,9 @@ return 0; //kill
 uint CShrapnelCloud::Update (void)
 {
 	int i;
-#pragma omp parallel
+//#pragma omp parallel
 	{
-	#pragma omp for 
+	//#pragma omp for 
 	for (i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Update ();
 	}

@@ -1057,7 +1057,7 @@ else
 			bSkip = 0;
 			#pragma omp parallel
 				{
-#pragma omp for private(vPos) reduction(+: nNewParts)
+				#pragma omp for private(vPos) reduction(+: nNewParts)
 				for (i = 0; i < h; i++) {
 #if 1
 					if (bSkip)
@@ -1546,9 +1546,14 @@ if (!(EGI_FLAG (bUseParticleSystem, 0, 1, 0)))
 	return 0;
 else
 #endif
+CParticleSystem *systemP;
+#pragma omp critical
+{
 if (!particleImageManager.Load (nType))
-	return -1;
-CParticleSystem *systemP = m_systems.Pop ();
+	systemP = NULL;
+else
+	systemP = m_systems.Pop ();
+}
 if (!systemP)
 	return -1;
 int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, nDensity,
