@@ -8804,6 +8804,34 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Configure"
+			>
+			<File
+				RelativePath="..\configure.ac"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="HTML"
+			>
+			<File
+				RelativePath="..\..\..\Websites\Descent\d2x-history.html"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Websites\Descent\d2x.html"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
