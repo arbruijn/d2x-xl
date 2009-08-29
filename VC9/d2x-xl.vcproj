@@ -88,7 +88,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib"
 				OutputFile="\programs\d2\bin\win32-std\debug\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -200,7 +200,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib"
 				OutputFile="\programs\d2\d2x-xl.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
