@@ -104,6 +104,14 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "u_mem.h"
 #include "byteswap.h"
 
+#ifndef UINT_PTR
+#	define UINT_PTR		unsigned int
+#endif
+
+#ifndef INT_PTR
+#	define INT_PTR		int
+#endif
+
 //------------------------------------------------------------------------------
 // #define UDPDEBUG
 
@@ -760,9 +768,9 @@ if (!gameStates.multi.bServer) {		//set up server address and add it to destinat
 		clientManager.Add (&sin);
 	}
 
-sk->fd = UINT_PTR (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP));
-if (0 > INT_PTR (sk->fd)) {
-	sk->fd = UINT_PTR (-1);
+sk->fd = (UINT_PTR) (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP));
+if (0 > (INT_PTR) (sk->fd)) {
+	sk->fd = (UINT_PTR) (-1);
 	FAIL ("couldn't create socket on local port %d", nLocalPort);
 	}
 #ifdef _WIN32
@@ -792,7 +800,7 @@ if (gameStates.multi.bServer || mpParams.udpPorts [1]) {
 #else
 		close (sk->fd);
 #endif
-		sk->fd = UINT_PTR (-1);
+		sk->fd = (UINT_PTR) (-1);
 		FAIL ("couldn't bind to local port %d", nLocalPort);
 		return 1;
 		}
@@ -817,7 +825,7 @@ if (!nOpenSockets) {
 PrintLog ("UDP interface: CloseSocket on D1X socket port %d\n", mysock->socket);
 if (closesocket (mysock->fd))
 	PrintLog ("UDP interface: closesocket() failed on CloseSocket D1X socket port %d.\n", mysock->socket);
-mysock->fd = UINT_PTR (-1);
+mysock->fd = (UINT_PTR) (-1);
 if (--nOpenSockets)
 	PrintLog ("UDP interface: (closesocket) %d sockets left\n", nOpenSockets);
 }
