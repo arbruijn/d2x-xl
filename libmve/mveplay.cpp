@@ -413,7 +413,7 @@ if (mve_audio_canplay) {
 			}
 		if (++mve_audio_buftail == TOTAL_AUDIO_BUFFERS)
 			mve_audio_buftail = 0;
-#ifndef WIN32
+#ifndef _WIN32
 		if (mve_audio_buftail == mve_audio_bufhead)
 			fprintf (stderr, "d'oh!  buffer ring overrun (%d)\n", mve_audio_bufhead);
 #endif
@@ -464,7 +464,7 @@ else
 	g_vBackBuf2 = reinterpret_cast<ubyte*> (g_vBackBuf1) + (g_width * g_height);
 memset (g_vBackBuf1, 0, g_width * g_height * 4);
 #ifdef DEBUG
-# ifndef WIN32
+# ifndef _WIN32
 fprintf (stderr, "DEBUG: w,h=%d,%d count=%d, tc=%d\n", w, h, count, truecolor);
 # endif
 #endif

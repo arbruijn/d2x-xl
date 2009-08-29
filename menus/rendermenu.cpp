@@ -173,7 +173,7 @@ if (gameOpts->app.bNotebookFriendly)
 			}
 		else
 			sprintf (m->m_text, TXT_NO_FRAMECAP);
-#if WIN32
+#if _WIN32
 		if (gameStates.render.bVSyncOk)
 			wglSwapIntervalEXT (v < 0);
 #endif

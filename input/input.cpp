@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #ifdef USE_LINUX_JOY
 #include "joystick.h"
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 tTransRotInfo	tirInfo;
 #endif
 
@@ -972,7 +972,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 //------------------------------------------------------------------------------
 
-#ifdef WIN32
+#ifdef _WIN32
 
 int ControlsReadTrackIR (void)
 {
@@ -1288,7 +1288,7 @@ for (i = 0; i < 3; i++) {
 	}
 if (gameOpts->input.bUseHotKeys)
 	ControlsDoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
-#ifdef WIN32
+#ifdef _WIN32
 if (ControlsReadTrackIR ())
 	ControlsDoTrackIR ();
 #endif

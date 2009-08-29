@@ -126,7 +126,7 @@ void RBASetVolume(int volume)
 	level = volume * 3;
 
 	if ((level<0) || (level>255)) {
-#ifndef WIN32
+#ifndef _WIN32
 		fprintf(stderr, "illegal volume value (allowed values 0-255)\n");
 #endif
 		return;
@@ -138,7 +138,7 @@ void RBASetVolume(int volume)
 		= volctrl.channel3
 		= level;
 	if ( ioctl(cdfile, CDROMVOLCTRL, &volctrl) == -1 ) {
-#ifndef WIN32
+#ifndef _WIN32
 		fprintf(stderr, "CDROMVOLCTRL ioctl failed\n");
 #endif
 		return;

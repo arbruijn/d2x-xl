@@ -76,6 +76,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 
 #ifdef _WIN32
 #	include <winsock2.h>
+#	include <ws2tcpip.h>
 #else
 #	include <netdb.h>
 #	include <unistd.h>
@@ -577,7 +578,7 @@ memcpy (qhbuf + 4, &srcPort, 2);
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".
 
-#ifdef __macosx__
+#if 1//def __macosx__
 
 static void SetupHints (struct addrinfo *hints)
 {
@@ -594,18 +595,31 @@ hints->ai_next = NULL;
 
 ubyte *QueryHost (char *buf)
 {
-    struct addrinfo*	info, * ip, hints;
-    int error;
+   struct addrinfo* info, * ip, hints;
+	int error, bufLen = int (strlen (buf));
 
+	char*	s;
+	char	c = 0;
+
+if ((s = strrchr (buf, ':'))) {
+	c = *s;
+	*s = '\0';
+	PortShift (s + 1);
+	}
+else
+	memset (qhbuf + 4, 0, 2);
 SetupHints (&hints);
-error = 0;
-if (error = getaddrinfo (buf, NULL, &hints, &info) != 0) {
+error = getaddrinfo (buf, NULL, &hints, &info);
+if (error != 0) {
 	// Trying again, but appending ".local" to the hostname. Why does this work?
 	// AFAIK, this suffix has to do with zeroconf (aka Bonjour aka Rendezvous).
 	strcat (buf, ".local");
 	SetupHints (&hints);
 	error = getaddrinfo (buf, NULL, &hints, &info);
 	}
+if (c)
+	*s = c;
+buf [bufLen] = '\0';
 if (error)
 	return NULL;
 
@@ -746,8 +760,9 @@ if (!gameStates.multi.bServer) {		//set up server address and add it to destinat
 		clientManager.Add (&sin);
 	}
 
-if (0 > (sk->fd = int (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)))) {
-	sk->fd = -1;
+sk->fd = UINT_PTR (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP));
+if (0 > INT_PTR (sk->fd)) {
+	sk->fd = UINT_PTR (-1);
 	FAIL ("couldn't create socket on local port %d", nLocalPort);
 	}
 #ifdef _WIN32
@@ -763,7 +778,7 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 #else
 	close (sk->fd);
 #endif
-	sk->fd = -1;
+	sk->fd = UINT_PTR (-1);
 	FAIL ("setting broadcast socket option failed");
 	}
 #endif
@@ -777,8 +792,9 @@ if (gameStates.multi.bServer || mpParams.udpPorts [1]) {
 #else
 		close (sk->fd);
 #endif
-		sk->fd = -1;
+		sk->fd = UINT_PTR (-1);
 		FAIL ("couldn't bind to local port %d", nLocalPort);
+		return 1;
 		}
 	}
 PrintLog ("Opened UDP connection (socket %d, port %d)\n", sk->fd, nLocalPort);
@@ -801,7 +817,7 @@ if (!nOpenSockets) {
 PrintLog ("UDP interface: CloseSocket on D1X socket port %d\n", mysock->socket);
 if (closesocket (mysock->fd))
 	PrintLog ("UDP interface: closesocket() failed on CloseSocket D1X socket port %d.\n", mysock->socket);
-mysock->fd = -1;
+mysock->fd = UINT_PTR (-1);
 if (--nOpenSockets)
 	PrintLog ("UDP interface: (closesocket) %d sockets left\n", nOpenSockets);
 }

@@ -371,7 +371,7 @@ static void dispatchDecoder16(ushort **pFrame, ubyte codeType, ubyte **pData, ub
 		*pDataRemain -= 2;
 		break;
 	case 0x6:
-#ifndef WIN32
+#ifndef _WIN32
 		fprintf(stderr, "STUB: encoding 6 not tested\n");
 #endif
 		for (i=0; i<2; i++)

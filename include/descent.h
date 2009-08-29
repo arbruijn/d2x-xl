@@ -3456,7 +3456,7 @@ typedef struct tTransRotInfo {
 	fVector3D	fvTrans;
 	} tTransRotInfo;
 
-#ifndef WIN32
+#ifndef _WIN32
 #	define WINAPI
 #	define HINSTANCE	int
 #	define HWND void *

@@ -535,7 +535,7 @@ static HINSTANCE hTIRDll = 0;
 
 int TIRUnload (void)
 {
-#ifdef WIN32
+#ifdef _WIN32
 if (hTIRDll)
    FreeLibrary (hTIRDll);
 pfnTIRInit = NULL;
@@ -553,7 +553,7 @@ return gameStates.input.bHaveTrackIR = 0;
 
 int TIRLoad (void)
 {
-#ifdef WIN32
+#ifdef _WIN32
 if (hTIRDll)
 	return 1;
 hTIRDll = LoadLibrary ("d2x-trackir.dll");

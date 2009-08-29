@@ -250,7 +250,7 @@ void CConsole::AlphaGL (SDL_Surface *s, int alpha) {
 				char print = 0;
 				/* Lock the surface for direct access to the pixels */
 				if (SDL_MUSTLOCK (s) && SDL_LockSurface (s) < 0) {
-#ifndef WIN32
+#ifndef _WIN32
 					PRINT_ERROR ("Can't lock surface: ");
 					fprintf (stderr, "%s\n", SDL_GetError ();
 #endif

@@ -311,7 +311,7 @@ if (gameStates.app.bUseSwapFile) {
 	gameStates.render.nMaxTextureQuality = 3;
 	return bMemInited = 1;
 	}
-#if defined (WIN32)
+#if defined (_WIN32)
  {
 	MEMORYSTATUS	memStat;
 	GlobalMemoryStatus (&memStat);

@@ -148,7 +148,7 @@ void D2MsgBox (const char *pszMsg, uint nType)
 gameData.app.bGamePaused = 1;
 if (screen.Width () && screen.Height () && pWarnFunc)
 	(*pWarnFunc)(pszMsg);
-#if defined (WIN32)
+#if defined (_WIN32)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined (__linux__)

@@ -110,7 +110,7 @@ if (*pszParentFolder) {
 
 // ----------------------------------------------------------------------------
 
-#ifdef WIN32
+#ifdef _WIN32
 #	define	STD_GAMEDIR		""
 #	define	D2X_APPNAME		"d2x-xl.exe"
 #elif defined(__macosx__)
@@ -336,7 +336,7 @@ GetAppFolder (szDataRootDir, gameFolders.szWallpaperDir, WALLPAPERDIR, "");
 #else
 GetAppFolder (gameFolders.szTextureDir [0], gameFolders.szWallpaperDir, WALLPAPERDIR, "");
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_DIR);
 #else
 sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_DIR);
