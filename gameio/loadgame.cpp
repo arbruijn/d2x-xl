@@ -1680,7 +1680,7 @@ GameFlushInputs ();		// clear out the keyboard
 if (!IsMultiGame)
 	FilterObjectsFromLevel ();
 TurnCheatsOff ();
-if (!(IsMultiGame || gameStates.app.cheats.bEnabled)) {
+if (!(IsMultiGame || (gameStates.app.cheats.bEnabled & 2))) {
 	SetHighestLevel (gameData.missions.nCurrentLevel);
 	}
 else

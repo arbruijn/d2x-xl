@@ -187,8 +187,8 @@ if (bVerbose)
 
 //	--------------------------------------------------------------------------
 //	Detonate reactor.
-//	Award CPlayerData all powerups in mine.
-//	Place CPlayerData just outside exit.
+//	Award player all powerups in mine.
+//	Place palyer just outside exit.
 //	Kill all bots in mine.
 //	Yippee!!
 void KillEverything (int bVerbose)
@@ -228,6 +228,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 	}
 // make sure exit gets opened
 gameStates.gameplay.bKillBossCheat = 0;
+gameStates.app.cheats.bEnabled |= 2;
 }
 
 //------------------------------------------------------------------------------
@@ -621,6 +622,7 @@ else if (nNewLevel <= 0)
 	return;
 #endif
 DoCheatPenalty ();
+gameStates.app.cheats.bEnabled |= 2;
 StartNewLevel (nNewLevel, 0);
 }
 

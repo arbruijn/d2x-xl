@@ -2224,17 +2224,18 @@ int FindHLIEntry (void)
 {
 	int i;
 
-for (i = 0; i <nHighestLevels; i++)
+for (i = 0; i <nHighestLevels; i++) {
 	if (!stricmp (highestLevels [i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename))
 		break;
-	if (i == nHighestLevels) {		//not found.  create entry
-		if (i == MAX_MISSIONS)
-			i--;		//take last entry
-		else
-			nHighestLevels++;
-		strcpy (highestLevels[i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename);
-		highestLevels [i].nLevel = 0;
-		}
+	}
+if (i == nHighestLevels) {		//not found.  create entry
+	if (i == MAX_MISSIONS)
+		i--;		//take last entry
+	else
+		nHighestLevels++;
+	strcpy (highestLevels[i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename);
+	highestLevels [i].nLevel = 0;
+	}
 return i;
 }
 

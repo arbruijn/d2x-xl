@@ -290,6 +290,8 @@ else if (gameOpts->app.bSinglePlayer) {
 		nMission = -1;
 	gameFolders.szMsnSubDir [0] = '\0';
 	}
+if (nMission >= 0)
+	nPlayerMaxLevel = GetHighestLevel ();
 hogFileManager.UseMission ("");
 
 for (;;) {
