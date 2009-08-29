@@ -8664,11 +8664,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
@@ -8818,17 +8818,37 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
-			Name="HTML"
+			Name="Release Notes"
 			>
 			<File
 				RelativePath="..\..\..\Websites\Descent\d2x-history.html"
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\Programs\d2\d2x-xl-version.txt"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Websites\Descent\d2x.html"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\Programs\d2\readme-d2x-xl.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\Programs\d2\release notes.txt"
 				>
 			</File>
 		</Filter>
