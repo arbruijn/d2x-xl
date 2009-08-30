@@ -838,7 +838,7 @@ bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.segs.fVertices.Write (cf, mdh.nVertices) == uint (mdh.nVertices));
 if (bOk) {
 	for (int i = 0; i < mdh.nFaces; i++) {
-		if (cf.Write (&FACES.faces [i].m_info, sizeof (CSegFaceInfo), 1) != sizeof (CSegFaceInfo)) {
+		if (cf.Write (&FACES.faces [i].m_info, sizeof (CSegFaceInfo), 1) != 1) {
 			bOk = false;
 			break;
 			}
