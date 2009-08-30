@@ -135,12 +135,11 @@ uint ipxNetworks [MAX_NETWORKS];
 int IPXGeneralPacketReady (ipx_socket_t *s) 
 {
 	fd_set set;
-	struct timeval tv;
+	struct timeval tv = {0, 0};
 	
 FD_ZERO (&set);
 FD_SET (s->fd, &set);
-tv.tv_sec = tv.tv_usec = 0;
-return (select (FD_SETSIZE, &set, NULL, NULL, &tv) > 0) ? 1 : 0;
+return (select (FD_SETSIZE, &set, NULL, NULL, &tv) > 0);
 }
 
 								/*---------------------------*/

@@ -48,11 +48,8 @@ typedef struct IPXPacketStructure {
 #pragma pack (pop)
 #endif
 
-#ifndef UINT_PTR
+#ifndef _WIN32
 #	define UINT_PTR	unsigned int
-#endif
-
-#ifndef INT_PTR
 #	define INT_PTR		int
 #endif
 
