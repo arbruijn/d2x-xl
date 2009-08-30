@@ -981,6 +981,7 @@ typedef struct tRenderStates {
 	int nMaxLightsPerObject;
 	int bVSync;
 	int bVSyncOk;
+	int nThreads;
 	fix xZoom;
 	fix xZoomScale;
 	ubyte nRenderingType;

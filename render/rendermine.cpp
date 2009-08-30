@@ -1392,13 +1392,14 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 
 	if (RENDERPATH) {
-		GetNumThreads ();
+		gameStates.render.nThreads = GetNumThreads ();
 		lightManager.ResetSegmentLights ();
 		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
 #ifndef OPENMP
 			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
 #endif
 			) {
+			gameStates.render.nThreads = 1;
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
