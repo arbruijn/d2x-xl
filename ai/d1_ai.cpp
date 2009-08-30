@@ -404,7 +404,7 @@ void set_rotvel_and_saturate(fix *dest, fix delta)
 #define	BABY_SPIDER_ID	14
 
 //-------------------------------------------------------------------------------------------
-void ai_turn_towards_vector(CFixVector *vGoal, CObject *objP, fix rate)
+void ai_turn_towards_vector (CFixVector *vGoal, CObject *objP, fix rate)
 {
 	CFixVector	new_fVec;
 	fix			dot;
@@ -439,7 +439,7 @@ void ai_turn_randomly(CFixVector *vec_to_player, CObject *objP, fix rate, int nP
 	//	Random turning looks too stupid, so 1/4 of time, cheat.
 	if (nPrevVisibility)
 		if (d_rand() > 0x7400) {
-			ai_turn_towards_vector(vec_to_player, objP, rate);
+			ai_turn_towards_vector (vec_to_player, objP, rate);
 			return;
 		}
 //--debug-- 	if (d_rand() > 0x6000)
@@ -744,7 +744,7 @@ void DoD1AIRobotHitAttack(CObject *robotP, CObject *playerP, CFixVector *vCollis
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void ai_multi_send_robot_position(int nObject, int force)
+void ai_multi_send_robot_position (int nObject, int force)
 {
 if (IsMultiGame)
 	MultiSendRobotPosition(nObject, force != -1);
@@ -830,7 +830,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 
 	if (IsMultiGame)
  {
-		ai_multi_send_robot_position(nObject, -1);
+		ai_multi_send_robot_position (nObject, -1);
 		MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &vFire);
 	}
 
@@ -845,7 +845,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	vec_goal must be normalized, or close to it.
-void move_towards_vector(CObject *objP, CFixVector *vec_goal)
+void move_towards_vector (CObject *objP, CFixVector *vec_goal)
 {
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	fix				speed, dot, xMaxSpeed;
@@ -889,7 +889,7 @@ void move_towards_vector(CObject *objP, CFixVector *vec_goal)
 void move_towards_player(CObject *objP, CFixVector *vec_to_player)
 //	vec_to_player must be normalized, or close to it.
 {
-	move_towards_vector(objP, vec_to_player);
+	move_towards_vector (objP, vec_to_player);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1199,7 +1199,7 @@ int	Do_ai_flag=1;
 //	If the playerP is cloaked, set vec_to_player based on time playerP cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if playerP is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to player_visibility
-void compute_vis_and_vec(CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFixVector *vec_to_player, int *player_visibility, tRobotInfo *botInfoP, int *flag)
+void compute_vis_and_vec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFixVector *vec_to_player, int *player_visibility, tRobotInfo *botInfoP, int *flag)
 {
 if (!*flag) {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
@@ -1709,6 +1709,7 @@ void DoD1AIFrame (CObject *objP)
 	int				nPrevVisibility;
 	CFixVector		vGunPoint;
 	CFixVector		vVisVecPos;
+	bool				bHaveGunPos = false;
 
 	if (aiP->SKIP_D1_AI_COUNT) {
 		aiP->SKIP_D1_AI_COUNT--;
@@ -1773,14 +1774,14 @@ if (DoAnyRobotDyingFrame (objP))
 	dist_to_player = CFixVector::Dist(gameData.ai.target.vBelievedPos, objP->info.position.vPos);
 	//	If this robotP can fire, compute visibility from gun position.
 	//	Don't want to compute visibility twice, as it is expensive.  (So is call to calc_vGunPoint).
-	if ((ailP->nextPrimaryFire <= 0) && (dist_to_player < I2X (200)) && (botInfoP->nGuns) && !(botInfoP->attackType)) {
-		CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN);
+	if ((ailP->nextPrimaryFire <= 0) && (dist_to_player < I2X (200)) && botInfoP->nGuns && !botInfoP->attackType) {
+		bHaveGunPos = CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN) != 0;
 		vVisVecPos = vGunPoint;
 		}
 	else {
 		vVisVecPos = objP->info.position.vPos;
 		vGunPoint.SetZero ();
-	}
+		}
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 	//	Occasionally make non-still robots make a path to the playerP.  Based on agitation and distance from playerP.
@@ -1885,7 +1886,7 @@ if (DoAnyRobotDyingFrame (objP))
 			if ((aiP->behavior != D1_AIB_STILL) && (aiP->behavior != D1_AIB_RUN_FROM)) {
 				if (!ai_multiplayer_awareness(objP, 30))
 					return;
-				ai_multi_send_robot_position(nObject, -1);
+				ai_multi_send_robot_position (nObject, -1);
 
 				if (!((ailP->mode == D1_AIM_FOLLOW_PATH) && (aiP->nCurPathIndex < aiP->nPathLength-1))) {
 					if (dist_to_player < I2X (30))
@@ -1939,7 +1940,7 @@ if (DoAnyRobotDyingFrame (objP))
 				aiP->GOAL_STATE = D1_AIS_FIRE;
 			if (aiP->CURRENT_STATE == D1_AIS_FLIN)
 				aiP->CURRENT_STATE = D1_AIS_FIRE;
-			compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
 		 {	int pv = player_visibility;
 				fix	dtp = dist_to_player/4;
@@ -1992,9 +1993,9 @@ if (DoAnyRobotDyingFrame (objP))
 			if (gameData.objs.consoleP->info.nSegment == objP->info.nSegment) {
 				if (!ai_multiplayer_awareness(objP, 97))
 					return;
-				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 				move_away_from_player(objP, &vec_to_player, 0);
-				ai_multi_send_robot_position(nObject, -1);
+				ai_multi_send_robot_position (nObject, -1);
 			} else if (ailP->mode != D1_AIM_STILL) {
 				int	r;
 
@@ -2006,15 +2007,15 @@ if (DoAnyRobotDyingFrame (objP))
 					if (!ai_multiplayer_awareness(objP, 50))
 						return;
 					CreateNSegmentPathToDoor(objP, 8+gameStates.app.nDifficultyLevel, -1);		//	third parameter is avoid_seg, -1 means avoid nothing.
-					ai_multi_send_robot_position(nObject, -1);
+					ai_multi_send_robot_position (nObject, -1);
 				}
 			} else {
-				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 				if (player_visibility) {
 					if (!ai_multiplayer_awareness(objP, 50))
 						return;
 					CreateNSegmentPathToDoor(objP, 8+gameStates.app.nDifficultyLevel, -1);		//	third parameter is avoid_seg, -1 means avoid nothing.
-					ai_multi_send_robot_position(nObject, -1);
+					ai_multi_send_robot_position (nObject, -1);
 				}
 			}
 			break;
@@ -2031,17 +2032,15 @@ if (DoAnyRobotDyingFrame (objP))
 			//	Green guy doesn't get his circle distance boosted, else he might never attack.
 			if (botInfoP->attackType != 1)
 				circle_distance += I2X (nObject&0xf) / 2;
-
 			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-
 			if ((player_visibility < 2) && (nPrevVisibility == 2)) { // this is redundant: mk, 01/15/95: && (ailP->mode == D1_AIM_CHASE_OBJECT)) {
-				if (!ai_multiplayer_awareness(objP, 53)) {
-					if (maybe_ai_do_actual_firing_stuff(objP, aiP))
+				if (!ai_multiplayer_awareness(objP, 53) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+					if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 					}
 				CreatePathToTarget(objP, 8, 1);
-				ai_multi_send_robot_position(nObject, -1);
+				ai_multi_send_robot_position (nObject, -1);
 				}
 			else if ((player_visibility == 0) && (dist_to_player > I2X (80)) && (!(IsMultiGame))) {
 				//	If pretty far from the playerP, playerP cannot be seen (obstructed) and in chase mode, switch to follow path mode.
@@ -2068,40 +2067,38 @@ if (DoAnyRobotDyingFrame (objP))
 				}
 
 			if (gameData.time.xGame - ailP->timeTargetSeen > CHASE_TIME_LENGTH) {
-
-				if (IsMultiGame)
-					if (!player_visibility && (dist_to_player > I2X (70))) {
-						ailP->mode = D1_AIM_STILL;
-						return;
-						}
-				if (!ai_multiplayer_awareness(objP, 64)) {
-					if (maybe_ai_do_actual_firing_stuff(objP, aiP))
+				if (IsMultiGame && !player_visibility && (dist_to_player > I2X (70))) {
+					ailP->mode = D1_AIM_STILL;
+					return;
+					}
+				if (!ai_multiplayer_awareness(objP, 64) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+					if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 					}
 				CreatePathToTarget(objP, 10, 1);
 				// -- show_path_and_other(objP);
-				ai_multi_send_robot_position(nObject, -1);
+				ai_multi_send_robot_position (nObject, -1);
 				}
 			else if ((aiP->CURRENT_STATE != D1_AIS_REST) && (aiP->GOAL_STATE != D1_AIS_REST)) {
-				if (!ai_multiplayer_awareness(objP, 70)) {
-					if (maybe_ai_do_actual_firing_stuff(objP, aiP))
+				if (!ai_multiplayer_awareness(objP, 70) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+					if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 					}
 				ai_move_relative_to_player(objP, ailP, dist_to_player, &vec_to_player, circle_distance, 0);
 				if ((obj_ref & 1) && ((aiP->GOAL_STATE == D1_AIS_SRCH) || (aiP->GOAL_STATE == D1_AIS_LOCK))) {
 					if (player_visibility) // == 2)
-						ai_turn_towards_vector(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+						ai_turn_towards_vector (&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 					else
 						ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
 					}
 				if (D1_AI_evaded) {
-					ai_multi_send_robot_position(nObject, 1);
+					ai_multi_send_robot_position (nObject, 1);
 					D1_AI_evaded = 0;
 					}
 				else
-					ai_multi_send_robot_position(nObject, -1);
+					ai_multi_send_robot_position (nObject, -1);
 
 				do_firing_stuff(objP, player_visibility, &vec_to_player);
 				}
@@ -2109,7 +2106,7 @@ if (DoAnyRobotDyingFrame (objP))
 			}
 
 		case D1_AIM_RUN_FROM_OBJECT:
-			compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
 			if (player_visibility) {
 				if (ailP->targetAwarenessType == 0)
@@ -2121,7 +2118,7 @@ if (DoAnyRobotDyingFrame (objP))
 			if (!(IsMultiGame) || player_visibility)
 				if (ai_multiplayer_awareness(objP, 75)) {
 					AIFollowPath(objP, player_visibility, nPrevVisibility, &vec_to_player);
-					ai_multi_send_robot_position(nObject, -1);
+					ai_multi_send_robot_position (nObject, -1);
 				}
 
 			if (aiP->GOAL_STATE != D1_AIS_FLIN)
@@ -2151,7 +2148,7 @@ if (DoAnyRobotDyingFrame (objP))
 				#ifdef NETWORK
 				if (IsMultiGame)
 			 {
-					ai_multi_send_robot_position(objP->Index (), -1);
+					ai_multi_send_robot_position (objP->Index (), -1);
 					MultiSendRobotFire(objP->Index (), -1, &vFire);
 				}
 				#endif
@@ -2165,22 +2162,22 @@ if (DoAnyRobotDyingFrame (objP))
 				if ((aiP->nHideIndex + aiP->nPathLength > 0) && (gameData.ai.routeSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment)) {
 					anger_level = 64;
 				}
-
-			compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-
+			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 			if (gameData.app.nGameMode & (GM_MODEM | GM_SERIAL))
 				if (!player_visibility && (dist_to_player > I2X (70))) {
 					ailP->mode = D1_AIM_STILL;
 					return;
 				}
-
-			if (!ai_multiplayer_awareness(objP, anger_level)) {
-				if (maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-					compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+			if (!ai_multiplayer_awareness(objP, anger_level) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+				if (!bHaveGunPos) {
+					bHaveGunPos = CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN) != 0;
+					vVisVecPos = vGunPoint;
+					}
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+				if (bHaveGunPos)
 					ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
-				}
 				return;
-			}
+				}
 
 			AIFollowPath(objP, player_visibility, nPrevVisibility, &vec_to_player);
 
@@ -2201,21 +2198,20 @@ if (DoAnyRobotDyingFrame (objP))
 				aiP->nPathLength = 0;
 			}
 
-			ai_multi_send_robot_position(nObject, -1);
+			ai_multi_send_robot_position (nObject, -1);
 
 			break;
 		}
 
 		case D1_AIM_HIDE:
-			if (!ai_multiplayer_awareness(objP, 71)) {
-				if (maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-					compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+			if (!ai_multiplayer_awareness(objP, 71) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+				if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
 					ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
-				}
 				return;
-			}
+				}
 
-			compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
  			AIFollowPath(objP, player_visibility, nPrevVisibility, &vec_to_player);
 
@@ -2224,23 +2220,23 @@ if (DoAnyRobotDyingFrame (objP))
 			else if (aiP->CURRENT_STATE == D1_AIS_FLIN)
 				aiP->GOAL_STATE = D1_AIS_LOCK;
 
-			ai_multi_send_robot_position(nObject, -1);
+			ai_multi_send_robot_position (nObject, -1);
 			break;
 
 		case D1_AIM_STILL:
 			if ((dist_to_player < I2X (120) + gameStates.app.nDifficultyLevel * I2X (20)) || (ailP->targetAwarenessType >= D1_PA_WEAPON_ROBOT_COLLISION - 1)) {
-				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
 				//	turn towards vector if visible this time or last time, or d_rand
 				// new!
 				if ((player_visibility) || (nPrevVisibility) || ((d_rand() > 0x4000) && !(IsMultiGame))) {
-					if (!ai_multiplayer_awareness(objP, 71)) {
-						if (maybe_ai_do_actual_firing_stuff(objP, aiP))
+					if (!ai_multiplayer_awareness(objP, 71) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+						if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
 							ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 						return;
-					}
-					ai_turn_towards_vector(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
-					ai_multi_send_robot_position(nObject, -1);
+						}
+					ai_turn_towards_vector (&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+					ai_multi_send_robot_position (nObject, -1);
 				}
 
 				do_firing_stuff(objP, player_visibility, &vec_to_player);
@@ -2248,32 +2244,32 @@ if (DoAnyRobotDyingFrame (objP))
 				if (player_visibility) {		//	Change, MK, 01/03/94 for Multiplayer reasons.  If robots can't see you (even with eyes on back of head), then don't do evasion.
 					if (botInfoP->attackType == 1) {
 						aiP->behavior = D1_AIB_NORMAL;
-						if (!ai_multiplayer_awareness(objP, 80)) {
-							if (maybe_ai_do_actual_firing_stuff(objP, aiP))
+						if (!ai_multiplayer_awareness(objP, 80) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+							if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
 								ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 							return;
-						}
+							}
 						ai_move_relative_to_player(objP, ailP, dist_to_player, &vec_to_player, 0, 0);
 						if (D1_AI_evaded) {
-							ai_multi_send_robot_position(nObject, 1);
+							ai_multi_send_robot_position (nObject, 1);
 							D1_AI_evaded = 0;
 						}
 						else
-							ai_multi_send_robot_position(nObject, -1);
+							ai_multi_send_robot_position (nObject, -1);
 					} else {
 						//	Robots in hover mode are allowed to evade at half Normal speed.
-						if (!ai_multiplayer_awareness(objP, 81)) {
-							if (maybe_ai_do_actual_firing_stuff(objP, aiP))
+						if (!ai_multiplayer_awareness(objP, 81) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+							if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
 								ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 							return;
-						}
+							}
 						ai_move_relative_to_player(objP, ailP, dist_to_player, &vec_to_player, 0, 1);
 						if (D1_AI_evaded) {
-							ai_multi_send_robot_position(nObject, -1);
+							ai_multi_send_robot_position (nObject, -1);
 							D1_AI_evaded = 0;
 						}
 						else
-							ai_multi_send_robot_position(nObject, -1);
+							ai_multi_send_robot_position (nObject, -1);
 					}
 				} else if ((objP->info.nSegment != aiP->nHideSegment) && (dist_to_player > I2X (80)) && (!(IsMultiGame))) {
 					//	If pretty far from the playerP, playerP cannot be seen (obstructed) and in chase mode, switch to follow path mode.
@@ -2297,9 +2293,9 @@ if (DoAnyRobotDyingFrame (objP))
 			vCenter = SEGMENTS [objP->info.nSegment].SideCenter (aiP->GOALSIDE);
 			vGoal = vCenter - objP->info.position.vPos;
 			CFixVector::Normalize (vGoal);
-			ai_turn_towards_vector(&vGoal, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
-			move_towards_vector(objP, &vGoal);
-			ai_multi_send_robot_position(nObject, -1);
+			ai_turn_towards_vector (&vGoal, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+			move_towards_vector (objP, &vGoal);
+			ai_multi_send_robot_position (nObject, -1);
 
 			break;
 		}
@@ -2313,7 +2309,7 @@ if (DoAnyRobotDyingFrame (objP))
 	//	If the robotP can see you, increase his awareness of you.
 	//	This prevents the problem of a robotP looking right at you but doing nothing.
 	// Assert(player_visibility != -1);	//	Means it didn't get initialized!
-	compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+	compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 	if (player_visibility == 2)
 		if (ailP->targetAwarenessType == 0)
 			ailP->targetAwarenessType = D1_PA_PLAYER_COLLISION;
@@ -2362,83 +2358,87 @@ if (DoAnyRobotDyingFrame (objP))
 
 	if ((aiP->GOAL_STATE != D1_AIS_FLIN)  && (objP->info.nId != ROBOT_BRAIN)) {
 		switch (aiP->CURRENT_STATE) {
-			case	D1_AIS_NONE:
-				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-
+			case D1_AIS_NONE:
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 				dot = CFixVector::Dot (objP->info.position.mOrient.FVec (), vec_to_player);
 				if (dot >= I2X (1)/2)
 					if (aiP->GOAL_STATE == D1_AIS_REST)
 						aiP->GOAL_STATE = D1_AIS_SRCH;
 				break;
-			case	D1_AIS_REST:
+			case D1_AIS_REST:
 				if (aiP->GOAL_STATE == D1_AIS_REST) {
-					compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+					compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 					if ((ailP->nextPrimaryFire <= 0) && (player_visibility)) {
 						aiP->GOAL_STATE = D1_AIS_FIRE;
+						}
 					}
-				}
 				break;
-			case	D1_AIS_SRCH:
+
+			case D1_AIS_SRCH:
 				if (!ai_multiplayer_awareness(objP, 60))
 					return;
-
-				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 				if (player_visibility) {
-					ai_turn_towards_vector(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
-					ai_multi_send_robot_position(nObject, -1);
-				} else if (!(IsMultiGame))
+					ai_turn_towards_vector (&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+					ai_multi_send_robot_position (nObject, -1);
+					}
+				else if (!(IsMultiGame))
 					ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
 				break;
-			case	D1_AIS_LOCK:
-				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
+			case D1_AIS_LOCK:
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 				if (!(IsMultiGame) || (player_visibility)) {
 					if (!ai_multiplayer_awareness(objP, 68))
 						return;
-
 					if (player_visibility) {
-						ai_turn_towards_vector(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
-						ai_multi_send_robot_position(nObject, -1);
-					} else if (!(IsMultiGame))
-						ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
-				}
-				break;
-			case	D1_AIS_FIRE:
-				compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-
-				if (player_visibility) {
-					if (!ai_multiplayer_awareness(objP, (ROBOT_FIRE_AGITATION-1)))
-				 {
-						if (IsMultiGame) {
-							ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
-							return;
+						ai_turn_towards_vector (&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+						ai_multi_send_robot_position (nObject, -1);
 						}
-					}
-					ai_turn_towards_vector(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
-					ai_multi_send_robot_position(nObject, -1);
-				} else if (!(IsMultiGame)) {
-					ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
-				}
-
-				//	Fire at playerP, if appropriate.
-				ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
-
+					else if (!(IsMultiGame))
+						ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
+						}
 				break;
-			case	D1_AIS_RECO:
+
+			case D1_AIS_FIRE:
+				if (!bHaveGunPos) {
+					bHaveGunPos = CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN) != 0;
+					vVisVecPos = vGunPoint;
+					}
+				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+				if (player_visibility) {
+					if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION-1) && IsMultiGame) {
+						if (bHaveGunPos)
+							ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
+						return;
+						}
+					ai_turn_towards_vector (&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+					ai_multi_send_robot_position (nObject, -1);
+					}
+				else if (!(IsMultiGame)) {
+					ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
+					}
+				//	Fire at playerP, if appropriate.
+				if (bHaveGunPos)
+					ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
+				break;
+
+			case D1_AIS_RECO:
 				if (!(obj_ref & 3)) {
-					compute_vis_and_vec(objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
+					compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 					if (player_visibility) {
 						if (!ai_multiplayer_awareness(objP, 69))
 							return;
-						ai_turn_towards_vector(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
-						ai_multi_send_robot_position(nObject, -1);
-					} else if (!(IsMultiGame)) {
+						ai_turn_towards_vector (&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
+						ai_multi_send_robot_position (nObject, -1);
+						} 
+					else if (!(IsMultiGame)) {
 						ai_turn_randomly(&vec_to_player, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel], nPrevVisibility);
+						}
 					}
-				}
 				break;
-			case	D1_AIS_FLIN:
+
+			case D1_AIS_FLIN:
 				break;
 			default:
 				aiP->GOAL_STATE = D1_AIS_REST;

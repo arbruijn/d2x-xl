@@ -1114,19 +1114,20 @@ return 0;
 int AIFireHandler (CObject *objP, tAIStateInfo *siP)
 {
 if ((siP->nPrevVisibility || !(siP->nObjRef & 3)) && ReadyToFire (siP->botInfoP, siP->ailP) &&
-		((siP->ailP->targetAwarenessType >= PA_RETURN_FIRE) ||//(siP->aiP->GOAL_STATE == AIS_FIRE) || //i.e. robot has been hit last frame
-		(gameData.ai.target.xDist < MAX_WAKEUP_DIST)) &&
-		siP->botInfoP->nGuns && !siP->botInfoP->attackType) {
+	 ((siP->ailP->targetAwarenessType >= PA_RETURN_FIRE) ||//(siP->aiP->GOAL_STATE == AIS_FIRE) || //i.e. robot has been hit last frame
+	  (gameData.ai.target.xDist < MAX_WAKEUP_DIST)) &&
+	 siP->botInfoP->nGuns && !siP->botInfoP->attackType) {
 	// Since we passed ReadyToFire (), either nextPrimaryFire or nextSecondaryFire <= 0.  CalcGunPoint from relevant one.
 	// If both are <= 0, we will deal with the mess in AIDoActualFiringStuff
 	if (siP->ailP->nextPrimaryFire <= 0)
 		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, siP->aiP->CURRENT_GUN);
 	else
 		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP,
-												(ROBOTINFO (objP->info.nId).nGuns == 1) ? 0 : !siP->aiP->CURRENT_GUN);
+													(ROBOTINFO (objP->info.nId).nGuns == 1) ? 0 : !siP->aiP->CURRENT_GUN);
 	siP->vVisPos = gameData.ai.vGunPoint;
 	}
 else {
+	siP->bHaveGunPos = 0;
 	siP->vVisPos = objP->info.position.vPos;
 	gameData.ai.vGunPoint.SetZero ();
 	}
@@ -1138,8 +1139,8 @@ return 0;
 
 int AIAwarenessHandler (CObject *objP, tAIStateInfo *siP)
 {
-	tAIStaticInfo	*aiP = siP->aiP;
-	tAILocalInfo		*ailP = siP->ailP;
+	tAIStaticInfo*	aiP = siP->aiP;
+	tAILocalInfo*	ailP = siP->ailP;
 
 if (ailP->targetAwarenessType) {
 	if ((ailP->targetAwarenessType < PA_RETURN_FIRE) || (siP->nPrevVisibility < 2)) {
@@ -1169,8 +1170,8 @@ return 0;
 
 int AIPlayerDeadHandler (CObject *objP, tAIStateInfo *siP)
 {
-	tAIStaticInfo	*aiP = siP->aiP;
-	tAILocalInfo		*ailP = siP->ailP;
+	tAIStaticInfo*	aiP = siP->aiP;
+	tAILocalInfo*	ailP = siP->ailP;
 
 if (!gameStates.app.bPlayerIsDead || ailP->targetAwarenessType)
 	return 0;
@@ -1221,8 +1222,8 @@ return 0;
 
 int AINewGoalHandler (CObject *objP, tAIStateInfo *siP)
 {
-	tAIStaticInfo	*aiP = siP->aiP;
-	tAILocalInfo		*ailP = siP->ailP;
+	tAIStaticInfo*	aiP = siP->aiP;
+	tAILocalInfo*	ailP = siP->ailP;
 
 if (ailP->targetAwarenessType) {
 	siP->nNewGoalState = aiTransitionTable [ailP->targetAwarenessType - 1][aiP->CURRENT_STATE][aiP->GOAL_STATE];

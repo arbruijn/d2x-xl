@@ -497,7 +497,7 @@ return (t == nObject);
 
 #define FVI_NEWCODE 2
 
-int ComputeHitpoint (CFixVector *vIntP, short *intS, CFixVector *p0, short nStartSeg, CFixVector *p1,
+int ComputeHitpoint (CFixVector *vIntP, short *nHitSegP, CFixVector *p0, short nStartSeg, CFixVector *p1,
 							fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList,
 							short *nSegments, int nEntrySeg, bool bCheckVisibility)
 {
@@ -805,7 +805,7 @@ if (nHitType == HIT_NONE) {     //didn't hit anything, return end refP
 	int i;
 
 	*vIntP = *p1;
-	*intS = nHitNoneSegment;
+	*nHitSegP = nHitNoneSegment;
 	if (nHitNoneSegment != -1) {			//(centerMask == 0)
 		if (flags & FQ_GET_SEGLIST) {
 #if FVI_NEWCODE != 2
@@ -830,11 +830,11 @@ else {
 	*vIntP = vClosestHitPoint;
 	if (nHitSegment == -1)
 		if (gameData.collisions.hitData.nSegment2 != -1)
-			*intS = gameData.collisions.hitData.nSegment2;
+			*nHitSegP = gameData.collisions.hitData.nSegment2;
 		else
-			*intS = nHitNoneSegment;
+			*nHitSegP = nHitNoneSegment;
 	else
-		*intS = nHitSegment;
+		*nHitSegP = nHitSegment;
 	}
 Assert(!(nHitType==HIT_OBJECT && gameData.collisions.hitData.nObject==-1));
 //PrintLog ("Exit ComputeHitpoint\n");

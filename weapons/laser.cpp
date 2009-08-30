@@ -564,7 +564,7 @@ int CreateNewLaserEasy (CFixVector* vDirection, CFixVector* vPosition, short par
 	CObject*		parentObjP = OBJECTS + parent;
 	int			fate;
 
-	//	Find segment containing laser fire vPosition.  If the robot is straddling a segment, the vPosition from
+	//	Find segment containing laser fire position.  If the robot is straddling a segment, the position from
 	//	which it fires may be in a different segment, which is bad news for FindHitpoint.  So, cast
 	//	a ray from the object center (whose segment we know) to the laser position.  Then, in the call to CreateNewWeapon
 	//	use the data returned from this call to FindHitpoint.
