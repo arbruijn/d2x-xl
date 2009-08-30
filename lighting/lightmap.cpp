@@ -574,20 +574,20 @@ static int CreatePoll (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-paletteManager.LoadEffect ();
+//paletteManager.LoadEffect ();
 if (nFace < gameData.segs.nFaces) {
 	lightmapManager.BuildAll (nFace);
 	nFace += PROGRESS_INCR;
 	}
 else {
 	key = -2;
-	paletteManager.LoadEffect ();
+	//paletteManager.LoadEffect ();
 	return nCurItem;
 	}
 menu [0].m_value++;
 menu [0].m_bRebuild = 1;
 key = 0;
-paletteManager.LoadEffect ();
+//paletteManager.LoadEffect ();
 return nCurItem;
 }
 

@@ -768,6 +768,7 @@ if (bOk) {
 	memcpy (gameData.segs.fVertices.Buffer (), bufP, nSize = sizeof (gameData.segs.fVertices [0]) * mdh.nVertices);
 	bufP += nSize;
 	FACES.faces.Create (mdh.nFaces);
+	FACES.faces.Clear ();
 	for (int i = 0; i < mdh.nFaces; i++, bufP += sizeof (CSegFaceInfo))
 		memcpy (&FACES.faces [i].m_info, bufP, sizeof (CSegFaceInfo));
 	FACES.tris.Create (mdh.nTris);
