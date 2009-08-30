@@ -1289,7 +1289,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkGetIpAddr (bool bServer)
+int NetworkGetIpAddr (bool bServer, bool bUDP)
 {
 	CMenu	m (9);
 	int	h, i, j, choice = 0;
@@ -1299,7 +1299,7 @@ int NetworkGetIpAddr (bool bServer)
 	static char szPort [2][7] = {{'\0','\0','\0','\0','\0','\0','\0'}, {'\0','\0','\0','\0','\0','\0','\0'}};
 	static int nSign = 0;
 
-if (!tracker.m_bUse) {
+if (bUDP && !tracker.m_bUse) {
 	if (!*mpParams.szServerIpAddr) {
 		ArchIpxSetDriver (IPX_DRIVER_UDP);
 		if (IpxInit (-1) != IPX_INIT_OK) {

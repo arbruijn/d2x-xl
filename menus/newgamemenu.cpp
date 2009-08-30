@@ -438,15 +438,15 @@ else if ((nChoice == multiOpts.nStartUdp) || (nChoice == multiOpts.nJoinUdp)) {
 	}
 else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nStartMCast4))
 	bStart = 1;
-else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) &&	(nChoice != multiOpts.nJoinMCast4))
+else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) && (nChoice != multiOpts.nJoinMCast4))
 	return 0;
 gameOpts->app.bSinglePlayer = 0;
 LoadMission (gameData.missions.nLastMission);
-if (bUDP && !(InitAutoNetGame () || NetworkGetIpAddr (bStart != 0)))
-	return 0;
 gameStates.multi.bServer = (nChoice & 1) == 0;
 gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
 if (bUDP) {
+	if (!(InitAutoNetGame () || NetworkGetIpAddr (bStart != 0)))
+		return 0;
 	gameStates.multi.nGameType = UDP_GAME;
 	IpxSetDriver (IPX_DRIVER_UDP); 
 	if (nChoice == multiOpts.nStartUdpTracker) {
@@ -468,6 +468,9 @@ else if ((nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nJoinKali)) 
 	IpxSetDriver (IPX_DRIVER_KALI); 
 	}
 else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast4)) {
+#if DBG
+	NetworkGetIpAddr (bStart != 0, false);
+#endif
 	gameStates.multi.nGameType = IPX_GAME;
 	IpxSetDriver (IPX_DRIVER_MCAST4); 
 	}

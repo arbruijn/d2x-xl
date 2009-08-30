@@ -741,9 +741,9 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 #if 0 //for testing only
 	static ubyte inAddrLoopBack [4] = {127,0,0,1};
 #endif
-	u_short	nLocalPort, nServerPort = mpParams.udpPorts [0] + networkData.nSocket;
+	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
+				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
 
-nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
 	FAIL ("couldn't get my address");
