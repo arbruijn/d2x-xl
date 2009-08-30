@@ -425,13 +425,13 @@ CSegFace *FindDupFace (short nSegment, short nSide)
 	int			i, j;
 
 for (i = segFaceP->nFaces, faceP0 = segFaceP->faceP; i; faceP0++, i--)
-	if (faceP0->nSide == nSide)
+	if (faceP0->m_info.nSide == nSide)
 		break;
 for (i = 0, segFaceP = SEGFACES.Buffer (); i < gameData.segs.nSegments; i++, segFaceP++) {
 	for (j = segFaceP->nFaces, faceP1 = segFaceP->faceP; j; faceP1++, j--) {
 		if (faceP1 == faceP0)
 			continue;
-		if ((faceP1->nIndex == faceP0->nIndex) || !memcmp (faceP1->index, faceP0->index, sizeof (faceP0->index)))
+		if ((faceP1->m_info.nIndex == faceP0->m_info.nIndex) || !memcmp (faceP1->m_info.index, faceP0->m_info.index, sizeof (faceP0->m_info.index)))
 			return faceP1;
 		}
 	}
