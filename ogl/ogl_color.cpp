@@ -329,8 +329,8 @@ return i * i;
 static inline int IsLightVert (int nVertex, CDynLight *prl)
 {
 if ((nVertex >= 0) && prl->info.faceP) {
-	ushort *pv = gameStates.render.bTriangleMesh ? prl->info.faceP->triIndex : prl->info.faceP->index;
-	for (int i = prl->info.faceP->nVerts; i; i--, pv++)
+	ushort *pv = gameStates.render.bTriangleMesh ? prl->info.faceP->triIndex : prl->info.faceP->m_info.index;
+	for (int i = prl->info.faceP->m_info.nVerts; i; i--, pv++)
 		if (*pv == (ushort) nVertex)
 			return 1;
 	}

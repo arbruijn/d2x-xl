@@ -75,17 +75,17 @@ PROF_END(ptFaceList)
 
 int AddFaceListItem (CSegFace *faceP, int nThread)
 {
-if (!(faceP->widFlags & WID_RENDER_FLAG))
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return 0;
 #if 1
-if (faceP->nFrame == gameData.app.nMineRenderCount)
+if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
 	return 0;
 #endif
 #if DBG
 if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
-int	i, j, nKey = faceP->nBaseTex;
+int	i, j, nKey = faceP->m_info.nBaseTex;
 
 if (nKey < 0)
 	return 0;
@@ -93,8 +93,8 @@ if (nKey < 0)
 PROF_START
 CFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
 
-if (faceP->nOvlTex)
-	nKey += MAX_WALL_TEXTURES + faceP->nOvlTex;
+if (faceP->m_info.nOvlTex)
+	nKey += MAX_WALL_TEXTURES + faceP->m_info.nOvlTex;
 i = nThread + gameStates.app.nThreads * flxP->nUsedFaces++;
 #if SORT_RENDER_FACES == 2
 j = flxP->roots [nKey];
@@ -115,7 +115,7 @@ else
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
 flxP->tails [nKey] = i;
-faceP->nFrame = gameData.app.nFrameCount;
+faceP->m_info.nFrame = gameData.app.nFrameCount;
 #endif
 PROF_END(ptFaceList)
 return 1;
@@ -127,52 +127,52 @@ return 1;
 
 void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP)
 {
-	CSide	*sideP = segP->m_sides + faceP->nSide;
+	CSide	*sideP = segP->m_sides + faceP->m_info.nSide;
 	short	nFrame = sideP->m_nFrame;
 
-if (faceP->nCamera >= 0) {
-	if (SetupMonitorFace (faceP->nSegment, faceP->nSide, faceP->nCamera, faceP)) 
+if (faceP->m_info.nCamera >= 0) {
+	if (SetupMonitorFace (faceP->m_info.nSegment, faceP->m_info.nSide, faceP->m_info.nCamera, faceP)) 
 		return;
-	faceP->nCamera = -1;
+	faceP->m_info.nCamera = -1;
 	}
 #if DBG
 if (FACE_IDX (faceP) == nDbgFace)
 	nDbgFace = nDbgFace;
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if ((faceP->nBaseTex < 0) || !faceP->bTextured)
+if ((faceP->m_info.nBaseTex < 0) || !faceP->m_info.bTextured)
 	return;
-if (faceP->bOverlay)
-	faceP->nBaseTex = sideP->m_nOvlTex;
+if (faceP->m_info.bOverlay)
+	faceP->m_info.nBaseTex = sideP->m_nOvlTex;
 else {
-	faceP->nBaseTex = sideP->m_nBaseTex;
-	if (!faceP->bSplit)
-		faceP->nOvlTex = sideP->m_nOvlTex;
+	faceP->m_info.nBaseTex = sideP->m_nBaseTex;
+	if (!faceP->m_info.bSplit)
+		faceP->m_info.nOvlTex = sideP->m_nOvlTex;
 	}
 if (gameOpts->ogl.bGlTexMerge) {
-	faceP->bmBot = LoadFaceBitmap (faceP->nBaseTex, nFrame);
+	faceP->bmBot = LoadFaceBitmap (faceP->m_info.nBaseTex, nFrame);
 	if (nFrame)
 		nFrame = nFrame;
-	if (faceP->nOvlTex)
-		faceP->bmTop = LoadFaceBitmap ((short) (faceP->nOvlTex), nFrame);
+	if (faceP->m_info.nOvlTex)
+		faceP->bmTop = LoadFaceBitmap ((short) (faceP->m_info.nOvlTex), nFrame);
 	else
 		faceP->bmTop = NULL;
 	}
 else {
-	if (faceP->nOvlTex != 0) {
-		faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
+	if (faceP->m_info.nOvlTex != 0) {
+		faceP->bmBot = TexMergeGetCachedBitmap (faceP->m_info.nBaseTex, faceP->m_info.nOvlTex, faceP->m_info.nOvlOrient);
 		if (faceP->bmBot)
 			faceP->bmBot->SetupTexture (1, 1);
 #if DBG
 		else
-			faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
+			faceP->bmBot = TexMergeGetCachedBitmap (faceP->m_info.nBaseTex, faceP->m_info.nOvlTex, faceP->m_info.nOvlOrient);
 #endif
 		faceP->bmTop = NULL;
 		}
 	else {
-		faceP->bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [faceP->nBaseTex].index;
-		LoadBitmap (gameData.pig.tex.bmIndexP [faceP->nBaseTex].index, gameStates.app.bD1Mission);
+		faceP->bmBot = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [faceP->m_info.nBaseTex].index;
+		LoadBitmap (gameData.pig.tex.bmIndexP [faceP->m_info.nBaseTex].index, gameStates.app.bD1Mission);
 		}
 	}
 }
@@ -189,35 +189,35 @@ if (gameStates.render.bPerPixelLighting)
 	return;
 if (!ogl.m_states.bGlTexMerge)
 	return;
-if (faceP->bSolid)
+if (faceP->m_info.bSolid)
 	return;
-if (faceP->bSlide || !faceP->nOvlTex || !faceP->bmTop || faceP->bAnimation ||
-	 (gameStates.render.history.bOverlay >= 0) || (faceP->nCamera >= 0))
-	faceP->bSolid = 1;
+if (faceP->m_info.bSlide || !faceP->m_info.nOvlTex || !faceP->bmTop || faceP->m_info.bAnimation ||
+	 (gameStates.render.history.bOverlay >= 0) || (faceP->m_info.nCamera >= 0))
+	faceP->m_info.bSolid = 1;
 else if (faceP->bmTop && strstr (faceP->bmTop->szName, "door"))
-	faceP->bAnimation = faceP->bSolid = 1;
-if (faceP->bSolid)
+	faceP->m_info.bAnimation = faceP->m_info.bSolid = 1;
+if (faceP->m_info.bSolid)
 	return;
 #if DBG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 newFaceP = segFaceP->faceP + segFaceP->nFaces++;
 *newFaceP = *faceP;
 newFaceP->nIndex = (newFaceP - 1)->nIndex + (newFaceP - 1)->nTris * 3;
-memcpy (newFaceP->index, faceP->index, sizeof (faceP->index));
+memcpy (newFaceP->index, faceP->m_info.index, sizeof (faceP->m_info.index));
 int nVerts = newFaceP->nTris * 3;
-memcpy (FACES.vertices + newFaceP->nIndex, FACES.vertices + faceP->nIndex, nVerts * sizeof (CFloatVector3));
-memcpy (FACES.texCoord + newFaceP->nIndex, FACES.ovlTexCoord + faceP->nIndex, nVerts * sizeof (tTexCoord2f));
-memcpy (FACES.color + newFaceP->nIndex, FACES.color + faceP->nIndex, nVerts * sizeof (tRgbaColorf));
-newFaceP->nBaseTex = faceP->nOvlTex;
-faceP->nOvlTex = newFaceP->nOvlTex = 0;
+memcpy (FACES.vertices + newFaceP->nIndex, FACES.vertices + faceP->m_info.nIndex, nVerts * sizeof (CFloatVector3));
+memcpy (FACES.texCoord + newFaceP->nIndex, FACES.ovlTexCoord + faceP->m_info.nIndex, nVerts * sizeof (tTexCoord2f));
+memcpy (FACES.color + newFaceP->nIndex, FACES.color + faceP->m_info.nIndex, nVerts * sizeof (tRgbaColorf));
+newFaceP->nBaseTex = faceP->m_info.nOvlTex;
+faceP->m_info.nOvlTex = newFaceP->nOvlTex = 0;
 faceP->bmTop = 
 newFaceP->bmTop = NULL;
-faceP->bSplit = 1;
+faceP->m_info.bSplit = 1;
 newFaceP->bOverlay = 1;
 if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
-	faceP->bIsLight = 0;
+	faceP->m_info.bIsLight = 0;
 }
 
 #endif
@@ -226,12 +226,12 @@ if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 
 bool RenderSolidFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
-if (!(faceP->widFlags & WID_RENDER_FLAG))
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
-if (IS_WALL (faceP->nWall))
+if (IS_WALL (faceP->m_info.nWall))
 	return false;
 LoadFaceBitmaps (segP, faceP);
-g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -239,12 +239,12 @@ return true;
 
 bool RenderWallFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
-if (!(faceP->widFlags & WID_RENDER_FLAG))
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
-if (!IS_WALL (faceP->nWall))
+if (!IS_WALL (faceP->m_info.nWall))
 	return false;
 LoadFaceBitmaps (segP, faceP);
-g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -252,18 +252,18 @@ return true;
 
 bool RenderColoredFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
-if (!(faceP->widFlags & WID_RENDER_FLAG))
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 if (faceP->bmBot)
 	return false;
-short nSegment = faceP->nSegment;
+short nSegment = faceP->m_info.nSegment;
 short special = SEGMENTS [nSegment].m_nType;
 if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) || 
 	 (SEGMENTS [nSegment].m_group < 0) || (SEGMENTS [nSegment].m_owner < 1))
 	return false;
 if (!gameData.app.nFrameCount)
 	gameData.render.nColoredFaces++;
-g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, !bDepthOnly && faceP->bTextured, bDepthOnly);
+g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -271,15 +271,15 @@ return true;
 
 bool RenderCoronaFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
-if (!(faceP->widFlags & WID_RENDER_FLAG))
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
-if (!faceP->nCorona)
+if (!faceP->m_info.nCorona)
 	return false;
 #if DBG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-RenderCorona (faceP->nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona), faceP->fRads [0]);
+RenderCorona (faceP->m_info.nSegment, faceP->m_info.nSide, CoronaVisibility (faceP->m_info.nCorona), faceP->m_info.fRads [0]);
 return true;
 }
 
@@ -305,10 +305,10 @@ static pRenderHandler renderHandlers [] = {RenderSolidFace, RenderWallFace, Rend
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType, int bDepthOnly)
 {
-if (!faceP->bVisible)
+if (!faceP->m_info.bVisible)
 	return false;
 #if DBG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 return renderHandlers [nType] (segP, faceP, bDepthOnly);
@@ -596,7 +596,7 @@ if (gameStates.render.bHaveSkyBox) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
-			if (!(faceP->bVisible = FaceIsVisible (nSegment, faceP->nSide)))
+			if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, faceP->m_info.nSide)))
 				continue;
 			RenderMineFace (SEGMENTS + nSegment, faceP, 4, 0);
 			}
@@ -641,10 +641,10 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
 		fliP = gameData.render.faceList + j;
 		faceP = fliP->faceP;
-		if (nSegment != faceP->nSegment) {
-			nSegment = faceP->nSegment;
+		if (nSegment != faceP->m_info.nSegment) {
+			nSegment = faceP->m_info.nSegment;
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
 			if (!bDepthOnly) {
@@ -674,9 +674,9 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
 		fliP = gameData.render.faceList + j;
 		faceP = fliP->faceP;
-		if (!faceP->nCorona)
+		if (!faceP->m_info.nCorona)
 			continue;
-		nSegment = faceP->nSegment;
+		nSegment = faceP->m_info.nSegment;
 		if (automap.m_bDisplay) {
 			if (!(automap.m_bFull || automap.m_visible [nSegment]))
 				return;
@@ -685,41 +685,41 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			}
 		if (nPass == 1) {
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
 #	endif
 #endif
-			CoronaVisibility (faceP->nCorona);
+			CoronaVisibility (faceP->m_info.nCorona);
 			}
 		else if (nPass == 2) {
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
 #	endif
 #endif
-			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
+			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
 			if (!glGetError ())
-				RenderCorona (nSegment, faceP->nSide, 1, faceP->fRads [0]);
+				RenderCorona (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}
 		else {
 #if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
 #	endif
 #endif
-			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
+			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
 			ogl.ClearError (1);
-			RenderCorona (nSegment, faceP->nSide, 1, faceP->fRads [0]);
+			RenderCorona (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
 			ogl.ClearError (1);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			ogl.ClearError (1);
@@ -784,11 +784,11 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		nSegment = nSegment;
 #endif
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++)
-		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && (faceP->nCamera < 0) &&
-			 FaceHasCorona (nSegment, faceP->nSide, NULL, NULL))
-			faceP->nCorona = ++gameData.render.lights.nCoronas;
+		if (faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_RENDER_FLAG) && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
+			 FaceHasCorona (nSegment, faceP->m_info.nSide, NULL, NULL))
+			faceP->m_info.nCorona = ++gameData.render.lights.nCoronas;
 		else
-			faceP->nCorona = 0;
+			faceP->m_info.nCorona = 0;
 	}
 return gameData.render.lights.nCoronas;
 }
@@ -819,7 +819,7 @@ if (gameStates.render.bPerPixelLighting == 2)
 	lightManager.Index (0)[0].nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 #if DBG
-	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
 	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly))
@@ -838,7 +838,7 @@ if (nType) {
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
-			if (RenderMineFace (SEGMENTS + faceP->nSegment, faceP, nType, bDepthOnly))
+			if (RenderMineFace (SEGMENTS + faceP->m_info.nSegment, faceP, nType, bDepthOnly))
 				nFaces++;
 		}
 	else {

@@ -230,22 +230,14 @@ typedef struct tFaceTriangle {
 	int					nIndex;
 	} tFaceTriangle;
 
-class CSegFace {
+class CSegFaceInfo {
 	public:
 		ushort				index [4];
-		ushort				*triIndex;
 		int					nIndex;
 		int					nTriIndex;
-#if USE_RANGE_ELEMENTS
-		uint					*vertIndex;
-#endif
 		int					nVerts;
 		int					nTris;
 		int					nFrame;
-		CBitmap*				bmBot;
-		CBitmap*				bmTop;
-		//tTexCoord2f			texCoord [4];
-		tTexCoord2f*		pTexCoord;	//needed to override default tex coords, e.g. for camera outputs
 		tRgbaColorf			color;
 		float					fRads [2];
 		short					nWall;
@@ -278,6 +270,18 @@ class CSegFace {
 		char					nType;
 		char					nSegColor;
 		char					nShader;
+		};
+
+class CSegFace {
+	public:
+		CSegFaceInfo		m_info;
+		ushort*				triIndex;
+#if USE_RANGE_ELEMENTS
+		uint*					vertIndex;
+#endif
+		CBitmap*				bmBot;
+		CBitmap*				bmTop;
+		tTexCoord2f*		texCoordP;	//needed to override default tex coords, e.g. for camera outputs
 		CSegFace*			nextSlidingFace;
 		};
 

@@ -868,7 +868,7 @@ bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
 					  (cameraP->Texture ().Texture () || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
-	cameraP->GetUVL (faceP, NULL, FACES.texCoord + faceP->nIndex, FACES.vertices + faceP->nIndex);
+	cameraP->GetUVL (faceP, NULL, FACES.texCoord + faceP->m_info.nIndex, FACES.vertices + faceP->m_info.nIndex);
 	if (bIsTeleCam) {
 #if DBG
 		faceP->bmBot = &cameraP->Texture ();
@@ -876,16 +876,16 @@ if (bHaveMonitorBg) {
 #else
 		faceP->bmTop = &cameraP->Texture ();
 		for (i = 0; i < 4; i++)
-			gameData.render.color.vertices [faceP->index [i]].color.alpha = 0.7f;
+			gameData.render.color.vertices [faceP->m_info.index [i]].color.alpha = 0.7f;
 #endif
 		}
-	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (faceP->nOvlTex == 0) || !faceP->bmBot)
+	else if (/*gameOpts->render.cameras.bFitToWall ||*/ (faceP->m_info.nOvlTex == 0) || !faceP->bmBot)
 		faceP->bmBot = &cameraP->Texture ();
 	else
 		faceP->bmTop = &cameraP->Texture ();
-	faceP->pTexCoord = cameraP->TexCoord ();
+	faceP->texCoordP = cameraP->TexCoord ();
 	}
-faceP->bTeleport = bIsTeleCam;
+faceP->m_info.bTeleport = bIsTeleCam;
 cameraP->SetVisible (1);
 return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 }

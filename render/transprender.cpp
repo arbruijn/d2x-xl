@@ -399,16 +399,16 @@ int CTransparencyRenderer::AddFaceTris (CSegFace *faceP)
 	tFaceTriangle*	triP;
 	CFloatVector	vertices [3];
 	int				h, i, j, bAdditive = FaceIsAdditive (faceP);
-	CBitmap*			bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
+	CBitmap*			bmP = faceP->m_info.bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
 	bmP = bmP->Override (-1);
 #if DBG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	faceP = faceP;
 #endif
-triP = FACES.tris + faceP->nTriIndex;
-for (h = faceP->nTris; h; h--, triP++) {
+triP = FACES.tris + faceP->m_info.nTriIndex;
+for (h = faceP->m_info.nTris; h; h--, triP++) {
 	for (i = 0, j = triP->nIndex; i < 3; i++, j++) {
 #if 1
 		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
@@ -422,7 +422,7 @@ for (h = faceP->nTris; h; h--, triP++) {
 	if (!AddPoly (faceP, triP, bmP, vertices, 3, FACES.texCoord + triP->nIndex,
 					  FACES.color + triP->nIndex,
 					  NULL, 3, (bmP != NULL) && !bAdditive, GL_TRIANGLES, GL_REPEAT,
-					  bAdditive, faceP->nSegment))
+					  bAdditive, faceP->m_info.nSegment))
 		return 0;
 	}
 return 1;
@@ -434,29 +434,29 @@ int CTransparencyRenderer::AddFaceQuads (CSegFace *faceP)
 {
 	CFloatVector	vertices [4];
 	int				i, j, bAdditive = FaceIsAdditive (faceP);
-	CBitmap*			bmP = faceP->bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
+	CBitmap*			bmP = faceP->m_info.bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
 	bmP = bmP->Override (-1);
 #if DBG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	faceP = faceP;
 #endif
-for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
+for (i = 0, j = faceP->m_info.nIndex; i < 4; i++, j++) {
 #if 1
 	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
 	if (automap.m_bDisplay)
-		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->index [i]], 0);
+		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->m_info.index [i]], 0);
 	else
-		vertices [i].Assign (gameData.segs.points [faceP->index [i]].p3_vec);
+		vertices [i].Assign (gameData.segs.points [faceP->m_info.index [i]].p3_vec);
 #endif
 	}
 return AddPoly (faceP, NULL, bmP,
-					 vertices, 4, FACES.texCoord + faceP->nIndex,
-					 FACES.color + faceP->nIndex,
+					 vertices, 4, FACES.texCoord + faceP->m_info.nIndex,
+					 FACES.color + faceP->m_info.nIndex,
 					 NULL, 4, (bmP != NULL) && !bAdditive, GL_TRIANGLE_FAN, GL_REPEAT,
-					 bAdditive, faceP->nSegment) > 0;
+					 bAdditive, faceP->m_info.nSegment) > 0;
 }
 
 //------------------------------------------------------------------------------
@@ -754,12 +754,12 @@ bLightmaps = m_data.bLightmaps && (faceP != NULL);
 if (!bLightmaps)
 	bLightmaps = bLightmaps;
 if (faceP) {
-	if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide))) {
+	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
 #if 0
 		if (triP) {
-			if ((triP->nIndex - faceP->nIndex) / 3 < 22)
+			if ((triP->nIndex - faceP->m_info.nIndex) / 3 < 22)
 				return;
-			if ((triP->nIndex - faceP->nIndex) / 3 > 23)
+			if ((triP->nIndex - faceP->m_info.nIndex) / 3 > 23)
 				return;
 			}
 #endif
@@ -786,7 +786,7 @@ if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPAREN
 	bmBot = bmTop;
 	bmTop = mask = NULL;
 	bDecal = -1;
-	faceP->nRenderType = gameStates.render.history.nType = 1;
+	faceP->m_info.nRenderType = gameStates.render.history.nType = 1;
 	}
 #if RENDER_TRANSP_DECALS
 else {
@@ -814,7 +814,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
 	glDepthFunc (GL_LEQUAL);
-	nIndex = triP ? triP->nIndex : faceP ? faceP->nIndex : 0;
+	nIndex = triP ? triP->nIndex : faceP ? faceP->m_info.nIndex : 0;
 	if (triP || faceP) {
 		if (!bLightmaps) {
 			ogl.SelectTMU (GL_TEXTURE0, true);
@@ -879,18 +879,18 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if DBG
-	if (faceP && (faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
 	if (faceP && gameStates.render.bPerPixelLighting) {
-		if (!faceP->bColored) {
-			G3SetupGrayScaleShader ((int) faceP->nRenderType, &faceP->color);
+		if (!faceP->m_info.bColored) {
+			G3SetupGrayScaleShader ((int) faceP->m_info.nRenderType, &faceP->m_info.color);
 			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		else {
 #if 0
 			if (gameData.render.lights.dynamic.headlights.nLights && !automap.m_bDisplay) {
-				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
+				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				bAdditive = true;
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -899,9 +899,9 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 #endif
 			if (gameStates.render.bPerPixelLighting == 1) {
 #	if RENDER_TRANSP_DECALS
-				G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType, false);
+				G3SetupLightmapShader (faceP, 0, (int) faceP->m_info.nRenderType, false);
 #	else
-				G3SetupLightmapShader (faceP, 0, (int) faceP->nRenderType != 0, false);
+				G3SetupLightmapShader (faceP, 0, (int) faceP->m_info.nRenderType != 0, false);
 #	endif
 #	if DBG
 				if ((item->nVertices < 3) || (item->nVertices > 4))
@@ -919,7 +919,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 #endif
 				for (;;) {
-					G3SetupPerPixelShader (faceP, 0, faceP->nRenderType, false);
+					G3SetupPerPixelShader (faceP, 0, faceP->m_info.nRenderType, false);
 					OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 					if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 						 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
@@ -936,12 +936,12 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			if (gameStates.render.bHeadlights) {
 #	if DBG
 				if (faceP) {
-					if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+					if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 						nDbgSeg = nDbgSeg;
 					}
 				glEnable (GL_BLEND);
 #	endif
-				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->color);
+				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
 				if (bAdditive != 2) {
 					bAdditive = 2;
 					glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
@@ -969,7 +969,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 		else
 			G3SetupShader (faceP, 0, mask != NULL, bDecal > 0, bmBot != NULL,
 								(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
-								m_data.bTextured ? NULL : faceP ? &faceP->color : item->color);
+								m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	ogl.ResetTransform (faceP != NULL);

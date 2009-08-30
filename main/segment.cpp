@@ -1037,11 +1037,11 @@ CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex)
 for (int i = segFaceP->nFaces; i; i--, faceP++) {
 	if (bmBot) {
 		faceP->bmBot = bmBot;
-		faceP->nBaseTex = nBaseTex;
+		faceP->m_info.nBaseTex = nBaseTex;
 		}
 	if (nOvlTex >= 0) {
 		faceP->bmTop = bmTop;
-		faceP->nOvlTex = nOvlTex;
+		faceP->m_info.nOvlTex = nOvlTex;
 		}
 	}
 return bmBot ? bmBot : bmTop;

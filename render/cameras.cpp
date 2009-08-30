@@ -267,7 +267,7 @@ void CCamera::GetUVL (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloa
 	int i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
 
 if (gameStates.render.bTriangleMesh) {
-	if ((nType = faceP->nType == SIDE_IS_TRI_13)) {
+	if ((nType = faceP->m_info.nType == SIDE_IS_TRI_13)) {
 		i2 = 4;
 		}
 	else {

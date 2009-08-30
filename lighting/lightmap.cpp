@@ -271,16 +271,16 @@ for (pl = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, pl++)
 		continue;
 	faceP = pl->info.faceP;
 	bIsLight = 0; 
-	t = IsLight (faceP->nBaseTex) ? faceP->nBaseTex : faceP->nOvlTex;
-	sideRad = (double) faceP->fRads [1] / 10.0;
-	nIndex = faceP->nSegment * 6 + faceP->nSide;
+	t = IsLight (faceP->m_info.nBaseTex) ? faceP->m_info.nBaseTex : faceP->m_info.nOvlTex;
+	sideRad = (double) faceP->m_info.fRads [1] / 10.0;
+	nIndex = faceP->m_info.nSegment * 6 + faceP->m_info.nSide;
 	//Process found light.
 	lmiP->range += sideRad;
 	//find where it is in the level.
-	lmiP->vPos = SEGMENTS [faceP->nSegment].SideCenter (faceP->nSide);
+	lmiP->vPos = SEGMENTS [faceP->m_info.nSegment].SideCenter (faceP->m_info.nSide);
 	lmiP->nIndex = nIndex; 
 	//find light direction, currently based on first 3 points of CSide, not always right.
-	CFixVector *normalP = SEGMENTS [faceP->nSegment].m_sides [faceP->nSide].m_normals;
+	CFixVector *normalP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_normals;
 	lmiP->vDir = CFixVector::Avg(normalP[0], normalP[1]);
 	lmiP++; 
 	}
@@ -358,7 +358,7 @@ void CLightmapManager::Build (int nThread)
 
 
 #if 0// DBG
-if ((m_data.faceP->nSegment != nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide != nDbgSide))) {
+if ((m_data.faceP->m_info.nSegment != nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide != nDbgSide))) {
 	m_data.nColor |= 1;
 	return;
 	}
@@ -381,7 +381,7 @@ else {
 	}
 
 #if DBG
-if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
+if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 vcd.vertPosP = &vcd.vertPos;
@@ -439,7 +439,7 @@ pixelPosP = m_data.pixelPos + yMin * w;
 for (y = yMin; y < yMax; y++) {
 	for (x = 0; x < w; x++, pixelPosP++) { 
 #if DBG
-		if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide))) {
+		if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide))) {
 			nDbgSeg = nDbgSeg;
 			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
 				nDbgSeg = nDbgSeg;
@@ -453,8 +453,8 @@ for (y = yMin; y < yMax; y++) {
 				nDbgSeg = nDbgSeg;
 			}
 #endif
-		if (0 < lightManager.SetNearestToPixel (m_data.faceP->nSegment, m_data.faceP->nSide, &m_data.vNormal, 
-															 pixelPosP, m_data.faceP->fRads [1] / 10.0f, nThread)) {
+		if (0 < lightManager.SetNearestToPixel (m_data.faceP->m_info.nSegment, m_data.faceP->m_info.nSide, &m_data.vNormal, 
+															 pixelPosP, m_data.faceP->m_info.fRads [1] / 10.0f, nThread)) {
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
 			G3AccumVertColor (-1, &color, &vcd, nThread);
@@ -520,13 +520,13 @@ if (nFace <= 0) {
 //Next Go through each surface and create a lightmap for it.
 for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 #if DBG
-	if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
+	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (SEGMENTS [m_data.faceP->nSegment].m_nType == SEGMENT_IS_SKYBOX)
+	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_nType == SEGMENT_IS_SKYBOX)
 		continue;
-	sideP = SEGMENTS [m_data.faceP->nSegment].m_sides + m_data.faceP->nSide;
-	memcpy (m_data.sideVerts, m_data.faceP->index, sizeof (m_data.sideVerts));
+	sideP = SEGMENTS [m_data.faceP->m_info.nSegment].m_sides + m_data.faceP->m_info.nSide;
+	memcpy (m_data.sideVerts, m_data.faceP->m_info.index, sizeof (m_data.sideVerts));
 	m_data.nType = (sideP->m_nType == SIDE_IS_QUAD) || (sideP->m_nType == SIDE_IS_TRI_02);
 	m_data.vNormal = CFixVector::Avg (sideP->m_normals [0], sideP->m_normals [1]);
 	CFixVector::Normalize (m_data.vNormal);
@@ -547,20 +547,20 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 		Build (-1);
 #endif
 #if DBG
-	if ((m_data.faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->nSide == nDbgSide)))
+	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
 	if (m_data.nColor == 1) {
-		m_data.faceP->nLightmap = 0;
+		m_data.faceP->m_info.nLightmap = 0;
 		nBlackLightmaps++;
 		}
 	else if (m_data.nColor == 2) {
-		m_data.faceP->nLightmap = 1;
+		m_data.faceP->m_info.nLightmap = 1;
 		nWhiteLightmaps++;
 		}
 	else {
 		Copy (m_data.texColor, m_list.nLightmaps);
-		m_data.faceP->nLightmap = m_list.nLightmaps++;
+		m_data.faceP->m_info.nLightmap = m_list.nLightmaps++;
 		}
 	}
 }
@@ -635,7 +635,7 @@ if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1);
 if (bOk) {
 	for (i = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
-		bOk = cf.Write (&faceP->nLightmap, sizeof (faceP->nLightmap), 1) == 1;
+		bOk = cf.Write (&faceP->m_info.nLightmap, sizeof (faceP->m_info.nLightmap), 1) == 1;
 		if (!bOk)
 			break;
 		}
@@ -676,7 +676,7 @@ if (bOk)
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
-		bOk = cf.Read (&faceP->nLightmap, sizeof (faceP->nLightmap), 1) == 1;
+		bOk = cf.Read (&faceP->m_info.nLightmap, sizeof (faceP->m_info.nLightmap), 1) == 1;
 		if (!bOk)
 			break;
 		}

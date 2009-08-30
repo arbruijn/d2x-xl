@@ -103,8 +103,8 @@ if (left < r)
 
 static inline int IsLightVert (int nVertex, CSegFace *faceP)
 {
-ushort *pv = (gameStates.render.bTriangleMesh ? faceP->triIndex : faceP->index);
-for (int i = faceP->nVerts; i; i--, pv++)
+ushort *pv = (gameStates.render.bTriangleMesh ? faceP->triIndex : faceP->m_info.index);
+for (int i = faceP->m_info.nVerts; i; i--, pv++)
 	if (*pv == (ushort) nVertex)
 		return 1;
 return 0;
@@ -281,18 +281,18 @@ if (!bLights)
 
 for (nFaces = segFaceP->nFaces, faceP = segFaceP->faceP; nFaces; nFaces--, faceP++) {
 #if DBG
-if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nSegment = nSegment;
 #endif
 	if (gameStates.render.bTriangleMesh) {
-		for (nTris = faceP->nTris, triP = FACES.tris + faceP->nTriIndex; nTris; nTris--, triP++)
+		for (nTris = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; nTris; nTris--, triP++)
 			for (i = 0; i < 3; i++)
 				while (!SetVertVis (nStartSeg, triP->index [i], 1))
 					;
 		}
 	else {
 		for (i = 0; i < 4; i++)
-			while (!SetVertVis (nStartSeg, faceP->index [i], 1))
+			while (!SetVertVis (nStartSeg, faceP->m_info.index [i], 1))
 				;
 		}
 	}

@@ -34,7 +34,7 @@ extern CRenderFaceDrawerP g3FaceDrawer;
 
 static inline int FaceIsAdditive (CSegFace *faceP)
 {
-return (int) ((faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->FromPog ()) : faceP->bAdditive);
+return (int) ((faceP->m_info.bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->FromPog ()) : faceP->m_info.bAdditive);
 }
 
 //------------------------------------------------------------------------------

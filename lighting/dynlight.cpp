@@ -434,7 +434,7 @@ else if (nSegment >= 0) {
 			nDbgSeg = nDbgSeg;
 #endif
 		pl->info.nType = 0;
-		pl->info.fRad = faceP ? faceP->fRads [1] / 2.0f : 0;
+		pl->info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || 
 									SEGMENTS [nSegment].Side (nSide)->IsVolatile ();
@@ -617,26 +617,26 @@ if (gameStates.render.nLightingMethod)
 	gameData.render.color.vertices.Clear ();
 m_data.Init ();
 for (nFace = gameData.segs.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
-	nSegment = faceP->nSegment;
+	nSegment = faceP->m_info.nSegment;
 	if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX)
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	nSide = faceP->nSide;
+	nSide = faceP->m_info.nSide;
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	nTexture = faceP->nBaseTex;
+	nTexture = faceP->m_info.nBaseTex;
 	if ((nTexture < 0) || (nTexture >= MAX_WALL_TEXTURES))
 		continue;
 	colorP = gameData.render.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
 		Add (faceP, &colorP->color, nLight, (short) nSegment, (short) nSide, -1, nTexture, NULL, 1);
-	faceP->nOvlTex = SEGMENTS [faceP->nSegment].Side (faceP->nSide)->m_nOvlTex;
-	nTexture = faceP->nOvlTex;
+	faceP->m_info.nOvlTex = SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->m_nOvlTex;
+	nTexture = faceP->m_info.nOvlTex;
 #if 0//DBG
 	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light
 		continue;

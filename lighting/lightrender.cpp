@@ -318,17 +318,17 @@ nFrameCount = gameData.app.nFrameCount;
 #endif
 	int			i;
 	CFixVector	vNormal;
-	CSide*		sideP = SEGMENTS [faceP->nSegment].m_sides + faceP->nSide;
+	CSide*		sideP = SEGMENTS [faceP->m_info.nSegment].m_sides + faceP->m_info.nSide;
 
 #if DBG
-if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 if (faceP - FACES.faces == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
 #if 1//!DBG
 if (m_data.index [0][0].nActive < 0)
-	lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
+	lightManager.SetNearestToSegment (faceP->m_info.nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 else {
 #if 0//DBG
 	CheckUsedLights2 ();
@@ -336,13 +336,13 @@ else {
 	m_data.index [0][0] = m_data.index [1][0];
 	}
 #else
-lightManager.SetNearestToSegment (faceP->nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
+lightManager.SetNearestToSegment (faceP->m_info.nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #endif
 vNormal = sideP->m_normals[0] + sideP->m_normals[1];
 vNormal *= (I2X (1) / 2);
 #if 1
 for (i = 0; i < 4; i++)
-	lightManager.SetNearestToVertex (faceP - FACES.faces, faceP->index [i], &vNormal, 0, 0, 1, 0);
+	lightManager.SetNearestToVertex (faceP - FACES.faces, faceP->m_info.index [i], &vNormal, 0, 0, 1, 0);
 #endif
 PROF_END(ptPerPixelLighting)
 return m_data.index [0][0].nActive;
