@@ -104,14 +104,6 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "u_mem.h"
 #include "byteswap.h"
 
-#ifndef UINT_PTR
-#	define UINT_PTR		unsigned int
-#endif
-
-#ifndef INT_PTR
-#	define INT_PTR		int
-#endif
-
 //------------------------------------------------------------------------------
 // #define UDPDEBUG
 

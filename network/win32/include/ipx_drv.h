@@ -48,13 +48,17 @@ typedef struct IPXPacketStructure {
 #pragma pack (pop)
 #endif
 
+#ifndef UINT_PTR
+#	define UINT_PTR	unsigned int
+#endif
+
+#ifndef INT_PTR
+#	define INT_PTR		int
+#endif
+
 typedef struct ipx_socket_struct {
 	u_short socket;
-#ifdef _WIN64
 	UINT_PTR	fd;
-#else
-	int fd;
-#endif
 } ipx_socket_t;
 
 struct ipx_recv_data {
