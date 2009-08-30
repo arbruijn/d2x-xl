@@ -1296,7 +1296,7 @@ void UpdateSlidingFaces (void)
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 	tUVL			*uvlP;
 
-for (faceP = FACES.slidingFaces; faceP; faceP = faceP->m_info.nextSlidingFace) {
+for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 #if DBG
 	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		faceP = faceP;

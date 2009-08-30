@@ -571,7 +571,7 @@ else
 
 #else
 
-#define RenderFacePP(_faceP)	OglDrawArrays (GL_TRIANGLES, (_faceP)->nIndex, 6)
+#define RenderFacePP(_faceP)	OglDrawArrays (GL_TRIANGLES, (_faceP)->m_info.nIndex, 6)
 
 #endif
 

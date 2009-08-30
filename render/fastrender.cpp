@@ -325,25 +325,25 @@ static tFaceRef faceRef [2][MAX_SEGMENTS_D2X * 6];
 
 int QCmpFaces (CSegFace *fp, CSegFace *mp)
 {
-if (!fp->bOverlay && mp->bOverlay)
+if (!fp->m_info.bOverlay && mp->m_info.bOverlay)
 	return -1;
-if (fp->bOverlay && !mp->bOverlay)
+if (fp->m_info.bOverlay && !mp->m_info.bOverlay)
 	return 1;
-if (!fp->bTextured && mp->bTextured)
+if (!fp->m_info.bTextured && mp->m_info.bTextured)
 	return -1;
-if (fp->bTextured && !mp->bTextured)
+if (fp->m_info.bTextured && !mp->m_info.bTextured)
 	return 1;
-if (!fp->nOvlTex && mp->nOvlTex)
+if (!fp->m_info.nOvlTex && mp->m_info.nOvlTex)
 	return -1;
-if (fp->nOvlTex && !mp->nOvlTex)
+if (fp->m_info.nOvlTex && !mp->m_info.nOvlTex)
 	return 1;
-if (fp->nBaseTex < mp->nBaseTex)
+if (fp->m_info.nBaseTex < mp->m_info.nBaseTex)
 	return -1;
-if (fp->nBaseTex > mp->nBaseTex)
+if (fp->m_info.nBaseTex > mp->m_info.nBaseTex)
 	return -1;
-if (fp->nOvlTex < mp->nOvlTex)
+if (fp->m_info.nOvlTex < mp->m_info.nOvlTex)
 	return -1;
-if (fp->nOvlTex > mp->nOvlTex)
+if (fp->m_info.nOvlTex > mp->m_info.nOvlTex)
 	return -1;
 return 0;
 }

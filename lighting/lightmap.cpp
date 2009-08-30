@@ -750,7 +750,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		CreateSpecial (m_data.texColor, 0, 0);
 		m_list.nLightmaps = 1;
 		for (int i = 0; i < gameData.segs.nFaces; i++)
-			FACES.faces [i].nLightmap = 0;
+			FACES.faces [i].m_info.nLightmap = 0;
 		}
 	BindAll ();
 	Save (nLevel);
