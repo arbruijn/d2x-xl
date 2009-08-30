@@ -19,8 +19,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory="$(ConfigurationName)\$(PlatformName)\"
+			IntermediateDirectory="$(ConfigurationName)\$(PlatformName)\"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -65,10 +65,6 @@
 				EnableEnhancedInstructionSet="0"
 				OpenMP="true"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Debug/d2x-xl.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -91,15 +87,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
-				OutputFile="\programs\d2\d2x-xl-omp-dbg.exe"
+				OutputFile="\programs\d2\bin\win32-omp\debug\d2x-xl-omp-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="/programs/d2/d2x-xl-dbg.pdb"
 				GenerateMapFile="true"
-				MapFileName="/programs/d2/d2x-xl-dbg.map"
 				MapExports="false"
 				SubSystem="2"
 				TargetMachine="1"
@@ -8664,11 +8658,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
