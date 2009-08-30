@@ -66,7 +66,6 @@
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="0"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Debug/d2x-xl.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -95,9 +94,7 @@
 				AdditionalLibraryDirectories="&quot;\projects\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\projects\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projects\sdl-1.2.13\debug&quot;;&quot;\projects\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\projects\irrlicht-1.4\lib\win32-visualstudio&quot;;&quot;c:\programme\visual leak detector\lib&quot;"
 				IgnoreDefaultLibraryNames="msvcrt.lib"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="\programs\d2\bin\win32-std\debug\d2x-xl-dbg.pdb"
 				GenerateMapFile="true"
-				MapFileName="\programs\d2\bin\win32-std\debug\d2x-xl-dbg.map"
 				MapExports="false"
 				SubSystem="2"
 				LinkTimeCodeGeneration="1"
@@ -179,7 +176,6 @@
 				EnableEnhancedInstructionSet="0"
 				OpenMP="false"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -4311,11 +4307,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
