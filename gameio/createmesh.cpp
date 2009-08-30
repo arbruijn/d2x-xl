@@ -58,7 +58,7 @@ using namespace Mesh;
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 8
+#define MESH_DATA_VERSION 9
 
 //------------------------------------------------------------------------------
 
