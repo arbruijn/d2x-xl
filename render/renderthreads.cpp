@@ -401,10 +401,13 @@ return false;
 int GetNumThreads (void)
 {
 #ifdef OPENMP
+gameStates.app.nThreads = omp_get_num_threads ();
+if (gameStates.app.nThreads < 2)
 #pragma omp parallel 
 	{
 	gameStates.app.nThreads = omp_get_num_threads ();
 	}
+
 if (gameStates.app.nThreads > MAX_THREADS) {
 	gameStates.app.nThreads = MAX_THREADS;
 	omp_set_num_threads (MAX_THREADS);
