@@ -1112,9 +1112,9 @@ int CGenericCockpit::CanSeeObject (int nObject, int bCheckObjs)
 if (nObject < 0)
 	return 0;
 
-	tCollisionQuery fq;
+	CHitQuery fq;
 	int nHitType;
-	tCollisionData hitData;
+	CHitData hitData;
 
 	//see if we can see this CPlayerData
 

@@ -478,6 +478,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.powerups.b3D, i, 0);
 		RP (gameOptions [i].render.powerups.b3DShields, i, 0);
 		RP (gameOptions [i].render.shadows.nClip, i, 0);
+		RP (gameOptions [i].render.shadows.nReach, i, 0);
 		RP (gameOptions [i].render.shadows.nLights, i, 0);
 		RP (gameOptions [i].render.nMaxFPS, i, 0);
 		RP (gameOptions [i].render.nImageQuality, i, 0);
@@ -588,7 +589,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.shadows.bPlayers, i, 0);
 		RP (gameOptions [i].render.shadows.bReactors, i, 0);
 		RP (gameOptions [i].render.shadows.bRobots, i, 0);
-		RP (gameOptions [i].render.shadows.nReach, i, 0);
 
 		RP (gameOptions [i].render.ship.nWingtip, i, 0);
 		RP (gameOptions [i].render.ship.bBullets, i, 0);

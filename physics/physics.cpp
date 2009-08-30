@@ -273,7 +273,7 @@ if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
 
 #if 1 //UNSTICK_OBJS
 
-int BounceObject (CObject *objP, tCollisionData	hi, float fOffs, fix *pxSideDists)
+int BounceObject (CObject *objP, CHitData	hi, float fOffs, fix *pxSideDists)
 {
 	fix	xSideDist, xSideDists [6];
 	short	nSegment;
@@ -318,8 +318,8 @@ return 0;
 
 void UnstickObject (CObject *objP)
 {
-	tCollisionData			hi;
-	tCollisionQuery		fq;
+	CHitData			hi;
+	CHitQuery		fq;
 	int				fviResult;
 
 if ((objP->info.nType == OBJ_PLAYER) &&
@@ -423,8 +423,8 @@ void CObject::DoPhysicsSim (void)
 	int					nTries = 0;
 	short					nObject = OBJ_IDX (this);
 	short					nWallHitSeg, nWallHitSide;
-	tCollisionData		hi;
-	tCollisionQuery	fq;
+	CHitData		hi;
+	CHitQuery	fq;
 	CFixVector			vSavePos;
 	int					nSaveSeg;
 	fix					xSimTime, xOldSimTime, xTimeScale;

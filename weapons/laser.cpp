@@ -559,9 +559,9 @@ return nObject;
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
 int CreateNewLaserEasy (CFixVector* vDirection, CFixVector* vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
-	CObject		*parentObjP = OBJECTS + parent;
+	CHitQuery	fq;
+	CHitData		hitData;
+	CObject*		parentObjP = OBJECTS + parent;
 	int			fate;
 
 	//	Find segment containing laser fire vPosition.  If the robot is straddling a segment, the vPosition from
@@ -582,8 +582,25 @@ fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 fq.bCheckVisibility = false;
 
 fate = FindHitpoint (&fq, &hitData);
-if (fate != HIT_NONE  || hitData.hit.nSegment==-1)
+if ((fate != HIT_NONE)  || (hitData.hit.nSegment == -1))
 	return -1;
+
+#if DBG
+if (!hitData.hit.nSegment) {
+	fq.p0					= &parentObjP->info.position.vPos;
+	fq.startSeg			= parentObjP->info.nSegment;
+	fq.p1					= vPosition;
+	fq.radP0				=
+	fq.radP1				= 0;
+	fq.thisObjNum		= OBJ_IDX (parentObjP);
+	fq.ignoreObjList	= NULL;
+	fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
+	fq.bCheckVisibility = false;
+
+	fate = FindHitpoint (&fq, &hitData);
+	}
+#endif
+
 return CreateNewWeapon (vDirection, &hitData.hit.vPoint, (short) hitData.hit.nSegment, parent, nWeaponType, bMakeSound);
 }
 
@@ -681,8 +698,8 @@ int LaserPlayerFireSpreadDelay (
 	short					nLaserSeg;
 	int					nFate;
 	CFixVector			vLaserPos, vLaserDir, *vGunPoints;
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	int					nObject;
 	CObject*				laserP;
 #if FULL_COCKPIT_OFFS
@@ -1109,8 +1126,8 @@ return rVal;
 // -- int create_lightning_blobs (CFixVector *vDirection, CFixVector *start_pos, int start_segnum, int parent)
 // -- {
 // -- 	int			i;
-// -- 	tCollisionQuery	fq;
-// -- 	tCollisionData		hitData;
+// -- 	CHitQuery	fq;
+// -- 	CHitData		hitData;
 // -- 	CFixVector	vEndPos;
 // -- 	CFixVector	norm_dir;
 // -- 	int			fate;

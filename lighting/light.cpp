@@ -117,8 +117,8 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, CFixVector *vO
 nCacheLookups++;
 if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFrameCount)) {
 	int			bApplyLight = 0;
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	int			nSegment, hitType;
 	nSegment = -1;
 	#if DBG
@@ -318,9 +318,10 @@ if (xObjIntensity) {
 					}
 				if (objP->info.nId != gameData.multiplayer.nLocalPlayer) {
 					CFixVector	tvec;
-					tCollisionQuery	fq;
-					tCollisionData		hitData;
-					int					fate;
+					CHitQuery	fq;
+					CHitData		hitData;
+					int			fate;
+
 					tvec = *vObjPos + objP->info.position.mOrient.FVec () * I2X (200);
 					fq.startSeg			= objP->info.nSegment;
 					fq.p0					= vObjPos;

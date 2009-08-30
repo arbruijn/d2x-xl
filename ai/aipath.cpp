@@ -148,8 +148,8 @@ void MoveTowardsOutside (tPointSeg *ptSegs, int *nPoints, CObject *objP, int bRa
 	CFixVector	vGoalPos;
 	int			count;
 	int			nTempSeg;
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	int			nHitType;
 
 j = *nPoints;
@@ -281,8 +281,8 @@ int CreatePathPoints (CObject *objP, int nStartSeg, int nEndSeg, tPointSeg *poin
 	CSegment*			segP;
 	CFixVector			vCenter;
 	int					nParentSeg, nDestSeg;
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	int					hitType;
 	int					bAvoidTarget;
 
@@ -467,8 +467,8 @@ int SmoothPath (CObject *objP, tPointSeg *pointSegP, int numPoints)
 return numPoints;
 #else
 	int			i, nFirstPoint = 0;
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	int			hitType;
 
 
@@ -820,9 +820,9 @@ else
 // -- too much work -- int attackKillObject (CObject *objP)
 // -- too much work -- {
 // -- too much work -- 	CObject		*kill_objp;
-// -- too much work -- 	tCollisionData		hitData;
+// -- too much work -- 	CHitData		hitData;
 // -- too much work -- 	int			fate;
-// -- too much work -- 	tCollisionQuery	fq;
+// -- too much work -- 	CHitQuery	fq;
 // -- too much work --
 // -- too much work -- 	if (gameData.escort.nKillObject == -1)
 // -- too much work -- 		return 0;
@@ -1081,9 +1081,9 @@ while ((xDistToGoal < thresholdDistance) && !forced_break) {
 			//	If not, turn around.
 			int			nOppositeEndIndex;
 			CFixVector	*vOppositeEndPoint;
-			tCollisionData		hitData;
+			CHitData		hitData;
 			int			fate;
-			tCollisionQuery	fq;
+			CHitQuery	fq;
 
 			// See which end we're nearer and look at the opposite end point.
 			if (abs (aiP->nCurPathIndex - aiP->nPathLength) < aiP->nCurPathIndex) {

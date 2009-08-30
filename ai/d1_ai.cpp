@@ -172,7 +172,7 @@ typedef struct awareness_event {
 //	so we don't want to call it again (for this CObject) unless we have to.
 CFixVector	Hit_pos;
 int			hitType, Hit_seg;
-tCollisionData		hitData;
+CHitData		hitData;
 
 #define	D1_AIS_MAX	8
 #define	D1_AIE_MAX	4
@@ -552,7 +552,7 @@ void john_cheat_func_4(int key)
 int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player)
 {
 	fix			dot;
-	tCollisionQuery	fq;
+	CHitQuery	fq;
 
 fq.p0 = pos;
 if ((*pos) == objP->info.position.vPos)

@@ -1021,8 +1021,8 @@ return G3_INFINITY;
 
 #else //slower method
 
-	tCollisionQuery	fq;
-	tCollisionData		fi;
+	CHitQuery	fq;
+	CHitData		fi;
 	CFixVector	v;
 
 if (!gameOpts->render.shadows.nClip)

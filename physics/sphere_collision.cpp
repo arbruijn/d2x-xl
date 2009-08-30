@@ -844,7 +844,7 @@ return nHitType;
 //	-----------------------------------------------------------------------------
 
 //Find out if a vector intersects with anything.
-//Fills in hitData, an tCollisionData structure (see header file).
+//Fills in hitData, an CHitData structure (see header file).
 //Parms:
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
@@ -853,7 +853,7 @@ return nHitType;
 //  ingore_obj			ignore collisions with this CObject
 //  check_objFlag	determines whether collisions with OBJECTS are checked
 //Returns the hitData->nHitType
-int FindHitpoint (tCollisionQuery *fq, tCollisionData *hitData)
+int FindHitpoint (CHitQuery *fq, CHitData *hitData)
 {
 	int			nHitType, nNewHitType;
 	short			nHitSegment, nHitSegment2;

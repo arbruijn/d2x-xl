@@ -36,26 +36,34 @@ typedef struct fvec2d {
 
 extern int ijTable [3][2];
 
-typedef struct tCollisionInfo {
-	int 			nType;						//what sort of intersection
-	short 		nSegment;					//what CSegment hit_pnt is in
-	short			nSegment2;
-	short 		nSide;						//if hit CWall, which CSide
-	short			nFace;
-	short 		nSideSegment;				//what CSegment the hit CSide is in
-	short 		nObject;						//if CObject hit, which CObject
-	CFixVector	vPoint;						//where we hit
-	CFixVector 	vNormal;						//if hit CWall, ptr to its surface normal
-	int			nNormals;
-	int			nNestCount;
-} tCollisionInfo;
+class CHitInfo {
+	public:
+		int 			nType;						//what sort of intersection
+		short 		nSegment;					//what CSegment hit_pnt is in
+		short			nSegment2;
+		short 		nSide;						//if hit CWall, which CSide
+		short			nFace;
+		short 		nSideSegment;				//what CSegment the hit CSide is in
+		short 		nObject;						//if CObject hit, which CObject
+		CFixVector	vPoint;						//where we hit
+		CFixVector 	vNormal;						//if hit CWall, ptr to its surface normal
+		int			nNormals;
+		int			nNestCount;
+
+	public:
+		CHitInfo () { memset (this, 0xff, sizeof (*this)); }
+	};
 
 //this data structure gets filled in by FindHitpoint()
-typedef struct tCollisionData {
-	tCollisionInfo	hit;
-	short 			nSegments;					//how many segs we went through
-	short 			segList [MAX_FVI_SEGS];	//list of segs vector went through
-} tCollisionData;
+class CHitData {
+	public:
+		CHitInfo	hit;
+		short 	nSegments;					//how many segs we went through
+		short 	segList [MAX_FVI_SEGS];	//list of segs vector went through
+
+	public:
+		CHitData () { nSegments = 0; }
+	};
 
 //flags for fvi query
 #define FQ_CHECK_OBJS		1		//check against objects?
@@ -75,20 +83,24 @@ typedef struct tCollisionData {
 #define IT_POINT  3       //touches vertex
 
 //this data contains the parms to fvi()
-typedef struct tCollisionQuery {
-	CFixVector	*p0, *p1;
-	short			startSeg;
-	fix			radP0, radP1;
-	short			thisObjNum;
-	short			*ignoreObjList;
-	int			flags;
-	bool			bCheckVisibility;
-} tCollisionQuery;
+class CHitQuery {
+	public:
+		CFixVector	*p0, *p1;
+		short			startSeg;
+		fix			radP0, radP1;
+		short			thisObjNum;
+		short			*ignoreObjList;
+		int			flags;
+		bool			bCheckVisibility;
+
+	public:
+		CHitQuery () { memset (this, 0xff, sizeof (*this)); }
+	};
 
 //	-----------------------------------------------------------------------------
 
 //Find out if a vector intersects with anything.
-//Fills in hitData, an tCollisionData structure (see above).
+//Fills in hitData, a CHitData structure (see above).
 //Parms:
 //  p0 & startseg 	describe the start of the vector
 //  p1 					the end of the vector
@@ -97,7 +109,7 @@ typedef struct tCollisionQuery {
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
 //Returns the hitData->hitType
-int FindHitpoint (tCollisionQuery *fq, tCollisionData *hitData);
+int FindHitpoint (CHitQuery *fq, CHitData* hitData);
 
 //finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also

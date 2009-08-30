@@ -124,9 +124,9 @@ return nTranspType;
 
 int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
 {
-	tCollisionQuery	fq;
+	CHitQuery	fq;
 	int					nHitType;
-	tCollisionData		hitData;
+	CHitData		hitData;
 
 	//see if we can see this CPlayerData
 
@@ -151,9 +151,9 @@ return nHitType != HIT_WALL;
 
 int CanSeeObject (int nObject, int bCheckObjs)
 {
-	tCollisionQuery	fq;
+	CHitQuery	fq;
 	int					nHitType;
-	tCollisionData		hitData;
+	CHitData		hitData;
 
 	//see if we can see this CPlayerData
 
@@ -175,8 +175,8 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject)
 //	Calls fvi.
 int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 {
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
@@ -203,9 +203,9 @@ return fate == HIT_NONE;
 
 int TargetInLineOfFire (void)
 {
-	tCollisionQuery	fq;
+	CHitQuery	fq;
 	int					nHitType, nType;
-	tCollisionData		hitData;
+	CHitData		hitData;
 	CFixVector			vEndPos;
 	CObject*				objP;
 

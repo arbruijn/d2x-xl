@@ -134,8 +134,8 @@ void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToTarget)
 	short				nStartSeg, nDestSeg, nObject, nSide, nAvoidObjs;
 	CObject			*avoidObjP;
 	CSegment			*segP;
-	tCollisionQuery		fq;
-	tCollisionData			hitData;
+	CHitQuery		fq;
+	CHitData			hitData;
 	int				hitType;
 
 vAvoidPos.SetZero ();

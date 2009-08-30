@@ -504,8 +504,8 @@ if (!gameStates.render.bOutsideMine) {
 if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
 	if ((explosion_wait2 -= gameData.time.xFrame) < 0) {
 		CFixVector tpnt;
-		tCollisionQuery fq;
-		tCollisionData hitData;
+		CHitQuery fq;
+		CHitData hitData;
 		//create little explosion on CWall
 		tpnt = gameData.objs.consoleP->info.position.mOrient.RVec () * ((d_rand ()-RAND_MAX/2)*100);
 		tpnt += gameData.objs.consoleP->info.position.mOrient.UVec () * ((d_rand ()-RAND_MAX/2)*100);

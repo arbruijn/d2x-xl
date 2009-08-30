@@ -241,8 +241,8 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		}
 	else {
 		//	Well, they are not directly connected, so use FindHitpoint to see if they are unobstructed.
-		tCollisionQuery	fq;
-		tCollisionData		hitData;
+		CHitQuery	fq;
+		CHitData		hitData;
 		int					fate;
 
 		fq.startSeg			= objP->info.nSegment;

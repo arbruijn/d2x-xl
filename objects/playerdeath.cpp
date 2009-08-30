@@ -85,8 +85,8 @@ void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 xCameraPlayerDist = vPlayerCameraOffs.Mag ();
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->info.xSize) {
 	//	Camera is too close to CPlayerData CObject, so move it away.
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	CFixVector	local_p1;
 
 	if (vPlayerCameraOffs.IsZero ())

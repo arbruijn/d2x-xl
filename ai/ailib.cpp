@@ -45,7 +45,7 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
 	fix					dot;
-	tCollisionQuery	fq;
+	CHitQuery	fq;
 
 	//	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
@@ -100,7 +100,7 @@ return 1;
 
 int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vTarget)
 {
-	tCollisionQuery	fq;
+	CHitQuery	fq;
 	fix			nSize, h;
 	short			nModel, ignoreObjs [2] = {OBJ_IDX (TARGETOBJ), -1};
 

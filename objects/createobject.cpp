@@ -193,8 +193,11 @@ int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const 
 #if DBG
 if (nType == OBJ_WEAPON) {
 	nType = nType;
-	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_ROBOT))
+	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_ROBOT)) {
 		nType = nType;
+		if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
+			nDbgSeg = nDbgSeg;
+		}
 	if (nId == FLARE_ID)
 		nType = nType;
 	if (gameData.objs.bIsMissile [(int) nId])

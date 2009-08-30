@@ -2769,7 +2769,7 @@ class CAIData {
 		CFixVector					vHitPos;
 		int							nHitType;
 		int							nHitSeg;
-		tCollisionData				hitData;
+		CHitData						hitData;
 		CAITarget					target;
 		CArray<tAILocalInfo>		localInfo;
 		CArray<tAICloakInfo>		cloakInfo; // [MAX_AI_CLOAK_INFO];
@@ -3142,7 +3142,7 @@ class CCollisionData {
 	public:
 		int			nSegsVisited;
 		CStaticArray< short, MAX_SEGS_VISITED >	segsVisited; // [MAX_SEGS_VISITED];
-		tCollisionInfo hitData;
+		CHitInfo hitData;
 };
 
 //------------------------------------------------------------------------------

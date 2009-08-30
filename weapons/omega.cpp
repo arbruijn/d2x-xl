@@ -284,8 +284,8 @@ ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
 	vTargetPos = OBJECTS [nTargetObj].info.position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
-	tCollisionQuery	fq;
-	tCollisionData		hitData;
+	CHitQuery	fq;
+	CHitData		hitData;
 	int			fate;
 	CFixVector	vPerturb, perturbed_fvec;
 
