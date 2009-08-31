@@ -178,12 +178,10 @@ static int ipx_mcast4_SendPacket(ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_cha
 {
 	struct sockaddr_in toaddr;
 
-msg("SendPacket enter, dataLen=%d", dataLen);
 if(dataLen < 0 || dataLen > MAX_PACKETSIZE)
 	return -1;
 toaddr.sin_family = AF_INET;
 memcpy(&toaddr.sin_addr, IPXHeader->Destination.Node + 0, 4);
-//toaddr.sin_port = htons(((short)ntohs(*reinterpret_cast<ushort*> (IPXHeader->Destination.Node + 4))) + UDP_BASEPORT);
 // For now, just use the same port for everything
 toaddr.sin_port = htons(UDP_BASEPORT);
 // If it's the broadcast address, then we want to send it to the
