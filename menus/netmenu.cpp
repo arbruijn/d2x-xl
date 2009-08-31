@@ -374,7 +374,7 @@ if ((nCurItem >= optGameTypes) && (nCurItem < optGameTypes + nGameTypes)) {
 		}
 	}
 if ((menu [optEntropy].m_value == (optEntOpts < 0)) ||
-	 (menu [optMonsterball].m_value == (optMBallOpts < 0)))
+	 ((gameOpts->app.bExpertMode == SUPERUSER) && (menu [optMonsterball].m_value == (optMBallOpts < 0))))
 	key = -2;
 //force restricted game for team games
 //obsolete with D2X-W32 as it can assign players to teams automatically
