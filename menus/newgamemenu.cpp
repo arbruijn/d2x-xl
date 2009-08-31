@@ -468,7 +468,7 @@ else if ((nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nJoinKali)) 
 	IpxSetDriver (IPX_DRIVER_KALI); 
 	}
 else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast4)) {
-#if DBG
+#if 0 //DBG
 	NetworkGetIpAddr (bStart != 0, false);
 #endif
 	gameStates.multi.nGameType = IPX_GAME;

@@ -132,7 +132,7 @@ static int ipx_mcast4_OpenSocket (ipx_socket_t *sk, int port)
 	struct sockaddr_in sin;
 	int ttl = 128;
 
-#if DBG
+#if 0 //DBG
 	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
 				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
 #endif
@@ -149,7 +149,7 @@ if ((sk->fd = (int) socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 // Bind to the port
 sin.sin_family = AF_INET;
 sin.sin_addr.s_addr = htonl (INADDR_ANY);
-#if DBG
+#if 0 //DBG
 sin.sin_port = htons (nLocalPort);
 #else
 sin.sin_port = htons (baseport);
@@ -199,7 +199,7 @@ sk->fd = (UINT_PTR) (-1);
 static int ipx_mcast4_SendPacket (ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_char *data, int dataLen)
 {
 	struct sockaddr_in toaddr;
-#if DBG
+#if 0 //DBG
 	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
 				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
 #endif
@@ -208,7 +208,7 @@ if ((dataLen < 0) || (dataLen > MAX_PACKETSIZE_MCAST4))
 	return -1;
 toaddr.sin_family = AF_INET;
 memcpy (&toaddr.sin_addr, IPXHeader->Destination.Node + 0, 4);
-#if DBG
+#if 0 //DBG
 toaddr.sin_port = htons (nLocalPort);
 #else
 toaddr.sin_port = htons (UDP_BASEPORT);
@@ -353,7 +353,7 @@ game_addr.s_addr = 0;
 static int ipx_mcast4_SendGamePacket (ipx_socket_t *sk, ubyte *data, int dataLen)
 {
 	struct sockaddr_in toaddr;
-#if DBG
+#if 0 //DBG
 	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nSocket,
 				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
 #endif
@@ -362,7 +362,7 @@ memset (&toaddr, 0, sizeof (toaddr));
 toaddr.sin_family = AF_INET;
 toaddr.sin_addr = game_addr;
 toaddr.sin_port = htons (UDP_BASEPORT);
-#if DBG
+#if 0 //DBG
 toaddr.sin_port = htons (nLocalPort);
 #else
 toaddr.sin_port = htons (baseport);
