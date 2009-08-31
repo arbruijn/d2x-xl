@@ -963,11 +963,12 @@ return -1;
 
 //------------------------------------------------------------------------------
 //added on 980905 by adb from original source to make sfx nVolume work
-void CAudio::SetFxVolume (int nVolume)
+void CAudio::SetFxVolume (int fxVolume)
 {
 if (!gameStates.app.bUseSound)
 	return;
-nVolume = FixMulDiv (nVolume, SOUND_MAX_VOLUME, 0x7fff);
+#ifdef _WIN32
+int nVolume = FixMulDiv (fxVolume, SOUND_MAX_VOLUME, 0x7fff);
 if (nVolume > SOUND_MAX_VOLUME)
 	m_info.nVolume = SOUND_MAX_VOLUME;
 else if (nVolume < 0)
@@ -976,6 +977,15 @@ else
 	m_info.nVolume = nVolume;
 if (!m_info.bAvailable) 
 	return;
+if (!songManager.Playing ()) {
+	HMIDIOUT hMIDI;
+	midiOutOpen (&hMIDI, -1, NULL, NULL, CALLBACK_NULL);
+	int nVolume = FixMulDiv (fxVolume, 128, SOUND_MAX_VOLUME);
+	nVolume = 65535 * nVolume / 128;
+	nVolume = midiOutSetVolume (hMIDI, nVolume | (nVolume << 16));
+	midiOutClose (hMIDI);
+	}
+#endif
 SyncSounds ();
 }
 //end edit by adb

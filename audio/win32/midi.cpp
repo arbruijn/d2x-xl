@@ -95,9 +95,8 @@ if (m_hmp) {
 	int mmVolume;
 
 	// scale up from 0-127 to 0-0xffff
-	mmVolume = (m_nVolume << 1) | (m_nVolume & 1);
-	mmVolume |= (mmVolume << 8);
-	nVolume = midiOutSetVolume ((HMIDIOUT)m_hmp->hmidi, mmVolume | (mmVolume << 16));
+	mmVolume = 65535 * m_nVolume / 128;
+	nVolume = midiOutSetVolume ((HMIDIOUT) m_hmp->hmidi, mmVolume | (mmVolume << 16));
 	}
 #	endif
 return nLastVolume;
@@ -166,8 +165,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		PrintLog ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
-	if (gameOpts->sound.bFadeMusic &&
-		 (-1 == Mix_FadeInMusicPos (m_music, bLoop ? -1 : 1, songManager.Pos () ? 1000 : 1500, (double) songManager.Pos () / 1000.0))) {
+	if (-1 == Mix_FadeInMusicPos (m_music, bLoop ? -1 : 1, !gameOpts->sound.bFadeMusic ? 0 : songManager.Pos () ? 1000 : 1500, (double) songManager.Pos () / 1000.0)) {
 		PrintLog ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
 		songManager.SetPos (0);
 		return 0;
