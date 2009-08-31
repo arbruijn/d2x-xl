@@ -53,11 +53,11 @@ static void msg (const char *fmt,...)
 {
 	va_list ap;
 
-	fputs(MSGHDR,stdout);
-	va_start(ap,fmt);
-	vprintf(fmt,ap);
-	va_end(ap);
-	//putchar('\n');
+fputs(MSGHDR,stdout);
+va_start(ap,fmt);
+vprintf(fmt,ap);
+va_end(ap);
+//putchar('\n');
 }
 
 //------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ int Fail (const char *fmt, ...)
 
 va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
-va_end (argP);   
+va_end (argP);
 MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s", szFailMsg);
 return 1;
 }
@@ -95,9 +95,9 @@ static void dumpraddr(ubyte *a)
 {
 	short port;
 
-	//printf("[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
-	port=(signed short)ntohs(*reinterpret_cast<ushort*> (a+4);
-	//if (port) printf(":%+d",port);
+//printf("[%u.%u.%u.%u]", a[0], a[1], a[2], a[3]);
+port = (signed short) ntohs (*reinterpret_cast<ushort*> (a+4));
+//if (port) printf(":%+d",port);
 }
 
 /* Like dumpraddr() but for structure "sockaddr_in"
@@ -107,12 +107,14 @@ static void dumpaddr(struct sockaddr_in *sin)
 	ushort ports;
 	ubyte qhbuf[8];
 
-	memcpy(qhbuf + 0, &sin->sin_addr, 4);
-	ports = htons(((short)ntohs(sin->sin_port)) - UDP_BASEPORT);
-	memcpy(qhbuf + 4, &ports, 2);
-	dumpraddr(qhbuf);
+memcpy(qhbuf + 0, &sin->sin_addr, 4);
+ports = htons (((short) ntohs (sin->sin_port)) - UDP_BASEPORT);
+memcpy (qhbuf + 4, &ports, 2);
+dumpraddr (qhbuf);
 }
 #endif
+
+//------------------------------------------------------------------------------
 
 // The multicast address for Descent 2 game announcements.
 #define DESCENT2_ANNOUNCE_ADDR inet_addr("239.255.1.2")
@@ -125,116 +127,108 @@ static int ipx_mcast4_OpenSocket(ipx_socket_t *sk, int port)
 	struct sockaddr_in sin;
 	int ttl = 128;
 
-	if((sk->fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
-	{
-		sk->fd = -1;
-		FAIL("socket() creation failed on port %d: %m", port);
+if((sk->fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+	sk->fd = -1;
+	FAIL("socket() creation failed on port %d: %m", port);
 	}
-
-	// Bind to the port
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = htonl(INADDR_ANY);
-	sin.sin_port = htons(baseport);
-	if (bind(sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof(sin)))
-	{
-		if (close(sk->fd))
-			msg("close() failed during error recovery: %m");
-		sk->fd = -1;
-		FAIL("bind() to UDP port %d failed: %m", baseport);
+// Bind to the port
+sin.sin_family = AF_INET;
+sin.sin_addr.s_addr = htonl(INADDR_ANY);
+sin.sin_port = htons(baseport);
+if (bind(sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof(sin))) {
+	if (close(sk->fd))
+		msg("close() failed during error recovery: %m");
+	sk->fd = -1;
+	FAIL("bind() to UDP port %d failed: %m", baseport);
 	}
-
-	// Set the TTL so the packets can get out of the local network.
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0)
-		FAIL("setsockopt() failed to set TTL to 128");
-
-	// Disable multicast loopback
-	loop = 0;
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
-		FAIL("setsockopt() failed to disable multicast loopback: %m");
-
-	// Subscribe to the game announcement address
-	memset(&mreq, 0, sizeof(mreq));
-	mreq.imr_multiaddr.s_addr = DESCENT2_ANNOUNCE_ADDR;
-	mreq.imr_interface.s_addr = INADDR_ANY;
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0)
-		FAIL("setsockopt() failed to subscribe to the game announcement multicast group");
-
-	// We're not subscribed to a game address yet
-	game_addr.s_addr = 0;
-
-	sk->socket = port;
-	return 0;
+// Set the TTL so the packets can get out of the local network.
+if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0) {
+	FAIL("setsockopt() failed to set TTL to 128");
+	}
+// Disable multicast loopback
+loop = 0;
+if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0) {
+	FAIL("setsockopt() failed to disable multicast loopback: %m");
+	}
+// Subscribe to the game announcement address
+memset(&mreq, 0, sizeof(mreq));
+mreq.imr_multiaddr.s_addr = DESCENT2_ANNOUNCE_ADDR;
+mreq.imr_interface.s_addr = INADDR_ANY;
+if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
+	FAIL("setsockopt() failed to subscribe to the game announcement multicast group");
+	}
+// We're not subscribed to a game address yet
+game_addr.s_addr = 0;
+sk->socket = port;
+return 0;
 }
+
+//------------------------------------------------------------------------------
 
 static void ipx_mcast4_CloseSocket(ipx_socket_t *sk)
 {
-	if(close(sk->fd) < 0)
-		msg("Close failed");
-	sk->fd = -1;
+if (close (sk->fd) < 0)
+	msg("Close failed");
+sk->fd = -1;
 }
+
+//------------------------------------------------------------------------------
 
 static int ipx_mcast4_SendPacket(ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_char *data, int dataLen)
 {
 	struct sockaddr_in toaddr;
-	int i;
 
-	msg("SendPacket enter, dataLen=%d", dataLen);
-
-	if(dataLen < 0 || dataLen > MAX_PACKETSIZE)
-		return -1;
-
-	toaddr.sin_family = AF_INET;
-	memcpy(&toaddr.sin_addr, IPXHeader->Destination.Node + 0, 4);
-	//toaddr.sin_port = htons(((short)ntohs(*reinterpret_cast<ushort*> (IPXHeader->Destination.Node + 4))) + UDP_BASEPORT);
-	// For now, just use the same port for everything
-	toaddr.sin_port = htons(UDP_BASEPORT);
-
-	// If it's the broadcast address, then we want to send it to the
-	// GAME ANNOUNCEMENT address.
-	// Data to be sent to the GAME has the destination already set by
-	// ipx_mcast4_SendGamePacket
-	if(toaddr.sin_addr.s_addr == INADDR_BROADCAST)
-		toaddr.sin_addr.s_addr = DESCENT2_ANNOUNCE_ADDR;
-
+msg("SendPacket enter, dataLen=%d", dataLen);
+if(dataLen < 0 || dataLen > MAX_PACKETSIZE)
+	return -1;
+toaddr.sin_family = AF_INET;
+memcpy(&toaddr.sin_addr, IPXHeader->Destination.Node + 0, 4);
+//toaddr.sin_port = htons(((short)ntohs(*reinterpret_cast<ushort*> (IPXHeader->Destination.Node + 4))) + UDP_BASEPORT);
+// For now, just use the same port for everything
+toaddr.sin_port = htons(UDP_BASEPORT);
+// If it's the broadcast address, then we want to send it to the
+// GAME ANNOUNCEMENT address.
+// Data to be sent to the GAME has the destination already set by
+// ipx_mcast4_SendGamePacket
+if(toaddr.sin_addr.s_addr == INADDR_BROADCAST)
+	toaddr.sin_addr.s_addr = DESCENT2_ANNOUNCE_ADDR;
 #ifdef IPX_MCAST4DBG
-	/*printf(MSGHDR "sendto((%d),Node=[4] %02X %02X,Socket=%02X %02X,s_port=%u,",
-	       dataLen,
-	       IPXHeader->Destination.Node[4], IPXHeader->Destination.Node[5],
-	       IPXHeader->Destination.Socket[0], IPXHeader->Destination.Socket[1],
-	       ntohs(toaddr.sin_port);
-	*/
-	dumpaddr(&toaddr);
-	//puts(").");
+/*printf(MSGHDR "sendto((%d),Node=[4] %02X %02X,Socket=%02X %02X,s_port=%u,",
+	   dataLen,
+	   IPXHeader->Destination.Node[4], IPXHeader->Destination.Node[5],
+	   IPXHeader->Destination.Socket[0], IPXHeader->Destination.Socket[1],
+	   ntohs(toaddr.sin_port);
+*/
+dumpaddr(&toaddr);
+//puts(").");
 #endif
-
-	i = sendto(sk->fd, data, dataLen, 0, reinterpret_cast<struct sockaddr*> (&toaddr), sizeof(toaddr));
-	return i;
+return sendto(sk->fd, data, dataLen, 0, reinterpret_cast<struct sockaddr*> (&toaddr), sizeof(toaddr));
 }
+
+//------------------------------------------------------------------------------
 
 static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, char *outbuf, int outbufsize, struct ipx_recv_data *rd)
 {
-	int size;
-	struct sockaddr_in fromaddr;
-	uint fromaddrsize = sizeof(fromaddr);
+int size;
+struct sockaddr_in fromaddr;
+uint fromaddrsize = sizeof(fromaddr);
 
 size = recvfrom(sk->fd, outbuf, outbufsize, 0, reinterpret_cast<struct sockaddr*> (&fromaddr), &fromaddrsize);
 if (size < 0)
 	return -1;
-
 #ifdef IPX_MCAST4DBG
-	//printf(MSGHDR "Got packet from ");
-	dumpaddr(&fromaddr);
-	//puts("");
+//printf(MSGHDR "Got packet from ");
+dumpaddr(&fromaddr);
+//puts("");
 #endif
-
-	// We have the packet, now fill out the receive data.
-	memset(rd, 0, sizeof(*rd));
-	memcpy(rd->src_node, &fromaddr.sin_addr, 4);
-	rd->pktType = 0;
-
-	return size;
+// We have the packet, now fill out the receive data.
+memset(rd, 0, sizeof(*rd));
+memcpy(rd->src_node, &fromaddr.sin_addr, 4);
+rd->pktType = 0;
+return size;
 }
 
+//------------------------------------------------------------------------------
 /* Handle the netgame aux data
  * Byte 0 is the protocol version number.
  * Bytes 1-4 are the IPv4 multicast session to join, in network byte order.
@@ -249,41 +243,37 @@ static int ipx_mcast4_HandleNetgameAuxData(ipx_socket_t *sk, const u_char buf[NE
 	struct ip_mreq mreq;
 	int ttl = 128;
 
-	// Check the protocol version
-	if(buf[0] != IPX_MCAST4_VERSION)
-	{
-		FAIL("mcast4 protocol\nversion mismatch!\nGame version is %02x,\nour version is %02x", buf[0], IPX_MCAST4_VERSION);
+// Check the protocol version
+if(buf[0] != IPX_MCAST4_VERSION) {
+	FAIL("mcast4 protocol\nversion mismatch!\nGame version is %02x,\nour version is %02x", buf[0], IPX_MCAST4_VERSION);
 	}
-
-	// Get the multicast session
-	memcpy(&game_addr, buf + 1, sizeof(game_addr));
-
+// Get the multicast session
+memcpy(&game_addr, buf + 1, sizeof(game_addr));
 #ifdef IPX_MCAST4DBG
-	{
-		struct sockaddr_in tmpaddr;
-		tmpaddr.sin_addr = game_addr;
-		tmpaddr.sin_port = 0;
+{
+	struct sockaddr_in tmpaddr;
+	tmpaddr.sin_addr = game_addr;
+	tmpaddr.sin_port = 0;
 
-		//printf("Handling netgame aux data: Subscribing to ");
-		dumpaddr(&tmpaddr);
-		//puts("");
-	}
+	//printf("Handling netgame aux data: Subscribing to ");
+	dumpaddr(&tmpaddr);
+	//puts("");
+}
 #endif
-
-	// Set the TTL so the packets can get out of the local network.
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0)
-		FAIL("setsockopt() failed to set TTL to 128");
-
-	memset(&mreq, 0, sizeof(mreq));
-	mreq.imr_multiaddr = game_addr;
-	mreq.imr_interface.s_addr = INADDR_ANY;
-
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0)
-		FAIL("setsockopt() failed to subscribe to the game group");
-
-	return 0;
+// Set the TTL so the packets can get out of the local network.
+if(setsockopt(sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0) {
+	FAIL("setsockopt() failed to set TTL to 128");
+	}
+memset(&mreq, 0, sizeof(mreq));
+mreq.imr_multiaddr = game_addr;
+mreq.imr_interface.s_addr = INADDR_ANY;
+if(setsockopt(sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
+	FAIL("setsockopt() failed to subscribe to the game group");
+	}
+return 0;
 }
 
+//------------------------------------------------------------------------------
 /* Create the netgame aux data.
  * Byte 0 is the protcol version number.
  * Bytes 1-4 hold the IPv4 multicast session for the game.
@@ -292,16 +282,16 @@ static void ipx_mcast4_InitNetgameAuxData(ipx_socket_t *sk, u_char buf[NETGAME_A
 {
 	Assert(game_addr.s_addr == 0);
 
-	// The first byte is the version number
-	buf[0] = IPX_MCAST4_VERSION;
-
-	// Generate a Random session
-	game_addr = inet_makeaddr(239*256 + 255, d_rand() % 0xFFFF);
-	memcpy(buf + 1, &game_addr, sizeof(game_addr));
-
-	// Since we're obviously the hosting machine, subscribe to this address
-	ipx_mcast4_HandleNetgameAuxData(sk, buf);
+// The first byte is the version number
+buf[0] = IPX_MCAST4_VERSION;
+// Generate a Random session
+game_addr = inet_makeaddr(239*256 + 255, d_rand() % 0xFFFF);
+memcpy(buf + 1, &game_addr, sizeof(game_addr));
+// Since we're obviously the hosting machine, subscribe to this address
+ipx_mcast4_HandleNetgameAuxData(sk, buf);
 }
+
+//------------------------------------------------------------------------------
 
 static void ipx_mcast4_HandleLeaveGame(ipx_socket_t *sk)
 {
@@ -323,6 +313,7 @@ static void ipx_mcast4_HandleLeaveGame(ipx_socket_t *sk)
 	game_addr.s_addr = 0;
 }
 
+//------------------------------------------------------------------------------
 // Send a packet to every member of the game.  We can just multicast it here.
 static int ipx_mcast4_SendGamePacket(ipx_socket_t *sk, ubyte *data, int dataLen)
 {
@@ -340,6 +331,7 @@ static int ipx_mcast4_SendGamePacket(ipx_socket_t *sk, ubyte *data, int dataLen)
 	return i;
 }
 
+//------------------------------------------------------------------------------
 // Pull this in from ipx_udp.c since it's the same for us.
 extern int UDPGetMyAddress();
 
@@ -355,3 +347,6 @@ struct ipx_driver ipx_mcast4 = {
 	ipx_mcast4_HandleLeaveGame,
 	ipx_mcast4_SendGamePacket
 };
+
+//------------------------------------------------------------------------------
+//eof
