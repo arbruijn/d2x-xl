@@ -47,8 +47,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "d2x-xl.ico"
-IDI_D2XW32              ICON                    "d2x-w32.ico"
-IDI_DESCENT2            ICON                    "descent.ico"
+IDI_D2X-XL               ICON                    "d2x-xl.ico"
+IDI_D2X-XL-2             ICON                    "d2x-xl-2.ico"
+IDI_DESCENT2             ICON                    "descent.ico"
 
 /////////////////////////////////////////////////////////////////////////////

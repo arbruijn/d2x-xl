@@ -293,7 +293,6 @@
 				EnableEnhancedInstructionSet="1"
 				OpenMP="true"
 				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
 				AssemblerListingLocation="$(IntDir)/"
 				ObjectFile="$(IntDir)/"
 				ProgramDataBaseFileName=".\Release/"
@@ -408,7 +407,6 @@
 				PrecompiledHeaderFile=".\Release/d2x-xl.pch"
 				AssemblerListingLocation="$(IntDir)/"
 				ObjectFile="$(IntDir)/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
@@ -6497,11 +6495,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
