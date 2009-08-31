@@ -237,7 +237,7 @@ static int ipx_mcast4_ReceivePacket (ipx_socket_t *sk, ubyte *outbuf, int outbuf
 	struct sockaddr_in fromaddr;
 	int fromaddrsize = sizeof (fromaddr);
 
-if (0 | (size = recvfrom (sk->fd, reinterpret_cast<char*> (outbuf), outbufsize, 0, reinterpret_cast<struct sockaddr*> (&fromaddr), &fromaddrsize)))
+if (0 > (size = recvfrom (sk->fd, reinterpret_cast<char*> (outbuf), outbufsize, 0, reinterpret_cast<struct sockaddr*> (&fromaddr), &fromaddrsize)))
 	return -1;
 
 #ifdef IPX_MCAST4DBG
