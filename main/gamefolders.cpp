@@ -182,9 +182,9 @@ void GetAppFolders (void)
 *gameFolders.szGameDir =
 *gameFolders.szDataDir =
 *szDataRootDir = '\0';
-if ((i = FindArg ("-userdir"))) {
+if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
 	sprintf (gameFolders.szGameDir, "%s\\%s\\", pszArgList [i + 1], DATADIR);
-	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog"))
+	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog")) 
 		*gameFolders.szGameDir = '\0';
 	else {
 		strcpy (gameFolders.szGameDir, pszArgList [i + 1]);

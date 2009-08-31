@@ -977,7 +977,7 @@ else
 	m_info.nVolume = nVolume;
 if (!m_info.bAvailable) 
 	return;
-if (!songManager.Playing ()) {
+if (gameStates.sound.bMidiFix && !songManager.Playing ()) {
 	HMIDIOUT hMIDI;
 	midiOutOpen (&hMIDI, -1, NULL, NULL, CALLBACK_NULL);
 	int nVolume = FixMulDiv (fxVolume, 128, SOUND_MAX_VOLUME);

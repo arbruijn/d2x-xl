@@ -1020,6 +1020,7 @@ typedef struct tSoundStates {
 	int nConquerWarningSoundChannel;
 	int nSoundChannels;
 	int bD1Sound;
+	int bMidiFix;
 	tAudioStates audio;
 } tSoundStates;
 
