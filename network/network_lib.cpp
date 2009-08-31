@@ -131,7 +131,7 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	return 0;
 #endif
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (if (gameStates.multi.nGameType < UDP_GAME) && (LOCAL_NODE [0] == 127))
+	if ((gameStates.multi.nGameType < UDP_GAME) && (LOCAL_NODE [0] == 127))
 		return 0;
 	return memcmp (pNetwork->ipx.node, LOCAL_NODE, ((gameStates.multi.nGameType > IPX_GAME) && extraGameInfo [1].bCheckUDPPort) ? 6 : 4) ? 1 : 0;
 	}
