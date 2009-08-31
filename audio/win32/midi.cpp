@@ -166,7 +166,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 		PrintLog ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
-	if (-1 == Mix_FadeInMusicPos (m_music, bLoop ? -1 : 1, songManager.Pos () ? 1000 : 1500, (double) songManager.Pos () / 1000.0)) {
+	if (gameOpts->sound.bFadeMusic &&
+		 (-1 == Mix_FadeInMusicPos (m_music, bLoop ? -1 : 1, songManager.Pos () ? 1000 : 1500, (double) songManager.Pos () / 1000.0))) {
 		PrintLog ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
 		songManager.SetPos (0);
 		return 0;
