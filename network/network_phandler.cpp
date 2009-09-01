@@ -454,7 +454,7 @@ else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
 	PrintLog ("invalid status %d for packet id %d\n", networkData.nStatus, pId);
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	console.printf (0, "received %s\n", piP->pszInfo);
-	if ((gameStates.multi.nGameType == UDP_GAME) && !addressFilter [pId])
+	if (!addressFilter [pId])
 		memcpy (&THEIR->player.network.ipx.server, &ipx_udpSrc.src_network, 10);
 	return piP->packetHandler (dataP, nLength);
 	}
