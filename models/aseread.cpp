@@ -31,6 +31,8 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
+#define MODEL_DATA_VERSION 1000	//must start with something bigger than the biggest model number
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -754,6 +756,7 @@ int CSubModel::SaveBinary (CFile& cf)
 if (!strcmp (m_szName, "$WINGTIP2-0"))
 	nDbgModel = nDbgModel;
 #endif
+cf.WriteInt (MODEL_DATA_VERSION);
 cf.Write (m_szName, 1, sizeof (m_szName));
 cf.Write (m_szParent, 1, sizeof (m_szParent));
 cf.WriteShort (m_nSubModel);
@@ -871,6 +874,12 @@ if (tBIN < tASE)
 
 if (!cf.Open (szFilename, gameFolders.szModelDir [bCustom], "rb", 0))
 	return 0;
+h = cf.ReadInt ();
+if (h != MODEL_DATA_VERSION) {
+	cf.Close ();
+	Destroy ();
+	return 0;
+	}
 m_nModel = cf.ReadInt ();
 m_nSubModels = cf.ReadInt ();
 m_nVerts = cf.ReadInt ();
