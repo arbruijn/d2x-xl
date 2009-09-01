@@ -694,7 +694,7 @@ int CheckAndFixSetup (void)
 
 if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
 	strcpy_s (szRootFolder, sizeof (szRootFolder), pszArgList [i + 1]);
-	i = strlen (szRootFolder);
+	i = int (strlen (szRootFolder));
 	if ((szRootFolder [i - 1] != '\\') && (szRootFolder [i - 1] != ':'))
 		strcat_s (szRootFolder, sizeof (szRootFolder), "\\");
 	}
