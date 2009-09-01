@@ -715,7 +715,7 @@ if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
 if (nResult) {
 	*szMsg = '\0';
 	if (nResult & 1) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nError - D2X-XL couldn't find the following Descent 2 files:\n\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nCritical - D2X-XL couldn't find the following Descent 2 files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD2, int (sizeofa (gameFilesD2)));
 		}
 	if (nResult & 2) {
@@ -727,7 +727,7 @@ if (nResult) {
 		CreateFileListMessage (szMsg, sizeof (szMsg), vertigoFiles, int (sizeofa (vertigoFiles)));
 		}
 	if (nResult & 8) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nError - D2X-XL couldn't find the following D2X-XL files:\n\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nCritical - D2X-XL couldn't find the following D2X-XL files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), addonFiles, int (sizeofa (addonFiles)), true);
 		}
 	if (nResult & 16) {
