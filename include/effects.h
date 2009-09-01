@@ -42,7 +42,7 @@ typedef __pack__ struct tEffectClip {
 	fix			xDestSize;      //3d size of explosion
 	int			nSound;      //what sound this makes
 	int			nSegment,nSide; //what seg & CSide, for one-shot clips
-} __pack__ tEffectClip;
+} tEffectClip;
 
 typedef tEffectClip D1_eclip;
 

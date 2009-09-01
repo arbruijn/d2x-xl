@@ -56,7 +56,7 @@ typedef tMultiHandler *pMultiHandler;
 typedef __pack__ struct tMultiHandlerInfo {
 	pMultiHandler	fpMultiHandler;
 	char				noEndLevelSeq;
-} __pack__ tMultiHandlerInfo;
+} tMultiHandlerInfo;
 
 void MultiResetPlayerObject (CObject *objP);
 void MultiResetObjectTexture (CObject *objP);
@@ -130,7 +130,7 @@ typedef __pack__ struct tNetPlayerStats {
 	ushort nHostagesTotal;        // Total number of hostages.
 	ubyte  nHostagesOnBoard;      // Number of hostages on ship.
 	ubyte  unused [16];
-} __pack__ tNetPlayerStats;
+} tNetPlayerStats;
 
 int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	24, // POSITION

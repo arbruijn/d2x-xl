@@ -109,7 +109,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef __pack__ struct tStuckObject {
 	short   nObject, nWall;
 	int     nSignature;
-} __pack__ tStuckObject;
+} tStuckObject;
 
 //------------------------------------------------------------------------------
 
@@ -163,7 +163,7 @@ typedef __pack__ struct tWallV16 {
 	sbyte   nTrigger;          // Which CTrigger is associated with the CWall.
 	sbyte   nClip;					// Which animation associated with the CWall.
 	sbyte   keys;
-} __pack__ tWallV16;
+} tWallV16;
 
 typedef __pack__ struct tWallV19 {
 	int     nSegment,nSide;     // Seg & CSide for this CWall
@@ -174,7 +174,7 @@ typedef __pack__ struct tWallV19 {
 	sbyte   nClip;           // Which animation associated with the CWall.
 	sbyte   keys;
 	int nLinkedWall;            // number of linked CWall
-} __pack__ tWallV19;
+} tWallV19;
 
 typedef __pack__ struct v19_door {
 	int     nPartCount;            // for linked walls
@@ -248,7 +248,7 @@ typedef __pack__ struct {
 	short   flags;
 	char    filename [13];
 	char    pad;
-} __pack__ tWallClip;
+} tWallClip;
 
 typedef __pack__ struct {
 	fix     playTime;
@@ -259,7 +259,7 @@ typedef __pack__ struct {
 	short   flags;
 	char    filename [13];
 	char    pad;
-} __pack__ tD1WallClip;
+} tD1WallClip;
 
 extern char pszWallNames[7][10];
 

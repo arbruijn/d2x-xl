@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef __pack__ struct tJointPos {
 	short jointnum;
 	CAngleVector angles;
-} __pack__ tJointPos;
+} tJointPos;
 
 //describes a list of joint positions
 typedef __pack__ struct jointlist {
@@ -124,7 +124,7 @@ typedef __pack__ struct tRobotInfo {
 
 	int     always_0xabcd;      // debugging
 
-} __pack__ tRobotInfo;
+} tRobotInfo;
 
 typedef __pack__ struct D1Robot_info {
 	int			nModel;							// which polygon model?

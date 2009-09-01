@@ -277,7 +277,7 @@ typedef __pack__ struct appletalk_addr {
 typedef union {
 	ipx_addr			ipx;
 	appletalk_addr	appletalk;
-} __pack__ tNetworkInfo;
+} tNetworkInfo;
 
 
 typedef __pack__ struct tNetPlayerInfo {
@@ -289,7 +289,7 @@ typedef __pack__ struct tNetPlayerInfo {
 	sbyte    connected;
 	ushort  socket;
 	ubyte   rank;
-} __pack__ tNetPlayerInfo;
+} tNetPlayerInfo;
 
 
 typedef __pack__ struct tAllNetPlayersInfo
@@ -297,7 +297,7 @@ typedef __pack__ struct tAllNetPlayersInfo
 	char    nType;
 	int     nSecurity;
 	struct tNetPlayerInfo players [MAX_PLAYERS+4];
-} __pack__ tAllNetPlayersInfo;
+} tAllNetPlayersInfo;
 
 typedef __pack__ struct tNetgameInfo {
 	ubyte   nType;
@@ -410,7 +410,7 @@ typedef __pack__ struct tNetgameInfo {
 // 279 bytes
 // 355 bytes total
 	ubyte   AuxData[NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
-} __pack__ tNetgameInfo;
+} tNetgameInfo;
 
 #define MAX_ROBOTS_CONTROLLED 5
 
@@ -423,7 +423,7 @@ typedef __pack__ struct tMultiRobotData {
 	int sendPending [MAX_ROBOTS_CONTROLLED];
 	int fired [MAX_ROBOTS_CONTROLLED];
 	sbyte fireBuf [MAX_ROBOTS_CONTROLLED][18+3];
-} __pack__ tMultiRobotData;
+} tMultiRobotData;
 
 extern struct tNetgameInfo netGame;
 extern struct tAllNetPlayersInfo netPlayers;

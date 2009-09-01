@@ -46,7 +46,7 @@ typedef __pack__ struct tMissingObjFrames {
 	ubyte					pid;
 	ubyte					nPlayer;
 	ushort				nFrame;
-} __pack__ tMissingObjFrames;
+} tMissingObjFrames;
 
 typedef __pack__ struct tRefuseData {
 	char	bThisPlayer;
@@ -54,7 +54,7 @@ typedef __pack__ struct tRefuseData {
 	char	bTeam;
 	char	szPlayer [12];
 	fix	xTimeLimit;
-	} __pack__ tRefuseData;
+	} tRefuseData;
 
 typedef __pack__ struct tSyncObjectsData {
 	int					nMode;
@@ -62,7 +62,7 @@ typedef __pack__ struct tSyncObjectsData {
 	int					nSent;
 	ushort				nFrame;
 	tMissingObjFrames	missingFrames;
-} __pack__ tSyncObjectsData;
+} tSyncObjectsData;
 
 typedef __pack__ struct tNetworkSyncData {
 	time_t				timeout;
@@ -74,7 +74,7 @@ typedef __pack__ struct tNetworkSyncData {
 	short					nExtras;
 	bool					bExtraGameInfo;
 	tSyncObjectsData	objs;
-} __pack__ tNetworkSyncData;
+} tNetworkSyncData;
 
 typedef __pack__ struct tNetworkData {
 	int					nActiveGames;
@@ -126,7 +126,7 @@ typedef __pack__ struct tNetworkData {
 	time_t				toWaitAllPoll;
 	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
 	short					nJoining;
-} __pack__ tNetworkData;
+} tNetworkData;
 
 extern tNetworkData networkData;
 
@@ -136,7 +136,7 @@ typedef __pack__ struct tNakedData {
 	int	nLength;
 	int	nDestPlayer;
    char	buf [NET_XDATA_SIZE + 4];
-	} __pack__ tNakedData;
+	} tNakedData;
 
 extern tNakedData	nakedData;
 

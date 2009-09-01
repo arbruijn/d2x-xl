@@ -92,7 +92,7 @@ typedef __pack__ struct tSequencePacket {
 	ubyte           pad1 [3];
 	tNetPlayerInfo  player;
 	ubyte           pad2 [3];
-} __pack__ tSequencePacket;
+} tSequencePacket;
 
 #define NET_XDATA_SIZE 454
 
@@ -118,7 +118,7 @@ typedef __pack__ struct tFrameInfo {
 	ubyte       objRenderType;
 	ubyte       nLevel;
 	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
-} __pack__ tFrameInfo;
+} tFrameInfo;
 
 // tFrameInfoShort is not aligned -- 01/18/96 -- MWA
 // won't align because of tShortPos.  Shortpos needs
@@ -134,7 +134,7 @@ typedef __pack__ struct tFrameInfoShort {
 	ubyte       objRenderType;
 	ubyte       nLevel;
 	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
-} __pack__ tFrameInfoShort;
+} tFrameInfoShort;
 
 typedef __pack__ struct tEntropyGameInfo {
 	ushort	nEnergyFillRate;
@@ -153,20 +153,20 @@ typedef __pack__ struct tEntropyGameInfo {
 	char		nOverrideTextures;
 	char		bBrightenRooms;
 	char		bPlayerHandicap;
-} __pack__ tEntropyGameInfo;
+} tEntropyGameInfo;
 
 #define MAX_MONSTERBALL_FORCES	25
 
 typedef __pack__ struct tMonsterballForce {
 	ubyte		nWeaponId;
 	short		nForce;
-} __pack__ tMonsterballForce;
+} tMonsterballForce;
 
 typedef __pack__ struct tMonsterballInfo {
 	char					nBonus;
 	char					nSizeMod;
 	tMonsterballForce forces [MAX_MONSTERBALL_FORCES];
-} __pack__ tMonsterballInfo;
+} tMonsterballInfo;
 
 typedef __pack__ struct tHeadlightInfo {
 	int bAvailable;
@@ -178,7 +178,7 @@ typedef __pack__ struct tLoadoutInfo {
 	uint					nGuns;
 	uint					nDevice;
 	ubyte					nMissiles [10];
-} __pack__ tLoadoutInfo;
+} tLoadoutInfo;
 
 typedef __pack__ struct tExtraGameInfo {
 	ubyte   	nType;
@@ -265,7 +265,7 @@ typedef __pack__ struct tExtraGameInfo {
 	int		nSecurity;
 	tHeadlightInfo	headlight;
 	tLoadoutInfo	loadout;
-} __pack__ tExtraGameInfo;
+} tExtraGameInfo;
 
 typedef __pack__ struct tMpParams {
 	char	szGameName [NETGAME_NAME_LEN + 1];
@@ -292,7 +292,7 @@ typedef __pack__ struct tMpParams {
 	ubyte	bShortPackets;
 	ubyte	nPPS;
 	tMsnListEntry	mission;
-} __pack__ tMpParams;
+} tMpParams;
 
 extern tMpParams mpParams;
 
@@ -300,7 +300,7 @@ typedef __pack__ struct tNetworkObjInfo {
 	short	nObject;
 	ubyte	nType;
 	ubyte	nId;
-} __pack__ tNetworkObjInfo;
+} tNetworkObjInfo;
 
 #if 1
 
@@ -395,7 +395,7 @@ typedef __pack__ struct tPingStats {
 	int	ping;
 	int	sent;
 	int	received;
-} __pack__ tPingStats;
+} tPingStats;
 
 extern tPingStats pingStats [MAX_PLAYERS];
 extern fix xPingReturnTime;
@@ -439,14 +439,14 @@ typedef __pack__ struct tEndLevelInfo {
 	short											killMatrix [MAX_PLAYERS][MAX_PLAYERS];
 	short                               kills;
 	short                               killed;
-} __pack__ tEndLevelInfo;
+} tEndLevelInfo;
 
 typedef __pack__ struct tEndLevelInfoShort {
 	ubyte                               nType;
 	ubyte                               nPlayer;
 	sbyte                               connected;
 	ubyte                               seconds_left;
-} __pack__ tEndLevelInfoShort;
+} tEndLevelInfoShort;
 
 // WARNING!!! This is the top part of tNetgameInfo...if that struct changes,
 //      this struct much change as well.  ie...they are aligned and the join system will
@@ -474,7 +474,7 @@ typedef __pack__ struct tLiteInfo {
 	ubyte                           versionMajor;
 	ubyte                           versionMinor;
 	ubyte                           teamVector;
-} __pack__ tLiteInfo;
+} tLiteInfo;
 
 #define NETGAME_INFO_SIZE       sizeof (tNetgameInfo)
 #define ALLNETPLAYERSINFO_SIZE  sizeof (tAllNetPlayersInfo)

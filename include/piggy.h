@@ -117,7 +117,7 @@ typedef struct tPIGBitmapHeader {
 	ubyte flags;
 	ubyte avgColor;
 	int offset;
-} __pack__ tPIGBitmapHeader;
+} tPIGBitmapHeader;
 
 typedef struct tPIGBitmapHeaderD1 {
 	char name [8];
@@ -127,7 +127,7 @@ typedef struct tPIGBitmapHeaderD1 {
 	ubyte flags;
 	ubyte avgColor;
 	int offset;
-} __pack__ tPIGBitmapHeaderD1;
+} tPIGBitmapHeaderD1;
 
 #define PIGBITMAPHEADER_D1_SIZE 17 // no wh_extra
 
@@ -136,12 +136,12 @@ typedef struct tPIGSoundHeader {
 	int length;
 	int data_length;
 	int offset;
-} __pack__ tPIGSoundHeader;
+} tPIGSoundHeader;
 
 // an index into the bitmap collection of the piggy file
 typedef struct tBitmapIndex {
 	ushort index;
-} __pack__ tBitmapIndex;
+} tBitmapIndex;
 
 typedef struct tBitmapFile {
 	char    name [15];

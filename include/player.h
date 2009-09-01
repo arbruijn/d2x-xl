@@ -70,7 +70,7 @@ typedef __pack__ struct tPlayerHostages {
 	ushort  nTotal;      // Total number of hostages.
 	ubyte   nOnBoard;    // Number of hostages on ship.
 	ubyte   nLevel;      // Number of hostages on this level.
-} __pack__ tPlayerHostages;
+} tPlayerHostages;
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
 class __pack__ CPlayerData {

@@ -29,14 +29,14 @@ typedef __pack__ struct tReactorTriggers {
 	short   nLinks;
 	short   segments [MAX_CONTROLCEN_LINKS];
 	short   sides [MAX_CONTROLCEN_LINKS];
-} __pack__ tReactorTriggers;
+} tReactorTriggers;
 
 typedef __pack__ struct tReactorProps {
 	int nModel;
 	int nGuns;
 	CFixVector gunPoints [MAX_CONTROLCEN_GUNS];
 	CFixVector gunDirs [MAX_CONTROLCEN_GUNS];
-} __pack__ tReactorProps;
+} tReactorProps;
 
 #define MAX_REACTORS 7
 

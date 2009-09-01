@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-class CSubModelData {
+class __pack__ CSubModelData {
 	public:
 #if 1
 		int			ptrs [MAX_SUBMODELS];
@@ -77,7 +77,7 @@ typedef __pack__ struct tPolyModelInfo {
 		ushort			nFirstTexture;
 		ubyte				nSimplerModel;	// alternate model with less detail (0 if none, nModel+1 else)
 		bool				bCustom;
-} __pack__ tPolyModelInfo;
+} tPolyModelInfo;
 
 class CPolyModel : public CByteArray {
 	private:

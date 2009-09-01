@@ -1054,7 +1054,7 @@ inline const CFixVector operator/ (const CFixVector& v, const fix d) {
 typedef union tFixMatrixData {
 	CFixVector	mat [3];
 	fix			vec [9];
-} __pack__ tFixMatrixData;
+} tFixMatrixData;
 
 
 class __pack__ CFixMatrix {

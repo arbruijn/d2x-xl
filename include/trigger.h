@@ -85,7 +85,7 @@ typedef __pack__ struct tTriggerV29 {
 	short   nLinks;
 	short   segments [MAX_TRIGGER_TARGETS];
 	short   sides [MAX_TRIGGER_TARGETS];
-} __pack__ tTriggerV29;
+} tTriggerV29;
 
 typedef __pack__ struct tTriggerV30 {
 	short   flags;
@@ -95,7 +95,7 @@ typedef __pack__ struct tTriggerV30 {
 	fix     time;
 	short   segments [MAX_TRIGGER_TARGETS];
 	short   sides [MAX_TRIGGER_TARGETS];
-} __pack__ tTriggerV30;
+} tTriggerV30;
 
 //flags for V30 & below triggers
 #define TRIGGER_CONTROL_DOORS      1    // Control Trigger

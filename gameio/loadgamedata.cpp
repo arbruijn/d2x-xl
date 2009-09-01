@@ -411,14 +411,14 @@ typedef struct tD1TextureHeader {
 	ubyte flag; //see BM_FLAG_XXX
 	ubyte ave_color; //palette index of average color
 	uint	offset; //relative to end of directory
-} __pack__ tD1TextureHeader;
+} tD1TextureHeader;
 
 typedef struct tD1SoundHeader {
 	char name [8];
 	int length; //size in bytes
 	int data_length; //actually the same as above
 	int offset; //relative to end of directory
-} __pack__ tD1SoundHeader;
+} tD1SoundHeader;
 
 
 void BMReadGameDataD1 (CFile& cf)

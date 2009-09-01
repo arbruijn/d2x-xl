@@ -106,7 +106,7 @@ typedef __pack__ struct tPowerupTypeInfo {
 	int hitSound;
 	fix size;       // 3d size of longest dimension
 	fix light;      // amount of light cast by this powerup, set in bitmaps.tbl
-} __pack__ tPowerupTypeInfo;
+} tPowerupTypeInfo;
 
 extern int N_powerupTypes;
 extern tPowerupTypeInfo powerupInfo[MAX_POWERUP_TYPES];

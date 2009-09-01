@@ -128,7 +128,7 @@ typedef __pack__ struct tAIStaticInfo {
 	short   nDangerLaser;
 	int     nDangerLaserSig;
 	fix     xDyingStartTime;       // Time at which this robot started dying.
-} __pack__ tAIStaticInfo;
+} tAIStaticInfo;
 
 class CAIStaticInfo {
 	private:
@@ -174,13 +174,13 @@ typedef __pack__ struct tAILocalInfo {
 	CAngleVector deltaAngles [MAX_SUBMODELS]; // angles for each subobject
 	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-CObject
 	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
-} __pack__ tAILocalInfo;
+} tAILocalInfo;
 
 typedef __pack__ struct {
 	int         nSegment;
 	CFixVector	point;
 	ubyte			nConnSide;
-} __pack__ tPointSeg;
+} tPointSeg;
 
 typedef __pack__ struct {
 	short       start, end;

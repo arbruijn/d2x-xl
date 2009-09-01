@@ -44,7 +44,7 @@ typedef __pack__ struct {
 	short           nSound;
 	tBitmapIndex    frames[VCLIP_MAX_FRAMES];
 	fix             lightValue;
-} __pack__ tVideoClip;
+} tVideoClip;
 
 extern int Num_vclips [2];
 extern tVideoClip Vclip [2][MAX_VCLIPS];

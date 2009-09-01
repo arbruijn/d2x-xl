@@ -98,7 +98,7 @@ typedef __pack__ struct tFuelCenInfo {
 	//CObject  *last_created_obj;
 	//int     last_created_sig;
 	CFixVector vCenter;
-} __pack__ tFuelCenInfo;
+} tFuelCenInfo;
 
 // The max number of robot centers per mine.
 
@@ -116,7 +116,7 @@ typedef __pack__ struct tMatCenInfo {
 	fix     xInterval;       	// Interval between materializations
 	short   nSegment;         	// Segment this is attached to.
 	short   nFuelCen;    		// Index in fuelcen array.
-} __pack__ tMatCenInfo;
+} tMatCenInfo;
 
 extern tMatCenInfo RobotCenters [MAX_ROBOT_CENTERS];
 
