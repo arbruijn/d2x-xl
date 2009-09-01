@@ -712,6 +712,8 @@ if (nResult) {
 		}
 	if (nResult & (1 | 8)) {
 		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL cannot run because files are missing.\n");
+		if (nResult & 8)
+			strcat_s (szMsg, sizeof (szMsg), "\nPlease download the required files. Download locations are\n - http://www.descent2.de/d2x.html\n - http://www.sourceforge.net/projects/d2x-xl\n");
 		Error (szMsg);
 		}
 	else if (nResult & (2 | 4 | 16)) {
