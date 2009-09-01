@@ -197,9 +197,9 @@ return 0;
 const bool CFace::operator!= (CFace& other)
 {
 if (m_textureP && (m_nBitmap >= 0) && (other.m_nBitmap >= 0)) {
-	if (m_textureP->BPP () < m_textureP->BPP ())
+	if (m_textureP->BPP () < other.m_textureP->BPP ())
 		return true;
-	if (m_textureP->BPP () > m_textureP->BPP ())
+	if (m_textureP->BPP () > other.m_textureP->BPP ())
 		return true;
 	}
 if (m_nBitmap < other.m_nBitmap)
