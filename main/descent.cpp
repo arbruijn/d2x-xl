@@ -114,6 +114,11 @@ tGameOptions *gameOpts = gameOptions;
 
 void EvalArgs (void);
 void GetAppFolders (void);
+#if defined (_WIN32) && !defined(_M_IA64) && !defined(_M_AMD64)
+int CheckAndFixSetup (void);
+#else
+#define CheckAndFixSetup()	
+#endif
 void InitGameStates (void);
 
 char szAutoMission [255];

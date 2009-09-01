@@ -425,7 +425,7 @@ else
 
 // ----------------------------------------------------------------------------
 
-#ifdef _WIN32
+#if defined (_WIN32) && !defined(_M_IA64) && !defined(_M_AMD64)
 
 typedef struct tFileDesc {
 	char*	pszFile;
@@ -435,17 +435,15 @@ typedef struct tFileDesc {
 	bool	bFound;
 } tFileDesc;
 
-static tFileDesc gameFiles [] = {
+static tFileDesc gameFilesD2 [] = {
 	// basic game files
 	{"\002descent.cfg", ".\\config", false, false, false},
 	{"\002alien1.pig", ".\\data", false, false, false},
 	{"\002alien2.pig", ".\\data", false, false, false},
-	{"\002descent.pig", ".\\data", false, false, false},
 	{"\002fire.pig", ".\\data", false, false, false},
 	{"\002groupa.pig", ".\\data", false, false, false},
 	{"\002ice.pig", ".\\data", false, false, false},
 	{"\002water.pig", ".\\data", false, false, false},
-	{"\002descent.hog", ".\\data", false, false, false},
 	{"\002descent2.hog", ".\\data", false, false, false},
 	{"\002descent2.ham", ".\\data", false, false, false},
 	{"\002descent2.p11", ".\\data", false, false, false},
@@ -460,6 +458,11 @@ static tFileDesc gameFiles [] = {
 	{"\002other-l.mvl", ".\\movies", false, false, false},
 	{"\002robots-h.mvl", ".\\movies", false, false, false},
 	{"\002robots-l.mvl", ".\\movies", false, false, false}
+};
+
+static tFileDesc gameFilesD1 [] = {
+	{"\002descent.pig", ".\\data", true, false, false},
+	{"\002descent.hog", ".\\data", true, false, false}
 };
 
 static tFileDesc vertigoFiles [] = {
@@ -598,8 +601,6 @@ for (int i = 0; i < nFiles; i++) {
 return nErrors;
 }
 
-#endif
-
 // ----------------------------------------------------------------------------
 
 void CheckAndCreateGameFolders (void)
@@ -622,26 +623,77 @@ static char* gameFolders [] = {
 	FFS	ffs;
 
 for (int i = 0; i < int (sizeofa (gameFolders)); i++) 
-	  if (FFF (gameFolders [i], &ffs, 1))
-	  		CFile::MkDir (gameFolders [i]);
+  if (FFF (gameFolders [i], &ffs, 1))
+  		CFile::MkDir (gameFolders [i]);
+}
+
+// ----------------------------------------------------------------------------
+
+void CreateFileListMessage (char* szMsg, int nMsgSize, tFileDesc* fileList, int nFiles)
+{
+	bool	bFirst = true;
+
+for (int i = 0; i < nFiles; i++) {
+	if (!fileList [i].bFound) {
+		if (bFirst)
+			bFirst = false;
+		else
+			strcat_s (szMsg, nMsgSize, ", ");
+		strcat_s (szMsg, nMsgSize, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------
 
 int CheckAndFixSetup (void)
 {
-#if defined (_WIN32) && !defined(_M_IA64) && !defined(_M_AMD64)
 	int	nResult = 0;
+	char	szMsg [10000];
 
 CheckAndCreateGameFolders ();
-if (CheckAndCopyFiles (gameFiles, int (sizeofa (gameFiles))))
+if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2))))
 	nResult |= 1;
-if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
+if (CheckAndCopyFiles (gameFilesD1, int (sizeofa (gameFilesD1))))
 	nResult |= 2;
 if (CheckAndCopyFiles (vertigoFiles, int (sizeofa (vertigoFiles))))
 	nResult |= 4;
-#endif
+if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
+	nResult |= 8;
+
+if (nResult) {
+	*szMsg = '\0';
+	if (nResult & 1) {
+		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following Descent 2 files:\n");
+		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD2, int (sizeofa (gameFilesD2)));
+		}
+	if (nResult & 2) {
+		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following Descent 1 files:\n");
+		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD1, int (sizeofa (gameFilesD1)));
+		}
+	if (nResult & 4) {
+		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following Vertigo files:\n");
+		CreateFileListMessage (szMsg, sizeof (szMsg), vertigoFiles, int (sizeofa (vertigoFiles)));
+		}
+	if (nResult & 8) {
+		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following D2X-XL files:\n");
+		CreateFileListMessage (szMsg, sizeof (szMsg), addonFiles, int (sizeofa (addonFiles)));
+		}
+	if (nResult & (1 | 8)) {
+		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL cannot run because files are missing.\n");
+		Error (szMsg);
+		}
+	else {
+		if (nResult & 2)
+			strcat_s (szMsg, sizeof (szMsg), "\nDescent 1 missions will be unavailable.\n");
+		if (nResult & 4)
+			strcat_s (szMsg, sizeof (szMsg), "\nVertigo missions will be unavailable.\n");
+		Warning (szMsg);
+		}
+	}
 return nResult;
 }
+
+#endif //defined (_WIN32) && !defined(_M_IA64) && !defined(_M_AMD64)
 
 // ----------------------------------------------------------------------------
