@@ -1058,7 +1058,7 @@ typedef union tFixMatrixData {
 
 
 class __pack__ CFixMatrix {
-	friend classCFloatMatrix;
+	friend class CFloatMatrix;
 
 	private:
 		tFixMatrixData	m_data;
@@ -1249,7 +1249,7 @@ typedef union tFloatMatrixData {
 } __pack__ tFloatMatrixData;
 
 class __pack__ CFloatMatrix {
-	friend classCFixMatrix;
+	friend class CFixMatrix;
 
 	private:
 		tFloatMatrixData	m_data;
