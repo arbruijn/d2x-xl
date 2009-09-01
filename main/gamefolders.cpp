@@ -589,7 +589,7 @@ return true;
 
 int CheckAndCopyFiles (tFileDesc* fileList, int nFiles)
 {
-	char	szSrc [FILENAME_LEN], szDest [FILENAME_LEN], szFolder [FILENAME_LEN];
+	char	szSrc [FILENAME_LEN], szDest [FILENAME_LEN];
 	int	nErrors = 0;
 	CFile	cf;
 
@@ -600,7 +600,7 @@ for (int i = 0; i < nFiles; i++) {
 			nErrors++;		
 		}
 	else {
-		sprintf_s (szDest, sizeof (szDest), "%s%s", szRootFolder, szFolder);
+		sprintf_s (szDest, sizeof (szDest), "%s%s", szRootFolder, fileList [i].pszFolder);
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 		if (fileList [i].bFound)
 			continue;
