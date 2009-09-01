@@ -1051,7 +1051,7 @@ inline const CFixVector operator/ (const CFixVector& v, const fix d) {
  * A 3x3 rotation m_data.matrix.  Sorry about the numbering starting with one. Ordering
  * is across then down, so <m1,m2,m3> is the first row.
  */
-typedef union tFixMatrixData {
+typedef __pack__ union tFixMatrixData {
 	CFixVector	mat [3];
 	fix			vec [9];
 } tFixMatrixData;
