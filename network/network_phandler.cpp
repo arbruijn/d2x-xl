@@ -60,7 +60,7 @@ void InitPacketHandlers (void);
 void InitAddressFilter (void)
 {
 memset (addressFilter, 0, sizeof (addressFilter));
-if (gameStates.multi.nGameType == UDP_GAME)
+//if (gameStates.multi.nGameType == UDP_GAME)
 	 addressFilter [PID_LITE_INFO] =
 	 addressFilter [PID_ADDPLAYER] =
 	 addressFilter [PID_ENDLEVEL] = 
