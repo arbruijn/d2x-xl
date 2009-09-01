@@ -39,6 +39,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_069503DA02E144F78241696221E56A25"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_06A079D61691492EBA8184A9831E9484"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -711,12 +717,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_F9DB5330C3FF480597D808873D27BB3D"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_FAEC334178C548FF8CAD2B4F3E38E88F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -724,6 +724,12 @@
         "Entry"
         {
         "MsmKey" = "8:_FCA69056968E48F5866AC598FD63807E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FCC87411C33947D396ECC972AFA4481C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -765,7 +771,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:..\\..\\..\\..\\packages\\d2x-xl-win32-1.14.112.msi"
+        "OutputFilename" = "8:..\\..\\..\\..\\packages\\d2x-xl-win32-1.14.114.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -797,7 +803,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:..\\..\\..\\packages\\d2x-xl-win32-1.14.113.msi"
+        "OutputFilename" = "8:..\\..\\..\\packages\\d2x-xl-win32-1.14.114.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -950,6 +956,26 @@
             "TargetName" = "8:statusb.tga"
             "Tag" = "8:"
             "Folder" = "8:_BB22F117CEEA4698A25B5B52A62678CB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_069503DA02E144F78241696221E56A25"
+            {
+            "SourcePath" = "8:E:\\install\\d2x-xl\\d2x-xl.ico"
+            "TargetName" = "8:d2x-xl.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -3237,26 +3263,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F9DB5330C3FF480597D808873D27BB3D"
-            {
-            "SourcePath" = "8:E:\\install\\d2x-xl\\d2x-xl.ico"
-            "TargetName" = "8:d2x-xl.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FAEC334178C548FF8CAD2B4F3E38E88F"
             {
             "SourcePath" = "8:E:\\install\\d2x-xl\\vorbis.dll"
@@ -3283,6 +3289,26 @@
             "TargetName" = "8:scope.tga"
             "Tag" = "8:"
             "Folder" = "8:_83C53B61E8A9458A8C3637DDCE359068"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FCC87411C33947D396ECC972AFA4481C"
+            {
+            "SourcePath" = "8:E:\\install\\d2x-xl\\d2x-xl-banner.bmp"
+            "TargetName" = "8:d2x-xl-banner.bmp"
+            "Tag" = "8:"
+            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -3513,14 +3539,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:D2X-XL"
-        "ProductCode" = "8:{420847CC-A379-4FF4-8235-C226686F57F3}"
-        "PackageCode" = "8:{744CE0CB-BAA3-4073-9314-B6E5ACE081CE}"
+        "ProductCode" = "8:{72F5620C-919B-4A6F-9D5A-0131D0C57D97}"
+        "PackageCode" = "8:{1B5DAAC8-2383-4415-B217-7CAF4C21D10B}"
         "UpgradeCode" = "8:{1536B026-1AF7-4EC6-9EBF-C8BDF74B269F}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.14.113"
+        "ProductVersion" = "8:1.14.114"
         "Manufacturer" = "8:Dietfrid Mali"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.sourceforge.net/projects/d2x-xl"
@@ -3633,7 +3659,7 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_2B061128D6804B41905A0288D04BBF44"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_3B15189719CA4D6E8F602642BE30DEA4"
             {
             "Name" = "8:D2X-XL"
             "Arguments" = "8:"
@@ -3641,13 +3667,13 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:"
+            "Target" = "8:_48668F9E1AF6497B87693BB5594F90B0"
             "Folder" = "8:_B7C75096AC5E43A286759E007D96A88C"
             "WorkingFolder" = "8:_74F415E14D754D1A9CA72EE35483842C"
             "Icon" = "8:"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_5BA69E5FA8AB401CA5160D03D8DD056C"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6BB9848377C74FF3934714DD1F9B1C68"
             {
             "Name" = "8:Start D2X-XL"
             "Arguments" = "8:"
@@ -3655,7 +3681,7 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:"
+            "Target" = "8:_48668F9E1AF6497B87693BB5594F90B0"
             "Folder" = "8:_69194351D91846249B7A73BFA8D22A1A"
             "WorkingFolder" = "8:_74F415E14D754D1A9CA72EE35483842C"
             "Icon" = "8:"
@@ -3689,7 +3715,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "ShowProgress"
@@ -3740,7 +3766,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "ShowProgress"
@@ -3785,7 +3811,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "UpdateText"
@@ -3830,7 +3856,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -3853,7 +3879,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -3876,7 +3902,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -3934,7 +3960,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -3972,7 +3998,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -4021,7 +4047,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "InstallAllUsersVisible"
@@ -4057,7 +4083,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:"
+                            "Value" = "8:_FCC87411C33947D396ECC972AFA4481C"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
