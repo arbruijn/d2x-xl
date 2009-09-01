@@ -382,7 +382,7 @@ if (hmp->devid == -1)
 
 	if ((rc = setup_buffers(hmp)))
 		return rc;
-	if ((midiStreamOpen(&hmp->hmidi, &hmp->devid,1, (DWORD) (size_t) midi_callback,
+	if ((midiStreamOpen(&hmp->hmidi, &hmp->devid,1, (DWORD_PTR) midi_callback,
 								0, CALLBACK_FUNCTION)) != MMSYSERR_NOERROR) {
 		hmp->hmidi = NULL;
 		return HMP_MM_ERR;

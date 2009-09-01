@@ -25,6 +25,7 @@
 			<Tool
 				Name="CppCmplrTool"
 				GlobalOptimizations="true"
+				InterproceduralOptimization="1"
 				OptimizeForWindowsApplication="true"
 				GenerateAlternateCodePaths="0"
 				UseProcessorExtensions="6"
