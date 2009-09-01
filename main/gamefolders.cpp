@@ -629,16 +629,31 @@ for (int i = 0; i < int (sizeofa (gameFolders)); i++)
 
 // ----------------------------------------------------------------------------
 
-void CreateFileListMessage (char* szMsg, int nMsgSize, tFileDesc* fileList, int nFiles)
+void CreateFileListMessage (char* szMsg, int nMsgSize, tFileDesc* fileList, int nFiles, bool bShowFolders = false)
 {
 	bool	bFirst = true;
+	int	l = 0;
 
 for (int i = 0; i < nFiles; i++) {
 	if (!fileList [i].bFound) {
 		if (bFirst)
 			bFirst = false;
-		else
+		else {
 			strcat_s (szMsg, nMsgSize, ", ");
+			l += 2;
+			}
+		l += strlen (fileList [i].pszFile);
+		if (bShowFolders)
+			l += strlen (fileList [i].pszFolder) - 1;
+		if (l >= 80) {
+			strcat_s (szMsg, nMsgSize, "\n");
+			l = 0;
+			bFirst = true;
+			}
+		if (bShowFolders) {
+			strcat_s (szMsg, nMsgSize, fileList [i].pszFolder + 2);
+			strcat_s (szMsg, nMsgSize, "\\");
+			}
 		strcat_s (szMsg, nMsgSize, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
 		}
 	}
@@ -677,7 +692,7 @@ if (nResult) {
 		}
 	if (nResult & 8) {
 		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following D2X-XL files:\n");
-		CreateFileListMessage (szMsg, sizeof (szMsg), addonFiles, int (sizeofa (addonFiles)));
+		CreateFileListMessage (szMsg, sizeof (szMsg), addonFiles, int (sizeofa (addonFiles)), true);
 		}
 	if (nResult & (1 | 8)) {
 		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL cannot run because files are missing.\n");
