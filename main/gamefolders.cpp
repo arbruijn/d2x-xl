@@ -450,26 +450,26 @@ static tFileDesc gameFilesD2 [] = {
 	{"\002descent2.p22", ".\\data", false, false, false},
 	{"\002descent2.s11", ".\\data", false, false, false},
 	{"\002descent2.s22", ".\\data", false, false, false},
-	{"\002d2x-h.mvl", ".\\movies", false, false, false},
-	{"\002d2x-l.mvl", ".\\movies", false, false, false},
 	{"\002intro-h.mvl", ".\\movies", false, false, false},
-	{"\002intro-l.mvl", ".\\movies", false, false, false},
+	{"\002intro-l.mvl", ".\\movies", true, false, false},
 	{"\002other-h.mvl", ".\\movies", false, false, false},
-	{"\002other-l.mvl", ".\\movies", false, false, false},
+	{"\002other-l.mvl", ".\\movies", true, false, false},
 	{"\002robots-h.mvl", ".\\movies", false, false, false},
-	{"\002robots-l.mvl", ".\\movies", false, false, false}
+	{"\002robots-l.mvl", ".\\movies", true, false, false}
 };
 
 static tFileDesc gameFilesD1 [] = {
-	{"\002descent.pig", ".\\data", true, false, false},
-	{"\002descent.hog", ".\\data", true, false, false}
+	{"\002descent.pig", ".\\data", false, false, false},
+	{"\002descent.hog", ".\\data", false, false, false}
 };
 
 static tFileDesc vertigoFiles [] = {
 	// Vertigo expansion
-	{"\002hoard.ham", ".\\data", true, false, false},
-	{"\002d2x.hog", ".\\missions", true, false, false},
-	{"\002d2x.mn2", ".\\missions", true, false, false}
+	{"\002hoard.ham", ".\\data", false, false, false},
+	{"\002d2x.hog", ".\\missions", false, false, false},
+	{"\002d2x.mn2", ".\\missions", false, false, false},
+	{"\002d2x-h.mvl", ".\\movies", false, false, false},
+	{"\002d2x-l.mvl", ".\\movies", true, false, false},
 };
 
 static tFileDesc addonFiles [] = {
@@ -497,7 +497,7 @@ static tFileDesc addonFiles [] = {
 	{"\002lightning.wav", ".\\sounds2", false, true, false},
 	{"\002lowping.wav", ".\\sounds2", false, true, false},
 	{"\002missileflight-big.wav", ".\\sounds2", false, true, false},
-	{"\002mssileflight-small.wav", ".\\sounds2", false, true, false},
+	{"\002missileflight-small.wav", ".\\sounds2", false, true, false},
 	{"\002slowdown.wav", ".\\sounds2", false, true, false},
 	{"\002speedup.wav", ".\\sounds2", false, true, false},
 	{"\002vulcan-firing.wav", ".\\sounds2", false, true, false},
@@ -632,29 +632,36 @@ for (int i = 0; i < int (sizeofa (gameFolders)); i++)
 void CreateFileListMessage (char* szMsg, int nMsgSize, tFileDesc* fileList, int nFiles, bool bShowFolders = false)
 {
 	bool	bFirst = true;
-	int	l = 0;
+	int	nListed = 0;
 
-for (int i = 0; i < nFiles; i++) {
+for (int i = 0, j = -1; i < nFiles; i++) {
 	if (!fileList [i].bFound) {
+#if 0
+		l += strlen (fileList [i].pszFile);
+		if (bShowFolders)
+			l += strlen (fileList [i].pszFolder) - 1;
+		if (l >= 200) {
+			strcat_s (szMsg, nMsgSize, ",\n");
+			l = 0;
+			bFirst = true;
+			}
+#endif
+		if (bShowFolders && ((j < 0) || strcmp (fileList [i].pszFolder, fileList [j].pszFolder))) {
+			j = i;
+			if (!bFirst) {
+				strcat_s (szMsg, nMsgSize, "\n\n");
+				bFirst = true;
+				}
+			strcat_s (szMsg, nMsgSize, fileList [i].pszFolder + 2);
+			strcat_s (szMsg, nMsgSize, ": ");
+			}
 		if (bFirst)
 			bFirst = false;
 		else {
 			strcat_s (szMsg, nMsgSize, ", ");
-			l += 2;
-			}
-		l += strlen (fileList [i].pszFile);
-		if (bShowFolders)
-			l += strlen (fileList [i].pszFolder) - 1;
-		if (l >= 80) {
-			strcat_s (szMsg, nMsgSize, "\n");
-			l = 0;
-			bFirst = true;
-			}
-		if (bShowFolders) {
-			strcat_s (szMsg, nMsgSize, fileList [i].pszFolder + 2);
-			strcat_s (szMsg, nMsgSize, "\\");
 			}
 		strcat_s (szMsg, nMsgSize, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
+		nListed++;
 		}
 	}
 }
@@ -679,30 +686,30 @@ if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
 if (nResult) {
 	*szMsg = '\0';
 	if (nResult & 1) {
-		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following Descent 2 files:\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following Descent 2 files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD2, int (sizeofa (gameFilesD2)));
 		}
 	if (nResult & 2) {
-		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following Descent 1 files:\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following Descent 1 files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD1, int (sizeofa (gameFilesD1)));
 		}
 	if (nResult & 4) {
-		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following Vertigo files:\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following Vertigo files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), vertigoFiles, int (sizeofa (vertigoFiles)));
 		}
 	if (nResult & 8) {
-		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL couldn't find the following D2X-XL files:\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following D2X-XL files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), addonFiles, int (sizeofa (addonFiles)), true);
 		}
 	if (nResult & (1 | 8)) {
-		strcat_s (szMsg, sizeof (szMsg), "\nD2X-XL cannot run because files are missing.\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL cannot run because files are missing.\n");
 		Error (szMsg);
 		}
 	else {
 		if (nResult & 2)
-			strcat_s (szMsg, sizeof (szMsg), "\nDescent 1 missions will be unavailable.\n");
+			strcat_s (szMsg, sizeof (szMsg), "\n\nDescent 1 missions will be unavailable.\n");
 		if (nResult & 4)
-			strcat_s (szMsg, sizeof (szMsg), "\nVertigo missions will be unavailable.\n");
+			strcat_s (szMsg, sizeof (szMsg), "\n\nVertigo missions will be unavailable.\n");
 		Warning (szMsg);
 		}
 	}
