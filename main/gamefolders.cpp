@@ -425,7 +425,7 @@ else
 
 // ----------------------------------------------------------------------------
 
-#if defined (_WIN32) && !defined(_M_IA64) && !defined(_M_AMD64)
+#if defined (_WIN32)
 
 typedef struct tFileDesc {
 	char*	pszFile;
