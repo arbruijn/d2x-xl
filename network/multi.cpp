@@ -53,10 +53,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef void tMultiHandler (char *);
 typedef tMultiHandler *pMultiHandler;
-typedef struct tMultiHandlerInfo {
+typedef __pack__ struct tMultiHandlerInfo {
 	pMultiHandler	fpMultiHandler;
 	char				noEndLevelSeq;
-} tMultiHandlerInfo;
+} __pack__ tMultiHandlerInfo;
 
 void MultiResetPlayerObject (CObject *objP);
 void MultiResetObjectTexture (CObject *objP);
@@ -102,7 +102,7 @@ tAllNetPlayersInfo netPlayers;
 
 tBitmapIndex mpTextureIndex [MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
-typedef struct tNetPlayerStats {
+typedef __pack__ struct tNetPlayerStats {
 	ubyte  messageType;
 	ubyte  nLocalPlayer;          // Who am i?
 	uint   flags;                 // Powerup flags, see below...
@@ -130,7 +130,7 @@ typedef struct tNetPlayerStats {
 	ushort nHostagesTotal;        // Total number of hostages.
 	ubyte  nHostagesOnBoard;      // Number of hostages on ship.
 	ubyte  unused [16];
-} tNetPlayerStats;
+} __pack__ tNetPlayerStats;
 
 int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	24, // POSITION

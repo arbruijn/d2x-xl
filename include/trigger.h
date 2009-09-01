@@ -76,7 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //old CTrigger structs
 
-typedef struct tTriggerV29 {
+typedef __pack__ struct tTriggerV29 {
 	sbyte   nType;
 	short   flags;
 	fix     value;
@@ -87,7 +87,7 @@ typedef struct tTriggerV29 {
 	short   sides [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV29;
 
-typedef struct tTriggerV30 {
+typedef __pack__ struct tTriggerV30 {
 	short   flags;
 	sbyte   nLinks;
 	sbyte   pad;                        //keep alignment
@@ -117,7 +117,7 @@ typedef struct tTriggerV30 {
 //the CTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.
 
-class CTriggerInfo {
+class __pack__ CTriggerInfo {
 	public:
 		ubyte		nType;   //what this CTrigger does
 		sbyte		nLinks;  //how many doors, etc. linked to this

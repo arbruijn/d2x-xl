@@ -39,19 +39,19 @@ const size_t UVEC = 1;
 const size_t FVEC = 2;
 const size_t HVEC = 3;
 
-class CFixVector;
-class CFloatVector;
-class CFloatVector3;
-class CAngleVector;
+class __pack__ CFixVector;
+class __pack__ CFloatVector;
+class __pack__ CFloatVector3;
+class __pack__ CAngleVector;
 
-class CFixMatrix;
-class CFloatMatrix;
+class __pack__ CFixMatrix;
+class __pack__ CFloatMatrix;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 /**
- * \class CFixVector
+ * \class __pack__ CFixVector
  * A 3 element fixed-point vector.
  */
 class __pack__ CFixVector {
@@ -151,10 +151,10 @@ inline const CFixVector operator/ (const CFixVector& v, const fix d);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 /**
- * \class CFloatVector
+ * \class __pack__ CFloatVector
  * A 4 element floating point vector class
  */
-class CFloatVector {
+class __pack__ CFloatVector {
 	public:
 		static const CFloatVector ZERO;
 		static const CFloatVector ZERO4;
@@ -224,10 +224,10 @@ const CFloatVector operator/ (const CFloatVector& v, const float s);
 //------------------------------------------------------------------------------
 
 /**
- * \class CFloatVector3
+ * \class __pack__ CFloatVector3
  * A 3 element floating point vector class
  */
-class CFloatVector3 {
+class __pack__ CFloatVector3 {
 	private:
 		float v [3];
 
@@ -1046,7 +1046,7 @@ inline const CFixVector operator/ (const CFixVector& v, const fix d) {
 // -----------------------------------------------------------------------------
 
 /**
- * \class CFixMatrix
+ * \class __pack__ CFixMatrix
  *
  * A 3x3 rotation m_data.matrix.  Sorry about the numbering starting with one. Ordering
  * is across then down, so <m1,m2,m3> is the first row.
@@ -1058,7 +1058,7 @@ typedef union tFixMatrixData {
 
 
 class __pack__ CFixMatrix {
-	friend class CFloatMatrix;
+	friend class __pack__ CFloatMatrix;
 
 	private:
 		tFixMatrixData	m_data;
@@ -1238,7 +1238,7 @@ inline void CFixMatrix::CheckAndFix (void)
 
 
 /**
- * \class CFloatMatrix
+ * \class __pack__ CFloatMatrix
  *
  * A 4x4 floating point transformation m_data.matrix
  */
@@ -1248,8 +1248,8 @@ typedef union tFloatMatrixData {
 	float				vec [16];
 } tFloatMatrixData;
 
-class CFloatMatrix {
-	friend class CFixMatrix;
+class __pack__ CFloatMatrix {
+	friend class __pack__ CFixMatrix;
 
 	private:
 		tFloatMatrixData	m_data;

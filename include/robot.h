@@ -41,26 +41,26 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RI_CLOAKED_EXCEPT_FIRING    2
 
 //describes the position of a certain joint
-typedef struct tJointPos {
+typedef __pack__ struct tJointPos {
 	short jointnum;
 	CAngleVector angles;
-} tJointPos;
+} __pack__ tJointPos;
 
 //describes a list of joint positions
-typedef struct jointlist {
+typedef __pack__ struct jointlist {
 	short n_joints;
 	short offset;
-} jointlist;
+} __pack__ jointlist;
 
 //robot info flags
 #define RIF_BIG_RADIUS  1   //pad the radius to fix robots firing through walls
 #define RIF_THIEF       2   //this guy steals!
 
 //  Robot information
-typedef struct tRobotInfo {
-	int     nModel;                  // which polygon model?
-	CFixVector  gunPoints[MAX_GUNS];   // where each gun model is
-	ubyte   gunSubModels[MAX_GUNS];    // which submodel is each gun in?
+typedef __pack__ struct tRobotInfo {
+	int			nModel;                  // which polygon model?
+	CFixVector  gunPoints [MAX_GUNS];   // where each gun model is
+	ubyte			gunSubModels [MAX_GUNS];    // which submodel is each gun in?
 
 	short   nExp1VClip;
 	short   nExp1Sound;
@@ -124,9 +124,9 @@ typedef struct tRobotInfo {
 
 	int     always_0xabcd;      // debugging
 
-} tRobotInfo;
+} __pack__ tRobotInfo;
 
-typedef struct D1Robot_info {
+typedef __pack__ struct D1Robot_info {
 	int			nModel;							// which polygon model?
 	int			nGuns;								// how many different gun positions
 	CFixVector	gunPoints[MAX_GUNS];			// where each gun model is
@@ -169,7 +169,7 @@ typedef struct D1Robot_info {
 
 	int		always_0xabcd;							// debugging
 
-} D1Robot_info;
+} __pack__ D1Robot_info;
 
 
 

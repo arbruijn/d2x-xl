@@ -174,6 +174,9 @@ memcpy (ipx_ServerAddress + 4, psl->servers + i, 4);
 
 int CTracker::GetServerFromList (int i)
 {
+if (!m_bUse)
+	return 0;
+
 	tServerListTable	*pslt = serverListTable;
 
 while (pslt) {
@@ -191,6 +194,9 @@ return 0;
 
 int CTracker::IsTracker (uint addr, ushort port)
 {
+if (!m_bUse)
+	return 0;
+
 	int	i;
 #if DBG
 	uint a;

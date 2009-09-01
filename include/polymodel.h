@@ -65,7 +65,7 @@ class CSubModelData {
 //------------------------------------------------------------------------------
 //used to describe a polygon model
 
-typedef struct tPolyModelInfo {
+typedef __pack__ struct tPolyModelInfo {
 		ushort			nId;
 		short				nType;
 		int				nModels;
@@ -77,7 +77,7 @@ typedef struct tPolyModelInfo {
 		ushort			nFirstTexture;
 		ubyte				nSimplerModel;	// alternate model with less detail (0 if none, nModel+1 else)
 		bool				bCustom;
-} tPolyModelInfo;
+} __pack__ tPolyModelInfo;
 
 class CPolyModel : public CByteArray {
 	private:

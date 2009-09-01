@@ -263,24 +263,24 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 // the server and node members since I cannot change the order ot these
 // members.
 
-typedef struct ipx_addr {
+typedef __pack__ struct ipx_addr {
 	ubyte   server[4];
 	ubyte   node [6];
-} ipx_addr;
+} __pack__ ipx_addr;
 
-typedef struct appletalk_addr {
+typedef __pack__ struct appletalk_addr {
 	ushort  net;
 	ubyte   node;
 	ubyte   socket;
-} appletalk_addr;
+} __pack__ appletalk_addr;
 
 typedef union {
 	ipx_addr			ipx;
 	appletalk_addr	appletalk;
-} tNetworkInfo;
+} __pack__ tNetworkInfo;
 
 
-typedef struct tNetPlayerInfo {
+typedef __pack__ struct tNetPlayerInfo {
 	char    callsign [CALLSIGN_LEN+1];
 	tNetworkInfo network;
 	ubyte   versionMajor;
@@ -292,14 +292,14 @@ typedef struct tNetPlayerInfo {
 } __pack__ tNetPlayerInfo;
 
 
-typedef struct tAllNetPlayersInfo
+typedef __pack__ struct tAllNetPlayersInfo
 {
 	char    nType;
 	int     nSecurity;
 	struct tNetPlayerInfo players [MAX_PLAYERS+4];
 } __pack__ tAllNetPlayersInfo;
 
-typedef struct tNetgameInfo {
+typedef __pack__ struct tNetgameInfo {
 	ubyte   nType;
 	int     nSecurity;
 	char    szGameName [NETGAME_NAME_LEN + 1];
@@ -414,7 +414,7 @@ typedef struct tNetgameInfo {
 
 #define MAX_ROBOTS_CONTROLLED 5
 
-typedef struct tMultiRobotData {
+typedef __pack__ struct tMultiRobotData {
 	int controlled [MAX_ROBOTS_CONTROLLED];
 	int agitation [MAX_ROBOTS_CONTROLLED];
 	fix controlledTime [MAX_ROBOTS_CONTROLLED];
@@ -423,7 +423,7 @@ typedef struct tMultiRobotData {
 	int sendPending [MAX_ROBOTS_CONTROLLED];
 	int fired [MAX_ROBOTS_CONTROLLED];
 	sbyte fireBuf [MAX_ROBOTS_CONTROLLED][18+3];
-} tMultiRobotData;
+} __pack__ tMultiRobotData;
 
 extern struct tNetgameInfo netGame;
 extern struct tAllNetPlayersInfo netPlayers;

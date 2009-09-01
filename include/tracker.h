@@ -26,8 +26,6 @@ typedef struct tServerListTable {
 	time_t						lastActive;
 } tServerListTable;
 
-extern int				bUseTracker;
-
 class CTracker {
 	private:
 		tServerList			m_list;

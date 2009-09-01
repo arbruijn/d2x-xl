@@ -270,14 +270,13 @@ static int ipx_mcast4_HandleNetgameAuxData (ipx_socket_t *sk, const u_char buf[N
 	int ttl = 128;
 
 	// Check the protocol version
-if (buf[0] != IPX_MCAST4_VERSION) {
+if (buf [0] != IPX_MCAST4_VERSION) {
 #ifdef _GNUC
 	FAIL ("mcast4 protocol\nversion mismatch!\nGame version is %02x,\nour version is %02x", buf[0], IPX_MCAST4_VERSION);
 #else
 	FAIL ("mcast4 protocol version mismatch!");
 #endif
 	}
-
 // Get the multicast session
 memcpy (&game_addr, buf + 1, sizeof (game_addr));
 
@@ -294,15 +293,16 @@ dumpaddr (&tmpaddr);
 #endif
 
 // Set the TTL so the packets can get out of the local network.
-if (setsockopt (sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, reinterpret_cast<const char*> (&ttl), sizeof (ttl)) < 0)
+if (setsockopt (sk->fd, IPPROTO_IP, IP_MULTICAST_TTL, reinterpret_cast<const char*> (&ttl), sizeof (ttl)) < 0) {
 	FAIL ("setsockopt () failed to set TTL to 128");
-
+	}
 memset (&mreq, 0, sizeof (mreq));
 mreq.imr_multiaddr = game_addr;
 mreq.imr_interface.s_addr = INADDR_ANY;
 
-if (setsockopt (sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&mreq), sizeof (mreq)) < 0)
+if (setsockopt (sk->fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&mreq), sizeof (mreq)) < 0) {
 	FAIL ("setsockopt () failed to subscribe to the game group");
+	}
 return 0;
 }
 
@@ -316,17 +316,15 @@ static void ipx_mcast4_InitNetgameAuxData (ipx_socket_t *sk, u_char buf[NETGAME_
 	char addr[16];
 	Assert (game_addr.s_addr == 0);
 
-	// The first byte is the version number
-	buf[0] = IPX_MCAST4_VERSION;
-
-	// Generate a random session
-	// game_addr = inet_makeaddr (239*256 + 255, d_rand () % 0xFFFF);
-	sprintf (addr, "%i.%i.%i.%i", 239, 255, d_rand () % 0xFF, d_rand () % 0xFF);
-	game_addr.s_addr = inet_addr (addr);
-	memcpy (buf + 1, &game_addr, sizeof (game_addr));
-
-	// Since we're obviously the hosting machine, subscribe to this address
-	ipx_mcast4_HandleNetgameAuxData (sk, buf);
+// The first byte is the version number
+buf [0] = IPX_MCAST4_VERSION;
+// Generate a random session
+// game_addr = inet_makeaddr (239*256 + 255, d_rand () % 0xFFFF);
+sprintf (addr, "%i.%i.%i.%i", 239, 255, d_rand () % 0xFF, d_rand () % 0xFF);
+game_addr.s_addr = inet_addr (addr);
+memcpy (buf + 1, &game_addr, sizeof (game_addr));
+// Since we're obviously the hosting machine, subscribe to this address
+ipx_mcast4_HandleNetgameAuxData (sk, buf);
 }
 
 //------------------------------------------------------------------------------

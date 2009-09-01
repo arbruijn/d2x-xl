@@ -84,7 +84,7 @@ extern char Special_names[MAX_CENTER_TYPES][11];
 //--repair-- abort_repair_center();
 
 // An array of pointers to segments with fuel centers.
-typedef struct tFuelCenInfo {
+typedef __pack__ struct tFuelCenInfo {
 	int     nType;
 	int     nSegment;
 	sbyte   bFlag;
@@ -98,11 +98,11 @@ typedef struct tFuelCenInfo {
 	//CObject  *last_created_obj;
 	//int     last_created_sig;
 	CFixVector vCenter;
-} tFuelCenInfo;
+} __pack__ tFuelCenInfo;
 
 // The max number of robot centers per mine.
 
-typedef struct  {
+typedef __pack__ struct  {
 	int     objFlags;    		// Up to 32 different robots
 	fix     xHitPoints;     	// How hard it is to destroy this particular matcen
 	fix     xInterval;       	// Interval between materialogrifizations
@@ -110,7 +110,7 @@ typedef struct  {
 	short   nFuelCen;    		// Index in fuelcen array.
 } __pack__ old_tMatCenInfo;
 
-typedef struct tMatCenInfo {
+typedef __pack__ struct tMatCenInfo {
 	int     objFlags [3]; 		// Up to 92 different robots
 	fix     xHitPoints;     	// How hard it is to destroy this particular matcen
 	fix     xInterval;       	// Interval between materializations

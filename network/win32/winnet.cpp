@@ -116,11 +116,11 @@ ubyte ipx_MyAddress [10];
 int nIpxPacket = 0;			/* Sequence number */
 
 /* User defined routing stuff */
-typedef struct user_address {
+typedef __pack__ struct user_address {
 	ubyte network [4];
 	ubyte node [6];
 	ubyte address [6];
-} user_address;
+} __pack__ user_address;
 
 #define MAX_USERS 64
 int nIpxUsers = 0;

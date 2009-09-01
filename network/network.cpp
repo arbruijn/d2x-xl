@@ -399,7 +399,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				ubyte send_data [MAX_PACKETSIZE];
 #endif
 				memset (&shortSyncPack, 0, sizeof (shortSyncPack));
-				CreateShortPos (&shortSyncPack.objPos, OBJECTS+nObject, 0);
+				CreateShortPos (&shortSyncPack.objPos, OBJECTS + nObject, 0);
 				shortSyncPack.nType = PID_PDATA;
 				shortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
 				shortSyncPack.objRenderType = OBJECTS [nObject].info.renderType;

@@ -42,29 +42,29 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-typedef struct tMissingObjFrames {
+typedef __pack__ struct tMissingObjFrames {
 	ubyte					pid;
 	ubyte					nPlayer;
 	ushort				nFrame;
-} tMissingObjFrames;
+} __pack__ tMissingObjFrames;
 
-typedef struct tRefuseData {
+typedef __pack__ struct tRefuseData {
 	char	bThisPlayer;
 	char	bWaitForAnswer;
 	char	bTeam;
 	char	szPlayer [12];
 	fix	xTimeLimit;
-	} tRefuseData;
+	} __pack__ tRefuseData;
 
-typedef struct tSyncObjectsData {
+typedef __pack__ struct tSyncObjectsData {
 	int					nMode;
 	int					nCurrent;
 	int					nSent;
 	ushort				nFrame;
 	tMissingObjFrames	missingFrames;
-} tSyncObjectsData;
+} __pack__ tSyncObjectsData;
 
-typedef struct tNetworkSyncData {
+typedef __pack__ struct tNetworkSyncData {
 	time_t				timeout;
 	time_t				tLastJoined;
 	tSequencePacket	player [2];
@@ -74,9 +74,9 @@ typedef struct tNetworkSyncData {
 	short					nExtras;
 	bool					bExtraGameInfo;
 	tSyncObjectsData	objs;
-} tNetworkSyncData;
+} __pack__ tNetworkSyncData;
 
-typedef struct tNetworkData {
+typedef __pack__ struct tNetworkData {
 	int					nActiveGames;
 	int					nLastActiveGames;
 	int					nNamesInfoSecurity;
@@ -126,17 +126,17 @@ typedef struct tNetworkData {
 	time_t				toWaitAllPoll;
 	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
 	short					nJoining;
-} tNetworkData;
+} __pack__ tNetworkData;
 
 extern tNetworkData networkData;
 
 //------------------------------------------------------------------------------
 
-typedef struct tNakedData {
+typedef __pack__ struct tNakedData {
 	int	nLength;
 	int	nDestPlayer;
    char	buf [NET_XDATA_SIZE + 4];
-	} tNakedData;
+	} __pack__ tNakedData;
 
 extern tNakedData	nakedData;
 

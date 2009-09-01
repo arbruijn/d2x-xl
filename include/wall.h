@@ -106,10 +106,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-typedef struct tStuckObject {
+typedef __pack__ struct tStuckObject {
 	short   nObject, nWall;
 	int     nSignature;
-} tStuckObject;
+} __pack__ tStuckObject;
 
 //------------------------------------------------------------------------------
 
@@ -156,7 +156,7 @@ class CCloakingWall {
 //------------------------------------------------------------------------------
 //Start old CWall structures
 
-typedef struct tWallV16 {
+typedef __pack__ struct tWallV16 {
 	sbyte   nType;             // What kind of special CWall.
 	sbyte   flags;             // Flags for the CWall.
 	fix     hps;               // "Hit points" of the CWall.
@@ -165,7 +165,7 @@ typedef struct tWallV16 {
 	sbyte   keys;
 } __pack__ tWallV16;
 
-typedef struct tWallV19 {
+typedef __pack__ struct tWallV19 {
 	int     nSegment,nSide;     // Seg & CSide for this CWall
 	sbyte   nType;              // What kind of special CWall.
 	sbyte   flags;              // Flags for the CWall.
@@ -176,7 +176,7 @@ typedef struct tWallV19 {
 	int nLinkedWall;            // number of linked CWall
 } __pack__ tWallV19;
 
-typedef struct v19_door {
+typedef __pack__ struct v19_door {
 	int     nPartCount;            // for linked walls
 	short   seg[2];             // Segment pointer of door.
 	short   nSide [2];            // Side number of door.
@@ -239,7 +239,7 @@ inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
 #define WCF_FROMPOG		32
 #define WCF_INITIALIZED	64
 
-typedef struct {
+typedef __pack__ struct {
 	fix     xTotalTime;
 	short   nFrameCount;
 	short   frames[MAX_CLIP_FRAMES];
@@ -250,7 +250,7 @@ typedef struct {
 	char    pad;
 } __pack__ tWallClip;
 
-typedef struct {
+typedef __pack__ struct {
 	fix     playTime;
 	short   nFrameCount;
 	short   frames[D1_MAX_CLIP_FRAMES];

@@ -3449,9 +3449,9 @@ void PrintVersionInfo (void);
 //	-----------------------------------------------------------------------------
 
 
-typedef struct fVector3D {
+typedef __pack__ struct fVector3D {
 	float	x, y, z;
-} fVector3D;
+} __pack__ fVector3D;
 
 typedef struct tTransRotInfo {
 	fVector3D	fvRot;

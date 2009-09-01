@@ -96,22 +96,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AIE_COLLIDE     2
 #define AIE_HURT        3
 
-//typedef struct opath {
-//	sbyte   path_index;     // current index of path
-//	sbyte   path_direction; // current path direction
-//	sbyte   nPathLength;    // length of current path
-//	sbyte   nothing;
-//	short   path[MAX_SEGMENTS_PER_PATH];
-//	short   always_0xabc;   // If this is ever not 0xabc, then someone overwrote
-//} opath;
-//
-//typedef struct oaiState {
-//	short   mode;               //
-//	short   counter;            // kind of a hack, frame countdown until switch modes
-//	opath   paths[2];
-//	CFixVector movement_vector; // movement vector for one second
-//} oaiState;
-
 #define SUB_FLAGS_GUNSEG        0x01
 #define SUB_FLAGS_SPROX         0x02    // If set, then this bot drops a super prox, not a prox, when it's time to drop something
 #define SUB_FLAGS_CAMERA_AWAKE  0x04    // If set, a camera (on a missile) woke this robot up, so don't fire at CPlayerData.  Can look real stupid!
@@ -133,7 +117,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // This is the stuff that is permanent for an AI CObject and is
 // therefore saved to disk.
-typedef struct tAIStaticInfo {
+typedef __pack__ struct tAIStaticInfo {
 	ubyte   behavior;               //
 	sbyte   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
 	short   nHideSegment;           // Segment to go to for hiding.
@@ -164,7 +148,7 @@ class CAIStaticInfo {
 };
 
 // This is the stuff which doesn't need to be saved to disk.
-typedef struct tAILocalInfo {
+typedef __pack__ struct tAILocalInfo {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
 // targetAwarenessType..nRapidFireCount used to be bytes
 // nGoalSegment used to be short.
@@ -192,13 +176,13 @@ typedef struct tAILocalInfo {
 	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
 } __pack__ tAILocalInfo;
 
-typedef struct {
+typedef __pack__ struct {
 	int         nSegment;
 	CFixVector	point;
 	ubyte			nConnSide;
 } __pack__ tPointSeg;
 
-typedef struct {
+typedef __pack__ struct {
 	short       start, end;
 	ubyte			nConnSide;
 } __pack__ segQueueEntry;

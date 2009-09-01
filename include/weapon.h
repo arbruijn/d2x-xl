@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // weapon info flags
 #define WIF_PLACABLE        1   // can be placed by level designer
 
-class CWeaponInfo {
+class __pack__ CWeaponInfo {
 	public:
 		sbyte   renderType;         // How to draw 0=laser, 1=blob, 2=CObject
 		sbyte   persistent;         // 0 = dies when it hits something, 1 = continues (eg, fusion cannon)
@@ -86,7 +86,7 @@ class CWeaponInfo {
 		void Read (CFile& cf, int nFileVersion);
 	};
 
-class CD1WeaponInfo {
+class __pack__ CD1WeaponInfo {
 	public:
 		sbyte	renderType;				// How to draw 0=laser, 1=blob, 2=CObject
 		sbyte	nModel;					// Model num if rendertype==2.
@@ -133,7 +133,7 @@ class CD1WeaponInfo {
 		tBitmapIndex	picture;				// a picture of the weapon for the cockpit
 	};
 
-class CD2D1WeaponInfo {
+class __pack__ CD2D1WeaponInfo {
 	public:
 		sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
 		sbyte	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.

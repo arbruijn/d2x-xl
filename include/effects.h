@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_FROMPOG		16
 #define EF_INITIALIZED	32
 
-typedef struct tEffectClip {
+typedef __pack__ struct tEffectClip {
 	tVideoClip	vClipInfo;             //embedded tVideoClip
 	fix			xTimeLeft;      //for sequencing
 	int			nCurFrame;      //for sequencing
@@ -50,19 +50,19 @@ extern int Num_effects [2];
 extern tEffectClip Effects [2][MAX_EFFECTS];
 
 // Set up special effects.
-extern fix EffectFrameTime (tEffectClip* ecP);
+fix EffectFrameTime (tEffectClip* ecP);
 
 // Set up special effects.
-extern void InitSpecialEffects (void);
+void InitSpecialEffects (void);
 
 // Clear any active one-shots
 void ResetSpecialEffects (void);
 
 // Function called in game loop to do effects.
-extern void DoSpecialEffects (bool bSetup = false);
+void DoSpecialEffects (bool bSetup = false);
 
 // Restore bitmap
-extern void RestoreEffectBitmapIcons (void);
+void RestoreEffectBitmapIcons (void);
 
 //stop an effect from animating.  Show first frame.
 void StopEffect(int effect_num);

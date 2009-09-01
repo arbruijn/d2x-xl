@@ -65,15 +65,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TEAM_BLUE   0
 #define TEAM_RED    1
 
-typedef struct tPlayerHostages {
+typedef __pack__ struct tPlayerHostages {
 	ushort  nRescued;		// Total number of hostages rescued.
 	ushort  nTotal;      // Total number of hostages.
 	ubyte   nOnBoard;    // Number of hostages on ship.
 	ubyte   nLevel;      // Number of hostages on this level.
-} tPlayerHostages;
+} __pack__ tPlayerHostages;
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
-class CPlayerData {
+class __pack__ CPlayerData {
 	public:
 		// Who am I data
 		char    callsign[CALLSIGN_LEN+1];   // The callsign of this CPlayerData, for net purposes.
@@ -136,7 +136,7 @@ class CPlayerData {
 #define MAX_PRIMARY_WEAPONS16   5
 #define MAX_SECONDARY_WEAPONS16 5
 
-typedef struct player16 {
+typedef __pack__ struct player16 {
 	// Who am I data
 	char    callsign[CALLSIGN_LEN+1]; // The callsign of this CPlayerData, for net purposes.
 	ubyte   netAddress[6];         // The network address of the CPlayerData.
@@ -188,7 +188,7 @@ typedef struct player16 {
 
 #define N_PLAYER_GUNS 8
 
-class CPlayerShip {
+class __pack__ CPlayerShip {
 	public:
 		int			nModel;
 		int			nExplVClip;
