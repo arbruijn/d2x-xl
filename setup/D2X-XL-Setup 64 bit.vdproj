@@ -15,13 +15,43 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_025F7A0031EA4BD4939A705C436AE6AE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_04B04981CCC3438D8405C032D96F93E2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_06208AD0B49D4221A6FCC1DF827E6717"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_170D720DCA994C03AA425395E98A8BFE"
+        "MsmKey" = "8:_068EA1571BBE4CCAAB4F3086DBCB2921"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0B811CE382E04E8F9CF1DC99AD8D876D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_118BC10335544520ACC83250500D8E2E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_199495BE3F5E49B4B1EBF09E71068766"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -33,7 +63,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1E0E579A68A14AF99BDA1651D840760F"
+        "MsmKey" = "8:_30816942BC154890B3322F21F5EFED39"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -45,25 +75,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_34068CF9DA89416385644991013E042B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_387801B34FAA4DB685820DF31296CF18"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_4090AED45DBD4CAB93F8797861F1026A"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4246CB308B60417897A8E42D35AFF0C1"
+        "MsmKey" = "8:_406A49930DC9441881302DF39C579A31"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -81,7 +99,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_594860C4DD5C47FFAB1413BA6B75ED27"
+        "MsmKey" = "8:_4F4F2F7D9404478CA31688226943D8D9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -93,19 +111,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_63D46D41ADF94A1BB6DD99FE1691EB15"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_654B4CAB78EB4BCD88DC2F49F5EF41F8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6846AFBECCDD4A898AEB47DED7CEEBA5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -123,13 +129,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_73DD9AB394454E84973B1C0FED46B116"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_880E182628F6448E86F4363D58937249"
+        "MsmKey" = "8:_83A195E1A5CB4FF3ADC71A6E69740888"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -141,7 +141,25 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_929AF7AEEB88401CA749E36B364CB431"
+        "MsmKey" = "8:_99C73412DD1643308F8DC527B9B16B86"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A42EC1BD3AA749F3B7E0BD6FA650AF46"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A4DF42C56E714463976BB713E040BD12"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A5980E229F384DCBB65912E0D57022E2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -153,7 +171,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B783CAF4C5B84070BA785891C00303AE"
+        "MsmKey" = "8:_BB03B8AE210347C69F9DE0CA7B9EEE90"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -177,13 +195,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C34C9ED9EEE74FA594A992B114752A98"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C464832A6403438082ABAC5BE57C9860"
+        "MsmKey" = "8:_C3360C1031BC4A43A70BD02F261643B6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -195,13 +207,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DB01855A75BA4ECA897024EE3D5FEC85"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E11A8E5409A2427E85185FA129FF3C58"
+        "MsmKey" = "8:_D1D9E27A960841E3BD42EE0CEB69EA98"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -213,14 +219,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EB63AC5E683C40B285AB8E123E065106"
+        "MsmKey" = "8:_E9AF08B297BC4D09B8C3BB0DC53EDE4A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DB01855A75BA4ECA897024EE3D5FEC85"
+        "OwnerKey" = "8:_83A195E1A5CB4FF3ADC71A6E69740888"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -290,7 +296,7 @@
         "DisplayName" = "8:Release 32 bit"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:..\\..\\..\\packages\\D2X-XL-x64-1.14.112.msi"
+        "OutputFilename" = "8:..\\..\\..\\packages\\D2X-XL-x64-1.14.113.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -350,6 +356,46 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_025F7A0031EA4BD4939A705C436AE6AE"
+            {
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\libguide40.dll"
+            "TargetName" = "8:libguide40.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_04B04981CCC3438D8405C032D96F93E2"
+            {
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\Microsoft.VC80.CRT.manifest"
+            "TargetName" = "8:Microsoft.VC80.CRT.manifest"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_06208AD0B49D4221A6FCC1DF827E6717"
             {
             "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\SDL_mixer-x64.dll"
@@ -370,12 +416,72 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_170D720DCA994C03AA425395E98A8BFE"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_068EA1571BBE4CCAAB4F3086DBCB2921"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\smpeg.dll"
-            "TargetName" = "8:smpeg.dll"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\d2x-xl-x64-intel.exe"
+            "TargetName" = "8:d2x-xl-x64-intel.exe"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0B811CE382E04E8F9CF1DC99AD8D876D"
+            {
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\msvcp80.dll"
+            "TargetName" = "8:msvcp80.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_118BC10335544520ACC83250500D8E2E"
+            {
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\SDL_image-x64-intel.dll"
+            "TargetName" = "8:SDL_image-x64-intel.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_199495BE3F5E49B4B1EBF09E71068766"
+            {
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\Microsoft.VC80.OpenMP.manifest"
+            "TargetName" = "8:Microsoft.VC80.OpenMP.manifest"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -410,12 +516,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E0E579A68A14AF99BDA1651D840760F"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_30816942BC154890B3322F21F5EFED39"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\msvcr90.dll"
-            "TargetName" = "8:msvcr90.dll"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\vcomp.dll"
+            "TargetName" = "8:vcomp.dll"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -450,26 +556,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_34068CF9DA89416385644991013E042B"
-            {
-            "SourcePath" = "8:..\\d2x-xl-banner.bmp"
-            "TargetName" = "8:d2x-xl-banner.bmp"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_387801B34FAA4DB685820DF31296CF18"
             {
             "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\Microsoft.VC80.CRT.manifest"
@@ -490,32 +576,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4090AED45DBD4CAB93F8797861F1026A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_406A49930DC9441881302DF39C579A31"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\vorbis.dll"
-            "TargetName" = "8:vorbis.dll"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\vorbisfile-x64-intel.dll"
+            "TargetName" = "8:vorbisfile-x64-intel.dll"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4246CB308B60417897A8E42D35AFF0C1"
-            {
-            "SourcePath" = "8:D:\\Programs\\d2\\SDL_mixer.dll"
-            "TargetName" = "8:SDL_mixer.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -570,12 +636,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_594860C4DD5C47FFAB1413BA6B75ED27"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4F4F2F7D9404478CA31688226943D8D9"
             {
-            "SourcePath" = "8:..\\d2x-xl.ico"
-            "TargetName" = "8:d2x-xl.ico"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\smpeg-x64-intel.dll"
+            "TargetName" = "8:smpeg-x64-intel.dll"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -610,52 +676,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_63D46D41ADF94A1BB6DD99FE1691EB15"
-            {
-            "SourcePath" = "8:D:\\Programs\\d2\\ogg.dll"
-            "TargetName" = "8:ogg.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_654B4CAB78EB4BCD88DC2F49F5EF41F8"
             {
             "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\d2x-xl-x64.embed.manifest"
             "TargetName" = "8:d2x-xl-x64.embed.manifest"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6846AFBECCDD4A898AEB47DED7CEEBA5"
-            {
-            "SourcePath" = "8:D:\\Programs\\d2\\Microsoft.VC80.CRT.manifest"
-            "TargetName" = "8:Microsoft.VC80.CRT.manifest"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -710,32 +736,23 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_73DD9AB394454E84973B1C0FED46B116"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_83A195E1A5CB4FF3ADC71A6E69740888"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\SDL_image.dll"
-            "TargetName" = "8:SDL_image.dll"
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:msvcm80, Version=8.0.50727.4053, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=AMD64"
+                "ScatterAssemblies"
+                {
+                    "_83A195E1A5CB4FF3ADC71A6E69740888"
+                    {
+                    "Name" = "8:msvcm80.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\msvcm80.dll"
+            "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_880E182628F6448E86F4363D58937249"
-            {
-            "SourcePath" = "8:D:\\Programs\\d2\\vorbisfile.dll"
-            "TargetName" = "8:vorbisfile.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -770,12 +787,72 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_929AF7AEEB88401CA749E36B364CB431"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99C73412DD1643308F8DC527B9B16B86"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\d2x-trackir.dll"
-            "TargetName" = "8:d2x-trackir.dll"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\ogg-x64-intel.dll"
+            "TargetName" = "8:ogg-x64-intel.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A42EC1BD3AA749F3B7E0BD6FA650AF46"
+            {
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\vorbis-x64-intel.dll"
+            "TargetName" = "8:vorbis-x64-intel.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A4DF42C56E714463976BB713E040BD12"
+            {
+            "SourcePath" = "8:..\\d2x-xl-banner.bmp"
+            "TargetName" = "8:d2x-xl-banner.bmp"
             "Tag" = "8:"
             "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5980E229F384DCBB65912E0D57022E2"
+            {
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\libmmd.dll"
+            "TargetName" = "8:libmmd.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -810,12 +887,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B783CAF4C5B84070BA785891C00303AE"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BB03B8AE210347C69F9DE0CA7B9EEE90"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\vcomp.dll"
-            "TargetName" = "8:vcomp.dll"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\libiomp5md.dll"
+            "TargetName" = "8:libiomp5md.dll"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -890,32 +967,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C34C9ED9EEE74FA594A992B114752A98"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C3360C1031BC4A43A70BD02F261643B6"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\msvcp90.dll"
-            "TargetName" = "8:msvcp90.dll"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\msvcr80.dll"
+            "TargetName" = "8:msvcr80.dll"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C464832A6403438082ABAC5BE57C9860"
-            {
-            "SourcePath" = "8:D:\\Programs\\d2\\d2x-xl.exe"
-            "TargetName" = "8:d2x-xl.exe"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -950,43 +1007,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DB01855A75BA4ECA897024EE3D5FEC85"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D1D9E27A960841E3BD42EE0CEB69EA98"
             {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:msvcm90, Version=9.0.30729.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_DB01855A75BA4ECA897024EE3D5FEC85"
-                    {
-                    "Name" = "8:msvcm90.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:D:\\Programs\\d2\\msvcm90.dll"
-            "TargetName" = "8:"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\SDL-x64-intel.dll"
+            "TargetName" = "8:SDL-x64-intel.dll"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E11A8E5409A2427E85185FA129FF3C58"
-            {
-            "SourcePath" = "8:D:\\Programs\\d2\\SDL.dll"
-            "TargetName" = "8:SDL.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1021,12 +1047,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EB63AC5E683C40B285AB8E123E065106"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E9AF08B297BC4D09B8C3BB0DC53EDE4A"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\Microsoft.VC90.CRT.manifest"
-            "TargetName" = "8:Microsoft.VC90.CRT.manifest"
+            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\SDL_mixer-x64-intel.dll"
+            "TargetName" = "8:SDL_mixer-x64-intel.dll"
             "Tag" = "8:"
-            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -1129,14 +1155,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:D2X-XL"
-        "ProductCode" = "8:{AA23187C-2ED1-49FB-935C-A2EBF2211217}"
-        "PackageCode" = "8:{182132CD-F034-443F-93B2-659C90352F43}"
+        "ProductCode" = "8:{D617933A-0A3C-4D29-AC5D-FDFC9E387566}"
+        "PackageCode" = "8:{827D78C3-253D-45F7-B827-62BDFEF157E6}"
         "UpgradeCode" = "8:{1536B026-1AF7-4EC6-9EBF-C8BDF74B269F}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.14.112"
+        "ProductVersion" = "8:1.14.113"
         "Manufacturer" = "8:Dietfrid Mali"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.sourceforge.net/projects/d2x-xl"
@@ -1146,7 +1172,7 @@
         "Keywords" = "8:Descent, OpenGL"
         "ARPCOMMENTS" = "8:OpenGL Modification for Descent 1 and 2"
         "ARPURLINFOABOUT" = "8:http://www.descent2.de"
-        "ARPPRODUCTICON" = "8:_594860C4DD5C47FFAB1413BA6B75ED27"
+        "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -1274,7 +1300,7 @@
             "Target" = "8:_C00AF4ED8A2549F084603090D1771B70"
             "Folder" = "8:_69194351D91846249B7A73BFA8D22A1A"
             "WorkingFolder" = "8:_74F415E14D754D1A9CA72EE35483842C"
-            "Icon" = "8:_594860C4DD5C47FFAB1413BA6B75ED27"
+            "Icon" = "8:"
             "Feature" = "8:"
             }
         }
@@ -1305,7 +1331,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "ShowProgress"
@@ -1356,7 +1382,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "ShowProgress"
@@ -1401,7 +1427,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "UpdateText"
@@ -1446,7 +1472,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -1469,7 +1495,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -1492,7 +1518,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -1550,7 +1576,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -1588,7 +1614,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "CopyrightWarning"
@@ -1637,7 +1663,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                             "InstallAllUsersVisible"
@@ -1673,7 +1699,7 @@
                             "ContextData" = "8:Bitmap"
                             "Attributes" = "3:4"
                             "Setting" = "3:2"
-                            "Value" = "8:_34068CF9DA89416385644991013E042B"
+                            "Value" = "8:_A4DF42C56E714463976BB713E040BD12"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
