@@ -478,6 +478,7 @@ static tFileDesc addonFiles [] = {
 	{"\002d2x.ini", "config", true, true, false},
 
 	{"\002d2x-xl.hog", "data", false, true, false},
+	{"\002exit.ham", "data", true, true, false},
 
 	{"*.plx", "profiles", true, true, false},
 	{"*.plr", "profiles", true, true, false},
