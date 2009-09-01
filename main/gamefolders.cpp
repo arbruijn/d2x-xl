@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "SDL_keyboard.h"
 #endif
 #include "descent.h"
+#include "findfile.h"
 #include "u_mem.h"
 #include "strutil.h"
 #include "key.h"
@@ -420,6 +421,227 @@ if (!GetAppFolder (gameFolders.szModDir [0], gameFolders.szModDir [1], gameFolde
 	}
 else
 	*gameFolders.szModName = '\0';
+}
+
+// ----------------------------------------------------------------------------
+
+#ifdef _WIN32
+
+typedef struct tFileDesc {
+	char*	pszFile;
+	char*	pszFolder;
+	bool	bOptional;
+	bool	bAddon;
+	bool	bFound;
+} tFileDesc;
+
+static tFileDesc gameFiles [] = {
+	// basic game files
+	{"\002descent.cfg", ".\\config", false, false, false},
+	{"\002alien1.pig", ".\\data", false, false, false},
+	{"\002alien2.pig", ".\\data", false, false, false},
+	{"\002descent.pig", ".\\data", false, false, false},
+	{"\002fire.pig", ".\\data", false, false, false},
+	{"\002groupa.pig", ".\\data", false, false, false},
+	{"\002ice.pig", ".\\data", false, false, false},
+	{"\002water.pig", ".\\data", false, false, false},
+	{"\002descent.hog", ".\\data", false, false, false},
+	{"\002descent2.hog", ".\\data", false, false, false},
+	{"\002descent2.ham", ".\\data", false, false, false},
+	{"\002descent2.p11", ".\\data", false, false, false},
+	{"\002descent2.p22", ".\\data", false, false, false},
+	{"\002descent2.s11", ".\\data", false, false, false},
+	{"\002descent2.s22", ".\\data", false, false, false},
+	{"\002d2x-h.mvl", ".\\movies", false, false, false},
+	{"\002d2x-l.mvl", ".\\movies", false, false, false},
+	{"\002intro-h.mvl", ".\\movies", false, false, false},
+	{"\002intro-l.mvl", ".\\movies", false, false, false},
+	{"\002other-h.mvl", ".\\movies", false, false, false},
+	{"\002other-l.mvl", ".\\movies", false, false, false},
+	{"\002robots-h.mvl", ".\\movies", false, false, false},
+	{"\002robots-l.mvl", ".\\movies", false, false, false}
+};
+
+static tFileDesc vertigoFiles [] = {
+	// Vertigo expansion
+	{"\002hoard.ham", ".\\data", true, false, false},
+	{"\002d2x.hog", ".\\missions", true, false, false},
+	{"\002d2x.mn2", ".\\missions", true, false, false}
+};
+
+static tFileDesc addonFiles [] = {
+	// D2X-XL addon files
+	{"\002d2x-default.ini", ".\\config", false, true, false},
+	{"\002d2x.ini", ".\\config", true, true, false},
+
+	{"\002d2x-xl.hog", ".\\data", false, true, false},
+
+	{"*.plx", ".\\profiles", true, true, false},
+	{"*.plr", ".\\profiles", true, true, false},
+
+	{"\002bullet.ase", ".\\models", false, true, false},
+	{"\002bullet.tga", ".\\models", false, true, false},
+
+	{"*.sg?", ".\\savegames", true, true, false},
+
+	{"\002afbr_1.wav", ".\\sounds2", false, true, false},
+	{"\002airbubbles.wav", ".\\sounds2", false, true, false},
+	{"\002gatling_slowdown.wav", ".\\sounds2", false, true, false},
+	{"\002gatling-speedup.wav", ".\\sounds2", false, true, false},
+	{"\002gauss-firing.wav", ".\\sounds2", false, true, false},
+	{"\002headlight.wav", ".\\sounds2", false, true, false},
+	{"\002highping.wav", ".\\sounds2", false, true, false},
+	{"\002lightning.wav", ".\\sounds2", false, true, false},
+	{"\002lowping.wav", ".\\sounds2", false, true, false},
+	{"\002missileflight-big.wav", ".\\sounds2", false, true, false},
+	{"\002mssileflight-small.wav", ".\\sounds2", false, true, false},
+	{"\002slowdown.wav", ".\\sounds2", false, true, false},
+	{"\002speedup.wav", ".\\sounds2", false, true, false},
+	{"\002vulcan-firing.wav", ".\\sounds2", false, true, false},
+	{"\002zoom1.wav", ".\\sounds2", false, true, false},
+	{"\002zoom2.wav", ".\\sounds2", false, true, false},
+
+	{"\002bullettime#0.tga", ".\\textures", false, true, false},   
+	{"\002cockpit.tga", ".\\textures", false, true, false},       
+	{"\002cockpitb.tga", ".\\textures", false, true, false},         
+	{"\002monsterball.tga", ".\\textures", false, true, false},
+	{"\002slowmotion#0.tga", ".\\textures", false, true, false},   
+	{"\002status.tga", ".\\textures", false, true, false},        
+	{"\002statusb.tga", ".\\textures", false, true, false},
+    
+	{"\002aimdmg.tga", ".\\textures\\d2x-xl", false, true, false},         
+	{"\002blast.tga", ".\\textures\\d2x-xl", false, true, false},         
+	{"\002blast-hard.tga", ".\\textures\\d2x-xl", false, true, false},       
+	{"\002blast-medium.tga", ".\\textures\\d2x-xl", false, true, false},
+	{"\002blast-soft.tga", ".\\textures\\d2x-xl", false, true, false},     
+	{"\002bubble.tga", ".\\textures\\d2x-xl", false, true, false},        
+	{"\002bullcase.tga", ".\\textures\\d2x-xl", false, true, false},         
+	{"\002corona.tga", ".\\textures\\d2x-xl", false, true, false},
+	{"\002deadzone.tga", ".\\textures\\d2x-xl", false, true, false},       
+	{"\002drivedmg.tga", ".\\textures\\d2x-xl", false, true, false},      
+	{"\002fire.tga", ".\\textures\\d2x-xl", false, true, false},             
+	{"\002glare.tga", ".\\textures\\d2x-xl", false, true, false},
+	{"\002gundmg.tga", ".\\textures\\d2x-xl", false, true, false},         
+	{"\002halfhalo.tga", ".\\textures\\d2x-xl", false, true, false},      
+	{"\002halo.tga", ".\\textures\\d2x-xl", false, true, false},             
+	{"\002joymouse.tga", ".\\textures\\d2x-xl", false, true, false},
+	{"\002pwupicon.tga", ".\\textures\\d2x-xl", false, true, false},       
+	{"\002rboticon.tga", ".\\textures\\d2x-xl", false, true, false},      
+	{"\002scope.tga", ".\\textures\\d2x-xl", false, true, false},            
+	{"\002shield.tga", ".\\textures\\d2x-xl", false, true, false},
+	{"\002smoke.tga", ".\\textures\\d2x-xl", false, true, false},          
+	{"\002smoke-hard.tga", ".\\textures\\d2x-xl", false, true, false},    
+	{"\002smoke-medium.tga", ".\\textures\\d2x-xl", false, true, false},     
+	{"\002smoke-soft.tga", ".\\textures\\d2x-xl", false, true, false},
+	{"\002sparks.tga", ".\\textures\\d2x-xl", false, true, false},         
+	{"\002thrust2d.tga", ".\\textures\\d2x-xl", false, true, false},      
+	{"\002thrust2d-blue.tga", ".\\textures\\d2x-xl", false, true, false},    
+	{"\002thrust2d-red.tga", ".\\textures\\d2x-xl", false, true, false},
+	{"\002thrust3d.tga", ".\\textures\\d2x-xl", false, true, false},       
+	{"\002thrust3d-blue.tga", ".\\textures\\d2x-xl", false, true, false}, 
+	{"\002thrust3d-red.tga", ".\\textures\\d2x-xl", false, true, false}
+};
+
+// ----------------------------------------------------------------------------
+
+bool CheckAndCopyWildcards (const char *szFile, const char* szFolder)
+{
+	FFS	ffs;
+	int	i;
+	char	szFilter [FILENAME_LEN], szSrc [FILENAME_LEN], szDest [FILENAME_LEN];
+	CFile	cf;
+
+
+if (i = FFF (szFile, &ffs, 0)) {
+	sprintf_s (szFilter, sizeof (szFilter), "%s\\%s", szFolder, szFile);
+	return FFF (szFilter, &ffs, 0) == 0;
+	}
+do {
+	sprintf_s (szDest, sizeof (szDest), "\002%s", ffs.name);
+	if (!CFile::Exist (szDest, szFolder, 0)) {
+		sprintf_s (szSrc, ".\\%s", ffs.name);
+		sprintf_s (szDest, sizeof (szDest), "%s\\%s", szFolder, ffs.name);
+		cf.Copy (szSrc, szDest);
+		}
+	} while (FFN (&ffs, 0));
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
+int CheckAndCopyFiles (tFileDesc* fileList, int nFiles)
+{
+	char	szSrc [FILENAME_LEN], szDest [FILENAME_LEN];
+	int	nErrors = 0;
+	CFile	cf;
+
+for (int i = 0; i < nFiles; i++) {
+	if (strstr (fileList [i].pszFile, "*") || strstr (fileList [i].pszFile, "?")) {
+		fileList [i].bFound = CheckAndCopyWildcards (fileList [i].pszFile, fileList [i].pszFolder);
+		if (!(fileList [i].bFound || fileList [i].bOptional))
+			nErrors++;		
+		}
+	else {
+		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, fileList [i].pszFolder, false) == 1;
+		if (fileList [i].bFound)
+			continue;
+		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, ".\\", false) == 1;
+		if (fileList [i].bFound) {
+			sprintf_s (szSrc, sizeof (szSrc), ".\\%s", fileList [i].pszFile + 1);
+			sprintf_s (szDest, sizeof (szDest), "%s\\%s", fileList [i].pszFolder, fileList [i].pszFile + 1);
+			cf.Copy (szSrc, szDest);
+			}
+		else if (!fileList [i].bOptional)
+			nErrors++;
+		}
+	}	
+return nErrors;
+}
+
+#endif
+
+// ----------------------------------------------------------------------------
+
+void CheckAndCreateGameFolders (void)
+{
+static char* gameFolders [] = {
+	".\\cache",
+	".\\config",
+	".\\data",
+	".\\models",
+	".\\mods",
+	".\\movies",
+	".\\profiles",
+	".\\savegames",
+	".\\screenshots",
+	".\\sounds2",
+	".\\sounds2\\d2x-xl",
+	".\\textures"
+};
+
+	FFS	ffs;
+
+for (int i = 0; i < int (sizeofa (gameFolders)); i++) 
+	  if (FFF (gameFolders [i], &ffs, 1))
+	  		CFile::MkDir (gameFolders [i]);
+}
+
+// ----------------------------------------------------------------------------
+
+int CheckAndFixSetup (void)
+{
+#if defined (_WIN32) && !defined(_M_IA64) && !defined(_M_AMD64)
+	int	nResult = 0;
+
+CheckAndCreateGameFolders ();
+if (CheckAndCopyFiles (gameFiles, int (sizeofa (gameFiles))))
+	nResult |= 1;
+if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
+	nResult |= 2;
+if (CheckAndCopyFiles (vertigoFiles, int (sizeofa (vertigoFiles))))
+	nResult |= 4;
+#endif
+return nResult;
 }
 
 // ----------------------------------------------------------------------------

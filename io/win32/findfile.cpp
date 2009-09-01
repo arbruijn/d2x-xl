@@ -70,17 +70,16 @@ int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int bFindDir
 	wchar_t	w_str [FILENAME_LEN];
 	char		str [FILENAME_LEN];
 #endif
-	find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
-	_FindFileHandle = FindFirstFile (AscToUnicode (w_str, pszFilter), &find);
-	if (_FindFileHandle == INVALID_HANDLE_VALUE) 
-		return 1;
-	else if (bFindDirs != ((find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0))
-		return FileFindNext (ffstruct, bFindDirs);
-	else {
-		ffstruct->size = find.nFileSizeLow;
-		strcpy (ffstruct->name, (UnicodeToAsc (str, find.cFileName)));
-		return 0; 
-	}
+
+find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
+_FindFileHandle = FindFirstFile (AscToUnicode (w_str, pszFilter), &find);
+if (_FindFileHandle == INVALID_HANDLE_VALUE) 
+	return 1;
+if (bFindDirs != ((find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0))
+	return FileFindNext (ffstruct, bFindDirs);
+ffstruct->size = find.nFileSizeLow;
+strcpy (ffstruct->name, (UnicodeToAsc (str, find.cFileName)));
+return 0; 
 }
 
 // ----------------------------------------------------------------------------
