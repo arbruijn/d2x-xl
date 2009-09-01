@@ -487,23 +487,6 @@ static tFileDesc addonFiles [] = {
 
 	{"*.sg?", ".\\savegames", true, true, false},
 
-	{"\002afbr_1.wav", ".\\sounds2", false, true, false},
-	{"\002airbubbles.wav", ".\\sounds2", false, true, false},
-	{"\002gatling_slowdown.wav", ".\\sounds2", false, true, false},
-	{"\002gatling-speedup.wav", ".\\sounds2", false, true, false},
-	{"\002gauss-firing.wav", ".\\sounds2", false, true, false},
-	{"\002headlight.wav", ".\\sounds2", false, true, false},
-	{"\002highping.wav", ".\\sounds2", false, true, false},
-	{"\002lightning.wav", ".\\sounds2", false, true, false},
-	{"\002lowping.wav", ".\\sounds2", false, true, false},
-	{"\002missileflight-big.wav", ".\\sounds2", false, true, false},
-	{"\002missileflight-small.wav", ".\\sounds2", false, true, false},
-	{"\002slowdown.wav", ".\\sounds2", false, true, false},
-	{"\002speedup.wav", ".\\sounds2", false, true, false},
-	{"\002vulcan-firing.wav", ".\\sounds2", false, true, false},
-	{"\002zoom1.wav", ".\\sounds2", false, true, false},
-	{"\002zoom2.wav", ".\\sounds2", false, true, false},
-
 	{"\002bullettime#0.tga", ".\\textures", false, true, false},   
 	{"\002cockpit.tga", ".\\textures", false, true, false},       
 	{"\002cockpitb.tga", ".\\textures", false, true, false},         
@@ -544,6 +527,26 @@ static tFileDesc addonFiles [] = {
 	{"\002thrust3d-blue.tga", ".\\textures\\d2x-xl", false, true, false}, 
 	{"\002thrust3d-red.tga", ".\\textures\\d2x-xl", false, true, false}
 };
+
+static tFileDesc addonSoundFiles [] = {
+	{"\002afbr_1.wav", ".\\sounds2", false, true, false},
+	{"\002airbubbles.wav", ".\\sounds2", false, true, false},
+	{"\002gatling-slowdown.wav", ".\\sounds2", false, true, false},
+	{"\002gatling-speedup.wav", ".\\sounds2", false, true, false},
+	{"\002gauss-firing.wav", ".\\sounds2", false, true, false},
+	{"\002headlight.wav", ".\\sounds2", false, true, false},
+	{"\002highping.wav", ".\\sounds2", false, true, false},
+	{"\002lightning.wav", ".\\sounds2", false, true, false},
+	{"\002lowping.wav", ".\\sounds2", false, true, false},
+	{"\002missileflight-big.wav", ".\\sounds2", false, true, false},
+	{"\002missileflight-small.wav", ".\\sounds2", false, true, false},
+	{"\002slowdown.wav", ".\\sounds2", false, true, false},
+	{"\002speedup.wav", ".\\sounds2", false, true, false},
+	{"\002vulcan-firing.wav", ".\\sounds2", false, true, false},
+	{"\002zoom1.wav", ".\\sounds2", false, true, false},
+	{"\002zoom2.wav", ".\\sounds2", false, true, false}
+};
+
 
 // ----------------------------------------------------------------------------
 
@@ -635,7 +638,7 @@ void CreateFileListMessage (char* szMsg, int nMsgSize, tFileDesc* fileList, int 
 	int	nListed = 0;
 
 for (int i = 0, j = -1; i < nFiles; i++) {
-	if (!fileList [i].bFound) {
+	if (!(fileList [i].bFound || fileList [i].bOptional)) {
 #if 0
 		l += strlen (fileList [i].pszFile);
 		if (bShowFolders)
@@ -682,34 +685,43 @@ if (CheckAndCopyFiles (vertigoFiles, int (sizeofa (vertigoFiles))))
 	nResult |= 4;
 if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
 	nResult |= 8;
+if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
+	nResult |= 16;
 
 if (nResult) {
 	*szMsg = '\0';
 	if (nResult & 1) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following Descent 2 files:\n\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nError - D2X-XL couldn't find the following Descent 2 files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD2, int (sizeofa (gameFilesD2)));
 		}
 	if (nResult & 2) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following Descent 1 files:\n\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nWarning - D2X-XL couldn't find the following Descent 1 files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD1, int (sizeofa (gameFilesD1)));
 		}
 	if (nResult & 4) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following Vertigo files:\n\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nWarning - D2X-XL couldn't find the following Vertigo files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), vertigoFiles, int (sizeofa (vertigoFiles)));
 		}
 	if (nResult & 8) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL couldn't find the following D2X-XL files:\n\n");
+		strcat_s (szMsg, sizeof (szMsg), "\n\nError - D2X-XL couldn't find the following D2X-XL files:\n\n");
 		CreateFileListMessage (szMsg, sizeof (szMsg), addonFiles, int (sizeofa (addonFiles)), true);
+		}
+	if (nResult & 16) {
+		strcat_s (szMsg, sizeof (szMsg), "\n\nWarning - D2X-XL couldn't find the following D2X-XL sound files:\n\n");
+		CreateFileListMessage (szMsg, sizeof (szMsg), addonSoundFiles, int (sizeofa (addonSoundFiles)), true);
 		}
 	if (nResult & (1 | 8)) {
 		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL cannot run because files are missing.\n");
 		Error (szMsg);
 		}
-	else {
+	else if (nResult & (2 | 4 | 16)) {
+		strcat_s (szMsg, sizeof (szMsg), "\n\n");
 		if (nResult & 2)
-			strcat_s (szMsg, sizeof (szMsg), "\n\nDescent 1 missions will be unavailable.\n");
+			strcat_s (szMsg, sizeof (szMsg), "Descent 1 missions will be unavailable.\n");
 		if (nResult & 4)
-			strcat_s (szMsg, sizeof (szMsg), "\n\nVertigo missions will be unavailable.\n");
+			strcat_s (szMsg, sizeof (szMsg), "Vertigo missions will be unavailable.\n");
+		if (nResult & 16)
+			strcat_s (szMsg, sizeof (szMsg), "Additional sound effects will be unavailable.\n");
 		Warning (szMsg);
 		}
 	}
