@@ -26,16 +26,16 @@ typedef struct tLightmapInfo {
 	//float		bright;
 	double		range;
 	int			nIndex;  //(seg*6)+CSide ie which CSide the light is on
-} tLightmapInfo;
+} __pack__ tLightmapInfo;
 
 typedef struct tLightmap {
 	tRgbColorf	*bmP;
-} tLightmap;
+} __pack__ tLightmap;
 
 typedef struct tLightmapBuffer {
 	GLuint		handle;
 	tRgbColorb	bmP [LIGHTMAP_BUFWIDTH][LIGHTMAP_BUFWIDTH];
-} tLightmapBuffer;
+} __pack__ tLightmapBuffer;
 
 typedef struct tLightmapList {
 	CArray<tLightmapInfo>	info;
@@ -43,7 +43,7 @@ typedef struct tLightmapList {
 	int							nBuffers;
 	int							nLights; 
 	ushort						nLightmaps;
-} tLightmapList;
+} __pack__ tLightmapList;
 
 typedef struct tLightmapData {
 	int					nType;
@@ -55,7 +55,7 @@ typedef struct tLightmapData {
 	CFixVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
 	int					nOffset [MAX_LIGHTMAP_WIDTH];
 	CSegFace				*faceP;
-	} tLightmapData;
+	} __pack__ tLightmapData;
 
 class CLightmapManager {
 	private:

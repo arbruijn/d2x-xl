@@ -76,7 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //old CTrigger structs
 
-typedef __pack__ struct tTriggerV29 {
+typedef struct tTriggerV29 {
 	sbyte   nType;
 	short   flags;
 	fix     value;
@@ -85,9 +85,9 @@ typedef __pack__ struct tTriggerV29 {
 	short   nLinks;
 	short   segments [MAX_TRIGGER_TARGETS];
 	short   sides [MAX_TRIGGER_TARGETS];
-} tTriggerV29;
+} __pack__ tTriggerV29;
 
-typedef __pack__ struct tTriggerV30 {
+typedef struct tTriggerV30 {
 	short   flags;
 	sbyte   nLinks;
 	sbyte   pad;                        //keep alignment
@@ -95,7 +95,7 @@ typedef __pack__ struct tTriggerV30 {
 	fix     time;
 	short   segments [MAX_TRIGGER_TARGETS];
 	short   sides [MAX_TRIGGER_TARGETS];
-} tTriggerV30;
+} __pack__ tTriggerV30;
 
 //flags for V30 & below triggers
 #define TRIGGER_CONTROL_DOORS      1    // Control Trigger
@@ -191,7 +191,7 @@ typedef struct tObjTriggerRef {
 	short		prev;
 	short		next;
 	short		nObject;
-} tObjTriggerRef;
+} __pack__ tObjTriggerRef;
 
 void TriggerInit();
 void TriggersFrameProcess();

@@ -117,7 +117,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // This is the stuff that is permanent for an AI CObject and is
 // therefore saved to disk.
-typedef __pack__ struct tAIStaticInfo {
+typedef struct tAIStaticInfo {
 	ubyte   behavior;               //
 	sbyte   flags[MAX_AI_FLAGS];    // various flags, meaning defined by constants
 	short   nHideSegment;           // Segment to go to for hiding.
@@ -128,7 +128,7 @@ typedef __pack__ struct tAIStaticInfo {
 	short   nDangerLaser;
 	int     nDangerLaserSig;
 	fix     xDyingStartTime;       // Time at which this robot started dying.
-} tAIStaticInfo;
+} __pack__ tAIStaticInfo;
 
 class CAIStaticInfo {
 	private:
@@ -148,7 +148,7 @@ class CAIStaticInfo {
 };
 
 // This is the stuff which doesn't need to be saved to disk.
-typedef __pack__ struct tAILocalInfo {
+typedef struct tAILocalInfo {
 // These used to be bytes, changed to ints so I could set watchpoints on them.
 // targetAwarenessType..nRapidFireCount used to be bytes
 // nGoalSegment used to be short.
@@ -174,15 +174,15 @@ typedef __pack__ struct tAILocalInfo {
 	CAngleVector deltaAngles [MAX_SUBMODELS]; // angles for each subobject
 	sbyte   goalState [MAX_SUBMODELS];     // Goal state for this sub-CObject
 	sbyte   achievedState [MAX_SUBMODELS]; // Last achieved state
-} tAILocalInfo;
+} __pack__ tAILocalInfo;
 
-typedef __pack__ struct {
+typedef struct {
 	int         nSegment;
 	CFixVector	point;
 	ubyte			nConnSide;
-} tPointSeg;
+} __pack__ tPointSeg;
 
-typedef __pack__ struct {
+typedef struct {
 	short       start, end;
 	ubyte			nConnSide;
 } __pack__ segQueueEntry;

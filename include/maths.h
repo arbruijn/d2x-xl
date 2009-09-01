@@ -25,7 +25,7 @@ typedef int16_t fixang;		//angles
 typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 	u_int32_t low;
    int32_t high;
-} tQuadInt;
+} __pack__ tQuadInt;
 
 //Convert an int to a fix
 #define I2X(i) ((static_cast<fix> (i)) * 65536)

@@ -45,7 +45,7 @@ typedef struct tCanvas {
 	CFont				*font;				// the currently selected font
 	tCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
-} tCanvas;
+} __pack__ tCanvas;
 
 class CCanvas : public CBitmap {
 	private:
@@ -108,7 +108,7 @@ typedef struct tScreen {		// This is a video screen
 	short   		width, height; // Actual Width and Height
 	fix     		aspect;			//aspect ratio (w/h) for this screen
 	float			scale [2];		//size ratio compared to 640x480
-} tScreen;
+} __pack__ tScreen;
 
 
 class CScreen {

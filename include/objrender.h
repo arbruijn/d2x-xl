@@ -21,7 +21,7 @@ typedef struct tCloakInfo {
 	fix	xLightScale;
 	fix	xDeltaTime;
 	fix	xTotalTime;
-	} tCloakInfo;
+	} __pack__ tCloakInfo;
 
 //------------------------------------------------------------------------------
 

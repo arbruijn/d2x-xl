@@ -39,7 +39,7 @@ typedef struct tMorphInfo {
 	ubyte				saveMovementType;
 	tPhysicsInfo	savePhysInfo;
 	int				nSignature;
-} tMorphInfo;
+} __pack__ tMorphInfo;
 
 #define MAX_MORPH_OBJECTS 250
 

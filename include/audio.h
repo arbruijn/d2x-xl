@@ -122,7 +122,7 @@ class CSoundSample {
 typedef struct tSoundQueueEntry {
 	fix	timeAdded;
 	short	nSound;
-} tSoundQueueEntry;
+} __pack__ tSoundQueueEntry;
 
 typedef struct tSoundQueueData {
 	int	nHead;
@@ -130,7 +130,7 @@ typedef struct tSoundQueueData {
 	int	nSounds;
 	int	nChannel;
 	CArray<tSoundQueueEntry>	queue; // [MAX_SOUND_QUEUE];
-} tSoundQueueData;
+} __pack__ tSoundQueueData;
 
 class CSoundQueue {
 	private:
@@ -178,7 +178,7 @@ class CAudioChannel {
 				ALuint			source;
 				int				loops;
 #endif
-			} tChannelInfo;
+			} __pack__ tChannelInfo;
 
 		tChannelInfo	m_info;
 
@@ -403,7 +403,7 @@ typedef struct tWAVHeader {
 	char	chunkID [4];
 	ulong	chunkSize;
 	char	riffType [4];
-} tRIFFChunk;
+} __pack__ tRIFFChunk;
 
 typedef struct tWAVFormat {
 	char		chunkID [4];
@@ -414,18 +414,18 @@ typedef struct tWAVFormat {
 	ulong		avgBytesPerSec;
 	ushort	blockAlign;
 	ushort	bitsPerSample;
-	} tPCMFormatChunk;
+	} __pack__ tPCMFormatChunk;
 
 typedef struct tWAVData {
 	char	chunkID [4];
 	ulong	chunkSize;
-} tWAVData;
+} __pack__ tWAVData;
 
 typedef struct tWAVInfo {
 	tWAVHeader	header;
 	tWAVFormat	format;
 	tWAVData		data;
-} tWAVInfo;
+} __pack__ tWAVInfo;
 
 //------------------------------------------------------------------------------
 

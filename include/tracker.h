@@ -16,7 +16,7 @@ typedef struct tServerList {
 	ubyte	id;
 	ubyte	nServers;
 	tUdpAddress		servers [MAX_TRACKER_SERVERS];
-} tServerList;
+} __pack__ tServerList;
 
 
 typedef struct tServerListTable {
@@ -24,7 +24,7 @@ typedef struct tServerListTable {
 	tServerList					serverList;
 	tUdpAddress					*tracker;
 	time_t						lastActive;
-} tServerListTable;
+} __pack__ tServerListTable;
 
 class CTracker {
 	private:

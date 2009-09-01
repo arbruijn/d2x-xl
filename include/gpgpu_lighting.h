@@ -35,7 +35,7 @@ typedef struct tVertLightIndex {
 	short			nVertex;
 	short			nLights;
 	tRgbaColorf	color;
-} tVertLightIndex;
+} __pack__ tVertLightIndex;
 
 typedef struct tVertLightData {
 	short					nVertices;
@@ -43,7 +43,7 @@ typedef struct tVertLightData {
 	CFloatVector		buffers [GPGPU_LIGHT_BUFFERS][GPGPU_LIGHT_BUF_SIZE];
 	CFloatVector		colors [GPGPU_LIGHT_BUF_SIZE];
 	tVertLightIndex	index [GPGPU_LIGHT_BUF_SIZE];
-} tVertLightData;
+} __pack__ tVertLightData;
 
 //------------------------------------------------------------------------------
 

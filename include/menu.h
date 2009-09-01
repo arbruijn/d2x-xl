@@ -181,7 +181,7 @@ typedef struct tMenuProps {
 			bIsScrollBox,
 			nDisplayMode,
 			bValid;
-} tMenuProps;
+} __pack__ tMenuProps;
 
 //------------------------------------------------------------------------------
 

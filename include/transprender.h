@@ -20,7 +20,7 @@ typedef enum tTranspItemType {
 	tiPoly,
 	tiTexPoly,
 	tiFlatPoly,
-} tTranspItemType;
+} __pack__ tTranspItemType;
 
 typedef struct tTranspPoly {
 	CSegFace*			faceP;
@@ -37,12 +37,12 @@ typedef struct tTranspPoly {
 	char					nColors;
 	char					bDepthMask;
 	char					bAdditive;
-} tTranspPoly;
+} __pack__ tTranspPoly;
 
 typedef struct tTranspObject {
 	CObject				*objP;
 	CFixVector			vScale;
-} tTranspObject;
+} __pack__ tTranspObject;
 
 typedef struct tTranspSprite {
 	CBitmap				*bmP;
@@ -55,36 +55,36 @@ typedef struct tTranspSprite {
 	char					bAdditive;
 	char					bDepthMask;
 	float					fSoftRad;
-} tTranspSprite;
+} __pack__ tTranspSprite;
 
 typedef struct tTranspSpark {
 	CFloatVector				position;
 	int					nSize;
 	char					nFrame;
 	char					nType;
-} tTranspSpark;
+} __pack__ tTranspSpark;
 
 typedef struct tTranspParticle {
 	CParticle			*particle;
 	float					fBrightness;
-} tTranspParticle;
+} __pack__ tTranspParticle;
 
 typedef enum tTranspSphereType {
 	riSphereShield,
 	riMonsterball
-} tTranspSphereType;
+} __pack__ tTranspSphereType;
 
 typedef struct tTranspSphere {
 	tTranspSphereType	nType;
 	tRgbaColorf			color;
 	CObject				*objP;
 	int					nSize;
-} tTranspSphere;
+} __pack__ tTranspSphere;
 
 typedef struct tTranspLightning {
 	CLightning			*lightning;
 	short					nDepth;
-} tTranspLightning;
+} __pack__ tTranspLightning;
 
 typedef struct tTranspLightTrail {
 	CBitmap					*bmP;
@@ -92,7 +92,7 @@ typedef struct tTranspLightTrail {
 	tTexCoord2f				texCoord [7];
 	tRgbaColorf				color;
 	char						bTrail;
-} tTranspLightTrail;
+} __pack__ tTranspLightTrail;
 
 typedef struct tTranspItem {
 	struct tTranspItem	*pNextItem;
@@ -112,7 +112,7 @@ typedef struct tTranspItem {
 		tTranspLightning			lightning;
 		tTranspLightTrail			thruster;
 	} item;
-} tTranspItem;
+} __pack__ tTranspItem;
 
 typedef struct tTranspItemBuffer {
 	CArray<tTranspItem*>	depthBuffer;
@@ -140,7 +140,7 @@ typedef struct tTranspItemBuffer {
 	char				bDecal;
 	char				bSplitPolys;
 	CBitmap			*bmP [3];
-} tTranspItemBuffer;
+} __pack__ tTranspItemBuffer;
 
 typedef struct tTranspItemData {
 	tTranspItem		item;
@@ -148,7 +148,7 @@ typedef struct tTranspItemData {
 	int				nSize;
 	int				nDepth;
 	int				nIndex;
-	} tTranspItemData;
+	} __pack__ tTranspItemData;
 
 //------------------------------------------------------------------------------
 

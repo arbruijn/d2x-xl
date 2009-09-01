@@ -199,7 +199,7 @@ int GrToggleFullScreenMenu(void);//returns state after toggling (ie, same as if 
 
 typedef struct tScrSize {
 	int	x, y, c;
-} tScrSize;
+} __pack__ tScrSize;
 
 extern tScrSize scrSizes [];
 
@@ -215,20 +215,20 @@ typedef union tTexCoord2f {
 	struct {
 		float	u, v;
 		} v;
-	} tTexCoord2f;
+	} __pack__ tTexCoord2f;
 
 typedef union tTexCoord3f {
 	float a [3];
 	struct {
 		float	u, v, l;
 		} v;
-	} tTexCoord3f;
+	} __pack__ tTexCoord3f;
 
 typedef struct tFaceTriangle {
 	ushort				nFace;
 	ushort				index [3];
 	int					nIndex;
-	} tFaceTriangle;
+	} __pack__ tFaceTriangle;
 
 class CSegFaceInfo {
 	public:
@@ -294,7 +294,7 @@ typedef struct tDisplayModeInfo {
 	short	flags;
 	char	isWideScreen;
 	char	isAvailable;
-} tDisplayModeInfo;
+} __pack__ tDisplayModeInfo;
 
 #define NUM_DISPLAY_MODES	21
 

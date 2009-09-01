@@ -106,10 +106,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-typedef __pack__ struct tStuckObject {
+typedef struct tStuckObject {
 	short   nObject, nWall;
 	int     nSignature;
-} tStuckObject;
+} __pack__ tStuckObject;
 
 //------------------------------------------------------------------------------
 
@@ -156,16 +156,16 @@ class CCloakingWall {
 //------------------------------------------------------------------------------
 //Start old CWall structures
 
-typedef __pack__ struct tWallV16 {
+typedef struct tWallV16 {
 	sbyte   nType;             // What kind of special CWall.
 	sbyte   flags;             // Flags for the CWall.
 	fix     hps;               // "Hit points" of the CWall.
 	sbyte   nTrigger;          // Which CTrigger is associated with the CWall.
 	sbyte   nClip;					// Which animation associated with the CWall.
 	sbyte   keys;
-} tWallV16;
+} __pack__ tWallV16;
 
-typedef __pack__ struct tWallV19 {
+typedef struct tWallV19 {
 	int     nSegment,nSide;     // Seg & CSide for this CWall
 	sbyte   nType;              // What kind of special CWall.
 	sbyte   flags;              // Flags for the CWall.
@@ -174,9 +174,9 @@ typedef __pack__ struct tWallV19 {
 	sbyte   nClip;           // Which animation associated with the CWall.
 	sbyte   keys;
 	int nLinkedWall;            // number of linked CWall
-} tWallV19;
+} __pack__ tWallV19;
 
-typedef __pack__ struct v19_door {
+typedef struct v19_door {
 	int     nPartCount;            // for linked walls
 	short   seg[2];             // Segment pointer of door.
 	short   nSide [2];            // Side number of door.
@@ -239,7 +239,7 @@ inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
 #define WCF_FROMPOG		32
 #define WCF_INITIALIZED	64
 
-typedef __pack__ struct {
+typedef struct {
 	fix     xTotalTime;
 	short   nFrameCount;
 	short   frames[MAX_CLIP_FRAMES];
@@ -248,9 +248,9 @@ typedef __pack__ struct {
 	short   flags;
 	char    filename [13];
 	char    pad;
-} tWallClip;
+} __pack__ tWallClip;
 
-typedef __pack__ struct {
+typedef struct {
 	fix     playTime;
 	short   nFrameCount;
 	short   frames[D1_MAX_CLIP_FRAMES];
@@ -259,7 +259,7 @@ typedef __pack__ struct {
 	short   flags;
 	char    filename [13];
 	char    pad;
-} tD1WallClip;
+} __pack__ tD1WallClip;
 
 extern char pszWallNames[7][10];
 

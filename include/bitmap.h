@@ -59,7 +59,7 @@ typedef struct tBmProps {
 	short   rowSize;	// ubyte offset to next row
 	sbyte	  nMode;		// 0=Linear, 1=ModeX, 2=SVGA
 	ubyte	  flags;		
-} tBmProps;
+} __pack__ tBmProps;
 
 class CFrameInfo {
 	public:

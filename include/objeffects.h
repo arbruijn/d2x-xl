@@ -8,7 +8,7 @@ typedef struct tThrusterInfo {
 	float					fLength;
 	tPathPoint			*pp;
 	CModelThrusters	*mtP;
-} tThrusterInfo;
+} __pack__ tThrusterInfo;
 
 void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj);
 #if DBG

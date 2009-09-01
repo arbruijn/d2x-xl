@@ -44,7 +44,7 @@ typedef struct tGameConfig {
 	int		vrTracking;
 	uint		nVersion;
 	int		nTotalTime;
-} tGameConfig;
+} __pack__ tGameConfig;
 
 extern tGameConfig gameConfig;
 

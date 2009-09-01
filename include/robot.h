@@ -41,13 +41,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RI_CLOAKED_EXCEPT_FIRING    2
 
 //describes the position of a certain joint
-typedef __pack__ struct tJointPos {
+typedef struct tJointPos {
 	short jointnum;
 	CAngleVector angles;
-} tJointPos;
+} __pack__ tJointPos;
 
 //describes a list of joint positions
-typedef __pack__ struct jointlist {
+typedef struct jointlist {
 	short n_joints;
 	short offset;
 } __pack__ jointlist;
@@ -57,7 +57,7 @@ typedef __pack__ struct jointlist {
 #define RIF_THIEF       2   //this guy steals!
 
 //  Robot information
-typedef __pack__ struct tRobotInfo {
+typedef struct tRobotInfo {
 	int			nModel;                  // which polygon model?
 	CFixVector  gunPoints [MAX_GUNS];   // where each gun model is
 	ubyte			gunSubModels [MAX_GUNS];    // which submodel is each gun in?
@@ -124,9 +124,9 @@ typedef __pack__ struct tRobotInfo {
 
 	int     always_0xabcd;      // debugging
 
-} tRobotInfo;
+} __pack__ tRobotInfo;
 
-typedef __pack__ struct D1Robot_info {
+typedef struct D1Robot_info {
 	int			nModel;							// which polygon model?
 	int			nGuns;								// how many different gun positions
 	CFixVector	gunPoints[MAX_GUNS];			// where each gun model is

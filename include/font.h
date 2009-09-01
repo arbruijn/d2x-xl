@@ -51,7 +51,7 @@ typedef struct tFont {
 	// These fields do not participate in disk i/o!
 	CArray<CBitmap> 	bitmaps;
 	CBitmap 				parentBitmap;
-} tFont;
+} __pack__ tFont;
 
 class CFont {
 	private:
@@ -124,7 +124,7 @@ typedef struct tOpenFont {
 	char		filename [SHORT_FILENAME_LEN];
 	CFont		font;
 	ubyte*	data;
-} tOpenFont;
+} __pack__ tOpenFont;
 
 class CFontManager {
 	private:

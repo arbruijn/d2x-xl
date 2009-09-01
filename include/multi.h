@@ -263,12 +263,12 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 // the server and node members since I cannot change the order ot these
 // members.
 
-typedef __pack__ struct ipx_addr {
+typedef struct ipx_addr {
 	ubyte   server[4];
 	ubyte   node [6];
 } __pack__ ipx_addr;
 
-typedef __pack__ struct appletalk_addr {
+typedef struct appletalk_addr {
 	ushort  net;
 	ubyte   node;
 	ubyte   socket;
@@ -277,10 +277,10 @@ typedef __pack__ struct appletalk_addr {
 typedef union {
 	ipx_addr			ipx;
 	appletalk_addr	appletalk;
-} tNetworkInfo;
+} __pack__ tNetworkInfo;
 
 
-typedef __pack__ struct tNetPlayerInfo {
+typedef struct tNetPlayerInfo {
 	char    callsign [CALLSIGN_LEN+1];
 	tNetworkInfo network;
 	ubyte   versionMajor;
@@ -289,17 +289,17 @@ typedef __pack__ struct tNetPlayerInfo {
 	sbyte    connected;
 	ushort  socket;
 	ubyte   rank;
-} tNetPlayerInfo;
+} __pack__ tNetPlayerInfo;
 
 
-typedef __pack__ struct tAllNetPlayersInfo
+typedef struct tAllNetPlayersInfo
 {
 	char    nType;
 	int     nSecurity;
 	struct tNetPlayerInfo players [MAX_PLAYERS+4];
-} tAllNetPlayersInfo;
+} __pack__ tAllNetPlayersInfo;
 
-typedef __pack__ struct tNetgameInfo {
+typedef struct tNetgameInfo {
 	ubyte   nType;
 	int     nSecurity;
 	char    szGameName [NETGAME_NAME_LEN + 1];
@@ -410,11 +410,11 @@ typedef __pack__ struct tNetgameInfo {
 // 279 bytes
 // 355 bytes total
 	ubyte   AuxData[NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
-} tNetgameInfo;
+} __pack__ tNetgameInfo;
 
 #define MAX_ROBOTS_CONTROLLED 5
 
-typedef __pack__ struct tMultiRobotData {
+typedef struct tMultiRobotData {
 	int controlled [MAX_ROBOTS_CONTROLLED];
 	int agitation [MAX_ROBOTS_CONTROLLED];
 	fix controlledTime [MAX_ROBOTS_CONTROLLED];
@@ -423,7 +423,7 @@ typedef __pack__ struct tMultiRobotData {
 	int sendPending [MAX_ROBOTS_CONTROLLED];
 	int fired [MAX_ROBOTS_CONTROLLED];
 	sbyte fireBuf [MAX_ROBOTS_CONTROLLED][18+3];
-} tMultiRobotData;
+} __pack__ tMultiRobotData;
 
 extern struct tNetgameInfo netGame;
 extern struct tAllNetPlayersInfo netPlayers;

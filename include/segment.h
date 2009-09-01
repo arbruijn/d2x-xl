@@ -333,7 +333,7 @@ typedef struct tSegFaces {
 	CSegFace*	faceP;
 	ubyte		nFaces;
 	ubyte		bVisible;
-} tSegFaces;
+} __pack__ tSegFaces;
 
 #define S2F_AMBIENT_WATER   0x01
 #define S2F_AMBIENT_LAVA    0x02

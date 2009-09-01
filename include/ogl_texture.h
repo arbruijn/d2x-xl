@@ -35,7 +35,7 @@ typedef struct tTexture {
 #elif RENDER2TEXTURE == 2
 	CFBO				fbo;
 #endif
-} tTexture;
+} __pack__ tTexture;
 
 class CTexture {
 	private:

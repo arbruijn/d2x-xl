@@ -22,7 +22,7 @@ typedef struct tPathPoint {
 	CFixVector			vPos;
 	CFixVector			vOrgPos;
 	CFixMatrix			mOrient;
-} tPathPoint;
+} __pack__ tPathPoint;
 
 class CFlightPath {
 	public:

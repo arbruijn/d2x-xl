@@ -24,7 +24,7 @@
 
 typedef struct tPartPos {
 	float		x, y, z;
-} tPartPos;
+} __pack__ tPartPos;
 
 typedef struct tParticle {
 #if !EXTRA_VERTEX_ARRAYS
@@ -56,7 +56,7 @@ typedef struct tParticle {
 	char			m_nFrame;
 	char			m_nRotFrame;
 	char			m_nOrient;
-} tParticle;
+} __pack__ tParticle;
 
 class CParticle : public tParticle {
 	public:
@@ -114,7 +114,7 @@ typedef struct tParticleEmitter {
 	char					m_bHaveColor;
 	char					m_bBlowUpParts;	//blow particles up at their "birth"
 	char					m_bEmittingFace;
-} tParticleEmitter;
+} __pack__ tParticleEmitter;
 
 class CParticleEmitter : public tParticleEmitter {
 	public:
@@ -163,7 +163,7 @@ typedef struct tParticleSystem {
 	bool								m_bDestroy;
 	bool								m_bValid;
 	char								m_nType;				//black or white
-} tParticleSystem;
+} __pack__ tParticleSystem;
 
 class CParticleSystem : public tParticleSystem {
 	public:

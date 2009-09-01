@@ -118,7 +118,7 @@ typedef struct {
 	fix         lastTime;
 	int         nLastSeg;
 	CFixVector   vLastPos;
-} tAICloakInfo;
+} __pack__ tAICloakInfo;
 
 #define CHASE_TIME_LENGTH   (I2X (8))
 #define DEFAULT_ROBOT_SOUND_VOLUME I2X (1)
@@ -131,7 +131,7 @@ typedef struct tAwarenessEvent {
 	short       nSegment; // CSegment the event occurred in
 	short       nType;   // nType of event, defines behavior
 	CFixVector	pos;    // absolute 3 space location of event
-} tAwarenessEvent;
+} __pack__ tAwarenessEvent;
 
 #define AIS_MAX 8
 #define AIE_MAX 5

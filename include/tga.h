@@ -20,7 +20,7 @@ typedef struct {
     short height;             // image height in pixels
     char  bits;               // image bits per pixel 8,16,24,32
     char  descriptor;         // image descriptor bits (vh flip bits)
-} tTgaHeader;
+} __pack__ tTgaHeader;
 
 class CModelTextures {
 	public:

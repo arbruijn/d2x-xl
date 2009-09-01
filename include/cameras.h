@@ -38,7 +38,7 @@ typedef struct tCamera {
 	fixang			curAngle;
 	fixang			curDelta;
 	time_t			t0;
-} tCamera;
+} __pack__ tCamera;
 
 class CCamera {
 	private:

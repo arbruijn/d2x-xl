@@ -26,7 +26,7 @@ typedef struct tPixelBuffer {
 	int			nWidth;
 	int			nHeight;
 	char			bBound;
-} tPixelBuffer;
+} __pack__ tPixelBuffer;
 
 #ifdef _WIN32
 extern PFNWGLCREATEPBUFFERARBPROC				wglCreatePbufferARB;

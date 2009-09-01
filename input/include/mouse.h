@@ -70,14 +70,14 @@ typedef struct tMouseButton {
 	fix	xTimeHeldDown;
 	uint	numDowns;
 	uint	numUps;
-} tMouseButton;
+} __pack__ tMouseButton;
 
 typedef struct tMouseInfo {
 	tMouseButton	buttons [MOUSE_MAX_BUTTONS];
 	int				dx, dy, dz;
 	int				x, y, z;
 	int				bDoubleClick;
-} tMouseInfo;
+} __pack__ tMouseInfo;
 
 extern tMouseInfo mouseData;
 

@@ -1051,14 +1051,14 @@ inline const CFixVector operator/ (const CFixVector& v, const fix d) {
  * A 3x3 rotation m_data.matrix.  Sorry about the numbering starting with one. Ordering
  * is across then down, so <m1,m2,m3> is the first row.
  */
-typedef __pack__ union tFixMatrixData {
+typedef union tFixMatrixData {
 	CFixVector	mat [3];
 	fix			vec [9];
-} tFixMatrixData;
+} __pack__ tFixMatrixData;
 
 
 class __pack__ CFixMatrix {
-	friend class __pack__ CFloatMatrix;
+	friend classCFloatMatrix;
 
 	private:
 		tFixMatrixData	m_data;
@@ -1246,10 +1246,10 @@ inline void CFixMatrix::CheckAndFix (void)
 typedef union tFloatMatrixData {
 	CFloatVector	mat [4];
 	float				vec [16];
-} tFloatMatrixData;
+} __pack__ tFloatMatrixData;
 
 class __pack__ CFloatMatrix {
-	friend class __pack__ CFixMatrix;
+	friend classCFixMatrix;
 
 	private:
 		tFloatMatrixData	m_data;

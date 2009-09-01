@@ -161,7 +161,7 @@ typedef struct tMuzzleInfo {
 	fix         createTime;
 	short       nSegment;
 	CFixVector  pos;
-} tMuzzleInfo;
+} __pack__ tMuzzleInfo;
 
 // Omega cannon stuff.
 #define DEFAULT_MAX_OMEGA_CHARGE    (I2X (1))  //  Maximum charge level for omega cannonw

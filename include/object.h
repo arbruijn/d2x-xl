@@ -162,12 +162,12 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
 
 // A compressed form for sending crucial data about via slow devices,
 // such as modems and buggies.
-typedef __pack__ struct tShortPos {
+typedef struct tShortPos {
 	sbyte   orient [9];
 	short   pos [3];
 	short   nSegment;
 	short   vel [3];
-} tShortPos;
+} __pack__ tShortPos;
 
 class CShortPos {
 	private:
@@ -210,7 +210,7 @@ class RenderLightningInfo : public RenderInfo { };
 
 //	-----------------------------------------------------------------------------
 // information for physics sim for an CObject
-typedef __pack__ struct tPhysicsInfo {
+typedef struct tPhysicsInfo {
 	CFixVector	velocity;   // velocity vector of this CObject
 	CFixVector	thrust;     // constant force applied to this CObject
 	fix         mass;       // the mass of this CObject
@@ -220,7 +220,7 @@ typedef __pack__ struct tPhysicsInfo {
 	CFixVector	rotThrust;  // rotational acceleration
 	fixang      turnRoll;   // rotation caused by turn banking
 	ushort      flags;      // misc physics flags
-} tPhysicsInfo;
+} __pack__ tPhysicsInfo;
 
 class CPhysicsInfo {
 	private:
@@ -250,19 +250,19 @@ class CPhysicsInfo {
 //	-----------------------------------------------------------------------------
 // stuctures for different kinds of simulation
 
-typedef __pack__ struct nParentInfo {
+typedef struct nParentInfo {
 	short		nType;
 	short		nObject;
 	int		nSignature;
-} tParentInfo;
+} __pack__ tParentInfo;
 
-typedef __pack__ struct tLaserInfo  {
+typedef struct tLaserInfo  {
 	tParentInfo	parent;
 	fix			xCreationTime;    // Absolute time of creation.
 	short			nLastHitObj;      // For persistent weapons (survive CObject collision), CObject it most recently hit.
 	short			nHomingTarget;		// Object this CObject is tracking.
 	fix			xScale;				// Power if this is a fusion bolt (or other super weapon to be added).
-} tLaserInfo;
+} __pack__ tLaserInfo;
 
 class CLaserInfo {
 	private:
@@ -287,11 +287,11 @@ class CLaserInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tAttachedObjInfo {
+typedef struct tAttachedObjInfo {
 	short	nParent;	// explosion is attached to this CObject
 	short	nPrev;	// previous explosion in attach list
 	short	nNext;	// next explosion in attach list
-} tAttachedObjInfo;
+} __pack__ tAttachedObjInfo;
 
 class CAttachedInfo {
 	private:
@@ -308,12 +308,12 @@ class CAttachedInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tExplosionInfo {
+typedef struct tExplosionInfo {
     fix     nSpawnTime;       // when lifeleft is < this, spawn another
     fix     nDeleteTime;      // when to delete CObject
     short   nDeleteObj;			// and what CObject to delete
 	 tAttachedObjInfo	attached;
-} tExplosionInfo;
+} __pack__ tExplosionInfo;
 
 class CExplosionInfo : public CAttachedInfo {
 	private:
@@ -330,12 +330,12 @@ class CExplosionInfo : public CAttachedInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tObjLightInfo {
+typedef struct tObjLightInfo {
     fix				intensity;  // how bright the light is
 	 short			nSegment;
 	 short			nObjects;
 	 tRgbaColorf	color;
-} tObjLightInfo;
+} __pack__ tObjLightInfo;
 
 class CObjLightInfo {
 	private:
@@ -354,11 +354,11 @@ class CObjLightInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tPowerupInfo {
+typedef struct tPowerupInfo {
 	int     nCount;          // how many/much we pick up (vulcan cannon only?)
 	fix     xCreationTime;  // Absolute time of creation.
 	int     nFlags;          // spat by CPlayerData?
-} tPowerupInfo;
+} __pack__ tPowerupInfo;
 
 class CPowerupInfo {
 	private:
@@ -375,13 +375,13 @@ class CPowerupInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tVClipInfo {
+typedef struct tVClipInfo {
 public:
 	int     nClipIndex;
 	fix	  xTotalTime;
 	fix     xFrameTime;
 	sbyte   nCurFrame;
-} tVClipInfo;
+} __pack__ tVClipInfo;
 
 class CVClipInfo {
 	private:
@@ -400,7 +400,7 @@ class CVClipInfo {
 #define SMOKE_TYPE_SPRAY	1
 #define SMOKE_TYPE_BUBBLES	2
 
-typedef __pack__ struct tParticleInfo {
+typedef struct tParticleInfo {
 public:
 	int			nLife;
 	int			nSize [2];
@@ -411,7 +411,7 @@ public:
 	tRgbaColorb	color;
 	char			nSide;
 	char			nType;
-} tParticleInfo;
+} __pack__ tParticleInfo;
 
 class CSmokeInfo {
 	private:
@@ -430,7 +430,7 @@ class CSmokeInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tLightningInfo {
+typedef struct tLightningInfo {
 public:
 	int			nLife;
 	int			nDelay;
@@ -452,7 +452,7 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	tRgbaColorb color;
-} tLightningInfo;
+} __pack__ tLightningInfo;
 
 class CLightningInfo {
 	private:
@@ -483,14 +483,14 @@ class CLightningInfo {
 //	-----------------------------------------------------------------------------
 // structures for different kinds of rendering
 
-typedef __pack__ struct tPolyObjInfo {
+typedef struct tPolyObjInfo {
 public:
 	int     		nModel;          // which polygon model
 	CAngleVector 	animAngles [MAX_SUBMODELS]; // angles for each subobject
 	int     		nSubObjFlags;       // specify which subobjs to draw
 	int     		nTexOverride;      // if this is not -1, map all face to this
 	int     		nAltTextures;       // if not -1, use these textures instead
-} tPolyObjInfo;
+} __pack__ tPolyObjInfo;
 
 class CPolyObjInfo {
 	private:
@@ -511,10 +511,10 @@ class CPolyObjInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tObjTransformation {
+typedef struct tObjTransformation {
 	CFixVector	vPos;				// absolute x,y,z coordinate of center of object
 	CFixMatrix	mOrient;			// orientation of object in world
-	} tObjTransformation;
+	} __pack__ tObjTransformation;
 
 class CObjTransformation {
 	private:
@@ -529,11 +529,11 @@ class CObjTransformation {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tObjContainerInfo {
+typedef struct tObjContainerInfo {
 	sbyte			nType;
 	sbyte			nId;
 	sbyte			nCount;
-} tObjContainerInfo;
+} __pack__ tObjContainerInfo;
 
 class CObjContainerInfo {
 	private:
@@ -550,7 +550,7 @@ class CObjContainerInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tObjectInfo {
+typedef struct tObjectInfo {
 	int     					nSignature;    // Every CObject ever has a unique nSignature...
 	ubyte   					nType;         // what nType of CObject this is... robot, weapon, hostage, powerup, fireball
 	ubyte   					nId;           // which form of CObject...which powerup, robot, etc.
@@ -572,12 +572,12 @@ typedef __pack__ struct tObjectInfo {
 	tObjContainerInfo		contains;
 	sbyte   					nCreator; // Materialization center that created this CObject, high bit set if matcen-created
 	fix     					xLifeLeft;      // how long until goes away, or 7fff if immortal
-} tObjectInfo;
+} __pack__ tObjectInfo;
 
 typedef union tObjMovementInfo {
 	tPhysicsInfo		physInfo; // a physics CObject
 	CFixVector   		spinRate; // for spinning objects
-	} tObjMovementInfo;
+	} __pack__ tObjMovementInfo;
 
 typedef union tObjControlInfo {
 	tLaserInfo			laserInfo;
@@ -585,17 +585,17 @@ typedef union tObjControlInfo {
 	tAIStaticInfo		aiInfo;
 	tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
 	tPowerupInfo		powerupInfo;
-	} tObjControlInfo;
+	} __pack__ tObjControlInfo;
 	
 typedef union tObjRenderInfo {
 	tPolyObjInfo		polyObjInfo;      // polygon model
 	tVClipInfo			vClipInfo;     // tVideoClip
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
-	} tObjRenderInfo;
+	} __pack__ tObjRenderInfo;
 	
 // TODO get rid of the structs (former unions) and the union
-typedef __pack__ struct tBaseObject {
+typedef struct tBaseObject {
 	tObjectInfo			info;
 	tObjMovementInfo	mType;	// movement info, determined by MOVEMENT_TYPE
 	tObjControlInfo	cType;	// control info, determined by CONTROL_TYPE
@@ -603,7 +603,7 @@ typedef __pack__ struct tBaseObject {
 #ifdef WORDS_NEED_ALIGNMENT
 	short   				nPad;
 #endif
-} tBaseObject;
+} __pack__ tBaseObject;
 
 //	-----------------------------------------------------------------------------
 
@@ -659,16 +659,16 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 
 struct tObject;
 
-typedef __pack__ struct tObjListLink {
+typedef struct tObjListLink {
 	tObject	*prev, *next;
-} tObjListLink;
+} __pack__ tObjListLink;
 
-typedef __pack__ struct tShotInfo {
+typedef struct tShotInfo {
 	short					nObject;
 	int					nSignature;
-} tShotInfo;
+} __pack__ tShotInfo;
 
-typedef __pack__ struct tObject : public tBaseObject {
+typedef struct tObject : public tBaseObject {
 	tObjListLink	links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
 	ubyte				nLinkedType;
 	ubyte				nTracers;
@@ -676,7 +676,7 @@ typedef __pack__ struct tObject : public tBaseObject {
 	fix				xTimeLastHit;
 	tShotInfo		shots;
 	CFixVector		vStartVel;
-} tObject;
+} __pack__ tObject;
 
 class CObject;
 
@@ -687,10 +687,10 @@ class CObjListLink {
 };
 
 
-typedef __pack__ struct tObjListRef {
+typedef struct tObjListRef {
 	CObject	*head, *tail;
 	short		nObjects;
-} tObjListRef;
+} __pack__ tObjListRef;
 
 
 class CObjHitInfo {
@@ -1002,11 +1002,11 @@ class CParticleObject : public CObject, public CSmokeInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tObjPosition {
+typedef struct tObjPosition {
 	tObjTransformation	position;
 	short						nSegment;     // CSegment number containing CObject
 	short						nSegType;		// nType of CSegment
-} tObjPosition;
+} __pack__ tObjPosition;
 
 class CObjPosition : public CObjTransformation {
 	private:
@@ -1019,14 +1019,14 @@ class CObjPosition : public CObjTransformation {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tWindowRenderedData {
+typedef struct tWindowRenderedData {
 	int     nFrame;
 	CObject *viewerP;
 	int     bRearView;
 	int     nUser;
 	int     nObjects;
 	short   renderedObjects [MAX_RENDERED_OBJECTS];
-} tWindowRenderedData;
+} __pack__ tWindowRenderedData;
 
 class WIndowRenderedData {
 	private:
@@ -1042,13 +1042,13 @@ class WIndowRenderedData {
 
 //	-----------------------------------------------------------------------------
 
-typedef __pack__ struct tObjDropInfo {
+typedef struct tObjDropInfo {
 	time_t	nDropTime;
 	short		nPowerupType;
 	short		nPrevPowerup;
 	short		nNextPowerup;
 	short		nObject;
-} tObjDropInfo;
+} __pack__ tObjDropInfo;
 
 class CObjDropInfo {
 	private:

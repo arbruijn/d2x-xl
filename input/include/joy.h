@@ -68,18 +68,18 @@ typedef struct tJoyButton {
 	fix xTimeWentDown;
 	int numDowns;
 	int numUps;
-} tJoyButton;
+} __pack__ tJoyButton;
 
 typedef struct tJoyAxisCal {
 	int		nMin;
 	int		nCenter;
 	int		nMax;
-} tJoyAxisCal;
+} __pack__ tJoyAxisCal;
 
 typedef struct tJoyAxis {
 	int			nValue;
 	tJoyAxisCal	cal;
-} tJoyAxis;
+} __pack__ tJoyAxis;
 
 typedef struct tSdlJoystick {
 	SDL_Joystick	*handle;
@@ -89,7 +89,7 @@ typedef struct tSdlJoystick {
 	int				hatMap [MAX_HATS_PER_JOYSTICK];  //Note: Descent expects hats to be buttons, so these are indices into Joystick.buttons
 	int				axisMap [MAX_AXES_PER_JOYSTICK];
 	int				buttonMap [MAX_BUTTONS_PER_JOYSTICK];
-} tSdlJoystick;
+} __pack__ tSdlJoystick;
 
 extern struct tSdlJoystick /*SDL_Joystick*/ sdlJoysticks [MAX_JOYSTICKS];
 

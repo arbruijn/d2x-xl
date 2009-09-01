@@ -54,7 +54,7 @@ typedef struct control_info {
 	ubyte useInvulDownCount;
 	ubyte slowMotionCount;
 	ubyte bulletTimeCount;
-} tControlInfo;
+} __pack__ tControlInfo;
 
 typedef struct ext_control_info {
 	fix pitchTime;
@@ -232,7 +232,7 @@ typedef struct tControlSettings {
 	ubyte		defaults [CONTROL_MAX_TYPES][MAX_CONTROLS];
 	ubyte		d2xCustom [MAX_HOTKEY_CONTROLS];
 	ubyte		d2xDefaults [MAX_HOTKEY_CONTROLS];
-} tControlSettings;
+} __pack__ tControlSettings;
 
 extern tControlSettings controlSettings;
 

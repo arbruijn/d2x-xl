@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_FROMPOG		16
 #define EF_INITIALIZED	32
 
-typedef __pack__ struct tEffectClip {
+typedef struct tEffectClip {
 	tVideoClip	vClipInfo;             //embedded tVideoClip
 	fix			xTimeLeft;      //for sequencing
 	int			nCurFrame;      //for sequencing
@@ -42,7 +42,7 @@ typedef __pack__ struct tEffectClip {
 	fix			xDestSize;      //3d size of explosion
 	int			nSound;      //what sound this makes
 	int			nSegment,nSide; //what seg & CSide, for one-shot clips
-} tEffectClip;
+} __pack__ tEffectClip;
 
 typedef tEffectClip D1_eclip;
 

@@ -10,7 +10,7 @@ typedef struct tReplacementModel {
 	short			nType;
 	int			bFlipV;
 	short			nId;
-} tReplacementModel;
+} __pack__ tReplacementModel;
 
 extern tReplacementModel replacementModels [];
 

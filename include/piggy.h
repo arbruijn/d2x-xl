@@ -89,19 +89,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tRGBA {
 	ubyte	r,g,b,a;
-} tRGBA;
+} __pack__ tRGBA;
 
 typedef struct tABGR {
 	ubyte	a, b, g, r;
-} tABGR;
+} __pack__ tABGR;
 
 typedef struct tBGRA {
 	ubyte	b, g, r, a;
-} tBGRA;
+} __pack__ tBGRA;
 
 typedef struct tARGB {
 	ubyte	a, r, g, b;
-} tARGB;
+} __pack__ tARGB;
 
 typedef struct alias {
 	char aliasname [FILENAME_LEN];
@@ -117,7 +117,7 @@ typedef struct tPIGBitmapHeader {
 	ubyte flags;
 	ubyte avgColor;
 	int offset;
-} tPIGBitmapHeader;
+} __pack__ tPIGBitmapHeader;
 
 typedef struct tPIGBitmapHeaderD1 {
 	char name [8];
@@ -127,7 +127,7 @@ typedef struct tPIGBitmapHeaderD1 {
 	ubyte flags;
 	ubyte avgColor;
 	int offset;
-} tPIGBitmapHeaderD1;
+} __pack__ tPIGBitmapHeaderD1;
 
 #define PIGBITMAPHEADER_D1_SIZE 17 // no wh_extra
 
@@ -136,20 +136,20 @@ typedef struct tPIGSoundHeader {
 	int length;
 	int data_length;
 	int offset;
-} tPIGSoundHeader;
+} __pack__ tPIGSoundHeader;
 
 // an index into the bitmap collection of the piggy file
 typedef struct tBitmapIndex {
 	ushort index;
-} tBitmapIndex;
+} __pack__ tBitmapIndex;
 
 typedef struct tBitmapFile {
 	char    name [15];
-} tBitmapFile;
+} __pack__ tBitmapFile;
 
 typedef struct tSoundFile {
 	char    name [15];
-} tSoundFile;
+} __pack__ tSoundFile;
 
 //------------------------------------------------------------------------------
 
@@ -287,7 +287,7 @@ char* DefaultSoundFile (void);
 typedef struct tAddonSound {
 	Mix_Chunk		*chunkP;
 	/*const*/ char		szSoundFile [FILENAME_LEN];
-} tAddonSound;
+} __pack__ tAddonSound;
 
 extern tAddonSound addonSounds [MAX_ADDON_SOUND_FILES];
 

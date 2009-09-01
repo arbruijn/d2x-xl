@@ -33,14 +33,14 @@ typedef struct tRenderThreadInfo {
 	tParticleEmitter		*particleEmitters [MAX_THREADS];
 	int						nCurTime [MAX_THREADS];
 	tThreadInfo				ti [MAX_THREADS];
-	} tRenderThreadInfo;
+	} __pack__ tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;
 
 typedef struct tTranspRenderThreadInfo {
 	tTranspItemData	itemData [MAX_THREADS];
 	tThreadInfo			ti [MAX_THREADS];
-	} tTranspRenderThreadInfo;
+	} __pack__ tTranspRenderThreadInfo;
 
 extern tTranspRenderThreadInfo tiTranspRender;
 extern tThreadInfo tiEffects;

@@ -101,12 +101,12 @@ extern char Powerup_names[MAX_POWERUP_TYPES][POWERUP_NAME_LENGTH];
 
 extern int Headlight_active_default;    // is headlight on when picked up?
 
-typedef __pack__ struct tPowerupTypeInfo {
+typedef struct tPowerupTypeInfo {
 	int nClipIndex;
 	int hitSound;
 	fix size;       // 3d size of longest dimension
 	fix light;      // amount of light cast by this powerup, set in bitmaps.tbl
-} tPowerupTypeInfo;
+} __pack__ tPowerupTypeInfo;
 
 extern int N_powerupTypes;
 extern tPowerupTypeInfo powerupInfo[MAX_POWERUP_TYPES];

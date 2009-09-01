@@ -22,13 +22,13 @@ typedef enum tSoundTask {
 	stOpenAudio,
 	stCloseAudio,
 	stReconfigureAudio
-	} tSoundTask;
+	} __pack__ tSoundTask;
 
 typedef struct tSoundThreadInfo {
 	tSoundTask		nTask;
 	float				fSlowDown;
 	tThreadInfo		ti;
-} tSoundThreadInfo;
+} __pack__ tSoundThreadInfo;
 
 void StartSoundThread (void);
 void EndSoundThread (void);

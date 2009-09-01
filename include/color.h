@@ -7,50 +7,50 @@ typedef struct tRgbColord {
 	double red;
 	double green;
 	double blue;
-} tRgbColord;
+} __pack__ tRgbColord;
 
 typedef struct tRgbaColord {
 	double red;
 	double green;
 	double blue;
 	double alpha;
-} tRgbaColord;
+} __pack__ tRgbaColord;
 
 typedef struct tRgbColorf {
 	float red;
 	float green;
 	float blue;
-} tRgbColorf;
+} __pack__ tRgbColorf;
 
 typedef struct tRgbaColorf {
 	float red;
 	float green;
 	float blue;
 	float	alpha;
-} tRgbaColorf;
+} __pack__ tRgbaColorf;
 
 typedef struct tRgbaColorb {
 	ubyte	red, green, blue, alpha;
-} tRgbaColorb;
+} __pack__ tRgbaColorb;
 
 typedef struct tRgbColorb {
 	ubyte	red, green, blue;
-} tRgbColorb;
+} __pack__ tRgbColorb;
 
 typedef struct tRgbColors {
 	sbyte red, green, blue;
-} tRgbColors;
+} __pack__ tRgbColors;
 
 typedef struct tFaceColor {
 	tRgbaColorf	color;
 	char			index;
-} tFaceColor;
+} __pack__ tFaceColor;
 
 typedef struct tCanvasColor {
 	short       index;       // current color
 	ubyte			rgb;
 	tRgbaColorb	color;
-} tCanvasColor;
+} __pack__ tCanvasColor;
 
 //-----------------------------------------------------------------------------
 

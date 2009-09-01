@@ -35,12 +35,12 @@ typedef struct tFaceProps {
 	ubyte			nVertices;
 	ubyte			widFlags;
 	char			nType;
-} tFaceProps;
+} __pack__ tFaceProps;
 
 typedef struct tFaceListEntry {
 	short			nextFace;
 	tFaceProps	props;
-} tFaceListEntry;
+} __pack__ tFaceListEntry;
 
 //------------------------------------------------------------------------------
 

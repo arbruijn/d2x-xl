@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //Palette entry structure
 typedef struct tPalEntry {
 	sbyte r, g, b;
-} tPalEntry;
+} __pack__ tPalEntry;
 
 //structure of the header in the file
 typedef struct tIFFBitmapHeader {
@@ -35,13 +35,13 @@ typedef struct tIFFBitmapHeader {
 	tPalEntry palette [256];		//the palette for this bitmap
 	ubyte *raw_data;				//ptr to array of data
 	short row_size;				//offset to next row
-} tIFFBitmapHeader;
+} __pack__ tIFFBitmapHeader;
 
 typedef struct tMemoryFile {
 	ubyte *data;
 	int	position;
 	int	length;
-} tMemoryFile;
+} __pack__ tMemoryFile;
 
 class CIFF {
 	private:

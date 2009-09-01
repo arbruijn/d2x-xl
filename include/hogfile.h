@@ -29,14 +29,14 @@ typedef struct tHogFile {
 	char		name [13];
 	int		offset;
 	int		length;
-} tHogFile;
+} __pack__ tHogFile;
 
 typedef struct tHogFileList {
 	tHogFile		files [MAX_HOGFILES];
 	char			szName [FILENAME_LEN];
 	int			nFiles;
 	int			bInitialized;
-} tHogFileList;
+} __pack__ tHogFileList;
 
 typedef struct tGameHogFiles {
 	tHogFileList D1HogFiles;
@@ -47,7 +47,7 @@ typedef struct tGameHogFiles {
 	tHogFileList MsnHogFiles;
 	char szAltHogFile [FILENAME_LEN];
 	int bAltHogFileInited;
-} tGameHogFiles;
+} __pack__ tGameHogFiles;
 
 class CHogFile {
 	public:

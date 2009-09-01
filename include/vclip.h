@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // tVideoClip flags
 #define VF_ROD      1       // draw as a rod, not a blob
 
-typedef __pack__ struct {
+typedef struct {
 	fix             xTotalTime;          // total time (in seconds) of clip
 	int             nFrameCount;
 	fix             xFrameTime;         // time (in seconds) of each frame
@@ -44,7 +44,7 @@ typedef __pack__ struct {
 	short           nSound;
 	tBitmapIndex    frames[VCLIP_MAX_FRAMES];
 	fix             lightValue;
-} tVideoClip;
+} __pack__ tVideoClip;
 
 extern int Num_vclips [2];
 extern tVideoClip Vclip [2][MAX_VCLIPS];

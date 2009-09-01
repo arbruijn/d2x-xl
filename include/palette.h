@@ -29,21 +29,21 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tBGR {
 	ubyte	b,g,r;
-} tBGR;
+} __pack__ tBGR;
 
 typedef struct tRGB {
 	ubyte	r,g,b;
-} tRGB;
+} __pack__ tRGB;
 
 typedef union tPalette {
 	ubyte			raw [PALETTE_SIZE * 3];
 	tRgbColorb	rgb [PALETTE_SIZE];
-} tPalette;
+} __pack__ tPalette;
 
 typedef struct tComputedColor {
 	ubyte			nIndex;
 	tRgbColorb	color;
-} tComputedColor;
+} __pack__ tComputedColor;
 
 class CPalette {
 	private:
@@ -91,7 +91,7 @@ class CPalette {
 typedef struct tPaletteList {
 	struct tPaletteList	*next;
 	CPalette					palette;
-} tPaletteList;
+} __pack__ tPaletteList;
 
 //------------------------------------------------------------------------------
 

@@ -42,7 +42,7 @@ typedef struct {
 	char    filename[13];       //used by editor to remap textures
 	char    pad2[3];
 	#endif
-} tTexMapInfo;
+} __pack__ tTexMapInfo;
 
 typedef struct {
 	char			filename[13];

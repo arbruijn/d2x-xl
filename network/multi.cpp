@@ -53,7 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef void tMultiHandler (char *);
 typedef tMultiHandler *pMultiHandler;
-typedef __pack__ struct tMultiHandlerInfo {
+typedef struct tMultiHandlerInfo {
 	pMultiHandler	fpMultiHandler;
 	char				noEndLevelSeq;
 } tMultiHandlerInfo;
@@ -102,7 +102,7 @@ tAllNetPlayersInfo netPlayers;
 
 tBitmapIndex mpTextureIndex [MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
-typedef __pack__ struct tNetPlayerStats {
+typedef struct tNetPlayerStats {
 	ubyte  messageType;
 	ubyte  nLocalPlayer;          // Who am i?
 	uint   flags;                 // Powerup flags, see below...

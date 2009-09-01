@@ -161,7 +161,7 @@ typedef struct tThreadInfo {
 	int				bDone;
 	int				bBlock;
 	int				bQuit;
-	} tThreadInfo;
+	} __pack__ tThreadInfo;
 
 //------------------------------------------------------------------------------
 
@@ -174,7 +174,7 @@ typedef struct tLegacyOptions {
 	int bRender;
 	int bSwitches;
 	int bWalls;
-} tLegacyOptions;
+} __pack__ tLegacyOptions;
 
 //------------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ typedef struct tCameraOptions {
 	int nSpeed;
 	int bFitToWall;
 	int bHires;
-} tCameraOptions;
+} __pack__ tCameraOptions;
 
 //------------------------------------------------------------------------------
 
@@ -195,7 +195,7 @@ typedef struct tWeaponIconOptions {
 	char bBoldHighlight;
 	char nSort;
 	ubyte alpha;
-} tWeaponIconOptions;
+} __pack__ tWeaponIconOptions;
 
 //------------------------------------------------------------------------------
 
@@ -207,7 +207,7 @@ typedef struct tColorOptions {
 	int bUseLightmaps;
 	int nLightmapRange;
 	int nSaturation;
-} tColorOptions;
+} __pack__ tColorOptions;
 
 //------------------------------------------------------------------------------
 
@@ -229,14 +229,14 @@ typedef struct tCockpitOptions {
 	int nWindowPos;
 	int nWindowSize;
 	int nWindowZoom;
-} tCockpitOptions;
+} __pack__ tCockpitOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tTextureOptions {
 	int bUseHires [2];
 	int nQuality;
-} tTextureOptions;
+} __pack__ tTextureOptions;
 
 //------------------------------------------------------------------------------
 
@@ -263,7 +263,7 @@ typedef struct tParticleOptions {
 	int bDecreaseLag;	//only render if CPlayerData is moving forward
 	int bAuxViews;
 	int bMonitors;
-} tParticleOptions;
+} __pack__ tParticleOptions;
 
 //------------------------------------------------------------------------------
 
@@ -280,7 +280,7 @@ typedef struct tLightningOptions {
 	int bRobotOmega;
 	int bAuxViews;
 	int bMonitors;
-} tLightningOptions;
+} __pack__ tLightningOptions;
 
 //------------------------------------------------------------------------------
 
@@ -295,7 +295,7 @@ typedef struct tShadowOptions {
 	int bMissiles;
 	int bPowerups;
 	int bReactors;
-	} tShadowOptions;
+	} __pack__ tShadowOptions;
 
 //------------------------------------------------------------------------------
 
@@ -303,7 +303,7 @@ typedef struct tPowerupOptions {
 	int b3D;
 	int b3DShields;
 	int nSpin;
-} tPowerupOptions;
+} __pack__ tPowerupOptions;
 
 //------------------------------------------------------------------------------
 
@@ -318,7 +318,7 @@ typedef struct tAutomapOptions {
 	int bSkybox;
 	int nColor;
 	int nRange;
-} tAutomapOptions;
+} __pack__ tAutomapOptions;
 
 //------------------------------------------------------------------------------
 
@@ -326,7 +326,7 @@ typedef struct tShipRenderOptions {
 	int nWingtip;
 	int bBullets;
 	int nColor;
-} tShipRenderOptions;
+} __pack__ tShipRenderOptions;
 
 //------------------------------------------------------------------------------
 
@@ -340,7 +340,7 @@ typedef struct tCoronaRenderOptions {
 	int bAdditiveObjs; //additive corona blending for light emitting weapons
 	int nIntensity;
 	int nObjIntensity;
-} tCoronaRenderOptions;
+} __pack__ tCoronaRenderOptions;
 
 //------------------------------------------------------------------------------
 
@@ -355,7 +355,7 @@ typedef struct tEffectRenderOptions {
 	int bTransparent;
 	int bSoftParticles;
 	int bMovingSparks;
-} tEffectRenderOptions;
+} __pack__ tEffectRenderOptions;
 
 //------------------------------------------------------------------------------
 
@@ -365,7 +365,7 @@ typedef struct tDebugRenderOptions {
 	int bTextures;
 	int bWalls;
 	int bWireFrame;
-} tDebugRenderOptions;
+} __pack__ tDebugRenderOptions;
 
 //------------------------------------------------------------------------------
 
@@ -399,7 +399,7 @@ typedef struct tRenderOptions {
 	tCoronaRenderOptions coronas;
 	tEffectRenderOptions effects;
 	tDebugRenderOptions debug;
-} tRenderOptions;
+} __pack__ tRenderOptions;
 
 //------------------------------------------------------------------------------
 
@@ -414,7 +414,7 @@ typedef struct tOglOptions {
 	int nMaxLightsPerPass;
 	int nMaxLightsPerObject;
 	int bVoodooHack;
-} tOglOptions;
+} __pack__ tOglOptions;
 
 //------------------------------------------------------------------------------
 
@@ -425,7 +425,7 @@ typedef struct tMovieOptions {
 	int bResize;
 	int bFullScreen;
 	int bSubTitles;
-} tMovieOptions;
+} __pack__ tMovieOptions;
 
 //------------------------------------------------------------------------------
 
@@ -446,7 +446,7 @@ typedef struct tGameplayOptions {
 	int nSlowMotionSpeedup;
 	int bUseD1AI;
 	int bNoThief;
-} tGameplayOptions;
+} __pack__ tGameplayOptions;
 
 //------------------------------------------------------------------------------
 
@@ -458,7 +458,7 @@ typedef struct tMouseInputOptions {
 	int bJoystick;
 	int nDeadzone;
 	int sensitivity [3];
-	} tMouseInputOptions;
+	} __pack__ tMouseInputOptions;
 
 //------------------------------------------------------------------------------
 
@@ -468,7 +468,7 @@ typedef struct tJoystickInputOptions {
 	int bLinearSens;
 	int sensitivity [UNIQUE_JOY_AXES];
 	int deadzones [UNIQUE_JOY_AXES];
-	} tJoystickInputOptions;
+	} __pack__ tJoystickInputOptions;
 
 //------------------------------------------------------------------------------
 
@@ -480,7 +480,7 @@ typedef struct tTrackIRInputOptions {
 	int nDeadzone;
 	int sensitivity [3];
 	int bSyncAxes;
-	} tTrackIRInputOptions;
+	} __pack__ tTrackIRInputOptions;
 
 //------------------------------------------------------------------------------
 
@@ -489,7 +489,7 @@ typedef struct tKeyboardInputOptions {
 	int bUse;
 	int nRamp;
 	int bRamp [3];
-	} tKeyboardInputOptions;
+	} __pack__ tKeyboardInputOptions;
 
 //------------------------------------------------------------------------------
 
@@ -501,7 +501,7 @@ typedef struct tInputOptions {
 	tJoystickInputOptions joystick;
 	tTrackIRInputOptions trackIR;
 	tKeyboardInputOptions keyboard;
-} tInputOptions;
+} __pack__ tInputOptions;
 
 //------------------------------------------------------------------------------
 
@@ -519,7 +519,7 @@ typedef struct tSoundOptions {
 	int bGatling;
 	int bSpeedUp;
 	fix xCustomSoundVolume;
-} tSoundOptions;
+} __pack__ tSoundOptions;
 
 //------------------------------------------------------------------------------
 
@@ -529,7 +529,7 @@ typedef struct tAltBgOptions {
 	double brightness;
 	int grayscale;
 	char szName [FILENAME_LEN];
-} tAltBgOptions;
+} __pack__ tAltBgOptions;
 
 //------------------------------------------------------------------------------
 
@@ -541,14 +541,14 @@ typedef struct tMenuOptions {
 	int bShowLevelVersion;
 	char nHotKeys;
 	tAltBgOptions altBg;
-} tMenuOptions;
+} __pack__ tMenuOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tDemoOptions {
 	int bOldFormat;
 	int bRevertFormat;
-} tDemoOptions;
+} __pack__ tDemoOptions;
 
 //------------------------------------------------------------------------------
 
@@ -557,7 +557,7 @@ typedef struct tMultiplayerOptions {
 	int bTimeoutPlayers;
 	int bUseMacros;
 	int bNoRedundancy;
-} tMultiplayerOptions;
+} __pack__ tMultiplayerOptions;
 
 //------------------------------------------------------------------------------
 
@@ -571,7 +571,7 @@ typedef struct tApplicationOptions {
 	int bColorblindFriendly;
 	int bNotebookFriendly;
 	int nScreenShotInterval;
-} tApplicationOptions;
+} __pack__ tApplicationOptions;
 
 //------------------------------------------------------------------------------
 
@@ -587,7 +587,7 @@ typedef struct tGameOptions {
 	tApplicationOptions	app;
 	tMultiplayerOptions	multi;
 	tDemoOptions			demo;
-} tGameOptions;
+} __pack__ tGameOptions;
 
 //------------------------------------------------------------------------------
 // states
@@ -604,7 +604,7 @@ typedef struct tSeismicStates {
 	int	nSound;
 	int	bSound;
 	int	nVolume;
-} tSeismicStates;
+} __pack__ tSeismicStates;
 
 //------------------------------------------------------------------------------
 
@@ -613,7 +613,7 @@ typedef struct tSlowMotionStates {
 	int	nState;
 	time_t tUpdate;
 	int	bActive;
-	} tSlowMotionStates;
+	} __pack__ tSlowMotionStates;
 
 //------------------------------------------------------------------------------
 
@@ -639,7 +639,7 @@ typedef struct tGameplayStates {
 	int nInitialLives;
 	tSeismicStates seismic;
 	tSlowMotionStates slowmo [2];
-} tGameplayStates;
+} __pack__ tGameplayStates;
 
 //------------------------------------------------------------------------------
 
@@ -654,7 +654,7 @@ typedef struct tKeyStates {
 	ubyte 	nLastReleased;
 	ubyte		pressed [256];
 	int		xLastPressTime;
-	} tKeyStates;
+	} __pack__ tKeyStates;
 
 typedef struct tInputStates {
 	int			nPlrFileVersion;
@@ -671,7 +671,7 @@ typedef struct tInputStates {
 	float			kcFrameTime;
 	fix			nCruiseSpeed;
 	tKeyStates	keys;
-} tInputStates;
+} __pack__ tInputStates;
 
 //------------------------------------------------------------------------------
 
@@ -684,13 +684,13 @@ typedef struct tMenuStates {
 	int bFullScreen;
 	int bReordering;
 	int bNoBackground;
-} tMenuStates;
+} __pack__ tMenuStates;
 
 //------------------------------------------------------------------------------
 
 typedef struct tMovieStates {
 	int bIntroPlayed;
-} tMovieStates;
+} __pack__ tMovieStates;
 
 //------------------------------------------------------------------------------
 
@@ -709,7 +709,7 @@ typedef struct tMultiplayerStates {
 	int bCheckPorts;
 	ubyte bSurfingNet;
 	int bPlayerIsTyping [MAX_PLAYERS];
-} tMultiplayerStates;
+} __pack__ tMultiplayerStates;
 
 //------------------------------------------------------------------------------
 
@@ -718,7 +718,7 @@ typedef struct tGfxStates {
 	int bOverride;
 	int nStartScrSize;
 	int nStartScrMode;
-} tGfxStates;
+} __pack__ tGfxStates;
 
 //------------------------------------------------------------------------------
 
@@ -796,13 +796,13 @@ typedef struct tOglStates {
 	float fAlpha;
 	float fLightRange;
 	GLuint hDepthBuffer; 
-} tOglStates;
+} __pack__ tOglStates;
 
 //------------------------------------------------------------------------------
 
 typedef struct tCameraStates {
 	int bActive;
-} tCameraStates;
+} __pack__ tCameraStates;
 
 //------------------------------------------------------------------------------
 
@@ -810,7 +810,7 @@ typedef struct tTextureStates {
 	int bGlTexMergeOk;
 	int bHaveMaskShader;
 	int bHaveGrayScaleShader;
-} tTextureStates;
+} __pack__ tTextureStates;
 
 //------------------------------------------------------------------------------
 
@@ -825,7 +825,7 @@ typedef struct tCockpitStates {
 	int nLastDrawn [2];
 	int n3DView [2];
 	int nCoopPlayerView [2];
-} tCockpitStates;
+} __pack__ tCockpitStates;
 
 //------------------------------------------------------------------------------
 
@@ -835,7 +835,7 @@ typedef struct tVRBuffers {
 	CCanvas		subRender [2];		//  Two sub buffers for left/right eyes.
 	CCanvas		screenPages [2];	//  Two pages of VRAM if paging is available
 	CCanvas		editorCanvas;		//  The canvas that the editor writes to.
-} tVRBuffers;
+} __pack__ tVRBuffers;
 
 typedef struct tVRStates {
 	u_int32_t	nScreenSize;
@@ -851,7 +851,7 @@ typedef struct tVRStates {
 	int			bEyeOffsetChanged;
 	int			bUseRegCode;
 	tVRBuffers	buffers;
-} tVRStates;
+} __pack__ tVRStates;
 
 //------------------------------------------------------------------------------
 
@@ -859,7 +859,7 @@ typedef struct tFontStates {
 	int bHires;
 	int bHiresAvailable;
 	int bInstalled;
-} tFontStates;
+} __pack__ tFontStates;
 
 //------------------------------------------------------------------------------
 
@@ -880,7 +880,7 @@ typedef struct tRenderDetail {
 	sbyte nWallRenderDepth;
 	sbyte nDebrisAmount; 
 	sbyte nSoundChannels;
-} tRenderDetail;
+} __pack__ tRenderDetail;
 
 typedef struct tRenderHistory {
 	CBitmap		*bmBot;
@@ -893,7 +893,7 @@ typedef struct tRenderHistory {
 	int			nShader;
 	int			nType;
 	int			nBlendMode;
-} tRenderHistory;
+} __pack__ tRenderHistory;
 
 typedef struct tZoomStates {
 	int			nState;
@@ -904,7 +904,7 @@ typedef struct tZoomStates {
 	int			nChannel;
 	float			nStep;
 	time_t		nTime;
-} tZoomStates;
+} __pack__ tZoomStates;
 
 typedef struct tRenderStates {
 	int bChaseCam;
@@ -999,7 +999,7 @@ typedef struct tRenderStates {
 	float grAlpha;
 	tRenderDetail detail;
 	tRenderHistory history;
-} tRenderStates;
+} __pack__ tRenderStates;
 
 //------------------------------------------------------------------------------
 
@@ -1010,7 +1010,7 @@ typedef struct tAudioStates {
 	int nNextSignature;
 	int nActiveObjects;
 	int nMaxChannels;
-} tAudioStates;
+} __pack__ tAudioStates;
 
 //------------------------------------------------------------------------------
 
@@ -1022,7 +1022,7 @@ typedef struct tSoundStates {
 	int bD1Sound;
 	int bMidiFix;
 	tAudioStates audio;
-} tSoundStates;
+} __pack__ tSoundStates;
 
 //------------------------------------------------------------------------------
 
@@ -1034,7 +1034,7 @@ typedef struct tVideoStates {
 	int nWidth;
 	int nHeight;
 	int bFullScreen;
-} tVideoStates;
+} __pack__ tVideoStates;
 
 //------------------------------------------------------------------------------
 
@@ -1054,7 +1054,7 @@ typedef struct tCheatStates {
 	int bSpeed;
 	int bD1CheatsEnabled;
 	int nUnlockLevel;
-} tCheatStates;
+} __pack__ tCheatStates;
 
 //------------------------------------------------------------------------------
 
@@ -1063,7 +1063,7 @@ typedef struct tEntropyStates {
 	int bConquerWarning;
 	int bExitSequence;
 	int nTimeLastMoved;
-} tEntropyStates;
+} __pack__ tEntropyStates;
 
 //------------------------------------------------------------------------------
 
@@ -1072,7 +1072,7 @@ typedef struct tSlowTick {
 	int nTime;
 	int nSlack;
 	int nLastTick;
-} tSlowTick;
+} __pack__ tSlowTick;
 
 typedef struct tApplicationStates {
 	tSlowTick tick40fps;
@@ -1152,7 +1152,7 @@ typedef struct tApplicationStates {
 	tObjTransformation playerPos;
 	short nPlayerSegment;
 	tCheatStates cheats;
-} tApplicationStates;
+} __pack__ tApplicationStates;
 
 //------------------------------------------------------------------------------
 
@@ -1164,7 +1164,7 @@ typedef struct tLimitFPSStates {
 	ubyte	bHomers;
 	ubyte	bFusion;
 	ubyte bOmega;
-} tLimitFPSStates;
+} __pack__ tLimitFPSStates;
 
 //------------------------------------------------------------------------------
 
@@ -1183,7 +1183,7 @@ typedef struct tGameStates {
 	tApplicationStates	app;
 	tEntropyStates			entropy;
 	tLimitFPSStates		limitFPS;
-} tGameStates;
+} __pack__ tGameStates;
 
 //------------------------------------------------------------------------------
 
@@ -1259,7 +1259,7 @@ typedef struct tLightRef {
 	short			nSegment;
 	short			nSide;
 	short			nTexture;
-} tLightRef;
+} __pack__ tLightRef;
 
 //------------------------------------------------------------------------------
 
@@ -1430,7 +1430,7 @@ typedef struct tObjRenderListItem {
 	short	nNextItem;
 	short	nObject;
 	fix	xDist;
-} tObjRenderListItem;
+} __pack__ tObjRenderListItem;
 
 class CObjRenderList {
 	public:
@@ -1509,7 +1509,7 @@ class CVertColorData {
 typedef struct tFaceListItem {
 	CSegFace*			faceP;
 	int					nNextItem;
-} tFaceListItem;
+} __pack__ tFaceListItem;
 
 class CFaceListIndex {
 	public:
@@ -1584,7 +1584,7 @@ class CSecretData {
 typedef struct tSlideSegs {
 	short	nSegment;
 	ubyte	nSides;
-} tSlideSegs;
+} __pack__ tSlideSegs;
 
 //------------------------------------------------------------------------------
 
@@ -1602,7 +1602,7 @@ typedef struct tFaceRenderVertex {
 	tTexCoord2f			texCoord;
 	tTexCoord2f			ovlTexCoord;
 	tTexCoord2f			lMapTexCoord;
-	} tFaceRenderVertex;
+	} __pack__ tFaceRenderVertex;
 
 class CFaceData {
 	public:
@@ -1644,12 +1644,12 @@ inline int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (
 typedef struct tSegList {
 	int					nSegments;
 	CArray<short>		segments;
-} tSegList;
+} __pack__ tSegList;
 
 typedef struct tSegExtent {
 	CFixVector			vMin;
 	CFixVector			vMax;
-	} tSegExtent;
+	} __pack__ tSegExtent;
 
 
 class CSkyBox : public CStack< short > {
@@ -1834,7 +1834,7 @@ typedef struct tSpeedBoostData {
 	CFixVector				vMaxVel;
 	CFixVector				vSrc;
 	CFixVector				vDest;
-} tSpeedBoostData;
+} __pack__ tSpeedBoostData;
 
 //------------------------------------------------------------------------------
 
@@ -1844,7 +1844,7 @@ typedef struct tQuad {
 #if DBG
 	time_t				t;
 #endif
-} tQuad;
+} __pack__ tQuad;
 
 typedef struct tBox {
 	CFixVector			vertices [8];
@@ -1853,7 +1853,7 @@ typedef struct tBox {
 	tQuad					rotFaces [6];	//transformed faces
 	short					nTransformed;
 #endif
-	} tBox;
+	} __pack__ tBox;
 
 typedef struct tHitbox {
 	CFixVector			vMin;
@@ -1863,7 +1863,7 @@ typedef struct tHitbox {
 	tBox					box;
 	CAngleVector		angles;			//rotation angles
 	short					nParent;			//parent hitbox
-} tHitbox;
+} __pack__ tHitbox;
 
 //------------------------------------------------------------------------------
 
@@ -1872,12 +1872,12 @@ typedef struct tHitbox {
 typedef struct tObjectViewData {
 	CFixMatrix			mView;
 	int					nFrame;
-} tObjectViewData;
+} __pack__ tObjectViewData;
 
 typedef struct tGuidedMissileInfo {
 	CObject				*objP;
 	int					nSignature;
-} tGuidedMissileInfo;
+} __pack__ tGuidedMissileInfo;
 
 class CObjLists {
 public:
@@ -2039,7 +2039,7 @@ class CRobotData {
 typedef struct tOpenALData {
 	ALCdevice			*device;
 	ALCcontext			*context;
-} tOpenALData;
+} __pack__ tOpenALData;
 
 #endif
 
@@ -2138,7 +2138,7 @@ typedef struct tFlagData {
 	tVideoClip			*vcP;
 	tVClipInfo			vci;
 	CFlightPath			path;
-} tFlagData;
+} __pack__ tFlagData;
 
 //------------------------------------------------------------------------------
 
@@ -2174,7 +2174,7 @@ typedef struct tFiringData {
 	int					nDuration;
 	int					bSound;
 	int					bSpeedUp;
-	} tFiringData;
+	} __pack__ tFiringData;
 
 class CWeaponData {
 	public:
@@ -2228,7 +2228,7 @@ class CModelThrusters {
 typedef struct tGunInfo {
 	int					nGuns;
 	CFixVector			vGunPoints [MAX_GUNS];
-	} tGunInfo;
+	} __pack__ tGunInfo;
 
 typedef struct tModelSphere {
 	short					nSubModels;
@@ -2236,7 +2236,7 @@ typedef struct tModelSphere {
 	short					nFaceVerts;
 	fix					xRads [3];
 	CFixVector			vOffsets [3];
-} tModelSphere;
+} __pack__ tModelSphere;
 
 #include "rendermodel.h"
 
@@ -2304,7 +2304,7 @@ typedef struct tLeftoverPowerup {
 	CObject				*spitterP;
 	ubyte					nCount;
 	ubyte					nType;
-} tLeftoverPowerup;
+} __pack__ tLeftoverPowerup;
 
 class CWeaponState {
 	public:
@@ -2495,7 +2495,7 @@ typedef struct tCountdownData {
 	fix					nTimer;
 	int					nSecsLeft;
 	int					nTotalTime;
-} tCountdownData;
+} __pack__ tCountdownData;
 
 //------------------------------------------------------------------------------
 
@@ -2558,7 +2558,7 @@ typedef enum {
 	rtPolyModel,
 	rtTaskCount,
 	rtLightmap
-} tRenderTask;
+} __pack__ tRenderTask;
 
 class CApplicationData {
 	public:
@@ -2603,11 +2603,11 @@ typedef enum tProfilerTags {
 	ptFaceList,
 	ptAux,
 	ptTagCount
-	} tProfilerTags;
+	} __pack__ tProfilerTags;
 
 typedef struct tProfilerData {
 	time_t				t [ptTagCount];
-} tProfilerData;
+} __pack__ tProfilerData;
 
 #define PROF_INIT			memset(&gameData.profiler.t, 0, sizeof (gameData.profiler.t));
 #define PROF_START		time_t	tProf = clock ();
@@ -2726,7 +2726,7 @@ typedef struct tReactorStates {
 	fix					xLastVisCheckTime;
 	CFixVector			vGunPos [MAX_CONTROLCEN_GUNS];
 	CFixVector			vGunDir [MAX_CONTROLCEN_GUNS];
-} tReactorStates;
+} __pack__ tReactorStates;
 
 class CReactorData {
 	public:
@@ -2802,14 +2802,14 @@ typedef struct tSatelliteData {
 	CBitmap			*bmP;
 	CFixVector		vPos;
 	CFixVector		vUp;
-} tSatelliteData;
+} __pack__ tSatelliteData;
 
 typedef struct tStationData {
 	CBitmap			*bmP;
 	CBitmap			**bmList [1];
 	CFixVector		vPos;
 	int				nModel;
-} tStationData;
+} __pack__ tStationData;
 
 class CTerrainData {
 	public:
@@ -2826,7 +2826,7 @@ typedef struct tExitData {
 	CFixMatrix			mOrient;
 	short					nSegNum;
 	short					nTransitSegNum;
-} tExitData;
+} __pack__ tExitData;
 
 class CEndLevelData {
 	public:
@@ -2976,7 +2976,7 @@ typedef struct tHoardItem {
 	int			nClip;
 	CBitmap		bm;
 	CPalette		*palette;
-} tHoardItem;
+} __pack__ tHoardItem;
 
 class CHoardData {
 	public:
@@ -3024,7 +3024,7 @@ class CHUDData {
 typedef struct {
 	int	seg0, seg1, csd;
 	fix	dist;
-} tFCDCacheData;
+} __pack__ tFCDCacheData;
 
 #define	MAX_FCD_CACHE	64
 
@@ -3043,21 +3043,21 @@ typedef struct tVertColorThreadData {
 	tThreadInfo		info [2];
 #endif
 	CVertColorData	data;
-	} tVertColorThreadData;
+	} __pack__ tVertColorThreadData;
 
 typedef struct tClipDistData {
 	CObject*				objP;
 	POF::CModel*		po;
 	POF::CSubModel*	pso;
 	float					fClipDist [2];
-	} tClipDistData;
+	} __pack__ tClipDistData;
 
 typedef struct tClipDistThreadData {
 #if MULTI_THREADED_SHADOWS
 	tThreadInfo		info [2];
 #endif
 	tClipDistData	data;
-	} tClipDistThreadData;
+	} __pack__ tClipDistThreadData;
 
 class CThreadData {
 	public:
@@ -3130,7 +3130,7 @@ typedef struct tPlayerStats {
 	int	nShots [2];
 	int	nHits [2];
 	int	nMisses [2];
-	} tPlayerStats;
+	} __pack__ tPlayerStats;
 
 class CStatsData {
 	public:
@@ -3175,7 +3175,7 @@ typedef struct tTextIndex {
 	int	nId;
 	int	nLines;
 	char	*pszText;
-} tTextIndex;
+} __pack__ tTextIndex;
 
 class CTextData {
 	public:
@@ -3271,11 +3271,11 @@ typedef struct tBossProps {
 	ubyte		bInvulEnergy;
 	ubyte		bInvulKinetic;
 	ubyte		bInvulSpot;
-} tBossProps;
+} __pack__ tBossProps;
 
 typedef struct tIntervalf {
 	float	fMin, fMax, fSize, fRad;
-} tIntervalf;
+} __pack__ tIntervalf;
 
 extern tBossProps bossProps [2][NUM_D2_BOSSES];
 
@@ -3294,7 +3294,7 @@ typedef struct tGameItemInfo {
 	int		offset;
 	int		count;
 	int		size;
-} tGameItemInfo;
+} __pack__ tGameItemInfo;
 
 typedef struct {
 	ushort  fileinfo_signature;
@@ -3313,7 +3313,7 @@ typedef struct {
 	tGameItemInfo	lightDeltaIndices;
 	tGameItemInfo	lightDeltas;
 	tGameItemInfo	equipGen;
-} tGameFileInfo;
+} __pack__ tGameFileInfo;
 
 extern tGameFileInfo gameFileInfo;
 
@@ -3449,14 +3449,14 @@ void PrintVersionInfo (void);
 //	-----------------------------------------------------------------------------
 
 
-typedef __pack__ struct fVector3D {
+typedef struct fVector3D {
 	float	x, y, z;
 } __pack__ fVector3D;
 
 typedef struct tTransRotInfo {
 	fVector3D	fvRot;
 	fVector3D	fvTrans;
-	} tTransRotInfo;
+	} __pack__ tTransRotInfo;
 
 #ifndef _WIN32
 #	define WINAPI

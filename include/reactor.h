@@ -25,18 +25,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_CONTROLCEN_LINKS    10
 
-typedef __pack__ struct tReactorTriggers {
+typedef struct tReactorTriggers {
 	short   nLinks;
 	short   segments [MAX_CONTROLCEN_LINKS];
 	short   sides [MAX_CONTROLCEN_LINKS];
-} tReactorTriggers;
+} __pack__ tReactorTriggers;
 
-typedef __pack__ struct tReactorProps {
+typedef struct tReactorProps {
 	int nModel;
 	int nGuns;
 	CFixVector gunPoints [MAX_CONTROLCEN_GUNS];
 	CFixVector gunDirs [MAX_CONTROLCEN_GUNS];
-} tReactorProps;
+} __pack__ tReactorProps;
 
 #define MAX_REACTORS 7
 

@@ -36,7 +36,7 @@ typedef struct tEdgeInfo {
 	ubyte		flags;			// 1 bytes  // See the EF_??? defines above.
 	uint		color;			// 4 bytes
 	ubyte		nFaces;			// 1 bytes  // 19 bytes...
-} tEdgeInfo;
+} __pack__ tEdgeInfo;
 
 //------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ typedef struct tAutomapWallColors {
 	uint	nDoorGold;
 	uint	nDoorRed;
 	uint	nRevealed;
-} tAutomapWallColors;
+} __pack__ tAutomapWallColors;
 
 typedef struct tAutomapColors {
 	tAutomapWallColors	walls;
@@ -58,7 +58,7 @@ typedef struct tAutomapColors {
 	uint						nLgtBlue;
 	uint						nLgtRed;
 	uint						nDkGray;
-} tAutomapColors;
+} __pack__ tAutomapColors;
 
 typedef struct tAutomapData {
 	int			bCheat;
@@ -69,7 +69,7 @@ typedef struct tAutomapData {
 	CFixVector	viewPos;
 	CFixVector	viewTarget;
 	CFixMatrix	viewMatrix;
-} tAutomapData;
+} __pack__ tAutomapData;
 
 //------------------------------------------------------------------------------
 

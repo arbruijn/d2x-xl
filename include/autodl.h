@@ -21,7 +21,7 @@ typedef struct tUploadDest {
 	int		fLen;
 	int		nPacketId;
 	int		nTimeout;
-} tUploadDest;
+} __pack__ tUploadDest;
 
 // upload buffer
 // format:

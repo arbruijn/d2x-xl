@@ -26,7 +26,7 @@ extern int g3d_interp_outline;      //if on, polygon models outlined in white
 //prefix because it was defined somewhere else before it was moved here
 typedef struct tUVL {
 	fix u,v,l;
-} tUVL;
+} __pack__ tUVL;
 
 //Stucture to store clipping codes in a word
 typedef struct g3sCodes {
@@ -50,7 +50,7 @@ typedef struct g3sNormal {
 
 typedef struct tScreenPos {
 	fix			x, y;
-} tScreenPos;
+} __pack__ tScreenPos;
 
 typedef struct g3sPoint {
 	CFixVector	p3_src;			//untransformed point

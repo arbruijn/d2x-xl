@@ -33,13 +33,13 @@ typedef struct tRenderQuality {
 	int	texMagFilter;
 	int	bNeedMipmap;
 	int	bAntiAliasing;
-} tRenderQuality;
+} __pack__ tRenderQuality;
 
 extern tRenderQuality renderQualities [];
 
 typedef struct tSinCosf {
 	float	fSin, fCos;
-} tSinCosf;
+} __pack__ tSinCosf;
 
 //------------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ void G3CalcNormal (g3sPoint **pointList, CFloatVector *pvNormal);
 
 typedef struct tScreenScale {
 	float x, y;
-} tScreenScale;
+} __pack__ tScreenScale;
 
 class COglData {
 	public:
@@ -88,7 +88,7 @@ typedef struct tClientBuffer {
 	const GLvoid*	buffer;
 	const char*		pszFile;
 	int				nLine;
-} tClientBuffer;
+} __pack__ tClientBuffer;
 
 #endif
 

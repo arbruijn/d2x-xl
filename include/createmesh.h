@@ -10,7 +10,7 @@ namespace Mesh {
 		ushort		verts [2];
 		int			tris [2];
 		float			fLength;
-		} tEdge;
+		} __pack__ tEdge;
 
 	typedef struct tTriangle {
 		int			nFace;
@@ -22,7 +22,7 @@ namespace Mesh {
 		tTexCoord2f	texCoord [3];
 		tTexCoord2f	ovlTexCoord [3];
 		tRgbaColorf	color [3];
-	} tTriangle;
+	} __pack__ tTriangle;
 
 class CTriMeshBuilder {
 	private:

@@ -42,7 +42,7 @@ typedef struct tTransformation {
 		CFloatMatrix	viewf [3];
 		fix				zoom;
 		float				zoomf;
-} tTransformation;
+} __pack__ tTransformation;
 
 class CTransformation {
 	public:

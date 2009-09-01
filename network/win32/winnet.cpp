@@ -116,7 +116,7 @@ ubyte ipx_MyAddress [10];
 int nIpxPacket = 0;			/* Sequence number */
 
 /* User defined routing stuff */
-typedef __pack__ struct user_address {
+typedef struct user_address {
 	ubyte network [4];
 	ubyte node [6];
 	ubyte address [6];
