@@ -58,8 +58,8 @@ typedef struct tBmProps {
 	short   w, h;		// width, height
 	short   rowSize;	// ubyte offset to next row
 	sbyte	  nMode;		// 0=Linear, 1=ModeX, 2=SVGA
-	ubyte	  flags;		
-} __pack__ tBmProps;
+	ubyte	  flags;
+} tBmProps;
 
 class CFrameInfo {
 	public:
@@ -89,10 +89,10 @@ class CBitmapInfo {
 	public:
 		char					szName [20];
 		tBmProps				props;
-		ubyte					flags;		
-		ushort				nId;		
-		tRgbColorb			avgColor;		
-		ubyte					avgColorIndex;	
+		ubyte					flags;
+		ushort				nId;
+		tRgbColorb			avgColor;
+		ubyte					avgColorIndex;
 		ubyte					nBPP;
 		ubyte					nType;
 		ubyte					bWallAnim;
@@ -168,9 +168,9 @@ class CBitmap : public CArray< ubyte > {
 			}
 
 		inline CBitmap* HasParent (void)
-		 { return (m_info.nType == BM_TYPE_STD) ? m_info.parentP :  NULL; } 
+		 { return (m_info.nType == BM_TYPE_STD) ? m_info.parentP :  NULL; }
 		inline CBitmap* HasOverride (void)
-		 { return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP :  m_info.frames.currentP; } 
+		 { return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP :  m_info.frames.currentP; }
 
 		inline CBitmap *Override (int iFrame) {
 			CBitmap *bmP = this;
@@ -199,7 +199,7 @@ class CBitmap : public CArray< ubyte > {
 		int RLEExpand (ubyte *colorMap, int bSwap0255);
 		int RLECompress (void);
 		void ExpandTo (CBitmap *destP);
-	
+
 		inline ubyte FrameCount (void) { return ((m_info.nType != BM_TYPE_ALT) && Parent ()) ? m_info.parentP->FrameCount () : m_info.frames.nCount; }
 		inline ubyte FrameIndex (void) { return m_info.frames.nCurrent; }
 		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bmP : NULL; }
@@ -214,19 +214,19 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetFrameCount (void) {  m_info.frames.nCount = m_info.props.h / m_info.props.w; }
 		void SetParent (CBitmap *parentP) { m_info.parentP = parentP; }
 		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
-		inline CBitmap* SetOverride (CBitmap *overrideP) { 
+		inline CBitmap* SetOverride (CBitmap *overrideP) {
 			CBitmap*	oldOverrideP = m_info.overrideP;
-			m_info.overrideP = overrideP; 
+			m_info.overrideP = overrideP;
 			return oldOverrideP;
 			}
-		CBitmap* SetCurFrame (CBitmap *frameP) { 
+		CBitmap* SetCurFrame (CBitmap *frameP) {
 			m_info.frames.nCurrent = int ((m_info.frames.currentP = frameP) - m_info.frames.bmP);
 			return m_info.frames.currentP;
 			}
-		CBitmap* SetCurFrame (int nFrame) { 
+		CBitmap* SetCurFrame (int nFrame) {
 			if ((m_info.nType != BM_TYPE_ALT) || !m_info.frames.bmP)
 				return this;
-			m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame); 
+			m_info.frames.currentP = m_info.frames.bmP + (m_info.frames.nCurrent = nFrame);
 			return m_info.frames.currentP;
 			}
 
@@ -272,9 +272,9 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
 		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
 		inline void SetTranspType (int nTranspType) { m_info.nTranspType = ((m_info.nBPP > 1) ? -1 : nTranspType); }
-		inline void SetupTexture (void) { 
-			m_info.texP = &m_info.texture; 
-			m_info.texture.SetBitmap (this); 
+		inline void SetupTexture (void) {
+			m_info.texP = &m_info.texture;
+			m_info.texture.SetBitmap (this);
 			}
 		inline void SetTexture (CTexture *texP) { m_info.texP = texP; }
 		inline void ResetTexture (void) { m_info.texP = &m_info.texture; }
@@ -315,10 +315,10 @@ class CBitmap : public CArray< ubyte > {
 		void Unlink (int bAddon);
 #endif
 		void RenderFullScreen (void);
-		int Render (CBitmap *dest, 
-						int xDest, int yDest, int wDest, int hDest, 
-						int xSrc, int ySrc, int wSrc, int hSrc, 
-						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, 
+		int Render (CBitmap *dest,
+						int xDest, int yDest, int wDest, int hDest,
+						int xSrc, int ySrc, int wSrc, int hSrc,
+						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0,
 						float fAlpha = 1.0f, tRgbaColorf* colorP = NULL);
 		inline void Render (CBitmap* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
 		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
@@ -343,13 +343,13 @@ class CBitmap : public CArray< ubyte > {
 		void DrawPixel (int x, int y, ubyte color);
 		ubyte GetPixel (int x, int y);
 
-		inline CBitmap& Clone (CBitmap& clone) { 
-			memcpy (&clone, this, sizeof (CBitmap)); 
+		inline CBitmap& Clone (CBitmap& clone) {
+			memcpy (&clone, this, sizeof (CBitmap));
 			return clone;
 			}
 
-		inline CBitmap& operator= (CBitmap& source) { 
-			source.Clone (*this); 
+		inline CBitmap& operator= (CBitmap& source) {
+			source.Clone (*this);
 			source.ShareBuffer (*this);
 			return *this;
 			}
@@ -363,7 +363,7 @@ class CBitmap : public CArray< ubyte > {
 	};
 
 inline int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }
-	
+
 //-----------------------------------------------------------------------------
 
 void LoadGameBackground (void);
