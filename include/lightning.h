@@ -19,7 +19,7 @@ typedef struct tLightningNode {
 	CFixVector			m_vBase;
 	CFixVector			m_vDelta [2];
 	int					m_nDelta [2];
-} __pack__ tLightningNode;
+} tLightningNode;
 
 class CLightningNode : public tLightningNode {
 	public:
@@ -86,7 +86,7 @@ typedef struct tLightning {
 	char							m_bRandom;
 	char							m_bLight;
 	char							m_bInPlane;
-} __pack__ tLightning;
+} tLightning;
 
 class CLightning : public tLightning {
 	public:
@@ -141,7 +141,7 @@ typedef struct tLightningSystem {
 	char						m_bForcefield;
 	char						m_bDestroy;
 	char						m_bValid;
-} __pack__ tLightningSystem;
+} tLightningSystem;
 
 class CLightningSystem : public tLightningSystem {
 	public:
@@ -182,7 +182,7 @@ typedef struct tLightningLight {
 	int				nDynLight;
 	short				nSegment;
 	int				nFrame;
-} __pack__ tLightningLight;
+} tLightningLight;
 
 
 typedef struct tLightningData {
@@ -191,7 +191,7 @@ typedef struct tLightningData {
 	CDataPool<CLightningSystem>	m_systems; // [MAX_LIGHTNINGS];
 	int									m_bDestroy;
 	int									m_nFirstLight;
-} __pack__ tLightningData;
+} tLightningData;
 
 class CLightningManager : public tLightningData {
 	public:
@@ -256,7 +256,7 @@ typedef struct tOmegaLightningHandles {
 	int		nLightning;
 	short		nParentObj;
 	short		nTargetObj;
-} __pack__ tOmegaLightningHandles;
+} tOmegaLightningHandles;
 
 
 class COmegaLightnings {
