@@ -548,7 +548,6 @@ static tFileDesc addonSoundFiles [] = {
 
 	{"\002gatling-slowdown.wav", ".\\sounds2\\D1", false, true, false},
 	{"\002gatling-speedup.wav", ".\\sounds2\\D1", false, true, false},
-	{"\002gauss-firing.wav", ".\\sounds2\\D1", false, true, false},
 	{"\002highping.wav", ".\\sounds2\\D1", false, true, false},
 	{"\002lowping.wav", ".\\sounds2\\D1", false, true, false},
 	{"\002missileflight-big.wav", ".\\sounds2\\D1", false, true, false},
@@ -723,8 +722,11 @@ if (nResult) {
 		}
 	if (nResult & (1 | 8)) {
 		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL cannot run because files are missing.\n");
+			strcat_s (szMsg, sizeof (szMsg), "\nPlease download the required files. Download locations are\n");
 		if (nResult & 8)
-			strcat_s (szMsg, sizeof (szMsg), "\nPlease download the required files. Download locations are\n - http://www.descent2.de/d2x.html\n - http://www.sourceforge.net/projects/d2x-xl\n");
+			strcat_s (szMsg, sizeof (szMsg), " - http://www.descent2.de/d2x.html\n - http://www.sourceforge.net/projects/d2x-xl\n");
+		if (nResult & 1)
+			strcat_s (szMsg, sizeof (szMsg), " - http://www.gog.com (buy the game here for little money)\n");
 		Error (szMsg);
 		}
 	else if ((gameConfig.nVersion != D2X_IVER) && (nResult & (2 | 4 | 16))) {	// only warn once each time a new game version is installed
