@@ -24,7 +24,7 @@ typedef struct tServerListTable {
 	tServerList					serverList;
 	tUdpAddress					*tracker;
 	time_t						lastActive;
-} __pack__ tServerListTable;
+} tServerListTable;
 
 class CTracker {
 	private:

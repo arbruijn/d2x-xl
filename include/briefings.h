@@ -23,7 +23,7 @@ typedef struct tBriefingScreen {
 	sbyte   nMessage;
 	short   textLeft, textTop;         //  upper left x, y of text window
 	short   textWidth, textHeight;    //  width and height of text window
-} __pack__ tBriefingScreen;
+} tBriefingScreen;
 
 
 class CBriefingInfo {
@@ -92,7 +92,7 @@ typedef struct tD1ExtraBotSound {
 	const char*	pszName;
 	short			nLevel;
 	short			nBotSig;
-} __pack__ tD1ExtraBotSound;
+} tD1ExtraBotSound;
 
 
 class CBriefing {

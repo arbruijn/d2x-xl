@@ -287,7 +287,7 @@ char* DefaultSoundFile (void);
 typedef struct tAddonSound {
 	Mix_Chunk		*chunkP;
 	/*const*/ char		szSoundFile [FILENAME_LEN];
-} __pack__ tAddonSound;
+} tAddonSound;
 
 extern tAddonSound addonSounds [MAX_ADDON_SOUND_FILES];
 

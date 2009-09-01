@@ -29,7 +29,7 @@ class CSphere : private CSphereData {
 		typedef struct tSphereVertex {
 			CFloatVector	vPos;
 			tTexCoord2f		uv;
-			} __pack__ tSphereVertex;
+			} tSphereVertex;
 
 		CArray<tSphereVertex>	m_vertices;
 		int							m_nVertices;

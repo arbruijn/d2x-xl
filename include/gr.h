@@ -228,7 +228,7 @@ typedef struct tFaceTriangle {
 	ushort				nFace;
 	ushort				index [3];
 	int					nIndex;
-	} __pack__ tFaceTriangle;
+	} tFaceTriangle;
 
 class CSegFaceInfo {
 	public:

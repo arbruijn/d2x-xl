@@ -163,7 +163,7 @@ typedef struct tGameFolders {
 	char szMusicDir [FILENAME_LEN];
 	char szModName [FILENAME_LEN];
 	int bAltHogDirInited;
-} __pack__ tGameFolders;
+} tGameFolders;
 
 int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);

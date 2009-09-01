@@ -33,13 +33,13 @@ typedef struct tRenderQuality {
 	int	texMagFilter;
 	int	bNeedMipmap;
 	int	bAntiAliasing;
-} __pack__ tRenderQuality;
+} tRenderQuality;
 
 extern tRenderQuality renderQualities [];
 
 typedef struct tSinCosf {
 	float	fSin, fCos;
-} __pack__ tSinCosf;
+} tSinCosf;
 
 //------------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ typedef struct tClientBuffer {
 	const GLvoid*	buffer;
 	const char*		pszFile;
 	int				nLine;
-} __pack__ tClientBuffer;
+} tClientBuffer;
 
 #endif
 

@@ -33,9 +33,9 @@ typedef struct tEdgeInfo {
 	short		verts [2];     // 4 bytes
 	ubyte		sides [4];     // 4 bytes
 	short		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
-	ubyte		flags;			// 1 bytes  // See the EF_??? defines above.
 	uint		color;			// 4 bytes
 	ubyte		nFaces;			// 1 bytes  // 19 bytes...
+	ubyte		flags;			// 1 bytes  // See the EF_??? defines above.
 } __pack__ tEdgeInfo;
 
 //------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ typedef struct tAutomapWallColors {
 	uint	nDoorGold;
 	uint	nDoorRed;
 	uint	nRevealed;
-} __pack__ tAutomapWallColors;
+} tAutomapWallColors;
 
 typedef struct tAutomapColors {
 	tAutomapWallColors	walls;

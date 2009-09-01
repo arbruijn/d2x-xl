@@ -64,13 +64,13 @@ extern ubyte Reticle_on;
 
 typedef struct tSpan {
 	sbyte l, r;
-} __pack__ tSpan;
+} tSpan;
 
 typedef struct tGaugeBox {
 	int left, top;
 	int right, bot;		//maximal box
 	tSpan *spanlist;	//list of left, right spans for copy
-} __pack__ tGaugeBox;
+} tGaugeBox;
 
 //	-----------------------------------------------------------------------------
 

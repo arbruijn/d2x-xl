@@ -2,13 +2,13 @@
 #define _OBJEFFECTS_H
 
 typedef struct tThrusterInfo {
-	CFixVector			vPos [2];
-	CFixVector			vDir [2];
-	float					fSize;
-	float					fLength;
-	tPathPoint			*pp;
-	CModelThrusters	*mtP;
-} __pack__ tThrusterInfo;
+	CFixVector				vPos [2];
+	CFixVector				vDir [2];
+	float							fSize;
+	float							fLength;
+	tPathPoint*				pp;
+	CModelThrusters*	mtP;
+}  tThrusterInfo;
 
 void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj);
 #if DBG

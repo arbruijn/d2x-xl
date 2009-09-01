@@ -20,7 +20,7 @@ typedef enum tTranspItemType {
 	tiPoly,
 	tiTexPoly,
 	tiFlatPoly,
-} __pack__ tTranspItemType;
+} tTranspItemType;
 
 typedef struct tTranspPoly {
 	CSegFace*			faceP;

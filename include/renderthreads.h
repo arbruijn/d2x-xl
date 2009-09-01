@@ -33,7 +33,7 @@ typedef struct tRenderThreadInfo {
 	tParticleEmitter		*particleEmitters [MAX_THREADS];
 	int						nCurTime [MAX_THREADS];
 	tThreadInfo				ti [MAX_THREADS];
-	} __pack__ tRenderThreadInfo;
+	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;
 

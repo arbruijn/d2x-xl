@@ -58,7 +58,7 @@ typedef struct tMsnListEntry {
 	ubyte   bAnarchyOnly;          // if true, mission is anarchy only
 	ubyte   location;                   // see defines below
 	ubyte   nDescentVersion;            // descent 1 or descent 2?
-} __pack__ tMsnListEntry;
+} tMsnListEntry;
 
 //values that describe where a mission is located
 #define ML_MISSIONDIR   0

@@ -26,7 +26,7 @@ typedef struct tIrrData {
 	IVideoDriver		*videoP;
 	ISceneManager		*sceneP;
 	IGUIEnvironment	*guiP;
-	} __pack__ tIrrData;
+	} tIrrData;
 
 extern tIrrData irrData;
 
