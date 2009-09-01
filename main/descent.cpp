@@ -740,7 +740,6 @@ signal (SIGILL, D2SignalHandler);
 signal (SIGINT, D2SignalHandler);
 signal (SIGSEGV, D2SignalHandler);
 signal (SIGTERM, D2SignalHandler);
-CheckAndFixSetup ();
 #ifdef _WIN32
 SDL_SetSpecialKeyHandling (0);
 #endif
@@ -751,6 +750,7 @@ InitExtraGameInfo ();
 InitNetworkData ();
 InitGameOptions (0);
 InitArgs (argc, argv);
+CheckAndFixSetup ();
 GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 	   char fnErr [FILENAME_LEN];
