@@ -627,7 +627,6 @@ if (error)
 // entries in the results list. Then we just grab the first regular IPv4 address we find
 // and cross our fingers.
 ip = info;
-int found = 0;
 for (ip = info; ip; ip = ip->ai_next)
 	if (ip->ai_family == PF_INET)
 		break;

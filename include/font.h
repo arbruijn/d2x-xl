@@ -72,13 +72,13 @@ class CFont {
 		short Height (void);
 		inline short Flags (void) { return m_info.flags; }
 		inline short BaseLine (void) { return m_info.baseLine; }
-		inline ubyte MinChar (void) { return m_info.minChar; } 
-		inline ubyte MaxChar (void) { return m_info.maxChar; } 
+		inline ubyte MinChar (void) { return m_info.minChar; }
+		inline ubyte MaxChar (void) { return m_info.maxChar; }
 		inline short ByteWidth (void) { return m_info.byteWidth; }
-		inline ubyte* Data (void) { return m_info.data; } 
+		inline ubyte* Data (void) { return m_info.data; }
 		inline ubyte**	Chars (void) { return m_info.chars.Buffer (); }
 		inline short* Widths (void) { return m_info.widths; }
-		inline ubyte* KernData (void) { return m_info.kernData; } 
+		inline ubyte* KernData (void) { return m_info.kernData; }
 		inline CBitmap* Bitmaps (void) { return m_info.bitmaps.Buffer (); }
 		inline CBitmap& ParentBitmap (void) { return m_info.parentBitmap; }
 
@@ -86,13 +86,13 @@ class CFont {
 		inline void GetHeight (short height) { m_info.height = height; }
 		inline void GetFlags (short flags) { m_info.flags = flags; }
 		inline void GetBaseLine (short baseLine) { m_info.baseLine = baseLine; }
-		inline void GetMinChar (ubyte minChar) { m_info.minChar = minChar; } 
-		inline void GetMaxChar (ubyte maxChar) { m_info.maxChar = maxChar; } 
+		inline void GetMinChar (ubyte minChar) { m_info.minChar = minChar; }
+		inline void GetMaxChar (ubyte maxChar) { m_info.maxChar = maxChar; }
 		inline void GetByteWidth (short byteWidth) { m_info.byteWidth = byteWidth; }
-		inline void GetData (ubyte* data) { m_info.data = data; } 
+		inline void GetData (ubyte* data) { m_info.data = data; }
 		inline void GetChars (ubyte** chars) { m_info.chars = chars; }
 		inline void GetWidths (short* widths) { m_info.widths = widths; }
-		inline void KernData (ubyte* kernData) { m_info.kernData = kernData; } 
+		inline void KernData (ubyte* kernData) { m_info.kernData = kernData; }
 		inline void SetBitmaps (CBitmap* bitmaps) { m_info.bitmaps = bitmaps; }
 		inline void SetParentBitmap (CBitmap& parent) { m_info.parentBitmap = parent; }
 		inline void SetBuffer (ubyte* buffer) { m_info.parentBitmap.SetBuffer (buffer); }
@@ -124,7 +124,7 @@ typedef struct tOpenFont {
 	char		filename [SHORT_FILENAME_LEN];
 	CFont		font;
 	ubyte*	data;
-} __pack__ tOpenFont;
+} tOpenFont;
 
 class CFontManager {
 	private:

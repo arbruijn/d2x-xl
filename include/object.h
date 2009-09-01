@@ -557,7 +557,7 @@ typedef struct tObjectInfo {
 #ifdef WORDS_NEED_ALIGNMENT
 	short   					pad;
 #endif
-	short   					nNextInSeg, 
+	short   					nNextInSeg,
 								nPrevInSeg;  // id of next and previous connected CObject in Objects, -1 = no connection
 	ubyte   					controlType;   // how this CObject is controlled
 	ubyte   					movementType;  // how this CObject moves
@@ -586,14 +586,14 @@ typedef union tObjControlInfo {
 	tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
 	tPowerupInfo		powerupInfo;
 	} __pack__ tObjControlInfo;
-	
+
 typedef union tObjRenderInfo {
 	tPolyObjInfo		polyObjInfo;      // polygon model
 	tVClipInfo			vClipInfo;     // tVideoClip
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
 	} __pack__ tObjRenderInfo;
-	
+
 // TODO get rid of the structs (former unions) and the union
 typedef struct tBaseObject {
 	tObjectInfo			info;
@@ -615,8 +615,8 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		tBaseObject	m_object;
 
 	public:
-		inline tBaseObject* GetInfo (void) { return &info; }; 
-		inline void GetInfo (tBaseObject* infoP) { info = *infoP; }; 
+		inline tBaseObject* GetInfo (void) { return &info; };
+		inline void GetInfo (tBaseObject* infoP) { info = *infoP; };
 #endif
 
 	public:
@@ -760,8 +760,8 @@ class CObject : public CObjectInfo {
 		inline short Id (void) { return m_nId; }
 		inline CObject* Prev (void) { return m_prev; }
 		inline CObject* Next (void) { return m_next; }
-		inline void ResetLinks (void) { 
-			memset (m_links, 0, sizeof (m_links)); 
+		inline void ResetLinks (void) {
+			memset (m_links, 0, sizeof (m_links));
 			m_nLinkedType = OBJ_NONE;
 			}
 		inline CObjListLink& Links (uint i) { return m_links [i]; }
@@ -899,7 +899,7 @@ class CObject : public CObjectInfo {
 		inline fix AimDamage (void) { return SubSystemDamage (0); }
 		inline fix DriveDamage (void) { return SubSystemDamage (1); }
 		inline fix GunDamage (void) { return SubSystemDamage (2); }
-		inline bool ResetDamage (int i) { 
+		inline bool ResetDamage (int i) {
 			if (!m_damage.nHits [i])
 				return false;
 			m_damage.nHits [i] = 0;
@@ -1006,7 +1006,7 @@ typedef struct tObjPosition {
 	tObjTransformation	position;
 	short						nSegment;     // CSegment number containing CObject
 	short						nSegType;		// nType of CSegment
-} __pack__ tObjPosition;
+} tObjPosition;
 
 class CObjPosition : public CObjTransformation {
 	private:
@@ -1026,7 +1026,7 @@ typedef struct tWindowRenderedData {
 	int     nUser;
 	int     nObjects;
 	short   renderedObjects [MAX_RENDERED_OBJECTS];
-} __pack__ tWindowRenderedData;
+} tWindowRenderedData;
 
 class WIndowRenderedData {
 	private:
@@ -1048,7 +1048,7 @@ typedef struct tObjDropInfo {
 	short		nPrevPowerup;
 	short		nNextPowerup;
 	short		nObject;
-} __pack__ tObjDropInfo;
+} tObjDropInfo;
 
 class CObjDropInfo {
 	private:

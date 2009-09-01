@@ -105,7 +105,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, nColor, nLights = 0, nStep = nStart ? -1 : 1;
+	int			h, i, nColor, nLights = 0;
 	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
@@ -270,7 +270,6 @@ PROF_START
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, nColor, nLights = 0,
-					nStep = nStart ? -1 : 1,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2,
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -413,8 +412,7 @@ PROF_START
 #endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nIndex, nColor, nLights = 0,
-					nStep = nStart ? -1 : 1;
+	int			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
@@ -549,8 +547,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	fix			xLight;
 	float			fAlpha;
 	tUVL			*uvlP;
-	int			h, i, j, uvi, nColor,
-					nStep = nStart ? -1 : 1;
+	int			h, i, j, uvi, nColor;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 

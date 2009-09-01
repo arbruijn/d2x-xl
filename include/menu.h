@@ -156,32 +156,32 @@ class CMenuItem {
 typedef struct tMenuProps {
 	int	scWidth,
 			scHeight,
-			x, 
-			y, 
-			xOffs, 
+			x,
+			y,
+			xOffs,
 			yOffs,
 			width,
 			height,
-			w, 
-			h, 
-			aw, 
-			tw, 
-			th, 
+			w,
+			h,
+			aw,
+			tw,
+			th,
 			ty,
-			twidth, 
-			rightOffset, 
+			twidth,
+			rightOffset,
 			nStringHeight,
 			bTinyMode,
-			nMenus, 
-			nOthers, 
-			nMaxNoScroll, 
+			nMenus,
+			nOthers,
+			nMaxNoScroll,
 			nMaxOnMenu,
 			nMaxDisplayable,
 			nScrollOffset,
 			bIsScrollBox,
 			nDisplayMode,
 			bValid;
-} __pack__ tMenuProps;
+} tMenuProps;
 
 //------------------------------------------------------------------------------
 
@@ -208,20 +208,20 @@ class CMenu : public CStack<CMenuItem> {
 
 	public:
 		CMenu () { Init (); }
-		CMenu (uint nLength) { 
-			Init (); 
+		CMenu (uint nLength) {
+			Init ();
 			Create (nLength);
 			}
-		inline void Init (void) { 
+		inline void Init (void) {
 			SetGrowth (10);
 			m_nGroup = 0;
 			}
-		inline int NewGroup (int nGroup = 0) { 
+		inline int NewGroup (int nGroup = 0) {
 			if (!nGroup)
-				m_nGroup++; 
-			else if (nGroup > 0) 
+				m_nGroup++;
+			else if (nGroup > 0)
 				m_nGroup = nGroup;
-			else 
+			else
 				m_nGroup--;
 			return m_nGroup;
 			}
@@ -238,12 +238,12 @@ class CMenu : public CStack<CMenuItem> {
 		int AddGauge (const char* szText, int nValue, int nMax);
 		inline CMenuItem& Item (int i = -1) { return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i]; }
 
-		int Menu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callback = NULL, 
+		int Menu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callback = NULL,
 					 int *nCurItemP = NULL, char *filename = NULL, int width = -1, int height = -1, int bTinyMode = 0);
 
 		int TinyMenu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callBack = NULL);
 
-		int FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
+		int FixedFontMenu (const char* pszTitle, const char* pszSubTitle,
 								 pMenuCallback callback, int* nCurItemP, char* filename, int width, int height);
 
 		static void DrawCloseBox (int x, int y);

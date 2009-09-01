@@ -37,12 +37,12 @@ typedef struct tTranspPoly {
 	char					nColors;
 	char					bDepthMask;
 	char					bAdditive;
-} __pack__ tTranspPoly;
+} tTranspPoly;
 
 typedef struct tTranspObject {
 	CObject				*objP;
 	CFixVector			vScale;
-} __pack__ tTranspObject;
+} tTranspObject;
 
 typedef struct tTranspSprite {
 	CBitmap				*bmP;
@@ -55,36 +55,36 @@ typedef struct tTranspSprite {
 	char					bAdditive;
 	char					bDepthMask;
 	float					fSoftRad;
-} __pack__ tTranspSprite;
+} tTranspSprite;
 
 typedef struct tTranspSpark {
 	CFloatVector				position;
 	int					nSize;
 	char					nFrame;
 	char					nType;
-} __pack__ tTranspSpark;
+} tTranspSpark;
 
 typedef struct tTranspParticle {
 	CParticle			*particle;
 	float					fBrightness;
-} __pack__ tTranspParticle;
+} tTranspParticle;
 
 typedef enum tTranspSphereType {
 	riSphereShield,
 	riMonsterball
-} __pack__ tTranspSphereType;
+} tTranspSphereType;
 
 typedef struct tTranspSphere {
 	tTranspSphereType	nType;
 	tRgbaColorf			color;
 	CObject				*objP;
 	int					nSize;
-} __pack__ tTranspSphere;
+} tTranspSphere;
 
 typedef struct tTranspLightning {
 	CLightning			*lightning;
 	short					nDepth;
-} __pack__ tTranspLightning;
+} tTranspLightning;
 
 typedef struct tTranspLightTrail {
 	CBitmap					*bmP;
@@ -92,7 +92,7 @@ typedef struct tTranspLightTrail {
 	tTexCoord2f				texCoord [7];
 	tRgbaColorf				color;
 	char						bTrail;
-} __pack__ tTranspLightTrail;
+} tTranspLightTrail;
 
 typedef struct tTranspItem {
 	struct tTranspItem	*pNextItem;
@@ -112,7 +112,7 @@ typedef struct tTranspItem {
 		tTranspLightning			lightning;
 		tTranspLightTrail			thruster;
 	} item;
-} __pack__ tTranspItem;
+} tTranspItem;
 
 typedef struct tTranspItemBuffer {
 	CArray<tTranspItem*>	depthBuffer;
@@ -140,7 +140,7 @@ typedef struct tTranspItemBuffer {
 	char				bDecal;
 	char				bSplitPolys;
 	CBitmap			*bmP [3];
-} __pack__ tTranspItemBuffer;
+} tTranspItemBuffer;
 
 typedef struct tTranspItemData {
 	tTranspItem		item;
@@ -148,7 +148,7 @@ typedef struct tTranspItemData {
 	int				nSize;
 	int				nDepth;
 	int				nIndex;
-	} __pack__ tTranspItemData;
+	} tTranspItemData;
 
 //------------------------------------------------------------------------------
 

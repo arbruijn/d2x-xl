@@ -40,7 +40,7 @@ extern tRenderThreadInfo tiRender;
 typedef struct tTranspRenderThreadInfo {
 	tTranspItemData	itemData [MAX_THREADS];
 	tThreadInfo			ti [MAX_THREADS];
-	} __pack__ tTranspRenderThreadInfo;
+	} tTranspRenderThreadInfo;
 
 extern tTranspRenderThreadInfo tiTranspRender;
 extern tThreadInfo tiEffects;
@@ -69,9 +69,9 @@ return !(gameStates.app.bMultiThreaded && (tiRender.ti [0].bExec || tiRender.ti 
 
 //------------------------------------------------------------------------------
 
-static 
+static
 #ifdef RELEASE
-inline 
+inline
 #endif
 void ComputeThreadRange (int nId, int nMax, int& nStart, int& nEnd, int nThreads = gameStates.app.nThreads)
 {

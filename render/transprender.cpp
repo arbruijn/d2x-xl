@@ -636,7 +636,7 @@ if (m_data.bUseLightmaps != bUseLightmaps) {
 	ResetBitmaps ();
 	ogl.EnableClientStates (1, 1, bUseLightmaps, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
-	if (m_data.bUseLightmaps = bUseLightmaps)
+	if ((m_data.bUseLightmaps = bUseLightmaps))
 		ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 	}
 

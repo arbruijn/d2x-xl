@@ -2585,7 +2585,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, erscheinen in einigen Menues zusaetzliche\nEinstellungsmoeglichkeiten.", "If checked, additional settings are displayed in some menus."},
  {"Beim Standardmodell werden einfach die Schutzschilde abgenutzt\nund schliesslich der Gegner zerstoert. Beim erweiterten\nModell koennen je nach Zustand des gegnerischen\nSchutzschildes kritische Treffer erzielt werden, die seine\nGeschwindigkeit, Zielsicherheit oder Feuerrate verringern.",
   "With the standard model shields are worn down until the opponent\nis destroyed. With the enhanced model you can score critical\nhits depending on the state of the opponent's shields and\nthus decrease his speed, aim and rate of fire."},
- {"Wenn angekreuzt, werden diverse optische Effekte (Rauch, Blitze, Leuchtspuren, Energieschilde, Zielmarkierungen etc.) gezeichnet. Andernfalls werden keine Effekte dargestellt.", 
+ {"Wenn angekreuzt, werden diverse optische Effekte (Rauch, Blitze, Leuchtspuren, Energieschilde, Zielmarkierungen etc.) gezeichnet. Andernfalls werden keine Effekte dargestellt.",
   "If checked, various optical effects (smoke, lightning, light trails, energy shields, target markers etc.) are displayed. Otherwise no effects are rendered."},
 #if 0
  {"", ""},
@@ -2764,7 +2764,7 @@ void FreeModTexts (void)
 {
 for (int i = 0; i < BASE_TEXT_COUNT; i++)
 	if (d2GameTexts [i][1]) {
-		delete[] (void*) (d2GameTexts [i][1]);
+		delete[] d2GameTexts [i][1];
 		d2GameTexts [i][1] = NULL;
 		}
 }

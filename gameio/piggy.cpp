@@ -93,7 +93,7 @@ ubyte d1ColorMap [256];
 #else
 #	define PIGGY_BUFFER_SIZE ((uint) 0x7fffffff)
 #endif
-#define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)		
+#define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)
 
 #define DBM_FLAG_ABM    64 // animated bitmap
 #define DBM_NUM_FRAMES  63
@@ -214,7 +214,7 @@ return bmi;
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex PiggyFindBitmap (const char * pszName, int bD1Data)   
+tBitmapIndex PiggyFindBitmap (const char * pszName, int bD1Data)
 {
 	tBitmapIndex	bi;
 	int				i;
@@ -234,7 +234,7 @@ for (i = 0; i < gameData.pig.tex.nAliases; i++)
 			pszName = alias;
 			}
 		else
-			pszName = gameData.pig.tex.aliases [i].filename; 
+			pszName = gameData.pig.tex.aliases [i].filename;
 		break;
 		}
 i = bitmapNames [bD1Data].Search (pszName);
@@ -359,7 +359,7 @@ void PiggyInitPigFile (char *filename)
 	char					szName [16];
 	char					szNameRead [16];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
-	int					bD1 = gameStates.app.bD1Data;
+	//int					bD1 = gameStates.app.bD1Data;
 	bool					bRegister = filename != NULL;
 	bool					bReload = true;
 	CBitmap				bm;
@@ -407,7 +407,7 @@ for (i = 0; i < nBitmapNum; i++) {
 	PIGBitmapHeaderRead (&bmh, *cfP);
 	memcpy (szNameRead, bmh.name, 8);
 	szNameRead [8] = 0;
-	if (bmh.dflags & DBM_FLAG_ABM)        
+	if (bmh.dflags & DBM_FLAG_ABM)
 		sprintf (szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 	else
 		strcpy (szName, szNameRead);
@@ -451,7 +451,7 @@ else {
 	pszFile = szFile;
 	pszFolder = gameFolders.szModDir [1];
 	}
-	
+
 if (!cf.Open (pszFile, pszFolder, "rb", 0)) {
 	bMustWriteHamFile = 1;
 	return 0;
@@ -508,7 +508,7 @@ for (i = 0; i < MAX_SOUND_FILES; i++)
 #endif
 
 /*---*/PrintLog ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
-for (i = 0; i < MAX_BITMAP_FILES; i++)     
+for (i = 0; i < MAX_BITMAP_FILES; i++)
 	gameData.pig.tex.bitmapXlat [i] = i;
 
 if (!bogusBitmap.FrameSize ()) {
@@ -546,7 +546,7 @@ if (gameData.pig.tex.nHamFileVersion >= 3) {
 	bSoundOk = LoadD2Sounds ();
 	}
 //if (gameStates.app.bFixModels)
-gameStates.app.bAltModels = 
+gameStates.app.bAltModels =
 gameStates.app.bFixModels = gameStates.app.bDemoData ? 0 : LoadRobotReplacements ("d2x-xl", NULL, 0, 1) > 0;
 LoadTextureBrightness ("descent2", gameData.pig.tex.defaultBrightness [0].Buffer ());
 LoadTextureBrightness ("descent", gameData.pig.tex.defaultBrightness [1].Buffer ());
@@ -558,9 +558,9 @@ return (bHamOk && bSoundOk);               //read ok
 
 //------------------------------------------------------------------------------
 
-const char * szCriticalErrors [13] = { 
+const char * szCriticalErrors [13] = {
 	"Write Protected", "Unknown Unit", "Drive Not Ready", "Unknown Command", "CRC Error",
-	"Bad struct length", "Seek Error", "Unknown media nType", "Sector not found", "Printer out of paper", 
+	"Bad struct length", "Seek Error", "Unknown media nType", "Sector not found", "Printer out of paper",
 	"Write Fault",	"Read fault", "General Failure"
 	};
 
@@ -657,7 +657,7 @@ bmP->Remap (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
  * "gameData.pig.tex.bmIndex" looks up a d2 bitmap index given a d2 nBaseTex
  * "d1_tmap_nums" looks up a d1 nBaseTex given a d1 bitmap. "-1" means "None"
  */
-void _CDECL_ FreeD1TMapNums (void) 
+void _CDECL_ FreeD1TMapNums (void)
 {
 if (d1_tmap_nums) {
 	PrintLog ("unloading D1 texture ids\n");
@@ -710,9 +710,9 @@ void LoadD1PigHeader (CFile& cf, int *pSoundNum, int *pBmHdrOffs, int *pBmDataOf
 
 	int	nPigDataStart,
 			nHeaderSize,
-			nBmHdrOffs, 
+			nBmHdrOffs,
 			nBmDataOffs,
-			nSoundNum, 
+			nSoundNum,
 			nBitmapNum;
 
 switch (cf.Length ()) {
@@ -734,7 +734,7 @@ switch (cf.Length ()) {
 	case D1_MAC_SHARE_PIGSIZE:
 		nPigDataStart = cf.ReadInt ();
 		if (bReadTMapNums)
-			BMReadD1TMapNums (cf); 
+			BMReadD1TMapNums (cf);
 		break;
 	}
 cf.Seek (nPigDataStart, SEEK_SET);
@@ -793,7 +793,7 @@ void LoadD1Textures (void)
 	char					szNameRead [16];
 	int					i, nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
 
-PiggyInitPigFile ("groupa.pig");
+PiggyInitPigFile (const_cast<char*> ("groupa.pig"));
 SetDataVersion (1);
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
@@ -831,7 +831,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		bmTemp.SetBPP (1);
 		bmTemp.SetFlags (bmh.flags | BM_FLAG_PAGED_OUT);
 		bmTemp.SetAvgColorIndex (bmh.avgColor);
-		bmTemp.SetBuffer (NULL); 
+		bmTemp.SetBuffer (NULL);
 		bmTemp.SetBPP (1);
 		bitmapCacheUsed += bmTemp.FrameSize ();
 		gameData.pig.tex.bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
@@ -873,7 +873,7 @@ for (i = 0; i < nBitmapNum; i++) {
 		break;
 	}
 if (i >= nBitmapNum) {
-#if TRACE			
+#if TRACE
 	console.printf (CON_DBG, "could not find bitmap %s\n", name);
 #endif
 	return bmi;

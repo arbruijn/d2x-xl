@@ -67,8 +67,8 @@ class CParticle : public tParticle {
 		int Render (float brightness);
 		int Update (int nCurTime);
 		inline bool IsVisible (void);
-		inline fix Transform (bool bUnscaled) { 
-			transformation.Transform (m_vTransPos, m_vPos, bUnscaled); 
+		inline fix Transform (bool bUnscaled) {
+			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos [Z];
 			}
 
@@ -114,7 +114,7 @@ typedef struct tParticleEmitter {
 	char					m_bHaveColor;
 	char					m_bBlowUpParts;	//blow particles up at their "birth"
 	char					m_bEmittingFace;
-} __pack__ tParticleEmitter;
+} tParticleEmitter;
 
 class CParticleEmitter : public tParticleEmitter {
 	public:
@@ -163,7 +163,7 @@ typedef struct tParticleSystem {
 	bool								m_bDestroy;
 	bool								m_bValid;
 	char								m_nType;				//black or white
-} __pack__ tParticleSystem;
+} tParticleSystem;
 
 class CParticleSystem : public tParticleSystem {
 	public:
@@ -171,8 +171,8 @@ class CParticleSystem : public tParticleSystem {
 		~CParticleSystem () { Destroy (); };
 		void Init (int nId);
 		int Create (CFixVector *pPos, CFixVector *pDir, CFixMatrix *pOrient,
-					   short nSegment, int nMaxEmitters, int nMaxParts, 
-						float fScale, int nDensity, int nPartsPerPos, 
+					   short nSegment, int nMaxEmitters, int nMaxParts,
+						float fScale, int nDensity, int nPartsPerPos,
 						int nLife, int nSpeed, char nType, int nObject,
 						tRgbaColorf *pColor, int bBlowUpParts, char nFace);
 		void Destroy (void);
@@ -211,8 +211,8 @@ class CParticleManager {
 		CParticleManager () {}
 		~CParticleManager ();
 		void Init (void);
-		inline void InitObjects (void) { 
-			m_objectSystems.Clear (0xff); 
+		inline void InitObjects (void) {
+			m_objectSystems.Clear (0xff);
 			m_objExplTime.Clear (0xff);
 			}
 		int Update (void);
@@ -250,8 +250,8 @@ class CParticleManager {
 		inline CParticleEmitter* GetEmitter (int i, int j)
 		 { return GetSystem (i).GetEmitter (j); }
 
-		inline void SetPos (int i, CFixVector *vPos, CFixMatrix *mOrient, short nSegment) { 
-			GetSystem (i).SetPos (vPos, mOrient, nSegment); 
+		inline void SetPos (int i, CFixVector *vPos, CFixMatrix *mOrient, short nSegment) {
+			GetSystem (i).SetPos (vPos, mOrient, nSegment);
 			}
 
 		inline void SetDensity (int i, int nMaxParts, int nDensity) {

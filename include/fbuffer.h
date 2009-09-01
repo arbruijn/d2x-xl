@@ -18,7 +18,7 @@ typedef struct tFrameBuffer {
 	int		nWidth;
 	int		nHeight;
 	GLenum	nStatus;
-} __pack__ tFrameBuffer;
+} tFrameBuffer;
 
 #ifdef _WIN32
 extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;

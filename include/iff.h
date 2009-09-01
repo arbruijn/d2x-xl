@@ -41,7 +41,7 @@ typedef struct tMemoryFile {
 	ubyte *data;
 	int	position;
 	int	length;
-} __pack__ tMemoryFile;
+} tMemoryFile;
 
 class CIFF {
 	private:
