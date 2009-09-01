@@ -91,7 +91,7 @@ class CPalette {
 typedef struct tPaletteList {
 	struct tPaletteList	*next;
 	CPalette					palette;
-} __pack__ tPaletteList;
+} tPaletteList;
 
 //------------------------------------------------------------------------------
 
