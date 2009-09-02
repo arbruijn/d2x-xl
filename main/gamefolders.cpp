@@ -347,7 +347,7 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 for (i = 0; i < 2; i++)
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
 MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
-sprintf (gameFolders.szDownloadDir, "%s/%s", szDataRootDir, DOWNLOADDIR);
+sprintf (gameFolders.szDownloadDir, "%s%s", szDataRootDir, DOWNLOADDIR);
 sprintf (gameFolders.szMissionDownloadDir, "%s/%s", gameFolders.szMissionDir, DOWNLOADDIR);
 CFile::MkDir (gameFolders.szMissionDownloadDir);
 }
@@ -626,28 +626,31 @@ return nErrors;
 static void CheckAndCreateGameFolders (void)
 {
 static const char* gameFolders [] = {
-	"./cache",
-	"./config",
-	"./data",
+	"cache",
+	"config",
+	"data",
 #if defined(_WIN32)
-	"./downloads",
+	"downloads",
 #endif
-	"./models",
-	"./mods",
-	"./movies",
-	"./profiles",
-	"./savegames",
-	"./screenshots",
-	"./sounds2",
-	"./sounds2/d2x-xl",
-	"./textures"
+	"models",
+	"mods",
+	"movies",
+	"profiles",
+	"savegames",
+	"screenshots",
+	"sounds2",
+	"sounds2/d2x-xl",
+	"textures"
 };
 
 	FFS	ffs;
+	char	szFolder [FILENAME_LEN];
 
-for (int i = 0; i < int (sizeofa (gameFolders)); i++) 
-  if (FFF (gameFolders [i], &ffs, 1))
-  		CFile::MkDir (gameFolders [i]);
+for (int i = 0; i < int (sizeofa (gameFolders)); i++) {
+	sprintf (szFolder, "%s%s", szRootFolder, gameFolders [i]);
+	if (FFF (szFolder, &ffs, 1))
+  		CFile::MkDir (szFolder);
+	}
 }
 
 #endif
@@ -802,15 +805,17 @@ if (URLDownloadToFile (NULL, "http://www.descent2.de/downloads/d2x-xl-version.tx
 	return -1;
 if (!cf.Open ("d2x-xl-version.txt", gameFolders.szDownloadDir, "rt", -1))
 	return -1;
-if (3 != fscanf (cf.File (), "%d.%d.%d", nVersion [0], nVersion [1], nVersion [2]))
+if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion [2]))
 	return -1;
 #if !DBG
 if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2])
 	return 0;
 #endif
-sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-win-%d.%d.%d.msi", nVersion [0], nVersion [1], nVersion [2]);
-sprintf (szDest, "%s/d2x-xl-win-%d.%d.%d.msi", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
+sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-win32-%d.%d.%d.msi", nVersion [0], nVersion [1], nVersion [2]);
+sprintf (szDest, "%s/d2x-xl-win32-%d.%d.%d.msi", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
 if (URLDownloadToFile (NULL, szSrc, szDest, NULL, NULL) != S_OK)
+	return -1;
+if (!cf.Exist (szDest, "", 0))
 	return -1;
 _execl (szDest, NULL);
 return 1;
