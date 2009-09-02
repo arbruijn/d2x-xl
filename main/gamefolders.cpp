@@ -808,15 +808,15 @@ int CheckForUpdate (void)
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
 if ((URLDownloadToFile (NULL, "http://www.descent2.de/downloads/d2x-xl-version.txt", szDest, NULL, NULL) != S_OK) &&
 	 (URLDownloadToFile (NULL, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, NULL, NULL) != S_OK)) {
-	Warning ("Download failed.);
+	Warning ("Download failed.");
 	return -1;
 	}
 if (!cf.Open ("d2x-xl-version.txt", gameFolders.szDownloadDir, "rt", -1)) {
-	Warning ("Download failed.);
+	Warning ("Download failed.");
 	return -1;
 	}
 if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion [2])) {
-	Warning ("Download failed.);
+	Warning ("Download failed.");
 	return -1;
 	}
 
@@ -824,21 +824,21 @@ if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion
 if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2])
 	return 0;
 #endif
+sprintf (szDest, "%s/d2x-xl-win-%d.%d.%d.exe", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
 #if 0
 messageBox.Show ("Downloading...");
-sprintf (szDest, "%s/d2x-xl-win-%d.%d.%d.exe", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
 sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-win-%d.%d.%d.exe", nVersion [0], nVersion [1], nVersion [2]);
 if (URLDownloadToFile (NULL, szSrc, szDest, NULL, NULL) != S_OK) {
 	sprintf (szSrc, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-win-%d.%d.%d.exe/download", nVersion [0], nVersion [1], nVersion [2]);
 	if (URLDownloadToFile (NULL, szSrc, szDest, NULL, NULL) != S_OK) {
 		messageBox.Clear ();
-		Warning ("Download failed.);
+		Warning ("Download failed.");
 		return -1;
 		}
 	}
 messageBox.Clear ();
 if (!cf.Exist (szDest, "", 0)) {
-	Warning ("Download failed.);
+	Warning ("Download failed.");
 	return -1;
 	}
 #endif
@@ -847,10 +847,11 @@ args [1] = NULL;
 if (0 <= _execv (szDest, args))
 	exit (1);
 
-char	szMsg [10000];
+char	szMsg [1000];
 
-sprintf (szMsg, "\n%s\nwas sucessfully download, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
-Warning (szMsg);
+sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
+//Warning (szMsg);
+MsgBox (TXT_ERROR, NULL, 1, TXT_OK, szMsg);
 return -1;
 }
 
