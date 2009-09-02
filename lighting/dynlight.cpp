@@ -129,7 +129,8 @@ if (SHOW_DYN_LIGHT) {
 
 short CLightManager::Find (short nSegment, short nSide, short nObject)
 {
-if (gameStates.render.nLightingMethod && !gameStates.app.bNostalgia) {
+//if (gameStates.render.nLightingMethod && !gameStates.app.bNostalgia) 
+	{
 	CDynLight*	pl = &m_data.lights [0];
 
 	if (nObject >= 0)
@@ -599,7 +600,7 @@ qs.SortAscending (m_data.lights.Buffer (), 0, m_data.nLights [0] - 1);
 void CLightManager::AddGeometryLights (void)
 {
 	int			nFace, nSegment, nSide, nTexture, nLight;
-	CSegFace*		faceP;
+	CSegFace*	faceP;
 	tFaceColor*	colorP;
 
 #if 0

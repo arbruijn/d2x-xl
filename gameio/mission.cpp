@@ -1031,9 +1031,10 @@ return 0;		//couldn't ffs mission
 
 int IsBuiltInMission (char* pszMission)
 {
+#if 0
 if (*pszMission)
 	return false;
-
+#endif
 pszMission = gameData.missions.list [gameData.missions.nCurrentMission].szMissionName;
 
 return (strstr (pszMission, "Descent: First Strike") != NULL) ||

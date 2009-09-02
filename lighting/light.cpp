@@ -1010,11 +1010,7 @@ void ChangeLight (short nSegment, short nSide, int dir)
 	CLightDelta*		dlP;
 	short					iSeg, iSide;
 
-if ((dir < 0) && lightManager.Delete (nSegment, nSide, -1))
-	return;
-if (lightManager.Toggle (nSegment, nSide, -1, dir >= 0) >= 0)
-	return;
-if (gameData.render.lights.deltaIndices.Buffer ()) {
+if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameData.render.lights.deltaIndices.Buffer ()) {
 	if (0 > (i = FindDLIndex (nSegment, nSide))) {
 #if DBG
 		FindDLIndex (nSegment, nSide);
@@ -1051,6 +1047,10 @@ if (gameData.render.lights.deltaIndices.Buffer ()) {
 		}
 	}
 //recompute static light for CSegment
+else if ((dir < 0) && lightManager.Delete (nSegment, nSide, -1))
+	return;
+if (lightManager.Toggle (nSegment, nSide, -1, dir >= 0) >= 0)
+	return;
 ChangeSegmentLight (nSegment, nSide, dir);
 }
 

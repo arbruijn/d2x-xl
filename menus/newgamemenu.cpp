@@ -264,7 +264,7 @@ void NewGameMenu (void)
 	CMenu				m;
 	int				optSelMsn, optMsnName, optLevelText, optLevel, optUseMod, optLaunch, optLoadout;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
-	int				i, choice = 0, bEnableMod = gameOpts->app.bEnableMods;
+	int				i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
 	char				szDifficulty [50];
 	char				szLevelText [32];
 	char				szLevel [5];
@@ -317,10 +317,11 @@ for (;;) {
 		}
 
 	if (nMission >= 0) {
+		bBuiltIn = IsBuiltInMission (gameData.missions.list [nMission].szMissionName);
 		gameOpts->app.bEnableMods = 1;
-		MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
+		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : gameData.missions.list [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
-		if (gameStates.app.bHaveMod == IsBuiltInMission (hogFileManager.m_files.MsnHogFiles.szName)) {
+		if (gameStates.app.bHaveMod == bBuiltIn) {
 			m.AddText ("", 0);
 			optUseMod = m.AddCheck (TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
 			}
