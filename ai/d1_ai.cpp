@@ -2035,7 +2035,7 @@ if (DoAnyRobotDyingFrame (objP))
 			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 			if ((player_visibility < 2) && (nPrevVisibility == 2)) { // this is redundant: mk, 01/15/95: && (ailP->mode == D1_AIM_CHASE_OBJECT)) {
 				if (!ai_multiplayer_awareness(objP, 53) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-					if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
+					if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 					}
@@ -2072,7 +2072,7 @@ if (DoAnyRobotDyingFrame (objP))
 					return;
 					}
 				if (!ai_multiplayer_awareness(objP, 64) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-					if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
+					if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 					}
@@ -2082,7 +2082,7 @@ if (DoAnyRobotDyingFrame (objP))
 				}
 			else if ((aiP->CURRENT_STATE != D1_AIS_REST) && (aiP->GOAL_STATE != D1_AIS_REST)) {
 				if (!ai_multiplayer_awareness(objP, 70) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-					if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
+					if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 						ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 					return;
 					}
@@ -2169,10 +2169,12 @@ if (DoAnyRobotDyingFrame (objP))
 					return;
 				}
 			if (!ai_multiplayer_awareness(objP, anger_level) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
+#if 0
 				if (!bHaveGunPos) {
 					bHaveGunPos = CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN) != 0;
 					vVisVecPos = vGunPoint;
 					}
+#endif
 				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 				if (bHaveGunPos)
 					ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
@@ -2206,7 +2208,7 @@ if (DoAnyRobotDyingFrame (objP))
 		case D1_AIM_HIDE:
 			if (!ai_multiplayer_awareness(objP, 71) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
 				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
-				if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
+				if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 					ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 				return;
 				}
@@ -2231,7 +2233,7 @@ if (DoAnyRobotDyingFrame (objP))
 				// new!
 				if ((player_visibility) || (nPrevVisibility) || ((d_rand() > 0x4000) && !(IsMultiGame))) {
 					if (!ai_multiplayer_awareness(objP, 71) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-						if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
+						if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 							ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 						return;
 						}
@@ -2245,7 +2247,7 @@ if (DoAnyRobotDyingFrame (objP))
 					if (botInfoP->attackType == 1) {
 						aiP->behavior = D1_AIB_NORMAL;
 						if (!ai_multiplayer_awareness(objP, 80) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-							if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
+							if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 								ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 							return;
 							}
@@ -2259,7 +2261,7 @@ if (DoAnyRobotDyingFrame (objP))
 					} else {
 						//	Robots in hover mode are allowed to evade at half Normal speed.
 						if (!ai_multiplayer_awareness(objP, 81) && maybe_ai_do_actual_firing_stuff(objP, aiP)) {
-							if (bHaveGunPos || CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN))
+							if (bHaveGunPos /*|| CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN)*/)
 								ai_do_actual_firing_stuff(objP, aiP, ailP, botInfoP, &vec_to_player, dist_to_player, &vGunPoint, player_visibility, object_animates);
 							return;
 							}
@@ -2401,10 +2403,12 @@ if (DoAnyRobotDyingFrame (objP))
 				break;
 
 			case D1_AIS_FIRE:
+#if 0
 				if (!bHaveGunPos) {
 					bHaveGunPos = CalcGunPoint (&vGunPoint, objP, aiP->CURRENT_GUN) != 0;
 					vVisVecPos = vGunPoint;
 					}
+#endif
 				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 				if (player_visibility) {
 					if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION-1) && IsMultiGame) {
