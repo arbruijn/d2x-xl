@@ -2233,7 +2233,7 @@ if (i == nHighestLevels) {		//not found.  create entry
 		i--;		//take last entry
 	else
 		nHighestLevels++;
-	strcpy (highestLevels[i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename);
+	strcpy (highestLevels [i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename);
 	highestLevels [i].nLevel = 0;
 	}
 return i;
@@ -2268,6 +2268,8 @@ if (strlen (gameData.missions.list [gameData.missions.nCurrentMission].filename)
 }
 #endif
 i = highestLevels [FindHLIEntry()].nLevel;
+if (i > gameData.missions.nLastLevel) 
+	i = highestLevels [FindHLIEntry()].nLevel = gameData.missions.nLastLevel;
 if (nHighestSaturnLevel > i)
    i = nHighestSaturnLevel;
 return i;

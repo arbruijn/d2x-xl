@@ -209,6 +209,7 @@ if (nHighestPlayerLevel > 1) {
 	char	szNumber [10];
 
 try_again:
+
 	sprintf (szInfo, "%s %d", TXT_START_ANY_LEVEL, nHighestPlayerLevel);
 	m.AddText (szInfo, 0);
 	strcpy (szNumber, "1");
@@ -221,8 +222,8 @@ try_again:
 		m [0].SetText (const_cast<char*> (TXT_ENTER_TO_CONT));
 		MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		goto try_again;
+		}
 	}
-}
 
 SavePlayerProfile ();
 if (!DifficultyMenu ())
@@ -273,7 +274,7 @@ void NewGameMenu (void)
 #endif
 
 	static int		nPlayerMaxLevel = 1;
-	static int		nLevel = 0;
+	static int		nLevel = 1;
 
 if (gameStates.app.bNostalgia) {
 	LegacyNewGameMenu ();
@@ -290,8 +291,11 @@ else if (gameOpts->app.bSinglePlayer) {
 		nMission = -1;
 	gameFolders.szMsnSubDir [0] = '\0';
 	}
-if (nMission >= 0)
+if (nMission >= 0) {
 	nPlayerMaxLevel = GetHighestLevel ();
+	if (nPlayerMaxLevel > gameData.missions.nLastLevel)
+		nPlayerMaxLevel = gameData.missions.nLastLevel;
+	}
 hogFileManager.UseMission ("");
 
 for (;;) {
@@ -368,9 +372,9 @@ for (;;) {
 	else if (choice == optLevel) {
 		i = atoi (m [optLevel].m_text);
 #if DBG
-		if (!i || (i < -gameData.missions.nSecretLevels) || (i > nPlayerMaxLevel))
+		if (!i || (i < -gameData.missions.nSecretLevels) || (i > nPlayerMaxLevel) || (i > gameData.missions.nLastLevel))
 #else
-		if ((i <= 0) || (i > nPlayerMaxLevel))
+		if ((i <= 0) || (i > nPlayerMaxLevel) || (i > gameData.missions.nLastLevel))
 #endif
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		else if (nLevel == i)
