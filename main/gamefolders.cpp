@@ -446,10 +446,6 @@ static tFileDesc gameFilesD2 [] = {
 	{"\002water.pig", "data", false, false, false},
 	{"\002descent2.hog", "data", false, false, false},
 	{"\002descent2.ham", "data", false, false, false},
-#if 0 //what's in these two files?
-	{"\002descent2.p11", "data", false, false, false},
-	{"\002descent2.p22", "data", false, false, false},
-#endif
 	{"\002descent2.s11", "data", false, false, false},
 	{"\002descent2.s22", "data", false, false, false},
 	{"\002intro-h.mvl", "movies", false, false, false},
