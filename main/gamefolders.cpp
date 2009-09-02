@@ -428,8 +428,8 @@ else
 #if defined (_WIN32) || defined(__unix__)
 
 typedef struct tFileDesc {
-	char*	pszFile;
-	char*	pszFolder;
+	const char*	pszFile;
+	const char*	pszFolder;
 	bool	bOptional;
 	bool	bUser;
 	bool	bFound;
@@ -571,15 +571,15 @@ static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 
 // quit if none of the specified files exist in the source folder
 if (i = FFF (fileDesc->pszFile, &ffs, 0)) {
-	sprintf_s (szFilter, sizeof (szFilter), "%s%s\\%s", fileDesc->bUser ? szHomeFolder : szRootFolder, fileDesc->pszFolder, fileDesc->pszFile);
+	sprintf (szFilter, "%s%s\\%s", fileDesc->bUser ? szHomeFolder : szRootFolder, fileDesc->pszFolder, fileDesc->pszFile);
 	return FFF (szFilter, &ffs, 0) == 0;
 	}
 do {
-	sprintf_s (szDest, sizeof (szDest), "\002%s", ffs.name);
-	sprintf_s (szFilter, sizeof (szFilter), "%s%s", fileDesc->bUser ? szUserFolder : szRootFolder, fileDesc->pszFolder);
+	sprintf (szDest, "\002%s", ffs.name);
+	sprintf (szFilter, "%s%s", fileDesc->bUser ? szUserFolder : szRootFolder, fileDesc->pszFolder);
 	if (!CFile::Exist (szDest, szFilter, 0)) {	// if the file doesn't exist in the destination folder copy it
-		sprintf_s (szSrc, "%s%s", fileDesc->bUser ? szHomeFolder : szRootFolder, ffs.name);
-		sprintf_s (szDest, sizeof (szDest), "%s%s\\%s", fileDesc->bUser ? szUserFolder : szRootFolder, fileDesc->pszFolder, ffs.name);
+		sprintf (szSrc, "%s%s", fileDesc->bUser ? szHomeFolder : szRootFolder, ffs.name);
+		sprintf (szDest, "%s%s\\%s", fileDesc->bUser ? szUserFolder : szRootFolder, fileDesc->pszFolder, ffs.name);
 		cf.Copy (szSrc, szDest);
 		}
 	} while (FFN (&ffs, 0));
@@ -601,14 +601,14 @@ for (int i = 0; i < nFiles; i++) {
 			nErrors++;		
 		}
 	else {
-		sprintf_s (szDest, sizeof (szDest), "%s%s", fileList [i].bUser ? szUserFolder : szRootFolder, fileList [i].pszFolder);
+		sprintf (szDest, "%s%s", fileList [i].bUser ? szUserFolder : szRootFolder, fileList [i].pszFolder);
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 		if (fileList [i].bFound)
 			continue;	// file exists in the destination folder
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, fileList [i].bUser ? szHomeFolder : szRootFolder, false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
-			sprintf_s (szSrc, sizeof (szSrc), "%s%s", szRootFolder, fileList [i].pszFile + 1);
-			sprintf_s (szDest, sizeof (szDest), "%s%s\\%s", fileList [i].bUser ? szUserFolder : szRootFolder, fileList [i].pszFolder, fileList [i].pszFile + 1);
+			sprintf (szSrc, "%s%s", szRootFolder, fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s\\%s", fileList [i].bUser ? szUserFolder : szRootFolder, fileList [i].pszFolder, fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional)
@@ -624,7 +624,7 @@ return nErrors;
 
 static void CheckAndCreateGameFolders (void)
 {
-static char* gameFolders [] = {
+static const char* gameFolders [] = {
 	"./cache",
 	"./config",
 	"./data",
@@ -650,7 +650,7 @@ for (int i = 0; i < int (sizeofa (gameFolders)); i++)
 
 // ----------------------------------------------------------------------------
 
-static void CreateFileListMessage (char* szMsg, int nMsgSize, tFileDesc* fileList, int nFiles, bool bShowFolders = false)
+static void CreateFileListMessage (char* szMsg, tFileDesc* fileList, int nFiles, bool bShowFolders = false)
 {
 	bool	bFirst = true;
 	int	nListed = 0;
@@ -660,20 +660,20 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 		if (bShowFolders && ((j < 0) || strcmp (fileList [i].pszFolder, fileList [j].pszFolder))) {
 			j = i;
 			if (!bFirst) {
-				strcat_s (szMsg, nMsgSize, "\n\n");
+				strcat (szMsg, "\n\n");
 				bFirst = true;
 				}
 			if (strcmp (szRootFolder, ".\\"))
-				strcat_s (szMsg, nMsgSize, szRootFolder);
-			strcat_s (szMsg, nMsgSize, fileList [i].pszFolder);
-			strcat_s (szMsg, nMsgSize, ": ");
+				strcat (szMsg, szRootFolder);
+			strcat (szMsg, fileList [i].pszFolder);
+			strcat (szMsg, ": ");
 			}
 		if (bFirst)
 			bFirst = false;
 		else {
-			strcat_s (szMsg, nMsgSize, ", ");
+			strcat (szMsg, ", ");
 			}
-		strcat_s (szMsg, nMsgSize, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
+		strcat (szMsg, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
 		nListed++;
 		}
 	}
@@ -687,36 +687,36 @@ int CheckAndFixSetup (void)
 	char	szMsg [10000];
 
 if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
-	strcpy_s (szRootFolder, sizeof (szRootFolder), pszArgList [i + 1]);
+	strcpy (szRootFolder, pszArgList [i + 1]);
 	i = int (strlen (szRootFolder));
 #if defined(__unix__)
 	if (szRootFolder [i - 1] != '/')
-		strcat_s (szRootFolder, sizeof (szRootFolder), "/");
+		strcat (szRootFolder, "/");
 #else
 	if ((szRootFolder [i - 1] != '\\') && (szRootFolder [i - 1] != '/') && (szRootFolder [i - 1] != ':'))
-		strcat_s (szRootFolder, sizeof (szRootFolder), "/");
+		strcat (szRootFolder, "/");
 #endif
 	}
 else
 #if defined(__unix__)
-	strcpy_s (szRootFolder, sizeof (szRootFolder), "/usr/local/games/d2x-xl/");
+	strcpy (szRootFolder, "/usr/local/games/d2x-xl/");
 #else
-	strcpy_s (szRootFolder, sizeof (szRootFolder), "./");
+	strcpy (szRootFolder, "./");
 #endif
 
 #if defined(__unix__)
 if (getenv ("HOME")) {
-	strcpy_s (szHomeFolder, sizeof (szHomeFolder), getenv ("HOME"));
+	strcpy (szHomeFolder, getenv ("HOME"));
 	i = int (strlen (szHomeFolder));
 	if (szHomeFolder [i - 1] != '/')
-		strcat_s (szHomeFolder, sizeof (szHomeFolder), "/");
+		strcat (szHomeFolder, "/");
 	}
 else
-	strcpy_s (szHomeFolder, sizeof (szHomeFolder), "./");
-sprintf_s (szUserFolder, sizeof (szUserFolder), "%s/.d2x-xl", szHomeFolder);
+	strcpy (szHomeFolder, "./");
+sprintf (szUserFolder, "%s/.d2x-xl", szHomeFolder);
 #else
-	strcpy_s (szHomeFolder, sizeof (szHomeFolder), szRootFolder);
-	strcpy_s (szUserFolder, sizeof (szUserFolder), szRootFolder);
+	strcpy (szHomeFolder, szRootFolder);
+	strcpy (szUserFolder, szRootFolder);
 #endif
 
 #if defined(_WIN32)
@@ -736,42 +736,42 @@ if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
 if (nResult) {
 	*szMsg = '\0';
 	if (nResult & 1) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nCritical - D2X-XL couldn't find the following Descent 2 files:\n\n");
-		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD2, int (sizeofa (gameFilesD2)));
+		strcat (szMsg, "\n\nCritical - D2X-XL couldn't find the following Descent 2 files:\n\n");
+		CreateFileListMessage (szMsg, gameFilesD2, int (sizeofa (gameFilesD2)));
 		}
 	if (nResult & 2) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nWarning - D2X-XL couldn't find the following Descent 1 files:\n\n");
-		CreateFileListMessage (szMsg, sizeof (szMsg), gameFilesD1, int (sizeofa (gameFilesD1)));
+		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following Descent 1 files:\n\n");
+		CreateFileListMessage (szMsg, gameFilesD1, int (sizeofa (gameFilesD1)));
 		}
 	if (nResult & 4) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nWarning - D2X-XL couldn't find the following Vertigo files:\n\n");
-		CreateFileListMessage (szMsg, sizeof (szMsg), vertigoFiles, int (sizeofa (vertigoFiles)));
+		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following Vertigo files:\n\n");
+		CreateFileListMessage (szMsg, vertigoFiles, int (sizeofa (vertigoFiles)));
 		}
 	if (nResult & 8) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nCritical - D2X-XL couldn't find the following D2X-XL files:\n\n");
-		CreateFileListMessage (szMsg, sizeof (szMsg), addonFiles, int (sizeofa (addonFiles)), true);
+		strcat (szMsg, "\n\nCritical - D2X-XL couldn't find the following D2X-XL files:\n\n");
+		CreateFileListMessage (szMsg, addonFiles, int (sizeofa (addonFiles)), true);
 		}
 	if (nResult & 16) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nWarning - D2X-XL couldn't find the following D2X-XL sound files:\n\n");
-		CreateFileListMessage (szMsg, sizeof (szMsg), addonSoundFiles, int (sizeofa (addonSoundFiles)), true);
+		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL sound files:\n\n");
+		CreateFileListMessage (szMsg, addonSoundFiles, int (sizeofa (addonSoundFiles)), true);
 		}
 	if (nResult & (1 | 8)) {
-		strcat_s (szMsg, sizeof (szMsg), "\n\nD2X-XL cannot run because files are missing.\n");
-			strcat_s (szMsg, sizeof (szMsg), "\nPlease download the required files. Download locations are\n");
+		strcat (szMsg, "\n\nD2X-XL cannot run because files are missing.\n");
+			strcat (szMsg, "\nPlease download the required files. Download locations are\n");
 		if (nResult & 8)
-			strcat_s (szMsg, sizeof (szMsg), " - http://www.descent2.de/d2x.html\n - http://www.sourceforge.net/projects/d2x-xl\n");
+			strcat (szMsg, " - http://www.descent2.de/d2x.html\n - http://www.sourceforge.net/projects/d2x-xl\n");
 		if (nResult & 1)
-			strcat_s (szMsg, sizeof (szMsg), " - http://www.gog.com (buy the game here for little money)\n");
+			strcat (szMsg, " - http://www.gog.com (buy the game here for little money)\n");
 		Error (szMsg);
 		}
 	else if ((FindArg ("-setup") || (gameConfig.nVersion != D2X_IVER)) && (nResult & (2 | 4 | 16))) {	// only warn once each time a new game version is installed
-		strcat_s (szMsg, sizeof (szMsg), "\n\n");
+		strcat (szMsg, "\n\n");
 		if (nResult & 2)
-			strcat_s (szMsg, sizeof (szMsg), "Descent 1 missions will be unavailable.\n");
+			strcat (szMsg, "Descent 1 missions will be unavailable.\n");
 		if (nResult & 4)
-			strcat_s (szMsg, sizeof (szMsg), "Vertigo missions will be unavailable.\n");
+			strcat (szMsg, "Vertigo missions will be unavailable.\n");
 		if (nResult & 16)
-			strcat_s (szMsg, sizeof (szMsg), "Additional sound effects will be unavailable.\n");
+			strcat (szMsg, "Additional sound effects will be unavailable.\n");
 		Warning (szMsg);
 		}
 	}
