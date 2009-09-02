@@ -824,9 +824,12 @@ if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion
 if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2])
 	return 0;
 #endif
+
+if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "An update has been found. Download it?"))
+	return 0;
 sprintf (szDest, "%s/d2x-xl-win-%d.%d.%d.exe", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
 #if 1
-messageBox.Show ("An Update was found. Downloading now...");
+messageBox.Show ("Downloading...");
 sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-win-%d.%d.%d.exe", nVersion [0], nVersion [1], nVersion [2]);
 if (URLDownloadToFile (NULL, szSrc, szDest, NULL, NULL) != S_OK) {
 	sprintf (szSrc, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-win-%d.%d.%d.exe/download", nVersion [0], nVersion [1], nVersion [2]);
