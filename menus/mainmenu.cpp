@@ -87,6 +87,9 @@ static struct {
 	int	nOrder;
 	int	nHelp;
 	int	nChoice;
+#if defined(_WIN32)
+	int	nUpdate;
+#endif
 } mainOpts;
 
 //------------------------------------------------------------------------------
@@ -97,6 +100,10 @@ int ExecMultiMenuOption (int nChoice);
 
 //returns the number of demo files on the disk
 int NDCountDemos (void);
+
+#if defined(_WIN32)
+int CheckForUpdate (void);
+#endif
 
 // ------------------------------------------------------------------------
 
@@ -150,16 +157,13 @@ int SetupMainMenu (CMenu& m)
 memset (&mainOpts, 0xff, sizeof (mainOpts));
 m.Destroy ();
 m.Create (25);
-#ifndef DEMO_ONLY
 SetScreenMode (SCREEN_MENU);
-#if 1
 m.AddText ("", 0);
 m.Top ()->m_bNoScroll = 1;
 m.AddText ("", 0);
 m.Top ()->m_bNoScroll = 1;
 m.AddText ("", 0);
 m.Top ()->m_bNoScroll = 1;
-#endif
 mainOpts.nNew = m.AddMenu (TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
 if (!gameStates.app.bNostalgia)
 	mainOpts.nSingle = m.AddMenu (TXT_NEW_SPGAME, KEY_I, HTX_MAIN_SINGLE);
@@ -172,14 +176,12 @@ else
 mainOpts.nPilots = m.AddMenu (TXT_CHANGE_PILOTS, KEY_P, HTX_MAIN_PILOT);
 mainOpts.nDemo = m.AddMenu (TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
 mainOpts.nScores = m.AddMenu (TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
-#if 0
-if (CFile::Exist ("orderd2.pcx", gameFolders.szDataDir, 0)) // SHAREWARE
-	mainOpts.nOrder = m.AddMenu (TXT_ORDERING_INFO, -1, NULL);
-#endif
 mainOpts.nMovies = m.AddMenu (TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
 if (!gameStates.app.bNostalgia)
 	mainOpts.nSongs = m.AddMenu (TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
 mainOpts.nCredits = m.AddMenu (TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
+#if defined(_WIN32)
+mainOpts.nUpdate = m.AddMenu (TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
 #endif
 mainOpts.nQuit = m.AddMenu (TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 return m.ToS ();
@@ -367,6 +369,10 @@ else if (nChoice == mainOpts.nQuit) {
 	}
 else if (nChoice == mainOpts.nOrder) 
 	ShowOrderForm ();
+#if defined(_WIN32)
+else if (nChoice == mainOpts.nUpdate)
+	CheckForUpdate ();
+#endif
 else
 	return 0;
 return 1;

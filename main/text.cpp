@@ -1894,6 +1894,7 @@ const char *defaultGameTexts [][2] = {
  {"zur Mine", "to mine"},
  {"Waffen", "weapons"},
  {"~Effekte einschalten", "enable ~Effects"},
+ {"auf ~Updates ueberpruefen", "check for ~Updates"},
 #if 0
  {"", ""},
 #endif
@@ -2587,6 +2588,8 @@ const char *defaultHelpTexts [][2] = {
   "With the standard model shields are worn down until the opponent\nis destroyed. With the enhanced model you can score critical\nhits depending on the state of the opponent's shields and\nthus decrease his speed, aim and rate of fire."},
  {"Wenn angekreuzt, werden diverse optische Effekte (Rauch, Blitze, Leuchtspuren, Energieschilde, Zielmarkierungen etc.) gezeichnet. Andernfalls werden keine Effekte dargestellt.",
   "If checked, various optical effects (smoke, lightning, light trails, energy shields, target markers etc.) are displayed. Otherwise no effects are rendered."},
+ {"D2X-XL versucht festzustellen, ob eine neuere Programmversion\nvorhanden ist. (Dazu muss auf das Internet zugegriffen werden.)", 
+  "D2X-XL will check whether a newer program version is available.\n(To do that it has to access the internet.)"},
 #if 0
  {"", ""},
 #endif
