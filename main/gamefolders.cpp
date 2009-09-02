@@ -437,7 +437,7 @@ typedef struct tFileDesc {
 
 static tFileDesc gameFilesD2 [] = {
 	// basic game files
-	{"\002descent.cfg", "config", false, false, false},
+	{"\002descent.cfg", "config", false, true, false},
 	{"\002alien1.pig", "data", false, false, false},
 	{"\002alien2.pig", "data", false, false, false},
 	{"\002fire.pig", "data", false, false, false},
@@ -496,9 +496,9 @@ static tFileDesc addonFiles [] = {
     
 	{"\002aimdmg.tga", "textures/d2x-xl", false, false, false},         
 	{"\002blast.tga", "textures/d2x-xl", false, false, false},         
-	{"\002blast-hard.tga", "textures/d2x-xl", false, false, false},       
-	{"\002blast-medium.tga", "textures/d2x-xl", false, false, false},
-	{"\002blast-soft.tga", "textures/d2x-xl", false, false, false},     
+	{"\002blast-hard.tga", "textures/d2x-xl", true, false, false},
+	{"\002blast-medium.tga", "textures/d2x-xl", true, false, false},
+	{"\002blast-soft.tga", "textures/d2x-xl", true, false, false},
 	{"\002bubble.tga", "textures/d2x-xl", false, false, false},        
 	{"\002bullcase.tga", "textures/d2x-xl", false, false, false},         
 	{"\002corona.tga", "textures/d2x-xl", false, false, false},
@@ -515,16 +515,16 @@ static tFileDesc addonFiles [] = {
 	{"\002scope.tga", "textures/d2x-xl", false, false, false},            
 	{"\002shield.tga", "textures/d2x-xl", false, false, false},
 	{"\002smoke.tga", "textures/d2x-xl", false, false, false},          
-	{"\002smoke-hard.tga", "textures/d2x-xl", false, false, false},    
-	{"\002smoke-medium.tga", "textures/d2x-xl", false, false, false},     
-	{"\002smoke-soft.tga", "textures/d2x-xl", false, false, false},
+	{"\002smoke-hard.tga", "textures/d2x-xl", true, false, false},
+	{"\002smoke-medium.tga", "textures/d2x-xl", true, false, false},
+	{"\002smoke-soft.tga", "textures/d2x-xl", true, false, false},
 	{"\002sparks.tga", "textures/d2x-xl", false, false, false},         
 	{"\002thrust2d.tga", "textures/d2x-xl", false, false, false},      
-	{"\002thrust2d-blue.tga", "textures/d2x-xl", false, false, false},    
-	{"\002thrust2d-red.tga", "textures/d2x-xl", false, false, false},
+	{"\002thrust2d-blue.tga", "textures/d2x-xl", true, false, false},
+	{"\002thrust2d-red.tga", "textures/d2x-xl", true, false, false},
 	{"\002thrust3d.tga", "textures/d2x-xl", false, false, false},       
-	{"\002thrust3d-blue.tga", "textures/d2x-xl", false, false, false}, 
-	{"\002thrust3d-red.tga", "textures/d2x-xl", false, false, false}
+	{"\002thrust3d-blue.tga", "textures/d2x-xl", true, false, false},
+	{"\002thrust3d-red.tga", "textures/d2x-xl", true, false, false}
 };
 
 static tFileDesc addonSoundFiles [] = {
@@ -570,7 +570,7 @@ static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 	CFile	cf;
 
 // quit if none of the specified files exist in the source folder
-if (i = FFF (fileDesc->pszFile, &ffs, 0)) {
+if ((i = FFF (fileDesc->pszFile, &ffs, 0))) {
 	sprintf (szFilter, "%s%s\\%s", fileDesc->bUser ? szHomeFolder : szRootFolder, fileDesc->pszFolder, fileDesc->pszFile);
 	return FFF (szFilter, &ffs, 0) == 0;
 	}
@@ -713,7 +713,7 @@ if (getenv ("HOME")) {
 	}
 else
 	strcpy (szHomeFolder, "./");
-sprintf (szUserFolder, "%s/.d2x-xl", szHomeFolder);
+sprintf (szUserFolder, "%s/.d2x-xl/", szHomeFolder);
 #else
 	strcpy (szHomeFolder, szRootFolder);
 	strcpy (szUserFolder, szRootFolder);

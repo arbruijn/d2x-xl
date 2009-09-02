@@ -114,7 +114,7 @@ tGameOptions *gameOpts = gameOptions;
 
 void EvalArgs (void);
 void GetAppFolders (void);
-#if defined (_WIN32) 
+#if defined (_WIN32) || defined(__unix__)
 int CheckAndFixSetup (void);
 #else
 #define CheckAndFixSetup()	
