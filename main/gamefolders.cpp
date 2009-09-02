@@ -441,7 +441,7 @@ typedef struct tFileDesc {
 
 static tFileDesc gameFilesD2 [] = {
 	// basic game files
-	{"\002descent.cfg", "config", false, true, false},
+	{"\002descent.cfg", "config", true, true, false},
 	{"\002alien1.pig", "data", false, false, false},
 	{"\002alien2.pig", "data", false, false, false},
 	{"\002fire.pig", "data", false, false, false},
