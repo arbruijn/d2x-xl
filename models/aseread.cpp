@@ -756,7 +756,6 @@ int CSubModel::SaveBinary (CFile& cf)
 if (!strcmp (m_szName, "$WINGTIP2-0"))
 	nDbgModel = nDbgModel;
 #endif
-cf.WriteInt (MODEL_DATA_VERSION);
 cf.Write (m_szName, 1, sizeof (m_szName));
 cf.Write (m_szParent, 1, sizeof (m_szParent));
 cf.WriteShort (m_nSubModel);
@@ -796,6 +795,7 @@ int CModel::SaveBinary (void)
 sprintf (szFilename, "model%03d.bin", m_nModel);
 if (!cf.Open (szFilename, gameFolders.szModelDir [m_bCustom], "wb", 0))
 	return 0;
+cf.WriteInt (MODEL_DATA_VERSION);
 cf.WriteInt (m_nModel);
 cf.WriteInt (m_nSubModels);
 cf.WriteInt (m_nVerts);
