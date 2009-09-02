@@ -1034,6 +1034,25 @@ gameData.objs.bIsSlowWeapon [SMARTMINE_BLOB_ID] =
 gameData.objs.bIsSlowWeapon [ROBOT_SMARTMINE_BLOB_ID] =
 gameData.objs.bIsSlowWeapon [SMARTMSL_BLOB_ID] =
 gameData.objs.bIsSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
+
+gameData.objs.bIsEquipment.Clear (0);
+gameData.objs.bIsEquipment [POW_EXTRA_LIFE] =
+gameData.objs.bIsEquipment [POW_KEY_BLUE] =
+gameData.objs.bIsEquipment [POW_KEY_RED] =
+gameData.objs.bIsEquipment [POW_KEY_GOLD] =
+gameData.objs.bIsEquipment [POW_FULL_MAP] =
+gameData.objs.bIsEquipment [POW_BLUE_FLAG] =
+gameData.objs.bIsEquipment [POW_RED_FLAG] =
+gameData.objs.bIsEquipment [POW_CLOAK] =
+gameData.objs.bIsEquipment [POW_INVUL] =
+gameData.objs.bIsEquipment [POW_HOARD_ORB] = 2;
+gameData.objs.bIsEquipment [POW_QUADLASER] =
+gameData.objs.bIsEquipment [POW_CONVERTER] =
+gameData.objs.bIsEquipment [POW_AMMO_RACK] =
+gameData.objs.bIsEquipment [POW_AFTERBURNER] =
+gameData.objs.bIsEquipment [POW_HEADLIGHT] =
+gameData.objs.bIsEquipment [POW_SLOWMOTION] =
+gameData.objs.bIsEquipment [POW_BULLETTIME] = 1;
 }
 
 //------------------------------------------------------------------------------

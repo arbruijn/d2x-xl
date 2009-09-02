@@ -1946,6 +1946,7 @@ class CObjectData {
 		CStaticArray< ubyte, MAX_WEAPONS >	bIsWeapon; //[MAX_WEAPONS];
 		CStaticArray< ubyte, MAX_WEAPONS >	bIsSlowWeapon; //[MAX_WEAPONS];
 		CStaticArray< short, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
+		CStaticArray< ubyte, MAX_POWERUP_TYPES >	bIsEquipment; //[MAX_WEAPONS];
 		CByteArray				bWantEffect; //[MAX_OBJECTS_D2X];
 
 	public:

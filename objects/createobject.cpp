@@ -360,7 +360,7 @@ if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 #endif
 	return -2;
 	}
-if (gameStates.gameplay.bMineMineCheat && !bForce)
+if (gameStates.gameplay.bMineMineCheat && !bForce && (gameData.objs.bIsEquipment [nId] < 2))
 	return -1;
 short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size,
 										CT_POWERUP, MT_PHYSICS, RT_POWERUP);

@@ -105,6 +105,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_51C35535006C45B9A42B8C0224F9A27B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5B31FEE179544F6E8ACF6D78B76B8D1C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -237,7 +243,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:..\\..\\..\\..\\packages\\d2x-xl-x64-1.14.112.msi"
+        "OutputFilename" = "8:..\\..\\..\\packages\\packages\\d2x-xl-x64-1.14.112.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -296,7 +302,7 @@
         "DisplayName" = "8:Release 32 bit"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:..\\..\\..\\packages\\D2X-XL-x64-1.14.113.msi"
+        "OutputFilename" = "8:..\\..\\..\\packages\\D2X-XL-x64-1.14.114.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -358,7 +364,7 @@
         {
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_025F7A0031EA4BD4939A705C436AE6AE"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\libguide40.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\libguide40.dll"
             "TargetName" = "8:libguide40.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -378,7 +384,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_04B04981CCC3438D8405C032D96F93E2"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\Microsoft.VC80.CRT.manifest"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\Microsoft.VC80.CRT.manifest"
             "TargetName" = "8:Microsoft.VC80.CRT.manifest"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -398,7 +404,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_06208AD0B49D4221A6FCC1DF827E6717"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\SDL_mixer-x64.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\SDL_mixer-x64.dll"
             "TargetName" = "8:SDL_mixer-x64.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -418,7 +424,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_068EA1571BBE4CCAAB4F3086DBCB2921"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\d2x-xl-x64-intel.exe"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\d2x-xl-x64-intel.exe"
             "TargetName" = "8:d2x-xl-x64-intel.exe"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -438,7 +444,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0B811CE382E04E8F9CF1DC99AD8D876D"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\msvcp80.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\msvcp80.dll"
             "TargetName" = "8:msvcp80.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -458,7 +464,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_118BC10335544520ACC83250500D8E2E"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\SDL_image-x64-intel.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\SDL_image-x64-intel.dll"
             "TargetName" = "8:SDL_image-x64-intel.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -478,7 +484,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_199495BE3F5E49B4B1EBF09E71068766"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\Microsoft.VC80.OpenMP.manifest"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\Microsoft.VC80.OpenMP.manifest"
             "TargetName" = "8:Microsoft.VC80.OpenMP.manifest"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -498,7 +504,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1D8DE515BA974E6DBC2547EED0E8CC70"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\vorbisfile-x64.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\vorbisfile-x64.dll"
             "TargetName" = "8:vorbisfile-x64.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -518,7 +524,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_30816942BC154890B3322F21F5EFED39"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\vcomp.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\vcomp.dll"
             "TargetName" = "8:vcomp.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -538,7 +544,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3399C483C850425F9BBC7E624279A162"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\msvcr80.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\msvcr80.dll"
             "TargetName" = "8:msvcr80.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -558,7 +564,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_387801B34FAA4DB685820DF31296CF18"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\Microsoft.VC80.CRT.manifest"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\Microsoft.VC80.CRT.manifest"
             "TargetName" = "8:Microsoft.VC80.CRT.manifest"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -578,7 +584,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_406A49930DC9441881302DF39C579A31"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\vorbisfile-x64-intel.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\vorbisfile-x64-intel.dll"
             "TargetName" = "8:vorbisfile-x64-intel.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -598,7 +604,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_43B20558E1E34969801425BBBD6F1879"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\d2x-xl-version.txt"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\d2x-xl-version.txt"
             "TargetName" = "8:d2x-xl-version.txt"
             "Tag" = "8:"
             "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
@@ -618,7 +624,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_45452397B95C4E8E89D52E4CB3B9E9BA"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\INSTALL"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\INSTALL"
             "TargetName" = "8:INSTALL"
             "Tag" = "8:"
             "Folder" = "8:_E0FC06A9F9864D75AED36B3F8CEA6AF9"
@@ -638,7 +644,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4F4F2F7D9404478CA31688226943D8D9"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\smpeg-x64-intel.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\smpeg-x64-intel.dll"
             "TargetName" = "8:smpeg-x64-intel.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -656,9 +662,29 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_51C35535006C45B9A42B8C0224F9A27B"
+            {
+            "SourcePath" = "8:E:\\install\\d2x-xl\\d2x-xl.ico"
+            "TargetName" = "8:d2x-xl.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5B31FEE179544F6E8ACF6D78B76B8D1C"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\ogg-x64.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\ogg-x64.dll"
             "TargetName" = "8:ogg-x64.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -678,7 +704,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_654B4CAB78EB4BCD88DC2F49F5EF41F8"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\d2x-xl-x64.embed.manifest"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\d2x-xl-x64.embed.manifest"
             "TargetName" = "8:d2x-xl-x64.embed.manifest"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -698,7 +724,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7069BFD9B0C14250ADC4C5CBA65A1FA2"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\SDL_image-x64.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\SDL_image-x64.dll"
             "TargetName" = "8:SDL_image-x64.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -718,7 +744,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_71B3C13A43DB4D6FAB4ED76E52C1EB9B"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\vorbis-x64.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\vorbis-x64.dll"
             "TargetName" = "8:vorbis-x64.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -749,7 +775,7 @@
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\msvcm80.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\msvcm80.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -769,7 +795,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_91C521EB295140A1AA8714C2711DCCF4"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\vcomp.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\vcomp.dll"
             "TargetName" = "8:vcomp.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -789,7 +815,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_99C73412DD1643308F8DC527B9B16B86"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\ogg-x64-intel.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\ogg-x64-intel.dll"
             "TargetName" = "8:ogg-x64-intel.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -809,7 +835,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A42EC1BD3AA749F3B7E0BD6FA650AF46"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\vorbis-x64-intel.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\vorbis-x64-intel.dll"
             "TargetName" = "8:vorbis-x64-intel.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -829,7 +855,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A4DF42C56E714463976BB713E040BD12"
             {
-            "SourcePath" = "8:..\\d2x-xl-banner.bmp"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\d2x-xl-banner.bmp"
             "TargetName" = "8:d2x-xl-banner.bmp"
             "Tag" = "8:"
             "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
@@ -849,7 +875,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5980E229F384DCBB65912E0D57022E2"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\libmmd.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\libmmd.dll"
             "TargetName" = "8:libmmd.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -869,7 +895,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ABB02689C3684EFA88F2F02223F977D4"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\readme-d2x-xl.txt"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\readme-d2x-xl.txt"
             "TargetName" = "8:readme-d2x-xl.txt"
             "Tag" = "8:"
             "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
@@ -889,7 +915,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BB03B8AE210347C69F9DE0CA7B9EEE90"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\libiomp5md.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\libiomp5md.dll"
             "TargetName" = "8:libiomp5md.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -909,7 +935,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BC6EB669B51740AAB875C08BFE95C369"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\Microsoft.VC80.OpenMP.manifest"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\Microsoft.VC80.OpenMP.manifest"
             "TargetName" = "8:Microsoft.VC80.OpenMP.manifest"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -929,7 +955,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C00AF4ED8A2549F084603090D1771B70"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\d2x-xl-x64.exe"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\d2x-xl-x64.exe"
             "TargetName" = "8:d2x-xl-x64.exe"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -949,7 +975,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C01414DB8D1C4F10A6A469F072B321E3"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\SDL-x64.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\SDL-x64.dll"
             "TargetName" = "8:SDL-x64.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -969,7 +995,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C3360C1031BC4A43A70BD02F261643B6"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\msvcr80.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\msvcr80.dll"
             "TargetName" = "8:msvcr80.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -989,7 +1015,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C58A53B2B51D4446B49BD55FF3838242"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\release notes.txt"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\release notes.txt"
             "TargetName" = "8:release notes.txt"
             "Tag" = "8:"
             "Folder" = "8:_74F415E14D754D1A9CA72EE35483842C"
@@ -1009,7 +1035,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D1D9E27A960841E3BD42EE0CEB69EA98"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\SDL-x64-intel.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\SDL-x64-intel.dll"
             "TargetName" = "8:SDL-x64-intel.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -1029,7 +1055,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E655EF9E72804143BB0A257F7204EC4A"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-omp\\smpeg-x64.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-omp\\smpeg-x64.dll"
             "TargetName" = "8:smpeg-x64.dll"
             "Tag" = "8:"
             "Folder" = "8:_AB5D9425AD8640D09E33EDB87E276923"
@@ -1049,7 +1075,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E9AF08B297BC4D09B8C3BB0DC53EDE4A"
             {
-            "SourcePath" = "8:D:\\Programs\\d2\\bin\\x64-intel\\SDL_mixer-x64-intel.dll"
+            "SourcePath" = "8:e:\\install\\d2x-xl\\bin\\x64-intel\\SDL_mixer-x64-intel.dll"
             "TargetName" = "8:SDL_mixer-x64-intel.dll"
             "Tag" = "8:"
             "Folder" = "8:_77F78921B7E44297B9B9CC089C30AF2B"
@@ -1155,14 +1181,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:D2X-XL"
-        "ProductCode" = "8:{D617933A-0A3C-4D29-AC5D-FDFC9E387566}"
-        "PackageCode" = "8:{827D78C3-253D-45F7-B827-62BDFEF157E6}"
+        "ProductCode" = "8:{AD0EEB73-A12F-4524-809D-F672C453E321}"
+        "PackageCode" = "8:{671F0D2E-565C-44FE-A396-27116438B186}"
         "UpgradeCode" = "8:{1536B026-1AF7-4EC6-9EBF-C8BDF74B269F}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.14.113"
+        "ProductVersion" = "8:1.14.114"
         "Manufacturer" = "8:Dietfrid Mali"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.sourceforge.net/projects/d2x-xl"
@@ -1711,9 +1737,6 @@
         {
         }
         "ProjectOutput"
-        {
-        }
-        "VJSharpPlugin"
         {
         }
     }
