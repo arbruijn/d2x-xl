@@ -850,6 +850,7 @@ int CheckForUpdate (void)
 	char*		args [2];
 	CFile		cf;
 	int		nVersion [3];
+	char		szMsg [1000];
 
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
 if ((DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest)) &&
@@ -901,9 +902,6 @@ args [0] = szDest;
 args [1] = NULL;
 if (0 <= _execv (szDest, args))
 	exit (1);
-
-char	szMsg [1000];
-
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
 //Warning (szMsg);
 MsgBox (TXT_ERROR, NULL, 1, TXT_OK, szMsg);
