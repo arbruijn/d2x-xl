@@ -557,7 +557,7 @@ static tFileDesc addonSoundFiles [] = {
 	{"\002missileflight-small.wav", "sounds2/D1", false, false, false},
 	{"\002vulcan-firing.wav", "sounds2/D1", false, false, false},
 	{"\002zoom1.wav", "sounds2/D1", false, false, false},
-	{"\002zoom2.wav", "sounds2\\D1", false, false, false}
+	{"\002zoom2.wav", "sounds2/D1", false, false, false}
 };
 
 static char szRootFolder [FILENAME_LEN];
