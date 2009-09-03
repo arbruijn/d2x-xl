@@ -756,8 +756,8 @@ PROF_START
 cockpit->Render (bExtraInfo);
 PROF_END(ptCockpit)
 }
+paletteManager.RenderEffect ();
 console.Draw ();
-
 ogl.SwapBuffers (0, 0);
 
 if (gameStates.app.bSaveScreenshot)
