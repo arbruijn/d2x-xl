@@ -842,6 +842,7 @@ return 0;
 
 #endif
 
+#if defined(_WIN32) || defined(__unix__)
 
 int CheckForUpdate (void)
 {
@@ -909,5 +910,7 @@ MsgBox (TXT_ERROR, NULL, 1, TXT_OK, szMsg);
 #endif
 return -1;
 }
+
+#endif
 
 // ----------------------------------------------------------------------------
