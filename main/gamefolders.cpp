@@ -834,13 +834,14 @@ return 0;
 
 #elif defined(_WIN32)
 
+#	include "urlmon.h"
+#	include <process.h>
+#	include "errno.h"
+
 #	define DownloadFile(_src,_dest)	URLDownloadToFile (NULL, _src, _dest, NULL, NULL)
 
 #endif
 
-#include "urlmon.h"
-#include <process.h>
-#include "errno.h"
 
 int CheckForUpdate (void)
 {
