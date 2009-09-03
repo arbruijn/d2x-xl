@@ -847,7 +847,6 @@ return 0;
 int CheckForUpdate (void)
 {
 	char		szSrc [FILENAME_LEN], szDest [FILENAME_LEN];
-	char*		args [2];
 	CFile		cf;
 	int		nVersion [3];
 	char		szMsg [1000];
@@ -898,8 +897,7 @@ if (!cf.Exist (szDest, "", 0)) {
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded.", szDest);
 MsgBox (NULL, NULL, 1, TXT_OK, szMsg);
 #else
-args [0] = szDest;
-args [1] = NULL;
+char*	args [2] = {szDest, NULL};
 if (0 <= _execv (szDest, args))
 	exit (1);
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
