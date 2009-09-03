@@ -137,7 +137,7 @@ static int ipx_mcast4_OpenSocket (ipx_socket_t *sk, int port)
 				nLocalPort = gameStates.multi.bServer ? nServerPort : mpParams.udpPorts [1];
 #endif
 
-if ((sk->fd = (int) socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+if (int (sk->fd = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 	sk->fd = (UINT_PTR) (-1);
 #ifdef _GNUC
 	FAIL ("socket () creation failed on port %d: %m", port);
