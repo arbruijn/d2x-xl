@@ -1800,10 +1800,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\network\download.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\network\win32\ipx_mcast4.cpp"
 						>
 						<FileConfiguration

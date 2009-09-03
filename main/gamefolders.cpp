@@ -289,11 +289,15 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (fn);
 	sprintf (fn, "%s/%s", szDataRootDir, CONFIGDIR);
 	CFile::MkDir (fn);
+	sprintf (fn, "%s/%s", szDataRootDir, DOWNLOADDIR);
+	CFile::MkDir (fn);
 	}
 #endif
 if (*gameFolders.szHomeDir) {
 #ifdef __macosx__
 	char *pszOSXCacheDir = GetMacOSXCacheFolder ();
+	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, DOWNLOADDIR);
+	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s",pszOSXCacheDir, TEXTUREDIR_D2);
 	CFile::MkDir (gameFolders.szTextureCacheDir [0]);
 	sprintf (gameFolders.szTextureCacheDir [1], "%s/%s", pszOSXCacheDir, TEXTUREDIR_D1);
@@ -327,6 +331,8 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szModelCacheDir [0]);
 	sprintf (gameFolders.szCacheDir, "%s/%s", szDataRootDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
+	sprintf (gameFolders.szDownloadDir, "%s%s", szDataRootDir, DOWNLOADDIR);
+	CFile::MkDir (gameFolders.szDownloadDir);
 #endif // __macosx__
 	}
 GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
@@ -350,7 +356,6 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 for (i = 0; i < 2; i++)
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [i]);
 MakeTexSubFolders (gameFolders.szModelCacheDir [0]);
-sprintf (gameFolders.szDownloadDir, "%s%s", szDataRootDir, DOWNLOADDIR);
 sprintf (gameFolders.szMissionDownloadDir, "%s/%s", gameFolders.szMissionDir, DOWNLOADDIR);
 CFile::MkDir (gameFolders.szMissionDownloadDir);
 }
@@ -845,8 +850,8 @@ int CheckForUpdate (void)
 	int		nVersion [3];
 
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
-if ((DownloadFile (NULL, "http://www.descent2.de/downloads/d2x-xl-version.txt", szDest, NULL, NULL) != S_OK) &&
-	 (DownloadFile (NULL, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, NULL, NULL) != S_OK)) {
+if ((DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest) != S_OK) &&
+	 (DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest) != S_OK)) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
 	return -1;
 	}
