@@ -1681,7 +1681,6 @@ InitRobotsForLevel ();
 InitShakerDetonates ();
 MorphInit ();
 InitAllMatCens ();
-paletteManager.ResetEffect ();
 InitThiefForLevel ();
 InitStuckObjects ();
 GameFlushInputs ();		// clear out the keyboard
@@ -2213,13 +2212,13 @@ gameStates.app.bGameRunning = 0;
 StopTriggeredSounds ();
 audio.PauseAll ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
+paletteManager.ResetEffect ();
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 	LOCALPLAYER.score =
 	(LOCALPLAYER.score * (100 - nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty])) / 100;
 if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
 	MultiSendMsgQuit ();
 gameStates.entropy.bConquering = 0;
-paletteManager.ResetEffect ();
 
 if (IsMultiGame)
 	MultiDoDeath (LOCALPLAYER.nObject);

@@ -2220,7 +2220,9 @@ if (m_nVersion >= 11) {
 		m_cf.Read (&dummy_fix, sizeof (fix), 1);
 	}
 }
-if (m_nVersion >= 12) {
+if (m_nVersion < 12)
+	paletteManager.ResetEffect ();
+else {
 	//read last was super information
 	m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 	m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
@@ -2229,9 +2231,6 @@ if (m_nVersion >= 12) {
 	paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
 	paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
 	paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
-	}
-else {
-	paletteManager.ResetEffect ();
 	}
 
 //	Load gameData.render.lights.subtracted

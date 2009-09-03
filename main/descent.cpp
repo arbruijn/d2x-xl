@@ -462,9 +462,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			GrabMouse (1, 1);
 			RunGame ();
 			GrabMouse (0, 1);
-			paletteManager.EnableEffect ();
-			paletteManager.ResetEffect ();
-			paletteManager.DisableEffect ();
+			paletteManager.EnableEffect (true);
 			gameStates.app.bD1Mission = 0;
 			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
