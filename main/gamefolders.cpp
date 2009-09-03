@@ -809,7 +809,7 @@ int DownloadFile (const char* pszSrc, const char* pszDest)
 CURL* hEasy;
 if (!(hEasy = curl_easy_init ()))
 	return 1;
-if (curl_easy_setopt (easyhandle, CURLOPT_URL, pszSrc)) {
+if (curl_easy_setopt (hEasy, CURLOPT_URL, pszSrc)) {
 	curl_easy_cleanup (hEasy);
 	return 1;
 	}
