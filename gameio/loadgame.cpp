@@ -1400,7 +1400,7 @@ if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 	 !(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) {
 	CCanvas::SetCurrent (NULL);
 	CCanvas::Current ()->Clear (BLACK_RGBA);
-	paletteManager.ClearEffect ();
+	paletteManager.ResetEffect ();
 	//paletteManager.Load (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
 	MaybeAddPlayerScore (0);
 	}

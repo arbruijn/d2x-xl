@@ -384,11 +384,13 @@ void LoadAllTextures (void)
 	int 	bBlackScreen;
 
 StopTime ();
+#if 0
 bBlackScreen = paletteManager.EffectDisabled ();
 if (paletteManager.EffectDisabled ()) {
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	//paletteManager.ResumeEffect ();
 	}
+#endif
 //	messageBox.Show (TXT_LOADING);
 LoadSegmentTextures ();
 LoadWallTextures ();
@@ -399,10 +401,12 @@ LoadGaugeTextures ();
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
 LoadAddonTextures ();
+#if 0
 if (bBlackScreen) {
 	paletteManager.ClearEffect ();
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	}
+#endif
 StartTime (0);
 }
 

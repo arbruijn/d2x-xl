@@ -405,8 +405,6 @@ else {
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 	backgroundManager.Init ();
 	backgroundManager.Setup (filename, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-	paletteManager.ClearEffect ();
-	paletteManager.EnableEffect ();
 	GrUpdate (0);
 	}
 }
@@ -450,7 +448,6 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 				}
 			else {
 				CheckJoystickCalibration ();
-				paletteManager.ClearEffect ();		//I'm not sure why we need this, but we do
 				//SetRenderQuality (0);
 				MainMenu ();
 				}
@@ -957,7 +954,6 @@ void ShowOrderForm (void)
 	char	exit_screen[16];
 
 	CCanvas::SetCurrent (NULL);
-	paletteManager.ClearEffect ();
 
 	KeyFlush ();
 

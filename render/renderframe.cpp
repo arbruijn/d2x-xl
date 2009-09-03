@@ -954,7 +954,7 @@ void GameRenderFrame (void)
 PROF_START
 SetScreenMode (SCREEN_GAME);
 cockpit->PlayHomingWarning ();
-paletteManager.ClearEffect (paletteManager.Game ());
+//paletteManager.ClearEffect (paletteManager.Game ());
 FillBackground ();
 transparencyRenderer.Reset ();
 //if (gameStates.render.vr.nRenderMode == VR_NONE)

@@ -87,7 +87,7 @@ else
 
 void CPaletteManager::SetEffect (float red, float green, float blue, bool bForce)
 {
-if (!m_data.nSuspended)
+if (m_data.nSuspended)
 	return;
 #if 0
 if (!gameStates.render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
@@ -132,7 +132,6 @@ SetEffect (bForce);
 void CPaletteManager::ClearEffect (void)
 {
 SetEffect (0, 0, 0);
-m_data.nSuspended = false;
 }
 
 //------------------------------------------------------------------------------
@@ -148,7 +147,6 @@ int CPaletteManager::ClearEffect (CPalette* palette)
 if (m_data.nLastGamma == m_data.nGamma)
 	return 1;
 m_data.nLastGamma = m_data.nGamma;
-m_data.nSuspended = true;
 SetEffect (0, 0, 0);
 m_data.current = Add (*palette);
 return 1;

@@ -323,9 +323,6 @@ if (bCond) {
 
 void CPaletteManager::ResetEffect (void)
 {
-m_data.effect.red =
-m_data.effect.green =
-m_data.effect.blue= 0;
 m_data.xFlashDuration = 0;
 m_data.xLastEffectTime = 0;
 SetEffect (0, 0, 0);
@@ -471,7 +468,7 @@ for (i = 0; i < MAX_FADE_LEVELS * 256; i++)
 for (i = 0; i < MAX_FADE_LEVELS; i++)
 	m_fadeTable [i * 256] = TRANSPARENCY_COLOR;
 #endif
-ClearEffect (&palette);
+ResetEffect ();
 return Add (palette);
 }
 
