@@ -673,8 +673,8 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 				strcat (szMsg, "\n\n");
 				bFirst = true;
 				}
-			if (strcmp (szRootFolder, ".\\"))
-				strcat (szMsg, szRootFolder);
+			if (strcmp (fileList [i].bUser ? szUserFolder : szRootFolder, ".\\"))
+				strcat (szMsg, fileList [i].bUser ? szUserFolder : szRootFolder);
 			strcat (szMsg, fileList [i].pszFolder);
 			strcat (szMsg, ": ");
 			}
