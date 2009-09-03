@@ -185,7 +185,7 @@ void GetAppFolders (void)
 *szDataRootDir = '\0';
 if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
 	sprintf (gameFolders.szGameDir, "%s\\%s\\", pszArgList [i + 1], DATADIR);
-	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog")) 
+	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog"))
 		*gameFolders.szGameDir = '\0';
 	else {
 		strcpy (gameFolders.szGameDir, pszArgList [i + 1]);
@@ -331,7 +331,7 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szModelCacheDir [0]);
 	sprintf (gameFolders.szCacheDir, "%s/%s", szDataRootDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
-	sprintf (gameFolders.szDownloadDir, "%s%s", szDataRootDir, DOWNLOADDIR);
+	sprintf (gameFolders.szDownloadDir, "%s/%s", szDataRootDir, DOWNLOADDIR);
 	CFile::MkDir (gameFolders.szDownloadDir);
 #endif // __macosx__
 	}
@@ -495,43 +495,43 @@ static tFileDesc addonFiles [] = {
 
 	{"*.sg?", "savegames", true, true, false},
 
-	{"\002bullettime#0.tga", "textures", false, false, false},   
-	{"\002cockpit.tga", "textures", false, false, false},       
-	{"\002cockpitb.tga", "textures", false, false, false},         
+	{"\002bullettime#0.tga", "textures", false, false, false},
+	{"\002cockpit.tga", "textures", false, false, false},
+	{"\002cockpitb.tga", "textures", false, false, false},
 	{"\002monsterball.tga", "textures", false, false, false},
-	{"\002slowmotion#0.tga", "textures", false, false, false},   
-	{"\002status.tga", "textures", false, false, false},        
+	{"\002slowmotion#0.tga", "textures", false, false, false},
+	{"\002status.tga", "textures", false, false, false},
 	{"\002statusb.tga", "textures", false, false, false},
-    
-	{"\002aimdmg.tga", "textures/d2x-xl", false, false, false},         
-	{"\002blast.tga", "textures/d2x-xl", false, false, false},         
+
+	{"\002aimdmg.tga", "textures/d2x-xl", false, false, false},
+	{"\002blast.tga", "textures/d2x-xl", false, false, false},
 	{"\002blast-hard.tga", "textures/d2x-xl", true, false, false},
 	{"\002blast-medium.tga", "textures/d2x-xl", true, false, false},
 	{"\002blast-soft.tga", "textures/d2x-xl", true, false, false},
-	{"\002bubble.tga", "textures/d2x-xl", false, false, false},        
-	{"\002bullcase.tga", "textures/d2x-xl", false, false, false},         
+	{"\002bubble.tga", "textures/d2x-xl", false, false, false},
+	{"\002bullcase.tga", "textures/d2x-xl", false, false, false},
 	{"\002corona.tga", "textures/d2x-xl", false, false, false},
-	{"\002deadzone.tga", "textures/d2x-xl", false, false, false},       
-	{"\002drivedmg.tga", "textures/d2x-xl", false, false, false},      
-	{"\002fire.tga", "textures/d2x-xl", false, false, false},             
+	{"\002deadzone.tga", "textures/d2x-xl", false, false, false},
+	{"\002drivedmg.tga", "textures/d2x-xl", false, false, false},
+	{"\002fire.tga", "textures/d2x-xl", false, false, false},
 	{"\002glare.tga", "textures/d2x-xl", false, false, false},
-	{"\002gundmg.tga", "textures/d2x-xl", false, false, false},         
-	{"\002halfhalo.tga", "textures/d2x-xl", false, false, false},      
-	{"\002halo.tga", "textures/d2x-xl", false, false, false},             
+	{"\002gundmg.tga", "textures/d2x-xl", false, false, false},
+	{"\002halfhalo.tga", "textures/d2x-xl", false, false, false},
+	{"\002halo.tga", "textures/d2x-xl", false, false, false},
 	{"\002joymouse.tga", "textures/d2x-xl", false, false, false},
-	{"\002pwupicon.tga", "textures/d2x-xl", false, false, false},       
-	{"\002rboticon.tga", "textures/d2x-xl", false, false, false},      
-	{"\002scope.tga", "textures/d2x-xl", false, false, false},            
+	{"\002pwupicon.tga", "textures/d2x-xl", false, false, false},
+	{"\002rboticon.tga", "textures/d2x-xl", false, false, false},
+	{"\002scope.tga", "textures/d2x-xl", false, false, false},
 	{"\002shield.tga", "textures/d2x-xl", false, false, false},
-	{"\002smoke.tga", "textures/d2x-xl", false, false, false},          
+	{"\002smoke.tga", "textures/d2x-xl", false, false, false},
 	{"\002smoke-hard.tga", "textures/d2x-xl", true, false, false},
 	{"\002smoke-medium.tga", "textures/d2x-xl", true, false, false},
 	{"\002smoke-soft.tga", "textures/d2x-xl", true, false, false},
-	{"\002sparks.tga", "textures/d2x-xl", false, false, false},         
-	{"\002thrust2d.tga", "textures/d2x-xl", false, false, false},      
+	{"\002sparks.tga", "textures/d2x-xl", false, false, false},
+	{"\002thrust2d.tga", "textures/d2x-xl", false, false, false},
 	{"\002thrust2d-blue.tga", "textures/d2x-xl", true, false, false},
 	{"\002thrust2d-red.tga", "textures/d2x-xl", true, false, false},
-	{"\002thrust3d.tga", "textures/d2x-xl", false, false, false},       
+	{"\002thrust3d.tga", "textures/d2x-xl", false, false, false},
 	{"\002thrust3d-blue.tga", "textures/d2x-xl", true, false, false},
 	{"\002thrust3d-red.tga", "textures/d2x-xl", true, false, false}
 };
@@ -607,7 +607,7 @@ for (int i = 0; i < nFiles; i++) {
 	if (strstr (fileList [i].pszFile, "*") || strstr (fileList [i].pszFile, "?")) {
 		fileList [i].bFound = CheckAndCopyWildcards (fileList + i);
 		if (!(fileList [i].bFound || fileList [i].bOptional))
-			nErrors++;		
+			nErrors++;
 		}
 	else {
 		sprintf (szDest, "%s%s", fileList [i].bUser ? szUserFolder : szRootFolder, fileList [i].pszFolder);
@@ -623,7 +623,7 @@ for (int i = 0; i < nFiles; i++) {
 		else if (!fileList [i].bOptional)
 			nErrors++;
 		}
-	}	
+	}
 return nErrors;
 }
 
@@ -827,6 +827,7 @@ if (curl_easy_perform (hEasy)) {
 	return 1;
 	}
 curl_easy_cleanup (hEasy);
+std::fclose (file);
 return 0;
 }
 
@@ -857,7 +858,7 @@ if ((DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
 	return -1;
 	}
-if (!cf.Open ("d2x-xl-version.txt", gameFolders.szDownloadDir, "rt", -1)) {
+if (!cf.Open (szDest, gameFolders.szDownloadDir, "rt", -1)) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
 	return -1;
 	}
@@ -875,7 +876,7 @@ if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
 
 if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "An update has been found. Download it?"))
 	return 0;
-sprintf (szDest, "%s/d2x-xl-win-%d.%d.%d.exe", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
+sprintf (szDest, "%s/d2x-xl-win-%d.%d.%d.rar", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
 #if 1
 messageBox.Show ("Downloading...");
 sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-win-%d.%d.%d.rar", nVersion [0], nVersion [1], nVersion [2]);
