@@ -1217,7 +1217,7 @@ CCanvas::SetCurrent (NULL);
 font = CCanvas::Current ()->Font ();
 FlushInput ();
 backgroundManager.Setup (NULL, xOffs, yOffs, 640, 480);
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 CCanvas::SetCurrent (NULL);
 
 nCurItem = 0;

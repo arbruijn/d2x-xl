@@ -233,7 +233,7 @@ return true;
 
 void CBackground::Draw (bool bDrawBox, bool bUpdate)
 {
-paletteManager.SetEffect (0, 0, 0);
+//paletteManager.SetEffect (0, 0, 0);
 if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
 	if (m_filename && (MODERN_STYLE || m_bTopMenu)) {
 		CCanvas::Push ();
@@ -255,7 +255,7 @@ if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager
 		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (),
 		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 	}
-paletteManager.LoadEffect ();
+//paletteManager.ReloadEffect ();
 if (bUpdate && !gameStates.app.bGameRunning)
 	GrUpdate (0);
 }
@@ -382,7 +382,7 @@ if (m_nDepth >= 0) {
 	m_bg [m_nDepth--].Destroy ();
 	Redraw (true);
 	if (gameStates.app.bGameRunning)
-		paletteManager.LoadEffect ();
+		paletteManager.ReloadEffect ();
 	}
 }
 

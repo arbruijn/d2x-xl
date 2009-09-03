@@ -490,22 +490,23 @@ if (m_props.bIsScrollBox) {
 			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
 		else
 			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
-			}
 		}
-	if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
-		if (MODERN_STYLE)
-			DrawCloseBox (m_props.x, m_props.y);
-		else
-			DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
-		m_bCloseBox = 1;
-		}
-	if (m_bRedraw || !MODERN_STYLE)
-		GrUpdate (0);
-	m_bRedraw = 1;
-	m_bStart = 0;
-	if (!m_bDontRestore && paletteManager.EffectDisabled ()) {
-		paletteManager.EnableEffect ();
 	}
+if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
+	if (MODERN_STYLE)
+		DrawCloseBox (m_props.x, m_props.y);
+	else
+		DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
+	m_bCloseBox = 1;
+	}
+if (m_bRedraw || !MODERN_STYLE)
+	GrUpdate (0);
+m_bRedraw = 1;
+m_bStart = 0;
+#if 0
+if (!m_bDontRestore && paletteManager.EffectDisabled ())
+	paletteManager.EnableEffect ();
+#endif
 gameStates.render.grAlpha = 1.0f;
 }
 

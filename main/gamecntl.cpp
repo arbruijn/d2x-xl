@@ -146,8 +146,7 @@ if (!gameData.app.bGamePaused) {
 	audio.PauseAll ();
 	RBAPause ();
 	StopTime ();
-	paletteManager.SaveEffect ();
-	paletteManager.ResetEffect ();
+	paletteManager.DisableEffect ();
 	GameFlushInputs ();
 #if defined (TACTILE)
 	if (TactileStick)
@@ -161,7 +160,7 @@ if (!gameData.app.bGamePaused) {
 void ResumeGame (void)
 {
 GameFlushInputs ();
-paletteManager.LoadEffect ();
+paletteManager.EnableEffect ();
 StartTime (0);
 if (redbook.Playing ())
 	RBAResume ();
@@ -201,7 +200,7 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 	}
 PauseGame ();
 SetPopupScreenMode ();
-paletteManager.LoadEffect ();
+//paletteManager.ReloadEffect ();
 formatTime (totalTime, X2I (LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal * 3600);
 formatTime (xLevelTime, X2I (LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel * 3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
@@ -225,11 +224,11 @@ while (gameData.app.bGamePaused) {
 		gameStates.menus.nInMenu++;
 		while (!(key = KeyInKey ())) {
 			GameRenderFrame ();
-			paletteManager.LoadEffect (NULL);
 			messageBox.Render ();
 			G3_SLEEP (1);
 			}
-		gameStates.menus.nInMenu--;
+		if (!--gameStates.menus.nInMenu)
+			paletteManager.ReloadEffect (NULL);
 		}
 #if DBG
 		HandleTestKey(key);

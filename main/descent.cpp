@@ -626,7 +626,7 @@ static int InitializePoll (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 switch (loadOp) {
 	case 0:
 		/*---*/PrintLog ("Creating default tracker list\n");
@@ -716,7 +716,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 		key = 0;
 		}
 	}
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 return nCurItem;
 }
 

@@ -443,7 +443,7 @@ if (nCurrentVGAMode != nMenuMode) {
 	if (GrSetMode (nMenuMode))
 		Error ("Cannot set screen mode for menu");
 	if (!paletteManager.EffectDisabled ())
-		paletteManager.LoadEffect ();
+		paletteManager.ReloadEffect ();
 	gameStates.menus.bInitBG = 1;
 	ogl.RebuildContext (gameStates.app.bGameRunning);
 	}

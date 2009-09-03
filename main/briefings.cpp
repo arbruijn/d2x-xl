@@ -553,7 +553,7 @@ if (*m_info.szBitmapName) {
 	G3DrawBitmap (p, I2X (w), I2X (h), bmP, NULL, 1.0, 3);
 	glDepthFunc (depthFunc);
 	G3EndFrame ();
-	paletteManager.LoadEffect ();
+	paletteManager.ReloadEffect ();
 	CCanvas::SetCurrent (curCanvSave);
 	delete bitmapCanv;
 	bitmapCanv = NULL;
@@ -608,7 +608,7 @@ Assert (ROBOTINFO (m_info.nRobot).nModel != -1);
 if (m_info.bInitAnimate) {
 	paletteManager.Load ("", "", 0, 0, 1);
 	OglCachePolyModelTextures (ROBOTINFO (m_info.nRobot).nModel);
-	paletteManager.LoadEffect ();
+	paletteManager.ReloadEffect ();
 	m_info.bInitAnimate = SDL_GetTicks ();
 	}
 gameStates.render.bFullBright	= 1;
@@ -1553,7 +1553,7 @@ return 1;
 
 void CBriefing::SetColors (void)
 {
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 
 if (gameStates.app.bD1Mission) {
   //green

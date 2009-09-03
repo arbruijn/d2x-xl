@@ -285,7 +285,7 @@ void CMovie::SetPalette (ubyte* p, unsigned start, unsigned count)
 if (count == 0)
 	return;
 
-//paletteManager.LoadEffect ();
+//paletteManager.ReloadEffect ();
 //Color 0 should be black, and we get color 255
 //movie libs palette into our array
 if (start + count > PALETTE_SIZE)
@@ -297,7 +297,7 @@ palette.SetBlack (0, 0, 0);
 palette.SetTransparency (50, 50, 50);
 //finally set the palette in the hardware
 movieManager.m_palette = paletteManager.Add (palette);
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 }
 
 //-----------------------------------------------------------------------
@@ -679,7 +679,7 @@ if (!(cf.Open (filename, gameFolders.szDataDir, "rb", 0) || (movieP = Open (file
 	return MOVIE_NOT_PLAYED;
 	}
 SetScreenMode (SCREEN_MENU);
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
 MVE_ioCallbacks (CMovie::Read);
 MVE_sfCallbacks (CMovie::ShowFrame);
@@ -693,7 +693,7 @@ gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && bHir
 ogl.SetRenderQuality (gameOpts->movies.nQuality ? 5 : 0);
 while ((result = MVE_rmStepMovie ()) == 0) {
 	subTitles.Draw (nFrame);
-	paletteManager.LoadEffect (); // moved this here because of flashing
+	paletteManager.ReloadEffect (); // moved this here because of flashing
 	GrUpdate (1);
 	key = KeyInKey ();
 	// If ESCAPE pressed, then quit movie.
@@ -722,7 +722,7 @@ else
 // Restore old graphic state
 ogl.SetRenderQuality ();
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 return (aborted ? MOVIE_ABORTED : MOVIE_PLAYED_FULL);
 }
 
@@ -847,9 +847,9 @@ if (!m_robotP)
 
 gameOpts->movies.bFullScreen = 1;
 if (ogl.m_states.nDrawBuffer == GL_BACK)
-	paletteManager.LoadEffect ();
+	paletteManager.ReloadEffect ();
 res = MVE_rmStepMovie ();
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 if (res == MVE_ERR_EOF) {   //end of movie, so reset
 	m_robotP->Rewind ();
 	if (MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 

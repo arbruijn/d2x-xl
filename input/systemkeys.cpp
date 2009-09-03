@@ -470,8 +470,8 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			console.Show ();
 			break;
 */
-		case KEY_COMMAND + KEY_P:
-		case KEY_CTRLED + KEY_P:
+		//case KEY_COMMAND + KEY_P:
+		//case KEY_CTRLED + KEY_P:
 		case KEY_PAUSE:
 			DoGamePause ();
 			break;
@@ -495,11 +495,11 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			if (!IsMultiGame) {
 				paletteManager.SaveEffect ();
 				paletteManager.ResetEffect ();
-				paletteManager.LoadEffect ();
+				paletteManager.ReloadEffect ();
 				}
 			ConfigMenu ();
 			if (!IsMultiGame)
-				paletteManager.LoadEffect ();
+				paletteManager.ReloadEffect ();
 			break;
 
 		case KEY_F3:
@@ -514,7 +514,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 		case KEY_F7 + KEY_SHIFTED:
 			paletteManager.SaveEffect ();
 			JoyDefsCalibrate ();
-			paletteManager.LoadEffect ();
+			paletteManager.ReloadEffect ();
 			break;
 
 		case KEY_SHIFTED + KEY_MINUS:
@@ -599,16 +599,16 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 
 		case KEY_ALTED + KEY_F2:
 			if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
-				paletteManager.SaveEffectAndReset ();
+				paletteManager.SaveAndResetEffect ();
 				paletteManager.SetEffect (); // get only the effect color back
 				saveGameManager.Save (0, 0, 0, NULL);
-				paletteManager.LoadEffect ();
+				paletteManager.ReloadEffect ();
 			}
 			break;  // 0 means not between levels.
 
 		case KEY_ALTED + KEY_F3:
 			if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
-				paletteManager.SaveEffectAndReset ();
+				paletteManager.SaveAndResetEffect ();
 				saveGameManager.Load (1, 0, 0, NULL);
 				if (gameData.app.bGamePaused)
 					DoGamePause ();
@@ -1059,9 +1059,9 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED + KEY_C:
-			paletteManager.SaveEffectAndReset ();
+			paletteManager.SaveAndResetEffect ();
 			DoCheatMenu ();
-			paletteManager.LoadEffect ();
+			paletteManager.ReloadEffect ();
 			break;
 
 		case KEYDBGGED + KEY_SHIFTED + KEY_A:

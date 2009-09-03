@@ -40,7 +40,7 @@ void CPaletteManager::ApplyEffect (void)
 	int	bDepthTest, bBlend;
 	GLint	blendSrc, blendDest;
 
-if (!m_data.bAllowEffect) {
+if (!m_data.nSuspended) {
 #if 1
 	return;
 #else
@@ -87,7 +87,7 @@ else
 
 void CPaletteManager::SetEffect (float red, float green, float blue, bool bForce)
 {
-if (!m_data.bAllowEffect)
+if (!m_data.nSuspended)
 	return;
 #if 0
 if (!gameStates.render.nLightingMethod || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
@@ -132,7 +132,7 @@ SetEffect (bForce);
 void CPaletteManager::ClearEffect (void)
 {
 SetEffect (0, 0, 0);
-m_data.bAllowEffect = false;
+m_data.nSuspended = false;
 }
 
 //------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ int CPaletteManager::ClearEffect (CPalette* palette)
 if (m_data.nLastGamma == m_data.nGamma)
 	return 1;
 m_data.nLastGamma = m_data.nGamma;
-m_data.bAllowEffect = true;
+m_data.nSuspended = true;
 SetEffect (0, 0, 0);
 m_data.current = Add (*palette);
 return 1;
@@ -159,7 +159,7 @@ return 1;
 
 int CPaletteManager::DisableEffect (void)
 {
-m_data.bAllowEffect = false;
+m_data.nSuspended++;
 return 0;
 }
 
@@ -167,7 +167,8 @@ return 0;
 
 int CPaletteManager::EnableEffect (void)
 {
-m_data.bAllowEffect = true;
+if (m_data.nSuspended > 0)
+	m_data.nSuspended--;
 return 0;
 }
 

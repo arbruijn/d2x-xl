@@ -294,26 +294,28 @@ CLAMP (m_data.effect.blue, -maxVal, maxVal);
 void CPaletteManager::SaveEffect (void)
 {
 m_data.lastEffect = m_data.effect;
+m_data.xLastDuration = m_data.xFlashDuration;
 }
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::LoadEffect (CPalette *palette)
+void CPaletteManager::ReloadEffect (CPalette *palette)
 {
 SetEffect (m_data.lastEffect.red, m_data.lastEffect.green, m_data.lastEffect.blue);
 //	Forces flash effect to fixup palette next frame.
 if (palette)
 	Activate (palette);
+m_data.xFlashDuration = m_data.xLastDuration;
 m_data.xLastEffectTime = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SaveEffectAndReset (void)
+void CPaletteManager::SaveAndResetEffect (void)
 {
 SaveEffect ();
 ResetEffect ();
-LoadEffect ();
+//ReloadEffect ();
 }
 
 //------------------------------------------------------------------------------
@@ -405,7 +407,7 @@ if (m_data.nGamma != gamma) {
 	m_data.nGamma = gamma;
 #if 0
 	if (!paletteManager.EffectDisabled ())
-		paletteManager.LoadEffect ();
+		paletteManager.ReloadEffect ();
 #endif
 	}
 }
@@ -508,7 +510,7 @@ if (bForce || pszLevelName || stricmp (paletteManager.LastLoaded (), pszPaletteN
 	strncpy (paletteManager.LastLoaded (), pszPaletteName, sizeof (paletteManager.LastLoaded ()));
 	palette = paletteManager.Load (pszPaletteName, pszLevelName);
 	if (!paletteManager.FadedOut () && !bNoScreenChange)
-		LoadEffect ();
+		ReloadEffect ();
 	gameData.hud.msgs [0].nColor = -1;
 	LoadGameBackground ();
 	}

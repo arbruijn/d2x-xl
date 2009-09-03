@@ -119,10 +119,10 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		sprintf (szText, TXT_EFF_SERVEWELL);
 	m.AddText (szText);
 	}
-paletteManager.SaveEffectAndReset();
+paletteManager.SaveAndResetEffect();
 bPauseableMenu = 1;
 m.TinyMenu (NULL, "Netgame Information");
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 }
 
 //------------------------------------------------------------------------------

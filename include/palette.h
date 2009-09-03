@@ -112,6 +112,7 @@ class CPaletteData {
 		int				nGamma;
 		int				nLastGamma;
 		fix				xFlashDuration;
+		fix				xLastDuration;
 		fix				xLastEffectTime;
 
 		ubyte				fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
@@ -119,7 +120,7 @@ class CPaletteData {
 		tRgbColorf		effect;
 		tRgbColorf		lastEffect;
 		bool				bDoEffect;
-		bool				bAllowEffect;
+		int				nSuspended;
 	};
 
 
@@ -154,8 +155,8 @@ class CPaletteManager {
 		void FadeEffect (void);
 		void ResetEffect (void);
 		void SaveEffect (void);
-		void SaveEffectAndReset (void);
-		void LoadEffect (CPalette* palette = NULL);
+		void SaveAndResetEffect (void);
+		void ReloadEffect (CPalette* palette = NULL);
 		void SetEffect (int red, int green, int blue, bool bForce = false);
 		void SetEffect (float red, float green, float blue, bool bForce = false);
 		void BumpEffect (int red, int green, int blue);
@@ -168,9 +169,9 @@ class CPaletteManager {
 		int ClearEffect (CPalette* palette);
 		int EnableEffect (void);
 		int DisableEffect (void);
-		bool EffectEnabled (void) { return m_data.bAllowEffect; }
-		bool EffectDisabled (void) { return !m_data.bAllowEffect; }
-		inline bool FadedOut (void) { return m_data.bAllowEffect; }
+		bool EffectEnabled (void) { return m_data.nSuspended <= 0; }
+		bool EffectDisabled (void) { return m_data.nSuspended > 0; }
+		inline bool FadedOut (void) { return m_data.nSuspended <= 0; }
 		void SetPrev (CPalette *palette) { m_data.prev = palette; }
 
 		 void Push (void) { 

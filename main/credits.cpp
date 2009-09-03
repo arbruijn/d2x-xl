@@ -387,7 +387,7 @@ if (m_xOffs < 0)
 if (m_yOffs < 0)
 	m_yOffs = 0;
 creditsPalette = paletteManager.Load ("credits.256", NULL);
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 m_fonts [0] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
 m_fonts [1] = fontManager.Load (fontNames [1][gameStates.menus.bHires]);
 m_fonts [2] = fontManager.Load (fontNames [2][gameStates.menus.bHires]);

@@ -785,9 +785,9 @@ sprintf (command_help, " (Use %c-# for F#. i.e. %c-1 for F1)", 133, 133);
 m.AddText (command_help);
 #endif
 nitems = opt;
-paletteManager.SaveEffectAndReset ();
+paletteManager.SaveAndResetEffect ();
 m.TinyMenu (NULL, TXT_KEYS);
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 }
 
 //------------------------------------------------------------------------------
@@ -844,7 +844,7 @@ DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();		//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
 gameStates.app.bEndLevelSequence = 0;
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 SetScreenMode (SCREEN_GAME);
 paletteManager.ResetEffect ();
 SetWarnFunc (ShowInGameWarning);
@@ -1008,13 +1008,13 @@ if (!setjmp (gameExitPoint)) {
 			if (!IsMultiGame) {
 				paletteManager.SaveEffect ();
 				paletteManager.ResetEffect ();
-				paletteManager.LoadEffect ();
+				paletteManager.ReloadEffect ();
 				}
 			ConfigMenu ();
 			if (bScanlineDouble != double_save)
 				cockpit->Init ();
 			if (!IsMultiGame)
-				paletteManager.LoadEffect ();
+				paletteManager.ReloadEffect ();
 			}
 		if (automap.m_bDisplay) {
 			int	save_w = gameData.render.window.w,
@@ -1037,9 +1037,9 @@ if (!setjmp (gameExitPoint)) {
 			SetFunctionMode (FMODE_GAME);
 			paletteManager.SaveEffect ();
 			paletteManager.ResetEffect ();
-			paletteManager.LoadEffect ();
+			paletteManager.ReloadEffect ();
 			choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
-			paletteManager.LoadEffect ();
+			paletteManager.ReloadEffect ();
 			SetFunctionMode (fmode);
 			if (choice)
 				SetFunctionMode (FMODE_GAME);

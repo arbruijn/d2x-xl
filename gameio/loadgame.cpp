@@ -912,7 +912,7 @@ GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
 #endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 /*---*/PrintLog ("   loading palette\n");
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
  //paletteManager.Load ("groupa.256", NULL, 0, 0, 1);		//don't change screen
 //if (!gameOpts->menus.nStyle)
 //	NMLoadBackground (NULL, NULL, 0);
@@ -1000,7 +1000,7 @@ if (!IsMultiGame)
 //songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 if (!gameStates.app.bProgressBars)
 	messageBox.Clear ();		//remove message before new palette loaded
-paletteManager.LoadEffect ();		//actually load the palette
+paletteManager.ReloadEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore) {
@@ -2203,7 +2203,7 @@ void DoPlayerDead (void)
 
 gameStates.app.bGameRunning = 0;
 paletteManager.ResetEffect ();
-paletteManager.LoadEffect ();
+paletteManager.ReloadEffect ();
 StopTriggeredSounds ();
 audio.PauseAll ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)

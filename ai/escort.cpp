@@ -1133,7 +1133,7 @@ if (!IS_OBJECT (objP, i)) {
 
 //	SetScreenMode ( SCREEN_MENU );
 	SetPopupScreenMode ();
-	paletteManager.LoadEffect ();
+	paletteManager.ReloadEffect ();
 
 	//	This prevents the buddy from coming back if you've told him to scram.
 	//	If we don't set next_goal, we get garbage there.
@@ -1205,7 +1205,7 @@ if (!IS_OBJECT (objP, i)) {
 		paused = 0;
 		}
 	GameFlushInputs ();
-	paletteManager.LoadEffect ();
+	paletteManager.ReloadEffect ();
 	if (!gameOpts->menus.nStyle)
 		StartTime (0);
 	audio.ResumeSounds ();
