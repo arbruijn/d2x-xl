@@ -892,6 +892,10 @@ if (!cf.Exist (szDest, "", 0)) {
 	return -1;
 	}
 #endif
+#if defined(__unix__)
+sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded.", szDest);
+MsgBox (NULL, NULL, 1, TXT_OK, szMsg);
+#else
 args [0] = szDest;
 args [1] = NULL;
 if (0 <= _execv (szDest, args))
@@ -902,6 +906,7 @@ char	szMsg [1000];
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
 //Warning (szMsg);
 MsgBox (TXT_ERROR, NULL, 1, TXT_OK, szMsg);
+#endif
 return -1;
 }
 
