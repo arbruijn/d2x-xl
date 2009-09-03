@@ -54,6 +54,7 @@
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.599689035" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 <option id="gnu.cpp.link.option.libs.814409644" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="GL"/>
+<listOptionValue builtIn="false" value="curl"/>
 <listOptionValue builtIn="false" value="SDL_image"/>
 <listOptionValue builtIn="false" value="GLU"/>
 <listOptionValue builtIn="false" value="SDL"/>
@@ -628,6 +629,7 @@
 <tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.473011433" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 <option id="gnu.cpp.link.option.libs.1922514675" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="GL"/>
+<listOptionValue builtIn="false" value="curl"/>
 <listOptionValue builtIn="false" value="GLU"/>
 <listOptionValue builtIn="false" value="SDL"/>
 <listOptionValue builtIn="false" value="SDL_mixer"/>
