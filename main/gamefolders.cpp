@@ -792,7 +792,46 @@ return nResult;
 
 // ----------------------------------------------------------------------------
 
-#if defined(_WIN32)
+#if defined(__unix__)
+
+#include <curl/curl.h>
+#include <cstdio>
+
+// link with libcurl (-lcurl)
+
+int DownloadFile (const char* pszSrc, const char* pszDest)
+{
+CURL* hEasy;
+if (!(hEasy = curl_easy_init ()))
+	return 1;
+if (curl_easy_setopt (easyhandle, CURLOPT_URL, pszSrc)) {
+	curl_easy_cleanup (hEasy);
+	return 1;
+	}
+std::FILE* file;
+if (!(file = std::fopen (pszDest, "w"))) {
+	curl_easy_cleanup (hEasy);
+	return 1;
+	}
+if (curl_easy_setopt (hEasy, CURLOPT_WRITEDATA, file)) {
+	curl_easy_cleanup (hEasy);
+	return 1;
+	}
+if (curl_easy_perform (hEasy)) {
+	curl_easy_cleanup (hEasy);
+	return 1;
+	}
+curl_easy_cleanup (hEasy);
+return 0;
+}
+
+// ----------------------------------------------------------------------------
+
+#elif defined(_WIN32)
+
+#	define DownloadFile(_src,_dest)	URLDownloadToFile (NULL, _src, _dest, NULL, NULL)
+
+#endif
 
 #include "urlmon.h"
 #include <process.h>
@@ -806,8 +845,8 @@ int CheckForUpdate (void)
 	int		nVersion [3];
 
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
-if ((URLDownloadToFile (NULL, "http://www.descent2.de/downloads/d2x-xl-version.txt", szDest, NULL, NULL) != S_OK) &&
-	 (URLDownloadToFile (NULL, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, NULL, NULL) != S_OK)) {
+if ((DownloadFile (NULL, "http://www.descent2.de/downloads/d2x-xl-version.txt", szDest, NULL, NULL) != S_OK) &&
+	 (DownloadFile (NULL, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, NULL, NULL) != S_OK)) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
 	return -1;
 	}
@@ -832,10 +871,10 @@ if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "An update has been found. Download 
 sprintf (szDest, "%s/d2x-xl-win-%d.%d.%d.exe", gameFolders.szDownloadDir, nVersion [0], nVersion [1], nVersion [2]);
 #if 1
 messageBox.Show ("Downloading...");
-sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-win-%d.%d.%d.exe", nVersion [0], nVersion [1], nVersion [2]);
-if (URLDownloadToFile (NULL, szSrc, szDest, NULL, NULL) != S_OK) {
-	sprintf (szSrc, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-win-%d.%d.%d.exe/download", nVersion [0], nVersion [1], nVersion [2]);
-	if (URLDownloadToFile (NULL, szSrc, szDest, NULL, NULL) != S_OK) {
+sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-win-%d.%d.%d.rar", nVersion [0], nVersion [1], nVersion [2]);
+if (DownloadFile (szSrc, szDest) != S_OK) {
+	sprintf (szSrc, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-win-%d.%d.%d.rar/download", nVersion [0], nVersion [1], nVersion [2]);
+	if (DownloadFile (szSrc, szDest) != S_OK) {
 		messageBox.Clear ();
 		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
 		return -1;
@@ -859,7 +898,5 @@ sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be
 MsgBox (TXT_ERROR, NULL, 1, TXT_OK, szMsg);
 return -1;
 }
-
-#endif
 
 // ----------------------------------------------------------------------------

@@ -1784,6 +1784,10 @@
 			<Filter
 				Name="network"
 				>
+				<File
+					RelativePath="..\network\download.h"
+					>
+				</File>
 				<Filter
 					Name="Source Files"
 					>
@@ -1793,6 +1797,10 @@
 					</File>
 					<File
 						RelativePath="..\network\banlist.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\network\download.cpp"
 						>
 					</File>
 					<File
@@ -4307,11 +4315,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
