@@ -87,7 +87,7 @@ static struct {
 	int	nOrder;
 	int	nHelp;
 	int	nChoice;
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__unix__)
 	int	nUpdate;
 #endif
 } mainOpts;
@@ -101,7 +101,7 @@ int ExecMultiMenuOption (int nChoice);
 //returns the number of demo files on the disk
 int NDCountDemos (void);
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__unix__)
 int CheckForUpdate (void);
 #endif
 
@@ -180,7 +180,7 @@ mainOpts.nMovies = m.AddMenu (TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
 if (!gameStates.app.bNostalgia)
 	mainOpts.nSongs = m.AddMenu (TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
 mainOpts.nCredits = m.AddMenu (TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__unix__)
 mainOpts.nUpdate = m.AddMenu (TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
 #endif
 mainOpts.nQuit = m.AddMenu (TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
@@ -369,7 +369,7 @@ else if (nChoice == mainOpts.nQuit) {
 	}
 else if (nChoice == mainOpts.nOrder) 
 	ShowOrderForm ();
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__unix__)
 else if (nChoice == mainOpts.nUpdate)
 	CheckForUpdate ();
 #endif
