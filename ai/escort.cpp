@@ -1126,14 +1126,11 @@ if (!IS_OBJECT (objP, i)) {
 	if (!gameOpts->menus.nStyle)
 		StopTime ();
 
-	paletteManager.SaveEffect ();
-	paletteManager.ResetEffect ();
+	//paletteManager.SuspendEffect ();
 	GameFlushInputs ();
 	paused = 1;
-
-//	SetScreenMode ( SCREEN_MENU );
 	SetPopupScreenMode ();
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 
 	//	This prevents the buddy from coming back if you've told him to scram.
 	//	If we don't set next_goal, we get garbage there.
@@ -1205,7 +1202,7 @@ if (!IS_OBJECT (objP, i)) {
 		paused = 0;
 		}
 	GameFlushInputs ();
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 	if (!gameOpts->menus.nStyle)
 		StartTime (0);
 	audio.ResumeSounds ();

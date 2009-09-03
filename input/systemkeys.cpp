@@ -492,14 +492,9 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
-			if (!IsMultiGame) {
-				paletteManager.SaveEffect ();
-				paletteManager.ResetEffect ();
-				paletteManager.ReloadEffect ();
-				}
+			//paletteManager.SuspendEffect (!IsMultiGame);
 			ConfigMenu ();
-			if (!IsMultiGame)
-				paletteManager.ReloadEffect ();
+			//paletteManager.ResumeEffect (!IsMultiGame);
 			break;
 
 		case KEY_F3:
@@ -512,9 +507,9 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		case KEY_F7 + KEY_SHIFTED:
-			paletteManager.SaveEffect ();
+			//paletteManager.SaveEffect ();
 			JoyDefsCalibrate ();
-			paletteManager.ReloadEffect ();
+			//paletteManager.ResumeEffect ();
 			break;
 
 		case KEY_SHIFTED + KEY_MINUS:
@@ -599,19 +594,19 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 
 		case KEY_ALTED + KEY_F2:
 			if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
-				paletteManager.SaveAndResetEffect ();
-				paletteManager.SetEffect (); // get only the effect color back
+				paletteManager.DisableEffect ();
 				saveGameManager.Save (0, 0, 0, NULL);
-				paletteManager.ReloadEffect ();
+				paletteManager.EnableEffect ();
 			}
 			break;  // 0 means not between levels.
 
 		case KEY_ALTED + KEY_F3:
 			if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
-				paletteManager.SaveAndResetEffect ();
-				saveGameManager.Load (1, 0, 0, NULL);
+				paletteManager.SuspendEffect ();
+				int bLoaded = saveGameManager.Load (1, 0, 0, NULL);
 				if (gameData.app.bGamePaused)
 					DoGamePause ();
+				paletteManager.ResumeEffect (!bLoaded);
 			}
 			break;
 
@@ -1059,9 +1054,9 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED + KEY_C:
-			paletteManager.SaveAndResetEffect ();
+			//paletteManager.SuspendEffect ();
 			DoCheatMenu ();
-			paletteManager.ReloadEffect ();
+			//paletteManager.ResumeEffect ();
 			break;
 
 		case KEYDBGGED + KEY_SHIFTED + KEY_A:

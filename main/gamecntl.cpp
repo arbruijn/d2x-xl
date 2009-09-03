@@ -200,7 +200,7 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 	}
 PauseGame ();
 SetPopupScreenMode ();
-//paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 formatTime (totalTime, X2I (LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal * 3600);
 formatTime (xLevelTime, X2I (LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel * 3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
@@ -227,8 +227,7 @@ while (gameData.app.bGamePaused) {
 			messageBox.Render ();
 			G3_SLEEP (1);
 			}
-		if (!--gameStates.menus.nInMenu)
-			paletteManager.ReloadEffect (NULL);
+		--gameStates.menus.nInMenu--;
 		}
 #if DBG
 		HandleTestKey(key);

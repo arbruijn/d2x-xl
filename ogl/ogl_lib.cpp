@@ -886,8 +886,8 @@ if (!gameStates.menus.nInMenu || bForce) {
 		GrPrintF (NULL, 5, h * i++, "  total: %1.2f %c", s, '%');
 		}
 #endif
-	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
-	paletteManager.ApplyEffect ();
+	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
+		paletteManager.RenderEffect ();
 	ogl.FlushDrawBuffer ();
 	SDL_GL_SwapBuffers ();
 	ogl.SetDrawBuffer (GL_BACK, 1);

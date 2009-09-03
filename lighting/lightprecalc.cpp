@@ -443,7 +443,7 @@ static int SortLightsPoll (CMenu& menu, int& key, int nCurItem, int nState)
 if (nState)
 	return nCurItem;
 
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 if (loadOp == 0) {
 	ComputeSegmentVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
@@ -478,13 +478,13 @@ else if (loadOp == 3) {
 	}
 if (loadOp == 4) {
 	key = -2;
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 	return nCurItem;
 	}
 menu [0].m_value++;
 menu [0].m_bRebuild = 1;
 key = 0;
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 return nCurItem;
 }
 

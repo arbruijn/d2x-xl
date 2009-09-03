@@ -313,7 +313,7 @@ GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE, NULL);
 fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (sorted);
 ScoreTableDrawNames (sorted);
-for (i=0; i<gameData.multiplayer.nPlayers; i++) {
+for ( i =0; i<gameData.multiplayer.nPlayers; i++) {
 	if (gameData.app.nGameMode & GM_TEAM)
 		color = GetTeam (sorted [i]);
 	else
@@ -326,7 +326,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	}
 ScoreTableDrawDeaths (sorted);
 GrUpdate (1);
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 }
 
 //-----------------------------------------------------------------------------
@@ -352,7 +352,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	}
 ScoreTableDrawDeaths (sorted);
 CCanvas::SetCurrent (NULL);
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 GrUpdate (1);
 }
 

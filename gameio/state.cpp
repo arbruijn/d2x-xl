@@ -285,8 +285,7 @@ if (nState) { // render
 	if (gameStates.menus.bHires) {
 		x = (CCanvas::Current ()->Width () - image->Width ()) / 2;
 		y = menu [0].m_y - 16;
-		if (gameStates.app.bGameRunning)
-			paletteManager.ReloadEffect ();
+		//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 		//BlitClipped (x, y, image);
 		image->RenderFixed (NULL, x, y);
 		if (gameOpts->menus.nStyle) {
@@ -407,9 +406,6 @@ for (i = 0; i < NM_IMG_SPACE; i++) {
 	m.AddText ("");
 	m.Top ()->m_bNoScroll = 1;
 	}
-if (gameStates.app.bGameRunning) {
-	paletteManager.ReloadEffect ();
-	}
 for (i = 0; i < NUM_SAVES + 1; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 	if (saveGameInfo [i].Load (filename [i], i)) {
@@ -417,11 +413,9 @@ for (i = 0; i < NUM_SAVES + 1; i++) {
 		nSaves++;
 		}
 	else {
-		m .AddMenu (saveGameInfo [i].Label ());
+		m.AddMenu (saveGameInfo [i].Label ());
 		}
 	}
-if (gameStates.app.bGameRunning) 
-	paletteManager.ReloadEffect ();
 if (nSaves < 1) {
 	MsgBox (NULL, NULL, 1, "Ok", TXT_NO_SAVEGAMES);
 	return 0;
@@ -1030,7 +1024,7 @@ if (thumbCanv) {
 	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.Buffer ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 	ShrinkTGA (&bm, bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 	// convert the resized TGA to bmp
 	ubyte *buffer = bm.Buffer ();
 	for (y = 0; y < THUMBNAIL_LH; y++) {
@@ -1039,7 +1033,7 @@ if (thumbCanv) {
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
 			thumbCanv->Buffer () [k] = paletteManager.Game ()->ClosestColor (buffer [i] / 4, buffer [i+1] / 4, buffer [i+2] / 4);
 			}
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 	bm.DestroyBuffer ();
 	thumbCanv->Write (m_cf, THUMBNAIL_LW * THUMBNAIL_LH);
 	CCanvas::Pop ();

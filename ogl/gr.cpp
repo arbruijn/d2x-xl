@@ -442,8 +442,7 @@ gameStates.video.nLastScreenMode = -1;
 if (nCurrentVGAMode != nMenuMode) {
 	if (GrSetMode (nMenuMode))
 		Error ("Cannot set screen mode for menu");
-	if (!paletteManager.EffectDisabled ())
-		paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect (!paletteManager.EffectDisabled ());
 	gameStates.menus.bInitBG = 1;
 	ogl.RebuildContext (gameStates.app.bGameRunning);
 	}

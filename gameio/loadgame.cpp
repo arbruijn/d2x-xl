@@ -615,6 +615,7 @@ return gameStates.app.bAutoRunMission ? szNoSong : gameData.missions.szSongNames
 
 void UnloadLevelData (int bRestore, bool bQuit)
 {
+paletteManager.EnableEffect (true);
 if (bQuit)
 	EndRenderThreads ();
 else {
@@ -797,19 +798,9 @@ return nLoadRes;
 }
 
 //------------------------------------------------------------------------------
-//load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
 
-extern char szAutoMission [255];
-
-int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
+static void CleanupBeforeGame (int nLevel)
 {
-	char*			pszLevelName;
-	char			szHogName [FILENAME_LEN];
-	CPlayerData	savePlayer;
-	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
-
-	static char szDefaultPlayList [] = "playlist.txt";
-
 /*---*/PrintLog ("Loading level...\n");
 EndRenderThreads ();
 gameData.Destroy ();
@@ -868,7 +859,24 @@ UnloadLevelData (bRestore, false);
 ControlRenderThreads ();
 /*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultModels ();
+paletteManager.EnableEffect (true);
+}
 
+//------------------------------------------------------------------------------
+//load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
+
+extern char szAutoMission [255];
+
+int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
+{
+	char*			pszLevelName;
+	char			szHogName [FILENAME_LEN];
+	CPlayerData	savePlayer;
+	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = gameData.missions.nCurrentLevel;
+
+	static char szDefaultPlayList [] = "playlist.txt";
+
+CleanupBeforeGame (nLevel);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
@@ -912,7 +920,7 @@ GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
 #endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 /*---*/PrintLog ("   loading palette\n");
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
  //paletteManager.Load ("groupa.256", NULL, 0, 0, 1);		//don't change screen
 //if (!gameOpts->menus.nStyle)
 //	NMLoadBackground (NULL, NULL, 0);
@@ -1000,7 +1008,7 @@ if (!IsMultiGame)
 //songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 if (!gameStates.app.bProgressBars)
 	messageBox.Clear ();		//remove message before new palette loaded
-paletteManager.ReloadEffect ();		//actually load the palette
+//paletteManager.ResumeEffect ();		//actually load the palette
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
 /*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore) {
@@ -2202,8 +2210,6 @@ void DoPlayerDead (void)
 	int bSecret = (gameData.missions.nCurrentLevel < 0);
 
 gameStates.app.bGameRunning = 0;
-paletteManager.ResetEffect ();
-paletteManager.ReloadEffect ();
 StopTriggeredSounds ();
 audio.PauseAll ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
@@ -2213,6 +2219,7 @@ if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
 	MultiSendMsgQuit ();
 gameStates.entropy.bConquering = 0;
+paletteManager.ResetEffect ();
 
 if (IsMultiGame)
 	MultiDoDeath (LOCALPLAYER.nObject);

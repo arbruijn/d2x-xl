@@ -255,7 +255,7 @@ if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) || backgroundManager
 		//CCanvas::Current ()->Left (), CCanvas::Current ()->Top (),
 		//			 CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom ());
 	}
-//paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 if (bUpdate && !gameStates.app.bGameRunning)
 	GrUpdate (0);
 }
@@ -381,8 +381,7 @@ void CBackgroundManager::Remove (void)
 if (m_nDepth >= 0) {
 	m_bg [m_nDepth--].Destroy ();
 	Redraw (true);
-	if (gameStates.app.bGameRunning)
-		paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 	}
 }
 

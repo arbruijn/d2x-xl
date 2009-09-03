@@ -785,9 +785,9 @@ sprintf (command_help, " (Use %c-# for F#. i.e. %c-1 for F1)", 133, 133);
 m.AddText (command_help);
 #endif
 nitems = opt;
-paletteManager.SaveAndResetEffect ();
+//paletteManager.SuspendEffect ();
 m.TinyMenu (NULL, TXT_KEYS);
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 }
 
 //------------------------------------------------------------------------------
@@ -844,9 +844,8 @@ DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();		//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
 gameStates.app.bEndLevelSequence = 0;
-paletteManager.ReloadEffect ();
-SetScreenMode (SCREEN_GAME);
 paletteManager.ResetEffect ();
+SetScreenMode (SCREEN_GAME);
 SetWarnFunc (ShowInGameWarning);
 #if TRACE
 //console.printf (CON_DBG, "   cockpit->Init () d:\temp\dm_test.\n");
@@ -1004,17 +1003,9 @@ if (!setjmp (gameExitPoint)) {
 		//see if redbook song needs to be restarted
 		redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
 		if (gameStates.app.bConfigMenu) {
-			int double_save = bScanlineDouble;
-			if (!IsMultiGame) {
-				paletteManager.SaveEffect ();
-				paletteManager.ResetEffect ();
-				paletteManager.ReloadEffect ();
-				}
+			//paletteManager.SuspendEffect (!IsMultiGame);
 			ConfigMenu ();
-			if (bScanlineDouble != double_save)
-				cockpit->Init ();
-			if (!IsMultiGame)
-				paletteManager.ReloadEffect ();
+			//paletteManager.ResumeEffect (!IsMultiGame);
 			}
 		if (automap.m_bDisplay) {
 			int	save_w = gameData.render.window.w,
@@ -1035,11 +1026,9 @@ if (!setjmp (gameExitPoint)) {
 			int choice, fmode;
 			fmode = gameStates.app.nFunctionMode;
 			SetFunctionMode (FMODE_GAME);
-			paletteManager.SaveEffect ();
-			paletteManager.ResetEffect ();
-			paletteManager.ReloadEffect ();
+			//paletteManager.SuspendEffect ();
 			choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
-			paletteManager.ReloadEffect ();
+			//paletteManager.ResumeEffect ();
 			SetFunctionMode (fmode);
 			if (choice)
 				SetFunctionMode (FMODE_GAME);

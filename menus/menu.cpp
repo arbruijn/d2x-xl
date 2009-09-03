@@ -401,6 +401,9 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 
 	int	sx, sy, i = SDL_GetTicks ();
 
+if (gameStates.app.bGameRunning)
+	paletteManager.RenderEffect ();
+
 if (i - m_tEnter > gameOpts->menus.nFade) {
 	if (i - t0 < 25) {
 		G3_SLEEP (0);
@@ -576,7 +579,6 @@ m_bDontRestore = 0;
 m_bAllText = 0;
 m_callback = callback;
 
-paletteManager.DisableEffect ();
 messageBox.Clear ();
 memset (&m_props, 0, sizeof (m_props));
 m_props.width = width;
@@ -642,6 +644,7 @@ else {
 		}
 	} 
 
+paletteManager.DisableEffect ();
 done = 0;
 topChoice = 0;
 while (Item (topChoice).m_nType == NM_TYPE_TEXT) {

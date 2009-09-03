@@ -3247,7 +3247,7 @@ void NDStopRecording (void)
 	char	fullname [15 + FILENAME_LEN] = "";
 
 NDFinishRecording ();
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 if (filename [0] != '\0') {
 	int num, i = (int) strlen (filename) - 1;
 	char newfile [15];

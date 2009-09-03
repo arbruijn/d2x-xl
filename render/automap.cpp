@@ -935,7 +935,7 @@ do {
 	Draw ();
 	if (bFirstTime) {
 		bFirstTime = 0;
-		paletteManager.ReloadEffect ();
+		//paletteManager.ResumeEffect ();
 		}
 	t2 = TimerGetFixedSeconds ();
 	if (bPauseGame)

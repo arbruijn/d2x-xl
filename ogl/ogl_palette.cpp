@@ -35,7 +35,7 @@
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::ApplyEffect (void)
+void CPaletteManager::RenderEffect (void)
 {
 	int	bDepthTest, bBlend;
 	GLint	blendSrc, blendDest;
@@ -165,9 +165,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CPaletteManager::EnableEffect (void)
+int CPaletteManager::EnableEffect (bool bReset)
 {
-if (m_data.nSuspended > 0)
+if (bReset)
+	m_data.nSuspended = 0;
+else if (m_data.nSuspended > 0)
 	m_data.nSuspended--;
 return 0;
 }

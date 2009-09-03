@@ -299,23 +299,24 @@ m_data.xLastDuration = m_data.xFlashDuration;
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::ReloadEffect (CPalette *palette)
+void CPaletteManager::ResumeEffect (bool bCond)
 {
-SetEffect (m_data.lastEffect.red, m_data.lastEffect.green, m_data.lastEffect.blue);
-//	Forces flash effect to fixup palette next frame.
-if (palette)
-	Activate (palette);
-m_data.xFlashDuration = m_data.xLastDuration;
-m_data.xLastEffectTime = 0;
+if (bCond) {
+	SetEffect (m_data.lastEffect.red, m_data.lastEffect.green, m_data.lastEffect.blue);
+	m_data.xFlashDuration = m_data.xLastDuration;
+	m_data.xLastEffectTime = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
 
-void CPaletteManager::SaveAndResetEffect (void)
+void CPaletteManager::SuspendEffect (bool bCond)
 {
-SaveEffect ();
-ResetEffect ();
-//ReloadEffect ();
+if (bCond) {
+	SaveEffect ();
+	ResetEffect ();
+	}
+//ResumeEffect ();
 }
 
 //------------------------------------------------------------------------------
@@ -405,10 +406,6 @@ void CPaletteManager::SetGamma (int gamma)
 CLAMP (gamma, 0, 16);
 if (m_data.nGamma != gamma) {
 	m_data.nGamma = gamma;
-#if 0
-	if (!paletteManager.EffectDisabled ())
-		paletteManager.ReloadEffect ();
-#endif
 	}
 }
 
@@ -509,8 +506,8 @@ if (nUsedForLevel && stricmp (paletteManager.LastPig (), pszPaletteName) != 0) {
 if (bForce || pszLevelName || stricmp (paletteManager.LastLoaded (), pszPaletteName)) {
 	strncpy (paletteManager.LastLoaded (), pszPaletteName, sizeof (paletteManager.LastLoaded ()));
 	palette = paletteManager.Load (pszPaletteName, pszLevelName);
-	if (!paletteManager.FadedOut () && !bNoScreenChange)
-		ReloadEffect ();
+	//if (!(paletteManager.FadedOut () || bNoScreenChange))
+	//	ResumeEffect ();
 	gameData.hud.msgs [0].nColor = -1;
 	LoadGameBackground ();
 	}

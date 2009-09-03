@@ -151,12 +151,12 @@ class CPaletteManager {
 		void ClearStep (void);
 		void StepUp (int r, int g, int b);
 		void StepUp (void);
-		void ApplyEffect (void);
+		void RenderEffect (void);
 		void FadeEffect (void);
 		void ResetEffect (void);
 		void SaveEffect (void);
-		void SaveAndResetEffect (void);
-		void ReloadEffect (CPalette* palette = NULL);
+		void SuspendEffect (bool bCond = true);
+		void ResumeEffect (bool bCond = true);
 		void SetEffect (int red, int green, int blue, bool bForce = false);
 		void SetEffect (float red, float green, float blue, bool bForce = false);
 		void BumpEffect (int red, int green, int blue);
@@ -167,7 +167,7 @@ class CPaletteManager {
 		void SetEffect (bool bForce = false);
 		void ClearEffect (void);
 		int ClearEffect (CPalette* palette);
-		int EnableEffect (void);
+		int EnableEffect (bool bReset = false);
 		int DisableEffect (void);
 		bool EffectEnabled (void) { return m_data.nSuspended <= 0; }
 		bool EffectDisabled (void) { return m_data.nSuspended > 0; }

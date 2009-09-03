@@ -636,7 +636,7 @@ if (gameStates.app.bD2XLevel && gameStates.render.bLightmapsOk)
 bShadows = 1;
 #endif
 
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 if (loadOp == 0) {
 	LoadSegmentsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
@@ -688,13 +688,13 @@ else if (loadOp == 6) {
 	}
 else {
 	key = -2;
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 	return nCurItem;
 	}
 menu [0].m_value++;
 menu [0].m_bRebuild = 1;
 key = 0;
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 return nCurItem;
 }
 

@@ -387,7 +387,7 @@ StopTime ();
 bBlackScreen = paletteManager.EffectDisabled ();
 if (paletteManager.EffectDisabled ()) {
 	CCanvas::Current ()->Clear (BLACK_RGBA);
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 	}
 //	messageBox.Show (TXT_LOADING);
 LoadSegmentTextures ();
@@ -433,7 +433,7 @@ if (nState)
 
 	int	i;
 
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 if (nTouchSeg < gameData.segs.nSegments) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchSeg < gameData.segs.nSegments); i++) {
 #if DBG
@@ -471,13 +471,13 @@ else {
 	LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
 	LoadAddonTextures ();
 	key = -2;
-	paletteManager.ReloadEffect ();
+	//paletteManager.ResumeEffect ();
 	return nCurItem;
 	}
 menu [0].m_value++;
 menu [0].m_bRebuild = 1;
 key = 0;
-paletteManager.ReloadEffect ();
+//paletteManager.ResumeEffect ();
 return nCurItem;
 }
 
