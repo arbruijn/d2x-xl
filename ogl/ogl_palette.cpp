@@ -40,7 +40,7 @@ void CPaletteManager::RenderEffect (void)
 	int	bDepthTest, bBlend;
 	GLint	blendSrc, blendDest;
 
-if (!m_data.nSuspended) {
+if (m_data.nSuspended) {
 #if 1
 	return;
 #else
