@@ -799,7 +799,7 @@ return nLoadRes;
 
 //------------------------------------------------------------------------------
 
-static void CleanupBeforeGame (int nLevel)
+static void CleanupBeforeGame (int nLevel, int bRestore)
 {
 /*---*/PrintLog ("Loading level...\n");
 EndRenderThreads ();
@@ -876,7 +876,7 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 
 	static char szDefaultPlayList [] = "playlist.txt";
 
-CleanupBeforeGame (nLevel);
+CleanupBeforeGame (nLevel, bRestore);
 /*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);

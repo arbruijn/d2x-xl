@@ -118,7 +118,11 @@ if (*pszParentFolder) {
 #	define	STD_GAMEDIR		"/Applications/Games/D2X-XL"
 #	define	D2X_APPNAME		"d2x-xl"
 #else
-#	define	STD_GAMEDIR		"/usr/local/games/d2x-xl"
+#	ifdef SHAREPATH
+#		define	STD_GAMEDIR		SHAREPATH
+#	else
+#		define	STD_GAMEDIR		"/usr/local/games/d2x-xl"
+#	endif
 #	define	D2X_APPNAME		"d2x-xl"
 #endif
 

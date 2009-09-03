@@ -227,7 +227,7 @@ while (gameData.app.bGamePaused) {
 			messageBox.Render ();
 			G3_SLEEP (1);
 			}
-		--gameStates.menus.nInMenu--;
+		gameStates.menus.nInMenu--;
 		}
 #if DBG
 		HandleTestKey(key);

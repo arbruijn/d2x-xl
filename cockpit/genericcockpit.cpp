@@ -1456,6 +1456,8 @@ if (!EGI_FLAG (nDamageModel, 0, 0, 0))
 	return;
 if (cockpit->Hide ())
 	return;
+if (gameStates.app.bPlayerIsDead)
+	return;
 #if 0
 	static int		nIdDamage [3] = {0, 0, 0};
 	static int		nColor [3] = {GOLD_RGBA, ORANGE_RGBA, RED_RGBA};
