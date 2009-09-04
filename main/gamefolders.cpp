@@ -461,11 +461,11 @@ static tFileDesc gameFilesD2 [] = {
 	{"\002descent2.ham", "data", false, false, false},
 	{"\002descent2.s11", "data", false, false, false},
 	{"\002descent2.s22", "data", false, false, false},
-	{"\002intro-h.mvl", "movies", false, false, false},
+	{"\002intro-h.mvl", "movies", true, false, false},
 	{"\002intro-l.mvl", "movies", true, false, false},
-	{"\002other-h.mvl", "movies", false, false, false},
+	{"\002other-h.mvl", "movies", true, false, false},
 	{"\002other-l.mvl", "movies", true, false, false},
-	{"\002robots-h.mvl", "movies", false, false, false},
+	{"\002robots-h.mvl", "movies", true, false, false},
 	{"\002robots-l.mvl", "movies", true, false, false}
 };
 
@@ -672,27 +672,38 @@ for (int i = 0; i < int (sizeofa (gameFolders)); i++) {
 static void CreateFileListMessage (char* szMsg, tFileDesc* fileList, int nFiles, bool bShowFolders = false)
 {
 	bool	bFirst = true;
-	int	nListed = 0;
+	int	l = 0, nListed = 0;
 
 for (int i = 0, j = -1; i < nFiles; i++) {
 	if (!(fileList [i].bFound || fileList [i].bOptional)) {
 		if (bShowFolders && ((j < 0) || strcmp (fileList [i].pszFolder, fileList [j].pszFolder))) {
 			j = i;
 			if (!bFirst) {
+				l = 0;
 				strcat (szMsg, "\n\n");
 				bFirst = true;
 				}
-			if (strcmp (fileList [i].bUser ? szUserFolder : szRootFolder, ".\\"))
+			if (strcmp (fileList [i].bUser ? szUserFolder : szRootFolder, ".\\")) {
 				strcat (szMsg, fileList [i].bUser ? szUserFolder : szRootFolder);
+				l += strlen (fileList [i].bUser ? szUserFolder : szRootFolder);
+				}
 			strcat (szMsg, fileList [i].pszFolder);
 			strcat (szMsg, ": ");
+			l += strlen (fileList [i].pszFolder) + 2;
 			}
 		if (bFirst)
 			bFirst = false;
 		else {
 			strcat (szMsg, ", ");
+			l += 2;
+			if (l >= 160) {
+				l = 0;
+				strcat (szMsg, "\n\n");
+				bFirst = true;
+				}
 			}
 		strcat (szMsg, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
+		l += strlen (fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
 		nListed++;
 		}
 	}
@@ -781,7 +792,16 @@ if (nResult) {
 			strcat (szMsg, " - http://www.descent2.de/d2x.html\n - http://www.sourceforge.net/projects/d2x-xl\n");
 		if (nResult & 1)
 			strcat (szMsg, " - http://www.gog.com (buy the game here for little money)\n");
-		Error (szMsg);
+#if 0
+		if (InitGraphics (false)) {
+			gameData.menu.helpColor = RGB_PAL (47, 47, 47);
+			gameData.menu.colorOverride = gameData.menu.helpColor;
+			MsgBox (TXT_ERROR, NULL, - 3, szMsg, " ", TXT_CLOSE);
+			gameData.menu.colorOverride = 0;
+			}
+		else
+#endif
+			Error (szMsg);
 		}
 	else if ((FindArg ("-setup") || (gameConfig.nVersion != D2X_IVER)) && (nResult & (2 | 4 | 16))) {	// only warn once each time a new game version is installed
 		strcat (szMsg, "\n\n");
@@ -791,7 +811,16 @@ if (nResult) {
 			strcat (szMsg, "Vertigo missions will be unavailable.\n");
 		if (nResult & 16)
 			strcat (szMsg, "Additional sound effects will be unavailable.\n");
-		Warning (szMsg);
+#if 0
+		if (InitGraphics (false)) {
+			gameData.menu.helpColor = RGB_PAL (47, 47, 47);
+			gameData.menu.colorOverride = gameData.menu.helpColor;
+			MsgBox (TXT_WARNING, NULL, - 3, szMsg, " ", TXT_CLOSE);
+			gameData.menu.colorOverride = 0;
+			}
+		else 
+#endif
+			Warning (szMsg);
 		}
 	}
 return nResult;

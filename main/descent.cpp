@@ -578,7 +578,7 @@ return gameStates.input.bHaveTrackIR = 0;
 
 // ----------------------------------------------------------------------------
 
-int InitGraphics (void)
+int InitGraphics (bool bFull = true)
 {
 	u_int32_t	nScreenSize;
 	int			t;
@@ -593,15 +593,17 @@ nScreenSize = SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameState
 /*---*/PrintLog ("Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
-/*---*/PrintLog ("Loading default palette\n");
-paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
-CCanvas::Current ()->SetPalette (paletteManager.Default ());	//just need some valid palette here
-/*---*/PrintLog ("Initializing game fonts\n");
-fontManager.Setup ();	// must load after palette data loaded.
-/*---*/PrintLog ("Setting screen mode\n");
-SetScreenMode (SCREEN_MENU);
-/*---*/PrintLog ("Showing loading screen\n");
-ShowLoadingScreen ();
+if (bFull) {
+	/*---*/PrintLog ("Loading default palette\n");
+	paletteManager.SetDefault (paletteManager.Load (D2_DEFAULT_PALETTE, NULL));
+	CCanvas::Current ()->SetPalette (paletteManager.Default ());	//just need some valid palette here
+	/*---*/PrintLog ("Initializing game fonts\n");
+	fontManager.Setup ();	// must load after palette data loaded.
+	/*---*/PrintLog ("Setting screen mode\n");
+	SetScreenMode (SCREEN_MENU);
+	/*---*/PrintLog ("Showing loading screen\n");
+		ShowLoadingScreen ();
+	}
 return 1;
 }
 
