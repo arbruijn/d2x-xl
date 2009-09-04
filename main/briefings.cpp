@@ -741,8 +741,6 @@ if (pcxResult != PCX_ERROR_NONE) {
 		}
 #endif
 	}
-if (paletteManager.EnableEffect ())
-	return 0;
 SetColors ();
 return 1;
 }
@@ -1539,13 +1537,9 @@ if (gameStates.app.bD1Mission) {
 		return 0;
 		}
 	GrUpdate (0);
-	if (paletteManager.EnableEffect ())
-		return 1;
 	}
 if (!ShowText (nScreen, nLevel))
 	return 0;
-if (paletteManager.DisableEffect ())
-	return 1;
 return 1;
 }
 

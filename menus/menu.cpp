@@ -642,7 +642,7 @@ else {
 		}
 	} 
 
-//paletteManager.DisableEffect ();
+paletteManager.DisableEffect ();
 done = 0;
 topChoice = 0;
 while (Item (topChoice).m_nType == NM_TYPE_TEXT) {
@@ -1374,7 +1374,7 @@ if (bTimeStopped) {
 if (bSoundStopped)
 	audio.ResumeSounds ();
 gameStates.menus.nInMenu--;
-//paletteManager.EnableEffect ();
+paletteManager.EnableEffect ();
 //paletteManager.SetEffect (0, 0, 0);
 SDL_EnableKeyRepeat (0, 0);
 if (gameStates.app.bGameRunning && IsMultiGame)

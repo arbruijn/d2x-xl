@@ -403,7 +403,6 @@ if (nPcxError != PCX_ERROR_NONE) {
 songManager.Play (SONG_CREDITS, 1);
 m_bmBackdrop.Remap (NULL, -1, -1);
 
-paletteManager.EnableEffect ();
 KeyFlush ();
 m_xTimeout = SDL_GetTicks () + m_xDelay;
 glEnable (GL_BLEND);

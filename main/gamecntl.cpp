@@ -146,7 +146,7 @@ if (!gameData.app.bGamePaused) {
 	audio.PauseAll ();
 	RBAPause ();
 	StopTime ();
-	//paletteManager.DisableEffect ();
+	paletteManager.DisableEffect ();
 	GameFlushInputs ();
 #if defined (TACTILE)
 	if (TactileStick)
@@ -160,7 +160,7 @@ if (!gameData.app.bGamePaused) {
 void ResumeGame (void)
 {
 GameFlushInputs ();
-//paletteManager.EnableEffect ();
+paletteManager.EnableEffect ();
 StartTime (0);
 if (redbook.Playing ())
 	RBAResume ();

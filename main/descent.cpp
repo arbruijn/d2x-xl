@@ -950,34 +950,27 @@ void CheckJoystickCalibration (void)
 
 void ShowOrderForm (void)
 {
-	int 	pcx_error;
-	char	exit_screen[16];
+	char	szExitScreen [16];
 
-	CCanvas::SetCurrent (NULL);
+CCanvas::SetCurrent (NULL);
+KeyFlush ();
+strcpy (szExitScreen, gameStates.menus.bHires ? "ordrd2ob.pcx" : "ordrd2o.pcx"); // OEM
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+	strcpy (szExitScreen, gameStates.menus.bHires ? "orderd2b.pcx" : "orderd2.pcx"); // SHAREWARE, prefer mac if hires
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+	strcpy (szExitScreen, gameStates.menus.bHires ? "orderd2.pcx" : "orderd2b.pcx"); // SHAREWARE, have to rescale
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+	strcpy (szExitScreen, gameStates.menus.bHires ? "warningb.pcx" : "warning.pcx"); // D1
+if (! CFile::Exist (szExitScreen, gameFolders.szDataDir, 0))
+	return; // D2 registered
 
-	KeyFlush ();
-
-	strcpy (exit_screen, gameStates.menus.bHires?"ordrd2ob.pcx":"ordrd2o.pcx"); // OEM
-	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
-		strcpy (exit_screen, gameStates.menus.bHires?"orderd2b.pcx":"orderd2.pcx"); // SHAREWARE, prefer mac if hires
-	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
-		strcpy (exit_screen, gameStates.menus.bHires?"orderd2.pcx":"orderd2b.pcx"); // SHAREWARE, have to rescale
-	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
-		strcpy (exit_screen, gameStates.menus.bHires?"warningb.pcx":"warning.pcx"); // D1
-	if (! CFile::Exist (exit_screen, gameFolders.szDataDir, 0))
-		return; // D2 registered
-
-	if ((pcx_error=PcxReadFullScrImage (exit_screen, 0))==PCX_ERROR_NONE) {
-		paletteManager.EnableEffect ();
-		GrUpdate (0);
-		while (!(KeyInKey () || MouseButtonState (0)))
-			;
-		paletteManager.DisableEffect ();
+int pcxResult = PcxReadFullScrImage (szExitScreen, 0);
+if (pcxResult == PCX_ERROR_NONE) {
+	GrUpdate (0);
+	while (!(KeyInKey () || MouseButtonState (0)))
+		;
 	}
-	else
-		Int3 ();		//can't load order screen
-
-	KeyFlush ();
+KeyFlush ();
 }
 
 // ----------------------------------------------------------------------------

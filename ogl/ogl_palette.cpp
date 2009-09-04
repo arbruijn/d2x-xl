@@ -157,7 +157,9 @@ return 1;
 
 int CPaletteManager::DisableEffect (void)
 {
-m_data.nSuspended++;
+#if 0 //obsolete
+m_data.nSuspended++; obsolete
+#endif
 return 0;
 }
 
@@ -165,10 +167,12 @@ return 0;
 
 int CPaletteManager::EnableEffect (bool bReset)
 {
+#if 0 //obsolete
 if (bReset)
 	m_data.nSuspended = 0;
 else if (m_data.nSuspended > 0)
 	m_data.nSuspended--;
+#endif
 return 0;
 }
 

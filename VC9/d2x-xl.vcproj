@@ -4311,11 +4311,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
@@ -4476,7 +4476,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="HTML"
+			Name="Documents"
 			>
 			<File
 				RelativePath="..\..\..\Websites\Descent\d2x-history.html"
@@ -4489,6 +4489,30 @@
 			<File
 				RelativePath="..\..\..\Websites\Descent\d2x.html"
 				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\programs\d2\config\d2x.ini"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\programs\d2\config\d2xdebug.ini"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\Programs\d2\release notes.txt"

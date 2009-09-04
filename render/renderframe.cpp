@@ -960,8 +960,8 @@ transparencyRenderer.Reset ();
 //if (gameStates.render.vr.nRenderMode == VR_NONE)
 RenderMonoFrame ();
 //StopTime ();
-if (!gameStates.menus.nInMenu)
-	paletteManager.EnableEffect ();
+//if (!gameStates.menus.nInMenu)
+//	paletteManager.EnableEffect ();
 //StartTime (0);
 gameData.app.nFrameCount++;
 PROF_END (ptRenderFrame)
