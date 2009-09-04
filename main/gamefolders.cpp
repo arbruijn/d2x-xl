@@ -696,11 +696,12 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 		else {
 			strcat (szMsg, ", ");
 			l += 2;
+#if 0
 			if (l >= 160) {
 				l = 0;
 				strcat (szMsg, "\n\n");
-				bFirst = true;
 				}
+#endif
 			}
 		strcat (szMsg, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
 		l += strlen (fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
