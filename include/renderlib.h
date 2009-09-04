@@ -111,7 +111,7 @@ void DrawWindowBox (uint color, short left, short top, short right, short bot);
 extern CBitmap *bmpCorona;
 extern CBitmap *bmpGlare;
 extern CBitmap *bmpHalo;
-extern CBitmap *bmpThruster [2];
+extern CBitmap *bmpThruster [2][2];
 extern CBitmap *bmpShield;
 extern CBitmap *bmpExplBlast;
 extern CBitmap *bmpSparks;

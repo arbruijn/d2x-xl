@@ -1058,6 +1058,7 @@ void RenderThrusterFlames (CObject *objP)
 	CFloatVector		v;
 	float					fSpeed, fPulse, fFade [4];
 	CThrusterData		*pt = NULL;
+	int					bPlayer = objP->info.nType == OBJ_PLAYER;
 
 	static time_t		tPulse = 0;
 	static int			nPulse = 10;
@@ -1110,19 +1111,21 @@ ti.fLength += float (rand () % 100) / 1000.0f;
 bStencil = ogl.StencilOff ();
 bTextured = 0;
 nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
+CBitmap* bmP = bmpThruster [nStyle][bPlayer];
+
 if (!LoadThruster ()) {
 	extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 	glDisable (GL_TEXTURE_2D);
 	}
 else if ((gameOpts->render.bDepthSort <= 0) || (nStyle == 1)) {
 	glEnable (GL_TEXTURE_2D);
-	bmpThruster [nStyle]->SetTranspType (-1);
-	if (bmpThruster [nStyle]->Bind (1)) {
+	bmP->SetTranspType (-1);
+	if (bmP->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 		glDisable (GL_TEXTURE_2D);
 		}
 	else {
-		bmpThruster [nStyle]->Texture ()->Wrap (GL_CLAMP);
+		bmP->Texture ()->Wrap (GL_CLAMP);
 		bTextured = 1;
 		}
 	}
@@ -1142,7 +1145,7 @@ if (nThrusters > 1) {
 		}
 	}
 glEnable (GL_BLEND);
-if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
+if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {	//2D
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
@@ -1157,9 +1160,9 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		fVecf.Assign (ti.pp ? ti.pp->mOrient.FVec () : objP->info.position.mOrient.FVec ());
 #endif
 	for (h = 0; h < nThrusters; h++)
-		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmpThruster [nStyle], &tcColor);
+		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmP, &tcColor);
 	}
-else {
+else { //3D
 	tTexCoord3f	tTexCoord2fl, tTexCoord2flStep;
 
 	CreateThrusterFlame ();
@@ -1177,13 +1180,14 @@ else {
 #if 1
 		// render a cap for the thruster flame at its base
 		if (bTextured && (bTextured = LoadThruster (1))) {
-			bmpThruster [0]->SetTranspType (-1);
-			if (bmpThruster [0]->Bind (1)) {
+			CBitmap* bmP = bmpThruster [0][bPlayer];
+			bmP->SetTranspType (-1);
+			if (bmP->Bind (1)) {
 				bTextured = 0;
 				glDisable (GL_TEXTURE_2D);
 				}
 			else {
-				bmpThruster [0]->Texture ()->Wrap (GL_CLAMP);
+				bmP->Texture ()->Wrap (GL_CLAMP);
 				bTextured = 1;
 				}
 			}
@@ -1201,7 +1205,7 @@ else {
 				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 				}
 			glEnd ();
-			bmpThruster [1]->Bind (1);
+			bmpThruster [1][bPlayer]->Bind (1);
 			}
 		else {
 			color [0] = color [1];

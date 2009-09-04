@@ -533,9 +533,9 @@ static tFileDesc addonFiles [] = {
 	{"\002smoke-soft.tga", "textures/d2x-xl", true, false, false},
 	{"\002sparks.tga", "textures/d2x-xl", false, false, false},
 	{"\002thrust2d.tga", "textures/d2x-xl", false, false, false},
-	{"\002thrust2d-blue.tga", "textures/d2x-xl", true, false, false},
-	{"\002thrust2d-red.tga", "textures/d2x-xl", true, false, false},
-	{"\002thrust3d.tga", "textures/d2x-xl", false, false, false},
+	{"\002thrust2d-blue.tga", "textures/d2x-xl", false, false, false},
+	{"\002thrust2d-red.tga", "textures/d2x-xl", false, false, false},
+	{"\002thrust3d.tga", "textures/d2x-xl", true, false, false},
 	{"\002thrust3d-blue.tga", "textures/d2x-xl", true, false, false},
 	{"\002thrust3d-red.tga", "textures/d2x-xl", true, false, false}
 };
