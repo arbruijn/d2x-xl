@@ -42,6 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void CSoundObject::Init (void)
 {
 memset (this, 0, sizeof (*this));
+m_audioVolume =
 m_channel = -1;
 }
 
@@ -140,6 +141,10 @@ void CAudio::GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short n
 	CFixVector	vecToSound;
 	fix 			angleFromEar, cosang, sinang;
 	fix			distance, pathDistance;
+#if DBG
+	static fix	prevDistance [2] = {0, 0}, prevPathDistance [2] = {0, 0};
+	static int	nPrevVolume [2] = {0, 0};
+#endif
 	float			fDecay;
 
 *nVolume = 0;
@@ -156,7 +161,11 @@ if (distance < maxDistance) {
 	pathDistance = FindConnectedDistance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 	if (pathDistance > -1) {
 		if (!nDecay)
+#if 1
+			*nVolume = FixMulDiv (maxVolume, maxDistance - pathDistance, maxDistance);
+#else
 			*nVolume = maxVolume - FixDiv (pathDistance, maxDistance);
+#endif
 		else if (nDecay == 1) {
 			fDecay = (float) exp (-log (2.0f) * 4.0f * X2F (pathDistance) / X2F (maxDistance / 2));
 			*nVolume = (int) (maxVolume * fDecay);
@@ -176,7 +185,17 @@ if (distance < maxDistance) {
 			*pan = (cosang + I2X (1)) / 2;
 			}
 		}
+#if DBG
+	prevPathDistance [1] = prevPathDistance [0];
+	prevPathDistance [0] = pathDistance;
+#endif
 	}
+#if DBG
+prevDistance [1] = prevDistance [0];
+prevDistance [0] = distance;
+nPrevVolume [1] = nPrevVolume [0];
+nPrevVolume [0] = *nVolume;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -607,7 +626,7 @@ void CAudio::SyncSounds (void)
 if (!OBJECTS.Buffer ())
 	return;
 
-	int				oldvolume, oldpan;
+	int				nOldVolume, nOldPan, nAudioVolume = audio.Volume ();
 	CObject*			objP;
 	CFixVector		vListenerPos = gameData.objs.viewerP->info.position.vPos;
 	CFixMatrix		mListenerOrient = gameData.objs.viewerP->info.position.mOrient;
@@ -629,21 +648,31 @@ while (i) {
 	i--;
 	soundObjP--;
 	if (soundObjP->m_flags & SOF_USED) {
-		oldvolume = soundObjP->m_volume;
-		oldpan = soundObjP->m_pan;
+		nOldVolume = soundObjP->m_volume;
+		nOldPan = soundObjP->m_pan;
 		// Check if its done.
 		if (!(soundObjP->m_flags & SOF_PLAY_FOREVER) && ((soundObjP->m_channel < 0) && !ChannelIsPlaying (soundObjP->m_channel))) {
 			DeleteSoundObject (i);
 			continue;		// Go on to next sound...
 			}
 		if (soundObjP->m_flags & SOF_LINK_TO_POS) {
+			int nVolume = soundObjP->m_volume;
+			int nPan = soundObjP->m_pan;
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
 				soundObjP->m_linkType.pos.position, soundObjP->m_linkType.pos.nSegment, soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #if USE_SDL_MIXER
-			if (gameOpts->sound.bUseSDLMixer)
-				Mix_VolPan (soundObjP->m_channel, soundObjP->m_volume, soundObjP->m_pan);
+			if (gameOpts->sound.bUseSDLMixer && ((soundObjP->m_volume != nVolume) || (soundObjP->m_pan != nPan))) {
+#	if DBG
+				if (soundObjP->m_volume != nVolume)
+					GetVolPan (
+						mListenerOrient, vListenerPos, nListenerSeg,
+						soundObjP->m_linkType.pos.position, soundObjP->m_linkType.pos.nSegment, soundObjP->m_maxVolume,
+						&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
+#	endif
+				//Mix_VolPan (soundObjP->m_channel, soundObjP->m_volume, soundObjP->m_pan);
+				}
 #endif
 			}
 		else if (soundObjP->m_flags & SOF_LINK_TO_OBJ) {
@@ -670,7 +699,8 @@ while (i) {
 				Mix_VolPan (soundObjP->m_channel, soundObjP->m_volume, soundObjP->m_pan);
 #endif
 			}
-		if ((oldvolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
+		if ((soundObjP->m_audioVolume != nAudioVolume) || (nOldVolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
+			soundObjP->m_audioVolume = nAudioVolume;
 			if (soundObjP->m_volume < 1) {	// Sound is too far away, so stop it playing.
 				if (soundObjP->m_channel > -1) {
 					if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
@@ -687,7 +717,7 @@ while (i) {
 					SetVolume (soundObjP->m_channel, soundObjP->m_volume);
 				}
 			}
-		if ((oldpan != soundObjP->m_pan) && (soundObjP->m_channel > -1))
+		if ((nOldPan != soundObjP->m_pan) && (soundObjP->m_channel > -1))
 			SetPan (soundObjP->m_channel, soundObjP->m_pan);
 		}
 	}

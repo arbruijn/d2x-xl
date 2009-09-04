@@ -138,13 +138,13 @@ if (!audio.Available ())
 	return;
 if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
 	if (nVolume) {
-		nVolume = (FixMul (nVolume, audio.Volume ()) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
+		nVolume = fix (X2F (nVolume) /** X2F (audio.Volume ()*/ * MIX_MAX_VOLUME + 0.5f);
 		if (!nVolume)
 			nVolume = 1;
 		Mix_Volume (nChannel, nVolume);
 		if (nPan >= 0) {
-			nPan /= (32767 / 127);
-			Mix_SetPanning (nChannel, (ubyte) nPan, (ubyte) (254 - nPan));
+			nPan = fix (X2F (nPan) * 254 + 0.5f);
+			Mix_SetPanning (nChannel, ubyte (nPan), ubyte (254 - nPan));
 			}
 		}
 	}
@@ -544,6 +544,21 @@ if (m_info.bResampled) {
 	m_info.sample.Destroy ();
 	m_info.bResampled = 0;
 	}
+
+m_info.nVolume = FixMul (audio.Volume (), nVolume);
+m_info.nPan = nPan;
+m_info.nPosition = 0;
+m_info.nSoundObj = nSoundObj;
+m_info.nSoundClass = nSoundClass;
+m_info.bLooped = bLooping;
+#if USE_OPENAL
+m_info.loops = bLooping ? -1 : nLoopEnd - nLoopStart + 1;
+#endif
+m_info.nSound = nSound;
+m_info.bPersistent = 0;
+m_info.bPlaying = 1;
+m_info.bPersistent = bPersistent;
+
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	//resample to two channels
@@ -576,7 +591,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 #endif
 			}
 		}
-	Mix_VolPan (m_info.nChannel, nVolume, nPan);
+	Mix_VolPan (m_info.nChannel, m_info.nVolume, nPan);
 	Mix_PlayChannel (m_info.nChannel, m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
 	}
 else 
@@ -597,19 +612,6 @@ if (pszWAV && *pszWAV)
 	if (nSpeed < I2X (1))
 		Speedup (soundP, nSpeed);
 	}
-m_info.nVolume = FixMul (audio.Volume (), nVolume);
-m_info.nPan = nPan;
-m_info.nPosition = 0;
-m_info.nSoundObj = nSoundObj;
-m_info.nSoundClass = nSoundClass;
-m_info.bLooped = bLooping;
-#if USE_OPENAL
-m_info.loops = bLooping ? -1 : nLoopEnd - nLoopStart + 1;
-#endif
-m_info.nSound = nSound;
-m_info.bPersistent = 0;
-m_info.bPlaying = 1;
-m_info.bPersistent = bPersistent;
 if (m_info.nIndex < 0)
 	m_info.nIndex = audio.RegisterChannel (this);
 return audio.FreeChannel ();

@@ -224,6 +224,7 @@ class CSoundObject {
 		short			m_nSound;			// The sound number that is playing
 		int			m_channel;			// What channel this is playing on, -1 if not playing
 		int			m_volume;			// Volume that this sound is playing at
+		int			m_audioVolume;		// audio volume set when the sound object was last updated
 		int			m_pan;				// Pan value that this sound is playing at
 		int			m_nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
 		char			m_szSound [FILENAME_LEN];	// file name of custom sound to be played

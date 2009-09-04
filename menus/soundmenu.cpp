@@ -122,7 +122,7 @@ if (soundOpts.nGatling >= 0) {
 	}
 if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
 	gameConfig.nDigiVolume = menu [soundOpts.nDigiVol].m_value;
-	audio.SetFxVolume ((gameConfig.nDigiVolume * 32768) / 8);
+	audio.SetFxVolume ((gameConfig.nDigiVolume * 32767) / 8);
 	audio.PlaySound (SOUND_DROP_BOMB);
 	}
 

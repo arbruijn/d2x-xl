@@ -1208,18 +1208,20 @@ else { //3D
 			bmpThruster [1][bPlayer]->Bind (1);
 			}
 		else {
-			color [0] = color [1];
-			color [1].red *= 0.975f;
-			color [1].green *= 0.8f;
-			color [1].alpha *= fFade [i / 4];
-			glColor4fv (reinterpret_cast<GLfloat*> (color));
-			glBegin (GL_TRIANGLE_STRIP);
-			for (j = 0; j < RING_SEGS; j++) {
-				//transformation.Transform (v, vFlame [0][nStripIdx [j]], 0);
-				//glVertex3fv (reinterpret_cast<GLfloat*> (&v));
-				glVertex3fv (reinterpret_cast<GLfloat*> (&vFlame [0][nStripIdx [j]]));
+			for (i = 0; i < THRUSTER_SEGS - 1; i++) {
+				color [0] = color [1];
+				color [1].red *= 0.975f;
+				color [1].green *= 0.8f;
+				color [1].alpha *= fFade [i / 4];
+				glColor4fv (reinterpret_cast<GLfloat*> (color));
+				glBegin (GL_TRIANGLE_STRIP);
+				for (j = 0; j < RING_SEGS; j++) {
+					//transformation.Transform (v, vFlame [0][nStripIdx [j]], 0);
+					//glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+					glVertex3fv (reinterpret_cast<GLfloat*> (&vFlame [0][nStripIdx [j]]));
+					}
+				glEnd ();
 				}
-			glEnd ();
 			}
 #endif
 		if (bTextured) {

@@ -1277,7 +1277,7 @@ m_nObject = -1;
 void CLightningSystem::CreateSound (int bSound)
 {
 if ((m_bSound = bSound)) {
-	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING));
+	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING));
 	if (m_bForcefield) {
 		if (0 <= (m_nSound = audio.GetSoundByName ("ff_amb_1")))
 			audio.CreateObjectSound (m_nSound, SOUNDCLASS_GENERIC, m_nObject, 1);

@@ -335,7 +335,7 @@ int bHaveThruster [2][2] = {{0, 0},{0, 0}};
 
 int LoadThruster (int nStyle)
 {
-	static const char* szThruster [2][2] = {{"thrust2-red.tga", "thrust2d-blue.tga"}, {"thrust3d-red.tga", "thrust3d-blue.tga"}};
+	static const char* szThruster [2][2] = {{"thrust2d-red.tga", "thrust2d-blue.tga"}, {"thrust3d-red.tga", "thrust3d-blue.tga"}};
 
 	if (nStyle < 0)
 		nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0);
