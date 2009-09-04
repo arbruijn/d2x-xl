@@ -899,21 +899,21 @@ int CheckForUpdate (void)
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
 if ((DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest)) &&
 	 (DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest))) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
+	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
 if (!cf.Open (szDest, gameFolders.szDownloadDir, "rt", -1)) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
+	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
 if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion [2])) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
+	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
 
 #if !DBG
 if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
-	MsgBox (NULL, NULL, 1, TXT_OK, "No updates were found.");
+	MsgBox (NULL, NULL, 1, TXT_CLOSE, "No updates were found.");
 	return 0;
 	}
 #endif
@@ -931,26 +931,26 @@ if (DownloadFile (szSrc, szDest)) {
 				FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 	if (DownloadFile (szSrc, szDest)) {
 		messageBox.Clear ();
-		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
+		MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 		return -1;
 		}
 	}
 messageBox.Clear ();
 if (!cf.Exist (szDest, "", 0)) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Download failed.");
+	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
 #endif
 #if defined(__unix__)
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded.", szDest);
-MsgBox (NULL, NULL, 1, TXT_OK, szMsg);
+MsgBox (NULL, NULL, 1, TXT_CLOSE, szMsg);
 #else
 char*	args [2] = {szDest, NULL};
 if (0 <= _execv (szDest, args))
 	exit (1);
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
 //Warning (szMsg);
-MsgBox (TXT_ERROR, NULL, 1, TXT_OK, szMsg);
+MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, szMsg);
 #endif
 return -1;
 }
