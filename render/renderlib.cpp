@@ -350,7 +350,7 @@ return LoadAddonBitmap (&bmpThruster [b3D][0], szThruster [b3D][0], &bHaveThrust
 void FreeThruster (void)
 {
 for (int i = 0; i < 2; i++)
-	for (int j = 0; j < 2; i++)
+	for (int j = 0; j < 2; j++)
 		if (bmpThruster [i][j]) {
 			delete bmpThruster [i][j];
 			bmpThruster [i][j] = NULL;
