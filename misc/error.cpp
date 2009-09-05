@@ -148,13 +148,13 @@ if (*szExitMsg) {
 void X_MessageBox (const char* pszMsg, bool bError)
 {
 	Widget	xMsgBox;
-	XmString	xmString = XmStringCreateLocalized (pszMsg);
+	XmString	xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
 	Arg		args [1];
 
 // setup message box text
 XtSetArg (args [0], XmNmessageString, xmString);
 // create and label message box
-xMsgBox = bError ? XmCreateErrorDialog (info, "Error", args, 1) : XmCreateWarningDialog (info, "Warning", args, 1);
+xMsgBox = bError ? XmCreateErrorDialog (NULL, "Error", args, 1) : XmCreateWarningDialog (NULL, "Warning", args, 1);
 // remove text resource
 XmStringFree (xmString);
 // remove help and cancel buttons
