@@ -185,8 +185,16 @@ if (screen.Width () && screen.Height () && pWarnFunc)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined(__linux__)
-	X_MessageBox (pszMsg, nType == MB_ICONERROR);
+#	if 1
+#	include <qmessagebox.h>
+
+	if (nType == MB_ICONERROR)
+		QMessageBox mb(QMessageBox::Critical, "Error", pszMsg,  QMessageBox::Ok);
+	else
+		QMessageBox mb(QMessageBox::Warning, "Warning", pszMsg,  QMessageBox::Ok);
+#else
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
+#endif
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
 #endif

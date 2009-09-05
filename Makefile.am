@@ -59,12 +59,12 @@ d2x_LDADD = \
 
 if MINGW32
 if USE_NETWORK
-d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lwsock32 -lcurl
+d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lwsock32 -lcurl -lXm -lXt -lX11
 else
-d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lcurl
+d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lcurl -lXm -lXt -lX11
 endif
 else
-d2x_sdl_LDADD = ${d2x_LDADD} -lm -lcurl
+d2x_sdl_LDADD = ${d2x_LDADD} -lm -lcurl -lXm -lXt -lX11
 endif
 d2x_xl_LDADD = ${d2x_sdl_LDADD} ${OGL_LIBS}
 
