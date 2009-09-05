@@ -136,11 +136,44 @@ if (*szExitMsg) {
 
 //------------------------------------------------------------------------------
 
+#if 1// defined(__unix__)
+
+ 
+#include <Xm/Xm.h>
+//#include <Xm/MainW.h>
+//#include <Xm/CascadeB.h>
+#include <Xm/MessageB.h>
+//#include <Xm/PushB.h>
+
+void X_MessageBox (const char* pszMsg, bool bError)
+{
+	Widget	xMsgBox;
+	XmString	xmString = XmStringCreateLocalized (pszMsg);
+	Arg		args [1];
+
+// setup message box text
+XtSetArg (args [0], XmNmessageString, xmString);
+// create and label message box
+xMsgBox = bError ? XmCreateErrorDialog (info, "Error", args, 1) : XmCreateWarningDialog (info, "Warning", args, 1);
+// remove text resource
+XmStringFree (xmString);
+// remove help and cancel buttons
+XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_CANCEL_BUTTON));
+XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_HELP_BUTTON));
+XtAddCallback (xMsgBox, XmNokCallback, X_InfoActivate, NULL);
+// display message box
+XtManageChild (xMsgBox);
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
 #ifndef MB_ICONWARNING
-#	define MB_ICONWARNING 0
+#	define MB_ICONWARNING	0
 #endif
 #ifndef MB_ICONERROR
-#	define MB_ICONERROR 0
+#	define MB_ICONERROR		1
 #endif
 
 void D2MsgBox (const char *pszMsg, uint nType)
@@ -151,7 +184,8 @@ if (screen.Width () && screen.Height () && pWarnFunc)
 #if defined (_WIN32)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
-#elif defined (__linux__)
+#elif defined(__linux__)
+	X_MessageBox (pszMsg, nType == MB_ICONERROR);
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
