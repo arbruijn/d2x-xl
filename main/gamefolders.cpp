@@ -469,7 +469,15 @@ static tFileDesc gameFilesD2 [] = {
 	{"\002robots-l.mvl", "movies", true, false, false}
 };
 
+static tFileDesc demoFilesD2 [] = {
+	// Descent 2 demo files
+	{"d2demo.hog", false, false, false},
+	{"d2demo.ham", false, false, false},
+	{"d2demo.pig", false, false, false}
+};
+
 static tFileDesc gameFilesD1 [] = {
+	// Descent 1 game files
 	{"\002descent.pig", "data", false, false, false},
 	{"\002descent.hog", "data", false, false, false}
 };
@@ -753,7 +761,7 @@ sprintf (szUserFolder, "%s/.d2x-xl/", szHomeFolder);
 #if defined(_WIN32)
 CheckAndCreateGameFolders ();
 #endif
-if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2))))
+if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2))) && CheckAndCopyFiles (demoFilesD2, int (sizeofa (demoFilesD2))))
 	nResult |= 1;
 if (CheckAndCopyFiles (gameFilesD1, int (sizeofa (gameFilesD1))))
 	nResult |= 2;
