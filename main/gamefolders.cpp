@@ -323,7 +323,8 @@ if (*gameFolders.szHomeDir) {
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
 #	else
 	strcpy (szDataRootDir, gameFolders.szHomeDir);
-	if (szDataRootDir [i = (int) strlen (szDataRootDir) - 1] == '\\')
+	i = int (strlen (szDataRootDir)) - 1;
+	if ((szDataRootDir [i] == '\\') || (szDataRootDir [i] == '/'))
 		szDataRootDir [i] = '\0';
 #	endif // __unix__
 	CFile::MkDir (szDataRootDir);
@@ -920,7 +921,7 @@ if ((DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
-if (!cf.Open (szDest, gameFolders.szDownloadDir, "rt", -1)) {
+if (!cf.Open ("d2x-xl-version.txt", gameFolders.szDownloadDir, "rt", -1)) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
