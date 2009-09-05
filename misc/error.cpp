@@ -136,7 +136,7 @@ if (*szExitMsg) {
 
 //------------------------------------------------------------------------------
 
-#if defined(__unix__)
+#if 0 //defined(__unix__)
 
  
 #include <Xm/Xm.h>
@@ -185,16 +185,7 @@ if (screen.Width () && screen.Height () && pWarnFunc)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined(__linux__)
-#	if 1
-#	include <qmessagebox.h>
-
-	if (nType == MB_ICONERROR)
-		QMessageBox mb(QMessageBox::Critical, "Error", pszMsg,  QMessageBox::Ok);
-	else
-		QMessageBox mb(QMessageBox::Warning, "Warning", pszMsg,  QMessageBox::Ok);
-#else
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
-#endif
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
 #endif
