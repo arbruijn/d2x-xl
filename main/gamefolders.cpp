@@ -723,6 +723,7 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 int CheckAndFixSetup (void)
 {
 	int	i, nResult = 0;
+	bool	bDemoData;
 	char	szMsg [10000];
 
 if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
@@ -761,12 +762,20 @@ sprintf (szUserFolder, "%s/.d2x-xl/", szHomeFolder);
 #if defined(_WIN32)
 CheckAndCreateGameFolders ();
 #endif
-if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2))) && CheckAndCopyFiles (demoFilesD2, int (sizeofa (demoFilesD2))))
-	nResult |= 1;
-if (CheckAndCopyFiles (gameFilesD1, int (sizeofa (gameFilesD1))))
-	nResult |= 2;
-if (CheckAndCopyFiles (vertigoFiles, int (sizeofa (vertigoFiles))))
-	nResult |= 4;
+if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2)))) {
+	if (CheckAndCopyFiles (demoFilesD2, int (sizeofa (demoFilesD2))))
+		nResult |= 1;
+	else
+		bDemoData = true;
+	}
+else
+	bDemoData = false;
+if (!bDemoData) {
+	if (CheckAndCopyFiles (gameFilesD1, int (sizeofa (gameFilesD1))))
+		nResult |= 2;
+	if (CheckAndCopyFiles (vertigoFiles, int (sizeofa (vertigoFiles))))
+		nResult |= 4;
+	}
 if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
 	nResult |= 8;
 if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
