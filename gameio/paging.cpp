@@ -381,11 +381,9 @@ for (int i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 
 void LoadAllTextures (void)
 {
-	int 	bBlackScreen;
-
 StopTime ();
 #if 0
-bBlackScreen = paletteManager.EffectDisabled ();
+int bBlackScreen = paletteManager.EffectDisabled ();
 if (paletteManager.EffectDisabled ()) {
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	//paletteManager.ResumeEffect ();

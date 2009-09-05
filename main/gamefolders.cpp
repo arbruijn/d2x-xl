@@ -595,7 +595,7 @@ do {
 		sprintf (szDest, "%s%s\\%s", fileDesc->bUser ? szUserFolder : szRootFolder, fileDesc->pszFolder, ffs.name);
 		cf.Copy (szSrc, szDest);
 		}
-	} while (FFN (&ffs, 0));
+	} while (!FFN (&ffs, 0));
 return true;
 }
 
