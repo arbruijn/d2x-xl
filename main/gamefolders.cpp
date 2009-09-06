@@ -841,7 +841,16 @@ if (nResult) {
 #endif
 			Warning (szMsg);
 		}
+	CFile	cf;
+	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.szHomeDir, "rt", 0)) {
+		fprintf (cf.File (), szMsg);
+		cf.Close ();
+		}
 	}
+#if DBG
+else
+	Warning ("No errors were found in your D2X-XL installation.");
+#endif
 return nResult;
 }
 

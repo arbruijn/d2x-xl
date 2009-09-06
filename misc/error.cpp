@@ -136,8 +136,30 @@ if (*szExitMsg) {
 
 //------------------------------------------------------------------------------
 
-#if 0 //defined(__unix__)
+#if 1 //defined(__unix__)
  
+#	if 0
+
+void GtkMessageBox (const char* pszMsg, bool bError)
+{
+	FILE*	fMsgBox;
+	char 	szReturn [256];
+	char*	pszEnv;
+
+if (!(pszEnv = new char [strlen (pszMsg) + 1000]))
+	return;
+sprintf (pszEnv, "D2X_XL_MSGBOX=<hbox>\n<label>%s</label>\n<label>%s</label>\n<button Close></button></hbox>",
+		 bError ? "Error" : "Warning", pszMsg);
+putenv (pszEnv);
+delete[] pszEnv;
+
+fMsgBox = popen ("gtkdialog --program=D2X_XL_MSGBOX", "r");
+fgets (szReturn, sizeof (szReturn) - 1, fMsgBox);
+pclose (fMsgBox);
+}
+
+#	elif 0
+
 #include <Xm/Xm.h>
 //#include <Xm/MainW.h>
 //#include <Xm/CascadeB.h>
@@ -164,6 +186,7 @@ XtAddCallback (xMsgBox, XmNokCallback, X_InfoActivate, NULL);
 XtManageChild (xMsgBox);
 }
 
+#	endif
 #endif
 
 //------------------------------------------------------------------------------
@@ -184,7 +207,11 @@ if (screen.Width () && screen.Height () && pWarnFunc)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined(__linux__)
+#	if 0
+	GtkMessageBox (pszMsg, nType == MB_ICONERROR);
+#	else
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
+#	endif
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
 #endif
