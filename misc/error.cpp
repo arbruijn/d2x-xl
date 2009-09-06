@@ -138,55 +138,45 @@ if (*szExitMsg) {
 
 #if 1 //defined(__unix__)
  
-#	if 0
-
-void GtkMessageBox (const char* pszMsg, bool bError)
-{
-	FILE*	fMsgBox;
-	char 	szReturn [256];
-	char*	pszEnv;
-
-if (!(pszEnv = new char [strlen (pszMsg) + 1000]))
-	return;
-sprintf (pszEnv, "D2X_XL_MSGBOX=<hbox>\n<label>%s</label>\n<label>%s</label>\n<button Close></button></hbox>",
-		 bError ? "Error" : "Warning", pszMsg);
-putenv (pszEnv);
-delete[] pszEnv;
-
-fMsgBox = popen ("gtkdialog --program=D2X_XL_MSGBOX", "r");
-fgets (szReturn, sizeof (szReturn) - 1, fMsgBox);
-pclose (fMsgBox);
-}
-
-#	elif 0
-
 #include <Xm/Xm.h>
 //#include <Xm/MainW.h>
 //#include <Xm/CascadeB.h>
 #include <Xm/MessageB.h>
 //#include <Xm/PushB.h>
 
-void X_MessageBox (const char* pszMsg, bool bError)
-{
-	Widget	xMsgBox;
-	XmString	xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
-	Arg		args [1];
+static XtAppContext	appContext;
+static Widget			topWidget;
 
+void XmCloseMsgBox (Widget w, XtPointer clientData, XmPushButtonCallbackStruct *cbs) 
+{   
+appContext.exit_flag = 1;
+}
+
+
+void XmMessageBox (const char* pszMsg, bool bError)
+{
+	Widget			msgBox;
+	XmString			xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
+	Arg				args [1];
+   
+topWidget = XtVaAppInitialize (&appContext, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 // setup message box text
 XtSetArg (args [0], XmNmessageString, xmString);
 // create and label message box
-xMsgBox = bError ? XmCreateErrorDialog (NULL, "Error", args, 1) : XmCreateWarningDialog (NULL, "Warning", args, 1);
+xMsgBox = bError ? XmCreateErrorDialog (topWidget, "Error", args, 1) : XmCreateWarningDialog (topWidget, "Warning", args, 1);
+XtAddCallback (xMsgBox, XmNokCallback, XmCloseMsgBox, NULL);
 // remove text resource
 XmStringFree (xmString);
 // remove help and cancel buttons
 XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_CANCEL_BUTTON));
 XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_HELP_BUTTON));
 XtAddCallback (xMsgBox, XmNokCallback, X_InfoActivate, NULL);
+XtRealizeWidget (topWidget);
 // display message box
-XtManageChild (xMsgBox);
+//XtManageChild (xMsgBox);
+XtAppMainLoop (app); //now how the heck do I get rid of this once the user clicks the dialog's ok button?
 }
 
-#	endif
 #endif
 
 //------------------------------------------------------------------------------
@@ -208,7 +198,7 @@ else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined(__linux__)
 #	if 0
-	GtkMessageBox (pszMsg, nType == MB_ICONERROR);
+	XmMessageBox (pszMsg, nType == MB_ICONERROR);
 #	else
 	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
 #	endif

@@ -731,6 +731,8 @@ int Initialize (int argc, char *argv[])
 {
 /*---*/PrintLog ("Initializing data\n");
 gameData.time.xGameTotal = 0;
+gameData.app.argC = argv;
+gameData.app.argV = reinterpret_cast<char**>(argv);
 signal (SIGABRT, D2SignalHandler);
 signal (SIGFPE, D2SignalHandler);
 signal (SIGILL, D2SignalHandler);

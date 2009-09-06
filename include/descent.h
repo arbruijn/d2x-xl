@@ -2571,6 +2571,8 @@ class CApplicationData {
 		uint					semaphores [4];
 		int					nLifetimeChecksum;
 		int					bUseMultiThreading [rtTaskCount];
+		int					argC;
+		char**				argV;
 
 	public:
 		CApplicationData ();
