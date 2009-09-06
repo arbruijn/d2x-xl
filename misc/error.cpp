@@ -145,7 +145,7 @@ if (*szExitMsg) {
 //#include <Xm/PushB.h>
 
 static XtAppContext	appContext;
-static Widget			topWidget;
+static Widget			topWid;
 
 void XmCloseMsgBox (Widget w, XtPointer clientData, XmPushButtonCallbackStruct *cbs) 
 {   
@@ -155,26 +155,47 @@ appContext.exit_flag = 1;
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
-	Widget			msgBox;
 	XmString			xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
-	Arg				args [1];
    
-topWidget = XtVaAppInitialize (&appContext, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+#if 1
+ /* initialize */
+Widget topWid = XtVaAppInitialize (&appContext, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+Widget msgBox = XtVaCreateManagedWidget ("d2x-xl-msgbox", xmMainWindowWidgetClass, topWid, /* XmNscrollingPolicy, XmVARIABLE, */NULL);
+Widget menuBar = XmCreateMenuBar (msgBox, "d2x-xl-menu", NULL, 0);        
+XtManageChild (menuBar);
+Widget closeWid = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
+XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
+// Create ScrolledText -- this is work area for the MainWindow 
+Arg args [4];
+XtSetArg (args [0], XmNrows,      30);
+XtSetArg (args [1], XmNcolumns,   162);
+XtSetArg (args [2], XmNeditable,  False);
+XtSetArg (args [3], XmNeditMode,  XmMULTI_LINE_EDIT);
+Widget textWid = XmCreateScrolledText (msgBox, "d2x-xl-msg", args, 4);
+XtManageChild (textWid);
+XmTextSetString (textWid, pszMsg);
+#else
+Widget topWid = XtVaAppInitialize (&appContext, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 // setup message box text
+Arg args [1];
 XtSetArg (args [0], XmNmessageString, xmString);
 // create and label message box
-xMsgBox = bError ? XmCreateErrorDialog (topWidget, "Error", args, 1) : XmCreateWarningDialog (topWidget, "Warning", args, 1);
-XtAddCallback (xMsgBox, XmNokCallback, XmCloseMsgBox, NULL);
+Widget xMsgBox = bError ? XmCreateErrorDialog (topWid, "Error", args, 1) : XmCreateWarningDialog (topWid, "Warning", args, 1);
 // remove text resource
 XmStringFree (xmString);
 // remove help and cancel buttons
 XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_CANCEL_BUTTON));
 XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_HELP_BUTTON));
-XtAddCallback (xMsgBox, XmNokCallback, X_InfoActivate, NULL);
-XtRealizeWidget (topWidget);
+XtAddCallback (xMsgBox, XmNokCallback, XmCloseMsgBox, NULL);
+XtManageChild (xMsgBox);
+#endif
+XtRealizeWidget (topWid);
 // display message box
-//XtManageChild (xMsgBox);
+appContext.exit_flag = 0;
 XtAppMainLoop (app); //now how the heck do I get rid of this once the user clicks the dialog's ok button?
+while (!appContext.exit_flag)
+	;
+XtUnrealizeWidget (topWid);
 }
 
 #endif
