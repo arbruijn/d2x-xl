@@ -225,15 +225,17 @@ XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
 XtAddCallback (msgBox, XmNdestroyCallback, XmCloseMsgBox, NULL);
 XtManageChild (msgBox);
 XmTextSetString (msgBox       , const_cast<char*>(pszMsg));
-#if 0
-int decor;
-XtVaGetValues (msgBox, XmNmwmDecorations, &decor, NULL);
-XtVaSetValues (msgBox, XmNmwmDecorations, decor & ~(MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
+#if 1
+int i;
+XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
+XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
+XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
+XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
 #else
 XtVaSetValues (topWid, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
 XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
-#endif
 XtVaSetValues (msgBox, XmNmwmFunctions, 0, NULL);
+#endif
 SetCloseCallBack (topWid, XmCloseMsgBox);
 SetCloseCallBack (msgBox, XmCloseMsgBox);
 
