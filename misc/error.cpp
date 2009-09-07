@@ -154,6 +154,12 @@ bCloseMsgBox = 1;
 }
 
 
+int _CDECL_ MsgBoxThread (void *pThreadId)
+{
+XtAppMainLoop (appContext);
+}
+
+
 void XmMessageBox (const char* pszMsg, bool bError)
 {
 #if 1
@@ -192,9 +198,11 @@ XtManageChild (xMsgBox);
 bCloseMsgBox = 0;
 XtRealizeWidget (topWid);
 // display message box
-XtAppMainLoop (appContext);
+SDL_Thread* threadP = SDL_CreateThread (MsBoxThread, &tiRender.ti [i].nId);
 while (!bCloseMsgBox)
 	G3_SLEEP (0);
+if (bCloseMsgBox)
+	SDL_KillThread (threadP);
 XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appContext);
 }
