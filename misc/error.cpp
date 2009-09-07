@@ -146,18 +146,18 @@ if (*szExitMsg) {
 #include <Xm/RowColumn.h>
 #include <Xm/Text.h>
 
-static XtAppContext	appContext;
+static XtAppContext	appShell;
 static int bCloseMsgBox = 0;
 
 void XmCloseMsgBox (Widget w, XtPointer clientData, XtPointer callData)
 {
-XtAppSetExitFlag (appContext);
+XtAppSetExitFlag (appShell);
 }
 
 
 int _CDECL_ MsgBoxThread (void *pThreadId)
 {
-XtAppMainLoop (appContext);
+XtAppMainLoop (appShell);
 return 0;
 }
 
@@ -171,30 +171,38 @@ void MsgBoxEvents (Widget w, XtPointer clientData, XEvent* event, Boolean *conti
 void XmMessageBox (const char* pszMsg, bool bError)
 {
 #if 1
+
  /* initialize */
-Widget topWid = XtVaAppInitialize (&appContext, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+Widget topWid = XtVaAppInitialize (&appShell, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 //Widget msgBox = XtVaCreateManagedWidget ("d2x-xl-msgbox", xmMainWindowWidgetClass, topWid, /* XmNscrollingPolicy, XmVARIABLE, */NULL);
+// Create ScrolledText -- this is work area for the MainWindow
 Arg args [4];
 XtSetArg (args [0], XmNrows,      30);
-XtSetArg (args [1], XmNcolumns,   162);
+XtSetArg (args [1], XmNcolumns,   121);
 XtSetArg (args [2], XmNeditable,  False);
 XtSetArg (args [3], XmNeditMode,  XmMULTI_LINE_EDIT);
 Widget msgBox = XmCreateScrolledText (topWid, const_cast<char*>("d2x-xl-msg"), args, 4);
+#if 0
+Widget menuBar = XmCreateMenuBar (msgBox, const_cast<char*>("d2x-xl-menu"), NULL, 0);
+XtManageChild (menuBar);
+Widget closeWid = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
+XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
+#endif
+XtAddCallback (msgBox, XmNdestroyCallback, XmCloseMsgBox, NULL);
+XtManageChild (msgBox);
+XmTextSetString (msgBox       , const_cast<char*>(pszMsg));
+#if 0
 int decor;
 XtVaGetValues (msgBox, XmNmwmDecorations, &decor, NULL);
-decor &= ~(MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU);
-XtVaSetValues (msgBox, XmNmwmDecorations, decor, NULL);
-//Widget menuBar = XmCreateMenuBar (msgBox, const_cast<char*>("d2x-xl-menu"), NULL, 0);
-//XtManageChild (menuBar);
-//Widget closeWid = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
-XtAddCallback (msgBox, XmNdestroyCallback, XmCloseMsgBox, NULL);
-//XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
-// Create ScrolledText -- this is work area for the MainWindow
-XtManageChild (msgBox);
-XmTextSetString (msgBox, const_cast<char*>(pszMsg));
+XtVaSetValues (msgBox, XmNmwmDecorations, decor & ~(MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
 #else
+XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU, NULL);
+#endif
+
+#else
+
 XmString xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
-Widget topWid = XtVaAppInitialize (&appContext, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 // setup message box text
 Arg args [1];
 XtSetArg (args [0], XmNmessageString, xmString);
@@ -209,15 +217,17 @@ XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_CANCEL_BUTTON));
 XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_HELP_BUTTON));
 XtAddCallback (xMsgBox, XmNokCallback, XmCloseMsgBox, NULL);
 XtManageChild (xMsgBox);
+
 #endif
+
 bCloseMsgBox = 0;
 XtRealizeWidget (topWid);
 // display message box
 SDL_Thread* threadP = SDL_CreateThread (MsgBoxThread, NULL);
-while (!XtAppGetExitFlag (appContext))
+while (!XtAppGetExitFlag (appShell))
 	G3_SLEEP (0);
 XtUnrealizeWidget (topWid);
-XtDestroyApplicationContext (appContext);
+XtDestroyApplicationContext (appShell);
 if (bCloseMsgBox)
 	SDL_KillThread (threadP);
 }
