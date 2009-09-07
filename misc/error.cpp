@@ -146,6 +146,36 @@ if (*szExitMsg) {
 #include <Xm/RowColumn.h>
 #include <Xm/Text.h>
 
+//------------------------------------------------------------------------------
+
+Boolean SetCloseCallBack (Widget shell, void (*callback) (Widget, XtPointer, XtPointer))
+{
+extern Atom XmInternAtom (Display *, char *, Boolean);
+
+if (!shell)
+	return False;
+Atom disp = XtDisplay (shell);
+if (!disp)
+	return False;
+// Retrieve Window Manager Protocol Property 
+Atom prop = XmInternAtom (disp, "WM_PROTOCOLS", False);
+if (!prop)
+	return False;
+// Retrieve Window Manager Delete Window Property
+Atom prot = XmInternAtom (disp, "WM_DELETE_WINDOW", True);
+if (!prot)
+	return False;
+// Ensure that Shell has the Delete Window Property 
+// NB: Necessary since some Window managers are not 
+// Fully XWM Compilant (olwm for instance is not)   
+XmAddProtocols (shell, prop, &prot, 1);
+// Now add our callback into the Protocol Callback List 
+XmAddProtocolCallback (shell, prop, prot, callback, NULL);
+return True;
+}
+
+//------------------------------------------------------------------------------
+
 static XtAppContext	appShell;
 static int bCloseMsgBox = 0;
 
@@ -154,6 +184,7 @@ void XmCloseMsgBox (Widget w, XtPointer clientData, XtPointer callData)
 XtAppSetExitFlag (appShell);
 }
 
+//------------------------------------------------------------------------------
 
 int _CDECL_ MsgBoxThread (void *pThreadId)
 {
@@ -161,12 +192,14 @@ XtAppMainLoop (appShell);
 return 0;
 }
 
+//------------------------------------------------------------------------------
 
 void MsgBoxEvents (Widget w, XtPointer clientData, XEvent* event, Boolean *continueToDispatch)
 {
 *continueToDispatch = 1;
 }
 
+//------------------------------------------------------------------------------
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
@@ -199,6 +232,8 @@ XtVaSetValues (msgBox, XmNmwmDecorations, decor & ~(MWM_DECOR_MINIMIZE | MWM_DEC
 XtVaSetValues (topWid, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
 XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
 #endif
+SetCloseCallBack (topWid, XmCloseMsgBox);
+SetCloseCallBack (msgBox, XmCloseMsgBox);
 
 #else
 
