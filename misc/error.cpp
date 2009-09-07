@@ -204,7 +204,7 @@ void MsgBoxEvents (Widget w, XtPointer clientData, XEvent* event, Boolean *conti
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
-#if 1
+#if 1 //create a non-editable multi-line text widget for longer messages
 
  /* initialize */
 Widget topWid = XtVaAppInitialize (&appShell, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
@@ -224,7 +224,8 @@ XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
 #endif
 XtAddCallback (msgBox, XmNdestroyCallback, XmCloseMsgBox, NULL);
 XtManageChild (msgBox);
-XmTextSetString (msgBox       , const_cast<char*>(pszMsg));
+XmTextSetString (msgBox, const_cast<char*>(pszMsg));
+
 #if 1
 int i;
 XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
@@ -239,7 +240,7 @@ XtVaSetValues (msgBox, XmNmwmFunctions, 0, NULL);
 SetCloseCallBack (topWid, XmCloseMsgBox);
 SetCloseCallBack (msgBox, XmCloseMsgBox);
 
-#else
+#else // use the built-in message box
 
 XmString xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
 Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
