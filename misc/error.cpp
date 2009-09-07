@@ -196,7 +196,8 @@ int decor;
 XtVaGetValues (msgBox, XmNmwmDecorations, &decor, NULL);
 XtVaSetValues (msgBox, XmNmwmDecorations, decor & ~(MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
 #else
-XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU, NULL);
+XtVaSetValues (topWid, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
+XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
 #endif
 
 #else
