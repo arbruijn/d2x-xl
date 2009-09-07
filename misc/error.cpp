@@ -157,12 +157,13 @@ bCloseMsgBox = 1;
 int _CDECL_ MsgBoxThread (void *pThreadId)
 {
 XtAppMainLoop (appContext);
+return 0;
 }
 
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
-#if 1
+#if 0
  /* initialize */
 Widget topWid = XtVaAppInitialize (&appContext, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 Widget msgBox = XtVaCreateManagedWidget ("d2x-xl-msgbox", xmMainWindowWidgetClass, topWid, /* XmNscrollingPolicy, XmVARIABLE, */NULL);
@@ -181,12 +182,14 @@ XtManageChild (textWid);
 XmTextSetString (textWid, const_cast<char*>(pszMsg));
 #else
 XmString xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
-widget topWid = XtVaAppInitialize (&appContext, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+Widget topWid = XtVaAppInitialize (&appContext, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 // setup message box text
 Arg args [1];
 XtSetArg (args [0], XmNmessageString, xmString);
 // create and label message box
-Widget xMsgBox = bError ? XmCreateErrorDialog (topWid, "Error", args, 1) : XmCreateWarningDialog (topWid, "Warning", args, 1);
+Widget xMsgBox = bError
+				 ? XmCreateErrorDialog (topWid, const_cast<char*>("Error"), args, 1)
+				 : XmCreateWarningDialog (topWid, const_cast<char*>("Warning"), args, 1);
 // remove text resource
 XmStringFree (xmString);
 // remove help and cancel buttons
@@ -198,13 +201,13 @@ XtManageChild (xMsgBox);
 bCloseMsgBox = 0;
 XtRealizeWidget (topWid);
 // display message box
-SDL_Thread* threadP = SDL_CreateThread (MsBoxThread, &tiRender.ti [i].nId);
+SDL_Thread* threadP = SDL_CreateThread (MsgBoxThread, NULL);
 while (!bCloseMsgBox)
 	G3_SLEEP (0);
-if (bCloseMsgBox)
-	SDL_KillThread (threadP);
 XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appContext);
+if (bCloseMsgBox)
+	SDL_KillThread (threadP);
 }
 
 #endif
