@@ -145,6 +145,7 @@ if (*szExitMsg) {
 #include <Xm/MessageB.h>
 #include <Xm/RowColumn.h>
 #include <Xm/Text.h>
+#include <Xm/Protocols.h>
 
 //------------------------------------------------------------------------------
 
@@ -154,22 +155,22 @@ extern Atom XmInternAtom (Display *, char *, Boolean);
 
 if (!shell)
 	return False;
-Atom disp = XtDisplay (shell);
+Display* disp = XtDisplay (shell);
 if (!disp)
 	return False;
-// Retrieve Window Manager Protocol Property 
-Atom prop = XmInternAtom (disp, "WM_PROTOCOLS", False);
+// Retrieve Window Manager Protocol Property
+Atom prop = XmInternAtom (disp, const_cast<char*>("WM_PROTOCOLS"), False);
 if (!prop)
 	return False;
 // Retrieve Window Manager Delete Window Property
-Atom prot = XmInternAtom (disp, "WM_DELETE_WINDOW", True);
+Atom prot = XmInternAtom (disp, const_cast<char*>("WM_DELETE_WINDOW"), True);
 if (!prot)
 	return False;
-// Ensure that Shell has the Delete Window Property 
-// NB: Necessary since some Window managers are not 
-// Fully XWM Compilant (olwm for instance is not)   
+// Ensure that Shell has the Delete Window Property
+// NB: Necessary since some Window managers are not
+// Fully XWM Compilant (olwm for instance is not)
 XmAddProtocols (shell, prop, &prot, 1);
-// Now add our callback into the Protocol Callback List 
+// Now add our callback into the Protocol Callback List
 XmAddProtocolCallback (shell, prop, prot, callback, NULL);
 return True;
 }
