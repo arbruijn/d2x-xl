@@ -233,6 +233,7 @@ XtVaSetValues (msgBox, XmNmwmDecorations, decor & ~(MWM_DECOR_MINIMIZE | MWM_DEC
 XtVaSetValues (topWid, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
 XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_TITLE, NULL);
 #endif
+XtVaSetValues (msgBox, XmNmwmFunctions, 0, NULL);
 SetCloseCallBack (topWid, XmCloseMsgBox);
 SetCloseCallBack (msgBox, XmCloseMsgBox);
 
