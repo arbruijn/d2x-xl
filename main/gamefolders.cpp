@@ -694,11 +694,11 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 				}
 			if (strcmp (fileList [i].bUser ? szUserFolder : szRootFolder, ".\\")) {
 				strcat (szMsg, fileList [i].bUser ? szUserFolder : szRootFolder);
-				l += strlen (fileList [i].bUser ? szUserFolder : szRootFolder);
+				l += int (strlen (fileList [i].bUser ? szUserFolder : szRootFolder));
 				}
 			strcat (szMsg, fileList [i].pszFolder);
 			strcat (szMsg, ": ");
-			l += strlen (fileList [i].pszFolder) + 2;
+			l += int (strlen (fileList [i].pszFolder)) + 2;
 			}
 		if (bFirst)
 			bFirst = false;
@@ -713,7 +713,7 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 #endif
 			}
 		strcat (szMsg, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
-		l += strlen (fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
+		l += int (strlen (fileList [i].pszFile) + (fileList [i].pszFile [0] == '\002'));
 		nListed++;
 		}
 	}
