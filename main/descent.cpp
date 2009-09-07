@@ -117,7 +117,7 @@ void GetAppFolders (void);
 #if defined (_WIN32) || defined(__unix__)
 int CheckAndFixSetup (void);
 #else
-#define CheckAndFixSetup()	
+#define CheckAndFixSetup()
 #endif
 void InitGameStates (void);
 
@@ -233,24 +233,24 @@ fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
 GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - GAME_FONT->Height () - 2, "visit www.descent2.de");
 fontManager.SetColorRGBi (RGB_PAL (23, 23, 23), 1, 0, 0);
 GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - GAME_FONT->Height () - h - 6, TXT_COPYRIGHT);
-GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, 
+GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2,
 			 CCanvas::Current ()->Height () - GAME_FONT->Height () - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
 	fontManager.Current ()->StringSize (TXT_VERTIGO, w, h, aw);
-	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
+	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS,
 				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
 	}
 fontManager.SetCurrent (MEDIUM2_FONT);
 fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
-GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, 
+GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS,
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.Current ()->StringSize (VERSION, ws, hs, aw);
 fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1, 
+GrPrintF (NULL, CCanvas::Current ()->Width () - ws - 1,
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
 #if 0
 if (!ogl.m_states.bShadersOk) {
@@ -385,7 +385,7 @@ if (!gameStates.app.bNostalgia)
 else {
 		char filename [14];
 
-#if TRACE	
+#if TRACE
 	console.printf(CON_DBG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
 	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
@@ -396,10 +396,10 @@ else {
 	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
 		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
 	GrSetMode (
-		gameStates.menus.bHires ? 
-			(gameStates.gfx.nStartScrMode < 0) ? 
-				SM (800, 600) 
-				: SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y) 
+		gameStates.menus.bHires ?
+			(gameStates.gfx.nStartScrMode < 0) ?
+				SM (800, 600)
+				: SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y)
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
@@ -500,16 +500,16 @@ if (gameStates.app.bMultiThreaded) {
 #endif
 		}
 	}
-gameData.render.vertColor.matAmbient[R] = 
-gameData.render.vertColor.matAmbient[G] = 
+gameData.render.vertColor.matAmbient[R] =
+gameData.render.vertColor.matAmbient[G] =
 gameData.render.vertColor.matAmbient[B] = AMBIENT_LIGHT;
 gameData.render.vertColor.matAmbient[A] = 1.0f;
-gameData.render.vertColor.matDiffuse [R] = 
-gameData.render.vertColor.matDiffuse [G] = 
+gameData.render.vertColor.matDiffuse [R] =
+gameData.render.vertColor.matDiffuse [G] =
 gameData.render.vertColor.matDiffuse [B] = DIFFUSE_LIGHT;
 gameData.render.vertColor.matDiffuse [A] = 1.0f;
-gameData.render.vertColor.matSpecular[R] = 
-gameData.render.vertColor.matSpecular[G] = 
+gameData.render.vertColor.matSpecular[R] =
+gameData.render.vertColor.matSpecular[G] =
 gameData.render.vertColor.matSpecular[B] = 0.0f;
 gameData.render.vertColor.matSpecular[A] = 1.0f;
 }
@@ -653,8 +653,8 @@ switch (loadOp) {
 	case 6:
 		/*---*/PrintLog ("Initializing movies\n");
 		if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE))
-			gameOpts->movies.bHires = 
-			gameStates.menus.bHires = 
+			gameOpts->movies.bHires =
+			gameStates.menus.bHires =
 			gameStates.menus.bHiresAvailable = 0;
 		else
 			gameStates.menus.bHires = gameStates.menus.bHiresAvailable = 1;
@@ -722,7 +722,7 @@ return nCurItem;
 void InitializeGauge (void)
 {
 loadOp = 0;
-ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll); 
+ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
 }
 
 // ----------------------------------------------------------------------------
@@ -731,7 +731,7 @@ int Initialize (int argc, char *argv[])
 {
 /*---*/PrintLog ("Initializing data\n");
 gameData.time.xGameTotal = 0;
-gameData.app.argC = argv;
+gameData.app.argC = argc;
 gameData.app.argV = reinterpret_cast<char**>(argv);
 signal (SIGABRT, D2SignalHandler);
 signal (SIGFPE, D2SignalHandler);
@@ -776,7 +776,7 @@ DefaultAllSettings ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 /*---*/PrintLog ("Loading text resources\n");
 /*---*/PrintLog ("Loading main hog file\n");
-if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) || 
+if (!(hogFileManager.Init ("descent2.hog", gameFolders.szDataDir) ||
 	  (gameStates.app.bDemoData = hogFileManager.Init ("d2demo.hog", gameFolders.szDataDir)))) {
 	/*---*/PrintLog ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
@@ -897,7 +897,7 @@ StartSoundThread (); //needs to be repeated here due to dependency on data read 
 paletteManager.DisableEffect ();
 // handle automatic launch of a demo playback
 if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
-	NDStartPlayback (gameData.demo.fnAuto);	
+	NDStartPlayback (gameData.demo.fnAuto);
 	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		SetFunctionMode (FMODE_GAME);
 	}
@@ -911,7 +911,7 @@ gameStates.app.bInitialized = 1;
 if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
-	}	
+	}
 DonationNotification ();
 BadHardwareNotification ();
 /*---*/PrintLog ("Invoking main menu\n");
