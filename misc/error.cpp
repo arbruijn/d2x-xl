@@ -275,9 +275,13 @@ else { // use the built-in message box
 
 XtRealizeWidget (topWid);
 // display message box
+#if 0
 /*SDL_Thread* threadP =*/ SDL_CreateThread (MsgBoxThread, NULL);
 while (!XtAppGetExitFlag (appShell))
 	G3_SLEEP (0);
+#else
+XtAppMainLoop (appShell);
+#endif
 XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appShell);
 }
