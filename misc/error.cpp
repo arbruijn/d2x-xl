@@ -156,6 +156,9 @@ if (*szExitMsg) {
 static XtAppContext		appShell;
 
 //------------------------------------------------------------------------------
+// intercept the window manager's close signal
+
+#if 0
 
 Boolean SetCloseCallBack (Widget shell, void (*callback) (Widget, XtPointer, XtPointer))
 {
@@ -183,6 +186,8 @@ XmAddProtocolCallback (shell, prop, prot, callback, NULL);
 return True;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
 void XmCloseMsgBox (Widget w, XtPointer clientData, XtPointer callData)
@@ -192,22 +197,7 @@ XtAppSetExitFlag (appShell);
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ MsgBoxThread (void *pThreadId)
-{
-XtAppMainLoop (appShell);
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-void MsgBoxEvents (Widget w, XtPointer clientData, XEvent* event, Boolean *continueToDispatch)
-{
-*continueToDispatch = 1;
-}
-
-//------------------------------------------------------------------------------
-
-static int MsgLineCount (char* pszMsg, int& nCols)
+static int MsgSize (char* pszMsg, int& nCols)
 {
 if (!(pszMsg && *pszMsg))
 	return 0;
@@ -221,24 +211,25 @@ return nRows;
 }
 
 //------------------------------------------------------------------------------
+// The callback function for the "OK" button. Since this is not a
+// predefined Motif dialog, the "widget" parameter is not the dialog
+// itself. That is only done by Motif dialog callbacks. Here in the
+// real world, the callback routine is called directly by the widget
+// that was invoked. Thus, we must pass the dialog as the client
+// data to get its handle. (We could get it using GetTopShell(),
+// but this way is quicker, since it's immediately available.)
 
-/* The callback function for the "OK" button. Since this is not a
-** predefined Motif dialog, the "widget" parameter is not the dialog
-** itself. That is only done by Motif dialog callbacks. Here in the
-** real world, the callback routine is called directly by the widget
-** that was invoked. Thus, we must pass the dialog as the client
-** data to get its handle. (We could get it using GetTopShell(),
-** but this way is quicker, since it's immediately available.)
-*/
-void DestroyShell (Widget widget, XtPointer client_data,
-                   XtPointer call_data)
+void DestroyShell (Widget widget, XtPointer clientData, XtPointer callData)
 {
-Widget shell = (Widget) client_data;
+Widget shell = (Widget) clientData;
 XtDestroyWidget (shell);
 XtAppSetExitFlag (appShell);
 }
 
 //------------------------------------------------------------------------------
+// Build a dialog containing a scrollable, non editable text widget and a close button.
+// Taken from the Motif programmer's manual and slightly adapted (no icon, single button),
+// minimal window decoration).
 
 void XmMessageDialog (const char* pszMsg, int nRows, int nCols, bool bError)
 {
@@ -354,8 +345,7 @@ void XmMessageBox (const char* pszMsg, bool bError)
 	Widget	topWid;
 	int		nRows, nCols;
 
-nRows = MsgLineCount (const_cast<char*>(pszMsg), nCols);
-
+nRows = MsgSize (const_cast<char*>(pszMsg), nCols);
 if ((nRows > 3) || (nCols > 360))
 	XmMessageDialog (pszMsg, nRows, nCols, bError);
 else { // use the built-in message box

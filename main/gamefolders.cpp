@@ -684,7 +684,7 @@ static void CreateFileListMessage (char* szMsg, tFileDesc* fileList, int nFiles,
 	int	l = 0, nListed = 0;
 
 for (int i = 0, j = -1; i < nFiles; i++) {
-	if (!(fileList [i].bFound || fileList [i].bOptional)) {
+	if (DBG || !(fileList [i].bFound || fileList [i].bOptional)) {
 		if (bShowFolders && ((j < 0) || strcmp (fileList [i].pszFolder, fileList [j].pszFolder))) {
 			j = i;
 			if (!bFirst) {
@@ -782,6 +782,9 @@ if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
 if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
 	nResult |= 16;
 
+#if DBG
+nResult = 255;
+#endif
 if (nResult) {
 	*szMsg = '\0';
 	if (nResult & 1) {
@@ -837,7 +840,7 @@ if (nResult) {
 			MsgBox (TXT_WARNING, NULL, - 3, szMsg, " ", TXT_CLOSE);
 			gameData.menu.colorOverride = 0;
 			}
-		else 
+		else
 #endif
 			Warning (szMsg);
 		}
