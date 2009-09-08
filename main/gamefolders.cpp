@@ -506,8 +506,10 @@ static tFileDesc addonFiles [] = {
 	{"\002bullet.ase", "models", false, false, false},
 	{"\002bullet.tga", "models", false, false, false},
 
-	{"*.sg?", "savegames", true, true, false},
+	{"*.sg?", "savegames", true, true, false}
+	};
 
+static tFileDesc addonTextureFiles [] = {
 	{"\002bullettime#0.tga", "textures", false, false, false},
 	{"\002cockpit.tga", "textures", false, false, false},
 	{"\002cockpitb.tga", "textures", false, false, false},
@@ -684,7 +686,7 @@ static void CreateFileListMessage (char* szMsg, tFileDesc* fileList, int nFiles,
 	int	l = 0, nListed = 0;
 
 for (int i = 0, j = -1; i < nFiles; i++) {
-	if (DBG || !(fileList [i].bFound || fileList [i].bOptional)) {
+	if (/*DBG ||*/ !(fileList [i].bFound || fileList [i].bOptional)) {
 		if (bShowFolders && ((j < 0) || strcmp (fileList [i].pszFolder, fileList [j].pszFolder))) {
 			j = i;
 			if (!bFirst) {
@@ -779,10 +781,12 @@ if (!bDemoData) {
 	}
 if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
 	nResult |= 8;
+if (CheckAndCopyFiles (addonTextureFiles, int (sizeofa (addonTextureFiles))))
+	nResult |= 32;
 if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
-	nResult |= 16;
+	nResult |= 32;
 
-#if DBG
+#if 0 //DBG
 nResult = 255;
 #endif
 if (nResult) {
@@ -804,6 +808,10 @@ if (nResult) {
 		CreateFileListMessage (szMsg, addonFiles, int (sizeofa (addonFiles)), true);
 		}
 	if (nResult & 16) {
+		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL texture files:\n\n");
+		CreateFileListMessage (szMsg, addonTextureFiles, int (sizeofa (addonTextureFiles)), true);
+		}
+	if (nResult & 32) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL sound files:\n\n");
 		CreateFileListMessage (szMsg, addonSoundFiles, int (sizeofa (addonSoundFiles)), true);
 		}
@@ -832,6 +840,8 @@ if (nResult) {
 		if (nResult & 4)
 			strcat (szMsg, "Vertigo missions will be unavailable.\n");
 		if (nResult & 16)
+			strcat (szMsg, "Additional image effects will be unavailable.\n");
+		if (nResult & 32)
 			strcat (szMsg, "Additional sound effects will be unavailable.\n");
 #if 0
 		if (InitGraphics (false)) {
