@@ -26,12 +26,13 @@ Temporary files: ~/.d2x-xl/cache
 
 2.1. Required packages
 
-You will need to have the following modules installed:
+You will need to have the following modules and their devel packages installed:
 
-SDL-devel
-SDL_mixer-devel
-SDL_image-devel
-Mesa-devel
+SDL
+SDL_mixer
+SDL_image
+Mesa
+OpenMotif
 DirectFB
 
 It is recommended to download the SDL and SDL_mixer source code from 
@@ -53,4 +54,4 @@ make
 2.3 Updates
 
 When updating the program, make sure to update the files from the latest D2X-XL
-data release.
+data release (d2x-xl-data-<version>.rar).
