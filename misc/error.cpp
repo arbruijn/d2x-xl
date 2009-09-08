@@ -206,22 +206,41 @@ void MsgBoxEvents (Widget w, XtPointer clientData, XEvent* event, Boolean *conti
 }
 
 //------------------------------------------------------------------------------
-#if 0
-static int MsgLineCount (const char* pszMsg)
+
+static int MsgLineCount (char* pszMsg, int& nCols)
 {
 if (!(pszMsg && *pszMsg))
 	return 0;
-int nLines = 1;
-for (; *pszMsg && (pszMsg = strchr (pszMsg, '\n')); nLines++, pszMsg++)
-	;
-return nLines;
+int nRows = 1;
+nCols = 0;
+for (char* p = pszMsg; *p && (pszMsg = strchr (p, '\n')); nRows++, p = ++pszMsg) {
+	if (nCols < pszMsg - p)
+		nCols = pszMsg - p;
+	}
+return nRows;
 }
-#endif
+
 //------------------------------------------------------------------------------
 
-#if 1
+/* The callback function for the "OK" button. Since this is not a
+** predefined Motif dialog, the "widget" parameter is not the dialog
+** itself. That is only done by Motif dialog callbacks. Here in the
+** real world, the callback routine is called directly by the widget
+** that was invoked. Thus, we must pass the dialog as the client
+** data to get its handle. (We could get it using GetTopShell(),
+** but this way is quicker, since it's immediately available.)
+*/
+void DestroyShell (Widget widget, XtPointer client_data,
+                   XtPointer call_data)
+{
+Widget shell = (Widget) client_data;
+XtDestroyWidget (shell);
+XtAppSetExitFlag (appShell);
+}
 
-void XmMessageBox (const char* pszMsg, bool bError)
+//------------------------------------------------------------------------------
+
+void XmMessageDialog (const char* pszMsg, int nRows, int nCols, bool bError)
 {
     Widget       msgBox, pane, msgText, form, /*sep, label,*/ widget;
     void         DestroyShell(Widget, XtPointer, XtPointer);
@@ -241,8 +260,9 @@ XtSetArg (args [0], XmNdeleteResponse, XmDESTROY);
 msgBox = XmCreateDialogShell (topWid, bError ? const_cast<char*>("Error") : const_cast<char*>("Warning"), args, 1);
 XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
 XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
+XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | MWM_DECOR_TITLE, NULL);
 XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
-XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
+XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_MINIMIZE | MWM_FUNC_MAXIMIZE | MWM_FUNC_CLOSE), NULL);
 // Create a PanedWindow to manage the stuff in this dialog.
 // PanedWindow won't let us set these to 0!
 XtSetArg (args [0], XmNsashWidth, 1);
@@ -286,7 +306,8 @@ XtSetArg (args [n], XmNeditable, False); n++;
 XtSetArg (args [n], XmNcursorPositionVisible, False); n++;
 XtSetArg (args [n], XmNwordWrap, True); n++;
 XtSetArg (args [n], XmNvalue, pszMsg); n++;
-XtSetArg (args [n], XmNrows, 5); n++;
+XtSetArg (args [n], XmNrows, min (nRows, 30)); n++;
+XtSetArg (args [n], XmNcolumns, min (nCols, 120)); n++;
 msgText = XmCreateScrolledText (form, const_cast<char*>("help_text"), args, n);
 // Attachment values must be set on the Text widget's PARENT,
 // the ScrolledWindow. This is the object that is positioned.
@@ -324,81 +345,19 @@ XtVaGetValues (widget, XmNheight, &h, NULL);
 XtVaSetValues (form, XmNpaneMaximum, h, XmNpaneMinimum, h, NULL);
 // This also pops up the dialog, as it is the child of a DialogShell
 XtManageChild (pane);
-XtAppMainLoop (appShell);
-XtUnrealizeWidget (topWid);
-XtDestroyApplicationContext (appShell);
 }
 
-/* The callback function for the "OK" button. Since this is not a
-** predefined Motif dialog, the "widget" parameter is not the dialog
-** itself. That is only done by Motif dialog callbacks. Here in the
-** real world, the callback routine is called directly by the widget
-** that was invoked. Thus, we must pass the dialog as the client
-** data to get its handle. (We could get it using GetTopShell(),
-** but this way is quicker, since it's immediately available.)
-*/
-void DestroyShell (Widget widget, XtPointer client_data,
-                   XtPointer call_data)
-{
-    Widget shell = (Widget) client_data;
-    XtDestroyWidget (shell);
-    XtAppSetExitFlag (appShell);
-}
-
-#else
+//------------------------------------------------------------------------------
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
 	Widget	topWid;
-	Arg		args [4];
+	int		nRows, nCols;
 
-if (MsgLineCount (pszMsg) > 0) { //create a non-editable multi-line text widget for longer messages
-	// create application shell which serves as top widget
-	topWid = XtVaAppInitialize (&appShell, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
-	// create main window which groups the message box elements (text pane, close menu)
-#if 0
-	Widget msgBox = XtVaCreateManagedWidget ("d2x-xl-msgbox", xmMainWindowWidgetClass, topWid, /* XmNscrollingPolicy, XmVARIABLE, */NULL);
-	// create the menu
-#if 1
-	Widget menuBar = XmCreateMenuBar (msgBox, const_cast<char*>("d2x-xl-menu"), NULL, 0);
-	XtManageChild (menuBar);
-	// add a "close" menu entry
-	Widget closeBtn = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
-#endif
-#else
-	XtSetArg (args [0], XmNwidth, 300);
-	XtSetArg (args [1], XmNheight, 150);
-	Widget msgBox = XmCreateDialogShell (topWid, const_cast<char*>("d2x-xl-msgbox"), args, 2);
-	int i;
-	XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
-	XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
-	XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
-	XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
-	//Widget closeBtn = XmCreateCommand (msgBox, const_cast<char*>("Close"), NULL, 0);
-#endif
-	// add a callback to the "close" menu entry that will initiate closing of the message box
-	//XtAddCallback (closeBtn, XmNactivateCallback, XmCloseMsgBox, NULL);
-	XtManageChild (msgBox);
-	// create the text widget
-	XtSetArg (args [0], XmNrows, 30);
-	XtSetArg (args [1], XmNcolumns, 121);
-	XtSetArg (args [2], XmNeditable, False);
-	XtSetArg (args [3], XmNeditMode, XmMULTI_LINE_EDIT);
-	Widget msgText = XmCreateScrolledText (msgBox, const_cast<char*>("d2x-xl-msg"), args, 4);
-	XmTextSetString (msgText, const_cast<char*>(pszMsg));
-	XtManageChild (msgText);
+nRows = MsgLineCount (const_cast<char*>(pszMsg), nCols);
 
-#if 0
-	// remove window decoration (doesn't work here as the msgBox is not derived from a vendor shell)
-	int i;
-	XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
-	XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
-	XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
-	XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
-#endif
-	SetCloseCallBack (topWid, XmCloseMsgBox);
-	SetCloseCallBack (msgBox, XmCloseMsgBox);
-	}
+if ((nRows > 3) || (nCols > 360))
+	XmMessageDialog (pszMsg, nRows, nCols, bError);
 else { // use the built-in message box
 	topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 	// setup message box text
@@ -417,22 +376,13 @@ else { // use the built-in message box
 	// add callback to the "close" button that signals closing of the message box
 	XtAddCallback (xMsgBox, XmNokCallback, XmCloseMsgBox, NULL);
 	XtManageChild (xMsgBox);
+	XtRealizeWidget (topWid);
 	}
 
-XtRealizeWidget (topWid);
-// display message box
-#if 0
-/*SDL_Thread* threadP =*/ SDL_CreateThread (MsgBoxThread, NULL);
-while (!XtAppGetExitFlag (appShell))
-	G3_SLEEP (0);
-#else
 XtAppMainLoop (appShell);
-#endif
 XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appShell);
 }
-
-#endif
 
 #endif //__unix__
 
