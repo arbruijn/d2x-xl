@@ -177,8 +177,7 @@ return True;
 
 //------------------------------------------------------------------------------
 
-static XtAppContext	appShell;
-static int bCloseMsgBox = 0;
+static XtAppContext		appShell;
 
 void XmCloseMsgBox (Widget w, XtPointer clientData, XtPointer callData)
 {
@@ -202,71 +201,85 @@ void MsgBoxEvents (Widget w, XtPointer clientData, XEvent* event, Boolean *conti
 
 //------------------------------------------------------------------------------
 
+static int MsgLineCount (const char* pszMsg)
+{
+if (!(pszMsg && *pszMsg))
+	return 0;
+int nLines = 1;
+for (; *pszMsg && (pszMsg = strchr (pszMsg, '\n')); nLines++, pszMsg++)
+	;
+return nLines;
+}
+
+//------------------------------------------------------------------------------
+
 void XmMessageBox (const char* pszMsg, bool bError)
 {
-#if 1 //create a non-editable multi-line text widget for longer messages
+	Widget topWid;
 
- /* initialize */
-Widget topWid = XtVaAppInitialize (&appShell, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
-//Widget msgBox = XtVaCreateManagedWidget ("d2x-xl-msgbox", xmMainWindowWidgetClass, topWid, /* XmNscrollingPolicy, XmVARIABLE, */NULL);
-// Create ScrolledText -- this is work area for the MainWindow
-Arg args [4];
-XtSetArg (args [0], XmNrows,      30);
-XtSetArg (args [1], XmNcolumns,   121);
-XtSetArg (args [2], XmNeditable,  False);
-XtSetArg (args [3], XmNeditMode,  XmMULTI_LINE_EDIT);
-Widget msgBox = XmCreateScrolledText (topWid, const_cast<char*>("d2x-xl-msg"), args, 4);
+if (MsgLineCount (pszMsg) > 3) { //create a non-editable multi-line text widget for longer messages
+	// create application shell which serves as top widget
+	topWid = XtVaAppInitialize (&appShell, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+	// create main window which groups the message box elements (text pane, close menu)
+	Widget msgBox = XtVaCreateManagedWidget ("d2x-xl-msgbox", xmMainWindowWidgetClass, topWid, /* XmNscrollingPolicy, XmVARIABLE, */NULL);
+#if 1
+	// create the menu
+	Widget menuBar = XmCreateMenuBar (msgBox, const_cast<char*>("d2x-xl-menu"), NULL, 0);
+	XtManageChild (menuBar);
+	// add a "close" menu entry
+	Widget closeWid = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
+	// add a callback to the "close" menu entry that will initiate closing of the message box
+	XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
+#endif
+	XtManageChild (msgBox);
+	// create the text widget
+	Arg args [4];
+	XtSetArg (args [0], XmNrows,      30);
+	XtSetArg (args [1], XmNcolumns,   121);
+	XtSetArg (args [2], XmNeditable,  False);
+	XtSetArg (args [3], XmNeditMode,  XmMULTI_LINE_EDIT);
+	Widget msgText = XmCreateScrolledText (msgBox, const_cast<char*>("d2x-xl-msg"), args, 4);
+	XmTextSetString (msgText, const_cast<char*>(pszMsg));
+	XtManageChild (msgText);
+
 #if 0
-Widget menuBar = XmCreateMenuBar (msgBox, const_cast<char*>("d2x-xl-menu"), NULL, 0);
-XtManageChild (menuBar);
-Widget closeWid = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
-XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
+	// remove window decoration (doesn't work here as the msgBox is not derived from a vendor shell)
+	int i;
+	XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
+	XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
+	XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
+	XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
 #endif
-XtAddCallback (msgBox, XmNdestroyCallback, XmCloseMsgBox, NULL);
-XtManageChild (msgBox);
-XmTextSetString (msgBox, const_cast<char*>(pszMsg));
+	SetCloseCallBack (topWid, XmCloseMsgBox);
+	SetCloseCallBack (msgBox, XmCloseMsgBox);
+	}
+else { // use the built-in message box
+	topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+	// setup message box text
+	Arg args [1];
+	XmString xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
+	XtSetArg (args [0], XmNmessageString, xmString);
+	// create and label message box
+	Widget xMsgBox = bError
+					 ? XmCreateErrorDialog (topWid, const_cast<char*>("Error"), args, 1)
+					 : XmCreateWarningDialog (topWid, const_cast<char*>("Warning"), args, 1);
+	// remove text resource
+	XmStringFree (xmString);
+	// remove help and cancel buttons
+	XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_CANCEL_BUTTON));
+	XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_HELP_BUTTON));
+	// add callback to the "close" button that signals closing of the message box
+	XtAddCallback (xMsgBox, XmNokCallback, XmCloseMsgBox, NULL);
+	XtManageChild (xMsgBox);
+	}
 
-#if 0
-int i;
-XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
-XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
-XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
-XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
-#endif
-SetCloseCallBack (topWid, XmCloseMsgBox);
-SetCloseCallBack (msgBox, XmCloseMsgBox);
-
-#else // use the built-in message box
-
-XmString xmString = XmStringCreateLocalized (const_cast<char*>(pszMsg));
-Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
-// setup message box text
-Arg args [1];
-XtSetArg (args [0], XmNmessageString, xmString);
-// create and label message box
-Widget xMsgBox = bError
-				 ? XmCreateErrorDialog (topWid, const_cast<char*>("Error"), args, 1)
-				 : XmCreateWarningDialog (topWid, const_cast<char*>("Warning"), args, 1);
-// remove text resource
-XmStringFree (xmString);
-// remove help and cancel buttons
-XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_CANCEL_BUTTON));
-XtUnmanageChild (XmMessageBoxGetChild (xMsgBox, XmDIALOG_HELP_BUTTON));
-XtAddCallback (xMsgBox, XmNokCallback, XmCloseMsgBox, NULL);
-XtManageChild (xMsgBox);
-
-#endif
-
-bCloseMsgBox = 0;
 XtRealizeWidget (topWid);
 // display message box
-SDL_Thread* threadP = SDL_CreateThread (MsgBoxThread, NULL);
+/*SDL_Thread* threadP =*/ SDL_CreateThread (MsgBoxThread, NULL);
 while (!XtAppGetExitFlag (appShell))
 	G3_SLEEP (0);
 XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appShell);
-if (bCloseMsgBox)
-	SDL_KillThread (threadP);
 }
 
 #endif
