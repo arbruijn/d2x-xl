@@ -223,132 +223,108 @@ return nLines;
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
-    Widget       help_dialog, pane, text_w, form, /*sep, label,*/ widget;
+    Widget       msgBox, pane, msgText, form, /*sep, label,*/ widget;
     void         DestroyShell(Widget, XtPointer, XtPointer);
     //Pixmap       pixmap;
-    Pixel        fg, bg;
-    Arg          args[10];
+    Arg          args [10];
     int          n = 0;
     int          i;
     Dimension    h;
-/* Set up a DialogShell as a popup window. Set the delete
-** window protocol response to XmDESTROY to make sure that
-** the window goes away appropriately. Otherwise, it's XmUNMAP
-** which means it'd be lost forever, since we're not storing
-** the widget globally or statically to this function.
-*/
+// Set up a DialogShell as a popup window. Set the delete
+// window protocol response to XmDESTROY to make sure that
+// the window goes away appropriately. Otherwise, it's XmUNMAP
+// which means it'd be lost forever, since we're not storing
+// the widget globally or statically to this function.
 Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 i = 0;
-XtSetArg (args[0], XmNdeleteResponse, XmDESTROY);
-help_dialog = XmCreateDialogShell (topWid, bError ? const_cast<char*>("Error") : const_cast<char*>("Warning"), args, 1);
-/* Create a PanedWindow to manage the stuff in this dialog. */
-/* PanedWindow won't let us set these to 0! */
-XtSetArg (args[0], XmNsashWidth, 1);
-/* Make small so user doesn't try to resize */
-XtSetArg (args[1], XmNsashHeight, 1);
-pane = XmCreatePanedWindow (help_dialog, const_cast<char*>("pane"), args, 2);
-/* Create a RowColumn in the form for Label and Text widgets.
-** This is the control area.
-*/
+XtSetArg (args [0], XmNdeleteResponse, XmDESTROY);
+msgBox = XmCreateDialogShell (topWid, bError ? const_cast<char*>("Error") : const_cast<char*>("Warning"), args, 1);
+XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
+XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
+XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
+XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
+// Create a PanedWindow to manage the stuff in this dialog.
+// PanedWindow won't let us set these to 0!
+XtSetArg (args [0], XmNsashWidth, 1);
+// Make small so user doesn't try to resize
+XtSetArg (args [1], XmNsashHeight, 1);
+pane = XmCreatePanedWindow (msgBox, const_cast<char*>("pane"), args, 2);
+// Create a RowColumn in the form for Label and Text widgets.
+// This is the control area.
 form = XmCreateForm (pane, const_cast<char*>("form1"), NULL, 0);
+#if 0
+Pixel        fg, bg;
 XtVaGetValues (form, /* once created, we can get its colors */
 			   XmNforeground, &fg,
 			   XmNbackground, &bg,
 			   NULL);
-#if 0
-/* create the pixmap of the appropriate depth using the colors
-** that will be used by the parent (form).
-*/
+// create the pixmap of the appropriate depth using the colors
+// that will be used by the parent (form).
 pixmap = XCreatePixmapFromBitmapData (
 	 XtDisplay (form),
 	 RootWindowOfScreen (XtScreen (form)),
 		(char *) info_bits, info_width, info_height,
 		fg, bg,
 		DefaultDepthOfScreen (XtScreen (form)));
-/* Create a label gadget using this pixmap */
+// Create a label gadget using this pixmap
 n = 0;
-XtSetArg (args[n], XmNlabelType, XmPIXMAP); n++;
-XtSetArg (args[n], XmNlabelPixmap, pixmap); n++;
-XtSetArg (args[n], XmNleftAttachment, XmATTACH_FORM); n++;
-XtSetArg (args[n], XmNtopAttachment, XmATTACH_FORM); n++;
-XtSetArg (args[n], XmNbottomAttachment, XmATTACH_FORM); n++;
+XtSetArg (args [n], XmNlabelType, XmPIXMAP); n++;
+XtSetArg (args [n], XmNlabelPixmap, pixmap); n++;
+XtSetArg (args [n], XmNleftAttachment, XmATTACH_FORM); n++;
+XtSetArg (args [n], XmNtopAttachment, XmATTACH_FORM); n++;
+XtSetArg (args [n], XmNbottomAttachment, XmATTACH_FORM); n++;
 label = XmCreateLabelGadget (form, "label", args, n);
 XtManageChild (label);
 #endif
-/* prepare the text for display in the ScrolledText object
-** we are about to create.
-*/
+// prepare the text for display in the ScrolledText object
+// we are about to create.
 n = 0;
-XtSetArg (args[n], XmNscrollVertical, True); n++;
-XtSetArg (args[n], XmNscrollHorizontal, False); n++;
-XtSetArg (args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
-XtSetArg (args[n], XmNeditable, False); n++;
-XtSetArg (args[n], XmNcursorPositionVisible, False); n++;
-XtSetArg (args[n], XmNwordWrap, True); n++;
-XtSetArg (args[n], XmNvalue, pszMsg); n++;
-XtSetArg (args[n], XmNrows, 5); n++;
-text_w = XmCreateScrolledText (form, const_cast<char*>("help_text"), args, n);
-/* Attachment values must be set on the Text widget's PARENT,
-** the ScrolledWindow. This is the object that is positioned.
-*/
-XtVaSetValues (XtParent (text_w),
-			   XmNleftAttachment, XmATTACH_WIDGET,
-			   //XmNleftWidget, label,
+XtSetArg (args [n], XmNscrollVertical, True); n++;
+XtSetArg (args [n], XmNscrollHorizontal, False); n++;
+XtSetArg (args [n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
+XtSetArg (args [n], XmNeditable, False); n++;
+XtSetArg (args [n], XmNcursorPositionVisible, False); n++;
+XtSetArg (args [n], XmNwordWrap, True); n++;
+XtSetArg (args [n], XmNvalue, pszMsg); n++;
+XtSetArg (args [n], XmNrows, 5); n++;
+msgText = XmCreateScrolledText (form, const_cast<char*>("help_text"), args, n);
+// Attachment values must be set on the Text widget's PARENT,
+// the ScrolledWindow. This is the object that is positioned.
+XtVaSetValues (XtParent (msgText),
+			   XmNleftAttachment, XmATTACH_FORM,
 			   XmNtopAttachment, XmATTACH_FORM,
 			   XmNrightAttachment, XmATTACH_FORM,
 			   XmNbottomAttachment, XmATTACH_FORM,
 			   NULL);
-XtManageChild (text_w);
+XtManageChild (msgText);
 XtManageChild (form);
-/* Create another form to act as the action area for the dialog */
-XtSetArg (args[0], XmNfractionBase, 5);
+// Create another form to act as the action area for the dialog
+XtSetArg (args [0], XmNfractionBase, 5);
 form = XmCreateForm (pane, const_cast<char*>("form2"), args, 1);
-/* The OK button is under the pane's separator and is
-** attached to the left edge of the form. It spreads from
-** position 0 to 1 along the bottom (the form is split into
-** 5 separate grids via XmNfractionBase upon creation).
-*/
+// The OK button is under the pane's separator and is
+// attached to the left edge of the form. It spreads from
+// position 0 to 1 along the bottom (the form is split into
+// 5 separate grids via XmNfractionBase upon creation).
 widget = XmCreatePushButtonGadget (form, const_cast<char*>("Close"), NULL, 0);
 XtVaSetValues (widget,
 			   XmNtopAttachment, XmATTACH_FORM,
 			   XmNbottomAttachment, XmATTACH_FORM,
 			   XmNleftAttachment, XmATTACH_POSITION,
-			   XmNleftPosition, 1,
+			   XmNleftPosition, 2,
 			   XmNrightAttachment, XmATTACH_POSITION,
-			   XmNrightPosition, 2,
+			   XmNrightPosition, 3,
 			   XmNshowAsDefault, True,
 			   XmNdefaultButtonShadowThickness, 1,
 			   NULL);
 XtManageChild (widget);
-XtAddCallback (widget, XmNactivateCallback, DestroyShell,
-			   (XtPointer) help_dialog);
-#if 0
-/* This is created with its XmNsensitive resource set to False
-** because we don't support "more" help. However, this is the
-** place to attach it to if there were any more.
-*/
-widget = XmCreatePushButtonGadget (form, const_cast<char*>("More"), NULL, 0);
-XtVaSetValues (widget,
-			   XmNsensitive,                    False,
-			   XmNtopAttachment,                XmATTACH_FORM,
-			   XmNbottomAttachment,             XmATTACH_FORM,
-			   XmNleftAttachment,               XmATTACH_POSITION,
-			   XmNleftPosition,                 3,
-			   XmNrightAttachment,              XmATTACH_POSITION,
-			   XmNrightPosition,                4,
-			   XmNshowAsDefault,                False,
-			   XmNdefaultButtonShadowThickness, 1,
-			   NULL);
-XtManageChild (widget);
-#endif
+XtAddCallback (widget, XmNactivateCallback, DestroyShell, (XtPointer) msgBox);
 /* Fix the action area pane to its current height -- never let it resize */
 XtManageChild (form);
 XtVaGetValues (widget, XmNheight, &h, NULL);
 XtVaSetValues (form, XmNpaneMaximum, h, XmNpaneMinimum, h, NULL);
-/* This also pops up the dialog, as it is the child of a DialogShell */
+// This also pops up the dialog, as it is the child of a DialogShell
 XtManageChild (pane);
 XtAppMainLoop (appShell);
-#endif
 XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appShell);
 }
@@ -457,6 +433,8 @@ XtDestroyApplicationContext (appShell);
 }
 
 #endif
+
+#endif //__unix__
 
 //------------------------------------------------------------------------------
 
