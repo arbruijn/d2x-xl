@@ -190,13 +190,6 @@ return True;
 
 //------------------------------------------------------------------------------
 
-void XmCloseMsgBox (Widget w, XtPointer clientData, XtPointer callData)
-{
-XtAppSetExitFlag (appShell);
-}
-
-//------------------------------------------------------------------------------
-
 static int MsgSize (char* pszMsg, int& nCols)
 {
 if (!(pszMsg && *pszMsg))
@@ -240,37 +233,33 @@ void XmMessageDialog (const char* pszMsg, int nRows, int nCols, bool bError)
     int          n = 0;
     int          i;
     Dimension    h;
-// Set up a DialogShell as a popup window. Set the delete
-// window protocol response to XmDESTROY to make sure that
-// the window goes away appropriately. Otherwise, it's XmUNMAP
-// which means it'd be lost forever, since we're not storing
+// Set up a DialogShell as a popup window. Set the delete window protocol response to XmDESTROY to make sure that
+// the window goes away appropriately. Otherwise, it's XmUNMAP which means it'd be lost forever, since we're not storing
 // the widget globally or statically to this function.
 Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
-i = 0;
 XtSetArg (args [0], XmNdeleteResponse, XmDESTROY);
 msgBox = XmCreateDialogShell (topWid, bError ? const_cast<char*>("Error") : const_cast<char*>("Warning"), args, 1);
 XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
-XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
-XtVaSetValues (msgBox, XmNmwmDecorations, MWM_DECOR_BORDER | MWM_DECOR_RESIZEH | MWM_DECOR_TITLE, NULL);
+i &= ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU);
+XtVaSetValues (msgBox, XmNmwmDecorations, i, NULL);
 XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
-XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_MINIMIZE | MWM_FUNC_MAXIMIZE | MWM_FUNC_CLOSE), NULL);
-// Create a PanedWindow to manage the stuff in this dialog.
-// PanedWindow won't let us set these to 0!
+i &= ~(MWM_FUNC_ALL | MWM_FUNC_MINIMIZE | MWM_FUNC_MAXIMIZE | MWM_FUNC_CLOSE);
+XtVaSetValues (msgBox, XmNmwmFunctions, i, NULL);
+// Create a PanedWindow to manage the stuff in this dialog. PanedWindow won't let us set these to 0!
 XtSetArg (args [0], XmNsashWidth, 1);
 // Make small so user doesn't try to resize
 XtSetArg (args [1], XmNsashHeight, 1);
 pane = XmCreatePanedWindow (msgBox, const_cast<char*>("pane"), args, 2);
-// Create a RowColumn in the form for Label and Text widgets.
-// This is the control area.
+// Create a RowColumn in the form for Label and Text widgets. This is the control area.
 form = XmCreateForm (pane, const_cast<char*>("form1"), NULL, 0);
+
 #if 0
-Pixel        fg, bg;
+Pixel fg, bg;
 XtVaGetValues (form, /* once created, we can get its colors */
-			   XmNforeground, &fg,
-			   XmNbackground, &bg,
-			   NULL);
-// create the pixmap of the appropriate depth using the colors
-// that will be used by the parent (form).
+					XmNforeground, &fg,
+					XmNbackground, &bg,
+					NULL);
+// create the pixmap of the appropriate depth using the colors that will be used by the parent (form).
 pixmap = XCreatePixmapFromBitmapData (
 	 XtDisplay (form),
 	 RootWindowOfScreen (XtScreen (form)),
@@ -287,8 +276,8 @@ XtSetArg (args [n], XmNbottomAttachment, XmATTACH_FORM); n++;
 label = XmCreateLabelGadget (form, "label", args, n);
 XtManageChild (label);
 #endif
-// prepare the text for display in the ScrolledText object
-// we are about to create.
+
+// prepare the text for display in the ScrolledText object we are about to create.
 n = 0;
 XtSetArg (args [n], XmNscrollVertical, True); n++;
 XtSetArg (args [n], XmNscrollHorizontal, False); n++;
@@ -300,8 +289,7 @@ XtSetArg (args [n], XmNvalue, pszMsg); n++;
 XtSetArg (args [n], XmNrows, min (nRows, 30)); n++;
 XtSetArg (args [n], XmNcolumns, min (nCols, 120)); n++;
 msgText = XmCreateScrolledText (form, const_cast<char*>("help_text"), args, n);
-// Attachment values must be set on the Text widget's PARENT,
-// the ScrolledWindow. This is the object that is positioned.
+// Attachment values must be set on the Text widget's PARENT, the ScrolledWindow. This is the object that is positioned.
 XtVaSetValues (XtParent (msgText),
 			   XmNleftAttachment, XmATTACH_FORM,
 			   XmNtopAttachment, XmATTACH_FORM,
@@ -313,10 +301,8 @@ XtManageChild (form);
 // Create another form to act as the action area for the dialog
 XtSetArg (args [0], XmNfractionBase, 5);
 form = XmCreateForm (pane, const_cast<char*>("form2"), args, 1);
-// The OK button is under the pane's separator and is
-// attached to the left edge of the form. It spreads from
-// position 0 to 1 along the bottom (the form is split into
-// 5 separate grids via XmNfractionBase upon creation).
+// The OK button is under the pane's separator and is attached to the left edge of the form. It spreads from
+// position 0 to 1 along the bottom (the form is split into 5 separate grids via XmNfractionBase upon creation).
 widget = XmCreatePushButtonGadget (form, const_cast<char*>("Close"), NULL, 0);
 XtVaSetValues (widget,
 			   XmNtopAttachment, XmATTACH_FORM,
@@ -340,6 +326,13 @@ XtManageChild (pane);
 
 //------------------------------------------------------------------------------
 
+void XmCloseMsgBox (Widget w, XtPointer clientData, XtPointer callData)
+{
+XtAppSetExitFlag (appShell);
+}
+
+//------------------------------------------------------------------------------
+
 void XmMessageBox (const char* pszMsg, bool bError)
 {
 	Widget	topWid;
@@ -356,8 +349,8 @@ else { // use the built-in message box
 	XtSetArg (args [0], XmNmessageString, xmString);
 	// create and label message box
 	Widget xMsgBox = bError
-					 ? XmCreateErrorDialog (topWid, const_cast<char*>("Error"), args, 1)
-					 : XmCreateWarningDialog (topWid, const_cast<char*>("Warning"), args, 1);
+						  ? XmCreateErrorDialog (topWid, const_cast<char*>("Error"), args, 1)
+						  : XmCreateWarningDialog (topWid, const_cast<char*>("Warning"), args, 1);
 	// remove text resource
 	XmStringFree (xmString);
 	// remove help and cancel buttons
@@ -368,7 +361,6 @@ else { // use the built-in message box
 	XtManageChild (xMsgBox);
 	XtRealizeWidget (topWid);
 	}
-
 XtAppMainLoop (appShell);
 XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appShell);
