@@ -159,42 +159,41 @@ static XtAppContext		appShell;
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
-    Widget       help_dialog, pane, text_w, form, sep, widget, label;
+    Widget       help_dialog, pane, text_w, form, /*sep, label,*/ widget;
     void         DestroyShell(Widget, XtPointer, XtPointer);
-    Pixmap       pixmap;
+    //Pixmap       pixmap;
     Pixel        fg, bg;
     Arg          args[10];
     int          n = 0;
     int          i;
-    char         *p, buf[BUFSIZ];
     Dimension    h;
     /* Set up a DialogShell as a popup window. Set the delete
     ** window protocol response to XmDESTROY to make sure that
     ** the window goes away appropriately. Otherwise, it's XmUNMAP
     ** which means it'd be lost forever, since we're not storing
-    ** the widget globally or statically to this function. 
+    ** the widget globally or statically to this function.
     */
 	Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
     i = 0;
-    XtSetArg (args[0], XmNdeleteResponse, XmDESTROY); 
-    help_dialog = XmCreateDialogShell (topWid, bError ? "Error" : "Warning", args, 1);
+    XtSetArg (args[0], XmNdeleteResponse, XmDESTROY);
+    help_dialog = XmCreateDialogShell (topWid, bError ? const_cast<char*>("Error") : const_cast<char*>("Warning"), args, 1);
     /* Create a PanedWindow to manage the stuff in this dialog. */
     /* PanedWindow won't let us set these to 0! */
-    XtSetArg (args[0], XmNsashWidth, 1);    
-    /* Make small so user doesn't try to resize */ 
-    XtSetArg (args[1], XmNsashHeight, 1);    
-    pane = XmCreatePanedWindow (help_dialog, "pane", args, 2);
+    XtSetArg (args[0], XmNsashWidth, 1);
+    /* Make small so user doesn't try to resize */
+    XtSetArg (args[1], XmNsashHeight, 1);
+    pane = XmCreatePanedWindow (help_dialog, const_cast<char*>("pane"), args, 2);
     /* Create a RowColumn in the form for Label and Text widgets.
-    ** This is the control area. 
+    ** This is the control area.
     */
-    form = XmCreateForm (pane, "form1", NULL, 0);
+    form = XmCreateForm (pane, const_cast<char*>("form1"), NULL, 0);
     XtVaGetValues (form, /* once created, we can get its colors */
                    XmNforeground, &fg,
                    XmNbackground, &bg,
                    NULL);
 #if 0
-    /* create the pixmap of the appropriate depth using the colors 
-    ** that will be used by the parent (form). 
+    /* create the pixmap of the appropriate depth using the colors
+    ** that will be used by the parent (form).
     */
     pixmap = XCreatePixmapFromBitmapData (
 		 XtDisplay (form),
@@ -204,33 +203,33 @@ void XmMessageBox (const char* pszMsg, bool bError)
 			DefaultDepthOfScreen (XtScreen (form)));
     /* Create a label gadget using this pixmap */
     n = 0;
-    XtSetArg (args[n++], XmNlabelType,        XmPIXMAP);     
-    XtSetArg (args[n++], XmNlabelPixmap,      pixmap);       
+    XtSetArg (args[n++], XmNlabelType,        XmPIXMAP);
+    XtSetArg (args[n++], XmNlabelPixmap,      pixmap);
     XtSetArg (args[n++], XmNleftAttachment,   XmATTACH_FORM);
     XtSetArg (args[n++], XmNtopAttachment,    XmATTACH_FORM);
     XtSetArg (args[n++], XmNbottomAttachment, XmATTACH_FORM);
     label = XmCreateLabelGadget (form, "label", args, n);
-    XtManageChild (label); 
+    XtManageChild (label);
 #endif
-    /* prepare the text for display in the ScrolledText object 
-    ** we are about to create. 
+    /* prepare the text for display in the ScrolledText object
+    ** we are about to create.
     */
     n = 0;
-    XtSetArg (args[n++], XmNscrollVertical,        True);             
-    XtSetArg (args[n++], XmNscrollHorizontal,      False);            
+    XtSetArg (args[n++], XmNscrollVertical,        True);
+    XtSetArg (args[n++], XmNscrollHorizontal,      False);
     XtSetArg (args[n++], XmNeditMode,              XmMULTI_LINE_EDIT);
-    XtSetArg (args[n++], XmNeditable,              False);            
-    XtSetArg (args[n++], XmNcursorPositionVisible, False);            
-    XtSetArg (args[n++], XmNwordWrap,              True);             
-    XtSetArg (args[n++], XmNvalue,                 pszMsg);              
-    XtSetArg (args[n++], XmNrows,                  5);                
-    text_w = XmCreateScrolledText (form, "help_text", args, n);
-    /* Attachment values must be set on the Text widget's PARENT, 
-    ** the ScrolledWindow. This is the object that is positioned. 
-    */ 
+    XtSetArg (args[n++], XmNeditable,              False);
+    XtSetArg (args[n++], XmNcursorPositionVisible, False);
+    XtSetArg (args[n++], XmNwordWrap,              True);
+    XtSetArg (args[n++], XmNvalue,                 pszMsg);
+    XtSetArg (args[n++], XmNrows,                  5);
+    text_w = XmCreateScrolledText (form, const_cast<char*>("help_text"), args, n);
+    /* Attachment values must be set on the Text widget's PARENT,
+    ** the ScrolledWindow. This is the object that is positioned.
+    */
     XtVaSetValues (XtParent (text_w),
                    XmNleftAttachment,   XmATTACH_WIDGET,
-                   XmNleftWidget,       label,
+                   //XmNleftWidget,       label,
                    XmNtopAttachment,    XmATTACH_FORM,
                    XmNrightAttachment,  XmATTACH_FORM,
                    XmNbottomAttachment, XmATTACH_FORM,
@@ -239,33 +238,33 @@ void XmMessageBox (const char* pszMsg, bool bError)
     XtManageChild (form);
     /* Create another form to act as the action area for the dialog */
     XtSetArg (args[0], XmNfractionBase, 5);
-    form = XmCreateForm (pane, "form2", args, 1);
-    /* The OK button is under the pane's separator and is 
+    form = XmCreateForm (pane, const_cast<char*>("form2"), args, 1);
+    /* The OK button is under the pane's separator and is
     ** attached to the left edge of the form. It spreads from
-    ** position 0 to 1 along the bottom (the form is split into 
-    ** 5 separate grids via XmNfractionBase upon creation). 
+    ** position 0 to 1 along the bottom (the form is split into
+    ** 5 separate grids via XmNfractionBase upon creation).
     */
-    widget = XmCreatePushButtonGadget (form, "OK", NULL, 0);
+    widget = XmCreatePushButtonGadget (form, const_cast<char*>("OK"), NULL, 0);
     XtVaSetValues (widget,
-                   XmNtopAttachment,                XmATTACH_FORM,  
-                   XmNbottomAttachment,             XmATTACH_FORM,   
-                   XmNleftAttachment,               XmATTACH_POSITION,  
-                   XmNleftPosition,                 1, 
-                   XmNrightAttachment,              XmATTACH_POSITION, 
-                   XmNrightPosition,                2, 
+                   XmNtopAttachment,                XmATTACH_FORM,
+                   XmNbottomAttachment,             XmATTACH_FORM,
+                   XmNleftAttachment,               XmATTACH_POSITION,
+                   XmNleftPosition,                 1,
+                   XmNrightAttachment,              XmATTACH_POSITION,
+                   XmNrightPosition,                2,
                    XmNshowAsDefault,                True,
                    XmNdefaultButtonShadowThickness, 1,
                    NULL);
     XtManageChild (widget);
     XtAddCallback (widget, XmNactivateCallback, DestroyShell,
                    (XtPointer) help_dialog);
-    /* This is created with its XmNsensitive resource set to False 
-    ** because we don't support "more" help. However, this is the 
-    ** place to attach it to if there were any more. 
+    /* This is created with its XmNsensitive resource set to False
+    ** because we don't support "more" help. However, this is the
+    ** place to attach it to if there were any more.
     */
-    widget = XmCreatePushButtonGadget (form, "More", NULL, 0);
+    widget = XmCreatePushButtonGadget (form, const_cast<char*>("More"), NULL, 0);
     XtVaSetValues (widget,
-                   XmNsensitive,                    False, 
+                   XmNsensitive,                    False,
                    XmNtopAttachment,                XmATTACH_FORM,
                    XmNbottomAttachment,             XmATTACH_FORM,
                    XmNleftAttachment,               XmATTACH_POSITION,
@@ -284,7 +283,7 @@ void XmMessageBox (const char* pszMsg, bool bError)
     XtManageChild (pane);
 }
 
-/* The callback function for the "OK" button. Since this is not a 
+/* The callback function for the "OK" button. Since this is not a
 ** predefined Motif dialog, the "widget" parameter is not the dialog
 ** itself. That is only done by Motif dialog callbacks. Here in the
 ** real world, the callback routine is called directly by the widget
