@@ -203,11 +203,11 @@ void XmMessageBox (const char* pszMsg, bool bError)
 			DefaultDepthOfScreen (XtScreen (form)));
     /* Create a label gadget using this pixmap */
     n = 0;
-    XtSetArg (args[n++], XmNlabelType,        XmPIXMAP);
-    XtSetArg (args[n++], XmNlabelPixmap,      pixmap);
-    XtSetArg (args[n++], XmNleftAttachment,   XmATTACH_FORM);
-    XtSetArg (args[n++], XmNtopAttachment,    XmATTACH_FORM);
-    XtSetArg (args[n++], XmNbottomAttachment, XmATTACH_FORM);
+    XtSetArg (args[n], XmNlabelType, XmPIXMAP); n++;
+    XtSetArg (args[n], XmNlabelPixmap, pixmap); n++;
+    XtSetArg (args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+    XtSetArg (args[n], XmNtopAttachment, XmATTACH_FORM); n++;
+    XtSetArg (args[n], XmNbottomAttachment, XmATTACH_FORM); n++;
     label = XmCreateLabelGadget (form, "label", args, n);
     XtManageChild (label);
 #endif
@@ -215,23 +215,23 @@ void XmMessageBox (const char* pszMsg, bool bError)
     ** we are about to create.
     */
     n = 0;
-    XtSetArg (args[n++], XmNscrollVertical,        True);
-    XtSetArg (args[n++], XmNscrollHorizontal,      False);
-    XtSetArg (args[n++], XmNeditMode,              XmMULTI_LINE_EDIT);
-    XtSetArg (args[n++], XmNeditable,              False);
-    XtSetArg (args[n++], XmNcursorPositionVisible, False);
-    XtSetArg (args[n++], XmNwordWrap,              True);
-    XtSetArg (args[n++], XmNvalue,                 pszMsg);
-    XtSetArg (args[n++], XmNrows,                  5);
+    XtSetArg (args[n], XmNscrollVertical, True); n++;
+    XtSetArg (args[n], XmNscrollHorizontal, False); n++;
+    XtSetArg (args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
+    XtSetArg (args[n], XmNeditable, False); n++;
+    XtSetArg (args[n], XmNcursorPositionVisible, False); n++;
+    XtSetArg (args[n], XmNwordWrap, True); n++;
+    XtSetArg (args[n], XmNvalue, pszMsg); n++;
+    XtSetArg (args[n], XmNrows, 5); n++;
     text_w = XmCreateScrolledText (form, const_cast<char*>("help_text"), args, n);
     /* Attachment values must be set on the Text widget's PARENT,
     ** the ScrolledWindow. This is the object that is positioned.
     */
     XtVaSetValues (XtParent (text_w),
-                   XmNleftAttachment,   XmATTACH_WIDGET,
-                   //XmNleftWidget,       label,
-                   XmNtopAttachment,    XmATTACH_FORM,
-                   XmNrightAttachment,  XmATTACH_FORM,
+                   XmNleftAttachment, XmATTACH_WIDGET,
+                   //XmNleftWidget, label,
+                   XmNtopAttachment, XmATTACH_FORM,
+                   XmNrightAttachment, XmATTACH_FORM,
                    XmNbottomAttachment, XmATTACH_FORM,
                    NULL);
     XtManageChild (text_w);
@@ -246,13 +246,13 @@ void XmMessageBox (const char* pszMsg, bool bError)
     */
     widget = XmCreatePushButtonGadget (form, const_cast<char*>("OK"), NULL, 0);
     XtVaSetValues (widget,
-                   XmNtopAttachment,                XmATTACH_FORM,
-                   XmNbottomAttachment,             XmATTACH_FORM,
-                   XmNleftAttachment,               XmATTACH_POSITION,
-                   XmNleftPosition,                 1,
-                   XmNrightAttachment,              XmATTACH_POSITION,
-                   XmNrightPosition,                2,
-                   XmNshowAsDefault,                True,
+                   XmNtopAttachment, XmATTACH_FORM,
+                   XmNbottomAttachment, XmATTACH_FORM,
+                   XmNleftAttachment, XmATTACH_POSITION,
+                   XmNleftPosition, 1,
+                   XmNrightAttachment, XmATTACH_POSITION,
+                   XmNrightPosition, 2,
+                   XmNshowAsDefault, True,
                    XmNdefaultButtonShadowThickness, 1,
                    NULL);
     XtManageChild (widget);
