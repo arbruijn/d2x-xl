@@ -145,6 +145,8 @@ if (*szExitMsg) {
 #include <Xm/MessageB.h>
 #include <Xm/RowColumn.h>
 #include <Xm/Text.h>
+#include <Xm/DialogS.h>
+#include <Xm/Command.h>
 #include <Xm/Protocols.h>
 
 //------------------------------------------------------------------------------
@@ -215,29 +217,41 @@ return nLines;
 
 void XmMessageBox (const char* pszMsg, bool bError)
 {
-	Widget topWid;
+	Widget	topWid;
+	Arg		args [4];
 
-if (MsgLineCount (pszMsg) > 3) { //create a non-editable multi-line text widget for longer messages
+if (MsgLineCount (pszMsg) > 0) { //create a non-editable multi-line text widget for longer messages
 	// create application shell which serves as top widget
 	topWid = XtVaAppInitialize (&appShell, bError ? "Error" : "Warning", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 	// create main window which groups the message box elements (text pane, close menu)
+#if 0
 	Widget msgBox = XtVaCreateManagedWidget ("d2x-xl-msgbox", xmMainWindowWidgetClass, topWid, /* XmNscrollingPolicy, XmVARIABLE, */NULL);
-#if 1
 	// create the menu
+#if 1
 	Widget menuBar = XmCreateMenuBar (msgBox, const_cast<char*>("d2x-xl-menu"), NULL, 0);
 	XtManageChild (menuBar);
 	// add a "close" menu entry
-	Widget closeWid = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
-	// add a callback to the "close" menu entry that will initiate closing of the message box
-	XtAddCallback (closeWid, XmNactivateCallback, XmCloseMsgBox, NULL);
+	Widget closeBtn = XtVaCreateManagedWidget ("Close", xmCascadeButtonWidgetClass, menuBar, XmNmnemonic, 'C', NULL);
 #endif
+#else
+	XtSetArg (args [0], XmNwidth, 300);
+	XtSetArg (args [1], XmNheight, 150);
+	Widget msgBox = XmCreateDialogShell (topWid, const_cast<char*>("d2x-xl-msgbox"), args, 2);
+	int i;
+	XtVaGetValues (msgBox, XmNmwmDecorations, &i, NULL);
+	XtVaSetValues (msgBox, XmNmwmDecorations, i & ~(MWM_DECOR_ALL | MWM_DECOR_MINIMIZE | MWM_DECOR_MAXIMIZE | MWM_DECOR_MENU), NULL);
+	XtVaGetValues (msgBox, XmNmwmFunctions, &i, NULL);
+	XtVaSetValues (msgBox, XmNmwmFunctions, i & ~(MWM_FUNC_ALL | MWM_FUNC_CLOSE), NULL);
+	//Widget closeBtn = XmCreateCommand (msgBox, const_cast<char*>("Close"), NULL, 0);
+#endif
+	// add a callback to the "close" menu entry that will initiate closing of the message box
+	//XtAddCallback (closeBtn, XmNactivateCallback, XmCloseMsgBox, NULL);
 	XtManageChild (msgBox);
 	// create the text widget
-	Arg args [4];
-	XtSetArg (args [0], XmNrows,      30);
-	XtSetArg (args [1], XmNcolumns,   121);
-	XtSetArg (args [2], XmNeditable,  False);
-	XtSetArg (args [3], XmNeditMode,  XmMULTI_LINE_EDIT);
+	XtSetArg (args [0], XmNrows, 30);
+	XtSetArg (args [1], XmNcolumns, 121);
+	XtSetArg (args [2], XmNeditable, False);
+	XtSetArg (args [3], XmNeditMode, XmMULTI_LINE_EDIT);
 	Widget msgText = XmCreateScrolledText (msgBox, const_cast<char*>("d2x-xl-msg"), args, 4);
 	XmTextSetString (msgText, const_cast<char*>(pszMsg));
 	XtManageChild (msgText);
