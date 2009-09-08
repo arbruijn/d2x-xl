@@ -144,6 +144,10 @@ if (*szExitMsg) {
 #include <Xm/CascadeB.h>
 #include <Xm/MessageB.h>
 #include <Xm/RowColumn.h>
+#include <Xm/Form.h>
+#include <Xm/PushBG.h>
+#include <Xm/LabelG.h>
+#include <Xm/PanedW.h>
 #include <Xm/Text.h>
 #include <Xm/DialogS.h>
 #include <Xm/Command.h>
@@ -163,7 +167,6 @@ void XmMessageBox (const char* pszMsg, bool bError)
     int          n = 0;
     int          i;
     char         *p, buf[BUFSIZ];
-    int          item_no = (int) client_data; 
     Dimension    h;
     /* Set up a DialogShell as a popup window. Set the delete
     ** window protocol response to XmDESTROY to make sure that
@@ -171,7 +174,7 @@ void XmMessageBox (const char* pszMsg, bool bError)
     ** which means it'd be lost forever, since we're not storing
     ** the widget globally or statically to this function. 
     */
-	topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
+	Widget topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
     i = 0;
     XtSetArg (args[0], XmNdeleteResponse, XmDESTROY); 
     help_dialog = XmCreateDialogShell (topWid, bError ? "Error" : "Warning", args, 1);
@@ -189,6 +192,7 @@ void XmMessageBox (const char* pszMsg, bool bError)
                    XmNforeground, &fg,
                    XmNbackground, &bg,
                    NULL);
+#if 0
     /* create the pixmap of the appropriate depth using the colors 
     ** that will be used by the parent (form). 
     */
@@ -207,16 +211,10 @@ void XmMessageBox (const char* pszMsg, bool bError)
     XtSetArg (args[n++], XmNbottomAttachment, XmATTACH_FORM);
     label = XmCreateLabelGadget (form, "label", args, n);
     XtManageChild (label); 
+#endif
     /* prepare the text for display in the ScrolledText object 
     ** we are about to create. 
     */
-    for (p = buf, i = 0; help_texts[item_no][i]; i++) {
-        p += strlen (strcpy (p, help_texts[item_no][i]));
-        if (!isspace (p[-1]))
-        /* spaces, tabs and newlines are spaces. */
-            *p++ = ' '; /* lines are concatenated together, insert space */
-    }
-    *--p = 0; /* get rid of trailing space... */
     n = 0;
     XtSetArg (args[n++], XmNscrollVertical,        True);             
     XtSetArg (args[n++], XmNscrollHorizontal,      False);            
@@ -224,7 +222,7 @@ void XmMessageBox (const char* pszMsg, bool bError)
     XtSetArg (args[n++], XmNeditable,              False);            
     XtSetArg (args[n++], XmNcursorPositionVisible, False);            
     XtSetArg (args[n++], XmNwordWrap,              True);             
-    XtSetArg (args[n++], XmNvalue,                 buf);              
+    XtSetArg (args[n++], XmNvalue,                 pszMsg);              
     XtSetArg (args[n++], XmNrows,                  5);                
     text_w = XmCreateScrolledText (form, "help_text", args, n);
     /* Attachment values must be set on the Text widget's PARENT, 
