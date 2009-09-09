@@ -507,8 +507,8 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 		CHitQuery fq;
 		CHitData hitData;
 		//create little explosion on CWall
-		tpnt = gameData.objs.consoleP->info.position.mOrient.RVec () * ((d_rand ()-RAND_MAX/2)*100);
-		tpnt += gameData.objs.consoleP->info.position.mOrient.UVec () * ((d_rand ()-RAND_MAX/2)*100);
+		tpnt = gameData.objs.consoleP->info.position.mOrient.RVec () * ((d_rand () - RAND_MAX / 2) * 100);
+		tpnt += gameData.objs.consoleP->info.position.mOrient.UVec () * ((d_rand () - RAND_MAX / 2) * 100);
 		tpnt += gameData.objs.consoleP->info.position.vPos;
 		if (gameStates.app.bEndLevelSequence == EL_FLYTHROUGH)
 			tpnt += gameData.objs.consoleP->info.position.mOrient.FVec () * (d_rand ()*200);
@@ -552,7 +552,6 @@ switch (gameStates.app.bEndLevelSequence) {
 					}
 				gameData.objs.viewerP = gameData.objs.endLevelCamera = OBJECTS + nObject;
 				cockpit->Activate (CM_LETTERBOX);
-				gameOpts->render.cockpit.bHUD = 0;	//will be restored by reading plr file when loading next level
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;
 				exitFlightObjects [1].speed = (5 * gameData.endLevel.xCurFlightSpeed) / 4;

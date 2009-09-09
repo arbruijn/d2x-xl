@@ -986,9 +986,17 @@ if (!cf.Exist (szDest, "", 0)) {
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded.", szDest);
 MsgBox (NULL, NULL, 1, TXT_CLOSE, szMsg);
 #else
+#	if 1
+#	include "shellapi.h"
+#	include "objbase.h"
+CoInitializeEx (NULL, COINIT_MULTITHREADED);
+if (HINSTANCE (32) < ShellExecute (NULL, NULL, szDest, NULL, NULL, SW_SHOW))
+	exit (1);
+#else
 char*	args [2] = {szDest, NULL};
 if (0 <= _execv (szDest, args))
 	exit (1);
+#endif
 sprintf (szMsg, "\nThe file\n\n%s\n\nwas sucessfully downloaded, but couldn't be excuted.\nPlease leave D2X-XL and start the installer manually.", szDest);
 //Warning (szMsg);
 MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, szMsg);

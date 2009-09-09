@@ -176,6 +176,7 @@ class CTrigger {
 		inline bool ClientOnly (void) { return (m_info.nType == TT_SHIELD_DAMAGE) || (m_info.nType == TT_ENERGY_DRAIN); }
 		int Delay (void);
 		bool IsDelayed (void);
+		bool IsExit (void);
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
 

@@ -845,6 +845,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+bool CTrigger::IsExit (void)
+{
+return (m_info.nType == TT_EXIT) || ((m_info.nType == TT_DESCENT1) && ((m_info.flagsD1 & TRIGGER_EXIT) != 0));
+}
+
+//------------------------------------------------------------------------------
+
 typedef struct {
 	int	nFlag;
 	int	nType;

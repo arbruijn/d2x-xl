@@ -618,7 +618,7 @@ if (gameStates.render.bRearView)
 if (gameData.render.window.x || gameData.render.window.y)
 	return;	// render window has been shrunk
 ToggleWeaponIcons ();
-if (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ()) {
+if ((gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
 	nLineSpacing = cockpit->LineSpacing ();
 	if (!(gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam))
 		DrawTally ();

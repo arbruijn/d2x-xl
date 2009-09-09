@@ -21,8 +21,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EL_LOOKBACK		2		//looking back at CPlayerData
 #define EL_OUTSIDE		3		//flying outside for a while
 #define EL_STOPPED		4		//stopped, watching explosion
-#define EL_PANNING		5		//panning around, watching CPlayerData
-#define EL_CHASING		6		//chasing CPlayerData to station
+#define EL_PANNING		5		//panning around, watching player
+#define EL_CHASING		6		//chasing player to station
 
 extern int Endlevel_sequence;
 void DoEndLevelFrame();
