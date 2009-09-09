@@ -860,7 +860,7 @@ if (nResult) {
 		cf.Close ();
 		}
 	}
-#if DBG
+#if 0 //DBG
 else
 	Warning ("No errors were found in your D2X-XL installation.");
 #endif
