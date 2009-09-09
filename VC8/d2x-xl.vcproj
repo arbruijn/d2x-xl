@@ -274,7 +274,7 @@
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
 				AdditionalIncludeDirectories="&quot;..\..\..\libraries\SDL-1.2.13\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.8&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include"
-				PreprocessorDefinitions="OPENMP;DBG=0;NDEBUG;RELEASE;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0700;OPENMP;DBG=0;NDEBUG;RELEASE;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
@@ -304,7 +304,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
 				OutputFile="\programs\d2\bin\win32-omp\d2x-xl-omp.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -412,7 +412,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
 				OutputFile="\programs\d2\bin\x64-omp\d2x-xl-x64.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"

@@ -57,7 +57,7 @@
 #include "cockpit.h"
 #include "gpgpu_lighting.h"
 
-#define _WIN32_WINNT		0x0600
+//#define _WIN32_WINNT		0x0600
 
 #define TRACK_STATES		0
 
