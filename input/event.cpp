@@ -27,13 +27,13 @@
 
 #include "descent.h"
 
-extern void KeyHandler(SDL_KeyboardEvent *event);
-extern void MouseButtonHandler(SDL_MouseButtonEvent *mbe);
-extern void MouseMotionHandler(SDL_MouseMotionEvent *mme);
+extern void KeyHandler (SDL_KeyboardEvent *event);
+extern void MouseButtonHandler (SDL_MouseButtonEvent *mbe);
+extern void MouseMotionHandler (SDL_MouseMotionEvent *mme);
 #ifndef USE_LINUX_JOY // stpohle - so we can choose at compile time..
-extern void joy_button_handler(SDL_JoyButtonEvent *jbe);
-extern void joy_hat_handler(SDL_JoyHatEvent *jhe);
-extern void joy_axis_handler(SDL_JoyAxisEvent *jae);
+extern void JoyButtonHandler (SDL_JoyButtonEvent *jbe);
+extern void joy_hat_Handler (SDL_JoyHatEvent *jhe);
+extern void joy_axis_Handler (SDL_JoyAxisEvent *jae);
 #endif
 
 static int initialised=0;
@@ -54,48 +54,41 @@ void event_poll(ulong mask)
 	time_t _t = t0;
 #endif
 
-/*
-	if (!mask)
-		mask = SDL_ALLEVENTS;
-	else
-		mask |= SDL_ACTIVEEVENTMASK | SDL_QUITMASK | SDL_SYSWMEVENTMASK;
-	while (PollEvent(&event, mask)) {
-*/
-	while (SDL_PollEvent (&event)) {
+while (SDL_PollEvent (&event)) {
 #if TO_EVENT_POLL
-		if (!gameOpts->legacy.bInput)
-			_t = SDL_GetTicks ();
+	if (!gameOpts->legacy.bInput)
+		_t = SDL_GetTicks ();
 #endif
-		switch(event.type) {
-			case SDL_KEYDOWN:
-				KeyHandler(reinterpret_cast<SDL_KeyboardEvent*> (&event));
-				break;
-			case SDL_KEYUP:
-				KeyHandler(reinterpret_cast<SDL_KeyboardEvent*> (&event));
-				break;
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-				MouseButtonHandler(reinterpret_cast<SDL_MouseButtonEvent*> (&event));
-				break;
-			case SDL_MOUSEMOTION:
-				MouseMotionHandler(reinterpret_cast<SDL_MouseMotionEvent*> (&event));
-				break;
+	switch(event.type) {
+		case SDL_KEYDOWN:
+			KeyHandler (reinterpret_cast<SDL_KeyboardEvent*> (&event));
+			break;
+		case SDL_KEYUP:
+			KeyHandler (reinterpret_cast<SDL_KeyboardEvent*> (&event));
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+			MouseButtonHandler (reinterpret_cast<SDL_MouseButtonEvent*> (&event));
+			break;
+		case SDL_MOUSEMOTION:
+			MouseMotionHandler (reinterpret_cast<SDL_MouseMotionEvent*> (&event));
+			break;
 #ifndef USE_LINUX_JOY       // stpohle - so we can choose at compile time..
-			case SDL_JOYBUTTONDOWN:
-			case SDL_JOYBUTTONUP:
-				joy_button_handler(reinterpret_cast<SDL_JoyButtonEvent*> (&event));
-				break;
-			case SDL_JOYAXISMOTION:
-				joy_axis_handler(reinterpret_cast<SDL_JoyAxisEvent*> (&event));
-				break;
-			case SDL_JOYHATMOTION:
-				joy_hat_handler(reinterpret_cast<SDL_JoyHatEvent*> (&event));
-				break;
-			case SDL_JOYBALLMOTION:
-				break;
+		case SDL_JOYBUTTONDOWN:
+		case SDL_JOYBUTTONUP:
+			JoyButtonHandler (reinterpret_cast<SDL_JoyButtonEvent*> (&event));
+			break;
+		case SDL_JOYAXISMOTION:
+			joy_axis_Handler (reinterpret_cast<SDL_JoyAxisEvent*> (&event));
+			break;
+		case SDL_JOYHATMOTION:
+			joy_hat_Handler (reinterpret_cast<SDL_JoyHatEvent*> (&event));
+			break;
+		case SDL_JOYBALLMOTION:
+			break;
 #endif
-			case SDL_QUIT: {
-			} break;
+		case SDL_QUIT:
+			break;
 		}
 #if TO_EVENT_POLL
 	if (!gameOpts->legacy.bInput && (_t - t0 >= TO_EVENT_POLL))

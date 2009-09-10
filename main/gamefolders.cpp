@@ -989,7 +989,11 @@ MsgBox (NULL, NULL, 1, TXT_CLOSE, szMsg);
 #	if 1
 #	include "shellapi.h"
 #	include "objbase.h"
+#if !defined(_M_IA64) && !defined(_M_AMD64)
 CoInitializeEx (NULL, COINIT_MULTITHREADED);
+#	else
+CoInitialize (NULL);
+#	endif
 if (HINSTANCE (32) < ShellExecute (NULL, NULL, szDest, NULL, NULL, SW_SHOW))
 	exit (1);
 #else
