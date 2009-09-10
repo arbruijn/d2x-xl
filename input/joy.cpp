@@ -64,122 +64,114 @@ switch (jbe->type) {
 
 void JoyHatHandler (SDL_JoyHatEvent *jhe)
 {
-	int hat;
-	int hbi;
+if (jhe->which >= MAX_JOYSTICKS)
+	return;
+int hat = sdlJoysticks [jhe->which].hatMap [jhe->hat] + jhe->which * MAX_BUTTONS_PER_JOYSTICK;
+//Save last state of the hat-button
+joyInfo.buttons [hat  ].lastState = joyInfo.buttons [hat  ].state;
+joyInfo.buttons [hat+1].lastState = joyInfo.buttons [hat+1].state;
+joyInfo.buttons [hat+2].lastState = joyInfo.buttons [hat+2].state;
+joyInfo.buttons [hat+3].lastState = joyInfo.buttons [hat+3].state;
 
-	if (jhe->which >= MAX_JOYSTICKS)
-		return;
-	hat = sdlJoysticks [jhe->which].hatMap [jhe->hat] + jhe->which * MAX_BUTTONS_PER_JOYSTICK;
-	//Save last state of the hat-button
-	joyInfo.buttons [hat  ].lastState = joyInfo.buttons [hat  ].state;
-	joyInfo.buttons [hat+1].lastState = joyInfo.buttons [hat+1].state;
-	joyInfo.buttons [hat+2].lastState = joyInfo.buttons [hat+2].state;
-	joyInfo.buttons [hat+3].lastState = joyInfo.buttons [hat+3].state;
+//get current state of the hat-button
+joyInfo.buttons [hat  ].state = ((jhe->value & SDL_HAT_UP)>0);
+joyInfo.buttons [hat+1].state = ((jhe->value & SDL_HAT_RIGHT)>0);
+joyInfo.buttons [hat+2].state = ((jhe->value & SDL_HAT_DOWN)>0);
+joyInfo.buttons [hat+3].state = ((jhe->value & SDL_HAT_LEFT)>0);
 
-	//get current state of the hat-button
-	joyInfo.buttons [hat  ].state = ((jhe->value & SDL_HAT_UP)>0);
-	joyInfo.buttons [hat+1].state = ((jhe->value & SDL_HAT_RIGHT)>0);
-	joyInfo.buttons [hat+2].state = ((jhe->value & SDL_HAT_DOWN)>0);
-	joyInfo.buttons [hat+3].state = ((jhe->value & SDL_HAT_LEFT)>0);
-
-	//determine if a hat-button up or down event based on state and lastState
-	for(hbi=0;hbi<4;hbi++)
- {
-		if(	!joyInfo.buttons [hat+hbi].lastState && joyInfo.buttons [hat+hbi].state) //lastState up, current state down
-	 {
-			joyInfo.buttons [hat+hbi].xTimeWentDown
-				= TimerGetFixedSeconds();
-			joyInfo.buttons [hat+hbi].numDowns++;
+//determine if a hat-button up or down event based on state and lastState
+for (int hbi = 0; hbi < 4; hbi++) {
+	if (!joyInfo.buttons [hat+hbi].lastState && joyInfo.buttons [hat+hbi].state) { //lastState up, current state down
+		joyInfo.buttons [hat+hbi].xTimeWentDown
+			= TimerGetFixedSeconds();
+		joyInfo.buttons [hat+hbi].numDowns++;
 		}
-		else if(joyInfo.buttons [hat+hbi].lastState && !joyInfo.buttons [hat+hbi].state)  //lastState down, current state up
-	 {
-			joyInfo.buttons [hat+hbi].numUps++;
+	else if (joyInfo.buttons [hat+hbi].lastState && !joyInfo.buttons [hat+hbi].state) { //lastState down, current state up
+		joyInfo.buttons [hat+hbi].numUps++;
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void JoyAxisHandler(SDL_JoyAxisEvent *jae)
+void JoyAxisHandler (SDL_JoyAxisEvent *jae)
 {
-	int axis;
-
-	if (jae->which >= MAX_JOYSTICKS)
-		return;
-	axis = sdlJoysticks [jae->which].axisMap [jae->axis] + jae->which * MAX_AXES_PER_JOYSTICK;
-	joyInfo.axes [axis].nValue = jae->value;
-	if (jae->which)
-		axis = 0;
+if (jae->which >= MAX_JOYSTICKS)
+	return;
+int axis = sdlJoysticks [jae->which].axisMap [jae->axis] + jae->which * MAX_AXES_PER_JOYSTICK;
+joyInfo.axes [axis].nValue = jae->value;
+if (jae->which)
+	axis = 0;
 }
 
 //------------------------------------------------------------------------------
 
-int JoyInit()
+int JoyInit (void)
 {
 	int				i, j, n;
 	tSdlJoystick	*joyP = sdlJoysticks;
 
-	if (SDL_Init(SDL_INIT_JOYSTICK) < 0) {
+if (SDL_Init(SDL_INIT_JOYSTICK) < 0) {
 #if TRACE
-		console.printf(CON_VERBOSE, "sdl-joystick: initialisation failed: %s.",SDL_GetError());
+	console.printf(CON_VERBOSE, "sdl-joystick: initialisation failed: %s.",SDL_GetError());
 #endif
-		return 0;
+	return 0;
 	}
-	memset (&joyInfo, 0, sizeof (joyInfo));
-	n = SDL_NumJoysticks();
+memset (&joyInfo, 0, sizeof (joyInfo));
+n = SDL_NumJoysticks();
 
 #if TRACE
-	console.printf(CON_VERBOSE, "sdl-joystick: found %d joysticks\n", n);
+console.printf(CON_VERBOSE, "sdl-joystick: found %d joysticks\n", n);
 #endif
-	for (i = 0; (i < n) && (gameStates.input.nJoysticks < MAX_JOYSTICKS); i++) {
+for (i = 0; (i < n) && (gameStates.input.nJoysticks < MAX_JOYSTICKS); i++) {
 #if TRACE
-		console.printf(CON_VERBOSE, "sdl-joystick %d: %s\n", i, SDL_JoystickName (i));
+	console.printf(CON_VERBOSE, "sdl-joystick %d: %s\n", i, SDL_JoystickName (i));
 #endif
-		joyP->handle = SDL_JoystickOpen (i);
-		if (joyP->handle) {
-			bJoyPresent = 1;
-			if((joyP->nAxes = SDL_JoystickNumAxes (joyP->handle)) > MAX_AXES_PER_JOYSTICK) {
-				Warning (TXT_JOY_AXESNO, joyP->nAxes, MAX_AXES_PER_JOYSTICK);
-				joyP->nAxes = MAX_AXES_PER_JOYSTICK;
-				}
-
-			if((joyP->nButtons = SDL_JoystickNumButtons (joyP->handle)) > MAX_BUTTONS_PER_JOYSTICK) {
-				Warning (TXT_JOY_BUTTONNO, joyP->nButtons, MAX_BUTTONS_PER_JOYSTICK);
-				joyP->nButtons = MAX_BUTTONS_PER_JOYSTICK;
-				}
-			if((joyP->nHats = SDL_JoystickNumHats (joyP->handle)) > MAX_HATS_PER_JOYSTICK) {
-				Warning (TXT_JOY_HATNO, joyP->nHats, MAX_HATS_PER_JOYSTICK);
-				joyP->nHats = MAX_HATS_PER_JOYSTICK;
-				}
-#if TRACE
-			console.printf(CON_VERBOSE, "sdl-joystick: %d axes\n", joyP->nAxes);
-			console.printf(CON_VERBOSE, "sdl-joystick: %d buttons\n", joyP->nButtons);
-			console.printf(CON_VERBOSE, "sdl-joystick: %d hats\n", joyP->nHats);
-#endif
-			memset (&joyInfo, 0, sizeof (joyInfo));
-			for (j = 0; j < joyP->nAxes; j++)
-				joyP->axisMap [j] = joyInfo.nAxes++;
-			for (j = 0; j < joyP->nButtons; j++)
-				joyP->buttonMap [j] = joyInfo.nButtons++;
-			for (j = 0; j < joyP->nHats; j++) {
-				joyP->hatMap [j] = joyInfo.nButtons;
-				//a hat counts as four buttons
-				joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_U : TNUM_HAT_U;
-				joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_R : TNUM_HAT_R;
-				joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_D : TNUM_HAT_D;
-				joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_L : TNUM_HAT_L;
-				}
-			joyP++;
-			gameStates.input.nJoysticks++;
+	joyP->handle = SDL_JoystickOpen (i);
+	if (joyP->handle) {
+		bJoyPresent = 1;
+		if((joyP->nAxes = SDL_JoystickNumAxes (joyP->handle)) > MAX_AXES_PER_JOYSTICK) {
+			Warning (TXT_JOY_AXESNO, joyP->nAxes, MAX_AXES_PER_JOYSTICK);
+			joyP->nAxes = MAX_AXES_PER_JOYSTICK;
 			}
-		else {
+
+		if((joyP->nButtons = SDL_JoystickNumButtons (joyP->handle)) > MAX_BUTTONS_PER_JOYSTICK) {
+			Warning (TXT_JOY_BUTTONNO, joyP->nButtons, MAX_BUTTONS_PER_JOYSTICK);
+			joyP->nButtons = MAX_BUTTONS_PER_JOYSTICK;
+			}
+		if((joyP->nHats = SDL_JoystickNumHats (joyP->handle)) > MAX_HATS_PER_JOYSTICK) {
+			Warning (TXT_JOY_HATNO, joyP->nHats, MAX_HATS_PER_JOYSTICK);
+			joyP->nHats = MAX_HATS_PER_JOYSTICK;
+			}
 #if TRACE
-			console.printf(CON_VERBOSE, "sdl-joystick: initialization failed!\n");
-#endif		
+		console.printf(CON_VERBOSE, "sdl-joystick: %d axes\n", joyP->nAxes);
+		console.printf(CON_VERBOSE, "sdl-joystick: %d buttons\n", joyP->nButtons);
+		console.printf(CON_VERBOSE, "sdl-joystick: %d hats\n", joyP->nHats);
+#endif
+		memset (&joyInfo, 0, sizeof (joyInfo));
+		for (j = 0; j < joyP->nAxes; j++)
+			joyP->axisMap [j] = joyInfo.nAxes++;
+		for (j = 0; j < joyP->nButtons; j++)
+			joyP->buttonMap [j] = joyInfo.nButtons++;
+		for (j = 0; j < joyP->nHats; j++) {
+			joyP->hatMap [j] = joyInfo.nButtons;
+			//a hat counts as four buttons
+			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_U : TNUM_HAT_U;
+			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_R : TNUM_HAT_R;
+			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_D : TNUM_HAT_D;
+			joybutton_text [joyInfo.nButtons++] = i ? TNUM_HAT2_L : TNUM_HAT_L;
+			}
+		joyP++;
+		gameStates.input.nJoysticks++;
 		}
+	else {
 #if TRACE
-		console.printf(CON_VERBOSE, "sdl-joystick: %d axes (total)\n", joyInfo.nAxes);
-		console.printf(CON_VERBOSE, "sdl-joystick: %d buttons (total)\n", joyInfo.nButtons);
+		console.printf(CON_VERBOSE, "sdl-joystick: initialization failed!\n");
+#endif		
+	}
+#if TRACE
+	console.printf(CON_VERBOSE, "sdl-joystick: %d axes (total)\n", joyInfo.nAxes);
+	console.printf(CON_VERBOSE, "sdl-joystick: %d buttons (total)\n", joyInfo.nButtons);
 #endif
 	}
 return bJoyPresent;
@@ -187,7 +179,7 @@ return bJoyPresent;
 
 //------------------------------------------------------------------------------
 
-void joy_close()
+void JoyClose (void)
 {
 	while (gameStates.input.nJoysticks)
 		SDL_JoystickClose(sdlJoysticks [--gameStates.input.nJoysticks].handle);
@@ -195,7 +187,7 @@ void joy_close()
 
 //------------------------------------------------------------------------------
 
-void JoyGetPos(int *x, int *y)
+void JoyGetPos (int *x, int *y)
 {
 	int axis [JOY_MAX_AXES];
 
@@ -210,22 +202,22 @@ JoyReadRawAxis (JOY_ALL_AXIS, axis);
 
 //------------------------------------------------------------------------------
 
-int JoyGetBtns()
+int JoyGetBtns (void)
 {
 #if 0 // This is never used?
-	int i, buttons = 0;
-	for (i=0; i++; i<buttons) {
-		switch (joyInfo.buttons [i].state) {
-		case SDL_PRESSED:
-			buttons |= 1<<i;
-			break;
-		case SDL_RELEASED:
-			break;
+int	buttons = 0;
+for (int i = 0; i++; i<buttons) {
+	switch (joyInfo.buttons [i].state) {
+	case SDL_PRESSED:
+		buttons |= 1<<i;
+		break;
+	case SDL_RELEASED:
+		break;
 		}
 	}
-	return buttons;
+return buttons;
 #else
-	return 0;
+return 0;
 #endif
 }
 
@@ -295,12 +287,9 @@ return channel_masks;
 
 void JoyFlush (void)
 {
-	int i;
-
 if (!gameStates.input.nJoysticks)
 	return;
-
-for (i = 0; i < MAX_JOYSTICKS * JOY_MAX_BUTTONS; i++) {
+for (int i = 0; i < MAX_JOYSTICKS * JOY_MAX_BUTTONS; i++) {
 	joyInfo.buttons [i].xTimeWentDown = 0;
 	joyInfo.buttons [i].numDowns = 0;
 	}
@@ -326,11 +315,9 @@ return joyInfo.buttons [nButton].state;
 
 void JoyGetCalVals (tJoyAxisCal *cal, int nAxes)
 {
-	int i;
-
 if (!nAxes)
 	nAxes = JOY_MAX_AXES;
-for (i = 0; i < nAxes; i++)
+for (int i = 0; i < nAxes; i++)
 	cal [i] = joyInfo.axes [i].cal;
 }
 
@@ -351,28 +338,28 @@ int JoyGetScaledReading (int raw, int nAxis)
 #if 1
 return (raw + 128) / 256;
 #else
-	int d, x;
+int d, x;
 
-	raw -= joyInfo.axes [nAxis].cal.nCenter;
-	if (raw < 0)
-		d = joyInfo.axes [nAxis].cal.nCenter - joyInfo.axes [nAxis].cal.nMin;
-	else if (raw > 0)
-		d = joyInfo.axes [nAxis].cal.nMax - joyInfo.axes [nAxis].cal.nCenter;
-	else
-		d = 0;
-	if (d)
-		x = ((raw << 7) / d);
-	else
-		x = 0;
-	if (x < -128)
-		x = -128;
-	if (x > 127)
-		x = 127;
-	d = (joyDeadzone [nAxis % 4]) * 6;
-	if ((x > (-d)) && (x < d))
-		x = 0;
+raw -= joyInfo.axes [nAxis].cal.nCenter;
+if (raw < 0)
+	d = joyInfo.axes [nAxis].cal.nCenter - joyInfo.axes [nAxis].cal.nMin;
+else if (raw > 0)
+	d = joyInfo.axes [nAxis].cal.nMax - joyInfo.axes [nAxis].cal.nCenter;
+else
+	d = 0;
+if (d)
+	x = ((raw << 7) / d);
+else
+	x = 0;
+if (x < -128)
+	x = -128;
+if (x > 127)
+	x = 127;
+d = (joyDeadzone [nAxis % 4]) * 6;
+if ((x > (-d)) && (x < d))
+	x = 0;
 
-	return x;
+return x;
 #endif
 }
 
