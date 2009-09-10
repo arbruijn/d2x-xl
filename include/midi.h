@@ -42,6 +42,7 @@ class CMidi {
 		void Init (void);
 		void Shutdown (void);
 		int SetVolume (int nVolume);
+		void FixVolume (int nVolume);
 		int PlaySong (char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song);
 		void Pause (void);
 		void Resume (void);

@@ -88,20 +88,34 @@ if (gameOpts->sound.bUseSDLMixer)
 	Mix_VolumeMusic (m_nVolume);
 #	endif
 #	if defined (_WIN32)
-#	if USE_SDL_MIXER
+#		if USE_SDL_MIXER
 else 
-#	endif
+#		endif
 if (m_hmp) {
-	int mmVolume;
-
 	// scale up from 0-127 to 0-0xffff
-	mmVolume = 65535 * m_nVolume / 128;
-	nVolume = midiOutSetVolume ((HMIDIOUT) m_hmp->hmidi, mmVolume | (mmVolume << 16));
+	nVolume = 65535 * m_nVolume / 128;
+	midiOutSetVolume ((HMIDIOUT) m_hmp->hmidi, nVolume | (nVolume << 16));
 	}
+FixVolume (m_nVolume);
 #	endif
 return nLastVolume;
 #else
 return 0;
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void CMidi::FixVolume (int nVolume)
+{
+#ifdef _WIN32
+if (gameStates.sound.bMidiFix && (songManager.Playing () < 0)) {
+	HMIDIOUT hMIDI;
+	midiOutOpen (&hMIDI, -1, NULL, NULL, CALLBACK_NULL);
+	nVolume = 65535 * nVolume / 128;
+	midiOutSetVolume (hMIDI, nVolume | (nVolume << 16));
+	midiOutClose (hMIDI);
+	}
 #endif
 }
 
@@ -176,9 +190,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 	else
 		songManager.SetStart (SDL_GetTicks ());
 	
-	songManager.SetPlaying (1);
+	songManager.SetPlaying (bCustom ? -1 : 1);
 	SetVolume (m_nVolume);
-	return 1;
+	return songManager.Playing ();
 	}
 #	endif
 #	if defined (_WIN32)

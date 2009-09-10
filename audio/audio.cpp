@@ -979,14 +979,8 @@ else
 	m_info.nVolume = nVolume;
 if (!m_info.bAvailable) 
 	return;
-if (gameStates.sound.bMidiFix && !songManager.Playing ()) {
-	HMIDIOUT hMIDI;
-	midiOutOpen (&hMIDI, -1, NULL, NULL, CALLBACK_NULL);
-	int nVolume = FixMulDiv (fxVolume, 128, SOUND_MAX_VOLUME);
-	nVolume = 65535 * nVolume / 128;
-	nVolume = midiOutSetVolume (hMIDI, nVolume | (nVolume << 16));
-	midiOutClose (hMIDI);
-	}
+if (!songManager.Playing ())
+	midi.FixVolume (FixMulDiv (fxVolume, 128, SOUND_MAX_VOLUME));
 #endif
 SyncSounds ();
 }

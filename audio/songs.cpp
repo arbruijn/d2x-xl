@@ -138,7 +138,7 @@ Register ();			//get new track list for new CD
 if (redbook.Enabled () && RBAEnabled ()) {
 	int nTracks = RBAGetNumberOfTracks ();
 	if (nTrack <= nTracks)
-		if (RBAPlayTracks(nTrack, bKeepPlaying ? nTracks : nTrack))  {
+		if (RBAPlayTracks (nTrack, bKeepPlaying ? nTracks : nTrack))  {
 			m_bPlaying = nTrack;
 			}
 	}
@@ -155,12 +155,12 @@ if (!m_bPlaying || (gameConfig.nRedbookVolume == 0))
 	return;
 
 currentTime = TimerGetFixedSeconds ();
-if (currentTime < m_xLastCheck || (currentTime - m_xLastCheck) >= I2X (2)) {
+if ((currentTime < m_xLastCheck) || ((currentTime - m_xLastCheck) >= I2X (2))) {
 	if (!RBAPeekPlayStatus ()) {
 		StopTime ();
 		// if title ends, start credit music
 		// if credits music ends, restart it
-		if (m_bPlaying == REDBOOK_TITLE_TRACK || m_bPlaying == REDBOOK_CREDITS_TRACK)
+		if ((m_bPlaying == REDBOOK_TITLE_TRACK) || (m_bPlaying == REDBOOK_CREDITS_TRACK))
 			PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 		else {
 
@@ -389,11 +389,10 @@ else if (nSong == SONG_BRIEFING) {
 		return;
 	}
 if (!m_info.bPlaying) {		//not playing redbook, so play midi
-	midi.PlaySong (
-		m_info.data [nSong].filename,
-		m_info.data [nSong].melodicBankFile,
-		m_info.data [nSong].drumBankFile,
-		bLoop, m_info.nSongs [1] && (nSong >= m_info.nSongs [0]));
+	midi.PlaySong (m_info.data [nSong].filename,
+						m_info.data [nSong].melodicBankFile,
+						m_info.data [nSong].drumBankFile,
+						bLoop, m_info.nSongs [1] && (nSong >= m_info.nSongs [0]));
 	}
 }
 
