@@ -32,8 +32,8 @@ extern void MouseButtonHandler (SDL_MouseButtonEvent *mbe);
 extern void MouseMotionHandler (SDL_MouseMotionEvent *mme);
 #ifndef USE_LINUX_JOY // stpohle - so we can choose at compile time..
 extern void JoyButtonHandler (SDL_JoyButtonEvent *jbe);
-extern void joy_hat_Handler (SDL_JoyHatEvent *jhe);
-extern void joy_axis_Handler (SDL_JoyAxisEvent *jae);
+extern void JoyHatHandler (SDL_JoyHatEvent *jhe);
+extern void JoyAxisHandler (SDL_JoyAxisEvent *jae);
 #endif
 
 static int initialised=0;
@@ -79,10 +79,10 @@ while (SDL_PollEvent (&event)) {
 			JoyButtonHandler (reinterpret_cast<SDL_JoyButtonEvent*> (&event));
 			break;
 		case SDL_JOYAXISMOTION:
-			joy_axis_Handler (reinterpret_cast<SDL_JoyAxisEvent*> (&event));
+			JoyAxisHandler (reinterpret_cast<SDL_JoyAxisEvent*> (&event));
 			break;
 		case SDL_JOYHATMOTION:
-			joy_hat_Handler (reinterpret_cast<SDL_JoyHatEvent*> (&event));
+			JoyHatHandler (reinterpret_cast<SDL_JoyHatEvent*> (&event));
 			break;
 		case SDL_JOYBALLMOTION:
 			break;

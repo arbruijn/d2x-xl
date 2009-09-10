@@ -41,7 +41,7 @@ tSdlJoystick /*tSdlJoystick*/ sdlJoysticks [MAX_JOYSTICKS];
 
 //------------------------------------------------------------------------------
 
-void joy_button_handler (SDL_JoyButtonEvent *jbe)
+void JoyButtonHandler (SDL_JoyButtonEvent *jbe)
 {
 	int button;
 
@@ -62,7 +62,7 @@ switch (jbe->type) {
 
 //------------------------------------------------------------------------------
 
-void joy_hat_handler (SDL_JoyHatEvent *jhe)
+void JoyHatHandler (SDL_JoyHatEvent *jhe)
 {
 	int hat;
 	int hbi;
@@ -100,7 +100,7 @@ void joy_hat_handler (SDL_JoyHatEvent *jhe)
 
 //------------------------------------------------------------------------------
 
-void joy_axis_handler(SDL_JoyAxisEvent *jae)
+void JoyAxisHandler(SDL_JoyAxisEvent *jae)
 {
 	int axis;
 
