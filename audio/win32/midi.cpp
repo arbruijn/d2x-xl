@@ -96,7 +96,8 @@ if (m_hmp) {
 	nVolume = 65535 * m_nVolume / 128;
 	midiOutSetVolume ((HMIDIOUT) m_hmp->hmidi, nVolume | (nVolume << 16));
 	}
-FixVolume (m_nVolume);
+if (songManager.Playing () < 0)
+	FixVolume (m_nVolume);
 #	endif
 return nLastVolume;
 #else
@@ -109,7 +110,7 @@ return 0;
 void CMidi::FixVolume (int nVolume)
 {
 #ifdef _WIN32
-if (gameStates.sound.bMidiFix && (songManager.Playing () < 0)) {
+if (gameStates.sound.bMidiFix && (songManager.Playing () <= 0)) {
 	HMIDIOUT hMIDI;
 	midiOutOpen (&hMIDI, -1, NULL, NULL, CALLBACK_NULL);
 	nVolume = 65535 * nVolume / 128;

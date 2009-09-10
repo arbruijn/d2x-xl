@@ -39,7 +39,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "libmve.h"
 #include "text.h"
 #include "screens.h"
+#include "midi.h"
 #include "songs.h"
+#include "config.h"
 
 //-----------------------------------------------------------------------
 
@@ -649,6 +651,7 @@ while ((c = KeyInKey ()))
 audio.Shutdown ();
 // Start sound
 MVE_sndInit (gameStates.app.bUseSound ? 1 : -1);
+midi.FixVolume (64);
 gameOpts->movies.bFullScreen = bFullScreen;
 ret = Run (name, gameOpts->movies.bHires, bRequired, -1, -1);
 audio.Setup (1);

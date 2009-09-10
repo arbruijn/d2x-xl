@@ -1055,6 +1055,7 @@ PrintLog ("   building sky box segment list\n");
 BuildSkyBoxSegList ();
 /*---*/PrintLog ("   stopping music\n");
 //songManager.StopAll ();
+audio.SetVolumes ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 ControlTranspRenderThread ();
 ControlEffectsThread ();
 ControlSoundThread ();

@@ -45,6 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_texcache.h"
 #include "briefings.h"
 #include "menubackground.h"
+#include "config.h"
 #ifdef __macosx__
 # include <OpenGL/glu.h>
 # undef GL_ARB_multitexture // hack!
@@ -1635,6 +1636,7 @@ if (!LoadImageText (fnBriefing, m_info.briefingText)) {
 	return;
 	}
 audio.StopAllChannels ();
+audio.SetVolumes ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);
