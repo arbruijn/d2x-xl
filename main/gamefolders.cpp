@@ -118,11 +118,7 @@ if (*pszParentFolder) {
 #	define	STD_GAMEDIR		"/Applications/Games/D2X-XL"
 #	define	D2X_APPNAME		"d2x-xl"
 #else
-#	ifdef SHAREPATH
-#		define	STD_GAMEDIR		SHAREPATH
-#	else
-#		define	STD_GAMEDIR		"/usr/local/games/d2x-xl"
-#	endif
+#	define	STD_GAMEDIR		"/usr/local/games/d2x-xl"
 #	define	D2X_APPNAME		"d2x-xl"
 #endif
 
@@ -226,9 +222,9 @@ if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolde
 		*gameFolders.szGameDir = '\0';
 #		endif
 #	endif //__unix__
-if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
-		*gameFolders.szGameDir = '\0';
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, SHAREPATH, ""))
+		*gameFolders.szGameDir = '\0';
+if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
 		*gameFolders.szGameDir = '\0';
 #	ifdef __macosx__
 GetOSXAppFolder (szDataRootDir, gameFolders.szGameDir);
