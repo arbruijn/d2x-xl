@@ -144,7 +144,7 @@ void PauseGame (void)
 if (!gameData.app.bGamePaused) {
 	gameData.app.bGamePaused = 1;
 	audio.PauseAll ();
-	RBAPause ();
+	rba.Pause ();
 	StopTime ();
 	paletteManager.DisableEffect ();
 	GameFlushInputs ();
@@ -163,7 +163,7 @@ GameFlushInputs ();
 paletteManager.EnableEffect ();
 StartTime (0);
 if (redbook.Playing ())
-	RBAResume ();
+	rba.Resume ();
 audio.ResumeAll ();
 gameData.app.bGamePaused = 0;
 }

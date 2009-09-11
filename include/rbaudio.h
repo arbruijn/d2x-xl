@@ -31,14 +31,14 @@ typedef struct RBACHANNELCTL {
 	uint out3in, out3vol;
 } RBACHANNELCTL;
 
-class RBA {
+class CRBA {
 	private:
 		SDL_CD*	m_cdInfo;
 		int		m_bInitialized;
 
 	public:
-		RBA ();
-		~RBA ();
+		CRBA ();
+		~CRBA ();
 		void Init (void);	//drive a == 0, drive b == 1
 		void Destroy (void);
 		void RegisterCD (void);
@@ -68,9 +68,9 @@ class RBA {
 		uint GetDiscID (void);
 
 	private:
-		int RBA::cddb_sum (int n);
+		int cddb_sum (int n);
 };
 
-extern class RBA rba;
+extern class CRBA rba;
 
 #endif

@@ -24,9 +24,11 @@
 #include "rbaudio.h"
 #include "text.h"
 
+CRBA rba;
+
 //------------------------------------------------------------------------------
 
-RBA::RBA ()
+CRBA::CRBA ()
 {
 m_cdInfo = NULL;
 m_bInitialized = 0;
@@ -34,18 +36,27 @@ m_bInitialized = 0;
 
 //------------------------------------------------------------------------------
 
-void RBA::Destroy (void)
+CRBA::~CRBA ()
+{
+Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+void CRBA::Destroy (void)
 {
 PrintLog ("shutting down SDL CD service\n");
 if (m_bInitialized) {
 	SDL_CDStop (m_cdInfo);
 	SDL_CDClose (m_cdInfo);
+	m_cdInfo = NULL;
+	m_bInitialized = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void RBA::Init (void)
+void CRBA::Init (void)
 {
 	int	d, i, j;
 	char	szDrive [FILENAME_LEN], sz [FILENAME_LEN];
@@ -92,20 +103,20 @@ m_bInitialized = 1;
 
 //------------------------------------------------------------------------------
 
-int RBA::Enabled (void)
+int CRBA::Enabled (void)
 {
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void RBA::RegisterCD (void)
+void CRBA::RegisterCD (void)
 {
 }
 
 //------------------------------------------------------------------------------
 
-int RBA::PlayTrack (int a)
+int CRBA::PlayTrack (int a)
 {
 if (!m_bInitialized) 
 	return -1;
@@ -117,7 +128,7 @@ return a;
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ RBA::Stop (void)
+void _CDECL_ CRBA::Stop (void)
 {
 if (m_bInitialized) 
 	SDL_CDStop (m_cdInfo);
@@ -125,7 +136,7 @@ if (m_bInitialized)
 
 //------------------------------------------------------------------------------
 
-void RBA::SetVolume (int volume)
+void CRBA::SetVolume (int volume)
 {
 #ifdef __linux__
 	int cdfile, level;
@@ -159,7 +170,7 @@ if (ioctl (cdfile, CDROMVOLCTRL, &volctrl) == -1) {
 
 //------------------------------------------------------------------------------
 
-void RBA::Pause (void)
+void CRBA::Pause (void)
 {
 if (m_bInitialized) 
 	SDL_CDPause (m_cdInfo);
@@ -167,7 +178,7 @@ if (m_bInitialized)
 
 //------------------------------------------------------------------------------
 
-int RBA::Resume (void)
+int CRBA::Resume (void)
 {
 if (!m_bInitialized) 
 	return -1;
@@ -177,7 +188,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int RBA::GetNumberOfTracks (void)
+int CRBA::GetNumberOfTracks (void)
 {
 if (!m_bInitialized) 
 	return -1;
@@ -187,7 +198,7 @@ return m_cdInfo->numtracks;
 
 //------------------------------------------------------------------------------
 // plays tracks first through last, inclusive
-int RBA::PlayTracks (int first, int last)
+int CRBA::PlayTracks (int first, int last)
 {
 if (!m_bInitialized)
 	return 0;
@@ -199,9 +210,9 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-// return the track number currently playing.  Useful if RBA::PlayTracks (void)
+// return the track number currently playing.  Useful if CRBA::PlayTracks (void)
 // is called.  Returns 0 if no track playing, else track number
-int RBA::GetTrackNum (void)
+int CRBA::GetTrackNum (void)
 {
 if (!m_bInitialized)
 	return 0;
@@ -212,7 +223,7 @@ return m_cdInfo->cur_track + 1;
 
 //------------------------------------------------------------------------------
 
-int RBA::PeekPlayStatus (void)
+int CRBA::PeekPlayStatus (void)
 {
 return (SDL_CDStatus (m_cdInfo) == CD_PLAYING);
 }
@@ -226,7 +237,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int RBA::cddb_sum (int n)
+int CRBA::cddb_sum (int n)
 {
 	int ret = 0;
 
@@ -240,7 +251,7 @@ return (ret);
 
 //------------------------------------------------------------------------------
 
-uint RBA::GetDiscID (void)
+uint CRBA::GetDiscID (void)
 {
 	int i, t = 0, n = 0;
 
