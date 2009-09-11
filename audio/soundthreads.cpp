@@ -9,6 +9,7 @@
 #include "maths.h"
 #include "songs.h"
 #include "soundthreads.h"
+#include "config.h"
 
 tSoundThreadInfo tiSound;
 
@@ -26,6 +27,7 @@ do {
 		}
 	if (tiSound.nTask == stOpenAudio) {
 		audio.Setup (tiSound.fSlowDown);
+		audio.SetVolumes ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 		}
 	else if (tiSound.nTask == stCloseAudio) {
 		audio.Shutdown ();
