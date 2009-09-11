@@ -75,16 +75,16 @@ void DoPhysicsAlignObject (CObject * objP)
 	fixang		delta_ang, roll_ang;
 	//CFixVector forvec = {0, 0, I2X (1)};
 	CFixMatrix	temp_matrix;
-	fix			d, largest_d=-I2X (1);
+	fix			dot, maxDot = -I2X (1);
 	int			i, nBestSide;
 
 nBestSide = 0;
 // bank CPlayerData according to CSegment orientation
 //find CSide of CSegment that CPlayerData is most aligned with
 for (i = 0; i < 6; i++) {
-	d = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals [0], objP->info.position.mOrient.UVec ());
-	if (d > largest_d) {
-		largest_d = d; 
+	dot = CFixVector::Dot (SEGMENTS [objP->info.nSegment].m_sides [i].m_normals [0], objP->info.position.mOrient.UVec ());
+	if (maxDot < dot) {
+		maxDot = dot; 
 		nBestSide = i;
 		}
 	}
@@ -100,7 +100,7 @@ else if (gameOpts->gameplay.nAutoLeveling == 2) {	 // new CPlayerData leveling c
 		desiredUpVec = SEGMENTS [objP->info.nSegment].m_sides [nBestSide].m_normals [0];
 	}
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
-	desiredUpVec = (*PlayerSpawnOrient(gameData.multiplayer.nLocalPlayer)).UVec ();
+	desiredUpVec = (*PlayerSpawnOrient (gameData.multiplayer.nLocalPlayer)).UVec ();
 else
 	return;
 if (labs (CFixVector::Dot (desiredUpVec, objP->info.position.mOrient.FVec ())) < I2X (1)/2) {
