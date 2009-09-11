@@ -86,7 +86,7 @@ m_xLastCheck = 0;
 
 void CRedbook::Destroy (void)
 {
-RBAStop ();    // stop song on exit
+rba.Stop ();    // stop song on exit
 }
 
 //------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ RBAStop ();    // stop song on exit
 void CRedbook::Register (void)
 {
 if (m_bForceRegister) {
-	RBARegisterCD ();			//get new track list for new CD
+	rba.RegisterCD ();			//get new track list for new CD
 	m_bForceRegister = 0;
 	}
 }
@@ -104,18 +104,18 @@ if (m_bForceRegister) {
 //takes volume in range 0..8
 void CRedbook::SetVolume (int volume)
 {
-RBASetVolume (0);		// makes the macs sound really funny
-RBASetVolume (volume * REDBOOK_VOLUME_SCALE / 8);
+rba.SetVolume (0);		// makes the macs sound really funny
+rba.SetVolume (volume * REDBOOK_VOLUME_SCALE / 8);
 }
 
 //------------------------------------------------------------------------------
 
 void CRedbook::ReInit (void)
 {
-RBAInit ();
-if (RBAEnabled ()) {
+rba.Init ();
+if (rba.Enabled ()) {
 	SetVolume (gameConfig.nRedbookVolume);
-	RBARegisterCD ();
+	rba.RegisterCD ();
 	m_bForceRegister = 0;
 	}
 }
@@ -132,13 +132,13 @@ m_bPlaying = 0;
 nTrack = 1;
 #endif
 
-if (!RBAEnabled () && redbook.Enabled () && !gameOpts->sound.bUseRedbook)
+if (!rba.Enabled () && redbook.Enabled () && !gameOpts->sound.bUseRedbook)
 	redbook.ReInit ();
 Register ();			//get new track list for new CD
-if (redbook.Enabled () && RBAEnabled ()) {
-	int nTracks = RBAGetNumberOfTracks ();
+if (redbook.Enabled () && rba.Enabled ()) {
+	int nTracks = rba.GetNumberOfTracks ();
 	if (nTrack <= nTracks)
-		if (RBAPlayTracks (nTrack, bKeepPlaying ? nTracks : nTrack))  {
+		if (rba.PlayTracks (nTrack, bKeepPlaying ? nTracks : nTrack))  {
 			m_bPlaying = nTrack;
 			}
 	}
@@ -156,7 +156,7 @@ if (!m_bPlaying || (gameConfig.nRedbookVolume == 0))
 
 currentTime = TimerGetFixedSeconds ();
 if ((currentTime < m_xLastCheck) || ((currentTime - m_xLastCheck) >= I2X (2))) {
-	if (!RBAPeekPlayStatus ()) {
+	if (!rba.PeekPlayStatus ()) {
 		StopTime ();
 		// if title ends, start credit music
 		// if credits music ends, restart it
@@ -190,12 +190,12 @@ if (m_bPlaying) {		//fade out volume
 		newVolume = FixMulDiv (oldVolume, (FADE_TIME - (t-oldTime)), FADE_TIME);
 		if (newVolume < 0)
 			newVolume = 0;
-		RBASetVolume (newVolume);
+		rba.SetVolume (newVolume);
 	} while (newVolume > 0);
 }
 if (audio.Available ()) {
-	RBAStop ();              	// Stop CD, if playing
-	RBASetVolume (oldVolume);	//restore volume
+	rba.Stop ();              	// Stop CD, if playing
+	rba.SetVolume (oldVolume);	//restore volume
 	}
 m_bPlaying = 0;
 }
@@ -209,7 +209,7 @@ int CRedbook::HaveD2CD (void)
 
 if (!redbook.Enabled ())
 	return 0;
-discid = RBAGetDiscID ();
+discid = rba.GetDiscID ();
 switch (discid) {
 	case D2_1_DISCID:
 	case D2_2_DISCID:
@@ -319,12 +319,12 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		}
 	m_info.nTotalSongs = i;
 	m_info.bInitialized = 1;
-	//	RBA Hook
+	//	rba. Hook
 	if (!gameOpts->sound.bUseRedbook)
 		redbook.Enable (0);
 	else {	// use redbook
-		RBAInit ();
-		if (RBAEnabled ()) {
+		rba.Init ();
+		if (rba.Enabled ()) {
 			redbook.SetVolume (gameConfig.nRedbookVolume);
 			redbook.ForceRegister ();
 			redbook.Register ();
@@ -422,7 +422,7 @@ if (bWaitForThread)
 m_info.nLevel = nLevel;
 nSong = (nLevel > 0) ? nLevel - 1 : -nLevel;
 m_info.nCurrent = nSong;
-if (!RBAEnabled () && redbook.Enabled () && gameOpts->sound.bUseRedbook)
+if (!rba.Enabled () && redbook.Enabled () && gameOpts->sound.bUseRedbook)
 	redbook.ReInit ();
 redbook.Register ();
 
@@ -456,7 +456,7 @@ if ((nLevel > 0) && m_user.nLevelSongs) {
 	if (m_user.nLevelSongs [0] && midi.PlaySong (m_user.levelSongs [0][nSong % m_user.nLevelSongs [0]], NULL, NULL, 1, 0))
 		return;
 	}
-if (redbook.Enabled () && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) > 1)	//try to play redbook
+if (redbook.Enabled () && rba.Enabled () && (nTracks = rba.GetNumberOfTracks ()) > 1)	//try to play redbook
 	redbook.PlayTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks - REDBOOK_FIRST_LEVEL_TRACK + 1)) , 1);
 if (!redbook.Playing ()) {			//not playing redbook, so play midi
 	nSong = m_info.nLevelSongs [bD1Song] ? m_info.nFirstLevelSong [bD1Song] + (nSong % m_info.nLevelSongs [bD1Song]) : 0;
@@ -475,7 +475,7 @@ if (!redbook.Playing ()) {			//not playing redbook, so play midi
 void CSongManager::Next (void)
 {
 if (m_info.bPlaying) 		//get correct track
-	m_info.nLevel = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
+	m_info.nLevel = rba.GetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
 PlayLevelSong (m_info.nLevel + 1, 0);
 }
 
@@ -484,7 +484,7 @@ PlayLevelSong (m_info.nLevel + 1, 0);
 void CSongManager::Prev (void)
 {
 if (m_info.bPlaying) 		//get correct track
-	m_info.nLevel = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
+	m_info.nLevel = rba.GetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
 if (m_info.nLevel > 1)
 	songManager.PlayLevelSong (m_info.nLevel - 1, 0);
 }

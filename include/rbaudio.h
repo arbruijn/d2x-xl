@@ -16,6 +16,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _RBAUDIO_H
 #define _RBAUDIO_H
 
+#ifdef __macosx__
+# include <SDL/SDL.h>
+#else
+# include <SDL.h>
+#endif
+
 #define RBA_MEDIA_CHANGED	-1
 
 typedef struct RBACHANNELCTL {
@@ -25,32 +31,46 @@ typedef struct RBACHANNELCTL {
 	uint out3in, out3vol;
 } RBACHANNELCTL;
 
-void RBAInit(void);	//drive a == 0, drive b == 1
-void RBARegisterCD(void);
-long RBAGetDeviceStatus(void);
-int RBAPlayTrack(int track);
-int RBAPlayTracks(int first, int last);	//plays tracks first through last, inclusive
-int RBACheckMediaChange();
-long	RBAGetHeadLoc(int *min, int *sec, int *frame);
-int	RBAPeekPlayStatus(void);
-void _CDECL_ RBAStop(void);
-void RBASetStereoAudio(RBACHANNELCTL *channels);
-void RBASetQuadAudio(RBACHANNELCTL *channels);
-void RBAGetAudioInfo(RBACHANNELCTL *channels);
-void RBASetChannelVolume(int channel, int volume);
-void RBASetVolume(int volume);
-int	RBAEnabled(void);
-void RBADisable(void);
-void RBAEnable(void);
-int	RBAGetNumberOfTracks(void);
-void	RBAPause();
-int	RBAResume();
+class RBA {
+	private:
+		SDL_CD*	m_cdInfo;
+		int		m_bInitialized;
 
-//return the track number currently playing.  Useful if RBAPlayTracks() 
-//is called.  Returns 0 if no track playing, else track number
-int RBAGetTrackNum();
+	public:
+		RBA ();
+		~RBA ();
+		void Init (void);	//drive a == 0, drive b == 1
+		void Destroy (void);
+		void RegisterCD (void);
+		long GetDeviceStatus (void);
+		int PlayTrack (int track);
+		int PlayTracks (int first, int last);	//plays tracks first through last, inclusive
+		int CheckMediaChange (void);
+		long GetHeadLoc (int *min, int *sec, int *frame);
+		int PeekPlayStatus (void);
+		void _CDECL_ Stop (void);
+		void SetStereoAudio (RBACHANNELCTL* channels);
+		void SetQuadAudio (RBACHANNELCTL* channels);
+		void GetAudioInfo (RBACHANNELCTL* channels);
+		void SetChannelVolume (int channel, int volume);
+		void SetVolume (int volume);
+		int Enabled (void);
+		void Disable (void);
+		void Enable (void);
+		int GetNumberOfTracks (void);
+		void Pause (void);
+		int Resume (void);
 
-// get the cddb discid for the current cd.
-uint RBAGetDiscID();
+		//return the track number currently playing.  Useful if RBAPlayTracks() 
+		//is called.  Returns 0 if no track playing, else track number
+		int GetTrackNum (void);
+		// get the cddb discid for the current cd.
+		uint GetDiscID (void);
+
+	private:
+		int RBA::cddb_sum (int n);
+};
+
+extern class RBA rba;
 
 #endif

@@ -12,12 +12,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __macosx__
-# include <SDL/SDL.h>
-#else
-# include <SDL.h>
-#endif
-
 #ifdef __linux__
 #include <sys/ioctl.h>
 #include <linux/cdrom.h>
@@ -30,35 +24,44 @@
 #include "rbaudio.h"
 #include "text.h"
 
-static SDL_CD *s_cd = NULL;
-static int initialised = 0;
+//------------------------------------------------------------------------------
 
-void _CDECL_ RBAExit(void)
+RBA::RBA ()
+{
+m_cdInfo = NULL;
+m_bInitialized = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void RBA::Destroy (void)
 {
 PrintLog ("shutting down SDL CD service\n");
-if (initialised) {
-	SDL_CDStop(s_cd);
-	SDL_CDClose(s_cd);
+if (m_bInitialized) {
+	SDL_CDStop (m_cdInfo);
+	SDL_CDClose (m_cdInfo);
 	}
 }
 
-void RBAInit (void)
+//------------------------------------------------------------------------------
+
+void RBA::Init (void)
 {
 	int	d, i, j;
 	char	szDrive [FILENAME_LEN], sz [FILENAME_LEN];
 
-if (initialised) 
+if (m_bInitialized) 
 	return;
 if (FindArg ("-nocdrom")) 
 	return; 
 
-if (SDL_Init(SDL_INIT_CDROM) < 0) {
-	Warning(TXT_SDL_INIT_LIB,SDL_GetError());
+if (SDL_Init (SDL_INIT_CDROM) < 0) {
+	Warning (TXT_SDL_INIT_LIB,SDL_GetError ());
 	return;
 	}
 
-if ((j = SDL_CDNumDrives()) == 0) {
-	Warning(TXT_CDROM_NONE);
+if ((j = SDL_CDNumDrives ()) == 0) {
+	Warning (TXT_CDROM_NONE);
 	return;
 	}
 
@@ -80,166 +83,178 @@ if ((i = FindArg ("-cdrom")) && *pszArgList [++i]) {
 		}
 	}
 
-if (!(s_cd = SDL_CDOpen(d))) {
-	Warning(TXT_CDROM_OPEN);
+if (! (m_cdInfo = SDL_CDOpen (d))) {
+	Warning (TXT_CDROM_OPEN);
 	return;
 	}
-atexit(RBAExit);
-initialised = 1;
+m_bInitialized = 1;
 }
 
-int RBAEnabled()
+//------------------------------------------------------------------------------
+
+int RBA::Enabled (void)
 {
-	return 1;
+return 1;
 }
 
-void RBARegisterCD()
-{
+//------------------------------------------------------------------------------
 
+void RBA::RegisterCD (void)
+{
 }
 
-int RBAPlayTrack(int a)
-{
-	if (!initialised) return -1;
+//------------------------------------------------------------------------------
 
-	if (CD_INDRIVE(SDL_CDStatus(s_cd)) ) {
-		SDL_CDPlayTracks(s_cd, a-1, 0, 0, 0);
+int RBA::PlayTrack (int a)
+{
+if (!m_bInitialized) 
+	return -1;
+if (CD_INDRIVE (SDL_CDStatus (m_cdInfo))) {
+	SDL_CDPlayTracks (m_cdInfo, a - 1, 0, 0, 0);
 	}
-	return a;
+return a;
 }
 
-void _CDECL_ RBAStop()
+//------------------------------------------------------------------------------
+
+void _CDECL_ RBA::Stop (void)
 {
-	if (!initialised) return;
-	SDL_CDStop(s_cd);
+if (m_bInitialized) 
+	SDL_CDStop (m_cdInfo);
 }
 
-void RBASetVolume(int volume)
+//------------------------------------------------------------------------------
+
+void RBA::SetVolume (int volume)
 {
 #ifdef __linux__
 	int cdfile, level;
 	struct cdrom_volctrl volctrl;
 
-	if (!initialised) return;
+if (!m_bInitialized) 
+	return;
 
-	cdfile = s_cd->id;
-	level = volume * 3;
+cdfile = m_cdInfo->id;
+level = volume * 3;
 
-	if ((level<0) || (level>255)) {
+if ((level<0) || (level>255)) {
 #ifndef _WIN32
-		fprintf(stderr, "illegal volume value (allowed values 0-255)\n");
+	fprintf (stderr, "illegal volume value (allowed values 0-255)\n");
 #endif
-		return;
+	return;
 	}
 
-	volctrl.channel0
-		= volctrl.channel1
-		= volctrl.channel2
-		= volctrl.channel3
-		= level;
-	if ( ioctl(cdfile, CDROMVOLCTRL, &volctrl) == -1 ) {
+volctrl.channel0 =
+volctrl.channel1 =
+volctrl.channel2 =
+volctrl.channel3 = level;
+if (ioctl (cdfile, CDROMVOLCTRL, &volctrl) == -1) {
 #ifndef _WIN32
-		fprintf(stderr, "CDROMVOLCTRL ioctl failed\n");
+	fprintf (stderr, "CDROMVOLCTRL ioctl failed\n");
 #endif
-		return;
+	return;
 	}
 #endif
 }
 
-void RBAPause()
+//------------------------------------------------------------------------------
+
+void RBA::Pause (void)
 {
-	if (!initialised) 
-		return;
-	SDL_CDPause(s_cd);
+if (m_bInitialized) 
+	SDL_CDPause (m_cdInfo);
 }
 
-int RBAResume()
+//------------------------------------------------------------------------------
+
+int RBA::Resume (void)
 {
-	if (!initialised) 
-		return -1;
-	SDL_CDResume(s_cd);
-	return 1;
+if (!m_bInitialized) 
+	return -1;
+SDL_CDResume (m_cdInfo);
+return 1;
 }
 
-int RBAGetNumberOfTracks()
+//------------------------------------------------------------------------------
+
+int RBA::GetNumberOfTracks (void)
 {
-	if (!initialised) 
-		return -1;
-	SDL_CDStatus(s_cd);
-	return s_cd->numtracks;
+if (!m_bInitialized) 
+	return -1;
+SDL_CDStatus (m_cdInfo);
+return m_cdInfo->numtracks;
 }
 
+//------------------------------------------------------------------------------
 // plays tracks first through last, inclusive
-int RBAPlayTracks(int first, int last)
+int RBA::PlayTracks (int first, int last)
 {
-if (!initialised)
+if (!m_bInitialized)
 	return 0;
-if (!CD_INDRIVE(SDL_CDStatus(s_cd)))
+if (!CD_INDRIVE (SDL_CDStatus (m_cdInfo)))
 	return 0;
-if (0 > SDL_CDPlayTracks(s_cd, first - 1, 0, last - first + 1, 0))
+if (0 > SDL_CDPlayTracks (m_cdInfo, first - 1, 0, last - first + 1, 0))
 	return 0;
 return 1;
 }
 
-// return the track number currently playing.  Useful if RBAPlayTracks()
+//------------------------------------------------------------------------------
+// return the track number currently playing.  Useful if RBA::PlayTracks (void)
 // is called.  Returns 0 if no track playing, else track number
-int RBAGetTrackNum()
+int RBA::GetTrackNum (void)
 {
-	if (!initialised)
-		return 0;
-
-	if (SDL_CDStatus(s_cd) != CD_PLAYING)
-		return 0;
-
-	return s_cd->cur_track + 1;
-}
-
-int RBAPeekPlayStatus()
-{
-	return (SDL_CDStatus(s_cd) == CD_PLAYING);
-}
-
-int CD_blast_mixer()
-{
+if (!m_bInitialized)
 	return 0;
+if (SDL_CDStatus (m_cdInfo) != CD_PLAYING)
+	return 0;
+return m_cdInfo->cur_track + 1;
 }
 
+//------------------------------------------------------------------------------
 
-static int cddb_sum(int n)
+int RBA::PeekPlayStatus (void)
 {
-	int ret;
-
-	/* For backward compatibility this algorithm must not change */
-
-	ret = 0;
-
-	while (n > 0) {
-		ret = ret + (n % 10);
-		n = n / 10;
-	}
-
-	return (ret);
+return (SDL_CDStatus (m_cdInfo) == CD_PLAYING);
 }
 
+//------------------------------------------------------------------------------
 
-uint RBAGetDiscID()
+int CD_blast_mixer (void)
+{
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int RBA::cddb_sum (int n)
+{
+	int ret = 0;
+
+// For backward compatibility this algorithm must not change
+while (n > 0) {
+	ret = ret + (n % 10);
+	n = n / 10;
+	}
+return (ret);
+}
+
+//------------------------------------------------------------------------------
+
+uint RBA::GetDiscID (void)
 {
 	int i, t = 0, n = 0;
 
-	if (!initialised)
-		return 0;
-
-	/* For backward compatibility this algorithm must not change */
-
-	i = 0;
-
-	while (i < s_cd->numtracks) {
-		n += cddb_sum(s_cd->track[i].offset / CD_FPS);
-		i++;
+if (!m_bInitialized)
+	return 0;
+/* For backward compatibility this algorithm must not change */
+i = 0;
+while (i < m_cdInfo->numtracks) {
+	n += cddb_sum (m_cdInfo->track[i].offset / CD_FPS);
+	i++;
 	}
-
-	t = (s_cd->track[s_cd->numtracks].offset / CD_FPS) -
-	    (s_cd->track[0].offset / CD_FPS);
-
-	return ((n % 0xff) << 24 | t << 8 | s_cd->numtracks);
+t = (m_cdInfo->track [m_cdInfo->numtracks].offset / CD_FPS) - (m_cdInfo->track [0].offset / CD_FPS);
+return (((n % 0xff) << 24) | (t << 8) | m_cdInfo->numtracks);
 }
+
+//------------------------------------------------------------------------------
+//eof

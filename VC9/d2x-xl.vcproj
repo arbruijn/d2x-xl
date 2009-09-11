@@ -3072,6 +3072,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\include\rbaudio.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\songs.h"
 						>
 					</File>
@@ -4311,11 +4315,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
