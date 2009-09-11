@@ -233,7 +233,7 @@ pszDrag [1] = TXT_LOW;
 pszDrag [2] = TXT_MEDIUM;
 pszDrag [3] = TXT_STANDARD;
 
-gameOpts->gameplay.nAutoLeveling = NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 2);
+gameOpts->gameplay.nAutoLeveling = NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 3);
 //extraGameInfo [0].nHitboxes = NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2) >> 1;
 for (nDrag = sizeofa (nDragTable); nDrag; ) {
 	nDrag--;
