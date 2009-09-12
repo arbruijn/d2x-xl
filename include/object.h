@@ -103,9 +103,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_SHRAPNELS		10	 // white explosion light blast
 #define RT_SMOKE			11
 #define RT_LIGHTNING    12
+#define RT_SOUND			13
 
 #define SMOKE_ID			0
 #define LIGHTNING_ID		1
+#define SOUND_ID			2
 
 #define SINGLE_LIGHT_ID		0
 #define CLUSTER_LIGHT_ID	1
@@ -480,6 +482,25 @@ class CLightningInfo {
 		inline char GetInPlane (void) { return m_info.bInPlane; }
 };
 
+
+typedef struct tSoundInfo {
+public:
+	char	szFilename [40];
+	fix	nVolume;
+	//Mix_Chunk*	mixChunkP;
+} tSoundInfo;
+
+class CSoundInfo {
+	private:
+		tSoundInfo	m_info;
+	public:
+		inline tSoundInfo* GetInfo (void) { return &m_info; };
+		inline char* Filename (void) { return m_info.szFilename; }
+		inline fix Volume (void) { return fix (float (m_info.nVolume) * I2X (1) / 10.0f + 0.5f); }
+		//inline Mix_Chunk* SoundHandle (void) { return m_info.mixChunkP; }
+		//inline void SetSoundHandle (Mix_Chunk* handle) { m_info.mixChunkP = handle; }
+};
+
 //	-----------------------------------------------------------------------------
 // structures for different kinds of rendering
 
@@ -592,6 +613,7 @@ typedef union tObjRenderInfo {
 	tVClipInfo			vClipInfo;     // tVideoClip
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
+	tSoundInfo			soundInfo;
 	} __pack__ tObjRenderInfo;
 
 // TODO get rid of the structs (former unions) and the union

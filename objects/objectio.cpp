@@ -258,6 +258,12 @@ switch (info.renderType) {
 		rType.lightningInfo.color.alpha = cf.ReadByte ();
 		break;
 
+	case RT_SOUND:
+		cf.Read (rType.soundInfo.szFilename, 1, sizeof (rType.soundInfo.szFilename));
+		rType.soundInfo.nVolume = int (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f + 0.5f);
+		//rType.soundInfo.mixChunkP = LoadAddonSound (rType.soundInfo.szFilename);
+		break;
+
 	default:
 		Int3();
 	}
