@@ -462,8 +462,10 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
 	if (!gameStates.app.bD1Mission && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
-	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX))
-		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
+	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX)) {
+		if (LOCALPLAYER.laserLevel < MAX_LASER_LEVEL)
+			LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
+		}
 	if (!bRestore && (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX))))
 		LOCALPLAYER.primaryAmmo [1] = GAUSS_WEAPON_AMMO_AMOUNT;
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevice;

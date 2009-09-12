@@ -733,13 +733,14 @@ int SpawnPowerup (CObject *spitterP, ubyte nId, int nCount)
 
 if (nCount <= 0)
 	return 0;
-gameData.multiplayer.powerupsInMine [nId] += nCount;
 velSave = spitterP->mType.physInfo.velocity;
 spitterP->mType.physInfo.velocity.SetZero ();
 for (i = nCount; i; i--) {
 	nObject = SpitPowerup (spitterP, nId, d_rand ());
-	objP = OBJECTS + nObject;
-	MultiSendCreatePowerup (nId, objP->info.nSegment, nObject, &objP->info.position.vPos);
+	if (nObject >= 0) {
+		objP = OBJECTS + nObject;
+		MultiSendCreatePowerup (nId, objP->info.nSegment, nObject, &objP->info.position.vPos);
+		}
 	}
 spitterP->mType.physInfo.velocity = velSave;
 return nCount;
