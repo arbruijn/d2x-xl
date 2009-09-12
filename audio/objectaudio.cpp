@@ -967,7 +967,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 		}
 
 FORALL_EFFECT_OBJS (objP, i)
-	if (objP->info.nType == SOUND_ID) {
+	if (objP->info.nId == SOUND_ID) {
 		char fn [FILENAME_LEN];
 		sprintf (fn, "%s.wav", objP->rType.soundInfo.szFilename);
 		audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, objP->Index (), 1, objP->rType.soundInfo.nVolume, I2X (256), -1, -1, fn);

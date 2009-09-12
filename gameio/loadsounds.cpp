@@ -441,6 +441,7 @@ Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn)
 {
 	Mix_Chunk	*chunkP;
 	char			szWAV [FILENAME_LEN];
+	char*			pszFolder, * pszFile;
 	int			i;
 	CFile			cf;
 
@@ -456,10 +457,22 @@ else {
 		return chunkP;
 	pszSoundFile += 3;
 	}
-if (!(cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
-		cf.Extract (pszSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)], 0, "d2x-temp.wav")))
-	return NULL;
-sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "");
+if (cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav")) {
+	pszFolder = gameFolders.szDataDir;
+	pszFile = "d2x-temp.wav";
+	}
+else {
+	if (cf.Exist (pszSoundFile, gameFolders.szSoundDir [5], 0))
+		pszFolder = gameFolders.szSoundDir [5];
+	else if (cf.Exist (pszSoundFile, gameFolders.szSoundDir [4], 0))
+		pszFolder = gameFolders.szSoundDir [4];
+	else if (cf.Exist (pszSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)], 0))
+		pszFolder = gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)];
+	else
+		return NULL;
+	pszFile = const_cast<char*>(pszSoundFile);
+	}
+sprintf (szWAV, "%s%s%s", pszFolder, *pszFolder ? "/" : "", pszFile);
 if (!(chunkP = Mix_LoadWAV (szWAV)))
 	return NULL;
 if (i >= 0)
