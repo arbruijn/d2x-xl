@@ -940,7 +940,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			speed = CFixVector::Normalize (vNewVel);
 			xMaxSpeed = WI_speed (objP->info.nId,gameStates.app.nDifficultyLevel);
 			if (speed + I2X (1) < xMaxSpeed) {
-				speed += FixMul (xMaxSpeed, gameData.time.xFrame / 2);
+				speed += FixMul (xMaxSpeed, max (I2X (1) / 80, gameData.time.xFrame / 2));
 				if (speed > xMaxSpeed)
 					speed = xMaxSpeed;
 				}

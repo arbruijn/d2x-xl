@@ -333,8 +333,8 @@ int nSpeed = mType.physInfo.velocity.Mag();
 nSpeed -= I2X (2);
 if (nSpeed < 0)
 	nSpeed = 0;
-if (gameData.multiplayer.bMoving == nSpeed)
-	return;
+//if (gameData.multiplayer.bMoving == nSpeed)
+//	return;
 
 if (gameData.multiplayer.bMoving < 0)
 	audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, OBJ_IDX (this), 1, I2X (1) / 64 + nSpeed / 256, I2X (256), -1, -1, 
