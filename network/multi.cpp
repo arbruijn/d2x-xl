@@ -674,49 +674,46 @@ if (gameStates.app.bHaveExtraGameInfo [1] &&(!extraGameInfo [1].bAutoBalanceTeam
 
 void ChoseTeam (int nPlayer)
 {
-	int	h, i, t, teamScore [2];
+if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && IsTeamGame && NetworkIAmMaster ()) {
+	int	h, i, t, teamScore [2] = {0, 0}, teamSize [2] = {0, 0};
 
-teamScore [0]  =
-teamScore [1] = 0;
-for (h = i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((t = GetTeam (i)))
-		h++;
-	teamScore [t] = gameData.multiplayer.players [i].score;
+	for (h = i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		t = GetTeam (i);
+		teamSize [t]++;
+		teamScore [t] += gameData.multiplayer.players [i].score;
+		}
+	// put CPlayerData on red team if red team smaller or weaker than blue team
+	// and on blue team otherwise
+	t = (teamSize [1] < teamSize [0]) || ((teamSize [1] == teamSize [0]) && (teamScore [1] < teamScore [0]));
+	SetTeam (nPlayer, t);
+	MultiSendSetTeam (nPlayer);
 	}
-i = gameData.multiplayer.nPlayers / 2;
-// put CPlayerData on red team if red team smaller or weaker than blue team
-// and on blue team otherwise
-SetTeam (nPlayer, (h < i) || ((h == i) &&(teamScore [1] < teamScore [0])) ? 1 : 0);
-MultiSendSetTeam (nPlayer);
 }
 
 //-----------------------------------------------------------------------------
 
 void AutoBalanceTeams (void)
 {
-if (gameStates.app.bHaveExtraGameInfo &&
-	 extraGameInfo [1].bAutoBalanceTeams &&
-	 (gameData.app.nGameMode & GM_TEAM) &&
-	 NetworkIAmMaster ()) {
+if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && IsTeamGame && NetworkIAmMaster ()) {
 		int	h, i, t, teamCount [2], teamScore [2];
 
-	teamCount [0] =
-	teamCount [1] =
+	teamSize [0] =
+	teamSize [1] =
 	teamScore [0] =
 	teamScore [1] = 0;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		t = GetTeam (i);
-		teamCount [t]++;
+		teamSize [t]++;
 		teamScore [t] = gameData.multiplayer.players [i].score;
 		}
-	h = teamCount [0] - teamCount [1];
+	h = teamSize [0] - teamSize [1];
 	// don't change teams if 1 CPlayerData or less difference
 	if ((h  >= -1) &&(h <= 1))
 		return;
 	// don't change teams if smaller team is better
-	if ((h > 1) &&(teamScore [1] > teamScore [0]))
+	if ((h > 1) && (teamScore [1] > teamScore [0]))
 		return;
-	if ((h < -1) &&(teamScore [0] > teamScore [1]))
+	if ((h < -1) && (teamScore [0] > teamScore [1]))
 		return;
 	// set id of the team to be reduced
 	t = (h > 1) ? 0 : 1;
@@ -725,7 +722,7 @@ if (gameStates.app.bHaveExtraGameInfo &&
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (GetTeam (i) != t)
 			continue;
-		if ((gameData.app.nGameMode & GM_CAPTURE) &&(gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG))
+		if ((gameData.app.nGameMode & GM_CAPTURE) && (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG))
 			continue;
 		SwitchTeam (i, 1);
 		h -= 2; // one team grows and the other shrinks ...
