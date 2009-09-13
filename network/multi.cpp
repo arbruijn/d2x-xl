@@ -618,9 +618,7 @@ static const char *szTeamColors [2] = {"blue", "red"};
 
 void SetTeam (int nPlayer, int team)
 {
-	int	i;
-
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
 		MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [i].nObject);
 
@@ -643,7 +641,7 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	HUDInitMessage (TXT_TEAMJOIN, szTeamColors [team]);
 	}
 else
-	HUDInitMessage (TXT_TEAMJOIN2, gameData.multiplayer.players [i].callsign, szTeamColors [team]);
+	HUDInitMessage (TXT_TEAMJOIN2, gameData.multiplayer.players [nPlayer].callsign, szTeamColors [team]);
 }
 
 //-----------------------------------------------------------------------------

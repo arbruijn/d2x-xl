@@ -1132,7 +1132,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject)
 }
 
 //	-----------------------------------------------------------------------------
-
+static int qqq = 0;
 //show names of teammates & players carrying flags
 void CGenericCockpit::DrawPlayerNames (void)
 {
@@ -1167,7 +1167,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 	bShowName = (nState ||
 					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) ||
 					 (bShowTeamNames && GetTeam (nPlayer) == nTeam));
-	bHasFlag = (gameData.multiplayer.players [nPlayer].connected && gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG);
+	bHasFlag = (gameData.multiplayer.players [nPlayer].connected && (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG));
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		nObject = gameData.multiplayer.players [nPlayer].nObject;
@@ -1188,7 +1188,15 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
 		g3sPoint		vPlayerPos;
 
+#if 0
 		G3TransformAndEncodePoint (&vPlayerPos, OBJECTS [nObject].info.position.vPos);
+#else
+		//transformation.Push ();
+		SetRenderView (0, NULL, 0);
+		G3TransformAndEncodePoint (&vPlayerPos, OBJECTS [nObject].info.position.vPos);
+		ogl.EndFrame ();
+		//transformation.Pop ();
+#endif
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
@@ -1214,13 +1222,11 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 					fontManager.SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue), 1, 0, 0);
 					x1 = x - w / 2;
 					y1 = y - h / 2;
-					//glBlendFunc (GL_ONE, GL_ONE);
 					nIdNames [nCurColor][nPlayer] = GrString (x1, y1, s, nIdNames [nCurColor] + nPlayer);
 					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->red, colorP->green, colorP->blue));
 					glLineWidth ((GLfloat) 2.0f);
 					OglDrawEmptyRect (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
 					glLineWidth (1);
-					//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
