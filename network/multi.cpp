@@ -695,7 +695,7 @@ if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && 
 void AutoBalanceTeams (void)
 {
 if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && IsTeamGame && NetworkIAmMaster ()) {
-		int	h, i, t, teamCount [2], teamScore [2];
+		int	h, i, t, teamSize [2], teamScore [2];
 
 	teamSize [0] =
 	teamSize [1] =
