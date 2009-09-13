@@ -1663,8 +1663,10 @@ Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 HUDClearMessages ();
 automap.ClearVisited ();
 
-for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	ResetPlayerData (bNewGame, bSecret, bRestore, i);
+if (!IsMultiGame) {
+	for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+		ResetPlayerData (bNewGame, bSecret, bRestore, i);
+	}
 if (IsCoopGame && networkData.nJoinState) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];
