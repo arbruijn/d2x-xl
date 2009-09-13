@@ -270,8 +270,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		return 0;
 		}
 	}
-for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	ResetPlayerData (true, false, false, i);
+LOCALPLAYER.timeLevel = 0;
 //PrintLog ("   NetworkInit\n");
 NetworkInit ();
 gameData.multiplayer.nPlayers = 0;

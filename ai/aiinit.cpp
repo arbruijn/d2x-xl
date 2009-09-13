@@ -208,8 +208,14 @@ void InitAIForShip (void)
 {
 for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
-	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
+	if (gameData.objs.consoleP) {
+		gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
+		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
+		}
+	else {
+		gameData.ai.cloakInfo [i].nLastSeg = -1;
+		gameData.ai.cloakInfo [i].vLastPos = CFixVector::ZERO;
+		}
 	}
 }
 

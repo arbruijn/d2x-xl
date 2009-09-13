@@ -374,7 +374,6 @@ if (bNewGame) {
 	playerP->lastScore = 0;
 	playerP->lives = gameStates.gameplay.nInitialLives;
 	playerP->level = 1;
-	playerP->timeLevel = 0;
 	playerP->timeTotal = 0;
 	playerP->hoursLevel = 0;
 	playerP->hoursTotal = 0;
@@ -402,6 +401,8 @@ if (bNewGame) {
 		else
 			playerP->flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 		}
+	else
+		playerP->timeLevel = 0;
 	if ((nPlayer = gameData.multiplayer.nLocalPlayer))
 		gameStates.app.bFirstSecretVisit = 1;
 	}
@@ -1663,10 +1664,8 @@ Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 HUDClearMessages ();
 automap.ClearVisited ();
 
-if (!IsMultiGame) {
-	for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-		ResetPlayerData (bNewGame, bSecret, bRestore, i);
-	}
+for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	ResetPlayerData (bNewGame, bSecret, bRestore, i);
 if (IsCoopGame && networkData.nJoinState) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];
