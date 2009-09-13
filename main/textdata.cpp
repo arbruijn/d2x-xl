@@ -24,8 +24,10 @@ delete[] msgP->textBuffer;
 msgP->textBuffer = NULL;
 delete[] msgP->index;
 msgP->index = NULL;
-if (msgP->bmP)
+if (msgP->bmP) {
 	delete msgP->bmP;
+	msgP->bmP = NULL;
+	}
 msgP->nMessages = 0;
 }
 
