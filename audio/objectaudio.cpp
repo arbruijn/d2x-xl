@@ -671,7 +671,6 @@ while (i) {
 						soundObjP->m_linkType.pos.position, soundObjP->m_linkType.pos.nSegment, soundObjP->m_maxVolume,
 						&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #	endif
-				//Mix_VolPan (soundObjP->m_channel, soundObjP->m_volume, soundObjP->m_pan);
 				}
 #endif
 			}
@@ -694,10 +693,6 @@ while (i) {
 				mListenerOrient, vListenerPos, nListenerSeg,
 				OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
-#if USE_SDL_MIXER
-			if (gameOpts->sound.bUseSDLMixer)
-				Mix_VolPan (soundObjP->m_channel, soundObjP->m_volume, soundObjP->m_pan);
-#endif
 			}
 		if ((soundObjP->m_audioVolume != nAudioVolume) || (nOldVolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
 			soundObjP->m_audioVolume = nAudioVolume;
@@ -711,6 +706,10 @@ while (i) {
 					}
 				}
 			else {
+#if DBG
+				if (strstr (soundObjP->m_szSound, "lightning"))
+					soundObjP = soundObjP;
+#endif
 				if (soundObjP->m_channel < 0)
 					soundObjP->Start ();
 				else
