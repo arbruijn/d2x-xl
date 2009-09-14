@@ -334,7 +334,7 @@ class CAudio {
 									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0);
 		int ChangeObjectSound (int nObject, fix nVolume);
 		int DestroyObjectSound (int nObject);
-		int SuspendObjectSound (int nVolume);
+		bool SuspendObjectSound (int nThreshold);
 		void DeleteSoundObject (int i);
 
 		int CreateSegmentSound (short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0,
