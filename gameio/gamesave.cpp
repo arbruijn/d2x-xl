@@ -822,9 +822,9 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 	sideP = SEGMENTS [i].m_sides;
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
 		CWall* wallP = sideP->Wall ();
-		if (!wallP || (wallP->nClip == -1))
-			continue;
-		if (gameData.walls.animP [wallP->nClip].flags & WCF_TMAP1) {
+		if (!wallP || (wallP->nClip < 0) || (wallP->nClip >= int (gameData.walls.animP.Length ()))) 
+			wallP->nClip = -1;
+		else if (gameData.walls.animP [wallP->nClip].flags & WCF_TMAP1) {
 			sideP->m_nBaseTex = gameData.walls.animP [wallP->nClip].frames [0];
 			sideP->m_nOvlTex = 0;
 			}
