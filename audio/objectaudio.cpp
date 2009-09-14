@@ -69,8 +69,7 @@ if (m_volume <= 0)
 if (gameStates.sound.bDontStartObjects)
 	return false;
 // only use up to 1/4 the sound channels for "permanent" sounts
-if ((m_flags & SOF_PERMANENT) &&
-	 (audio.ActiveObjects () >= max (1, audio.GetMaxChannels () / 4)))
+if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= max (1, audio.GetMaxChannels () / 4)) && !audio.SuspendObjectSound (m_volume))
 	return false;
 // start the sample playing
 m_channel =
@@ -308,6 +307,28 @@ m_info.nLoopingChannel = -1;
 void CAudio::ResumeLoopingSound (void)
 {
 StartLoopingSound ();
+}
+
+//------------------------------------------------------------------------------
+// find sound object with lowest volume. If found object's volume <= nThreshold,
+// stop sound object to free up a sound channel for another (louder) one.
+
+bool CAudio::SuspendObjectSound (int nThreshold)
+{
+	int	j = -1, nMinVolume = I2X (1000);
+
+for (int i = 0; i < int (m_objects.ToS ()); i++) {
+	if (m_objects [i].m_channel < 0)
+		continue;
+	if (nMinVolume > m_objects [i].m_volume) {
+		nMinVolume = m_objects [i].m_volume;
+		j = i;
+		}
+	}
+if (nMinVolume > nThreshold)
+	return false;
+m_objects [j].Stop ();
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -706,8 +727,10 @@ while (i) {
 					}
 				}
 			else {
-#if DBG
-				if (strstr (soundObjP->m_szSound, "lightning"))
+#if 1 //DBG
+				if (*soundObjP->m_szSound)
+					soundObjP = soundObjP;
+				if (strstr (soundObjP->m_szSound, "dripping-water"))
 					soundObjP = soundObjP;
 #endif
 				if (soundObjP->m_channel < 0)
@@ -969,7 +992,7 @@ FORALL_EFFECT_OBJS (objP, i)
 	if (objP->info.nId == SOUND_ID) {
 		char fn [FILENAME_LEN];
 		sprintf (fn, "%s.wav", objP->rType.soundInfo.szFilename);
-		audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, objP->Index (), 1, objP->rType.soundInfo.nVolume, I2X (256), -1, -1, fn);
+		audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, objP->Index (), 1, objP->rType.soundInfo.nVolume, I2X (256), 0, 0, fn);
 		}
 
 if (0 <= (nSound = audio.GetSoundByName ("explode2"))) {

@@ -334,6 +334,7 @@ class CAudio {
 									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0);
 		int ChangeObjectSound (int nObject, fix nVolume);
 		int DestroyObjectSound (int nObject);
+		int SuspendObjectSound (int nVolume);
 		void DeleteSoundObject (int i);
 
 		int CreateSegmentSound (short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0,
@@ -371,7 +372,13 @@ class CAudio {
 		inline int Format (void) { return m_info.nFormat; }
 		inline void SetFormat (int nFormat) { m_info.nFormat = nFormat; }
 		inline int Available (void) { return m_info.bAvailable; }
-		inline int ActiveObjects (void) { return m_info.nActiveObjects; }
+		inline int ActiveObjects (void) { 
+			m_info.nActiveObjects = 0;
+			for (int i = 0; i < int (m_objects.ToS ()); i++)
+				if (m_objects [i].m_channel >= 0)
+					m_info.nActiveObjects++;
+				return m_info.nActiveObjects; 
+			}
 		inline int MaxChannels (void) { return MAX_SOUND_CHANNELS; }
 		inline int FreeChannel (void) { return m_info.nFreeChannel; }
 		inline CAudioChannel* Channel (uint i = 0) { return m_channels + i; }
