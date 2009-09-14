@@ -930,12 +930,20 @@ int CheckForUpdate (void)
 {
 	char		szSrc [FILENAME_LEN], szDest [FILENAME_LEN];
 	CFile		cf;
-	int		nVersion [3];
+	int		nVersion [3], nLocation;
 	char		szMsg [1000];
 
+	static char* pszSource [2] = {
+		"http://www.descent2.de/downloads", 
+		"http://sourceforge.net/projects/d2x-xl/files"
+	};
+
 sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.szDownloadDir);
-if ((DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest)) &&
-	 (DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest))) {
+if (!DownloadFile ("http://www.descent2.de/downloads/d2x-xl-version.txt", szDest))
+	nLocation = 0;
+else if (!DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest))
+	nLocation = 1;
+else {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
 	return -1;
 	}
@@ -961,16 +969,11 @@ sprintf (szDest, "%s/d2x-xl-%s-%d.%d.%d.%s", gameFolders.szDownloadDir,
 			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 #if 1
 messageBox.Show ("Downloading...");
-sprintf (szSrc, "http://www.descent2.de/downloads/d2x-xl-%s-%d.%d.%d.%s",
-			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
+sprintf (szSrc, "%s/d2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 if (DownloadFile (szSrc, szDest)) {
-	sprintf (szSrc, "http://sourceforge.net/projects/d2x-xl/files/d2x-xl-%s-%d.%d.%d.%s/download",
-				FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
-	if (DownloadFile (szSrc, szDest)) {
-		messageBox.Clear ();
-		MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
-		return -1;
-		}
+	messageBox.Clear ();
+	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, "Download failed.");
+	return -1;
 	}
 messageBox.Clear ();
 if (!cf.Exist (szDest, "", 0)) {
