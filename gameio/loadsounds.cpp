@@ -458,7 +458,7 @@ else {
 	pszSoundFile += 3;
 	}
 if (cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav")) {
-	pszFolder = gameFolders.szDataDir;
+	pszFolder = gameFolders.szCacheDir;
 	pszFile = "d2x-temp.wav";
 	}
 else {
