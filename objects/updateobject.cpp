@@ -590,7 +590,8 @@ if (gameOpts->gameplay.nAutoLeveling)
 	gameData.objs.consoleP->mType.physInfo.flags |= PF_LEVELLING;
 else
 	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
-
+gameData.laser.xUpdateTime %= I2X (1) / 40;
+gameData.laser.xUpdateTime += gameData.time.xFrame;
 // Move all OBJECTS
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();

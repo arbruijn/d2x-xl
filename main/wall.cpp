@@ -341,14 +341,22 @@ if (!nFrames)
 
 fix xTotalTime = (fix) (gameData.walls.animP [nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 fix xFrameTime = xTotalTime / nFrames;
+#if DBG
+int i;
+if (xElapsedTime < 0)
+	i = nFrames;
+else
+	i = xElapsedTime / xFrameTime;
+#else
 int i = (xElapsedTime < 0) ? nFrames : xElapsedTime / xFrameTime;
+#endif
 CSegment* segP = SEGMENTS + nSegment;
 if (i < nFrames)
 	segP->SetTexture (nSide, NULL, -1, nClip, i);
 if (i > nFrames / 2)
 	flags |= WALL_DOOR_OPENED;
 if (i < nFrames - 1)
-	return 0;
+	return 0; // not fully opened yet
 segP->SetTexture (nSide, NULL, -1, nClip, nFrames - 1);
 if (flags & WALL_DOOR_AUTO) {
 	state = WALL_DOOR_WAITING;

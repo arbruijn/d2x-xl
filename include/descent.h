@@ -3089,6 +3089,7 @@ class CLaserData {
 	public:
 		fix		xLastFiredTime;
 		fix		xNextFireTime;
+		fix		xUpdateTime;
 		int		nGlobalFiringCount;
 		int		nMissileGun;
 		int		nOffset;

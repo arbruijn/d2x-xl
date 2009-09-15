@@ -57,7 +57,7 @@ void NDRecordGuidedStart (void);
 #define	FULL_COCKPIT_OFFS 0
 #define	LASER_OFFS	 (I2X (29) / 100)
 
-static   int nMslTurnSpeeds [3] = {4, 2, 1};
+static   int nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, I2X (1)};
 
 #define	HOMINGMSL_SCALE		nMslTurnSpeeds [(IsMultiGame && !IsCoopGame) ? 2 : extraGameInfo [IsMultiGame].nMslTurnSpeed]
 
@@ -68,7 +68,7 @@ static   int nMslTurnSpeeds [3] = {4, 2, 1};
 
 inline int HomingMslScale (void)
 {
-return (int) (HOMINGMSL_SCALE * sqrt (gameStates.gameplay.slowmo [0].fSpeed));
+return (int) (HOMINGMSL_SCALE / sqrt (gameStates.gameplay.slowmo [0].fSpeed));
 }
 
 //---------------------------------------------------------------------------------
@@ -901,77 +901,79 @@ if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FUSION_ID)) {		//alwa
 	objP->mType.physInfo.velocity *= (WI_speed (objP->info.nId,gameStates.app.nDifficultyLevel));
 	}
 //	For homing missiles, turn towards target. (unless it's the guided missile)
-if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.tick40fps.bTick) &&
+if ((gameData.laser.xUpdateTime >= I2X (1) / 40) &&
 	 (objP->info.nType == OBJ_WEAPON) &&
     (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (objP->info.nId)) &&
 	 !(objP->info.nFlags & PF_HAS_BOUNCED) &&
 	 !((objP->info.nId == GUIDEDMSL_ID) &&
 	   (objP == (gmObjP = gameData.objs.guidedMissile [OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId].objP)) &&
 	   (objP->info.nSignature == gmObjP->info.nSignature))) {
-	CFixVector	vVecToObject, vNewVel;
-	fix			dot = I2X (1);
-	fix			speed, xMaxSpeed, xDist;
-	int			nObjId = objP->info.nId;
-	//	For first 1/2 second of life, missile flies straight.
-	//if (objP->cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) 
-		{
-		int	nHomingTarget = objP->cType.laserInfo.nHomingTarget;
+	fix xFrameTime;
+	for (xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xFrameTime -= I2X (1) / 40) {
+		CFixVector	vVecToObject, vNewVel;
+		fix			dot = I2X (1);
+		fix			speed, xMaxSpeed, xDist;
+		int			nObjId = objP->info.nId;
+		//	For first 1/2 second of life, missile flies straight.
+		//if (objP->cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) 
+			{
+			int	nHomingTarget = objP->cType.laserInfo.nHomingTarget;
 
-		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
-		if ((nObjId == ROBOT_SMARTMINE_BLOB_ID) ||
-			 (nObjId == ROBOT_SMARTMSL_BLOB_ID) ||
-			 (nObjId == SMARTMINE_BLOB_ID) ||
-			 (nObjId == SMARTMSL_BLOB_ID) ||
-			 (nObjId == EARTHSHAKER_MEGA_ID))
-			objP->mType.physInfo.flags &= ~PF_BOUNCE;
+			//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
+			if ((nObjId == ROBOT_SMARTMINE_BLOB_ID) ||
+				 (nObjId == ROBOT_SMARTMSL_BLOB_ID) ||
+				 (nObjId == SMARTMINE_BLOB_ID) ||
+				 (nObjId == SMARTMSL_BLOB_ID) ||
+				 (nObjId == EARTHSHAKER_MEGA_ID))
+				objP->mType.physInfo.flags &= ~PF_BOUNCE;
 
-		//	Make sure the CObject we are tracking is still trackable.
-		nHomingTarget = TrackHomingTarget (nHomingTarget, objP, &dot);
-		if (nHomingTarget != -1) {
-			if (nHomingTarget == LOCALPLAYER.nObject) {
-				xDistToTarget = CFixVector::Dist (objP->info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
-				if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
-					LOCALPLAYER.homingObjectDist = xDistToTarget;
-				}
-			vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - objP->info.position.vPos;
-			xDist = vVecToObject.Mag ();
-			CFixVector::Normalize (vVecToObject);
-			vNewVel = objP->mType.physInfo.velocity;
-			speed = CFixVector::Normalize (vNewVel);
-			xMaxSpeed = WI_speed (objP->info.nId,gameStates.app.nDifficultyLevel);
-			if (speed + I2X (1) < xMaxSpeed) {
-				speed += FixMul (xMaxSpeed, max (I2X (1) / 80, gameData.time.xFrame / 2));
-				if (speed > xMaxSpeed)
-					speed = xMaxSpeed;
-				}
-			if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (objP->info.nId == EARTHSHAKER_MEGA_ID)) {
-				fix h = (objP->info.xLifeLeft + I2X (1) - 1) / I2X (1);
+			//	Make sure the CObject we are tracking is still trackable.
+			nHomingTarget = TrackHomingTarget (nHomingTarget, objP, &dot);
+			if (nHomingTarget != -1) {
+				if (nHomingTarget == LOCALPLAYER.nObject) {
+					xDistToTarget = CFixVector::Dist (objP->info.position.vPos, OBJECTS [nHomingTarget].info.position.vPos);
+					if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
+						LOCALPLAYER.homingObjectDist = xDistToTarget;
+					}
+				vVecToObject = OBJECTS [nHomingTarget].info.position.vPos - objP->info.position.vPos;
+				xDist = CFixVector::Normalize (vVecToObject);
+				vNewVel = objP->mType.physInfo.velocity;
+				speed = CFixVector::Normalize (vNewVel);
+				xMaxSpeed = WI_speed (objP->info.nId,gameStates.app.nDifficultyLevel);
+				if (speed + I2X (1) < xMaxSpeed) {
+					speed += FixMul (xMaxSpeed, I2X (1) / 80);
+					if (speed > xMaxSpeed)
+						speed = xMaxSpeed;
+					}
+				if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (objP->info.nId == EARTHSHAKER_MEGA_ID)) {
+					fix h = (objP->info.xLifeLeft + I2X (1) - 1) / I2X (1);
 
-				if (h > 7)
-					vVecToObject *= (I2X (1) / (h - 6));
-				}
-			// -- dot = CFixVector::Dot (vNewVel, vVecToObject);
-			vVecToObject *= (I2X (1) / HomingMslScale ());
-			vNewVel += vVecToObject;
-			//	The boss' smart children track better...
-			if (gameData.weapons.info [objP->info.nId].renderType != WEAPON_RENDER_POLYMODEL)
+					if (h > 7)
+						vVecToObject *= (I2X (1) / (h - 6));
+					}
+	#if 0
+				vVecToObject *= HomingMslScale ();
+	#endif
 				vNewVel += vVecToObject;
-			CFixVector::Normalize (vNewVel);
-			CFixVector vOldVel = objP->mType.physInfo.velocity;
-			objP->mType.physInfo.velocity = vNewVel;
-			objP->mType.physInfo.velocity *= speed;
-			CFixVector vTest = objP->info.position.vPos + vNewVel * xDist;
-			if (!CanSeePoint (NULL, &objP->info.position.vPos, &vTest, objP->info.nSegment, 3 * objP->info.xSize / 2))
-				objP->mType.physInfo.velocity = vOldVel;
-			else {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
-				fix	absdot = abs (I2X (1) - dot);
-            fix	lifelost = FixMul (absdot * 32, gameData.time.xFrame);
-				objP->info.xLifeLeft -= lifelost;
-				}
+				//	The boss' smart children track better...
+				if (gameData.weapons.info [objP->info.nId].renderType != WEAPON_RENDER_POLYMODEL)
+					vNewVel += vVecToObject;
+				CFixVector::Normalize (vNewVel);
+				CFixVector vOldVel = objP->mType.physInfo.velocity;
+				objP->mType.physInfo.velocity = vNewVel;
+				objP->mType.physInfo.velocity *= speed;
+				CFixVector vTest = objP->info.position.vPos + vNewVel * xDist;
+				if (!CanSeePoint (NULL, &objP->info.position.vPos, &vTest, objP->info.nSegment, 3 * objP->info.xSize / 2))
+					objP->mType.physInfo.velocity = vOldVel;
+				else {	//	Subtract off life proportional to amount turned. For hardest turn, it will lose 2 seconds per second.
+					dot = abs (I2X (1) - dot);
+					objP->info.xLifeLeft -= FixMul (dot * 32, I2X (1) / 40);
+					}
 
-			//	Only polygon OBJECTS have visible orientation, so only they should turn.
-			if (gameData.weapons.info [objP->info.nId].renderType == WEAPON_RENDER_POLYMODEL)
-				HomingMissileTurnTowardsVelocity (objP, &vNewVel);		//	vNewVel is normalized velocity.
+				//	Only polygon OBJECTS have visible orientation, so only they should turn.
+				if (gameData.weapons.info [objP->info.nId].renderType == WEAPON_RENDER_POLYMODEL)
+					HomingMissileTurnTowardsVelocity (objP, &vNewVel);		//	vNewVel is normalized velocity.
+				}
 			}
 		}
 	}
@@ -1107,128 +1109,6 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 gameData.laser.nGlobalFiringCount = 0;
 return rVal;
 }
-
-// -- #define	MAX_LIGHTNING_DISTANCE	 (I2X (30)0)
-// -- #define	MAX_LIGHTNING_BLOBS		16
-// -- #define	LIGHTNING_BLOB_DISTANCE	 (MAX_LIGHTNING_DISTANCE/MAX_LIGHTNING_BLOBS)
-// --
-// -- #define	LIGHTNING_BLOB_ID			13
-// --
-// -- #define	LIGHTNING_TIME		 (I2X (1)/4)
-// -- #define	LIGHTNING_DELAY	 (I2X (1)/8)
-// --
-// -- int	Lightning_gun_num = 1;
-// --
-// -- fix	Lightning_startTime = -I2X (10), Lightning_lastTime;
-// --
-// -- //	--------------------------------------------------------------------------------------------------
-// -- //	Return -1 if failed to create at least one blob.  Else return index of last blob created.
-// -- int create_lightning_blobs (CFixVector *vDirection, CFixVector *start_pos, int start_segnum, int parent)
-// -- {
-// -- 	int			i;
-// -- 	CHitQuery	fq;
-// -- 	CHitData		hitData;
-// -- 	CFixVector	vEndPos;
-// -- 	CFixVector	norm_dir;
-// -- 	int			fate;
-// -- 	int			num_blobs;
-// -- 	CFixVector	tvec;
-// -- 	fix			dist_to_hit_point;
-// -- 	CFixVector	point_pos, delta_pos;
-// -- 	int			nObject;
-// -- 	CFixVector	*gun_pos;
-// -- 	CFixMatrix	m;
-// -- 	CFixVector	gun_pos2;
-// --
-// -- 	if (LOCALPLAYER.energy > I2X (1))
-// -- 		LOCALPLAYER.energy -= I2X (1);
-// --
-// -- 	if (LOCALPLAYER.energy <= I2X (1)) {
-// -- 		LOCALPLAYER.energy = 0;
-// -- 		AutoSelectWeapon (0);
-// -- 		return -1;
-// -- 	}
-// --
-// -- 	norm_dir = *vDirection;
-// --
-// -- 	CFixVector::Normalize (&norm_dir);
-// -- 	VmVecScaleAdd (&vEndPos, start_pos, &norm_dir, MAX_LIGHTNING_DISTANCE);
-// --
-// -- 	fq.p0						= start_pos;
-// -- 	fq.startSeg				= start_segnum;
-// -- 	fq.p1						= &vEndPos;
-// -- 	fq.Rad ()					= 0;
-// -- 	fq.thisObjNum			= parent;
-// -- 	fq.ignoreObjList	= NULL;
-// -- 	fq.flags					= FQ_TRANSWALL | FQ_CHECK_OBJS;
-// --
-// -- 	fate = FindHitpoint (&fq, &hitData);
-// -- 	if (hitData.hit.nSegment == -1) {
-// -- 		return -1;
-// -- 	}
-// --
-// -- 	dist_to_hit_point = VmVecMag (VmVecSub (&tvec, &hitData.hit.vPoint, start_pos);
-// -- 	num_blobs = dist_to_hit_point/LIGHTNING_BLOB_DISTANCE;
-// --
-// -- 	if (num_blobs > MAX_LIGHTNING_BLOBS)
-// -- 		num_blobs = MAX_LIGHTNING_BLOBS;
-// --
-// -- 	if (num_blobs < MAX_LIGHTNING_BLOBS/4)
-// -- 		num_blobs = MAX_LIGHTNING_BLOBS/4;
-// --
-// -- 	// Find the initial vPosition of the laser
-// -- 	gun_pos = &gameData.pig.ship.player->gunPoints [Lightning_gun_num];
-// -- 	VmCopyTransposeMatrix (&m,&OBJECTS [parent].info.position.mOrient);
-// -- 	VmVecRotate (&gun_pos2, gun_pos, &m);
-// -- 	VmVecAdd (&point_pos, &OBJECTS [parent].info.position.vPos, &gun_pos2);
-// --
-// -- 	delta_pos = norm_dir;
-// -- 	VmVecScale (&delta_pos, dist_to_hit_point/num_blobs);
-// --
-// -- 	for (i=0; i<num_blobs; i++) {
-// -- 		int			tPointSeg;
-// -- 		CObject		*obj;
-// --
-// -- 		VmVecInc (&point_pos, &delta_pos);
-// -- 		tPointSeg = FindSegByPos (&point_pos, start_segnum, 1, 0);
-// -- 		if (tPointSeg == -1)	//	Hey, we thought we were creating points on a line, but we left the mine!
-// -- 			continue;
-// --
-// -- 		nObject = CreateNewWeapon (vDirection, &point_pos, tPointSeg, parent, LIGHTNING_BLOB_ID, 0);
-// --
-// -- 		if (nObject < 0)  {
-// -- 			Int3 ();
-// -- 			return -1;
-// -- 		}
-// --
-// -- 		obj = OBJECTS + nObject;
-// --
-// -- 		audio.PlaySound (gameData.weapons.info [objP->info.nId].flashSound);
-// --
-// -- 		// -- VmVecScale (&objP->mType.physInfo.velocity, I2X (1)/2);
-// --
-// -- 		objP->info.xLifeLeft = (LIGHTNING_TIME + LIGHTNING_DELAY)/2;
-// --
-// -- 	}
-// --
-// -- 	return nObject;
-// --
-// -- }
-// --
-// -- //	--------------------------------------------------------------------------------------------------
-// -- //	Lightning Cannon.
-// -- //	While being fired, creates path of blobs forward from CPlayerData until it hits something.
-// -- //	Up to MAX_LIGHTNING_BLOBS blobs, spaced LIGHTNING_BLOB_DISTANCE units apart.
-// -- //	When the CPlayerData releases the firing key, the blobs move forward.
-// -- void lightning_frame (void)
-// -- {
-// -- 	if ((gameData.time.xGame - Lightning_startTime < LIGHTNING_TIME) && (gameData.time.xGame - Lightning_startTime > 0)) {
-// -- 		if (gameData.time.xGame - Lightning_lastTime > LIGHTNING_DELAY) {
-// -- 			create_lightning_blobs (&gameData.objs.consoleP->info.position.mOrient.FVec (), &gameData.objs.consoleP->info.position.vPos, gameData.objs.consoleP->info.nSegment, OBJ_IDX (gameData.objs.consoleP));
-// -- 			Lightning_lastTime = gameData.time.xGame;
-// -- 		}
-// -- 	}
-// -- }
 
 //	--------------------------------------------------------------------------------------------------
 
