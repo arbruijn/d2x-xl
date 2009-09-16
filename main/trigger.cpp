@@ -413,7 +413,8 @@ for (int i = 0; i < m_info.nLinks; i++) {
 				segP->StartCloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
-				audio.CreateSegmentSound (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, I2X (1));
+				if (!(m_info.flags & TF_SILENT))
+					audio.CreateSegmentSound (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, I2X (1));
 				wallP->nType = nNewWallType;
 				audio.DestroySegmentSound (segP->Index (), nSide, SOUND_FORCEFIELD_HUM);
 				if (connWallP) {
@@ -505,7 +506,8 @@ for (int i = 0; i < m_info.nLinks; i++) {
 	segP = SEGMENTS + m_info.segments [i];
 	nSide = m_info.sides [i];
 	segP->IllusionOff (nSide);
-	audio.CreateSegmentSound (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, I2X (1));
+	if (!(m_info.flags & TF_SILENT))
+		audio.CreateSegmentSound (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, I2X (1));
   	}
 }
 
@@ -1223,6 +1225,32 @@ if ((m_info.tOperated > 0) && !Delay ()) {
 
 //------------------------------------------------------------------------------
 
+void CTrigger::Read (CFile& cf, int bObjTrigger)
+{
+	int i;
+
+m_info.nType = cf.ReadByte ();
+if (bObjTrigger)
+	m_info.flags = cf.ReadShort ();
+else
+	m_info.flags = short (cf.ReadByte ());
+m_info.nLinks = cf.ReadByte ();
+cf.ReadByte ();
+m_info.value = cf.ReadFix ();
+m_info.time [0] = cf.ReadFix ();
+m_info.time [1] = -1;
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
+	m_info.segments [i] = cf.ReadShort ();
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
+	m_info.sides [i] = cf.ReadShort ();
+m_info.nObject = -1;
+m_info.nPlayer = -1;
+m_info.nChannel = -1;
+m_info.tOperated = -1;
+}
+
+//------------------------------------------------------------------------------
+
 void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
 m_info.nType = (ubyte) cf.ReadByte ();
@@ -1536,35 +1564,6 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigger.segments [i] = cf.ReadShort ();
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigger.sides [i] = cf.ReadShort ();
-}
-
-//------------------------------------------------------------------------------
-
-/*
- * reads a CTrigger structure from a CFile
- */
-void CTrigger::Read (CFile& cf, int bObjTrigger)
-{
-	int i;
-
-m_info.nType = cf.ReadByte ();
-if (bObjTrigger)
-	m_info.flags = cf.ReadShort ();
-else
-	m_info.flags = short (cf.ReadByte ());
-m_info.nLinks = cf.ReadByte ();
-cf.ReadByte ();
-m_info.value = cf.ReadFix ();
-m_info.time [0] = cf.ReadFix ();
-m_info.time [1] = -1;
-for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	m_info.segments [i] = cf.ReadShort ();
-for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
-	m_info.sides [i] = cf.ReadShort ();
-m_info.nObject = -1;
-m_info.nPlayer = -1;
-m_info.nChannel = -1;
-m_info.tOperated = -1;
 }
 
 //	-----------------------------------------------------------------------------

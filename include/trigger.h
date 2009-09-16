@@ -71,8 +71,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TF_PERMANENT			 8
 #define TF_ALTERNATE			 16
 #define TF_SET_ORIENT		 32
-#define TF_PLAYING_SOUND	 64
+#define TF_SILENT				 64
 #define TF_AUTOPLAY			128
+#define TF_PLAYING_SOUND	256  // only used internally
 
 //old CTrigger structs
 

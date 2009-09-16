@@ -1023,12 +1023,13 @@ bool BitmapLoaded (int bmi, int bD1)
 {
 	CBitmap*		bmoP, * bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
 	CTexture*	texP;
-#if 1
+
+if (!bmP)
+	return false;
 if (bmP->Flags () & BM_FLAG_PAGED_OUT)
 	return false;
 if ((bmoP = bmP->Override (-1)))
 	bmP = bmoP;
-#endif
 return ((texP = bmP->Texture ()) && (texP->Handle ())) || (bmP->Buffer () != 0);
 }
 
