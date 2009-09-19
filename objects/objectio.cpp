@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -55,6 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamesave.h"
 #include "multi.h"
 #include "state.h"
+#include "strutil.h"
 #ifdef TACTILE
 #	include "tactile.h"
 #endif
@@ -260,6 +248,8 @@ switch (info.renderType) {
 
 	case RT_SOUND:
 		cf.Read (rType.soundInfo.szFilename, 1, sizeof (rType.soundInfo.szFilename));
+		rType.soundInfo.szFilename [sizeof (rType.soundInfo.szFilename) - 1] = '\0';
+		strlwr (rType.soundInfo.szFilename);
 		rType.soundInfo.nVolume = int (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f + 0.5f);
 		//rType.soundInfo.mixChunkP = LoadAddonSound (rType.soundInfo.szFilename);
 		break;

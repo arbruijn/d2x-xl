@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 
 static const char* pszDigiVolume = "DigiVolume";
+static const char* pszAmbientVolume = "AmbientVolume";
 static const char* pszMidiVolume = "MidiVolume";
 static const char* pszRedbookEnabled = "RedbookEnabled";
 static const char* pszRedbookVolume = "RedbookVolume";
@@ -80,7 +81,8 @@ gameConfig.vrTracking = 0;
 gameConfig.nDigiType = 0;
 gameConfig.nDigiDMA = 0;
 gameConfig.nMidiType = 0;
-gameConfig.nDigiVolume = 4;
+gameConfig.nAudioVolume [0] = 4;
+gameConfig.nAudioVolume [1] = 4;
 gameConfig.nMidiVolume = 0;
 gameConfig.nRedbookVolume = 0;
 gameConfig.nControlType = 0;
@@ -89,7 +91,7 @@ gameConfig.nVersion = 0;
 }
 
 // ----------------------------------------------------------------------------
-//gameOpts->movies.bHires might be changed by -nohighres, so save a "real" copy of it
+
 int bHiresMoviesSave;
 int bRedbookEnabledSave;
 
@@ -106,7 +108,8 @@ int ReadConfigFile (void)
 strcpy (gameConfig.szLastPlayer, "");
 memset (cal, 0, sizeof (cal));
 JoySetCalVals (cal, sizeofa (cal));
-gameConfig.nDigiVolume = 4;
+gameConfig.nAudioVolume [0] = 4;
+gameConfig.nAudioVolume [1] = 4;
 gameConfig.nMidiVolume = 0;
 gameConfig.nRedbookVolume = 0;
 gameConfig.nControlType = 0;
@@ -134,7 +137,9 @@ while (!cf.EoF ()) {
 		if (value [strlen (value) - 1] == '\n')
 			value [strlen (value) - 1] = 0;
 		if (!strcmp (token, pszDigiVolume))
-			gameConfig.nDigiVolume = (ubyte) strtol (value, NULL, 10);
+			gameConfig.nAudioVolume [0] = (ubyte) strtol (value, NULL, 10);
+		else if (!strcmp (token, pszAmbientVolume))
+			gameConfig.nAudioVolume [1] = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszMidiVolume))
 			gameConfig.nMidiVolume = (ubyte) strtol (value, NULL, 10);
 		else if (!strcmp (token, pszRedbookEnabled))
@@ -205,18 +210,22 @@ if (i > 0) {
 		i = 0;
 	else if (i > 100)
 		i = 100;
-	gameConfig.nDigiVolume =
+	gameConfig.nAudioVolume [0] =
+	gameConfig.nAudioVolume [1] =
 	gameConfig.nMidiVolume =
 	gameConfig.nRedbookVolume = (i * 8) / 100;
 	}
 
-if (gameConfig.nDigiVolume > 8)
-	gameConfig.nDigiVolume = 8;
+if (gameConfig.nAudioVolume [0] > 8)
+	gameConfig.nAudioVolume [0] = 8;
+if (gameConfig.nAudioVolume [1] > 8)
+	gameConfig.nAudioVolume [1] = 8;
 if (gameConfig.nMidiVolume > 8)
 	gameConfig.nMidiVolume = 8;
 if (gameConfig.nRedbookVolume > 8)
 	gameConfig.nRedbookVolume = 8;
-audio.SetVolumes ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
+audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
+audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 if (cf.Open ("descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
 	while (!cf.EoF ()) {
 		memset (line, 0, 80);
@@ -268,7 +277,9 @@ if (!cf.Open ("descent.cfg", gameFolders.szConfigDir, "wt", 0))
 	return 1;
 sprintf (str, "%s=%u\n", pszD2XVersion, D2X_IVER);
 cf.PutS (str);
-sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
+sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nAudioVolume [0]);
+cf.PutS (str);
+sprintf (str, "%s=%d\n", pszAmbientVolume, gameConfig.nAudioVolume [1]);
 cf.PutS (str);
 sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);
 cf.PutS (str);
@@ -331,4 +342,3 @@ return 0;
 
 // ----------------------------------------------------------------------------
 //eof
-

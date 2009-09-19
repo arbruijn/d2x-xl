@@ -1,4 +1,3 @@
-// MIDI stuff follows.
 #include <stdio.h>
 
 #include "descent.h"
@@ -96,7 +95,7 @@ if (m_hmp) {
 	nVolume = 65535 * m_nVolume / 128;
 	midiOutSetVolume ((HMIDIOUT) m_hmp->hmidi, nVolume | (nVolume << 16));
 	}
-if (songManager.Playing () < 0)
+if ((songManager.Playing () < 0) || !nVolume)
 	FixVolume (m_nVolume);
 #	endif
 return nLastVolume;
@@ -113,7 +112,7 @@ void CMidi::FixVolume (int nVolume)
 if (gameStates.sound.bMidiFix && (songManager.Playing () <= 0)) {
 	HMIDIOUT hMIDI;
 	midiOutOpen (&hMIDI, -1, NULL, NULL, CALLBACK_NULL);
-	nVolume = 65535 * nVolume / 128;
+	nVolume = 65535; // * nVolume / 128;
 	midiOutSetVolume (hMIDI, nVolume | (nVolume << 16));
 	midiOutClose (hMIDI);
 	}

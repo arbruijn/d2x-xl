@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -74,7 +61,9 @@ extern tDetailData detailData;
 
 static struct {
 	int	nDigiVol;
+	int   nAmbientVol;
 	int	nMusicVol;
+	int	nLinkVols;
 	int	nRedbook;
 	int	nVolume;
 	int	nGatling;
@@ -120,10 +109,30 @@ if (soundOpts.nGatling >= 0) {
 		nKey = -2;
 		}
 	}
-if (gameConfig.nDigiVolume != menu [soundOpts.nDigiVol].m_value) {
-	gameConfig.nDigiVolume = menu [soundOpts.nDigiVol].m_value;
-	audio.SetFxVolume ((gameConfig.nDigiVolume * 32767) / 8);
+
+if (gameConfig.nAudioVolume [0] != menu [soundOpts.nDigiVol].m_value) {
+	gameConfig.nAudioVolume [0] = menu [soundOpts.nDigiVol].m_value;
+	if (gameOpts->sound.bLinkVolumes) {
+		gameConfig.nAudioVolume [1] = gameConfig.nAudioVolume [0];
+		audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32767) / 8, 1);
+		}
+	audio.SetFxVolume ((gameConfig.nAudioVolume [0] * 32767) / 8);
 	audio.PlaySound (SOUND_DROP_BOMB);
+	}
+
+if (soundOpts.nAmbientVol >= 0) {
+	if (gameConfig.nAudioVolume [1] != menu [soundOpts.nAmbientVol].m_value) {
+		gameConfig.nAudioVolume [1] = menu [soundOpts.nAmbientVol].m_value;
+		audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32767) / 8, 1);
+		}
+	}
+
+if (gameOpts->sound.bLinkVolumes != menu [soundOpts.nLinkVols].m_value) {
+	if ((gameOpts->sound.bLinkVolumes = menu [soundOpts.nLinkVols].m_value)) {
+		gameConfig.nAudioVolume [1] = gameConfig.nAudioVolume [0];
+		audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32767) / 8, 1);
+		}
+	nKey = -2;
 	}
 
 if (menu [soundOpts.nRedbook].m_value != redbook.Enabled ()) {
@@ -220,11 +229,16 @@ do {
 		}
 	else
 		soundOpts.nChannels = -1;
-	soundOpts.nDigiVol = m.AddSlider (TXT_FX_VOLUME, gameConfig.nDigiVolume, 0, 8, KEY_F, HTX_ONLINE_MANUAL);
+	soundOpts.nDigiVol = m.AddSlider (TXT_FX_VOLUME, gameConfig.nAudioVolume [0], 0, 8, KEY_F, HTX_ONLINE_MANUAL);
+	if (gameOpts->sound.bLinkVolumes)
+		soundOpts.nAmbientVol = -1;
+	else
+		soundOpts.nAmbientVol = m.AddSlider (TXT_AMBIENT_VOLUME, gameConfig.nAudioVolume [1], 0, 8, KEY_A, HTX_ONLINE_MANUAL);
 	soundOpts.nMusicVol = m.AddSlider (redbook.Enabled () ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 												  redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 												  0, 8, KEY_M, HTX_ONLINE_MANUAL);
 	m.AddText ("", 0);
+	soundOpts.nLinkVols = m.AddCheck (TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_ONLINE_MANUAL);
 	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Playing (), KEY_C, HTX_ONLINE_MANUAL);
 	optReverse = m.AddCheck (TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 #if 1
@@ -264,7 +278,7 @@ do {
 		if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 			audio.DestroyObjectSound (LOCALPLAYER.nObject);
 		}
-	gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nDigiVolume) * 10.0f / 8.0f + 0.5f);
+	gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f + 0.5f);
 } while (i == -2);
 if (gameConfig.nMidiVolume < 1)
 	midi.PlaySong (NULL, NULL, NULL, 0, 0);

@@ -13,7 +13,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 /*
  *
- * Header file for Inferno.  Should be included in all source files.
+ * Header file for Descent.  Should be included in all source files.
  *
  */
 
@@ -512,6 +512,7 @@ typedef struct tSoundOptions {
 	int bUseSDLMixer;
 	int bUseOpenAL;
 	int bFadeMusic;
+	int bLinkVolumes;
 	int audioSampleRate;	// what's used by the audio system
 	int soundSampleRate;	// what the default sounds are in
 	int bShip;

@@ -18,7 +18,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
@@ -34,7 +33,7 @@ typedef struct tGameConfig {
 	int		nDigiType;
 	int		nDigiDMA;
 	int		nMidiType;
-	ubyte		nDigiVolume;
+	ubyte		nAudioVolume [2];
 	ubyte		nMidiVolume;
 	ubyte		nRedbookVolume;
 	ubyte		bReverseChannels;
@@ -64,3 +63,5 @@ void InitGameConfig (void);
 void SetNostalgia (int nLevel);
 
 #endif
+
+//eof

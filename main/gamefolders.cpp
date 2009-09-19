@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -131,6 +118,7 @@ if (*pszParentFolder) {
 #	define	SOUNDDIR2		"Sounds2"
 #	define	SOUNDDIR1_D1	"Sounds1/D1"
 #	define	SOUNDDIR2_D1	"Sounds2/D1"
+#	define	SOUNDDIR_D2X	"Sounds2/d2x-xl"
 #	define	CONFIGDIR		"Config"
 #	define	PROFDIR			"Profiles"
 #	define	SCRSHOTDIR		"Screenshots"
@@ -154,6 +142,7 @@ if (*pszParentFolder) {
 #	define	SOUNDDIR2		"sounds2"
 #	define	SOUNDDIR1_D1	"sounds1/D1"
 #	define	SOUNDDIR2_D1	"sounds2/D1"
+#	define	SOUNDDIR_D2X	"sounds2/d2x-xl"
 #	define	CONFIGDIR		"config"
 #	define	PROFDIR			"profiles"
 #	define	SCRSHOTDIR		"screenshots"
@@ -262,6 +251,7 @@ if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase"))
 	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
+GetAppFolder (szDataRootDir, gameFolders.szSoundDir [6], SOUNDDIR_D2X, "*.wav");
 if (GetAppFolder (szDataRootDir, gameFolders.szSoundDir [2], SOUNDDIR1_D1, "*.wav"))
 	*gameFolders.szSoundDir [2] = '\0';
 if (GetAppFolder (szDataRootDir, gameFolders.szSoundDir [3], SOUNDDIR2_D1, "*.wav"))
@@ -549,31 +539,43 @@ static tFileDesc addonTextureFiles [] = {
 
 static tFileDesc addonSoundFiles [] = {
 	{"\002afbr_1.wav", "sounds2", false, false, false},
-	{"\002airbubbles.wav", "sounds2", false, false, false},
-	{"\002gatling-slowdown.wav", "sounds2", false, false, false},
-	{"\002gatling-speedup.wav", "sounds2", false, false, false},
-	{"\002gauss-firing.wav", "sounds2", false, false, false},
-	{"\002headlight.wav", "sounds2", false, false, false},
-	{"\002highping.wav", "sounds2", false, false, false},
-	{"\002lightning.wav", "sounds2", false, false, false},
-	{"\002lowping.wav", "sounds2", false, false, false},
-	{"\002missileflight-big.wav", "sounds2", false, false, false},
-	{"\002missileflight-small.wav", "sounds2", false, false, false},
-	{"\002slowdown.wav", "sounds2", false, false, false},
-	{"\002speedup.wav", "sounds2", false, false, false},
-	{"\002vulcan-firing.wav", "sounds2", false, false, false},
-	{"\002zoom1.wav", "sounds2", false, false, false},
-	{"\002zoom2.wav", "sounds2", false, false, false},
+	{"\002airbubbles.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002gatling-slowdown.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002gatling-speedup.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002gauss-firing.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002headlight.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002highping.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002lightning.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002lowping.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002missileflight-big.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002missileflight-small.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002slowdown.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002speedup.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002vulcan-firing.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002zoom1.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002zoom2.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002boiling-lava.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002busy-machine.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002computer.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002deep-hum.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002dripping-water.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002dripping-water-2.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002dripping-water-3.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002earthquake.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002energy.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002falling-rocks.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002falling-rocks-2.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002fast-fan.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002flowing-lava.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002flowing-water.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002insects.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002machine-gear.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002mighty-machine.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002static-buzz.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002steam.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002teleporter.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002waterfall.wav", "sounds2/d2x-xl", false, false, false}
 
-	{"\002gatling-slowdown.wav", "sounds2/D1", false, false, false},
-	{"\002gatling-speedup.wav", "sounds2/D1", false, false, false},
-	{"\002highping.wav", "sounds2/D1", false, false, false},
-	{"\002lowping.wav", "sounds2/D1", false, false, false},
-	{"\002missileflight-big.wav", "sounds2/D1", false, false, false},
-	{"\002missileflight-small.wav", "sounds2/D1", false, false, false},
-	{"\002vulcan-firing.wav", "sounds2/D1", false, false, false},
-	{"\002zoom1.wav", "sounds2/D1", false, false, false},
-	{"\002zoom2.wav", "sounds2/D1", false, false, false}
 };
 
 static char szRootFolder [FILENAME_LEN];

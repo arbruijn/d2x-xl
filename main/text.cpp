@@ -1895,6 +1895,8 @@ const char *defaultGameTexts [][2] = {
  {"Waffen", "weapons"},
  {"~Effekte einschalten", "enable ~Effects"},
  {"auf ~Updates ueberpruefen", "check for ~Updates"},
+ {"~Umgebungs-Lautstaerke", "~Ambient sound volume"},
+ {"Lautstaerke ~koppeln", "~Link volume controls"},
 #if 0
  {"", ""},
 #endif
@@ -2590,6 +2592,7 @@ const char *defaultHelpTexts [][2] = {
   "If checked, various optical effects (smoke, lightning, light trails, energy shields, target markers etc.) are displayed. Otherwise no effects are rendered."},
  {"D2X-XL versucht festzustellen, ob eine neuere Programmversion\nvorhanden ist. (Dazu muss auf das Internet zugegriffen werden.)", 
   "D2X-XL will check whether a newer program version is available.\n(To do that it has to access the internet.)"},
+ {"Wenn angekreuzt, wird die Umgebungslautstaerke der\nEffektlautstaerke angeglichen.", "If checked, ambient sound volume is equalized with\neffect sound volume"},
 #if 0
  {"", ""},
 #endif

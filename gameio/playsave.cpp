@@ -489,6 +489,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
 		RP (gameOptions [i].app.bNotebookFriendly, i, 0);
 		RP (gameOptions [i].sound.bFadeMusic, i, 1);
+		RP (gameOptions [i].sound.bLinkVolumes, i, 1);
 		RP (gameOptions [i].sound.bGatling, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
 		RP (gameOptions [i].sound.bShip, i, 0);
@@ -977,6 +978,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nImageQuality", "3"},
 	 {"gameOptions[0].render.cockpit.bFlashGauges", "1"},
 	 {"gameOptions[0].sound.bFadeMusic", "1"},
+	 {"gameOptions[0].sound.bLinkVolumes", "1"},
 	 {"gameOptions[0].sound.bGatling", "0"},
 	 {"gameOptions[0].sound.bMissiles", "0"},
 	 {"gameOptions[0].sound.bShip", "0"},
@@ -2517,11 +2519,9 @@ if (!fs.FileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
 got_player:
 
 bStartup = 0;
-if (filename [0] == '<') {
-	// They selected 'create new pilot'
+if (filename [0] == '<') { // They selected 'create new pilot'
 	if (!MakeNewPlayerFile (1))
-		//return 0;		// They hit Esc during enter name stage
-		goto callMenu;
+		goto callMenu;	// They hit Esc during enter name stage
 	}
 else
 	strncpy (LOCALPLAYER.callsign, filename, CALLSIGN_LEN);

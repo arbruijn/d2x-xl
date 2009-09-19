@@ -425,7 +425,28 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 	 {NULL, "11:airbubbles.wav"},
 	 {NULL, "12:zoom1.wav"},
 	 {NULL, "13:zoom2.wav"},
-	 {NULL, "14:headlight.wav"}
+	 {NULL, "14:headlight.wav"},
+	 {NULL, "15:boiling-lava.wav"},
+	 {NULL, "16:busy-machine.wav"},
+	 {NULL, "17:computer.wav"},
+	 {NULL, "18:deep-hum.wav"},
+	 {NULL, "19:dripping-water.wav"},
+	 {NULL, "20:dripping-water-2.wav"},
+	 {NULL, "21:dripping-water-3.wav"},
+	 {NULL, "22:earthquake.wav"},
+	 {NULL, "23:energy.wav"},
+	 {NULL, "24:falling-rocks.wav"},
+	 {NULL, "25:falling-rocks-2.wav"},
+	 {NULL, "26:fast-fan.wav"},
+	 {NULL, "27:flowing-lava.wav"},
+	 {NULL, "28:flowing-water.wav"},
+	 {NULL, "29:insects.wav"},
+	 {NULL, "30:machine-gear.wav"},
+	 {NULL, "31:mighty-machine.wav"},
+	 {NULL, "32:static-buzz.wav"},
+	 {NULL, "33:steam.wav"},
+	 {NULL, "34:teleporter.wav"},
+	 {NULL, "35:waterfall.wav"}
 	};
 
 //------------------------------------------------------------------------------
@@ -433,6 +454,16 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 const char *AddonSoundName (int nSound)
 {
 return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? "" : addonSounds [nSound].szSoundFile;
+}
+
+//------------------------------------------------------------------------------
+
+int FindAddonSound (const char* pszSoundFile)
+{
+for (int i = 0; i < MAX_ADDON_SOUND_FILES; i++)
+	if (strstr (addonSounds [i].szSoundFile + 3, pszSoundFile) ==  addonSounds [i].szSoundFile + 3)
+		return i;
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -446,16 +477,18 @@ Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn)
 	CFile			cf;
 
 if (!::isdigit (*pszSoundFile))
-	i = -1;
+	i = FindAddonSound (pszSoundFile);
 else {
 	i = atoi (pszSoundFile);
 	if (i >= MAX_ADDON_SOUND_FILES)
 		return NULL;
+	}
+if (i >= 0) {
 	if (bBuiltIn)
 		*bBuiltIn = 1;
 	if ((chunkP = addonSounds [i].chunkP))
 		return chunkP;
-	pszSoundFile += 3;
+	pszSoundFile = addonSounds [i].szSoundFile + 3;
 	}
 if (cf.Extract (pszSoundFile, gameFolders.szDataDir, 0, "d2x-temp.wav")) {
 	pszFolder = gameFolders.szCacheDir;
@@ -466,8 +499,8 @@ else {
 		pszFolder = gameFolders.szSoundDir [5];
 	else if (cf.Exist (pszSoundFile, gameFolders.szSoundDir [4], 0))
 		pszFolder = gameFolders.szSoundDir [4];
-	else if (cf.Exist (pszSoundFile, gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)], 0))
-		pszFolder = gameFolders.szSoundDir [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)];
+	else if (cf.Exist (pszSoundFile, gameFolders.szSoundDir [6], 0))
+		pszFolder = gameFolders.szSoundDir [6];
 	else
 		return NULL;
 	pszFile = const_cast<char*>(pszSoundFile);

@@ -55,9 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define KEY_DELAY_DEFAULT       ((I2X (20))/1000)
 
-
-void SetColors ();
-int NMCheckButtonPress ();
+int NMCheckButtonPress (void);
 
 //Begin D1X modification
 #define MAX_BRIEFING_COLORS     9
@@ -1636,7 +1634,8 @@ if (!LoadImageText (fnBriefing, m_info.briefingText)) {
 	return;
 	}
 audio.StopAllChannels ();
-audio.SetVolumes ((gameConfig.nDigiVolume * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
+audio.SetFxVolume (gameConfig.nAudioVolume [1], 1);
+audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);

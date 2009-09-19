@@ -1,17 +1,4 @@
 /*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
-/*
  *
  * Include file for sound hardware.
  *
@@ -100,7 +87,7 @@ class CSoundSample {
 #define SAMPLE_RATE_44K				44100
 
 #define SOUNDCLASS_GENERIC			0
-#define SOUNDCLASS_PERSISTENT		1
+#define SOUNDCLASS_AMBIENT			1
 #define SOUNDCLASS_PLAYER			2
 #define SOUNDCLASS_ROBOT			3
 #define SOUNDCLASS_LASER			4
@@ -170,6 +157,7 @@ class CAudioChannel {
 				ubyte				bPersistent;	// This can't be pre-empted
 				ubyte				bResampled;
 				ubyte				bBuiltIn;
+				ubyte				bAmbient;
 #if USE_SDL_MIXER
 				Mix_Chunk*		mixChunkP;
 				int				nChannel;
@@ -221,6 +209,7 @@ class CSoundObject {
 		fix			m_maxVolume;		// Max volume that this sound is playing at
 		fix			m_maxDistance;		// The max distance that this sound can be heard at...
 		int			m_soundClass;
+		int			m_bAmbient;
 		short			m_nSound;			// The sound number that is playing
 		int			m_channel;			// What channel this is playing on, -1 if not playing
 		int			m_volume;			// Volume that this sound is playing at
@@ -265,7 +254,7 @@ class CAudio {
 				int		nFormat;
 				int		nMaxChannels;
 				int		nFreeChannel;
-				int		nVolume;
+				int		nVolume [2];
 				int		nMidiVolume;
 				int		nNextSignature;
 				int		nActiveObjects;
@@ -311,9 +300,9 @@ class CAudio {
 		int GetMaxChannels (void);
 		int FindChannel (short nSound);
 		void SetMidiVolume (int nVolume);
-		void SetFxVolume (int nVolume);
+		void SetFxVolume (int nVolume, int nType = 0);
 		void SetVolumes (int fxVolume, int midiVolume);
-		inline int Volume (void) { return m_info.nVolume; }
+		inline int Volume (int nType = 0) { return m_info.nVolume [nType]; }
 
 		int StartSound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = DEFAULT_VOLUME, int nPan = DEFAULT_PAN,
 							 int bLooping = 0, int nLoopStart = -1, int nLoopEnd = -1, int nSoundObj = -1, int nSpeed = I2X (1),

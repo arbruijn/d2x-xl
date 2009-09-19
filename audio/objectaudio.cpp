@@ -69,7 +69,7 @@ if (m_volume <= 0)
 if (gameStates.sound.bDontStartObjects)
 	return false;
 // only use up to 1/4 the sound channels for "permanent" sounts
-if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= max (1, audio.GetMaxChannels () / 4)) && !audio.SuspendObjectSound (m_volume))
+if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= max (1, 33 * audio.GetMaxChannels () / 100)) && !audio.SuspendObjectSound (m_volume))
 	return false;
 // start the sample playing
 m_channel =
@@ -362,7 +362,7 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 	GetVolPan (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
 				  gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, maxVolume, &nVolume, &nPan,
 				  maxDistance, nDecay);
-	PlaySound (nOrgSound, SOUNDCLASS_GENERIC, nVolume, nPan, 0, -1, pszSound, &objP->info.position.vPos);
+	PlaySound (nOrgSound, nSoundClass, nVolume, nPan, 0, -1, pszSound, &objP->info.position.vPos);
 	return -1;
 	}
 #ifdef NEWDEMO
@@ -381,6 +381,7 @@ soundObjP->m_linkType.obj.nObjSig = objP->info.nSignature;
 soundObjP->m_maxVolume = maxVolume;
 soundObjP->m_maxDistance = maxDistance;
 soundObjP->m_soundClass = nSoundClass;
+soundObjP->m_bAmbient = (nSoundClass == SOUNDCLASS_AMBIENT);
 soundObjP->m_volume = 0;
 soundObjP->m_pan = 0;
 soundObjP->m_nSound = (pszSound && *pszSound) ? -1 : nSound;
@@ -647,7 +648,8 @@ void CAudio::SyncSounds (void)
 if (!OBJECTS.Buffer ())
 	return;
 
-	int				nOldVolume, nOldPan, nAudioVolume = audio.Volume ();
+	int				nOldVolume, nNewVolume, nOldPan, 
+						nAudioVolume [2] = {audio.Volume (0), audio.Volume (1)};
 	CObject*			objP;
 	CFixVector		vListenerPos = gameData.objs.viewerP->info.position.vPos;
 	CFixMatrix		mListenerOrient = gameData.objs.viewerP->info.position.mOrient;
@@ -669,7 +671,10 @@ while (i) {
 	i--;
 	soundObjP--;
 	if (soundObjP->m_flags & SOF_USED) {
-		nOldVolume = soundObjP->m_volume;
+		nOldVolume = FixMulDiv (soundObjP->m_volume, soundObjP->m_audioVolume, I2X (1));
+#if USE_SDL_MIXER
+		nOldVolume = fix (X2F (nOldVolume) * MIX_MAX_VOLUME + 0.5f);
+#endif
 		nOldPan = soundObjP->m_pan;
 		// Check if its done.
 		if (!(soundObjP->m_flags & SOF_PLAY_FOREVER) && ((soundObjP->m_channel < 0) && !ChannelIsPlaying (soundObjP->m_channel))) {
@@ -685,7 +690,7 @@ while (i) {
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 #if USE_SDL_MIXER
 			if (gameOpts->sound.bUseSDLMixer && ((soundObjP->m_volume != nVolume) || (soundObjP->m_pan != nPan))) {
-#	if DBG
+#	if 0 //DBG
 				if (soundObjP->m_volume != nVolume)
 					GetVolPan (
 						mListenerOrient, vListenerPos, nListenerSeg,
@@ -715,9 +720,21 @@ while (i) {
 				OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 			}
-		if ((soundObjP->m_audioVolume != nAudioVolume) || (nOldVolume != soundObjP->m_volume) || (soundObjP->m_channel < 0)) {
-			soundObjP->m_audioVolume = nAudioVolume;
-			if (soundObjP->m_volume < 1) {	// Sound is too far away, so stop it playing.
+		nNewVolume = FixMulDiv (soundObjP->m_volume, nAudioVolume [soundObjP->m_bAmbient], I2X (1));
+#if USE_SDL_MIXER
+		nNewVolume = fix (X2F (nNewVolume) * MIX_MAX_VOLUME + 0.5f);
+#endif
+		if ((nOldVolume != nNewVolume) || (soundObjP->m_channel < 0)) {
+#if 0 //DBG
+			if (!strcmp (soundObjP->m_szSound, "steam.wav")) {
+				GetVolPan (
+					mListenerOrient, vListenerPos, nListenerSeg,
+					OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
+					&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
+				}
+#endif
+			soundObjP->m_audioVolume = nAudioVolume [soundObjP->m_bAmbient];
+			if (nNewVolume <= 0) {	// sound is too far away or muted, so stop it playing.
 				if (soundObjP->m_channel > -1) {
 					if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
 						DeleteSoundObject (i);
@@ -727,7 +744,7 @@ while (i) {
 					}
 				}
 			else {
-#if 1 //DBG
+#if 0 //DBG
 				if (*soundObjP->m_szSound)
 					soundObjP = soundObjP;
 				if (strstr (soundObjP->m_szSound, "dripping-water"))
@@ -991,8 +1008,12 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 FORALL_EFFECT_OBJS (objP, i)
 	if (objP->info.nId == SOUND_ID) {
 		char fn [FILENAME_LEN];
+#if 0 //DBG
+		if (strcmp (objP->rType.soundInfo.szFilename, "steam"))
+			continue;
+#endif
 		sprintf (fn, "%s.wav", objP->rType.soundInfo.szFilename);
-		audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, objP->Index (), 1, objP->rType.soundInfo.nVolume, I2X (256), 0, 0, fn);
+		audio.CreateObjectSound (-1, SOUNDCLASS_AMBIENT, objP->Index (), 1, objP->rType.soundInfo.nVolume, I2X (256), 0, 0, fn);
 		}
 
 if (0 <= (nSound = audio.GetSoundByName ("explode2"))) {
@@ -1000,7 +1021,7 @@ if (0 <= (nSound = audio.GetSoundByName ("explode2"))) {
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
-			audio.CreateObjectSound (nSound, SOUNDCLASS_GENERIC, objP->Index ());
+			audio.CreateObjectSound (nSound, SOUNDCLASS_AMBIENT, objP->Index ());
 			}
 	}
 //gameStates.sound.bD1Sound = 0;

@@ -193,7 +193,7 @@ m_info.bResampled = 0;
 void CAudioChannel::SetVolume (int nVolume)
 {
 if (m_info.bPlaying) {
-	m_info.nVolume = FixMulDiv (nVolume, audio.Volume (), I2X (1));
+	m_info.nVolume = FixMulDiv (nVolume, audio.Volume (m_info.bAmbient), I2X (1));
 #if USE_SDL_MIXER
 	if (gameOpts->sound.bUseSDLMixer)
 		Mix_VolPan (int (this - audio.Channel ()), m_info.nVolume, -1);
@@ -555,6 +555,7 @@ m_info.bLooped = bLooping;
 m_info.loops = bLooping ? -1 : nLoopEnd - nLoopStart + 1;
 #endif
 m_info.nSound = nSound;
+m_info.bAmbient = (nSoundClass == SOUNDCLASS_AMBIENT);
 m_info.bPersistent = 0;
 m_info.bPlaying = 1;
 m_info.bPersistent = bPersistent;
@@ -671,7 +672,8 @@ m_info.nFormat = AUDIO_S16LSB;
 #else
 m_info.nFormat = AUDIO_U8;
 #endif
-m_info.nVolume = SOUND_MAX_VOLUME;
+m_info.nVolume [0] = 
+m_info.nVolume [1] = SOUND_MAX_VOLUME;
 m_info.nMaxChannels = MAX_SOUND_CHANNELS;
 Init ();
 }
@@ -790,7 +792,8 @@ else
 		}
 	SDL_PauseAudio (0);
 	}
-SetFxVolume (m_info.nVolume);
+SetFxVolume (Volume (1), 1);
+SetFxVolume (Volume ());
 m_info.bInitialized =
 m_info.bAvailable = 1;
 return 0;
@@ -832,9 +835,9 @@ else
 void CAudio::Shutdown (void)
 {
 if (m_info.bAvailable) {
-	int nVolume = m_info.nVolume;
+	int nVolume = m_info.nVolume [0];
 	SetFxVolume (0);
-	m_info.nVolume = nVolume;
+	m_info.nVolume [0] = nVolume;
 	m_info.bAvailable = 0;
 	Close ();
 	}
@@ -944,8 +947,8 @@ return i;
 }
 
 //------------------------------------------------------------------------------
-// Returns the nChannel a sound number is bPlaying on, or
-// -1 if none.
+// Returns the nChannel a sound number is bPlaying on, or -1 if none.
+
 int CAudio::FindChannel (short nSound)
 {
 if (!gameStates.app.bUseSound)
@@ -959,27 +962,26 @@ if (!soundP->data [soundP->bCustom].Buffer ()) {
 	Int3 ();
 	return -1;
 	}
-//FIXME: not implemented
 return -1;
 }
 
 //------------------------------------------------------------------------------
 //added on 980905 by adb from original source to make sfx nVolume work
-void CAudio::SetFxVolume (int fxVolume)
+void CAudio::SetFxVolume (int fxVolume, int nType)
 {
 if (!gameStates.app.bUseSound)
 	return;
 #ifdef _WIN32
 int nVolume = FixMulDiv (fxVolume, SOUND_MAX_VOLUME, 0x7fff);
 if (nVolume > SOUND_MAX_VOLUME)
-	m_info.nVolume = SOUND_MAX_VOLUME;
+	m_info.nVolume [nType] = SOUND_MAX_VOLUME;
 else if (nVolume < 0)
-	m_info.nVolume = 0;
+	m_info.nVolume [nType] = 0;
 else
-	m_info.nVolume = nVolume;
+	m_info.nVolume [nType] = nVolume;
 if (!m_info.bAvailable) 
 	return;
-if (!songManager.Playing ())
+if (!(nType || songManager.Playing ()))
 	midi.FixVolume (FixMulDiv (fxVolume, 128, SOUND_MAX_VOLUME));
 #endif
 SyncSounds ();
