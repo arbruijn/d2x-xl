@@ -182,7 +182,7 @@ class CAudioChannel {
 					  const char *pszWAV, CFixVector* vPos);
 		void Stop (void);
 		void Mix (ubyte* stream, int len);
-		inline int Playing (void) { return m_info.bPlaying; }
+		inline int Playing (void) { return m_info.bPlaying && m_info.mixChunkP; }
 		void SetPlaying (int bPlaying);
 		fix Duration (void);
 		inline int SoundObject (void) { return m_info.nSoundObj; }

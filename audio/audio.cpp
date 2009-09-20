@@ -240,6 +240,7 @@ if (audio.Available () && gameOpts->sound.bUseSDLMixer) {
 		else
 			Mix_FreeChunk (m_info.mixChunkP);
 		m_info.mixChunkP = NULL;
+		m_info.bPlaying = 0;
 		}
 	//Mix_FadeOutChannel (nChannel, 500);
 	}
@@ -537,6 +538,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		else
 			Mix_FreeChunk (m_info.mixChunkP);
 		m_info.mixChunkP = NULL;
+		m_info.bPlaying = 0;
 		}
 	}
 #endif
@@ -554,11 +556,6 @@ m_info.bLooped = bLooping;
 #if USE_OPENAL
 m_info.loops = bLooping ? -1 : nLoopEnd - nLoopStart + 1;
 #endif
-m_info.nSound = nSound;
-m_info.bAmbient = (nSoundClass == SOUNDCLASS_AMBIENT);
-m_info.bPersistent = 0;
-m_info.bPlaying = 1;
-m_info.bPersistent = bPersistent;
 
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
@@ -613,6 +610,10 @@ if (pszWAV && *pszWAV)
 	if (nSpeed < I2X (1))
 		Speedup (soundP, nSpeed);
 	}
+m_info.nSound = nSound;
+m_info.bAmbient = (nSoundClass == SOUNDCLASS_AMBIENT);
+m_info.bPlaying = 1;
+m_info.bPersistent = bPersistent;
 if (m_info.nIndex < 0)
 	m_info.nIndex = audio.RegisterChannel (this);
 return audio.FreeChannel ();
