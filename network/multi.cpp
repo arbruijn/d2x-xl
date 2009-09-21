@@ -4114,10 +4114,12 @@ void MultiDoCaptureBonus (char *buf)
 	short	nTeam, nKillGoal, penalty = 0, bonus;
 	//char	szTeam [20];
 
-if (gameData.app.nGameMode & GM_HOARD)
-	bonus = 5;
-else if (gameData.app.nGameMode & GM_ENTROPY)
+if (gameData.app.nGameMode & GM_ENTROPY)
 	bonus = 3;
+else if (gameData.app.nGameMode & GM_HOARD)
+	bonus = 5;
+else if (gameData.app.nGameMode & GM_CAPTURE)
+	bonus = 5;
 else if (gameData.app.nGameMode & GM_MONSTERBALL)
 	bonus = extraGameInfo [1].monsterball.nBonus;
 else

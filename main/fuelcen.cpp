@@ -935,7 +935,7 @@ short blueFlagGoals = -1;
 int GatherFlagGoals (void)
 {
 	int			h, i, j;
-	CSegment	*segP = SEGMENTS.Buffer ();
+	CSegment*	segP = SEGMENTS.Buffer ();
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
@@ -986,7 +986,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF &&
 	 !FlagAtHome ((nFlagId == POW_BLUEFLAG) ? POW_REDFLAG : POW_BLUEFLAG))
 	return 0;
-MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
+MultiSendCaptureBonus (char (gameData.multiplayer.nLocalPlayer));
 LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
 MaybeDropNetPowerup (-1, nFlagId, FORCE_DROP);
 return 1;
