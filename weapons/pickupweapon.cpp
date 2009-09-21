@@ -152,24 +152,23 @@ return 1;
 //	Returns the amount picked up
 int PickupAmmo (int classFlag, int nWeaponIndex, int ammoCount, const char *pszMsg, int nPlayer)
 {
-	int		nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
-	int		nOldAmmo = classFlag;		//kill warning
-	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
-
-Assert(classFlag==CLASS_PRIMARY && nWeaponIndex==VULCAN_INDEX);
+	int				nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
+	int				nOldAmmo = classFlag;		//kill warning
+	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
 
 nMaxAmmo = nMaxPrimaryAmmo [nWeaponIndex];
 if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
 	nMaxAmmo *= 2;
-if (playerP->primaryAmmo [nWeaponIndex] == nMaxAmmo)
-	return 0;
+nMaxAmmo -= playerP->primaryAmmo [nWeaponIndex];
+if (ammoCount > nMaxAmmo) {
+	if (!nMaxAmmo)
+		return 0;
+	ammoCount = nMaxAmmo;
+	}
 nOldAmmo = playerP->primaryAmmo [nWeaponIndex];
 playerP->primaryAmmo [nWeaponIndex] += ammoCount;
-if (playerP->primaryAmmo [nWeaponIndex] > nMaxAmmo) {
-	ammoCount += (nMaxAmmo - playerP->primaryAmmo [nWeaponIndex]);
-	playerP->primaryAmmo [nWeaponIndex] = nMaxAmmo;
-	}
 if ((nPlayer = gameData.multiplayer.nLocalPlayer)) {
+	gameData.weapons.nAmmoCollected += ammoCount;
 	nCutPoint = POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && (playerP->laserLevel >= 4))
 		nSupposedWeapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
@@ -193,8 +192,10 @@ int	pwSave = gameData.weapons.nPrimary;
 // Ugh, save selected primary weapon around the picking up of the ammo.  
 // I apologize for this code.  Matthew A. Toschlog
 if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, NULL, nPlayer)) {
-	if (ISLOCALPLAYER (nPlayer))
+	if (ISLOCALPLAYER (nPlayer)) {
+		gameData.weapons.nAmmoCollected += VULCAN_AMMO_AMOUNT;
 		PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
+		}
 	bUsed = 1;
 	} 
 else {

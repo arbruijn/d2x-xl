@@ -1029,6 +1029,7 @@ int LocalPlayerFireLaser (void)
 	int		nWeaponIndex;
 	int		rVal = 0;
 	int 		nRoundsPerShot = 1;
+	int		bGatling = (gameData.weapons.nPrimary == GAUSS_INDEX) ? 2 : (gameData.weapons.nPrimary == VULCAN_INDEX) ? 1 : 0;
 	fix		addval;
 	static int nSpreadfireToggle = 0;
 	static int nHelixOrient = 0;
@@ -1051,7 +1052,7 @@ nAmmoUsed = WI_ammo_usage (nWeaponIndex);
 addval = 2 * gameData.time.xFrame;
 if (addval > I2X (1))
 	addval = I2X (1);
-if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
+if (!bGatling)
 	nPrimaryAmmo = playerP->primaryAmmo [gameData.weapons.nPrimary];
 else {
 	if ((gameOpts->sound.bHires [0] == 2) && gameOpts->sound.bGatling &&
@@ -1088,6 +1089,30 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 			}
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
 			flags |= LASER_QUAD;
+#if 1
+		int fired = LaserFireObject ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
+		if (fired) {
+			rVal += fired;
+			if (bGatling) {
+				if (nAmmoUsed > playerP->primaryAmmo [VULCAN_INDEX])
+					nAmmoUsed = playerP->primaryAmmo [VULCAN_INDEX];
+				playerP->primaryAmmo [VULCAN_INDEX] -= nAmmoUsed;
+				if (gameData.weapons.nAmmoCollected) {
+					if ((gameData.weapons.nAmmoCollected < nAmmoUsed) ||
+						 ((gameData.weapons.nAmmoCollected - 1) / VULCAN_AMMO_AMOUNT > (gameData.weapons.nAmmoCollected - 1 - nAmmoUsed) / VULCAN_AMMO_AMOUNT))
+						MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
+					gameData.weapons.nAmmoCollected -= nAmmoUsed;
+					if (gameData.weapons.nAmmoCollected < 0)
+						gameData.weapons.nAmmoCollected = 0;
+					}
+				}
+			else {
+				playerP->energy -= (xEnergyUsed * fired) / gameData.weapons.info [nWeaponIndex].fireCount;
+				if (playerP->energy < 0)
+					playerP->energy = 0;
+				}
+			}
+#else
 		rVal += LaserFireObject ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
 		playerP->energy -= (xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount;
 		if (playerP->energy < 0)
@@ -1098,6 +1123,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 			else
 				playerP->primaryAmmo [VULCAN_INDEX] -= nAmmoUsed;
 			}
+#endif
 		AutoSelectWeapon (0, 1);		//	Make sure the CPlayerData can fire from this weapon.
 		}
 	else {

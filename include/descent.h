@@ -2186,6 +2186,7 @@ class CWeaponData {
 		sbyte						bTripleFusion;
 		tFiringData				firing [2];
 		int						nTypes [2];
+		int						nAmmoCollected;
 		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
 		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
 		CArray<tRgbaColorf>	color;

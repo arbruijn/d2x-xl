@@ -25,7 +25,7 @@ int CallObjectCreateEgg (CObject *objP, int count, int nType, int id);
 int MaybeDropNetPowerup (short nObject, int powerupType, int nDropState);
 void RespawnDestroyedWeapon (short nObject);
 void MaybeReplacePowerupWithEnergy (CObject *del_obj);
-void DropPowerups ();
+void DropPowerups (void);
 int DropPowerup (ubyte nType, ubyte id, short owner, int num, const CFixVector& init_vel, const CFixVector& pos, short nSegment);
 // creates afterburner blobs behind the specified CObject
 void DropAfterburnerBlobs (CObject *obj, int count, fix size_scale, fix lifetime, CObject *pParent, int bThruster);

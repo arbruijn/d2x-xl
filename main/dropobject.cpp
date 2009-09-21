@@ -729,7 +729,7 @@ if (nObject >= 0) {
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
 		if (objP->info.contains.nType == OBJ_POWERUP) {
-			if (objP->info.contains.nId == POW_VULCAN || objP->info.contains.nId == POW_GAUSS)
+			if ((objP->info.contains.nId == POW_VULCAN) || (objP->info.contains.nId == POW_GAUSS))
 				OBJECTS [nObject].cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
 			else if (objP->info.contains.nId == POW_OMEGA)
 				OBJECTS [nObject].cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
