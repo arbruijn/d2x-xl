@@ -168,7 +168,6 @@ if (ammoCount > nMaxAmmo) {
 nOldAmmo = playerP->primaryAmmo [nWeaponIndex];
 playerP->primaryAmmo [nWeaponIndex] += ammoCount;
 if ((nPlayer = gameData.multiplayer.nLocalPlayer)) {
-	gameData.weapons.nAmmoCollected += ammoCount;
 	nCutPoint = POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && (playerP->laserLevel >= 4))
 		nSupposedWeapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
@@ -193,7 +192,7 @@ int	pwSave = gameData.weapons.nPrimary;
 // I apologize for this code.  Matthew A. Toschlog
 if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, NULL, nPlayer)) {
 	if (ISLOCALPLAYER (nPlayer)) {
-		gameData.weapons.nAmmoCollected += VULCAN_AMMO_AMOUNT;
+		gameData.weapons.nAmmoCollected++;
 		PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
 		}
 	bUsed = 1;
@@ -307,9 +306,8 @@ int PickupGatlingGun (CObject *objP, int nId, int nPlayer)
 //maybe snag some of the nAmmo.  if single-CPlayerData, grab all the nAmmo
 //and remove the powerup.  If multi-CPlayerData take nAmmo in excess of
 //the amount in a powerup, and leave the rest.
-if (!bUsed)
-	if (IsMultiGame)
-		nAmmo -= VULCAN_AMMO_AMOUNT;	//don't let take all nAmmo
+if (!bUsed && IsMultiGame)
+	nAmmo -= VULCAN_AMMO_AMOUNT;	//don't let take all ammo
 if (nAmmo > 0) {
 	int nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer);
 	objP->cType.powerupInfo.nCount -= nAmmoUsed;

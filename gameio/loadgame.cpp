@@ -516,6 +516,7 @@ gameData.weapons.nOverridden = 0;
 gameData.weapons.nPrimary = 0;
 gameData.weapons.nSecondary = 0;
 gameData.weapons.nAmmoCollected = 0;
+gameData.weapons.nAmmoUsed = 0;
 LOCALPLAYER.flags &= ~
 	(PLAYER_FLAGS_QUAD_LASERS |
 	 PLAYER_FLAGS_AFTERBURNER |

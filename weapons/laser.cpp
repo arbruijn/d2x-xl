@@ -1098,12 +1098,15 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 					nAmmoUsed = playerP->primaryAmmo [VULCAN_INDEX];
 				playerP->primaryAmmo [VULCAN_INDEX] -= nAmmoUsed;
 				if (gameData.weapons.nAmmoCollected) {
-					if ((gameData.weapons.nAmmoCollected < nAmmoUsed) ||
-						 ((gameData.weapons.nAmmoCollected - 1) / VULCAN_AMMO_AMOUNT > (gameData.weapons.nAmmoCollected - 1 - nAmmoUsed) / VULCAN_AMMO_AMOUNT))
-						MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
-					gameData.weapons.nAmmoCollected -= nAmmoUsed;
-					if (gameData.weapons.nAmmoCollected < 0)
-						gameData.weapons.nAmmoCollected = 0;
+					gameData.weapons.nAmmoUsed += nAmmoUsed;
+					if (gameData.weapons.nAmmoUsed >= VULCAN_AMMO_AMOUNT) {
+						gameData.weapons.nAmmoUsed -= VULCAN_AMMO_AMOUNT;
+						if (gameData.weapons.nAmmoUsed < 0)
+							gameData.weapons.nAmmoUsed = 0;
+						gameData.weapons.nAmmoCollected--;
+						if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
+							MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
+						}
 					}
 				}
 			else {

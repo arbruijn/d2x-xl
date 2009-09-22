@@ -362,8 +362,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
-				 (gameStates.app.nSDLTicks - gameData.objs.dropInfo [nObject].nDropTime <
-				  extraGameInfo [IsMultiGame].nSpawnDelay))
+				 (gameStates.app.nSDLTicks - gameData.objs.dropInfo [nObject].nDropTime < extraGameInfo [IsMultiGame].nSpawnDelay))
 				return 0;
 			nDropState = EXEC_DROP;
 			}
@@ -846,7 +845,7 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 void DropPlayerEggs (CObject *playerObjP)
 {
 if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST)) {
-	int				rthresh, nFlag;
+	int				rthresh;
 	int				nPlayerId = playerObjP->info.nId;
 	short				nObject, plrObjNum = OBJ_IDX (playerObjP);
 	int				nVulcanAmmo = 0;
@@ -876,7 +875,7 @@ while ((playerP->secondaryAmmo [SMARTMINE_INDEX] % 4 == 1) && (d_rand () < rthre
   	}
 
 	//	If the CPlayerData had proximity bombs, maybe arm one of them.
-	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
+	if (IsMultiGame && !(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 		rthresh = 30000;
 		while ((playerP->secondaryAmmo [PROXMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
 			short			nNewSeg;
@@ -935,8 +934,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 #if !DBG
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 #endif
-	if (IsHoardGame ||
-	    (IsEntropyGame && extraGameInfo [1].entropy.nVirusStability)) {
+	if (IsHoardGame || (IsEntropyGame && extraGameInfo [1].entropy.nVirusStability)) {
 		// Drop hoard orbs
 
 		int maxCount, i;
@@ -951,24 +949,61 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 		}
 
 	//Drop the vulcan, gauss, and ammo
+#if 1
 	nVulcanAmmo = playerP->primaryAmmo [VULCAN_INDEX];
-	nFlag = HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX);
-	if (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) {
-		nVulcanAmmo -= GAUSS_WEAPON_AMMO_AMOUNT;
-		if (nVulcanAmmo < 0)
-			nVulcanAmmo = 0;
-		}
-	if ((int (playerP->primaryWeaponFlags & nFlag) == nFlag) && (int (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) != nFlag))
-		nVulcanAmmo /= 2;		//if both vulcan & gauss, each gets half
-	if ((nVulcanAmmo < VULCAN_AMMO_AMOUNT) && !(extraGameInfo [IsMultiGame].loadout.nGuns & nFlag))
-		nVulcanAmmo = VULCAN_AMMO_AMOUNT;	//make sure gun has at least as much as a powerup
-	nObject = MaybeDropPrimaryWeaponEgg (playerObjP, VULCAN_INDEX);
-	if (nObject >= 0)
-		OBJECTS [nObject].cType.powerupInfo.nCount = nVulcanAmmo;
-	nObject = MaybeDropPrimaryWeaponEgg (playerObjP, GAUSS_INDEX);
-	if (nObject >= 0)
-		OBJECTS [nObject].cType.powerupInfo.nCount = nVulcanAmmo;
+	if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
+		int nGunObjs [2] = {-1, -1};
+		int nGunIds [2] = {VULCAN_INDEX, GAUSS_INDEX};
+		int nGunAmmo [2] = {VULCAN_WEAPON_AMMO_AMOUNT, GAUSS_WEAPON_AMMO_AMOUNT};
+		int i;
 
+		gameData.weapons.nAmmoUsed = 0;
+		if (gameData.weapons.nAmmoCollected) {	// drop ammo in excess of presupplied Vulcan/Gauss ammo as vulcan ammo packs
+			CallObjectCreateEgg (playerObjP, gameData.weapons.nAmmoCollected, OBJ_POWERUP, POW_VULCAN_AMMO);
+			nVulcanAmmo -= gameData.weapons.nAmmoCollected * VULCAN_AMMO_AMOUNT;
+			if (nVulcanAmmo < 0)
+				nVulcanAmmo = 0;
+			gameData.weapons.nAmmoCollected = 0;
+			}
+		for (i = 0; i < 2; i++) {
+			if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nGunIds [i]))
+				nVulcanAmmo -= nGunAmmo [i];
+			else if (playerP->primaryWeaponFlags & HAS_FLAG (nGunIds [i]))
+				nGunObjs [i] = MaybeDropPrimaryWeaponEgg (playerObjP, nGunIds [i]);
+			}
+		if ((nGunObjs [0] >= 0) && (nGunObjs [1] >= 0))
+			nVulcanAmmo /= 2;
+		for (i = 0; i < 2; i++) {
+			if (nGunObjs [i] >= 0)
+				OBJECTS [nGunObjs [i]].cType.powerupInfo.nCount = nVulcanAmmo;
+			}
+		}
+#else //	else {
+		int nFlag = HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX);
+		if (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) {
+			nVulcanAmmo -= GAUSS_WEAPON_AMMO_AMOUNT;
+			if (nVulcanAmmo < 0)
+				nVulcanAmmo = 0;
+			}
+		if ((int (playerP->primaryWeaponFlags & nFlag) == nFlag) && (int (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) != nFlag))
+			nVulcanAmmo /= 2;		//if both vulcan & gauss, each gets half
+		if ((nVulcanAmmo < VULCAN_AMMO_AMOUNT) && !(extraGameInfo [IsMultiGame].loadout.nGuns & nFlag))
+			nVulcanAmmo = VULCAN_AMMO_AMOUNT;	//make sure gun has at least as much as a powerup
+		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, VULCAN_INDEX);
+		if (nObject >= 0)
+			OBJECTS [nObject].cType.powerupInfo.nCount = nVulcanAmmo;
+		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, GAUSS_INDEX);
+		if (nObject >= 0)
+			OBJECTS [nObject].cType.powerupInfo.nCount = nVulcanAmmo;
+		}
+	//	If player has vulcan ammo, but no gatling cannon, drop the ammo.
+	if (!(playerP->primaryWeaponFlags & (HAS_VULCAN_FLAG | HAS_GAUSS_FLAG))) {
+		int amount = playerP->primaryAmmo [VULCAN_INDEX];
+		if (amount > 8 * VULCAN_AMMO_AMOUNT)
+			amount = 8 * VULCAN_AMMO_AMOUNT;
+		CallObjectCreateEgg (playerObjP, amount / VULCAN_AMMO_AMOUNT, OBJ_POWERUP, POW_VULCAN_AMMO);
+		}
+#endif
 	//	Drop the rest of the primary weapons
 	MaybeDropPrimaryWeaponEgg (playerObjP, SPREADFIRE_INDEX);
 	MaybeDropPrimaryWeaponEgg (playerObjP, PLASMA_INDEX);
@@ -994,20 +1029,6 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 	DropMissile1or4 (playerObjP, CONCUSSION_INDEX);
 	DropMissile1or4 (playerObjP, FLASHMSL_INDEX);
 	DropMissile1or4 (playerObjP, MERCURY_INDEX);
-	//	If CPlayerData has vulcan ammo, but no vulcan cannon, drop the ammo.
-	if (!(playerP->primaryWeaponFlags & HAS_VULCAN_FLAG)) {
-		int	amount = playerP->primaryAmmo [VULCAN_INDEX];
-		if (amount > 200) {
-#if TRACE
-			console.printf (CON_DBG, "Surprising amount of vulcan ammo: %i bullets. \n", amount);
-#endif
-			amount = 200;
-			}
-		while (amount > 0) {
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_VULCAN_AMMO);
-			amount -= VULCAN_AMMO_AMOUNT;
-			}
-		}
 
 		//	Always drop a shield and energy powerup.
 	if (IsMultiGame) {
