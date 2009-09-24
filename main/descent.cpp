@@ -54,6 +54,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "hogfile.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
+#include "ogl_render.h"
 #include "ogl_shader.h"
 #include "sdlgl.h"
 #include "text.h"
@@ -230,11 +231,27 @@ CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (GAME_FONT);
 fontManager.Current ()->StringSize ("V2.2", w, h, aw);
 fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - GAME_FONT->Height () - 2, "visit www.descent2.de");
-fontManager.SetColorRGBi (RGB_PAL (23, 23, 23), 1, 0, 0);
-GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - GAME_FONT->Height () - h - 6, TXT_COPYRIGHT);
-GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2,
-			 CCanvas::Current ()->Height () - GAME_FONT->Height () - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+h += 2;
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - h, "visit www.descent2.de");
+fontManager.SetColorRGBi (RGB_PAL (51, 34, 0), 1, 0, 0);
+fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 3 * h - 6, "Press F1 for help in menus");
+fontManager.SetColorRGBi (RGB_PAL (31, 31, 31), 1, 0, 0);
+CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0));
+OglDrawLine (CCanvas::Current ()->Width () / 2 - 275,
+		CCanvas::Current ()->Height () - 2 * h - 4,
+		CCanvas::Current ()->Width () / 2 + 275,
+		CCanvas::Current ()->Height () - 2 * h - 4,
+		NULL);
+#if 0
+OglDrawLine (2, //CCanvas::Current ()->Width () / 2 - 200,
+		CCanvas::Current ()->Height () - h - 2,
+		CCanvas::Current ()->Width () - 2, // / 2 + 200,
+		CCanvas::Current ()->Height () - h - 2,
+		NULL);
+#endif
+GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 2 * h - 2, TXT_COPYRIGHT);
+GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 if (bVertigo < 0)
 	bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionDir, 0);
 if (bVertigo) {
@@ -247,6 +264,7 @@ fontManager.SetCurrent (MEDIUM2_FONT);
 fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
 GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS,
 			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
+fontManager.SetCurrent (NORMAL_FONT);
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.Current ()->StringSize (VERSION, ws, hs, aw);
 fontManager.SetColorRGBi (D2BLUE_RGBA, 1, 0, 0);
