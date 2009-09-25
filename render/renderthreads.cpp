@@ -405,7 +405,7 @@ gameStates.app.nThreads = omp_get_num_threads ();
 if (gameStates.app.nThreads < 2)
 #pragma omp parallel 
 	{
-	gameStates.app.nThreads = omp_get_num_threads ();
+	gameStates.app.nThreads = omp_get_max_threads ();
 	}
 
 if (gameStates.app.nThreads > MAX_THREADS) {
