@@ -239,10 +239,10 @@ GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 3 * h - 6, "Press F1 fo
 fontManager.SetColorRGBi (RGB_PAL (31, 31, 31), 1, 0, 0);
 CCanvas::Current ()->SetColor (CCanvas::Current ()->FontColor (0));
 OglDrawLine (CCanvas::Current ()->Width () / 2 - 275,
-		CCanvas::Current ()->Height () - 2 * h - 5,
-		CCanvas::Current ()->Width () / 2 + 275,
-		CCanvas::Current ()->Height () - 2 * h - 5,
-		NULL);
+				 CCanvas::Current ()->Height () - 2 * h - 5,
+				 CCanvas::Current ()->Width () / 2 + 275,
+				 CCanvas::Current ()->Height () - 2 * h - 5,
+				 NULL);
 #if 0
 OglDrawLine (2, //CCanvas::Current ()->Width () / 2 - 200,
 		CCanvas::Current ()->Height () - h - 2,

@@ -82,6 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "banlist.h"
 #include "songs.h"
 #include "headlight.h"
+#include "playsave.h"
 #include "gpgpu_lighting.h"
 
 u_int32_t nCurrentVGAMode;
@@ -924,6 +925,7 @@ meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
 gameData.Destroy ();
 PiggyCloseFile ();
+SavePlayerProfile ();
 SetFunctionMode (FMODE_MENU);	
 }
 
