@@ -597,13 +597,19 @@ else
 
 void DoStaticParticles (CObject *objP)
 {
-	int			i, j, nObject, nSmoke, bBubbles = objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES;
+	int			i, j, nObject, nSmoke, 
+					nType = (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) 
+							  ? 2
+							  : (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES)
+							    ? 1
+								 : 0;
 	CFixVector	pos, offs, dir;
 
-	static tRgbaColorf defaultColors [2] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}};
+	static tRgbaColorf defaultColors [3] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
+	static int particleTypes [3] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES};
 
 nObject = (int) objP->Index ();
-if (!(SHOW_SMOKE && (bBubbles ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {
+if (!(SHOW_SMOKE && ((nType == 1) ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {
 	if (particleManager.GetObjectSystem (nObject) >= 0)
 		KillObjectSmoke (nObject);
 	return;
@@ -620,14 +626,14 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	dir = objP->info.position.mOrient.FVec () * (objP->rType.particleInfo.nSpeed * I2X (2) / 55);
 	nSmoke = particleManager.Create (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 												objP->info.nSegment, 1, -objP->rType.particleInfo.nParts,
-												-PARTICLE_SIZE (objP->rType.particleInfo.nSize [gameOpts->render.particles.bDisperse], bBubbles ? 4.0f : 2.0f),
+												-PARTICLE_SIZE (objP->rType.particleInfo.nSize [gameOpts->render.particles.bDisperse], (nType == 1) ? 4.0f : 2.0f),
 												-1, 3, STATIC_SMOKE_PART_LIFE * objP->rType.particleInfo.nLife,
-												objP->rType.particleInfo.nDrift, bBubbles ? BUBBLE_PARTICLES : SMOKE_PARTICLES, 
-												nObject, bColor ? &color : defaultColors + bBubbles, 1, objP->rType.particleInfo.nSide - 1);
+												objP->rType.particleInfo.nDrift, particleTypes [nType], 
+												nObject, bColor ? &color : defaultColors + nType, 1, objP->rType.particleInfo.nSide - 1);
 	if (nSmoke < 0)
 		return;
 	particleManager.SetObjectSystem (nObject, nSmoke);
-	if (bBubbles)
+	if (nType == 1)
 		audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_AIRBUBBLES));
 	else
 		particleManager.SetBrightness (particleManager.GetObjectSystem (nObject), objP->rType.particleInfo.nBrightness);

@@ -76,20 +76,20 @@
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
-static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
+static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0,0},{0,0,0,0,0}};
 
-static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL}};
+static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL, NULL}};
 #if 0
 static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
- {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"},
- {"smoke.tga", "bubble.tga", "bullcase.tga", "corona.tga"}
+ {"smoke.tga", "bubble.tga", "napalm.tga", "bullcase.tga", "corona.tga"},
+ {"smoke.tga", "bubble.tga", "napalm.tga", "bullcase.tga", "corona.tga"}
 	};
 
-static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
-static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
+static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1,1},{1,1,1,1,1}};
+static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0,0},{0,0,0,0,0}};
 #if 0
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
@@ -209,11 +209,11 @@ else
 if (!nRad)
 	nRad = I2X (1);
 m_nType = nType;
-m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES);
+m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) ? 1 : (nParticleSystemType == FIRE_PARTICLES) ? 2 : 0;
 m_nClass = nClass;
 m_nSegment = nSegment;
 m_nBounce = 0;
-color = colorP ? *colorP : defaultColor;
+color = (colorP && (m_bEmissive < 2)) ? *colorP : defaultColor;
 m_color [0] =
 m_color [1] = color;
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
@@ -223,7 +223,7 @@ if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 else {
 	m_bBright = (nType == SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
 	if (colorP) {
-		if (nType != LIGHT_PARTICLES) {
+		if (!m_bEmissive) {
 			m_color [0].red *= RANDOM_FADE;
 			m_color [0].green *= RANDOM_FADE;
 			m_color [0].blue *= RANDOM_FADE;
@@ -253,17 +253,28 @@ else {
 				m_color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 				}
 			}
-		}
 #if 1
-	if (gameOpts->render.particles.bDisperse && !m_bBright) {
-		fBrightness = 1.0f - fBrightness;
-		m_color [0].alpha += fBrightness * fBrightness / 8.0f;
+		if (gameOpts->render.particles.bDisperse && !m_bBright) {
+			fBrightness = 1.0f - fBrightness;
+			m_color [0].alpha += fBrightness * fBrightness / 8.0f;
+			}
 		}
 #endif
 	}
 //nSpeed = (int) (sqrt (nSpeed) * (float) I2X (1));
 nSpeed *= I2X (1);
-if (vDir) {
+if (!vDir || (nType == FIRE_PARTICLES)) {
+	CFixVector	vOffs;
+	vDrift [X] = nSpeed - randN (2 * nSpeed);
+	vDrift [Y] = nSpeed - randN (2 * nSpeed);
+	vDrift [Z] = nSpeed - randN (2 * nSpeed);
+	if (nType == FIRE_PARTICLES)
+		vDrift *= nRad / 32;
+	vOffs = vDrift;
+	m_vDir.SetZero ();
+	m_bHaveDir = 1;
+	}
+else {
 	CAngleVector	a;
 	CFixMatrix		m;
 	float				d;
@@ -284,24 +295,19 @@ if (vDir) {
 		m_color [0].blue = 1.0f;
 #endif
 	vDrift *= nSpeed;
-	if ((nType == SMOKE_PARTICLES) || (nType == BUBBLE_PARTICLES))
+	if (nType <= FIRE_PARTICLES)
 		m_vDir = *vDir * (I2X (3) / 4 + I2X (randN (16)) / 64);
 	else
 		m_vDir = *vDir;
 	m_bHaveDir = 1;
 	}
-else {
-	CFixVector	vOffs;
-	vDrift [X] = nSpeed - randN (2 * nSpeed);
-	vDrift [Y] = nSpeed - randN (2 * nSpeed);
-	vDrift [Z] = nSpeed - randN (2 * nSpeed);
-	vOffs = vDrift;
-	m_vDir.SetZero ();
-	m_bHaveDir = 1;
-	}
 m_vDrift = vDrift;
 if (vEmittingFace)
 	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
+#if 0
+else if (nType == FIRE_PARTICLES)
+	m_vPos = *vPos + vDrift * (nRad / 32);
+#endif	
 else if (nType != BUBBLE_PARTICLES)
 	m_vPos = *vPos + vDrift * (I2X (1) / 64);
 else {
@@ -332,17 +338,20 @@ if (nType == SMOKE_PARTICLES) {
 	if (gameOpts->render.particles.bDisperse)
 		nLife = (nLife * 2) / 3;
 	nLife = nLife / 2 + randN (nLife / 2);
-	}
-m_nLife =
-m_nTTL = nLife;
-m_nMoved = nCurTime;
-m_nDelay = 0; //bStart ? randN (nLife) : 0;
-if (nType == SMOKE_PARTICLES)
 	nRad += randN (nRad);
+	}
+else if (nType == FIRE_PARTICLES) {
+	nLife = nLife / 4 + randN (nLife / 4);
+	nRad += randN (nRad);
+	}
 else if (nType == BUBBLE_PARTICLES)
 	nRad = nRad / 10 + randN (9 * nRad / 10);
 else
 	nRad *= 2;
+m_nLife =
+m_nTTL = nLife;
+m_nMoved = nCurTime;
+m_nDelay = 0; //bStart ? randN (nLife) : 0;
 if ((m_bBlowUp = bBlowUp)) {
 	m_nRad = nRad / 2;
 	m_nWidth =
@@ -382,7 +391,7 @@ else if (nParticleSystemType == SMOKE_PARTICLES)
 	m_color [0].alpha /= colorP ? color.red + color.green + color.blue + 2 : 2;
 else if (nParticleSystemType == BUBBLE_PARTICLES)
 	m_color [0].alpha /= 2;
-else if (nParticleSystemType == LIGHT_PARTICLES)
+else if ((nParticleSystemType == LIGHT_PARTICLES) || (nParticleSystemType == FIRE_PARTICLES))
 	m_color [0].alpha /= 5;
 #	if 0
 else if (nParticleSystemType == GATLING_PARTICLES)
@@ -489,7 +498,7 @@ if (m_nDelay > 0)
 else {
 	vPos = m_vPos;
 	drift = m_vDrift;
-	if ((m_nType == SMOKE_PARTICLES) /*|| (m_nType == BUBBLE_PARTICLES)*/) {
+	if ((m_nType == SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES)) {
 		drift [X] = ChangeDir (drift [X]);
 		drift [Y] = ChangeDir (drift [Y]);
 		drift [Z] = ChangeDir (drift [Z]);
@@ -598,7 +607,7 @@ int CParticle::Render (float brightness)
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
 	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive;
-	float						decay = (nType == BUBBLE_PARTICLES) ? 1.0f : (float) m_nLife / (float) m_nTTL;
+	float						decay = (nType == BUBBLE_PARTICLES) ? 1.0f : float (m_nLife) / float (m_nTTL);
 
 	static int				nFrames = 1;
 	static float			deltaUV = 1.0f;
@@ -607,6 +616,8 @@ int CParticle::Render (float brightness)
 	static CFloatMatrix	mRot;
 
 if (m_nDelay > 0)
+	return 0;
+if (m_nLife < 0)
 	return 0;
 if ((nType < 0) || (nType >= PARTICLE_TYPES))
 	return 0;
@@ -648,7 +659,7 @@ else if (gameOpts->render.particles.bSort) {
 		}
 	}
 else
-	transformation.Transform(hp, m_vPos, 0);
+	transformation.Transform (hp, m_vPos, 0);
 if (m_bBright)
 	brightness = (float) sqrt (brightness);
 if (nType == SMOKE_PARTICLES) {
@@ -685,7 +696,7 @@ if (nType == SMOKE_PARTICLES) {
 	}
 pc = m_color [0];
 //pc.alpha *= /*gameOpts->render.particles.bDisperse ? decay2 :*/ decay;
-if ((nType == SMOKE_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
+if (nType <= FIRE_PARTICLES) {
 	char nFrame = ((nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles) ? 0 : m_nFrame;
 	u = (float) (nFrame % nFrames) * deltaUV;
 	v = (float) (nFrame / nFrames) * deltaUV;
@@ -711,10 +722,30 @@ if (nType == SMOKE_PARTICLES) {
 	}
 vCenter.Assign (hp);
 i = m_nOrient;
-if (bEmissive) { //scale light trail particle color to reduce saturation
+if (bEmissive == 1) { //scale light trail particle color to reduce saturation
 	pc.red /= 50.0f;
 	pc.green /= 50.0f;
 	pc.blue /= 50.0f;
+	}
+else if (bEmissive == 2) {
+	float fFade;
+	if (decay < 0.1f)
+		decay = decay;
+	if (decay > 0.75f)
+		fFade = 4.0f * (1.0f - decay);
+	else
+		fFade = decay * 4.0f / 3.0f;
+	decay = 1.0f;
+#if 1
+	pc.red =
+	pc.green = 
+	pc.blue = fFade;
+#else
+	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2.0f + 0.5f;
+	pc.red *= fFade;
+	pc.green *= fFade;
+	pc.blue *= fFade;
+#endif
 	}
 else if (m_nType != BUBBLE_PARTICLES) {
 #if 0
@@ -1629,7 +1660,6 @@ tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
 bufferBrightness = brightness;
 glEnable (GL_BLEND);
-//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (0);
 ogl.SelectTMU (GL_TEXTURE0, true);
@@ -1643,7 +1673,7 @@ if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 		if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
-		else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= BUBBLE_PARTICLES))
+		else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= FIRE_PARTICLES))
 			LoadGlareShader (10, 0);
 		else if (gameStates.render.history.nShader >= 0) {
 			glUseProgramObject (0);
@@ -1765,6 +1795,8 @@ if ((nType == LIGHT_PARTICLES) || (nType == GATLING_PARTICLES))
 	return LIGHT_PARTICLES;
 if (nType == BUBBLE_PARTICLES)
 	return BUBBLE_PARTICLES;
+if (nType == FIRE_PARTICLES)
+	return FIRE_PARTICLES;
 return -1;
 }
 
@@ -1775,7 +1807,7 @@ void CParticleImageManager::Animate (int nType)
 	int	nFrames = nParticleFrames [0][nType];
 
 if (nFrames > 1) {
-	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0};
+	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0};
 
 	time_t	t = gameStates.app.nSDLTicks;
 	int		iFrame = iParticleFrames [0][nType];
@@ -1859,6 +1891,8 @@ bmP->SetupTexture (0, 1);
 if (nType == SMOKE_PARTICLES)
 	h = 8;
 else if (nType == BUBBLE_PARTICLES)
+	h = 4;
+else if (nType == FIRE_PARTICLES)
 	h = 4;
 else
 	h = bmP->FrameCount ();

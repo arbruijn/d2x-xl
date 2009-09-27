@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "d2x-xl", "d2x-xl.icproj", "{9940BD79-40FA-474C-AA54-580802195A8D}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "d2x-xl", "d2x-xl.vcproj", "{9940BD79-40FA-474C-AA54-580802195A8D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1482BB73-080E-4A8C-9613-10FCDC99CDF0} = {1482BB73-080E-4A8C-9613-10FCDC99CDF0}
 		{41EA47C0-0444-496A-8602-B46A59E6B1D7} = {41EA47C0-0444-496A-8602-B46A59E6B1D7}
@@ -8,38 +8,38 @@ Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "d2x-xl", "d2x-xl.icproj", "
 		{C0381763-0DA2-4B1A-AC98-9D64783F971C} = {C0381763-0DA2-4B1A-AC98-9D64783F971C}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "d2x-trackir", "..\d2x-trackir\VC9\d2x-trackir.icproj", "{B30FAEA5-F4AA-4DEF-95AD-4D63083AA0E3}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "d2x-trackir", "..\d2x-trackir\VC9\d2x-trackir.vcproj", "{B30FAEA5-F4AA-4DEF-95AD-4D63083AA0E3}"
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "ogg_dynamic", "..\..\..\Libraries\libogg-1.1.3\VC9\ogg_dynamic.icproj", "{75FAB554-5C70-4ECC-A67C-B2F6B34346AA}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "ogg_dynamic", "..\..\..\Libraries\libogg-1.1.3\VC9\ogg_dynamic.vcproj", "{75FAB554-5C70-4ECC-A67C-B2F6B34346AA}"
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "vorbis_dynamic", "..\..\..\Libraries\libvorbis-1.1.2\VC9\vorbis_dynamic.icproj", "{AC7EDBF8-7259-4E9C-9374-0886E29FE633}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "vorbis_dynamic", "..\..\..\Libraries\libvorbis-1.1.2\VC9\vorbis_dynamic.vcproj", "{AC7EDBF8-7259-4E9C-9374-0886E29FE633}"
 	ProjectSection(ProjectDependencies) = postProject
 		{75FAB554-5C70-4ECC-A67C-B2F6B34346AA} = {75FAB554-5C70-4ECC-A67C-B2F6B34346AA}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "vorbisfile_dynamic", "..\..\..\Libraries\libvorbis-1.1.2\VC9\vorbisfile_dynamic.icproj", "{66C00824-FF30-4412-9D11-7B82ED35B7C6}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "vorbisfile_dynamic", "..\..\..\Libraries\libvorbis-1.1.2\VC9\vorbisfile_dynamic.vcproj", "{66C00824-FF30-4412-9D11-7B82ED35B7C6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{75FAB554-5C70-4ECC-A67C-B2F6B34346AA} = {75FAB554-5C70-4ECC-A67C-B2F6B34346AA}
 		{AC7EDBF8-7259-4E9C-9374-0886E29FE633} = {AC7EDBF8-7259-4E9C-9374-0886E29FE633}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDL", "..\..\..\Libraries\SDL-1.2.13\VC9\SDL\SDL.icproj", "{C0381763-0DA2-4B1A-AC98-9D64783F971C}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDL", "..\..\..\Libraries\SDL-1.2.13\VC9\SDL\SDL.vcproj", "{C0381763-0DA2-4B1A-AC98-9D64783F971C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{75FAB554-5C70-4ECC-A67C-B2F6B34346AA} = {75FAB554-5C70-4ECC-A67C-B2F6B34346AA}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDLmain", "..\..\..\Libraries\SDL-1.2.13\VC9\SDLmain\SDLmain.icproj", "{1482BB73-080E-4A8C-9613-10FCDC99CDF0}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDLmain", "..\..\..\Libraries\SDL-1.2.13\VC9\SDLmain\SDLmain.vcproj", "{1482BB73-080E-4A8C-9613-10FCDC99CDF0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C0381763-0DA2-4B1A-AC98-9D64783F971C} = {C0381763-0DA2-4B1A-AC98-9D64783F971C}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDL_image", "..\..\..\Libraries\SDL_image-1.2.7\VC9\SDL_image.icproj", "{41EA47C0-0444-496A-8602-B46A59E6B1D7}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDL_image", "..\..\..\Libraries\SDL_image-1.2.7\VC9\SDL_image.vcproj", "{41EA47C0-0444-496A-8602-B46A59E6B1D7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1482BB73-080E-4A8C-9613-10FCDC99CDF0} = {1482BB73-080E-4A8C-9613-10FCDC99CDF0}
 		{C0381763-0DA2-4B1A-AC98-9D64783F971C} = {C0381763-0DA2-4B1A-AC98-9D64783F971C}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDL_mixer", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\SDL_mixer.icproj", "{04AF7371-D09D-42AA-90BC-5938F3DA6215}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDL_mixer", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\SDL_mixer.vcproj", "{04AF7371-D09D-42AA-90BC-5938F3DA6215}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1E4DA88C-9040-4603-A923-9DA853531D8C} = {1E4DA88C-9040-4603-A923-9DA853531D8C}
 		{75FAB554-5C70-4ECC-A67C-B2F6B34346AA} = {75FAB554-5C70-4ECC-A67C-B2F6B34346AA}
@@ -52,16 +52,16 @@ Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "SDL_mixer", "..\..\..\Libra
 		{C0381763-0DA2-4B1A-AC98-9D64783F971C} = {C0381763-0DA2-4B1A-AC98-9D64783F971C}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "smpeg", "..\..\..\Libraries\smpeg-0.4.4\VC9\smpeg.icproj", "{0ACBF560-207A-43AC-BED2-C83911A0A72E}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "smpeg", "..\..\..\Libraries\smpeg-0.4.4\VC9\smpeg.vcproj", "{0ACBF560-207A-43AC-BED2-C83911A0A72E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C0381763-0DA2-4B1A-AC98-9D64783F971C} = {C0381763-0DA2-4B1A-AC98-9D64783F971C}
 	EndProjectSection
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "mikmod", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\mikmod.icproj", "{1E4DA88C-9040-4603-A923-9DA853531D8C}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "mikmod", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\mikmod.vcproj", "{1E4DA88C-9040-4603-A923-9DA853531D8C}"
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "native_midi", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\native_midi.icproj", "{55D99900-66CE-4862-BDF5-C54A1F00A0D7}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "native_midi", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\native_midi.vcproj", "{55D99900-66CE-4862-BDF5-C54A1F00A0D7}"
 EndProject
-Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "timidity", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\timidity.icproj", "{D08AC187-E9ED-4636-AB98-F2746113D978}"
+Project("{EAF909A5-FA59-4C3D-9431-0FCC20D5BCF9}") = "timidity", "..\..\..\Libraries\SDL_mixer-1.2.8\VC9\timidity.vcproj", "{D08AC187-E9ED-4636-AB98-F2746113D978}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1256,7 +1256,7 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSe
 
 void CTransparencyRenderer::RenderParticle (tTranspParticle *item)
 {
-if (item->particle->m_nType == 2)
+if (item->particle->m_nType == BULLET_PARTICLES)
 	CTransparencyRenderer::RenderBullet (item->particle);
 else {
 	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
