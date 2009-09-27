@@ -560,6 +560,10 @@ else {
 		m_nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
 #else
 		m_nLife -= t;
+#	if DBG
+		if ((m_nLife <= 0) && (m_nType == 2))
+			m_nLife = -1;
+#	endif
 #endif
 		if ((m_nType == SMOKE_PARTICLES) && (nRad = m_nRad)) {
 			if (m_bBlowUp) {
@@ -740,6 +744,7 @@ else if (bEmissive == 2) {
 	pc.red =
 	pc.green = 
 	pc.blue = fFade;
+	m_color [0] = pc;
 #else
 	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2.0f + 0.5f;
 	pc.red *= fFade;
@@ -968,7 +973,7 @@ if ((nObject >= 0) && (nObject < 0x70000000)) {
 	m_nObjId = OBJECTS [nObject].info.nId;
 	}
 m_nClass = ObjectClass (nObject);
-m_fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
+m_fPartsPerTick = float (nMaxParts) / float (abs (nLife) * 1.25f);
 m_nTicks = 0;
 m_nDefBrightness = 0;
 if ((m_bEmittingFace = (vEmittingFace != NULL)))
@@ -1037,14 +1042,14 @@ else
 			m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime);
 		}
 			
-	for (i = 0; i < m_nParts; i++) {
-		j = (m_nFirstPart + i) % m_nPartLimit;
+	for (i = 0, j = m_nFirstPart; i < m_nParts; i++) {
 		if (m_particles [j].m_nLife <= 0) {
 			if (j != m_nFirstPart)
 				m_particles [j] = m_particles [m_nFirstPart];
 			m_nFirstPart = (m_nFirstPart + 1) % m_nPartLimit;
 			m_nParts--;
 			}
+		j = ++j % m_nPartLimit;
 		}
 
 	m_nTicks += t;
@@ -1178,7 +1183,7 @@ if ((m_bHaveDir = (vDir != NULL)))
 inline void CParticleEmitter::SetLife (int nLife)
 {
 m_nLife = nLife;
-m_fPartsPerTick = nLife ? (float) m_nMaxParts / (float) abs (nLife) : 0.0f;
+m_fPartsPerTick = nLife ? float (m_nMaxParts) / float (abs (nLife) * 1.25f) : 0.0f;
 m_nTicks = 0;
 }
 
@@ -1236,7 +1241,7 @@ m_nMaxParts = nMaxParts;
 if (m_nParts > nMaxParts)
 	m_nParts = nMaxParts;
 #endif
-m_fPartsPerTick = (float) m_nMaxParts / (float) abs (m_nLife);
+m_fPartsPerTick = float (m_nMaxParts) / float (abs (m_nLife) * 1.25f);
 return 1;
 }
 
