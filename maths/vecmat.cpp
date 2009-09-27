@@ -667,7 +667,7 @@ const CAngleVector CFixMatrix::ExtractAnglesVec (void) const
 	CAngleVector a;
 	fix sinh, cosh, cosp;
 
-if (m_data.mat [FVEC][X] == 0 && m_data.mat [FVEC][Z] == 0)		//zero head
+if ((m_data.mat [FVEC][X] == 0) && (m_data.mat [FVEC][Z] == 0))		//zero head
 	a [HA] = 0;
 else
 	a [HA] = FixAtan2 (m_data.mat [FVEC][Z], m_data.mat [FVEC][X]);

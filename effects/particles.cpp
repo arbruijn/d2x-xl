@@ -84,8 +84,8 @@ static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
- {"smoke.tga", "bubble.tga", "napalm.tga", "bullcase.tga", "corona.tga"},
- {"smoke.tga", "bubble.tga", "napalm.tga", "bullcase.tga", "corona.tga"}
+ {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga"},
+ {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga"}
 	};
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1,1},{1,1,1,1,1}};
@@ -278,16 +278,20 @@ if (!vDir /*|| (nType == FIRE_PARTICLES)*/) {
 	m_bHaveDir = 1;
 	}
 else {
-	CAngleVector	a;
-	CFixMatrix		m;
-	float				d;
-	a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
-	a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
-	a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
-	m = CFixMatrix::Create (a);
-	vDrift = m * (*vDir);
+	m_vDir = *vDir;
+	if (nType == FIRE_PARTICLES)
+		vDrift = m_vDir;
+	else {
+		CAngleVector	a;
+		CFixMatrix		m;
+		a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
+		a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
+		a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
+		m = CFixMatrix::Create (a);
+		vDrift = m * m_vDir;
+		}
 	CFixVector::Normalize (vDrift);
-	d = (float) CFixVector::DeltaAngle (vDrift, *vDir, NULL);
+	float d = float (CFixVector::DeltaAngle (vDrift, m_vDir, NULL));
 	if (d) {
 		d = (float) exp ((I2X (1) / 8) / d);
 		nSpeed = (fix) ((float) nSpeed / d);
@@ -298,10 +302,14 @@ else {
 		m_color [0].blue = 1.0f;
 #endif
 	vDrift *= nSpeed;
+#if 1
 	if (nType <= FIRE_PARTICLES)
-		m_vDir = *vDir * (I2X (3) / 4 + I2X (randN (16)) / 64);
-	else
-		m_vDir = *vDir;
+		m_vDir *= (I2X (3) / 4 + I2X (randN (16)) / 64);
+#endif
+#if DBG
+	if (CFixVector::Dot (vDrift, m_vDir) < 0)
+		d = 0;
+#endif
 	m_bHaveDir = 1;
 	}
 m_vDrift = vDrift;
@@ -500,6 +508,12 @@ if (m_nDelay > 0)
 	m_nDelay -= t;
 else {
 	vPos = m_vPos;
+#if DBG
+	drift = m_vDrift;
+	CFixVector::Normalize (drift);
+	if (CFixVector::Dot (drift, m_vDir) < 0)
+		j = 0;
+#endif
 	drift = m_vDrift;
 	if ((m_nType == SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES)) {
 		drift [X] = ChangeDir (drift [X]);
@@ -563,10 +577,12 @@ else {
 		m_nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
 #else
 		m_nLife -= t;
-		if ((m_nType == FIRE_PARTICLES) && (m_nLife <= m_nTTL / 3) && !m_bReversed) {
+#	if 0
+		if ((m_nType == FIRE_PARTICLES) && !m_bReversed && (m_nLife <= m_nTTL / 4 + randN (m_nTTL / 4))) {
 			m_vDrift = -m_vDrift;
 			m_bReversed = 1;
 			}
+#	endif
 #	if DBG
 		if ((m_nLife <= 0) && (m_nType == 2))
 			m_nLife = -1;
@@ -742,10 +758,10 @@ else if (bEmissive == 2) {
 	float fFade;
 	if (decay < 0.1f)
 		decay = decay;
-	if (decay > 0.75f)
-		fFade = 4.0f * (1.0f - decay);
+	if (decay > 0.5f)
+		fFade = 2.0f * (1.0f - decay);
 	else
-		fFade = decay * 4.0f / 3.0f;
+		fFade = decay *	2.0f;
 	decay = 1.0f;
 #if 1
 	pc.red =
@@ -1665,7 +1681,9 @@ if (bufferBrightness < 0)
 if (!iBuffer)
 	return false;
 
-CBitmap *bmP = bmpParticle [0][particleManager.LastType ()];
+int nType = particleManager.LastType ();
+
+CBitmap *bmP = bmpParticle [0][nType];
 if (!bmP)
 	return false;
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
@@ -1683,10 +1701,10 @@ if (bmP->Bind (0))
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
-		if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || particleManager.LastType ()))
+		if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
-		else if ((gameOpts->render.effects.bSoftParticles & 4) && (particleManager.LastType () <= FIRE_PARTICLES))
-			LoadGlareShader (10, 0);
+		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= FIRE_PARTICLES))
+			LoadGlareShader (10, nType == FIRE_PARTICLES);
 		else if (gameStates.render.history.nShader >= 0) {
 			glUseProgramObject (0);
 			gameStates.render.history.nShader = -1;

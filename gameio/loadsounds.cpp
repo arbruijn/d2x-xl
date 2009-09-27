@@ -447,7 +447,8 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 	 {NULL, "32:static-buzz.wav"},
 	 {NULL, "33:steam.wav"},
 	 {NULL, "34:teleporter.wav"},
-	 {NULL, "35:waterfall.wav"}
+	 {NULL, "35:waterfall.wav"},
+	 {NULL, "36:fire.wav"}
 	};
 
 //------------------------------------------------------------------------------

@@ -540,6 +540,7 @@ static tFileDesc addonTextureFiles [] = {
 static tFileDesc addonSoundFiles [] = {
 	{"\002afbr_1.wav", "sounds2", false, false, false},
 	{"\002airbubbles.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002fire.wav", "sounds2/d2x-xl", false, false, false},
 	{"\002gatling-slowdown.wav", "sounds2/d2x-xl", false, false, false},
 	{"\002gatling-speedup.wav", "sounds2/d2x-xl", false, false, false},
 	{"\002gauss-firing.wav", "sounds2/d2x-xl", false, false, false},
