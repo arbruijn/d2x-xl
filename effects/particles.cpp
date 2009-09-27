@@ -213,6 +213,7 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) ? 1 : (nParticleSystemTyp
 m_nClass = nClass;
 m_nSegment = nSegment;
 m_nBounce = 0;
+m_bReversed = 0;
 color = (colorP && (m_bEmissive < 2)) ? *colorP : defaultColor;
 m_color [0] =
 m_color [1] = color;
@@ -261,9 +262,11 @@ else {
 		}
 #endif
 	}
-//nSpeed = (int) (sqrt (nSpeed) * (float) I2X (1));
-nSpeed *= I2X (1);
-if (!vDir || (nType == FIRE_PARTICLES)) {
+if (nType == FIRE_PARTICLES)
+	nSpeed = int (sqrt (double (nSpeed)) * float (I2X (1)));
+else
+	nSpeed *= I2X (1);
+if (!vDir /*|| (nType == FIRE_PARTICLES)*/) {
 	CFixVector	vOffs;
 	vDrift [X] = nSpeed - randN (2 * nSpeed);
 	vDrift [Y] = nSpeed - randN (2 * nSpeed);
@@ -341,7 +344,7 @@ if (nType == SMOKE_PARTICLES) {
 	nRad += randN (nRad);
 	}
 else if (nType == FIRE_PARTICLES) {
-	nLife = nLife / 4 + randN (nLife / 4);
+	nLife = nLife / 2 + randN (nLife / 2);
 	nRad += randN (nRad);
 	}
 else if (nType == BUBBLE_PARTICLES)
@@ -392,7 +395,7 @@ else if (nParticleSystemType == SMOKE_PARTICLES)
 else if (nParticleSystemType == BUBBLE_PARTICLES)
 	m_color [0].alpha /= 2;
 else if ((nParticleSystemType == LIGHT_PARTICLES) || (nParticleSystemType == FIRE_PARTICLES))
-	m_color [0].alpha /= 5;
+	m_color [0].alpha = 1.0f;
 #	if 0
 else if (nParticleSystemType == GATLING_PARTICLES)
 	;//m_color [0].alpha /= 6;
@@ -560,6 +563,10 @@ else {
 		m_nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
 #else
 		m_nLife -= t;
+		if ((m_nType == FIRE_PARTICLES) && (m_nLife <= m_nTTL / 3) && !m_bReversed) {
+			m_vDrift = -m_vDrift;
+			m_bReversed = 1;
+			}
 #	if DBG
 		if ((m_nLife <= 0) && (m_nType == 2))
 			m_nLife = -1;

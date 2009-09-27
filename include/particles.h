@@ -37,7 +37,7 @@ typedef struct tParticle {
 	CFixVector	m_vDir;				//movement direction
 	CFixVector	m_vDrift;
 	int			m_nTTL;				//time to live
-	int			m_nLife;			//remaining life time
+	int			m_nLife;				//remaining life time
 	int			m_nDelay;			//time between creation and appearance
 	int			m_nMoved;			//time last moved
 	int			m_nWidth;
@@ -45,13 +45,14 @@ typedef struct tParticle {
 	int			m_nRad;
 	short			m_nSegment;
 	tRgbaColorf	m_color [2];		//well ... the color, ya know =)
-	char			m_nType;			//black or white
+	char			m_nType;				//black or white
 	char			m_nRotDir;
 	char			m_nBounce;
 	char			m_bHaveDir;
 	char			m_bBlowUp;
 	char			m_bBright;
 	char			m_bEmissive;
+	char			m_bReversed;
 	char			m_nFade;
 	char			m_nClass;
 	char			m_nFrame;

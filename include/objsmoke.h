@@ -38,6 +38,8 @@
 #define STATIC_SMOKE_PART_LIFE	-3200
 #define STATIC_SMOKE_PART_SPEED	1000
 
+#define FIRE_PART_LIFE				-800
+
 #define REACTOR_MAX_PARTS			500
 
 //------------------------------------------------------------------------------
