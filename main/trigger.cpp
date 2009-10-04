@@ -1254,7 +1254,7 @@ m_info.tOperated = -1;
 void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
 m_info.nType = (ubyte) cf.ReadByte ();
-if (bObjTrigger && (saveGameManager.Version () >= 41))
+if ((saveGameManager.Version () >= 48) || (bObjTrigger && (saveGameManager.Version () >= 41)))
 	m_info.flags = cf.ReadShort ();
 else
 	m_info.flags = short (cf.ReadByte ());
@@ -1275,10 +1275,7 @@ m_info.tOperated = (saveGameManager.Version () < 44) ? -1 : cf.ReadFix ();
 void CTrigger::SaveState (CFile& cf, bool bObjTrigger)
 {
 cf.WriteByte (sbyte (m_info.nType));
-if (bObjTrigger)
-	cf.WriteShort (m_info.flags);
-else
-	cf.WriteByte (sbyte (m_info.flags));
+cf.WriteShort (m_info.flags);
 cf.WriteByte (m_info.nLinks);
 cf.WriteFix (m_info.value);
 cf.WriteFix (m_info.time [0]);
