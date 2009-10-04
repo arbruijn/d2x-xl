@@ -853,7 +853,7 @@ return 255;
 
 ubyte KCJoyBtnCtrlFunc (void)
 {
-	int i;
+	int	h, i;
 	ubyte code = 255;
 
 if (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS) {

@@ -143,17 +143,17 @@ int NMCheckButtonPress ()
 	int i;
 
 	switch (gameConfig.nControlType) {
-	case	CONTROL_JOYSTICK:
-	case	CONTROL_FLIGHTSTICK_PRO:
-	case	CONTROL_THRUSTMASTER_FCS:
-	case	CONTROL_GRAVIS_GAMEPAD:
+	case CONTROL_JOYSTICK:
+	case CONTROL_FLIGHTSTICK_PRO:
+	case CONTROL_THRUSTMASTER_FCS:
+	case CONTROL_GRAVIS_GAMEPAD:
 		for (i = 0; i < 4; i++)
 	 		if (JoyGetButtonDownCnt (i) > 0) 
 				return 1;
 		break;
-	case	CONTROL_MOUSE:
-	case	CONTROL_CYBERMAN:
-	case	CONTROL_WINJOYSTICK:
+	case CONTROL_MOUSE:
+	case CONTROL_CYBERMAN:
+	case CONTROL_WINJOYSTICK:
 		break;
 	case	CONTROL_NONE:		//keyboard only
 		#ifdef APPLE_DEMO
