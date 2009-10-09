@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "cfile.h"
 
-#define MAX_MISSIONS                    500
+#define MAX_MISSIONS                    5000
 #define MAX_LEVELS_PER_MISSION          100
 #define MAX_SECRET_LEVELS_PER_MISSION   (MAX_LEVELS_PER_MISSION / 5)
 #define MISSION_NAME_LEN                25
