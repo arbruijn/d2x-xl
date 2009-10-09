@@ -928,7 +928,7 @@ optEntOpts =
 optMBallOpts = -1;
 if (!gameStates.app.bNostalgia) {
 	optD2XOpts = m.AddMenu (TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);
-	if (m [optEntropy].m_value)
+	if ((optEntropy >= 0) && m [optEntropy].m_value)
 		optEntOpts = m.AddMenu (TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
 	if (m [optMonsterball].m_value && (gameOpts->app.bExpertMode == SUPERUSER))
 		optMBallOpts = m.AddMenu (TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);

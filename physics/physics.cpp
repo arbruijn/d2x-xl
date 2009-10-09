@@ -611,6 +611,10 @@ retryMove:
 	vSaveP0 = *fq.p0;
 	vSaveP1 = *fq.p1;
 	memset (&hi, 0, sizeof (hi));
+#if DBG
+	if (info.nType == OBJ_POWERUP)
+		nDbgObj = nDbgObj;
+#endif
 	fviResult = FindHitpoint (&fq, &hi);
 	UpdateStats (this, fviResult);
 	vSavePos = info.position.vPos;			//save the CObject's position

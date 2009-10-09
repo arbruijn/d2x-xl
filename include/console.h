@@ -25,7 +25,7 @@ Have Fun!
 #include "cvar.h"
 
 //! Cut the buffer line if it becomes longer than this
-#define CON_CHARS_PER_LINE   128
+#define CON_CHARS_PER_LINE   256
 //! Cursor blink frequency in ms
 #define CON_BLINK_RATE       500
 //! Border in pixels from the most left to the first letter

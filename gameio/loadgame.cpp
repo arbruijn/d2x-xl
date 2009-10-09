@@ -359,6 +359,8 @@ if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 	LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
 gameData.multiplayer.nBuiltinMissiles = 2 + NDL - gameStates.app.nDifficultyLevel;
+if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) 
+	gameData.physics.xAfterburnerCharge = I2X (1);
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 }
 
@@ -498,8 +500,6 @@ LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.hostages.nOnBoard = 0;
 
-gameData.physics.xAfterburnerCharge = 0;
-
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	LOCALPLAYER.primaryAmmo [i] = 0;
 	bLastPrimaryWasSuper [i] = 0;
@@ -530,6 +530,7 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_FLAG);
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 AddPlayerLoadout (bRestore);
+gameData.physics.xAfterburnerCharge = (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//CPlayerData no longer dead
