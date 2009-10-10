@@ -474,7 +474,7 @@ intersection = vHit;
 #if 0 //DBG
 CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, vHit, 1, 1);
 #endif
-if (!bCheckVisibility && (thisObjP->info.nType != OBJ_POWERUP)) {
+if (!bCheckVisibility && (otherObjP->info.nType != OBJ_POWERUP)) {
 	vHit = thisObjP->RegisterHit (vHit, nModel);
 	//vHit = otherObjP->RegisterHit (vHit, nModel);
 	}
