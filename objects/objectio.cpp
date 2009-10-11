@@ -218,6 +218,10 @@ switch (info.renderType) {
 			rType.particleInfo.nType = 0;
 		else
 			rType.particleInfo.nType = cf.ReadByte ();
+		if (gameData.segs.nLevelVersion < 19)
+			rType.particleInfo.bEnabled = 0;
+		else
+			rType.particleInfo.bEnabled = cf.ReadByte ();
 		break;
 
 	case RT_LIGHTNING:
@@ -244,6 +248,10 @@ switch (info.renderType) {
 		rType.lightningInfo.color.green = cf.ReadByte ();
 		rType.lightningInfo.color.blue = cf.ReadByte ();
 		rType.lightningInfo.color.alpha = cf.ReadByte ();
+		if (gameData.segs.nLevelVersion < 19)
+			rType.lightningInfo.bEnabled = 0;
+		else
+			rType.lightningInfo.bEnabled = cf.ReadByte ();
 		break;
 
 	case RT_SOUND:
@@ -251,7 +259,10 @@ switch (info.renderType) {
 		rType.soundInfo.szFilename [sizeof (rType.soundInfo.szFilename) - 1] = '\0';
 		strlwr (rType.soundInfo.szFilename);
 		rType.soundInfo.nVolume = int (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f + 0.5f);
-		//rType.soundInfo.mixChunkP = LoadAddonSound (rType.soundInfo.szFilename);
+		if (gameData.segs.nLevelVersion < 19)
+			rType.soundInfo.bEnabled = 0;
+		else
+			rType.soundInfo.bEnabled = cf.ReadByte ();
 		break;
 
 	default:
@@ -352,9 +363,8 @@ switch (info.controlType) {
 switch (info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
-		int i;
 		rType.polyObjInfo.nModel = cf.ReadInt ();
-		for (i = 0; i < MAX_SUBMODELS; i++)
+		for (int i = 0; i < MAX_SUBMODELS; i++)
 			cf.ReadAngVec (rType.polyObjInfo.animAngles [i]);
 		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
 		rType.polyObjInfo.nTexOverride = cf.ReadInt ();
@@ -372,6 +382,27 @@ switch (info.renderType) {
 		break;
 
 	case RT_LASER:
+		break;
+
+	case RT_SMOKE:
+		if (saveGameManager.Version () < 49)
+			rType.particleInfo.bEnabled = 1;
+		else
+			rType.particleInfo.bEnabled = cf.ReadByte ();
+		break;
+
+	case RT_LIGHTNING:
+		if (saveGameManager.Version () < 49)
+			rType.lightningInfo.bEnabled = 1;
+		else
+			rType.lightningInfo.bEnabled = cf.ReadByte ();
+		break;
+
+	case RT_SOUND:
+		if (saveGameManager.Version () < 48)
+			rType.soundInfo.bEnabled = 1;
+		else
+			rType.soundInfo.bEnabled = cf.ReadByte ();
 		break;
 	}
 if (saveGameManager.Version () < 45)
@@ -495,6 +526,18 @@ switch (info.renderType) {
 		break;
 
 	case RT_LASER:
+		break;
+
+	case RT_SMOKE:
+		cf.WriteByte (rType.particleInfo.bEnabled);
+		break;
+
+	case RT_LIGHTNING:
+		cf.WriteByte (rType.lightningInfo.bEnabled);
+		break;
+
+	case RT_SOUND:
+		cf.WriteByte (rType.soundInfo.bEnabled);
 		break;
 	}
 cf.WriteFix (m_damage.nHits [0]);

@@ -1314,7 +1314,7 @@ for (i = 0; i < nMaxEmitters; i++)
 		return -1;
 		}
 m_nType = nType;
-m_bValid = true;
+m_bValid = 1;
 return 1;
 }
 
@@ -1327,7 +1327,7 @@ m_nObject = -1;
 m_nObjType = -1;
 m_nObjId = -1;
 m_nSignature = -1;
-m_bValid =
+m_bValid = 0;
 m_bDestroy = false;
 }
 
@@ -1335,7 +1335,7 @@ m_bDestroy = false;
 
 void CParticleSystem::Destroy (void)
 {
-m_bValid =
+m_bValid = 0;
 m_bDestroy = false;
 if (m_emitters.Buffer ()) {
 	m_emitters.Destroy ();
@@ -1352,7 +1352,7 @@ if (m_emitters.Buffer ()) {
 
 int CParticleSystem::Render (void)
 {
-if (!m_bValid)
+if (m_bValid < 1)
 	return 0;
 
 	int	h = 0;
@@ -1472,7 +1472,7 @@ return m_nEmitters;
 
 int CParticleSystem::Update (void)
 {
-if (!m_bValid)
+if (m_bValid < 1)
 	return 0;
 
 	CParticleEmitter	*emitterP;

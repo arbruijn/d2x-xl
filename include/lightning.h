@@ -218,6 +218,7 @@ class CLightningManager : public tLightningData {
 		void RenderSystem (void);
 		void RenderForDamage (CObject *objP, g3sPoint **pointList, RenderModel::CVertex *pVerts, int nVertices);
 		void Animate (tLightning *pl, int nStart, int nBolts, int nDepth);
+		int Enable (CObject* objP);
 		int CreateForMissile (CObject *objP);
 		void CreateForShaker (CObject *objP);
 		void CreateForShakerMega (CObject *objP);

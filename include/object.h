@@ -414,6 +414,7 @@ public:
 	tRgbaColorb	color;
 	char			nSide;
 	char			nType;
+	char			bEnabled;
 } __pack__ tParticleInfo;
 
 class CSmokeInfo {
@@ -454,6 +455,7 @@ public:
 	char			bSound;
 	char			bRandom;
 	char			bInPlane;
+	char			bEnabled;
 	tRgbaColorb color;
 } __pack__ tLightningInfo;
 
@@ -488,6 +490,7 @@ typedef struct tSoundInfo {
 public:
 	char	szFilename [40];
 	fix	nVolume;
+	char	bEnabled;
 	//Mix_Chunk*	mixChunkP;
 } tSoundInfo;
 
@@ -507,11 +510,11 @@ class CSoundInfo {
 
 typedef struct tPolyObjInfo {
 public:
-	int     		nModel;          // which polygon model
+	int     			nModel;          // which polygon model
 	CAngleVector 	animAngles [MAX_SUBMODELS]; // angles for each subobject
-	int     		nSubObjFlags;       // specify which subobjs to draw
-	int     		nTexOverride;      // if this is not -1, map all face to this
-	int     		nAltTextures;       // if not -1, use these textures instead
+	int     			nSubObjFlags;       // specify which subobjs to draw
+	int     			nTexOverride;      // if this is not -1, map all face to this
+	int     			nAltTextures;       // if not -1, use these textures instead
 } __pack__ tPolyObjInfo;
 
 class CPolyObjInfo {

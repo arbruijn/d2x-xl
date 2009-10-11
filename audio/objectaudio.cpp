@@ -650,7 +650,7 @@ if (!OBJECTS.Buffer ())
 
 	int				nOldVolume, nNewVolume, nOldPan, 
 						nAudioVolume [2] = {audio.Volume (0), audio.Volume (1)};
-	CObject*			objP;
+	CObject*			objP = NULL;
 	CFixVector		vListenerPos = gameData.objs.viewerP->info.position.vPos;
 	CFixMatrix		mListenerOrient = gameData.objs.viewerP->info.position.mOrient;
 	short				nListenerSeg = gameData.objs.viewerP->info.nSegment;
@@ -711,7 +711,7 @@ while (i) {
 				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
 				continue;
 				}
-			else if ((objP->info.nType == OBJ_EFFECT) && (objP->info.nId == LIGHTNING_ID) && !SHOW_LIGHTNING) {
+			else if ((objP->info.nType == OBJ_EFFECT) && (!objP->rType.soundInfo.bEnabled || ((objP->info.nId == LIGHTNING_ID) && !SHOW_LIGHTNING))) {
 				soundObjP->Stop ();
 				continue;
 				}

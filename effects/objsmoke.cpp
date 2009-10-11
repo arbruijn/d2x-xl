@@ -609,7 +609,7 @@ void DoStaticParticles (CObject *objP)
 	static int particleTypes [3] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES};
 
 nObject = (int) objP->Index ();
-if (!(SHOW_SMOKE && ((nType == 1) ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {
+if (!(SHOW_SMOKE && objP->rType.particleInfo.bEnabled && ((nType == 1) ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {
 	if (particleManager.GetObjectSystem (nObject) >= 0)
 		KillObjectSmoke (nObject);
 	return;

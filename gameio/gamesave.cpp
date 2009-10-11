@@ -590,6 +590,7 @@ if (gameTopFileInfo.fileinfoVersion >= 33) {
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
 			gameData.trigs.objTriggerRefs [i].prev = cf.ReadShort ();
 			gameData.trigs.objTriggerRefs [i].next = cf.ReadShort ();
+			OBJTRIGGERS [i].m_info.nObject = 
 			gameData.trigs.objTriggerRefs [i].nObject = cf.ReadShort ();
 			}
 		}

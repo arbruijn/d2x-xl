@@ -150,7 +150,7 @@ if (m_info.nLinks) {
 		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 		objP->RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
-			int	i = gameData.bosses.Find (objP->Index ());
+			int i = gameData.bosses.Find (objP->Index ());
 
 			if (i >= 0)
 				gameData.bosses [i].Setup (objP->Index ());
@@ -305,9 +305,25 @@ int CTrigger::DoEnableTrigger (void)
 {
 	CTrigger*	trigP;
 
-for (int i = 0; i < m_info.nLinks; i++)
-	if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
-		trigP->m_info.flags &= ~TF_DISABLED;
+for (int i = 0; i < m_info.nLinks; i++) {
+	if (m_info.sides [i] >= 0) {
+		if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
+			trigP->m_info.flags &= ~TF_DISABLED;
+		}
+	else {
+		CObject*	objP = OBJECTS + m_info.segments [i];
+		if (!objP || (objP->info.nType != OBJ_EFFECT))
+			return 0;
+		if (objP->info.nId == SMOKE_ID)
+			objP->rType.particleInfo.bEnabled = 1;
+		else if (objP->info.nId == LIGHTNING_ID)
+			objP->rType.lightningInfo.bEnabled = 1;
+		else if (objP->info.nId == SOUND_ID)
+			objP->rType.soundInfo.bEnabled = 1;
+		else
+			return 0;
+		}
+	}
 return 1;
 }
 
@@ -317,9 +333,25 @@ int CTrigger::DoDisableTrigger (void)
 {
 	CTrigger*	trigP;
 
-for (int i = 0; i < m_info.nLinks; i++)
-	if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
-		trigP->m_info.flags |= TF_DISABLED;
+for (int i = 0; i < m_info.nLinks; i++) {
+	if (m_info.sides [i] >= 0) {
+		if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
+			trigP->m_info.flags |= TF_DISABLED;
+		}
+	else {
+		CObject*	objP = OBJECTS + m_info.segments [i];
+		if (!objP || (objP->info.nType != OBJ_EFFECT))
+			return 0;
+		if (objP->info.nId == SMOKE_ID)
+			objP->rType.particleInfo.bEnabled = 1;
+		else if (objP->info.nId == LIGHTNING_ID)
+			objP->rType.lightningInfo.bEnabled = 1;
+		else if (objP->info.nId == SOUND_ID)
+			objP->rType.soundInfo.bEnabled = 1;
+		else
+			return 0;
+		}
+	}
 return 1;
 }
 
@@ -952,9 +984,6 @@ if (!nDepth && !bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType !=
 	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks;
 	}
 
-if (m_info.flags & TF_ONE_SHOT)		//if this is a one-bShot...
-	m_info.flags |= TF_DISABLED;		//..then don't let it happen again
-
 if (m_info.tOperated < 0) {
 	m_info.tOperated = gameData.time.xGame;
 	m_info.nObject = nObject;
@@ -975,6 +1004,9 @@ if (Delay () > 0) {
 	nDepth--;
 	return 1;
 	}
+
+if (m_info.flags & TF_ONE_SHOT)		//if this is a one-shot...
+	m_info.flags |= TF_DISABLED;		//..then don't let it happen again
 
 switch (m_info.nType) {
 
@@ -1356,8 +1388,13 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 	}
 
 trigP = OBJTRIGGERS.Buffer ();
-for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++)
+for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++) {
+	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || NetworkIAmMaster ())) {
+		trigP->Operate (trigP->m_info.nObject, -1, 0, true);
+		trigP->m_info.flags |= TF_DISABLED;
+		}
 	trigP->Countdown (true);	
+	}
 }
 
 //------------------------------------------------------------------------------

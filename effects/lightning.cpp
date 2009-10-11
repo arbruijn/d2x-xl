@@ -48,8 +48,8 @@ COmegaLightnings	omegaLightnings;
 #define MAX_LIGHTNING_SEGMENTS	10000
 
 typedef struct tPlasmaBuffer {
-	tTexCoord2f	texCoord [4 * MAX_LIGHTNING_SEGMENTS];
-	CFloatVector		vertices [4 * MAX_LIGHTNING_SEGMENTS];
+	tTexCoord2f		texCoord [4 * MAX_LIGHTNING_SEGMENTS];
+	CFloatVector	vertices [4 * MAX_LIGHTNING_SEGMENTS];
 } tPlasmaBuffer;
 
 static tPlasmaBuffer plasmaBuffers [2][2];
@@ -1299,7 +1299,7 @@ if ((m_bSound > 0) & (m_nObject >= 0))
 
 void CLightningSystem::Animate (int nStart, int nBolts)
 {
-if (!m_bValid)
+if (m_bValid < 1)
 	return;
 
 	CLightning *lightningP = m_lightning + nStart;
@@ -1358,7 +1358,7 @@ if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 		Animate (0, m_nBolts);
 		if (!(m_nBolts = SetLife ()))
 			lightningManager.Destroy (this, NULL);
-		else if (m_nObject >= 0) {
+		else if ((m_bValid > 0) && (m_nObject >= 0)) {
 			UpdateSound ();
 			MoveForObject ();
 			}
@@ -1379,7 +1379,7 @@ if (m_bSound)
 
 void CLightningSystem::UpdateSound (void)
 {
-if (!m_bValid)
+if (m_bValid < 1)
 	return;
 if (!m_bSound)
 	return;
@@ -1435,7 +1435,7 @@ Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 
 void CLightningSystem::Render (int nStart, int nBolts, int bDepthSort, int nThread)
 {
-if (!m_bValid)
+if (m_bValid < 1)
 	return;
 
 if (automap.m_bDisplay && !(gameStates.render.bAllVisited || automap.m_bFull)) {
@@ -1467,7 +1467,7 @@ if (nBolts < 0)
 
 int CLightningSystem::SetLight (void)
 {
-if (!m_bValid)
+if (m_bValid < 1)
 	return 0;
 
 	int nLights = 0;
@@ -1834,6 +1834,16 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
+int CLightningManager::Enable (CObject* objP)
+{
+int h = m_objects [objP->Index ()];
+if ((h >= 0) && m_systems [h].m_bValid)
+	m_systems [h].m_bValid = objP->rType.lightningInfo.bEnabled ? 1 : -1;
+return m_systems [h].m_bValid;
+}
+
+//------------------------------------------------------------------------------
+
 void CLightningManager::StaticFrame (void)
 {
 	int				h, i;
@@ -1871,8 +1881,11 @@ FORALL_EFFECT_OBJS (objP, i) {
 	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
 				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 				   pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, 1, pli->nStyle, &color);
-	if (h >= 0)
+	if (h >= 0) {
 		m_objects [i] = h;
+		if (!objP->rType.lightningInfo.bEnabled)
+			m_systems [h].m_bValid = -1;
+		}
 	}
 }
 

@@ -163,7 +163,7 @@ typedef struct tParticleSystem {
 	short								m_nObjType;
 	short								m_nObjId;
 	bool								m_bDestroy;
-	bool								m_bValid;
+	char								m_bValid;
 	char								m_nType;				//black or white
 } tParticleSystem;
 
