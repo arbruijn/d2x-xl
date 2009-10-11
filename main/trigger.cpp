@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "textdata.h"
 #include "marker.h"
+#include "lightning.h"
 #include "state.h"
 #include "playerdeath.h"
 
@@ -316,8 +317,10 @@ for (int i = 0; i < m_info.nLinks; i++) {
 			return 0;
 		if (objP->info.nId == SMOKE_ID)
 			objP->rType.particleInfo.bEnabled = 1;
-		else if (objP->info.nId == LIGHTNING_ID)
+		else if (objP->info.nId == LIGHTNING_ID) {
 			objP->rType.lightningInfo.bEnabled = 1;
+			lightningManager.Enable (objP);
+			}
 		else if (objP->info.nId == SOUND_ID)
 			objP->rType.soundInfo.bEnabled = 1;
 		else
@@ -343,11 +346,13 @@ for (int i = 0; i < m_info.nLinks; i++) {
 		if (!objP || (objP->info.nType != OBJ_EFFECT))
 			return 0;
 		if (objP->info.nId == SMOKE_ID)
-			objP->rType.particleInfo.bEnabled = 1;
-		else if (objP->info.nId == LIGHTNING_ID)
-			objP->rType.lightningInfo.bEnabled = 1;
+			objP->rType.particleInfo.bEnabled = 0;
+		else if (objP->info.nId == LIGHTNING_ID) {
+			objP->rType.lightningInfo.bEnabled = 0;
+			lightningManager.Enable (objP);
+			}
 		else if (objP->info.nId == SOUND_ID)
-			objP->rType.soundInfo.bEnabled = 1;
+			objP->rType.soundInfo.bEnabled = 0;
 		else
 			return 0;
 		}

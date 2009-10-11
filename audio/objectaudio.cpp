@@ -711,7 +711,9 @@ while (i) {
 				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
 				continue;
 				}
-			else if ((objP->info.nType == OBJ_EFFECT) && (!objP->rType.soundInfo.bEnabled || ((objP->info.nId == LIGHTNING_ID) && !SHOW_LIGHTNING))) {
+			else if ((objP->info.nType == OBJ_EFFECT) && 
+						((objP->info.nId == SOUND_ID) && !objP->rType.soundInfo.bEnabled) || 
+						((objP->info.nId == LIGHTNING_ID) && !(SHOW_LIGHTNING && objP->rType.lightningInfo.bEnabled))) {
 				soundObjP->Stop ();
 				continue;
 				}

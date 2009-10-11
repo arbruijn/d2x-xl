@@ -1358,7 +1358,7 @@ if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 		Animate (0, m_nBolts);
 		if (!(m_nBolts = SetLife ()))
 			lightningManager.Destroy (this, NULL);
-		else if ((m_bValid > 0) && (m_nObject >= 0)) {
+		else if (m_bValid && (m_nObject >= 0)) {
 			UpdateSound ();
 			MoveForObject ();
 			}
@@ -1379,8 +1379,9 @@ if (m_bSound)
 
 void CLightningSystem::UpdateSound (void)
 {
-if (m_bValid < 1)
+if (m_bValid < 1) {
 	return;
+	}
 if (!m_bSound)
 	return;
 

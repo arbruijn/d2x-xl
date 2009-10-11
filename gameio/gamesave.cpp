@@ -476,9 +476,36 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static int ReadTriggerInfo (CFile& cf)
+static void CheckTriggerInfo (void)
 {
 	int		h, i, j;
+	CTrigger	*trigP;
+
+for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
+	if (trigP->m_info.nLinks < 0)
+		trigP->m_info.nLinks = 0;
+	else if (trigP->m_info.nLinks > MAX_TRIGGER_TARGETS)
+		trigP->m_info.nLinks = MAX_TRIGGER_TARGETS;
+	for (h = trigP->m_info.nLinks, j = 0; j < h; ) {
+		if ((trigP->m_info.segments [j] >= 0) && 
+			 (trigP->m_info.sides [j] >= 0) 
+			 ? (trigP->m_info.segments [j] < gameData.segs.nSegments) && (trigP->m_info.sides [j] < 6) 
+			 : (trigP->m_info.segments [j] < gameData.objs.nObjects) && (trigP->m_info.sides [j] == -1))
+			j++;
+		else if (--h) {
+			trigP->m_info.segments [j] = trigP->m_info.segments [h];
+			trigP->m_info.sides [j] = trigP->m_info.sides [h];
+			}
+		}
+	trigP->m_info.nLinks = h;
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+static int ReadTriggerInfo (CFile& cf)
+{
+	int		i, j;
 	CTrigger	*trigP;
 
 if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
@@ -561,22 +588,6 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 				trigP->m_info.sides [t] = trig.sides [t];
 				}
 			}
-		if (trigP->m_info.nLinks < 0)
-			trigP->m_info.nLinks = 0;
-		else if (trigP->m_info.nLinks > MAX_TRIGGER_TARGETS)
-			trigP->m_info.nLinks = MAX_TRIGGER_TARGETS;
-		for (h = trigP->m_info.nLinks, j = 0; j < h; ) {
-			if ((trigP->m_info.segments [j] >= 0) && 
-				 (trigP->m_info.sides [j] >= 0) 
-				 ? (trigP->m_info.segments [j] < gameData.segs.nSegments) && (trigP->m_info.sides [j] < 6) 
-				 : (trigP->m_info.segments [j] < gameData.objs.nObjects) && (trigP->m_info.sides [j] == -1))
-				j++;
-			else if (--h) {
-				trigP->m_info.segments [j] = trigP->m_info.segments [h];
-				trigP->m_info.sides [j] = trigP->m_info.sides [h];
-				}
-			}
-		trigP->m_info.nLinks = h;
 		}
 	}
 
@@ -960,6 +971,7 @@ ResetObjects (gameFileInfo.objects.count);
 CheckAndLinkObjects ();
 ClearTransientObjects (1);		//1 means clear proximity bombs
 CheckAndFixDoors ();
+CheckTriggerInfo ();
 //gameData.walls.nOpenDoors = gameFileInfo.doors.count;
 gameData.trigs.m_nTriggers = gameFileInfo.triggers.count;
 gameData.walls.nWalls = gameFileInfo.walls.count;
