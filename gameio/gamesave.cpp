@@ -566,8 +566,10 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 		else if (trigP->m_info.nLinks > MAX_TRIGGER_TARGETS)
 			trigP->m_info.nLinks = MAX_TRIGGER_TARGETS;
 		for (h = trigP->m_info.nLinks, j = 0; j < h; ) {
-			if ((trigP->m_info.segments [j] >= 0) && (trigP->m_info.segments [j] < gameData.segs.nSegments) &&
-				 (trigP->m_info.sides [j] >= 0) && (trigP->m_info.sides [j] < 6))
+			if ((trigP->m_info.segments [j] >= 0) && 
+				 (trigP->m_info.sides [j] >= 0) 
+				 ? (trigP->m_info.segments [j] < gameData.segs.nSegments) && (trigP->m_info.sides [j] < 6) 
+				 : (trigP->m_info.segments [j] < gameData.objs.nObjects) && (trigP->m_info.sides [j] == -1))
 				j++;
 			else if (--h) {
 				trigP->m_info.segments [j] = trigP->m_info.segments [h];
