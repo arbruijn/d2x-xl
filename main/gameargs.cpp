@@ -394,6 +394,8 @@ void EvalAppArgs (void)
 if ((t = FindArg ("-gpgpu_lights")))
 	ogl.m_states.bVertexLighting = NumArg (t, 1);
 #endif
+if ((t = FindArg ("-check_setup")))
+	gameStates.app.bCheckAndFixSetup = NumArg (t, 1);
 if ((t = FindArg ("-expertmode")))
 	gameOpts->app.bExpertMode = NumArg (t, 1);
 if ((t = FindArg ("-pured2")))

@@ -1084,6 +1084,7 @@ typedef struct tApplicationStates {
 	int nThreads;
 #endif
 	int bDemoData;
+	int bCheckAndFixSetup;
 	int nSDLTicks;
 	int nExtGameStatus;
 	int nFunctionMode;

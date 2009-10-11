@@ -264,6 +264,7 @@ gameStates.video.bFullScreen = -1;
 
 void InitAppStates (void)
 {
+gameStates.app.bCheckAndFixSetup = 1;
 gameStates.app.bHaveExtraData = 0;
 gameStates.app.nExtGameStatus = 1;
 gameStates.app.nFunctionMode = FMODE_MENU;

@@ -722,6 +722,9 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 
 int CheckAndFixSetup (void)
 {
+if (!gameStates.app.bCheckAndFixSetup)
+	return 0;
+
 	int	i, nResult = 0;
 	bool	bDemoData;
 	char	szMsg [10000];
