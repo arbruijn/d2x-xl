@@ -1409,7 +1409,7 @@ static void StartTriggeredSounds (CArray<CTrigger>& triggers)
 	CTrigger	*trigP = triggers.Buffer ();
 
 for (int i = triggers.Length (); i > 0; i--, trigP++)
-	if ((trigP->m_info.nType == TT_SOUND) && (trigP->m_info.flags & TF_PLAYING_SOUND) && (trigP->m_info.nChannel < 0))
+	if ((trigP->m_info.nType == TT_SOUND) && ((trigP->m_info.flags & (TF_PLAYING_SOUND | TF_DISABLED)) == TF_PLAYING_SOUND) && (trigP->m_info.nChannel < 0))
 		trigP->DoPlaySound (-1);
 }
 
