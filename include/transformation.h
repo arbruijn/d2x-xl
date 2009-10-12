@@ -91,13 +91,7 @@ class CTransformation {
 			return dest = m_info.view [bUnscaled] * vTrans;
 			}
 
-		_INLINE_ CFloatVector& Translate (CFloatVector& dest, const CFloatVector& src) 
-		 { return dest = src - m_info.posf [0]; }
-
 		_INLINE_ CFloatVector& Rotate (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) 
-		 { return dest = m_info.viewf [bUnscaled] * src; }
-
-		_INLINE_ CFloatVector3& Rotate (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) 
 		 { return dest = m_info.viewf [bUnscaled] * src; }
 
 		_INLINE_ CFloatVector& Transform (CFloatVector& dest, const CFloatVector& src, int bUnscaled = 0) {
@@ -105,10 +99,19 @@ class CTransformation {
 			return dest = m_info.viewf [bUnscaled] * vTrans;
 			}
 
+		_INLINE_ CFloatVector3& Translate (CFloatVector3& dest, const CFloatVector3& src) 
+		 { return dest = src - *m_info.posf [0].XYZ (); }
+
+		_INLINE_ CFloatVector3& Rotate (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) { 
+			CFloatVector vTemp;
+			vTemp.Assign (src);
+			dest.Assign (m_info.viewf [bUnscaled] * vTemp);
+			return dest;			
+			}
+
 		_INLINE_ CFloatVector3& Transform (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) {
 			CFloatVector vTrans;
-			vTrans.Assign (src);
-			vTrans -= m_info.posf [0];
+			vTrans.Assign (src - *m_info.posf [0].XYZ ());
 			dest.Assign (m_info.viewf [bUnscaled] * vTrans);
 			return dest;
 			}

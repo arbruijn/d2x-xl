@@ -414,8 +414,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (lightColor.IsZero ())
 		continue;
 
-	if (bTransform)
-		transformation.Transform (spotDir, prl->info.vDirf.XYZ (), 0);
+	if (bTransform) 
+		transformation.Transform (spotDir, *prl->info.vDirf.XYZ (), 0);
 	else
 		spotDir = *prl->info.vDirf.XYZ ();
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
