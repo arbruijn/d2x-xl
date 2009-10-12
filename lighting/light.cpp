@@ -758,7 +758,10 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vTransformed)
 fix light;
 #if 1
 if (gameStates.render.nLightingMethod && (objP->info.renderType != RT_POLYOBJ)) {
-	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, vTransformed); //&objP->info.position.vPos);
+	int nState = gameStates.render.nState;
+	gameStates.render.nState = -1;
+	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
+	gameStates.render.nState = nState;
 	light = I2X (1);
 	}
 else

@@ -350,7 +350,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 {
 	int					i, j, nLights, nType,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
-							bTransform = gameStates.render.nState && !ogl.m_states.bUseTransform,
+							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform,
 							nSaturation = gameOpts->render.color.nSaturation;
 	int					nBrightness, nMaxBrightness = 0;
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
@@ -415,7 +415,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 
 	if (bTransform) 
-		transformation.Transform (spotDir, *prl->info.vDirf.XYZ (), 0);
+		transformation.Transform (spotDir, *prl->info.vDirf.XYZ (), 1);
 	else
 		spotDir = *prl->info.vDirf.XYZ ();
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
