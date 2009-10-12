@@ -739,7 +739,7 @@ oldViewer = viewer;
 //compute the lighting for an CObject.  Takes a pointer to the CObject,
 //and possibly a rotated 3d point.  If the point isn't specified, the
 //object's center point is rotated.
-fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
+fix ComputeObjectLight (CObject *objP, CFixVector *vTransformed)
 {
 #if DBG
    if (!objP)
@@ -756,11 +756,13 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vRotated)
 #endif
 	//First, get static light for this CSegment
 fix light;
-if (gameStates.render.nLightingMethod && !((gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects)) {
-	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
+#if 0
+if (gameStates.render.nLightingMethod && (objP->info.renderType != RT_POLYOBJ)) {
+	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, vTransformed); //&objP->info.position.vPos);
 	light = I2X (1);
 	}
 else
+#endif
 	light = SEGMENTS [objP->info.nSegment].m_xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
@@ -781,7 +783,7 @@ else {		//new CObject, initialize
 	gameData.objs.xLight [nObject] = light;
 	}
 //Next, add in headlight on this CObject
-// -- Matt code: light += ComputeHeadlight (vRotated,I2X (1));
+// -- Matt code: light += ComputeHeadlight (vTransformed,I2X (1));
 light += lightManager.Headlights ().ComputeLightOnObject (objP);
 //Finally, add in dynamic light for this CSegment
 light += ComputeSegDynamicLight (objP->info.nSegment);

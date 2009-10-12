@@ -410,6 +410,8 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (prl->info.bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *(reinterpret_cast<CFloatVector3*> (&prl->info.color));
+	if (lightColor.IsZero ())
+		continue;
 
 	spotDir = *prl->info.vDirf.XYZ ();
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();

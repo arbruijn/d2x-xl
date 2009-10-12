@@ -600,9 +600,6 @@ else if (gameStates.render.bPerPixelLighting) {
 			CVertColorData	vcd;
 
 		InitVertColorData (vcd);
-		vcd.vertNorm[X] =
-		vcd.vertNorm[Y] =
-		vcd.vertNorm[Z] = 0;
 		vcd.vertNorm.SetZero ();
 		if (vPosP)
 			vcd.vertPos.Assign (*vPosP);
