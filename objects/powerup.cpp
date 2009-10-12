@@ -209,10 +209,10 @@ else if ((objP->rType.vClipInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP-
 	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
 			tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
 			int				iFrame = objP->rType.vClipInfo.nCurFrame;
-		DrawObjectBlob (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
+		DrawObjectBitmap (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
 		}
 	else {
-		DrawObjectBlob (objP, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nCurFrame, NULL, 1);
+		DrawObjectBitmap (objP, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nCurFrame, NULL, 1);
 		}
 	}
 #if DBG

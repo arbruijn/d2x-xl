@@ -19,6 +19,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3d.h"
 #include "globvars.h"
 #include "fix.h"
+#include "light.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
@@ -67,7 +68,7 @@ vRodNorm.p.y = FixMul (vRodNorm.p.y, transformation.m_info.scale.p.y);
 //now we have the usable edge.  generate four points
 //vTop points
 vTemp = vRodNorm * xTopWidth;
-vTemp[Z] = 0;
+vTemp [Z] = 0;
 rodPoints [0].p3_vec = topPoint->p3_vec + vTemp;
 rodPoints [1].p3_vec = topPoint->p3_vec - vTemp;
 vTemp = vRodNorm * xBtmWidth;
@@ -112,6 +113,36 @@ uvlList [1].l =
 uvlList [2].l =
 uvlList [3].l = light;
 return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, -1);
+}
+
+//------------------------------------------------------------------------------
+//draw an CObject that is a texture-mapped rod
+void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
+{
+	CBitmap*		bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
+	g3sPoint		pTop, pBottom;
+
+LoadBitmap (bmi.index, 0);
+if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
+	bmP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
+	bmP = bmP->Override (iFrame);
+	}
+CFixVector delta = objP->info.position.mOrient.UVec () * objP->info.xSize;
+CFixVector vTop = objP->info.position.vPos + delta;
+CFixVector vBottom = objP->info.position.vPos - delta;
+G3TransformAndEncodePoint (&pTop, vTop);
+G3TransformAndEncodePoint (&pBottom, vBottom);
+fix light = bLit ? ComputeObjectLight (objP, &pTop.p3_vec) : I2X (1);
+if (gameStates.render.nLightingMethod < 2)
+	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL);
+else {
+	if (CalcRodCorners (&pBottom, objP->info.xSize, &pTop, objP->info.xSize))
+		return;
+	CFloatVector	vertices [4];
+	for (int i = 0; i < 4; i++)
+		vertices [i].Assign (rodPoints [i].p3_vec);
+	G3DrawQuad (bmP, vertices, &gameData.objs.color.color, 1);
+	}
 }
 
 //------------------------------------------------------------------------------

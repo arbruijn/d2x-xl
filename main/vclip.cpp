@@ -137,7 +137,7 @@ if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
 if (vcP->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], bLit, iFrame);
 else
-	DrawObjectBlob (objP, vcP->frames [0].index, vcP->frames [iFrame].index, iFrame, color, (float) alpha);
+	DrawObjectBitmap (objP, vcP->frames [0].index, vcP->frames [iFrame].index, iFrame, color, (float) alpha);
 #if 1
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
 	glDepthMask (1);

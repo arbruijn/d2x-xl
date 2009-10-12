@@ -287,7 +287,7 @@ return fScale;
 //------------------------------------------------------------------------------
 //draw an CObject that has one bitmap & doesn't rotate
 
-void DrawObjectBlob (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
+void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
 	CBitmap*		bmP;
 	tRgbaColorf	color;
@@ -426,32 +426,6 @@ else {
 		G3DrawBitmap (objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, bmP, NULL, fAlpha, nTransp);
 	}
 gameData.render.nTotalSprites++;
-}
-
-//------------------------------------------------------------------------------
-//draw an CObject that is a texture-mapped rod
-void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
-{
-	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-	fix light;
-	CFixVector delta, top_v, bot_v;
-	g3sPoint top_p, bot_p;
-
-LoadBitmap (bmi.index, 0);
-if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
-	bmP->SetupTexture (1, gameOpts->render.bDepthSort <= 0);
-	bmP = bmP->Override (iFrame);
-	}
-delta = objP->info.position.mOrient.UVec () * objP->info.xSize;
-top_v = objP->info.position.vPos + delta;
-bot_v = objP->info.position.vPos - delta;
-G3TransformAndEncodePoint (&top_p, top_v);
-G3TransformAndEncodePoint (&bot_p, bot_v);
-if (bLit)
-	light = ComputeObjectLight (objP, &top_p.p3_vec);
-else
-	light = I2X (1);
-G3DrawRodTexPoly (bmP, &bot_p, objP->info.xSize, &top_p, objP->info.xSize, light, NULL);
 }
 
 //------------------------------------------------------------------------------

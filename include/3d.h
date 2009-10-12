@@ -215,6 +215,8 @@ int G3DrawBitmap (const CFixVector& vPos, fix xWidth, fix xHeight, CBitmap *bmP,
 
 int G3DrawSprite (const CFixVector& vPos, fix xWidth, fix xHeight, CBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive, float fSoftRad);
 
+int G3DrawQuad (CBitmap* bmP, CFloatVector* vertexP, tRgbaColorf* colorP, int nColors);
+
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
 extern g3sPoint *Vbuf0 [];

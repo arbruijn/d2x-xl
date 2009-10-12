@@ -43,6 +43,18 @@
 
 //------------------------------------------------------------------------------
 
+int G3DrawQuad (CBitmap* bmP, CFloatVector* vertexP, tRgbaColorf* colorP, int nColors)
+{
+	GLfloat			u = bmP->Texture ()->U ();
+	GLfloat			v = bmP->Texture ()->V ();
+	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
+
+OglRenderArrays (bmP, 0, vertexP, 4, texCoords, colorP, nColors, GL_QUADS, GL_REPEAT);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, tRgbaColorf* colorP, float alpha, int transp)
 {
 	CFloatVector	fPos;
@@ -65,14 +77,14 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	glDisable (GL_TEXTURE_2D);
 	glColor4d (1,1,1,1);
 	glBegin (GL_QUADS);
-	fPos[X] -= w;
-	fPos[Y] += h;
+	fPos [X] -= w;
+	fPos [Y] += h;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	fPos[X] += 2 * w;
+	fPos [X] += 2 * w;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	fPos[Y] -= 2 * h;
+	fPos [Y] -= 2 * h;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	fPos[X] -= 2 * w;
+	fPos [X] -= 2 * w;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glEnd ();
 	}
@@ -94,13 +106,13 @@ else {
 	fPos [Y] += h;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (u, 0);
-	fPos[X] += 2 * w;
+	fPos [X] += 2 * w;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (u, v);
-	fPos[Y] -= 2 * h;
+	fPos [Y] -= 2 * h;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glTexCoord2f (0, v);
-	fPos[X] -= 2 * w;
+	fPos [X] -= 2 * w;
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glEnd ();
 	}

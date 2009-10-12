@@ -97,7 +97,7 @@ switch (gameData.weapons.info [objP->info.nId].renderType) {
 					//Laser_draw_one (objP->Index (), gameData.weapons.info [objP->info.nId].bitmap);
 		break;
 	case WEAPON_RENDER_BLOB:
-		DrawObjectBlob (objP, gameData.weapons.info [objP->info.nId].bitmap.index, gameData.weapons.info [objP->info.nId].bitmap.index, 0, NULL, 2.0f / 3.0f);
+		DrawObjectBitmap (objP, gameData.weapons.info [objP->info.nId].bitmap.index, gameData.weapons.info [objP->info.nId].bitmap.index, 0, NULL, 2.0f / 3.0f);
 		break;
 	case WEAPON_RENDER_POLYMODEL:
 		break;

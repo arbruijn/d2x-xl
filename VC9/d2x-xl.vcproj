@@ -10823,11 +10823,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
@@ -11090,6 +11090,18 @@
 		<Filter
 			Name="Documents"
 			>
+			<File
+				RelativePath="..\..\..\..\programs\d2\config\d2x-default.ini"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="..\..\..\Websites\Descent\d2x-history.html"
 				>

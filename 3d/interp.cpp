@@ -688,7 +688,7 @@ for (;;) {
 			CFixVector	vo = *VECPTR (p+4);
 			if (!gameData.models.vScale.IsZero ())
 				vo *= gameData.models.vScale;
-			transformation.Begin(vo, *va);
+			transformation.Begin (vo, *va);
 			if (vOffset)
 				vo += *vOffset;
 			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, NULL, NULL, nModel);
