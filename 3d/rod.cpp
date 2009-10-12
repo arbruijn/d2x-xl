@@ -23,6 +23,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
+#include "transprender.h"
 
 #define RESCALE_ROD	0
 
@@ -133,15 +134,29 @@ CFixVector vBottom = objP->info.position.vPos - delta;
 G3TransformAndEncodePoint (&pTop, vTop);
 G3TransformAndEncodePoint (&pBottom, vBottom);
 fix light = bLit ? ComputeObjectLight (objP, &pTop.p3_vec) : I2X (1);
-if (gameStates.render.nLightingMethod < 2)
+if (!gameStates.render.bPerPixelLighting)
 	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL);
 else {
 	if (CalcRodCorners (&pBottom, objP->info.xSize, &pTop, objP->info.xSize))
 		return;
+
 	CFloatVector	vertices [4];
-	for (int i = 0; i < 4; i++)
+	GLfloat			u = bmP->Texture ()->U ();
+	GLfloat			v = bmP->Texture ()->V ();
+	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
+
+	for (int i = 0; i < 4; i++) {
 		vertices [i].Assign (rodPoints [i].p3_vec);
-	G3DrawQuad (bmP, vertices, &gameData.objs.color.color, 1);
+		texCoords [i].v.u = X2F (rodUvlList [i].u);
+		texCoords [i].v.v = X2F (rodUvlList [i].v);
+		}
+#if 1
+	bmP = bmP->Override (-1);
+	bmP->SetupTexture (1, 0);
+	G3DrawQuad (bmP, vertices, texCoords, &gameData.objs.color.color, 1);
+#else
+	transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoords, NULL, &gameData.objs.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, -1);
+#endif
 	}
 }
 

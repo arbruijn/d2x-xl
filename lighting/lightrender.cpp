@@ -589,13 +589,14 @@ if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) {
-	psc->color.red = psc->color.green = psc->color.blue = 1.0f;
+	psc->color.red = psc->color.green = psc->color.blue = psc->color.alpha = 1.0f;
 	psc->index = 1;
 	}
 else if (gameStates.render.bPerPixelLighting) {
 	psc->color.red =
 	psc->color.green =
 	psc->color.blue = 0;
+	psc->color.alpha = 1.0f;
 	if (SetNearestToSgmAvg (nSegment)) {
 			CVertColorData	vcd;
 

@@ -43,13 +43,13 @@
 
 //------------------------------------------------------------------------------
 
-int G3DrawQuad (CBitmap* bmP, CFloatVector* vertexP, tRgbaColorf* colorP, int nColors)
+int G3DrawQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors)
 {
 	GLfloat			u = bmP->Texture ()->U ();
 	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
 
-OglRenderArrays (bmP, 0, vertexP, 4, texCoords, colorP, nColors, GL_QUADS, GL_REPEAT);
+OglRenderArrays (bmP, 0, vertexP, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, GL_QUADS, GL_REPEAT);
 return 0;
 }
 

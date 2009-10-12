@@ -480,7 +480,7 @@ inline const CFloatVector& CFloatVector::operator/= (const float s) {
 }
 
 inline const CFloatVector CFloatVector::operator+ (const CFloatVector& other) const {
-	return Create (v [0]+other [0], v [1]+other [1], v [2]+other [2], 1);
+	return Create (v [0] + other [0], v [1] + other [1], v [2] + other [2], 1);
 }
 
 inline const CFloatVector CFloatVector::operator+ (const CFixVector& other) const {
@@ -488,7 +488,7 @@ inline const CFloatVector CFloatVector::operator+ (const CFixVector& other) cons
 }
 
 inline const CFloatVector CFloatVector::operator- (const CFloatVector& other) const {
-	return Create (v [0]-other [0], v [1]-other [1], v [2]-other [2], 1);
+	return Create (v [0] - other [0], v [1] - other [1], v [2] - other [2], 1);
 }
 
 inline const CFloatVector CFloatVector::operator- (const CFixVector& other) const {
@@ -668,11 +668,11 @@ inline const CFloatVector3& CFloatVector3::operator/= (const float s) {
 }
 
 inline const CFloatVector3 CFloatVector3::operator+ (const CFloatVector3& other) const {
-	return Create (v [0]+other [0], v [1]+other [1], v [2]+other [2]);
+	return Create (v [0] + other [0], v [1] + other [1], v [2] + other [2]);
 }
 
 inline const CFloatVector3 CFloatVector3::operator- (const CFloatVector3& other) const {
-	return Create (v [0]-other [0], v [1]-other [1], v [2]-other [2]);
+	return Create (v [0] - other [0], v [1] - other [1], v [2] - other [2]);
 }
 
 

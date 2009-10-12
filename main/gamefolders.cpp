@@ -726,7 +726,7 @@ if (!gameStates.app.bCheckAndFixSetup)
 	return 0;
 
 	int	i, nResult = 0;
-	bool	bDemoData;
+	bool	bDemoData = false;
 	char	szMsg [10000];
 
 if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
@@ -771,8 +771,6 @@ if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2)))) {
 	else
 		bDemoData = true;
 	}
-else
-	bDemoData = false;
 if (!bDemoData) {
 	if (CheckAndCopyFiles (gameFilesD1, int (sizeofa (gameFilesD1))))
 		nResult |= 2;

@@ -27,6 +27,7 @@
 #include "ogl_color.h"
 #include "collision_math.h"
 #include "palette.h"
+#include "transformation.h"
 
 #define CHECK_LIGHT_VERT	1
 #define BRIGHT_SHOTS			0
@@ -413,7 +414,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if (lightColor.IsZero ())
 		continue;
 
-	spotDir = *prl->info.vDirf.XYZ ();
+	if (bTransform)
+		transformation.Transform (spotDir, prl->info.vDirf.XYZ (), 0);
+	else
+		spotDir = *prl->info.vDirf.XYZ ();
 	lightPos = *prl->render.vPosf [bTransform].XYZ ();
 	lightDir = lightPos - *vcd.vertPosP;
 	if (IsLightVert (nVertex, prl)) {

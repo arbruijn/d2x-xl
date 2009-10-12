@@ -105,6 +105,14 @@ class CTransformation {
 			return dest = m_info.viewf [bUnscaled] * vTrans;
 			}
 
+		_INLINE_ CFloatVector3& Transform (CFloatVector3& dest, const CFloatVector3& src, int bUnscaled = 0) {
+			CFloatVector vTrans;
+			vTrans.Assign (src);
+			vTrans -= m_info.posf [0];
+			dest.Assign (m_info.viewf [bUnscaled] * vTrans);
+			return dest;
+			}
+
 		CFixVector RotateScaledX (CFixVector& dest, fix scale);
 		CFixVector RotateScaledY (CFixVector& dest, fix scale);
 		CFixVector RotateScaledZ (CFixVector& dest, fix scale);
