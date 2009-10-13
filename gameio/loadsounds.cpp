@@ -392,7 +392,7 @@ else {
 	nLoadedSounds = SetupSounds (cf, nSounds, cf.Tell (), bCustom, bUseLowRes);
 	if (bCustom)
 		gameOpts->sound.bHires [0] = (nLoadedSounds & 0xffff) ? 0 : 2;
-	else if (gameOpts->sound.bHires [0] && ((nLoadedSounds >> 16) < nSounds))
+	else if (gameOpts->sound.bHires [0] && ((nLoadedSounds >> 16) == 0))
 		gameOpts->sound.bHires [0] = 0;
 	}
 

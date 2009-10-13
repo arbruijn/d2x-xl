@@ -767,6 +767,7 @@ InitExtraGameInfo ();
 InitNetworkData ();
 InitGameOptions (0);
 InitArgs (argc, argv);
+EvalArgs ();
 CheckAndFixSetup ();
 GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
