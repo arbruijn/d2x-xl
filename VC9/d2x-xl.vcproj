@@ -10823,11 +10823,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
@@ -11134,6 +11134,14 @@
 				RelativePath="..\..\..\Websites\Descent\d2x-switches.html"
 				>
 				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release-OMP|x64"
 					ExcludedFromBuild="true"
 					>
@@ -11257,6 +11265,14 @@
 			<File
 				RelativePath="..\..\..\Websites\Descent\downloads.html"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\Websites\Descent\intro.html"
