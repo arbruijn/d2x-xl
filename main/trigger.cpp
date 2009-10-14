@@ -1010,9 +1010,6 @@ if (Delay () > 0) {
 	return 1;
 	}
 
-if (m_info.flags & TF_ONE_SHOT)		//if this is a one-shot...
-	m_info.flags |= TF_DISABLED;		//..then don't let it happen again
-
 switch (m_info.nType) {
 
 	case TT_EXIT:
@@ -1212,6 +1209,9 @@ switch (m_info.nType) {
 		Int3 ();
 		break;
 	}
+
+if (m_info.flags & TF_ONE_SHOT)		//if this is a one-shot...
+	m_info.flags |= TF_DISABLED;		//..then don't let it happen again
 if (m_info.flags & TF_ALTERNATE)
 	m_info.nType = oppTrigTypes [m_info.nType];
 #if DBG
