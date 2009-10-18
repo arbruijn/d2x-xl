@@ -219,7 +219,7 @@ switch (info.renderType) {
 		else
 			rType.particleInfo.nType = cf.ReadByte ();
 		if (gameData.segs.nLevelVersion < 19)
-			rType.particleInfo.bEnabled = 0;
+			rType.particleInfo.bEnabled = 1;
 		else
 			rType.particleInfo.bEnabled = cf.ReadByte ();
 		break;
@@ -249,7 +249,7 @@ switch (info.renderType) {
 		rType.lightningInfo.color.blue = cf.ReadByte ();
 		rType.lightningInfo.color.alpha = cf.ReadByte ();
 		if (gameData.segs.nLevelVersion < 19)
-			rType.lightningInfo.bEnabled = 0;
+			rType.lightningInfo.bEnabled = 1;
 		else
 			rType.lightningInfo.bEnabled = cf.ReadByte ();
 		break;
@@ -260,7 +260,7 @@ switch (info.renderType) {
 		strlwr (rType.soundInfo.szFilename);
 		rType.soundInfo.nVolume = int (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f + 0.5f);
 		if (gameData.segs.nLevelVersion < 19)
-			rType.soundInfo.bEnabled = 0;
+			rType.soundInfo.bEnabled = 1;
 		else
 			rType.soundInfo.bEnabled = cf.ReadByte ();
 		break;
