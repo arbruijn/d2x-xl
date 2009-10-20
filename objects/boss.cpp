@@ -391,7 +391,8 @@ if (!m_info.Grow ())
 	return -1;
 m_info.Top ()->Init ();
 m_info.Top ()->Setup (nObject);
-extraGameInfo [0].nBossCount++;
+if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
+	extraGameInfo [0].nBossCount++;
 return nBoss;
 }
 
@@ -399,8 +400,14 @@ return nBoss;
 
 void CBossData::Remove (short nBoss)
 {
+if ((nBoss < 0) || (nBoss >= short (m_info.ToS ())))
+	return;
+	
+short nObject = m_info [nBoss].m_nObject;
+
 if (m_info.Delete (nBoss)) {
-	extraGameInfo [0].nBossCount--;
+	if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
+		extraGameInfo [0].nBossCount--;
 	memset (&m_info [m_info.ToS ()], 0, sizeof (CBossInfo));
 	}
 }

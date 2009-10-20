@@ -217,7 +217,7 @@ if (bFinalCountdown ||
 	 (gameStates.app.bD2XLevel && bReactor && (trigP = FindObjTrigger (objP->Index (), TT_COUNTDOWN, -1)))) {
 //	If a secret level, delete secret.sgc to indicate that we can't return to our secret level.
 	if (bFinalCountdown) {
-		if (extraGameInfo [0].nBossCount)
+		//if (extraGameInfo [0].nBossCount)
 			KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
 			SEGMENTS [gameData.reactor.triggers.segments [i]].ToggleWall (gameData.reactor.triggers.sides [i]);
@@ -471,7 +471,8 @@ FORALL_ACTOR_OBJS (objP, i) {
 	if (IS_BOSS (objP)) {
 		if ((BOSS_COUNT < int (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
 			gameData.bosses [BOSS_COUNT].m_nObject = objP->Index ();
-			extraGameInfo [0].nBossCount++;
+			if (ROBOTINFO (objP->info.nId).bEndsLevel)
+				extraGameInfo [0].nBossCount++;
 			if (BOSS_COUNT < 2)
 				nBossObj = objP->Index ();
 #if TRACE
@@ -495,8 +496,10 @@ if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
 else if (BOSS_COUNT > 0) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
-		OBJECTS [gameData.reactor.states [j].nObject].BashToShield (true);
-		extraGameInfo [0].nBossCount--;
+		objP = &OBJECTS [gameData.reactor.states [j].nObject];
+		objP->BashToShield (true);
+		if (ROBOTINFO (objP->info.nId).bEndsLevel)
+			extraGameInfo [0].nBossCount--;
 		if (j < --gameStates.gameplay.nReactorCount [0])
 			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
 		}

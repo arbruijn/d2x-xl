@@ -109,6 +109,7 @@ typedef struct tRobotInfo {
 	sbyte   pursuit;        //  !0 means pursues CPlayerData after he goes around a corner.  4 = 4/2 pursue up to 4/2 seconds after becoming invisible if up to 4 segments away
 	sbyte   lightcast;      //  Amount of light cast. 1 is default.  10 is very large.
 	sbyte   bDeathRoll;     //  0 = dies without death roll. !0 means does death roll, larger = faster and louder
+	sbyte   bEndsLevel;
 
 	//bossFlag, companion, thief, & pursuit probably should also be bits in the flags byte.
 	ubyte   flags;          // misc properties
