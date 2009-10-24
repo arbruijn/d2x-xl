@@ -203,7 +203,7 @@ for (i = 0; gameFolders.szGameDir [i]; i++)
 strcpy (szDataRootDir, gameFolders.szGameDir);
 strcpy (gameFolders.szHomeDir, *gameFolders.szGameDir ? gameFolders.szGameDir : szDataRootDir);
 #else // Linux, OS X
-#	if defined (__unix__) || defined (__macosx__)
+#	if defined(__unix__) || defined(__macosx__) || defined(__FreeBSD__)
 if (getenv ("HOME"))
 	strcpy (gameFolders.szHomeDir, getenv ("HOME"));
 #		if 0
