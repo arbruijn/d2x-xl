@@ -22,7 +22,6 @@
 # include <stdlib.h>
 # include <SDL/SDL.h>
 #else
-# include <malloc.h>
 # include <SDL.h>
 #endif
 
