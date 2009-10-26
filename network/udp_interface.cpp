@@ -560,7 +560,7 @@ m_nBroads = d;
 //------------------------------------------------------------------------------
 // Parse PORTSHIFT numeric parameter
 
-#ifndef __macosx__
+//#ifndef __macosx__
 
 static void PortShift (const char *pszPort)
 {
@@ -573,7 +573,7 @@ else
 memcpy (qhbuf + 4, &srcPort, 2);
 }
 
-#endif
+//#endif
 
 //------------------------------------------------------------------------------
 // Do hostname resolve on name "buf" and return the address in buffer "qhbuf".

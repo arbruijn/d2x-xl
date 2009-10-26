@@ -235,7 +235,7 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 
 #else //GL_VERSION_20
 
-+#  if defined(__macosx__) || defined(__FreeBSD__)
+#  if defined(__macosx__) || defined(__FreeBSD__)
 #    define glCreateShaderObject   glCreateShaderObjectARB
 #    define glShaderSource         glShaderSourceARB
 #    define glCompileShader        glCompileShaderARB

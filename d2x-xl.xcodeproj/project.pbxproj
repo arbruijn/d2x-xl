@@ -2743,9 +2743,9 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				HEADER_SEARCH_PATHS = (
-					"/Library/Frameworks/SDL.framework/Headers//**",
-					"/Library/Frameworks/SDL_image.framework/Headers//**",
-					"/Library/Frameworks/SDL_mixer.framework/Headers//**",
+					"/Library/Frameworks/SDL.framework/Headers/**",
+					"/Library/Frameworks/SDL_image.framework/Headers/**",
+					"/Library/Frameworks/SDL_mixer.framework/Headers/**",
 				);
 				INFOPLIST_FILE = io/macosx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";

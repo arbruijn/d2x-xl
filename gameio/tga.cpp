@@ -9,7 +9,7 @@
 #include "tga.h"
 
 #if USE_SDL_IMAGE
-#	include <SDL_image.h>
+#	include <SDL_image/SDL_image.h>
 #endif
 
 #define MIN_OPACITY	224
