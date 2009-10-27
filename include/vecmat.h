@@ -39,13 +39,13 @@ const size_t UVEC = 1;
 const size_t FVEC = 2;
 const size_t HVEC = 3;
 
-class __pack__ CFixVector;
-class __pack__ CFloatVector;
-class __pack__ CFloatVector3;
-class __pack__ CAngleVector;
+class CFixVector;
+class CFloatVector;
+class CFloatVector3;
+class CAngleVector;
 
-class __pack__ CFixMatrix;
-class __pack__ CFloatMatrix;
+class CFixMatrix;
+class CFloatMatrix;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
