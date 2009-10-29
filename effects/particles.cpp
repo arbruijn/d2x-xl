@@ -76,20 +76,20 @@
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
-static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0,0},{0,0,0,0,0}};
+static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0,0,0},{0,0,0,0,0,0}};
 
-static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL, NULL}};
+static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL, NULL, NULL}};
 #if 0
 static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
- {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga"},
- {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga"}
+ {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga", "smoke.tga"},
+ {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga", "smoke.tga"}
 	};
 
-static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1,1},{1,1,1,1,1}};
-static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0,0},{0,0,0,0,0}};
+static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1,1,1},{1,1,1,1,1,1}};
+static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0,0,0},{0,0,0,0,0,0}};
 #if 0
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
@@ -370,7 +370,7 @@ if ((m_bBlowUp = bBlowUp)) {
 	m_nRad += m_nRad / bBlowUp;
 	}
 else {
-	m_nWidth =
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 2 : nRad;
 	m_nHeight = nRad;
 	m_nRad = nRad / 2;
 	}
@@ -385,7 +385,7 @@ else if (nType == BUBBLE_PARTICLES) {
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
-else if (nType == LIGHT_PARTICLES) {
+else if ((nType == LIGHT_PARTICLES) || (nType == WATERFALL_PARTICLES)) {
 	m_nFrame = 0;
 	m_nRotFrame = 0;
 	m_nOrient = 0;
@@ -499,7 +499,11 @@ int CParticle::Update (int nCurTime)
 	short			nSegment;
 	fix			t, dot;
 	CFixVector	vPos, drift;
-	fix			drag = (m_nType == BUBBLE_PARTICLES) ? I2X (1) : F2X ((float) m_nLife / (float) m_nTTL);
+	fix			drag = (m_nType == BUBBLE_PARTICLES) 
+							 ? I2X (1) // constant speed
+							 : (m_nType == WATERFALL_PARTICLES) 
+								? I2X (1) + I2X (1) / 256 // accelerate
+								: F2X ((float) m_nLife / (float) m_nTTL); // decelerate
 
 if ((m_nLife <= 0) /*|| (m_color [0].alpha < 0.01f)*/)
 	return 0;
@@ -554,7 +558,7 @@ else {
 			m_nSegment = nSegment;
 			}
 		if (gameOpts->render.particles.bCollisions && CollideWithWall ()) {	//Reflect the particle
-			if (j || (m_nType == BUBBLE_PARTICLES) ||!(dot = CFixVector::Dot (drift, *wallNorm))) {
+			if (j || (m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES) || !(dot = CFixVector::Dot (drift, *wallNorm))) {
 				m_nLife = -1;
 				return 0;
 				}
@@ -1827,6 +1831,8 @@ if (nType == BUBBLE_PARTICLES)
 	return BUBBLE_PARTICLES;
 if (nType == FIRE_PARTICLES)
 	return FIRE_PARTICLES;
+if (nType == WATERFALL_PARTICLES)
+	return WATERFALL_PARTICLES;
 return -1;
 }
 
@@ -1922,6 +1928,8 @@ if (nType == SMOKE_PARTICLES)
 	h = 8;
 else if (nType == BUBBLE_PARTICLES)
 	h = 4;
+if (nType == WATERFALL_PARTICLES)
+	h = 8;
 else if (nType == FIRE_PARTICLES)
 	h = 4;
 else

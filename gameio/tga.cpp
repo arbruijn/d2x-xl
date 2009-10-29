@@ -9,7 +9,11 @@
 #include "tga.h"
 
 #if USE_SDL_IMAGE
+#	ifdef __macosx__
 #	include <SDL_image/SDL_image.h>
+#	else
+#	include <SDL_image.h>
+#	endif
 #endif
 
 #define MIN_OPACITY	224

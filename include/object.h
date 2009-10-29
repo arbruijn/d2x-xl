@@ -398,10 +398,11 @@ class CVClipInfo {
 
 //	-----------------------------------------------------------------------------
 
-#define SMOKE_TYPE_SMOKE	0
-#define SMOKE_TYPE_SPRAY	1
-#define SMOKE_TYPE_BUBBLES	2
-#define SMOKE_TYPE_FIRE		3
+#define SMOKE_TYPE_SMOKE		0
+#define SMOKE_TYPE_SPRAY		1
+#define SMOKE_TYPE_BUBBLES		2
+#define SMOKE_TYPE_FIRE			3
+#define SMOKE_TYPE_WATERFALL	4
 
 typedef struct tParticleInfo {
 public:

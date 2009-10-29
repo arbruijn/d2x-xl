@@ -598,15 +598,17 @@ else
 void DoStaticParticles (CObject *objP)
 {
 	int			i, j, nObject, nSmoke, 
-					nType = (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) 
-							  ? 2
-							  : (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES)
-							    ? 1
-								 : 0;
+					nType = (objP->rType.particleInfo.nType == SMOKE_TYPE_WATERFALL) 
+							  ? 3
+							  : (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) 
+								  ? 2
+								  : (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES)
+									 ? 1
+									 : 0;
 	CFixVector	pos, offs, dir;
 
 	static tRgbaColorf defaultColors [3] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
-	static int particleTypes [3] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES};
+	static int particleTypes [4] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES};
 
 nObject = (int) objP->Index ();
 if (!(SHOW_SMOKE && objP->rType.particleInfo.bEnabled && ((nType == 1) ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {

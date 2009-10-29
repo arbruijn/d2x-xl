@@ -9,14 +9,15 @@
 
 #define PARTICLE_RAD	(I2X (1))
 
-#define PARTICLE_TYPES		5
+#define PARTICLE_TYPES			6
 
-#define SMOKE_PARTICLES		0
-#define BUBBLE_PARTICLES	1
-#define FIRE_PARTICLES		2
-#define BULLET_PARTICLES	3
-#define LIGHT_PARTICLES		4
-#define GATLING_PARTICLES	5
+#define SMOKE_PARTICLES			0
+#define BUBBLE_PARTICLES		1
+#define FIRE_PARTICLES			2
+#define WATERFALL_PARTICLES	3
+#define BULLET_PARTICLES		4
+#define LIGHT_PARTICLES			5
+#define GATLING_PARTICLES		6
 
 #define MAX_PARTICLES(_nParts,_nDens)	particleManager.MaxParticles (_nParts, _nDens)
 #define PARTICLE_SIZE(_nSize,_fScale)	particleManager.ParticleSize (_nSize, _fScale)
