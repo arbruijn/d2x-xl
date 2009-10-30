@@ -385,7 +385,7 @@ else if (nType == BUBBLE_PARTICLES) {
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
-else if ((nType == LIGHT_PARTICLES) || (nType == WATERFALL_PARTICLES)) {
+else if ((nType == LIGHT_PARTICLES) /*|| (nType == WATERFALL_PARTICLES)*/) {
 	m_nFrame = 0;
 	m_nRotFrame = 0;
 	m_nOrient = 0;
@@ -867,7 +867,7 @@ pb [2].color =
 pb [3].color = pc;
 if ((nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
-if (!nType && gameOpts->render.particles.bRotate) {
+if (((nType == SMOKE_PARTICLES) /*|| (nType == WATERFALL_PARTICLES)*/) && gameOpts->render.particles.bRotate) {
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 		bInitSinCos = 0;
