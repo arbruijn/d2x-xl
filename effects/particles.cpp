@@ -84,8 +84,8 @@ static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static const char *szParticleImg [2][PARTICLE_TYPES] = {
- {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga", "smoke.tga"},
- {"smoke.tga", "bubble.tga", "fire.tga", "bullcase.tga", "corona.tga", "smoke.tga"}
+ {"smoke.tga", "bubble.tga", "fire.tga", "smoke.tga", "bullcase.tga", "corona.tga"},
+ {"smoke.tga", "bubble.tga", "fire.tga", "smoke.tga", "bullcase.tga", "corona.tga"}
 	};
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1,1,1},{1,1,1,1,1,1}};
@@ -99,9 +99,9 @@ static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
 typedef struct tParticleVertex {
-	tTexCoord2f	texCoord;
-	tRgbaColorf	color;
-	CFloatVector3		vertex;
+	tTexCoord2f		texCoord;
+	tRgbaColorf		color;
+	CFloatVector3	vertex;
 	} tParticleVertex;
 
 static tParticleVertex particleBuffer [VERT_BUF_SIZE];
@@ -365,12 +365,12 @@ m_nMoved = nCurTime;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 if ((m_bBlowUp = bBlowUp)) {
 	m_nRad = nRad / 2;
-	m_nWidth =
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 3 : nRad;
 	m_nHeight = m_nRad;
 	m_nRad += m_nRad / bBlowUp;
 	}
 else {
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 2 : nRad;
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 3 : nRad;
 	m_nHeight = nRad;
 	m_nRad = nRad / 2;
 	}
@@ -499,11 +499,17 @@ int CParticle::Update (int nCurTime)
 	short			nSegment;
 	fix			t, dot;
 	CFixVector	vPos, drift;
-	fix			drag = (m_nType == BUBBLE_PARTICLES) 
-							 ? I2X (1) // constant speed
-							 : (m_nType == WATERFALL_PARTICLES) 
-								? I2X (1) + I2X (1) / 256 // accelerate
-								: F2X ((float) m_nLife / (float) m_nTTL); // decelerate
+	fix			drag;
+	
+if (m_nType == BUBBLE_PARTICLES) 
+	drag = I2X (1); // constant speed
+else if (m_nType == WATERFALL_PARTICLES) {
+	float h = 4.0f - 3.0f * float (m_nLife) / float (m_nTTL);
+	h *= h;
+	drag = F2X (h);
+	}
+else 
+	drag = F2X (float (m_nLife) / float (m_nTTL)); // decelerate
 
 if ((m_nLife <= 0) /*|| (m_color [0].alpha < 0.01f)*/)
 	return 0;
@@ -538,7 +544,12 @@ else {
 //				VmVecScaleInc (&drift, &m_vDir, drag);
 			m_vPos += m_vDir * drag;
 			}
-		if ((m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16)) {
+		bool bCheckSeg;
+		if (m_nType == WATERFALL_PARTICLES)
+			bCheckSeg = m_nLife > I2X (1) / 2;
+		else 
+			bCheckSeg = (m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16);
+		if (bCheckSeg) {
 			nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 1);
 			if (nSegment < 0) {
 #if DBG
@@ -547,12 +558,19 @@ else {
 #endif
 				nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 1, 1);
 				if (nSegment < 0) {
-					m_nLife = -1;
+					if (m_nType == WATERFALL_PARTICLES)
+						m_nLife = I2X (1) / 2;
+					else 
+						m_nLife = -1;
 					return 0;
 					}
 				}
-			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) {
+			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) { 
 				m_nLife = -1;
+				return 0;
+				}
+			if ((m_nType == WATERFALL_PARTICLES) && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER)) { 
+				m_nLife = I2X (1); //-1;
 				return 0;
 				}
 			m_nSegment = nSegment;
@@ -652,6 +670,10 @@ if (m_nLife < 0)
 	return 0;
 if ((nType < 0) || (nType >= PARTICLE_TYPES))
 	return 0;
+#if 0 //DBG
+if (nType != WATERFALL_PARTICLES)
+	return 0;
+#endif
 if (!(bmP = bmpParticle [0][nType]))
 	return 0;
 if (bmP->CurFrame ())
@@ -727,7 +749,7 @@ if (nType == SMOKE_PARTICLES) {
 	}
 pc = m_color [0];
 //pc.alpha *= /*gameOpts->render.particles.bDisperse ? decay2 :*/ decay;
-if (nType <= FIRE_PARTICLES) {
+if (nType <= WATERFALL_PARTICLES) {
 	char nFrame = ((nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles) ? 0 : m_nFrame;
 	u = (float) (nFrame % nFrames) * deltaUV;
 	v = (float) (nFrame / nFrames) * deltaUV;
@@ -760,12 +782,14 @@ if (bEmissive == 1) { //scale light trail particle color to reduce saturation
 	}
 else if (bEmissive == 2) {
 	float fFade;
+#if 0
 	if (decay < 0.1f)
 		decay = decay;
+#endif
 	if (decay > 0.5f)
 		fFade = 2.0f * (1.0f - decay);
 	else
-		fFade = decay *	2.0f;
+		fFade = decay * 2.0f;
 	decay = 1.0f;
 #if 1
 	pc.red =
@@ -780,19 +804,32 @@ else if (bEmissive == 2) {
 #endif
 	}
 else if (m_nType != BUBBLE_PARTICLES) {
-#if 0
-	pc.alpha = (pc.alpha - 0.005f) * decay + 0.005f;
-#	if 1
-	pc.alpha = (float) pow (pc.alpha * pc.alpha, 1.0 / 3.0);
-#	endif
-#else
-	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2.0f + 0.5f;
+	float fFade;
+	if (nType == WATERFALL_PARTICLES) {
+		float fPivot = X2F (m_nTTL) / 4.0f;
+		if (fPivot > 0.25f)
+			fPivot = 0.25f;
+		float fLived = X2F (m_nTTL - m_nLife);
+		if (fLived < fPivot)
+			fFade = fLived / fPivot;
+		else
+			fFade = 1.0f - (fLived - fPivot) / (1.0f - fPivot);
+		if (fFade < 0.0f)
+			fFade = 0.05f;
+		else
+			fFade = 0.1f + 0.9f * fFade;
+		if (fFade > 1.0f)
+			fFade = 1.0f;
+		}
+	else {
+		fFade = float (sin (double (/*sqr*/ (sqr (1.0f - decay))) * Pi * 1.5)) / 2.0f + 0.5f;
+		//fFade = (float) cos (double (sqr (1.0f - decay)) * Pi) / 2.0f + 0.5f;
+		//pc.alpha *= 0.6f; //alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : m_nClass]];
+		}
 	pc.alpha *= fFade;
-#endif
-	pc.alpha *= 0.6f; //alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : m_nClass]];
 	}
 if (pc.alpha < 1.0 / 255.0) {
-	m_nLife = 0;
+	m_nLife = -1;
 	return 0;
 	}
 #if 0
@@ -1694,6 +1731,7 @@ tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
 bufferBrightness = brightness;
 glEnable (GL_BLEND);
+glEnable (GL_DEPTH_TEST);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (0);
 ogl.SelectTMU (GL_TEXTURE0, true);
@@ -1707,7 +1745,7 @@ if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 		if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
-		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= FIRE_PARTICLES))
+		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
 			LoadGlareShader (10, nType == FIRE_PARTICLES);
 		else if (gameStates.render.history.nShader >= 0) {
 			glUseProgramObject (0);
@@ -1928,7 +1966,7 @@ if (nType == SMOKE_PARTICLES)
 	h = 8;
 else if (nType == BUBBLE_PARTICLES)
 	h = 4;
-if (nType == WATERFALL_PARTICLES)
+else if (nType == WATERFALL_PARTICLES)
 	h = 8;
 else if (nType == FIRE_PARTICLES)
 	h = 4;
