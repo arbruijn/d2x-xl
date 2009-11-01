@@ -1731,7 +1731,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 		}
 	playerP->shields -= damage;
 	MultiSendShields ();
-	paletteManager.BumpEffect (X2I (damage)*4, -X2I (damage/2), -X2I (damage/2));	//flash red
+	paletteManager.BumpEffect (X2I (damage) * 4, -X2I (damage / 2), -X2I (damage / 2));	//flash red
 	if (playerP->shields < 0) {
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
 		Die ();
@@ -1757,9 +1757,8 @@ if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].m_nType ==
 	return 1;
 if ((info.nId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
-if (info.nId == OMEGA_ID)
-	if (!OkToDoOmegaDamage (this))
-		return 1;
+if ((info.nId == OMEGA_ID) && !OkToDoOmegaDamage (this))
+	return 1;
 //	Don't Collide own smart mines unless direct hit.
 if ((info.nId == SMARTMINE_ID) &&
 	 (OBJ_IDX (playerObjP) == cType.laserInfo.parent.nObject) &&

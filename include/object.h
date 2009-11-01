@@ -937,7 +937,6 @@ class CObject : public CObjectInfo {
 		void RepairDamage (void);
 		int TimeLastRepaired (void) { return m_damage.tRepaired; }
 
-
 		bool Cloaked (void);
 
 		inline void SetTarget (CObject* targetP) { m_target = targetP; }
