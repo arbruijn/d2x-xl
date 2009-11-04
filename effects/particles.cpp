@@ -104,6 +104,7 @@ typedef struct tParticleVertex {
 	CFloatVector3	vertex;
 	} tParticleVertex;
 
+static tRgbaColorf defaultParticleColor = {1.0f, 1.0f, 1.0f, 2.0f * 0.6f};
 static tParticleVertex particleBuffer [VERT_BUF_SIZE];
 static float bufferBrightness = -1;
 static char bBufferEmissive = 0;
@@ -190,11 +191,9 @@ return vPos;
 
 int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 							  short nSegment, int nLife, int nSpeed, char nParticleSystemType, char nClass,
-						     float nScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp,
+						     float nScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp, char nFadeType,
 							  float fBrightness, CFixVector *vEmittingFace)
 {
-
-	static tRgbaColorf	defaultColor = {1,1,1,1};
 
 	tRgbaColorf	color;
 	CFixVector	vDrift;
@@ -211,15 +210,16 @@ if (!nRad)
 m_nType = nType;
 m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) ? 1 : (nParticleSystemType == FIRE_PARTICLES) ? 2 : 0;
 m_nClass = nClass;
+m_nFadeType = nFadeType;
 m_nSegment = nSegment;
 m_nBounce = 0;
 m_bReversed = 0;
-color = (colorP && (m_bEmissive < 2)) ? *colorP : defaultColor;
+color = (colorP && (m_bEmissive < 2)) ? *colorP : defaultParticleColor;
 m_color [0] =
 m_color [1] = color;
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 	m_bBright = 0;
-	m_nFade = -1;
+	m_nFadeState = -1;
 	}
 else {
 	m_bBright = (nType == SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
@@ -229,13 +229,13 @@ else {
 			m_color [0].green *= RANDOM_FADE;
 			m_color [0].blue *= RANDOM_FADE;
 			}
-		m_nFade = 0;
+		m_nFadeState = 0;
 		}
 	else {
 		m_color [0].red = 1.0f;
 		m_color [0].green = 0.5f;
 		m_color [0].blue = 0.0f;
-		m_nFade = 2;
+		m_nFadeState = 2;
 		}
 	if (m_bEmissive)
 		m_color [0].alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
@@ -246,7 +246,7 @@ else {
 			if (colorP->alpha < 0)
 				m_color [0].alpha = -colorP->alpha;
 			else {
-				if (2 == (m_nFade = (char) colorP->alpha)) {
+				if (2 == (m_nFadeState = (char) colorP->alpha)) {
 					m_color [0].red = 1.0f;
 					m_color [0].green = 0.5f;
 					m_color [0].blue = 0.0f;
@@ -656,7 +656,7 @@ int CParticle::Render (float brightness)
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
 	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive;
-	float						decay = (nType == BUBBLE_PARTICLES) ? 1.0f : float (m_nLife) / float (m_nTTL);
+	float						fFade, decay = (nType == BUBBLE_PARTICLES) ? 1.0f : float (m_nLife) / float (m_nTTL);
 
 	static int				nFrames = 1;
 	static float			deltaUV = 1.0f;
@@ -716,7 +716,7 @@ else
 if (m_bBright)
 	brightness = (float) sqrt (brightness);
 if (nType == SMOKE_PARTICLES) {
-	if (m_nFade > 0) {
+	if (m_nFadeState > 0) {
 		if (m_color [0].green < m_color [1].green) {
 #if SMOKE_SLOWMO
 			m_color [0].green += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
@@ -725,7 +725,7 @@ if (nType == SMOKE_PARTICLES) {
 #endif
 			if (m_color [0].green > m_color [1].green) {
 				m_color [0].green = m_color [1].green;
-				m_nFade--;
+				m_nFadeState--;
 				}
 			}
 		if (m_color [0].blue < m_color [1].blue) {
@@ -736,15 +736,15 @@ if (nType == SMOKE_PARTICLES) {
 #endif
 			if (m_color [0].blue > m_color [1].blue) {
 				m_color [0].blue = m_color [1].blue;
-				m_nFade--;
+				m_nFadeState--;
 				}
 			}
 		}
-	else if (m_nFade == 0) {
+	else if (m_nFadeState == 0) {
 		m_color [0].red = m_color [1].red * RANDOM_FADE;
 		m_color [0].green = m_color [1].green * RANDOM_FADE;
 		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
-		m_nFade = -1;
+		m_nFadeState = -1;
 		}
 	}
 pc = m_color [0];
@@ -775,59 +775,45 @@ if (nType == SMOKE_PARTICLES) {
 	}
 vCenter.Assign (hp);
 i = m_nOrient;
-if (bEmissive == 1) { //scale light trail particle color to reduce saturation
-	pc.red /= 50.0f;
-	pc.green /= 50.0f;
-	pc.blue /= 50.0f;
+
+if (m_nFadeType == 0)	// default (start fully visible, fade out)
+	pc.alpha *= float (cos (double (sqr (1.0f - decay)) * Pi) / 2.0 + 0.5) * 0.6f;
+else if (m_nFadeType == 1)	// quickly fade in, then gently fade out
+	pc.alpha *= float (sin (double (/*sqr*/ (sqr (1.0f - decay))) * Pi * 1.5) / 2.0 + 0.5) * 0.6f;
+else if (m_nFadeType == 2) {	// fade in, then gently fade out
+	float fPivot = X2F (m_nTTL) / 4.0f;
+	if (fPivot > 0.25f)
+		fPivot = 0.25f;
+	float fLived = X2F (m_nTTL - m_nLife);
+	if (fLived < fPivot)
+		fFade = fLived / fPivot;
+	else
+		fFade = 1.0f - (fLived - fPivot) / (1.0f - fPivot);
+	if (fFade < 0.0f)
+		fFade = 0.05f;
+	else
+		fFade = 0.1f + 0.9f * fFade;
+	if (fFade > 1.0f)
+		fFade = 1.0f;
+	pc.alpha *= fFade;
 	}
-else if (bEmissive == 2) {
-	float fFade;
-#if 0
-	if (decay < 0.1f)
-		decay = decay;
-#endif
+else if (m_nFadeType == 3) {	// fire (additive, blend in)
 	if (decay > 0.5f)
 		fFade = 2.0f * (1.0f - decay);
 	else
 		fFade = decay * 2.0f;
 	decay = 1.0f;
-#if 1
 	pc.red =
 	pc.green = 
 	pc.blue = fFade;
 	m_color [0] = pc;
-#else
-	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2.0f + 0.5f;
-	pc.red *= fFade;
-	pc.green *= fFade;
-	pc.blue *= fFade;
-#endif
 	}
-else if (m_nType != BUBBLE_PARTICLES) {
-	float fFade;
-	if (nType == WATERFALL_PARTICLES) {
-		float fPivot = X2F (m_nTTL) / 4.0f;
-		if (fPivot > 0.25f)
-			fPivot = 0.25f;
-		float fLived = X2F (m_nTTL - m_nLife);
-		if (fLived < fPivot)
-			fFade = fLived / fPivot;
-		else
-			fFade = 1.0f - (fLived - fPivot) / (1.0f - fPivot);
-		if (fFade < 0.0f)
-			fFade = 0.05f;
-		else
-			fFade = 0.1f + 0.9f * fFade;
-		if (fFade > 1.0f)
-			fFade = 1.0f;
-		}
-	else {
-		fFade = float (sin (double (/*sqr*/ (sqr (1.0f - decay))) * Pi * 1.5)) / 2.0f + 0.5f;
-		//fFade = (float) cos (double (sqr (1.0f - decay)) * Pi) / 2.0f + 0.5f;
-		//pc.alpha *= 0.6f; //alphaScale [gameOpts->render.particles.nAlpha [gameOpts->render.particles.bSyncSizes ? 0 : m_nClass]];
-		}
-	pc.alpha *= fFade;
+else if (m_nFadeType == 4) {	// light trail (additive, constant effect)
+	pc.red /= 50.0f;
+	pc.green /= 50.0f;
+	pc.blue /= 50.0f;
 	}
+
 if (pc.alpha < 1.0 / 255.0) {
 	m_nLife = -1;
 	return 0;
@@ -1010,8 +996,12 @@ m_nLife = nLife;
 m_nBirth = nCurTime;
 m_nSpeed = nSpeed;
 m_nType = nType;
+m_nFadeType = 0;
+m_nClass = ObjectClass (nObject);
 if ((m_bHaveColor = (colorP != NULL)))
 	m_color = *colorP;
+else
+	m_color = defaultParticleColor;
 if ((m_bHaveDir = (vDir != NULL)))
 	m_vDir = *vDir;
 m_vPrevPos =
@@ -1036,7 +1026,6 @@ if ((nObject >= 0) && (nObject < 0x70000000)) {
 	m_nObjType = OBJECTS [nObject].info.nType;
 	m_nObjId = OBJECTS [nObject].info.nId;
 	}
-m_nClass = ObjectClass (nObject);
 m_fPartsPerTick = float (nMaxParts) / float (abs (nLife) * 1.25f);
 m_nTicks = 0;
 m_nDefBrightness = 0;
@@ -1166,7 +1155,7 @@ else
 					vPos.Assign (vPosf + vDeltaf * float (i));
 					if (m_particles [(j + i) % m_nPartLimit].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
 																					 m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
-																					 nCurTime, m_bBlowUpParts, fBrightness, vEmittingFace)) {
+																					 nCurTime, m_bBlowUpParts, m_nFadeType, fBrightness, vEmittingFace)) {
 						nNewParts++;
 						}
 					if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
@@ -1256,6 +1245,13 @@ m_nTicks = 0;
 inline void CParticleEmitter::SetBrightness (int nBrightness)
 {
 m_nDefBrightness = nBrightness;
+}
+
+//------------------------------------------------------------------------------
+
+inline void CParticleEmitter::SetFadeType (int nFadeType)
+{
+m_nFadeType = nFadeType;
 }
 
 //------------------------------------------------------------------------------
@@ -1464,6 +1460,15 @@ void CParticleSystem::SetBrightness (int nBrightness)
 if (m_bValid && m_emitters.Buffer ())
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetBrightness (nBrightness);
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleSystem::SetFadeType (int nFadeType)
+{
+if (m_bValid && m_emitters.Buffer ())
+	for (int i = 0; i < m_nEmitters; i++)
+		m_emitters [i].SetFadeType (nFadeType);
 }
 
 //------------------------------------------------------------------------------

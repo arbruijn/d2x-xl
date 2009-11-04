@@ -54,7 +54,8 @@ typedef struct tParticle {
 	char			m_bBright;
 	char			m_bEmissive;
 	char			m_bReversed;
-	char			m_nFade;
+	char			m_nFadeType;
+	char			m_nFadeState;
 	char			m_nClass;
 	char			m_nFrame;
 	char			m_nRotFrame;
@@ -65,7 +66,7 @@ class CParticle : public tParticle {
 	public:
 		int Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 					   short nSegment, int nLife, int nSpeed, char nParticleSystemType, char nClass,
-				      float fScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp,
+				      float fScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp, char nFadeType,
 					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
 		int Update (int nCurTime);
@@ -117,6 +118,7 @@ typedef struct tParticleEmitter {
 	char					m_bHaveColor;
 	char					m_bBlowUpParts;	//blow particles up at their "birth"
 	char					m_bEmittingFace;
+	char					m_nFadeType;
 } tParticleEmitter;
 
 class CParticleEmitter : public tParticleEmitter {
@@ -134,6 +136,7 @@ class CParticleEmitter : public tParticleEmitter {
 		inline void SetDir (CFixVector *vDir);
 		inline void SetLife (int nLife);
 		inline void SetBrightness (int nBrightness);
+		inline void SetFadeType (int nFadeType);
 		inline void SetSpeed (int nSpeed);
 		inline void SetType (int nType);
 		inline int SetDensity (int nMaxParts, int nDensity);
@@ -145,7 +148,7 @@ class CParticleEmitter : public tParticleEmitter {
 
 	private:
 		char ObjectClass (int nObject);
-		float  Brightness (void);
+		float Brightness (void);
 		inline int MayBeVisible (void);
 };
 
@@ -166,6 +169,7 @@ typedef struct tParticleSystem {
 	bool								m_bDestroy;
 	char								m_bValid;
 	char								m_nType;				//black or white
+	char								m_nFadeType;
 } tParticleSystem;
 
 class CParticleSystem : public tParticleSystem {
@@ -191,6 +195,7 @@ class CParticleSystem : public tParticleSystem {
 		void SetType (int nType);
 		void SetSpeed (int nSpeed);
 		void SetBrightness (int nBrightness);
+		void SetFadeType (int nFadeType);
 
 		inline bool HasEmitters (void) { return m_emitters.Buffer () != NULL; }
 		inline CParticleEmitter* GetEmitter (int i)
@@ -272,6 +277,10 @@ class CParticleManager {
 
 		inline void SetBrightness (int i, int nBrightness) {
 			GetSystem (i).SetBrightness (nBrightness);
+			}
+
+		inline void SetFadeType (int i, int nFadeType) {
+			GetSystem (i).SetFadeType (nFadeType);
 			}
 
 		inline void SetType (int i, int nType) {

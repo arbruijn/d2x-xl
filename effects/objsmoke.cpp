@@ -23,13 +23,10 @@
 #include "renderthreads.h"
 
 static tRgbaColorf smokeColors [] = {
- {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, 2.0f},
- {2.0f / 3.0f, 2.0f / 3.0f, 2.0f / 3.0f, 2.0f},
-#if 0
- {3.0f / 4.0f, 3.0f / 4.0f, 3.0f / 4.0f, 2.0f},
- {4.0f / 5.0f, 4.0f / 5.0f, 4.0f / 5.0f, 2.0f},
-#endif
- {1.0f, 1.0f, 1.0f, 2.0f}
+	 {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, 2.0f /** 0.6f*/},
+	 {2.0f / 3.0f, 2.0f / 3.0f, 2.0f / 3.0f, 2.0f /** 0.6f*/},
+	 {1.0f, 1.0f, 1.0f, 2.0f /** 0.6f*/},
+	 {2.0f / 3.0f, 2.0f / 3.0f, 2.0f / 3.0f, 2.0f},
 	};
 
 //------------------------------------------------------------------------------
@@ -205,6 +202,7 @@ if (gameOpts->render.ship.bBullets) {
 					}
 				else {
 					particleManager.SetPos (i, &vEmitter, &posP->mOrient, objP->info.nSegment);
+					particleManager.SetFadeType (i, -1);
 					}
 				}
 			else {
@@ -509,7 +507,7 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
-	float				nScale = 1.75f;
+	float				nScale = 1.75f; //1.75f;
 	tThrusterInfo	ti;
 
 nObject = objP->Index ();
@@ -524,7 +522,7 @@ else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
 	nLife = gameOpts->render.particles.nLife [3] + 1;
 #if 1
-	nParts = int (MSL_MAX_PARTS * X2F (nSpeed) / (34.0f * (4 - nLife)));
+	nParts = int (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
 	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
 		nParts /= 2;
 
@@ -598,13 +596,7 @@ else
 void DoStaticParticles (CObject *objP)
 {
 	int			i, j, nObject, nSmoke, 
-					nType = (objP->rType.particleInfo.nType == SMOKE_TYPE_WATERFALL) 
-							  ? 3
-							  : (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) 
-								  ? 2
-								  : (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES)
-									 ? 1
-									 : 0;
+					nType, nFadeType;
 	CFixVector	pos, offs, dir;
 
 	static tRgbaColorf defaultColors [3] = {{0.5f, 0.5f, 0.5f, 0.0f}, {0.8f, 0.9f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f}};
@@ -620,6 +612,22 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		tRgbaColorf color;
 		int bColor;
 
+	if (objP->rType.particleInfo.nType == SMOKE_TYPE_WATERFALL) {
+		nType = 3;
+		nFadeType = 2;
+		}
+	else if (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) {
+		nType = 2;
+		nFadeType = 3;
+		}
+	else if (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES) {
+		nType = 1;
+		nFadeType = -1;
+		}
+	else {
+		nType = 0;
+		nFadeType = 1;
+		}
 	color.red = (float) objP->rType.particleInfo.color.red / 255.0f;
 	color.green = (float) objP->rType.particleInfo.color.green / 255.0f;
 	color.blue = (float) objP->rType.particleInfo.color.blue / 255.0f;
@@ -638,7 +646,8 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	if (nType == 1)
 		audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_AIRBUBBLES));
 	else
-		particleManager.SetBrightness (particleManager.GetObjectSystem (nObject), objP->rType.particleInfo.nBrightness);
+		particleManager.SetBrightness (nSmoke, objP->rType.particleInfo.nBrightness);
+	particleManager.SetFadeType (nSmoke, nFadeType);
 	}
 if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smoke emitting faces
 	i = objP->rType.particleInfo.nDrift >> 4;
@@ -754,6 +763,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	if (nSmoke < 0)
 		return;
 	particleManager.SetObjectSystem (nObject, nSmoke);
+	particleManager.SetFadeType (nSmoke, bGatling ? 0 : 4);
 	}
 pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
 particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
