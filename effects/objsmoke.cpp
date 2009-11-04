@@ -603,6 +603,22 @@ void DoStaticParticles (CObject *objP)
 	static int particleTypes [4] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES};
 
 nObject = (int) objP->Index ();
+if (objP->rType.particleInfo.nType == SMOKE_TYPE_WATERFALL) {
+	nType = 3;
+	nFadeType = 2;
+	}
+else if (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) {
+	nType = 2;
+	nFadeType = 3;
+	}
+else if (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES) {
+	nType = 1;
+	nFadeType = -1;
+	}
+else {
+	nType = 0;
+	nFadeType = 1;
+	}
 if (!(SHOW_SMOKE && objP->rType.particleInfo.bEnabled && ((nType == 1) ? gameOpts->render.particles.bBubbles : gameOpts->render.particles.bStatic))) {
 	if (particleManager.GetObjectSystem (nObject) >= 0)
 		KillObjectSmoke (nObject);
@@ -612,22 +628,6 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		tRgbaColorf color;
 		int bColor;
 
-	if (objP->rType.particleInfo.nType == SMOKE_TYPE_WATERFALL) {
-		nType = 3;
-		nFadeType = 2;
-		}
-	else if (objP->rType.particleInfo.nType == SMOKE_TYPE_FIRE) {
-		nType = 2;
-		nFadeType = 3;
-		}
-	else if (objP->rType.particleInfo.nType == SMOKE_TYPE_BUBBLES) {
-		nType = 1;
-		nFadeType = -1;
-		}
-	else {
-		nType = 0;
-		nFadeType = 1;
-		}
 	color.red = (float) objP->rType.particleInfo.color.red / 255.0f;
 	color.green = (float) objP->rType.particleInfo.color.green / 255.0f;
 	color.blue = (float) objP->rType.particleInfo.color.blue / 255.0f;
