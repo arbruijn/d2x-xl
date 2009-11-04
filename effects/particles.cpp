@@ -777,9 +777,9 @@ vCenter.Assign (hp);
 i = m_nOrient;
 
 if (m_nFadeType == 0)	// default (start fully visible, fade out)
-	pc.alpha *= float (cos (double (sqr (1.0f - decay)) * Pi) / 2.0 + 0.5) * 0.6f;
+	pc.alpha *= float (cos (double (sqr (1.0f - decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 else if (m_nFadeType == 1)	// quickly fade in, then gently fade out
-	pc.alpha *= float (sin (double (/*sqr*/ (sqr (1.0f - decay))) * Pi * 1.5) / 2.0 + 0.5) * 0.6f;
+	pc.alpha *= float (sin (double (/*sqr*/ (sqr (1.0f - decay))) * Pi * 1.5) * 0.5 + 0.5);
 else if (m_nFadeType == 2) {	// fade in, then gently fade out
 	float fPivot = X2F (m_nTTL) / 4.0f;
 	if (fPivot > 0.25f)
