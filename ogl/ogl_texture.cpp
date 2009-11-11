@@ -1105,7 +1105,7 @@ bmoP->SetCurFrame (bmfP);
 bmfP->SetTranspType (3);
 bmfP->SetupTexture (1, bLoadTextures);
 bmfP->SetStatic (1);
-return bmP;
+return bmfP;
 }
 
 //------------------------------------------------------------------------------
