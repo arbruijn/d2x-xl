@@ -452,12 +452,11 @@ if (nSegment != -1) {
 	if (!explObjP)
 		return;
 	AttachObject (objP, explObjP);
-	if (d_rand () < 8192) {
-		fix	vol = I2X (1) / 2;
+	if (bSound || (d_rand () < 8192)) {
+		fix vol = I2X (1) / 2;
 		if (objP->info.nType == OBJ_ROBOT)
 			vol *= 2;
-		else if (bSound)
-			audio.CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
+		audio.CreateObjectSound (SOUND_EXPLODING_WALL, SOUNDCLASS_EXPLOSION, objP->Index (), 0, vol);
 		}
 	}
 }

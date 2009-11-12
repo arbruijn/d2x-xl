@@ -180,9 +180,14 @@ int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
 	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
-	if (nTries++)
+	if (nTries++) {
 		fq.startSeg		= bSpectate ? FindSegByPos (gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) :
 							  FindSegByPos (objP1->info.position.vPos, objP1->info.nSegment, 1, 0);
+		if (fq.startSeg < 0) {
+			fate = HIT_BAD_P0;
+			return false;
+			}
+		}
 	else
 		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
 	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->info.position.vPos;
@@ -196,7 +201,7 @@ do {
 	fate = FindHitpoint (&fq, &hitData);
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
-return fate == HIT_NONE;
+return (fate == HIT_NONE) || (fate == HIT_BAD_P0);
 }
 
 //	-----------------------------------------------------------------------------

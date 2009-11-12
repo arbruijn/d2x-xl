@@ -869,6 +869,19 @@ Assert(fq->ignoreObjList != reinterpret_cast<short*> (-1));
 gameData.collisions.hitData.vNormal.SetZero ();
 gameData.collisions.hitData.nNormals = 0;
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
+if ((fq->startSeg > gameData.segs.nLastSegment) || (fq->startSeg < 0)) {
+	fq->startSeg = FindSegByPos (*fq->p0, -1, 0, 0);
+	if (fq->startSeg < 0) {
+		hitData->hit.nType = HIT_BAD_P0;
+		hitData->hit.vPoint = *fq->p0;
+		hitData->hit.nSegment = fq->startSeg;
+		hitData->hit.nSide = 0;
+		hitData->hit.nObject = 0;
+		hitData->hit.nSideSegment = -1;
+		hitData->nSegments = 0;
+		return hitData->hit.nType;
+		}
+	}
 
 gameData.collisions.hitData.nSegment = -1;
 gameData.collisions.hitData.nSide = -1;

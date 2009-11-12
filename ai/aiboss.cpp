@@ -326,14 +326,14 @@ void DoBossDyingFrame (CObject *objP)
 if (i < 0)
 	return;
 rval = DoRobotDyingFrame (objP, gameData.bosses [i].m_nDyingStartTime, BOSS_DEATH_DURATION,
-								 &gameData.bosses [i].m_bDyingSoundPlaying,
-								 ROBOTINFO (objP->info.nId).deathrollSound, I2X (4), I2X (4));
+								  &gameData.bosses [i].m_bDyingSoundPlaying,
+								  ROBOTINFO (objP->info.nId).deathrollSound, I2X (4), I2X (4));
 if (rval) {
 	gameData.bosses.Remove (i);
 	if (ROBOTINFO (objP->info.nId).bEndsLevel)
 		DoReactorDestroyedStuff (NULL);
+	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (4), I2X (512));
 	objP->Explode (I2X (1)/4);
-	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
 	}
 }
 

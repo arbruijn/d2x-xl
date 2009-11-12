@@ -209,10 +209,11 @@ temp = gameData.time.xGame - StartTime;
 objP->mType.physInfo.rotVel[X] = temp / 9;
 objP->mType.physInfo.rotVel[Y] = temp / 5;
 objP->mType.physInfo.rotVel[Z] = temp / 7;
-
 if (gameOpts->sound.audioSampleRate) {
 	soundP = gameData.pig.sound.soundP + audio.XlatSound (deathSound);
 	xSoundDuration = FixDiv (soundP->nLength [soundP->bHires], gameOpts->sound.audioSampleRate);
+	if (!xSoundDuration)
+		xSoundDuration = I2X (1);
 	}
 else
 	xSoundDuration = I2X (1);
@@ -225,12 +226,13 @@ if (StartTime + xRollDuration - xSoundDuration < gameData.time.xGame) {
 		*bDyingSoundPlaying = 1;
 		audio.CreateObjectSound (deathSound, SOUNDCLASS_ROBOT, objP->Index (), 0, xSoundScale, xSoundScale * 256);	//	I2X (5)12 means play twice as loud
 		}
-	else if (d_rand () < gameData.time.xFrame*16)
-		CreateSmallFireballOnObject (objP, (I2X (1) + d_rand ()) * (16 * xExplScale/I2X (1)) / 8, 0);
+	else if (d_rand () < gameData.time.xFrame * 16) {
+		CreateSmallFireballOnObject (objP, (I2X (1) + d_rand ()) * (16 * xExplScale/I2X (1)) / 8, d_rand () < gameData.time.xFrame * 2);
+		}
 	}
-else if (d_rand () < gameData.time.xFrame * 8)
-	CreateSmallFireballOnObject (objP, (I2X (1)/2 + d_rand ()) * (16 * xExplScale / I2X (1)) / 8, 1);
-
+else if (d_rand () < gameData.time.xFrame * 8) {
+	CreateSmallFireballOnObject (objP, (I2X (1)/2 + d_rand ()) * (16 * xExplScale / I2X (1)) / 8, d_rand () < gameData.time.xFrame);
+	}
 return (StartTime + xRollDuration < gameData.time.xGame);
 }
 
@@ -241,7 +243,6 @@ void StartRobotDeathSequence (CObject *objP)
 objP->cType.aiInfo.xDyingStartTime = gameData.time.xGame;
 objP->cType.aiInfo.bDyingSoundPlaying = 0;
 objP->cType.aiInfo.SKIP_AI_COUNT = 0;
-
 }
 
 //	----------------------------------------------------------------------
