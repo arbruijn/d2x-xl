@@ -470,7 +470,7 @@ uint CSide::CheckPointToFace (CFixVector& intersection, short iFace, CFixVector 
 	fix 			check_i, check_j;
 	CFixVector	*v0, *v1;
 	vec2d 		vEdge, vCheck;
-	fix 			d;
+	QLONG			d;
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal
@@ -512,7 +512,7 @@ for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
 	vEdge.j = (*v1) [j] - (*v0) [j];
 	vCheck.i = check_i - (*v0) [i];
 	vCheck.j = check_j - (*v0) [j];
-	d = FixMul (vCheck.i, vEdge.j) - FixMul (vCheck.j, vEdge.i);
+	d = FixMul64 (vCheck.i, vEdge.j) - FixMul64 (vCheck.j, vEdge.i);
 	if (d < 0)              		//we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
 	}

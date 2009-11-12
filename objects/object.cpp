@@ -1070,11 +1070,13 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	PrintLog ("invalid object in RelinkObjToSeg\r\n");
 	return;
 	}
-if ((nNewSeg < 0) || (nNewSeg > gameData.segs.nLastSegment)) {
+#endif
+if ((nNewSeg < 0) || (nNewSeg >= gameData.segs.nSegments)) {
+#if DBG
 	PrintLog ("invalid segment in RelinkObjToSeg\r\n");
+#endif
 	return;
 	}
-#endif
 UnlinkFromSeg ();
 LinkToSeg (nNewSeg);
 #if DBG

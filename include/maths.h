@@ -51,8 +51,9 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #endif
 
 
-#define FixMul(_a, _b)	(static_cast<fix> (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / 65536))
-#define FixDiv(_a, _b)	(static_cast<fix> ((_b) ? (((static_cast<QLONG> (_a)) * 65536) / (static_cast<QLONG> (_b))) : 1))
+#define FixMul64(_a, _b)		(static_cast<QLONG> (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / 65536))
+#define FixMul(_a, _b)			(static_cast<fix> (FixMul64 (_a, _b)))
+#define FixDiv(_a, _b)			(static_cast<fix> ((_b) ? (((static_cast<QLONG> (_a)) * 65536) / (static_cast<QLONG> (_b))) : 1))
 #define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / (static_cast<QLONG> (_c))) : 1))
 
 //divide a tQuadInt by a long
