@@ -290,13 +290,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTrigger::DoMasterTrigger (short nObject)
+int CTrigger::DoMasterTrigger (short nObject, bool bObjTrigger)
 {
 	CTrigger*	trigP;
 
 for (int i = 0; i < m_info.nLinks; i++)
 	if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
-		trigP->Operate (nObject, gameData.multiplayer.nLocalPlayer, 0, 0);
+		trigP->Operate (nObject, gameData.multiplayer.nLocalPlayer, 0, bObjTrigger);
 return 1;
 }
 
@@ -944,10 +944,15 @@ int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 #if DBG
 if (this - gameData.trigs.triggers.Buffer () == nDbgTrigger)
 	nDbgTrigger = nDbgTrigger;
+if (bObjTrigger)
+	nDbgTrigger = nDbgTrigger;
 #endif
 
 if (m_info.flags & TF_DISABLED)
 	return 1;		//1 means don't send trigger hit to other players
+
+if (nDepth > 15)
+	return 1;
 
 nDepth++;
 
@@ -970,11 +975,9 @@ else {
 		nDepth--;
 		return 1;
 		}
-	if ((m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
-		if (!bObjTrigger)	{
-			nDepth--;
-			return 1;
-			}
+	if (!bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST && (m_info.nType != TT_MASTER))) {
+		nDepth--;
+		return 1;
 		}
 	}
 
@@ -1184,7 +1187,7 @@ switch (m_info.nType) {
 		break;
 
 	case TT_MASTER:
-		DoMasterTrigger (nObject);
+		DoMasterTrigger (nObject, bObjTrigger);
 		break;
 
 	case TT_ENABLE_TRIGGER:

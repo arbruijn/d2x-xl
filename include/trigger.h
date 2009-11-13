@@ -159,7 +159,7 @@ class CTrigger {
 		void DoUnlockDoors (void);
 		void DoLockDoors (void);
 		int DoSetSpawnPoints (void);
-		int DoMasterTrigger (short nObject);
+		int DoMasterTrigger (short nObject, bool bObjTrigger);
 		int DoEnableTrigger (void);
 		int DoDisableTrigger (void);
 		void DoTeleport (short nObject);
