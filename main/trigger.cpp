@@ -308,8 +308,16 @@ int CTrigger::DoEnableTrigger (void)
 
 for (int i = 0; i < m_info.nLinks; i++) {
 	if (m_info.sides [i] >= 0) {
-		if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
-			trigP->m_info.flags &= ~TF_DISABLED;
+		if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i]))) {
+			if (trigP->m_info.nType != TT_MASTER)
+				trigP->m_info.flags &= ~TF_DISABLED;
+			else {
+				if (trigP->m_info.value > 0)
+					(trigP->m_info.value)--;
+				if (trigP->m_info.value <= 0)
+					trigP->m_info.flags &= ~TF_DISABLED;
+				}
+			}
 		}
 	else {
 		CObject*	objP = OBJECTS + m_info.segments [i];
@@ -338,8 +346,12 @@ int CTrigger::DoDisableTrigger (void)
 
 for (int i = 0; i < m_info.nLinks; i++) {
 	if (m_info.sides [i] >= 0) {
-		if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
+		if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i]))) {
 			trigP->m_info.flags |= TF_DISABLED;
+			if (trigP->m_info.nType == TT_MASTER) {
+				(trigP->m_info.value)++;
+				}
+			}
 		}
 	else {
 		CObject*	objP = OBJECTS + m_info.segments [i];
@@ -1234,6 +1246,8 @@ if (!gameStates.app.bD2XLevel)
 	return 0;
 if ((m_info.nType == TT_COUNTDOWN) || (m_info.nType == TT_MESSAGE) || (m_info.nType == TT_SOUND))
 	return 0;
+if ((m_info.nType == TT_MASTER) && (m_info.value > 0))
+	return 1;
 if ((abs (m_info.time [0]) < 100) || (abs (m_info.time [0]) > 900000))
 	return 0;
 return 1;
@@ -1277,6 +1291,8 @@ else
 m_info.nLinks = cf.ReadByte ();
 cf.ReadByte ();
 m_info.value = cf.ReadFix ();
+if ((m_info.nType == TT_MASTER) && (m_info.value < 0))	//patch master trigger value (which acts as semaphore)
+	m_info.value = 0;
 m_info.time [0] = cf.ReadFix ();
 m_info.time [1] = -1;
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
@@ -1300,6 +1316,8 @@ else
 	m_info.flags = short (cf.ReadByte ());
 m_info.nLinks = cf.ReadByte ();
 m_info.value = cf.ReadFix ();
+if ((m_info.nType == TT_MASTER) && (m_info.value < 0))	//patch master trigger value (which acts as semaphore)
+	m_info.value = 0;
 m_info.time [0] = cf.ReadFix ();
 m_info.time [1] = -1;
 for (int i = 0; i < MAX_TRIGGER_TARGETS; i++) {
