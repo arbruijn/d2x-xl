@@ -288,9 +288,16 @@ else {
 		a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
 		a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
 		m = CFixMatrix::Create (a);
+		if (nType == WATERFALL_PARTICLES)
+			CFixVector::Normalize (m_vDir);
 		vDrift = m * m_vDir;
 		}
 	CFixVector::Normalize (vDrift);
+	if (nType == WATERFALL_PARTICLES) {
+		fix dot = CFixVector::Dot (m_vDir, vDrift);
+		if (dot < I2X (1) / 2)
+			return 0;
+		}
 	float d = float (CFixVector::DeltaAngle (vDrift, m_vDir, NULL));
 	if (d) {
 		d = (float) exp ((I2X (1) / 8) / d);
@@ -570,21 +577,9 @@ else {
 				m_nLife = -1;
 				return 0;
 				}
-			if (m_nType == WATERFALL_PARTICLES) {
-				if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
+			if ((m_nType == WATERFALL_PARTICLES) && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER)) { 
 					m_nLife = I2X (1); //-1;
 					return 0;
-					}
-				CFixVector vDir [2];
-				vDir [0] = m_vPos [1] - m_vPos [0];
-				CFixVector::Normalize (vDir [0]);
-				vDir [1] = m_vDir;
-				CFixVector::Normalize (vDir [1]);
-				if (CFixVector::Dot (vDir [0], vDir [1]) > 2 * I2X (1) / 3)
-					bCheckSeg = m_nLife > I2X (1) / 2;
-				else {
-					bCheckSeg = false;
-					m_nLife = I2X (1) / 2;
 					}
 				}
 			m_nSegment = nSegment;
