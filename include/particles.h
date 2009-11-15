@@ -33,7 +33,7 @@ typedef struct tParticle {
 	tPartPos		m_glPos;
 #endif
 	CFixMatrix	m_mOrient;
-	CFixVector	m_vPos [2];			//position
+	CFixVector	m_vPos;				//position
 	CFixVector	m_vTransPos;		//transformed position
 	CFixVector	m_vDir;				//movement direction
 	CFixVector	m_vDrift;
