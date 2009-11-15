@@ -1406,6 +1406,8 @@ trigP = TRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 	if (!gameStates.app.bD2XLevel)
 		continue;
+	if (trigP->m_info.flags & TF_DISABLED)
+		continue;
 	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT))) {
 		trigP->Operate (LOCALPLAYER.nObject, gameData.multiplayer.nLocalPlayer, 0, false);
 		if (!trigP->IsDelayed ())
