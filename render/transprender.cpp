@@ -1238,7 +1238,7 @@ void CTransparencyRenderer::RenderBullet (CParticle *pParticle)
 
 memset (&o, 0, sizeof (o));
 o.info.nType = OBJ_POWERUP;
-o.info.position.vPos = pParticle->m_vPos;
+o.info.position.vPos = pParticle->m_vPos [0];
 o.info.position.mOrient = pParticle->m_mOrient;
 if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSegment, 0, 0))) {
 	lightManager.Index (0)[0].nActive = 0;

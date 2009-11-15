@@ -314,18 +314,18 @@ else {
 	}
 m_vDrift = vDrift;
 if (vEmittingFace)
-	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
+	m_vPos [0] = *RandomPointOnQuad (vEmittingFace, vPos);
 #if 0
 else if (nType == FIRE_PARTICLES)
-	m_vPos = *vPos + vDrift * (nRad / 32);
+	m_vPos [0] = *vPos + vDrift * (nRad / 32);
 #endif	
 else if (nType != BUBBLE_PARTICLES)
-	m_vPos = *vPos + vDrift * (I2X (1) / 64);
+	m_vPos [0] = *vPos + vDrift * (I2X (1) / 64);
 else {
-	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
+	//m_vPos [0] = *vPos + vDrift * (I2X (1) / 32);
 	nSpeed = vDrift.Mag () / 16;
 	vDrift = CFixVector::Avg ((*mOrient).RVec () * (nSpeed - randN (2 * nSpeed)), (*mOrient).UVec () * (nSpeed - randN (2 * nSpeed)));
-	m_vPos = *vPos + vDrift + (*mOrient).FVec () * (I2X (1) / 2 - randN (I2X (1)));
+	m_vPos [0] = *vPos + vDrift + (*mOrient).FVec () * (I2X (1) / 2 - randN (I2X (1)));
 #if 1
 	m_vDrift.SetZero ();
 #else
@@ -333,6 +333,7 @@ else {
 	m_vDrift *= I2X (32);
 #endif
 	}
+m_vPos [1] = m_vPos [0];
 if ((nType != BUBBLE_PARTICLES) && mOrient) {
 		CAngleVector	vRot;
 		CFixMatrix		mRot;
@@ -469,7 +470,7 @@ for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, sideP++) {
 		nFaces [nSide] = sideP->m_nFaces;
 		}
 	for (nFace = nInFront = 0; nFace < nFaces [nSide]; nFace++) {
-		nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
+		nDist = m_vPos [0].DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
@@ -517,7 +518,7 @@ t = nCurTime - m_nMoved;
 if (m_nDelay > 0)
 	m_nDelay -= t;
 else {
-	vPos = m_vPos;
+	vPos = m_vPos [0];
 #if DBG
 	drift = m_vDrift;
 	CFixVector::Normalize (drift);
@@ -533,7 +534,7 @@ else {
 	for (j = 0; j < 2; j++) {
 		if (t < 0)
 			t = -t;
-		m_vPos = vPos + drift * t; //(I2X (t) / 1000);
+		m_vPos [0] = vPos + drift * t; //(I2X (t) / 1000);
 		if (m_bHaveDir) {
 			CFixVector vi = drift, vj = m_vDir;
 			CFixVector::Normalize (vi);
@@ -542,21 +543,21 @@ else {
 			if (CFixVector::Dot (vi, vj) < 0)
 				drag = -drag;
 //				VmVecScaleInc (&drift, &m_vDir, drag);
-			m_vPos += m_vDir * drag;
+			m_vPos [0] += m_vDir * drag;
 			}
 		bool bCheckSeg;
-		if (m_nType == WATERFALL_PARTICLES)
+		if (m_nType == WATERFALL_PARTICLES) 
 			bCheckSeg = m_nLife > I2X (1) / 2;
 		else 
 			bCheckSeg = (m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16);
 		if (bCheckSeg) {
-			nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 1);
+			nSegment = FindSegByPos (m_vPos [0], m_nSegment, 0, 0, 1);
 			if (nSegment < 0) {
 #if DBG
 				if (m_nSegment == nDbgSeg)
-					nSegment = FindSegByPos (m_vPos, m_nSegment, 1, 0, 1);
+					nSegment = FindSegByPos (m_vPos [0], m_nSegment, 1, 0, 1);
 #endif
-				nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 1, 1);
+				nSegment = FindSegByPos (m_vPos [0], m_nSegment, 0, 1, 1);
 				if (nSegment < 0) {
 					if (m_nType == WATERFALL_PARTICLES)
 						m_nLife = I2X (1) / 2;
@@ -569,9 +570,22 @@ else {
 				m_nLife = -1;
 				return 0;
 				}
-			if ((m_nType == WATERFALL_PARTICLES) && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER)) { 
-				m_nLife = I2X (1); //-1;
-				return 0;
+			if (m_nType == WATERFALL_PARTICLES) {
+				if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
+					m_nLife = I2X (1); //-1;
+					return 0;
+					}
+				CFixVector vDir [2];
+				vDir [0] = m_vPos [1] - m_vPos [0];
+				CFixVector::Normalize (vDir [0]);
+				vDir [1] = m_vDir;
+				CFixVector::Normalize (vDir [1]);
+				if (CFixVector::Dot (vDir [0], vDir [1]) > 2 * I2X (1) / 3)
+					bCheckSeg = m_nLife > I2X (1) / 2;
+				else {
+					bCheckSeg = false;
+					m_nLife = I2X (1) / 2;
+					}
 				}
 			m_nSegment = nSegment;
 			}
@@ -582,7 +596,7 @@ else {
 				}
 			else {
 				drift = m_vDrift + *wallNorm * (-2 * dot);
-				//VmVecScaleAdd (&m_vPos, &vPos, &drift, 2 * t);
+				//VmVecScaleAdd (&m_vPos [0], &vPos, &drift, 2 * t);
 				m_nBounce = 3;
 				continue;
 				}
@@ -712,7 +726,7 @@ else if (gameOpts->render.particles.bSort) {
 		}
 	}
 else
-	transformation.Transform (hp, m_vPos, 0);
+	transformation.Transform (hp, m_vPos [0], 0);
 if (m_bBright)
 	brightness = (float) sqrt (brightness);
 if (nType == SMOKE_PARTICLES) {
@@ -1135,7 +1149,7 @@ else
 				vDeltaf [Y] /= (float) h;
 				vDeltaf [Z] /= (float) h;
 #else
-				vPosf.Assign (m_vPos);
+				vPosf.Assign (m_vPos [0]);
 				vDeltaf [X] =
 				vDeltaf [Y] =
 				vDeltaf [Z] = 0.0f;
