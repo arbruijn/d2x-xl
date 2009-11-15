@@ -37,6 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textdata.h"
 #include "marker.h"
 #include "lightning.h"
+#include "gamesave.h"
 #include "state.h"
 #include "playerdeath.h"
 
@@ -1289,8 +1290,8 @@ m_info.nLinks = cf.ReadByte ();
 cf.ReadByte ();
 m_info.value = cf.ReadFix ();
 #if 1
-if (!bObjTrigger && (m_info.nType == TT_MASTER)) {	//patch master trigger value (which acts as semaphore)
-	if (m_info.value < 0)
+if (m_info.nType == TT_MASTER) {	//patch master trigger value (which acts as semaphore)
+	if (bObjTrigger || (gameTopFileInfo.fileinfoVersion < 39))
 		m_info.value = 0;
 	else if (m_info.value > 0)
 		m_info.flags |= TF_DISABLED;
@@ -1320,7 +1321,7 @@ else
 m_info.nLinks = cf.ReadByte ();
 m_info.value = cf.ReadFix ();
 #if 1
-if (bObjTrigger && (m_info.nType == TT_MASTER) && (m_info.value < 0))	//patch master trigger value (which acts as semaphore)
+if ((saveGameManager.Version () < 50) && (m_info.nType == TT_MASTER))	//patch master trigger value (which acts as semaphore)
 	m_info.value = 0;
 #endif
 m_info.time [0] = cf.ReadFix ();
