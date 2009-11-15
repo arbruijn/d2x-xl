@@ -72,7 +72,7 @@ class CParticle : public tParticle {
 		int Update (int nCurTime);
 		inline bool IsVisible (void);
 		inline fix Transform (bool bUnscaled) {
-			transformation.Transform (m_vTransPos, m_vPos [0], bUnscaled);
+			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos [Z];
 			}
 
