@@ -146,16 +146,19 @@ if (nTime > 0) {
 		color = 10;
 	else if (color > 31) 
 		color = 31;
+	color = color - (color % 4);	//	Only allowing colors 12, 16, 20, 24, 28 speeds up gr_getcolor, improves caching
 	if (gameStates.app.cheats.bEnabled)
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
 		sprintf (szScore, "%5d", nScore);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	x = SB_SCORE_ADDED_RIGHT - w - LHY (2);
-	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
+	fontManager.SetColorRGBi (RGBA_PAL2 (0, color, 0), 1, 0, 0);
+	fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 	nIdTotalScore = PrintF (&nIdTotalScore, x, SB_SCORE_ADDED_Y, szScore);
+	fontManager.SetScale (1.0f);
 	CCanvas::Pop ();
 	lastX [(gameStates.video.nDisplayMode ? 2 : 0) + gameStates.render.vr.nCurrentPage] = x;
 	} 

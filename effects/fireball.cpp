@@ -208,7 +208,11 @@ FORALL_OBJS (objP, i) {
 				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP->info.nId).bossFlag - BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (objP->ApplyDamageToRobot (damage, nParent)) {
+#if DBG
+				if (parentP && (nParent == LOCALPLAYER.nObject))
+#else
 				if (!gameStates.gameplay.bNoBotAI && parentP && (nParent == LOCALPLAYER.nObject))
+#endif
 					cockpit->AddPointsToScore (ROBOTINFO (objP->info.nId).scoreValue);
 				}
 			}

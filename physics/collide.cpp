@@ -133,7 +133,11 @@ if ((otherObjP->info.nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 				else
 					result = ApplyDamageToRobot (xDamage / 2, OBJ_IDX (otherObjP));
 				}
+#if DBG
+			if (result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature))
+#else
 			if (!gameStates.gameplay.bNoBotAI && result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature))
+#endif
 				cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
 			break;
 
@@ -957,7 +961,11 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 		return 1;
 	if (ROBOTINFO (info.nId).kamikaze) {
 		ApplyDamageToRobot (info.xShields + 1, OBJ_IDX (playerObjP));
+#if DBG
+		if (playerObjP == gameData.objs.consoleP)
+#else
 		if (!gameStates.gameplay.bNoBotAI && (playerObjP == gameData.objs.consoleP))
+#endif
 			cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
 		}
 	if (ROBOTINFO (info.nId).thief) {
@@ -1051,11 +1059,19 @@ if ((info.xShields < 0) && !(info.nFlags & (OF_EXPLODING | OF_DESTROYED))) {
 	extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (this);
 	if (IsMultiGame) {
+#if DBG
+		if (nAttacker == LOCALPLAYER.nObject)
+#else
 		if (!gameStates.gameplay.bNoBotAI && (nAttacker == LOCALPLAYER.nObject))
+#endif
 			cockpit->AddPointsToScore (CONTROL_CEN_SCORE);
 		MultiSendDestroyReactor (OBJ_IDX (this), OBJECTS [nAttacker].info.nId);
 		}
+#if DBG
+	else
+#else
 	else if (!gameStates.gameplay.bNoBotAI)
+#endif
 		cockpit->AddPointsToScore (CONTROL_CEN_SCORE);
 	CreateSound (SOUND_CONTROL_CENTER_DESTROYED);
 	Explode (0);
@@ -1566,7 +1582,11 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 				xDamage *= extraGameInfo [IsMultiGame].nFusionRamp / 2;
 			if (!robotP->ApplyDamageToRobot (xDamage, cType.laserInfo.parent.nObject))
 				BumpTwoObjects (robotP, this, 0, vHitPt);		//only bump if not dead. no xDamage from bump
+#if DBG
+			else if (cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature) {
+#else
 			else if (!gameStates.gameplay.bNoBotAI && (cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature)) {
+#endif
 				cockpit->AddPointsToScore (botInfoP->scoreValue);
 				DetectEscortGoalAccomplished (OBJ_IDX (robotP));
 				}

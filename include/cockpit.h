@@ -303,6 +303,11 @@ class CHUD : public CGenericCockpit {
 
 	private:
 		int FlashGauge (int h, int *bFlash, int tToggle);
+		inline int LineSpacing (void) {
+			return ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+					 ? m_info.nLineSpacing
+					 : 5 * GAME_FONT->Height () / 4;
+			}
 	};
 
 //	-----------------------------------------------------------------------------
