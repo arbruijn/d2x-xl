@@ -1293,11 +1293,15 @@ m_info.value = cf.ReadFix ();
 if (m_info.nType == TT_MASTER) {	//patch master trigger value (which acts as semaphore)
 	if (bObjTrigger || (gameTopFileInfo.fileinfoVersion < 39))
 		m_info.value = 0;
-	else if (m_info.value > 0)
+	else if (m_info.value > 0) {
+		m_info.value = X2I (m_info.value);
 		m_info.flags |= TF_DISABLED;
+		}
 	}
 #endif
 m_info.time [0] = cf.ReadFix ();
+if (bObjTrigger && (m_info.nType != TT_COUNTDOWN) && (m_info.nType != TT_MESSAGE) && (m_info.nType != TT_SOUND))
+	m_info.time [0] = -1;
 m_info.time [1] = -1;
 for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	m_info.segments [i] = cf.ReadShort ();
