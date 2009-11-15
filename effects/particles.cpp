@@ -577,9 +577,8 @@ else {
 				return 0;
 				}
 			if ((m_nType == WATERFALL_PARTICLES) && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER)) { 
-					m_nLife = I2X (1); //-1;
-					return 0;
-					}
+				m_nLife = I2X (1); //-1;
+				return 0;
 				}
 			m_nSegment = nSegment;
 			}
