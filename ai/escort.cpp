@@ -461,7 +461,7 @@ int GetBossId (void)
 	int	h, i;
 	int	nObject;
 
-	for (h = BOSS_COUNT, i = 0; i < BOSS_COUNT; i++) {
+	for (h = gameData.bosses.ToS (), i = 0; i < h; i++) {
 		if (0 <= (nObject = gameData.bosses [i].m_nObject))
 			return OBJECTS [nObject].info.nId;
 		}
@@ -801,8 +801,8 @@ else if (!(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_RED_KEY) &&
 			 (ExistsInMine (gameData.objs.consoleP->info.nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
 	return ESCORT_GOAL_RED_KEY;
 else if (!gameData.reactor.bDestroyed) {
-	for (int i = 0; i < extraGameInfo [0].nBossCount; i++)
-		if ((i < BOSS_COUNT) && (gameData.bosses [i].m_nObject >= 0) && gameData.bosses [i].m_nTeleportSegs)
+	for (int i = 0; i < int (gameData.bosses.ToS ()); i++)
+		if ((gameData.bosses [i].m_nObject >= 0) && gameData.bosses [i].m_nTeleportSegs)
 			return ESCORT_GOAL_BOSS;
 		return ESCORT_GOAL_CONTROLCEN;
 	}

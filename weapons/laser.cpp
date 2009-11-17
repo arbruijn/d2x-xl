@@ -1542,7 +1542,6 @@ FORALL_OBJS (curObjP, nObject) {
 //	Get type of weapon for child from parent.
 if (nObjType == OBJ_WEAPON) {
 	nBlobId = gameData.weapons.info [nObjId].children;
-	Assert (nBlobId != -1);		//	Hmm, missing data in bitmaps.tbl.  Need "children=NN" parameter.
 	}
 else {
 	Assert (nObjType == OBJ_ROBOT);

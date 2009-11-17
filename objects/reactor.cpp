@@ -494,7 +494,7 @@ if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount [0]) {
 
 if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
-else if (BOSS_COUNT > 0) {
+else if (gameData.bosses.ToS () > 0) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
 		objP = &OBJECTS [gameData.reactor.states [j].nObject];
 		objP->BashToShield (true);

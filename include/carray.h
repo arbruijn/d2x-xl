@@ -6,6 +6,7 @@
 #endif
 
 #include <string.h>
+#include <stdlib.h>
 
 #ifndef DBG
 #	ifdef _DEBUG
@@ -203,8 +204,10 @@ class CArray : public CQuickSort < _T > {
 				}
 			if (!p)
 				return m_data.buffer;
-			if (bCopy)
+			if (bCopy) {
 				memcpy (p, m_data.buffer, ((length > m_data.length) ? m_data.length : length) * sizeof (_T)); 
+				Clear (); // hack to avoid d'tors
+				}
 			m_data.length = length;
 			m_data.pos %= length;
 			delete[] m_data.buffer;
