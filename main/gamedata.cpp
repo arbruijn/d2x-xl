@@ -661,12 +661,18 @@ bool CTriggerData::Create (int nTriggers, bool bObjTriggers)
 {
 if (bObjTriggers) {
 	objTriggers.Create (nTriggers);
+#if 0
 	objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
 	objTriggerRefs.Clear (0xff);
+#endif
 	m_nObjTriggers = nTriggers;
 	}
 else {
+#if 0
 	CREATE (firstObjTrigger, LEVEL_OBJECTS, 0xff);
+#else
+	CREATE (objTriggerRefs, LEVEL_OBJECTS, 0);
+#endif
 	triggers.Create (nTriggers);
 	delay.Create (nTriggers);
 	delay.Clear (0xff);
@@ -679,7 +685,9 @@ return true;
 
 void CTriggerData::Destroy (void)
 {
+#if 0
 firstObjTrigger.Destroy ();
+#endif
 triggers.Destroy ();
 objTriggers.Destroy ();
 objTriggerRefs.Destroy ();

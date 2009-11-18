@@ -190,9 +190,14 @@ inline int operator- (CTrigger* t, CArray<CTrigger>& a) { return a.Index (t); }
 //------------------------------------------------------------------------------
 
 typedef struct tObjTriggerRef {
+#if 1
+	ubyte		nFirst;
+	ubyte		nCount;
+#else
 	short		prev;
 	short		next;
 	short		nObject;
+#endif
 } __pack__ tObjTriggerRef;
 
 void TriggerInit();

@@ -1796,7 +1796,7 @@ class CTriggerData {
 		CArray<CTrigger>			triggers; // [MAX_TRIGGERS];
 		CArray<CTrigger>			objTriggers; // [MAX_TRIGGERS];
 		CArray<tObjTriggerRef>	objTriggerRefs; // [MAX_OBJ_TRIGGERS];
-		CArray<short>				firstObjTrigger; // [MAX_OBJECTS_D2X];
+//		CArray<short>				firstObjTrigger; // [MAX_OBJECTS_D2X];
 		CArray<int>					delay; // [MAX_TRIGGERS];
 		int							m_nTriggers;
 		int							m_nObjTriggers;

@@ -503,9 +503,39 @@ for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, tr
 
 // -----------------------------------------------------------------------------
 
+int CmpObjTriggers (const CTrigger* pv, const CTrigger* pm)
+{
+return (pv->m_info.nType < pm->m_info.nType) ? -1 : (pv->m_info.nType > pm->m_info.nType) ? 1 : 
+		 (pv->m_info.nType < pm->m_info.nType) ? -1 : (pv->m_info.nType > pm->m_info.nType) ? 1 : 0;
+}
+
+// -----------------------------------------------------------------------------
+
+void BuildObjTriggerRef (void)
+{
+if (gameData.trigs.m_nObjTriggers) {
+	CQuickSort<CTrigger>	qs;
+	qs.SortAscending (OBJTRIGGERS.Buffer (), 0, gameData.trigs.m_nObjTriggers - 1, &CmpObjTriggers);
+	CTrigger* trigP = OBJTRIGGERS.Buffer ();
+	short nType = -1;
+	for (int i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
+		if (nType != trigP->m_info.nType) {
+			if (nType >= 0)
+				gameData.trigs.objTriggerRefs [nType].nCount = i - gameData.trigs.objTriggerRefs [nType].nFirst;
+			nType = trigP->m_info.nType;
+			gameData.trigs.objTriggerRefs [nType].nFirst = i;
+			}
+		if (nType >= 0)
+			gameData.trigs.objTriggerRefs [nType].nCount = i - gameData.trigs.objTriggerRefs [nType].nFirst;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 static int ReadTriggerInfo (CFile& cf)
 {
-	int		i, j;
+	int		i;
 	CTrigger	*trigP;
 
 if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
@@ -601,37 +631,26 @@ if (gameTopFileInfo.fileinfoVersion >= 33) {
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].Read (cf, 1);
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
-			gameData.trigs.objTriggerRefs [i].prev = cf.ReadShort ();
-			gameData.trigs.objTriggerRefs [i].next = cf.ReadShort ();
-			OBJTRIGGERS [i].m_info.nObject = 
-			gameData.trigs.objTriggerRefs [i].nObject = cf.ReadShort ();
+			cf.ReadShort ();
+			cf.ReadShort ();
+			OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
 			}
 		}
-	if (gameTopFileInfo.fileinfoVersion < 36) {
-		if (!gameData.trigs.firstObjTrigger.Create (700)) {
-			Error ("Not enough memory for object trigger data");
-			return -1;
-			}
-		for (i = 0; i < 700; i++)
-			gameData.trigs.firstObjTrigger [i] = cf.ReadShort ();
-		}
+
+	if (gameTopFileInfo.fileinfoVersion < 36) 
+		cf.Seek (700 * sizeof (short), SEEK_CUR);
+	else if (gameTopFileInfo.fileinfoVersion < 40) 
+		cf.Seek (cf.ReadShort () * 2 * sizeof (short), SEEK_CUR);
 	else {
-		gameData.trigs.firstObjTrigger.Clear (0xff);
-		if (!gameData.trigs.firstObjTrigger.Create (LEVEL_OBJECTS)) {
-			Error ("Not enough memory for object trigger data");
-			return -1;
-			}
-		for (i = cf.ReadShort (); i; i--) {
-			j = cf.ReadShort ();
-			gameData.trigs.firstObjTrigger [j] = cf.ReadShort ();
-			}
+		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+			OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
 		}
+	BuildObjTriggerRef ();
 	}
 else {
 	gameData.trigs.m_nObjTriggers = 0;
 	OBJTRIGGERS.Clear ();
-	gameData.trigs.objTriggerRefs.Clear (0xff);
-	gameData.trigs.firstObjTrigger.Clear (0xff);
+	gameData.trigs.objTriggerRefs.Clear (0);
 	}
 return 0;
 }

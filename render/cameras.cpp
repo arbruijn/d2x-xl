@@ -626,7 +626,7 @@ Destroy ();
 
 int CCameraManager::Create (void)
 {
-	int		h, i, j, k, r;
+	int		i, j, k;
 	ubyte		t;
 	CWall		*wallP;
 	CObject	*objP;
@@ -668,20 +668,18 @@ if (gameData.trigs.m_nTriggers) {
 
 if (gameData.trigs.m_nObjTriggers) {
 	FORALL_OBJS (objP, i) {
-		r = j = gameData.trigs.firstObjTrigger [objP->Index ()];
+		triggerP = OBJTRIGGERS + gameData.trigs.objTriggerRefs [objP->Index ()].nFirst;
+		j = gameData.trigs.objTriggerRefs [objP->Index ()].nCount;
 #if DBG
 		if (j >= 0)
 			j = j;
 #endif
-		for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h && (m_nCameras < MAX_CAMERAS); h--) {
-			triggerP = OBJTRIGGERS + j;
+		for (; j && (m_nCameras < MAX_CAMERAS); j--, triggerP++) {
 			if (triggerP->m_info.nType == TT_CAMERA) {
 				for (k = 0; k < triggerP->m_info.nLinks; k++)
 					if (m_cameras [m_nCameras].Create (m_nCameras, -1, -1, triggerP->m_info.segments [k], triggerP->m_info.sides [k], objP, 0, 0))
 						SetFaceCamera (triggerP->m_info.segments [k] * 6 + triggerP->m_info.sides [k], (char) m_nCameras++);
 				}
-			if (r == (j = gameData.trigs.objTriggerRefs [j].next))
-				break;
 			}
 		}
 	}

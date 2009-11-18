@@ -1296,6 +1296,8 @@ if (m_info.nType == TT_MASTER) {	//patch master trigger value (which acts as sem
 	else if (m_info.value > 0) {
 		m_info.value = X2I (m_info.value);
 		m_info.flags |= TF_DISABLED;
+		if (m_info.flags & TF_AUTOPLAY)
+			m_info.flags &= ~TF_PERMANENT;
 		}
 	}
 #endif
@@ -1317,6 +1319,8 @@ m_info.tOperated = -1;
 
 void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
+if (saveGameManager.Version () > 50) 
+	m_info.nObject = cf.ReadShort ();
 m_info.nType = (ubyte) cf.ReadByte ();
 if ((saveGameManager.Version () >= 48) || (bObjTrigger && (saveGameManager.Version () >= 41)))
 	m_info.flags = cf.ReadShort ();
@@ -1342,6 +1346,7 @@ m_info.tOperated = (saveGameManager.Version () < 44) ? -1 : cf.ReadFix ();
 
 void CTrigger::SaveState (CFile& cf, bool bObjTrigger)
 {
+cf.WriteShort (m_info.nObject);
 cf.WriteByte (sbyte (m_info.nType));
 cf.WriteShort (m_info.flags);
 cf.WriteByte (m_info.nLinks);
@@ -1362,16 +1367,12 @@ CTrigger *FindObjTrigger (short nObject, short nType, short nTrigger)
 {
 if (!OBJTRIGGERS.Buffer ())
 	return NULL;
-
-	short i = (nTrigger < 0) ? gameData.trigs.firstObjTrigger [nObject] : gameData.trigs.objTriggerRefs [nTrigger].next;
-
-while (i >= 0) {
-	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
-		break;
-	if (OBJTRIGGERS [i].m_info.nType == nType)
-		return OBJTRIGGERS + i;
-	i = gameData.trigs.objTriggerRefs [i].next;
-	}
+if (!gameData.trigs.objTriggerRefs [nObject].nCount)
+	return NULL;
+if (nTrigger < 0)
+	return OBJTRIGGERS + gameData.trigs.objTriggerRefs [nObject].nFirst;
+if (++nTrigger - gameData.trigs.objTriggerRefs [nObject].nFirst < gameData.trigs.objTriggerRefs [nObject].nCount)
+	return OBJTRIGGERS + nTrigger;
 return NULL;
 }
 
@@ -1382,20 +1383,18 @@ void ExecObjTriggers (short nObject, int bDamage)
 if (!OBJTRIGGERS.Buffer ())
 	return;
 
-	short	i = gameData.trigs.firstObjTrigger [nObject], j = 0;
+	ubyte i = gameData.trigs.objTriggerRefs [nObject].nFirst, j = gameData.trigs.objTriggerRefs [nObject].nCount;
 
-while ((i >= 0) && (j < 256)) {
-	if (gameData.trigs.objTriggerRefs [i].nObject < 0)
-		break;
+for (; j; j--, i++) {
+	if (OBJTRIGGERS [i].m_info.nObject < 0)
+		continue;
 	if (OBJTRIGGERS [i].DoExecObjTrigger (nObject, bDamage)) {
 		OBJTRIGGERS [i].Operate (nObject, -1, 0, 1);
 		if (IsMultiGame)
 			MultiSendObjTrigger (i);
 		}
 	if (!bDamage)
-		gameData.trigs.objTriggerRefs [i].nObject = -1;
-	i = gameData.trigs.objTriggerRefs [i].next;
-	j++;
+		OBJTRIGGERS [i].m_info.nObject = -1;
 	}
 }
 
@@ -1427,7 +1426,7 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 
 trigP = OBJTRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++) {
-	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || NetworkIAmMaster ())) {
+	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.nObject >= 0) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || NetworkIAmMaster ())) {
 		trigP->Operate (trigP->m_info.nObject, -1, 0, true);
 		trigP->m_info.flags |= TF_DISABLED;
 		}
@@ -1507,23 +1506,16 @@ return wallP ? wallP->nSegment * 65536 + wallP->nSide : -1;
 
 int ObjTriggerIsValid (int nTrigger)
 {
-	int		h, j;
+	int		j;
 	//int		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i) {
-	j = gameData.trigs.firstObjTrigger [objP->Index ()];
-	if (j < 0)
-		continue;
-	if (gameData.trigs.objTriggerRefs [j].nObject < 0)
-		continue;
-	h = 0;
-	while ((j >= 0) && (h < 256)) {
-		if (j == nTrigger)
-			return 1;
-		j = gameData.trigs.objTriggerRefs [j].next;
-		h++;
-		}
+	j = objP->Index ();
+	if ((nTrigger >= gameData.trigs.objTriggerRefs [j].nFirst) && 
+		 (nTrigger < gameData.trigs.objTriggerRefs [j].nFirst + gameData.trigs.objTriggerRefs [j].nCount) &&
+		(OBJTRIGGERS [nTrigger].m_info.nObject >= 0))
+		return 1;
 	}
 return 0;
 }

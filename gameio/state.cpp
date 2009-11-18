@@ -51,6 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "audio.h"
 #include "gamemine.h"
+#include "gamesave.h"
 #include "error.h"
 #include "gameseg.h"
 #include "menu.h"
@@ -105,7 +106,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define IFDBG(_expr)
 #endif
 
-#define STATE_VERSION				50
+#define STATE_VERSION				51
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -724,12 +725,16 @@ m_cf.WriteByte (playerP->hoursTotal);            // Hours played (since timeTota
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 void CSaveGameManager::SaveObjTriggerRef (tObjTriggerRef *refP)
 {
 m_cf.WriteShort (refP->prev);
 m_cf.WriteShort (refP->next);
 m_cf.WriteShort (refP->nObject);
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -802,7 +807,6 @@ IFDBG (static int fPos);
 void CSaveGameManager::SaveGameData (void)
 {
 	int		i, j;
-	short		nObjsWithTrigger, nObject, nFirstTrigger;
 	CObject	*objP;
 
 m_cf.WriteInt (gameData.segs.nMaxSegments);
@@ -910,6 +914,7 @@ if (!m_bBetweenLevels) {
 	else {
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].SaveState (m_cf, true);
+#if 0
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			SaveObjTriggerRef (gameData.trigs.objTriggerRefs + i);
 		nObjsWithTrigger = 0;
@@ -928,6 +933,7 @@ if (!m_bBetweenLevels) {
 				m_cf.WriteShort (nFirstTrigger);
 				}
 			}
+#endif
 		}
 	IFDBG (fPos = m_cf.Tell ());
 //Save tmap info
@@ -1576,9 +1582,9 @@ playerP->hoursTotal = m_cf.ReadByte ();            // Hours played (since timeTo
 
 void CSaveGameManager::LoadObjTriggerRef (tObjTriggerRef *refP)
 {
-refP->prev = m_cf.ReadShort ();
-refP->next = m_cf.ReadShort ();
-refP->nObject = m_cf.ReadShort ();
+m_cf.ReadShort ();
+m_cf.ReadShort ();
+m_cf.ReadShort ();
 }
 
 //------------------------------------------------------------------------------
@@ -1843,20 +1849,22 @@ if (!m_bBetweenLevels) {
 	if (gameData.trigs.m_nObjTriggers > 0) {
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].LoadState (m_cf, true);
-		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
-			CSaveGameManager::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
-		if (m_nVersion < 36) {
-			j = (m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X;
-			for (i = 0; i < j; i++)
-				gameData.trigs.firstObjTrigger [i] = m_cf.ReadShort ();
-			}
-		else {
-			gameData.trigs.firstObjTrigger.Clear (0xff);
-			for (i = m_cf.ReadShort (); i; i--) {
-				j = m_cf.ReadShort ();
-				gameData.trigs.firstObjTrigger [j] = m_cf.ReadShort ();
+		if (m_nVersion < 51) {
+			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+				CSaveGameManager::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
+			if (m_nVersion < 36) {
+				j = (m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X;
+				for (i = 0; i < j; i++)
+					m_cf.ReadShort ();
+				}
+			else {
+				for (i = m_cf.ReadShort (); i; i--) {
+					m_cf.ReadShort ();
+					m_cf.ReadShort ();
+					}
 				}
 			}
+		BuildObjTriggerRef ();
 		}
 	else if (m_nVersion < 36)
 		m_cf.Seek (((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
@@ -2125,8 +2133,9 @@ if (!m_bBetweenLevels) {
 		m_cf.Read (&gameData.trigs.m_nObjTriggers, sizeof (gameData.trigs.m_nObjTriggers), 1);
 		if (gameData.trigs.m_nObjTriggers > 0) {
 			OBJTRIGGERS.Read (m_cf, gameData.trigs.m_nObjTriggers);
-			gameData.trigs.objTriggerRefs.Read (m_cf, gameData.trigs.m_nObjTriggers);
-			gameData.trigs.firstObjTrigger.Read (m_cf, 700);
+			m_cf.Seek (gameData.trigs.m_nObjTriggers * 6 * sizeof (short), SEEK_CUR);
+			m_cf.Seek (700 * sizeof (short), SEEK_CUR);
+			BuildObjTriggerRef ();
 			}
 		else
 			m_cf.Seek (((m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 34) ? MAX_OBJECTS_D2X : 700) * sizeof (short), SEEK_CUR);

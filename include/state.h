@@ -66,7 +66,9 @@ class CSaveGameManager {
 		void SaveReactorState (tReactorStates *stateP);
 		void SaveFuelCen (tFuelCenInfo *fuelcenP);
 		void SaveMatCen (tMatCenInfo *matcenP);
+#if 0
 		void SaveObjTriggerRef (tObjTriggerRef *refP);
+#endif
 		void SavePlayer (CPlayerData *playerP);
 		void SaveNetPlayers (void);
 		void SaveNetGame (void);

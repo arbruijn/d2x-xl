@@ -49,4 +49,6 @@ extern game_top_fileinfo gameTopFileInfo;
 
 extern int Errors_in_mine;
 
+void BuildObjTriggerRef (void);
+
 #endif /* _GAMESAVE_H */
