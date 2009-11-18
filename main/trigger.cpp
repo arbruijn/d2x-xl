@@ -119,7 +119,7 @@ for (int i = 0; i < m_info.nLinks; i++)
 
 inline int CTrigger::DoExecObjTrigger (short nObject, int bDamage)
 {
-	fix	v = 10 - m_info.value;
+	fix	v = 10 - X2I (m_info.value);
 
 if (bDamage != ((m_info.nType == TT_TELEPORT) || (m_info.nType == TT_SPAWN_BOT)))
 	return 0;

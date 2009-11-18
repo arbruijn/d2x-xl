@@ -505,7 +505,7 @@ for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, tr
 
 int CmpObjTriggers (const CTrigger* pv, const CTrigger* pm)
 {
-return (pv->m_info.nType < pm->m_info.nType) ? -1 : (pv->m_info.nType > pm->m_info.nType) ? 1 : 
+return (pv->m_info.nObject < pm->m_info.nObject) ? -1 : (pv->m_info.nObject > pm->m_info.nObject) ? 1 : 
 		 (pv->m_info.nType < pm->m_info.nType) ? -1 : (pv->m_info.nType > pm->m_info.nType) ? 1 : 0;
 }
 
@@ -517,17 +517,18 @@ if (gameData.trigs.m_nObjTriggers) {
 	CQuickSort<CTrigger>	qs;
 	qs.SortAscending (OBJTRIGGERS.Buffer (), 0, gameData.trigs.m_nObjTriggers - 1, &CmpObjTriggers);
 	CTrigger* trigP = OBJTRIGGERS.Buffer ();
-	short nType = -1;
-	for (int i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
-		if (nType != trigP->m_info.nType) {
-			if (nType >= 0)
-				gameData.trigs.objTriggerRefs [nType].nCount = i - gameData.trigs.objTriggerRefs [nType].nFirst;
-			nType = trigP->m_info.nType;
-			gameData.trigs.objTriggerRefs [nType].nFirst = i;
+	int i;
+	short nObject = -1;
+	for (i = 0; i < gameData.trigs.m_nObjTriggers; i++, trigP++) {
+		if (nObject != trigP->m_info.nObject) {
+			if (nObject >= 0)
+				gameData.trigs.objTriggerRefs [nObject].nCount = i - gameData.trigs.objTriggerRefs [nObject].nFirst;
+			nObject = trigP->m_info.nObject;
+			gameData.trigs.objTriggerRefs [nObject].nFirst = i;
 			}
-		if (nType >= 0)
-			gameData.trigs.objTriggerRefs [nType].nCount = i - gameData.trigs.objTriggerRefs [nType].nFirst;
 		}
+	if (nObject >= 0)
+		gameData.trigs.objTriggerRefs [nObject].nCount = i - gameData.trigs.objTriggerRefs [nObject].nFirst;
 	}
 }
 
