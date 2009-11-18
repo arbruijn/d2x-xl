@@ -630,21 +630,23 @@ if (gameTopFileInfo.fileinfoVersion >= 33) {
 			}
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].Read (cf, 1);
-		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
-			cf.ReadShort ();
-			cf.ReadShort ();
-			OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
+		if (gameTopFileInfo.fileinfoVersion >= 40) {
+			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+				OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
+			}
+		else {
+			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
+				cf.ReadShort ();
+				cf.ReadShort ();
+				OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
+				}
+			if (gameTopFileInfo.fileinfoVersion < 36) 
+				cf.Seek (700 * sizeof (short), SEEK_CUR);
+			else 
+				cf.Seek (cf.ReadShort () * 2 * sizeof (short), SEEK_CUR);
 			}
 		}
 
-	if (gameTopFileInfo.fileinfoVersion < 36) 
-		cf.Seek (700 * sizeof (short), SEEK_CUR);
-	else if (gameTopFileInfo.fileinfoVersion < 40) 
-		cf.Seek (cf.ReadShort () * 2 * sizeof (short), SEEK_CUR);
-	else {
-		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
-			OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
-		}
 	BuildObjTriggerRef ();
 	}
 else {
