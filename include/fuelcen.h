@@ -118,16 +118,14 @@ typedef struct tMatCenInfo {
 	short   nFuelCen;    		// Index in fuelcen array.
 } __pack__ tMatCenInfo;
 
-extern tMatCenInfo RobotCenters [MAX_ROBOT_CENTERS];
-
 //--repair-- extern CObject *RepairObj;  // which CObject getting repaired, or NULL
 
 // Called when a materialization center gets triggered by the CPlayerData
 // flying through some CTrigger!
-int TriggerMatCen (short nSegment);
+int StartMatCen (short nSegment);
 void DisableMatCens (void);
 void InitAllMatCens (void);
-void TriggerBotGen (CObject *objP, short nSegment);
+void OperateBotGen (CObject *objP, short nSegment);
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
 void SetEquipGenStates (void);
 

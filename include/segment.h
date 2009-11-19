@@ -256,6 +256,7 @@ class CSegment {
 		void CreateEquipGen (int oldType);
 		void CreateBotGen (int oldType);
 		void CreateFuelCen (int oldType);
+		void CreateMatCen (int nOldType, int nMaxCount);
 
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);

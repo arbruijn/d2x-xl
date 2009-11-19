@@ -74,7 +74,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 // Turns a CSegment into a fully charged up fuel center...
 void CSegment::CreateFuelCen (int oldType)
 {
-	int			i, stationType = m_nType;
+	int	i, stationType = m_nType;
 
 switch (stationType) {
 	case SEGMENT_IS_NOTHING:
@@ -136,44 +136,66 @@ else if (oldType == SEGMENT_IS_ROBOTMAKER) {
 }
 
 //------------------------------------------------------------
-// Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
-// This function is separate from other fuelcens because we don't want values reset.
-void CSegment::CreateBotGen (int oldType)
-{
-	int	i, stationType = m_nType;
 
-Assert (stationType == SEGMENT_IS_ROBOTMAKER);
-Assert (gameData.matCens.nFuelCenters > -1);
-if (m_nMatCen >= gameFileInfo.botGen.count) {
+void CSegment::CreateMatCen (int nOldType, int nMaxCount)
+{
+	int	i;
+
+if (m_nMatCen >= nMaxCount) {
 	m_nType = SEGMENT_IS_NOTHING;
 	m_nMatCen = -1;
 	return;
 	}
-switch (oldType) {
+switch (nOldType) {
 	case SEGMENT_IS_FUELCEN:
 	case SEGMENT_IS_REPAIRCEN:
 	case SEGMENT_IS_ROBOTMAKER:
-		i = m_value;
+	case SEGMENT_IS_EQUIPMAKER:
+		i = m_value;	// index in fuel center array passed from level editor
 		break;
 	default:
 		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
-		i = gameData.matCens.nFuelCenters;
+		m_value = i = gameData.matCens.nFuelCenters;
 	}
-m_value = i;
-gameData.matCens.fuelCenters [i].nType = stationType;
-gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
-gameData.matCens.fuelCenters [i].xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
-gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
-gameData.matCens.fuelCenters [i].nSegment = Index ();
-gameData.matCens.fuelCenters [i].xTimer = -1;
-gameData.matCens.fuelCenters [i].bFlag = 0;
-gameData.matCens.fuelCenters [i].vCenter = m_vCenter;
-i = gameData.matCens.nBotCenters++;
+gameData.matCens.origStationTypes [i] = (nOldType == m_nType) ? SEGMENT_IS_NOTHING : nOldType;
+tFuelCenInfo* fuelCenP = &gameData.matCens.fuelCenters [i];
+fuelCenP->nType = m_nType;
+fuelCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
+fuelCenP->xMaxCapacity = fuelCenP->xCapacity;
+fuelCenP->nSegment = Index ();
+fuelCenP->xTimer = -1;
+fuelCenP->bFlag = 0;
+fuelCenP->vCenter = m_vCenter;
+}
+
+//------------------------------------------------------------
+// Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
+// This function is separate from other fuelcens because we don't want values reset.
+void CSegment::CreateBotGen (int nOldType)
+{
+CreateMatCen (nOldType, gameFileInfo.botGen.count);
+int i = gameData.matCens.nBotCenters++;
 gameData.matCens.botGens [i].xHitPoints = MATCEN_HP_DEFAULT;
 gameData.matCens.botGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
 gameData.matCens.botGens [i].nSegment = Index ();
-if (oldType == SEGMENT_IS_NOTHING)
+if (nOldType == SEGMENT_IS_NOTHING)
 	gameData.matCens.botGens [i].nFuelCen = gameData.matCens.nFuelCenters;
+gameData.matCens.nFuelCenters++;
+}
+
+
+//------------------------------------------------------------
+// Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
+// This function is separate from other fuelcens because we don't want values reset.
+void CSegment::CreateEquipGen (int nOldType)
+{
+CreateMatCen (nOldType, gameFileInfo.equipGen.count);
+int i = gameData.matCens.nEquipCenters++;
+gameData.matCens.equipGens [i].xHitPoints = MATCEN_HP_DEFAULT;
+gameData.matCens.equipGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
+gameData.matCens.equipGens [i].nSegment = Index ();
+if (nOldType == SEGMENT_IS_NOTHING)
+	gameData.matCens.equipGens [i].nFuelCen = gameData.matCens.nFuelCenters;
 gameData.matCens.nFuelCenters++;
 }
 
@@ -187,56 +209,6 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 	gameData.matCens.fuelCenters [gameData.matCens.equipGens [i].nFuelCen].bEnabled =
 		FindTriggerTarget (gameData.matCens.fuelCenters [i].nSegment, -1) == 0;
 }
-
-//------------------------------------------------------------
-// Adds a matcen that already is a special nType into the gameData.matCens.fuelCenters array.
-// This function is separate from other fuelcens because we don't want values reset.
-void CSegment::CreateEquipGen (int oldType)
-{
-	short		nSegment = Index ();
-	int		stationType = m_nType;
-	int		i;
-
-Assert (stationType == SEGMENT_IS_EQUIPMAKER);
-Assert (gameData.matCens.nFuelCenters > -1);
-if (m_nMatCen >= gameFileInfo.equipGen.count) {
-	m_nType = SEGMENT_IS_NOTHING;
-	m_nMatCen = -1;
-	return;
-	}
-switch (oldType) {
-	case SEGMENT_IS_FUELCEN:
-	case SEGMENT_IS_REPAIRCEN:
-	case SEGMENT_IS_ROBOTMAKER:
-	case SEGMENT_IS_EQUIPMAKER:
-		i = m_value;
-		break;
-	default:
-		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
-		i = gameData.matCens.nFuelCenters;
-	}
-m_value = i;
-gameData.matCens.fuelCenters [i].nType = stationType;
-gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
-gameData.matCens.fuelCenters [i].xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
-gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.fuelCenters [i].xCapacity;
-gameData.matCens.fuelCenters [i].nSegment = nSegment;
-gameData.matCens.fuelCenters [i].xTimer = -1;
-gameData.matCens.fuelCenters [i].bFlag = 0;
-//gameData.matCens.fuelCenters [i].bEnabled = FindTriggerTarget (nSegment, -1) == 0;
-gameData.matCens.fuelCenters [i].vCenter = m_vCenter;
-//m_nMatCen = gameData.matCens.nEquipCenters;
-i = m_nMatCen;
-gameData.matCens.equipGens [i].xHitPoints = MATCEN_HP_DEFAULT;
-gameData.matCens.equipGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
-gameData.matCens.equipGens [i].nSegment = nSegment;
-if (oldType == SEGMENT_IS_NOTHING)
-	gameData.matCens.equipGens [i].nFuelCen = gameData.matCens.nFuelCenters;
-if (gameData.matCens.nEquipCenters <= i)
-	 gameData.matCens.nEquipCenters = i + 1;
-gameData.matCens.nFuelCenters++;
-}
-
 //------------------------------------------------------------
 // Adds a CSegment that already is a special nType into the gameData.matCens.fuelCenters array.
 void CSegment::CreateGenerator (int nType)
@@ -256,11 +228,11 @@ else {
 //	The lower this number is, the more quickly the center can be re-triggered.
 //	If it's too low, it can mean all the robots won't be put out, but for about 5
 //	robots, that's not real likely.
-#define	MATCEN_LIFE (I2X (30-2*gameStates.app.nDifficultyLevel))
+#define	MATCEN_LIFE (I2X (30 - 2 * gameStates.app.nDifficultyLevel))
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in CSegment nSegment
-int TriggerMatCen (short nSegment)
+int StartMatCen (short nSegment)
 {
 	// -- CSegment		*segP = &SEGMENTS [nSegment];
 	CSegment*		segP = &SEGMENTS [nSegment];
@@ -271,14 +243,10 @@ int TriggerMatCen (short nSegment)
 #if TRACE
 console.printf (CON_DBG, "Trigger matcen, CSegment %i\n", nSegment);
 #endif
-if (segP->m_nType == SEGMENT_IS_EQUIPMAKER) {
+if (segP->m_nType == SEGMENT_IS_EQUIPMAKER) {	// toggle it on or off
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [segP->m_nMatCen].nFuelCen;
 	return (matCenP->bEnabled = !matCenP->bEnabled) ? 1 : 2;
 	}
-Assert (segP->m_nType == SEGMENT_IS_ROBOTMAKER);
-Assert (segP->m_nMatCen < gameData.matCens.nFuelCenters);
-Assert ((segP->m_nMatCen >= 0) && (segP->m_nMatCen <= gameData.segs.nLastSegment));
-
 matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->m_nMatCen].nFuelCen;
 if (matCenP->bEnabled)
 	return 0;
@@ -302,18 +270,12 @@ if (nObject != -1) {
 	OBJECTS [nObject].info.xLifeLeft = MATCEN_LIFE;
 	OBJECTS [nObject].cType.lightInfo.intensity = I2X (8);	//	Light cast by a fuelcen.
 	}
-else {
-#if TRACE
-	console.printf (1, "Can't create invisible flare for matcen.\n");
-#endif
-	Int3 ();
-	}
 return 0;
 }
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in CSegment nSegment
-void TriggerBotGen (CObject *objP, short nSegment)
+void OperateBotGen (CObject *objP, short nSegment)
 {
 	CSegment*		segP = &SEGMENTS [nSegment];
 	tFuelCenInfo*	matCenP;
@@ -322,9 +284,6 @@ void TriggerBotGen (CObject *objP, short nSegment)
 if (nSegment < 0)
 	nType = 255;
 else {
-	Assert (segP->m_nType == SEGMENT_IS_ROBOTMAKER);
-	Assert (segP->m_nMatCen < gameData.matCens.nFuelCenters);
-	Assert ((segP->m_nMatCen >= 0) && (segP->m_nMatCen <= gameData.segs.nLastSegment));
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->m_nMatCen].nFuelCen;
 	nType = GetMatCenObjType (matCenP, gameData.matCens.botGens [segP->m_nMatCen].objFlags);
 	if (nType < 0)
