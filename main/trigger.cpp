@@ -527,7 +527,7 @@ void CTrigger::DoMatCen (int bMessage)
 	int i, h [3] = {0,0,0};
 
 for (i = 0; i < m_info.nLinks; i++)
-	h [SEGMENTS [m_info.segments [i]].StartMatCen ()]++;
+	h [StartMatCen (m_info.segments [i])]++;
 if (bMessage) {
 	if (h [1])
 		HUDInitMessage (TXT_EQUIPGENS_ON, (h [1] == 1) ? "" : "s");
