@@ -524,7 +524,8 @@ if (gameData.trigs.m_nObjTriggers) {
 			if (nObject >= 0)
 				gameData.trigs.objTriggerRefs [nObject].nCount = i - gameData.trigs.objTriggerRefs [nObject].nFirst;
 			nObject = trigP->m_info.nObject;
-			gameData.trigs.objTriggerRefs [nObject].nFirst = i;
+			if (nObject >= 0)
+				gameData.trigs.objTriggerRefs [nObject].nFirst = i;
 			}
 		}
 	if (nObject >= 0)
