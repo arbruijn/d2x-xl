@@ -1850,18 +1850,32 @@ if (!m_bBetweenLevels) {
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].LoadState (m_cf, true);
 		if (m_nVersion < 51) {
-			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
+#if 1
+				m_cf.Seek (2 * sizeof (short), SEEK_CUR);
+				OBJTRIGGERS [i].m_info.nObject = m_cf.ReadShort ();
+#else
 				CSaveGameManager::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
+#endif
+				}
 			if (m_nVersion < 36) {
+#if 1
+				m_cf.Seek (((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
+#else
 				j = (m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X;
 				for (i = 0; i < j; i++)
 					m_cf.ReadShort ();
+#endif
 				}
 			else {
+#if 1
+				m_cf.Seek (m_cf.ReadShort () * 2 * sizeof (short), SEEK_CUR);
+#else
 				for (i = m_cf.ReadShort (); i; i--) {
 					m_cf.ReadShort ();
 					m_cf.ReadShort ();
 					}
+#endif
 				}
 			}
 		BuildObjTriggerRef ();

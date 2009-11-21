@@ -637,8 +637,7 @@ if (gameTopFileInfo.fileinfoVersion >= 33) {
 			}
 		else {
 			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
-				cf.ReadShort ();
-				cf.ReadShort ();
+				cf.Seek (2 * sizeof (short), SEEK_CUR);
 				OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
 				}
 			if (gameTopFileInfo.fileinfoVersion < 36) 

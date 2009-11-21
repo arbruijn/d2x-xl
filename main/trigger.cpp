@@ -119,8 +119,11 @@ for (int i = 0; i < m_info.nLinks; i++)
 
 inline int CTrigger::DoExecObjTrigger (short nObject, int bDamage)
 {
-	fix	v = 10 - X2I (m_info.value);
+	fix	v = m_info.value;
 
+if (v >= I2X (1))
+v = X2I (v);
+v = 10 - v;
 if (bDamage != ((m_info.nType == TT_TELEPORT) || (m_info.nType == TT_SPAWN_BOT)))
 	return 0;
 if (!bDamage)
@@ -1321,7 +1324,7 @@ void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
 if (saveGameManager.Version () > 50) 
 	m_info.nObject = cf.ReadShort ();
-m_info.nType = (ubyte) cf.ReadByte ();
+m_info.nType = ubyte (cf.ReadByte ());
 if ((saveGameManager.Version () >= 48) || (bObjTrigger && (saveGameManager.Version () >= 41)))
 	m_info.flags = cf.ReadShort ();
 else

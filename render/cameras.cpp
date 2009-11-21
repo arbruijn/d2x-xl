@@ -649,7 +649,7 @@ m_objectCameras.Clear (0xFF);
 if (gameData.trigs.m_nTriggers) {
 	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_nCameras < MAX_CAMERAS); i++, wallP++) {
 		t = wallP->nTrigger;
-		if (t >= gameData.trigs.m_nTriggers)
+		if (t >= TRIGGERS.Length ())
 			continue;
 		triggerP = TRIGGERS + t;
 		if (triggerP->m_info.nType == TT_CAMERA) {

@@ -270,6 +270,8 @@ gameData.models.Prepare ();
 
 h = (m_nVersion < 24) ? 1 : (m_nVersion < 42) ? MAX_BOSS_COUNT : m_cf.ReadFix ();
 gameData.bosses.Destroy ();
+if ((h < 0) > (h > 1000))
+	return 0;
 if (h) {
 	if (!gameData.bosses.Create (h))
 		return 0;
