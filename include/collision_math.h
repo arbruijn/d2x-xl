@@ -132,6 +132,10 @@ fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p
 
 fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, short& nModel);
 
+bool PointIsInFace (CFloatVector* refP, CFloatVector vNormal, short* nVertIndex, short nVerts);
+
+uint CheckPointToFace (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
+
 //	-----------------------------------------------------------------------------
 
 static inline fix RegisterHit (CFixVector *vBestHit, CFixVector *vCurHit, CFixVector *vRef, fix dMin)

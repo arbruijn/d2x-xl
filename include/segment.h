@@ -172,6 +172,8 @@ class CSide {
 		bool IsPlanar (void);
 		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
 		ubyte Distf (const CFloatVector& point, float& fSideDist, int bBehind, short sideBit);
+		fix DistToPoint (CFixVector v);
+		float DistToPointf (CFloatVector v);
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit, bool bCheckPoke = false);
 		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);

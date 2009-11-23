@@ -489,6 +489,9 @@ if (m_nFaces == 2) {
 	}
 else {				//only one face on this CSide
 	vNormal.Assign (Normal (0));
+#if DBG
+	fDist = CFloatVector::Dist (refPoint, vMin);
+#endif
 	fDist = refPoint.DistToPlane (vNormal, vMin);
 	if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {
 		mask |= sideBit;
@@ -496,6 +499,68 @@ else {				//only one face on this CSide
 		}
 	}
 return mask;
+}
+
+//	-----------------------------------------------------------------------------
+
+fix CSide::DistToPoint (CFixVector v)
+{
+	CFixVector		h, n;
+	fix				dist, minDist = 0x7fffffff;
+	int				i, j;
+
+// compute intersection of perpendicular through refP with the plane spanned up by the face
+for (i = j = 0; i < m_nFaces; i++, j += 3) {
+	n = m_normals [i];
+	h = v - VERTICES [m_vertices [j]];
+	dist = CFixVector::Dot (h, n);
+	if (minDist > abs (dist)) {
+		h = v - n * dist;
+		if (CheckPointToFace (h, i, n)) {
+			minDist = abs (dist);
+			}
+		}
+	}
+if (minDist < 0x7fffffff)
+	return 0;
+for (i = 0; i < 4; i++) {
+	VmPointLineIntersection (h, VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % 4]], v, 1);
+	dist = CFixVector::Dist (h, v);
+	if (minDist > dist)
+		minDist = dist;
+	}
+return minDist;
+}
+
+//	-----------------------------------------------------------------------------
+
+float CSide::DistToPointf (CFloatVector v)
+{
+	CFloatVector	h, n;
+	float				dist, minDist = 1e30f;
+	int				i, j;
+
+// compute intersection of perpendicular through refP with the plane spanned up by the face
+for (i = j = 0; i < m_nFaces; i++, j += 3) {
+	n.Assign (m_normals [i]);
+	h = v - FVERTICES [m_vertices [j]];
+	dist = CFloatVector::Dot (h, n);
+	if (minDist > fabs (dist)) {
+		h = v - n * dist;
+		if (PointIsInFace (&h, n, m_vertices + j, (m_nFaces == 1) ? 4 : 3)) {
+			minDist = float (fabs (dist));
+			}
+		}
+	}
+if (minDist < 1e30f)
+	return 0;
+for (i = 0; i < 4; i++) {
+	VmPointLineIntersection (h, FVERTICES [m_corners [i]], FVERTICES [m_corners [(i + 1) % 4]], v, 1);
+	dist = CFloatVector::Dist (h, v);
+	if (minDist > dist)
+		minDist = dist;
+	}
+return minDist;
 }
 
 //	-----------------------------------------------------------------------------
