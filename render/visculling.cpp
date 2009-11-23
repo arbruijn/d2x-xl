@@ -431,7 +431,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 			nDbgObj = nDbgObj;
 #endif
 		objP = OBJECTS + nObject;
-		Assert (objP->info.nSegment == nSegment);
+		//Assert (objP->info.nSegment == nSegment);
 		if (objP->info.nFlags & OF_ATTACHED)
 			continue;		//ignore this CObject
 		nNewSeg = nSegment;

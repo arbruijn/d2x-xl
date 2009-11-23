@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Intel C++ Project"
-	Version="11.0"
+	Version="11.1"
 	Name="d2x-xl"
 	ProjectGUID="{9940BD79-40FA-474C-AA54-580802195A8D}"
 	VCNestedProjectGUID="{1C9AA6BF-147B-4027-848A-B33038B49BFE}"

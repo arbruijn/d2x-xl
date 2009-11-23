@@ -199,6 +199,11 @@ int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 	CFixVector	vDrift;
 	int			nRad, nFrames, nType = particleImageManager.GetType (nParticleSystemType);
 
+#if DBG
+if (nType != WATERFALL_PARTICLES)
+	return 0;
+#endif
+
 if (nScale < 0)
 	nRad = (int) -nScale;
 else if (gameOpts->render.particles.bSyncSizes)
@@ -366,6 +371,7 @@ else if (nType == BUBBLE_PARTICLES)
 	nRad = nRad / 10 + randN (9 * nRad / 10);
 else
 	nRad *= 2;
+m_vStartPos = m_vPos;
 m_nLife =
 m_nTTL = nLife;
 m_nMoved = nCurTime;
@@ -553,7 +559,7 @@ else {
 			}
 		bool bCheckSeg;
 		if (m_nType == WATERFALL_PARTICLES) 
-			bCheckSeg = m_nLife > I2X (1) / 2;
+			bCheckSeg = m_nLife > 500;
 		else 
 			bCheckSeg = (m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16);
 		if (bCheckSeg) {
@@ -566,19 +572,29 @@ else {
 				nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 1, 1);
 				if (nSegment < 0) {
 					if (m_nType == WATERFALL_PARTICLES)
-						m_nLife = I2X (1) / 2;
-					else 
+						m_nLife = 500;
+					else {
 						m_nLife = -1;
-					return 0;
+						return 0;
+						}
 					}
 				}
 			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) { 
 				m_nLife = -1;
 				return 0;
 				}
-			if ((m_nType == WATERFALL_PARTICLES) && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER)) { 
-				m_nLife = I2X (1); //-1;
-				return 0;
+			if (m_nType == WATERFALL_PARTICLES) {
+#if 1
+				if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
+					m_nLife = 500; //-1;
+					//return 0;
+					}
+#endif
+				CFixVector vDir = m_vPos - m_vStartPos;
+				if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
+					m_nLife = -1;
+					return 0;
+					}
 				}
 			m_nSegment = nSegment;
 			}
@@ -663,7 +679,7 @@ int CParticle::Render (float brightness)
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
 	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive;
-	float						fFade, decay = (nType == BUBBLE_PARTICLES) ? 1.0f : float (m_nLife) / float (m_nTTL);
+	float						fFade, decay = ((nType == BUBBLE_PARTICLES) || (nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 
 	static int				nFrames = 1;
 	static float			deltaUV = 1.0f;
@@ -788,10 +804,10 @@ if (m_nFadeType == 0)	// default (start fully visible, fade out)
 else if (m_nFadeType == 1)	// quickly fade in, then gently fade out
 	pc.alpha *= float (sin (double (/*sqr*/ (sqr (1.0f - decay))) * Pi * 1.5) * 0.5 + 0.5);
 else if (m_nFadeType == 2) {	// fade in, then gently fade out
-	float fPivot = X2F (m_nTTL) / 4.0f;
+	float fPivot = m_nTTL / 4000.0f;
 	if (fPivot > 0.25f)
 		fPivot = 0.25f;
-	float fLived = X2F (m_nTTL - m_nLife);
+	float fLived = (m_nTTL - m_nLife) / 1000.0f;
 	if (fLived < fPivot)
 		fFade = fLived / fPivot;
 	else

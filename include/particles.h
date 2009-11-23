@@ -34,6 +34,7 @@ typedef struct tParticle {
 #endif
 	CFixMatrix	m_mOrient;
 	CFixVector	m_vPos;				//position
+	CFixVector	m_vStartPos;		//initial position
 	CFixVector	m_vTransPos;		//transformed position
 	CFixVector	m_vDir;				//movement direction
 	CFixVector	m_vDrift;
