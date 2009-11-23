@@ -33,7 +33,7 @@ int get_new_seg(CFixVector *p0,int startseg);
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos(const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, int nThread = 0);
+int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance = 0, int nThread = 0);
 short FindClosestSeg (CFixVector& vPos);
 
 //--repair-- // Create data specific to segments which does not need to get written to disk.

@@ -59,6 +59,17 @@ return mask;
 }
 
 // -------------------------------------------------------------------------------
+
+ubyte CSegment::GetSideDistsf (const CFloatVector& refP, float* fSideDists, int bBehind)
+{
+	ubyte		mask = 0;
+
+for (int nSide = 0; nSide < 6; nSide++)
+	mask |= m_sides [nSide].Distf (refP, fSideDists [nSide], bBehind, 1 << nSide);
+return mask;
+}
+
+// -------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------
 //	Used to become a constant based on editor, but I wanted to be able to set
 //	this for omega blob FindSegByPos calls.  Would be better to pass a paremeter
@@ -67,38 +78,83 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns CSegment number, or -1 if can't find CSegment
-int TraceSegs (const CFixVector& p0, int nOldSeg, int nTraceDepth, char* bVisited)
+int TraceSegs (const CFixVector& p0, int nCurSeg, int nTraceDepth, char* bVisited, fix xTolerance = 0)
 {
-	CSegment			*segP;
-	fix				xSideDists [6], xMaxDist;
-	int				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
+	CSegment*	segP;
+	fix			xSideDists [6], xMaxDist;
+	int			centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
 if (nTraceDepth >= gameData.segs.nSegments)
 	return -1;
-if (bVisited [nOldSeg])
+if (bVisited [nCurSeg])
 	return -1;
-bVisited [nOldSeg] = 1;
-if (!(centerMask = SEGMENTS [nOldSeg].GetSideDists (p0, xSideDists, 1)))		//we're in the old CSegment
-	return nOldSeg;		
-segP = SEGMENTS + nOldSeg;
+bVisited [nCurSeg] = 1;
+if (!(centerMask = SEGMENTS [nCurSeg].GetSideDists (p0, xSideDists, 1)))		//we're in the old CSegment
+	return nCurSeg;		
+segP = SEGMENTS + nCurSeg;
 for (;;) {
 	nMaxSide = -1;
-	xMaxDist = 0;
+	xMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
-		if ((centerMask & bit) && (segP->m_children [nSide] > -1) && (xSideDists [nSide] < xMaxDist)) {
+		if ((centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
+			if (xTolerance >= -xSideDists [nSide]) {
+#if DBG
+				SEGMENTS [nCurSeg].GetSideDists (p0, xSideDists, 1);
+#endif
+				return nCurSeg;
+				}
 			xMaxDist = xSideDists [nSide];
 			nMaxSide = nSide;
 			}
 	if (nMaxSide == -1)
 		break;
 	xSideDists [nMaxSide] = 0;
-	if (0 <= (nMatchSeg = TraceSegs (p0, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited)))	//trace into adjacent CSegment
+	if (0 <= (nMatchSeg = TraceSegs (p0, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, xTolerance)))	//trace into adjacent CSegment
 		break;
 	}
 return nMatchSeg;		//we haven't found a CSegment
 }
 
+// -------------------------------------------------------------------------------
 
+int TraceSegsf (const CFixVector& p0, int nCurSeg, int nTraceDepth, char* bVisited, fix xTolerance = 0)
+{
+	CSegment*		segP;
+	float				fSideDists [6], fMaxDist, fTolerance = X2F (xTolerance);
+	int				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
+	CFloatVector	v;
+
+if (nTraceDepth >= gameData.segs.nSegments)
+	return -1;
+if (bVisited [nCurSeg])
+	return -1;
+bVisited [nCurSeg] = 1;
+v.Assign (p0);
+segP = SEGMENTS + nCurSeg;
+if (!(centerMask = segP->GetSideDistsf (v, fSideDists, 1)))		//we're in the old CSegment
+	return nCurSeg;		
+for (;;) {
+	nMaxSide = -1;
+	fMaxDist = 0; // find only sides we're behind as seen from inside the current segment
+	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
+		if ((centerMask & bit) && && (fSideDists [nSide] < fMaxDist)) {
+			if (fTolerance >= -fSideDists [nSide]) {
+#if DBG
+				SEGMENTS [nCurSeg].GetSideDistsf (v, fSideDists, 1);
+#endif
+				return nCurSeg;
+				}
+			fMaxDist = fSideDists [nSide];
+			nMaxSide = nSide;
+			}
+	if (nMaxSide == -1)
+		break;
+	fSideDists [nMaxSide] = 0;
+	if (0 <= (nMatchSeg = TraceSegsf (p0, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, xTolerance)))	//trace into adjacent CSegment
+		break;
+	}
+return nMatchSeg;		//we haven't found a CSegment
+}
 
 int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 
@@ -108,7 +164,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // 2. Recursivel [Y] trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos (const CFixVector& p, int nSegment, int bExhaustive, int bSkyBox, int nThread)
+int FindSegByPos (const CFixVector& p, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
 	static char		bVisited [2][MAX_SEGMENTS_D2X]; 
 
@@ -127,7 +183,9 @@ nSemaphore++;
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
 	memset (bVisited [nThread], 0, gameData.segs.nSegments);
-	nNewSeg = TraceSegs (p, nSegment, 0, bVisited [nThread]);
+	nNewSeg = xTolerance 
+				 ? TraceSegsf (p, nSegment, 0, bVisited [nThread], xTolerance)
+				 : TraceSegs (p, nSegment, 0, bVisited [nThread], xTolerance);
 	if (nNewSeg != -1)//we found a CSegment!
 		goto funcExit;
 	}

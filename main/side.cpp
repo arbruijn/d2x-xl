@@ -372,9 +372,9 @@ if (m_nFaces == 2) {
 	int	nSideCount = 0, 
 			nCenterCount = 0;
 
-	CFixVector minVertex = MinVertex ();
+	CFixVector vMin = MinVertex ();
 	for (int nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
-		xDist = refPoint.DistToPlane (Normal (nFace), minVertex);
+		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
 		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 			nCenterCount++;
 		if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (!bCheckPoke || (xDist + xRad >= -PLANE_DIST_TOLERANCE))) {
@@ -420,9 +420,9 @@ xSideDist = 0;
 if (m_nFaces == 2) {
 	int nCenterCount = 0;
 
-	CFixVector minVertex = MinVertex ();
+	CFixVector vMin = MinVertex ();
 	for (int nFace = 0; nFace < 2; nFace++) {
-		xDist = refPoint.DistToPlane (Normal (nFace), minVertex);
+		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 			nCenterCount++;
 			xSideDist += xDist;
@@ -447,6 +447,52 @@ else {				//only one face on this CSide
 	if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
 		mask |= sideBit;
 		xSideDist = xDist;
+		}
+	}
+return mask;
+}
+
+// -------------------------------------------------------------------------------
+
+ubyte CSide::Distf (const CFloatVector& refPoint, float& fSideDist, int bBehind, short sideBit)
+{
+	float	fDist;
+	ubyte mask = 0;
+	CFloatVector vMin, vNormal;
+
+vMin.Assign (MinVertex ());
+fSideDist = 0;
+if (m_nFaces == 2) {
+	int nCenterCount = 0;
+
+	for (int nFace = 0; nFace < 2; nFace++) {
+		vNormal.Assign (Normal (nFace));
+		fDist = refPoint.DistToPlane (vNormal, vMin);
+		if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {	//in front of face
+			nCenterCount++;
+			fSideDist += fDist;
+			}
+		}
+	if (IsPlanar ()) {	//must be behind both faces
+		if (nCenterCount == 2) {
+			mask |= sideBit;
+			fSideDist /= 2;	//get average
+			}
+		}
+	else {	//must be behind at least one face
+		if (nCenterCount) {
+			mask |= sideBit;
+			if (nCenterCount == 2)
+				fSideDist /= 2;	//get average
+			}
+		}
+	}
+else {				//only one face on this CSide
+	vNormal.Assign (Normal (0));
+	fDist = refPoint.DistToPlane (vNormal, vMin);
+	if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {
+		mask |= sideBit;
+		fSideDist = fDist;
 		}
 	}
 return mask;

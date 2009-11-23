@@ -171,6 +171,7 @@ class CSide {
 		fix Height (void);
 		bool IsPlanar (void);
 		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
+		ubyte Distf (const CFloatVector& point, float& fSideDist, int bBehind, short sideBit);
 		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short& faceBit, bool bCheckPoke = false);
 		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
 		int CheckForTranspPixel (CFixVector& intersection, short iFace);
@@ -293,6 +294,7 @@ class CSegment {
 		CSegMasks Masks (const CFixVector& refP, fix xRad);
 		CSegMasks SideMasks (int nSide, const CFixVector& refP, fix xRad, bool bCheckPoke = false);
 		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
+		ubyte GetSideDistsf (const CFloatVector& refP, float* fSideDists, int bBehind);
 		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
 		 { m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 

@@ -61,6 +61,7 @@ typedef struct tParticle {
 	char			m_nFrame;
 	char			m_nRotFrame;
 	char			m_nOrient;
+	char			m_bChecked;
 } __pack__ tParticle;
 
 class CParticle : public tParticle {

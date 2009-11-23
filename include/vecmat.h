@@ -209,6 +209,7 @@ class __pack__ CFloatVector {
 		CFloatVector& Assign (const CFloatVector3& other);
 		CFloatVector& Assign (const CFloatVector& other);
 		CFloatVector& Assign (const CFixVector& other);
+		const float DistToPlane (const CFloatVector& n, const CFloatVector& p) const;
 
 	private:
 		float v [4];
@@ -493,6 +494,12 @@ inline const CFloatVector CFloatVector::operator- (const CFloatVector& other) co
 
 inline const CFloatVector CFloatVector::operator- (const CFixVector& other) const {
 	return Create (v [0] - X2F (other [0]), v [1] - X2F (other [1]), v [2] - X2F (other [2]), 1);
+}
+
+inline const float CFloatVector::DistToPlane (const CFloatVector& n, const CFloatVector& p) const
+{
+CFloatVector t = *this - p;
+return CFloatVector::Dot (t, n);
 }
 
 // -----------------------------------------------------------------------------

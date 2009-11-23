@@ -204,6 +204,7 @@ if (nType != WATERFALL_PARTICLES)
 	return 0;
 #endif
 
+m_bChecked = 0;
 if (nScale < 0)
 	nRad = (int) -nScale;
 else if (gameOpts->render.particles.bSyncSizes)
@@ -557,44 +558,54 @@ else {
 //				VmVecScaleInc (&drift, &m_vDir, drag);
 			m_vPos += m_vDir * drag;
 			}
-		bool bCheckSeg;
-		if (m_nType == WATERFALL_PARTICLES) 
-			bCheckSeg = m_nLife > 500;
-		else 
-			bCheckSeg = (m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16);
-		if (bCheckSeg) {
-			nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 1);
-			if (nSegment < 0) {
 #if DBG
-				if (m_nSegment == nDbgSeg)
-					nSegment = FindSegByPos (m_vPos, m_nSegment, 1, 0, 1);
+		if (m_nLife < 1000)
+			nSegment = FindSegByPos (m_vStartPos, m_nSegment, 0, 0, 0, 1);
 #endif
-				nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 1, 1);
+		if ((m_nType == WATERFALL_PARTICLES) 
+			 ? !m_bChecked && (m_nLife > 500)
+			 : (m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16)) {
+#if 1
+			if (0 > (nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, fix (m_nRad), 1))) {
+				m_nLife = -1;
+				return 0;
+				}
+#else
+			nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, 1);
+			if (nSegment < 0) {
+				nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, fix (m_nRad), 1);
 				if (nSegment < 0) {
-					if (m_nType == WATERFALL_PARTICLES)
-						m_nLife = 500;
+					if (m_nType == WATERFALL_PARTICLES) {
+#if DBG
+						nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, fix (m_nRad), 1);
+#endif
+						m_nLife = -1;
+						return 0;
+						}
 					else {
 						m_nLife = -1;
 						return 0;
 						}
 					}
 				}
+#endif
 			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) { 
 				m_nLife = -1;
 				return 0;
 				}
 			if (m_nType == WATERFALL_PARTICLES) {
-#if 1
-				if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
-					m_nLife = 500; //-1;
-					//return 0;
-					}
-#endif
 				CFixVector vDir = m_vPos - m_vStartPos;
 				if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
 					m_nLife = -1;
 					return 0;
 					}
+#if 1
+				if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
+					m_bChecked = 1;
+					m_nLife = 500; 
+					break;
+					}
+#endif
 				}
 			m_nSegment = nSegment;
 			}
@@ -819,6 +830,9 @@ else if (m_nFadeType == 2) {	// fade in, then gently fade out
 	if (fFade > 1.0f)
 		fFade = 1.0f;
 	pc.alpha *= fFade;
+#if DBG
+	pc.alpha = 1.0f;
+#endif
 	}
 else if (m_nFadeType == 3) {	// fire (additive, blend in)
 	if (decay > 0.5f)
@@ -1238,7 +1252,7 @@ return 0;
 void CParticleEmitter::SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment)
 {
 if ((nSegment < 0) && gameOpts->render.particles.bCollisions)
-	nSegment = FindSegByPos (*vPos, m_nSegment, 1, 0, 1);
+	nSegment = FindSegByPos (*vPos, m_nSegment, 1, 0, 0, 1);
 m_vPos = *vPos;
 if (mOrient)
 	m_mOrient = *mOrient;
