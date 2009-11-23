@@ -554,30 +554,10 @@ else {
 		if ((m_nType == WATERFALL_PARTICLES) 
 			 ? !m_bChecked 
 			 : (m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16)) {
-#if 1
 			if (0 > (nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), 1))) {
 				m_nLife = -1;
 				return 0;
 				}
-#else
-			nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, 1);
-			if (nSegment < 0) {
-				nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, fix (m_nRad), 1);
-				if (nSegment < 0) {
-					if (m_nType == WATERFALL_PARTICLES) {
-#if DBG
-						nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, fix (m_nRad), 1);
-#endif
-						m_nLife = -1;
-						return 0;
-						}
-					else {
-						m_nLife = -1;
-						return 0;
-						}
-					}
-				}
-#endif
 			if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) { 
 				m_nLife = -1;
 				return 0;
