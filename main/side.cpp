@@ -516,7 +516,7 @@ for (i = j = 0; i < m_nFaces; i++, j += 3) {
 	dist = CFixVector::Dot (h, n);
 	if (minDist > abs (dist)) {
 		h = v - n * dist;
-		if (CheckPointToFace (h, i, n)) {
+		if (!CheckPointToFace (h, i, n)) {
 			minDist = abs (dist);
 			}
 		}

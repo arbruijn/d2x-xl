@@ -97,12 +97,8 @@ for (;;) {
 	xMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
 		if ((centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
-			if ((xTolerance >= -xSideDists [nSide]) && (xTolerance >= segP->Side (nSide)->DistToPoint (v))) {
-#if DBG
-				segP->GetSideDists (v, xSideDists, 1);
-#endif
+			if (xTolerance && (xTolerance >= -xSideDists [nSide]) && (xTolerance >= segP->Side (nSide)->DistToPoint (v))) 
 				return nCurSeg;
-				}
 			if (segP->m_children [nSide] >= 0) {
 				xMaxDist = xSideDists [nSide];
 				nMaxSide = nSide;
@@ -138,7 +134,7 @@ for (;;) {
 	fMaxDist = 0; // find only sides we're behind as seen from inside the current segment
 	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
 		if ((centerMask & bit) && (fSideDists [nSide] < fMaxDist)) {
-			if (fTolerance >= -fSideDists [nSide]) {
+			if ((fTolerance >= -fSideDists [nSide])  && (fTolerance >= segP->Side (nSide)->DistToPointf (v))) {
 #if DBG
 				SEGMENTS [nCurSeg].GetSideDistsf (v, fSideDists, 1);
 #endif

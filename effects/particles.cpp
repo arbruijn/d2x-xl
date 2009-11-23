@@ -199,11 +199,6 @@ int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 	CFixVector	vDrift;
 	int			nRad, nFrames, nType = particleImageManager.GetType (nParticleSystemType);
 
-#if DBG
-if (nType != WATERFALL_PARTICLES)
-	return 0;
-#endif
-
 m_bChecked = 0;
 if (nScale < 0)
 	nRad = (int) -nScale;
@@ -552,18 +547,12 @@ else {
 			CFixVector vi = drift, vj = m_vDir;
 			CFixVector::Normalize (vi);
 			CFixVector::Normalize (vj);
-//				if (CFixVector::Dot (drift, m_vDir) < 0)
 			if (CFixVector::Dot (vi, vj) < 0)
 				drag = -drag;
-//				VmVecScaleInc (&drift, &m_vDir, drag);
 			m_vPos += m_vDir * drag;
 			}
-#if DBG
-		if (m_nLife < 1000)
-			nSegment = FindSegByPos (m_vStartPos, m_nSegment, 0, 0, 0, 1);
-#endif
 		if ((m_nType == WATERFALL_PARTICLES) 
-			 ? !m_bChecked && (m_nLife > 500)
+			 ? !m_bChecked 
 			 : (m_nType == BUBBLE_PARTICLES) || (m_nTTL - m_nLife > I2X (1) / 16)) {
 #if 1
 			if (0 > (nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, fix (m_nRad), 1))) {
@@ -830,9 +819,6 @@ else if (m_nFadeType == 2) {	// fade in, then gently fade out
 	if (fFade > 1.0f)
 		fFade = 1.0f;
 	pc.alpha *= fFade;
-#if DBG
-	pc.alpha = 1.0f;
-#endif
 	}
 else if (m_nFadeType == 3) {	// fire (additive, blend in)
 	if (decay > 0.5f)
