@@ -6,6 +6,7 @@
 #include "u_mem.h"
 #include "gr.h"
 #include "ogl_lib.h"
+#include "renderthreads.h"
 #include "tga.h"
 
 #if USE_SDL_IMAGE
@@ -40,16 +41,27 @@ return 1;
 void ConvertToRGB (CBitmap* bmP)
 {
 if ((bmP->BPP () == 4) && bmP->Buffer ()) {
-#if 1
 	tRgbColorb *rgbP = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 
+#pragma omp parallel
+	{
+	int	i, j = bmP->Length () / 4;
+#	pragma omp for private (i)
+#if 1
+	for (i = 0; i < j; i++) {
+		rgbP [i].red = rgbaP [i].red;
+		rgbP [i].green = rgbaP [i].green;
+		rgbP [i].blue = rgbaP [i].blue;
+		}
+#else
 	for (int i = bmP->Length () / 4; i; i--, rgbP++, rgbaP++) {
 		rgbP->red = rgbaP->red;
 		rgbP->green = rgbaP->green;
 		rgbP->blue = rgbaP->blue;
 		}
 #endif
+	}
 	bmP->Resize (uint (3 * bmP->Size () / 4));
 	bmP->SetBPP (3);
 	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -60,46 +72,121 @@ if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 
 void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightness, bool bSwapRB = true)
 {
-	int				i, n, nAlpha = 0, nVisible = 0, nFrames;
-	int				h = bmP->Height ();
-	int				w = bmP->Width ();
-	tRgbColorf		avgColor;
-	tRgbColorb		avgColorb;
-	float			a, avgAlpha = 0;
+	int			i, n, nAlpha = 0, nVisible = 0, nFrames;
+	int			h = bmP->Height ();
+	int			w = bmP->Width ();
+	tRgbaColorf	avgColor;
+	tRgbColorb	avgColorb;
+	float			a;
 
 bmP->AddFlags (BM_FLAG_TGA);
 bmP->SetTranspType (-1);
 memset (bmP->TransparentFrames (), 0, 4 * sizeof (int));
 memset (bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
-avgColor.red = avgColor.green = avgColor.blue = 0;
+memset (&avgColor, 0, sizeof (avgColor));
 
 bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (bmP->BPP () == 3) {
-	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
+#ifdef OPENMP
+	int			tId, j = w * h;
+	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
+	tRgbColorf	ac [MAX_THREADS];
 
+	memset (ac, 0, sizeof (ac));
+#pragma omp parallel private (tId)
+	{
+	tId = omp_get_thread_num ();
+#	pragma omp for 
+	for (i = 0; i < j; i++) {
+		::Swap (p [i].red, p [i].blue);
+		ac [tId].red += p [i].red;
+		ac [tId].green += p [i].green;
+		ac [tId].blue += p [i].blue;
+		}
+	for (i = 0; i < GetNumThreads (); i++) {
+		avgColor.red += ac [i].red;
+		avgColor.green += ac [i].green;
+		avgColor.blue += ac [i].blue;
+		}
+	}
+#else
+	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 	for (i = h * w; i; i--, p++) {
 		::Swap (p->red, p->blue);
 		avgColor.red += p->red;
 		avgColor.green += p->green;
 		avgColor.blue += p->blue;
 		}
+#endif
 	nVisible = w * h * 255;
 	}
 else {
-	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 	int nSuperTransp;
 
 	if (!(nFrames = h / w))
 		nFrames = 1;
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
+#ifdef OPENMP
+	int			nst [MAX_THREADS], nac [MAX_THREADS], tId, j = w * (h / nFrames);
+	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + n * j;
+	tRgbaColorf	avc [MAX_THREADS];
+
+	memset (avc, 0, sizeof (avc));
+	memset (nst, 0, sizeof (nst));
+	memset (nac, 0, sizeof (nac));
+#pragma omp parallel private (tId)
+	{
+	tId = omp_get_thread_num ();
+#	pragma omp for reduction (+: nVisible)
+		for (i = 0; i < j; i++) {
+			if (bSwapRB)
+				::Swap (p [i].red, p [i].blue);
+			if (bGrayScale) {
+				p [i].red =
+				p [i].green =
+				p [i].blue = ubyte ((int (p [i].red) + int (p [i].green) + int (p [i].blue)) / 3 * brightness);
+				}
+			else if ((p [i].red == 120) && (p [i].green == 88) && (p [i].blue == 128)) {
+				nst [tId]++;
+				p [i].alpha = 0;
+				}
+			else {
+				if (alpha >= 0)
+					p [i].alpha = alpha;
+				if (!p [i].alpha)
+					p [i].red =		//avoid colored transparent areas interfering with visible image edges
+					p [i].green =
+					p [i].blue = 0;
+				}
+			if (p [i].alpha < MIN_OPACITY) {
+				avc [tId].alpha += p [i].alpha;
+				nac [tId]++;
+				}
+			nVisible += p [i].alpha;
+			a = float (p [i].alpha) / 255.0f;
+			avc [tId].red += p [i].red * a;
+			avc [tId].green += p [i].green * a;
+			avc [tId].blue += p [i].blue * a;
+			}
+	}
+	for (i = 0; i < GetNumThreads (); i++) {
+		avgColor.red += avc [i].red;
+		avgColor.green += avc [i].green;
+		avgColor.blue += avc [i].blue;
+		avgColor.alpha += avc [i].alpha;
+		nSuperTransp += nst [i];
+		nAlpha += nac [i];
+		}
+#else
+	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 		for (i = w * (h / nFrames); i; i--, p++) {
 			if (bSwapRB)
 				::Swap (p->red, p->blue);
 			if (bGrayScale) {
 				p->red =
 				p->green =
-				p->blue = (ubyte) (((int) p->red + (int) p->green + (int) p->blue) / 3 * brightness);
+				p->blue = ubyte ((int (p [i].red) + int (p [i].green) + int (p [i].blue)) / 3 * brightness);
 				}
 			else if ((p->red == 120) && (p->green == 88) && (p->blue == 128)) {
 				nSuperTransp++;
@@ -114,7 +201,7 @@ else {
 					p->blue = 0;
 				}
 			if (p->alpha < MIN_OPACITY) {
-				avgAlpha += p->alpha;
+				avgcolor.alpha += p->alpha;
 				nAlpha++;
 				}
 			nVisible += p->alpha;
@@ -123,9 +210,10 @@ else {
 			avgColor.green += p->green * a;
 			avgColor.blue += p->blue * a;
 			}
+#endif
 		if (nAlpha > w * w / 1000) {
 			if (!n) {
-				if (avgAlpha / nAlpha > 1.0f)
+				if (avgColor.alpha / nAlpha > 1.0f)
 					bmP->AddFlags (BM_FLAG_TRANSPARENT);
 				else
 					bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
@@ -140,10 +228,10 @@ else {
 			}
 		}
 	}
-a = (float) nVisible / 255.0f;
-avgColorb.red = (ubyte) (avgColor.red / a);
-avgColorb.green = (ubyte) (avgColor.green / a);
-avgColorb.blue = (ubyte) (avgColor.blue / a);
+a = float (nVisible) / 255.0f;
+avgColorb.red = ubyte (avgColor.red / a);
+avgColorb.green = ubyte (avgColor.green / a);
+avgColorb.blue = ubyte (avgColor.blue / a);
 bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB (bmP);
