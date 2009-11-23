@@ -96,7 +96,7 @@ if (bmP->BPP () == 3) {
 #pragma omp parallel private (tId)
 	{
 	tId = omp_get_thread_num ();
-#	pragma omp for 
+#	pragma omp for
 	for (i = 0; i < j; i++) {
 		::Swap (p [i].red, p [i].blue);
 		ac [tId].red += p [i].red;
@@ -201,7 +201,7 @@ else {
 					p->blue = 0;
 				}
 			if (p->alpha < MIN_OPACITY) {
-				avgcolor.alpha += p->alpha;
+				avgColor.alpha += p->alpha;
 				nAlpha++;
 				}
 			nVisible += p->alpha;
