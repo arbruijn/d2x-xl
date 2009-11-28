@@ -623,6 +623,7 @@ if (gameFileInfo.triggers.count && (gameFileInfo.triggers.offset > -1)) {
 		}
 	}
 
+gameData.trigs.objTriggerRefs.Clear (0xff);
 if (gameTopFileInfo.fileinfoVersion >= 33) {
 	gameData.trigs.m_nObjTriggers = cf.ReadInt ();
 	if (gameData.trigs.m_nObjTriggers) {
@@ -653,7 +654,6 @@ if (gameTopFileInfo.fileinfoVersion >= 33) {
 else {
 	gameData.trigs.m_nObjTriggers = 0;
 	OBJTRIGGERS.Clear ();
-	gameData.trigs.objTriggerRefs.Clear (0);
 	}
 return 0;
 }

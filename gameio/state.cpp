@@ -1846,6 +1846,7 @@ if (!m_bBetweenLevels) {
 	//Restore CObject CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nObjTriggers))
 		return 0;
+	gameData.trigs.objTriggerRefs.Clear (0xff);
 	if (gameData.trigs.m_nObjTriggers > 0) {
 		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
 			OBJTRIGGERS [i].LoadState (m_cf, true);

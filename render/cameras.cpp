@@ -668,7 +668,9 @@ if (gameData.trigs.m_nTriggers) {
 
 if (gameData.trigs.m_nObjTriggers) {
 	FORALL_OBJS (objP, i) {
-		triggerP = OBJTRIGGERS + gameData.trigs.objTriggerRefs [objP->Index ()].nFirst;
+		if ((j = gameData.trigs.objTriggerRefs [objP->Index ()].nFirst) >= int (OBJTRIGGERS.Length ()))
+			continue;
+		triggerP = OBJTRIGGERS + j;
 		j = gameData.trigs.objTriggerRefs [objP->Index ()].nCount;
 #if DBG
 		if (j >= 0)
