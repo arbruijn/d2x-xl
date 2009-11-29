@@ -128,16 +128,16 @@ else {
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
 #ifdef OPENMP
-	int			nst [MAX_THREADS], nac [MAX_THREADS], tId, j = w * (h / nFrames);
-	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + n * j;
-	tRgbaColorf	avc [MAX_THREADS];
+		int			nst [MAX_THREADS], nac [MAX_THREADS], tId, j = w * (h / nFrames);
+		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + n * j;
+		tRgbaColorf	avc [MAX_THREADS];
 
-	memset (avc, 0, sizeof (avc));
-	memset (nst, 0, sizeof (nst));
-	memset (nac, 0, sizeof (nac));
+		memset (avc, 0, sizeof (avc));
+		memset (nst, 0, sizeof (nst));
+		memset (nac, 0, sizeof (nac));
 #pragma omp parallel private (tId)
-	{
-	tId = omp_get_thread_num ();
+		{
+		tId = omp_get_thread_num ();
 #	pragma omp for reduction (+: nVisible)
 		for (i = 0; i < j; i++) {
 			if (bSwapRB)
@@ -169,7 +169,7 @@ else {
 			avc [tId].green += p [i].green * a;
 			avc [tId].blue += p [i].blue * a;
 			}
-	}
+		}
 	for (i = 0; i < GetNumThreads (); i++) {
 		avgColor.red += avc [i].red;
 		avgColor.green += avc [i].green;
@@ -179,14 +179,14 @@ else {
 		nAlpha += nac [i];
 		}
 #else
-	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
+		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 		for (i = w * (h / nFrames); i; i--, p++) {
 			if (bSwapRB)
 				::Swap (p->red, p->blue);
 			if (bGrayScale) {
 				p->red =
 				p->green =
-				p->blue = ubyte ((int (p [i].red) + int (p [i].green) + int (p [i].blue)) / 3 * brightness);
+				p->blue = ubyte ((int (p->red) + int (p->green) + int (p->blue)) / 3 * brightness);
 				}
 			else if ((p->red == 120) && (p->green == 88) && (p->blue == 128)) {
 				nSuperTransp++;
