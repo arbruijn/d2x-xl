@@ -78,6 +78,9 @@ void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightnes
 	tRgbaColorf	avgColor;
 	tRgbColorb	avgColorb;
 	float			a;
+#ifndef OPENMP
+ 	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
+#endif
 
 bmP->AddFlags (BM_FLAG_TGA);
 bmP->SetTranspType (-1);
@@ -179,7 +182,6 @@ else {
 		nAlpha += nac [i];
 		}
 #else
-		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 		for (i = w * (h / nFrames); i; i--, p++) {
 			if (bSwapRB)
 				::Swap (p->red, p->blue);
