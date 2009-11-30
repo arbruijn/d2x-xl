@@ -1388,6 +1388,8 @@ if (!OBJTRIGGERS.Buffer ())
 
 	ubyte i = gameData.trigs.objTriggerRefs [nObject].nFirst, j = gameData.trigs.objTriggerRefs [nObject].nCount;
 
+if (i >= OBJTRIGGERS.Length ())
+	return;
 for (; j; j--, i++) {
 	if (OBJTRIGGERS [i].m_info.nObject < 0)
 		continue;
