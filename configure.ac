@@ -117,9 +117,10 @@ AC_ARG_ENABLE(debug,
     [  --enable-debug         Take out debug symbols, Asserts, Int3, etc ],,)
 if test x$enable_debug != xyes; then
     AC_DEFINE(NDEBUG,,[Define to disable asserts, int3, etc.])
-    CFLAGS="-O3 $CFLAGS"
-    CXXFLAGS="-O3 $CXXFLAGS"
-else
+    CFLAGS="-O3 $CFLAGS -fopenmp"
+    CXXFLAGS="-O3 $CXXFLAGS -fopenmp"
+    AC_DEFINE(OPENMP,,[Define to enable openmp code])
+   else
     CFLAGS="-g $CFLAGS"
     CXXFLAGS="-g $CXXFLAGS"
     AC_DEFINE(_DEBUG,,[Define to enable asserts, int3, etc.])
