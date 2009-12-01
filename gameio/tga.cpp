@@ -90,9 +90,9 @@ memset (&avgColor, 0, sizeof (avgColor));
 
 bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (bmP->BPP () == 3) {
+	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 #ifdef OPENMP
 	int			tId, j = w * h;
-	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 	tRgbColorf	ac [MAX_THREADS];
 
 	memset (ac, 0, sizeof (ac));
@@ -111,9 +111,9 @@ if (bmP->BPP () == 3) {
 		avgColor.green += ac [i].green;
 		avgColor.blue += ac [i].blue;
 		}
+	avgColor.alpha = 1.0f;
 	}
 #else
-	tRgbColorb *p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 	for (i = h * w; i; i--, p++) {
 		::Swap (p->red, p->blue);
 		avgColor.red += p->red;
@@ -517,14 +517,16 @@ h.width = cf.ReadShort ();
 h.height = cf.ReadShort ();
 h.bits = (char) cf.ReadByte ();
 h.descriptor = (char) cf.ReadByte ();
-if (h.identSize)
-	cf.Seek (h.identSize, SEEK_CUR);
+if (h.identSize && cf.Seek (h.identSize, SEEK_CUR))
+	return 0;
 if (bmP) {
 	bmP->Init (0, 0, 0, h.width, h.height, h.bits / 8, NULL);
 	}
 if (ph)
 	*ph = h;
-return 1;
+return (h.width <= 4096) && (h.height <= 32768) && 
+       (h.xStart < h.width) && (h.yStart < h.height) &&
+		 ((h.bits == 8) || (h.bits == 16) || (h.bits == 24) || (h.bits == 32));
 }
 
 //---------------------------------------------------------------
