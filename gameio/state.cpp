@@ -628,7 +628,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	m_cf.WriteShort (netGame.killed [i]);					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	m_cf.WriteShort (netGame.playerKills [i]);			// 16 bytes
-m_cf.WriteInt (netGame.KillGoal);							// 4 bytes
+m_cf.WriteInt (netGame.nKillGoal);							// 4 bytes
 m_cf.WriteFix (netGame.xPlayTimeAllowed);					// 4 bytes
 m_cf.WriteFix (netGame.xLevelTime);							// 4 bytes
 m_cf.WriteInt (netGame.controlInvulTime);				// 4 bytes
@@ -1487,7 +1487,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.killed [i] = m_cf.ReadShort ();					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.playerKills [i] = m_cf.ReadShort ();			// 16 bytes
-netGame.KillGoal = m_cf.ReadInt ();							// 4 bytes
+netGame.nKillGoal = m_cf.ReadInt ();							// 4 bytes
 netGame.xPlayTimeAllowed = m_cf.ReadFix ();					// 4 bytes
 netGame.xLevelTime = m_cf.ReadFix ();							// 4 bytes
 netGame.controlInvulTime = m_cf.ReadInt ();				// 4 bytes

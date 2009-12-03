@@ -1333,10 +1333,10 @@ for (i = 0; i < nPlayers; i++) {
 			}
 		if (i == nLeft)
 			y0 = y;
-		if (netGame.KillGoal || netGame.xPlayTimeAllowed)
+		if (netGame.nKillGoal || netGame.xPlayTimeAllowed)
 			x1 -= LHX (18);
 		}
-	else if (netGame.KillGoal || netGame.xPlayTimeAllowed)
+	else if (netGame.nKillGoal || netGame.xPlayTimeAllowed)
 		 x1 = LHX (43) - LHX (18);
 	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
 	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
@@ -1429,7 +1429,7 @@ for (i = 0; i < nPlayers; i++) {
 		}
 	else if (IsCoopGame)
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%-6d", gameData.multiplayer.players [nPlayer].score);
-   else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
+   else if (netGame.xPlayTimeAllowed || netGame.nKillGoal)
       nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d (%d)",
 					 gameData.multiplayer.players [nPlayer].netKillsTotal,
 					 gameData.multiplayer.players [nPlayer].nKillGoalCount);

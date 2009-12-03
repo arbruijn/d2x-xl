@@ -391,9 +391,9 @@ if (menu [optCoop].m_value) {
 		}
 	if (!(netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-	if (netGame.xPlayTimeAllowed || netGame.KillGoal) {
+	if (netGame.xPlayTimeAllowed || netGame.nKillGoal) {
 		netGame.xPlayTimeAllowed = 0;
-		netGame.KillGoal = 0;
+		netGame.nKillGoal = 0;
 		}
 	}
 else {// if !Coop game
@@ -443,9 +443,9 @@ if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != LastPTA)) {
 	menu [optPlayTime].m_bRebuild = 1;
 	}
 if ((optKillGoal >= 0) && (menu [optKillGoal].m_value != LastKillGoal)) {
-	mpParams.nKillGoal = netGame.KillGoal = menu [optKillGoal].m_value;
-	sprintf (menu [optKillGoal].m_text, TXT_KILLGOAL, netGame.KillGoal*5);
-	LastKillGoal = netGame.KillGoal;
+	mpParams.nKillGoal = netGame.nKillGoal = menu [optKillGoal].m_value;
+	sprintf (menu [optKillGoal].m_text, TXT_KILLGOAL, netGame.nKillGoal*5);
+	LastKillGoal = netGame.nKillGoal;
 	menu [optKillGoal].m_bRebuild = 1;
 	}
 
@@ -501,7 +501,7 @@ do {
 		sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
 		*szPlayTime = * (TXT_MAXTIME - 1);
 		optPlayTime = m.AddSlider (szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
-		sprintf (szKillGoal + 1, TXT_KILLGOAL, netGame.KillGoal * 5);
+		sprintf (szKillGoal + 1, TXT_KILLGOAL, netGame.nKillGoal * 5);
 		*szKillGoal = * (TXT_KILLGOAL - 1);
 		optKillGoal = m.AddSlider (szKillGoal + 1, mpParams.nKillGoal, 0, 10, KEY_K, HTX_MULTI2_KILLGOAL);
 		}
@@ -537,7 +537,7 @@ do {
 			}
 		}
 
-	LastKillGoal = netGame.KillGoal;
+	LastKillGoal = netGame.nKillGoal;
 	LastPTA = mpParams.nMaxTime;
 
 doMenu:

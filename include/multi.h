@@ -398,7 +398,7 @@ typedef struct tNetgameInfo {
 	short   teamKills [2];							// 4 bytes
 	short   killed [MAX_PLAYERS];					// 16 bytes
 	short   playerKills [MAX_PLAYERS];			// 16 bytes
-	int     KillGoal;									// 4 bytes
+	int     nKillGoal;								// 4 bytes
 	fix     xPlayTimeAllowed;						// 4 bytes
 	fix     xLevelTime;								// 4 bytes
 	int     controlInvulTime;						// 4 bytes

@@ -68,7 +68,7 @@
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="0"
-				OpenMP="false"
+				OpenMP="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
@@ -10824,11 +10824,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

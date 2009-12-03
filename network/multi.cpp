@@ -870,7 +870,7 @@ void MultiComputeKill (int nKiller, int nKilled)
 	int		nKillGoal;
 	char		szKilled [(CALLSIGN_LEN*2)+4];
 	char		szKiller [(CALLSIGN_LEN*2)+4];
-	CPlayerData	*pKiller, *pKilled;
+	CPlayerData	*killerP, *killedP;
 	CObject	*objP;
 
 gameData.score.nKillsChanged = 1;
@@ -892,21 +892,21 @@ if ((killedType != OBJ_PLAYER) &&(killedType != OBJ_GHOST)) {
 	Int3 (); // computeKill passed non-CPlayerData CObject!
 	return;
 	}
-pKilled = gameData.multiplayer.players + nKilledPlayer;
+killedP = gameData.multiplayer.players + nKilledPlayer;
 gameData.multigame.kills.pFlags [nKilledPlayer] = 1;
 Assert ((nKilledPlayer >= 0) &&(nKilledPlayer < gameData.multiplayer.nPlayers));
 if (gameData.app.nGameMode & GM_TEAM)
-	sprintf (szKilled, "%s (%s)", pKilled->callsign, netGame.szTeamName [GetTeam (nKilledPlayer)]);
+	sprintf (szKilled, "%s (%s)", killedP->callsign, netGame.szTeamName [GetTeam (nKilledPlayer)]);
 else
-	sprintf (szKilled, "%s", pKilled->callsign);
+	sprintf (szKilled, "%s", killedP->callsign);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDeath (nKilledPlayer);
 audio.PlaySound (SOUND_HUD_KILL, SOUNDCLASS_GENERIC, I2X (3));
 if (gameData.reactor.bDestroyed)
-	pKilled->connected = 3;
+	killedP->connected = 3;
 if (killerType == OBJ_REACTOR) {
-	pKilled->netKilledTotal++;
-	pKilled->netKillsTotal--;
+	killedP->netKilledTotal++;
+	killedP->netKillsTotal--;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiKill (nKilledPlayer, -1);
 	if (nKilledPlayer == gameData.multiplayer.nLocalPlayer) {
@@ -932,15 +932,15 @@ else if ((killerType != OBJ_PLAYER) &&(killerType != OBJ_GHOST)) {
 		else
 			HUDInitMessage ("%s %s %s.", szKilled, TXT_WAS, TXT_KILLED_BY_ROBOT);
 		}
-	pKilled->netKilledTotal++;
+	killedP->netKilledTotal++;
 	return;
 	}
 nKillerPlayer = OBJECTS [nKiller].info.nId;
-pKiller = gameData.multiplayer.players + nKillerPlayer;
+killerP = gameData.multiplayer.players + nKillerPlayer;
 if (gameData.app.nGameMode & GM_TEAM)
-	sprintf (szKiller, "%s (%s)", pKiller->callsign, netGame.szTeamName [GetTeam (nKillerPlayer)]);
+	sprintf (szKiller, "%s (%s)", killerP->callsign, netGame.szTeamName [GetTeam (nKillerPlayer)]);
 else
-	sprintf (szKiller, "%s", pKiller->callsign);
+	sprintf (szKiller, "%s", killerP->callsign);
 // Beyond this point, it was definitely a CPlayerData-CPlayerData kill situation
 #if DBG
 if ((nKillerPlayer < 0) || (nKillerPlayer  >= gameData.multiplayer.nPlayers))
@@ -981,7 +981,7 @@ else {
 				bMultiSuicide = 1;
 			}
 		else {
-			pKiller->secondaryAmmo [SMARTMINE_INDEX] += extraGameInfo [1].entropy.nBumpVirusCapacity;
+			killerP->secondaryAmmo [SMARTMINE_INDEX] += extraGameInfo [1].entropy.nBumpVirusCapacity;
 			if (extraGameInfo [1].entropy.nMaxVirusCapacity)
 				if (gameData.multiplayer.players [nKillerPlayer].secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nMaxVirusCapacity)
 					gameData.multiplayer.players [nKillerPlayer].secondaryAmmo [SMARTMINE_INDEX] = extraGameInfo [1].entropy.nMaxVirusCapacity;
@@ -990,13 +990,13 @@ else {
 	else if (gameData.app.nGameMode & GM_TEAM) {
 		if (t0 == t1) {
 			gameData.multigame.kills.nTeam [t0]--;
-			pKiller->netKillsTotal--;
-			pKiller->nKillGoalCount--;
+			killerP->netKillsTotal--;
+			killerP->nKillGoalCount--;
 			}
 		else {
 			gameData.multigame.kills.nTeam [t1]++;
-			pKiller->netKillsTotal++;
-			pKiller->nKillGoalCount++;
+			killerP->netKillsTotal++;
+			killerP->nKillGoalCount++;
 			}
 		}
 	else {
@@ -1008,13 +1008,13 @@ else {
 					ipx_udpSrc.src_node [2],
 					ipx_udpSrc.src_node [3],
 					*reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4));
-		pKiller->netKillsTotal++;
-		pKiller->nKillGoalCount++;
+		killerP->netKillsTotal++;
+		killerP->nKillGoalCount++;
 		}
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiKill (nKillerPlayer, 1);
 	gameData.multigame.kills.matrix [nKillerPlayer][nKilledPlayer]++;
-	pKilled->netKilledTotal += 1;
+	killedP->netKilledTotal += 1;
 	if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, szKilled);
 		MultiAddLifetimeKills ();
@@ -1025,31 +1025,31 @@ else {
 		HUDInitMessage ("%s %s %s!", szKiller, TXT_KILLED, TXT_YOU);
 		MultiAddLifetimeKilled ();
 		if (gameData.app.nGameMode & GM_HOARD) {
-			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]>3)
+			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] > 3)
 				MultiSendPlayByPlay (1, nKillerPlayer, gameData.multiplayer.nLocalPlayer);
-			else if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]>0)
+			else if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] > 0)
 				MultiSendPlayByPlay (0, nKillerPlayer, gameData.multiplayer.nLocalPlayer);
 			}
 		}
 	else
 		HUDInitMessage ("%s %s %s!", szKiller, TXT_KILLED, szKilled);
 	}
-nKillGoal = netGame.KillGoal * ((gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5);
-if (netGame.KillGoal > 0) {
-	if (pKiller->nKillGoalCount >= nKillGoal) {
+if (netGame.nKillGoal > 0) {
+	nKillGoal = netGame.nKillGoal * ((gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5);
+	if (killerP->nKillGoalCount >= nKillGoal) {
 		if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
 			HUDInitMessage (TXT_REACH_KILLGOAL);
 			LOCALPLAYER.shields = I2X (200);
 			}
 		else
-			HUDInitMessage (TXT_REACH_KILLGOAL2, pKiller->callsign);
+			HUDInitMessage (TXT_REACH_KILLGOAL2, killerP->callsign);
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
 		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		}
 	}
 MultiSortKillList ();
 MultiShowPlayerList ();
-pKilled->flags &= (~(PLAYER_FLAGS_HEADLIGHT_ON));  // clear the nKilled guys flags/headlights
+killedP->flags &= (~(PLAYER_FLAGS_HEADLIGHT_ON));  // clear the nKilled guys flags/headlights
 }
 
 //-----------------------------------------------------------------------------
@@ -3727,7 +3727,7 @@ void MultiCheckForKillGoalWinner ()
 if (gameData.reactor.bDestroyed)
 	return;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].nKillGoalCount>best) {
+	if (gameData.multiplayer.players [i].nKillGoalCount > best) {
 		best = gameData.multiplayer.players [i].nKillGoalCount;
 		bestnum = i;
 		}
@@ -4146,8 +4146,8 @@ if (penalty) {
 #if 0
 	gameData.multiplayer.players [nPlayer].netKillsTotal -= bonus;
 	gameData.multiplayer.players [nPlayer].nKillGoalCount -= bonus;
-	if (netGame.KillGoal > 0) {
-		nKillGoal = netGame.KillGoal * bonus;
+	if (netGame.nKillGoal > 0) {
+		nKillGoal = netGame.nKillGoal * bonus;
 		if (gameData.multigame.kills.nTeam [nTeam] >= nKillGoal) {
 			sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
 			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
@@ -4160,8 +4160,8 @@ if (penalty) {
 else {
 	gameData.multiplayer.players [nPlayer].netKillsTotal += bonus;
 	gameData.multiplayer.players [nPlayer].nKillGoalCount += bonus;
-	if (netGame.KillGoal > 0) {
-		nKillGoal = netGame.KillGoal * bonus;
+	if (netGame.nKillGoal > 0) {
+		nKillGoal = netGame.nKillGoal * bonus;
 		if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= nKillGoal) {
 			if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 				HUDInitMessage (TXT_REACH_KILLGOAL);
@@ -4229,8 +4229,8 @@ gameData.multiplayer.players [nPlayer].nKillGoalCount += bonus;
 gameData.multigame.kills.nTeam [GetTeam (nPlayer)] %= 1000;
 gameData.multiplayer.players [nPlayer].netKillsTotal %= 1000;
 gameData.multiplayer.players [nPlayer].nKillGoalCount %= 1000;
-if (netGame.KillGoal>0) {
-	nKillGoal = netGame.KillGoal*5;
+if (netGame.nKillGoal > 0) {
+	nKillGoal = netGame.nKillGoal * 5;
 	if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= nKillGoal) {
 		if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 			HUDInitMessage (TXT_REACH_KILLGOAL);
