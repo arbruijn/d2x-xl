@@ -3740,13 +3740,12 @@ else {
 
 void MultiCheckForKillGoalWinner (bool bForce)
 {
-	int h = 0, i, j = 0;
-	CObject *objP;
+	int h = 0, j = 0;
 
 if (gameData.reactor.bDestroyed)
 	return;
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].nKillGoalCount > h) {
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if (h < gameData.multiplayer.players [i].nKillGoalCount) {
 		h = gameData.multiplayer.players [i].nKillGoalCount;
 		j = i;
 		}
@@ -3754,10 +3753,9 @@ if (h >= KillGoal (bForce)) {
 	if (j == gameData.multiplayer.nLocalPlayer)
 		HUDInitMessage (TXT_BEST_SCORE, h);
 	else
-		HUDInitMessage (TXT_BEST_SCORE, gameData.multiplayer.players [j].callsign, j);
+		HUDInitMessage (TXT_BEST_SCORE2, gameData.multiplayer.players [j].callsign, j);
 	HUDInitMessage (TXT_CTRLCEN_DEAD);
-	objP = ObjFindFirstOfType (OBJ_REACTOR);
-	NetDestroyReactor (objP);
+	NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 	}
 }
 
