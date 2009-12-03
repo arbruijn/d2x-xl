@@ -479,6 +479,29 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
 
 // -----------------------------------------------------------------------------
 
+static inline int CaptureBonus (void)
+{
+if (gameData.app.nGameMode & GM_ENTROPY)
+	return 3;
+else if (gameData.app.nGameMode & GM_HOARD)
+	return 5;
+else if (gameData.app.nGameMode & GM_CAPTURE)
+	return 5;
+else if (gameData.app.nGameMode & GM_MONSTERBALL)
+	return extraGameInfo [1].monsterball.nBonus;
+else
+	return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+static inline int KillGoal (bool bNone = false)
+{
+return bNone ? 0 : netGame.nKillGoal ? netGame.nKillGoal * CaptureBonus () : 0x7fffffff;
+}
+
+// -----------------------------------------------------------------------------
+
 void MultiSetFlagPos (void)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players;
@@ -867,7 +890,6 @@ void MultiComputeKill (int nKiller, int nKilled)
 
 	int		nKilledPlayer, killedType, t0, t1;
 	int		nKillerPlayer, killerType, nKillerId;
-	int		nKillGoal;
 	char		szKilled [(CALLSIGN_LEN*2)+4];
 	char		szKiller [(CALLSIGN_LEN*2)+4];
 	CPlayerData	*killerP, *killedP;
@@ -918,7 +940,7 @@ if (killerType == OBJ_REACTOR) {
 	return;
 	}
 else if ((killerType != OBJ_PLAYER) &&(killerType != OBJ_GHOST)) {
-	if ((nKillerId == SMALLMINE_ID) &&(killerType != OBJ_ROBOT)) {
+	if ((nKillerId == SMALLMINE_ID) && (killerType != OBJ_ROBOT)) {
 		if (nKilledPlayer == gameData.multiplayer.nLocalPlayer)
 			HUDInitMessage (TXT_MINEKILL);
 		else
@@ -971,7 +993,7 @@ if (nKillerPlayer == nKilledPlayer) {
 else {
 	if (gameData.app.nGameMode & GM_HOARD) {
 		if (gameData.app.nGameMode & GM_TEAM) {
-			if ((nKilledPlayer == gameData.multiplayer.nLocalPlayer) &&(t0 == t1))
+			if ((nKilledPlayer == gameData.multiplayer.nLocalPlayer) && (t0 == t1))
 				bMultiSuicide = 1;
 			}
 		}
@@ -1014,7 +1036,7 @@ else {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiKill (nKillerPlayer, 1);
 	gameData.multigame.kills.matrix [nKillerPlayer][nKilledPlayer]++;
-	killedP->netKilledTotal += 1;
+	killedP->netKilledTotal++;
 	if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", TXT_YOU, TXT_KILLED, szKilled);
 		MultiAddLifetimeKills ();
@@ -1034,18 +1056,15 @@ else {
 	else
 		HUDInitMessage ("%s %s %s!", szKiller, TXT_KILLED, szKilled);
 	}
-if (netGame.nKillGoal > 0) {
-	nKillGoal = netGame.nKillGoal * ((gameData.app.nGameMode & GM_ENTROPY) ? 3 : 5);
-	if (killerP->nKillGoalCount >= nKillGoal) {
-		if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
-			HUDInitMessage (TXT_REACH_KILLGOAL);
-			LOCALPLAYER.shields = I2X (200);
-			}
-		else
-			HUDInitMessage (TXT_REACH_KILLGOAL2, killerP->callsign);
-		HUDInitMessage (TXT_CTRLCEN_DEAD);
-		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
+if (killerP->nKillGoalCount >= KillGoal ()) {
+	if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
+		HUDInitMessage (TXT_REACH_KILLGOAL);
+		LOCALPLAYER.shields = I2X (200);
 		}
+	else
+		HUDInitMessage (TXT_REACH_KILLGOAL2, killerP->callsign);
+	HUDInitMessage (TXT_CTRLCEN_DEAD);
+	NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 	}
 MultiSortKillList ();
 MultiShowPlayerList ();
@@ -3719,25 +3738,27 @@ else {
 
 //-----------------------------------------------------------------------------
 
-void MultiCheckForKillGoalWinner ()
+void MultiCheckForKillGoalWinner (bool bForce)
 {
-	int i, best = 0, bestnum = 0;
+	int h = 0, i, j = 0;
 	CObject *objP;
 
 if (gameData.reactor.bDestroyed)
 	return;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].nKillGoalCount > best) {
-		best = gameData.multiplayer.players [i].nKillGoalCount;
-		bestnum = i;
+	if (gameData.multiplayer.players [i].nKillGoalCount > h) {
+		h = gameData.multiplayer.players [i].nKillGoalCount;
+		j = i;
 		}
-if (bestnum == gameData.multiplayer.nLocalPlayer)
-	HUDInitMessage (TXT_BEST_SCORE, best);
-else
-	HUDInitMessage (TXT_BEST_SCORE, gameData.multiplayer.players [bestnum].callsign, best);
-HUDInitMessage (TXT_CTRLCEN_DEAD);
-objP = ObjFindFirstOfType (OBJ_REACTOR);
-NetDestroyReactor (objP);
+if (h >= KillGoal (bForce)) {
+	if (j == gameData.multiplayer.nLocalPlayer)
+		HUDInitMessage (TXT_BEST_SCORE, h);
+	else
+		HUDInitMessage (TXT_BEST_SCORE, gameData.multiplayer.players [j].callsign, j);
+	HUDInitMessage (TXT_CTRLCEN_DEAD);
+	objP = ObjFindFirstOfType (OBJ_REACTOR);
+	NetDestroyReactor (objP);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -4111,19 +4132,10 @@ void MultiDoCaptureBonus (char *buf)
 	// appropriate CPlayerData's tally.
 
 	int 	nPlayer = (int) buf [1];
-	short	nTeam, nKillGoal, penalty = 0, bonus;
+	short	nTeam, penalty = 0, bonus;
 	//char	szTeam [20];
 
-if (gameData.app.nGameMode & GM_ENTROPY)
-	bonus = 3;
-else if (gameData.app.nGameMode & GM_HOARD)
-	bonus = 5;
-else if (gameData.app.nGameMode & GM_CAPTURE)
-	bonus = 5;
-else if (gameData.app.nGameMode & GM_MONSTERBALL)
-	bonus = extraGameInfo [1].monsterball.nBonus;
-else
-	bonus = 1;
+bonus = CaptureBonus ();
 gameData.score.nKillsChanged = 1;
 if (nPlayer < 0) {
 	penalty = 1;
@@ -4146,32 +4158,26 @@ if (penalty) {
 #if 0
 	gameData.multiplayer.players [nPlayer].netKillsTotal -= bonus;
 	gameData.multiplayer.players [nPlayer].nKillGoalCount -= bonus;
-	if (netGame.nKillGoal > 0) {
-		nKillGoal = netGame.nKillGoal * bonus;
-		if (gameData.multigame.kills.nTeam [nTeam] >= nKillGoal) {
-			sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
-			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
-			HUDInitMessage (TXT_CTRLCEN_DEAD);
-			NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
-			}
+	if (gameData.multigame.kills.nTeam [nTeam] >= KillGoal ()) {
+		sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
+		HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
+		HUDInitMessage (TXT_CTRLCEN_DEAD);
+		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		}
 #endif
 	}
 else {
 	gameData.multiplayer.players [nPlayer].netKillsTotal += bonus;
 	gameData.multiplayer.players [nPlayer].nKillGoalCount += bonus;
-	if (netGame.nKillGoal > 0) {
-		nKillGoal = netGame.nKillGoal * bonus;
-		if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= nKillGoal) {
-			if (nPlayer == gameData.multiplayer.nLocalPlayer) {
-				HUDInitMessage (TXT_REACH_KILLGOAL);
-				LOCALPLAYER.shields = I2X (200);
-				}
-			else
-				HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multiplayer.players [nPlayer].callsign);
-			HUDInitMessage (TXT_CTRLCEN_DEAD);
-			NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
+	if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= KillGoal ()) {
+		if (nPlayer == gameData.multiplayer.nLocalPlayer) {
+			HUDInitMessage (TXT_REACH_KILLGOAL);
+			LOCALPLAYER.shields = I2X (200);
 			}
+		else
+			HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multiplayer.players [nPlayer].callsign);
+		HUDInitMessage (TXT_CTRLCEN_DEAD);
+		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		}
 	}
 MultiSortKillList ();
@@ -4195,7 +4201,6 @@ int GetOrbBonus (char num)
 void MultiDoOrbBonus (char *buf)
 {
 	int nPlayer = (int) buf [1];
-	int nKillGoal;
 	int bonus = GetOrbBonus (buf [2]);
 
 gameData.score.nKillsChanged = 1;
@@ -4229,18 +4234,15 @@ gameData.multiplayer.players [nPlayer].nKillGoalCount += bonus;
 gameData.multigame.kills.nTeam [GetTeam (nPlayer)] %= 1000;
 gameData.multiplayer.players [nPlayer].netKillsTotal %= 1000;
 gameData.multiplayer.players [nPlayer].nKillGoalCount %= 1000;
-if (netGame.nKillGoal > 0) {
-	nKillGoal = netGame.nKillGoal * 5;
-	if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= nKillGoal) {
-		if (nPlayer == gameData.multiplayer.nLocalPlayer) {
-			HUDInitMessage (TXT_REACH_KILLGOAL);
-			LOCALPLAYER.shields = I2X (200);
-			}
-		else
-			HUDInitMessage (TXT_REACH_KILLGOAL2, gameData.multiplayer.players [nPlayer].callsign);
-		HUDInitMessage (TXT_CTRLCEN_DEAD);
-		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
+if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= KillGoal ()) {
+	if (nPlayer == gameData.multiplayer.nLocalPlayer) {
+		HUDInitMessage (TXT_REACH_KILLGOAL);
+		LOCALPLAYER.shields = I2X (200);
 		}
+	else
+		HUDInitMessage (TXT_REACH_KILLGOAL2, gameData.multiplayer.players [nPlayer].callsign);
+	HUDInitMessage (TXT_CTRLCEN_DEAD);
+	NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 	}
 MultiSortKillList ();
 MultiShowPlayerList ();

@@ -444,7 +444,7 @@ if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != LastPTA)) {
 	}
 if ((optKillGoal >= 0) && (menu [optKillGoal].m_value != LastKillGoal)) {
 	mpParams.nKillGoal = netGame.nKillGoal = menu [optKillGoal].m_value;
-	sprintf (menu [optKillGoal].m_text, TXT_KILLGOAL, netGame.nKillGoal*5);
+	sprintf (menu [optKillGoal].m_text, TXT_KILLGOAL, netGame.nKillGoal * 5);
 	LastKillGoal = netGame.nKillGoal;
 	menu [optKillGoal].m_bRebuild = 1;
 	}

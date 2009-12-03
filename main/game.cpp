@@ -137,7 +137,7 @@ void SlideTextures (void);
 void PowerupGrabCheatAll (void);
 
 //	Other functions
-void MultiCheckForKillGoalWinner (void);
+void MultiCheckForKillGoalWinner (bool bForce);
 void MultiCheckForEntropyWinner (void);
 void DefaultAllSettings (void);
 
@@ -1434,10 +1434,8 @@ if (IsMultiGame) {
 	tracker.AddServer ();
    MultiDoFrame ();
 	CheckMonsterballScore ();
-	if (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))))
-       MultiCheckForKillGoalWinner ();
-	else
-		MultiCheckForEntropyWinner ();
+	MultiCheckForKillGoalWinner (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))));
+	MultiCheckForEntropyWinner ();
   }
 if (bRenderFrame) {
 	if (gameStates.render.cockpit.bRedraw) {			//screen need redrawing?
