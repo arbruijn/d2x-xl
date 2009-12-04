@@ -198,12 +198,12 @@ if (!gameData.hoard.bInitialized) {
 	//Create orb goal wall effect
 	gameData.hoard.goal.nClip = gameData.eff.nEffects [0]++;
 	Assert (gameData.eff.nEffects [0] < MAX_EFFECTS);
-	ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip;
-	*ecP = gameData.eff.effects [0][94];        //copy from blue goal
-	ecP->changingWallTexture = gameData.pig.tex.nTextures [0];
-	ecP->vClipInfo.nFrameCount = gameData.hoard.goal.nFrames;
-	ecP->flags &= ~EF_INITIALIZED;
-
+	if ((ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip)) {
+		*ecP = gameData.eff.effects [0][94];        //copy from blue goal
+		ecP->changingWallTexture = gameData.pig.tex.nTextures [0];
+		ecP->vClipInfo.nFrameCount = gameData.hoard.goal.nFrames;
+		ecP->flags &= ~EF_INITIALIZED;
+		}
 	i = gameData.pig.tex.nTextures [0];
 	if (0 <= (j = MultiFindGoalTexture (TMI_GOAL_BLUE)))
 		gameData.pig.tex.tMapInfoP [i] = gameData.pig.tex.tMapInfoP [j];
