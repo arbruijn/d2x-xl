@@ -11627,6 +11627,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release-Intel|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release-Intel|x64"
 					ExcludedFromBuild="true"
 					>
