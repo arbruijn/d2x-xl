@@ -524,9 +524,7 @@ void MultiSetFlagPos (void)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players;
 #if 1//!DBG
-	int		i;
-
-for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
 	if (playerP->flags & PLAYER_FLAGS_FLAG)
 		gameData.pig.flags [!GetTeam (i)].path.SetPoint (OBJECTS + playerP->nObject);
 #else
