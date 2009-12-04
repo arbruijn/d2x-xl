@@ -75,8 +75,8 @@ if (pl < 0)
 sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl);
 m.AddText (szText);
 #endif
-if (netGame.nKillGoal)
-	sprintf (szText, TXT_INFO_KILLGOAL, netGame.nKillGoal*5);
+if (netGame.nScoreGoal)
+	sprintf (szText, TXT_INFO_SCOREGOAL, netGame.nScoreGoal*5);
 sprintf (szText, " ");
 sprintf (szText, TXT_INFO_PLRSCONN);
 netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking();

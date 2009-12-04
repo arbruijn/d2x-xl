@@ -84,7 +84,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_WALL_STATUS				41  // send to new players
 #define MULTI_HEARTBEAT					42
 
-#define MULTI_KILLGOALS					43
+#define MULTI_SCOREGOALS					43
 #define MULTI_SEISMIC					44
 #define MULTI_LIGHT						45
 #define MULTI_START_TRIGGER			46
@@ -398,7 +398,7 @@ typedef struct tNetgameInfo {
 	short   teamKills [2];							// 4 bytes
 	short   killed [MAX_PLAYERS];					// 16 bytes
 	short   playerKills [MAX_PLAYERS];			// 16 bytes
-	int     nKillGoal;								// 4 bytes
+	int     nScoreGoal;								// 4 bytes
 	fix     xPlayTimeAllowed;						// 4 bytes
 	fix     xLevelTime;								// 4 bytes
 	int     controlInvulTime;						// 4 bytes
@@ -452,7 +452,7 @@ void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj);
 void MultiOnlyPlayerMsg (int bMsgBox);
 
 void MultiSendStolenItems ();
-void MultiSendKillGoalCounts ();
+void MultiSendScoreGoalCounts ();
 void MultiSendPowerupUpdate ();
 void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int nSide, ushort flags);
 void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ushort flags, ubyte state);

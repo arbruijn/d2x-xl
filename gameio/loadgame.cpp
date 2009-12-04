@@ -388,7 +388,7 @@ if (bNewGame) {
 	playerP->numKillsTotal = 0;
 	playerP->numRobotsLevel = 0;
 	playerP->numRobotsTotal = 0;
-	playerP->nKillGoalCount = 0;
+	playerP->nScoreGoalCount = 0;
 	playerP->hostages.nRescued = 0;
 	playerP->hostages.nLevel = 0;
 	playerP->hostages.nTotal = 0;

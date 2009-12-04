@@ -280,7 +280,7 @@ typedef struct tMpParams {
 	int	nWeaponFilter;
 	int	nReactorLife;
 	ubyte	nMaxTime;
-	ubyte	nKillGoal;
+	ubyte	nScoreGoal;
 	ubyte	bInvul;
 	ubyte	bMarkerView;
 	ubyte	bIndestructibleLights;

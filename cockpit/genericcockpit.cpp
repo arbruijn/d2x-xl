@@ -1333,10 +1333,10 @@ for (i = 0; i < nPlayers; i++) {
 			}
 		if (i == nLeft)
 			y0 = y;
-		if (netGame.nKillGoal || netGame.xPlayTimeAllowed)
+		if (netGame.nScoreGoal || netGame.xPlayTimeAllowed)
 			x1 -= LHX (18);
 		}
-	else if (netGame.nKillGoal || netGame.xPlayTimeAllowed)
+	else if (netGame.nScoreGoal || netGame.xPlayTimeAllowed)
 		 x1 = LHX (43) - LHX (18);
 	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
 	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
@@ -1429,10 +1429,10 @@ for (i = 0; i < nPlayers; i++) {
 		}
 	else if (IsCoopGame)
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%-6d", gameData.multiplayer.players [nPlayer].score);
-   else if (netGame.xPlayTimeAllowed || netGame.nKillGoal)
+   else if (netGame.xPlayTimeAllowed || netGame.nScoreGoal)
       nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d (%d)",
 					 gameData.multiplayer.players [nPlayer].netKillsTotal,
-					 gameData.multiplayer.players [nPlayer].nKillGoalCount);
+					 gameData.multiplayer.players [nPlayer].nScoreGoalCount);
    else
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
 	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != gameData.multiplayer.nLocalPlayer)) {

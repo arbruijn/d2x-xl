@@ -628,7 +628,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	m_cf.WriteShort (netGame.killed [i]);					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	m_cf.WriteShort (netGame.playerKills [i]);			// 16 bytes
-m_cf.WriteInt (netGame.nKillGoal);							// 4 bytes
+m_cf.WriteInt (netGame.nScoreGoal);							// 4 bytes
 m_cf.WriteFix (netGame.xPlayTimeAllowed);					// 4 bytes
 m_cf.WriteFix (netGame.xLevelTime);							// 4 bytes
 m_cf.WriteInt (netGame.controlInvulTime);				// 4 bytes
@@ -707,7 +707,7 @@ if (playerP->invulnerableTime == 0x7fffffff)		// invul cheat active
 	m_cf.WriteFix (playerP->invulnerableTime);      // Time invulnerable
 else
 	m_cf.WriteFix (playerP->invulnerableTime - gameData.time.xGame);      // Time invulnerable
-m_cf.WriteShort (playerP->nKillGoalCount);          // Num of players killed this level
+m_cf.WriteShort (playerP->nScoreGoalCount);          // Num of players killed this level
 m_cf.WriteShort (playerP->netKilledTotal);       // Number of times killed total
 m_cf.WriteShort (playerP->netKillsTotal);        // Number of net kills total
 m_cf.WriteShort (playerP->numKillsLevel);        // Number of kills this level
@@ -1487,7 +1487,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.killed [i] = m_cf.ReadShort ();					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	netGame.playerKills [i] = m_cf.ReadShort ();			// 16 bytes
-netGame.nKillGoal = m_cf.ReadInt ();							// 4 bytes
+netGame.nScoreGoal = m_cf.ReadInt ();							// 4 bytes
 netGame.xPlayTimeAllowed = m_cf.ReadFix ();					// 4 bytes
 netGame.xLevelTime = m_cf.ReadFix ();							// 4 bytes
 netGame.controlInvulTime = m_cf.ReadInt ();				// 4 bytes
@@ -1562,7 +1562,7 @@ if (playerP->cloakTime != 0x7fffffff)
 playerP->invulnerableTime = m_cf.ReadFix ();      // Time invulnerable
 if (playerP->invulnerableTime != 0x7fffffff)
 	playerP->invulnerableTime += gameData.time.xGame;
-playerP->nKillGoalCount = m_cf.ReadShort ();          // Num of players killed this level
+playerP->nScoreGoalCount = m_cf.ReadShort ();          // Num of players killed this level
 playerP->netKilledTotal = m_cf.ReadShort ();       // Number of times killed total
 playerP->netKillsTotal = m_cf.ReadShort ();        // Number of net kills total
 playerP->numKillsLevel = m_cf.ReadShort ();        // Number of kills this level

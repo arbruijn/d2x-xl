@@ -343,7 +343,7 @@ for (i = 0; i < 2; i++) {
 		RP (mpParams.nWeaponFilter, 0, 0);
 		RP (mpParams.nReactorLife, 0, 0);
 		RP (mpParams.nMaxTime, 0, 0);
-		RP (mpParams.nKillGoal, 0, 0);
+		RP (mpParams.nScoreGoal, 0, 0);
 		RP (mpParams.bInvul, 0, 0);
 		RP (mpParams.bMarkerView, 0, 0);
 		RP (mpParams.bIndestructibleLights, 0, 0);
@@ -798,7 +798,7 @@ tParamValue defaultParams [] = {
 	 {"mpParams.nWeaponFilter", "67108863"},
 	 {"mpParams.nReactorLife", "2"},
 	 {"mpParams.nMaxTime", "0"},
-	 {"mpParams.nKillGoal", "2"},
+	 {"mpParams.nScoreGoal", "2"},
 	 {"mpParams.bInvul", "-1"},
 	 {"mpParams.bMarkerView", "0"},
 	 {"mpParams.bIndestructibleLights", "0"},
@@ -1718,7 +1718,7 @@ for (i = 0; i < 2; i++) {
 		mpParams.nWeaponFilter = cf.ReadInt ();
 		mpParams.nReactorLife = cf.ReadInt ();
 		mpParams.nMaxTime = cf.ReadByte ();
-		mpParams.nKillGoal = cf.ReadByte ();
+		mpParams.nScoreGoal = cf.ReadByte ();
 		mpParams.bInvul = cf.ReadByte ();
 		mpParams.bMarkerView = cf.ReadByte ();
 		mpParams.bIndestructibleLights = cf.ReadByte ();

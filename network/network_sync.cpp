@@ -236,8 +236,8 @@ else if (syncP->nExtras == 4) {
 		MultiSendStolenItems ();
 	}
 else if (syncP->nExtras == 5) {
-	if (netGame.xPlayTimeAllowed || netGame.nKillGoal)
-		MultiSendKillGoalCounts ();
+	if (netGame.xPlayTimeAllowed || netGame.nScoreGoal)
+		MultiSendScoreGoalCounts ();
 	}
 else if (syncP->nExtras == 6)
 	NetworkSendSmashedLights (syncP->nExtrasPlayer);

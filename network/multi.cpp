@@ -119,7 +119,7 @@ typedef struct tNetPlayerStats {
 	fix    cloakTime;             // Time cloaked
 	fix    invulnerableTime;      // Time invulnerable
 	fix    homingObjectDist;      // Distance of nearest homing CObject.
-	short  nKillGoalCount;
+	short  nScoreGoalCount;
 	short  netKilledTotal;        // Number of times nKilled total
 	short  netKillsTotal;         // Number of net kills total
 	short  numKillsLevel;         // Number of kills this level
@@ -176,7 +176,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	11, // MULTI_STOLEN_ITEMS
 	6,  // MULTI_WALL_STATUS
 	5,  // MULTI_HEARTBEAT
-	9,  // MULTI_KILLGOALS
+	9,  // MULTI_SCOREGOALS
 	9,  // MULTI_SEISMIC
 	18, // MULTI_LIGHT
 	2,  // MULTI_START_TRIGGER
@@ -479,7 +479,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++)
 
 // -----------------------------------------------------------------------------
 
-static inline int CaptureBonus (void)
+static inline int BonusScore (void)
 {
 if (gameData.app.nGameMode & GM_ENTROPY)
 	return 3;
@@ -495,9 +495,27 @@ else
 
 // -----------------------------------------------------------------------------
 
-static inline int KillGoal (bool bNone = false)
+static inline int ScoreGoal (bool bNone = false)
 {
-return bNone ? 0 : netGame.nKillGoal ? netGame.nKillGoal * CaptureBonus () : 0x7fffffff;
+return bNone ? 0 : netGame.nScoreGoal ? netGame.nScoreGoal * BonusScore () : 0x7fffffff;
+}
+
+// -----------------------------------------------------------------------------
+
+static void CheckScoreGoal (int nPlayer, bool bForce = false)
+{
+if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal ()) {
+	if (nPlayer != gameData.multiplayer.nLocalPlayer) 
+		HUDInitMessage (TXT_REACH_SCOREGOAL2, gameData.multiplayer.players [nPlayer].callsign);
+	else {
+		HUDInitMessage (TXT_REACH_SCOREGOAL);
+		LOCALPLAYER.shields = I2X (200);
+		}
+	if (!gameData.reactor.bDestroyed) {
+		HUDInitMessage (TXT_CTRLCEN_DEAD);
+		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
+		}	
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -546,7 +564,7 @@ for (i = 0; i < gameData.multiplayer.nMaxPlayers; i++)
 	gameData.multiplayer.players [i].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear capture flag
 
 for (i = 0; i < MAX_PLAYERS; i++)
-	gameData.multiplayer.players [i].nKillGoalCount = 0;
+	gameData.multiplayer.players [i].nScoreGoalCount = 0;
 gameData.multiplayer.maxPowerupsAllowed.Clear (0);
 gameData.multiplayer.powerupsInMine.Clear (0);
 }
@@ -649,14 +667,14 @@ if (team  >= 0) {
 	if (team)
 		netGame.teamVector |= (1 << nPlayer);
 	else
-		netGame.teamVector &= ~ (1 << nPlayer);
+		netGame.teamVector &= ~(1 << nPlayer);
 	}
 else {
 	team = !GetTeam (nPlayer);
 	if (team)
 		netGame.teamVector |= (1 << nPlayer);
 	else
-		netGame.teamVector &= ~ (1 << nPlayer);
+		netGame.teamVector &= ~(1 << nPlayer);
 	NetworkSendNetgameUpdate ();
 	}
 sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [nPlayer].callsign);
@@ -767,7 +785,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	gameData.multiplayer.players [i].netKilledTotal = 0;
 	gameData.multiplayer.players [i].netKillsTotal = 0;
 	gameData.multiplayer.players [i].flags = 0;
-	gameData.multiplayer.players [i].nKillGoalCount = 0;
+	gameData.multiplayer.players [i].nScoreGoalCount = 0;
 	}
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	gameData.multigame.robots.controlled [i] = -1;
@@ -1013,12 +1031,12 @@ else {
 		if (t0 == t1) {
 			gameData.multigame.kills.nTeam [t0]--;
 			killerP->netKillsTotal--;
-			killerP->nKillGoalCount--;
+			killerP->nScoreGoalCount--;
 			}
 		else {
 			gameData.multigame.kills.nTeam [t1]++;
 			killerP->netKillsTotal++;
-			killerP->nKillGoalCount++;
+			killerP->nScoreGoalCount++;
 			}
 		}
 	else {
@@ -1031,7 +1049,7 @@ else {
 					ipx_udpSrc.src_node [3],
 					*reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4));
 		killerP->netKillsTotal++;
-		killerP->nKillGoalCount++;
+		killerP->nScoreGoalCount++;
 		}
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiKill (nKillerPlayer, 1);
@@ -1056,16 +1074,7 @@ else {
 	else
 		HUDInitMessage ("%s %s %s!", szKiller, TXT_KILLED, szKilled);
 	}
-if (killerP->nKillGoalCount >= KillGoal ()) {
-	if (nKillerPlayer == gameData.multiplayer.nLocalPlayer) {
-		HUDInitMessage (TXT_REACH_KILLGOAL);
-		LOCALPLAYER.shields = I2X (200);
-		}
-	else
-		HUDInitMessage (TXT_REACH_KILLGOAL2, killerP->callsign);
-	HUDInitMessage (TXT_CTRLCEN_DEAD);
-	NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
-	}
+CheckScoreGoal (nKillerPlayer);
 MultiSortKillList ();
 MultiShowPlayerList ();
 killedP->flags &= (~(PLAYER_FLAGS_HEADLIGHT_ON));  // clear the nKilled guys flags/headlights
@@ -2460,7 +2469,7 @@ void MultiDoSyncKills (char *buf)
 
 gameData.multiplayer.players [nPlayer].score = GET_INTEL_INT (bufP);
 bufP += 4;
-gameData.multiplayer.players [nPlayer].nKillGoalCount = GET_INTEL_SHORT (bufP);
+gameData.multiplayer.players [nPlayer].nScoreGoalCount = GET_INTEL_SHORT (bufP);
 bufP += 2;
 gameData.multiplayer.players [nPlayer].netKilledTotal = GET_INTEL_SHORT (bufP);
 bufP += 2;
@@ -2481,7 +2490,7 @@ gameData.multigame.msg.buf [0] = (char) MULTI_SYNC_KILLS;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
 PUT_INTEL_INT (bufP, LOCALPLAYER.score);
 bufP += 4;
-PUT_INTEL_SHORT (bufP, LOCALPLAYER.nKillGoalCount);
+PUT_INTEL_SHORT (bufP, LOCALPLAYER.nScoreGoalCount);
 bufP += 2;
 PUT_INTEL_SHORT (bufP, LOCALPLAYER.netKilledTotal);
 bufP += 2;
@@ -3376,7 +3385,7 @@ ps->score = INTEL_INT (pd->score);                                     // Curren
 ps->cloakTime = (fix)INTEL_INT (pd->cloakTime);                      // Time cloaked
 ps->homingObjectDist = (fix)INTEL_INT (pd->homingObjectDist);      // Distance of nearest homing CObject.
 ps->invulnerableTime = (fix)INTEL_INT (pd->invulnerableTime);        // Time invulnerable
-ps->nKillGoalCount = INTEL_SHORT (pd->nKillGoalCount);
+ps->nScoreGoalCount = INTEL_SHORT (pd->nScoreGoalCount);
 ps->netKilledTotal = INTEL_SHORT (pd->netKilledTotal);             // Number of times nKilled total
 ps->netKillsTotal = INTEL_SHORT (pd->netKillsTotal);               // Number of net kills total
 ps->numKillsLevel = INTEL_SHORT (pd->numKillsLevel);               // Number of kills this level
@@ -3412,7 +3421,7 @@ ps->score = INTEL_INT (pd->score);                       // Current score.
 ps->cloakTime = (fix)INTEL_INT ((int)pd->cloakTime);   // Time cloaked
 ps->homingObjectDist = (fix)INTEL_INT ((int)pd->homingObjectDist); // Distance of nearest homing CObject.
 ps->invulnerableTime = (fix)INTEL_INT ((int)pd->invulnerableTime); // Time invulnerable
-ps->nKillGoalCount = INTEL_SHORT (pd->nKillGoalCount);
+ps->nScoreGoalCount = INTEL_SHORT (pd->nScoreGoalCount);
 ps->netKilledTotal = INTEL_SHORT (pd->netKilledTotal); // Number of times nKilled total
 ps->netKillsTotal = INTEL_SHORT (pd->netKillsTotal); // Number of net kills total
 ps->numKillsLevel = INTEL_SHORT (pd->numKillsLevel); // Number of kills this level
@@ -3631,24 +3640,24 @@ return;
 
 //-----------------------------------------------------------------------------
 
-void MultiSendKillGoalCounts ()
+void MultiSendScoreGoalCounts ()
 {
 	int i, count = 1;
-	gameData.multigame.msg.buf [0] = MULTI_KILLGOALS;
+	gameData.multigame.msg.buf [0] = MULTI_SCOREGOALS;
 
 for (i = 0; i < MAX_PLAYERS; i++)
-		gameData.multigame.msg.buf [count++] = (char)gameData.multiplayer.players [i].nKillGoalCount;
+		gameData.multigame.msg.buf [count++] = (char)gameData.multiplayer.players [i].nScoreGoalCount;
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
 
 //-----------------------------------------------------------------------------
 
-void MultiDoKillGoalCounts (char *buf)
+void MultiDoScoreGoalCounts (char *buf)
 {
 	int i, count = 1;
 
 for (i = 0; i < MAX_PLAYERS; i++)
-	gameData.multiplayer.players [i].nKillGoalCount = buf [count++];
+	gameData.multiplayer.players [i].nScoreGoalCount = buf [count++];
 }
 
 //-----------------------------------------------------------------------------
@@ -3738,25 +3747,18 @@ else {
 
 //-----------------------------------------------------------------------------
 
-void MultiCheckForKillGoalWinner (bool bForce)
+void MultiCheckForScoreGoalWinner (bool bForce)
 {
-	int h = 0, j = 0;
+	int h = 0, nPlayer = 0;
 
 if (gameData.reactor.bDestroyed)
 	return;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (h < gameData.multiplayer.players [i].nKillGoalCount) {
-		h = gameData.multiplayer.players [i].nKillGoalCount;
-		j = i;
+	if (h < gameData.multiplayer.players [i].nScoreGoalCount) {
+		h = gameData.multiplayer.players [i].nScoreGoalCount;
+		nPlayer = i;
 		}
-if (h >= KillGoal (bForce)) {
-	if (j == gameData.multiplayer.nLocalPlayer)
-		HUDInitMessage (TXT_BEST_SCORE, h);
-	else
-		HUDInitMessage (TXT_BEST_SCORE2, gameData.multiplayer.players [j].callsign, j);
-	HUDInitMessage (TXT_CTRLCEN_DEAD);
-	NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
-	}
+CheckScoreGoal (nPlayer, bForce);
 }
 
 //-----------------------------------------------------------------------------
@@ -4133,7 +4135,7 @@ void MultiDoCaptureBonus (char *buf)
 	short	nTeam, penalty = 0, bonus;
 	//char	szTeam [20];
 
-bonus = CaptureBonus ();
+bonus = BonusScore ();
 gameData.score.nKillsChanged = 1;
 if (nPlayer < 0) {
 	penalty = 1;
@@ -4155,10 +4157,10 @@ gameData.multiplayer.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear 
 if (penalty) {
 #if 0
 	gameData.multiplayer.players [nPlayer].netKillsTotal -= bonus;
-	gameData.multiplayer.players [nPlayer].nKillGoalCount -= bonus;
-	if (gameData.multigame.kills.nTeam [nTeam] >= KillGoal ()) {
+	gameData.multiplayer.players [nPlayer].nScoreGoalCount -= bonus;
+	if (gameData.multigame.kills.nTeam [nTeam] >= ScoreGoal ()) {
 		sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
-		HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
+		HUDInitMessage (TXT_REACH_SCOREGOAL, szTeam);
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
 		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		}
@@ -4166,17 +4168,8 @@ if (penalty) {
 	}
 else {
 	gameData.multiplayer.players [nPlayer].netKillsTotal += bonus;
-	gameData.multiplayer.players [nPlayer].nKillGoalCount += bonus;
-	if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= KillGoal ()) {
-		if (nPlayer == gameData.multiplayer.nLocalPlayer) {
-			HUDInitMessage (TXT_REACH_KILLGOAL);
-			LOCALPLAYER.shields = I2X (200);
-			}
-		else
-			HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multiplayer.players [nPlayer].callsign);
-		HUDInitMessage (TXT_CTRLCEN_DEAD);
-		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
-		}
+	gameData.multiplayer.players [nPlayer].nScoreGoalCount += bonus;
+	CheckScoreGoal (nPlayer);
 	}
 MultiSortKillList ();
 MultiShowPlayerList ();
@@ -4200,6 +4193,7 @@ void MultiDoOrbBonus (char *buf)
 {
 	int nPlayer = (int) buf [1];
 	int bonus = GetOrbBonus (buf [2]);
+	int nTeam = GetTeam (nPlayer);
 
 gameData.score.nKillsChanged = 1;
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
@@ -4209,7 +4203,7 @@ else
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	soundQueue.StartSound (SOUND_HUD_YOU_GOT_GOAL, I2X (2));
 else if (gameData.app.nGameMode & GM_TEAM) {
-	if (GetTeam (nPlayer) == TEAM_RED)
+	if (nTeam == TEAM_RED)
 		audio.PlaySound (SOUND_HUD_RED_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
 	else
 		audio.PlaySound (SOUND_HUD_BLUE_GOT_GOAL, SOUNDCLASS_GENERIC, I2X (2));
@@ -4226,22 +4220,13 @@ if (bonus>gameData.score.nPhallicLimit) {
 	gameData.score.nPhallicLimit = bonus;
 	}
 gameData.multiplayer.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear orb flag
-gameData.multigame.kills.nTeam [GetTeam (nPlayer)] += bonus;
 gameData.multiplayer.players [nPlayer].netKillsTotal += bonus;
-gameData.multiplayer.players [nPlayer].nKillGoalCount += bonus;
-gameData.multigame.kills.nTeam [GetTeam (nPlayer)] %= 1000;
 gameData.multiplayer.players [nPlayer].netKillsTotal %= 1000;
-gameData.multiplayer.players [nPlayer].nKillGoalCount %= 1000;
-if (gameData.multiplayer.players [nPlayer].nKillGoalCount >= KillGoal ()) {
-	if (nPlayer == gameData.multiplayer.nLocalPlayer) {
-		HUDInitMessage (TXT_REACH_KILLGOAL);
-		LOCALPLAYER.shields = I2X (200);
-		}
-	else
-		HUDInitMessage (TXT_REACH_KILLGOAL2, gameData.multiplayer.players [nPlayer].callsign);
-	HUDInitMessage (TXT_CTRLCEN_DEAD);
-	NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
-	}
+gameData.multiplayer.players [nPlayer].nScoreGoalCount += bonus;
+gameData.multiplayer.players [nPlayer].nScoreGoalCount %= 1000;
+gameData.multigame.kills.nTeam [nTeam] += bonus;
+gameData.multigame.kills.nTeam [nTeam] %= 1000;
+CheckScoreGoal (nPlayer);
 MultiSortKillList ();
 MultiShowPlayerList ();
 }
@@ -5051,7 +5036,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoStolenItems, 1},
 	{MultiDoWallStatus, 1},
 	{MultiDoHeartBeat, 1},
-	{MultiDoKillGoalCounts, 1},
+	{MultiDoScoreGoalCounts, 1},
 	{MultiDoSeismic, 1},
 	{MultiDoLight, 1},
 	{MultiDoStartTrigger, 1},
@@ -5203,9 +5188,9 @@ switch (nType) {
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoLight (buf);
 		break;
-	case MULTI_KILLGOALS:
+	case MULTI_SCOREGOALS:
 		if (!gameStates.app.bEndLevelSequence)
-			MultiDoKillGoalCounts (buf);
+			MultiDoScoreGoalCounts (buf);
 		break;
 	case MULTI_ENDLEVEL_START:
 		if (!gameStates.app.bEndLevelSequence)

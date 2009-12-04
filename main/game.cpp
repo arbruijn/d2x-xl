@@ -137,7 +137,7 @@ void SlideTextures (void);
 void PowerupGrabCheatAll (void);
 
 //	Other functions
-void MultiCheckForKillGoalWinner (bool bForce);
+void MultiCheckForScoreGoalWinner (bool bForce);
 void MultiCheckForEntropyWinner (void);
 void DefaultAllSettings (void);
 
@@ -1434,7 +1434,7 @@ if (IsMultiGame) {
 	tracker.AddServer ();
    MultiDoFrame ();
 	CheckMonsterballScore ();
-	MultiCheckForKillGoalWinner (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))));
+	MultiCheckForScoreGoalWinner (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))));
 	MultiCheckForEntropyWinner ();
   }
 if (bRenderFrame) {

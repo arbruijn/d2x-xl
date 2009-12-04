@@ -115,7 +115,7 @@ class __pack__ CPlayerData {
 		fix     cloakTime;            // Time cloaked
 		fix     invulnerableTime;     // Time invulnerable
 
-		short   nKillGoalCount;       // Num of players killed this level
+		short   nScoreGoalCount;       // Num of players killed this level
 		short   netKilledTotal;			// Number of times killed total
 		short   netKillsTotal;        // Number of net kills total
 		short   numKillsLevel;        // Number of kills this level

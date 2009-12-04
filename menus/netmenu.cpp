@@ -391,9 +391,9 @@ if (menu [optCoop].m_value) {
 		}
 	if (!(netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-	if (netGame.xPlayTimeAllowed || netGame.nKillGoal) {
+	if (netGame.xPlayTimeAllowed || netGame.nScoreGoal) {
 		netGame.xPlayTimeAllowed = 0;
-		netGame.nKillGoal = 0;
+		netGame.nScoreGoal = 0;
 		}
 	}
 else {// if !Coop game
@@ -414,9 +414,9 @@ return nCurItem;
 //------------------------------------------------------------------------------
 
 fix LastPTA;
-int LastKillGoal;
+int LastScoreGoal;
 
-int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight;
+int optSetPower, optPlayTime, optScoreGoal, optSocket, optMarkerView, optLight;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
 int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optAutoDL, optDLTimeout;
 int optHeadlights, optPowerupLights, optSpotSize, optSmokeGrenades, optMaxSmokeGrens;
@@ -442,11 +442,11 @@ if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != LastPTA)) {
 	LastPTA = netGame.xPlayTimeAllowed;
 	menu [optPlayTime].m_bRebuild = 1;
 	}
-if ((optKillGoal >= 0) && (menu [optKillGoal].m_value != LastKillGoal)) {
-	mpParams.nKillGoal = netGame.nKillGoal = menu [optKillGoal].m_value;
-	sprintf (menu [optKillGoal].m_text, TXT_KILLGOAL, netGame.nKillGoal * 5);
-	LastKillGoal = netGame.nKillGoal;
-	menu [optKillGoal].m_bRebuild = 1;
+if ((optScoreGoal >= 0) && (menu [optScoreGoal].m_value != LastScoreGoal)) {
+	mpParams.nScoreGoal = netGame.nScoreGoal = menu [optScoreGoal].m_value;
+	sprintf (menu [optScoreGoal].m_text, TXT_SCOREGOAL, netGame.nScoreGoal * 5);
+	LastScoreGoal = netGame.nScoreGoal;
+	menu [optScoreGoal].m_bRebuild = 1;
 	}
 
 if (optAutoDL >= 0) {
@@ -479,7 +479,7 @@ void NetworkMoreGameOptions (void)
 	static int choice = 0;
 
 	int		i;
-	char		szPlayTime [80], szKillGoal [80], szInvul [50],
+	char		szPlayTime [80], szScoreGoal [80], szInvul [50],
 				szSocket [6], szPPS [6];
 	CMenu		m;
 
@@ -493,17 +493,17 @@ do {
 	optReactorLife = m.AddSlider (szInvul + 1, mpParams.nReactorLife, 0, 10, KEY_R, HTX_MULTI2_REACTOR); 
 	if (IsCoopGame) {
 		optPlayTime =
-		optKillGoal = -1;
+		optScoreGoal = -1;
 		LastPTA =
-		LastKillGoal = 0;
+		LastScoreGoal = 0;
 		}
 	else {
 		sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
 		*szPlayTime = * (TXT_MAXTIME - 1);
 		optPlayTime = m.AddSlider (szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
-		sprintf (szKillGoal + 1, TXT_KILLGOAL, netGame.nKillGoal * 5);
-		*szKillGoal = * (TXT_KILLGOAL - 1);
-		optKillGoal = m.AddSlider (szKillGoal + 1, mpParams.nKillGoal, 0, 10, KEY_K, HTX_MULTI2_KILLGOAL);
+		sprintf (szScoreGoal + 1, TXT_SCOREGOAL, netGame.nScoreGoal * 5);
+		*szScoreGoal = * (TXT_SCOREGOAL - 1);
+		optScoreGoal = m.AddSlider (szScoreGoal + 1, mpParams.nScoreGoal, 0, 10, KEY_K, HTX_MULTI2_SCOREGOAL);
 		}
 	optStartInvul = m.AddCheck (TXT_INVUL_RESPAWN, mpParams.bInvul, KEY_I, HTX_MULTI2_INVUL);
 	optMarkerView = m.AddCheck (TXT_MARKER_CAMS, mpParams.bMarkerView, KEY_C, HTX_MULTI2_MARKERCAMS);
@@ -537,7 +537,7 @@ do {
 			}
 		}
 
-	LastKillGoal = netGame.nKillGoal;
+	LastScoreGoal = netGame.nScoreGoal;
 	LastPTA = mpParams.nMaxTime;
 
 doMenu:

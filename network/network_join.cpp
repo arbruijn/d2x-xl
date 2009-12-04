@@ -214,7 +214,7 @@ gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
 memset (gameData.multigame.kills.matrix [nPlayer], 0, MAX_PLAYERS * sizeof (short)); 
 gameData.multiplayer.players [nPlayer].score = 0;
 gameData.multiplayer.players [nPlayer].flags = 0;
-gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
+gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
 if (nPlayer == gameData.multiplayer.nPlayers) {
 	gameData.multiplayer.nPlayers++;
 	netGame.nNumPlayers = gameData.multiplayer.nPlayers;
@@ -450,7 +450,7 @@ else {
 	}
 if (IsTeamGame)
 	ChoseTeam (nPlayer);
-gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
+gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
 gameData.multiplayer.players [nPlayer].connected = 0;
 // Send updated OBJECTS data to the new/returning CPlayerData
 syncP->player [0] = *player;
@@ -482,7 +482,7 @@ npiP->versionMinor = player->player.versionMinor;
 npiP->rank = player->player.rank;
 npiP->connected = 1;
 NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
-gameData.multiplayer.players [gameData.multiplayer.nPlayers].nKillGoalCount = 0;
+gameData.multiplayer.players [gameData.multiplayer.nPlayers].nScoreGoalCount = 0;
 gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
 ResetPlayerTimeout (gameData.multiplayer.nPlayers, -1);
 gameData.multiplayer.nPlayers++;
