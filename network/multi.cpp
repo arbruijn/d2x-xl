@@ -515,6 +515,7 @@ if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal (bForce)
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
 		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		}	
+	gameData.reactor.bDestroyed = -1;
 	}
 }
 
@@ -3747,9 +3748,9 @@ else {
 
 void MultiCheckForScoreGoalWinner (bool bForce)
 {
-	int h = 0, nPlayer = 0;
+	int h = 0, nPlayer = -1;
 
-if (gameData.reactor.bDestroyed)
+if (gameData.reactor.bDestroyed < 0)
 	return;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (h < gameData.multiplayer.players [i].nScoreGoalCount) {
