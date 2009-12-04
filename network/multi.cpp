@@ -504,7 +504,7 @@ return bNone ? 0 : netGame.nScoreGoal ? netGame.nScoreGoal * BonusScore () : 0x7
 
 static void CheckScoreGoal (int nPlayer, bool bForce = false)
 {
-if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal ()) {
+if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal (bForce)) {
 	if (nPlayer != gameData.multiplayer.nLocalPlayer) 
 		HUDInitMessage (TXT_REACH_SCOREGOAL2, gameData.multiplayer.players [nPlayer].callsign);
 	else {
