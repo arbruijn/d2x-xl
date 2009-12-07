@@ -257,7 +257,7 @@ if (objP->cType.aiInfo.xDyingStartTime) {
 	if (rval) {
 		objP->Explode (I2X (1)/4);
 		audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
-		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->info.nId).thief))
+		if (!gameOpts->gameplay.bNoThief && (gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->info.nId).thief))
 			RecreateThief (objP);
 		}
 	return 1;
