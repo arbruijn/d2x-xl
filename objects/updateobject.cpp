@@ -516,7 +516,7 @@ if (OBJ_IDX (this) == nDbgObj)
 if (info.nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId).thief) {
 #if 1
-		ApplyDamageToRobot (info.xShields + I2X (1));
+		ApplyDamageToRobot (info.xShields + I2X (1), -1);
 #else
 		info.xShields = 0;
 		info.xLifeLeft = 0;
