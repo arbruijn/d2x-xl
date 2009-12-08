@@ -95,8 +95,6 @@ u_int32_t nCurrentVGAMode;
 
 //do menus work in 640x480 or 320x200?
 //PC version sets this in main ().  Mac versios is always high-res, so set to 1 here
-int Debug_pause=0;				//John's debugging pause system
-
 //	Toggle_var points at a variable which gets !ed on ctrl-alt-T press.
 
 #if DBG                          //these only exist if debugging

@@ -74,9 +74,6 @@ int	redbookVolume = 255;
 
 //	External Variables ---------------------------------------------------------
 
-extern int	*Toggle_var;
-extern int	Debug_pause;
-
 extern fix	showViewTextTimer;
 
 //	Function prototypes --------------------------------------------------------
@@ -1015,12 +1012,6 @@ void HandleTestKey(int key)
 			ToggleOutlineMode ();
 			break;
 	#endif
-		case KEYDBGGED + KEY_T:
-			*Toggle_var = !*Toggle_var;
-#if TRACE
-			console.printf (CON_DBG, "Variable at %08x set to %i\n", Toggle_var, *Toggle_var);
-#endif
-			break;
 		case KEYDBGGED + KEY_L:
 			if (++gameStates.render.nLighting >= 2)
 				gameStates.render.nLighting = 0;
@@ -1094,10 +1085,6 @@ void HandleTestKey(int key)
 			break;
 		case KEYDBGGED + KEY_PERIOD:
 			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 68985);
-			break;
-
-		case KEYDBGGED + KEY_P + KEY_SHIFTED:
-			Debug_pause = 1;
 			break;
 
 		case KEYDBGGED + KEY_B: {

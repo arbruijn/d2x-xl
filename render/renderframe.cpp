@@ -44,15 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "menubackground.h"
 
-#if DBG
-extern int Debug_pause;				//John's debugging pause system
-#endif
-
-#if DBG
-extern int bSavingMovieFrames;
-#else
 #define bSavingMovieFrames 0
-#endif
 
 //------------------------------------------------------------------------------
 
