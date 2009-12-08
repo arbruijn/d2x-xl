@@ -464,6 +464,7 @@ class CNetGameInfo {
 
 	public:
 		CNetGameInfo() { memset (&m_info, 0, sizeof (m_info)); }
+		CNetGameInfo (tNetGameInfo* ngi) { *this = *ngi; }
 
 		inline size_t Size (void)  { return gameStates.app.bD2XLevel ? sizeof (tNetGameInfo) : sizeof (tNetGameInfo) - sizeof (tNetGameInfoD2X) + sizeof (tNetGameInfoD2); }
 

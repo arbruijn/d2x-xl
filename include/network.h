@@ -459,6 +459,9 @@ class CEndLevelInfo {
 	public:
 		tEndLevelInfo	m_info;
 
+		CEndLevelInfo() { memset (&m_info, 0, sizeof (m_info)); }
+		CEndLevelInfo (tEndLevelInfo* eli) { *this = *eli; }
+
 		inline size_t Size (void) { return gameStates.app.bD2XLevel ? sizeof (m_info.d2x) : sizeof (m_info.d2); }
 
 		tEndLevelInfo& operator= (tEndLevelInfo& other) {

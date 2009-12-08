@@ -41,9 +41,8 @@ void NetworkReadEndLevelPacket (ubyte *dataP)
 {
 	// Special packet for end of level syncing
 	int				nPlayer;
-	CEndLevelInfo	eli;
+	CEndLevelInfo	eli (reinterpret_cast<tEndLevelInfo*> (dataP));
 
-memcpy (&eli.m_info, dataP, eli.Size ());
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	int i, j;
 

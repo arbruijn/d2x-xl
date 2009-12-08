@@ -147,9 +147,9 @@ extern const char *pszRankStrings [];
 extern struct ipx_recv_data ipx_udpSrc;
 
 extern int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
-#if 0
+#if 1
 extern CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
-extern CExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
+extern tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
 extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 extern CAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
 #endif

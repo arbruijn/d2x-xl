@@ -60,8 +60,8 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 
 void NetworkProcessGameInfo (ubyte *dataP)
 {
-	int i;
-	CNetGameInfo *newGame = reinterpret_cast<tNetGameInfo*> (dataP);
+	int				i;
+	CNetGameInfo	newGame (reinterpret_cast<tNetGameInfo*> (dataP));
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CNetGameInfo tmp_info;
@@ -73,13 +73,13 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 networkData.bWaitingForPlayerInfo = 0;
 #if SECURITY_CHECK
-if (newGame->m_info.nSecurity != playerInfoP->m_info.nSecurity) {
+if (newGame.m_info.nSecurity != playerInfoP->m_info.nSecurity) {
 	Int3 ();     // Get Jason
    return;     // If this first half doesn't go with the second half
    }
 #endif
 Assert (playerInfoP != NULL);
-i = FindActiveNetGame (newGame->szGameName, newGame->nSecurity);
+i = FindActiveNetGame (newGame.m_info.szGameName, newGame.m_info.nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
 	console.printf (CON_DBG, "Too many netgames.\n");
@@ -87,15 +87,15 @@ if (i == MAX_ACTIVE_NETGAMES) {
 	return;
 	}
 if (i == networkData.nActiveGames) {
-	if (newGame->nNumPlayers == 0)
+	if (newGame.m_info.nNumPlayers == 0)
 		return;
 	networkData.nActiveGames++;
 	}
 networkData.bGamesChanged = 1;
 // MWA  memcpy (&activeNetGames [i], dataP, sizeof (tNetGameInfo);
 nLastNetGameUpdate [i] = SDL_GetTicks ();
-memcpy (activeNetGames + i, reinterpret_cast<ubyte*> (newGame), sizeof (tNetGameInfo));
-memcpy (activeNetPlayers + i, playerInfoP, sizeof (tAllNetPlayersInfo));
+activeNetGames [i] = newGame;
+activeNetPlayers [i] = *playerInfoP;
 if (networkData.nSecurityCheck)
 #if SECURITY_CHECK
 	if (activeNetGames [i].m_info.nSecurity == networkData.nSecurityCheck)
@@ -112,9 +112,9 @@ if (activeNetGames [i].m_info.nNumPlayers == 0) {	// Delete this game
 
 void NetworkProcessLiteInfo (ubyte *dataP)
 {
-	int				i;
-	tNetGameInfo	*actGameP;
-	tNetGameInfoLite		*newInfo = reinterpret_cast<tNetGameInfoLite*> (dataP);
+	int					i;
+	CNetGameInfo*		actGameP;
+	tNetGameInfoLite*	newInfo = reinterpret_cast<tNetGameInfoLite*> (dataP);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tNetGameInfoLite		tmp_info;
 
@@ -139,23 +139,23 @@ nLastNetGameUpdate [i] = SDL_GetTicks ();
 // See if this is really a Hoard/Entropy/Monsterball game
 // If so, adjust all the dataP accordingly
 if (HoardEquipped ()) {
-	if (actGameP->gameFlags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY | NETGAME_FLAG_MONSTERBALL)) {
-		if ((actGameP->gameFlags & NETGAME_FLAG_MONSTERBALL) == NETGAME_FLAG_MONSTERBALL)
-			actGameP->gameMode = NETGAME_MONSTERBALL; 
-		else if (actGameP->gameFlags & NETGAME_FLAG_HOARD)
-			actGameP->gameMode = NETGAME_HOARD;					  
-		else if (actGameP->gameFlags & NETGAME_FLAG_ENTROPY)
-			actGameP->gameMode = NETGAME_ENTROPY;					  
-		actGameP->gameStatus = NETSTAT_PLAYING;
-		if (actGameP->gameFlags & NETGAME_FLAG_TEAM_HOARD)
-			actGameP->gameMode = NETGAME_TEAM_HOARD;					  
-		if (actGameP->gameFlags & NETGAME_FLAG_REALLY_ENDLEVEL)
-			actGameP->gameStatus = NETSTAT_ENDLEVEL;
-		if (actGameP->gameFlags & NETGAME_FLAG_REALLY_FORMING)
-			actGameP->gameStatus = NETSTAT_STARTING;
+	if (actGameP->m_info.gameFlags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY | NETGAME_FLAG_MONSTERBALL)) {
+		if ((actGameP->m_info.gameFlags & NETGAME_FLAG_MONSTERBALL) == NETGAME_FLAG_MONSTERBALL)
+			actGameP->m_info.gameMode = NETGAME_MONSTERBALL; 
+		else if (actGameP->m_info.gameFlags & NETGAME_FLAG_HOARD)
+			actGameP->m_info.gameMode = NETGAME_HOARD;					  
+		else if (actGameP->m_info.gameFlags & NETGAME_FLAG_ENTROPY)
+			actGameP->m_info.gameMode = NETGAME_ENTROPY;					  
+		actGameP->m_info.gameStatus = NETSTAT_PLAYING;
+		if (actGameP->m_info.gameFlags & NETGAME_FLAG_TEAM_HOARD)
+			actGameP->m_info.gameMode = NETGAME_TEAM_HOARD;					  
+		if (actGameP->m_info.gameFlags & NETGAME_FLAG_REALLY_ENDLEVEL)
+			actGameP->m_info.gameStatus = NETSTAT_ENDLEVEL;
+		if (actGameP->m_info.gameFlags & NETGAME_FLAG_REALLY_FORMING)
+			actGameP->m_info.gameStatus = NETSTAT_STARTING;
 		}
 	}
-if (actGameP->nNumPlayers == 0)
+if (actGameP->m_info.nNumPlayers == 0)
 	DeleteActiveNetGame (i);
 }
 
@@ -310,7 +310,7 @@ if (gnum == -1) {
 #else
 gnum = 0;
 #endif
-sprintf (mText [num], TXT_GAME_PLRS, activeNetGames [gnum].szGameName); 
+sprintf (mText [num], TXT_GAME_PLRS, activeNetGames [gnum].m_info.szGameName); 
 num++;
 for (i = 0; i < nPlayers; i++) {
 	l = dataP [count++];
