@@ -901,8 +901,6 @@ void HandleGameKey(int key)
 
 //	--------------------------------------------------------------------------
 
-void ToggleMovieSaving(void);
-
 #if DBG
 
 void HandleTestKey(int key)
@@ -1111,16 +1109,6 @@ void HandleTestKey(int key)
 			item = m.Menu (NULL, "Briefing to play?");
 			if (item != -1)
 				briefing.Run (text, 1);
-			break;
-		}
-
-		case KEYDBGGED + KEY_F5:
-			ToggleMovieSaving ();
-			break;
-
-		case KEYDBGGED + KEY_SHIFTED + KEY_F5: {
-			extern int Movie_fixed_frametime;
-			Movie_fixed_frametime = !Movie_fixed_frametime;
 			break;
 		}
 

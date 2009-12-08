@@ -277,7 +277,7 @@ return vMuzzle;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
-static int FireWeaponDelayedWithSpread (
+int FireWeaponDelayedWithSpread (
 	CObject *objP,
 	ubyte nLaserType,
 	int nGun,
