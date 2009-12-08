@@ -8389,6 +8389,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\weapons\createweapon.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\weapons\dropweapon.cpp"
 						>
 						<FileConfiguration
@@ -8457,7 +8461,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\weapons\fireweweapon.cpp"
+						RelativePath="..\weapons\fireweapon.cpp"
 						>
 					</File>
 					<File

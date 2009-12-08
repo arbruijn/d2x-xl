@@ -1534,7 +1534,7 @@ else { // Note the link to above!
 	if (!FusionBump ())
 		return 1;
 	if (gameData.laser.nGlobalFiringCount)
-		gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//FireWeapon (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
+		gameData.laser.nGlobalFiringCount -= LocalPlayerFireGun ();	//FireWeapon (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
 	if (gameData.laser.nGlobalFiringCount < 0)
 		gameData.laser.nGlobalFiringCount = 0;
 	}
