@@ -16,11 +16,7 @@
 #define D2X_MINOR		14
 #endif
 #ifndef D2X_MICRO
-<<<<<<< .mine
-#define D2X_MICRO		164
-=======
 #define D2X_MICRO		166
->>>>>>> .r5581
 #endif
 
 #define VERSION_TYPE		"Full Version"
