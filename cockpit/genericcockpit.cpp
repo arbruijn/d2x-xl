@@ -1132,7 +1132,7 @@ return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitData.hit.nObject == nObject)
 }
 
 //	-----------------------------------------------------------------------------
-static int qqq = 0;
+
 //show names of teammates & players carrying flags
 void CGenericCockpit::DrawPlayerNames (void)
 {
@@ -1149,7 +1149,7 @@ void CGenericCockpit::DrawPlayerNames (void)
 	int w, h, aw;
 	int x0, y0, x1, y1;
 	int nColor;
-	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
 bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
@@ -1289,7 +1289,7 @@ if (!(IsMultiGame && gameData.multigame.kills.bShowList))
 	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
 	static int faw = -1;
 
-	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
 if (bGetPing)
 	networkData.tLastPingStat = t;
@@ -1299,7 +1299,7 @@ if (gameData.multigame.kills.xShowListTimer > 0) {
 		gameData.multigame.kills.bShowList = 0;
 	}
 nPlayers = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (playerList);
-nLeft = (nPlayers <= 4) ? nPlayers : (nPlayers + 1) / 2;
+nLeft = /*(nPlayers <= MAXPLAYERS / 2) ? nPlayers :*/ (nPlayers + 1) / 2;
 //If font size changes, this code might not work right anymore
 //Assert (GAME_FONT->Height ()==5 && GAME_FONT->Width ()==7);
 fth = GAME_FONT->Height ();

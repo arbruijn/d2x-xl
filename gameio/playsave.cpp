@@ -2030,8 +2030,6 @@ if (profile.Busy ())
 	int		id, bRewriteIt = 0, nMaxControls;
 	uint i;
 
-Assert (gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
-
 sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
 	PrintLog ("   couldn't read player file '%s'\n", filename);
