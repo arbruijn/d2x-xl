@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "grdef.h"
 #include "gamepal.h"
+#include "pcx.h"
 
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
@@ -1047,6 +1048,10 @@ if (!BitmapLoaded (bmi, bD1))
 
 //------------------------------------------------------------------------------
 
+#define BACKGROUND_NAME "statback.pcx"
+
+extern CBitmap bmBackground;
+
 void LoadGameBackground (void)
 {
 	int pcx_error;
@@ -1056,7 +1061,7 @@ void LoadGameBackground (void)
 bmBackground.DestroyBuffer ();
 pcx_error = PCXReadBitmap (szBackground [gameStates.app.cheats.bJohnHeadOn], &bmBackground, BM_LINEAR, 0);
 if (pcx_error != PCX_ERROR_NONE)
-	Error ("File %s - PCX error: %s",BACKGROUND_NAME,pcx_errormsg (pcx_error));
+	Error ("File %s - PCX error: %s", BACKGROUND_NAME, pcx_errormsg (pcx_error));
 bmBackground.Remap (NULL, -1, -1);
 }
 

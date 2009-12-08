@@ -108,8 +108,6 @@ fix xFixedFrameTime = 0;          //if non-zero, set frametime to this
 
 CBitmap bmBackground;
 
-#define BACKGROUND_NAME "statback.pcx"
-
 //	Function prototypes for GAME.C exclusively.
 
 #define cv_w  Bitmap ().Width ()

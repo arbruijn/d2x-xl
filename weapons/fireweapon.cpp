@@ -1013,7 +1013,7 @@ for (i = 0; i < j; i++, h = !h) {
 //				    cannon.
 void FireGun (void)
 {
-	int h, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
+	int i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 
 if (gameData.weapons.firing [0].nDuration)
 	gameData.laser.nGlobalFiringCount += WI_fireCount (i);
