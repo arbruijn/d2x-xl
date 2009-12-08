@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamefont.h"
 #include "gamesave.h"
 #include "gamepal.h"
-#include "laser.h"
+#include "fireweapon.h"
 #include "byteswap.h"
 #include "multi.h"
 #include "makesig.h"

@@ -1515,7 +1515,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		longjmp (gameExitPoint, 0);		// Go back to menu
 	}
 else { // Note the link to above!
-	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
+	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  DoWeaponSequence modifies this.
 	//PrintLog ("UpdateAllObjects\n");
 	if (!UpdateAllObjects ())
 		return 0;
@@ -1527,14 +1527,14 @@ else { // Note the link to above!
 	FuelcenUpdateAll ();
 	//PrintLog ("DoAIFrameAll\n");
 	DoAIFrameAll ();
-	if (AllowedToFireLaser ()) {
+	if (AllowedToFireGun ()) {
 		//PrintLog ("FireLaser\n");
 		FireLaser ();				// Fire Laser!
 		}
 	if (!FusionBump ())
 		return 1;
 	if (gameData.laser.nGlobalFiringCount)
-		gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
+		gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//FireWeapon (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
 	if (gameData.laser.nGlobalFiringCount < 0)
 		gameData.laser.nGlobalFiringCount = 0;
 	}

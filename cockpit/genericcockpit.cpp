@@ -1049,7 +1049,7 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 
 x = CCanvas::Current ()->Width () / 2;
 y = CCanvas::Current ()->Height () / 2;
-bLaserReady = AllowedToFireLaser ();
+bLaserReady = AllowedToFireGun ();
 bMissileReady = AllowedToFireMissile (-1, 1);
 bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
 bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 1);

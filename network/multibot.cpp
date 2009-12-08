@@ -658,11 +658,11 @@ else
 	CalcGunPoint (&vGunPoint, &OBJECTS [nRobot], nGun);
 robotP = &ROBOTINFO (OBJECTS [nRobot].info.nId);
 if (nGun == -1) 
-	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);
+	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);
 else if (nGun == -2)
-	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, SMARTMINE_ID, 1);
+	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, SMARTMINE_ID, 1);
 else
-	CreateNewLaserEasy (&vFire, &vGunPoint, nRobot, robotP->nWeaponType, 1);
+	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, robotP->nWeaponType, 1);
 }
 
 //-----------------------------------------------------------------------------

@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "collide.h"
 #include "gameseg.h"
-#include "laser.h"
+#include "fireweapon.h"
 #include "omega.h"
 #include "network.h"
 #include "multi.h"

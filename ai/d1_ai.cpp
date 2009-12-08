@@ -27,7 +27,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "rendermine.h"
 #include "error.h"
 #include "d1_ai.h"
-#include "laser.h"
+#include "fireweapon.h"
 #include "collision_math.h"
 #include "polymodel.h"
 #include "loadgamedata.h"
@@ -826,7 +826,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 		}
 	}
 
-	CreateNewLaserEasy ( &vFire, fire_point, objP->Index (), botInfoP->nWeaponType, 1);
+	CreateNewWeaponSimple ( &vFire, fire_point, objP->Index (), botInfoP->nWeaponType, 1);
 
 	if (IsMultiGame)
  {
@@ -2142,7 +2142,7 @@ if (DoAnyRobotDyingFrame (objP))
 				vFire = -vFire;
 				fire_pos = objP->info.position.vPos + vFire;
 
-				CreateNewLaserEasy( &vFire, &fire_pos, objP->Index (), PROXMINE_ID, 1);
+				CreateNewWeaponSimple( &vFire, &fire_pos, objP->Index (), PROXMINE_ID, 1);
 				ailP->nextPrimaryFire = I2X (5);		//	Drop a proximity bomb every 5 seconds.
 
 				#ifdef NETWORK

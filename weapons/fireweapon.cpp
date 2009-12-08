@@ -557,7 +557,7 @@ return nObject;
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
-int CreateNewLaserEasy (CFixVector* vDirection, CFixVector* vPosition, short parent, ubyte nWeaponType, int bMakeSound)
+int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short parent, ubyte nWeaponType, int bMakeSound)
 {
 	CHitQuery	fq;
 	CHitData		hitData;
@@ -684,7 +684,7 @@ return vMuzzle;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
-int LaserPlayerFireSpreadDelay (
+static int FireWeaponDelayedWithSpread (
 	CObject *objP,
 	ubyte nLaserType,
 	int nGun,
@@ -698,8 +698,8 @@ int LaserPlayerFireSpreadDelay (
 	short					nLaserSeg;
 	int					nFate;
 	CFixVector			vLaserPos, vLaserDir, *vGunPoints;
-	CHitQuery	fq;
-	CHitData		hitData;
+	CHitQuery			fq;
+	CHitData				hitData;
 	int					nObject;
 	CObject*				laserP;
 #if FULL_COCKPIT_OFFS
@@ -865,8 +865,8 @@ return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int) extraGameInfo [IsMultiGame]
 }
 
 //-------------------------------------------------------------------------------------------
-//sequence this laser CObject for this _frame_ (underscores added here to aid MK in his searching!)
-void LaserDoWeaponSequence (CObject *objP)
+//sequence this weapon object for this _frame_ (underscores added here to aid MK in his searching!)
+void DoWeaponSequence (CObject *objP)
 {
 	CObject	*gmObjP;
 	fix		xWeaponSpeed, xScaleFactor, xDistToTarget;
@@ -1023,16 +1023,16 @@ Controls [0].fireSecondaryDownCount = 0;
 
 int LocalPlayerFireLaser (void)
 {
-	CPlayerData	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
-	fix		xEnergyUsed;
-	int		nAmmoUsed, nPrimaryAmmo;
-	int		nWeaponIndex;
-	int		rVal = 0;
-	int 		nRoundsPerShot = 1;
-	int		bGatling = (gameData.weapons.nPrimary == GAUSS_INDEX) ? 2 : (gameData.weapons.nPrimary == VULCAN_INDEX) ? 1 : 0;
-	fix		addval;
-	static int nSpreadfireToggle = 0;
-	static int nHelixOrient = 0;
+	CPlayerData*	playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
+	fix				xEnergyUsed;
+	int				nAmmoUsed, nPrimaryAmmo;
+	int				nWeaponIndex;
+	int				rVal = 0;
+	int 				nRoundsPerShot = 1;
+	int				bGatling = (gameData.weapons.nPrimary == GAUSS_INDEX) ? 2 : (gameData.weapons.nPrimary == VULCAN_INDEX) ? 1 : 0;
+	fix				addval;
+	static int		nSpreadfireToggle = 0;
+	static int		nHelixOrient = 0;
 
 if (gameStates.app.bPlayerIsDead)
 	return 0;
@@ -1090,7 +1090,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
 			flags |= LASER_QUAD;
 #if 1
-		int fired = LaserFireObject ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
+		int fired = FireWeapon ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
 		if (fired) {
 			rVal += fired;
 			if (bGatling) {
@@ -1116,7 +1116,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 				}
 			}
 #else
-		rVal += LaserFireObject ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
+		rVal += FireWeapon ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
 		playerP->energy -= (xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount;
 		if (playerP->energy < 0)
 			playerP->energy = 0;
@@ -1240,9 +1240,9 @@ if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (objP);
-	if (0 <= LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
 		nFired++;
-	if (0 <= LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 		nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECTS [nLightObj].Die ();
@@ -1388,9 +1388,9 @@ if (!nFired && (nLightObj >= 0))
 	OBJECTS [nLightObj].Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (objP);
-	if (0 <= LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
 	nFired++;
-	if (0 <= LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
+	if (0 <= FireWeaponDelayedWithSpread (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 	nFired++;
 	if (!nFired && (nLightObj >= 0))
 		OBJECTS [nLightObj].Die ();
@@ -1431,7 +1431,7 @@ pWeaponHandler weaponHandlers [] = {
 //	More than one shot is fired with a pseudo-delay so that players on show machines can fire (for themselves
 //	or other players) often enough for things like the vulcan cannon.
 
-int LaserFireObject (short nObject, ubyte nWeapon, int nLevel, int nFlags, int nRoundsPerShot)
+int FireWeapon (short nObject, ubyte nWeapon, int nLevel, int nFlags, int nRoundsPerShot)
 {
 if (nWeapon > OMEGA_INDEX) {
 	gameData.weapons.nPrimary = 0;

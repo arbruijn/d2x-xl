@@ -153,7 +153,7 @@ else if (nSignal == SIGTERM)
 else
 	PrintLog ("Unknown signal\n");
 #if !DBG
-//exit (1);
+exit (1);
 #endif
 }
 

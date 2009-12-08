@@ -286,7 +286,7 @@ switch (info.controlType) {
 		break;
 
 	case CT_WEAPON:
-		LaserDoWeaponSequence (this);
+		DoWeaponSequence (this);
 		break;
 
 	case CT_EXPLOSION:

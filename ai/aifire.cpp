@@ -316,7 +316,7 @@ if ((botInfoP->nSecWeaponType != -1) && ((nWeaponType < 0) || !nGun))
 	nWeaponType = botInfoP->nSecWeaponType;
 if (nWeaponType < 0)
 	return;
-if (0 > (nShot = CreateNewLaserEasy (&vFire, vFirePoint, objP->Index (), (ubyte) nWeaponType, 1)))
+if (0 > (nShot = CreateNewWeaponSimple (&vFire, vFirePoint, objP->Index (), (ubyte) nWeaponType, 1)))
 	return;
 
 lightClusterManager.AddForAI (objP, nObject, nShot);

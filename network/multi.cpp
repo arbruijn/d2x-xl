@@ -1342,7 +1342,7 @@ else {
 		else
 			gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		}
-	LaserFireObject ((short) gameData.multiplayer.players [nPlayer].nObject, weapon, (int)buf [3], flags, (int)buf [5]);
+	FireWeapon ((short) gameData.multiplayer.players [nPlayer].nObject, weapon, (int)buf [3], flags, (int)buf [5]);
 	if (weapon == FUSION_INDEX)
 		gameData.fusion.xCharge = xSaveCharge;
 	}
@@ -1727,7 +1727,7 @@ nObject = GET_INTEL_SHORT (buf + count);
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 if (0 <= (i = FindReactor (OBJECTS + nObject)))
-	CreateNewLaserEasy (&to_target, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
+	CreateNewWeaponSimple (&to_target, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
 }
 
 //-----------------------------------------------------------------------------

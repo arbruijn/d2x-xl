@@ -195,7 +195,7 @@ sbyte   bIsEnergyWeapon [MAX_WEAPON_TYPES] = {
 
 //	-----------------------------------------------------------------------------
 
-int AllowedToFireLaser (void)
+int AllowedToFireGun (void)
 {
 	float	s;
 

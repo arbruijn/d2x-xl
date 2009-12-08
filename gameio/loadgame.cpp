@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "timer.h"
 #include "cameras.h"
 #include "rendermine.h"
-#include "laser.h"
+#include "fireweapon.h"
 #include "omega.h"
 #include "screens.h"
 #include "textures.h"

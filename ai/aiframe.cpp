@@ -392,7 +392,7 @@ if ((siP->ailP->nextPrimaryFire <= 0) && (gameData.ai.nTargetVisibility)) {
 	fire_vec = objP->info.position.mOrient.FVec ();
 	fire_vec = -fire_vec;
 	fire_pos = objP->info.position.vPos + fire_vec;
-	CreateNewLaserEasy (&fire_vec, &fire_pos, objP->Index (), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? ROBOT_SMARTMINE_ID : PROXMINE_ID, 1);
+	CreateNewWeaponSimple (&fire_vec, &fire_pos, objP->Index (), (aiP->SUB_FLAGS & SUB_FLAGS_SPROX) ? ROBOT_SMARTMINE_ID : PROXMINE_ID, 1);
 	siP->ailP->nextPrimaryFire = (I2X (1)/2)* (NDL+5 - gameStates.app.nDifficultyLevel);      // Drop a proximity bomb every 5 seconds.
 	if (siP->bMultiGame) {
 		AIMultiSendRobotPos (objP->Index (), -1);
@@ -866,7 +866,7 @@ if (siP->botInfoP->companion) {
 			;
 
 		if (bDoStuff && (CFixVector::Dot (objP->info.position.mOrient.FVec (), gameData.ai.target.vDir) < I2X (1) / 2)) {
-			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
+			CreateNewWeaponSimple (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = I2X (1)/2;
 			if (!gameData.escort.bMayTalk) // If buddy not talking, make him fire flares less often.
 				siP->ailP->nextPrimaryFire += d_rand ()*4;
@@ -899,7 +899,7 @@ if (siP->botInfoP->thief) {
 			}
 		if (bDoStuff) {
 			// @mk, 05/08/95: Firing flare from center of CObject, this is dumb...
-			CreateNewLaserEasy (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
+			CreateNewWeaponSimple (&objP->info.position.mOrient.FVec (), &objP->info.position.vPos, objP->Index (), FLARE_ID, 1);
 			siP->ailP->nextPrimaryFire = I2X (1) / 2;
 			if (gameData.thief.nStolenItem == 0)     // If never stolen an item, fire flares less often (bad: gameData.thief.nStolenItem wraps, but big deal)
 				siP->ailP->nextPrimaryFire += d_rand ()*4;

@@ -2159,7 +2159,7 @@ class CPigData {
 
 //------------------------------------------------------------------------------
 
-#include "laser.h"
+#include "fireweapon.h"
 
 class CMuzzleData {
 	public:
