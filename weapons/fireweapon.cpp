@@ -1008,5 +1008,18 @@ for (i = 0; i < j; i++, h = !h) {
 	}
 }
 
+//	-----------------------------------------------------------------------------
+//	Fire Laser:  Registers a laser fire, and performs special stuff for the fusion
+//				    cannon.
+void FireGun (void)
+{
+	int h, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
+
+if (gameData.weapons.firing [0].nDuration)
+	gameData.laser.nGlobalFiringCount += WI_fireCount (i);
+if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount)
+	ChargeFusion ();
+}
+
 //	-------------------------------------------------------------------------------------------
 // eof

@@ -3109,6 +3109,7 @@ class CFusionData {
 		fix	xCharge;
 		fix	xNextSoundTime;
 		fix	xLastSoundTime;
+		int	xFrameTime;
 };
 
 //------------------------------------------------------------------------------

@@ -184,6 +184,7 @@ void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, 
 
 void GrUpdate (int bClear);
 void SaveScreenShot (ubyte *buf, int automapFlag);
+void AutoScreenshot (void);
 
 /*
  * currently SDL and OGL are the only things that supports toggling

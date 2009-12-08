@@ -181,5 +181,106 @@ if (bTmpBuf)
 StartTime (0);
 }
 
+//-----------------------------------------------------------------------------
+
+int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, MAX_FRAMERATE};
+
+void AutoScreenshot (void)
+{
+	int	h;
+
+	static	time_t	t0 = 0;
+
+if (gameData.app.bGamePaused || gameStates.menus.nInMenu)
+	return;
+if (!(h = screenShotIntervals [gameOpts->app.nScreenShotInterval]))
+	return;
+if (gameStates.app.nSDLTicks - t0 < h * 1000)
+	return;
+t0 = gameStates.app.nSDLTicks;
+gameStates.app.bSaveScreenshot = 1;
+SaveScreenShot (0, 0);
+}
+
+//------------------------------------------------------------------------------
+
+// mac routine to drop contents of screen to a pict file using copybits
+// save a PICT to a file
+#ifdef MACINTOSH
+
+void SavePictScreen (int multiplayer)
+{
+	OSErr err;
+	int parid, i, count;
+	char *pfilename, filename [50], buf[512], cwd[FILENAME_MAX];
+	short fd;
+	FSSpec spec;
+	PicHandle pict_handle;
+	static int multiCount = 0;
+	StandardFileReply sf_reply;
+
+// dump the contents of the GameWindow into a picture using copybits
+
+	pict_handle = OpenPicture (&GameWindow->portRect);
+	if (pict_handle == NULL)
+		return;
+
+	CopyBits (&GameWindow->portBits, &GameWindow->portBits, &GameWindow->portRect, &GameWindow->portRect, srcBic, NULL);
+	ClosePicture ();
+
+// get the cwd to restore with chdir when done -- this keeps the mac world sane
+	if (!getcwd (cwd, FILENAME_MAX))
+		Int3 ();
+// create the fsspec
+
+	sprintf (filename, "screen%d", multiCount++);
+	pfilename = c2pstr (filename);
+	if (!multiplayer) {
+		show_cursor ();
+		StandardPutFile ("\pSave PICT as:", pfilename, &sf_reply);
+		if (!sf_reply.sfGood)
+			goto end;
+		memcpy (&spec, & (sf_reply.sfFile), sizeof (FSSpec));
+		if (sf_reply.sfReplacing)
+			FSpDelete (&spec);
+		err = FSpCreate (&spec, 'ttxt', 'PICT', smSystemScript);
+		if (err)
+			goto end;
+	} else {
+//		parid = GetAppDirId ();
+		err = FSMakeFSSpec (0, 0, pfilename, &spec);
+		if (err == nsvErr)
+			goto end;
+		if (err != fnfErr)
+			FSpDelete (&spec);
+		err = FSpCreate (&spec, 'ttxt', 'PICT', smSystemScript);
+		if (err != 0)
+			goto end;
+	}
+
+// write the PICT file
+	if (FSpOpenDF (&spec, fsRdWrPerm, &fd))
+		goto end;
+	memset (buf, 0, sizeof (buf);
+	count = 512;
+	if (FSWrite (fd, &count, buf))
+		goto end;
+	count = GetHandleSize ((Handle)pict_handle);
+	HLock ((Handle)pict_handle);
+	if (FSWrite (fd, &count, *pict_handle)) {
+		FSClose (fd);
+		FSpDelete (&spec);
+	}
+
+end:
+	HUnlock ((Handle)pict_handle);
+	DisposeHandle ((Handle)pict_handle);
+	FSClose (fd);
+	hide_cursor ();
+	chdir (cwd);
+}
+
+#endif
+
 //------------------------------------------------------------------------------
 

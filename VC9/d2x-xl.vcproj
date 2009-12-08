@@ -3413,6 +3413,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\main\gametime.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\main\highscores.cpp"
 						>
 						<FileConfiguration
@@ -8462,6 +8466,10 @@
 					</File>
 					<File
 						RelativePath="..\weapons\fireweapon.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\weapons\fusion.cpp"
 						>
 					</File>
 					<File
