@@ -308,7 +308,7 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 #endif
 if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].versionMinor & 0xF0)) {
+		if (gameData.multiplayer.players [i].connected && !(netPlayers.m_info.players [i].versionMinor & 0xF0)) {
 			MsgBox ("Warning!", NULL, 1, TXT_OK,
 								 "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
@@ -316,7 +316,7 @@ if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.m
 	}
 if (IS_MAC_SHARE && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].versionMinor & 0xF0)) {
+		if (gameData.multiplayer.players [i].connected && !(netPlayers.m_info.players [i].versionMinor & 0xF0)) {
 			MsgBox ("Warning!", NULL, 1 , TXT_OK,
 								 "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
@@ -1672,7 +1672,7 @@ for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	ResetPlayerData (bNewGame, bSecret, bRestore, i);
 if (IsCoopGame && networkData.nJoinState) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];
+		gameData.multiplayer.players [i].flags |= netGame.PlayerFlags () [i];
 	}
 
 if (IsMultiGame)
@@ -2060,7 +2060,7 @@ if (left < r)
 int GetRandomPlayerPosition (void)
 {
 	CObject		*objP;
-	tSpawnMap	spawnMap [MAX_NUM_NET_PLAYERS];
+	tSpawnMap	spawnMap [MAX_PLAYERS];
 	int			nSpawnPos = 0;
 	int			nSpawnSegs = 0;
 	int			i, j, bRandom;

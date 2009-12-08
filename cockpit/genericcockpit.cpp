@@ -518,8 +518,8 @@ if (Hide ())
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
-	timevar = I2X (netGame.xPlayTimeAllowed * 5 * 60);
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed ()) {
+	timevar = I2X (netGame.PlayTimeAllowed () * 5 * 60);
 	i = X2I (timevar - gameStates.app.xThisLevelTime) + 1;
 	sprintf (szScore, "T - %5d", i);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
@@ -1151,7 +1151,7 @@ void CGenericCockpit::DrawPlayerNames (void)
 	int nColor;
 	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
-bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
+bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.m_info.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
@@ -1283,7 +1283,7 @@ if (Hide ())
 if (!(IsMultiGame && gameData.multigame.kills.bShowList))
 	return;
 
-	int nPlayers, playerList [MAX_NUM_NET_PLAYERS];
+	int nPlayers, playerList [MAX_PLAYERS];
 	int nLeft, i, xo = 0, x0, x1, y0, fth, l;
 	int t = gameStates.app.nSDLTicks;
 	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
@@ -1333,10 +1333,10 @@ for (i = 0; i < nPlayers; i++) {
 			}
 		if (i == nLeft)
 			y0 = y;
-		if (netGame.nScoreGoal || netGame.xPlayTimeAllowed)
+		if (netGame.ScoreGoal () || netGame.PlayTimeAllowed ())
 			x1 -= LHX (18);
 		}
-	else if (netGame.nScoreGoal || netGame.xPlayTimeAllowed)
+	else if (netGame.ScoreGoal () || netGame.PlayTimeAllowed ())
 		 x1 = LHX (43) - LHX (18);
 	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
 	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
@@ -1358,30 +1358,30 @@ for (i = 0; i < nPlayers; i++) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
-						teamInd [0], netGame.szTeamName [i],
-						netPlayers.players [i].network.ipx.node [0],
-						netPlayers.players [i].network.ipx.node [1],
-						netPlayers.players [i].network.ipx.node [2],
-						netPlayers.players [i].network.ipx.node [3],
-						netPlayers.players [i].network.ipx.node [5] +
-						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
+						teamInd [0], netGame.m_info.szTeamName [i],
+						netPlayers.m_info.players [i].network.ipx.node [0],
+						netPlayers.m_info.players [i].network.ipx.node [1],
+						netPlayers.m_info.players [i].network.ipx.node [2],
+						netPlayers.m_info.players [i].network.ipx.node [3],
+						netPlayers.m_info.players [i].network.ipx.node [5] +
+						 (unsigned) netPlayers.m_info.players [i].network.ipx.node [4] * 256);
 #else
-			sprintf (name, "%c%s", teamInd [0], netGame.szTeamName [i]);
+			sprintf (name, "%c%s", teamInd [0], netGame.m_info.szTeamName [i]);
 #endif
 			indent = 0;
 			}
 		else {
 #if SHOW_PLAYER_IP
 			sprintf (name, "%-8s %d.%d.%d.%d:%d",
-						netGame.szTeamName [i],
-						netPlayers.players [i].network.ipx.node [0],
-						netPlayers.players [i].network.ipx.node [1],
-						netPlayers.players [i].network.ipx.node [2],
-						netPlayers.players [i].network.ipx.node [3],
-						netPlayers.players [i].network.ipx.node [5] +
-						 (unsigned) netPlayers.players [i].network.ipx.node [4] * 256);
+						netGame.m_info.szTeamName [i],
+						netPlayers.m_info.players [i].network.ipx.node [0],
+						netPlayers.m_info.players [i].network.ipx.node [1],
+						netPlayers.m_info.players [i].network.ipx.node [2],
+						netPlayers.m_info.players [i].network.ipx.node [3],
+						netPlayers.m_info.players [i].network.ipx.node [5] +
+						 (unsigned) netPlayers.m_info.players [i].network.ipx.node [4] * 256);
 #else
-			strcpy (name, netGame.szTeamName [i]);
+			strcpy (name, netGame.m_info.szTeamName [i]);
 #endif
 			fontManager.Current ()->StringSize (teamInd, indent, sh, aw);
 			}
@@ -1390,12 +1390,12 @@ for (i = 0; i < nPlayers; i++) {
 #if 0//DBG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d",
 					gameData.multiplayer.players [nPlayer].callsign,
-					netPlayers.players [nPlayer].network.ipx.node [0],
-					netPlayers.players [nPlayer].network.ipx.node [1],
-					netPlayers.players [nPlayer].network.ipx.node [2],
-					netPlayers.players [nPlayer].network.ipx.node [3],
-					netPlayers.players [nPlayer].network.ipx.node [5] +
-					 (unsigned) netPlayers.players [nPlayer].network.ipx.node [4] * 256);
+					netPlayers.m_info.players [nPlayer].network.ipx.node [0],
+					netPlayers.m_info.players [nPlayer].network.ipx.node [1],
+					netPlayers.m_info.players [nPlayer].network.ipx.node [2],
+					netPlayers.m_info.players [nPlayer].network.ipx.node [3],
+					netPlayers.m_info.players [nPlayer].network.ipx.node [5] +
+					 (unsigned) netPlayers.m_info.players [nPlayer].network.ipx.node [4] * 256);
 #else
 		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
 #endif
@@ -1429,7 +1429,7 @@ for (i = 0; i < nPlayers; i++) {
 		}
 	else if (IsCoopGame)
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%-6d", gameData.multiplayer.players [nPlayer].score);
-   else if (netGame.xPlayTimeAllowed || netGame.nScoreGoal)
+   else if (netGame.PlayTimeAllowed () || netGame.ScoreGoal ())
       nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y0, "%3d (%d)",
 					 gameData.multiplayer.players [nPlayer].netKillsTotal,
 					 gameData.multiplayer.players [nPlayer].nScoreGoalCount);
@@ -2000,7 +2000,7 @@ transformation.Push ();
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the CPlayerData's zoom factor
 if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
-	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP)) {
+	if (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP)) {
 		automap.m_bDisplay = -1;
 		automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
 		automap.m_bDisplay = 0;

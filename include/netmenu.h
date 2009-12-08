@@ -6,7 +6,7 @@ void NetworkMonsterballOptions (void);
 int NetworkBrowseGames (void);
 int NetworkGetGameParams (int bAutoRun);
 int NetworkSelectPlayers (int bAutoRun);
-void InitNetgameMenu (CMenu& menu, int i);
+void InitNetGameMenu (CMenu& menu, int i);
 int NetworkFindGame (void);
 int NetworkGetIpAddr (bool bServer = false, bool bUDP = true);
 void ShowNetGameInfo (int choice);

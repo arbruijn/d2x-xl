@@ -30,12 +30,12 @@ extern int netmisc_find_diff(void *block1, void *block2, int block_size, void *d
 extern int netmisc_apply_diff(void *block1, void *diff_buffer, int diff_size);
 
 void BEReceiveNetPlayerInfo (ubyte *data, tNetPlayerInfo *info);
-void BEReceiveNetPlayersPacket(ubyte *data, tAllNetPlayersInfo *pinfo);
+void BEReceiveNetPlayersPacket(ubyte *data, CAllNetPlayersInfo *pinfo);
 void BESendNetPlayersPacket(ubyte *server, ubyte *node);
 void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte *netAddress);
 void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq);
 void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int liteFlag);
-void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag);
+void BEReceiveNetGamePacket(ubyte *data, CNetGameInfo *netgame, int liteFlag);
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress);
 void BEReceiveExtraGameInfo(ubyte *data, tExtraGameInfo *extraGameInfo);
 void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress);
@@ -101,11 +101,11 @@ void BESwapObject (CObject *obj);
 #else
 
 #define ReceiveNetPlayersPacket(data, pinfo) \
-	memcpy(pinfo, data, sizeof (tAllNetPlayersInfo))
+	memcpy(pinfo, data, netPlayers.Size ())
 #define SendNetPlayersPacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)&netPlayers, sizeof(tAllNetPlayersInfo), server, node)
+	IPXSendInternetPacketData((ubyte *)&netPlayers, netPlayers.Size (), server, node)
 #define SendBroadcastNetPlayersPacket() \
-	IPXSendBroadcastData((ubyte *)&netPlayers, sizeof(tAllNetPlayersInfo))
+	IPXSendBroadcastData((ubyte *)&netPlayers, netPlayers.Size ())
 
 #define SendSequencePacket(seq, server, node, netAddress) \
 	IPXSendPacketData((ubyte *)&seq, sizeof(tSequencePacket), server, node, netAddress)
@@ -115,21 +115,21 @@ void BESwapObject (CObject *obj);
 	IPXSendBroadcastData((ubyte *)&seq, sizeof(tSequencePacket))
 
 #define SendFullNetGamePacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *)&netGame, sizeof(tNetgameInfo), server, node, netAddress)
+	IPXSendPacketData((ubyte *)&netGame, sizeof(tNetGameInfo), server, node, netAddress)
 #define SendLiteNetGamePacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *)&netGame, sizeof(tLiteInfo), server, node, netAddress)
+	IPXSendPacketData((ubyte *)&netGame, sizeof(tNetGameInfoLite), server, node, netAddress)
 #define SendInternetFullNetGamePacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)&netGame, sizeof(tNetgameInfo), server, node)
+	IPXSendInternetPacketData((ubyte *)&netGame, netGame.Size (), server, node)
 #define SendInternetLiteNetGamePacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)&netGame, sizeof(tLiteInfo), server, node)
+	IPXSendInternetPacketData((ubyte *)&netGame, sizeof(tNetGameInfoLite), server, node)
 #define SendBroadcastFullNetGamePacket() \
-	IPXSendBroadcastData((ubyte *)&netGame, sizeof(tNetgameInfo))
+	IPXSendBroadcastData((ubyte *)&netGame, netGame.Size ())
 #define SendBroadcastLiteNetGamePacket() \
-	IPXSendBroadcastData((ubyte *)&netGame, sizeof(tLiteInfo))
+	IPXSendBroadcastData((ubyte *)&netGame, sizeof(tNetGameInfoLite))
 #define ReceiveFullNetGamePacket(data, netgame) \
-	memcpy((ubyte *)(netgame), data, sizeof(tNetgameInfo))
+	memcpy((ubyte *)(netgame), data, netGame.Size ())
 #define ReceiveLiteNetGamePacket(data, netgame) \
-	memcpy((ubyte *)(netgame), data, sizeof(tLiteInfo))
+	memcpy((ubyte *)(netgame), data, sizeof(tNetGameInfoLite))
 
 #define SendExtraGameInfoPacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo), server, node, netAddress)

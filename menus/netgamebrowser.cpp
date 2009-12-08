@@ -42,7 +42,7 @@ char szGameList [MAX_ACTIVE_NETGAMES + 5][100];
 
 //------------------------------------------------------------------------------
 
-void InitNetgameMenuOption (CMenu& menu, int j)
+void InitNetGameMenuOption (CMenu& menu, int j)
 {
 if (j >= int (menu.ToS ()))
 	menu.AddMenu (szGameList [j]);
@@ -54,12 +54,12 @@ m->m_bRebuild = 1;
 
 //------------------------------------------------------------------------------
 
-void InitNetgameMenu (CMenu& menu, int i)
+void InitNetGameMenu (CMenu& menu, int i)
 {
 	int j;
 
 for (j = i + 2 + tracker.m_bUse; i < MAX_ACTIVE_NETGAMES; i++, j++)
-	InitNetgameMenuOption (menu, j);
+	InitNetGameMenuOption (menu, j);
 }
 
 //------------------------------------------------------------------------------
@@ -192,25 +192,25 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 #endif
 	// Copy the active games data into the menu options
 	for (i = 0; i < networkData.nActiveGames; i++, h++) {
-			int gameStatus = activeNetGames [i].gameStatus;
+			int gameStatus = activeNetGames [i].m_info.gameStatus;
 			int nplayers = 0;
 			char szLevelName [20], szMissionName [50], szGameName [50];
-			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? FindMissionByName (activeNetGames [i].szMissionName, -1) : -1;
+			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? FindMissionByName (activeNetGames [i].m_info.szMissionName, -1) : -1;
 
 		// These next two loops protect against menu skewing
 		// if missiontitle or gamename contain a tab
 
-		PruneText (szMissionName, activeNetGames [i].szMissionTitle, sizeof (szMissionName), 4, nLevelVersion);
-		PruneText (szGameName, activeNetGames [i].szGameName, sizeof (szGameName), 1, -1);
-		nplayers = activeNetGames [i].nConnected;
-		if (activeNetGames [i].nLevel < 0)
-			sprintf (szLevelName, "S%d", -activeNetGames [i].nLevel);
+		PruneText (szMissionName, activeNetGames [i].m_info.szMissionTitle, sizeof (szMissionName), 4, nLevelVersion);
+		PruneText (szGameName, activeNetGames [i].m_info.szGameName, sizeof (szGameName), 1, -1);
+		nplayers = activeNetGames [i].m_info.nConnected;
+		if (activeNetGames [i].m_info.nLevel < 0)
+			sprintf (szLevelName, "S%d", -activeNetGames [i].m_info.nLevel);
 		else
-			sprintf (szLevelName, "%d", activeNetGames [i].nLevel);
+			sprintf (szLevelName, "%d", activeNetGames [i].m_info.nLevel);
 		if (gameStatus == NETSTAT_STARTING)
 			psz = "Forming";
 		else if (gameStatus == NETSTAT_PLAYING) {
-			nJoinStatus = CanJoinNetgame (activeNetGames + i, NULL);
+			nJoinStatus = CanJoinNetGame (activeNetGames + i, NULL);
 
 			if (nJoinStatus == 1)
 				psz = "Open";
@@ -224,8 +224,8 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 		else 
 			psz = "Between";
 		sprintf (szOption, "%2d.\t%s\t%s\t%d/%d\t%s\t%s\t%s", 
-					i + 1, szGameName, szModeLetters [activeNetGames [i].gameMode], nplayers, 
-					activeNetGames [i].nMaxPlayers, szMissionName, szLevelName, psz);
+					i + 1, szGameName, szModeLetters [activeNetGames [i].m_info.gameMode], nplayers, 
+					activeNetGames [i].m_info.nMaxPlayers, szMissionName, szLevelName, psz);
 		Assert (strlen (szOption) < 100);
 		if (strcmp (szOption, menu [h].m_text)) {
 			memcpy (menu [h].m_text, szOption, 100);
@@ -235,7 +235,7 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 			}
 		}
 	for (i = 3 + networkData.nActiveGames; i < MAX_ACTIVE_NETGAMES; i++, h++)
-		InitNetgameMenuOption (menu, h);
+		InitNetGameMenuOption (menu, h);
 	}
 #if 0
 else
@@ -244,7 +244,7 @@ else
 for (i = 3 + networkData.nActiveGames; i < MAX_ACTIVE_NETGAMES; i++, h++)
 	if (menu [h].m_value && (t - menu [h].m_value > 10000)) 
 	 {
-		InitNetgameMenuOption (menu, h);
+		InitNetGameMenuOption (menu, h);
 		bPlaySound = 1;
 		}
 #endif
@@ -309,7 +309,7 @@ if (!bAutoRun) {
 	menu.AddText (szGameList [1 + tracker.m_bUse]);
 	strcpy (menu.Top ()->m_text, TXT_GAME_BROWSER);
 	menu.Top ()->m_bNoScroll = 1;
-	InitNetgameMenu (menu, 0);
+	InitNetGameMenu (menu, 0);
 	}
 networkData.bGamesChanged = 1;    
 
@@ -350,21 +350,21 @@ if ((choice < 0) || (choice >= networkData.nActiveGames)) {
 	}
 
 // Choice has been made and looks legit
-if (AGI.gameStatus == NETSTAT_ENDLEVEL) {
+if (AGI.m_info.gameStatus == NETSTAT_ENDLEVEL) {
 	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
 	goto doMenu;
 	}
-if (AGI.protocolVersion != MULTI_PROTO_VERSION) {
-	if (AGI.protocolVersion == 3) {
+if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
+	if (AGI.m_info.protocolVersion == 3) {
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT1);
 		}
-	else if (AGI.protocolVersion == 4) {
+	else if (AGI.m_info.protocolVersion == 4) {
 		}
 	else {
 		char	szFmt [200], szError [200];
 
 		sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
-		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.protocolVersion);
+		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.m_info.protocolVersion);
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, szError);
 		}
 	goto doMenu;
@@ -375,17 +375,17 @@ if (tracker.m_bUse) {
 	tracker.GetServerFromList (choice);
 	}
 // Check for valid mission name
-console.printf (CON_DBG, TXT_LOADING_MSN, AGI.szMissionName);
-if (!(LoadMissionByName (AGI.szMissionName, -1) ||	(downloadManager.DownloadMission (AGI.szMissionName) && LoadMissionByName (AGI.szMissionName, -1)))) {
-	PrintLog ("Mission '%s' not found%s\n", AGI.szMissionName);
+console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
+if (!(LoadMissionByName (AGI.m_info.szMissionName, -1) ||	(downloadManager.DownloadMission (AGI.m_info.szMissionName) && LoadMissionByName (AGI.m_info.szMissionName, -1)))) {
+	PrintLog ("Mission '%s' not found%s\n", AGI.m_info.szMissionName);
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
-if (IS_D2_OEM && (AGI.nLevel > 8)) {
+if (IS_D2_OEM && (AGI.m_info.nLevel > 8)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_OEM_ONLY8);
 	goto doMenu;
 	}
-if (IS_MAC_SHARE && (AGI.nLevel > 4)) {
+if (IS_MAC_SHARE && (AGI.m_info.nLevel > 4)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_SHARE_ONLY4);
 	goto doMenu;
 	}
@@ -396,31 +396,31 @@ if (!NetworkWaitForAllInfo (choice)) {
 	}       
 
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
-  if (!CanJoinNetgame (activeNetGames + choice, activeNetPlayers + choice)) {
-	if (AGI.nNumPlayers == AGI.nMaxPlayers)
+  if (!CanJoinNetGame (activeNetGames + choice, activeNetPlayers + choice)) {
+	if (AGI.m_info.nNumPlayers == AGI.m_info.nMaxPlayers)
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_GAME_FULL);
 	else
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_IN_PROGRESS);
 	goto doMenu;
 	}
 // Choice is valid, prepare to join in
-memcpy (&netGame, activeNetGames + choice, sizeof (tNetgameInfo));
+memcpy (&netGame, activeNetGames + choice, sizeof (tNetGameInfo));
 memcpy (&netPlayers, activeNetPlayers + choice, sizeof (tAllNetPlayersInfo));
-gameStates.app.nDifficultyLevel = netGame.difficulty;
-gameData.multiplayer.nMaxPlayers = netGame.nMaxPlayers;
+gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
+gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
 ChangePlayerNumTo (1);
 memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
 // Handle the extra data for the network driver
 // For the mcast4 driver, this is the game's multicast address, to
 // which the driver subscribes.
-if (IpxHandleNetGameAuxData (netGame.AuxData) < 0) {
+if (IpxHandleNetGameAuxData (netGame.AuxData ()) < 0) {
 	networkData.nStatus = NETSTAT_BROWSING;
 	goto doMenu;
 	}
-NetworkSetGameMode (netGame.gameMode);
+NetworkSetGameMode (netGame.m_info.gameMode);
 NetworkAdjustMaxDataSize ();
 //PrintLog ("loading level\n");
-StartNewLevel (netGame.nLevel, true);
+StartNewLevel (netGame.m_info.nLevel, true);
 //PrintLog ("exiting netgame browser\n");
 //backgroundManager.Remove ();
 return 1;         // look ma, we're in a game!!!

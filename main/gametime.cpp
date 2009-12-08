@@ -212,7 +212,7 @@ if ((gameStates.app.tick60fps.bTick = (gameStates.app.tick60fps.nTime >= (50 + +
 //------------------------------------------------------------------------------
 
 #ifdef NETWORK
-void GameDrawTimeLeft ()
+void GameDrawTimeLeft (void)
 {
 	char temp_string[30];
 	fix timevar;
@@ -221,8 +221,8 @@ void GameDrawTimeLeft ()
 
 fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-timevar=I2X (netGame.xPlayTimeAllowed*5*60);
-i = X2I (timevar-gameStates.app.xThisLevelTime) + 1;
+timevar = I2X (netGame.PlayTimeAllowed () * 5 * 60);
+i = X2I (timevar - gameStates.app.xThisLevelTime) + 1;
 sprintf (temp_string, TXT_TIME_LEFT, i);
 if (i >= 0)
 	nId = GrString (0, 32, temp_string, &nId);

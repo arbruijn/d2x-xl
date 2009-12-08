@@ -1189,7 +1189,7 @@ if (!(bTracker
 #endif //UDP_SAFEMODE
 		}
 	gameStates.multi.bHaveLocalAddress = 1;
-	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
+	memcpy (netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
 #if UDP_SAFEMODE
 	dataLen -= (bSafeMode ? 22 : 14);
 #else
@@ -1242,8 +1242,8 @@ struct ipx_driver ipx_udp = {
 #else
 	IPXGeneralPacketReady,
 #endif
-	NULL,	// InitNetgameAuxData
-	NULL,	// HandleNetgameAuxData
+	NULL,	// InitNetGameAuxData
+	NULL,	// HandleNetGameAuxData
 	NULL,	// HandleLeaveGame
 	NULL	// SendGamePacke
 };

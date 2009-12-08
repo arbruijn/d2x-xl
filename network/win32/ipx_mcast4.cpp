@@ -259,7 +259,7 @@ return size;
  * Byte 0 is the protocol version number.
  * Bytes 1-4 are the IPv4 multicast session to join, in network byte order.
  */
-static int ipx_mcast4_HandleNetgameAuxData (ipx_socket_t *sk, const u_char buf[NETGAME_AUX_SIZE])
+static int ipx_mcast4_HandleNetGameAuxData (ipx_socket_t *sk, const u_char buf[NETGAME_AUX_SIZE])
 {
 	// Extract the multicast session and subscribe to it.  We should
 	// now be getting packets intended for the players of this game.
@@ -311,7 +311,7 @@ return 0;
  * Byte 0 is the protcol version number.
  * Bytes 1-4 hold the IPv4 multicast session for the game.
  */
-static void ipx_mcast4_InitNetgameAuxData (ipx_socket_t *sk, u_char buf[NETGAME_AUX_SIZE])
+static void ipx_mcast4_InitNetGameAuxData (ipx_socket_t *sk, u_char buf[NETGAME_AUX_SIZE])
 {
 	char addr[16];
 	Assert (game_addr.s_addr == 0);
@@ -324,7 +324,7 @@ sprintf (addr, "%i.%i.%i.%i", 239, 255, d_rand () % 0xFF, d_rand () % 0xFF);
 game_addr.s_addr = inet_addr (addr);
 memcpy (buf + 1, &game_addr, sizeof (game_addr));
 // Since we're obviously the hosting machine, subscribe to this address
-ipx_mcast4_HandleNetgameAuxData (sk, buf);
+ipx_mcast4_HandleNetGameAuxData (sk, buf);
 }
 
 //------------------------------------------------------------------------------
@@ -379,8 +379,8 @@ struct ipx_driver ipx_mcast4 = {
 	ipx_mcast4_SendPacket,
 	ipx_mcast4_ReceivePacket,
 	IPXGeneralPacketReady,
-	ipx_mcast4_InitNetgameAuxData,
-	ipx_mcast4_HandleNetgameAuxData,
+	ipx_mcast4_InitNetGameAuxData,
+	ipx_mcast4_HandleNetGameAuxData,
 	ipx_mcast4_HandleLeaveGame,
 	ipx_mcast4_SendGamePacket
 };

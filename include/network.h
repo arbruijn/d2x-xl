@@ -360,7 +360,7 @@ void NetworkSendEndLevelSub (int player_num);
 void NetworkDisconnectPlayer (int playernum);
 
 extern void NetworkDumpPlayer (ubyte * server, ubyte *node, int why);
-extern void NetworkSendNetgameUpdate (void);
+extern void NetworkSendNetGameUpdate (void);
 
 extern int GetMyNetRanking (void);
 
@@ -431,54 +431,67 @@ int InitAutoNetGame (void);
 // headaches by keeping alignment if these are changed!!!!  Contact
 // me for info.
 
-typedef struct tEndLevelInfo {
-	ubyte                               nType;
-	ubyte                               nPlayer;
-	sbyte                               connected;
-	ubyte                               seconds_left;
-	short											killMatrix [MAX_PLAYERS][MAX_PLAYERS];
-	short                               kills;
-	short                               killed;
-} __pack__ tEndLevelInfo;
-
 typedef struct tEndLevelInfoShort {
 	ubyte                               nType;
 	ubyte                               nPlayer;
 	sbyte                               connected;
-	ubyte                               seconds_left;
+	ubyte                               secondsLeft;
 } __pack__ tEndLevelInfoShort;
 
-// WARNING!!! This is the top part of tNetgameInfo...if that struct changes,
+typedef struct tEndLevelInfoD2 : public tEndLevelInfoShort {
+	short											scoreMatrix [MAX_PLAYERS_D2][MAX_PLAYERS_D2];
+	short                               kills;
+	short                               killed;
+} __pack__ tEndLevelInfoD2;
+
+typedef struct tEndLevelInfoD2X : public tEndLevelInfoShort  {
+	short											scoreMatrix [MAX_PLAYERS_D2X][MAX_PLAYERS_D2X];
+	short                               kills;
+	short                               killed;
+} __pack__ tEndLevelInfoD2X;
+
+typedef union tEndLevelInfo {
+	tEndLevelInfoD2							d2;
+	tEndLevelInfoD2X							d2x;
+} __pack__ tEndLevelInfo;
+
+class CEndLevelInfo {
+	public:
+		tEndLevelInfo	m_info;
+
+		inline size_t Size (void) { return gameStates.app.bD2XLevel ? sizeof (m_info.d2x) : sizeof (m_info.d2); }
+
+		tEndLevelInfo& operator= (tEndLevelInfo& other) {
+			memcpy (&m_info, &other, Size ());
+			return m_info;
+			}
+
+		tEndLevelInfo& operator= (CEndLevelInfo& other) {
+			m_info = other.m_info;
+			return m_info;
+			}
+
+		inline ubyte& Type (void) { return gameStates.app.bD2XLevel ? m_info.d2x.nType : m_info.d2.nType; }
+		inline ubyte& Player (void) { return gameStates.app.bD2XLevel ? m_info.d2x.nPlayer : m_info.d2.nPlayer; }
+		inline sbyte& Connected (void) { return gameStates.app.bD2XLevel ? m_info.d2x.connected : m_info.d2.connected; }
+		inline ubyte& SecondsLeft (void) { return gameStates.app.bD2XLevel ? m_info.d2x.secondsLeft : m_info.d2.secondsLeft; }
+		inline short* ScoreMatrix (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.scoreMatrix [0][0] : &m_info.d2.scoreMatrix [0][0]; }
+		inline short& ScoreMatrix (int i, int j) { return gameStates.app.bD2XLevel ? m_info.d2x.scoreMatrix [i][j] : m_info.d2.scoreMatrix [i][j]; }
+		inline short& Kills (void) { return gameStates.app.bD2XLevel ? m_info.d2x.kills : m_info.d2.kills; }
+		inline short& Killed (void) { return gameStates.app.bD2XLevel ? m_info.d2x.killed : m_info.d2.killed; }
+};
+
+// WARNING!!! This is the top part of tNetGameInfo...if that struct changes,
 //      this struct much change as well.  ie...they are aligned and the join system will
 // not work without it.
 
 // MWA  if this structure changes -- please make appropriate changes to receive_netgame_info
 // code for macintosh in netmisc.c
 
-typedef struct tLiteInfo {
-	ubyte                           nType;
-	int                             nSecurity;
-	char                            szGameName [NETGAME_NAME_LEN+1];
-	char                            szMissionTitle [MISSION_NAME_LEN+1];
-	char                            szMissionName [9];
-	int                             nLevel;
-	ubyte                           gameMode;
-	ubyte                           bRefusePlayers;
-	ubyte                           difficulty;
-	ubyte                           gameStatus;
-	ubyte                           nNumPlayers;
-	ubyte                           nMaxPlayers;
-	ubyte                           nConnected;
-	ubyte                           gameFlags;
-	ubyte                           protocolVersion;
-	ubyte                           versionMajor;
-	ubyte                           versionMinor;
-	ubyte                           teamVector;
-} __pack__ tLiteInfo;
 
-#define NETGAME_INFO_SIZE       sizeof (tNetgameInfo)
-#define ALLNETPLAYERSINFO_SIZE  sizeof (tAllNetPlayersInfo)
-#define LITE_INFO_SIZE          sizeof (tLiteInfo)
+#define NETGAME_INFO_SIZE       netGameInfo.Size ()
+#define ALLNETPLAYERSINFO_SIZE  netPlayers.m_info.Size ()
+#define LITE_INFO_SIZE          sizeof (tNetGameInfoLite)
 #define SEQUENCE_PACKET_SIZE    sizeof (tSequencePacket)
 #define FRAME_INFO_SIZE         sizeof (tFrameInfo)
 #define IPX_SHORT_INFO_SIZE     sizeof (tFrameInfoShort)
@@ -498,7 +511,7 @@ void NetworkFlush (void);
 int  NetworkWaitForAllInfo (int choice);
 void NetworkSetGameMode (int gameMode);
 void NetworkAdjustMaxDataSize (void);
-int CanJoinNetgame (tNetgameInfo *game,tAllNetPlayersInfo *people);
+int CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
 void RestartNetSearching (CMenu& menu);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
@@ -518,9 +531,9 @@ char *iptos (char *pszIP, char *addr);
 #define DUMP_LEVEL      6
 #define DUMP_KICKED     7 // never used
 
-extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
-extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern tAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
+extern CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
+extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
+extern CAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
 extern int nCoopPenalties [10];
 
 #define COMPETITION	 (IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
@@ -532,9 +545,11 @@ extern int nCoopPenalties [10];
 
 static inline short PacketsPerSec (void)
 {
-if ( (netGame.nPacketsPerSec < 1) || (netGame.nPacketsPerSec > 20))
-	netGame.nPacketsPerSec = 10;
-return netGame.nPacketsPerSec;
+	int	i = netGame.PacketsPerSec ();
+
+if ((i < 1) || (i > 20))
+	netGame.PacketsPerSec () = 10;
+return netGame.PacketsPerSec ();
 }
 
 //------------------------------------------------------------------------------

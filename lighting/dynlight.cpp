@@ -288,7 +288,7 @@ int CLightManager::IsDestructible (short nTexture)
 {
 if (!nTexture)
 	return 0;
-if (IsMultiGame && netGame.bIndestructibleLights)
+if (IsMultiGame && netGame.m_info.bIndestructibleLights)
 	return 0;
 short nClip = gameData.pig.tex.tMapInfoP [nTexture].nEffectClip;
 tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.eff.effectP + nClip;

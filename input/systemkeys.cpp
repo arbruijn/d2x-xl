@@ -867,14 +867,14 @@ void HandleGameKey(int key)
 			SwitchTeam (gameData.multiplayer.nLocalPlayer, 0);
 			break;
 		case KEY_F6:
-			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && !(gameData.app.nGameMode & GM_TEAM))
+			if (netGame.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && !(gameData.app.nGameMode & GM_TEAM))
 			 {
 					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
 				}
 			break;
 		case KEY_ALTED + KEY_1:
-			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
+			if (netGame.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
 			 {
 					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
@@ -882,7 +882,7 @@ void HandleGameKey(int key)
 				}
 			break;
 		case KEY_ALTED + KEY_2:
-			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
+			if (netGame.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
 			 {
 					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);

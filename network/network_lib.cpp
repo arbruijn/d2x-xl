@@ -163,7 +163,7 @@ void DeleteActiveNetGame (int i)
 {
 if (i < --networkData.nActiveGames) {
 	int h = networkData.nActiveGames - i;
-	memcpy (activeNetGames + i, activeNetGames + i + 1, sizeof (tNetgameInfo) * h);
+	memcpy (activeNetGames + i, activeNetGames + i + 1, sizeof (tNetGameInfo) * h);
 	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, sizeof (tAllNetPlayersInfo) * h);
 	memcpy (nLastNetGameUpdate + i, nLastNetGameUpdate + i + 1, sizeof (int) * h);
 	}
@@ -193,9 +193,9 @@ int FindActiveNetGame (char *pszGameName, int nSecurity)
 	int	i;
 
 for (i = 0; i < networkData.nActiveGames; i++) {
-	if (!stricmp (activeNetGames [i].szGameName, pszGameName)
+	if (!stricmp (activeNetGames [i].m_info.szGameName, pszGameName)
 #if SECURITY_CHECK
-		 && (activeNetGames [i].nSecurity == nSecurity)
+		 && (activeNetGames [i].m_info.nSecurity == nSecurity)
 #endif
 		 )
 		break;
@@ -328,7 +328,7 @@ FORALL_POWERUP_OBJS (objP, i) {
 
 void NetworkAdjustMaxDataSize ()
 {
-networkData.nMaxXDataSize = netGame.bShortPackets ? NET_XDATA_SIZE : NET_XDATA_SIZE;
+networkData.nMaxXDataSize = netGame.ShortPackets () ? NET_XDATA_SIZE : NET_XDATA_SIZE;
 }
 
 //------------------------------------------------------------------------------

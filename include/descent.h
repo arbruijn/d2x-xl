@@ -2138,7 +2138,7 @@ class CShipData {
 
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
-	tVideoClip			*vcP;
+	tVideoClip*			vcP;
 	tVClipInfo			vci;
 	CFlightPath			path;
 } tFlagData;
@@ -2147,10 +2147,10 @@ typedef struct tFlagData {
 
 class CPigData {
 	public:
-		CTextureData		tex;
-		CSoundData			sound;
-		CShipData			ship;
-		tFlagData			flags [2];
+		CTextureData	tex;
+		CSoundData		sound;
+		CShipData		ship;
+		tFlagData		flags [2];
 
 	public:
 		CPigData () {}
@@ -2409,9 +2409,9 @@ class CMultiMenuData {
 
 class CMultiKillData {
 	public:
-		char					pFlags [MAX_NUM_NET_PLAYERS];
-		int					nSorted [MAX_NUM_NET_PLAYERS];
-		short					matrix [MAX_NUM_NET_PLAYERS][MAX_NUM_NET_PLAYERS];
+		char					pFlags [MAX_PLAYERS];
+		int					nSorted [MAX_PLAYERS];
+		short					matrix [MAX_PLAYERS][MAX_PLAYERS];
 		short					nTeam [2];
 		char					bShowList;
 		fix					xShowListTimer;

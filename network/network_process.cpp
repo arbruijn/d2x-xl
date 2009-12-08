@@ -61,10 +61,10 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 void NetworkProcessGameInfo (ubyte *dataP)
 {
 	int i;
-	tNetgameInfo *newGame = reinterpret_cast<tNetgameInfo*> (dataP);
+	CNetGameInfo *newGame = reinterpret_cast<tNetGameInfo*> (dataP);
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tNetgameInfo tmp_info;
+	CNetGameInfo tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ReceiveNetGamePacket (dataP, &tmp_info, 0); // get correctly aligned structure
@@ -73,7 +73,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 networkData.bWaitingForPlayerInfo = 0;
 #if SECURITY_CHECK
-if (newGame->nSecurity != playerInfoP->nSecurity) {
+if (newGame->m_info.nSecurity != playerInfoP->m_info.nSecurity) {
 	Int3 ();     // Get Jason
    return;     // If this first half doesn't go with the second half
    }
@@ -92,17 +92,17 @@ if (i == networkData.nActiveGames) {
 	networkData.nActiveGames++;
 	}
 networkData.bGamesChanged = 1;
-// MWA  memcpy (&activeNetGames [i], dataP, sizeof (tNetgameInfo);
+// MWA  memcpy (&activeNetGames [i], dataP, sizeof (tNetGameInfo);
 nLastNetGameUpdate [i] = SDL_GetTicks ();
-memcpy (activeNetGames + i, reinterpret_cast<ubyte*> (newGame), sizeof (tNetgameInfo));
+memcpy (activeNetGames + i, reinterpret_cast<ubyte*> (newGame), sizeof (tNetGameInfo));
 memcpy (activeNetPlayers + i, playerInfoP, sizeof (tAllNetPlayersInfo));
 if (networkData.nSecurityCheck)
 #if SECURITY_CHECK
-	if (activeNetGames [i].nSecurity == networkData.nSecurityCheck)
+	if (activeNetGames [i].m_info.nSecurity == networkData.nSecurityCheck)
 #endif
 		networkData.nSecurityCheck = -1;
 if (i == networkData.nActiveGames)
-if (activeNetGames [i].nNumPlayers == 0) {	// Delete this game
+if (activeNetGames [i].m_info.nNumPlayers == 0) {	// Delete this game
 	DeleteActiveNetGame (i);
 	networkData.nSecurityCheck = 0;
 	}
@@ -113,19 +113,19 @@ if (activeNetGames [i].nNumPlayers == 0) {	// Delete this game
 void NetworkProcessLiteInfo (ubyte *dataP)
 {
 	int				i;
-	tNetgameInfo	*actGameP;
-	tLiteInfo		*newInfo = reinterpret_cast<tLiteInfo*> (dataP);
+	tNetGameInfo	*actGameP;
+	tNetGameInfoLite		*newInfo = reinterpret_cast<tNetGameInfoLite*> (dataP);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tLiteInfo		tmp_info;
+	tNetGameInfoLite		tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	ReceiveNetGamePacket (dataP, reinterpret_cast<tNetgameInfo*> (&tmp_info), 1);
+	ReceiveNetGamePacket (dataP, reinterpret_cast<tNetGameInfo*> (&tmp_info), 1);
 	newInfo = &tmp_info;
 	}
 #endif
 
 networkData.bGamesChanged = 1;
-i = FindActiveNetGame (reinterpret_cast<tNetgameInfo*> (newInfo)->szGameName, reinterpret_cast<tNetgameInfo*> (newInfo)->nSecurity);
+i = FindActiveNetGame (reinterpret_cast<tNetGameInfo*> (newInfo)->szGameName, reinterpret_cast<tNetGameInfo*> (newInfo)->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES)
 	return;
 if (i == networkData.nActiveGames) {
@@ -134,7 +134,7 @@ if (i == networkData.nActiveGames) {
 	networkData.nActiveGames++;
 	}
 actGameP = activeNetGames + i;
-memcpy (actGameP, reinterpret_cast<ubyte*> (newInfo), sizeof (tLiteInfo));
+memcpy (actGameP, reinterpret_cast<ubyte*> (newInfo), sizeof (tNetGameInfoLite));
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 // See if this is really a Hoard/Entropy/Monsterball game
 // If so, adjust all the dataP accordingly
@@ -215,8 +215,8 @@ void NetworkProcessRequest (tSequencePacket *their)
 	int i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!CmpNetPlayers (their->player.callsign, netPlayers.players [i].callsign, 
-								&their->player.network, &netPlayers.players [i].network)) {
+	if (!CmpNetPlayers (their->player.callsign, netPlayers.m_info.players [i].callsign, 
+								&their->player.network, &netPlayers.m_info.players [i].network)) {
 		gameData.multiplayer.players [i].connected = 1;
 		break;
 		}
@@ -228,7 +228,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 void NetworkProcessPData (char *dataP)
 {
 Assert (gameData.app.nGameMode & GM_NETWORK);
-if (netGame.bShortPackets)
+if (netGame.ShortPackets ())
 	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (dataP));
 else
 	NetworkReadPDataPacket (reinterpret_cast<tFrameInfo*> (dataP));
@@ -295,7 +295,7 @@ for (i = 0; i < 12; i++)
 
 #if SECURITY_CHECK
 for (gnum = -1, i = 0; i < networkData.nActiveGames; i++) {
-	if (networkData.nNamesInfoSecurity == activeNetGames [i].nSecurity) {
+	if (networkData.nNamesInfoSecurity == activeNetGames [i].m_info.nSecurity) {
 		gnum = i;
 		break;
 		}

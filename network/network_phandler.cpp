@@ -99,7 +99,7 @@ return 1;
 int NetworkBadSecurity (int nSecurity, const char *pszId)
 {
 #if SECURITY_CHECK
-if (nSecurity == netGame.nSecurity)
+if (nSecurity == netGame.m_info.nSecurity)
 #endif
 	return 0;
 console.printf (CON_DBG, "Bad security for %s\n", pszId);
@@ -184,7 +184,7 @@ if (networkData.nStatus == NETSTAT_STARTING) // Someone wants to join our game!
 else if (networkData.nStatus == NETSTAT_WAITING)	// Someone is ready to receive a sync packet
 	NetworkProcessRequest (THEIR);	
 else if (networkData.nStatus == NETSTAT_PLAYING) {		// Someone wants to join a game in progress!
-	if (netGame.bRefusePlayers)
+	if (netGame.m_info.bRefusePlayers)
 		DoRefuseStuff (THEIR);
 	else 
 		NetworkWelcomePlayer (THEIR);
@@ -218,7 +218,7 @@ int SyncHandler (ubyte *dataP, int nLength)
 if (gameStates.multi.nGameType >= IPX_GAME)
 	ReceiveFullNetGamePacket (dataP, &tempNetInfo);
 else
-	tempNetInfo = *reinterpret_cast<tNetgameInfo*> (dataP);
+	tempNetInfo = *reinterpret_cast<tNetGameInfo*> (dataP);
 if (NetworkBadSecurity (tempNetInfo.nSecurity, "PID_SYNC"))
 	return 0;
 if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
@@ -236,7 +236,7 @@ else {
 	networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 	networkData.nSecurityNum = tempNetInfo.nSecurity;
 	if (NetworkWaitForPlayerInfo ())
-		NetworkReadSyncPacket (reinterpret_cast<tNetgameInfo*> (dataP), 0);
+		NetworkReadSyncPacket (reinterpret_cast<tNetGameInfo*> (dataP), 0);
 	networkData.nSecurityFlag = 0;
 	networkData.nSecurityNum = 0;
 	}
@@ -324,13 +324,13 @@ return 1;
 
 int GameUpdateHandler (ubyte *dataP, int nLength)
 {
-if (NetworkBadSecurity (reinterpret_cast<tNetgameInfo*> (dataP)->nSecurity, "PID_GAME_UPDATE"))
+if (NetworkBadSecurity (reinterpret_cast<tNetGameInfo*> (dataP)->nSecurity, "PID_GAME_UPDATE"))
 	return 0;
 if (networkData.nStatus == NETSTAT_PLAYING) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		ReceiveLiteNetGamePacket (dataP, &netGame);
 	else
-		memcpy (&netGame, dataP, sizeof (tLiteInfo));
+		memcpy (&netGame, dataP, sizeof (tNetGameInfoLite));
 	}
 if (IsTeamGame) {
 	int i;

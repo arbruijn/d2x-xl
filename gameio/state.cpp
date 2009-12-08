@@ -564,84 +564,84 @@ void CSaveGameManager::SaveNetGame (void)
 {
 	int	i, j;
 
-m_cf.WriteByte (netGame.nType);
-m_cf.WriteInt (netGame.nSecurity);
-m_cf.Write (netGame.szGameName, 1, NETGAME_NAME_LEN + 1);
-m_cf.Write (netGame.szMissionTitle, 1, MISSION_NAME_LEN + 1);
-m_cf.Write (netGame.szMissionName, 1, 9);
-m_cf.WriteInt (netGame.nLevel);
-m_cf.WriteByte ((sbyte) netGame.gameMode);
-m_cf.WriteByte ((sbyte) netGame.bRefusePlayers);
-m_cf.WriteByte ((sbyte) netGame.difficulty);
-m_cf.WriteByte ((sbyte) netGame.gameStatus);
-m_cf.WriteByte ((sbyte) netGame.nNumPlayers);
-m_cf.WriteByte ((sbyte) netGame.nMaxPlayers);
-m_cf.WriteByte ((sbyte) netGame.nConnected);
-m_cf.WriteByte ((sbyte) netGame.gameFlags);
-m_cf.WriteByte ((sbyte) netGame.protocolVersion);
-m_cf.WriteByte ((sbyte) netGame.versionMajor);
-m_cf.WriteByte ((sbyte) netGame.versionMinor);
-m_cf.WriteByte ((sbyte) netGame.teamVector);
-m_cf.WriteByte ((sbyte) netGame.DoMegas);
-m_cf.WriteByte ((sbyte) netGame.DoSmarts);
-m_cf.WriteByte ((sbyte) netGame.DoFusions);
-m_cf.WriteByte ((sbyte) netGame.DoHelix);
-m_cf.WriteByte ((sbyte) netGame.DoPhoenix);
-m_cf.WriteByte ((sbyte) netGame.DoAfterburner);
-m_cf.WriteByte ((sbyte) netGame.DoInvulnerability);
-m_cf.WriteByte ((sbyte) netGame.DoCloak);
-m_cf.WriteByte ((sbyte) netGame.DoGauss);
-m_cf.WriteByte ((sbyte) netGame.DoVulcan);
-m_cf.WriteByte ((sbyte) netGame.DoPlasma);
-m_cf.WriteByte ((sbyte) netGame.DoOmega);
-m_cf.WriteByte ((sbyte) netGame.DoSuperLaser);
-m_cf.WriteByte ((sbyte) netGame.DoProximity);
-m_cf.WriteByte ((sbyte) netGame.DoSpread);
-m_cf.WriteByte ((sbyte) netGame.DoSmartMine);
-m_cf.WriteByte ((sbyte) netGame.DoFlash);
-m_cf.WriteByte ((sbyte) netGame.DoGuided);
-m_cf.WriteByte ((sbyte) netGame.DoEarthShaker);
-m_cf.WriteByte ((sbyte) netGame.DoMercury);
-m_cf.WriteByte ((sbyte) netGame.bAllowMarkerView);
-m_cf.WriteByte ((sbyte) netGame.bIndestructibleLights);
-m_cf.WriteByte ((sbyte) netGame.DoAmmoRack);
-m_cf.WriteByte ((sbyte) netGame.DoConverter);
-m_cf.WriteByte ((sbyte) netGame.DoHeadlight);
-m_cf.WriteByte ((sbyte) netGame.DoHoming);
-m_cf.WriteByte ((sbyte) netGame.DoLaserUpgrade);
-m_cf.WriteByte ((sbyte) netGame.DoQuadLasers);
-m_cf.WriteByte ((sbyte) netGame.bShowAllNames);
-m_cf.WriteByte ((sbyte) netGame.BrightPlayers);
-m_cf.WriteByte ((sbyte) netGame.invul);
-m_cf.WriteByte ((sbyte) netGame.FriendlyFireOff);
+m_cf.WriteByte (netGame.m_info.nType);
+m_cf.WriteInt (netGame.m_info.nSecurity);
+m_cf.Write (netGame.m_info.szGameName, 1, NETGAME_NAME_LEN + 1);
+m_cf.Write (netGame.m_info.szMissionTitle, 1, MISSION_NAME_LEN + 1);
+m_cf.Write (netGame.m_info.szMissionName, 1, 9);
+m_cf.WriteInt (netGame.m_info.nLevel);
+m_cf.WriteByte ((sbyte) netGame.m_info.gameMode);
+m_cf.WriteByte ((sbyte) netGame.m_info.bRefusePlayers);
+m_cf.WriteByte ((sbyte) netGame.m_info.difficulty);
+m_cf.WriteByte ((sbyte) netGame.m_info.gameStatus);
+m_cf.WriteByte ((sbyte) netGame.m_info.nNumPlayers);
+m_cf.WriteByte ((sbyte) netGame.m_info.nMaxPlayers);
+m_cf.WriteByte ((sbyte) netGame.m_info.nConnected);
+m_cf.WriteByte ((sbyte) netGame.m_info.gameFlags);
+m_cf.WriteByte ((sbyte) netGame.m_info.protocolVersion);
+m_cf.WriteByte ((sbyte) netGame.m_info.versionMajor);
+m_cf.WriteByte ((sbyte) netGame.m_info.versionMinor);
+m_cf.WriteByte ((sbyte) netGame.m_info.teamVector);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoMegas);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoSmarts);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoFusions);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoHelix);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoPhoenix);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoAfterburner);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoInvulnerability);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoCloak);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoGauss);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoVulcan);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoPlasma);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoOmega);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoSuperLaser);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoProximity);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoSpread);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoSmartMine);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoFlash);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoGuided);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoEarthShaker);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoMercury);
+m_cf.WriteByte ((sbyte) netGame.m_info.bAllowMarkerView);
+m_cf.WriteByte ((sbyte) netGame.m_info.bIndestructibleLights);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoAmmoRack);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoConverter);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoHeadlight);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoHoming);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoLaserUpgrade);
+m_cf.WriteByte ((sbyte) netGame.m_info.DoQuadLasers);
+m_cf.WriteByte ((sbyte) netGame.m_info.bShowAllNames);
+m_cf.WriteByte ((sbyte) netGame.m_info.BrightPlayers);
+m_cf.WriteByte ((sbyte) netGame.m_info.invul);
+m_cf.WriteByte ((sbyte) netGame.m_info.FriendlyFireOff);
 for (i = 0; i < 2; i++)
-	m_cf.Write (netGame.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
+	m_cf.Write (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	m_cf.WriteInt (netGame.locations [i]);
+	m_cf.WriteInt (netGame.Locations (i));
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (j = 0; j < MAX_PLAYERS; j++)
-		m_cf.WriteShort (netGame.kills [i][j]);			// 128 bytes
-m_cf.WriteShort (netGame.nSegmentCheckSum);				// 2 bytes
+		m_cf.WriteShort (netGame.Kills (i, j));			// 128 bytes
+m_cf.WriteShort (netGame.SegmentCheckSum ());			// 2 bytes
 for (i = 0; i < 2; i++)
-	m_cf.WriteShort (netGame.teamKills [i]);				// 4 bytes
+	m_cf.WriteShort (netGame.TeamKills (i));				// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	m_cf.WriteShort (netGame.killed [i]);					// 16 bytes
+	m_cf.WriteShort (netGame.Killed (i));					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	m_cf.WriteShort (netGame.playerKills [i]);			// 16 bytes
-m_cf.WriteInt (netGame.nScoreGoal);							// 4 bytes
-m_cf.WriteFix (netGame.xPlayTimeAllowed);					// 4 bytes
-m_cf.WriteFix (netGame.xLevelTime);							// 4 bytes
-m_cf.WriteInt (netGame.controlInvulTime);				// 4 bytes
-m_cf.WriteInt (netGame.monitorVector);					// 4 bytes
+	m_cf.WriteShort (netGame.PlayerKills (i));			// 16 bytes
+m_cf.WriteInt (netGame.ScoreGoal ());						// 4 bytes
+m_cf.WriteFix (netGame.PlayTimeAllowed ());				// 4 bytes
+m_cf.WriteFix (netGame.LevelTime ());						// 4 bytes
+m_cf.WriteInt (netGame.ControlInvulTime ());				// 4 bytes
+m_cf.WriteInt (netGame.MonitorVector ());		// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	m_cf.WriteInt (netGame.playerScore [i]);				// 32 bytes
+	m_cf.WriteInt (netGame.PlayerScore (i));				// 32 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	m_cf.WriteByte ((sbyte) netGame.playerFlags [i]);	// 8 bytes
-m_cf.WriteShort (PacketsPerSec ());					// 2 bytes
-m_cf.WriteByte ((sbyte) netGame.bShortPackets);			// 1 bytes
+	m_cf.WriteByte ((sbyte) netGame.PlayerFlags (i));	// 8 bytes
+m_cf.WriteShort (PacketsPerSec ());							// 2 bytes
+m_cf.WriteByte (sbyte (netGame.ShortPackets ()));		// 1 bytes
 // 279 bytes
 // 355 bytes total
-m_cf.Write (netGame.AuxData, NETGAME_AUX_SIZE, 1);  // Storage for protocol-specific data (e.g., multicast session and port)
+m_cf.Write (netGame.AuxData (), NETGAME_AUX_SIZE, 1);  // Storage for protocol-specific data (e.g., multicast session and port)
 }
 
 //------------------------------------------------------------------------------
@@ -650,18 +650,18 @@ void CSaveGameManager::SaveNetPlayers (void)
 {
 	int	i;
 
-m_cf.WriteByte ((sbyte) netPlayers.nType);
-m_cf.WriteInt (netPlayers.nSecurity);
+m_cf.WriteByte ((sbyte) netPlayers.m_info.nType);
+m_cf.WriteInt (netPlayers.m_info.nSecurity);
 for (i = 0; i < MAX_PLAYERS + 4; i++) {
-	m_cf.Write (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1);
-	m_cf.Write (netPlayers.players [i].network.ipx.server, 1, 4);
-	m_cf.Write (netPlayers.players [i].network.ipx.node, 1, 6);
-	m_cf.WriteByte ((sbyte) netPlayers.players [i].versionMajor);
-	m_cf.WriteByte ((sbyte) netPlayers.players [i].versionMinor);
-	m_cf.WriteByte ((sbyte) netPlayers.players [i].computerType);
-	m_cf.WriteByte (netPlayers.players [i].connected);
-	m_cf.WriteShort ((short) netPlayers.players [i].socket);
-	m_cf.WriteByte ((sbyte) netPlayers.players [i].rank);
+	m_cf.Write (netPlayers.m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
+	m_cf.Write (netPlayers.m_info.players [i].network.ipx.server, 1, 4);
+	m_cf.Write (netPlayers.m_info.players [i].network.ipx.node, 1, 6);
+	m_cf.WriteByte ((sbyte) netPlayers.m_info.players [i].versionMajor);
+	m_cf.WriteByte ((sbyte) netPlayers.m_info.players [i].versionMinor);
+	m_cf.WriteByte ((sbyte) netPlayers.m_info.players [i].computerType);
+	m_cf.WriteByte (netPlayers.m_info.players [i].connected);
+	m_cf.WriteShort ((short) netPlayers.m_info.players [i].socket);
+	m_cf.WriteByte ((sbyte) netPlayers.m_info.players [i].rank);
 	}
 }
 
@@ -1262,7 +1262,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	else {
 		nServerPlayer = -1;
 		for (i = 0; i < nPlayers; i++)
-			if (!strcmp (pszServerCallSign, netPlayers.players [i].callsign)) {
+			if (!strcmp (pszServerCallSign, netPlayers.m_info.players [i].callsign)) {
 				nServerPlayer = i;
 				break;
 				}
@@ -1271,9 +1271,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		nOtherObjNum = restoredPlayers [0].nObject;
 		nServerObjNum = restoredPlayers [nServerPlayer].nObject;
 	 {
-		tNetPlayerInfo h = netPlayers.players [0];
-		netPlayers.players [0] = netPlayers.players [nServerPlayer];
-		netPlayers.players [nServerPlayer] = h;
+		tNetPlayerInfo h = netPlayers.m_info.players [0];
+		netPlayers.m_info.players [0] = netPlayers.m_info.players [nServerPlayer];
+		netPlayers.m_info.players [nServerPlayer] = h;
 		}
 	 {
 		CPlayerData h = restoredPlayers [0];
@@ -1286,10 +1286,10 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 			gameData.multiplayer.nLocalPlayer = nServerPlayer;
 		}
 #if 0
-	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, 
+	memcpy (netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, 
 			 IpxGetMyLocalAddress (), 6);
-	*reinterpret_cast<ushort*> ((netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)) = 
-		htons (*reinterpret_cast<ushort*> ((netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)));
+	*reinterpret_cast<ushort*> ((netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)) = 
+		htons (*reinterpret_cast<ushort*> ((netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)));
 #endif
 	}
 *pnOtherObjNum = nOtherObjNum;
@@ -1310,7 +1310,7 @@ for (i = 0; i < nPlayers; i++) {
 				if (gameStates.multi.nGameType == UDP_GAME) {
 					memcpy (restoredPlayers [i].netAddress, gameData.multiplayer.players [j].netAddress, 
 							  sizeof (gameData.multiplayer.players [j].netAddress));
-					memcpy (netPlayers.players [i].network.ipx.node, gameData.multiplayer.players [j].netAddress, 
+					memcpy (netPlayers.m_info.players [i].network.ipx.node, gameData.multiplayer.players [j].netAddress, 
 							  sizeof (gameData.multiplayer.players [j].netAddress));
 					}
 				restoredPlayers [i].connected = 1;
@@ -1322,7 +1322,7 @@ for (i = 0; i < nPlayers; i++) {
 for (i = 0; i < MAX_PLAYERS; i++) {
 	if (!restoredPlayers [i].connected) {
 		memset (restoredPlayers [i].netAddress, 0xFF, sizeof (restoredPlayers [i].netAddress));
-		memset (netPlayers.players [i].network.ipx.node, 0xFF, sizeof (netPlayers.players [i].network.ipx.node));
+		memset (netPlayers.m_info.players [i].network.ipx.node, 0xFF, sizeof (netPlayers.m_info.players [i].network.ipx.node));
 		}
 	}
 memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (CPlayerData) * nPlayers);
@@ -1423,102 +1423,102 @@ void CSaveGameManager::LoadNetGame (void)
 {
 	int	i, j;
 
-netGame.nType = m_cf.ReadByte ();
-netGame.nSecurity = m_cf.ReadInt ();
-m_cf.Read (netGame.szGameName, 1, NETGAME_NAME_LEN + 1);
-m_cf.Read (netGame.szMissionTitle, 1, MISSION_NAME_LEN + 1);
-m_cf.Read (netGame.szMissionName, 1, 9);
-netGame.nLevel = m_cf.ReadInt ();
-netGame.gameMode = (ubyte) m_cf.ReadByte ();
-netGame.bRefusePlayers = (ubyte) m_cf.ReadByte ();
-netGame.difficulty = (ubyte) m_cf.ReadByte ();
-netGame.gameStatus = (ubyte) m_cf.ReadByte ();
-netGame.nNumPlayers = (ubyte) m_cf.ReadByte ();
-netGame.nMaxPlayers = (ubyte) m_cf.ReadByte ();
-netGame.nConnected = (ubyte) m_cf.ReadByte ();
-netGame.gameFlags = (ubyte) m_cf.ReadByte ();
-netGame.protocolVersion = (ubyte) m_cf.ReadByte ();
-netGame.versionMajor = (ubyte) m_cf.ReadByte ();
-netGame.versionMinor = (ubyte) m_cf.ReadByte ();
-netGame.teamVector = (ubyte) m_cf.ReadByte ();
-netGame.DoMegas = (ubyte) m_cf.ReadByte ();
-netGame.DoSmarts = (ubyte) m_cf.ReadByte ();
-netGame.DoFusions = (ubyte) m_cf.ReadByte ();
-netGame.DoHelix = (ubyte) m_cf.ReadByte ();
-netGame.DoPhoenix = (ubyte) m_cf.ReadByte ();
-netGame.DoAfterburner = (ubyte) m_cf.ReadByte ();
-netGame.DoInvulnerability = (ubyte) m_cf.ReadByte ();
-netGame.DoCloak = (ubyte) m_cf.ReadByte ();
-netGame.DoGauss = (ubyte) m_cf.ReadByte ();
-netGame.DoVulcan = (ubyte) m_cf.ReadByte ();
-netGame.DoPlasma = (ubyte) m_cf.ReadByte ();
-netGame.DoOmega = (ubyte) m_cf.ReadByte ();
-netGame.DoSuperLaser = (ubyte) m_cf.ReadByte ();
-netGame.DoProximity = (ubyte) m_cf.ReadByte ();
-netGame.DoSpread = (ubyte) m_cf.ReadByte ();
-netGame.DoSmartMine = (ubyte) m_cf.ReadByte ();
-netGame.DoFlash = (ubyte) m_cf.ReadByte ();
-netGame.DoGuided = (ubyte) m_cf.ReadByte ();
-netGame.DoEarthShaker = (ubyte) m_cf.ReadByte ();
-netGame.DoMercury = (ubyte) m_cf.ReadByte ();
-netGame.bAllowMarkerView = (ubyte) m_cf.ReadByte ();
-netGame.bIndestructibleLights = (ubyte) m_cf.ReadByte ();
-netGame.DoAmmoRack = (ubyte) m_cf.ReadByte ();
-netGame.DoConverter = (ubyte) m_cf.ReadByte ();
-netGame.DoHeadlight = (ubyte) m_cf.ReadByte ();
-netGame.DoHoming = (ubyte) m_cf.ReadByte ();
-netGame.DoLaserUpgrade = (ubyte) m_cf.ReadByte ();
-netGame.DoQuadLasers = (ubyte) m_cf.ReadByte ();
-netGame.bShowAllNames = (ubyte) m_cf.ReadByte ();
-netGame.BrightPlayers = (ubyte) m_cf.ReadByte ();
-netGame.invul = (ubyte) m_cf.ReadByte ();
-netGame.FriendlyFireOff = (ubyte) m_cf.ReadByte ();
+netGame.m_info.nType = m_cf.ReadByte ();
+netGame.m_info.nSecurity = m_cf.ReadInt ();
+m_cf.Read (netGame.m_info.szGameName, 1, NETGAME_NAME_LEN + 1);
+m_cf.Read (netGame.m_info.szMissionTitle, 1, MISSION_NAME_LEN + 1);
+m_cf.Read (netGame.m_info.szMissionName, 1, 9);
+netGame.m_info.nLevel = m_cf.ReadInt ();
+netGame.m_info.gameMode = (ubyte) m_cf.ReadByte ();
+netGame.m_info.bRefusePlayers = (ubyte) m_cf.ReadByte ();
+netGame.m_info.difficulty = (ubyte) m_cf.ReadByte ();
+netGame.m_info.gameStatus = (ubyte) m_cf.ReadByte ();
+netGame.m_info.nNumPlayers = (ubyte) m_cf.ReadByte ();
+netGame.m_info.nMaxPlayers = (ubyte) m_cf.ReadByte ();
+netGame.m_info.nConnected = (ubyte) m_cf.ReadByte ();
+netGame.m_info.gameFlags = (ubyte) m_cf.ReadByte ();
+netGame.m_info.protocolVersion = (ubyte) m_cf.ReadByte ();
+netGame.m_info.versionMajor = (ubyte) m_cf.ReadByte ();
+netGame.m_info.versionMinor = (ubyte) m_cf.ReadByte ();
+netGame.m_info.teamVector = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoMegas = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoSmarts = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoFusions = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoHelix = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoPhoenix = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoAfterburner = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoInvulnerability = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoCloak = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoGauss = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoVulcan = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoPlasma = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoOmega = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoSuperLaser = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoProximity = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoSpread = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoSmartMine = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoFlash = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoGuided = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoEarthShaker = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoMercury = (ubyte) m_cf.ReadByte ();
+netGame.m_info.bAllowMarkerView = (ubyte) m_cf.ReadByte ();
+netGame.m_info.bIndestructibleLights = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoAmmoRack = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoConverter = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoHeadlight = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoHoming = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoLaserUpgrade = (ubyte) m_cf.ReadByte ();
+netGame.m_info.DoQuadLasers = (ubyte) m_cf.ReadByte ();
+netGame.m_info.bShowAllNames = (ubyte) m_cf.ReadByte ();
+netGame.m_info.BrightPlayers = (ubyte) m_cf.ReadByte ();
+netGame.m_info.invul = (ubyte) m_cf.ReadByte ();
+netGame.m_info.FriendlyFireOff = (ubyte) m_cf.ReadByte ();
 for (i = 0; i < 2; i++)
-	m_cf.Read (netGame.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
+	m_cf.Read (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.locations [i] = m_cf.ReadInt ();
+	netGame.Locations (i) = m_cf.ReadInt ();
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (j = 0; j < MAX_PLAYERS; j++)
-		netGame.kills [i][j] = m_cf.ReadShort ();			// 128 bytes
-netGame.nSegmentCheckSum = m_cf.ReadShort ();				// 2 bytes
+		netGame.Kills (i, j) = m_cf.ReadShort ();				// 128 bytes
+netGame.SegmentCheckSum () = m_cf.ReadShort ();				// 2 bytes
 for (i = 0; i < 2; i++)
-	netGame.teamKills [i] = m_cf.ReadShort ();				// 4 bytes
+	netGame.TeamKills (i) = m_cf.ReadShort ();				// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.killed [i] = m_cf.ReadShort ();					// 16 bytes
+	netGame.Killed (i) = m_cf.ReadShort ();					// 16 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.playerKills [i] = m_cf.ReadShort ();			// 16 bytes
-netGame.nScoreGoal = m_cf.ReadInt ();							// 4 bytes
-netGame.xPlayTimeAllowed = m_cf.ReadFix ();					// 4 bytes
-netGame.xLevelTime = m_cf.ReadFix ();							// 4 bytes
-netGame.controlInvulTime = m_cf.ReadInt ();				// 4 bytes
-netGame.monitorVector = m_cf.ReadInt ();					// 4 bytes
+	netGame.PlayerKills (i) = m_cf.ReadShort ();				// 16 bytes
+netGame.ScoreGoal () = m_cf.ReadInt ();						// 4 bytes
+netGame.PlayTimeAllowed () = m_cf.ReadFix ();				// 4 bytes
+netGame.LevelTime () = m_cf.ReadFix ();						// 4 bytes
+netGame.ControlInvulTime () = m_cf.ReadInt ();				// 4 bytes
+netGame.MonitorVector () = m_cf.ReadInt ();					// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.playerScore [i] = m_cf.ReadInt ();				// 32 bytes
+	netGame.PlayerScore (i) = m_cf.ReadInt ();				// 32 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
-	netGame.playerFlags [i] = (ubyte) m_cf.ReadByte ();	// 8 bytes
-netGame.nPacketsPerSec = m_cf.ReadShort ();					// 2 bytes
-netGame.bShortPackets = (ubyte) m_cf.ReadByte ();			// 1 bytes
+	netGame.PlayerFlags (i) = (ubyte) m_cf.ReadByte ();	// 8 bytes
+netGame.PacketsPerSec () = m_cf.ReadShort ();				// 2 bytes
+netGame.ShortPackets () = ubyte (m_cf.ReadByte ());		// 1 bytes
 // 279 bytes
 // 355 bytes total
-m_cf.Read (netGame.AuxData, NETGAME_AUX_SIZE, 1);  // Storage for protocol-specific data (e.g., multicast session and port)
+m_cf.Read (netGame.AuxData (), NETGAME_AUX_SIZE, 1);  // Storage for protocol-specific data (e.g., multicast session and port)
 }
 
 //------------------------------------------------------------------------------
 
 void CSaveGameManager::LoadNetPlayers (void)
 {
-netPlayers.nType = (ubyte) m_cf.ReadByte ();
-netPlayers.nSecurity = m_cf.ReadInt ();
+netPlayers.m_info.nType = (ubyte) m_cf.ReadByte ();
+netPlayers.m_info.nSecurity = m_cf.ReadInt ();
 for (int i = 0; i < MAX_PLAYERS + 4; i++) {
-	m_cf.Read (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1);
-	m_cf.Read (netPlayers.players [i].network.ipx.server, 1, 4);
-	m_cf.Read (netPlayers.players [i].network.ipx.node, 1, 6);
-	netPlayers.players [i].versionMajor = (ubyte) m_cf.ReadByte ();
-	netPlayers.players [i].versionMinor = (ubyte) m_cf.ReadByte ();
-	netPlayers.players [i].computerType = m_cf.ReadByte ();
-	netPlayers.players [i].connected = m_cf.ReadByte ();
-	netPlayers.players [i].socket = (ushort) m_cf.ReadShort ();
-	netPlayers.players [i].rank = (ubyte) m_cf.ReadByte ();
+	m_cf.Read (netPlayers.m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
+	m_cf.Read (netPlayers.m_info.players [i].network.ipx.server, 1, 4);
+	m_cf.Read (netPlayers.m_info.players [i].network.ipx.node, 1, 6);
+	netPlayers.m_info.players [i].versionMajor = (ubyte) m_cf.ReadByte ();
+	netPlayers.m_info.players [i].versionMinor = (ubyte) m_cf.ReadByte ();
+	netPlayers.m_info.players [i].computerType = m_cf.ReadByte ();
+	netPlayers.m_info.players [i].connected = m_cf.ReadByte ();
+	netPlayers.m_info.players [i].socket = (ushort) m_cf.ReadShort ();
+	netPlayers.m_info.players [i].rank = (ubyte) m_cf.ReadByte ();
 	}
 }
 
@@ -1694,7 +1694,7 @@ CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
-	strcpy (szServerCallSign, netPlayers.players [0].callsign);
+	strcpy (szServerCallSign, netPlayers.m_info.players [0].callsign);
 	gameData.app.nStateGameId = m_cf.ReadInt ();
 	CSaveGameManager::LoadNetGame ();
 	IFDBG (fPos = m_cf.Tell ());
@@ -2052,9 +2052,9 @@ CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (gameData.app.nGameMode & GM_MULTI) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
-	strcpy (szServerCallSign, netPlayers.players [0].callsign);
+	strcpy (szServerCallSign, netPlayers.m_info.players [0].callsign);
 	m_cf.Read (&gameData.app.nStateGameId, sizeof (int), 1);
-	m_cf.Read (&netGame, sizeof (tNetgameInfo), 1);
+	m_cf.Read (&netGame, sizeof (tNetGameInfo), 1);
 	m_cf.Read (&netPlayers, sizeof (tAllNetPlayersInfo), 1);
 	m_cf.Read (&nPlayers, sizeof (gameData.multiplayer.nPlayers), 1);
 	m_cf.Read (&gameData.multiplayer.nLocalPlayer, sizeof (gameData.multiplayer.nLocalPlayer), 1);

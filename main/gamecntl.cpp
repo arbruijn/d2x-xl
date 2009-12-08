@@ -170,7 +170,7 @@ gameData.app.bGamePaused = 0;
 
 //------------------------------------------------------------------------------
 
-void DoShowNetgameHelp (void);
+void DoShowNetGameHelp (void);
 
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
 int DoGamePause (void)
@@ -191,7 +191,7 @@ if (gameData.app.bGamePaused) {		//unpause!
 	}
 
 if (gameData.app.nGameMode & GM_NETWORK) {
-	 DoShowNetgameHelp();
+	 DoShowNetGameHelp();
     return (KEY_PAUSE);
 	}
 else if (gameData.app.nGameMode & GM_MULTI) {
@@ -262,13 +262,13 @@ int SelectNextWindowFunction(int nWindow)
 			break;
 		case CV_REAR:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_TOPDOWN;
 				break;
 				}
 		case CV_RADAR_TOPDOWN:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 				gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_HEADSUP;
 				break;
 				}
@@ -304,7 +304,7 @@ int SelectNextWindowFunction(int nWindow)
 			//if not multi, fall through
 		case CV_MARKER:
 		case_marker:;
-			if (!IsMultiGame || IsCoopGame || netGame.bAllowMarkerView) {	//anarchy only
+			if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView) {	//anarchy only
 				gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 				if (gameData.marker.viewers [nWindow] == -1)
 					gameData.marker.viewers [nWindow] = gameData.multiplayer.nLocalPlayer * 3;

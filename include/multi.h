@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // How many simultaneous network players do we support?
 
-#define MAX_NUM_NET_PLAYERS     8
+#define MAX_NUM_NET_PLAYERS			(gameStates.app.bD2XLevel ? 16 : 8)
 
 #define MULTI_POSITION					0
 #define MULTI_REAPPEAR					1
@@ -222,7 +222,8 @@ extern int bUseMacros;
 
 extern int message_length[MULTI_MAX_TYPE+1];
 
-extern short kill_matrix[MAX_NUM_NET_PLAYERS][MAX_NUM_NET_PLAYERS];
+extern CShortArray scoreMatrix;
+//extern short scoreMatrix[MAX_NUM_NET_PLAYERS][MAX_NUM_NET_PLAYERS];
 
 
 extern void MultiMsgInputSub (int key);
@@ -241,7 +242,7 @@ extern int controlInvulTime;
 
 #define N_PLAYER_SHIP_TEXTURES 6
 
-extern tBitmapIndex mpTextureIndex[MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
+extern tBitmapIndex mpTextureIndex[MAX_PLAYERS_D2][N_PLAYER_SHIP_TEXTURES];
 
 #define NETGAME_FLAG_CLOSED            1
 #define NETGAME_FLAG_SHOW_ID           2
@@ -286,7 +287,7 @@ typedef struct tNetPlayerInfo {
 	ubyte   versionMajor;
 	ubyte   versionMinor;
 	ubyte   computerType;
-	sbyte    connected;
+	sbyte   connected;
 	ushort  socket;
 	ubyte   rank;
 } __pack__ tNetPlayerInfo;
@@ -296,28 +297,87 @@ typedef struct tAllNetPlayersInfo
 {
 	char    nType;
 	int     nSecurity;
-	struct tNetPlayerInfo players [MAX_PLAYERS+4];
+	struct tNetPlayerInfo players [MAX_PLAYERS_D2X + 4];
 } __pack__ tAllNetPlayersInfo;
 
-typedef struct tNetgameInfo {
-	ubyte   nType;
-	int     nSecurity;
-	char    szGameName [NETGAME_NAME_LEN + 1];
-	char    szMissionTitle [MISSION_NAME_LEN + 1];
-	char    szMissionName [9];
-	int     nLevel;
-	ubyte   gameMode;
-	ubyte   bRefusePlayers;
-	ubyte   difficulty;
-	ubyte   gameStatus;
-	ubyte   nNumPlayers;
-	ubyte   nMaxPlayers;
-	ubyte   nConnected;
-	ubyte   gameFlags;
-	ubyte   protocolVersion;
-	ubyte   versionMajor;
-	ubyte   versionMinor;
-	ubyte   teamVector;
+class CAllNetPlayersInfo {
+	public:
+		tAllNetPlayersInfo	m_info;
+
+	inline size_t Size (void) { return sizeof (m_info) - sizeof (m_info.players) + sizeof (tNetPlayerInfo) * (MAX_NUM_NET_PLAYERS + 4); }
+
+	inline tAllNetPlayersInfo& operator= (tAllNetPlayersInfo& other) {
+		memcpy (&m_info, &other, Size ());
+		return m_info;
+		}
+	inline tAllNetPlayersInfo& operator= (CAllNetPlayersInfo& other) {
+		m_info = other.m_info;
+		return m_info;
+		}
+};
+
+typedef struct tNetGameInfoD2 {
+	int     locations [MAX_PLAYERS_D2];			// 32 bytes
+	short   kills [MAX_PLAYERS_D2][MAX_PLAYERS_D2];	// 128 bytes
+	ushort  nSegmentCheckSum;						// 2 bytes
+	short   teamKills [2];							// 4 bytes
+	short   killed [MAX_PLAYERS_D2];				// 16 bytes
+	short   playerKills [MAX_PLAYERS_D2];		// 16 bytes
+	int     nScoreGoal;								// 4 bytes
+	fix     xPlayTimeAllowed;						// 4 bytes
+	fix     xLevelTime;								// 4 bytes
+	int     controlInvulTime;						// 4 bytes
+	int     monitorVector;							// 4 bytes
+	int     playerScore [MAX_PLAYERS_D2];		// 32 bytes
+	ubyte   playerFlags [MAX_PLAYERS_D2];		// 8 bytes
+	short   nPacketsPerSec;							// 2 bytes
+	ubyte   bShortPackets;							// 1 bytes
+// 279 bytes
+// 355 bytes total
+	ubyte   auxData[NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
+} __pack__ tNetGameInfoD2;
+
+typedef struct tNetGameInfoD2X {
+	int     locations [MAX_PLAYERS_D2X];		// 32 bytes
+	short   kills [MAX_PLAYERS_D2X][MAX_PLAYERS_D2X];	// 128 bytes
+	ushort  nSegmentCheckSum;						// 2 bytes
+	short   teamKills [2];							// 4 bytes
+	short   killed [MAX_PLAYERS_D2X];			// 16 bytes
+	short   playerKills [MAX_PLAYERS_D2X];		// 16 bytes
+	int     nScoreGoal;								// 4 bytes
+	fix     xPlayTimeAllowed;						// 4 bytes
+	fix     xLevelTime;								// 4 bytes
+	int     controlInvulTime;						// 4 bytes
+	int     monitorVector;							// 4 bytes
+	int     playerScore [MAX_PLAYERS_D2X];		// 32 bytes
+	ubyte   playerFlags [MAX_PLAYERS_D2X];		// 8 bytes
+	short   nPacketsPerSec;							// 2 bytes
+	ubyte   bShortPackets;							// 1 bytes
+	ubyte   auxData [NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
+} __pack__ tNetGameInfoD2X;
+
+typedef struct tNetGameInfoLite {
+	ubyte                           nType;
+	int                             nSecurity;
+	char                            szGameName [NETGAME_NAME_LEN+1];
+	char                            szMissionTitle [MISSION_NAME_LEN+1];
+	char                            szMissionName [9];
+	int                             nLevel;
+	ubyte                           gameMode;
+	ubyte                           bRefusePlayers;
+	ubyte                           difficulty;
+	ubyte                           gameStatus;
+	ubyte                           nNumPlayers;
+	ubyte                           nMaxPlayers;
+	ubyte                           nConnected;
+	ubyte                           gameFlags;
+	ubyte                           protocolVersion;
+	ubyte                           versionMajor;
+	ubyte                           versionMinor;
+	ubyte                           teamVector;
+} __pack__ tNetGameInfoLite;
+
+typedef struct tNetGameInfo : tNetGameInfoLite {
 // 72 bytes
 // change the order of the bit fields for the mac compiler.
 // doing so will mean I don't have to do screwy things to
@@ -391,26 +451,56 @@ typedef struct tNetgameInfo {
 	short DoFlash:1;
 #endif
 
-	char    szTeamName [2][CALLSIGN_LEN+1];		// 18 bytes
-	int     locations [MAX_PLAYERS];				// 32 bytes
-	short   kills [MAX_PLAYERS][MAX_PLAYERS];	// 128 bytes
-	ushort  nSegmentCheckSum;						// 2 bytes
-	short   teamKills [2];							// 4 bytes
-	short   killed [MAX_PLAYERS];					// 16 bytes
-	short   playerKills [MAX_PLAYERS];			// 16 bytes
-	int     nScoreGoal;								// 4 bytes
-	fix     xPlayTimeAllowed;						// 4 bytes
-	fix     xLevelTime;								// 4 bytes
-	int     controlInvulTime;						// 4 bytes
-	int     monitorVector;							// 4 bytes
-	int     playerScore [MAX_PLAYERS];			// 32 bytes
-	ubyte   playerFlags [MAX_PLAYERS];			// 8 bytes
-	short   nPacketsPerSec;							// 2 bytes
-	ubyte   bShortPackets;							// 1 bytes
-// 279 bytes
-// 355 bytes total
-	ubyte   AuxData[NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
-} __pack__ tNetgameInfo;
+	char    szTeamName [2][CALLSIGN_LEN+1];	// 18 bytes
+	union {
+		tNetGameInfoD2		d2;
+		tNetGameInfoD2X	d2x;
+		} versionSpecific;
+	} __pack__ tNetGameInfo;
+
+class CNetGameInfo {
+	public:
+		tNetGameInfo	m_info;
+
+	public:
+		CNetGameInfo() { memset (&m_info, 0, sizeof (m_info)); }
+
+		inline size_t Size (void)  { return gameStates.app.bD2XLevel ? sizeof (tNetGameInfo) : sizeof (tNetGameInfo) - sizeof (tNetGameInfoD2X) + sizeof (tNetGameInfoD2); }
+
+		inline tNetGameInfo& operator= (tNetGameInfo& other) {
+			memcpy (&m_info, &other, Size ());
+			return m_info;
+			}
+
+		inline tNetGameInfo& operator= (CNetGameInfo& other) {
+			m_info = other.m_info;
+			return m_info;
+			}
+
+		inline int* Locations (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.locations : m_info.versionSpecific.d2.locations; }
+		inline int& Locations (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.locations [i] : m_info.versionSpecific.d2.locations [i]; }
+		inline short* Kills (void) { return gameStates.app.bD2XLevel ? &m_info.versionSpecific.d2x.kills [0][0] : &m_info.versionSpecific.d2.kills [0][0]; }
+		inline short& Kills (int i, int j) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.kills [i][j] : m_info.versionSpecific.d2.kills [i][j]; }
+		inline short* TeamKills (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.teamKills : m_info.versionSpecific.d2.teamKills; }
+		inline short& TeamKills (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.teamKills [i] : m_info.versionSpecific.d2.teamKills [i]; }
+		inline short* Killed (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.killed : m_info.versionSpecific.d2.killed; }
+		inline short& Killed (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.killed [i] : m_info.versionSpecific.d2.killed [i]; }
+		inline short* PlayerKills (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerKills : m_info.versionSpecific.d2.playerKills; }
+		inline short& PlayerKills (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerKills [i] : m_info.versionSpecific.d2.playerKills [i]; }
+		inline ushort& SegmentCheckSum (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }
+		inline int& ScoreGoal (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.nScoreGoal : m_info.versionSpecific.d2.nScoreGoal; }
+		inline fix& PlayTimeAllowed (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.xPlayTimeAllowed : m_info.versionSpecific.d2.xPlayTimeAllowed; }
+		inline fix& LevelTime (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.xLevelTime : m_info.versionSpecific.d2.xLevelTime; }
+		inline int& ControlInvulTime (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
+		inline int& MonitorVector (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
+		inline int* PlayerScore (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerScore : m_info.versionSpecific.d2.playerScore; }
+		inline int& PlayerScore (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerScore [i] : m_info.versionSpecific.d2.playerScore [i]; }
+		inline ubyte* PlayerFlags (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerFlags : m_info.versionSpecific.d2.playerFlags; }
+		inline ubyte& PlayerFlags (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerFlags [i] : m_info.versionSpecific.d2.playerFlags [i]; }
+		inline short& PacketsPerSec (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
+		inline ubyte& ShortPackets (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
+		inline ubyte* AuxData (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.auxData : m_info.versionSpecific.d2.auxData; }
+};
 
 #define MAX_ROBOTS_CONTROLLED 5
 
@@ -425,8 +515,8 @@ typedef struct tMultiRobotData {
 	sbyte fireBuf [MAX_ROBOTS_CONTROLLED][18+3];
 } __pack__ tMultiRobotData;
 
-extern struct tNetgameInfo netGame;
-extern struct tAllNetPlayersInfo netPlayers;
+extern CNetGameInfo netGame;
+extern CAllNetPlayersInfo netPlayers;
 
 int NetworkIAmMaster (void);
 void ChangePlayerNumTo (int new_pnum);

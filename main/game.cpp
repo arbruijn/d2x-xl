@@ -925,7 +925,7 @@ if (IsMultiGame) {
 	tracker.AddServer ();
    MultiDoFrame ();
 	CheckMonsterballScore ();
-	MultiCheckForScoreGoalWinner (netGame.xPlayTimeAllowed && (gameStates.app.xThisLevelTime >= I2X ((netGame.xPlayTimeAllowed * 5 * 60))));
+	MultiCheckForScoreGoalWinner (netGame.PlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.PlayTimeAllowed () * 5 * 60))));
 	MultiCheckForEntropyWinner ();
   }
 if (bRenderFrame) {
@@ -963,7 +963,7 @@ gameData.time.xGame += gameData.time.xFrame;
 if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) {
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 	}
-if (IsMultiGame && netGame.xPlayTimeAllowed)
+if (IsMultiGame && netGame.PlayTimeAllowed ())
    gameStates.app.xThisLevelTime +=gameData.time.xFrame;
 //PrintLog ("DigiSyncSounds\n");
 audio.SyncSounds ();
@@ -1024,7 +1024,7 @@ else { // Note the link to above!
 if (gameStates.render.bDoAppearanceEffect) {
 	gameData.objs.consoleP->CreateAppearanceEffect ();
 	gameStates.render.bDoAppearanceEffect = 0;
-	if (IsMultiGame && netGame.invul) {
+	if (IsMultiGame && netGame.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		LOCALPLAYER.invulnerableTime = gameData.time.xGame-I2X (27);
 		bFakingInvul = 1;

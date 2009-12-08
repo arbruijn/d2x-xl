@@ -95,20 +95,20 @@ sprintf (szFeedbackResult, "%s ", TXT_MESSAGE_SENT_TO);
 if ((gameData.app.nGameMode & GM_TEAM) && (atoi (gameData.multigame.msg.szMsg) > 0) && 
 	 (atoi (gameData.multigame.msg.szMsg) < 3)) {
 	sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
-				TXT_TEAM, netGame.szTeamName [atoi (gameData.multigame.msg.szMsg)-1]);
+				TXT_TEAM, netGame.m_info.szTeamName [atoi (gameData.multigame.msg.szMsg)-1]);
 	bFound = 1;
 	}
 if (!bFound)
 	if (gameData.app.nGameMode & GM_TEAM) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (!strnicmp (netGame.szTeamName [i], gameData.multigame.msg.szMsg, l)) {
+			if (!strnicmp (netGame.m_info.szTeamName [i], gameData.multigame.msg.szMsg, l)) {
 				if (bFound)
 					strcat (szFeedbackResult, ", ");
 				bFound++;
 				if (!(bFound % 4))
 					strcat (szFeedbackResult, "\n");
 				sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
-							TXT_TEAM, netGame.szTeamName [i]);
+							TXT_TEAM, netGame.m_info.szTeamName [i]);
 				}
 			}
 		}
@@ -278,8 +278,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 kick_player:;
 		if (gameStates.multi.nGameType  >= IPX_GAME)
 			NetworkDumpPlayer (
-				netPlayers.players [i].network.ipx.server, 
-				netPlayers.players [i].network.ipx.node, 
+				netPlayers.m_info.players [i].network.ipx.server, 
+				netPlayers.m_info.players [i].network.ipx.node, 
 				7);
 
 		HUDInitMessage (TXT_DUMPING, gameData.multiplayer.players [i].callsign);
@@ -385,18 +385,18 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 			SetTeam (i, -1);
 #else
 #if 0
-			if (netGame.teamVector & (1<<i))
-				netGame.teamVector&= (~ (1<<i));
+			if (netGame.m_info.teamVector & (1<<i))
+				netGame.m_info.teamVector&= (~ (1<<i));
 			else
-				netGame.teamVector|= (1<<i);
+				netGame.m_info.teamVector|= (1<<i);
 #else
-				netGame.teamVector ^= (1<<i);
+				netGame.m_info.teamVector ^= (1<<i);
 #endif
 			for (t = 0;t<gameData.multiplayer.nPlayers;t++)
 				if (gameData.multiplayer.players [t].connected)
 					MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [t].nObject);
 
-			NetworkSendNetgameUpdate ();
+			NetworkSendNetGameUpdate ();
 			sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [i].callsign);
 			if (i == gameData.multiplayer.nLocalPlayer) {
 				HUDInitMessage (TXT_TEAMCHANGE1);
@@ -424,7 +424,7 @@ else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_HANDICAP, 9)) {
 		return;
 	}
 else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_BOMBS_OFF, 7))
-	netGame.DoSmartMine = 0;
+	netGame.m_info.DoSmartMine = 0;
 else if (!(gameStates.render.cockpit.bShowPingStats || strnicmp (gameData.multigame.msg.szMsg, TXT_PING, 5))) {
 	if (PingPlayer (-1))
 		return;
@@ -553,7 +553,7 @@ i = atoi (bufP);
 if ((i >= 1) && (i <= 2))
 	return 1;
 for (i = 0; i < 2; i++)
-	if (!strnicmp (netGame.szTeamName [i], bufP, nLen))
+	if (!strnicmp (netGame.m_info.szTeamName [i], bufP, nLen))
 		return 1;
 return 0;
 }
@@ -569,7 +569,7 @@ if (!(gameData.app.nGameMode & GM_TEAM))
 i = GetTeam (gameData.multiplayer.nLocalPlayer);
 if (i == atoi (bufP) - 1)
 	return 1;
-if (!strnicmp (netGame.szTeamName [i], bufP, nLen))
+if (!strnicmp (netGame.m_info.szTeamName [i], bufP, nLen))
 	return 1;
 return 0;
 }

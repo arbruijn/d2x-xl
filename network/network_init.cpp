@@ -93,7 +93,7 @@ gameData.multiplayer.maxPowerupsAllowed.Clear (0);
 gameData.multiplayer.powerupsInMine.Clear (0);
 networkData.nTotalMissedPackets = 0; 
 networkData.nTotalPacketsGot = 0;
-memset (&netGame, 0, sizeof (tNetgameInfo));
+memset (&netGame, 0, sizeof (tNetGameInfo));
 memset (&netPlayers, 0, sizeof (tAllNetPlayersInfo));
 networkData.thisPlayer.nType = PID_REQUEST;
 memcpy (networkData.thisPlayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
@@ -115,7 +115,7 @@ MultiNewGame ();
 networkData.bNewGame = 1;
 gameData.reactor.bDestroyed = 0;
 NetworkFlush ();
-netGame.nPacketsPerSec = mpParams.nPPS;
+netGame.PacketsPerSec () = mpParams.nPPS;
 }
 
 //------------------------------------------------------------------------------

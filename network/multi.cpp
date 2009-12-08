@@ -96,9 +96,9 @@ void DropPlayerEggs (CObject *player); // from collide.c
 
 extern void SetFunctionMode (int);
 
-tNetgameInfo netGame;
+CNetGameInfo netGame;
 
-tAllNetPlayersInfo netPlayers;
+CAllNetPlayersInfo netPlayers;
 
 tBitmapIndex mpTextureIndex [MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
@@ -497,7 +497,7 @@ else
 
 static inline int ScoreGoal (bool bNone = false)
 {
-return bNone ? 0 : netGame.nScoreGoal ? netGame.nScoreGoal * BonusScore () : 0x7fffffff;
+return bNone ? 0 : netGame.ScoreGoal () ? netGame.ScoreGoal () * BonusScore () : 0x7fffffff;
 }
 
 // -----------------------------------------------------------------------------
@@ -572,7 +572,7 @@ gameData.multiplayer.powerupsInMine.Clear (0);
 
 short GetTeam (int nPlayer)
 {
-return (netGame.teamVector & (1 << nPlayer)) ? 1 : 0;
+return (netGame.m_info.teamVector & (1 << nPlayer)) ? 1 : 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -664,17 +664,17 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 
 if (team  >= 0) {
 	if (team)
-		netGame.teamVector |= (1 << nPlayer);
+		netGame.m_info.teamVector |= (1 << nPlayer);
 	else
-		netGame.teamVector &= ~(1 << nPlayer);
+		netGame.m_info.teamVector &= ~(1 << nPlayer);
 	}
 else {
 	team = !GetTeam (nPlayer);
 	if (team)
-		netGame.teamVector |= (1 << nPlayer);
+		netGame.m_info.teamVector |= (1 << nPlayer);
 	else
-		netGame.teamVector &= ~(1 << nPlayer);
-	NetworkSendNetgameUpdate ();
+		netGame.m_info.teamVector &= ~(1 << nPlayer);
+	NetworkSendNetGameUpdate ();
 	}
 sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [nPlayer].callsign);
 if (nPlayer == gameData.multiplayer.nLocalPlayer) {
@@ -935,7 +935,7 @@ killedP = gameData.multiplayer.players + nKilledPlayer;
 gameData.multigame.kills.pFlags [nKilledPlayer] = 1;
 Assert ((nKilledPlayer >= 0) &&(nKilledPlayer < gameData.multiplayer.nPlayers));
 if (gameData.app.nGameMode & GM_TEAM)
-	sprintf (szKilled, "%s (%s)", killedP->callsign, netGame.szTeamName [GetTeam (nKilledPlayer)]);
+	sprintf (szKilled, "%s (%s)", killedP->callsign, netGame.m_info.szTeamName [GetTeam (nKilledPlayer)]);
 else
 	sprintf (szKilled, "%s", killedP->callsign);
 if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -977,7 +977,7 @@ else if ((killerType != OBJ_PLAYER) &&(killerType != OBJ_GHOST)) {
 nKillerPlayer = OBJECTS [nKiller].info.nId;
 killerP = gameData.multiplayer.players + nKillerPlayer;
 if (gameData.app.nGameMode & GM_TEAM)
-	sprintf (szKiller, "%s (%s)", killerP->callsign, netGame.szTeamName [GetTeam (nKillerPlayer)]);
+	sprintf (szKiller, "%s (%s)", killerP->callsign, netGame.m_info.szTeamName [GetTeam (nKillerPlayer)]);
 else
 	sprintf (szKiller, "%s", killerP->callsign);
 // Beyond this point, it was definitely a CPlayerData-CPlayerData kill situation
@@ -1169,7 +1169,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected) {
 			if (i == gameData.multiplayer.nLocalPlayer) {
@@ -2924,7 +2924,7 @@ FORALL_STATIC_OBJS (objP, i) {
 		}
 	else if (objP->info.nType == OBJ_POWERUP) {
 		if (objP->info.nId == POW_EXTRA_LIFE) {
-			if (!netGame.DoInvulnerability) {
+			if (!netGame.m_info.DoInvulnerability) {
 				objP->info.nId = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -2943,7 +2943,7 @@ FORALL_STATIC_OBJS (objP, i) {
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 				}
 		if (objP->info.nId == POW_INVUL) {
-			if (invCount  >= 3 || (!netGame.DoInvulnerability)) {
+			if (invCount  >= 3 || (!netGame.m_info.DoInvulnerability)) {
 				objP->info.nId = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -2952,7 +2952,7 @@ FORALL_STATIC_OBJS (objP, i) {
 				invCount++;
 			}
 		if (objP->info.nId == POW_CLOAK) {
-			if (cloakCount  >= 3 || (!netGame.DoCloak)) {
+			if (cloakCount  >= 3 || (!netGame.m_info.DoCloak)) {
 				objP->info.nId = POW_SHIELD_BOOST;
 				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -2964,91 +2964,91 @@ FORALL_STATIC_OBJS (objP, i) {
 		switch (objP->info.nId) {
 				break;
 			case POW_AFTERBURNER:
-				objP->BashToShield (!netGame.DoAfterburner);
+				objP->BashToShield (!netGame.m_info.DoAfterburner);
 				break;
 			case POW_FUSION:
-				objP->BashToShield (!netGame.DoFusions);
+				objP->BashToShield (!netGame.m_info.DoFusions);
 				break;
 			case POW_PHOENIX:
-				objP->BashToShield (!netGame.DoPhoenix);
+				objP->BashToShield (!netGame.m_info.DoPhoenix);
 				break;
 			case POW_HELIX:
-				objP->BashToShield (!netGame.DoHelix);
+				objP->BashToShield (!netGame.m_info.DoHelix);
 				break;
 			case POW_MEGAMSL:
-				objP->BashToShield (!netGame.DoMegas);
+				objP->BashToShield (!netGame.m_info.DoMegas);
 				break;
 			case POW_SMARTMSL:
-				objP->BashToShield (!netGame.DoSmarts);
+				objP->BashToShield (!netGame.m_info.DoSmarts);
 				break;
 			case POW_GAUSS:
-				objP->BashToShield (!netGame.DoGauss);
+				objP->BashToShield (!netGame.m_info.DoGauss);
 				break;
 			case POW_VULCAN:
-				objP->BashToShield (!netGame.DoVulcan);
+				objP->BashToShield (!netGame.m_info.DoVulcan);
 				break;
 			case POW_PLASMA:
-				objP->BashToShield (!netGame.DoPlasma);
+				objP->BashToShield (!netGame.m_info.DoPlasma);
 				break;
 			case POW_OMEGA:
-				objP->BashToShield (!netGame.DoOmega);
+				objP->BashToShield (!netGame.m_info.DoOmega);
 				break;
 			case POW_SUPERLASER:
-				objP->BashToShield (!netGame.DoSuperLaser);
+				objP->BashToShield (!netGame.m_info.DoSuperLaser);
 				break;
 			case POW_PROXMINE:
-				objP->BashToShield (!netGame.DoProximity || (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)));
+				objP->BashToShield (!netGame.m_info.DoProximity || (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)));
 				break;
 			case POW_SMARTMINE:
-				objP->BashToShield (!netGame.DoSmartMine || (gameData.app.nGameMode & GM_ENTROPY));
+				objP->BashToShield (!netGame.m_info.DoSmartMine || (gameData.app.nGameMode & GM_ENTROPY));
 				break;
 			case POW_VULCAN_AMMO:
-				objP->BashToShield (!(netGame.DoVulcan || netGame.DoGauss));
+				objP->BashToShield (!(netGame.m_info.DoVulcan || netGame.m_info.DoGauss));
 				break;
 			case POW_SPREADFIRE:
-				objP->BashToShield (!netGame.DoSpread);
+				objP->BashToShield (!netGame.m_info.DoSpread);
 				break;
 			case POW_FLASHMSL_1:
-				objP->BashToShield (!netGame.DoFlash);
+				objP->BashToShield (!netGame.m_info.DoFlash);
 				break;
 			case POW_FLASHMSL_4:
-				objP->BashToShield (!netGame.DoFlash);
+				objP->BashToShield (!netGame.m_info.DoFlash);
 				break;
 			case POW_GUIDEDMSL_1:
-				objP->BashToShield (!netGame.DoGuided);
+				objP->BashToShield (!netGame.m_info.DoGuided);
 				break;
 			case POW_GUIDEDMSL_4:
-				objP->BashToShield (!netGame.DoGuided);
+				objP->BashToShield (!netGame.m_info.DoGuided);
 				break;
 			case POW_EARTHSHAKER:
-				objP->BashToShield (!netGame.DoEarthShaker);
+				objP->BashToShield (!netGame.m_info.DoEarthShaker);
 				break;
 			case POW_MERCURYMSL_1:
-				objP->BashToShield (!netGame.DoMercury);
+				objP->BashToShield (!netGame.m_info.DoMercury);
 				break;
 			case POW_MERCURYMSL_4:
-				objP->BashToShield (!netGame.DoMercury);
+				objP->BashToShield (!netGame.m_info.DoMercury);
 				break;
 			case POW_CONVERTER:
-				objP->BashToShield (!netGame.DoConverter);
+				objP->BashToShield (!netGame.m_info.DoConverter);
 				break;
 			case POW_AMMORACK:
-				objP->BashToShield (!netGame.DoAmmoRack);
+				objP->BashToShield (!netGame.m_info.DoAmmoRack);
 				break;
 			case POW_HEADLIGHT:
-				 objP->BashToShield (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (headlight.bAvailable, 0, 1, 0)));
+				 objP->BashToShield (!netGame.m_info.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (headlight.bAvailable, 0, 1, 0)));
 				break;
 			case POW_LASER:
-				objP->BashToShield (!netGame.DoLaserUpgrade);
+				objP->BashToShield (!netGame.m_info.DoLaserUpgrade);
 				break;
 			case POW_HOMINGMSL_1:
-				objP->BashToShield (!netGame.DoHoming);
+				objP->BashToShield (!netGame.m_info.DoHoming);
 				break;
 			case POW_HOMINGMSL_4:
-				objP->BashToShield (!netGame.DoHoming);
+				objP->BashToShield (!netGame.m_info.DoHoming);
 				break;
 			case POW_QUADLASER:
-				objP->BashToShield (!netGame.DoQuadLasers);
+				objP->BashToShield (!netGame.m_info.DoQuadLasers);
 				break;
 			case POW_BLUEFLAG:
 				objP->BashToShield (!(gameData.app.nGameMode & GM_CAPTURE));
@@ -3663,7 +3663,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 void MultiSendHeartBeat ()
 {
-if (!netGame.xPlayTimeAllowed)
+if (!netGame.PlayTimeAllowed ())
 	return;
 gameData.multigame.msg.buf [0] = MULTI_HEARTBEAT;
 PUT_INTEL_INT (gameData.multigame.msg.buf+1, gameStates.app.xThisLevelTime);
@@ -4516,127 +4516,127 @@ int MultiPowerupIsAllowed (int id)
 {
 switch (id) {
 	case POW_INVUL:
-		if (!netGame.DoInvulnerability)
+		if (!netGame.m_info.DoInvulnerability)
 			return (0);
 		break;
 	case POW_CLOAK:
-		if (!netGame.DoCloak)
+		if (!netGame.m_info.DoCloak)
 			return (0);
 		break;
 	case POW_AFTERBURNER:
-		if (!netGame.DoAfterburner)
+		if (!netGame.m_info.DoAfterburner)
 			return (0);
 		break;
 	case POW_FUSION:
-		if (!netGame.DoFusions)
+		if (!netGame.m_info.DoFusions)
 			return (0);
 		break;
 	case POW_PHOENIX:
-		if (!netGame.DoPhoenix)
+		if (!netGame.m_info.DoPhoenix)
 			return (0);
 		break;
 	case POW_HELIX:
-		if (!netGame.DoHelix)
+		if (!netGame.m_info.DoHelix)
 			return (0);
 		break;
 	case POW_MEGAMSL:
-		if (!netGame.DoMegas)
+		if (!netGame.m_info.DoMegas)
 			return (0);
 		break;
 	case POW_SMARTMSL:
-		if (!netGame.DoSmarts)
+		if (!netGame.m_info.DoSmarts)
 			return (0);
 		break;
 	case POW_GAUSS:
-		if (!netGame.DoGauss)
+		if (!netGame.m_info.DoGauss)
 			return (0);
 		break;
 	case POW_VULCAN:
-		if (!netGame.DoVulcan)
+		if (!netGame.m_info.DoVulcan)
 			return (0);
 		break;
 	case POW_PLASMA:
-		if (!netGame.DoPlasma)
+		if (!netGame.m_info.DoPlasma)
 			return (0);
 		break;
 	case POW_OMEGA:
-		if (!netGame.DoOmega)
+		if (!netGame.m_info.DoOmega)
 			return (0);
 		break;
 	case POW_SUPERLASER:
-		if (!netGame.DoSuperLaser)
+		if (!netGame.m_info.DoSuperLaser)
 			return (0);
 		break;
 	case POW_PROXMINE:
-		if (!netGame.DoProximity)
+		if (!netGame.m_info.DoProximity)
 			return (0);
 		break;
 	case POW_VULCAN_AMMO:
-		if (!(netGame.DoVulcan || netGame.DoGauss))
+		if (!(netGame.m_info.DoVulcan || netGame.m_info.DoGauss))
 			return (0);
 		break;
 	case POW_SPREADFIRE:
-		if (!netGame.DoSpread)
+		if (!netGame.m_info.DoSpread)
 			return (0);
 		break;
 	case POW_SMARTMINE:
-		if (!netGame.DoSmartMine)
+		if (!netGame.m_info.DoSmartMine)
 			return (0);
 		break;
 	case POW_FLASHMSL_1:
-		if (!netGame.DoFlash)
+		if (!netGame.m_info.DoFlash)
 			return (0);
 		break;
 	case POW_FLASHMSL_4:
-		if (!netGame.DoFlash)
+		if (!netGame.m_info.DoFlash)
 			return (0);
 		break;
 	case POW_GUIDEDMSL_1:
-		if (!netGame.DoGuided)
+		if (!netGame.m_info.DoGuided)
 			return (0);
 		break;
 	case POW_GUIDEDMSL_4:
-		if (!netGame.DoGuided)
+		if (!netGame.m_info.DoGuided)
 			return (0);
 		break;
 	case POW_EARTHSHAKER:
-		if (!netGame.DoEarthShaker)
+		if (!netGame.m_info.DoEarthShaker)
 			return (0);
 		break;
 	case POW_MERCURYMSL_1:
-		if (!netGame.DoMercury)
+		if (!netGame.m_info.DoMercury)
 			return (0);
 		break;
 	case POW_MERCURYMSL_4:
-		if (!netGame.DoMercury)
+		if (!netGame.m_info.DoMercury)
 			return (0);
 		break;
 	case POW_CONVERTER:
-		if (!netGame.DoConverter)
+		if (!netGame.m_info.DoConverter)
 			return (0);
 		break;
 	case POW_AMMORACK:
-		if (!netGame.DoAmmoRack)
+		if (!netGame.m_info.DoAmmoRack)
 			return (0);
 		break;
 	case POW_HEADLIGHT:
-		if (!netGame.DoHeadlight)
+		if (!netGame.m_info.DoHeadlight)
 			return (0);
 		break;
 	case POW_LASER:
-		if (!netGame.DoLaserUpgrade)
+		if (!netGame.m_info.DoLaserUpgrade)
 			return (0);
 		break;
 	case POW_HOMINGMSL_1:
-		if (!netGame.DoHoming)
+		if (!netGame.m_info.DoHoming)
 			return (0);
 		break;
 	case POW_HOMINGMSL_4:
-		if (!netGame.DoHoming)
+		if (!netGame.m_info.DoHoming)
 			return (0);
 		break;
 	case POW_QUADLASER:
-		if (!netGame.DoQuadLasers)
+		if (!netGame.m_info.DoQuadLasers)
 			return (0);
 		break;
 	case POW_BLUEFLAG:
@@ -4709,7 +4709,7 @@ if (oldrank!=GetMyNetRanking ()) {
 	if (!gameOpts->multi.bNoRankings) {
 		HUDInitMessage (TXT_PROMOTED, pszRankStrings [GetMyNetRanking ()]);
 		audio.PlaySound (SOUND_BUDDY_MET_GOAL, SOUNDCLASS_GENERIC, I2X (2));
-		netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
+		netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 		}
 	}
 SavePlayerProfile ();
@@ -4730,7 +4730,7 @@ oldrank = GetMyNetRanking ();
 networkData.nNetLifeKilled++;
 if (oldrank!=GetMyNetRanking ()) {
 	MultiSendRanking ();
-	netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
+	netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 	if (!gameOpts->multi.bNoRankings)
 		HUDInitMessage (TXT_DEMOTED, pszRankStrings [GetMyNetRanking ()]);
 	}
@@ -4756,14 +4756,14 @@ void MultiDoRanking (char *buf)
 	int nPlayer = (int) buf [1];
 	char rank = buf [2];
 
-	if (netPlayers.players [nPlayer].rank<rank)
+	if (netPlayers.m_info.players [nPlayer].rank<rank)
 		strcpy (rankstr, TXT_RANKUP);
-	else if (netPlayers.players [nPlayer].rank>rank)
+	else if (netPlayers.m_info.players [nPlayer].rank>rank)
 		strcpy (rankstr, TXT_RANKDOWN);
 	else
 		return;
 
-	netPlayers.players [nPlayer].rank = rank;
+	netPlayers.m_info.players [nPlayer].rank = rank;
 
 	if (!gameOpts->multi.bNoRankings)
 		HUDInitMessage (TXT_RANKCHANGE2, gameData.multiplayer.players [nPlayer].callsign,

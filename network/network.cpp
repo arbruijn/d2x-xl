@@ -92,10 +92,10 @@ returning the game info.
  */
 
 int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
-tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
+CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
 tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
-tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-tAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
+CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
+CAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
 
 int nCoopPenalties [10] = {0, 1, 2, 3, 5, 10, 25, 50, 75, 90};
 
@@ -110,7 +110,7 @@ tMpParams mpParams = {
 
 tPingStats pingStats [MAX_PLAYERS];
 
-tNetgameInfo tempNetInfo;
+tNetGameInfo tempNetInfo;
 
 const char *pszRankStrings []={
 	" (unpatched) ", "Cadet ", "Ensign ", "Lieutenant ", "Lt.Commander ", 
@@ -178,14 +178,14 @@ bAutoRun = InitAutoNetGame ();
 if (0 > (i = NetworkGetGameParams (bAutoRun)))
 	return 0;
 gameData.multiplayer.nPlayers = 0;
-netGame.difficulty = gameStates.app.nDifficultyLevel;
-netGame.gameMode = mpParams.nGameMode;
-netGame.gameStatus = NETSTAT_STARTING;
-netGame.nNumPlayers = 0;
-netGame.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
-netGame.nLevel = mpParams.nLevel;
-netGame.protocolVersion = MULTI_PROTO_VERSION;
-strcpy (netGame.szGameName, mpParams.szGameName);
+netGame.m_info.difficulty = gameStates.app.nDifficultyLevel;
+netGame.m_info.gameMode = mpParams.nGameMode;
+netGame.m_info.gameStatus = NETSTAT_STARTING;
+netGame.m_info.nNumPlayers = 0;
+netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
+netGame.m_info.nLevel = mpParams.nLevel;
+netGame.m_info.protocolVersion = MULTI_PROTO_VERSION;
+strcpy (netGame.m_info.szGameName, mpParams.szGameName);
 networkData.nStatus = NETSTAT_STARTING;
 // Have the network driver initialize whatever data it wants to
 // store for this netgame.
@@ -193,10 +193,10 @@ networkData.nStatus = NETSTAT_STARTING;
 // Clients subscribe to this address when they call
 // IpxHandleNetGameAuxData.
 IpxInitNetGameAuxData (netGame.AuxData);
-NetworkSetGameMode (netGame.gameMode);
-netGame.nSecurity = d_rand ();  // For syncing Netgames with CPlayerData packets
+NetworkSetGameMode (netGame.m_info.gameMode);
+netGame.m_info.nSecurity = d_rand ();  // For syncing NetGames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {
-	StartNewLevel (netGame.nLevel, true);
+	StartNewLevel (netGame.m_info.nLevel, true);
 	ResetAllPlayerTimeouts ();
 	return 1;
 	}
@@ -212,8 +212,8 @@ void RestartNetSearching (CMenu& menu)
 {
 gameData.multiplayer.nPlayers = 0;
 networkData.nActiveGames = 0;
-memset (activeNetGames, 0, sizeof (tNetgameInfo) * MAX_ACTIVE_NETGAMES);
-InitNetgameMenu (menu, 0);
+memset (activeNetGames, 0, sizeof (tNetGameInfo) * MAX_ACTIVE_NETGAMES);
+InitNetGameMenu (menu, 0);
 networkData.nNamesInfoSecurity = -1;
 networkData.bGamesChanged = 1;      
 }
@@ -241,7 +241,7 @@ if ((NetworkIAmMaster ())) {
 				}
 		}
 
-	netGame.nNumPlayers = 0;
+	netGame.m_info.nNumPlayers = 0;
 	nsave = gameData.multiplayer.nPlayers;
 	gameData.multiplayer.nPlayers = 0;
 	NetworkSendGameInfo (NULL);
@@ -303,7 +303,7 @@ int NetworkListen (void)
 downloadManager.CleanUp ();
 if (NetworkIAmMaster ())
 	tracker.AddServer ();
-if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.nJoining)
+if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.ShortPackets () && !networkData.nJoining)
 	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
 
 if (gameStates.multi.nGameType >= IPX_GAME)
@@ -372,8 +372,8 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		Assert (nakedData.nDestPlayer >- 1);
 		if (gameStates.multi.nGameType >= IPX_GAME) 
 			IPXSendPacketData (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
-									netPlayers.players [nakedData.nDestPlayer].network.ipx.server, 
-									netPlayers.players [nakedData.nDestPlayer].network.ipx.node, 
+									netPlayers.m_info.players [nakedData.nDestPlayer].network.ipx.server, 
+									netPlayers.m_info.players [nakedData.nDestPlayer].network.ipx.node, 
 									gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
@@ -394,7 +394,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				MultiSendFire ();              // Do firing if needed..
 				}
 			networkData.xLastSendTime = 0;
-			if (netGame.bShortPackets) {
+			if (netGame.ShortPackets ()) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 				ubyte send_data [MAX_PACKETSIZE];
 #endif
@@ -524,8 +524,8 @@ mybuf [1]=gameData.multiplayer.nLocalPlayer;
 if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendPacketData (
 			reinterpret_cast<ubyte*> (mybuf), 2, 
-		netPlayers.players [nPlayer].network.ipx.server, 
-		netPlayers.players [nPlayer].network.ipx.node, 
+		netPlayers.m_info.players [nPlayer].network.ipx.server, 
+		netPlayers.m_info.players [nPlayer].network.ipx.node, 
 		gameData.multiplayer.players [nPlayer].netAddress);
 }
 
@@ -611,9 +611,9 @@ return (rank+1);
 
 void NetworkCheckForOldVersion (char pnum)
 {  
-if ((netPlayers.players [(int) pnum].versionMajor == 1) && 
-	 !(netPlayers.players [(int) pnum].versionMinor & 0x0F))
-	netPlayers.players [ (int) pnum].rank = 0;
+if ((netPlayers.m_info.players [(int) pnum].versionMajor == 1) && 
+	 !(netPlayers.m_info.players [(int) pnum].versionMinor & 0x0F))
+	netPlayers.m_info.players [ (int) pnum].rank = 0;
 }
 
 //------------------------------------------------------------------------------

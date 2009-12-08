@@ -564,7 +564,7 @@ transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 if (!ogl.m_states.bUseTransform)
 	mView.Assign (transformation.m_info.view [0]);
 vPos.Assign (transformation.m_info.pos);
-if (IsMultiGame && netGame.BrightPlayers)
+if (IsMultiGame && netGame.m_info.BrightPlayers)
 	*fLight = 1.0f;
 ogl.SelectTMU (GL_TEXTURE0);
 glEnable (GL_TEXTURE_2D);

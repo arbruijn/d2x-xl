@@ -40,31 +40,33 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void NetworkReadEndLevelPacket (ubyte *dataP)
 {
 	// Special packet for end of level syncing
-	int nPlayer;
-	tEndLevelInfo *end = reinterpret_cast<tEndLevelInfo*> (dataP);
+	int				nPlayer;
+	CEndLevelInfo	eli;
+
+memcpy (&eli.m_info, dataP, eli.Size ());
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	int i, j;
 
-for (i = 0; i < MAX_PLAYERS; i++)
-	for (j = 0; j < MAX_PLAYERS; j++)
-		end->killMatrix [i][j] = INTEL_SHORT (end->killMatrix [i][j]);
-end->kills = INTEL_SHORT (end->kills);
-end->killed = INTEL_SHORT (end->killed);
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
+		eli.ScoreMatrix (i, j) = INTEL_SHORT (eli.ScoreMatrix (i, j));
+eli.Kills () = INTEL_SHORT (eli.kills);
+eli.Killed () = INTEL_SHORT (eli.killed);
 #endif
-nPlayer = end->nPlayer;
+nPlayer = eli.Player ();
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer);
-if (nPlayer>=gameData.multiplayer.nPlayers) {
+if (nPlayer >= gameData.multiplayer.nPlayers) {
 	Int3 (); // weird, but it an happen in a coop restore game
 	return; // if it happens in a coop restore, don't worry about it
 	}
-if ((networkData.nStatus == NETSTAT_PLAYING) && (end->connected != 0))
+if ((networkData.nStatus == NETSTAT_PLAYING) && (eli.Connected () != 0))
 	return; // Only accept disconnect packets if we're not out of the level yet
-gameData.multiplayer.players [nPlayer].connected = end->connected;
-memcpy (&gameData.multigame.kills.matrix [nPlayer][0], end->killMatrix, MAX_PLAYERS*sizeof (short));
-gameData.multiplayer.players [nPlayer].netKillsTotal = end->kills;
-gameData.multiplayer.players [nPlayer].netKilledTotal = end->killed;
-if ((gameData.multiplayer.players [nPlayer].connected == 1) && (end->seconds_left < gameData.reactor.countdown.nSecsLeft))
-	gameData.reactor.countdown.nSecsLeft = end->seconds_left;
+gameData.multiplayer.players [nPlayer].connected = eli.Connected ();
+memcpy (&gameData.multigame.kills.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (short));
+gameData.multiplayer.players [nPlayer].netKillsTotal = eli.Kills ();
+gameData.multiplayer.players [nPlayer].netKilledTotal = eli.Killed ();
+if ((gameData.multiplayer.players [nPlayer].connected == 1) && (eli.SecondsLeft () < gameData.reactor.countdown.nSecsLeft))
+	gameData.reactor.countdown.nSecsLeft = eli.SecondsLeft ();
 ResetPlayerTimeout (nPlayer, -1);
 }
 
@@ -74,34 +76,34 @@ void NetworkReadEndLevelShortPacket (ubyte *dataP)
 {
 	// Special packet for end of level syncing
 
-	int nPlayer;
-	tEndLevelInfoShort *end;
+	int						nPlayer;
+	tEndLevelInfoShort*	eli;
 
-end = reinterpret_cast<tEndLevelInfoShort*> (dataP);
-nPlayer = end->nPlayer;
+eli = reinterpret_cast<tEndLevelInfoShort*> (dataP);
+nPlayer = eli->nPlayer;
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer);
 if (nPlayer >= gameData.multiplayer.nPlayers) {
 	Int3 (); // weird, but it can happen in a coop restore game
 	return; // if it happens in a coop restore, don't worry about it
 	}
 
-if ((networkData.nStatus == NETSTAT_PLAYING) && (end->connected != 0))
+if ((networkData.nStatus == NETSTAT_PLAYING) && (eli->connected != 0))
 	return; // Only accept disconnect packets if we're not out of the level yet
-gameData.multiplayer.players [nPlayer].connected = end->connected;
-if ((gameData.multiplayer.players [nPlayer].connected == 1) && (end->seconds_left < gameData.reactor.countdown.nSecsLeft))
-	gameData.reactor.countdown.nSecsLeft = end->seconds_left;
+gameData.multiplayer.players [nPlayer].connected = eli->connected;
+if ((gameData.multiplayer.players [nPlayer].connected == 1) && (eli->secondsLeft < gameData.reactor.countdown.nSecsLeft))
+	gameData.reactor.countdown.nSecsLeft = eli->secondsLeft;
 ResetPlayerTimeout (nPlayer, -1);
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit)
+void NetworkReadSyncPacket (CNetGameInfo * sp, int rsinit)
 {
-	int				i, j;
-	char				szLocalCallSign [CALLSIGN_LEN+1];
-	tNetPlayerInfo	*playerP;
+	int					i, j;
+	char					szLocalCallSign [CALLSIGN_LEN+1];
+	tNetPlayerInfo*	playerP;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tNetgameInfo	tmp_info;
+	CNetGameInfo		tmp_info;
 
 if ((gameStates.multi.nGameType >= IPX_GAME) && (sp != &netGame)) { // for macintosh -- get the values unpacked to our structure format
 	ReceiveFullNetGamePacket (reinterpret_cast<ubyte*> (sp), &tmp_info);
@@ -116,7 +118,7 @@ if (sp != &netGame) {
 	char *p = reinterpret_cast<char*> (sp);
 	ushort h;
 	int i, s;
-	for (i = 0, h = -1; i < (int) sizeof (tNetgameInfo) - 1; i++, p++) {
+	for (i = 0, h = -1; i < (int) sizeof (tNetGameInfo) - 1; i++, p++) {
 		s = *reinterpret_cast<ushort*> (p);
 		if (s == networkData.nSegmentCheckSum) {
 			h = i;
@@ -127,19 +129,19 @@ if (sp != &netGame) {
 			break;
 			}
 		}
-	memcpy (&netGame, sp, sizeof (tNetgameInfo));
-	memcpy (&netPlayers, playerInfoP, sizeof (tAllNetPlayersInfo));
+	netGame = *sp;
+	netPlayers = *playerInfoP;
 	}
-gameData.multiplayer.nPlayers = sp->nNumPlayers;
-gameStates.app.nDifficultyLevel = sp->difficulty;
-networkData.nStatus = sp->gameStatus;
+gameData.multiplayer.nPlayers = sp->m_info.nNumPlayers;
+gameStates.app.nDifficultyLevel = sp->m_info.difficulty;
+networkData.nStatus = sp->m_info.gameStatus;
 //Assert (gameStates.app.nFunctionMode != FMODE_GAME);
 // New code, 11/27
 #if 1
-console.printf (1, "netGame.checksum = %d, calculated checksum = %d.\n",
-					 netGame.nSegmentCheckSum, networkData.nSegmentCheckSum);
+console.printf (1, "netGame.m_info.checksum = %d, calculated checksum = %d.\n",
+					 netGame.SegmentCheckSum (), networkData.nSegmentCheckSum);
 #endif
-if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
+if (netGame.SegmentCheckSum () != networkData.nSegmentCheckSum) {
 	if (extraGameInfo [0].bAutoDownload)
 		networkData.nStatus = NETSTAT_AUTODL;
 	else {
@@ -159,7 +161,7 @@ gameData.multiplayer.nLocalPlayer = -1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	gameData.multiplayer.players [i].netKillsTotal = 0;
 
-for (i = 0, playerP = playerInfoP->players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (gameData.multiplayer.nLocalPlayer != -1) {
 			Int3 (); // Hey, we've found ourselves twice
@@ -178,27 +180,27 @@ for (i = 0, playerP = playerInfoP->players; i < gameData.multiplayer.nPlayers; i
 		if (server != 0)
 			IpxGetLocalTarget (
 				reinterpret_cast<ubyte*> (&server),
-				playerInfoP->players [i].network.ipx.node,
+				playerInfoP->m_info.players [i].network.ipx.node,
 				gameData.multiplayer.players [i].netAddress);
 #else // WORDS_NEED_ALIGNMENT
-		if (*reinterpret_cast<uint*> (playerInfoP->players [i].network.ipx.server) != 0)
+		if (*reinterpret_cast<uint*> (playerInfoP->m_info.players [i].network.ipx.server) != 0)
 			IpxGetLocalTarget (
-				playerInfoP->players [i].network.ipx.server,
-				playerInfoP->players [i].network.ipx.node,
+				playerInfoP->m_info.players [i].network.ipx.server,
+				playerInfoP->m_info.players [i].network.ipx.node,
 				gameData.multiplayer.players [i].netAddress);
 #endif // WORDS_NEED_ALIGNMENT
 		else
-			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->players [i].network.ipx.node, 6);
+			memcpy (gameData.multiplayer.players [i].netAddress, playerInfoP->m_info.players [i].network.ipx.node, 6);
 		}
 	gameData.multiplayer.players [i].nPacketsGot = 0;                             // How many packets we got from them
 	gameData.multiplayer.players [i].nPacketsSent = 0;                            // How many packets we sent to them
 	gameData.multiplayer.players [i].connected = playerP->connected;
-	gameData.multiplayer.players [i].netKillsTotal = sp->playerKills [i];
-	gameData.multiplayer.players [i].netKilledTotal = sp->killed [i];
+	gameData.multiplayer.players [i].netKillsTotal = sp->PlayerKills (i);
+	gameData.multiplayer.players [i].netKilledTotal = sp->Killed (i);
 	if (networkData.nJoinState || (i != gameData.multiplayer.nLocalPlayer))
-		gameData.multiplayer.players [i].score = sp->playerScore [i];
+		gameData.multiplayer.players [i].score = sp->PlayerScore (i);
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		gameData.multigame.kills.matrix [i][j] = sp->kills [i][j];
+		gameData.multigame.kills.matrix [i][j] = sp->Kills (i, j);
 	}
 
 if (gameData.multiplayer.nLocalPlayer < 0) {
@@ -208,25 +210,25 @@ if (gameData.multiplayer.nLocalPlayer < 0) {
 	}
 if (networkData.nJoinState) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		gameData.multiplayer.players [i].netKilledTotal = sp->killed [i];
-	NetworkProcessMonitorVector (sp->monitorVector);
-	LOCALPLAYER.timeLevel = sp->xLevelTime;
+		gameData.multiplayer.players [i].netKilledTotal = sp->Killed (i);
+	NetworkProcessMonitorVector (sp->MonitorVector ());
+	LOCALPLAYER.timeLevel = sp->LevelTime ();
 	}
-gameData.multigame.kills.nTeam [0] = sp->teamKills [0];
-gameData.multigame.kills.nTeam [1] = sp->teamKills [1];
+gameData.multigame.kills.nTeam [0] = sp->TeamKills (0);
+gameData.multigame.kills.nTeam [1] = sp->TeamKills (1);
 LOCALPLAYER.connected = 1;
-netPlayers.players [gameData.multiplayer.nLocalPlayer].connected = 1;
-netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
+netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].connected = 1;
+netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 if (!networkData.nJoinState) {
 	int	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (bGotTeamSpawnPos) {
 			j = TeamSpawnPos (i);
 			if (j < 0)
-				j = netGame.locations [i];
+				j = netGame.Locations (i);
 			}
 		else
-			j = netGame.locations [i];
+			j = netGame.Locations (i);
 		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
 		}
 	}
@@ -345,12 +347,12 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiMakeGhostPlayer (nTheirPlayer);
 	OBJECTS [theirObjNum].CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
-	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
+	ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
 		HUDInitMessage ("%s'%s' %s",
-							 pszRankStrings [netPlayers.players [nTheirPlayer].rank],
+							 pszRankStrings [netPlayers.m_info.players [nTheirPlayer].rank],
 							 gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
@@ -482,12 +484,12 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiMakeGhostPlayer (nTheirPlayer);
 	OBJECTS [theirObjNum].CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
-	ClipRank (reinterpret_cast<char*> (&netPlayers.players [nTheirPlayer].rank));
+	ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [nTheirPlayer].rank));
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
 		HUDInitMessage ("%s'%s' %s",
-							 pszRankStrings [netPlayers.players [nTheirPlayer].rank],
+							 pszRankStrings [netPlayers.m_info.players [nTheirPlayer].rank],
 							 gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}

@@ -236,7 +236,7 @@ else if (syncP->nExtras == 4) {
 		MultiSendStolenItems ();
 	}
 else if (syncP->nExtras == 5) {
-	if (netGame.xPlayTimeAllowed || netGame.nScoreGoal)
+	if (netGame.PlayTimeAllowed () || netGame.ScoreGoal ())
 		MultiSendScoreGoalCounts ();
 	}
 else if (syncP->nExtras == 6)
@@ -314,43 +314,43 @@ void NetworkUpdateNetGame (void)
 
 	int i, j;
 
-netGame.nConnected = 0;
+netGame.m_info.nConnected = 0;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
-		netGame.nConnected++;
+		netGame.m_info.nConnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
-//	the tLiteInfo struct when you're sitting on the join netgame screen.  We can
+//	the tNetGameInfoLite struct when you're sitting on the join netgame screen.  We can
 //	"sneak" Hoard information into this field.  This is better than sending 
 //	another packet that could be lost in transit.
 if (HoardEquipped ()) {
 	if (gameData.app.nGameMode & GM_MONSTERBALL)
-		netGame.gameFlags |= NETGAME_FLAG_MONSTERBALL;
+		netGame.m_info.gameFlags |= NETGAME_FLAG_MONSTERBALL;
 	else if (gameData.app.nGameMode & GM_ENTROPY)
-		netGame.gameFlags |= NETGAME_FLAG_ENTROPY;
+		netGame.m_info.gameFlags |= NETGAME_FLAG_ENTROPY;
 	else if (gameData.app.nGameMode & GM_HOARD) {
-		netGame.gameFlags |= NETGAME_FLAG_HOARD;
+		netGame.m_info.gameFlags |= NETGAME_FLAG_HOARD;
 		if (gameData.app.nGameMode & GM_TEAM)
-			netGame.gameFlags |= NETGAME_FLAG_TEAM_HOARD;
+			netGame.m_info.gameFlags |= NETGAME_FLAG_TEAM_HOARD;
 		}
 	}
 if (networkData.nStatus == NETSTAT_STARTING)
 	return;
-netGame.nNumPlayers = gameData.multiplayer.nPlayers;
-netGame.gameStatus = networkData.nStatus;
-netGame.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
+netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
+netGame.m_info.gameStatus = networkData.nStatus;
+netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	netPlayers.players [i].connected = gameData.multiplayer.players [i].connected;
+	netPlayers.m_info.players [i].connected = gameData.multiplayer.players [i].connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		netGame.kills [i][j] = gameData.multigame.kills.matrix [i][j];
-	netGame.killed [i] = gameData.multiplayer.players [i].netKilledTotal;
-	netGame.playerKills [i] = gameData.multiplayer.players [i].netKillsTotal;
-	netGame.playerScore [i] = gameData.multiplayer.players [i].score;
-	netGame.playerFlags [i] = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
+		netGame.Kills (i, j) = gameData.multigame.kills.matrix [i][j];
+	netGame.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
+	netGame.PlayerKills (i) = gameData.multiplayer.players [i].netKillsTotal;
+	netGame.PlayerScore (i) = gameData.multiplayer.players [i].score;
+	netGame.PlayerFlags (i) = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
 	}
-netGame.teamKills [0] = gameData.multigame.kills.nTeam [0];
-netGame.teamKills [1] = gameData.multigame.kills.nTeam [1];
-netGame.nLevel = gameData.missions.nCurrentLevel;
+netGame.TeamKills (0) = gameData.multigame.kills.nTeam [0];
+netGame.TeamKills (1) = gameData.multigame.kills.nTeam [1];
+netGame.m_info.nLevel = gameData.missions.nCurrentLevel;
 }
 
 //------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ if (i < 0) {
 #endif
 	return -1;
 	}
-sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.players [i].callsign, TXT_NET_TO_ENTER);
+sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.m_info.players [i].callsign, TXT_NET_TO_ENTER);
 networkData.toSyncPoll = 0;
 do {
 	choice = m.Menu (NULL, TXT_WAIT, NetworkSyncPoll);
@@ -444,7 +444,7 @@ do {
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
 else if (networkData.nStatus == NETSTAT_AUTODL)
-	if (downloadManager.DownloadMission (netGame.szMissionName))
+	if (downloadManager.DownloadMission (netGame.m_info.szMissionName))
 		return 1;
 #if 1			
 console.printf (CON_DBG, "Aborting join.\n");
@@ -454,8 +454,8 @@ memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	memcpy (me.player.network.ipx.server, IpxGetMyServerAddress (), 4);
-	SendInternetSequencePacket (me, netPlayers.players [0].network.ipx.server, 
-										 netPlayers.players [0].network.ipx.node);
+	SendInternetSequencePacket (me, netPlayers.m_info.players [0].network.ipx.server, 
+										 netPlayers.m_info.players [0].network.ipx.node);
 }
 gameData.multiplayer.nPlayers = 0;
 SetFunctionMode (FMODE_MENU);
@@ -509,7 +509,7 @@ int NetworkWaitForAllInfo (int choice)
 m.AddText ("Press Escape to cancel");
 networkData.bWaitAllChoice = choice;
 networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
-networkData.nSecurityCheck = activeNetGames [choice].nSecurity;
+networkData.nSecurityCheck = activeNetGames [choice].m_info.nSecurity;
 networkData.nSecurityFlag = 0;
 
 networkData.toWaitAllPoll = 0;
@@ -607,29 +607,29 @@ while (0 < (size = IpxGetPacketData (packet))) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				ReceiveFullNetGamePacket (data, &tempNetInfo); 
 			else
-				memcpy (reinterpret_cast<ubyte*> (&tempNetInfo), data, sizeof (tNetgameInfo));
+				memcpy (reinterpret_cast<ubyte*> (&tempNetInfo), data, sizeof (tNetGameInfo));
 #if SECURITY_CHECK
-			if (tempNetInfo.nSecurity != networkData.nSecurityCheck)
+			if (tempNetInfo.m_info.nSecurity != networkData.nSecurityCheck)
 				break;
 #endif
 			if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_GAMEINFO) {
 #if SECURITY_CHECK
-				if ((playerInfoP->nSecurity == tempNetInfo.nSecurity) && (playerInfoP->nSecurity == networkData.nSecurityCheck)) 
+				if ((playerInfoP->m_info.nSecurity == tempNetInfo.m_info.nSecurity) && (playerInfoP->m_info.nSecurity == networkData.nSecurityCheck)) 
 #endif
 					{
-					memcpy (&activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetgameInfo));
-					memcpy (activeNetPlayers + choice, playerInfoP, sizeof (tAllNetPlayersInfo));
+					activeNetGames [choice] = tempNetInfo;
+					activeNetPlayers [choice] = *playerInfoP;
 					networkData.nSecurityCheck = -1;
 					}
 				}
 			else {
 				networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
-				networkData.nSecurityNum = tempNetInfo.nSecurity;
+				networkData.nSecurityNum = tempNetInfo.m_info.nSecurity;
 				if (NetworkWaitForPlayerInfo ()) {
 #if 1			
-					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", networkData.nSecurityNum, playerInfoP->nSecurity);
+					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", networkData.nSecurityNum, playerInfoP->m_info.nSecurity);
 #endif
-					memcpy (activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetgameInfo));
+					memcpy (activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetGameInfo));
 					memcpy (activeNetPlayers + choice, playerInfoP, sizeof (tAllNetPlayersInfo));
 					networkData.nSecurityCheck = -1;
 					}
@@ -662,7 +662,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 			memcpy (&tmpPlayersBase, tempPlayerP, sizeof (tAllNetPlayersInfo));
 			playerInfoP = &tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo = 0;
-			networkData.nSecurityNum = tmpPlayersBase.nSecurity;
+			networkData.nSecurityNum = tmpPlayersBase.m_info.nSecurity;
 			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_GAMEINFO;
 			break;
 
@@ -719,7 +719,7 @@ for (;;) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if ((gameData.multiplayer.players [i].connected != 0) && (i != gameData.multiplayer.nLocalPlayer)) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
-					NetworkDumpPlayer (netPlayers.players [i].network.ipx.server, netPlayers.players [i].network.ipx.node, DUMP_ABORTED);
+					NetworkDumpPlayer (netPlayers.m_info.players [i].network.ipx.server, netPlayers.m_info.players [i].network.ipx.node, DUMP_ABORTED);
 				}
 			}
 			longjmp (gameExitPoint, 0);  

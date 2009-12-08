@@ -950,7 +950,7 @@ if (!bForceBlowup) {
 if (!bForceBlowup)
 	return 0;
 
-if (IsMultiGame && netGame.bIndestructibleLights && !nSwitchType)
+if (IsMultiGame && netGame.m_info.bIndestructibleLights && !nSwitchType)
 	return 0;
 //note: this must get called before the texture changes,
 //because we use the light value of the texture to change

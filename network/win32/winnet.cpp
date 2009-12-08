@@ -439,8 +439,8 @@ fclose (fp);
 // Initalizes the protocol-specific member of the netgame packet.
 void IpxInitNetGameAuxData (ubyte buf [])
 {
-if (driver->InitNetgameAuxData)
-	driver->InitNetgameAuxData (&ipxSocketData, buf);
+if (driver->InitNetGameAuxData)
+	driver->InitNetGameAuxData (&ipxSocketData, buf);
 }
 
 								/*---------------------------*/
@@ -448,8 +448,8 @@ if (driver->InitNetgameAuxData)
 // Handles the protocol-specific member of the netgame packet.
 int IpxHandleNetGameAuxData (const ubyte buf [])
 {
-if (driver->HandleNetgameAuxData)
-	return driver->HandleNetgameAuxData (&ipxSocketData, buf);
+if (driver->HandleNetGameAuxData)
+	return driver->HandleNetGameAuxData (&ipxSocketData, buf);
 return 0;
 }
 
@@ -483,8 +483,8 @@ else {
 		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
 			IPXSendPacketData (
 				data, datasize, 
-				netPlayers.players [i].network.ipx.server, 
-				netPlayers.players [i].network.ipx.node,
+				netPlayers.m_info.players [i].network.ipx.server, 
+				netPlayers.m_info.players [i].network.ipx.node,
 				gameData.multiplayer.players [i].netAddress);
 		}
 	return datasize;

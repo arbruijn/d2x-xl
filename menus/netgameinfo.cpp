@@ -34,8 +34,8 @@
 #include "gamefont.h"
 #include "menubackground.h"
 
-#define LHX(x)      (gameStates.menus.bHires?2* (x):x)
-#define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
+#define LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
+#define LHY(y)      (gameStates.menus.bHires? (24* (y)) / 10 : y)
 
 #define AGI	activeNetGames [choice]
 #define AXI activeExtraGameInfo [choice]
@@ -51,8 +51,10 @@ extern ubyte ipx_MyAddress [10];
 
 //------------------------------------------------------------------------------
 
-extern tNetgameInfo activeNetGames [];
+#if 1
+extern CNetGameInfo activeNetGames [];
 extern tExtraGameInfo activeExtraGameInfo [];
+#endif
 
 char szHighlight [] = {1, (char) 255, (char) 192, (char) 128, 0};
 
@@ -79,13 +81,13 @@ if (choice >= networkData.nActiveGames)
 memset (mTexts, 0, sizeof (mTexts));
 for (i = 0; i < 20; i++)
 	m.AddText (reinterpret_cast<char*> (mTexts + i));
-sprintf (mTexts [opt], TXT_NGI_GAME, szHighlight, AGI.szGameName); 
+sprintf (mTexts [opt], TXT_NGI_GAME, szHighlight, AGI.m_info.szGameName); 
 opt++;
-sprintf (mTexts [opt], TXT_NGI_MISSION, szHighlight, AGI.szMissionTitle); 
+sprintf (mTexts [opt], TXT_NGI_MISSION, szHighlight, AGI.m_info.szMissionTitle); 
 opt++;
-sprintf (mTexts [opt], TXT_NGI_LEVEL, szHighlight, AGI.nLevel); 
+sprintf (mTexts [opt], TXT_NGI_LEVEL, szHighlight, AGI.m_info.nLevel); 
 opt++;
-sprintf (mTexts [opt], TXT_NGI_SKILL, szHighlight, MENU_DIFFICULTY_TEXT (AGI.difficulty)); 
+sprintf (mTexts [opt], TXT_NGI_SKILL, szHighlight, MENU_DIFFICULTY_TEXT (AGI.m_info.difficulty)); 
 opt++;
 opt++;
 #if !DBG
@@ -138,7 +140,7 @@ else
 	opt++;
 	if (!AXI.bCompetition && AXI.bRadarEnabled) {
 		INITFLAGS ("Radar: ");
-		ADDFLAG ((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0, "Players");
+		ADDFLAG ((AGI.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0, "Players");
 		ADDFLAG (AXI.nRadar, "Radar");
 		ADDFLAG (AXI.bPowerupsOnRadar, "Powerups");
 		ADDFLAG (AXI.bRobotsOnRadar, "Robots");

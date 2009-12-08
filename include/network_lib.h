@@ -140,17 +140,19 @@ typedef struct tNakedData {
 
 extern tNakedData	nakedData;
 
-extern tNetgameInfo tempNetInfo;
+extern CNetGameInfo tempNetInfo;
 
 extern const char *pszRankStrings [];
 
 extern struct ipx_recv_data ipx_udpSrc;
 
 extern int nLastNetGameUpdate [MAX_ACTIVE_NETGAMES];
-extern tNetgameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
-extern tExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
-extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
-extern tAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
+#if 0
+extern CNetGameInfo activeNetGames [MAX_ACTIVE_NETGAMES];
+extern CExtraGameInfo activeExtraGameInfo [MAX_ACTIVE_NETGAMES];
+extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
+extern CAllNetPlayersInfo *playerInfoP, tmpPlayersBase;
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -178,7 +180,7 @@ int NetworkVerifyPlayers (void);
 void NetworkRequestPlayerNames (int);
 
 void NetworkNewPlayer (tSequencePacket *their);
-int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people);
+int CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
 void NetworkWelcomePlayer (tSequencePacket *their);
 void NetworkNewPlayer (tSequencePacket *their);
 void NetworkAddPlayer (tSequencePacket *seqP);
@@ -188,7 +190,7 @@ void NetworkRemovePlayer (tSequencePacket *seqP);
 void DoRefuseStuff (tSequencePacket *their);
 void NetworkDumpPlayer (ubyte * server, ubyte *node, int nReason);
 
-void NetworkReadSyncPacket (tNetgameInfo * sp, int rsinit);
+void NetworkReadSyncPacket (CNetGameInfo * sp, int rsinit);
 void NetworkReadObjectPacket (ubyte *dataP);
 void NetworkReadEndLevelPacket (ubyte *dataP);
 void NetworkReadEndLevelShortPacket (ubyte *dataP);
@@ -226,7 +228,7 @@ void NetworkSendEndLevelShortSub (int from_player_num, int to_player);
 void NetworkSendGameInfo (tSequencePacket *their);
 void NetworkSendExtraGameInfo (tSequencePacket *their);
 void NetworkSendLiteInfo (tSequencePacket *their);
-void NetworkSendNetgameUpdate (void);
+void NetworkSendNetGameUpdate (void);
 int NetworkSendRequest (void);
 void NetworkSendSync (void);
 void NetworkSendData (ubyte * ptr, int len, int urgent);

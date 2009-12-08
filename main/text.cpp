@@ -322,7 +322,7 @@ const char* d2GameTexts [][2] = {
 	{"\nESC to leave netgame", NULL},
 	{"Waiting for signal from", NULL},
 	{"to enter the mine", NULL},
-	{"Searching for Netgames...", NULL},
+	{"Searching for NetGames...", NULL},
 	{"That choice is invalid.\n", NULL},
 	{"That game is between levels.\nWait for status to change\nand try joining again.", NULL},
 	{"Your version of Descent 2\ndoes not match the version\nin use for that game.", NULL},

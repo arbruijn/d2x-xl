@@ -110,8 +110,8 @@ return m_iTimeout;
 void CDownloadManager::SetDownloadFlag (int nPlayer, bool bFlag)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!memcmp (&m_uploadDests [nPlayer].addr.server, &netPlayers.players [i].network.ipx.server, 4) &&
-		 !memcmp (&m_uploadDests [nPlayer].addr.node, &netPlayers.players [i].network.ipx.node, 6)) {
+	if (!memcmp (&m_uploadDests [nPlayer].addr.server, &netPlayers.m_info.players [i].network.ipx.server, 4) &&
+		 !memcmp (&m_uploadDests [nPlayer].addr.node, &netPlayers.m_info.players [i].network.ipx.node, 6)) {
 		m_bDownloading [i] = bFlag;
 		return;
 		}
@@ -253,14 +253,14 @@ int CDownloadManager::UploadOpenFile (int i, const char *pszExt)
 
 sprintf (szFile, "%s%s%s%s", 
 			gameFolders.szMissionDirs [0], (l && (gameFolders.szMissionDirs [0][l-1] != '/')) ? "/" : "", 
-			netGame.szMissionName, pszExt);
+			netGame.m_info.szMissionName, pszExt);
 if (m_uploadDests [i].cf.File ())
 	m_uploadDests [i].cf.Close ();
 if (!m_uploadDests [i].cf.Open (szFile, "", "rb", 0))
 	return UploadError ();
 m_uploadDests [i].fLen = m_uploadDests [i].cf.Length ();
 PUT_INTEL_INT (m_uploadBuf + 2, m_uploadDests [i].fLen);
-sprintf (szFile, "%s%s", netGame.szMissionName, pszExt);
+sprintf (szFile, "%s%s", netGame.m_info.szMissionName, pszExt);
 l = (int) strlen (szFile) + 1;
 memcpy (m_uploadBuf + 6, szFile, l);
 m_uploadDests [i].nPacketId = -1;

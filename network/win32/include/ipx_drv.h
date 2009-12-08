@@ -74,8 +74,8 @@ struct ipx_driver {
 	int (*SendPacket)(ipx_socket_t *, IPXPacket_t *, u_char *, int);
 	int (*ReceivePacket)(ipx_socket_t *, ubyte *, int, struct ipx_recv_data *);
 	int (*PacketReady)(ipx_socket_t *s);
-	void (*InitNetgameAuxData)(ipx_socket_t *, u_char []);
-	int (*HandleNetgameAuxData)(ipx_socket_t *, const u_char []);
+	void (*InitNetGameAuxData)(ipx_socket_t *, u_char []);
+	int (*HandleNetGameAuxData)(ipx_socket_t *, const u_char []);
 	void (*HandleLeaveGame)(ipx_socket_t *);
 	int (*SendGamePacket)(ipx_socket_t *s, u_char *, int);
 };

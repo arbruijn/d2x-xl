@@ -42,7 +42,7 @@ int NetworkFindPlayer (tNetPlayerInfo *playerP)
 	int	i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (!CmpNetPlayers (NULL, NULL, &netPlayers.players [i].network, &playerP->network))
+	if (!CmpNetPlayers (NULL, NULL, &netPlayers.m_info.players [i].network, &playerP->network))
 		return i;         // already got them
 return -1;
 }
@@ -74,7 +74,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people)
+int CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people)
 {
 	// Can this CPlayerData rejoin a netgame in progress?
 
@@ -164,7 +164,7 @@ gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 KillGatlingSmoke (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
-netPlayers.players [nPlayer].connected = 0;
+netPlayers.m_info.players [nPlayer].connected = 0;
 for (short i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].nPlayer == nPlayer)
 		DeleteSyncData (i);
@@ -190,11 +190,11 @@ nObject = gameData.multiplayer.players [nPlayer].nObject;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
 memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
-memcpy (netPlayers.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
+memcpy (netPlayers.m_info.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
-netPlayers.players [nPlayer].rank = their->player.rank;
-netPlayers.players [nPlayer].versionMajor = their->player.versionMajor;
-netPlayers.players [nPlayer].versionMinor = their->player.versionMinor;
+netPlayers.m_info.players [nPlayer].rank = their->player.rank;
+netPlayers.m_info.players [nPlayer].versionMajor = their->player.versionMajor;
+netPlayers.m_info.players [nPlayer].versionMinor = their->player.versionMinor;
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -206,7 +206,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	else
 		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.ipx.node, 6);
 	}
-memcpy (&netPlayers.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
+memcpy (&netPlayers.m_info.players [nPlayer].network, &their->player.network, sizeof (tNetworkInfo));
 gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
 gameData.multiplayer.players [nPlayer].connected = 1;
 gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
@@ -217,7 +217,7 @@ gameData.multiplayer.players [nPlayer].flags = 0;
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
 if (nPlayer == gameData.multiplayer.nPlayers) {
 	gameData.multiplayer.nPlayers++;
-	netGame.nNumPlayers = gameData.multiplayer.nPlayers;
+	netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
 	}
 audio.PlaySound (SOUND_HUD_MESSAGE);
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
@@ -252,7 +252,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
 			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
 			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
-			memcpy (netPlayers.players [i].network.ipx.node, newAddress, 6);
+			memcpy (netPlayers.m_info.players [i].network.ipx.node, newAddress, 6);
 			return i;
 			}
 		}
@@ -273,7 +273,7 @@ return -1;
 
 static int FindPlayerSlot (tSequencePacket *player)
 {
-if (netGame.gameFlags & NETGAME_FLAG_CLOSED) {
+if (netGame.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 	// Slots are open but game is closed
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -445,7 +445,7 @@ else {
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nPlayer].rank], 
+		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.m_info.players [nPlayer].rank], 
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
 if (IsTeamGame)
@@ -473,7 +473,7 @@ void NetworkAddPlayer (tSequencePacket *player)
 
 if (NetworkFindPlayer (&player->player) > -1)
 	return;
-npiP = netPlayers.players + gameData.multiplayer.nPlayers;
+npiP = netPlayers.m_info.players + gameData.multiplayer.nPlayers;
 memcpy (&npiP->network, &player->player.network, sizeof (tNetworkInfo));
 ClipRank (reinterpret_cast<char*> (&player->player.rank));
 memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN+1);
@@ -486,7 +486,7 @@ gameData.multiplayer.players [gameData.multiplayer.nPlayers].nScoreGoalCount = 0
 gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
 ResetPlayerTimeout (gameData.multiplayer.nPlayers, -1);
 gameData.multiplayer.nPlayers++;
-netGame.nNumPlayers = gameData.multiplayer.nPlayers;
+netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
 // Broadcast updated info
 NetworkSendGameInfo (NULL);
 }
@@ -504,17 +504,17 @@ if (pn < 0)
 
 for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	j = i++;
-	memcpy (&netPlayers.players [j].network, &netPlayers.players [i].network.ipx.node, 
+	memcpy (&netPlayers.m_info.players [j].network, &netPlayers.m_info.players [i].network.ipx.node, 
 			  sizeof (tNetworkInfo));
-	memcpy (netPlayers.players [j].callsign, netPlayers.players [i].callsign, CALLSIGN_LEN+1);
-	netPlayers.players [j].versionMajor = netPlayers.players [i].versionMajor;
-	netPlayers.players [j].versionMinor = netPlayers.players [i].versionMinor;
-   netPlayers.players [j].rank = netPlayers.players [i].rank;
-	ClipRank (reinterpret_cast<char*> (&netPlayers.players [j].rank));
+	memcpy (netPlayers.m_info.players [j].callsign, netPlayers.m_info.players [i].callsign, CALLSIGN_LEN+1);
+	netPlayers.m_info.players [j].versionMajor = netPlayers.m_info.players [i].versionMajor;
+	netPlayers.m_info.players [j].versionMinor = netPlayers.m_info.players [i].versionMinor;
+   netPlayers.m_info.players [j].rank = netPlayers.m_info.players [i].rank;
+	ClipRank (reinterpret_cast<char*> (&netPlayers.m_info.players [j].rank));
    NetworkCheckForOldVersion ((char) i);
 	}
 gameData.multiplayer.nPlayers--;
-netGame.nNumPlayers = gameData.multiplayer.nPlayers;
+netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
 // Broadcast new info
 NetworkSendGameInfo (NULL);
 }
@@ -546,7 +546,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 		else
 			HUDInitMessage ("%s %s wants to join", 
 								 pszRankStrings [their->player.rank], their->player.callsign);
-		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", netGame.szTeamName [0], netGame.szTeamName [1]);
+		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", netGame.m_info.szTeamName [0], netGame.m_info.szTeamName [1]);
 		}               
 	else    
 		HUDInitMessage (TXT_JOIN_ACCEPT, their->player.callsign);
@@ -560,7 +560,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 		else
 			sprintf (szRank, "%s ", pszRankStrings [their->player.rank]);
 		sprintf (szJoinMsg, " \n  %s%s wants to join.  \n  Alt-1 assigns to team %s.  \n  Alt-2 to team %s.  \n ", 
-					szRank, their->player.callsign, netGame.szTeamName [0], netGame.szTeamName [1]);
+					szRank, their->player.callsign, netGame.m_info.szTeamName [0], netGame.m_info.szTeamName [1]);
 		joinMsgIndex.nLines = 5;
 		}
 	else {
@@ -593,11 +593,11 @@ else {
 			nNewPlayer = GetNewPlayerNumber (their);
 			Assert (networkData.refuse.bTeam == 1 || networkData.refuse.bTeam == 2);        
 			if (networkData.refuse.bTeam == 1)      
-				netGame.teamVector &= ~(1 << nNewPlayer);
+				netGame.m_info.teamVector &= ~(1 << nNewPlayer);
 			else
-				netGame.teamVector |= (1 << nNewPlayer);
+				netGame.m_info.teamVector |= (1 << nNewPlayer);
 			NetworkWelcomePlayer (their);
-			NetworkSendNetgameUpdate (); 
+			NetworkSendNetGameUpdate (); 
 			}
 		else
 			NetworkWelcomePlayer (their);

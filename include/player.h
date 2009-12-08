@@ -18,8 +18,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "weapon.h"
 
-#define MAX_PLAYERS 16
-#define MAX_COOP_PLAYERS 3
+#define MAX_PLAYERS_D2		8
+#define MAX_PLAYERS_D2X		16
+#define MAX_PLAYERS			16
+#define MAX_COOP_PLAYERS	3
 #define MAX_MULTI_PLAYERS (MAX_PLAYERS + MAX_COOP_PLAYERS)
 
 // Initial CPlayerData stat values

@@ -218,8 +218,8 @@ struct ipx_driver ipx_win = {
 	ipx_win_SendPacket,
 	ipx_win_ReceivePacket,
 	IPXGeneralPacketReady,
-	NULL,	// InitNetgameAuxData
-	NULL,	// HandleNetgameAuxData
+	NULL,	// InitNetGameAuxData
+	NULL,	// HandleNetGameAuxData
 	NULL,	// HandleLeaveGame
 	NULL	// SendGamePack
 };
