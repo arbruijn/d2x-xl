@@ -96,7 +96,7 @@ ResetPlayerTimeout (nPlayer, -1);
 
 //------------------------------------------------------------------------------
 
-void NetworkReadSyncPacket (CNetGameInfo * sp, int rsinit)
+void NetworkProcessSyncPacket (CNetGameInfo * sp, int rsinit)
 {
 	int					i, j;
 	char					szLocalCallSign [CALLSIGN_LEN+1];

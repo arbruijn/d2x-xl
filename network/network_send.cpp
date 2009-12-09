@@ -517,7 +517,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		SendNetPlayersPacket (netPlayers.m_info.players [i].network.ipx.server, netPlayers.m_info.players [i].network.ipx.node);
 		}
 	}
-NetworkReadSyncPacket (&netGame, 1); // Read it myself, as if I had sent it
+NetworkProcessSyncPacket (&netGame, 1); // Read it myself, as if I had sent it
 }
 
 //------------------------------------------------------------------------------

@@ -225,7 +225,7 @@ if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 #if SECURITY_CHECK
 	if (tempNetInfo.m_info.nSecurity == playerInfoP->m_info.nSecurity) {
 #endif
-		NetworkReadSyncPacket (&tempNetInfo, 0);
+		NetworkProcessSyncPacket (&tempNetInfo, 0);
 		networkData.nSecurityFlag = 0;
 		networkData.nSecurityNum = 0;
 #if SECURITY_CHECK
@@ -235,11 +235,8 @@ if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 else {
 	networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 	networkData.nSecurityNum = tempNetInfo.m_info.nSecurity;
-	if (NetworkWaitForPlayerInfo ()) {
-		CNetGameInfo h;
-		NetworkReadSyncPacket (&h, 0);
-		memcpy (dataP, &h.m_info, h.Size ());
-		}
+	if (NetworkWaitF1orPlayerInfo ())
+		NetworkProcessSyncPacket (tempNetInfo, 0);
 	networkData.nSecurityFlag = 0;
 	networkData.nSecurityNum = 0;
 	}

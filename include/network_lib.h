@@ -190,7 +190,7 @@ void NetworkRemovePlayer (tSequencePacket *seqP);
 void DoRefuseStuff (tSequencePacket *their);
 void NetworkDumpPlayer (ubyte * server, ubyte *node, int nReason);
 
-void NetworkReadSyncPacket (CNetGameInfo * sp, int rsinit);
+void NetworkProcessSyncPacket (CNetGameInfo * sp, int rsinit);
 void NetworkReadObjectPacket (ubyte *dataP);
 void NetworkReadEndLevelPacket (ubyte *dataP);
 void NetworkReadEndLevelShortPacket (ubyte *dataP);
