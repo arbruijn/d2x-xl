@@ -163,8 +163,8 @@ void DeleteActiveNetGame (int i)
 {
 if (i < --networkData.nActiveGames) {
 	int h = networkData.nActiveGames - i;
-	memcpy (activeNetGames + i, activeNetGames + i + 1, sizeof (tNetGameInfo) * h);
-	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, sizeof (tAllNetPlayersInfo) * h);
+	memcpy (activeNetGames + i, activeNetGames + i + 1, activeNetGames [0].Size () * h);
+	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, activeNetPlayers [0].Size () * h);
 	memcpy (nLastNetGameUpdate + i, nLastNetGameUpdate + i + 1, sizeof (int) * h);
 	}
 networkData.bGamesChanged = 1;

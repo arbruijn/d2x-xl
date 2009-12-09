@@ -187,7 +187,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void BEReceiveNetPlayersPacket(ubyte *data, tAllNetPlayersInfo *pinfo)
+void BEReceiveNetPlayersPacket(ubyte *data, CAllNetPlayersInfo *pinfo)
 {
 	int i, bufI = 0;
 

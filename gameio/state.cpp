@@ -616,26 +616,26 @@ m_cf.WriteByte ((sbyte) netGame.m_info.invul);
 m_cf.WriteByte ((sbyte) netGame.m_info.FriendlyFireOff);
 for (i = 0; i < 2; i++)
 	m_cf.Write (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteInt (netGame.Locations (i));
-for (i = 0; i < MAX_PLAYERS; i++)
-	for (j = 0; j < MAX_PLAYERS; j++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
 		m_cf.WriteShort (netGame.Kills (i, j));			// 128 bytes
 m_cf.WriteShort (netGame.SegmentCheckSum ());			// 2 bytes
 for (i = 0; i < 2; i++)
 	m_cf.WriteShort (netGame.TeamKills (i));				// 4 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteShort (netGame.Killed (i));					// 16 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteShort (netGame.PlayerKills (i));			// 16 bytes
 m_cf.WriteInt (netGame.ScoreGoal ());						// 4 bytes
 m_cf.WriteFix (netGame.PlayTimeAllowed ());				// 4 bytes
 m_cf.WriteFix (netGame.LevelTime ());						// 4 bytes
 m_cf.WriteInt (netGame.ControlInvulTime ());				// 4 bytes
 m_cf.WriteInt (netGame.MonitorVector ());		// 4 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteInt (netGame.PlayerScore (i));				// 32 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteByte ((sbyte) netGame.PlayerFlags (i));	// 8 bytes
 m_cf.WriteShort (PacketsPerSec ());							// 2 bytes
 m_cf.WriteByte (sbyte (netGame.ShortPackets ()));		// 1 bytes
@@ -652,7 +652,7 @@ void CSaveGameManager::SaveNetPlayers (void)
 
 m_cf.WriteByte ((sbyte) netPlayers.m_info.nType);
 m_cf.WriteInt (netPlayers.m_info.nSecurity);
-for (i = 0; i < MAX_PLAYERS + 4; i++) {
+for (i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	m_cf.Write (netPlayers.m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
 	m_cf.Write (netPlayers.m_info.players [i].network.ipx.server, 1, 4);
 	m_cf.Write (netPlayers.m_info.players [i].network.ipx.node, 1, 6);
@@ -845,7 +845,7 @@ for (i = 0; i < 2; i++) {
 	m_cf.WriteInt (F2X (gameStates.gameplay.slowmo [i].fSpeed));
 	m_cf.WriteInt (gameStates.gameplay.slowmo [i].nState);
 	}
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteInt (gameData.multiplayer.weaponStates [i].bTripleFusion);
 if (!m_bBetweenLevels) {
 //Finish all morph OBJECTS
@@ -992,7 +992,7 @@ gameData.render.lights.subtracted.Write (m_cf, LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (gameData.missions.nEntryLevel);
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	SaveSpawnPoint (i);
 }
 
@@ -1319,7 +1319,7 @@ for (i = 0; i < nPlayers; i++) {
 			}
 		}
 	}
-for (i = 0; i < MAX_PLAYERS; i++) {
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (!restoredPlayers [i].connected) {
 		memset (restoredPlayers [i].netAddress, 0xFF, sizeof (restoredPlayers [i].netAddress));
 		memset (netPlayers.m_info.players [i].network.ipx.node, 0xFF, sizeof (netPlayers.m_info.players [i].network.ipx.node));
@@ -1475,26 +1475,26 @@ netGame.m_info.invul = (ubyte) m_cf.ReadByte ();
 netGame.m_info.FriendlyFireOff = (ubyte) m_cf.ReadByte ();
 for (i = 0; i < 2; i++)
 	m_cf.Read (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	netGame.Locations (i) = m_cf.ReadInt ();
-for (i = 0; i < MAX_PLAYERS; i++)
-	for (j = 0; j < MAX_PLAYERS; j++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
 		netGame.Kills (i, j) = m_cf.ReadShort ();				// 128 bytes
 netGame.SegmentCheckSum () = m_cf.ReadShort ();				// 2 bytes
 for (i = 0; i < 2; i++)
 	netGame.TeamKills (i) = m_cf.ReadShort ();				// 4 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	netGame.Killed (i) = m_cf.ReadShort ();					// 16 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	netGame.PlayerKills (i) = m_cf.ReadShort ();				// 16 bytes
 netGame.ScoreGoal () = m_cf.ReadInt ();						// 4 bytes
 netGame.PlayTimeAllowed () = m_cf.ReadFix ();				// 4 bytes
 netGame.LevelTime () = m_cf.ReadFix ();						// 4 bytes
 netGame.ControlInvulTime () = m_cf.ReadInt ();				// 4 bytes
 netGame.MonitorVector () = m_cf.ReadInt ();					// 4 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	netGame.PlayerScore (i) = m_cf.ReadInt ();				// 32 bytes
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	netGame.PlayerFlags (i) = (ubyte) m_cf.ReadByte ();	// 8 bytes
 netGame.PacketsPerSec () = m_cf.ReadShort ();				// 2 bytes
 netGame.ShortPackets () = ubyte (m_cf.ReadByte ());		// 1 bytes
@@ -1509,7 +1509,7 @@ void CSaveGameManager::LoadNetPlayers (void)
 {
 netPlayers.m_info.nType = (ubyte) m_cf.ReadByte ();
 netPlayers.m_info.nSecurity = m_cf.ReadInt ();
-for (int i = 0; i < MAX_PLAYERS + 4; i++) {
+for (int i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	m_cf.Read (netPlayers.m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
 	m_cf.Read (netPlayers.m_info.players [i].network.ipx.server, 1, 4);
 	m_cf.Read (netPlayers.m_info.players [i].network.ipx.node, 1, 6);
@@ -1760,7 +1760,7 @@ for (i = 0; i < 2; i++) {
 		}
 	}
 if (m_nVersion > 33) {
-	for (i = 0; i < MAX_PLAYERS; i++)
+	for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	   if (i != gameData.multiplayer.nLocalPlayer)
 		   gameData.multiplayer.weaponStates [i].bTripleFusion = m_cf.ReadInt ();
    	else {
@@ -2013,7 +2013,7 @@ if (m_nVersion >= 37) {
 	tObjPosition playerInitSave [MAX_PLAYERS];
 
 	memcpy (playerInitSave, gameData.multiplayer.playerInit, sizeof (playerInitSave));
-	for (h = 1, i = 0; i < MAX_PLAYERS; i++)
+	for (h = 1, i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 		if (!LoadSpawnPoint (i))
 			h = 0;
 	if (!h)
@@ -2055,7 +2055,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	strcpy (szServerCallSign, netPlayers.m_info.players [0].callsign);
 	m_cf.Read (&gameData.app.nStateGameId, sizeof (int), 1);
 	m_cf.Read (&netGame, sizeof (tNetGameInfo), 1);
-	m_cf.Read (&netPlayers, sizeof (tAllNetPlayersInfo), 1);
+	m_cf.Read (&netPlayers, netPlayers.Size (), 1);
 	m_cf.Read (&nPlayers, sizeof (gameData.multiplayer.nPlayers), 1);
 	m_cf.Read (&gameData.multiplayer.nLocalPlayer, sizeof (gameData.multiplayer.nLocalPlayer), 1);
 	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;

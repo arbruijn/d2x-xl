@@ -404,8 +404,8 @@ networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 	goto doMenu;
 	}
 // Choice is valid, prepare to join in
-memcpy (&netGame, activeNetGames + choice, sizeof (tNetGameInfo));
-memcpy (&netPlayers, activeNetPlayers + choice, sizeof (tAllNetPlayersInfo));
+netGame = activeNetGames [choice];
+netPlayers = activeNetPlayers [choice];
 gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
 gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
 ChangePlayerNumTo (1);

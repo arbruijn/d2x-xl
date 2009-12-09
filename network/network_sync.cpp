@@ -530,12 +530,12 @@ int NetworkWaitForPlayerInfo (void)
 {
 	int						size = 0, retries = 0;
 	ubyte						packet [MAX_PACKETSIZE];
-	tAllNetPlayersInfo*	tempPlayerP;
+	CAllNetPlayersInfo	tempPlayer;
 	uint						xTimeout;
 	ubyte						id = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tAllNetPlayersInfo info_struct;
+	CAllNetPlayersInfo info_struct;
 #endif
 
 if (gameStates.multi.nGameType >= IPX_GAME)
@@ -558,17 +558,17 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () <
 	if ((size > 0) && (id == PID_PLAYERSINFO)) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		ReceiveNetPlayersPacket (packet, &info_struct);
-		tempPlayerP = &info_struct;
+		tempPlayer = &info_struct;
 #else
-		tempPlayerP = reinterpret_cast<tAllNetPlayersInfo*> (packet);
+		tempPlayer = *(reinterpret_cast<tAllNetPlayersInfo*> (packet));
 #endif
 		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {
 #if SECURITY_CHECK
-			if (networkData.nSecurityNum != tempPlayerP->nSecurity)
+			if (networkData.nSecurityNum != tempPlayer.m_info.nSecurity)
 				continue;
 #endif
-			memcpy (&tmpPlayersBase, reinterpret_cast<ubyte*> (tempPlayerP), sizeof (tAllNetPlayersInfo));
+			tmpPlayersBase = tempPlayer;
 			playerInfoP = &tmpPlayersBase;
 			networkData.nSecurityFlag = NETSECURITY_OFF;
 			networkData.nSecurityNum = 0;
@@ -576,9 +576,9 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () <
 			return 1;
 			}
 		else {
-			networkData.nSecurityNum = tempPlayerP->nSecurity;
+			networkData.nSecurityNum = tempPlayer.m_info.nSecurity;
 			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_GAMEINFO;
-			memcpy (&tmpPlayersBase, reinterpret_cast<ubyte*> (tempPlayerP), sizeof (tAllNetPlayersInfo));
+			tmpPlayersBase = tempPlayer;
 			playerInfoP = &tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo = 0;
 			return 1;
@@ -594,10 +594,7 @@ void NetworkDoBigWait (int choice)
 {
 	int						size;
 	ubyte						packet [MAX_PACKETSIZE], *data;
-	tAllNetPlayersInfo*	tempPlayerP;
-#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tAllNetPlayersInfo	tempPlayer;
-#endif
+	CAllNetPlayersInfo	tempPlayer;
   
 while (0 < (size = IpxGetPacketData (packet))) {
 	data = &packet [0];
@@ -607,7 +604,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				ReceiveFullNetGamePacket (data, &tempNetInfo); 
 			else
-				memcpy (reinterpret_cast<ubyte*> (&tempNetInfo), data, sizeof (tNetGameInfo));
+				memcpy (&tempNetInfo.m_info, data, tempNetInfo.Size ());
 #if SECURITY_CHECK
 			if (tempNetInfo.m_info.nSecurity != networkData.nSecurityCheck)
 				break;
@@ -629,8 +626,8 @@ while (0 < (size = IpxGetPacketData (packet))) {
 #if 1			
 					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", networkData.nSecurityNum, playerInfoP->m_info.nSecurity);
 #endif
-					memcpy (activeNetGames + choice, reinterpret_cast<ubyte*> (&tempNetInfo), sizeof (tNetGameInfo));
-					memcpy (activeNetPlayers + choice, playerInfoP, sizeof (tAllNetPlayersInfo));
+					activeNetGames [choice] = tempNetInfo;
+					activeNetPlayers [choice] = *playerInfoP;
 					networkData.nSecurityCheck = -1;
 					}
 				networkData.nSecurityFlag = 0;
@@ -646,20 +643,19 @@ while (0 < (size = IpxGetPacketData (packet))) {
 
 		case PID_PLAYERSINFO:
 			if (gameStates.multi.nGameType < IPX_GAME)
-				tempPlayerP = reinterpret_cast<tAllNetPlayersInfo*> (data);
+				tempPlayer = *(reinterpret_cast<tAllNetPlayersInfo*> (data));
 			else {
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-				tempPlayerP = reinterpret_cast<tAllNetPlayersInfo*> (data);
+				tempPlayer = *(reinterpret_cast<tAllNetPlayersInfo*> (data));
 #else
 				ReceiveNetPlayersPacket (data, &tempPlayer);
-				tempPlayerP = &tempPlayer;
 #endif
 				}
 #if SECURITY_CHECK
-			if (tempPlayerP->nSecurity != networkData.nSecurityCheck) 
+			if (tempPlayer.m_info.nSecurity != networkData.nSecurityCheck) 
 				break;     // If this isn't the guy we're looking for, move on
 #endif
-			memcpy (&tmpPlayersBase, tempPlayerP, sizeof (tAllNetPlayersInfo));
+			tmpPlayersBase = tempPlayer;
 			playerInfoP = &tmpPlayersBase;
 			networkData.bWaitingForPlayerInfo = 0;
 			networkData.nSecurityNum = tmpPlayersBase.m_info.nSecurity;

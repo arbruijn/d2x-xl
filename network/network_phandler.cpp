@@ -123,7 +123,7 @@ int PlayersInfoHandler (ubyte *dataP, int nLength)
 if (gameStates.multi.nGameType >= IPX_GAME)
 	ReceiveNetPlayersPacket (dataP, &tmpPlayersBase);
 else
-	memcpy (&tmpPlayersBase, dataP, sizeof (tAllNetPlayersInfo));
+	memcpy (&tmpPlayersBase.m_info, dataP, tmpPlayersBase.Size ());
 if (NetworkBadSecurity (tmpPlayersBase.m_info.nSecurity, "PID_PLAYERSINFO"))
 	return 0;
 playerInfoP = &tmpPlayersBase;

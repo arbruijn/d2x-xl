@@ -116,8 +116,8 @@ if (rsinit)
 if (sp != &netGame) {
 	char *p = reinterpret_cast<char*> (sp);
 	ushort h;
-	int i, s;
-	for (i = 0, h = -1; i < (int) sizeof (tNetGameInfo) - 1; i++, p++) {
+	int i, j = (int) netGame.Size () - 1, s;
+	for (i = 0, h = -1; i < j; i++, p++) {
 		s = *reinterpret_cast<ushort*> (p);
 		if (s == networkData.nSegmentCheckSum) {
 			h = i;
