@@ -119,11 +119,11 @@ void BESwapObject (CObject *obj);
 #define SendLiteNetGamePacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *)&netGame.m_info, sizeof(tNetGameInfoLite), server, node, netAddress)
 #define SendInternetFullNetGamePacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)&netGame.m_info, netGame.Size (), server, node)
+	IPXSendInternetPacketData((ubyte *)&netGame.m_info, int (netGame.Size ()), server, node)
 #define SendInternetLiteNetGamePacket(server, node) \
 	IPXSendInternetPacketData((ubyte *)&netGame.m_info, sizeof(tNetGameInfoLite), server, node)
 #define SendBroadcastFullNetGamePacket() \
-	IPXSendBroadcastData((ubyte *)&netGame.m_info, netGame.Size ())
+	IPXSendBroadcastData((ubyte *)&netGame.m_info, int (netGame.Size ()))
 #define SendBroadcastLiteNetGamePacket() \
 	IPXSendBroadcastData((ubyte *)&netGame.m_info, sizeof(tNetGameInfoLite))
 #define ReceiveFullNetGamePacket(data, netgame) \
