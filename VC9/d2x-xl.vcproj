@@ -100,7 +100,6 @@
 				GenerateMapFile="true"
 				MapExports="false"
 				SubSystem="2"
-				LinkTimeCodeGeneration="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
