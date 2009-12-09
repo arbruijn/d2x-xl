@@ -235,8 +235,8 @@ if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 else {
 	networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 	networkData.nSecurityNum = tempNetInfo.m_info.nSecurity;
-	if (NetworkWaitF1orPlayerInfo ())
-		NetworkProcessSyncPacket (tempNetInfo, 0);
+	if (NetworkWaitForPlayerInfo ())
+		NetworkProcessSyncPacket (&tempNetInfo, 0);
 	networkData.nSecurityFlag = 0;
 	networkData.nSecurityNum = 0;
 	}
