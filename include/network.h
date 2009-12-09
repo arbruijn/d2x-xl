@@ -493,7 +493,7 @@ class CEndLevelInfo {
 
 
 #define NETGAME_INFO_SIZE       netGameInfo.Size ()
-#define ALLNETPLAYERSINFO_SIZE  netPlayers.m_info.Size ()
+#define ALLNETPLAYERSINFO_SIZE  netPlayers.Size ()
 #define LITE_INFO_SIZE          sizeof (tNetGameInfoLite)
 #define SEQUENCE_PACKET_SIZE    sizeof (tSequencePacket)
 #define FRAME_INFO_SIZE         sizeof (tFrameInfo)
