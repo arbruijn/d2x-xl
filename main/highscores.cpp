@@ -295,7 +295,7 @@ GrPrintF (NULL, CENTERSCREEN- (sw/2), LHY (55+72+3), message);
 void ScoreTableRedraw (void)
 {
 	int i, color;
-	int sorted [MAX_NUM_NET_PLAYERS];
+	int sorted [MAX_PLAYERS];
 
 xOffs = (CCanvas::Current ()->Width () - 640) / 2;
 yOffs = (CCanvas::Current ()->Height () - 480) / 2;
@@ -334,7 +334,7 @@ GrUpdate (1);
 void ScoreTableDrawCoop (void)
 {
 	int i, color;
-	int sorted [MAX_NUM_NET_PLAYERS];
+	int sorted [MAX_PLAYERS];
 
 MultiSortKillList ();
 fontManager.SetCurrent (MEDIUM3_FONT);

@@ -223,7 +223,7 @@ extern int bUseMacros;
 extern int message_length[MULTI_MAX_TYPE+1];
 
 extern CShortArray scoreMatrix;
-//extern short scoreMatrix[MAX_NUM_NET_PLAYERS][MAX_NUM_NET_PLAYERS];
+//extern short scoreMatrix[MAX_PLAYERS][MAX_PLAYERS];
 
 
 extern void MultiMsgInputSub (int key);
