@@ -79,12 +79,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 // defines and other things for appletalk/ipx games on mac
-
-#define APPLETALK_GAME  1
-#define IPX_GAME        2
-#define UDP_GAME			3
+#if 0
 extern int nNetworkGameType;
 extern int nNetworkGameSubType;
+#endif
 
 typedef struct tSequencePacket {
 	ubyte           nType;

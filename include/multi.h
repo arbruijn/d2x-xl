@@ -36,7 +36,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // How many simultaneous network players do we support?
 
-#define MAX_NUM_NET_PLAYERS			(gameStates.app.bD2XLevel ? 16 : 8)
+#define APPLETALK_GAME  1
+#define IPX_GAME        2
+#define UDP_GAME			3
+
+#define MAX_NUM_NET_PLAYERS			((gameStates.multi.nGameType == UDP_GAME) ? 16 : 8)
 
 #define MULTI_POSITION					0
 #define MULTI_REAPPEAR					1
@@ -466,7 +470,7 @@ class CNetGameInfo {
 		CNetGameInfo() { memset (&m_info, 0, sizeof (m_info)); }
 		CNetGameInfo (tNetGameInfo* ngi) { *this = *ngi; }
 
-		inline size_t Size (void) { return gameStates.app.bD2XLevel ? sizeof (tNetGameInfo) : sizeof (tNetGameInfo) - sizeof (tNetGameInfoD2X) + sizeof (tNetGameInfoD2); }
+		inline size_t Size (void) { return (gameStates.multi.nGameType == UDP_GAME) ? sizeof (tNetGameInfo) : sizeof (tNetGameInfo) - sizeof (tNetGameInfoD2X) + sizeof (tNetGameInfoD2); }
 
 		inline tNetGameInfo& operator= (tNetGameInfo& other) {
 			memcpy (&m_info, &other, Size ());
@@ -478,29 +482,29 @@ class CNetGameInfo {
 			return m_info;
 			}
 
-		inline int* Locations (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.locations : m_info.versionSpecific.d2.locations; }
-		inline int& Locations (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.locations [i] : m_info.versionSpecific.d2.locations [i]; }
-		inline short* Kills (void) { return gameStates.app.bD2XLevel ? &m_info.versionSpecific.d2x.kills [0][0] : &m_info.versionSpecific.d2.kills [0][0]; }
-		inline short& Kills (int i, int j) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.kills [i][j] : m_info.versionSpecific.d2.kills [i][j]; }
-		inline short* TeamKills (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.teamKills : m_info.versionSpecific.d2.teamKills; }
-		inline short& TeamKills (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.teamKills [i] : m_info.versionSpecific.d2.teamKills [i]; }
-		inline short* Killed (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.killed : m_info.versionSpecific.d2.killed; }
-		inline short& Killed (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.killed [i] : m_info.versionSpecific.d2.killed [i]; }
-		inline short* PlayerKills (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerKills : m_info.versionSpecific.d2.playerKills; }
-		inline short& PlayerKills (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerKills [i] : m_info.versionSpecific.d2.playerKills [i]; }
-		inline ushort& SegmentCheckSum (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }
-		inline int& ScoreGoal (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.nScoreGoal : m_info.versionSpecific.d2.nScoreGoal; }
-		inline fix& PlayTimeAllowed (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.xPlayTimeAllowed : m_info.versionSpecific.d2.xPlayTimeAllowed; }
-		inline fix& LevelTime (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.xLevelTime : m_info.versionSpecific.d2.xLevelTime; }
-		inline int& ControlInvulTime (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
-		inline int& MonitorVector (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
-		inline int* PlayerScore (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerScore : m_info.versionSpecific.d2.playerScore; }
-		inline int& PlayerScore (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerScore [i] : m_info.versionSpecific.d2.playerScore [i]; }
-		inline ubyte* PlayerFlags (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerFlags : m_info.versionSpecific.d2.playerFlags; }
-		inline ubyte& PlayerFlags (int i) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.playerFlags [i] : m_info.versionSpecific.d2.playerFlags [i]; }
-		inline short& PacketsPerSec (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
-		inline ubyte& ShortPackets (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
-		inline ubyte* AuxData (void) { return gameStates.app.bD2XLevel ? m_info.versionSpecific.d2x.auxData : m_info.versionSpecific.d2.auxData; }
+		inline int* Locations (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.locations : m_info.versionSpecific.d2.locations; }
+		inline int& Locations (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.locations [i] : m_info.versionSpecific.d2.locations [i]; }
+		inline short* Kills (void) { return (gameStates.multi.nGameType == UDP_GAME) ? &m_info.versionSpecific.d2x.kills [0][0] : &m_info.versionSpecific.d2.kills [0][0]; }
+		inline short& Kills (int i, int j) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.kills [i][j] : m_info.versionSpecific.d2.kills [i][j]; }
+		inline short* TeamKills (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.teamKills : m_info.versionSpecific.d2.teamKills; }
+		inline short& TeamKills (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.teamKills [i] : m_info.versionSpecific.d2.teamKills [i]; }
+		inline short* Killed (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed : m_info.versionSpecific.d2.killed; }
+		inline short& Killed (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed [i] : m_info.versionSpecific.d2.killed [i]; }
+		inline short* PlayerKills (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills : m_info.versionSpecific.d2.playerKills; }
+		inline short& PlayerKills (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills [i] : m_info.versionSpecific.d2.playerKills [i]; }
+		inline ushort& SegmentCheckSum (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }
+		inline int& ScoreGoal (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nScoreGoal : m_info.versionSpecific.d2.nScoreGoal; }
+		inline fix& PlayTimeAllowed (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xPlayTimeAllowed : m_info.versionSpecific.d2.xPlayTimeAllowed; }
+		inline fix& LevelTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xLevelTime : m_info.versionSpecific.d2.xLevelTime; }
+		inline int& ControlInvulTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
+		inline int& MonitorVector (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
+		inline int* PlayerScore (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore : m_info.versionSpecific.d2.playerScore; }
+		inline int& PlayerScore (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore [i] : m_info.versionSpecific.d2.playerScore [i]; }
+		inline ubyte* PlayerFlags (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags : m_info.versionSpecific.d2.playerFlags; }
+		inline ubyte& PlayerFlags (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags [i] : m_info.versionSpecific.d2.playerFlags [i]; }
+		inline short& PacketsPerSec (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
+		inline ubyte& ShortPackets (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
+		inline ubyte* AuxData (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.auxData : m_info.versionSpecific.d2.auxData; }
 };
 
 #define MAX_ROBOTS_CONTROLLED 5
