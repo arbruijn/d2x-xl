@@ -55,21 +55,19 @@ int GetNewPlayerNumber (tSequencePacket *their)
 
 if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers)
 	return (gameData.multiplayer.nPlayers);
-else {
-	// Slots are full but game is open, see if anyone is
-	// disconnected and replace the oldest CPlayerData with this new one
-	int oldestPlayer = -1;
-	fix oldestTime = gameStates.app.nSDLTicks;
+// Slots are full but game is open, see if anyone is
+// disconnected and replace the oldest CPlayerData with this new one
+int oldestPlayer = -1;
+fix oldestTime = gameStates.app.nSDLTicks;
 
-	Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((!gameData.multiplayer.players [i].connected) && (networkData.nLastPacketTime [i] < oldestTime)) {
-			oldestTime = networkData.nLastPacketTime [i];
-			oldestPlayer = i;
-			}
+Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
+for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if ((!gameData.multiplayer.players [i].connected) && (networkData.nLastPacketTime [i] < oldestTime)) {
+		oldestTime = networkData.nLastPacketTime [i];
+		oldestPlayer = i;
 		}
-	return oldestPlayer;
 	}
+return oldestPlayer;
 }
 
 //------------------------------------------------------------------------------
