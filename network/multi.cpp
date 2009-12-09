@@ -866,7 +866,7 @@ return  gameData.multiplayer.nPlayers;
 void MultiSortKillList (void)
 {
 
-	int kills [MAX_NUM_NET_PLAYERS];
+	int kills [MAX_PLAYERS];
 	int i;
 	int changed = 1;
 
