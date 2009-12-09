@@ -82,21 +82,21 @@ if (game->m_info.gameStatus == NETSTAT_STARTING)
    return 1;
 if (game->m_info.gameStatus != NETSTAT_PLAYING) {
 #if 1      
-	console.printf (CON_DBG, "Error: Can't join because gameStatus !=NETSTAT_PLAYING\n");
+	console.printf (CON_DBG, "Error: Cannot join because gameStatus !=NETSTAT_PLAYING\n");
 #endif
 	return 0;
     }
 
 if ((game->m_info.versionMajor == 0) && (D2X_MAJOR > 0)) {
 #if 1      
-	console.printf (CON_DBG, "Error:Can't join because version majors don't match!\n");
+	console.printf (CON_DBG, "Error: Cannot join because version majors don't match!\n");
 #endif
 	return 0;
 	}
 
 if ((game->m_info.versionMajor > 0) && (D2X_MAJOR == 0)) {
 #if 1      
-	console.printf (CON_DBG, "Error:Can't join because version majors2 don't match!\n");
+	console.printf (CON_DBG, "Error: Cannot join because version majors2 don't match!\n");
 #endif
 	return 0;
 	}
