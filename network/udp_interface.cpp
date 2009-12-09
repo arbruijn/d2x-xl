@@ -265,7 +265,7 @@ int CClientManager::CheckClientSize (void)
 {
 if (m_nClients < m_clients.Length ())
 	return 1;
-m_clients.Resize (m_clients.Buffer () ? m_clients.Length () * 2 : 8);
+m_clients.Resize (m_clients.Buffer () ? m_clients.Length () * 2 : MAX_PLAYERS);
 return 1;
 }
 
@@ -275,7 +275,7 @@ int CClientManager::CheckBroadSize (void)
 {
 if (m_nBroads < m_broads.Length ())
 	return 1;
-m_broads.Resize (m_broads.Buffer () ? m_broads.Length () * 2 : 8);
+m_broads.Resize (m_broads.Buffer () ? m_broads.Length () * 2 : MAX_PLAYERS);
 return 1;
 }
 

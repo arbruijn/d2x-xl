@@ -381,7 +381,7 @@ if ((menu [optEntropy].m_value == (optEntOpts < 0)) ||
 //even in a match and progress, and allows players to switch teams
 if (menu [optCoop].m_value) {
 	oldmaxnet = 1;
-	if (menu [optMaxNet].m_value>2)  {
+	if (menu [optMaxNet].m_value > 2)  {
 		menu [optMaxNet].m_value = 2;
 		menu [optMaxNet].m_bRedraw = 1;
 		}
@@ -399,12 +399,12 @@ if (menu [optCoop].m_value) {
 else {// if !Coop game
 	if (oldmaxnet) {
 		oldmaxnet = 0;
-		menu [optMaxNet].m_value = 6;
-		menu [optMaxNet].m_maxValue = 6;
+		menu [optMaxNet].m_value = 
+		menu [optMaxNet].m_maxValue = MAX_NUM_NET_PLAYERS - 2;
 		}
 	}         
 if (lastMaxNet != menu [optMaxNet].m_value)  {
-	sprintf (menu [optMaxNet].m_text, TXT_MAX_PLAYERS, menu [optMaxNet].m_value+2);
+	sprintf (menu [optMaxNet].m_text, TXT_MAX_PLAYERS, menu [optMaxNet].m_value + 2);
 	lastMaxNet = menu [optMaxNet].m_value;
 	menu [optMaxNet].m_bRebuild = 1;
 	}               

@@ -68,7 +68,7 @@ else {
 			oldestPlayer = i;
 			}
 		}
-	return (oldestPlayer);
+	return oldestPlayer;
 	}
 }
 
@@ -89,14 +89,14 @@ if (game->m_info.gameStatus != NETSTAT_PLAYING) {
 	return 0;
     }
 
-if (game->m_info.versionMajor == 0 && D2X_MAJOR>0) {
+if ((game->m_info.versionMajor == 0) && (D2X_MAJOR > 0)) {
 #if 1      
 	console.printf (CON_DBG, "Error:Can't join because version majors don't match!\n");
 #endif
 	return 0;
 	}
 
-if (game->m_info.versionMajor>0 && D2X_MAJOR == 0) {
+if ((game->m_info.versionMajor > 0) && (D2X_MAJOR == 0)) {
 #if 1      
 	console.printf (CON_DBG, "Error:Can't join because version majors2 don't match!\n");
 #endif
@@ -113,7 +113,7 @@ if (!(game->m_info.gameFlags & NETGAME_FLAG_CLOSED)) {
 		 return 3;
 	if (game->m_info.nNumPlayers < game->m_info.nMaxPlayers)
 		return 1;
-	if (game->m_info.nConnected<nNumPlayers)
+	if (game->m_info.nConnected < nNumPlayers)
 		return 1;
 	}
 if (!people) {
@@ -189,8 +189,8 @@ Assert (nPlayer < gameData.multiplayer.nMaxPlayers);
 nObject = gameData.multiplayer.players [nPlayer].nObject;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
-memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
-memcpy (netPlayers.m_info.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
+memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
+memcpy (netPlayers.m_info.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
 netPlayers.m_info.players [nPlayer].rank = their->player.rank;
 netPlayers.m_info.players [nPlayer].versionMajor = their->player.versionMajor;
@@ -211,7 +211,7 @@ gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
 gameData.multiplayer.players [nPlayer].connected = 1;
 gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
 gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
-memset (gameData.multigame.kills.matrix [nPlayer], 0, MAX_PLAYERS * sizeof (short)); 
+memset (gameData.multigame.kills.matrix [nPlayer], 0, MAX_NUM_NET_PLAYERS * sizeof (short)); 
 gameData.multiplayer.players [nPlayer].score = 0;
 gameData.multiplayer.players [nPlayer].flags = 0;
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
@@ -476,7 +476,7 @@ if (NetworkFindPlayer (&player->player) > -1)
 npiP = netPlayers.m_info.players + gameData.multiplayer.nPlayers;
 memcpy (&npiP->network, &player->player.network, sizeof (tNetworkInfo));
 ClipRank (reinterpret_cast<char*> (&player->player.rank));
-memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN+1);
+memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN + 1);
 npiP->versionMajor = player->player.versionMajor;
 npiP->versionMinor = player->player.versionMinor;
 npiP->rank = player->player.rank;
@@ -506,7 +506,7 @@ for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	j = i++;
 	memcpy (&netPlayers.m_info.players [j].network, &netPlayers.m_info.players [i].network.ipx.node, 
 			  sizeof (tNetworkInfo));
-	memcpy (netPlayers.m_info.players [j].callsign, netPlayers.m_info.players [i].callsign, CALLSIGN_LEN+1);
+	memcpy (netPlayers.m_info.players [j].callsign, netPlayers.m_info.players [i].callsign, CALLSIGN_LEN + 1);
 	netPlayers.m_info.players [j].versionMajor = netPlayers.m_info.players [i].versionMajor;
 	netPlayers.m_info.players [j].versionMinor = netPlayers.m_info.players [i].versionMinor;
    netPlayers.m_info.players [j].rank = netPlayers.m_info.players [i].rank;
@@ -530,7 +530,7 @@ void DoRefuseStuff (tSequencePacket *their)
 
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
 
-for (i = 0; i < MAX_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	if (!strcmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
 		NetworkWelcomePlayer (their);
 		return;
