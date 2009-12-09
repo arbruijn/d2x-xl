@@ -121,7 +121,8 @@ void UnloadSphereShader (void)
 {
 if (gameStates.render.history.nShader != 1) {
 	gameStates.render.history.nShader = -1;
-	glUseProgramObject (0);
+	if (ogl.m_states.bShadersOk)
+		glUseProgramObject (0);
 	}
 }
 
