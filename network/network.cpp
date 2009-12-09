@@ -110,7 +110,7 @@ tMpParams mpParams = {
 
 tPingStats pingStats [MAX_PLAYERS];
 
-tNetGameInfo tempNetInfo;
+CNetGameInfo tempNetInfo;
 
 const char *pszRankStrings []={
 	" (unpatched) ", "Cadet ", "Ensign ", "Lieutenant ", "Lt.Commander ", 
@@ -192,7 +192,7 @@ networkData.nStatus = NETSTAT_STARTING;
 // For mcast4, this randomly chooses a multicast session and port.
 // Clients subscribe to this address when they call
 // IpxHandleNetGameAuxData.
-IpxInitNetGameAuxData (netGame.AuxData);
+IpxInitNetGameAuxData (netGame.AuxData ());
 NetworkSetGameMode (netGame.m_info.gameMode);
 netGame.m_info.nSecurity = d_rand ();  // For syncing NetGames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {

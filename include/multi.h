@@ -242,7 +242,7 @@ extern int controlInvulTime;
 
 #define N_PLAYER_SHIP_TEXTURES 6
 
-extern tBitmapIndex mpTextureIndex[MAX_PLAYERS_D2][N_PLAYER_SHIP_TEXTURES];
+extern tBitmapIndex mpTextureIndex[MAX_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
 #define NETGAME_FLAG_CLOSED            1
 #define NETGAME_FLAG_SHOW_ID           2

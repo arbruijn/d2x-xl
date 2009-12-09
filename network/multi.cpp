@@ -100,7 +100,7 @@ CNetGameInfo netGame;
 
 CAllNetPlayersInfo netPlayers;
 
-tBitmapIndex mpTextureIndex [MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
+tBitmapIndex mpTextureIndex [MAX_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
 typedef struct tNetPlayerStats {
 	ubyte  messageType;

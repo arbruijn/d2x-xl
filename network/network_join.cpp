@@ -80,40 +80,40 @@ int CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people)
 
 	int i, nNumPlayers;
 
-if (game->gameStatus == NETSTAT_STARTING)
+if (game->m_info.gameStatus == NETSTAT_STARTING)
    return 1;
-if (game->gameStatus != NETSTAT_PLAYING) {
+if (game->m_info.gameStatus != NETSTAT_PLAYING) {
 #if 1      
 	console.printf (CON_DBG, "Error: Can't join because gameStatus !=NETSTAT_PLAYING\n");
 #endif
 	return 0;
     }
 
-if (game->versionMajor == 0 && D2X_MAJOR>0) {
+if (game->m_info.versionMajor == 0 && D2X_MAJOR>0) {
 #if 1      
 	console.printf (CON_DBG, "Error:Can't join because version majors don't match!\n");
 #endif
 	return 0;
 	}
 
-if (game->versionMajor>0 && D2X_MAJOR == 0) {
+if (game->m_info.versionMajor>0 && D2X_MAJOR == 0) {
 #if 1      
 	console.printf (CON_DBG, "Error:Can't join because version majors2 don't match!\n");
 #endif
 	return 0;
 	}
 // Game is in progress, figure out if this guy can re-join it
-nNumPlayers = game->nNumPlayers;
+nNumPlayers = game->m_info.nNumPlayers;
 
-if (!(game->gameFlags & NETGAME_FLAG_CLOSED)) {
+if (!(game->m_info.gameFlags & NETGAME_FLAG_CLOSED)) {
 	// Look for CPlayerData that is not connected
-	if (game->nConnected == game->nMaxPlayers)
+	if (game->m_info.nConnected == game->m_info.nMaxPlayers)
 		 return 2;
-	if (game->bRefusePlayers)
+	if (game->m_info.bRefusePlayers)
 		 return 3;
-	if (game->nNumPlayers < game->nMaxPlayers)
+	if (game->m_info.nNumPlayers < game->m_info.nMaxPlayers)
 		return 1;
-	if (game->nConnected<nNumPlayers)
+	if (game->m_info.nConnected<nNumPlayers)
 		return 1;
 	}
 if (!people) {
@@ -123,9 +123,9 @@ if (!people) {
 // Search to see if we were already in this closed netgame in progress
 for (i = 0; i < nNumPlayers; i++)
 	if (!CmpNetPlayers (LOCALPLAYER.callsign, 
-							  people->players [i].callsign, 
+							  people->m_info.players [i].callsign, 
 							  &networkData.thisPlayer.player.network, 
-							  &people->players [i].network))
+							  &people->m_info.players [i].network))
 		return 1;
 #if 1      
 console.printf (CON_DBG, "Error: Can't join because at end of list!\n");

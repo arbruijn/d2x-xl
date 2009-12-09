@@ -124,11 +124,11 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 	ReceiveNetPlayersPacket (dataP, &tmpPlayersBase);
 else
 	memcpy (&tmpPlayersBase, dataP, sizeof (tAllNetPlayersInfo));
-if (NetworkBadSecurity (tmpPlayersBase.Security (), "PID_PLAYERSINFO"))
+if (NetworkBadSecurity (tmpPlayersBase.m_info.nSecurity, "PID_PLAYERSINFO"))
 	return 0;
 playerInfoP = &tmpPlayersBase;
 networkData.bWaitingForPlayerInfo = 0;
-networkData.nSecurityNum = playerInfoP->Security ();
+networkData.nSecurityNum = playerInfoP->m_info.nSecurity;
 networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_SYNC;
 return 1;
 }
@@ -219,11 +219,11 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 	ReceiveFullNetGamePacket (dataP, &tempNetInfo);
 else
 	tempNetInfo = *reinterpret_cast<tNetGameInfo*> (dataP);
-if (NetworkBadSecurity (tempNetInfo.Security (), "PID_SYNC"))
+if (NetworkBadSecurity (tempNetInfo.m_info.nSecurity, "PID_SYNC"))
 	return 0;
 if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 #if SECURITY_CHECK
-	if (tempNetInfo.Security () == playerInfoP->Security ()) {
+	if (tempNetInfo.m_info.nSecurity == playerInfoP->m_info.nSecurity) {
 #endif
 		NetworkReadSyncPacket (&tempNetInfo, 0);
 		networkData.nSecurityFlag = 0;
@@ -234,11 +234,11 @@ if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_SYNC) {
 	}
 else {
 	networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
-	networkData.nSecurityNum = tempNetInfo.Security ();
+	networkData.nSecurityNum = tempNetInfo.m_info.nSecurity;
 	if (NetworkWaitForPlayerInfo ()) {
 		CNetGameInfo h;
-		NetworkReadSyncPacket (h, 0);
-		memcpy (dataP, h, h.Size ());
+		NetworkReadSyncPacket (&h, 0);
+		memcpy (dataP, &h.m_info, h.Size ());
 		}
 	networkData.nSecurityFlag = 0;
 	networkData.nSecurityNum = 0;

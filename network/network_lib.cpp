@@ -359,8 +359,8 @@ for (i = 0; i < 100; i++)
 
 void NetworkRequestPlayerNames (int n)
 {
-NetworkSendAllInfoRequest (PID_GAME_PLAYERS, activeNetGames [n].nSecurity);
-networkData.nNamesInfoSecurity = activeNetGames [n].nSecurity;
+NetworkSendAllInfoRequest (PID_GAME_PLAYERS, activeNetGames [n].m_info.nSecurity);
+networkData.nNamesInfoSecurity = activeNetGames [n].m_info.nSecurity;
 }
 
 //------------------------------------------------------------------------------

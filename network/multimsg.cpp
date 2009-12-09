@@ -253,7 +253,7 @@ if (strlen (gameData.multigame.msg.szMsg) <= (size_t) name_index) {
 	}
 
 if (gameData.multigame.msg.szMsg [name_index] == '#' && ::isdigit (gameData.multigame.msg.szMsg [name_index+1])) {
-	int players [MAX_NUM_NET_PLAYERS];
+	int players [MAX_PLAYERS];
 	int listpos = gameData.multigame.msg.szMsg [name_index+1] - '0';
 
 	if (gameData.multigame.kills.bShowList == 1 || gameData.multigame.kills.bShowList == 2) {
