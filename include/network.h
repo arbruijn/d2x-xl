@@ -472,14 +472,13 @@ class CEndLevelInfo {
 			return m_info;
 			}
 
-		inline ubyte& Type (void) { return gameStates.app.bD2XLevel ? m_info.d2x.nType : m_info.d2.nType; }
-		inline ubyte& Player (void) { return gameStates.app.bD2XLevel ? m_info.d2x.nPlayer : m_info.d2.nPlayer; }
-		inline sbyte& Connected (void) { return gameStates.app.bD2XLevel ? m_info.d2x.connected : m_info.d2.connected; }
-		inline ubyte& SecondsLeft (void) { return gameStates.app.bD2XLevel ? m_info.d2x.secondsLeft : m_info.d2.secondsLeft; }
-		inline short* ScoreMatrix (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.scoreMatrix [0][0] : &m_info.d2.scoreMatrix [0][0]; }
-		inline short& ScoreMatrix (int i, int j) { return gameStates.app.bD2XLevel ? m_info.d2x.scoreMatrix [i][j] : m_info.d2.scoreMatrix [i][j]; }
-		inline short& Kills (void) { return gameStates.app.bD2XLevel ? m_info.d2x.kills : m_info.d2.kills; }
-		inline short& Killed (void) { return gameStates.app.bD2XLevel ? m_info.d2x.killed : m_info.d2.killed; }
+		inline ubyte* Type (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nType : &m_info.d2.nType; }
+		inline ubyte* Player (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nPlayer : &m_info.d2.nPlayer; }
+		inline sbyte* Connected (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.connected : &m_info.d2.connected; }
+		inline ubyte* SecondsLeft (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.secondsLeft : &m_info.d2.secondsLeft; }
+		inline short* ScoreMatrix (int i = 0, int j = 0) { return gameStates.app.bD2XLevel ? m_info.d2x.scoreMatrix [i] + j : m_info.d2.scoreMatrix [i] + j; }
+		inline short* Kills (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.kills : &m_info.d2.kills; }
+		inline short* Killed (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.killed : &m_info.d2.killed; }
 };
 
 // WARNING!!! This is the top part of tNetGameInfo...if that struct changes,

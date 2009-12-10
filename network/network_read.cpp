@@ -48,24 +48,24 @@ void NetworkReadEndLevelPacket (ubyte *dataP)
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		eli.ScoreMatrix (i, j) = INTEL_SHORT (eli.ScoreMatrix (i, j));
-eli.Kills () = INTEL_SHORT (eli.kills);
-eli.Killed () = INTEL_SHORT (eli.killed);
+		*eli.ScoreMatrix (i, j) = INTEL_SHORT (*eli.ScoreMatrix (i, j));
+*eli.Kills () = INTEL_SHORT (*eli.kills);
+*eli.Killed () = INTEL_SHORT (*eli.killed);
 #endif
-nPlayer = eli.Player ();
+nPlayer = *eli.Player ();
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer);
 if (nPlayer >= gameData.multiplayer.nPlayers) {
 	Int3 (); // weird, but it an happen in a coop restore game
 	return; // if it happens in a coop restore, don't worry about it
 	}
-if ((networkData.nStatus == NETSTAT_PLAYING) && (eli.Connected () != 0))
+if ((networkData.nStatus == NETSTAT_PLAYING) && (*eli.Connected () != 0))
 	return; // Only accept disconnect packets if we're not out of the level yet
-gameData.multiplayer.players [nPlayer].connected = eli.Connected ();
+gameData.multiplayer.players [nPlayer].connected = *eli.Connected ();
 memcpy (&gameData.multigame.kills.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (short));
-gameData.multiplayer.players [nPlayer].netKillsTotal = eli.Kills ();
-gameData.multiplayer.players [nPlayer].netKilledTotal = eli.Killed ();
-if ((gameData.multiplayer.players [nPlayer].connected == 1) && (eli.SecondsLeft () < gameData.reactor.countdown.nSecsLeft))
-	gameData.reactor.countdown.nSecsLeft = eli.SecondsLeft ();
+gameData.multiplayer.players [nPlayer].netKillsTotal = *eli.Kills ();
+gameData.multiplayer.players [nPlayer].netKilledTotal = *eli.Killed ();
+if ((gameData.multiplayer.players [nPlayer].connected == 1) && (*eli.SecondsLeft () < gameData.reactor.countdown.nSecsLeft))
+	gameData.reactor.countdown.nSecsLeft = *eli.SecondsLeft ();
 ResetPlayerTimeout (nPlayer, -1);
 }
 

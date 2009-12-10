@@ -221,11 +221,11 @@ void NetworkSendEndLevelSub (int nPlayer)
 	int i;
 
 	// Send an endlevel packet for a CPlayerData
-end.Type () = PID_ENDLEVEL;
-end.Player () = nPlayer;
-end.Connected () = gameData.multiplayer.players [nPlayer].connected;
-end.Kills () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKillsTotal);
-end.Killed () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKilledTotal);
+*end.Type () = PID_ENDLEVEL;
+*end.Player () = nPlayer;
+*end.Connected () = gameData.multiplayer.players [nPlayer].connected;
+*end.Kills () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKillsTotal);
+*end.Killed () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKilledTotal);
 memcpy (end.ScoreMatrix (), gameData.multigame.kills.matrix [nPlayer], MAX_NUM_NET_PLAYERS * sizeof (short));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -234,7 +234,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 #endif
 if (gameData.multiplayer.players [nPlayer].connected == 1) {// Still playing
 	Assert (gameData.reactor.bDestroyed);
-	end.SecondsLeft () = gameData.reactor.countdown.nSecsLeft;
+	*end.SecondsLeft () = gameData.reactor.countdown.nSecsLeft;
 	}
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {       
 	if ((i != gameData.multiplayer.nLocalPlayer) && 
