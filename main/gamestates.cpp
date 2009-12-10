@@ -318,8 +318,13 @@ gameStates.app.nDetailLevel = NUM_DETAIL_LEVELS - 1;
 gameStates.app.nBaseCtrlCenExplTime = DEFAULT_CONTROL_CENTER_EXPLOSION_TIME;
 gameStates.app.bDebugSpew = 1;
 gameStates.app.bProgressBars = 1;
+#if 0 //DBG
+gameStates.app.bFixModels = 0;
+gameStates.app.bAltModels = 0;
+#else
 gameStates.app.bFixModels = 1;
 gameStates.app.bAltModels = 1;
+#endif
 gameStates.app.cheats.bEnabled = 0;
 gameStates.app.cheats.bTurboMode = 0;
 gameStates.app.cheats.bMonsterMode = 0;

@@ -413,8 +413,8 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-fix LastPTA;
-int LastScoreGoal;
+fix nLastPTA;
+int nLastScoreGoal;
 
 int optSetPower, optPlayTime, optScoreGoal, optSocket, optMarkerView, optLight;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
@@ -436,16 +436,16 @@ if (nLastReactorLife != menu [optReactorLife].m_value)   {
 	menu [optReactorLife].m_bRebuild = 1;
    }
   
-if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != LastPTA)) {
-	netGame.SetPlayTimeAllowed (mpParams.nMaxTime = menu [optPlayTime].m_value);
-	LastPTA = netGame.GetPlayTimeAllowed ();
-	sprintf (menu [optPlayTime].m_text, TXT_MAXTIME, LastPTA * 5, TXT_MINUTES_ABBREV);
+if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != nLastPTA)) {
+	mpParams.nMaxTime = menu [optPlayTime].m_value;
+	nLastPTA = netGame.GetPlayTimeAllowed ();
+	sprintf (menu [optPlayTime].m_text, TXT_MAXTIME, nLastPTA * 5, TXT_MINUTES_ABBREV);
 	menu [optPlayTime].m_bRebuild = 1;
 	}
-if ((optScoreGoal >= 0) && (menu [optScoreGoal].m_value != LastScoreGoal)) {
-	netGame.SetScoreGoal (mpParams.nScoreGoal = menu [optScoreGoal].m_value);
+if ((optScoreGoal >= 0) && (menu [optScoreGoal].m_value != nLastScoreGoal)) {
+	mpParams.nScoreGoal = menu [optScoreGoal].m_value;
 	sprintf (menu [optScoreGoal].m_text, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
-	LastScoreGoal = mpParams.nScoreGoal;
+	nLastScoreGoal = mpParams.nScoreGoal;
 	menu [optScoreGoal].m_bRebuild = 1;
 	}
 
@@ -493,8 +493,8 @@ do {
 	if (IsCoopGame) {
 		optPlayTime =
 		optScoreGoal = -1;
-		LastPTA =
-		LastScoreGoal = 0;
+		nLastPTA =
+		nLastScoreGoal = 0;
 		}
 	else {
 		sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.GetPlayTimeAllowed () * 5, TXT_MINUTES_ABBREV);
@@ -536,8 +536,8 @@ do {
 			}
 		}
 
-	LastScoreGoal = netGame.GetScoreGoal ();
-	LastPTA = mpParams.nMaxTime;
+	nLastScoreGoal = netGame.GetScoreGoal ();
+	nLastPTA = mpParams.nMaxTime;
 
 doMenu:
 
@@ -547,13 +547,21 @@ doMenu:
 
    //mpParams.nReactorLife = atoi (szInvul)*I2X (60);
 mpParams.nReactorLife = m [optReactorLife].m_value;
-netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 
 if (i == optSetPower) {
 	NetworkSetWeaponsAllowed ();
 	GetAllAllowables ();
 	goto doMenu;
 	}
+
+mpParams.bInvul = ubyte (m [optStartInvul].m_value);
+mpParams.bBrightPlayers = ubyte (m [optBrightPlayers].m_value ? 0 : 1);
+mpParams.bShowAllNames = ubyte (m [optShowNames].m_value);
+mpParams.bMarkerView = ubyte (m [optMarkerView].m_value);
+mpParams.bIndestructibleLights = ubyte (m [optLight].m_value);
+mpParams.nDifficulty = m [optDifficulty].m_value;
+mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].m_value;
+mpParams.bShortPackets = m [optShortPkts].m_value;
 mpParams.nPPS = atoi (szPPS);
 if (mpParams.nPPS > 20) {
 	mpParams.nPPS = 20;
@@ -563,7 +571,7 @@ else if (mpParams.nPPS < 2) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
 	mpParams.nPPS = 2;      
 }
-netGame.SetPacketsPerSec (mpParams.nPPS);
+
 if (gameStates.multi.nGameType >= IPX_GAME) { 
 	int newSocket = atoi (szSocket);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
@@ -575,25 +583,6 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		}
 	}
 
-netGame.m_info.invul = m [optStartInvul].m_value;
-mpParams.bInvul = (ubyte) netGame.m_info.invul;
-netGame.m_info.BrightPlayers = m [optBrightPlayers].m_value ? 0 : 1;
-mpParams.bBrightPlayers = (ubyte) netGame.m_info.BrightPlayers;
-netGame.SetShortPackets (mpParams.bShortPackets = m [optShortPkts].m_value);
-netGame.m_info.bShowAllNames = m [optShowNames].m_value;
-mpParams.bShowAllNames = (ubyte) netGame.m_info.bShowAllNames;
-NetworkAdjustMaxDataSize ();
-//  extraGameInfo [0].bEnhancedCTF = (m [optEnhancedCTF].m_value != 0);
-
-netGame.m_info.bAllowMarkerView = m [optMarkerView].m_value;
-mpParams.bMarkerView = (ubyte) netGame.m_info.bAllowMarkerView;
-netGame.m_info.bIndestructibleLights = m [optLight].m_value; 
-mpParams.bIndestructibleLights = (ubyte) netGame.m_info.bIndestructibleLights;
-mpParams.nDifficulty = gameStates.app.nDifficultyLevel = m [optDifficulty].m_value;
-if ((mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].m_value))
-	netGame.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-else
-	netGame.m_info.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
 }
 
 //------------------------------------------------------------------------------
@@ -1125,6 +1114,20 @@ if (gameStates.app.bNostalgia) {
 netGame.m_info.szMissionName [sizeof (netGame.m_info.szMissionName) - 1] = '\0';
 strcpy (netGame.m_info.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
 netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
+netGame.SetPlayTimeAllowed (mpParams.nMaxTime);
+netGame.SetScoreGoal (mpParams.nScoreGoal);
+netGame.SetPacketsPerSec (mpParams.nPPS);
+netGame.m_info.invul = mpParams.bInvul;
+netGame.m_info.BrightPlayers = mpParams.bBrightPlayers;
+netGame.SetShortPackets (mpParams.bShortPackets);
+netGame.m_info.bAllowMarkerView = mpParams.bMarkerView;
+netGame.m_info.bIndestructibleLights = mpParams.bIndestructibleLights; 
+if (mpParams.bShowPlayersOnAutomap)
+	netGame.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
+else
+	netGame.m_info.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
+gameStates.app.nDifficultyLevel = mpParams.nDifficulty;
+NetworkAdjustMaxDataSize ();
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 return key;
 }

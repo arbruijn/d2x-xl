@@ -510,10 +510,10 @@ return !gameStates.app.bHaveExtraGameInfo [1] && (nRemoteObj - nLocalObjs > 10) 
 
 int NetworkVerifyPlayers (void)
 {
-	int		i, j, t, bCoop = IsCoopGame;
-	int		nPlayers, nPlayerObjs [MAX_PLAYERS], bHaveReactor = !bCoop;
-	CObject	*objP;
-	CPlayerData	*playerP;
+	int				i, j, t, bCoop = IsCoopGame;
+	int				nPlayers, nPlayerObjs [MAX_PLAYERS], bHaveReactor = !bCoop;
+	CObject*			objP;
+	CPlayerData*	playerP;
 
 for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, playerP++)
 	nPlayerObjs [j] = playerP->connected ? playerP->nObject : -1;
