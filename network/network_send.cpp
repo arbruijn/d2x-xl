@@ -67,9 +67,9 @@ void NetworkSendMarkers (void)
 
 for (i = j = 0; i < gameData.multiplayer.nPlayers; i++, j++) {
    if (gameData.marker.objects [j] != -1)
-		MultiSendDropMarker (i, gameData.marker.point [j], 0, gameData.marker.szMessage [j]);
+		MultiSendDropMarker (i, gameData.marker.position [j], 0, gameData.marker.szMessage [j]);
    if (gameData.marker.objects [++j] != -1)
-		MultiSendDropMarker (i, gameData.marker.point [j], 1, gameData.marker.szMessage [j]);
+		MultiSendDropMarker (i, gameData.marker.position [j], 1, gameData.marker.szMessage [j]);
 	}
  }
 

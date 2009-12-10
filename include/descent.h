@@ -2504,12 +2504,12 @@ typedef struct tCountdownData {
 
 //------------------------------------------------------------------------------
 
-#define NUM_MARKERS         16
+#define NUM_MARKERS         (MAX_PLAYERS * 3)
 #define MARKER_MESSAGE_LEN  40
 
 class CMarkerData {
 	public:
-		CStaticArray< CFixVector, NUM_MARKERS >	point; // [NUM_MARKERS];		//these are only used in multi.c, and I'd get rid of them there, but when I tried to do that once, I caused some horrible bug. -MT
+		CStaticArray< CFixVector, NUM_MARKERS >	position; // [NUM_MARKERS];	//three markers (two regular + one spawn) per player in multi
 		char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
 		char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
 		CStaticArray< short, NUM_MARKERS >			objects; // [NUM_MARKERS];

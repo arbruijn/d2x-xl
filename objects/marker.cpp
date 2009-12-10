@@ -165,7 +165,7 @@ void DropMarker (char nPlayerMarker, int bSpawn)
 	CObject	*playerP = OBJECTS + LOCALPLAYER.nObject;
 
 if (!(bSpawn && MoveSpawnMarker (&playerP->info.position, playerP->info.nSegment))) {
-	gameData.marker.point [nMarker] = playerP->info.position.vPos;
+	gameData.marker.position [nMarker] = playerP->info.position.vPos;
 	short nObject = gameData.marker.objects [nMarker];
 	if ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]) && (OBJECTS [nObject].info.nType == OBJ_MARKER))
 		ReleaseObject (nObject);
@@ -204,8 +204,8 @@ nMarker = MAX_DROP_SINGLE + 1;
 if (nMarker > NUM_MARKERS - 1)
 	nMarker = NUM_MARKERS - 1;
 sprintf (gameData.marker.szMessage [nMarker], "RIP: %s",gameData.escort.szName);
-gameData.marker.point [nMarker] = objP->info.position.vPos;
-if (gameData.marker.objects [nMarker] != -1 && gameData.marker.objects [nMarker] !=0)
+gameData.marker.position [nMarker] = objP->info.position.vPos;
+if ((gameData.marker.objects [nMarker] != -1) && (gameData.marker.objects [nMarker] != 0))
 	ReleaseObject (gameData.marker.objects [nMarker]);
 gameData.marker.objects [nMarker] = DropMarkerObject (objP->info.position.vPos, (short) objP->info.nSegment, objP->info.position.mOrient, nMarker);
 }

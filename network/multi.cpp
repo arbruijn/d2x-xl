@@ -110,8 +110,8 @@ typedef struct tNetPlayerStats {
 	fix    shields;               // shields remaining (protection)
 	ubyte  lives;                 // Lives remaining, 0 = game over.
 	ubyte  laserLevel;				// Current level of the laser.
-	ubyte  primaryWeaponFlags;		// bit set indicates the CPlayerData has this weapon.
-	ubyte  secondaryWeaponFlags;  // bit set indicates the CPlayerData has this weapon.
+	ubyte  primaryWeaponFlags;		// bit set indicates the player has this weapon.
+	ubyte  secondaryWeaponFlags;  // bit set indicates the player has this weapon.
 	ushort primaryAmmo [MAX_PRIMARY_WEAPONS];     // How much ammo of each nType.
 	ushort secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
 	int    lastScore;             // Score at beginning of current level.
@@ -329,8 +329,8 @@ defaultPlayerShip.gunPoints [0].Create (-1608, -87663, -190825);
 
 //-----------------------------------------------------------------------------
 // check protection
-// return 0 if CPlayerData cheats and cheat cannot be neutralized
-// currently doesn't do anything besides setting CPlayerData ship physics to default values.
+// return 0 if player cheats and cheat cannot be neutralized
+// currently doesn't do anything besides setting player ship physics to default values.
 
 int MultiProtectGame (void)
 {
@@ -720,8 +720,7 @@ if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && 
 		teamSize [t]++;
 		teamScore [t] += gameData.multiplayer.players [i].score;
 		}
-	// put CPlayerData on red team if red team smaller or weaker than blue team
-	// and on blue team otherwise
+	// put player on red team if red team smaller or weaker than blue team and on blue team otherwise
 	t = (teamSize [1] < teamSize [0]) || ((teamSize [1] == teamSize [0]) && (teamScore [1] < teamScore [0]));
 	SetTeam (nPlayer, t);
 	MultiSendSetTeam (nPlayer);
@@ -745,7 +744,7 @@ if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && 
 		teamScore [t] = gameData.multiplayer.players [i].score;
 		}
 	h = teamSize [0] - teamSize [1];
-	// don't change teams if 1 CPlayerData or less difference
+	// don't change teams if 1 player or less difference
 	if ((h  >= -1) &&(h <= 1))
 		return;
 	// don't change teams if smaller team is better
@@ -903,14 +902,14 @@ char bMultiSuicide = 0;
 void MultiComputeKill (int nKiller, int nKilled)
 {
 	// Figure out the results of a network kills and add it to the
-	// appropriate CPlayerData's tally.
+	// appropriate player's tally.
 
-	int		nKilledPlayer, killedType, t0, t1;
-	int		nKillerPlayer, killerType, nKillerId;
-	char		szKilled [(CALLSIGN_LEN*2)+4];
-	char		szKiller [(CALLSIGN_LEN*2)+4];
-	CPlayerData	*killerP, *killedP;
-	CObject	*objP;
+	int				nKilledPlayer, killedType, t0, t1;
+	int				nKillerPlayer, killerType, nKillerId;
+	char				szKilled [(CALLSIGN_LEN*2)+4];
+	char				szKiller [(CALLSIGN_LEN*2)+4];
+	CPlayerData*	killerP, * killedP;
+	CObject*			objP;
 
 gameData.score.nKillsChanged = 1;
 bMultiSuicide = 0;
@@ -928,7 +927,7 @@ objP = OBJECTS + nKiller;
 killerType = objP->info.nType;
 nKillerId = objP->info.nId;
 if ((killedType != OBJ_PLAYER) &&(killedType != OBJ_GHOST)) {
-	Int3 (); // computeKill passed non-CPlayerData CObject!
+	Int3 (); // computeKill passed non-player object!
 	return;
 	}
 killedP = gameData.multiplayer.players + nKilledPlayer;
@@ -980,7 +979,7 @@ if (gameData.app.nGameMode & GM_TEAM)
 	sprintf (szKiller, "%s (%s)", killerP->callsign, netGame.m_info.szTeamName [GetTeam (nKillerPlayer)]);
 else
 	sprintf (szKiller, "%s", killerP->callsign);
-// Beyond this point, it was definitely a CPlayerData-CPlayerData kill situation
+// Beyond this point, it was definitely a player-player kill situation
 #if DBG
 if ((nKillerPlayer < 0) || (nKillerPlayer  >= gameData.multiplayer.nPlayers))
 	Int3 (); // See rob, tracking down bug with kill HUD messages
@@ -1299,7 +1298,7 @@ return 0;
 }
 
 //-----------------------------------------------------------------------------
-// Do any miscellaneous stuff for a new network CPlayerData after death
+// Do any miscellaneous stuff for a new network player after death
 
 void MultiDoDeath (int nObject)
 {
@@ -1349,7 +1348,7 @@ else {
 }
 
 //-----------------------------------------------------------------------------
-// This routine does only CPlayerData positions, mode game only
+// This routine does only player positions, mode game only
 
 void MultiDoPosition (char *buf)
 {
@@ -1387,17 +1386,17 @@ gameData.multigame.kills.pFlags [objP->info.nId] = 0;
 }
 
 //-----------------------------------------------------------------------------
-// Only call this for players, not robots.  nPlayer is CPlayerData number, not
+// Only call this for players, not robots.  nPlayer is player number, not
 // Object number.
 
 void MultiDoPlayerExplode (char *buf)
 {
-	CObject	*objP;
-	CPlayerData	*playerP;
-	int		count, nPlayer, i;
-	fix		shields;
-	short		s;
-	char		nRemoteCreated;
+	CObject*			objP;
+	CPlayerData*	playerP;
+	int				count, nPlayer, i;
+	fix				shields;
+	short				s;
+	char				nRemoteCreated;
 
 nPlayer = buf [1];
 #if !DBG
@@ -1407,7 +1406,7 @@ if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers))
 Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 #endif
-// If we are in the process of sending OBJECTS to a new CPlayerData, reset that process
+// If we are in the process of sending OBJECTS to a new player, reset that process
 NetworkResetObjSync (-1);
 // Stuff the gameData.multiplayer.players structure to prepare for the explosion
 playerP = gameData.multiplayer.players + nPlayer;
@@ -1455,7 +1454,7 @@ for (i = nRemoteCreated; i < gameData.multigame.create.nLoc; i++)
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
 	objP->ExplodeBadassPlayer ();
-	objP->info.nFlags &= ~OF_SHOULD_BE_DEAD;              //don't really kill CPlayerData
+	objP->info.nFlags &= ~OF_SHOULD_BE_DEAD;              //don't really kill player
 	MultiMakePlayerGhost (nPlayer);
 	}
 else
@@ -1874,23 +1873,23 @@ OBJTRIGGERS [nTrigger].Operate (gameData.multiplayer.players [nPlayer].nObject, 
 
 void MultiDoDropMarker (char *buf)
 {
-	int nPlayer = (int) (buf [1]);
-	int nMsg = (int) (buf [2]);
+	int nPlayer = int (buf [1]);
+	int nMsg = int (buf [2]);
 	int nMarker = nPlayer * 2 + nMsg;
 	CFixVector position;
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)  // my marker? don't set it down cuz it might screw up the orientation
 	return;
-position[X] = GET_INTEL_INT (buf + 3);
-position[Y] = GET_INTEL_INT (buf + 7);
-position[Z] = GET_INTEL_INT (buf + 11);
+position [X] = GET_INTEL_INT (buf + 3);
+position [Y] = GET_INTEL_INT (buf + 7);
+position [Z] = GET_INTEL_INT (buf + 11);
 memcpy (gameData.marker.szMessage + 2 * nPlayer + nMsg, buf + 15, 40);
-gameData.marker.point [nMarker] = position;
+gameData.marker.position [nMarker] = position;
 if ((gameData.marker.objects [nMarker] != -1) &&
 	 (OBJECTS [gameData.marker.objects [nMarker]].info.nType != OBJ_NONE) &&
 	 (gameData.marker.objects [nMarker] != 0))
 	ReleaseObject (gameData.marker.objects [nMarker]);
-gameData.marker.objects [(nPlayer*2)+nMsg] =
+gameData.marker.objects [nPlayer * 2 + nMsg] =
 	DropMarkerObject (
 		position,
 		OBJECTS [LOCALPLAYER.nObject].info.nSegment,
@@ -1959,7 +1958,7 @@ if ((player_n == gameData.multiplayer.nLocalPlayer) || (player_n == 255)) {
 }
 
 //-----------------------------------------------------------------------------
-// Got a CPlayerData packet from someone!!!
+// Got a player packet from someone!!!
 
 void MultiDoSendPlayer (char *buf)
 {
@@ -1970,7 +1969,7 @@ UseNetPlayerStats (gameData.multiplayer.players  + p->nLocalPlayer, p);
 
 //-----------------------------------------------------------------------------
 // A generic, emergency function to solve proszPlayerms that crop up
-// when a CPlayerData exits quick-out from the game because of a
+// when a player exits quick-out from the game because of a
 // serial connection loss.  Fixes several weird bugs!
 
 void MultiResetStuff (void)
@@ -1988,7 +1987,7 @@ void MultiResetPlayerObject (CObject *objP)
 {
 	int i;
 
-//Init physics for a non-console CPlayerData
+//Init physics for a non-console player
 if (objP > OBJECTS + gameData.objs.nLastObject [0])
 	return;
 if ((objP->info.nType != OBJ_PLAYER) &&(objP->info.nType != OBJ_GHOST))
@@ -2008,7 +2007,7 @@ objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;              
 objP->rType.polyObjInfo.nSubObjFlags = 0;         //zero the flags
 for (i = 0; i < MAX_SUBMODELS; i++)
 	objP->rType.polyObjInfo.animAngles [i].SetZero ();
-//reset textures for this, if not CPlayerData 0
+//reset textures for this, if not player 0
 MultiResetObjectTexture (objP);
 // Clear misc
 objP->info.nFlags = 0;
@@ -2099,12 +2098,12 @@ void MultiSendDestroyReactor (int nObject, int nPlayer)
 {
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	HUDInitMessage (TXT_YOU_DEST_CONTROL);
-else if ((nPlayer > 0) &&(nPlayer < gameData.multiplayer.nPlayers))
+else if ((nPlayer > 0) && (nPlayer < gameData.multiplayer.nPlayers))
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_HAS_DEST_CONTROL);
 else
 	HUDInitMessage (TXT_CONTROL_DESTROYED);
 gameData.multigame.msg.buf [0] = (char) MULTI_CONTROLCEN;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nObject);
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + 1, nObject);
 gameData.multigame.msg.buf [3] = nPlayer;
 MultiSendData (gameData.multigame.msg.buf, 4, 2);
 }
@@ -2120,15 +2119,15 @@ MultiSendData (gameData.multigame.msg.buf, 5, 2);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendDropMarker (int CPlayerData, CFixVector position, char messagenum, char text [])
+void MultiSendDropMarker (int nPlayer, CFixVector position, char nMessage, char text [])
 {
-if (CPlayerData < gameData.multiplayer.nPlayers) {
-	gameData.multigame.msg.buf [0] = (char)MULTI_MARKER;
-	gameData.multigame.msg.buf [1] = (char)CPlayerData;
-	gameData.multigame.msg.buf [2] = messagenum;
-	PUT_INTEL_INT (gameData.multigame.msg.buf+3, position[X]);
-	PUT_INTEL_INT (gameData.multigame.msg.buf+7, position[Y]);
-	PUT_INTEL_INT (gameData.multigame.msg.buf+11, position[Z]);
+if (nPlayer < gameData.multiplayer.nPlayers) {
+	gameData.multigame.msg.buf [0] = (char) MULTI_MARKER;
+	gameData.multigame.msg.buf [1] = (char) nPlayer;
+	gameData.multigame.msg.buf [2] = nMessage;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + 3, position [X]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + 7, position [Y]);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + 11, position [Z]);
 	memcpy (gameData.multigame.msg.buf + 15, text, 40);
 	MultiSendData (gameData.multigame.msg.buf, 55, 1);
 	}
@@ -2219,7 +2218,7 @@ extern ubyte primaryWeaponToPowerup [];
 static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER};
 static int nDevicePowerups [] = {POW_FULL_MAP, POW_AMMORACK, POW_CONVERTER, POW_QUADLASER, POW_AFTERBURNER};
 
-// put a lid on how many OBJECTS will be spewed by an exploding CPlayerData
+// put a lid on how many OBJECTS will be spewed by an exploding player
 // to prevent rampant powerups in netgames
 
 void MultiCapObjects (void)
@@ -2631,7 +2630,7 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, 5, nPlayer);
 // Part 3 : Functions that change or prepare the game for multiplayer use.
 //          Not including functions needed to synchronize or start the
 //          particular nType of multiplayer game.  Includes preparing the
-//                      mines, CPlayerData structures, etc.
+//                      mines, player structures, etc.
 
 //-----------------------------------------------------------------------------
 
@@ -2844,7 +2843,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 void MultiSendHostageDoorStatus (int wallnum)
 {
-	// Tell the other CPlayerData what the hit point status of a hostage door
+	// Tell the other player what the hit point status of a hostage door
 	// should be
 	int count = 0;
 
@@ -3335,10 +3334,10 @@ saveGameManager.SaveState (0, filename, description);
 
 void MultiRestoreGame (ubyte slot, uint id)
 {
-	char		filename [128];
+	char			filename [128];
 	CPlayerData	nSavedPlayer;
-	int		i;
-	uint		thisid;
+	int			i;
+	uint			thisid;
 
 #if !DBG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
@@ -3371,8 +3370,8 @@ ps->energy = (fix)INTEL_INT (pd->energy);                            // Amount o
 ps->shields = (fix)INTEL_INT (pd->shields);                          // shields remaining (protection)
 ps->lives = pd->lives;                                              // Lives remaining, 0 = game over.
 ps->laserLevel = pd->laserLevel;                                  // Current level of the laser.
-ps->primaryWeaponFlags = (ubyte) pd->primaryWeaponFlags;                  // bit set indicates the CPlayerData has this weapon.
-ps->secondaryWeaponFlags = (ubyte) pd->secondaryWeaponFlags;              // bit set indicates the CPlayerData has this weapon.
+ps->primaryWeaponFlags = (ubyte) pd->primaryWeaponFlags;                  // bit set indicates the player has this weapon.
+ps->secondaryWeaponFlags = (ubyte) pd->secondaryWeaponFlags;              // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	ps->primaryAmmo [i] = INTEL_SHORT (pd->primaryAmmo [i]);
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -3407,8 +3406,8 @@ ps->energy = (fix)INTEL_INT ((int)pd->energy);           // Amount of energy rem
 ps->shields = (fix)INTEL_INT ((int)pd->shields);         // shields remaining (protection)
 ps->lives = pd->lives;                                  // Lives remaining, 0 = game over.
 ps->laserLevel = pd->laserLevel;                      // Current level of the laser.
-ps->primaryWeaponFlags = pd->primaryWeaponFlags;      // bit set indicates the CPlayerData has this weapon.
-ps->secondaryWeaponFlags = pd->secondaryWeaponFlags;  // bit set indicates the CPlayerData has this weapon.
+ps->primaryWeaponFlags = pd->primaryWeaponFlags;      // bit set indicates the player has this weapon.
+ps->secondaryWeaponFlags = pd->secondaryWeaponFlags;  // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
 	ps->primaryAmmo [i] = INTEL_SHORT (pd->primaryAmmo [i]);
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
@@ -3594,7 +3593,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ushort flags, ubyte state)
 {
-	// Send CWall states a specific rejoining CPlayerData
+	// Send wall states a specific rejoining player
 	short count = 0;
 
 Assert (gameData.app.nGameMode & GM_NETWORK);
@@ -4128,7 +4127,7 @@ MultiDoOrbBonus (gameData.multigame.msg.buf);
 void MultiDoCaptureBonus (char *buf)
 {
 	// Figure out the results of a network kills and add it to the
-	// appropriate CPlayerData's tally.
+	// appropriate player's tally.
 
 	int 	nPlayer = (int) buf [1];
 	short	nTeam, penalty = 0, bonus;
@@ -4186,7 +4185,7 @@ int GetOrbBonus (char num)
 
 //-----------------------------------------------------------------------------
 	// Figure out the results of a network kills and add it to the
-	// appropriate CPlayerData's tally.
+	// appropriate player's tally.
 
 void MultiDoOrbBonus (char *buf)
 {
@@ -4692,7 +4691,7 @@ TRIGGERS [(int) ((ubyte) buf [1])].m_info.flags |= TF_DISABLED;
 }
 
 //-----------------------------------------------------------------------------
-// This function adds a kill to lifetime stats of this CPlayerData, and possibly
+// This function adds a kill to lifetime stats of this player, and possibly
 // gives a promotion.  If so, it will tell everyone else
 
 void MultiAddLifetimeKills ()
@@ -4719,7 +4718,7 @@ SavePlayerProfile ();
 
 void MultiAddLifetimeKilled ()
 {
-	// This function adds a "nKilled" to lifetime stats of this CPlayerData, and possibly
+	// This function adds a "nKilled" to lifetime stats of this player, and possibly
 	// gives a demotion.  If so, it will tell everyone else
 
 	int oldrank;

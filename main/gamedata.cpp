@@ -861,7 +861,7 @@ nCurrent = 0;
 nLast = -1;
 fScale = 0;
 nDefiningMsg = 0;
-point.Clear ();
+position.Clear ();
 objects.Clear ();
 }
 
