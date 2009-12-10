@@ -53,10 +53,11 @@ int GetNewPlayerNumber (tSequencePacket *their)
   {
 	 int i;
 
-if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers)
-	return (gameData.multiplayer.nPlayers);
+if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) && 
+	 (gameData.multiplayer.nPlayers < gameData.multiplayer.nPlayerPositions))
+	return gameData.multiplayer.nPlayers;
 // Slots are full but game is open, see if anyone is
-// disconnected and replace the oldest CPlayerData with this new one
+// disconnected and replace the oldest player with this new one
 int oldestPlayer = -1;
 fix oldestTime = gameStates.app.nSDLTicks;
 
@@ -280,7 +281,8 @@ if (netGame.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 			DUMP_CLOSED);
 	return -1;
 	}
-if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) {
+if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) &&
+	 (gameData.multiplayer.nPlayers < gameData.multiplayer.nPlayerPositions)) {
 	// Add CPlayerData in an open slot, game not full yet
 	networkData.bPlayerAdded = 1;
 	return gameData.multiplayer.nPlayers;
@@ -289,7 +291,6 @@ if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) {
 // disconnected and replace the oldest CPlayerData with this new one
 int oldestPlayer = -1;
 fix oldestTime = TimerGetApproxSeconds ();
-Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!gameData.multiplayer.players [i].connected && (networkData.nLastPacketTime [i] < oldestTime)) {
 		oldestTime = networkData.nLastPacketTime [i];

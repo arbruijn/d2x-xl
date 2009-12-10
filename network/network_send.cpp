@@ -230,7 +230,7 @@ memcpy (end.ScoreMatrix (), gameData.multigame.kills.matrix [nPlayer], MAX_NUM_N
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (int j = 0; j < MAX_PLAYERS; j++)
-		end.scoreMatrix [i][j] = INTEL_SHORT (end.scoreMatrix [i][j]);
+		end.ScoreMatrix (i, j) = INTEL_SHORT (end.ScoreMatrix (i, j));
 #endif
 if (gameData.multiplayer.players [nPlayer].connected == 1) {// Still playing
 	Assert (gameData.reactor.bDestroyed);
@@ -494,7 +494,7 @@ if (IsCoopGame) {
 		netGame.Locations (i) = i;
 	}
 else {	// randomize player positions
-	int h, j = gameData.multiplayer.nPlayerPositions, posTable [MAX_PLAYERS] = {0, 1, 2, 3, 4, 5, 6, 7};
+	int h, j = gameData.multiplayer.nPlayerPositions, posTable [MAX_PLAYERS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,13, 14, 15};
 
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		h = d_rand () % j;	// compute random table index

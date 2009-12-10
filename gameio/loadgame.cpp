@@ -1645,7 +1645,14 @@ SetMonsterballForces ();
 //	gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
 	MsgBox (NULL, NULL, 1, TXT_OK, "Too many players for this level.");
+#if 1
+	while (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
+		--gameData.multiplayer.nPlayers;
+		memset (gameData.multiplayer.players + gameData.multiplayer.nPlayers, 0, sizeof (gameData.multiplayer.players [gameData.multiplayer.nPlayers]));
+		}
+#else
 	return 0;
+#endif
 	}
 Assert (gameData.multiplayer.nPlayers <= gameData.multiplayer.nPlayerPositions);
 	//If this assert fails, there's not enough start positions
