@@ -381,29 +381,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && (gameData.app.nGameMode & GM_TEAM))
 				HUDInitMessage (TXT_MOVE_FLAG);
 				return 1;
 				}
-#if 1
 			SetTeam (i, -1);
-#else
-#if 0
-			if (netGame.m_info.teamVector & (1<<i))
-				netGame.m_info.teamVector&= (~ (1<<i));
-			else
-				netGame.m_info.teamVector|= (1<<i);
-#else
-				netGame.m_info.teamVector ^= (1<<i);
-#endif
-			for (t = 0;t<gameData.multiplayer.nPlayers;t++)
-				if (gameData.multiplayer.players [t].connected)
-					MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [t].nObject);
-
-			NetworkSendNetGameUpdate ();
-			sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [i].callsign);
-			if (i == gameData.multiplayer.nLocalPlayer) {
-				HUDInitMessage (TXT_TEAMCHANGE1);
-				}
-			else
-				HUDInitMessage (TXT_TEAMCHANGE2, gameData.multiplayer.players [i].callsign);
-#endif
 			break;
 		}
 	}

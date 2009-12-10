@@ -42,16 +42,16 @@
 
 int NetworkSelectTeams (void)
 {
-	CMenu	m;
-	int	choice, opt_team_b;
-	ubyte teamVector = 0;
-	char	teamNames [2][CALLSIGN_LEN+1];
-	int	i;
-	int	playerIds [MAX_PLAYERS+2];
+	CMenu		m;
+	int		choice, opt_team_b;
+	ushort	teamVector = 0;
+	char		teamNames [2][CALLSIGN_LEN+1];
+	int		i;
+	int		playerIds [MAX_PLAYERS+2];
 
 	// One-time initialization
 
-for (i = gameData.multiplayer.nPlayers/2; i < gameData.multiplayer.nPlayers; i++) // Put first half of players on team A
+for (i = gameData.multiplayer.nPlayers / 2; i < gameData.multiplayer.nPlayers; i++) // Put first half of players on team A
 	teamVector |= (1 << i);
 sprintf (teamNames [0], "%s", TXT_BLUE);
 sprintf (teamNames [1], "%s", TXT_RED);
@@ -82,7 +82,7 @@ for (;;) {
 	if (choice == int (m.ToS ()) - 1) {
 		if ((m.ToS () - 2 - opt_team_b < 2) || (opt_team_b == 1)) 
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
-		netGame.m_info.teamVector = teamVector;
+		netGame.m_info.SetTeamVector (teamVector);
 		strcpy (netGame.m_info.szTeamName [0], teamNames [0]);
 		strcpy (netGame.m_info.szTeamName [1], teamNames [1]);
 		return 1;

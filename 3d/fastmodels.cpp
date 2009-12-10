@@ -423,7 +423,7 @@ static inline int PlayerColor (int nObject)
 
 for (nColor = 0; nColor < gameData.multiplayer.nPlayers; nColor++)
 	if (gameData.multiplayer.players [nColor].nObject == nObject)
-		return nColor + 1;
+		return (nColor % 8) + 1;
 return 1;
 }
 

@@ -592,9 +592,9 @@ else {
 			nNewPlayer = GetNewPlayerNumber (their);
 			Assert (networkData.refuse.bTeam == 1 || networkData.refuse.bTeam == 2);        
 			if (networkData.refuse.bTeam == 1)      
-				netGame.m_info.teamVector &= ~(1 << nNewPlayer);
+				netGame.m_info.RemoveTeamPlayer (nNewPlayer);
 			else
-				netGame.m_info.teamVector |= (1 << nNewPlayer);
+				netGame.m_info.AddTeamPlayer (nNewPlayer);
 			NetworkWelcomePlayer (their);
 			NetworkSendNetGameUpdate (); 
 			}

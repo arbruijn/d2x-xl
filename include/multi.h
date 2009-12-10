@@ -361,24 +361,33 @@ typedef struct tNetGameInfoD2X {
 } __pack__ tNetGameInfoD2X;
 
 typedef struct tNetGameInfoLite {
-	ubyte                           nType;
-	int                             nSecurity;
-	char                            szGameName [NETGAME_NAME_LEN+1];
-	char                            szMissionTitle [MISSION_NAME_LEN+1];
-	char                            szMissionName [9];
-	int                             nLevel;
-	ubyte                           gameMode;
-	ubyte                           bRefusePlayers;
-	ubyte                           difficulty;
-	ubyte                           gameStatus;
-	ubyte                           nNumPlayers;
-	ubyte                           nMaxPlayers;
-	ubyte                           nConnected;
-	ubyte                           gameFlags;
-	ubyte                           protocolVersion;
-	ubyte                           versionMajor;
-	ubyte                           versionMinor;
-	ubyte                           teamVector;
+	public:
+		ubyte                        nType;
+		int                          nSecurity;
+		char                         szGameName [NETGAME_NAME_LEN+1];
+		char                         szMissionTitle [MISSION_NAME_LEN+1];
+		char                         szMissionName [9];
+		int                          nLevel;
+		ubyte                        gameMode;
+		ubyte                        bRefusePlayers;
+		ubyte                        difficulty;
+		ubyte                        gameStatus;
+		ubyte                        nNumPlayers;
+		ubyte                        nMaxPlayers;
+		ubyte                        nConnected;
+		ubyte                        gameFlags;
+		ubyte                        protocolVersion;
+		ubyte                        versionMajor;
+		ubyte                        versionMinor;
+		ubyte                        teamVector;
+
+   public:
+		inline int GetLevel (void) { return nLevel & 0xFFFF; }
+		inline void SetLevel (int n) { nLevel = (nLevel & 0xFFFF0000) | (n & 0xFFFF); }
+		ushort GetTeamVector (void);
+		void SetTeamVector (ushort n);
+		inline void AddTeamPlayer (int n) { SetTeamVector (GetTeamVector () | (1 << n)); }
+		inline void RemoveTeamPlayer (int n) { SetTeamVector (GetTeamVector () & ~(1 << n)); }
 } __pack__ tNetGameInfoLite;
 
 typedef struct tNetGameInfo : tNetGameInfoLite {

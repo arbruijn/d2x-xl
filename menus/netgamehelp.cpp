@@ -54,7 +54,7 @@ sprintf (szText, TXT_INFO_GAME, netGame.m_info.szGameName);
 m.AddText (szText);
 sprintf (szText, TXT_INFO_MISSION, netGame.m_info.szMissionTitle);
 m.AddText (szText);
-sprintf (szText, TXT_INFO_LEVEL, netGame.m_info.nLevel);
+sprintf (szText, TXT_INFO_LEVEL, netGame.m_info.GetLevel ());
 m.AddText (szText);
 sprintf (szText, TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.m_info.difficulty));
 m.AddText (szText);

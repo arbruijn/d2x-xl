@@ -932,7 +932,7 @@ else
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
 if (IsTeamGame) {
-	NDWriteByte (netGame.m_info.teamVector);
+	NDWriteByte (netGame.m_info.GetTeamVector ());
 	NDWriteString (netGame.m_info.szTeamName [0]);
 	NDWriteString (netGame.m_info.szTeamName [1]);
 	}
@@ -1708,7 +1708,7 @@ gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
 if (IsTeamGame) {
-	netGame.m_info.teamVector = NDReadByte ();
+	netGame.m_info.SetTeamVector (NDReadByte ());
 	NDReadString (netGame.m_info.szTeamName [0]);
 	NDReadString (netGame.m_info.szTeamName [1]);
 	}

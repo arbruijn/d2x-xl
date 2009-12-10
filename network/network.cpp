@@ -183,7 +183,7 @@ netGame.m_info.gameMode = mpParams.nGameMode;
 netGame.m_info.gameStatus = NETSTAT_STARTING;
 netGame.m_info.nNumPlayers = 0;
 netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
-netGame.m_info.nLevel = mpParams.nLevel;
+netGame.m_info.SetLevel (mpParams.nLevel);
 netGame.m_info.protocolVersion = MULTI_PROTO_VERSION;
 strcpy (netGame.m_info.szGameName, mpParams.szGameName);
 networkData.nStatus = NETSTAT_STARTING;
@@ -196,7 +196,7 @@ IpxInitNetGameAuxData (netGame.AuxData ());
 NetworkSetGameMode (netGame.m_info.gameMode);
 netGame.m_info.nSecurity = d_rand ();  // For syncing NetGames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {
-	StartNewLevel (netGame.m_info.nLevel, true);
+	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
 	return 1;
 	}

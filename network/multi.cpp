@@ -306,6 +306,23 @@ CWeaponInfo defaultWeaponInfoD2 [] = {
 
 //-----------------------------------------------------------------------------
 
+ushort tNetGameInfoLite::GetTeamVector (void) 
+{ 
+return ((gameStates.multi.nGameType == UDP_GAME) && !IsCoopGame) ? ushort (nLevel >> 16) : ushort (teamVector); 
+}
+
+//-----------------------------------------------------------------------------
+
+void tNetGameInfoLite::SetTeamVector (ushort n) 
+{ 
+if ((gameStates.multi.nGameType == UDP_GAME) && IsCoopGame) 
+	nLevel = (nLevel & 0xFFFF) | (int (n) << 16); 
+else 
+	teamVector = ubyte (n); 
+}
+
+//-----------------------------------------------------------------------------
+
 void InitDefaultPlayerShip (void)
 {
 defaultPlayerShip.nModel = 108;
@@ -572,7 +589,7 @@ gameData.multiplayer.powerupsInMine.Clear (0);
 
 short GetTeam (int nPlayer)
 {
-return (netGame.m_info.teamVector & (1 << nPlayer)) ? 1 : 0;
+return (netGame.m_info.GetTeamVector () & (1 << nPlayer)) ? 1 : 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -662,18 +679,18 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
 		MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [i].nObject);
 
-if (team  >= 0) {
+if (team >= 0) {
 	if (team)
-		netGame.m_info.teamVector |= (1 << nPlayer);
+		netGame.m_info.AddTeamPlayer (nPlayer);
 	else
-		netGame.m_info.teamVector &= ~(1 << nPlayer);
+		netGame.m_info.RemoveTeamPlayer (nPlayer);
 	}
 else {
 	team = !GetTeam (nPlayer);
 	if (team)
-		netGame.m_info.teamVector |= (1 << nPlayer);
+		netGame.m_info.AddTeamPlayer (nPlayer);
 	else
-		netGame.m_info.teamVector &= ~(1 << nPlayer);
+		netGame.m_info.RemoveTeamPlayer (nPlayer);
 	NetworkSendNetGameUpdate ();
 	}
 sprintf (gameData.multigame.msg.szMsg, TXT_TEAMCHANGE3, gameData.multiplayer.players [nPlayer].callsign);

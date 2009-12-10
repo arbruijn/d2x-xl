@@ -758,7 +758,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_COCKPIT)
 	CCanvas::SetCurrent (&gameStates.render.vr.buffers.render [0]);
 #endif
 m_info.nColor = RGBA (255, 255, 255, int (float (nCloakFadeValue) / float (FADE_LEVELS) * 255));
-BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer), x, y);
+BitBlt (GAUGE_SHIPS + (IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % 8), x, y);
 m_info.nColor = WHITE_RGBA;
 gameStates.render.grAlpha = 1.0f;
 #if 0
@@ -1212,7 +1212,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 						colorP = typingColors + nCurColor;
 						}
 					else {
-						nColor = IsTeamGame ? GetTeam (nPlayer) : nPlayer;
+						nColor = IsTeamGame ? GetTeam (nPlayer) : nPlayer % 8;
 						colorP = playerColors + nColor;
 						}
 
@@ -1347,7 +1347,7 @@ for (i = 0; i < nPlayers; i++) {
 			if (IsTeamGame)
 				color = GetTeam (nPlayer);
 			else
-				color = nPlayer;
+				color = nPlayer % 8;
 			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
 			}
 		}
