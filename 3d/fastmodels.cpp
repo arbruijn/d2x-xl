@@ -417,22 +417,34 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+static inline int PlayerColor (int nObject)
+{
+	int	nColor;
+
+for (nColor = 0; nColor < gameData.multiplayer.nPlayers; nColor++)
+	if (gameData.multiplayer.players [nColor].nObject == nObject)
+		return nColor + 1;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclusive, CArray<CBitmap*>& modelBitmaps,
-						   CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
+						   CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	RenderModel::CModel*		pm = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CSubModel*	psm = pm->m_subModels + nSubModel;
 	RenderModel::CFace*		pmf;
 	CBitmap*						bmP = NULL;
-	CAngleVector				va = pAnimAngles ? pAnimAngles [psm->m_nAngles] : CAngleVector::ZERO;
+	CAngleVector				va = animAnglesP ? animAnglesP [psm->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
 	int							h, i, j, bTransparent, bAnimate, bTextured = gameOpts->render.debug.bTextures && !(gameStates.render.bCloaked /*|| nPass*/),
 									bGetThruster = !nPass && ObjectHasThruster (objP);
 	short							nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
 if (objP->info.nType == OBJ_PLAYER)
-	nTeamColor = IsMultiGame ? (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId) + 1 : gameOpts->render.ship.nColor;
+	nTeamColor = IsMultiGame ? IsTeamGame ? GetTeam (objP->info.nId) + 1 : PlayerColor (objP->Index ()) : gameOpts->render.ship.nColor;
 else
 	nTeamColor = 0;
 #if 1
@@ -460,7 +472,7 @@ bAnimate = G3AnimateSubModel (objP, psm, nModel);
 // render any dependent submodels
 for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, psm++)
 	if (psm->m_nParent == nSubModel)
-		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires,
+		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, animAnglesP, &vo, bHires,
 							 bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 #endif
 // render the faces
@@ -577,7 +589,7 @@ if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
 //------------------------------------------------------------------------------
 
 void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>& modelBitmaps,
-						CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
+						CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires, int bUseVBO, int bTransparency,
 						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	RenderModel::CModel*	pm;
@@ -700,11 +712,11 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bHires) {
 		for (int i = 0; i < pm->m_nSubModels; i++)
 			if (pm->m_subModels [i].m_nParent == -1)
-				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->m_subModels [0].m_vOffset : vOffsetP,
+				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &pm->m_subModels [0].m_vOffset : vOffsetP,
 									 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 		}
 	else
-		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->m_subModels [0].m_vOffset : vOffsetP,
+		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &pm->m_subModels [0].m_vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 	//if (nSubModel < 0)
 		transformation.End ();
@@ -727,7 +739,7 @@ ogl.ResetTransform (1);
 //------------------------------------------------------------------------------
 
 void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
-										 CAngleVector *pAnimAngles, CFixVector *vOffsetP, int bHires)
+										 CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires)
 {
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
 	return;
@@ -748,7 +760,7 @@ if (pm->m_bValid < 1) {
 		return;
 	}
 psm = pm->m_subModels + nSubModel;
-va = pAnimAngles ? pAnimAngles + psm->m_nAngles : &CAngleVector::ZERO;
+va = animAnglesP ? animAnglesP + psm->m_nAngles : &CAngleVector::ZERO;
 if (!objP || (objP->Damage () > 0.5f))
 	return;
 // set the translation
@@ -762,7 +774,7 @@ if (vOffsetP) {
 // render any dependent submodels
 for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, psm++)
 	if (psm->m_nParent == nSubModel)
-		G3RenderDamageLightnings (objP, nModel, i, pAnimAngles, &vo, bHires);
+		G3RenderDamageLightnings (objP, nModel, i, animAnglesP, &vo, bHires);
 // render the lightnings
 for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; i--, pmf++)
 	lightningManager.RenderForDamage (objP, NULL, pm->m_faceVerts + pmf->m_nIndex, pmf->m_nVerts);
@@ -773,7 +785,7 @@ if (vOffsetP)
 //------------------------------------------------------------------------------
 
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
-						 CAngleVector *pAnimAngles, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
+						 CAngleVector *animAnglesP, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	RenderModel::CModel*	pm = gameData.models.renderModels [1] + nModel;
 	int						i, 
@@ -895,9 +907,9 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
 #if 1 //!DBG
-G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
+G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
 if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
-	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
 #endif
 glDisable (GL_TEXTURE_2D);
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
@@ -913,7 +925,7 @@ if (gameOpts->render.debug.bWireFrame)
 #if 1 //!DBG
 if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
 	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
+	G3RenderDamageLightnings (objP, nModel, 0, animAnglesP, NULL, bHires);
 	transformation.End ();
 	}
 #endif
