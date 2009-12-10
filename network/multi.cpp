@@ -497,7 +497,7 @@ else
 
 static inline int ScoreGoal (bool bNone = false)
 {
-return bNone ? 0 : netGame.ScoreGoal () ? netGame.ScoreGoal () * BonusScore () : 0x7fffffff;
+return bNone ? 0 : netGame.GetScoreGoal () ? netGame.GetScoreGoal () * BonusScore () : 0x7fffffff;
 }
 
 // -----------------------------------------------------------------------------
@@ -1168,7 +1168,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.PlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.GetPlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected) {
 			if (i == gameData.multiplayer.nLocalPlayer) {
@@ -3662,11 +3662,11 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 void MultiSendHeartBeat ()
 {
-if (!netGame.PlayTimeAllowed ())
-	return;
-gameData.multigame.msg.buf [0] = MULTI_HEARTBEAT;
-PUT_INTEL_INT (gameData.multigame.msg.buf+1, gameStates.app.xThisLevelTime);
-MultiSendData (gameData.multigame.msg.buf, 5, 0);
+if (netGame.GetPlayTimeAllowed ()) {
+	gameData.multigame.msg.buf [0] = MULTI_HEARTBEAT;
+	PUT_INTEL_INT (gameData.multigame.msg.buf+1, gameStates.app.xThisLevelTime);
+	MultiSendData (gameData.multigame.msg.buf, 5, 0);
+	}
 }
 
 //-----------------------------------------------------------------------------

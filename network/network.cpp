@@ -303,7 +303,7 @@ int NetworkListen (void)
 downloadManager.CleanUp ();
 if (NetworkIAmMaster ())
 	tracker.AddServer ();
-if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.ShortPackets () && !networkData.nJoining)
+if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.GetShortPackets () && !networkData.nJoining)
 	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
 
 if (gameStates.multi.nGameType >= IPX_GAME)
@@ -394,7 +394,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				MultiSendFire ();              // Do firing if needed..
 				}
 			networkData.xLastSendTime = 0;
-			if (netGame.ShortPackets ()) {
+			if (netGame.GetShortPackets ()) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 				ubyte send_data [MAX_PACKETSIZE];
 #endif

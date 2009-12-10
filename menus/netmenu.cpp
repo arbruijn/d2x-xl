@@ -391,9 +391,9 @@ if (menu [optCoop].m_value) {
 		}
 	if (!(netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		netGame.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-	if (netGame.PlayTimeAllowed () || netGame.ScoreGoal ()) {
-		netGame.PlayTimeAllowed () = 0;
-		netGame.ScoreGoal () = 0;
+	if (netGame.GetPlayTimeAllowed () || netGame.GetScoreGoal ()) {
+		netGame.SetPlayTimeAllowed (0);
+		netGame.SetScoreGoal (0);
 		}
 	}
 else {// if !Coop game
@@ -437,15 +437,15 @@ if (nLastReactorLife != menu [optReactorLife].m_value)   {
    }
   
 if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != LastPTA)) {
-	netGame.PlayTimeAllowed () = mpParams.nMaxTime = menu [optPlayTime].m_value;
-	sprintf (menu [optPlayTime].m_text, TXT_MAXTIME, netGame.PlayTimeAllowed () * 5, TXT_MINUTES_ABBREV);
-	LastPTA = netGame.PlayTimeAllowed ();
+	netGame.SetPlayTimeAllowed (mpParams.nMaxTime = menu [optPlayTime].m_value);
+	LastPTA = netGame.GetPlayTimeAllowed ();
+	sprintf (menu [optPlayTime].m_text, TXT_MAXTIME, LastPTA * 5, TXT_MINUTES_ABBREV);
 	menu [optPlayTime].m_bRebuild = 1;
 	}
 if ((optScoreGoal >= 0) && (menu [optScoreGoal].m_value != LastScoreGoal)) {
-	mpParams.nScoreGoal = netGame.ScoreGoal () = menu [optScoreGoal].m_value;
-	sprintf (menu [optScoreGoal].m_text, TXT_SCOREGOAL, netGame.ScoreGoal () * 5);
-	LastScoreGoal = netGame.ScoreGoal ();
+	netGame.SetScoreGoal (mpParams.nScoreGoal = menu [optScoreGoal].m_value);
+	sprintf (menu [optScoreGoal].m_text, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
+	LastScoreGoal = mpParams.nScoreGoal;
 	menu [optScoreGoal].m_bRebuild = 1;
 	}
 
@@ -497,10 +497,10 @@ do {
 		LastScoreGoal = 0;
 		}
 	else {
-		sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.PlayTimeAllowed ()*5, TXT_MINUTES_ABBREV);
+		sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.GetPlayTimeAllowed () * 5, TXT_MINUTES_ABBREV);
 		*szPlayTime = * (TXT_MAXTIME - 1);
 		optPlayTime = m.AddSlider (szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
-		sprintf (szScoreGoal + 1, TXT_SCOREGOAL, netGame.ScoreGoal () * 5);
+		sprintf (szScoreGoal + 1, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
 		*szScoreGoal = * (TXT_SCOREGOAL - 1);
 		optScoreGoal = m.AddSlider (szScoreGoal + 1, mpParams.nScoreGoal, 0, 10, KEY_K, HTX_MULTI2_SCOREGOAL);
 		}
@@ -536,7 +536,7 @@ do {
 			}
 		}
 
-	LastScoreGoal = netGame.ScoreGoal ();
+	LastScoreGoal = netGame.GetScoreGoal ();
 	LastPTA = mpParams.nMaxTime;
 
 doMenu:
@@ -547,7 +547,7 @@ doMenu:
 
    //mpParams.nReactorLife = atoi (szInvul)*I2X (60);
 mpParams.nReactorLife = m [optReactorLife].m_value;
-netGame.ControlInvulTime () = mpParams.nReactorLife * 5 * I2X (60);
+netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 
 if (i == optSetPower) {
 	NetworkSetWeaponsAllowed ();
@@ -563,7 +563,7 @@ else if (mpParams.nPPS < 2) {
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
 	mpParams.nPPS = 2;      
 }
-netGame.PacketsPerSec () = mpParams.nPPS;
+netGame.SetPacketsPerSec (mpParams.nPPS);
 if (gameStates.multi.nGameType >= IPX_GAME) { 
 	int newSocket = atoi (szSocket);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
@@ -579,7 +579,7 @@ netGame.m_info.invul = m [optStartInvul].m_value;
 mpParams.bInvul = (ubyte) netGame.m_info.invul;
 netGame.m_info.BrightPlayers = m [optBrightPlayers].m_value ? 0 : 1;
 mpParams.bBrightPlayers = (ubyte) netGame.m_info.BrightPlayers;
-mpParams.bShortPackets = netGame.ShortPackets () = m [optShortPkts].m_value;
+netGame.SetShortPackets (mpParams.bShortPackets = m [optShortPkts].m_value);
 netGame.m_info.bShowAllNames = m [optShowNames].m_value;
 mpParams.bShowAllNames = (ubyte) netGame.m_info.bShowAllNames;
 NetworkAdjustMaxDataSize ();
@@ -1124,7 +1124,7 @@ if (gameStates.app.bNostalgia) {
 	}
 netGame.m_info.szMissionName [sizeof (netGame.m_info.szMissionName) - 1] = '\0';
 strcpy (netGame.m_info.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
-netGame.ControlInvulTime () = mpParams.nReactorLife * 5 * I2X (60);
+netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 return key;
 }

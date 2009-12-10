@@ -115,7 +115,7 @@ MultiNewGame ();
 networkData.bNewGame = 1;
 gameData.reactor.bDestroyed = 0;
 NetworkFlush ();
-netGame.PacketsPerSec () = mpParams.nPPS;
+netGame.SetPacketsPerSec (mpParams.nPPS);
 }
 
 //------------------------------------------------------------------------------

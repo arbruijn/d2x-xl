@@ -328,7 +328,7 @@ FORALL_POWERUP_OBJS (objP, i) {
 
 void NetworkAdjustMaxDataSize ()
 {
-networkData.nMaxXDataSize = netGame.ShortPackets () ? NET_XDATA_SIZE : NET_XDATA_SIZE;
+networkData.nMaxXDataSize = netGame.GetShortPackets () ? NET_XDATA_SIZE : NET_XDATA_SIZE;
 }
 
 //------------------------------------------------------------------------------

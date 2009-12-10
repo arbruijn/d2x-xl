@@ -236,7 +236,7 @@ else if (syncP->nExtras == 4) {
 		MultiSendStolenItems ();
 	}
 else if (syncP->nExtras == 5) {
-	if (netGame.PlayTimeAllowed () || netGame.ScoreGoal ())
+	if (netGame.GetPlayTimeAllowed () || netGame.GetScoreGoal ())
 		MultiSendScoreGoalCounts ();
 	}
 else if (syncP->nExtras == 6)

@@ -925,7 +925,7 @@ if (IsMultiGame) {
 	tracker.AddServer ();
    MultiDoFrame ();
 	CheckMonsterballScore ();
-	MultiCheckForScoreGoalWinner (netGame.PlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.PlayTimeAllowed () * 5 * 60))));
+	MultiCheckForScoreGoalWinner (netGame.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.GetPlayTimeAllowed () * 5 * 60))));
 	MultiCheckForEntropyWinner ();
   }
 if (bRenderFrame) {
@@ -963,8 +963,8 @@ gameData.time.xGame += gameData.time.xFrame;
 if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) {
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 	}
-if (IsMultiGame && netGame.PlayTimeAllowed ())
-   gameStates.app.xThisLevelTime +=gameData.time.xFrame;
+if (IsMultiGame && netGame.GetPlayTimeAllowed ())
+   gameStates.app.xThisLevelTime += gameData.time.xFrame;
 //PrintLog ("DigiSyncSounds\n");
 audio.SyncSounds ();
 if (gameStates.app.bEndLevelSequence) {

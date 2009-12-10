@@ -123,8 +123,8 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 	netGame.PlayerKills (j) = gameData.multiplayer.players [j].netKillsTotal;
 	netGame.PlayerScore (j) = gameData.multiplayer.players [j].score;
 	}       
-netGame.LevelTime () = LOCALPLAYER.timeLevel;
-netGame.MonitorVector () = NetworkCreateMonitorVector ();
+netGame.SetLevelTime (LOCALPLAYER.timeLevel);
+netGame.SetMonitorVector (NetworkCreateMonitorVector ());
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (syncP->player [1].player.network.ipx.server, syncP->player [1].player.network.ipx.node);
 	SendNetPlayersPacket (syncP->player [1].player.network.ipx.server, syncP->player [1].player.network.ipx.node);
@@ -305,8 +305,7 @@ netGame.m_info.versionMajor = D2X_MAJOR;
 netGame.m_info.versionMinor = D2X_MINOR;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
-if (netGame.PlayTimeAllowed ()) {
-	timevar = I2X (netGame.PlayTimeAllowed () * 5 * 60);
+if ((timevar = I2X (netGame.GetPlayTimeAllowed () * 5 * 60))) {
 	i = X2I (timevar - gameStates.app.xThisLevelTime);
 	if (i < 30)
 		netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
@@ -507,7 +506,7 @@ else {	// randomize player positions
 NetworkUpdateNetGame ();
 netGame.m_info.gameStatus = NETSTAT_PLAYING;
 netGame.m_info.nType = PID_SYNC;
-netGame.SegmentCheckSum () = networkData.nSegmentCheckSum;
+netGame.SetSegmentCheckSum (networkData.nSegmentCheckSum);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((!gameData.multiplayer.players [i].connected) || (i == gameData.multiplayer.nLocalPlayer))
 		continue;
@@ -671,8 +670,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		count += CALLSIGN_LEN + 1;
 		}
 buf [count++] = 99;
-buf [count++] = netGame.ShortPackets ();	
-buf [count++] = (char) PacketsPerSec ();
+buf [count++] = netGame.GetShortPackets ();	
+buf [count++] = char (PacketsPerSec ());
  
 sendit:	   
 

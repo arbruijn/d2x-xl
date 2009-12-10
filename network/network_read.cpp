@@ -138,9 +138,9 @@ networkData.nStatus = sp->m_info.gameStatus;
 // New code, 11/27
 #if 1
 console.printf (1, "netGame.m_info.checksum = %d, calculated checksum = %d.\n",
-					 netGame.SegmentCheckSum (), networkData.nSegmentCheckSum);
+					 netGame.GetSegmentCheckSum (), networkData.nSegmentCheckSum);
 #endif
-if (netGame.SegmentCheckSum () != networkData.nSegmentCheckSum) {
+if (netGame.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 	if (extraGameInfo [0].bAutoDownload)
 		networkData.nStatus = NETSTAT_AUTODL;
 	else {
@@ -210,8 +210,8 @@ if (gameData.multiplayer.nLocalPlayer < 0) {
 if (networkData.nJoinState) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].netKilledTotal = sp->Killed (i);
-	NetworkProcessMonitorVector (sp->MonitorVector ());
-	LOCALPLAYER.timeLevel = sp->LevelTime ();
+	NetworkProcessMonitorVector (sp->GetMonitorVector ());
+	LOCALPLAYER.timeLevel = sp->GetLevelTime ();
 	}
 gameData.multigame.kills.nTeam [0] = sp->TeamKills (0);
 gameData.multigame.kills.nTeam [1] = sp->TeamKills (1);

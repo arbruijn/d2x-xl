@@ -64,9 +64,9 @@ sprintf (szText, TXT_INFO_SERVER, gameData.multiplayer.players [NetworkWhoIsMast
 m.AddText (szText);
 sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGame.m_info.nMaxPlayers);
 m.AddText (szText);
-sprintf (szText, TXT_INFO_PPS, netGame.PacketsPerSec ());
+sprintf (szText, TXT_INFO_PPS, netGame.GetPacketsPerSec ());
 m.AddText (szText);
-sprintf (szText, TXT_INFO_SHORTPKT, netGame.ShortPackets () ? "Yes" : "No");
+sprintf (szText, TXT_INFO_SHORTPKT, netGame.GetShortPackets () ? "Yes" : "No");
 m.AddText (szText);
 #if DBG
 pl = (int) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot)) * 100.0);
@@ -75,8 +75,8 @@ if (pl < 0)
 sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl);
 m.AddText (szText);
 #endif
-if (netGame.ScoreGoal ())
-	sprintf (szText, TXT_INFO_SCOREGOAL, netGame.ScoreGoal () * 5);
+if (netGame.GetScoreGoal ())
+	sprintf (szText, TXT_INFO_SCOREGOAL, netGame.GetScoreGoal () * 5);
 sprintf (szText, " ");
 sprintf (szText, TXT_INFO_PLRSCONN);
 netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();

@@ -492,19 +492,29 @@ class CNetGameInfo {
 		inline short& Killed (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed [i] : m_info.versionSpecific.d2.killed [i]; }
 		inline short* PlayerKills (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills : m_info.versionSpecific.d2.playerKills; }
 		inline short& PlayerKills (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills [i] : m_info.versionSpecific.d2.playerKills [i]; }
-		inline ushort& SegmentCheckSum (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }
-		inline int& ScoreGoal (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nScoreGoal : m_info.versionSpecific.d2.nScoreGoal; }
-		inline fix& PlayTimeAllowed (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xPlayTimeAllowed : m_info.versionSpecific.d2.xPlayTimeAllowed; }
-		inline fix& LevelTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xLevelTime : m_info.versionSpecific.d2.xLevelTime; }
-		inline int& ControlInvulTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
-		inline int& MonitorVector (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
 		inline int* PlayerScore (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore : m_info.versionSpecific.d2.playerScore; }
 		inline int& PlayerScore (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore [i] : m_info.versionSpecific.d2.playerScore [i]; }
 		inline ubyte* PlayerFlags (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags : m_info.versionSpecific.d2.playerFlags; }
 		inline ubyte& PlayerFlags (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags [i] : m_info.versionSpecific.d2.playerFlags [i]; }
-		inline short& PacketsPerSec (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
-		inline ubyte& ShortPackets (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
 		inline ubyte* AuxData (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.auxData : m_info.versionSpecific.d2.auxData; }
+
+		inline ushort GetSegmentCheckSum (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }
+		inline int GetScoreGoal (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nScoreGoal : m_info.versionSpecific.d2.nScoreGoal; }
+		inline fix GetPlayTimeAllowed (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xPlayTimeAllowed : m_info.versionSpecific.d2.xPlayTimeAllowed; }
+		inline fix GetLevelTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xLevelTime : m_info.versionSpecific.d2.xLevelTime; }
+		inline int GetControlInvulTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
+		inline int GetMonitorVector (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
+		inline short GetPacketsPerSec (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
+		inline ubyte GetShortPackets (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
+
+		inline void SetSegmentCheckSum (ushort n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nSegmentCheckSum = n; else m_info.versionSpecific.d2.nSegmentCheckSum = n; }
+		inline void SetScoreGoal (int n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nScoreGoal = n; else m_info.versionSpecific.d2.nScoreGoal = n; }
+		inline void SetPlayTimeAllowed (fix n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.xPlayTimeAllowed = n; else m_info.versionSpecific.d2.xPlayTimeAllowed = n; }
+		inline void SetLevelTime (fix n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.xLevelTime = n; else m_info.versionSpecific.d2.xLevelTime = n; }
+		inline void SetControlInvulTime (int n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.controlInvulTime = n; else m_info.versionSpecific.d2.controlInvulTime = n; }
+		inline void SetMonitorVector (int n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.monitorVector = n; else m_info.versionSpecific.d2.monitorVector = n; }
+		inline void SetPacketsPerSec (short n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nPacketsPerSec = n; else m_info.versionSpecific.d2.nPacketsPerSec = n; }
+		inline void SetShortPackets (ubyte n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.bShortPackets = n; else m_info.versionSpecific.d2.bShortPackets = n; }
 };
 
 #define MAX_ROBOTS_CONTROLLED 5

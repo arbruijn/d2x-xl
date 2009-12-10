@@ -546,11 +546,11 @@ extern int nCoopPenalties [10];
 
 static inline short PacketsPerSec (void)
 {
-	int	i = netGame.PacketsPerSec ();
+	int	i = netGame.GetPacketsPerSec ();
 
 if ((i < 1) || (i > 20))
-	netGame.PacketsPerSec () = 10;
-return netGame.PacketsPerSec ();
+	netGame.SetPacketsPerSec (10);
+return netGame.GetPacketsPerSec ();
 }
 
 //------------------------------------------------------------------------------
