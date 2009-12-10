@@ -617,26 +617,26 @@ m_cf.WriteByte ((sbyte) netGame.m_info.FriendlyFireOff);
 for (i = 0; i < 2; i++)
 	m_cf.Write (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	m_cf.WriteInt (netGame.Locations (i));
+	m_cf.WriteInt (*netGame.Locations (i));
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		m_cf.WriteShort (netGame.Kills (i, j));			// 128 bytes
+		m_cf.WriteShort (*netGame.Kills (i, j));			// 128 bytes
 m_cf.WriteShort (netGame.GetSegmentCheckSum ());			// 2 bytes
 for (i = 0; i < 2; i++)
-	m_cf.WriteShort (netGame.TeamKills (i));				// 4 bytes
+	m_cf.WriteShort (*netGame.TeamKills (i));				// 4 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	m_cf.WriteShort (netGame.Killed (i));					// 16 bytes
+	m_cf.WriteShort (*netGame.Killed (i));					// 16 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	m_cf.WriteShort (netGame.PlayerKills (i));			// 16 bytes
+	m_cf.WriteShort (*netGame.PlayerKills (i));			// 16 bytes
 m_cf.WriteInt (netGame.GetScoreGoal ());						// 4 bytes
 m_cf.WriteFix (netGame.GetPlayTimeAllowed ());				// 4 bytes
 m_cf.WriteFix (netGame.GetLevelTime ());						// 4 bytes
 m_cf.WriteInt (netGame.GetControlInvulTime ());				// 4 bytes
 m_cf.WriteInt (netGame.GetMonitorVector ());		// 4 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	m_cf.WriteInt (netGame.PlayerScore (i));				// 32 bytes
+	m_cf.WriteInt (*netGame.PlayerScore (i));				// 32 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	m_cf.WriteByte ((sbyte) netGame.PlayerFlags (i));	// 8 bytes
+	m_cf.WriteByte ((sbyte) *netGame.PlayerFlags (i));	// 8 bytes
 m_cf.WriteShort (PacketsPerSec ());							// 2 bytes
 m_cf.WriteByte (sbyte (netGame.GetShortPackets ()));		// 1 bytes
 // 279 bytes
@@ -1476,26 +1476,26 @@ netGame.m_info.FriendlyFireOff = (ubyte) m_cf.ReadByte ();
 for (i = 0; i < 2; i++)
 	m_cf.Read (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	netGame.Locations (i) = m_cf.ReadInt ();
+	*netGame.Locations (i) = m_cf.ReadInt ();
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		netGame.Kills (i, j) = m_cf.ReadShort ();				// 128 bytes
+		*netGame.Kills (i, j) = m_cf.ReadShort ();				// 128 bytes
 netGame.SetSegmentCheckSum (m_cf.ReadShort ());				// 2 bytes
 for (i = 0; i < 2; i++)
-	netGame.TeamKills (i) = m_cf.ReadShort ();				// 4 bytes
+	*netGame.TeamKills (i) = m_cf.ReadShort ();				// 4 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	netGame.Killed (i) = m_cf.ReadShort ();					// 16 bytes
+	*netGame.Killed (i) = m_cf.ReadShort ();					// 16 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	netGame.PlayerKills (i) = m_cf.ReadShort ();				// 16 bytes
+	*netGame.PlayerKills (i) = m_cf.ReadShort ();				// 16 bytes
 netGame.SetScoreGoal (m_cf.ReadInt ());						// 4 bytes
 netGame.SetPlayTimeAllowed (m_cf.ReadFix ());				// 4 bytes
 netGame.SetLevelTime (m_cf.ReadFix ());						// 4 bytes
 netGame.SetControlInvulTime (m_cf.ReadInt ());				// 4 bytes
 netGame.SetMonitorVector (m_cf.ReadInt ());					// 4 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	netGame.PlayerScore (i) = m_cf.ReadInt ();				// 32 bytes
+	*netGame.PlayerScore (i) = m_cf.ReadInt ();				// 32 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	netGame.PlayerFlags (i) = ubyte (m_cf.ReadByte ());	// 8 bytes
+	*netGame.PlayerFlags (i) = ubyte (m_cf.ReadByte ());	// 8 bytes
 netGame.SetPacketsPerSec (m_cf.ReadShort ());				// 2 bytes
 netGame.SetShortPackets (ubyte (m_cf.ReadByte ()));		// 1 bytes
 // 279 bytes

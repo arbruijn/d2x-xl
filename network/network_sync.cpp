@@ -342,14 +342,14 @@ netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers.m_info.players [i].connected = gameData.multiplayer.players [i].connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		netGame.Kills (i, j) = gameData.multigame.kills.matrix [i][j];
-	netGame.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
-	netGame.PlayerKills (i) = gameData.multiplayer.players [i].netKillsTotal;
-	netGame.PlayerScore (i) = gameData.multiplayer.players [i].score;
-	netGame.PlayerFlags (i) = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
+		*netGame.Kills (i, j) = gameData.multigame.kills.matrix [i][j];
+	*netGame.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
+	*netGame.PlayerKills (i) = gameData.multiplayer.players [i].netKillsTotal;
+	*netGame.PlayerScore (i) = gameData.multiplayer.players [i].score;
+	*netGame.PlayerFlags (i) = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
 	}
-netGame.TeamKills (0) = gameData.multigame.kills.nTeam [0];
-netGame.TeamKills (1) = gameData.multigame.kills.nTeam [1];
+*netGame.TeamKills (0) = gameData.multigame.kills.nTeam [0];
+*netGame.TeamKills (1) = gameData.multigame.kills.nTeam [1];
 netGame.m_info.nLevel = gameData.missions.nCurrentLevel;
 }
 

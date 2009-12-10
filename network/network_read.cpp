@@ -194,12 +194,12 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 	gameData.multiplayer.players [i].nPacketsGot = 0;                             // How many packets we got from them
 	gameData.multiplayer.players [i].nPacketsSent = 0;                            // How many packets we sent to them
 	gameData.multiplayer.players [i].connected = playerP->connected;
-	gameData.multiplayer.players [i].netKillsTotal = sp->PlayerKills (i);
-	gameData.multiplayer.players [i].netKilledTotal = sp->Killed (i);
+	gameData.multiplayer.players [i].netKillsTotal = *sp->PlayerKills (i);
+	gameData.multiplayer.players [i].netKilledTotal = *sp->Killed (i);
 	if (networkData.nJoinState || (i != gameData.multiplayer.nLocalPlayer))
-		gameData.multiplayer.players [i].score = sp->PlayerScore (i);
+		gameData.multiplayer.players [i].score = *sp->PlayerScore (i);
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		gameData.multigame.kills.matrix [i][j] = sp->Kills (i, j);
+		gameData.multigame.kills.matrix [i][j] = *sp->Kills (i, j);
 	}
 
 if (gameData.multiplayer.nLocalPlayer < 0) {
@@ -209,12 +209,12 @@ if (gameData.multiplayer.nLocalPlayer < 0) {
 	}
 if (networkData.nJoinState) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		gameData.multiplayer.players [i].netKilledTotal = sp->Killed (i);
+		gameData.multiplayer.players [i].netKilledTotal = *sp->Killed (i);
 	NetworkProcessMonitorVector (sp->GetMonitorVector ());
 	LOCALPLAYER.timeLevel = sp->GetLevelTime ();
 	}
-gameData.multigame.kills.nTeam [0] = sp->TeamKills (0);
-gameData.multigame.kills.nTeam [1] = sp->TeamKills (1);
+gameData.multigame.kills.nTeam [0] = *sp->TeamKills (0);
+gameData.multigame.kills.nTeam [1] = *sp->TeamKills (1);
 LOCALPLAYER.connected = 1;
 netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].connected = 1;
 netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
@@ -224,10 +224,10 @@ if (!networkData.nJoinState) {
 		if (bGotTeamSpawnPos) {
 			j = TeamSpawnPos (i);
 			if (j < 0)
-				j = netGame.Locations (i);
+				j = *netGame.Locations (i);
 			}
 		else
-			j = netGame.Locations (i);
+			j = *netGame.Locations (i);
 		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
 		}
 	}

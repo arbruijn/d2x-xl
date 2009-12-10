@@ -482,20 +482,13 @@ class CNetGameInfo {
 			return m_info;
 			}
 
-		inline int* Locations (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.locations : m_info.versionSpecific.d2.locations; }
-		inline int& Locations (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.locations [i] : m_info.versionSpecific.d2.locations [i]; }
-		inline short* Kills (void) { return (gameStates.multi.nGameType == UDP_GAME) ? &m_info.versionSpecific.d2x.kills [0][0] : &m_info.versionSpecific.d2.kills [0][0]; }
-		inline short& Kills (int i, int j) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.kills [i][j] : m_info.versionSpecific.d2.kills [i][j]; }
-		inline short* TeamKills (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.teamKills : m_info.versionSpecific.d2.teamKills; }
-		inline short& TeamKills (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.teamKills [i] : m_info.versionSpecific.d2.teamKills [i]; }
-		inline short* Killed (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed : m_info.versionSpecific.d2.killed; }
-		inline short& Killed (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed [i] : m_info.versionSpecific.d2.killed [i]; }
-		inline short* PlayerKills (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills : m_info.versionSpecific.d2.playerKills; }
-		inline short& PlayerKills (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills [i] : m_info.versionSpecific.d2.playerKills [i]; }
-		inline int* PlayerScore (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore : m_info.versionSpecific.d2.playerScore; }
-		inline int& PlayerScore (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore [i] : m_info.versionSpecific.d2.playerScore [i]; }
-		inline ubyte* PlayerFlags (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags : m_info.versionSpecific.d2.playerFlags; }
-		inline ubyte& PlayerFlags (int i) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags [i] : m_info.versionSpecific.d2.playerFlags [i]; }
+		inline int* Locations (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.locations + i : m_info.versionSpecific.d2.locations + i; }
+		inline short* Kills (int i = 0, int j = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.kills [i] + j : m_info.versionSpecific.d2.kills [i] + j; }
+		inline short* TeamKills (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.teamKills + i : m_info.versionSpecific.d2.teamKills + i; }
+		inline short* Killed (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed  + i : m_info.versionSpecific.d2.killed  + i; }
+		inline short* PlayerKills (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills  + i : m_info.versionSpecific.d2.playerKills  + i; }
+		inline int* PlayerScore (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore  + i : m_info.versionSpecific.d2.playerScore  + i; }
+		inline ubyte* PlayerFlags (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags  + i : m_info.versionSpecific.d2.playerFlags  + i; }
 		inline ubyte* AuxData (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.auxData : m_info.versionSpecific.d2.auxData; }
 
 		inline ushort GetSegmentCheckSum (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }

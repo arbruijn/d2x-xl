@@ -118,10 +118,10 @@ NetworkUpdateNetGame ();
 // Fill in the kill list
 for (j = 0; j < MAX_PLAYERS; j++) {
 	for (i = 0; i < MAX_PLAYERS; i++)
-		netGame.Kills (j, i) = gameData.multigame.kills.matrix [j][i];
-	netGame.Killed (j) = gameData.multiplayer.players [j].netKilledTotal;
-	netGame.PlayerKills (j) = gameData.multiplayer.players [j].netKillsTotal;
-	netGame.PlayerScore (j) = gameData.multiplayer.players [j].score;
+		*netGame.Kills (j, i) = gameData.multigame.kills.matrix [j][i];
+	*netGame.Killed (j) = gameData.multiplayer.players [j].netKilledTotal;
+	*netGame.PlayerKills (j) = gameData.multiplayer.players [j].netKillsTotal;
+	*netGame.PlayerScore (j) = gameData.multiplayer.players [j].score;
 	}       
 netGame.SetLevelTime (LOCALPLAYER.timeLevel);
 netGame.SetMonitorVector (NetworkCreateMonitorVector ());
@@ -144,10 +144,10 @@ NetworkUpdateNetGame ();
 // Fill in the kill list
 for (j = 0; j < MAX_PLAYERS; j++) {
 	for (i = 0; i < MAX_PLAYERS; i++)
-		netGame.Kills () [j][i] = gameData.multigame.kills.matrix [j][i];
-	netGame.Killed () [j] = gameData.multiplayer.players [j].netKilledTotal;
-	netGame.PlayerKills () [j] = gameData.multiplayer.players [j].netKillsTotal;
-	netGame.PlayerScore () [j] = gameData.multiplayer.players [j].score;
+		*netGame.Kills () [j][i] = gameData.multigame.kills.matrix [j][i];
+	*netGame.Killed () [j] = gameData.multiplayer.players [j].netKilledTotal;
+	*netGame.PlayerKills () [j] = gameData.multiplayer.players [j].netKillsTotal;
+	*netGame.PlayerScore () [j] = gameData.multiplayer.players [j].score;
 	}       
 netGame.LevelTime () = LOCALPLAYER.timeLevel;
 netGame.MonitorVector () = NetworkCreateMonitorVector ();
@@ -490,14 +490,14 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 		gameData.multiplayer.players [i].connected = 1; // Get rid of endlevel connect statuses
 if (IsCoopGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
-		netGame.Locations (i) = i;
+		*netGame.Locations (i) = i;
 	}
 else {	// randomize player positions
 	int h, j = gameData.multiplayer.nPlayerPositions, posTable [MAX_PLAYERS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,13, 14, 15};
 
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		h = d_rand () % j;	// compute random table index
-		netGame.Locations (i) = posTable [h];	// pick position using random index
+		*netGame.Locations (i) = posTable [h];	// pick position using random index
 		if (h < --j)
 			posTable [h] = posTable [j];	// remove picked position from position table
 		}
