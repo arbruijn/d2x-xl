@@ -77,6 +77,25 @@ static ubyte *nmBufP = NULL;
 #define	BE_GET_BYTE(_dest)					(_dest) = nmBufP [nmBufI++]
 #define	BE_GET_BYTES(_dest,_destSize)		memcpy (_dest, nmBufP + nmBufI, _destSize); nmBufI += (_destSize)
 
+inline int BEGetInt (int& nmBufI)
+{
+int i;
+BE_GET_INT (i);
+return i;
+}
+
+inline short BEGetShort (int& nmBufI)
+{
+short i;
+BE_GET_SHORT (i);
+return i;
+}
+
+inline ubyte BEGetByte (int& nmBufI)
+{
+return nmBufP [nmBufI++];
+}
+
 //------------------------------------------------------------------------------
 // following are routine for big endian hardware that will swap the elements of
 // structures send through the networking code.  The structures and
@@ -230,26 +249,26 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 		BE_SET_SHORT (netGame.Kills (i, j));
 		}
 	}
-BE_SET_SHORT (netGame.SegmentCheckSum ());
-BE_SET_SHORT (netGame.TeamKills (0));
-BE_SET_SHORT (netGame.TeamKills (1));
+BE_SET_SHORT (netGame.GetSegmentCheckSum ());
+BE_SET_SHORT (*netGame.TeamKills (0));
+BE_SET_SHORT (*netGame.TeamKills (1));
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	BE_SET_SHORT (netGame.Killed (i));
+	BE_SET_SHORT (*netGame.Killed (i));
 	}
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	BE_SET_SHORT (netGame.PlayerKills (i));
+	BE_SET_SHORT (*netGame.PlayerKills (i));
 	}
-BE_SET_INT (netGame.ScoreGoal ());
-BE_SET_INT (netGame.PlayTimeAllowed ());
-BE_SET_INT (netGame.LevelTime ());
-BE_SET_INT (netGame.ControlInvulTime ());
-BE_SET_INT (netGame.MonitorVector ());
+BE_SET_INT (netGame.GetScoreGoal ());
+BE_SET_INT (netGame.GetPlayTimeAllowed ());
+BE_SET_INT (netGame.GetLevelTime ());
+BE_SET_INT (netGame.GetControlInvulTime ());
+BE_SET_INT (netGame.GetMonitorVector ());
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	BE_SET_INT (netGame.PlayerScore (i));
+	BE_SET_INT (*netGame.PlayerScore (i));
 	}
 BE_SET_BYTES (netGame.PlayerFlags (), MAX_NUM_NET_PLAYERS);
 BE_SET_SHORT (PacketsPerSec ());
-BE_SET_BYTE (netGame.ShortPackets ()); 
+BE_SET_BYTE (netGame.GetShortPackets ()); 
 
 do_send:
 
@@ -294,7 +313,7 @@ BE_GET_SHORT (*reinterpret_cast<short*> ((reinterpret_cast<ubyte*> (&netGame->m_
 BE_GET_SHORT (*reinterpret_cast<short*> ((reinterpret_cast<ubyte*> (&netGame->m_info.teamVector) + 3)));                             
 BE_GET_BYTES (netGame->m_info.szTeamName, CALLSIGN_LEN + 1);   
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	BE_GET_INT (netGame->Locations (i));          
+	BE_GET_INT (*netGame->Locations (i));          
 	}
 #if 1
 for (i = MAX_NUM_NET_PLAYERS * MAX_NUM_NET_PLAYERS, ps = netGame->Kills (); i; i--, ps++) {
@@ -309,26 +328,26 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 		}
 	}
 #endif
-BE_GET_SHORT (netGame->SegmentCheckSum ());         
-BE_GET_SHORT (netGame->TeamKills (0));             
-BE_GET_SHORT (netGame->TeamKills (1));             
+netGame->SetSegmentCheckSum (BEGetShort (nmBufI));         
+BE_GET_SHORT (*netGame->TeamKills (0));             
+BE_GET_SHORT (*netGame->TeamKills (1));             
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	BE_GET_SHORT (netGame->Killed (i));             
+	BE_GET_SHORT (*netGame->Killed (i));             
 	}
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	BE_GET_SHORT (netGame->PlayerKills (i));       
+	BE_GET_SHORT (*netGame->PlayerKills (i));       
 	}
-BE_GET_INT (netGame->ScoreGoal ());                  
-BE_GET_INT (netGame->PlayTimeAllowed ());           
-BE_GET_INT (netGame->LevelTime ());                
-BE_GET_INT (netGame->ControlInvulTime ());        
-BE_GET_INT (netGame->MonitorVector ());            
+netGame->SetScoreGoal (BEGetInt (nmBufI));                  
+netGame->SetPlayTimeAllowed (BEGetInt (nmBufI));           
+netGame->SetLevelTime (BEGetInt (nmBufI));                
+netGame->SetControlInvulTime (BEGetInt (nmBufI));        
+netGame->SetMonitorVector (BEGetInt (nmBufI));            
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	BE_GET_INT (netGame->PlayerScore (i));       
+	BE_GET_INT (*netGame->PlayerScore (i));       
 	}
 BE_GET_BYTES (netGame->PlayerFlags (), MAX_NUM_NET_PLAYERS);
-BE_GET_SHORT (netGame->PacketsPerSec ());             
-BE_GET_BYTE (netGame->ShortPackets ());              
+netGame->SetPacketsPerSec (BEGetShort (nmBufI));             
+netGame->SetShortPackets (BEGetByte (nmBufI));              
 }
 
 //------------------------------------------------------------------------------
