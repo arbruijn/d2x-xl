@@ -437,15 +437,15 @@ if (nLastReactorLife != menu [optReactorLife].m_value)   {
    }
   
 if ((optPlayTime >= 0) && (menu [optPlayTime].m_value != nLastPTA)) {
+	nLastPTA = mpParams.nMaxTime;
 	mpParams.nMaxTime = menu [optPlayTime].m_value;
-	nLastPTA = netGame.GetPlayTimeAllowed ();
 	sprintf (menu [optPlayTime].m_text, TXT_MAXTIME, nLastPTA * 5, TXT_MINUTES_ABBREV);
 	menu [optPlayTime].m_bRebuild = 1;
 	}
 if ((optScoreGoal >= 0) && (menu [optScoreGoal].m_value != nLastScoreGoal)) {
+	nLastScoreGoal = mpParams.nScoreGoal;
 	mpParams.nScoreGoal = menu [optScoreGoal].m_value;
 	sprintf (menu [optScoreGoal].m_text, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
-	nLastScoreGoal = mpParams.nScoreGoal;
 	menu [optScoreGoal].m_bRebuild = 1;
 	}
 
@@ -497,7 +497,7 @@ do {
 		nLastScoreGoal = 0;
 		}
 	else {
-		sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.GetPlayTimeAllowed () * 5, TXT_MINUTES_ABBREV);
+		sprintf (szPlayTime + 1, TXT_MAXTIME, mpParams.nMaxTime * 5, TXT_MINUTES_ABBREV);
 		*szPlayTime = * (TXT_MAXTIME - 1);
 		optPlayTime = m.AddSlider (szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
 		sprintf (szScoreGoal + 1, TXT_SCOREGOAL, mpParams.nScoreGoal * 5);
