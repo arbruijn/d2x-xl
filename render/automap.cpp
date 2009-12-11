@@ -220,7 +220,7 @@ void CAutomap::DrawObjects (void)
 {
 if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 	return;
-int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % 8;	// Note link to above if!
+int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % MAX_PLAYER_COLORS;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
 int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
 if (bTextured) {

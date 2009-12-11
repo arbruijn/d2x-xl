@@ -932,7 +932,7 @@ else
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
 if (IsTeamGame) {
-	NDWriteByte (netGame.m_info.GetTeamVector ());
+	NDWriteByte (sbyte (netGame.m_info.GetTeamVector ()));
 	NDWriteString (netGame.m_info.szTeamName [0]);
 	NDWriteString (netGame.m_info.szTeamName [1]);
 	}
@@ -1933,15 +1933,15 @@ while (!bDone) {
 					break;
 				objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) && IsMultiGame) {
-					int nPlayerData = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId;
-					if (nPlayerData == 0)
+					int nPlayer = IsTeamGame ? GetTeam (objP->info.nId) : (objP->info.nId % MAX_PLAYER_COLORS) + 1;
+					if (nPlayer == 0)
 						break;
-					nPlayerData--;
+					nPlayer--;
 					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
-						mpTextureIndex [nPlayerData][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].FirstTexture () + i]];
-					mpTextureIndex [nPlayerData][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayerData * 2]];
-					mpTextureIndex [nPlayerData][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayerData * 2 + 1]];
-					objP->rType.polyObjInfo.nAltTextures = nPlayerData+1;
+						mpTextureIndex [nPlayer][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].FirstTexture () + i]];
+					mpTextureIndex [nPlayer][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayer * 2]];
+					mpTextureIndex [nPlayer][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayer * 2 + 1]];
+					objP->rType.polyObjInfo.nAltTextures = nPlayer+1;
 					}
 				}
 			break;

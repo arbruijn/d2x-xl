@@ -423,7 +423,7 @@ static inline int PlayerColor (int nObject)
 
 for (nColor = 0; nColor < gameData.multiplayer.nPlayers; nColor++)
 	if (gameData.multiplayer.players [nColor].nObject == nObject)
-		return (nColor % 8) + 1;
+		return (nColor % MAX_PLAYER_COLORS) + 1;
 return 1;
 }
 
@@ -493,7 +493,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = modelBitmaps [nBitmap];
 				else {
 					bmP = pm->m_textures + nBitmap;
-					if (nTeamColor && bmP->Team () && (0 <= (h = pm->m_teamTextures [nTeamColor % 8]))) {
+					if (nTeamColor && bmP->Team () && (0 <= (h = pm->m_teamTextures [nTeamColor % MAX_PLAYER_COLORS]))) {
 						nBitmap = h;
 						bmP = pm->m_textures + nBitmap;
 						}

@@ -5299,10 +5299,6 @@
 			<Filter
 				Name="network"
 				>
-				<File
-					RelativePath="..\network\download.h"
-					>
-				</File>
 				<Filter
 					Name="Source Files"
 					>
@@ -6356,6 +6352,10 @@
 					</File>
 					<File
 						RelativePath="..\include\banlist.h"
+						>
+					</File>
+					<File
+						RelativePath="..\network\download.h"
 						>
 					</File>
 					<File
@@ -10710,11 +10710,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

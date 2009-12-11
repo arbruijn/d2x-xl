@@ -59,7 +59,7 @@ typedef struct tMultiHandlerInfo {
 } tMultiHandlerInfo;
 
 void MultiResetPlayerObject (CObject *objP);
-void MultiResetObjectTexture (CObject *objP);
+void MultiSetObjectTextures (CObject *objP);
 void MultiAddLifetimeKilled (void);
 void MultiAddLifetimeKills (void);
 void MultiSendPlayByPlay (int num, int spnum, int dpnum);
@@ -677,7 +677,7 @@ void SetTeam (int nPlayer, int team)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
-		MultiResetObjectTexture (OBJECTS + gameData.multiplayer.players [i].nObject);
+		MultiSetObjectTextures (OBJECTS + gameData.multiplayer.players [i].nObject);
 
 if (team >= 0) {
 	if (team)
@@ -2025,7 +2025,7 @@ objP->rType.polyObjInfo.nSubObjFlags = 0;         //zero the flags
 for (i = 0; i < MAX_SUBMODELS; i++)
 	objP->rType.polyObjInfo.animAngles [i].SetZero ();
 //reset textures for this, if not player 0
-MultiResetObjectTexture (objP);
+MultiSetObjectTextures (objP);
 // Clear misc
 objP->info.nFlags = 0;
 if (objP->info.nType == OBJ_GHOST)
@@ -2034,26 +2034,23 @@ if (objP->info.nType == OBJ_GHOST)
 
 //-----------------------------------------------------------------------------
 
-void MultiResetObjectTexture (CObject *objP)
+void MultiSetObjectTextures (CObject *objP)
 {
 	int				id, i, j;
 	CPolyModel*		modelP = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
 	tBitmapIndex*	bmiP;
 
-if (IsTeamGame)
-	id = GetTeam (objP->info.nId);
-else
-	id = objP->info.nId;
-if (!id)
-	objP->rType.polyObjInfo.nAltTextures = 0;
-else {
-	//Assert (N_PLAYER_SHIP_TEXTURES == modelP->nTextures);
-	bmiP = mpTextureIndex [--id];
+id = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId % MAX_PLAYER_COLORS;
+//if (!id)
+//	objP->rType.polyObjInfo.nAltTextures = 0;
+//else 
+	{
+	bmiP = mpTextureIndex [id];
 	for (i = 0, j = modelP->FirstTexture (); i < N_PLAYER_SHIP_TEXTURES; i++, j++)
 		bmiP [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
 	bmiP [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2]];
 	bmiP [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2 + 1]];
-	objP->rType.polyObjInfo.nAltTextures = id;
+	objP->rType.polyObjInfo.nAltTextures = id + 1;
 	}
 }
 

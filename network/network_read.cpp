@@ -545,7 +545,7 @@ FORALL_OBJS (objP, i) {
 		if ((t == OBJ_REACTOR) || ((t == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag))
 			bHaveReactor = 1;
 		}
-	if (nPlayers >= gameData.multiplayer.nMaxPlayers)
+	if (nPlayers > gameData.multiplayer.nMaxPlayers)
 		return 1;
 	}
 return !bHaveReactor;

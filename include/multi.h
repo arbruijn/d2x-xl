@@ -246,7 +246,7 @@ extern int controlInvulTime;
 
 #define N_PLAYER_SHIP_TEXTURES 6
 
-extern tBitmapIndex mpTextureIndex[MAX_PLAYERS][N_PLAYER_SHIP_TEXTURES];
+extern tBitmapIndex mpTextureIndex [MAX_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
 #define NETGAME_FLAG_CLOSED            1
 #define NETGAME_FLAG_SHOW_ID           2
@@ -565,7 +565,7 @@ void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int nSide, ushort fla
 void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ushort flags, ubyte state);
 void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val);
 void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
-void MultiResetObjectTexture (CObject *objP);
+void MultiSetObjectTextures (CObject *objP);
 void MultiSendSeismic (fix start, fix end);
 void MultiSendDropBlobs (char nPlayer);
 
