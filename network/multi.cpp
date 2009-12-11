@@ -315,7 +315,7 @@ return ((gameStates.multi.nGameType == UDP_GAME) && !IsCoopGame) ? ushort (nLeve
 
 void tNetGameInfoLite::SetTeamVector (ushort n) 
 { 
-if ((gameStates.multi.nGameType == UDP_GAME) && IsCoopGame) 
+if ((gameStates.multi.nGameType == UDP_GAME) && !IsCoopGame) 
 	nLevel = (nLevel & 0xFFFF) | (int (n) << 16); 
 else 
 	teamVector = ubyte (n); 
@@ -2040,16 +2040,16 @@ void MultiSetObjectTextures (CObject *objP)
 	CPolyModel*		modelP = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
 	tBitmapIndex*	bmiP;
 
-id = IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId % MAX_PLAYER_COLORS;
-//if (!id)
-//	objP->rType.polyObjInfo.nAltTextures = 0;
-//else 
+id = (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId % MAX_PLAYER_COLORS);
+if (!id)
+	objP->rType.polyObjInfo.nAltTextures = 0;
+else 
 	{
-	bmiP = mpTextureIndex [id];
+	bmiP = mpTextureIndex [--id];
 	for (i = 0, j = modelP->FirstTexture (); i < N_PLAYER_SHIP_TEXTURES; i++, j++)
 		bmiP [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
-	bmiP [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2]];
-	bmiP [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + id * 2 + 1]];
+	bmiP [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + 2 * id]];
+	bmiP [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + 2 * id + 1]];
 	objP->rType.polyObjInfo.nAltTextures = id + 1;
 	}
 }
