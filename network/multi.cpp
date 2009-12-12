@@ -662,9 +662,9 @@ for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 
 void MultiSendSetTeam (int nPlayer)
 {
-gameData.multigame.msg.buf [0] = (char) MULTI_SET_TEAM;
-gameData.multigame.msg.buf [1] = (char) nPlayer;
-gameData.multigame.msg.buf [2] = (char) GetTeam (nPlayer);
+gameData.multigame.msg.buf [0] = char (MULTI_SET_TEAM);
+gameData.multigame.msg.buf [1] = char (nPlayer);
+gameData.multigame.msg.buf [2] = char (GetTeam (nPlayer));
 gameData.multigame.msg.buf [3] = 0;
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
 }
@@ -705,7 +705,7 @@ else
 
 void MultiDoSetTeam (char *buf)
 {
-SetTeam ((int) buf [1], (int) buf [2]);
+SetTeam (int (buf [1]), int (buf [2]));
 }
 
 //-----------------------------------------------------------------------------
@@ -727,9 +727,9 @@ if (gameStates.app.bHaveExtraGameInfo [1] &&(!extraGameInfo [1].bAutoBalanceTeam
 
 //-----------------------------------------------------------------------------
 
-void ChoseTeam (int nPlayer)
+void ChoseTeam (int nPlayer, bool bForce)
 {
-if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && IsTeamGame && NetworkIAmMaster ()) {
+if (gameStates.app.bHaveExtraGameInfo && (bForce || extraGameInfo [1].bAutoBalanceTeams) && IsTeamGame && NetworkIAmMaster ()) {
 	int	h, i, t, teamScore [2] = {0, 0}, teamSize [2] = {0, 0};
 
 	for (h = i = 0; i < gameData.multiplayer.nPlayers; i++) {

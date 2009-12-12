@@ -211,7 +211,7 @@ void MultiSendConquerRoom (char owner, char prevOwner, char group);
 void MultiSendConquerWarning ();
 void MultiSendStopConquerWarning ();
 void MultiSendData (char *buf, int len, int repeat);
-void ChoseTeam (int nPlayer);
+void ChoseTeam (int nPlayer, bool bForce = false);
 void AutoBalanceTeams ();
 
 short GetTeam (int nPlayer);

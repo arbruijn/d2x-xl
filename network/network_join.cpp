@@ -392,7 +392,7 @@ void NetworkWelcomePlayer (tSequencePacket *player)
 {
 	int					nPlayer;
 	ubyte					newAddress [6];
-	tNetworkSyncData	*syncP;
+	tNetworkSyncData*	syncP;
 
 networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
@@ -448,11 +448,11 @@ else {
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
 if (IsTeamGame)
-	ChoseTeam (nPlayer);
+	ChoseTeam (nPlayer, true);
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
 gameData.multiplayer.players [nPlayer].connected = 0;
 // Send updated OBJECTS data to the new/returning CPlayerData
-syncP->player [0] = *player;
+syncP->player [0] = 
 syncP->player [1] = *player;
 syncP->player [1].player.connected = nPlayer;
 syncP->bExtraGameInfo = 0;
