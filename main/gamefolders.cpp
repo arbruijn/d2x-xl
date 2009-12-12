@@ -208,13 +208,13 @@ if (getenv ("HOME"))
 	strcpy (gameFolders.szHomeDir, getenv ("HOME"));
 #		if 0
 if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolders.szHomeDir, gameFolders.szGameDir, "d2x-xl", "d2x-xl"))
-		*gameFolders.szGameDir = '\0';
+	*gameFolders.szGameDir = '\0';
 #		endif
 #	endif //__unix__
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, SHAREPATH, ""))
-		*gameFolders.szGameDir = '\0';
+	*gameFolders.szGameDir = '\0';
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
-		*gameFolders.szGameDir = '\0';
+	*gameFolders.szGameDir = '\0';
 #	ifdef __macosx__
 GetOSXAppFolder (szDataRootDir, gameFolders.szGameDir);
 #	else
@@ -458,9 +458,9 @@ static tFileDesc gameFilesD2 [] = {
 
 static tFileDesc demoFilesD2 [] = {
 	// Descent 2 demo files
-	{"d2demo.hog", false, false, false},
-	{"d2demo.ham", false, false, false},
-	{"d2demo.pig", false, false, false}
+	{"d2demo.hog", "data", false, false, false},
+	{"d2demo.ham", "data", false, false, false},
+	{"d2demo.pig", "data", false, false, false}
 };
 
 static tFileDesc gameFilesD1 [] = {
@@ -782,7 +782,7 @@ if (!bDemoData) {
 if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
 	nResult |= 8;
 if (CheckAndCopyFiles (addonTextureFiles, int (sizeofa (addonTextureFiles))))
-	nResult |= 32;
+	nResult |= 16;
 if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
 	nResult |= 32;
 

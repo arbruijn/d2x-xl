@@ -1158,8 +1158,8 @@ const char *defaultGameTexts [][2] = {
  {"Kontaktminen", "Proximity bombs"},
  {"Du wurdest von einer Mine zerstoert!", "You were killed by a mine!"},
  {"%s wurde von einer Mine zerstoert!", "%s was killed by a mine!"},
- {"Du hast das Abschussziel erreicht!", "You reached the kill goal!"},
- {"%s hat das Abschussziel erreicht!", "%s has reached the kill goal!"},
+ {"Du hast das Punkteziel erreicht!", "You reached the score goal!"},
+ {"%s hat das Punkteziel erreicht!", "%s has reached the score goal!"},
  {"Das Kontrollzentrum wurde zerstoert", "The control center has been destroyed!"},
  {"Nur %s kann andere %s", "Only %s can %s others!"},
  {"Du musst einen Namen zum %s angegeben", "You must specify a name to %s"},
@@ -1897,6 +1897,7 @@ const char *defaultGameTexts [][2] = {
  {"auf ~Updates ueberpruefen", "check for ~Updates"},
  {"~Umgebungs-Lautstaerke", "~Ambient sound volume"},
  {"Lautstaerke ~koppeln", "~Link volume controls"},
+ {"Spielende: %d Punkte", "End match: %d Points"},
 #if 0
  {"", ""},
 #endif

@@ -2,7 +2,7 @@
 
 define([D2X_MAJOR],1)
 define([D2X_MINOR],14)
-define([D2X_MICRO],175)
+define([D2X_MICRO],176)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)
@@ -85,7 +85,7 @@ test "x$prefix" = "xNONE" && prefix=$ac_default_prefix
 test "x$exec_prefix" = "xNONE" && exec_prefix="${prefix}"
 
 dnl Set default locations to find data files.
-default_sharepath="$datadir/$PACKAGE"
+default_sharepath="$datadir/games/$PACKAGE"
 
 CFLAGS="-Wall -Wno-char-subscripts $CFLAGS"
 CXXFLAGS="-Wall -Wno-char-subscripts $CXXFLAGS"
@@ -181,8 +181,8 @@ if test "x$sharepath" = "xauto" -o "x$sharepath" = "xyes" -o "x$sharepath" = "x"
     sharepath="$default_sharepath"
 fi
 AC_SUBST(sharepath)
-eval sharepath=$sharepath
-AC_DEFINE_UNQUOTED(SHAREPATH, "$sharepath",[Define this to be the shared game directory root])
+# eval sharepath=$sharepath
+# AC_DEFINE_UNQUOTED(SHAREPATH, "$sharepath",[Define this to be the shared game directory root])
 
 # Test for MSDOS
 if test x$MSDOS = xyes; then
@@ -208,7 +208,7 @@ else
 
   # Check for SDL_image
     AC_CHECK_LIB(SDL_image, IMG_Load,
-        LIBS="-lSDL_image $LIBS",
+        LIBS="-lSDL_image $LIBS";
         AC_DEFINE(USE_SDL_IMAGE,1,[Define if you have the SDL_image library]))
 
   	# Check for SDL_mixer

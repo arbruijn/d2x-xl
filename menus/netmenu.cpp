@@ -1112,10 +1112,11 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bTagOnlyHitObjs = 0;
 	}
 netGame.m_info.szMissionName [sizeof (netGame.m_info.szMissionName) - 1] = '\0';
-strcpy (netGame.m_info.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
+strncpy (netGame.m_info.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGame.m_info.szMissionTitle));
+netGame.m_info.szMissionTitle [sizeof (netGame.m_info.szMissionTitle) - 1] = '\0';
 netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 netGame.SetPlayTimeAllowed (mpParams.nMaxTime);
-netGame.SetScoreGoal (mpParams.nScoreGoal);
+netGame.SetScoreGoal (mpParams.nScoreGoal * 5);
 netGame.SetPacketsPerSec (mpParams.nPPS);
 netGame.m_info.invul = mpParams.bInvul;
 netGame.m_info.BrightPlayers = mpParams.bBrightPlayers;

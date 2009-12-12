@@ -510,7 +510,7 @@ return ftell (f) - startOffs;
 
 //------------------------------------------------------------------------------
 
-ubyte midiSetTempo [19] = {'M','T','r','k',0,0,0,11,0,0xFF,0x51,0x03,0x18,0x80,0x00,0,0xFF,0x2F,0};
+static ubyte midiSetTempo [19] = {'M','T','r','k',0,0,0,11,0,0xFF,0x51,0x03,0x18,0x80,0x00,0,0xFF,0x2F,0};
 
 int hmp_to_midi (hmp_file *hmp, char *pszFn)
 {
@@ -522,14 +522,16 @@ if (!(f = fopen (pszFn, "wb")))
 	return 0;
 // midi nSignature & header
 fwrite ("MThd", 4, 1, f);
-i = BE_INT (6);
+i = 6;
+i = BE_INT (i);
 fwrite (&i, sizeof (i), 1, f);
-s = BE_SHORT (1);
+s = 1;
+s = BE_SHORT (s);
 fwrite (&s, sizeof (s), 1, f);	//format
 s = BE_SHORT (hmp->num_trks);
 fwrite (&s, sizeof (s), 1, f);
-i = 0xC0;								//hmp->midi_division;
-s = BE_SHORT ((short) i);
+s = 0xC0;								//hmp->midi_division;
+s = BE_SHORT (s);
 fwrite (&s, sizeof (s), 1, f);	//tempo
 fwrite (midiSetTempo, sizeof (midiSetTempo), 1, f);
 

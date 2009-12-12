@@ -993,7 +993,7 @@ void LoadGameTexts(void);
 #define TXT_ENT_TGLMENU					GT(213)
 #define TXT_ENT_TEXMENU					GT(214)
 #define TXT_MAXTIME						GT(215)
-#define TXT_SCOREGOAL						GT(216)
+#define TXT_KILLGOAL						GT(216)
 #define TXT_INVUL_RESPAWN				GT(217)
 #define TXT_MARKER_CAMS					GT(218)
 #define TXT_KEEP_LIGHTS					GT(219)
@@ -1934,10 +1934,10 @@ void LoadGameTexts(void);
 #define TXT_CHECK_FOR_UPDATE			GT(1150)
 #define TXT_AMBIENT_VOLUME				GT(1151)
 #define TXT_LINK_AUDIO_VOLUMES		GT(1152)
+#define TXT_SCOREGOAL					GT(1153)
 
 #if 0
 
-#define TXT_					GT(1153)
 #define TXT_					GT(1154)
 #define TXT_					GT(1155)
 #define TXT_					GT(1156)

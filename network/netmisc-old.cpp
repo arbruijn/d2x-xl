@@ -416,6 +416,7 @@ netgame->nSecurity = INTEL_INT (netgame->nSecurity);
 memcpy(netgame->szGameName, data + bufI, NETGAME_NAME_LEN+1);
 bufI += (NETGAME_NAME_LEN+1);
 memcpy(netgame->szMissionTitle, data + bufI, MISSION_NAME_LEN+1);
+netgame->szMissionTitle [sizeof (netgame->szMissionTitle) - 1] = '\0';
 bufI += (MISSION_NAME_LEN+1);
 memcpy(netgame->szMissionName, data + bufI, 9);
 bufI += 9;

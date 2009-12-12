@@ -380,9 +380,9 @@ else if (!*szPigName || cfP->File ())
 if (bRegister)
 	PiggyCloseFile ();             //close old pig if still open
 //rename pigfile for shareware
+strlwr (szPigName);
 if (stricmp (szPigName, DefaultPigFile (1)) && !CFile::Exist (szPigName, gameFolders.szDataDir, 0))
 	strcpy (szPigName, DefaultPigFile (1));
-strlwr (szPigName);
 if (!cfP->Open (szPigName, gameFolders.szDataDir, "rb", 0)) {
 	if (!CopyPigFileFromCD (*cfP, szPigName))
 		return;
