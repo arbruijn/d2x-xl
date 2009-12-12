@@ -877,6 +877,32 @@ return  gameData.multiplayer.nPlayers;
 }
 
 //-----------------------------------------------------------------------------
+
+static void QSortKillList (int* kills, int left, int right)
+{
+	int	l = left,
+			r = right,
+			m = kills [(l + r) / 2];
+
+do {
+	while (kills [l] > m)
+		l++;
+	while (kills [r] < m)
+		r--;
+	if (l <= r) {
+		if (l < r)
+			Swap (kills [l], kills [r]);
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	QSortKillList (kills, l, right);
+if (left < r)
+	QSortKillList (kills, left, r);
+};
+
+//-----------------------------------------------------------------------------
 // Sort the kills list each time a new kill is added
 
 void MultiSortKillList (void)
@@ -884,32 +910,21 @@ void MultiSortKillList (void)
 
 	int kills [MAX_PLAYERS];
 	int i;
-	int changed = 1;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameData.app.nGameMode & GM_MULTI_COOP)
 		kills [i] = gameData.multiplayer.players [i].score;
-	else
-	if (gameData.multigame.kills.bShowList == 2) {
-		if (gameData.multiplayer.players [i].netKilledTotal+gameData.multiplayer.players [i].netKillsTotal)
-			kills [i] = (int) ((double) ((double)gameData.multiplayer.players [i].netKillsTotal/ ((double)gameData.multiplayer.players [i].netKilledTotal+ (double)gameData.multiplayer.players [i].netKillsTotal))*100.0);
+	else if (gameData.multigame.kills.bShowList != 2) 
+		kills [i] = gameData.multiplayer.players [i].netKillsTotal;
+	else {
+		if (gameData.multiplayer.players [i].netKilledTotal + gameData.multiplayer.players [i].netKillsTotal)
+			kills [i] = int (double (gameData.multiplayer.players [i].netKillsTotal) / 
+								  (double (gameData.multiplayer.players [i].netKilledTotal + gameData.multiplayer.players [i].netKillsTotal)) * 100.0);
 		else
 			kills [i] = -1;  // always draw the ones without any ratio last
 		}
-	else
-		kills [i] = gameData.multiplayer.players [i].netKillsTotal;
 	}
-while (changed) {
-	changed = 0;
-	for (i = 0; i < gameData.multiplayer.nPlayers-1; i++) {
-		if (kills [gameData.multigame.kills.nSorted [i]] < kills [gameData.multigame.kills.nSorted [i+1]]) {
-			changed = gameData.multigame.kills.nSorted [i];
-			gameData.multigame.kills.nSorted [i] = gameData.multigame.kills.nSorted [i+1];
-			gameData.multigame.kills.nSorted [i+1] = changed;
-			changed = 1;
-			}
-		}
-	}
+QSortKillList (kills, 0, gameData.multiplayer.nPlayers - 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -3755,6 +3770,29 @@ else {
 	gameData.reactor.countdown.nTimer = -1;
 	}
 #endif
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiRemoveGhostShips (void)
+{
+	ubyte		bHaveObject [MAX_PLAYERS];
+	CObject*	objP;
+//	int		i;
+
+memset (bHaveObject, 0, sizeof (bHaveObject));
+FORALL_PLAYER_OBJS (objP, i) {
+	if (bHaveObject [objP->info.nId] || (objP->info.nId >= gameData.multiplayer.nPlayers))
+		objP->Die ();
+	else {
+		if (!gameData.multiplayer.players [objP->info.nId].connected) {
+			objP->SetType (OBJ_GHOST);
+			objP->info.renderType = RT_NONE;
+			objP->info.movementType = MT_NONE;
+			}
+		bHaveObject [objP->info.nId] = 1;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

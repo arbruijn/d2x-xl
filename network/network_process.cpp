@@ -274,6 +274,7 @@ void NetworkProcessNamesReturn (char *dataP)
    char	mText [15][50], temp [50];
 	int	i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
    
+memset (mText, 0, sizeof (mText));
 if (networkData.nNamesInfoSecurity != *reinterpret_cast<int*> (dataP + 1)) {
 #if 1			
   console.printf (CON_DBG, "Bad security on names return!\n");
@@ -290,8 +291,6 @@ if (nPlayers == 255) {
 	return;
 	}
 Assert ((nPlayers > 0) && (nPlayers < MAX_NUM_NET_PLAYERS));
-for (i = 0; i < 12; i++) 
-	m.AddText (mText [i]);	
 
 #if SECURITY_CHECK
 for (gnum = -1, i = 0; i < networkData.nActiveGames; i++) {
@@ -327,6 +326,8 @@ if (dataP [count] == 99) {
 	sprintf (mText [num++], TXT_SHORT_PACKETS2, dataP [count+1] ? TXT_ON : TXT_OFF);
 	sprintf (mText [num++], TXT_PPS2, dataP [count+2]);
 	}
+for (i = 0; i < num; i++) 
+	m.AddText (mText [i]);	
 bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;

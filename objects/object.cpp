@@ -767,7 +767,7 @@ if (this - gameData.objs.objects == nDbgObj) {
 Unlink (true);
 m_nLinkedType = nType;
 Link (gameData.objs.lists.all, 0);
-if (nType == OBJ_PLAYER)
+if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 	Link (gameData.objs.lists.players, 1);
 else if (nType == OBJ_ROBOT)
 	Link (gameData.objs.lists.robots, 1);
@@ -809,7 +809,7 @@ if (bForce || (nType != OBJ_NONE)) {
 #endif
 	m_nLinkedType = OBJ_NONE;
 	Unlink (gameData.objs.lists.all, 0);
-	if (nType == OBJ_PLAYER)
+	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 		Unlink (gameData.objs.lists.players, 1);
 	else if (nType == OBJ_ROBOT)
 		Unlink (gameData.objs.lists.robots, 1);

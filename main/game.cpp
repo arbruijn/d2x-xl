@@ -127,6 +127,8 @@ void DoSeismicStuff (void);
 int ReadControls (void);		// located in gamecntl.c
 void DoFinalBossFrame (void);
 
+void MultiRemoveGhostShips (void);
+
 void GameRenderFrame (void);
 void OmegaChargeFrame (void);
 void FlickerLights (void);
@@ -927,6 +929,7 @@ if (IsMultiGame) {
 	CheckMonsterballScore ();
 	MultiCheckForScoreGoalWinner (netGame.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.GetPlayTimeAllowed () * 5 * 60))));
 	MultiCheckForEntropyWinner ();
+	MultiRemoveGhostShips ();
   }
 if (bRenderFrame) {
 	if (gameStates.render.cockpit.bRedraw) {			//screen need redrawing?
