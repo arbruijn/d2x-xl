@@ -3782,6 +3782,8 @@ void MultiRemoveGhostShips (void)
 
 memset (bHaveObject, 0, sizeof (bHaveObject));
 FORALL_PLAYER_OBJS (objP, i) {
+	if (objP->info.nType != OBJ_PLAYER)
+		continue;
 	if (bHaveObject [objP->info.nId] || (objP->info.nId >= gameData.multiplayer.nPlayers))
 		objP->Die ();
 	else {

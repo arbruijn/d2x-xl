@@ -79,8 +79,6 @@ if (choice >= networkData.nActiveGames)
 	return;
 #endif
 memset (mTexts, 0, sizeof (mTexts));
-for (i = 0; i < 20; i++)
-	m.AddText (reinterpret_cast<char*> (mTexts + i));
 sprintf (mTexts [opt], TXT_NGI_GAME, szHighlight, AGI.m_info.szGameName); 
 opt++;
 sprintf (mTexts [opt], TXT_NGI_MISSION, szHighlight, AGI.m_info.szMissionTitle); 
@@ -176,6 +174,8 @@ else
 		strcat (mTexts [opt], "Gameplay ext.: None");
 	opt++;
 	}
+for (i = 0; i < opt; i++)
+	m.AddText (reinterpret_cast<char*> (mTexts + i));
 bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
