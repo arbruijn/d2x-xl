@@ -109,6 +109,10 @@ if (*pszParentFolder) {
 #	define	D2X_APPNAME		"d2x-xl"
 #endif
 
+#ifndef SHAREPATH
+#	define SHAREPATH		STD_GAMEDIR
+#endif
+
 #if defined(__macosx__)
 #	define	DATADIR			"Data"
 #	define	SHADERDIR		"Shaders"
