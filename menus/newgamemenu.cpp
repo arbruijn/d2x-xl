@@ -103,7 +103,8 @@ do {
 	if (nNewMission == -1)
 		return -1;      //abort!
 	} while (!gameData.missions.list [nNewMission].nDescentVersion);
-strcpy (gameConfig.szLastMission, msnNames [nNewMission]);
+strncpy (gameConfig.szLastMission, msnNames [nNewMission] + (MsnHasGameVer (msnNames [nNewMission]) ? 4 : 0), sizeof (gameConfig.szLastMission));
+gameConfig.szLastMission [sizeof (gameConfig.szLastMission) - 1] = '\0';
 if (!LoadMission (nNewMission)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
 	return -1;
