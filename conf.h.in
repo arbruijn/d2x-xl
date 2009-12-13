@@ -91,6 +91,9 @@
 /* Define if you want D2X to use Z-buffering */
 #undef OGL_ZBUF
 
+/* Define to enable openmp code */
+#undef OPENMP
+
 /* Name of package */
 #undef PACKAGE
 
@@ -111,9 +114,6 @@
 
 /* Define for a "release" build */
 #undef RELEASE
-
-/* Define this to be the shared game directory root */
-#undef SHAREPATH
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
