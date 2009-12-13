@@ -1283,9 +1283,10 @@ if (!(IsMultiGame && gameData.multigame.kills.bShowList))
 	return;
 
 	int nPlayers, playerList [MAX_PLAYERS];
-	int nLeft, i, xo = 0, x0, x1, y0, fth, l;
+	int nLeft, i, xo = 0, x0, x1, y0, fth;
 	int t = gameStates.app.nSDLTicks;
 	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
+	float fScale;
 	static int faw = -1;
 
 	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
@@ -1299,13 +1300,16 @@ if (gameData.multigame.kills.xShowListTimer > 0) {
 	}
 nPlayers = (gameData.multigame.kills.bShowList == 3) ? 2 : MultiGetKillList (playerList);
 nLeft = /*(nPlayers <= MAXPLAYERS / 2) ? nPlayers :*/ (nPlayers + 1) / 2;
+fScale = float (CCanvas::Current ()->Height ()) / 640.0f;
+if (fScale < 1.0f)
+	fScale = 1.0f;
 //If font size changes, this code might not work right anymore
 //Assert (GAME_FONT->Height ()==5 && GAME_FONT->Width ()==7);
 fth = GAME_FONT->Height ();
 y -= nLeft * (fth + 1);
 x = CCanvas::Current ()->Width () - LHX (x);
 x0 = LHX (1);
-x1 = LHX (43);
+x1 = int (LHX (43) * fScale);
 y0 = y;
 
 if (gameStates.render.cockpit.bShowPingStats) {
@@ -1321,7 +1325,7 @@ if (gameStates.render.cockpit.bShowPingStats) {
 for (i = 0; i < nPlayers; i++) {
 	int nPlayer;
 	char name [80], teamInd [2] = {127, 0};
-	int sw, sh, aw, indent =0;
+	int sh, aw, indent =0;
 
 	if (i >= nLeft) {
 		x0 = x;
@@ -1336,18 +1340,13 @@ for (i = 0; i < nPlayers; i++) {
 			x1 -= LHX (18);
 		}
 	else if (netGame.GetScoreGoal () || netGame.GetPlayTimeAllowed ())
-		 x1 = LHX (43) - LHX (18);
+		 x1 = int (LHX (43) * fScale - LHX (18));
 	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
 	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
-		int color;
-
 		if (gameData.multiplayer.players [nPlayer].connected != 1)
 			fontManager.SetColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
-			if (IsTeamGame)
-				color = GetTeam (nPlayer);
-			else
-				color = nPlayer % MAX_PLAYER_COLORS;
+			int color = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;
 			fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue), 1, 0, 0);
 			}
 		}
@@ -1400,13 +1399,14 @@ for (i = 0; i < nPlayers; i++) {
 #endif
 #if 0//DBG
 	x1 += LHX (100);
-#endif
+	int l, sw, nWidth = x1 - x0 - LHX (2);
 	for (l = (int) strlen (name); l;) {
 		fontManager.Current ()->StringSize (name, sw, sh, aw);
-		if (sw <= x1 - x0 - LHX (2))
+		if (sw <= nWidth)
 			break;
 		name [--l] = '\0';
 		}
+#endif
 	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y0, "%s", name);
 
 	if (gameData.multigame.kills.bShowList == 2) {
