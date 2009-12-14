@@ -1609,7 +1609,10 @@ if (objP->info.nType == OBJ_POWERUP)
 				gameData.multiplayer.powerupsInMine [id] -= 4;
 			}
 		}
-objP->MultiDie (); // quick and painless
+if (objP->info.nType == OBJ_ROBOT)
+	MultiDestroyRobot (objP);
+else
+	objP->MultiDie (); // quick and painless
 }
 
 //-----------------------------------------------------------------------------

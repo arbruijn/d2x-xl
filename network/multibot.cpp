@@ -37,6 +37,8 @@ int MultiAddControlledRobot (int nObject, int agitation);
 void MultiSendReleaseRobot (int nObject);
 void MultiDeleteControlledRobot (int nObject);
 void MultiSendRobotPositionSub (int nObject);
+void DropStolenItems (CObject*);
+
 
 //
 // Code for controlling robots in multiplayer games
@@ -669,43 +671,28 @@ else
 
 //-----------------------------------------------------------------------------
 
-extern void DropStolenItems (CObject*);
-
-int MultiExplodeRobotSub (int nRobot, int nKiller, char bIsThief)
+int MultiDestroyRobot (CObject* robotP, char bIsThief)
 {
-	CObject *robotP;
+	short	nRobot = OBJ_IDX (robotP);
 
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0])) { // Objnum in range?
-	Int3 (); // See rob
-	return 0;
-	}
-if (OBJECTS [nRobot].info.nType != OBJ_ROBOT) // Object is robotP?
-	return 0;
-if (OBJECTS [nRobot].info.nFlags & OF_EXPLODING) // Object already exploding
-	return 0;
-if (OBJECTS [nRobot].cType.aiInfo.xDyingStartTime > 0)	// death sequence initiated
-	return 0;
-// Data seems valid, explode the sucker
-NetworkResetObjSync (nRobot);
-robotP = OBJECTS + nRobot;
 // Drop non-Random KEY powerups locally only!
 if (IsCoopGame && (robotP->info.contains.nCount > 0) && (robotP->info.contains.nType == OBJ_POWERUP) && 
 	 (robotP->info.contains.nId >= POW_KEY_BLUE) && (robotP->info.contains.nId <= POW_KEY_GOLD))
 	ObjectCreateEgg (robotP);
 /*else*/ if (robotP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
-	MultiDropRobotPowerups (OBJ_IDX (robotP));
-	MultiDeleteControlledRobot (OBJ_IDX (robotP));
+	MultiDropRobotPowerups (nRobot);
+	MultiDeleteControlledRobot (nRobot);
 	}
 else if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && NetworkIAmMaster ()) {
 	robotP->cType.aiInfo.REMOTE_OWNER = gameData.multiplayer.nLocalPlayer;
-	MultiDropRobotPowerups (OBJ_IDX (robotP));
+	MultiDropRobotPowerups (robotP->Index ());
 	robotP->cType.aiInfo.REMOTE_OWNER = -1;
-	//MultiDeleteControlledRobot (OBJ_IDX (robotP));
+	//MultiDeleteControlledRobot (nRobot);
 	}
 if (bIsThief || ROBOTINFO (robotP->info.nId).thief)
 	DropStolenItems (robotP);
 if (ROBOTINFO (robotP->info.nId).bossFlag) {
-	int i = gameData.bosses.Find (nRobot);
+	int i = gameData.bosses.Find (robotP->Index ());
 	if ((i >= 0) && gameData.bosses [i].m_nDying)
 		return 0;
 	StartBossDeathSequence (robotP);
@@ -725,13 +712,31 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
+int MultiExplodeRobotSub (int nRobot, int nKiller, char bIsThief)
+{
+if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0])) { // Objnum in range?
+	Int3 (); // See rob
+	return 0;
+	}
+if (OBJECTS [nRobot].info.nType != OBJ_ROBOT) // Object is robotP?
+	return 0;
+if (OBJECTS [nRobot].info.nFlags & OF_EXPLODING) // Object already exploding
+	return 0;
+if (OBJECTS [nRobot].cType.aiInfo.xDyingStartTime > 0)	// death sequence initiated
+	return 0;
+// Data seems valid, explode the sucker
+NetworkResetObjSync (nRobot);
+return MultiDestroyRobot (OBJECTS + nRobot);
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiDoRobotExplode (char *buf)
 {
 	// Explode robot controlled by other CPlayerData
 
 	int	nPlayer, nRobot, rval, bufP = 1;
 	short nRemoteBot, nKiller, nRemoteKiller;
-	char	bThief;
 
 nPlayer = buf [bufP++]; 
 nRemoteKiller = GET_INTEL_SHORT (buf + bufP);
@@ -740,10 +745,9 @@ bufP += 3;
 nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = ObjnumRemoteToLocal (nRemoteBot, int (buf [bufP+2])); 
 bufP += 3;
-bThief = buf [bufP];
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
-rval = MultiExplodeRobotSub (nRobot, nKiller, bThief);
+rval = MultiExplodeRobotSub (nRobot, nKiller, buf [bufP]);
 if (rval && (nKiller == LOCALPLAYER.nObject))
 	cockpit->AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
 }
