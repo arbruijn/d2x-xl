@@ -59,7 +59,7 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
 newPos = posP->vPos + posP->mOrient.FVec () * spitterP->info.xSize;
-if (IsMultiGame && (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS))
+if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
 nObject = CreatePowerup (id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), (short) OBJSEG (spitterP), newPos, 0);
 if (nObject < 0) {

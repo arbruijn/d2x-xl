@@ -516,6 +516,8 @@ if (nObject <= 0)
 	int nParent;
 	CObject *objP = OBJECTS + nObject;
 
+if (IsMultiGame)
+	MultiSendRemObj (nObject);
 if (objP->info.nType == OBJ_WEAPON) {
 	RespawnDestroyedWeapon (nObject);
 	if (objP->info.nId == GUIDEDMSL_ID) {

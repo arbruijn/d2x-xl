@@ -358,7 +358,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 #endif
 	if (gameData.reactor.bDestroyed || gameStates.app.bEndLevelSequence)
 		return 0;
-	gameData.multigame.create.nLoc = 0;
+	gameData.multigame.create.nCount = 0;
 	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
@@ -574,7 +574,7 @@ switch (nType) {
 			vNewPos = pos;
 
 			if (IsMultiGame) {
-				if (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS) {
+				if (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS) {
 					return -1;
 					}
 				if ((gameData.app.nGameMode & GM_NETWORK) && networkData.nStatus == NETSTAT_ENDLEVEL)
@@ -586,7 +586,7 @@ switch (nType) {
 				return nObject;
 				}
 			if (IsMultiGame)
-				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
+				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 			objP = OBJECTS + nObject;
 			objP->mType.physInfo.velocity = vNewVel;
 			objP->mType.physInfo.drag = 512;	//1024;
@@ -640,7 +640,7 @@ switch (nType) {
 				return nObject;
 				}
 			if (IsMultiGame)
-				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
+				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 			objP = &OBJECTS [nObject];
 			//Set polygon-CObject-specific data
 			objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
@@ -857,10 +857,10 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 	// Seed the Random number generator so in net play the eggs will always
 	// drop the same way
 if (IsMultiGame) {
-	gameData.multigame.create.nLoc = 0;
+	gameData.multigame.create.nCount = 0;
 	}
 
-//	If the CPlayerData had smart mines, maybe arm one of them.
+//	If the player had smart mines, maybe arm one of them.
 rthresh = 30000;
 while ((playerP->secondaryAmmo [SMARTMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
 	short			nNewSeg;

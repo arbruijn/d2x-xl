@@ -165,7 +165,7 @@ if ((nParent == LOCALPLAYER.nObject) &&
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;
 		if (IsMultiGame)
-			gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
+			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 		objP->rType.vClipInfo.nCurFrame = 0;

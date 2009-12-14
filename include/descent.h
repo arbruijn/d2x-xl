@@ -2366,10 +2366,10 @@ class CMultiplayerData {
 class CMultiCreateData {
 	public:
 		CStaticArray< int, MAX_NET_CREATE_OBJECTS >	nObjNums; // [MAX_NET_CREATE_OBJECTS];
-		int					nLoc;
+		int					nCount;
 
 	public:
-		CMultiCreateData () { nLoc = 0; }
+		CMultiCreateData () { nCount = 0; }
 };
 
 class CMultiLaserData {
