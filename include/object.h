@@ -703,6 +703,7 @@ typedef struct tObject : public tBaseObject {
 	fix				xTimeLastHit;
 	tShotInfo		shots;
 	CFixVector		vStartVel;
+	CFixVector		vRenderPos;
 } __pack__ tObject;
 
 class CObject;
@@ -751,6 +752,7 @@ class CObject : public CObjectInfo {
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;
+		CFixVector		m_vRenderPos;
 		CObjHitInfo		m_hitInfo;
 		CObjDamageInfo	m_damage;
 		bool				m_bMultiplayer;
@@ -798,6 +800,7 @@ class CObject : public CObjectInfo {
 		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
 		inline tShotInfo& Shots (void) { return m_shots; }
 		inline CFixVector StartVel (void) { return m_vStartVel; }
+		inline CFixVector RenderPos (void) { return m_vRenderPos.IsZero () ? info.position.vPos : m_vRenderPos; }
 
 		inline void SetId (short nId) { m_nId = nId; }
 		inline void SetPrev (CObject* prev) { m_prev = prev; }
@@ -807,6 +810,7 @@ class CObject : public CObjectInfo {
 		inline void SetCreationTime (fix xCreationTime) { m_xCreationTime = xCreationTime; }
 		inline void SetTimeLastHit (fix xTimeLastHit) { m_xTimeLastHit = xTimeLastHit; }
 		inline void SetStartVel (CFixVector* vStartVel) { m_vStartVel = *vStartVel; }
+		inline void SetRenderPos (CFixVector& vRenderPos) { m_vRenderPos = vRenderPos; }
 		inline CFixVector Origin (void) { return m_vOrigin; }
 		inline void SetOrigin (CFixVector vOrigin) { m_vOrigin = vOrigin; }
 

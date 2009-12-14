@@ -669,8 +669,10 @@ if ((*bmName && /*!gameStates.app.bDemoData &&*/ ((nIndex < 0) || IsCockpit (bmN
 			}
 		else {
 			bTGA = 1;
-			if (strstr (fn [nFile], "omegblob#") && strstr (fn [nFile], "/mods/"))
+			if (strstr (fn [nFile], "omegblob#") && strstr (fn [nFile], "/mods/") && !strstr (fn [nFile], "/mods/descent2"))
 				gameStates.render.bOmegaModded = 1;
+			else if (strstr (fn [nFile], "plasblob#") && strstr (fn [nFile], "/mods/") && !strstr (fn [nFile], "/mods/descent2"))
+				gameStates.render.bPlasmaModded = 1;
 			altBmP->SetType (BM_TYPE_ALT);
 			bmP->SetOverride (altBmP);
 			bmP = altBmP;

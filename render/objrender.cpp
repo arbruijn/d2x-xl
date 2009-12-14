@@ -383,6 +383,7 @@ if (nType == OBJ_POWERUP) {
 		RenderPowerupCorona (objP, color.red, color.green, color.blue,
 									coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	}
+
 if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
 	 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields) {
 	if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
@@ -412,13 +413,19 @@ else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.green =
 		color.blue = 1;
 	color.alpha = fAlpha;
+	CFixVector vPos = objP->info.position.vPos;
+	if (!IsMultiGame (nType == OBJ_WEAPON) && (objP->info.nId == PLASMA_ID) && !gameStates.render.bPlasmaModded) {
+		double angle = X2F ((6 * (gameData.time.xGame - objP->CreationTime ())) % I2X (2)) * Pi;
+		vPos += objP->info.position.mOrient.RVec () * F2X (sin (angle) / 2.0f) + objP->info.position.mOrient.UVec () * F2X (cos (angle) / 2.0f);
+		objP->SetRenderPos (vPos);
+		}
 	if (bmP->Width () > bmP->Height ())
-		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()),
+		transparencyRenderer.AddSprite (bmP, vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()),
 												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 	else
-		transparencyRenderer.AddSprite (bmP, objP->info.position.vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize,
+		transparencyRenderer.AddSprite (bmP, vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize,
 												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
-	}
+}
 else {
 	if (bmP->Width () > bmP->Height ())
 		G3DrawBitmap (objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), bmP, NULL, fAlpha, nTransp);

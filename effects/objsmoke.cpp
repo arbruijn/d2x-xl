@@ -765,7 +765,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	particleManager.SetObjectSystem (nObject, nSmoke);
 	particleManager.SetFadeType (nSmoke, bGatling ? 0 : 4);
 	}
-pos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
+pos = objP->RenderPos () + objP->info.position.mOrient.FVec () * (-objP->info.xSize / 2);
 particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 }
 

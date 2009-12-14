@@ -32,8 +32,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // ----------------------------------------------------------------------------
 
-static fix wiggleTime;
-
 void WiggleObject (CObject *objP)
 {
 	fix		xWiggle;
@@ -48,16 +46,16 @@ if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWig
 	return;
 nParent = gameData.objs.parentObjs [objP->Index ()];
 pParent = (nParent < 0) ? NULL : OBJECTS + nParent;
-FixFastSinCos ((fix) (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
-if (wiggleTime < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
-	xWiggle = FixMul (xWiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
+FixFastSinCos (fix (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
+if (gameData.time.xFrame < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
+	xWiggle = FixMul (xWiggle * 20, gameData.time.xFrame); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (objP))
 	OBJPOS (objP)->vPos += (OBJPOS (objP)->mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
 else if ((objP->info.nType == OBJ_PLAYER) || !pParent)
 	objP->mType.physInfo.velocity += objP->info.position.mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {
 	objP->mType.physInfo.velocity += pParent->info.position.mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
-	objP->info.position.vPos += objP->mType.physInfo.velocity * wiggleTime;
+	objP->info.position.vPos += objP->mType.physInfo.velocity * gameData.time.xFrame;
 	}
 }
 
@@ -167,7 +165,6 @@ if (!gameStates.input.bSkipControls)
 bMulti = IsMultiGame;
 if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [objP->Index ()].bBoosted) {
 #if 1//!DBG
-	wiggleTime = gameData.time.xFrame;
 	WiggleObject (objP);
 #endif
 	}
