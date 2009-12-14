@@ -101,8 +101,11 @@ if (OBJECTS.Buffer () && !(gameData.objs.speedBoost.Buffer () && gameData.objs.s
 void CObject::Die (void)
 {
 info.nFlags |= OF_SHOULD_BE_DEAD;
-if (IsMultiGame)
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
 	MultiSendRemoveObj (Index ());
+	MultiSendRemoveObj (Index ());
+	MultiSendRemoveObj (Index ());
+	}
 #if DBG
 if (this == dbgObjP)
 	dbgObjP = dbgObjP;
