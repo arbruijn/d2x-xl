@@ -832,6 +832,7 @@ class CObject : public CObjectInfo {
 		void CreateSound (short nSound);
 
 		void Die (void);
+		void MultiDie (void);
 		void MaybeDelete (void);
 
 		void TurnTowardsVector (CFixVector vGoal, fix rate);

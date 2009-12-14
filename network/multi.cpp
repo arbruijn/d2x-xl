@@ -1568,7 +1568,7 @@ MultiMakePlayerGhost (buf [1]);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoRemObj (char *buf)
+void MultiDoRemoveObj (char *buf)
 {
 	short nObject; // which CObject to remove
 	short nLocalObj;
@@ -1584,14 +1584,19 @@ if (nObject < 1)
 nLocalObj = ObjnumRemoteToLocal (nObject, obj_owner); // translate to local nObject
 if (nLocalObj < 0)
 	return;
-if ((OBJECTS [nLocalObj].info.nType != OBJ_ROBOT) &&
-	 (OBJECTS [nLocalObj].info.nType != OBJ_POWERUP) &&
-	 (OBJECTS [nLocalObj].info.nType != OBJ_HOSTAGE))
+CObject* objP = OBJECTS + nLocalObj;
+if (objP->info.nType == OBJ_ROBOT) {
+	if (objP->cType.aiInfo.xDyingStartTime > 0)	// robot death sequence
+		return;
+	}
+else if ((objP->info.nType != OBJ_POWERUP) && (objP->info.nType != OBJ_HOSTAGE))
+	return;
+if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_EXPLODING | OF_DESTROYED))
 	return;
 NetworkResetObjSync (nLocalObj);
-if (OBJECTS [nLocalObj].info.nType == OBJ_POWERUP)
+if (objP->info.nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
-		id = OBJECTS [nLocalObj].info.nId;
+		id = objP->info.nId;
 #if 0//DBG
 		HUDMessage (0, "removing %s (%d present)", pszPowerup [id], gameData.multiplayer.powerupsInMine [id]);
 #endif
@@ -1604,7 +1609,7 @@ if (OBJECTS [nLocalObj].info.nType == OBJ_POWERUP)
 				gameData.multiplayer.powerupsInMine [id] -= 4;
 			}
 		}
-OBJECTS [nLocalObj].Die (); // quick and painless
+objP->MultiDie (); // quick and painless
 }
 
 //-----------------------------------------------------------------------------
@@ -2540,8 +2545,11 @@ if (IsMultiGame &&(gameStates.multi.nGameType == UDP_GAME) &&(gameStates.app.nSD
 //-----------------------------------------------------------------------------
 // Tell the other guy to remove an CObject from his list
 
-void MultiSendRemObj (int nObject)
+void MultiSendRemoveObj (int nObject)
 {
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
+	return;
+
 	sbyte obj_owner;
 	short nRemoteObj;
 	int	id;
@@ -2561,8 +2569,8 @@ if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) &&(gameData.app.nGameMode & GM
 			}
 		}
 	}
-gameData.multigame.msg.buf [0] = (char) MULTI_REMOVE_OBJECT;
-nRemoteObj = ObjnumLocalToRemote ((short)nObject, &obj_owner);
+gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
+nRemoteObj = ObjnumLocalToRemote (short (nObject), &obj_owner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network objnums
 gameData.multigame.msg.buf [3] = obj_owner;
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
@@ -5043,7 +5051,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoReappear, 1},
 	{MultiDoFire, 1},
 	{MultiDoKill, 0},
-	{MultiDoRemObj, 1},
+	{MultiDoRemoveObj, 1},
 	{MultiDoPlayerExplode, 1},
 	{MultiDoMsg, 1},
 	{MultiDoQuit, 1},
@@ -5172,7 +5180,7 @@ switch (nType) {
 		break;
 	case MULTI_REMOVE_OBJECT:
 		if (!gameStates.app.bEndLevelSequence)
-			MultiDoRemObj (buf);
+			MultiDoRemoveObj (buf);
 		break;
 	case MULTI_PLAYER_DROP:
 	case MULTI_PLAYER_EXPLODE:

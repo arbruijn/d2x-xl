@@ -1619,7 +1619,7 @@ if (this == gameData.objs.consoleP) {
 	// Remove the hostage CObject.
 	hostageP->Die ();
 	if (IsMultiGame)
-		MultiSendRemObj (OBJ_IDX (hostageP));
+		MultiSendRemoveObj (OBJ_IDX (hostageP));
 	}
 return 1;
 }
@@ -1900,7 +1900,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	if (bPowerupUsed) {
 		powerupP->Die ();
 		if (IsMultiGame)
-			MultiSendRemObj (OBJ_IDX (powerupP));
+			MultiSendRemoveObj (OBJ_IDX (powerupP));
 		}
 	}
 else if (IsCoopGame && (info.nId != gameData.multiplayer.nLocalPlayer)) {

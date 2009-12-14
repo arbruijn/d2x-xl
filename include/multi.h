@@ -163,7 +163,7 @@ void MultiSendMessage (void);
 void MultiSendPosition (int nObject);
 void MultiSendReappear ();
 void MultiSendKill (int nObject);
-void MultiSendRemObj (int nObject);
+void MultiSendRemoveObj (int nObject);
 void MultiSendQuit (int why);
 void MultiSendDoorOpen (int nSegment, int nSide, ushort flags);
 void MultiSendCreateExplosion (int nPlayer);
