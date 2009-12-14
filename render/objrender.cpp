@@ -414,7 +414,7 @@ else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 		color.blue = 1;
 	color.alpha = fAlpha;
 	CFixVector vPos = objP->info.position.vPos;
-	if (!IsMultiGame (nType == OBJ_WEAPON) && (objP->info.nId == PLASMA_ID) && !gameStates.render.bPlasmaModded) {
+	if (!IsMultiGame && (nType == OBJ_WEAPON) && (objP->info.nId == PLASMA_ID) && !gameStates.render.bPlasmaModded) {
 		double angle = X2F ((6 * (gameData.time.xGame - objP->CreationTime ())) % I2X (2)) * Pi;
 		vPos += objP->info.position.mOrient.RVec () * F2X (sin (angle) / 2.0f) + objP->info.position.mOrient.UVec () * F2X (cos (angle) / 2.0f);
 		objP->SetRenderPos (vPos);
