@@ -383,11 +383,11 @@ if ((gameData.missions.nCurrentLevel >= gameData.missions.nLastLevel) &&
 
 void ScoreTableView (int bNetwork)
 {											 
-   int	i, k, done,choice;
+   int	i, k, done, choice, nInMenu;
 	uint	entryTime = SDL_GetTicks ();
 	int	key;
    int	oldstates [MAX_PLAYERS];
-   int	previousSeconds_left=-1;
+   int	previousSeconds_left = -1;
    int	nReady,nEscaped;
 	int	bRedraw = 0;
 
@@ -460,15 +460,21 @@ while (!done) {
 		case KEY_ESC:
 			if (gameData.app.nGameMode & GM_NETWORK) {
 				gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
+				nInMenu = gameStates.menus.nInMenu;
+				gameStates.menus.nInMenu = 0;
 				choice = MsgBox (NULL, NetworkEndLevelPoll3, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+				gameStates.menus.nInMenu = nInMenu;
 				}
 			else
-				choice=MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+				nInMenu = gameStates.menus.nInMenu;
+				gameStates.menus.nInMenu = 0;
+				choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+				gameStates.menus.nInMenu = nInMenu;
 				if (choice == 0) {
 					ScoreTableQuit (1, bNetwork);
 					return;
 					}
-				gameData.score.nKillsChanged=1;
+				gameData.score.nKillsChanged = 1;
 				break;
 
 		case KEY_PRINT_SCREEN:
@@ -501,7 +507,7 @@ while (!done) {
 		m.AddGauge ("", -1, 1000); //dummy for NetworkEndLevelPoll2()
 		NetworkEndLevelPoll2 (m, key, 0, 0);
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (gameData.multiplayer.players [i].connected && i!=gameData.multiplayer.nLocalPlayer) {
+			if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer)) {
 			// Check timeout for idle players
 			if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
 	#if TRACE

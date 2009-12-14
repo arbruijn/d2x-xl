@@ -259,7 +259,7 @@ if (nState)
 	// Polling loop for End-of-level menu
    int num_ready = 0, i;
  
-if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime+ (I2X (8))))
+if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime + (I2X (8))))
 	key = -2;
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)

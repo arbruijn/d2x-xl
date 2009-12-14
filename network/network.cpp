@@ -42,6 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "tracker.h"
 #include "playsave.h"
+#include "gamecntl.h"
 #include "text.h"
 
 #ifndef _WIN32
@@ -504,7 +505,9 @@ void NetworkConsistencyError (void)
 if (++networkData.nConsistencyErrorCount < 10)
 	return;
 SetFunctionMode (FMODE_MENU);
+PauseGame ();
 MsgBox (NULL, NULL, 1, TXT_OK, TXT_CONSISTENCY_ERROR);
+ResumeGame ();
 SetFunctionMode (FMODE_GAME);
 networkData.nConsistencyErrorCount = 0;
 gameData.multigame.bQuitGame = 1;

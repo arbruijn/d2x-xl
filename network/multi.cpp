@@ -1585,7 +1585,7 @@ nLocalObj = ObjnumRemoteToLocal (nObject, obj_owner); // translate to local nObj
 if (nLocalObj < 0)
 	return;
 CObject* objP = OBJECTS + nLocalObj;
-if (objP->info.nType == OBJ_ROBOT) {
+if ((gameStates.multi.nGameType == UDP_GAME) && (objP->info.nType == OBJ_ROBOT)) {
 	if (objP->cType.aiInfo.xDyingStartTime > 0)	// robot death sequence
 		return;
 	}
@@ -3762,7 +3762,7 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 	}
 gameStates.entropy.bExitSequence = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((GetTeam (i) != t) &&(gameData.multiplayer.players [i].shields  >= 0))
+	if ((GetTeam (i) != t) && (gameData.multiplayer.players [i].shields >= 0))
 		return;
 countDown = gameStates.app.nSDLTicks;
 #if 1//!DBG
