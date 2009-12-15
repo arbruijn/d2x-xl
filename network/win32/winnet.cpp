@@ -219,14 +219,6 @@ bIpxInstalled = 0;
 
 								/*---------------------------*/
 
-void CatchSockErr (void)
-{
-if ((ipxSocketData.fd == 0) && (ipxSocketData.socket == 0))
-	ipxSocketData.fd = -1;
-}
-
-								/*---------------------------*/
-
 struct ipx_recv_data ipx_udpSrc;
 
 int IpxGetPacketData (ubyte *data)
@@ -235,10 +227,8 @@ int IpxGetPacketData (ubyte *data)
 
 	int dataSize, dataOffs;
 
-CatchSockErr ();
 while (driver->PacketReady (&ipxSocketData)) {
 	dataSize = driver->ReceivePacket (reinterpret_cast<ipx_socket_t*> (&ipxSocketData), buf, sizeof (buf), &ipx_udpSrc);
-CatchSockErr ();
 #if 0//DBG
 	HUDMessage (0, "received %d bytes from %d.%d.%d.%d:%u", 
 					size,
@@ -258,10 +248,8 @@ CatchSockErr ();
 		continue;
 		}
 	memcpy (data, buf + dataOffs, dataSize - dataOffs);
-CatchSockErr ();
 	return dataSize - dataOffs;
 	}
-CatchSockErr ();
 return 0;
 }
 
@@ -273,7 +261,6 @@ void IPXSendPacketData
 	static u_char buf [MAX_PACKETSIZE];
 	IPXPacket_t ipxHeader;
 	
-CatchSockErr ();
 if (dataSize > D2X_DATALIMIT) 
 	PrintLog ("outgoing data package too large (%d bytes)\n", dataSize);
 else {
@@ -289,7 +276,6 @@ else {
 		}
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + (gameStates.multi.bTrackerCall ? 0 : 4));
 	}
-CatchSockErr ();
 }
 
 								/*---------------------------*/
