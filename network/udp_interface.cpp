@@ -263,9 +263,9 @@ CheckClientSize ();
 
 int CClientManager::CheckClientSize (void)
 {
-if (m_nClients <= m_clients.Length ())
+if (m_nClients < m_clients.Length ())
 	return 1;
-m_clients.Resize (m_clients.Buffer () ? m_clients.Length () * 2 : MAX_PLAYERS);
+m_clients.Resize ((m_clients.Buffer () && m_clients.Length ()) ? m_clients.Length () * 2 : MAX_PLAYERS);
 return 1;
 }
 
