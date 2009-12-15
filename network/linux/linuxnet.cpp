@@ -179,22 +179,22 @@ struct ipx_recv_data ipx_udpSrc;
 
 int IpxGetPacketData (ubyte * data)
 {
-	static char buf [UDP_DATALIMIT + 4];
-	int size, offs;
+	static char buf [MAX_PACKETSIZE];
+	int dataSize, dataOffs;
 
 while (driver->PacketReady (&ipxSocketData)) {
-	size = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &ipx_udpSrc);
-	if (size < 0)
+	dataSize = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &ipx_udpSrc);
+	if (dataSize < 0)
 		break;
-	if (size < 6)
+	if (dataSize < 6)
 		continue;
-	offs = tracker.IsTracker (*reinterpret_cast<uint*> (ipx_udpSrc.src_node), *reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4)) ? 0 : 4;
-	if (size > DATALIMIT + offs) {
+	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (ipx_udpSrc.src_node), *reinterpret_cast<ushort*> (ipx_udpSrc.src_node + 4)) ? 0 : 4;
+	if (dataSize > D2X_DATALIMIT + dataOffs) {
 		PrintLog ("incoming data package too large (%d bytes)\n", dataSize);
 		continue;
 		}
-	memcpy (data, buf + offs, size - offs);
-	return size - offs;
+	memcpy (data, buf + dataOffs, dataSize - dataOffs);
+	return dataSize - dataOffs;
 	}
 return 0;
 }
@@ -207,7 +207,7 @@ void IPXSendPacketData
 	static u_char buf [UDP_DATALIMIT + 4];
 	IPXPacket_t ipxHeader;
 
-if (dataSize > DATALIMIT) 
+if (dataSize > D2X_DATALIMIT)
 	PrintLog ("outgoing data package too large (%d bytes)\n", dataSize);
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
@@ -250,8 +250,6 @@ void IPXSendPacketData (ubyte * data, int dataSize, ubyte *network, ubyte *addre
 {
 	u_char buf [UDP_DATALIMIT + 4];
 	IPXPacket_t ipxHeader;
-
-	Assert (dataSize <= DATALIMIT);
 
 memcpy (ipxHeader.Destination.Network, network, 4);
 memcpy (ipxHeader.Destination.Node, immediate_address, 6);
