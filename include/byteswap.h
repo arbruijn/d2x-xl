@@ -57,7 +57,7 @@ SWAP (h, DSWAP (i)->b [0], DSWAP (i)->b [7]);
 SWAP (h, DSWAP (i)->b [1], DSWAP (i)->b [6]);
 SWAP (h, DSWAP (i)->b [2], DSWAP (i)->b [5]);
 SWAP (h, DSWAP (i)->b [3], DSWAP (i)->b [4]);
-return i;
+return DSWAP (i)->d;
 #endif
 }
 
@@ -94,7 +94,7 @@ return s.i;
 #else
 SWAP (h, FSWAP (i)->b [0], FSWAP (i)->b [3]);
 SWAP (h, FSWAP (i)->b [1], FSWAP (i)->b [2]);
-return i;
+return FSWAP (i)->f;
 #endif
 }
 
@@ -119,7 +119,7 @@ static inline int SWAPINT (int i)
 char	h;
 SWAP (h, ISWAP (i)->b [0], ISWAP (i)->b [3]);
 SWAP (h, ISWAP (i)->b [1], ISWAP (i)->b [2]);
-return i;
+return ISWAP (i)->;
 }
 
 static inline int SwapInt (int i, int bEndian)
@@ -142,7 +142,7 @@ static inline short SWAPSHORT (short i)
 {
 char	h;
 SWAP (h, SSWAP (i)->b [0], SSWAP (i)->b [1]);
-return i;
+return SSWAP (i)->s;
 }
 
 static inline int SwapShort (short i, int bEndian)
