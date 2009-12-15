@@ -71,7 +71,7 @@ return SWAPDOUBLE (i);
 // ----------------------------------------------------------------------------
 
 typedef union fSwap {
-	float	i;
+	float	f;
 	char	b [4];
 } fSwap;
 
@@ -119,7 +119,7 @@ static inline int SWAPINT (int i)
 char	h;
 SWAP (h, ISWAP (i)->b [0], ISWAP (i)->b [3]);
 SWAP (h, ISWAP (i)->b [1], ISWAP (i)->b [2]);
-return ISWAP (i)->;
+return ISWAP (i)->i;
 }
 
 static inline int SwapInt (int i, int bEndian)
