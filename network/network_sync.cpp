@@ -105,7 +105,7 @@ objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try to speed it up without
 																// over-stressing the receiver.
 	nObjFrames = 0;
-	memset (objBuf, 0, DATALIMIT);
+	memset (objBuf, 0, D2X_DATALIMIT);
 	objBuf [0] = PID_OBJECT_DATA;
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
@@ -132,7 +132,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			if ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer))
 				continue;
 			}
-		if ((DATALIMIT - bufI - 1) < int (sizeof (tBaseObject)) + 5)
+		if ((D2X_DATALIMIT - bufI - 1) < int (sizeof (tBaseObject)) + 5)
 			break; // Not enough room for another CObject
 		nObjFrames++;
 		syncP->objs.nSent++;
@@ -156,7 +156,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 				*reinterpret_cast<short*> (objBuf + 2) = INTEL_SHORT (syncP->objs.nFrame);
 			else
 				objBuf [2] = (ubyte) syncP->objs.nFrame;
-			Assert (bufI <= DATALIMIT);
+			Assert (bufI <= D2X_DATALIMIT);
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (
 					objBuf, bufI, 
@@ -265,7 +265,7 @@ void NetworkSyncConnection (tNetworkSyncData *syncP)
 
 if (t < syncP->timeout)
 	return;
-syncP->timeout = t + (/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 2000 / PacketsPerSec ());
+syncP->timeout = t + 10; //(/*(gameStates.multi.nGameType == UDP_GAME) ? 200 :*/ 2000 / PacketsPerSec ());
 if (syncP->bExtraGameInfo) {
 	NetworkSendExtraGameInfo (&syncP->player [0]);
 	syncP->bExtraGameInfo = 0;

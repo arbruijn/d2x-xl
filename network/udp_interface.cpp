@@ -263,7 +263,7 @@ CheckClientSize ();
 
 int CClientManager::CheckClientSize (void)
 {
-if (m_nClients < m_clients.Length ())
+if (m_nClients <= m_clients.Length ())
 	return 1;
 m_clients.Resize (m_clients.Buffer () ? m_clients.Length () * 2 : MAX_PLAYERS);
 return 1;
@@ -906,7 +906,7 @@ static int UDPSendPacket
 #ifdef UDPDEBUG
 PrintLog ("UDP interface: SendPacket enter, dataLen=%d",dataLen);
 #endif
-if ((dataLen < 0) || (dataLen > MAX_DATASIZE))
+if ((dataLen < 0) || (dataLen > D2X_DATALIMIT))
 	return -1;
 if (gameStates.multi.bTrackerCall)
 	memcpy (buf, data, dataLen);

@@ -538,8 +538,8 @@ extern int nCoopPenalties [10];
 
 #define COMPETITION	 (IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
 
-#define MAX_DATASIZE ( (gameStates.multi.nGameType == UDP_GAME) ? UDP_DATASIZE : IPX_DATASIZE)
-#define DATALIMIT ( (gameStates.multi.nGameType == UDP_GAME) ? UDP_DATALIMIT : IPX_DATALIMIT)
+//#define MAX_DATASIZE ((gameStates.multi.nGameType == UDP_GAME) ? UDP_DATASIZE : IPX_DATASIZE)
+#define D2X_DATALIMIT ((gameStates.multi.nGameType == UDP_GAME) ? UDP_DATALIMIT : IPX_DATALIMIT)
 
 //------------------------------------------------------------------------------
 

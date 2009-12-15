@@ -224,7 +224,7 @@ XtAppSetExitFlag (appShell);
 // Taken from the Motif programmer's manual and slightly adapted (no icon, single button),
 // minimal window decoration).
 
-void XmMessageDialog (const char* pszMsg, int nRows, int nCols, bool bError)
+Widget XmMessageDialog (const char* pszMsg, int nRows, int nCols, bool bError)
 {
     Widget       msgBox, pane, msgText, form, /*sep, label,*/ widget;
     void         DestroyShell(Widget, XtPointer, XtPointer);
@@ -322,6 +322,7 @@ XtVaGetValues (widget, XmNheight, &h, NULL);
 XtVaSetValues (form, XmNpaneMaximum, h, XmNpaneMinimum, h, NULL);
 // This also pops up the dialog, as it is the child of a DialogShell
 XtManageChild (pane);
+return topWid;
 }
 
 //------------------------------------------------------------------------------
@@ -340,7 +341,7 @@ void XmMessageBox (const char* pszMsg, bool bError)
 
 nRows = MsgSize (const_cast<char*>(pszMsg), nCols);
 if ((nRows > 3) || (nCols > 360))
-	XmMessageDialog (pszMsg, nRows, nCols, bError);
+	topWid = XmMessageDialog (pszMsg, nRows, nCols, bError);
 else { // use the built-in message box
 	topWid = XtVaAppInitialize (&appShell, "D2X-XL", NULL, 0, &gameData.app.argC, gameData.app.argV, NULL, NULL);
 	// setup message box text

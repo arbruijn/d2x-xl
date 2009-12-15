@@ -162,7 +162,7 @@ int NetworkStartGame (void)
 	int i, bAutoRun;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	Assert (FRAME_INFO_SIZE < DATALIMIT);
+	Assert (FRAME_INFO_SIZE < D2X_DATALIMIT);
 	if (!networkData.bActive) {
 		MsgBox (NULL, NULL, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;
