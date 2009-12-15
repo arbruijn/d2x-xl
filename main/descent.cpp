@@ -152,7 +152,7 @@ else if (nSignal == SIGTERM)
 	PrintLog ("Termination request\n");
 else
 	PrintLog ("Unknown signal\n");
-#if !DBG
+#if DBG
 //exit (1);
 #endif
 }
