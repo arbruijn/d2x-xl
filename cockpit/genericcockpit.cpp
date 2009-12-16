@@ -347,11 +347,11 @@ if (IsMultiGame && networkData.nTotalMissedPackets && !automap.m_bDisplay) {
 		int	nLossRate = (1000 * networkData.nTotalMissedPackets) / (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets);
 
 	if (nLossRate > 9) {
-		if (nLossRate > 300)
+		if (nLossRate >= 300)
 			fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-		else if (nLossRate > 200)
+		else if (nLossRate >= 200)
 			fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-		else if (nLossRate > 100)
+		else if (nLossRate >= 100)
 			fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		else if (nLossRate)
 			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
