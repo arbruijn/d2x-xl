@@ -339,14 +339,12 @@ void CGenericCockpit::DrawPacketLoss (void)
 {
 	static int nIdPacketLoss = 0;
 
-	networkData.nTotalPacketsGot++;
-
 if (IsMultiGame && networkData.nTotalMissedPackets && !automap.m_bDisplay) {
 		static time_t t, t0 = -1;
 
 		char	szLoss [50];
-		int	x = 11; // position measured from lower right corner
-		int	nLossRate = (100 * networkData.nTotalMissedPackets) / networkData.nTotalPacketsGot;
+		int	w, h, aw; // position measured from lower right corner
+		int	nLossRate = (1000 * networkData.nTotalMissedPackets) / networkData.nTotalPacketsGot;
 
 	if (nLossRate > 9) {
 		if (nLossRate > 300)
@@ -357,9 +355,10 @@ if (IsMultiGame && networkData.nTotalMissedPackets && !automap.m_bDisplay) {
 			fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		else if (nLossRate)
 			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		sprintf (szLoss, "packet loss: %d.%d %c", nLossRate / 100, nLossRate % 10, '%');
+		sprintf (szLoss, "packet loss: %d.%d%c", nLossRate / 10, nLossRate % 10, '%');
+		fontManager.Current ()->StringSize (szLoss, w, h, aw);
 		nIdPacketLoss = GrPrintF (&nIdPacketLoss,
-										 CCanvas::Current ()->Width () - (x * GAME_FONT->Width ()),
+										 CCanvas::Current ()->Width () - w - LHX (1),
 										 CCanvas::Current ()->Height () - 8 * (GAME_FONT->Height () + GAME_FONT->Height () / 4),
 										 szLoss);
 		}
