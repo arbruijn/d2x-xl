@@ -261,11 +261,13 @@ syncP->nExtras++;
 
 void NetworkSyncConnection (tNetworkSyncData *syncP)
 {
+#if 1
 	time_t	t = (time_t) SDL_GetTicks ();
 
 if (t < syncP->timeout)
 	return;
-syncP->timeout = t + 1000 / PacketsPerSec ();
+syncP->timeout = t + 100 / PacketsPerSec ();
+#endif
 if (syncP->bExtraGameInfo) {
 	NetworkSendExtraGameInfo (&syncP->player [0]);
 	syncP->bExtraGameInfo = 0;
