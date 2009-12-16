@@ -242,7 +242,7 @@ MultiSortKillList ();
 
 void NetworkTrackPackets (int nPlayer, int nPackets)
 {
-	CPlayerData	playerP = gameData.multiplayer.players + nPlayer;
+	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->nPacketsGot < 0) {
 	playerP->nPacketsGot = nPackets;
