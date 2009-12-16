@@ -1282,12 +1282,13 @@ if (Hide ())
 if (!(IsMultiGame && gameData.multigame.kills.bShowList))
 	return;
 
-	int nPlayers, playerList [MAX_PLAYERS];
-	int nLeft, i, xo = 0, x0, x1, y0, fth;
-	int t = gameStates.app.nSDLTicks;
-	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
+	int	nPlayers, playerList [MAX_PLAYERS];
+	int	nLeft, nameLen, i, xo = 0, x0, x1, y0, fth;
+	int	t = gameStates.app.nSDLTicks;
+	int	bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
+	int	faw = int (float (GAME_FONT->TotalWidth ()) / float (GAME_FONT->Range ()) * 1.05f + 0.5f);
 	float fScale;
-	static int faw = -1;
+
 
 	static int nIdKillList [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
@@ -1309,12 +1310,12 @@ fth = GAME_FONT->Height ();
 y -= nLeft * (fth + 1);
 x = CCanvas::Current ()->Width () - LHX (x);
 x0 = LHX (1);
-x1 = int (LHX (43) * fScale);
+nameLen = (9 + (gameData.multigame.kills.bShowList == 3)) * faw;
+x1 = x0 + nameLen;
 y0 = y;
 
 if (gameStates.render.cockpit.bShowPingStats) {
 	if (faw < 0)
-		faw = GAME_FONT->TotalWidth () / (GAME_FONT->Range ());
 		if (gameData.multigame.kills.bShowList == 2)
 			xo = faw * 24;//was +25;
 		else if (IsCoopGame)
@@ -1325,22 +1326,26 @@ if (gameStates.render.cockpit.bShowPingStats) {
 for (i = 0; i < nPlayers; i++) {
 	int nPlayer;
 	char name [80], teamInd [2] = {127, 0};
-	int sh, aw, indent =0;
+	int sh, aw, indent = 0;
 
 	if (i >= nLeft) {
-		x0 = x;
-		x1 = CCanvas::Current ()->Width () - ((gameData.app.nGameMode & GM_MULTI_COOP) ? LHX (27) : LHX (15));
+		x1 = CCanvas::Current ()->Width () - LHX (1) - 6 * faw; // ((gameData.app.nGameMode & GM_MULTI_COOP) ? LHX (27) : LHX (15));
+		x0 = x1 - nameLen;
 		if (gameStates.render.cockpit.bShowPingStats) {
 			x0 -= xo + 6 * faw;
 			x1 -= xo + 6 * faw;
 			}
 		if (i == nLeft)
 			y0 = y;
+#if 0
 		if (netGame.GetScoreGoal () || netGame.GetPlayTimeAllowed ())
 			x1 -= LHX (18);
+#endif
 		}
+#if 0
 	else if (netGame.GetScoreGoal () || netGame.GetPlayTimeAllowed ())
 		 x1 = int (LHX (43) * fScale - LHX (18));
+#endif
 	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : playerList [i];
 	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
 		if (gameData.multiplayer.players [nPlayer].connected != 1)

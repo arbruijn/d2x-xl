@@ -906,7 +906,8 @@ void MultiDoCreateRobotPowerups (char *buf)
 	int		nPlayer, nEggObj, i, bufP = 1;
 	short		s;
 
-nPlayer = buf [bufP++];									
+nPlayer = buf [bufP++];			
+delObjP.info.nType = OBJ_ROBOT;
 delObjP.info.contains.nCount = buf [bufP++];					
 delObjP.info.contains.nType = buf [bufP++];					
 delObjP.info.contains.nId = buf [bufP++]; 					
