@@ -335,6 +335,39 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 
 //------------------------------------------------------------------------------
 
+void CGenericCockpit::DrawPacketLoss (void)
+{
+	static int nIdPacketLoss = 0;
+
+	networkData.nTotalPacketsGot++;
+
+if (IsMultiGame && networkData.nTotalMissedPackets && !automap.m_bDisplay) {
+		static time_t t, t0 = -1;
+
+		char	szLoss [50];
+		int	x = 11; // position measured from lower right corner
+		int	nLossRate = (100 * networkData.nTotalMissedPackets) / networkData.nTotalPacketsGot;
+
+	if (nLossRate) {
+		if (nLossRate > 300)
+			fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
+		else if (nLossRate > 200)
+			fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
+		else if (nLossRate > 100)
+			fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
+		else if (nLossRate)
+			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
+		sprintf (szLoss, "packet loss: %d.%d %c", nLossRate / 100, nLossRate % 10, '%');
+		nIdPacketLoss = GrPrintF (&nIdPacketLoss,
+										 CCanvas::Current ()->Width () - (x * GAME_FONT->Width ()),
+										 CCanvas::Current ()->Height () - 8 * (GAME_FONT->Height () + GAME_FONT->Height () / 4),
+										 szLoss);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CGenericCockpit::DrawFrameRate (void)
 {
 	static fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -1849,7 +1882,7 @@ if (bExtraInfo) {
 	DrawFrameRate ();
 	DrawCruise ();
 	}
-
+DrawPacketLoss ();
 DrawSlowMotion ();
 DrawPlayerStats ();
 DrawScore ();

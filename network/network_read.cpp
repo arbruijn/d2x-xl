@@ -315,13 +315,13 @@ if  (pd->nPackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) {
 #if 1
 	if (networkData.nMissedPackets > 0)
 		console.printf (0,
-			"Missed %d packets from CPlayerData #%d (%d total)\n",
+			"Missed %d packets from player #%d (%d total)\n",
 			pd->nPackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot,
 			nTheirPlayer,
 			networkData.nMissedPackets);
 	else
 		console.printf (CON_DBG,
-			"Got %d late packets from CPlayerData #%d (%d total)\n",
+			"Got %d late packets from player #%d (%d total)\n",
 			gameData.multiplayer.players [nTheirPlayer].nPacketsGot-pd->nPackets,
 			nTheirPlayer,
 			networkData.nMissedPackets);

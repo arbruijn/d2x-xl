@@ -1121,9 +1121,9 @@ static int UDPReceivePacket
 #else
 	socklen_t				fromAddrSize = sizeof (fromAddr);
 #endif
-	CClient*					clientP;
 	ushort					srcPort;
 #if UDP_SAFEMODE
+	CClient*					clientP;
 	int						packetId = -1, bSafeMode = 0;
 #endif
 #if DBG
@@ -1163,9 +1163,9 @@ if (!(bTracker
 	i = clientManager.Add (&fromAddr);
 	if (i < 0)
 		return -1;
+#if UDP_SAFEMODE
 	if (i < clientManager.ClientCount () - 1) {	//i.e. sender already in list or successfully added to list
 		clientP = &clientManager.Client (i);
-#if UDP_SAFEMODE
 		bSafeMode = 0;
 		clientP->fd = s->fd;
 		clientP->bOurSafeMode = (memcmp (outBuf + dataLen - 10, "SAFE", 4) == 0);
@@ -1186,8 +1186,8 @@ if (!(bTracker
 		console.printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d",
 						iptos (szIP, reinterpret_cast<char*> (&fromAddr), dataLen, packetId, clientP->bSafeMode, clientP->bOurSafeMode);
 #	endif
-#endif //UDP_SAFEMODE
 		}
+#endif //UDP_SAFEMODE
 	gameStates.multi.bHaveLocalAddress = 1;
 	memcpy (netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
 #if UDP_SAFEMODE

@@ -1873,15 +1873,16 @@ int CObject::CollideRobotAndMatCen (void)
 
 CreateSound (SOUND_ROBOT_HIT);
 //	audio.PlaySound (SOUND_ROBOT_HIT);
-
 if (ROBOTINFO (info.nId).nExp1VClip > -1)
 	/*Object*/CreateExplosion ((short) info.nSegment, info.position.vPos, (info.xSize/2*3)/4, (ubyte) ROBOTINFO (info.nId).nExp1VClip);
+vExitDir.SetZero ();
 for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++)
 	if (segP->IsDoorWay (nSide, NULL) & WID_FLY_FLAG) {
 		vExitDir = segP->SideCenter (nSide) - info.position.vPos;
 		CFixVector::Normalize (vExitDir);
 		}
-Bump (vExitDir, I2X (8));
+if (!vExitDir.IsZero ())
+	Bump (vExitDir, I2X (8));
 ApplyDamageToRobot (I2X (1), -1);
 return 1;
 }

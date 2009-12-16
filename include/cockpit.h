@@ -165,6 +165,7 @@ class CGenericCockpit {
 		void DrawMultiMessage (void);
 		void DrawCountdown (int y);
 		void DrawRecording (int y);
+		void DrawPacketLoss (void);
 		void DrawFrameRate (void);
 		void DrawPlayerStats (void);
 		void DrawSlowMotion (void);
