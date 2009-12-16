@@ -69,7 +69,7 @@ m.AddText (szText);
 sprintf (szText, TXT_INFO_SHORTPKT, netGame.GetShortPackets () ? "Yes" : "No");
 m.AddText (szText);
 #if DBG
-pl = (int) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot)) * 100.0);
+pl = (int) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
 if (pl < 0)
 	pl = 0;
 sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, pl);

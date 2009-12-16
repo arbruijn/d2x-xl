@@ -536,7 +536,7 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (!networkData.bSyncPackInited) {
 	networkData.bSyncPackInited = 1;
-	memset (&networkData.syncPack, 0, sizeof (tFrameInfo));
+	memset (&networkData.syncPack, 0, sizeof (tFrameInfoLong));
 	}
 if (urgent)
 	networkData.bPacketUrgent = 1;

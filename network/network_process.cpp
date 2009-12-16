@@ -231,7 +231,7 @@ Assert (gameData.app.nGameMode & GM_NETWORK);
 if (netGame.GetShortPackets ())
 	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (dataP));
 else
-	NetworkReadPDataPacket (reinterpret_cast<tFrameInfo*> (dataP));
+	NetworkReadPDataLongPacket (reinterpret_cast<tFrameInfoLong*> (dataP));
 }
 
 //------------------------------------------------------------------------------

@@ -102,9 +102,9 @@ typedef struct tSequencePacket {
 //      shorts on even byte boundries
 //      ints on even byte boundries
 
-typedef struct tFrameInfo {
+typedef struct tFrameInfoLong {
 	ubyte       nType;                   // What nType of packet
-	ubyte       pad[3];                 // Pad out length of tFrameInfo packet
+	ubyte       pad[3];                 // Pad out length of tFrameInfoLong packet
 	int         nPackets;
 	CFixVector	objPos;
 	CFixMatrix	objOrient;
@@ -116,7 +116,7 @@ typedef struct tFrameInfo {
 	ubyte       objRenderType;
 	ubyte       nLevel;
 	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
-} __pack__ tFrameInfo;
+} __pack__ tFrameInfoLong;
 
 // tFrameInfoShort is not aligned -- 01/18/96 -- MWA
 // won't align because of tShortPos.  Shortpos needs
@@ -124,7 +124,7 @@ typedef struct tFrameInfo {
 
 typedef struct tFrameInfoShort {
 	ubyte       nType;                   // What nType of packet
-	ubyte       pad[3];                 // Pad out length of tFrameInfo packet
+	ubyte       pad[3];                 // Pad out length of tFrameInfoLong packet
 	int         nPackets;
 	tShortPos   objPos;
 	ushort      dataSize;          // Size of data appended to the net packet
@@ -133,6 +133,11 @@ typedef struct tFrameInfoShort {
 	ubyte       nLevel;
 	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoShort;
+
+typedef union tFrameInfo {
+	tFrameInfoLong		l;
+	tFrameInfoShort	s;
+} tFrameInfo;
 
 typedef struct tEntropyGameInfo {
 	ushort	nEnergyFillRate;
@@ -493,7 +498,7 @@ class CEndLevelInfo {
 #define ALLNETPLAYERSINFO_SIZE  int (netPlayers.Size ())
 #define LITE_INFO_SIZE          sizeof (tNetGameInfoLite)
 #define SEQUENCE_PACKET_SIZE    sizeof (tSequencePacket)
-#define FRAME_INFO_SIZE         sizeof (tFrameInfo)
+#define FRAME_INFO_SIZE         sizeof (tFrameInfoLong)
 #define IPX_SHORT_INFO_SIZE     sizeof (tFrameInfoShort)
 #define ENTROPY_INFO_SIZE       sizeof (tExtraGameInfo)
 

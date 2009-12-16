@@ -104,8 +104,8 @@ typedef struct tNetworkData {
 	int					nTotalPacketsGot;
 	int					nMissedPackets;
 	int					nConsistencyErrorCount;
-	tFrameInfo			syncPack;
-	tFrameInfo			urgentSyncPack;
+	tFrameInfoLong			syncPack;
+	tFrameInfoLong			urgentSyncPack;
 	ubyte					bSyncPackInited;       
 	ushort				nSegmentCheckSum;
 	tSequencePacket	thisPlayer;
@@ -194,7 +194,7 @@ void NetworkProcessSyncPacket (CNetGameInfo * sp, int rsinit);
 void NetworkReadObjectPacket (ubyte *dataP);
 void NetworkReadEndLevelPacket (ubyte *dataP);
 void NetworkReadEndLevelShortPacket (ubyte *dataP);
-void NetworkReadPDataPacket (tFrameInfo *pd);
+void NetworkReadPDataLongPacket (tFrameInfoLong *pd);
 void NetworkReadPDataShortPacket (tFrameInfoShort *pd);
 void NetworkReadObjectPacket (ubyte *dataP);
 

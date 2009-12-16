@@ -344,7 +344,7 @@ if (IsMultiGame && networkData.nTotalMissedPackets && !automap.m_bDisplay) {
 
 		char	szLoss [50];
 		int	w, h, aw; // position measured from lower right corner
-		int	nLossRate = (1000 * networkData.nTotalMissedPackets) / networkData.nTotalPacketsGot;
+		int	nLossRate = (1000 * networkData.nTotalMissedPackets) / (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets);
 
 	if (nLossRate > 9) {
 		if (nLossRate > 300)
@@ -355,7 +355,7 @@ if (IsMultiGame && networkData.nTotalMissedPackets && !automap.m_bDisplay) {
 			fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		else if (nLossRate)
 			fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-		sprintf (szLoss, "packet loss: %d.%d%c", nLossRate / 10, nLossRate % 10, '%');
+		sprintf (szLoss, "packet loss: %d.%d%c%c", nLossRate / 10, nLossRate % 10, '%', '%');
 		fontManager.Current ()->StringSize (szLoss, w, h, aw);
 		nIdPacketLoss = GrPrintF (&nIdPacketLoss,
 										 CCanvas::Current ()->Width () - w - LHX (1),

@@ -446,7 +446,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				networkData.syncPack.nPackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
 				IpxSendGamePacket (
 					reinterpret_cast<ubyte*> (&networkData.syncPack), 
-					sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_dataSize);
+					sizeof (tFrameInfoLong) - networkData.nMaxXDataSize + send_dataSize);
 				}
 			networkData.syncPack.dataSize = 0;               // Start data over at 0 length.
 			networkData.bD2XData = 0;
