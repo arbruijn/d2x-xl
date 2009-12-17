@@ -320,7 +320,7 @@ if ((networkData.sync [0].nPlayer != -1) && (nPlayer == networkData.sync [0].nPl
 if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers)) {
 	if (networkData.nStatus != NETSTAT_WAITING) {
 		Int3 (); // We missed an important packet!
-		NetworkConsistencyError ();
+		//NetworkConsistencyError ();
 		}
 	return;
 	}

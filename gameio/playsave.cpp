@@ -2365,11 +2365,11 @@ cf.WriteInt (gameStates.render.cockpit.n3DView [0]);
 cf.WriteInt (gameStates.render.cockpit.n3DView [1]);
 cf.WriteInt (networkData.nNetLifeKills);
 cf.WriteInt (networkData.nNetLifeKilled);
-i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 #if TRACE
 console.printf (CON_DBG,"Writing: Lifetime checksum is %d\n",i);
 #endif
-cf.WriteInt (i);
+cf.WriteInt (gameData.app.nLifetimeChecksum);
 //write guidebot name
 cf.WriteString (gameData.escort.szRealName);
 strcpy (buf, "DOS joystick");
@@ -2405,7 +2405,7 @@ return SavePlayerProfile ();
 
 //------------------------------------------------------------------------------
 
-int GetLifetimeChecksum (int a,int b)
+int GetLifetimeChecksum (int a, int b)
  {
   int num;
 

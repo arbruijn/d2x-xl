@@ -17,13 +17,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "carray.h"
 #include "player.h"
 
-#define AM_SHOW_PLAYERS			(!IsMultiGame || (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
-#define AM_SHOW_PLAYER(_i)		(!IsMultiGame || \
-										 (gameData.app.nGameMode & GM_MULTI_COOP) || \
-										 (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
-										 (GetTeam (gameData.multiplayer.nLocalPlayer) == GetTeam (_i)))
-#define AM_SHOW_ROBOTS			EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
-#define AM_SHOW_POWERUPS(_i)	((EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i)) && (!IsMultiGame || IsCoopGame))
+#define AM_SHOW_PLAYERS				(!IsMultiGame || (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
+#define AM_SHOW_PLAYER(_i)			(!IsMultiGame || \
+											 (gameData.app.nGameMode & GM_MULTI_COOP) || \
+											 (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
+											 (GetTeam (gameData.multiplayer.nLocalPlayer) == GetTeam (_i)))
+#define AM_SHOW_ROBOTS				EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
+#ifdef DBG
+#	define AM_SHOW_POWERUPS(_i)	(EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i))
+#else
+#	define AM_SHOW_POWERUPS(_i)	((EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i)) && (!IsMultiGame || IsCoopGame))
+#endif
 
 //------------------------------------------------------------------------------
 

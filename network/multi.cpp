@@ -1477,9 +1477,11 @@ bufI += 2;
 playerP->flags = GET_INTEL_INT (buf + bufI);
 bufI += 4;
 #if 0
-if (gameStates.multi.nGameType == UDP_GAME) {
-	d_srand (gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI));
-	bufI += 2;
+if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] > 0) {
+	if (gameStates.multi.nGameType == UDP_GAME) {
+		d_srand (gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI));
+		bufI += 2;
+		}
 	}
 #endif
 #if 0
@@ -1492,7 +1494,11 @@ gameData.multigame.create.nCount = 0;
 	{
 	fix shields = playerP->shields;
 	playerP->shields = -1;
-	DropPlayerEggs (objP);
+#if 0
+	if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] < 0)
+#endif
+	if (gameStates.multi.nGameType != UDP_GAME)
+		DropPlayerEggs (objP);
 	playerP->shields = shields;
 // Create mapping from remote to local numbering system
 	for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
@@ -2305,9 +2311,11 @@ bufI += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
 bufI += 4;
 #if 0
-if (gameStates.multi.nGameType == UDP_GAME) {
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
-	bufI += 2;
+if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] > 0) {
+	if (gameStates.multi.nGameType == UDP_GAME) {
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
+		bufI += 2;
+		}
 	}
 #endif
 gameData.multigame.msg.buf [bufI++] = gameData.multigame.create.nCount;
