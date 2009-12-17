@@ -853,7 +853,7 @@ while (/*(playerP->secondaryAmmo [nId] % 4 == 1) &&*/ (d_rand () < rthresh)) {
 	if (nObject < 0)
 		return;
 	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
-		MultiSendDropWeapon (nObject);
+		MultiSendCreateWeapon (nObject);
   	}
 }
 

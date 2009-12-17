@@ -218,7 +218,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	5,	 // MULTI_COUNTDOWN
 	22, // MULTI_PLAYER_WEAPONS
 	99, // MULTI_SYNC_MONSTERBALL
-	31	 // MULTI_DROP_POWERUP
+	31, // MULTI_DROP_POWERUP
+	31	 // MULTI_CREATE_WEAPON
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -1225,7 +1226,7 @@ MultiSyncMonsterball ();
 
 //-----------------------------------------------------------------------------
 
-void MultiSendData (char *buf, int len, int repeat)
+void MultiSendData (char *buf, int len, int bUrgent)
 {
 #if DBG
 if (len != multiMessageLengths [(int)buf [0]])
@@ -1237,7 +1238,7 @@ Assert (buf [0] <= MULTI_MAX_TYPE);
 if ((gameData.app.nGameMode & GM_NETWORK) &&(buf [0] < 1))
 	return;
 else if (gameData.app.nGameMode & GM_NETWORK)
-	NetworkSendData (reinterpret_cast<ubyte*> (buf), len, repeat);
+	NetworkSendData (reinterpret_cast<ubyte*> (buf), len, bUrgent);
 }
 
 //-----------------------------------------------------------------------------
@@ -1765,6 +1766,56 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 if (0 <= (i = FindReactor (OBJECTS + nObject)))
 	CreateNewWeaponSimple (&to_target, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiDoCreateWeapon (char *buf)
+{
+	short			nSegment;
+	short			nObject;
+	int			nLocalObj;
+	int			nPlayer;
+	int			count = 1;
+	CFixVector	vPos, vDir;
+	char			nId;
+
+if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
+	return;
+nPlayer = int (buf [count++]);
+nId = buf [count++];
+#if 0
+if ((gameData.app.nGameMode & GM_NETWORK) &&
+	 (gameData.multiplayer.powerupsInMine [(int)powerupType] + PowerupsOnShips (powerupType) >=
+	  gameData.multiplayer.maxPowerupsAllowed [powerupType]))
+	return;
+#endif
+nSegment = GET_INTEL_SHORT (buf + count);
+count += 2;
+nObject = GET_INTEL_SHORT (buf + count);
+count += 2;
+if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
+	Int3 ();
+	return;
+	}
+memcpy (&vPos, buf + count, sizeof (CFixVector));
+count += sizeof (CFixVector);
+memcpy (&vDir, buf + count, sizeof (CFixVector));
+count += sizeof (CFixVector);
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
+INTEL_VECTOR (vPos);
+INTEL_VECTOR (vDir);
+#endif
+gameData.multigame.create.nCount = 0;
+nLocalObj = CreateNewWeapon (&vDir, &vPos, nSegment, nPlayer, nId, 0);
+if (nLocalObj < 0)
+	return;
+NetworkResetObjSync (nLocalObj);
+OBJECTS [nLocalObj].info.position.vPos = vPos;
+OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero ();
+OBJECTS [nLocalObj].RelinkToSeg (nSegment);
+MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
+return;
 }
 
 //-----------------------------------------------------------------------------
@@ -2715,6 +2766,52 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 
 //-----------------------------------------------------------------------------
 
+void MultiSendCreateWeapon (int nObject)
+{
+	// Create a powerup on a remote machine, used for remote
+	// placement of used powerups like missiles and cloaking
+	// powerups.
+
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
+	CFixVector vSwapped;
+#endif
+	int count = 0;
+
+#if 0
+if (gameData.app.nGameMode & GM_NETWORK)
+	gameData.multiplayer.powerupsInMine [powerupType]++;
+#endif
+gameData.multigame.msg.buf [count++] = MULTI_CREATE_WEAPON;
+gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
+gameData.multigame.msg.buf [count++] = OBJECTS [nObject].info.nId;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, OBJECTS [nObject].nSegment);
+count += 2;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
+count += 2;
+#if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
+memcpy (gameData.multigame.msg.buf + count, OBJECTS [nObject].info.position.vPos, sizeof (CFixVector));
+count += sizeof (CFixVector);
+memcpy (gameData.multigame.msg.buf + count, OBJECTS [nObject].mType.physInfo.velocity, sizeof (CFixVector));
+count += sizeof (CFixVector);
+#else
+vSwapped [X] = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos [X]));
+vSwapped [Y] = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos [Y]));
+vSwapped [Z] = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos [Z]));
+memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
+count += 12;
+vSwapped [X] = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity [X]));
+vSwapped [Y] = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity [Y]));
+vSwapped [Z] = (fix)INTEL_INT (int (OBJECTS [nObject].mType.physInfo.velocity [Z]));
+memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
+count += 12;
+#endif
+MultiSendData (gameData.multigame.msg.buf, count, 1);
+NetworkResetObjSync (nObject);
+MapObjnumLocalToLocal (nObject);
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos)
 {
 	// Create a powerup on a remote machine, used for remote
@@ -2747,7 +2844,7 @@ vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos) [Z]);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
-MultiSendData (gameData.multigame.msg.buf, count, 2);
+MultiSendData (gameData.multigame.msg.buf, count, 1);
 NetworkResetObjSync (nObject);
 MapObjnumLocalToLocal (nObject);
 }
@@ -2793,7 +2890,7 @@ vSwapped[Z] = (fix)INTEL_INT ((int) (*vVel) [Z]);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif
-MultiSendData (gameData.multigame.msg.buf, count, 2);
+MultiSendData (gameData.multigame.msg.buf, count, 1);
 NetworkResetObjSync (nObject);
 MapObjnumLocalToLocal (nObject);
 }
@@ -3569,13 +3666,14 @@ ammo = GET_INTEL_SHORT (buf + 6);
 seed = GET_INTEL_INT (buf + 8);
 objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 nObject = SpitPowerup (objP, powerupId, seed);
-MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
-if (nObject!=-1)
+if (nObject >= 0) {
+	MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
 	OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
 #if 0
-if (gameData.app.nGameMode & GM_NETWORK)
-	gameData.multiplayer.powerupsInMine [powerupId]++;
+	if (gameData.app.nGameMode & GM_NETWORK)
+		gameData.multiplayer.powerupsInMine [powerupId]++;
 #endif
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -5189,7 +5287,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoCountdown, 1},
 	{MultiDoPlayerWeapons, 1},
 	{MultiDoSyncMonsterball, 1},
-	{MultiDoDropPowerup, 1}
+	{MultiDoDropPowerup, 1},
+	{MultiCreateWeapon, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5534,6 +5633,10 @@ switch (nType) {
 	case MULTI_DROP_POWERUP:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoDropPowerup (buf);
+		break;
+	case MULTI_CREATE_WEAPON:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoCreateWeapon (buf);
 		break;
 	default:
 		Int3 ();
