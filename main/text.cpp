@@ -1898,6 +1898,8 @@ const char *defaultGameTexts [][2] = {
  {"~Umgebungs-Lautstaerke", "~Ambient sound volume"},
  {"Lautstaerke ~koppeln", "~Link volume controls"},
  {"Spielende: %d Punkte", "End match: %d Points"},
+ {"Sekundaerwaffen-Kapazität...", "Secondary Weapon Capacity..."},
+ {"Sekundaerwaffen-Kapazität", "Secondary Weapon Capacity"},
 #if 0
  {"", ""},
 #endif
@@ -2593,7 +2595,8 @@ const char *defaultHelpTexts [][2] = {
   "If checked, various optical effects (smoke, lightning, light trails, energy shields, target markers etc.) are displayed. Otherwise no effects are rendered."},
  {"D2X-XL versucht festzustellen, ob eine neuere Programmversion\nvorhanden ist. (Dazu muss auf das Internet zugegriffen werden.)", 
   "D2X-XL will check whether a newer program version is available.\n(To do that it has to access the internet.)"},
- {"Wenn angekreuzt, wird die Umgebungslautstaerke der\nEffektlautstaerke angeglichen.", "If checked, ambient sound volume is equalized with\neffect sound volume"},
+ {"Wenn angekreuzt, wird die Umgebungslautstaerke der\nEffektlautstaerke angeglichen.", "If checked, ambient sound volume is equalized with\neffect sound volume."},
+ {"Hier koennen die maximalen Ladekapazitaeten fuer\nRaketen und Minen eingestellt werden.", "Adjust the maximum load capacity for missiles\nand mines here."},
 #if 0
  {"", ""},
 #endif

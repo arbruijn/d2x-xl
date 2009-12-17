@@ -588,8 +588,10 @@ switch (nType) {
 				return nObject;
 				}
 			if (IsMultiGame) {
+#if 0
 				if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
 					MultiSendDropPowerup (nId, nSegment, nObject, &vNewPos, &vNewVel);
+#endif
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 				}
 			objP = OBJECTS + nObject;
@@ -852,8 +854,10 @@ while ((playerP->secondaryAmmo [nId] % 4 == 1) && (d_rand () < rthresh)) {
 	short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
 	if (nObject < 0)
 		return;
+#if 0
 	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
 		MultiSendCreateWeapon (nObject);
+#endif
   	}
 }
 

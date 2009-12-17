@@ -1935,11 +1935,11 @@ void LoadGameTexts(void);
 #define TXT_AMBIENT_VOLUME				GT(1151)
 #define TXT_LINK_AUDIO_VOLUMES		GT(1152)
 #define TXT_SCOREGOAL					GT(1153)
+#define TXT_MISSILE_LOADOUT			GT(1154)
+#define TXT_MSLLOADOUT_TITLE			GT(1155)
 
 #if 0
 
-#define TXT_					GT(1154)
-#define TXT_					GT(1155)
 #define TXT_					GT(1156)
 #define TXT_					GT(1157)
 #define TXT_					GT(1158)
@@ -2512,10 +2512,10 @@ void LoadGameTexts(void);
 #define HTX_DAMAGE_MODEL				HT(406)
 #define HTX_ENABLE_EFFECTS				HT(407)
 #define HTX_CHECK_FOR_UPDATE			HT(408)
+#define HTX_MISSILE_LOADOUT			HT(409)
 
 #if 0
 
-#define HTX_						HT(409)
 #define HTX_						HT(410)
 #define HTX_						HT(411)
 #define HTX_						HT(412)

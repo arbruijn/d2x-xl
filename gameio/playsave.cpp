@@ -416,6 +416,8 @@ for (i = 0; i < 2; i++) {
 
 		RP (extraGameInfo [i].loadout.nGuns, 0, 0);
 		RP (extraGameInfo [i].loadout.nDevice, 0, 0);
+		for (j = 0; j < 10; j++)
+			RP (extraGameInfo [i].loadout.nMissiles [j], i, j);
 
 		RP (extraGameInfo [i].headlight.bAvailable, i, 0);
 		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
@@ -914,6 +916,16 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].headlight.bBuiltIn", "0"},
 	 {"extraGameInfo[0].loadout.nGuns", "0"},
 	 {"extraGameInfo[0].loadout.nDevice", "0"},
+	 {"extraGameInfo[0].loadout.nMissiles[0]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[1]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[2]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[3]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[4]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[5]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[6]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[7]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[8]", "-1"},
+	 {"extraGameInfo[0].loadout.nMissiles[9]", "-1"},
 	 {"extraGameInfo [0].bShowWeapons", "1"},
 	 {"extraGameInfo [0].bBrightObjects", "0"},
 	 {"gameOptions[0].input.keyboard.bRamp[0]", "0"},

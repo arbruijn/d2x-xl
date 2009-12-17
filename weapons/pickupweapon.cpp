@@ -89,6 +89,8 @@ else {
 	nMaxAmount = nMaxSecondaryAmmo [nWeaponIndex];
 	if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
 		nMaxAmount *= 2;
+	if (IsMultiGame && !IsCoopGame && gameStates.app.bHaveExtraGameInfo [1] && (nMaxAmount > extraGameInfo [1].loadout.nMissiles [nWeaponIndex]))
+		nMaxAmount = extraGameInfo [1].loadout.nMissiles [nWeaponIndex];
 	}
 if (playerP->secondaryAmmo [nWeaponIndex] >= nMaxAmount) {
 	if (ISLOCALPLAYER (nPlayer))

@@ -801,6 +801,96 @@ do {
 
 //------------------------------------------------------------------------------
 
+static char* szMslNames [] = {
+	"===Missiles===",
+	"",
+	"Concussion: %d",
+	"Homing: %d",
+	"Smart: %d",
+	"Mega: %d",
+	"Flash: %d",
+	"Guided: %d",
+	"Mercury: %d",
+	"Earth Shaker: %d",
+	"",
+	"===Mines===",
+	"",
+	"Proximity: %d",
+	"Smart: %d"
+};
+
+static int powerupMap [] = {
+	-1,
+	-1,
+	CONCUSSION_INDEX,
+	HOMING_INDEX,
+	SMART_INDEX,
+	MEGA_INDEX,
+	FLASHMSL_INDEX,
+	GUIDED_INDEX,
+	MERCURY_INDEX,
+	EARTHSHAKER_INDEX,
+	-1,
+	-1,
+	-1,
+	PROXMINE_INDEX,
+	SMARTMINE_INDEX
+};
+
+int NetworkMissileOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
+{
+if (nState)
+	return nCurItem;
+
+	int	h, i, v;
+
+for (i = 0; i < int (menu.ToS ()); i++) {
+	if (menu [i].m_nType != NM_TYPE_TEXT) {
+		h = powerupMap [i];
+		v = menu [i].m_value;
+		if (v != extraGameInfo [0].loadout.nMissiles [h]) {
+			extraGameInfo [0].loadout.nMissiles [h] = v;
+			sprintf (menu [i].m_text, szMslNames [i], v);
+			menu [i].m_bRebuild = true;
+			}
+		}
+	}
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+void MissileLoadoutMenu (void)
+{
+	static int choice = 0;
+
+	int		h, i, j;
+	char		szSlider [50];
+	CMenu		m;
+
+j = sizeofa (powerupMap);
+do {
+	m.Destroy ();
+	m.Create (j);
+	for (i = 0; i < j; i++) {
+		if ((h = powerupMap [i]) < 0) {
+			h = m.AddText (szMslNames [i]);
+			m [h].m_bCentered = 1;
+			}
+		else {
+			if (extraGameInfo [0].loadout.nMissiles [h] > nMaxSecondaryAmmo [h])
+				extraGameInfo [0].loadout.nMissiles [h] = nMaxSecondaryAmmo [h];
+			sprintf (szSlider, szMslNames [i], extraGameInfo [0].loadout.nMissiles [h]);
+			strupr (szSlider);
+			m.AddSlider (szSlider, extraGameInfo [0].loadout.nMissiles [h], 0, nMaxSecondaryAmmo [h], 0, NULL); 
+			}
+		}
+	i = m.Menu (NULL, TXT_MSLLOADOUT_TITLE, NetworkMissileOptionsPoll, &choice);
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
 int NetworkGetGameType (CMenu& m, int bAnarchyOnly)
 {
 	int bHoard = HoardEquipped ();
@@ -841,7 +931,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int optGameName, optLevel, optLevelText, optMoreOpts, optMission, optMissionName, optD2XOpts, optConfigMenu, optLoadoutMenu;
+static int optGameName, optLevel, optLevelText, optMoreOpts, optMission, optMissionName, optD2XOpts, optConfigMenu, optLoadoutMenu, optMissileMenu;
 
 void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxNet, int nNewMission)
 {
@@ -888,7 +978,7 @@ optEntropy =
 optMonsterball = -1;
 if (bHoard) {
 	optHoard = m.AddRadio (TXT_HOARD, 0, KEY_H, HTX_MULTI_HOARD);
-	optTeamHoard = m.AddRadio (TXT_TEAM_HOARD, 0, KEY_H, HTX_MULTI_TEAMHOARD);
+	optTeamHoard = m.AddRadio (TXT_TEAM_HOARD, 0, KEY_O, HTX_MULTI_TEAMHOARD);
 	if (!gameStates.app.bNostalgia) {
 		optEntropy = m.AddRadio (TXT_ENTROPY, 0, KEY_Y, HTX_MULTI_ENTROPY);
 		optMonsterball = m.AddRadio (TXT_MONSTERBALL, 0, KEY_B, HTX_MULTI_MONSTERBALL);
@@ -924,6 +1014,7 @@ if (!gameStates.app.bNostalgia) {
 		InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	optConfigMenu = m.AddMenu (TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
 	optLoadoutMenu = m.AddMenu (TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
+	optMissileMenu = m.AddMenu (TXT_MISSILE_LOADOUT, KEY_I, HTX_MISSILE_LOADOUT);
 	}
 }
 
@@ -981,6 +1072,10 @@ else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optCon
 	}
 else if (!gameStates.app.bNostalgia && (optLoadoutMenu >= 0) && (choice == optLoadoutMenu)) {
 	LoadoutOptionsMenu ();
+	return 1;
+	}
+else if (!gameStates.app.bNostalgia && (optMissileMenu >= 0) && (choice == optMissileMenu)) {
+	MissileLoadoutMenu ();
 	return 1;
 	}
 else if (choice == optMission) {

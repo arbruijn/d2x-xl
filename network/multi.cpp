@@ -132,94 +132,94 @@ typedef struct tNetPlayerStats {
 	ubyte  unused [16];
 } tNetPlayerStats;
 
-int multiMessageLengths [MULTI_MAX_TYPE+1] = {
-	24, // POSITION
-	3,  // REAPPEAR
-	8,  // FIRE
-	5,  // KILL
-	4,  // REMOVE_OBJECT
-	97+9, // PLAYER_EXPLODE
-	37, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
-	2,  // QUIT
-	4,  // PLAY_SOUND
-	41, // BEGIN_SYNC
-	4,  // CONTROLCEN
-	5,  // CLAIM ROBOT
-	4,  // END_SYNC
-	2,  // CLOAK
-	3,  // ENDLEVEL_START
-	5,  // DOOR_OPEN
-	2,  // CREATE_EXPLOSION
-	16, // CONTROLCEN_FIRE
-	97+9, // PLAYER_DROP
-	19, // CREATE_POWERUP
-	9,  // MISSILE_TRACK
-	2,  // DE-CLOAK
-	2,  // MENU_CHOICE
-	28, // ROBOT_POSITION  (shortpos_length (23) + 5 = 28)
-	9,  // ROBOT_EXPLODE
-	5,  // ROBOT_RELEASE
-	18, // ROBOT_FIRE
-	6,  // SCORE
-	6,  // CREATE_ROBOT
-	3,  // TRIGGER
-	10, // BOSS_ACTIONS
-	27, // ROBOT_POWERUPS
-	7,  // HOSTAGE_DOOR
-	2+24, // SAVE_GAME      (ubyte slot, uint id, char name [20])
-	2+4,  // RESTORE_GAME   (ubyte slot, uint id)
-	1+1,  // MULTI_REQ_PLAYER
-	sizeof (tNetPlayerStats), // MULTI_SEND_PLAYER
-	55, // MULTI_MARKER
-	12, // MULTI_DROP_WEAPON
-	3+sizeof (tShortPos), // MULTI_GUIDED
-	11, // MULTI_STOLEN_ITEMS
-	6,  // MULTI_WALL_STATUS
-	5,  // MULTI_HEARTBEAT
-	9,  // MULTI_SCOREGOALS
-	9,  // MULTI_SEISMIC
-	18, // MULTI_LIGHT
-	2,  // MULTI_START_TRIGGER
-	6,  // MULTI_FLAGS
-	2,  // MULTI_DROP_BLOB
-	MAX_POWERUP_TYPES+1, // MULTI_POWERUP_UPDATE
-	sizeof (CActiveDoor)+3, // MULTI_ACTIVE_DOOR
-	4,  // MULTI_SOUND_FUNCTION
-	2,  // MULTI_CAPTURE_BONUS
-	2,  // MULTI_GOT_FLAG
-	12, // MULTI_DROP_FLAG
-	1
-, // MULTI_ROBOT_CONTROLS
-	2,  // MULTI_FINISH_GAME
-	3,  // MULTI_RANK
-	1,  // MULTI_MODEM_PING
-	1,  // MULTI_MODEM_PING_RETURN
-	3,  // MULTI_ORB_BONUS
-	2,  // MULTI_GOT_ORB
-	12, // MULTI_DROP_ORB
-	4,  // MULTI_PLAY_BY_PLAY
-	3,	 // MULTI_RETURN_FLAG
-	4,	 // MULTI_CONQUER_ROOM
-	3,  // MULTI_CONQUER_WARNING
-	3,  // MULTI_STOP_CONQUER_WARNING
-	5,  // MULTI_TELEPORT
-	4,  // MULTI_SET_TEAM
-	3,  // MULTI_MESSAGE_START
-	3,  // MULTI_MESSAGE_QUIT
-	3,	 // MULTI_OBJECT_TRIGGER
-	6,	 // MULTI_PLAYER_SHIELDS,
-	2,	 // MULTI_INVUL
-	2,	 // MULTI_DEINVUL
-	29, // MULTI_WEAPONS
-	40, // MULTI_MONSTERBALL
-	2,  // MULTI_CHEATING
-	5,  // MULTI_TRIGGER_EXT
-	16, // MULTI_SYNC_KILLS
-	5,	 // MULTI_COUNTDOWN
-	22, // MULTI_PLAYER_WEAPONS
-	99, // MULTI_SYNC_MONSTERBALL
-	31, // MULTI_DROP_POWERUP
-	31	 // MULTI_CREATE_WEAPON
+static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
+	{24, -1}, // POSITION
+	{3, -1},  // REAPPEAR
+	{8, -1},  // FIRE
+	{5, -1},  // KILL
+	{4, -1},  // REMOVE_OBJECT
+	{97+9, 97+11}, // PLAYER_EXPLODE
+	{37, -1}, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
+	{2, -1},  // QUIT
+	{4, -1},  // PLAY_SOUND
+	{41, -1}, // BEGIN_SYNC
+	{4, -1},  // CONTROLCEN
+	{5, -1},  // CLAIM ROBOT
+	{4, -1},  // END_SYNC
+	{2, -1},  // CLOAK
+	{3, -1},  // ENDLEVEL_START
+	{5, -1},  // DOOR_OPEN
+	{2, -1},  // CREATE_EXPLOSION
+	{16, -1}, // CONTROLCEN_FIRE
+	{97+9, -1}, // PLAYER_DROP
+	{19, -1}, // CREATE_POWERUP
+	{9, -1},  // MISSILE_TRACK
+	{2, -1},  // DE-CLOAK
+	{2, -1},  // MENU_CHOICE
+	{28, -1}, // ROBOT_POSITION  (shortpos_length (23) + 5 = 28)
+	{9, -1},  // ROBOT_EXPLODE
+	{5, -1},  // ROBOT_RELEASE
+	{18, -1}, // ROBOT_FIRE
+	{6, -1},  // SCORE
+	{6, -1},  // CREATE_ROBOT
+	{3, -1},  // TRIGGER
+	{10, -1}, // BOSS_ACTIONS
+	{27, -1}, // ROBOT_POWERUPS
+	{7, -1},  // HOSTAGE_DOOR
+	{2+24, -1}, // SAVE_GAME      (ubyte slot, -1}, uint id, -1}, char name [20])
+	{2+4, -1},  // RESTORE_GAME   (ubyte slot, -1}, uint id)
+	{1+1, -1},  // MULTI_REQ_PLAYER
+	{sizeof (tNetPlayerStats), -1}, // MULTI_SEND_PLAYER
+	{55, -1}, // MULTI_MARKER
+	{12, -1}, // MULTI_DROP_WEAPON
+	{3+sizeof (tShortPos), -1}, // MULTI_GUIDED
+	{11, -1}, // MULTI_STOLEN_ITEMS
+	{6, -1},  // MULTI_WALL_STATUS
+	{5, -1},  // MULTI_HEARTBEAT
+	{9, -1},  // MULTI_SCOREGOALS
+	{9, -1},  // MULTI_SEISMIC
+	{18, -1}, // MULTI_LIGHT
+	{2, -1},  // MULTI_START_TRIGGER
+	{6, -1},  // MULTI_FLAGS
+	{2, -1},  // MULTI_DROP_BLOB
+	{MAX_POWERUP_TYPES+1, -1}, // MULTI_POWERUP_UPDATE
+	{sizeof (CActiveDoor)+3, -1}, // MULTI_ACTIVE_DOOR
+	{4, -1},  // MULTI_SOUND_FUNCTION
+	{2, -1},  // MULTI_CAPTURE_BONUS
+	{2, -1},  // MULTI_GOT_FLAG
+	{12, -1}, // MULTI_DROP_FLAG
+	{1
+, -1}, // MULTI_ROBOT_CONTROLS
+	{2, -1},  // MULTI_FINISH_GAME
+	{3, -1},  // MULTI_RANK
+	{1, -1},  // MULTI_MODEM_PING
+	{1, -1},  // MULTI_MODEM_PING_RETURN
+	{3, -1},  // MULTI_ORB_BONUS
+	{2, -1},  // MULTI_GOT_ORB
+	{12, -1}, // MULTI_DROP_ORB
+	{4, -1},  // MULTI_PLAY_BY_PLAY
+	{3, -1},	 // MULTI_RETURN_FLAG
+	{4, -1},	 // MULTI_CONQUER_ROOM
+	{3, -1},  // MULTI_CONQUER_WARNING
+	{3, -1},  // MULTI_STOP_CONQUER_WARNING
+	{5, -1},  // MULTI_TELEPORT
+	{4, -1},  // MULTI_SET_TEAM
+	{3, -1},  // MULTI_MESSAGE_START
+	{3, -1},  // MULTI_MESSAGE_QUIT
+	{3, -1},	 // MULTI_OBJECT_TRIGGER
+	{6, -1},	 // MULTI_PLAYER_SHIELDS, -1},
+	{2, -1},	 // MULTI_INVUL
+	{2, -1},	 // MULTI_DEINVUL
+	{29, -1}, // MULTI_WEAPONS
+	{40, -1}, // MULTI_MONSTERBALL
+	{2, -1},  // MULTI_CHEATING
+	{5, -1},  // MULTI_TRIGGER_EXT
+	{16, -1}, // MULTI_SYNC_KILLS
+	{5, -1},	 // MULTI_COUNTDOWN
+	{22, -1}, // MULTI_PLAYER_WEAPONS
+	{99, -1}, // MULTI_SYNC_MONSTERBALL
+	{31, -1}, // MULTI_DROP_POWERUP
+	{31, -1} // MULTI_CREATE_WEAPON
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -238,6 +238,15 @@ CPlayerShip defaultPlayerShip;
 	 CFixVector::Create(1608, -87663, 184978),
 	 CFixVector::Create(-1608, -87663, -190825)}};
 #endif
+
+//-----------------------------------------------------------------------------
+
+inline int MultiMsgLen (int nMsg)
+{
+	int l = multiMessageLengths [nMsg][gameStates.multi.nGameType == UDP_GAME];
+
+return (l > 0) ? l : multiMessageLengths [nMsg][0];
+}
 
 //-----------------------------------------------------------------------------
 
@@ -1229,7 +1238,7 @@ MultiSyncMonsterball ();
 void MultiSendData (char *buf, int len, int bUrgent)
 {
 #if DBG
-if (len != multiMessageLengths [(int)buf [0]])
+if (len != MultiMsgLen (int (buf [0])))
 	len = len;
 #endif
 Assert (buf [0] <= MULTI_MAX_TYPE);
@@ -1247,12 +1256,13 @@ void MultiLeaveGame (void)
 {
 	fix	shields;
 
-if (!(gameData.app.nGameMode & GM_MULTI))
+if (!IsMultiGame)
 	return;
 if (gameData.app.nGameMode & GM_NETWORK) {
 	gameData.multigame.create.nCount = 0;
 	AdjustMineSpawn ();
 	MultiCapObjects ();
+	d_srand (gameStates.app.nRandSeed = d_rand ());
 	shields = LOCALPLAYER.shields;
 	LOCALPLAYER.shields = -1;
 	DropPlayerEggs (gameData.objs.consoleP);
@@ -1460,6 +1470,10 @@ playerP->primaryAmmo [VULCAN_INDEX] = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
 playerP->primaryAmmo [GAUSS_INDEX] = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	d_srand (gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI));
+	bufI += 2;
+	}
 playerP->flags = GET_INTEL_INT (buf + bufI);
 bufI += 4;
 #if 0
@@ -1468,7 +1482,8 @@ MultiAdjustRemoteCap (nPlayer);
 objP = OBJECTS + playerP->nObject;
 nRemoteCreated = buf [bufI++]; // How many did the other guy create?
 gameData.multigame.create.nCount = 0;
-if (gameStates.multi.nGameType != UDP_GAME) {
+//if (gameStates.multi.nGameType != UDP_GAME) 
+	{
 	fix shields = playerP->shields;
 	playerP->shields = -1;
 	DropPlayerEggs (objP);
@@ -1748,24 +1763,24 @@ CreateSmallFireballOnObject (&OBJECTS [gameData.multiplayer.players [nPlayer].nO
 
 void MultiDoCtrlcenFire (char *buf)
 {
-	CFixVector to_target;
-	char nGun;
-	short nObject;
-	int i, count = 1;
+	CFixVector	vTarget;
+	char			nGun;
+	short			nObject;
+	int			i, count = 1;
 
-memcpy (&to_target, buf + count, 12);
+memcpy (&vTarget, buf + count, 12);
 count += 12;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)  // swap the vector to_target
-to_target[X] = (fix)INTEL_INT ((int) to_target[X]);
-to_target[Y] = (fix)INTEL_INT ((int) to_target[Y]);
-to_target[Z] = (fix)INTEL_INT ((int) to_target[Z]);
+vTarget[X] = (fix)INTEL_INT ((int) vTarget[X]);
+vTarget[Y] = (fix)INTEL_INT ((int) vTarget[Y]);
+vTarget[Z] = (fix)INTEL_INT ((int) vTarget[Z]);
 #endif
 nGun = buf [count++];
 nObject = GET_INTEL_SHORT (buf + count);
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 if (0 <= (i = FindReactor (OBJECTS + nObject)))
-	CreateNewWeaponSimple (&to_target, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
+	CreateNewWeaponSimple (&vTarget, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -2158,7 +2173,7 @@ while (nBytesProcessed < len) {
 	nType = buf [nBytesProcessed];
 	if ((nType < 0) || (nType > MULTI_MAX_TYPE))
 		return;
-	nMsgLen = multiMessageLengths [nType];
+	nMsgLen = MultiMsgLen (nType);
 	Assert (nMsgLen > 0);
 	if ((nBytesProcessed + nMsgLen) > len) {
 		Int3 ();
@@ -2281,6 +2296,10 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [VUL
 bufI += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [GAUSS_INDEX]);
 bufI += 2;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
+	bufI += 2;
+	}
 PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
 bufI += 4;
 gameData.multigame.msg.buf [bufI++] = gameData.multigame.create.nCount;
@@ -2299,10 +2318,10 @@ for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	}
 gameData.multigame.create.nCount = 0;
 #if DBG
-if (bufI > multiMessageLengths [MULTI_PLAYER_EXPLODE])
+if (bufI > MultiMsgLen (MULTI_PLAYER_EXPLODE))
 	Warning ("MultiSendPlayerExplode:\nMax. message length exceeded!"); // See Rob
 #endif
-MultiSendData (gameData.multigame.msg.buf, multiMessageLengths [MULTI_PLAYER_EXPLODE], 2);
+MultiSendData (gameData.multigame.msg.buf, MultiMsgLen (MULTI_PLAYER_EXPLODE), 2);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
@@ -5309,11 +5328,6 @@ if (nType > MULTI_MAX_TYPE) {
 	return;
 	}
 
-#ifdef NETPROFILING
-	TTRecv [nType]++;
-	fprintf (ReceiveLogFile, "Packet nType: %d Len:%d TT = %d\n", nType, len, TTRecv [nType]);
-	fflush (RecieveLogFile);
-#endif
 console.printf (CON_VERBOSE, "multi data %d\n", nType);
 #if !DBG
 if (nType <= MULTI_MAX_TYPE) {
