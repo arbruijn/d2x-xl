@@ -841,8 +841,8 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 
 static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType, int nId)
 {
-int rthresh = 0xFFFF; //30000;
-while (/*(playerP->secondaryAmmo [nId] % 4 == 1) &&*/ (d_rand () < rthresh)) {
+int rthresh = 30000;
+while ((playerP->secondaryAmmo [nId] % 4 == 1) && (d_rand () < rthresh)) {
 	CFixVector vRandom = CFixVector::Random ();
 	rthresh /= 2;
 	CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
