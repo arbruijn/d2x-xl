@@ -1783,6 +1783,8 @@ void MultiDoCreateWeapon (char *buf)
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
 nPlayer = int (buf [count++]);
+if (nPlayer == gameData.multiplayer.nLocalPlayer)
+	return;
 nId = buf [count++];
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
@@ -1833,6 +1835,8 @@ int MultiDoCreatePowerup (char *buf)
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return -1;
 nPlayer = int (buf [count++]);
+if (nPlayer == gameData.multiplayer.nLocalPlayer)
+	return -1;
 powerupType = buf [count++];
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
@@ -2784,14 +2788,14 @@ if (gameData.app.nGameMode & GM_NETWORK)
 gameData.multigame.msg.buf [count++] = MULTI_CREATE_WEAPON;
 gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
 gameData.multigame.msg.buf [count++] = OBJECTS [nObject].info.nId;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, OBJECTS [nObject].nSegment);
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, OBJECTS [nObject].info.nSegment);
 count += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 count += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, OBJECTS [nObject].info.position.vPos, sizeof (CFixVector));
+memcpy (gameData.multigame.msg.buf + count, &OBJECTS [nObject].info.position.vPos, sizeof (CFixVector));
 count += sizeof (CFixVector);
-memcpy (gameData.multigame.msg.buf + count, OBJECTS [nObject].mType.physInfo.velocity, sizeof (CFixVector));
+memcpy (gameData.multigame.msg.buf + count, &OBJECTS [nObject].mType.physInfo.velocity, sizeof (CFixVector));
 count += sizeof (CFixVector);
 #else
 vSwapped [X] = (fix)INTEL_INT (int (OBJECTS [nObject].info.position.vPos [X]));
@@ -5288,7 +5292,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoPlayerWeapons, 1},
 	{MultiDoSyncMonsterball, 1},
 	{MultiDoDropPowerup, 1},
-	{MultiCreateWeapon, 1}
+	{MultiDoCreateWeapon, 1}
 	};
 
 //-----------------------------------------------------------------------------
