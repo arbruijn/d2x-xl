@@ -174,6 +174,7 @@ void MultiSendInvul (void);
 void MultiSendDeInvul (void);
 void MultiSendCloak (void);
 void MultiSendDeCloak (void);
+void MultiSendCreateWeapon (int nObject);
 void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos);
 void MultiSendDropPowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos, const CFixVector *vVel);
 void MultiSendPlaySound (int nSound, fix volume);
