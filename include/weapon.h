@@ -309,7 +309,7 @@ int PickupVulcanAmmo (CObject *objP, int nPlayer);
 int AttemptToStealItem (CObject *objp, int player_num);
 
 //this function is for when the CPlayerData intentionally drops a powerup
-extern int SpitPowerup (CObject *spitter, ubyte id, int seed);
+int SpitPowerup (CObject *spitter, ubyte id, int seed = -1);
 
 #define SMEGA_ID    40
 

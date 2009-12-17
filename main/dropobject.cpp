@@ -589,7 +589,7 @@ switch (nType) {
 				}
 			if (IsMultiGame) {
 				if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
-					MultiSendCreatePowerup (nId, nSegment, nObject, &vPos);
+					MultiSendDropPowerup (nId, nSegment, nObject, &vNewPos, &vNewVel);
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 				}
 			objP = OBJECTS + nObject;
@@ -841,18 +841,19 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 
 static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType, int nId)
 {
-int rthresh = 30000;
-while ((playerP->secondaryAmmo [SMARTMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
+int rthresh = 0xFFFF; //30000;
+while (/*(playerP->secondaryAmmo [nId] % 4 == 1) &&*/ (d_rand () < rthresh)) {
 	CFixVector vRandom = CFixVector::Random ();
 	rthresh /= 2;
 	CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
 	short nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);
-	if (nNewSeg != -1)
-		CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
-#if 0
+	if (nNewSeg == -1)
+		return;
+	short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
+	if (nObject < 0)
+		return;
 	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
-		MultiSendCreateWeapon ();
-#endif
+		MultiSendDropWeapon (nObject);
   	}
 }
 

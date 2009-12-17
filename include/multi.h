@@ -131,7 +131,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_COUNTDOWN					81
 #define MULTI_PLAYER_WEAPONS			82
 #define MULTI_SYNC_MONSTERBALL		83
-#define MULTI_MAX_TYPE					83
+#define MULTI_DROP_POWERUP				84
+#define MULTI_MAX_TYPE					84
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -173,6 +174,7 @@ void MultiSendDeInvul (void);
 void MultiSendCloak (void);
 void MultiSendDeCloak (void);
 void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos);
+void MultiSendDropPowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos, const CFixVector *vVel);
 void MultiSendPlaySound (int nSound, fix volume);
 void MultiSendAudioTaunt (int taunt_num);
 void MultiSendScore (void);
@@ -180,7 +182,7 @@ void MultiSendTrigger (int nTrigger, int nObject);
 void MultiSendObjTrigger (int CTrigger);
 void MultiSendHostageDoorStatus (int wallnum);
 void MultiSendNetPlayerStatsRequest (ubyte nPlayer);
-void MultiSendDropWeapon (int nObject,int seed);
+void MultiSendDropWeapon (int nObject);
 void MultiSendDropMarker (int nPlayer,CFixVector position,char messagenum,char text[]);
 void MultiSendGuidedInfo (CObject *miss,char);
 void MultiSendReturnFlagHome (short nObject);

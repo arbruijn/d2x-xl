@@ -47,10 +47,11 @@ if ((gameData.app.nGameMode & GM_NETWORK) &&
 	  gameData.multiplayer.maxPowerupsAllowed [id]))
 	return -1;
 #endif
+d_srand (gameStates.app.nRandSeed = (seed < 0) ? d_rand () : seed);
 newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.FVec () * I2X (SPIT_SPEED);
-newVelocity[X] += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity[Y] += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity[Z] += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity [X] += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity [Y] += (d_rand() - 16384) * SPIT_SPEED * 2;
+newVelocity [Z] += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
 if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 	newVelocity.SetZero ();
@@ -61,7 +62,7 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 newPos = posP->vPos + posP->mOrient.FVec () * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
-nObject = CreatePowerup (id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), (short) OBJSEG (spitterP), newPos, 0);
+nObject = CreatePowerup (id, short (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), short (OBJSEG (spitterP)), newPos, 0);
 if (nObject < 0) {
 	Int3();
 	return nObject;
@@ -82,7 +83,7 @@ switch (objP->info.nId) {
 	case POW_SHIELD_BOOST:
 	case POW_ENERGY:
 		objP->info.xLifeLeft = (d_rand() + I2X (3)) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
-		if (gameData.app.nGameMode & GM_MULTI)
+		if (IsMultiGame)
 			objP->info.xLifeLeft /= 2;
 		break;
 	default:
@@ -106,14 +107,12 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 void DropCurrentWeapon (void)
 {
 	int	nObject = -1,
-			ammo = 0,
-			seed;
+			ammo = 0;
 
-seed = d_rand ();
 if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
-		nObject = SpitPowerup (gameData.objs.consoleP, POW_QUADLASER, seed);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_QUADLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 			return;
@@ -122,7 +121,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		}
 	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltinWeapon (SUPER_LASER_INDEX)) {
 		LOCALPLAYER.laserLevel--;
-		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER, seed);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.laserLevel++;
 			return;
@@ -135,7 +134,7 @@ else {
 		gameData.weapons.bTripleFusion = 0;
 	else if (gameData.weapons.nPrimary && !IsBuiltinWeapon (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
-		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
+		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
 		}
 	if (nObject < 0) {	// couldn't drop
 		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
@@ -160,7 +159,7 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 		OBJECTS [nObject].cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
 	}
 if (IsMultiGame) {
-	MultiSendDropWeapon (nObject, seed);
+	MultiSendDropWeapon (nObject);
 	MultiSendWeapons (1);
 	}
 if (gameData.weapons.nPrimary) //if selected weapon was not the laser
@@ -173,7 +172,7 @@ extern void DropOrb (void);
 
 void DropSecondaryWeapon (int nWeapon)
 {
-	int nObject, seed, nPowerup, bHoardEntropy, bMine;
+	int nObject, nPowerup, bHoardEntropy, bMine;
 
 if (nWeapon < 0)
 	nWeapon = gameData.weapons.nSecondary;
@@ -197,8 +196,7 @@ if (bMine)
 	LOCALPLAYER.secondaryAmmo [nWeapon] -= 4;
 else
 	LOCALPLAYER.secondaryAmmo [nWeapon]--;
-seed = d_rand();
-nObject = SpitPowerup (gameData.objs.consoleP, nPowerup, seed);
+nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
 if (nObject == -1) {
 	if (bMine)
 		LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
@@ -209,7 +207,7 @@ if (nObject == -1) {
 HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
 audio.PlaySound (SOUND_DROP_WEAPON);
 if (gameData.app.nGameMode & GM_MULTI) {
-	MultiSendDropWeapon (nObject, seed);
+	MultiSendDropWeapon (nObject);
 	MultiSendWeapons (1);
 	}
 if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {

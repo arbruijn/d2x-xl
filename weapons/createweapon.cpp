@@ -59,7 +59,7 @@ int CreateWeaponObject (ubyte nWeaponType, short nSegment, CFixVector *vPosition
 
 switch (gameData.weapons.info [nWeaponType].renderType) {
 	case WEAPON_RENDER_BLOB:
-		rType = RT_LASER;			// Render as a laser even if blob (see render code above for explanation)
+		rType = RT_LASER;	// Render as a laser even if blob (see render code above for explanation)
 		xLaserRadius = gameData.weapons.info [nWeaponType].blob_size;
 		break;
 	case WEAPON_RENDER_POLYMODEL:
@@ -158,9 +158,7 @@ else if (gameStates.app.bD2XLevel &&
 			(SEGMENTS [gameData.objs.consoleP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
 	return -1;
 #if 1
-if ((nParent == LOCALPLAYER.nObject) &&
-	 (nWeaponType == PROXMINE_ID) &&
-	 (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
+if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;

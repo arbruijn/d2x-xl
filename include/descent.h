@@ -1145,6 +1145,7 @@ typedef struct tApplicationStates {
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
 	int bShowError;
 	int bClearMessage;
+	int nRandSeed;
 	int iDownloadTimeout;
 	bool bCustomData;
 	bool bCustomSounds;

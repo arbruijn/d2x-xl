@@ -217,7 +217,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	16, // MULTI_SYNC_KILLS
 	5,	 // MULTI_COUNTDOWN
 	22, // MULTI_PLAYER_WEAPONS
-	99  // MULTI_SYNC_MONSTERBALL
+	99, // MULTI_SYNC_MONSTERBALL
+	31	 // MULTI_DROP_POWERUP
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -1768,19 +1769,19 @@ if (0 <= (i = FindReactor (OBJECTS + nObject)))
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCreatePowerup (char *buf)
+int MultiDoCreatePowerup (char *buf)
 {
 	short			nSegment;
 	short			nObject;
 	int			nLocalObj;
 	int			nPlayer;
 	int			count = 1;
-	CFixVector	vNewPos;
+	CFixVector	vPos;
 	char			powerupType;
 
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
-	return;
-nPlayer = (int) buf [count++];
+	return -1;
+nPlayer = int (buf [count++]);
 powerupType = buf [count++];
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
@@ -1794,27 +1795,36 @@ nObject = GET_INTEL_SHORT (buf + count);
 count += 2;
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 	Int3 ();
-	return;
+	return -1;
 	}
-memcpy (&vNewPos, buf + count, sizeof (CFixVector));
-count += sizeof (CFixVector);
+memcpy (&vPos, buf + count, sizeof (CFixVector));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 INTEL_VECTOR (vNewPos);
 #endif
 gameData.multigame.create.nCount = 0;
 nLocalObj = CallObjectCreateEgg (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType, true);
 if (nLocalObj < 0)
-	return;
+	return -1;
 NetworkResetObjSync (nLocalObj);
-OBJECTS [nLocalObj].info.position.vPos = vNewPos;
+OBJECTS [nLocalObj].info.position.vPos = vPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero ();
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
-/*Object*/CreateExplosion (nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+/*Object*/CreateExplosion (nSegment, vPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 #if 0
 if (gameData.app.nGameMode & GM_NETWORK)
 	gameData.multiplayer.powerupsInMine [(int) powerupType]++;
 #endif
+return nLocalObj;
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiDoDropPowerup (char *buf)
+{
+int nObject = MultiDoCreatePowerup (buf);
+if (nObject >= 0)
+OBJECTS [nObject].mType.physInfo.velocity = *reinterpret_cast<CFixVector*>(buf + 7 + sizeof (CFixVector));
 }
 
 //-----------------------------------------------------------------------------
@@ -2744,6 +2754,52 @@ MapObjnumLocalToLocal (nObject);
 
 //-----------------------------------------------------------------------------
 
+void MultiSendDropPowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos, const CFixVector *vVel)
+{
+	// Create a powerup on a remote machine, used for remote
+	// placement of used powerups like missiles and cloaking
+	// powerups.
+
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
+	CFixVector vSwapped;
+#endif
+	int count = 0;
+
+#if 0
+if (gameData.app.nGameMode & GM_NETWORK)
+	gameData.multiplayer.powerupsInMine [powerupType]++;
+#endif
+gameData.multigame.msg.buf [count++] = MULTI_DROP_POWERUP;
+gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
+gameData.multigame.msg.buf [count++] = powerupType;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nSegment);
+count += 2;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
+count += 2;
+#if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
+memcpy (gameData.multigame.msg.buf + count, vPos, sizeof (CFixVector));
+count += sizeof (CFixVector);
+memcpy (gameData.multigame.msg.buf + count, vVel, sizeof (CFixVector));
+count += sizeof (CFixVector);
+#else
+vSwapped[X] = (fix)INTEL_INT ((int) (*vPos) [X]);
+vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos) [Y]);
+vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos) [Z]);
+memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
+count += 12;
+vSwapped[X] = (fix)INTEL_INT ((int) (*vVel) [X]);
+vSwapped[Y] = (fix)INTEL_INT ((int) (*vVel) [Y]);
+vSwapped[Z] = (fix)INTEL_INT ((int) (*vVel) [Z]);
+memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
+count += 12;
+#endif
+MultiSendData (gameData.multigame.msg.buf, count, 2);
+NetworkResetObjSync (nObject);
+MapObjnumLocalToLocal (nObject);
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiSendPlaySound (int nSound, fix volume)
 {
 gameData.multigame.msg.buf [0] = MULTI_PLAY_SOUND;
@@ -3468,7 +3524,7 @@ ps->hostages.nOnBoard = pd->nHostagesOnBoard;            // Number of hostages o
 
 //-----------------------------------------------------------------------------
 
-void MultiSendDropWeapon (int nObject, int seed)
+void MultiSendDropWeapon (int nObject)
 {
 	CObject *objP;
 	int count = 0;
@@ -3489,7 +3545,7 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 count += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, ammoCount);
 count += 2;
-PUT_INTEL_INT (gameData.multigame.msg.buf + count, seed);
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, gameStates.app.nRandSeed);
 MapObjnumLocalToLocal (nObject);
 #if 0
 if (gameData.app.nGameMode & GM_NETWORK)
@@ -4382,9 +4438,9 @@ else
 
 //-----------------------------------------------------------------------------
 
-void DropOrb ()
+void DropOrb (void)
 {
-	int nObject, seed;
+	int nObject;
 
 if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
 	return; // How did we get here? Get Leighton!
@@ -4392,15 +4448,14 @@ if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]) {
 	HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_NO_ORBS : TXT_NO_VIRUS);
 	return;
 	}
-seed = d_rand ();
-nObject = SpitPowerup (gameData.objs.consoleP, POW_HOARD_ORB, seed);
+nObject = SpitPowerup (gameData.objs.consoleP, POW_HOARD_ORB);
 if (nObject < 0)
 	return;
 HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_DROP_ORB : TXT_DROP_VIRUS);
 audio.PlaySound (SOUND_DROP_WEAPON);
 if (nObject > -1)
 	if (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))
-		MultiSendDropFlag (nObject, seed);
+		MultiSendDropFlag (nObject, d_rand ());
 // If empty, tell everyone to stop drawing the box around me
 if (!--LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
@@ -4408,9 +4463,9 @@ if (!--LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 
 //-----------------------------------------------------------------------------
 
-void DropFlag ()
+void DropFlag (void)
 {
-	int nObject, seed;
+	int nObject;
 
 if (!(gameData.app.nGameMode & GM_CAPTURE) && !(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
 	return;
@@ -4424,12 +4479,11 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
 	}
 HUDInitMessage (TXT_DROP_FLAG);
 audio.PlaySound (SOUND_DROP_WEAPON);
-seed = d_rand ();
-nObject = SpitPowerup (gameData.objs.consoleP, (ubyte) ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG), seed);
+nObject = SpitPowerup (gameData.objs.consoleP, (ubyte) ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG));
 if (nObject < 0)
 	return;
-if ((gameData.app.nGameMode & GM_CAPTURE) && nObject>-1)
-	MultiSendDropFlag (nObject, seed);
+if ((gameData.app.nGameMode & GM_CAPTURE) && (nObject > -1))
+	MultiSendDropFlag (nObject, d_rand ());
 LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_FLAG);
 }
 
@@ -5068,7 +5122,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoCreateExplosion, 1},
 	{MultiDoCtrlcenFire, 1},
 	{MultiDoPlayerExplode, 1},
-	{MultiDoCreatePowerup, 1},
+	{(pMultiHandler) MultiDoCreatePowerup, 1},
 	{NULL, 1},
 	{MultiDoDeCloak, 1},
 	{NULL, 1},
@@ -5134,7 +5188,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoSyncKills, 1},
 	{MultiDoCountdown, 1},
 	{MultiDoPlayerWeapons, 1},
-	{MultiDoSyncMonsterball, 1}
+	{MultiDoSyncMonsterball, 1},
+	{MultiDoDropPowerup, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5475,6 +5530,10 @@ switch (nType) {
 	case MULTI_SYNC_MONSTERBALL:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoSyncMonsterball (buf);
+		break;
+	case MULTI_DROP_POWERUP:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoDropPowerup (buf);
 		break;
 	default:
 		Int3 ();

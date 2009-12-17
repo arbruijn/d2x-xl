@@ -736,7 +736,7 @@ if (nCount <= 0)
 velSave = spitterP->mType.physInfo.velocity;
 spitterP->mType.physInfo.velocity.SetZero ();
 for (i = nCount; i; i--) {
-	nObject = SpitPowerup (spitterP, nId, d_rand ());
+	nObject = SpitPowerup (spitterP, nId);
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;
 		MultiSendCreatePowerup (nId, objP->info.nSegment, nObject, &objP->info.position.vPos);
