@@ -146,7 +146,7 @@ if (damage > 0) {
 	}
 
 //this is a horrible hack.  guided missile stuff should not be
-//handled in the middle of a routine that is dealing with the CPlayerData
+//handled in the middle of a routine that is dealing with the player
 Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
 	nWeaponType = 0;

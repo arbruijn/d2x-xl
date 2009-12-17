@@ -20,13 +20,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EXEC_DROP		3
 
 int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState);
-int ObjectCreateEgg (CObject *objP);
-int CallObjectCreateEgg (CObject *objP, int count, int nType, int id);
+int ObjectCreateEgg (CObject *objP, bool bLocal = false);
+int CallObjectCreateEgg (CObject *objP, int count, int nType, int id, bool bLocal = false);
 int MaybeDropNetPowerup (short nObject, int powerupType, int nDropState);
 void RespawnDestroyedWeapon (short nObject);
 void MaybeReplacePowerupWithEnergy (CObject *del_obj);
 void DropPowerups (void);
-int DropPowerup (ubyte nType, ubyte id, short owner, int num, const CFixVector& init_vel, const CFixVector& pos, short nSegment);
+int DropPowerup (ubyte nType, ubyte nId, short nOwner, int nCount, const CFixVector& vInitVel, const CFixVector& vPos, short nSegment, bool bLocal = false);
 // creates afterburner blobs behind the specified CObject
 void DropAfterburnerBlobs (CObject *obj, int count, fix size_scale, fix lifetime, CObject *pParent, int bThruster);
 int MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int weapon_index);

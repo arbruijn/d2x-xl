@@ -103,13 +103,6 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 
 //	-----------------------------------------------------------------------------
 
-static inline int IsBuiltInGun (int nGunIndex)
-{
-return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nGunIndex)) != 0);
-}
-
-//	-----------------------------------------------------------------------------
-
 void DropCurrentWeapon (void)
 {
 	int	nObject = -1,
@@ -127,7 +120,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 			}
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
-	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltInGun (SUPER_LASER_INDEX)) {
+	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltinWeapon (SUPER_LASER_INDEX)) {
 		LOCALPLAYER.laserLevel--;
 		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER, seed);
 		if (nObject < 0) {
@@ -140,7 +133,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 else {
 	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion)
 		gameData.weapons.bTripleFusion = 0;
-	else if (gameData.weapons.nPrimary && !IsBuiltInGun (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
+	else if (gameData.weapons.nPrimary && !IsBuiltinWeapon (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
 		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
 		}

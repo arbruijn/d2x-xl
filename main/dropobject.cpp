@@ -359,7 +359,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (gameData.reactor.bDestroyed || gameStates.app.bEndLevelSequence)
 		return 0;
 	gameData.multigame.create.nCount = 0;
-	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
+	if (IsMultiGame && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
 				 (gameStates.app.nSDLTicks - gameData.objs.dropInfo [nObject].nDropTime < extraGameInfo [IsMultiGame].nSpawnDelay))
@@ -379,7 +379,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			DelDropInfo (nObject);
 			}
 		}
-	if (0 > (nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType)))
+	if (0 > (nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType, true)))
 		return 0;
 	if (0 > (nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState)))
 		return 0;
@@ -541,18 +541,18 @@ if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->info.contains.nId == POW_EX
 
 //------------------------------------------------------------------------------
 
-int DropPowerup (ubyte nType, ubyte id, short owner, int nCount, const CFixVector& vInitVel, const CFixVector& pos, short nSegment)
+int DropPowerup (ubyte nType, ubyte nId, short owner, int nCount, const CFixVector& vInitVel, const CFixVector& vPos, short nSegment, bool bLocal)
 {
 	short			nObject = -1;
 	CObject		*objP;
 	CFixVector	vNewVel, vNewPos;
-	fix			xOldMag;
+	fix			xOldMag, xNewMag;
    int			i;
 
 switch (nType) {
 	case OBJ_POWERUP:
 		for (i = 0; i < nCount; i++) {
-			int	nRandScale;
+			int	nRandScale, nOffset;
 			vNewVel = vInitVel;
 			xOldMag = vInitVel.Mag();
 
@@ -560,18 +560,20 @@ switch (nType) {
 			if (IsMultiGame && !(gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
 				nRandScale = 4;
 				//	extra life powerups are converted to invulnerability in multiplayer, for what is an extra life, anyway?
-				if (id == POW_EXTRA_LIFE)
-					id = POW_INVUL;
+				if (nId == POW_EXTRA_LIFE)
+					nId = POW_INVUL;
 				}
 			else
 				nRandScale = 2;
-			vNewVel [X] += FixMul (xOldMag + I2X (32), d_rand () * nRandScale - 16384 * nRandScale);
-			vNewVel [Y] += FixMul (xOldMag + I2X (32), d_rand () * nRandScale - 16384 * nRandScale);
-			vNewVel [Z] += FixMul (xOldMag + I2X (32), d_rand () * nRandScale - 16384 * nRandScale);
+			xNewMag = xOldMag + I2X (32);
+			nOffset = 16384 * nRandScale;
+			vNewVel [X] += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
+			vNewVel [Y] += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
+			vNewVel [Z] += FixMul (xNewMag, d_rand () * nRandScale - nOffset);
 			// Give keys zero velocity so they can be tracked better in multi
-			if (IsMultiGame && (((id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD)) || (id == POW_MONSTERBALL)))
+			if (IsMultiGame && (((nId >= POW_KEY_BLUE) && (nId <= POW_KEY_GOLD)) || (nId == POW_MONSTERBALL)))
 				vNewVel.SetZero ();
-			vNewPos = pos;
+			vNewPos = vPos;
 
 			if (IsMultiGame) {
 				if (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS) {
@@ -580,13 +582,16 @@ switch (nType) {
 				if ((gameData.app.nGameMode & GM_NETWORK) && networkData.nStatus == NETSTAT_ENDLEVEL)
 					return -1;
 				}
-			nObject = CreatePowerup (id, owner, nSegment, vNewPos, 0);
+			nObject = CreatePowerup (nId, owner, nSegment, vNewPos, 0);
 			if (nObject < 0) {
 				Int3 ();
 				return nObject;
 				}
-			if (IsMultiGame)
+			if (IsMultiGame) {
+				if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
+					MultiSendCreatePowerup (nId, nSegment, nObject, &vPos);
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
+				}
 			objP = OBJECTS + nObject;
 			objP->mType.physInfo.velocity = vNewVel;
 			objP->mType.physInfo.drag = 512;	//1024;
@@ -615,7 +620,7 @@ switch (nType) {
 
 	case OBJ_ROBOT:
 		for (i = 0; i < nCount; i++) {
-			int	nRandScale;
+			int nRandScale;
 			vNewVel = vInitVel;
 			xOldMag = vInitVel.Mag();
 			CFixVector::Normalize (vNewVel);
@@ -626,19 +631,13 @@ switch (nType) {
 			vNewVel [Z] += (d_rand () - 16384) * 2;
 			CFixVector::Normalize (vNewVel);
 			vNewVel *= ((I2X (32) + xOldMag) * nRandScale);
-			vNewPos = pos;
+			vNewPos = vPos;
 			//	This is dangerous, could be outside mine.
 //				vNewPos.x += (d_rand ()-16384)*8;
 //				vNewPos.y += (d_rand ()-16384)*7;
 //				vNewPos.z += (d_rand ()-16384)*6;
-			nObject = CreateRobot (id, nSegment, vNewPos);
-			if (nObject < 0) {
-#if TRACE
-				console.printf (1, "Can't create CObject in ObjectCreateEgg, robots.  Aborting.\n");
-#endif
-				Int3 ();
+			if (0 > (nObject = CreateRobot (nId, nSegment, vNewPos)))
 				return nObject;
-				}
 			if (IsMultiGame)
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 			objP = &OBJECTS [nObject];
@@ -657,17 +656,17 @@ switch (nType) {
 			objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
 			objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
 			objP->cType.aiInfo.REMOTE_OWNER = -1;
-			if (ROBOTINFO (id).bossFlag)
+			if (ROBOTINFO (nId).bossFlag)
 				gameData.bosses.Add (nObject);
 			}
 		// At JasenW's request, robots which contain robots
 		// sometimes drop shields.
 		if (d_rand () > 16384)
-			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, pos, nSegment);
+			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, vPos, nSegment);
 		break;
 
 	default:
-		Error ("Error: Illegal nType (%i) in CObject spawning.\n", nType);
+		Error ("Error: Illegal nType (%i) in function DropPowerup.\n", nType);
 	}
 return nObject;
 }
@@ -675,7 +674,7 @@ return nObject;
 // ----------------------------------------------------------------------------
 // Returns created CObject number. If object dropped by player, set flag.
 
-int ObjectCreateEgg (CObject *objP)
+int ObjectCreateEgg (CObject *objP, bool bLocal)
 {
 	int	nObject;
 
@@ -715,12 +714,9 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 	}
 
 nObject = DropPowerup (
-	objP->info.contains.nType,
-   (ubyte) objP->info.contains.nId,
-	ObjIdx (objP),
-	objP->info.contains.nCount,
-	objP->mType.physInfo.velocity,
-	objP->info.position.vPos, objP->info.nSegment);
+	objP->info.contains.nType, ubyte (objP->info.contains.nId), ObjIdx (objP),	objP->info.contains.nCount,
+	objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment, bLocal);
+
 if (nObject >= 0) {
 	if (objP->info.nType == OBJ_PLAYER) {
 		if (objP->info.nId == gameData.multiplayer.nLocalPlayer)
@@ -743,14 +739,14 @@ return nObject;
 //	-------------------------------------------------------------------------------------------------------
 //	Put count OBJECTS of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them! Yippee!
 //	Returns created CObject number.
-int CallObjectCreateEgg (CObject *objP, int count, int nType, int id)
+int CallObjectCreateEgg (CObject *objP, int nCount, int nType, int nId, bool bLocal)
 {
-if (count <= 0)
+if (nCount <= 0)
 	return -1;
-objP->info.contains.nCount = count;
+objP->info.contains.nCount = nCount;
 objP->info.contains.nType = nType;
-objP->info.contains.nId = id;
-return ObjectCreateEgg (objP);
+objP->info.contains.nId = nId;
+return ObjectCreateEgg (objP, bLocal);
 }
 
 //------------------------------------------------------------------------------
@@ -841,89 +837,73 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 // -- int	Items_destroyed = 0;
 
 //	-----------------------------------------------------------------------------
+//	If the player had smart mines, maybe arm some of them.
+
+static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType, int nId)
+{
+int rthresh = 30000;
+while ((playerP->secondaryAmmo [SMARTMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
+	CFixVector vRandom = CFixVector::Random ();
+	rthresh /= 2;
+	CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
+	short nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);
+	if (nNewSeg != -1)
+		CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
+#if 0
+	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
+		MultiSendCreateWeapon ();
+#endif
+  	}
+}
+
+//	-----------------------------------------------------------------------------
 
 void DropPlayerEggs (CObject *playerObjP)
 {
 if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST)) {
-	int				rthresh;
 	int				nPlayerId = playerObjP->info.nId;
 	short				nObject, plrObjNum = OBJ_IDX (playerObjP);
 	int				nVulcanAmmo = 0;
-	CFixVector		vRandom;
 	CPlayerData*	playerP = gameData.multiplayer.players + nPlayerId;
 
-	// -- Items_destroyed = 0;
-
-	// Seed the Random number generator so in net play the eggs will always
-	// drop the same way
-if (IsMultiGame) {
+// Seed the Random number generator so in net play the eggs will always
+// drop the same way
+if (IsMultiGame)
 	gameData.multigame.create.nCount = 0;
+MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
+MaybeArmMines (playerObjP, playerP, PROXMINE_INDEX, PROXMINE_ID);
+
+//	If the player dies and he has powerful lasers, create the powerups here.
+if (playerP->laserLevel > MAX_LASER_LEVEL) {
+	if (!IsBuiltinWeapon (SUPER_LASER_INDEX)) {
+		CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
+		CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
+		}
+	}
+else if (playerP->laserLevel >= 1) {
+	if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX)))
+		CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
 	}
 
-//	If the player had smart mines, maybe arm one of them.
-rthresh = 30000;
-while ((playerP->secondaryAmmo [SMARTMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
-	short			nNewSeg;
-	CFixVector	tvec;
-
-	vRandom = CFixVector::Random();
-	rthresh /= 2;
-	tvec = playerObjP->info.position.vPos + vRandom;
-	nNewSeg = FindSegByPos (tvec, playerObjP->info.nSegment, 1, 0);
-	if (nNewSeg != -1)
-		CreateNewWeapon (&vRandom, &tvec, nNewSeg, plrObjNum, SMARTMINE_ID, 0);
-  	}
-
-	//	If the CPlayerData had proximity bombs, maybe arm one of them.
-	if (IsMultiGame && !(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
-		rthresh = 30000;
-		while ((playerP->secondaryAmmo [PROXMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
-			short			nNewSeg;
-			CFixVector	tvec;
-
-			vRandom = CFixVector::Random();
-			rthresh /= 2;
-			tvec = playerObjP->info.position.vPos + vRandom;
-			nNewSeg = FindSegByPos (tvec, playerObjP->info.nSegment, 1, 0);
-			if (nNewSeg != -1)
-				CreateNewWeapon (&vRandom, &tvec, nNewSeg, plrObjNum, PROXMINE_ID, 0);
-			}
-		}
-
-		//	If the CPlayerData dies and he has powerful lasers, create the powerups here.
-
-	if (playerP->laserLevel > MAX_LASER_LEVEL) {
-		if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && 
-			   (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))) {
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
-			CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
-			}
-		}
-	else if (playerP->laserLevel >= 1) {
-		if (!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && 
-			   (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (POW_LASER) | HAS_FLAG (SUPER_LASER_INDEX)))))
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
-		}
-
-	//	Drop quad laser if appropos
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_QUAD_LASERS, POW_QUADLASER);
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CLOAKED, POW_CLOAK);
-	while (playerP->nInvuls--)
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
-	while (playerP->nCloaks--)
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_FULLMAP, POW_FULL_MAP);
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AFTERBURNER, POW_AFTERBURNER);
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AMMO_RACK, POW_AMMORACK);
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CONVERTER, POW_CONVERTER);
-	if (!IsMultiGame) {
-		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_SLOWMOTION, POW_SLOWMOTION);
-		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_BULLETTIME, POW_BULLETTIME);
-		}	
-	if (PlayerHasHeadlight (nPlayerId) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) &&
-		 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
-		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_HEADLIGHT, POW_HEADLIGHT);
-	// drop the other enemies flag if you have it
+//	Drop quad laser if appropos
+MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_QUAD_LASERS, POW_QUADLASER);
+MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CLOAKED, POW_CLOAK);
+while (playerP->nInvuls--)
+	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
+while (playerP->nCloaks--)
+	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
+MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_FULLMAP, POW_FULL_MAP);
+MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AFTERBURNER, POW_AFTERBURNER);
+MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AMMO_RACK, POW_AMMORACK);
+MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CONVERTER, POW_CONVERTER);
+if (!IsMultiGame) {
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_SLOWMOTION, POW_SLOWMOTION);
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_BULLETTIME, POW_BULLETTIME);
+	}	
+if (PlayerHasHeadlight (nPlayerId) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) &&
+	 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_HEADLIGHT, POW_HEADLIGHT);
+// drop the other enemies flag if you have it
 
 playerP->nInvuls =
 playerP->nCloaks = 0;
@@ -966,7 +946,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 			gameData.weapons.nAmmoCollected = 0;
 			}
 		for (i = 0; i < 2; i++) {
-			if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nGunIds [i]))
+			if (IsBuiltinWeapon (nGunIds [i]))
 				nVulcanAmmo -= nGunAmmo [i];
 			else if (playerP->primaryWeaponFlags & HAS_FLAG (nGunIds [i]))
 				nGunObjs [i] = MaybeDropPrimaryWeaponEgg (playerObjP, nGunIds [i]);
@@ -980,7 +960,7 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 		}
 #else //	else {
 		int nFlag = HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX);
-		if (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) {
+		if (IsBuiltinWeapon (VULCAN_INDEX) || IsBuiltinWeapon (GAUSS_INDEX)) {
 			nVulcanAmmo -= GAUSS_WEAPON_AMMO_AMOUNT;
 			if (nVulcanAmmo < 0)
 				nVulcanAmmo = 0;

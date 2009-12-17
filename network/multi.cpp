@@ -1423,7 +1423,6 @@ void MultiDoPlayerExplode (char *buf)
 	CObject*			objP;
 	CPlayerData*	playerP;
 	int				bufI, nPlayer, i;
-	fix				shields;
 	short				nRemoteObj;
 	char				nRemoteCreated;
 
@@ -1467,19 +1466,21 @@ MultiAdjustRemoteCap (nPlayer);
 objP = OBJECTS + playerP->nObject;
 nRemoteCreated = buf [bufI++]; // How many did the other guy create?
 gameData.multigame.create.nCount = 0;
-shields = playerP->shields;
-playerP->shields = -1;
-DropPlayerEggs (objP);
-playerP->shields = shields;
+if (gameStates.multi.nGameType != UDP_GAME) {
+	fix shields = playerP->shields;
+	playerP->shields = -1;
+	DropPlayerEggs (objP);
+	playerP->shields = shields;
 // Create mapping from remote to local numbering system
-for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
-	nRemoteObj = GET_INTEL_SHORT (buf + bufI);
-	if (nRemoteObj > 0)
-		MapObjnumLocalToRemote ((short) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
-	bufI += 2;
+	for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
+		nRemoteObj = GET_INTEL_SHORT (buf + bufI);
+		if (nRemoteObj > 0)
+			MapObjnumLocalToRemote ((short) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
+		bufI += 2;
+		}
+	for (; i < gameData.multigame.create.nCount; i++)
+		OBJECTS [gameData.multigame.create.nObjNums [i]].Die ();
 	}
-for (; i < gameData.multigame.create.nCount; i++)
-	OBJECTS [gameData.multigame.create.nObjNums [i]].Die ();
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
 	objP->ExplodeBadassPlayer ();
@@ -1801,7 +1802,7 @@ count += sizeof (CFixVector);
 INTEL_VECTOR (vNewPos);
 #endif
 gameData.multigame.create.nCount = 0;
-nLocalObj = CallObjectCreateEgg (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType);
+nLocalObj = CallObjectCreateEgg (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType, true);
 if (nLocalObj < 0)
 	return;
 NetworkResetObjSync (nLocalObj);
@@ -2342,12 +2343,10 @@ if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = int (primaryWeaponToPowerup [i]);
-	if (extraGameInfo [IsMultiGame].loadout.nGuns & (1 << i))	// weapon is standard loadout
+	if (IsBuiltinWeapon (i))	// weapon is standard loadout
 		continue;
 	if (i == 0) {// laser
-		if (extraGameInfo [IsMultiGame].loadout.nGuns & 1)	// lasers or superlasers are standard loadout
-			continue;
-		if (extraGameInfo [IsMultiGame].loadout.nGuns & (1 | (i << 5)))	// lasers or superlasers are standard loadout
+		if (IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX))	// lasers or superlasers are standard loadout
 			continue;
 		if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
 			gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER] += gameData.multiplayer.players [nPlayer].laserLevel - MAX_LASER_LEVEL;
@@ -2706,7 +2705,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, CFixVector *pos)
+void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos)
 {
 	// Create a powerup on a remote machine, used for remote
 	// placement of used powerups like missiles and cloaking
@@ -2729,12 +2728,12 @@ count += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 count += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, pos, sizeof (CFixVector));
+memcpy (gameData.multigame.msg.buf + count, vPos, sizeof (CFixVector));
 count += sizeof (CFixVector);
 #else
-vSwapped[X] = (fix)INTEL_INT ((int) (*pos) [X]);
-vSwapped[Y] = (fix)INTEL_INT ((int) (*pos) [Y]);
-vSwapped[Z] = (fix)INTEL_INT ((int) (*pos) [Z]);
+vSwapped[X] = (fix)INTEL_INT ((int) (*vPos) [X]);
+vSwapped[Y] = (fix)INTEL_INT ((int) (*vPos) [Y]);
+vSwapped[Z] = (fix)INTEL_INT ((int) (*vPos) [Z]);
 memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
 count += 12;
 #endif

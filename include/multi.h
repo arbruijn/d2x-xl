@@ -172,7 +172,7 @@ void MultiSendInvul (void);
 void MultiSendDeInvul (void);
 void MultiSendCloak (void);
 void MultiSendDeCloak (void);
-void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, CFixVector *pos);
+void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos);
 void MultiSendPlaySound (int nSound, fix volume);
 void MultiSendAudioTaunt (int taunt_num);
 void MultiSendScore (void);

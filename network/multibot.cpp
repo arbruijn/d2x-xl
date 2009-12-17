@@ -988,7 +988,7 @@ else if (botInfoP->containsCount) {
 			nEggObj = ObjectCreateEgg (delObjP);
 		}
 	}
-if (nEggObj >= 0) // Transmit the CObject creation to the other players	 
+if (nEggObj >= 0) // Transmit the object creation to the other players	 
 	MultiSendCreateRobotPowerups (delObjP);
 }
 

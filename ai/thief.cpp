@@ -479,18 +479,11 @@ gameData.thief.stolenItems.Clear (char (0xff));
 
 void DropStolenItems(CObject *objP)
 {
-	int	i;
-#if TRACE
-        console.printf (CON_DBG,"Dropping thief items!\n");
-#endif
-	// -- compress_stolen_items();
-
-	for (i=0; i<MAX_STOLEN_ITEMS; i++) {
-		if (gameData.thief.stolenItems[i] != 255)
-			DropPowerup(OBJ_POWERUP, gameData.thief.stolenItems[i], -1, 1, objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment);
-		gameData.thief.stolenItems[i] = 255;
+for (int i = 0; i < MAX_STOLEN_ITEMS; i++) {
+	if (gameData.thief.stolenItems [i] != 255)
+		DropPowerup (OBJ_POWERUP, gameData.thief.stolenItems [i], -1, 1, objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment);
+	gameData.thief.stolenItems [i] = 255;
 	}
-
 }
 
 // --------------------------------------------------------------------------------------------------------------

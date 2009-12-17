@@ -305,6 +305,10 @@ typedef struct tNetworkObjInfo {
 	ubyte	nId;
 } __pack__ tNetworkObjInfo;
 
+extern tExtraGameInfo extraGameInfo [2];
+
+//	-----------------------------------------------------------------------------
+
 #if 1
 
 static inline int EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int bAllowLocalFlagOn, int bAllowLocalFlagOff)
@@ -344,13 +348,21 @@ return bMultiFlag;
 
 #endif
 
+//	-----------------------------------------------------------------------------
+
+static inline bool IsBuiltinWeapon (int nWeapon)
+{
+return (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [IsMultiGame]) && 
+		 (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nWeapon));
+}
+
+//	-----------------------------------------------------------------------------
+
 int NetworkStartGame (void);
 void NetworkRejoinGame (void);
 void NetworkLeaveGame (void);
 int NetworkEndLevel (int *secret);
 int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState);
-
-extern tExtraGameInfo extraGameInfo [2];
 
 int NetworkListen (void);
 int NetworkLevelSync (void);

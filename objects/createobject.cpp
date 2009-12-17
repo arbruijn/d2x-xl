@@ -299,7 +299,9 @@ objP->LinkToSeg (nSegment);
 
 memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
 #if 1
-if ((nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(int) nId] && IsMultiGame && IsCoopGame && (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
+if (IsMultiGame && IsCoopGame && 
+	 (nType == OBJ_WEAPON) && gameData.objs.bIsMissile [int (nId)] && 
+	 (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
 
 	for (int i = 0; i < MAX_POWERUP_TYPES; i++) {

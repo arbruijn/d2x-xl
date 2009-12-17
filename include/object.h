@@ -1215,23 +1215,16 @@ int UpdateObjectSeg (CObject *objP, bool bMove = true);
 // numbers used when debugging is on
 void FixObjectSegs (void);
 
-// Drops objects contained in objp.
-int ObjectCreateEgg (CObject *objP);
-
-// Interface to ObjectCreateEgg, puts count objects of nType nType, id
-// = id in objp and then drops them.
-int CallObjectCreateEgg(CObject *objp, int count, int nType, int id);
-
-extern void DeadPlayerEnd(void);
+void DeadPlayerEnd (void);
 
 // Extract information from an CObject (objp->orient, objp->pos,
 // objp->nSegment), stuff in a tShortPos structure.  See typedef
 // tShortPos.
-extern void CreateShortPos(tShortPos *spp, CObject *objp, int swap_bytes);
+void CreateShortPos(tShortPos *spp, CObject *objp, int swap_bytes);
 
 // Extract information from a tShortPos, stuff in objp->orient
 // (matrix), objp->pos, objp->nSegment
-extern void ExtractShortPos(CObject *objp, tShortPos *spp, int swap_bytes);
+void ExtractShortPos(CObject *objp, tShortPos *spp, int swap_bytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay
 // between levels if clear_all is set, clear even proximity bombs
