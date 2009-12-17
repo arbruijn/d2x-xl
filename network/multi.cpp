@@ -138,7 +138,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{8, -1},  // FIRE
 	{5, -1},  // KILL
 	{4, -1},  // REMOVE_OBJECT
-	{97+9, 97+11}, // PLAYER_EXPLODE
+	{97+9, -1}, // PLAYER_EXPLODE
 	{37, -1}, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
 	{2, -1},  // QUIT
 	{4, -1},  // PLAY_SOUND
@@ -243,9 +243,13 @@ CPlayerShip defaultPlayerShip;
 
 inline int MultiMsgLen (int nMsg)
 {
+#if 1
+return multiMessageLengths [nMsg][0];
+#else
 	int l = multiMessageLengths [nMsg][gameStates.multi.nGameType == UDP_GAME];
 
 return (l > 0) ? l : multiMessageLengths [nMsg][0];
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1470,12 +1474,14 @@ playerP->primaryAmmo [VULCAN_INDEX] = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
 playerP->primaryAmmo [GAUSS_INDEX] = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
+playerP->flags = GET_INTEL_INT (buf + bufI);
+bufI += 4;
+#if 0
 if (gameStates.multi.nGameType == UDP_GAME) {
 	d_srand (gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI));
 	bufI += 2;
 	}
-playerP->flags = GET_INTEL_INT (buf + bufI);
-bufI += 4;
+#endif
 #if 0
 MultiAdjustRemoteCap (nPlayer);
 #endif
@@ -2296,12 +2302,14 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [VUL
 bufI += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [GAUSS_INDEX]);
 bufI += 2;
+PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
+bufI += 4;
+#if 0
 if (gameStates.multi.nGameType == UDP_GAME) {
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
 	bufI += 2;
 	}
-PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
-bufI += 4;
+#endif
 gameData.multigame.msg.buf [bufI++] = gameData.multigame.create.nCount;
 Assert (gameData.multigame.create.nCount <= MAX_NET_CREATE_OBJECTS);
 memset (gameData.multigame.msg.buf + bufI, -1, MAX_NET_CREATE_OBJECTS * sizeof (short));

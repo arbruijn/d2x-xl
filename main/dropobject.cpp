@@ -588,7 +588,7 @@ switch (nType) {
 				return nObject;
 				}
 			if (IsMultiGame) {
-#if 0
+#if 1
 				if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
 					MultiSendDropPowerup (nId, nSegment, nObject, &vNewPos, &vNewVel);
 #endif
@@ -678,7 +678,7 @@ return nObject;
 
 int ObjectCreateEgg (CObject *objP, bool bLocal)
 {
-	int	nObject;
+	int	i, nObject;
 
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
 	if (IsMultiGame) {
@@ -715,11 +715,11 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 		}
 	}
 
-nObject = DropPowerup (
-	objP->info.contains.nType, ubyte (objP->info.contains.nId), ObjIdx (objP),	objP->info.contains.nCount,
-	objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment, bLocal);
-
-if (nObject >= 0) {
+for (i = objP->info.contains.nCount; i; i--) {
+	nObject = DropPowerup (objP->info.contains.nType, ubyte (objP->info.contains.nId), ObjIdx (objP), 1,
+								  objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment, bLocal);
+	if (nObject < 0)
+		break;
 	if (objP->info.nType == OBJ_PLAYER) {
 		if (objP->info.nId == gameData.multiplayer.nLocalPlayer)
 			OBJECTS [nObject].info.nFlags |= OF_PLAYER_DROPPED;
@@ -854,7 +854,7 @@ while ((playerP->secondaryAmmo [nId] % 4 == 1) && (d_rand () < rthresh)) {
 	short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
 	if (nObject < 0)
 		return;
-#if 0
+#if 1
 	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
 		MultiSendCreateWeapon (nObject);
 #endif
