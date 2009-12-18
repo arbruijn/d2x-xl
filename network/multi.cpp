@@ -243,7 +243,7 @@ CPlayerShip defaultPlayerShip;
 
 inline int MultiMsgLen (int nMsg)
 {
-#if 1
+#if 0
 return multiMessageLengths [nMsg][0];
 #else
 	int l = multiMessageLengths [nMsg][gameStates.multi.nGameType == UDP_GAME];
@@ -1477,7 +1477,7 @@ bufI += 2;
 playerP->flags = GET_INTEL_INT (buf + bufI);
 bufI += 4;
 #if 1
-if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] > 0) {
+if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		d_srand (gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI));
 		bufI += 2;
@@ -2311,7 +2311,7 @@ bufI += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
 bufI += 4;
 #if 1
-if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] > 0) {
+if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
 		bufI += 2;
