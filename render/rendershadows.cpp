@@ -417,7 +417,7 @@ if (!bShadowTest)
 #if DBG
 		if (gameStates.render.bChaseCam)
 #else	
-		if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
+		if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION)))
 #endif			 
 			G3SetViewMatrix (gameData.render.mine.viewerEye, externalView.Pos () ? externalView.Pos ()->mOrient : 
 								  gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);

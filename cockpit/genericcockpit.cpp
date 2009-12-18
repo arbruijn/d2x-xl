@@ -1103,7 +1103,7 @@ Assert (nCrossBm <= 1);
 #if DBG
 if (gameStates.render.bChaseCam)
 #else
-if (gameStates.render.bChaseCam && (!IsMultiGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
+if (gameStates.render.bChaseCam && (!IsMultiGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION)))
 #endif
 	return;
 m_info.xScale *= float (HUD_ASPECT);

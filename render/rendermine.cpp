@@ -763,7 +763,7 @@ else {
 #if DBG
 			 gameStates.render.bChaseCam) {
 #else
-			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
+			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
 #endif
 			externalView.GetViewPoint ();
 			G3SetViewMatrix (gameData.render.mine.viewerEye,

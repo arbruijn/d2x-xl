@@ -207,7 +207,7 @@ return 1;
 int ToggleChaseCam (void)
 {
 #if !DBG
-if (IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
+if (IsMultiGame && !IsCoopGame && (!EGI_FLAG (bEnableCheats, 0, 0, 0) || COMPETITION)) {
 	HUDMessage (0, "Chase camera is not available");
 	return 0;
 	}
@@ -245,7 +245,7 @@ return 1;
 int ToggleFreeCam (void)
 {
 #if !DBG
-if ((IsMultiGame && !(IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))) {
+if (IsMultiGame && !IsCoopGame && (!EGI_FLAG (bEnableCheats, 0, 0, 0) || COMPETITION)) {
 	HUDMessage (0, "Free camera is not available");
 	return 0;
 	}
