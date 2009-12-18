@@ -138,7 +138,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{8, -1},  // FIRE
 	{5, -1},  // KILL
 	{4, -1},  // REMOVE_OBJECT
-	{97+9, -1}, // PLAYER_EXPLODE
+	{97+9, 97+11}, // PLAYER_EXPLODE
 	{37, -1}, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
 	{2, -1},  // QUIT
 	{4, -1},  // PLAY_SOUND
@@ -1476,7 +1476,7 @@ playerP->primaryAmmo [GAUSS_INDEX] = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
 playerP->flags = GET_INTEL_INT (buf + bufI);
 bufI += 4;
-#if 0
+#if 1
 if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		d_srand (gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI));
@@ -2310,7 +2310,7 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [GAU
 bufI += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
 bufI += 4;
-#if 0
+#if 1
 if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
