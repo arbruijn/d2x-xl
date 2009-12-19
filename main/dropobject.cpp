@@ -588,7 +588,7 @@ switch (nType) {
 				return nObject;
 				}
 			if (IsMultiGame) {
-#if 1
+#if 0
 				if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
 					MultiSendDropPowerup (nId, nSegment, nObject, &vNewPos, &vNewVel);
 #endif
@@ -839,14 +839,16 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 // -- int	Items_destroyed = 0;
 
 //	-----------------------------------------------------------------------------
-//	If the player had smart mines, maybe arm some of them.
+//	If the player had mines, maybe arm up to 3 of them.
 
 static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType, int nId)
 {
-int rthresh = 30000;
-while (((gameStates.multi.nGameType == UDP_GAME) ? playerP->secondaryAmmo [nType] / 4 : (playerP->secondaryAmmo [nType] % 4 == 1)) && (d_rand () < rthresh)) {
+int nAmmo = playerP->secondaryAmmo [nType];
+if (nAmmo > 3)
+	nAmmo = 3;
+for (int nThreshold = 30000; nAmmo && (d_rand () < nThreshold); nThreshold /= 2) {
 	CFixVector vRandom = CFixVector::Random ();
-	rthresh /= 2;
+	nThreshold /= 2;
 	CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
 	short nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);
 	if (nNewSeg == -1)
@@ -854,11 +856,11 @@ while (((gameStates.multi.nGameType == UDP_GAME) ? playerP->secondaryAmmo [nType
 	short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
 	if (nObject < 0)
 		return;
-	playerP->secondaryAmmo [nType]--;
-#if 1
+#if 0
 	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
 		MultiSendCreateWeapon (nObject);
 #endif
+	nAmmo--;
   	}
 }
 
@@ -874,8 +876,11 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 
 // Seed the Random number generator so in net play the eggs will always
 // drop the same way
-if (IsMultiGame)
+	if (IsMultiGame) {
 	gameData.multigame.create.nCount = 0;
+	if (gameStates.multi.nGameType != UDP_GAME)
+		d_srand (gameStates.app.nRandSeed = 5483L);
+	}
 MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
 if (IsMultiGame && !(IsHoardGame || IsEntropyGame))
 	MaybeArmMines (playerObjP, playerP, PROXMINE_INDEX, PROXMINE_ID);

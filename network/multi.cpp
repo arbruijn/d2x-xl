@@ -1496,9 +1496,9 @@ gameData.multigame.create.nCount = 0;
 	playerP->shields = -1;
 #if 0
 	if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] < 0)
-#endif
 	if (gameStates.multi.nGameType != UDP_GAME)
-		DropPlayerEggs (objP);
+#endif
+	DropPlayerEggs (objP);
 	playerP->shields = shields;
 // Create mapping from remote to local numbering system
 	for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
