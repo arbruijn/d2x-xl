@@ -844,7 +844,7 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType, int nId)
 {
 int rthresh = 30000;
-while ((playerP->secondaryAmmo [nId] % 4 == 1) && (d_rand () < rthresh)) {
+while (((gameStates.multi.nGameType == UDP_GAME) ? playerP->secondaryAmmo [nType] / 4 : (playerP->secondaryAmmo [nType] % 4 == 1)) && (d_rand () < rthresh)) {
 	CFixVector vRandom = CFixVector::Random ();
 	rthresh /= 2;
 	CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
@@ -854,6 +854,7 @@ while ((playerP->secondaryAmmo [nId] % 4 == 1) && (d_rand () < rthresh)) {
 	short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
 	if (nObject < 0)
 		return;
+	playerP->secondaryAmmo [nType]--;
 #if 1
 	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
 		MultiSendCreateWeapon (nObject);
