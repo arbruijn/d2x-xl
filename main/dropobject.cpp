@@ -876,7 +876,8 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 if (IsMultiGame)
 	gameData.multigame.create.nCount = 0;
 MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
-MaybeArmMines (playerObjP, playerP, PROXMINE_INDEX, PROXMINE_ID);
+if (IsMultiGame && !(IsHoardGame || IsEntropyGame))
+	MaybeArmMines (playerObjP, playerP, PROXMINE_INDEX, PROXMINE_ID);
 
 //	If the player dies and he has powerful lasers, create the powerups here.
 if (playerP->laserLevel > MAX_LASER_LEVEL) {

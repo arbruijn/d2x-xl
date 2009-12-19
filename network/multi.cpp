@@ -1803,45 +1803,45 @@ void MultiDoCreateWeapon (char *buf)
 	short			nObject;
 	int			nLocalObj;
 	int			nPlayer;
-	int			count = 1;
-	CFixVector	vPos, vDir;
+	int			bufI = 1;
+	CFixVector	vPos, vVel;
 	char			nId;
 
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
-nPlayer = int (buf [count++]);
+nPlayer = int (buf [bufI++]);
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	return;
-nId = buf [count++];
+nId = buf [bufI++];
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
 	 (gameData.multiplayer.powerupsInMine [(int)powerupType] + PowerupsOnShips (powerupType) >=
 	  gameData.multiplayer.maxPowerupsAllowed [powerupType]))
 	return;
 #endif
-nSegment = GET_INTEL_SHORT (buf + count);
-count += 2;
-nObject = GET_INTEL_SHORT (buf + count);
-count += 2;
+nSegment = GET_INTEL_SHORT (buf + bufI);
+bufI += 2;
+nObject = GET_INTEL_SHORT (buf + bufI);
+bufI += 2;
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 	Int3 ();
 	return;
 	}
-memcpy (&vPos, buf + count, sizeof (CFixVector));
-count += sizeof (CFixVector);
-memcpy (&vDir, buf + count, sizeof (CFixVector));
-count += sizeof (CFixVector);
+memcpy (&vPos, buf + bufI, sizeof (CFixVector));
+bufI += sizeof (CFixVector);
+memcpy (&vVel, buf + bufI, sizeof (CFixVector));
+bufI += sizeof (CFixVector);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 INTEL_VECTOR (vPos);
-INTEL_VECTOR (vDir);
+INTEL_VECTOR (vVel);
 #endif
 gameData.multigame.create.nCount = 0;
-nLocalObj = CreateNewWeapon (&vDir, &vPos, nSegment, nPlayer, nId, 0);
+nLocalObj = CreateNewWeapon (&vVel, &vPos, nSegment, nPlayer, nId, 0);
 if (nLocalObj < 0)
 	return;
 NetworkResetObjSync (nLocalObj);
 OBJECTS [nLocalObj].info.position.vPos = vPos;
-OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero ();
+OBJECTS [nLocalObj].mType.physInfo.velocity = vVel;
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
 return;
@@ -1855,31 +1855,31 @@ int MultiDoCreatePowerup (char *buf)
 	short			nObject;
 	int			nLocalObj;
 	int			nPlayer;
-	int			count = 1;
+	int			bufI = 1;
 	CFixVector	vPos;
 	char			powerupType;
 
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return -1;
-nPlayer = int (buf [count++]);
+nPlayer = int (buf [bufI++]);
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	return -1;
-powerupType = buf [count++];
+powerupType = buf [bufI++];
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
 	 (gameData.multiplayer.powerupsInMine [(int)powerupType] + PowerupsOnShips (powerupType) >=
 	  gameData.multiplayer.maxPowerupsAllowed [powerupType]))
 	return;
 #endif
-nSegment = GET_INTEL_SHORT (buf + count);
-count += 2;
-nObject = GET_INTEL_SHORT (buf + count);
-count += 2;
+nSegment = GET_INTEL_SHORT (buf + bufI);
+bufI += 2;
+nObject = GET_INTEL_SHORT (buf + bufI);
+bufI += 2;
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 	Int3 ();
 	return -1;
 	}
-memcpy (&vPos, buf + count, sizeof (CFixVector));
+memcpy (&vPos, buf + bufI, sizeof (CFixVector));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 INTEL_VECTOR (vNewPos);
 #endif
