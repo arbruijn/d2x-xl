@@ -519,7 +519,7 @@ gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.nLocalPlayer;
 hBufP = bufP++;
 gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nType; 				
 gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nId;					
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, delObjP->info.nSegment);		        
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, delObjP->info.nSegment);
 bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 memcpy (gameData.multigame.msg.buf + bufP, &delObjP->info.position.vPos, sizeof (CFixVector));
@@ -530,6 +530,10 @@ vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Z]);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));     
 #endif
 bufP += 12;
+if (gameStates.multi.nGameType == UDP_GAME)
+	gameStates.app.nRandSeed = d_rand ();
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
+bufP += 2;
 gameData.multigame.create.nCount = 0;
 for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
 	h = (nContained > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : nContained;
@@ -919,6 +923,11 @@ delObjP.mType.physInfo.velocity.SetZero ();
 delObjP.info.position.vPos [X] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [X]);
 delObjP.info.position.vPos [Y] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Y]);
 delObjP.info.position.vPos [Z] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Z]);
+ if (gameStates.multi.nGameType == UDP_GAME)
+	 gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufP);
+else
+	gameStates.app.nRandSeed = 8321L;
+d_srand (gameStates.app.nRandSeed);
 Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer); // What? How'd we send ourselves this?
 gameData.multigame.create.nCount = 0;
@@ -957,6 +966,9 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 	}
 botInfoP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nCount = 0;
+if (gameStates.multi.nGameType == UDP_GAME)
+	d_srand (gameStates.app.nRandSeed = d_rand ());
+
 if (delObjP->info.contains.nCount > 0) { 
 	//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 	if (delObjP->info.contains.nType == OBJ_POWERUP) {
@@ -969,12 +981,16 @@ if (delObjP->info.contains.nCount > 0) {
 				delObjP->info.contains.nCount = 0;
 			}
 		}
+	if (gameStates.multi.nGameType != UDP_GAME)
+		d_srand (gameStates.app.nRandSeed = 1245L);
 	if (delObjP->info.contains.nCount > 0)
 		nEggObj = ObjectCreateEgg (delObjP);
 	}
 else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robots we weren't in control of
 	return;
 else if (botInfoP->containsCount) {
+	if (gameStates.multi.nGameType != UDP_GAME)
+		d_srand (TimerGetApproxSeconds ());
 	if (((d_rand () * 16) >> 15) < botInfoP->containsProb) {
 		delObjP->info.contains.nCount = ((d_rand () * botInfoP->containsCount) >> 15) + 1;
 		delObjP->info.contains.nType = botInfoP->containsType;
@@ -984,6 +1000,8 @@ else if (botInfoP->containsCount) {
 			if (!MultiPowerupIsAllowed (delObjP->info.contains.nId))
 				delObjP->info.contains.nId = POW_SHIELD_BOOST;
 			 }
+		if (gameStates.multi.nGameType != UDP_GAME)
+			d_srand (gameStates.app.nRandSeed = 1245L);
 		if (delObjP->info.contains.nCount > 0)
 			nEggObj = ObjectCreateEgg (delObjP);
 		}

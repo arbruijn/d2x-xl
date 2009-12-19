@@ -484,6 +484,7 @@ void NetworkSendSync (void)
 {
 	int i;
 
+d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 	// Randomize their starting locations...
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 	if (gameData.multiplayer.players [i].connected)

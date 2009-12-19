@@ -196,6 +196,9 @@ if (pbFixedPos)
 nDepth = BASE_NET_DROP_DEPTH + d_rand () % (BASE_NET_DROP_DEPTH * 2);
 vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
 nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].info.nSegment;
+
+if (gameStates.multi.nGameType != UDP_GAME)
+	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = gameData.multiplayer.nLocalPlayer;
@@ -848,7 +851,7 @@ if ((gameStates.multi.nGameType != UDP_GAME) && (nAmmo %4 != 1))
 	return;
 if (nAmmo > 3)
 	nAmmo = 3;
-for (int nThreshold = 30000; ((gameStates.multi.nGameType == UDP_GAME) ? nAmmo : (nAmmo %4 != 1)) && (d_rand () < nThreshold); nThreshold /= 2) {
+for (int nThreshold = 30000; ((gameStates.multi.nGameType == UDP_GAME) ? nAmmo : (nAmmo %4 == 1)) && (d_rand () < nThreshold); nThreshold /= 2) {
 	CFixVector vRandom = CFixVector::Random ();
 	nThreshold /= 2;
 	CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
@@ -878,10 +881,11 @@ if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHO
 
 // Seed the Random number generator so in net play the eggs will always
 // drop the same way
-	if (IsMultiGame) {
+if (IsMultiGame) {
 	gameData.multigame.create.nCount = 0;
 	if (gameStates.multi.nGameType != UDP_GAME)
-		d_srand (gameStates.app.nRandSeed = 5483L);
+		gameStates.app.nRandSeed = 5483L;
+	d_srand (gameStates.app.nRandSeed);
 	}
 MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
 if (IsMultiGame && !(IsHoardGame || IsEntropyGame))

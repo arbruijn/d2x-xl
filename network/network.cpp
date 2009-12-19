@@ -195,6 +195,7 @@ networkData.nStatus = NETSTAT_STARTING;
 // IpxHandleNetGameAuxData.
 IpxInitNetGameAuxData (netGame.AuxData ());
 NetworkSetGameMode (netGame.m_info.gameMode);
+d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 netGame.m_info.nSecurity = d_rand ();  // For syncing NetGames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {
 	StartNewLevel (netGame.m_info.GetLevel (), true);

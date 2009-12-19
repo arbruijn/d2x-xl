@@ -195,7 +195,7 @@ if (gameStates.app.bPlayerIsDead) {
 				AdjustMineSpawn ();
 				MultiCapObjects ();
 				}
-			d_srand (gameStates.app.nRandSeed = d_rand ());
+			gameStates.app.nRandSeed = d_rand ();
 			DropPlayerEggs (gameData.objs.consoleP);
 			gameStates.app.bPlayerEggsDropped = 1;
 			if (IsMultiGame)
@@ -228,7 +228,7 @@ if (gameStates.app.bPlayerIsDead) {
 				AdjustMineSpawn ();
 				MultiCapObjects ();
 				}
-			d_srand (gameStates.app.nRandSeed = d_rand ());
+			gameStates.app.nRandSeed = d_rand ();
 			DropPlayerEggs (gameData.objs.consoleP);
 			gameStates.app.bPlayerEggsDropped = 1;
 			if (IsMultiGame)

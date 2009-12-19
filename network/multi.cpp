@@ -164,7 +164,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},  // CREATE_ROBOT
 	{3, -1},  // TRIGGER
 	{10, -1}, // BOSS_ACTIONS
-	{27, -1}, // ROBOT_POWERUPS
+	{27, 29}, // ROBOT_POWERUPS
 	{7, -1},  // HOSTAGE_DOOR
 	{2+24, -1}, // SAVE_GAME      (ubyte slot, -1}, uint id, -1}, char name [20])
 	{2+4, -1},  // RESTORE_GAME   (ubyte slot, -1}, uint id)
@@ -1479,7 +1479,7 @@ bufI += 4;
 #if 1
 if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
-		d_srand (gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI));
+		gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufI);
 		bufI += 2;
 		}
 	}
