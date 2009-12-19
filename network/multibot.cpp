@@ -530,8 +530,6 @@ vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Z]);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));     
 #endif
 bufP += 12;
-if (gameStates.multi.nGameType == UDP_GAME)
-	gameStates.app.nRandSeed = d_rand ();
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
 bufP += 2;
 gameData.multigame.create.nCount = 0;
@@ -967,7 +965,7 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 botInfoP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nCount = 0;
 if (gameStates.multi.nGameType == UDP_GAME)
-	d_srand (gameStates.app.nRandSeed = d_rand ());
+	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 
 if (delObjP->info.contains.nCount > 0) { 
 	//	If dropping a weapon that the CPlayerData has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.

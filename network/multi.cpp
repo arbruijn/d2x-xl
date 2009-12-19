@@ -1266,7 +1266,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	gameData.multigame.create.nCount = 0;
 	AdjustMineSpawn ();
 	MultiCapObjects ();
-	d_srand (gameStates.app.nRandSeed = d_rand ());
+	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 	shields = LOCALPLAYER.shields;
 	LOCALPLAYER.shields = -1;
 	DropPlayerEggs (gameData.objs.consoleP);
