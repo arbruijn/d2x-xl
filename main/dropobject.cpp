@@ -846,27 +846,43 @@ if ((nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAm
 
 static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType, int nId)
 {
-int nAmmo = playerP->secondaryAmmo [nType];
-if ((gameStates.multi.nGameType != UDP_GAME) && (nAmmo %4 != 1))
-	return;
-if (nAmmo > 3)
-	nAmmo = 3;
-for (int nThreshold = 30000; ((gameStates.multi.nGameType == UDP_GAME) ? nAmmo : (nAmmo %4 == 1)) && (d_rand () < nThreshold); nThreshold /= 2) {
-	CFixVector vRandom = CFixVector::Random ();
-	nThreshold /= 2;
-	CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
-	short nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);
-	if (nNewSeg == -1)
-		return;
-	short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
-	if (nObject < 0)
-		return;
-#if 0
-	if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
-		MultiSendCreateWeapon (nObject);
-#endif
-	nAmmo--;
-  	}
+if (gameStates.multi.nGameType == UDP_GAME) {
+	int nAmmo = playerP->secondaryAmmo [nType];
+	if (nAmmo > 4)
+		nAmmo = 4;
+	for (nAmmo = d_rand () % nAmmo; nAmmo; nAmmo--) {
+		CFixVector vRandom = CFixVector::Random ();
+		CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
+		short nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);
+		if (nNewSeg == -1)
+			return;
+		short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
+		if (nObject < 0)
+			return;
+	#if 0
+		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
+			MultiSendCreateWeapon (nObject);
+	#endif
+		nAmmo--;
+  		}
+	}
+else {
+	for (int nThreshold = 30000; (playerP->secondaryAmmo [nType] % 4 == 1) && (d_rand () < nThreshold); nThreshold /= 2) {
+		CFixVector vRandom = CFixVector::Random ();
+		nThreshold /= 2;
+		CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
+		short nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);
+		if (nNewSeg == -1)
+			return;
+		short nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
+		if (nObject < 0)
+			return;
+	#if 0
+		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
+			MultiSendCreateWeapon (nObject);
+	#endif
+  		}
+	}
 }
 
 //	-----------------------------------------------------------------------------
