@@ -1068,7 +1068,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#ifndef OPENMP
+#ifndef _OPENMP
 
 static inline void WaitForRenderThread (int nThread)
 {
@@ -1090,7 +1090,7 @@ void CLightning::RenderBuffered (int nDepth, int nThread)
 
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
 	return;
-#ifndef OPENMP
+#ifndef _OPENMP
 if (gameStates.app.bMultiThreaded && (nThread > 0))
 	tiRender.ti [nThread].bBlock = 1;
 #endif
@@ -1108,7 +1108,7 @@ if (!(bPlasma = SetupPlasma ()))
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
-#ifndef OPENMP
+#ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
 if (bPlasma) {
@@ -1116,7 +1116,7 @@ if (bPlasma) {
 	RenderPlasma (&color, nThread);
 	}
 RenderCore (&color, nDepth, nThread);
-#ifndef OPENMP
+#ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
 if (gameOpts->render.lightning.nQuality)
