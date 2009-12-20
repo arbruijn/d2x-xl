@@ -848,6 +848,8 @@ static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType,
 {
 if (gameStates.multi.nGameType == UDP_GAME) {
 	int nAmmo = playerP->secondaryAmmo [nType];
+	if (!nAmmo)
+		return;
 	if (nAmmo > 4)
 		nAmmo = 4;
 	for (nAmmo = d_rand () % nAmmo; nAmmo; nAmmo--) {

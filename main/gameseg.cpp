@@ -164,7 +164,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 //Returns nSegment if found, or -1
 int FindSegByPos (const CFixVector& p, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
-	static char		bVisited [2][MAX_SEGMENTS_D2X]; 
+	static char		bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
 
 	int		nNewSeg, i;
 	short		*segNumP;
