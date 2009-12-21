@@ -215,8 +215,12 @@ if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolde
 	*gameFolders.szGameDir = '\0';
 #		endif
 #	endif //__unix__
-if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, SHAREPATH, ""))
-	*gameFolders.szGameDir = '\0';
+if (*SHAREPATH) {
+	char s [PATHNAME_LEN];
+	sprintf (s, "%s/d2x-xl", SHAREPATH);
+	if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, s, ""))
+		*gameFolders.szGameDir = '\0';
+	}
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
 	*gameFolders.szGameDir = '\0';
 #	ifdef __macosx__
