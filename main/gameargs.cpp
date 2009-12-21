@@ -394,6 +394,10 @@ void EvalAppArgs (void)
 if ((t = FindArg ("-gpgpu_lights")))
 	ogl.m_states.bVertexLighting = NumArg (t, 1);
 #endif
+#ifdef __unix__
+if ((t = FindArg ("-linux_msgbox")))
+	gameStates.app.bLinuxMsgBox = NumArg (t, 1);
+#endif
 if ((t = FindArg ("-check_setup")))
 	gameStates.app.bCheckAndFixSetup = NumArg (t, 1);
 if ((t = FindArg ("-expertmode")))

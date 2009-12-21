@@ -1086,6 +1086,9 @@ typedef struct tApplicationStates {
 #endif
 	int bDemoData;
 	int bCheckAndFixSetup;
+#ifdef __unix__
+	int bLinuxMsgBox;
+#endif
 	int nSDLTicks;
 	int nExtGameStatus;
 	int nFunctionMode;

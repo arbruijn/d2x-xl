@@ -136,7 +136,7 @@ if (*szExitMsg) {
 
 //------------------------------------------------------------------------------
 
-#if defined(__unix__)
+#ifdef LINUX_MSGBOX
 
 #include <Xm/Xm.h>
 #include <Xm/MwmUtil.h>
@@ -367,7 +367,7 @@ XtUnrealizeWidget (topWid);
 XtDestroyApplicationContext (appShell);
 }
 
-#endif //__unix__
+#endif //LINUX_MSGBOX
 
 //------------------------------------------------------------------------------
 
@@ -387,11 +387,12 @@ if (screen.Width () && screen.Height () && pWarnFunc)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined(__linux__)
-#	if 1
-	XmMessageBox (pszMsg, nType == MB_ICONERROR);
-#	else
-	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
+#	ifdef LINUX_MSGBOX
+	if (gameStates.app.bLinuxMsgBox)
+		XmMessageBox (pszMsg, nType == MB_ICONERROR);
+	else
 #	endif
+	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
 #endif
