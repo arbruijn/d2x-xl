@@ -2,7 +2,7 @@
 
 define([D2X_MAJOR],1)
 define([D2X_MINOR],14)
-define([D2X_MICRO],189)
+define([D2X_MICRO],190)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)
@@ -119,10 +119,10 @@ if test x$enable_debug != xyes; then
     AC_DEFINE(NDEBUG,,[Define to disable asserts, int3, etc.])
     CFLAGS="-O3 $CFLAGS -fopenmp"
     CXXFLAGS="-O3 $CXXFLAGS -fopenmp"
-    AC_DEFINE(_OPENMP,,[Define to enable openmp code])
+#    AC_DEFINE(OPENMP,,[Define to enable openmp code])
    else
-    CFLAGS="-g $CFLAGS"
-    CXXFLAGS="-g $CXXFLAGS"
+    CFLAGS="-g $CFLAGS -fopenmp"
+    CXXFLAGS="-g $CXXFLAGS -fopenmp"
     AC_DEFINE(_DEBUG,,[Define to enable asserts, int3, etc.])
     D2X_FEATURES="debug ${D2X_FEATURES}"
 fi
