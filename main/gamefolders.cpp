@@ -216,7 +216,7 @@ if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolde
 #		endif
 #	endif //__unix__
 if (*SHAREPATH) {
-	char s [PATHNAME_LEN];
+	char s [FILENAME_LEN];
 	sprintf (s, "%s/d2x-xl", SHAREPATH);
 	if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, s, ""))
 		*gameFolders.szGameDir = '\0';

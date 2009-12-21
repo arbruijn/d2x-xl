@@ -681,7 +681,7 @@ return nObject;
 
 int ObjectCreateEgg (CObject *objP, bool bLocal)
 {
-	int	i, nObject;
+	int	i, nObject = -1;
 
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
 	if (IsMultiGame) {
@@ -893,7 +893,7 @@ void DropPlayerEggs (CObject *playerObjP)
 {
 if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST)) {
 	int				nPlayerId = playerObjP->info.nId;
-	short				nObject, plrObjNum = OBJ_IDX (playerObjP);
+	short				nObject;
 	int				nVulcanAmmo = 0;
 	CPlayerData*	playerP = gameData.multiplayer.players + nPlayerId;
 
