@@ -50,6 +50,12 @@ int nLogDate = 0;
 
 void ShowInGameWarning (const char *s);
 
+#ifdef __unix__
+#	define LINUX_MSGBOX	0
+#else
+#	define LINUX_MSGBOX	0
+#endif
+
 //------------------------------------------------------------------------------
 
 void ArrayError (const char* pszMsg)
@@ -136,7 +142,7 @@ if (*szExitMsg) {
 
 //------------------------------------------------------------------------------
 
-#ifdef LINUX_MSGBOX
+#if LINUX_MSGBOX
 
 #include <Xm/Xm.h>
 #include <Xm/MwmUtil.h>
@@ -387,8 +393,8 @@ if (screen.Width () && screen.Height () && pWarnFunc)
 else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined(__linux__)
-#	ifdef LINUX_MSGBOX
-	if (gameStates.app.bLinuxMsgBox)
+#	if LINUX_MSGBOX
+	if (gameStates.app.bCheckAndFixSetup)
 		XmMessageBox (pszMsg, nType == MB_ICONERROR);
 	else
 #	endif
