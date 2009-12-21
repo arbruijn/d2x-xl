@@ -752,7 +752,7 @@ if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
 	}
 else
 #if defined(__unix__)
-	strcpy (szRootFolder, "/usr/local/games/d2x-xl/");
+	strcpy (szRootFolder, *SHAREPATH ? SHAREPATH : "/usr/local/games/d2x-xl/");
 #else
 	strcpy (szRootFolder, "./");
 #endif
