@@ -217,7 +217,10 @@ if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolde
 #	endif //__unix__
 *gameFolders.szSharePath = '\0';
 if (*gameFolders.szSharePath) {
-	sprintf (gameFolders.szSharePath, "%s/d2x-xl", SHAREPATH);
+	if (strstr (SHAREPATH, "games"))
+		sprintf (gameFolders.szSharePath, "%s/d2x-xl", SHAREPATH);
+	else
+		sprintf (gameFolders.szSharePath, "%s/games/d2x-xl", SHAREPATH);
 	if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, gameFolders.szSharePath, "")) {
 		*gameFolders.szGameDir = 
 		*gameFolders.szSharePath = '\0';
