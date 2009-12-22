@@ -6,7 +6,7 @@ endif
 
 noinst_LIBRARIES = libmain.a
 
-INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL -DSHAREPATH=\""$(sharepath)"\"
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	briefings.cpp cheats.cpp cmd.cpp config.cpp controls.cpp credits.cpp crypt.cpp dropobject.cpp effects.cpp endlevel.cpp \
