@@ -110,7 +110,7 @@ if (*pszParentFolder) {
 #endif
 
 #ifndef SHAREPATH
-#	define SHAREPATH		STD_GAMEDIR
+#	define SHAREPATH			""
 #endif
 
 #if defined(__macosx__)
@@ -215,11 +215,12 @@ if (!*gameFolders.szGameDir && *gameFolders.szHomeDir && GetAppFolder (gameFolde
 	*gameFolders.szGameDir = '\0';
 #		endif
 #	endif //__unix__
-if (*SHAREPATH) {
-	char s [FILENAME_LEN];
-	sprintf (s, "%s/d2x-xl", SHAREPATH);
-	if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, s, ""))
-		*gameFolders.szGameDir = '\0';
+*gameFolders.szSharePath = '\0';
+if (*gameFolders.szSharePath) {
+	sprintf (gameFolders.szSharePath, "%s/d2x-xl", SHAREPATH);
+	if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, gameFolders.szSharePath, "")) {
+		*gameFolders.szGameDir = 
+		*gameFolders.szSharePath = '\0';
 	}
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
 	*gameFolders.szGameDir = '\0';
@@ -753,6 +754,8 @@ if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
 else
 #if defined(__unix__)
 	strcpy (szRootFolder, *SHAREPATH ? SHAREPATH : "/usr/local/games/d2x-xl/");
+	if (szRootFolder [strlen (szRootFolder) - 1] != '/')
+		strcat (szRootFolder, "/");
 #else
 	strcpy (szRootFolder, "./");
 #endif

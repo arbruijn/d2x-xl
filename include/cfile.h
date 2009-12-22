@@ -125,6 +125,9 @@ class CFile {
 
 typedef struct tGameFolders {
 	char szHomeDir [FILENAME_LEN];
+#ifdef __unix__
+	char szSharePath [FILENAME_LEN];
+#endif
 	char szGameDir [FILENAME_LEN];
 	char szDataDir [FILENAME_LEN];
 	char szDownloadDir [FILENAME_LEN];
