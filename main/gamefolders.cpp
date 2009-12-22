@@ -221,6 +221,7 @@ if (*gameFolders.szSharePath) {
 	if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, gameFolders.szSharePath, "")) {
 		*gameFolders.szGameDir = 
 		*gameFolders.szSharePath = '\0';
+		}
 	}
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAMEDIR, ""))
 	*gameFolders.szGameDir = '\0';
@@ -753,7 +754,7 @@ if ((i = FindArg ("-userdir")) && pszArgList [i + 1] && *pszArgList [i + 1]) {
 	}
 else
 #if defined(__unix__)
-	strcpy (szRootFolder, *SHAREPATH ? SHAREPATH : "/usr/local/games/d2x-xl/");
+	strcpy (szRootFolder, *gameFolders.szSharePath ? gameFolders.szSharePath : "/usr/local/games/d2x-xl/");
 	if (szRootFolder [strlen (szRootFolder) - 1] != '/')
 		strcat (szRootFolder, "/");
 #else
