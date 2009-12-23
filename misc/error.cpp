@@ -394,7 +394,7 @@ else
 	MessageBox (NULL, pszMsg, "D2X-XL", nType | MB_OK);
 #elif defined(__linux__)
 #	if LINUX_MSGBOX
-	if (gameStates.app.bCheckAndFixSetup)
+	if (gameStates.app.bLinuxMsgBox)
 		XmMessageBox (pszMsg, nType == MB_ICONERROR);
 	else
 #	endif
