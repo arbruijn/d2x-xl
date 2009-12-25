@@ -184,6 +184,7 @@ class CAudioChannel {
 		void Mix (ubyte* stream, int len);
 		inline int Playing (void) { return m_info.bPlaying && m_info.mixChunkP; }
 		void SetPlaying (int bPlaying);
+		inline void SetIndex (int nIndex) { m_info.nIndex = nIndex; }
 		fix Duration (void);
 		inline int SoundObject (void) { return m_info.nSoundObj; }
 		inline void SetSoundObj (int nSoundObj) { m_info.nSoundObj = nSoundObj; }

@@ -240,7 +240,6 @@ if (audio.Available () && gameOpts->sound.bUseSDLMixer) {
 		else
 			Mix_FreeChunk (m_info.mixChunkP);
 		m_info.mixChunkP = NULL;
-		m_info.bPlaying = 0;
 		}
 	//Mix_FadeOutChannel (nChannel, 500);
 	}
@@ -458,6 +457,7 @@ void CAudioChannel::SetPlaying (int bPlaying)
 { 
 if ((m_info.bPlaying != bPlaying) && !(m_info.bPlaying = bPlaying)) {
 	audio.UnregisterChannel (m_info.nIndex);
+	m_info.nIndex = -1;
 	if (m_info.nSoundObj >= 0)
 		audio.EndSoundObject (m_info.nSoundObj);
 	}
@@ -538,7 +538,6 @@ if (gameOpts->sound.bUseSDLMixer) {
 		else
 			Mix_FreeChunk (m_info.mixChunkP);
 		m_info.mixChunkP = NULL;
-		m_info.bPlaying = 0;
 		}
 	}
 #endif
@@ -646,7 +645,7 @@ if (m_info.bPlaying && m_info.sample.Buffer () && m_info.nLength) {
 	while (streamPos < streamEnd) {
 		if (channelData == channelEnd) {
 			if (!m_info.bLooped) {
-				m_info.bPlaying = 0;
+				SetPlaying (0);
 				break;
 				}
 			channelData = m_info.sample.Buffer ();
@@ -858,15 +857,27 @@ audio.Setup (1);
 
 int CAudio::RegisterChannel (CAudioChannel* channelP)
 {
-return m_usedChannels.Push (int (channelP - m_channels.Buffer ())) ? m_usedChannels.ToS () - 1 : 0;
+if (m_usedChannels.Push (int (channelP - m_channels.Buffer ())))
+	return m_usedChannels.ToS () - 1;
+for (int i = int (m_usedChannels.ToS ()); i; )
+	if (!m_channels [m_usedChannels [--i]].Playing ())
+		UnregisterChannel (i);
+return m_usedChannels.Push (int (channelP - m_channels.Buffer ())) ? m_usedChannels.ToS () - 1 : -1;
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::UnregisterChannel (int nIndex)
 {
-if ((nIndex >= 0) && (nIndex < int (m_usedChannels.ToS ())))
+if ((nIndex >= 0) && (nIndex < int (m_usedChannels.ToS ()))) {
 	m_usedChannels.Delete (nIndex);
+	if (nIndex < int (m_usedChannels.ToS ()))
+		m_channels [m_usedChannels [nIndex]].SetIndex (nIndex);
+	}
+#if DBG
+else
+	ArrayError ("error in audio channel registry\n");
+#endif
 }
 
 //------------------------------------------------------------------------------
