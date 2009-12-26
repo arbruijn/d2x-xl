@@ -879,10 +879,6 @@ if ((nIndex >= 0) && (nIndex < int (m_usedChannels.ToS ()))) {
 #endif
 		m_channels [m_usedChannels [nIndex]].SetIndex (nIndex);
 	}
-#if DBG
-else
-	ArrayError ("error in audio channel registry\n");
-#endif
 }
 
 //------------------------------------------------------------------------------

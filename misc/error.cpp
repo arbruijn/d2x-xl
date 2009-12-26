@@ -435,13 +435,13 @@ exit (1);
 
 void _CDECL_ PrintLog (const char *fmt, ...)
 {
- if (fErr) {
 		va_list arglist;
 		static char	szErr [100000];
 
 	va_start (arglist, fmt);
 	vsprintf (szErr, fmt, arglist);
 	va_end (arglist);
+if (fErr) {
 	fprintf (fErr, szErr);
 	fflush (fErr);
 	}

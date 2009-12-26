@@ -446,7 +446,7 @@ if (*gameFolders.szMusicDir) {
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}
-	sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicDir, nSong);
+	sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicDir, nLevel);
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return;
 	}

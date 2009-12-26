@@ -44,24 +44,11 @@ if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 	tRgbColorb *rgbP = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
 	tRgbaColorb *rgbaP = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 
-#pragma omp parallel
-	{
-	int	i, j = bmP->Length () / 4;
-#	pragma omp for private (i)
-#if 1
-	for (i = 0; i < j; i++) {
-		rgbP [i].red = rgbaP [i].red;
-		rgbP [i].green = rgbaP [i].green;
-		rgbP [i].blue = rgbaP [i].blue;
-		}
-#else
 	for (int i = bmP->Length () / 4; i; i--, rgbP++, rgbaP++) {
 		rgbP->red = rgbaP->red;
 		rgbP->green = rgbaP->green;
 		rgbP->blue = rgbaP->blue;
 		}
-#endif
-	}
 	bmP->Resize (uint (3 * bmP->Size () / 4));
 	bmP->SetBPP (3);
 	bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
