@@ -318,7 +318,7 @@ if ((objP == gameData.objs.consoleP) &&
 	return objP ? WID_RENDER_FLAG : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_RENDPAST_FLAG;
 
 if ((childP->m_nType == SEGMENT_IS_BLOCKED) || (childP->m_nType == SEGMENT_IS_SKYBOX))
-	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)))
+	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP)))
 			 ? WID_RENDER_FLAG
 			 : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
 

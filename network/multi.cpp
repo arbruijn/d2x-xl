@@ -4945,7 +4945,7 @@ TRIGGERS [(int) ((ubyte) buf [1])].m_info.flags |= TF_DISABLED;
 // This function adds a kill to lifetime stats of this player, and possibly
 // gives a promotion.  If so, it will tell everyone else
 
-void MultiAddLifetimeKills ()
+void MultiAddLifetimeKills (void)
 {
 
 	int oldrank;
@@ -4962,12 +4962,13 @@ if (oldrank!=GetMyNetRanking ()) {
 		netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 		}
 	}
-SavePlayerProfile ();
+if (gameStates.multi.nGameType != UDP_GAME)
+	SavePlayerProfile ();
 }
 
 //-----------------------------------------------------------------------------
 
-void MultiAddLifetimeKilled ()
+void MultiAddLifetimeKilled (void)
 {
 	// This function adds a "nKilled" to lifetime stats of this player, and possibly
 	// gives a demotion.  If so, it will tell everyone else
@@ -4978,13 +4979,14 @@ if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;
 oldrank = GetMyNetRanking ();
 networkData.nNetLifeKilled++;
-if (oldrank!=GetMyNetRanking ()) {
+if (oldrank != GetMyNetRanking ()) {
 	MultiSendRanking ();
 	netPlayers.m_info.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 	if (!gameOpts->multi.bNoRankings)
 		HUDInitMessage (TXT_DEMOTED, pszRankStrings [GetMyNetRanking ()]);
 	}
-SavePlayerProfile ();
+if (gameStates.multi.nGameType != UDP_GAME)
+	SavePlayerProfile ();
 }
 
 //-----------------------------------------------------------------------------

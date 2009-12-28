@@ -133,13 +133,13 @@ if (!gameStates.app.bPlayerIsDead)
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordRestoreCockpit ();
-gameStates.app.bPlayerIsDead = 0;
-gameStates.app.bPlayerExploded = 0;
 if (gameData.objs.deadPlayerCamera) {
 	ReleaseObject (OBJ_IDX (gameData.objs.deadPlayerCamera));
 	gameData.objs.deadPlayerCamera = NULL;
 	}
 CGenericCockpit::Rewind ();
+gameStates.app.bPlayerIsDead = 0;
+gameStates.app.bPlayerExploded = 0;
 gameData.objs.viewerP = viewerSaveP;
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nFlags = nPlayerFlagsSave;

@@ -2168,7 +2168,8 @@ gameStates.render.cockpit.nNextType = -1;
 cockpit->Setup (false);
 if (bClearMessages)
 	HUDClearMessages ();
-SavePlayerProfile ();
+if (!gameStates.app.bPlayerIsDead)
+	SavePlayerProfile ();
 }
 
 //------------------------------------------------------------------------------

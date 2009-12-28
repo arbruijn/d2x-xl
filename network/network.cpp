@@ -253,7 +253,8 @@ LOCALPLAYER.connected = 0;
 NetworkSendEndLevelPacket ();
 ChangePlayerNumTo (0);
 gameData.app.nGameMode = GM_GAME_OVER;
-SavePlayerProfile ();
+if (gameStates.multi.nGameType != UDP_GAME)
+	SavePlayerProfile ();
 IpxHandleLeaveGame ();
 NetworkFlush ();
 }
