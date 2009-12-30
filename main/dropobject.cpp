@@ -848,7 +848,7 @@ static void MaybeArmMines (CObject *playerObjP, CPlayerData* playerP, int nType,
 {
 if (gameStates.multi.nGameType == UDP_GAME) {
 	int nAmmo = playerP->secondaryAmmo [nType];
-	if (!nAmmo)
+	if (nAmmo <= 0)
 		return;
 	if (nAmmo > 4)
 		nAmmo = 4;
