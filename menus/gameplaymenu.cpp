@@ -287,12 +287,16 @@ do {
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
-	m.AddText ("", 0);
-	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+	if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
+		optLoadout = -1;
+	else {
+		m.AddText ("", 0);
+		optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+		}
 	for (;;) {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
-		if (choice == optLoadout)
+		if ((optLoadout >= 0) && (choice == optLoadout))
 			LoadoutOptionsMenu ();
 		else if (choice == optReorderPrim)
 			ReorderPrimary ();

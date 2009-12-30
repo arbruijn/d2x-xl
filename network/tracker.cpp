@@ -353,8 +353,8 @@ if (!(i = atoi (pszArgList [t + 1])))
 	return;
 if (i > MAX_TRACKER_SERVERS)
 	i = MAX_TRACKER_SERVERS;
-for (j = 0; j < i; j++) {
-	sprintf (szKwd, "-tracker%d", j + 1);
+for (j = 1; j <= i; j++) {
+	sprintf (szKwd, "-tracker%d", j);
 	if (!(t = FindArg (szKwd)))
 		continue;
 	if (ParseIpAndPort (pszArgList [t + 1], &tracker))
