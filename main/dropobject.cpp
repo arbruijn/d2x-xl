@@ -865,7 +865,6 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
 			MultiSendCreateWeapon (nObject);
 	#endif
-		nAmmo--;
   		}
 	}
 else {
