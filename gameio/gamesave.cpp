@@ -896,7 +896,7 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 //go through all triggers, killing unused ones
 static void CheckAndFixTriggers (void)
 {
-	int	i, j;
+	int	h, i, j;
 	short	nSegment, nSide, nWall;
 
 for (i = 0; i < gameData.trigs.m_nTriggers; ) {
@@ -915,24 +915,34 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 
 CTrigger* trigP = TRIGGERS.Buffer ();
 for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
-	for (j = 0; j < trigP->m_info.nLinks; j++) {
+	for (h = trigP->m_info.nLinks, j = 0; j < h; ) {
 		nSegment = trigP->m_info.segments [j];
-		nSide = trigP->m_info.sides [j];
-		nWall = SEGMENTS [nSegment].WallNum (nSide);
-		//check to see that if a CTrigger requires a CWall that it has one,
-		//and if it requires a botGen that it has one
-		if (trigP->m_info.nType == TT_MATCEN) {
-			if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
-				continue;		//botGen CTrigger doesn'i point to botGen
-			}
-		else if ((trigP->m_info.nType != TT_LIGHT_OFF) && (trigP->m_info.nType != TT_LIGHT_ON)) { //light triggers don't require walls
-			if (IS_WALL (nWall))
-				WALLS [nWall].controllingTrigger = i;
-			else {
-				Int3();	//	This is illegal.  This ttrigger requires a CWall
+		if (nSegment >= gameData.segs.nSegments) {
+			if (j < --h) {
+				trigP->m_info.segments [j] = trigP->m_info.segments [h];
+				trigP->m_info.sides [j] = trigP->m_info.sides [h];
 				}
 			}
+		else {
+			nSide = trigP->m_info.sides [j];
+			nWall = SEGMENTS [nSegment].WallNum (nSide);
+			//check to see that if a CTrigger requires a CWall that it has one,
+			//and if it requires a botGen that it has one
+			if (trigP->m_info.nType == TT_MATCEN) {
+				if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
+					continue;		//botGen CTrigger doesn'i point to botGen
+				}
+			else if ((trigP->m_info.nType != TT_LIGHT_OFF) && (trigP->m_info.nType != TT_LIGHT_ON)) { //light triggers don't require walls
+				if (IS_WALL (nWall))
+					WALLS [nWall].controllingTrigger = i;
+				else {
+					Int3();	//	This is illegal.  This ttrigger requires a CWall
+					}
+				}
+			j++;
+			}
 		}
+	trigP->m_info.nLinks = h;
 	}
 }
 

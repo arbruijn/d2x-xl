@@ -106,7 +106,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define IFDBG(_expr)
 #endif
 
-#define STATE_VERSION				51
+#define STATE_VERSION				52
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -841,6 +841,7 @@ m_cf.WriteByte (gameData.weapons.nSecondary);
 m_cf.WriteInt (gameStates.app.nDifficultyLevel);
 // Save cheats enabled
 m_cf.WriteInt (gameStates.app.cheats.bEnabled);
+m_cf.WriteInt (gameOpts->app.bEnableMods);
 for (i = 0; i < 2; i++) {
 	m_cf.WriteInt (F2X (gameStates.gameplay.slowmo [i].fSpeed));
 	m_cf.WriteInt (gameStates.gameplay.slowmo [i].nState);
@@ -1749,6 +1750,8 @@ SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
 gameStates.app.nDifficultyLevel = m_cf.ReadInt ();
 // Restore the cheats enabled flag
 gameStates.app.cheats.bEnabled = m_cf.ReadInt ();
+if (m_nVersion >= 52)
+	gameOpts->app.bEnableMods = m_cf.ReadInt ();
 for (i = 0; i < 2; i++) {
 	if (m_nVersion < 33) {
 		gameStates.gameplay.slowmo [i].fSpeed = 1;
@@ -2343,7 +2346,7 @@ FixObjectSizes ();
 SetupEffects ();
 InitReactorForLevel (1);
 InitAIObjects ();
-AddPlayerLoadout ();
+AddPlayerLoadout (true);
 SetMaxOmegaCharge ();
 SetEquipGenStates ();
 if (!IsMultiGame)
