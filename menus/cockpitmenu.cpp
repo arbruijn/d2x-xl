@@ -97,8 +97,9 @@ for (int i = 0; i < 2; i++) {
 	m = menu + optWindowType [i];
 	v = winFuncs [m->m_value];
 	if (v != gameStates.render.cockpit.n3DView [i]) {
-		gameStates.render.cockpit.n3DView [0] = v;
-		sprintf (m->m_text, GT (1163 + i), szWindowType [v]);
+		gameStates.render.cockpit.n3DView [i] = v;
+		sprintf (m->m_text, GT (1163 + i), szWindowType [m->m_value]);
+		m->m_bRebuild = 1;
 		}
 	}
 
@@ -194,7 +195,7 @@ nTgtInd = extraGameInfo [0].bMslLockIndicators ? extraGameInfo [0].bTargetIndica
 
 do {
 	m.Destroy ();
-	m.Create (15);
+	m.Create (20);
 
 	optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
 	optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
@@ -228,7 +229,7 @@ do {
 	m.AddText ("", 0);
 
 	for (i = 0; i < 2; i++) {
-		sprintf (szSlider, GT (1164 + i), szWindowType [gameStates.render.cockpit.n3DView [i]]);
+		sprintf (szSlider, GT (1163 + i), szWindowType [gameStates.render.cockpit.n3DView [i]]);
 		optWindowType [i] = m.AddSlider (szSlider, gameStates.render.cockpit.n3DView [0], 0, nWinFuncs - 1, i ? KEY_R : KEY_L, HTX_CPIT_WINTYPE);
 		}
 

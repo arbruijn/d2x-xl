@@ -317,7 +317,7 @@ if (!IsMultiGame || IsCoopGame)
 	return bLocalFlag;
 if (!gameStates.app.bHaveExtraGameInfo [1])	//host doesn't use d2x-xl or runs in pure D2 mode
 	return bDefault;
-if (bLocalFlag == bMultiFlag)
+if ((bLocalFlag != 0) == (bMultiFlag != 0))
 	return bMultiFlag;
 if (bLocalFlag) {
 	if (bAllowLocalFlagOn)
