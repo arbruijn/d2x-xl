@@ -1937,18 +1937,18 @@ void LoadGameTexts(void);
 #define TXT_SCOREGOAL					GT(1153)
 #define TXT_MISSILE_LOADOUT			GT(1154)
 #define TXT_MSLLOADOUT_TITLE			GT(1155)
+#define TXT_CV_NONE						GT(1156)
+#define TXT_CV_ESCORT					GT(1157)
+#define TXT_CV_REAR						GT(1158)
+#define TXT_CV_COOP						GT(1159)
+#define TXT_CV_MARKER					GT(1160)
+#define TXT_CV_RADAR_TOPDOWN			GT(1161)
+#define TXT_CV_RADAR_HEADSUP			GT(1162)
+#define TXT_LEFT_COCKPIT_WIN			GT(1163)
+#define TXT_RIGHT_COCKPIT_WIN			GT(1164)
 
 #if 0
 
-#define TXT_					GT(1156)
-#define TXT_					GT(1157)
-#define TXT_					GT(1158)
-#define TXT_					GT(1159)
-#define TXT_					GT(1160)
-#define TXT_					GT(1161)
-#define TXT_					GT(1162)
-#define TXT_					GT(1163)
-#define TXT_					GT(1164)
 #define TXT_					GT(1165)
 #define TXT_					GT(1166)
 #define TXT_					GT(1167)
@@ -2513,10 +2513,10 @@ void LoadGameTexts(void);
 #define HTX_ENABLE_EFFECTS				HT(407)
 #define HTX_CHECK_FOR_UPDATE			HT(408)
 #define HTX_MISSILE_LOADOUT			HT(409)
+#define HTX_CPIT_WINTYPE				HT(410)
 
 #if 0
 
-#define HTX_						HT(410)
 #define HTX_						HT(411)
 #define HTX_						HT(412)
 #define HTX_						HT(413)

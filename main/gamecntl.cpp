@@ -252,74 +252,98 @@ return key;
 
 //------------------------------------------------------------------------------
 //switch a cockpit window to the next function
-int SelectNextWindowFunction(int nWindow)
+int SelectNextWindowFunction (int nWindow)
 {
-	Assert(nWindow==0 || nWindow==1);
+switch (gameStates.render.cockpit.n3DView [nWindow]) {
+	case CV_NONE:
+		gameStates.render.cockpit.n3DView [nWindow] = CV_REAR;
+		break;
 
-	switch (gameStates.render.cockpit.n3DView [nWindow]) {
-		case CV_NONE:
-			gameStates.render.cockpit.n3DView [nWindow] = CV_REAR;
+	case CV_REAR:
+		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
+		    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_TOPDOWN;
 			break;
-		case CV_REAR:
-			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
-				gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_TOPDOWN;
-				break;
-				}
-		case CV_RADAR_TOPDOWN:
-			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
-				gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_HEADSUP;
-				break;
-				}
-		case CV_RADAR_HEADSUP:
-			if (FindEscort()) {
-				gameStates.render.cockpit.n3DView [nWindow] = CV_ESCORT;
-				break;
 			}
-			//if no ecort, fall through
-		case CV_ESCORT:
-			gameStates.render.cockpit.nCoopPlayerView [nWindow] = -1;		//force first CPlayerData
-			//fall through
-		case CV_COOP:
-			gameData.marker.viewers [nWindow] = -1;
-			if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
-				gameStates.render.cockpit.n3DView [nWindow] = CV_COOP;
-				while (1) {
-					gameStates.render.cockpit.nCoopPlayerView [nWindow]++;
-					if (gameStates.render.cockpit.nCoopPlayerView [nWindow] == gameData.multiplayer.nPlayers) {
-						gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
-						goto case_marker;
-					}
-					if (gameStates.render.cockpit.nCoopPlayerView [nWindow]==gameData.multiplayer.nLocalPlayer)
-						continue;
 
-					if (gameData.app.nGameMode & GM_MULTI_COOP)
-						break;
-					else if (GetTeam(gameStates.render.cockpit.nCoopPlayerView [nWindow]) == GetTeam(gameData.multiplayer.nLocalPlayer))
-						break;
+	case CV_RADAR_TOPDOWN:
+		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
+		    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_HEADSUP;
+			break;
+			}
+
+	case CV_RADAR_HEADSUP:
+		if (FindEscort()) {
+			gameStates.render.cockpit.n3DView [nWindow] = CV_ESCORT;
+			break;
+			}
+
+		//if no ecort, fall through
+	case CV_ESCORT:
+		gameStates.render.cockpit.nCoopPlayerView [nWindow] = -1;		//force first CPlayerData
+		//fall through
+
+	case CV_COOP:
+		gameData.marker.viewers [nWindow] = -1;
+		if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
+			gameStates.render.cockpit.n3DView [nWindow] = CV_COOP;
+			while (1) {
+				gameStates.render.cockpit.nCoopPlayerView [nWindow]++;
+				if (gameStates.render.cockpit.nCoopPlayerView [nWindow] == gameData.multiplayer.nPlayers) {
+					gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
+					goto case_marker;
+					}
+				if (gameStates.render.cockpit.nCoopPlayerView [nWindow]==gameData.multiplayer.nLocalPlayer)
+					continue;
+
+				if (gameData.app.nGameMode & GM_MULTI_COOP)
+					break;
+				else if (GetTeam(gameStates.render.cockpit.nCoopPlayerView [nWindow]) == GetTeam(gameData.multiplayer.nLocalPlayer))
+					break;
 				}
-				break;
+			break;
 			}
-			//if not multi, fall through
-		case CV_MARKER:
-		case_marker:;
-			if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView) {	//anarchy only
-				gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
-				if (gameData.marker.viewers [nWindow] == -1)
-					gameData.marker.viewers [nWindow] = gameData.multiplayer.nLocalPlayer * 3;
-				else if (gameData.marker.viewers [nWindow] < gameData.multiplayer.nLocalPlayer * 3 + MaxDrop ())
-					gameData.marker.viewers [nWindow]++;
-				else
-					gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;
-			}
+		//if not multi, fall through
+	case CV_MARKER:
+	case_marker:;
+		if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView) {	//anarchy only
+			gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
+			if (gameData.marker.viewers [nWindow] == -1)
+				gameData.marker.viewers [nWindow] = gameData.multiplayer.nLocalPlayer * 3;
+			else if (gameData.marker.viewers [nWindow] < gameData.multiplayer.nLocalPlayer * 3 + MaxDrop ())
+				gameData.marker.viewers [nWindow]++;
 			else
 				gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;
-			break;
+		}
+		else
+			gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;
+		break;
 	}
-	SavePlayerProfile();
+SavePlayerProfile();
+return 1;	 //bScreenChanged
+}
 
-	return 1;	 //bScreenChanged
+//------------------------------------------------------------------------------
+//switch a cockpit window to the next function
+int GatherWindowFunctions (int* nWinFuncs)
+{
+	int	i = 0;
+
+nWinFuncs [i++] = CV_NONE;
+if (FindEscort()) {
+	nWinFuncs [i++] = CV_ESCORT;
+nWinFuncs [i++] = CV_REAR;
+if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
+	nWinFuncs [i++] = CV_COOP;
+if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView)
+	nWinFuncs [i++] = CV_MARKER;
+if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
+	 (!(gameData.app.nGameMode & GM_MULTI) || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+	nWinFuncs [i++] = CV_RADAR_TOPDOWN;
+	nWinFuncs [i++] = CV_RADAR_HEADSUP;
+	}
+return i;
 }
 
 //	Testing functions ----------------------------------------------------------

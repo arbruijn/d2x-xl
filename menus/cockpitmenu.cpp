@@ -21,6 +21,7 @@
 #include "timer.h"
 #include "text.h"
 #include "gamefont.h"
+#include "gamecntl.h"
 #include "menu.h"
 #include "network.h"
 #include "network_lib.h"
@@ -57,17 +58,20 @@
 
 #define WEAPON_ICONS 0
 
-static int	optWindowSize, optWindowZoom, optWindowPos, optWindowAlign,	optTgtInd;
+static int	optWindowSize, optWindowZoom, optWindowPos, optWindowAlign,	optTgtInd, optWindowType [2];
 #if WEAPON_ICONS
 static int	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 #endif
 
 static int nWindowPos, nWindowAlign, nTgtInd;
 
+static const char *szWindowType [7];
 static const char *szWindowSize [4];
 static const char *szWindowPos [2];
 static const char *szWindowAlign [3];
 static const char *szTgtInd [3];
+
+static int nWinFuncs, winFuncs [CV_FUNC_COUNT];
 
 //------------------------------------------------------------------------------
 
@@ -88,6 +92,15 @@ if (v != bShowWeaponIcons) {
 	return nCurItem;
 	}
 #endif
+
+for (int i = 0; i < 2; i++) {
+	m = menu + optWindowType [i];
+	v = winFuncs [m->m_value];
+	if (v != gameStates.render.cockpit.n3DView [i]) {
+		gameStates.render.cockpit.n3DView [0] = v;
+		sprintf (m->m_text, GT (1163 + i), szWindowType [v]);
+		}
+	}
 
 m = menu + optWindowSize;
 v = m->m_value;
@@ -147,6 +160,10 @@ void CockpitOptionsMenu (void)
 
 	char	szSlider [50];
 
+nWinFuncs = GatherWindowFunctions (winFuncs);
+for (i = 0; i < nWinFuncs; i++)
+	szWindowType [i] = GT (1156 + winFuncs [i]);
+
 szWindowSize [0] = TXT_AUXWIN_SMALL;
 szWindowSize [1] = TXT_AUXWIN_MEDIUM;
 szWindowSize [2] = TXT_AUXWIN_LARGE;
@@ -180,7 +197,7 @@ do {
 	m.Create (15);
 
 	optHUD = m.AddCheck (TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
-	optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
+	optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
 	optMissiles = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
 	//if (gameOpts->app.bExpertMode)
@@ -206,9 +223,17 @@ do {
 		optIconPos = -1;
 #endif
 	m.AddText ("", 0);
-	m.AddText (TXT_COCKPIT_WINDOWS, 0);
+	i = m.AddText (TXT_COCKPIT_WINDOWS, 0);
+	m [i].m_bCentered = 1;
+	m.AddText ("", 0);
+
+	for (i = 0; i < 2; i++) {
+		sprintf (szSlider, GT (1164 + i), szWindowType [gameStates.render.cockpit.n3DView [i]]);
+		optWindowType [i] = m.AddSlider (szSlider, gameStates.render.cockpit.n3DView [0], 0, nWinFuncs - 1, i ? KEY_R : KEY_L, HTX_CPIT_WINTYPE);
+		}
+
 	sprintf (szSlider, TXT_AUXWIN_SIZE, szWindowSize [gameOpts->render.cockpit.nWindowSize]);
-	optWindowSize = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_S, HTX_CPIT_WINSIZE);
+	optWindowSize = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_I, HTX_CPIT_WINSIZE);
 
 	sprintf (szSlider, TXT_AUXWIN_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
 	optWindowZoom = m.AddSlider (szSlider, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);

@@ -22,13 +22,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_FRAMERATE		60
 
 // from mglobal.c
-#define CV_NONE             0
-#define CV_ESCORT           1
-#define CV_REAR             2
-#define CV_COOP             3
-#define CV_MARKER   			 4
-#define CV_RADAR_TOPDOWN    5
-#define CV_RADAR_HEADSUP    6
+#define CV_NONE            0
+#define CV_ESCORT          1
+#define CV_REAR            2
+#define CV_COOP            3
+#define CV_MARKER   			4
+#define CV_RADAR_TOPDOWN   5
+#define CV_RADAR_HEADSUP   6
+#define CV_FUNC_COUNT		7
 
 // constants for ft_preference
 #define FP_RIGHT        0

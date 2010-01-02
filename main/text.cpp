@@ -1878,8 +1878,8 @@ const char *defaultGameTexts [][2] = {
  {"wenn leer", "when empty"},
  {"beste waehlen", "chose best"},
  {"Alt-R\t  Radar umschalten.", "Alt-R\t  toggle radar"},
- {"Cockpit-Anzeigen", "Cockpit Windows"},
- {"Groesse: %s", "Size: %s"},
+ {"===Cockpit-Anzeigen===", "===Cockpit Windows==="},
+ {"Groesse: %s", "SIze: %s"},
  {"~Epileptikerfreundlicher Modus", "~Epileptic-friendly mode"},
  {"Farbenblindenfreundlicher Modus", "~Colorblind-friendly mode"},
  {"~Treffer-Erkennung: %s", "~Hit detection: %s"},
@@ -1900,7 +1900,16 @@ const char *defaultGameTexts [][2] = {
  {"Spielende: %d Punkte", "End match: %d Points"},
  {"Sekundaerwaffen-Kapazität...", "Secondary Weapon Capacity..."},
  {"Sekundaerwaffen-Kapazität", "Secondary Weapon Capacity"},
-#if 0
+ {"kein", "none"},
+ {"Guidebot", "guidebot"},
+ {"Rueckspiegel", "rear view"},
+ {"Mitspieler", "coop player"},
+ {"Boje", "marker"},
+ {"Radar (Draufsicht)", "radar (top down)"},
+ {"Radar (Voraussicht)", "radar (heads up)"},
+ {"Links: %s", "Left: %s"},
+ {"Rechts: %s", "Right: %s"},
+##if 0
  {"", ""},
 #endif
  {"", ""}
@@ -2597,6 +2606,7 @@ const char *defaultHelpTexts [][2] = {
   "D2X-XL will check whether a newer program version is available.\n(To do that it has to access the internet.)"},
  {"Wenn angekreuzt, wird die Umgebungslautstaerke der\nEffektlautstaerke angeglichen.", "If checked, ambient sound volume is equalized with\neffect sound volume."},
  {"Hier koennen die maximalen Ladekapazitaeten fuer\nRaketen und Minen eingestellt werden.", "Adjust the maximum load capacity for missiles\nand mines here."},
+ {"Hier kann eingestellt werden, was in den Hilfsanzeigen\ndes Cockpits sichtbar ist.", "You can chose what is displayed in the auxiliary\ncockpit windows here."},
 #if 0
  {"", ""},
 #endif
