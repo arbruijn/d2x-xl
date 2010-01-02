@@ -321,6 +321,8 @@ for (int i = 0; i < m_info.nLinks; i++) {
 				if (trigP->m_info.value <= 0)
 					trigP->m_info.flags &= ~TF_DISABLED;
 				}
+			if ((m_info.flags & (TF_PERMANENT | TF_DISABLED)) == TF_PERMANENT)
+				m_info.tOperated = -1;
 			}
 		}
 	else {
