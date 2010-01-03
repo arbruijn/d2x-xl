@@ -560,7 +560,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () <
 	if ((size > 0) && (id == PID_PLAYERSINFO)) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		ReceiveNetPlayersPacket (packet, &info_struct);
-		tempPlayer = &info_struct;
+		tempPlayer = info_struct;
 #else
 		tempPlayer = *(reinterpret_cast<tAllNetPlayersInfo*> (packet));
 #endif

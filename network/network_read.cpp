@@ -49,8 +49,8 @@ void NetworkReadEndLevelPacket (ubyte *dataP)
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
 		*eli.ScoreMatrix (i, j) = INTEL_SHORT (*eli.ScoreMatrix (i, j));
-*eli.Kills () = INTEL_SHORT (*eli.kills);
-*eli.Killed () = INTEL_SHORT (*eli.killed);
+*eli.Kills () = INTEL_SHORT (*eli.Kills ());
+*eli.Killed () = INTEL_SHORT (*eli.Killed ());
 #endif
 nPlayer = *eli.Player ();
 Assert (nPlayer != gameData.multiplayer.nLocalPlayer);

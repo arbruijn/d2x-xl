@@ -68,7 +68,7 @@ void NetworkProcessGameInfo (ubyte *dataP)
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ReceiveNetGamePacket (dataP, &tmp_info, 0); // get correctly aligned structure
-	newGame = &tmp_info;
+	newGame = tmp_info;
 	}
 #endif
 networkData.bWaitingForPlayerInfo = 0;
@@ -116,11 +116,11 @@ void NetworkProcessLiteInfo (ubyte *dataP)
 	CNetGameInfo*		actGameP;
 	tNetGameInfoLite*	newInfo = reinterpret_cast<tNetGameInfoLite*> (dataP);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tNetGameInfoLite		tmp_info;
+	CNetGameInfo		tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	ReceiveNetGamePacket (dataP, reinterpret_cast<tNetGameInfo*> (&tmp_info), 1);
-	newInfo = &tmp_info;
+	ReceiveNetGamePacket (dataP, &tmp_info, 1);
+	newInfo = reinterpret_cast<tNetGameInfoLite*> (&tmp_info.m_info);
 	}
 #endif
 

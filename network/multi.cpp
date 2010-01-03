@@ -1881,7 +1881,7 @@ if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 	}
 memcpy (&vPos, buf + bufI, sizeof (CFixVector));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-INTEL_VECTOR (vNewPos);
+INTEL_VECTOR (vPos);
 #endif
 gameData.multigame.create.nCount = 0;
 nLocalObj = CallObjectCreateEgg (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, 1, OBJ_POWERUP, powerupType, true);

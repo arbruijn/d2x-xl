@@ -230,7 +230,7 @@ memcpy (end.ScoreMatrix (), gameData.multigame.kills.matrix [nPlayer], MAX_NUM_N
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (int j = 0; j < MAX_PLAYERS; j++)
-		end.ScoreMatrix (i, j) = INTEL_SHORT (end.ScoreMatrix (i, j));
+		*end.ScoreMatrix (i, j) = INTEL_SHORT (*end.ScoreMatrix (i, j));
 #endif
 if (gameData.multiplayer.players [nPlayer].connected == 1) {// Still playing
 	Assert (gameData.reactor.bDestroyed);
