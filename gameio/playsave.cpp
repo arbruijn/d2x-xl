@@ -362,6 +362,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bDropAllMissiles, 0, 0);
 		RP (extraGameInfo [i].bEnhancedCTF, 0, 0);
 		RP (extraGameInfo [i].bFixedRespawns, 0, 0);
+		RP (extraGameInfo [i].nSpawnDelay, 0, 0); // / 1000
 		RP (extraGameInfo [i].bFluidPhysics, 0, 0);
 		RP (extraGameInfo [i].bFriendlyFire, 0, 0);
 		RP (extraGameInfo [i].bGatlingTrails, 0, 0);
@@ -511,7 +512,6 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].grWallTransparency, 0, 0);
 		RP (extraGameInfo [i].nFusionRamp, 0, 0);
 		RP (extraGameInfo [i].nOmegaRamp, 0, 0);
-		RP (extraGameInfo [i].nSpawnDelay, 0, 0); // / 1000
 		RP (extraGameInfo [i].nSpeedBoost, 0, 0);
 		for (j = 0; j < 5; j++) {
 			RP (gameOptions [i].render.particles.nDens [j], i, j);
@@ -1026,6 +1026,8 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nHitboxes", "2"},
 	 {"extraGameInfo[0].nDamageModel", "0"},
 	 {"extraGameInfo[0].nSpotSize", "0"},
+	 {"extraGameInfo[0].bFixedRespawns", "0"},
+	 {"extraGameInfo[0].nSpawnDelay", "0"},
 	 {"gameOptions[0].input.joystick.bUse", "1"},
 	 {"gameOptions[0].input.mouse.bUse", "1"},
 	 {"gameOptions[0].input.trackIR.bUse", "1"},
@@ -1310,7 +1312,6 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[1].bPowerupLights", "0"},
 	 {"extraGameInfo[1].bKillMissiles", "0"},
 	 {"extraGameInfo[1].bTripleFusion", "1"},
-	 {"extraGameInfo[0].bFixedRespawns", "0"},
 	 {"extraGameInfo[0].bFluidPhysics", "1"},
 	 {"extraGameInfo[0].bImmortalPowerups", "0"},
 	 {"extraGameInfo[0].bMultiBosses", "1"},
@@ -1324,7 +1325,6 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nOmegaRamp", "4"},
 	 {"extraGameInfo[0].nMslTurnSpeed", "1"},
 	 {"extraGameInfo[0].nMslStartSpeed", "0"},
-	 {"extraGameInfo[0].nSpawnDelay", "0"},
 	 {"extraGameInfo[0].nSpeedBoost", "10"},
 	 {"extraGameInfo[0].headlight.bAvailable", "1"},
 	 {"gameOptions[0].render.particles.nDens[0]", "1"},

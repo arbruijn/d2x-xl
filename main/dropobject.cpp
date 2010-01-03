@@ -375,7 +375,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			gameData.objs.dropInfo [h].nObject = nObject;
 			gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
 			gameData.objs.dropInfo [h].nDropTime =
-				 (extraGameInfo [IsMultiGame].nSpawnDelay < 0) ? -1 : gameStates.app.nSDLTicks;
+				 (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks;
 			return 0;
 			}
 		if (nDropState == EXEC_DROP) {

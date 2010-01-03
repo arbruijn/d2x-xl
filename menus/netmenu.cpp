@@ -422,6 +422,7 @@ int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optAutoDL, optDLTimeou
 int optHeadlights, optPowerupLights, optSpotSize, optSmokeGrenades, optMaxSmokeGrens;
 int optShowNames, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
+int optFixedSpawn, optSpawnDelay;
 
 //------------------------------------------------------------------------------
 
@@ -663,6 +664,15 @@ if (extraGameInfo [0].bSmokeGrenades && (optMaxSmokeGrens >= 0)) {
 		}
 	}
 
+if (optSpawnDelay >= 0) {
+	v = menu [optSpawnDelay].m_value * 5;
+	if (extraGameInfo [0].nSpawnDelay != v * 1000) {
+		extraGameInfo [0].nSpawnDelay = v * 1000;
+		sprintf (menu [optSpawnDelay].m_text, TXT_RESPAWN_DELAY, v);
+		menu [optSpawnDelay].m_bRebuild = 1;
+		}
+	}
+
 return nCurItem;
 }
 
@@ -759,6 +769,12 @@ do {
 		}
 	else
 		optMaxSmokeGrens = -1;
+	optFixedSpawn = m.AddCheck (TXT_FIXED_SPAWN, extraGameInfo [0].bFixedRespawns, KEY_F, HTX_GPLAY_FIXEDSPAWN);
+	if (extraGameInfo [0].nSpawnDelay < 0)
+		extraGameInfo [0].nSpawnDelay = 0;
+	sprintf (szSlider + 1, TXT_RESPAWN_DELAY, extraGameInfo [0].nSpawnDelay / 1000);
+	*szSlider = *(TXT_RESPAWN_DELAY - 1);
+	optSpawnDelay = m.AddSlider (szSlider + 1, extraGameInfo [0].nSpawnDelay / 5000, 0, 12, KEY_R, HTX_GPLAY_SPAWNDELAY);
 	m.AddText ("", 0);
 
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);
@@ -791,6 +807,7 @@ do {
 		GET_VAL (extraGameInfo [1].bDualMissileLaunch, optDualMiss);
 		GET_VAL (extraGameInfo [1].bDisableReactor, optDisableReactor);
 		GET_VAL (extraGameInfo [1].bTargetIndicators, optTgtInd);
+		GET_VAL (extraGameInfo [1].bFixedRespawns, optFixedSpawn);
 		extraGameInfo [1].bDamageIndicators = extraGameInfo [1].bTargetIndicators;
 		extraGameInfo [1].bMslLockIndicators = extraGameInfo [1].bTargetIndicators;
 		extraGameInfo [1].bFriendlyIndicators = 1;
