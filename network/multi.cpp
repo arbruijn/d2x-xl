@@ -2238,8 +2238,8 @@ if (gameStates.multi.nGameType != UDP_GAME)
 else {
 	gameData.multigame.msg.buf [8] = char (gameData.multigame.laser.nFired [0]);
 	for (int i = 0; i < gameData.multigame.laser.nFired [0]; i++)
-		PUT_INTEL_SHORT (gameData.multigame.msg.buf + 9 + 2 * i, gameData.multigame.laser.nObjects [i]);
-	MultiSendData (gameData.multigame.msg.buf, 9 + sizeofa (gameData.multigame.laser.nObjects), 0);
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + 9 + 2 * i, gameData.multigame.laser.nObjects [0]	[i]);
+	MultiSendData (gameData.multigame.msg.buf, 9 + MAX_FIRED_OBJECTS * sizeof (short), 0);
 	}
 gameData.multigame.laser.nFired [0] = 0;
 gameData.multigame.laser.bFired = 0;
