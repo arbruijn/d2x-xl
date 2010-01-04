@@ -766,7 +766,7 @@ inline const fix CFixVector::Dot (const fix x, const fix y, const fix z, const C
 inline const fix CFixVector::Normalize (CFixVector& v) {
 fix m = v.Mag ();
 if (!m)
-	v [x] = v [y] = v [z] = 0;
+	v [X] = v [Y] = v [Z] = 0;
 else {
 	v [X] = FixDiv (v [X], m);
 	v [Y] = FixDiv (v [Y], m);
