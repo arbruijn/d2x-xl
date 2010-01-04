@@ -372,7 +372,7 @@ if (nLaserType == OMEGA_ID)
 	return -1;
 if (nObject == -1)
 	return -1;
-TrackWeaponObject (nObject, int (objP->info.nId));
+//TrackWeaponObject (nObject, int (objP->info.nId));
 laserP = OBJECTS + nObject;
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.guidedMissile [objP->info.nId].objP = laserP;

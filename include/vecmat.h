@@ -764,11 +764,15 @@ inline const fix CFixVector::Dot (const fix x, const fix y, const fix z, const C
 }
 
 inline const fix CFixVector::Normalize (CFixVector& v) {
-	fix m = v.Mag ();
+fix m = v.Mag ();
+if (!m)
+	v [x] = v [y] = v [z] = 0;
+else {
 	v [X] = FixDiv (v [X], m);
 	v [Y] = FixDiv (v [Y], m);
 	v [Z] = FixDiv (v [Z], m);
-	return m;
+	}
+return m;
 }
 
 inline CFixVector& CFixVector::Perp (CFixVector& dest, const CFixVector& p0, const CFixVector& p1, const CFixVector& p2) {
