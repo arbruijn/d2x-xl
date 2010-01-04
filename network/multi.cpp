@@ -1401,6 +1401,7 @@ else {
 	if (weapon == FUSION_INDEX)
 		gameData.fusion.xCharge = xSaveCharge;
 	}
+gameData.multigame.laser.nFired [0] =
 gameData.multigame.laser.nFired [1] = 0;
 }
 
