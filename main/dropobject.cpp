@@ -389,8 +389,12 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	OBJECTS [nObject].mType.physInfo.velocity.SetZero ();
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].info.position.vPos;
-	else
-		vNewPos = SEGMENTS [nSegment].RandomPoint () + CFixVector::Normalize (SEGMENTS [nSegment].Center () - vNewPos) * OBJECTS [nObject].info.xSize;
+	else {
+		CFixVector vOffset = SEGMENTS [nSegment].Center () - vNewPos;
+		CFixVector::Normalize (vOffset);
+		vNewPos = SEGMENTS [nSegment].RandomPoint ();
+		vNewPos += vOffset * OBJECTS [nObject].info.xSize;
+		}
 	nSegment = FindSegByPos (vNewPos, nSegment, 1, 0);
 	MultiSendCreatePowerup (nPowerupType, nSegment, nObject, &vNewPos);
 	if (!bFixedPos)
