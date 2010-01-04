@@ -943,15 +943,15 @@ QSortKillList (kills, 0, gameData.multiplayer.nPlayers - 1);
 
 char bMultiSuicide = 0;
 
-void MultiComputeKill (int nKiller, int nKilled)
+void MultiComputeKill (int nKiller, int nKilled, int nKillerPlayer = -1)
 {
 	// Figure out the results of a network kills and add it to the
 	// appropriate player's tally.
 
 	int				nKilledPlayer, killedType, t0, t1;
-	int				nKillerPlayer, killerType, nKillerId;
-	char				szKilled [(CALLSIGN_LEN*2)+4];
-	char				szKiller [(CALLSIGN_LEN*2)+4];
+	int				killerType, nKillerId;
+	char				szKilled [CALLSIGN_LEN * 2 + 4];
+	char				szKiller [CALLSIGN_LEN * 2 + 4];
 	CPlayerData*	killerP, * killedP;
 	CObject*			objP;
 
@@ -967,10 +967,14 @@ if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject [0]) ||
 objP = OBJECTS + nKilled;
 killedType = objP->info.nType;
 nKilledPlayer = objP->info.nId;
+if ((nKillerPlayer >= 0) && (nKillerPlayer < gameData.multiplayer.nPlayers))
+	nKiller = gameData.multiplayer.players [nKillerPlayer].nObject;
+else
+	nKillerPlayer = objP->info.nId;
 objP = OBJECTS + nKiller;
 killerType = objP->info.nType;
 nKillerId = objP->info.nId;
-if ((killedType != OBJ_PLAYER) &&(killedType != OBJ_GHOST)) {
+if ((killedType != OBJ_PLAYER) && (killedType != OBJ_GHOST)) {
 	Int3 (); // computeKill passed non-player object!
 	return;
 	}
@@ -999,7 +1003,7 @@ if (killerType == OBJ_REACTOR) {
 		HUDInitMessage ("%s %s %s.", szKilled, TXT_WAS, TXT_KILLED_BY_NONPLAY);
 	return;
 	}
-else if ((killerType != OBJ_PLAYER) &&(killerType != OBJ_GHOST)) {
+else if ((killerType != OBJ_PLAYER) && (killerType != OBJ_GHOST)) {
 	if ((nKillerId == SMALLMINE_ID) && (killerType != OBJ_ROBOT)) {
 		if (nKilledPlayer == gameData.multiplayer.nLocalPlayer)
 			HUDInitMessage (TXT_MINEKILL);
@@ -1017,7 +1021,6 @@ else if ((killerType != OBJ_PLAYER) &&(killerType != OBJ_GHOST)) {
 	killedP->netKilledTotal++;
 	return;
 	}
-nKillerPlayer = OBJECTS [nKiller].info.nId;
 killerP = gameData.multiplayer.players + nKillerPlayer;
 if (gameData.app.nGameMode & GM_TEAM)
 	sprintf (szKiller, "%s (%s)", killerP->callsign, netGame.m_info.szTeamName [GetTeam (nKillerPlayer)]);
@@ -1051,13 +1054,13 @@ if (nKillerPlayer == nKilledPlayer) {
 		HUDInitMessage ("%s %s", szKilled, TXT_SUICIDE);
 	}
 else {
-	if (gameData.app.nGameMode & GM_HOARD) {
-		if (gameData.app.nGameMode & GM_TEAM) {
+	if (IsHoardGame) {
+		if (IsTeamGame) {
 			if ((nKilledPlayer == gameData.multiplayer.nLocalPlayer) && (t0 == t1))
 				bMultiSuicide = 1;
 			}
 		}
-	else if (gameData.app.nGameMode & GM_ENTROPY) {
+	else if (IsEntropyGame) {
 		if (t0 == t1) {
 			if (nKilledPlayer == gameData.multiplayer.nLocalPlayer)
 				bMultiSuicide = 1;
@@ -1069,7 +1072,7 @@ else {
 					gameData.multiplayer.players [nKillerPlayer].secondaryAmmo [SMARTMINE_INDEX] = extraGameInfo [1].entropy.nMaxVirusCapacity;
 			}
 		}
-	else if (gameData.app.nGameMode & GM_TEAM) {
+	else if (IsTeamGame) {
 		if (t0 == t1) {
 			gameData.multigame.kills.nTeam [t0]--;
 			killerP->netKillsTotal--;
@@ -1106,7 +1109,7 @@ else {
 	else if (nKilledPlayer == gameData.multiplayer.nLocalPlayer) {
 		HUDInitMessage ("%s %s %s!", szKiller, TXT_KILLED, TXT_YOU);
 		MultiAddLifetimeKilled ();
-		if (gameData.app.nGameMode & GM_HOARD) {
+		if (IsHoardGame) {
 			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] > 3)
 				MultiSendPlayByPlay (1, nKillerPlayer, gameData.multiplayer.nLocalPlayer);
 			else if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] > 0)
@@ -1534,9 +1537,11 @@ if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers)) {
 int nKilled = gameData.multiplayer.players [nPlayer].nObject;
 gameData.multiplayer.players [nPlayer].shields = -1;
 int nKiller = GET_INTEL_SHORT (buf + 2);
-if (nKiller >= 0)
-	nKiller = ObjnumRemoteToLocal (nKiller, (sbyte) buf [4]);
-MultiComputeKill (nKiller, nKilled);
+if (nKiller < 0) 
+	nPlayer = -1;
+else
+	nKiller = ObjnumRemoteToLocal (nKiller, sbyte (nPlayer = int (buf [4])));
+MultiComputeKill (nKiller, nKilled, nPlayer);
 }
 
 //-----------------------------------------------------------------------------
