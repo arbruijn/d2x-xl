@@ -2376,9 +2376,13 @@ class CMultiCreateData {
 		CMultiCreateData () { nCount = 0; }
 };
 
+#define MAX_FIRED_OBJECTS	8
+
 class CMultiLaserData {
 	public:
 		int					bFired;
+		ubyte					nFired [2];
+		short					nObjects [2][MAX_FIRED_OBJECTS];
 		int					nGun;
 		int					nFlags;
 		int					nLevel;

@@ -71,6 +71,17 @@ return (int) (HOMINGMSL_SCALE / sqrt (gameStates.gameplay.slowmo [0].fSpeed));
 }
 
 //---------------------------------------------------------------------------------
+
+void TrackWeaponObject (short nObject, int nOwner)
+{
+if (gameData.multigame.laser.nFired [0] < sizeofa (gameData.multigame.laser.nObjects)) {
+	if (gameData.multigame.laser.nFired [0] < gameData.multigame.laser.nFired [1])
+		MapObjnumLocalToRemote (nObject, gameData.multigame.laser.nObjects [1][gameData.multigame.laser.nFired [0]], nOwner);
+	gameData.multigame.laser.nObjects [0][gameData.multigame.laser.nFired [0]++] = nObject;
+	}
+}
+
+//---------------------------------------------------------------------------------
 // Called by render code.... determines if the laser is from a robot or the
 // CPlayerData and calls the appropriate routine.
 
@@ -334,7 +345,7 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 if (CFixVector::Dist (vLaserPos, posP->vPos) > 3 * objP->info.xSize / 2) {
 	return -1;
 	}
-if (nFate == HIT_WALL)  {
+if (nFate == HIT_WALL) {
 	return -1;
 	}
 #if 0
@@ -359,9 +370,9 @@ nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, objP->Index (), nL
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
 	return -1;
-if (nObject == -1) {
+if (nObject == -1)
 	return -1;
-	}
+TrackWeaponObject (nObject, int (objP->info.nId));
 laserP = OBJECTS + nObject;
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.guidedMissile [objP->info.nId].objP = laserP;

@@ -135,7 +135,7 @@ typedef struct tNetPlayerStats {
 static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{24, -1}, // POSITION
 	{3, -1},  // REAPPEAR
-	{8, -1},  // FIRE
+	{8, 9 + MAX_FIRED_OBJECTS * sizeof (short)},  // FIRE
 	{5, -1},  // KILL
 	{4, -1},  // REMOVE_OBJECT
 	{97+9, 97+11}, // PLAYER_EXPLODE
@@ -967,11 +967,14 @@ if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject [0]) ||
 objP = OBJECTS + nKilled;
 killedType = objP->info.nType;
 nKilledPlayer = objP->info.nId;
-if ((nKillerPlayer >= 0) && (nKillerPlayer < gameData.multiplayer.nPlayers))
+if ((nKillerPlayer >= 0) && (nKillerPlayer < gameData.multiplayer.nPlayers)) {
 	nKiller = gameData.multiplayer.players [nKillerPlayer].nObject;
-else
+	objP = OBJECTS + nKiller;
+	}
+else {
+	objP = OBJECTS + nKiller;
 	nKillerPlayer = objP->info.nId;
-objP = OBJECTS + nKiller;
+	}
 killerType = objP->info.nType;
 nKillerId = objP->info.nId;
 if ((killedType != OBJ_PLAYER) && (killedType != OBJ_GHOST)) {
@@ -1363,6 +1366,11 @@ void MultiDoFire (char *buf)
 	sbyte flags = buf [4];
 
 gameData.multigame.laser.nTrack = GET_INTEL_SHORT (buf + 6);
+if (gameStates.multi.nGameType == UDP_GAME) {
+	gameData.multigame.laser.nFired [1] = buf [8];
+	for (int i = 0; i < gameData.multigame.laser.nFired [1]; i++)
+		gameData.multigame.laser.nObjects [1][i] = GET_INTEL_SHORT (buf + 9 + i * sizeof (short));
+	}
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
@@ -1370,14 +1378,14 @@ if (weapon == FLARE_ADJUST)
 	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, FLARE_ID, 6, 1, 0, -1);
 else if (weapon >= MISSILE_ADJUST) {
 	int h = weapon - MISSILE_ADJUST;
-	ubyte weapon_id = secondaryWeaponToWeaponInfo [h];
-	int weapon_gun = secondaryWeaponToGunNum [h] + (flags & 1);
+	ubyte weaponId = secondaryWeaponToWeaponInfo [h];
+	int weaponGun = secondaryWeaponToGunNum [h] + (flags & 1);
 	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 	if (h == GUIDED_INDEX)
 		gameData.multigame.bIsGuided = 1;
 	if (playerP->secondaryAmmo [h] > 0)
 		playerP->secondaryAmmo [h]--;
-	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, weapon_id, weapon_gun, 1, 0, -1);
+	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, weaponId, weaponGun, 1, 0, -1);
 	}
 else {
 	fix xSaveCharge = gameData.fusion.xCharge;
@@ -1389,10 +1397,11 @@ else {
 		else
 			gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		}
-	FireWeapon ((short) gameData.multiplayer.players [nPlayer].nObject, weapon, (int)buf [3], flags, (int)buf [5]);
+	FireWeapon ((short) gameData.multiplayer.players [nPlayer].nObject, weapon, (int) buf [3], flags, (int)buf [5]);
 	if (weapon == FUSION_INDEX)
 		gameData.fusion.xCharge = xSaveCharge;
 	}
+gameData.multigame.laser.nFired [1] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -1541,7 +1550,11 @@ if (nKiller < 0)
 	nPlayer = -1;
 else
 	nKiller = ObjnumRemoteToLocal (nKiller, sbyte (nPlayer = int (buf [4])));
+#if DBG
+MultiComputeKill (nKiller, nKilled);
+#else
 MultiComputeKill (nKiller, nKilled, nPlayer);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2212,14 +2225,22 @@ void MultiSendFire (void)
 {
 if (!gameData.multigame.laser.bFired)
 	return;
-gameData.multigame.msg.buf [0] = (char)MULTI_FIRE;
-gameData.multigame.msg.buf [1] = (char)gameData.multiplayer.nLocalPlayer;
-gameData.multigame.msg.buf [2] = (char)gameData.multigame.laser.nGun;
-gameData.multigame.msg.buf [3] = (char)gameData.multigame.laser.nLevel;
-gameData.multigame.msg.buf [4] = (char)gameData.multigame.laser.nFlags;
-gameData.multigame.msg.buf [5] = (char)gameData.multigame.laser.bFired;
+gameData.multigame.msg.buf [0] = char (MULTI_FIRE);
+gameData.multigame.msg.buf [1] = char (gameData.multiplayer.nLocalPlayer);
+gameData.multigame.msg.buf [2] = char (gameData.multigame.laser.nGun);
+gameData.multigame.msg.buf [3] = char (gameData.multigame.laser.nLevel);
+gameData.multigame.msg.buf [4] = char (gameData.multigame.laser.nFlags);
+gameData.multigame.msg.buf [5] = char (gameData.multigame.laser.bFired);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+6, gameData.multigame.laser.nTrack);
-MultiSendData (gameData.multigame.msg.buf, 8, 0);
+if (gameStates.multi.nGameType != UDP_GAME)
+	MultiSendData (gameData.multigame.msg.buf, 8, 0);
+else {
+	gameData.multigame.msg.buf [8] = char (gameData.multigame.laser.nFired [0]);
+	for (int i = 0; i < gameData.multigame.laser.nFired [0]; i++)
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + 9 + 2 * i, gameData.multigame.laser.nObjects [i]);
+	MultiSendData (gameData.multigame.msg.buf, 9 + sizeofa (gameData.multigame.laser.nObjects), 0);
+	}
+gameData.multigame.laser.nFired [0] = 0;
 gameData.multigame.laser.bFired = 0;
 }
 

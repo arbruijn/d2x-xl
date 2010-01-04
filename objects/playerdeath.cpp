@@ -269,7 +269,7 @@ else {
 //		This prevents cheating
 	if (gameData.app.nGameMode & GM_HOARD)
 		if (!bMultiSuicide)
-			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]<12)
+			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] < 12)
 				LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]++;
 	}
 paletteManager.SetRedEffect (40);

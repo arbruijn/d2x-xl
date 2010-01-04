@@ -344,8 +344,10 @@ if (nWeapon > OMEGA_INDEX) {
 	gameData.weapons.nPrimary = 0;
 	nRoundsPerShot = 0;
 	}
-else
+else {
+	gameData.multigame.laser.nFired [0] = 0;
 	nRoundsPerShot = weaponHandlers [nWeapon] (OBJECTS + nObject, nLevel, nFlags, nRoundsPerShot);
+	}
 if (IsMultiGame && (nObject == LOCALPLAYER.nObject)) {
 	gameData.multigame.laser.bFired = nRoundsPerShot;
 	gameData.multigame.laser.nGun = nWeapon;
