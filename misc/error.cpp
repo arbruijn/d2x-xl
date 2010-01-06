@@ -511,6 +511,8 @@ int nDbgVertex = -1;
 int nDbgBaseTex = -1;
 int nDbgOvlTex = -1;
 int nDbgTexture = -1;
+short nDbgSound = -1;
+short nDbgChannel = -1;
 
 #endif
 

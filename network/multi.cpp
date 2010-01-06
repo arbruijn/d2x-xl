@@ -446,15 +446,13 @@ if (nLocalObj != nRemoteObj)
 
 void MapObjnumLocalToRemote (int nLocalObj, int nRemoteObj, int nOwner)
 {
-Assert (nLocalObj > -1);
-Assert (nLocalObj < LEVEL_OBJECTS);
-Assert (nRemoteObj > -1);
-Assert (nRemoteObj < LEVEL_OBJECTS);
-Assert (nOwner > -1);
-Assert (nOwner != gameData.multiplayer.nLocalPlayer);
-gameData.multigame.nObjOwner [nLocalObj] = nOwner;
-gameData.multigame.remoteToLocal [nOwner * LEVEL_OBJECTS + nRemoteObj] = nLocalObj;
-gameData.multigame.localToRemote [nLocalObj] = nRemoteObj;
+if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS) && 
+	 (nRemoteObj > -1) && (nRemoteObj < LEVEL_OBJECTS) && 
+	 (nOwner > -1) && (nOwner != gameData.multiplayer.nLocalPlayer)) {
+	gameData.multigame.nObjOwner [nLocalObj] = nOwner;
+	gameData.multigame.remoteToLocal [nOwner * LEVEL_OBJECTS + nRemoteObj] = nLocalObj;
+	gameData.multigame.localToRemote [nLocalObj] = nRemoteObj;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -462,11 +460,11 @@ gameData.multigame.localToRemote [nLocalObj] = nRemoteObj;
 
 void MapObjnumLocalToLocal (int nLocalObj)
 {
-Assert (nLocalObj > -1);
-Assert (nLocalObj < LEVEL_OBJECTS);
-gameData.multigame.nObjOwner [nLocalObj] = gameData.multiplayer.nLocalPlayer;
-gameData.multigame.remoteToLocal [gameData.multiplayer.nLocalPlayer * LEVEL_OBJECTS + nLocalObj] = nLocalObj;
-gameData.multigame.localToRemote [nLocalObj] = nLocalObj;
+if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS)) {
+	gameData.multigame.nObjOwner [nLocalObj] = gameData.multiplayer.nLocalPlayer;
+	gameData.multigame.remoteToLocal [gameData.multiplayer.nLocalPlayer * LEVEL_OBJECTS + nLocalObj] = nLocalObj;
+	gameData.multigame.localToRemote [nLocalObj] = nLocalObj;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1940,9 +1938,9 @@ void MultiDoPlaySound (char *buf)
 
 if (!gameData.multiplayer.players [nPlayer].connected)
 	return;
-Assert (gameData.multiplayer.players [nPlayer].nObject  >= 0);
-Assert (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject [0]);
-audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume);
+if ((gameData.multiplayer.players [nPlayer].nObject >= 0) &&
+	 (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject [0]))
+	audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume);
 }
 
 //-----------------------------------------------------------------------------
@@ -2971,8 +2969,8 @@ void MultiSendPlaySound (int nSound, fix volume)
 {
 gameData.multigame.msg.buf [0] = MULTI_PLAY_SOUND;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
-gameData.multigame.msg.buf [2] = (char)nSound;
-gameData.multigame.msg.buf [3] = (char) (volume >> 12);
+gameData.multigame.msg.buf [2] = char (nSound);
+gameData.multigame.msg.buf [3] = char (volume >> 12);
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
 }
 
@@ -4342,18 +4340,12 @@ if (!FindActiveDoor (doorP->nFrontWall [0]))
 
 //-----------------------------------------------------------------------------
 
-void MultiSendSoundFunction (char whichfunc, char sound)
+void MultiSendSoundFunction (char nFunction, char sound)
 {
-	int count = 0;
-
 gameData.multigame.msg.buf [0] = MULTI_SOUND_FUNCTION;
-count++;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
-count++;
-gameData.multigame.msg.buf [2] = whichfunc;
-count++;
+gameData.multigame.msg.buf [2] = nFunction;
 gameData.multigame.msg.buf [3] = sound;
-count++;       // this would probably work on the PC as well.  Jason?
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
 }
 
@@ -4364,28 +4356,28 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 
 void MultiDoSoundFunction (char *buf)
 {
-	// for afterburner
-	int nPlayer, whichfunc;
-	short sound;
-
+// for afterburner
 if (LOCALPLAYER.connected != 1)
 	return;
-
-nPlayer = (int) buf [1];
-whichfunc = (int) buf [2];
-sound = buf [3];
-if (whichfunc == 0)
+int nPlayer = int (buf [1]);
+int nFunction = int (buf [2]);
+if (nFunction == 0)
 	audio.DestroyObjectSound (gameData.multiplayer.players [nPlayer].nObject);
-else if (whichfunc == 3)
-	audio.CreateObjectSound (sound, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [nPlayer].nObject, 1, I2X (1), I2X (256),
-						 AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+else if (nFunction == 3) {
+	short nSound = short (ubyte (buf [3]));
+	if (nSound == SOUND_AFTERBURNER_PLAY)
+		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, short (gameData.multiplayer.players [nPlayer].nObject));
+	else
+		audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, short (gameData.multiplayer.players [nPlayer].nObject), 1, I2X (1), I2X (256),
+										 AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+	}
 }
 
 //-----------------------------------------------------------------------------
 
 void MultiSendCaptureBonus (char nPlayer)
 {
-	Assert ((gameData.app.nGameMode &(GM_CAPTURE | GM_ENTROPY)) ||
+	Assert ((gameData.app.nGameMode & (GM_CAPTURE | GM_ENTROPY)) ||
 			  ((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL));
 
 gameData.multigame.msg.buf [0] = MULTI_CAPTURE_BONUS;

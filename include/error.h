@@ -43,7 +43,7 @@ void Int3();
 
 #if 1//DBG
 
-extern short nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel;
+extern short nDbgSeg, nDbgSide, nDbgFace, nDbgObj, nDbgObjType, nDbgObjId, nDbgModel, nDbgSound, nDbgChannel;
 extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture;
 
 #endif

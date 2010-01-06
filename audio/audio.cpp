@@ -101,8 +101,6 @@ CAudio audio;
 
 static SDL_AudioSpec waveSpec;
 
-int nDbgSound = -1;
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -221,6 +219,10 @@ if (m_info.bPlaying) {
 void CAudioChannel::Stop (void)
 {
 audio.UnregisterChannel (m_info.nIndex);
+#if DBG
+if (m_info.nChannel == nDbgChannel)
+	nDbgChannel = nDbgChannel;
+#endif
 m_info.nIndex = -1;
 m_info.bPlaying = 0;
 m_info.nSoundObj = -1;
@@ -596,7 +598,7 @@ else
 if (pszWAV && *pszWAV)
 	return -1;
 #endif
- {
+	{
 	if ((gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K)) {
 		int l = Resample (soundP, 0, 0);
 		if (l <= 0)
@@ -937,8 +939,8 @@ return channelMinVolP [0] ? channelMinVolP [0] : channelMinVolP [1];
 
 // Volume 0-I2X (1)
 int CAudio::StartSound (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping, 
-						int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
-						const char *pszWAV, CFixVector* vPos)
+								int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed, 
+								const char *pszWAV, CFixVector* vPos)
 {
 	CAudioChannel*	channelP;
 

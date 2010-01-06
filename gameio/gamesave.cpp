@@ -929,8 +929,10 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 			//check to see that if a CTrigger requires a CWall that it has one,
 			//and if it requires a botGen that it has one
 			if (trigP->m_info.nType == TT_MATCEN) {
-				if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER)
+				if ((SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_EQUIPMAKER)) {
+					j++;
 					continue;		//botGen CTrigger doesn'i point to botGen
+					}
 				}
 			else if ((trigP->m_info.nType != TT_LIGHT_OFF) && (trigP->m_info.nType != TT_LIGHT_ON)) { //light triggers don't require walls
 				if (IS_WALL (nWall))

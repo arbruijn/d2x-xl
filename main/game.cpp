@@ -304,22 +304,20 @@ void FlyInit (CObject *objP)
 
 void DoCloakStuff (void)
 {
-	int i;
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-			if (gameData.time.xGame - gameData.multiplayer.players[i].cloakTime > CLOAK_TIME_MAX) {
-				gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
-				if (i == gameData.multiplayer.nLocalPlayer) {
-					audio.PlaySound (SOUND_CLOAK_OFF);
-					#ifdef NETWORK
-					if (gameData.app.nGameMode & GM_MULTI)
-						MultiSendPlaySound (SOUND_CLOAK_OFF, I2X (1));
-					MaybeDropNetPowerup (-1, POW_CLOAK, FORCE_DROP);
-					MultiSendDeCloak (); // For demo recording
-					#endif
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
+		if (gameData.time.xGame - gameData.multiplayer.players[i].cloakTime > CLOAK_TIME_MAX) {
+			gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
+			if (i == gameData.multiplayer.nLocalPlayer) {
+				audio.PlaySound (SOUND_CLOAK_OFF);
+				if (gameData.app.nGameMode & GM_MULTI)
+					MultiSendPlaySound (SOUND_CLOAK_OFF, I2X (1));
+				MaybeDropNetPowerup (-1, POW_CLOAK, FORCE_DROP);
+				MultiSendDeCloak (); // For demo recording
 				}
 			}
 		}
+	}
 }
 
 //	------------------------------------------------------------------------------------
@@ -372,31 +370,28 @@ static int abScale = 4;
 void DoAfterburnerStuff (void)
 {
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
-	gameData.physics.xAfterburnerCharge=0;
+	gameData.physics.xAfterburnerCharge = 0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 	if (audio.DestroyObjectSound (LOCALPLAYER.nObject))
-#ifdef NETWORK
-		MultiSendSoundFunction (0,0)
-#endif
-	 	;
+		MultiSendSoundFunction (0,0);
 	}
 else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburnerState != gameStates.gameplay.bLastAfterburnerState)) || 
 	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge))) {
-	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
-		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
+	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
-							 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
-#ifdef NETWORK
-		if (gameData.app.nGameMode & GM_MULTI)
+										 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+		if (IsMultiGame)
 			MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
-#endif
 		}
 	else {
+#if 1
 		audio.DestroyObjectSound (LOCALPLAYER.nObject);
 		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
-#ifdef NETWORK
-		if (gameData.app.nGameMode & GM_MULTI)
-		 	MultiSendSoundFunction (0,0);
+		if (IsMultiGame) {
+			if (gameStates.multi.nGameType == UDP_GAME)
+			 	MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_PLAY);
+		 	MultiSendSoundFunction (0, 0);
+			}
 #endif
 		}
 	}

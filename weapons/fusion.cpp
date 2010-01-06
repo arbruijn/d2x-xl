@@ -90,7 +90,7 @@ else {
 		else {
 			CreateAwarenessEvent (gameData.objs.consoleP, WEAPON_ROBOT_COLLISION);
 			audio.PlaySound (SOUND_FUSION_WARMUP);
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				MultiSendPlaySound (SOUND_FUSION_WARMUP, I2X (1));
 				}
 		gameData.fusion.xLastSoundTime = gameData.time.xGame;
