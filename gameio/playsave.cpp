@@ -752,6 +752,12 @@ while (!m_cf.EoF ())
 audio.SetMaxChannels (NMCLAMP (gameStates.sound.audio.nMaxChannels, MIN_SOUND_CHANNELS, MAX_SOUND_CHANNELS));
 cockpit->Activate (gameStates.render.cockpit.nType);	
 downloadManager.SetTimeoutIndex (gameStates.app.iDownloadTimeout);
+for (int i = 0; i < 2; i++) {
+	if (gameStates.render.cockpit.n3DView [i] < CV_NONE)
+		gameStates.render.cockpit.n3DView [i] = CV_NONE;
+	else if (gameStates.render.cockpit.n3DView [i] >= CV_FUNC_COUNT)
+		gameStates.render.cockpit.n3DView [i] = CV_FUNC_COUNT - 1;
+	}
 return m_cf.Close ();
 }
 
@@ -1533,8 +1539,8 @@ gameOpts->input.joystick.sensitivity [4] = 8;
 gameOpts->input.mouse.sensitivity [0] =
 gameOpts->input.mouse.sensitivity [1] =
 gameOpts->input.mouse.sensitivity [2] = 8;
-gameStates.render.cockpit.n3DView[0]=CV_NONE;
-gameStates.render.cockpit.n3DView[1]=CV_NONE;
+gameStates.render.cockpit.n3DView[0] = CV_NONE;
+gameStates.render.cockpit.n3DView[1] = CV_NONE;
 
 // Default taunt macros
 strcpy(gameData.multigame.msg.szMacro[0], TXT_GET_ALONG);
