@@ -2155,7 +2155,7 @@ if (gameStates.input.nPlrFileVersion >= D2W95_PLAYER_FILE_VERSION)
 if (gameStates.input.nPlrFileVersion >= 25)
 	cf.Read (controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1);
 else {
-	for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
+	for (i = 0; i < MAX_HOTKEY_CONTROLS; i++)
 		controlSettings.d2xCustom [i] = controlSettings.d2xDefaults [i];
 	}
 if (gameStates.input.nPlrFileVersion >= D2XXL_PLAYER_FILE_VERSION) {

@@ -852,7 +852,7 @@
 				OutputFile="\programs\d2\bin\x64-intel\d2x-xl-x64-intel.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="c:\program files (x86)\intel\compiler\11.1\051\ipp\em64t\lib;c:\program files (x86)\intel\compiler\11.1\051\ipp\em64t\stublib"
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="true"
 				GenerateMapFile="false"
@@ -10711,11 +10711,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

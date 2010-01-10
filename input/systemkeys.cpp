@@ -1126,7 +1126,7 @@ int ReadControls (void)
 	fix keyTime;
 	static ubyte explodingFlag=0;
 
-gameStates.app.bPlayerFiredLaserThisFrame=-1;
+gameStates.app.bPlayerFiredLaserThisFrame = -1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 		if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
 			|| gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining

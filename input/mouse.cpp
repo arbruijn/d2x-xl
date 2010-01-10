@@ -40,6 +40,10 @@ memset (&mouseData, 0, sizeof (mouseData));
 
 //------------------------------------------------------------------------------
 
+#if DBG
+int nDbgButton = -1;
+#endif
+
 void MouseButtonHandler (SDL_MouseButtonEvent *mbe)
 {
 	// to bad, SDL buttons use a different mapping as descent expects,
@@ -63,6 +67,10 @@ void MouseButtonHandler (SDL_MouseButtonEvent *mbe)
 	fix xCurTime = TimerGetFixedSeconds ();
 
 if (mbe->state == SDL_PRESSED) {
+#if DBG
+if (button == nDbgButton)
+	nDbgButton = nDbgButton;
+#endif
 	mb->pressed = 1;
 	mb->xPrevTimeWentDown = mb->xTimeWentDown;
 	mb->xTimeWentDown = xCurTime;
@@ -80,6 +88,10 @@ if (mbe->state == SDL_PRESSED) {
 		}
 	}
 else {
+#if DBG
+if (button == nDbgButton)
+	nDbgButton = nDbgButton;
+#endif
 	mb->pressed = 0;
 	mb->xTimeHeldDown += xCurTime - mb->xTimeWentDown;
 	mb->numUps++;
