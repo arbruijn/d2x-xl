@@ -45,7 +45,7 @@ typedef struct tTranspRenderThreadInfo {
 extern tTranspRenderThreadInfo tiTranspRender;
 extern tThreadInfo tiEffects;
 
-int RunRenderThreads (int nTask, int nThreads = 2);
+int RunRenderThreads (int nTask, int nThreads = -1);
 void StartRenderThreads (void);
 void EndRenderThreads (void);
 void StartTranspRenderThread (void);

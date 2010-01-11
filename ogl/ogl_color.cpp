@@ -388,6 +388,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 	nLights--;
 #if DBG
+	if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
+		nDbgVertex = nDbgVertex;
+#endif
+#if DBG
 	if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #	if 0

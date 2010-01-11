@@ -82,6 +82,8 @@ if ((nTask < rtTaskCount) && !gameData.app.bUseMultiThreading [nTask])
 	return 0;
 #endif
 tiRender.nTask = (tRenderTask) nTask;
+if (nThreads < 0)
+	nThreads = gameStates.app.nThreads;
 for (i = 0; i < nThreads; i++)
 	tiRender.ti [i].bExec = 1;
 #if DBG
