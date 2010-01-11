@@ -262,9 +262,11 @@ if (ogl.m_states.bRender2TextureOk)
 
 //------------------------------------------------------------------------------
 
+#define EPS 0.01f
+
 void CCamera::GetUVL (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP)
 {
-	int i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
+	int	i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
 
 if (gameStates.render.bTriangleMesh) {
 	if ((nType = faceP->m_info.nType == SIDE_IS_TRI_13)) {
@@ -295,43 +297,52 @@ else
 		int	bHaveBuffer = HaveBuffer (1) == 1;
 		int	bFitToWall = m_info.bTeleport || gameOpts->render.cameras.bFitToWall;
 #endif
-
+#if DBG
+	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	if (uvlP) {
-		rotLeft = (uvlP [1].u > uvlP [0].u);
-		rotRight = (uvlP [1].u < uvlP [0].u);
+		fix delta = uvlP [1].u - uvlP [0].u;
+		rotLeft = (delta > F2X (EPS));
+		rotRight = (delta < -F2X (EPS));
 		if (rotLeft) {
-			yFlip = (uvlP [1].u < uvlP [2].u);
-			xFlip = (uvlP [3].v > uvlP [1].v);
+			yFlip = (uvlP [1].u - uvlP [2].u < -F2X (EPS));
+			xFlip = (uvlP [3].v - uvlP [1].v > F2X (EPS));
 			}
 		else if (rotRight) {
-			yFlip = (uvlP [3].u < uvlP [0].u);
-			xFlip = (uvlP [1].v > uvlP [3].v);
+			yFlip = (uvlP [3].u - uvlP [0].u < -F2X (EPS));
+			xFlip = (uvlP [1].v - uvlP [3].v > F2X (EPS));
 			}
 		else {
-			xFlip = (uvlP [2].u < uvlP [0].u);
-			yFlip = (uvlP [1].v > uvlP [0].v);
+			xFlip = (uvlP [2].u - uvlP [0].u < -F2X (EPS));
+			yFlip = (uvlP [1].v - uvlP [0].v > F2X (EPS));
 			}
 		dvFace = X2F (uvlP [1].v - uvlP [0].v);
 		duFace = X2F (uvlP [2].u - uvlP [0].u);
 		}
 	else {
-		rotLeft = (texCoordP [1].v.u < texCoordP [0].v.u);
-		rotRight = (texCoordP [1].v.u > texCoordP [0].v.u);
+		float delta = texCoordP [1].v.u - texCoordP [0].v.u;
+		rotLeft = (delta < -EPS);
+		rotRight = (delta > EPS);
 		if (rotLeft) {
-			yFlip = (texCoordP [1].v.u > texCoordP [i2].v.u);
-			xFlip = (texCoordP [i3].v.v < texCoordP [1].v.v);
+			yFlip = (texCoordP [1].v.u - texCoordP [i2].v.u > EPS);
+			xFlip = (texCoordP [i3].v.v - texCoordP [1].v.v < -EPS);
 			}
 		else if (rotRight) {
-			yFlip = (texCoordP [i3].v.u > texCoordP [0].v.u);
-			xFlip = (texCoordP [1].v.v < texCoordP [i3].v.v);
+			yFlip = (texCoordP [i3].v.u - texCoordP [0].v.u > EPS);
+			xFlip = (texCoordP [1].v.v - texCoordP [i3].v.v < -EPS);
 			}
 		else {
-			xFlip = (texCoordP [i2].v.u < texCoordP [0].v.u);
-			yFlip = (texCoordP [1].v.v > texCoordP [0].v.v);
+			xFlip = (texCoordP [i2].v.u - texCoordP [0].v.u < -EPS);
+			yFlip = (texCoordP [1].v.v - texCoordP [0].v.v > EPS);
 			}
 		dvFace = (float) fabs (texCoordP [1].v.v - texCoordP [0].v.v);
 		duFace = (float) fabs (texCoordP [i2].v.u - texCoordP [0].v.u);
 		}
+	if (fabs (dvFace) <= EPS)
+		dvFace = 0.0f;
+	if (fabs (duFace) <= EPS)
+		duFace = 0.0f;
 	du = dv = 0;
 	if (bHaveBuffer) {
 		duImage = (float) CCanvas::Current ()->Width () / (float) m_info.buffer.Width () / nScale;
