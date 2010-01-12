@@ -34,11 +34,11 @@
 			<Tool
 				Name="CppCmplrTool"
 				GlobalOptimizations="true"
-				InterproceduralOptimization="2"
+				InterproceduralOptimization="1"
 				OptimizeForWindowsApplication="true"
 				GenerateAlternateCodePaths="5"
 				UseProcessorExtensions="6"
-				Parallelization="true"
+				Parallelization="false"
 				UseIntelOptimizedHeaders="true"/>
 		</Configuration>
 	</Configurations>
