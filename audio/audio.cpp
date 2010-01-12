@@ -591,7 +591,12 @@ if (gameOpts->sound.bUseSDLMixer) {
 			}
 		}
 	Mix_VolPan (m_info.nChannel, m_info.nVolume, nPan);
-	Mix_PlayChannel (m_info.nChannel, m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
+	try {
+		Mix_PlayChannel (m_info.nChannel, m_info.mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
+		}
+	catch (...) {
+		PrintLog ("Error in Mix_PlayChannel\n");
+		}
 	}
 else 
 #else
