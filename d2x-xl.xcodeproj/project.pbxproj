@@ -11,6 +11,12 @@
 		705340B409321DDF006BD186 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2F67ED704C74A3F00A80002 /* OpenGL.framework */; };
 		705340B509321DDF006BD186 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2F67F1E04C773E400A80002 /* GLUT.framework */; };
 		70723359093CAC7300601454 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70723358093CAC7300601454 /* SDL.framework */; };
+		A408F78810FD273B00AE64CB /* controlweapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A408F78310FD273B00AE64CB /* controlweapon.cpp */; };
+		A408F78910FD273B00AE64CB /* createweapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A408F78410FD273B00AE64CB /* createweapon.cpp */; };
+		A408F78A10FD273B00AE64CB /* fireweapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A408F78510FD273B00AE64CB /* fireweapon.cpp */; };
+		A408F78B10FD273B00AE64CB /* fusion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A408F78610FD273B00AE64CB /* fusion.cpp */; };
+		A408F78C10FD273B00AE64CB /* weaponhandlers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A408F78710FD273B00AE64CB /* weaponhandlers.cpp */; };
+		A408F7D510FD2E1D00AE64CB /* gametime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A408F7D410FD2E1D00AE64CB /* gametime.cpp */; };
 		A40ADF0D0F48E0410018DA6C /* render_lighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A40ADF0C0F48E0410018DA6C /* render_lighting.cpp */; };
 		A40ADF0F0F48E04D0018DA6C /* gpgpu_lighting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A40ADF0E0F48E04D0018DA6C /* gpgpu_lighting.cpp */; };
 		A40ADF110F48E0780018DA6C /* trigger.h in Headers */ = {isa = PBXBuildFile; fileRef = A40ADF100F48E0780018DA6C /* trigger.h */; };
@@ -245,7 +251,6 @@
 		A45015F20F3F93EC00D04D61 /* flightpath.h in Headers */ = {isa = PBXBuildFile; fileRef = A450137D0F3F93EB00D04D61 /* flightpath.h */; };
 		A45015F30F3F93EC00D04D61 /* font.h in Headers */ = {isa = PBXBuildFile; fileRef = A450137E0F3F93EB00D04D61 /* font.h */; };
 		A45015F40F3F93EC00D04D61 /* fuelcen.h in Headers */ = {isa = PBXBuildFile; fileRef = A450137F0F3F93EB00D04D61 /* fuelcen.h */; };
-		A45015F50F3F93EC00D04D61 /* fvi.h in Headers */ = {isa = PBXBuildFile; fileRef = A45013800F3F93EB00D04D61 /* fvi.h */; };
 		A45015F60F3F93EC00D04D61 /* fvi_a.h in Headers */ = {isa = PBXBuildFile; fileRef = A45013810F3F93EB00D04D61 /* fvi_a.h */; };
 		A45015F70F3F93EC00D04D61 /* game.h in Headers */ = {isa = PBXBuildFile; fileRef = A45013820F3F93EB00D04D61 /* game.h */; };
 		A45015F80F3F93EC00D04D61 /* gameargs.h in Headers */ = {isa = PBXBuildFile; fileRef = A45013830F3F93EB00D04D61 /* gameargs.h */; };
@@ -501,11 +506,9 @@
 		A450170B0F3F93EC00D04D61 /* shrapnel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A00F3F93EC00D04D61 /* shrapnel.cpp */; };
 		A450170C0F3F93EC00D04D61 /* sparkeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A10F3F93EC00D04D61 /* sparkeffect.cpp */; };
 		A450170D0F3F93EC00D04D61 /* dropweapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A30F3F93EC00D04D61 /* dropweapon.cpp */; };
-		A450170E0F3F93EC00D04D61 /* laser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A40F3F93EC00D04D61 /* laser.cpp */; };
 		A45017100F3F93EC00D04D61 /* omega.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A60F3F93EC00D04D61 /* omega.cpp */; };
 		A45017110F3F93EC00D04D61 /* pickupweapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A70F3F93EC00D04D61 /* pickupweapon.cpp */; };
 		A45017120F3F93EC00D04D61 /* seismic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A80F3F93EC00D04D61 /* seismic.cpp */; };
-		A45017130F3F93EC00D04D61 /* weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014A90F3F93EC00D04D61 /* weapon.cpp */; };
 		A45017140F3F93EC00D04D61 /* weaponorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014AA0F3F93EC00D04D61 /* weaponorder.cpp */; };
 		A45017150F3F93EC00D04D61 /* extgl.h in Headers */ = {isa = PBXBuildFile; fileRef = A45014AC0F3F93EC00D04D61 /* extgl.h */; };
 		A45017160F3F93EC00D04D61 /* fbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A45014AD0F3F93EC00D04D61 /* fbuffer.cpp */; };
@@ -573,6 +576,12 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		705340BB09321DDF006BD186 /* d2x-xl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "d2x-xl.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		70723358093CAC7300601454 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
+		A408F78310FD273B00AE64CB /* controlweapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = controlweapon.cpp; sourceTree = "<group>"; };
+		A408F78410FD273B00AE64CB /* createweapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = createweapon.cpp; sourceTree = "<group>"; };
+		A408F78510FD273B00AE64CB /* fireweapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fireweapon.cpp; sourceTree = "<group>"; };
+		A408F78610FD273B00AE64CB /* fusion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fusion.cpp; sourceTree = "<group>"; };
+		A408F78710FD273B00AE64CB /* weaponhandlers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = weaponhandlers.cpp; sourceTree = "<group>"; };
+		A408F7D410FD2E1D00AE64CB /* gametime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gametime.cpp; sourceTree = "<group>"; };
 		A40ADF0C0F48E0410018DA6C /* render_lighting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = render_lighting.cpp; sourceTree = "<group>"; };
 		A40ADF0E0F48E04D0018DA6C /* gpgpu_lighting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gpgpu_lighting.cpp; sourceTree = "<group>"; };
 		A40ADF100F48E0780018DA6C /* trigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = trigger.h; sourceTree = "<group>"; };
@@ -828,7 +837,6 @@
 		A450137D0F3F93EB00D04D61 /* flightpath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = flightpath.h; sourceTree = "<group>"; };
 		A450137E0F3F93EB00D04D61 /* font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = font.h; sourceTree = "<group>"; };
 		A450137F0F3F93EB00D04D61 /* fuelcen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fuelcen.h; sourceTree = "<group>"; };
-		A45013800F3F93EB00D04D61 /* fvi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fvi.h; sourceTree = "<group>"; };
 		A45013810F3F93EB00D04D61 /* fvi_a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fvi_a.h; sourceTree = "<group>"; };
 		A45013820F3F93EB00D04D61 /* game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = game.h; sourceTree = "<group>"; };
 		A45013830F3F93EB00D04D61 /* gameargs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gameargs.h; sourceTree = "<group>"; };
@@ -1086,11 +1094,9 @@
 		A45014A00F3F93EC00D04D61 /* shrapnel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shrapnel.cpp; sourceTree = "<group>"; };
 		A45014A10F3F93EC00D04D61 /* sparkeffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sparkeffect.cpp; sourceTree = "<group>"; };
 		A45014A30F3F93EC00D04D61 /* dropweapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dropweapon.cpp; sourceTree = "<group>"; };
-		A45014A40F3F93EC00D04D61 /* laser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = laser.cpp; sourceTree = "<group>"; };
 		A45014A60F3F93EC00D04D61 /* omega.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = omega.cpp; sourceTree = "<group>"; };
 		A45014A70F3F93EC00D04D61 /* pickupweapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pickupweapon.cpp; sourceTree = "<group>"; };
 		A45014A80F3F93EC00D04D61 /* seismic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = seismic.cpp; sourceTree = "<group>"; };
-		A45014A90F3F93EC00D04D61 /* weapon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = weapon.cpp; sourceTree = "<group>"; };
 		A45014AA0F3F93EC00D04D61 /* weaponorder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = weaponorder.cpp; sourceTree = "<group>"; };
 		A45014AC0F3F93EC00D04D61 /* extgl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extgl.h; sourceTree = "<group>"; };
 		A45014AD0F3F93EC00D04D61 /* fbuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fbuffer.cpp; sourceTree = "<group>"; };
@@ -1490,6 +1496,7 @@
 				A45013050F3F93EB00D04D61 /* gameoptions.cpp */,
 				A45013060F3F93EB00D04D61 /* gameseg.cpp */,
 				A45013070F3F93EB00D04D61 /* gamestates.cpp */,
+				A408F7D410FD2E1D00AE64CB /* gametime.cpp */,
 				A45013080F3F93EB00D04D61 /* highscores.cpp */,
 				A45013090F3F93EB00D04D61 /* kconfig.cpp */,
 				A450130B0F3F93EB00D04D61 /* mglobal.cpp */,
@@ -1648,7 +1655,6 @@
 				A450137D0F3F93EB00D04D61 /* flightpath.h */,
 				A450137E0F3F93EB00D04D61 /* font.h */,
 				A450137F0F3F93EB00D04D61 /* fuelcen.h */,
-				A45013800F3F93EB00D04D61 /* fvi.h */,
 				A45013810F3F93EB00D04D61 /* fvi_a.h */,
 				A45013820F3F93EB00D04D61 /* game.h */,
 				A45013830F3F93EB00D04D61 /* gameargs.h */,
@@ -1982,12 +1988,15 @@
 		A45014A20F3F93EC00D04D61 /* weapons */ = {
 			isa = PBXGroup;
 			children = (
+				A408F78310FD273B00AE64CB /* controlweapon.cpp */,
+				A408F78410FD273B00AE64CB /* createweapon.cpp */,
 				A45014A30F3F93EC00D04D61 /* dropweapon.cpp */,
-				A45014A40F3F93EC00D04D61 /* laser.cpp */,
+				A408F78510FD273B00AE64CB /* fireweapon.cpp */,
+				A408F78610FD273B00AE64CB /* fusion.cpp */,
 				A45014A60F3F93EC00D04D61 /* omega.cpp */,
 				A45014A70F3F93EC00D04D61 /* pickupweapon.cpp */,
 				A45014A80F3F93EC00D04D61 /* seismic.cpp */,
-				A45014A90F3F93EC00D04D61 /* weapon.cpp */,
+				A408F78710FD273B00AE64CB /* weaponhandlers.cpp */,
 				A45014AA0F3F93EC00D04D61 /* weaponorder.cpp */,
 			);
 			path = weapons;
@@ -2126,7 +2135,6 @@
 				A45015F20F3F93EC00D04D61 /* flightpath.h in Headers */,
 				A45015F30F3F93EC00D04D61 /* font.h in Headers */,
 				A45015F40F3F93EC00D04D61 /* fuelcen.h in Headers */,
-				A45015F50F3F93EC00D04D61 /* fvi.h in Headers */,
 				A45015F60F3F93EC00D04D61 /* fvi_a.h in Headers */,
 				A45015F70F3F93EC00D04D61 /* game.h in Headers */,
 				A45015F80F3F93EC00D04D61 /* gameargs.h in Headers */,
@@ -2603,11 +2611,9 @@
 				A450170B0F3F93EC00D04D61 /* shrapnel.cpp in Sources */,
 				A450170C0F3F93EC00D04D61 /* sparkeffect.cpp in Sources */,
 				A450170D0F3F93EC00D04D61 /* dropweapon.cpp in Sources */,
-				A450170E0F3F93EC00D04D61 /* laser.cpp in Sources */,
 				A45017100F3F93EC00D04D61 /* omega.cpp in Sources */,
 				A45017110F3F93EC00D04D61 /* pickupweapon.cpp in Sources */,
 				A45017120F3F93EC00D04D61 /* seismic.cpp in Sources */,
-				A45017130F3F93EC00D04D61 /* weapon.cpp in Sources */,
 				A45017140F3F93EC00D04D61 /* weaponorder.cpp in Sources */,
 				A45017160F3F93EC00D04D61 /* fbuffer.cpp in Sources */,
 				A45017190F3F93EC00D04D61 /* gr.cpp in Sources */,
@@ -2641,6 +2647,12 @@
 				A4A1659D0FEE381B00AF2D6D /* sphere_collision.cpp in Sources */,
 				A4A1659E0FEE381B00AF2D6D /* hitbox_collision.cpp in Sources */,
 				A4A165A70FEE384700AF2D6D /* criticalhit.cpp in Sources */,
+				A408F78810FD273B00AE64CB /* controlweapon.cpp in Sources */,
+				A408F78910FD273B00AE64CB /* createweapon.cpp in Sources */,
+				A408F78A10FD273B00AE64CB /* fireweapon.cpp in Sources */,
+				A408F78B10FD273B00AE64CB /* fusion.cpp in Sources */,
+				A408F78C10FD273B00AE64CB /* weaponhandlers.cpp in Sources */,
+				A408F7D510FD2E1D00AE64CB /* gametime.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2727,6 +2739,7 @@
 				INFOPLIST_FILE = io/macosx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "d2x-xl";
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
@@ -2756,6 +2769,7 @@
 				INFOPLIST_FILE = io/macosx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "d2x-xl";
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
