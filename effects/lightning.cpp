@@ -1238,7 +1238,7 @@ bool CLightningSystem::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, C
 {
 m_nObject = nObject;
 m_nTarget = nTarget;
-if (!(nLife && nLength && (nNodes > 4)))
+if (!(nLife && (nLength || vEnd) && (nNodes > 4)))
 	return false;
 m_nBolts = nBolts;
 if (nObject >= 0)
@@ -1252,6 +1252,14 @@ m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
 if (!m_lightning.Create (nBolts))
 	return false;
 m_lightning.Clear ();
+
+CObject* waypointP;
+if ((m_nObject >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0])))) {
+	vPos = &waypointP->info.position.vPos;
+	if ((m_nTarget >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nTarget].rType.lightningInfo.nWaypoint [0])))) 
+		vEnd = &waypointP->info.position.vPos;
+	}
+
 CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nTarget, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
@@ -1380,7 +1388,7 @@ CObject* CLightningSystem::FindWaypoint (short nId)
 FORALL_EFFECT_OBJS (objP, i) {
 	if ((objP->info.nId == LIGHTNING_ID) && 
 		 objP->rType.lightningInfo.bWaypoint && 
-		 (objP->rType.lightningInfo.nWaypoint [0] == nId))
+		 (objP->rType.lightningInfo.nId == nId))
 		return objP;
 	}
 return NULL;
@@ -1392,6 +1400,8 @@ bool CLightningSystem::MoveToWaypoint (int nStage)
 {
 if (m_bDestroy)
 	return false;
+if (m_tUpdate < 0)
+	return true;
 
 CObject* objP = OBJECTS + m_nObject;
 
@@ -1413,7 +1423,7 @@ if (nStage == 0) {
 		if (xDist > xTotalDist)
 			xDist = xTotalDist;
 		else { // reached or moving past current destination waypoint, so switch to next one
-			if (0 <= (objP->rType.lightningInfo.nWaypoint [0] = waypointP->rType.lightningInfo.nWaypoint [0]))
+			if (0 <= (objP->rType.lightningInfo.nWaypoint [0] = waypointP->rType.lightningInfo.nTarget))
 				objP->rType.lightningInfo.nWaypoint [0] = objP->rType.lightningInfo.nWaypoint [1];
 			}
 		objP->rType.lightningInfo.vMove += vDir * xDist;
@@ -1421,6 +1431,7 @@ if (nStage == 0) {
 		} while (xTotalDist > 0);
 	}
 else if (!objP->rType.lightningInfo.vMove.IsZero ()) {
+	Move ();
 	}	
 return true;
 }
@@ -1522,7 +1533,7 @@ if (m_nTarget < 0) {
 	vEndOffs.SetZero ();
 	}
 else {
-	vEnd = (m_nTarget < 0) ? NULL : &OBJECTS [m_nTarget].info.position.vPos;
+	vEnd = &OBJECTS [m_nTarget].info.position.vPos;
 	vEndOffs = OBJECTS [m_nTarget].rType.lightningInfo.vMove;
 	}	
 if (SHOW_LIGHTNING) {
@@ -1533,6 +1544,8 @@ if (SHOW_LIGHTNING) {
 			m_lightning [i].Move (vStart, vStartOffs, vEnd, vEndOffs);
 		}
 	}
+OBJECTS [m_nObject].info.position.vPos += OBJECTS [m_nObject].rType.lightningInfo.vMove;
+OBJECTS [m_nObject].rType.lightningInfo.vMove.SetZero ();
 }
 
 //------------------------------------------------------------------------------
@@ -1997,8 +2010,10 @@ FORALL_EFFECT_OBJS (objP, i) {
 		continue;
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
-	else if ((targetP = FindTargetObj (objP, pli->nTarget)))
-		pli->nLength = CFixVector::Dist (objP->info.position.vPos, targetP->info.position.vPos) / I2X (1);
+	else if ((targetP = FindTargetObj (objP, pli->nTarget))) {
+		vEnd = &targetP->info.position.vPos;
+		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / I2X (1);
+		}
 	else {
 		v = objP->info.position.vPos + objP->info.position.mOrient.FVec () * I2X (pli->nLength);
 		vEnd = &v;

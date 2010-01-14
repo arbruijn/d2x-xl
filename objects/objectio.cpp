@@ -236,7 +236,7 @@ switch (info.renderType) {
 		rType.lightningInfo.nNodes = cf.ReadShort ();
 		rType.lightningInfo.nChildren = cf.ReadShort ();
 		rType.lightningInfo.nSteps = cf.ReadShort ();
-		if (gameData.segs.nLevelVersion < 41)
+		if (gameTopFileInfo.fileinfoVersion < 41)
 			rType.lightningInfo.nWaypoint [0] = 0;
 		else
 			rType.lightningInfo.nWaypoint [0] = cf.ReadShort ();
