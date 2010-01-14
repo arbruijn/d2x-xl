@@ -236,6 +236,12 @@ switch (info.renderType) {
 		rType.lightningInfo.nNodes = cf.ReadShort ();
 		rType.lightningInfo.nChildren = cf.ReadShort ();
 		rType.lightningInfo.nSteps = cf.ReadShort ();
+		if (gameData.segs.nLevelVersion < 41)
+			rType.lightningInfo.nWaypoint [0] = 0;
+		else
+			rType.lightningInfo.nWaypoint [0] = cf.ReadShort ();
+		rType.lightningInfo.nWaypoint [1] = rType.lightningInfo.nWaypoint [0];
+		rType.lightningInfo.bWaypoint = (rType.lightningInfo.nId < 0);
 		rType.lightningInfo.nAngle = cf.ReadByte ();
 		rType.lightningInfo.nStyle = cf.ReadByte ();
 		rType.lightningInfo.nSmoothe = cf.ReadByte ();

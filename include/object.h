@@ -448,6 +448,7 @@ public:
 	short			nNodes;
 	short			nChildren;
 	short			nSteps;
+	short			nWaypoint [2];
 	char			nAngle;
 	char			nStyle;
 	char			nSmoothe;
@@ -457,6 +458,8 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	char			bEnabled;
+	char			bWaypoint;
+	CFixVector	vMove;
 	tRgbaColorb color;
 } __pack__ tLightningInfo;
 
