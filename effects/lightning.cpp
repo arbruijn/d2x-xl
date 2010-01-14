@@ -770,7 +770,7 @@ if (m_nNodes > 0) {
 
 //------------------------------------------------------------------------------
 
-int CLightning::SetLife (void)
+int CLightning::UpdateLife (void)
 {
 	int	h;
 
@@ -806,7 +806,17 @@ return 1;
 int CLightning::Update (int nDepth)
 {
 Animate (nDepth);
-return SetLife ();
+return UpdateLife ();
+}
+
+//------------------------------------------------------------------------------
+
+int CLightning::Reset (CFixVector* vPos, CFixVector* vEnd)
+{
+m_vBase = *vPos;
+m_vEnd = *vEnd;
+m_nTTL = 0;
+return UpdateLife ();
 }
 
 //------------------------------------------------------------------------------
@@ -888,7 +898,7 @@ if (0 < (h = m_nNodes)) {
 		else {
 			d1 = CFixVector::Dist (*vStart, nodeP->m_vPos);
 			d2 = CFixVector::Dist (*vEnd, nodeP->m_vPos);
-			vDelta = CFixVector::Avg ((d2 * vStartOffs) / (d1 + d2), (d1 * vEndOffs) / (d1 + d2));
+			vDelta = (d2 * vStartOffs) / (d1 + d2) + (d1 * vEndOffs) / (d1 + d2);
 			nodeP->Move (vDelta, nSegment);
 			}
 		}
@@ -1256,6 +1266,7 @@ m_lightning.Clear ();
 CObject* waypointP;
 if ((m_nObject >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0])))) {
 	vPos = &waypointP->info.position.vPos;
+	OBJECTS [m_nObject].info.position.vPos = waypointP->info.position.vPos;
 	if ((m_nTarget >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nTarget].rType.lightningInfo.nWaypoint [0])))) 
 		vEnd = &waypointP->info.position.vPos;
 	}
@@ -1355,7 +1366,7 @@ if (nBolts < 0)
 
 //------------------------------------------------------------------------------
 
-int CLightningSystem::SetLife (void)
+int CLightningSystem::UpdateLife (void)
 {
 if (!m_bValid)
 	return 0;
@@ -1364,7 +1375,7 @@ if (!m_bValid)
 	int			i;
 
 for (i = 0; i < m_nBolts; ) {
-	if (!lightningP->SetLife ()) {
+	if (!lightningP->UpdateLife ()) {
 		lightningP->DestroyNodes ();
 		if (!--m_nBolts)
 			return 0;
@@ -1386,9 +1397,7 @@ CObject* CLightningSystem::FindWaypoint (short nId)
 	CObject*	objP;
 
 FORALL_EFFECT_OBJS (objP, i) {
-	if ((objP->info.nId == LIGHTNING_ID) && 
-		 objP->rType.lightningInfo.bWaypoint && 
-		 (objP->rType.lightningInfo.nId == nId))
+	if ((objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nId))
 		return objP;
 	}
 return NULL;
@@ -1405,12 +1414,12 @@ if (m_tUpdate < 0)
 
 CObject* objP = OBJECTS + m_nObject;
 
-if (objP->rType.lightningInfo.bWaypoint)
+if (objP->rType.lightningInfo.nId < 0)
 	return true;
 
 if (nStage == 0) {
 	CObject*	waypointP;
-	fix xDist = 0, xTotalDist = F2X (float (objP->rType.lightningInfo.nSteps) / 1000.0f * float (gameStates.app.nSDLTicks - m_tUpdate));
+	fix xDist = 0, xMoved = 0, xStep;
 	objP->rType.lightningInfo.vMove.SetZero ();
 
 	do {
@@ -1418,17 +1427,27 @@ if (nStage == 0) {
 			m_bDestroy = 1;
 			return false;
 			}
+		xStep = F2X (float (waypointP->rType.lightningInfo.nSteps) / 1000.0f * float (gameStates.app.nSDLTicks - m_tUpdate)) - xMoved;
 		CFixVector vDir = waypointP->info.position.vPos - (objP->info.position.vPos + objP->rType.lightningInfo.vMove);
 		xDist = CFixVector::Normalize (vDir);
-		if (xDist > xTotalDist)
-			xDist = xTotalDist;
+		if (xDist > xStep) {
+			xDist = xStep;
+			}
 		else { // reached or moving past current destination waypoint, so switch to next one
-			if (0 <= (objP->rType.lightningInfo.nWaypoint [0] = waypointP->rType.lightningInfo.nTarget))
+			if (0 <= (objP->rType.lightningInfo.nWaypoint [0] = waypointP->rType.lightningInfo.nTarget)) {
 				objP->rType.lightningInfo.nWaypoint [0] = objP->rType.lightningInfo.nWaypoint [1];
+				waypointP = FindWaypoint (objP->rType.lightningInfo.nWaypoint [0]);
+				objP->info.position.vPos = waypointP->info.position.vPos;
+				objP->RelinkToSeg (waypointP->info.nSegment);
+				objP->rType.lightningInfo.bReset = 1;
+				objP->rType.lightningInfo.vMove.SetZero ();
+				xDist = 0;
+				}
 			}
 		objP->rType.lightningInfo.vMove += vDir * xDist;
-		xTotalDist -= xDist;
-		} while (xTotalDist > 0);
+		xStep -= xDist;
+		xMoved += xDist;
+		} while (xStep > 0);
 	}
 else if (!objP->rType.lightningInfo.vMove.IsZero ()) {
 	Move ();
@@ -1451,7 +1470,7 @@ if (!m_bValid)
 if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		Animate (0, m_nBolts);
-		if (!(m_nBolts = SetLife ()))
+		if (!(m_nBolts = UpdateLife ()))
 			lightningManager.Destroy (this, NULL);
 		else if (m_bValid && (m_nObject >= 0)) {
 			UpdateSound ();
@@ -1495,6 +1514,44 @@ if (m_bSound < 0)
 	return;
 DestroySound ();
 m_bSound = -1;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningSystem::Die (void)
+{
+if (!m_bValid)
+	return;
+if (!m_lightning.Buffer ())
+	return;
+if (SHOW_LIGHTNING) {
+	#pragma omp parallel
+		{
+		#pragma omp for
+		for (int i = 0; i < m_nBolts; i++)
+			m_lightning [i].Die ();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningSystem::Reset (void)
+{
+if (!m_bValid)
+	return;
+if (!m_lightning.Buffer ())
+	return;
+CFixVector* vStart = &OBJECTS [m_nObject].info.position.vPos;
+CFixVector* vEnd = (m_nTarget < 0) ? NULL : &OBJECTS [m_nTarget].info.position.vPos;
+if (SHOW_LIGHTNING) {
+	#pragma omp parallel
+		{
+		#pragma omp for
+		for (int i = 0; i < m_nBolts; i++)
+			m_lightning [i].Reset (vStart, vEnd);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1545,6 +1602,7 @@ if (SHOW_LIGHTNING) {
 		}
 	}
 OBJECTS [m_nObject].info.position.vPos += OBJECTS [m_nObject].rType.lightningInfo.vMove;
+OBJECTS [m_nObject].info.nSegment = FindSegByPos (OBJECTS [m_nObject].info.position.vPos, OBJECTS [m_nObject].info.nSegment, 0, 0);
 OBJECTS [m_nObject].rType.lightningInfo.vMove.SetZero ();
 }
 

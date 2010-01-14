@@ -458,7 +458,7 @@ public:
 	char			bRandom;
 	char			bInPlane;
 	char			bEnabled;
-	char			bWaypoint;
+	char			bReset;
 	CFixVector	vMove;
 	tRgbaColorb color;
 } __pack__ tLightningInfo;

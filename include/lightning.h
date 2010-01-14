@@ -101,11 +101,12 @@ class CLightning : public tLightning {
 					  char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode);
 		void Setup (bool bInit);
 		void Destroy (void);
+		int Reset (CFixVector* vPos, CFixVector* vEnd);
 		void DestroyNodes (void);
 		void Smoothe (void);
 		void ComputeOffsets (void);
 		void Bump (void);
-		int SetLife (void);
+		int UpdateLife (void);
 		void Animate (int nDepth);
 		int Update (int nDepth);
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
@@ -113,10 +114,12 @@ class CLightning : public tLightning {
 		void Render (int nDepth, int bDepthSort, int nThread);
 		int SetLight (void);
 		inline int MayBeVisible (void);
+		inline void Die (void) { m_nTTL = 0; }
 		CLightning& operator= (CLightning& source) { 
 			memcpy (this, &source, sizeof (CLightning)); 
 			return *this;
 			}
+
 	private:
 		void CreatePath (int bSeed, int nDepth);
 		int ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength);
@@ -163,9 +166,11 @@ class CLightningSystem : public tLightningSystem {
 		int Update (void);
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		void Move (void);
+		void Die (void);
+		void Reset (void);
 		bool MoveToWaypoint (int nStage = 0);
 		void Mute (void);
-		int SetLife (void);
+		int UpdateLife (void);
 		int SetLight (void);
 		inline CLightning* Lightnings (void) { return m_lightning.Buffer (); }
 		inline int Id (void) { return m_nId; }
