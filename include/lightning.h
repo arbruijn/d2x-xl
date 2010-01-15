@@ -166,11 +166,15 @@ class CLightningSystem : public tLightningSystem {
 		void Render (int nStart, int nBolts, int bDepthSort, int nThread);
 		int Update (void);
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
+#if WAYPOINTS
 		void Move (void);
 		void Die (void);
 		void Reset (void);
 		void Revive (void);
 		bool MoveToWaypoint (int nStage = 0);
+		int FindPredWaypoint (short nId);
+		int FindRootWaypoint (short nId);
+#endif
 		void Mute (void);
 		int UpdateLife (void);
 		int SetLight (void);

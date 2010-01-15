@@ -1256,9 +1256,25 @@ bool CLightningSystem::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, C
 {
 m_nObject = nObject;
 m_nTarget = nTarget;
+#if 0
+if ((m_nObject >= 0) && (OBJECTS [m_nObject].rType.lightningInfo.nId >= 0)) 
+	return true;
+#endif
 if (!(nLife && (nLength || vEnd) && (nNodes > 4)))
 	return false;
-m_nBolts = nBolts;
+
+#if WAYPOINTS
+CObject* waypointP;
+
+if ((m_nObject >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0])))) {
+	vPos = &waypointP->info.position.vPos;
+	OBJECTS [m_nObject].info.position.vPos = waypointP->info.position.vPos;
+	if ((m_nTarget >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nTarget].rType.lightningInfo.nWaypoint [0])))) 
+		vEnd = &waypointP->info.position.vPos;
+	OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [1] = FindRootWaypoint (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [1]);
+	}
+#endif
+
 if (nObject >= 0)
 	m_nSegment [0] =
 	m_nSegment [1] = -1;
@@ -1267,39 +1283,34 @@ else {
 	m_nSegment [1] = FindSegByPos (*vEnd, -1, 1, 0);
 	}
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
-if (!m_lightning.Create (nBolts))
-	return false;
-m_lightning.Clear ();
 
-CObject* waypointP;
-if ((m_nObject >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0])))) {
-	vPos = &waypointP->info.position.vPos;
-	OBJECTS [m_nObject].info.position.vPos = waypointP->info.position.vPos;
-	if ((m_nTarget >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nTarget].rType.lightningInfo.nWaypoint [0])))) 
-		vEnd = &waypointP->info.position.vPos;
-	}
+if ((m_nBolts = nBolts)) {
+	if (!m_lightning.Create (nBolts))
+		return false;
+	m_lightning.Clear ();
 
-CLightning l;
-l.Init (vPos, vEnd, vDelta, nObject, nTarget, nLife, nDelay, nLength, nAmplitude,
-		  nAngle, nOffset, nNodes, nChildren, nSteps,
-		  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
-int bFail = 0;
-#pragma omp parallel 
-	{
-	#pragma omp for
-	for (int i = 0; i < nBolts; i++) {
-		if (bFail)
-			continue;
-		m_lightning [i] = l;
-		if (!m_lightning [i].Create (0))
-			bFail = 1;
+	CLightning l;
+	l.Init (vPos, vEnd, vDelta, nObject, nTarget, nLife, nDelay, nLength, nAmplitude,
+			  nAngle, nOffset, nNodes, nChildren, nSteps,
+			  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
+	int bFail = 0;
+	#pragma omp parallel 
+		{
+		#pragma omp for
+		for (int i = 0; i < nBolts; i++) {
+			if (bFail)
+				continue;
+			m_lightning [i] = l;
+			if (!m_lightning [i].Create (0))
+				bFail = 1;
+			}
 		}
+
+	if (bFail)
+		return false;
+
+	CreateSound (bSound);
 	}
-
-if (bFail)
-	return false;
-
-CreateSound (bSound);
 m_nKey [0] =
 m_nKey [1] = 0;
 m_bDestroy = 0;
@@ -1407,6 +1418,8 @@ return m_nBolts;
 
 //------------------------------------------------------------------------------
 
+#if WAYPOINTS
+
 CObject* CLightningSystem::FindWaypoint (short nId)
 {
 	CObject*	objP;
@@ -1416,6 +1429,30 @@ FORALL_EFFECT_OBJS (objP, i) {
 		return objP;
 	}
 return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+int CLightningSystem::FindPredWaypoint (short nId)
+{
+	CObject*	objP;
+
+FORALL_EFFECT_OBJS (objP, i) {
+	if ((objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId < 0) && (objP->rType.lightningInfo.nTarget == nId))
+		return objP->rType.lightningInfo.nId;
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CLightningSystem::FindRootWaypoint (short nId)
+{
+	int h;
+
+while ((h = FindPredWaypoint (nId)))
+	nId = h;
+return nId;
 }
 
 //------------------------------------------------------------------------------
@@ -1475,6 +1512,8 @@ else if (!objP->rType.lightningInfo.vMove.IsZero ()) {
 	}	
 return true;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1538,6 +1577,8 @@ m_bSound = -1;
 
 //------------------------------------------------------------------------------
 
+#if WAYPOINTS
+
 void CLightningSystem::Die (void)
 {
 if (!m_bValid)
@@ -1598,26 +1639,6 @@ if (SHOW_LIGHTNING) {
 
 //------------------------------------------------------------------------------
 
-void CLightningSystem::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
-{
-if (!m_bValid)
-	return;
-if (nSegment < 0)
-	return;
-if (!m_lightning.Buffer ())
-	return;
-if (SHOW_LIGHTNING) {
-	#pragma omp parallel
-		{
-		#pragma omp for
-		for (int i = 0; i < m_nBolts; i++)
-			m_lightning [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void CLightningSystem::Move (void)
 {
 if (!m_bValid)
@@ -1655,6 +1676,28 @@ if (SHOW_LIGHTNING) {
 		}
 	}
 Revive ();
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
+void CLightningSystem::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
+{
+if (!m_bValid)
+	return;
+if (nSegment < 0)
+	return;
+if (!m_lightning.Buffer ())
+	return;
+if (SHOW_LIGHTNING) {
+	#pragma omp parallel
+		{
+		#pragma omp for
+		for (int i = 0; i < m_nBolts; i++)
+			m_lightning [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
