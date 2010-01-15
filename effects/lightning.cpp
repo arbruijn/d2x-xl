@@ -887,18 +887,25 @@ if (!m_nodes.Buffer ())
 
 	CLightningNode	*nodeP;
 	CFixVector		vDelta;
-	fix				d1, d2;
+	CFloatVector	vStartf, vEndf, vStartOffsf, vEndOffsf, vPosf;
+	float				d1, d2;
 	int				h, j;
 
 m_nSegment = nSegment;
+vStartf.Assign (*vStart);
+vEndf.Assign (*vEnd);
+vStartOffsf.Assign (vStartOffs);
+vEndOffsf.Assign (vEndOffs);
+
 if (0 < (h = m_nNodes)) {
 	for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++) {
 		if (!vEnd)
 			nodeP->Move (vStartOffs, nSegment);
 		else {
-			d1 = CFixVector::Dist (*vStart, nodeP->m_vPos);
-			d2 = CFixVector::Dist (*vEnd, nodeP->m_vPos);
-			vDelta = (d2 * vStartOffs) / (d1 + d2) + (d1 * vEndOffs) / (d1 + d2);
+			vPosf.Assign (nodeP->m_vPos);
+			d1 = CFloatVector::Dist (vStartf, vPosf);
+			d2 = CFloatVector::Dist (vEndf, vPosf);
+			vDelta.Assign ((d2 * vStartOffsf + d1 * vEndOffsf) / (d1 + d2));
 			nodeP->Move (vDelta, nSegment);
 			}
 		}
@@ -1441,7 +1448,7 @@ if (nStage == 0) {
 				objP->RelinkToSeg (waypointP->info.nSegment);
 				objP->rType.lightningInfo.bReset = 1;
 				objP->rType.lightningInfo.vMove.SetZero ();
-				xDist = 0;
+				vDir.SetZero ();
 				}
 			}
 		objP->rType.lightningInfo.vMove += vDir * xDist;
@@ -1474,7 +1481,7 @@ if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 			lightningManager.Destroy (this, NULL);
 		else if (m_bValid && (m_nObject >= 0)) {
 			UpdateSound ();
-			if (!MoveToWaypoint ())
+			if (!MoveToWaypoint (0))
 				MoveForObject ();
 			}
 		m_tUpdate = gameStates.app.nSDLTicks;
@@ -1582,8 +1589,15 @@ if (!m_bValid)
 	return;
 if (!m_lightning.Buffer ())
 	return;
-CFixVector* vStart = &OBJECTS [m_nObject].info.position.vPos, vStartOffs = OBJECTS [m_nObject].rType.lightningInfo.vMove;
+
+CObject* objP = OBJECTS + m_nObject;
+CFixVector* vStart = &objP->info.position.vPos, vStartOffs = objP->rType.lightningInfo.vMove;
 CFixVector* vEnd, vEndOffs;
+
+if (objP->rType.lightningInfo.bReset) {
+	objP->rType.lightningInfo.bReset = 0;
+	Reset ();
+	}
 
 if (m_nTarget < 0) {
 	vEnd = NULL;
@@ -1601,9 +1615,9 @@ if (SHOW_LIGHTNING) {
 			m_lightning [i].Move (vStart, vStartOffs, vEnd, vEndOffs);
 		}
 	}
-OBJECTS [m_nObject].info.position.vPos += OBJECTS [m_nObject].rType.lightningInfo.vMove;
-OBJECTS [m_nObject].info.nSegment = FindSegByPos (OBJECTS [m_nObject].info.position.vPos, OBJECTS [m_nObject].info.nSegment, 0, 0);
-OBJECTS [m_nObject].rType.lightningInfo.vMove.SetZero ();
+objP->info.position.vPos += vStartOffs;
+objP->RelinkToSeg (FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 0, 0));
+objP->rType.lightningInfo.vMove.SetZero ();
 }
 
 //------------------------------------------------------------------------------
@@ -1881,6 +1895,7 @@ if (SHOW_LIGHTNING) {
 		if (0 > systemP->Update ())
 			Destroy (systemP, NULL);
 		}
+	nCurrent = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
 		nextP = m_systems.GetNext (nCurrent);
 		systemP->MoveToWaypoint (1);
