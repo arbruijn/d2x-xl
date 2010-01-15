@@ -184,7 +184,7 @@ if (m_child) {
 
 void CLightningNode::Animate (bool bInit, short nSegment, int nDepth)
 {
-#if 0
+#if 1
 if (bInit)
 	m_vPos = m_vNewPos;
 #if UPDATE_LIGHTNINGS
@@ -1407,6 +1407,8 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
+static time_t tMove = -1;
+
 bool CLightningSystem::MoveToWaypoint (int nStage)
 {
 if (m_bDestroy)
@@ -1420,6 +1422,8 @@ if (objP->rType.lightningInfo.nId < 0)
 if (nStage == 0) {
 	CObject*	waypointP;
 	fix xDist = 0, xMoved = 0, xStep;
+	objP->info.position.vPos += objP->rType.lightningInfo.vMove;
+	objP->RelinkToSeg (FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 0, 0));
 	objP->rType.lightningInfo.vMove.SetZero ();
 
 	do {
@@ -1615,10 +1619,6 @@ if (SHOW_LIGHTNING) {
 			m_lightning [i].Move (vStart, vStartOffs, vEnd, vEndOffs);
 		}
 	}
-#if 0
-objP->info.position.vPos += vStartOffs;
-objP->RelinkToSeg (FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 0, 0));
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1871,8 +1871,6 @@ return NULL;
 
 void CLightningManager::Update (void)
 {
-	static time_t tMove = -1;
-
 if (SHOW_LIGHTNING) {
 
 		CObject	*objP;
@@ -1898,7 +1896,10 @@ if (SHOW_LIGHTNING) {
 			DestroyForObject (objP);
 			}
 		}
-	int nCurrent = -1;
+
+	int nCurrent;
+
+	nCurrent = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
 		nextP = m_systems.GetNext (nCurrent);
 		if (0 > systemP->Update ())
