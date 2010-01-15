@@ -246,7 +246,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 int j;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++) {
-		BE_SET_SHORT (netGame.Kills (i, j));
+		BE_SET_SHORT (*netGame.Kills (i, j));
 		}
 	}
 BE_SET_SHORT (netGame.GetSegmentCheckSum ());

@@ -5,6 +5,7 @@
 #include "hmpfile.h"
 #include "audio.h"
 #include "songs.h"
+#include "config.h"
 #include "midi.h"
 
 CMidi midi;
@@ -175,7 +176,13 @@ if (gameOpts->sound.bUseSDLMixer) {
 			}
 		pfnSong = fnSong;
 		}
-	if (!(m_music = Mix_LoadMUS (pfnSong))) {
+	try {
+		m_music = Mix_LoadMUS (pfnSong);
+		}
+	catch (...) {	// critical problem in midi playback -> turn it off
+		SetVolume (gameConfig.nMidiVolume = 0);
+		}
+	if (!m_music) {
 		PrintLog ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
