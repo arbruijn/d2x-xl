@@ -138,14 +138,14 @@ return vRand;
 //------------------------------------------------------------------------------
 
 bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
-											 short nTarget, int nLife, int nLength, int nAmplitude,
+											 int nLife, int nLength, int nAmplitude,
 											 char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
 											 short nSmoothe, char bClamp, char bPlasma, char bLight,
 											 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
 {
 if (!(m_child = new CLightning))
 	return false;
-m_child->Init (&m_vPos, vEnd, vDelta, -1, nTarget, nLife, 0, nLength, nAmplitude, nAngle, 0,
+m_child->Init (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
 					nNodes, nChildren, nSteps, nSmoothe, bClamp, bPlasma, bLight,
 					nStyle, colorP, parentP, nNode);
 return m_child->Create (nDepth - 1);
@@ -184,7 +184,6 @@ if (m_child) {
 
 void CLightningNode::Animate (bool bInit, short nSegment, int nDepth)
 {
-#if 1
 if (bInit)
 	m_vPos = m_vNewPos;
 #if UPDATE_LIGHTNINGS
@@ -195,7 +194,6 @@ if (m_child) {
 	m_child->Move (&m_vPos, nSegment, 0, 0);
 	m_child->Animate (nDepth + 1);
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -477,7 +475,7 @@ m_nSteps = -abs (m_nSteps);
 //------------------------------------------------------------------------------
 
 void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
-							  short nObject, short nTarget, int nLife, int nDelay, int nLength, int nAmplitude,
+							  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 							  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
 							  short nSmoothe, char bClamp, char bPlasma, char bLight,
 							  char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
@@ -491,7 +489,6 @@ if (nObject < 0) {
 	}
 else {
 	m_nObject = nObject;
-	m_nTarget = nTarget;
 	}
 m_parent = parentP;
 m_nNode = nNode;
@@ -549,7 +546,7 @@ if (gameOpts->render.lightning.nQuality && nDepth && m_nChildren) {
 		nNode = int (j) + 2 - d_rand () % 5;
 		if (nNode < 1)
 			nNode = int (j);
-		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nTarget, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
+		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
 													 2 * m_nNodes / n, m_nChildren / 5, nDepth - 1, m_nSteps / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
 													 m_nStyle, &m_color, this, nNode))
 			return false;
@@ -611,7 +608,6 @@ if (m_nNodes > 0)
 
 void CLightning::Bump (void)
 {
-#if 1
 	CLightningNode	*nodeP;
 	int			h, i, nSteps, nDist, nAmplitude, nMaxDist = 0;
 	CFixVector	vBase [2];
@@ -634,7 +630,6 @@ if ((h = nAmplitude - nMaxDist)) {
 			nodeP->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
 		}
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -774,7 +769,7 @@ if (m_nNodes > 0) {
 
 //------------------------------------------------------------------------------
 
-int CLightning::UpdateLife (void)
+int CLightning::SetLife (void)
 {
 	int	h;
 
@@ -810,17 +805,7 @@ return 1;
 int CLightning::Update (int nDepth)
 {
 Animate (nDepth);
-return UpdateLife ();
-}
-
-//------------------------------------------------------------------------------
-
-int CLightning::Reset (CFixVector* vPos, CFixVector* vEnd)
-{
-m_vBase = *vPos;
-m_vEnd = *vEnd;
-m_nTTL = 0;
-return UpdateLife ();
+return SetLife ();
 }
 
 //------------------------------------------------------------------------------
@@ -861,7 +846,7 @@ else {
 	}
 if (bStretch) {
 	m_vDir = m_vEnd - m_vPos;
-	m_nLength = m_vDir.Mag ();
+	m_nLength = m_vDir.Mag();
 	}
 if (0 < (h = m_nNodes)) {
 	for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++) {
@@ -876,39 +861,6 @@ if (0 < (h = m_nNodes)) {
 			vDelta [Z] = int (vOffs [Z] * fStep + 0.5);
 			}
 		nodeP->Move (vDelta, nSegment);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CLightning::Move (CFixVector* vStart, CFixVector vStartOffs, CFixVector* vEnd, CFixVector vEndOffs)
-{
-if (nSegment < 0)
-	return;
-if (!m_nodes.Buffer ())
-	return;
-
-	CLightningNode	*nodeP;
-	CFixVector		vDelta;
-	fix				d1, d2;
-	int				h, j;
-
-m_nSegment = nSegment;
-m_vPos = *vStart + vStartOffs;
-if (0 < (h = m_nNodes)) {
-	if (!vEnd) {
-		for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++)
-			nodeP->Move (vStartOffs, nSegment);
-		}
-	else {
-		m_vEnd = *vEnd + vEndOffs;
-		for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++) {
-			d1 = CFixVector::Dist (*vStart, nodeP->m_vPos);
-			d2 = CFixVector::Dist (*vEnd, nodeP->m_vPos);
-			vDelta = (d2 * vStartOffs + d1 * vEndOffs) / (d1 + d2);
-			nodeP->Move (vDelta, nSegment);
-			}
 		}
 	}
 }
@@ -1249,32 +1201,15 @@ m_nId = nId;
 //------------------------------------------------------------------------------
 
 bool CLightningSystem::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
-										 short nObject, short nTarget, int nLife, int nDelay, int nLength, int nAmplitude,
+										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
 										 short nSmoothe, char bClamp, char bPlasma, char bSound, char bLight,
 										 char nStyle, tRgbaColorf *colorP)
 {
 m_nObject = nObject;
-m_nTarget = nTarget;
-#if 0
-if ((m_nObject >= 0) && (OBJECTS [m_nObject].rType.lightningInfo.nId >= 0)) 
-	return true;
-#endif
-if (!(nLife && (nLength || vEnd) && (nNodes > 4)))
+if (!(nLife && nLength && (nNodes > 4)))
 	return false;
-
-#if WAYPOINTS
-CObject* waypointP;
-
-if ((m_nObject >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0])))) {
-	vPos = &waypointP->info.position.vPos;
-	OBJECTS [m_nObject].info.position.vPos = waypointP->info.position.vPos;
-	if ((m_nTarget >= 0) && ((waypointP = FindWaypoint (OBJECTS [m_nTarget].rType.lightningInfo.nWaypoint [0])))) 
-		vEnd = &waypointP->info.position.vPos;
-	OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [1] = FindRootWaypoint (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [1]);
-	}
-#endif
-
+m_nBolts = nBolts;
 if (nObject >= 0)
 	m_nSegment [0] =
 	m_nSegment [1] = -1;
@@ -1283,34 +1218,30 @@ else {
 	m_nSegment [1] = FindSegByPos (*vEnd, -1, 1, 0);
 	}
 m_bForcefield = !nDelay && (vEnd || (nAngle <= 0));
-
-if ((m_nBolts = nBolts)) {
-	if (!m_lightning.Create (nBolts))
-		return false;
-	m_lightning.Clear ();
-
-	CLightning l;
-	l.Init (vPos, vEnd, vDelta, nObject, nTarget, nLife, nDelay, nLength, nAmplitude,
-			  nAngle, nOffset, nNodes, nChildren, nSteps,
-			  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
-	int bFail = 0;
-	#pragma omp parallel 
-		{
-		#pragma omp for
-		for (int i = 0; i < nBolts; i++) {
-			if (bFail)
-				continue;
-			m_lightning [i] = l;
-			if (!m_lightning [i].Create (0))
-				bFail = 1;
-			}
+if (!m_lightning.Create (nBolts))
+	return false;
+m_lightning.Clear ();
+CLightning l;
+l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
+		  nAngle, nOffset, nNodes, nChildren, nSteps,
+		  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
+int bFail = 0;
+#pragma omp parallel 
+	{
+	#pragma omp for
+	for (int i = 0; i < nBolts; i++) {
+		if (bFail)
+			continue;
+		m_lightning [i] = l;
+		if (!m_lightning [i].Create (0))
+			bFail = 1;
 		}
-
-	if (bFail)
-		return false;
-
-	CreateSound (bSound);
 	}
+
+if (bFail)
+	return false;
+
+CreateSound (bSound);
 m_nKey [0] =
 m_nKey [1] = 0;
 m_bDestroy = 0;
@@ -1385,23 +1316,16 @@ if (nBolts < 0)
 
 //------------------------------------------------------------------------------
 
-int CLightningSystem::UpdateLife (void)
+int CLightningSystem::SetLife (void)
 {
 if (!m_bValid)
 	return 0;
-
-CObject* objP = OBJECTS + m_nObject;
-
-if (objP->rType.lightningInfo.nId < 0)
-	return 1;
-if (objP->rType.lightningInfo.nWaypoint [0] < 0)
-	return 1;
 
 	CLightning	*lightningP = m_lightning.Buffer ();
 	int			i;
 
 for (i = 0; i < m_nBolts; ) {
-	if (!lightningP->UpdateLife ()) {
+	if (!lightningP->SetLife ()) {
 		lightningP->DestroyNodes ();
 		if (!--m_nBolts)
 			return 0;
@@ -1415,105 +1339,6 @@ for (i = 0; i < m_nBolts; ) {
 	}
 return m_nBolts;
 }
-
-//------------------------------------------------------------------------------
-
-#if WAYPOINTS
-
-CObject* CLightningSystem::FindWaypoint (short nId)
-{
-	CObject*	objP;
-
-FORALL_EFFECT_OBJS (objP, i) {
-	if ((objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nId))
-		return objP;
-	}
-return NULL;
-}
-
-//------------------------------------------------------------------------------
-
-int CLightningSystem::FindPredWaypoint (short nId)
-{
-	CObject*	objP;
-
-FORALL_EFFECT_OBJS (objP, i) {
-	if ((objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId < 0) && (objP->rType.lightningInfo.nTarget == nId))
-		return objP->rType.lightningInfo.nId;
-	}
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int CLightningSystem::FindRootWaypoint (short nId)
-{
-	int h;
-
-while ((h = FindPredWaypoint (nId)))
-	nId = h;
-return nId;
-}
-
-//------------------------------------------------------------------------------
-
-static time_t tMove = -1;
-
-bool CLightningSystem::MoveToWaypoint (int nStage)
-{
-if (m_bDestroy)
-	return false;
-
-CObject* objP = OBJECTS + m_nObject;
-
-if (objP->rType.lightningInfo.nId < 0)
-	return true;
-
-if (nStage == 0) {
-	CObject*	waypointP;
-	fix xDist = 0, xMoved = 0, xStep;
-	objP->info.position.vPos += objP->rType.lightningInfo.vMove;
-	objP->RelinkToSeg (FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 0, 0));
-	objP->rType.lightningInfo.vMove.SetZero ();
-
-	do {
-		if (!(waypointP = FindWaypoint (objP->rType.lightningInfo.nWaypoint [0]))) {
-			m_bDestroy = 1;
-			return false;
-			}
-		xStep = F2X (float (waypointP->rType.lightningInfo.nSteps) / 1000.0f * float (gameStates.app.nSDLTicks - tMove)) - xMoved;
-		CFixVector vDir = waypointP->info.position.vPos - (objP->info.position.vPos + objP->rType.lightningInfo.vMove);
-		xDist = CFixVector::Normalize (vDir);
-		if (xDist > xStep) {
-			xDist = xStep;
-			}
-		else { // reached or moving past current destination waypoint, so switch to next one
-			if (0 <= (objP->rType.lightningInfo.nWaypoint [0] = waypointP->rType.lightningInfo.nTarget)) {
-				objP->rType.lightningInfo.nWaypoint [0] = objP->rType.lightningInfo.nWaypoint [1];
-				waypointP = FindWaypoint (objP->rType.lightningInfo.nWaypoint [0]);
-				objP->info.position.vPos = waypointP->info.position.vPos;
-				objP->RelinkToSeg (waypointP->info.nSegment);
-				objP->rType.lightningInfo.bReset = 1;
-				objP->rType.lightningInfo.vMove.SetZero ();
-				vDir.SetZero ();
-				}
-			}
-		objP->rType.lightningInfo.vMove += vDir * xDist;
-		xStep -= xDist;
-		xMoved += xDist;
-		} while (xStep > 0);
-#if DBG
-	if (objP->rType.lightningInfo.vMove.IsZero ())
-		nDbgObj = nDbgObj;
-#endif
-	}
-else if (!objP->rType.lightningInfo.vMove.IsZero ()) {
-	Move ();
-	}	
-return true;
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -1531,7 +1356,7 @@ if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nBolts);
-		if (!(m_nBolts = UpdateLife ()))
+		if (!(m_nBolts = SetLife ()))
 			lightningManager.Destroy (this, NULL);
 		else if (m_bValid && (m_nObject >= 0)) {
 			UpdateSound ();
@@ -1577,111 +1402,6 @@ m_bSound = -1;
 
 //------------------------------------------------------------------------------
 
-#if WAYPOINTS
-
-void CLightningSystem::Die (void)
-{
-if (!m_bValid)
-	return;
-if (!m_lightning.Buffer ())
-	return;
-if (SHOW_LIGHTNING) {
-	#pragma omp parallel
-		{
-		#pragma omp for
-		for (int i = 0; i < m_nBolts; i++)
-			m_lightning [i].Die ();
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CLightningSystem::Reset (void)
-{
-if (!m_bValid)
-	return;
-if (!m_lightning.Buffer ())
-	return;
-if (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0] >= 0)
-	return;
-CFixVector* vStart = &OBJECTS [m_nObject].info.position.vPos;
-CFixVector* vEnd = (m_nTarget < 0) ? NULL : &OBJECTS [m_nTarget].info.position.vPos;
-if (SHOW_LIGHTNING) {
-	#pragma omp parallel
-		{
-		#pragma omp for
-		for (int i = 0; i < m_nBolts; i++)
-			m_lightning [i].Reset (vStart, vEnd);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CLightningSystem::Revive (void)
-{
-if (!m_bValid)
-	return;
-if (!m_lightning.Buffer ())
-	return;
-if (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0] >= 0)
-	return;
-if (SHOW_LIGHTNING) {
-	#pragma omp parallel
-		{
-		#pragma omp for
-		for (int i = 0; i < m_nBolts; i++)
-			m_lightning [i].Revive ();
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CLightningSystem::Move (void)
-{
-if (!m_bValid)
-	return;
-if (!m_lightning.Buffer ())
-	return;
-
-CObject* objP = OBJECTS + m_nObject;
-CFixVector* vStart = &objP->info.position.vPos, vStartOffs = objP->rType.lightningInfo.vMove;
-CFixVector* vEnd, vEndOffs;
-
-if (objP->rType.lightningInfo.bReset) {
-	objP->rType.lightningInfo.bReset = 0;
-	Reset ();
-	}
-
-if (m_nTarget < 0) {
-	vEnd = NULL;
-	vEndOffs.SetZero ();
-	}
-else {
-	vEnd = &OBJECTS [m_nTarget].info.position.vPos;
-	vEndOffs = OBJECTS [m_nTarget].rType.lightningInfo.vMove;
-#if DBG
-	if (vEndOffs.IsZero ())
-		nDbgObj = nDbgObj;
-#endif
-	}	
-if (SHOW_LIGHTNING) {
-	#pragma omp parallel
-		{
-		#pragma omp for
-		for (int i = 0; i < m_nBolts; i++)
-			m_lightning [i].Move (vStart, vStartOffs, vEnd, vEndOffs);
-		}
-	}
-Revive ();
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 void CLightningSystem::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
 {
 if (!m_bValid)
@@ -1709,8 +1429,7 @@ if (!m_bValid)
 
 	CObject* objP = OBJECTS + m_nObject;
 
-if (objP->info.nType != OBJ_EFFECT)
-	Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
+Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1732,12 +1451,7 @@ if (automap.m_bDisplay && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 		}
 	}
 
-#if DBG
-if ((nDbgObj >= 0) && (m_nObject != nDbgObj))
-	return;
-#endif
-
-		CLightning *lightningP = m_lightning + nStart;
+CLightning *lightningP = m_lightning + nStart;
 
 if (nBolts < 0)
 	nBolts = m_nBolts;
@@ -1820,7 +1534,7 @@ m_bDestroy = 0;
 //------------------------------------------------------------------------------
 
 int CLightningManager::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
-										 short nObject, short nTarget, int nLife, int nDelay, int nLength, int nAmplitude,
+										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
 										 short nSmoothe, char bClamp, char bPlasma, char bSound, char bLight,
 										 char nStyle, tRgbaColorf *colorP)
@@ -1833,7 +1547,7 @@ SEM_ENTER (SEM_LIGHTNING)
 CLightningSystem* systemP = m_systems.Pop ();
 if (!systemP)
 	return -1;
-if (!(systemP->Create (nBolts, vPos, vEnd, vDelta, nObject, nTarget, nLife, nDelay, nLength, nAmplitude,
+if (!(systemP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 							  nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bPlasma, bSound, bLight,
 							  nStyle, colorP))) {
 	m_systems.Push (systemP->Id ());
@@ -1975,28 +1689,11 @@ if (SHOW_LIGHTNING) {
 			DestroyForObject (objP);
 			}
 		}
-
-	int nCurrent;
-
-	nCurrent = -1;
+	int nCurrent = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
 		nextP = m_systems.GetNext (nCurrent);
 		if (0 > systemP->Update ())
 			Destroy (systemP, NULL);
-		}
-
-	if ((tMove < 0) || (gameStates.app.nSDLTicks - tMove >= 25)) {
-		nCurrent = -1;
-		for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
-			nextP = m_systems.GetNext (nCurrent);
-			systemP->MoveToWaypoint (0);
-			}
-		nCurrent = -1;
-		for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
-			nextP = m_systems.GetNext (nCurrent);
-			systemP->MoveToWaypoint (1);
-			}
-		tMove = gameStates.app.nSDLTicks;
 		}
 
 	FORALL_OBJS (objP, i) {
@@ -2127,21 +1824,11 @@ CFixVector *CLightningManager::FindTargetPos (CObject* emitterP, short nTarget)
 	//int		i;
 	CObject*	objP;
 
-return ((objP = FindTargetObj (emitterP, nTarget))) ? &objP->info.position.vPos : NULL;
-}
-
-//------------------------------------------------------------------------------
-
-CObject *CLightningManager::FindTargetObj (CObject* emitterP, short nTarget)
-{
-	//int		i;
-	CObject*	objP;
-
 if (!nTarget)
-	return NULL;
+	return 0;
 FORALL_EFFECT_OBJS (objP, i) {
 	if ((objP != emitterP) && (objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
-		return objP;
+		return &objP->info.position.vPos;
 	}
 return NULL;
 }
@@ -2161,7 +1848,7 @@ return m_systems [h].m_bValid;
 void CLightningManager::StaticFrame (void)
 {
 	int				h, i;
-	CObject			*objP, *targetP;
+	CObject			*objP;
 	CFixVector		*vEnd, *vDelta, v;
 	tLightningInfo	*pli;
 	tRgbaColorf		color;
@@ -2181,10 +1868,8 @@ FORALL_EFFECT_OBJS (objP, i) {
 		continue;
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
-	else if ((targetP = FindTargetObj (objP, pli->nTarget))) {
-		vEnd = &targetP->info.position.vPos;
+	else if ((vEnd = FindTargetPos (objP, pli->nTarget)))
 		pli->nLength = CFixVector::Dist (objP->info.position.vPos, *vEnd) / I2X (1);
-		}
 	else {
 		v = objP->info.position.vPos + objP->info.position.mOrient.FVec () * I2X (pli->nLength);
 		vEnd = &v;
@@ -2194,9 +1879,8 @@ FORALL_EFFECT_OBJS (objP, i) {
 	color.blue = (float) pli->color.blue / 255.0f;
 	color.alpha = (float) pli->color.alpha / 255.0f;
 	vDelta = pli->bInPlane ? &objP->info.position.mOrient.RVec () : NULL;
-	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, targetP ? targetP->Index () : -1,
-					-abs (pli->nLife), pli->nDelay, I2X (pli->nLength), I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), 
-					pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
+	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
+				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 				   pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, 1, pli->nStyle, &color);
 	if (h >= 0) {
 		m_objects [i] = h;
@@ -2333,7 +2017,7 @@ void CLightningManager::CreateForExplosion (CObject* objP, tRgbaColorf *colorP, 
 if (SHOW_LIGHTNING && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
-			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1, nTTL, 0,
+			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
 			nRad, I2X (4), 0, I2X (2), 50, 5, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
 	}
 }
@@ -2404,7 +2088,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (2 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -1, -1000, 100,
+		h = Create (2 * objP->info.xSize / I2X (1), &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 100,
 						objP->info.xSize, objP->info.xSize / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 1, 0, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
@@ -2422,7 +2106,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP
 	if (0 <= m_objects [i])
 		MoveForObject (objP);
 	else {
-		h = Create (4 * objP->info.xSize / I2X (1), &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -1, -5000, 1000,
+		h = Create (4 * objP->info.xSize / I2X (1), &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -5000, 1000,
 						4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, 0, 1, 1, 1, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
@@ -2449,7 +2133,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)
 			}
 		Destroy (m_systems + h, NULL);
 		}
-	h = Create (n, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1, -1000, 4000,
+	h = Create (n, &objP->info.position.vPos, NULL, NULL, objP->Index (), -1000, 4000,
 					objP->info.xSize, objP->info.xSize / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, 0, -1, colorP);
 	if (h >= 0)
 		m_objects [i] = h;
@@ -2541,7 +2225,7 @@ if (i < 0) {
 		vPos.Assign (vPosf);
 		vEnd.Assign (vEndf);
 		}
-	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, -1, 1000 + d_rand () % 2000, 0,
+	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0,
 					h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 0, 1, &color);
 	bUpdate = 1;
 	}
@@ -2706,7 +2390,7 @@ else {
 	color.alpha = gameOpts->render.lightning.bPlasma ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning =
-		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1, -1, 
+		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
 										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 										 (parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam,

@@ -162,7 +162,6 @@ if (menu [soundOpts.nRedbook].m_value != redbook.Enabled ()) {
 			}
 		}
 	menu [soundOpts.nMusicVol].SetText (redbook.Enabled () ? const_cast<char*> (TXT_CD_VOLUME) : const_cast<char*> (TXT_MIDI_VOLUME));
-	menu [soundOpts.nMusicVol].m_value = redbook.Enabled () ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume;
 	menu [soundOpts.nMusicVol].m_bRebuild = 1;
 	}
 
@@ -240,7 +239,7 @@ do {
 												  0, 8, KEY_M, HTX_ONLINE_MANUAL);
 	m.AddText ("", 0);
 	soundOpts.nLinkVols = m.AddCheck (TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_ONLINE_MANUAL);
-	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
+	soundOpts.nRedbook = m.AddCheck (TXT_REDBOOK_ENABLED, redbook.Playing (), KEY_C, HTX_ONLINE_MANUAL);
 	optReverse = m.AddCheck (TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 #if 1
 	if (redbook.Enabled () || !gameConfig.nMidiVolume)

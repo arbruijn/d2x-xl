@@ -236,11 +236,6 @@ switch (info.renderType) {
 		rType.lightningInfo.nNodes = cf.ReadShort ();
 		rType.lightningInfo.nChildren = cf.ReadShort ();
 		rType.lightningInfo.nSteps = cf.ReadShort ();
-		if (gameTopFileInfo.fileinfoVersion < 41)
-			rType.lightningInfo.nWaypoint [0] = 0;
-		else
-			rType.lightningInfo.nWaypoint [0] = cf.ReadShort ();
-		rType.lightningInfo.nWaypoint [1] = rType.lightningInfo.nWaypoint [0];
 		rType.lightningInfo.nAngle = cf.ReadByte ();
 		rType.lightningInfo.nStyle = cf.ReadByte ();
 		rType.lightningInfo.nSmoothe = cf.ReadByte ();
@@ -253,7 +248,6 @@ switch (info.renderType) {
 		rType.lightningInfo.color.green = cf.ReadByte ();
 		rType.lightningInfo.color.blue = cf.ReadByte ();
 		rType.lightningInfo.color.alpha = cf.ReadByte ();
-		rType.lightningInfo.bReset = 0;
 		if (gameData.segs.nLevelVersion < 19)
 			rType.lightningInfo.bEnabled = 1;
 		else
