@@ -611,6 +611,7 @@ if (m_nNodes > 0)
 
 void CLightning::Bump (void)
 {
+#if 1
 	CLightningNode	*nodeP;
 	int			h, i, nSteps, nDist, nAmplitude, nMaxDist = 0;
 	CFixVector	vBase [2];
@@ -633,6 +634,7 @@ if ((h = nAmplitude - nMaxDist)) {
 			nodeP->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -893,11 +895,15 @@ if (!m_nodes.Buffer ())
 	int				h, j;
 
 m_nSegment = nSegment;
+m_vPos = *vStart + vStartOffs;
 if (0 < (h = m_nNodes)) {
-	for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++) {
-		if (!vEnd)
+	if (!vEnd) {
+		for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++)
 			nodeP->Move (vStartOffs, nSegment);
-		else {
+		}
+	else {
+		m_vEnd = *vEnd + vEndOffs;
+		for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++) {
 			d1 = CFixVector::Dist (*vStart, nodeP->m_vPos);
 			d2 = CFixVector::Dist (*vEnd, nodeP->m_vPos);
 			vDelta = (d2 * vStartOffs + d1 * vEndOffs) / (d1 + d2);
@@ -1373,6 +1379,13 @@ int CLightningSystem::UpdateLife (void)
 if (!m_bValid)
 	return 0;
 
+CObject* objP = OBJECTS + m_nObject;
+
+if (objP->rType.lightningInfo.nId < 0)
+	return 1;
+if (objP->rType.lightningInfo.nWaypoint [0] < 0)
+	return 1;
+
 	CLightning	*lightningP = m_lightning.Buffer ();
 	int			i;
 
@@ -1549,6 +1562,8 @@ if (!m_bValid)
 	return;
 if (!m_lightning.Buffer ())
 	return;
+if (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0] >= 0)
+	return;
 CFixVector* vStart = &OBJECTS [m_nObject].info.position.vPos;
 CFixVector* vEnd = (m_nTarget < 0) ? NULL : &OBJECTS [m_nTarget].info.position.vPos;
 if (SHOW_LIGHTNING) {
@@ -1557,6 +1572,26 @@ if (SHOW_LIGHTNING) {
 		#pragma omp for
 		for (int i = 0; i < m_nBolts; i++)
 			m_lightning [i].Reset (vStart, vEnd);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningSystem::Revive (void)
+{
+if (!m_bValid)
+	return;
+if (!m_lightning.Buffer ())
+	return;
+if (OBJECTS [m_nObject].rType.lightningInfo.nWaypoint [0] >= 0)
+	return;
+if (SHOW_LIGHTNING) {
+	#pragma omp parallel
+		{
+		#pragma omp for
+		for (int i = 0; i < m_nBolts; i++)
+			m_lightning [i].Revive ();
 		}
 	}
 }
@@ -1619,6 +1654,7 @@ if (SHOW_LIGHTNING) {
 			m_lightning [i].Move (vStart, vStartOffs, vEnd, vEndOffs);
 		}
 	}
+Revive ();
 }
 
 //------------------------------------------------------------------------------

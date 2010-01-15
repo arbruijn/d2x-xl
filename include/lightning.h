@@ -102,6 +102,7 @@ class CLightning : public tLightning {
 		void Setup (bool bInit);
 		void Destroy (void);
 		int Reset (CFixVector* vPos, CFixVector* vEnd);
+		inline void Revive (void) { m_nTTL = abs (m_nLife); }
 		void DestroyNodes (void);
 		void Smoothe (void);
 		void ComputeOffsets (void);
@@ -168,6 +169,7 @@ class CLightningSystem : public tLightningSystem {
 		void Move (void);
 		void Die (void);
 		void Reset (void);
+		void Revive (void);
 		bool MoveToWaypoint (int nStage = 0);
 		void Mute (void);
 		int UpdateLife (void);
