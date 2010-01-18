@@ -278,6 +278,8 @@ int KcHotkeySize (void);
 
 //------------------------------------------------------------------------------
 
+#include "joy.h"
+
 class CControlConfig {
 	public:
 		void Run (int nType, const char* pszTitle);

@@ -1423,8 +1423,8 @@ void CControlConfig::Edit (kcItem* items, int nItems)
 {
 	int i;
 
-m_items = m_items;
-m_nItems = m_nItems;
+m_items = items;
+m_nItems = nItems;
 m_nPrevItem = -1;
 m_nCurItem = 0;
 m_nPrevMouseState =
