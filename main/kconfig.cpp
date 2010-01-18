@@ -410,6 +410,8 @@ int ExtYVibrateInfo [2]={0,0};
 ubyte ExtXVibrateClear=0;
 ubyte ExtYVibrateClear=0;
 
+int CControlConfig::m_startAxis [JOY_MAX_AXES];
+
 //------------------------------------------------------------------------------
 
 int CControlConfig::IsAxisUsed (int axis)

@@ -301,8 +301,9 @@ class CControlConfig {
 		int			m_bRedraw;
 		int			m_xOffs, m_yOffs;
 		int			m_closeX, m_closeY, m_closeSize;
-		int			m_startAxis [JOY_MAX_AXES];
 		const char*	m_pszTitle;
+
+		static int	m_startAxis [JOY_MAX_AXES];
 
 	private:
 		void Edit (kcItem* items, int nItems);
@@ -328,11 +329,11 @@ class CControlConfig {
 		void ReadFCS (int raw_axis);
 
 		int AssignControl (kcItem *item, int nType, ubyte code);
-		ubyte KeyCtrlFunc (void);
-		ubyte JoyBtnCtrlFunc (void);
-		ubyte MouseBtnCtrlFunc (void);
-		ubyte JoyAxisCtrlFunc (void);
-		ubyte MouseAxisCtrlFunc (void);
+		static ubyte KeyCtrlFunc (void);
+		static ubyte JoyBtnCtrlFunc (void);
+		static ubyte MouseBtnCtrlFunc (void);
+		static ubyte JoyAxisCtrlFunc (void);
+		static ubyte MouseAxisCtrlFunc (void);
 		int ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg);
 
 		inline int ChangeKey (kcItem *item) { return ChangeControl (item, BT_KEY, &CControlConfig::KeyCtrlFunc, TXT_PRESS_NEW_KEY); }
