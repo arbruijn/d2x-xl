@@ -250,7 +250,6 @@ void kconfig_sense_init();
 extern int kconfig_is_axes_used(int axis);
 
 extern ubyte nExtGameStatus;
-void KConfig(int n, const char *pszTitle);
 void SetControlType (void);
 
 extern ubyte system_keys [];
@@ -357,6 +356,8 @@ class CControlConfig {
 		void LinkHotkeyEntries (void);
 		void LinkTableEntries (int tableFlags);
 };
+
+extern CControlConfig controlConfig;
 
 //------------------------------------------------------------------------------
 

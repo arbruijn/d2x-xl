@@ -96,8 +96,6 @@ int mouseAxisTextIndex [3] = {TNUM_L_R, TNUM_F_B, TNUM_Z1};
 int mouseButtonTextIndex [3] = {TNUM_LEFT, TNUM_RIGHT, TNUM_MID};
 const char * extraMouseButtonTextIndex [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M10","M11","M12","M13","M14","M15","M16" };//text for buttons above 3. -MPM
 
-// macros for drawing lo/hi res KConfig screens (see scores.c as well)
-
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
 
@@ -411,6 +409,8 @@ ubyte ExtXVibrateClear=0;
 ubyte ExtYVibrateClear=0;
 
 int CControlConfig::m_startAxis [JOY_MAX_AXES];
+
+CControlConfig controlConfig;
 
 //------------------------------------------------------------------------------
 
@@ -1467,8 +1467,6 @@ if (i >= 0)
 	LinkTableEntries (1 << i);
 
 for (;;) {
-//	Windows addendum to allow for KConfig input.
-		//see if redbook song needs to be restarted
 	m_nChangeMode = HandleControl ();
 	redbook.CheckRepeat ();
 	MultiDoFrame ();

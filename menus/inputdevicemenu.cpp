@@ -289,7 +289,7 @@ do {
 			return;
 		gameConfig.nControlType = gameOpts->input.mouse.bUse ? CONTROL_MOUSE : gameConfig.nControlType;
 		if (choice == nCustMouseOpt)
-			KConfig (2, TXT_CFG_MOUSE);
+			controlConfig.Run (2, TXT_CFG_MOUSE);
 	} while (i >= 0);
 }
 
@@ -441,7 +441,7 @@ do {
 	if (i == -1)
 		return;
 	if (choice == nCustJoyOpt)
-		KConfig (1, TXT_CFG_JOY);
+		controlConfig.Run (1, TXT_CFG_JOY);
 	} while (i >= 0);
 }
 
@@ -662,9 +662,9 @@ do {
 			break;
 			}
 	if (choice == nCustKbdOpt)
-		KConfig (0, TXT_CFG_KBD);
+		controlConfig.Run (0, TXT_CFG_KBD);
 	else if (choice == nCustHotKeysOpt)
-		KConfig (4, TXT_CFG_HOTKEYS);
+		controlConfig.Run (4, TXT_CFG_HOTKEYS);
 	} while (i >= 0);
 DefaultKeyboardSettings ();
 }
