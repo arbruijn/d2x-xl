@@ -91,7 +91,7 @@ tKeyProps keyProperties [] = {
 { "P",      'p',    'P',    SDLK_p             },
 { "[",      '[',    '{',    SDLK_LEFTBRACKET   },
 { "]",      ']',    '}',    SDLK_RIGHTBRACKET  },
-{ "�",      255,    255,    SDLK_RETURN        },
+{ "RETURN", 255,    255,    SDLK_RETURN        },
 { "LCTRL",  255,    255,    SDLK_LCTRL         },
 { "A",      'a',    'A',    SDLK_a             },
 { "S",      's',    'S',    SDLK_s             },

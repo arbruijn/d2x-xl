@@ -1129,6 +1129,7 @@ CREATE (gameData.objs.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
 CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
 CREATE (gameData.objs.bWantEffect, LEVEL_OBJECTS, (char) 0);
 InitFreeList ();
+memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 return lightClusterManager.Init () && shrapnelManager.Init ();
 }
 
@@ -1152,6 +1153,7 @@ DESTROY (gameData.objs.nLightSig);
 DESTROY (gameData.objs.nHitObjects);
 DESTROY (gameData.objs.viewData);
 DESTROY (gameData.objs.bWantEffect);
+memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
 nObjects = 0;
 lightManager.Reset ();
 shrapnelManager.Reset ();

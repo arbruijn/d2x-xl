@@ -16,6 +16,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "config.h"
 #include "gamestat.h"
+#include "text.h"
+#include "menu.h"
 
 #define	D2X_KEYS		1
 
@@ -274,5 +276,88 @@ int KcMouseSize (void);
 int KcJoystickSize (void);
 int KcSuperJoySize (void);
 int KcHotkeySize (void);
+
+//------------------------------------------------------------------------------
+
+class CControlConfig {
+	public:
+		void Run (int nType, const char* pszTitle);
+
+	private:
+		typedef ubyte kc_ctrlfuncType (void);
+		typedef kc_ctrlfuncType *kc_ctrlfunc_ptr;
+
+		typedef struct tItemPos {
+			int	i, l, r, y;
+			} tItemPos;
+
+	private:
+		kcItem*		m_items;
+		int			m_nItems;
+		int			m_nCurItem, m_nPrevItem;
+		int			m_nChangeMode, m_nPrevChangeMode;
+		int			m_nMouseState, m_nPrevMouseState;
+		int			m_bTimeStopped;
+		int			m_bRedraw;
+		int			m_xOffs, m_yOffs;
+		int			m_closeX, m_closeY, m_closeSize;
+		int			m_startAxis [JOY_MAX_AXES];
+		const char*	m_pszTitle;
+
+	private:
+		void Edit (kcItem* items, int nItems);
+		int HandleControl (void);
+		int HandleInput (void);
+		void Quit (void);
+
+
+		const char* MouseButtonText (int i);
+		const char* MouseAxisText (int i);
+		const char* YesNoText (int i);
+
+		int IsAxisUsed (int axis);
+		int GetItemHeight (kcItem *item);
+		void DrawTitle (void);
+		void DrawHeader (void);
+		void DrawTable (void);
+		void DrawScreen (void);
+		void DrawQuestion (kcItem *item);
+		void DrawItem (kcItem* item, int bIsCurrent, int bRedraw);
+		inline void DrawItem (kcItem *item, int bIsCurrent) { DrawItem (item, bIsCurrent, MODERN_STYLE); }
+
+		void ReadFCS (int raw_axis);
+
+		int AssignControl (kcItem *item, int nType, ubyte code);
+		ubyte KeyCtrlFunc (void);
+		ubyte JoyBtnCtrlFunc (void);
+		ubyte MouseBtnCtrlFunc (void);
+		ubyte JoyAxisCtrlFunc (void);
+		ubyte MouseAxisCtrlFunc (void);
+		int ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg);
+
+		inline int ChangeKey (kcItem *item) { return ChangeControl (item, BT_KEY, &CControlConfig::KeyCtrlFunc, TXT_PRESS_NEW_KEY); }
+		inline int ChangeJoyButton (kcItem *item) { return ChangeControl (item, BT_JOY_BUTTON, &CControlConfig::JoyBtnCtrlFunc, TXT_PRESS_NEW_JBUTTON); }
+		inline int ChangeMouseButton (kcItem * item) { return ChangeControl (item, BT_MOUSE_BUTTON, &CControlConfig::MouseBtnCtrlFunc, TXT_PRESS_NEW_MBUTTON); }
+		inline int ChangeJoyAxis (kcItem *item) { return ChangeControl (item, BT_JOY_AXIS, &CControlConfig::JoyAxisCtrlFunc, TXT_MOVE_NEW_JOY_AXIS); }
+		inline int ChangeMouseAxis (kcItem * item) { return ChangeControl (item, BT_MOUSE_AXIS, &CControlConfig::MouseAxisCtrlFunc, TXT_MOVE_NEW_MSE_AXIS); }
+		int ChangeInvert (kcItem * item);
+
+		void QSortItemPos (tItemPos* pos, int left, int right);
+		tItemPos* GetItemPos (kcItem* items, int nItems);
+		int* GetItemRef (int nItems, tItemPos* pos);
+		int FindItemAt (int x, int y);
+		int FindNextItemLeft (int nItems, int nCurItem, tItemPos *pos, int *ref);
+		int FindNextItemRight (int nItems, int nCurItem, tItemPos *pos, int *ref);
+		int FindNextItemUp (int nItems, int nCurItem, tItemPos *pos, int *ref);
+		int FindNextItemDown (int nItems, int nCurItem, tItemPos *pos, int *ref);
+		void LinkKbdEntries (void);
+		void LinkJoyEntries (void);
+		void LinkMouseEntries (void);
+		void LinkHotkeyEntries (void);
+		void LinkTableEntries (int tableFlags);
+};
+
+//------------------------------------------------------------------------------
+
 
 #endif /* _KCONFIG_H */
