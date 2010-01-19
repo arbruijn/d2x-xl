@@ -75,7 +75,9 @@ int RunRenderThreads (int nTask, int nThreads)
 #endif
 	int		i;
 
+#ifdef _OPENMP
 if (!gameStates.app.bMultiThreaded)
+#endif
 	return 0;
 #if 0
 if ((nTask < rtTaskCount) && !gameData.app.bUseMultiThreading [nTask])
