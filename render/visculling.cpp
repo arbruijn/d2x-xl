@@ -521,39 +521,92 @@ tiRender.zMax [nThread] = zMax;
 
 //------------------------------------------------------------------------------
 
-void SortRenderSegs (void)
+void MergeSegZRefs (void)
 {
 	tSegZRef	*ps, *pi, *pj;
 	int		h, i, j;
 
+h = gameData.render.mine.nRenderSegs;
+for (i = h / 2, j = h - i, ps = segZRef [1], pi = segZRef [0], pj = pi + h / 2; h; h--) {
+	if (i && (!j || (pi->z < pj->z))) {
+		*ps++ = *pi++;
+		i--;
+		}
+	else if (j) {
+		*ps++ = *pj++;
+		j--;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void GetMaxDepth (void)
+{
+gameData.render.zMax = 0;
+for (int i = 0; i < gameStates.app.nThreads; i++) {
+	if (gameData.render.zMax < tiRender.zMax [i])
+		gameData.render.zMax = tiRender.zMax [i];
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void SortRenderSegs (void)
+{
 if (gameData.render.mine.nRenderSegs < 2)
 	return;
-if (RunRenderThreads (rtInitSegZRef))
-	gameData.render.zMax = max (tiRender.zMax [0], tiRender.zMax [1]);
+
+#ifdef _OPENMP
+
+	int h, i, j;
+
+if (gameStates.app.nThreads < 2) {
+	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
+	gameData.render.zMax = tiRender.zMax [0];
+	QSortSegZRef (0, gameData.render.mine.nRenderSegs - 1);
+	}
+else
+#pragma omp parallel
+	{
+	#pragma omp for private (i, j)
+	for (h = 0; h < gameStates.app.nThreads; h++) {
+		ComputeThreadRange (h, gameData.render.mine.nRenderSegs, i, j);
+		InitSegZRef (i, j, h);
+		}
+	}
+GetMaxDepth ();
+if (!RENDERPATH)
+#pragma omp parallel
+	{
+	omp_set_num_threads (2);
+	#pragma omp for private (i, j)
+	for (h = 0; h < 2; h++) {
+		ComputeThreadRange (h, gameData.render.mine.nRenderSegs, i, j, 2);
+		QSortSegZRef (i, j);
+		}
+	omp_set_num_threads (gameStates.app.nThreads);
+	}
+
+#else
+
+if (RunRenderThreads (rtInitSegZRef)) 
+	GetMaxDepth ();
 else {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
 	gameData.render.zMax = tiRender.zMax [0];
 	}
 if (!RENDERPATH) {
-	if (RunRenderThreads (rtSortSegZRef)) {
-		h = gameData.render.mine.nRenderSegs;
-		for (i = h / 2, j = h - i, ps = segZRef [1], pi = segZRef [0], pj = pi + h / 2; h; h--) {
-			if (i && (!j || (pi->z < pj->z))) {
-				*ps++ = *pi++;
-				i--;
-				}
-			else if (j) {
-				*ps++ = *pj++;
-				j--;
-				}
-			}
-		}
+	if (RunRenderThreads (rtSortSegZRef))
+		MergeSegZRefs ();
 	else
 		QSortSegZRef (0, gameData.render.mine.nRenderSegs - 1);
 	ps = segZRef [gameStates.app.bMultiThreaded];
-	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
+	for (int i = 0; i < gameData.render.mine.nRenderSegs; i++)
 		gameData.render.mine.nSegRenderList [i] = ps [i].nSegment;
 	}
+
+#endif
 }
 
 //------------------------------------------------------------------------------
