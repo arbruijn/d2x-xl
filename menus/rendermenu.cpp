@@ -463,6 +463,7 @@ do {
 		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.bUseLightmaps;
 		}
 	gameOpts->render.nEyeOffset = nEyeOffset ? I2X (1) + (nEyeOffset - 1) * (I2X (1) / 4) : 0;
+	gameOpts->render.nStereo = gameOpts->render.nEyeOffset != 0;
 
 #if DBG
 	if (EXPERTMODE) {

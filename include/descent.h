@@ -3428,7 +3428,7 @@ extern fix nDebrisLife [];
 // limit framerate to 30 while recording demo and to 40 when in automap and framerate display is disabled
 #define MAXFPS		((gameData.demo.nState == ND_STATE_RECORDING) ? 30 : \
                    (automap.m_bDisplay && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
-                   gameOpts->render.nMaxFPS)
+                   gameOpts->render.nMaxFPS * (gameOpts->render.nStereo + 1))
 
 #define SPECTATOR(_objP)	(gameStates.render.bFreeCam && OBJECTS.IsElement (_objP) && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->info.position)
