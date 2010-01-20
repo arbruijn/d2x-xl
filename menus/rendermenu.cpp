@@ -224,6 +224,8 @@ if (renderOpts.nStereoView >= 0) {
 			gameOpts->render.nEyeOffset = I2X (1);
 			nEyeOffset = (gameOpts->render.nEyeOffset / (I2X (1) / 4)) - 1;
 			}
+		else if (!v && gameOpts->render.nEyeOffset)
+			gameOpts->render.nEyeOffset = 0;
 		sprintf (m->m_text, TXT_STEREO_VIEW, pszStereoView [v]);
 		m->m_bRebuild = -1;
 		}
