@@ -522,7 +522,6 @@ for (y = tileTop;y <= tileBot; y++) {
 void FillBackground (void)
 {
 if (gameData.render.window.x || gameData.render.window.y) {
-//	OglEndFrame ();
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
 	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
@@ -533,7 +532,6 @@ if (gameData.render.window.x || gameData.render.window.y) {
 	CCanvas::Pop ();
 	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
 	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
-//	ogl.StartFrame (0, 0);
 	}
 }
 
@@ -604,11 +602,11 @@ cockpit->PlayHomingWarning ();
 FillBackground ();
 transparencyRenderer.Reset ();
 //if (gameStates.render.vr.nRenderMode == VR_NONE)
-if (!gameOpts->render.nStereo || gameStates.app.bSaveScreenshot)
+if (!gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
 else {
-	RenderMonoFrame (-I2X (1));
-	RenderMonoFrame (-I2X (1));
+	RenderMonoFrame (-gameOpts->render.nEyeOffset);
+	RenderMonoFrame (gameOpts->render.nEyeOffset);
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)

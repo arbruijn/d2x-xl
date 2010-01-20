@@ -544,7 +544,7 @@ if (*m_info.szBitmapName) {
 	bmP->SetStatic (1);
 
 	GLint	depthFunc;
-	G3StartFrame (1, 0);
+	G3StartFrame (1, 0, 0);
 	G3SetViewMatrix (p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 	p[Z] = 2 * I2X (w);
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);

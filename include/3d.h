@@ -96,7 +96,7 @@ void _CDECL_ g3_close (void);
 //Frame setup functions:
 
 //start the frame
-void G3StartFrame (int bFlat, int bResetColorBuf);
+void G3StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset);
 
 //set view from x,y,z & p,b,h, zoom.  Must call one of g3_setView_* ()
 void G3SetViewAngles (const CFixVector& view_pos, const CAngleVector& view_orient,fix zoom);

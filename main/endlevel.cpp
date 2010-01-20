@@ -873,9 +873,9 @@ transparencyRenderer.Render ();
 
 //-----------------------------------------------------------------------------
 
-void RenderEndLevelFrame (fix xEyeOffset, int nWindowNum)
+void RenderEndLevelFrame (fix nEyeOffset, int nWindowNum)
 {
-G3StartFrame (0, !nWindowNum);
+G3StartFrame (0, !nWindowNum, nEyeOffset);
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 	RenderEndLevelMine (xEyeOffset, nWindowNum);

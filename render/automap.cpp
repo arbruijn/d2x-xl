@@ -450,7 +450,7 @@ if (bAutomapFrame) {
 #endif
 if (!gameOpts->render.automap.bTextured)
 	gameOpts->render.automap.bTextured = 1;
-G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar);
+G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar, 0);
 
 if (bAutomapFrame)
 	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));

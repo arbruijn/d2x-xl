@@ -210,7 +210,7 @@ class COGL {
 		int EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
 		void DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
 		void ResetClientStates (void);
-		void StartFrame (int bFlat, int bResetColorBuf);
+		void StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset);
 		void EndFrame (void);
 		void EnableLighting (int bSpecular);
 		void DisableLighting (void);

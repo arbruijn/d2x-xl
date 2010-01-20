@@ -865,7 +865,7 @@ if (!nWindow)
 //PrintLog ("G3StartFrame\n");
 {
 PROF_START
-G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
+G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), nEyeOffset);
 //PrintLog ("SetRenderView\n");
 SetRenderView (nEyeOffset, &nStartSeg, 1);
 PROF_END(ptAux)
@@ -896,7 +896,7 @@ if (SHOW_SHADOWS &&
 		if (gameOpts->render.shadows.bSoft = 1)
 			gameStates.render.nShadowBlurPass = 1;
 #endif
-		ogl.StartFrame (0, 0);
+		ogl.StartFrame (0, 0, nEyeOffset);
 #if SOFT_SHADOWS
 		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
 #endif
@@ -922,7 +922,7 @@ if (SHOW_SHADOWS &&
 			gameStates.render.nShadowBlurPass = 2;
 			gameStates.render.nShadowPass = 0;
 #if 1
-			ogl.StartFrame (0, 1);
+			ogl.StartFrame (0, 1, nEyeOffset);
 			SetRenderView (nEyeOffset, &nStartSeg, 1);
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif
@@ -939,7 +939,7 @@ else
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 	else {
 		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
-			ogl.StartFrame (0, 1);
+			ogl.StartFrame (0, 1, nEyeOffset);
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}

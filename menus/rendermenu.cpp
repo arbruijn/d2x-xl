@@ -72,6 +72,7 @@ static struct {
 	int	nLighting;
 	int	nLightmaps;
 	int	nColorLevel;
+	int	nEyeOffset;
 	int	nCameras;
 	int	nLights;
 	int	nPasses;
@@ -90,6 +91,9 @@ static const char *pszRendQual [4];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
+static const char *pszEyeOffsets [10] = {"0.0", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
+
+static int nEyeOffset = 0;
 
 //------------------------------------------------------------------------------
 
@@ -205,6 +209,16 @@ if (renderOpts.nMeshQual > 0) {
 		gameOpts->render.nMeshQuality = v;
 		sprintf (m->m_text, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 		m->m_bRebuild = 1;
+		}
+	}
+
+if (renderOpts.nEyeOffset >= 0) {
+	m = menu + renderOpts.nEyeOffset;
+	v = m->m_value;
+	if (nEyeOffset != v) {
+		nEyeOffset = v;
+		sprintf (m->m_text, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
+		m->m_bRebuild = -1;
 		}
 	}
 
@@ -392,6 +406,16 @@ do {
 		else
 			renderOpts.nMeshQual = -1;
 		}
+#if DBG
+	nEyeOffset = gameOpts->render.nEyeOffset;
+	if (nEyeOffset)
+		nEyeOffset = (nEyeOffset - I2X (1)) / (I2X (1) / 4) + 1;
+	sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
+	*szSlider = *(TXT_EYE_OFFSET - 1);
+	renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, 2, KEY_E, HTX_EYE_OFFSET);
+#else
+	renderOpts.nEyeOffset = -1;
+#endif
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	*szSlider = *(TXT_CAMERAS - 1);
 	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_A, HTX_CAMERAS);
@@ -438,6 +462,7 @@ do {
 		gameOpts->render.bUseLightmaps = (nLighting > 1);
 		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.bUseLightmaps;
 		}
+	gameOpts->render.nEyeOffset = nEyeOffset ? I2X (1) + (nEyeOffset - 1) * (I2X (1) / 4) : 0;
 
 #if DBG
 	if (EXPERTMODE) {

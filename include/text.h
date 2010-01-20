@@ -1946,6 +1946,7 @@ void LoadGameTexts(void);
 #define TXT_CV_RADAR_HEADSUP			GT(1162)
 #define TXT_LEFT_COCKPIT_WIN			GT(1163)
 #define TXT_RIGHT_COCKPIT_WIN			GT(1164)
+#define TXT_EYE_OFFSET					GT(1165)
 
 #if 0
 
@@ -2514,6 +2515,7 @@ void LoadGameTexts(void);
 #define HTX_CHECK_FOR_UPDATE			HT(408)
 #define HTX_MISSILE_LOADOUT			HT(409)
 #define HTX_CPIT_WINTYPE				HT(410)
+#define HTX_EYE_OFFSET					HT(411)
 
 #if 0
 

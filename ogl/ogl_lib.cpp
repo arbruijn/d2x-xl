@@ -537,7 +537,7 @@ if ((x != ogl.m_states.nLastX) || (y != ogl.m_states.nLastY) || (w != ogl.m_stat
 
 #define GL_INFINITY	0
 
-void COGL::StartFrame (int bFlat, int bResetColorBuf)
+void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)
 {
 	GLint nError = glGetError ();
 
@@ -665,7 +665,7 @@ if (gameStates.render.nShadowPass) {
 				}
 			OglCullFace (0);
 			glDepthFunc (GL_LESS);
-			glColorMask (1,1,1,1);
+			glColorMask (nEyeOffset <= 0, GL_TRUE, nEyeOffset >= 0, GL_TRUE);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 4) {	//render unlit/final scene
@@ -705,7 +705,7 @@ else
 		glDisable (GL_SCISSOR_TEST);
 	if (gameStates.render.nRenderPass < 0) {
 		glDepthMask (1);
-		glColorMask (1,1,1,1);
+		glColorMask (nEyeOffset <= 0, GL_TRUE, nEyeOffset >= 0, GL_TRUE);
 		glClearColor (0,0,0,0);
 #if 0
 		if (bResetColorBuf)
@@ -716,7 +716,7 @@ else
 		}
 	else if (gameStates.render.nRenderPass) {
 		glDepthMask (0);
-		glColorMask (1,1,1,1);
+		glColorMask (nEyeOffset <= 0, GL_TRUE, nEyeOffset >= 0, GL_TRUE);
 		glClearColor (0,0,0,0);
 		if (bResetColorBuf)
 			glClear (GL_COLOR_BUFFER_BIT);

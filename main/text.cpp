@@ -1909,6 +1909,7 @@ const char *defaultGameTexts [][2] = {
  {"Radar (Voraussicht)", "radar (heads up)"},
  {"Links: %s", "Left: %s"},
  {"Rechts: %s", "Right: %s"},
+ {"~Augenabstand: %s", "~Eye Offset: %s"},
 #if 0
  {"", ""},
 #endif

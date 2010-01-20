@@ -380,6 +380,7 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	int nStereo;
+	fix nEyeOffset;
 	short nMaxFPS;
 	int nPath;
 	int nQuality;
