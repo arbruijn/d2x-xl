@@ -426,7 +426,7 @@ PROF_END(ptCockpit)
 }
 paletteManager.RenderEffect ();
 console.Draw ();
-if (!nEyeOffset || gameOpts->render.nStereo == 4) {
+if (!nEyeOffset || (gameOpts->render.nStereo == 4)) {
 	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}
