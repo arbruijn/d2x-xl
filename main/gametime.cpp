@@ -29,6 +29,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "text.h"
 
+// limit framerate to 30 while recording demo and to 40 when in automap and framerate display is disabled
+#define MAXFPS		((gameData.demo.nState == ND_STATE_RECORDING) ? 30 : \
+                   (automap.m_bDisplay && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
+						 (gameOpts->render.nStereo == 4) ? 2 * gameOpts->render.nMaxFPS : gameOpts->render.nMaxFPS)
+
 //------------------------------------------------------------------------------
 
 void StopTime (void)
