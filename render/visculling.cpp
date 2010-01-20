@@ -552,6 +552,15 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 
 //------------------------------------------------------------------------------
 
+void SetSegRenderList (void)
+{
+tSegZRef* ps = segZRef [gameStates.app.bMultiThreaded];
+for (int i = 0; i < gameData.render.mine.nRenderSegs; i++)
+	gameData.render.mine.nSegRenderList [i] = ps [i].nSegment;
+}
+
+//------------------------------------------------------------------------------
+
 void SortRenderSegs (void)
 {
 if (gameData.render.mine.nRenderSegs < 2)
@@ -586,6 +595,7 @@ if (!RENDERPATH)
 		QSortSegZRef (i, j);
 		}
 	omp_set_num_threads (gameStates.app.nThreads);
+	SetSegRenderList ();
 	}
 
 #else
@@ -601,9 +611,7 @@ if (!RENDERPATH) {
 		MergeSegZRefs ();
 	else
 		QSortSegZRef (0, gameData.render.mine.nRenderSegs - 1);
-	ps = segZRef [gameStates.app.bMultiThreaded];
-	for (int i = 0; i < gameData.render.mine.nRenderSegs; i++)
-		gameData.render.mine.nSegRenderList [i] = ps [i].nSegment;
+	SetSegRenderList ();
 	}
 
 #endif
