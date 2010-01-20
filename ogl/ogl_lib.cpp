@@ -339,7 +339,7 @@ glDisable (GL_STENCIL_TEST);
 glDisable (GL_LIGHTING);
 glDisable (GL_COLOR_MATERIAL);
 glDepthMask (1);
-glColorMask (1,1,1,1);
+ColorMask (1,1,1,1,1);
 if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
 }
@@ -541,6 +541,7 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)
 {
 	GLint nError = glGetError ();
 
+m_data.nEyeOffset = nEyeOffset;
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
 	ogl.SetDrawBuffer (GL_BACK, 1);
 #if SHADOWS
@@ -571,19 +572,19 @@ if (gameStates.render.nShadowPass) {
 			glEnable (GL_CULL_FACE);
 			OglCullFace (0);
 			if (!FAST_SHADOWS)
-				glColorMask (0,0,0,0);
+				ColorMask (0,0,0,0,0);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
 		if (gameStates.render.bShadowMaps) {
-			glColorMask (0,0,0,0);
+			ColorMask (0,0,0,0,0);
 			glEnable (GL_POLYGON_OFFSET_FILL);
 			glPolygonOffset (1.0f, 2.0f);
 			}
 		else {
 #	if DBG_SHADOWS
 			if (bShadowTest) {
-				glColorMask (1,1,1,1);
+				ColorMask (1,1,1,1,0);
 				glDepthMask (0);
 				glEnable (GL_BLEND);
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -592,7 +593,7 @@ if (gameStates.render.nShadowPass) {
 			else
 #	endif
 			 {
-				glColorMask (0,0,0,0);
+				ColorMask (0,0,0,0,0);
 				glDepthMask (0);
 				glEnable (GL_STENCIL_TEST);
 				if (!glIsEnabled (GL_STENCIL_TEST))
@@ -665,7 +666,7 @@ if (gameStates.render.nShadowPass) {
 				}
 			OglCullFace (0);
 			glDepthFunc (GL_LESS);
-			glColorMask (nEyeOffset <= 0, GL_TRUE, nEyeOffset >= 0, GL_TRUE);
+			ColorMask (1,1,1,1,1);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 4) {	//render unlit/final scene
@@ -705,7 +706,7 @@ else
 		glDisable (GL_SCISSOR_TEST);
 	if (gameStates.render.nRenderPass < 0) {
 		glDepthMask (1);
-		glColorMask (nEyeOffset <= 0, GL_TRUE, nEyeOffset >= 0, GL_TRUE);
+		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
 #if 0
 		if (bResetColorBuf)
@@ -716,14 +717,14 @@ else
 		}
 	else if (gameStates.render.nRenderPass) {
 		glDepthMask (0);
-		glColorMask (nEyeOffset <= 0, GL_TRUE, nEyeOffset >= 0, GL_TRUE);
+		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
 		if (bResetColorBuf)
 			glClear (GL_COLOR_BUFFER_BIT);
 		}
 	else { //make a depth-only render pass first to decrease bandwidth waste due to overdraw
 		glDepthMask (1);
-		glColorMask (0,0,0,0);
+		ColorMask (0,0,0,0,0);
 		glClear (GL_DEPTH_BUFFER_BIT);
 		}
 	if (ogl.m_states.bAntiAliasingOk && ogl.m_states.bAntiAliasing)
@@ -796,7 +797,7 @@ if (SHOW_DYN_LIGHT) {
 	glDisable (GL_COLOR_MATERIAL);
 	}
 glDepthMask (1);
-glColorMask (1,1,1,1);
+ogl.ColorMask (1,1,1,1,0);
 if (ogl.m_states.bAntiAliasingOk && ogl.m_states.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
 }

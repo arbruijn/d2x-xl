@@ -455,7 +455,7 @@ CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) 
 	glDepthFunc (GL_LEQUAL);
 else {
-	glColorMask (0,0,0,0);
+	ogl.ColorMask (0,0,0,0,0);
 	glDepthMask (1);
 	glDepthFunc (GL_LESS);
 	}
@@ -737,7 +737,7 @@ void QueryCoronas (short nFaces, int nPass)
 
 BeginRenderFaces (3, 0);
 glDepthMask (0);
-glColorMask (1,1,1,1);
+ogl.ColorMask (1,1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
 	// first just render all coronas (happens before any geometry gets rendered)
@@ -928,7 +928,7 @@ else {	//front to back
 	else
 		j = 0;
 	BeginRenderFaces (0, 0);
-	glColorMask (1,1,1,1);
+	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;
 	RenderSegments (nType, 0, 0);
 	glDepthMask (1);

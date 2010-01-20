@@ -427,6 +427,7 @@ PROF_END(ptCockpit)
 }
 paletteManager.RenderEffect ();
 console.Draw ();
+#if 0
 if (nEyeOffset < 0)
 	glAccum (GL_LOAD, 1.0); 
 else if (nEyeOffset > 0) {
@@ -434,6 +435,7 @@ else if (nEyeOffset > 0) {
 	ogl.SwapBuffers (0, 0);
 	}
 else
+#endif
 	ogl.SwapBuffers (0, 0);
 
 if (gameStates.app.bSaveScreenshot && !nEyeOffset)

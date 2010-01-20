@@ -412,7 +412,7 @@ do {
 		nEyeOffset = (nEyeOffset - I2X (1)) / (I2X (1) / 4) + 1;
 	sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 	*szSlider = *(TXT_EYE_OFFSET - 1);
-	renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, 2, KEY_E, HTX_EYE_OFFSET);
+	renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, 9, KEY_E, HTX_EYE_OFFSET);
 #else
 	renderOpts.nEyeOffset = -1;
 #endif
