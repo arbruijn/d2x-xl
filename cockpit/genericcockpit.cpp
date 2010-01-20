@@ -1815,6 +1815,7 @@ if (!cockpit->Setup (true))
 #endif
 glDepthFunc (GL_ALWAYS);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.ColorMask (1,1,1,1,0);
 CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);

@@ -437,7 +437,7 @@ do {
 	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
-#if DBG
+#if 1 //DBG
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoView [gameOpts->render.nStereo]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	renderOpts.nStereoView = m.AddSlider (szSlider + 1, gameOpts->render.nStereo, 0, 3, KEY_S, HTX_STEREO_VIEW);
