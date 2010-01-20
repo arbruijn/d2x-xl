@@ -1946,13 +1946,12 @@ void LoadGameTexts(void);
 #define TXT_CV_RADAR_HEADSUP			GT(1162)
 #define TXT_LEFT_COCKPIT_WIN			GT(1163)
 #define TXT_RIGHT_COCKPIT_WIN			GT(1164)
-#define TXT_EYE_OFFSET					GT(1165)
-#define TXT_FAST_SCREEN					GT(1166)
-#define TXT_STEREO_VIEW					GT(1167)
-#define TXT_BLUE_RED						GT(1168)
-#define TXT_GREEN_RED					GT(1169)
-#define TXT_CYAN_RED						GT(1170)
-#define TXT_SHUTTER						GT(1171)
+#define TXT_STEREO_VIEW					GT(1165)
+#define TXT_EYE_OFFSET					GT(1166)
+#define TXT_BLUE_RED						GT(1167)
+#define TXT_GREEN_RED					GT(1168)
+#define TXT_CYAN_RED						GT(1169)
+#define TXT_SHUTTER						GT(1170)
 
 #if 0
 

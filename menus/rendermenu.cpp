@@ -220,6 +220,7 @@ if (renderOpts.nStereoView >= 0) {
 	v = m->m_value;
 	if ((h = gameOpts->render.nStereo) != v) {
 		gameOpts->render.nStereo = v;
+		sprintf (m->m_text, TXT_STEREO_VIEW, pszStereoView [v]);
 		m->m_bRebuild = -1;
 		}
 	if ((h == 0) != (v == 0)) {
@@ -234,8 +235,7 @@ if (gameOpts->render.nStereo) {
 	if (nEyeOffset != v) {
 		nEyeOffset = v;
 		gameOpts->render.nEyeOffset = I2X (1) + nEyeOffset * (I2X (1) / 4);
-		gameOpts->render.nStereo = gameOpts->render.nEyeOffset != 0;
-		sprintf (m->m_text, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
+		sprintf (m->m_text, TXT_EYE_OFFSET, pszEyeOffsets [v]);
 		m->m_bRebuild = -1;
 		}
 	}
@@ -438,7 +438,7 @@ do {
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
 #if DBG
-	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszEyeOffsets [nEyeOffset]);
+	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoView [gameOpts->render.nStereo]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	renderOpts.nStereoView = m.AddSlider (szSlider + 1, gameOpts->render.nStereo, 0, 3, KEY_S, HTX_STEREO_VIEW);
 	if (gameOpts->render.nStereo) {
