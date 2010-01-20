@@ -73,6 +73,7 @@ static struct {
 	int	nLightmaps;
 	int	nColorLevel;
 	int	nEyeOffset;
+	int	nFastScreen;
 	int	nCameras;
 	int	nLights;
 	int	nPasses;
@@ -195,10 +196,14 @@ if (gameOpts->render.nImageQuality != v) {
 if (renderOpts.nRenderQual > 0) {
 	m = menu + renderOpts.nRenderQual;
 	v = m->m_value;
-	if (gameOpts->render.nQuality != v) {
+	if ((h = gameOpts->render.nQuality) != v) {
 		gameOpts->render.nQuality = v;
 		sprintf (m->m_text, TXT_RENDER_QUALITY, pszRendQual [gameOpts->render.nQuality]);
 		m->m_bRebuild = 1;
+		}
+	if ((h == 0) != (v == 0)) {
+		key = -2;
+		return nCurItem;
 		}
 	}
 
@@ -413,8 +418,13 @@ do {
 	sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 	*szSlider = *(TXT_EYE_OFFSET - 1);
 	renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, 9, KEY_E, HTX_EYE_OFFSET);
+	if (nEyeOffset)
+		renderOpts.nFastScreen = m.AddCheck (TXT_FAST_SCREEN, gameOpts->render.bFastScreen, KEY_F, HTX_FAST_SCREEN);
+	else
+		renderOpts.nFastScreen = -1;
 #else
 	renderOpts.nEyeOffset = -1;
+	renderOpts.nFastScreen = -1;
 #endif
 	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
 	*szSlider = *(TXT_CAMERAS - 1);

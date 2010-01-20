@@ -419,7 +419,6 @@ else {
 	RenderFrame (nEyeOffset, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-FlashMine ();
 {
 PROF_START
 cockpit->Render (bExtraInfo);
@@ -427,16 +426,17 @@ PROF_END(ptCockpit)
 }
 paletteManager.RenderEffect ();
 console.Draw ();
-#if 0
-if (nEyeOffset < 0)
+if (!gameOpts->render.bFastScreen && (nEyeOffset < 0))
 	glAccum (GL_LOAD, 1.0); 
-else if (nEyeOffset > 0) {
+else if (!gameOpts->render.bFastScreen && (nEyeOffset > 0)) {
 	glAccum (GL_ACCUM, 1.0); 
+	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}
-else
-#endif
+else {
+	FlashMine ();
 	ogl.SwapBuffers (0, 0);
+	}
 
 if (gameStates.app.bSaveScreenshot && !nEyeOffset)
 	SaveScreenShot (NULL, 0);

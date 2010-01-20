@@ -1947,11 +1947,10 @@ void LoadGameTexts(void);
 #define TXT_LEFT_COCKPIT_WIN			GT(1163)
 #define TXT_RIGHT_COCKPIT_WIN			GT(1164)
 #define TXT_EYE_OFFSET					GT(1165)
+#define TXT_FAST_SCREEN					GT(1166)
 
 #if 0
 
-#define TXT_					GT(1165)
-#define TXT_					GT(1166)
 #define TXT_					GT(1167)
 #define TXT_					GT(1168)
 #define TXT_					GT(1169)
@@ -2516,11 +2515,10 @@ void LoadGameTexts(void);
 #define HTX_MISSILE_LOADOUT			HT(409)
 #define HTX_CPIT_WINTYPE				HT(410)
 #define HTX_EYE_OFFSET					HT(411)
+#define HTX_FAST_SCREEN					HT(412)
 
 #if 0
 
-#define HTX_						HT(411)
-#define HTX_						HT(412)
 #define HTX_						HT(413)
 #define HTX_						HT(414)
 #define HTX_						HT(415)

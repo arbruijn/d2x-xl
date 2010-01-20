@@ -948,7 +948,7 @@ if (bPrintLine) {
 	CFloatVector	vf;
 	glLineWidth (3);
 	if (!bShadowTest) {
-		ColorMask (1,1,1,1,1);
+		ogl.ColorMask (1,1,1,1,1);
 		glDisable (GL_STENCIL_TEST);
 		}
 	glColor4d (1,0.8,0,1);
@@ -959,7 +959,7 @@ if (bPrintLine) {
 	glVertex3fv (reinterpret_cast<GLfloat*> (&vf));
 	glEnd ();
 	if (!bShadowTest) {
-		ColorMask (0,0,0,0,0);
+		ogl.ColorMask (0,0,0,0,0);
 		glEnable (GL_STENCIL_TEST);
 		}
 	}

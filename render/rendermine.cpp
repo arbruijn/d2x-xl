@@ -758,6 +758,8 @@ else {
 			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
 #endif
 			externalView.GetViewPoint ();
+			if (nEyeOffset)
+				gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * nEyeOffset;
 			G3SetViewMatrix (gameData.render.mine.viewerEye,
 								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale);

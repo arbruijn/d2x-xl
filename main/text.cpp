@@ -1910,6 +1910,7 @@ const char *defaultGameTexts [][2] = {
  {"Links: %s", "Left: %s"},
  {"Rechts: %s", "Right: %s"},
  {"~Augenabstand: %s", "~Eye Offset: %s"},
+ {"~Bildschirm-Wiederholrate >= 100 Hz", "Monitor refresh rate >= 100 Hz"},
 #if 0
  {"", ""},
 #endif

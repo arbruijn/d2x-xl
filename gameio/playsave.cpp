@@ -485,6 +485,9 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.shadows.nLights, i, 0);
 		RP (gameOptions [i].render.nMaxFPS, i, 0);
 		RP (gameOptions [i].render.nImageQuality, i, 0);
+		RP (gameOptions [i].render.bHires, i, 0);
+		RP (gameOptions [i].render.nEyeOffset, i, 0);
+		RP (gameOptions [i].render.bFastScreen, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
 		RP (gameOptions [i].app.bEnableMods, i, 0);
@@ -502,7 +505,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].gameplay.nAIAggressivity, i, 0);
 		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
 		RP (gameOptions [i].gameplay.nSlowMotionSpeedup, i, 0);
-		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameStates.sound.audio.nMaxChannels, 0, 128);
 #if 0
 		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
@@ -972,10 +974,11 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].ogl.nMaxLightsPerPass", "8"},
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
+	 {"gameOptions[0].render.nEyeOffset", "0"},
+	 {"gameOptions[0].render.bFastScreen", "0"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},
-	 {"gameOptions[0].render.cameras.bHires", "1"},
 	 {"gameOptions[0].render.automap.bTextured", "1"},
 	 {"gameOptions[0].render.automap.bBright", "0"},
 	 {"gameOptions[0].render.automap.nRange", "0"},
