@@ -426,14 +426,20 @@ PROF_END(ptCockpit)
 }
 paletteManager.RenderEffect ();
 console.Draw ();
-if (!gameOpts->render.bFastScreen && (nEyeOffset < 0))
-	glAccum (GL_LOAD, 1.0); 
-else if (!gameOpts->render.bFastScreen && (nEyeOffset > 0)) {
-	glAccum (GL_ACCUM, 1.0); 
+if (!nEyeOffset || gameOpts->render.bFastScreen) {
 	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}
+else if (nEyeOffset < 0) {
+	glFlush ();
+	ogl.ColorMask (1,1,1,1,0);
+	glAccum (GL_LOAD, 1.0); 
+	}
 else {
+	glFlush ();
+	ogl.ColorMask (1,1,1,1,0);
+	glAccum (GL_ACCUM, 1.0); 
+	 glAccum (GL_RETURN, 1.0);
 	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}

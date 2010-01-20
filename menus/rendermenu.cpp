@@ -138,7 +138,7 @@ if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int			v;
+	int			h, v;
 
 if (!gameStates.app.bNostalgia) {
 	m = menu + renderOpts.nBrightness;
@@ -196,14 +196,10 @@ if (gameOpts->render.nImageQuality != v) {
 if (renderOpts.nRenderQual > 0) {
 	m = menu + renderOpts.nRenderQual;
 	v = m->m_value;
-	if ((h = gameOpts->render.nQuality) != v) {
+	if (gameOpts->render.nQuality != v) {
 		gameOpts->render.nQuality = v;
 		sprintf (m->m_text, TXT_RENDER_QUALITY, pszRendQual [gameOpts->render.nQuality]);
 		m->m_bRebuild = 1;
-		}
-	if ((h == 0) != (v == 0)) {
-		key = -2;
-		return nCurItem;
 		}
 	}
 
@@ -215,12 +211,16 @@ if (renderOpts.nMeshQual > 0) {
 		sprintf (m->m_text, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 		m->m_bRebuild = 1;
 		}
+	if ((h == 0) != (v == 0)) {
+		key = -2;
+		return nCurItem;
+		}
 	}
 
 if (renderOpts.nEyeOffset >= 0) {
 	m = menu + renderOpts.nEyeOffset;
 	v = m->m_value;
-	if (nEyeOffset != v) {
+	if ((h = nEyeOffset) != v) {
 		nEyeOffset = v;
 		sprintf (m->m_text, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 		m->m_bRebuild = -1;
@@ -411,6 +411,12 @@ do {
 		else
 			renderOpts.nMeshQual = -1;
 		}
+	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
+	*szSlider = *(TXT_CAMERAS - 1);
+	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_A, HTX_CAMERAS);
+	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
+	*szSlider = *(TXT_POWERUPS - 1);
+	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
 #if DBG
 	nEyeOffset = gameOpts->render.nEyeOffset;
 	if (nEyeOffset)
@@ -418,22 +424,17 @@ do {
 	sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 	*szSlider = *(TXT_EYE_OFFSET - 1);
 	renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, 9, KEY_E, HTX_EYE_OFFSET);
+#else
+	nEyeOffset = 0;
+	renderOpts.nEyeOffset = -1;
+	renderOpts.nFastScreen = -1;
+#endif
+
+	m.AddText ("");
 	if (nEyeOffset)
 		renderOpts.nFastScreen = m.AddCheck (TXT_FAST_SCREEN, gameOpts->render.bFastScreen, KEY_F, HTX_FAST_SCREEN);
 	else
 		renderOpts.nFastScreen = -1;
-#else
-	renderOpts.nEyeOffset = -1;
-	renderOpts.nFastScreen = -1;
-#endif
-	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
-	*szSlider = *(TXT_CAMERAS - 1);
-	renderOpts.nCameras = m.AddSlider (szSlider + 1, nCameras, 0, 2, KEY_A, HTX_CAMERAS);
-	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
-	*szSlider = *(TXT_POWERUPS - 1);
-	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
-
-	m.AddText ("");
 	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
 
 #if DBG
