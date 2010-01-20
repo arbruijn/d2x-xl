@@ -357,7 +357,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		vNormal.Neg ();
 		}
 	viewer.info.position.mOrient = CFixMatrix::Create (&vNormal, 0);
-	G3StartFrame (0, 0);
+	G3StartFrame (0, 0, 0);
 	RenderStartFrame ();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
 #endif

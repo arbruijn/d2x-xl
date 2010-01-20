@@ -256,7 +256,7 @@ void DrawModelPicture (int nModel, CAngleVector *orientAngles)
 	CFixMatrix	o = CFixMatrix::IDENTITY;
 
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
-G3StartFrame (0, 0);
+G3StartFrame (0, 0, 0);
 glDisable (GL_BLEND);
 G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [0][nModel].Rad ())
