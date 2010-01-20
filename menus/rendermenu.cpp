@@ -94,9 +94,9 @@ static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
 static const char *pszStereoView [5];
-static const char *pszEyeOffsets [] = {"0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
+static const char *pszEyeOffsets [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
-static int nEyeOffset = 1;
+static int nEyeOffset = 0;
 
 //------------------------------------------------------------------------------
 
@@ -220,6 +220,10 @@ if (renderOpts.nStereoView >= 0) {
 	v = m->m_value;
 	if ((h = gameOpts->render.nStereo) != v) {
 		gameOpts->render.nStereo = v;
+		if (v && !gameOpts->render.nEyeOffset) {
+			gameOpts->render.nEyeOffset = I2X (1);
+			nEyeOffset = (gameOpts->render.nEyeOffset / (I2X (1) / 4)) - 1;
+			}
 		sprintf (m->m_text, TXT_STEREO_VIEW, pszStereoView [v]);
 		m->m_bRebuild = -1;
 		}
@@ -234,7 +238,7 @@ if (gameOpts->render.nStereo) {
 	v = m->m_value;
 	if (nEyeOffset != v) {
 		nEyeOffset = v;
-		gameOpts->render.nEyeOffset = I2X (1) / 2 + nEyeOffset * (I2X (1) / 4);
+		gameOpts->render.nEyeOffset = (nEyeOffset + 1) * (I2X (1) / 4);
 		sprintf (m->m_text, TXT_EYE_OFFSET, pszEyeOffsets [v]);
 		m->m_bRebuild = -1;
 		}
@@ -359,7 +363,11 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
-nEyeOffset = gameOpts->render.nStereo ? (gameOpts->render.nEyeOffset - I2X (1) / 2) / (I2X (1) / 4) : 0;
+nEyeOffset = gameOpts->render.nStereo ? gameOpts->render.nEyeOffset / (I2X (1) / 4) - 1 : 0;
+if (nEyeOffset < 0)
+	nEyeOffset = 0;
+else if (nEyeOffset >= sizeofa (pszEyeOffsets))
+	nEyeOffset = sizeofa (pszEyeOffsets) - 1;
 
 do {
 	m.Destroy ();
@@ -506,7 +514,7 @@ do {
 #endif
 	} while (i == -2);
 
-gameOpts->render.nEyeOffset = gameOpts->render.nStereo ? I2X (1) / 2 + nEyeOffset * (I2X (1) / 4) : 0;
+gameOpts->render.nEyeOffset = gameOpts->render.nStereo ? (nEyeOffset + 1) * (I2X (1) / 4) : 0;
 lightManager.SetMethod ();
 DefaultRenderSettings ();
 }
