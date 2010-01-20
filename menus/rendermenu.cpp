@@ -359,7 +359,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
-nEyeOffset = gameOpts->render.nStereo ? I2X (1) + gameOpts->render.nEyeOffset * (I2X (1) / 4) : 0;
+nEyeOffset = gameOpts->render.nStereo ? (gameOpts->render.nEyeOffset - I2X (1)) / (I2X (1) / 4) : 0;
 
 do {
 	m.Destroy ();
@@ -444,7 +444,7 @@ do {
 	if (gameOpts->render.nStereo) {
 		sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 		*szSlider = *(TXT_EYE_OFFSET - 1);
-		renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, 9, KEY_E, HTX_EYE_OFFSET);
+		renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, 8, KEY_E, HTX_EYE_OFFSET);
 		}
 	else
 		renderOpts.nEyeOffset = 0;
