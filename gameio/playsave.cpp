@@ -485,8 +485,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.shadows.nLights, i, 0);
 		RP (gameOptions [i].render.nMaxFPS, i, 0);
 		RP (gameOptions [i].render.nImageQuality, i, 0);
+		RP (gameOptions [i].render.nStereo, i, 0);
 		RP (gameOptions [i].render.nEyeOffset, i, 0);
-		RP (gameOptions [i].render.bFastScreen, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
@@ -974,8 +974,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].ogl.nMaxLightsPerPass", "8"},
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
+	 {"gameOptions[0].render.nStereo", "0"},
 	 {"gameOptions[0].render.nEyeOffset", "0"},
-	 {"gameOptions[0].render.bFastScreen", "0"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},

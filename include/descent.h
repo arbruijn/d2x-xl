@@ -381,7 +381,6 @@ typedef struct tRenderOptions {
 	int nDefMathFormat;
 	int nStereo;
 	fix nEyeOffset;
-	int bFastScreen;
 	short nMaxFPS;
 	int nPath;
 	int nQuality;

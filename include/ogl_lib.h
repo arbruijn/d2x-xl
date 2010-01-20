@@ -232,12 +232,7 @@ class COGL {
 		void FlushDrawBuffer (bool bAdditive = false);
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
-		inline void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE) {
-			if (bEyeOffset)
-				glColorMask (bRed * (m_data.nEyeOffset <= 0), bGreen * (m_data.nEyeOffset == 0), bBlue * (m_data.nEyeOffset >= 0), bAlpha);
-			else
-				glColorMask (bRed, bGreen, bBlue, bAlpha);
-			}
+		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
 
 #if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);

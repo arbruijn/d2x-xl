@@ -535,6 +535,22 @@ if ((x != ogl.m_states.nLastX) || (y != ogl.m_states.nLastY) || (w != ogl.m_stat
 
 //------------------------------------------------------------------------------
 
+void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset) 
+{
+if (!(bEyeOffset && gameOpts->render.nStereo))
+	glColorMask (bRed, bGreen, bBlue, bAlpha);
+else if (gameOpts->render.nStereo == 1)	//blue/red
+	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+else if (gameOpts->render.nStereo == 2)	//green/red
+	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+else if (gameOpts->render.nStereo == 3)	//cyan/red
+	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+else
+	glColorMask (bRed, bGreen, bBlue, bAlpha);
+}
+
+//------------------------------------------------------------------------------
+
 #define GL_INFINITY	0
 
 void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)

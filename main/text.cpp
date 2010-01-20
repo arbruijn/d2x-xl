@@ -1910,9 +1910,12 @@ const char *defaultGameTexts [][2] = {
  {"Links: %s", "Left: %s"},
  {"Rechts: %s", "Right: %s"},
  {"~Augenabstand: %s", "~Eye Offset: %s"},
- {"~Bildschirm-Wiederholrate >= 100 Hz", "Monitor refresh rate >= 100 Hz"},
+ {"3D-~Brille: %s", "3D ~Glasses: %s"},
+ {"blau/rot", "blue/red"},
+ {"blau/gruen", "blue/green"},
+ {"blau/cyan", "blue/cyan"},
+ {"shutter", "shutter"},
 #if 0
- {"", ""},
 #endif
  {"", ""}
 	};
@@ -2609,6 +2612,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, wird die Umgebungslautstaerke der\nEffektlautstaerke angeglichen.", "If checked, ambient sound volume is equalized with\neffect sound volume."},
  {"Hier koennen die maximalen Ladekapazitaeten fuer\nRaketen und Minen eingestellt werden.", "Adjust the maximum load capacity for missiles\nand mines here."},
  {"Hier kann eingestellt werden, was in den Hilfsanzeigen\ndes Cockpits sichtbar ist.", "You can chose what is displayed in the auxiliary\ncockpit windows here."},
+ {"Hier kann der virtuelle Augenabstand angepasst werden.", "Ajdust the virtual eye distance here."},
+ {"Hier kann die Art der 3D-Brille eingestellt werden.", "Chose the type of your 3D glasses here."},
 #if 0
  {"", ""},
 #endif
