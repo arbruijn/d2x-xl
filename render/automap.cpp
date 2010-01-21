@@ -402,7 +402,7 @@ if (gameOpts->render.cockpit.bHUD) {
 
 //------------------------------------------------------------------------------
 
-void CAutomap::Draw (void)
+void CAutomap::Draw (fix nEyeOffset)
 {
 #if 1
 PROF_START
@@ -450,7 +450,7 @@ if (bAutomapFrame) {
 #endif
 if (!gameOpts->render.automap.bTextured)
 	gameOpts->render.automap.bTextured = 1;
-G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar, 0);
+G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar, nEyeOffset);
 
 if (bAutomapFrame)
 	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
@@ -498,7 +498,8 @@ if (bAutomapFrame) {
 DrawLevelId ();
 PROF_END(ptRenderFrame)
 #endif
-ogl.SwapBuffers (0, 0);
+if (nEyeOffset >= 0)
+	ogl.SwapBuffers (0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -932,7 +933,12 @@ do {
 	redbook.CheckRepeat ();
 	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update ();
-	Draw ();
+	if (!gameOpts->render.nStereo)
+		Draw ();
+	else {
+		Draw (-gameOpts->render.nEyeOffset);
+		Draw (gameOpts->render.nEyeOffset);
+		}
 	if (bFirstTime) {
 		bFirstTime = 0;
 		//paletteManager.ResumeEffect ();
