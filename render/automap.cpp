@@ -498,8 +498,11 @@ if (bAutomapFrame) {
 DrawLevelId ();
 PROF_END(ptRenderFrame)
 #endif
-if (nEyeOffset >= 0)
+if (nEyeOffset >= 0) {
+	if ((gameOpts->render.nStereo == 1) && (nEyeOffset > 0))
+		ogl.FlushDrawBuffer ();
 	ogl.SwapBuffers (0, 0);
+	}
 }
 
 //------------------------------------------------------------------------------
