@@ -546,7 +546,7 @@ if (!(bEyeOffset && gameOpts->render.nStereo))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.nStereo == 1) {	//colorcode 3-d (amber/blue)
 	if (m_data.nEyeOffset < 0) {
-		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
+		glColorMask (bRed, GL_FALSE /*bGreen*/, GL_FALSE, bAlpha);
 		}
 	else {
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
