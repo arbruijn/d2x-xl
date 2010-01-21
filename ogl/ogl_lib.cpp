@@ -546,7 +546,7 @@ if (!(bEyeOffset && gameOpts->render.nStereo))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.nStereo == 1) {	//colorcode 3-d (amber/blue)
 	if (m_data.nEyeOffset < 0) {
-		glColorMask (bRed, GL_FALSE /*bGreen*/, GL_FALSE, bAlpha);
+		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
 		}
 	else {
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
@@ -1169,27 +1169,34 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 if (ogl.HaveDrawBuffer ()) {
 	int bStereo = 0;
 
+	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 0);
+	glEnable (GL_TEXTURE_2D);
+	ogl.SelectTMU (GL_TEXTURE0);
+	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
+
+	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
+		SelectDrawBuffer (1);
+		SetDrawBuffer (GL_BACK, 0);
+#if 1
+		glEnable (GL_TEXTURE_2D);
+		ogl.SelectTMU (GL_TEXTURE1);
+		glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
+
+		gameData.render.nShaderChanges++;
+		glUseProgramObject (cc3DShaderProg);
+		glUniform1i (glGetUniformLocation (cc3DShaderProg, "leftFrame"), 0);
+		glUniform1i (glGetUniformLocation (cc3DShaderProg, "rightFrame"), 1);
+		ogl.ClearError (0);
+#endif
+		}
 	if (bAdditive) {
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
-#if 0
-	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
-		gameData.render.nShaderChanges++;
-		glUseProgramObject (cc3DShaderProg);
-		ogl.ClearError (0);
-		ogl.SelectTMU (GL_TEXTURE1);
-		glEnable (GL_TEXTURE_2D);
-		glBindTexture (GL_TEXTURE_2D, m_data.drawBuffers [1].RenderBuffer ());
-		}
-	else
-#endif
-		glUseProgramObject (0);
-	ogl.SelectTMU (GL_TEXTURE0);
-	glEnable (GL_TEXTURE_2D);
-	glBindTexture (GL_TEXTURE_2D, m_data.drawBuffers [0].RenderBuffer ());
-	glColor3f (1, 1, 1);
+	//glDepthFunc (GL_ALWAYS);
+#if 1
+	//glColor3f (1, 1, 1);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	glVertex2f (0, 0);
@@ -1200,12 +1207,10 @@ if (ogl.HaveDrawBuffer ()) {
 	glTexCoord2f (1, 0);
 	glVertex2f (1, 0);
 	glEnd ();
+#endif
+	//glDepthFunc (GL_LEQUAL);
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
-	if (bStereo) {
-		glUseProgramObject (0);
-		gameStates.render.history.nShader = -1;
-		}
 	}
 #endif
 }
@@ -1378,9 +1383,10 @@ glDeleteTextures (n, hTextures);
 const char* cc3DFS = 
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
-	"vec3 leftColor = texture2D (leftFrame, gl_TexCoord [0].st).rgb;\r\n" \
-	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].st).rgb;\r\n" \
-	"gl_FragColor = vec4 (leftColor.r, leftColor.g, dot (rightColor, vec3 (0.15, 0.15, 0.7)), 1.0);}\r\n" 
+	"vec3 leftColor = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"gl_FragColor = vec4 (leftColor.r, leftColor.g, dot (rightColor, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" 
+	"}"
 	;
 
 const char* cc3DVS = 
