@@ -793,7 +793,8 @@ void COGL::EndFrame (void)
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
-	ogl.SelectDrawBuffer (0);
+	if (gameStates.render.bRenderIndirect)
+		ogl.SelectDrawBuffer (0);
 	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
 if (ogl.m_states.bShadersOk)

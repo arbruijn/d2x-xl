@@ -462,6 +462,10 @@ if (m_bRadar == 2) {
 	}
 else {
 	m_data.viewPos = m_data.viewTarget + m_data.viewMatrix.FVec () * -m_data.nViewDist;
+	if (!m_bRadar && nEyeOffset) {
+		glClear (GL_COLOR_BUFFER_BIT);
+		m_data.viewPos += m_data.viewMatrix.RVec () * nEyeOffset;
+		}
 	G3SetViewMatrix (m_data.viewPos, m_data.viewMatrix, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
 if (!m_bRadar && (gameOpts->render.automap.bTextured & 1)) {
