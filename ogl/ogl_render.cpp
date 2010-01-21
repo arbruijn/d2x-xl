@@ -123,8 +123,8 @@ int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glBegin (GL_LINES);
-OglVertex3x (p0->p3_vec[X], p0->p3_vec[Y], p0->p3_vec[Z]);
-OglVertex3x (p1->p3_vec[X], p1->p3_vec[Y], p1->p3_vec[Z]);
+OglVertex3x (p0->p3_vec [X], p0->p3_vec [Y], p0->p3_vec [Z]);
+OglVertex3x (p1->p3_vec [X], p1->p3_vec [Y], p1->p3_vec [Z]);
 if (CCanvas::Current ()->Color ().rgb)
 	glDisable (GL_BLEND);
 glEnd ();
@@ -211,7 +211,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
-glTranslatef (X2F (pnt->p3_vec[X]), X2F (pnt->p3_vec[Y]), X2F (pnt->p3_vec[Z]));
+glTranslatef (X2F (pnt->p3_vec [X]), X2F (pnt->p3_vec [Y]), X2F (pnt->p3_vec [Z]));
 r = X2F (rad);
 glScaled (r, r, r);
 if (bBigSphere) {
@@ -248,9 +248,9 @@ int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 
 glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
-x = X2F (p.p3_vec[X]);
-y = X2F (p.p3_vec[Y]);
-z = X2F (p.p3_vec[Z]);
+x = X2F (p.p3_vec [X]);
+y = X2F (p.p3_vec [Y]);
+z = X2F (p.p3_vec [Z]);
 r = X2F (rad);
 glBegin (GL_POLYGON);
 for (i = 0; i <= nSides; i++) {
@@ -277,9 +277,9 @@ int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 
 glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
-x = X2F (p.p3_vec[X]);
-y = X2F (p.p3_vec[Y]);
-v[Z] = X2F (p.p3_vec[Z]);
+x = X2F (p.p3_vec [X]);
+y = X2F (p.p3_vec [Y]);
+v[Z] = X2F (p.p3_vec [Z]);
 r = X2F (rad);
 glBegin (GL_LINES);
 for (i = 0; i <= nSides; i++)
@@ -359,7 +359,7 @@ glDisable (GL_TEXTURE_2D);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nVertices; i++, pointList++) {
-//	glVertex3f (X2F (pointList [c]->p3_vec[X]), X2F (pointList [c]->p3_vec[Y]), X2F (pointList [c]->p3_vec[Z]);
+//	glVertex3f (X2F (pointList [c]->p3_vec [X]), X2F (pointList [c]->p3_vec [Y]), X2F (pointList [c]->p3_vec [Z]);
 	OglVertex3f (*pointList);
 	}
 #if 1

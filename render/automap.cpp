@@ -1022,7 +1022,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 
 	cc = RotateVertexList (2, edgeP->verts);
 	distance = gameData.segs.points [edgeP->verts [1]].p3_vec [Z];
-	if (minDistance>distance)
+	if (minDistance > distance)
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
 		nfacing = nnfacing = 0;

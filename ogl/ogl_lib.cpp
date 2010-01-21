@@ -544,21 +544,28 @@ void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboole
 {
 if (!(bEyeOffset && gameOpts->render.nStereo))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
-else if (gameOpts->render.nStereo == 1) {	//colorcode 3-d (amber/blue)
-	if (m_data.nEyeOffset < 0) {
+else if (gameOpts->render.nStereo == GLASSES_COLORCODE_3D) {	//colorcode 3-d (amber/blue)
+	if (m_data.nEyeOffset < 0)
 		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
-		}
-	else {
+	else
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
-		}
 	}
-else if (gameOpts->render.nStereo == 2)	//blue/red
+else if (gameOpts->render.nStereo == GLASSES_BLUE_RED) {	//blue/red
+	if (m_data.nEyeOffset < 0)
+	else
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
-else if (gameOpts->render.nStereo == 3)	//green/red
+	}
+else if (gameOpts->render.nStereo == GLASSES_GREEN_RED) {	//green/red
+	if (m_data.nEyeOffset < 0)
+	else
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
-else if (gameOpts->render.nStereo == 4)	//cyan/red
+	}
+else if (gameOpts->render.nStereo == GLASSES_CYAN_RED) {	//cyan/red
+	if (m_data.nEyeOffset < 0)
+	else
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
-else
+	}
+else //GLASSES_SHUTTER or NONE
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 }
 
@@ -574,7 +581,7 @@ m_data.nEyeOffset = nEyeOffset;
 if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
-	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 1);
+	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == GLASSES_COLORCODE_3D);
 	ogl.SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.nEyeOffset > 0));
 	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
@@ -1175,7 +1182,7 @@ if (ogl.HaveDrawBuffer ()) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
-	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
+	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == GLASSES_COLORCODE_3D))) {
 		SelectDrawBuffer (1);
 		SetDrawBuffer (GL_BACK, 0);
 #if 1
@@ -1410,7 +1417,7 @@ if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) {
 		LinkShaderProg (&cc3DShaderProg);
 	if (!gameStates.render.textures.bHaveCC3DShader) {
 		DeleteColorCode3DShader ();
-		gameOpts->render.nStereo = 0;
+		gameOpts->render.nStereo = GLASSES_NONE;
 		}
 	}
 }

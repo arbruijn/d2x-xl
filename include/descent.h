@@ -369,6 +369,13 @@ typedef struct tDebugRenderOptions {
 
 //------------------------------------------------------------------------------
 
+#define GLASSES_NONE				0
+#define GLASSES_COLORCODE_3D	1
+#define GLASSES_BLUE_RED		2
+#define GLASSES_GREEN_RED		3
+#define GLASSES_CYAN_RED		4
+#define GLASSES_SHUTTER			5
+
 typedef struct tRenderOptions {
 	int bAllSegs;
 	int nLightingMethod;

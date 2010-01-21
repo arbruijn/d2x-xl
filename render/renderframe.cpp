@@ -351,11 +351,11 @@ else
 
 void FlushFrame (fix nEyeOffset)
 {
-if (!nEyeOffset || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter glasses
+if (!nEyeOffset || (gameOpts->render.nStereo == GLASSES_SHUTTER)) {	//no stereo or shutter glasses
 	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}
-else if (gameOpts->render.nStereo == 1) {	// ColorCode 3-D
+else if (gameOpts->render.nStereo == GLASSES_COLORCODE_3D) {	// ColorCode 3-D
 	FlashMine ();
 	if (nEyeOffset > 0)
 		ogl.SwapBuffers (0, 0);
@@ -449,11 +449,13 @@ else {
 	RenderFrame (nEyeOffset, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-{
-PROF_START
-cockpit->Render (bExtraInfo);
-PROF_END(ptCockpit)
-}
+
+if (!nEyeOffset || ((gameOpts->render.nStereo >= GLASSES_BLUE_RED) && (gameOpts->render.nStereo <= GLASSES_CYAN_RED))) {
+	PROF_START
+	cockpit->Render (bExtraInfo);
+	PROF_END(ptCockpit)
+	}
+
 paletteManager.RenderEffect ();
 console.Draw ();
 FlushFrame (nEyeOffset);
@@ -626,14 +628,14 @@ void GameRenderFrame (void)
 {
 PROF_START
 SetScreenMode (SCREEN_GAME);
-if ((gameOpts->render.nStereo != 1) || !(gameData.app.nFrameCount & 1)) {
+if ((gameOpts->render.nStereo != GLASSES_COLORCODE_3D) || !(gameData.app.nFrameCount & 1)) {
 	cockpit->PlayHomingWarning ();
 	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
 if (!gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
-else if (gameStates.menus.nInMenu && (gameOpts->render.nStereo == 1)) {
+else if (gameStates.menus.nInMenu && (gameOpts->render.nStereo == GLASSES_COLORCODE_3D)) {
 	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.nEyeOffset : -gameOpts->render.nEyeOffset);
 	}
 else {
