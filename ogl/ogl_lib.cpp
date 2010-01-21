@@ -551,7 +551,7 @@ else if (gameOpts->render.nStereo == 2)	//green/red
 else if (gameOpts->render.nStereo == 3)	//cyan/red
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
 else if (gameOpts->render.nStereo == 4) {	//colorcode 3-d (amber/blue)
-	if (m_nData.nEyeOffset < 0)
+	if (m_data.nEyeOffset < 0)
 		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
 	else
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
@@ -570,8 +570,9 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)
 
 m_data.nEyeOffset = nEyeOffset;
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
-	ogl.SelectDrawBuffer ((m_nData.nEyeOffset > 0) && (gameOpts->render.nStereo == 4));
+	ogl.SelectDrawBuffer ((m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 4));
 	ogl.SetDrawBuffer (GL_BACK, 1);
+	}
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY

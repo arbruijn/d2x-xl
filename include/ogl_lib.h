@@ -228,6 +228,7 @@ class COGL {
 		GLuint CreateDepthTexture (int nTMU, int bFBO);
 		GLuint CreateStencilTexture (int nTMU, int bFBO);
 		void CreateDrawBuffer (void);
+		void DestroyDrawBuffer (void);
 		void DestroyDrawBuffers (void);
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
