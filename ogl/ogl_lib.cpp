@@ -1371,9 +1371,9 @@ glDeleteTextures (n, hTextures);
 const char* cc3DFS = 
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
-	"vec3 leftColor = texture2D(leftFrame, gl_TexCoord[0].st).rgb;\r\n" \
-	"vec3 rightColor = texture2D(rightFrame, gl_TexCoord[0].st).rgb;\r\n" \
-	"gl_FragColor = vec4(leftColor.r, leftColor.g, dot (right, vec3 (0.15, 0.15, 0.7)), 1.0);}\r\n" 
+	"vec3 leftColor = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"gl_FragColor = vec4 (leftColor.r, leftColor.g, dot (rightColor, vec3 (0.15, 0.15, 0.7)), 1.0);}\r\n" 
 	;
 
 const char* cc3DVS = 
