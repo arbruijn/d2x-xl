@@ -426,22 +426,28 @@ PROF_END(ptCockpit)
 }
 paletteManager.RenderEffect ();
 console.Draw ();
-if (!nEyeOffset || (gameOpts->render.nStereo == 4)) {
-	FlashMine ();
+FlashMine ();
+
+if (!nEyeOffset || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter glasses
 	ogl.SwapBuffers (0, 0);
 	}
-else if (nEyeOffset < 0) {
-	glFlush ();
-	ogl.ColorMask (1,1,1,1,0);
-	glAccum (GL_LOAD, 1.0); 
+else if (gameOpts->render.nStereo == 4) {	// ColorCode 3-D
+	if (nEyeOffset > 0)
+		ogl.SwapBuffers (0, 0);
 	}
 else {
-	glFlush ();
-	ogl.ColorMask (1,1,1,1,0);
-	glAccum (GL_ACCUM, 1.0); 
-	 glAccum (GL_RETURN, 1.0);
-	FlashMine ();
-	ogl.SwapBuffers (0, 0);
+	if (nEyeOffset < 0) {
+		glFlush ();
+		ogl.ColorMask (1,1,1,1,0);
+		glAccum (GL_LOAD, 1.0); 
+		}
+	else {
+		glFlush ();
+		ogl.ColorMask (1,1,1,1,0);
+		glAccum (GL_ACCUM, 1.0); 
+		 glAccum (GL_RETURN, 1.0);
+		ogl.SwapBuffers (0, 0);
+		}
 	}
 
 if (gameStates.app.bSaveScreenshot && !nEyeOffset)
