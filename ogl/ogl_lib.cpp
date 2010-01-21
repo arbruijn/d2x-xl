@@ -1201,7 +1201,9 @@ if (ogl.HaveDrawBuffer ()) {
 		glUseProgramObject (cc3DShaderProg);
 		glUniform1i (glGetUniformLocation (cc3DShaderProg, "leftFrame"), 1);
 		glUniform1i (glGetUniformLocation (cc3DShaderProg, "rightFrame"), 0);
+#if 0
 		glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 3.0f);
+#endif
 		ogl.ClearError (0);
 #endif
 		}
@@ -1397,11 +1399,11 @@ glDeleteTextures (n, hTextures);
 
 const char* cc3DFS = 
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
-	"uniform float gain;\r\n" \
+	"/*uniform float gain;*/\r\n" \
 	"void main() {\r\n" \
 	"vec3 color = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"color.b = dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7));\r\n" \
-	"color += ((vec3 (1.0, 1.0, 1.0) - color) * color) * gain;\r\n" \
+	"/*color += ((vec3 (1.0, 1.0, 1.0) - color) * color) * gain;*/\r\n" \
 	"gl_FragColor = vec4 (color, 1.0);\r\n" \
 	"}"
 	;

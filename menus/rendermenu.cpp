@@ -74,7 +74,9 @@ static struct {
 	int	nColorLevel;
 	int	n3DGlasses;
 	int	nEyeOffset;
+#if 0
 	int	nColorGain;
+#endif
 	int	nFastScreen;
 	int	nCameras;
 	int	nLights;
@@ -246,7 +248,7 @@ if (gameOpts->render.n3DGlasses) {
 		sprintf (m->m_text, TXT_EYE_OFFSET, pszEyeOffsets [v]);
 		m->m_bRebuild = -1;
 		}
-
+#if 0
 	if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {
 		m = menu + renderOpts.nColorGain;
 		v = m->m_value;
@@ -256,6 +258,7 @@ if (gameOpts->render.n3DGlasses) {
 			m->m_bRebuild = -1;
 			}
 		}
+#endif
 	}
 
 m = menu + renderOpts.nCameras;
@@ -473,11 +476,13 @@ do {
 		sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 		*szSlider = *(TXT_EYE_OFFSET - 1);
 		renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, sizeofa (pszEyeOffsets) - 1, KEY_E, HTX_EYE_OFFSET);
+#if 0
 		if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {
 			sprintf (szSlider + 1, TXT_COLOR_GAIN, pszColorGain [gameOpts->render.nColorGain]);
 			*szSlider = *(TXT_COLOR_GAIN - 1);
 			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.nColorGain, 0, sizeofa (pszColorGain) - 1, KEY_A, HTX_COLOR_GAIN);
 			}
+#endif
 		}
 	else
 		renderOpts.nEyeOffset = 0;
