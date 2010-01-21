@@ -437,6 +437,7 @@ else {
 
 
 FadeIn ();
+ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Redraw ();
 i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);

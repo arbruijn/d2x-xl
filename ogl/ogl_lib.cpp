@@ -1174,7 +1174,7 @@ if (ogl.HaveDrawBuffer ()) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
-	if ((bStereo = !gameStates.menus.nInMenu && cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
+	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
 		SelectDrawBuffer (1);
 		SetDrawBuffer (GL_BACK, 0);
 #if 1
