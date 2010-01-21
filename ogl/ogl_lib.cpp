@@ -574,7 +574,7 @@ m_data.nEyeOffset = nEyeOffset;
 if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
-	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 1);
+	gameStates.render.bRenderIndirect = !gameStates.menus.nInMenu && (gameOpts->render.nStereo == 1);
 	ogl.SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.nEyeOffset > 0));
 	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
@@ -999,7 +999,6 @@ if (bGame) {
 		lightmapManager.BindAll ();
 	gpgpuLighting.End ();
 	gpgpuLighting.Begin ();
-	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 1);
 	SelectDrawBuffer (0);
 	cameraManager.Create ();
 	InitSpheres ();
@@ -1175,7 +1174,7 @@ if (ogl.HaveDrawBuffer ()) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
-	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
+	if ((bStereo = !gameStates.menus.nInMenu && cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
 		SelectDrawBuffer (1);
 		SetDrawBuffer (GL_BACK, 0);
 #if 1

@@ -427,7 +427,7 @@ PROF_END(ptCockpit)
 paletteManager.RenderEffect ();
 console.Draw ();
 
-if (!nEyeOffset || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter glasses
+if (!nEyeOffset || gameStates.menus.nInMenu || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter glasses
 	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}
@@ -625,7 +625,7 @@ cockpit->PlayHomingWarning ();
 FillBackground ();
 transparencyRenderer.Reset ();
 //if (gameStates.render.vr.nRenderMode == VR_NONE)
-if (!gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
+if (!gameStates.menus.nInMenu || !gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
 else {
 	RenderMonoFrame (-gameOpts->render.nEyeOffset);
