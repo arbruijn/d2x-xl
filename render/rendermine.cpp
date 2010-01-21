@@ -969,7 +969,8 @@ if (transformation.m_info.bUsePlayerHeadAngles)
 gameStates.render.nShadowPass = 0;
 //PrintLog ("G3EndFrame\n");
 G3EndFrame ();
-gameStates.render.nEyeOffset = nEyeOffsetSave;
+if (nWindow)
+	ogl.SetEyeOffset (gameStates.render.nEyeOffset = nEyeOffsetSave);
 if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
