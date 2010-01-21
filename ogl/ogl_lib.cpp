@@ -54,6 +54,7 @@
 #include "menu.h"
 #include "menubackground.h"
 #include "cockpit.h"
+#include "automap.h"
 #include "gpgpu_lighting.h"
 
 //#define _WIN32_WINNT		0x0600
@@ -753,8 +754,8 @@ else
 		glDepthMask (1);
 		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
-#if 0
-		if (bResetColorBuf)
+#if 1
+		if (bResetColorBuf && automap.m_bDisplay)
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
 #endif

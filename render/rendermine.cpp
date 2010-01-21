@@ -1392,7 +1392,6 @@ gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras &&
 gameStates.render.bDoLightmaps = 0;
 ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 PROF_END(ptAux)
-
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 

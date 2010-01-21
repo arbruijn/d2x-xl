@@ -584,7 +584,7 @@ ogl.ClearError (0);
 void RenderSkyBoxFaces (void)
 {
 	tSegFaces*	segFaceP;
-	CSegFace*		faceP;
+	CSegFace*	faceP;
 	short*		segP;
 	int			i, j, nSegment, bFullBright = gameStates.render.bFullBright;
 
