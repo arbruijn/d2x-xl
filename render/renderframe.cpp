@@ -633,7 +633,7 @@ if ((gameOpts->render.nStereo != 1) || !(gameData.app.nFrameCount & 1)) {
 	}
 if (!gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
-else if (gameOpts->render.nStereo == 1) {
+else if (gameStates.menus.nInMenu && (gameOpts->render.nStereo == 1)) {
 	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.nEyeOffset : -gameOpts->render.nEyeOffset);
 	}
 else {

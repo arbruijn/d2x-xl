@@ -844,12 +844,14 @@ extern CBitmap bmBackground;
 void RenderFrame (fix nEyeOffset, int nWindow)
 {
 	short nStartSeg;
+	fix	nEyeOffsetSave = gameStates.render.nEyeOffset;
 
 gameStates.render.nWindow = nWindow;
 gameStates.render.nEyeOffset = nEyeOffset;
 if (gameStates.app.bEndLevelSequence) {
 	RenderEndLevelFrame (nEyeOffset, nWindow);
 	gameData.app.nFrameCount++;
+	gameStates.render.nEyeOffset = nEyeOffsetSave;
 	return;
 	}
 #ifdef NEWDEMO
@@ -876,6 +878,7 @@ PROF_END(ptAux)
 }
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
 	G3EndFrame ();
+	gameStates.render.nEyeOffset = nEyeOffsetSave;
 	return;
 	}
 #if CLEAR_WINDOW == 1
@@ -966,6 +969,7 @@ if (transformation.m_info.bUsePlayerHeadAngles)
 gameStates.render.nShadowPass = 0;
 //PrintLog ("G3EndFrame\n");
 G3EndFrame ();
+gameStates.render.nEyeOffset = nEyeOffsetSave;
 if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
