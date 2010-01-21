@@ -1914,7 +1914,7 @@ const char *defaultGameTexts [][2] = {
  {"blau/rot", "blue/red"},
  {"blau/gruen", "blue/green"},
  {"blau/cyan", "blue/cyan"},
- {"gelb/blay (CC 3D)", "amber/blue (CC 3D)"},
+ {"gelb/blau (CC 3D)", "amber/blue (CC 3D)"},
  {"shutter", "shutter"},
  {"~Aufhellung: %s", "color g~Ain: %s"},
 #if 0

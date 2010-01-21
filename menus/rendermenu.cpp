@@ -72,7 +72,7 @@ static struct {
 	int	nLighting;
 	int	nLightmaps;
 	int	nColorLevel;
-	int	nStereoView;
+	int	n3DGlasses;
 	int	nEyeOffset;
 	int	nColorGain;
 	int	nFastScreen;
@@ -217,8 +217,8 @@ if (renderOpts.nMeshQual > 0) {
 		}
 	}
 
-if (renderOpts.nStereoView >= 0) {
-	m = menu + renderOpts.nStereoView;
+if (renderOpts.n3DGlasses >= 0) {
+	m = menu + renderOpts.n3DGlasses;
 	v = m->m_value;
 	if ((h = gameOpts->render.n3DGlasses) != v) {
 		gameOpts->render.n3DGlasses = v;
@@ -230,10 +230,10 @@ if (renderOpts.nStereoView >= 0) {
 			gameOpts->render.nEyeOffset = 0;
 		sprintf (m->m_text, TXT_STEREO_VIEW, pszStereoView [v]);
 		m->m_bRebuild = -1;
-		}
-	if ((h == 0) != (v == 0)) {
-		key = -2;
-		return nCurItem;
+		if (((h == 0) != (v == 0)) || (h == 1) || (v == 1)) {
+			key = -2;
+			return nCurItem;
+			}
 		}
 	}
 
@@ -252,7 +252,7 @@ if (gameOpts->render.n3DGlasses) {
 		v = m->m_value;
 		if (gameOpts->render.nColorGain != v) {
 			gameOpts->render.nColorGain = v;
-			sprintf (m->m_text, TXT_EYE_OFFSET, pszColorGain [v]);
+			sprintf (m->m_text, TXT_COLOR_GAIN, pszColorGain [v]);
 			m->m_bRebuild = -1;
 			}
 		}
@@ -370,6 +370,11 @@ pszStereoView [3] = TXT_GREEN_RED;
 pszStereoView [4] = TXT_CYAN_RED;
 pszStereoView [5] = TXT_SHUTTER;
 
+pszColorGain [0] = TXT_NONE;
+pszColorGain [1] = TXT_LOW;
+pszColorGain [2] = TXT_MEDIUM;
+pszColorGain [3] = TXT_HIGH;
+
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
 				? 0
@@ -463,15 +468,15 @@ do {
 #if 1 //DBG
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoView [gameOpts->render.n3DGlasses]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
-	renderOpts.nStereoView = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (pszStereoView) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (pszStereoView) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 	if (gameOpts->render.n3DGlasses) {
 		sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 		*szSlider = *(TXT_EYE_OFFSET - 1);
 		renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, sizeofa (pszEyeOffsets) - 1, KEY_E, HTX_EYE_OFFSET);
 		if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {
-			sprintf (szSlider + 1, TXT_COLOR_GAIN, pszColorGain [nEyeOffset]);
+			sprintf (szSlider + 1, TXT_COLOR_GAIN, pszColorGain [gameOpts->render.nColorGain]);
 			*szSlider = *(TXT_COLOR_GAIN - 1);
-			renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, gameOpts->render.nColorGain, 0, sizeofa (pszColorGain) - 1, KEY_A, HTX_COLOR_GAIN);
+			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.nColorGain, 0, sizeofa (pszColorGain) - 1, KEY_A, HTX_COLOR_GAIN);
 			}
 		}
 	else

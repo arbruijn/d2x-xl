@@ -945,8 +945,8 @@ do {
 	if (!gameOpts->render.n3DGlasses)
 		Draw ();
 	else {
+		Draw (-gameOpts->render.nEyeOffset);
 		Draw (gameOpts->render.nEyeOffset);
-		Draw (+gameOpts->render.nEyeOffset);
 		}
 	if (bFirstTime) {
 		bFirstTime = 0;

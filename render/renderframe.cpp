@@ -636,11 +636,11 @@ if ((gameOpts->render.n3DGlasses != GLASSES_COLORCODE_3D) || !(gameData.app.nFra
 if (!gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
 else if (gameStates.menus.nInMenu && (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D)) {
-	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? -gameOpts->render.nEyeOffset : gameOpts->render.nEyeOffset);
+	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.nEyeOffset : -gameOpts->render.nEyeOffset);
 	}
 else {
-	RenderMonoFrame (gameOpts->render.nEyeOffset);
 	RenderMonoFrame (-gameOpts->render.nEyeOffset);
+	RenderMonoFrame (gameOpts->render.nEyeOffset);
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)
