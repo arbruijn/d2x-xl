@@ -352,10 +352,10 @@ pszColorLevel [1] = TXT_WEAPONS;
 pszColorLevel [2] = TXT_FULL;
 
 pszStereoView [0] = TXT_NONE;
-pszStereoView [1] = TXT_BLUE_RED;
-pszStereoView [2] = TXT_GREEN_RED;
-pszStereoView [3] = TXT_CYAN_RED;
-pszStereoView [4] = TXT_COLORCODE_3D;
+pszStereoView [1] = TXT_COLORCODE_3D;
+pszStereoView [2] = TXT_BLUE_RED;
+pszStereoView [3] = TXT_GREEN_RED;
+pszStereoView [4] = TXT_CYAN_RED;
 pszStereoView [5] = TXT_SHUTTER;
 
 lightManager.SetMethod ();

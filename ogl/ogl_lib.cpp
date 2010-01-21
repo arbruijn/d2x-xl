@@ -544,18 +544,18 @@ void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboole
 {
 if (!(bEyeOffset && gameOpts->render.nStereo))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
-else if (gameOpts->render.nStereo == 1)	//blue/red
-	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
-else if (gameOpts->render.nStereo == 2)	//green/red
-	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
-else if (gameOpts->render.nStereo == 3)	//cyan/red
-	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
-else if (gameOpts->render.nStereo == 4) {	//colorcode 3-d (amber/blue)
+else if (gameOpts->render.nStereo == 1) {	//colorcode 3-d (amber/blue)
 	if (m_data.nEyeOffset < 0)
 		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
 	else
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
 	}
+else if (gameOpts->render.nStereo == 2)	//blue/red
+	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+else if (gameOpts->render.nStereo == 3)	//green/red
+	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+else if (gameOpts->render.nStereo == 4)	//cyan/red
+	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
 else
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 }
@@ -570,7 +570,7 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)
 
 m_data.nEyeOffset = nEyeOffset;
 if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
-	ogl.SelectDrawBuffer ((m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 4));
+	ogl.SelectDrawBuffer ((m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1));
 	ogl.SetDrawBuffer (GL_BACK, 1);
 	}
 #if SHADOWS
@@ -992,7 +992,7 @@ if (bGame) {
 		lightmapManager.BindAll ();
 	gpgpuLighting.End ();
 	gpgpuLighting.Begin ();
-	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 4);
+	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 1);
 	SelectDrawBuffer (0);
 	cameraManager.Create ();
 	InitSpheres ();
@@ -1174,7 +1174,7 @@ if (ogl.HaveDrawBuffer ()) {
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
 	glEnable (GL_TEXTURE_2D);
-	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 4))) {
+	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
 		gameData.render.nShaderChanges++;
 		glUseProgramObject (cc3DShaderProg);
 		ogl.ClearError (0);

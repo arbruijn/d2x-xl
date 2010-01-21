@@ -431,7 +431,7 @@ FlashMine ();
 if (!nEyeOffset || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter glasses
 	ogl.SwapBuffers (0, 0);
 	}
-else if (gameOpts->render.nStereo == 4) {	// ColorCode 3-D
+else if (gameOpts->render.nStereo == 1) {	// ColorCode 3-D
 	if (nEyeOffset > 0)
 		ogl.SwapBuffers (0, 0);
 	}
