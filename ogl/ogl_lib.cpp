@@ -545,10 +545,12 @@ void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboole
 if (!(bEyeOffset && gameOpts->render.nStereo))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.nStereo == 1) {	//colorcode 3-d (amber/blue)
-	if (m_data.nEyeOffset < 0)
+	if (m_data.nEyeOffset < 0) {
 		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
-	else
+		}
+	else {
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
+		}
 	}
 else if (gameOpts->render.nStereo == 2)	//blue/red
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
@@ -569,9 +571,12 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)
 	GLint nError = glGetError ();
 
 m_data.nEyeOffset = nEyeOffset;
-if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
-	ogl.SelectDrawBuffer ((m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1));
-	ogl.SetDrawBuffer (GL_BACK, 1);
+if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
+	gameStates.render.bRenderIndirect = 0;
+else {
+	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 1);
+	ogl.SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.nEyeOffset > 0));
+	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
@@ -787,8 +792,10 @@ void COGL::EndFrame (void)
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
-	ogl.SetDrawBuffer (GL_BACK, 1);
+if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
+	ogl.SelectDrawBuffer (0);
+	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+	}
 if (ogl.m_states.bShadersOk)
 	glUseProgramObject (0);
 #if 0
@@ -1053,9 +1060,9 @@ oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 void COGL::CreateDrawBuffer (void)
 {
 #if FBO_DRAW_BUFFER
-if (gameStates.render.bRenderIndirect && ogl.m_states.bRender2TextureOk && !m_data.drawBufferP->Handle ()) {
+if (gameStates.render.bRenderIndirect && ogl.m_states.bRender2TextureOk && !DrawBuffer ()->Handle ()) {
 	PrintLog ("creating draw buffer\n");
-	m_data.drawBufferP->Create (ogl.m_states.nCurWidth, ogl.m_states.nCurHeight, 1);
+	DrawBuffer ()->Create (ogl.m_states.nCurWidth, ogl.m_states.nCurHeight, 1);
 	}
 #endif
 }
@@ -1072,10 +1079,9 @@ if (bSemaphore)
 	return;
 bSemaphore++;
 #	endif
-if (ogl.m_states.bRender2TextureOk && m_data.drawBufferP && m_data.drawBufferP->Handle ()) {
+if (ogl.m_states.bRender2TextureOk && DrawBuffer () && DrawBuffer ()->Handle ()) {
 	SetDrawBuffer (GL_BACK, 0);
-	m_data.drawBufferP->Destroy ();
-	ogl.m_states.bDrawBufferActive = 0;
+	DrawBuffer ()->Destroy ();
 	}
 #	if 1
 bSemaphore--;
@@ -1107,24 +1113,21 @@ if (bSemaphore)
 bSemaphore++;
 #endif
 #if FBO_DRAW_BUFFER
-if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && m_data.drawBufferP->Handle ()) {
-	if (!m_states.bDrawBufferActive) {
-		if (m_data.drawBufferP->Enable ()) {
+if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
+	if (!DrawBuffer ()->Active ()) {
+		if (DrawBuffer ()->Enable ()) {
 			glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT);
-			m_states.bDrawBufferActive = 1;
 			}
 		else {
 			DestroyDrawBuffers ();
 			SelectDrawBuffer (0);
 			glDrawBuffer (GL_BACK);
-			m_states.bDrawBufferActive = 0;
 			}
 		}
 	}
 else {
-	if (m_states.bDrawBufferActive) {
-		m_data.drawBufferP->Disable ();
-		m_states.bDrawBufferActive = 0;
+	if (DrawBuffer ()->Active ()) {
+		DrawBuffer ()->Disable ();
 		}
 	glDrawBuffer (m_states.nDrawBuffer = nBuffer);
 	}
@@ -1141,17 +1144,15 @@ bSemaphore--;
 void COGL::SetReadBuffer (int nBuffer, int bFBO)
 {
 #if FBO_DRAW_BUFFER
-if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && m_data.drawBufferP->Handle ()) {
-	if (!m_states.bReadBufferActive) {
-		m_data.drawBufferP->Enable ();
+if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
+	if (!DrawBuffer ()->Active ()) {
+		DrawBuffer ()->Enable ();
 		glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
-		m_states.bReadBufferActive = 1;
 		}
 	}
 else {
-	if (m_states.bReadBufferActive) {
-		m_data.drawBufferP->Disable ();
-		m_states.bReadBufferActive = 0;
+	if (DrawBuffer ()->Active ()) {
+		DrawBuffer ()->Disable ();
 		}
 	glReadBuffer (nBuffer);
 	}
@@ -1166,22 +1167,27 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 {
 #if FBO_DRAW_BUFFER
 if (ogl.HaveDrawBuffer ()) {
-	int bStereo;
+	int bStereo = 0;
 
 	SetDrawBuffer (GL_BACK, 0);
 	if (bAdditive) {
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
-	glEnable (GL_TEXTURE_2D);
+#if 0
 	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 1))) {
 		gameData.render.nShaderChanges++;
 		glUseProgramObject (cc3DShaderProg);
 		ogl.ClearError (0);
 		ogl.SelectTMU (GL_TEXTURE1);
+		glEnable (GL_TEXTURE_2D);
 		glBindTexture (GL_TEXTURE_2D, m_data.drawBuffers [1].RenderBuffer ());
 		}
+	else
+#endif
+		glUseProgramObject (0);
 	ogl.SelectTMU (GL_TEXTURE0);
+	glEnable (GL_TEXTURE_2D);
 	glBindTexture (GL_TEXTURE_2D, m_data.drawBuffers [0].RenderBuffer ());
 	glColor3f (1, 1, 1);
 	glBegin (GL_QUADS);
@@ -1194,6 +1200,7 @@ if (ogl.HaveDrawBuffer ()) {
 	glTexCoord2f (1, 0);
 	glVertex2f (1, 0);
 	glEnd ();
+	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo) {
 		glUseProgramObject (0);
@@ -1341,8 +1348,8 @@ glTexCoordPointer (size, type, stride, pointer);
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)
 {
 glGenTextures (n, hTextures);
-if ((*hTextures == m_data.drawBufferP->RenderBuffer ()) &&
-	 (hTextures != &m_data.drawBufferP->RenderBuffer ()))
+if ((*hTextures == DrawBuffer ()->RenderBuffer ()) &&
+	 (hTextures != &DrawBuffer ()->RenderBuffer ()))
 	DestroyDrawBuffers ();
 }
 
@@ -1350,8 +1357,8 @@ if ((*hTextures == m_data.drawBufferP->RenderBuffer ()) &&
 
 void COGL::DeleteTextures (GLsizei n, GLuint *hTextures)
 {
-if ((*hTextures == m_data.drawBufferP->RenderBuffer ()) &&
-	 (hTextures != &m_data.drawBufferP->RenderBuffer ()))
+if ((*hTextures == DrawBuffer ()->RenderBuffer ()) &&
+	 (hTextures != &DrawBuffer ()->RenderBuffer ()))
 	DestroyDrawBuffers ();
 #if DBG
 for (int i = 0; i < n;)
@@ -1371,8 +1378,8 @@ glDeleteTextures (n, hTextures);
 const char* cc3DFS = 
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
-	"vec3 leftColor = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"vec3 leftColor = texture2D (leftFrame, gl_TexCoord [0].st).rgb;\r\n" \
+	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].st).rgb;\r\n" \
 	"gl_FragColor = vec4 (leftColor.r, leftColor.g, dot (rightColor, vec3 (0.15, 0.15, 0.7)), 1.0);}\r\n" 
 	;
 

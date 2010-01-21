@@ -199,7 +199,7 @@ if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 glDrawBuffer (GL_BACK);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-ogl.m_states.bDrawBufferActive = 0;
+m_info.bActive = 0;
 glBindTexture (GL_TEXTURE_2D, 0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 #if 1//DBG
@@ -207,6 +207,7 @@ if (!Available ())
 	return 0;
 #endif
 ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
+m_info.bActive = 1;
 return 1;
 }
 
@@ -217,6 +218,7 @@ int CFBO::Disable (void)
 if (!ogl.m_states.bRender2TextureOk)
 	return 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+m_info.bActive = 0;
 #if 1//DBG
 if (!Available ())
 	return 0;

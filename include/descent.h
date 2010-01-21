@@ -733,7 +733,6 @@ typedef struct tOglStates {
 	int bRender2TextureOk;
 	int bPerPixelLightingOk;
 	int bUseRender2Texture;
-	int bDrawBufferActive;
 	int bReadBufferActive;
 	int bFullScreen;
 	int bLastFullScreen;

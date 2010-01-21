@@ -104,8 +104,6 @@ class COglStates {
 		int	bRender2TextureOk;
 		int	bPerPixelLightingOk;
 		int	bUseRender2Texture;
-		int	bDrawBufferActive;
-		int	bReadBufferActive;
 		int	bFullScreen;
 		int	bLastFullScreen;
 		int	bUseTransform;
@@ -237,7 +235,7 @@ class COGL {
 			m_data.SelectDrawBuffer (nSide); 
 			CreateDrawBuffer ();
 			}
-
+		inline CFBO* DrawBuffer (void) { return m_data.drawBufferP; }
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
@@ -285,7 +283,7 @@ class COGL {
 		inline int UseTransform (void) { return m_states.bUseTransform; }
 
 		inline int HaveDrawBuffer (void) {
-			return m_states.bRender2TextureOk && m_data.drawBufferP->Handle () && m_states.bDrawBufferActive;
+			return m_states.bRender2TextureOk && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();
 			}
 
 		int StencilOff (void);

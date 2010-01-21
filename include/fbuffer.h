@@ -17,6 +17,7 @@ typedef struct tFrameBuffer {
 	int		nType;
 	int		nWidth;
 	int		nHeight;
+	int		bActive;
 	GLenum	nStatus;
 } tFrameBuffer;
 
@@ -61,6 +62,7 @@ class CFBO {
 		inline void SetHeight (int nHeight) { m_info.nHeight = nHeight; }
 		inline GLenum GetStatus (void) { return m_info.nStatus; }
 		inline void SetStatus (GLenum nStatus) { m_info.nStatus = nStatus; }
+		inline int Active (void) { return m_info.bActive; }
 		GLuint Handle (void) { return m_info.hFBO; }
 		GLuint& RenderBuffer (void) { return m_info.hRenderBuffer; }
 		GLuint& DepthBuffer (void) { return m_info.hDepthBuffer; }
