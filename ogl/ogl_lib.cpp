@@ -1199,7 +1199,7 @@ if (ogl.HaveDrawBuffer ()) {
 		glUseProgramObject (cc3DShaderProg);
 		glUniform1i (glGetUniformLocation (cc3DShaderProg, "leftFrame"), 0);
 		glUniform1i (glGetUniformLocation (cc3DShaderProg, "rightFrame"), 1);
-		glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 4.0f);
+		glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 3.0f);
 		ogl.ClearError (0);
 #endif
 		}
@@ -1399,7 +1399,7 @@ const char* cc3DFS =
 	"void main() {\r\n" \
 	"vec3 color = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"color.b = dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7));\r\n" \
-	"color += (vec3 (1.0, 1.0, 1.0) - color) * gain;\r\n" \
+	"color += ((vec3 (1.0, 1.0, 1.0) - color) * color) * gain;\r\n" \
 	"gl_FragColor = vec4 (color, 1.0);\r\n" \
 	"}"
 	;
