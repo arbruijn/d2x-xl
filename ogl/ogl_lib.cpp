@@ -1174,7 +1174,7 @@ if (ogl.HaveDrawBuffer ()) {
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
 	glEnable (GL_TEXTURE_2D);
-	if ((bStereo = cc3DShaderProg && (m_nData.nEyeOffset > 0) && (gameOpts->render.nStereo == 4))) {
+	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.nStereo == 4))) {
 		gameData.render.nShaderChanges++;
 		glUseProgramObject (cc3DShaderProg);
 		ogl.ClearError (0);
