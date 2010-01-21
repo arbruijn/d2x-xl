@@ -551,18 +551,22 @@ else if (gameOpts->render.nStereo == GLASSES_COLORCODE_3D) {	//colorcode 3-d (am
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
 	}
 else if (gameOpts->render.nStereo == GLASSES_BLUE_RED) {	//blue/red
-	if (m_data.nEyeOffset < 0)
+	if (m_data.nEyeOffset <= 0)
+		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
-	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 	}
 else if (gameOpts->render.nStereo == GLASSES_GREEN_RED) {	//green/red
-	if (m_data.nEyeOffset < 0)
+	if (m_data.nEyeOffset <= 0)
+		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
-	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 	}
 else if (gameOpts->render.nStereo == GLASSES_CYAN_RED) {	//cyan/red
-	if (m_data.nEyeOffset < 0)
+	if (m_data.nEyeOffset <= 0)
+		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
+		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
 	}
 else //GLASSES_SHUTTER or NONE
@@ -1392,7 +1396,7 @@ const char* cc3DFS =
 	"void main() {\r\n" \
 	"vec3 leftColor = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"gl_FragColor = vec4 (leftColor.r, leftColor.g, dot (rightColor, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" 
+	"gl_FragColor = vec4 (leftColor.r, leftColor.g, dot (rightColor, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" \
 	"}"
 	;
 

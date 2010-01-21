@@ -451,7 +451,7 @@ if (bAutomapFrame) {
 #endif
 if (!gameOpts->render.automap.bTextured)
 	gameOpts->render.automap.bTextured = 1;
-G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !m_bRadar, nEyeOffset);
+G3StartFrame (m_bRadar || !(gameOpts->render.automap.bTextured & 1), !(m_bRadar || nEyeOffset), nEyeOffset);
 
 if (bAutomapFrame)
 	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
@@ -463,7 +463,7 @@ if (m_bRadar == 2) {
 else {
 	m_data.viewPos = m_data.viewTarget + m_data.viewMatrix.FVec () * -m_data.nViewDist;
 	if (!m_bRadar && nEyeOffset) {
-		glClear (GL_COLOR_BUFFER_BIT);
+		//glClear (GL_COLOR_BUFFER_BIT);
 		m_data.viewPos += m_data.viewMatrix.RVec () * nEyeOffset;
 		}
 	G3SetViewMatrix (m_data.viewPos, m_data.viewMatrix, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
@@ -474,6 +474,7 @@ if (!m_bRadar && (gameOpts->render.automap.bTextured & 1)) {
 	RenderEffects (0);
 	}
 if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
+	ogl.ColorMask (1,1,1,1,0);
 	DrawEdges ();
 	DrawObjects ();
 	}
