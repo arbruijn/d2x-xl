@@ -767,7 +767,7 @@ return bOk;
 static int RenderPlayerModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 int bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
-if (automap.m_bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
+if (automap.Display () && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
 	return 0;
 tObjTransformation savePos;
 if (bSpectate) {
@@ -794,7 +794,7 @@ static int RenderRobotModel (CObject* objP, int bDepthSort, int bSpectate)
 {
 if (gameStates.render.nType != 1)
 	return 0;
-if (automap.m_bDisplay && !AM_SHOW_ROBOTS)
+if (automap.Display () && !AM_SHOW_ROBOTS)
 	return 0;
 gameData.models.vScale.SetZero ();
 #if DBG
@@ -833,7 +833,7 @@ return 1;
 
 static int RenderWeaponModel (CObject* objP, int bDepthSort, int bSpectate)
 {
-if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
 	ConvertWeaponToVClip (objP);
@@ -903,7 +903,7 @@ return 1;
 
 static int RenderPowerupModel (CObject* objP, int bDepthSort, int bSpectate)
 {
-if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
@@ -994,7 +994,7 @@ static int RenderWeapon (CObject* objP, int bForce)
 if (gameStates.render.nType != 1)
 	return 0;
 if (gameStates.render.nShadowPass != 2) {
-	if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+	if (automap.Display () && !AM_SHOW_POWERUPS (1))
 		return 0;
 	if (objP->info.nType != OBJ_WEAPON)
 		DrawWeaponVClip (objP);
@@ -1032,7 +1032,7 @@ return 1;
 
 static int RenderPowerup (CObject* objP, int bDepthSort, int bForce)
 {
-if (automap.m_bDisplay && !AM_SHOW_POWERUPS (1))
+if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (gameStates.render.nType != 1)
 	return 0;
@@ -1087,7 +1087,7 @@ if (nObject != LOCALPLAYER.nObject) {
 	if (objP == gameData.objs.viewerP)
 		return 0;
 	 }
-else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.m_bDisplay) {
+else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.Display ()) {
 	if ((bSpectate = (gameStates.render.bFreeCam && !nWindow)))
 		;
 #if DBG

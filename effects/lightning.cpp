@@ -1439,7 +1439,7 @@ void CLightningSystem::Render (int nStart, int nBolts, int bDepthSort, int nThre
 if (m_bValid < 1)
 	return;
 
-if (automap.m_bDisplay && !(gameStates.render.bAllVisited || automap.m_bFull)) {
+if (automap.Display () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 	if (m_nObject >= 0) {
 		if (!automap.m_visited [0][OBJECTS [m_nObject].Segment ()])
 			return;

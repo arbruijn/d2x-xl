@@ -424,7 +424,7 @@ return 0;
 
 static inline int G3FaceIsColored (CSegFace *faceP)
 {
-return !automap.m_bDisplay || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
+return !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------

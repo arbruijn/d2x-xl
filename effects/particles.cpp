@@ -1751,7 +1751,7 @@ if (bmP->Bind (0))
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
-		if (lightManager.Headlights ().nLights && !(automap.m_bDisplay || nType))
+		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
 		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
 			LoadGlareShader (10, nType == FIRE_PARTICLES);

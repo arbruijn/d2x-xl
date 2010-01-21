@@ -450,7 +450,7 @@ else {
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 
-if (!nEyeOffset || ((gameOpts->render.n3DGlasses >= GLASSES_BLUE_RED) && (gameOpts->render.n3DGlasses <= GLASSES_CYAN_RED))) {
+if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_CYAN_RED) || (nEyeOffset >= 0)) {
 	PROF_START
 	cockpit->Render (bExtraInfo);
 	PROF_END(ptCockpit)

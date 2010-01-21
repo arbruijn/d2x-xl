@@ -282,6 +282,7 @@ class COGL {
 		inline int SetTransform (int bUseTransform) { return m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }
 		inline void SetEyeOffset (fix nEyeOffset) { m_data.nEyeOffset = nEyeOffset; }
+		inline fix EyeOffset (void) { return m_data.nEyeOffset; }
 
 		inline int HaveDrawBuffer (void) {
 			return m_states.bRender2TextureOk && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();

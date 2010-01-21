@@ -614,7 +614,7 @@ static inline int VisitSegment (short nSegment, int bAutomap)
 if (nSegment < 0)
 	return 0;
 if (bAutomap) {
-	if (automap.m_bDisplay) {
+	if (automap.Display ()) {
 		if (!(automap.m_bFull || automap.m_visible [nSegment]))
 			return 0;
 		if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
@@ -678,7 +678,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (!faceP->m_info.nCorona)
 			continue;
 		nSegment = faceP->m_info.nSegment;
-		if (automap.m_bDisplay) {
+		if (automap.Display ()) {
 			if (!(automap.m_bFull || automap.m_visible [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
@@ -877,7 +877,7 @@ int SetupCoronas (int nType)
 {
 if (!SetupCoronaFaces ())
 	return 0;
-if (automap.m_bDisplay || !gameOpts->render.automap.bCoronas)
+if (automap.Display () || !gameOpts->render.automap.bCoronas)
 	return 0;
 int nCoronaStyle = CoronaStyle ();
 if (nCoronaStyle != 1)

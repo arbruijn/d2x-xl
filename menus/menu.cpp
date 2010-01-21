@@ -415,7 +415,7 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 	CCanvas::Push ();
 	CCanvas::SetCurrent (gameCanvasP);
 	if (!gameStates.app.bShowError) {
-		if (automap.m_bDisplay) {
+		if (automap.Display ()) {
 			automap.DoFrame (0, 0);
 			CalcFrameTime ();
 			}
@@ -501,8 +501,8 @@ if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
 		DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
 	m_bCloseBox = 1;
 	}
-if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || (gameOpts->render.n3DGlasses != 1) || (gameData.app.nFrameCount & 1))) {
-	if (gameStates.app.bGameRunning && (gameOpts->render.n3DGlasses == 1))
+if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || (gameOpts->render.n3DGlasses != GLASSES_COLORCODE_3D) || (ogl.EyeOffset () > 0))) {
+	if (gameStates.app.bGameRunning && (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D))
 		ogl.FlushDrawBuffer ();
 	GrUpdate (0);
 	}
@@ -1360,7 +1360,7 @@ launchOption:
 		}
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, gameCanvasP);
-	if (gameStates.app.bGameRunning && (gameOpts->render.n3DGlasses == 1))
+	if (gameStates.app.bGameRunning && (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D))
 		Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
 FadeOut (pszTitle, pszSubTitle, gameCanvasP);

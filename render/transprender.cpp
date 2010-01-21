@@ -413,7 +413,7 @@ for (h = faceP->m_info.nTris; h; h--, triP++) {
 #if 1
 		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
-		if (automap.m_bDisplay)
+		if (automap.Display ())
 			transformation.Transform (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
 			vertices [i].Assign (gameData.segs.points [triP->index [i]].p3_vec);
@@ -446,7 +446,7 @@ for (i = 0, j = faceP->m_info.nIndex; i < 4; i++, j++) {
 #if 1
 	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
-	if (automap.m_bDisplay)
+	if (automap.Display ())
 		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->m_info.index [i]], 0);
 	else
 		vertices [i].Assign (gameData.segs.points [faceP->m_info.index [i]].p3_vec);
@@ -889,7 +889,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			}
 		else {
 #if 0
-			if (gameData.render.lights.dynamic.headlights.nLights && !automap.m_bDisplay) {
+			if (gameData.render.lights.dynamic.headlights.nLights && !automap.Display ()) {
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				bAdditive = true;
@@ -960,7 +960,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 		glDepthMask (m_data.bDepthMask);
 		}
 	else {
-		if (bAdditive && !automap.m_bDisplay) {
+		if (bAdditive && !automap.Display ()) {
 			if (bSoftBlend)
 				LoadGlareShader (5);
 			else
@@ -968,7 +968,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			}
 		else
 			G3SetupShader (faceP, 0, mask != NULL, bDecal > 0, bmBot != NULL,
-								(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
+								(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 								m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
@@ -990,7 +990,7 @@ if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapManager.H
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		G3SetupShader (faceP, 0, 0, 0, bmBot != NULL,
-							(item->nSegment < 0) || !automap.m_bDisplay || automap.m_visited [0][item->nSegment],
+							(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 							bmBot ? NULL : item->color);
 		}
 	j = item->nVertices;

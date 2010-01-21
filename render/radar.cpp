@@ -161,7 +161,7 @@ if (gameStates.app.bNostalgia)
 	return;
 if (cockpit->Hide ())
 	return;
-if (automap.m_bDisplay)
+if (automap.Display ())
 	return;
 if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
 	return;

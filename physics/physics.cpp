@@ -944,7 +944,7 @@ if (mType.physInfo.mass == 0)
 	return;
 if (info.movementType != MT_PHYSICS)
 	return;
-if ((automap.m_bDisplay && (this == gameData.objs.consoleP)) || SPECTATOR (this))
+if ((automap.Display () && (this == gameData.objs.consoleP)) || SPECTATOR (this))
 	return;
 #ifdef TACTILE
   if (TactileStick && (obj == OBJECTS + LOCALPLAYER.nObject))
@@ -993,7 +993,7 @@ void CObject::TurnTowardsVector (CFixVector vGoal, fix rate)
 // If no one moves, will be facing vGoal in 1 second.
 
 //	Detect null vector.
-if (automap.m_bDisplay && (this == gameData.objs.consoleP))
+if (automap.Display () && (this == gameData.objs.consoleP))
 	return;
 if (vGoal.IsZero ())
 	return;

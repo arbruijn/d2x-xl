@@ -546,9 +546,11 @@ void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboole
 if (!(bEyeOffset && gameOpts->render.n3DGlasses))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {	//colorcode 3-d (amber/blue)
+#if 0
 	if (m_data.nEyeOffset < 0)
 		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
 	else
+#endif
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_BLUE_RED) {	//blue/red
@@ -755,7 +757,7 @@ else
 		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
 #if 1
-		if (bResetColorBuf && automap.m_bDisplay)
+		if (bResetColorBuf && automap.Display ())
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
 #endif
@@ -1197,8 +1199,8 @@ if (ogl.HaveDrawBuffer ()) {
 
 		gameData.render.nShaderChanges++;
 		glUseProgramObject (cc3DShaderProg);
-		glUniform1i (glGetUniformLocation (cc3DShaderProg, "leftFrame"), 0);
-		glUniform1i (glGetUniformLocation (cc3DShaderProg, "rightFrame"), 1);
+		glUniform1i (glGetUniformLocation (cc3DShaderProg, "leftFrame"), 1);
+		glUniform1i (glGetUniformLocation (cc3DShaderProg, "rightFrame"), 0);
 		glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 3.0f);
 		ogl.ClearError (0);
 #endif

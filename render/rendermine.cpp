@@ -173,7 +173,7 @@ void FlashFrame (void)
 {
 	static fixang flash_ang = 0;
 
-if (automap.m_bDisplay)
+if (automap.Display ())
 	return;
 if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
 	gameStates.render.nFlashScale = I2X (1);
@@ -630,7 +630,7 @@ ogl.SetupTransform (0);
 cc = RotateVertexList (8, segP->m_verts);
 gameData.render.vertP = gameData.segs.fVertices.Buffer ();
 //	return;
-if (cc.ccAnd /*&& !automap.m_bDisplay*/)	//all off screen and not rendering the automap
+if (cc.ccAnd /*&& !automap.Display ()*/)	//all off screen and not rendering the automap
 	return 0;
 gameStates.render.nState = 0;
 #if DBG //convenient place for a debug breakpoint
@@ -794,7 +794,7 @@ WaitForRenderThreads ();
 #else
 WaitForEffectsThread ();
 #endif
-if (automap.m_bDisplay) {
+if (automap.Display ()) {
 	bLightnings = gameOpts->render.automap.bLightnings;
 	bParticles = gameOpts->render.automap.bParticles;
 	bSparks = gameOpts->render.automap.bSparks;
@@ -896,7 +896,7 @@ if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows =
 	extraGameInfo [1].bShadows = 0;
 if (SHOW_SHADOWS &&
-	 !(nWindow || gameStates.render.cameras.bActive || automap.m_bDisplay)) {
+	 !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
 #if SOFT_SHADOWS
@@ -1049,7 +1049,7 @@ void RenderSegment (int nListPos)
 
 if (nSegment < 0)
 	return;
-if (automap.m_bDisplay) {
+if (automap.Display ()) {
 	if (!(automap.m_bFull || automap.m_visited [0][nSegment]))
 		return;
 	if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
@@ -1069,7 +1069,7 @@ if (!RenderSegmentFaces (nSegment, gameStates.render.nWindow)) {
 	gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [nListPos]] = gameData.render.mine.nVisible - 1;
 	return;
 	}
-if ((gameStates.render.nType == 0) && !automap.m_bDisplay)
+if ((gameStates.render.nType == 0) && !automap.Display ())
 	automap.m_visited [0][nSegment] = gameData.render.mine.bSetAutomapVisited;
 else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref [gameData.render.mine.nSegRenderList [nListPos]] >= 0)) {
 #if DBG
@@ -1111,7 +1111,7 @@ ogl.m_states.fAlpha = FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
-	if (!automap.m_bDisplay)
+	if (!automap.Display ())
 		RenderStartFrame ();
 #if USE_SEGRADS
 	TransformSideCenters ();
@@ -1154,7 +1154,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		}
 #endif //CLEAR_WINDOW
 
-gameStates.render.bFullBright = automap.m_bDisplay && gameOpts->render.automap.bBright;
+gameStates.render.bFullBright = automap.Display () && gameOpts->render.automap.bBright;
 ogl.m_states.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (ogl.m_states.nContrast == 8);
 #if SHADOWS
 ogl.m_states.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
@@ -1186,7 +1186,7 @@ PROF_END(ptRenderObjects)
 void RenderSkyBox (int nWindow)
 {
 PROF_START
-if (gameStates.render.bHaveSkyBox && (!automap.m_bDisplay || gameOpts->render.automap.bSkybox)) {
+if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
 	glDepthMask (1);
 	if (RENDERPATH)
 		RenderSkyBoxFaces ();
@@ -1458,7 +1458,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 
 		transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
 		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
-												  !(gameStates.render.bFullBright || automap.m_bDisplay);
+												  !(gameStates.render.bFullBright || automap.Display ());
 		}
 	}
 
@@ -1476,7 +1476,7 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	RenderEffects (nWindow);
 #endif
 	if (!gameStates.app.bNostalgia &&
-		 (!automap.m_bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
+		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
  		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

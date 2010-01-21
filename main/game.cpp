@@ -615,7 +615,7 @@ if (!setjmp (gameExitPoint)) {
 		int playerShields;
 			// GAME LOOP!
 #if DBG
-		if (automap.m_bDisplay)
+		if (automap.Display ())
 #endif
 		automap.m_bDisplay = 0;
 		gameStates.app.bConfigMenu = 0;
@@ -674,7 +674,7 @@ if (!setjmp (gameExitPoint)) {
 			ConfigMenu ();
 			//paletteManager.ResumeEffect (!IsMultiGame);
 			}
-		if (automap.m_bDisplay) {
+		if (automap.Display ()) {
 			int	save_w = gameData.render.window.w,
 					save_h = gameData.render.window.h;
 			automap.DoFrame (0, 0);

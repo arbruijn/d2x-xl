@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 inline int SegmentIsVisible (CSegment *segP)
 {
-if (automap.m_bDisplay)
+if (automap.Display ())
 	return 1;
 return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 }

@@ -664,7 +664,7 @@ BumpVisitedFlag ();
 BumpProcessedFlag ();
 BumpVisibleFlag ();
 
-if (automap.m_bDisplay && gameOpts->render.automap.bTextured && !automap.Radar ()) {
+if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar ()) {
 	int nSegmentLimit = automap.SegmentLimit ();
 	int bUnlimited = nSegmentLimit == automap.MaxSegsAway ();
 	int bSkyBox = gameOpts->render.automap.bSkybox;

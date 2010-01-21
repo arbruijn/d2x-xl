@@ -121,6 +121,7 @@ class CAutomap {
 		inline int SegmentLimit (void) { return m_nSegmentLimit; }
 		inline int MaxSegsAway (void) { return m_nMaxSegsAway; }
 		inline int Visible (int nSegment) { return m_bFull || m_visited [0][nSegment]; }
+		inline int Display (void) { return m_bDisplay; }
 
 	private:
 		void AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visited);
