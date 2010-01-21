@@ -16,5 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void ShrinkWindow ();
 void GrowWindow ();
+void FlushFrame (fix nEyeOffset);
 
 #endif /* _GAMEREND_H */

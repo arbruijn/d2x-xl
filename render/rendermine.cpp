@@ -173,6 +173,8 @@ void FlashFrame (void)
 {
 	static fixang flash_ang = 0;
 
+if (automap.m_bDisplay)
+	return;
 if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
 	gameStates.render.nFlashScale = I2X (1);
 	return;

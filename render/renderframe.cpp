@@ -349,6 +349,36 @@ else
 
 //------------------------------------------------------------------------------
 
+void FlushFrame (fix nEyeOffset)
+{
+if (!nEyeOffset || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter glasses
+	FlashMine ();
+	ogl.SwapBuffers (0, 0);
+	}
+else if (gameOpts->render.nStereo == 1) {	// ColorCode 3-D
+	FlashMine ();
+	if (nEyeOffset > 0)
+		ogl.SwapBuffers (0, 0);
+	}
+else {
+	if (nEyeOffset < 0) {
+		glFlush ();
+		ogl.ColorMask (1,1,1,1,0);
+		glAccum (GL_LOAD, 1.0); 
+		}
+	else {
+		glFlush ();
+		ogl.ColorMask (1,1,1,1,0);
+		FlashMine ();
+		glAccum (GL_ACCUM, 1.0); 
+	   glAccum (GL_RETURN, 1.0);
+		ogl.SwapBuffers (0, 0);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void RenderMonoFrame (fix nEyeOffset = 0)
 {
 	CCanvas		frameWindow;
@@ -426,31 +456,7 @@ PROF_END(ptCockpit)
 }
 paletteManager.RenderEffect ();
 console.Draw ();
-
-if (!nEyeOffset || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter glasses
-	FlashMine ();
-	ogl.SwapBuffers (0, 0);
-	}
-else if (gameOpts->render.nStereo == 1) {	// ColorCode 3-D
-	FlashMine ();
-	if (nEyeOffset > 0)
-		ogl.SwapBuffers (0, 0);
-	}
-else {
-	if (nEyeOffset < 0) {
-		glFlush ();
-		ogl.ColorMask (1,1,1,1,0);
-		glAccum (GL_LOAD, 1.0); 
-		}
-	else {
-		glFlush ();
-		ogl.ColorMask (1,1,1,1,0);
-		FlashMine ();
-		glAccum (GL_ACCUM, 1.0); 
-	   glAccum (GL_RETURN, 1.0);
-		ogl.SwapBuffers (0, 0);
-		}
-	}
+FlushFrame (nEyeOffset);
 
 if (gameStates.app.bSaveScreenshot && !nEyeOffset)
 	SaveScreenShot (NULL, 0);

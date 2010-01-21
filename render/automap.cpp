@@ -49,6 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "systemkeys.h"
 #include "menu.h"
+#include "renderframe.h"
 #include "automap.h"
 
 #ifndef Pi
@@ -498,11 +499,7 @@ if (bAutomapFrame) {
 DrawLevelId ();
 PROF_END(ptRenderFrame)
 #endif
-if (nEyeOffset >= 0) {
-	if ((gameOpts->render.nStereo == 1) && (nEyeOffset > 0))
-		ogl.FlushDrawBuffer ();
-	ogl.SwapBuffers (0, 0);
-	}
+FlushFrame (nEyeOffset);
 }
 
 //------------------------------------------------------------------------------
