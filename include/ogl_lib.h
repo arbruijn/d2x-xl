@@ -69,7 +69,8 @@ class COglData {
 		float				zFar;
 		CFloatVector3	depthScale;
 		tScreenScale	screenScale;
-		CFBO				drawBuffer;
+		CFBO				drawBuffers [2];
+		CFBO*				drawBufferP;
 		CFBO				glowBuffer;
 		int				nPerPixelLights [8];
 		float				lightRads [8];
@@ -80,6 +81,7 @@ class COglData {
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
+		inline void SelectDrawBuffer (int nSide) { drawBufferP = drawBuffers + (nSide > 0); }
 };
 
 
@@ -226,10 +228,15 @@ class COGL {
 		GLuint CreateDepthTexture (int nTMU, int bFBO);
 		GLuint CreateStencilTexture (int nTMU, int bFBO);
 		void CreateDrawBuffer (void);
-		void DestroyDrawBuffer (void);
+		void DestroyDrawBuffers (void);
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
 		void FlushDrawBuffer (bool bAdditive = false);
+		inline void SelectDrawBuffer (int nSide) { 
+			m_data.SelectDrawBuffer (nSide); 
+			CreateDrawBuffer ();
+			}
+
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
@@ -243,7 +250,6 @@ class COGL {
 		void GenTextures (GLsizei n, GLuint *hTextures);
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
 		void BindTexture (GLuint handle) { glBindTexture (GL_TEXTURE_2D, handle); }
-
 
 #else
 		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
@@ -278,11 +284,14 @@ class COGL {
 		inline int UseTransform (void) { return m_states.bUseTransform; }
 
 		inline int HaveDrawBuffer (void) {
-			return m_states.bRender2TextureOk && m_data.drawBuffer.Handle () && m_states.bDrawBufferActive;
+			return m_states.bRender2TextureOk && m_data.drawBufferP->Handle () && m_states.bDrawBufferActive;
 			}
 
 		int StencilOff (void);
 		void StencilOn (int bStencil);
+
+		void InitColorCode3DShader (void);
+		void DeleteColorCode3DShader (void);
 };
 
 extern COGL ogl;

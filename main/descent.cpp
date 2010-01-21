@@ -855,7 +855,7 @@ profile.Destroy ();
 if (!FindArg ("-notitles"))
 #endif
 	//ShowOrderForm ();
-ogl.DestroyDrawBuffer ();
+ogl.DestroyDrawBuffers ();
 return 0;
 }
 

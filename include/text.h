@@ -1951,7 +1951,8 @@ void LoadGameTexts(void);
 #define TXT_BLUE_RED						GT(1167)
 #define TXT_GREEN_RED					GT(1168)
 #define TXT_CYAN_RED						GT(1169)
-#define TXT_SHUTTER						GT(1170)
+#define TXT_COLORCODE_3D				GT(1170)
+#define TXT_SHUTTER						GT(1171)
 
 #if 0
 

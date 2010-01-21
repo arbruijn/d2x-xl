@@ -193,7 +193,7 @@ if (ogl.m_states.bInitialized && bRebuild) {
 		fontManager.Remap ();
 	}
 D2SetCaption ();
-ogl.CreateDrawBuffer ();
+ogl.SelectDrawBuffer (0);
 ogl.InitState ();
 ogl.m_states.bInitialized = 1;
 return 1;

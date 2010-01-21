@@ -342,6 +342,8 @@ PrintLog ("   initializing glare shader programs\n");
 InitGlareShader ();
 PrintLog ("   initializing gray scale shader programs\n");
 InitGrayScaleShader ();
+PrintLog ("   initializing ColorCode 3-D shader programs\n");
+InitColorCode3DShader ();
 ResetPerPixelLightingShaders ();
 InitPerPixelLightingShaders ();
 ResetLightmapShaders ();

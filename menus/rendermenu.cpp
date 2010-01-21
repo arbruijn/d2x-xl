@@ -93,7 +93,7 @@ static const char *pszRendQual [4];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
-static const char *pszStereoView [5];
+static const char *pszStereoView [6];
 static const char *pszEyeOffsets [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
 static int nEyeOffset = 0;
@@ -355,7 +355,8 @@ pszStereoView [0] = TXT_NONE;
 pszStereoView [1] = TXT_BLUE_RED;
 pszStereoView [2] = TXT_GREEN_RED;
 pszStereoView [3] = TXT_CYAN_RED;
-pszStereoView [4] = TXT_SHUTTER;
+pszStereoView [4] = TXT_COLORCODE_3D;
+pszStereoView [5] = TXT_SHUTTER;
 
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
@@ -450,7 +451,7 @@ do {
 #if 1 //DBG
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoView [gameOpts->render.nStereo]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
-	renderOpts.nStereoView = m.AddSlider (szSlider + 1, gameOpts->render.nStereo, 0, 3, KEY_S, HTX_STEREO_VIEW);
+	renderOpts.nStereoView = m.AddSlider (szSlider + 1, gameOpts->render.nStereo, 0, sizeofa (pszStereoView) - 2, KEY_S, HTX_STEREO_VIEW);	//exclude shutter
 	if (gameOpts->render.nStereo) {
 		sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
 		*szSlider = *(TXT_EYE_OFFSET - 1);

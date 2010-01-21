@@ -96,6 +96,10 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
+GLhandleARB cc3DShaderProg = 0;
+GLhandleARB cc3Df = 0;
+GLhandleARB cc3Dv = 0;
+
 int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
 int r_texcount = 0;
 int gr_renderstats = 0;
@@ -302,6 +306,7 @@ CLEAR (lightRads);
 CLEAR (lightPos);
 bLightmaps = 0;
 nHeadlights = 0;
+drawBufferP = drawBuffers;
 };
 
 //------------------------------------------------------------------------------
@@ -545,6 +550,12 @@ else if (gameOpts->render.nStereo == 2)	//green/red
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
 else if (gameOpts->render.nStereo == 3)	//cyan/red
 	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+else if (gameOpts->render.nStereo == 4) {	//colorcode 3-d (amber/blue)
+	if (m_nData.nEyeOffset < 0)
+		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
+	else
+		glColorMask (bRed, bGreen, bBlue, bAlpha);
+	}
 else
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 }
@@ -558,7 +569,8 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)
 	GLint nError = glGetError ();
 
 m_data.nEyeOffset = nEyeOffset;
-if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing))
+if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
+	ogl.SelectDrawBuffer ((m_nData.nEyeOffset > 0) && (gameOpts->render.nStereo == 4));
 	ogl.SetDrawBuffer (GL_BACK, 1);
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
@@ -979,7 +991,8 @@ if (bGame) {
 		lightmapManager.BindAll ();
 	gpgpuLighting.End ();
 	gpgpuLighting.Begin ();
-	CreateDrawBuffer ();
+	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 4);
+	SelectDrawBuffer (0);
 	cameraManager.Create ();
 	InitSpheres ();
 	cockpit->Rebuild ();
@@ -1039,9 +1052,9 @@ oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 void COGL::CreateDrawBuffer (void)
 {
 #if FBO_DRAW_BUFFER
-if (gameStates.render.bRenderIndirect && ogl.m_states.bRender2TextureOk && !m_data.drawBuffer.Handle ()) {
+if (gameStates.render.bRenderIndirect && ogl.m_states.bRender2TextureOk && !m_data.drawBufferP->Handle ()) {
 	PrintLog ("creating draw buffer\n");
-	m_data.drawBuffer.Create (ogl.m_states.nCurWidth, ogl.m_states.nCurHeight, 1);
+	m_data.drawBufferP->Create (ogl.m_states.nCurWidth, ogl.m_states.nCurHeight, 1);
 	}
 #endif
 }
@@ -1058,15 +1071,25 @@ if (bSemaphore)
 	return;
 bSemaphore++;
 #	endif
-if (ogl.m_states.bRender2TextureOk && m_data.drawBuffer.Handle ()) {
+if (ogl.m_states.bRender2TextureOk && m_data.drawBufferP && m_data.drawBufferP->Handle ()) {
 	SetDrawBuffer (GL_BACK, 0);
-	m_data.drawBuffer.Destroy ();
+	m_data.drawBufferP->Destroy ();
 	ogl.m_states.bDrawBufferActive = 0;
 	}
 #	if 1
 bSemaphore--;
 #	endif
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::DestroyDrawBuffers (void)
+{
+SelectDrawBuffer (1);
+DestroyDrawBuffer ();
+SelectDrawBuffer (0);
+DestroyDrawBuffer ();
 }
 
 //------------------------------------------------------------------------------
@@ -1081,15 +1104,15 @@ if (bSemaphore)
 bSemaphore++;
 #endif
 #if FBO_DRAW_BUFFER
-if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && m_data.drawBuffer.Handle ()) {
+if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && m_data.drawBufferP->Handle ()) {
 	if (!m_states.bDrawBufferActive) {
-		if (m_data.drawBuffer.Enable ()) {
+		if (m_data.drawBufferP->Enable ()) {
 			glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT);
 			m_states.bDrawBufferActive = 1;
 			}
 		else {
-			DestroyDrawBuffer ();
-			CreateDrawBuffer ();
+			DestroyDrawBuffers ();
+			SelectDrawBuffer (0);
 			glDrawBuffer (GL_BACK);
 			m_states.bDrawBufferActive = 0;
 			}
@@ -1097,7 +1120,7 @@ if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && m_data.drawBuf
 	}
 else {
 	if (m_states.bDrawBufferActive) {
-		m_data.drawBuffer.Disable ();
+		m_data.drawBufferP->Disable ();
 		m_states.bDrawBufferActive = 0;
 		}
 	glDrawBuffer (m_states.nDrawBuffer = nBuffer);
@@ -1115,16 +1138,16 @@ bSemaphore--;
 void COGL::SetReadBuffer (int nBuffer, int bFBO)
 {
 #if FBO_DRAW_BUFFER
-if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && m_data.drawBuffer.Handle ()) {
+if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && m_data.drawBufferP->Handle ()) {
 	if (!m_states.bReadBufferActive) {
-		m_data.drawBuffer.Enable ();
+		m_data.drawBufferP->Enable ();
 		glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
 		m_states.bReadBufferActive = 1;
 		}
 	}
 else {
 	if (m_states.bReadBufferActive) {
-		m_data.drawBuffer.Disable ();
+		m_data.drawBufferP->Disable ();
 		m_states.bReadBufferActive = 0;
 		}
 	glReadBuffer (nBuffer);
@@ -1140,14 +1163,23 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 {
 #if FBO_DRAW_BUFFER
 if (ogl.HaveDrawBuffer ()) {
+	int bStereo;
+
 	SetDrawBuffer (GL_BACK, 0);
-	ogl.SelectTMU (GL_TEXTURE0);
 	if (bAdditive) {
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
 	glEnable (GL_TEXTURE_2D);
-	glBindTexture (GL_TEXTURE_2D, m_data.drawBuffer.RenderBuffer ());
+	if ((bStereo = cc3DShaderProg && (m_nData.nEyeOffset > 0) && (gameOpts->render.nStereo == 4))) {
+		gameData.render.nShaderChanges++;
+		glUseProgramObject (cc3DShaderProg);
+		ogl.ClearError (0);
+		ogl.SelectTMU (GL_TEXTURE1);
+		glBindTexture (GL_TEXTURE_2D, m_data.drawBuffers [1].RenderBuffer ());
+		}
+	ogl.SelectTMU (GL_TEXTURE0);
+	glBindTexture (GL_TEXTURE_2D, m_data.drawBuffers [0].RenderBuffer ());
 	glColor3f (1, 1, 1);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
@@ -1160,6 +1192,10 @@ if (ogl.HaveDrawBuffer ()) {
 	glVertex2f (1, 0);
 	glEnd ();
 	SetDrawBuffer (GL_BACK, 1);
+	if (bStereo) {
+		glUseProgramObject (0);
+		gameStates.render.history.nShader = -1;
+		}
 	}
 #endif
 }
@@ -1302,18 +1338,18 @@ glTexCoordPointer (size, type, stride, pointer);
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)
 {
 glGenTextures (n, hTextures);
-if ((*hTextures == m_data.drawBuffer.RenderBuffer ()) &&
-	 (hTextures != &m_data.drawBuffer.RenderBuffer ()))
-	DestroyDrawBuffer ();
+if ((*hTextures == m_data.drawBufferP->RenderBuffer ()) &&
+	 (hTextures != &m_data.drawBufferP->RenderBuffer ()))
+	DestroyDrawBuffers ();
 }
 
 //------------------------------------------------------------------------------
 
 void COGL::DeleteTextures (GLsizei n, GLuint *hTextures)
 {
-if ((*hTextures == m_data.drawBuffer.RenderBuffer ()) &&
-	 (hTextures != &m_data.drawBuffer.RenderBuffer ()))
-	DestroyDrawBuffer ();
+if ((*hTextures == m_data.drawBufferP->RenderBuffer ()) &&
+	 (hTextures != &m_data.drawBufferP->RenderBuffer ()))
+	DestroyDrawBuffers ();
 #if DBG
 for (int i = 0; i < n;)
 	if (int (hTextures [i]) < 0)
@@ -1326,5 +1362,51 @@ glDeleteTextures (n, hTextures);
 }
 
 #endif
+
+//------------------------------------------------------------------------------
+
+const char* cc3DFS = 
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"vec3 leftColor = texture2D(leftFrame, gl_TexCoord[0].st).rgb;\r\n" \
+	"vec3 rightColor = texture2D(rightFrame, gl_TexCoord[0].st).rgb;\r\n" \
+	"gl_FragColor = vec4(leftColor.r, leftColor.g, dot (right, vec3 (0.15, 0.15, 0.7)), 1.0);}\r\n" 
+	;
+
+const char* cc3DVS = 
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+	;
+
+//-------------------------------------------------------------------------
+
+void COGL::InitColorCode3DShader (void)
+{
+if (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk) {
+	PrintLog ("building ColorCode 3-D shader programs\n");
+	if (cc3DShaderProg)
+		DeleteShaderProg (&cc3DShaderProg);
+	gameStates.render.textures.bHaveCC3DShader =
+		CreateShaderProg (&cc3DShaderProg) &&
+		CreateShaderFunc (&cc3DShaderProg, &cc3Df, &cc3Dv, cc3DFS, cc3DVS, 1) &&
+		LinkShaderProg (&cc3DShaderProg);
+	if (!gameStates.render.textures.bHaveCC3DShader) {
+		DeleteColorCode3DShader ();
+		gameOpts->render.nStereo = 0;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------
+
+void COGL::DeleteColorCode3DShader (void)
+{
+if (cc3DShaderProg) {
+	DeleteShaderProg (&cc3DShaderProg);
+	cc3DShaderProg = 0;
+	}
+}
 
 //------------------------------------------------------------------------------
