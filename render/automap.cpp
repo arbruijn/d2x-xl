@@ -942,11 +942,11 @@ do {
 	redbook.CheckRepeat ();
 	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update ();
-	if (!gameOpts->render.nStereo)
+	if (!gameOpts->render.n3DGlasses)
 		Draw ();
 	else {
-		Draw (-gameOpts->render.nEyeOffset);
 		Draw (gameOpts->render.nEyeOffset);
+		Draw (+gameOpts->render.nEyeOffset);
 		}
 	if (bFirstTime) {
 		bFirstTime = 0;

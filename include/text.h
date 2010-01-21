@@ -1953,10 +1953,10 @@ void LoadGameTexts(void);
 #define TXT_CYAN_RED						GT(1169)
 #define TXT_COLORCODE_3D				GT(1170)
 #define TXT_SHUTTER						GT(1171)
+#define TXT_COLOR_GAIN					GT(1172)
 
 #if 0
 
-#define TXT_					GT(1172)
 #define TXT_					GT(1173)
 #define TXT_					GT(1174)
 #define TXT_					GT(1175)
@@ -2516,10 +2516,10 @@ void LoadGameTexts(void);
 #define HTX_CPIT_WINTYPE				HT(410)
 #define HTX_EYE_OFFSET					HT(411)
 #define HTX_STEREO_VIEW					HT(412)
+#define HTX_COLOR_GAIN					HT(413)
 
 #if 0
 
-#define HTX_						HT(413)
 #define HTX_						HT(414)
 #define HTX_						HT(415)
 #define HTX_						HT(416)

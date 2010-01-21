@@ -1916,6 +1916,7 @@ const char *defaultGameTexts [][2] = {
  {"blau/cyan", "blue/cyan"},
  {"gelb/blay (CC 3D)", "amber/blue (CC 3D)"},
  {"shutter", "shutter"},
+ {"~Aufhellung: %s", "color g~Ain: %s"}
 #if 0
 #endif
  {"", ""}
@@ -2615,6 +2616,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann eingestellt werden, was in den Hilfsanzeigen\ndes Cockpits sichtbar ist.", "You can chose what is displayed in the auxiliary\ncockpit windows here."},
  {"Hier kann der virtuelle Augenabstand angepasst werden.", "Ajdust the virtual eye distance here."},
  {"Hier kann die Art der 3D-Brille eingestellt werden.", "Chose the type of your 3D glasses here."},
+ {"Hier kann die Helligkeit fuer ColorCode 3-D geregelt werden.", "Adjust brightness for ColorCode 3-D here."},
 #if 0
  {"", ""},
 #endif
