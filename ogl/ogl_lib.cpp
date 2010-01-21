@@ -574,7 +574,7 @@ m_data.nEyeOffset = nEyeOffset;
 if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
-	gameStates.render.bRenderIndirect = !gameStates.menus.nInMenu && (gameOpts->render.nStereo == 1);
+	gameStates.render.bRenderIndirect = (gameOpts->render.nStereo == 1);
 	ogl.SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.nEyeOffset > 0));
 	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
@@ -928,7 +928,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 #endif
 	ogl.FlushDrawBuffer ();
 	SDL_GL_SwapBuffers ();
-	ogl.SetDrawBuffer (GL_BACK, 1);
+	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 #if 1
 	//if (gameStates.menus.nInMenu || bClear)
 		glClear (GL_COLOR_BUFFER_BIT);

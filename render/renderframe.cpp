@@ -433,7 +433,7 @@ if (!nEyeOffset || (gameOpts->render.nStereo == 5)) {	//no stereo or shutter gla
 	}
 else if (gameOpts->render.nStereo == 1) {	// ColorCode 3-D
 	FlashMine ();
-	if (gameStates.menus.nInMenu || (nEyeOffset > 0))
+	if (nEyeOffset > 0)
 		ogl.SwapBuffers (0, 0);
 	}
 else {
@@ -620,13 +620,16 @@ void GameRenderFrame (void)
 {
 PROF_START
 SetScreenMode (SCREEN_GAME);
-cockpit->PlayHomingWarning ();
-//paletteManager.ClearEffect (paletteManager.Game ());
-FillBackground ();
-transparencyRenderer.Reset ();
-//if (gameStates.render.vr.nRenderMode == VR_NONE)
-if ((gameStates.menus.nInMenu && (gameOpts->render.nStereo == 1)) || !gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
+if ((gameOpts->render.nStereo != 1) || !(gameData.app.nFrameCount & 1)) {
+	cockpit->PlayHomingWarning ();
+	FillBackground ();
+	transparencyRenderer.Reset ();
+	}
+if (!gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
+else if (gameOpts->render.nStereo == 1) {
+	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.nEyeOffset : -gameOpts->render.nEyeOffset);
+	}
 else {
 	RenderMonoFrame (-gameOpts->render.nEyeOffset);
 	RenderMonoFrame (gameOpts->render.nEyeOffset);
