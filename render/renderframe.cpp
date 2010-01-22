@@ -422,7 +422,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
-	if (cameraManager.Render ())
+	if ((nEyeOffset <= 0) && cameraManager.Render ())
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (nEyeOffset, 0);
 	if (nEyeOffset <= 0)
