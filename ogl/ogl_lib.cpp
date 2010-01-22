@@ -1398,16 +1398,23 @@ glDeleteTextures (n, hTextures);
 //------------------------------------------------------------------------------
 
 const char* cc3DFS = 
+#if 1
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
-	"/*uniform float gain;*/\r\n" \
 	"void main() {\r\n" \
-	"vec3 color = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float gain = min (0.15, (1.0 - texture2D (rightFrame, gl_TexCoord [0].xy).b) / 2.0);\r\n" \
-	"color.b = dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (gain, gain, 1.0));\r\n" \
-	"/*color += ((vec3 (1.0, 1.0, 1.0) - color) * color) * gain;*/\r\n" \
-	"gl_FragColor = vec4 (color, 1.0);\r\n" \
+	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" \
 	"}"
 	;
+#else
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float t = rightColor.r + rightColor.g;\r\n" \
+	"float s = min (t, 0.3);\r\n" \
+	"vec3 scale = vec3 (s / t * rightColor.r, s / t * rightColor.g, 1.0 - s);\r\n" \
+	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (rightColor, scale), 1.0);\r\n" \
+	"}"
+	;
+#endif
 
 const char* cc3DVS = 
 	"void main(void){" \
