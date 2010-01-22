@@ -73,7 +73,7 @@ static struct {
 	int	nLightmaps;
 	int	nColorLevel;
 	int	n3DGlasses;
-	int	nEyeOffset;
+	int	nStereoSeparation;
 #if 0
 	int	nColorGain;
 #endif
@@ -96,11 +96,11 @@ static const char *pszRendQual [4];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
-static const char *pszStereoView [6];
+static const char *psz3DGlasses [6];
 static const char *pszColorGain [4];
-static const char *pszEyeOffsets [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
+static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
-static int nEyeOffset = 0;
+static int xStereoSeparation = 0;
 
 //------------------------------------------------------------------------------
 
@@ -224,13 +224,13 @@ if (renderOpts.n3DGlasses >= 0) {
 	v = m->m_value;
 	if ((h = gameOpts->render.n3DGlasses) != v) {
 		gameOpts->render.n3DGlasses = v;
-		if (v && !gameOpts->render.nEyeOffset) {
-			gameOpts->render.nEyeOffset = I2X (1);
-			nEyeOffset = (gameOpts->render.nEyeOffset / (I2X (1) / 4)) - 1;
+		if (v && !gameOpts->render.xStereoSeparation) {
+			gameOpts->render.xStereoSeparation = I2X (1);
+			xStereoSeparation = (gameOpts->render.xStereoSeparation / (I2X (1) / 4)) - 1;
 			}
-		else if (!v && gameOpts->render.nEyeOffset)
-			gameOpts->render.nEyeOffset = 0;
-		sprintf (m->m_text, TXT_STEREO_VIEW, pszStereoView [v]);
+		else if (!v && gameOpts->render.xStereoSeparation)
+			gameOpts->render.xStereoSeparation = 0;
+		sprintf (m->m_text, TXT_STEREO_VIEW, psz3DGlasses [v]);
 		m->m_bRebuild = -1;
 		if (((h == 0) != (v == 0)) || (h == 1) || (v == 1)) {
 			key = -2;
@@ -240,12 +240,12 @@ if (renderOpts.n3DGlasses >= 0) {
 	}
 
 if (gameOpts->render.n3DGlasses) {
-	m = menu + renderOpts.nEyeOffset;
+	m = menu + renderOpts.nStereoSeparation;
 	v = m->m_value;
-	if (nEyeOffset != v) {
-		nEyeOffset = v;
-		gameOpts->render.nEyeOffset = (nEyeOffset + 1) * (I2X (1) / 4);
-		sprintf (m->m_text, TXT_EYE_OFFSET, pszEyeOffsets [v]);
+	if (xStereoSeparation != v) {
+		xStereoSeparation = v;
+		gameOpts->render.xStereoSeparation = (xStereoSeparation + 1) * (I2X (1) / 4);
+		sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 		m->m_bRebuild = -1;
 		}
 #if 0
@@ -366,12 +366,12 @@ pszColorLevel [0] = TXT_OFF;
 pszColorLevel [1] = TXT_WEAPONS;
 pszColorLevel [2] = TXT_FULL;
 
-pszStereoView [0] = TXT_NONE;
-pszStereoView [1] = TXT_COLORCODE_3D;
-pszStereoView [2] = TXT_BLUE_RED;
-pszStereoView [3] = TXT_GREEN_RED;
-pszStereoView [4] = TXT_CYAN_RED;
-pszStereoView [5] = TXT_SHUTTER;
+psz3DGlasses [0] = TXT_NONE;
+psz3DGlasses [1] = TXT_COLORCODE_3D;
+psz3DGlasses [2] = TXT_BLUE_RED;
+psz3DGlasses [3] = TXT_GREEN_RED;
+psz3DGlasses [4] = TXT_CYAN_RED;
+psz3DGlasses [5] = TXT_SHUTTER;
 
 pszColorGain [0] = TXT_NONE;
 pszColorGain [1] = TXT_LOW;
@@ -386,11 +386,11 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
-nEyeOffset = gameOpts->render.n3DGlasses ? gameOpts->render.nEyeOffset / (I2X (1) / 4) - 1 : 0;
-if (nEyeOffset < 0)
-	nEyeOffset = 0;
-else if (nEyeOffset >= sizeofa (pszEyeOffsets))
-	nEyeOffset = sizeofa (pszEyeOffsets) - 1;
+xStereoSeparation = gameOpts->render.n3DGlasses ? gameOpts->render.xStereoSeparation / (I2X (1) / 4) - 1 : 0;
+if (xStereoSeparation < 0)
+	xStereoSeparation = 0;
+else if (xStereoSeparation >= sizeofa (pszStereoSeparation))
+	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
 
 do {
 	m.Destroy ();
@@ -469,13 +469,13 @@ do {
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
 #if 1 //DBG
-	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoView [gameOpts->render.n3DGlasses]);
+	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.n3DGlasses]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
-	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (pszStereoView) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 	if (gameOpts->render.n3DGlasses) {
-		sprintf (szSlider + 1, TXT_EYE_OFFSET, pszEyeOffsets [nEyeOffset]);
-		*szSlider = *(TXT_EYE_OFFSET - 1);
-		renderOpts.nEyeOffset = m.AddSlider (szSlider + 1, nEyeOffset, 0, sizeofa (pszEyeOffsets) - 1, KEY_E, HTX_EYE_OFFSET);
+		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
+		*szSlider = *(TXT_STEREO_SEPARATION - 1);
+		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
 #if 0
 		if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {
 			sprintf (szSlider + 1, TXT_COLOR_GAIN, pszColorGain [gameOpts->render.nColorGain]);
@@ -485,11 +485,11 @@ do {
 #endif
 		}
 	else
-		renderOpts.nEyeOffset = 0;
+		renderOpts.nStereoSeparation = 0;
 #else
-	nEyeOffset = 0;
+	xStereoSeparation = 0;
 	renderOpts.nStereo = -1;
-	renderOpts.nEyeOffset = -1;
+	renderOpts.nStereoSeparation = -1;
 	renderOpts.nFastScreen = -1;
 #endif
 
@@ -544,7 +544,7 @@ do {
 #endif
 	} while (i == -2);
 
-gameOpts->render.nEyeOffset = gameOpts->render.n3DGlasses ? (nEyeOffset + 1) * (I2X (1) / 4) : 0;
+gameOpts->render.xStereoSeparation = gameOpts->render.n3DGlasses ? (xStereoSeparation + 1) * (I2X (1) / 4) : 0;
 lightManager.SetMethod ();
 DefaultRenderSettings ();
 }

@@ -547,30 +547,30 @@ if (!(bEyeOffset && gameOpts->render.n3DGlasses))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {	//colorcode 3-d (amber/blue)
 #if 0
-	if (m_data.nEyeOffset < 0)
+	if (m_data.xStereoSeparation < 0)
 		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
 	else
 #endif
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_BLUE_RED) {	//blue/red
-	if (m_data.nEyeOffset <= 0)
+	if (m_data.xStereoSeparation <= 0)
 		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
 		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_GREEN_RED) {	//green/red
-	if (m_data.nEyeOffset <= 0)
+	if (m_data.xStereoSeparation <= 0)
 		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
 		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_CYAN_RED) {	//cyan/red
-	if (m_data.nEyeOffset <= 0)
+	if (m_data.xStereoSeparation <= 0)
 		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
 		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
-	glColorMask (bRed * (m_data.nEyeOffset >= 0), bGreen * (m_data.nEyeOffset <= 0), bBlue * (m_data.nEyeOffset <= 0), bAlpha);
+	glColorMask (bRed * (m_data.xStereoSeparation >= 0), bGreen * (m_data.xStereoSeparation <= 0), bBlue * (m_data.xStereoSeparation <= 0), bAlpha);
 	}
 else //GLASSES_SHUTTER or NONE
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
@@ -580,16 +580,16 @@ else //GLASSES_SHUTTER or NONE
 
 #define GL_INFINITY	0
 
-void COGL::StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset)
+void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 	GLint nError = glGetError ();
 
-m_data.nEyeOffset = nEyeOffset;
+m_data.xStereoSeparation = xStereoSeparation;
 if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
 	gameStates.render.bRenderIndirect = (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D);
-	ogl.SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.nEyeOffset > 0));
+	ogl.SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
 	ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
 #if SHADOWS
@@ -1189,7 +1189,7 @@ if (ogl.HaveDrawBuffer ()) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
-	if ((bStereo = cc3DShaderProg && (m_data.nEyeOffset > 0) && (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D))) {
+	if ((bStereo = cc3DShaderProg && (m_data.xStereoSeparation > 0) && (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D))) {
 		SelectDrawBuffer (1);
 		SetDrawBuffer (GL_BACK, 0);
 #if 1

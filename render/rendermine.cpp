@@ -104,7 +104,7 @@ if (reticleCanvas) {
 #if 0
 
 // Draw the reticle in 3D for head tracking
-void Draw3DReticle (fix nEyeOffset)
+void Draw3DReticle (fix xStereoSeparation)
 {
 	g3sPoint 	reticlePoints [4];
 	tUVL			tUVL [4];
@@ -130,7 +130,7 @@ tUVL [2].v =
 tUVL [3].v = I2X (1);
 
 v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.FVec () * (I2X (4));
-v1 += gameData.objs.viewerP->info.position.mOrient.RVec () * nEyeOffset;
+v1 += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
 v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (-I2X (1));
 v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (I2X (1));
 G3TransformAndEncodePoint(&reticlePoints [0], v2);
@@ -707,14 +707,14 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 
 //------------------------------------------------------------------------------
 
-void SetRenderView (fix nEyeOffset, short *nStartSegP, int bOglScale)
+void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
 {
 	short nStartSeg;
 	bool	bPlayer = gameData.objs.viewerP == gameData.objs.consoleP;
 
 gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
-if (nEyeOffset && bPlayer)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * nEyeOffset;
+if (xStereoSeparation && bPlayer)
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
 
 externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
@@ -760,8 +760,8 @@ else {
 			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
 #endif
 			externalView.GetViewPoint ();
-			if (nEyeOffset)
-				gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * nEyeOffset;
+			if (xStereoSeparation)
+				gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
 			G3SetViewMatrix (gameData.render.mine.viewerEye,
 								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale);
@@ -841,21 +841,21 @@ PROF_END(ptEffects)
 
 extern CBitmap bmBackground;
 
-void RenderFrame (fix nEyeOffset, int nWindow)
+void RenderFrame (fix xStereoSeparation, int nWindow)
 {
 	short nStartSeg;
-	fix	nEyeOffsetSave = gameStates.render.nEyeOffset;
+	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation;
 
 gameStates.render.nWindow = nWindow;
-gameStates.render.nEyeOffset = nEyeOffset;
+gameStates.render.xStereoSeparation = xStereoSeparation;
 if (gameStates.app.bEndLevelSequence) {
-	RenderEndLevelFrame (nEyeOffset, nWindow);
+	RenderEndLevelFrame (xStereoSeparation, nWindow);
 	gameData.app.nFrameCount++;
-	gameStates.render.nEyeOffset = nEyeOffsetSave;
+	gameStates.render.xStereoSeparation = nEyeOffsetSave;
 	return;
 	}
 #ifdef NEWDEMO
-if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
+if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
    if (!gameStates.render.nRenderingType)
    	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
    if (gameStates.render.nRenderingType != 255)
@@ -871,14 +871,14 @@ if (!nWindow)
 //PrintLog ("G3StartFrame\n");
 {
 PROF_START
-G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), nEyeOffset);
+G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
 //PrintLog ("SetRenderView\n");
-SetRenderView (nEyeOffset, &nStartSeg, 1);
+SetRenderView (xStereoSeparation, &nStartSeg, 1);
 PROF_END(ptAux)
 }
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
 	G3EndFrame ();
-	gameStates.render.nEyeOffset = nEyeOffsetSave;
+	gameStates.render.xStereoSeparation = nEyeOffsetSave;
 	return;
 	}
 #if CLEAR_WINDOW == 1
@@ -903,21 +903,21 @@ if (SHOW_SHADOWS &&
 		if (gameOpts->render.shadows.bSoft = 1)
 			gameStates.render.nShadowBlurPass = 1;
 #endif
-		ogl.StartFrame (0, 0, nEyeOffset);
+		ogl.StartFrame (0, 0, xStereoSeparation);
 #if SOFT_SHADOWS
 		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
 #endif
-		RenderMine (nStartSeg, nEyeOffset, nWindow);
+		RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #if 1//!DBG
 		PROF_START
-		RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
+		RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
 		PROF_END(ptEffects)
 #else
 		if (FAST_SHADOWS)
-			;//RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
+			;//RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
 		else {
 			PROF_START
-			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
+			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
 			PROF_END(ptEffects)
 			}
 #endif
@@ -929,9 +929,9 @@ if (SHOW_SHADOWS &&
 			gameStates.render.nShadowBlurPass = 2;
 			gameStates.render.nShadowPass = 0;
 #if 1
-			ogl.StartFrame (0, 1, nEyeOffset);
-			SetRenderView (nEyeOffset, &nStartSeg, 1);
-			RenderMine (nStartSeg, nEyeOffset, nWindow);
+			ogl.StartFrame (0, 1, xStereoSeparation);
+			SetRenderView (xStereoSeparation, &nStartSeg, 1);
+			RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #endif
 			RenderShadowTexture ();
 			}
@@ -943,11 +943,11 @@ else
 #endif
 	{
 	if (gameStates.render.nRenderPass < 0)
-		RenderMine (nStartSeg, nEyeOffset, nWindow);
+		RenderMine (nStartSeg, xStereoSeparation, nWindow);
 	else {
 		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
-			ogl.StartFrame (0, 1, nEyeOffset);
-			RenderMine (nStartSeg, nEyeOffset, nWindow);
+			ogl.StartFrame (0, 1, xStereoSeparation);
+			RenderMine (nStartSeg, xStereoSeparation, nWindow);
 			}
 		}
 	}
@@ -964,13 +964,13 @@ if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSe
 #endif
 #if 0
 if (transformation.m_info.bUsePlayerHeadAngles)
-	Draw3DReticle (nEyeOffset);
+	Draw3DReticle (xStereoSeparation);
 #endif
 gameStates.render.nShadowPass = 0;
 //PrintLog ("G3EndFrame\n");
 G3EndFrame ();
 if (nWindow)
-	ogl.SetEyeOffset (gameStates.render.nEyeOffset = nEyeOffsetSave);
+	ogl.SetEyeOffset (gameStates.render.xStereoSeparation = nEyeOffsetSave);
 if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
@@ -1089,7 +1089,7 @@ else if (gameStates.render.nType == 2)	// render objects containing transparency
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
-int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
+int BeginRenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 PROF_START
 #if CLEAR_WINDOW == 2
@@ -1125,7 +1125,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildRenderObjLists (gameData.render.mine.nRenderSegs);
 #if 1
-		if (nEyeOffset <= 0)	// Do for left eye or zero.
+		if (xStereoSeparation <= 0)	// Do for left eye or zero.
 			SetDynamicLight ();
 #endif
 		}
@@ -1334,7 +1334,7 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 
 extern int bLog;
 
-void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
+void RenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 PROF_START
 #if DBG
@@ -1393,10 +1393,10 @@ gameStates.render.bDoLightmaps = 0;
 ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 PROF_END(ptAux)
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
+	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, xStereoSeparation, nWindow);
 
 	if (RENDERPATH) {
-		if (nEyeOffset <= 0) {
+		if (xStereoSeparation <= 0) {
 			gameStates.render.nThreads = GetNumThreads ();
 			lightManager.ResetSegmentLights ();
 			if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)

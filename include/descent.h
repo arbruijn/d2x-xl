@@ -388,7 +388,7 @@ typedef struct tRenderOptions {
 	int nDefMathFormat;
 	int n3DGlasses;
 	int nColorGain;
-	fix nEyeOffset;
+	fix xStereoSeparation;
 	short nMaxFPS;
 	int nPath;
 	int nQuality;
@@ -857,7 +857,7 @@ typedef struct tVRStates {
 	int			nLowRes;			// Default to low res
 	int 			bShowHUD;
 	int			nSensitivity;	// 0 - 2
-	int			nEyeOffset;
+	int			xStereoSeparation;
 	int			nEyeSwitch;
 	int			bEyeOffsetChanged;
 	int			bUseRegCode;
@@ -939,7 +939,7 @@ typedef struct tRenderStates {
 	int bCloaked;
 	int bBrightObject;
 	int nWindow;
-	int nEyeOffset;
+	int xStereoSeparation;
 	int nStartSeg;
 	int nLighting;
 	int nMaxTextureQuality;

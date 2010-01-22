@@ -77,7 +77,7 @@ class COglData {
 		CFloatVector	lightPos [8];
 		int				bLightmaps;
 		int				nHeadlights;
-		fix				nEyeOffset;
+		fix				xStereoSeparation;
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
@@ -211,7 +211,7 @@ class COGL {
 		int EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
 		void DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
 		void ResetClientStates (void);
-		void StartFrame (int bFlat, int bResetColorBuf, fix nEyeOffset);
+		void StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation);
 		void EndFrame (void);
 		void EnableLighting (int bSpecular);
 		void DisableLighting (void);
@@ -281,8 +281,8 @@ class COGL {
 
 		inline int SetTransform (int bUseTransform) { return m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }
-		inline void SetEyeOffset (fix nEyeOffset) { m_data.nEyeOffset = nEyeOffset; }
-		inline fix EyeOffset (void) { return m_data.nEyeOffset; }
+		inline void SetEyeOffset (fix xStereoSeparation) { m_data.xStereoSeparation = xStereoSeparation; }
+		inline fix EyeOffset (void) { return m_data.xStereoSeparation; }
 
 		inline int HaveDrawBuffer (void) {
 			return m_states.bRender2TextureOk && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();

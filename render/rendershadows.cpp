@@ -273,7 +273,7 @@ for (; gameData.render.shadows.nShadowMaps;)
 
 //------------------------------------------------------------------------------
 
-void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow)
+void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 	static float mTexBiasf [] = {
 		0.5f, 0.0f, 0.0f, 0.0f, 
@@ -322,7 +322,7 @@ for (i = 0, cameraP = gameData.render.shadows.shadowMaps; i < 1/*gameData.render
 	}
 glMatrixMode (GL_MODELVIEW);
 #endif
-RenderMine (nStartSeg, nEyeOffset, nWindow);
+RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #if 1
 glMatrixMode (GL_TEXTURE);
 glLoadIdentity ();
@@ -391,7 +391,7 @@ return h;
 
 //------------------------------------------------------------------------------
 
-void RenderFastShadows (fix nEyeOffset, int nWindow, short nStartSeg)
+void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
 {
 #if 0//OOF_TEST_CUBE
 #	if 1
@@ -402,17 +402,17 @@ for (bShadowTest = 0; bShadowTest < 2; bShadowTest++)
 #endif
  {
 	gameStates.render.nShadowPass = 2;
-	ogl.StartFrame (0, 0, nEyeOffset);
+	ogl.StartFrame (0, 0, xStereoSeparation);
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
 	//RenderObjectShadows ();
-	RenderMine (nStartSeg, nEyeOffset, nWindow);
+	RenderMine (nStartSeg, xStereoSeparation, nWindow);
 	}
 #if DBG
 if (!bShadowTest) 
 #endif
  {
 	gameStates.render.nShadowPass = 3;
-	ogl.StartFrame (0, 0, nEyeOffset);
+	ogl.StartFrame (0, 0, xStereoSeparation);
 	if	(gameStates.render.bShadowMaps) {
 #if DBG
 		if (gameStates.render.bChaseCam)
@@ -424,7 +424,7 @@ if (!bShadowTest)
 		else
 			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, 
 								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), 1);
-		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
+		ApplyShadowMaps (nStartSeg, xStereoSeparation, nWindow);
 		}
 	else {
 		RenderShadowQuad (0);
@@ -434,7 +434,7 @@ if (!bShadowTest)
 
 //------------------------------------------------------------------------------
 
-void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
+void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
 {
 	short			i, n;
 	CDynLight*	prl;
@@ -449,20 +449,20 @@ for (i = 0; i < n; i++) {
 	prl->render.bExclusive = 1;
 #if 1
 	gameStates.render.nShadowPass = 2;
-	ogl.StartFrame (0, 0, nEyeOffset);
+	ogl.StartFrame (0, 0, xStereoSeparation);
 	memcpy (&gameData.render.shadows.vLightPos, prl->render.vPosf + 1, sizeof (CFloatVector));
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-	RenderMine (nStartSeg, nEyeOffset, nWindow);
+	RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #endif
 	gameStates.render.nShadowPass = 3;
-	ogl.StartFrame (0, 0, nEyeOffset);
+	ogl.StartFrame (0, 0, xStereoSeparation);
 	gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
-	RenderMine (nStartSeg, nEyeOffset, nWindow);
+	RenderMine (nStartSeg, xStereoSeparation, nWindow);
 	prl->render.bExclusive = 0;
 	}
 #if 0
 gameStates.render.nShadowPass = 4;
-RenderMine (nStartSeg, nEyeOffset, nWindow);
+RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #endif
 }
 

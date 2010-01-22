@@ -349,19 +349,19 @@ else
 
 //------------------------------------------------------------------------------
 
-void FlushFrame (fix nEyeOffset)
+void FlushFrame (fix xStereoSeparation)
 {
-if (!nEyeOffset || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//no stereo or shutter glasses
+if (!xStereoSeparation || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//no stereo or shutter glasses
 	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {	// ColorCode 3-D
 	FlashMine ();
-	if (nEyeOffset > 0)
+	if (xStereoSeparation > 0)
 		ogl.SwapBuffers (0, 0);
 	}
 else {
-	if (nEyeOffset < 0) {
+	if (xStereoSeparation < 0) {
 		glFlush ();
 		ogl.ColorMask (1,1,1,1,0);
 		glAccum (GL_LOAD, 1.0); 
@@ -379,7 +379,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void RenderMonoFrame (fix nEyeOffset = 0)
+void RenderMonoFrame (fix xStereoSeparation = 0)
 {
 	CCanvas		frameWindow;
 	int			bExtraInfo = 1;
@@ -392,7 +392,7 @@ gameStates.render.vr.buffers.screenPages [0].SetupPane (
 	gameStates.render.vr.buffers.subRender [0].Height ());
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 
-if (nEyeOffset <= 0) {
+if (xStereoSeparation <= 0) {
 	PROF_START
 	SEM_ENTER (SEM_LIGHTNING)
 	bool bRetry;
@@ -422,10 +422,10 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
-	if (!nEyeOffset && cameraManager.Render ())
+	if (!xStereoSeparation && cameraManager.Render ())
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-	RenderFrame (nEyeOffset, 0);
-	if (nEyeOffset <= 0)
+	RenderFrame (xStereoSeparation, 0);
+	if (xStereoSeparation <= 0)
   		WakeupRenderedObjects (gameData.objs.viewerP, 0);
 	gameData.objs.viewerP = viewerSave;
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
@@ -444,13 +444,13 @@ else {
 		return;
 		}
 	UpdateRenderedData (0, gameData.objs.viewerP, gameStates.render.bRearView, 0);
-	if (!nEyeOffset && cameraManager.Render ())
+	if (!xStereoSeparation && cameraManager.Render ())
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-	RenderFrame (nEyeOffset, 0);
+	RenderFrame (xStereoSeparation, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 
-if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_CYAN_RED) || (nEyeOffset >= 0)) {
+if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_CYAN_RED) || (xStereoSeparation >= 0)) {
 	PROF_START
 	cockpit->Render (bExtraInfo);
 	PROF_END(ptCockpit)
@@ -458,9 +458,9 @@ if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGla
 
 paletteManager.RenderEffect ();
 console.Draw ();
-FlushFrame (nEyeOffset);
+FlushFrame (xStereoSeparation);
 
-if (gameStates.app.bSaveScreenshot && !nEyeOffset)
+if (gameStates.app.bSaveScreenshot && !xStereoSeparation)
 	SaveScreenShot (NULL, 0);
 }
 
@@ -633,14 +633,14 @@ if ((gameOpts->render.n3DGlasses != GLASSES_COLORCODE_3D) || !(gameData.app.nFra
 	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
-if (!gameOpts->render.nEyeOffset || gameStates.app.bSaveScreenshot)
+if (!gameOpts->render.xStereoSeparation || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
 else if (gameStates.menus.nInMenu && (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D)) {
-	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.nEyeOffset : -gameOpts->render.nEyeOffset);
+	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.xStereoSeparation : -gameOpts->render.xStereoSeparation);
 	}
 else {
-	RenderMonoFrame (-gameOpts->render.nEyeOffset);
-	RenderMonoFrame (gameOpts->render.nEyeOffset);
+	RenderMonoFrame (-gameOpts->render.xStereoSeparation);
+	RenderMonoFrame (gameOpts->render.xStereoSeparation);
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)

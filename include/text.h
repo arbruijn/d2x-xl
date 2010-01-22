@@ -1947,7 +1947,7 @@ void LoadGameTexts(void);
 #define TXT_LEFT_COCKPIT_WIN			GT(1163)
 #define TXT_RIGHT_COCKPIT_WIN			GT(1164)
 #define TXT_STEREO_VIEW					GT(1165)
-#define TXT_EYE_OFFSET					GT(1166)
+#define TXT_STEREO_SEPARATION					GT(1166)
 #define TXT_BLUE_RED						GT(1167)
 #define TXT_GREEN_RED					GT(1168)
 #define TXT_CYAN_RED						GT(1169)
@@ -2514,7 +2514,7 @@ void LoadGameTexts(void);
 #define HTX_CHECK_FOR_UPDATE			HT(408)
 #define HTX_MISSILE_LOADOUT			HT(409)
 #define HTX_CPIT_WINTYPE				HT(410)
-#define HTX_EYE_OFFSET					HT(411)
+#define HTX_STEREO_SEPARATION					HT(411)
 #define HTX_STEREO_VIEW					HT(412)
 #define HTX_COLOR_GAIN					HT(413)
 

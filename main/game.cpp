@@ -162,7 +162,7 @@ tDetailData	detailData = {
 void VRResetParams (void)
 {
 gameStates.render.vr.xEyeWidth = VR_SEPARATION;
-gameStates.render.vr.nEyeOffset = VR_PIXEL_SHIFT;
+gameStates.render.vr.xStereoSeparation = VR_PIXEL_SHIFT;
 gameStates.render.vr.bEyeOffsetChanged = 2;
 }
 

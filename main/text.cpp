@@ -1910,7 +1910,7 @@ const char *defaultGameTexts [][2] = {
  {"Links: %s", "Left: %s"},
  {"Rechts: %s", "Right: %s"},
  {"3D-~Brille: %s", "3D ~Glasses: %s"},
- {"~Augenabstand: %s", "~Eye Offset: %s"},
+ {"stE~reo-Trennung: %s", "st~Ereo Separation: %s"},
  {"blau/rot", "blue/red"},
  {"blau/gruen", "blue/green"},
  {"blau/cyan", "blue/cyan"},

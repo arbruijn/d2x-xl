@@ -112,7 +112,7 @@ class CAutomap {
 		bool InitBackground (void);
 		int Setup (int bPauseGame, fix& xEntryTime);
 		int Update (void);
-		void Draw (fix nEyeOffset = 0);
+		void Draw (fix xStereoSeparation = 0);
 		void DoFrame (int nKeyCode, int bRadar);
 		void ClearVisited (void);
 		int ReadControls (int nLeaveMode, int bDone, int& bPauseGame);

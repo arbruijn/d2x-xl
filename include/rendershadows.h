@@ -11,10 +11,10 @@ void RenderShadowTexture (void);
 int RenderShadowMap (CDynLight *pLight);
 void RenderObjectShadows (void);
 void DestroyShadowMaps (void);
-void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow);
+void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow);
 int GatherShadowLightSources (void);
-void RenderFastShadows (fix nEyeOffset, int nWindow, short nStartSeg);
-void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg);
+void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg);
+void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg);
 
 #if DBG_SHADOWS
 extern int bShadowTest;
