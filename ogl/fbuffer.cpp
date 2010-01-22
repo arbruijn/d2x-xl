@@ -197,7 +197,7 @@ int CFBO::Enable (void)
 {
 if (!ogl.m_states.bRender2TextureOk)
 	return 0;
-glDrawBuffer (GL_BACK);
+ogl.SetDrawBuffer (GL_BACK, 0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 m_info.bActive = 0;
 glBindTexture (GL_TEXTURE_2D, 0);
@@ -206,8 +206,8 @@ glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 if (!Available ())
 	return 0;
 #endif
-ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
 m_info.bActive = 1;
+ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
 return 1;
 }
 
