@@ -1402,7 +1402,8 @@ const char* cc3DFS =
 	"/*uniform float gain;*/\r\n" \
 	"void main() {\r\n" \
 	"vec3 color = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"color.b = dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7));\r\n" \
+	"float gain = min (0.15, (1.0 - texture2D (rightFrame, gl_TexCoord [0].xy).b) / 2.0);\r\n" \
+	"color.b = dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (gain, gain, 1.0));\r\n" \
 	"/*color += ((vec3 (1.0, 1.0, 1.0) - color) * color) * gain;*/\r\n" \
 	"gl_FragColor = vec4 (color, 1.0);\r\n" \
 	"}"
