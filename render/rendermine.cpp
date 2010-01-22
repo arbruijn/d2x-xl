@@ -1396,69 +1396,70 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 
 	if (RENDERPATH) {
-		gameStates.render.nThreads = GetNumThreads ();
-		lightManager.ResetSegmentLights ();
-		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
+		if (nEyeOffset <= 0) {
+			gameStates.render.nThreads = GetNumThreads ();
+			lightManager.ResetSegmentLights ();
+			if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
 #ifndef _OPENMP
-			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
+				 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
 #endif
-			) {
-			gameStates.render.nThreads = 1;
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
-				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
-			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-				ComputeFaceLight (0, gameData.segs.nFaces, 0);
-			else
-				ComputeFaceLight (0, gameData.segs.nSegments, 0);
-			}
-#ifdef _OPENMP
-		else {
-				int	nStart, nEnd, nMax;
-
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
-				nMax = gameData.render.mine.nRenderSegs;
-			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-				nMax = gameData.segs.nFaces;
-			else
-				nMax = gameData.segs.nSegments;
-			if (gameStates.app.nThreads & 1) {
-				#pragma omp parallel
-					{
-					#pragma omp for private (nStart, nEnd)
-					for (int i = 0; i < gameStates.app.nThreads; i++) {
-						ComputeThreadRange (i, nMax, nStart, nEnd);
-						ComputeFaceLight (nStart, nEnd, i);
-						}
-					}
+				) {
+				gameStates.render.nThreads = 1;
+				if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
+					ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+				else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
+					ComputeFaceLight (0, gameData.segs.nFaces, 0);
+				else
+					ComputeFaceLight (0, gameData.segs.nSegments, 0);
 				}
+#ifdef _OPENMP
 			else {
-				int	nPivot = gameStates.app.nThreads / 2;
-				#pragma omp parallel
-					{
-					#pragma omp for private (nStart, nEnd)
-					for (int i = 0; i < gameStates.app.nThreads; i++) {
-						if (i < nPivot) {
-							ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
+					int	nStart, nEnd, nMax;
+
+				if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
+					nMax = gameData.render.mine.nRenderSegs;
+				else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
+					nMax = gameData.segs.nFaces;
+				else
+					nMax = gameData.segs.nSegments;
+				if (gameStates.app.nThreads & 1) {
+					#pragma omp parallel
+						{
+						#pragma omp for private (nStart, nEnd)
+						for (int i = 0; i < gameStates.app.nThreads; i++) {
+							ComputeThreadRange (i, nMax, nStart, nEnd);
 							ComputeFaceLight (nStart, nEnd, i);
 							}
-						else {
-							ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
-							ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
+						}
+					}
+				else {
+					int	nPivot = gameStates.app.nThreads / 2;
+					#pragma omp parallel
+						{
+						#pragma omp for private (nStart, nEnd)
+						for (int i = 0; i < gameStates.app.nThreads; i++) {
+							if (i < nPivot) {
+								ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
+								ComputeFaceLight (nStart, nEnd, i);
+								}
+							else {
+								ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
+								ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
+								}
 							}
 						}
 					}
 				}
-			}
 #endif //_OPENMP
-		PROF_START
-		UpdateSlidingFaces ();
-		PROF_END(ptAux);
-		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
-			meshBuilder.BuildVBOs ();
-
+			PROF_START
+			UpdateSlidingFaces ();
+			PROF_END(ptAux);
+			if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
+				meshBuilder.BuildVBOs ();
+			gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
+													  !(gameStates.render.bFullBright || automap.Display ());
+			}
 		transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
-		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
-												  !(gameStates.render.bFullBright || automap.Display ());
 		}
 	}
 
