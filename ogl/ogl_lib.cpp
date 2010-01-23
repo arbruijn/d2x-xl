@@ -1199,8 +1199,8 @@ if (ogl.HaveDrawBuffer ()) {
 
 		gameData.render.nShaderChanges++;
 		glUseProgramObject (cc3DShaderProg);
-		glUniform1i (glGetUniformLocation (cc3DShaderProg, "leftFrame"), 1);
-		glUniform1i (glGetUniformLocation (cc3DShaderProg, "rightFrame"), 0);
+		glUniform1i (glGetUniformLocation (cc3DShaderProg, "leftFrame"), 0);
+		glUniform1i (glGetUniformLocation (cc3DShaderProg, "rightFrame"), 1);
 #if 0
 		glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 3.0f);
 #endif
