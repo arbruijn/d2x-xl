@@ -487,7 +487,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nImageQuality, i, 0);
 		RP (gameOptions [i].render.n3DGlasses, i, 0);
 		RP (gameOptions [i].render.xStereoSeparation, i, 0);
-		RP (gameOptions [i].render.nColorGain, i, 0);
+		RP (gameOptions [i].render.bColorCode3D, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
