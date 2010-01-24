@@ -74,9 +74,7 @@ static struct {
 	int	nColorLevel;
 	int	n3DGlasses;
 	int	nStereoSeparation;
-#if 0
 	int	nColorCode3D;
-#endif
 	int	nFastScreen;
 	int	nCameras;
 	int	nLights;
@@ -246,17 +244,6 @@ if (gameOpts->render.n3DGlasses) {
 		sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 		m->m_bRebuild = -1;
 		}
-#if 1
-	if (ogl.ColorCode3D ()) {
-		m = menu + renderOpts.nColorCode3D;
-		v = m->m_value;
-		if (gameOpts->render.nColorCode3D != v) {
-			gameOpts->render.nColorCode3D = v;
-			sprintf (m->m_text, TXT_AMBER_BLUE, pszColorCode3D [v]);
-			m->m_bRebuild = -1;
-			}
-		}
-#endif
 	}
 
 m = menu + renderOpts.nCameras;
