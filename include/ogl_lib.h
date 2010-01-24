@@ -239,7 +239,14 @@ class COGL {
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
-		inline int ColorCode3D (void) { return (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) ? 1 : 0; }
+		inline int ColorCode3D (int bForce = 0) { 
+			return !(bForce || gameOpts->render.bColorCode3D)
+					 ? 0
+					 : (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) 
+					    ? 1 
+						 : (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) 
+							? 2 
+							: 0; }
 
 #if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);

@@ -75,7 +75,7 @@ static struct {
 	int	n3DGlasses;
 	int	nStereoSeparation;
 #if 0
-	int	nColorGain;
+	int	nColorCode3D;
 #endif
 	int	nFastScreen;
 	int	nCameras;
@@ -97,7 +97,7 @@ static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
 static const char *psz3DGlasses [6];
-static const char *pszColorGain [4];
+static const char *pszColorCode3D [4];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
 static int xStereoSeparation = 0;
@@ -232,10 +232,8 @@ if (renderOpts.n3DGlasses >= 0) {
 			gameOpts->render.xStereoSeparation = 0;
 		sprintf (m->m_text, TXT_STEREO_VIEW, psz3DGlasses [v]);
 		m->m_bRebuild = -1;
-		if (((h == 0) != (v == 0)) || (h == 1) || (v == 1)) {
-			key = -2;
-			return nCurItem;
-			}
+		key = -2;
+		return nCurItem;
 		}
 	}
 
@@ -248,6 +246,17 @@ if (gameOpts->render.n3DGlasses) {
 		sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 		m->m_bRebuild = -1;
 		}
+#if 1
+	if (ogl.ColorCode3D ()) {
+		m = menu + renderOpts.nColorCode3D;
+		v = m->m_value;
+		if (gameOpts->render.nColorCode3D != v) {
+			gameOpts->render.nColorCode3D = v;
+			sprintf (m->m_text, TXT_AMBER_BLUE, pszColorCode3D [v]);
+			m->m_bRebuild = -1;
+			}
+		}
+#endif
 	}
 
 m = menu + renderOpts.nCameras;
@@ -356,16 +365,16 @@ pszColorLevel [1] = TXT_WEAPONS;
 pszColorLevel [2] = TXT_FULL;
 
 psz3DGlasses [0] = TXT_NONE;
-psz3DGlasses [1] = TXT_COLORCODE_3D;
+psz3DGlasses [1] = TXT_AMBER_BLUE;
 psz3DGlasses [2] = TXT_RED_CYAN;
 psz3DGlasses [3] = TXT_BLUE_RED;
 psz3DGlasses [4] = TXT_GREEN_RED;
 psz3DGlasses [5] = TXT_SHUTTER;
 
-pszColorGain [0] = TXT_NONE;
-pszColorGain [1] = TXT_LOW;
-pszColorGain [2] = TXT_MEDIUM;
-pszColorGain [3] = TXT_HIGH;
+pszColorCode3D [0] = TXT_NONE;
+pszColorCode3D [1] = TXT_LOW;
+pszColorCode3D [2] = TXT_MEDIUM;
+pszColorCode3D [3] = TXT_HIGH;
 
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
@@ -467,7 +476,8 @@ do {
 		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
 		}
 	else
-		renderOpts.nStereoSeparation = 0;
+		renderOpts.nColorCode3D = 
+		renderOpts.nStereoSeparation = -1;
 #else
 	xStereoSeparation = 0;
 	renderOpts.nStereo = -1;
@@ -476,6 +486,10 @@ do {
 #endif
 
 	m.AddText ("");
+	if (ogl.ColorCode3D (1))
+		renderOpts.nColorCode3D = m.AddCheck (TXT_COLORCODE_3D, gameOpts->render.bColorCode3D, KEY_D, HTX_COLORCODE_3D);
+	else
+		renderOpts.nColorCode3D = -1;
 	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
 
 #if DBG

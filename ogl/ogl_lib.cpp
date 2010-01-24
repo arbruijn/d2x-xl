@@ -1193,7 +1193,7 @@ if (HaveDrawBuffer ()) {
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
 	if (m_data.xStereoSeparation > 0) {
-	int i = ColorCode3D ();
+	int i = ColorCode3D () - 1;
 		if ((bStereo = (i >= 0) && (i <= 1) && cc3DShaderProg [i])) {
 			SelectDrawBuffer (1);
 			SetDrawBuffer (GL_BACK, 0);
@@ -1204,8 +1204,8 @@ if (HaveDrawBuffer ()) {
 
 			gameData.render.nShaderChanges++;
 			glUseProgramObject (cc3DShaderProg [i]);
-			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "leftFrame"), 1);
-			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "rightFrame"), 0);
+			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "leftFrame"), 0);
+			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "rightFrame"), 1);
 #if 0
 			glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 3.0f);
 #endif

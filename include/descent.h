@@ -387,7 +387,7 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	int n3DGlasses;
-	int nColorGain;
+	int bColorCode3D;
 	fix xStereoSeparation;
 	short nMaxFPS;
 	int nPath;
