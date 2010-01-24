@@ -1917,7 +1917,7 @@ const char *defaultGameTexts [][2] = {
  {"gruen/rot", "green/red"},
  {"shutter", "shutter"},
  {"ColorCode 3-~D", "ColorCode 3-~D"},
- {"~Frames tauschen", "~Flip frames"}
+ {"~Frames tauschen", "~Flip frames"},
 #if 0
 #endif
  {"", ""}

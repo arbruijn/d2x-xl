@@ -1057,7 +1057,7 @@ xy primaryOffsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
 xy secondaryOffsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 
 //draw the reticle
-void CGenericCockpit::DrawReticle (int bForceBig)
+void CGenericCockpit::DrawReticle (int bForceBig, fix xStereoSeparation)
 {
 if (cockpit->Hide ())
 	return;
@@ -1079,6 +1079,10 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 	}
 
 x = CCanvas::Current ()->Width () / 2;
+if (xStereoSeparation) {
+	ogl.ColorMask (1,1,1,1,1);
+	x += int (float (x / 10) * X2F (xStereoSeparation));
+	}
 y = CCanvas::Current ()->Height () / 2;
 bLaserReady = AllowedToFireGun ();
 bMissileReady = AllowedToFireMissile (-1, 1);
@@ -1125,6 +1129,7 @@ BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondary
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);
+ogl.ColorMask (1,1,1,1,0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1800,7 +1805,7 @@ gameData.demo.nState = saveNewDemoState;
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
 
-void CGenericCockpit::Render (int bExtraInfo)
+void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
 {
 if (Hide ())
 	return;
@@ -1865,7 +1870,7 @@ fontManager.SetCurrent (GAME_FONT);
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
 
 if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
-	DrawReticle (0);
+	DrawReticle (0, xStereoSeparation);
 
 if (!bLimited) {
 	DrawPlayerNames ();

@@ -452,7 +452,7 @@ CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 
 if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_RED_CYAN) || (xStereoSeparation >= 0)) {
 	PROF_START
-	cockpit->Render (bExtraInfo);
+	cockpit->Render (bExtraInfo, ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_RED_CYAN)) ? xStereoSeparation : 0);
 	PROF_END(ptCockpit)
 	}
 
