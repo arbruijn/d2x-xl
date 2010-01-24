@@ -248,17 +248,6 @@ if (gameOpts->render.n3DGlasses) {
 		sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 		m->m_bRebuild = -1;
 		}
-#if 0
-	if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {
-		m = menu + renderOpts.nColorGain;
-		v = m->m_value;
-		if (gameOpts->render.nColorGain != v) {
-			gameOpts->render.nColorGain = v;
-			sprintf (m->m_text, TXT_COLOR_GAIN, pszColorGain [v]);
-			m->m_bRebuild = -1;
-			}
-		}
-#endif
 	}
 
 m = menu + renderOpts.nCameras;
@@ -368,9 +357,9 @@ pszColorLevel [2] = TXT_FULL;
 
 psz3DGlasses [0] = TXT_NONE;
 psz3DGlasses [1] = TXT_COLORCODE_3D;
-psz3DGlasses [2] = TXT_BLUE_RED;
-psz3DGlasses [3] = TXT_GREEN_RED;
-psz3DGlasses [4] = TXT_CYAN_RED;
+psz3DGlasses [2] = TXT_RED_CYAN;
+psz3DGlasses [3] = TXT_BLUE_RED;
+psz3DGlasses [4] = TXT_GREEN_RED;
 psz3DGlasses [5] = TXT_SHUTTER;
 
 pszColorGain [0] = TXT_NONE;
@@ -476,13 +465,6 @@ do {
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
-#if 0
-		if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {
-			sprintf (szSlider + 1, TXT_COLOR_GAIN, pszColorGain [gameOpts->render.nColorGain]);
-			*szSlider = *(TXT_COLOR_GAIN - 1);
-			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.nColorGain, 0, sizeofa (pszColorGain) - 1, KEY_A, HTX_COLOR_GAIN);
-			}
-#endif
 		}
 	else
 		renderOpts.nStereoSeparation = 0;

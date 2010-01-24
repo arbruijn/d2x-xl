@@ -1911,10 +1911,10 @@ const char *defaultGameTexts [][2] = {
  {"Rechts: %s", "Right: %s"},
  {"3D-~Brille: %s", "3D ~Glasses: %s"},
  {"stE~reo-Trennung: %s", "st~Ereo Separation: %s"},
- {"blau/rot", "blue/red"},
- {"blau/gruen", "blue/green"},
- {"blau/cyan", "blue/cyan"},
  {"gelb/blau (CC 3D)", "amber/blue (CC 3D)"},
+ {"rot/tuerkis", "red/cyan"},
+ {"blau/rot", "blue/red"},
+ {"gruen/rot", "green/red"},
  {"shutter", "shutter"},
  {"~Aufhellung: %s", "color g~Ain: %s"},
 #if 0

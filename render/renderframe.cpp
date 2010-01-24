@@ -355,7 +355,7 @@ if (!xStereoSeparation || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//
 	FlashMine ();
 	ogl.SwapBuffers (0, 0);
 	}
-else if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {	// ColorCode 3-D
+else if (ogl.ColorCode3D ()) {	// ColorCode 3-D
 	FlashMine ();
 	if (xStereoSeparation > 0)
 		ogl.SwapBuffers (0, 0);
@@ -450,7 +450,7 @@ else {
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 
-if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_CYAN_RED) || (xStereoSeparation >= 0)) {
+if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_RED_CYAN) || (xStereoSeparation >= 0)) {
 	PROF_START
 	cockpit->Render (bExtraInfo);
 	PROF_END(ptCockpit)
@@ -628,14 +628,14 @@ void GameRenderFrame (void)
 {
 PROF_START
 SetScreenMode (SCREEN_GAME);
-if ((gameOpts->render.n3DGlasses != GLASSES_COLORCODE_3D) || !(gameData.app.nFrameCount & 1)) {
+if (!ogl.ColorCode3D () || !(gameData.app.nFrameCount & 1)) {
 	cockpit->PlayHomingWarning ();
 	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
 if (!gameOpts->render.xStereoSeparation || gameStates.app.bSaveScreenshot)
 	RenderMonoFrame ();
-else if (gameStates.menus.nInMenu && (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D)) {
+else if (gameStates.menus.nInMenu && (ogl.ColorCode3D ())) {
 	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.xStereoSeparation : -gameOpts->render.xStereoSeparation);
 	}
 else {
