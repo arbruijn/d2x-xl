@@ -1081,7 +1081,7 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 x = CCanvas::Current ()->Width () / 2;
 if (xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
-	x += int (float (x / 10) * X2F (xStereoSeparation));
+	x -= int (float (x / 32) * X2F (xStereoSeparation));
 	}
 y = CCanvas::Current ()->Height () / 2;
 bLaserReady = AllowedToFireGun ();
@@ -1114,8 +1114,13 @@ m_info.xScale *= float (HUD_ASPECT);
 bHiresReticle = 1; //(gameStates.render.fonts.bHires != 0) && !gameStates.app.bDemoData;
 bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.window.wMax * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
-nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) ? BM_ADDON_RETICLE_RED : BM_ADDON_RETICLE_GREEN;
-
+nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) 
+				 ? BM_ADDON_RETICLE_RED 
+//				 : ((xStereoSeparation < 0) == gameOpts->render.bFlipFrames)
+//					? BM_ADDON_RETICLE_RED
+					: BM_ADDON_RETICLE_GREEN;
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glColor3i (1,1,1);
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 		  (x + ScaleX (crossOffsets [ofs].x - 1)), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
 		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
@@ -1129,7 +1134,9 @@ BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondary
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);
-ogl.ColorMask (1,1,1,1,0);
+if (xStereoSeparation) {
+	ogl.ColorMask (1,1,1,1,0);
+	}
 }
 
 //	-----------------------------------------------------------------------------

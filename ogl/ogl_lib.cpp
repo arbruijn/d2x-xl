@@ -1409,11 +1409,19 @@ const char* cc3DFS [2] = {
 #if 1
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" \
+	"vec3 c = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float d = (1.0 - c.b) / (c.r + c.g);\r\n" \
+	"vec3 s = vec3 (d * c.r, d * c.g, 1.0);\r\n" \
+	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (c, s), 1.0);\r\n" \
+	"/*gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);*/\r\n" \
 	"}",
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
-	"gl_FragColor = vec4 (dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (0.7, 0.15, 0.15)), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
+	"vec3 c = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float d = (1.0 - c.r) / c.g + c.b;\r\n" \
+	"vec3 s = vec3 (1.0, d * c.g, d * c.b);\r\n" \
+	"gl_FragColor = vec4 (min (1.0, dot (c, s)), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
+	"/*gl_FragColor = vec4 (min (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);*/\r\n" \
 	"}"
 	};
 #else
