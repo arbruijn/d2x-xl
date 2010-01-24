@@ -546,31 +546,33 @@ void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboole
 if (!(bEyeOffset && gameOpts->render.n3DGlasses))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {	//colorcode 3-d (amber/blue)
-#if 0
-	if (m_data.xStereoSeparation < 0)
-		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
-	else
-#endif
-		glColorMask (bRed, bGreen, bBlue, bAlpha);
-	}
-else if (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) {	//red/cyan
-	if (ColorCode3D ())
+	if (gameOpts->render.bColorCode3D)
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
 	else {
-		if (m_data.xStereoSeparation <= 0)
+		if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
+			glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
+		else
+			glColorMask (GL_FALSE, GL_FALSE, bBlue, bAlpha);
+		}
+	}
+else if (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) {	//red/cyan
+	if (gameOpts->render.bColorCode3D)
+		glColorMask (bRed, bGreen, bBlue, bAlpha);
+	else {
+		if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
 			glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 		else
 			glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 		}
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_BLUE_RED) {	//blue/red
-	if (m_data.xStereoSeparation <= 0)
+	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
 		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
 		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_GREEN_RED) {	//green/red
-	if (m_data.xStereoSeparation <= 0)
+	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
 		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	else
 		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
@@ -1193,7 +1195,7 @@ if (HaveDrawBuffer ()) {
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
 	if (m_data.xStereoSeparation > 0) {
-	int i = ColorCode3D () - 1;
+		int i = ColorCode3D () - 1;
 		if ((bStereo = (i >= 0) && (i <= 1) && cc3DShaderProg [i])) {
 			SelectDrawBuffer (1);
 			SetDrawBuffer (GL_BACK, 0);
@@ -1204,8 +1206,8 @@ if (HaveDrawBuffer ()) {
 
 			gameData.render.nShaderChanges++;
 			glUseProgramObject (cc3DShaderProg [i]);
-			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "leftFrame"), 0);
-			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "rightFrame"), 1);
+			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "leftFrame"), gameOpts->render.bFlipFrames);
+			glUniform1i (glGetUniformLocation (cc3DShaderProg [i], "rightFrame"), !gameOpts->render.bFlipFrames);
 #if 0
 			glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 3.0f);
 #endif

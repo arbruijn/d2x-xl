@@ -75,6 +75,7 @@ static struct {
 	int	n3DGlasses;
 	int	nStereoSeparation;
 	int	nColorCode3D;
+	int	nFlipFrames;
 	int	nFastScreen;
 	int	nCameras;
 	int	nLights;
@@ -244,6 +245,16 @@ if (gameOpts->render.n3DGlasses) {
 		sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 		m->m_bRebuild = -1;
 		}
+
+	m = menu + renderOpts.nColorCode3D;
+	v = m->m_value;
+	if (gameOpts->render.bColorCode3D != v)
+		gameOpts->render.bColorCode3D = v;
+
+	m = menu + renderOpts.nFlipFrames;
+	v = m->m_value;
+	if (gameOpts->render.bFlipFrames != v)
+		gameOpts->render.bFlipFrames = v;
 	}
 
 m = menu + renderOpts.nCameras;
@@ -464,6 +475,7 @@ do {
 		}
 	else
 		renderOpts.nColorCode3D = 
+		renderOpts.nFlipFrames = 
 		renderOpts.nStereoSeparation = -1;
 #else
 	xStereoSeparation = 0;
@@ -477,6 +489,7 @@ do {
 		renderOpts.nColorCode3D = m.AddCheck (TXT_COLORCODE_3D, gameOpts->render.bColorCode3D, KEY_D, HTX_COLORCODE_3D);
 	else
 		renderOpts.nColorCode3D = -1;
+	renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
 
 #if DBG

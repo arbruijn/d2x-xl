@@ -501,6 +501,7 @@ if (m_info.buffer.Buffer ())
 			(CCanvas::Current ()->Height () - m_info.buffer.Height ()) / 2, 
 			m_info.buffer.Width (), m_info.buffer.Height (), 0);
 #else
+		ogl.SetReadBuffer (GL_FRONT, 0);
 		glReadPixels (
 			(CCanvas::Current ()->Width () - m_info.buffer.Width ()) / 2, 
 			(CCanvas::Current ()->Height () - m_info.buffer.Height ()) / 2, 
@@ -525,11 +526,13 @@ if (m_info.buffer.Buffer ())
 		int	wDest = m_info.buffer.Width () * 4;
 
 		if (CCanvas::Current ()->Width () == m_info.buffer.Width ()) {
+			ogl.SetReadBuffer (GL_FRONT, 0);
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
 				GL_RGBA, GL_UNSIGNED_BYTE, m_info.buffer.Buffer () + dyBuf * m_info.buffer.Width () * 4);
 			}
 		else {
+			ogl.SetReadBuffer (GL_FRONT, 0);
 			glReadPixels (
 				0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (),
 				GL_RGBA, GL_UNSIGNED_BYTE, m_info.screenBuf);

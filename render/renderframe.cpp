@@ -458,10 +458,9 @@ if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGla
 
 paletteManager.RenderEffect ();
 console.Draw ();
-FlushFrame (xStereoSeparation);
-
-if (gameStates.app.bSaveScreenshot && !xStereoSeparation)
+if (gameStates.app.bSaveScreenshot && (gameOpts->render.xStereoSeparation >= 0))
 	SaveScreenShot (NULL, 0);
+FlushFrame (xStereoSeparation);
 }
 
 //------------------------------------------------------------------------------
@@ -633,9 +632,9 @@ if (!ogl.ColorCode3D () || !(gameData.app.nFrameCount & 1)) {
 	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
-if (!gameOpts->render.xStereoSeparation || gameStates.app.bSaveScreenshot)
+if (!gameOpts->render.xStereoSeparation /*|| gameStates.app.bSaveScreenshot*/)
 	RenderMonoFrame ();
-else if (gameStates.menus.nInMenu && (ogl.ColorCode3D ())) {
+else if (gameStates.menus.nInMenu && ogl.ColorCode3D ()) {
 	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.xStereoSeparation : -gameOpts->render.xStereoSeparation);
 	}
 else {

@@ -332,11 +332,14 @@ void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, 
 
 glDisable (GL_TEXTURE_2D);
 ogl.SetReadBuffer (GL_FRONT, 1);
-if (bTGA)
+if (bTGA) {
+	ogl.SetReadBuffer (GL_FRONT, 0);
 	glReadPixels (0, 0, wScreen, hScreen, GL_RGBA, GL_UNSIGNED_BYTE, ogl.m_data.buffer);
+	}
 else {
 	if (wScreen * hScreen * 3 > OGLTEXBUFSIZE)
 		Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
+	ogl.SetReadBuffer (GL_FRONT, 0);
 	glReadPixels (0, 0, wScreen, hScreen, GL_RGB, GL_UNSIGNED_BYTE, ogl.m_data.buffer);
 	}
 

@@ -224,7 +224,7 @@ if (!Available ())
 	return 0;
 #endif
 //glBindTexture (GL_TEXTURE_2D, m_info.hRenderBuffer);
-ogl.SetDrawBuffer (GL_BACK, 1);
+ogl.SetDrawBuffer (GL_BACK, 0);
 return 1;
 }
 

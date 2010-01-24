@@ -1027,7 +1027,7 @@ if (thumbCanv) {
 	bm.SetBPP (3);
 	bm.CreateBuffer ();
 	//glDisable (GL_TEXTURE_2D);
-	ogl.SetReadBuffer (GL_FRONT, 1);
+	ogl.SetReadBuffer (GL_FRONT, 0);
 	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.Buffer ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 	ShrinkTGA (&bm, bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);

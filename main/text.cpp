@@ -1917,6 +1917,7 @@ const char *defaultGameTexts [][2] = {
  {"gruen/rot", "green/red"},
  {"shutter", "shutter"},
  {"ColorCode 3-~D", "ColorCode 3-~D"},
+ {"~Frames tauschen", "~Flip frames"}
 #if 0
 #endif
  {"", ""}
@@ -2617,6 +2618,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann der virtuelle Augenabstand angepasst werden.", "Ajdust the virtual eye distance here."},
  {"Hier kann die Art der 3D-Brille eingestellt werden.", "Chose the type of your 3D glasses here."},
  {"Hier kann angegeben werden, ob die 3D-Brille dem\nColorCode 3-D-Standard entspricht.", "Specify whether the 3D glasses comply with the ColorCode 3-D\nstandard here."},
+ {"Wenn angekreuzt, werden rechtes und linkes Bild vertauscht.", "If checked, left and right frame are exchanged."},
 #if 0
  {"", ""},
 #endif
