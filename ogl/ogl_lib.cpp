@@ -1419,6 +1419,7 @@ const char* cc3DFS [3][2] = {
 	"}"
 	},
 	{
+#if 0
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
@@ -1431,6 +1432,24 @@ const char* cc3DFS [3][2] = {
 	"float d = (1.0 - cl.r) / cl.g + cl.b;\r\n" \
 	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), texture2D (rightFrame, gl_TexCoord [0].xy).gb, 1.0);\r\n" \
 	"}"
+#else
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float d = (1.0 - cr.b) / (cr.r + cr.g) / 2.0;\r\n" \
+	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"d = 1.0 + cl.b / (cl.r + cl.g) / 2.0;\r\n" \
+	"gl_FragColor = vec4 (cl.r * d, cl.g * d, dot (cr, vec3 (d * cr.r, d * cr.g, 1.0)), 1.0);\r\n" \
+	"}",
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float d = (1.0 - cl.r) / (cl.g + cl.b) / 2.0;\r\n" \
+	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"d = 1.0 + cr.r / (cr.g + cr.b) / 2.0;\r\n" \
+	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), cr.g * d, cr.b * d, 1.0);\r\n" \
+	"}"
+#endif
 	},
 	{
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
@@ -1444,7 +1463,7 @@ const char* cc3DFS [3][2] = {
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
 	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cl.r) / cl.g + cl.b;\r\n" \
+	"float d = (1.0 - cl.r) / (cl.g + cl.b);\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"d = 1.0 + cr.r / (cr.g + cr.b);\r\n" \
 	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), cr.g * d, cr.b * d, 1.0);\r\n" \
