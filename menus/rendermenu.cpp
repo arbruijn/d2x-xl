@@ -98,7 +98,7 @@ static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
 static const char *psz3DGlasses [6];
 static const char *pszColorCode3D [4];
-static const char *pszEnhance3D [3];
+static const char *pszEnhance3D [4];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
 static int xStereoSeparation = 0;
@@ -386,7 +386,8 @@ pszColorCode3D [3] = TXT_HIGH;
 
 pszEnhance3D [0] = TXT_OFF;
 pszEnhance3D [1] = TXT_LOW;
-pszEnhance3D [2] = TXT_HIGH;
+pszEnhance3D [2] = TXT_MEDIUM;
+pszEnhance3D [3] = TXT_HIGH;
 
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)

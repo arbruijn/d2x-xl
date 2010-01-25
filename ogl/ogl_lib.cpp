@@ -97,7 +97,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-GLhandleARB cc3DShaderProg [3][2] = {{0,0},{0,0},{0,0}};
+GLhandleARB cc3DShaderProg [2][2] = {{0,0},{0,0}};
 GLhandleARB cc3Df = 0;
 GLhandleARB cc3Dv = 0;
 
@@ -1195,9 +1195,11 @@ if (HaveDrawBuffer ()) {
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
 	if (m_data.xStereoSeparation > 0) {
-		int i = gameOpts->render.bEnhance3D;
+		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
+		int i = (gameOpts->render.bEnhance3D > 0);
 		int j = ColorCode3D () - 1;
-		if ((bStereo = (j >= 0) && (j <= 1) && cc3DShaderProg [i][j])) {
+		GLhandleARB shaderProg;
+		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = cc3DShaderProg [i][j]))) {
 			SelectDrawBuffer (1);
 			SetDrawBuffer (GL_BACK, 0);
 #if 1
@@ -1207,10 +1209,11 @@ if (HaveDrawBuffer ()) {
 
 			gameData.render.nShaderChanges++;
 			glUseProgramObject (cc3DShaderProg [i][j]);
-			glUniform1i (glGetUniformLocation (cc3DShaderProg [i][j], "leftFrame"), gameOpts->render.bFlipFrames);
-			glUniform1i (glGetUniformLocation (cc3DShaderProg [i][j], "rightFrame"), !gameOpts->render.bFlipFrames);
-#if 0
-			glUniform1f (glGetUniformLocation (cc3DShaderProg, "gain"), float (gameOpts->render.nColorGain) / 3.0f);
+			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
+			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
+#if 1
+			if (i)
+				glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bEnhance3D]);
 #endif
 			ClearError (0);
 #endif
@@ -1434,40 +1437,24 @@ const char* cc3DFS [3][2] = {
 	"}"
 #else
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"uniform float gain;\r\n" \
 	"void main() {\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cr.b) / (cr.r + cr.g) / 2.0;\r\n" \
+	"float d = (1.0 - cr.b) / (cr.r + cr.g) / gain;\r\n" \
 	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"d = 1.0 + cl.b / (cl.r + cl.g) / 2.0;\r\n" \
+	"d = 1.0 + cl.b / (cl.r + cl.g) / gain;\r\n" \
 	"gl_FragColor = vec4 (cl.r * d, cl.g * d, dot (cr, vec3 (d * cr.r, d * cr.g, 1.0)), 1.0);\r\n" \
 	"}",
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"uniform float gain;\r\n" \
 	"void main() {\r\n" \
 	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cl.r) / (cl.g + cl.b) / 2.0;\r\n" \
+	"float d = (1.0 - cl.r) / (cl.g + cl.b) / gain;\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"d = 1.0 + cr.r / (cr.g + cr.b) / 2.0;\r\n" \
+	"d = 1.0 + cr.r / (cr.g + cr.b) / gain;\r\n" \
 	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), cr.g * d, cr.b * d, 1.0);\r\n" \
 	"}"
 #endif
-	},
-	{
-	"uniform sampler2D leftFrame, rightFrame;\r\n" \
-	"void main() {\r\n" \
-	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cr.b) / (cr.r + cr.g);\r\n" \
-	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"d = 1.0 + cl.b / (cl.r + cl.g);\r\n" \
-	"gl_FragColor = vec4 (cl.r * d, cl.g * d, dot (cr, vec3 (d * cr.r, d * cr.g, 1.0)), 1.0);\r\n" \
-	"}",
-	"uniform sampler2D leftFrame, rightFrame;\r\n" \
-	"void main() {\r\n" \
-	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cl.r) / (cl.g + cl.b);\r\n" \
-	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"d = 1.0 + cr.r / (cr.g + cr.b);\r\n" \
-	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), cr.g * d, cr.b * d, 1.0);\r\n" \
-	"}"
 	}
 	};
 #else
@@ -1495,7 +1482,7 @@ void COGL::InitColorCode3DShader (void)
 {
 if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 	PrintLog ("building ColorCode 3-D shader programs\n");
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
 			if (cc3DShaderProg [i][j])
 				DeleteShaderProg (&cc3DShaderProg [i][j]);
@@ -1517,7 +1504,7 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 void COGL::DeleteColorCode3DShader (void)
 {
 if (cc3DShaderProg) {
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
 			DeleteShaderProg (&cc3DShaderProg [i][j]);
 			cc3DShaderProg [i][j] = 0;
