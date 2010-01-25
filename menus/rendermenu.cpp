@@ -258,6 +258,7 @@ if (gameOpts->render.n3DGlasses) {
 	if (gameOpts->render.bEnhance3D != v) {
 		gameOpts->render.bEnhance3D = v;
 		sprintf (m->m_text, TXT_ENHANCE_3D, pszEnhance3D [v]);
+		m->m_bRebuild = -1;
 		}
 
 	m = menu + renderOpts.nFlipFrames;
