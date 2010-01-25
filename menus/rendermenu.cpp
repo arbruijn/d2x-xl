@@ -98,6 +98,7 @@ static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
 static const char *psz3DGlasses [6];
 static const char *pszColorCode3D [4];
+static const char *pszEnhance3D [3];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
 static int xStereoSeparation = 0;
@@ -254,8 +255,10 @@ if (gameOpts->render.n3DGlasses) {
 
 	m = menu + renderOpts.nEnhance3D;
 	v = m->m_value;
-	if (gameOpts->render.bEnhance3D != v)
+	if (gameOpts->render.bEnhance3D != v) {
 		gameOpts->render.bEnhance3D = v;
+		sprintf (m->m_text, TXT_ENHANCE_3D, pszEnhance3D [v]);
+		}
 
 	m = menu + renderOpts.nFlipFrames;
 	v = m->m_value;
@@ -380,6 +383,10 @@ pszColorCode3D [1] = TXT_LOW;
 pszColorCode3D [2] = TXT_MEDIUM;
 pszColorCode3D [3] = TXT_HIGH;
 
+pszEnhance3D [0] = TXT_OFF;
+pszEnhance3D [1] = TXT_LOW;
+pszEnhance3D [2] = TXT_HIGH;
+
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
 				? 0
@@ -478,8 +485,16 @@ do {
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
+		if (ogl.ColorCode3D (1)) {
+			sprintf (szSlider + 1, TXT_ENHANCE_3D, pszEnhance3D [gameOpts->render.bEnhance3D]);
+			*szSlider = *(TXT_ENHANCE_3D - 1);
+			renderOpts.nEnhance3D = m.AddSlider (szSlider + 1, gameOpts->render.bEnhance3D, 0, sizeofa (pszEnhance3D) - 1, KEY_E, HTX_ENHANCE_3D);
+			}
+		else
+			renderOpts.nEnhance3D = -1;
 		}
 	else
+		renderOpts.nEnhance3D =
 		renderOpts.nColorCode3D = 
 		renderOpts.nFlipFrames = 
 		renderOpts.nStereoSeparation = -1;
@@ -493,10 +508,8 @@ do {
 	m.AddText ("");
 	if (ogl.ColorCode3D (1)) {
 		renderOpts.nColorCode3D = m.AddCheck (TXT_COLORCODE_3D, gameOpts->render.bColorCode3D, KEY_D, HTX_COLORCODE_3D);
-		renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.bEnhance3D, KEY_E, HTX_ENHANCE_3D);
 		}
 	else
-		renderOpts.nEnhance3D =
 		renderOpts.nColorCode3D = -1;
 	renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);

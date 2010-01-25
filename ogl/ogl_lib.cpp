@@ -97,7 +97,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-GLhandleARB cc3DShaderProg [2][2] = {{0, 0},{0, 0}};
+GLhandleARB cc3DShaderProg [3][2] = {{0,0},{0,0},{0,0}};
 GLhandleARB cc3Df = 0;
 GLhandleARB cc3Dv = 0;
 
@@ -1406,7 +1406,7 @@ glDeleteTextures (n, hTextures);
 
 //------------------------------------------------------------------------------
 
-const char* cc3DFS [2][2] = {
+const char* cc3DFS [3][2] = {
 #if 1
 	{
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
@@ -1423,19 +1423,31 @@ const char* cc3DFS [2][2] = {
 	"void main() {\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"float d = (1.0 - cr.b) / (cr.r + cr.g);\r\n" \
-	"vec3 s = vec3 (d * cr.r, d * cr.g, 1.0);\r\n" \
-	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"d = 1.0 + cl.b / (cl.r + cl.g);\r\n" \
-	"gl_FragColor = vec4 (cl.r * d, cl.g * d, dot (cr, s), 1.0);\r\n" \
+	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).rg, dot (cr, vec3 (d * cr.r, d * cr.g, 1.0)), 1.0);\r\n" \
 	"}",
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
 	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"float d = (1.0 - cl.r) / cl.g + cl.b;\r\n" \
-	"vec3 s = vec3 (1.0, d * cl.g, d * cl.b);\r\n" \
+	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), texture2D (rightFrame, gl_TexCoord [0].xy).gb, 1.0);\r\n" \
+	"}"
+	},
+	{
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float d = (1.0 - cr.b) / (cr.r + cr.g);\r\n" \
+	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"d = 1.0 + cl.b / (cl.r + cl.g);\r\n" \
+	"gl_FragColor = vec4 (cl.r * d, cl.g * d, dot (cr, vec3 (d * cr.r, d * cr.g, 1.0)), 1.0);\r\n" \
+	"}",
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float d = (1.0 - cl.r) / cl.g + cl.b;\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"d = 1.0 + cr.r / (cr.g + cr.b);\r\n" \
-	"gl_FragColor = vec4 (dot (cl, s), cr.g * d, cr.b * d, 1.0);\r\n" \
+	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), cr.g * d, cr.b * d, 1.0);\r\n" \
 	"}"
 	}
 	};
@@ -1464,7 +1476,7 @@ void COGL::InitColorCode3DShader (void)
 {
 if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 	PrintLog ("building ColorCode 3-D shader programs\n");
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 2; j++) {
 			if (cc3DShaderProg [i][j])
 				DeleteShaderProg (&cc3DShaderProg [i][j]);
@@ -1486,7 +1498,7 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 void COGL::DeleteColorCode3DShader (void)
 {
 if (cc3DShaderProg) {
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 2; j++) {
 			DeleteShaderProg (&cc3DShaderProg [i][j]);
 			cc3DShaderProg [i][j] = 0;

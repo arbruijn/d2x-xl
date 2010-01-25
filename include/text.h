@@ -1953,8 +1953,8 @@ void LoadGameTexts(void);
 #define TXT_BLUE_RED						GT(1169)
 #define TXT_GREEN_RED					GT(1170)
 #define TXT_SHUTTER						GT(1171)
-#define TXT_COLORCODE_3D				GT(1172)
-#define TXT_ENHANCE_3D					GT(1173)
+#define TXT_ENHANCE_3D					GT(1172)
+#define TXT_COLORCODE_3D				GT(1173)
 #define TXT_FLIPFRAMES					GT(1174)
 
 #if 0

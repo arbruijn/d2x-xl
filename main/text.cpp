@@ -1916,9 +1916,9 @@ const char *defaultGameTexts [][2] = {
  {"blau/rot", "blue/red"},
  {"gruen/rot", "green/red"},
  {"shutter", "shutter"},
+ {"3D-effekt v~Erstaerken: %s", "~Enhance 3D effect: %s"},
  {"ColorCode 3-~D", "ColorCode 3-~D"},
  {"~Frames tauschen", "~Flip frames"},
- {"3D-effekt v~Erstaerken", "~Enhance 3D effect"},
 #if 0
  {"", ""},
 #endif
