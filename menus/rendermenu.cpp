@@ -74,8 +74,8 @@ static struct {
 	int	nColorLevel;
 	int	n3DGlasses;
 	int	nStereoSeparation;
-	int	nColorCode3D;
 	int	nEnhance3D;
+	int	nColorGain;
 	int	nFlipFrames;
 	int	nFastScreen;
 	int	nCameras;
@@ -97,7 +97,7 @@ static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
 static const char *psz3DGlasses [6];
-static const char *pszColorCode3D [4];
+static const char *pszEnhanced3D [4];
 static const char *pszEnhance3D [4];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
@@ -248,16 +248,16 @@ if (gameOpts->render.n3DGlasses) {
 		m->m_bRebuild = -1;
 		}
 
-	m = menu + renderOpts.nColorCode3D;
-	v = m->m_value;
-	if (gameOpts->render.bColorCode3D != v)
-		gameOpts->render.bColorCode3D = v;
-
 	m = menu + renderOpts.nEnhance3D;
 	v = m->m_value;
-	if (gameOpts->render.bEnhance3D != v) {
+	if (gameOpts->render.bEnhance3D != v)
 		gameOpts->render.bEnhance3D = v;
-		sprintf (m->m_text, TXT_ENHANCE_3D, pszEnhance3D [v]);
+
+	m = menu + renderOpts.nColorGain;
+	v = m->m_value;
+	if (gameOpts->render.bColorGain != v) {
+		gameOpts->render.bColorGain = v;
+		sprintf (m->m_text, TXT_COLORGAIN, pszEnhance3D [v]);
 		m->m_bRebuild = -1;
 		}
 
@@ -379,10 +379,10 @@ psz3DGlasses [3] = TXT_BLUE_RED;
 psz3DGlasses [4] = TXT_GREEN_RED;
 psz3DGlasses [5] = TXT_SHUTTER;
 
-pszColorCode3D [0] = TXT_NONE;
-pszColorCode3D [1] = TXT_LOW;
-pszColorCode3D [2] = TXT_MEDIUM;
-pszColorCode3D [3] = TXT_HIGH;
+pszEnhanced3D [0] = TXT_NONE;
+pszEnhanced3D [1] = TXT_LOW;
+pszEnhanced3D [2] = TXT_MEDIUM;
+pszEnhanced3D [3] = TXT_HIGH;
 
 pszEnhance3D [0] = TXT_OFF;
 pszEnhance3D [1] = TXT_LOW;
@@ -487,17 +487,17 @@ do {
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
-		if (ogl.ColorCode3D (1)) {
-			sprintf (szSlider + 1, TXT_ENHANCE_3D, pszEnhance3D [gameOpts->render.bEnhance3D]);
-			*szSlider = *(TXT_ENHANCE_3D - 1);
-			renderOpts.nEnhance3D = m.AddSlider (szSlider + 1, gameOpts->render.bEnhance3D, 0, sizeofa (pszEnhance3D) - 1, KEY_E, HTX_ENHANCE_3D);
+		if (ogl.Enhance3D (1)) {
+			sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);
+			*szSlider = *(TXT_COLORGAIN - 1);
+			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_E, HTX_COLORGAIN);
 			}
 		else
-			renderOpts.nEnhance3D = -1;
+			renderOpts.nColorGain = -1;
 		}
 	else
-		renderOpts.nEnhance3D =
-		renderOpts.nColorCode3D = 
+		renderOpts.nColorGain =
+		renderOpts.nEnhance3D = 
 		renderOpts.nFlipFrames = 
 		renderOpts.nStereoSeparation = -1;
 #else
@@ -508,11 +508,11 @@ do {
 #endif
 
 	m.AddText ("");
-	if (ogl.ColorCode3D (1)) {
-		renderOpts.nColorCode3D = m.AddCheck (TXT_COLORCODE_3D, gameOpts->render.bColorCode3D, KEY_D, HTX_COLORCODE_3D);
+	if (ogl.Enhance3D (1)) {
+		renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.bEnhance3D, KEY_D, HTX_ENHANCE_3D);
 		}
 	else
-		renderOpts.nColorCode3D = -1;
+		renderOpts.nEnhance3D = -1;
 	renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
 

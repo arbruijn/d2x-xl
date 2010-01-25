@@ -239,10 +239,10 @@ class COGL {
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
-		inline int ColorCode3D (int bForce = 0) { 
-			return !(bForce || gameOpts->render.bColorCode3D)
+		inline int Enhance3D (int bForce = 0) { 
+			return !(bForce || gameOpts->render.bEnhance3D)
 					 ? 0
-					 : (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) 
+					 : (gameOpts->render.n3DGlasses == GLASSES_AMBER_BLUE) 
 					    ? 1 
 						 : (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) 
 							? 2 
@@ -299,8 +299,8 @@ class COGL {
 		int StencilOff (void);
 		void StencilOn (int bStencil);
 
-		void InitColorCode3DShader (void);
-		void DeleteColorCode3DShader (void);
+		void InitEnhanced3DShader (void);
+		void DeleteEnhanced3DShader (void);
 };
 
 extern COGL ogl;

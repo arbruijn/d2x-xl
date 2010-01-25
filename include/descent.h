@@ -370,7 +370,7 @@ typedef struct tDebugRenderOptions {
 //------------------------------------------------------------------------------
 
 #define GLASSES_NONE				0
-#define GLASSES_COLORCODE_3D	1
+#define GLASSES_AMBER_BLUE	1
 #define GLASSES_RED_CYAN		2
 #define GLASSES_BLUE_RED		3
 #define GLASSES_GREEN_RED		4
@@ -387,8 +387,8 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	int n3DGlasses;
-	int bColorCode3D;
 	int bEnhance3D;
+	int bColorGain;
 	int bFlipFrames;
 	fix xStereoSeparation;
 	short nMaxFPS;

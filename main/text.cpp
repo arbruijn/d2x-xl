@@ -1916,8 +1916,8 @@ const char *defaultGameTexts [][2] = {
  {"blau/rot", "blue/red"},
  {"gruen/rot", "green/red"},
  {"shutter", "shutter"},
- {"3D-effekt v~Erstaerken: %s", "~Enhance 3D effect: %s"},
- {"ColorCode 3-~D", "ColorCode 3-~D"},
+ {"~Aufhellen: %s", "Color ~Gain: %s"},
+ {"3~D Effekt verstaerken", "enhance 3-~D effect"},
  {"~Frames tauschen", "~Flip frames"},
 #if 0
  {"", ""},
@@ -2619,9 +2619,9 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann eingestellt werden, was in den Hilfsanzeigen\ndes Cockpits sichtbar ist.", "You can chose what is displayed in the auxiliary\ncockpit windows here."},
  {"Hier kann der virtuelle Augenabstand angepasst werden.", "Ajdust the virtual eye distance here."},
  {"Hier kann die Art der 3D-Brille eingestellt werden.", "Chose the type of your 3D glasses here."},
- {"Hier kann angegeben werden, ob die 3D-Brille dem\nColorCode 3-D-Standard entspricht.", "Specify whether the 3D glasses comply with the ColorCode 3-D\nstandard here."},
+ {"Hier kann mit entsprechenden 3D-Brillen der\n3D-Effekt verstaerkt werden.", "Enhance the 3D effect when using appropriate glasses."},
+ {"Hier kann die 3D-Ansicht aufgehellt werden\n(dabei koennen Bilddetails verschwinden).", "Increase the 3D view's brightness here\n(this can cause image details to disappear)."},
  {"Wenn angekreuzt, werden rechtes und linkes Bild vertauscht.", "If checked, left and right frame are exchanged."},
- {"Wenn angekreuzt, wird der 3D-Effekt verstaerkt\n(dabei koennen Bilddetails verschwinden).", "If checked the 3D effect is enhanced\n(this can cause image details to disappear)."},
 #if 0
  {"", ""},
 #endif

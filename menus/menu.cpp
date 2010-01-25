@@ -501,8 +501,8 @@ if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
 		DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
 	m_bCloseBox = 1;
 	}
-if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.ColorCode3D () || (ogl.EyeOffset () > 0))) {
-	if (gameStates.app.bGameRunning && (ogl.ColorCode3D ()))
+if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.EyeOffset () > 0))) {
+	if (gameStates.app.bGameRunning && (ogl.Enhance3D ()))
 		ogl.FlushDrawBuffer ();
 	GrUpdate (0);
 	}
@@ -1360,7 +1360,7 @@ launchOption:
 		}
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, gameCanvasP);
-	if (gameStates.app.bGameRunning && (ogl.ColorCode3D ()))
+	if (gameStates.app.bGameRunning && (ogl.Enhance3D ()))
 		Render (pszTitle, pszSubTitle, gameCanvasP);
 	}
 FadeOut (pszTitle, pszSubTitle, gameCanvasP);

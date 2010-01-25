@@ -97,7 +97,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-GLhandleARB cc3DShaderProg [2][2] = {{0,0},{0,0}};
+GLhandleARB enhanced3DShaderProg [2][2] = {{0,0},{0,0}};
 GLhandleARB cc3Df = 0;
 GLhandleARB cc3Dv = 0;
 
@@ -545,8 +545,8 @@ void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboole
 {
 if (!(bEyeOffset && gameOpts->render.n3DGlasses))
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
-else if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {	//colorcode 3-d (amber/blue)
-	if (gameOpts->render.bColorCode3D)
+else if (gameOpts->render.n3DGlasses == GLASSES_AMBER_BLUE) {	//colorcode 3-d (amber/blue)
+	if (gameOpts->render.bEnhance3D)
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
 	else {
 		if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
@@ -556,7 +556,7 @@ else if (gameOpts->render.n3DGlasses == GLASSES_COLORCODE_3D) {	//colorcode 3-d 
 		}
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) {	//red/cyan
-	if (gameOpts->render.bColorCode3D)
+	if (gameOpts->render.bEnhance3D)
 		glColorMask (bRed, bGreen, bBlue, bAlpha);
 	else {
 		if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
@@ -593,7 +593,7 @@ m_data.xStereoSeparation = xStereoSeparation;
 if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
-	gameStates.render.bRenderIndirect = ColorCode3D ();
+	gameStates.render.bRenderIndirect = Enhance3D ();
 	SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
@@ -1196,10 +1196,10 @@ if (HaveDrawBuffer ()) {
 
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
-		int i = (gameOpts->render.bEnhance3D > 0);
-		int j = ColorCode3D () - 1;
+		int i = (gameOpts->render.bColorGain > 0);
+		int j = Enhance3D () - 1;
 		GLhandleARB shaderProg;
-		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = cc3DShaderProg [i][j]))) {
+		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = enhanced3DShaderProg [i][j]))) {
 			SelectDrawBuffer (1);
 			SetDrawBuffer (GL_BACK, 0);
 #if 1
@@ -1208,12 +1208,12 @@ if (HaveDrawBuffer ()) {
 			glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
 			gameData.render.nShaderChanges++;
-			glUseProgramObject (cc3DShaderProg [i][j]);
+			glUseProgramObject (enhanced3DShaderProg [i][j]);
 			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
 #if 1
 			if (i)
-				glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bEnhance3D]);
+				glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
 #endif
 			ClearError (0);
 #endif
@@ -1478,20 +1478,20 @@ const char* cc3DVS =
 
 //-------------------------------------------------------------------------
 
-void COGL::InitColorCode3DShader (void)
+void COGL::InitEnhanced3DShader (void)
 {
 if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
-	PrintLog ("building ColorCode 3-D shader programs\n");
+	PrintLog ("building enhanced 3D shader programs\n");
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			if (cc3DShaderProg [i][j])
-				DeleteShaderProg (&cc3DShaderProg [i][j]);
+			if (enhanced3DShaderProg [i][j])
+				DeleteShaderProg (&enhanced3DShaderProg [i][j]);
 			gameStates.render.textures.bHaveCC3DShader =
-				CreateShaderProg (&cc3DShaderProg [i][j]) &&
-				CreateShaderFunc (&cc3DShaderProg [i][j], &cc3Df, &cc3Dv, cc3DFS [i][j], cc3DVS, 1) &&
-				LinkShaderProg (&cc3DShaderProg [i][j]);
+				CreateShaderProg (&enhanced3DShaderProg [i][j]) &&
+				CreateShaderFunc (&enhanced3DShaderProg [i][j], &cc3Df, &cc3Dv, cc3DFS [i][j], cc3DVS, 1) &&
+				LinkShaderProg (&enhanced3DShaderProg [i][j]);
 			if (!gameStates.render.textures.bHaveCC3DShader) {
-				DeleteColorCode3DShader ();
+				DeleteEnhanced3DShader ();
 				gameOpts->render.n3DGlasses = GLASSES_NONE;
 				}
 			}
@@ -1501,13 +1501,13 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 
 //-------------------------------------------------------------------------
 
-void COGL::DeleteColorCode3DShader (void)
+void COGL::DeleteEnhanced3DShader (void)
 {
-if (cc3DShaderProg) {
+if (enhanced3DShaderProg) {
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			DeleteShaderProg (&cc3DShaderProg [i][j]);
-			cc3DShaderProg [i][j] = 0;
+			DeleteShaderProg (&enhanced3DShaderProg [i][j]);
+			enhanced3DShaderProg [i][j] = 0;
 			}
 		}
 	}

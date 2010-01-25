@@ -1953,8 +1953,8 @@ void LoadGameTexts(void);
 #define TXT_BLUE_RED						GT(1169)
 #define TXT_GREEN_RED					GT(1170)
 #define TXT_SHUTTER						GT(1171)
-#define TXT_ENHANCE_3D					GT(1172)
-#define TXT_COLORCODE_3D				GT(1173)
+#define TXT_COLORGAIN					GT(1172)
+#define TXT_ENHANCE_3D					GT(1173)
 #define TXT_FLIPFRAMES					GT(1174)
 
 #if 0
@@ -2516,8 +2516,8 @@ void LoadGameTexts(void);
 #define HTX_CPIT_WINTYPE				HT(410)
 #define HTX_STEREO_SEPARATION			HT(411)
 #define HTX_STEREO_VIEW					HT(412)
-#define HTX_COLORCODE_3D				HT(413)
-#define HTX_ENHANCE_3D					HT(414)
+#define HTX_ENHANCE_3D					HT(413)
+#define HTX_COLORGAIN					HT(414)
 #define HTX_FLIPFRAMES					HT(415)
 
 #if 0
