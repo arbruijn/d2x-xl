@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SHOW_PLAYER_IP		0
 
-void DrawGuidedCrosshair (void);
+void DrawGuidedCrosshair (fix xStereoSeparation);
 void DrawZoomCrosshair (void);
 
 #if 0
@@ -1057,7 +1057,7 @@ xy primaryOffsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
 xy secondaryOffsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 
 //draw the reticle
-void CGenericCockpit::DrawReticle (int bForceBig, fix xStereoSeparation)
+void CGenericCockpit::DrawReticle (int bForceBig)
 {
 if (cockpit->Hide ())
 	return;
@@ -1069,7 +1069,7 @@ if (cockpit->Hide ())
 
 if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
 	 ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided))) {
-	DrawGuidedCrosshair ();
+	DrawGuidedCrosshair (m_info.xStereoSeparation);
 	return;
 	}
 
@@ -1079,9 +1079,9 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 	}
 
 x = CCanvas::Current ()->Width () / 2;
-if (xStereoSeparation) {
+if (m_info.xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
-	x -= int (float (x / 32) * X2F (xStereoSeparation));
+	x -= int (float (x / 32) * X2F (m_info.xStereoSeparation));
 	}
 y = CCanvas::Current ()->Height () / 2;
 bLaserReady = AllowedToFireGun ();
@@ -1116,7 +1116,7 @@ bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.ren
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) 
 				 ? BM_ADDON_RETICLE_RED 
-//				 : ((xStereoSeparation < 0) == gameOpts->render.bFlipFrames)
+//				 : ((m_info.xStereoSeparation < 0) == gameOpts->render.bFlipFrames)
 //					? BM_ADDON_RETICLE_RED
 					: BM_ADDON_RETICLE_GREEN;
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1134,7 +1134,7 @@ BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondary
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 m_info.xScale /= float (HUD_ASPECT);
-if (xStereoSeparation) {
+if (m_info.xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,0);
 	}
 }
@@ -1835,6 +1835,7 @@ cockpit->SetColor (WHITE_RGBA);
 cockpit->SetLineSpacing (m_info.nLineSpacing);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
+m_info.xStereoSeparation = xStereoSeparation;
 m_info.xScale = screen.Scale (0);
 m_info.yScale = screen.Scale (1);
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
@@ -1877,7 +1878,7 @@ fontManager.SetCurrent (GAME_FONT);
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
 
 if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
-	DrawReticle (0, xStereoSeparation);
+	DrawReticle (0);
 
 if (!bLimited) {
 	DrawPlayerNames ();
@@ -2071,7 +2072,7 @@ if (pszLabel) {
 	GrPrintF (NULL, 0x8000, 2, pszLabel);
 	}
 if (nUser == WBU_GUIDED) {
-	DrawGuidedCrosshair ();
+	DrawGuidedCrosshair (m_info.xStereoSeparation);
 	}
 if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
