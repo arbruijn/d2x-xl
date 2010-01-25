@@ -1440,19 +1440,19 @@ const char* cc3DFS [3][2] = {
 	"uniform float gain;\r\n" \
 	"void main() {\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cr.b) / (cr.r + cr.g) / gain;\r\n" \
 	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"d = 1.0 + cl.b / (cl.r + cl.g) / gain;\r\n" \
-	"gl_FragColor = vec4 (cl.r * d, cl.g * d, dot (cr, vec3 (d * cr.r, d * cr.g, 1.0)), 1.0);\r\n" \
+	"float dr = (1.0 - cr.b) / (cr.r + cr.g) / gain;\r\n" \
+	"float dl = 1.0 + cl.b / (cl.r + cl.g) / gain;\r\n" \
+	"gl_FragColor = vec4 (cl.r * dl, cl.g * dl, dot (cr, vec3 (dr * cr.r, dr * cr.g, 1.0)), 1.0);\r\n" \
 	"}",
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"uniform float gain;\r\n" \
 	"void main() {\r\n" \
 	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cl.r) / (cl.g + cl.b) / gain;\r\n" \
 	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"d = 1.0 + cr.r / (cr.g + cr.b) / gain;\r\n" \
-	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), cr.g * d, cr.b * d, 1.0);\r\n" \
+	"float dl = (1.0 - cl.r) / (cl.g + cl.b) / gain;\r\n" \
+	"float dr = 1.0 + cr.r / (cr.g + cr.b) / gain;\r\n" \
+	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, dl * cl.g, dl * cl.b)), cr.g * dr, cr.b * dr, 1.0);\r\n" \
 	"}"
 #endif
 	}
