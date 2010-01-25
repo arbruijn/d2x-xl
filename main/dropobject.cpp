@@ -16,7 +16,11 @@
 #include "dropobject.h"
 #include "headlight.h"
 
-#define	BASE_NET_DROP_DEPTH	8
+#if DBG
+#	define	BASE_NET_DROP_DEPTH	2
+#else
+#	define	BASE_NET_DROP_DEPTH	8
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -384,8 +388,10 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 		}
 	if (0 > (nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType, true)))
 		return 0;
-	if (0 > (nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState)))
+	if (0 > (nSegment = ChooseDropSegment (OBJECTS + nObject, &bFixedPos, nDropState))) {
+		OBJECTS [nObject].Die ();
 		return 0;
+		}
 	OBJECTS [nObject].mType.physInfo.velocity.SetZero ();
 	if (bFixedPos)
 		vNewPos = OBJECTS [nObject].info.position.vPos;
