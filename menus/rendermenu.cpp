@@ -75,6 +75,7 @@ static struct {
 	int	n3DGlasses;
 	int	nStereoSeparation;
 	int	nColorCode3D;
+	int	nEnhance3D;
 	int	nFlipFrames;
 	int	nFastScreen;
 	int	nCameras;
@@ -250,6 +251,11 @@ if (gameOpts->render.n3DGlasses) {
 	v = m->m_value;
 	if (gameOpts->render.bColorCode3D != v)
 		gameOpts->render.bColorCode3D = v;
+
+	m = menu + renderOpts.nEnhance3D;
+	v = m->m_value;
+	if (gameOpts->render.bEnhance3D != v)
+		gameOpts->render.bEnhance3D = v;
 
 	m = menu + renderOpts.nFlipFrames;
 	v = m->m_value;
@@ -485,9 +491,12 @@ do {
 #endif
 
 	m.AddText ("");
-	if (ogl.ColorCode3D (1))
+	if (ogl.ColorCode3D (1)) {
 		renderOpts.nColorCode3D = m.AddCheck (TXT_COLORCODE_3D, gameOpts->render.bColorCode3D, KEY_D, HTX_COLORCODE_3D);
+		renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.bEnhance3D, KEY_E, HTX_ENHANCE_3D);
+		}
 	else
+		renderOpts.nEnhance3D =
 		renderOpts.nColorCode3D = -1;
 	renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);

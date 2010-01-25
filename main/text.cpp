@@ -1918,7 +1918,9 @@ const char *defaultGameTexts [][2] = {
  {"shutter", "shutter"},
  {"ColorCode 3-~D", "ColorCode 3-~D"},
  {"~Frames tauschen", "~Flip frames"},
+ {"3D-effekt v~Erstaerken", "~Enhance 3D effect"},
 #if 0
+ {"", ""},
 #endif
  {"", ""}
 	};
@@ -2619,6 +2621,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Art der 3D-Brille eingestellt werden.", "Chose the type of your 3D glasses here."},
  {"Hier kann angegeben werden, ob die 3D-Brille dem\nColorCode 3-D-Standard entspricht.", "Specify whether the 3D glasses comply with the ColorCode 3-D\nstandard here."},
  {"Wenn angekreuzt, werden rechtes und linkes Bild vertauscht.", "If checked, left and right frame are exchanged."},
+ {"Wenn angekreuzt, wird der 3D-Effekt verstaerkt\n(dabei koennen Bilddetails verschwinden).", "If checked the 3D effect is enhanced\n(this can cause image details to disappear)."},
 #if 0
  {"", ""},
 #endif
