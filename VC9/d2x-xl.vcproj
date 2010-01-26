@@ -10711,11 +10711,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
@@ -10989,6 +10989,14 @@
 			<File
 				RelativePath="..\..\..\..\programs\d2\config\d2x-default.ini"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					ExcludedFromBuild="true"
@@ -11365,6 +11373,14 @@
 			<File
 				RelativePath="..\..\..\Websites\Descent\scripts\install-data.js"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					ExcludedFromBuild="true"

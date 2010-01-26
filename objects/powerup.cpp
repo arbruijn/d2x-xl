@@ -818,6 +818,7 @@ powerupToDevice [POW_BULLETTIME] = PLAYER_FLAGS_BULLETTIME;
 powerupToDevice [POW_BLUEFLAG] = 
 powerupToDevice [POW_REDFLAG] = PLAYER_FLAGS_FLAG;
 
+powerupToDevice [POW_VULCAN_AMMO] = POW_VULCAN_AMMO;
 
 memset (powerupToWeaponCount, 0, sizeof (powerupToWeaponCount));
 
@@ -858,6 +859,8 @@ powerupToWeaponCount [POW_SMARTMINE] =
 powerupToWeaponCount [POW_MERCURYMSL_4] = 
 powerupToWeaponCount [POW_HOMINGMSL_4] = 4;
 
+powerupToWeaponCount [POW_VULCAN_AMMO] = 1;
+
 memset (powerupClass, 0, sizeof (powerupClass));
 powerupClass [POW_LASER] = 
 powerupClass [POW_VULCAN] =
@@ -895,6 +898,8 @@ powerupClass [POW_CONVERTER] =
 powerupClass [POW_AMMORACK] = 
 powerupClass [POW_AFTERBURNER] = 
 powerupClass [POW_HEADLIGHT] = 3;
+
+powerupClass [POW_VULCAN_AMMO] = 4;
 
 memset (powerupToObject, 0xff, sizeof (powerupToObject));
 powerupToObject [POW_LASER] = LASER_ID;
@@ -1121,20 +1126,21 @@ return weaponToModel [nWeapon];
 short PowerupsOnShips (int nPowerup)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players;
-	int				nClass;
+	int				nClass, nVulcanAmmo = 0;
 	short				h, i, nIndex = PowerupToDevice (nPowerup, &nClass);
 
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
-	if ((i == gameData.multiplayer.nLocalPlayer) && 
-		 (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
+	if ((i == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
 		continue;
 	if (playerP->shields < 0)
 		continue;
 	if (!playerP->connected)
 		continue;
-	if (nClass == 3) {	// some device
+	if (nClass == 4)
+		nVulcanAmmo += playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [i].nAmmoUsed;
+	else if (nClass == 3) {	// some device
 		if (!(extraGameInfo [0].loadout.nDevice & nIndex))
 			h += (playerP->flags & nIndex) != 0;
 		}
@@ -1158,7 +1164,7 @@ for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 			}
 		}
 	}
-return h;
+return (nClass == 4) ? (nVulcanAmmo + VULCAN_AMMO_AMOUNT - 1) / VULCAN_AMMO_AMOUNT : h;
 } 
 
 //------------------------------------------------------------------------------

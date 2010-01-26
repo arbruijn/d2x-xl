@@ -210,7 +210,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},	 // MULTI_PLAYER_SHIELDS, -1},
 	{2, -1},	 // MULTI_INVUL
 	{2, -1},	 // MULTI_DEINVUL
-	{31, -1}, // MULTI_WEAPONS
+	{29, -1}, // MULTI_WEAPONS
 	{40, -1}, // MULTI_MONSTERBALL
 	{2, -1},  // MULTI_CHEATING
 	{5, -1},  // MULTI_TRIGGER_EXT
@@ -219,7 +219,8 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{22, -1}, // MULTI_PLAYER_WEAPONS
 	{99, -1}, // MULTI_SYNC_MONSTERBALL
 	{31, -1}, // MULTI_DROP_POWERUP
-	{31, -1} // MULTI_CREATE_WEAPON
+	{31, -1}, // MULTI_CREATE_WEAPON
+	{4, -1}, // MULTI_AMMO
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -1647,9 +1648,6 @@ NetworkResetObjSync (nLocalObj);
 if (objP->info.nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
 		id = objP->info.nId;
-#if 0//DBG
-		HUDMessage (0, "removing %s (%d present)", pszPowerup [id], gameData.multiplayer.powerupsInMine [id]);
-#endif
 		if (gameData.multiplayer.powerupsInMine [id] > 0)
 			gameData.multiplayer.powerupsInMine [id]--;
 		if (MultiPowerupIs4Pack (id)) {
@@ -1833,12 +1831,6 @@ nPlayer = int (buf [bufI++]);
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	return;
 nId = buf [bufI++];
-#if 0
-if ((gameData.app.nGameMode & GM_NETWORK) &&
-	 (gameData.multiplayer.powerupsInMine [(int)powerupType] + PowerupsOnShips (powerupType) >=
-	  gameData.multiplayer.maxPowerupsAllowed [powerupType]))
-	return;
-#endif
 nSegment = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
 nObject = GET_INTEL_SHORT (buf + bufI);
@@ -1885,12 +1877,6 @@ nPlayer = int (buf [bufI++]);
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	return -1;
 powerupType = buf [bufI++];
-#if 0
-if ((gameData.app.nGameMode & GM_NETWORK) &&
-	 (gameData.multiplayer.powerupsInMine [(int)powerupType] + PowerupsOnShips (powerupType) >=
-	  gameData.multiplayer.maxPowerupsAllowed [powerupType]))
-	return;
-#endif
 nSegment = GET_INTEL_SHORT (buf + bufI);
 bufI += 2;
 nObject = GET_INTEL_SHORT (buf + bufI);
@@ -1913,10 +1899,6 @@ OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero ();
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
 MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
 /*Object*/CreateExplosion (nSegment, vPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
-#if 0
-if (gameData.app.nGameMode & GM_NETWORK)
-	gameData.multiplayer.powerupsInMine [(int) powerupType]++;
-#endif
 return nLocalObj;
 }
 
@@ -2293,9 +2275,9 @@ if (nPlayer < gameData.multiplayer.nPlayers) {
 
 void MultiSendEndLevelStart (int secret)
 {
-gameData.multigame.msg.buf [0] = (char)MULTI_ENDLEVEL_START;
+gameData.multigame.msg.buf [0] = (char) MULTI_ENDLEVEL_START;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
-gameData.multigame.msg.buf [2] = (char)secret;
+gameData.multigame.msg.buf [2] = (char) secret;
 if ((secret) && !gameData.multigame.bGotoSecret)
 	gameData.multigame.bGotoSecret = 1;
 else if (!gameData.multigame.bGotoSecret)
@@ -2315,7 +2297,7 @@ void MultiSendPlayerExplode (char nType)
 	int i;
 
 Assert ((nType == MULTI_PLAYER_DROP) || (nType == MULTI_PLAYER_EXPLODE));
-MultiSendWeapons (1);
+MultiSendAmmo ();
 MultiSendPosition (LOCALPLAYER.nObject);
 NetworkResetObjSync (-1);
 gameData.multigame.msg.buf [bufI++] = nType;
@@ -2396,7 +2378,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	nType = int (primaryWeaponToPowerup [i]);
 	if (!LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		continue;
-	h = gameData.multiplayer.maxPowerupsAllowed [nType] /*+ PowerupsOnShips (nType)*/ - gameData.multiplayer.powerupsInMine [nType];
+	h = gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType];
 	if (i == LASER_INDEX) {
 		if ((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) && (h < MAX_LASER_LEVEL))
 			LOCALPLAYER.laserLevel = h;
@@ -2430,7 +2412,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 			continue;
 		}
 	nType = int (secondaryWeaponToPowerup [i]);
-	h = gameData.multiplayer.maxPowerupsAllowed [nType] /*+ PowerupsOnShips (nType)*/ - gameData.multiplayer.powerupsInMine [nType];
+	h = gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType];
 	if (LOCALPLAYER.secondaryAmmo [i] > h)
 		LOCALPLAYER.secondaryAmmo [i] = max (h, 0);
 	}
@@ -2442,13 +2424,13 @@ LOCALPLAYER.secondaryAmmo [7] *= 4;
 for (i = 0; i < int (sizeofa (nDeviceFlags)); i++) {
 	if (LOCALPLAYER.flags & nDeviceFlags [i]) {
 		nType = nDevicePowerups [i];
-		if (0 >= gameData.multiplayer.maxPowerupsAllowed [nType] /*+ PowerupsOnShips (nType)*/ - gameData.multiplayer.powerupsInMine [nType])
+		if (0 >= gameData.multiplayer.maxPowerupsAllowed [nType] - gameData.multiplayer.powerupsInMine [nType])
 			LOCALPLAYER.flags &= (~PLAYER_FLAGS_CLOAKED);
 		}
 	}
 
 if (PlayerHasHeadlight (-1) &&
-	 (0 >= gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT] /*+ PowerupsOnShips (POW_HEADLIGHT)*/ - gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]))
+	 (0 >= gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT] - gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]))
 	LOCALPLAYER.flags &= (~PLAYER_FLAGS_HEADLIGHT);
 
 if (gameData.app.nGameMode & GM_CAPTURE) {
@@ -2514,51 +2496,6 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.bAdjustPowerupCap [i] = false;
 	}
 }
-
-//-----------------------------------------------------------------------------
-
-#if 0
-
-void MultiAdjustRemoteCap (int nPlayer)
-{
-	char nType;
-	int nIndex;
-
-if (!(gameData.app.nGameMode & GM_NETWORK) || (gameStates.multi.nGameType == UDP_GAME))
-	return;
-for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
-	nType = primaryWeaponToPowerup [nIndex];
-	if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags &(1 << nIndex))
-	   gameData.multiplayer.powerupsInMine [nType]++;
-	}
-for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
-	nType = secondaryWeaponToPowerup [nIndex];
-	if ((gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)) && nIndex == 2)
-		continue;
-	if (nIndex == 2 || nIndex == 7) // PROX or SMARTMINES? Those bastards...
-		gameData.multiplayer.powerupsInMine [nType] += (gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex]/4);
-	else
-		gameData.multiplayer.powerupsInMine [nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex];
-	}
-if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
-	gameData.multiplayer.powerupsInMine [POW_SUPERLASER]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
-	gameData.multiplayer.powerupsInMine [POW_QUADLASER]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
-	gameData.multiplayer.powerupsInMine [POW_CLOAK]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FULLMAP)
-	gameData.multiplayer.powerupsInMine [POW_FULL_MAP]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
-	gameData.multiplayer.powerupsInMine [POW_AFTERBURNER]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
-	gameData.multiplayer.powerupsInMine [POW_AMMORACK]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CONVERTER)
-	gameData.multiplayer.powerupsInMine [POW_CONVERTER]++;
-if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
-	gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]++;
-}
-
-#endif
 
 //-----------------------------------------------------------------------------
 
@@ -2689,9 +2626,6 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 
 if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) &&(gameData.app.nGameMode & GM_NETWORK)) {
 	id = OBJECTS [nObject].info.nId;
-#if 0//DBG
-	HUDMessage (0, "requesting to remove %s (%d present)", pszPowerup [id], gameData.multiplayer.powerupsInMine [id]);
-#endif
 	if (gameData.multiplayer.powerupsInMine [id] > 0) {
 		gameData.multiplayer.powerupsInMine [id]--;
 		if (MultiPowerupIs4Pack (id)) {
@@ -2847,10 +2781,6 @@ void MultiSendCreateWeapon (int nObject)
 #endif
 	int count = 0;
 
-#if 0
-if (gameData.app.nGameMode & GM_NETWORK)
-	gameData.multiplayer.powerupsInMine [powerupType]++;
-#endif
 gameData.multigame.msg.buf [count++] = MULTI_CREATE_WEAPON;
 gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
 gameData.multigame.msg.buf [count++] = OBJECTS [nObject].info.nId;
@@ -2893,10 +2823,6 @@ void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, const C
 #endif
 	int count = 0;
 
-#if 0
-if (gameData.app.nGameMode & GM_NETWORK)
-	gameData.multiplayer.powerupsInMine [powerupType]++;
-#endif
 gameData.multigame.msg.buf [count++] = MULTI_CREATE_POWERUP;
 gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
 gameData.multigame.msg.buf [count++] = powerupType;
@@ -2932,10 +2858,6 @@ void MultiSendDropPowerup (int powerupType, int nSegment, int nObject, const CFi
 #endif
 	int count = 0;
 
-#if 0
-if (gameData.app.nGameMode & GM_NETWORK)
-	gameData.multiplayer.powerupsInMine [powerupType]++;
-#endif
 gameData.multigame.msg.buf [count++] = MULTI_DROP_POWERUP;
 gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
 gameData.multigame.msg.buf [count++] = powerupType;
@@ -3714,10 +3636,6 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, ammoCount);
 count += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, gameStates.app.nRandSeed);
 MapObjnumLocalToLocal (nObject);
-#if 0
-if (gameData.app.nGameMode & GM_NETWORK)
-	gameData.multiplayer.powerupsInMine [objP->info.nId]++;
-#endif
 MultiSendData (gameData.multigame.msg.buf, 12, 2);
 }
 
@@ -3739,10 +3657,6 @@ nObject = SpitPowerup (objP, powerupId, seed);
 if (nObject >= 0) {
 	MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
 	OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
-#if 0
-	if (gameData.app.nGameMode & GM_NETWORK)
-		gameData.multiplayer.powerupsInMine [powerupId]++;
-#endif
 	}
 }
 
@@ -4152,6 +4066,16 @@ gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (b
 
 //-----------------------------------------------------------------------------
 
+void MultiDoAmmo (char *buf)
+{
+	int	i;
+	int	nPlayer = (int) buf [1];
+
+gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (buf + 2);
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiSendWeapons (int bForce)
 {
 	int t = gameStates.app.nSDLTicks;
@@ -4179,6 +4103,20 @@ if (bForce || (t - nTimeout > 1000)) {
 	bufP += 2;
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	}
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendAmmo (int bForce)
+{
+	int i, bufP = 0;
+
+nTimeout = t;
+gameData.multigame.msg.buf [bufP++] = (char) MULTI_AMMO;
+gameData.multigame.msg.buf [bufP++] = (char) gameData.multiplayer.nLocalPlayer;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed);
+bufP += 2;
+MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -4670,11 +4608,6 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, objP->cType.powerupInfo.nCo
 count += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, seed);
 MapObjnumLocalToLocal (nObject);
-#if 0
-if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
-	if (gameData.app.nGameMode & GM_NETWORK)
-		gameData.multiplayer.powerupsInMine [objP->info.nId]++;
-#endif
 MultiSendData (gameData.multigame.msg.buf, 12, 2);
 }
 
@@ -4700,10 +4633,6 @@ if (nObject!=-1)
 if (gameData.app.nGameMode & GM_ENTROPY)
 	OBJECTS [nObject].info.nCreator = GetTeam (nPlayer) + 1;
 else if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))) {
-#if 0
-	if (gameData.app.nGameMode & GM_NETWORK)
-		gameData.multiplayer.powerupsInMine [powerupId]++;
-#endif
 	gameData.multiplayer.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);
 	}
 }
@@ -5357,7 +5286,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoPlayerWeapons, 1},
 	{MultiDoSyncMonsterball, 1},
 	{MultiDoDropPowerup, 1},
-	{MultiDoCreateWeapon, 1}
+	{MultiDoCreateWeapon, 1},
+	{MultiDoAmmo, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5702,6 +5632,9 @@ switch (nType) {
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoCreateWeapon (buf);
 		break;
+	case MULTI_AMMO:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoAmmo (buf);
 	default:
 		Int3 ();
 	}

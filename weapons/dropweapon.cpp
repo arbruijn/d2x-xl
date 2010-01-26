@@ -41,12 +41,6 @@ int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 	CFixVector	newVelocity, newPos;
 	tObjTransformation	*posP = OBJPOS (spitterP);
 
-#if 0
-if ((gameData.app.nGameMode & GM_NETWORK) &&
-	 (gameData.multiplayer.powerupsInMine [(int)id] + PowerupsOnShips (id) >=
-	  gameData.multiplayer.maxPowerupsAllowed [id]))
-	return -1;
-#endif
 d_srand (gameStates.app.nRandSeed = (seed < 0) ? d_rand () : seed);
 newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.FVec () * I2X (SPIT_SPEED);
 newVelocity [X] += (d_rand() - 16384) * SPIT_SPEED * 2;
@@ -206,7 +200,7 @@ if (nObject == -1) {
 	}
 HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
 audio.PlaySound (SOUND_DROP_WEAPON);
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	MultiSendDropWeapon (nObject);
 	MultiSendWeapons (1);
 	}

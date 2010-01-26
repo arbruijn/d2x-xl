@@ -901,60 +901,60 @@ else {
 void DropPlayerEggs (CObject *playerObjP)
 {
 if ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST)) {
-	int				nPlayerId = playerObjP->info.nId;
+	int				nPlayer = playerObjP->info.nId;
 	short				nObject;
 	int				nVulcanAmmo = 0;
-	CPlayerData*	playerP = gameData.multiplayer.players + nPlayerId;
+	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
 
-// Seed the Random number generator so in net play the eggs will always
-// drop the same way
-if (IsMultiGame) {
-	gameData.multigame.create.nCount = 0;
-	if (gameStates.multi.nGameType != UDP_GAME)
-		gameStates.app.nRandSeed = 5483L;
-	d_srand (gameStates.app.nRandSeed);
-	}
-MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
-if (IsMultiGame && !(IsHoardGame || IsEntropyGame))
-	MaybeArmMines (playerObjP, playerP, PROXMINE_INDEX, PROXMINE_ID);
-
-//	If the player dies and he has powerful lasers, create the powerups here.
-if (playerP->laserLevel > MAX_LASER_LEVEL) {
-	if (!IsBuiltinWeapon (SUPER_LASER_INDEX)) {
-		CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
-		CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
+	// Seed the Random number generator so in net play the eggs will always
+	// drop the same way
+	if (IsMultiGame) {
+		gameData.multigame.create.nCount = 0;
+		if (gameStates.multi.nGameType != UDP_GAME)
+			gameStates.app.nRandSeed = 5483L;
+		d_srand (gameStates.app.nRandSeed);
 		}
-	}
-else if (playerP->laserLevel >= 1) {
-	if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX)))
-		CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
-	}
+	MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
+	if (IsMultiGame && !(IsHoardGame || IsEntropyGame))
+		MaybeArmMines (playerObjP, playerP, PROXMINE_INDEX, PROXMINE_ID);
 
-//	Drop quad laser if appropos
-MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_QUAD_LASERS, POW_QUADLASER);
-MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CLOAKED, POW_CLOAK);
-while (playerP->nInvuls--)
-	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
-while (playerP->nCloaks--)
-	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
-MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_FULLMAP, POW_FULL_MAP);
-MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AFTERBURNER, POW_AFTERBURNER);
-MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AMMO_RACK, POW_AMMORACK);
-MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CONVERTER, POW_CONVERTER);
-if (!IsMultiGame) {
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_SLOWMOTION, POW_SLOWMOTION);
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_BULLETTIME, POW_BULLETTIME);
-	}	
-if (PlayerHasHeadlight (nPlayerId) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) &&
-	 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
-	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_HEADLIGHT, POW_HEADLIGHT);
-// drop the other enemies flag if you have it
+	//	If the player dies and he has powerful lasers, create the powerups here.
+	if (playerP->laserLevel > MAX_LASER_LEVEL) {
+		if (!IsBuiltinWeapon (SUPER_LASER_INDEX)) {
+			CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
+			CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
+			}
+		}
+	else if (playerP->laserLevel >= 1) {
+		if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX)))
+			CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
+		}
 
-playerP->nInvuls =
-playerP->nCloaks = 0;
-playerP->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
-if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG))
-	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayerId) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
+	//	Drop quad laser if appropos
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_QUAD_LASERS, POW_QUADLASER);
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CLOAKED, POW_CLOAK);
+	while (playerP->nInvuls--)
+		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
+	while (playerP->nCloaks--)
+		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_FULLMAP, POW_FULL_MAP);
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AFTERBURNER, POW_AFTERBURNER);
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AMMO_RACK, POW_AMMORACK);
+	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CONVERTER, POW_CONVERTER);
+	if (!IsMultiGame) {
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_SLOWMOTION, POW_SLOWMOTION);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_BULLETTIME, POW_BULLETTIME);
+		}	
+	if (PlayerHasHeadlight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) &&
+		 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_HEADLIGHT, POW_HEADLIGHT);
+	// drop the other enemies flag if you have it
+
+	playerP->nInvuls =
+	playerP->nCloaks = 0;
+	playerP->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
+	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG))
+		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
 
 #if !DBG
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
@@ -974,15 +974,14 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 		}
 
 	//Drop the vulcan, gauss, and ammo
-#if 1
-	nVulcanAmmo = playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed;
+	nVulcanAmmo = playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed;
 	if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 		int nGunObjs [2] = {-1, -1};
 		int nGunIds [2] = {VULCAN_INDEX, GAUSS_INDEX};
 		int nGunAmmo [2] = {VULCAN_WEAPON_AMMO_AMOUNT, GAUSS_WEAPON_AMMO_AMOUNT};
 		int i;
 
-		gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed = 0;
+		gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = 0;
 		if (0 < (i = nVulcanAmmo / VULCAN_AMMO_AMOUNT - 1)) {	// drop ammo in excess of presupplied Vulcan/Gauss ammo as vulcan ammo packs
 			CallObjectCreateEgg (playerObjP, i, OBJ_POWERUP, POW_VULCAN_AMMO);
 			nVulcanAmmo -= i * VULCAN_AMMO_AMOUNT;
@@ -1002,32 +1001,6 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 				OBJECTS [nGunObjs [i]].cType.powerupInfo.nCount = nVulcanAmmo;
 			}
 		}
-#else //	else {
-		int nFlag = HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX);
-		if (IsBuiltinWeapon (VULCAN_INDEX) || IsBuiltinWeapon (GAUSS_INDEX)) {
-			nVulcanAmmo -= GAUSS_WEAPON_AMMO_AMOUNT;
-			if (nVulcanAmmo < 0)
-				nVulcanAmmo = 0;
-			}
-		if ((int (playerP->primaryWeaponFlags & nFlag) == nFlag) && (int (extraGameInfo [IsMultiGame].loadout.nGuns & nFlag) != nFlag))
-			nVulcanAmmo /= 2;		//if both vulcan & gauss, each gets half
-		if ((nVulcanAmmo < VULCAN_AMMO_AMOUNT) && !(extraGameInfo [IsMultiGame].loadout.nGuns & nFlag))
-			nVulcanAmmo = VULCAN_AMMO_AMOUNT;	//make sure gun has at least as much as a powerup
-		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, VULCAN_INDEX);
-		if (nObject >= 0)
-			OBJECTS [nObject].cType.powerupInfo.nCount = nVulcanAmmo;
-		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, GAUSS_INDEX);
-		if (nObject >= 0)
-			OBJECTS [nObject].cType.powerupInfo.nCount = nVulcanAmmo;
-		}
-	//	If player has vulcan ammo, but no gatling cannon, drop the ammo.
-	if (!(playerP->primaryWeaponFlags & (HAS_VULCAN_FLAG | HAS_GAUSS_FLAG))) {
-		int amount = playerP->primaryAmmo [VULCAN_INDEX];
-		if (amount > 8 * VULCAN_AMMO_AMOUNT)
-			amount = 8 * VULCAN_AMMO_AMOUNT;
-		CallObjectCreateEgg (playerObjP, amount / VULCAN_AMMO_AMOUNT, OBJ_POWERUP, POW_VULCAN_AMMO);
-		}
-#endif
 	//	Drop the rest of the primary weapons
 	MaybeDropPrimaryWeaponEgg (playerObjP, SPREADFIRE_INDEX);
 	MaybeDropPrimaryWeaponEgg (playerObjP, PLASMA_INDEX);
