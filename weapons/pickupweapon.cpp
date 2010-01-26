@@ -193,10 +193,8 @@ int	pwSave = gameData.weapons.nPrimary;
 // Ugh, save selected primary weapon around the picking up of the ammo.  
 // I apologize for this code.  Matthew A. Toschlog
 if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, NULL, nPlayer)) {
-	if (ISLOCALPLAYER (nPlayer)) {
-		gameData.weapons.nAmmoCollected++;
+	if (ISLOCALPLAYER (nPlayer))
 		PowerupBasic (7, 14, 21, VULCAN_AMMO_SCORE, "%s!", TXT_VULCAN_AMMO, nPlayer);
-		}
 	bUsed = 1;
 	} 
 else {

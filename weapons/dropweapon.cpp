@@ -147,16 +147,11 @@ audio.PlaySound (SOUND_DROP_WEAPON);
 if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 	//if it's one of these, drop some ammo with the weapon
 	ammo = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
-	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(VULCAN_INDEX)) && (gameData.weapons.nPrimary == GAUSS_INDEX))
+	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG (VULCAN_INDEX)) && (gameData.weapons.nPrimary == GAUSS_INDEX))
 		ammo /= 2;		//if both vulcan & gauss, drop half
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject >= 0)
 		OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
-		if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed) {
-								gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed += nAmmoUsed;
-
-				MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
-
 	}
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
