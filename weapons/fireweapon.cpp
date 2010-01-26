@@ -647,7 +647,7 @@ xEnergyUsed = WI_energy_usage (nWeaponIndex);
 if (gameData.weapons.nPrimary == OMEGA_INDEX)
 	xEnergyUsed = 0;	//	Omega consumes energy when recharging, not when firing.
 if (gameStates.app.nDifficultyLevel < 2)
-	xEnergyUsed = FixMul (xEnergyUsed, I2X (gameStates.app.nDifficultyLevel+2)/4);
+	xEnergyUsed = FixMul (xEnergyUsed, I2X (gameStates.app.nDifficultyLevel + 2) / 4);
 //	MK, 01/26/96, Helix use 2x energy in multiplayer.  bitmaps.tbl parm should have been reduced for single player.
 if (nWeaponIndex == HELIX_INDEX)
 	if (IsMultiGame)
@@ -702,13 +702,12 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 					nAmmoUsed = playerP->primaryAmmo [VULCAN_INDEX];
 				playerP->primaryAmmo [VULCAN_INDEX] -= nAmmoUsed;
 				gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed += nAmmoUsed;
-				MultiSendAmmo ();
 				if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed >= VULCAN_AMMO_AMOUNT) {
 					if (gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 						MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
 					gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed -= VULCAN_AMMO_AMOUNT;
-					MultiSendAmmo ();
 					}
+				MultiSendAmmo ();
 				}
 			else {
 				playerP->energy -= (xEnergyUsed * fired) / gameData.weapons.info [nWeaponIndex].fireCount;

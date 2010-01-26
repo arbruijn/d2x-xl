@@ -220,7 +220,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{99, -1}, // MULTI_SYNC_MONSTERBALL
 	{31, -1}, // MULTI_DROP_POWERUP
 	{31, -1}, // MULTI_CREATE_WEAPON
-	{4, -1} // MULTI_AMMO
+	{6, -1} // MULTI_AMMO
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -622,8 +622,7 @@ gameData.multigame.msg.buf [15] = (ubyte) wsP->firing [0].bSpeedUp;
 gameData.multigame.msg.buf [16] = wsP->bTripleFusion;
 gameData.multigame.msg.buf [17] = wsP->nMslLaunchPos;
 PUT_INTEL_INT (gameData.multigame.msg.buf + 18, wsP->xMslFireTime);
-PUT_INTEL_INT (gameData.multigame.msg.buf + 22, wsP->nAmmoUsed);
-MultiSendData (gameData.multigame.msg.buf, 26, 0);
+MultiSendData (gameData.multigame.msg.buf, 22, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1468,6 +1467,7 @@ Assert (nPlayer < gameData.multiplayer.nPlayers);
 // If we are in the process of sending OBJECTS to a new player, reset that process
 NetworkResetObjSync (-1);
 // Stuff the gameData.multiplayer.players structure to prepare for the explosion
+gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = 0;
 playerP = gameData.multiplayer.players + nPlayer;
 bufI = 2;
 playerP->primaryWeaponFlags = GET_INTEL_SHORT (buf + bufI);
@@ -2297,7 +2297,6 @@ void MultiSendPlayerExplode (char nType)
 	int i;
 
 Assert ((nType == MULTI_PLAYER_DROP) || (nType == MULTI_PLAYER_EXPLODE));
-MultiSendAmmo ();
 MultiSendPosition (LOCALPLAYER.nObject);
 NetworkResetObjSync (-1);
 gameData.multigame.msg.buf [bufI++] = nType;
@@ -2317,7 +2316,8 @@ gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.secondaryAmmo [GUIDED_IN
 gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]);
 gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.secondaryAmmo [MERCURY_INDEX]);
 gameData.multigame.msg.buf [bufI++] = char (LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX]);
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [VULCAN_INDEX] + 
+					  gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed);
 bufI += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [GAUSS_INDEX]);
 bufI += 2;
@@ -2355,6 +2355,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 	MultiStripRobots (gameData.multiplayer.nLocalPlayer);
+gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -4070,7 +4071,8 @@ void MultiDoAmmo (char *buf)
 {
 	int	nPlayer = (int) buf [1];
 
-gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (buf + 2);
+gameData.multiplayer.players [int (nPlayer)].primaryAmmo [VULCAN_INDEX] = ushort (GET_INTEL_SHORT (buf + 2));
+gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (buf + 4);
 }
 
 //-----------------------------------------------------------------------------
@@ -4081,7 +4083,7 @@ void MultiSendWeapons (int bForce)
 
 	static int nTimeout = 0;
 
-if (gameStates.multi.nGameType == IPX_GAME)
+if (!IsMultiGame || (gameStates.multi.nGameType != UDP_GAME))
 	return;
 if (bForce || (t - nTimeout > 1000)) {
 		int i, bufP = 0;
@@ -4108,10 +4110,15 @@ if (bForce || (t - nTimeout > 1000)) {
 
 void MultiSendAmmo (void)
 {
+if (!IsMultiGame || (gameStates.multi.nGameType != UDP_GAME))
+	return;
+
 	int bufP = 0;
 
 gameData.multigame.msg.buf [bufP++] = (char) MULTI_AMMO;
 gameData.multigame.msg.buf [bufP++] = (char) gameData.multiplayer.nLocalPlayer;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, short (LOCALPLAYER.primaryAmmo [VULCAN_INDEX]));
+bufP += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed);
 bufP += 2;
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
