@@ -2204,8 +2204,6 @@ class CWeaponData {
 		sbyte						bTripleFusion;
 		tFiringData				firing [2];
 		int						nTypes [2];
-		int						nAmmoCollected;
-		int						nAmmoUsed;
 		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
 		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
 		CArray<tRgbaColorf>	color;
@@ -2330,15 +2328,16 @@ typedef struct tLeftoverPowerup {
 
 class CWeaponState {
 	public:
+		tFiringData				firing [2];
+		fix						xMslFireTime;
+		short						nAmmoUsed;
 		char						nMissiles;
 		char						nPrimary;
 		char						nSecondary;
 		char						bQuadLasers;
-		tFiringData				firing [2];
 		char						nLaserLevel;
 		char						bTripleFusion;
 		char						nMslLaunchPos;
-		fix						xMslFireTime;
 
 	public:
 		CWeaponState () { memset (this, 0, sizeof (*this)); }

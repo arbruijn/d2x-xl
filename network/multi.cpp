@@ -210,7 +210,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},	 // MULTI_PLAYER_SHIELDS, -1},
 	{2, -1},	 // MULTI_INVUL
 	{2, -1},	 // MULTI_DEINVUL
-	{29, -1}, // MULTI_WEAPONS
+	{31, -1}, // MULTI_WEAPONS
 	{40, -1}, // MULTI_MONSTERBALL
 	{2, -1},  // MULTI_CHEATING
 	{5, -1},  // MULTI_TRIGGER_EXT
@@ -621,7 +621,8 @@ gameData.multigame.msg.buf [15] = (ubyte) wsP->firing [0].bSpeedUp;
 gameData.multigame.msg.buf [16] = wsP->bTripleFusion;
 gameData.multigame.msg.buf [17] = wsP->nMslLaunchPos;
 PUT_INTEL_INT (gameData.multigame.msg.buf + 18, wsP->xMslFireTime);
-MultiSendData (gameData.multigame.msg.buf, 22, 0);
+PUT_INTEL_INT (gameData.multigame.msg.buf + 22, wsP->nAmmoUsed);
+MultiSendData (gameData.multigame.msg.buf, 26, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -2314,6 +2315,7 @@ void MultiSendPlayerExplode (char nType)
 	int i;
 
 Assert ((nType == MULTI_PLAYER_DROP) || (nType == MULTI_PLAYER_EXPLODE));
+MultiSendWeapons (1);
 MultiSendPosition (LOCALPLAYER.nObject);
 NetworkResetObjSync (-1);
 gameData.multigame.msg.buf [bufI++] = nType;
@@ -4124,7 +4126,7 @@ void MultiSendFlags (char nPlayer)
 {
 gameData.multigame.msg.buf [0] = MULTI_FLAGS;
 gameData.multigame.msg.buf [1] = nPlayer;
-PUT_INTEL_INT (gameData.multigame.msg.buf + 2, gameData.multiplayer.players [(int) nPlayer].flags);
+PUT_INTEL_INT (gameData.multigame.msg.buf + 2, gameData.multiplayer.players [int (nPlayer)].flags);
 MultiSendData (gameData.multigame.msg.buf, 6, 1);
 }
 
@@ -4138,13 +4140,14 @@ void MultiDoWeapons (char *buf)
 gameData.multiplayer.players [nPlayer].shields  =
 OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.xShields = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-gameData.multiplayer.players [(int) nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
+gameData.multiplayer.players [int (nPlayer)].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
-	gameData.multiplayer.players [(int) nPlayer].secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
+	gameData.multiplayer.players [int (nPlayer)].secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
 	bufP += 2;
 	}
-gameData.multiplayer.players [(int) nPlayer].laserLevel = gameData.multigame.msg.buf [bufP];
+gameData.multiplayer.players [int (nPlayer)].laserLevel = gameData.multigame.msg.buf [bufP++];
+gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
 }
 
 //-----------------------------------------------------------------------------
@@ -4172,6 +4175,8 @@ if (bForce || (t - nTimeout > 1000)) {
 		bufP += 2;
 		}
 	gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.laserLevel;
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed);
+	bufP += 2;
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	}
 }

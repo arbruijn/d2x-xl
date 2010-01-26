@@ -1899,7 +1899,8 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	(info.nId == gameData.multiplayer.nLocalPlayer)) {
 	int bPowerupUsed = DoPowerup (powerupP, info.nId);
 	if (bPowerupUsed) {
-		powerupP->Die ();
+		if ((gameStates.multi.nGameType != UDP_GAME) || (info.nId != POW_VULCAN_AMMO))
+			powerupP->Die ();
 		if (IsMultiGame)
 			MultiSendRemoveObj (OBJ_IDX (powerupP));
 		}

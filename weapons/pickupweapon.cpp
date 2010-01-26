@@ -163,7 +163,7 @@ if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
 	nMaxAmmo *= 2;
 nMaxAmmo -= playerP->primaryAmmo [nWeaponIndex];
 if (ammoCount > nMaxAmmo) {
-	if (!nMaxAmmo)
+	if (!nMaxAmmo || (nWeaponIndex == VULCAN_INDEX))	// only pick up Vulcan ammo if player can take the entire clip
 		return 0;
 	ammoCount = nMaxAmmo;
 	}
@@ -187,7 +187,7 @@ return ammoCount;	//return amount used
 
 int PickupVulcanAmmo (CObject *objP, int nPlayer)
 {
-	int		bUsed = 0;
+	int	bUsed = 0;
 
 int	pwSave = gameData.weapons.nPrimary;	
 // Ugh, save selected primary weapon around the picking up of the ammo.  

@@ -152,6 +152,11 @@ if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary ==
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject >= 0)
 		OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
+		if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed) {
+								gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed += nAmmoUsed;
+
+				MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
+
 	}
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy

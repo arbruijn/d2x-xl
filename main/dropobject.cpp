@@ -975,20 +975,19 @@ if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG
 
 	//Drop the vulcan, gauss, and ammo
 #if 1
-	nVulcanAmmo = playerP->primaryAmmo [VULCAN_INDEX];
+	nVulcanAmmo = playerP->primaryAmmo [VULCAN_INDEX] + gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed;
 	if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 		int nGunObjs [2] = {-1, -1};
 		int nGunIds [2] = {VULCAN_INDEX, GAUSS_INDEX};
 		int nGunAmmo [2] = {VULCAN_WEAPON_AMMO_AMOUNT, GAUSS_WEAPON_AMMO_AMOUNT};
 		int i;
 
-		gameData.weapons.nAmmoUsed = 0;
-		if (gameData.weapons.nAmmoCollected) {	// drop ammo in excess of presupplied Vulcan/Gauss ammo as vulcan ammo packs
-			CallObjectCreateEgg (playerObjP, gameData.weapons.nAmmoCollected, OBJ_POWERUP, POW_VULCAN_AMMO);
-			nVulcanAmmo -= gameData.weapons.nAmmoCollected * VULCAN_AMMO_AMOUNT;
+		gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed = 0;
+		if (0 < (i = nVulcanAmmo / VULCAN_AMMO_AMOUNT - 1)) {	// drop ammo in excess of presupplied Vulcan/Gauss ammo as vulcan ammo packs
+			CallObjectCreateEgg (playerObjP, i, OBJ_POWERUP, POW_VULCAN_AMMO);
+			nVulcanAmmo -= i * VULCAN_AMMO_AMOUNT;
 			if (nVulcanAmmo < 0)
 				nVulcanAmmo = 0;
-			gameData.weapons.nAmmoCollected = 0;
 			}
 		for (i = 0; i < 2; i++) {
 			if (IsBuiltinWeapon (nGunIds [i]))
