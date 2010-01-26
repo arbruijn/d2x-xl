@@ -705,7 +705,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 				if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed >= VULCAN_AMMO_AMOUNT) {
 					gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed -= VULCAN_AMMO_AMOUNT;
 					if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
-						MultiSendWeapons (1);
+						//MultiSendWeapons (1);
 						MaybeDropNetPowerup (-1, POW_VULCAN_AMMO, FORCE_DROP);
 						}
 					}
