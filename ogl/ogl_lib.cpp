@@ -54,6 +54,7 @@
 #include "menu.h"
 #include "menubackground.h"
 #include "cockpit.h"
+#include "renderframe.h"
 #include "automap.h"
 #include "gpgpu_lighting.h"
 
@@ -593,7 +594,7 @@ m_data.xStereoSeparation = xStereoSeparation;
 if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
-	gameStates.render.bRenderIndirect = Enhance3D ();
+	gameStates.render.bRenderIndirect = m_data.xStereoSeparation && Enhance3D ();
 	SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
@@ -853,6 +854,7 @@ if (SHOW_DYN_LIGHT) {
 	glDisable (GL_COLOR_MATERIAL);
 	}
 glDepthMask (1);
+//SetStereoSeparation (0);
 ColorMask (1,1,1,1,0);
 if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
@@ -946,8 +948,17 @@ if (!gameStates.menus.nInMenu || bForce) {
 	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 		paletteManager.RenderEffect ();
 #endif
-	FlushDrawBuffer ();
+	if (gameStates.render.bRenderIndirect) {
+		FlushDrawBuffer ();
+		//SelectDrawBuffer (0);
+		gameStates.render.bRenderIndirect = 0;
+		Draw2DFrameElements ();
+		gameStates.render.bRenderIndirect = 1;
+		//SetDrawBuffer (GL_BACK, 1);
+		}
 	SDL_GL_SwapBuffers ();
+	if (gameStates.app.bSaveScreenshot)
+		SaveScreenShot (NULL, 0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 #if 1
 	//if (gameStates.menus.nInMenu || bClear)
@@ -1223,9 +1234,7 @@ if (HaveDrawBuffer ()) {
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
-	//glDepthFunc (GL_ALWAYS);
 #if 1
-	//glColor3f (1, 1, 1);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	glVertex2f (0, 0);
@@ -1237,9 +1246,10 @@ if (HaveDrawBuffer ()) {
 	glVertex2f (1, 0);
 	glEnd ();
 #endif
-	//glDepthFunc (GL_LEQUAL);
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
+	if (bStereo)
+		glUseProgramObject (0);
 	}
 #endif
 }

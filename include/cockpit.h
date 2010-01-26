@@ -189,7 +189,7 @@ class CGenericCockpit {
 		void DrawDamage (void);
 		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
 		void UpdateLaserWeaponInfo (void);
-		void DrawReticle (int bForceBig);
+		void DrawReticle (int bForceBig, fix xStereoSeparation = 0);
 		int CanSeeObject (int nObject, int bCheckObjs);
 		void DrawPlayerNames (void);
 		void RenderWindows (void);

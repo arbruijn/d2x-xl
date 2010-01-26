@@ -501,7 +501,7 @@ if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
 		DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
 	m_bCloseBox = 1;
 	}
-if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.EyeOffset () > 0))) {
+if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0))) {
 	if (gameStates.app.bGameRunning && (ogl.Enhance3D ()))
 		ogl.FlushDrawBuffer ();
 	GrUpdate (0);

@@ -60,7 +60,7 @@ if (RENDERPATH)
 //this doesn't do anything, but is here for completeness
 void G3EndFrame (void)
 {
-ogl.EndFrame();
+ogl.EndFrame ();
 nFreePoints = 0;
 }
 

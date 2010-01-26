@@ -289,8 +289,8 @@ class COGL {
 
 		inline int SetTransform (int bUseTransform) { return m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }
-		inline void SetEyeOffset (fix xStereoSeparation) { m_data.xStereoSeparation = xStereoSeparation; }
-		inline fix EyeOffset (void) { return m_data.xStereoSeparation; }
+		inline void SetStereoSeparation (fix xStereoSeparation) { m_data.xStereoSeparation = xStereoSeparation; }
+		inline fix StereoSeparation (void) { return m_data.xStereoSeparation; }
 
 		inline int HaveDrawBuffer (void) {
 			return m_states.bRender2TextureOk && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();

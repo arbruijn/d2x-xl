@@ -356,30 +356,49 @@ else
 
 //------------------------------------------------------------------------------
 
+void Draw2DFrameElements (void)
+{
+ogl.SetDrawBuffer (GL_BACK, 0);
+ogl.SetStereoSeparation (0);
+ogl.ColorMask (1,1,1,1,0);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (!gameStates.menus.nInMenu) {
+	PROF_START
+	cockpit->Render (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive (), 0);
+	PROF_END(ptCockpit)
+	}
+paletteManager.RenderEffect ();
+console.Draw ();
+FlashMine ();
+}
+
+//------------------------------------------------------------------------------
+
 void FlushFrame (fix xStereoSeparation)
 {
 if (!xStereoSeparation || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//no stereo or shutter glasses
-	FlashMine ();
+	Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
-else if (ogl.Enhance3D ()) {
-	FlashMine ();
-	if (xStereoSeparation > 0)
-		ogl.SwapBuffers (0, 0);
-	}
 else {
-	if (xStereoSeparation < 0) {
-		glFlush ();
-		ogl.ColorMask (1,1,1,1,0);
-		glAccum (GL_LOAD, 1.0); 
+	cockpit->DrawReticle (0, xStereoSeparation);
+	if (ogl.Enhance3D ()) {
+		if (xStereoSeparation > 0)
+			ogl.SwapBuffers (0, 0);
 		}
 	else {
-		glFlush ();
-		ogl.ColorMask (1,1,1,1,0);
-		FlashMine ();
-		glAccum (GL_ACCUM, 1.0); 
-	   glAccum (GL_RETURN, 1.0);
-		ogl.SwapBuffers (0, 0);
+		if (xStereoSeparation < 0) {
+			glFlush ();
+			ogl.ColorMask (1,1,1,1,0);
+			glAccum (GL_LOAD, 1.0); 
+			}
+		else {
+			glFlush ();
+			ogl.ColorMask (1,1,1,1,0);
+			glAccum (GL_ACCUM, 1.0); 
+			glAccum (GL_RETURN, 1.0);
+			ogl.SwapBuffers (0, 0);
+			}
 		}
 	}
 }
@@ -456,17 +475,17 @@ else {
 	RenderFrame (xStereoSeparation, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-
+#if 0
 if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_RED_CYAN) || (xStereoSeparation >= 0)) {
 	PROF_START
 	cockpit->Render (bExtraInfo, ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_RED_CYAN)) ? xStereoSeparation : 0);
 	PROF_END(ptCockpit)
 	}
-
 paletteManager.RenderEffect ();
 console.Draw ();
 if (gameStates.app.bSaveScreenshot && (gameOpts->render.xStereoSeparation >= 0))
 	SaveScreenShot (NULL, 0);
+#endif
 FlushFrame (xStereoSeparation);
 }
 

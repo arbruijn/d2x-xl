@@ -1057,7 +1057,7 @@ xy primaryOffsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
 xy secondaryOffsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 
 //draw the reticle
-void CGenericCockpit::DrawReticle (int bForceBig)
+void CGenericCockpit::DrawReticle (int bForceBig, fix xStereoSeparation)
 {
 if (cockpit->Hide ())
 	return;
@@ -1078,6 +1078,7 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 	return;
 	}
 
+m_info.xStereoSeparation = xStereoSeparation;
 x = CCanvas::Current ()->Width () / 2;
 if (m_info.xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
@@ -1877,7 +1878,7 @@ fontManager.SetCurrent (GAME_FONT);
 
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
 
-if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles)
+if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles && !ogl.StereoSeparation ())
 	DrawReticle (0);
 
 if (!bLimited) {
@@ -2018,6 +2019,7 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 
 	CObject*	viewerSave = gameData.objs.viewerP;
 	int		bRearViewSave = gameStates.render.bRearView;
+	//fix		xStereoSeparation = ogl.StereoSeparation ();
 	float		nZoomSave;
 
 	static int bOverlapDirty [2] = {0, 0};
@@ -2061,6 +2063,7 @@ if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
 else
 	RenderFrame (0, nWindow + 1);
 gameStates.zoom.nFactor = nZoomSave;
+//ogl.SetStereoSeparation (xStereoSeparation);
 transformation.Pop ();
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) {

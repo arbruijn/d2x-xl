@@ -970,7 +970,7 @@ gameStates.render.nShadowPass = 0;
 //PrintLog ("G3EndFrame\n");
 G3EndFrame ();
 if (nWindow)
-	ogl.SetEyeOffset (gameStates.render.xStereoSeparation = nEyeOffsetSave);
+	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);
 if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
