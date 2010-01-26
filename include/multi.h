@@ -133,7 +133,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_SYNC_MONSTERBALL		83
 #define MULTI_DROP_POWERUP				84
 #define MULTI_CREATE_WEAPON			85
-#define MULTI_MAX_TYPE					85
+#define MULTI_AMMO						86
+#define MULTI_MAX_TYPE					86
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -155,6 +156,7 @@ void MultiCapObjects (void);
 void MultiSendPlayerWeapons (int nPlayer);
 void MultiSendFlags (char);
 void MultiSendWeapons (int bForce);
+void MultiSendAmmo (void);
 void MultiSendMonsterball (int bForce, int bCreate);
 void MultiSendFire (void);
 void MultiSendDestroyReactor (int nObject, int nPlayer);

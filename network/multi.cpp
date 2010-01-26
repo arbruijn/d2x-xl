@@ -220,7 +220,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{99, -1}, // MULTI_SYNC_MONSTERBALL
 	{31, -1}, // MULTI_DROP_POWERUP
 	{31, -1}, // MULTI_CREATE_WEAPON
-	{4, -1}, // MULTI_AMMO
+	{4, -1} // MULTI_AMMO
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -4068,7 +4068,6 @@ gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (b
 
 void MultiDoAmmo (char *buf)
 {
-	int	i;
 	int	nPlayer = (int) buf [1];
 
 gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (buf + 2);
@@ -4109,9 +4108,8 @@ if (bForce || (t - nTimeout > 1000)) {
 
 void MultiSendAmmo (int bForce)
 {
-	int i, bufP = 0;
+	int bufP = 0;
 
-nTimeout = t;
 gameData.multigame.msg.buf [bufP++] = (char) MULTI_AMMO;
 gameData.multigame.msg.buf [bufP++] = (char) gameData.multiplayer.nLocalPlayer;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed);
