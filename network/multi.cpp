@@ -4106,7 +4106,7 @@ if (bForce || (t - nTimeout > 1000)) {
 
 //-----------------------------------------------------------------------------
 
-void MultiSendAmmo (int bForce)
+void MultiSendAmmo (void)
 {
 	int bufP = 0;
 
