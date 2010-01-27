@@ -248,17 +248,21 @@ if (gameOpts->render.n3DGlasses) {
 		m->m_bRebuild = -1;
 		}
 
-	m = menu + renderOpts.nEnhance3D;
-	v = m->m_value;
-	if (gameOpts->render.bEnhance3D != v)
-		gameOpts->render.bEnhance3D = v;
+	if (renderOpts.nEnhance3D >= 0) {
+		m = menu + renderOpts.nEnhance3D;
+		v = m->m_value;
+		if (gameOpts->render.bEnhance3D != v)
+			gameOpts->render.bEnhance3D = v;
+		}
 
-	m = menu + renderOpts.nColorGain;
-	v = m->m_value;
-	if (gameOpts->render.bColorGain != v) {
-		gameOpts->render.bColorGain = v;
-		sprintf (m->m_text, TXT_COLORGAIN, pszEnhance3D [v]);
-		m->m_bRebuild = -1;
+	if (renderOpts.nColorGain >= 0) {
+		m = menu + renderOpts.nColorGain;
+		v = m->m_value;
+		if (gameOpts->render.bColorGain != v) {
+			gameOpts->render.bColorGain = v;
+			sprintf (m->m_text, TXT_COLORGAIN, pszEnhance3D [v]);
+			m->m_bRebuild = -1;
+			}
 		}
 
 	m = menu + renderOpts.nFlipFrames;

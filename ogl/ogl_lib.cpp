@@ -763,7 +763,7 @@ else
 		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
 #if 1
-		if (bResetColorBuf && automap.Display ())
+		if (bResetColorBuf && (automap.Display () || gameStates.render.bRenderIndirect))
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
 #endif
@@ -1426,16 +1426,16 @@ const char* cc3DFS [3][2] = {
 	"void main() {\r\n" \
 	"vec3 c = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"float d = min (1.0 - c.b, 0.3);\r\n" \
-	"s = d / max (0.000001, c.r + c.g)\r\n" \
-	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (c, vec3 (s, s, 1.0 - d)), 1.0);*/\r\n" \
+	"float s = d / max (0.000001, c.r + c.g);\r\n" \
+	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, min (1.0, dot (c, vec3 (c.r * s, c.g * s, 1.0))), 1.0);\r\n" \
 	"/*gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);*/\r\n" \
 	"}",
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
 	"vec3 c = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"float d = min (1.0 - c.r, 0.3);\r\n" \
-	"s = d / max (0.000001, c.g + c.b)\r\n" \
-	"gl_FragColor = vec4 (dot (c, vec3 (1.0 - d, s, s)), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);*/\r\n" \
+	"float s = d / max (0.000001, c.g + c.b);\r\n" \
+	"gl_FragColor = vec4 (min (1.0, dot (c, vec3 (1.0, c.g * s, c.b * s))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
 	"/*gl_FragColor = vec4 (min (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);*/\r\n" \
 	"}"
 	},

@@ -361,8 +361,8 @@ void Draw2DFrameElements (void)
 ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-if (!gameStates.menus.nInMenu) {
+//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (!gameStates.menus.nInMenu && gameStates.app.bGameRunning) {
 	PROF_START
 	cockpit->Render (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive (), 0);
 	PROF_END(ptCockpit)
@@ -381,7 +381,8 @@ if (!xStereoSeparation || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//
 	ogl.SwapBuffers (0, 0);
 	}
 else {
-	cockpit->DrawReticle (0, xStereoSeparation);
+	if (!gameStates.menus.nInMenu && gameStates.app.bGameRunning)
+		cockpit->DrawReticle (0, xStereoSeparation);
 	if (ogl.Enhance3D ()) {
 		if (xStereoSeparation > 0)
 			ogl.SwapBuffers (0, 0);
