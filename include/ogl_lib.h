@@ -240,13 +240,16 @@ class COGL {
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
 		inline int Enhance3D (int bForce = 0) { 
-			return !(bForce || gameOpts->render.bEnhance3D)
+			return !(gameOpts->render.bUseShaders && m_states.bShadersOk)
 					 ? 0
-					 : (gameOpts->render.n3DGlasses == GLASSES_AMBER_BLUE) 
-					    ? 1 
-						 : (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) 
-							? 2 
-							: 0; }
+					 : !(bForce || gameOpts->render.bEnhance3D)
+						 ? 0
+						 : (gameOpts->render.n3DGlasses == GLASSES_AMBER_BLUE) 
+							 ? 1 
+							 : (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) 
+								? 2 
+								: 0; 
+			}
 
 #if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
