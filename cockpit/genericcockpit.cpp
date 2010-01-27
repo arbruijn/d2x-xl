@@ -1061,6 +1061,15 @@ void CGenericCockpit::DrawReticle (int bForceBig, fix xStereoSeparation)
 {
 if (cockpit->Hide ())
 	return;
+if (!gameOpts->render.cockpit.bReticle
+	 || !gameStates.app.bGameRunning 
+	 || gameStates.menus.nInMenu 
+	 || gameStates.render.bRearView 
+	 || gameStates.app.bPlayerIsDead 
+	 || gameStates.render.bChaseCam 
+	 || gameStates.render.bFreeCam
+	 || automap.Display ())
+	return;
 
 	int		x, y;
 	int		bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
@@ -1878,7 +1887,7 @@ fontManager.SetCurrent (GAME_FONT);
 
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
 
-if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !transformation.m_info.bUsePlayerHeadAngles && !gameOpts->render.n3DGlasses)
+if (!(transformation.m_info.bUsePlayerHeadAngles || gameOpts->render.n3DGlasses))
 	DrawReticle (0);
 
 if (!bLimited) {

@@ -381,8 +381,7 @@ if (!xStereoSeparation || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//
 	ogl.SwapBuffers (0, 0);
 	}
 else {
-	if (gameStates.app.bGameRunning && !(gameStates.menus.nInMenu || gameStates.render.bRearView || automap.Display ()))
-		cockpit->DrawReticle (0, xStereoSeparation);
+	cockpit->DrawReticle (0, xStereoSeparation);
 	if (ogl.Enhance3D ()) {
 		if (xStereoSeparation > 0)
 			ogl.SwapBuffers (0, 0);
