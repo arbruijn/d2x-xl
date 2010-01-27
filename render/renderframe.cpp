@@ -362,7 +362,7 @@ ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-if (!gameStates.menus.nInMenu && gameStates.app.bGameRunning) {
+if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_START
 	cockpit->Render (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive (), 0);
 	PROF_END(ptCockpit)
@@ -381,7 +381,7 @@ if (!xStereoSeparation || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//
 	ogl.SwapBuffers (0, 0);
 	}
 else {
-	if (!gameStates.menus.nInMenu && gameStates.app.bGameRunning)
+	if (gameStates.app.bGameRunning && !(gameStates.menus.nInMenu || gameStates.render.bRearView || automap.Display ()))
 		cockpit->DrawReticle (0, xStereoSeparation);
 	if (ogl.Enhance3D ()) {
 		if (xStereoSeparation > 0)
