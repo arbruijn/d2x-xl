@@ -226,7 +226,7 @@ if (renderOpts.n3DGlasses >= 0) {
 	if ((h = gameOpts->render.n3DGlasses) != v) {
 		gameOpts->render.n3DGlasses = v;
 		if (v && !gameOpts->render.xStereoSeparation) {
-			gameOpts->render.xStereoSeparation = I2X (1);
+			gameOpts->render.xStereoSeparation = I2X (1) / 4;
 			xStereoSeparation = (gameOpts->render.xStereoSeparation / (I2X (1) / 16)) - 1;
 			}
 		else if (!v && gameOpts->render.xStereoSeparation)
@@ -236,16 +236,16 @@ if (renderOpts.n3DGlasses >= 0) {
 		key = -2;
 		return nCurItem;
 		}
-	}
 
-if (gameOpts->render.n3DGlasses) {
-	m = menu + renderOpts.nStereoSeparation;
-	v = m->m_value;
-	if (xStereoSeparation != v) {
-		xStereoSeparation = v;
-		gameOpts->render.xStereoSeparation = (xStereoSeparation + 1) * (I2X (1) / 16);
-		sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
-		m->m_bRebuild = -1;
+	if (renderOpts.nStereoSeparation >= 0) {
+		m = menu + renderOpts.nStereoSeparation;
+		v = m->m_value;
+		if (xStereoSeparation != v) {
+			xStereoSeparation = v;
+			gameOpts->render.xStereoSeparation = (xStereoSeparation + 1) * (I2X (1) / 16);
+			sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
+			m->m_bRebuild = -1;
+			}
 		}
 
 	if (renderOpts.nEnhance3D >= 0) {
@@ -265,10 +265,12 @@ if (gameOpts->render.n3DGlasses) {
 			}
 		}
 
-	m = menu + renderOpts.nFlipFrames;
-	v = m->m_value;
-	if (gameOpts->render.bFlipFrames != v)
-		gameOpts->render.bFlipFrames = v;
+	if (renderOpts.nFlipFrames >= 0) {
+		m = menu + renderOpts.nFlipFrames;
+		v = m->m_value;
+		if (gameOpts->render.bFlipFrames != v)
+			gameOpts->render.bFlipFrames = v;
+		}
 	}
 
 m = menu + renderOpts.nCameras;
@@ -483,10 +485,15 @@ do {
 	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
-#if 1 //DBG
+
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.n3DGlasses]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	renderOpts.nColorGain =
+	renderOpts.nEnhance3D = 
+	renderOpts.nFlipFrames = 
+	renderOpts.nStereoSeparation = -1;
+
 	if (gameOpts->render.n3DGlasses) {
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
@@ -496,28 +503,14 @@ do {
 			*szSlider = *(TXT_COLORGAIN - 1);
 			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_E, HTX_COLORGAIN);
 			}
-		else
-			renderOpts.nColorGain = -1;
 		}
-	else
-		renderOpts.nColorGain =
-		renderOpts.nEnhance3D = 
-		renderOpts.nFlipFrames = 
-		renderOpts.nStereoSeparation = -1;
-#else
-	xStereoSeparation = 0;
-	renderOpts.nStereo = -1;
-	renderOpts.nStereoSeparation = -1;
-	renderOpts.nFastScreen = -1;
-#endif
 
 	m.AddText ("");
-	if (ogl.Enhance3D (1)) {
-		renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.bEnhance3D, KEY_D, HTX_ENHANCE_3D);
+	if (gameOpts->render.n3DGlasses) {
+		if (ogl.Enhance3D (1))
+			renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.bEnhance3D, KEY_D, HTX_ENHANCE_3D);
+		renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 		}
-	else
-		renderOpts.nEnhance3D = -1;
-	renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 	optSubTitles = m.AddCheck (TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
 
 #if DBG
