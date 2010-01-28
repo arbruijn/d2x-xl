@@ -289,11 +289,8 @@ if (!bInitialized) {
 	memset (&tiRender, 0, sizeof (tiRender));
 	bInitialized = true;
 	}
-#ifdef _OPENMP
-for (int i = 0; i < 2; i++) {
-#else
+#ifndef _OPENMP
 for (int i = 0; i < gameStates.app.nThreads; i++) {
-#endif
 	if (!tiRender.ti [i].pThread) {
 		tiRender.ti [i].bDone =
 		tiRender.ti [i].bExec = 0;
@@ -301,19 +298,23 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 		tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 		}
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void ControlRenderThreads (void)
 {
+#ifndef _OPENMP
 StartRenderThreads ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void EndRenderThreads (void)
 {
+#ifndef _OPENMP
 tiRender.ti [0].bDone =
 tiRender.ti [1].bDone = 1;
 G3_SLEEP (10);
@@ -324,6 +325,7 @@ for (int i = 0; i < 2; i++) {
 		}
 	}
 EndTranspRenderThread ();
+#endif
 EndEffectsThread ();
 }
 
@@ -358,10 +360,12 @@ if (!bInitialized) {
 	memset (&tiEffects, 0, sizeof (tiEffects));
 	bInitialized = true;
 	}
+#ifndef _OPENMP
 tiEffects.bDone = 0;
 tiEffects.bExec = 0;
 if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
 	gameData.app.bUseMultiThreading [rtEffects] = 0;
+#endif
 }
 
 //------------------------------------------------------------------------------

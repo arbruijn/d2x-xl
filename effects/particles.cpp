@@ -428,6 +428,8 @@ inline bool CParticle::IsVisible (void)
 #if 0
 return gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible;
 #else
+if ((m_nSegment < 0) || (m_nSegment >= gameData.segs.nSegments))
+	return false;
 if (gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible)
 	return true;
 short* childP = SEGMENTS [m_nSegment].m_children;
@@ -995,6 +997,7 @@ int CParticleEmitter::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mO
 {
 if (!m_particles.Create (nMaxParts))
 	return 0;
+m_particles.Clear ();
 m_nLife = nLife;
 m_nBirth = nCurTime;
 m_nSpeed = nSpeed;
@@ -1194,9 +1197,7 @@ else
 #endif
  {
 		float			brightness = Brightness ();
-		int			nParts = m_nParts, h, i, j,
-						nFirstPart = m_nFirstPart,
-						nPartLimit = m_nPartLimit;
+		int			h, i, j;
 		int			bVisible = MayBeVisible ();
 
 #if DBG
@@ -1205,7 +1206,7 @@ else
 	if (m_nPartLimit > int (m_particles.Length ()))
 		m_nPartLimit = int (m_particles.Length ());
 #endif
-	for (h = 0, i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
+	for (h = 0, i = m_nParts, j = m_nFirstPart; i; i--, j = (j + 1) % m_nPartLimit)
 		if ((bVisible || m_particles [j].IsVisible ()) && transparencyRenderer.AddParticle (m_particles + j, brightness, nThread))
 			h++;
 	return h;
@@ -1396,8 +1397,9 @@ if (m_bValid < 1)
 	return 0;
 
 	int	h = 0;
+	CParticleEmitter* emitterP = m_emitters.Buffer ();
 
-if (m_emitters.Buffer ()) {
+if (emitterP) {
 	if (!particleImageManager.Load (m_nType))
 		return 0;
 	if ((m_nObject >= 0) && (m_nObject < 0x70000000) &&
@@ -1405,7 +1407,6 @@ if (m_emitters.Buffer ()) {
 		  (OBJECTS [m_nObject].info.nSignature != m_nSignature) ||
 		  (particleManager.GetObjectSystem (m_nObject) < 0)))
 		SetLife (0);
-	CParticleEmitter *emitterP = m_emitters.Buffer ();
 	for (int i = m_nEmitters; i; i--, emitterP++)
 		h += emitterP->Render (-1);
 	}
