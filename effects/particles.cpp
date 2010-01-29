@@ -1201,7 +1201,7 @@ else
 		int			bVisible = MayBeVisible ();
 
 #if DBG
-	if (nFirstPart >= int (m_particles.Length ()))
+	if (m_nFirstPart >= int (m_particles.Length ()))
 		return 0;
 	if (m_nPartLimit > int (m_particles.Length ()))
 		m_nPartLimit = int (m_particles.Length ());

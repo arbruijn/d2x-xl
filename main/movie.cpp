@@ -849,8 +849,10 @@ if (!m_robotP)
 	int res;
 
 gameOpts->movies.bFullScreen = 1;
+#if 0
 if (ogl.m_states.nDrawBuffer == GL_BACK)
-	//paletteManager.ResumeEffect ();
+	paletteManager.ResumeEffect ();
+#endif
 res = MVE_rmStepMovie ();
 //paletteManager.ResumeEffect ();
 if (res == MVE_ERR_EOF) {   //end of movie, so reset
