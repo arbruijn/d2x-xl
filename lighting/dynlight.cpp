@@ -134,7 +134,7 @@ short CLightManager::Find (short nSegment, short nSide, short nObject)
 	CDynLight*	pl = &m_data.lights [0];
 
 	if (nObject >= 0)
-		return m_data.owners [nObject];
+		return m_data.owners.Buffer () ? m_data.owners [nObject] : -1;
 	if (nSegment >= 0)
 		for (short i = 0; i < m_data.nLights [0]; i++, pl++)
 			if ((pl->info.nSegment == nSegment) && (pl->info.nSide == nSide))
@@ -505,7 +505,7 @@ if ((nLight >= 0) && (nLight < m_data.nLights [0])) {
 
 int CLightManager::Delete (short nSegment, short nSide, short nObject)
 {
-	int	nLight = Find (nSegment, nSide, nObject);
+	int nLight = Find (nSegment, nSide, nObject);
 
 if (nLight < 0)
 	return 0;

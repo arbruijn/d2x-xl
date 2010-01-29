@@ -512,7 +512,7 @@ return nObject;
 //remove CObject from the world
 void ReleaseObject (short nObject)
 {
-if (nObject <= 0)
+if ((nObject <= 0) || (nObject >= LEVEL_OBJECTS))
 	return;
 
 	int nParent;
@@ -546,7 +546,12 @@ if ((objP->info.nType == OBJ_ROBOT) ||
 objP->info.nType = OBJ_NONE;		//unused!
 objP->info.nSignature = -1;
 objP->info.nSegment = -1;				// zero it!
-FreeObject (nObject);
+try {
+	FreeObject (nObject);
+	}
+catch (...) {
+	PrintLog ("Error freeing an object\n");
+	}
 SpawnLeftoverPowerups (nObject);
 }
 

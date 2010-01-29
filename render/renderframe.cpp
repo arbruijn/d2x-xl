@@ -427,7 +427,7 @@ if (xStereoSeparation <= 0) {
 		bRetry = false;
 		try {
 			lightningManager.SetLights ();
-		}
+			}
 		catch(...) {
 			bRetry = true;
 			}

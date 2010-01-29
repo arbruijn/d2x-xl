@@ -846,13 +846,12 @@ if (info.nType != nNewType) {
 //frees up an CObject.  Generally, ReleaseObject () should be called to get
 //rid of an CObject.  This function deallocates the CObject entry after
 //the CObject has been unlinked
+
 void FreeObject (int nObject)
 {
-	CObject	*objP = OBJECTS + nObject;
-
-#if DBG
 if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 	return;
+#if DBG
 if (nObject == nDbgObj) {
 	//PrintLog ("freeing object #%d\n", nObject);
 	nDbgObj = nDbgObj;
@@ -862,6 +861,8 @@ if (nObject == nDbgObj) {
 		nDbgObj = nDbgObj;
 	}
 #endif
+	CObject	*objP = OBJECTS + nObject;
+
 objP->Unlink ();
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
