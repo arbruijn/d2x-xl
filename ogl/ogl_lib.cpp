@@ -77,6 +77,10 @@ static DWORD nOglLibFlags [2] = {1680960820, (DWORD) -1};
 
 COGL ogl;
 
+#define ZNEAR		1.0
+#define ZSCREEN	(automap.Display () ? 20.0 : 10.0)
+#define ZFAR		ogl.m_data.zFar
+
 //------------------------------------------------------------------------------
 
 #if DBG_SHADOWS
@@ -117,6 +121,13 @@ tRenderQuality renderQualities [] = {
 	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1},	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
 	{GL_LINEAR, GL_LINEAR, 0, 1}	// special mode for high quality movie rendering: smooth textures + anti aliasing
 	};
+
+//------------------------------------------------------------------------------
+
+double COGL::ZScreen (void)
+{
+return ZSCREEN;
+}
 
 //------------------------------------------------------------------------------
 
@@ -488,12 +499,6 @@ memset (m_states.clientStates, 0, sizeof (m_states.clientStates));
 
 //------------------------------------------------------------------------------
 
-#define ZNEAR		1.0
-#define ZSCREEN	(automap.Display () ? 20.0 : 10.0)
-#define ZFAR		ogl.m_data.zFar
-
-//------------------------------------------------------------------------------
-
 inline double DegToRad (double d)
 {
 return d * (Pi / 180.0);
@@ -527,11 +532,16 @@ else
 #endif
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
-if (StereoSeparation ())
+if (StereoSeparation () && (gameOpts->render.n3DMethod == STEREO_PARALLEL))
 	SetupFrustum ();
-else
+else {
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom),
 		   			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), ZNEAR, ZFAR);
+#if 0
+	if (StereoSeparation ())
+		gluLookAt (X2D (StereoSeparation ()) / 2, 0.0, 0.0, 0.0, 0.0, ZSCREEN, 0.0, 0.0, 0.0);
+#endif
+	}
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
 m_data.depthScale [X] = float (ZFAR / (ZFAR - ZNEAR));

@@ -302,7 +302,9 @@ class COGL {
 
 		int StencilOff (void);
 		void StencilOn (int bStencil);
-
+		
+		double ZScreen (void);
+		
 		void InitEnhanced3DShader (void);
 		void DeleteEnhanced3DShader (void);
 };

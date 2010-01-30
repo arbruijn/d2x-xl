@@ -76,6 +76,7 @@ static struct {
 	int	nColorLevel;
 	int	n3DGlasses;
 	int	nStereoSeparation;
+	int   n3DMethod;
 	int	nEnhance3D;
 	int	nColorGain;
 	int	nFlipFrames;
@@ -99,8 +100,8 @@ static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
 static const char *psz3DGlasses [6];
-static const char *pszEnhanced3D [4];
 static const char *pszEnhance3D [4];
+static const char *psz3DMethod [2];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
 static int xStereoSeparation = 0;
@@ -257,6 +258,16 @@ if (renderOpts.n3DGlasses >= 0) {
 			gameOpts->render.bEnhance3D = v;
 		}
 
+	if (renderOpts.n3DMethod >= 0) {
+		m = menu + renderOpts.n3DMethod;
+		v = m->m_value;
+		if (gameOpts->render.n3DMethod != v) {
+			gameOpts->render.n3DMethod = v;
+			sprintf (m->m_text, TXT_3D_METHOD, psz3DMethod [v]);
+			m->m_bRebuild = -1;
+			}
+		}
+
 	if (renderOpts.nColorGain >= 0) {
 		m = menu + renderOpts.nColorGain;
 		v = m->m_value;
@@ -387,15 +398,13 @@ psz3DGlasses [3] = TXT_BLUE_RED;
 psz3DGlasses [4] = TXT_GREEN_RED;
 psz3DGlasses [5] = TXT_SHUTTER;
 
-pszEnhanced3D [0] = TXT_NONE;
-pszEnhanced3D [1] = TXT_LOW;
-pszEnhanced3D [2] = TXT_MEDIUM;
-pszEnhanced3D [3] = TXT_HIGH;
-
 pszEnhance3D [0] = TXT_OFF;
 pszEnhance3D [1] = TXT_LOW;
 pszEnhance3D [2] = TXT_MEDIUM;
 pszEnhance3D [3] = TXT_HIGH;
+
+psz3DMethod [0] = TXT_3D_PARALLEL;
+psz3DMethod [1] = TXT_3D_TOE_IN;
 
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
@@ -491,6 +500,7 @@ do {
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.n3DGlasses]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	renderOpts.n3DMethod = 
 	renderOpts.nColorGain =
 	renderOpts.nEnhance3D = 
 	renderOpts.nFlipFrames = 
@@ -500,6 +510,9 @@ do {
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
+		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.n3DMethod]);
+		*szSlider = *(TXT_STEREO_SEPARATION - 1);
+		renderOpts.n3DMethod = m.AddSlider (szSlider + 1, gameOpts->render.n3DMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
 		if (ogl.Enhance3D (1)) {
 			sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);
 			*szSlider = *(TXT_COLORGAIN - 1);

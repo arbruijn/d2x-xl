@@ -1077,8 +1077,8 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 else {
 	transformation.m_info.bUsePlayerHeadAngles = 1;
 	if (gameOpts->input.trackIR.bMove [0]) {
-		transformation.m_info.playerHeadAngles[HA] = (fixang) -tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1);
-		transformation.m_info.playerHeadAngles[PA] = (fixang) tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1);
+		transformation.m_info.playerHeadAngles[HA] = fixang (-tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1));
+		transformation.m_info.playerHeadAngles[PA] = fixang (tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1));
 		}
 	else
 		transformation.m_info.playerHeadAngles[HA] =
@@ -1090,14 +1090,14 @@ else {
 	}
 fDeadzone = 256.0f * gameOpts->input.trackIR.nDeadzone;
 fScale = 16384.0f / (16384.0f - fDeadzone);
-if (gameOpts->input.trackIR.bMove [2] && ((float) fabs (tirInfo.fvTrans.x) > fDeadzone)) {
+if (gameOpts->input.trackIR.bMove [2] && (float (fabs (tirInfo.fvTrans.x) > fDeadzone))) {
 	if (tirInfo.fvTrans.x < 0)
 		tirInfo.fvTrans.x += fDeadzone;
 	else
 		tirInfo.fvTrans.x -= fDeadzone;
-	Controls [0].sidewaysThrustTime -= (int) ((tirInfo.fvTrans.x - fDeadzone) * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
+	Controls [0].sidewaysThrustTime -= int ((tirInfo.fvTrans.x - fDeadzone) * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
 	}
-if (gameOpts->input.trackIR.bMove [3] && ((float) fabs (tirInfo.fvTrans.y) > fDeadzone)) {
+if (gameOpts->input.trackIR.bMove [3] && (float (fabs (tirInfo.fvTrans.y) > fDeadzone))) {
 	if (tirInfo.fvTrans.y < 0)
 		tirInfo.fvTrans.y += fDeadzone;
 	else

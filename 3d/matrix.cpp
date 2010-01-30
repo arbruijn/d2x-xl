@@ -38,14 +38,31 @@ ScaleMatrix (1);
 
 //------------------------------------------------------------------------------
 //set view from x,y,z, viewer matrix, and xZoom.  Must call one of g3_setView_*()
-void G3SetViewMatrix (const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale)
+
+#define ZSCREEN 10.0
+
+void G3SetViewMatrix (const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation)
 {
+	static int t = 0;
+
 transformation.m_info.zoom = xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
 transformation.m_info.posf [0].Assign (transformation.m_info.pos);
 transformation.m_info.posf [1].Assign (transformation.m_info.pos);
-transformation.m_info.view [0] = mOrient;
+if (xStereoSeparation && (gameOpts->render.n3DMethod == STEREO_TOE_IN)) {
+	fix zScreen = F2X (ogl.ZScreen () * 1.0);
+	CFixVector o = CFixVector::Create (fix (xStereoSeparation / 2), 0, 0);
+	CFixVector h = CFixVector::Create (fix (xStereoSeparation / 2), 0, zScreen);
+	CFixVector::Normalize (o);
+	CFixVector::Normalize (h);
+	fix d = CFixVector::Dot (h, o);
+	CAngleVector a = CAngleVector::Create (0, 0, (xStereoSeparation < 0) ? d : -d);
+	CFixMatrix r = CFixMatrix::Create (a);
+	transformation.m_info.view [0] = const_cast<CFixMatrix&> (mOrient) * r;
+	}
+else
+	transformation.m_info.view [0] = mOrient;
 transformation.m_info.viewf [0].Assign (transformation.m_info.view [0]);
 ScaleMatrix (bOglScale);
 CFixMatrix::Transpose (transformation.m_info.viewf [2], transformation.m_info.view [0]);

@@ -1919,6 +1919,9 @@ const char *defaultGameTexts [][2] = {
  {"~Aufhellen: %s", "Color ~Gain: %s"},
  {"3~D Effekt verstaerken", "enhance 3-~D effect"},
  {"~Frames tauschen", "~Flip frames"},
+ {"pro~Jektion: %s", "pro~Jection: %s"},
+ {"parallel", "parallel"},
+ {"gekreuzt", "toe in"},
 #if 0
  {"", ""},
 #endif
@@ -2622,6 +2625,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann mit entsprechenden 3D-Brillen der\n3D-Effekt verstaerkt werden.", "Enhance the 3D effect when using appropriate glasses."},
  {"Hier kann die 3D-Ansicht aufgehellt werden\n(dabei koennen Bilddetails verschwinden).", "Increase the 3D view's brightness here\n(this can cause image details to disappear)."},
  {"Wenn angekreuzt, werden rechtes und linkes Bild vertauscht.", "If checked, left and right frame are exchanged."},
+ {"Hier kann eine Stereo-Projektionsmethode ausgewaehlt werden.\n\nParallel: Die Blickrichtung beider Augen ist parallel.\nGekreuzt: Die Blickrichtungen beider Augen kreuzen sich.", 
+  "Select a stereo rendering projection method here.\n\nParallel: View direction of both eyes is parallel.\nToe in: View directions of both eyes are crossing each other."},
 #if 0
  {"", ""},
 #endif

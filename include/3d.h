@@ -102,7 +102,7 @@ void G3StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation);
 void G3SetViewAngles (const CFixVector& view_pos, const CAngleVector& view_orient,fix zoom);
 
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_setView_* ()
-void G3SetViewMatrix (const CFixVector& view_pos, const CFixMatrix& view_matrix,fix zoom, int bOglScale);
+void G3SetViewMatrix (const CFixVector& view_pos, const CFixMatrix& view_matrix,fix zoom, int bOglScale, fix xStereoSeparation = 0);
 
 //end the frame
 void G3EndFrame (void);
