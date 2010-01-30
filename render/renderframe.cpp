@@ -661,12 +661,15 @@ if (!ogl.Enhance3D () || !(gameData.app.nFrameCount & 1)) {
 	}
 if (!gameOpts->render.xStereoSeparation /*|| gameStates.app.bSaveScreenshot*/)
 	RenderMonoFrame ();
-else if (gameStates.menus.nInMenu && ogl.Enhance3D ()) {
-	RenderMonoFrame ((gameData.app.nFrameCount & 1) ? gameOpts->render.xStereoSeparation : -gameOpts->render.xStereoSeparation);
-	}
 else {
-	RenderMonoFrame (-gameOpts->render.xStereoSeparation);
-	RenderMonoFrame (gameOpts->render.xStereoSeparation);
+	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.xStereoSeparation : gameOpts->render.xStereoSeparation;
+	if (gameStates.menus.nInMenu && ogl.Enhance3D ()) {
+		RenderMonoFrame ((gameData.app.nFrameCount & 1) ? xStereoSeparation : -xStereoSeparation);
+		}
+	else {
+		RenderMonoFrame (-xStereoSeparation);
+		RenderMonoFrame (xStereoSeparation);
+		}
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)

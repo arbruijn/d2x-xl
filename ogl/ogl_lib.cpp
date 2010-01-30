@@ -488,8 +488,33 @@ memset (m_states.clientStates, 0, sizeof (m_states.clientStates));
 
 //------------------------------------------------------------------------------
 
-#define ZNEAR	1
-#define ZFAR	ogl.m_data.zFar
+#define ZNEAR		1.0
+#define ZSCREEN	10.0
+#define ZFAR		ogl.m_data.zFar
+
+//------------------------------------------------------------------------------
+
+inline double DegToRad (double d)
+{
+return d * (Pi / 180.0);
+}
+
+
+void SetFrustum (void)
+{
+double fovy = gameStates.render.glFOV * X2D (transformation.m_info.zoom);
+double aspect = double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ());
+double h = ZNEAR * tan (DegToRad (fovy * 0.5));
+double w = aspect * h;
+double bias = X2D (ogl.StereoSeparation ()) / 2.0;
+double shift = bias * ZNEAR / ZSCREEN;
+if (bias < 0)
+	glFrustum (-w - shift, w - shift, h, -h, ZNEAR, ZFAR);
+else 
+	glFrustum (-w + shift, w + shift, h, -h, ZNEAR, ZFAR);
+}
+
+//------------------------------------------------------------------------------
 
 void COGL::SetFOV (void)
 {
@@ -505,8 +530,11 @@ glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);
-gluPerspective (gameStates.render.glFOV * (double (transformation.m_info.zoom) / 65536.0),
-      			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), ZNEAR, ZFAR);
+if (StereoSeparation ())
+	SetFrustum ();
+else
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom),
+		   			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), ZNEAR, ZFAR);
 m_data.depthScale [X] = float (ZFAR / (ZFAR - ZNEAR));
 m_data.depthScale [Y] = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 m_data.depthScale [Z] = float (ZFAR - ZNEAR);
@@ -801,6 +829,7 @@ else
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable (GL_STENCIL_TEST);
 	}
+SetFrustum ();
 nError = glGetError ();
 }
 
@@ -978,6 +1007,7 @@ if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 	glScalef (1, 1, -1);
 	glMultMatrixf (reinterpret_cast<GLfloat*> (transformation.m_info.viewf [2].Vec ()));
 	glTranslatef (-transformation.m_info.posf [1][0], -transformation.m_info.posf [1][1], -transformation.m_info.posf [1][2]);
+	SetFrustum ();
 	++m_states.nTransformCalls;
 	}
 }
