@@ -489,7 +489,7 @@ memset (m_states.clientStates, 0, sizeof (m_states.clientStates));
 //------------------------------------------------------------------------------
 
 #define ZNEAR		1.0
-#define ZSCREEN	(automap.Display () ? 100.0 : 10.0)
+#define ZSCREEN	(automap.Display () ? 20.0 : 10.0)
 #define ZFAR		ogl.m_data.zFar
 
 //------------------------------------------------------------------------------
