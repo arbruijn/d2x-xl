@@ -1922,7 +1922,7 @@ const char *defaultGameTexts [][2] = {
  {"pro~Jektion: %s", "pro~Jection: %s"},
  {"parallel", "parallel"},
  {"gekreuzt", "toe in"},
- {"Bildschirm-Abstand: %d", ""},
+ {"b~Ildschirm-Abstand: %d", "screen d~Istance: %d"},
 #if 0
  {"", ""},
 #endif
@@ -2626,8 +2626,9 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann mit entsprechenden 3D-Brillen der\n3D-Effekt verstaerkt werden.", "Enhance the 3D effect when using appropriate glasses."},
  {"Hier kann die 3D-Ansicht aufgehellt werden\n(dabei koennen Bilddetails verschwinden).", "Increase the 3D view's brightness here\n(this can cause image details to disappear)."},
  {"Wenn angekreuzt, werden rechtes und linkes Bild vertauscht.", "If checked, left and right frame are exchanged."},
- {"Hier kann eine Stereo-Projektionsmethode ausgewaehlt werden.\n\nParallel: Die Blickrichtung beider Augen ist parallel.\nGekreuzt: Die Blickrichtungen beider Augen kreuzen sich.", 
-  "Select a stereo rendering projection method here.\n\nParallel: View direction of both eyes is parallel.\nToe in: View directions of both eyes are crossing each other."},
+ {"Hier kann eine Stereo-Projektionsmethode ausgewaehlt werden.\n\nParallel: Die Blickrichtung beider Augen ist parallel.\nOptisch korrekt, aber schlechte Raumtrennung entfernter Strukturen.\n\nGekreuzt: Die Blickrichtungen beider Augen kreuzen sich.\nBessere Raumtrennung entferter Strukturen\nauf Kosten minimaler Bildverzerrung.", 
+  "Select a stereo rendering projection method here.\n\nParallel: View direction of both eyes is parallel.\nOptically correct, but low stereo separation of distant structures.\n\nToe in: View directions of both eyes are crossing each other.\nBetter stereo separation of distant structures at the cost\nof a minimal distortion of the view."},
+ {"Hier kann eingestellt werden, in welcher Entfernung im Raum\ndie Bildschirmoberflaeche liegt.", "Chose the distance of the screen surface in 3D space here."},
 #if 0
  {"", ""},
 #endif
