@@ -364,7 +364,7 @@ ogl.ColorMask (1,1,1,1,0);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_START
-	cockpit->Render (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive (), 0);
+	cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);
 	PROF_END(ptCockpit)
 	}
 paletteManager.RenderEffect ();
@@ -449,7 +449,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		}
   	gameData.objs.viewerP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP;
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
-	if (!xStereoSeparation && cameraManager.Render ())
+	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (xStereoSeparation, 0);
 	if (xStereoSeparation <= 0)
@@ -471,7 +471,7 @@ else {
 		return;
 		}
 	UpdateRenderedData (0, gameData.objs.viewerP, gameStates.render.bRearView, 0);
-	if (!xStereoSeparation && cameraManager.Render ())
+	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (xStereoSeparation, 0);
 	}

@@ -188,8 +188,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{2, -1},  // MULTI_CAPTURE_BONUS
 	{2, -1},  // MULTI_GOT_FLAG
 	{12, -1}, // MULTI_DROP_FLAG
-	{1
-, -1}, // MULTI_ROBOT_CONTROLS
+	{142, -1}, // MULTI_ROBOT_CONTROLS
 	{2, -1},  // MULTI_FINISH_GAME
 	{3, -1},  // MULTI_RANK
 	{1, -1},  // MULTI_MODEM_PING
@@ -210,7 +209,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},	 // MULTI_PLAYER_SHIELDS, -1},
 	{2, -1},	 // MULTI_INVUL
 	{2, -1},	 // MULTI_DEINVUL
-	{29, -1}, // MULTI_WEAPONS
+	{31, -1}, // MULTI_WEAPONS
 	{40, -1}, // MULTI_MONSTERBALL
 	{2, -1},  // MULTI_CHEATING
 	{5, -1},  // MULTI_TRIGGER_EXT
