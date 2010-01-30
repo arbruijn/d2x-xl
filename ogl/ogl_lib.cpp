@@ -500,13 +500,13 @@ return d * (Pi / 180.0);
 }
 
 
-void SetFrustum (void)
+void COGL::SetupFrustum (void)
 {
 double fovy = gameStates.render.glFOV * X2D (transformation.m_info.zoom);
 double aspect = double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ());
 double h = ZNEAR * tan (DegToRad (fovy * 0.5));
 double w = aspect * h;
-double shift = X2D (ogl.StereoSeparation ()) / 2.0 * ZNEAR / ZSCREEN;
+double shift = X2D (StereoSeparation ()) / 2.0 * ZNEAR / ZSCREEN;
 if (shift < 0)
 	glFrustum (-w - shift, w - shift, -h, h, ZNEAR, ZFAR);
 else 
@@ -515,7 +515,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void COGL::SetFOV (void)
+void COGL::SetupProjection (void)
 {
 #if 0
 gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
@@ -528,7 +528,7 @@ else
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
 if (StereoSeparation ())
-	SetFrustum ();
+	SetupFrustum ();
 else
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom),
 		   			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), ZNEAR, ZFAR);
@@ -1447,8 +1447,17 @@ glDeleteTextures (n, hTextures);
 //------------------------------------------------------------------------------
 
 const char* cc3DFS [3][2] = {
-#if 1
 	{
+#if 1
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" \
+	"}",
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"gl_FragColor = vec4 (min (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
+	"}"
+#else
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
 	"vec3 c = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
@@ -1463,22 +1472,9 @@ const char* cc3DFS [3][2] = {
 	"gl_FragColor = vec4 (min (1.0, dot (c, vec3 (1.0, c.g * s, c.b * s))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
 	"/*gl_FragColor = vec4 (min (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);*/\r\n" \
 	"}"
+#endif
 	},
 	{
-#if 0
-	"uniform sampler2D leftFrame, rightFrame;\r\n" \
-	"void main() {\r\n" \
-	"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cr.b) / (cr.r + cr.g);\r\n" \
-	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).rg, dot (cr, vec3 (d * cr.r, d * cr.g, 1.0)), 1.0);\r\n" \
-	"}",
-	"uniform sampler2D leftFrame, rightFrame;\r\n" \
-	"void main() {\r\n" \
-	"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float d = (1.0 - cl.r) / cl.g + cl.b;\r\n" \
-	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, d * cl.g, d * cl.b)), texture2D (rightFrame, gl_TexCoord [0].xy).gb, 1.0);\r\n" \
-	"}"
-#else
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"uniform float gain;\r\n" \
 	"void main() {\r\n" \
@@ -1497,20 +1493,8 @@ const char* cc3DFS [3][2] = {
 	"float dr = 1.0 + cr.r /  max (0.000001, cr.g + cr.b) / gain;\r\n" \
 	"gl_FragColor = vec4 (dot (cl, vec3 (1.0, dl * cl.g, dl * cl.b)), cr.g * dr, cr.b * dr, 1.0);\r\n" \
 	"}"
-#endif
 	}
 	};
-#else
-	"uniform sampler2D leftFrame, rightFrame;\r\n" \
-	"void main() {\r\n" \
-	"vec3 rightColor = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-	"float t = rightColor.r + rightColor.g;\r\n" \
-	"float s = min (t, 0.3);\r\n" \
-	"vec3 scale = vec3 (s / t * rightColor.r, s / t * rightColor.g, 1.0 - s);\r\n" \
-	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (rightColor, scale), 1.0);\r\n" \
-	"}"
-	;
-#endif
 
 const char* cc3DVS = 
 	"void main(void){" \

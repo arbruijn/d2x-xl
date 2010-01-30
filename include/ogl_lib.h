@@ -204,7 +204,8 @@ class COGL {
 		void InitState (void);
 		void InitShaders (void);
 
-		void SetFOV (void);
+		void SetupProjection (void);
+		void SetupFrustum (void);
 		void SelectTMU (int nTMU, bool bClient = false);
 		int EnableClientState (GLuint nState, int nTMU = -1);
 		int DisableClientState (GLuint nState, int nTMU = -1);
