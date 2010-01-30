@@ -1959,12 +1959,10 @@ void LoadGameTexts(void);
 #define TXT_3D_METHOD					GT(1175)
 #define TXT_3D_PARALLEL					GT(1176)
 #define TXT_3D_TOE_IN					GT(1177)
+#define TXT_3D_SCREEN_DIST				GT(1178)
 
 #if 0
 
-#define TXT_					GT(1176)
-#define TXT_					GT(1177)
-#define TXT_					GT(1178)
 #define TXT_					GT(1179)
 #define TXT_					GT(1180)
 #define TXT_					GT(1181)
@@ -2522,6 +2520,7 @@ void LoadGameTexts(void);
 #define HTX_COLORGAIN					HT(414)
 #define HTX_FLIPFRAMES					HT(415)
 #define HTX_3D_METHOD					HT(416)
+#define HTX_3D_SCREEN_DIST				HT(417)
 
 #if 0
 

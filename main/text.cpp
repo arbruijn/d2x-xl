@@ -1865,7 +1865,7 @@ const char *defaultGameTexts [][2] = {
  {"~Schatten: %s", "sh~Adows: %s"},
  {"~Beleuchtung: %s", "~Lighting: %s"},
  {"~Lightmaps: %s", "light~Maps: %s"},
- {"~Kameras: %s", "~Cameras: %s"},
+ {"K~Ameras: %s", "c~Ameras: %s"},
  {"~Abgasstrahl", "thr~Uster flames: %s"},
  {"2D", "2D"},
  {"3D", "3D"},
@@ -1916,12 +1916,13 @@ const char *defaultGameTexts [][2] = {
  {"blau/rot", "blue/red"},
  {"gruen/rot", "green/red"},
  {"shutter", "shutter"},
- {"~Aufhellen: %s", "Color ~Gain: %s"},
+ {"a~Ufhellen: %s", "color ~Gain: %s"},
  {"3~D Effekt verstaerken", "enhance 3-~D effect"},
  {"~Frames tauschen", "~Flip frames"},
  {"pro~Jektion: %s", "pro~Jection: %s"},
  {"parallel", "parallel"},
  {"gekreuzt", "toe in"},
+ {"Bildschirm-Abstand: %d", ""},
 #if 0
  {"", ""},
 #endif

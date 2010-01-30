@@ -75,8 +75,9 @@ static struct {
 	int	nLightmaps;
 	int	nColorLevel;
 	int	n3DGlasses;
-	int	nStereoSeparation;
+	int   nScreenDist;
 	int   n3DMethod;
+	int	nStereoSeparation;
 	int	nEnhance3D;
 	int	nColorGain;
 	int	nFlipFrames;
@@ -264,6 +265,16 @@ if (renderOpts.n3DGlasses >= 0) {
 		if (gameOpts->render.n3DMethod != v) {
 			gameOpts->render.n3DMethod = v;
 			sprintf (m->m_text, TXT_3D_METHOD, psz3DMethod [v]);
+			m->m_bRebuild = -1;
+			}
+		}
+
+	if (renderOpts.nScreenDist >= 0) {
+		m = menu + renderOpts.nScreenDist;
+		v = m->m_value;
+		if (gameOpts->render.nScreenDist != v) {
+			gameOpts->render.nScreenDist = v;
+			sprintf (m->m_text, TXT_3D_SCREEN_DIST, nScreenDists [v]);
 			m->m_bRebuild = -1;
 			}
 		}
@@ -507,16 +518,22 @@ do {
 	renderOpts.nStereoSeparation = -1;
 
 	if (gameOpts->render.n3DGlasses) {
+		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.n3DMethod]);
+		*szSlider = *(TXT_3D_METHOD - 1);
+		renderOpts.n3DMethod = m.AddSlider (szSlider + 1, gameOpts->render.n3DMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
+
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
-		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.n3DMethod]);
-		*szSlider = *(TXT_STEREO_SEPARATION - 1);
-		renderOpts.n3DMethod = m.AddSlider (szSlider + 1, gameOpts->render.n3DMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
+
+		sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.nScreenDist]);
+		*szSlider = *(TXT_3D_SCREEN_DIST - 1);
+		renderOpts.nScreenDist = m.AddSlider (szSlider + 1, gameOpts->render.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_E, HTX_3D_SCREEN_DIST);
+
 		if (ogl.Enhance3D (1)) {
 			sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);
 			*szSlider = *(TXT_COLORGAIN - 1);
-			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_E, HTX_COLORGAIN);
+			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
 			}
 		}
 

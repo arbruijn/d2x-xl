@@ -487,6 +487,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nImageQuality, i, 0);
 		RP (gameOptions [i].render.n3DGlasses, i, 0);
 		RP (gameOptions [i].render.n3DMethod, i, 0);
+		RP (gameOptions [i].render.nScreenDist, i, 0);
 		RP (gameOptions [i].render.xStereoSeparation, i, 0);
 		RP (gameOptions [i].render.bEnhance3D, i, 0);
 		RP (gameOptions [i].render.bColorGain, i, 0);
@@ -979,6 +980,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nQuality", "2"},
 	 {"gameOptions[0].render.n3DGlasses", "0"},
 	 {"gameOptions[0].render.n3DMethod", "0"},
+	 {"gameOptions[0].render.nScreenDist", "3"},
 	 {"gameOptions[0].render.xStereoSeparation", "0"},
 	 {"gameOptions[0].render.bEnhance3D", "0"},
 	 {"gameOptions[0].render.bColorGain", "0"},

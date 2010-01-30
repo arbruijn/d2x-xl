@@ -111,6 +111,8 @@ int r_texcount = 0;
 int gr_renderstats = 0;
 int gr_badtexture = 0;
 
+int nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
+
 //------------------------------------------------------------------------------
 
 tRenderQuality renderQualities [] = {
@@ -126,7 +128,7 @@ tRenderQuality renderQualities [] = {
 
 double COGL::ZScreen (void)
 {
-return ZSCREEN;
+return double (nScreenDists [gameOpts->render.nScreenDist] * (automap.Display () + 1));
 }
 
 //------------------------------------------------------------------------------
@@ -511,7 +513,7 @@ double fovy = gameStates.render.glFOV * X2D (transformation.m_info.zoom);
 double aspect = double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ());
 double h = ZNEAR * tan (DegToRad (fovy * 0.5));
 double w = aspect * h;
-double shift = X2D (StereoSeparation ()) / 2.0 * ZNEAR / ZSCREEN;
+double shift = X2D (StereoSeparation ()) / 2.0 * ZNEAR / ZScreen ();
 if (shift < 0)
 	glFrustum (-w - shift, w - shift, -h, h, ZNEAR, ZFAR);
 else 
@@ -537,10 +539,6 @@ if (StereoSeparation () && (gameOpts->render.n3DMethod == STEREO_PARALLEL))
 else {
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom),
 		   			 double (CCanvas::Current ()->Width ()) / double (CCanvas::Current ()->Height ()), ZNEAR, ZFAR);
-#if 0
-	if (StereoSeparation ())
-		gluLookAt (X2D (StereoSeparation ()) / 2, 0.0, 0.0, 0.0, 0.0, ZSCREEN, 0.0, 0.0, 0.0);
-#endif
 	}
 if (gameStates.render.bRearView < 0)
 	glScalef (-1.0f, 1.0f, 1.0f);

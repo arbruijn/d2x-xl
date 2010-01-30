@@ -51,7 +51,7 @@ transformation.m_info.pos = vPos;
 transformation.m_info.posf [0].Assign (transformation.m_info.pos);
 transformation.m_info.posf [1].Assign (transformation.m_info.pos);
 if (xStereoSeparation && (gameOpts->render.n3DMethod == STEREO_TOE_IN)) {
-	fix zScreen = F2X (ogl.ZScreen () * 1.0);
+	fix zScreen = F2X (ogl.ZScreen () * 10.0);
 	CFixVector o = CFixVector::Create (fix (xStereoSeparation / 2), 0, 0);
 	CFixVector h = CFixVector::Create (fix (xStereoSeparation / 2), 0, zScreen);
 	CFixVector::Normalize (o);

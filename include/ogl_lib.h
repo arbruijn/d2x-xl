@@ -26,6 +26,8 @@ extern GLuint g3ExitTMU [2];
 extern int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc, r_texcount;
 extern int gr_renderstats, gr_badtexture;
 
+extern int nScreenDists [10];
+
 //------------------------------------------------------------------------------
 
 typedef struct tRenderQuality {
