@@ -508,6 +508,8 @@ do {
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
 
+	if (gameOpts->render.n3DGlasses)
+		m.AddText ("");
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.n3DGlasses]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
@@ -528,7 +530,7 @@ do {
 
 		sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.nScreenDist]);
 		*szSlider = *(TXT_3D_SCREEN_DIST - 1);
-		renderOpts.nScreenDist = m.AddSlider (szSlider + 1, gameOpts->render.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_E, HTX_3D_SCREEN_DIST);
+		renderOpts.nScreenDist = m.AddSlider (szSlider + 1, gameOpts->render.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
 
 		if (ogl.Enhance3D (1)) {
 			sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);

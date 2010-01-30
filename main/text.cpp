@@ -1922,7 +1922,7 @@ const char *defaultGameTexts [][2] = {
  {"pro~Jektion: %s", "pro~Jection: %s"},
  {"parallel", "parallel"},
  {"gekreuzt", "toe in"},
- {"b~Ildschirm-Abstand: %d", "screen d~Istance: %d"},
+ {"bild~Schirm-Abstand: %d", "~Screen distance: %d"},
 #if 0
  {"", ""},
 #endif
