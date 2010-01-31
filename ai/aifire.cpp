@@ -503,7 +503,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 				}
 			}
 		}
-else if ((!botInfoP->attackType && gameData.weapons.info [botInfoP->nWeaponType].homingFlag) ||
+else if ((!botInfoP->attackType && (botInfoP->nWeaponType >= 0) && gameData.weapons.info [botInfoP->nWeaponType].homingFlag) ||
 			(((botInfoP->nSecWeaponType != -1) && gameData.weapons.info [botInfoP->nSecWeaponType].homingFlag))) {
 	fix dist;
 	//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
