@@ -1923,6 +1923,7 @@ const char *defaultGameTexts [][2] = {
  {"parallel", "parallel"},
  {"gekreuzt", "toe in"},
  {"bild~Schirm-Abstand: %d", "~Screen distance: %d"},
+ {"~Geisterbilder verringern", "decrease g~Host"},
 #if 0
  {"", ""},
 #endif
@@ -2629,6 +2630,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann eine Stereo-Projektionsmethode ausgewaehlt werden.\n\nParallel: Die Blickrichtung beider Augen ist parallel.\nOptisch korrekt, aber schlechte Raumtrennung entfernter Strukturen.\n\nGekreuzt: Die Blickrichtungen beider Augen kreuzen sich.\nBessere Raumtrennung entferter Strukturen\nauf Kosten minimaler Bildverzerrung.", 
   "Select a stereo rendering projection method here.\n\nParallel: View direction of both eyes is parallel.\nOptically correct, but low stereo separation of distant structures.\n\nToe in: View directions of both eyes are crossing each other.\nBetter stereo separation of distant structures at the cost\nof a minimal distortion of the view."},
  {"Hier kann eingestellt werden, in welcher Entfernung im Raum\ndie Bildschirmoberflaeche liegt.", "Chose the distance of the screen surface in 3D space here."},
+ {"Je nach Einstellung versucht D2X-XL, mehr oder weniger stark,\nGeisterbilder zu verringern. Dabei verringert sich\nallerdings die Helligkeit des Bildes.", 
+  "Depending on the chosen setting, D2X-XL tries to diminish\nghost images more or less intensive. This will however\ndecrease the image brightness."},
 #if 0
  {"", ""},
 #endif

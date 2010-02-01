@@ -491,6 +491,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.xStereoSeparation, i, 0);
 		RP (gameOptions [i].render.bEnhance3D, i, 0);
 		RP (gameOptions [i].render.bColorGain, i, 0);
+		RP (gameOptions [i].render.bDeghost, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
@@ -984,7 +985,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.xStereoSeparation", "0"},
 	 {"gameOptions[0].render.bEnhance3D", "0"},
 	 {"gameOptions[0].render.bColorGain", "0"},
-	 {"gameOptions[0].render.nColorGain", "0"},
+	 {"gameOptions[0].render.bDeghost", "0"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},

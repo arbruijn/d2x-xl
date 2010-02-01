@@ -394,6 +394,7 @@ typedef struct tRenderOptions {
 	int nScreenDist;
 	int bEnhance3D;
 	int bColorGain;
+	int bDeghost;
 	int bFlipFrames;
 	fix xStereoSeparation;
 	short nMaxFPS;
