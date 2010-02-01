@@ -352,7 +352,9 @@ else {
 	}
 #else
 if (bmi < 0) {
-	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
+	if (-bmi - 1 >= int (gameData.pig.tex.addonBitmaps.Length ()))
+		return;
+	bmP = &gameData.pig.tex.addonBitmaps [-bmi - 1];
 	bmP = bmP->SetCurFrame (iFrame);
 	}
 else {

@@ -56,7 +56,7 @@ void NDRecordGuidedEnd (void);
 #define	FULL_COCKPIT_OFFS 0
 #define	LASER_OFFS	 (I2X (29) / 100)
 
-static   int nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, I2X (1)};
+static   int nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, 5 * I2X (1) / 4};
 
 #define	HOMINGMSL_SCALE		nMslTurnSpeeds [(IsMultiGame && !IsCoopGame) ? 2 : extraGameInfo [IsMultiGame].nMslTurnSpeed]
 
