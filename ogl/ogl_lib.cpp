@@ -1262,7 +1262,7 @@ if (HaveDrawBuffer ()) {
 #if 1
 			if (h)
 				glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
-			else if (i)
+			if (i)
 				glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
 #endif
 			ClearError (0);
@@ -1521,8 +1521,8 @@ const char* enhance3DFS [2][2][2] = {
 		"vec3 h = vec3 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (c, vec3 (c.r * s, c.g * s, 1.0)));\r\n" \
 		"vec3 l = h * vec3 (0.3, 0.59, 0.11);\r\n" \
 		"float t = (l.r + l.g + l.b);\r\n" \
-		"s = strengh [0] / max (strengh [0], (l.g + l.r) / t);\r\n" \
-		"t = strengh [1] / max (strengh [1], l.b / t);\r\n" \
+		"s = strength [0] / max (strength [0], (l.g + l.r) / t);\r\n" \
+		"t = strength [1] / max (strength [1], l.b / t);\r\n" \
 		"gl_FragColor = vec4 (h.r * s, h.g * s, h.b * t, 1.0);\r\n" \
 		"}",
 		// red/cyan
@@ -1545,21 +1545,23 @@ const char* enhance3DFS [2][2][2] = {
 		// amber/blue
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
 		"uniform vec2 strength;\r\n" \
+		"uniform float gain;\r\n" \
 		"void main() {\r\n" \
 		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-		"float dr = (1.0 - cr.b) /  max (0.000001, cr.r + cr.g) / gain;\r\n" \
+		"float dr = (1.0 - cr.b) / max (0.000001, cr.r + cr.g) / gain;\r\n" \
 		"float dl = 1.0 + cl.b /  max (0.000001, cl.r + cl.g) / gain;\r\n" \
 		"vec3 h = vec3 (cl.r * dl, cl.g * dl, dot (cr, vec3 (dr * cr.r, dr * cr.g, 1.0)));\r\n" \
 		"vec3 l = h * vec3 (0.3, 0.59, 0.11);\r\n" \
 		"float t = (l.r + l.g + l.b);\r\n" \
-		"s = strengh [0] / max (strengh [0], (l.g + l.r) / t);\r\n" \
-		"t = strengh [1] / max (strengh [1], l.b / t);\r\n" \
+		"float s = strength [0] / max (strength [0], (l.g + l.r) / t);\r\n" \
+		"t = strength [1] / max (strength [1], l.b / t);\r\n" \
 		"gl_FragColor = vec4 (h.r * s, h.g * s, h.b * t, 1.0);\r\n" \
 		"}",
 		// red/cyan
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
 		"uniform vec2 strength;\r\n" \
+		"uniform float gain;\r\n" \
 		"void main() {\r\n" \
 		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
@@ -1568,7 +1570,7 @@ const char* enhance3DFS [2][2][2] = {
 		"vec3 h = vec3 (dot (cl, vec3 (1.0, dl * cl.g, dl * cl.b)), cr.g * dr, cr.b * dr);\r\n" \
 		"vec3 l = h * vec3 (0.3, 0.59, 0.11);\r\n" \
 		"float t = (l.r + l.g + l.b);\r\n" \
-		"s = strength [0] / max (strength [0], (l.g + l.b) / t);\r\n" \
+		"float s = strength [0] / max (strength [0], (l.g + l.b) / t);\r\n" \
 		"t = strength [1] / max (strength [1], l.r / t);\r\n" \
 		"gl_FragColor = vec4 (h.r * t, h.g * s, h.b * s, 1.0);\r\n" \
 		"}"

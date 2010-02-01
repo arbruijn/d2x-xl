@@ -1923,7 +1923,7 @@ const char *defaultGameTexts [][2] = {
  {"parallel", "parallel"},
  {"gekreuzt", "toe in"},
  {"bild~Schirm-Abstand: %d", "~Screen distance: %d"},
- {"~Geisterbilder verringern", "decrease g~Host"},
+ {"~Geisterbilder verringern: %s", "decrease g~Hosting: %s"},
 #if 0
  {"", ""},
 #endif
