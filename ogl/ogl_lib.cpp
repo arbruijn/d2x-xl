@@ -102,7 +102,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-GLhandleARB enhanced3DShaderProg [2][2] = {{0,0},{0,0}};
+GLhandleARB enhance3DShaderProg [2][2] = {{0,0},{0,0}};
 GLhandleARB cc3Df = 0;
 GLhandleARB cc3Dv = 0;
 
@@ -1245,7 +1245,7 @@ if (HaveDrawBuffer ()) {
 		int i = (gameOpts->render.bColorGain > 0);
 		int j = Enhance3D () - 1;
 		GLhandleARB shaderProg;
-		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = enhanced3DShaderProg [i][j]))) {
+		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = enhance3DShaderProg [i][j]))) {
 			SelectDrawBuffer (1);
 			SetDrawBuffer (GL_BACK, 0);
 #if 1
@@ -1254,7 +1254,7 @@ if (HaveDrawBuffer ()) {
 			glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
 			gameData.render.nShaderChanges++;
-			glUseProgramObject (enhanced3DShaderProg [i][j]);
+			glUseProgramObject (enhance3DShaderProg [i][j]);
 			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
 #if 1
@@ -1454,9 +1454,9 @@ glDeleteTextures (n, hTextures);
 
 //------------------------------------------------------------------------------
 
-const char* cc3DFS [3][2] = {
+const char* enhance3DFS [3][2] = {
 	{
-#if 1
+#if 0
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
 	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" \
@@ -1470,16 +1470,30 @@ const char* cc3DFS [3][2] = {
 	"void main() {\r\n" \
 	"vec3 c = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"float s = min (1.0 - c.b, 0.3) / max (0.000001, c.r + c.g);\r\n" \
-	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, min (1.0, dot (c, vec3 (c.r * s, c.g * s, 1.0))), 1.0);\r\n" \
-	"/*gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);*/\r\n" \
+	"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (c, vec3 (c.r * s, c.g * s, 1.0)), 1.0);\r\n" \
 	"}",
+#	if 1
 	"uniform sampler2D leftFrame, rightFrame;\r\n" \
 	"void main() {\r\n" \
 	"vec3 c = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 	"float s = min (1.0 - c.r, 0.3) / max (0.000001, c.g + c.b);\r\n" \
-	"gl_FragColor = vec4 (min (1.0, dot (c, vec3 (1.0, c.g * s, c.b * s))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
-	"/*gl_FragColor = vec4 (min (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);*/\r\n" \
+	"gl_FragColor = vec4 (dot (c, vec3 (1.0, c.g * s, c.b * s)), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
 	"}"
+#	else //deghosting by reducing red or cyan brightness if they exceed a certain threshold compared to the pixels total brightness
+	"uniform sampler2D leftFrame, rightFrame;\r\n" \
+	"void main() {\r\n" \
+	"vec3 c = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+	"float s = min (1.0 - c.r, 0.3) / max (0.000001, c.g + c.b);\r\n" \
+	"vec3 r = vec3 (dot (c, vec3 (1.0, c.g * s, c.b * s)), texture2D (rightFrame, gl_TexCoord [0].xy).yz);\r\n" \
+	"vec3 l = r * vec3 (0.3, 0.59, 0.11);\r\n" \
+	"float t = (l.r + l.g + l.b);\r\n" \
+	"s = 0.6 / max (0.6, (l.g + l.b) / t);\r\n" \
+	"t = 0.8 / max (0.8, l.r / t);\r\n" \
+	"float dr = r.r * (1.0 - t) / 2.0;\r\n" \
+	"gl_FragColor = vec4 (r.r * t, r.g * s + dr, r.b * s + dr, 1.0);\r\n" \
+	"/*gl_FragColor = vec4 (dot (c, vec3 (1.0, c.g * s, c.b * s)), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);*/\r\n" \
+	"}"
+#	endif
 #endif
 	},
 	{
@@ -1519,12 +1533,12 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 	PrintLog ("building enhanced 3D shader programs\n");
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			if (enhanced3DShaderProg [i][j])
-				DeleteShaderProg (&enhanced3DShaderProg [i][j]);
+			if (enhance3DShaderProg [i][j])
+				DeleteShaderProg (&enhance3DShaderProg [i][j]);
 			gameStates.render.textures.bHaveCC3DShader =
-				CreateShaderProg (&enhanced3DShaderProg [i][j]) &&
-				CreateShaderFunc (&enhanced3DShaderProg [i][j], &cc3Df, &cc3Dv, cc3DFS [i][j], cc3DVS, 1) &&
-				LinkShaderProg (&enhanced3DShaderProg [i][j]);
+				CreateShaderProg (&enhance3DShaderProg [i][j]) &&
+				CreateShaderFunc (&enhance3DShaderProg [i][j], &cc3Df, &cc3Dv, enhance3DFS [i][j], cc3DVS, 1) &&
+				LinkShaderProg (&enhance3DShaderProg [i][j]);
 			if (!gameStates.render.textures.bHaveCC3DShader) {
 				DeleteEnhanced3DShader ();
 				gameOpts->render.n3DGlasses = GLASSES_NONE;
@@ -1538,11 +1552,11 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 
 void COGL::DeleteEnhanced3DShader (void)
 {
-if (enhanced3DShaderProg) {
+if (enhance3DShaderProg) {
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 2; j++) {
-			DeleteShaderProg (&enhanced3DShaderProg [i][j]);
-			enhanced3DShaderProg [i][j] = 0;
+			DeleteShaderProg (&enhance3DShaderProg [i][j]);
+			enhance3DShaderProg [i][j] = 0;
 			}
 		}
 	}
