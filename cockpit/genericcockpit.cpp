@@ -1091,7 +1091,8 @@ m_info.xStereoSeparation = xStereoSeparation;
 x = CCanvas::Current ()->Width () / 2;
 if (m_info.xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
-	x -= int (float (x / 32) * X2F (m_info.xStereoSeparation));
+	//x -= int (float (x) / 64.0 * X2F (m_info.xStereoSeparation));
+	x += ((m_info.xStereoSeparation < 0) ? -1 : 1) * int (float (x) / 640.0f + 1.5f); //(ogl.m_states.bFullScreen ? int (float (x) / 320.0f + 0.5f) : 4);
 	}
 y = CCanvas::Current ()->Height () / 2;
 bLaserReady = AllowedToFireGun ();
