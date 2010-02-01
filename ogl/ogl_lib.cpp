@@ -1489,8 +1489,8 @@ const char* enhance3DFS [3][2] = {
 	"float t = (l.r + l.g + l.b);\r\n" \
 	"s = 0.6 / max (0.6, (l.g + l.b) / t);\r\n" \
 	"t = 0.8 / max (0.8, l.r / t);\r\n" \
-	"float dr = r.r * (1.0 - t) / 2.0;\r\n" \
-	"gl_FragColor = vec4 (r.r * t, r.g * s + dr, r.b * s + dr, 1.0);\r\n" \
+	"float dr = 0.0 /*r.r * (1.0 - t) / 2.0*/;\r\n" \
+	"gl_FragColor = vec4 (r.r * t, r.g * s + dr * 0.25, r.b * s + dr * 0.75, 1.0);\r\n" \
 	"/*gl_FragColor = vec4 (dot (c, vec3 (1.0, c.g * s, c.b * s)), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);*/\r\n" \
 	"}"
 #	endif
