@@ -112,7 +112,7 @@ int gr_renderstats = 0;
 int gr_badtexture = 0;
 
 int nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
-float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.9f}, {0.7f, 0.8f}, {0.6f, 0.7f}};
+float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.6f, 0.6f}};
 
 //------------------------------------------------------------------------------
 

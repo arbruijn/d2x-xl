@@ -553,7 +553,7 @@ do {
 
 			sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.bDeghost]);
 			*szSlider = *(TXT_3D_DEGHOST - 1);
-			renderOpts.nDeghost = m.AddSlider (szSlider + 1, gameOpts->render.bDeghost, 0, sizeofa (pszDeghost) - 1, KEY_G, HTX_3D_DEGHOST);
+			renderOpts.nDeghost = m.AddSlider (szSlider + 1, gameOpts->render.bDeghost, 0, sizeofa (pszDeghost) - 1, KEY_H, HTX_3D_DEGHOST);
 			}
 		}
 
