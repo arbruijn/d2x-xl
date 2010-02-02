@@ -254,13 +254,6 @@ if (renderOpts.n3DGlasses >= 0) {
 			}
 		}
 
-	if (renderOpts.nEnhance3D >= 0) {
-		m = menu + renderOpts.nEnhance3D;
-		v = m->m_value;
-		if (gameOpts->render.bEnhance3D != v)
-			gameOpts->render.bEnhance3D = v;
-		}
-
 	if (renderOpts.n3DMethod >= 0) {
 		m = menu + renderOpts.n3DMethod;
 		v = m->m_value;
@@ -298,6 +291,17 @@ if (renderOpts.n3DGlasses >= 0) {
 			gameOpts->render.bColorGain = v;
 			sprintf (m->m_text, TXT_COLORGAIN, pszEnhance3D [v]);
 			m->m_bRebuild = -1;
+			}
+		}
+
+	if (renderOpts.nEnhance3D >= 0) {
+		m = menu + renderOpts.nEnhance3D;
+		v = m->m_value;
+		if (gameOpts->render.bEnhance3D != v) {
+			gameOpts->render.bEnhance3D = v;
+			m->m_bRebuild = -1;
+			key = -2;
+			return nCurItem;
 			}
 		}
 
