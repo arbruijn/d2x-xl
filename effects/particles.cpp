@@ -374,7 +374,7 @@ m_nMoved = nCurTime;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 if ((m_bBlowUp = bBlowUp)) {
 	m_nRad = nRad / 2;
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 3 : nRad;
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 3 : m_nRad;
 	m_nHeight = m_nRad;
 	m_nRad += m_nRad / bBlowUp;
 	}
