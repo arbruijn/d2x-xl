@@ -46,7 +46,7 @@
 
 //------------------------------------------------------------------------------
 
-int gsShaderProg [2][3] = {{-1,-1,-1},{-1,-1,-1}};
+int grayscaleShaderProgs [2][3] = {{-1,-1,-1},{-1,-1,-1}};
 
 const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
@@ -130,7 +130,7 @@ void DeleteGrayScaleShader (void)
 {
 for (int i = 0; i < 2; i++)
 	for (int j = 0; j < 3; j++) 
-		shaderManager.Delete (gsShaderProg [i][j]);
+		shaderManager.Delete (grayscaleShaderProgs [i][j]);
 }
 
 //-------------------------------------------------------------------------
@@ -143,7 +143,7 @@ else {
 	PrintLog ("building grayscale shader programs\n");
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 3; j++) {
-			if (!(gameStates.render.textures.bHaveGrayScaleShader = shaderManager.Build (gsShaderProg [i][j], grayScaleFS [i][j], grayScaleVS [i][j]))) {
+			if (!(gameStates.render.textures.bHaveGrayScaleShader = shaderManager.Build (grayscaleShaderProgs [i][j], grayScaleFS [i][j], grayScaleVS [i][j]))) {
 				DeleteGrayScaleShader ();
 				return;
 				}
@@ -1283,7 +1283,7 @@ if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 if (lightmapShaderProgs [nType] >= 0)
 	return 1;
 for (h = 0; h <= 3; h++) {
-	if (lightmapShaderProgs [h])
+	if (lightmapShaderProgs [h] >= 0)
 		continue;
 	PrintLog ("building lightmap shader programs\n");
 	if (!shaderManager.Build (lightmapShaderProgs [h], pszLMLightingFS [h], pszLMLightingVS [h])) {
@@ -1577,7 +1577,7 @@ if (!gameStates.render.textures.bHaveGrayScaleShader)
 if (nType > 2)
 	nType = 2;
 int bLightmaps = lightmapManager.HaveLightmaps ();
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (gsShaderProg [bLightmaps][nType]));
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (grayscaleShaderProgs [bLightmaps][nType]));
 if (0 < int (shaderProg)) {
 	glUseProgramObject (shaderProg);
 	if (!nType)
@@ -1589,7 +1589,7 @@ if (0 < int (shaderProg)) {
 		}
 	ogl.ClearError (0);
 	}
-return gsShaderProg [bLightmaps][nType];
+return grayscaleShaderProgs [bLightmaps][nType];
 }
 
 // ----------------------------------------------------------------------------------------------
