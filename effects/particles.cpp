@@ -25,6 +25,7 @@
 #include "hudmsgs.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
+#include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "piggy.h"
 #include "globvars.h"

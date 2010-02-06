@@ -27,6 +27,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #include "u_mem.h"
 #include "error.h"
 #include "ogl_lib.h"
+#include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "rendermine.h"
 #include "gameseg.h"
@@ -955,7 +956,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	else {
 		if (bAdditive && !automap.Display ()) {
 			if (bSoftBlend)
-				LoadGlareShader (5);
+				glareRenderer.LoadShader (5);
 			else
 				ResetShader ();
 			}
@@ -1088,7 +1089,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
-		LoadGlareShader (item->fSoftRad);
+		glareRenderer.LoadShader (item->fSoftRad);
 	else //if (m_data.bDepthMask)
 		glDepthMask (m_data.bDepthMask = 0);
 	glBegin (GL_QUADS);
@@ -1140,7 +1141,7 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 	glEnable (GL_TEXTURE_2D);
 	bmpSparks->Texture ()->Bind ();
 	if (bSoftSparks)
-		LoadGlareShader (3);
+		glareRenderer.LoadShader (3);
 	else {
 		ResetShader ();
 		if (m_data.bDepthMask)

@@ -102,7 +102,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-GLhandleARB enhance3DShaderProg [2][2][2] = {{{-1,-1},{-1,-1}},{{-1,-1},{-1,-1}}};
+int enhance3DShaderProg [2][2][2] = {{{-1,-1},{-1,-1}},{{-1,-1},{-1,-1}}};
 
 int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
 int r_texcount = 0;
@@ -1245,25 +1245,28 @@ if (HaveDrawBuffer ()) {
 		int i = (gameOpts->render.bColorGain > 0);
 		int j = Enhance3D () - 1;
 		GLhandleARB shaderProg;
-		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = abs (shaderManager.Deploy ([h][i][j]))))) {
-			SelectDrawBuffer (1);
-			SetDrawBuffer (GL_BACK, 0);
+		if ((bStereo = (j >= 0) && (j <= 1)) {
+			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ([h][i][j]));
+			if (shaderProg > 0) {
+				SelectDrawBuffer (1);
+				SetDrawBuffer (GL_BACK, 0);
 #if 1
-			glEnable (GL_TEXTURE_2D);
-			SelectTMU (GL_TEXTURE1);
-			glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
+				glEnable (GL_TEXTURE_2D);
+				SelectTMU (GL_TEXTURE1);
+				glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
-			glUseProgramObject (shaderProg);
-			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
-			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
+				glUseProgramObject (shaderProg);
+				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
+				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
 #if 1
-			if (h)
-				glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
-			if (i)
-				glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
+				if (h)
+					glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
+				if (i)
+					glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
 #endif
-			ClearError (0);
+				ClearError (0);
 #endif
+				}
 			}
 		}
 	if (bAdditive) {
@@ -1285,7 +1288,7 @@ if (HaveDrawBuffer ()) {
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)
-		glShaderManager.Deploy (-1);
+		ShaderManager.Deploy (-1);
 	}
 #endif
 }

@@ -1177,7 +1177,7 @@ return pszFS;
 
 //-------------------------------------------------------------------------
 
-GLhandleARB perPixelLightingShaderProgs [9][4] =
+int perPixelLightingShaderProgs [9][4] =
  {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};
 
 int CreatePerPixelLightingShader (int nType, int nLights)
@@ -1270,7 +1270,7 @@ for (int nType = 0; nType < 4; nType++)
 
 // ----------------------------------------------------------------------------------------------
 
-GLhandleARB lightmapShaderProgs [4] = {-1,-1,-1,-1};
+int lightmapShaderProgs [4] = {-1,-1,-1,-1};
 
 int CreateLightmapShader (int nType)
 {
@@ -1286,11 +1286,11 @@ for (h = 0; h <= 3; h++) {
 	if (lightmapShaderProgs [h])
 		continue;
 	PrintLog ("building lightmap shader programs\n");
-	if (!shaderManager.Build (lightmapShaderProgs + h, pszLMLightingFS [h], pszLMLightingVS [h])) {
+	if (!shaderManager.Build (lightmapShaderProgs [h], pszLMLightingFS [h], pszLMLightingVS [h])) {
 		ogl.m_states.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)
-			DeleteShaderProg (lightmapShaderProgs + j);
+			shaderManager.Delete (lightmapShaderProgs [j]);
 		return -1;
 		}
 	}
@@ -1571,22 +1571,23 @@ return perPixelLightingShaderProgs [nLights][nType];
 
 int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
 {
-if (gameStates.render.textures.bHaveGrayScaleShader) {
-	if (nType > 2)
-		nType = 2;
-	int bLightmaps = lightmapManager.HaveLightmaps ();
-	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (gsShaderProg [bLightmaps][nType]));
-	if (0 < int (shaderProg)) {
-		glUseProgramObject (shaderProg);
-		if (!nType)
-			glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
-		else {
-			glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
-			if (nType > 1)
-				glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
-			}
-		ogl.ClearError (0);
+if (!gameStates.render.textures.bHaveGrayScaleShader)
+	return -1;
+
+if (nType > 2)
+	nType = 2;
+int bLightmaps = lightmapManager.HaveLightmaps ();
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (gsShaderProg [bLightmaps][nType]));
+if (0 < int (shaderProg)) {
+	glUseProgramObject (shaderProg);
+	if (!nType)
+		glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
+	else {
+		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
+		if (nType > 1)
+			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
 		}
+	ogl.ClearError (0);
 	}
 return gsShaderProg [bLightmaps][nType];
 }

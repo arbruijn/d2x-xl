@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "texmerge.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
+#include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
 #include "rendermine.h"

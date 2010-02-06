@@ -51,6 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "renderframe.h"
 #include "automap.h"
+#include "ogl_shader.h"
 
 #ifndef Pi
 #	define Pi 3.141592653589793240

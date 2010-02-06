@@ -257,7 +257,7 @@ if (shaderProg) {
 
 int CShaderManager::Alloc (int& nShader)
 {
-if ((nShader >= 0) && (nShader < int (m_shaders.ToS )) && (m_shaders [nShader].refP == &nShader))
+if ((nShader >= 0) && (nShader < int (m_shaders.ToS ())) && (m_shaders [nShader].refP == &nShader))
 	return nShader;
 if (!m_shaders.Grow ())
 	return nShader = -1;
@@ -374,7 +374,7 @@ return 0;
 
 int CShaderManager::Build (int& nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile)
 {
-if ((nShader >= 0) || (nShader >= int (m_shaders.ToS ())) {
+if ((nShader < 0) || (nShader >= int (m_shaders.ToS ()))) {
 	if (!Alloc (nShader))
 		return 0;
 	}

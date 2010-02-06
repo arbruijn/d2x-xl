@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "gpgpu_lighting.h"
 #include "fastrender.h"
+#include "ogl_shader.h"
 
 #define RENDER_DEPTHMASK_FIRST 0
 
@@ -280,7 +281,7 @@ if (!faceP->m_info.nCorona)
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-RenderCorona (faceP->m_info.nSegment, faceP->m_info.nSide, CoronaVisibility (faceP->m_info.nCorona), faceP->m_info.fRads [0]);
+glareRenderer.Render (faceP->m_info.nSegment, faceP->m_info.nSide, glareRenderer.Visibility (faceP->m_info.nCorona), faceP->m_info.fRads [0]);
 return true;
 }
 
@@ -456,8 +457,8 @@ else {
 	glDepthFunc (GL_LESS);
 	}
 if (nType == 3) {
-	if (CoronaStyle () == 2)
-		LoadGlareShader (10);
+	if (glareRenderer.Style () == 2)
+		glareRenderer.LoadShader (10);
 	return 0;
 	}
 else {
@@ -564,9 +565,9 @@ if (nType != 3) {
 	if (FACES.vboDataHandle)
 		glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 	}
-else if (CoronaStyle () == 2)
-	UnloadGlareShader ();
-else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
+else if (glareRenderer.Style () == 2)
+	glareRenderer.UnloadShader ();
+else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (glareRenderer.Style () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.ClearError (0);
@@ -699,7 +700,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
 			if (!glGetError ())
-				RenderCorona (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
+				glareRenderer.Render (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			}
 		else {
@@ -713,7 +714,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
 			ogl.ClearError (1);
-			RenderCorona (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
+			glareRenderer.Render (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
 			ogl.ClearError (1);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
 			ogl.ClearError (1);
@@ -779,7 +780,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 #endif
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++)
 		if (faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_RENDER_FLAG) && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
-			 FaceHasCorona (nSegment, faceP->m_info.nSide, NULL, NULL))
+			 glareRenderer.FaceHasCorona (nSegment, faceP->m_info.nSide, NULL, NULL))
 			faceP->m_info.nCorona = ++gameData.render.lights.nCoronas;
 		else
 			faceP->m_info.nCorona = 0;
@@ -872,7 +873,7 @@ if (!SetupCoronaFaces ())
 	return 0;
 if (automap.Display () || !gameOpts->render.automap.bCoronas)
 	return 0;
-int nCoronaStyle = CoronaStyle ();
+int nCoronaStyle = glareRenderer.Style ();
 if (nCoronaStyle != 1)
 	return 0;
 if (ogl.m_states.bOcclusionQuery) {

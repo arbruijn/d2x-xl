@@ -35,7 +35,7 @@ class CShaderManager {
 		CShaderManager ();
 		~CShaderManager ();
 		void Init (void);
-		void Destroy (bool bAll);
+		void Destroy (bool bAll = true);
 		void Setup (void);
 		int Deploy (int nShader);
 		int Alloc (int& nShader);

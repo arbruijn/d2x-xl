@@ -769,8 +769,7 @@ void DeleteHeadlightShader (void)
 for (int i = 0; i < 2; i++) {
 	for (int j = 0; j < 4; j++) {
 		if (headlightShaderProgs [i][j]) {
-			DeleteShaderProg (&headlightShaderProgs [i][j]);
-			headlightShaderProgs [i][j] = 0;
+			shaderManager.Delete (headlightShaderProgs [i][j]);
 			}
 		}
 	}
