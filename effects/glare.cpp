@@ -31,7 +31,7 @@
 
 float coronaIntensities [] = {0.35f, 0.5f, 0.75f, 1};
 
-int hGlareShader [2] = {-1,-1};
+int hGlareShader = -1;
 
 CGlareRenderer glareRenderer;
 
@@ -681,7 +681,7 @@ if (ogl.m_states.bOcclusionQuery && Style ()) {
 		else if (fSize > 20)
 #	endif
 			fSize = 20;
-		glUniform1f (glGetUniformLocation (hGlareShader [1], "dMax"), GLfloat (fSize));
+		glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), GLfloat (fSize));
 		}
 #endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
@@ -767,10 +767,7 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 
 bool CGlareRenderer::ShaderActive (void)
 {
-for (int i = 0; i < 2; i++)
-	if (hGlareShader [i] && (shaderManager.Current () == hGlareShader [i]))
-		return true;
-return false;
+return (hGlareShader >= 0) && (shaderManager.Current () == hGlareShader);
 }
 
 //-------------------------------------------------------------------------
@@ -788,7 +785,7 @@ if (ogl.m_states.bDepthBlending) {
 		ogl.m_states.bUseDepthBlending = 1;
 		if (dMax < 1)
 			dMax = 1;
-		m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader [0]));
+		m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
 		if (0 < int (m_shaderProg)) {
 			glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
@@ -830,7 +827,7 @@ if (ogl.m_states.bDepthBlending) {
 
 //------------------------------------------------------------------------------
 
-const char *glareFS [2] = {
+const char *glareFS =
 	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
@@ -847,28 +844,14 @@ const char *glareFS [2] = {
 	"/*gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);*/\r\n" \
 	"gl_FragColor = vec4 ((texColor.rgb * gl_Color.rgb) * max (1.0 - bAdditive, dz), max (bAdditive, texColor.a * gl_Color.a * dz));\r\n" \
 	"}\r\n"
-	,
-	"uniform sampler2D glareTex, depthTex;\r\n" \
-	"uniform float dMax;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
-	"#define ZNEAR 1.0\r\n" \
-	"#define ZFAR 5000.0\r\n" \
-	"#define LinearDepth(_z) (2.0 * ZFAR) / (ZFAR + ZNEAR - (_z) * (ZFAR - ZNEAR))\r\n" \
-	"void main (void) {\r\n" \
-	"float texZ = LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
-	"float fragZ = LinearDepth (gl_FragCoord.z);\r\n" \
-	"float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
-	"dz = (dMax - dz) / dMax;\r\n" \
-	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
-	"gl_FragColor = vec4 ((texColor.rgb * gl_Color.rgb) * dz, 1.0 /*texColor.a * gl_Color.a*/);\r\n" \
-	"}\r\n"
-	};
+	;
 
 const char *glareVS =
 	"void main (void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"gl_Position = ftransform () /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
-	"gl_FrontColor = gl_Color;}\r\n";
+	"gl_FrontColor = gl_Color;}\r\n"
+	;
 
 //-------------------------------------------------------------------------
 
@@ -881,14 +864,9 @@ PrintLog ("building corona blending shader program\n");
 if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 	ogl.m_states.bDepthBlending = 1;
 	m_shaderProg = 0;
-	for (int i = 0; i < 2; i++) {
-		if (!shaderManager.Build (hGlareShader [i], glareFS [i], glareVS)) {
-			ogl.ClearError (0);
-			ogl.m_states.bDepthBlending = 0;
-			while (i)
-				shaderManager.Delete (hGlareShader [--i]);
-			return;
-			}
+	if (!shaderManager.Build (hGlareShader, glareFS, glareVS)) {
+		ogl.ClearError (0);
+		ogl.m_states.bDepthBlending = 0;
 		}
 	}
 #endif
