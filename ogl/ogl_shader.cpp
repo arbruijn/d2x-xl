@@ -378,7 +378,7 @@ return 0;
 int CShaderManager::Build (int& nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile)
 {
 if ((nShader < 0) || (nShader >= int (m_shaders.ToS ()))) {
-	if (!Alloc (nShader))
+	if (Alloc (nShader) < 0)
 		return 0;
 	if (!Create (nShader))
 		return 0;
@@ -449,6 +449,7 @@ void CShaderManager::Setup (void)
 if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	return;
 Destroy ();
+Init ();
 ::PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 ogl.m_states.bShadersOk = (nTMUs >= 4);

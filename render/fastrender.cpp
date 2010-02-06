@@ -70,7 +70,6 @@ memset (flx.tails, 0xff, sizeof (flx.tails));
 #endif
 	flx.nUsedKeys = 0;
 	}
-gameData.render.nUsedFaces = 0;
 PROF_END(ptFaceList)
 }
 
