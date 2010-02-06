@@ -1238,7 +1238,7 @@ for (h = 0; h <= 3; h++) {
 			gameStates.render.bPerPixelLighting = 1;
 			for (i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
 				for (j = 0; j < 4; j++)
-					DeleteShaderProg (perPixelLightingShaderProgs [i] + j);
+					shaderManager.Delete (perPixelLightingShaderProgs [i][j]);
 			nLights = 0;
 			return -1;
 			}

@@ -90,7 +90,7 @@ if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 	}
 if (sphereShaderProg < 0) {
 	PrintLog ("building sphere shader program\n");
-	if (!shaderManager.Build (&sphereShaderProg, pszSphereFS, pszSphereVS)) {
+	if (!shaderManager.Build (sphereShaderProg, pszSphereFS, pszSphereVS)) {
 		ogl.m_states.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		return -1;

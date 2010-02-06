@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "u_mem.h"
 #include "ogl_lib.h"
+#include "ogl_shader.h"
 #include "ogl_color.h"
 #include "rendermine.h"
 #include "transprender.h"

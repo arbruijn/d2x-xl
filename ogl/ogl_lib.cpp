@@ -1244,9 +1244,8 @@ if (HaveDrawBuffer ()) {
 		int h = (gameOpts->render.bDeghost > 0);
 		int i = (gameOpts->render.bColorGain > 0);
 		int j = Enhance3D () - 1;
-		GLhandleARB shaderProg;
-		if ((bStereo = (j >= 0) && (j <= 1)) {
-			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ([h][i][j]));
+		if ((bStereo = ((j >= 0) && (j <= 1)))) {
+			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (enhance3DShaderProg [h][i][j]));
 			if (shaderProg > 0) {
 				SelectDrawBuffer (1);
 				SetDrawBuffer (GL_BACK, 0);
@@ -1288,7 +1287,7 @@ if (HaveDrawBuffer ()) {
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)
-		ShaderManager.Deploy (-1);
+		shaderManager.Deploy (-1);
 	}
 #endif
 }

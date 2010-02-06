@@ -821,7 +821,6 @@ int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colo
 {
 	int			h, i, bTransform;
 	tRgbaColorf	color;
-	GLhandleARB	shaderProg;
 
 //headlights
 h = IsMultiGame ? nLights : 1;

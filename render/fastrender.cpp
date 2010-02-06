@@ -687,7 +687,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 				continue;
 #	endif
 #endif
-			CoronaVisibility (faceP->m_info.nCorona);
+			glareRenderer.Visibility (faceP->m_info.nCorona);
 			}
 		else if (nPass == 2) {
 #if DBG
