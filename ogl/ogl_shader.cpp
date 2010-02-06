@@ -127,12 +127,12 @@ void CShaderManager::Destroy (bool bAll)
 {
 for (int i = 0; i < int (m_shaders.ToS ()); i++) {
 	tShaderData& shader = m_shaders [i];
+	Delete (i);
 	if (bAll)
-		Delete (i);
-	else
 		Reset (i);
 	}
-m_shaders.Destroy ();
+if (bAll)
+	m_shaders.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -374,9 +374,14 @@ return 0;
 
 int CShaderManager::Build (int& nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile)
 {
-if (!Alloc (nShader))
-	return 0;
-Dispose (m_shaders [nShader].program);
+if ((nShader >= 0) || (nShader >= int (m_shaders.ToS ())) {
+	if (!Alloc (nShader))
+		return 0;
+	}
+else {
+	if (m_shaders [nShader].program)
+		return 1;
+	}
 if (!Compile (nShader, pszFragShader, pszVertShader, bFromFile))
 	return 0;
 if (!Link (nShader))
@@ -438,6 +443,7 @@ void CShaderManager::Setup (void)
 
 if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	return;
+Destroy ();
 ::PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 ogl.m_states.bShadersOk = (nTMUs >= 4);
@@ -456,7 +462,7 @@ InitHeadlightShaders (1);
 ::PrintLog ("   initializing vertex lighting shader programs\n");
 gpgpuLighting.InitShader ();
 ::PrintLog ("   initializing glare shader programs\n");
-InitGlareShader ();
+glareRenderer.InitShader ();
 ::PrintLog ("   initializing gray scale shader programs\n");
 InitGrayScaleShader ();
 ::PrintLog ("   initializing enhanced 3D shader programs\n");

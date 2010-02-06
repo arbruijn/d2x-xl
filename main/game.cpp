@@ -586,6 +586,7 @@ SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 #endif
 if (pfnTIRStop)
 	pfnTIRStop ();
+shaderManager.Destroy (true);
 meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
 gameData.Destroy ();

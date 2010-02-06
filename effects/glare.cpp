@@ -31,7 +31,7 @@
 
 float coronaIntensities [] = {0.35f, 0.5f, 0.75f, 1};
 
-int hGlareShader [2] = {0, 0};
+int hGlareShader [2] = {-1,-1};
 
 CGlareRenderer glareRenderer;
 

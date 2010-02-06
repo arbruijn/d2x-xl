@@ -102,7 +102,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-GLhandleARB enhance3DShaderProg [2][2][2] = {{{0,0},{0,0}},{{0,0},{0,0}}};
+GLhandleARB enhance3DShaderProg [2][2][2] = {{{-1,-1},{-1,-1}},{{-1,-1},{-1,-1}}};
 
 int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
 int r_texcount = 0;

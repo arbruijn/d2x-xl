@@ -46,7 +46,7 @@
 
 //------------------------------------------------------------------------------
 
-int gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
+int gsShaderProg [2][3] = {{-1,-1,-1},{-1,-1,-1}};
 
 const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
@@ -128,14 +128,9 @@ const char *grayScaleVS [2][3] = {{
 
 void DeleteGrayScaleShader (void)
 {
-for (int i = 0; i < 2; i++) {
-	for (int j = 0; j < 3; j++) {
-		if (gsShaderProg [i][j]) {
-			DeleteShaderProg (&gsShaderProg [i][j]);
-			gsShaderProg [i][j] = 0;
-			}
-		}
-	}
+for (int i = 0; i < 2; i++)
+	for (int j = 0; j < 3; j++) 
+		shaderManager.Delete (gsShaderProg [i][j]);
 }
 
 //-------------------------------------------------------------------------
@@ -148,13 +143,7 @@ else {
 	PrintLog ("building grayscale shader programs\n");
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 3; j++) {
-			if (gsShaderProg [i][j])
-				DeleteShaderProg (&gsShaderProg [i][j]);
-			gameStates.render.textures.bHaveGrayScaleShader =
-				CreateShaderProg (&gsShaderProg [i][j]) &&
-				CreateShaderFunc (&gsShaderProg [i][j], &gsf [i][j], &gsv [i][j], grayScaleFS [i][j], grayScaleVS [i][j], 1) &&
-				LinkShaderProg (&gsShaderProg [i][j]);
-			if (!gameStates.render.textures.bHaveGrayScaleShader) {
+			if (!(gameStates.render.textures.bHaveGrayScaleShader = shaderManager.Build (gsShaderProg [i][j], grayScaleFS [i][j], grayScaleVS [i][j]))) {
 				DeleteGrayScaleShader ();
 				return;
 				}
@@ -1189,13 +1178,7 @@ return pszFS;
 //-------------------------------------------------------------------------
 
 GLhandleARB perPixelLightingShaderProgs [9][4] =
- {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
-
-GLhandleARB ppLvs [9][4] =
- {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
-
-GLhandleARB ppLfs [9][4] =
- {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+ {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};
 
 int CreatePerPixelLightingShader (int nType, int nLights)
 {
@@ -1247,10 +1230,7 @@ for (h = 0; h <= 3; h++) {
 		PrintLog ("building lighting shader programs\n");
 		pszFS = BuildLightingShader (fsP [h], i);
 		pszVS = BuildLightingShader (vsP [h], i);
-		bOk = (pszFS != NULL) && (pszVS != NULL) &&
-				CreateShaderProg (perPixelLightingShaderProgs [i] + h) &&
-				CreateShaderFunc (perPixelLightingShaderProgs [i] + h, ppLfs [i] + h, ppLvs [i] + h, pszFS, pszVS, 1) &&
-				LinkShaderProg (perPixelLightingShaderProgs [i] + h);
+		bOk = (pszFS != NULL) && (pszVS != NULL) && shaderManager.Build (perPixelLightingShaderProgs [i][h], pszFS, pszVS);
 		delete[] pszFS;
 		delete[] pszVS;
 		if (!bOk) {
@@ -1290,13 +1270,11 @@ for (int nType = 0; nType < 4; nType++)
 
 // ----------------------------------------------------------------------------------------------
 
-GLhandleARB lightmapShaderProgs [4] = {0,0,0,0};
-GLhandleARB lmLvs [4] = {0,0,0,0};
-GLhandleARB lmLfs [4] = {0,0,0,0};
+GLhandleARB lightmapShaderProgs [4] = {-1,-1,-1,-1};
 
 int CreateLightmapShader (int nType)
 {
-	int	h, j, bOk;
+	int	h, j;
 
 if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
@@ -1308,10 +1286,7 @@ for (h = 0; h <= 3; h++) {
 	if (lightmapShaderProgs [h])
 		continue;
 	PrintLog ("building lightmap shader programs\n");
-	bOk = CreateShaderProg (lightmapShaderProgs + h) &&
-			CreateShaderFunc (lightmapShaderProgs + h, lmLfs + h, lmLvs + h, pszLMLightingFS [h], pszLMLightingVS [h], 1) &&
-			LinkShaderProg (lightmapShaderProgs + h);
-	if (!bOk) {
+	if (!shaderManager.Build (lightmapShaderProgs + h, pszLMLightingFS [h], pszLMLightingVS [h])) {
 		ogl.m_states.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)

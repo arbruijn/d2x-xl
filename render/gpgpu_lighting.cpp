@@ -42,9 +42,7 @@ CGPGPULighting gpgpuLighting;
 
 void CGPGPULighting::Init (void)
 {
-m_hShaderProg = 0;
-m_hVertShader = 0; 
-m_hFragShader = 0; 
+m_hShaderProg = -1;
 }
 
 //------------------------------------------------------------------------------

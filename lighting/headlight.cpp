@@ -760,7 +760,7 @@ const char *headlightVS [2][8] = {
 
 //-------------------------------------------------------------------------
 
-int headlightShaderProgs [2][4] = {{0,0,0,0},{0,0,0,0}};
+int headlightShaderProgs [2][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1}};
 
 //-------------------------------------------------------------------------
 
@@ -795,8 +795,6 @@ if ((ogl.m_states.bHeadlight = (ogl.m_states.bShadersOk))) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 2; i++) {
 		for (j = 0; j < 4; j++) {
-			if (headlightShaderProgs [i][j])
-				DeleteShaderProg (&headlightShaderProgs [i][j]);
 #if 1//!DBG
 			if (nLights == 1)
 				pszFS = const_cast<char*> (headlightFS [i][h = j]);
