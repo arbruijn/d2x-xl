@@ -1194,7 +1194,7 @@ if (!gameStates.render.bPerPixelLighting)
 #if CONST_LIGHT_COUNT
 nLights = gameStates.render.nMaxLightsPerPass;
 #endif
-if (perPixelLightingShaderProgs [nLights][nType])
+if (perPixelLightingShaderProgs [nLights][nType] >= 0)
 	return nLights;
 for (h = 0; h <= 3; h++) {
 #if CONST_LIGHT_COUNT
@@ -1203,7 +1203,7 @@ for (h = 0; h <= 3; h++) {
 	for (i = 0; i <= gameStates.render.nMaxLightsPerPass; i++)
 #endif
 	 {
-		if (perPixelLightingShaderProgs [i][h])
+		if (perPixelLightingShaderProgs [i][h] >= 0)
 			continue;
 		if (lightmapManager.HaveLightmaps ()) {
 			if (i) {
@@ -1251,7 +1251,7 @@ return ogl.m_data.nPerPixelLights [nType] = nLights;
 
 void ResetPerPixelLightingShaders (void)
 {
-memset (perPixelLightingShaderProgs, 0, sizeof (perPixelLightingShaderProgs));
+//memset (perPixelLightingShaderProgs, 0xFF, sizeof (perPixelLightingShaderProgs));
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -1309,7 +1309,7 @@ for (int nType = 0; nType < 4; nType++)
 
 void ResetLightmapShaders (void)
 {
-memset (lightmapShaderProgs, 0xFF, sizeof (lightmapShaderProgs));
+//memset (lightmapShaderProgs, 0xFF, sizeof (lightmapShaderProgs));
 }
 
 //------------------------------------------------------------------------------
