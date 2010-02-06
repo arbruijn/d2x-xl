@@ -49,9 +49,7 @@ typedef struct tVertLightData {
 
 class CGPGPULighting {
 	private:
-		GLhandleARB		m_hShaderProg;
-		GLhandleARB		m_hVertShader; 
-		GLhandleARB		m_hFragShader; 
+		int				m_hShaderProg;
 		tVertLightData	m_vld;
 
 

@@ -245,7 +245,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CShaderManager::Delete (GLhandleARB& shaderProg)
+void CShaderManager::Dispose (GLhandleARB& shaderProg)
 {
 if (shaderProg) {
 	glDeleteObject (shaderProg);
@@ -257,6 +257,8 @@ if (shaderProg) {
 
 int CShaderManager::Alloc (int& nShader)
 {
+if ((nShader >= 0) && (nShader < int (m_shaders.ToS )) && (m_shaders [nShader].refP == &nShader))
+	return nShader;
 if (!m_shaders.Grow ())
 	return nShader = -1;
 nShader = m_shaders.ToS () - 1;
@@ -352,7 +354,7 @@ if (!shader.program) {
 	if (!i)
 		return 0;
 	if (!Compile (nShader, progFS [i - 1], progVS [i - 1], 0)) {
-		Delete (shader.program);
+		Dispose (shader.program);
 		return 0;
 		}
 	}
@@ -364,7 +366,7 @@ if (bLinked)
 	return 1;
 ::PrintLog ("   Couldn't link shader programs\n");
 PrintLog (shader.program, 1);
-Delete (shader.program);
+Dispose (shader.program);
 return 0;
 }
 
@@ -374,6 +376,7 @@ int CShaderManager::Build (int& nShader, const char* pszFragShader, const char* 
 {
 if (!Alloc (nShader))
 	return 0;
+Dispose (m_shaders [nShader].program);
 if (!Compile (nShader, pszFragShader, pszVertShader, bFromFile))
 	return 0;
 if (!Link (nShader))
@@ -418,11 +421,13 @@ if (!ogl.m_states.bShadersOk)
 	return 0;
 if (nShader >= int (m_shaders.ToS ()))
 	return 0;
+GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
 if (m_nCurrent == nShader)
-	return 1;
+	return -int (shaderProg);
 m_nCurrent = nShader;
-glUseProgramObject ((nShader < 0) ? 0 : m_shaders [nShader].program);
-return 1;
+glUseProgramObject (shaderProg);
+gameData.render.nShaderChanges++;
+return int (shaderProg);
 }
 
 //------------------------------------------------------------------------------

@@ -102,9 +102,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-GLhandleARB enhance3DShaderProg [2][2][2] = {{0,0},{0,0}};
-GLhandleARB cc3Df = 0;
-GLhandleARB cc3Dv = 0;
+GLhandleARB enhance3DShaderProg [2][2][2] = {{{0,0},{0,0}},{{0,0},{0,0}}};
 
 int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
 int r_texcount = 0;
@@ -854,7 +852,7 @@ if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
 if (m_states.bShadersOk)
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 #if 0
 // There's a weird effect of string pooling causing the renderer to stutter every time a
 // new string texture is uploaded to the OpenGL driver when depth textures are used.
@@ -1247,7 +1245,7 @@ if (HaveDrawBuffer ()) {
 		int i = (gameOpts->render.bColorGain > 0);
 		int j = Enhance3D () - 1;
 		GLhandleARB shaderProg;
-		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = enhance3DShaderProg [h][i][j]))) {
+		if ((bStereo = (j >= 0) && (j <= 1) && (shaderProg = abs (shaderManager.Deploy ([h][i][j]))))) {
 			SelectDrawBuffer (1);
 			SetDrawBuffer (GL_BACK, 0);
 #if 1
@@ -1255,7 +1253,6 @@ if (HaveDrawBuffer ()) {
 			SelectTMU (GL_TEXTURE1);
 			glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
-			gameData.render.nShaderChanges++;
 			glUseProgramObject (shaderProg);
 			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
@@ -1288,7 +1285,7 @@ if (HaveDrawBuffer ()) {
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)
-		glUseProgramObject (0);
+		glShaderManager.Deploy (-1);
 	}
 #endif
 }
@@ -1594,12 +1591,7 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				if (enhance3DShaderProg [h][i][j])
-					DeleteShaderProg (&enhance3DShaderProg [h][i][j]);
-				gameStates.render.textures.bHaveCC3DShader =
-					CreateShaderProg (&enhance3DShaderProg [h][i][j]) &&
-					CreateShaderFunc (&enhance3DShaderProg [h][i][j], &cc3Df, &cc3Dv, enhance3DFS [h][i][j], cc3DVS, 1) &&
-					LinkShaderProg (&enhance3DShaderProg [h][i][j]);
+				gameStates.render.textures.bHaveCC3DShader = (0 <= shaderManager.Build (enhance3DShaderProg [h][i][j], enhance3DFS [h][i][j], cc3DVS));
 				if (!gameStates.render.textures.bHaveCC3DShader) {
 					DeleteEnhanced3DShader ();
 					gameOpts->render.n3DGlasses = GLASSES_NONE;
@@ -1618,8 +1610,7 @@ if (enhance3DShaderProg) {
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				DeleteShaderProg (&enhance3DShaderProg [h][i][j]);
-				enhance3DShaderProg [h][i][j] = 0;
+				shaderManager.Delete (enhance3DShaderProg [h][i][j]);
 				}
 			}
 		}

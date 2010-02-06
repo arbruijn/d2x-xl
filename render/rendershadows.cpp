@@ -146,9 +146,7 @@ i = glGetError ();
 
 //------------------------------------------------------------------------------
 
-GLhandleARB shadowProg = 0;
-GLhandleARB shadowFS = 0; 
-GLhandleARB shadowVS = 0; 
+int shadowProg = -1;
 
 #if DBG_SHADERS
 
@@ -164,10 +162,7 @@ const char *pszShadowVS = "shadows.vert";
 
 void RenderShadowTexture (void)
 {
-if (!(shadowProg ||
-	   (CreateShaderProg (&shadowProg) &&
-	    CreateShaderFunc (&shadowProg, &shadowFS, &shadowVS, pszShadowFS, pszShadowVS, 1) &&
-	    LinkShaderProg (&shadowProg))))
+if ((shadowProg < 0) && !shaderManager.Build (shadowProg, pszShadowFS, pszShadowVS))
 	return;
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
@@ -205,7 +200,7 @@ glTexCoord2d (0,-1);
 glVertex2d (0,0.5);
 glEnd ();
 if (ogl.m_states.bShadersOk)
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 glEnable (GL_DEPTH_TEST);
 glDepthMask (1);
 glPopMatrix ();

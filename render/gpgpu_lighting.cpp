@@ -366,7 +366,7 @@ else if (nState == 1) {
 	}	
 else if (nState == 2) {
 	Render ();
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 	lightManager.FBO ().Disable ();
 	glMatrixMode (GL_PROJECTION);    
 	glPopMatrix ();
@@ -439,10 +439,6 @@ const char *vertLightVS =
 
 void CGPGPULighting::InitShader (void)
 {
-#if GPGPU_VERTEX_LIGHTING
-	int	bOk;
-#endif
-
 if (!ogl.m_states.bVertexLighting)
 	return;
 ogl.m_states.bVertexLighting = 0;
@@ -452,12 +448,9 @@ if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 	ogl.m_states.bVertexLighting = 1;
 	if (m_hShaderProg)
 		DeleteShaderProg (&m_hShaderProg);
-	bOk = CreateShaderProg (&m_hShaderProg) &&
-			CreateShaderFunc (&m_hShaderProg, &m_hFragShader, &m_hVertShader, gpgpuLightFS, vertLightVS, 1) &&
-			LinkShaderProg (&m_hShaderProg);
-	if (!bOk) {
+	if (0 > shaderManager.Build (m_hShaderProg, gpgpuLightFS, vertLightVS)) {
 		ogl.m_states.bVertexLighting = 0;
-		DeleteShaderProg (&m_hShaderProg);
+		shaderManager.Delete (m_hShaderProg);
 		}
 	}
 #endif

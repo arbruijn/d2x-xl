@@ -1757,7 +1757,7 @@ if (InitBuffer (bLightmaps)) {
 		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
 			LoadGlareShader (10, nType == FIRE_PARTICLES);
 		else if (gameStates.render.history.nShader >= 0) {
-			glUseProgramObject (0);
+			shaderManager.Deploy (-1);
 			gameStates.render.history.nShader = -1;
 			}
 		}
@@ -1779,7 +1779,7 @@ else {
 iBuffer = 0;
 glDepthMask (1);
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != -1) && (gameStates.render.history.nShader != 999)) {
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 	gameStates.render.history.nShader = -1;
 	}
 return true;

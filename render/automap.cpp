@@ -454,7 +454,7 @@ if (!gameOpts->render.automap.bTextured)
 G3StartFrame (m_bRadar /*|| !(gameOpts->render.automap.bTextured & 1)*/, !m_bRadar, xStereoSeparation);
 ogl.ResetClientStates ();
 if (ogl.m_states.bShadersOk) {
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 	gameStates.render.history.nShader = -1;
 	}
 

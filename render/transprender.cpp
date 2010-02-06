@@ -657,14 +657,7 @@ return 1;
 
 void CTransparencyRenderer::ResetShader (void)
 {
-if (ogl.m_states.bShadersOk && (gameStates.render.history.nShader >= 0)) {
-	gameData.render.nShaderChanges++;
-	if (gameStates.render.history.nShader == 999)
-		UnloadGlareShader ();
-	else
-		glUseProgramObject (0);
-	gameStates.render.history.nShader = -1;
-	}
+shaderManager.Deploy (-1);
 }
 
 //------------------------------------------------------------------------------
@@ -1461,7 +1454,7 @@ sparkBuffer.nSparks = 0;
 ogl.DisableLighting ();
 ogl.ResetClientStates ();
 if (ogl.m_states.bShadersOk) {
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 	gameStates.render.history.nShader = -1;
 	}
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];

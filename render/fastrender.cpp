@@ -447,7 +447,7 @@ gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
 ogl.ResetClientStates ();
 if (ogl.m_states.bShadersOk) {
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 	gameStates.render.history.nShader = -1;
 	}
 glEnable (GL_CULL_FACE);
@@ -561,7 +561,7 @@ G3FlushFaceBuffer (1);
 #endif
 ogl.ResetClientStates ();
 if (ogl.m_states.bShadersOk) {
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 	gameStates.render.history.nShader = -1;
 	}
 if (nType != 3) {

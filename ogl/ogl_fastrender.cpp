@@ -196,7 +196,7 @@ else if (bColorKey || bMultiTexture)
 	nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
 else if (gameStates.render.history.nShader >= 0) {
 	gameData.render.nShaderChanges++;
-	glUseProgramObject (0);
+	shaderManager.Deploy (-1);
 	nShader = -1;
 	}
 ogl.ClearError (0);
@@ -652,7 +652,7 @@ else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
 		G3SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
 	else if (gameStates.render.history.nShader != -1) {
-		glUseProgramObject (0);
+		shaderManager.Deploy (-1);
 		gameStates.render.history.nShader = -1;
 		gameData.render.nShaderChanges++;
 		}
@@ -777,7 +777,7 @@ else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
 		G3SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
 	else if (gameStates.render.history.nShader != -1) {
-		glUseProgramObject (0);
+		shaderManager.Deploy (-1);
 		gameStates.render.history.nShader = -1;
 		gameData.render.nShaderChanges++;
 		}

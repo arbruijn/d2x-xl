@@ -760,9 +760,7 @@ const char *headlightVS [2][8] = {
 
 //-------------------------------------------------------------------------
 
-GLhandleARB headlightShaderProgs [2][4] = {{0,0,0,0},{0,0,0,0}};
-GLhandleARB lvs [2][4] = {{0,0,0,0},{0,0,0,0}};
-GLhandleARB lfs [2][4] = {{0,0,0,0},{0,0,0,0}};
+int headlightShaderProgs [2][4] = {{0,0,0,0},{0,0,0,0}};
 
 //-------------------------------------------------------------------------
 
@@ -805,10 +803,7 @@ if ((ogl.m_states.bHeadlight = (ogl.m_states.bShadersOk))) {
 			else
 #endif
 				pszFS = BuildLightingShader (headlightFS [i][h = j + 4], nLights);
-			bOk = (pszFS != NULL) &&
-					CreateShaderProg (&headlightShaderProgs [i][j]) &&
-					CreateShaderFunc (&headlightShaderProgs [i][j], &lfs [i][j], &lvs [i][j], pszFS, headlightVS [i][h], 1) &&
-					LinkShaderProg (&headlightShaderProgs [i][j]);
+			bOk = (pszFS != NULL) && (0 <= shaderManager.Build (headlightShaderProgs [i][j], pszFS, headlightVS [i][h]));
 			if (pszFS && (nLights > 1))
 				delete[] pszFS;
 			if (!bOk) {
@@ -827,27 +822,24 @@ ogl.m_data.nHeadlights = nLights;
 
 int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP)
 {
-	int			h, i, nShader, bTransform;
+	int			h, i, bTransform;
 	tRgbaColorf	color;
+	GLhandleARB	shaderProg;
 
 //headlights
 h = IsMultiGame ? nLights : 1;
 InitHeadlightShaders (h);
-nShader = 10 + bLightmaps * 4 + nType;
-if (nShader != gameStates.render.history.nShader) {
-	//glUseProgramObject (0);
-	gameData.render.nShaderChanges++;
-	glUseProgramObject (activeShaderProg = headlightShaderProgs [bLightmaps][nType]);
+if (0 < int (shaderProg = shaderManager.Deploy (headlightShaderProgs [bLightmaps][nType]))) {
 	if (nType) {
-		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightmaps);
+		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
 		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightmaps);
+			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
 			if (nType > 2)
-				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2 + bLightmaps);
+				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2 + bLightmaps);
 			}
 		}
-	//glUniform1f (glGetUniformLocation (activeShaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
-	//glUniform1f (glGetUniformLocation (activeShaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
+	//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
+	//glUniform1f (glGetUniformLocation (shaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 	if ((bTransform = !ogl.m_states.nTransformCalls))
 		ogl.SetupTransform (1);
 	for (h = i = 0; i < MAX_PLAYERS; i++) {
@@ -870,10 +862,10 @@ if (nShader != gameStates.render.history.nShader) {
 		color.red = color.green = color.blue = 2.0f;
 		color.alpha = 1;
 		}
-	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
+	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
 	ogl.ClearError (0);
 	}
-return gameStates.render.history.nShader = nShader;
+return shaderProg ? headlightShaderProgs [bLightmaps][nType] : -1;
 }
 
 //-----------------------------------------------------------------------------
