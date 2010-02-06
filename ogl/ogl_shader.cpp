@@ -412,6 +412,21 @@ if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
 
 //------------------------------------------------------------------------------
 
+int CShaderManager::Deploy (int nShader)
+{
+if (!ogl.m_states.bShadersOk)
+	return 0;
+if (nShader >= int (m_shaders.ToS ()))
+	return 0;
+if (m_nCurrent == nShader)
+	return 1;
+m_nCurrent = nShader;
+glUseProgramObject ((nShader < 0) ? 0 : m_shaders [nShader].program);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 void CShaderManager::Setup (void)
 {
 	GLint	nTMUs;
