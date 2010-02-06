@@ -121,6 +121,7 @@ void CShaderManager::Init (void)
 m_shaders.Create (100);
 m_shaders.SetGrowth (100);
 m_shaders.Clear ();
+m_nCurrent = -1;
 }
 
 //------------------------------------------------------------------------------

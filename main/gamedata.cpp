@@ -403,8 +403,9 @@ fAttScale [0] = 0.0f;
 fAttScale [1] = 0.003333f;
 #endif
 #if 1
-for (int i = 0; i < 2; i++)
-	faceIndex [i].Init ();
+for (int h = 0; h < 2; h++)
+	for (int i = 0; i < gameStates.app.nThreads; i++)
+		faceIndex [h][i].Init ();
 faceList.Clear ();
 #endif
 }
@@ -489,7 +490,7 @@ return true;
 void CFaceData::Destroy (void)
 {
 DESTROY (faces);
-DESTROY ( tris);
+DESTROY (tris);
 DESTROY (vertices);
 #if USE_RANGE_ELEMENTS
 DESTROY (vertIndex);
@@ -508,9 +509,9 @@ CFaceListIndex::CFaceListIndex ()
 {
 nUsedFaces = 0;
 nUsedKeys = 0;
-roots.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-tails.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-usedKeys.Create ((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+roots.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+tails.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+usedKeys.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 Init ();
 }
 

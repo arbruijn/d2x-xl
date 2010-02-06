@@ -47,28 +47,30 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ResetFaceList (int nThread)
 {
 PROF_START
-	CFaceListIndex *flxP = gameData.render.faceIndex + nThread;
+for (int i = 0; i < 2; i++) {
+	CFaceListIndex& flx = gameData.render.faceIndex [i][nThread];
 #if SORT_RENDER_FACES == 2
 #	if 0//DBG
-memset (flxP->roots, 0xff, sizeof (flxP->roots));
+	memset (flx.roots, 0xff, sizeof (flx.roots));
 #	else
-short *roots = flxP->roots,
-		*usedKeys = flxP->usedKeys;
-for (int i = 0, h = flxP->nUsedKeys; i < h; i++) 
-	roots [usedKeys [i]] = -1;
+	short *roots = flx.roots,
+			*usedKeys = flx.usedKeys;
+	for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
+		roots [usedKeys [i]] = -1;
 #	endif
 #else
 #	if 0//DBG
-memset (flxP->tails, 0xff, sizeof (flxP->tails));
+memset (flx.tails, 0xff, sizeof (flx.tails));
 #	else
-int* tails = flxP->tails.Buffer (),
-	* usedKeys = flxP->usedKeys.Buffer ();
-for (int i = 0, h = flxP->nUsedKeys; i < h; i++) 
-	tails [usedKeys [i]] = -1;
+	int* tails = flx.tails.Buffer (),
+		* usedKeys = flx.usedKeys.Buffer ();
+	for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
+		tails [usedKeys [i]] = -1;
 #	endif
 #endif
-flxP->nUsedFaces = 0; //(nThread & 1) ? LEVEL_FACES : 0;
-flxP->nUsedKeys = 0;
+	flx.nUsedFaces = 0; //(nThread & 1) ? LEVEL_FACES : 0;
+	flx.nUsedKeys = 0;
+	}
 PROF_END(ptFaceList)
 }
 
@@ -92,31 +94,29 @@ if (nKey < 0)
 	return 0;
 
 PROF_START
-CFaceListIndex	*flxP = gameData.render.faceIndex + nThread;
+CFaceListIndex& flx = gameData.render.faceIndex [faceP->m_info.nOvlTex != 0][nThread];
 
-if (faceP->m_info.nOvlTex)
-	nKey += MAX_WALL_TEXTURES + faceP->m_info.nOvlTex;
-i = nThread + gameStates.render.nThreads * flxP->nUsedFaces;
-flxP->nUsedFaces++;
+i = nThread + gameStates.render.nThreads * flx.nUsedFaces;
+flx.nUsedFaces++;
 #if SORT_RENDER_FACES == 2
-j = flxP->roots [nKey];
+j = flx.roots [nKey];
 if (j < 0)
-	flxP->usedKeys [flxP->nUsedKeys++] = nKey;
+	flx.usedKeys [flx.nUsedKeys++] = nKey;
 gameData.render.faceList [i].nNextItem = j;
 gameData.render.faceList [i].faceP = faceP;
-flxP->roots [nKey] = i;
+flx.roots [nKey] = i;
 #else
-j = flxP->tails [nKey];
+j = flx.tails [nKey];
 if (j < 0) {
-	flxP->usedKeys [flxP->nUsedKeys] = nKey;
-	flxP->nUsedKeys++;
-	flxP->roots [nKey] = i;
+	flx.usedKeys [flx.nUsedKeys] = nKey;
+	flx.nUsedKeys++;
+	flx.roots [nKey] = i;
 	}
 else
 	gameData.render.faceList [j].nNextItem = i;
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
-flxP->tails [nKey] = i;
+flx.tails [nKey] = i;
 faceP->m_info.nFrame = gameData.app.nFrameCount;
 #endif
 PROF_END(ptFaceList)
@@ -727,7 +727,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 
 void QueryCoronas (short nFaces, int nPass)
 {
-	int	i;
+	int	h, i;
 
 BeginRenderFaces (3, 0);
 glDepthMask (0);
@@ -735,17 +735,20 @@ ogl.ColorMask (1,1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
 	// first just render all coronas (happens before any geometry gets rendered)
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [i], 0);
+	for (h = 0; h < 2; h++)
+		for (i = 0; i < gameStates.app.nThreads; i++)
+			RenderCoronaFaceList (gameData.render.faceIndex [h][i], 0);
 	glFlush ();
 	// then query how many samples (pixels) were rendered for each corona
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [i], 1);
+	for (h = 0; h < 2; h++)
+		for (i = 0; i < gameStates.app.nThreads; i++)
+			RenderCoronaFaceList (gameData.render.faceIndex [h][i], 1);
 	}
 else { //now find out how many fragments are rendered for each corona if geometry interferes
 	gameStates.render.bQueryCoronas = 2;
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [i], 2);
+	for (h = 0; h < 2; h++)
+		for (i = 0; i < gameStates.app.nThreads; i++)
+			RenderCoronaFaceList (gameData.render.faceIndex [h][i], 2);
 	glFlush ();
 	}
 glDepthMask (1);
@@ -827,7 +830,7 @@ return nFaces;
 
 short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
-	int	i, nFaces = 0, bAutomap = (nType == 0);
+	int	h, i, nFaces = 0, bAutomap = (nType == 0);
 
 if (nType) {
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
@@ -843,8 +846,9 @@ if (nType) {
 	}
 else {
 #if SORT_RENDER_FACES > 1
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		nFaces += RenderFaceList (gameData.render.faceIndex [i], nType, bDepthOnly, bHeadlight);
+	for (h = 0; h < 2; h++)
+		for (i = 0; i < gameStates.app.nThreads; i++)
+			nFaces += RenderFaceList (gameData.render.faceIndex [h][i], nType, bDepthOnly, bHeadlight);
 #else
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
 		nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bDepthOnly, bAutomap, bHeadlight);
