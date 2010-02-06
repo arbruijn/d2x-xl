@@ -1280,7 +1280,7 @@ if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
-if (lightmapShaderProgs [nType])
+if (lightmapShaderProgs [nType] >= 0)
 	return 1;
 for (h = 0; h <= 3; h++) {
 	if (lightmapShaderProgs [h])
@@ -1309,7 +1309,7 @@ for (int nType = 0; nType < 4; nType++)
 
 void ResetLightmapShaders (void)
 {
-memset (lightmapShaderProgs, 0, sizeof (lightmapShaderProgs));
+memset (lightmapShaderProgs, 0xFF, sizeof (lightmapShaderProgs));
 }
 
 //------------------------------------------------------------------------------

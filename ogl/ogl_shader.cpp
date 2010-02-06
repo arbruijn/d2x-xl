@@ -104,12 +104,14 @@ CShaderManager shaderManager;
 
 CShaderManager::CShaderManager ()
 {
+Init ();
 }
 
 //------------------------------------------------------------------------------
 
 CShaderManager::~CShaderManager ()
 {
+Destroy (true);
 }
 
 //------------------------------------------------------------------------------
@@ -376,6 +378,8 @@ int CShaderManager::Build (int& nShader, const char* pszFragShader, const char* 
 {
 if ((nShader < 0) || (nShader >= int (m_shaders.ToS ()))) {
 	if (!Alloc (nShader))
+		return 0;
+	if (!Create (nShader))
 		return 0;
 	}
 else {

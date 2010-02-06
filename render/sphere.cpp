@@ -103,7 +103,7 @@ return 1;
 
 void ResetSphereShaders (void)
 {
-sphereShaderProg = 0;
+sphereShaderProg = -1;
 }
 
 // -----------------------------------------------------------------------------
