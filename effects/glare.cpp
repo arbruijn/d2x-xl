@@ -778,6 +778,7 @@ return false;
 void CGlareRenderer::LoadShader (float dMax, int bAdditive)
 {
 	static float dMaxPrev = -1;
+	static int	 bAddPrev = -1;
 
 ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
@@ -787,7 +788,7 @@ if (ogl.m_states.bDepthBlending) {
 		ogl.m_states.bUseDepthBlending = 1;
 		if (dMax < 1)
 			dMax = 1;
-		m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader [bAdditive]));
+		m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader [0]));
 		if (0 < int (m_shaderProg)) {
 			glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
@@ -798,9 +799,12 @@ if (ogl.m_states.bDepthBlending) {
 		else if (0 > int (m_shaderProg)) {
 			m_shaderProg = GLuint (-int (m_shaderProg));
 			if (dMaxPrev != dMax)
-				glUniform1f (glGetUniformLocation (hGlareShader [bAdditive], "dMax"), (GLfloat) dMax);
+				glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
+			if (bAddPrev != bAdditive)
+				glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
 			}
 		dMaxPrev = dMax;
+		bAddPrev = bAdditive;
 		glDisable (GL_DEPTH_TEST);
 		}
 	ogl.SelectTMU (GL_TEXTURE0);
@@ -830,6 +834,7 @@ const char *glareFS [2] = {
 	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
+	"uniform int bAdditive;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define LinearDepth(_z) (2.0 * ZFAR) / (ZFAR + ZNEAR - (_z) * (ZFAR - ZNEAR))\r\n" \
@@ -839,7 +844,8 @@ const char *glareFS [2] = {
 	"float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
+	"/*gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);*/\r\n" \
+	"gl_FragColor = vec4 ((texColor.rgb * gl_Color.rgb) * max (1.0 - bAdditive, dz), max (bAdditive, texColor.a * gl_Color.a * dz));\r\n" \
 	"}\r\n"
 	,
 	"uniform sampler2D glareTex, depthTex;\r\n" \

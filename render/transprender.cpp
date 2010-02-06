@@ -1141,7 +1141,7 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 	glEnable (GL_TEXTURE_2D);
 	bmpSparks->Texture ()->Bind ();
 	if (bSoftSparks)
-		glareRenderer.LoadShader (3);
+		glareRenderer.LoadShader (3, 1);
 	else {
 		ResetShader ();
 		if (m_data.bDepthMask)
