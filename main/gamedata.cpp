@@ -507,7 +507,6 @@ DESTROY (lMapTexCoord);
 
 CFaceListIndex::CFaceListIndex ()
 {
-nUsedFaces = 0;
 nUsedKeys = 0;
 roots.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 tails.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);

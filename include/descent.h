@@ -1540,7 +1540,7 @@ class CFaceListIndex {
 		CIntArray				roots; // [MAX_WALL_TEXTURES * 3];
 		CIntArray				tails; // [MAX_WALL_TEXTURES * 3];
 		CIntArray				usedKeys; // [MAX_WALL_TEXTURES * 3];
-		int						nUsedFaces;
+		//int						nUsedFaces;
 		int						nUsedKeys;
 	public:
 		CFaceListIndex ();
@@ -1583,6 +1583,7 @@ class CRenderData {
 		int							nColoredFaces;
 		int							nStateChanges;
 		int							nShaderChanges;
+		int							nUsedFaces;
 		float							fAttScale [2];
 		ubyte							nPowerupFilter;
 

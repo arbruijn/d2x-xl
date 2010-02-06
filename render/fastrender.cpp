@@ -68,13 +68,16 @@ memset (flx.tails, 0xff, sizeof (flx.tails));
 		tails [usedKeys [i]] = -1;
 #	endif
 #endif
-	flx.nUsedFaces = 0; //(nThread & 1) ? LEVEL_FACES : 0;
 	flx.nUsedKeys = 0;
 	}
+gameData.render.nUsedFaces = 0;
 PROF_END(ptFaceList)
 }
 
 //------------------------------------------------------------------------------
+// AddFaceListItem creates lists of faces with the same texture
+// The lists themselves are kept in gameData.render.faceList
+// gameData.render.faceIndex holds the root index of each texture's face list
 
 int AddFaceListItem (CSegFace *faceP, int nThread)
 {
@@ -96,8 +99,10 @@ if (nKey < 0)
 PROF_START
 CFaceListIndex& flx = gameData.render.faceIndex [faceP->m_info.nOvlTex != 0][nThread];
 
-i = nThread + gameStates.render.nThreads * flx.nUsedFaces;
-flx.nUsedFaces++;
+#ifdef _OPENMP
+#	pragma omp critical
+#endif
+i = gameData.render.nUsedFaces++;
 #if SORT_RENDER_FACES == 2
 j = flx.roots [nKey];
 if (j < 0)
