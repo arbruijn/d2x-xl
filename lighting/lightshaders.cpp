@@ -1483,7 +1483,7 @@ int G3SetupPerPixelShader (CSegFace *faceP, int bDepthOnly, int nType, bool bHea
 PROF_START
 	static CBitmap	*nullBmP = NULL;
 
-	int	bLightmaps, nLights, nShader;
+	int	bLightmaps, nLights;
 
 if (bDepthOnly)
 	return 0;
@@ -1491,11 +1491,6 @@ if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
 #if ONLY_LIGHTMAPS == 2
 nType = 0;
-#endif
-#if CONST_LIGHT_COUNT
-nShader = 20 + 4 * gameStates.render.nMaxLightsPerPass + nType;
-#else
-nShader = 20 + 4 * nLights + nType;
 #endif
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -1510,7 +1505,6 @@ if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
 	}
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType]));
-
 if (!shaderProg) {
 	PROF_END(ptShaderStates);
 	return -1;
@@ -1553,13 +1547,10 @@ int G3SetupLightmapShader (CSegFace *faceP, int bDepthOnly, int nType, bool bHea
 PROF_START
 	static CBitmap	*nullBmP = NULL;
 
-	int	nShader;
-
 if (bDepthOnly)
 	return 0;
 if (!CreateLightmapShader (nType))
 	return 0;
-nShader = 60 + nType;
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
@@ -1567,29 +1558,38 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (lightmapManager.Bind (i))
 	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
-if (nShader != gameStates.render.history.nShader) {
-	gameData.render.nShaderChanges++;
+
 #if CONST_LIGHT_COUNT
-	glUseProgramObject (activeShaderProg = lightmapShaderProgs [nType]);
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
 #else
-	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [nLights][nType]));
 #endif
+if (!shaderProg)
+	return -1;
+
+if (0 < int (shaderProg)) {
 	ogl.ClearError (0);
-	glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
+	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType) {
-		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 1);
+		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
 		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 2);
+			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
 			if (nType > 2)
-				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 3);
+				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
 			}
 		}
 	}
+else
+	shaderProg = GLhandleARB (-int (shaderProg));
 if (!nType)
-	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
-return gameStates.render.history.nShader = nShader;
+#if CONST_LIGHT_COUNT
+return lightmapShaderProgs [nType];
+#else
+return perPixelLightingShaderProgs [nLights][nType];
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1600,7 +1600,7 @@ if (gameStates.render.textures.bHaveGrayScaleShader) {
 	if (nType > 2)
 		nType = 2;
 	int bLightmaps = lightmapManager.HaveLightmaps ();
-	GLhandleARB shaderProg = shaderManager.Deploy (gsShaderProg [bLightmaps][nType]);
+	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (gsShaderProg [bLightmaps][nType]));
 	if (0 < int (shaderProg)) {
 		glUseProgramObject (shaderProg);
 		if (!nType)

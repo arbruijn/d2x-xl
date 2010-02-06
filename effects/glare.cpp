@@ -787,14 +787,13 @@ if (ogl.m_states.bDepthBlending) {
 		ogl.m_states.bUseDepthBlending = 1;
 		if (dMax < 1)
 			dMax = 1;
-		m_shaderProg = shaderManager.Deploy (hGlareShader [bAdditive]);
+		m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader [bAdditive]));
 		if (0 < int (m_shaderProg)) {
 			glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
 			glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
 			glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
 			glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
-			gameData.render.nShaderChanges++;
 			}
 		else if (0 > int (m_shaderProg)) {
 			m_shaderProg = GLuint (-int (m_shaderProg));

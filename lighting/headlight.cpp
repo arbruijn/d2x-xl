@@ -830,8 +830,7 @@ int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colo
 h = IsMultiGame ? nLights : 1;
 InitHeadlightShaders (h);
 
-GLhandleARB shaderProg = GLhandleARB (shaderProg = shaderManager.Deploy (headlightShaderProgs [bLightmaps][nType]));
-
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (headlightShaderProgs [bLightmaps][nType]));
 if (!shaderProg)
 	return -1;
 

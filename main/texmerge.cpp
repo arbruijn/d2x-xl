@@ -408,9 +408,7 @@ switch (nType) {
 
 //------------------------------------------------------------------------------
 
-GLhandleARB tmShaderProgs [6] = {0,0,0,0,0,0};
-GLhandleARB tmf [6] = {0,0,0,0,0,0}; 
-GLhandleARB tmv [6] = {0,0,0,0,0,0}; 
+int tmShaderProgs [6] = {0,0,0,0,0,0};
 
 const char *texMergeFS [6] = {
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -515,18 +513,14 @@ if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 else {
 	PrintLog ("building texturing shader programs\n");
 	for (i = 0; i < 6; i++) {
-		if (tmShaderProgs [i])
-			DeleteShaderProg (tmShaderProgs + i);
-		b = CreateShaderProg (tmShaderProgs + i) &&
-			 CreateShaderFunc (tmShaderProgs + i, tmf + i, tmv + i, texMergeFS [i], texMergeVS [i % 3], 1) &&
-			 LinkShaderProg (tmShaderProgs + i);
+		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i % 3]);
 		if (i == 2)
 			gameStates.render.textures.bHaveMaskShader = b;
 		else
 			gameStates.render.textures.bGlTexMergeOk = b;
 		if (!gameStates.render.textures.bGlTexMergeOk) {
 			while (i)
-				DeleteShaderProg (tmShaderProgs + --i);
+				shaderManager.Delete (tmShaderProgs [--i]);
 			gameOpts->ogl.bGlTexMerge = 0;
 			break;
 			}
@@ -543,6 +537,8 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 int G3SetupTexMergeShader (int bColorKey, int bColored, int nType)
 {
+	int nShader = nType - 1 + bColored * 3;
+
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
 
 if (!shaderProg)

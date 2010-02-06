@@ -180,9 +180,9 @@ if (!ogl.m_states.bUseTransform) {
 if (!nHits)
 	return 0;
 
-GLhandleARB shaderProg = shaderManager.Deploy (sphereShaderProg);
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (sphereShaderProg));
 if (shaderProg) {
-	if (int (shaderProg) > 0)
+	if (0 < int (shaderProg))
 		glUniform1i (glGetUniformLocation (shaderProg, "shaderTex"), 0);
 	else
 		shaderProg = GLhandleARB (-int (shaderProg));

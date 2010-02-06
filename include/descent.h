@@ -909,7 +909,6 @@ typedef struct tRenderHistory {
 	ubyte			bShaderMerge;
 	int			bOverlay;
 	int			bColored;
-	int			nShader;
 	int			nType;
 	int			nBlendMode;
 } tRenderHistory;

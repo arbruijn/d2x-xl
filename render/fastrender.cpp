@@ -437,7 +437,6 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
-gameStates.render.history.nShader = -1;
 gameStates.render.history.bOverlay = -1;
 gameStates.render.history.bColored = 1;
 gameStates.render.history.nBlendMode = -1;
@@ -446,10 +445,7 @@ gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
 ogl.ResetClientStates ();
-if (ogl.m_states.bShadersOk) {
-	shaderManager.Deploy (-1);
-	gameStates.render.history.nShader = -1;
-	}
+shaderManager.Deploy (-1);
 glEnable (GL_CULL_FACE);
 CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) 
@@ -560,10 +556,7 @@ void EndRenderFaces (int nType, int bDepthOnly)
 G3FlushFaceBuffer (1);
 #endif
 ogl.ResetClientStates ();
-if (ogl.m_states.bShadersOk) {
-	shaderManager.Deploy (-1);
-	gameStates.render.history.nShader = -1;
-	}
+shaderManager.Deploy (-1);
 if (nType != 3) {
 	if (gameStates.render.bPerPixelLighting == 2)
 		ogl.DisableLighting ();
