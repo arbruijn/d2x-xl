@@ -102,7 +102,9 @@ CFaceListIndex& flx = gameData.render.faceIndex [faceP->m_info.nOvlTex != 0][nTh
 #ifdef _OPENMP
 #	pragma omp critical
 #endif
+{
 i = gameData.render.nUsedFaces++;
+}
 #if SORT_RENDER_FACES == 2
 j = flx.roots [nKey];
 if (j < 0)

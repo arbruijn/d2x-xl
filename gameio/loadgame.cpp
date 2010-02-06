@@ -847,7 +847,7 @@ for (int h = 0; h < 2; h++) {
 	for (int i = 0; i < gameStates.app.nThreads; i++) {
 		gameData.render.faceIndex [h][i].roots.Clear (0xff);
 		gameData.render.faceIndex [h][i].tails.Clear (0xff);
-		gameData.render.faceIndex [h][i].nUsedFaces = 0; //(i & 1) ? LEVEL_FACES : 0;
+		//gameData.render.faceIndex [h][i].nUsedFaces = 0; //(i & 1) ? LEVEL_FACES : 0;
 		gameData.render.faceIndex [h][i].nUsedKeys = 0;
 		}
 	}
