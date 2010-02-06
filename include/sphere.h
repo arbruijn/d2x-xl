@@ -8,6 +8,7 @@
 #include "oof.h"
 
 void InitSpheres (void);
+void ResetSphereShaders (void);
 
 #define RINGED_SPHERE	1
 

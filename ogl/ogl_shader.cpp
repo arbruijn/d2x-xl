@@ -37,6 +37,7 @@
 #include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "glare.h"
+#include "sphere.h"
 #include "rendermine.h"
 #include "gpgpu_lighting.h"
 
@@ -64,10 +65,83 @@ PFNGLUNIFORM1IARBPROC				glUniform1i = NULL;
 
 //------------------------------------------------------------------------------
 
-char *LoadShader (char* fileName) //, char* Shadersource)
+#if 1
+
+const char *progVS [] = {
+	"void TexMergeVS ();" \
+	"void main (void) {TexMergeVS ();}"
+,
+	"void LightingVS ();" \
+	"void main (void) {LightingVS ();}"
+,
+	"void LightingVS ();" \
+	"void TexMergeVS ();" \
+	"void main (void) {TexMergeVS (); LightingVS ();}"
+	};
+
+const char *progFS [] = {
+	"void TexMergeFS ();" \
+	"void main (void) {TexMergeFS ();}"
+,
+	"void LightingFS ();" \
+	"void main (void) {LightingFS ();}"
+,
+	"void LightingFS ();" \
+	"void TexMergeFS ();" \
+	"void main (void) {TexMergeFS (); LightingFS ();}"
+	};
+
+GLhandleARB mainVS = 0;
+GLhandleARB mainFS = 0;
+
+#endif
+
+CShaderManager shaderManager;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+CShaderManager::CShaderManager ()
 {
-	FILE	*fp;
-	char	*bufP = NULL;
+}
+
+//------------------------------------------------------------------------------
+
+CShaderManager::~CShaderManager ()
+{
+}
+
+//------------------------------------------------------------------------------
+
+void CShaderManager::Init (void)
+{
+m_shaders.Create (100);
+m_shaders.SetGrowth (100);
+m_shaders.Clear ();
+}
+
+//------------------------------------------------------------------------------
+
+void CShaderManager::Destroy (bool bAll)
+{
+for (int i = 0; i < int (m_shaders.ToS ()); i++) {
+	tShaderData& shader = m_shaders [i];
+	if (bAll)
+		Delete (i);
+	else
+		Reset (i);
+	}
+m_shaders.Destroy ();
+}
+
+//------------------------------------------------------------------------------
+// load a shader program's source code from a file
+
+char* CShaderManager::Load (const char* fileName) //, char* Shadersource)
+{
+	FILE*	fp;
+	char*	bufP = NULL;
 	int 	fSize;
 #ifdef _WIN32
 	int	f;
@@ -117,7 +191,7 @@ return bufP;
 #	define	_HANDLE	handle
 #endif
 
-void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
+void CShaderManager::PrintLog (GLhandleARB handle, int bProgram)
 {
    GLint nLogLen = 0;
    GLint charsWritten = 0;
@@ -147,7 +221,7 @@ glGetObjectParameteriv (_HANDLE, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
 if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 	glGetInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
-		PrintLog ("\n%s\n\n", infoLog);
+		::PrintLog ("\n%s\n\n", infoLog);
 	delete[] infoLog;
 	}
 #endif
@@ -157,199 +231,233 @@ if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 
 //------------------------------------------------------------------------------
 
-const char *progVS [] = {
-	"void TexMergeVS ();" \
-	"void main (void) {TexMergeVS ();}"
-,
-	"void LightingVS ();" \
-	"void main (void) {LightingVS ();}"
-,
-	"void LightingVS ();" \
-	"void TexMergeVS ();" \
-	"void main (void) {TexMergeVS (); LightingVS ();}"
-	};
-
-const char *progFS [] = {
-	"void TexMergeFS ();" \
-	"void main (void) {TexMergeFS ();}"
-,
-	"void LightingFS ();" \
-	"void main (void) {LightingFS ();}"
-,
-	"void LightingFS ();" \
-	"void TexMergeFS ();" \
-	"void main (void) {TexMergeFS (); LightingFS ();}"
-	};
-
-GLhandleARB mainVS = 0;
-GLhandleARB mainFS = 0;
-
-//------------------------------------------------------------------------------
-
 GLhandleARB	genShaderProg = 0;
 
-int CreateShaderProg (GLhandleARB *progP)
+int CShaderManager::Create (int nShader)
 {
-if (!progP)
-	progP = &genShaderProg;
-if (*progP)
+if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
+	return 0;
+if (m_shaders [nShader].program || (m_shaders [nShader].program = glCreateProgramObject ()))
 	return 1;
-*progP = glCreateProgramObject ();
-if (*progP)
-	return 1;
-PrintLog ("   Couldn't create shader program CObject\n");
+::PrintLog ("   Couldn't create shader program CObject\n");
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void DeleteShaderProg (GLhandleARB *progP)
+void CShaderManager::Delete (GLhandleARB& shaderProg)
 {
-#if 0
-if (!progP)
-	progP = &genShaderProg;
-#endif
-if (progP && *progP) {
-	glDeleteObject (*progP);
-	*progP = 0;
+if (shaderProg) {
+	glDeleteObject (shaderProg);
+	shaderProg = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP,
-							 const char *fsName, const char *vsName, int bFromFile)
+int CShaderManager::Alloc (int& nShader)
 {
-	GLhandleARB	fs, vs;
-	GLint bFragCompiled, bVertCompiled;
+if (!m_shaders.Grow ())
+	return nShader = -1;
+nShader = m_shaders.ToS () - 1;
+memset (&m_shaders [nShader], 0, sizeof (m_shaders [nShader]));
+m_shaders [nShader].refP = &nShader;
+return nShader;
+}
+
+//------------------------------------------------------------------------------
+
+int CShaderManager::Compile (int nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile)
+{
+	GLint		bCompiled [2] = {0,0};
+	bool		bError = false;
+	int		i;
+
+	static GLint nShaderTypes [2] = {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER};
 
 if (!ogl.m_states.bShadersOk)
 	return 0;
-if (!CreateShaderProg (progP))
+if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
 	return 0;
-if (*fsP) {
-	glDeleteObject (*fsP);
-	*fsP = 0;
-	}
-if (*vsP) {
-	glDeleteObject (*vsP);
-	*vsP = 0;
-	}
-if (!(vs = glCreateShaderObject (GL_VERTEX_SHADER)))
-	return 0;
-if (!(fs = glCreateShaderObject (GL_FRAGMENT_SHADER))) {
-	glDeleteObject (vs);
-	return 0;
-	}
-#if DBG_SHADERS
-if (bFromFile) {
-	vsName = LoadShader (vsName);
-	fsName = LoadShader (fsName);
-	if (!vsName || !fsName)
-		return 0;
-	}
-#endif
-glShaderSource (vs, 1, reinterpret_cast<const GLcharARB **> (&vsName), NULL);
-glShaderSource (fs, 1, reinterpret_cast<const GLcharARB **> (&fsName), NULL);
-#if DBG_SHADERS
-if (bFromFile) {
-	delete[] vsName;
-	delete[] fsName;
-	}
-#endif
-glCompileShader (vs);
-glCompileShader (fs);
-glGetObjectParameteriv (vs, GL_OBJECT_COMPILE_STATUS_ARB, &bVertCompiled);
-glGetObjectParameteriv (fs, GL_OBJECT_COMPILE_STATUS_ARB, &bFragCompiled);
-if (!bVertCompiled || !bFragCompiled) {
-	if (!bVertCompiled) {
-		PrintLog ("   Couldn't compile vertex shader\n   \"%s\"\n", vsName);
-		PrintShaderInfoLog (vs, 0);
+tShaderData& shader = m_shaders [nShader];
+
+for (i = 0; i < 2; i++) {
+	if (shader.shaders [i]) {
+		glDeleteObject (shader.shaders [i]);
+		shader.shaders [i] = 0;
 		}
-	if (!bFragCompiled) {
-		PrintLog ("   Couldn't compile fragment shader\n   \"%s\"\n", fsName);
-		PrintShaderInfoLog (fs, 0);
+	if (!(shader.shaders [i] = glCreateShaderObject (nShaderTypes [i])))
+		break;
+#if DBG_SHADERS
+	if (bFromFile) {
+		shader.shaders [i] = LoadShader (i ? pszFragShader : pszVertShader);
+		if (!shader.shaders [i])
+			return 0;
 		}
-	return 0;
+#endif
+	glShaderSource (shader.shaders [i], 1, i ? reinterpret_cast<const GLcharARB **> (&pszFragShader) : reinterpret_cast<const GLcharARB **> (&pszVertShader), NULL);
+#if DBG_SHADERS
+	if (bFromFile) {
+		if (i)
+			delete[] pszFragShader;
+		else
+			delete[] pszVertShader;
+		}
+#endif
+	glCompileShader (shader.shaders [i]);
+	glGetObjectParameteriv (shader.shaders [i], GL_OBJECT_COMPILE_STATUS_ARB, &bCompiled [i]);
+	if (!bCompiled [i])
+		break;
+	glAttachObject (shader.program, shader.shaders [i]);
 	}
-glAttachObject (*progP, vs);
-glAttachObject (*progP, fs);
-*fsP = fs;
-*vsP = vs;
-return 1;
+
+for (i = 0; i < 2; i++) {
+	if (!bCompiled [i]) {
+		bError = true;
+		if (i)
+			::PrintLog ("   Couldn't compile fragment shader\n   \"%s\"\n", pszFragShader);
+		else
+			::PrintLog ("   Couldn't compile vertex shader\n   \"%s\"\n", pszVertShader);
+		if (shader.shaders [i]) {
+			PrintLog (shader.shaders [i], 0);
+			glDeleteObject (shader.shaders [i]);
+			shader.shaders [i] = 0;
+			}
+		}
+	}
+if (!bError)
+	return 1;
+m_shaders.Pop ();
+return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int LinkShaderProg (GLhandleARB *progP)
+int CShaderManager::Link (int nShader)
 {
-	int	i = 0;
-	GLint	bLinked;
+if (!ogl.m_states.bShadersOk)
+	return 0;
+if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
+	return 0;
+tShaderData& shader = m_shaders [nShader];
 
-if (!progP) {
-	progP = &genShaderProg;
-	if (!*progP)
+if (!shader.program) {
+	if (!Create (nShader))
 		return 0;
+	int	i;
 	if (gameOpts->ogl.bGlTexMerge)
 		i |= 1;
 	if (gameStates.render.nLightingMethod)
 		i |= 2;
 	if (!i)
 		return 0;
-	if (!CreateShaderFunc (progP, &mainFS, &mainVS, progFS [i - 1], progVS [i - 1], 0)) {
-		DeleteShaderProg (progP);
+	if (!Compile (nShader, progFS [i - 1], progVS [i - 1], 0)) {
+		Delete (shader.program);
 		return 0;
 		}
 	}
-glLinkProgram (*progP);
-glGetObjectParameteriv (*progP, GL_OBJECT_LINK_STATUS_ARB, &bLinked);
+
+glLinkProgram (shader.program);
+GLint	bLinked;
+glGetObjectParameteriv (shader.program, GL_OBJECT_LINK_STATUS_ARB, &bLinked);
 if (bLinked)
 	return 1;
-PrintLog ("   Couldn't link shader programs\n");
-PrintShaderInfoLog (*progP, 1);
-DeleteShaderProg (progP);
+::PrintLog ("   Couldn't link shader programs\n");
+PrintLog (shader.program, 1);
+Delete (shader.program);
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void ResetSphereShaders (void);
+int CShaderManager::Build (int& nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile)
+{
+if (!Alloc (nShader))
+	return 0;
+if (!Compile (nShader, pszFragShader, pszVertShader, bFromFile))
+	return 0;
+if (!Link (nShader))
+	return 0;
+return 1;
+}
 
-void COGL::InitShaders (void)
+//------------------------------------------------------------------------------
+
+void CShaderManager::Reset (int nShader)
+{
+if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
+	*m_shaders [nShader].refP = -1;
+	m_shaders [nShader].refP = NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CShaderManager::Delete (int nShader)
+{
+if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
+	tShaderData& shader = m_shaders [nShader];
+	for (int j = 0; j < 2; j++) {
+		if (shader.shaders [j]) {
+			glDeleteObject (shader.shaders [j]);
+			shader.shaders [j] = 0;
+			}
+		}
+	if (shader.program) {
+		glDeleteObject (shader.program);
+		shader.program = 0;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CShaderManager::Setup (void)
 {
 	GLint	nTMUs;
 
 if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	return;
-PrintLog ("initializing shader programs\n");
+::PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 ogl.m_states.bShadersOk = (nTMUs >= 4);
 if (!ogl.m_states.bShadersOk) {
-	PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
+	::PrintLog ("GPU has too few texture units (%d)\n", nTMUs);
 	ogl.m_states.bLowMemory = 0;
 	ogl.m_states.bHaveTexCompression = 0;
 	return;
 	}
 gameStates.render.bLightmapsOk = (nTMUs >= 4);
-PrintLog ("   initializing texture merging shader programs\n");
+::PrintLog ("   initializing texture merging shader programs\n");
 InitTexMergeShaders ();
 ogl.m_data.nHeadlights = 0;
-PrintLog ("   initializing lighting shader programs\n");
+::PrintLog ("   initializing lighting shader programs\n");
 InitHeadlightShaders (1);
-PrintLog ("   initializing vertex lighting shader programs\n");
+::PrintLog ("   initializing vertex lighting shader programs\n");
 gpgpuLighting.InitShader ();
-PrintLog ("   initializing glare shader programs\n");
+::PrintLog ("   initializing glare shader programs\n");
 InitGlareShader ();
-PrintLog ("   initializing gray scale shader programs\n");
+::PrintLog ("   initializing gray scale shader programs\n");
 InitGrayScaleShader ();
-PrintLog ("   initializing enhanced 3D shader programs\n");
-InitEnhanced3DShader ();
+::PrintLog ("   initializing enhanced 3D shader programs\n");
+ogl.InitEnhanced3DShader ();
 ResetPerPixelLightingShaders ();
 InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
 ResetSphereShaders ();
-LinkShaderProg (NULL);
+#if 0
+Link (Alloc ());
+#endif
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void COGL::InitShaders (void)
+{
+shaderManager.Setup ();
 }
 
 //------------------------------------------------------------------------------

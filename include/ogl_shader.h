@@ -9,12 +9,46 @@
 extern GLhandleARB	genShaderProg;
 
 char *LoadShader (char* fileName);
-int CreateShaderProg (GLhandleARB *progP);
-int CreateShaderFunc (GLhandleARB *progP, GLhandleARB *fsP, GLhandleARB *vsP, 
+int CreateShaderProg (GLhandleARB *shaderProgP);
+int CreateShaderFunc (GLhandleARB *shaderProgP, GLhandleARB *fsP, GLhandleARB *vsP, 
 		const char *fsName, const char *vsName, int bFromFile);
-int LinkShaderProg (GLhandleARB *progP);
-void DeleteShaderProg (GLhandleARB *progP);
+int LinkShaderProg (GLhandleARB *shaderProgP);
+void DeleteShaderProg (GLhandleARB *shaderProgP);
 void InitShaders (void);
 void OglInitShaders (void);
+
+typedef struct tShaderData {
+	GLhandleARB		shaders [2];
+	GLhandleARB		program;
+	int*				refP;
+} tShaderData;
+
+class CShaderManager {
+	private:
+		CStack<tShaderData>		m_shaders;
+		int							m_nCurrent;
+
+	public:
+		CShaderManager ();
+		~CShaderManager ();
+		void Init (void);
+		void Destroy (bool bAll);
+		void Setup (void);
+		int Deploy (int nShader);
+		int Alloc (int& nShader);
+		char* Load (const char* filename);
+		int Create (int nShader);
+		int Compile (int nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile);
+		int Link (int nShader);
+		int Build (int& nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile);
+		void Reset (int nShader);
+		void Delete (int nShader);
+
+	private:
+		void CShaderManager::Delete (GLhandleARB& shaderProg);
+		void CShaderManager::PrintLog (GLhandleARB handle, int bProgram);
+};
+
+extern CShaderManager shaderManager;
 
 #endif
