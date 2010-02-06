@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "descent.h"
 #include "ogl_lib.h"
+#include "ogl_shader.h"
 #include "ogl_render.h"
 #include "key.h"
 #include "object.h"

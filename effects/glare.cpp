@@ -192,7 +192,7 @@ else {
 
 // -----------------------------------------------------------------------------------
 
-int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short* corners)
+int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short* corners)
 {
 	fix		d, d1, d2, dMax = -1;
 	int		i, j;
@@ -229,7 +229,7 @@ return i;
 
 // -----------------------------------------------------------------------------------
 
-int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensityP)
+int CGlareRenderer::FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensityP)
 {
 	ushort		nWall;
 	CSide			*sideP;
@@ -334,7 +334,7 @@ return nTexture;
 
 // -----------------------------------------------------------------------------------
 
-float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide)
+float CGlareRenderer::ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide)
 {
 	CSide*			sideP = SEGMENTS [nSegment].m_sides + nSide;
 	short*			corners;
@@ -365,7 +365,7 @@ return fLight;
 
 // -----------------------------------------------------------------------------------
 
-void ComputeSpriteZRange (CFloatVector *sprite, tIntervalf *zRangeP)
+void CGlareRenderer::ComputeSpriteZRange (CFloatVector *sprite, tIntervalf *zRangeP)
 {
 	float			z;
 	tIntervalf	zRange = {1000000000.0f, -1000000000.0f};
@@ -385,7 +385,7 @@ zRange.fRad = zRange.fSize / 2;
 
 // -----------------------------------------------------------------------------------
 
-float MoveSpriteIn (CFloatVector *sprite, CFloatVector *vCenter, tIntervalf *zRangeP, float fIntensity)
+float CGlareRenderer::MoveSpriteIn (CFloatVector *sprite, CFloatVector *vCenter, tIntervalf *zRangeP, float fIntensity)
 {
 	tIntervalf	zRange;
 
@@ -406,7 +406,7 @@ return fIntensity;
 
 // -----------------------------------------------------------------------------------
 
-void ComputeHardGlare (CFloatVector *sprite, CFloatVector *vCenter, CFloatVector *vNormal)
+void CGlareRenderer::ComputeHardGlare (CFloatVector *sprite, CFloatVector *vCenter, CFloatVector *vNormal)
 {
 	CFloatVector	u, v, p, q, e, s, t;
 	float		h, g;
@@ -492,8 +492,8 @@ glLineWidth (1);
 
 // -----------------------------------------------------------------------------------
 
-void RenderHardGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fLight,
-							 float fIntensity, tIntervalf *zRangeP, int bAdditive, int bColored)
+void CGlareRenderer::RenderHardGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fLight,
+												  float fIntensity, tIntervalf *zRangeP, int bAdditive, int bColored)
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	tRgbaColorf	color;
@@ -548,7 +548,7 @@ RenderCoronaOutline (sprite, vCenter);
 
 // -----------------------------------------------------------------------------------
 
-float ComputeSoftGlare (CFloatVector *sprite, CFloatVector *vLight, CFloatVector *vEye)
+float CGlareRenderer::ComputeSoftGlare (CFloatVector *sprite, CFloatVector *vLight, CFloatVector *vEye)
 {
 	CFloatVector 		n, e, s, t, u, v;
 	float 		ul, vl, h, cosine;
@@ -588,7 +588,7 @@ return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nInten
 
 // -----------------------------------------------------------------------------------
 
-void RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored)
+void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored)
 {
 	tRgbaColorf color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};

@@ -408,7 +408,7 @@ switch (nType) {
 
 //------------------------------------------------------------------------------
 
-int tmShaderProgs [6] = {0,0,0,0,0,0};
+int tmShaderProgs [6] = {-1,-1,-1,-1,-1,-1};
 
 const char *texMergeFS [6] = {
 	"uniform sampler2D baseTex, decalTex;\r\n" \
