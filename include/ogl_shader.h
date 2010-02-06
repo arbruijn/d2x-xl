@@ -47,6 +47,7 @@ class CShaderManager {
 		void Reset (int nShader);
 		void Delete (int nShader);
 		inline int Current (void) { return m_nCurrent; }
+		inline bool IsCurrent (int nShader) { return m_nCurrent == nShader; }
 
 	private:
 		void Dispose (GLhandleARB& shaderProg);

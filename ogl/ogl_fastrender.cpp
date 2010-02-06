@@ -127,7 +127,6 @@ if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 		}
 	faceBuffer.nFaces =
 	faceBuffer.nElements = 0;
-	//gameStates.render.history.nShader = -1;
 	}
 #endif
 }
@@ -177,7 +176,7 @@ else
 
 int G3SetupShader (CSegFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
 {
-	int	nType, nShader = gameStates.render.history.nShader;
+	int	nType, nShader = -1;
 
 if (!ogl.m_states.bShadersOk || (gameStates.render.nType == 4))
 	return -1;
@@ -194,14 +193,10 @@ else if (gameStates.render.bHeadlights && !bDepthOnly)
 	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
 else if (bColorKey || bMultiTexture)
 	nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
-else if (gameStates.render.history.nShader >= 0) {
-	gameData.render.nShaderChanges++;
+else
 	shaderManager.Deploy (-1);
-	nShader = -1;
-	}
 ogl.ClearError (0);
-gameStates.render.history.nType = nType;
-return gameStates.render.history.nShader = nShader;
+return nShader;
 }
 
 //------------------------------------------------------------------------------
@@ -651,11 +646,8 @@ if (!bColored) {
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
 		G3SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
-	else if (gameStates.render.history.nShader != -1) {
+	else 
 		shaderManager.Deploy (-1);
-		gameStates.render.history.nShader = -1;
-		gameData.render.nShaderChanges++;
-		}
 	glColor3f (1,1,1);
 	RenderFacePP (faceP);
 	}
@@ -776,11 +768,8 @@ if (!bColored) {
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
 		G3SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
-	else if (gameStates.render.history.nShader != -1) {
+	else 
 		shaderManager.Deploy (-1);
-		gameStates.render.history.nShader = -1;
-		gameData.render.nShaderChanges++;
-		}
 	glColor3f (1,1,1);
 	RenderFacePP (faceP);
 	}

@@ -765,6 +765,16 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 
 //-------------------------------------------------------------------------
 
+bool CGlareRenderer::ShaderActive (void)
+{
+for (int i = 0; i < 2; i++)
+	if (hGlareShader [i] && (shaderManager.Current () == hGlareShader [i]))
+		return true;
+return false;
+}
+
+//-------------------------------------------------------------------------
+
 void CGlareRenderer::LoadShader (float dMax, int bAdditive)
 {
 	static float dMaxPrev = -1;
@@ -777,7 +787,8 @@ if (ogl.m_states.bDepthBlending) {
 		ogl.m_states.bUseDepthBlending = 1;
 		if (dMax < 1)
 			dMax = 1;
-		if (0 < int (m_shaderProg = shaderManager.Deploy (hGlareShader [bAdditive]))) {
+		m_shaderProg = shaderManager.Deploy (hGlareShader [bAdditive]);
+		if (0 < int (m_shaderProg)) {
 			glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
 			glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
@@ -785,7 +796,8 @@ if (ogl.m_states.bDepthBlending) {
 			glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
 			gameData.render.nShaderChanges++;
 			}
-		else {
+		else if (0 > int (m_shaderProg)) {
+			m_shaderProg = GLuint (-int (m_shaderProg));
 			if (dMaxPrev != dMax)
 				glUniform1f (glGetUniformLocation (hGlareShader [bAdditive], "dMax"), (GLfloat) dMax);
 			}

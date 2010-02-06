@@ -46,9 +46,7 @@
 
 //------------------------------------------------------------------------------
 
-GLhandleARB gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
-GLhandleARB gsf [2][3] = {{0,0,0},{0,0,0}};
-GLhandleARB gsv [2][3] = {{0,0,0},{0,0,0}};
+int gsShaderProg [2][3] = {{0,0,0},{0,0,0}};
 
 const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
@@ -1510,30 +1508,34 @@ if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
 #endif
 	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 	}
-if (nShader != gameStates.render.history.nShader) {
-	gameData.render.nShaderChanges++;
-#if CONST_LIGHT_COUNT
-	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType]);
-#else
-	glUseProgramObject (activeShaderProg = perPixelLightingShaderProgs [nLights][nType]);
-#endif
+
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType]));
+
+if (!shaderProg) {
+	PROF_END(ptShaderStates);
+	return -1;
+	}
+
+if (0 < int (shaderProg)) {
 	if (bLightmaps)
-		glUniform1i (glGetUniformLocation (activeShaderProg, "lMapTex"), 0);
+		glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType) {
-		glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightmaps);
+		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
 		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightmaps);
+			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
 			if (nType > 2)
-				glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2 + bLightmaps);
+				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2 + bLightmaps);
 			}
 		}
 	}
+else
+	shaderProg = GLhandleARB (-int (shaderProg));
 if (!nType)
-	glUniform4fv (glGetUniformLocation (activeShaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 #if CONST_LIGHT_COUNT
-glUniform1i (glGetUniformLocation (activeShaderProg, "nLights"), GLint (nLights));
+glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
 #endif
-glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"),
+glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"),
 #if 1
 				 (nLights ? float (nLights) / float (ogl.m_states.nLights) : 1.0f));
 #else
@@ -1541,7 +1543,7 @@ glUniform1f (glGetUniformLocation (activeShaderProg, "fLightScale"),
 #endif
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
-return gameStates.render.history.nShader = nShader;
+return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];
 }
 
 //------------------------------------------------------------------------------
@@ -1598,22 +1600,20 @@ if (gameStates.render.textures.bHaveGrayScaleShader) {
 	if (nType > 2)
 		nType = 2;
 	int bLightmaps = lightmapManager.HaveLightmaps ();
-	int nShader = 90 + 3 * bLightmaps + nType;
-	if (gameStates.render.history.nShader != nShader) {
-		gameData.render.nShaderChanges++;
-		glUseProgramObject (activeShaderProg = gsShaderProg [bLightmaps][nType]);
+	GLhandleARB shaderProg = shaderManager.Deploy (gsShaderProg [bLightmaps][nType]);
+	if (0 < int (shaderProg)) {
+		glUseProgramObject (shaderProg);
 		if (!nType)
-			glUniform4fv (glGetUniformLocation (activeShaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
+			glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
 		else {
-			glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), bLightmaps);
+			glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
 			if (nType > 1)
-				glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1 + bLightmaps);
+				glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
 			}
-		gameStates.render.history.nShader = nShader;
 		ogl.ClearError (0);
 		}
 	}
-return gameStates.render.history.nShader;
+return gsShaderProg [bLightmaps][nType];
 }
 
 // ----------------------------------------------------------------------------------------------

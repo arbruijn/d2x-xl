@@ -1755,11 +1755,9 @@ if (InitBuffer (bLightmaps)) {
 		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
 		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
-			LoadGlareShader (10, nType == FIRE_PARTICLES);
-		else if (gameStates.render.history.nShader >= 0) {
+			glareRenderer.LoadShader (10, nType == FIRE_PARTICLES);
+		else
 			shaderManager.Deploy (-1);
-			gameStates.render.history.nShader = -1;
-			}
 		}
 	glNormal3f (0, 0, 0);
 	OglDrawArrays (GL_QUADS, 0, iBuffer);
@@ -1778,10 +1776,8 @@ else {
 	}
 iBuffer = 0;
 glDepthMask (1);
-if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && (gameStates.render.history.nShader != -1) && (gameStates.render.history.nShader != 999)) {
+if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
-	gameStates.render.history.nShader = -1;
-	}
 return true;
 }
 

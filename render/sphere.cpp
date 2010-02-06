@@ -78,28 +78,19 @@ const char *pszSphereVS =
 	"	}"
 	;
 
-GLhandleARB sphereShaderProg = 0;
-GLhandleARB sphereFS = 0;
-GLhandleARB sphereVS = 0;
+int sphereShaderProg = -1;
 
 // -----------------------------------------------------------------------------
 
 int CreateSphereShader (void)
 {
-	int	bOk;
-
 if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
-if (sphereShaderProg)
-	return 1;
-PrintLog ("building sphere shader program\n");
-if (!sphereShaderProg) {
-	bOk = CreateShaderProg (&sphereShaderProg) &&
-			CreateShaderFunc (&sphereShaderProg, &sphereFS, &sphereVS, pszSphereFS, pszSphereVS, 1) &&
-			LinkShaderProg (&sphereShaderProg);
-	if (!bOk) {
+if (sphereShaderProg < 0) {
+	PrintLog ("building sphere shader program\n");
+	if (!bshaderManager.Build (&sphereShaderProg, pszSphereFS, pszSphereVS)) {
 		ogl.m_states.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		return -1;
@@ -119,11 +110,7 @@ sphereShaderProg = 0;
 
 void UnloadSphereShader (void)
 {
-if (gameStates.render.history.nShader != 1) {
-	gameStates.render.history.nShader = -1;
-	if (ogl.m_states.bShadersOk)
-		shaderManager.Deploy (-1);
-	}
+shaderManager.Deploy (-1);
 }
 
 // -----------------------------------------------------------------------------
@@ -193,16 +180,18 @@ if (!ogl.m_states.bUseTransform) {
 if (!nHits)
 	return 0;
 
-if (100 + ogl.m_states.bUseTransform != gameStates.render.history.nShader) {
-	gameData.render.nShaderChanges++;
-	glUseProgramObject (sphereShaderProg);
-	glUniform1i (glGetUniformLocation (sphereShaderProg, "shaderTex"), 0);
+GLhandleARB shaderProg = shaderManager.Deploy (sphereShaderProg);
+if (shaderProg) {
+	if (int (shaderProg) > 0)
+		glUniform1i (glGetUniformLocation (shaderProg, "shaderTex"), 0);
+	else
+		shaderProg = GLhandleARB (-int (shaderProg));
+	glUniform4fv (glGetUniformLocation (shaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
+	glUniform3fv (glGetUniformLocation (shaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 	}
-glUniform4fv (glGetUniformLocation (sphereShaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
-glUniform3fv (glGetUniformLocation (sphereShaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
-return gameStates.render.history.nShader = 100 + ogl.m_states.bUseTransform;
+return shaderManager.Current ();
 }
 
 // -----------------------------------------------------------------------------
@@ -891,8 +880,8 @@ if (gameData.render.shield.nFaces > 0)
 			}
 		tObjTransformation *posP = OBJPOS (objP);
 		float r = X2F (nSize);
-		if (gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive) &&
-			 (gameStates.render.history.nShader != 100)) {	// full and not just partial sphere rendered
+		if (gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive) && !shaderManager.IsCurrent (sphereShaderProg)) {
+			// full and not just partial sphere rendered
 			CFixVector vPos;
 			transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 			vPos.SetZero ();

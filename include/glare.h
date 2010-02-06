@@ -13,6 +13,7 @@ class CGlareRenderer {
 		void LoadShader (float dMax, int bAdditive = 1);
 		void UnloadShader (void);
 		void InitShader (void);
+		bool ShaderActive (void);
 		int Style (void);
 		void DestroyDepthTexture (void);
 		inline GLuint DepthBuffer (void) { return m_hDepthBuffer; }

@@ -1255,14 +1255,15 @@ else {
 	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
 
 	SetClientState (0, 0, 0, 0, 0);
+#if 0
 	if (!bSoftSmoke || (gameStates.render.history.nShader != 999))
 		ResetShader ();
+#endif
 	if (m_data.nPrevType != tiParticle) {
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		particleManager.SetLastType (-1);
 		m_data.bTextured = 1;
-		//InitParticleBuffer (m_data.bLightmaps);
 		}
 	item->particle->Render (item->fBrightness);
 	ResetBitmaps ();
@@ -1453,10 +1454,7 @@ m_data.bmP [1] = NULL;
 sparkBuffer.nSparks = 0;
 ogl.DisableLighting ();
 ogl.ResetClientStates ();
-if (ogl.m_states.bShadersOk) {
-	shaderManager.Deploy (-1);
-	gameStates.render.history.nShader = -1;
-	}
+shaderManager.Deploy (-1);
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 glEnable (GL_BLEND);

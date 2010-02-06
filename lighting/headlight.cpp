@@ -829,7 +829,13 @@ int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colo
 //headlights
 h = IsMultiGame ? nLights : 1;
 InitHeadlightShaders (h);
-if (0 < int (shaderProg = shaderManager.Deploy (headlightShaderProgs [bLightmaps][nType]))) {
+
+GLhandleARB shaderProg = GLhandleARB (shaderProg = shaderManager.Deploy (headlightShaderProgs [bLightmaps][nType]));
+
+if (!shaderProg)
+	return -1;
+
+if (0 < int (shaderProg)) {
 	if (nType) {
 		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
 		if (nType > 1) {
@@ -865,7 +871,7 @@ if (0 < int (shaderProg = shaderManager.Deploy (headlightShaderProgs [bLightmaps
 	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
 	ogl.ClearError (0);
 	}
-return shaderProg ? headlightShaderProgs [bLightmaps][nType] : -1;
+return headlightShaderProgs [bLightmaps][nType];
 }
 
 //-----------------------------------------------------------------------------

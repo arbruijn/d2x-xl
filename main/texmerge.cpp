@@ -543,16 +543,16 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 int G3SetupTexMergeShader (int bColorKey, int bColored, int nType)
 {
-int nShader = nType - 1 + bColored * 3;
-if (nShader != gameStates.render.history.nShader) {
-	gameData.render.nShaderChanges++;
-	glUseProgramObject (activeShaderProg = tmShaderProgs [nShader]);
-	}
-glUniform1i (glGetUniformLocation (activeShaderProg, "baseTex"), 0);
-glUniform1i (glGetUniformLocation (activeShaderProg, "decalTex"), 1);
-glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);
-glUniform1f (glGetUniformLocation (activeShaderProg, "grAlpha"), 1.0f);
-return gameStates.render.history.nShader = nShader;
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
+
+if (!shaderProg)
+	return -1;
+
+glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 0);
+glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1);
+glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2);
+glUniform1f (glGetUniformLocation (shaderProg, "grAlpha"), 1.0f);
+return tmShaderProgs [nShader];
 }
 
 //------------------------------------------------------------------------------
