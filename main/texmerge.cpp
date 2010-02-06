@@ -515,9 +515,9 @@ else {
 	for (i = 0; i < 6; i++) {
 		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i % 3]);
 		if (i == 2)
-			gameStates.render.textures.bHaveMaskShader = b;
+			gameStates.render.textures.bHaveMaskShader = (b >= 0);
 		else
-			gameStates.render.textures.bGlTexMergeOk = b;
+			gameStates.render.textures.bGlTexMergeOk = (b >= 0);
 		if (!gameStates.render.textures.bGlTexMergeOk) {
 			while (i)
 				shaderManager.Delete (tmShaderProgs [--i]);
