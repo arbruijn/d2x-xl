@@ -1255,7 +1255,6 @@ if (item->particle->m_nType == BULLET_PARTICLES)
 else {
 	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
 
-	SetClientState (0, 0, 0, 0, 0);
 #if 0
 	if (!bSoftSmoke || (gameStates.render.history.nShader != 999))
 		ResetShader ();
@@ -1266,8 +1265,10 @@ else {
 		particleManager.SetLastType (-1);
 		m_data.bTextured = 1;
 		}
-	item->particle->Render (item->fBrightness);
-	ResetBitmaps ();
+	if (item->particle->Render (item->fBrightness) < 0) {
+		SetClientState (0, 0, 0, 0, 0);
+		ResetBitmaps ();
+		}
 	m_data.bDepthMask = 1;
 	}
 }
@@ -1335,16 +1336,19 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
-if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))) {
-	if (particleManager.FlushBuffer (-1.0f))
+if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0)))) {
+	if (sparkBuffer.nSparks)
+		FlushSparkBuffer ();
+	if (particleManager.FlushBuffer (-1.0f)) {
 		m_data.bDepthMask = 1;
-	if (nType < 0)
-		particleManager.CloseBuffer ();
-	glEnable (GL_DEPTH_TEST);
-	ResetBitmaps ();
-	particleManager.SetLastType (-1);
-	m_data.bClientColor = 1;
-	m_data.bUseLightmaps = 0;
+		if (nType < 0)
+			particleManager.CloseBuffer ();
+		//glEnable (GL_DEPTH_TEST);
+		ResetBitmaps ();
+		particleManager.SetLastType (-1);
+		m_data.bClientColor = 1;
+		m_data.bUseLightmaps = 0;
+		}
 	}
 }
 
@@ -1352,7 +1356,7 @@ if ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0))
 
 void CTransparencyRenderer::FlushBuffers (int nType)
 {
-if (nType != tiSpark)
+if ((nType != tiSpark) && (nType != tiParticle))
 	FlushSparkBuffer ();
 FlushParticleBuffer (nType);
 }

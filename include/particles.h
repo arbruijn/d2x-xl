@@ -216,6 +216,7 @@ class CParticleManager {
 		int								m_nLastType;
 		int								m_bAnimate;
 		int								m_bStencil;
+		int								m_iBuffer;
 
 	public:
 		CParticleManager () {}
@@ -320,6 +321,12 @@ class CParticleManager {
 
 		inline int RemoveEmitter (int i, int j)
 		 { return GetSystem (i).RemoveEmitter (j); }
+
+		inline int BufPtr (void)
+			{ return m_iBuffer; }
+
+		inline void IncBufPtr (int i)
+			{ m_iBuffer += i; }
 
 	private:
 		void RebuildSystemList (void);

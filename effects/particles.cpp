@@ -109,7 +109,6 @@ static tRgbaColorf defaultParticleColor = {1.0f, 1.0f, 1.0f, 2.0f * 0.6f};
 static tParticleVertex particleBuffer [VERT_BUF_SIZE];
 static float bufferBrightness = -1;
 static char bBufferEmissive = 0;
-static int iBuffer = 0;
 
 #define SMOKE_START_ALPHA		(gameOpts->render.particles.bDisperse ? 64 : 96) //96 : 128)
 
@@ -662,6 +661,7 @@ int CParticle::Render (float brightness)
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
 	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive;
+	bool						bFlushed = false;
 	float						fFade, decay = ((nType == BUBBLE_PARTICLES) || (nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 
 	static int				nFrames = 1;
@@ -682,17 +682,21 @@ if (nType != WATERFALL_PARTICLES)
 #endif
 if (!(bmP = bmpParticle [0][nType]))
 	return 0;
+#if 0
 if (bmP->CurFrame ())
 	bmP = bmP->CurFrame ();
+#endif
 if (gameOpts->render.bDepthSort > 0) {
 	hp = m_vTransPos;
 	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness) || (bBufferEmissive != bEmissive)) {
-		particleManager.FlushBuffer (brightness);
+		bFlushed = particleManager.FlushBuffer (brightness);
 		particleManager.SetLastType (nType);
 		bBufferEmissive = bEmissive;
+#if 0
 		ogl.SelectTMU (GL_TEXTURE0, true);
 		if (bmP->Bind (0))
 			return 0;
+#endif
 		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
 		if (m_bEmissive)
@@ -844,7 +848,7 @@ else {
 	vOffset [Y] = X2F (m_nHeight) * decay;
 	}
 vOffset [Z] = 0;
-pb = particleBuffer + iBuffer;
+pb = particleBuffer + particleManager.BufPtr ();
 pb [i].texCoord.v.u =
 pb [(i + 3) % 4].texCoord.v.u = u;
 pb [i].texCoord.v.v =
@@ -902,8 +906,8 @@ else {
 	pb [2].vertex [Z] =
 	pb [3].vertex [Z] = vCenter [Z];
 	}
-iBuffer += 4;
-if (iBuffer >= VERT_BUF_SIZE)
+particleManager.IncBufPtr (4);
+if (particleManager.BufPtr () >= VERT_BUF_SIZE)
 	particleManager.FlushBuffer (brightness);
 if (particleManager.Animate ()) {
 	m_nFrame = (m_nFrame + 1) % (nFrames * nFrames);
@@ -912,7 +916,7 @@ if (particleManager.Animate ()) {
 	}
 if (gameOpts->render.bDepthSort > 0)
 	glEnd ();
-return 1;
+return bFlushed ? -1 : 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1600,6 +1604,7 @@ int i = 0;
 int nCurrent = m_systems.FreeList ();
 for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Init (i++);
+m_iBuffer = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1729,7 +1734,7 @@ bool CParticleManager::FlushBuffer (float brightness)
 {
 if (bufferBrightness < 0)
 	bufferBrightness = brightness;
-if (!iBuffer)
+if (!m_iBuffer)
 	return false;
 
 int nType = particleManager.LastType ();
@@ -1757,25 +1762,30 @@ if (InitBuffer (bLightmaps)) {
 			lightManager.Headlights ().SetupShader (1, 0, &color);
 		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
 			glareRenderer.LoadShader (10, nType == FIRE_PARTICLES);
-		else
+		else {
 			shaderManager.Deploy (-1);
+			if (nType <= WATERFALL_PARTICLES)
+				glBlendFunc (GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			else
+				glBlendFunc (GL_ONE, GL_ONE);
+			}
 		}
 	glNormal3f (0, 0, 0);
-	OglDrawArrays (GL_QUADS, 0, iBuffer);
+	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
 	}
 else {
 	tParticleVertex *pb;
 	glEnd ();
 	glNormal3f (0, 0, 0);
 	glBegin (GL_QUADS);
-	for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
+	for (pb = particleBuffer; m_iBuffer; m_iBuffer--, pb++) {
 		glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
 		glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
 		glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));
 		}
 	glEnd ();
 	}
-iBuffer = 0;
+m_iBuffer = 0;
 glDepthMask (1);
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
@@ -1815,7 +1825,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 		return 0;
 	glDepthFunc (GL_LESS);
 	glDepthMask (0);
-	iBuffer = 0;
+	m_iBuffer = 0;
 	}
 particleManager.SetLastType (-1);
 if (gameStates.app.nSDLTicks - t0 < 33)
