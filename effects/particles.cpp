@@ -1765,7 +1765,7 @@ if (InitBuffer (bLightmaps)) {
 		else {
 			shaderManager.Deploy (-1);
 			if (nType <= WATERFALL_PARTICLES)
-				glBlendFunc (GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			else
 				glBlendFunc (GL_ONE, GL_ONE);
 			}

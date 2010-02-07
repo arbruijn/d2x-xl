@@ -179,20 +179,21 @@ void CAutomap::DrawPlayer (CObject* objP)
 	CFixVector	vArrowPos, vHeadPos;
 	g3sPoint		spherePoint, arrowPoint, headPoint;
 	int			size = objP->info.xSize * (m_bRadar ? 2 : 1);
-	int			bUseTransform = ogl.m_states.bUseTransform;
+//	int			bUseTransform = ogl.m_states.bUseTransform;
 
 //ogl.m_states.bUseTransform = RENDERPATH;
-headPoint.p3_index =
-arrowPoint.p3_index =
 spherePoint.p3_index = -1;
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
-spherePoint.p3_vec.SetZero ();
+//spherePoint.p3_vec.SetZero ();
 G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 //transformation.Rotate (&spherePoint.p3_vec, &objP->info.position.vPos, 0);
 G3DrawSphere (&spherePoint, m_bRadar ? objP->info.xSize * 2 : objP->info.xSize, !m_bRadar);
 
 if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
+
+headPoint.p3_index =
+arrowPoint.p3_index = -1;
 // Draw shaft of arrow
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*3);
 G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
@@ -214,7 +215,7 @@ G3DrawLine (&arrowPoint, &headPoint);
 vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.UVec () * (size*2);
 G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
 G3DrawLine (&spherePoint, &arrowPoint);
-ogl.m_states.bUseTransform = bUseTransform;
+//ogl.m_states.bUseTransform = bUseTransform;
 }
 
 //------------------------------------------------------------------------------
@@ -226,11 +227,9 @@ if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % MAX_PLAYER_COLORS;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
 int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
-if (bTextured) {
-	glDisable (GL_CULL_FACE);
-	glEnable (GL_BLEND);
-	gameStates.render.grAlpha = 0.5f;
-	}
+glDisable (GL_CULL_FACE);
+glEnable (GL_BLEND);
+gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
 glDisable (GL_TEXTURE_2D);
 glLineWidth (2 * GLfloat (screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
