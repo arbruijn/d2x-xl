@@ -1758,16 +1758,19 @@ if (bmP->Bind (0))
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
+		int bAdditive = (nType == FIRE_PARTICLES) || (nType == LIGHT_PARTICLES);
 		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
 		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
-			glareRenderer.LoadShader (10, nType == FIRE_PARTICLES);
+			glareRenderer.LoadShader (10, bAdditive);
 		else {
 			shaderManager.Deploy (-1);
-			if (nType <= WATERFALL_PARTICLES)
-				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			else
+#if 1
+			if (bAdditive)
 				glBlendFunc (GL_ONE, GL_ONE);
+			else
+				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 			}
 		}
 	glNormal3f (0, 0, 0);
