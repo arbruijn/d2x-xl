@@ -150,13 +150,13 @@ else {
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}
-#if 1
-	bmP = bmP->Override (-1);
-	bmP->SetupTexture (1, 0);
-	G3DrawQuad (bmP, vertices, texCoords, &gameData.objs.color.color, 1);
-#else
-	transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoords, NULL, &gameData.objs.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, -1);
-#endif
+	if (objP->info.nType == OBJ_FIREBALL)
+		transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoords, NULL, &gameData.objs.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 1, -1);
+	else {
+		bmP = bmP->Override (-1);
+		bmP->SetupTexture (1, 0);
+		G3DrawQuad (bmP, vertices, texCoords, &gameData.objs.color.color, 1);
+		}
 	}
 }
 

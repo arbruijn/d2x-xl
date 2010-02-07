@@ -1082,6 +1082,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	else
 		glColor3f (1, 1, 1);
+	glEnable (GL_BLEND);
 	if (item->bAdditive == 2)
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	else if (item->bAdditive == 1)
@@ -1089,7 +1090,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
-		glareRenderer.LoadShader (item->fSoftRad);
+		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
 	else //if (m_data.bDepthMask)
 		glDepthMask (m_data.bDepthMask = 0);
 	glBegin (GL_QUADS);

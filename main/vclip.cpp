@@ -130,7 +130,7 @@ else if (objP->info.nType == OBJ_WEAPON) {
 	else
 		alpha = WEAPON_ALPHA;
 	}
-#if 1
+#if 0
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
 	glDepthMask (1);	//don't set z-buffer for transparent objects
 #endif
