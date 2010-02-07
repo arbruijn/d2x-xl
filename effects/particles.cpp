@@ -660,9 +660,9 @@ int CParticle::Render (float brightness)
 	tRgbaColorf				pc;
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
-	int						i, nFrame, nType = m_nType, bEmissive = m_bEmissive;
+	int						i, nFrame;
 	bool						bFlushed = false;
-	float						fFade, decay = ((nType == BUBBLE_PARTICLES) || (nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
+	float						fFade, decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 
 	static int				nFrames = 1;
 	static float			deltaUV = 1.0f;
@@ -674,13 +674,13 @@ if (m_nDelay > 0)
 	return 0;
 if (m_nLife < 0)
 	return 0;
-if ((nType < 0) || (nType >= PARTICLE_TYPES))
+if ((m_nType < 0) || (m_nType >= PARTICLE_TYPES))
 	return 0;
-#if 0 //DBG
-if (nType != WATERFALL_PARTICLES)
-	return 0;
+#if DBG
+if (m_nType == LIGHT_PARTICLES)
+	m_nType = m_nType;
 #endif
-if (!(bmP = bmpParticle [0][nType]))
+if (!(bmP = bmpParticle [0][m_nType]))
 	return 0;
 #if 0
 if (bmP->CurFrame ())
@@ -688,44 +688,46 @@ if (bmP->CurFrame ())
 #endif
 if (gameOpts->render.bDepthSort > 0) {
 	hp = m_vTransPos;
-	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness) || (bBufferEmissive != bEmissive)) {
+	if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 		bFlushed = particleManager.FlushBuffer (brightness);
-		particleManager.SetLastType (nType);
-		bBufferEmissive = bEmissive;
+		particleManager.SetLastType (m_nType);
+		bBufferEmissive = m_bEmissive;
+		nFrames = nParticleFrames [0][m_nType];
+		deltaUV = 1.0f / (float) nFrames;
 #if 0
 		ogl.SelectTMU (GL_TEXTURE0, true);
 		if (bmP->Bind (0))
 			return 0;
-#endif
-		nFrames = nParticleFrames [0][nType];
-		deltaUV = 1.0f / (float) nFrames;
 		if (m_bEmissive)
 			//glBlendFunc (GL_ONE, GL_ONE);
 			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 		}
 	}
 else if (gameOpts->render.particles.bSort) {
 	hp = m_vTransPos;
-	if ((particleManager.LastType () != nType) || (brightness != bufferBrightness)) {
+	if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness)) {
 		particleManager.FlushBuffer (brightness);
-		particleManager.SetLastType (nType);
+		particleManager.SetLastType (m_nType);
+		nFrames = nParticleFrames [0][m_nType];
+		deltaUV = 1.0f / (float) nFrames;
+#if 0
 		if (bmP->Bind (0))
 			return 0;
-		nFrames = nParticleFrames [0][nType];
-		deltaUV = 1.0f / (float) nFrames;
 		if (m_bEmissive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 		}
 	}
 else
 	transformation.Transform (hp, m_vPos, 0);
 if (m_bBright)
 	brightness = (float) sqrt (brightness);
-if (nType == SMOKE_PARTICLES) {
+if (m_nType == SMOKE_PARTICLES) {
 	if (m_nFadeState > 0) {
 		if (m_color [0].green < m_color [1].green) {
 #if SMOKE_SLOWMO
@@ -759,8 +761,8 @@ if (nType == SMOKE_PARTICLES) {
 	}
 pc = m_color [0];
 //pc.alpha *= /*gameOpts->render.particles.bDisperse ? decay2 :*/ decay;
-if (nType <= WATERFALL_PARTICLES) {
-	char nFrame = ((nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles) ? 0 : m_nFrame;
+if (m_nType <= WATERFALL_PARTICLES) {
+	char nFrame = ((m_nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles) ? 0 : m_nFrame;
 	u = (float) (nFrame % nFrames) * deltaUV;
 	v = (float) (nFrame / nFrames) * deltaUV;
 	d = deltaUV;
@@ -769,7 +771,7 @@ else {
 	u = v = 0.0f;
 	d = 1.0f;
 	}
-if (nType == SMOKE_PARTICLES) {
+if (m_nType == SMOKE_PARTICLES) {
 #if 0
 	if (SHOW_DYN_LIGHT) {
 		tFaceColor *psc = AvgSgmColor (m_nSegment, NULL);
@@ -834,7 +836,7 @@ if (!lightManager.Headlights ().nLights && (pc.red + pc.green + pc.blue < 0.001)
 	return 0;
 	}
 #endif
-if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
+if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
 #if 0
 	decay = (float) sqrt (decay);
 #else
@@ -861,9 +863,9 @@ pb [0].color =
 pb [1].color =
 pb [2].color =
 pb [3].color = pc;
-if ((nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
+if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
-if (((nType == SMOKE_PARTICLES) /*|| (nType == WATERFALL_PARTICLES)*/) && gameOpts->render.particles.bRotate) {
+if (((m_nType == SMOKE_PARTICLES) /*|| (m_nType == WATERFALL_PARTICLES)*/) && gameOpts->render.particles.bRotate) {
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 		bInitSinCos = 0;
@@ -911,7 +913,7 @@ if (particleManager.BufPtr () >= VERT_BUF_SIZE)
 	particleManager.FlushBuffer (brightness);
 if (particleManager.Animate ()) {
 	m_nFrame = (m_nFrame + 1) % (nFrames * nFrames);
-	if (!(nType || (m_nFrame & 1)))
+	if (!(m_nType || (m_nFrame & 1)))
 		m_nRotFrame = (m_nRotFrame + 1) % 64;
 	}
 if (gameOpts->render.bDepthSort > 0)
@@ -922,7 +924,6 @@ return bFlushed ? -1 : 1;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
 char CParticleEmitter::ObjectClass (int nObject)
 {
@@ -1758,15 +1759,14 @@ if (bmP->Bind (0))
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
-		int bAdditive = (nType == FIRE_PARTICLES) || (nType == LIGHT_PARTICLES);
 		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
 		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
-			glareRenderer.LoadShader (10, bAdditive);
+			glareRenderer.LoadShader (10, bBufferEmissive);
 		else {
 			shaderManager.Deploy (-1);
 #if 1
-			if (bAdditive)
+			if (bBufferEmissive)
 				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			else
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
