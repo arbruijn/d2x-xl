@@ -231,12 +231,6 @@ if (renderOpts.n3DGlasses >= 0) {
 	v = m->m_value;
 	if ((h = gameOpts->render.n3DGlasses) != v) {
 		gameOpts->render.n3DGlasses = v;
-		if (v && !gameOpts->render.xStereoSeparation) {
-			gameOpts->render.xStereoSeparation = I2X (1) / 4;
-			xStereoSeparation = (gameOpts->render.xStereoSeparation / (STEREO_SEPARATION_STEP)) - 1;
-			}
-		else if (!v && gameOpts->render.xStereoSeparation)
-			gameOpts->render.xStereoSeparation = 0;
 		sprintf (m->m_text, TXT_STEREO_VIEW, psz3DGlasses [v]);
 		m->m_bRebuild = -1;
 		key = -2;
@@ -248,7 +242,6 @@ if (renderOpts.n3DGlasses >= 0) {
 		v = m->m_value;
 		if (xStereoSeparation != v) {
 			xStereoSeparation = v;
-			gameOpts->render.xStereoSeparation = (xStereoSeparation + 1) * (STEREO_SEPARATION_STEP);
 			sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 			m->m_bRebuild = -1;
 			}
@@ -442,7 +435,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
-xStereoSeparation = gameOpts->render.n3DGlasses ? gameOpts->render.xStereoSeparation / (STEREO_SEPARATION_STEP) - 1 : 0;
+xStereoSeparation = gameOpts->render.xStereoSeparation / (STEREO_SEPARATION_STEP) - 1;
 if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
 else if (xStereoSeparation >= sizeofa (pszStereoSeparation))
@@ -531,6 +524,7 @@ do {
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 	renderOpts.n3DMethod = 
+	renderOpts.nScreenDist =
 	renderOpts.nColorGain =
 	renderOpts.nEnhance3D = 
 	renderOpts.nDeghost =
@@ -619,7 +613,7 @@ do {
 #endif
 	} while (i == -2);
 
-gameOpts->render.xStereoSeparation = gameOpts->render.n3DGlasses ? (xStereoSeparation + 1) * (STEREO_SEPARATION_STEP) : 0;
+gameOpts->render.xStereoSeparation = (xStereoSeparation + 1) * (STEREO_SEPARATION_STEP);
 lightManager.SetMethod ();
 DefaultRenderSettings ();
 }

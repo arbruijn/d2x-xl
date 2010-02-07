@@ -476,17 +476,6 @@ else {
 	RenderFrame (xStereoSeparation, 0);
 	}
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);
-#if 0
-if ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_RED_CYAN) || (xStereoSeparation >= 0)) {
-	PROF_START
-	cockpit->Render (bExtraInfo, ((gameOpts->render.n3DGlasses < GLASSES_BLUE_RED) || (gameOpts->render.n3DGlasses > GLASSES_RED_CYAN)) ? xStereoSeparation : 0);
-	PROF_END(ptCockpit)
-	}
-paletteManager.RenderEffect ();
-console.Draw ();
-if (gameStates.app.bSaveScreenshot && (gameOpts->render.xStereoSeparation >= 0))
-	SaveScreenShot (NULL, 0);
-#endif
 FlushFrame (xStereoSeparation);
 }
 
@@ -659,7 +648,7 @@ if (!ogl.Enhance3D () || !(gameData.app.nFrameCount & 1)) {
 	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
-if (!gameOpts->render.xStereoSeparation /*|| gameStates.app.bSaveScreenshot*/)
+if (!gameOpts->render.n3DGlasses)
 	RenderMonoFrame ();
 else {
 	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.xStereoSeparation : gameOpts->render.xStereoSeparation;

@@ -982,7 +982,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.n3DGlasses", "0"},
 	 {"gameOptions[0].render.n3DMethod", "0"},
 	 {"gameOptions[0].render.nScreenDist", "3"},
-	 {"gameOptions[0].render.xStereoSeparation", "0"},
+	 {"gameOptions[0].render.xStereoSeparation", "32768"},
 	 {"gameOptions[0].render.bEnhance3D", "0"},
 	 {"gameOptions[0].render.bColorGain", "0"},
 	 {"gameOptions[0].render.bDeghost", "0"},
