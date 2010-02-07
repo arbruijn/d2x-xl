@@ -1767,7 +1767,7 @@ if (InitBuffer (bLightmaps)) {
 			shaderManager.Deploy (-1);
 #if 1
 			if (bAdditive)
-				glBlendFunc (GL_ONE, GL_ONE);
+				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			else
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
