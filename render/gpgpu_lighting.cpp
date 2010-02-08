@@ -295,13 +295,13 @@ if (nState == 0) {
 			return 0;
 			}
 		}
-	glUniform1f (glGetUniformLocation (m_nShaderProg, "lightRange"), ogl.m_states.fLightRange);
+	glUniform1f (glGetUniformLocation (shaderProg, "lightRange"), ogl.m_states.fLightRange);
 #endif
 #if 0
-	glUniform1f (glGetUniformLocation (m_nShaderProg, "shininess"), 64.0f);
-	glUniform3fv (glGetUniformLocation (m_nShaderProg, "matAmbient"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matAmbient));
-	glUniform3fv (glGetUniformLocation (m_nShaderProg, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matDiffuse));
-	glUniform3fv (glGetUniformLocation (m_nShaderProg, "matSpecular"), 1, reinterpret_cast<GLfloat*> (&matSpecular));
+	glUniform1f (glGetUniformLocation (shaderProg, "shininess"), 64.0f);
+	glUniform3fv (glGetUniformLocation (shaderProg, "matAmbient"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matAmbient));
+	glUniform3fv (glGetUniformLocation (shaderProg, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matDiffuse));
+	glUniform3fv (glGetUniformLocation (shaderProg, "matSpecular"), 1, reinterpret_cast<GLfloat*> (&matSpecular));
 #endif
 	ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
 	ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
