@@ -1820,6 +1820,17 @@ gameOptions [0].render.weaponIcons.nSort = 1;
 gameOptions [0].render.weaponIcons.bShowAmmo = 1;
 gameOptions [0].render.weaponIcons.alpha = 4;
 
+if (!gameOpts->app.bExpertMode) {
+	if (gameOpts->render.n3DGlasses) {
+		gameOpts->render.n3DMethod = 1;
+		gameOpts->render.nScreenDist = 5;
+		gameOpts->render.bColorGain = 1;
+		gameOpts->render.bDeghost = 1;
+		gameOpts->render.bEnhance3D = (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk);
+		gameOpts->render.bFlipFrames = 0;
+		}
+	}
+
 DefaultPowerupSettings ();
 DefaultShipSettings ();
 DefaultMovieSettings ();
