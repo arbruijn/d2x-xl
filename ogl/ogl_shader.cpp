@@ -206,7 +206,7 @@ if (bProgram) {
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 		glGetProgramInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
-			PrintLog ("\n%s\n\n", infoLog);
+			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}
@@ -215,7 +215,7 @@ else {
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 		glGetShaderInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
-			PrintLog ("\n%s\n\n", infoLog);
+			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}

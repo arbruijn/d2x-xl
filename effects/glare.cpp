@@ -794,7 +794,7 @@ if (ogl.m_states.bDepthBlending) {
 			glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
 			}
 		else if (0 > int (m_shaderProg)) {
-			m_shaderProg = GLuint (-int (m_shaderProg));
+			m_shaderProg = GLhandleARB (-int (m_shaderProg));
 			if (dMaxPrev != dMax)
 				glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
 			if (bAddPrev != bAdditive)
