@@ -43,7 +43,7 @@ CGPGPULighting gpgpuLighting;
 
 void CGPGPULighting::Init (void)
 {
-m_hShaderProg = -1;
+m_nShaderProg = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -285,21 +285,23 @@ if (nState == 0) {
    glViewport (0, 0, GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH);
 	lightManager.FBO ().Enable ();
 #if 1
-	glUseProgramObject (m_hShaderProg);
+	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (m_nShaderProg));
+	if (0 > int (shaderProg))
+		shaderProg = GLhandleARB (-int (shaderProg));
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
-		glUniform1i (glGetUniformLocation (m_hShaderProg, szTexNames [i]), i);
+		glUniform1i (glGetUniformLocation (shaderProg, szTexNames [i]), i);
 		if ((j = glGetError ())) {
 			Compute (-1, 2, NULL);
 			return 0;
 			}
 		}
-	glUniform1f (glGetUniformLocation (m_hShaderProg, "lightRange"), ogl.m_states.fLightRange);
+	glUniform1f (glGetUniformLocation (m_nShaderProg, "lightRange"), ogl.m_states.fLightRange);
 #endif
 #if 0
-	glUniform1f (glGetUniformLocation (m_hShaderProg, "shininess"), 64.0f);
-	glUniform3fv (glGetUniformLocation (m_hShaderProg, "matAmbient"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matAmbient));
-	glUniform3fv (glGetUniformLocation (m_hShaderProg, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matDiffuse));
-	glUniform3fv (glGetUniformLocation (m_hShaderProg, "matSpecular"), 1, reinterpret_cast<GLfloat*> (&matSpecular));
+	glUniform1f (glGetUniformLocation (m_nShaderProg, "shininess"), 64.0f);
+	glUniform3fv (glGetUniformLocation (m_nShaderProg, "matAmbient"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matAmbient));
+	glUniform3fv (glGetUniformLocation (m_nShaderProg, "matDiffuse"), 1, reinterpret_cast<GLfloat*> (&gameData.render.vertColor.matDiffuse));
+	glUniform3fv (glGetUniformLocation (m_nShaderProg, "matSpecular"), 1, reinterpret_cast<GLfloat*> (&matSpecular));
 #endif
 	ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
 	ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
@@ -445,11 +447,11 @@ ogl.m_states.bVertexLighting = 0;
 if (ogl.m_states.bRender2TextureOk && ogl.m_states.bShadersOk) {
 	PrintLog ("building vertex lighting shader program\n");
 	ogl.m_states.bVertexLighting = 1;
-	if (m_hShaderProg)
-		DeleteShaderProg (&m_hShaderProg);
-	if (0 > shaderManager.Build (m_hShaderProg, gpgpuLightFS, vertLightVS)) {
+	if (m_nShaderProg)
+		DeleteShaderProg (&m_nShaderProg);
+	if (0 > shaderManager.Build (m_nShaderProg, gpgpuLightFS, vertLightVS)) {
 		ogl.m_states.bVertexLighting = 0;
-		shaderManager.Delete (m_hShaderProg);
+		shaderManager.Delete (m_nShaderProg);
 		}
 	}
 #endif
