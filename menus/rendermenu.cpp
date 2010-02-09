@@ -546,7 +546,7 @@ do {
 		if (ogl.Enhance3D () > 0) {
 			sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);
 			*szSlider = *(TXT_COLORGAIN - 1);
-			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
+			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 2 + gameStates.render.bHaveStereoBuffers, KEY_G, HTX_COLORGAIN);
 
 			sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.bDeghost]);
 			*szSlider = *(TXT_3D_DEGHOST - 1);

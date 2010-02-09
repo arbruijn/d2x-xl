@@ -954,6 +954,7 @@ typedef struct tRenderStates {
 	int bHaveDynLights;
 	int bHaveSparks;
 	int bHaveStencilBuffer;
+	int bHaveStereoBuffers;
 	int bUsePerPixelLighting;
 	int nRenderPass;
 	int nShadowPass;

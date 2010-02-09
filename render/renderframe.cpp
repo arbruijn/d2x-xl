@@ -377,7 +377,7 @@ FlashMine ();
 
 void FlushFrame (fix xStereoSeparation)
 {
-if (!xStereoSeparation) {	//no stereo or shutter glasses
+if (!(gameOpts->render.n3DGlasses && xStereoSeparation)) {	//no stereo or shutter glasses
 	Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}

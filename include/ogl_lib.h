@@ -118,6 +118,7 @@ class COglStates {
 		ubyte	nTransparencyLimit;
 		GLint	nDepthBits;
 		GLint	nStencilBits;
+		GLint	nStereo;
 		int	bEnableTexture2D;
 		int	bEnableTexClamp;
 		int	bEnableScissor;
@@ -253,7 +254,7 @@ class COGL {
 								? 2 
 								 : (gameOpts->render.n3DGlasses == GLASSES_GREEN_MAGENTA) 
 									? 3 
-									 : (gameOpts->render.n3DGlasses == GLASSES_SHUTTER) 
+									 : ((gameOpts->render.n3DGlasses == GLASSES_SHUTTER) && m_states.nStereo)
 										? -1
 										: 0; 
 			}

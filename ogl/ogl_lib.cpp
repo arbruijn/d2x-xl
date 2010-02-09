@@ -616,8 +616,9 @@ if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 else {
 	int i = Enhance3D ();
 	if (i < 0) {
+		ogl.ClearError (0);
 		SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
-		if (ogl.ClearError ())
+		if (ogl.ClearError (0))
 			gameOpts->render.n3DGlasses = 0;
 		}	
 	else {

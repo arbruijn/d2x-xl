@@ -116,6 +116,7 @@ SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
 SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
 SdlGlSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
 SdlGlSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
+SdlGlSetAttribute (NULL, "SDL_GL_STEREO", SDL_GL_STEREO, 1);
 if (ogl.m_states.bFSAA) {
 	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLEBUFFERS", SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SdlGlSetAttribute (NULL, "SDL_GL_MULTISAMPLESAMPLES", SDL_GL_MULTISAMPLESAMPLES, 4);
@@ -179,6 +180,8 @@ ogl.m_states.nColorBits += i;
 glGetIntegerv (GL_DEPTH_BITS, &ogl.m_states.nDepthBits);
 glGetIntegerv (GL_STENCIL_BITS, &ogl.m_states.nStencilBits);
 gameStates.render.bHaveStencilBuffer = (ogl.m_states.nStencilBits > 0);
+glGetIntegerv (GL_STEREO, &ogl.m_states.nStereo);
+gameStates.render.bHaveStereoBuffers = (ogl.m_states.nStereo > 0);
 SDL_ShowCursor (0);
 ogl.m_states.nCurWidth = w;
 ogl.m_states.nCurHeight = h;
