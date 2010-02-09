@@ -1237,11 +1237,11 @@ if (HaveDrawBuffer ()) {
 
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
-		int h = (gameOpts->render.bDeghost > 0);
+		int h = gameOpts->render.bDeghost;
 		int i = (gameOpts->render.bColorGain > 0);
 		int j = Enhance3D () - 1;
 		if ((bStereo = ((j >= 0) && (j <= 2))) && ((h < 4) || (j == 1))) {
-			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h][i][j]));
+			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
 			if (shaderProg > 0) {
 				SelectDrawBuffer (1);
 				SetDrawBuffer (GL_BACK, 0);
@@ -1486,7 +1486,7 @@ const char* enhance3DFS [2][2][3] = {
 		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 		"float s = min (1.0 - cl.g, 0.3) / max (0.000001, cl.r + cl.b);\r\n" \
-		"gl_FragColor = vec4 (cr.r, dot (c, vec3 (cl.r * s, 1.0, cl.b * s)), cr.b, 1.0);\r\n" \
+		"gl_FragColor = vec4 (cr.r, dot (cl, vec3 (cl.r * s, 1.0, cl.b * s)), cr.b, 1.0);\r\n" \
 		"}"
 #endif
 		},
@@ -1625,6 +1625,7 @@ const char* enhance3DFS [2][2][3] = {
 };
 
 const char* duboisFS = 
+#if 0
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
 		"vec3 rl = vec3 ( 0.4561000,  0.5004840,  0.17638100);\r\n" \
 		"vec3 gl = vec3 (-0.0400822, -0.0378246, -0.01575890);\r\n" \
@@ -1639,6 +1640,19 @@ const char* duboisFS =
 		"                     clamp (dot (cl, gl) + dot (cr, gr), 0.0, 1.0),\r\n" \
 		"                     clamp (dot (cl, bl) + dot (cr, br), 0.0, 1.0), 1.0);\r\n" \
 		"}";
+#else
+		"uniform sampler2D leftFrame, rightFrame;\r\n" \
+		"mat3 lScale = mat3 ( 0.4561000,  0.5004840,  0.17638100,\r\n" \
+		"                    -0.0400822, -0.0378246, -0.01575890,\r\n" \
+		"                    -0.0152161, -0.0205971, -0.00546856);\r\n" \
+		"mat3 rScale = mat3 (-0.0434706, -0.0879388, -0.00155529,\r\n" \
+		"                     0.3784760,  0.7336400, -0.01845030,\r\n" \
+		"                    -0.0721527, -0.1129610,  1.22640000);\r\n" \
+		"void main() {\r\n" \
+		"gl_FragColor = vec4 (clamp (texture2D (leftFrame, gl_TexCoord [0].xy).rgb * lScale + texture2D (rightFrame, gl_TexCoord [0].xy).rgb * rScale,\r\n" \
+		"                            vec3 (0.0, 0.0, 0.0), vec3 (1.0, 1.0, 1.0)), 1.0);\r\n" \
+		"}";
+#endif
 
 const char* enhance3DVS = 
 	"void main(void){" \
