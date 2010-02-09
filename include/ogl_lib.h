@@ -282,18 +282,17 @@ class COGL {
 		inline void DeleteTextures (GLsizei n, GLuint *hTextures) { glDeleteTextures (n, hTextures); }
 #endif
 
-		inline void ClearError (int bTrapError) {
-#if DBG_OGL
+		inline GLenum ClearError (int bTrapError) {
 			GLenum nError = glGetError ();
+#if DBG_OGL
 			if (nError) {
 				const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
 				PrintLog ("%s\n", pszError);
 				if (bTrapError)
 					nError = nError;
 				}
-#else
-			glGetError();
 #endif
+			return nError;
 			}
 
 

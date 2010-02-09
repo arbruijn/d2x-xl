@@ -615,8 +615,11 @@ if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
 	int i = Enhance3D ();
-	if (i < 0)
+	if (i < 0) {
 		SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
+		if (ogl.ClearError ())
+			gameOpts->render.n3DGlasses = 0;
+		}	
 	else {
 		gameStates.render.bRenderIndirect = m_data.xStereoSeparation && (i > 0);
 		SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
