@@ -521,7 +521,7 @@ do {
 		m.AddText ("");
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.n3DGlasses]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
-	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 2, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 1, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 	renderOpts.n3DMethod = 
 	renderOpts.nScreenDist =
 	renderOpts.nColorGain =
