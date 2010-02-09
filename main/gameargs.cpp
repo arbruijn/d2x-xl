@@ -400,8 +400,10 @@ if ((t = FindArg ("-linux_msgbox")))
 #endif
 if ((t = FindArg ("-check_setup")))
 	gameStates.app.bCheckAndFixSetup = NumArg (t, 1);
+#if 0
 if ((t = FindArg ("-expertmode")))
 	gameOpts->app.bExpertMode = NumArg (t, 1);
+#endif
 if ((t = FindArg ("-pured2")))
 	SetNostalgia (3);
 else if ((t = FindArg ("-nostalgia")))
