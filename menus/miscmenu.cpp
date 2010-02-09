@@ -74,6 +74,16 @@ if (nState)
 	CMenuItem * m;
 	int			v;
 
+m = menu + miscOpts.nExpertMode;
+v = m->m_value;
+if (gameOpts->app.bExpertMode != v) {
+	gameOpts->app.bExpertMode = v;
+	sprintf (m->m_text, TXT_EXPERTMODE, pszExpertMode [v]);
+	m->m_bRebuild = 1;
+	key = -2;
+	return nCurItem;
+	}
+
 if (miscOpts.nScreenshots >= 0) {
 	m = menu + miscOpts.nScreenshots;
 	v = m->m_value;
@@ -95,6 +105,8 @@ return nCurItem;
 
 void DefaultMiscSettings (void);
 
+static const char* pszExpertMode [3];
+
 void MiscellaneousMenu (void)
 {
 	static int choice = 0;
@@ -103,6 +115,16 @@ void MiscellaneousMenu (void)
 	int	i;
 	int	optHeadlight, optAutoLevel, optEpileptic, optColorblind, optNotebook,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
+
+pszExpertMode [0] = TXT_OFF;
+pszExpertMode [1] = TXT_BASIC;
+pszExpertMode [2] = TXT_FULL;
+
+if (gameOpts->app.bExpertMode == SUPERUSER)
+	gameOpts->app.bExpertMode = 2;
+else if (gameOpts->app.bExpertMode)
+	gameOpts->app.bExpertMode = 1;
+
 #if UDP_SAFEMODE
 	int	optSafeUDP;
 #endif
@@ -113,6 +135,10 @@ do {
 	m.Destroy ();
 	m.Create (20);
 	memset (&miscOpts, 0xff, sizeof (miscOpts));
+	sprintf (szSlider + 1, TXT_EXPERTMODE, pszExpertMode [gameOpts->app.bExpertMode]);
+	*szSlider = *(TXT_EXPERTMODE - 1);
+	miscOpts.nExpertMode = m.AddSlider (szSlider + 1, gameOpts->app.bExpertMode, 0, sizeofa (pszExpertMode) - 1, KEY_X, HTX_EXPERTMODE);  
+	m.AddText ("", 0);
 	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = optEpileptic = optColorblind = -1;
 	if (gameStates.app.bNostalgia) {
 		optAutoLevel = m.AddCheck (TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
@@ -139,9 +165,11 @@ do {
 		}
 	else
 		miscOpts.nScreenshots = -1;
+
 	do {
 		i = m.Menu (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, MiscellaneousCallback, &choice);
 	} while (i >= 0);
+
 	if (gameStates.app.bNostalgia) {
 		gameOpts->gameplay.nAutoLeveling = m [optAutoLevel].m_value;
 		gameOpts->render.cockpit.bReticle = m [optReticle].m_value;
@@ -156,6 +184,11 @@ do {
 		GET_VAL (gameOpts->app.bNotebookFriendly, optNotebook);
 		}
 	} while (i == -2);
+
+if (gameOpts->app.bExpertMode == 2)
+	gameOpts->app.bExpertMode = SUPERUSER;
+else if (gameOpts->app.bExpertMode)
+	gameOpts->app.bExpertMode = 1;
 
 DefaultMiscSettings ();
 }

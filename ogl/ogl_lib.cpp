@@ -102,7 +102,7 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-int enhance3DShaderProg [2][2][2] = {{{-1,-1},{-1,-1}},{{-1,-1},{-1,-1}}};
+int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
 
 int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
 int r_texcount = 0;
@@ -578,39 +578,25 @@ if ((x != m_states.nLastX) || (y != m_states.nLastY) || (w != m_states.nLastW) |
 
 void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset) 
 {
-if (!(bEyeOffset && gameOpts->render.n3DGlasses))
+if (!bEyeOffset || !gameOpts->render.n3DGlasses || gameOpts->render.bEnhance3D)
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.n3DGlasses == GLASSES_AMBER_BLUE) {	//colorcode 3-d (amber/blue)
-	if (gameOpts->render.bEnhance3D)
-		glColorMask (bRed, bGreen, bBlue, bAlpha);
-	else {
-		if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
-			glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
-		else
-			glColorMask (GL_FALSE, GL_FALSE, bBlue, bAlpha);
-		}
+	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
+		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
+	else
+		glColorMask (GL_FALSE, GL_FALSE, bBlue, bAlpha);
 	}
 else if (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) {	//red/cyan
-	if (gameOpts->render.bEnhance3D)
-		glColorMask (bRed, bGreen, bBlue, bAlpha);
-	else {
-		if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
-			glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
-		else
-			glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
-		}
-	}
-else if (gameOpts->render.n3DGlasses == GLASSES_BLUE_RED) {	//blue/red
 	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
-		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
-	else
 		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
+	else
+		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	}
-else if (gameOpts->render.n3DGlasses == GLASSES_GREEN_RED) {	//green/red
+else if (gameOpts->render.n3DGlasses == GLASSES_GREEN_MAGENTA) {	//blue/red
 	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
-		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
+		glColorMask (GL_FALSE, bGreen, GL_FALSE, bAlpha);
 	else
-		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
+		glColorMask (bRed, GL_FALSE, bBlue, bAlpha);
 	}
 else //GLASSES_SHUTTER or NONE
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
@@ -1244,12 +1230,11 @@ if (HaveDrawBuffer ()) {
 		int h = (gameOpts->render.bDeghost > 0);
 		int i = (gameOpts->render.bColorGain > 0);
 		int j = Enhance3D () - 1;
-		if ((bStereo = ((j >= 0) && (j <= 1)))) {
+		if ((bStereo = ((j >= 0) && (j <= 2)))) {
 			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (enhance3DShaderProg [h][i][j]));
 			if (shaderProg > 0) {
 				SelectDrawBuffer (1);
 				SetDrawBuffer (GL_BACK, 0);
-#if 1
 				glEnable (GL_TEXTURE_2D);
 				SelectTMU (GL_TEXTURE1);
 				glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
@@ -1257,14 +1242,11 @@ if (HaveDrawBuffer ()) {
 				glUseProgramObject (shaderProg);
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
-#if 1
 				if (h)
 					glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
 				if (i)
 					glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
-#endif
 				ClearError (0);
-#endif
 				}
 			}
 		}
@@ -1272,7 +1254,6 @@ if (HaveDrawBuffer ()) {
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_ONE, GL_ONE);
 		}
-#if 1
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	glVertex2f (0, 0);
@@ -1283,7 +1264,6 @@ if (HaveDrawBuffer ()) {
 	glTexCoord2f (1, 0);
 	glVertex2f (1, 0);
 	glEnd ();
-#endif
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)
@@ -1457,7 +1437,7 @@ glDeleteTextures (n, hTextures);
 
 //------------------------------------------------------------------------------
 
-const char* enhance3DFS [2][2][2] = {
+const char* enhance3DFS [2][2][3] = {
 	{
 		{
 	#if 0
@@ -1470,17 +1450,27 @@ const char* enhance3DFS [2][2][2] = {
 		"gl_FragColor = vec4 (min (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
 		"}"
 	#else
+		// amber/blue
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
 		"void main() {\r\n" \
 		"vec3 c = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 		"float s = min (1.0 - c.b, 0.3) / max (0.000001, c.r + c.g);\r\n" \
 		"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (c, vec3 (c.r * s, c.g * s, 1.0)), 1.0);\r\n" \
 		"}",
+		// red/cyan
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
 		"void main() {\r\n" \
 		"vec3 c = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
 		"float s = min (1.0 - c.r, 0.3) / max (0.000001, c.g + c.b);\r\n" \
 		"gl_FragColor = vec4 (dot (c, vec3 (1.0, c.g * s, c.b * s)), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 1.0);\r\n" \
+		"}",
+		// green/magenta
+		"uniform sampler2D leftFrame, rightFrame;\r\n" \
+		"void main() {\r\n" \
+		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"float s = min (1.0 - cl.g, 0.3) / max (0.000001, cl.r + cl.b);\r\n" \
+		"gl_FragColor = vec4 (cr.r, dot (c, vec3 (cl.r * s, 1.0, cl.b * s)), cr.b, 1.0);\r\n" \
 		"}"
 #endif
 		},
@@ -1504,6 +1494,16 @@ const char* enhance3DFS [2][2][2] = {
 		"float dl = (1.0 - cl.r) / max (0.000001, cl.g + cl.b) / gain;\r\n" \
 		"float dr = 1.0 + cr.r /  max (0.000001, cr.g + cr.b) / gain;\r\n" \
 		"gl_FragColor = vec4 (dot (cl, vec3 (1.0, dl * cl.g, dl * cl.b)), cr.g * dr, cr.b * dr, 1.0);\r\n" \
+		"}",
+		// green/magenta
+		"uniform sampler2D leftFrame, rightFrame;\r\n" \
+		"uniform float gain;\r\n" \
+		"void main() {\r\n" \
+		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"float dl = (1.0 - cl.g) / max (0.000001, cl.r + cl.b) / gain;\r\n" \
+		"float dr = 1.0 + cr.g /  max (0.000001, cr.r + cr.b) / gain;\r\n" \
+		"gl_FragColor = vec4 (cr.r * dr, dot (cl, vec3 (dl * cl.r, 1.0, dl * cl.b)), cr.b * dr, 1.0);\r\n" \
 		"}"
 		},
 	},
@@ -1537,6 +1537,21 @@ const char* enhance3DFS [2][2][2] = {
 		"s = strength [0] / max (strength [0], (l.g + l.b) / t);\r\n" \
 		"t = strength [1] / max (strength [1], l.r / t);\r\n" \
 		"gl_FragColor = vec4 (h.r * t, h.g * s, h.b * s, 1.0);\r\n" \
+		"}",
+		// green/magenta
+		// de-ghosting by reducing red or cyan brightness if they exceed a certain threshold compared to the pixels total brightness
+		"uniform sampler2D leftFrame, rightFrame;\r\n" \
+		"uniform vec2 strength;\r\n" \
+		"void main() {\r\n" \
+		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"float s = min (1.0 - cl.g, 0.3) / max (0.000001, cl.r + cl.b);\r\n" \
+		"vec3 h = vec3 (cr.r, dot (cl, vec3 (cl.r * s, 1.0, cl.b * s)), cr.b);\r\n" \
+		"vec3 l = h * vec3 (0.3, 0.59, 0.11);\r\n" \
+		"float t = (l.r + l.g + l.b);\r\n" \
+		"s = strength [0] / max (strength [0], (l.r + l.b) / t);\r\n" \
+		"t = strength [1] / max (strength [1], l.g / t);\r\n" \
+		"gl_FragColor = vec4 (h.r * s, h.g * t, h.b * s, 1.0);\r\n" \
 		"}"
 		},
 		// color adjustment
@@ -1572,6 +1587,22 @@ const char* enhance3DFS [2][2][2] = {
 		"float s = strength [0] / max (strength [0], (l.g + l.b) / t);\r\n" \
 		"t = strength [1] / max (strength [1], l.r / t);\r\n" \
 		"gl_FragColor = vec4 (h.r * t, h.g * s, h.b * s, 1.0);\r\n" \
+		"}",
+		// red/cyan
+		"uniform sampler2D leftFrame, rightFrame;\r\n" \
+		"uniform vec2 strength;\r\n" \
+		"uniform float gain;\r\n" \
+		"void main() {\r\n" \
+		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"float dl = (1.0 - cl.g) / max (0.000001, cl.r + cl.b) / gain;\r\n" \
+		"float dr = 1.0 + cr.g /  max (0.000001, cr.r + cr.b) / gain;\r\n" \
+		"vec3 h = vec3 (cr.r * dr, dot (cl, vec3 (dl * cl.r, 1.0, dl * cl.b)), cr.b * dr);\r\n" \
+		"vec3 l = h * vec3 (0.3, 0.59, 0.11);\r\n" \
+		"float t = (l.r + l.g + l.b);\r\n" \
+		"float s = strength [0] / max (strength [0], (l.r + l.b) / t);\r\n" \
+		"t = strength [1] / max (strength [1], l.g / t);\r\n" \
+		"gl_FragColor = vec4 (h.r * s, h.g * t, h.b * s, 1.0);\r\n" \
 		"}"
 		}
 	}
@@ -1592,7 +1623,7 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 	PrintLog ("building enhanced 3D shader programs\n");
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
+			for (int j = 0; j < 3; j++) {
 				gameStates.render.textures.bHaveCC3DShader = (0 <= shaderManager.Build (enhance3DShaderProg [h][i][j], enhance3DFS [h][i][j], cc3DVS));
 				if (!gameStates.render.textures.bHaveCC3DShader) {
 					DeleteEnhanced3DShader ();
@@ -1611,7 +1642,7 @@ void COGL::DeleteEnhanced3DShader (void)
 if (enhance3DShaderProg) {
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
+			for (int j = 0; j < 3; j++) {
 				shaderManager.Delete (enhance3DShaderProg [h][i][j]);
 				}
 			}

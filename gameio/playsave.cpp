@@ -495,6 +495,10 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
+		RP (gameOptions [i].app.bEpilepticFriendly, i, 0);
+		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
+		RP (gameOptions [i].app.bNotebookFriendly, i, 0);
+		RP (gameOptions [i].app.bExpertMode, i, 0);
 		RP (gameOptions [i].app.bEnableMods, i, 0);
 		RP (gameOptions [i].app.bEpilepticFriendly, i, 0);
 		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
@@ -778,10 +782,6 @@ typedef struct tParamValue {
 tParamValue defaultParams [] = {
 	 {"gameData.render.window.w", "640"},
 	 {"gameData.render.window.h", "480"},
-	 {"gameStates.app.bEnableMods[0]", "0"},
-	 {"gameStates.app.bEpilepticFriendly", "0"},
-	 {"gameStates.app.bColorblindFriendly", "0"},
-	 {"gameStates.app.bNotebookFriendly", "0"},
 	 {"gameStates.app.iDownloadTimeout", "5"},
 	 {"gameStates.render.cockpit.nType", "3"},
 	 {"gameStates.render.bShowFrameRate", "0"},
