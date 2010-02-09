@@ -1135,6 +1135,7 @@ tSparkBuffer sparkBuffer;
 
 void CTransparencyRenderer::FlushSparkBuffer (void)
 {
+#if 1
 	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
 if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
@@ -1159,6 +1160,7 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 	m_data.bClientColor = 0;
 	sparkBuffer.nSparks = 0;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1299,6 +1301,10 @@ if (!m_data.bDepthMask)
 	glDepthMask (m_data.bDepthMask = 1);
 glEnable (GL_BLEND);
 glBlendFunc (GL_ONE, GL_ONE);
+#if 0
+glEnable (GL_DEPTH_TEST);
+glDepthFunc (GL_LEQUAL);
+#endif
 glDisable (GL_CULL_FACE);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 #if 1
@@ -1329,7 +1335,6 @@ if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	glEnd ();
 	}
 glEnable (GL_CULL_FACE);
-glDepthFunc (GL_LEQUAL);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -1341,10 +1346,10 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 	if (sparkBuffer.nSparks)
 		FlushSparkBuffer ();
 	if (particleManager.FlushBuffer (-1.0f)) {
-		m_data.bDepthMask = 1;
+		m_data.bDepthMask = 0;
 		if (nType < 0)
 			particleManager.CloseBuffer ();
-		//glEnable (GL_DEPTH_TEST);
+		glEnable (GL_DEPTH_TEST);
 		ResetBitmaps ();
 		particleManager.SetLastType (-1);
 		m_data.bClientColor = 1;

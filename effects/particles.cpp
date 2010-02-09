@@ -1743,6 +1743,11 @@ int nType = particleManager.LastType ();
 CBitmap *bmP = bmpParticle [0][nType];
 if (!bmP)
 	return false;
+if (bmP->CurFrame ())
+	bmP = bmP->CurFrame ();
+if (bmP->Bind (0))
+	return false;
+
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
 bufferBrightness = brightness;
@@ -1752,10 +1757,6 @@ glDepthFunc (GL_LEQUAL);
 glDepthMask (0);
 ogl.SelectTMU (GL_TEXTURE0, true);
 glEnable (GL_TEXTURE_2D);
-if (bmP->CurFrame ())
-	bmP = bmP->CurFrame ();
-if (bmP->Bind (0))
-	return false;
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
