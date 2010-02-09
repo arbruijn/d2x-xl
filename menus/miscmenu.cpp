@@ -62,6 +62,8 @@ static struct {
 	int	nScreenshots;
 } miscOpts;
 
+static const char* pszExpertMode [3];
+
 //------------------------------------------------------------------------------
 
 extern int screenShotIntervals [];
@@ -78,7 +80,7 @@ m = menu + miscOpts.nExpertMode;
 v = m->m_value;
 if (gameOpts->app.bExpertMode != v) {
 	gameOpts->app.bExpertMode = v;
-	sprintf (m->m_text, TXT_EXPERTMODE, pszExpertMode [v]);
+	sprintf (m->m_text, TXT_EXPERT_MODE, pszExpertMode [v]);
 	m->m_bRebuild = 1;
 	key = -2;
 	return nCurItem;
@@ -104,8 +106,6 @@ return nCurItem;
 //------------------------------------------------------------------------------
 
 void DefaultMiscSettings (void);
-
-static const char* pszExpertMode [3];
 
 void MiscellaneousMenu (void)
 {
@@ -135,9 +135,9 @@ do {
 	m.Destroy ();
 	m.Create (20);
 	memset (&miscOpts, 0xff, sizeof (miscOpts));
-	sprintf (szSlider + 1, TXT_EXPERTMODE, pszExpertMode [gameOpts->app.bExpertMode]);
-	*szSlider = *(TXT_EXPERTMODE - 1);
-	miscOpts.nExpertMode = m.AddSlider (szSlider + 1, gameOpts->app.bExpertMode, 0, sizeofa (pszExpertMode) - 1, KEY_X, HTX_EXPERTMODE);  
+	sprintf (szSlider + 1, TXT_EXPERT_MODE, pszExpertMode [gameOpts->app.bExpertMode]);
+	*szSlider = *(TXT_EXPERT_MODE - 1);
+	miscOpts.nExpertMode = m.AddSlider (szSlider + 1, gameOpts->app.bExpertMode, 0, sizeofa (pszExpertMode) - 1, KEY_X, HTX_EXPERT_MODE);  
 	m.AddText ("", 0);
 	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = optEpileptic = optColorblind = -1;
 	if (gameStates.app.bNostalgia) {
