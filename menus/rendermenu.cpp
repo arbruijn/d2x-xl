@@ -103,7 +103,7 @@ static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
 static const char *psz3DGlasses [5];
 static const char *pszEnhance3D [4];
-static const char *pszDeghost [4];
+static const char *pszDeghost [5];
 static const char *psz3DMethod [2];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0"};
 
@@ -271,9 +271,13 @@ if (renderOpts.n3DGlasses >= 0) {
 		m = menu + renderOpts.nDeghost;
 		v = m->m_value;
 		if (gameOpts->render.bDeghost != v) {
+			if ((v == 4) || (gameOpts->render.bDeghost == 4))
+				key = -2;
 			gameOpts->render.bDeghost = v;
 			sprintf (m->m_text, TXT_3D_DEGHOST, pszDeghost [v]);
 			m->m_bRebuild = -1;
+			if (key == -2)
+				return nCurItem;
 			}
 		}
 
@@ -417,6 +421,7 @@ pszDeghost [0] = TXT_OFF;
 pszDeghost [1] = TXT_LOW;
 pszDeghost [2] = TXT_MEDIUM;
 pszDeghost [3] = TXT_HIGH;
+pszDeghost [4] = TXT_3D_DUBOIS;
 
 pszEnhance3D [0] = TXT_OFF;
 pszEnhance3D [1] = TXT_LOW;
@@ -543,14 +548,14 @@ do {
 		*szSlider = *(TXT_3D_SCREEN_DIST - 1);
 		renderOpts.nScreenDist = m.AddSlider (szSlider + 1, gameOpts->render.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
 
-		if (ogl.Enhance3D () > 0) {
+		if ((ogl.Enhance3D () > 0) && (gameOpts->render.bDeghost < 4)) {
 			sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);
 			*szSlider = *(TXT_COLORGAIN - 1);
 			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
 
 			sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.bDeghost]);
 			*szSlider = *(TXT_3D_DEGHOST - 1);
-			renderOpts.nDeghost = m.AddSlider (szSlider + 1, gameOpts->render.bDeghost, 0, sizeofa (pszDeghost) - 1, KEY_H, HTX_3D_DEGHOST);
+			renderOpts.nDeghost = m.AddSlider (szSlider + 1, gameOpts->render.bDeghost, 0, sizeofa (pszDeghost) - 2 + (ogl.Enhance3D (1) == 2), KEY_H, HTX_3D_DEGHOST);
 			}
 		m.AddText ("");
 		if (ogl.Enhance3D (1) > 0)

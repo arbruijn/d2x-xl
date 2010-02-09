@@ -103,6 +103,7 @@ GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
 int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
+int duboisShaderProg = -1;
 
 int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
 int r_texcount = 0;
@@ -1239,8 +1240,8 @@ if (HaveDrawBuffer ()) {
 		int h = (gameOpts->render.bDeghost > 0);
 		int i = (gameOpts->render.bColorGain > 0);
 		int j = Enhance3D () - 1;
-		if ((bStereo = ((j >= 0) && (j <= 2)))) {
-			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (enhance3DShaderProg [h][i][j]));
+		if ((bStereo = ((j >= 0) && (j <= 2))) && ((h < 4) || (j == 1))) {
+			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h][i][j]));
 			if (shaderProg > 0) {
 				SelectDrawBuffer (1);
 				SetDrawBuffer (GL_BACK, 0);
@@ -1251,10 +1252,12 @@ if (HaveDrawBuffer ()) {
 				glUseProgramObject (shaderProg);
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
-				if (h)
-					glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
-				if (i)
-					glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
+				if (h < 3) {
+					if (h)
+						glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
+					if (i)
+						glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
+					}
 				ClearError (0);
 				}
 			}
@@ -1449,25 +1452,13 @@ glDeleteTextures (n, hTextures);
 const char* enhance3DFS [2][2][3] = {
 	{
 		{
-	#if 1
+	#if 0
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
 		"void main() {\r\n" \
 		"gl_FragColor = vec4 (texture2D (leftFrame, gl_TexCoord [0].xy).xy, dot (texture2D (rightFrame, gl_TexCoord [0].xy).rgb, vec3 (0.15, 0.15, 0.7)), 1.0);\r\n" \
 		"}",
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
-		"vec3 rl = vec3 ( 0.4561000,  0.5004840,  0.17638100);\r\n" \
-		"vec3 gl = vec3 (-0.0400822, -0.0378246, -0.01575890);\r\n" \
-		"vec3 bl = vec3 (-0.0152161, -0.0205971, -0.00546856);\r\n" \
-		"vec3 rr = vec3 (-0.0434706, -0.0879388, -0.00155529);\r\n" \
-		"vec3 gr = vec3 ( 0.3784760,  0.7336400, -0.01845030);\r\n" \
-		"vec3 br = vec3 (-0.0721527, -0.1129610,  1.22640000);\r\n" \
-		"void main() {\r\n" \
-		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
-		"gl_FragColor = vec4 (clamp (dot (cl, rl) + dot (cr, rr), 0.0, 1.0),\r\n" \
-		"                     clamp (dot (cl, gl) + dot (cr, gr), 0.0, 1.0),\r\n" \
-		"                     clamp (dot (cl, bl) + dot (cr, br), 0.0, 1.0), 1.0);\r\n" \
-		"/*gl_FragColor = vec4 (clamp (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 0.0, 1.0);*/\r\n" \
+		"gl_FragColor = vec4 (clamp (1.0, dot (texture2D (leftFrame, gl_TexCoord [0].xy).rgb, vec3 (1.0, 0.15, 0.15))), texture2D (rightFrame, gl_TexCoord [0].xy).yz, 0.0, 1.0);\r\n" \
 		"}",
 		"uniform sampler2D leftFrame, rightFrame;\r\n" \
 		"void main() {\r\n" \
@@ -1633,7 +1624,23 @@ const char* enhance3DFS [2][2][3] = {
 	}
 };
 
-const char* cc3DVS = 
+const char* duboisFS = 
+		"uniform sampler2D leftFrame, rightFrame;\r\n" \
+		"vec3 rl = vec3 ( 0.4561000,  0.5004840,  0.17638100);\r\n" \
+		"vec3 gl = vec3 (-0.0400822, -0.0378246, -0.01575890);\r\n" \
+		"vec3 bl = vec3 (-0.0152161, -0.0205971, -0.00546856);\r\n" \
+		"vec3 rr = vec3 (-0.0434706, -0.0879388, -0.00155529);\r\n" \
+		"vec3 gr = vec3 ( 0.3784760,  0.7336400, -0.01845030);\r\n" \
+		"vec3 br = vec3 (-0.0721527, -0.1129610,  1.22640000);\r\n" \
+		"void main() {\r\n" \
+		"vec3 cl = texture2D (leftFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"vec3 cr = texture2D (rightFrame, gl_TexCoord [0].xy).rgb;\r\n" \
+		"gl_FragColor = vec4 (clamp (dot (cl, rl) + dot (cr, rr), 0.0, 1.0),\r\n" \
+		"                     clamp (dot (cl, gl) + dot (cr, gr), 0.0, 1.0),\r\n" \
+		"                     clamp (dot (cl, bl) + dot (cr, br), 0.0, 1.0), 1.0);\r\n" \
+		"}";
+
+const char* enhance3DVS = 
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_Position=ftransform();"\
@@ -1645,14 +1652,22 @@ const char* cc3DVS =
 void COGL::InitEnhanced3DShader (void)
 {
 if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
+	PrintLog ("building dubois optimization programs\n");
+	gameStates.render.textures.bHaveEnhanced3DShader = (0 <= shaderManager.Build (duboisShaderProg, duboisFS, enhance3DVS));
+	if (!gameStates.render.textures.bHaveEnhanced3DShader) {
+		DeleteEnhanced3DShader ();
+		gameOpts->render.n3DGlasses = GLASSES_NONE;
+		return;
+		}
 	PrintLog ("building enhanced 3D shader programs\n");
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 3; j++) {
-				gameStates.render.textures.bHaveCC3DShader = (0 <= shaderManager.Build (enhance3DShaderProg [h][i][j], enhance3DFS [h][i][j], cc3DVS));
-				if (!gameStates.render.textures.bHaveCC3DShader) {
+				gameStates.render.textures.bHaveEnhanced3DShader = (0 <= shaderManager.Build (enhance3DShaderProg [h][i][j], enhance3DFS [h][i][j], enhance3DVS));
+				if (!gameStates.render.textures.bHaveEnhanced3DShader) {
 					DeleteEnhanced3DShader ();
 					gameOpts->render.n3DGlasses = GLASSES_NONE;
+					return;
 					}
 				}
 			}

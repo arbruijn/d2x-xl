@@ -1923,6 +1923,7 @@ const char *defaultGameTexts [][2] = {
  {"gekreuzt", "toe in"},
  {"bild~Schirm-Abstand: %d", "~Screen distance: %d"},
  {"~Geisterbilder verringern: %s", "decrease g~Hosting: %s"},
+ {"Dubois", "Dubois"},
 #if 0
  {"", ""},
 #endif

@@ -827,7 +827,7 @@ typedef struct tTextureStates {
 	int bGlTexMergeOk;
 	int bHaveMaskShader;
 	int bHaveGrayScaleShader;
-	int bHaveCC3DShader;
+	int bHaveEnhanced3DShader;
 } tTextureStates;
 
 //------------------------------------------------------------------------------
