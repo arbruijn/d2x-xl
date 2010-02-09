@@ -2631,6 +2631,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann eingestellt werden, in welcher Entfernung im Raum\ndie Bildschirmoberflaeche liegt.", "Chose the distance of the screen surface in 3D space here."},
  {"Je nach Einstellung versucht D2X-XL, mehr oder weniger stark,\nGeisterbilder zu verringern. Dabei verringert sich\nallerdings die Helligkeit des Bildes.", 
   "Depending on the chosen setting, D2X-XL tries to diminish\nghost images more or less intensive. This will however\ndecrease the image brightness."},
+ {"Je nach Einstellung werden keine, einige oder viele\nzusaetzliche Menueoptionen angezeigt.", "Depending on this setting no, a few or many\nadditional menu options are shown."},
 #if 0
  {"", ""},
 #endif

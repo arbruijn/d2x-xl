@@ -2522,10 +2522,10 @@ void LoadGameTexts(void);
 #define HTX_3D_METHOD					HT(416)
 #define HTX_3D_SCREEN_DIST				HT(417)
 #define HTX_3D_DEGHOST					HT(418)
+#define HTX_EXPERT_MODE					HT(419)
 
 #if 0
 
-#define HTX_						HT(419)
 #define HTX_						HT(420)
 #define HTX_						HT(421)
 #define HTX_						HT(422)
