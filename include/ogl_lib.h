@@ -253,7 +253,9 @@ class COGL {
 								? 2 
 								 : (gameOpts->render.n3DGlasses == GLASSES_GREEN_MAGENTA) 
 									? 3 
-									: 0; 
+									 : (gameOpts->render.n3DGlasses == GLASSES_SHUTTER) 
+										? -1
+										: 0; 
 			}
 
 #if DBG_OGL

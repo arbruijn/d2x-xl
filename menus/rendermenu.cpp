@@ -543,7 +543,7 @@ do {
 		*szSlider = *(TXT_3D_SCREEN_DIST - 1);
 		renderOpts.nScreenDist = m.AddSlider (szSlider + 1, gameOpts->render.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
 
-		if (ogl.Enhance3D ()) {
+		if (ogl.Enhance3D () > 0) {
 			sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);
 			*szSlider = *(TXT_COLORGAIN - 1);
 			renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
@@ -553,7 +553,7 @@ do {
 			renderOpts.nDeghost = m.AddSlider (szSlider + 1, gameOpts->render.bDeghost, 0, sizeofa (pszDeghost) - 1, KEY_H, HTX_3D_DEGHOST);
 			}
 		m.AddText ("");
-		if (ogl.Enhance3D (1))
+		if (ogl.Enhance3D (1) > 0)
 			renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.bEnhance3D, KEY_D, HTX_ENHANCE_3D);
 #if 0
 		renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);

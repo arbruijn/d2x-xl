@@ -358,7 +358,8 @@ else
 
 void Draw2DFrameElements (void)
 {
-ogl.SetDrawBuffer (GL_BACK, 0);
+if (ogl.Enhance3D () >= 0)
+	ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -376,13 +377,16 @@ FlashMine ();
 
 void FlushFrame (fix xStereoSeparation)
 {
-if (!xStereoSeparation || (gameOpts->render.n3DGlasses == GLASSES_SHUTTER)) {	//no stereo or shutter glasses
+if (!xStereoSeparation) {	//no stereo or shutter glasses
 	Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
 else {
-	cockpit->DrawReticle (0, xStereoSeparation);
-	if (ogl.Enhance3D ()) {
+	int i = ogl.Enhance3D ();
+	if (i < 0)
+		Draw2DFrameElements ();
+	cockpit->DrawReticle (0, (i <= 0) ? 0 : xStereoSeparation);
+	if (i) {
 		if (xStereoSeparation > 0)
 			ogl.SwapBuffers (0, 0);
 		}

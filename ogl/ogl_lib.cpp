@@ -614,9 +614,14 @@ m_data.xStereoSeparation = xStereoSeparation;
 if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
-	gameStates.render.bRenderIndirect = m_data.xStereoSeparation && Enhance3D ();
-	SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
-	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+	int i = Enhance3D ();
+	if (i < 0)
+		SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
+	else {
+		gameStates.render.bRenderIndirect = m_data.xStereoSeparation && (i > 0);
+		SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
+		SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+		}
 	}
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
