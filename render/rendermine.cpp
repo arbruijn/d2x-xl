@@ -1032,7 +1032,6 @@ else {
 	}
 #endif
 
-//ogl.ResetStates ();
 ogl.m_states.bHaveDepthBuffer =
 gameData.render.nUsedFaces =
 gameData.render.nTotalFaces =

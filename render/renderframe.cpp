@@ -435,7 +435,6 @@ if (!nWindow)
 //PrintLog ("G3StartFrame\n");
 {
 PROF_START
-ogl.ResetStates ();
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
 //PrintLog ("SetRenderView\n");
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
