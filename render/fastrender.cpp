@@ -811,6 +811,7 @@ short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 	int	h, i, nFaces = 0, bAutomap = (nType == 0);
 
 if (nType) {
+	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
@@ -823,6 +824,7 @@ if (nType) {
 		}
 	}
 else {
+	// render mine by pre-sorted textures
 	for (h = 0; h < 2; h++)
 		for (i = 0; i < gameStates.app.nThreads; i++)
 			nFaces += RenderFaceList (gameData.render.faceIndex [h][i], nType, bDepthOnly, bHeadlight);
@@ -883,11 +885,11 @@ return SortFaces ();
 
 //------------------------------------------------------------------------------
 
-void RenderFaceList (int nType)
+void RenderFaceList (int nType, int bFrontToBack)
 {
 	int	j;
 
-if (nType) {	//back to front
+if (!bFrontToBack) {	//back to front
 	BeginRenderFaces (nType, 0);
 	RenderSegments (nType, 0, 0);
 	if (nType < 2)

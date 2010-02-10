@@ -536,7 +536,6 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#endif
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
 for (i = nStart; i < nEnd; i++) {

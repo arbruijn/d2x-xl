@@ -990,7 +990,7 @@ PROF_START
 gameStates.render.nType = nType;
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 	BumpVisitedFlag ();
-	RenderFaceList (nType);
+	RenderFaceList (nType, bFrontToBack);
 	ogl.ClearError (0);
 	}
 RenderMineObjects (nType);
@@ -1197,7 +1197,7 @@ SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 RenderSegmentList (0, 1);	// render opaque geometry
-RenderSegmentList (1, 1);		// render objects
+RenderSegmentList (1, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
 		glDepthFunc (GL_LEQUAL);
