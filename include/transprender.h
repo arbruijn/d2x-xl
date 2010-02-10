@@ -132,7 +132,6 @@ typedef struct tTranspItemBuffer {
 	char				bTextured;
 	char				bClientColor;
 	char				bClientTexCoord;
-	char				bDepthMask;
 	char				bDisplay;
 	char				bHaveParticles;
 	char				bLightmaps;
@@ -197,7 +196,6 @@ class CTransparencyRenderer {
 		void DisableTMU (int nTMU, char bFull);
 		void SetDecalState (char bDecal, char bTexCoord, char bColor, char bUseLightmaps);
 		int SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal);
-		void ResetShader (void);
 		int LoadImage (CBitmap *bmP, char nColors, char nFrame, int nWrap,
 						   int bClientState, int nTransp, int bShader, int bUseLightmaps,
 							int bHaveDecal, int bDecal);

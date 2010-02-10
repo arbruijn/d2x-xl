@@ -656,13 +656,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::ResetShader (void)
-{
-shaderManager.Deploy (-1);
-}
-
-//------------------------------------------------------------------------------
-
 int CTransparencyRenderer::LoadImage (CBitmap *bmP, char nColors, char nFrame, int nWrap,
 												  int bClientState, int nTransp, int bShader, int bUseLightmaps,
 												  int bHaveDecal, int bDecal)
@@ -701,7 +694,7 @@ else if (SetClientState (bClientState, 0, /*!m_data.bLightmaps &&*/ (nColors > 1
 		}
 	}
 if (!bShader)
-	ResetShader ();
+	shaderManager.Deploy (-1);
 return 1;
 }
 
@@ -740,7 +733,7 @@ if (!bmBot) {
 if (bmBot && strstr (bmBot->Name (), "glare.tga"))
 	item = item;
 #endif
-#if 1
+
 faceP = item->faceP;
 triP = item->triP;
 bLightmaps = m_data.bLightmaps && (faceP != NULL);
@@ -763,15 +756,8 @@ if (faceP) {
 else {
 	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 	}
-//m_data.bUseLightmaps = 0;
 #endif
-#if 0
-if (!m_data.bDepthMask)
-	ogl.SetDepthWrite (m_data.bDepthMask = 1);
-#else
-if (m_data.bDepthMask != item->bDepthMask)
-	ogl.SetDepthWrite (bool ((m_data.bDepthMask = item->bDepthMask) != 0));
-#endif
+ogl.SetDepthWrite (item->bDepthMask != 0);
 if (!faceP)
 	bmTop = NULL;
 else if ((bmTop = faceP->bmTop))
@@ -782,15 +768,10 @@ if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPAREN
 	bDecal = -1;
 	faceP->m_info.nRenderType = gameStates.render.history.nType = 1;
 	}
-#if RENDER_TRANSP_DECALS
 else {
 	bDecal = bmTop != NULL;
 	mask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
 	}
-#else
-bDecal = 0;
-mask = NULL;
-#endif
 if (!bmTop && m_data.bmP [1]) {
 	DisableTMU (GL_TEXTURE1 + bLightmaps, 1);
 	m_data.bmP [1] = NULL;
@@ -799,10 +780,6 @@ if (!mask && m_data.bmP [2]) {
 	DisableTMU (GL_TEXTURE2 + bLightmaps, 1);
 	m_data.bmP [2] = NULL;
 	}
-#if 0
-if (!bLightmaps)
-	DisableTMU (GL_TEXTURE3, 1);
-#endif
 
 if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
@@ -845,23 +822,10 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 			}
 		}
-	else if (item->nColors == 1) {
-#if 0
-		tRgbaColorf c [4];
-		c [0] = c [1] = c [2] = c [3] = item->color [0];
-		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<GLfloat*> (c));
-#else
+	else if (item->nColors == 1)
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
-#endif
-		}
-	else {
-#if 0
-		tRgbaColorf c [4] = {{1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1}};
-		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<GLfloat*> (c));
-#else
+	else
 		glColor3d (1, 1, 1);
-#endif
-		}
 	bAdditive = item->bAdditive;
 	ogl.SetBlendUsage (true);
 	if (bAdditive == 1)
@@ -882,21 +846,8 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		else {
-#if 0
-			if (gameData.render.lights.dynamic.headlights.nLights && !automap.Display ()) {
-				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
-				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
-				bAdditive = true;
-				ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-				ogl.SetDepthMode (GL_LEQUAL);
-				}
-#endif
 			if (gameStates.render.bPerPixelLighting == 1) {
-#	if RENDER_TRANSP_DECALS
 				G3SetupLightmapShader (faceP, 0, (int) faceP->m_info.nRenderType, false);
-#	else
-				G3SetupLightmapShader (faceP, 0, (int) faceP->m_info.nRenderType != 0, false);
-#	endif
 #	if DBG
 				if ((item->nVertices < 3) || (item->nVertices > 4))
 					PrintLog ("invalid transparent render item\n");
@@ -907,24 +858,15 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			else {
 				ogl.m_states.iLight = 0;
 				lightManager.Index (0)[0].nActive = -1;
-#if 0
-				ogl.SelectTMU (GL_TEXTURE0, true);
-				ogl.EnableClientState (GL_NORMAL_ARRAY);
-				OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
-#endif
 				for (;;) {
 					G3SetupPerPixelShader (faceP, 0, faceP->m_info.nRenderType, false);
 					OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 					if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 						 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 						break;
-					//if (bAdditive && (bAdditive != 2))
-						{
-						bAdditive = 2;
-						ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-						//ogl.SetDepthMode (GL_EQUAL);
-						ogl.SetDepthWrite (false);
-						}
+					bAdditive = 2;
+					ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					ogl.SetDepthWrite (false);
 					}
 				}
 			if (gameStates.render.bHeadlights) {
@@ -939,26 +881,20 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				if (bAdditive != 2) {
 					bAdditive = 2;
 					ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-					//ogl.SetDepthMode (GL_EQUAL);
 					ogl.SetDepthWrite (false);
 					}
-#if 0
-				ogl.SelectTMU (GL_TEXTURE1, true);
-				ogl.EnableClientState (GL_NORMAL_ARRAY);
-				OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
-#endif
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			}
 		ogl.SetDepthMode (GL_LEQUAL);
-		ogl.SetDepthWrite (m_data.bDepthMask != 0);
+		ogl.SetDepthWrite (false);
 		}
 	else {
 		if (bAdditive && !automap.Display ()) {
 			if (bSoftBlend)
 				glareRenderer.LoadShader (5);
 			else
-				ResetShader ();
+				shaderManager.Deploy (-1);
 			}
 		else
 			G3SetupShader (faceP, 0, mask != NULL, bDecal > 0, bmBot != NULL,
@@ -970,15 +906,13 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	if (faceP)
 		gameData.render.nTotalFaces++;
 	}
-else
-#endif
-if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
+else if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
-		ResetShader ();
+		shaderManager.Deploy (-1);
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	else if (item->bAdditive == 2) {
-		ResetShader ();
+		shaderManager.Deploy (-1);
 		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	else {
@@ -1040,28 +974,14 @@ PROF_END(ptRenderFaces)
 
 void CTransparencyRenderer::RenderObject (tTranspObject *item)
 {
-#if 1
-//SEM_LEAVE (SEM_LIGHTNING)	//might lockup otherwise when creating damage lightnings on cloaked objects
-//SEM_LEAVE (SEM_SPARKS)
-ResetShader ();
-#if 1
+shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
-#else
-for (int i = 0; i < 4; i++) {
-	ogl.SelectTMU (GL_TEXTURE3 - i);
-	glBindTexture (GL_TEXTURE_2D, 0);
-	ogl.SetTextureUsage (false);
-	}
-#endif
 gameData.models.vScale = item->vScale;
-ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
+ogl.SetDepthWrite (false);
 DrawPolygonObject (item->objP, 0, 1);
 gameData.models.vScale.SetZero ();
 ogl.ResetClientStates ();
 ResetBitmaps ();
-//SEM_ENTER (SEM_LIGHTNING)
-//SEM_ENTER (SEM_SPARKS)
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1091,8 +1011,8 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
 		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
-	else //if (m_data.bDepthMask)
-		ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
+	else
+		ogl.SetDepthWrite (false);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;
@@ -1135,7 +1055,6 @@ tSparkBuffer sparkBuffer;
 
 void CTransparencyRenderer::FlushSparkBuffer (void)
 {
-#if 1
 	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
 if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
@@ -1145,9 +1064,8 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 	if (bSoftSparks)
 		glareRenderer.LoadShader (3, 1);
 	else {
-		ResetShader ();
-		if (m_data.bDepthMask)
-			ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
+		shaderManager.Deploy (-1);
+		ogl.SetDepthWrite (false);
 		}
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
@@ -1160,7 +1078,6 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 	m_data.bClientColor = 0;
 	sparkBuffer.nSparks = 0;
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1212,17 +1129,17 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 
 gameOpts->render.bDepthSort = -1;
 ogl.ResetClientStates ();
-ResetShader ();
+shaderManager.Deploy (-1);
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 ResetBitmaps ();
-ResetShader ();
+shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
+ogl.SetDepthWrite (false);
 ogl.SetBlendUsage (true);
 gameOpts->render.bDepthSort = bDepthSort;
 }
@@ -1260,7 +1177,7 @@ else {
 
 #if 0
 	if (!bSoftSmoke || (gameStates.render.history.nShader != 999))
-		ResetShader ();
+		shaderManager.Deploy (-1);
 #endif
 	if (m_data.nPrevType != tiParticle) {
 		ogl.SetTextureUsage (true);
@@ -1272,7 +1189,6 @@ else {
 		SetClientState (0, 0, 0, 0, 0);
 		ResetBitmaps ();
 		}
-	m_data.bDepthMask = 1;
 	}
 }
 
@@ -1281,24 +1197,21 @@ else {
 void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 {
 if (m_data.nPrevType != m_data.nCurType) {
-	if (m_data.bDepthMask)
-		ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
+	ogl.SetDepthWrite (false);
 	ogl.ResetClientStates ();
 	ResetBitmaps ();
-	ResetShader ();
+	shaderManager.Deploy (-1);
 	}
 item->lightning->Render (item->nDepth, 0, 0);
 ogl.ResetClientStates ();
 ResetBitmaps ();
-m_data.bDepthMask = 1;
 }
 
 //------------------------------------------------------------------------------
 
 void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
-if (!m_data.bDepthMask)
-	ogl.SetDepthWrite (m_data.bDepthMask = 1);
+ogl.SetDepthWrite (true);
 ogl.SetBlendUsage (true);
 ogl.SetBlendMode (GL_ONE, GL_ONE);
 #if 0
@@ -1346,7 +1259,6 @@ if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (part
 	if (sparkBuffer.nSparks)
 		FlushSparkBuffer ();
 	if (particleManager.FlushBuffer (-1.0f)) {
-		m_data.bDepthMask = 0;
 		if (nType < 0)
 			particleManager.CloseBuffer ();
 		ogl.SetDepthTest (true);
@@ -1448,12 +1360,11 @@ if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFr
 	}
 PROF_START
 gameStates.render.nType = 5;
-ResetShader ();
+shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
 ogl.ResetClientStates ();
 ResetBitmaps ();
 m_data.bTextured = -1;
-m_data.bDepthMask = 0;
 m_data.bUseLightmaps = 0;
 m_data.bDecal = 0;
 m_data.bLightmaps = lightmapManager.HaveLightmaps ();
@@ -1501,7 +1412,7 @@ for (int i = m_data.itemLists.Length (); i; i--, pl++)
 #endif
 FlushBuffers (-1);
 particleManager.EndRender ();
-ResetShader ();
+shaderManager.Deploy (-1);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
