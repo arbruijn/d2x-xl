@@ -1329,18 +1329,10 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 }
 
 //------------------------------------------------------------------------------
-//renders onto current canvas
 
-extern int bLog;
-
-void RenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
+static void SetupMineRenderer (void)
 {
-PROF_START
 #if DBG
-if (nWindow)
-	nWindow = nWindow;
-else
-	nWindow = nWindow;
 if (gameStates.app.bNostalgia) {
 	gameOptions [1].render.debug.bWireFrame = 0;
 	gameOptions [1].render.debug.bTextures = 1;
@@ -1390,8 +1382,13 @@ gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras &&
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) &&
 										 !gameStates.render.cameras.bActive;
 gameStates.render.bDoLightmaps = 0;
+}
+
+//------------------------------------------------------------------------------
+
+static void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow)
+{
 ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
-PROF_END(ptAux)
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, xStereoSeparation, nWindow);
 
@@ -1462,7 +1459,19 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
 		}
 	}
+}
 
+//------------------------------------------------------------------------------
+//renders onto current canvas
+
+extern int bLog;
+
+void RenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
+{
+PROF_START
+SetupMineRenderer ();
+PROF_END(ptAux)
+ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !RENDERPATH)
 	RenderSkyBox (nWindow);
