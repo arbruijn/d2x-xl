@@ -426,8 +426,6 @@ bool CRenderData::Create (void)
 {
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
 Init ();
-for (int i = 0; i < gameStates.app.nThreads; i++)
-	faceIndex [i].Create ();
 return true;
 }
 
@@ -519,7 +517,7 @@ Destroy ();
 
 void CFaceListIndex::Create (void)
 {
-nUsedKeys = 0;
+Destroy ();
 roots.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 tails.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 usedKeys.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);

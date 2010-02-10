@@ -1455,6 +1455,8 @@ if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ()))
 	return 0;
 #endif
 ComputeFaceKeys ();
+for (i = 0; i < gameStates.app.nThreads; i++)
+	gameData.render.faceIndex [i].Create ();
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();
