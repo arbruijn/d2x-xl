@@ -74,14 +74,12 @@ if (faceP - FACES.faces >= gameData.segs.nFaces)
 int	i, j, nKey = faceP->m_info.nKey;
 
 PROF_START
-CFaceListIndex& flx = gameData.render.faceIndex [nThread];
-
 #ifdef _OPENMP
 #	pragma omp critical
 #endif
 {
+CFaceListIndex& flx = gameData.render.faceIndex [0]; //[nThread];
 i = gameData.render.nUsedFaces++;
-}
 j = flx.tails [nKey];
 if (j < 0) {
 	flx.usedKeys [flx.nUsedKeys] = nKey;
@@ -94,6 +92,7 @@ gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
 flx.tails [nKey] = i;
 faceP->m_info.nFrame = gameData.app.nFrameCount;
+}
 PROF_END(ptFaceList)
 return 1;
 }
@@ -700,7 +699,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 
 void QueryCoronas (short nFaces, int nPass)
 {
-	int	h, i;
+	int	i;
 
 BeginRenderFaces (3, 0);
 glDepthMask (0);
@@ -800,7 +799,7 @@ return nFaces;
 
 short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
-	int	h, i, nFaces = 0, bAutomap = (nType == 0);
+	int	i, nFaces = 0, bAutomap = (nType == 0);
 
 if (nType) {
 	// render mine segment by segment
@@ -817,8 +816,12 @@ if (nType) {
 	}
 else {
 	// render mine by pre-sorted textures
+#if 1
+	nFaces = RenderFaceList (gameData.render.faceIndex [0], nType, bDepthOnly, bHeadlight);
+#else
 	for (i = 0; i < gameStates.app.nThreads; i++)
 		nFaces += RenderFaceList (gameData.render.faceIndex [i], nType, bDepthOnly, bHeadlight);
+#endif
 	}
 return nFaces;
 }
