@@ -800,8 +800,7 @@ short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
 	int	i, nFaces = 0, bAutomap = (nType == 0);
 
-//if (nType > 1) {
-if (!automap.Display ()) {
+if (nType > 1) {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();

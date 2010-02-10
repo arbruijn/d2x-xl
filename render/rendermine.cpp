@@ -937,7 +937,7 @@ void RenderMineObjects (int nType)
 if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
-if ((nType < 1) || (nType > 2))
+if (nType != 1)
 	return;
 gameStates.render.nState = 1;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
