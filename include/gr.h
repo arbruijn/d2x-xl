@@ -287,12 +287,6 @@ class CSegFace {
 		CSegFace*			nextSlidingFace;
 
 	public:
-		inline const bool operator< (CSegFace& other) { return m_info.nKey < other.m_info.nKey; }
-		inline const bool operator> (CSegFace& other) { return m_info.nKey > other.m_info.nKey; }
-		inline const bool operator== (CSegFace& other) { return m_info.nKey == other.m_info.nKey; }
-		inline const bool operator< (CSegFace* other) { return m_info.nKey < other->m_info.nKey; }
-		inline const bool operator> (CSegFace* other) { return m_info.nKey > other->m_info.nKey; }
-		inline const bool operator== (CSegFace* other) { return m_info.nKey == other->m_info.nKey; }
 		};
 
 inline int operator- (CSegFace* f, CArray<CSegFace>& a) { return a.Index (f); }

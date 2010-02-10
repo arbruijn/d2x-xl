@@ -707,17 +707,17 @@ ogl.ColorMask (1,1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
 	// first just render all coronas (happens before any geometry gets rendered)
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [i], 0);
+	//for (i = 0; i < gameStates.app.nThreads; i++)
+		RenderCoronaFaceList (gameData.render.faceIndex [0], 0);
 	glFlush ();
 	// then query how many samples (pixels) were rendered for each corona
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [i], 1);
+	//for (i = 0; i < gameStates.app.nThreads; i++)
+		RenderCoronaFaceList (gameData.render.faceIndex [0], 1);
 	}
 else { //now find out how many fragments are rendered for each corona if geometry interferes
 	gameStates.render.bQueryCoronas = 2;
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [i], 2);
+	//for (i = 0; i < gameStates.app.nThreads; i++)
+		RenderCoronaFaceList (gameData.render.faceIndex [0], 2);
 	glFlush ();
 	}
 glDepthMask (1);

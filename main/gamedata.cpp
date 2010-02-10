@@ -434,7 +434,7 @@ return true;
 void CRenderData::Destroy (void)
 {
 DESTROY (gameData.render.faceList);
-for (int i = 0; i < gameStates.app.nThreads; i++)
+for (int i = 0; i < 1 /*gameStates.app.nThreads*/; i++)
 	faceIndex [i].Destroy ();
 }
 
