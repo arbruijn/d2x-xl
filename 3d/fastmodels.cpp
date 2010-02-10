@@ -616,15 +616,15 @@ else
 	nLights = 1;
 ogl.SetBlendUsage (true);
 if (bEmissive)
-	SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 else if (gameStates.render.bCloaked)
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 else if (bTransparency) {
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	SetDepthWrite (false);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetDepthWrite (false);
 	}
 else
-	SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 
 if (!bLighting || (sliP->nLast < 0))
 	nLightRange = 0;
@@ -633,8 +633,8 @@ else
 for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
-			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			SetDepthWrite (false);
+			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			ogl.SetDepthWrite (false);
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
 #if DBG
@@ -727,7 +727,7 @@ if (!nLightRange && nLights)
 #endif
 if (bLighting) {
 	ogl.DisableLighting ();
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthWrite (true);
 	}
 ogl.ResetTransform (1);
