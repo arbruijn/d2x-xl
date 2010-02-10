@@ -61,7 +61,7 @@ int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, t
 
 r_bitmapc++;
 ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
 fPos.Assign (vPos);
@@ -193,7 +193,7 @@ m_info.texP->Wrap (GL_REPEAT);
 m_render.bBlendState = ogl.GetBlendUsage ();
 glGetIntegerv (GL_DEPTH_FUNC, &m_render.depthFunc);
 ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetBlendUsage (bBlend);
+ogl.SetBlending (bBlend);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 return &m_info.texture;
 }
@@ -227,9 +227,9 @@ void CBitmap::OglEndRender (void)
 {
 ogl.SetDepthMode (m_render.depthFunc);
 if (m_render.bBlendState)
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 else
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 ogl.SelectTMU (GL_TEXTURE0);
 OglBindTexture (0);
 ogl.SetTextureUsage (false);

@@ -1032,6 +1032,7 @@ else {
 	}
 #endif
 
+//ogl.ResetStates ();
 ogl.m_states.bHaveDepthBuffer =
 gameData.render.nUsedFaces =
 gameData.render.nTotalFaces =
@@ -1210,7 +1211,7 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
  		ogl.SetTextureUsage (true);
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		ogl.SetDepthMode (GL_LEQUAL);
 		if (!nWindow) {

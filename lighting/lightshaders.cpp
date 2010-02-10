@@ -1554,10 +1554,10 @@ if (0 < int (shaderProg)) {
 			}
 		}
 	}
-else
+else if (!nType) {
 	shaderProg = GLhandleARB (-int (shaderProg));
-if (!nType)
 	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 #if CONST_LIGHT_COUNT

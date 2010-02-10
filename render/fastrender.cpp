@@ -514,7 +514,7 @@ if (bNormals)
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 if (gameStates.render.bFullBright)
 	glColor3f (1,1,1);
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.ClearError (0);
 return 1;

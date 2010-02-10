@@ -41,7 +41,7 @@ if (m_data.nSuspended)
 	return;
 if (!m_data.bDoEffect)
 	return;
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetBlendMode (GL_ONE,GL_ONE);
 glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 ogl.SetDepthTest (false);

@@ -746,7 +746,7 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 	int	bTextured = 0;
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;

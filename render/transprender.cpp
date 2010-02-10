@@ -827,7 +827,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	else
 		glColor3d (1, 1, 1);
 	bAdditive = item->bAdditive;
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	if (bAdditive == 1)
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
 	else if (bAdditive == 2)
@@ -875,7 +875,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 					if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 						nDbgSeg = nDbgSeg;
 					}
-				ogl.SetBlendUsage (true);
+				ogl.SetBlending (true);
 #	endif
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
 				if (bAdditive != 2) {
@@ -1002,7 +1002,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	else
 		glColor3f (1, 1, 1);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	if (item->bAdditive == 2)
 		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	else if (item->bAdditive == 1)
@@ -1140,7 +1140,7 @@ ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthWrite (false);
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 gameOpts->render.bDepthSort = bDepthSort;
 }
 
@@ -1212,7 +1212,7 @@ ResetBitmaps ();
 void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
 ogl.SetDepthWrite (true);
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetBlendMode (GL_ONE, GL_ONE);
 #if 0
 ogl.SetDepthTest (true);
@@ -1379,7 +1379,7 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);

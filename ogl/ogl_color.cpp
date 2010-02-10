@@ -113,7 +113,7 @@ else if (colorP->rgb) {
 	fc [2] = float (colorP->color.blue) / 255.0f;
 	fc [3] = float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha;
 	if (fc [3] < 1.0f) {
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
 		}
 	glColor4fv (fc);
@@ -139,7 +139,7 @@ else if (colorP->rgb) {
 		float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha
 		};
 	if (colorP->color.alpha < 1.0f) {
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
 		}
 	return color;

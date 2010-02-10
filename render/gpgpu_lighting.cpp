@@ -306,7 +306,7 @@ if (nState == 0) {
 	ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
 	ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
 	ogl.SetFaceCulling (false);
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 	glDisable (GL_ALPHA_TEST);
 	ogl.SetDepthTest (false);
 	glColor3f (0,0,0);

@@ -843,7 +843,7 @@ else {
 		SetAlphaTest (true);
 		glAlphaFunc (GL_GEQUAL, (float) 0.01);
 		}
-	SetBlendUsage (true);
+	SetBlending (true);
 	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	SetStencilTest (false);
 	}
@@ -1110,7 +1110,7 @@ else {
 		glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();//clear matrix
-		SetBlendUsage (true);
+		SetBlending (true);
 		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		SetTextureUsage (false);
 		SetDepthMode (GL_ALWAYS); //LEQUAL);
@@ -1280,7 +1280,7 @@ if (HaveDrawBuffer ()) {
 			}
 		}
 	if (bAdditive) {
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		SetBlendMode (GL_ONE, GL_ONE);
 		}
 	glBegin (GL_QUADS);

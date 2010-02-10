@@ -206,6 +206,7 @@ class COGL {
 
 	public:
 		void Initialize (void);
+		inline void ResetStates (void) { m_data.Initialize (); }
 
 		void SetupExtensions (void);
 		void SetupMultiTexturing (void);
@@ -281,22 +282,27 @@ class COGL {
 		inline bool SetStencilTest (bool bStencilTest) { return Enable (m_data.bStencilTest, bStencilTest, GL_STENCIL_TEST); }
 		inline bool getStencilTest (void) { return m_data.bStencilTest; }
 
-		inline bool SetBlendUsage (bool bUseBlending) { return Enable (m_data.bUseBlending, bUseBlending, GL_BLEND); }
+		inline bool SetBlending (bool bUseBlending) { return Enable (m_data.bUseBlending, bUseBlending, GL_BLEND); }
 		inline bool GetBlendUsage (void) { return m_data.bUseBlending; }
 		
-		inline bool SetTextureUsage (bool bUseTextures) { return Enable (m_data.bUseTextures, bUseTextures, GL_TEXTURE_2D); }
+		inline bool SetTextureUsage (bool bUseTextures) { return Enable (m_data.bUseTextures = !bUseTextures, bUseTextures, GL_TEXTURE_2D); }
 		inline bool GetTextureUsage (void) { return m_data.bUseTextures; }
 		
 		inline bool SetLineSmooth (bool bLineSmooth) { return Enable (m_data.bLineSmooth, bLineSmooth, GL_LINE_SMOOTH); }
 		inline bool GetLineSmoothe (void) { return m_data.bLineSmooth; }
 		
 		inline bool SetBlendMode (GLenum nSrcBlendMode, GLenum nDestBlendMode) {
+			SetBlending (true);
 			if ((m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode))
 				return true;
 			glBlendFunc (m_data.nSrcBlendMode = nSrcBlendMode, m_data.nDestBlendMode = nDestBlendMode);
+#if 1
+			return true;
+#else
 			glGetIntegerv (GL_BLEND_SRC, (GLint*) &m_data.nSrcBlendMode);
 			glGetIntegerv (GL_BLEND_DST, (GLint*) &m_data.nDestBlendMode);
 			return (m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode);
+#endif
 			}
 
 		inline GLenum SetDepthMode (GLenum nDepthMode) {

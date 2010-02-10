@@ -295,13 +295,13 @@ else
 int nEraseHeight = (100 - m_info.nEnergy) * SB_ENERGY_GAUGE_H / 100;
 if (nEraseHeight > 0) {
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 	Rect (
 		SB_ENERGY_GAUGE_X, 
 		SB_ENERGY_GAUGE_Y, 
 		SB_ENERGY_GAUGE_X + SB_ENERGY_GAUGE_W, 
 		SB_ENERGY_GAUGE_Y + nEraseHeight);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	}
 CCanvas::Pop ();
 }
@@ -351,10 +351,10 @@ BitBlt (SB_GAUGE_AFTERBURNER, SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y);
 nEraseHeight = FixMul ((I2X (1) - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 
 if (nEraseHeight > 0) {
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 	Rect (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, 
 			SB_AFTERBURNER_GAUGE_X + SB_AFTERBURNER_GAUGE_W - 1, SB_AFTERBURNER_GAUGE_Y + nEraseHeight - 1);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	}
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();

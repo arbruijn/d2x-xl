@@ -177,7 +177,7 @@ else {
 	nBoxes = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nHitboxes;
 	}
 ogl.SetDepthMode (GL_LEQUAL);
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetTextureUsage (false);
 ogl.SetDepthWrite (false);
@@ -1124,7 +1124,7 @@ if (nThrusters > 1) {
 			}
 		}
 	}
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {	//2D
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
@@ -1527,7 +1527,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	bStencil = ogl.StencilOff ();
 	ogl.SetDepthWrite (false);
 	glEnable (GL_LINE_STIPPLE);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetLineSmooth (true);
 	glLineStipple (6, 0x003F); //patterns [h]);
@@ -1680,7 +1680,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			nTrailItem = transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 			}
 		else {
-			ogl.SetBlendUsage (true);
+			ogl.SetBlending (true);
 			if (bAdditive)
 				ogl.SetBlendMode (GL_ONE, GL_ONE);
 			else

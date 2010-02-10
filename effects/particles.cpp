@@ -1751,7 +1751,7 @@ if (bmP->Bind (0))
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
 bufferBrightness = brightness;
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
@@ -1822,7 +1822,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	InitBuffer (bLightmaps);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetFaceCulling (false);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetTextureUsage (true);
 	if ((nType >= 0) && bmP->Bind (0))

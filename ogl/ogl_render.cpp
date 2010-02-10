@@ -126,7 +126,7 @@ glBegin (GL_LINES);
 OglVertex3x (p0->p3_vec [X], p0->p3_vec [Y], p0->p3_vec [Z]);
 OglVertex3x (p1->p3_vec [X], p1->p3_vec [Y], p1->p3_vec [Z]);
 if (CCanvas::Current ()->Color ().rgb)
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 glEnd ();
 return 1;
 }
@@ -232,7 +232,7 @@ else {
 	}
 glPopMatrix ();
 if (CCanvas::Current ()->Color ().rgb)
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 return 0;
 }
 
@@ -260,7 +260,7 @@ for (i = 0; i <= nSides; i++) {
 	glVertex3f (hx, hy, z);
 	}
 if (c.rgb)
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 glEnd ();
 return 1;
 }
@@ -290,7 +290,7 @@ for (i = 0; i <= nSides; i++)
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 		}
 if (CCanvas::Current ()->Color ().rgb)
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 glEnd ();
 return 1;
 }
@@ -321,7 +321,7 @@ else{
 }
 glPopMatrix ();
 if (CCanvas::Current ()->Color ().rgb)
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 return 0;
 }
 
@@ -334,7 +334,7 @@ int G3DrawWhitePoly (int nVertices, g3sPoint **pointList)
 
 r_polyc++;
 ogl.SetTextureUsage (false);
-ogl.SetBlendUsage (false);
+ogl.SetBlending (false);
 glColor4d (1.0, 1.0, 1.0, 1.0);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nVertices; i++, pointList++)
@@ -364,7 +364,7 @@ for (i = 0; i < nVertices; i++, pointList++) {
 	}
 #if 1
 if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < 1.0f))
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 #endif
 glEnd ();
 return 0;
@@ -404,7 +404,7 @@ else
 	if (!bDepthMask)
 		ogl.SetDepthWrite (false);
 	ogl.SetDepthMode (GL_LEQUAL);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	ogl.SetTextureUsage (false);
 	glColor4fv (reinterpret_cast<GLfloat*> (color));
 	glBegin (GL_TRIANGLE_FAN);
@@ -458,11 +458,11 @@ if (FAST_SHADOWS) {
 	if (bBlend)
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else
-		ogl.SetBlendUsage (false);
+		ogl.SetBlending (false);
 	}
 else {
 	if (gameStates.render.nShadowPass == 3) {
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
@@ -534,7 +534,7 @@ if (!bmBot)
 r_tpolyc++;
 if (FAST_SHADOWS) {
 	if (!bBlend)
-		ogl.SetBlendUsage (false);
+		ogl.SetBlending (false);
 #if 0
 	else
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -544,7 +544,7 @@ else {
 	if (gameStates.render.nShadowPass == 1)
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
@@ -817,7 +817,7 @@ ogl.SetTextureUsage (false);
 tMapColor.index =
 lightColor.index = 0;
 if (!bBlend)
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 return 0;
 }
 
@@ -853,11 +853,11 @@ if (FAST_SHADOWS) {
 	if (bBlend)
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else
-		ogl.SetBlendUsage (false);
+		ogl.SetBlending (false);
 	}
 else {
 	if (gameStates.render.nShadowPass == 3) {
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
@@ -942,7 +942,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 r_tpolyc++;
 if (FAST_SHADOWS) {
 	if (!bBlend)
-		ogl.SetBlendUsage (false);
+		ogl.SetBlending (false);
 #if 0
 	else
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -952,7 +952,7 @@ else {
 	if (gameStates.render.nShadowPass == 1)
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
@@ -1022,7 +1022,7 @@ ogl.SetTextureUsage (false);
 tMapColor.index =
 lightColor.index = 0;
 if (!bBlend)
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 return 0;
 }
 
@@ -1078,7 +1078,7 @@ else {
 			return 1;
 		bmP = bmP->Override (-1);
 		bmP->Texture ()->Wrap (GL_CLAMP);
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		if (bAdditive == 2)
 			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else if (bAdditive == 1)
@@ -1104,7 +1104,7 @@ else {
 		ogl.SetDepthWrite (true);
 		if (bAdditive)
 			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//ogl.SetBlendUsage (false);
+		//ogl.SetBlending (false);
 		}
 	}
 return 0;

@@ -614,7 +614,7 @@ if (bLighting) {
 	}
 else
 	nLights = 1;
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 if (bEmissive)
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 else if (gameStates.render.bCloaked)

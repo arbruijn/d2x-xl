@@ -254,9 +254,9 @@ if (gameOpts->movies.bFullScreen) {
 	int dh = (int) (CCanvas::Current ()->Width () * r);
 	int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
 
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 	bmFrame.Render (CCanvas::Current (), 0, yOffs, CCanvas::Current ()->Width (), dh, sx, sy, bufw, bufh, 1, 0, gameOpts->movies.nQuality);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	}
 else {
 	int xOffs = (CCanvas::Current ()->Width () - 640) / 2;

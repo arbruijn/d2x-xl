@@ -86,7 +86,7 @@ ogl.SetDepthTest (false);
 ogl.SetStencilTest (true);
 ogl.SetDepthWrite (false);
 if (gameStates.render.nShadowBlurPass)
-	ogl.SetBlendUsage (false);
+	ogl.SetBlending (false);
 else
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glColor4dv (shadowHue [gameStates.render.nShadowBlurPass]);// / fDist);
@@ -173,9 +173,9 @@ glOrtho (0, 1, 1, 0, 0, 1);
 ogl.SetDepthTest (false);
 ogl.SetDepthWrite (false);
 #if 1
-ogl.SetBlendUsage (false);
+ogl.SetBlending (false);
 #else
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 ogl.SetTextureUsage (true);

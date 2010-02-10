@@ -184,7 +184,7 @@ ogl.SetTextureUsage (false);
 ogl.SetFaceCulling (false);
 depthFunc = ogl.GetDepthMode ();
 ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetLineSmooth (true);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);

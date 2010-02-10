@@ -108,7 +108,7 @@ if (LoadScope ()) {
 	float h = ch / sh;
 
 	ogl.SetTextureUsage (true);
-	ogl.SetBlendUsage (true);
+	ogl.SetBlending (true);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthTest (false);
 	if (bmpScope->Bind (1))
@@ -333,7 +333,7 @@ if (gameOpts->app.bEpilepticFriendly ||
 	 !(/*extraGameInfo [0].bFlickerLights &&*/ gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
 	return;
 
-ogl.SetBlendUsage (true);
+ogl.SetBlending (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glColor4f (0, 0, 0, /*1.0f -*/ 3 * X2F (gameStates.render.nFlashScale) / 4);
 ogl.SetDepthTest (false);
@@ -436,6 +436,7 @@ if (!nWindow)
 {
 PROF_START
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
+ogl.ResetStates ();
 //PrintLog ("SetRenderView\n");
 SetRenderView (xStereoSeparation, &nStartSeg, 1);
 PROF_END(ptAux)

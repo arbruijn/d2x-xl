@@ -81,7 +81,7 @@ else {
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();
 		ogl.SetTextureUsage (true);
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (bmpDeadzone->Bind (1)) 
 			return;
@@ -108,7 +108,7 @@ else {
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);	//the positions are based upon the standard reticle at 320x200 res.
-		ogl.SetBlendUsage (true);
+		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f (1.0f, 0.8f, 0.0f, 1.0f / (3.0f + 0.5f * gameOpts->input.mouse.nDeadzone));
 		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
