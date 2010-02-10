@@ -82,8 +82,7 @@ int nKey = faceP->m_info.nKey;
 int i = gameData.render.nUsedFaces++;
 int j = flx.tails [nKey];
 if (j < 0) {
-	flx.usedKeys [flx.nUsedKeys] = nKey;
-	flx.nUsedKeys++;
+	flx.usedKeys [flx.nUsedKeys++] = nKey;
 	flx.roots [nKey] = i;
 	}
 else
@@ -606,7 +605,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
-		fliP = gameData.render.faceList + j;
+		fliP = &gameData.render.faceList [j];
 		faceP = fliP->faceP;
 		if (nSegment != faceP->m_info.nSegment) {
 			nSegment = faceP->m_info.nSegment;
@@ -639,7 +638,7 @@ void RenderCoronaFaceList (CFaceListIndex& flx, int nPass)
 
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
-		fliP = gameData.render.faceList + j;
+		fliP = &gameData.render.faceList [j];
 		faceP = fliP->faceP;
 		if (!faceP->m_info.nCorona)
 			continue;
@@ -801,7 +800,7 @@ short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
 	int	i, nFaces = 0, bAutomap = (nType == 0);
 
-if (nType) {
+if (nType > 1) {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
@@ -888,7 +887,7 @@ if (nType > 1) {	//back to front
 else {	//front to back
 	if (!(nType || gameStates.render.nWindow))
 		SetupCoronas (nType);
-	BeginRenderFaces (0, 0);
+	BeginRenderFaces (nType, 0);
 	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;
 	RenderSegments (nType, 0, 0);

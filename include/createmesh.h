@@ -102,7 +102,6 @@ class CQuadMeshBuilder {
 		void BuildSlidingFaceList (void);
 		int IsBigFace (ushort* sideVerts);
 		CFloatVector3 *SetTriNormals (tFaceTriangle *triP, CFloatVector3 *m_normalP);
-		void ComputeFaceKeys (void);
 
 		static int CompareFaceKeys (const CSegFace** pf, const CSegFace** pm);
 
@@ -113,6 +112,7 @@ class CQuadMeshBuilder {
 		int Build (int nLevel, bool bRebuild = false);
 		bool BuildVBOs ();
 		void DestroyVBOs ();
+		void ComputeFaceKeys (void);
 	};
 
 }

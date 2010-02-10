@@ -1082,9 +1082,19 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 int CQuadMeshBuilder::CompareFaceKeys (const CSegFace** pf, const CSegFace** pm)
 {
-	int i = (*pf)->m_info.nKey;
-	int m = (*pm)->m_info.nKey;
-
+#if 1
+int i = (*pf)->m_info.nKey;
+int m = (*pm)->m_info.nKey;
+#else
+short i = (*pf)->m_info.nBaseTex;
+short m = (*pm)->m_info.nBaseTex;
+if (i < m) 
+	return -1;
+if (i > m)
+	return 1;
+i = (*pf)->m_info.nOvlTex;
+m = (*pm)->m_info.nOvlTex;
+#endif
 return (i < m) ? -1 : (i > m) ? 1 : 0;
 }
 
@@ -1102,14 +1112,21 @@ keyFaceRef.Create (gameData.segs.nFaces);
 for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
 	keyFaceRef [i] = faceP;
 	faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES;
+	if (faceP->m_info.nKey < 0)
+		faceP->m_info.nKey = 0x7FFFFFFF;
 	}
 
+#if 0
 keyFaceRef.SortAscending ();
+#else
+CQuickSort<CSegFace*> qs;
+qs.SortAscending (keyFaceRef.Buffer (), 0, gameData.segs.nFaces - 1, reinterpret_cast<CQuickSort<CSegFace*>::comparator> (CQuadMeshBuilder::CompareFaceKeys));
+#endif
 
-int nKey = -1;
+int i, nKey = -1;
 gameData.segs.nFaceKeys = -1;
 
-for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
+for (i = 0; i < gameData.segs.nFaces; i++, faceP++) {
 	faceP = keyFaceRef [i];
 	if (nKey != faceP->m_info.nKey) {
 		nKey = faceP->m_info.nKey;
@@ -1118,6 +1135,8 @@ for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
 	faceP->m_info.nKey = gameData.segs.nFaceKeys;
 	}
 ++gameData.segs.nFaceKeys;
+for (i = 0; i < gameStates.app.nThreads; i++)
+	gameData.render.faceIndex [i].Create ();
 }
 
 //------------------------------------------------------------------------------
@@ -1454,9 +1473,6 @@ if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStat
 if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ()))
 	return 0;
 #endif
-ComputeFaceKeys ();
-for (i = 0; i < gameStates.app.nThreads; i++)
-	gameData.render.faceIndex [i].Create ();
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();

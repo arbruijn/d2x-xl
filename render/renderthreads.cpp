@@ -68,21 +68,21 @@ return nActive;
 
 int RunRenderThreads (int nTask, int nThreads)
 {
-#if DBG
+#ifdef _OPENMP
+
+return 0;
+
+#else
+
+#	if DBG
 	time_t	t0 = 0, t2 = 0;
 	int		nActive;
 	static	int nLockups = 0;
-#endif
+#	endif
 	int		i;
 
-#ifdef _OPENMP
 if (!gameStates.app.bMultiThreaded)
-#endif
 	return 0;
-#if 0
-if ((nTask < rtTaskCount) && !gameData.app.bUseMultiThreading [nTask])
-	return 0;
-#endif
 tiRender.nTask = (tRenderTask) nTask;
 if (nThreads < 0)
 	nThreads = gameStates.app.nThreads;
@@ -96,9 +96,6 @@ while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 		if (!t2)
 			t2 = clock ();
 		else if (clock () - t2 > 33) {	//slower threads must not take more than 33 ms over the fastest one
-#if 0//!DBG
-			t2 = clock ();
-#else
 			PrintLog ("threads locked up (task: %d)\n", nTask);
 			for (i = 0; i < nThreads; i++)
 				tiRender.ti [i].bExec = 0;
@@ -106,15 +103,16 @@ while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 				gameStates.app.bMultiThreaded = 0;
 				gameStates.app.nThreads = 1;
 				}
-#endif
 			}
 		}
 	}
-#else
+#	else
 while (ThreadsActive (nThreads))
 	G3_SLEEP (0);
-#endif
+#	endif
 return 1;
+
+#endif
 }
 
 //------------------------------------------------------------------------------

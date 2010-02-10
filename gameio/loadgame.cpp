@@ -125,6 +125,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "monsterball.h"
 #include "systemkeys.h"
+#include "createmesh.h"
 #include "renderthreads.h"
 #include "multi.h"
 

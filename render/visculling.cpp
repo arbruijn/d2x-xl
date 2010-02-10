@@ -579,6 +579,7 @@ else
 		}
 	}
 GetMaxDepth ();
+#else
 if (RunRenderThreads (rtInitSegZRef)) 
 	GetMaxDepth ();
 else {
