@@ -1579,7 +1579,6 @@ if (nType > 2)
 int bLightmaps = lightmapManager.HaveLightmaps ();
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (grayscaleShaderProgs [bLightmaps][nType]));
 if (0 < int (shaderProg)) {
-	glUseProgramObject (shaderProg);
 	if (!nType)
 		glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
 	else {

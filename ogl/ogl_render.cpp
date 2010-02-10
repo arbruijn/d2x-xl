@@ -576,7 +576,7 @@ retry:
 if (bShaderMerge) {
 	mask = gameStates.render.textures.bHaveMaskShader ? bmTop->Mask () : NULL;
 	nShader = bSuperTransp ? mask ? 2 : 1 : 0;
-	glUseProgramObject (activeShaderProg = GLhandleARB (abs (int (shaderManager.Deploy (tmShaderProgs [nShader])))));
+	activeShaderProg = GLhandleARB (abs (int (shaderManager.Deploy (tmShaderProgs [nShader]))));
 	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), bVertexArrays, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "btmTex"), 0);
 	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), bVertexArrays, 0);
@@ -808,7 +808,8 @@ else if (bShaderMerge) {
 	OglBindTexture (0);
 	ogl.SetTextureUsage (false); // Disable the 2nd texture
 #endif
-	glUseProgramObject (activeShaderProg = 0);
+	activeShaderProg = 0;
+	shaderManager.Deploy (-1);
 	}
 ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 OglBindTexture (0);

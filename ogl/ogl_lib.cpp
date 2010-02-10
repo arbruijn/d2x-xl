@@ -1267,7 +1267,6 @@ if (HaveDrawBuffer ()) {
 				SelectTMU (GL_TEXTURE1);
 				glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
-				glUseProgramObject (shaderProg);
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
 				if (h < 3) {

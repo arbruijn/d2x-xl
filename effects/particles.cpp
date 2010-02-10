@@ -1790,7 +1790,7 @@ else {
 	glEnd ();
 	}
 m_iBuffer = 0;
-ogl.SetDepthWrite (true);
+//ogl.SetDepthWrite (true);
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
 return true;

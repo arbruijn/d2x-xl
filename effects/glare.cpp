@@ -638,11 +638,13 @@ else {
 if (!gameStates.render.bQueryCoronas && bAdditive)
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 RenderCoronaOutline (sprite, vCenter);
+#if 0
 if (gameStates.render.bQueryCoronas != 2) {
 	ogl.SetDepthTest (true);
 	if (gameStates.render.bQueryCoronas == 1)
 		ogl.SetDepthMode (GL_LEQUAL);
 	}
+#endif
 }
 
 // -----------------------------------------------------------------------------------

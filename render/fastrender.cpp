@@ -541,6 +541,9 @@ else if (glareRenderer.Style () == 2)
 else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (glareRenderer.Style () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetDepthWrite (true);
+ogl.SetDepthTest (true);
+ogl.SetDepthMode (GL_LEQUAL);
 ogl.ClearError (0);
 }
 
@@ -838,7 +841,7 @@ int SetupCoronas (int nType)
 {
 if (!SetupCoronaFaces ())
 	return 0;
-if (automap.Display () || !gameOpts->render.automap.bCoronas)
+if (automap.Display () && !gameOpts->render.automap.bCoronas)
 	return 0;
 int nCoronaStyle = glareRenderer.Style ();
 if (nCoronaStyle != 1)
