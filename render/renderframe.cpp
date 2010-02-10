@@ -194,7 +194,7 @@ else
 glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 
 glPushMatrix ();
-glEnable (GL_LINE_SMOOTH);
+ogl.SetLineSmooth (true);
 glTranslatef (0.5f, 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), 0.0f);
 glScalef (xScale, yScale, 1.0f);
 #if 0
@@ -247,7 +247,7 @@ glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f, yScale, 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), sinCos);
 #else
 glPushMatrix ();
-glEnable (GL_LINE_SMOOTH);
+ogl.SetLineSmooth (true);
 if (bHaveTarget)
 	glColor4f (1.0f, 0.0f, 0.0f, 0.25f);
 else
@@ -255,7 +255,7 @@ else
 glTranslatef (0.5f, 0.5f, 0.5f);
 glScalef (float (w << 5) / float (cw), float (h << 5) / float (ch), 0.1f);
 OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, 1.0f, 0, 1.0f, 0, sinCos);
-glDisable (GL_LINE_SMOOTH);
+ogl.SetLineSmooth (false);
 glPopMatrix ();
 #endif
 

@@ -322,11 +322,13 @@ bStencilTest = false;
 glDisable (GL_STENCIL_TEST);
 bCullFaces = true;
 glEnable (GL_CULL_FACE);
-nCullMode = GL_BACK;
-glDisable (GL_SCISSOR_TEST);
+glCullFace (nCullMode = GL_BACK);
 bScissorTest = false;
-glDisable (GL_ALPHA_TEST);
+glDisable (GL_SCISSOR_TEST);
 bAlphaTest = false;
+glDisable (GL_ALPHA_TEST);
+bLineSmooth = false;
+glDisable (GL_LINE_SMOOTH);
 
 zNear = 1.0f;
 zFar = 5000.0f;
@@ -794,10 +796,10 @@ else {
 			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
 			CCanvas::Current ()->Width (),
 			CCanvas::Current ()->Height ());
-		glEnable (GL_SCISSOR_TEST);
+		ogl.SetScissorTest (true);
 		}
 	else
-		glDisable (GL_SCISSOR_TEST);
+		ogl.SetScissorTest (false);
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
 		ColorMask (1,1,1,1,1);

@@ -1529,7 +1529,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glEnable (GL_LINE_STIPPLE);
 	ogl.SetBlendUsage (true);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable (GL_LINE_SMOOTH);
+	ogl.SetLineSmooth (true);
 	glLineStipple (6, 0x003F); //patterns [h]);
 	vDirf *= TRACER_WIDTH / 20.0f;
 	for (i = 1; i < 5; i++) {
@@ -1542,7 +1542,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		}
 	glLineWidth (1);
 	glDisable (GL_LINE_STIPPLE);
-	glDisable (GL_LINE_SMOOTH);
+	ogl.SetLineSmooth (false);
 	ogl.SetDepthWrite (true);
 	ogl.StencilOn (bStencil);
 	}

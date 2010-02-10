@@ -383,7 +383,7 @@ else if (nState == 2) {
 	ogl.SetDepthWrite (true);
 	ogl.SetDepthTest (true);
 	ogl.SetDepthMode (GL_LESS);
-	glEnable (GL_ALPHA_TEST);
+	ogl.SetAlphaTest (true);
 	glAlphaFunc (GL_GEQUAL, (float) 0.01);	
 	ogl.SetDrawBuffer (GL_BACK, 1);
 	}

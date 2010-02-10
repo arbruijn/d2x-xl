@@ -91,6 +91,7 @@ class COglData {
 		bool				bStencilTest;
 		bool				bCullFaces;
 		bool				bUseTextures;
+		bool				bLineSmooth;
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
@@ -277,6 +278,9 @@ class COGL {
 		
 		inline bool SetTextureUsage (bool bUseTextures) { return Enable (m_data.bUseTextures, bUseTextures, GL_TEXTURE_2D); }
 		inline bool GetTextureUsage (void) { return m_data.bUseTextures; }
+		
+		inline bool SetLineSmooth (bool bLineSmooth) { return Enable (m_data.bLineSmooth, bLineSmooth, GL_LINE_SMOOTH); }
+		inline bool GetLineSmoothe (void) { return m_data.bLineSmooth; }
 		
 		inline bool SetBlendMode (GLenum nSrcBlendMode, GLenum nDestBlendMode) {
 			if ((m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode))

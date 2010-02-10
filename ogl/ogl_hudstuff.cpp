@@ -70,7 +70,7 @@ else {
 		glTranslatef ((float) (mouseData.x) / (float) screen.Width (), 1.0f - (float) (mouseData.y) / (float) screen.Height (), 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
 		ogl.SetTextureUsage (false);
-		glEnable (GL_LINE_SMOOTH);
+		ogl.SetLineSmooth (true);
 		glColor4f (1.0f, 0.8f, 0.0f, 0.9f);
 		glLineWidth (3);
 		OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (screen.Height ()) / float (screen.Width ()), 0, sinCos12);
@@ -117,7 +117,7 @@ else {
 		OglDrawEllipse (30, GL_LINES, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
 		glPopMatrix ();
 		}
-	glDisable (GL_LINE_SMOOTH);
+	ogl.SetLineSmooth (false);
 	glLineWidth (1);
 #if 0
 	glEndList ();

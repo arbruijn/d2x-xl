@@ -97,7 +97,7 @@ else {
 	glVertex2f (-x, y);
 	glVertex2f (x, -y);
 	glEnd ();
-	//glDisable (GL_LINE_SMOOTH);
+	//ogl.SetLineSmooth (false);
 	glLineWidth (2);
 	glPopMatrix ();
 	return;
@@ -186,7 +186,7 @@ depthFunc = ogl.GetDepthMode ();
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendUsage (true);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glEnable (GL_LINE_SMOOTH);
+ogl.SetLineSmooth (true);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
 glLineWidth (fLineWidth);
 pc = radarColor + gameOpts->render.automap.nColor;
@@ -212,7 +212,7 @@ FORALL_OBJS (objP, i) {
 			RenderRadarBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9f / 4);
 		}
 	}
-glDisable (GL_LINE_SMOOTH);
+ogl.SetLineSmooth (false);
 glLineWidth (1);
 ogl.SetDepthMode (depthFunc);
 ogl.SetFaceCulling (true);

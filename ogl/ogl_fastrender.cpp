@@ -662,9 +662,9 @@ else {
 		if (!bAdditive) {
 			bAdditive = true;
 			//if (!faceP->m_info.bTransparent)
-				ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			ogl.SetDepthMode (GL_EQUAL);
-			SetDepthWrite (false);
+			ogl.SetDepthWrite (false);
 			}
 		}
 #if 0 //headlights will be rendered in a separate pass to decrease shader changes

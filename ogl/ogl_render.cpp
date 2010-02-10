@@ -139,7 +139,7 @@ void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, floa
 	double	ang;
 
 glPushMatrix ();
-glEnable (GL_LINE_SMOOTH);
+ogl.SetLineSmooth (true);
 glTranslatef (xo, yo, 0.0f);
 glScalef (xsc, ysc, 1.0f);
 if (nType == GL_LINES) {	// implies a dashed circle
@@ -183,7 +183,7 @@ else {
 		}
 	glEnd ();
 	}
-glDisable (GL_LINE_SMOOTH);
+ogl.SetLineSmooth (false);
 glPopMatrix ();
 }
 

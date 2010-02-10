@@ -181,7 +181,7 @@ CFixVector::Normalize (vDir);
 vDir *= (xSize - objP->info.xSize);
 vPos += vDir;
 #endif
-SetDepthWrite (false);
+ogl.SetDepthWrite (false);
 #if BLAST_TYPE == 0
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
 color.red =
