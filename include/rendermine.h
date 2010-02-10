@@ -89,7 +89,7 @@ void BuildRenderObjLists (int nSegCount);
 void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors = false);
 void BuildRenderSegListFast (short nStartSeg, int nWindow);
 
-void ResetFaceList (int nThread);
+void ResetFaceList (void);
 int AddFaceListItem (CSegFace *faceP, int nThread);
 
 //------------------------------------------------------------------------------

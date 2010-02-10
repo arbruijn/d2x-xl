@@ -1141,12 +1141,7 @@ for (i = 0; i < gameData.segs.nFaces; i++, faceP++) {
 	faceP->m_info.nKey = gameData.segs.nFaceKeys;
 	}
 ++gameData.segs.nFaceKeys;
-#if 1
-gameData.render.faceIndex [0].Create ();
-#else
-for (i = 0; i < gameStates.app.nThreads; i++)
-	gameData.render.faceIndex [i].Create ();
-#endif
+gameData.render.faceIndex.Create ();
 }
 
 //------------------------------------------------------------------------------

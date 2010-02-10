@@ -844,12 +844,9 @@ memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLast
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 gameData.objs.objects.Clear ();
 lightClusterManager.Init ();
-for (int i = 0; i < 1 /*gameStates.app.nThreads*/; i++) {
-	gameData.render.faceIndex [i].roots.Clear (0xff);
-	gameData.render.faceIndex [i].tails.Clear (0xff);
-	//gameData.render.faceIndex [h][i].nUsedFaces = 0; //(i & 1) ? LEVEL_FACES : 0;
-	gameData.render.faceIndex [i].nUsedKeys = 0;
-	}
+gameData.render.faceIndex.roots.Clear (0xff);
+gameData.render.faceIndex.tails.Clear (0xff);
+gameData.render.faceIndex.nUsedKeys = 0;
 lightManager.ResetIndex ();
 memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
 omegaLightnings.Init ();

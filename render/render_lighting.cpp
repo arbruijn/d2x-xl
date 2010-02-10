@@ -111,7 +111,6 @@ PROF_START
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-ResetFaceList (nThread);
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
@@ -270,7 +269,6 @@ PROF_START
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-ResetFaceList (nThread);
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
@@ -409,7 +407,6 @@ PROF_START
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-ResetFaceList (nThread);
 lightManager.ResetIndex ();
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;

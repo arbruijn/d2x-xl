@@ -42,10 +42,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void ResetFaceList (int nThread)
+void ResetFaceList (void)
 {
 PROF_START
-CFaceListIndex& flx = gameData.render.faceIndex [nThread];
+CFaceListIndex& flx = gameData.render.faceIndex;
 int* tails = flx.tails.Buffer (),
 	* usedKeys = flx.usedKeys.Buffer ();
 for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
@@ -77,7 +77,7 @@ if (faceP - FACES.faces >= gameData.segs.nFaces)
 #endif
 {
 PROF_START
-CFaceListIndex& flx = gameData.render.faceIndex [0]; //[nThread];
+CFaceListIndex& flx = gameData.render.faceIndex; //[nThread];
 int nKey = faceP->m_info.nKey;
 int i = gameData.render.nUsedFaces++;
 int j = flx.tails [nKey];
@@ -603,7 +603,10 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 	int				i, j, nFaces = 0, nSegment = -1;
 	int				bAutomap = (nType == 0);
 
-flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
+#if 1
+if (automap.Display ())
+	flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
+#endif
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
 		fliP = &gameData.render.faceList [j];
@@ -699,8 +702,6 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 
 void QueryCoronas (short nFaces, int nPass)
 {
-	int	i;
-
 BeginRenderFaces (3, 0);
 glDepthMask (0);
 ogl.ColorMask (1,1,1,1,1);
@@ -708,16 +709,14 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
 	// first just render all coronas (happens before any geometry gets rendered)
 	//for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [0], 0);
+		RenderCoronaFaceList (gameData.render.faceIndex, 0);
 	glFlush ();
 	// then query how many samples (pixels) were rendered for each corona
-	//for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [0], 1);
+	RenderCoronaFaceList (gameData.render.faceIndex, 1);
 	}
 else { //now find out how many fragments are rendered for each corona if geometry interferes
 	gameStates.render.bQueryCoronas = 2;
-	//for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex [0], 2);
+	RenderCoronaFaceList (gameData.render.faceIndex, 2);
 	glFlush ();
 	}
 glDepthMask (1);
@@ -801,7 +800,8 @@ short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
 	int	i, nFaces = 0, bAutomap = (nType == 0);
 
-if (nType > 1) {
+//if (nType > 1) {
+if (!automap.Display ()) {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
@@ -816,12 +816,7 @@ if (nType > 1) {
 	}
 else {
 	// render mine by pre-sorted textures
-#if 1
-	nFaces = RenderFaceList (gameData.render.faceIndex [0], nType, bDepthOnly, bHeadlight);
-#else
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		nFaces += RenderFaceList (gameData.render.faceIndex [i], nType, bDepthOnly, bHeadlight);
-#endif
+	nFaces = RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly, bHeadlight);
 	}
 return nFaces;
 }
