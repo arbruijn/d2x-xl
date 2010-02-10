@@ -603,6 +603,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 	int				i, j, nFaces = 0, nSegment = -1;
 	int				bAutomap = (nType == 0);
 
+flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
 		fliP = &gameData.render.faceList [j];

@@ -54,6 +54,8 @@
 
 using namespace Mesh;
 
+void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
+
 //------------------------------------------------------------------------------
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
@@ -1111,17 +1113,21 @@ void CQuadMeshBuilder::ComputeFaceKeys (void)
 keyFaceRef.Create (gameData.segs.nFaces);
 for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
 	keyFaceRef [i] = faceP;
-	faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES;
-	if (faceP->m_info.nKey < 0)
+	if (faceP->m_info.nBaseTex < 0)
 		faceP->m_info.nKey = 0x7FFFFFFF;
+	else if (faceP->m_info.nOvlTex <= 0)
+		faceP->m_info.nKey = int (faceP->m_info.nBaseTex);
+	else {
+		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
+		if (faceP->bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT)
+			faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES * MAX_WALL_TEXTURES;
+		else
+			faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES;
+		}
 	}
 
-#if 0
-keyFaceRef.SortAscending ();
-#else
 CQuickSort<CSegFace*> qs;
 qs.SortAscending (keyFaceRef.Buffer (), 0, gameData.segs.nFaces - 1, reinterpret_cast<CQuickSort<CSegFace*>::comparator> (CQuadMeshBuilder::CompareFaceKeys));
-#endif
 
 int i, nKey = -1;
 gameData.segs.nFaceKeys = -1;

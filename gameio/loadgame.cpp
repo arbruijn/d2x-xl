@@ -1569,6 +1569,7 @@ if (gameData.app.nGameMode & GM_NETWORK)
 AIResetAllPaths ();
 gameData.bosses.ResetHitTimes ();
 ClearStuckObjects ();
+meshBuilder.ComputeFaceKeys ();
 ResetTime ();
 ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;
