@@ -2145,9 +2145,7 @@ if (DoAnyRobotDyingFrame (objP))
 				CreateNewWeaponSimple( &vFire, &fire_pos, objP->Index (), PROXMINE_ID, 1);
 				ailP->nextPrimaryFire = I2X (5);		//	Drop a proximity bomb every 5 seconds.
 
-				#ifdef NETWORK
-				if (IsMultiGame)
-			 {
+				if (IsMultiGame) {
 					ai_multi_send_robot_position (objP->Index (), -1);
 					MultiSendRobotFire(objP->Index (), -1, &vFire);
 				}

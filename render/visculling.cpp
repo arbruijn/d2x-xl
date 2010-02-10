@@ -585,36 +585,12 @@ else
 		}
 	}
 GetMaxDepth ();
-if (!RENDERPATH)
-#pragma omp parallel
-	{
-	omp_set_num_threads (2);
-	#pragma omp for private (i, j)
-	for (h = 0; h < 2; h++) {
-		ComputeThreadRange (h, gameData.render.mine.nRenderSegs, i, j, 2);
-		QSortSegZRef (i, j);
-		}
-	omp_set_num_threads (gameStates.app.nThreads);
-	SetSegRenderList ();
-	}
-
-#else
-
 if (RunRenderThreads (rtInitSegZRef)) 
 	GetMaxDepth ();
 else {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
 	gameData.render.zMax = tiRender.zMax [0];
 	}
-if (!RENDERPATH) {
-	if (RunRenderThreads (rtSortSegZRef))
-		MergeSegZRefs ();
-	else
-		QSortSegZRef (0, gameData.render.mine.nRenderSegs - 1);
-	SetSegRenderList ();
-	}
-
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -869,20 +845,16 @@ void BuildRenderSegListFast (short nStartSeg, int nWindow)
 {
 	int	nSegment;
 
-if (!RENDERPATH)
-	BuildRenderSegList (nStartSeg, nWindow);
-else {
-	gameData.render.mine.nRenderSegs = 0;
-	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
+gameData.render.mine.nRenderSegs = 0;
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
 #if DBG
-		if (nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
 #endif
-		if (gameData.segs.SegVis (nStartSeg, nSegment)) {
-			gameData.render.mine.bVisible [nSegment] = gameData.render.mine.nVisible;
-			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = nSegment;
-			RotateVertexList (8, SEGMENTS [nSegment].m_verts);
-			}
+	if (gameData.segs.SegVis (nStartSeg, nSegment)) {
+		gameData.render.mine.bVisible [nSegment] = gameData.render.mine.nVisible;
+		gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = nSegment;
+		RotateVertexList (8, SEGMENTS [nSegment].m_verts);
 		}
 	}
 HUDMessage (0, "%d", gameData.render.mine.nRenderSegs);

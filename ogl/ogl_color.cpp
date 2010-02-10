@@ -586,8 +586,6 @@ if (j) {
 if (nLights)
 	nLights = 0;
 #endif
-if (!RENDERPATH)
-	lightManager.ResetNearestToVertex (nVertex, nThread);
 return j;
 }
 

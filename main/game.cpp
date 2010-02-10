@@ -333,12 +333,10 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 		LOCALPLAYER.flags ^= PLAYER_FLAGS_INVULNERABLE;
 		if (!bFakingInvul) {
 			audio.PlaySound (SOUND_INVULNERABILITY_OFF);
-#ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {
 				MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, I2X (1));
 				MaybeDropNetPowerup (-1, POW_INVUL, FORCE_DROP);
 				}
-#endif
 #if TRACE
 				//console.printf (CON_DBG, " --- You have been DE-INVULNERABLEIZED! ---\n");
 #endif
@@ -572,9 +570,7 @@ if (gameStates.sound.bD1Sound) {
 	}
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
-#ifdef NETWORK
 MultiLeaveGame ();
-#endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
 CGenericCockpit::Rewind (false);

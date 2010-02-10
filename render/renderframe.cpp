@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamefont.h"
 #include "newdemo.h"
 #include "text.h"
+#include "textdata.h"
 #include "gr.h"
 #include "ogl_render.h"
 #include "endlevel.h"
@@ -41,10 +42,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamepal.h"
 #include "visibility.h"
 #include "lightning.h"
+#include "rendershadows.h"
 #include "transprender.h"
+#include "radar.h"
 #include "menubackground.h"
 
 #define bSavingMovieFrames 0
+
+void StartLightingFrame (CObject *viewer);
+
+uint	nClearWindowColor = 0;
 
 //------------------------------------------------------------------------------
 
@@ -410,6 +417,144 @@ else {
 
 //------------------------------------------------------------------------------
 
+extern CBitmap bmBackground;
+
+void RenderFrame (fix xStereoSeparation, int nWindow)
+{
+	short nStartSeg;
+	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation;
+
+gameStates.render.nWindow = nWindow;
+gameStates.render.xStereoSeparation = xStereoSeparation;
+if (gameStates.app.bEndLevelSequence) {
+	RenderEndLevelFrame (xStereoSeparation, nWindow);
+	gameData.app.nFrameCount++;
+	gameStates.render.xStereoSeparation = nEyeOffsetSave;
+	return;
+	}
+#ifdef NEWDEMO
+if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
+   if (!gameStates.render.nRenderingType)
+   	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
+   if (gameStates.render.nRenderingType != 255)
+   	NDRecordViewerObject (gameData.objs.viewerP);
+	}
+#endif
+
+//PrintLog ("StartLightingFrame\n");
+StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
+ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
+if (!nWindow)
+	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
+//PrintLog ("G3StartFrame\n");
+{
+PROF_START
+G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
+//PrintLog ("SetRenderView\n");
+SetRenderView (xStereoSeparation, &nStartSeg, 1);
+PROF_END(ptAux)
+}
+if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
+	G3EndFrame ();
+	gameStates.render.xStereoSeparation = nEyeOffsetSave;
+	return;
+	}
+#if CLEAR_WINDOW == 1
+if (!nClearWindowColor)
+	nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
+CCanvas::Current ()->Clear (nClearWindowColor);
+#endif
+
+#if DBG
+if (bShowOnlyCurSide)
+	CCanvas::Current ()->Clear (nClearWindowColor);
+#endif
+#if SHADOWS
+if (!gameStates.render.bHaveStencilBuffer)
+	extraGameInfo [0].bShadows =
+	extraGameInfo [1].bShadows = 0;
+if (SHOW_SHADOWS &&
+	 !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
+	if (!gameStates.render.bShadowMaps) {
+		gameStates.render.nShadowPass = 1;
+#if SOFT_SHADOWS
+		if (gameOpts->render.shadows.bSoft = 1)
+			gameStates.render.nShadowBlurPass = 1;
+#endif
+		ogl.StartFrame (0, 0, xStereoSeparation);
+#if SOFT_SHADOWS
+		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
+#endif
+		RenderMine (nStartSeg, xStereoSeparation, nWindow);
+#if 1//!DBG
+		PROF_START
+		RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
+		PROF_END(ptEffects)
+#else
+		if (FAST_SHADOWS)
+			;//RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
+		else {
+			PROF_START
+			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
+			PROF_END(ptEffects)
+			}
+#endif
+#if SOFT_SHADOWS
+		if (gameOpts->render.shadows.bSoft) {
+			PROF_START
+			CreateShadowTexture ();
+			PROF_END(ptEffects)
+			gameStates.render.nShadowBlurPass = 2;
+			gameStates.render.nShadowPass = 0;
+#if 1
+			ogl.StartFrame (0, 1, xStereoSeparation);
+			SetRenderView (xStereoSeparation, &nStartSeg, 1);
+			RenderMine (nStartSeg, xStereoSeparation, nWindow);
+#endif
+			RenderShadowTexture ();
+			}
+#endif
+		nWindow = 0;
+		}
+	}
+else
+#endif
+	{
+	if (gameStates.render.nRenderPass < 0)
+		RenderMine (nStartSeg, xStereoSeparation, nWindow);
+	else {
+		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
+			ogl.StartFrame (0, 1, xStereoSeparation);
+			RenderMine (nStartSeg, xStereoSeparation, nWindow);
+			}
+		}
+	}
+ogl.StencilOff ();
+RenderSkyBox (nWindow);
+#if 1
+RenderEffects (nWindow);
+#endif
+#if 1
+if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
+	//PrintLog ("RenderRadar\n");
+	RenderRadar ();
+	}
+#endif
+#if 0
+if (transformation.m_info.bUsePlayerHeadAngles)
+	Draw3DReticle (xStereoSeparation);
+#endif
+gameStates.render.nShadowPass = 0;
+//PrintLog ("G3EndFrame\n");
+G3EndFrame ();
+if (nWindow)
+	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);
+if (!ShowGameMessage (gameData.messages, -1, -1))
+	ShowGameMessage (gameData.messages + 1, -1, -1);
+}
+
+//------------------------------------------------------------------------------
+
 void RenderMonoFrame (fix xStereoSeparation = 0)
 {
 	CCanvas		frameWindow;
@@ -643,9 +788,48 @@ StartTime (0);
 
 //------------------------------------------------------------------------------
 
+void UpdateSlidingFaces (void)
+{
+	CSegFace		*faceP;
+	short			h, k, nOffset;
+	tTexCoord2f	*texCoordP, *ovlTexCoordP;
+	tUVL			*uvlP;
+
+for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
+#if DBG
+	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+		faceP = faceP;
+#endif
+	texCoordP = FACES.texCoord + faceP->m_info.nIndex;
+	ovlTexCoordP = FACES.ovlTexCoord + faceP->m_info.nIndex;
+	uvlP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_uvls;
+	nOffset = faceP->m_info.nType == SIDE_IS_TRI_13;
+	if (gameStates.render.bTriangleMesh) {
+		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
+		for (h = 0; h < 6; h++) {
+			k = nTriVerts [nOffset][h];
+			texCoordP [h].v.u = X2F (uvlP [k].u);
+			texCoordP [h].v.v = X2F (uvlP [k].v);
+			RotateTexCoord2f (ovlTexCoordP [h], texCoordP [h], faceP->m_info.nOvlOrient);
+			}
+		}
+	else {
+		for (h = 0; h < 4; h++) {
+			texCoordP [h].v.u = X2F (uvlP [(h + nOffset) % 4].u);
+			texCoordP [h].v.v = X2F (uvlP [(h + nOffset) % 4].v);
+			RotateTexCoord2f (ovlTexCoordP [h], texCoordP [h], faceP->m_info.nOvlOrient);
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void GameRenderFrame (void)
 {
 PROF_START
+UpdateSlidingFaces ();
+PROF_END(ptAux);
 SetScreenMode (SCREEN_GAME);
 if (!ogl.Enhance3D () || !(gameData.app.nFrameCount & 1)) {
 	cockpit->PlayHomingWarning ();

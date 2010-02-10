@@ -216,7 +216,6 @@ if ((gameStates.app.tick60fps.bTick = (gameStates.app.tick60fps.nTime >= (50 + +
 
 //------------------------------------------------------------------------------
 
-#ifdef NETWORK
 void GameDrawTimeLeft (void)
 {
 	char temp_string[30];
@@ -232,7 +231,6 @@ sprintf (temp_string, TXT_TIME_LEFT, i);
 if (i >= 0)
 	nId = GrString (0, 32, temp_string, &nId);
 }
-#endif
 
 //-----------------------------------------------------------------------------
 //eof

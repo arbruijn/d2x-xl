@@ -927,7 +927,7 @@ if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !Ge
 	}
 else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 		tHitbox	*phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
-		fix		nObjRad = RENDERPATH ? (phb->vMax [Z] - phb->vMin [Z]) / 2 : 2 * (phb->vMax [Z] - phb->vMin [Z]) / 3;
+		fix		nObjRad = (phb->vMax [Z] - phb->vMin [Z]) / 2;
 
 	if (bAfterburnerBlob)
 		nObjRad *= 2;

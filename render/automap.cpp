@@ -181,7 +181,6 @@ void CAutomap::DrawPlayer (CObject* objP)
 	int			size = objP->info.xSize * (m_bRadar ? 2 : 1);
 //	int			bUseTransform = ogl.m_states.bUseTransform;
 
-//ogl.m_states.bUseTransform = RENDERPATH;
 spherePoint.p3_index = -1;
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
 //spherePoint.p3_vec.SetZero ();
@@ -1009,7 +1008,7 @@ void CAutomap::DrawEdges (void)
 	g3sPoint		*p1, *p2;
 	int			bUseTransform = ogl.m_states.bUseTransform;
 
-ogl.m_states.bUseTransform = RENDERPATH;
+ogl.m_states.bUseTransform = 1;
 glLineWidth (GLfloat (screen.Width ()) / 640.0f);
 for (i = 0; i <= m_nLastEdge; i++) {
 	//edgeP = &m_edges [Edge_used_list [i]];

@@ -345,10 +345,7 @@ float CGlareRenderer::ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *v
 corners = SEGMENTS [nSegment].Corners (nSide);
 for (i = 0; i < 4; i++) {
 	fLight += X2F (sideP->m_uvls [i].l);
-	if (RENDERPATH)
-		transformation.Transform (sprite [i], gameData.segs.fVertices [corners [i]], 0);
-	else
-		sprite [i] = gameData.segs.fVertices [corners [i]];	//already transformed
+	transformation.Transform (sprite [i], gameData.segs.fVertices [corners [i]], 0);
 	}
 v.Assign (SEGMENTS [nSegment].SideCenter (nSide));
 transformation.Transform (*vCenter, v, 0);

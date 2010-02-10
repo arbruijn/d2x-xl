@@ -736,7 +736,7 @@ else
 		else {
 			bResetColor = (bOverlay != 1);
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || !RENDERPATH)
+				if (gameStates.render.nState)
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;

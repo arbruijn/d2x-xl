@@ -807,14 +807,6 @@ if (gameStates.render.bQueryCoronas &&
 	 (((objP->info.nType == OBJ_WEAPON) && (objP->info.nId < MAX_WEAPONS) &&
 	  gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]) || gameStates.render.bCloaked))
 	return 1;
-#if G3_FAST_MODELS
-if (!RENDERPATH)
-#endif
- {
-	gameData.models.renderModels [0][nModel].m_bValid =
-	gameData.models.renderModels [1][nModel].m_bValid = -1;
-	return 0;
-	}
 if (pm->m_bValid < 1) {
 	if (pm->m_bValid) {
 		i = 0;

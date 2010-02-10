@@ -777,8 +777,6 @@ void CModelData::Prepare (void)
 	CObject		o, *objP = OBJECTS.Buffer ();
 	const char*	pszHires;
 
-if (!RENDERPATH)
-	return;
 if (!OBJECTS.Buffer ())
 	return;
 PrintLog ("   building optimized polygon model data\n");

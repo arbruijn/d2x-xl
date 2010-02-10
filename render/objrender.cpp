@@ -1066,7 +1066,7 @@ return 1;
 int RenderObject (CObject *objP, int nWindow, int bForce)
 {
 	short			nObject = objP->Index ();
-	int			bSpectate = 0, bDepthSort = RENDERPATH || (gameOpts->render.bDepthSort > 0);
+	int			bSpectate = 0, bDepthSort = (gameOpts->render.bDepthSort > 0);
 
 int nType = objP->info.nType;
 if (nType == 255) {

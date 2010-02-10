@@ -1065,8 +1065,7 @@ audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVo
 ControlTranspRenderThread ();
 ControlEffectsThread ();
 ControlSoundThread ();
-if (RENDERPATH)
-	gameOpts->render.bDepthSort = 1;
+gameOpts->render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
 return 1;
 }

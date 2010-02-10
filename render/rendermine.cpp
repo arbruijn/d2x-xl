@@ -75,12 +75,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // ------------------------------------------------------------------------------
 
-void StartLightingFrame (CObject *viewer);
-
-uint	nClearWindowColor = 0;
-int	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
-
 #define CLEAR_WINDOW	0
+
+int	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
 
 void RenderSkyBox (int nWindow);
 
@@ -695,286 +692,6 @@ for (int i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached
 }
 
 //------------------------------------------------------------------------------
-//increment counter for checking if points bTransformed
-//This must be called at the start of the frame if RotateVertexList() will be used
-void RenderStartFrame (void)
-{
-if (!++gameStates.render.nFrameCount) {		//wrap!
-	gameData.render.mine.nRotatedLast.Clear (0);		//clear all to zero
-	gameStates.render.nFrameCount = 1;											//and set this frame to 1
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
-{
-	short nStartSeg;
-	bool	bPlayer = gameData.objs.viewerP == gameData.objs.consoleP;
-
-gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
-if (xStereoSeparation && bPlayer)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
-
-externalView.SetPos (NULL);
-if (gameStates.render.cameras.bActive) {
-	nStartSeg = gameData.objs.viewerP->info.nSegment;
-	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
-	}
-else {
-	if (!gameStates.render.nWindow && (bPlayer))
-		externalView.SetPoint (gameData.objs.viewerP);
-	if ((bPlayer) && transformation.m_info.bUsePlayerHeadAngles) {
-		CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-		CFixMatrix mView = gameData.objs.viewerP->info.position.mOrient * mHead;
-		G3SetViewMatrix (gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
-		}
-	else if (gameStates.render.bRearView && (bPlayer)) {
-#if 1
-		CFixMatrix mView;
-
-		mView = gameData.objs.viewerP->info.position.mOrient;
-		mView.FVec ().Neg ();
-		mView.RVec ().Neg ();
-#else
-		CFixMatrix mHead, mView;
-
-		transformation.m_info.playerHeadAngles [PA] = 0;
-		transformation.m_info.playerHeadAngles [BA] = 0x7fff;
-		transformation.m_info.playerHeadAngles [HA] = 0x7fff;
-		VmAngles2Matrix (&mHead, &transformation.m_info.playerHeadAngles);
-		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
-#endif
-		G3SetViewMatrix (gameData.render.mine.viewerEye, mView,  //gameStates.render.xZoom, bOglScale);
-							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
-		}
-	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
-		gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect); 
-		gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
-		HandleZoom ();
-		if ((bPlayer) &&
-#if DBG
-			 gameStates.render.bChaseCam) {
-#else
-			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
-#endif
-			externalView.GetViewPoint ();
-			if (xStereoSeparation)
-				gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
-			G3SetViewMatrix (gameData.render.mine.viewerEye,
-								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
-								  gameStates.render.xZoom, bOglScale, xStereoSeparation);
-			}
-		else
-			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
-								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
-		}
-	else
-		G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
-							  gameStates.render.xZoom, bOglScale, xStereoSeparation);
-	if (!nStartSegP)
-		nStartSeg = gameStates.render.nStartSeg;
-	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.nSegment, 1, 0)))
-		nStartSeg = gameData.objs.viewerP->info.nSegment;
-	}
-if (nStartSegP)
-	*nStartSegP = nStartSeg;
-}
-
-//------------------------------------------------------------------------------
-
-void RenderEffects (int nWindow)
-{
-	int bLightnings, bParticles, bSparks;
-
-PROF_START
-#if UNIFY_THREADS
-WaitForRenderThreads ();
-#else
-WaitForEffectsThread ();
-#endif
-if (automap.Display ()) {
-	bLightnings = gameOpts->render.automap.bLightnings;
-	bParticles = gameOpts->render.automap.bParticles;
-	bSparks = gameOpts->render.automap.bSparks;
-	}
-else {
-	bSparks = (gameOptions [0].render.nQuality > 0);
-	bLightnings = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
-					  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
-	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
-					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
-	}
-if (bSparks) {
-	SEM_ENTER (SEM_SPARKS)
-	//PrintLog ("RenderEnergySparks\n");
-	sparkManager.Render ();
-	//SEM_LEAVE (SEM_SPARKS)
-	}
-if (bParticles) {
-	SEM_ENTER (SEM_SMOKE)
-	//PrintLog ("RenderSmoke\n");
-	particleManager.Cleanup ();
-	particleManager.Render ();
-	//SEM_LEAVE (SEM_SMOKE)
-	}
-if (bLightnings) {
-	SEM_ENTER (SEM_LIGHTNING)
-	//PrintLog ("RenderLightnings\n");
-	lightningManager.Render ();
-	}
-//PrintLog ("transparencyRenderer.Render\n");
-if (bLightnings)
-	SEM_LEAVE (SEM_LIGHTNING)
-transparencyRenderer.Render ();
-#if 1
-if (bParticles)
-	SEM_LEAVE (SEM_SMOKE)
-if (bSparks)
-	SEM_LEAVE (SEM_SPARKS)
-#endif
-PROF_END(ptEffects)
-}
-
-//------------------------------------------------------------------------------
-
-extern CBitmap bmBackground;
-
-void RenderFrame (fix xStereoSeparation, int nWindow)
-{
-	short nStartSeg;
-	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation;
-
-gameStates.render.nWindow = nWindow;
-gameStates.render.xStereoSeparation = xStereoSeparation;
-if (gameStates.app.bEndLevelSequence) {
-	RenderEndLevelFrame (xStereoSeparation, nWindow);
-	gameData.app.nFrameCount++;
-	gameStates.render.xStereoSeparation = nEyeOffsetSave;
-	return;
-	}
-#ifdef NEWDEMO
-if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
-   if (!gameStates.render.nRenderingType)
-   	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
-   if (gameStates.render.nRenderingType != 255)
-   	NDRecordViewerObject (gameData.objs.viewerP);
-	}
-#endif
-
-//PrintLog ("StartLightingFrame\n");
-StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
-ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
-if (!nWindow)
-	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
-//PrintLog ("G3StartFrame\n");
-{
-PROF_START
-G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive), xStereoSeparation);
-//PrintLog ("SetRenderView\n");
-SetRenderView (xStereoSeparation, &nStartSeg, 1);
-PROF_END(ptAux)
-}
-if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
-	G3EndFrame ();
-	gameStates.render.xStereoSeparation = nEyeOffsetSave;
-	return;
-	}
-#if CLEAR_WINDOW == 1
-if (!nClearWindowColor)
-	nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
-CCanvas::Current ()->Clear (nClearWindowColor);
-#endif
-
-#if DBG
-if (bShowOnlyCurSide)
-	CCanvas::Current ()->Clear (nClearWindowColor);
-#endif
-#if SHADOWS
-if (!gameStates.render.bHaveStencilBuffer)
-	extraGameInfo [0].bShadows =
-	extraGameInfo [1].bShadows = 0;
-if (SHOW_SHADOWS &&
-	 !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
-	if (!gameStates.render.bShadowMaps) {
-		gameStates.render.nShadowPass = 1;
-#if SOFT_SHADOWS
-		if (gameOpts->render.shadows.bSoft = 1)
-			gameStates.render.nShadowBlurPass = 1;
-#endif
-		ogl.StartFrame (0, 0, xStereoSeparation);
-#if SOFT_SHADOWS
-		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
-#endif
-		RenderMine (nStartSeg, xStereoSeparation, nWindow);
-#if 1//!DBG
-		PROF_START
-		RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
-		PROF_END(ptEffects)
-#else
-		if (FAST_SHADOWS)
-			;//RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
-		else {
-			PROF_START
-			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
-			PROF_END(ptEffects)
-			}
-#endif
-#if SOFT_SHADOWS
-		if (gameOpts->render.shadows.bSoft) {
-			PROF_START
-			CreateShadowTexture ();
-			PROF_END(ptEffects)
-			gameStates.render.nShadowBlurPass = 2;
-			gameStates.render.nShadowPass = 0;
-#if 1
-			ogl.StartFrame (0, 1, xStereoSeparation);
-			SetRenderView (xStereoSeparation, &nStartSeg, 1);
-			RenderMine (nStartSeg, xStereoSeparation, nWindow);
-#endif
-			RenderShadowTexture ();
-			}
-#endif
-		nWindow = 0;
-		}
-	}
-else
-#endif
-	{
-	if (gameStates.render.nRenderPass < 0)
-		RenderMine (nStartSeg, xStereoSeparation, nWindow);
-	else {
-		for (gameStates.render.nRenderPass = 0; gameStates.render.nRenderPass < 2; gameStates.render.nRenderPass++) {
-			ogl.StartFrame (0, 1, xStereoSeparation);
-			RenderMine (nStartSeg, xStereoSeparation, nWindow);
-			}
-		}
-	}
-ogl.StencilOff ();
-RenderSkyBox (nWindow);
-#if 1
-RenderEffects (nWindow);
-#endif
-#if 1
-if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
-	//PrintLog ("RenderRadar\n");
-	RenderRadar ();
-	}
-#endif
-#if 0
-if (transformation.m_info.bUsePlayerHeadAngles)
-	Draw3DReticle (xStereoSeparation);
-#endif
-gameStates.render.nShadowPass = 0;
-//PrintLog ("G3EndFrame\n");
-G3EndFrame ();
-if (nWindow)
-	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);
-if (!ShowGameMessage (gameData.messages, -1, -1))
-	ShowGameMessage (gameData.messages + 1, -1, -1);
-}
-
-//------------------------------------------------------------------------------
 
 static tObjRenderListItem objRenderList [MAX_OBJECTS_D2X];
 
@@ -1086,6 +803,93 @@ else if (gameStates.render.nType == 2)	// render objects containing transparency
 }
 
 //------------------------------------------------------------------------------
+//increment counter for checking if points bTransformed
+//This must be called at the start of the frame if RotateVertexList() will be used
+void RenderStartFrame (void)
+{
+if (!++gameStates.render.nFrameCount) {		//wrap!
+	gameData.render.mine.nRotatedLast.Clear (0);		//clear all to zero
+	gameStates.render.nFrameCount = 1;											//and set this frame to 1
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
+{
+	short nStartSeg;
+	bool	bPlayer = gameData.objs.viewerP == gameData.objs.consoleP;
+
+gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
+if (xStereoSeparation && bPlayer)
+	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
+
+externalView.SetPos (NULL);
+if (gameStates.render.cameras.bActive) {
+	nStartSeg = gameData.objs.viewerP->info.nSegment;
+	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+	}
+else {
+	if (!gameStates.render.nWindow && (bPlayer))
+		externalView.SetPoint (gameData.objs.viewerP);
+	if ((bPlayer) && transformation.m_info.bUsePlayerHeadAngles) {
+		CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
+		CFixMatrix mView = gameData.objs.viewerP->info.position.mOrient * mHead;
+		G3SetViewMatrix (gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+		}
+	else if (gameStates.render.bRearView && (bPlayer)) {
+#if 1
+		CFixMatrix mView;
+
+		mView = gameData.objs.viewerP->info.position.mOrient;
+		mView.FVec ().Neg ();
+		mView.RVec ().Neg ();
+#else
+		CFixMatrix mHead, mView;
+
+		transformation.m_info.playerHeadAngles [PA] = 0;
+		transformation.m_info.playerHeadAngles [BA] = 0x7fff;
+		transformation.m_info.playerHeadAngles [HA] = 0x7fff;
+		VmAngles2Matrix (&mHead, &transformation.m_info.playerHeadAngles);
+		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
+#endif
+		G3SetViewMatrix (gameData.render.mine.viewerEye, mView,  //gameStates.render.xZoom, bOglScale);
+							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
+		}
+	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
+		gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect); 
+		gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
+		HandleZoom ();
+		if ((bPlayer) &&
+#if DBG
+			 gameStates.render.bChaseCam) {
+#else
+			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
+#endif
+			externalView.GetViewPoint ();
+			if (xStereoSeparation)
+				gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
+			G3SetViewMatrix (gameData.render.mine.viewerEye,
+								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
+								  gameStates.render.xZoom, bOglScale, xStereoSeparation);
+			}
+		else
+			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
+								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
+		}
+	else
+		G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
+							  gameStates.render.xZoom, bOglScale, xStereoSeparation);
+	if (!nStartSegP)
+		nStartSeg = gameStates.render.nStartSeg;
+	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.nSegment, 1, 0)))
+		nStartSeg = gameData.objs.viewerP->info.nSegment;
+	}
+if (nStartSegP)
+	*nStartSegP = nStartSeg;
+}
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 int BeginRenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
@@ -1115,11 +919,8 @@ if (((gameStates.render.nRenderPass <= 0) &&
 #if USE_SEGRADS
 	TransformSideCenters ();
 #endif
-	if (!RENDERPATH)
-		RotateSideNorms ();
-	 }
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-	ogl.m_states.bUseTransform = RENDERPATH;
+	ogl.m_states.bUseTransform = 1;
 	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.nSegRenderList & gameData.render.mine.nRenderSegs
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildRenderObjLists (gameData.render.mine.nRenderSegs);
@@ -1187,18 +988,7 @@ void RenderSkyBox (int nWindow)
 PROF_START
 if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
 	glDepthMask (1);
-	if (RENDERPATH)
-		RenderSkyBoxFaces ();
-	else {
-			int	i, bFullBright = gameStates.render.bFullBright;
-			short	*segP;
-
-		gameStates.render.nType = 4;
-		gameStates.render.bFullBright = 1;
-		for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++)
-			RenderSegmentFaces (*segP, nWindow);
-		gameStates.render.bFullBright = bFullBright;
-		}
+	RenderSkyBoxFaces ();
 	RenderSkyBoxObjects ();
 	}
 PROF_END(ptRenderPass)
@@ -1268,18 +1058,7 @@ PROF_START
 gameStates.render.nType = nType;
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 	BumpVisitedFlag ();
-	if (RENDERPATH == 1)
-		RenderFaceList (nType);
-	else {
-		int nListPos;
-
-		if (bFrontToBack)
-			for (nListPos = 0; nListPos < gameData.render.mine.nRenderSegs; )
-				RenderSegment (nListPos++);
-		else
-			for (nListPos = gameData.render.mine.nRenderSegs; nListPos; )
-				RenderSegment (--nListPos);
-		}
+	RenderFaceList (nType);
 	ogl.ClearError (0);
 	}
 RenderMineObjects (nType);
@@ -1289,43 +1068,6 @@ if (gameStates.app.bMultiThreaded)
 ogl.ClearError (0);
 PROF_END(ptRenderPass)
 return 1;
-}
-
-//------------------------------------------------------------------------------
-
-void UpdateSlidingFaces (void)
-{
-	CSegFace		*faceP;
-	short			h, k, nOffset;
-	tTexCoord2f	*texCoordP, *ovlTexCoordP;
-	tUVL			*uvlP;
-
-for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
-#if DBG
-	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-		faceP = faceP;
-#endif
-	texCoordP = FACES.texCoord + faceP->m_info.nIndex;
-	ovlTexCoordP = FACES.ovlTexCoord + faceP->m_info.nIndex;
-	uvlP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_uvls;
-	nOffset = faceP->m_info.nType == SIDE_IS_TRI_13;
-	if (gameStates.render.bTriangleMesh) {
-		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
-		for (h = 0; h < 6; h++) {
-			k = nTriVerts [nOffset][h];
-			texCoordP [h].v.u = X2F (uvlP [k].u);
-			texCoordP [h].v.v = X2F (uvlP [k].v);
-			RotateTexCoord2f (ovlTexCoordP [h], texCoordP [h], faceP->m_info.nOvlOrient);
-			}
-		}
-	else {
-		for (h = 0; h < 4; h++) {
-			texCoordP [h].v.u = X2F (uvlP [(h + nOffset) % 4].u);
-			texCoordP [h].v.v = X2F (uvlP [(h + nOffset) % 4].v);
-			RotateTexCoord2f (ovlTexCoordP [h], texCoordP [h], faceP->m_info.nOvlOrient);
-			}
-		}
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -1392,73 +1134,123 @@ ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMult
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, xStereoSeparation, nWindow);
 
-	if (RENDERPATH) {
-		if (xStereoSeparation <= 0) {
-			gameStates.render.nThreads = GetNumThreads ();
-			lightManager.ResetSegmentLights ();
-			if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
+	if (xStereoSeparation <= 0) {
+		gameStates.render.nThreads = GetNumThreads ();
+		lightManager.ResetSegmentLights ();
+		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
 #ifndef _OPENMP
-				 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
+			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
 #endif
-				) {
-				gameStates.render.nThreads = 1;
-				if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
-					ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
-				else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-					ComputeFaceLight (0, gameData.segs.nFaces, 0);
-				else
-					ComputeFaceLight (0, gameData.segs.nSegments, 0);
-				}
+			) {
+			gameStates.render.nThreads = 1;
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
+				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
+				ComputeFaceLight (0, gameData.segs.nFaces, 0);
+			else
+				ComputeFaceLight (0, gameData.segs.nSegments, 0);
+			}
 #ifdef _OPENMP
-			else {
-					int	nStart, nEnd, nMax;
+		else {
+				int	nStart, nEnd, nMax;
 
-				if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
-					nMax = gameData.render.mine.nRenderSegs;
-				else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-					nMax = gameData.segs.nFaces;
-				else
-					nMax = gameData.segs.nSegments;
-				if (gameStates.app.nThreads & 1) {
-					#pragma omp parallel
-						{
-						#pragma omp for private (nStart, nEnd)
-						for (int i = 0; i < gameStates.app.nThreads; i++) {
-							ComputeThreadRange (i, nMax, nStart, nEnd);
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
+				nMax = gameData.render.mine.nRenderSegs;
+			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
+				nMax = gameData.segs.nFaces;
+			else
+				nMax = gameData.segs.nSegments;
+			if (gameStates.app.nThreads & 1) {
+				#pragma omp parallel
+					{
+					#pragma omp for private (nStart, nEnd)
+					for (int i = 0; i < gameStates.app.nThreads; i++) {
+						ComputeThreadRange (i, nMax, nStart, nEnd);
+						ComputeFaceLight (nStart, nEnd, i);
+						}
+					}
+				}
+			else {
+				int	nPivot = gameStates.app.nThreads / 2;
+				#pragma omp parallel
+					{
+					#pragma omp for private (nStart, nEnd)
+					for (int i = 0; i < gameStates.app.nThreads; i++) {
+						if (i < nPivot) {
+							ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
 							ComputeFaceLight (nStart, nEnd, i);
 							}
-						}
-					}
-				else {
-					int	nPivot = gameStates.app.nThreads / 2;
-					#pragma omp parallel
-						{
-						#pragma omp for private (nStart, nEnd)
-						for (int i = 0; i < gameStates.app.nThreads; i++) {
-							if (i < nPivot) {
-								ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
-								ComputeFaceLight (nStart, nEnd, i);
-								}
-							else {
-								ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
-								ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
-								}
+						else {
+							ComputeThreadRange (i - nPivot, nMax - tiRender.nMiddle, nStart, nEnd, nPivot);
+							ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, i);
 							}
 						}
 					}
 				}
-#endif //_OPENMP
-			PROF_START
-			UpdateSlidingFaces ();
-			PROF_END(ptAux);
-			if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
-				meshBuilder.BuildVBOs ();
-			gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
-													  !(gameStates.render.bFullBright || automap.Display ());
 			}
-		transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
+#endif //_OPENMP
+		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
+			meshBuilder.BuildVBOs ();
+		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
+												  !(gameStates.render.bFullBright || automap.Display ());
 		}
+	transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderEffects (int nWindow)
+{
+	int bLightnings, bParticles, bSparks;
+
+PROF_START
+#if UNIFY_THREADS
+WaitForRenderThreads ();
+#else
+WaitForEffectsThread ();
+#endif
+if (automap.Display ()) {
+	bLightnings = gameOpts->render.automap.bLightnings;
+	bParticles = gameOpts->render.automap.bParticles;
+	bSparks = gameOpts->render.automap.bSparks;
+	}
+else {
+	bSparks = (gameOptions [0].render.nQuality > 0);
+	bLightnings = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
+					  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
+	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
+					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
+	}
+if (bSparks) {
+	SEM_ENTER (SEM_SPARKS)
+	//PrintLog ("RenderEnergySparks\n");
+	sparkManager.Render ();
+	//SEM_LEAVE (SEM_SPARKS)
+	}
+if (bParticles) {
+	SEM_ENTER (SEM_SMOKE)
+	//PrintLog ("RenderSmoke\n");
+	particleManager.Cleanup ();
+	particleManager.Render ();
+	//SEM_LEAVE (SEM_SMOKE)
+	}
+if (bLightnings) {
+	SEM_ENTER (SEM_LIGHTNING)
+	//PrintLog ("RenderLightnings\n");
+	lightningManager.Render ();
+	}
+//PrintLog ("transparencyRenderer.Render\n");
+if (bLightnings)
+	SEM_LEAVE (SEM_LIGHTNING)
+transparencyRenderer.Render ();
+#if 1
+if (bParticles)
+	SEM_LEAVE (SEM_SMOKE)
+if (bSparks)
+	SEM_LEAVE (SEM_SPARKS)
+#endif
+PROF_END(ptEffects)
 }
 
 //------------------------------------------------------------------------------
@@ -1473,8 +1265,6 @@ SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 RenderSegmentList (0, 1);	// render opaque geometry
-if ((gameOpts->render.bDepthSort < 1) && !RENDERPATH)
-	RenderSkyBox (nWindow);
 RenderSegmentList (1, 1);		// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
