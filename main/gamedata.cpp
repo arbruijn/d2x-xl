@@ -402,8 +402,6 @@ fAttScale [1] = 0.005f;
 fAttScale [0] = 0.0f;
 fAttScale [1] = 0.003333f;
 #endif
-for (int i = 0; i < gameStates.app.nThreads; i++)
-	faceIndex [i].Init ();
 faceList.Clear ();
 }
 
@@ -428,6 +426,8 @@ bool CRenderData::Create (void)
 {
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
 Init ();
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	faceIndex [i].Create ();
 return true;
 }
 
@@ -436,6 +436,8 @@ return true;
 void CRenderData::Destroy (void)
 {
 DESTROY (gameData.render.faceList);
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	faceIndex [i].Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -504,11 +506,34 @@ DESTROY (lMapTexCoord);
 
 CFaceListIndex::CFaceListIndex ()
 {
+}
+
+//------------------------------------------------------------------------------
+
+CFaceListIndex::~CFaceListIndex ()
+{
+Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceListIndex::Create (void)
+{
 nUsedKeys = 0;
 roots.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 tails.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 usedKeys.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 Init ();
+}
+
+//------------------------------------------------------------------------------
+
+void CFaceListIndex::Destroy (void)
+{
+nUsedKeys = 0;
+roots.Destroy ();
+tails.Destroy ();
+usedKeys.Destroy ();
 }
 
 //------------------------------------------------------------------------------

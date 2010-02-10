@@ -1531,6 +1531,9 @@ class CFaceListIndex {
 		int						nUsedKeys;
 	public:
 		CFaceListIndex ();
+		~CFaceListIndex ();
+		void Create (void);
+		void Destroy (void);
 		void Init (void);
 	};
 
