@@ -329,6 +329,10 @@ bAlphaTest = false;
 glDisable (GL_ALPHA_TEST);
 bLineSmooth = false;
 glDisable (GL_LINE_SMOOTH);
+bLighting = false;
+glDisable (GL_LIGHTING);
+bPolyOffsetFill = false;
+glDisable (GL_POLYGON_OFFSET_FILL);
 
 zNear = 1.0f;
 zFar = 5000.0f;
@@ -376,7 +380,7 @@ SetAlphaTest (false);
 SetDepthTest (false);
 SetStencilTest (false);
 SetStencilTest (false);
-glDisable (GL_LIGHTING);
+SetLighting (false);
 glDisable (GL_COLOR_MATERIAL);
 ogl.SetDepthWrite (true);
 ColorMask (1,1,1,1,1);
@@ -675,7 +679,7 @@ if (gameStates.render.nShadowPass) {
 	else if (gameStates.render.nShadowPass == 2) {	//render occluders / shadow maps
 		if (gameStates.render.bShadowMaps) {
 			ColorMask (0,0,0,0,0);
-			glEnable (GL_POLYGON_OFFSET_FILL);
+			ogl.SetPolyOffsetFill (true);
 			glPolygonOffset (1.0f, 2.0f);
 			}
 		else {
@@ -732,7 +736,7 @@ if (gameStates.render.nShadowPass) {
 					}
 #endif
 #if 0
-				glEnable (GL_POLYGON_OFFSET_FILL);
+				ogl.SetPolyOffsetFill (true);
 				glPolygonOffset (1.0f, 1.0f);
 #endif
 				}
@@ -740,12 +744,12 @@ if (gameStates.render.nShadowPass) {
 		}
 	else if (gameStates.render.nShadowPass == 3) { //render final lit scene
 		if (gameStates.render.bShadowMaps) {
-			glDisable (GL_POLYGON_OFFSET_FILL);
+			ogl.SetPolyOffsetFill (false);
 			SetDepthMode (GL_LESS);
 			}
 		else {
 #if 0
-			glDisable (GL_POLYGON_OFFSET_FILL);
+			ogl.SetPolyOffsetFill (false);
 #endif
 			if (gameStates.render.nShadowBlurPass == 2)
 				SetStencilTest (false);
@@ -892,7 +896,7 @@ SetDepthTest (false);
 SetFaceCulling (false);
 SetStencilTest (false);
 if (SHOW_DYN_LIGHT) {
-	glDisable (GL_LIGHTING);
+	SetLighting (false);
 	glDisable (GL_COLOR_MATERIAL);
 	}
 ogl.SetDepthWrite (true);
@@ -917,7 +921,7 @@ if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 #endif
 		static GLfloat fSpecular [] = {0.5f, 0.5f, 0.5f, 1.0f};
 
-	glEnable (GL_LIGHTING);
+	SetLighting (true);
 	glShadeModel (GL_SMOOTH);
 	glMaterialfv (GL_FRONT_AND_BACK, GL_AMBIENT, fAmbient);
 	glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, fDiffuse);
@@ -937,8 +941,8 @@ if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 void COGL::DisableLighting (void)
 {
 if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
+	SetLighting (false);
 	glDisable (GL_COLOR_MATERIAL);
-	glDisable (GL_LIGHTING);
 	}
 }
 
@@ -1057,6 +1061,7 @@ else
 void COGL::RebuildContext (int bGame)
 {
 m_states.bRebuilding = 1;
+m_data.Initialize ();
 SetupExtensions ();
 backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)

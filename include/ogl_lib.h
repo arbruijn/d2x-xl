@@ -92,6 +92,8 @@ class COglData {
 		bool				bCullFaces;
 		bool				bUseTextures;
 		bool				bLineSmooth;
+		bool				bLighting;
+		bool				bPolyOffsetFill;
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
@@ -263,6 +265,12 @@ class COGL {
 
 		inline bool SetDepthTest (bool bDepthTest) { return Enable (m_data.bDepthTest, bDepthTest, GL_DEPTH_TEST); }
 		inline bool GetDepthTest (void) { return m_data.bDepthTest; }
+
+		inline bool SetLighting (bool bLighting) { return Enable (m_data.bLighting, bLighting, GL_LIGHTING); }
+		inline bool GetLighting (void) { return m_data.bLighting; }
+
+		inline bool SetPolyOffsetFill (bool bPolyOffsetFill) { return Enable (m_data.bPolyOffsetFill, bPolyOffsetFill, GL_POLYGON_OFFSET_FILL); }
+		inline bool GetPolyOffsetFill (void) { return m_data.bPolyOffsetFill; }
 
 		inline bool SetAlphaTest (bool bAlphaTest) { return Enable (m_data.bAlphaTest, bAlphaTest, GL_ALPHA_TEST); }
 		inline bool GetAlphaTest (void) { return m_data.bAlphaTest; }

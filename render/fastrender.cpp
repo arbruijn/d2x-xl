@@ -443,7 +443,7 @@ else {
 		ogl.EnableLighting (1);
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);
-		glDisable (GL_LIGHTING);
+		SetLighting (false);
 		glColor4f (1,1,1,1);
 		}
 	}
