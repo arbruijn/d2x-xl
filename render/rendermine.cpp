@@ -875,9 +875,7 @@ if (!nWindow)
 if (!gameStates.render.cameras.bActive)
 	windowRenderedData [nWindow].nObjects = 0;
 ogl.m_states.fAlpha = FADE_LEVELS;
-if (((gameStates.render.nRenderPass <= 0) &&
-	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
-	 gameStates.render.bShadowMaps) {
+if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) || gameStates.render.bShadowMaps) {
 	if (!automap.Display ())
 		RenderStartFrame ();
 	}
