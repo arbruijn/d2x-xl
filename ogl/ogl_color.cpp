@@ -241,10 +241,8 @@ void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tFaceCol
 	float l = (bmP->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
 
-#if SHADOWS
 if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
-#endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)
 	OglColor4sf (l, l, l, s);
 else if (vertColor) {

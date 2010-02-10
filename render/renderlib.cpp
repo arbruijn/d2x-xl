@@ -896,10 +896,8 @@ void AdjustVertexColor (CBitmap *bmP, tFaceColor *colorP, fix xLight)
 	float l = (bmP && (bmP->Flags () & BM_FLAG_NO_LIGHTING)) ? 1.0f : X2F (xLight);
 	float s = 1.0f;
 
-#if SHADOWS
 if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
-#endif
 if (!colorP->index || !gameStates.render.bAmbientColor || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
 	colorP->color.red =
 	colorP->color.green =

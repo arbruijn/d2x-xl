@@ -646,15 +646,10 @@ id = (int) objP->info.nId;
 if ((id < 0) || (id == 255))
 	bEnergyWeapon = id = 0;
 else {
-#if 0
-	bGatling = ((objP->info.nType == OBJ_WEAPON) && ((id == VULCAN_ID) || (id == GAUSS_ID)));
-#endif
 	bEnergyWeapon = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [id] && !gameData.objs.bIsMissile [id];
 	}
-#if SHADOWS
 if (!bForce && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass == 3))
 	return 1;
-#endif
 if (gameStates.render.bBuildModels)
 	xLight = I2X (1);
 else {

@@ -469,7 +469,6 @@ CCanvas::Current ()->Clear (nClearWindowColor);
 if (bShowOnlyCurSide)
 	CCanvas::Current ()->Clear (nClearWindowColor);
 #endif
-#if SHADOWS
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows =
 	extraGameInfo [1].bShadows = 0;
@@ -486,11 +485,9 @@ if (SHOW_SHADOWS &&
 		ogl.Viewport (CCanvas::Current ()->props.x, CCanvas::Current ()->props.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, xStereoSeparation, nWindow);
-#if 1//!DBG
 		PROF_START
 		RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
 		PROF_END(ptEffects)
-#else
 		if (FAST_SHADOWS)
 			;//RenderFastShadows (xStereoSeparation, nWindow, nStartSeg);
 		else {
@@ -498,7 +495,6 @@ if (SHOW_SHADOWS &&
 			RenderNeatShadows (xStereoSeparation, nWindow, nStartSeg);
 			PROF_END(ptEffects)
 			}
-#endif
 #if SOFT_SHADOWS
 		if (gameOpts->render.shadows.bSoft) {
 			PROF_START
@@ -506,20 +502,16 @@ if (SHOW_SHADOWS &&
 			PROF_END(ptEffects)
 			gameStates.render.nShadowBlurPass = 2;
 			gameStates.render.nShadowPass = 0;
-#if 1
 			ogl.StartFrame (0, 1, xStereoSeparation);
 			SetRenderView (xStereoSeparation, &nStartSeg, 1);
 			RenderMine (nStartSeg, xStereoSeparation, nWindow);
-#endif
 			RenderShadowTexture ();
 			}
 #endif
 		nWindow = 0;
 		}
 	}
-else
-#endif
-	{
+else {
 	if (gameStates.render.nRenderPass < 0)
 		RenderMine (nStartSeg, xStereoSeparation, nWindow);
 	else {

@@ -50,9 +50,7 @@ extern int bFrontFaces;
 extern int bBackFaces;
 extern int bSWCulling;
 #endif
-#if SHADOWS
 extern int bZPass;
-#endif
 
 #define G3_DRAW_ARRAYS	1
 #define G3_USE_VBOS		0

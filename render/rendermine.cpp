@@ -62,11 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#if LIGHTMAPS
-#	define LMAP_LIGHTADJUST	1
-#else
-#	define LMAP_LIGHTADJUST	0
-#endif
+#define LMAP_LIGHTADJUST	1
 
 #define bPreDrawSegs			0
 
@@ -432,33 +428,21 @@ if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 if (bmTop)
 	fpDrawTexPolyMulti (
 		props.nVertices, pointList, props.uvls,
-#	if LIGHTMAPS
 		props.uvl_lMaps,
-#	endif
 		bmBot, bmTop,
-#	if LIGHTMAPS
 		NULL, //lightmaps + props.segNum * 6 + props.sideNum,
-#	endif
 		&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam, props.segNum);
 else
-#	if LIGHTMAPS == 0
-	G3DrawTexPoly (props.nVertices, pointList, props.uvls, bmBot, &props.vNormal, !bIsMonitor || bIsTeleCam, props.segNum);
-#	else
 	fpDrawTexPolyMulti (
 		props.nVertices, pointList, props.uvls, props.uvl_lMaps, bmBot, NULL,
 		NULL, //lightmaps + props.segNum * 6 + props.sideNum,
 		&props.vNormal, 0, !bIsMonitor || bIsTeleCam, props.segNum);
-#	endif
 #else
 fpDrawTexPolyMulti (
 	props.nVertices, pointList, props.uvls,
-#	if LIGHTMAPS
 	props.uvl_lMaps,
-#	endif
 	bmBot, bmTop,
-#	if LIGHTMAPS
 	NULL, //lightmaps + props.segNum * 6 + props.sideNum,
-#	endif
 	&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam,
 	props.segNum);
 #endif
@@ -494,7 +478,6 @@ void RenderSide (CSegment *segP, short nSide)
 	CSide			*sideP = segP->m_sides + nSide;
 	tFaceProps	props;
 
-#if LIGHTMAPS
 #define	LMAP_SIZE	(1.0 / 16.0)
 
 	static tUVL	uvl_lMaps [4] = {
@@ -503,7 +486,6 @@ void RenderSide (CSegment *segP, short nSide)
 	 {F2X (1.0 - LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}, 
 	 {F2X (LMAP_SIZE), F2X (1.0 - LMAP_SIZE), 0}
 	};
-#endif
 
 props.segNum = segP->Index ();
 props.sideNum = nSide;
@@ -537,7 +519,6 @@ switch (gameStates.render.nType) {
 			glareRenderer.Render (props.segNum, props.sideNum, 1, 20);
 		return;
 	}
-#if LIGHTMAPS
 if (gameStates.render.bDoLightmaps) {
 		float	Xs = 8;
 		float	h = 0.5f / (float) Xs;
@@ -551,21 +532,16 @@ if (gameStates.render.bDoLightmaps) {
 	props.uvl_lMaps [2].v =
 	props.uvl_lMaps [3].v = F2X (1-h);
 	}
-#endif
 props.nBaseTex = sideP->m_nBaseTex;
 props.nOvlTex = sideP->m_nOvlTex;
 props.nOvlOrient = sideP->m_nOvlOrient;
 
 	//	========== Mark: Here is the change...beginning here: ==========
 
-#if LIGHTMAPS
 	if (gameStates.render.bDoLightmaps) {
 		memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 4);
-#if LMAP_LIGHTADJUST
 		props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = I2X (1) / 2;
-#	endif
 		}
-#endif
 
 #if DBG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
@@ -890,77 +866,35 @@ if (nStartSegP)
 }
 
 //------------------------------------------------------------------------------
-//renders onto current canvas
 
 int BeginRenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
 PROF_START
-#if CLEAR_WINDOW == 2
-	tPortal	*oldPortal;
-#endif
-#if 0//DBG
-	int		i;
-#endif
-
 if (!nWindow)
 	GetPlayerMslLock ();	// uses rendered object info from previous frame stored in windowRenderedData
 if (!gameStates.render.cameras.bActive)
 	windowRenderedData [nWindow].nObjects = 0;
-#ifdef LASER_HACK
-nHackLasers = 0;
-#endif
-//set up for rendering
 ogl.m_states.fAlpha = FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
 	if (!automap.Display ())
 		RenderStartFrame ();
-#if USE_SEGRADS
-	TransformSideCenters ();
-#endif
+	}
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	ogl.m_states.bUseTransform = 1;
 	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.nSegRenderList & gameData.render.mine.nRenderSegs
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildRenderObjLists (gameData.render.mine.nRenderSegs);
-#if 1
 		if (xStereoSeparation <= 0)	// Do for left eye or zero.
 			SetDynamicLight ();
-#endif
 		}
 	ogl.m_states.bUseTransform = 0;
 	lightManager.Transform (0, 1);
 	}
-
-#if CLEAR_WINDOW == 2
-	if (gameData.render.gameData.render.nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
-		int i;
-
-		if (nClearWindowColor == (uint) -1)
-			nClearWindowColor = BLACK_RGBA;
-		CCanvas::Current ()->SetColor (nClearWindowColor);
-		for (i = gameData.render.gameData.render.nFirstTerminalSeg, oldPortal = renderPortals; i < gameData.render.mine.nRenderSegs; i++, oldPortal++) {
-			if (gameData.render.mine.nSegRenderList [i] != -0x7fff) {
-#if DBG
-				if ((oldPortal->left == -1) || (oldPortal->top == -1) || (oldPortal->right == -1) || (oldPortal->bot == -1))
-					Int3();
-				else
-#endif
-					//NOTE LINK TO ABOVE!
-					OglDrawFilledRect (oldPortal->left, oldPortal->top, oldPortal->right, oldPortal->bot);
-				}
-			}
-		}
-#endif //CLEAR_WINDOW
-
 gameStates.render.bFullBright = automap.Display () && gameOpts->render.automap.bBright;
 ogl.m_states.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (ogl.m_states.nContrast == 8);
-#if SHADOWS
 ogl.m_states.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
-#else
-ogl.m_states.bScaleLight = 0;
-#endif
 gameStates.render.bUseCameras = USE_CAMERAS;
 PROF_END(ptAux);
 return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType != OBJ_ROBOT);

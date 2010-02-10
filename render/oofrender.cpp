@@ -542,11 +542,9 @@ for (i = 0; i < m_nChildren; i++) {
 			return 0;
 	}
 #endif
-#if SHADOWS
 if (gameStates.render.nShadowPass == 2)
 	OOF_DrawShadow (po, pso);
 else 
-#endif
 	Draw (objP, po, fLight);
 return 1;
 }
@@ -607,10 +605,8 @@ int CModel::Render (CObject *objP, float *fLight, int bCloaked)
 {
 	float	dt;
 
-#if SHADOWS
 if (FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 	return 1;
-#endif
 if (m_bCloaked != bCloaked) {
 	m_bCloaked = bCloaked;
 	m_nCloakPulse = 0;
@@ -644,13 +640,9 @@ else {
 	}
 if (m_fAlpha < 0.01f)
 	m_fAlpha = 0.01f;
-#if SHADOWS
-return (!gameStates.render.bShadowMaps && (gameStates.render.nShadowPass == 2)) ? 
-	RenderShadow (objP, fLight) :
-	Draw (objP, fLight);
-#else
-return Draw (objP, fLight);
-#endif
+return (!gameStates.render.bShadowMaps && (gameStates.render.nShadowPass == 2)) 
+		  ? RenderShadow (objP, fLight) 
+		  : Draw (objP, fLight);
 }
 
 //------------------------------------------------------------------------------

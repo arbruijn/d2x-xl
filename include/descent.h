@@ -55,23 +55,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GEOMETRY_VBOS	0
 
 #if DBG
-#	define	SHADOWS	1
-#else
-#	define	SHADOWS	1
-#endif
-
-#if DBG
 #	define	PROFILING 1
 #else
 #	define	PROFILING 0
 #endif
 
-#if SHADOWS
-#	if DBG
-#		define DBG_SHADOWS 1
-#	else
-#		define DBG_SHADOWS 0
-#	endif
+#if DBG
+#	define DBG_SHADOWS 1
+#else
+#	define DBG_SHADOWS 0
 #endif
 
 #if USE_IRRLICHT

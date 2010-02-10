@@ -553,33 +553,12 @@ void LoadSideLightsCompiled (int i, CFile& cf)
 	int			j;
 
 gameData.render.shadows.nLights = 0;
-#if LIGHTMAPS
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
 	pc = gameData.render.color.lights + i;
 	for (; i < j; i++, pc++) {
 		ReadColor (cf, pc, gameData.segs.nLevelVersion <= 13, 1);
-#if 0//SHADOWS
-		RegisterLight (pc, (short) (i / 6), (short) (i % 6));
-#endif
 		}
-	}
-else {
-#else
- {
-#endif
-#if 0//SHADOWS
-	CSegment	*segP;
-	CSide		*sideP;
-	int		h;
-
-	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
-	segP = SEGMENTS + i;
-	for (i = 0; i < j; i++, segP++)
-		for (h = 0, sideP = segP->m_sides; h < 6; h++, sideP++)
-			if (IsLight (sideP->m_nBaseTex) || IsLight (sideP->nOvlTexf))
-				RegisterLight (NULL, (short) i, (short) h);
-#endif
 	}
 }
 
@@ -628,13 +607,9 @@ if (nState)
 
 	int	bLightmaps = 0, bShadows = 0;
 
-#if LIGHTMAPS
 if (gameStates.app.bD2XLevel && gameStates.render.bLightmapsOk)
 	bLightmaps = 1;
-#endif
-#if SHADOWS
 bShadows = 1;
-#endif
 
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
@@ -705,13 +680,9 @@ int LoadMineGaugeSize (void)
 	int	i = 2 * PROGRESS_STEPS (gameData.segs.nSegments) + 2;
 	int	bLightmaps = 0, bShadows = 0;
 
-#if LIGHTMAPS
 	if (gameStates.render.bLightmapsOk)
 		bLightmaps = 1;
-#endif
-#if SHADOWS
 	bShadows = 1;
-#endif
 if (gameStates.app.bD2XLevel) {
 	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
 	i += PROGRESS_STEPS (gameData.segs.nSegments * 6);

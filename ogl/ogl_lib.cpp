@@ -628,7 +628,6 @@ else {
 		SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 		}
 	}
-#if SHADOWS
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
 	float	infProj [4][4];	//projection to infinity
@@ -764,9 +763,7 @@ if (gameStates.render.nShadowPass) {
 	glLoadIdentity ();
 #endif
 	}
-else
-#endif //SHADOWS
- {
+else {
 	r_polyc =
 	r_tpolyc =
 	r_tvertexc =

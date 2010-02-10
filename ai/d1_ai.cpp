@@ -2149,7 +2149,6 @@ if (DoAnyRobotDyingFrame (objP))
 					ai_multi_send_robot_position (objP->Index (), -1);
 					MultiSendRobotFire(objP->Index (), -1, &vFire);
 				}
-				#endif
 			}
 			break;
 

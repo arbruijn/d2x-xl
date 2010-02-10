@@ -5,9 +5,7 @@
 #	include <conf.h>
 #endif
 
-#if DBG && SHADOWS
-#	define OOF_TEST_CUBE 0
-#else
+#if DBG
 #	define OOF_TEST_CUBE 0
 #endif
 

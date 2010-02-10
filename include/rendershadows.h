@@ -26,9 +26,7 @@ extern int bBackFaces;
 extern int bSWCulling;
 extern int bWallShadows;
 #endif
-#if SHADOWS
 extern int bZPass;
-#endif
 
 #endif //_RENDERSHADOWS_H
 

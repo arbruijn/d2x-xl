@@ -73,9 +73,7 @@ extern int bFrontFaces;
 extern int bBackFaces;
 extern int bSWCulling;
 #endif
-#if SHADOWS
 extern int bZPass;
-#endif
 static int bTriangularize = 0;
 //static int bIntrinsicFacing = 0;
 static int bFlatPolys = 1;
@@ -1424,7 +1422,6 @@ return 1;
 
 int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
 {
-#if SHADOWS
 	CFixVector	v, vLightDir;
 	short*		pnl;
 	int			h, i, j;
@@ -1498,7 +1495,6 @@ else {
 			}
 		}
 	}
-#endif
 ogl.DisableClientState (GL_VERTEX_ARRAY);
 return 1;
 }

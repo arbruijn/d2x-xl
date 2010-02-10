@@ -28,9 +28,7 @@ typedef struct tFaceProps {
 	short			nBaseTex, nOvlTex, nOvlOrient;
 	tUVL			uvls [4];
 	short			vp [5];
-#if LIGHTMAPS
 	tUVL			uvl_lMaps [4];
-#endif
 	CFixVector	vNormal;
 	ubyte			nVertices;
 	ubyte			widFlags;

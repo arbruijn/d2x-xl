@@ -61,12 +61,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#if LIGHTMAPS
-#	define LMAP_LIGHTADJUST	1
-#else
-#	define LMAP_LIGHTADJUST	0
-#endif
-
 #define bPreDrawSegs			0
 
 #define VIS_CULLING			1
@@ -591,6 +585,7 @@ else {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
 	gameData.render.zMax = tiRender.zMax [0];
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

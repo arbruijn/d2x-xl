@@ -20,8 +20,6 @@
 #	define OGL_QUERY				1
 #endif
 
-#define LIGHTMAPS					1
-
 #define TEXTURE_COMPRESSION	0
 
 #if DBG

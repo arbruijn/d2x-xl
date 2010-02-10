@@ -1852,14 +1852,9 @@ for (i = 0; i < 2; i++) {
 		gameOptions [i].app.bExpertMode = (int) cf.ReadByte ();
 	if (gameStates.input.nPlrFileVersion >= 105) {
 		if (!i)
-#if SHADOWS
 			extraGameInfo [0].bShadows = cf.ReadByte ();
 		gameOptions [i].render.shadows.nLights = cf.ReadInt ();
 		gameOptions [i].render.shadows.nLights = NMCLAMP (gameOptions [i].render.shadows.nLights, 0, 8);
-#else
-			cf.ReadByte ();
-		cf.ReadInt ();
-#endif
 		}
 	if (gameStates.input.nPlrFileVersion >= 106)
 		if (!i)

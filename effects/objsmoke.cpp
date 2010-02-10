@@ -864,20 +864,10 @@ FORALL_EFFECT_OBJS (objP, i) {
 
 void DoParticleFrame (void)
 {
-#if SHADOWS
 if (gameStates.render.nShadowPass > 1)
 	return;
-#endif
 SEM_ENTER (SEM_SMOKE)
 PlayerBulletFrame ();
-#if 0
-#	if DBG
-if (!gameStates.render.bChaseCam)
-#	else
-if (!gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION)))
-#	endif
-	DoPlayerSmoke (gameData.objs.viewerP, gameData.multiplayer.nLocalPlayer);
-#endif
 ObjectParticleFrame ();
 //StaticParticlesFrame ();
 shrapnelManager.DoFrame ();
