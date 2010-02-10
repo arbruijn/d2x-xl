@@ -71,7 +71,6 @@ if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
 if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
-int	i, j, nKey = faceP->m_info.nKey;
 
 #ifdef _OPENMP
 #	pragma omp critical
@@ -79,8 +78,9 @@ int	i, j, nKey = faceP->m_info.nKey;
 {
 PROF_START
 CFaceListIndex& flx = gameData.render.faceIndex [0]; //[nThread];
-i = gameData.render.nUsedFaces++;
-j = flx.tails [nKey];
+int nKey = faceP->m_info.nKey;
+int i = gameData.render.nUsedFaces++;
+int j = flx.tails [nKey];
 if (j < 0) {
 	flx.usedKeys [flx.nUsedKeys] = nKey;
 	flx.nUsedKeys++;
