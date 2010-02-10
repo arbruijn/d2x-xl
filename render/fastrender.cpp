@@ -73,11 +73,11 @@ if (faceP - FACES.faces >= gameData.segs.nFaces)
 #endif
 int	i, j, nKey = faceP->m_info.nKey;
 
-PROF_START
 #ifdef _OPENMP
 #	pragma omp critical
 #endif
 {
+PROF_START
 CFaceListIndex& flx = gameData.render.faceIndex [0]; //[nThread];
 i = gameData.render.nUsedFaces++;
 j = flx.tails [nKey];
@@ -92,8 +92,8 @@ gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
 flx.tails [nKey] = i;
 faceP->m_info.nFrame = gameData.app.nFrameCount;
-}
 PROF_END(ptFaceList)
+}
 return 1;
 }
 
