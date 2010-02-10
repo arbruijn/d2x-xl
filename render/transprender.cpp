@@ -951,7 +951,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				}
 			}
 		ogl.SetDepthMode (GL_LEQUAL);
-		ogl.SetDepthWrite (m_data.bDepthMask);
+		ogl.SetDepthWrite (m_data.bDepthMask != 0);
 		}
 	else {
 		if (bAdditive && !automap.Display ()) {
@@ -1054,7 +1054,7 @@ for (int i = 0; i < 4; i++) {
 	}
 #endif
 gameData.models.vScale = item->vScale;
-ogl.SetDepthWrite (m_data.bDepthMask = 0);
+ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
 DrawPolygonObject (item->objP, 0, 1);
 gameData.models.vScale.SetZero ();
 ogl.ResetClientStates ();
@@ -1092,7 +1092,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	if (bSoftBlend)
 		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
 	else //if (m_data.bDepthMask)
-		ogl.SetDepthWrite (m_data.bDepthMask = 0);
+		ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;
@@ -1147,7 +1147,7 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 	else {
 		ResetShader ();
 		if (m_data.bDepthMask)
-			ogl.SetDepthWrite (m_data.bDepthMask = 0);
+			ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
 		}
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
@@ -1222,7 +1222,7 @@ ResetShader ();
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-ogl.SetDepthWrite (m_data.bDepthMask = 0);
+ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
 ogl.SetBlendUsage (true);
 gameOpts->render.bDepthSort = bDepthSort;
 }
@@ -1282,7 +1282,7 @@ void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 {
 if (m_data.nPrevType != m_data.nCurType) {
 	if (m_data.bDepthMask)
-		ogl.SetDepthWrite (m_data.bDepthMask = 0);
+		ogl.SetDepthWrite (bool (m_data.bDepthMask = 0));
 	ogl.ResetClientStates ();
 	ResetBitmaps ();
 	ResetShader ();
