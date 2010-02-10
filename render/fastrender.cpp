@@ -881,25 +881,19 @@ return SortFaces ();
 
 void RenderFaceList (int nType, int bFrontToBack)
 {
-	int	j;
-
-if (!bFrontToBack) {	//back to front
+if (nType > 1) {	//back to front
 	BeginRenderFaces (nType, 0);
 	RenderSegments (nType, 0, 0);
-	if (nType < 2)
-		RenderHeadlights (nType);
 	}
 else {	//front to back
-	if (!gameStates.render.nWindow)
-		j = SetupCoronas (nType);
-	else
-		j = 0;
+	if (!(nType || gameStates.render.nWindow))
+		SetupCoronas (nType);
 	BeginRenderFaces (0, 0);
 	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;
 	RenderSegments (nType, 0, 0);
 	glDepthMask (1);
-	RenderHeadlights (0);
+	RenderHeadlights (nType);
 	}
 EndRenderFaces (nType, 0);
 }
