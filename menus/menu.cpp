@@ -436,6 +436,7 @@ else {
 	}
 
 
+ogl.SetDepthTest (false);
 FadeIn ();
 ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Redraw ();

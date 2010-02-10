@@ -294,8 +294,8 @@ class COGL {
 			if ((m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode))
 				return true;
 			glBlendFunc (m_data.nSrcBlendMode = nSrcBlendMode, m_data.nDestBlendMode = nDestBlendMode);
-			glGetIntegerv (GL_BLEND_SRC, (GLint*) m_data.nSrcBlendMode);
-			glGetIntegerv (GL_BLEND_DST, (GLint*) m_data.nDestBlendMode);
+			glGetIntegerv (GL_BLEND_SRC, (GLint*) &m_data.nSrcBlendMode);
+			glGetIntegerv (GL_BLEND_DST, (GLint*) &m_data.nDestBlendMode);
 			return (m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode);
 			}
 

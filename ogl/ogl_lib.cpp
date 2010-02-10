@@ -314,14 +314,14 @@ glDisable (GL_TEXTURE_2D);
 bUseBlending = true;
 glEnable (GL_BLEND);
 glBlendFunc (nSrcBlendMode = GL_SRC_ALPHA, nDestBlendMode = GL_ONE_MINUS_SRC_ALPHA);
-bDepthTest = true;
-glEnable (GL_DEPTH_TEST);
-bDepthWrite = true;
-glDepthMask (1);
+bDepthTest = false;
+glDisable (GL_DEPTH_TEST);
+bDepthWrite = false;
+glDepthMask (0);
 bStencilTest = false;
 glDisable (GL_STENCIL_TEST);
-bCullFaces = true;
-glEnable (GL_CULL_FACE);
+bCullFaces = false;
+glDisable (GL_CULL_FACE);
 glCullFace (nCullMode = GL_BACK);
 bScissorTest = false;
 glDisable (GL_SCISSOR_TEST);
@@ -1097,6 +1097,7 @@ if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) &&
 	 (m_states.bLastFullScreen == m_states.bFullScreen) &&
 	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (m_states.nDrawBuffer == GL_FRONT)))
 	return;
+m_data.Initialize ();
 if (gameStates.video.nScreenMode == SCREEN_GAME)
 	SetDrawBuffer (GL_BACK, 1);
 else {
@@ -1111,7 +1112,7 @@ else {
 		glLoadIdentity ();//clear matrix
 		SetBlendUsage (true);
 		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		ogl.SetTextureUsage (false);
+		SetTextureUsage (false);
 		SetDepthMode (GL_ALWAYS); //LEQUAL);
 		SetDepthTest (false);
 		}

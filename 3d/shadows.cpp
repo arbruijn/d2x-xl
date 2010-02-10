@@ -947,7 +947,7 @@ if (bPrintLine) {
 	glLineWidth (3);
 	if (!bShadowTest) {
 		ogl.ColorMask (1,1,1,1,1);
-		SetStencilTest (false);
+		ogl.SetStencilTest (false);
 		}
 	glColor4d (1,0.8,0,1);
 	glBegin (GL_LINES);
