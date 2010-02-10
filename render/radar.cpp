@@ -214,7 +214,7 @@ FORALL_OBJS (objP, i) {
 	}
 glDisable (GL_LINE_SMOOTH);
 glLineWidth (1);
-ogl.SetDepthFunc (depthFunc);
+ogl.SetDepthMode (depthFunc);
 ogl.SetFaceCulling (true);
 ogl.StencilOn (bStencil);
 }

@@ -424,7 +424,7 @@ if (!bDepthOnly)
 	ogl.SetDepthMode (GL_LEQUAL);
 else {
 	ogl.ColorMask (0,0,0,0,0);
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	ogl.SetDepthMode (GL_LESS);
 	}
 if (nType == 3) {
@@ -515,7 +515,7 @@ if (bNormals)
 if (gameStates.render.bFullBright)
 	glColor3f (1,1,1);
 ogl.SetBlendUsage (true);
-SetBlendMode (GL_ONE, GL_ZERO);
+ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.ClearError (0);
 return 1;
 }
@@ -540,7 +540,7 @@ else if (glareRenderer.Style () == 2)
 	glareRenderer.UnloadShader ();
 else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (glareRenderer.Style () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.ClearError (0);
 }
 
@@ -554,7 +554,7 @@ void RenderSkyBoxFaces (void)
 	int			i, j, nSegment, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
 	BeginRenderFaces (4, 0);
@@ -703,7 +703,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 void QueryCoronas (short nFaces, int nPass)
 {
 BeginRenderFaces (3, 0);
-SetDepthWrite (0);
+ogl.SetDepthWrite (false);
 ogl.ColorMask (1,1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
@@ -719,7 +719,7 @@ else { //now find out how many fragments are rendered for each corona if geometr
 	RenderCoronaFaceList (gameData.render.faceIndex, 2);
 	glFlush ();
 	}
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 glClearColor (0,0,0,0);
 glClearDepth (0xffffffff);
 glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -825,7 +825,7 @@ return nFaces;
 void RenderHeadlights (int nType)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
-	SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	g3FaceDrawer = lightmapManager.HaveLightmaps () ? G3DrawHeadlightsPPLM : G3DrawHeadlights;
 	RenderSegments (nType, 0, 1);
 	SetFaceDrawer (-1);
@@ -886,7 +886,7 @@ else {	//front to back
 	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;
 	RenderSegments (nType, 0, 0);
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	RenderHeadlights (nType);
 	}
 EndRenderFaces (nType, 0);

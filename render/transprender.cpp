@@ -865,13 +865,13 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	bAdditive = item->bAdditive;
 	ogl.SetBlendUsage (true);
 	if (bAdditive == 1)
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 	else if (bAdditive == 2)
-		SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	else if (bAdditive == 3)
-		SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	else
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if DBG
 	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -887,7 +887,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				bAdditive = true;
-				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+				ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 				ogl.SetDepthMode (GL_LEQUAL);
 				}
 #endif
@@ -921,9 +921,9 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 					//if (bAdditive && (bAdditive != 2))
 						{
 						bAdditive = 2;
-						SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+						ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 						//ogl.SetDepthMode (GL_EQUAL);
-						SetDepthWrite (0);
+						ogl.SetDepthWrite (false);
 						}
 					}
 				}
@@ -938,9 +938,9 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
 				if (bAdditive != 2) {
 					bAdditive = 2;
-					SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 					//ogl.SetDepthMode (GL_EQUAL);
-					SetDepthWrite (0);
+					ogl.SetDepthWrite (false);
 					}
 #if 0
 				ogl.SelectTMU (GL_TEXTURE1, true);
@@ -975,14 +975,14 @@ else
 if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
 		ResetShader ();
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	else if (item->bAdditive == 2) {
 		ResetShader ();
-		SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	else {
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		G3SetupShader (faceP, 0, 0, 0, bmBot != NULL,
 							(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 							bmBot ? NULL : item->color);
@@ -1030,7 +1030,7 @@ if (!bmBot) {
 	}
 #endif
 if (bAdditive)
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (bSoftBlend)
 	ogl.SetDepthTest (true);
 PROF_END(ptRenderFaces)
@@ -1084,11 +1084,11 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		glColor3f (1, 1, 1);
 	ogl.SetBlendUsage (true);
 	if (item->bAdditive == 2)
-		SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	else if (item->bAdditive == 1)
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 	else
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
 		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
 	else //if (m_data.bDepthMask)
@@ -1109,7 +1109,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
 	glEnd ();
 	if (item->bAdditive)
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
 		ogl.SetDepthTest (true);
 	}
@@ -1149,12 +1149,12 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 		if (m_data.bDepthMask)
 			glDepthMask (m_data.bDepthMask = 0);
 		}
-	SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
 	OglDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftSparks)
 		ogl.SetDepthTest (true);
 	m_data.bClientColor = 0;
@@ -1221,7 +1221,7 @@ ResetBitmaps ();
 ResetShader ();
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthMask (m_data.bDepthMask = 0);
 ogl.SetBlendUsage (true);
 gameOpts->render.bDepthSort = bDepthSort;
@@ -1300,7 +1300,7 @@ void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 if (!m_data.bDepthMask)
 	glDepthMask (m_data.bDepthMask = 1);
 ogl.SetBlendUsage (true);
-SetBlendMode (GL_ONE, GL_ONE);
+ogl.SetBlendMode (GL_ONE, GL_ONE);
 #if 0
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
@@ -1335,7 +1335,7 @@ if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	glEnd ();
 	}
 ogl.SetFaceCulling (true);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //------------------------------------------------------------------------------
@@ -1469,9 +1469,9 @@ shaderManager.Deploy (-1);
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 ogl.SetBlendUsage (true);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
-SetDepthWrite (0);
+ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
@@ -1510,9 +1510,9 @@ ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
 OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 OglBindTexture (0);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
 m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 m_data.nMaxOffs = 0;

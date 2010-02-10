@@ -294,6 +294,7 @@ class COGL {
 				}
 			return m_data.nDepthMode;
 			}
+		inline GLenum GetDepthMode (void) { return m_data.nDepthMode; }
 
 		inline void SetDepthWrite (bool bDepthWrite) { 
 			if (m_data.bDepthWrite != bDepthWrite)

@@ -496,7 +496,7 @@ if (alpha < 1.0f) {
 	}
 glColor4f (red, green, blue, alpha);
 *pfScale = fScale;
-SetDepthWrite (0);
+ogl.SetDepthWrite (false);
 return bTextured;
 }
 
@@ -756,13 +756,13 @@ else
 ogl.SetDepthMode (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
 if (bAdditive == 2)
-	SetBlendMode (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
+	ogl.SetBlendMode (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
 else if (bAdditive == 1)
-	SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 else
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #else
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
 #if 1
@@ -787,7 +787,7 @@ ogl.m_states.bUseTransform = 0;
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LESS);
 return 1;
 }

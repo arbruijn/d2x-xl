@@ -985,7 +985,7 @@ void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
 
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
-SetBlendMode (GL_ONE, GL_ONE);
+ogl.SetBlendMode (GL_ONE, GL_ONE);
 for (bScale = 0; bScale < 2; bScale++) {
 	if (bScale)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
@@ -1019,7 +1019,7 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 	CFloatVector3*	vPosf = coreBuffer [nThread];
 	int				i;
 
-SetBlendMode (GL_ONE, GL_ONE);
+ogl.SetBlendMode (GL_ONE, GL_ONE);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glEnable (GL_LINE_SMOOTH);
@@ -1154,7 +1154,7 @@ else {
 		ogl.SetFaceCulling (true);
 	glLineWidth (1);
 	glDisable (GL_LINE_SMOOTH);
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
 

@@ -109,7 +109,7 @@ if (LoadScope ()) {
 
 	ogl.SetTextureUsage (true);
 	ogl.SetBlendUsage (true);
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthTest (false);
 	if (bmpScope->Bind (1))
 		return;
@@ -699,9 +699,9 @@ if (gameData.render.window.x || gameData.render.window.y) {
 	CCanvas::SetCurrent (CurrentGameScreen ());
 	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
 	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
-	SetDepthWrite (0);
+	ogl.SetDepthWrite (false);
 	bmBackground.Render (CCanvas::Current (), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 0, 0, -bmBackground.Width (), -bmBackground.Height ());
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	CCanvas::Pop ();
 	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
 	ogl.m_states.nLastH = CCanvas::Current ()->Height ();

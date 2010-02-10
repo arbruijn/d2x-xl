@@ -37,30 +37,13 @@
 
 void CPaletteManager::RenderEffect (void)
 {
-	int	bDepthTest, bBlend;
-	GLint	blendSrc, blendDest;
-
-if (m_data.nSuspended) {
-#if 1
+if (m_data.nSuspended)
 	return;
-#else
-	if ((bBlend = glIsEnabled (GL_BLEND))) {
-		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
-		glGetIntegerv (GL_BLEND_DST, &blendDest);
-		}
-	else
-		ogl.SetBlendUsage (true);
-	SetBlendMode (GL_ONE,GL_ONE);
-	glColor3f (0, 0, 0);
-#endif
-	}
-else if (m_data.bDoEffect) {
-	ogl.SetBlendUsage (true);
-	ogl.SetBlendMode (GL_ONE,GL_ONE);
-	glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
-	}
-else
+if (!m_data.bDoEffect)
 	return;
+ogl.SetBlendUsage (true);
+ogl.SetBlendMode (GL_ONE,GL_ONE);
+glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 ogl.SetDepthTest (false);
 ogl.SetTextureUsage (false);
 glBegin (GL_QUADS);

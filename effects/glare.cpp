@@ -528,7 +528,7 @@ bmP->Texture ()->Wrap (GL_CLAMP);
 ogl.SetFaceCulling (false);
 if (bAdditive) {
 	fLight *= color.alpha;
-	SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	}
 glColor4fv (reinterpret_cast<GLfloat*> (&color));
 glBegin (GL_QUADS);
@@ -538,7 +538,7 @@ for (i = 0; i < 4; i++) {
 	}
 glEnd ();
 if (bAdditive)
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetFaceCulling (true);
 RenderCoronaOutline (sprite, vCenter);
 }
@@ -594,13 +594,13 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 
 if (gameStates.render.bQueryCoronas) {
 	ogl.SetTextureUsage (false);
-	SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
 else {
 	ogl.SetTextureUsage (true);
 	ogl.SetDepthMode (GL_ALWAYS);
 	if (bAdditive)
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 	if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 		return;
 	}
@@ -636,7 +636,7 @@ else {
 	glEnd ();
 	}
 if (!gameStates.render.bQueryCoronas && bAdditive)
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 RenderCoronaOutline (sprite, vCenter);
 if (gameStates.render.bQueryCoronas != 2) {
 	ogl.SetDepthTest (true);

@@ -132,7 +132,7 @@ else if (objP->info.nType == OBJ_WEAPON) {
 	}
 #if 0
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
-	glDepthMask (1);	//don't set z-buffer for transparent objects
+	ogl.SetDepthWrite (true);	//don't set z-buffer for transparent objects
 #endif
 if (vcP->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], bLit, iFrame);
@@ -140,7 +140,7 @@ else
 	DrawObjectBitmap (objP, vcP->frames [0].index, vcP->frames [iFrame].index, iFrame, color, (float) alpha);
 #if 1
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 #endif
 }
 
@@ -181,7 +181,7 @@ CFixVector::Normalize (vDir);
 vDir *= (xSize - objP->info.xSize);
 vPos += vDir;
 #endif
-SetDepthWrite (0);
+SetDepthWrite (false);
 #if BLAST_TYPE == 0
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
 color.red =
@@ -207,7 +207,7 @@ for (i = 0; i < 3; i++) {
 	}
 transformation.End ();
 #endif
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 }
 
 // -----------------------------------------------------------------------------

@@ -84,7 +84,7 @@ glOrtho (0, 1, 1, 0, 0, 1);
 ogl.SetTextureUsage (false);
 ogl.SetDepthTest (false);
 ogl.SetStencilTest (true);
-ogl.SetDepthWrite (0);
+ogl.SetDepthWrite (false);
 if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlendUsage (false);
 else
@@ -97,7 +97,7 @@ glVertex2f (1,1);
 glVertex2f (0,1);
 glEnd ();
 ogl.SetDepthTest (true);
-SetStencilTest (false);
+ogl.SetStencilTest (false);
 ogl.SetDepthWrite (true);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
@@ -171,7 +171,7 @@ glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
 ogl.SetDepthTest (false);
-SetDepthWrite (0);
+ogl.SetDepthWrite (false);
 #if 1
 ogl.SetBlendUsage (false);
 #else
@@ -201,7 +201,7 @@ glEnd ();
 if (ogl.m_states.bShadersOk)
 	shaderManager.Deploy (-1);
 ogl.SetDepthTest (true);
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();

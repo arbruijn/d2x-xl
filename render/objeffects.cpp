@@ -49,9 +49,9 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 {
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
-	SetDepthWrite (0);
+	ogl.SetDepthWrite (false);
 	G3DrawSprite (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	}
 }
 
@@ -178,9 +178,9 @@ else {
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlendUsage (true);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetTextureUsage (false);
-SetDepthWrite (0);
+ogl.SetDepthWrite (false);
 
 tBox hb [MAX_HITBOXES + 1];
 TransformHitboxes (objP, &objP->info.position.vPos, hb);
@@ -245,7 +245,7 @@ if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo
 	DrawShieldSphere (&o, 1, 0, 0, 0.33f);
 	}
 #endif
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LESS);
 }
 
@@ -1147,9 +1147,9 @@ else { //3D
 
 	CreateThrusterFlame ();
 	ogl.SetFaceCulling (false);
-	SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.m_states.bUseTransform = 1;
-	SetDepthWrite (0);
+	ogl.SetDepthWrite (false);
 
 	tTexCoord2flStep.v.u = 1.0f / RING_SEGS;
 	tTexCoord2flStep.v.v = 0.9f / THRUSTER_SEGS;
@@ -1247,10 +1247,10 @@ else { //3D
 		transformation.End ();
 		}
 	ogl.m_states.bUseTransform = 0;
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetFaceCulling (true);
 	OglCullFace (0);
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	}
 ogl.StencilOn (bStencil);
 }
@@ -1358,8 +1358,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	if (bDepthSort)
 		return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
 	bStencil = ogl.StencilOff ();
-	SetDepthWrite (0);
-	SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetDepthWrite (false);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	if (bSimple) {
 		G3DrawSprite (vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, bmpCorona, &color, alpha, 1, 3);
 		}
@@ -1370,7 +1370,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 
 		ogl.SetFaceCulling (false);
 		ogl.SetDepthMode (GL_LEQUAL);
-		SetDepthWrite (0);
+		ogl.SetDepthWrite (false);
 		ogl.SetTextureUsage (true);
 		bmpCorona->SetTranspType (-1);
 		if (bmpCorona->Bind (1))
@@ -1405,8 +1405,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		ogl.SetTextureUsage (false);
 		ogl.SetFaceCulling (true);
 		}
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask (1);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetDepthWrite (true);
 	ogl.StencilOn (bStencil);
 	}
 return 0;
@@ -1436,7 +1436,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			tRgbaColorf		*pc = gameData.weapons.color + objP->info.nId;
 
 		transformation.Begin (vPos, objP->info.position.mOrient);
-		SetDepthWrite (0);
+		ogl.SetDepthWrite (false);
 		ogl.SetTextureUsage (false);
 		//OglCullFace (1);
 		ogl.SetFaceCulling (false);
@@ -1487,7 +1487,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 				}
 			glEnd ();
 			}
-		glDepthMask (1);
+		ogl.SetDepthWrite (true);
 		OglCullFace (0);
 		transformation.End ();
 		}
@@ -1525,10 +1525,10 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 			return;
 		}
 	bStencil = ogl.StencilOff ();
-	SetDepthWrite (0);
+	ogl.SetDepthWrite (false);
 	glEnable (GL_LINE_STIPPLE);
 	ogl.SetBlendUsage (true);
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_LINE_SMOOTH);
 	glLineStipple (6, 0x003F); //patterns [h]);
 	vDirf *= TRACER_WIDTH / 20.0f;
@@ -1543,7 +1543,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glLineWidth (1);
 	glDisable (GL_LINE_STIPPLE);
 	glDisable (GL_LINE_SMOOTH);
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	ogl.StencilOn (bStencil);
 	}
 }
@@ -1682,14 +1682,14 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		else {
 			ogl.SetBlendUsage (true);
 			if (bAdditive)
-				SetBlendMode (GL_ONE, GL_ONE);
+				ogl.SetBlendMode (GL_ONE, GL_ONE);
 			else
-				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glColor4fv (reinterpret_cast<GLfloat*> (&trailColor));
 			bDrawArrays = ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			bStencil = ogl.StencilOff ();
 			ogl.SetFaceCulling (false);
-			SetDepthWrite (0);
+			ogl.SetDepthWrite (false);
 			ogl.SetTextureUsage (true);
 			bmP->SetTranspType (-1);
 			if (bmP->Bind (1))
@@ -1713,7 +1713,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 					}
 				glEnd ();
 			if (bAdditive)
-				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 0 // render outline
 				ogl.SetTextureUsage (false);
 				glColor3d (1, 0, 0);
@@ -1725,7 +1725,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				}
 			ogl.StencilOn (bStencil);
 			ogl.SetFaceCulling (true);
-			glDepthMask (1);
+			ogl.SetDepthWrite (true);
 			}
 		}
 	RenderShockwave (objP);

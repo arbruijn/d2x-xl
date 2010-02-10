@@ -240,11 +240,11 @@ if (gameOpts->render.debug.bWireFrame) {
 static inline void G3SetBlendMode (CSegFace *faceP)
 {
 if (faceP->m_info.bAdditive)
-	SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 else if (faceP->m_info.bTransparent)
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 else
-	SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 }
 
 //------------------------------------------------------------------------------
@@ -662,16 +662,16 @@ else {
 		if (!bAdditive) {
 			bAdditive = true;
 			//if (!faceP->m_info.bTransparent)
-				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+				ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			ogl.SetDepthMode (GL_EQUAL);
-			SetDepthWrite (0);
+			SetDepthWrite (false);
 			}
 		}
 #if 0 //headlights will be rendered in a separate pass to decrease shader changes
 	if (gameStates.render.bHeadlights) {
 		if (!bAdditive) {
 			bAdditive = true;
-			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			}
 		lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->m_info.color);
 		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
@@ -679,7 +679,7 @@ else {
 #endif
 	if (bAdditive) {
 		ogl.SetDepthMode (GL_LEQUAL);
-		glDepthMask (1);
+		ogl.SetDepthWrite (true);
 		}
 	}
 

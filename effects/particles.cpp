@@ -699,10 +699,10 @@ if (gameOpts->render.bDepthSort > 0) {
 		if (bmP->Bind (0))
 			return 0;
 		if (m_bEmissive)
-			//SetBlendMode (GL_ONE, GL_ONE);
-			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			//ogl.SetBlendMode (GL_ONE, GL_ONE);
+			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else
-			SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 		}
 	}
@@ -717,9 +717,9 @@ else if (gameOpts->render.particles.bSort) {
 		if (bmP->Bind (0))
 			return 0;
 		if (m_bEmissive)
-			SetBlendMode (GL_ONE, GL_ONE);
+			ogl.SetBlendMode (GL_ONE, GL_ONE);
 		else
-			SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 		}
 	}
@@ -1754,7 +1754,7 @@ bufferBrightness = brightness;
 ogl.SetBlendUsage (true);
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
-SetDepthWrite (0);
+ogl.SetDepthWrite (false);
 ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTextureUsage (true);
 
@@ -1768,9 +1768,9 @@ if (InitBuffer (bLightmaps)) {
 			shaderManager.Deploy (-1);
 #if 1
 			if (bBufferEmissive)
-				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+				ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			else
-				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 			}
 		}
@@ -1790,7 +1790,7 @@ else {
 	glEnd ();
 	}
 m_iBuffer = 0;
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
 return true;
@@ -1823,12 +1823,12 @@ if (gameOpts->render.bDepthSort <= 0) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetFaceCulling (false);
 	ogl.SetBlendUsage (true);
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetTextureUsage (true);
 	if ((nType >= 0) && bmP->Bind (0))
 		return 0;
 	ogl.SetDepthMode (GL_LESS);
-	SetDepthWrite (0);
+	ogl.SetDepthWrite (false);
 	m_iBuffer = 0;
 	}
 particleManager.SetLastType (-1);
@@ -1850,9 +1850,9 @@ if (gameOpts->render.bDepthSort <= 0) {
 		glEnd ();
 	OglBindTexture (0);
 	ogl.SetTextureUsage (false);
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	ogl.StencilOn (particleManager.Stencil ());
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 return 1;
 }

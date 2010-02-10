@@ -919,7 +919,7 @@ void RenderSkyBox (int nWindow)
 {
 PROF_START
 if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	RenderSkyBoxFaces ();
 	RenderSkyBoxObjects ();
 	}
@@ -1211,12 +1211,12 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
  		ogl.SetTextureUsage (true);
 		ogl.SetBlendUsage (true);
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		ogl.SetDepthMode (GL_LEQUAL);
 		if (!nWindow) {
-			SetDepthWrite (0);
+			ogl.SetDepthWrite (false);
 			RenderSegmentList (3, 1);
-			glDepthMask (1);
+			ogl.SetDepthWrite (true);
 			}
 		ogl.SetDepthMode (GL_LESS);
 		ogl.SetTextureUsage (false);

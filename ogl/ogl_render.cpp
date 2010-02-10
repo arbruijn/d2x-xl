@@ -402,7 +402,7 @@ else
 	else
 #endif
 	if (!bDepthMask)
-		SetDepthWrite (0);
+		ogl.SetDepthWrite (false);
 	ogl.SetDepthMode (GL_LEQUAL);
 	ogl.SetBlendUsage (true);
 	ogl.SetTextureUsage (false);
@@ -413,7 +413,7 @@ else
 	glEnd ();
 	ogl.SetDepthMode (depthFunc);
 	if (!bDepthMask)
-		glDepthMask (1);
+		ogl.SetDepthWrite (true);
 	}
 return 0;
 }
@@ -456,14 +456,14 @@ int G3DrawTexPolyFlat (
 
 if (FAST_SHADOWS) {
 	if (bBlend)
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else
 		ogl.SetBlendUsage (false);
 	}
 else {
 	if (gameStates.render.nShadowPass == 3) {
 		ogl.SetBlendUsage (true);
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
 ogl.SelectTMU (GL_TEXTURE0);
@@ -537,7 +537,7 @@ if (FAST_SHADOWS) {
 		ogl.SetBlendUsage (false);
 #if 0
 	else
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 	}
 else {
@@ -545,7 +545,7 @@ else {
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
 		ogl.SetBlendUsage (true);
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
 ogl.SetDepthMode (GL_LEQUAL);
@@ -850,14 +850,14 @@ r_tpolyc++;
 	ogl.SetDepthMode (GL_LEQUAL);
 if (FAST_SHADOWS) {
 	if (bBlend)
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else
 		ogl.SetBlendUsage (false);
 	}
 else {
 	if (gameStates.render.nShadowPass == 3) {
 		ogl.SetBlendUsage (true);
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
 ogl.SetDepthMode (GL_LEQUAL);
@@ -944,7 +944,7 @@ if (FAST_SHADOWS) {
 		ogl.SetBlendUsage (false);
 #if 0
 	else
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 	}
 else {
@@ -952,7 +952,7 @@ else {
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
 		ogl.SetBlendUsage (true);
-		SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
 ogl.SetDepthMode (GL_LEQUAL);
@@ -1071,7 +1071,7 @@ else {
 		glEnd ();
 		}
 	else {
-		SetDepthWrite (0);
+		ogl.SetDepthWrite (false);
 		ogl.SetTextureUsage (true);
 		if (bmP->Bind (1))
 			return 1;
@@ -1079,11 +1079,11 @@ else {
 		bmP->Texture ()->Wrap (GL_CLAMP);
 		ogl.SetBlendUsage (true);
 		if (bAdditive == 2)
-			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else if (bAdditive == 1)
-			SetBlendMode (GL_ONE, GL_ONE);
+			ogl.SetBlendMode (GL_ONE, GL_ONE);
 		else
-			SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (colorP)
 			glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
 		else
@@ -1100,9 +1100,9 @@ else {
 		glTexCoord2d (0, v);
 		glVertex3d (x - w, y - h, z);
 		glEnd ();
-		glDepthMask (1);
+		ogl.SetDepthWrite (true);
 		if (bAdditive)
-			SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//ogl.SetBlendUsage (false);
 		}
 	}

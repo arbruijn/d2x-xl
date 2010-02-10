@@ -293,7 +293,7 @@ else
 		m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
 		gameStates.render.grAlpha = GrAlpha (2 * 7);
 		ogl.SetBlendUsage (true);
-		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 200);
 		OglDrawFilledRect (right - 5, top + 5, right - 6, bottom - 5);
 		OglDrawFilledRect (right - 4, top + 4, right - 5, bottom - 5);

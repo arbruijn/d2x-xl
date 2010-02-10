@@ -621,7 +621,7 @@ else if (gameStates.render.bCloaked)
 	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 else if (bTransparency) {
 	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	SetDepthWrite (0);
+	SetDepthWrite (false);
 	}
 else
 	SetBlendMode (GL_ONE, GL_ZERO);
@@ -634,7 +634,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
 			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			SetDepthWrite (0);
+			SetDepthWrite (false);
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
 #if DBG
@@ -728,7 +728,7 @@ if (!nLightRange && nLights)
 if (bLighting) {
 	ogl.DisableLighting ();
 	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	}
 ogl.ResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);

@@ -147,7 +147,7 @@ glVertex2f (x1, y0);
 glVertex2f (x1, y1);
 glVertex2f (x0, y1);
 glEnd ();
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //if (colorP->rgb)
 //	ogl.SetBlendUsage (false);
 }

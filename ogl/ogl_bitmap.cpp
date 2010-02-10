@@ -62,7 +62,7 @@ int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, t
 r_bitmapc++;
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetBlendUsage (true);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
 fPos.Assign (vPos);
 transformation.Transform (fPos, fPos, 0);
@@ -194,7 +194,7 @@ m_render.bBlendState = ogl.GetBlendUsage ();
 glGetIntegerv (GL_DEPTH_FUNC, &m_render.depthFunc);
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendUsage (bBlend);
-SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 return &m_info.texture;
 }
 

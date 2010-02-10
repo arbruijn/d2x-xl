@@ -321,7 +321,7 @@ if (nState == 0) {
 		Compute (-1, 2, NULL);
 		return 0;
 		}
-	SetDepthWrite (0);
+	ogl.SetDepthWrite (false);
 	}
 else if (nState == 1) {
 	CDynLight*		psl;
@@ -380,7 +380,7 @@ else if (nState == 2) {
 		ogl.SelectTMU (GL_TEXTURE0 + i);
 		glBindTexture (GL_TEXTURE_2D, 0);
 		}
-	glDepthMask (1);
+	ogl.SetDepthWrite (true);
 	ogl.SetDepthTest (true);
 	ogl.SetDepthMode (GL_LESS);
 	glEnable (GL_ALPHA_TEST);

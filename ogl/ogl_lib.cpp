@@ -309,8 +309,8 @@ nDrawBuffer = -1;
 void COglData::Initialize (void)
 {
 palette = NULL;
-glDisable (GL_TEXTURE_2D);
 bUseTextures = false;
+glDisable (GL_TEXTURE_2D);
 bUseBlending = true;
 glEnable (GL_BLEND);
 glBlendFunc (nSrcBlendMode = GL_SRC_ALPHA, nDestBlendMode = GL_ONE_MINUS_SRC_ALPHA);
@@ -376,7 +376,7 @@ SetStencilTest (false);
 SetStencilTest (false);
 glDisable (GL_LIGHTING);
 glDisable (GL_COLOR_MATERIAL);
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 ColorMask (1,1,1,1,1);
 if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 	glDisable (GL_MULTISAMPLE_ARB);
@@ -680,7 +680,7 @@ if (gameStates.render.nShadowPass) {
 #	if DBG_SHADOWS
 			if (bShadowTest) {
 				ColorMask (1,1,1,1,0);
-				SetDepthWrite (0);
+				SetDepthWrite (false);
 				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				SetStencilTest (false);
 				}
@@ -688,7 +688,7 @@ if (gameStates.render.nShadowPass) {
 #	endif
 			 {
 				ColorMask (0,0,0,0,0);
-				SetDepthWrite (0);
+				SetDepthWrite (false);
 				SetStencilTest (true);
 				if (!glIsEnabled (GL_STENCIL_TEST)) {
 					SetStencilTest (false);
@@ -799,7 +799,7 @@ else {
 	else
 		glDisable (GL_SCISSOR_TEST);
 	if (gameStates.render.nRenderPass < 0) {
-		glDepthMask (1);
+		ogl.SetDepthWrite (true);
 		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
 #if 1
@@ -810,14 +810,14 @@ else {
 			glClear (GL_DEPTH_BUFFER_BIT);
 		}
 	else if (gameStates.render.nRenderPass) {
-		SetDepthWrite (0);
+		SetDepthWrite (false);
 		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
 		if (bResetColorBuf)
 			glClear (GL_COLOR_BUFFER_BIT);
 		}
 	else { //make a depth-only render pass first to decrease bandwidth waste due to overdraw
-		glDepthMask (1);
+		ogl.SetDepthWrite (true);
 		ColorMask (0,0,0,0,0);
 		glClear (GL_DEPTH_BUFFER_BIT);
 		}
@@ -893,7 +893,7 @@ if (SHOW_DYN_LIGHT) {
 	glDisable (GL_LIGHTING);
 	glDisable (GL_COLOR_MATERIAL);
 	}
-glDepthMask (1);
+ogl.SetDepthWrite (true);
 //SetStereoSeparation (0);
 ColorMask (1,1,1,1,0);
 if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
