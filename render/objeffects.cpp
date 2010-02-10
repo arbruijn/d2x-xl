@@ -1474,7 +1474,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			}
 		ogl.SetFaceCulling (true);
 		for (h = 0; h < 3; h += 2) {
-			glCullFace (h ? GL_FRONT : GL_BACK);
+			ogl.SetCullMode (h ? GL_FRONT : GL_BACK);
 			glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
 			glBegin (GL_TRIANGLE_STRIP);
 			for (j = 0; j < RING_SEGS; j++) {

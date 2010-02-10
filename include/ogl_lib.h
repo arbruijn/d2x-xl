@@ -285,7 +285,7 @@ class COGL {
 		inline bool SetBlending (bool bUseBlending) { return Enable (m_data.bUseBlending, bUseBlending, GL_BLEND); }
 		inline bool GetBlendUsage (void) { return m_data.bUseBlending; }
 		
-		inline bool SetTextureUsage (bool bUseTextures) { return Enable (m_data.bUseTextures = !bUseTextures, bUseTextures, GL_TEXTURE_2D); }
+		inline bool SetTextureUsage (bool bUseTextures) { return Enable (m_data.bUseTextures, bUseTextures, GL_TEXTURE_2D); }
 		inline bool GetTextureUsage (void) { return m_data.bUseTextures; }
 		
 		inline bool SetLineSmooth (bool bLineSmooth) { return Enable (m_data.bLineSmooth, bLineSmooth, GL_LINE_SMOOTH); }
@@ -321,7 +321,7 @@ class COGL {
 
 		inline GLenum SetCullMode (GLenum nCullMode) {
 			if (m_data.nCullMode != nCullMode)
-				glCullFace (m_data.nCullMode != nCullMode);
+				glCullFace (m_data.nCullMode = nCullMode);
 			return m_data.nCullMode;
 			}
 

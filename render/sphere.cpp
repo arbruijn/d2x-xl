@@ -622,7 +622,7 @@ if (ogl.m_states.bUseTransform) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
-		glCullFace (nCull ? GL_FRONT : GL_BACK);
+		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
 		for (i = 0; i < h; i++) {
 			RenderRing (i, nQuads, bTextured, GL_QUAD_STRIP);
 #if 0
@@ -644,7 +644,7 @@ if (ogl.m_states.bUseTransform) {
 	}
 else {
 	for (nCull = 0; nCull < 2; nCull++) {
-		glCullFace (nCull ? GL_FRONT : GL_BACK);
+		ogl.SetCullMode (nCull ? GL_FRONT : GL_BACK);
 		svP [0] = svP [1] = &m_vertices [0];
 		for (j = 0; j < h; j++) {
 			for (i = 0; i < nQuads; i++, svP [0]++) {
