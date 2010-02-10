@@ -1540,7 +1540,7 @@ class CRenderData {
 	public:
 		CColorData					color;
 		int							transpColor;
-		CFaceListIndex				faceIndex [2][MAX_THREADS];
+		CFaceListIndex				faceIndex [MAX_THREADS];
 		CVertColorData				vertColor;
 		CSphere						shield;
 		CSphere						monsterball;
@@ -1715,6 +1715,7 @@ class CSegmentData {
 		int						nSegments;
 		int						nLastSegment;
 		int						nFaces;
+		int						nFaceKeys;
 		int						nTris;
 		int						nLevelVersion;
 		char						szLevelFilename [FILENAME_LEN];

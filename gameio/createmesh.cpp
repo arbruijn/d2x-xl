@@ -1080,6 +1080,48 @@ for (i = 0; i < 2; i++, m_triP++) {
 
 //------------------------------------------------------------------------------
 
+int CQuadMeshBuilder::CompareFaceKeys (const CSegFace** pf, const CSegFace** pm)
+{
+	int i = (*pf)->m_info.nKey;
+	int m = (*pm)->m_info.nKey;
+
+return (i < m) ? -1 : (i > m) ? 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+// Create a linearized set of keys for all faces, where each unique combination of 
+// a face's base and overlay texture has a unique key.
+// The renderer will use these to quickly access all faces bearing the same textures.
+
+void CQuadMeshBuilder::ComputeFaceKeys (void)
+{
+	CSegFace	*faceP = FACES.faces.Buffer ();
+	CArray<CSegFace*>	keyFaceRef;
+
+keyFaceRef.Create (gameData.segs.nFaces);
+for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
+	keyFaceRef [i] = faceP;
+	faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES;
+	}
+
+keyFaceRef.SortAscending ();
+
+int nKey = -1;
+gameData.segs.nFaceKeys = -1;
+
+for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
+	faceP = keyFaceRef [i];
+	if (nKey != faceP->m_info.nKey) {
+		nKey = faceP->m_info.nKey;
+		++gameData.segs.nFaceKeys;
+		}
+	faceP->m_info.nKey = gameData.segs.nFaceKeys;
+	}
+++gameData.segs.nFaceKeys;
+}
+
+//------------------------------------------------------------------------------
+
 void CQuadMeshBuilder::BuildSlidingFaceList (void)
 {
 	CSegFace	*faceP = FACES.faces.Buffer ();
@@ -1412,6 +1454,7 @@ if (gameStates.render.bTriangleMesh && !m_triMeshBuilder.Build (nLevel, gameStat
 if (!(gameData.render.lights.Resize () && gameData.render.color.Resize ()))
 	return 0;
 #endif
+ComputeFaceKeys ();
 BuildSlidingFaceList ();
 if (gameStates.render.bTriangleMesh)
 	cameraManager.Destroy ();

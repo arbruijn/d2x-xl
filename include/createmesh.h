@@ -70,18 +70,18 @@ class CTriMeshBuilder {
 
 class CQuadMeshBuilder {
 	private:
-		CSegFace				*m_faceP;
-		tFaceTriangle	*m_triP;
-		CFloatVector3	*m_vertexP;
-		CFloatVector3	*m_normalP;
-		tTexCoord2f		*m_texCoordP;
-		tTexCoord2f		*m_ovlTexCoordP;
-		tTexCoord2f		*m_lMapTexCoordP;
-		tRgbaColorf		*m_faceColorP;
-		tFaceColor		*m_colorP;
-		CSegment			*m_segP;
-		tSegFaces		*m_segFaceP;
-		CSide				*m_sideP;
+		CSegFace*		m_faceP;
+		tFaceTriangle*	m_triP;
+		CFloatVector3*	m_vertexP;
+		CFloatVector3*	m_normalP;
+		tTexCoord2f*	m_texCoordP;
+		tTexCoord2f*	m_ovlTexCoordP;
+		tTexCoord2f*	m_lMapTexCoordP;
+		tRgbaColorf*	m_faceColorP;
+		tFaceColor*		m_colorP;
+		CSegment*		m_segP;
+		tSegFaces*		m_segFaceP;
+		CSide*			m_sideP;
 
 		ushort			m_sideVerts [5];
 		short				m_nOvlTexCount;
@@ -102,6 +102,9 @@ class CQuadMeshBuilder {
 		void BuildSlidingFaceList (void);
 		int IsBigFace (ushort* sideVerts);
 		CFloatVector3 *SetTriNormals (tFaceTriangle *triP, CFloatVector3 *m_normalP);
+		void ComputeFaceKeys (void);
+
+		static int CompareFaceKeys (const CSegFace** pf, const CSegFace** pm);
 
 	public:
 		CQuadMeshBuilder (void) {};

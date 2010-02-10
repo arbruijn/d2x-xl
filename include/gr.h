@@ -234,6 +234,7 @@ typedef struct tFaceTriangle {
 class CSegFaceInfo {
 	public:
 		ushort				index [4];
+		int					nKey;
 		int					nIndex;
 		int					nTriIndex;
 		int					nVerts;
@@ -284,6 +285,11 @@ class CSegFace {
 		CBitmap*				bmTop;
 		tTexCoord2f*		texCoordP;	//needed to override default tex coords, e.g. for camera outputs
 		CSegFace*			nextSlidingFace;
+
+	public:
+		bool operator< (CSegFace& other) { return m_info.nKey < other.m_info.nKey; }
+		bool operator> (CSegFace& other) { return m_info.nKey > other.m_info.nKey; }
+		bool operator== (CSegFace& other) { return m_info.nKey == other.m_info.nKey; }
 		};
 
 inline int operator- (CSegFace* f, CArray<CSegFace>& a) { return a.Index (f); }

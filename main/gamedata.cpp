@@ -402,12 +402,9 @@ fAttScale [1] = 0.005f;
 fAttScale [0] = 0.0f;
 fAttScale [1] = 0.003333f;
 #endif
-#if 1
-for (int h = 0; h < 2; h++)
-	for (int i = 0; i < gameStates.app.nThreads; i++)
-		faceIndex [h][i].Init ();
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	faceIndex [i].Init ();
 faceList.Clear ();
-#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -508,9 +505,9 @@ DESTROY (lMapTexCoord);
 CFaceListIndex::CFaceListIndex ()
 {
 nUsedKeys = 0;
-roots.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-tails.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-usedKeys.Create (MAX_WALL_TEXTURES); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+roots.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+tails.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+usedKeys.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 Init ();
 }
 

@@ -45,14 +45,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ResetFaceList (int nThread)
 {
 PROF_START
-for (int i = 0; i < 2; i++) {
-	CFaceListIndex& flx = gameData.render.faceIndex [i][nThread];
-	int* tails = flx.tails.Buffer (),
-		* usedKeys = flx.usedKeys.Buffer ();
-	for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
-		tails [usedKeys [i]] = -1;
-	flx.nUsedKeys = 0;
-	}
+CFaceListIndex& flx = gameData.render.faceIndex [nThread];
+int* tails = flx.tails.Buffer (),
+	* usedKeys = flx.usedKeys.Buffer ();
+for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
+	tails [usedKeys [i]] = -1;
+flx.nUsedKeys = 0;
 PROF_END(ptFaceList)
 }
 
@@ -73,13 +71,10 @@ if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
 if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
-int	i, j, nKey = faceP->m_info.nBaseTex;
-
-if (nKey < 0)
-	return 0;
+int	i, j, nKey = faceP->m_info.nKey;
 
 PROF_START
-CFaceListIndex& flx = gameData.render.faceIndex [faceP->m_info.nOvlTex != 0][nThread];
+CFaceListIndex& flx = gameData.render.faceIndex [nThread];
 
 #ifdef _OPENMP
 #	pragma omp critical
@@ -713,20 +708,17 @@ ogl.ColorMask (1,1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
 	// first just render all coronas (happens before any geometry gets rendered)
-	for (h = 0; h < 2; h++)
-		for (i = 0; i < gameStates.app.nThreads; i++)
-			RenderCoronaFaceList (gameData.render.faceIndex [h][i], 0);
+	for (i = 0; i < gameStates.app.nThreads; i++)
+		RenderCoronaFaceList (gameData.render.faceIndex [i], 0);
 	glFlush ();
 	// then query how many samples (pixels) were rendered for each corona
-	for (h = 0; h < 2; h++)
-		for (i = 0; i < gameStates.app.nThreads; i++)
-			RenderCoronaFaceList (gameData.render.faceIndex [h][i], 1);
+	for (i = 0; i < gameStates.app.nThreads; i++)
+		RenderCoronaFaceList (gameData.render.faceIndex [i], 1);
 	}
 else { //now find out how many fragments are rendered for each corona if geometry interferes
 	gameStates.render.bQueryCoronas = 2;
-	for (h = 0; h < 2; h++)
-		for (i = 0; i < gameStates.app.nThreads; i++)
-			RenderCoronaFaceList (gameData.render.faceIndex [h][i], 2);
+	for (i = 0; i < gameStates.app.nThreads; i++)
+		RenderCoronaFaceList (gameData.render.faceIndex [i], 2);
 	glFlush ();
 	}
 glDepthMask (1);
@@ -825,9 +817,8 @@ if (nType) {
 	}
 else {
 	// render mine by pre-sorted textures
-	for (h = 0; h < 2; h++)
-		for (i = 0; i < gameStates.app.nThreads; i++)
-			nFaces += RenderFaceList (gameData.render.faceIndex [h][i], nType, bDepthOnly, bHeadlight);
+	for (i = 0; i < gameStates.app.nThreads; i++)
+		nFaces += RenderFaceList (gameData.render.faceIndex [i], nType, bDepthOnly, bHeadlight);
 	}
 return nFaces;
 }
