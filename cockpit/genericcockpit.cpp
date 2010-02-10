@@ -1128,7 +1128,7 @@ nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ())
 //				 : ((m_info.xStereoSeparation < 0) == gameOpts->render.bFlipFrames)
 //					? BM_ADDON_RETICLE_RED
 					: BM_ADDON_RETICLE_GREEN;
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glColor3i (1,1,1);
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 		  (x + ScaleX (crossOffsets [ofs].x - 1)), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
@@ -1834,8 +1834,8 @@ if (!cockpit->Setup (false))
 if (!cockpit->Setup (true))
 	return;
 #endif
-glDepthFunc (GL_ALWAYS);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetDepthMode (GL_ALWAYS);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
 CCanvas::SetCurrent (CurrentGameScreen ());
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);

@@ -467,7 +467,7 @@ if (bmP && (bmP == bmpShield)) {
 #endif
 if (bmP) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	if (bmP->Bind (1))
 		bmP = NULL;
 	else {
@@ -478,7 +478,7 @@ if (bmP) {
 		}
 	}
 if (!bmP) {
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	bTextured = 0;
 	alpha /= 2;
 	}
@@ -496,7 +496,7 @@ if (alpha < 1.0f) {
 	}
 glColor4f (red, green, blue, alpha);
 *pfScale = fScale;
-glDepthMask (0);
+SetDepthWrite (0);
 return bTextured;
 }
 
@@ -746,23 +746,23 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 	int	bTextured = 0;
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 
-glEnable (GL_BLEND);
+ogl.SetBlendUsage (true);
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;
 else
 #endif
 	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
-glDepthFunc (GL_LEQUAL);
+ogl.SetDepthMode (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
 if (bAdditive == 2)
-	glBlendFunc (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
+	SetBlendMode (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
 else if (bAdditive == 1)
-	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 else
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #else
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
 #if 1
@@ -788,7 +788,7 @@ ogl.m_states.bUseTransform = 0;
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
 glDepthMask (1);
-glDepthFunc (GL_LESS);
+ogl.SetDepthMode (GL_LESS);
 return 1;
 }
 

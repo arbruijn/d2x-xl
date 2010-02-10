@@ -81,15 +81,14 @@ glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
-glDisable (GL_TEXTURE_2D);
-glDisable (GL_DEPTH_TEST);
-glEnable (GL_STENCIL_TEST);
-glDepthMask (0);
+ogl.SetTextureUsage (false);
+ogl.SetDepthTest (false);
+ogl.SetStencilTest (true);
+ogl.SetDepthWrite (0);
 if (gameStates.render.nShadowBlurPass)
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 else
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDisable (GL_TEXTURE_2D);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glColor4dv (shadowHue [gameStates.render.nShadowBlurPass]);// / fDist);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
@@ -97,9 +96,9 @@ glVertex2f (1,0);
 glVertex2f (1,1);
 glVertex2f (0,1);
 glEnd ();
-glEnable (GL_DEPTH_TEST);
-glDisable (GL_STENCIL_TEST);
-glDepthMask (1);
+ogl.SetDepthTest (true);
+SetStencilTest (false);
+ogl.SetDepthWrite (true);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
 glPopMatrix ();
@@ -171,15 +170,15 @@ glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
-glDisable (GL_DEPTH_TEST);
-glDepthMask (0);
+ogl.SetDepthTest (false);
+SetDepthWrite (0);
 #if 1
-glDisable (GL_BLEND);
+ogl.SetBlendUsage (false);
 #else
-glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendUsage (true);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 ogl.SelectTMU (GL_TEXTURE0);
 shadowBuf.SetTranspType (0);
 if (shadowBuf.Bind (0))
@@ -201,7 +200,7 @@ glVertex2d (0,0.5);
 glEnd ();
 if (ogl.m_states.bShadersOk)
 	shaderManager.Deploy (-1);
-glEnable (GL_DEPTH_TEST);
+ogl.SetDepthTest (true);
 glDepthMask (1);
 glPopMatrix ();
 glMatrixMode (GL_MODELVIEW);
@@ -292,7 +291,7 @@ void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 
 #if 1
 ogl.SelectTMU (GL_TEXTURE0);
-glEnable (GL_TEXTURE_2D); 
+ogl.SetTextureUsage (true); 
 
 glEnable (GL_TEXTURE_GEN_S);
 glEnable (GL_TEXTURE_GEN_T);
@@ -327,7 +326,7 @@ glDisable (GL_TEXTURE_GEN_T);
 glDisable (GL_TEXTURE_GEN_R);
 glDisable (GL_TEXTURE_GEN_Q);
 ogl.SelectTMU (GL_TEXTURE0);	
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 #endif
 DestroyShadowMaps ();
 }

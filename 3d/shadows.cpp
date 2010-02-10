@@ -738,7 +738,7 @@ return m_nState = 1;
 
 void G3SetCullAndStencil (int bCullFront, int bZPass)
 {
-glEnable (GL_CULL_FACE);
+ogl.SetFaceCulling (true);
 if (bCullFront) {
 	OglCullFace (1);
 	if (bZPass)
@@ -947,7 +947,7 @@ if (bPrintLine) {
 	glLineWidth (3);
 	if (!bShadowTest) {
 		ogl.ColorMask (1,1,1,1,1);
-		glDisable (GL_STENCIL_TEST);
+		SetStencilTest (false);
 		}
 	glColor4d (1,0.8,0,1);
 	glBegin (GL_LINES);
@@ -958,7 +958,7 @@ if (bPrintLine) {
 	glEnd ();
 	if (!bShadowTest) {
 		ogl.ColorMask (0,0,0,0,0);
-		glEnable (GL_STENCIL_TEST);
+		ogl.SetStencilTest (true);
 		}
 	}
 #endif
@@ -1249,7 +1249,7 @@ int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
 #if DBG_SHADOWS
 if (bShadowTest) {
 	glColor4fv (reinterpret_cast<GLfloat*> (modelColor + bCullFront));
-	glDepthFunc (GL_LEQUAL);
+	ogl.SetDepthMode (GL_LEQUAL);
 	}
 #endif
 G3SetCullAndStencil (bCullFront, bZPass);
@@ -1433,7 +1433,7 @@ if (!gameStates.render.bShadowMaps) {
 		return 0;
 	}
 ogl.SelectTMU (GL_TEXTURE0);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
 pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;

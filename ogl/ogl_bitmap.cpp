@@ -61,8 +61,8 @@ int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, t
 
 r_bitmapc++;
 ogl.SelectTMU (GL_TEXTURE0);
-glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendUsage (true);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
 fPos.Assign (vPos);
 transformation.Transform (fPos, fPos, 0);
@@ -73,7 +73,7 @@ VmVecRotate (&pv, &v1, &transformation.m_info.view [0]);
 w = (GLfloat) X2F (width); //FixMul (width, transformation.m_info.scale.x));
 h = (GLfloat) X2F (height); //FixMul (height, transformation.m_info.scale.y));
 if (gameStates.render.nShadowBlurPass == 1) {
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	glColor4d (1,1,1,1);
 	glBegin (GL_QUADS);
 	fPos [X] -= w;
@@ -88,7 +88,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	glEnd ();
 	}
 else {
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	if (bmP->Bind (1))
 		return 1;
 	bmP = bmP->Override (-1);
@@ -184,20 +184,17 @@ m_render.v2 = float (Bottom ()) / h;
 CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 {
 ogl.ClearError (1);
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 ogl.SelectTMU (GL_TEXTURE0);
 if (Bind (bMipMaps))
 	return NULL;
 m_info.texP->Wrap (GL_REPEAT);
 
-m_render.bBlendState = glIsEnabled (GL_BLEND);
+m_render.bBlendState = ogl.GetBlendUsage ();
 glGetIntegerv (GL_DEPTH_FUNC, &m_render.depthFunc);
-glDepthFunc (GL_ALWAYS);
-if (bBlend)
-	glEnable (GL_BLEND);
-else
-	glDisable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetDepthMode (GL_ALWAYS);
+ogl.SetBlendUsage (bBlend);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 return &m_info.texture;
 }
 
@@ -228,14 +225,14 @@ glEnd ();
 
 void CBitmap::OglEndRender (void)
 {
-glDepthFunc (m_render.depthFunc);
+ogl.SetDepthMode (m_render.depthFunc);
 if (m_render.bBlendState)
-	glEnable (GL_BLEND);
+	ogl.SetBlendUsage (true);
 else
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 ogl.SelectTMU (GL_TEXTURE0);
 OglBindTexture (0);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 }
 
 //------------------------------------------------------------------------------
@@ -330,7 +327,7 @@ void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, 
 	int	wScreen = screen.Width ();
 	int	hScreen = screen.Height ();
 
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 ogl.SetReadBuffer (GL_FRONT, 1);
 if (bTGA) {
 	ogl.SetReadBuffer (GL_FRONT, 0);

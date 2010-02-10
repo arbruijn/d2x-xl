@@ -548,9 +548,9 @@ if (*m_info.szBitmapName) {
 	G3SetViewMatrix (p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 	p[Z] = 2 * I2X (w);
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
-	glDepthFunc (GL_ALWAYS);
+	ogl.SetDepthMode (GL_ALWAYS);
 	G3DrawBitmap (p, I2X (w), I2X (h), bmP, NULL, 1.0, 3);
-	glDepthFunc (depthFunc);
+	ogl.SetDepthMode (depthFunc);
 	G3EndFrame ();
 	//paletteManager.ResumeEffect ();
 	CCanvas::SetCurrent (curCanvSave);
@@ -1513,9 +1513,9 @@ pszMsg = GetMessage (gameStates.app.bD1Mission ? briefingScreens [nScreen % MAX_
 if (!pszMsg)
 	return (0);
 SetColors ();
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 i = ShowMessage (nScreen, pszMsg, nLevel);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 return i;
 }
 

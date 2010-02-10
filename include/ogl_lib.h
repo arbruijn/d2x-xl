@@ -65,8 +65,6 @@ class COglData {
 	public:
 		GLubyte			buffer [OGLTEXBUFSIZE];
 		CPalette*		palette;
-		GLenum			nSrcBlend;
-		GLenum			nDestBlend;
 		float				zNear;
 		float				zFar;
 		CFloatVector3	depthScale;
@@ -80,6 +78,19 @@ class COglData {
 		int				bLightmaps;
 		int				nHeadlights;
 		fix				xStereoSeparation;
+		GLenum			nSrcBlendMode;
+		GLenum			nDestBlendMode;
+		GLenum			nDepthMode;
+		GLenum			nCullMode;
+		GLuint			nDepthFunc;
+		bool				bAlphaTest;
+		bool				bScissorTest;
+		bool				bDepthTest;
+		bool				bDepthWrite;
+		bool				bUseBlending;
+		bool				bStencilTest;
+		bool				bCullFaces;
+		bool				bUseTextures;
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
@@ -224,7 +235,6 @@ class COGL {
 		void SwapBuffers (int bForce, int bClear);
 		void SetupTransform (int bForce);
 		void ResetTransform (int bForce);
-		void BlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 		void SetScreenMode (void);
 		void GetVerInfo (void);
 		GLuint CreateDepthTexture (int nTMU, int bFBO);
@@ -235,11 +245,74 @@ class COGL {
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
 		void FlushDrawBuffer (bool bAdditive = false);
+
+		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {
+			if (bCurrent != bNew) {
+				if (bCurrent = bNew)
+					glEnable (nFunc);
+				else
+					glDisable (nFunc);
+				bCurrent = glIsEnabled (nFunc) != 0;
+				}
+			return bCurrent;
+			}
+
+		inline bool SetFaceCulling (bool bCullFaces) { return Enable (m_data.bCullFaces, bCullFaces, GL_CULL_FACE); }
+		inline bool GetFaceCulling (void) { return m_data.bCullFaces; }
+
+		inline bool SetDepthTest (bool bDepthTest) { return Enable (m_data.bDepthTest, bDepthTest, GL_DEPTH_TEST); }
+		inline bool GetDepthTest (void) { return m_data.bDepthTest; }
+
+		inline bool SetAlphaTest (bool bAlphaTest) { return Enable (m_data.bAlphaTest, bAlphaTest, GL_ALPHA_TEST); }
+		inline bool GetAlphaTest (void) { return m_data.bAlphaTest; }
+
+		inline bool SetScissorTest (bool bScissorTest) { return Enable (m_data.bScissorTest, bScissorTest, GL_SCISSOR_TEST); }
+		inline bool GetScissorTest (void) { return m_data.bScissorTest; }
+
+		inline bool SetStencilTest (bool bStencilTest) { return Enable (m_data.bStencilTest, bStencilTest, GL_STENCIL_TEST); }
+		inline bool getStencilTest (void) { return m_data.bStencilTest; }
+
+		inline bool SetBlendUsage (bool bUseBlending) { return Enable (m_data.bUseBlending, bUseBlending, GL_BLEND); }
+		inline bool GetBlendUsage (void) { return m_data.bUseBlending; }
+		
+		inline bool SetTextureUsage (bool bUseTextures) { return Enable (m_data.bUseTextures, bUseTextures, GL_TEXTURE_2D); }
+		inline bool GetTextureUsage (void) { return m_data.bUseTextures; }
+		
+		inline bool SetBlendMode (GLenum nSrcBlendMode, GLenum nDestBlendMode) {
+			if ((m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode))
+				return true;
+			glBlendFunc (m_data.nSrcBlendMode = nSrcBlendMode, m_data.nDestBlendMode = nDestBlendMode);
+			glGetIntegerv (GL_BLEND_SRC, (GLint*) m_data.nSrcBlendMode);
+			glGetIntegerv (GL_BLEND_DST, (GLint*) m_data.nDestBlendMode);
+			return (m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode);
+			}
+
+		inline GLenum SetDepthMode (GLenum nDepthMode) {
+			if (m_data.nDepthMode != nDepthMode) {
+				SetDepthMode (m_data.nDepthMode = nDepthMode);
+				glGetIntegerv (GL_DEPTH_FUNC, (GLint*) &m_data.nDepthMode);
+				}
+			return m_data.nDepthMode;
+			}
+
+		inline void SetDepthWrite (bool bDepthWrite) { 
+			if (m_data.bDepthWrite != bDepthWrite)
+				glDepthMask (GLboolean (m_data.bDepthWrite = bDepthWrite));
+			}
+
+		inline GLenum SetCullMode (GLenum nCullMode) {
+			if (m_data.nCullMode != nCullMode)
+				glCullFace (m_data.nCullMode != nCullMode);
+			return m_data.nCullMode;
+			}
+
 		inline void SelectDrawBuffer (int nSide) { 
 			m_data.SelectDrawBuffer (nSide); 
 			CreateDrawBuffer ();
 			}
+
 		inline CFBO* DrawBuffer (void) { return m_data.drawBufferP; }
+
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
@@ -328,10 +401,10 @@ return pPoint->p3_normal.nFaces ? pPoint->p3_normal.vNormal.XYZ () : pvNormal->X
 
 static inline void OglCullFace (int bFront)
 {
-if (gameStates.render.bRearView /*&& (gameStates.render.nWindow != 0)*/)
-	glCullFace (bFront ? GL_BACK : GL_FRONT);
+if (gameStates.render.bRearView)
+	ogl.SetCullMode (bFront ? GL_BACK : GL_FRONT);
 else
-	glCullFace (bFront ? GL_FRONT : GL_BACK);
+	ogl.SetCullMode (bFront ? GL_FRONT : GL_BACK);
 }
 
 //------------------------------------------------------------------------------

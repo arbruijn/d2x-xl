@@ -418,7 +418,7 @@ if (SHOW_DYN_LIGHT &&
 	POFGatherPolyModelItems (objP, modelDataP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
-glEnable (GL_CULL_FACE);
+ogl.SetFaceCulling (true);
 OglCullFace (0);
 for (;;) {
 	nTag = WORDVAL (p);

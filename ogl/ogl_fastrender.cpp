@@ -210,7 +210,7 @@ if (gameOpts->render.debug.bWireFrame) {
 		tFaceTriangle	*triP = FACES.tris + faceP->m_info.nTriIndex;
 		ogl.DisableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
-			glDisable (GL_TEXTURE_2D);
+			ogl.SetTextureUsage (false);
 		glColor3f (1.0f, 0.5f, 0.0f);
 		glLineWidth (6);
 		glBegin (GL_LINE_LOOP);
@@ -227,7 +227,7 @@ if (gameOpts->render.debug.bWireFrame) {
 		if (gameOpts->render.debug.bDynamicLight)
 			ogl.EnableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
-			glEnable (GL_TEXTURE_2D);
+			ogl.SetTextureUsage (true);
 		}
 	glLineWidth (1);
 	}
@@ -240,11 +240,11 @@ if (gameOpts->render.debug.bWireFrame) {
 static inline void G3SetBlendMode (CSegFace *faceP)
 {
 if (faceP->m_info.bAdditive)
-	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 else if (faceP->m_info.bTransparent)
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 else
-	glBlendFunc (GL_ONE, GL_ZERO);
+	SetBlendMode (GL_ONE, GL_ZERO);
 }
 
 //------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ if (bTextured) {
 		else {
 			ogl.SelectTMU (GL_TEXTURE1, true);
 			OglBindTexture (0);
-			glDisable (GL_TEXTURE_2D);
+			ogl.SetTextureUsage (false);
 			mask = NULL;
 			}
 		}
@@ -284,7 +284,7 @@ if (bTextured) {
 		else {
 			ogl.SelectTMU (GL_TEXTURE2, true);
 			OglBindTexture (0);
-			glDisable (GL_TEXTURE_2D);
+			ogl.SetTextureUsage (false);
 			bColorKey = 0;
 			}
 		}
@@ -302,7 +302,7 @@ else {
 	gameStates.render.history.bmBot = NULL;
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	OglBindTexture (0);
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	}
 PROF_END(ptRenderStates)
 return 1;
@@ -358,7 +358,7 @@ else {
 	gameStates.render.history.bmBot = NULL;
 	ogl.SelectTMU (GL_TEXTURE1, true);
 	OglBindTexture (0);
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	}
 PROF_END(ptRenderStates)
 return 1;
@@ -372,7 +372,7 @@ ogl.SelectTMU ((bmTop ? GL_TEXTURE1 : GL_TEXTURE0) + bLightmaps, true);
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, faceP->texCoordP - faceP->m_info.nIndex);
 else {
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	OglBindTexture (0);
 	}
 }
@@ -383,7 +383,7 @@ void G3ResetMonitor (CBitmap *bmTop, int bLightmaps)
 {
 if (bmTop) {
 	ogl.SelectTMU (GL_TEXTURE1 + bLightmaps, true);
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.ovlTexCoord.Buffer ()));
 	//gameStates.render.history.bmTop = NULL;
 	}
@@ -662,23 +662,23 @@ else {
 		if (!bAdditive) {
 			bAdditive = true;
 			//if (!faceP->m_info.bTransparent)
-				glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			glDepthFunc (GL_EQUAL);
-			glDepthMask (0);
+				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			ogl.SetDepthMode (GL_EQUAL);
+			SetDepthWrite (0);
 			}
 		}
 #if 0 //headlights will be rendered in a separate pass to decrease shader changes
 	if (gameStates.render.bHeadlights) {
 		if (!bAdditive) {
 			bAdditive = true;
-			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 			}
 		lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->m_info.color);
 		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
 		}
 #endif
 	if (bAdditive) {
-		glDepthFunc (GL_LEQUAL);
+		ogl.SetDepthMode (GL_LEQUAL);
 		glDepthMask (1);
 		}
 	}

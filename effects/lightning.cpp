@@ -985,7 +985,7 @@ void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
 
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
-glBlendFunc (GL_ONE, GL_ONE);
+SetBlendMode (GL_ONE, GL_ONE);
 for (bScale = 0; bScale < 2; bScale++) {
 	if (bScale)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
@@ -995,7 +995,7 @@ for (bScale = 0; bScale < 2; bScale++) {
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), plasmaBuffers [nThread][bScale].vertices);
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	glColor3f (1,1,1);
 	texCoordP = plasmaBuffers [nThread][bScale].texCoord;
 	vertexP = plasmaBuffers [nThread][bScale].vertices;
@@ -1019,7 +1019,7 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 	CFloatVector3*	vPosf = coreBuffer [nThread];
 	int				i;
 
-glBlendFunc (GL_ONE, GL_ONE);
+SetBlendMode (GL_ONE, GL_ONE);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glEnable (GL_LINE_SMOOTH);
@@ -1029,14 +1029,14 @@ if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
 #if 1
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	OglVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
 else {
 	ogl.SelectTMU (GL_TEXTURE0);
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	glBegin (GL_LINE_STRIP);
 	for (i = m_nNodes, vPosf = coreBuffer [nThread]; i; i--, vPosf++)
 		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf));
@@ -1057,7 +1057,7 @@ int CLightning::SetupPlasma (void)
 if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0, true);
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 if (LoadCorona () && !bmpCorona->Bind (1)) {
 	bmpCorona->Texture ()->Wrap (GL_CLAMP);
 	return 1;
@@ -1148,13 +1148,13 @@ if ((bDepthSort > 0) && (gameStates.render.nType != 5)) {	// not in transparency
 	}
 else {
 	if (!nDepth)
-		glDisable (GL_CULL_FACE);
+		ogl.SetFaceCulling (false);
 	RenderBuffered (0, nThread);
 	if (!nDepth)
-		glEnable (GL_CULL_FACE);
+		ogl.SetFaceCulling (true);
 	glLineWidth (1);
 	glDisable (GL_LINE_SMOOTH);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
 
@@ -2231,7 +2231,7 @@ if (i < 0) {
 	}
 if (i >= 0) {
 	systemP = m_systems + i;
-	glDisable (GL_CULL_FACE);
+	ogl.SetFaceCulling (false);
 	if (bUpdate) {
 		systemP->m_nKey [0] = key.i [0];
 		systemP->m_nKey [1] = key.i [1];

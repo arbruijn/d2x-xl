@@ -230,7 +230,7 @@ transformation.Transform (&p0.p3_vec, &objP->info.position.vPos);
 VmVecSub (&p1.p3_vec, &objP->info.position.vPos, &objP->mType.physInfo.velocity);
 transformation.Transform (&p1.p3_vec, &p1.p3_vec);
 glLineWidth (20);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 glBegin (GL_LINES);
 glColor4d (1.0, 0.5, 0.0, 0.3);
 OglVertex3x (p0.p3_vec [X], p0.p3_vec [Y], p0.p3_vec [Z]);
@@ -257,7 +257,7 @@ void DrawModelPicture (int nModel, CAngleVector *orientAngles)
 
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0, 0);
-glDisable (GL_BLEND);
+ogl.SetBlendUsage (false);
 G3SetViewMatrix (p, o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [0][nModel].Rad ())
 	p [Z] = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [0][nModel].Rad (), BASE_MODEL_SIZE);

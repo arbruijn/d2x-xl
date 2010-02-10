@@ -1026,7 +1026,7 @@ if (thumbCanv) {
 	y = (screen.Height () - bm.Height ()) / 2;
 	bm.SetBPP (3);
 	bm.CreateBuffer ();
-	//glDisable (GL_TEXTURE_2D);
+	//ogl.SetTextureUsage (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
 	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.Buffer ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize

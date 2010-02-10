@@ -69,7 +69,7 @@ else {
 		glPushMatrix ();
 		glTranslatef ((float) (mouseData.x) / (float) screen.Width (), 1.0f - (float) (mouseData.y) / (float) screen.Height (), 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
-		glDisable (GL_TEXTURE_2D);
+		ogl.SetTextureUsage (false);
 		glEnable (GL_LINE_SMOOTH);
 		glColor4f (1.0f, 0.8f, 0.0f, 0.9f);
 		glLineWidth (3);
@@ -80,9 +80,9 @@ else {
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();
-		glEnable (GL_TEXTURE_2D);
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetTextureUsage (true);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (bmpDeadzone->Bind (1)) 
 			return;
 		bmpDeadzone->Texture ()->Wrap (GL_CLAMP);
@@ -100,7 +100,7 @@ else {
 		glVertex2f (-w, h);
 		glEnd ();
 		OglBindTexture (0);
-		glDisable (GL_TEXTURE_2D);
+		ogl.SetTextureUsage (false);
 		glPopMatrix ();
 		}
 	else {
@@ -108,12 +108,12 @@ else {
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);	//the positions are based upon the standard reticle at 320x200 res.
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f (1.0f, 0.8f, 0.0f, 1.0f / (3.0f + 0.5f * gameOpts->input.mouse.nDeadzone));
 		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
-		glDisable (GL_TEXTURE_2D);
+		ogl.SetTextureUsage (false);
 		OglDrawEllipse (30, GL_LINES, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
 		glPopMatrix ();
 		}

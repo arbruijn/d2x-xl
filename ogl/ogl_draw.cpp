@@ -47,7 +47,7 @@ extern int r_upixelc;
 
 void OglDrawPixel (int x, int y, tCanvasColor *colorP)
 {
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 glPointSize (1.0);
 glBegin (GL_POINTS);
 if (!colorP)
@@ -56,7 +56,7 @@ OglCanvasColor (colorP);
 glVertex2f (float (x + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW),
 				1.0f - float (y + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastW));
 //if (colorP->rgb)
-//	glDisable (GL_BLEND);
+//	ogl.SetBlendUsage (false);
 glEnd ();
 }
 
@@ -69,7 +69,7 @@ GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.
 GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
@@ -80,7 +80,7 @@ glVertex2f (x1, y1);
 glVertex2f (x1, y0);
 glEnd ();
 //if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
-//	glDisable (GL_BLEND);
+//	ogl.SetBlendUsage (false);
 }
 
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP, int nC
 	int top = CCanvas::Current ()->Top ();
 	int j;
 
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 if (!colorP) {
 	colorP = &COLOR;
 	nColors = 1;
@@ -106,7 +106,7 @@ for (int i = 0; i <= nVerts; i++) {
 	}
 glEnd ();
 //if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
-//	glDisable (GL_BLEND);
+//	ogl.SetBlendUsage (false);
 }
 
 //------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.n
 GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
 GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
@@ -125,7 +125,7 @@ glBegin (GL_LINES);
 glVertex2f (x0, y0);
 glVertex2f (x1, y1);
 //if (colorP->rgb)
-//	glDisable (GL_BLEND);
+//	ogl.SetBlendUsage (false);
 glEnd();
 }
 
@@ -137,7 +137,7 @@ GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.n
 GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
 GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
@@ -147,9 +147,9 @@ glVertex2f (x1, y0);
 glVertex2f (x1, y1);
 glVertex2f (x0, y1);
 glEnd ();
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //if (colorP->rgb)
-//	glDisable (GL_BLEND);
+//	ogl.SetBlendUsage (false);
 }
 
 //------------------------------------------------------------------------------

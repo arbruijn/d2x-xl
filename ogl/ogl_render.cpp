@@ -120,13 +120,13 @@ return 0;
 
 int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glBegin (GL_LINES);
 OglVertex3x (p0->p3_vec [X], p0->p3_vec [Y], p0->p3_vec [Z]);
 OglVertex3x (p1->p3_vec [X], p1->p3_vec [Y], p1->p3_vec [Z]);
 if (CCanvas::Current ()->Color ().rgb)
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 glEnd ();
 return 1;
 }
@@ -208,7 +208,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 {
 	double r;
 
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (X2F (pnt->p3_vec [X]), X2F (pnt->p3_vec [Y]), X2F (pnt->p3_vec [Z]));
@@ -232,7 +232,7 @@ else {
 	}
 glPopMatrix ();
 if (CCanvas::Current ()->Color ().rgb)
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 return 0;
 }
 
@@ -246,7 +246,7 @@ int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 	float				hx, hy, x, y, z, r;
 	float				ang;
 
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 x = X2F (p.p3_vec [X]);
 y = X2F (p.p3_vec [Y]);
@@ -260,7 +260,7 @@ for (i = 0; i <= nSides; i++) {
 	glVertex3f (hx, hy, z);
 	}
 if (c.rgb)
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 glEnd ();
 return 1;
 }
@@ -275,7 +275,7 @@ int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 	float			x, y, r;
 	float			ang;
 
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 x = X2F (p.p3_vec [X]);
 y = X2F (p.p3_vec [Y]);
@@ -290,7 +290,7 @@ for (i = 0; i <= nSides; i++)
 		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
 		}
 if (CCanvas::Current ()->Color ().rgb)
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 glEnd ();
 return 1;
 }
@@ -299,7 +299,7 @@ return 1;
 
 int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 //	glPointSize (X2F (rad);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
@@ -321,7 +321,7 @@ else{
 }
 glPopMatrix ();
 if (CCanvas::Current ()->Color ().rgb)
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 return 0;
 }
 
@@ -333,8 +333,8 @@ int G3DrawWhitePoly (int nVertices, g3sPoint **pointList)
 	int i;
 
 r_polyc++;
-glDisable (GL_TEXTURE_2D);
-glDisable (GL_BLEND);
+ogl.SetTextureUsage (false);
+ogl.SetBlendUsage (false);
 glColor4d (1.0, 1.0, 1.0, 1.0);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nVertices; i++, pointList++)
@@ -355,7 +355,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	return 0;
 	}
 r_polyc++;
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nVertices; i++, pointList++) {
@@ -364,7 +364,7 @@ for (i = 0; i < nVertices; i++, pointList++) {
 	}
 #if 1
 if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < 1.0f))
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 #endif
 glEnd ();
 return 0;
@@ -398,20 +398,20 @@ else
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 #if OGL_QUERY
 	if (gameStates.render.bQueryOcclusion)
-		glDepthFunc (GL_LESS);
+		ogl.SetDepthMode (GL_LESS);
 	else
 #endif
 	if (!bDepthMask)
-		glDepthMask (0);
-	glDepthFunc (GL_LEQUAL);
-	glEnable (GL_BLEND);
-	glDisable (GL_TEXTURE_2D);
+		SetDepthWrite (0);
+	ogl.SetDepthMode (GL_LEQUAL);
+	ogl.SetBlendUsage (true);
+	ogl.SetTextureUsage (false);
 	glColor4fv (reinterpret_cast<GLfloat*> (color));
 	glBegin (GL_TRIANGLE_FAN);
 	for (i = 0; i < nVertices; i++)
 		OglVertex3f (*pointList++);
 	glEnd ();
-	glDepthFunc (depthFunc);
+	ogl.SetDepthMode (depthFunc);
 	if (!bDepthMask)
 		glDepthMask (1);
 	}
@@ -456,18 +456,18 @@ int G3DrawTexPolyFlat (
 
 if (FAST_SHADOWS) {
 	if (bBlend)
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else
-		glDisable (GL_BLEND);
+		ogl.SetBlendUsage (false);
 	}
 else {
 	if (gameStates.render.nShadowPass == 3) {
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_ONE, GL_ONE);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
 ogl.SelectTMU (GL_TEXTURE0);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 glColor4d (0, 0, 0, gameStates.render.grAlpha);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0, ppl = pointList; i < nVertices; i++, ppl++)
@@ -534,21 +534,21 @@ if (!bmBot)
 r_tpolyc++;
 if (FAST_SHADOWS) {
 	if (!bBlend)
-		glDisable (GL_BLEND);
+		ogl.SetBlendUsage (false);
 #if 0
 	else
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 	}
 else {
 	if (gameStates.render.nShadowPass == 1)
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_ONE, GL_ONE);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
-glDepthFunc (GL_LEQUAL);
+ogl.SetDepthMode (GL_LEQUAL);
 bmBot = bmBot->Override (-1);
 bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) &&
 				  ((gameStates.render.grAlpha < 1.0f) ||
@@ -595,7 +595,7 @@ if (bShaderMerge) {
 else if (!bDepthSort) {
 	if (bmBot == gameData.endLevel.satellite.bmP) {
 		ogl.SelectTMU (GL_TEXTURE0);
-		glEnable (GL_TEXTURE_2D);
+		ogl.SetTextureUsage (true);
 		}
 	else
 		InitTMU0 (bVertexArrays);
@@ -768,7 +768,7 @@ else
 if (bOverlay > 0) {
 	r_tpolyc++;
 	ogl.SelectTMU (GL_TEXTURE0);
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	if (bmTop->Bind (1))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
@@ -796,27 +796,27 @@ if (bOverlay > 0) {
 			}
 		}
 	glEnd ();
-	glDepthFunc (GL_LESS);
+	ogl.SetDepthMode (GL_LESS);
 #if OGL_CLEANUP
 	OglBindTexture (0);
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 #endif
 	}
 else if (bShaderMerge) {
 #if OGL_CLEANUP
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
 	OglBindTexture (0);
-	glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
+	ogl.SetTextureUsage (false); // Disable the 2nd texture
 #endif
 	glUseProgramObject (activeShaderProg = 0);
 	}
 ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 OglBindTexture (0);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 tMapColor.index =
 lightColor.index = 0;
 if (!bBlend)
-	glEnable (GL_BLEND);
+	ogl.SetBlendUsage (true);
 return 0;
 }
 
@@ -847,20 +847,20 @@ if (!bmBot)
 	return 1;
 r_tpolyc++;
 //if (gameStates.render.nShadowPass != 3)
-	glDepthFunc (GL_LEQUAL);
+	ogl.SetDepthMode (GL_LEQUAL);
 if (FAST_SHADOWS) {
 	if (bBlend)
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else
-		glDisable (GL_BLEND);
+		ogl.SetBlendUsage (false);
 	}
 else {
 	if (gameStates.render.nShadowPass == 3) {
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_ONE, GL_ONE);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
-glDepthFunc (GL_LEQUAL);
+ogl.SetDepthMode (GL_LEQUAL);
 bmBot = bmBot->Override (-1);
 if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
@@ -941,25 +941,25 @@ if (gameStates.render.nShadowBlurPass == 1) {
 r_tpolyc++;
 if (FAST_SHADOWS) {
 	if (!bBlend)
-		glDisable (GL_BLEND);
+		ogl.SetBlendUsage (false);
 #if 0
 	else
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 	}
 else {
 	if (gameStates.render.nShadowPass == 1)
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_ONE, GL_ONE);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_ONE, GL_ONE);
 		}
 	}
-glDepthFunc (GL_LEQUAL);
+ogl.SetDepthMode (GL_LEQUAL);
 bmP = bmP->Override (-1);
 if (bmP == gameData.endLevel.satellite.bmP) {
 	ogl.SelectTMU (GL_TEXTURE0);
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	}
 else
 	InitTMU0 (0);
@@ -1017,11 +1017,11 @@ else {
 		}
 	}
 glEnd ();
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 tMapColor.index =
 lightColor.index = 0;
 if (!bBlend)
-	glEnable (GL_BLEND);
+	ogl.SetBlendUsage (true);
 return 0;
 }
 
@@ -1061,7 +1061,7 @@ else {
 	w = (double) X2F (xWidth);
 	h = (double) X2F (xHeight);
 	if (gameStates.render.nShadowBlurPass == 1) {
-		glDisable (GL_TEXTURE_2D);
+		ogl.SetTextureUsage (false);
 		glColor4d (1,1,1,1);
 		glBegin (GL_QUADS);
 		glVertex3d (x - w, y + h, z);
@@ -1071,19 +1071,19 @@ else {
 		glEnd ();
 		}
 	else {
-		glDepthMask (0);
-		glEnable (GL_TEXTURE_2D);
+		SetDepthWrite (0);
+		ogl.SetTextureUsage (true);
 		if (bmP->Bind (1))
 			return 1;
 		bmP = bmP->Override (-1);
 		bmP->Texture ()->Wrap (GL_CLAMP);
-		glEnable (GL_BLEND);
+		ogl.SetBlendUsage (true);
 		if (bAdditive == 2)
-			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else if (bAdditive == 1)
-			glBlendFunc (GL_ONE, GL_ONE);
+			SetBlendMode (GL_ONE, GL_ONE);
 		else
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (colorP)
 			glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
 		else
@@ -1102,8 +1102,8 @@ else {
 		glEnd ();
 		glDepthMask (1);
 		if (bAdditive)
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//glDisable (GL_BLEND);
+			SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//ogl.SetBlendUsage (false);
 		}
 	}
 return 0;
@@ -1117,9 +1117,9 @@ int OglRenderArrays (CBitmap *bmP, int nFrame, CFloatVector *vertexP, int nVerti
 	int	bVertexArrays = ogl.EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
 
 if (bmP)
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 else
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 if (bmP) {
 	if (bmP->Bind (1))
 		return 0;

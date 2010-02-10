@@ -444,7 +444,7 @@ if (gameStates.render.bQueryOcclusion) {
 #endif
 
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
-glDepthFunc (GL_ALWAYS);
+ogl.SetDepthMode (GL_ALWAYS);
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 center.p3_vec.SetZero ();
 for (i = 0; i < nVertices; i++) {
@@ -470,7 +470,7 @@ VmVecInc (&Normal.p3_vec, &center.p3_vec);
 VmVecScale (&Normal.p3_vec, I2X (10));
 G3DrawLine (&center, &Normal);
 #endif
-glDepthFunc (depthFunc);
+ogl.SetDepthMode (depthFunc);
 }
 
 // ----------------------------------------------------------------------------

@@ -147,9 +147,9 @@ glPointParameterfARB		= (PFNGLPOINTPARAMETERFARBPROC) wglGetProcAddress ("glPoin
 
 void COGL::SetupStencilOps (void)
 {
-glEnable (GL_STENCIL_TEST);
+ogl.SetStencilTest (true);
 if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST)))
-	glDisable (GL_STENCIL_TEST);
+	SetStencilTest (false);
 #if !DBG
 #	ifdef _WIN32
 glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glActiveStencilFaceEXT");

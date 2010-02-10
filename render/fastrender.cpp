@@ -418,14 +418,14 @@ gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
-glEnable (GL_CULL_FACE);
+ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) 
-	glDepthFunc (GL_LEQUAL);
+	ogl.SetDepthMode (GL_LEQUAL);
 else {
 	ogl.ColorMask (0,0,0,0,0);
 	glDepthMask (1);
-	glDepthFunc (GL_LESS);
+	ogl.SetDepthMode (GL_LESS);
 	}
 if (nType == 3) {
 	if (glareRenderer.Style () == 2)
@@ -514,8 +514,8 @@ if (bNormals)
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 if (gameStates.render.bFullBright)
 	glColor3f (1,1,1);
-glEnable (GL_BLEND);
-glBlendFunc (GL_ONE, GL_ZERO);
+ogl.SetBlendUsage (true);
+SetBlendMode (GL_ONE, GL_ZERO);
 ogl.ClearError (0);
 return 1;
 }
@@ -540,7 +540,7 @@ else if (glareRenderer.Style () == 2)
 	glareRenderer.UnloadShader ();
 else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (glareRenderer.Style () == 1))
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.ClearError (0);
 }
 
@@ -703,7 +703,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 void QueryCoronas (short nFaces, int nPass)
 {
 BeginRenderFaces (3, 0);
-glDepthMask (0);
+SetDepthWrite (0);
 ogl.ColorMask (1,1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
@@ -825,7 +825,7 @@ return nFaces;
 void RenderHeadlights (int nType)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
-	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	g3FaceDrawer = lightmapManager.HaveLightmaps () ? G3DrawHeadlightsPPLM : G3DrawHeadlights;
 	RenderSegments (nType, 0, 1);
 	SetFaceDrawer (-1);

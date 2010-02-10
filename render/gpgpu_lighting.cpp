@@ -79,7 +79,7 @@ ogl.GenTextures (1, &hBuffer);
 if (!hBuffer)
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0 + i, true);
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 glBindTexture (GL_TEXTURE_2D, hBuffer);
 // set up texture parameters, turn off filtering
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -305,10 +305,10 @@ if (nState == 0) {
 #endif
 	ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 0); 
 	ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
-	glDisable (GL_CULL_FACE);
-	glDisable (GL_BLEND);
+	ogl.SetFaceCulling (false);
+	ogl.SetBlendUsage (false);
 	glDisable (GL_ALPHA_TEST);
-	glDisable (GL_DEPTH_TEST);
+	ogl.SetDepthTest (false);
 	glColor3f (0,0,0);
 #if GPGPU_LIGHT_DRAWARRAYS
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
@@ -321,7 +321,7 @@ if (nState == 0) {
 		Compute (-1, 2, NULL);
 		return 0;
 		}
-	glDepthMask (0);
+	SetDepthWrite (0);
 	}
 else if (nState == 1) {
 	CDynLight*		psl;
@@ -381,8 +381,8 @@ else if (nState == 2) {
 		glBindTexture (GL_TEXTURE_2D, 0);
 		}
 	glDepthMask (1);
-	glEnable (GL_DEPTH_TEST);
-	glDepthFunc (GL_LESS);
+	ogl.SetDepthTest (true);
+	ogl.SetDepthMode (GL_LESS);
 	glEnable (GL_ALPHA_TEST);
 	glAlphaFunc (GL_GEQUAL, (float) 0.01);	
 	ogl.SetDrawBuffer (GL_BACK, 1);

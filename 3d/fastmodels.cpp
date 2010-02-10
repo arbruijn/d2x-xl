@@ -479,13 +479,13 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (vOffsetP && (nSubModel == nExclusive))
 		transformation.Begin (vOffsetP, NULL);
 #endif
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
 		if (bTextured && (nBitmap != pmf->m_nBitmap)) {
 			if (0 > (nBitmap = pmf->m_nBitmap))
-				glDisable (GL_TEXTURE_2D);
+				ogl.SetTextureUsage (false);
 			else {
 				if (!bHires)
 					bmP = modelBitmaps [nBitmap];
@@ -497,7 +497,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 						}
 					}
 				ogl.SelectTMU (GL_TEXTURE0, true);
-				glEnable (GL_TEXTURE_2D);
+				ogl.SetTextureUsage (true);
 				bmP = bmP->Override (-1);
 				if (bmP->Frames ())
 					bmP = bmP->CurFrame ();
@@ -614,17 +614,17 @@ if (bLighting) {
 	}
 else
 	nLights = 1;
-glEnable (GL_BLEND);
+ogl.SetBlendUsage (true);
 if (bEmissive)
-	glBlendFunc (GL_ONE, GL_ONE);
+	SetBlendMode (GL_ONE, GL_ONE);
 else if (gameStates.render.bCloaked)
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 else if (bTransparency) {
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask (0);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetDepthWrite (0);
 	}
 else
-	glBlendFunc (GL_ONE, GL_ZERO);
+	SetBlendMode (GL_ONE, GL_ZERO);
 
 if (!bLighting || (sliP->nLast < 0))
 	nLightRange = 0;
@@ -633,8 +633,8 @@ else
 for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
-			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			glDepthMask (0);
+			SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			SetDepthWrite (0);
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
 #if DBG
@@ -727,7 +727,7 @@ if (!nLightRange && nLights)
 #endif
 if (bLighting) {
 	ogl.DisableLighting ();
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (1);
 	}
 ogl.ResetTransform (1);
@@ -901,7 +901,7 @@ G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHire
 if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
 #endif
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 if (gameStates.render.bCloaked)

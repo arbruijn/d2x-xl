@@ -281,7 +281,7 @@ else
 	//if (height > nmBackground.Height ()) height = nmBackground.Height ();
 	right = left + width - 1;
 	bottom = top + height - 1;
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 	if (!backgroundManager.Shadow ()) {
 		CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
 		CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
@@ -292,8 +292,8 @@ else
 	else {
 		m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
 		gameStates.render.grAlpha = GrAlpha (2 * 7);
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 200);
 		OglDrawFilledRect (right - 5, top + 5, right - 6, bottom - 5);
 		OglDrawFilledRect (right - 4, top + 4, right - 5, bottom - 5);
@@ -321,7 +321,7 @@ else
 		OglDrawFilledRect (left + 3, top + 6, left + 4, bottom - 4);
 		OglDrawFilledRect (left + 4, top + 6, left + 5, bottom - 5);
 		OglDrawFilledRect (left + 5, top + 6, left + 6, bottom - 6);
-		glDisable (GL_BLEND);
+		ogl.SetBlendUsage (false);
 		}
 	//GrUpdate (0);
 	}
@@ -426,7 +426,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 	if (bottom >= screen.Height ())
 		bottom = screen.Height () - 1;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	OglDrawFilledRect (left, top, right, bottom);
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
 	glLineWidth (GLfloat (nLineWidth) * sqrt (GLfloat (screen.Width ()) / 640.0f));

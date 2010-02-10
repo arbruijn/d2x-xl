@@ -164,7 +164,7 @@ void OOF_SetCullAndStencil (int bCullFront)
 if (bSingleStencil || bShadowTest) 
 #endif
  {
-	glEnable (GL_CULL_FACE);
+	ogl.SetFaceCulling (true);
 	if (bCullFront) {
 		OglCullFace (1);
 		if (bZPass)
@@ -258,7 +258,7 @@ for (i = pso->m_edges.m_nContourEdges, pe = pso->m_edges.m_list.Buffer (); i; pe
 		}
 #if DBG_SHADOWS
 glEnd ();
-glEnable (GL_CULL_FACE);
+ogl.SetFaceCulling (true);
 #endif
 return 1;
 }
@@ -360,9 +360,9 @@ pv = m_rotVerts.Buffer ();
 pvn = m_normals.Buffer ();
 pvc = m_vertColors.Buffer ();
 //memset (pvc, 0, m_nVerts * sizeof (tFaceColor));
-glEnable (GL_CULL_FACE);
+ogl.SetFaceCulling (true);
 OglCullFace (0);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (!bDynLighting) {
 	sc = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
 	if (sc.index != gameStates.render.nFrameFlipFlop + 1)
@@ -565,7 +565,7 @@ vPos.Assign (transformation.m_info.pos);
 if (IsMultiGame && netGame.m_info.BrightPlayers)
 	*fLight = 1.0f;
 ogl.SelectTMU (GL_TEXTURE0);
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 	if (pso->m_nParent == -1) {
 		if (!pso->Render (objP, this, vo, i, fLight)) {
@@ -574,7 +574,7 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 			}
 		}
 transformation.End ();
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 return r;
 }
 

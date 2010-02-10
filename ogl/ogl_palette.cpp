@@ -49,38 +49,28 @@ if (m_data.nSuspended) {
 		glGetIntegerv (GL_BLEND_DST, &blendDest);
 		}
 	else
-		glEnable (GL_BLEND);
-	glBlendFunc (GL_ONE,GL_ONE);
+		ogl.SetBlendUsage (true);
+	SetBlendMode (GL_ONE,GL_ONE);
 	glColor3f (0, 0, 0);
 #endif
 	}
 else if (m_data.bDoEffect) {
-	if ((bBlend = glIsEnabled (GL_BLEND))) {
-		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
-		glGetIntegerv (GL_BLEND_DST, &blendDest);
-		}
-	else
-		glEnable (GL_BLEND);
-	glBlendFunc (GL_ONE,GL_ONE);
+	ogl.SetBlendUsage (true);
+	ogl.SetBlendMode (GL_ONE,GL_ONE);
 	glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 	}
 else
 	return;
-if ((bDepthTest = glIsEnabled (GL_DEPTH_TEST)))
-	glDisable (GL_DEPTH_TEST);
-glDisable (GL_TEXTURE_2D);
+ogl.SetDepthTest (false);
+ogl.SetTextureUsage (false);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (0,1);
 glVertex2f (1,1);
 glVertex2f (1,0);
 glEnd ();
-if (bDepthTest)
-	glEnable (GL_DEPTH_TEST);
-if (bBlend)
-	glBlendFunc (blendSrc, blendDest);
-else
-	glDisable (GL_BLEND);
+ogl.SetDepthTest (true);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //------------------------------------------------------------------------------

@@ -86,7 +86,7 @@ else
 G3TransformAndEncodePoint (&basePoint, MarkerObj (-1, nMarker)->info.position.vPos);
 glPushMatrix ();
 glTranslatef (X2F (basePoint.p3_vec[X]), X2F (basePoint.p3_vec[Y]), X2F (basePoint.p3_vec[Z]));
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glBegin (GL_LINES);
 px = xCoord [nMarker];

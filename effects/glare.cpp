@@ -71,7 +71,7 @@ if (nError)
 	nError = nError;
 #endif
 ogl.SelectTMU (GL_TEXTURE1);
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 if (!ogl.m_states.hDepthBuffer)
 	ogl.m_states.bHaveDepthBuffer = 0;
 if (ogl.m_states.hDepthBuffer || (ogl.m_states.hDepthBuffer = ogl.CreateDepthTexture (-1, 0))) {
@@ -460,7 +460,7 @@ void RenderCoronaOutline(CFloatVector *sprite, CFloatVector *vCenter)
 {
 	int	i;
 
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 glColor4d (1,1,1,1);
 glLineWidth (2);
 glBegin (GL_LINE_LOOP);
@@ -518,17 +518,17 @@ if (!bColored)
 color.alpha *= fIntensity * fIntensity;
 if (color.alpha < 0.01f)
 	return;
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 	return;
 bmP->SetTranspType (-1);
 if (bmP->Bind (1))
 	return;
 bmP->Texture ()->Wrap (GL_CLAMP);
-glDisable (GL_CULL_FACE);
+ogl.SetFaceCulling (false);
 if (bAdditive) {
 	fLight *= color.alpha;
-	glBlendFunc (GL_ONE, GL_ONE);
+	SetBlendMode (GL_ONE, GL_ONE);
 	}
 glColor4fv (reinterpret_cast<GLfloat*> (&color));
 glBegin (GL_QUADS);
@@ -538,8 +538,8 @@ for (i = 0; i < 4; i++) {
 	}
 glEnd ();
 if (bAdditive)
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glEnable (GL_CULL_FACE);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetFaceCulling (true);
 RenderCoronaOutline (sprite, vCenter);
 }
 
@@ -593,14 +593,14 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	CBitmap*		bmP = NULL;
 
 if (gameStates.render.bQueryCoronas) {
-	glDisable (GL_TEXTURE_2D);
-	glBlendFunc (GL_ONE, GL_ZERO);
+	ogl.SetTextureUsage (false);
+	SetBlendMode (GL_ONE, GL_ZERO);
 	}
 else {
-	glEnable (GL_TEXTURE_2D);
-	glDepthFunc (GL_ALWAYS);
+	ogl.SetTextureUsage (true);
+	ogl.SetDepthMode (GL_ALWAYS);
 	if (bAdditive)
-		glBlendFunc (GL_ONE, GL_ONE);
+		SetBlendMode (GL_ONE, GL_ONE);
 	if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 		return;
 	}
@@ -636,12 +636,12 @@ else {
 	glEnd ();
 	}
 if (!gameStates.render.bQueryCoronas && bAdditive)
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 RenderCoronaOutline (sprite, vCenter);
 if (gameStates.render.bQueryCoronas != 2) {
-	glEnable (GL_DEPTH_TEST);
+	ogl.SetDepthTest (true);
 	if (gameStates.render.bQueryCoronas == 1)
-		glDepthFunc (GL_LEQUAL);
+		ogl.SetDepthMode (GL_LEQUAL);
 	}
 }
 
@@ -683,7 +683,7 @@ if (ogl.m_states.bOcclusionQuery && Style ()) {
 #endif
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
 						  !automap.Display () || automap.m_visited [0][nSegment] || !gameOpts->render.automap.bGrayOut);
-	glDepthFunc (GL_LESS);
+	ogl.SetDepthMode (GL_LESS);
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -799,7 +799,7 @@ if (ogl.m_states.bDepthBlending) {
 			}
 		dMaxPrev = dMax;
 		bAddPrev = bAdditive;
-		glDisable (GL_DEPTH_TEST);
+		ogl.SetDepthTest (false);
 		}
 	ogl.SelectTMU (GL_TEXTURE0);
 	}
@@ -812,13 +812,13 @@ void CGlareRenderer::UnloadShader (void)
 if (ogl.m_states.bDepthBlending) {
 	shaderManager.Deploy (-1);
 	//DestroyGlareDepthTexture ();
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	ogl.SelectTMU (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	ogl.SelectTMU (GL_TEXTURE2);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	ogl.SelectTMU (GL_TEXTURE0);
-	glEnable (GL_DEPTH_TEST);
+	ogl.SetDepthTest (true);
 	}
 }
 

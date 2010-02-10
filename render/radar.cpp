@@ -174,17 +174,17 @@ fRadius = 5.0f / transformation.m_info.scalef [X];
 fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;
 mRadar = CFixMatrix::Create (aRadar);
 ogl.SelectTMU (GL_TEXTURE3);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 ogl.SelectTMU (GL_TEXTURE2);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 ogl.SelectTMU (GL_TEXTURE1);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 ogl.SelectTMU (GL_TEXTURE0);
-glDisable (GL_TEXTURE_2D);
-glDisable (GL_CULL_FACE);
-glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
-glDepthFunc (GL_ALWAYS);
-glEnable (GL_BLEND);
+ogl.SetTextureUsage (false);
+ogl.SetFaceCulling (false);
+depthFunc = ogl.GetDepthMode ();
+ogl.SetDepthMode (GL_ALWAYS);
+ogl.SetBlendUsage (true);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glEnable (GL_LINE_SMOOTH);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -214,8 +214,8 @@ FORALL_OBJS (objP, i) {
 	}
 glDisable (GL_LINE_SMOOTH);
 glLineWidth (1);
-glDepthFunc (depthFunc);
-glEnable (GL_CULL_FACE);
+ogl.SetDepthFunc (depthFunc);
+ogl.SetFaceCulling (true);
 ogl.StencilOn (bStencil);
 }
 

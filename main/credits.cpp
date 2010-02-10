@@ -274,7 +274,7 @@ else if ((k == KEY_ESC) || (m_bDone > uint (NUM_LINES))) {
 	if (creditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
 		creditsOffscreenBuf->Destroy ();
 #endif
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 	gameStates.menus.nInMenu = 0;
 	return false;
 	}
@@ -405,8 +405,8 @@ m_bmBackdrop.Remap (NULL, -1, -1);
 
 KeyFlush ();
 m_xTimeout = SDL_GetTicks () + m_xDelay;
-glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendUsage (true);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 gameStates.menus.nInMenu = 1;
 for (;;) {
 	Read ();

@@ -254,7 +254,7 @@ if (m_info.nEnergy) {
 	BitBlt (GAUGE_ENERGY_RIGHT, RIGHT_ENERGY_GAUGE_X, RIGHT_ENERGY_GAUGE_Y);
 	if (m_info.nEnergy < 100) {	// erase part of gauge corresponding to energy loss
 		float fScale = float (100 - m_info.nEnergy) / 100.0f;
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			{
 			int x [4] = {ENERGY_GAUGE_TOP_LEFT, LEFT_ENERGY_GAUGE_W, ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH, ENERGY_GAUGE_BOT_LEFT};
@@ -272,7 +272,7 @@ if (m_info.nEnergy) {
 			x [3] = x [2];
 			x [1] += (ScaleX (LEFT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W) - x [1]) / 2;
 			x [2] += (ScaleX (LEFT_ENERGY_GAUGE_X + ENERGY_GAUGE_BOT_LEFT + ENERGY_GAUGE_BOT_WIDTH) - x [2]) / 2;
-			glEnable (GL_BLEND);
+			ogl.SetBlendUsage (true);
 			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 4);
 #endif
 			}
@@ -295,11 +295,11 @@ if (m_info.nEnergy) {
 			x [0] += (x [1] - x [0]) / 2;
 			x [3] = ScaleX (RIGHT_ENERGY_GAUGE_X + LEFT_ENERGY_GAUGE_W - ENERGY_GAUGE_BOT_WIDTH);
 			x [3] += (x [2] - x [3]) / 2;
-			glEnable (GL_BLEND);
+			ogl.SetBlendUsage (true);
 			OglDrawFilledPoly (x, y, 4, gaugeFadeColors [1], 4);
 #endif
 			}
-		glDisable (GL_BLEND);
+		ogl.SetBlendUsage (false);
 		}
 	}
 }
@@ -447,10 +447,10 @@ if (yMax) {
 	y [2] = ScaleY (AFTERBURNER_GAUGE_Y + y [2]);
 	x [3] = ScaleX (AFTERBURNER_GAUGE_X + tableP [2 * yMax - 1] + 1);
 	gameStates.render.grAlpha = 1.0f;
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendUsage (true);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	OglDrawFilledPoly (x, y, 4, gaugeFadeColors [0], 1);
-	glDisable (GL_BLEND);
+	ogl.SetBlendUsage (false);
 	}
 }
 

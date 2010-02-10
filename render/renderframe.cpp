@@ -107,10 +107,10 @@ if (LoadScope ()) {
 	float y = 1.0f - float (CCanvas::Current ()->Top ()) / sh;
 	float h = ch / sh;
 
-	glEnable (GL_TEXTURE_2D);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable (GL_DEPTH_TEST);
+	ogl.SetTextureUsage (true);
+	ogl.SetBlendUsage (true);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetDepthTest (false);
 	if (bmpScope->Bind (1))
 		return;
 	bmpScope->Texture ()->Wrap (GL_REPEAT);
@@ -126,8 +126,8 @@ if (LoadScope ()) {
 	glVertex2f (0, y - h);
 	glEnd ();
 	OglBindTexture (0);
-	glEnable (GL_DEPTH_TEST);
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetDepthTest (true);
+	ogl.SetTextureUsage (false);
 	glPopMatrix ();
 	}
 }
@@ -333,32 +333,18 @@ if (gameOpts->app.bEpilepticFriendly ||
 	 !(/*extraGameInfo [0].bFlickerLights &&*/ gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
 	return;
 
-	int	bDepthTest, bBlend;
-	GLint	blendSrc, blendDest;
-
-if ((bBlend = glIsEnabled (GL_BLEND))) {
-	glGetIntegerv (GL_BLEND_SRC, &blendSrc);
-	glGetIntegerv (GL_BLEND_DST, &blendDest);
-	}
-else
-	glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendUsage (true);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glColor4f (0, 0, 0, /*1.0f -*/ 3 * X2F (gameStates.render.nFlashScale) / 4);
-if ((bDepthTest = glIsEnabled (GL_DEPTH_TEST)))
-	glDisable (GL_DEPTH_TEST);
-glDisable (GL_TEXTURE_2D);
+ogl.SetDepthTest (false);
+ogl.SetTextureUsage (false);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (0,1);
 glVertex2f (1,1);
 glVertex2f (1,0);
 glEnd ();
-if (bDepthTest)
-	glEnable (GL_DEPTH_TEST);
-if (bBlend)
-	glBlendFunc (blendSrc, blendDest);
-else
-	glDisable (GL_BLEND);
+ogl.SetDepthTest (true);
 }
 
 //------------------------------------------------------------------------------
@@ -369,7 +355,7 @@ if (ogl.Enhance3D () >= 0)
 	ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
-//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_START
 	cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);
@@ -713,7 +699,7 @@ if (gameData.render.window.x || gameData.render.window.y) {
 	CCanvas::SetCurrent (CurrentGameScreen ());
 	ogl.m_states.nLastW = CCanvas::Current ()->Width ();
 	ogl.m_states.nLastH = CCanvas::Current ()->Height ();
-	glDepthMask (0);
+	SetDepthWrite (0);
 	bmBackground.Render (CCanvas::Current (), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 0, 0, -bmBackground.Width (), -bmBackground.Height ());
 	glDepthMask (1);
 	CCanvas::Pop ();

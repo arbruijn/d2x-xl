@@ -1200,28 +1200,28 @@ RenderSegmentList (0, 1);	// render opaque geometry
 RenderSegmentList (1, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
-		glDepthFunc (GL_LEQUAL);
+		ogl.SetDepthMode (GL_LEQUAL);
 		RenderSegmentList (2, 1);	// render transparent geometry
-		glDepthFunc (GL_LESS);
+		ogl.SetDepthMode (GL_LESS);
 		}
 #if 0
 	RenderEffects (nWindow);
 #endif
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
- 		glEnable (GL_TEXTURE_2D);
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDepthFunc (GL_LEQUAL);
+ 		ogl.SetTextureUsage (true);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetDepthMode (GL_LEQUAL);
 		if (!nWindow) {
-			glDepthMask (0);
+			SetDepthWrite (0);
 			RenderSegmentList (3, 1);
 			glDepthMask (1);
 			}
-		glDepthFunc (GL_LESS);
-		glDisable (GL_TEXTURE_2D);
+		ogl.SetDepthMode (GL_LESS);
+		ogl.SetTextureUsage (false);
 		}
-	glDepthFunc (GL_LESS);
+	ogl.SetDepthMode (GL_LESS);
 	}
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);

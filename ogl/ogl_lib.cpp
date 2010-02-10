@@ -309,8 +309,25 @@ nDrawBuffer = -1;
 void COglData::Initialize (void)
 {
 palette = NULL;
-nSrcBlend = GL_SRC_ALPHA;
-nDestBlend = GL_ONE_MINUS_SRC_ALPHA;
+glDisable (GL_TEXTURE_2D);
+bUseTextures = false;
+bUseBlending = true;
+glEnable (GL_BLEND);
+glBlendFunc (nSrcBlendMode = GL_SRC_ALPHA, nDestBlendMode = GL_ONE_MINUS_SRC_ALPHA);
+bDepthTest = true;
+glEnable (GL_DEPTH_TEST);
+bDepthWrite = true;
+glDepthMask (1);
+bStencilTest = false;
+glDisable (GL_STENCIL_TEST);
+bCullFaces = true;
+glEnable (GL_CULL_FACE);
+nCullMode = GL_BACK;
+glDisable (GL_SCISSOR_TEST);
+bScissorTest = false;
+glDisable (GL_ALPHA_TEST);
+bAlphaTest = false;
+
 zNear = 1.0f;
 zFar = 5000.0f;
 depthScale.SetZero ();
@@ -322,6 +339,7 @@ CLEAR (lightPos);
 bLightmaps = 0;
 nHeadlights = 0;
 drawBufferP = drawBuffers;
+
 };
 
 //------------------------------------------------------------------------------
@@ -349,13 +367,13 @@ glMatrixMode (GL_MODELVIEW);
 glLoadIdentity ();//clear matrix
 glScalef (1.0f, -1.0f, 1.0f);
 glTranslatef (0.0f, -1.0f, 0.0f);
-glDisable (GL_CULL_FACE);
 SetDrawBuffer (GL_BACK, 1);
-glDisable (GL_SCISSOR_TEST);
-glDisable (GL_ALPHA_TEST);
-glDisable (GL_DEPTH_TEST);
-glDisable (GL_CULL_FACE);
-glDisable (GL_STENCIL_TEST);
+SetFaceCulling (false);
+SetScissorTest (false);
+SetAlphaTest (false);
+SetDepthTest (false);
+SetStencilTest (false);
+SetStencilTest (false);
 glDisable (GL_LIGHTING);
 glDisable (GL_COLOR_MATERIAL);
 glDepthMask (1);
@@ -366,12 +384,6 @@ if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 
 //------------------------------------------------------------------------------
 
-void COGL::BlendFunc (GLenum nSrcBlend, GLenum nDestBlend)
-{
-m_data.nSrcBlend = nSrcBlend;
-m_data.nDestBlend = nDestBlend;
-glBlendFunc (nSrcBlend, nDestBlend);
-}
 
 //------------------------------------------------------------------------------
 
@@ -491,10 +503,10 @@ void COGL::ResetClientStates (void)
 {
 for (int i = 4; i; ) {
 	DisableClientStates (1, 1, 1, GL_TEXTURE0 + --i);
-	glEnable (GL_TEXTURE_2D);
+	SetTextureUsage (true);
 	OglBindTexture (0);
 	if (i)
-		glDisable (GL_TEXTURE_2D);
+		SetTextureUsage (false);
 	}
 memset (m_states.clientStates, 0, sizeof (m_states.clientStates));
 }
@@ -649,10 +661,10 @@ if (gameStates.render.nShadowPass) {
 #if 0
 			glLoadIdentity ();
 #endif
-			glEnable (GL_DEPTH_TEST);
-			glDisable (GL_STENCIL_TEST);
-			glDepthFunc (GL_LESS);
-			glEnable (GL_CULL_FACE);
+			SetDepthTest (true);
+			SetStencilTest (false);
+			SetDepthMode (GL_LESS);
+			SetFaceCulling (true);
 			OglCullFace (0);
 			if (!FAST_SHADOWS)
 				ColorMask (0,0,0,0,0);
@@ -668,20 +680,21 @@ if (gameStates.render.nShadowPass) {
 #	if DBG_SHADOWS
 			if (bShadowTest) {
 				ColorMask (1,1,1,1,0);
-				glDepthMask (0);
-				glEnable (GL_BLEND);
-				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glDisable (GL_STENCIL_TEST);
+				SetDepthWrite (0);
+				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				SetStencilTest (false);
 				}
 			else
 #	endif
 			 {
 				ColorMask (0,0,0,0,0);
-				glDepthMask (0);
-				glEnable (GL_STENCIL_TEST);
-				if (!glIsEnabled (GL_STENCIL_TEST))
+				SetDepthWrite (0);
+				SetStencilTest (true);
+				if (!glIsEnabled (GL_STENCIL_TEST)) {
+					SetStencilTest (false);
 					extraGameInfo [0].bShadows =
 					extraGameInfo [1].bShadows = 0;
+					}
 				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
 #if 0
@@ -726,14 +739,14 @@ if (gameStates.render.nShadowPass) {
 	else if (gameStates.render.nShadowPass == 3) { //render final lit scene
 		if (gameStates.render.bShadowMaps) {
 			glDisable (GL_POLYGON_OFFSET_FILL);
-			glDepthFunc (GL_LESS);
+			SetDepthMode (GL_LESS);
 			}
 		else {
 #if 0
 			glDisable (GL_POLYGON_OFFSET_FILL);
 #endif
 			if (gameStates.render.nShadowBlurPass == 2)
-				glDisable (GL_STENCIL_TEST);
+				SetStencilTest (false);
          else if (FAST_SHADOWS) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
 				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);
@@ -748,14 +761,14 @@ if (gameStates.render.nShadowPass) {
 #endif
 				}
 			OglCullFace (0);
-			glDepthFunc (GL_LESS);
+			ogl.SetDepthMode (GL_LESS);
 			ColorMask (1,1,1,1,1);
 			}
 		}
 	else if (gameStates.render.nShadowPass == 4) {	//render unlit/final scene
-		glEnable (GL_DEPTH_TEST);
-		glDepthFunc (GL_LESS);
-		glEnable (GL_CULL_FACE);
+		SetDepthTest (true);
+		SetDepthMode (GL_LESS);
+		SetFaceCulling (true);
 		OglCullFace (0);
 		}
 #if GL_INFINITY
@@ -797,7 +810,7 @@ else {
 			glClear (GL_DEPTH_BUFFER_BIT);
 		}
 	else if (gameStates.render.nRenderPass) {
-		glDepthMask (0);
+		SetDepthWrite (0);
 		ColorMask (1,1,1,1,1);
 		glClearColor (0,0,0,0);
 		if (bResetColorBuf)
@@ -811,22 +824,22 @@ else {
 	if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 		glEnable (GL_MULTISAMPLE_ARB);
 	if (bFlat) {
-		glDisable (GL_DEPTH_TEST);
-		glDisable (GL_ALPHA_TEST);
-		glDisable (GL_CULL_FACE);
+		SetDepthTest (false);
+		SetAlphaTest (false);
+		SetFaceCulling (false);
 		}
 	else {
-		glEnable (GL_CULL_FACE);
+		SetFaceCulling (true);
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
-		glCullFace ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);
-		glEnable (GL_DEPTH_TEST);
-		glDepthFunc (GL_LESS);
-		glEnable (GL_ALPHA_TEST);
+		SetCullMode ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);
+		SetDepthTest (true);
+		SetDepthMode (GL_LESS);
+		SetAlphaTest (true);
 		glAlphaFunc (GL_GEQUAL, (float) 0.01);
 		}
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable (GL_STENCIL_TEST);
+	SetBlendUsage (true);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetStencilTest (false);
 	}
 nError = glGetError ();
 }
@@ -851,7 +864,7 @@ if (m_states.bShadersOk)
 // new string texture is uploaded to the OpenGL driver when depth textures are used.
 DestroyGlareDepthTexture ();
 #endif
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 DisableClientStates (1, 1, 1, GL_TEXTURE3);
 OglBindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE2);
@@ -860,7 +873,7 @@ DisableClientStates (1, 1, 1, GL_TEXTURE1);
 OglBindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE0);
 OglBindTexture (0);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 Viewport (0, 0, screen.Width (), screen.Height ());
 #ifndef NMONO
 //	merge_textures_stats ();
@@ -871,11 +884,11 @@ glLoadIdentity ();//clear matrix
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 glMatrixMode (GL_MODELVIEW);
 glLoadIdentity ();//clear matrix
-glDisable (GL_SCISSOR_TEST);
-glDisable (GL_ALPHA_TEST);
-glDisable (GL_DEPTH_TEST);
-glDisable (GL_CULL_FACE);
-glDisable (GL_STENCIL_TEST);
+SetScissorTest (false);
+SetAlphaTest (false);
+SetDepthTest (false);
+SetFaceCulling (false);
+SetStencilTest (false);
 if (SHOW_DYN_LIGHT) {
 	glDisable (GL_LIGHTING);
 	glDisable (GL_COLOR_MATERIAL);
@@ -1089,11 +1102,11 @@ else {
 		glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();//clear matrix
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable (GL_TEXTURE_2D);
-		glDepthFunc (GL_ALWAYS); //LEQUAL);
-		glDisable (GL_DEPTH_TEST);
+		SetBlendUsage (true);
+		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetTextureUsage (false);
+		SetDepthMode (GL_ALWAYS); //LEQUAL);
+		SetDepthTest (false);
 		}
 	}
 gameStates.video.nLastScreenMode = gameStates.video.nScreenMode;
@@ -1228,7 +1241,7 @@ if (HaveDrawBuffer ()) {
 
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 0);
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	SelectTMU (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
@@ -1242,7 +1255,7 @@ if (HaveDrawBuffer ()) {
 			if (shaderProg > 0) {
 				SelectDrawBuffer (1);
 				SetDrawBuffer (GL_BACK, 0);
-				glEnable (GL_TEXTURE_2D);
+				ogl.SetTextureUsage (true);
 				SelectTMU (GL_TEXTURE1);
 				glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
 
@@ -1260,8 +1273,8 @@ if (HaveDrawBuffer ()) {
 			}
 		}
 	if (bAdditive) {
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_ONE, GL_ONE);
+		ogl.SetBlendUsage (true);
+		SetBlendMode (GL_ONE, GL_ONE);
 		}
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
@@ -1289,7 +1302,7 @@ GLuint COGL::CreateDepthTexture (int nTMU, int bFBO)
 
 if (nTMU > GL_TEXTURE0)
 	SelectTMU (nTMU);
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hBuffer = 0;
@@ -1326,7 +1339,7 @@ GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 
 if (nTMU > 0)
 	SelectTMU (nTMU);
-glEnable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;
@@ -1353,7 +1366,7 @@ int COGL::StencilOff (void)
 {
 if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
 	return 0;
-glDisable (GL_STENCIL_TEST);
+SetStencilTest (false);
 m_states.nStencil--;
 return 1;
 }
@@ -1363,7 +1376,7 @@ return 1;
 void COGL::StencilOn (int bStencil)
 {
 if (bStencil) {
-	glEnable (GL_STENCIL_TEST);
+	ogl.SetStencilTest (true);
 	m_states.nStencil++;
 	}
 }

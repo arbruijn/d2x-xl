@@ -49,7 +49,7 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 {
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
-	glDepthMask (0);
+	SetDepthWrite (0);
 	G3DrawSprite (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
 	glDepthMask (1);
 	}
@@ -176,11 +176,11 @@ else {
 	iBox = 1;
 	nBoxes = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nHitboxes;
 	}
-glDepthFunc (GL_LEQUAL);
-glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-glDisable (GL_TEXTURE_2D);
-glDepthMask (0);
+ogl.SetDepthMode (GL_LEQUAL);
+ogl.SetBlendUsage (true);
+SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetTextureUsage (false);
+SetDepthWrite (0);
 
 tBox hb [MAX_HITBOXES + 1];
 TransformHitboxes (objP, &objP->info.position.vPos, hb);
@@ -246,7 +246,7 @@ if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo
 	}
 #endif
 glDepthMask (1);
-glDepthFunc (GL_LESS);
+ogl.SetDepthMode (GL_LESS);
 }
 
 #endif
@@ -418,7 +418,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	fVerts [0][Z] = fVerts [1][Z] = fVerts [2][Z] = fVerts [3][Z] = fPos [Z];
 	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 #if 1
 	if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0))) {
 		OglVertexPointer (4, GL_FLOAT, 0, fVerts);
@@ -504,11 +504,11 @@ if (bMarker || (objP->info.nType == OBJ_MONSTERBALL))
 	r = 17 * r / 12;
 r2 = r / 4;
 
-glDisable (GL_CULL_FACE);
+ogl.SetFaceCulling (false);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 bVertexArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 ogl.SelectTMU (GL_TEXTURE0);
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	CFloatVector	rotVerts [3];
@@ -607,7 +607,7 @@ else {
 	OglDrawArrays (GL_TRIANGLES, 0, 3);
 	}
 ogl.DisableClientState (GL_VERTEX_ARRAY);
-glEnable (GL_CULL_FACE);
+ogl.SetFaceCulling (true);
 }
 
 // -----------------------------------------------------------------------------
@@ -645,7 +645,7 @@ if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	bStencil = ogl.StencilOff ();
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
 		  reinterpret_cast<tRgbColorf*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
@@ -764,7 +764,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 	if (pp) {
 		bStencil = ogl.StencilOff ();
 		ogl.SelectTMU (GL_TEXTURE0);
-		glEnable (GL_TEXTURE_2D);
+		ogl.SetTextureUsage (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadBitmap (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
@@ -1013,7 +1013,7 @@ dotCorona = CFloatVector::Dot (vPosf, v);
 if (gameOpts->render.bDepthSort > 0)
 	transparencyRenderer.AddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
 else {
-	glDisable (GL_CULL_FACE);
+	ogl.SetFaceCulling (false);
 	glColor3f (c, c, c);
 	if (dotTrail < dotCorona) {
 		glBegin (GL_TRIANGLES);
@@ -1029,7 +1029,7 @@ else {
 		glVertex3fv (reinterpret_cast<GLfloat*> (vCorona + i));
 		}
 	glEnd ();
-	glEnable (GL_CULL_FACE);
+	ogl.SetFaceCulling (true);
 	}
 }
 
@@ -1095,14 +1095,14 @@ CBitmap* bmP = bmpThruster [nStyle][bPlayer];
 
 if (!LoadThruster ()) {
 	extraGameInfo [IsMultiGame].bThrusterFlames = 2;
-	glDisable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (false);
 	}
 else if ((gameOpts->render.bDepthSort <= 0) || (nStyle == 1)) {
-	glEnable (GL_TEXTURE_2D);
+	ogl.SetTextureUsage (true);
 	bmP->SetTranspType (-1);
 	if (bmP->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
-		glDisable (GL_TEXTURE_2D);
+		ogl.SetTextureUsage (false);
 		}
 	else {
 		bmP->Texture ()->Wrap (GL_CLAMP);
@@ -1124,7 +1124,7 @@ if (nThrusters > 1) {
 			}
 		}
 	}
-glEnable (GL_BLEND);
+ogl.SetBlendUsage (true);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {	//2D
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
@@ -1146,10 +1146,10 @@ else { //3D
 	tTexCoord3f	tTexCoord2fl, tTexCoord2flStep;
 
 	CreateThrusterFlame ();
-	glDisable (GL_CULL_FACE);
-	glBlendFunc (GL_ONE, GL_ONE);
+	ogl.SetFaceCulling (false);
+	SetBlendMode (GL_ONE, GL_ONE);
 	ogl.m_states.bUseTransform = 1;
-	glDepthMask (0);
+	SetDepthWrite (0);
 
 	tTexCoord2flStep.v.u = 1.0f / RING_SEGS;
 	tTexCoord2flStep.v.v = 0.9f / THRUSTER_SEGS;
@@ -1164,7 +1164,7 @@ else { //3D
 			bmP->SetTranspType (-1);
 			if (bmP->Bind (1)) {
 				bTextured = 0;
-				glDisable (GL_TEXTURE_2D);
+				ogl.SetTextureUsage (false);
 				}
 			else {
 				bmP->Texture ()->Wrap (GL_CLAMP);
@@ -1247,8 +1247,8 @@ else { //3D
 		transformation.End ();
 		}
 	ogl.m_states.bUseTransform = 0;
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable (GL_CULL_FACE);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetFaceCulling (true);
 	OglCullFace (0);
 	glDepthMask (1);
 	}
@@ -1358,8 +1358,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	if (bDepthSort)
 		return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
 	bStencil = ogl.StencilOff ();
-	glDepthMask (0);
-	glBlendFunc (GL_ONE, GL_ONE);
+	SetDepthWrite (0);
+	SetBlendMode (GL_ONE, GL_ONE);
 	if (bSimple) {
 		G3DrawSprite (vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, bmpCorona, &color, alpha, 1, 3);
 		}
@@ -1368,10 +1368,10 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		float		dot;
 		int		i, j;
 
-		glDisable (GL_CULL_FACE);
-		glDepthFunc (GL_LEQUAL);
-		glDepthMask (0);
-		glEnable (GL_TEXTURE_2D);
+		ogl.SetFaceCulling (false);
+		ogl.SetDepthMode (GL_LEQUAL);
+		SetDepthWrite (0);
+		ogl.SetTextureUsage (true);
 		bmpCorona->SetTranspType (-1);
 		if (bmpCorona->Bind (1))
 			return 0;
@@ -1401,11 +1401,11 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 			glEnd ();
 			}
 		transformation.End ();
-		glDepthFunc (GL_LESS);
-		glDisable (GL_TEXTURE_2D);
-		glEnable (GL_CULL_FACE);
+		ogl.SetDepthMode (GL_LESS);
+		ogl.SetTextureUsage (false);
+		ogl.SetFaceCulling (true);
 		}
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (1);
 	ogl.StencilOn (bStencil);
 	}
@@ -1436,10 +1436,10 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			tRgbaColorf		*pc = gameData.weapons.color + objP->info.nId;
 
 		transformation.Begin (vPos, objP->info.position.mOrient);
-		glDepthMask (0);
-		glDisable (GL_TEXTURE_2D);
+		SetDepthWrite (0);
+		ogl.SetTextureUsage (false);
 		//OglCullFace (1);
-		glDisable (GL_CULL_FACE);
+		ogl.SetFaceCulling (false);
 		r [3] = X2F (objP->info.xSize);
 		if (r [3] >= 3.0f)
 			r [3] /= 1.5f;
@@ -1472,7 +1472,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 				}
 			glEnd ();
 			}
-		glEnable (GL_CULL_FACE);
+		ogl.SetFaceCulling (true);
 		for (h = 0; h < 3; h += 2) {
 			glCullFace (h ? GL_FRONT : GL_BACK);
 			glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
@@ -1525,10 +1525,10 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 			return;
 		}
 	bStencil = ogl.StencilOff ();
-	glDepthMask (0);
+	SetDepthWrite (0);
 	glEnable (GL_LINE_STIPPLE);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendUsage (true);
+	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_LINE_SMOOTH);
 	glLineStipple (6, 0x003F); //patterns [h]);
 	vDirf *= TRACER_WIDTH / 20.0f;
@@ -1680,17 +1680,17 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			nTrailItem = transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 			}
 		else {
-			glEnable (GL_BLEND);
+			ogl.SetBlendUsage (true);
 			if (bAdditive)
-				glBlendFunc (GL_ONE, GL_ONE);
+				SetBlendMode (GL_ONE, GL_ONE);
 			else
-				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glColor4fv (reinterpret_cast<GLfloat*> (&trailColor));
 			bDrawArrays = ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			bStencil = ogl.StencilOff ();
-			glDisable (GL_CULL_FACE);
-			glDepthMask (0);
-			glEnable (GL_TEXTURE_2D);
+			ogl.SetFaceCulling (false);
+			SetDepthWrite (0);
+			ogl.SetTextureUsage (true);
 			bmP->SetTranspType (-1);
 			if (bmP->Bind (1))
 				return;
@@ -1700,7 +1700,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vTrailVerts);
 				OglDrawArrays (GL_QUADS, 0, 4);
 #if 0 // render outline
-				glDisable (GL_TEXTURE_2D);
+				ogl.SetTextureUsage (false);
 				OglDrawArrays (GL_LINE_LOOP, 0, 4);
 #endif
 				ogl.DisableClientStates (1, 0, 0, -1);
@@ -1713,9 +1713,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 					}
 				glEnd ();
 			if (bAdditive)
-				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 0 // render outline
-				glDisable (GL_TEXTURE_2D);
+				ogl.SetTextureUsage (false);
 				glColor3d (1, 0, 0);
 				glBegin (GL_LINE_LOOP);
 				for (i = 0; i < 4; i++)
@@ -1724,7 +1724,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 #endif
 				}
 			ogl.StencilOn (bStencil);
-			glEnable (GL_CULL_FACE);
+			ogl.SetFaceCulling (true);
 			glDepthMask (1);
 			}
 		}

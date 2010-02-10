@@ -226,10 +226,10 @@ if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 int color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer % MAX_PLAYER_COLORS;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
 int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
-glDisable (GL_CULL_FACE);
-glEnable (GL_BLEND);
+ogl.SetFaceCulling (false);
+ogl.SetBlendUsage (true);
 gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
-glDisable (GL_TEXTURE_2D);
+ogl.SetTextureUsage (false);
 glLineWidth (2 * GLfloat (screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 if (!m_bRadar) {
@@ -251,7 +251,7 @@ if (AM_SHOW_PLAYERS) {
 				color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].red, playerColors [color].green, playerColors [color].blue));
 				if (bTextured)
-					glEnable (GL_BLEND);
+					ogl.SetBlendUsage (true);
 				DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
 				}
 			}
@@ -259,7 +259,7 @@ if (AM_SHOW_PLAYERS) {
 	}
 
 if (bTextured)
-	glEnable (GL_BLEND);
+	ogl.SetBlendUsage (true);
 
 CObject* objP = OBJECTS.Buffer ();
 g3sPoint	spherePoint;
@@ -334,7 +334,7 @@ FORALL_OBJS (objP, i) {
 		}
 	}
 gameStates.render.grAlpha = 1.0f;
-glEnable (GL_CULL_FACE);
+ogl.SetFaceCulling (true);
 glLineWidth (1);
 }
 
