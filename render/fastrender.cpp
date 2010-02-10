@@ -42,32 +42,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#if SORT_RENDER_FACES > 1
-
 void ResetFaceList (int nThread)
 {
 PROF_START
 for (int i = 0; i < 2; i++) {
 	CFaceListIndex& flx = gameData.render.faceIndex [i][nThread];
-#if SORT_RENDER_FACES == 2
-#	if 0//DBG
-	memset (flx.roots, 0xff, sizeof (flx.roots));
-#	else
-	short *roots = flx.roots,
-			*usedKeys = flx.usedKeys;
-	for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
-		roots [usedKeys [i]] = -1;
-#	endif
-#else
-#	if 0//DBG
-memset (flx.tails, 0xff, sizeof (flx.tails));
-#	else
 	int* tails = flx.tails.Buffer (),
 		* usedKeys = flx.usedKeys.Buffer ();
 	for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
 		tails [usedKeys [i]] = -1;
-#	endif
-#endif
 	flx.nUsedKeys = 0;
 	}
 PROF_END(ptFaceList)
@@ -104,14 +87,6 @@ CFaceListIndex& flx = gameData.render.faceIndex [faceP->m_info.nOvlTex != 0][nTh
 {
 i = gameData.render.nUsedFaces++;
 }
-#if SORT_RENDER_FACES == 2
-j = flx.roots [nKey];
-if (j < 0)
-	flx.usedKeys [flx.nUsedKeys++] = nKey;
-gameData.render.faceList [i].nNextItem = j;
-gameData.render.faceList [i].faceP = faceP;
-flx.roots [nKey] = i;
-#else
 j = flx.tails [nKey];
 if (j < 0) {
 	flx.usedKeys [flx.nUsedKeys] = nKey;
@@ -124,12 +99,9 @@ gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
 flx.tails [nKey] = i;
 faceP->m_info.nFrame = gameData.app.nFrameCount;
-#endif
 PROF_END(ptFaceList)
 return 1;
 }
-
-#endif //SORT_RENDER_FACES > 1
 
 //------------------------------------------------------------------------------
 
@@ -851,14 +823,9 @@ if (nType) {
 		}
 	}
 else {
-#if SORT_RENDER_FACES > 1
 	for (h = 0; h < 2; h++)
 		for (i = 0; i < gameStates.app.nThreads; i++)
 			nFaces += RenderFaceList (gameData.render.faceIndex [h][i], nType, bDepthOnly, bHeadlight);
-#else
-	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
-		nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bDepthOnly, bAutomap, bHeadlight);
-#endif
 	}
 return nFaces;
 }

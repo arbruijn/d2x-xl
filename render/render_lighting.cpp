@@ -111,9 +111,7 @@ PROF_START
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
-#endif
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
@@ -151,9 +149,7 @@ for (i = nStart; i < nEnd; i++) {
 		faceP->m_info.bVisible = 0;
 		continue;
 		}
-#if SORT_RENDER_FACES > 1
 	AddFaceListItem (faceP, nThread);
-#endif
 	faceP->m_info.color = faceColor [nColor].color;
 	pc = FACES.color + faceP->m_info.nIndex;
 	for (h = 0; h < 4; h++, pc++) {
@@ -274,9 +270,7 @@ PROF_START
 					bLightmaps = lightmapManager.HaveLightmaps ();
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
-#endif
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
@@ -319,10 +313,8 @@ for (i = nStart; i < nEnd; i++) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
-#if SORT_RENDER_FACES > 1
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
-#endif
 		faceP->m_info.color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->m_info.nSide, -1);
 		pc = FACES.color + faceP->m_info.nIndex;
@@ -417,9 +409,7 @@ PROF_START
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_RENDER_FACES > 1
 ResetFaceList (nThread);
-#endif
 lightManager.ResetIndex ();
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
@@ -461,17 +451,12 @@ for (i = nStart; i < nEnd; i++) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
-#if SORT_RENDER_FACES > 1
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
-#endif
 		faceP->m_info.color = faceColor [nColor].color;
-#if 1
 		if (!(bNeedLight || nColor) && faceP->m_info.bHasColor)
 			continue;
 		faceP->m_info.bHasColor = 1;
-#endif
-//			SetDynLightMaterial (nSegment, faceP->m_info.nSide, -1);
 		for (k = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
 			pc = FACES.color + nIndex;
@@ -551,8 +536,6 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-#if SORT_RENDER_FACES > 1
-ResetFaceList (nThread);
 #endif
 ogl.m_states.bUseTransform = 1;
 gameStates.render.nState = 0;
@@ -582,10 +565,8 @@ for (i = nStart; i < nEnd; i++) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
-#if SORT_RENDER_FACES > 1
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
-#endif
 		faceP->m_info.color = faceColor [nColor].color;
 		pc = FACES.color + faceP->m_info.nIndex;
 		uvlP = segP->m_sides [nSide].m_uvls;
