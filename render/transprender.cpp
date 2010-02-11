@@ -754,31 +754,35 @@ if (faceP) {
 		}
 	}
 else {
-	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 	}
 #endif
-ogl.SetDepthWrite (item->bDepthMask != 0);
-if (!faceP)
-	bmTop = NULL;
-else if ((bmTop = faceP->bmTop))
-	bmTop = bmTop->Override (-1);
-if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
-	bmBot = bmTop;
+if (!faceP) {
 	bmTop = mask = NULL;
-	bDecal = -1;
-	faceP->m_info.nRenderType = gameStates.render.history.nType = 1;
+	bDecal = 0;
+	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 	}
 else {
-	bDecal = bmTop != NULL;
-	mask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
-	}
-if (!bmTop && m_data.bmP [1]) {
-	DisableTMU (GL_TEXTURE1 + bLightmaps, 1);
-	m_data.bmP [1] = NULL;
-	}
-if (!mask && m_data.bmP [2]) {
-	DisableTMU (GL_TEXTURE2 + bLightmaps, 1);
-	m_data.bmP [2] = NULL;
+	ogl.SetDepthWrite (item->bDepthMask != 0);
+	if ((bmTop = faceP->bmTop))
+		bmTop = bmTop->Override (-1);
+	if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+		bmBot = bmTop;
+		bmTop = mask = NULL;
+		bDecal = -1;
+		faceP->m_info.nRenderType = gameStates.render.history.nType = 1;
+		}
+	else {
+		bDecal = bmTop != NULL;
+		mask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
+		}
+	if (!bmTop && m_data.bmP [1]) {
+		DisableTMU (GL_TEXTURE1 + bLightmaps, 1);
+		m_data.bmP [1] = NULL;
+		}
+	if (!mask && m_data.bmP [2]) {
+		DisableTMU (GL_TEXTURE2 + bLightmaps, 1);
+		m_data.bmP [2] = NULL;
+		}
 	}
 
 if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
@@ -887,7 +891,6 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				}
 			}
 		ogl.SetDepthMode (GL_LEQUAL);
-		ogl.SetDepthWrite (false);
 		}
 	else {
 		if (bAdditive && !automap.Display ()) {
@@ -977,7 +980,6 @@ void CTransparencyRenderer::RenderObject (tTranspObject *item)
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 gameData.models.vScale = item->vScale;
-ogl.SetDepthWrite (false);
 DrawPolygonObject (item->objP, 0, 1);
 gameData.models.vScale.SetZero ();
 ogl.ResetClientStates ();
@@ -1011,8 +1013,6 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	if (bSoftBlend)
 		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
-	else
-		ogl.SetDepthWrite (false);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos [X] -= w;
@@ -1063,10 +1063,8 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSpa
 	bmpSparks->Texture ()->Bind ();
 	if (bSoftSparks)
 		glareRenderer.LoadShader (3, 1);
-	else {
+	else
 		shaderManager.Deploy (-1);
-		ogl.SetDepthWrite (false);
-		}
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	glColor3f (1, 1, 1);
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
@@ -1139,8 +1137,6 @@ shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-ogl.SetDepthWrite (false);
-ogl.SetBlending (true);
 gameOpts->render.bDepthSort = bDepthSort;
 }
 
@@ -1197,7 +1193,6 @@ else {
 void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 {
 if (m_data.nPrevType != m_data.nCurType) {
-	ogl.SetDepthWrite (false);
 	ogl.ResetClientStates ();
 	ResetBitmaps ();
 	shaderManager.Deploy (-1);
@@ -1212,13 +1207,13 @@ ResetBitmaps ();
 void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
 ogl.SetDepthWrite (true);
+ogl.SetFaceCulling (false);
 ogl.SetBlending (true);
 ogl.SetBlendMode (GL_ONE, GL_ONE);
 #if 0
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 #endif
-ogl.SetFaceCulling (false);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 #if 1
 if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
@@ -1310,6 +1305,9 @@ if (!pl->bRendered) {
 #endif
 	try {
 		FlushBuffers (m_data.nCurType);
+		ogl.SetBlending (true);
+		ogl.SetDepthWrite (false);
+		ogl.SetDepthTest (true);
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
 			RenderPoly (&pl->item.poly);
 			}
@@ -1379,10 +1377,8 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
-ogl.SetBlending (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
-ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
