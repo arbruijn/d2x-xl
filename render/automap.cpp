@@ -403,7 +403,7 @@ if (gameOpts->render.cockpit.bHUD) {
 
 //------------------------------------------------------------------------------
 
-void CAutomap::Draw (fix xStereoSeparation)
+void CAutomap::Render (fix xStereoSeparation)
 {
 #if 1
 PROF_START
@@ -916,7 +916,7 @@ m_bRadar = bRadar;
 bPauseGame = Setup (bPauseGame, xEntryTime);
 bRedrawScreen = 0;
 if (bRadar) {
-	Draw ();
+	Render ();
 
 	ogl.m_states.nContrast = nContrast;
 	if (!--m_bDisplay) {
@@ -940,10 +940,10 @@ do {
 	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update ();
 	if (!gameOpts->render.n3DGlasses)
-		Draw ();
+		Render ();
 	else {
-		Draw (-gameOpts->render.xStereoSeparation);
-		Draw (gameOpts->render.xStereoSeparation);
+		Render (-gameOpts->render.xStereoSeparation);
+		Render (gameOpts->render.xStereoSeparation);
 		}
 	if (bFirstTime) {
 		bFirstTime = 0;
