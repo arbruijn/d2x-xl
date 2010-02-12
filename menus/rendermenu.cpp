@@ -499,14 +499,13 @@ do {
 	sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 	*szSlider = *(TXT_IMAGE_QUALITY - 1);
 	renderOpts.nImageQual = m.AddSlider (szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_I, HTX_ADVRND_RENDQUAL);
+	sprintf (szSlider + 1, TXT_RENDER_QUALITY, pszRendQual [gameOpts->render.nQuality]);
+	*szSlider = *(TXT_RENDER_QUALITY + 1);
+	renderOpts.nRenderQual = m.AddSlider (szSlider + 1, gameOpts->render.nQuality, 0, 3, KEY_R, HTX_ADVRND_TEXQUAL);
+
 	if (gameStates.app.bGameRunning)
-		renderOpts.nRenderQual =
 		renderOpts.nMeshQual = -1;
 	else {
-		sprintf (szSlider + 1, TXT_RENDER_QUALITY, pszRendQual [gameOpts->render.nQuality]);
-		*szSlider = *(TXT_RENDER_QUALITY + 1);
-		renderOpts.nRenderQual = m.AddSlider (szSlider + 1, gameOpts->render.nQuality, 0, 3, KEY_R, HTX_ADVRND_TEXQUAL);
-
 		if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
 			sprintf (szSlider + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
 			*szSlider = *(TXT_MESH_QUALITY + 1);

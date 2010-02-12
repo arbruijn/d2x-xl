@@ -729,10 +729,6 @@ if (!bmBot) {
 	glPolygonMode (GL_FRONT, GL_FILL);
 	}
 #endif
-#if DBG
-if (bmBot && strstr (bmBot->Name (), "glare.tga"))
-	item = item;
-#endif
 
 faceP = item->faceP;
 triP = item->triP;
@@ -756,13 +752,13 @@ if (faceP) {
 else {
 	}
 #endif
+ogl.SetDepthWrite (item->bDepthMask != 0);
 if (!faceP) {
 	bmTop = mask = NULL;
 	bDecal = 0;
 	bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 	}
 else {
-	ogl.SetDepthWrite (item->bDepthMask != 0);
 	if ((bmTop = faceP->bmTop))
 		bmTop = bmTop->Override (-1);
 	if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
@@ -852,11 +848,6 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 		else {
 			if (gameStates.render.bPerPixelLighting == 1) {
 				G3SetupLightmapShader (faceP, 0, (int) faceP->m_info.nRenderType, false);
-#	if DBG
-				if ((item->nVertices < 3) || (item->nVertices > 4))
-					PrintLog ("invalid transparent render item\n");
-				else
-#	endif
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			else {
@@ -1208,12 +1199,7 @@ void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
 ogl.SetDepthWrite (true);
 ogl.SetFaceCulling (false);
-ogl.SetBlending (true);
 ogl.SetBlendMode (GL_ONE, GL_ONE);
-#if 0
-ogl.SetDepthTest (true);
-ogl.SetDepthMode (GL_LEQUAL);
-#endif
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 #if 1
 if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
