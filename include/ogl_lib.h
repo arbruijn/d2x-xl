@@ -189,6 +189,8 @@ class COglStates {
 
 		int	nTMU [2];	//active driver and client TMUs
 		int	clientStates [4][6];	// client states for the first 4 TMUs
+		int	bClientTexCoord;
+		int	bClientColor;
 #if DBG_OGL
 		tClientBuffer	clientBuffers [4][6];
 #endif
@@ -249,6 +251,21 @@ class COGL {
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
 		void FlushDrawBuffer (bool bAdditive = false);
+
+		int BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
+							  tTexCoord2f *texCoordP, 
+							  tRgbaColorf *colorP, int nColors,
+							  int nTMU = -1);
+		void ReleaseBuffers (void);
+		int BindBitmap (CBitmap* bmP, int nFrame, int nWrap);
+		int RenderArrays (int nPrimitive, 
+								CFloatVector *vertexP, int nVertices, int nDimensions = 3,
+								tTexCoord2f *texCoordP = NULL, 
+								tRgbaColorf *colorP = NULL, int nColors = 1, 
+								CBitmap *bmP = NULL, int nFrame = 0, int nWrap = GL_REPEAT);
+		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors);
+		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix width, fix height, tRgbaColorf* colorP, float alpha, int transp);
+
 
 		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {
 			if (bCurrent != bNew) {

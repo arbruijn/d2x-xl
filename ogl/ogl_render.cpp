@@ -1056,11 +1056,11 @@ else {
 	ogl.SelectTMU (GL_TEXTURE0);
 	v1 = vPos - transformation.m_info.pos;
 	pv = transformation.m_info.view [0] * v1;
-	x = (double) X2F (pv[X]);
-	y = (double) X2F (pv[Y]);
-	z = (double) X2F (pv[Z]);
-	w = (double) X2F (xWidth);
-	h = (double) X2F (xHeight);
+	x = double X2F (pv [X]);
+	y = double X2F (pv [Y]);
+	z = double X2F (pv [Z]);
+	w = double X2F (xWidth);
+	h = double X2F (xHeight);
 	if (gameStates.render.nShadowBlurPass == 1) {
 		ogl.SetTextureUsage (false);
 		glColor4d (1,1,1,1);
@@ -1078,7 +1078,6 @@ else {
 			return 1;
 		bmP = bmP->Override (-1);
 		bmP->Texture ()->Wrap (GL_CLAMP);
-		ogl.SetBlending (true);
 		if (bAdditive == 2)
 			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		else if (bAdditive == 1)
@@ -1112,16 +1111,12 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglRenderArrays (CBitmap *bmP, int nFrame, CFloatVector *vertexP, int nVertices, tTexCoord2f *texCoordP,
-							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
+int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap)
 {
-	int	bVertexArrays = ogl.EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
-
-if (bmP)
-	ogl.SetTextureUsage (true);
-else
+if (!bmP) 
 	ogl.SetTextureUsage (false);
-if (bmP) {
+else {
+	ogl.SetTextureUsage (true);
 	if (bmP->Bind (1))
 		return 0;
 	bmP = bmP->Override (-1);
@@ -1129,22 +1124,50 @@ if (bmP) {
 		bmP = bmP->Frames () + nFrame;
 	bmP->Texture ()->Wrap (nWrap);
 	}
-if (bVertexArrays) {
-	if (texCoordP)
-		OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
-	if (colorP) {
-		if (nColors == nVertices)
-			OglColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
-		else
-			glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-		}
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
+							  tTexCoord2f *texCoordP, 
+							  tRgbaColorf *colorP, int nColors,
+							  int nTMU = -1)
+{
+if (!ogl.EnableClientStates (m_data.bClientTexCoord = (bmP && texCoordP), m_data.bClientColor = (colorP && (nColors == nVertices)), 0, nTMU))
+	return 0;
+if (texCoordP)
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
+if (colorP) {
+	if (nColors == nVertices)
+		OglColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
+	else
+		glColor4fv (reinterpret_cast<GLfloat*> (colorP));
+	}
+OglVertexPointer (nDimensions, GL_FLOAT, nDimensions * sizeof (float), vertexP);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::ReleaseBuffers (void)
+{
+ogl.DisableClientStates (m_bClientTexCoord, m_bClientColor, 0);
+}
+
+//------------------------------------------------------------------------------
+
+int COGL::RenderArrays (int nPrimitive, 
+							   CFloatVector *vertexP, int nVertices, int nDimensions,
+							   tTexCoord2f *texCoordP, 
+							   tRgbaColorf *colorP, int nColors, 
+							   CBitmap *bmP, int nFrame, int nWrap)
+{
+if (!BindBitmap (bmP, nFrame, nWrap)
+	return 0;
+if (BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, GL_TEXTURE0)) {
 	OglDrawArrays (nPrimitive, 0, nVertices);
-	ogl.DisableClientState (GL_VERTEX_ARRAY);
-	if (texCoordP)
-		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY);
-	if (colorP)
-		ogl.DisableClientState (GL_COLOR_ARRAY);
+	ogl.ReleaseBuffers ();
 	}
 else {
 	int i = nVertices;
@@ -1184,6 +1207,55 @@ else {
 	glEnd ();
 	}
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors)
+{
+if (!bmP)
+	ogl.RenderArrays (GL_QUADS, vertexP, 4, 4, NULL, colorP, nColors, bmP, 0, GL_REPEAT);
+else {
+	GLfloat			u = bmP->Texture ()->U ();
+	GLfloat			v = bmP->Texture ()->V ();
+	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
+
+	ogl.RenderArrays (GL_QUADS, vertexP, 4, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, bmP, 0, GL_REPEAT);
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix width, fix height,tRgbaColorf* colorP, float alpha, int transp)
+{
+	float				verts [4][2], vPosf;
+	tRgbaColorf		color = {1, 1, 1, 1};
+	GLfloat			h, w, u, v;
+
+ogl.SelectTMU (GL_TEXTURE0);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+vPosf.Assign (vPos);
+transformation.Transform (fPos, fPos, 0);
+w = (GLfloat) X2F (width); 
+h = (GLfloat) X2F (height);
+verts [0][X] = 
+verts [3][X] = vPosf [X] - w;
+verts [1][X] = 
+verts [2][X] = vPosf [X] + w;
+verts [0][Y] = 
+verts [1][Y] = vPosf [Y] + h;
+verts [2][Y] =
+verts [3][Y] = vPosf [Y] - h;
+if (gameStates.render.nShadowBlurPass == 1)
+	RenderArrays (GL_QUAD, verts, 4, 2);
+else {
+	u = bmP->Texture ()->U ();
+	v = bmP->Texture ()->V ();
+	tTexCoord2f	texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
+	RenderArrays (GL_QUAD, verts, 4, 2, texCoord, colorP ? colorP : &color, 1, bmP, 0, GL_CLAMP);
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------

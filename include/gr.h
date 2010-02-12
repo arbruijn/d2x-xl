@@ -17,9 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "fix.h"
 #include "palette.h"
-#include "bitmap.h"
 #include "vecmat.h"
-#include "canvas.h"
 
 //-----------------------------------------------------------------------------
 
@@ -40,6 +38,22 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SM(w,h) ((((u_int32_t)w)<<16)+(((u_int32_t)h)&0xFFFF))
 #define SM_W(m) (m>>16)
 #define SM_H(m) (m&0xFFFF)
+
+//-----------------------------------------------------------------------------
+
+typedef union tTexCoord2f {
+	float a [2];
+	struct {
+		float	u, v;
+		} v;
+	} __pack__ tTexCoord2f;
+
+typedef union tTexCoord3f {
+	float a [3];
+	struct {
+		float	u, v, l;
+		} v;
+	} __pack__ tTexCoord3f;
 
 //=========================================================================
 // System functions:
@@ -71,6 +85,10 @@ extern ubyte *gr_video_memory;
 void _CDECL_ GrClose(void);
 
 //=========================================================================
+
+#include "bitmap.h"
+#include "canvas.h"
+
 void gr_bm_pixel (CBitmap * bmP, int x, int y, ubyte color);
 void gr_bm_upixel (CBitmap * bmP, int x, int y, ubyte color);
 void BlitToBitmap (CBitmap * dest, int dx, int dy, int w, int h, CBitmap * src, int sx, int sy, int bTransp);
@@ -210,20 +228,6 @@ char *ScrSizeArg (int x, int y);
 int SCREENMODE (int x, int y, int c);
 int S_MODE (u_int32_t *VV, int *VG);
 int GrBitmapHasTransparency (CBitmap *bmP);
-
-typedef union tTexCoord2f {
-	float a [2];
-	struct {
-		float	u, v;
-		} v;
-	} __pack__ tTexCoord2f;
-
-typedef union tTexCoord3f {
-	float a [3];
-	struct {
-		float	u, v, l;
-		} v;
-	} __pack__ tTexCoord3f;
 
 typedef struct tFaceTriangle {
 	ushort				nFace;

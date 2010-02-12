@@ -40,83 +40,6 @@
 #include "texmerge.h"
 #include "transprender.h"
 
-//------------------------------------------------------------------------------
-
-int G3DrawQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors)
-{
-	GLfloat			u = bmP->Texture ()->U ();
-	GLfloat			v = bmP->Texture ()->V ();
-	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
-
-OglRenderArrays (bmP, 0, vertexP, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, GL_QUADS, GL_REPEAT);
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int G3DrawBitmap (const CFixVector&	vPos, fix width, fix height, CBitmap* bmP, tRgbaColorf* colorP, float alpha, int transp)
-{
-	CFloatVector	fPos;
-	GLfloat			h, w, u, v;
-
-r_bitmapc++;
-ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetBlending (true);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#if 1
-fPos.Assign (vPos);
-transformation.Transform (fPos, fPos, 0);
-#else
-v1 = vPos[0] - transformation.m_info.vPos;
-VmVecRotate (&pv, &v1, &transformation.m_info.view [0]);
-#endif
-w = (GLfloat) X2F (width); //FixMul (width, transformation.m_info.scale.x));
-h = (GLfloat) X2F (height); //FixMul (height, transformation.m_info.scale.y));
-if (gameStates.render.nShadowBlurPass == 1) {
-	ogl.SetTextureUsage (false);
-	glColor4d (1,1,1,1);
-	glBegin (GL_QUADS);
-	fPos [X] -= w;
-	fPos [Y] += h;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	fPos [X] += 2 * w;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	fPos [Y] -= 2 * h;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	fPos [X] -= 2 * w;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glEnd ();
-	}
-else {
-	ogl.SetTextureUsage (true);
-	if (bmP->Bind (1))
-		return 1;
-	bmP = bmP->Override (-1);
-	bmP->Texture ()->Wrap (GL_CLAMP);
-	if (colorP)
-		glColor4f (colorP->red, colorP->green, colorP->blue, alpha);
-	else
-		glColor4d (1, 1, 1, double (alpha));
-	u = bmP->Texture ()->U ();
-	v = bmP->Texture ()->V ();
-	glBegin (GL_QUADS);
-	glTexCoord2f (0, 0);
-	fPos [X] -= w;
-	fPos [Y] += h;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glTexCoord2f (u, 0);
-	fPos [X] += 2 * w;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glTexCoord2f (u, v);
-	fPos [Y] -= 2 * h;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glTexCoord2f (0, v);
-	fPos [X] -= 2 * w;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glEnd ();
-	}
-return 0;
-}
 
 //------------------------------------------------------------------------------
 
@@ -130,6 +53,20 @@ else if (orient == 3)
 	glTexCoord2f (v * m_render.aspect, 1.0f - u);
 else
 	glTexCoord2f (u, v);
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::SetTexCoord (GLfloat u, GLfloat v, int orient, tTexCoord2f& texCoord)
+{
+if (orient == 1)
+	texCoord.v.u = (1.0f - v) * m_render.aspect, texCoord.v.v = u;
+else if (orient == 2)
+	texCoord.v.u = 1.0f - u, texCoord.v.v = 1.0f - v;
+else if (orient == 3)
+	texCoord.v.u = v * m_render.aspect, texCoord.v.v = 1.0f - u;
+else
+	texCoord.v.u = u, texCoord.v.v = v;
 }
 
 //------------------------------------------------------------------------------
@@ -191,9 +128,8 @@ if (Bind (bMipMaps))
 m_info.texP->Wrap (GL_REPEAT);
 
 m_render.bBlendState = ogl.GetBlendUsage ();
-glGetIntegerv (GL_DEPTH_FUNC, &m_render.depthFunc);
+m_render.depthFunc = ogl.GetDepthMode ();
 ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetBlending (bBlend);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 return &m_info.texture;
 }
@@ -202,23 +138,20 @@ return &m_info.texture;
 
 void CBitmap::OglRender (tRgbaColorf* colorP, int nColors, int orient)
 {
-glBegin (GL_QUADS);
-glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-SetTexCoord (m_render.u1, m_render.v1, orient);
-glVertex2f (m_render.x0, m_render.y0);
-if (nColors > 1)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 1));
-SetTexCoord (m_render.u2, m_render.v1, orient);
-glVertex2f (m_render.x1, m_render.y0);
-if (nColors > 1)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 2));
-SetTexCoord (m_render.u2, m_render.v2, orient);
-glVertex2f (m_render.x1, m_render.y1);
-if (nColors > 1)
-	glColor4fv (reinterpret_cast<GLfloat*> (colorP + 3));
-SetTexCoord (m_render.u1, m_render.v2, orient);
-glVertex2f (m_render.x0, m_render.y1);
-glEnd ();
+	float				verts [4][2] = {{m_render.x0, m_render.y0}, {m_render.x1, m_render.y0}, {m_render.x1, m_render.y1}, {m_render.x0, m_render.y1}};
+	tTexCoord2f		texCoord [4];
+
+for (int i = 0; i < 4; i++)
+	SetTexCoord (m_render.u1, m_render.v1, orient, texCoord [i]);
+ogl.EnableClientStates (1, (nColors == 4), 0, GL_TEXTURE0);
+glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
+if (nColors == 4)
+	OglColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
+else
+	glColor4fv (reinterpret_cast<GLfloat*> (colorP));
+OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), verts);
+OglDrawArrays (GL_QUADS, 0, 4);
+ogl.DisableClientStates (1, (nColors == 4), 0, GL_TEXTURE0);
 }
 
 //------------------------------------------------------------------------------
@@ -226,10 +159,7 @@ glEnd ();
 void CBitmap::OglEndRender (void)
 {
 ogl.SetDepthMode (m_render.depthFunc);
-if (m_render.bBlendState)
-	ogl.SetBlending (true);
-else
-	ogl.SetBlending (false);
+ogl.SetBlending (m_render.bBlendState != 0);
 ogl.SelectTMU (GL_TEXTURE0);
 OglBindTexture (0);
 ogl.SetTextureUsage (false);

@@ -547,9 +547,9 @@ if (*m_info.szBitmapName) {
 	G3StartFrame (1, 0, 0);
 	G3SetViewMatrix (p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 	p[Z] = 2 * I2X (w);
-	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
+	depthFunc = ogl.GetDepthMode ();
 	ogl.SetDepthMode (GL_ALWAYS);
-	G3DrawBitmap (p, I2X (w), I2X (h), bmP, NULL, 1.0, 3);
+	ogl.RenderBitmap (bmP, p, I2X (w), I2X (h), NULL, 1.0, 3);
 	ogl.SetDepthMode (depthFunc);
 	G3EndFrame ();
 	//paletteManager.ResumeEffect ();
