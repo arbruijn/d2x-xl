@@ -255,6 +255,7 @@ class COGL {
 		int BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							  tTexCoord2f *texCoordP, 
 							  tRgbaColorf *colorP, int nColors,
+							  CBitmap *bmP, 							  
 							  int nTMU = -1);
 		void ReleaseBuffers (void);
 		int BindBitmap (CBitmap* bmP, int nFrame, int nWrap);

@@ -1132,9 +1132,10 @@ return 1;
 int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							  tTexCoord2f *texCoordP, 
 							  tRgbaColorf *colorP, int nColors,
-							  int nTMU = -1)
+							   CBitmap *bmP,
+							  int nTMU)
 {
-if (!ogl.EnableClientStates (m_data.bClientTexCoord = (bmP && texCoordP), m_data.bClientColor = (colorP && (nColors == nVertices)), 0, nTMU))
+if (!ogl.EnableClientStates (m_states.bClientTexCoord = (bmP && texCoordP), m_states.bClientColor = (colorP && (nColors == nVertices)), 0, nTMU))
 	return 0;
 if (texCoordP)
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
@@ -1152,7 +1153,7 @@ return 1;
 
 void COGL::ReleaseBuffers (void)
 {
-ogl.DisableClientStates (m_bClientTexCoord, m_bClientColor, 0);
+ogl.DisableClientStates (m_states.bClientTexCoord, m_states.bClientColor, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1163,9 +1164,9 @@ int COGL::RenderArrays (int nPrimitive,
 							   tRgbaColorf *colorP, int nColors, 
 							   CBitmap *bmP, int nFrame, int nWrap)
 {
-if (!BindBitmap (bmP, nFrame, nWrap)
+if (!BindBitmap (bmP, nFrame, nWrap))
 	return 0;
-if (BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, GL_TEXTURE0)) {
+if (BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, bmP, GL_TEXTURE0)) {
 	OglDrawArrays (nPrimitive, 0, nVertices);
 	ogl.ReleaseBuffers ();
 	}
@@ -1220,7 +1221,7 @@ else {
 	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
 
-	ogl.RenderArrays (GL_QUADS, vertexP, 4, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, bmP, 0, GL_REPEAT);
+	RenderArrays (GL_QUADS, vertexP, 4, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, bmP, 0, GL_REPEAT);
 	}
 return 0;
 }
@@ -1229,16 +1230,18 @@ return 0;
 
 int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix width, fix height,tRgbaColorf* colorP, float alpha, int transp)
 {
-	float				verts [4][2], vPosf;
+	CFloatVector	verts [4];
+	CFloatVector	vPosf;
 	tRgbaColorf		color = {1, 1, 1, 1};
 	GLfloat			h, w, u, v;
 
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 vPosf.Assign (vPos);
-transformation.Transform (fPos, fPos, 0);
+transformation.Transform (vPosf, vPosf, 0);
 w = (GLfloat) X2F (width); 
 h = (GLfloat) X2F (height);
+memset (verts, 0, sizeof (verts));
 verts [0][X] = 
 verts [3][X] = vPosf [X] - w;
 verts [1][X] = 
@@ -1248,12 +1251,12 @@ verts [1][Y] = vPosf [Y] + h;
 verts [2][Y] =
 verts [3][Y] = vPosf [Y] - h;
 if (gameStates.render.nShadowBlurPass == 1)
-	RenderArrays (GL_QUAD, verts, 4, 2);
+	RenderArrays (GL_QUADS, verts, 4, 4);
 else {
 	u = bmP->Texture ()->U ();
 	v = bmP->Texture ()->V ();
 	tTexCoord2f	texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
-	RenderArrays (GL_QUAD, verts, 4, 2, texCoord, colorP ? colorP : &color, 1, bmP, 0, GL_CLAMP);
+	RenderArrays (GL_QUADS, verts, 4, 4, texCoord, colorP ? colorP : &color, 1, bmP, 0, GL_CLAMP);
 	}
 return 0;
 }
