@@ -73,12 +73,17 @@ ogl.SetTextureUsage (false);
 if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
-glBegin (GL_QUADS);
-glVertex2f (x0, y0);
-glVertex2f (x0, y1);
-glVertex2f (x1, y1);
-glVertex2f (x1, y0);
-glEnd ();
+CFloatVector verts [4];
+memset (verts, 0, sizeof (verts));
+verts [0][X] = 
+verts [1][X] = x0;
+verts [2][X] = 
+verts [3][X] = x1;
+verts [0][Y] = 
+verts [3][Y] = y0;
+verts [1][Y] = 
+verts [2][Y] = y1;
+ogl.RenderQuad (NULL, verts);
 //if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
 //	ogl.SetBlending (false);
 }

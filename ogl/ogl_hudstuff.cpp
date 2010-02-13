@@ -80,25 +80,22 @@ else {
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();
-		ogl.SetTextureUsage (true);
-		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		if (bmpDeadzone->Bind (1)) 
-			return;
-		bmpDeadzone->Texture ()->Wrap (GL_CLAMP);
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
-		glBegin (GL_QUADS);
-		glTexCoord2f (0, 0);
-		glVertex2f (-w, -h);
-		glTexCoord2f (1, 0);
-		glVertex2f (w, -h);
-		glTexCoord2f (1, 1);
-		glVertex2f (w, h);
-		glTexCoord2f (0, 1);
-		glVertex2f (-w, h);
-		glEnd ();
+		CFloatVector verts [4];
+		memset (verts, 0, sizeof (verts));
+		verts [0][X] = 
+		verts [3][X] = -w;
+		verts [1][X] = 
+		verts [2][X] = w;
+		verts [0][Y] = 
+		verts [1][Y] = -h;
+		verts [2][Y] = 
+		verts [3][Y] = w;
+		tTexCoord2f texCoord [4] = {{0,0},{1,0},{1,1},{0,1}};
+		ogl.RenderQuad (bmpDeadzone, verts, texCoord);
 		OglBindTexture (0);
 		ogl.SetTextureUsage (false);
 		glPopMatrix ();

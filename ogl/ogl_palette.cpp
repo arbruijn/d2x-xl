@@ -46,12 +46,17 @@ ogl.SetBlendMode (GL_ONE,GL_ONE);
 glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 ogl.SetDepthTest (false);
 ogl.SetTextureUsage (false);
-glBegin (GL_QUADS);
-glVertex2f (0,0);
-glVertex2f (0,1);
-glVertex2f (1,1);
-glVertex2f (1,0);
-glEnd ();
+CFloatVector verts [4];
+memset (verts, 0, sizeof (verts));
+verts [0][X] =
+verts [1][X] = 0;
+verts [2][X] =
+verts [3][X] = 1;
+verts [0][Y] =
+verts [3][Y] = 0;
+verts [1][Y] =
+verts [2][Y] = 1;
+ogl.RenderQuad (NULL, verts);
 ogl.SetDepthTest (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

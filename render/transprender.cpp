@@ -984,45 +984,35 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
 if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend, 0, 0, 0)) {
-	float		h, w, u, v;
-	CFloatVector	fPos = item->position;
+	CFloatVector	vPosf = item->position;
 
-	w = (float) X2F (item->nWidth);
-	h = (float) X2F (item->nHeight);
-	u = item->bmP->Texture ()->U ();
-	v = item->bmP->Texture ()->V ();
 	if (item->bColor)
 		glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	else
 		glColor3f (1, 1, 1);
 	ogl.SetBlending (true);
-	if (item->bAdditive == 2)
-		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	else if (item->bAdditive == 1)
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
-	else
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (item->bAdditive);
 	if (bSoftBlend)
 		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
-	glBegin (GL_QUADS);
-	glTexCoord2f (0, 0);
-	fPos [X] -= w;
-	fPos [Y] += h;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glTexCoord2f (u, 0);
-	fPos [X] += 2 * w;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glTexCoord2f (u, v);
-	fPos [Y] -= 2 * h;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glTexCoord2f (0, v);
-	fPos [X] -= 2 * w;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&fPos));
-	glEnd ();
-	if (item->bAdditive)
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (bSoftBlend)
-		ogl.SetDepthTest (true);
+
+	CFloatVector	verts [4];
+	memset (verts, 0, sizeof (verts));
+	float w = X2F (item->nWidth);
+	float h = X2F (item->nHeight);
+	verts [0][X] =
+	verts [3][X] = vPosf [X] - w;
+	verts [1][X] =
+	verts [2][X] = vPosf [X] + w;
+	verts [0][Y] =
+	verts [1][Y] = vPosf [Y] + h;
+	verts [2][Y] =
+	verts [3][Y] = vPosf [Y] - h;
+	float u = item->bmP->Texture ()->U ();
+	float v = item->bmP->Texture ()->V ();
+	tTexCoord2f texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
+	ogl.RenderQuad (item->bmP, verts, texCoord, NULL, 0, GL_CLAMP);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetDepthTest (true);
 	}
 }
 
@@ -1187,7 +1177,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	shaderManager.Deploy (-1);
 	}
 gameStates.render.bDepthSort = -1;
-item->lightning->Render (item->nDepth, 0, 0);
+item->lightning->Render (item->nDepth, 0);
 gameStates.render.bDepthSort = 1;
 ogl.ResetClientStates ();
 ResetBitmaps ();

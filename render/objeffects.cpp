@@ -382,10 +382,10 @@ return &defaultColor;
 
 void RenderDamageIndicator (CObject *objP, tRgbColorf *pc)
 {
-	CFixVector	vPos;
-	CFloatVector		fPos, fVerts [4];
-	float			r, r2, w;
-	int			i, bStencil, bDrawArrays;
+	CFixVector		vPos;
+	CFloatVector	vPosf, fVerts [4];
+	float				r, r2, w;
+	int				bStencil;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -398,57 +398,32 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	bStencil = ogl.StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	PolyObjPos (objP, &vPos);
-	fPos.Assign (vPos);
-	transformation.Transform (fPos, fPos, 0);
+	vPosf.Assign (vPos);
+	transformation.Transform (vPosf, vPosf, 0);
 	r = X2F (objP->info.xSize);
 	r2 = r / 10;
 	r = r2 * 9;
 	w = 2 * r;
-	fPos [X] -= r;
-	fPos [Y] += r;
+	vPosf [X] -= r;
+	vPosf [Y] += r;
 	w *= objP->Damage ();
-	fVerts [0][X] = fVerts [3][X] = fPos [X];
-	fVerts [1][X] = fVerts [2][X] = fPos [X] + w;
-	fVerts [0][Y] = fVerts [1][Y] = fPos [Y];
-	fVerts [2][Y] = fVerts [3][Y] = fPos [Y] - r2;
-	fVerts [0][Z] = fVerts [1][Z] = fVerts [2][Z] = fVerts [3][Z] = fPos [Z];
+	fVerts [0][X] = fVerts [3][X] = vPosf [X];
+	fVerts [1][X] = fVerts [2][X] = vPosf [X] + w;
+	fVerts [0][Y] = fVerts [1][Y] = vPosf [Y];
+	fVerts [2][Y] = fVerts [3][Y] = vPosf [Y] - r2;
+	fVerts [0][Z] = fVerts [1][Z] = fVerts [2][Z] = fVerts [3][Z] = vPosf [Z];
 	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	ogl.SetTextureUsage (false);
-#if 1
-	if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0))) {
-		OglVertexPointer (4, GL_FLOAT, 0, fVerts);
-		OglDrawArrays (GL_QUADS, 0, 4);
-		}
-	else {
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++)
-			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
-		glEnd ();
-		}
-#else
-	bDrawArrays = 0;
-	glBegin (GL_QUADS);
-	glVertex3f (fPos [X], fPos [Y], fPos [Z]);
-	glVertex3f (fPos [X] + w, fPos [Y], fPos [Z]);
-	glVertex3f (fPos [X] + w, fPos [Y] - r2, fPos [Z]);
-	glVertex3f (fPos [X], fPos [Y] - r2, fPos [Z]);
-	glEnd ();
-#endif
+	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
+	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
+	OglDrawArrays (GL_QUADS, 0, 4);
 	w = 2 * r;
-	fVerts [1][X] = fVerts [2][X] = fPos [X] + w;
+	fVerts [1][X] = fVerts [2][X] = vPosf [X] + w;
 	glColor3fv (reinterpret_cast<GLfloat*> (pc));
-	if (bDrawArrays) {
-		OglVertexPointer (4, GL_FLOAT, 0, fVerts);
-		OglDrawArrays (GL_LINE_LOOP, 0, 4);
-		ogl.DisableClientState (GL_VERTEX_ARRAY);
-		}
-	else {
-		glBegin (GL_LINE_LOOP);
-		for (i = 0; i < 4; i++)
-			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
-		glEnd ();
-		}
+	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
+	OglDrawArrays (GL_LINE_LOOP, 0, 4);
+	ogl.DisableClientState (GL_VERTEX_ARRAY);
 	ogl.StencilOn (bStencil);
 	}
 }
@@ -742,7 +717,10 @@ void RenderTowedFlag (CObject *objP)
 		CFloatVector::Create(0.0f, -(1.0f / 3.0f), 0.0f, 1.0f)
 	};
 
-	static tTexCoord2f texCoordList [4] = {{{0.0f, -0.3f}}, {{1.0f, -0.3f}}, {{1.0f, 0.7f}}, {{0.0f, 0.7f}}};
+	static tTexCoord2f texCoordList [2][4] = {
+		{{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}},
+		{{0.0f, 0.7f}, {1.0f, 0.7f}, {1.0f, -0.3f}, {0.0f, -0.3f}}
+		};
 
 if (gameStates.app.bNostalgia)
 	return;
@@ -750,7 +728,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_FLAG)) {
 		CFixVector		vPos = objP->info.position.vPos;
-		CFloatVector	vPosf;
+		CFloatVector	vPosf, verts [4];
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->info.nId);
 		tPathPoint		*pp = pf->path.GetPoint ();
 		int				i, bStencil;
@@ -765,32 +743,24 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		LoadBitmap (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
 		bmP->SetTranspType (2);
-		if (bmP->Bind (1))
-			return;
-		bmP = bmP->CurFrame (-1);
-		bmP->Texture ()->Wrap (GL_REPEAT);
 		vPos += objP->info.position.mOrient.FVec () * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
 		transformation.Begin (vPos, pp->mOrient);
-		glBegin (GL_QUADS);
 		glColor3f (1.0f, 1.0f, 1.0f);
 		for (i = 0; i < 4; i++) {
 			vPosf [X] = 0;
 			vPosf [Y] = fVerts [i][Y] * r;
 			vPosf [Z] = fVerts [i][Z] * r;
-			transformation.Transform (vPosf, vPosf, 0);
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordList + i));
-			glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
+			transformation.Transform (verts [i], vPosf, 0);
 			}
+		ogl.RenderQuad (bmP, verts, texCoordList [0]);
 		for (i = 3; i >= 0; i--) {
 			vPosf [X] = 0;
 			vPosf [Y] = fVerts [i][Y] * r;
 			vPosf [Z] = fVerts [i][Z] * r;
-			transformation.Transform (vPosf, vPosf, 0);
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordList + i));
-			glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
+			transformation.Transform (verts [3 - i], vPosf, 0);
 			}
-		glEnd ();
+		ogl.RenderQuad (bmP, verts, texCoordList [1]);
 		transformation.End ();
 		OglBindTexture (0);
 		ogl.StencilOn (bStencil);
@@ -1015,7 +985,7 @@ void RenderThrusterFlames (CObject *objP)
 	int					h, i, j, k, l, nStyle, nThrusters, bStencil, bSpectate, bTextured;
 	tRgbaColorf			color [2];
 	tThrusterInfo		ti;
-	CFloatVector		v;
+	CFloatVector		v, verts [4];
 	float					fSpeed, fPulse, fFade [4];
 	CThrusterData*		pt = NULL;
 	CBitmap*				bmP;
@@ -1147,19 +1117,15 @@ else { //3D
 				}
 			}
 		if (bTextured) {
-			glBegin (GL_QUADS);
 			float z = (vFlame [0][0][Z] + vFlame [1][0][Z]) / 2.0f * ti.fLength;
 			for (j = 0; j < 4; j++) {
 				k = j * 4;
-				v = vFlame [5][k];
-				v [X] *= ti.fSize * 1.5f;
-				v [Y] *= ti.fSize * 1.5f;
-				v [Z] = z;
-				//transformation.Transform (v, v, 0);
-				glTexCoord2fv (reinterpret_cast<GLfloat*> (&tcThruster [j]));
-				glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+				verts [j] = vFlame [5][k];
+				verts [j] [X] *= ti.fSize * 1.5f;
+				verts [j] [Y] *= ti.fSize * 1.5f;
+				verts [j] [Z] = z;
 				}
-			glEnd ();
+			ogl.RenderQuad (bmP, verts, tcThruster);
 			bmpThruster [1][bPlayer]->Bind (1);
 			}
 		else {

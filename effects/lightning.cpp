@@ -1144,7 +1144,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 	if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
-				m_nodes [i].GetChild ()->Render (nDepth + 1, 1, nThread);
+				m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
 	}
 else {
 	if (!nDepth)
@@ -2236,8 +2236,11 @@ if (i >= 0) {
 		systemP->m_nKey [0] = key.i [0];
 		systemP->m_nKey [1] = key.i [1];
 		}
-	if (systemP->Lightnings () && (systemP->m_nBolts = systemP->Lightnings ()->Update (0)))
-		systemP->Render (0, -1, 0, -1);
+	if (systemP->Lightnings () && (systemP->m_nBolts = systemP->Lightnings ()->Update (0))) {
+		gameStates.render.bDepthSort = -1;
+		systemP->Render (0, -1, -1);
+		gameStates.render.bDepthSort = 1;
+		}
 	else
 		Destroy (m_systems + i, NULL);
 	}

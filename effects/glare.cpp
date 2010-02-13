@@ -495,7 +495,6 @@ void CGlareRenderer::RenderHardGlare (CFloatVector *sprite, CFloatVector *vCente
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	tRgbaColorf	color;
 	CBitmap*		bmP;
-	int			i;
 
 fLight /= 4;
 if (fLight < 0.01f)
@@ -518,27 +517,16 @@ if (!bColored)
 color.alpha *= fIntensity * fIntensity;
 if (color.alpha < 0.01f)
 	return;
-ogl.SetTextureUsage (true);
 if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 	return;
 bmP->SetTranspType (-1);
-if (bmP->Bind (1))
-	return;
-bmP->Texture ()->Wrap (GL_CLAMP);
 ogl.SetFaceCulling (false);
 if (bAdditive) {
 	fLight *= color.alpha;
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	}
-glColor4fv (reinterpret_cast<GLfloat*> (&color));
-glBegin (GL_QUADS);
-for (i = 0; i < 4; i++) {
-	glTexCoord2fv (reinterpret_cast<GLfloat*> (tcGlare + i));
-	glVertex3fv (reinterpret_cast<GLfloat*> (sprite + i));
-	}
-glEnd ();
-if (bAdditive)
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.RenderQuad (bmP, sprite, tcGlare, &color, 1, GL_CLAMP);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetFaceCulling (true);
 RenderCoronaOutline (sprite, vCenter);
 }
@@ -547,9 +535,9 @@ RenderCoronaOutline (sprite, vCenter);
 
 float CGlareRenderer::ComputeSoftGlare (CFloatVector *sprite, CFloatVector *vLight, CFloatVector *vEye)
 {
-	CFloatVector 		n, e, s, t, u, v;
-	float 		ul, vl, h, cosine;
-	int 			i;
+	CFloatVector 	n, e, s, t, u, v;
+	float 			ul, vl, h, cosine;
+	int 				i;
 
 u = sprite [2] + sprite [1];
 u -= sprite [0];
@@ -589,7 +577,6 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 {
 	tRgbaColorf color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-	int 			i;
 	CBitmap*		bmP = NULL;
 
 if (gameStates.render.bQueryCoronas) {
@@ -626,14 +613,7 @@ if (ogl.EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTU
 	ogl.DisableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0);
 	}
 else {
-	if (gameStates.render.bQueryCoronas == 0)
-		bmP->Bind (1);
-	glBegin (GL_QUADS);
-	for  (i = 0; i < 4; i++) {
-		glTexCoord2fv (reinterpret_cast<GLfloat*> (tcGlare + i));
-		glVertex3fv (reinterpret_cast<GLfloat*> (sprite + i));
-		}
-	glEnd ();
+	ogl.RenderQuad (gameStates.render.bQueryCoronas ? NULL : bmP, sprite, tcGlare);
 	}
 if (!gameStates.render.bQueryCoronas && bAdditive)
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
