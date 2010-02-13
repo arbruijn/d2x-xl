@@ -251,9 +251,9 @@ for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 	}
 OglVertexPointer (3, GL_FLOAT, 0, ogl.VertexBuffer ().Buffer ());
 #if DBG_SHADOWS
-ogl.Buffers ().Flush ((bShadowTest < 2) ? GL_QUADS : GL_LINES, nVerts);
+ogl.FlushBuffers ((bShadowTest < 2) ? GL_QUADS : GL_LINES, nVerts);
 #else
-ogl.Buffers ().Flush (GL_QUADS, nVerts);
+ogl.FlushBuffers (GL_QUADS, nVerts);
 #endif
 #if DBG_SHADOWS
 ogl.SetFaceCulling (true);
@@ -310,7 +310,7 @@ if (bCullFront) {
 					}
 				}
 			}
-		ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts);
+		ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -328,7 +328,7 @@ else {
 					ogl.VertexBuffer () [nVerts++] = pv [pfv->m_nIndex];
 				}
 			}
-		ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts);
+		ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -405,7 +405,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 		pfv = pf->m_verts;
 		if (pf->m_bTextured) {
 			if (bTextured == 0) {
-				ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts [0], 0, 0);
+				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 0, 0);
 				bTextured = 1;
 				}
 
@@ -487,7 +487,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			}
 		else {
 			if (bTextured == 1) {
-				ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts [0], 1, 1);
+				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 1, 1);
 				bTextured = 0;
 				ogl.SetTextureUsage (false);
 				bmP = NULL;
@@ -501,7 +501,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			}
 		}
 	if (bTextured >= 0)
-		ogl.Buffers ().Flush (GL_TRIANGLE_FAN, bTextured, bTextured);
+		ogl.FlushBuffers (GL_TRIANGLE_FAN, bTextured, bTextured);
 	}
 glFrontFace (GL_CW);
 return 1;

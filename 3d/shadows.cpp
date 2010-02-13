@@ -790,6 +790,7 @@ OglDrawArrays (GL_QUADS, 0, 4);
 void G3RenderFarShadowCapFace (CFloatVector *pv, int nVerts)
 {
 	CFloatVector	v0, v1;
+	int				i;
 
 #if DBG_SHADOWS
 if (bShadowTest == 1)
@@ -802,8 +803,10 @@ if (bShadowTest)
 else
 #	endif
 #endif
-glBegin (GL_TRIANGLE_FAN);
-for (pv += nVerts; nVerts; nVerts--) {
+if (!ogl.Buffers.SizeVertexBuffer (nVerts))
+	return;
+//glBegin (GL_TRIANGLE_FAN);
+for (i = 0, pv += nVerts; nVerts; nVerts--, i++) {
 	v0 = *(--pv);
 	v1 = v0 - vLightPosf;
 #if NORM_INF
@@ -812,9 +815,9 @@ for (pv += nVerts; nVerts; nVerts--) {
 	v1 *= fInf;
 #endif
 	v0 += v1;
-	glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
+	ogl.VertexBuffer [i++] = v0 + v1;
 	}
-glEnd ();
+ogl.FlushBuffers (i);
 }
 
 //------------------------------------------------------------------------------
