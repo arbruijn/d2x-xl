@@ -311,14 +311,16 @@ void COglData::Initialize (void)
 palette = NULL;
 bUseTextures = false;
 nTMU [0] = 0;
-glActiveTexture (GL_TEXTURE3);
-glBindTexture (GL_TEXTURE_2D, nTexture [3] = 0);
-glActiveTexture (GL_TEXTURE2);
-glBindTexture (GL_TEXTURE_2D, nTexture [2] = 0);
-glActiveTexture (GL_TEXTURE1);
-glBindTexture (GL_TEXTURE_2D, nTexture [1] = 0);
-glActiveTexture (GL_TEXTURE0);
-glBindTexture (GL_TEXTURE_2D, nTexture [0] = 0);
+if (glActiveTexture) {
+	glActiveTexture (GL_TEXTURE3);
+	glBindTexture (GL_TEXTURE_2D, nTexture [3] = 0);
+	glActiveTexture (GL_TEXTURE2);
+	glBindTexture (GL_TEXTURE_2D, nTexture [2] = 0);
+	glActiveTexture (GL_TEXTURE1);
+	glBindTexture (GL_TEXTURE_2D, nTexture [1] = 0);
+	glActiveTexture (GL_TEXTURE0);
+	glBindTexture (GL_TEXTURE_2D, nTexture [0] = 0);
+	}
 bUseBlending = true;
 glEnable (GL_BLEND);
 glBlendFunc (nSrcBlendMode = GL_SRC_ALPHA, nDestBlendMode = GL_ONE_MINUS_SRC_ALPHA);

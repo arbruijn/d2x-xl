@@ -126,7 +126,7 @@ v [1] = v [0];
 v [1][Y] = 0;
 if (ogl.SizeVertexBuffer (2)) {
 	ogl.VertexBuffer () [0].Assign (v [0]);
-	ogl.VertexBuffer () [1].Assign (v [0]);
+	ogl.VertexBuffer () [1].Assign (v [1]);
 	ogl.FlushBuffers (GL_LINES, 2);
 	}
 #endif

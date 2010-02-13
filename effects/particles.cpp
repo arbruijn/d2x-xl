@@ -1680,7 +1680,6 @@ int CParticleManager::InitBuffer (int bLightmaps)
 {
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
-return 0;
 if (bLightmaps) {
 	OglBindTexture (0);
 	ogl.SetTextureUsage (false);
