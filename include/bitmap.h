@@ -116,6 +116,9 @@ class CBitmapInfo {
 		CPalette*			palette;
 		CTexture				texture;
 		CTexture*			texP;
+		tTexCoord2f*		texCoordP;
+		tRgbaColorf*		colorP;
+		int					nColors;
 	};
 
 class CBitmapRenderData {
@@ -182,6 +185,14 @@ class CBitmap : public CArray< ubyte > {
 			return bmP->CurFrame (iFrame);
 			}
 
+		inline void SetColor (tRgbaColorf* colorP = NULL, int nColors = 1) { m_info.colorP = colorP, m_info.nColors = nColors; }
+		inline tRgbaColorf* GetColor (int* nColors = NULL) { 
+			if (nColors)
+				*nColors = m_info.nColors; 
+			return m_info.colorP; 
+			}
+		inline void SetTexCoord (tTexCoord2d* texCoordP = NULL) { m_info.texCoordP = texCoordP; }
+		inline tTexCoord2f* GetTexCoord (void) { return m_info.texCoordP; }
 		void SetPalette (CPalette *palette, int transparentColor = -1, int supertranspColor = -1, int *freq = NULL);
 		void Remap (CPalette *palette, int transparentColor, int superTranspColor);
 		void SetTransparent (int bTransparent);

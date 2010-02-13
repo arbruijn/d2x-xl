@@ -73,17 +73,10 @@ ogl.SetTextureUsage (false);
 if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
-CFloatVector verts [4];
-memset (verts, 0, sizeof (verts));
-verts [0][X] = 
-verts [1][X] = x0;
-verts [2][X] = 
-verts [3][X] = x1;
-verts [0][Y] = 
-verts [3][Y] = y0;
-verts [1][Y] = 
-verts [2][Y] = y1;
-ogl.RenderQuad (NULL, verts);
+CFloatVector vPosf;
+vPosf [X] = (x0 + x1) / 2;
+vPosf [Y] = (y0 + y1) / 2;
+ogl.RenderQuad (bmP, &vPosf, vPosf [X], vPosf [Y], 2);
 //if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
 //	ogl.SetBlending (false);
 }

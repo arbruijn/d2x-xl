@@ -753,14 +753,16 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 			vPosf [Z] = fVerts [i][Z] * r;
 			transformation.Transform (verts [i], vPosf, 0);
 			}
-		ogl.RenderQuad (bmP, verts, texCoordList [0]);
+		bmP->SetTexCoord (texCoordList [0]);
+		ogl.RenderQuad (bmP, verts, 3);
 		for (i = 3; i >= 0; i--) {
 			vPosf [X] = 0;
 			vPosf [Y] = fVerts [i][Y] * r;
 			vPosf [Z] = fVerts [i][Z] * r;
 			transformation.Transform (verts [3 - i], vPosf, 0);
 			}
-		ogl.RenderQuad (bmP, verts, texCoordList [1]);
+		bmP->SetTexCoord (texCoordList [1]);
+		ogl.RenderQuad (bmP, verts, 3);
 		transformation.End ();
 		OglBindTexture (0);
 		ogl.StencilOn (bStencil);
@@ -1125,7 +1127,8 @@ else { //3D
 				verts [j] [Y] *= ti.fSize * 1.5f;
 				verts [j] [Z] = z;
 				}
-			ogl.RenderQuad (bmP, verts, tcThruster);
+			bmP->SetTexCoord (tcThruster);
+			ogl.RenderQuad (bmP, verts, 3);
 			bmpThruster [1][bPlayer]->Bind (1);
 			}
 		else {
@@ -1335,7 +1338,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 				v = quad [j] - vCenter;
 				quad [j] += v * fScale;
 				}
-			ogl.RenderQuad (bmpCorona, quad, tcCorona, NULL, 0, GL_CLAMP);
+			bmpCorona->SetTexCoord (tcCorona);
+			ogl.RenderQuad (bmpCorona, quad, 3);
 			}
 		transformation.End ();
 		ogl.SetDepthMode (GL_LESS);

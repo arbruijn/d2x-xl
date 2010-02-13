@@ -333,17 +333,11 @@ if (gameOpts->app.bEpilepticFriendly ||
 	 !(/*extraGameInfo [0].bFlickerLights &&*/ gameStates.render.nFlashScale && (gameStates.render.nFlashScale != I2X (1))))
 	return;
 
-ogl.SetBlending (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glColor4f (0, 0, 0, /*1.0f -*/ 3 * X2F (gameStates.render.nFlashScale) / 4);
-ogl.SetDepthTest (false);
 ogl.SetTextureUsage (false);
-glBegin (GL_QUADS);
-glVertex2f (0,0);
-glVertex2f (0,1);
-glVertex2f (1,1);
-glVertex2f (1,0);
-glEnd ();
+ogl.SetDepthTest (false);
+ogl.RenderScreenQuad ();
 ogl.SetDepthTest (true);
 }
 

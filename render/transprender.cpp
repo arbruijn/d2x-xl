@@ -996,23 +996,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	ogl.SetBlendMode (item->bAdditive);
 	if (bSoftBlend)
 		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
-
-	CFloatVector	verts [4];
-	memset (verts, 0, sizeof (verts));
-	float w = X2F (item->nWidth);
-	float h = X2F (item->nHeight);
-	verts [0][X] =
-	verts [3][X] = vPosf [X] - w;
-	verts [1][X] =
-	verts [2][X] = vPosf [X] + w;
-	verts [0][Y] =
-	verts [1][Y] = vPosf [Y] + h;
-	verts [2][Y] =
-	verts [3][Y] = vPosf [Y] - h;
-	float u = item->bmP->Texture ()->U ();
-	float v = item->bmP->Texture ()->V ();
-	tTexCoord2f texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
-	ogl.RenderQuad (item->bmP, verts, texCoord, NULL, 0, GL_CLAMP);
+	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight));
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthTest (true);
 	}
@@ -1205,7 +1189,7 @@ if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	int i;
 	if (item->bTrail) {
 		glBegin (GL_TRIANGLES);
-		for (i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			glTexCoord2fv (reinterpret_cast<GLfloat*> (item->texCoord + 4 + i));
 			glVertex3fv (reinterpret_cast<GLfloat*> (item->vertices + 4 + i));
 			}

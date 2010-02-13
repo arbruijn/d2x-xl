@@ -1097,18 +1097,43 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
+int COGL::RenderQuad (CBitmap* bmP, int nDimensions, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
 {
 if (!bmP)
-	ogl.RenderArrays (GL_QUADS, vertexP, 4, 4, NULL, colorP, nColors, bmP, 0, GL_REPEAT);
+	ogl.RenderArrays (GL_QUADS, vertexP, 4, nDimensions, NULL, colorP, nColors, bmP, 0, GL_REPEAT);
+else if (texCoordP)
+	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, nWrap);
 else {
 	GLfloat			u = bmP->Texture ()->U ();
 	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
 
-	RenderArrays (GL_QUADS, vertexP, 4, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, bmP, 0, nWrap);
+	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoords, colorP, nColors, bmP, 0, nWrap);
 	}
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector vPosf, float width, float height, int nDimensions, int nWrap)
+{
+CFloatVector verts [4];
+verts [0][X] =
+verts [3][X] = vPosf [X] - w;
+verts [1][X] =
+verts [2][X] = vPosf [X] + w;
+verts [0][Y] =
+verts [1][Y] = vPosf [Y] + h;
+verts [2][Y] =
+verts [3][Y] = vPosf [Y] - h;
+if (nDimensions == 3)
+ verts [0][Z] =
+ verts [1][Z] =
+ verts [2][Z] =
+ verts [3][Z] = vPosf [Z];
+int nColors;
+tRgbaColorf* colorP = bmP->GetColor (&nColors);
+return RenderQuad (bmP, verts, nDimensions, NULL, NULL, 0, nWrap, colorP, nColors);
 }
 
 //------------------------------------------------------------------------------
@@ -1124,24 +1149,11 @@ SelectTMU (GL_TEXTURE0);
 SetBlendMode (bAdditive);
 vPosf.Assign (vPos);
 transformation.Transform (vPosf, vPosf, 0);
-w = (GLfloat) X2F (xWidth); 
-h = (GLfloat) X2F (xHeight);
-memset (verts, 0, sizeof (verts));
-verts [0][X] = 
-verts [3][X] = vPosf [X] - w;
-verts [1][X] = 
-verts [2][X] = vPosf [X] + w;
-verts [0][Y] = 
-verts [1][Y] = vPosf [Y] + h;
-verts [2][Y] =
-verts [3][Y] = vPosf [Y] - h;
 if (gameStates.render.nShadowBlurPass == 1)
-	RenderArrays (GL_QUADS, verts, 4, 4);
+	RenderQuad (NULL, vPosf, X2F (xWidth), X2F (xHeight), 2);
 else {
-	u = bmP->Texture ()->U ();
-	v = bmP->Texture ()->V ();
-	tTexCoord2f	texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
-	RenderArrays (GL_QUADS, verts, 4, 4, texCoord, colorP ? colorP : &color, 1, bmP, 0, GL_CLAMP);
+	bmP->SetColor (colorP);
+	RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight));
 	}
 SetBlendMode (0);
 return 0;
@@ -1151,14 +1163,14 @@ return 0;
 
 int COGL::RenderSprite (CBitmap* bmP, const CFixVector& vPos,
 								fix xWidth,	fix xHeight,
-								tRgbaColorf* colorP, float alpha,
+								float alpha,
 								int bAdditive, 
 								float fSoftRad)
 {
 	CFixVector	pv, v1;
 
 if (alpha < 1.0f) {
-	tRgbaColorf color;
+	tRgbaColorf	color, * colorP = bmP->GetColor ();
 	if (!colorP) {
 		color.red =
 		color.green =
@@ -1172,48 +1184,43 @@ else {
 	ogl.SelectTMU (GL_TEXTURE0);
 	v1 = vPos - transformation.m_info.pos;
 	pv = transformation.m_info.view [0] * v1;
-	float x = X2F (pv [X]);
-	float y = X2F (pv [Y]);
-	float z = X2F (pv [Z]);
-	float w = X2F (xWidth);
-	float h = X2F (xHeight);
-
-	CFloatVector verts [4];
-	verts [0][X] =
-	verts [3][X] = x - w;
-	verts [1][X] =
-	verts [2][X] = x + w;
-	verts [0][Y] =
-	verts [1][Y] = y + h;
-	verts [2][Y] =
-	verts [3][Y] = y - h;
-	verts [0][Z] = 
-	verts [1][Z] = 
-	verts [2][Z] = 
-	verts [3][Z] = z;
-	verts [0][W] = 
-	verts [1][W] = 
-	verts [2][W] = 
-	verts [3][W] = 1;
-
+	CFloatVector vPosf;
+	vPosf.Assign (pv);
 	if (gameStates.render.nShadowBlurPass == 1) {
 		glColor4f (1,1,1,1);
-		ogl.RenderQuad (NULL, verts);
+		ogl.RenderQuad (NULL, vPosf, X2F (xWidth), X2F (xHeight), 3);
 		}
 	else {
-		ogl.SetDepthWrite (false);
-		if (!colorP)
+		if (colorP)
+			glColor4fv (reinterpret_cast<const GLfloat*>(colorP));
+		else
 			glColor4f (1, 1, 1, alpha);
-		float u = bmP->Texture ()->U ();
-		float v = bmP->Texture ()->V ();
-		tTexCoord2f texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
 		SetBlendMode (bAdditive);
-		RenderQuad (bmP, verts, texCoord, colorP, 1);
+		ogl.SetDepthWrite (false);
+		ogl.RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight), 3);
 		ogl.SetDepthWrite (true);
 		SetBlendMode (0);
 		}
 	}
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::RenderScreenQuad (int bTextured)
+{
+	static tTexCoord2f texCoord [4] = {{0,0},{1,0},{1,1},{0,1}};
+
+CFloatVector verts [4];
+verts [0][X] =
+verts [1][X] = 0;
+verts [2][X] =
+verts [3][X] = 1;
+verts [0][Y] =
+verts [3][Y] = 0;
+verts [1][Y] =
+verts [2][Y] = 1;
+RenderQuad (NULL, verts, 2, bTextured ? texCoord : NULL);
 }
 
 //------------------------------------------------------------------------------

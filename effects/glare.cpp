@@ -525,7 +525,9 @@ if (bAdditive) {
 	fLight *= color.alpha;
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	}
-ogl.RenderQuad (bmP, sprite, tcGlare, &color, 1, GL_CLAMP);
+bmP->SetColor (&color);
+bmP->SetTexCoord (tcGlare);
+ogl.RenderQuad (bmP, sprite, 3);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetFaceCulling (true);
 RenderCoronaOutline (sprite, vCenter);
@@ -612,9 +614,12 @@ if (ogl.EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTU
 	OglDrawArrays (GL_QUADS, 0, 4);
 	ogl.DisableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0);
 	}
-else {
-	ogl.RenderQuad (gameStates.render.bQueryCoronas ? NULL : bmP, sprite, tcGlare);
+else if (gameStates.render.bQueryCoronas) {
+	bmP->SetTexCoord (tcGlare);
+	ogl.RenderQuad (bmP, sprite, 3);
 	}
+else
+	ogl.RenderQuad (NULL, sprite, 3);
 if (!gameStates.render.bQueryCoronas && bAdditive)
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 RenderCoronaOutline (sprite, vCenter);

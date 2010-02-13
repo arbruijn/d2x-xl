@@ -84,18 +84,12 @@ else {
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glColor4f (1.0f, 1.0f, 1.0f, 0.8f / (float) gameOpts->input.mouse.nDeadzone);
-		CFloatVector verts [4];
-		memset (verts, 0, sizeof (verts));
-		verts [0][X] = 
-		verts [3][X] = -w;
-		verts [1][X] = 
-		verts [2][X] = w;
-		verts [0][Y] = 
-		verts [1][Y] = -h;
-		verts [2][Y] = 
-		verts [3][Y] = w;
+		CFloatVector vPosf;
+		vPosf [X] =
+		vPosf [Y] = 0;
 		tTexCoord2f texCoord [4] = {{0,0},{1,0},{1,1},{0,1}};
-		ogl.RenderQuad (bmpDeadzone, verts, texCoord);
+		bmpDeadzone.SetTexCoord (texCoord);
+		ogl.RenderQuad (bmpDeadzone, &vPosf, w, h);
 		OglBindTexture (0);
 		ogl.SetTextureUsage (false);
 		glPopMatrix ();
@@ -105,7 +99,6 @@ else {
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);	//the positions are based upon the standard reticle at 320x200 res.
-		ogl.SetBlending (true);
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f (1.0f, 0.8f, 0.0f, 1.0f / (3.0f + 0.5f * gameOpts->input.mouse.nDeadzone));
 		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
