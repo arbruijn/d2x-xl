@@ -265,7 +265,7 @@ if (ogl.SizeVertexBuffer (nSides + 1)) {
 		ang = 2.0f * float (Pi * (i % nSides) / nSides);
 		v [X] = x + float (cos (ang) * r);
 		v [Y] = y + float (sin (ang) * r);
-		ogl.VertBuffer () [i] = v;
+		ogl.VertexBuffer () [i] = v;
 		}
 	ogl.FlushBuffers (GL_POLYGON, nSides + 1);
 	if (c.rgb)

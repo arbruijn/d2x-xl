@@ -1094,7 +1094,7 @@ if (nStyle == 1) {	//2D
 		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmpThruster [0][bPlayer], &tcColor);
 	}
 else { //3D
-	tTexCoord3f	tTexCoord2fl, tTexCoord2flStep;
+	tTexCoord2f	tTexCoord2fl, tTexCoord2flStep;
 
 	CreateThrusterFlame ();
 	ogl.SetFaceCulling (false);
@@ -1381,7 +1381,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			float				r [4], l [4], alpha;
 			tRgbaColorf		*colorP = gameData.weapons.color + objP->info.nId;
 
-		if (ogl.SizeBuffers (2 * 3 * (RING_SEGS + 1)) {
+		if (ogl.SizeBuffers (2 * 3 * (RING_SEGS + 1))) {
 			transformation.Begin (vPos, objP->info.position.mOrient);
 			ogl.SetDepthWrite (false);
 			ogl.SetTextureUsage (false);
@@ -1403,7 +1403,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			l [0] = -r [3] / 3;
 			alpha = 0.15f;
 			int nVerts = 0;
-			tRgbaColorf	color = *pc;
+			tRgbaColorf	color = *colorP;
 			for (h = 0; h < 3; h++) {
 				for (i = 0; i <= RING_SEGS; i++) {
 					j = i % RING_SEGS;
@@ -1425,7 +1425,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			nVerts = 0;
 			for (h = 0; h < 3; h += 2) {
 				ogl.SetCullMode (h ? GL_FRONT : GL_BACK);
-				glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
+				glColor4f (colorP->red, colorP->green, colorP->blue, h ? 0.1f : alpha);
 				for (j = 0; j < RING_SEGS; j++) {
 					vPosf = vRingVerts [nStripIdx [j]];
 					vPosf [X] *= r [h];
