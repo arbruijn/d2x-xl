@@ -564,7 +564,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.effects.bRobotShields, i, 0);
 		RP (gameOptions [i].render.effects.bOnlyShieldHits, 0, 0);
 		RP (gameOptions [i].render.effects.bTransparent, i, 0);
-		RP (gameOptions [i].render.bDepthSort, i, 0);
 		RP (gameOptions [i].render.lightning.bAuxViews, i, 0);
 		RP (gameOptions [i].render.lightning.bMonitors, i, 0);
 		RP (gameOptions [i].render.lightning.bPlasma, i, 0);
@@ -1404,7 +1403,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.effects.bRobotShields", "1"},
 	 {"gameOptions[0].render.effects.bOnlyShieldHits", "1"},
 	 {"gameOptions[0].render.effects.bTransparent", "1"},
-	 {"gameOptions[0].render.bDepthSort", "1"},
 	 {"gameOptions[0].render.cameras.bFitToWall", "0"},
 	 {"gameOptions[0].render.cameras.nFPS", "0"},
 	 {"gameOptions[0].render.cameras.nSpeed", "5000"},

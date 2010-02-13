@@ -188,12 +188,12 @@ color.red =
 color.green =
 color.blue =
 color.alpha = fAlpha;
-ogl.RenderBitmap (bmpExplBlast, vPos, xSize, xSize, &color, fAlpha, 2, 10);
+ogl.RenderSprite (bmpExplBlast, vPos, xSize, xSize, &color, fAlpha, 2, 10);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
-	ogl.RenderBitmap (bmpExplBlast, &vPos, xSize, xSize, &color, fAlpha * blastColors [i].alpha, 0);
+	ogl.RenderSprite (bmpExplBlast, &vPos, xSize, xSize, &color, fAlpha * blastColors [i].alpha, 0);
 #elif BLAST_TYPE == 2
 CreateSphere (&sd);
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);

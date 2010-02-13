@@ -384,7 +384,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 if (color->alpha < 0)
 	color->alpha = gameStates.render.grAlpha;
 #if 1
-if (gameOpts->render.bDepthSort > 0) {
+if (gameStates.render.bDepthSort > 0) {
 	CFloatVector	vertices [8];
 
 	for (i = 0; i < nVertices; i++)
@@ -550,7 +550,7 @@ else {
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 bmBot = bmBot->Override (-1);
-bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) &&
+bDepthSort = (!bmTop && (gameStates.render.bDepthSort > 0) &&
 				  ((gameStates.render.grAlpha < 1.0f) ||
 				   (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
 if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
@@ -658,7 +658,7 @@ if (bVertexArrays || bDepthSort) {
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, vertColors + i);
 		}
 #if 1
-	if (gameOpts->render.bDepthSort > 0) {
+	if (gameStates.render.bDepthSort > 0) {
 		bmBot->SetupTexture (1, 0);
 		transparencyRenderer.AddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 		return 0;
@@ -1034,12 +1034,14 @@ if (!bmP)
 	ogl.SetTextureUsage (false);
 else {
 	ogl.SetTextureUsage (true);
-	if (bmP->Bind (1))
-		return 0;
-	bmP = bmP->Override (-1);
-	if (bmP->Frames ())
-		bmP = bmP->Frames () + nFrame;
-	bmP->Texture ()->Wrap (nWrap);
+	if (!bmP->IsBound ()) {
+		if (bmP->Bind (1))
+			return 0;
+		bmP = bmP->Override (-1);
+		if (bmP->Frames ())
+			bmP = bmP->Frames () + nFrame;
+		bmP->Texture ()->Wrap (nWrap);
+		}
 	}
 return 1;
 }
@@ -1129,7 +1131,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors)
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
 {
 if (!bmP)
 	ogl.RenderArrays (GL_QUADS, vertexP, 4, 4, NULL, colorP, nColors, bmP, 0, GL_REPEAT);
@@ -1138,14 +1140,14 @@ else {
 	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
 
-	RenderArrays (GL_QUADS, vertexP, 4, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, bmP, 0, GL_REPEAT);
+	RenderArrays (GL_QUADS, vertexP, 4, 4, texCoordP ? texCoordP : texCoords, colorP, nColors, bmP, 0, nWrap);
 	}
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderBitmap2D (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive)
+int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive)
 {
 	CFloatVector	verts [4];
 	CFloatVector	vPosf;
@@ -1181,7 +1183,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos,
+int COGL::RenderSprite (CBitmap* bmP, const CFixVector& vPos,
 								fix xWidth,	fix xHeight,
 								tRgbaColorf* colorP, float alpha,
 								int bAdditive, 
@@ -1189,7 +1191,7 @@ int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos,
 {
 	CFixVector	pv, v1;
 
-if (gameOpts->render.bDepthSort > 0) {
+if (gameStates.render.bDepthSort > 0) {
 	tRgbaColorf color;
 	if (!colorP) {
 		color.red =

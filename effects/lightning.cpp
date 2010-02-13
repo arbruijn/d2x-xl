@@ -1801,7 +1801,7 @@ if (SHOW_LIGHTNING) {
 	int nCurrent = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
-			systemP->Render (0, systemP->m_nBolts, gameOpts->render.bDepthSort > 0, 0);
+			systemP->Render (0, systemP->m_nBolts, gameStates.render.bDepthSort > 0, 0);
 	ogl.StencilOn (bStencil);
 	}
 }

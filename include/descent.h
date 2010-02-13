@@ -388,7 +388,6 @@ typedef struct tRenderOptions {
 	int nQuality;
 	int nImageQuality;
 	int nDebrisLife;
-	int bDepthSort;
 	tCameraOptions cameras;
 	tColorOptions color;
 	tCockpitOptions cockpit;
@@ -927,6 +926,7 @@ typedef struct tRenderStates {
 	int bColored;
 	int bBriefing;
 	int bRearView;
+	int bDepthSort;
 	int nInterpolationMethod;
 	int bTMapFlat;
 	int bCloaked;

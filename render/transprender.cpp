@@ -1114,9 +1114,9 @@ sparkBuffer.nSparks++;
 
 void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 {
-	int bDepthSort = gameOpts->render.bDepthSort;
+	int bDepthSort = gameStates.render.bDepthSort;
 
-gameOpts->render.bDepthSort = -1;
+gameStates.render.bDepthSort = -1;
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 if (item->nType == riSphereShield)
@@ -1128,7 +1128,7 @@ shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-gameOpts->render.bDepthSort = bDepthSort;
+gameStates.render.bDepthSort = bDepthSort;
 }
 
 //------------------------------------------------------------------------------
@@ -1339,7 +1339,7 @@ void CTransparencyRenderer::Render (void)
 	struct tTranspItem	**pd, *pl, *pn;
 	int						nItems, nDepth, bStencil;
 
-if (!(gameOpts->render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
+if (!(gameStates.render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
 PROF_START

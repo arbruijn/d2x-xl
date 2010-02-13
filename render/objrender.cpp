@@ -395,7 +395,7 @@ if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
 	//the actual shield in the sprite texture has 3/4 of the textures size
 	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4);
 	}
-else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
+else if ((gameStates.render.bDepthSort > 0) && (fAlpha < 1)) {
 	if (bAdditive) {
 #if 1
 		color.red =
@@ -432,9 +432,9 @@ else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 }
 else {
 	if (bmP->Width () > bmP->Height ())
-		ogl.RenderBitmap2D (bmP, objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), NULL, fAlpha, bAdditive);
+		ogl.RenderBitmap (bmP, objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), NULL, fAlpha, bAdditive);
 	else
-		ogl.RenderBitmap2D (bmP, objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, NULL, fAlpha, bAdditive);
+		ogl.RenderBitmap (bmP, objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, NULL, fAlpha, bAdditive);
 	}
 gameData.render.nTotalSprites++;
 }
@@ -661,7 +661,7 @@ else {
 	if (DrawHiresObject (objP, xLight, xEngineGlow))
 		return 1;
 	gameStates.render.bBrightObject = bEnergyWeapon;
-	gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
+	gameStates.render.bDepthSort = -gameStates.render.bDepthSort;
 	imSave = gameStates.render.nInterpolationMethod;
 	if (bLinearTMapPolyObjs)
 		gameStates.render.nInterpolationMethod = 1;
@@ -754,7 +754,7 @@ else {
 if (!gameStates.render.bBuildModels) {
 	gameStates.render.nInterpolationMethod = imSave;
 	gameStates.render.bBrightObject = 0;
-	gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
+	gameStates.render.bDepthSort = -gameStates.render.bDepthSort;
 	}
 return bOk;
 }
@@ -1061,7 +1061,7 @@ return 1;
 int RenderObject (CObject *objP, int nWindow, int bForce)
 {
 	short			nObject = objP->Index ();
-	int			bSpectate = 0, bDepthSort = (gameOpts->render.bDepthSort > 0);
+	int			bSpectate = 0, bDepthSort = (gameStates.render.bDepthSort > 0);
 
 int nType = objP->info.nType;
 if (nType == 255) {

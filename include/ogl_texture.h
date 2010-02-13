@@ -63,6 +63,7 @@ class CTexture {
 		static void Wrap (int state);
 		void Bind (void);
 		int BindRenderBuffer (void);
+		bool IsBound (void);
 
 		inline CTexture* Prev (void) { return m_prev; }
 		inline CTexture* Next (void) { return m_next; }

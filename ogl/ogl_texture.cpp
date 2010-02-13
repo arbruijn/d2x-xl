@@ -388,6 +388,13 @@ else
 
 //------------------------------------------------------------------------------
 
+bool CTexture::IsBound (void) 
+{ 
+return m_info.handle && (m_info.handle == ogl.BoundTexture ()); 
+}
+
+//------------------------------------------------------------------------------
+
 int CTexture::BindRenderBuffer (void)
 {
 #if RENDER2TEXTURE == 1

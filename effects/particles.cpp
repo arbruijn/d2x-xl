@@ -686,7 +686,7 @@ if (!(bmP = bmpParticle [0][m_nType]))
 if (bmP->CurFrame ())
 	bmP = bmP->CurFrame ();
 #endif
-if (gameOpts->render.bDepthSort > 0) {
+if (gameStates.render.bDepthSort > 0) {
 	hp = m_vTransPos;
 	if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 		bFlushed = particleManager.FlushBuffer (brightness);
@@ -916,7 +916,7 @@ if (particleManager.Animate ()) {
 	if (!(m_nType || (m_nFrame & 1)))
 		m_nRotFrame = (m_nRotFrame + 1) % 64;
 	}
-if (gameOpts->render.bDepthSort > 0)
+if (gameStates.render.bDepthSort > 0)
 	glEnd ();
 return bFlushed ? -1 : 1;
 }
@@ -1196,7 +1196,7 @@ int CParticleEmitter::Render (int nThread)
 if (!m_particles)
 	return 0;
 #if MT_PARTICLES
-if (((gameOpts->render.bDepthSort > 0) && (nThread < 0)) && RunEmitterThread (emitterP, 0, rtRenderParticles)) {
+if (((gameStates.render.bDepthSort > 0) && (nThread < 0)) && RunEmitterThread (emitterP, 0, rtRenderParticles)) {
 	return 0;
 	}
 else
@@ -1813,7 +1813,7 @@ int CParticleManager::BeginRender (int nType, float nScale)
 	int			bLightmaps = lightmapManager.HaveLightmaps ();
 	static time_t	t0 = 0;
 
-if (gameOpts->render.bDepthSort <= 0) {
+if (gameStates.render.bDepthSort <= 0) {
 	nType = (nType % PARTICLE_TYPES);
 	if ((nType >= 0) && !gameOpts->render.particles.bSort)
 		particleImageManager.Animate (nType);
@@ -1845,7 +1845,7 @@ return 1;
 
 int CParticleManager::EndRender (void)
 {
-if (gameOpts->render.bDepthSort <= 0) {
+if (gameStates.render.bDepthSort <= 0) {
 	if (!CloseBuffer ())
 		glEnd ();
 	OglBindTexture (0);

@@ -267,15 +267,14 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #define	OglColorPointer(size, type, stride, pointer)		ogl.ColorPointer (size, type, stride, pointer, const_cast<char*>(__FILE__), __LINE__)
 #define	OglTexCoordPointer(size, type, stride, pointer)	ogl.TexCoordPointer (size, type, stride, pointer, const_cast<char*>(__FILE__), __LINE__)
 #define	OglNormalPointer(type, stride, pointer)			ogl.NormalPointer (type, stride, pointer, const_cast<char*>(__FILE__), __LINE__)
-#define	OglBindTexture(_handle)									ogl.BindTexture (_handle)
 #else
 #define	OglDrawArrays(mode, first, count)					glDrawArrays (mode, first, count)
 #define	OglVertexPointer(size, type, stride, pointer)	glVertexPointer (size, type, stride, pointer)
 #define	OglColorPointer(size, type, stride, pointer)		glColorPointer (size, type, stride, pointer)
 #define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer)
 #define	OglNormalPointer(type, stride, pointer)			glNormalPointer (type, stride, pointer)
-#define	OglBindTexture(_handle)									glBindTexture (GL_TEXTURE_2D, _handle)
 #endif
+#define	OglBindTexture(_handle)									ogl.BindTexture (_handle)
 
 //------------------------------------------------------------------------------
 

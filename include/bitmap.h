@@ -295,6 +295,7 @@ class CBitmap : public CArray< ubyte > {
 		int PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer = NULL);
 #endif
 		int Bind (int bMipMaps);
+		inline bool IsBound (void) { return m_info.texP && m_info.texP->IsBound (); }
 		inline bool Prepared (void) { return m_info.texP && m_info.texP->Handle (); }
 
 #if TEXTURE_COMPRESSION

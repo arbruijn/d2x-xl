@@ -78,6 +78,7 @@ class COglData {
 		int				bLightmaps;
 		int				nHeadlights;
 		fix				xStereoSeparation;
+		GLuint			nTexture;
 		GLenum			nSrcBlendMode;
 		GLenum			nDestBlendMode;
 		GLenum			nDepthMode;
@@ -264,9 +265,9 @@ class COGL {
 								tTexCoord2f *texCoordP = NULL, 
 								tRgbaColorf *colorP = NULL, int nColors = 1, 
 								CBitmap *bmP = NULL, int nFrame = 0, int nWrap = GL_REPEAT);
-		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP = NULL, tRgbaColorf* colorP = NULL, int nColors = 1);
-		int RenderBitmap2D (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
-		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive, float fSoftRad);
+		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP = NULL, tRgbaColorf* colorP = NULL, int nColors = 1, int nWrap = GL_REPEAT);
+		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
+		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive, float fSoftRad);
 
 		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {
 			if (bCurrent != bNew) {
@@ -379,6 +380,12 @@ class COGL {
 										: 0; 
 			}
 
+		inline void BindTexture (GLuint handle) { 
+			if (m_data.nTexture != handle)
+				glBindTexture (GL_TEXTURE_2D, m_data.nTexture = handle); 
+			}
+		inline GLuint BoundTexture (void) { return m_data.nTexture; }
+
 #if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
 		void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
@@ -387,8 +394,7 @@ class COGL {
 
 		void GenTextures (GLsizei n, GLuint *hTextures);
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
-		void BindTexture (GLuint handle) { glBindTexture (GL_TEXTURE_2D, handle); }
-
+	
 #else
 		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
 			{ glVertexPointer (size, type, stride, pointer); }

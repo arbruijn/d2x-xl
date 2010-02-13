@@ -50,7 +50,7 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	ogl.SetDepthWrite (false);
-	ogl.RenderBitmap (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
+	ogl.RenderSprite (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
 	ogl.SetDepthWrite (true);
 	}
 }
@@ -96,10 +96,10 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		color.green *= fScale;
 		color.blue *= fScale;
 		}
-	bDepthSort = gameOpts->render.bDepthSort;
-	gameOpts->render.bDepthSort = -1;
-	ogl.RenderBitmap (bmP, objP->info.position.vPos, xSize, xSize, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
-	gameOpts->render.bDepthSort = bDepthSort;
+	bDepthSort = gameStates.render.bDepthSort;
+	gameStates.render.bDepthSort = -1;
+	ogl.RenderSprite (bmP, objP->info.position.vPos, xSize, xSize, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
+	gameStates.render.bDepthSort = bDepthSort;
 	}
 }
 
@@ -1010,27 +1010,7 @@ dotTrail = CFloatVector::Dot (vPosf, v);
 v = *vCorona;
 CFloatVector::Normalize (v);
 dotCorona = CFloatVector::Dot (vPosf, v);
-if (gameOpts->render.bDepthSort > 0)
-	transparencyRenderer.AddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
-else {
-	ogl.SetFaceCulling (false);
-	glColor3f (c, c, c);
-	if (dotTrail < dotCorona) {
-		glBegin (GL_TRIANGLES);
-		for (i = 0; i < 3; i++) {
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (tcTrail + i));
-			glVertex3fv (reinterpret_cast<GLfloat*> (vTrail + i));
-			}
-		glEnd ();
-		}
-	glBegin (GL_QUADS);
-	for (i = 0; i < 4; i++) {
-		glTexCoord2fv (reinterpret_cast<GLfloat*> (tcCorona + i));
-		glVertex3fv (reinterpret_cast<GLfloat*> (vCorona + i));
-		}
-	glEnd ();
-	ogl.SetFaceCulling (true);
-	}
+transparencyRenderer.AddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
 }
 
 // -----------------------------------------------------------------------------
@@ -1042,7 +1022,8 @@ void RenderThrusterFlames (CObject *objP)
 	tThrusterInfo		ti;
 	CFloatVector		v;
 	float					fSpeed, fPulse, fFade [4];
-	CThrusterData		*pt = NULL;
+	CThrusterData*		pt = NULL;
+	CBitmap*				bmP;
 	int					bPlayer = objP->info.nType == OBJ_PLAYER;
 
 	static time_t		tPulse = 0;
@@ -1090,15 +1071,15 @@ if (ti.fLength < ti.fSize / 2)
 ti.fLength += float (rand () % 100) / 1000.0f;
 bStencil = ogl.StencilOff ();
 bTextured = 0;
-nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
-CBitmap* bmP = bmpThruster [nStyle][bPlayer];
+nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0);
 
 if (!LoadThruster ()) {
 	extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 	ogl.SetTextureUsage (false);
 	}
-else if ((gameOpts->render.bDepthSort <= 0) || (nStyle == 1)) {
+else if (nStyle == 2) {
 	ogl.SetTextureUsage (true);
+	bmP = bmpThruster [1][bPlayer];
 	bmP->SetTranspType (-1);
 	if (bmP->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
@@ -1124,8 +1105,8 @@ if (nThrusters > 1) {
 			}
 		}
 	}
-ogl.SetBlending (true);
-if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {	//2D
+
+if (nStyle == 1) {	//2D
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
@@ -1140,7 +1121,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {	//2D
 		fVecf.Assign (ti.pp ? ti.pp->mOrient.FVec () : objP->info.position.mOrient.FVec ());
 #endif
 	for (h = 0; h < nThrusters; h++)
-		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmP, &tcColor);
+		CreateLightTrail (ti.vPos [h], ti.vDir [h], ti.fSize, ti.fLength, bmpThruster [0][bPlayer], &tcColor);
 	}
 else { //3D
 	tTexCoord3f	tTexCoord2fl, tTexCoord2flStep;
@@ -1157,7 +1138,6 @@ else { //3D
 
 	for (h = 0; h < nThrusters; h++) {
 		transformation.Begin (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
-#if 1
 		// render a cap for the thruster flame at its base
 		if (bTextured && (bTextured = LoadThruster (1))) {
 			CBitmap* bmP = bmpThruster [0][bPlayer];
@@ -1203,7 +1183,6 @@ else { //3D
 				glEnd ();
 				}
 			}
-#endif
 		if (bTextured) {
 			float c = 1; //0.8f + 0.02f * fPulse;
 			glColor3f (c, c, c); //, 0.9f);
@@ -1283,7 +1262,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		color.green *= fScale;
 		color.blue *= fScale;
 		}
-	ogl.RenderBitmap (bmP, objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), colorP, alpha, bAdditive, 1);
+	ogl.RenderSprite (bmP, objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), colorP, alpha, bAdditive, 1);
 	}
 }
 
@@ -1333,7 +1312,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 
 	CFixVector	vPos = objP->info.position.vPos;
 	xSize = (fix) (WeaponBlobSize (objP->info.nId) * F2X (fScale));
-	bDepthSort = bDepthSort && bSimple && (gameOpts->render.bDepthSort > 0);
+	bDepthSort = bDepthSort && bSimple;
 	if (xOffset) {
 		if (bViewerOffset) {
 			CFixVector o = gameData.render.mine.viewerEye - vPos;
@@ -1361,7 +1340,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	ogl.SetDepthWrite (false);
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	if (bSimple) {
-		ogl.RenderBitmap (bmpCorona, vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, &color, alpha, 1, 3);
+		ogl.RenderSprite (bmpCorona, vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, &color, alpha, 1, 3);
 		}
 	else {
 		CFloatVector	quad [4], verts [8], vCenter, vNormal, v;
@@ -1386,19 +1365,17 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 				}
 			vCenter = vCenter * 0.25f;
 			vNormal = CFloatVector::Normal (quad [0], quad [1], quad [2]);
-			v = vCenter; CFloatVector::Normalize (v);
+			v = vCenter; 
+			CFloatVector::Normalize (v);
 			dot = CFloatVector::Dot (vNormal, v);
 			if (dot >= 0)
 				continue;
 			glColor4f (colorP->red, colorP->green, colorP->blue, alpha * (float) sqrt (-dot));
-			glBegin (GL_QUADS);
 			for (j = 0; j < 4; j++) {
 				v = quad [j] - vCenter;
 				quad [j] += v * fScale;
- 				glTexCoord2fv (reinterpret_cast<GLfloat*> (tcCorona + j));
-				glVertex3fv (reinterpret_cast<GLfloat*> (quad + j));
 				}
-			glEnd ();
+			ogl.RenderQuad (bmpCorona, quad, tcCorona, NULL, 0, GL_CLAMP);
 			}
 		transformation.End ();
 		ogl.SetDepthMode (GL_LESS);
@@ -1627,7 +1604,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				(!objP->mType.physInfo.velocity.IsZero ()) &&
 				(bAdditive ? LoadGlare () : LoadCorona ())) {
 			CFloatVector	vNormf, vOffsf, vTrailVerts [4];
-			int				i, bStencil, bDrawArrays, bDepthSort = (gameOpts->render.bDepthSort > 0);
+			int				i, bStencil, bDrawArrays, bDepthSort = (gameStates.render.bDepthSort > 0);
 			float				h, l, r, dx, dy;
 			CBitmap*			bmP;
 

@@ -52,7 +52,7 @@ transformation.ComputeAspect ();
 InitFreePoints ();
 ogl.StartFrame (bFlat, bResetColorBuf, xStereoSeparation);
 gameStates.render.bHeadlightOn = 1;
-gameOpts->render.bDepthSort = 1;
+gameStates.render.bDepthSort = 1;
 }
 
 //------------------------------------------------------------------------------

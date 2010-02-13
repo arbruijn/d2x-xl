@@ -94,7 +94,6 @@ if (i) {
 	gameOptions [1].render.ship.nWingtip = 1;
 	gameOptions [1].render.ship.bBullets = 1;
 	gameOptions [1].render.nMaxFPS = 60;
-	gameOptions [1].render.bDepthSort = 0;
 	gameOptions [1].render.effects.bTransparent = 0;
 	gameOptions [1].render.debug.bDynamicLight = 1;
 	gameOptions [1].render.textures.bUseHires [0] =
@@ -228,7 +227,6 @@ else {
 	gameOptions [0].render.shadows.nClip = 1;
 	gameOptions [0].render.shadows.nReach = 1;
 	gameOptions [0].render.nMaxFPS = 60;
-	gameOptions [1].render.bDepthSort = 1;
 	gameOptions [0].render.effects.bTransparent = 1;
 	gameOptions [0].render.debug.bDynamicLight = 1;
 	gameOptions [0].render.nImageQuality = 3;
