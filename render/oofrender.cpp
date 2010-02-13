@@ -184,58 +184,6 @@ if (bSingleStencil || bShadowTest)
 
 //------------------------------------------------------------------------------
 
-static CArray<CFloatVector>	vertexBuffer;
-static CArray<tRgbaColorf>		colorBuffer;
-static CArray<tTexCoord2f>		texCoordBuffer;
-
-static bool SizeVertexBuffer (int nVerts)
-{
-if (int (vertexBuffer.Length ()) >= nVerts)
-	return true;
-vertexBuffer.Destroy ();
-return vertexBuffer.Create (nVerts) != NULL;
-}
-
-static bool SizeColorBuffer (int nVerts)
-{
-if (int (colorBuffer.Length ()) >= nVerts)
-	return true;
-colorBuffer.Destroy ();
-return colorBuffer.Create (nVerts) != NULL;
-}
-
-static bool SizeTexCoordBuffer (int nVerts)
-{
-if (int (colorBuffer.Length ()) >= nVerts)
-	return true;
-colorBuffer.Destroy ();
-return colorBuffer.Create (nVerts) != NULL;
-}
-
-static bool SizeBuffers (int nVerts)
-{
-return SizeVertexBuffer (nVerts) && SizeColorBuffer (nVerts) && SizeTexCoordBuffer (nVerts);
-}
-
-
-//------------------------------------------------------------------------------
-
-static void FlushBuffers (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0)
-{
-if (vertexBuffer.Buffer () && nVerts) {
-	if (bTextured)
-		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
-	if (bColored) 
-		ogl.EnableClientState (GL_COLOR_ARRAY);
-	ogl.EnableClientState (GL_VERTEX_ARRAY);
-	OglVertexPointer (3, GL_FLOAT, 0, vertexBuffer.Buffer ());
-	OglDrawArrays (nPrimitive, 0, nVerts);
-	ogl.DisableClientState (GL_VERTEX_ARRAY);
-	}
-}
-
-//------------------------------------------------------------------------------
-
 int OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int bCullFront)
 {
 	CEdge*					pe;
@@ -266,7 +214,7 @@ else if (bShadowTest > 1)
 #endif
 
 nEdges = pso->m_edges.m_nContourEdges;
-if (!SizeVertexBuffer (nEdges * 4))
+if (!ogl.Buffers ().SizeVertices (nEdges * 4))
 	return 1;
 pv = pso->m_rotVerts.Buffer ();
 for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
@@ -278,34 +226,34 @@ for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 			int h = (pe->m_faces [1] && pe->m_faces [1]->m_bFacingLight);
 			if (pe->m_faces [h]->m_bReverse)
 				h = !h;
-			vertexBuffer [nVerts] = pv [pe->m_v1 [h]];
-			vertexBuffer [nVerts + 1] = pv [pe->m_v0 [h]];
-			vertexBuffer [nVerts + 2] = vertexBuffer [1] - vrLightPos;
-			vertexBuffer [nVerts + 3] = vertexBuffer [0] - vrLightPos;
+			ogl.VertexBuffer () [nVerts] = pv [pe->m_v1 [h]];
+			ogl.VertexBuffer () [nVerts + 1] = pv [pe->m_v0 [h]];
+			ogl.VertexBuffer () [nVerts + 2] = ogl.VertexBuffer () [1] - vrLightPos;
+			ogl.VertexBuffer () [nVerts + 3] = ogl.VertexBuffer () [0] - vrLightPos;
 #if NORM_INF
-			vertexBuffer [nVerts + 2] *= G3_INFINITY / vertexBuffer [nVerts + 2].Mag ();
-			vertexBuffer [nVerts + 3] *= G3_INFINITY / vertexBuffer [nVerts + 3].Mag ();
+			ogl.VertexBuffer () [nVerts + 2] *= G3_INFINITY / ogl.VertexBuffer () [nVerts + 2].Mag ();
+			ogl.VertexBuffer () [nVerts + 3] *= G3_INFINITY / ogl.VertexBuffer () [nVerts + 3].Mag ();
 #else
-			vertexBuffer [nVerts + 2] *= G3_INFINITY;
-			vertexBuffer [nVerts + 3] *= G3_INFINITY;
+			ogl.VertexBuffer () [nVerts + 2] *= G3_INFINITY;
+			ogl.VertexBuffer () [nVerts + 3] *= G3_INFINITY;
 #endif
-			vertexBuffer [nVerts + 2] += vertexBuffer [nVerts + 1];
-			vertexBuffer [nVerts + 3] += vertexBuffer [nVerts];
+			ogl.VertexBuffer () [nVerts + 2] += ogl.VertexBuffer () [nVerts + 1];
+			ogl.VertexBuffer () [nVerts + 3] += ogl.VertexBuffer () [nVerts];
 			nVerts += 4;
 #if DBG_SHADOWS
 			}
 		else {
-			vertexBuffer [nVerts++] = pv [pe->m_v0 [0]];
-			vertexBuffer [nVerts++] = pv [pe->m_v1 [0]];
+			ogl.VertexBuffer () [nVerts++] = pv [pe->m_v0 [0]];
+			ogl.VertexBuffer () [nVerts++] = pv [pe->m_v1 [0]];
 			}
 #endif
 		}
 	}
-OglVertexPointer (3, GL_FLOAT, 0, vertexBuffer.Buffer ());
+OglVertexPointer (3, GL_FLOAT, 0, ogl.VertexBuffer ().Buffer ());
 #if DBG_SHADOWS
-FlushBuffers ((bShadowTest < 2) ? GL_QUADS : GL_LINES, nVerts);
+ogl.Buffers ().Flush ((bShadowTest < 2) ? GL_QUADS : GL_LINES, nVerts);
 #else
-FlushBuffers (GL_QUADS, nVerts);
+ogl.Buffers ().Flush (GL_QUADS, nVerts);
 #endif
 #if DBG_SHADOWS
 ogl.SetFaceCulling (true);
@@ -336,7 +284,7 @@ nVerts = 0;
 for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++)
 	nVerts += pf->m_nVerts;
 
-if (!SizeVertexBuffer (nVerts))
+if (!ogl.Buffers ().SizeVertices (nVerts))
 	return 1;
 
 if (bCullFront) {
@@ -358,11 +306,11 @@ if (bCullFront) {
 #else
 					v1 *= G3_INFINITY;
 #endif
-					vertexBuffer [nVerts++] = v0 + v1;
+					ogl.VertexBuffer () [nVerts++] = v0 + v1;
 					}
 				}
 			}
-		FlushBuffers (GL_TRIANGLE_FAN, nVerts);
+		ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -377,10 +325,10 @@ else {
 		for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
 			if (pf->m_bReverse == bReverse) {
 				for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++)
-					vertexBuffer [nVerts++] = pv [pfv->m_nIndex];
+					ogl.VertexBuffer () [nVerts++] = pv [pfv->m_nIndex];
 				}
 			}
-		FlushBuffers (GL_TRIANGLE_FAN, nVerts);
+		ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -440,16 +388,16 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			nVerts [pf->m_bTextured] += pf->m_nVerts;
 		}
 	nVerts [2] = nVerts [nVerts [1] > nVerts [0]];
-	if (!SizeBuffers (nVerts [2]))
+	if (!ogl.Buffers ().SizeBuffers (nVerts [2]))
 		return 0;
 
 	if (bReverse)
 		glFrontFace (GL_CCW);
 
 	nVerts [0] = 0;
-	pvb = vertexBuffer.Buffer ();
-	pcb = colorBuffer.Buffer ();
-	ptb = texCoordBuffer.Buffer ();
+	pvb = ogl.VertexBuffer ().Buffer ();
+	pcb = ogl.ColorBuffer ().Buffer ();
+	ptb = ogl.TexCoordBuffer ().Buffer ();
 
 	for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
 		if (pf->m_bReverse != bReverse)
@@ -457,7 +405,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 		pfv = pf->m_verts;
 		if (pf->m_bTextured) {
 			if (bTextured == 0) {
-				FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 0, 0);
+				ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts [0], 0, 0);
 				bTextured = 1;
 				}
 
@@ -539,7 +487,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			}
 		else {
 			if (bTextured == 1) {
-				FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 1, 1);
+				ogl.Buffers ().Flush (GL_TRIANGLE_FAN, nVerts [0], 1, 1);
 				bTextured = 0;
 				ogl.SetTextureUsage (false);
 				bmP = NULL;
@@ -553,7 +501,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			}
 		}
 	if (bTextured >= 0)
-		FlushBuffers (GL_TRIANGLE_FAN, bTextured, bTextured);
+		ogl.Buffers ().Flush (GL_TRIANGLE_FAN, bTextured, bTextured);
 	}
 glFrontFace (GL_CW);
 return 1;

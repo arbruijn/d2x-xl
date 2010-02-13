@@ -202,10 +202,25 @@ class COglStates {
 };
 
 
+class COglBuffers {
+	public:
+		CArray<CFloatVector>		vertices;
+		CArray<tTexCoord2f>		texCoord;
+		CArray<tRgbaColorf>		color;
+
+	public:
+		bool SizeVertices (int nVerts);
+		bool SizeColor (int nVerts);
+		static bool SizeTexCoord (int nVerts);
+		static bool SizeBuffers (int nVerts);
+		void Flush (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0);
+	};
+
 class COGL {
 	public:
 		COglData		m_data;
 		COglStates	m_states;
+		COglBuffers	m_buffers;
 
 	public:
 		void Initialize (void);
@@ -281,6 +296,11 @@ class COGL {
 				}
 			return bCurrent;
 			}
+
+		inline COglBuffers& Buffers (void) { return m_buffers; }
+		inline CArray<CFloatVector>& VertexBuffer (void) { return Buffers ().vertices; }
+		inline CArray<tTexCoord2f>& TexCoordBuffer (void) { return Buffers ().texCoord; }
+		inline CArray<tRgbaColorf>& ColorBuffer (void) { return Buffers ().color; }
 
 		inline bool SetFaceCulling (bool bCullFaces) { return Enable (m_data.bCullFaces, bCullFaces, GL_CULL_FACE); }
 		inline bool GetFaceCulling (void) { return m_data.bCullFaces; }

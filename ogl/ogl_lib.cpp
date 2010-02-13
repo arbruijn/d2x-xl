@@ -310,6 +310,7 @@ void COglData::Initialize (void)
 {
 palette = NULL;
 bUseTextures = false;
+glBindTexture (nTexture = 0);
 glDisable (GL_TEXTURE_2D);
 bUseBlending = true;
 glEnable (GL_BLEND);
