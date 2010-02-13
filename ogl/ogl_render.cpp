@@ -1153,9 +1153,9 @@ if (nDimensions == 3)
  verts [1][Z] =
  verts [2][Z] =
  verts [3][Z] = vPosf [Z];
-int nColors;
-tRgbaColorf* colorP = bmP->GetColor (&nColors);
-return RenderQuad (bmP, verts, nDimensions, bmP->GetTexCoord (), colorP, nColors, nWrap);
+int nColors = 0;
+tRgbaColorf* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
+return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);
 }
 
 //------------------------------------------------------------------------------

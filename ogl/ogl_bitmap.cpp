@@ -141,8 +141,10 @@ void CBitmap::OglRender (tRgbaColorf* colorP, int nColors, int orient)
 	float				verts [4][2] = {{m_render.x0, m_render.y0}, {m_render.x1, m_render.y0}, {m_render.x1, m_render.y1}, {m_render.x0, m_render.y1}};
 	tTexCoord2f		texCoord [4];
 
-for (int i = 0; i < 4; i++)
-	SetTexCoord (m_render.u1, m_render.v1, orient, texCoord [i]);
+SetTexCoord (m_render.u1, m_render.v1, orient, texCoord [0]);
+SetTexCoord (m_render.u2, m_render.v1, orient, texCoord [1]);
+SetTexCoord (m_render.u2, m_render.v2, orient, texCoord [2]);
+SetTexCoord (m_render.u1, m_render.v2, orient, texCoord [3]);
 ogl.EnableClientStates (1, (nColors == 4), 0, GL_TEXTURE0);
 glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
 if (nColors == 4)

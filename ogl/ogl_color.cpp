@@ -116,7 +116,14 @@ void OglCanvasColor (tCanvasColor* canvColorP, tRgbaColorf* colorP)
 	tRgbaColorf	color;
 
 if (!canvColorP) {
-	glColor4f (1.0, 1.0, 1.0, gameStates.render.grAlpha);
+	if (colorP) {
+		colorP->red =
+		colorP->green =
+		colorP->blue = 1.0f;
+		colorP->alpha = gameStates.render.grAlpha;
+		}
+	else 
+		glColor4f (1.0f, 1.0f, 1.0f, gameStates.render.grAlpha);
 	}
 else if (canvColorP->rgb) {
 	color.red = float (canvColorP->color.red) / 255.0f;
@@ -125,7 +132,10 @@ else if (canvColorP->rgb) {
 	color.alpha = float (canvColorP->color.alpha) / 255.0f * gameStates.render.grAlpha;
 	if (color.alpha < 1.0f)
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
-	glColor4fv (reinterpret_cast<GLfloat*> (&color));
+	if (colorP)
+		*colorP = color;
+	else
+		glColor4fv (reinterpret_cast<GLfloat*> (&color));
 	}
 else
 	OglPalColor (paletteManager.Game (), canvColorP->index, colorP);
