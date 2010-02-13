@@ -439,7 +439,6 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				pcb->alpha = m_pfAlpha [pfv->m_nIndex] * fAlpha;
 				pcb++;
 				}
-			//glBegin (GL_TRIANGLE_FAN);
 			for (j = pf->m_nVerts; j; j--, pfv++) {
 				phv = pv + (h = pfv->m_nIndex);
 				if (bDynLighting) {

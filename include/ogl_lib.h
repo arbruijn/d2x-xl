@@ -213,7 +213,7 @@ class COglBuffers {
 		bool SizeColor (int nVerts);
 		bool SizeTexCoord (int nVerts);
 		bool SizeBuffers (int nVerts);
-		void Flush (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0);
+		void Flush (GLenum nPrimitive, int nVerts, int nDimension = 3, int bTextured = 0, int bColored = 0);
 
 	};
 
@@ -304,8 +304,8 @@ class COGL {
 		inline CArray<tRgbaColorf>& ColorBuffer (void) { return Buffers ().color; }
 		inline bool SizeBuffers (int nVerts) { return m_buffers.SizeBuffers (nVerts); }
 		inline bool SizeVertexBuffer (int nVerts) { return m_buffers.SizeVertices (nVerts); }
-		inline void FlushBuffers (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0) {
-			m_buffers.Flush (nPrimitive, nVerts, bTextured, bColored); 
+		inline void FlushBuffers (GLenum nPrimitive, int nVerts, int nDimensions = 3, int bTextured = 0, int bColored = 0) {
+			m_buffers.Flush (nPrimitive, nVerts, nDimensions, bTextured, bColored); 
 			}
 
 		inline bool SetFaceCulling (bool bCullFaces) { return Enable (m_data.bCullFaces, bCullFaces, GL_CULL_FACE); }

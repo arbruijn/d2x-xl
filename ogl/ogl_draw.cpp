@@ -85,69 +85,71 @@ ogl.RenderQuad (NULL, vPosf, vPosf [X], vPosf [Y], 2);
 
 void OglDrawFilledPoly (int* x, int* y, int nVerts, tCanvasColor *colorP, int nColors)
 {
+if (ogl.SizeBuffers (nVerts + 1)) {
 	int left = CCanvas::Current ()->Left ();
 	int top = CCanvas::Current ()->Top ();
 	int j;
+	bool bColor;
 
-ogl.SetTextureUsage (false);
-if (!colorP) {
-	colorP = &COLOR;
-	nColors = 1;
+	ogl.SetTextureUsage (false);
+	if (!(bColor = colorP && (nColors == nVerts)))
+		OglCanvasColor (&COLOR);
+	for (int i = 0; i <= nVerts; i++) {
+		j = i % nVerts;
+		if (bColor)
+			OglCanvasColor (colorP + j, ogl.ColorBuffer () + i);
+		ogl.VertexBuffer () [i][X] = GLfloat (x [j] + left) / GLfloat (ogl.m_states.nLastW);
+		ogl.VertexBuffer () [i][Y] = 1.0f - GLfloat (y [j] + top) / GLfloat (ogl.m_states.nLastH);
+		}
+	ogl.FlushBuffers (GL_POLYGON, nVerts + 1);
 	}
-glBegin (GL_POLYGON);
-for (int i = 0; i <= nVerts; i++) {
-	j = i % nVerts;
-	if (j < nColors)
-		OglCanvasColor (colorP + j);
-	glVertex2f (GLfloat (x [j] + left) / GLfloat (ogl.m_states.nLastW),
-					1.0f - GLfloat (y [j] + top) / GLfloat (ogl.m_states.nLastH));
-	}
-glEnd ();
-//if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
-//	ogl.SetBlending (false);
 }
 
 //------------------------------------------------------------------------------
 
 void OglDrawLine (int left, int top, int right, int bot, tCanvasColor *colorP)
 {
-GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
-GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
-GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-ogl.SetTextureUsage (false);
-if (!colorP)
-	colorP = &COLOR;
-OglCanvasColor (colorP);
-glBegin (GL_LINES);
-glVertex2f (x0, y0);
-glVertex2f (x1, y1);
-//if (colorP->rgb)
-//	ogl.SetBlending (false);
-glEnd();
+if (ogl.SizeVertexBuffer (2)) {
+	GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+	GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+	GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
+	GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
+	ogl.SetTextureUsage (false);
+	if (!colorP)
+		colorP = &COLOR;
+	OglCanvasColor (colorP);
+	ogl.VertexBuffer () [0][X] = x0;
+	ogl.VertexBuffer () [0][Y] = y0;
+	ogl.VertexBuffer () [1][X] = x1;
+	ogl.VertexBuffer () [1][Y] = y1;
+	ogl.FlushBuffers (GL_LINES, 2, 2);
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void OglDrawEmptyRect (int left, int top, int right, int bot, tCanvasColor* colorP)
 {
-GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
-GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
-GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-ogl.SetTextureUsage (false);
-if (!colorP)
-	colorP = &COLOR;
-OglCanvasColor (colorP);
-glBegin (GL_LINE_LOOP);
-glVertex2f (x0, y0);
-glVertex2f (x1, y0);
-glVertex2f (x1, y1);
-glVertex2f (x0, y1);
-glEnd ();
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//if (colorP->rgb)
-//	ogl.SetBlending (false);
+if (ogl.SizeVertexBuffer (4)) {
+	GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+	GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+	GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
+	GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
+	ogl.SetTextureUsage (false);
+	if (!colorP)
+		colorP = &COLOR;
+	OglCanvasColor (colorP);
+	ogl.VertexBuffer () [0][X] = x0;
+	ogl.VertexBuffer () [0][Y] = y0;
+	ogl.VertexBuffer () [1][X] = x1;
+	ogl.VertexBuffer () [1][Y] = y0;
+	ogl.VertexBuffer () [2][X] = x1;
+	ogl.VertexBuffer () [2][Y] = y1;
+	ogl.VertexBuffer () [3][X] = x0;
+	ogl.VertexBuffer () [3][Y] = y1;
+	ogl.FlushBuffers (GL_LINE_LOOP, 4, 2);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ return (nObject < 0) ? NULL : OBJECTS + nObject;
 void DrawMarkerNumber (int nMarker)
 {
 	g3sPoint	basePoint;
-	int		i;
+	int		i, j;
 	float		*px, *py;
 
 	static float xCoord [9][10] =
@@ -75,27 +75,32 @@ void DrawMarkerNumber (int nMarker)
 
   int nPoints [] = {6, 10, 8, 6, 10, 10, 4, 10, 8};
 
-if (gameData.marker.fScale == 0.0f)
-	gameData.marker.fScale = 2.0f;
-if (nMarker == gameData.marker.nHighlight)
-	CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 0, 47));
-else
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
-G3TransformAndEncodePoint (&basePoint, MarkerObj (-1, nMarker)->info.position.vPos);
-glPushMatrix ();
-glTranslatef (X2F (basePoint.p3_vec[X]), X2F (basePoint.p3_vec[Y]), X2F (basePoint.p3_vec[Z]));
-ogl.SetTextureUsage (false);
-OglCanvasColor (&CCanvas::Current ()->Color ());
-glBegin (GL_LINES);
-px = xCoord [nMarker];
-py = yCoord [nMarker];
-for (i = nPoints [nMarker] / 2; i; i--) {
-	glVertex2f (*px++ * gameData.marker.fScale, *py++ * gameData.marker.fScale);
-	glVertex2f (*px++ * gameData.marker.fScale, *py++ * gameData.marker.fScale);
+if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
+	if (gameData.marker.fScale == 0.0f)
+		gameData.marker.fScale = 2.0f;
+	if (nMarker == gameData.marker.nHighlight)
+		CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
+	else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 0, 47));
+	else
+		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
+	G3TransformAndEncodePoint (&basePoint, MarkerObj (-1, nMarker)->info.position.vPos);
+	glPushMatrix ();
+	glTranslatef (X2F (basePoint.p3_vec[X]), X2F (basePoint.p3_vec[Y]), X2F (basePoint.p3_vec[Z]));
+	ogl.SetTextureUsage (false);
+	OglCanvasColor (&CCanvas::Current ()->Color ());
+	px = xCoord [nMarker];
+	py = yCoord [nMarker];
+	for (i = nPoints [nMarker] / 2, j = 0; i; i--) {
+		ogl.VertexBuffer () [j][X] = *px++ * gameData.marker.fScale;
+		ogl.VertexBuffer () [j][Y] = *py++ * gameData.marker.fScale;
+		j++;
+		ogl.VertexBuffer () [j][X] = *px++ * gameData.marker.fScale;
+		ogl.VertexBuffer () [j][Y] = *py++ * gameData.marker.fScale;
+		j++;
+		}
+	ogl.FlushBuffers (GL_LINES, nPoints [nMarker], 2);
 	}
-glEnd ();
 glPopMatrix ();
 }
 

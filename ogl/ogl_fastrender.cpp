@@ -213,10 +213,11 @@ if (gameOpts->render.debug.bWireFrame) {
 			ogl.SetTextureUsage (false);
 		glColor3f (1.0f, 0.5f, 0.0f);
 		glLineWidth (6);
-		glBegin (GL_LINE_LOOP);
-		for (int i = 0; i < 4; i++)
-			glVertex3fv (reinterpret_cast<GLfloat*> (gameData.segs.fVertices + faceP->m_info.index [i]));
-		glEnd ();
+		if (ogl.SizeVertexBuffer (4)) {
+			for (int i = 0; i < 4; i++)
+				ogl.VertexBuffer () [i] = gameData.segs.fVertices [faceP->m_info.index [i]];
+			ogl.FlushBuffers (GL_LINE_LOOP, 4);
+			}	
 		if (gameStates.render.bTriangleMesh) {
 			glLineWidth (2);
 			glColor3f (1,1,1);

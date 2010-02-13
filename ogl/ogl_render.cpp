@@ -120,14 +120,15 @@ return 0;
 
 int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
-ogl.SetTextureUsage (false);
-OglCanvasColor (&CCanvas::Current ()->Color ());
-glBegin (GL_LINES);
-OglVertex3x (p0->p3_vec [X], p0->p3_vec [Y], p0->p3_vec [Z]);
-OglVertex3x (p1->p3_vec [X], p1->p3_vec [Y], p1->p3_vec [Z]);
-if (CCanvas::Current ()->Color ().rgb)
-	ogl.SetBlending (false);
-glEnd ();
+if (ogl.SizeVertexBuffer (2)) {
+	ogl.SetTextureUsage (false);
+	OglCanvasColor (&CCanvas::Current ()->Color ());
+	ogl.VertexBuffer () [0].Assign (p0->p3_vec);
+	ogl.VertexBuffer () [1].Assign (p0->p3_vec);
+	ogl.FlushBuffers (GL_LINES, 2, 2);
+	if (CCanvas::Current ()->Color ().rgb)
+		ogl.SetBlending (false);
+	}
 return 1;
 }
 
@@ -143,45 +144,47 @@ ogl.SetLineSmooth (true);
 glTranslatef (xo, yo, 0.0f);
 glScalef (xsc, ysc, 1.0f);
 if (nType == GL_LINES) {	// implies a dashed circle
-	glBegin (nType);
-	if (sinCosP) {
-		for (i = 0; i < nSides; i++, sinCosP++) {
-			glVertex2f (sinCosP->fCos, sinCosP->fSin);
-			i++, sinCosP++;
-			glVertex2f (sinCosP->fCos, sinCosP->fSin);
+	if (ogl.SizeVertexBuffer (nSides * 2)) {
+		if (sinCosP) {
+			for (i = 0; i < nSides; i++, sinCosP++) {
+				ogl.VertexBuffer () [i][X] = sinCosP->fCos;
+				ogl.VertexBuffer () [i][Y] = sinCosP->fSin;
+				i++, sinCosP++;
+				ogl.VertexBuffer () [i][X] = sinCosP->fCos;
+				ogl.VertexBuffer () [i][Y] = sinCosP->fSin;
+				}
 			}
-		}
-	else {
-		for (i = 0; i < nSides; i++) {
-			ang = 2.0 * Pi * i / nSides;
-			glVertex2f (float (cos (ang)), float (sin (ang)));
-			i++;
-			ang = 2.0 * Pi * i / nSides;
-			glVertex2f (float (cos (ang)), float (sin (ang)));
+		else {
+			for (i = 0; i < nSides; i++) {
+				ang = 2.0 * Pi * i / nSides;
+				ogl.VertexBuffer () [i][X] = float (cos (ang));
+				ogl.VertexBuffer () [i][Y] = float (sin (ang));
+				i++;
+				ang = 2.0 * Pi * i / nSides;
+				ogl.VertexBuffer () [i][X] = float (cos (ang));
+				ogl.VertexBuffer () [i][Y] = float (sin (ang));
+				}
 			}
+		ogl.FlushBuffers (GL_LINES, nSides * 2, 2);
 		}
-	glEnd ();
 	}
 else {
 	if (sinCosP) {
-#if 1
 		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 		OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (sinCosP));
 		OglDrawArrays (nType, 0, nSides);
 		ogl.DisableClientStates (0, 0, 0, GL_TEXTURE0);
-#else
-		for (i = 0; i < nSides; i++, sinCosP++)
-			glVertex2f (sinCosP->fCos, sinCosP->fSin);
-#endif
 		}
 	else {
-		glBegin (nType);
-		for (i = 0; i < nSides; i++) {
-			ang = 2.0 * Pi * i / nSides;
-			glVertex2f (float (cos (ang)), float (sin (ang)));
+		if (ogl.SizeVertexBuffer (nSides)) {
+			for (i = 0; i < nSides; i++) {
+				ang = 2.0 * Pi * i / nSides;
+				ogl.VertexBuffer () [i][X] = float (cos (ang));
+				ogl.VertexBuffer () [i][Y] = float (sin (ang));
+				}
+			ogl.FlushBuffers (nType, nSides, 2);
 			}
 		}
-	glEnd ();
 	}
 ogl.SetLineSmooth (false);
 glPopMatrix ();
@@ -194,10 +197,13 @@ void OglDrawCircle (int nSides, int nType)
 	int		i;
 	double	ang;
 
-glBegin (nType);
-for (i = 0; i < nSides; i++) {
-	ang = 2.0 * Pi * i / nSides;
-	glVertex2d (cos (ang), sin (ang));
+if (ogl.SizeVertexBuffer (nSides)) {
+	for (i = 0; i < nSides; i++) {
+		ang = 2.0 * Pi * i / nSides;
+		ogl.VertexBuffer () [i][X] = float (cos (ang));
+		ogl.VertexBuffer () [i][Y] = float (sin (ang));
+		}
+	ogl.FlushBuffers (nType, nSides, 2);
 	}
 glEnd ();
 }
@@ -243,25 +249,28 @@ int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 	tCanvasColor	c = CCanvas::Current ()->Color ();
 	g3sPoint			p = *p0;
 	int				i;
-	float				hx, hy, x, y, z, r;
+	CFloatVector	v;
+	float				x, y, z, r;
 	float				ang;
 
-ogl.SetTextureUsage (false);
-OglCanvasColor (&CCanvas::Current ()->Color ());
-x = X2F (p.p3_vec [X]);
-y = X2F (p.p3_vec [Y]);
-z = X2F (p.p3_vec [Z]);
-r = X2F (rad);
-glBegin (GL_POLYGON);
-for (i = 0; i <= nSides; i++) {
-	ang = 2.0f * (float) Pi * (i % nSides) / nSides;
-	hx = x + (float) cos (ang) * r;
-	hy = y + (float) sin (ang) * r;
-	glVertex3f (hx, hy, z);
+if (ogl.SizeVertexBuffer (nSides + 1)) {
+	ogl.SetTextureUsage (false);
+	OglCanvasColor (&CCanvas::Current ()->Color ());
+	x = X2F (p.p3_vec [X]);
+	y = X2F (p.p3_vec [Y]);
+	z = X2F (p.p3_vec [Z]);
+	r = X2F (rad);
+	v [Z] = z;
+	for (i = 0; i <= nSides; i++) {
+		ang = 2.0f * float (Pi * (i % nSides) / nSides);
+		v [X] = x + float (cos (ang) * r);
+		v [Y] = y + float (sin (ang) * r);
+		ogl.VertBuffer () [i] = v;
+		}
+	ogl.FlushBuffers (GL_POLYGON, nSides + 1);
+	if (c.rgb)
+		ogl.SetBlending (false);
 	}
-if (c.rgb)
-	ogl.SetBlending (false);
-glEnd ();
 return 1;
 }
 
@@ -269,29 +278,31 @@ return 1;
 
 int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 {
-	g3sPoint		p = *p0;
-	int			i, j;
-	CFloatVector		v;
-	float			x, y, r;
-	float			ang;
+	g3sPoint			p = *p0;
+	int				i, j;
+	CFloatVector	v;
+	float				x, y, r;
+	float				ang;
 
-ogl.SetTextureUsage (false);
-OglCanvasColor (&CCanvas::Current ()->Color ());
-x = X2F (p.p3_vec [X]);
-y = X2F (p.p3_vec [Y]);
-v[Z] = X2F (p.p3_vec [Z]);
-r = X2F (rad);
-glBegin (GL_LINES);
-for (i = 0; i <= nSides; i++)
-	for (j = i; j <= i + 1; j++) {
-		ang = 2.0f * (float) Pi * (j % nSides) / nSides;
-		v[X] = x + (float) cos (ang) * r;
-		v[Y] = y + (float) sin (ang) * r;
-		glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
+	ogl.SetTextureUsage (false);
+	OglCanvasColor (&CCanvas::Current ()->Color ());
+	x = X2F (p.p3_vec [X]);
+	y = X2F (p.p3_vec [Y]);
+	v[Z] = X2F (p.p3_vec [Z]);
+	r = X2F (rad);
+	for (i = 0; i <= nSides; i++) {
+		for (j = i; j <= i + 1; j++) {
+			ang = 2.0f * (float) Pi * (j % nSides) / nSides;
+			v [X] = x + (float) cos (ang) * r;
+			v [Y] = y + (float) sin (ang) * r;
+			ogl.VertexBuffer () [i] = v;
+			}
 		}
-if (CCanvas::Current ()->Color ().rgb)
-	ogl.SetBlending (false);
-glEnd ();
+	ogl.FlushBuffers (GL_LINES, 2 * (nSides + 1), 2);
+	if (CCanvas::Current ()->Color ().rgb)
+		ogl.SetBlending (false);
+	}
 return 1;
 }
 
@@ -303,9 +314,8 @@ ogl.SetTextureUsage (false);
 //	glPointSize (X2F (rad);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
-glTranslatef (
-			(X2F (xc1) + CCanvas::Current ()->Left ()) / (float) ogl.m_states.nLastW,
-		1.0f - (X2F (yc1) + CCanvas::Current ()->Top ()) / (float) ogl.m_states.nLastH, 0);
+glTranslatef ((X2F (xc1) + CCanvas::Current ()->Left ()) / (float) ogl.m_states.nLastW,
+				  1.0f - (X2F (yc1) + CCanvas::Current ()->Top ()) / (float) ogl.m_states.nLastH, 0);
 glScalef (X2F (r1), X2F (r1), X2F (r1));
 if (r1<=I2X (5)){
 	if (!circleh5)
@@ -329,18 +339,22 @@ return 0;
 
 int G3DrawWhitePoly (int nVertices, g3sPoint **pointList)
 {
-#if 1
-	int i;
+	int			i;
+	g3sPoint*	p;
 
-r_polyc++;
-ogl.SetTextureUsage (false);
-ogl.SetBlending (false);
-glColor4d (1.0, 1.0, 1.0, 1.0);
-glBegin (GL_TRIANGLE_FAN);
-for (i = 0; i < nVertices; i++, pointList++)
-	OglVertex3f (*pointList);
-glEnd ();
-#endif
+if (ogl.SizeVertexBuffer (nVertices)) {
+	ogl.SetTextureUsage (false);
+	ogl.SetBlending (false);
+	glColor4d (1.0, 1.0, 1.0, 1.0);
+	for (i = 0; i < nVertices; i++) {
+		p = pointList [i];
+		if (p->p3_index < 0)
+			ogl.VertexBuffer () [i].Assign ((*pointList)->p3_vec);
+		else
+			ogl.VertexBuffer () [i] = gameData.render.vertP [p->p3_index];
+		}
+	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
+	}
 return 0;
 }
 
@@ -348,25 +362,27 @@ return 0;
 
 int G3DrawPoly (int nVertices, g3sPoint **pointList)
 {
-	int i;
+	int			i;
+	g3sPoint*	p;
 
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
 	}
-r_polyc++;
-ogl.SetTextureUsage (false);
-OglCanvasColor (&CCanvas::Current ()->Color ());
-glBegin (GL_TRIANGLE_FAN);
-for (i = 0; i < nVertices; i++, pointList++) {
-//	glVertex3f (X2F (pointList [c]->p3_vec [X]), X2F (pointList [c]->p3_vec [Y]), X2F (pointList [c]->p3_vec [Z]);
-	OglVertex3f (*pointList);
+if (ogl.SizeVertexBuffer (nVertices)) {
+	ogl.SetTextureUsage (false);
+	OglCanvasColor (&CCanvas::Current ()->Color ());
+	for (i = 0; i < nVertices; i++) {
+		p = pointList [i];
+		if (p->p3_index < 0)
+			ogl.VertexBuffer () [i].Assign ((*pointList)->p3_vec);
+		else
+			ogl.VertexBuffer () [i] = gameData.render.vertP [p->p3_index];
+		}
+	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
+	if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < 1.0f))
+		ogl.SetBlending (false);
 	}
-#if 1
-if (CCanvas::Current ()->Color ().rgb || (gameStates.render.grAlpha < 1.0f))
-	ogl.SetBlending (false);
-#endif
-glEnd ();
 return 0;
 }
 
@@ -422,27 +438,33 @@ int G3DrawTexPolyFlat (
 	short			nSegment)
 {
 	int			i;
-	g3sPoint		**ppl;
+	g3sPoint*	p;
 
-if (FAST_SHADOWS) {
-	if (bBlend)
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	else
-		ogl.SetBlending (false);
-	}
-else {
-	if (gameStates.render.nShadowPass == 3) {
-		ogl.SetBlending (true);
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+if (ogl.SizeVertexBuffer (nVertices)) {
+	if (FAST_SHADOWS) {
+		if (bBlend)
+			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		else
+			ogl.SetBlending (false);
 		}
+	else {
+		if (gameStates.render.nShadowPass == 3) {
+			ogl.SetBlending (true);
+			ogl.SetBlendMode (GL_ONE, GL_ONE);
+			}
+		}
+	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.SetTextureUsage (false);
+	glColor4d (0, 0, 0, gameStates.render.grAlpha);
+	for (i = 0; i < nVertices; i++) {
+		p = pointList [i];
+		if (p->p3_index < 0)
+			ogl.VertexBuffer () [i].Assign ((*pointList)->p3_vec);
+		else
+			ogl.VertexBuffer () [i] = gameData.render.vertP [p->p3_index];
+		}
+	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
 	}
-ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetTextureUsage (false);
-glColor4d (0, 0, 0, gameStates.render.grAlpha);
-glBegin (GL_TRIANGLE_FAN);
-for (i = 0, ppl = pointList; i < nVertices; i++, ppl++)
-	OglVertex3f (*ppl);
-glEnd ();
 return 0;
 }
 
@@ -1254,7 +1276,7 @@ return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts);
 
 //------------------------------------------------------------------------------
 
-void COglBuffers::Flush (GLenum nPrimitive, int nVerts, int bTextured, int bColored)
+void COglBuffers::Flush (GLenum nPrimitive, int nVerts, int nDimensions, int bTextured, int bColored)
 {
 if (vertices.Buffer () && nVerts) {
 	if (bTextured && texCoord.Buffer ()) {
@@ -1266,7 +1288,7 @@ if (vertices.Buffer () && nVerts) {
 		OglColorPointer (4, GL_FLOAT, 0, color.Buffer ());
 		}
 	ogl.EnableClientState (GL_VERTEX_ARRAY);
-	OglVertexPointer (3, GL_FLOAT, 0, vertices.Buffer ());
+	OglVertexPointer (nDimensions, GL_FLOAT, sizeof (CFloatVector), vertices.Buffer ());
 	OglDrawArrays (nPrimitive, 0, nVerts);
 	ogl.DisableClientStates (bTextured, bColored, 0);
 	}

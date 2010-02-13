@@ -31,9 +31,9 @@ extern float fLightRanges [5];
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (ubyte *palette, int c);
+void OglPalColor (ubyte *palette, int c, tRgbaColorf* colorP = NULL);
 tRgbaColorf GetPalColor (CPalette *palette, int c);
-void OglCanvasColor (tCanvasColor* colorP);
+void OglCanvasColor (tCanvasColor* canvColorP, tRgbaColorf* colorP = NULL);
 tRgbaColorf GetCanvasColor (tCanvasColor* colorP);
 void OglColor4sf (float r, float g, float b, float s);
 void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tFaceColor *vertColor);

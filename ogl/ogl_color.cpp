@@ -67,18 +67,28 @@ tRgbaColorf modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (CPalette *palette, int c)
+void OglPalColor (CPalette *palette, int c, tRgbaColorf* colorP)
 {
 	tRgbaColorf	color;
 
-if (c < 0)
-	glColor3f (1.0, 1.0, 1.0);
+if (c < 0) {
+	if (colorP)
+		colorP->red =
+		colorP->green =
+		colorP->blue =
+		colorP->alpha = 1.0;
+	else
+		glColor3f (1.0, 1.0, 1.0);
+	}
 else {
 	if (!palette)
 		palette = paletteManager.Game ();
 	palette->ToRgbaf (c, color);
 	color.alpha = gameStates.render.grAlpha;
-	glColor4fv (reinterpret_cast<GLfloat*> (&color));
+	if (colorP)
+		*colorP = color;
+	else
+		glColor4fv (reinterpret_cast<GLfloat*> (&color));
 	}
 }
 
@@ -101,25 +111,24 @@ return color;
 
 //------------------------------------------------------------------------------
 
-void OglCanvasColor (tCanvasColor* colorP)
+void OglCanvasColor (tCanvasColor* canvColorP, tRgbaColor colorP)
 {
-	GLfloat	fc [4];
+	tRgbaColorf	color;
 
-if (!colorP)
+if (!canvColorP) {
 	glColor4f (1.0, 1.0, 1.0, gameStates.render.grAlpha);
-else if (colorP->rgb) {
-	fc [0] = float (colorP->color.red) / 255.0f;
-	fc [1] = float (colorP->color.green) / 255.0f;
-	fc [2] = float (colorP->color.blue) / 255.0f;
-	fc [3] = float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha;
-	if (fc [3] < 1.0f) {
-		ogl.SetBlending (true);
+	}
+else if (canvColorP->rgb) {
+	color.red = float (colorP->color.red) / 255.0f;
+	color.green = float (colorP->color.green) / 255.0f;
+	color.blue = float (colorP->color.blue) / 255.0f;
+	color.alpha = float (colorP->color.alpha) / 255.0f * gameStates.render.grAlpha;
+	if (color.alpha < 1.0f)
 		ogl.SetBlendMode (ogl.m_data.nSrcBlendMode, ogl.m_data.nDestBlendMode);
-		}
-	glColor4fv (fc);
+	glColor4fv (reinterpret_cast<GLfloat*> (&color));
 	}
 else
-	OglPalColor (paletteManager.Game (), colorP->index);
+	OglPalColor (paletteManager.Game (), canvColorP->index, colorP);
 }
 
 //------------------------------------------------------------------------------

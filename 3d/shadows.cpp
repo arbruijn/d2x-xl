@@ -805,7 +805,6 @@ else
 #endif
 if (!ogl.SizeVertexBuffer (nVerts))
 	return;
-//glBegin (GL_TRIANGLE_FAN);
 for (i = 0, pv += nVerts; nVerts; nVerts--, i++) {
 	v0 = *(--pv);
 	v1 = v0 - vLightPosf;
@@ -1312,7 +1311,6 @@ for (nVerts = 0, i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 		}
 	else
 #endif
-		//glBegin (GL_TRIANGLE_FAN);
 	for (j = pf->m_nVerts, pfv = pf->m_verts + j; j; j--) {
 		v0 = pvf [*--pfv];
 #if 1
@@ -1335,9 +1333,7 @@ for (nVerts = 0, i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 #endif
 			}
 		ogl.VertexBuffer () [nVerts++] = v0 + v1;
-		//glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 		}
-	//glEnd ();
 	}
 ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 
@@ -1371,13 +1367,9 @@ for (nVerts = 0, i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 		}
 	else
 #endif
-		//glBegin (GL_TRIANGLE_FAN);
 	for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--) {
 		ogl.VertexBuffer () [nVerts++] = pvf [*pfv++];
-		//v0 = pvf [*pfv++];
-		//glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
 		}
-	//glEnd ();
 	}
 ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 return 1;
