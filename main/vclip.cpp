@@ -188,7 +188,8 @@ color.red =
 color.green =
 color.blue =
 color.alpha = fAlpha;
-ogl.RenderSprite (bmpExplBlast, vPos, xSize, xSize, &color, fAlpha, 2, 10);
+bmpExplBlast->SetColor (&color);
+ogl.RenderSprite (bmpExplBlast, vPos, xSize, xSize, fAlpha, 2, 10);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft)) / 4;
