@@ -302,8 +302,11 @@ class COGL {
 		inline CArray<CFloatVector>& VertexBuffer (void) { return Buffers ().vertices; }
 		inline CArray<tTexCoord2f>& TexCoordBuffer (void) { return Buffers ().texCoord; }
 		inline CArray<tRgbaColorf>& ColorBuffer (void) { return Buffers ().color; }
+		inline bool SizeBuffers (int nVerts) { return m_buffers.SizeBuffers (nVerts); }
+		inline bool SizeVertexBuffer (int nVerts) { return m_buffers.SizeVertices (nVerts); }
 		inline void FlushBuffers (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0) {
-			m_buffers.Flush (nPrimitive, nVerts, bTextured, bColored); }
+			m_buffers.Flush (nPrimitive, nVerts, bTextured, bColored); 
+			}
 
 		inline bool SetFaceCulling (bool bCullFaces) { return Enable (m_data.bCullFaces, bCullFaces, GL_CULL_FACE); }
 		inline bool GetFaceCulling (void) { return m_data.bCullFaces; }
