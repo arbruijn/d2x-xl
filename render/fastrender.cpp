@@ -204,6 +204,8 @@ if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 if (IS_WALL (faceP->m_info.nWall))
 	return false;
 LoadFaceBitmaps (segP, faceP);
+if (!faceP->bmBot)
+	return false;
 g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
@@ -627,7 +629,6 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 					lightManager.Index (0)[0].nActive = -1;
 				}
 			}
-		faceP = fliP->faceP;
 		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly))
 			nFaces++;
 		}

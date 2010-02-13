@@ -288,12 +288,15 @@ class COGL {
 		void RenderScreenQuad (int bTextured = 0);
 
 		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {
-			if (bCurrent != bNew) {
+			if (bCurrent != bNew) 
+				{
 				if (bCurrent = bNew)
 					glEnable (nFunc);
 				else
 					glDisable (nFunc);
+#if DBG
 				bCurrent = glIsEnabled (nFunc) != 0;
+#endif
 				}
 			return bCurrent;
 			}
@@ -363,10 +366,8 @@ class COGL {
 
 
 		inline GLenum SetDepthMode (GLenum nDepthMode) {
-			if (m_data.nDepthMode != nDepthMode) {
-				SetDepthMode (m_data.nDepthMode = nDepthMode);
-				glGetIntegerv (GL_DEPTH_FUNC, (GLint*) &m_data.nDepthMode);
-				}
+			if (m_data.nDepthMode != nDepthMode)
+				glDepthFunc (m_data.nDepthMode = nDepthMode);
 			return m_data.nDepthMode;
 			}
 		inline GLenum GetDepthMode (void) { return m_data.nDepthMode; }
