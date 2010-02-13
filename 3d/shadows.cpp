@@ -72,6 +72,9 @@ extern int bShadowVolume;
 extern int bFrontFaces;
 extern int bBackFaces;
 extern int bSWCulling;
+#	define SHADOWTEST	bShadowTest
+#else
+#	define SHADOWTEST 0
 #endif
 extern int bZPass;
 static int bTriangularize = 0;
@@ -864,8 +867,8 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 			v [0] = pvf [pfv [(j + 1) % n]];
 #if DBG_SHADOWS
 			if (bShadowTest < 3) {
-				glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
 #endif
+				glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
 				v [3] = v [0] - vLightPosf;
 				v [2] = v [1] - vLightPosf;
 #if NORM_INF
@@ -877,14 +880,7 @@ for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 #endif
 				v [2] += v [1];
 				v [3] += v [0];
-#if 1//!DBG
 				OglDrawArrays (GL_QUADS, 0, 4);
-#else
-				glVertex3fv (reinterpret_cast<GLfloat*> (v));
-				glVertex3fv (reinterpret_cast<GLfloat*> (v+1));
-				glVertex3fv (reinterpret_cast<GLfloat*> (v+2));
-				glVertex3fv (reinterpret_cast<GLfloat*> (v+3));
-#endif
 #if DBG_SHADOWS
 				}
 			else {
@@ -945,7 +941,10 @@ if (!nVisited++)
 if (bPrintLine) {
 	CFloatVector	vf;
 	glLineWidth (3);
-	if (!bShadowTest) {
+#	if DBG_SHADOWS
+	if (!bShadowTest) 
+#	endif
+		{
 		ogl.ColorMask (1,1,1,1,1);
 		ogl.SetStencilTest (false);
 		}
@@ -956,7 +955,10 @@ if (bPrintLine) {
 	vf.Assign (*vPos);
 	glVertex3fv (reinterpret_cast<GLfloat*> (&vf));
 	glEnd ();
-	if (!bShadowTest) {
+#	if DBG_SHADOWS
+	if (!bShadowTest) 
+#	endif
+		{
 		ogl.ColorMask (0,0,0,0,0);
 		ogl.SetStencilTest (true);
 		}
@@ -1261,7 +1263,7 @@ nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->r
 fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
 for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
 	pf = *ppf;
-#if DBG
+#if DBG_SHADOWS
 	if (pf->m_bFacingLight && (bShadowTest > 3)) {
 		glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
 		v1 = v0 = pf->m_vCenterf;
