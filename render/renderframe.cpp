@@ -125,7 +125,7 @@ if (LoadScope ()) {
 	glTexCoord2f (0.5f - w, 0.75f);
 	glVertex2f (0, y - h);
 	glEnd ();
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	ogl.SetDepthTest (true);
 	ogl.SetTextureUsage (false);
 	glPopMatrix ();

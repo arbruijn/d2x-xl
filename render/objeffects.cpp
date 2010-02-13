@@ -767,7 +767,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		bmP->SetTexCoord (texCoordList [1]);
 		ogl.RenderQuad (bmP, verts, 3);
 		transformation.End ();
-		OglBindTexture (0);
+		ogl.BindTexture (0);
 		ogl.StencilOn (bStencil);
 		}
 	}

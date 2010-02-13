@@ -412,7 +412,16 @@ class COGL {
 			if (m_data.nTexture [m_data.nTMU [0]] != handle)
 				glBindTexture (GL_TEXTURE_2D, m_data.nTexture [m_data.nTMU [0]] = handle); 
 			}
+
 		inline GLuint BoundTexture (void) { return m_data.nTexture [m_data.nTMU [0]]; }
+
+		inline void ReleaseTexture (GLuint handle) { 
+			for (int i = 0; i < 4; i++)
+				if (m_data.nTexture [i] == handle) {
+					glBindTexture (GL_TEXTURE_2D, m_data.nTexture [i] = 0); 
+					break;
+					}
+			}
 
 #if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);

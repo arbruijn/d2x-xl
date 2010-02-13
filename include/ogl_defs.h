@@ -274,7 +274,6 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #define	OglTexCoordPointer(size, type, stride, pointer)	glTexCoordPointer (size, type, stride, pointer)
 #define	OglNormalPointer(type, stride, pointer)			glNormalPointer (type, stride, pointer)
 #endif
-#define	OglBindTexture(_handle)									ogl.BindTexture (_handle)
 
 //------------------------------------------------------------------------------
 

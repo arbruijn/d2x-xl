@@ -1681,7 +1681,7 @@ int CParticleManager::InitBuffer (int bLightmaps)
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
 if (bLightmaps) {
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	ogl.SetTextureUsage (false);
 	ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 	}
@@ -1807,7 +1807,7 @@ int CParticleManager::EndRender (void)
 #if 0
 CloseBuffer ();
 if (gameStates.render.bDepthSort <= 0) {
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	ogl.SetTextureUsage (false);
 	ogl.SetDepthWrite (true);
 	ogl.StencilOn (particleManager.Stencil ());

@@ -583,7 +583,7 @@ void CTransparencyRenderer::DisableTMU (int nTMU, char bFull)
 {
 ogl.DisableClientStates (1, 1, 1, nTMU);
 if (bFull) {
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	ogl.SetTextureUsage (false);
 	}
 }
@@ -682,13 +682,13 @@ if (bmP) {
 			m_data.nFrame = nFrame;
 			}
 		else
-			OglBindTexture (0);
+			ogl.BindTexture (0);
 		m_data.bmP [bDecal] = bmP;
 		}
 	}
 else if (SetClientState (bClientState, 0, /*!m_data.bLightmaps &&*/ (nColors > 1), bUseLightmaps, 0) || m_data.bTextured) {
 	if (m_data.bTextured) {
-		OglBindTexture (0);
+		ogl.BindTexture (0);
 		ogl.SetTextureUsage (false);
 		ResetBitmaps ();
 		}
@@ -1370,14 +1370,14 @@ FlushBuffers (-1);
 particleManager.EndRender ();
 shaderManager.Deploy (-1);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
-OglBindTexture (0);
+ogl.BindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
-OglBindTexture (0);
+ogl.BindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
-OglBindTexture (0);
+ogl.BindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 ogl.SetTextureUsage (false);
-OglBindTexture (0);
+ogl.BindTexture (0);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);

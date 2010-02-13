@@ -520,7 +520,7 @@ void COGL::ResetClientStates (void)
 for (int i = 4; i; ) {
 	DisableClientStates (1, 1, 1, GL_TEXTURE0 + --i);
 	SetTextureUsage (true);
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	if (i)
 		SetTextureUsage (false);
 	}
@@ -882,13 +882,13 @@ DestroyGlareDepthTexture ();
 #endif
 ogl.SetTextureUsage (true);
 DisableClientStates (1, 1, 1, GL_TEXTURE3);
-OglBindTexture (0);
+ogl.BindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE2);
-OglBindTexture (0);
+ogl.BindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE1);
-OglBindTexture (0);
+ogl.BindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE0);
-OglBindTexture (0);
+ogl.BindTexture (0);
 SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 Viewport (0, 0, screen.Width (), screen.Height ());
 #ifndef NMONO
@@ -1261,7 +1261,7 @@ if (HaveDrawBuffer ()) {
 	SetDrawBuffer (GL_BACK, 0);
 	ogl.SetTextureUsage (true);
 	SelectTMU (GL_TEXTURE0);
-	OglBindTexture (DrawBuffer ()->RenderBuffer ());
+	ogl.BindTexture (DrawBuffer ()->RenderBuffer ());
 
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
@@ -1275,7 +1275,7 @@ if (HaveDrawBuffer ()) {
 				SetDrawBuffer (GL_BACK, 0);
 				ogl.SetTextureUsage (true);
 				SelectTMU (GL_TEXTURE1);
-				OglBindTexture (DrawBuffer ()->RenderBuffer ());
+				ogl.BindTexture (DrawBuffer ()->RenderBuffer ());
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
@@ -1314,7 +1314,7 @@ ogl.SetTextureUsage (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hBuffer = 0;
-OglBindTexture (hBuffer);
+ogl.BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_states.nCurWidth, m_states.nCurHeight,
 				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
@@ -1351,7 +1351,7 @@ ogl.SetTextureUsage (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;
-OglBindTexture (hBuffer);
+ogl.BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
 				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);

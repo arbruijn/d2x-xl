@@ -328,7 +328,7 @@ if (frames) {
 else if (m_info.texP && (m_info.texP == &m_info.texture)) {
 #if RENDER2TEXTURE == 2
 	if (m_info.texP->IsRenderBuffer ())
-		OglBindTexture (0);
+		ogl.ReleaseTexture (m_info.texP->Handle ());
 	else
 #elif RENDER2TEXTURE == 1
 #	ifdef _WIN32

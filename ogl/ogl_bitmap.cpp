@@ -163,7 +163,7 @@ void CBitmap::OglEndRender (void)
 ogl.SetDepthMode (m_render.depthFunc);
 ogl.SetBlending (m_render.bBlendState != 0);
 ogl.SelectTMU (GL_TEXTURE0);
-OglBindTexture (0);
+ogl.BindTexture (0);
 ogl.SetTextureUsage (false);
 }
 

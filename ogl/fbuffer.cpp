@@ -101,7 +101,7 @@ if (nHeight > 0)
 	m_info.nHeight = nHeight;
 ogl.GenTextures (1, &m_info.hRenderBuffer);
 if (nType == 2) { //GPGPU
-	OglBindTexture (m_info.hRenderBuffer);
+	ogl.BindTexture (m_info.hRenderBuffer);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -113,7 +113,7 @@ if (nType == 2) { //GPGPU
 	m_info.hDepthBuffer = 0;
 	}
 else {
-	OglBindTexture (m_info.hRenderBuffer);
+	ogl.BindTexture (m_info.hRenderBuffer);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -200,7 +200,7 @@ if (!ogl.m_states.bRender2TextureOk)
 ogl.SetDrawBuffer (GL_BACK, 0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 m_info.bActive = 0;
-OglBindTexture (0);
+//ogl.BindTexture (0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 #if 1//DBG
 if (!Available ())
@@ -223,7 +223,7 @@ m_info.bActive = 0;
 if (!Available ())
 	return 0;
 #endif
-//OglBindTexture (m_info.hRenderBuffer);
+//ogl.BindTexture (m_info.hRenderBuffer);
 ogl.SetDrawBuffer (GL_BACK, 0);
 return 1;
 }

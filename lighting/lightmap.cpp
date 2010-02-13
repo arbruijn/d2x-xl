@@ -105,7 +105,7 @@ if (!lmP->handle) {
 #endif
 	return 0;
 	}
-OglBindTexture (lmP->handle); 
+ogl.BindTexture (lmP->handle); 
 #if 0//DBG
 if ((nError = glGetError ()))
 	return 0;

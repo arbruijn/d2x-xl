@@ -269,7 +269,7 @@ if (bTextured) {
 			}
 		else {
 			ogl.SelectTMU (GL_TEXTURE1, true);
-			OglBindTexture (0);
+			ogl.BindTexture (0);
 			ogl.SetTextureUsage (false);
 			mask = NULL;
 			}
@@ -284,7 +284,7 @@ if (bTextured) {
 			}
 		else {
 			ogl.SelectTMU (GL_TEXTURE2, true);
-			OglBindTexture (0);
+			ogl.BindTexture (0);
 			ogl.SetTextureUsage (false);
 			bColorKey = 0;
 			}
@@ -302,7 +302,7 @@ if (bTextured) {
 else {
 	gameStates.render.history.bmBot = NULL;
 	ogl.SelectTMU (GL_TEXTURE0, true);
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	ogl.SetTextureUsage (false);
 	}
 PROF_END(ptRenderStates)
@@ -330,7 +330,7 @@ if (bTextured) {
 			}
 		else {
 			ogl.SelectTMU (GL_TEXTURE2, true);
-			OglBindTexture (0);
+			ogl.BindTexture (0);
 			mask = NULL;
 			}
 		}
@@ -345,7 +345,7 @@ if (bTextured) {
 			}
 		else {
 			ogl.SelectTMU (GL_TEXTURE3, true);
-			OglBindTexture (0);
+			ogl.BindTexture (0);
 			bColorKey = 0;
 			}
 		}
@@ -358,7 +358,7 @@ if (bTextured) {
 else {
 	gameStates.render.history.bmBot = NULL;
 	ogl.SelectTMU (GL_TEXTURE1, true);
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	ogl.SetTextureUsage (false);
 	}
 PROF_END(ptRenderStates)
@@ -374,7 +374,7 @@ if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, faceP->texCoordP - faceP->m_info.nIndex);
 else {
 	ogl.SetTextureUsage (false);
-	OglBindTexture (0);
+	ogl.BindTexture (0);
 	}
 }
 
