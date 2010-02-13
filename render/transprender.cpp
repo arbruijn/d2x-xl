@@ -971,7 +971,9 @@ void CTransparencyRenderer::RenderObject (tTranspObject *item)
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 gameData.models.vScale = item->vScale;
-DrawPolygonObject (item->objP, 0, 1);
+gameStates.render.bDepthSort = -1;
+DrawPolygonObject (item->objP, 1);
+gameStates.render.bDepthSort = 1;
 gameData.models.vScale.SetZero ();
 ogl.ResetClientStates ();
 ResetBitmaps ();
@@ -1134,7 +1136,7 @@ if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSe
 	o.info.renderType = RT_POLYOBJ;
 	o.rType.polyObjInfo.nModel = BULLET_MODEL;
 	o.rType.polyObjInfo.nTexOverride = -1;
-	DrawPolygonObject (&o, 0, 1);
+	DrawPolygonObject (&o, 1);
 	gameData.models.vScale.SetZero ();
 	ogl.ResetClientStates ();
 	ResetBitmaps ();

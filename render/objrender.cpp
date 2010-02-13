@@ -654,7 +654,7 @@ if (gameStates.render.bBuildModels)
 	xLight = I2X (1);
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
-	if ((bCloaked || bEnergyWeapon) && (gameStates.render.nShadowPass != 2)) {
+	if ((gameStates.render.bDepthSort > 0) && (bCloaked || bEnergyWeapon) && (gameStates.render.nShadowPass != 2)) {
 		transparencyRenderer.AddObject (objP);
 		return 1;
 		}
