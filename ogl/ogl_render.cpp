@@ -1191,7 +1191,7 @@ int COGL::RenderSprite (CBitmap* bmP, const CFixVector& vPos,
 {
 	CFixVector	pv, v1;
 
-if (gameStates.render.bDepthSort > 0) {
+if (alpha < 1.0f) {
 	tRgbaColorf color;
 	if (!colorP) {
 		color.red =

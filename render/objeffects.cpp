@@ -50,7 +50,7 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	ogl.SetDepthWrite (false);
-	ogl.RenderSprite (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
+	ogl.RenderSprite (bCorona ? bmpCorona : bmpHalo, *vPos, xSize, xSize, &c, alpha * 4.0f / 3.0f, 1, 1);
 	ogl.SetDepthWrite (true);
 	}
 }
@@ -988,7 +988,6 @@ void CreateLightTrail (CFixVector& vPos, CFixVector &vDir, float fSize, float fL
 
 	CFloatVector	v, vPosf, vNormf, vTrail [3], vCorona [4], fVecf;
 	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
-	int		i;
 
 fVecf.Assign (vDir);
 vPosf.Assign (vPos);
@@ -1604,7 +1603,6 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				(!objP->mType.physInfo.velocity.IsZero ()) &&
 				(bAdditive ? LoadGlare () : LoadCorona ())) {
 			CFloatVector	vNormf, vOffsf, vTrailVerts [4];
-			int				i, bStencil, bDrawArrays, bDepthSort = (gameStates.render.bDepthSort > 0);
 			float				h, l, r, dx, dy;
 			CBitmap*			bmP;
 
@@ -1653,57 +1651,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vTrailVerts [1] += vOffsf;
 		vTrailVerts [3] = vTrailVerts [0] - vNormf;
 		vTrailVerts [3] += vOffsf;
-		if (bDepthSort) {
-			nTrailItem = transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
-			}
-		else {
-			ogl.SetBlending (true);
-			if (bAdditive)
-				ogl.SetBlendMode (GL_ONE, GL_ONE);
-			else
-				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glColor4fv (reinterpret_cast<GLfloat*> (&trailColor));
-			bDrawArrays = ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-			bStencil = ogl.StencilOff ();
-			ogl.SetFaceCulling (false);
-			ogl.SetDepthWrite (false);
-			ogl.SetTextureUsage (true);
-			bmP->SetTranspType (-1);
-			if (bmP->Bind (1))
-				return;
-			bmP->Texture ()->Wrap (GL_CLAMP);
-			if (bDrawArrays) {
-				OglTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
-				OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vTrailVerts);
-				OglDrawArrays (GL_QUADS, 0, 4);
-#if 0 // render outline
-				ogl.SetTextureUsage (false);
-				OglDrawArrays (GL_LINE_LOOP, 0, 4);
-#endif
-				ogl.DisableClientStates (1, 0, 0, -1);
-				}
-			else {
-				glBegin (GL_QUADS);
-				for (i = 0; i < 4; i++) {
-					glTexCoord3fv (reinterpret_cast<GLfloat*> (tTexCoordTrail + i));
-					glVertex3fv (reinterpret_cast<GLfloat*> (vTrailVerts + i));
-					}
-				glEnd ();
-			if (bAdditive)
-				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#if 0 // render outline
-				ogl.SetTextureUsage (false);
-				glColor3d (1, 0, 0);
-				glBegin (GL_LINE_LOOP);
-				for (i = 0; i < 4; i++)
-					glVertex3fv (reinterpret_cast<GLfloat*> (vTrailVerts + i));
-				glEnd ();
-#endif
-				}
-			ogl.StencilOn (bStencil);
-			ogl.SetFaceCulling (true);
-			ogl.SetDepthWrite (true);
-			}
+		nTrailItem = transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 		}
 	RenderShockwave (objP);
 	}
