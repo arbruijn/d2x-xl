@@ -1230,7 +1230,7 @@ vertices.Destroy ();
 return vertices.Create (nVerts) != NULL;
 }
 
-bool SizeColor (int nVerts)
+bool COglBuffers::SizeColor (int nVerts)
 {
 if (int (color.Length ()) >= nVerts)
 	return true;
@@ -1238,7 +1238,7 @@ color.Destroy ();
 return color.Create (nVerts) != NULL;
 }
 
-static bool SizeTexCoord (int nVerts)
+bool COglBuffers::SizeTexCoord (int nVerts)
 {
 if (int (texCoord.Length ()) >= nVerts)
 	return true;
@@ -1246,7 +1246,7 @@ texCoord.Destroy ();
 return texCoord.Create (nVerts) != NULL;
 }
 
-static bool SizeBuffers (int nVerts)
+bool COglBuffers::SizeBuffers (int nVerts)
 {
 return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts);
 }
@@ -1254,21 +1254,21 @@ return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts);
 
 //------------------------------------------------------------------------------
 
-void COglBuffers::Flush (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0)
+void COglBuffers::Flush (GLenum nPrimitive, int nVerts, int bTextured, int bColored)
 {
 if (vertices.Buffer () && nVerts) {
 	if (bTextured && texCoord.Buffer ()) {
 		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
 		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord.Buffer ());
 		}
-	if (bColored && color.Buffer ()) 
+	if (bColored && color.Buffer ()) {
 		ogl.EnableClientState (GL_COLOR_ARRAY);
 		OglColorPointer (4, GL_FLOAT, 0, color.Buffer ());
 		}
 	ogl.EnableClientState (GL_VERTEX_ARRAY);
 	OglVertexPointer (3, GL_FLOAT, 0, vertices.Buffer ());
 	OglDrawArrays (nPrimitive, 0, nVerts);
-	ogl.DisableClientState (GL_VERTEX_ARRAY);
+	ogl.DisableClientStates (bTextured, bColored, 0);
 	}
 }
 

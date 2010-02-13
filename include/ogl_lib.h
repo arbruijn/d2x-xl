@@ -211,8 +211,8 @@ class COglBuffers {
 	public:
 		bool SizeVertices (int nVerts);
 		bool SizeColor (int nVerts);
-		static bool SizeTexCoord (int nVerts);
-		static bool SizeBuffers (int nVerts);
+		bool SizeTexCoord (int nVerts);
+		bool SizeBuffers (int nVerts);
 		void Flush (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0);
 	};
 
