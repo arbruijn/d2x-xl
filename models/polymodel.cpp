@@ -793,7 +793,7 @@ for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
 		if (objP->rType.polyObjInfo.nModel == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
-		if (DrawPolygonObject (objP, 1, 0))
+		if (DrawPolygonObject (objP, 0))
 			h++;
 		}
 	}
@@ -832,7 +832,7 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 			nDbgModel = nDbgModel;
 #endif
 		PrintLog ("      building model %d (%s)\n", o.rType.polyObjInfo.nModel, pszHires ? pszHires : "n/a");
-		if (DrawPolygonObject (&o, 1, 0))
+		if (DrawPolygonObject (&o, 0))
 			h++;
 		}
 	if (o.info.nType == OBJ_HOSTAGE)
