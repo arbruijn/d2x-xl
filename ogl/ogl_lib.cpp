@@ -310,13 +310,14 @@ void COglData::Initialize (void)
 {
 palette = NULL;
 bUseTextures = false;
-SelectTMU (GL_TEXTURE3);
+nTMU [0] = 0;
+glActiveTexture (GL_TEXTURE3);
 glBindTexture (GL_TEXTURE_2D, nTexture [3] = 0);
-SelectTMU (GL_TEXTURE2);
+glActiveTexture (GL_TEXTURE2);
 glBindTexture (GL_TEXTURE_2D, nTexture [2] = 0);
-SelectTMU (GL_TEXTURE1);
+glActiveTexture (GL_TEXTURE1);
 glBindTexture (GL_TEXTURE_2D, nTexture [1] = 0);
-SelectTMU (GL_TEXTURE0);
+glActiveTexture (GL_TEXTURE0);
 glBindTexture (GL_TEXTURE_2D, nTexture [0] = 0);
 bUseBlending = true;
 glEnable (GL_BLEND);

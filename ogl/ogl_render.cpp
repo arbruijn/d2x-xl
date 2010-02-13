@@ -1042,7 +1042,7 @@ int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							   CBitmap *bmP,
 							  int nTMU)
 {
-if (!ogl.EnableClientStates (m_states.bClientTexCoord = (bmP && texCoordP), m_states.bClientColor = (colorP && (nColors == nVertices)), 0, nTMU))
+if (!ogl.EnableClientStates (m_data.bClientTexCoord = (bmP && texCoordP), m_data.bClientColor = (colorP && (nColors == nVertices)), 0, nTMU))
 	return 0;
 if (texCoordP)
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
@@ -1060,7 +1060,7 @@ return 1;
 
 void COGL::ReleaseBuffers (void)
 {
-ogl.DisableClientStates (m_states.bClientTexCoord, m_states.bClientColor, 0);
+ogl.DisableClientStates (m_data.bClientTexCoord, m_data.bClientColor, 0);
 }
 
 //------------------------------------------------------------------------------
