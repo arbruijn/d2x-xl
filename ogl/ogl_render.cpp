@@ -1133,17 +1133,15 @@ if (nDimensions == 3)
  verts [3][Z] = vPosf [Z];
 int nColors;
 tRgbaColorf* colorP = bmP->GetColor (&nColors);
-return RenderQuad (bmP, verts, nDimensions, bmP->GetTexCoord (), colorP, nColors, 0, nWrap);
+return RenderQuad (bmP, verts, nDimensions, bmP->GetTexCoord (), colorP, nColors, nWrap);
 }
 
 //------------------------------------------------------------------------------
 
 int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive)
 {
-	CFloatVector	verts [4];
 	CFloatVector	vPosf;
 	tRgbaColorf		color = {1, 1, 1, 1};
-	GLfloat			h, w, u, v;
 
 SelectTMU (GL_TEXTURE0);
 SetBlendMode (bAdditive);
@@ -1152,7 +1150,7 @@ transformation.Transform (vPosf, vPosf, 0);
 if (gameStates.render.nShadowBlurPass == 1)
 	RenderQuad (NULL, vPosf, X2F (xWidth), X2F (xHeight), 2);
 else {
-	bmP->SetColor (colorP);
+	bmP->SetColor (colorP ? colorP : &color);
 	RenderQuad (bmP, vPosf, X2F (xWidth), X2F (xHeight));
 	}
 SetBlendMode (0);
