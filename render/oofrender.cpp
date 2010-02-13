@@ -184,11 +184,35 @@ if (bSingleStencil || bShadowTest)
 
 //------------------------------------------------------------------------------
 
+static CArray<CFloatVector>	vertexBuffer;
+
+static bool SizeVertexBuffer (int nVerts)
+{
+if (int (vertexBuffer.Length ()) >= nVerts * 4)
+	return true;
+vertexBuffer.Destroy ();
+return vertexBuffer.Create (nVerts * 4) != NULL;
+}
+
+//------------------------------------------------------------------------------
+
+static void FlushVertexBuffer (GLenum nPrimitive, int nVerts)
+{
+if (vertexBuffer.Buffer () && nVerts) {
+	ogl.EnableClientState (GL_VERTEX_ARRAY);
+	OglVertexPointer (3, GL_FLOAT, 0, vertexBuffer.Buffer ());
+	OglDrawArrays (nPrimitive, 0, nVerts);
+	ogl.DisableClientState (GL_VERTEX_ARRAY);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int bCullFront)
 {
-	CEdge		*pe;
-	CFloatVector	*pv, v [4];
-	int				i, j;
+	CEdge*					pe;
+	CFloatVector*			pv;
+	int						nVerts, nEdges;
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
@@ -205,59 +229,57 @@ if (bShadowTest < 2)
 	glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
 #endif
 OOF_SetCullAndStencil (bCullFront);
-pv = pso->m_rotVerts.Buffer ();
+
 #if DBG_SHADOWS
-if (bShadowTest < 2)
-	glBegin (GL_QUADS);
-else
-	glBegin (GL_LINES);
+if (bShadowTest == 1)
+	glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
+else if (bShadowTest > 1)
+	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
-for (i = pso->m_edges.m_nContourEdges, pe = pso->m_edges.m_list.Buffer (); i; pe++)
+
+nEdges = pso->m_edges.m_nContourEdges;
+if (!SizeVertexBuffer (nEdges))
+	return 1;
+pv = pso->m_rotVerts.Buffer ();
+for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 	if (pe->m_bContour) {
-		i--;
+		nEdges--;
 #if DBG_SHADOWS
 		if (bShadowTest < 2) {
-			if (bShadowTest)
-				glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
 #endif
-			j = (pe->m_faces [1] && pe->m_faces [1]->m_bFacingLight);
-			if (pe->m_faces [j]->m_bReverse)
-				j = !j;
-			v [0] = pv [pe->m_v1 [j]];
-			v [3] = v [0] - vrLightPos;
-			v [1] = pv [pe->m_v0 [j]];
-			v [2] = v [1] - vrLightPos;
+			int h = (pe->m_faces [1] && pe->m_faces [1]->m_bFacingLight);
+			if (pe->m_faces [h]->m_bReverse)
+				h = !h;
+			vertexBuffer [nVerts] = pv [pe->m_v1 [h]];
+			vertexBuffer [nVerts + 1] = pv [pe->m_v0 [h]];
+			vertexBuffer [nVerts + 2] = vertexBuffer [1] - vrLightPos;
+			vertexBuffer [nVerts + 3] = vertexBuffer [0] - vrLightPos;
 #if NORM_INF
-			v [2] *= G3_INFINITY / v [2].Mag ();
-			v [3] *= G3_INFINITY / v [3].Mag ();
+			vertexBuffer [nVerts + 2] *= G3_INFINITY / vertexBuffer [nVerts + 2].Mag ();
+			vertexBuffer [nVerts + 3] *= G3_INFINITY / vertexBuffer [nVerts + 3].Mag ();
 #else
-			v [2] *= G3_INFINITY;
-			v [3] *= G3_INFINITY;
+			vertexBuffer [nVerts + 2] *= G3_INFINITY;
+			vertexBuffer [nVerts + 3] *= G3_INFINITY;
 #endif
-			v [2] += v [1];
-			v [3] += v [0];
-#if !DBG
-			ogl.EnableClientState (GL_VERTEX_ARRAY);
-			OglVertexPointer (3, GL_FLOAT, 0, v);
-			OglDrawArrays (GL_QUADS, 0, 4);
-			ogl.DisableClientState (GL_VERTEX_ARRAY);
-#else
-			glVertex3fv (reinterpret_cast<GLfloat*> (v));
-			glVertex3fv (reinterpret_cast<GLfloat*> (v+1));
-			glVertex3fv (reinterpret_cast<GLfloat*> (v+2));
-			glVertex3fv (reinterpret_cast<GLfloat*> (v+3));
-#endif
+			vertexBuffer [nVerts + 2] += vertexBuffer [nVerts + 1];
+			vertexBuffer [nVerts + 3] += vertexBuffer [nVerts];
+			nVerts += 4;
 #if DBG_SHADOWS
 			}
 		else {
-			glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-			glVertex3fv (reinterpret_cast<GLfloat*> (pv + pe->m_v0 [0]));
-			glVertex3fv (reinterpret_cast<GLfloat*> (pv + pe->m_v1 [0]));
+			vertexBuffer [nVerts++] = pv [pe->m_v0 [0]];
+			vertexBuffer [nVerts++] = pv [pe->m_v1 [0]];
 			}
 #endif
 		}
+	}
+OglVertexPointer (3, GL_FLOAT, 0, vertexBuffer.Buffer ());
 #if DBG_SHADOWS
-glEnd ();
+FlushVertexBuffer ((bShadowTest < 2) ? GL_QUADS : GL_LINES, nVerts);
+#else
+FlushVertexBuffer (GL_QUADS, nVerts);
+#endif
+#if DBG_SHADOWS
 ogl.SetFaceCulling (true);
 #endif
 return 1;
@@ -267,10 +289,10 @@ return 1;
 
 int OOF_DrawShadowCaps (CModel *po, CSubModel *pso, int bCullFront)
 {
-	CFace		*pf;
-	CFaceVert	*pfv;
-	CFloatVector		*pv, v0, v1;
-	int				i, j;
+	CFace*			pf;
+	CFaceVert*		pfv;
+	CFloatVector*	pv, v0, v1;
+	int				nVerts, i, j, bReverse;
 
 #if DBG_SHADOWS
 if (bZPass)
@@ -281,47 +303,58 @@ glColor4fv (reinterpret_cast<GLfloat*> (modelColor));
 #endif
 pv = pso->m_rotVerts.Buffer ();
 OOF_SetCullAndStencil (bCullFront);
+
+nVerts = 0;
+for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++)
+	nVerts += pf->m_nVerts;
+
+if (!SizeVertexBuffer (nVerts))
+	return 1;
+
 if (bCullFront) {
 #if DBG_SHADOWS
 	if (!bRearCap)
 		return 1;
 #endif
-	for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
-		if (pf->m_bReverse)
+	for (bReverse = 0; bReverse <= 1; bReverse++) {
+		nVerts = 0;
+		if (bReverse)
 			glFrontFace (GL_CCW);
-		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++) {
-			v0 = pv [pfv->m_nIndex];
-			v1 = v0 - vrLightPos;
-#	if NORM_INF
-			v1 *= G3_INFINITY / v1.Mag ();
-#	else
-			v1 *= G3_INFINITY;
-#	endif
-			v1 += v0;
-			glVertex3fv (reinterpret_cast<GLfloat*> (&v1));
+		for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
+			if (pf->m_bReverse == bReverse) {
+				for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++) {
+					v0 = pv [pfv->m_nIndex];
+					v1 = v0 - vrLightPos;
+#if NORM_INF
+					v1 *= G3_INFINITY / v1.Mag ();
+#else
+					v1 *= G3_INFINITY;
+#endif
+					vertexBuffer [nVerts++] = v0 + v1;
+					glVertex3fv (reinterpret_cast<GLfloat*> (&v1));
+					}
+				}
 			}
-		glEnd ();
-		if (pf->m_bReverse)
+		FlushVertexBuffer (GL_TRIANGLE_FAN, nVerts);
+		if (bReverse)
 			glFrontFace (GL_CW);
 		}
-#if 1
 	}
 else {
-#endif
 #if DBG_SHADOWS
 	if (!bFrontCap)
 		return 1;
 #endif
-	for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
-		if (pf->m_bReverse)
-			glFrontFace (GL_CCW);
-		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++) {
-			glVertex3fv (reinterpret_cast<GLfloat*> (pv + pfv->m_nIndex));
+	for (bReverse = 0; bReverse <= 1; bReverse++) {
+		nVerts = 0;
+		for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
+			if (pf->m_bReverse == bReverse) {
+				for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++)
+					vertexBuffer [nVerts++] = pv [pfv->m_nIndex];
+				}
 			}
-		glEnd ();
-		if (pf->m_bReverse)
+		FlushVertexBuffer (GL_TRIANGLE_FAN, nVerts);
+		if (bReverse)
 			glFrontFace (GL_CW);
 		}
 	}

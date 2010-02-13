@@ -1193,7 +1193,6 @@ ogl.SetDepthWrite (true);
 ogl.SetFaceCulling (false);
 ogl.SetBlendMode (GL_ONE, GL_ONE);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
-#if 1
 if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 	OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
@@ -1202,7 +1201,6 @@ if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 else
-#endif
 if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	int i;
 	if (item->bTrail) {

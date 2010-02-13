@@ -1729,12 +1729,7 @@ if (InitBuffer (bLightmaps)) {
 			glareRenderer.LoadShader (10, bBufferEmissive);
 		else {
 			shaderManager.Deploy (-1);
-#if 1
-			if (bBufferEmissive)
-				ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			else
-				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
+			ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
 			}
 		}
 	glNormal3f (0, 0, 0);
