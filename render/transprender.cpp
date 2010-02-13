@@ -1114,21 +1114,19 @@ sparkBuffer.nSparks++;
 
 void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 {
-	int bDepthSort = gameStates.render.bDepthSort;
-
-gameStates.render.bDepthSort = -1;
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
+gameStates.render.bDepthSort = -1;
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
+gameStates.render.bDepthSort = 1;
 ResetBitmaps ();
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-gameStates.render.bDepthSort = bDepthSort;
 }
 
 //------------------------------------------------------------------------------
@@ -1188,7 +1186,9 @@ if (m_data.nPrevType != m_data.nCurType) {
 	ResetBitmaps ();
 	shaderManager.Deploy (-1);
 	}
+gameStates.render.bDepthSort = -1;
 item->lightning->Render (item->nDepth, 0, 0);
+gameStates.render.bDepthSort = 1;
 ogl.ResetClientStates ();
 ResetBitmaps ();
 }
@@ -1339,7 +1339,7 @@ void CTransparencyRenderer::Render (void)
 	struct tTranspItem	**pd, *pl, *pn;
 	int						nItems, nDepth, bStencil;
 
-if (!(gameStates.render.bDepthSort && m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
+if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
 PROF_START

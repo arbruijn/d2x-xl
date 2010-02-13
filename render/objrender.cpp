@@ -395,7 +395,7 @@ if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
 	//the actual shield in the sprite texture has 3/4 of the textures size
 	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4);
 	}
-else if ((gameStates.render.bDepthSort > 0) && (fAlpha < 1)) {
+else if (fAlpha < 1) {
 	if (bAdditive) {
 #if 1
 		color.red =
@@ -628,7 +628,7 @@ return 1;
 //draw an CObject which renders as a polygon model
 #define MAX_MODEL_TEXTURES 63
 
-int DrawPolygonObject (CObject *objP, int bDepthSort, int bForce)
+int DrawPolygonObject (CObject *objP, int bForce)
 {
 	fix	xLight;
 	int	imSave = 0;
@@ -654,14 +654,13 @@ if (gameStates.render.bBuildModels)
 	xLight = I2X (1);
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
-	if ((bCloaked || bEnergyWeapon) && bDepthSort && (gameStates.render.nShadowPass != 2)) {
+	if ((bCloaked || bEnergyWeapon) && (gameStates.render.nShadowPass != 2)) {
 		transparencyRenderer.AddObject (objP);
 		return 1;
 		}
 	if (DrawHiresObject (objP, xLight, xEngineGlow))
 		return 1;
 	gameStates.render.bBrightObject = bEnergyWeapon;
-	gameStates.render.bDepthSort = -gameStates.render.bDepthSort;
 	imSave = gameStates.render.nInterpolationMethod;
 	if (bLinearTMapPolyObjs)
 		gameStates.render.nInterpolationMethod = 1;
@@ -680,7 +679,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 		bmiP [i] = bm;
 	bOk = DrawPolyModel (objP, &objP->info.position.vPos,
 								&objP->info.position.mOrient,
-								reinterpret_cast<CAngleVector*> ( &objP->rType.polyObjInfo.animAngles),
+								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
 								objP->rType.polyObjInfo.nModel,
 								objP->rType.polyObjInfo.nSubObjFlags,
 								xLight,
@@ -754,14 +753,13 @@ else {
 if (!gameStates.render.bBuildModels) {
 	gameStates.render.nInterpolationMethod = imSave;
 	gameStates.render.bBrightObject = 0;
-	gameStates.render.bDepthSort = -gameStates.render.bDepthSort;
 	}
 return bOk;
 }
 
 // -----------------------------------------------------------------------------
 
-static int RenderPlayerModel (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderPlayerModel (CObject* objP, int bSpectate)
 {
 int bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
 if (automap.Display () && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
@@ -772,7 +770,7 @@ if (bSpectate) {
 	objP->info.position = gameStates.app.playerPos;
 	}
 //DoObjectSmoke (objP);
-DrawPolygonObject (objP, bDepthSort, 0);
+DrawPolygonObject (objP, 0);
 gameOpts->ogl.bLightObjects = bDynObjLight;
 if (!gameStates.render.bQueryCoronas) {
 	RenderThrusterFlames (objP);
@@ -787,7 +785,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderRobotModel (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderRobotModel (CObject* objP, int bSpectate)
 {
 if (gameStates.render.nType != 1)
 	return 0;
@@ -799,7 +797,7 @@ if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 #if !RENDER_HITBOX
-DrawPolygonObject (objP, bDepthSort, 0);
+DrawPolygonObject (objP, 0);
 #endif
 if (!gameStates.render.bQueryCoronas && objP->info.controlType) {
 	RenderThrusterFlames (objP);
@@ -814,11 +812,11 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderReactorModel (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderReactorModel (CObject* objP, int bSpectate)
 {
 if (gameStates.render.nType != 1)
 	return 0;
-DrawPolygonObject (objP, bDepthSort, 0);
+DrawPolygonObject (objP, 0);
 if (!gameStates.render.bQueryCoronas && (gameStates.render.nShadowPass != 2)) {
 	RenderRobotShield (objP);
 	RenderTargetIndicator (objP, NULL);
@@ -828,7 +826,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderWeaponModel (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderWeaponModel (CObject* objP, int bSpectate)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
@@ -848,7 +846,7 @@ else {
 				}
 			}
 		//DoObjectSmoke (objP);
-		DrawPolygonObject (objP, bDepthSort, 0);
+		DrawPolygonObject (objP, 0);
 #if RENDER_HITBOX
 #	if 0
 		DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
@@ -868,7 +866,7 @@ else {
 #	endif
 #endif
 		if (objP->info.nType != OBJ_WEAPON) {
-			DrawPolygonObject (objP, bDepthSort, 0);
+			DrawPolygonObject (objP, 0);
 			if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
 				RenderLightTrail (objP);
 			}
@@ -880,14 +878,14 @@ else {
 					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (2));
 					CFixVector vSavedPos = objP->info.position.vPos;
 					objP->info.position.vPos += objP->info.position.mOrient.FVec ();
-					DrawPolygonObject (objP, bDepthSort, 0);
+					DrawPolygonObject (objP, 0);
 					objP->info.position.vPos = vSavedPos;
 					}
 				}
 			else {
 				if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
 					RenderLightTrail (objP);
-				DrawPolygonObject (objP, bDepthSort, 0);
+				DrawPolygonObject (objP, 0);
 				}
 			gameData.models.vScale.SetZero ();
 			}
@@ -898,13 +896,13 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPowerupModel (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderPowerupModel (CObject* objP, int bSpectate)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
-	if (!DrawPolygonObject (objP, bDepthSort, 0))
+	if (!DrawPolygonObject (objP, 0))
 		ConvertWeaponToPowerup (objP);
 	else {
 		objP->mType.physInfo.mass = I2X (1);
@@ -926,9 +924,9 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderHostageModel (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderHostageModel (CObject* objP, int bSpectate)
 {
-if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, bDepthSort, 0)))
+if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, 0)))
 	ConvertModelToHostage (objP);
 #if DBG
 RenderRobotShield (objP);
@@ -938,9 +936,9 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPolyModel (CObject* objP, int bDepthSort, int bSpectate)
+static int RenderPolyModel (CObject* objP, int bSpectate)
 {
-DrawPolygonObject (objP, bDepthSort, 0);
+DrawPolygonObject (objP, 0);
 DrawDebrisCorona (objP);
 if (IsSpawnMarkerObject (objP))
 	RenderMslLockIndicator (objP);
@@ -1014,12 +1012,12 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderHostage (CObject* objP, int bDepthSort, int bForce)
+static int RenderHostage (CObject* objP, int bForce)
 {
 if (gameStates.render.nType != 1)
 	return 0;
 if (ConvertHostageToModel (objP))
-	DrawPolygonObject (objP, bDepthSort, 0);
+	DrawPolygonObject (objP, 0);
 else if (gameStates.render.nShadowPass != 2)
 	DrawHostage (objP);
 return 1;
@@ -1027,7 +1025,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPowerup (CObject* objP, int bDepthSort, int bForce)
+static int RenderPowerup (CObject* objP, int bForce)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
@@ -1035,7 +1033,7 @@ if (gameStates.render.nType != 1)
 	return 0;
 if (objP->PowerupToDevice ()) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
-	DrawPolygonObject (objP, bDepthSort, 0);
+	DrawPolygonObject (objP, 0);
 	}
 else if (gameStates.render.nShadowPass != 2)
 	DrawPowerup (objP);
@@ -1061,7 +1059,7 @@ return 1;
 int RenderObject (CObject *objP, int nWindow, int bForce)
 {
 	short			nObject = objP->Index ();
-	int			bSpectate = 0, bDepthSort = (gameStates.render.bDepthSort > 0);
+	int			bSpectate = 0;
 
 int nType = objP->info.nType;
 if (nType == 255) {
@@ -1131,31 +1129,31 @@ switch (objP->info.renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (nType == OBJ_PLAYER) {
-			if (!RenderPlayerModel (objP, bDepthSort, bSpectate))
+			if (!RenderPlayerModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_ROBOT) {
-			if (!RenderRobotModel (objP, bDepthSort, bSpectate))
+			if (!RenderRobotModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_WEAPON) {
-			if (!RenderWeaponModel (objP, bDepthSort, bSpectate))
+			if (!RenderWeaponModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_REACTOR) {
-			if (!RenderReactorModel (objP, bDepthSort, bSpectate))
+			if (!RenderReactorModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_POWERUP) {
-			if (!RenderPowerupModel (objP, bDepthSort, bSpectate))
+			if (!RenderPowerupModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_HOSTAGE) {
-			if (!RenderHostageModel (objP, bDepthSort, bSpectate))
+			if (!RenderHostageModel (objP, bSpectate))
 				return 0;
 			}
 		else {
-			if (!RenderPolyModel (objP, bDepthSort, bSpectate))
+			if (!RenderPolyModel (objP, bSpectate))
 				return 0;
 			}
 		break;
@@ -1194,12 +1192,12 @@ switch (objP->info.renderType) {
 		break;
 
 	case RT_HOSTAGE:
-		if (!RenderHostage (objP, bDepthSort, bForce))
+		if (!RenderHostage (objP, bForce))
 			return 0;
 		break;
 
 	case RT_POWERUP:
-		if (!RenderPowerup (objP, bDepthSort, bForce))
+		if (!RenderPowerup (objP, bForce))
 			return 0;
 		break;
 

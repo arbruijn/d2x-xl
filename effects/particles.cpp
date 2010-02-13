@@ -682,49 +682,14 @@ if (m_nType == LIGHT_PARTICLES)
 #endif
 if (!(bmP = bmpParticle [0][m_nType]))
 	return 0;
-#if 0
-if (bmP->CurFrame ())
-	bmP = bmP->CurFrame ();
-#endif
-if (gameStates.render.bDepthSort > 0) {
-	hp = m_vTransPos;
-	if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
-		bFlushed = particleManager.FlushBuffer (brightness);
-		particleManager.SetLastType (m_nType);
-		bBufferEmissive = m_bEmissive;
-		nFrames = nParticleFrames [0][m_nType];
-		deltaUV = 1.0f / (float) nFrames;
-#if 0
-		ogl.SelectTMU (GL_TEXTURE0, true);
-		if (bmP->Bind (0))
-			return 0;
-		if (m_bEmissive)
-			//ogl.SetBlendMode (GL_ONE, GL_ONE);
-			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		else
-			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
-		}
+hp = m_vTransPos;
+if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
+	bFlushed = particleManager.FlushBuffer (brightness);
+	particleManager.SetLastType (m_nType);
+	bBufferEmissive = m_bEmissive;
+	nFrames = nParticleFrames [0][m_nType];
+	deltaUV = 1.0f / (float) nFrames;
 	}
-else if (gameOpts->render.particles.bSort) {
-	hp = m_vTransPos;
-	if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness)) {
-		particleManager.FlushBuffer (brightness);
-		particleManager.SetLastType (m_nType);
-		nFrames = nParticleFrames [0][m_nType];
-		deltaUV = 1.0f / (float) nFrames;
-#if 0
-		if (bmP->Bind (0))
-			return 0;
-		if (m_bEmissive)
-			ogl.SetBlendMode (GL_ONE, GL_ONE);
-		else
-			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
-		}
-	}
-else
-	transformation.Transform (hp, m_vPos, 0);
 if (m_bBright)
 	brightness = (float) sqrt (brightness);
 if (m_nType == SMOKE_PARTICLES) {
@@ -916,8 +881,6 @@ if (particleManager.Animate ()) {
 	if (!(m_nType || (m_nFrame & 1)))
 		m_nRotFrame = (m_nRotFrame + 1) % 64;
 	}
-if (gameStates.render.bDepthSort > 0)
-	glEnd ();
 return bFlushed ? -1 : 1;
 }
 
@@ -1196,7 +1159,7 @@ int CParticleEmitter::Render (int nThread)
 if (!m_particles)
 	return 0;
 #if MT_PARTICLES
-if (((gameStates.render.bDepthSort > 0) && (nThread < 0)) && RunEmitterThread (emitterP, 0, rtRenderParticles)) {
+if (((nThread < 0)) && RunEmitterThread (emitterP, 0, rtRenderParticles)) {
 	return 0;
 	}
 else
@@ -1779,7 +1742,6 @@ if (InitBuffer (bLightmaps)) {
 	}
 else {
 	tParticleVertex *pb;
-	glEnd ();
 	glNormal3f (0, 0, 0);
 	glBegin (GL_QUADS);
 	for (pb = particleBuffer; m_iBuffer; m_iBuffer--, pb++) {
@@ -1813,6 +1775,7 @@ int CParticleManager::BeginRender (int nType, float nScale)
 	int			bLightmaps = lightmapManager.HaveLightmaps ();
 	static time_t	t0 = 0;
 
+#if 0
 if (gameStates.render.bDepthSort <= 0) {
 	nType = (nType % PARTICLE_TYPES);
 	if ((nType >= 0) && !gameOpts->render.particles.bSort)
@@ -1831,6 +1794,7 @@ if (gameStates.render.bDepthSort <= 0) {
 	ogl.SetDepthWrite (false);
 	m_iBuffer = 0;
 	}
+#endif
 particleManager.SetLastType (-1);
 if (gameStates.app.nSDLTicks - t0 < 33)
 	particleManager.m_bAnimate = 0;
@@ -1845,15 +1809,16 @@ return 1;
 
 int CParticleManager::EndRender (void)
 {
+#if 0
 if (gameStates.render.bDepthSort <= 0) {
-	if (!CloseBuffer ())
-		glEnd ();
+	CloseBuffer ();
 	OglBindTexture (0);
 	ogl.SetTextureUsage (false);
 	ogl.SetDepthWrite (true);
 	ogl.StencilOn (particleManager.Stencil ());
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
+#endif
 return 1;
 }
 

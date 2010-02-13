@@ -72,7 +72,6 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 	tRgbaColorf color;
 	fix			xSize;
 	float			fScale;
-	int			bDepthSort;
 	CBitmap		*bmP = bAdditive ? bmpGlare : bmpCorona;
 
 
@@ -96,10 +95,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		color.green *= fScale;
 		color.blue *= fScale;
 		}
-	bDepthSort = gameStates.render.bDepthSort;
-	gameStates.render.bDepthSort = -1;
 	ogl.RenderSprite (bmP, objP->info.position.vPos, xSize, xSize, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
-	gameStates.render.bDepthSort = bDepthSort;
 	}
 }
 
@@ -1311,7 +1307,6 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 
 	CFixVector	vPos = objP->info.position.vPos;
 	xSize = (fix) (WeaponBlobSize (objP->info.nId) * F2X (fScale));
-	bDepthSort = bDepthSort && bSimple;
 	if (xOffset) {
 		if (bViewerOffset) {
 			CFixVector o = gameData.render.mine.viewerEye - vPos;
@@ -1333,7 +1328,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.green *= color.green;
 	color.blue *= color.blue;
 #endif
-	if (bDepthSort)
+	if (bDepthSort && bSimple)
 		return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
 	bStencil = ogl.StencilOff ();
 	ogl.SetDepthWrite (false);

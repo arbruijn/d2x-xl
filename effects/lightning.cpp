@@ -1128,11 +1128,11 @@ ogl.ClearError (0);
 
 //------------------------------------------------------------------------------
 
-void CLightning::Render (int nDepth, int bDepthSort, int nThread)
+void CLightning::Render (int nDepth, int nThread)
 {
 	int				i;
 
-if ((bDepthSort > 0) && (gameStates.render.nType != 5)) {	// not in transparency renderer
+if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// not in transparency renderer
 	if ((m_nNodes < 0) || (m_nSteps < 0))
 		return;
 	if (!MayBeVisible ())
@@ -1434,7 +1434,7 @@ Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0);
 
 //------------------------------------------------------------------------------
 
-void CLightningSystem::Render (int nStart, int nBolts, int bDepthSort, int nThread)
+void CLightningSystem::Render (int nStart, int nBolts, int nThread)
 {
 if (m_bValid < 1)
 	return;
@@ -1460,7 +1460,7 @@ if (nBolts < 0)
 	{
 	#pragma omp for
 	for (int i = 0; i < nBolts; i++)
-		lightningP [i].Render (0, bDepthSort, nThread);
+		lightningP [i].Render (0, nThread);
 	}
 }
 
@@ -1801,7 +1801,7 @@ if (SHOW_LIGHTNING) {
 	int nCurrent = -1;
 	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
 		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
-			systemP->Render (0, systemP->m_nBolts, gameStates.render.bDepthSort > 0, 0);
+			systemP->Render (0, systemP->m_nBolts, 0);
 	ogl.StencilOn (bStencil);
 	}
 }

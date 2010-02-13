@@ -1283,16 +1283,10 @@ if (HaveDrawBuffer ()) {
 		ogl.SetBlending (true);
 		SetBlendMode (GL_ONE, GL_ONE);
 		}
-	glBegin (GL_QUADS);
-	glTexCoord2f (0, 0);
-	glVertex2f (0, 0);
-	glTexCoord2f (0, 1);
-	glVertex2f (0, 1);
-	glTexCoord2f (1, 1);
-	glVertex2f (1, 1);
-	glTexCoord2f (1, 0);
-	glVertex2f (1, 0);
-	glEnd ();
+
+	static CFloatVector verts [4] = {{0,0,0,1},{0,1,0,1},{1,1,0,1},{1,0,0,1}};
+	static tTexCoord2f texCoord [4] = {{0,0},{1,0},{1,1},{0,1}};
+	ogl.RenderQuad (NULL, verts, texCoord);
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)

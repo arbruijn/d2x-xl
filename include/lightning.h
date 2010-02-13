@@ -108,7 +108,7 @@ class CLightning : public tLightning {
 		void Animate (int nDepth);
 		int Update (int nDepth);
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
-		void Render (int nDepth, int bDepthSort, int nThread);
+		void Render (int nDepth, int nThread);
 		int SetLight (void);
 		inline int MayBeVisible (void);
 		CLightning& operator= (CLightning& source) { 
@@ -154,7 +154,7 @@ class CLightningSystem : public tLightningSystem {
 						 char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
 		void Destroy (void);
 		void Animate (int nStart, int nBolts);
-		void Render (int nStart, int nBolts, int bDepthSort, int nThread);
+		void Render (int nStart, int nBolts, int nThread);
 		int Update (void);
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		void Mute (void);
@@ -213,7 +213,7 @@ class CLightningManager : public tLightningData {
 		void Move (int i, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		void Mute (void);
 		void MoveForObject (CObject *objP);
-		void Render (tLightning *pl, int nBolts, short nDepth, int bDepthSort);
+		void Render (tLightning *pl, int nBolts, short nDepth);
 		void RenderBuffered (tLightning *plRoot, int nStart, int nBolts, int nDepth, int nThread);
 		void RenderSystem (void);
 		void RenderForDamage (CObject *objP, g3sPoint **pointList, RenderModel::CVertex *pVerts, int nVertices);

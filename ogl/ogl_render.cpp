@@ -383,38 +383,11 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 if (color->alpha < 0)
 	color->alpha = gameStates.render.grAlpha;
-#if 1
-if (gameStates.render.bDepthSort > 0) {
-	CFloatVector	vertices [8];
+CFloatVector	vertices [8];
 
-	for (i = 0; i < nVertices; i++)
-		vertices [i] = gameData.render.vertP [pointList [i]->p3_index];
-	transparencyRenderer.AddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
-	}
-else
-#endif
- {
-	r_polyc++;
-	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
-#if OGL_QUERY
-	if (gameStates.render.bQueryOcclusion)
-		ogl.SetDepthMode (GL_LESS);
-	else
-#endif
-	if (!bDepthMask)
-		ogl.SetDepthWrite (false);
-	ogl.SetDepthMode (GL_LEQUAL);
-	ogl.SetBlending (true);
-	ogl.SetTextureUsage (false);
-	glColor4fv (reinterpret_cast<GLfloat*> (color));
-	glBegin (GL_TRIANGLE_FAN);
-	for (i = 0; i < nVertices; i++)
-		OglVertex3f (*pointList++);
-	glEnd ();
-	ogl.SetDepthMode (depthFunc);
-	if (!bDepthMask)
-		ogl.SetDepthWrite (true);
-	}
+for (i = 0; i < nVertices; i++)
+	vertices [i] = gameData.render.vertP [pointList [i]->p3_index];
+transparencyRenderer.AddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 return 0;
 }
 
@@ -550,7 +523,7 @@ else {
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 bmBot = bmBot->Override (-1);
-bDepthSort = (!bmTop && (gameStates.render.bDepthSort > 0) &&
+bDepthSort = (!bmTop && 
 				  ((gameStates.render.grAlpha < 1.0f) ||
 				   (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
 if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
@@ -657,13 +630,9 @@ if (bVertexArrays || bDepthSort) {
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, vertColors + i);
 		}
-#if 1
-	if (gameStates.render.bDepthSort > 0) {
-		bmBot->SetupTexture (1, 0);
-		transparencyRenderer.AddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
-		return 0;
-		}
-#endif
+	bmBot->SetupTexture (1, 0);
+	transparencyRenderer.AddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
+	return 0;
 	}
 #if G3_DRAW_ARRAYS
 if (bVertexArrays) {

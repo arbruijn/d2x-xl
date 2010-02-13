@@ -125,7 +125,7 @@ void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 
 LoadBitmap (bmi.index, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
-	bmP->SetupTexture (1, gameStates.render.bDepthSort <= 0);
+	bmP->SetupTexture (1, 0);
 	bmP = bmP->Override (iFrame);
 	}
 CFixVector delta = objP->info.position.mOrient.UVec () * objP->info.xSize;
