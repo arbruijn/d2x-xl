@@ -76,7 +76,7 @@ OglCanvasColor (colorP);
 CFloatVector vPosf;
 vPosf [X] = (x0 + x1) / 2;
 vPosf [Y] = (y0 + y1) / 2;
-ogl.RenderQuad (NULL, vPosf, vPosf [X], vPosf [Y], 2);
+ogl.RenderQuad (NULL, vPosf, (x1 - x0) / 2, (y1 - y0) / 2, 2);
 //if (colorP->rgb || (gameStates.render.grAlpha < 1.0f))
 //	ogl.SetBlending (false);
 }

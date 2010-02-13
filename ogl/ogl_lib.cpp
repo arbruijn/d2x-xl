@@ -310,8 +310,14 @@ void COglData::Initialize (void)
 {
 palette = NULL;
 bUseTextures = false;
-glBindTexture (GL_TEXTURE_2D, nTexture = 0);
-glDisable (GL_TEXTURE_2D);
+SelectTMU (GL_TEXTURE3);
+glBindTexture (GL_TEXTURE_2D, nTexture [3] = 0);
+SelectTMU (GL_TEXTURE2);
+glBindTexture (GL_TEXTURE_2D, nTexture [2] = 0);
+SelectTMU (GL_TEXTURE1);
+glBindTexture (GL_TEXTURE_2D, nTexture [1] = 0);
+SelectTMU (GL_TEXTURE0);
+glBindTexture (GL_TEXTURE_2D, nTexture [0] = 0);
 bUseBlending = true;
 glEnable (GL_BLEND);
 glBlendFunc (nSrcBlendMode = GL_SRC_ALPHA, nDestBlendMode = GL_ONE_MINUS_SRC_ALPHA);
@@ -1252,7 +1258,7 @@ if (HaveDrawBuffer ()) {
 	SetDrawBuffer (GL_BACK, 0);
 	ogl.SetTextureUsage (true);
 	SelectTMU (GL_TEXTURE0);
-	glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
+	OglBindTexture (DrawBuffer ()->RenderBuffer ());
 
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
@@ -1266,7 +1272,7 @@ if (HaveDrawBuffer ()) {
 				SetDrawBuffer (GL_BACK, 0);
 				ogl.SetTextureUsage (true);
 				SelectTMU (GL_TEXTURE1);
-				glBindTexture (GL_TEXTURE_2D, DrawBuffer ()->RenderBuffer ());
+				OglBindTexture (DrawBuffer ()->RenderBuffer ());
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
@@ -1305,7 +1311,7 @@ ogl.SetTextureUsage (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hBuffer = 0;
-glBindTexture (GL_TEXTURE_2D, hBuffer);
+OglBindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_states.nCurWidth, m_states.nCurHeight,
 				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
@@ -1342,7 +1348,7 @@ ogl.SetTextureUsage (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;
-glBindTexture (GL_TEXTURE_2D, hBuffer);
+OglBindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
 				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);

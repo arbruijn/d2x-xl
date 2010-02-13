@@ -1376,6 +1376,7 @@ OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
 OglBindTexture (0);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
+ogl.SetTextureUsage (false);
 OglBindTexture (0);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);

@@ -80,7 +80,7 @@ if (!hBuffer)
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0 + i, true);
 ogl.SetTextureUsage (true);
-glBindTexture (GL_TEXTURE_2D, hBuffer);
+OglBindTexture (hBuffer);
 // set up texture parameters, turn off filtering
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -201,7 +201,7 @@ memset (m_vld.colors, 0, sizeof (m_vld.colors));
 #if 0
 for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 	ogl.SelectTMU (GL_TEXTURE0 + i, true);
-	glBindTexture (GL_TEXTURE_2D, 0);
+	OglBindTexture (0);
 	}
 #endif
 ogl.DeleteTextures (VL_SHADER_BUFFERS, hBuffer);
@@ -378,7 +378,7 @@ else if (nState == 2) {
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 		ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0 + i);
 		ogl.SelectTMU (GL_TEXTURE0 + i);
-		glBindTexture (GL_TEXTURE_2D, 0);
+		OglBindTexture (0);
 		}
 	ogl.SetDepthWrite (true);
 	ogl.SetDepthTest (true);

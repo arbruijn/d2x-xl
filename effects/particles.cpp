@@ -1680,6 +1680,7 @@ int CParticleManager::InitBuffer (int bLightmaps)
 {
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
+return 0;
 if (bLightmaps) {
 	OglBindTexture (0);
 	ogl.SetTextureUsage (false);
@@ -1734,6 +1735,7 @@ if (InitBuffer (bLightmaps)) {
 		}
 	glNormal3f (0, 0, 0);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
+	glNormal3f (1, 1, 1);
 	}
 else {
 	tParticleVertex *pb;
@@ -1804,8 +1806,8 @@ return 1;
 int CParticleManager::EndRender (void)
 {
 #if 0
+CloseBuffer ();
 if (gameStates.render.bDepthSort <= 0) {
-	CloseBuffer ();
 	OglBindTexture (0);
 	ogl.SetTextureUsage (false);
 	ogl.SetDepthWrite (true);

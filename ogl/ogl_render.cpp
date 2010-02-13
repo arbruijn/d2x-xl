@@ -1052,7 +1052,7 @@ if (colorP) {
 	else
 		glColor4fv (reinterpret_cast<GLfloat*> (colorP));
 	}
-OglVertexPointer (nDimensions, GL_FLOAT, nDimensions * sizeof (float), vertexP);
+OglVertexPointer (nDimensions, GL_FLOAT, sizeof (CFloatVector), vertexP);
 return 1;
 }
 

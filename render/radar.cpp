@@ -100,8 +100,8 @@ else {
 		ogl.VertexBuffer () [3][Y] = y;
 		ogl.VertexBuffer () [4][X] = -x;
 		ogl.VertexBuffer () [4][Y] = y;
-		ogl.VertexBuffer () [4][X] = x;
-		ogl.VertexBuffer () [4][Y] = -y;
+		ogl.VertexBuffer () [5][X] = x;
+		ogl.VertexBuffer () [5][Y] = -y;
 		ogl.FlushBuffers (GL_LINES, 6, 2);
 		}
 	//ogl.SetLineSmooth (false);
@@ -190,9 +190,7 @@ ogl.SetTextureUsage (false);
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTextureUsage (false);
 ogl.SetFaceCulling (false);
-depthFunc = ogl.GetDepthMode ();
-ogl.SetDepthMode (GL_ALWAYS);
-ogl.SetBlending (true);
+ogl.SetDepthTest (false);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetLineSmooth (true);
 glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -222,7 +220,7 @@ FORALL_OBJS (objP, i) {
 	}
 ogl.SetLineSmooth (false);
 glLineWidth (1);
-ogl.SetDepthMode (depthFunc);
+ogl.SetDepthTest (true);
 ogl.SetFaceCulling (true);
 ogl.StencilOn (bStencil);
 }

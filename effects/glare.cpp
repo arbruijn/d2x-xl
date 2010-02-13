@@ -75,7 +75,7 @@ ogl.SetTextureUsage (true);
 if (!ogl.m_states.hDepthBuffer)
 	ogl.m_states.bHaveDepthBuffer = 0;
 if (ogl.m_states.hDepthBuffer || (ogl.m_states.hDepthBuffer = ogl.CreateDepthTexture (-1, 0))) {
-	glBindTexture (GL_TEXTURE_2D, ogl.m_states.hDepthBuffer);
+	OglBindTexture (ogl.m_states.hDepthBuffer);
 	if (!ogl.m_states.bHaveDepthBuffer) {
 #if 0
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, screen.Width (), screen.Height (), 0);
@@ -801,9 +801,9 @@ if (ogl.m_states.bDepthBlending) {
 	//DestroyGlareDepthTexture ();
 	ogl.SetTextureUsage (true);
 	ogl.SelectTMU (GL_TEXTURE1);
-	glBindTexture (GL_TEXTURE_2D, 0);
+	OglBindTexture (0);
 	ogl.SelectTMU (GL_TEXTURE2);
-	glBindTexture (GL_TEXTURE_2D, 0);
+	OglBindTexture (0);
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.SetDepthTest (true);
 	}

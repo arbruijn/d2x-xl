@@ -78,7 +78,7 @@ class COglData {
 		int				bLightmaps;
 		int				nHeadlights;
 		fix				xStereoSeparation;
-		GLuint			nTexture;
+		GLuint			nTexture [4];
 		GLenum			nSrcBlendMode;
 		GLenum			nDestBlendMode;
 		GLenum			nDepthMode;
@@ -409,10 +409,10 @@ class COGL {
 			}
 
 		inline void BindTexture (GLuint handle) { 
-			if (m_data.nTexture != handle)
-				glBindTexture (GL_TEXTURE_2D, m_data.nTexture = handle); 
+			if (m_data.nTexture [m_states.nTMU [0]] != handle)
+				glBindTexture (GL_TEXTURE_2D, m_data.nTexture [m_states.nTMU [0]] = handle); 
 			}
-		inline GLuint BoundTexture (void) { return m_data.nTexture; }
+		inline GLuint BoundTexture (void) { return m_data.nTexture [m_states.nTMU [0]]; }
 
 #if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
