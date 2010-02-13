@@ -683,7 +683,7 @@ if (bVertexArrays) {
 	}
 else
 #endif
- {
+	{
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		if (bOverlay) {

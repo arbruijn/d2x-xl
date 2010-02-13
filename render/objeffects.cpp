@@ -1135,19 +1135,17 @@ else { //3D
 			bmpThruster [1][bPlayer]->Bind (1);
 			}
 		else {
-			for (i = 0; i < THRUSTER_SEGS - 1; i++) {
-				color [0] = color [1];
-				color [1].red *= 0.975f;
-				color [1].green *= 0.8f;
-				color [1].alpha *= fFade [i / 4];
-				glColor4fv (reinterpret_cast<GLfloat*> (color));
-				glBegin (GL_TRIANGLE_STRIP);
-				for (j = 0; j < RING_SEGS; j++) {
-					//transformation.Transform (v, vFlame [0][nStripIdx [j]], 0);
-					//glVertex3fv (reinterpret_cast<GLfloat*> (&v));
-					glVertex3fv (reinterpret_cast<GLfloat*> (&vFlame [0][nStripIdx [j]]));
+			if (ogl.SizeVertexBuffer (RING_SEGS)) {
+				for (i = 0; i < THRUSTER_SEGS - 1; i++) {
+					color [0] = color [1];
+					color [1].red *= 0.975f;
+					color [1].green *= 0.8f;
+					color [1].alpha *= fFade [i / 4];
+					glColor4fv (reinterpret_cast<GLfloat*> (color));
+					for (j = 0; j < RING_SEGS; j++)
+						ogl.VertexBuffer () [j] = vFlame [0][nStripIdx [j]];
+					ogl.FlushBuffers (GL_TRIANGLE_STRIP, RING_SEGS);
 					}
-				glEnd ();
 				}
 			}
 		if (bTextured) {
@@ -1161,33 +1159,35 @@ else { //3D
 			color [1].alpha = 0.9f;
 			}
 #if 1
-		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
-			if (!bTextured) {
-				color [0] = color [1];
-				color [1].red *= 0.975f;
-				color [1].green *= 0.8f;
-				color [1].alpha *= fFade [i / 4];
-				}
-			glBegin (GL_QUAD_STRIP);
-			for (j = 0; j <= RING_SEGS; j++) {
-				k = j % RING_SEGS;
-				tTexCoord2fl.v.u = j * tTexCoord2flStep.v.u;
-				for (l = 0; l < 2; l++) {
-					v = vFlame [i + l][k];
-					v [X] *= ti.fSize;
-					v [Y] *= ti.fSize;
-					v [Z] *= ti.fLength;
-					//transformation.Transform (v, v, 0);
-					if (bTextured) {
-						tTexCoord2fl.v.v = 0.1f + tTexCoord2flStep.v.v * (i + l);
-						glTexCoord2fv (reinterpret_cast<GLfloat*> (&tTexCoord2fl));
-						}
-					else
-						glColor4fv (reinterpret_cast<GLfloat*> (color + l));
-					glVertex3fv (reinterpret_cast<GLfloat*> (&v));
+		if (ogl.SizeBuffers ((THRUSTER_SEGS - 1) * (RING_SEGS + 1) * 2)) {
+			int nVerts = 0;
+			for (i = 0; i < THRUSTER_SEGS - 1; i++) {
+				if (!bTextured) {
+					color [0] = color [1];
+					color [1].red *= 0.975f;
+					color [1].green *= 0.8f;
+					color [1].alpha *= fFade [i / 4];
 					}
+				for (j = 0; j <= RING_SEGS; j++) {
+					k = j % RING_SEGS;
+					tTexCoord2fl.v.u = j * tTexCoord2flStep.v.u;
+					for (l = 0; l < 2; l++) {
+						v = vFlame [i + l][k];
+						v [X] *= ti.fSize;
+						v [Y] *= ti.fSize;
+						v [Z] *= ti.fLength;
+						//transformation.Transform (v, v, 0);
+						if (bTextured) {
+							tTexCoord2fl.v.v = 0.1f + tTexCoord2flStep.v.v * (i + l);
+							ogl.TexCoordBuffer () [nVerts] = tTexCoord2fl;
+							}
+						else
+							ogl.ColorBuffer () [nVerts] = color [l];
+						ogl.VertexBuffer () [nVerts++] = v;
+						}
+					}
+				ogl.FlushBuffers (GL_QUAD_STRIP, nVerts, bTextured, !bTextured);
 				}
-			glEnd ();
 			}
 #endif
 		transformation.End ();
@@ -1379,63 +1379,67 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 			CFloatVector	vPosf;
 			int				h, i, j, k, n;
 			float				r [4], l [4], alpha;
-			tRgbaColorf		*pc = gameData.weapons.color + objP->info.nId;
+			tRgbaColorf		*colorP = gameData.weapons.color + objP->info.nId;
 
-		transformation.Begin (vPos, objP->info.position.mOrient);
-		ogl.SetDepthWrite (false);
-		ogl.SetTextureUsage (false);
-		//OglCullFace (1);
-		ogl.SetFaceCulling (false);
-		r [3] = X2F (objP->info.xSize);
-		if (r [3] >= 3.0f)
-			r [3] /= 1.5f;
-		else if (r [3] < 1)
-			r [3] *= 2;
-		else if (r [3] < 2)
-			r [3] *= 1.5f;
-		r [2] = r [3];
-		r [1] = r [2] / 4.0f * 3.0f;
-		r [0] = r [2] / 3;
-		l [3] = (r [3] < 1.0f) ? 10.0f : 20.0f;
-		l [2] = r [3] / 4;
-		l [1] = -r [3] / 6;
-		l [0] = -r [3] / 3;
-		alpha = 0.15f;
-		for (h = 0; h < 3; h++) {
-			glBegin (GL_QUAD_STRIP);
-			for (i = 0; i < RING_SEGS + 1; i++) {
-				j = i % RING_SEGS;
-				for (k = 0; k < 2; k++) {
-					n = h + k;
-					glColor4f (pc->red, pc->green, pc->blue, (n == 3) ? 0.0f : alpha);
-					vPosf = vRingVerts [j];
-					vPosf [X] *= r [n];
-					vPosf [Y] *= r [n];
-					vPosf [Z] = -l [n];
-					transformation.Transform(vPosf, vPosf, 0);
-					glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
+		if (ogl.SizeBuffers (2 * 3 * (RING_SEGS + 1)) {
+			transformation.Begin (vPos, objP->info.position.mOrient);
+			ogl.SetDepthWrite (false);
+			ogl.SetTextureUsage (false);
+			//OglCullFace (1);
+			ogl.SetFaceCulling (false);
+			r [3] = X2F (objP->info.xSize);
+			if (r [3] >= 3.0f)
+				r [3] /= 1.5f;
+			else if (r [3] < 1)
+				r [3] *= 2;
+			else if (r [3] < 2)
+				r [3] *= 1.5f;
+			r [2] = r [3];
+			r [1] = r [2] / 4.0f * 3.0f;
+			r [0] = r [2] / 3;
+			l [3] = (r [3] < 1.0f) ? 10.0f : 20.0f;
+			l [2] = r [3] / 4;
+			l [1] = -r [3] / 6;
+			l [0] = -r [3] / 3;
+			alpha = 0.15f;
+			int nVerts = 0;
+			tRgbaColorf	color = *pc;
+			for (h = 0; h < 3; h++) {
+				for (i = 0; i <= RING_SEGS; i++) {
+					j = i % RING_SEGS;
+					for (k = 0; k < 2; k++) {
+						n = h + k;
+						color.alpha = (n == 3) ? 0.0f : alpha;
+						ogl.ColorBuffer () [nVerts] = color;
+						vPosf = vRingVerts [j];
+						vPosf [X] *= r [n];
+						vPosf [Y] *= r [n];
+						vPosf [Z] = -l [n];
+						transformation.Transform (ogl.VertexBuffer () [nVerts], vPosf, 0);
+						nVerts++;
+						}
 					}
 				}
-			glEnd ();
-			}
-		ogl.SetFaceCulling (true);
-		for (h = 0; h < 3; h += 2) {
-			ogl.SetCullMode (h ? GL_FRONT : GL_BACK);
-			glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
-			glBegin (GL_TRIANGLE_STRIP);
-			for (j = 0; j < RING_SEGS; j++) {
-				vPosf = vRingVerts [nStripIdx [j]];
-				vPosf [X] *= r [h];
-				vPosf [Y] *= r [h];
-				vPosf [Z] = -l [h];
-				transformation.Transform(vPosf, vPosf, 0);
-				glVertex3fv (reinterpret_cast<GLfloat*> (&vPosf));
+			ogl.FlushBuffers (GL_QUAD_STRIP, nVerts, 0, 1);
+			ogl.SetFaceCulling (true);
+			nVerts = 0;
+			for (h = 0; h < 3; h += 2) {
+				ogl.SetCullMode (h ? GL_FRONT : GL_BACK);
+				glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
+				for (j = 0; j < RING_SEGS; j++) {
+					vPosf = vRingVerts [nStripIdx [j]];
+					vPosf [X] *= r [h];
+					vPosf [Y] *= r [h];
+					vPosf [Z] = -l [h];
+					transformation.Transform (ogl.VertexBuffer () [nVerts], vPosf, 0);
+					nVerts++;
+					}
+				ogl.FlushBuffers (GL_TRIANGLE_STRIP, nVerts, 0, 1);
 				}
-			glEnd ();
+			ogl.SetDepthWrite (true);
+			OglCullFace (0);
+			transformation.End ();
 			}
-		ogl.SetDepthWrite (true);
-		OglCullFace (0);
-		transformation.End ();
 		}
 	ogl.StencilOn (bStencil);
 	}

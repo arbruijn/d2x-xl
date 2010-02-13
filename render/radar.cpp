@@ -86,17 +86,24 @@ else {
 	glLineWidth (2 * fLineWidth);
  	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, fRadius / 3.0f, 0, fRadius / 9.0f, 0, sinCosRadar);
 	glLineWidth (fLineWidth);
-	glBegin (GL_LINES);
-	float x = fRadius * 0.707f + 0.333f;
-	float y = fRadius / 3.0f;
-	glVertex2f (0, y + 1);
-	glVertex2f (0, -y - 1);
-	y -= 0.333f;
-	glVertex2f (-x, -y);
-	glVertex2f (x, y);
-	glVertex2f (-x, y);
-	glVertex2f (x, -y);
-	glEnd ();
+	if (ogl.SizeVertexBuffer (6)) {
+		float x = fRadius * 0.707f + 0.333f;
+		float y = fRadius / 3.0f;
+		ogl.VertexBuffer () [0][X] = 0;
+		ogl.VertexBuffer () [0][Y] = y + 1;
+		ogl.VertexBuffer () [1][X] = 0;
+		ogl.VertexBuffer () [1][Y] = -y - 1;
+		y -= 0.333f;
+		ogl.VertexBuffer () [2][X] = -x;
+		ogl.VertexBuffer () [2][Y] = -y;
+		ogl.VertexBuffer () [3][X] = x;
+		ogl.VertexBuffer () [3][Y] = y;
+		ogl.VertexBuffer () [4][X] = -x;
+		ogl.VertexBuffer () [4][Y] = y;
+		ogl.VertexBuffer () [4][X] = x;
+		ogl.VertexBuffer () [4][Y] = -y;
+		ogl.FlushBuffers (GL_LINES, 6, 2);
+		}
 	//ogl.SetLineSmooth (false);
 	glLineWidth (2);
 	glPopMatrix ();
@@ -117,10 +124,11 @@ glPopMatrix ();
 #if 1
 v [1] = v [0];
 v [1][Y] = 0;
-glBegin (GL_LINES);
-OglVertex3x (v [0][X], v [0][Y], v [0][Z]);
-OglVertex3x (v [1][X], v [1][Y], v [1][Z]);
-glEnd ();
+if (ogl.SizeVertexBuffer (2)) {
+	ogl.VertexBuffer () [0].Assign (v [0]);
+	ogl.VertexBuffer () [1].Assign (v [0]);
+	ogl.FlushBuffers (GL_LINES, 2);
+	}
 #endif
 glPopMatrix ();
 }
