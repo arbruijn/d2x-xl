@@ -162,7 +162,6 @@ void RenderRadar (void)
 {
 	int			i, bStencil;
 	CObject		*objP;
-	GLint			depthFunc;
 	tRgbColorf	*pc;
 
 if (gameStates.app.bNostalgia)
