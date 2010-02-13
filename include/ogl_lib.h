@@ -266,9 +266,9 @@ class COGL {
 								tRgbaColorf *colorP = NULL, int nColors = 1, 
 								CBitmap *bmP = NULL, int nFrame = 0, int nWrap = GL_REPEAT);
 		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions = 3, tTexCoord2f* texCoordP = NULL, tRgbaColorf* colorP = NULL, int nColors = 1, int nWrap = GL_CLAMP);
-		int RenderQuad (CBitmap* bmP, CFloatVector* vPosf, float width, float height, int nDimensions = 2, int nWrap = GL_CLAMP);
+		int RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions = 2, int nWrap = GL_CLAMP);
 		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
-		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive, float fSoftRad);
+		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int bAdditive, float fSoftRad);
 		void RenderScreenQuad (int bTextured = 0);
 
 		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {

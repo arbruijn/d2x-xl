@@ -50,7 +50,9 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	ogl.SetDepthWrite (false);
-	ogl.RenderSprite (bCorona ? bmpCorona : bmpHalo, *vPos, xSize, xSize, &c, alpha * 4.0f / 3.0f, 1, 1);
+	CBitmap* bmP = bCorona ? bmpCorona : bmpHalo;
+	bmP->SetColor (&c);
+	ogl.RenderSprite (bmP, *vPos, xSize, xSize, alpha * 4.0f / 3.0f, 1, 1);
 	ogl.SetDepthWrite (true);
 	}
 }
@@ -95,7 +97,8 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		color.green *= fScale;
 		color.blue *= fScale;
 		}
-	ogl.RenderSprite (bmP, objP->info.position.vPos, xSize, xSize, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
+	bmP->SetColor (&color);
+	ogl.RenderSprite (bmP, objP->info.position.vPos, xSize, xSize, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
 	}
 }
 
@@ -1226,7 +1229,8 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		color.green *= fScale;
 		color.blue *= fScale;
 		}
-	ogl.RenderSprite (bmP, objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), colorP, alpha, bAdditive, 1);
+	bmP->SetColor (colorP);
+	ogl.RenderSprite (bmP, objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, bAdditive, 1);
 	}
 }
 
@@ -1303,7 +1307,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	ogl.SetDepthWrite (false);
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	if (bSimple) {
-		ogl.RenderSprite (bmpCorona, vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, &color, alpha, 1, 3);
+		bmpCorona->SetColor (&color);
+		ogl.RenderSprite (bmpCorona, vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, alpha, 1, 3);
 		}
 	else {
 		CFloatVector	quad [4], verts [8], vCenter, vNormal, v;

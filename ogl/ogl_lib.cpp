@@ -1283,7 +1283,7 @@ if (HaveDrawBuffer ()) {
 		ogl.SetBlending (true);
 		SetBlendMode (GL_ONE, GL_ONE);
 		}
-	ogl.RenderScreenQuad (NULL, verts, 2, 1);
+	ogl.RenderScreenQuad ();
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)

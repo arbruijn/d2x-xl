@@ -99,7 +99,7 @@ if ((m_info.xTTL > 0) && LoadExplBlast ()) {
 	fix xSize = I2X (1) / 2 + d_rand () % (I2X (1) / 4);
 	#pragma omp critical
 		{
-		ogl.RenderSprite (bmpExplBlast, m_info.vPos, xSize, xSize, NULL, X2F (m_info.xTTL) / X2F (m_info.xLife) / 2, 0, 0);
+		ogl.RenderSprite (bmpExplBlast, m_info.vPos, xSize, xSize, X2F (m_info.xTTL) / X2F (m_info.xLife) / 2, 0, 0);
 		}
 	}
 }

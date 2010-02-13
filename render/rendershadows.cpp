@@ -401,10 +401,10 @@ for (bShadowTest = 0; bShadowTest < 2; bShadowTest++)
 	//RenderObjectShadows ();
 	RenderMine (nStartSeg, xStereoSeparation, nWindow);
 	}
-#if DBG
+#if DBG_SHADOWS
 if (!bShadowTest) 
 #endif
- {
+	{
 	gameStates.render.nShadowPass = 3;
 	ogl.StartFrame (0, 0, xStereoSeparation);
 	if	(gameStates.render.bShadowMaps) {

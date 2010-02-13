@@ -1766,8 +1766,7 @@ return 1;
 
 int CParticleManager::BeginRender (int nType, float nScale)
 {
-	CBitmap	*bmP;
-	int			bLightmaps = lightmapManager.HaveLightmaps ();
+	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	static time_t	t0 = 0;
 
 #if 0

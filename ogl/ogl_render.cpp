@@ -1097,7 +1097,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderQuad (CBitmap* bmP, int nDimensions, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
 {
 if (!bmP)
 	ogl.RenderArrays (GL_QUADS, vertexP, 4, nDimensions, NULL, colorP, nColors, bmP, 0, GL_REPEAT);
@@ -1115,17 +1115,17 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderQuad (CBitmap* bmP, CFloatVector vPosf, float width, float height, int nDimensions, int nWrap)
+int COGL::RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions, int nWrap)
 {
 CFloatVector verts [4];
 verts [0][X] =
-verts [3][X] = vPosf [X] - w;
+verts [3][X] = vPosf [X] - width;
 verts [1][X] =
-verts [2][X] = vPosf [X] + w;
+verts [2][X] = vPosf [X] + width;
 verts [0][Y] =
-verts [1][Y] = vPosf [Y] + h;
+verts [1][Y] = vPosf [Y] + height;
 verts [2][Y] =
-verts [3][Y] = vPosf [Y] - h;
+verts [3][Y] = vPosf [Y] - height;
 if (nDimensions == 3)
  verts [0][Z] =
  verts [1][Z] =
@@ -1133,7 +1133,7 @@ if (nDimensions == 3)
  verts [3][Z] = vPosf [Z];
 int nColors;
 tRgbaColorf* colorP = bmP->GetColor (&nColors);
-return RenderQuad (bmP, verts, nDimensions, NULL, NULL, 0, nWrap, colorP, nColors);
+return RenderQuad (bmP, verts, nDimensions, bmP->GetTexCoord (), colorP, nColors, 0, nWrap);
 }
 
 //------------------------------------------------------------------------------
@@ -1167,10 +1167,11 @@ int COGL::RenderSprite (CBitmap* bmP, const CFixVector& vPos,
 								int bAdditive, 
 								float fSoftRad)
 {
-	CFixVector	pv, v1;
+	CFixVector		pv, v1;
+	tRgbaColorf*	colorP = bmP->GetColor ();
 
 if (alpha < 1.0f) {
-	tRgbaColorf	color, * colorP = bmP->GetColor ();
+	tRgbaColorf	color;
 	if (!colorP) {
 		color.red =
 		color.green =
@@ -1191,9 +1192,7 @@ else {
 		ogl.RenderQuad (NULL, vPosf, X2F (xWidth), X2F (xHeight), 3);
 		}
 	else {
-		if (colorP)
-			glColor4fv (reinterpret_cast<const GLfloat*>(colorP));
-		else
+		if (!colorP)
 			glColor4f (1, 1, 1, alpha);
 		SetBlendMode (bAdditive);
 		ogl.SetDepthWrite (false);

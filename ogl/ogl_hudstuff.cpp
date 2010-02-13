@@ -88,8 +88,8 @@ else {
 		vPosf [X] =
 		vPosf [Y] = 0;
 		tTexCoord2f texCoord [4] = {{0,0},{1,0},{1,1},{0,1}};
-		bmpDeadzone.SetTexCoord (texCoord);
-		ogl.RenderQuad (bmpDeadzone, &vPosf, w, h);
+		bmpDeadzone->SetTexCoord (texCoord);
+		ogl.RenderQuad (bmpDeadzone, vPosf, w, h);
 		OglBindTexture (0);
 		ogl.SetTextureUsage (false);
 		glPopMatrix ();
