@@ -61,6 +61,16 @@ typedef struct tScreenScale {
 	float x, y;
 } __pack__ tScreenScale;
 
+#if DBG_OGL
+
+typedef struct tClientBuffer {
+	const GLvoid*	buffer;
+	const char*		pszFile;
+	int				nLine;
+} tClientBuffer;
+
+#endif
+
 class COglData {
 	public:
 		GLubyte			buffer [OGLTEXBUFSIZE];
@@ -95,22 +105,20 @@ class COglData {
 		bool				bLineSmooth;
 		bool				bLighting;
 		bool				bPolyOffsetFill;
+		int				nTMU [2];	//active driver and client TMUs
+		int				clientStates [4][6];	// client states for the first 4 TMUs
+		int				bClientTexCoord;
+		int				bClientColor;
+#if DBG_OGL
+		tClientBuffer	clientBuffers [4][6];
+#endif
+
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
 		inline void SelectDrawBuffer (int nSide) { drawBufferP = drawBuffers + (nSide > 0); }
 };
 
-
-#if DBG_OGL
-
-typedef struct tClientBuffer {
-	const GLvoid*	buffer;
-	const char*		pszFile;
-	int				nLine;
-} tClientBuffer;
-
-#endif
 
 class COglStates {
 	public:
@@ -187,14 +195,6 @@ class COglStates {
 		float	fAlpha;
 		float	fLightRange;
 		GLuint hDepthBuffer;
-
-		int	nTMU [2];	//active driver and client TMUs
-		int	clientStates [4][6];	// client states for the first 4 TMUs
-		int	bClientTexCoord;
-		int	bClientColor;
-#if DBG_OGL
-		tClientBuffer	clientBuffers [4][6];
-#endif
 
 	public:
 		COglStates () { Initialize (); }
@@ -409,10 +409,10 @@ class COGL {
 			}
 
 		inline void BindTexture (GLuint handle) { 
-			if (m_data.nTexture [m_states.nTMU [0]] != handle)
-				glBindTexture (GL_TEXTURE_2D, m_data.nTexture [m_states.nTMU [0]] = handle); 
+			if (m_data.nTexture [m_data.nTMU [0]] != handle)
+				glBindTexture (GL_TEXTURE_2D, m_data.nTexture [m_data.nTMU [0]] = handle); 
 			}
-		inline GLuint BoundTexture (void) { return m_data.nTexture [m_states.nTMU [0]]; }
+		inline GLuint BoundTexture (void) { return m_data.nTexture [m_data.nTMU [0]]; }
 
 #if DBG_OGL
 		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
