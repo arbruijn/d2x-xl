@@ -191,7 +191,7 @@ class CBitmap : public CArray< ubyte > {
 				*nColors = m_info.nColors; 
 			return m_info.colorP; 
 			}
-		inline void SetTexCoord (tTexCoord2d* texCoordP = NULL) { m_info.texCoordP = texCoordP; }
+		inline void SetTexCoord (tTexCoord2f* texCoordP = NULL) { m_info.texCoordP = texCoordP; }
 		inline tTexCoord2f* GetTexCoord (void) { return m_info.texCoordP; }
 		void SetPalette (CPalette *palette, int transparentColor = -1, int supertranspColor = -1, int *freq = NULL);
 		void Remap (CPalette *palette, int transparentColor, int superTranspColor);
