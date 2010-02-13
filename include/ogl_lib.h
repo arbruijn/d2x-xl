@@ -264,9 +264,9 @@ class COGL {
 								tTexCoord2f *texCoordP = NULL, 
 								tRgbaColorf *colorP = NULL, int nColors = 1, 
 								CBitmap *bmP = NULL, int nFrame = 0, int nWrap = GL_REPEAT);
-		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors);
-		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix width, fix height, tRgbaColorf* colorP, float alpha, int transp);
-
+		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, tTexCoord2f* texCoordP = NULL, tRgbaColorf* colorP = NULL, int nColors = 1);
+		int RenderBitmap2D (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
+		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive, float fSoftRad);
 
 		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {
 			if (bCurrent != bNew) {
@@ -322,6 +322,16 @@ class COGL {
 			return (m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode);
 #endif
 			}
+
+		inline void SetBlendMode (int bAdditive) {
+			if (bAdditive == 2)
+				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			else if (bAdditive == 1)
+				SetBlendMode (GL_ONE, GL_ONE);
+			else
+				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			}
+
 
 		inline GLenum SetDepthMode (GLenum nDepthMode) {
 			if (m_data.nDepthMode != nDepthMode) {

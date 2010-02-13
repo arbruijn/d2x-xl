@@ -50,7 +50,7 @@ void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, floa
 if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	ogl.SetDepthWrite (false);
-	G3DrawSprite (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
+	ogl.RenderBitmap (*vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1, 1);
 	ogl.SetDepthWrite (true);
 	}
 }
@@ -98,7 +98,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		}
 	bDepthSort = gameOpts->render.bDepthSort;
 	gameOpts->render.bDepthSort = -1;
-	G3DrawSprite (objP->info.position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
+	ogl.RenderBitmap (bmP, objP->info.position.vPos, xSize, xSize, &color, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
 	gameOpts->render.bDepthSort = bDepthSort;
 	}
 }
@@ -1283,7 +1283,7 @@ if (gameOpts->render.coronas.bShots && (bAdditive ? LoadGlare () : LoadCorona ()
 		color.green *= fScale;
 		color.blue *= fScale;
 		}
-	G3DrawSprite (objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), bmP, colorP, alpha, bAdditive, 1);
+	ogl.RenderBitmap (bmP, objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), colorP, alpha, bAdditive, 1);
 	}
 }
 
@@ -1361,7 +1361,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	ogl.SetDepthWrite (false);
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	if (bSimple) {
-		G3DrawSprite (vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, bmpCorona, &color, alpha, 1, 3);
+		ogl.RenderBitmap (bmpCorona, vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, &color, alpha, 1, 3);
 		}
 	else {
 		CFloatVector	quad [4], verts [8], vCenter, vNormal, v;

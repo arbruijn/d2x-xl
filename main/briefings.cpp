@@ -549,7 +549,7 @@ if (*m_info.szBitmapName) {
 	p[Z] = 2 * I2X (w);
 	depthFunc = ogl.GetDepthMode ();
 	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.RenderBitmap (bmP, p, I2X (w), I2X (h), NULL, 1.0, 3);
+	ogl.RenderBitmap2D (bmP, p, I2X (w), I2X (h), NULL, 1.0, 0);
 	ogl.SetDepthMode (depthFunc);
 	G3EndFrame ();
 	//paletteManager.ResumeEffect ();

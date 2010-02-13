@@ -1028,89 +1028,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int G3DrawSprite (
-	const CFixVector&	vPos,
-	fix				xWidth,
-	fix				xHeight,
-	CBitmap*			bmP,
-	tRgbaColorf*	colorP,
-	float				alpha,
-	int				bAdditive,
-	float				fSoftRad)
-{
-	CFixVector	pv, v1;
-	GLdouble		h, w, u, v, x, y, z;
-
-if (gameOpts->render.bDepthSort > 0) {
-	tRgbaColorf color;
-	if (!colorP) {
-		color.red =
-		color.green =
-		color.blue = 1;
-		color.alpha = alpha;
-		colorP = &color;
-		}
-	transparencyRenderer.AddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive, fSoftRad);
-	}
-else {
-	ogl.SelectTMU (GL_TEXTURE0);
-	v1 = vPos - transformation.m_info.pos;
-	pv = transformation.m_info.view [0] * v1;
-	x = double X2F (pv [X]);
-	y = double X2F (pv [Y]);
-	z = double X2F (pv [Z]);
-	w = double X2F (xWidth);
-	h = double X2F (xHeight);
-	if (gameStates.render.nShadowBlurPass == 1) {
-		ogl.SetTextureUsage (false);
-		glColor4d (1,1,1,1);
-		glBegin (GL_QUADS);
-		glVertex3d (x - w, y + h, z);
-		glVertex3d (x + w, y + h, z);
-		glVertex3d (x + w, y - h, z);
-		glVertex3d (x - w, y - h, z);
-		glEnd ();
-		}
-	else {
-		ogl.SetDepthWrite (false);
-		ogl.SetTextureUsage (true);
-		if (bmP->Bind (1))
-			return 1;
-		bmP = bmP->Override (-1);
-		bmP->Texture ()->Wrap (GL_CLAMP);
-		if (bAdditive == 2)
-			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		else if (bAdditive == 1)
-			ogl.SetBlendMode (GL_ONE, GL_ONE);
-		else
-			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		if (colorP)
-			glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
-		else
-			glColor4d (1, 1, 1, (double) alpha);
-		glBegin (GL_QUADS);
-		u = bmP->Texture ()->U ();
-		v = bmP->Texture ()->V ();
-		glTexCoord2d (0, 0);
-		glVertex3d (x - w, y + h, z);
-		glTexCoord2d (u, 0);
-		glVertex3d (x + w, y + h, z);
-		glTexCoord2d (u, v);
-		glVertex3d (x + w, y - h, z);
-		glTexCoord2d (0, v);
-		glVertex3d (x - w, y - h, z);
-		glEnd ();
-		ogl.SetDepthWrite (true);
-		if (bAdditive)
-			ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//ogl.SetBlending (false);
-		}
-	}
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
 int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap)
 {
 if (!bmP) 
@@ -1228,19 +1145,19 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix width, fix height,tRgbaColorf* colorP, float alpha, int transp)
+int COGL::RenderBitmap2D (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive)
 {
 	CFloatVector	verts [4];
 	CFloatVector	vPosf;
 	tRgbaColorf		color = {1, 1, 1, 1};
 	GLfloat			h, w, u, v;
 
-ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+SelectTMU (GL_TEXTURE0);
+SetBlendMode (bAdditive);
 vPosf.Assign (vPos);
 transformation.Transform (vPosf, vPosf, 0);
-w = (GLfloat) X2F (width); 
-h = (GLfloat) X2F (height);
+w = (GLfloat) X2F (xWidth); 
+h = (GLfloat) X2F (xHeight);
 memset (verts, 0, sizeof (verts));
 verts [0][X] = 
 verts [3][X] = vPosf [X] - w;
@@ -1257,6 +1174,76 @@ else {
 	v = bmP->Texture ()->V ();
 	tTexCoord2f	texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
 	RenderArrays (GL_QUADS, verts, 4, 4, texCoord, colorP ? colorP : &color, 1, bmP, 0, GL_CLAMP);
+	}
+SetBlendMode (0);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos,
+								fix xWidth,	fix xHeight,
+								tRgbaColorf* colorP, float alpha,
+								int bAdditive, 
+								float fSoftRad)
+{
+	CFixVector	pv, v1;
+
+if (gameOpts->render.bDepthSort > 0) {
+	tRgbaColorf color;
+	if (!colorP) {
+		color.red =
+		color.green =
+		color.blue = 1;
+		color.alpha = alpha;
+		colorP = &color;
+		}
+	transparencyRenderer.AddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive, fSoftRad);
+	}
+else {
+	ogl.SelectTMU (GL_TEXTURE0);
+	v1 = vPos - transformation.m_info.pos;
+	pv = transformation.m_info.view [0] * v1;
+	float x = X2F (pv [X]);
+	float y = X2F (pv [Y]);
+	float z = X2F (pv [Z]);
+	float w = X2F (xWidth);
+	float h = X2F (xHeight);
+
+	CFloatVector verts [4];
+	verts [0][X] =
+	verts [3][X] = x - w;
+	verts [1][X] =
+	verts [2][X] = x + w;
+	verts [0][Y] =
+	verts [1][Y] = y + h;
+	verts [2][Y] =
+	verts [3][Y] = y - h;
+	verts [0][Z] = 
+	verts [1][Z] = 
+	verts [2][Z] = 
+	verts [3][Z] = z;
+	verts [0][W] = 
+	verts [1][W] = 
+	verts [2][W] = 
+	verts [3][W] = 1;
+
+	if (gameStates.render.nShadowBlurPass == 1) {
+		glColor4f (1,1,1,1);
+		ogl.RenderQuad (NULL, verts);
+		}
+	else {
+		ogl.SetDepthWrite (false);
+		if (!colorP)
+			glColor4f (1, 1, 1, alpha);
+		float u = bmP->Texture ()->U ();
+		float v = bmP->Texture ()->V ();
+		tTexCoord2f texCoord [4] = {{0,0},{u,0},{u,v},{0,v}};
+		SetBlendMode (bAdditive);
+		RenderQuad (bmP, verts, texCoord, colorP, 1);
+		ogl.SetDepthWrite (true);
+		SetBlendMode (0);
+		}
 	}
 return 0;
 }

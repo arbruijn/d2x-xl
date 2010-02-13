@@ -432,9 +432,9 @@ else if ((gameOpts->render.bDepthSort > 0) && (fAlpha < 1)) {
 }
 else {
 	if (bmP->Width () > bmP->Height ())
-		ogl.RenderBitmap (bmP, objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), NULL, fAlpha, nTransp);
+		ogl.RenderBitmap2D (bmP, objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), NULL, fAlpha, bAdditive);
 	else
-		ogl.RenderBitmap (bmP, objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, NULL, fAlpha, nTransp);
+		ogl.RenderBitmap2D (bmP, objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, NULL, fAlpha, bAdditive);
 	}
 gameData.render.nTotalSprites++;
 }

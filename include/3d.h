@@ -209,8 +209,6 @@ int G3DrawRodPoly (g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top
 //returns 1 if off screen, 0 if drew
 int G3DrawRodTexPoly (CBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
 
-int G3DrawSprite (const CFixVector& vPos, fix xWidth, fix xHeight, CBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive, float fSoftRad);
-
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
 extern g3sPoint *Vbuf0 [];
