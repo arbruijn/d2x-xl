@@ -374,9 +374,6 @@ return 0;
 
 int G3DrawPolyAlpha (int nVertices, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask, short nSegment)
 {
-	int		i;
-	GLint		depthFunc;
-
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
@@ -385,7 +382,7 @@ if (color->alpha < 0)
 	color->alpha = gameStates.render.grAlpha;
 CFloatVector	vertices [8];
 
-for (i = 0; i < nVertices; i++)
+for (int i = 0; i < nVertices; i++)
 	vertices [i] = gameData.render.vertP [pointList [i]->p3_index];
 transparencyRenderer.AddPoly (NULL, NULL, NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 return 0;

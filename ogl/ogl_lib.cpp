@@ -1284,7 +1284,12 @@ if (HaveDrawBuffer ()) {
 		SetBlendMode (GL_ONE, GL_ONE);
 		}
 
-	static CFloatVector verts [4] = {{0,0,0,1},{0,1,0,1},{1,1,0,1},{1,0,0,1}};
+	static CFloatVector verts [4];
+	
+	verts [0].Set (0,0,0,1);
+	verts [1].Set (0,1,0,1);
+	verts [2].Set (1,1,0,1);
+	verts [3].Set (1,0,0,1);
 	static tTexCoord2f texCoord [4] = {{0,0},{1,0},{1,1},{0,1}};
 	ogl.RenderQuad (NULL, verts, texCoord);
 	SelectDrawBuffer (0);
