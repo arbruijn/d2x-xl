@@ -185,20 +185,48 @@ if (bSingleStencil || bShadowTest)
 //------------------------------------------------------------------------------
 
 static CArray<CFloatVector>	vertexBuffer;
+static CArray<tRgbaColorf>		colorBuffer;
+static CArray<tTexCoord2f>		texCoordBuffer;
 
 static bool SizeVertexBuffer (int nVerts)
 {
-if (int (vertexBuffer.Length ()) >= nVerts * 4)
+if (int (vertexBuffer.Length ()) >= nVerts)
 	return true;
 vertexBuffer.Destroy ();
-return vertexBuffer.Create (nVerts * 4) != NULL;
+return vertexBuffer.Create (nVerts) != NULL;
 }
+
+static bool SizeColorBuffer (int nVerts)
+{
+if (int (colorBuffer.Length ()) >= nVerts)
+	return true;
+colorBuffer.Destroy ();
+return colorBuffer.Create (nVerts) != NULL;
+}
+
+static bool SizeTexCoordBuffer (int nVerts)
+{
+if (int (colorBuffer.Length ()) >= nVerts)
+	return true;
+colorBuffer.Destroy ();
+return colorBuffer.Create (nVerts) != NULL;
+}
+
+static bool SizeBuffers (int nVerts)
+{
+return SizeVertexBuffer (nVerts) && SizeColorBuffer (nVerts) && SizeTexCoordBuffer (nVerts);
+}
+
 
 //------------------------------------------------------------------------------
 
-static void FlushVertexBuffer (GLenum nPrimitive, int nVerts)
+static void FlushBuffers (GLenum nPrimitive, int nVerts, int bTextured = 0, int bColored = 0)
 {
 if (vertexBuffer.Buffer () && nVerts) {
+	if (bTextured)
+		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
+	if (bColored) 
+		ogl.EnableClientState (GL_COLOR_ARRAY);
 	ogl.EnableClientState (GL_VERTEX_ARRAY);
 	OglVertexPointer (3, GL_FLOAT, 0, vertexBuffer.Buffer ());
 	OglDrawArrays (nPrimitive, 0, nVerts);
@@ -238,7 +266,7 @@ else if (bShadowTest > 1)
 #endif
 
 nEdges = pso->m_edges.m_nContourEdges;
-if (!SizeVertexBuffer (nEdges))
+if (!SizeVertexBuffer (nEdges * 4))
 	return 1;
 pv = pso->m_rotVerts.Buffer ();
 for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
@@ -275,9 +303,9 @@ for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 	}
 OglVertexPointer (3, GL_FLOAT, 0, vertexBuffer.Buffer ());
 #if DBG_SHADOWS
-FlushVertexBuffer ((bShadowTest < 2) ? GL_QUADS : GL_LINES, nVerts);
+FlushBuffers ((bShadowTest < 2) ? GL_QUADS : GL_LINES, nVerts);
 #else
-FlushVertexBuffer (GL_QUADS, nVerts);
+FlushBuffers (GL_QUADS, nVerts);
 #endif
 #if DBG_SHADOWS
 ogl.SetFaceCulling (true);
@@ -331,11 +359,10 @@ if (bCullFront) {
 					v1 *= G3_INFINITY;
 #endif
 					vertexBuffer [nVerts++] = v0 + v1;
-					glVertex3fv (reinterpret_cast<GLfloat*> (&v1));
 					}
 				}
 			}
-		FlushVertexBuffer (GL_TRIANGLE_FAN, nVerts);
+		FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -353,7 +380,7 @@ else {
 					vertexBuffer [nVerts++] = pv [pfv->m_nIndex];
 				}
 			}
-		FlushVertexBuffer (GL_TRIANGLE_FAN, nVerts);
+		FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -379,11 +406,15 @@ int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 	CFaceVert*		pfv;
 	CFloatVector*	pv, * pvn, * phv;
 	tFaceColor*		pvc, vc, sc = {{1,1,1,1}};
-	CBitmap			*bmP;
-	int				h, i, j;
-	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0);
+	CBitmap*			bmP = NULL;
+	int				h, i, j, nVerts [3];
+	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0), bTextured = -1, bReverse;
 	int				bDynLighting = gameStates.render.bApplyDynLight;
 	float				fl, r, g, b, fAlpha = po->m_fAlpha;
+	// helper pointers into render buffers
+	CFloatVector*	pvb;
+	tRgbaColorf*	pcb;
+	tTexCoord2f*	ptb;
 
 #if DBG_SHADOWS
 if (bShadowTest && (bShadowTest < 4))
@@ -401,116 +432,130 @@ if (!bDynLighting) {
 	if (sc.index != gameStates.render.nFrameFlipFlop + 1)
 		sc.color.red = sc.color.green = sc.color.blue = 1;
 	}
-for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
-	if (pf->m_bReverse)
-		glFrontFace (GL_CCW);
-	pfv = pf->m_verts;
-#if 0
-	if (!(ogl.m_states.bUseTransform || OOF_FrontFace (pso, pf)))
-		continue;
-#endif
-	if (pf->m_bTextured) {
-#if DBG
-		fl = pf->m_vNormal * mView.FVec ();
-		fl = 0.75f + 0.25f * fl;
-		fl = fl * *fLight;
-#else
-		fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.FVec ()));
-#endif
-		if (fl > 1)
-			fl = 1;
-//		fl = 1.0f;
-		bmP = po->m_textures.m_bitmaps + pf->m_texProps.nTexId;
-		if (bmP->Texture () && ((int) bmP->Texture ()->Handle () < 0))
-			bmP->Texture ()->SetHandle (0);
-		bmP->SetTranspType (0);
-		if (bmP->Bind (1))
-			return 0;
-		bmP->Texture ()->Wrap (GL_REPEAT);
-		if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
-			glColor4f (fl * m_glowInfo.m_color.red, 
-						  fl * m_glowInfo.m_color.green, 
-						  fl * m_glowInfo.m_color.blue, 
-						  m_pfAlpha [pfv->m_nIndex] * fAlpha);
-			}
-		else if (!bDynLighting) {
-#if 0
-			fl = (float) sqrt (fl);
-#endif
-			if (bBright)
-#if 1
-				fl += (1 - fl) / 2;
-#else
-				fl = (float) sqrt (fl);
-#endif
-			glColor4f (sc.color.red * fl, sc.color.green * fl, sc.color.blue * fl,
-						  m_pfAlpha [pfv->m_nIndex] * fAlpha);
-			}
-		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->m_nVerts; j; j--, pfv++) {
-			phv = pv + (h = pfv->m_nIndex);
-			if (bDynLighting) {
-				if (pvc [h].index != gameStates.render.nFrameFlipFlop + 1)
-					G3VertexColor (reinterpret_cast<CFloatVector3*> (pvn + h), reinterpret_cast<CFloatVector3*> (phv), -1, pvc + h, NULL, 1, 0, 0);
-				vc.color.red = (float) sqrt (pvc [h].color.red);
-				vc.color.green = (float) sqrt (pvc [h].color.green);
-				vc.color.blue = (float) sqrt (pvc [h].color.blue);
-				if (bBright) {
-#if 1
-					vc.color.red += (1 - vc.color.red) / 2;
-					vc.color.green += (1 - vc.color.green) / 2;
-					vc.color.blue += (1 - vc.color.blue) / 2;
-#else
-					vc.color.red = (float) sqrt (vc.color.red);
-					vc.color.green = (float) sqrt (vc.color.green);
-					vc.color.blue = (float) sqrt (vc.color.blue);
-#endif
-					}
-				OglColor4sf (vc.color.red, vc.color.green, vc.color.blue, m_pfAlpha [pfv->m_nIndex] * fAlpha);
-				}
-			glTexCoord2f (pfv->m_fu, pfv->m_fv);
-			glVertex3fv (reinterpret_cast<GLfloat*> (phv));
-			//glVertex4f (phv->m_x, phv->m_y, phv->m_z, 0.5);
-			}
-		glEnd ();
-#if DBG_SHADOWS
-		if (pf->m_bFacingLight && (bShadowTest > 3)) {
-				CFloatVector	fv0;
 
-			glLineWidth (3);
-			glColor4f (1.0f, 0.0f, 0.5f, 1.0f);
-			glBegin (GL_LINES);
-			fv0 = pf->m_vRotCenter;
-			glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
-			fv0 += pf->m_vRotNormal;
-			glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
-			glEnd ();
-			glColor4f (0.0f, 1.0f, 0.5f, 1.0f);
-			glBegin (GL_LINES);
-			fv0 = pf->m_vRotCenter;
-			glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
-			fv0 = vrLightPos;
-			glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
-			glEnd ();
-			glLineWidth (1);
+for (bReverse = 0; bReverse <= 1; bReverse++) {
+	nVerts [1] = nVerts [2] = 0;
+	for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
+		if (pf->m_bReverse == bReverse)
+			nVerts [pf->m_bTextured] += pf->m_nVerts;
+		}
+	nVerts [2] = nVerts [nVerts [1] > nVerts [0]];
+	if (!SizeBuffers (nVerts [2]))
+		return 0;
+
+	if (bReverse)
+		glFrontFace (GL_CCW);
+
+	nVerts [0] = 0;
+	pvb = vertexBuffer.Buffer ();
+	pcb = colorBuffer.Buffer ();
+	ptb = texCoordBuffer.Buffer ();
+
+	for (i = m_faces.m_nFaces, pf = m_faces.m_list.Buffer (); i; i--, pf++) {
+		if (pf->m_bReverse != bReverse)
+			continue;
+		pfv = pf->m_verts;
+		if (pf->m_bTextured) {
+			if (bTextured == 0) {
+				FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 0, 0);
+				bTextured = 1;
+				}
+
+			if (bmP != po->m_textures.m_bitmaps + pf->m_texProps.nTexId) {
+				bmP = po->m_textures.m_bitmaps + pf->m_texProps.nTexId;
+				if (bmP->Texture () && ((int) bmP->Texture ()->Handle () < 0))
+					bmP->Texture ()->SetHandle (0);
+				bmP->SetTranspType (0);
+				if (bmP->Bind (1))
+					return 0;
+				bmP->Texture ()->Wrap (GL_REPEAT);
+				ogl.SetTextureUsage (true);
+				}
+
+			fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.FVec ()));
+			if (fl > 1)
+				fl = 1;
+			if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
+				pcb->red = fl * m_glowInfo.m_color.red;
+				pcb->green = fl * m_glowInfo.m_color.green;
+				pcb->blue = fl * m_glowInfo.m_color.blue;
+				pcb->alpha = m_pfAlpha [pfv->m_nIndex] * fAlpha;
+				pcb++;
+				}
+			else if (!bDynLighting) {
+				if (bBright)
+					fl += (1 - fl) / 2;
+				pcb->red = sc.color.red * fl;
+				pcb->green = sc.color.green * fl;
+				pcb->blue = sc.color.blue * fl;
+				pcb->alpha = m_pfAlpha [pfv->m_nIndex] * fAlpha;
+				pcb++;
+				}
+			//glBegin (GL_TRIANGLE_FAN);
+			for (j = pf->m_nVerts; j; j--, pfv++) {
+				phv = pv + (h = pfv->m_nIndex);
+				if (bDynLighting) {
+					if (pvc [h].index != gameStates.render.nFrameFlipFlop + 1)
+						G3VertexColor (reinterpret_cast<CFloatVector3*> (pvn + h), reinterpret_cast<CFloatVector3*> (phv), -1, pvc + h, NULL, 1, 0, 0);
+					
+					vc.color.red = (float) sqrt (pvc [h].color.red);
+					vc.color.green = (float) sqrt (pvc [h].color.green);
+					vc.color.blue = (float) sqrt (pvc [h].color.blue);
+					if (bBright) {
+						vc.color.red += (1 - vc.color.red) / 2;
+						vc.color.green += (1 - vc.color.green) / 2;
+						vc.color.blue += (1 - vc.color.blue) / 2;
+						}
+					vc.color.alpha = m_pfAlpha [pfv->m_nIndex] * fAlpha;
+					*pcb++ = vc.color;
+					}
+				ptb->v.u = pfv->m_fu;
+				ptb->v.v = pfv->m_fv;
+				ptb++;
+				*pvb++ = *phv;
 			}
+#if DBG_SHADOWS
+			if (pf->m_bFacingLight && (bShadowTest > 3)) {
+					CFloatVector	fv0;
+
+				glLineWidth (3);
+				glColor4f (1.0f, 0.0f, 0.5f, 1.0f);
+				glBegin (GL_LINES);
+				fv0 = pf->m_vRotCenter;
+				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
+				fv0 += pf->m_vRotNormal;
+				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
+				glEnd ();
+				glColor4f (0.0f, 1.0f, 0.5f, 1.0f);
+				glBegin (GL_LINES);
+				fv0 = pf->m_vRotCenter;
+				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
+				fv0 = vrLightPos;
+				glVertex3fv (reinterpret_cast<GLfloat*> (&fv0));
+				glEnd ();
+				glLineWidth (1);
+				}
 #endif
-		}
-	else {
-		fl = fLight [1];
-		r = fl * (float) pf->m_texProps.color.red / 255.0f;
-		g = fl * (float) pf->m_texProps.color.green / 255.0f;
-		b = fl * (float) pf->m_texProps.color.blue / 255.0f;
-		glColor4f (r, g, b, m_pfAlpha [pfv->m_nIndex] * fAlpha);
-		glBegin (GL_TRIANGLE_FAN);
-		for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++) {
-			glVertex3fv (reinterpret_cast<GLfloat*> (pv + pfv->m_nIndex));
 			}
-		glEnd ();
+		else {
+			if (bTextured == 1) {
+				FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 1, 1);
+				bTextured = 0;
+				ogl.SetTextureUsage (false);
+				bmP = NULL;
+				}
+			fl = fLight [1];
+			r = fl * (float) pf->m_texProps.color.red / 255.0f;
+			g = fl * (float) pf->m_texProps.color.green / 255.0f;
+			b = fl * (float) pf->m_texProps.color.blue / 255.0f;
+			glColor4f (r, g, b, m_pfAlpha [pfv->m_nIndex] * fAlpha);
+			*pvb++ = pv [pfv->m_nIndex];
+			}
 		}
-	if (pf->m_bReverse)
-		glFrontFace (GL_CW);
+	if (bTextured >= 0)
+		FlushBuffers (GL_TRIANGLE_FAN, bTextured, bTextured);
 	}
+glFrontFace (GL_CW);
 return 1;
 }
 
@@ -577,7 +622,7 @@ for (i = 0; i < m_nChildren; i++) {
 #endif
 if (gameStates.render.nShadowPass == 2)
 	OOF_DrawShadow (po, pso);
-else 
+else
 	Draw (objP, po, fLight);
 return 1;
 }
