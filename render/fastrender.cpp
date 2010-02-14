@@ -38,9 +38,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fastrender.h"
 #include "ogl_shader.h"
 
-#undef DBG
-#define DBG 1
-
 #define RENDER_DEPTHMASK_FIRST 0
 
 //------------------------------------------------------------------------------

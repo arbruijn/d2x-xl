@@ -37,9 +37,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gpgpu_lighting.h"
 #include "fastrender.h"
 
-#undef DBG
-#define DBG 1
-
 // -----------------------------------------------------------------------------------
 
 inline int SegmentIsVisible (CSegment *segP)

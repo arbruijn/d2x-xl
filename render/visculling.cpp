@@ -59,9 +59,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sparkeffect.h"
 #include "createmesh.h"
 
-#undef DBG
-#define DBG 1
-
 //------------------------------------------------------------------------------
 
 #define bPreDrawSegs			0

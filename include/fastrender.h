@@ -35,7 +35,6 @@ void RenderSkyBoxFaces (void);
 
 static inline void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
-ResetFaceList ();
 if (gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE)) {
 	if (gameStates.render.bTriangleMesh)
 		ComputeDynamicTriangleLight (nStart, nEnd, nThread);

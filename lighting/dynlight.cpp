@@ -38,9 +38,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightprecalc.h"
 #include "createmesh.h"
 
-#undef DBG
-#define DBG 1
-
 #define SORT_LIGHTS 0
 #define PREFER_GEOMETRY_LIGHTS 1
 

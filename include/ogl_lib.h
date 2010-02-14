@@ -290,7 +290,7 @@ class COGL {
 		void RenderScreenQuad (int bTextured = 0);
 
 		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {
-#if DBG_OGL == 0
+#if DBG_OGL < 2
 			if (bCurrent != bNew) 
 #endif
 				{
@@ -347,12 +347,12 @@ class COGL {
 		
 		inline bool SetBlendMode (GLenum nSrcBlendMode, GLenum nDestBlendMode) {
 			SetBlending (true);
-#if DBG_OGL == 0
+#if DBG_OGL < 2
 			if ((m_data.nSrcBlendMode == nSrcBlendMode) && (m_data.nDestBlendMode == nDestBlendMode))
 				return true;
 #endif
 			glBlendFunc (m_data.nSrcBlendMode = nSrcBlendMode, m_data.nDestBlendMode = nDestBlendMode);
-#if DBG_OGL == 0
+#if DBG_OGL < 2
 			return true;
 #else
 			glGetIntegerv (GL_BLEND_SRC, (GLint*) &m_data.nSrcBlendMode);
@@ -372,7 +372,7 @@ class COGL {
 
 
 		inline GLenum SetDepthMode (GLenum nDepthMode) {
-#if DBG_OGL == 0
+#if DBG_OGL < 2
 			if (m_data.nDepthMode != nDepthMode)
 #endif
 				glDepthFunc (m_data.nDepthMode = nDepthMode);
@@ -381,14 +381,14 @@ class COGL {
 		inline GLenum GetDepthMode (void) { return m_data.nDepthMode; }
 
 		inline void SetDepthWrite (bool bDepthWrite) { 
-#if DBG_OGL == 0
+#if DBG_OGL < 2
 			if (m_data.bDepthWrite != bDepthWrite)
 #endif
 				glDepthMask (GLboolean (m_data.bDepthWrite = bDepthWrite));
 			}
 
 		inline GLenum SetCullMode (GLenum nCullMode) {
-#if DBG_OGL == 0
+#if DBG_OGL < 2
 			if (m_data.nCullMode != nCullMode)
 #endif
 				glCullFace (m_data.nCullMode = nCullMode);
@@ -422,7 +422,7 @@ class COGL {
 			}
 
 		inline void BindTexture (GLuint handle) { 
-#if DBG_OGL == 0
+#if DBG_OGL < 2
 			if (m_data.nTexture [m_data.nTMU [0]] != handle)
 #endif
 				glBindTexture (GL_TEXTURE_2D, m_data.nTexture [m_data.nTMU [0]] = handle); 

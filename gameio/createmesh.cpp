@@ -52,9 +52,6 @@
 #include "netmisc.h"
 #include "createmesh.h"
 
-#undef DBG
-#define DBG 1
-
 using namespace Mesh;
 
 void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);

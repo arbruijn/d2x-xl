@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifndef DBG_ARRAYS
+#ifndef DBG
 #	ifdef _DEBUG
 #		define DBG 1
 #	else
@@ -16,7 +16,7 @@
 #	endif
 #endif
 
-#define DBG_ARRAYS	1 //DBG
+#define DBG_ARRAYS	DBG
 
 #include "pstypes.h"
 #include "cquicksort.h"

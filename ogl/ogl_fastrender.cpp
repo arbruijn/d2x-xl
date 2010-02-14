@@ -49,9 +49,6 @@
 #	define G3_BUFFER_FACES	0
 #endif
 
-#undef DBG
-#define DBG 1
-
 CRenderFaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
 //------------------------------------------------------------------------------
