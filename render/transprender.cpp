@@ -1094,7 +1094,7 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 gameStates.render.bDepthSort = -1;
 if (item->nType == riSphereShield)
-	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
+	;//DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 gameStates.render.bDepthSort = 1;
@@ -1369,15 +1369,8 @@ for (int i = m_data.itemLists.Length (); i; i--, pl++)
 FlushBuffers (-1);
 particleManager.EndRender ();
 shaderManager.Deploy (-1);
-ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
-ogl.BindTexture (0);
-ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
-ogl.BindTexture (0);
-ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
-ogl.BindTexture (0);
-ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
+ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
-ogl.BindTexture (0);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);

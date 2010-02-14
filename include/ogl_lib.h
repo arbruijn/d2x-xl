@@ -207,8 +207,10 @@ class COglBuffers {
 		CArray<CFloatVector>		vertices;
 		CArray<tTexCoord2f>		texCoord;
 		CArray<tRgbaColorf>		color;
+		int							m_nVertices;
 
 	public:
+		COglBuffers () { m_nVertices = 0; }
 		bool SizeVertices (int nVerts);
 		bool SizeColor (int nVerts);
 		bool SizeTexCoord (int nVerts);

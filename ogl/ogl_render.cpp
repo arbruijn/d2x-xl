@@ -1246,7 +1246,7 @@ RenderQuad (NULL, verts, 2, bTextured ? texCoord : NULL);
 
 bool COglBuffers::SizeVertices (int nVerts)
 {
-if (int (vertices.Length ()) >= nVerts)
+if (int (vertices.Length ()) < nVerts)
 	return true;
 vertices.Destroy ();
 return vertices.Create (nVerts) != NULL;
@@ -1278,7 +1278,9 @@ return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts);
 
 void COglBuffers::Flush (GLenum nPrimitive, int nVerts, int nDimensions, int bTextured, int bColored)
 {
-if (vertices.Buffer () && nVerts) {
+if (nVerts > 0)
+	m_nVertices = nVerts;
+if (vertices.Buffer () && m_nVertices) {
 	if (bTextured && texCoord.Buffer ()) {
 		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
 		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord.Buffer ());
@@ -1289,7 +1291,7 @@ if (vertices.Buffer () && nVerts) {
 		}
 	ogl.EnableClientState (GL_VERTEX_ARRAY);
 	OglVertexPointer (nDimensions, GL_FLOAT, sizeof (CFloatVector), vertices.Buffer ());
-	OglDrawArrays (nPrimitive, 0, nVerts);
+	OglDrawArrays (nPrimitive, 0, m_nVertices);
 	ogl.DisableClientStates (bTextured, bColored, 0);
 	}
 }

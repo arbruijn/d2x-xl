@@ -746,7 +746,6 @@ int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float ySc
 	int	bTextured = 0;
 	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 
-ogl.SetBlending (true);
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;
@@ -755,12 +754,7 @@ else
 	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
 ogl.SetDepthMode (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
-if (bAdditive == 2)
-	ogl.SetBlendMode (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
-else if (bAdditive == 1)
-	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-else
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (bAdditive);
 #else
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
@@ -780,7 +774,7 @@ ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 CFixVector vPos;
 transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
-RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
+//RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.m_states.bUseTransform = 0;
@@ -788,7 +782,7 @@ ogl.m_states.bUseTransform = 0;
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
 ogl.SetDepthWrite (true);
-ogl.SetDepthMode (GL_LESS);
+//ogl.SetDepthMode (GL_LEQUAL);
 return 1;
 }
 

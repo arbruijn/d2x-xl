@@ -826,7 +826,7 @@ int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
 	CFloatVector*	pvf, v [4];
 	CFace*			pf, ** ppf;
 	short*			pfv, * paf;
-	short				h, i, j, n, nVerts;
+	short				h, i, j, n, nVerts = 0;
 	float				fClipDist;
 	int				nClip;
 
@@ -843,73 +843,74 @@ else if (bShadowTest > 1)
 	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
 G3SetCullAndStencil (bCullFront, bZPass);
-pvf = po->m_vertsf.Buffer ();
-#if DBG_SHADOWS
-if (bShadowTest < 2)
-	;
-else if (bShadowTest == 2)
-	glLineWidth (3);
-else {
-	glLineWidth (3);
-	glBegin (GL_LINES);
-	}
-#endif
-nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
-fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
-OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
-
-nVerts = 0;
-for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
-	pf = *ppf;
-	paf = po->m_adjFaces + pf->m_nAdjFaces;
-	for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
-		h = *paf++;
-		if ((h < 0) || !m_faces [h].m_bFacingLight)
-			nVerts += 4;
+if (!bCullFront) {
+	pvf = po->m_vertsf.Buffer ();
+	#if DBG_SHADOWS
+	if (bShadowTest < 2)
+		;
+	else if (bShadowTest == 2)
+		glLineWidth (3);
+	else {
+		glLineWidth (3);
+		glBegin (GL_LINES);
 		}
-	}
+	#endif
+	nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
+	fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
+	//OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
 
-if (!ogl.SizeVertexBuffer (nVerts))
-	return 0;
+	for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
+		pf = *ppf;
+		paf = po->m_adjFaces + pf->m_nAdjFaces;
+		for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
+			h = *paf++;
+			if ((h < 0) || !m_faces [h].m_bFacingLight)
+				nVerts += 4;
+			}
+		}
 
-glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
-for (nVerts = 0, i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
-	pf = *ppf;
-	paf = po->m_adjFaces + pf->m_nAdjFaces;
-	// walk through all edges of the current lit face and check whether the adjacent face does not face the light source
-	// if so, that edge is a contour edge: Use it to render a shadow volume face ("side wall" of the shadow volume)
-	for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
-		h = *paf++;
-		if ((h < 0) || !m_faces [h].m_bFacingLight) {
-			v [1] = pvf [pfv [j]];
-			v [0] = pvf [pfv [(j + 1) % n]];
+	if (!ogl.SizeVertexBuffer (nVerts))
+		return 0;
+
+	glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
+	for (nVerts = 0, i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
+		pf = *ppf;
+		paf = po->m_adjFaces + pf->m_nAdjFaces;
+		// walk through all edges of the current lit face and check whether the adjacent face does not face the light source
+		// if so, that edge is a contour edge: Use it to render a shadow volume face ("side wall" of the shadow volume)
+		for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
+			h = *paf++;
+			if ((h < 0) || !m_faces [h].m_bFacingLight) {
+				v [1] = pvf [pfv [j]];
+				v [0] = pvf [pfv [(j + 1) % n]];
 #if DBG_SHADOWS
-			if (bShadowTest < 3) {
+				if (bShadowTest < 3) {
 #endif
-				v [3] = v [0] - vLightPosf;
-				v [2] = v [1] - vLightPosf;
+					v [3] = v [0] - vLightPosf;
+					v [2] = v [1] - vLightPosf;
 #if NORM_INF
-				v [3] *= fClipDist / v [3].Mag ();
-				v [2] *= fClipDist / v [2].Mag ();
+					v [3] *= fClipDist / v [3].Mag ();
+					v [2] *= fClipDist / v [2].Mag ();
 #else
-				v [3] *= fClipDist;
-				v [2] *= fClipDist;
+					v [3] *= fClipDist;
+					v [2] *= fClipDist;
 #endif
-				v [2] += v [1];
-				v [3] += v [0];
-				ogl.VertexBuffer () [nVerts++] = v [0];
-				ogl.VertexBuffer () [nVerts++] = v [1];
-				ogl.VertexBuffer () [nVerts++] = v [2];
-				ogl.VertexBuffer () [nVerts++] = v [3];
-				//OglDrawArrays (GL_QUADS, 0, 4);
+					//v [2] += v [1];
+					//v [3] += v [0];
+					ogl.VertexBuffer () [nVerts++] = v [0];
+					ogl.VertexBuffer () [nVerts++] = v [1];
+					ogl.VertexBuffer () [nVerts++] = v [2] + v [1];
+					ogl.VertexBuffer () [nVerts++] = v [3] + v [2];
+					//OglDrawArrays (GL_QUADS, 0, 4);
 #if DBG_SHADOWS
-				}
-			else {
-				glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
-				glVertex3fv (reinterpret_cast<GLfloat*> (v));
-				glVertex3fv (reinterpret_cast<GLfloat*> (v + 1));
-				}
+					}
+				else {
+					glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+					glVertex3fv (reinterpret_cast<GLfloat*> (v));
+					glVertex3fv (reinterpret_cast<GLfloat*> (v + 1));
+					}
 #endif
+				}
 			}
 		}
 	}
