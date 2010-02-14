@@ -44,9 +44,9 @@
 #include "automap.h"
 
 #if DBG
-#	define G3_BUFFER_FACES	0
+#	define G3_BUFFER_FACES	1
 #else
-#	define G3_BUFFER_FACES	0
+#	define G3_BUFFER_FACES	1
 #endif
 
 CRenderFaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
@@ -81,8 +81,11 @@ void G3BuildQuadIndex (CSegFace *faceP, int *indexP)
 {
 #if G3_BUFFER_FACES
 int nIndex = faceP->m_info.nIndex;
-for (int i = 0; i < 4; i++)
-	*indexP++ = nIndex++;
+//for (int i = 0; i < 4; i++)
+*indexP++ = nIndex++;
+*indexP++ = nIndex++;
+*indexP++ = nIndex++;
+*indexP = nIndex;
 #else
 	tRgbaColorf	*pc = FACES.color + faceP->m_info.nIndex;
 	float			l, lMax = 0;
@@ -117,10 +120,10 @@ if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 	if (gameStates.render.bFullBright)
 		glColor3f (1,1,1);
 	try {
-		if (!gameStates.render.bTriangleMesh)
-			glDrawElements (GL_TRIANGLE_FAN, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
-		else
+		if (gameStates.render.bTriangleMesh)
 			glDrawElements (GL_TRIANGLES, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
+		else
+			glDrawElements (GL_TRIANGLE_FAN, faceBuffer.nElements, GL_UNSIGNED_INT, faceBuffer.index);
 		}
 	catch(...) {
 		PrintLog ("error calling glDrawElements (%d, %d) in G3FlushFaceBuffer\n", gameStates.render.bTriangleMesh ? "GL_TRIANGLES" : "GL_TRIANGLE_FAN");
@@ -159,12 +162,14 @@ else
 			return;
 			}
 #endif
-	if (!gameStates.render.bTriangleMesh || (faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop) || (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)) {
+	if (/*!gameStates.render.bTriangleMesh ||*/ (faceBuffer.bmBot != bmBot) || (faceBuffer.bmTop != bmTop)) {
 		if (faceBuffer.nFaces)
 			G3FlushFaceBuffer (1);
 		faceBuffer.bmBot = bmBot;
 		faceBuffer.bmTop = bmTop;
 		}
+	else if (faceBuffer.nElements + j > FACE_BUFFER_INDEX_SIZE)
+		G3FlushFaceBuffer (1);
 	faceBuffer.bTextured = bTextured;
 	for (; j; j--)
 		faceBuffer.index [faceBuffer.nElements++] = i++;
@@ -399,28 +404,32 @@ else {
 
 static inline int G3FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
+if (faceP->m_info.nTransparent >= 0)
+	return faceP->m_info.nTransparent;
 if (!bmBot)
-	return faceP->m_info.color.alpha < 1.0f;
+	return faceP->m_info.nTransparent = (faceP->m_info.color.alpha < 1.0f);
 if (faceP->m_info.bTransparent || faceP->m_info.bAdditive)
-	return 1;
+	return faceP->m_info.nTransparent = 1;
 if (bmBot->Flags () & BM_FLAG_SEE_THRU)
-	return 0;
+	return faceP->m_info.nTransparent = 0;
 if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
-	return 0;
+	return faceP->m_info.nTransparent = 0;
 if (!bmTop)
-	return 1;
+	return faceP->m_info.nTransparent = 1;
 if (bmTop->Flags () & BM_FLAG_SEE_THRU)
-	return 0;
+	return faceP->m_info.nTransparent = 0;
 if (bmTop->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
-	return 1;
-return 0;
+	return faceP->m_info.nTransparent = 1;
+return faceP->m_info.nTransparent = 0;
 }
 
 //------------------------------------------------------------------------------
 
 static inline int G3FaceIsColored (CSegFace *faceP)
 {
-return !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
+return (faceP->m_info.nColored >= 0)
+		 ? faceP->m_info.nColored
+		 : faceP->m_info.nColored = !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------

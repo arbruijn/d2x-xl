@@ -88,12 +88,18 @@ class CAutomap {
 		int						m_nLastEdge;
 		int						m_nWidth;
 		int						m_nHeight;
+		int						m_bFade;
+		int						m_nColor;
+		float						m_fScale;
+		tRgbaColorf				m_color;
 		int						m_bChaseCam;
 		int						m_bFreeCam;
 		char						m_szLevelNum [200];
 		char						m_szLevelName [200];
 		CBitmap					m_background;
 		CAngleVector			m_vTAngles;
+		bool						m_bDrawBuffers;
+		int						m_nVerts;
 
 	public:
 		CArray<ushort>			m_visited [2];
@@ -137,6 +143,8 @@ class CAutomap {
 		void AddUnknownEdge (int va, int vb);
 		void AddSegmentEdges (CSegment *segP);
 		void AddUnknownSegmentEdges (CSegment* segP);
+		void SetEdgeColor (int bFade, int nColor, float fScale = 1.e10f);
+		void DrawLine (short v0, short v1);
 };
 
 //------------------------------------------------------------------------------

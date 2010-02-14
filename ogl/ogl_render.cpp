@@ -124,8 +124,8 @@ if (ogl.SizeVertexBuffer (2)) {
 	ogl.SetTextureUsage (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	ogl.VertexBuffer () [0].Assign (p0->p3_vec);
-	ogl.VertexBuffer () [1].Assign (p0->p3_vec);
-	ogl.FlushBuffers (GL_LINES, 2, 2);
+	ogl.VertexBuffer () [1].Assign (p1->p3_vec);
+	ogl.FlushBuffers (GL_LINES, 2, 3);
 	if (CCanvas::Current ()->Color ().rgb)
 		ogl.SetBlending (false);
 	}

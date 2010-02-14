@@ -90,6 +90,8 @@ else
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
 flx.tails [nKey] = i;
+faceP->m_info.nTransparent = -1;
+faceP->m_info.nColored = -1;
 faceP->m_info.nFrame = gameData.app.nFrameCount;
 PROF_END(ptFaceList)
 }

@@ -276,6 +276,8 @@ class CSegFaceInfo {
 		char					nType;
 		char					nSegColor;
 		char					nShader;
+		char					nTransparent;
+		char					nColored;
 		};
 
 class CSegFace {

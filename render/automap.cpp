@@ -996,20 +996,71 @@ for (i = 0; i <= m_nLastEdge; i++) {
 
 //------------------------------------------------------------------------------
 
+void CAutomap::SetEdgeColor (int bFade, int nColor, float fScale)
+{
+if ((bFade != m_bFade) || (nColor != m_nColor) || (fScale != m_fScale)) {
+	m_bFade = bFade;
+	m_nColor = nColor;
+	m_fScale = fScale;
+	if (bFade)
+		CCanvas::Current ()->SetColorRGBi (nColor);
+	else
+		CCanvas::Current ()->SetColorRGBi (RGBA_FADE (nColor, 32.0f / fScale));
+	if (m_bDrawBuffers) {
+		tCanvasColor canvColor = CCanvas::Current ()->Color ();
+		m_color.red = float (canvColor.color.red) / 255.0f;
+		m_color.green = float (canvColor.color.green) / 255.0f;
+		m_color.blue = float (canvColor.color.blue) / 255.0f;
+		m_color.alpha = float (canvColor.color.alpha) / 255.0f;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CAutomap::DrawLine (short v0, short v1)
+{
+if (!m_bDrawBuffers)
+	G3DrawLine (gameData.segs.points + v0, gameData.segs.points + v1);
+else {
+	if (m_nVerts > 998) {
+		ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
+		m_nVerts = 0;
+		}
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v0].p3_vec);
+	ogl.ColorBuffer () [m_nVerts] = m_color;
+	m_nVerts++;
+	ogl.VertexBuffer () [m_nVerts].Assign (gameData.segs.points [v1].p3_vec);
+	ogl.ColorBuffer () [m_nVerts] = m_color;
+	m_nVerts++;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CAutomap::DrawEdges (void)
 {
-	g3sCodes		cc;
-	int			i, j, nbright = 0;
-	ubyte			nfacing, nnfacing;
-	tEdgeInfo*	edgeP;
-	CFixVector	*tv1;
-	fix			distance;
-	fix			minDistance = 0x7fffffff;
-	g3sPoint		*p1, *p2;
-	int			bUseTransform = ogl.m_states.bUseTransform;
+	g3sCodes			cc;
+	int				i, j, nbright = 0;
+	ubyte				nfacing, nnfacing;
+	tEdgeInfo*		edgeP;
+	CFixVector		*tv1;
+	fix				distance;
+	fix				minDistance = 0x7fffffff;
+	g3sPoint			*p1, *p2;
+	int				bUseTransform = ogl.m_states.bUseTransform;
+	bool				bDrawBuffers = ogl.SizeBuffers (1000);
 
 ogl.m_states.bUseTransform = 1;
 glLineWidth (GLfloat (screen.Width ()) / 640.0f);
+ogl.SetDepthTest (false);
+ogl.SetDepthWrite (false);
+ogl.SetTextureUsage (false);
+
+m_bFade = m_nColor = -1;
+m_fScale = 1e10f;
+m_nVerts = 0;
+
 for (i = 0; i <= m_nLastEdge; i++) {
 	//edgeP = &m_edges [Edge_used_list [i]];
 	edgeP = m_edges + i;
@@ -1043,23 +1094,25 @@ for (i = 0; i <= m_nLastEdge; i++) {
 			m_brightEdges [nbright++] = edgeP;
 			}
 		else if (edgeP->flags & (EF_DEFINING|EF_GRATE)) {
-			if (nfacing == 0) {
-				if (edgeP->flags & EF_NO_FADE)
-					CCanvas::Current ()->SetColorRGBi (edgeP->color);
-				else
-					CCanvas::Current ()->SetColorRGBi (RGBA_FADE (edgeP->color, 32.0 / 8.0));
-				G3DrawLine (gameData.segs.points + edgeP->verts [0], gameData.segs.points + edgeP->verts [1]);
-				}
-			else {
+			if (nfacing) 
 				m_brightEdges [nbright++] = edgeP;
+			else {
+				SetEdgeColor (int (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, 8.0f);
+				DrawLine (edgeP->verts [0], edgeP->verts [1]);
 				}
 			}
 		}
 	}
 
+if (m_bDrawBuffers && m_nVerts) {
+	ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
+	m_nVerts = 0;
+	}
 if (minDistance < 0)
 	minDistance = 0;
 
+m_bFade = m_nColor = -1;
+m_fScale = 1e10f;
 // Sort the bright ones using a shell sort
 {
 	int i, j, incr, v1, v2;
@@ -1088,27 +1141,23 @@ while (incr > 0) {
 
 // Draw the bright ones
 for (i = 0; i < nbright; i++) {
-	int color;
-	fix dist;
 	edgeP = m_brightEdges [i];
 	p1 = gameData.segs.points + edgeP->verts [0];
 	p2 = gameData.segs.points + edgeP->verts [1];
-	dist = p1->p3_vec [Z] - minDistance;
+	fix xDist = p1->p3_vec [Z] - minDistance;
 	// Make distance be 1.0 to 0.0, where 0.0 is 10 segments away;
-	if (dist < 0)
-		dist = 0;
-	if (dist >= m_data.nMaxDist)
+	if (xDist < 0)
+		xDist = 0;
+	else if (xDist >= m_data.nMaxDist)
 		continue;
-
-	if (edgeP->flags & EF_NO_FADE)
-		CCanvas::Current ()->SetColorRGBi (edgeP->color);
-	else {
-		dist = I2X (1) - FixDiv (dist, m_data.nMaxDist);
-		color = X2I (dist*31);
-		CCanvas::Current ()->SetColorRGBi (RGBA_FADE (edgeP->color, 32.0 / color));
-		}
-	G3DrawLine (p1, p2);
+	SetEdgeColor (int (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, X2F (I2X (1) - FixDiv (xDist, m_data.nMaxDist)) * 31);
+	DrawLine (edgeP->verts [0], edgeP->verts [1]);
 	}
+if (m_bDrawBuffers && m_nVerts) {
+	ogl.FlushBuffers (GL_LINES, m_nVerts, 3, 0, 1);
+	m_nVerts = 0;
+	}
+
 glLineWidth (1);
 ogl.m_states.bUseTransform = bUseTransform;
 }
