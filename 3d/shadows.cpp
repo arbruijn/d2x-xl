@@ -821,6 +821,8 @@ ogl.FlushBuffers (GL_TRIANGLE_FAN, i);
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
 {
 	CFloatVector*	pvf, v [4];
@@ -920,6 +922,96 @@ glLineWidth (1);
 #endif
 return 1;
 }
+
+#else //------------------------------------------------------------------------------
+
+int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
+{
+	CFloatVector*	pvf, v [4];
+	CFace*			pf, ** ppf;
+	short*			pfv, * paf;
+	short				h, i, j, n;
+	float				fClipDist;
+	int				nClip;
+
+#if DBG_SHADOWS
+if (!bShadowVolume)
+	return 1;
+if (bCullFront && !bBackFaces)
+	return 1;
+if (!bCullFront && !bFrontFaces)
+	return 1;
+if (bShadowTest == 1)
+	glColor4fv (reinterpret_cast<GLfloat*> (shadowColor));
+else if (bShadowTest > 1)
+	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+#endif
+G3SetCullAndStencil (bCullFront, bZPass);
+pvf = po->m_vertsf.Buffer ();
+#if DBG_SHADOWS
+if (bShadowTest < 2)
+	;
+else if (bShadowTest == 2)
+	glLineWidth (3);
+else {
+	glLineWidth (3);
+	glBegin (GL_LINES);
+	}
+#endif
+nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
+fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);
+for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
+	pf = *ppf;
+	paf = po->m_adjFaces + pf->m_nAdjFaces;
+	// walk through all edges of the current lit face and check whether the adjacent face does not face the light source
+	// if so, that edge is a contour edge: Use it to render a shadow volume face ("side wall" of the shadow volume)
+	for (j = 0, n = pf->m_nVerts, pfv = pf->m_verts; j < n; j++) {
+		h = *paf++;
+		if ((h < 0) || !m_faces [h].m_bFacingLight) {
+			v [1] = pvf [pfv [j]];
+			v [0] = pvf [pfv [(j + 1) % n]];
+#if DBG_SHADOWS
+			if (bShadowTest < 3) {
+				glColor4fv (reinterpret_cast<GLfloat*> (shadowColor + bCullFront));
+#endif
+				v [3] = v [0] - vLightPosf;
+				v [2] = v [1] - vLightPosf;
+#if NORM_INF
+				v [3] *= fClipDist / v [3].Mag ();
+				v [2] *= fClipDist / v [2].Mag ();
+#else
+				v [3] *= fClipDist;
+				v [2] *= fClipDist;
+#endif
+				v [2] += v [1];
+				v [3] += v [0];
+#if 1//!DBG
+				OglDrawArrays (GL_QUADS, 0, 4);
+#else
+				glVertex3fv (reinterpret_cast<GLfloat*> (v));
+				glVertex3fv (reinterpret_cast<GLfloat*> (v+1));
+				glVertex3fv (reinterpret_cast<GLfloat*> (v+2));
+				glVertex3fv (reinterpret_cast<GLfloat*> (v+3));
+#endif
+#if DBG_SHADOWS
+				}
+			else {
+				glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
+				glVertex3fv (reinterpret_cast<GLfloat*> (v));
+				glVertex3fv (reinterpret_cast<GLfloat*> (v + 1));
+				}
+#endif
+			}
+		}
+	}
+#if DBG_SHADOWS
+glLineWidth (1);
+#endif
+return 1;
+}
+
+#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -1259,6 +1351,8 @@ return m_fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_INF
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
 {
 	CFloatVector*	pvf, v0, v1;
@@ -1376,6 +1470,120 @@ ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 return 1;
 }
 
+#else //------------------------------------------------------------------------------
+
+int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
+{
+	CFloatVector*	pvf, v0, v1;
+	CFace*			pf, ** ppf;
+	short*			pfv, i, j;
+	float				fClipDist;
+	int				nClip;
+
+#if DBG_SHADOWS
+if (bShadowTest) {
+	glColor4fv (reinterpret_cast<GLfloat*> (modelColor + bCullFront));
+	glDepthFunc (GL_LEQUAL);
+	}
+#endif
+G3SetCullAndStencil (bCullFront, bZPass);
+pvf = po->m_vertsf.Buffer ();
+#if DBG_SHADOWS
+if (bRearCap)
+#endif
+nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
+fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
+for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
+	pf = *ppf;
+#if DBG_SHADOWS
+	if (pf->m_bFacingLight && (bShadowTest > 3)) {
+		glColor4f (0.20f, 0.8f, 1.0f, 1.0f);
+		v1 = v0 = pf->m_vCenterf;
+		glBegin (GL_LINES);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
+		v0 += pf->m_vNormf;
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
+		glEnd ();
+		glColor4d (0,0,1,1);
+		glBegin (GL_LINES);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v1));
+		glVertex3fv (reinterpret_cast<GLfloat*> (&vLightPosf));
+		glEnd ();
+		glColor4fv (reinterpret_cast<GLfloat*> (modelColor + bCullFront));
+		}
+	if (bShadowTest && (bShadowTest != 2)) {
+		glLineWidth (1);
+		glBegin (GL_LINE_LOOP);
+		}
+	else
+#endif
+		glBegin (GL_TRIANGLE_FAN);
+	for (j = pf->m_nVerts, pfv = pf->m_verts + j; j; j--) {
+		v0 = pvf [*--pfv];
+#if 1
+		v1 = v0 - vLightPosf;
+#if DBG_SHADOWS
+		if (bShadowTest < 4)
+#endif
+		 {
+#if NORM_INF
+#	if DBG_SHADOWS
+			if (bShadowTest == 2)
+				v1 *= 5.0f / v1.Mag ();
+			else
+#	endif
+				v1 *= fClipDist / v1.Mag ();
+#else
+			v1 *= fClipDist;
+#endif
+			v0 += v1;
+#endif
+			}
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
+		}
+	glEnd ();
+	}
+#if DBG_SHADOWS
+if (bFrontCap)
+#endif
+for (i = m_nLitFaces, ppf = m_litFaces; i; i--, ppf++) {
+	pf = *ppf;
+	if (!pf->m_bFacingLight)
+		continue;
+#if DBG_SHADOWS
+	if (pf->m_bFacingLight && (bShadowTest > 3)) {
+		glColor4f (1.0f, 0.8f, 0.2f, 1.0f);
+		v1 = v0 = pf->m_vCenterf;
+		glBegin (GL_LINES);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
+		v0 += pf->m_vNormf;
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
+		glEnd ();
+		glColor4d (1,0,0,1);
+		glBegin (GL_LINES);
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v1));
+		glVertex3fv (reinterpret_cast<GLfloat*> (&vLightPosf));
+		glEnd ();
+		glColor4fv (reinterpret_cast<GLfloat*> (modelColor + bCullFront));
+		}
+	if (bShadowTest && (bShadowTest != 2)) {
+		glLineWidth (1);
+		glBegin (GL_LINE_LOOP);
+		}
+	else
+#endif
+		glBegin (GL_TRIANGLE_FAN);
+	for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--) {
+		v0 = pvf [*pfv++];
+		glVertex3fv (reinterpret_cast<GLfloat*> (&v0));
+		}
+	glEnd ();
+	}
+return 1;
+}
+
+#endif
+
 //------------------------------------------------------------------------------
 
 int CSubModel::RenderShadow (CObject *objP, CModel* po)
@@ -1397,6 +1605,7 @@ if (pso - po->m_subModels == 8)
 GatherLitFaces (po);
 if ((m_nRenderFlipFlop = !m_nRenderFlipFlop))
 	m_fClipDist = ClipDist (objP, po);
+ogl.SetTextureUsage (false);
 h = RenderShadowCaps (objP, po, 0) &&
 	 RenderShadowCaps (objP, po, 1) &&
 	 RenderShadowVolume (po, 0) &&

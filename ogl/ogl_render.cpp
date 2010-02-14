@@ -1246,7 +1246,7 @@ RenderQuad (NULL, verts, 2, bTextured ? texCoord : NULL);
 
 bool COglBuffers::SizeVertices (int nVerts)
 {
-if (int (vertices.Length ()) < nVerts)
+if (int (vertices.Length ()) >= nVerts)
 	return true;
 vertices.Destroy ();
 return vertices.Create (nVerts) != NULL;
