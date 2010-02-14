@@ -599,7 +599,7 @@ int DrawHiresObject (CObject *objP, fix xLight, fix *xEngineGlow)
 	OOF::CModel	*po;
 
 if (gameStates.render.bLoResShadows && (gameStates.render.nShadowPass == 2))
-	return 0;
+	return 1;
 if (objP->info.nType == OBJ_DEBRIS)
 	return 0;
 else if ((objP->info.nType == OBJ_POWERUP) || (objP->info.nType == OBJ_WEAPON)) {

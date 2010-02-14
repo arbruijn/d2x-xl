@@ -284,9 +284,6 @@ nVerts = 0;
 for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++)
 	nVerts += pf->m_nVerts;
 
-if (!ogl.Buffers ().SizeVertices (nVerts))
-	return 1;
-
 if (bCullFront) {
 #if DBG_SHADOWS
 	if (!bRearCap)
@@ -298,7 +295,11 @@ if (bCullFront) {
 			glFrontFace (GL_CCW);
 		for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
 			if (pf->m_bReverse == bReverse) {
-				for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++) {
+				j = pf->m_nVerts;
+				if (!ogl.Buffers ().SizeVertices (j))
+					return 1;
+				nVerts = 0;
+				for (pfv = pf->m_verts; j; j--, pfv++) {
 					v0 = pv [pfv->m_nIndex];
 					v1 = v0 - vrLightPos;
 #if NORM_INF
@@ -308,9 +309,9 @@ if (bCullFront) {
 #endif
 					ogl.VertexBuffer () [nVerts++] = v0 + v1;
 					}
+				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 				}
 			}
-		ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -324,11 +325,15 @@ else {
 		nVerts = 0;
 		for (i = pso->m_faces.m_nFaces, pf = pso->m_faces.m_list.Buffer (); i; i--, pf++) {
 			if (pf->m_bReverse == bReverse) {
-				for (j = pf->m_nVerts, pfv = pf->m_verts; j; j--, pfv++)
+				j = pf->m_nVerts;
+				if (!ogl.Buffers ().SizeVertices (j))
+					return 1;
+				nVerts = 0;
+				for (pfv = pf->m_verts; j; j--, pfv++)
 					ogl.VertexBuffer () [nVerts++] = pv [pfv->m_nIndex];
 				}
+			ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 			}
-		ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts);
 		if (bReverse)
 			glFrontFace (GL_CW);
 		}
@@ -568,7 +573,7 @@ for (i = 0; i < m_nChildren; i++) {
 	}
 #endif
 if (gameStates.render.nShadowPass == 2)
-	OOF_DrawShadow (po, pso);
+	OOF_DrawShadow (po, po->m_subModels + nIndex);
 else
 	Draw (objP, po, fLight);
 return 1;
