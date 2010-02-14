@@ -143,7 +143,7 @@ class CAutomap {
 		void AddUnknownEdge (int va, int vb);
 		void AddSegmentEdges (CSegment *segP);
 		void AddUnknownSegmentEdges (CSegment* segP);
-		void SetEdgeColor (int bFade, int nColor, float fScale = 1.e10f);
+		void SetEdgeColor (int nColor, int bFade, float fScale = 1.e10f);
 		void DrawLine (short v0, short v1);
 };
 

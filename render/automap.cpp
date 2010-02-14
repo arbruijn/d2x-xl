@@ -996,7 +996,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 
 //------------------------------------------------------------------------------
 
-void CAutomap::SetEdgeColor (int bFade, int nColor, float fScale)
+void CAutomap::SetEdgeColor (int nColor, int bFade, float fScale)
 {
 if ((bFade != m_bFade) || (nColor != m_nColor) || (fScale != m_fScale)) {
 	m_bFade = bFade;
@@ -1049,8 +1049,8 @@ void CAutomap::DrawEdges (void)
 	fix				minDistance = 0x7fffffff;
 	g3sPoint			*p1, *p2;
 	int				bUseTransform = ogl.m_states.bUseTransform;
-	bool				bDrawBuffers = ogl.SizeBuffers (1000);
-
+	
+m_bDrawBuffers = ogl.SizeBuffers (1000);
 ogl.m_states.bUseTransform = 1;
 glLineWidth (GLfloat (screen.Width ()) / 640.0f);
 ogl.SetDepthTest (false);
@@ -1158,6 +1158,8 @@ if (m_bDrawBuffers && m_nVerts) {
 	m_nVerts = 0;
 	}
 
+ogl.SetDepthTest (true);
+ogl.SetDepthWrite (true);
 glLineWidth (1);
 ogl.m_states.bUseTransform = bUseTransform;
 }
