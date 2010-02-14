@@ -345,10 +345,14 @@ return 1;
 
 int OOF_DrawShadow (CModel *po, CSubModel *pso)
 {
+#if 1
+return 1;	// D2 oof models aren't 'shadow proof'
+#else
 return OOF_DrawShadowVolume (po, pso, 0) && 
 		 OOF_DrawShadowVolume (po, pso, 1) && 
 		 OOF_DrawShadowCaps (po, pso, 0) && 
 		 OOF_DrawShadowCaps (po, pso, 1); 
+#endif
 }
 
 //------------------------------------------------------------------------------
