@@ -60,6 +60,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "createmesh.h"
 #include "systemkeys.h"
 
+#undef DBG
+#define DBG 1
+
 //------------------------------------------------------------------------------
 
 #define LMAP_LIGHTADJUST	1

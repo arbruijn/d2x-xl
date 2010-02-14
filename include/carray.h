@@ -8,13 +8,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifndef DBG
+#ifndef DBG_ARRAYS
 #	ifdef _DEBUG
 #		define DBG 1
 #	else
 #		define DBG 0
 #	endif
 #endif
+
+#define DBG_ARRAYS	1 //DBG
 
 #include "pstypes.h"
 #include "cquicksort.h"
@@ -97,7 +99,7 @@ class CArray : public CQuickSort < _T > {
 			}
 
 		void Clear (ubyte filler = 0, uint count = 0xffffffff) { 
-#if DBG
+#if DBG_ARRAYS
 			if ((count != 0xffffffff) && (count > 1000000)) {
 				count = count;
 				ArrayError ("array overflow\n");
@@ -122,7 +124,7 @@ class CArray : public CQuickSort < _T > {
 			return true;
 			}
 
-#if DBG
+#if DBG_ARRAYS
 		inline int Index (_T* elem) { 
 			if (IsElement (elem))
 				return static_cast<int> (elem - m_data.buffer); 
@@ -133,7 +135,7 @@ class CArray : public CQuickSort < _T > {
 		inline uint Index (_T* elem) { return uint (elem - m_data.buffer); }
 #endif
 
-#if DBG
+#if DBG_ARRAYS
 		inline _T* Pointer (uint i) { 
 			if (!m_data.buffer || (i >= m_data.length)) {
 				ArrayError ("invalid array handle or index\n");
@@ -149,7 +151,7 @@ class CArray : public CQuickSort < _T > {
 			if (m_data.buffer) {
 				if (!m_data.nMode) {
 					delete[] m_data.buffer;
-#if DBG
+#if DBG_ARRAYS
 					m_data.buffer = reinterpret_cast<_T *> (NULL); 
 #endif
 					}
@@ -165,7 +167,7 @@ class CArray : public CQuickSort < _T > {
 						m_data.length = length;
 					}
 				catch(...) {
-#if DBG
+#if DBG_ARRAYS
 					ArrayError ("invalid buffer size\n");
 #endif
 					m_data.buffer = NULL;
@@ -197,7 +199,7 @@ class CArray : public CQuickSort < _T > {
 			p = new _T [length];
 				}
 			catch(...) {
-#if DBG
+#if DBG_ARRAYS
 				ArrayError ("invalid buffer size\n");
 #endif
 				p = NULL;
@@ -219,7 +221,7 @@ class CArray : public CQuickSort < _T > {
 		inline _T* Current (void) { return m_data.buffer ? m_data.buffer + m_data.pos : NULL; }
 
 		inline size_t Size (void) { return m_data.length * sizeof (_T); }
-#if DBG
+#if DBG_ARRAYS
 		inline _T& operator[] (uint i) { 
 			if (m_data.buffer && (i < m_data.length))
 				return m_data.buffer [i];
@@ -294,7 +296,7 @@ class CArray : public CQuickSort < _T > {
 			return m_data.buffer + m_data.pos;
 			}
 
-#if DBG
+#if DBG_ARRAYS
 
 		inline _T* operator+ (uint i) { 
 			if (m_data.buffer && (i < m_data.length))

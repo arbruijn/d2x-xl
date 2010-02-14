@@ -47,6 +47,9 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #define TI_POLY_OFFSET 0
 #define TI_POLY_CENTER 1
 
+#undef DBG
+#define DBG 1
+
 #if DBG
 int nDbgPoly = -1, nDbgItem = -1;
 #endif

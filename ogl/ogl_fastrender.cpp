@@ -46,8 +46,11 @@
 #if DBG
 #	define G3_BUFFER_FACES	1
 #else
-#	define G3_BUFFER_FACES	1
+#	define G3_BUFFER_FACES	0
 #endif
+
+#undef DBG
+#define DBG 1
 
 CRenderFaceDrawerP g3FaceDrawer = G3DrawFaceArrays;
 
@@ -154,7 +157,7 @@ else
 	int	i = faceP->m_info.nIndex,
 			j = gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4;
 
-#if DBG
+#if 0 //DBG
 		if (i == nDbgVertex)
 			nDbgVertex = nDbgVertex;
 		if (i + j > int (FACES.vertices.Length ())) {
