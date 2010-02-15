@@ -8912,6 +8912,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\ogl\ogl_buffers.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\ogl\ogl_color.cpp"
 						>
 					</File>
@@ -10711,11 +10715,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
