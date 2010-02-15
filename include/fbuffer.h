@@ -63,6 +63,7 @@ class CFBO {
 		inline GLenum GetStatus (void) { return m_info.nStatus; }
 		inline void SetStatus (GLenum nStatus) { m_info.nStatus = nStatus; }
 		inline int Active (void) { return m_info.bActive; }
+		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }
 		GLuint& RenderBuffer (void) { return m_info.hRenderBuffer; }
 		GLuint& DepthBuffer (void) { return m_info.hDepthBuffer; }

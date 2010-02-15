@@ -284,7 +284,7 @@ class COGL {
 								tRgbaColorf *colorP = NULL, int nColors = 1, 
 								CBitmap *bmP = NULL, int nFrame = 0, int nWrap = GL_REPEAT);
 		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions = 3, tTexCoord2f* texCoordP = NULL, tRgbaColorf* colorP = NULL, int nColors = 1, int nWrap = GL_CLAMP);
-		int RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions = 2, int nWrap = GL_CLAMP);
+		int RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions = 3, int nWrap = GL_CLAMP);
 		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
 		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int bAdditive, float fSoftRad);
 		void RenderScreenQuad (int bTextured = 0);
@@ -436,6 +436,13 @@ class COGL {
 					glBindTexture (GL_TEXTURE_2D, m_data.nTexture [i] = 0); 
 					break;
 					}
+			}
+
+		inline int IsBound (GLuint handle) { 
+			for (int i = 0; i < 4; i++)
+				if (m_data.nTexture [i] == handle)
+					return i;
+			return -1;
 			}
 
 #if DBG_OGL

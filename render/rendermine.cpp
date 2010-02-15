@@ -1056,7 +1056,6 @@ gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras &&
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) &&
 										 !gameStates.render.cameras.bActive;
 gameStates.render.bDoLightmaps = 0;
-ResetFaceList ();
 }
 
 //------------------------------------------------------------------------------
@@ -1068,6 +1067,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, xStereoSeparation, nWindow);
 
 	if (xStereoSeparation <= 0) {
+		ResetFaceList ();
 		gameStates.render.nThreads = GetNumThreads ();
 		lightManager.ResetSegmentLights ();
 		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)

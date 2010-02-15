@@ -2243,6 +2243,7 @@ if (i >= 0) {
 		}
 	else
 		Destroy (m_systems + i, NULL);
+	ogl.SetFaceCulling (true);
 	}
 }
 

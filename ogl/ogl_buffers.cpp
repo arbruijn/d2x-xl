@@ -296,7 +296,7 @@ if (HaveDrawBuffer ()) {
 	ogl.SetTextureUsage (true);
 	SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer ()->RenderBuffer ());
-
+#if 1
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 		int h = gameOpts->render.bDeghost;
@@ -323,11 +323,26 @@ if (HaveDrawBuffer ()) {
 				}
 			}
 		}
+#endif
 	if (bAdditive) {
 		ogl.SetBlending (true);
 		SetBlendMode (GL_ONE, GL_ONE);
 		}
-	ogl.RenderScreenQuad ();
+	glColor3f (1, 1, 1);
+#if 0 //DBG
+	glBegin (GL_QUADS);
+	glTexCoord2f (0, 0);
+	glVertex2f (0, 0);
+	glTexCoord2f (0, 1);
+	glVertex2f (0, 1);
+	glTexCoord2f (1, 1);
+	glVertex2f (1, 1);
+	glTexCoord2f (1, 0);
+	glVertex2f (1, 0);
+	glEnd ();
+#else
+	ogl.RenderScreenQuad (1);
+#endif
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)

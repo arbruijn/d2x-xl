@@ -226,6 +226,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int CFBO::IsBound (void) 
+{ 
+return m_info.hRenderBuffer && (m_info.hRenderBuffer == ogl.BoundTexture ()); 
+}
+
+//------------------------------------------------------------------------------
+
 void CFBO::Setup (void)
 {
 PrintLog ("Checking rendering to texture ...\n");

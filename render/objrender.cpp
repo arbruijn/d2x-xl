@@ -295,7 +295,7 @@ void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf
 #if 0
 	int			bMuzzleFlash = 0;
 #endif
-	int			bAdditive = 0, bEnergy = 0, nTransp = (nType == OBJ_POWERUP) ? 3 : 2;
+	int			bAdditive = 0, bEnergy = 0;
 	fix			xSize;
 	float			fScale;
 
@@ -330,7 +330,6 @@ if (gameOpts->render.textures.bUseHires [0] || gameOpts->render.effects.bTranspa
 		}
 	}
 else {
-	nTransp = 3;
 	fAlpha = 1.0f;
 	}
 

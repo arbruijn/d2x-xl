@@ -1018,9 +1018,7 @@ return 0;
 
 int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap)
 {
-if (!bmP) 
-	ogl.SetTextureUsage (false);
-else {
+if (bmP) {
 	ogl.SetTextureUsage (true);
 	if (!bmP->IsBound ()) {
 		if (bmP->Bind (1))
@@ -1031,6 +1029,8 @@ else {
 		bmP->Texture ()->Wrap (nWrap);
 		}
 	}
+else if (!(ogl.DrawBuffer () && ogl.DrawBuffer ()->IsBound ()))
+	ogl.SetTextureUsage (false);
 return 1;
 }
 
@@ -1042,7 +1042,7 @@ int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							   CBitmap *bmP,
 							  int nTMU)
 {
-if (!ogl.EnableClientStates (m_data.bClientTexCoord = (bmP && texCoordP), m_data.bClientColor = (colorP && (nColors == nVertices)), 0, nTMU))
+if (!ogl.EnableClientStates (m_data.bClientTexCoord = texCoordP != NULL, m_data.bClientColor = ((colorP != NULL) && (nColors == nVertices)), 0, nTMU))
 	return 0;
 if (texCoordP)
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
@@ -1122,7 +1122,7 @@ return 1;
 int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
 {
 if (!bmP)
-	ogl.RenderArrays (GL_QUADS, vertexP, 4, nDimensions, NULL, colorP, nColors, bmP, 0, GL_REPEAT);
+	ogl.RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, GL_CLAMP);
 else if (texCoordP)
 	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, nWrap);
 else {
@@ -1155,6 +1155,35 @@ if (nDimensions == 3)
  verts [3][Z] = vPosf [Z];
 int nColors = 0;
 tRgbaColorf* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
+#if 0 //DBG
+if (bmP) {
+	float u = bmP->Texture ()->U ();
+	float v = bmP->Texture ()->V ();
+	glEnable (GL_TEXTURE_2D);
+	if (bmP->Bind (1)) 
+		return 1;
+	bmP = bmP->Override (-1);
+	bmP->Texture ()->Wrap (GL_CLAMP);
+	SetFaceCulling (false);
+	if (colorP)
+		glColor4fv (reinterpret_cast<GLfloat*>(colorP));
+	else
+		glColor3f (1, 1, 1);
+	glBegin (GL_QUADS);
+	glTexCoord2f (0, 0);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [0]));
+	glTexCoord2f (u, 0);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [1]));
+	glTexCoord2f (u, v);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [2]));
+	glTexCoord2f (0, v);
+	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [3]));
+	glEnd ();
+	SetFaceCulling (true);
+	return 1;
+	}
+else
+#endif
 return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);
 }
 
@@ -1163,7 +1192,7 @@ return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, c
 int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive)
 {
 	CFloatVector	vPosf;
-	tRgbaColorf		color = {1, 1, 1, 1};
+	tRgbaColorf		color = {1, 1, 1, alpha};
 
 SelectTMU (GL_TEXTURE0);
 SetBlendMode (bAdditive);
@@ -1228,7 +1257,7 @@ return 0;
 
 void COGL::RenderScreenQuad (int bTextured)
 {
-	static tTexCoord2f texCoord [4] = {{0,0},{1,0},{1,1},{0,1}};
+	static tTexCoord2f texCoord [4] = {{0,0},{0,1},{1,1},{1,0}};
 
 CFloatVector verts [4];
 verts [0][X] =

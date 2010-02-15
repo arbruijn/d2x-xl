@@ -307,7 +307,7 @@ if (nState == 0) {
 	ogl.SetReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 0);
 	ogl.SetFaceCulling (false);
 	ogl.SetBlending (false);
-	glDisable (GL_ALPHA_TEST);
+	ogl.SetAlphaTest (false);
 	ogl.SetDepthTest (false);
 	glColor3f (0,0,0);
 #if GPGPU_LIGHT_DRAWARRAYS
