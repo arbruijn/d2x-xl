@@ -359,9 +359,9 @@ return m_vOffs;
 }
 
 //------------------------------------------------------------------------------
-// phi is used to pull the random perlin path down; the closer to the start
-// and end the more it is pulled down. That way the path will actually start at the 
-// intended start and end points and get more jaggy the further it is away from them.
+// phi is used to modulate the perlin path via a sine function to make it begin
+// at the intended start and end points and then have increasing amplitude as 
+// moving out from them.
 
 CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, int *nSeed, double phi, double i)
 {
