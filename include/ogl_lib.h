@@ -294,7 +294,7 @@ class COGL {
 			if (bCurrent != bNew) 
 #endif
 				{
-				if (bCurrent = bNew)
+				if ((bCurrent = bNew))
 					glEnable (nFunc);
 				else
 					glDisable (nFunc);
