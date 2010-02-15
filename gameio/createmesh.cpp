@@ -1119,7 +1119,7 @@ for (int i = 0; i < gameData.segs.nFaces; i++, faceP++) {
 		faceP->m_info.nKey = int (faceP->m_info.nBaseTex);
 	else {
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
-		if (faceP->bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT)
+		if (faceP->bmTop && (faceP->bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT))
 			faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES * MAX_WALL_TEXTURES;
 		else
 			faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES;
@@ -1447,17 +1447,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		else {
 			m_colorP += FACE_VERTS;
 			}
-		}
-	if (!(gameStates.render.bTriangleMesh || gameStates.render.bPerPixelLighting) &&
-		 ogl.m_states.bGlTexMerge && m_nOvlTexCount) { //allow for splitting multi-textured faces into two single textured ones
-		gameData.segs.nFaces += m_nOvlTexCount;
-		m_faceP += m_nOvlTexCount;
-		m_triP += 2;
-		m_vertexP += m_nOvlTexCount * FACE_VERTS;
-		m_normalP += m_nOvlTexCount * FACE_VERTS;
-		m_texCoordP += m_nOvlTexCount * FACE_VERTS;
-		m_ovlTexCoordP += m_nOvlTexCount * FACE_VERTS;
-		m_faceColorP += m_nOvlTexCount * FACE_VERTS;
 		}
 	}
 #if 1

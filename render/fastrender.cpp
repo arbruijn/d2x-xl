@@ -38,8 +38,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fastrender.h"
 #include "ogl_shader.h"
 
-#define RENDER_DEPTHMASK_FIRST 0
-
 //------------------------------------------------------------------------------
 
 void ResetFaceList (void)
@@ -151,51 +149,6 @@ else {
 		}
 	}
 }
-
-//------------------------------------------------------------------------------
-
-#if RENDER_DEPTHMASK_FIRST
-
-void SplitFace (tSegFaces *segFaceP, CSegFace *faceP)
-{
-	CSegFace *newFaceP;
-
-if (gameStates.render.bPerPixelLighting)
-	return;
-if (!ogl.m_states.bGlTexMerge)
-	return;
-if (faceP->m_info.bSolid)
-	return;
-if (faceP->m_info.bSlide || !faceP->m_info.nOvlTex || !faceP->bmTop || faceP->m_info.bAnimation ||
-	 (gameStates.render.history.bOverlay >= 0) || (faceP->m_info.nCamera >= 0))
-	faceP->m_info.bSolid = 1;
-else if (faceP->bmTop && strstr (faceP->bmTop->szName, "door"))
-	faceP->m_info.bAnimation = faceP->m_info.bSolid = 1;
-if (faceP->m_info.bSolid)
-	return;
-#if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
-#endif
-newFaceP = segFaceP->faceP + segFaceP->nFaces++;
-*newFaceP = *faceP;
-newFaceP->nIndex = (newFaceP - 1)->nIndex + (newFaceP - 1)->nTris * 3;
-memcpy (newFaceP->index, faceP->m_info.index, sizeof (faceP->m_info.index));
-int nVerts = newFaceP->nTris * 3;
-memcpy (FACES.vertices + newFaceP->nIndex, FACES.vertices + faceP->m_info.nIndex, nVerts * sizeof (CFloatVector3));
-memcpy (FACES.texCoord + newFaceP->nIndex, FACES.ovlTexCoord + faceP->m_info.nIndex, nVerts * sizeof (tTexCoord2f));
-memcpy (FACES.color + newFaceP->nIndex, FACES.color + faceP->m_info.nIndex, nVerts * sizeof (tRgbaColorf));
-newFaceP->nBaseTex = faceP->m_info.nOvlTex;
-faceP->m_info.nOvlTex = newFaceP->nOvlTex = 0;
-faceP->bmTop = 
-newFaceP->bmTop = NULL;
-faceP->m_info.bSplit = 1;
-newFaceP->bOverlay = 1;
-if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
-	faceP->m_info.bIsLight = 0;
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 
