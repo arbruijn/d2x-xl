@@ -868,7 +868,7 @@ if (gameConfig.nTotalTime > (25 * 60)) {	// played for more than 25 hours
 	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;
 	messageBox.Show (TXT_PLEASE_DONATE);
-	G3_SLEEP (10000);
+	G3_SLEEP (15000);
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
@@ -892,7 +892,7 @@ if (!ogl.m_states.bShadersOk && (gameConfig.nVersion != D2X_IVER)) {
 		}
 #endif
 	messageBox.Show (TXT_BAD_HARDWARE);
-	G3_SLEEP (4000);
+	G3_SLEEP (5000);
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
