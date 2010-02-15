@@ -1094,7 +1094,7 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 gameStates.render.bDepthSort = -1;
 if (item->nType == riSphereShield)
-	;//DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
+	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 gameStates.render.bDepthSort = 1;
