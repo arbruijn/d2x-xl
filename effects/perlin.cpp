@@ -7,12 +7,12 @@ static long randSeed = 0;
 
 //------------------------------------------------------------------------------
 
+#define RAND_HALF	((double (RAND_MAX) + 1) / 2)
+
 double Noise1D (long x)
 {
 #if 1
-//srand (randSeed * (x + 2));
-x = rand ();
-return double (x - (double (RAND_MAX) + 1) / 2) / ((double (RAND_MAX) + 1) / 2);
+return (double (rand ()) - RAND_HALF) / RAND_HALF;
 #else
 double h;
 x = randSeed + x * x;
