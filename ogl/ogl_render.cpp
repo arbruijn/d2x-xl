@@ -1155,35 +1155,6 @@ if (nDimensions == 3)
  verts [3][Z] = vPosf [Z];
 int nColors = 0;
 tRgbaColorf* colorP = bmP ? bmP->GetColor (&nColors) : NULL;
-#if 0 //DBG
-if (bmP) {
-	float u = bmP->Texture ()->U ();
-	float v = bmP->Texture ()->V ();
-	glEnable (GL_TEXTURE_2D);
-	if (bmP->Bind (1)) 
-		return 1;
-	bmP = bmP->Override (-1);
-	bmP->Texture ()->Wrap (GL_CLAMP);
-	SetFaceCulling (false);
-	if (colorP)
-		glColor4fv (reinterpret_cast<GLfloat*>(colorP));
-	else
-		glColor3f (1, 1, 1);
-	glBegin (GL_QUADS);
-	glTexCoord2f (0, 0);
-	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [0]));
-	glTexCoord2f (u, 0);
-	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [1]));
-	glTexCoord2f (u, v);
-	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [2]));
-	glTexCoord2f (0, v);
-	glVertex3fv (reinterpret_cast<GLfloat*> (&verts [3]));
-	glEnd ();
-	SetFaceCulling (true);
-	return 1;
-	}
-else
-#endif
 return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, colorP, nColors, nWrap);
 }
 
