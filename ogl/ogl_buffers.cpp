@@ -68,6 +68,50 @@ float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.
 
 //------------------------------------------------------------------------------
 
+#if DBG_OGL
+
+void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+{
+m_data.clientBuffers [m_data.nTMU [0]][0].buffer = pointer;
+m_data.clientBuffers [m_data.nTMU [0]][0].pszFile = pszFile;
+m_data.clientBuffers [m_data.nTMU [0]][0].nLine = nLine;
+glVertexPointer (size, type, stride, pointer);
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+{
+m_data.clientBuffers [m_data.nTMU [0]][1].buffer = pointer;
+m_data.clientBuffers [m_data.nTMU [0]][1].pszFile = pszFile;
+m_data.clientBuffers [m_data.nTMU [0]][1].nLine = nLine;
+glNormalPointer (type, stride, pointer);
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+{
+m_data.clientBuffers [m_data.nTMU [0]][2].buffer = pointer;
+m_data.clientBuffers [m_data.nTMU [0]][2].pszFile = pszFile;
+m_data.clientBuffers [m_data.nTMU [0]][2].nLine = nLine;
+glColorPointer (size, type, stride, pointer);
+}
+
+//------------------------------------------------------------------------------
+
+void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+{
+m_data.clientBuffers [m_data.nTMU [0]][4].buffer = pointer;
+m_data.clientBuffers [m_data.nTMU [0]][4].pszFile = pszFile;
+m_data.clientBuffers [m_data.nTMU [0]][4].nLine = nLine;
+glTexCoordPointer (size, type, stride, pointer);
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
 void COGL::SwapBuffers (int bForce, int bClear)
 {
 if (!gameStates.menus.nInMenu || bForce) {
@@ -354,50 +398,6 @@ if (glGetError ()) {
 	return hBuffer = 0;
 	}
 return hBuffer;
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
-#if DBG_OGL
-
-void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
-{
-m_data.clientBuffers [m_data.nTMU [0]][0].buffer = pointer;
-m_data.clientBuffers [m_data.nTMU [0]][0].pszFile = pszFile;
-m_data.clientBuffers [m_data.nTMU [0]][0].nLine = nLine;
-glVertexPointer (size, type, stride, pointer);
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
-{
-m_data.clientBuffers [m_data.nTMU [0]][1].buffer = pointer;
-m_data.clientBuffers [m_data.nTMU [0]][1].pszFile = pszFile;
-m_data.clientBuffers [m_data.nTMU [0]][1].nLine = nLine;
-glNormalPointer (type, stride, pointer);
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
-{
-m_data.clientBuffers [m_data.nTMU [0]][2].buffer = pointer;
-m_data.clientBuffers [m_data.nTMU [0]][2].pszFile = pszFile;
-m_data.clientBuffers [m_data.nTMU [0]][2].nLine = nLine;
-glColorPointer (size, type, stride, pointer);
-}
-
-//------------------------------------------------------------------------------
-
-void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
-{
-m_data.clientBuffers [m_data.nTMU [0]][4].buffer = pointer;
-m_data.clientBuffers [m_data.nTMU [0]][4].pszFile = pszFile;
-m_data.clientBuffers [m_data.nTMU [0]][4].nLine = nLine;
-glTexCoordPointer (size, type, stride, pointer);
 }
 
 #endif

@@ -195,34 +195,28 @@ if (m_info.hFBO) {
 
 int CFBO::Enable (void)
 {
-if (!ogl.m_states.bRender2TextureOk)
+if (Available () <= 0)
 	return 0;
+if (m_info.bActive)
+	return 1;
 ogl.SetDrawBuffer (GL_BACK, 0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-m_info.bActive = 0;
 //ogl.BindTexture (0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-#if 1//DBG
-if (!Available ())
-	return 0;
-#endif
-m_info.bActive = 1;
 ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
-return 1;
+return m_info.bActive = 1;
 }
 
 //------------------------------------------------------------------------------
 
 int CFBO::Disable (void)
 {
-if (!ogl.m_states.bRender2TextureOk)
+if (Available () <= 0)
 	return 0;
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+if (!m_info.bActive)
+	return 1;
 m_info.bActive = 0;
-#if 1//DBG
-if (!Available ())
-	return 0;
-#endif
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 //ogl.BindTexture (m_info.hRenderBuffer);
 ogl.SetDrawBuffer (GL_BACK, 0);
 return 1;
