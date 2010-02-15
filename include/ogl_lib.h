@@ -149,6 +149,7 @@ class COglStates {
 		int	bFSAA;
 		int	bAntiAliasing;
 		int	bAntiAliasingOk;
+		int	bQuadBuffering;
 		int	bVoodooHack;
 		int	bTextureCompression;
 		int	bHaveTexCompression;

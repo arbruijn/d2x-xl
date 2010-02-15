@@ -313,6 +313,8 @@ else
 	ogl.m_states.nPreloadTextures = 5;
 if ((t = FindArg ("-FSAA")))
 	ogl.m_states.bFSAA = NumArg (t, 1);
+if ((t = FindArg ("-quad_buffering")))
+	ogl.m_states.bQuadBuffering = NumArg (t, 1);
 
 #ifdef GL_ARB_multitexture
 if (t = FindArg ("-gl_arb_multitexture_ok")))
