@@ -1736,6 +1736,7 @@ if (InitBuffer (bLightmaps)) {
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
 	glNormal3f (1, 1, 1);
 	}
+#if GL_FALLBACK
 else {
 	tParticleVertex *pb;
 	glNormal3f (0, 0, 0);
@@ -1747,6 +1748,7 @@ else {
 		}
 	glEnd ();
 	}
+#endif
 m_iBuffer = 0;
 //ogl.SetDepthWrite (true);
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())

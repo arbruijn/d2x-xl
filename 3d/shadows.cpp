@@ -846,7 +846,7 @@ G3SetCullAndStencil (bCullFront, bZPass);
 if (!bCullFront) 
 	{
 	pvf = po->m_vertsf.Buffer ();
-	#if DBG_SHADOWS
+#if DBG_SHADOWS
 	if (bShadowTest < 2)
 		;
 	else if (bShadowTest == 2)
@@ -855,7 +855,7 @@ if (!bCullFront)
 		glLineWidth (3);
 		glBegin (GL_LINES);
 		}
-	#endif
+#endif
 	nClip = gameOpts->render.shadows.nClip ? po->m_fClipDist.Buffer () ? gameOpts->render.shadows.nClip : 1 : 0;
 	fClipDist = (nClip >= 2) ? m_fClipDist : fInf;
 	//OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), v);

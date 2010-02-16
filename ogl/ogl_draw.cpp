@@ -47,17 +47,16 @@ extern int r_upixelc;
 
 void OglDrawPixel (int x, int y, tCanvasColor *colorP)
 {
-ogl.SetTextureUsage (false);
-glPointSize (1.0);
-glBegin (GL_POINTS);
-if (!colorP)
-	colorP = &COLOR;
-OglCanvasColor (colorP);
-glVertex2f (float (x + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW),
-				1.0f - float (y + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastW));
-//if (colorP->rgb)
-//	ogl.SetBlending (false);
-glEnd ();
+if (ogl.SizeVertexBuffer (1)) {
+	ogl.SetTextureUsage (false);
+	glPointSize (1.0);
+	if (!colorP)
+		colorP = &COLOR;
+	OglCanvasColor (colorP);
+	ogl.VertexBuffer () [0][X] = float (x + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
+	ogl.VertexBuffer () [0][Y] = 1.0f - float (y + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastW);
+	ogl.FlushBuffers (GL_POINT, 1, 2);
+	}
 }
 
 //------------------------------------------------------------------------------

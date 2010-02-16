@@ -403,7 +403,7 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 
 if (i - m_tEnter > gameOpts->menus.nFade) {
 	if (i - t0 < 25) {
-		G3_SLEEP (0);
+		G3_SLEEP (1);
 		return;
 		}
 	t0 = i;

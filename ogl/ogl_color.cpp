@@ -255,19 +255,27 @@ else {
 //------------------------------------------------------------------------------
 
 /*inline*/
-void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tFaceColor *vertColor)
+void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tRgbaColorf* colorP)
 {
 	float l = (bmP->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
 
 if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
-if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)
-	OglColor4sf (l, l, l, s);
-else if (vertColor) {
+if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
+	if (!colorP)
+		OglColor4sf (l, l, l, s);
+	else {
+		colorP->red =
+		colorP->green =
+		colorP->blue = l;
+		colorP->alpha = s;
+		}
+	}
+else if (colorP) {
 	if (tMapColor.index) {
 		ScaleColor (&tMapColor, l);
-		vertColor->color = tMapColor.color;
+		*colorP = tMapColor.color;
 		if (l >= 0)
 			tMapColor.color.red =
 			tMapColor.color.green =
@@ -278,7 +286,7 @@ else if (vertColor) {
 	else if (vertColors [i].index) {
 			tFaceColor *pvc = vertColors + i;
 
-		vertColor->color = vertColors [i].color;
+		*colorP = vertColors [i].color;
 		if (bResetColor) {
 			pvc->color.red =
 			pvc->color.green =
@@ -287,11 +295,11 @@ else if (vertColor) {
 			}
 		}
 	else {
-		vertColor->color.red =
-		vertColor->color.green =
-		vertColor->color.blue = l;
+		colorP->red =
+		colorP->green =
+		colorP->blue = l;
 		}
-	vertColor->color.alpha = s;
+	colorP->alpha = s;
 	}
 else {
 	if (tMapColor.index) {

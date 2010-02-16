@@ -900,6 +900,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	if (faceP)
 		gameData.render.nTotalFaces++;
 	}
+#if GL_FALLBACK
 else if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
 		shaderManager.Deploy (-1);
@@ -951,6 +952,7 @@ else if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapMana
 		}
 	glEnd ();
 	}
+#endif
 #if TI_POLY_OFFSET
 if (!bmBot) {
 	glPolygonOffset (0,0);
@@ -1184,6 +1186,7 @@ if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 		OglDrawArrays (GL_TRIANGLES, 4, 3);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
+#if GL_FALLBACK
 else
 if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	int i;
@@ -1202,6 +1205,7 @@ if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 		}
 	glEnd ();
 	}
+#endif
 ogl.SetFaceCulling (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

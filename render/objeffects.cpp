@@ -527,12 +527,14 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 			glLineWidth (2);
 		if (bVertexArrays)
 			OglDrawArrays (bMarker ? GL_LINE_LOOP : GL_TRIANGLES, 0, 3);
+#if GL_FALLBACK
 		else {
 			glBegin (bMarker ? GL_LINE_LOOP : GL_TRIANGLES);
 			for (h = 0; h < 3; h++)
 				glVertex3fv (reinterpret_cast<GLfloat*> (rotVerts + h));
 			glEnd ();
 			}
+#endif
 		if (bMarker)
 			glLineWidth (1);
 		if (!j) {	//now rotate by 90 degrees
@@ -642,24 +644,28 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [3][Z] = fPos [Z];
 		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
 			OglDrawArrays (GL_LINE_STRIP, 0, 4);
+#if GL_FALLBACK
 		else {
 			glBegin (GL_LINE_STRIP);
 			for (i = 0; i < 4; i++)
 				glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 			glEnd ();
 			}
+#endif
 		fVerts [0][X] = fVerts [3][X] = fPos [X] + r2;
 		fVerts [1][X] = fVerts [2][X] = fPos [X] + r;
 		if (bDrawArrays) {
 			OglDrawArrays (GL_LINE_STRIP, 0, 4);
 			ogl.DisableClientState (GL_VERTEX_ARRAY);
 			}
+#if GL_FALLBACK
 		else {
 			glBegin (GL_LINE_STRIP);
 			for (i = 0; i < 4; i++)
 				glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 			glEnd ();
 			}
+#endif
 		}
 	else {	//triangle
 		r2 = r / 3;
@@ -673,6 +679,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [2][Z] = fPos [Z];
 		if ((bDrawArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
 			OglDrawArrays (GL_LINE_LOOP, 0, 3);
+#if GL_FALLBACK
 		else {
 			glBegin (GL_LINE_LOOP);
 			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts));
@@ -680,6 +687,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + 2));
 			glEnd ();
 			}
+#endif
 		if (EGI_FLAG (bDamageIndicators, 0, 1, 0)) {
 			r3 = objP->Damage ();
 			if (r3 < 1.0f) {
@@ -697,12 +705,14 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			OglDrawArrays (GL_TRIANGLES, 0, 3);
 			ogl.DisableClientState (GL_VERTEX_ARRAY);
 			}
+#if GL_FALLBACK
 		else {
 			glBegin (GL_TRIANGLES);
 			for (i = 0; i < 3; i++)
 			glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 			glEnd ();
 			}
+#endif
 		}
 	ogl.StencilOn (bStencil);
 	}
@@ -1449,6 +1459,8 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 
 #define TRACER_WIDTH	3
 
+#if 0
+
 void RenderTracers (CObject *objP)
 {
 if (!SHOW_OBJ_FX)
@@ -1497,6 +1509,8 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	ogl.StencilOn (bStencil);
 	}
 }
+
+#endif
 
 // -----------------------------------------------------------------------------
 // Draws a texture-mapped laser bolt

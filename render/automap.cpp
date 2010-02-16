@@ -190,31 +190,32 @@ G3DrawSphere (&spherePoint, m_bRadar ? objP->info.xSize * 2 : objP->info.xSize, 
 
 if (m_bRadar && (objP->Index () != LOCALPLAYER.nObject))
 	return;
-
-headPoint.p3_index =
-arrowPoint.p3_index = -1;
-// Draw shaft of arrow
-vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*3);
-G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
-G3DrawLine (&spherePoint, &arrowPoint);
-
-// Draw right head of arrow
-vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
-vHeadPos += objP->info.position.mOrient.RVec () * (size*1);
-G3TransformAndEncodePoint (&headPoint, vHeadPos);
-G3DrawLine (&arrowPoint, &headPoint);
-
-// Draw left head of arrow
-vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
-vHeadPos += objP->info.position.mOrient.RVec () * (size* (-1));
-G3TransformAndEncodePoint (&headPoint, vHeadPos);
-G3DrawLine (&arrowPoint, &headPoint);
-
-// Draw CPlayerData's up vector
-vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.UVec () * (size*2);
-G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
-G3DrawLine (&spherePoint, &arrowPoint);
-//ogl.m_states.bUseTransform = bUseTransform;
+if (ogl.SizeVertexBuffer (3)) {
+	headPoint.p3_index =
+	arrowPoint.p3_index = -1;
+	ogl.VertexBuffer () [1].Assign (spherePoint.p3_vec);
+	// Draw CPlayerData's up vector
+	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.UVec () * (size*2);
+	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
+	ogl.VertexBuffer () [0].Assign (arrowPoint.p3_vec);
+	// Draw shaft of arrow
+	vArrowPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size * 3);
+	G3TransformAndEncodePoint (&arrowPoint, vArrowPos);
+	ogl.VertexBuffer () [2].Assign (arrowPoint.p3_vec);
+	ogl.FlushBuffers (GL_LINE_STRIP, 3);
+	ogl.VertexBuffer () [1].Assign (arrowPoint.p3_vec);
+	// Draw right head of arrow
+	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
+	vHeadPos += objP->info.position.mOrient.RVec () * (size*1);
+	G3TransformAndEncodePoint (&headPoint, vHeadPos);
+	ogl.VertexBuffer () [0].Assign (headPoint.p3_vec);
+	// Draw left head of arrow
+	vHeadPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (size*2);
+	vHeadPos += objP->info.position.mOrient.RVec () * (size* (-1));
+	G3TransformAndEncodePoint (&headPoint, vHeadPos);
+	ogl.VertexBuffer () [2].Assign (headPoint.p3_vec);
+	ogl.FlushBuffers (GL_LINE_STRIP, 3);
+	}
 }
 
 //------------------------------------------------------------------------------

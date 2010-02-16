@@ -1030,13 +1030,13 @@ for (i = 0; i < m_nNodes; i++)
 	vPosf [i].Assign (m_nodes [i].m_vPos);
 if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
-#if 1
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTextureUsage (false);
 	OglVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
+#if GL_FALLBACK
 else {
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.SetTextureUsage (false);

@@ -6,6 +6,9 @@
 #	include <conf.h>
 #endif
 
+#define GL_FALLBACK	0	// fall back to glBegin/glEnd when client arrays aren't available
+
+
 #ifdef _WIN32
 #	define OGL_MULTI_TEXTURING	1
 #	define VERTEX_LIGHTING		1
