@@ -926,7 +926,7 @@ if (ogl.SizeBuffers (nVertices)) {
 		}
 	ogl.EnableClientStates (1, 1, 0, 1);
 	OglColorPointer (4, GL_FLOAT, 0, &ogl.ColorBuffer ());
-	OglTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoord);
+	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 	ogl.EnableClientStates (1, 0, 0, 2);
 	OglTexCoordPointer (2, GL_FLOAT, 0, &ogl.TexCoordBuffer ());
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 1, !gameStates.render.bFullBright);
