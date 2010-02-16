@@ -425,7 +425,7 @@ if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
 
 //------------------------------------------------------------------------------
 
-int CShaderManager::Deploy (int nShader)
+int64_t CShaderManager::Deploy (int nShader)
 {
 if (!ogl.m_states.bShadersOk)
 	return 0;
@@ -433,11 +433,11 @@ if (nShader >= int (m_shaders.ToS ()))
 	return 0;
 GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
 if (m_nCurrent == nShader)
-	return -int (shaderProg);
+	return -int64_t (shaderProg);
 m_nCurrent = nShader;
 glUseProgramObject (shaderProg);
 gameData.render.nShaderChanges++;
-return int (shaderProg);
+return int64_t (shaderProg);
 }
 
 //------------------------------------------------------------------------------
@@ -465,8 +465,10 @@ InitTexMergeShaders ();
 ogl.m_data.nHeadlights = 0;
 ::PrintLog ("   initializing lighting shader programs\n");
 InitHeadlightShaders (1);
+#if GPGPU_VERTEX_LIGHTING
 ::PrintLog ("   initializing vertex lighting shader programs\n");
 gpgpuLighting.InitShader ();
+#endif
 ::PrintLog ("   initializing glare shader programs\n");
 glareRenderer.InitShader ();
 ::PrintLog ("   initializing gray scale shader programs\n");

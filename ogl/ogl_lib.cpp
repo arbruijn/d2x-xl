@@ -305,39 +305,43 @@ void COglData::Initialize (void)
 palette = NULL;
 bUseTextures = false;
 nTMU [0] = 0;
-if (glActiveTexture) {
-	glActiveTexture (GL_TEXTURE3);
-	glBindTexture (GL_TEXTURE_2D, nTexture [3] = 0);
-	glActiveTexture (GL_TEXTURE2);
-	glBindTexture (GL_TEXTURE_2D, nTexture [2] = 0);
-	glActiveTexture (GL_TEXTURE1);
-	glBindTexture (GL_TEXTURE_2D, nTexture [1] = 0);
-	glActiveTexture (GL_TEXTURE0);
-	glBindTexture (GL_TEXTURE_2D, nTexture [0] = 0);
+if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
+#ifndef GL_VERSION_20
+	if (glActiveTexture) 
+#endif
+		{
+		glActiveTexture (GL_TEXTURE3);
+		glBindTexture (GL_TEXTURE_2D, nTexture [3] = 0);
+		glActiveTexture (GL_TEXTURE2);
+		glBindTexture (GL_TEXTURE_2D, nTexture [2] = 0);
+		glActiveTexture (GL_TEXTURE1);
+		glBindTexture (GL_TEXTURE_2D, nTexture [1] = 0);
+		glActiveTexture (GL_TEXTURE0);
+		glBindTexture (GL_TEXTURE_2D, nTexture [0] = 0);
+		}
+	bUseBlending = true;
+	glEnable (GL_BLEND);
+	glBlendFunc (nSrcBlendMode = GL_SRC_ALPHA, nDestBlendMode = GL_ONE_MINUS_SRC_ALPHA);
+	bDepthTest = false;
+	glDisable (GL_DEPTH_TEST);
+	bDepthWrite = false;
+	glDepthMask (0);
+	bStencilTest = false;
+	glDisable (GL_STENCIL_TEST);
+	bCullFaces = false;
+	glDisable (GL_CULL_FACE);
+	glCullFace (nCullMode = GL_BACK);
+	bScissorTest = false;
+	glDisable (GL_SCISSOR_TEST);
+	bAlphaTest = false;
+	glDisable (GL_ALPHA_TEST);
+	bLineSmooth = false;
+	glDisable (GL_LINE_SMOOTH);
+	bLighting = false;
+	glDisable (GL_LIGHTING);
+	bPolyOffsetFill = false;
+	glDisable (GL_POLYGON_OFFSET_FILL);
 	}
-bUseBlending = true;
-glEnable (GL_BLEND);
-glBlendFunc (nSrcBlendMode = GL_SRC_ALPHA, nDestBlendMode = GL_ONE_MINUS_SRC_ALPHA);
-bDepthTest = false;
-glDisable (GL_DEPTH_TEST);
-bDepthWrite = false;
-glDepthMask (0);
-bStencilTest = false;
-glDisable (GL_STENCIL_TEST);
-bCullFaces = false;
-glDisable (GL_CULL_FACE);
-glCullFace (nCullMode = GL_BACK);
-bScissorTest = false;
-glDisable (GL_SCISSOR_TEST);
-bAlphaTest = false;
-glDisable (GL_ALPHA_TEST);
-bLineSmooth = false;
-glDisable (GL_LINE_SMOOTH);
-bLighting = false;
-glDisable (GL_LIGHTING);
-bPolyOffsetFill = false;
-glDisable (GL_POLYGON_OFFSET_FILL);
-
 zNear = 1.0f;
 zFar = 5000.0f;
 depthScale.SetZero ();
@@ -1009,8 +1013,10 @@ if (bGame) {
 	gameData.models.Prepare ();
 	if (bGame && lightmapManager.HaveLightmaps ())
 		lightmapManager.BindAll ();
+#if GPGPU_VERTEX_LIGHTING
 	gpgpuLighting.End ();
 	gpgpuLighting.Begin ();
+#endif
 	SelectDrawBuffer (0);
 	cameraManager.Create ();
 	InitSpheres ();

@@ -286,8 +286,8 @@ if (nState == 0) {
 	lightManager.FBO ().Enable ();
 #if 1
 	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (m_nShaderProg));
-	if (0 > int (shaderProg))
-		shaderProg = GLhandleARB (-int (shaderProg));
+	if (0 > int64_t (shaderProg))
+		shaderProg = GLhandleARB (-int64_t (shaderProg));
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 		glUniform1i (glGetUniformLocation (shaderProg, szTexNames [i]), i);
 		if ((j = glGetError ())) {

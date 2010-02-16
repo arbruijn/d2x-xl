@@ -6422,6 +6422,14 @@
 					<File
 						RelativePath="..\render\gpgpu_lighting.cpp"
 						>
+						<FileConfiguration
+							Name="Release-OMP|x64"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\render\morph.cpp"
@@ -6562,6 +6570,18 @@
 					<File
 						RelativePath="..\effects\glare.cpp"
 						>
+					</File>
+					<File
+						RelativePath="..\effects\glow.cpp"
+						>
+						<FileConfiguration
+							Name="Release-OMP|x64"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\effects\lightning.cpp"
@@ -10715,11 +10735,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

@@ -413,7 +413,7 @@ inline CFloatVector& CFloatVector::Neg (void) {
 	return *this;
 	}
 
-inline CFloatVector3* CFloatVector::XYZ (void) { return reinterpret_cast<CFloatVector3*> (v); }
+inline CFloatVector3* CFloatVector::XYZ (void) { return reinterpret_cast<CFloatVector3*> (&v [0]); }
 
 inline const CFloatVector CFloatVector::operator- (void) const {
 	return Create (-v [X], -v [Y], -v [Z]);

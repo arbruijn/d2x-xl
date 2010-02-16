@@ -37,7 +37,7 @@ class CShaderManager {
 		void Init (void);
 		void Destroy (bool bAll = true);
 		void Setup (void);
-		int Deploy (int nShader);
+		int64_t Deploy (int nShader);
 		int Alloc (int& nShader);
 		char* Load (const char* filename);
 		int Create (int nShader);

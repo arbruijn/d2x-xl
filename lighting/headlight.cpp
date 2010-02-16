@@ -830,7 +830,7 @@ GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (headlightShaderProgs
 if (!shaderProg)
 	return -1;
 
-if (0 < int (shaderProg)) {
+if (0 < int64_t (shaderProg)) {
 	if (nType) {
 		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
 		if (nType > 1) {

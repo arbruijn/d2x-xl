@@ -1,5 +1,7 @@
 // Copyright (c) Dietfrid Mali
 
+#if 0
+
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -76,3 +78,5 @@ if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && RENDERPATH)
 
 //------------------------------------------------------------------------------
 // eof
+
+#endif
