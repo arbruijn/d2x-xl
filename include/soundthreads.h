@@ -35,6 +35,7 @@ void EndSoundThread (void);
 void ControlSoundThread (void);
 void WaitForSoundThread (void);
 int RunSoundThread (tSoundTask nTask);
+bool HaveSoundThread (void);
 
 extern tSoundThreadInfo tiSound;
 

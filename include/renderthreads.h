@@ -57,7 +57,6 @@ void EndEffectsThread (void);
 void ControlEffectsThread (void);
 bool WaitForEffectsThread (void);
 void ControlRenderThreads (void);
-bool HaveSoundThread (void);
 
 int GetNumThreads (void);
 
