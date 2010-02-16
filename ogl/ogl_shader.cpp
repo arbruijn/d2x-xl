@@ -188,12 +188,6 @@ return bufP;
 
 //------------------------------------------------------------------------------
 
-#ifdef __macosx__
-#	define	_HANDLE	GLuint (handle)
-#else
-#	define	_HANDLE	handle
-#endif
-
 void CShaderManager::PrintLog (GLhandleARB handle, int bProgram)
 {
    GLint nLogLen = 0;
@@ -202,35 +196,33 @@ void CShaderManager::PrintLog (GLhandleARB handle, int bProgram)
 
 #ifdef GL_VERSION_20
 if (bProgram) {
-	glGetProgramiv (_HANDLE, GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetProgramiv (handle, GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetProgramInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
+		glGetProgramInfoLog (handle, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}
 else {
-	glGetShaderiv (_HANDLE, GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetShaderiv (handle, GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetShaderInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
+		glGetShaderInfoLog (handle, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}
 #else
-glGetObjectParameteriv (_HANDLE, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
+glGetObjectParameteriv (handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
 if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-	glGetInfoLog (_HANDLE, nLogLen, &charsWritten, infoLog);
+	glGetInfoLog (handle, nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
 		::PrintLog ("\n%s\n\n", infoLog);
 	delete[] infoLog;
 	}
 #endif
 }
-
-#undef _HANDLE
 
 //------------------------------------------------------------------------------
 
