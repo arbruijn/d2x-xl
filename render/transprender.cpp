@@ -720,7 +720,7 @@ PROF_START
 	CSegFace*		faceP;
 	tFaceTriangle*	triP;
 	CBitmap*			bmBot = item->bmP, *bmTop = NULL, *mask;
-	int				i, j, nIndex, bLightmaps, bDecal, bSoftBlend = 0, bAdditive = 0;
+	int				nIndex, bLightmaps, bDecal, bSoftBlend = 0, bAdditive = 0;
 
 #if TI_POLY_OFFSET
 if (!bmBot) {
@@ -916,7 +916,7 @@ else if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapMana
 							(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 							bmBot ? NULL : item->color);
 		}
-	j = item->nVertices;
+	int i, j = item->nVertices;
 	glBegin (item->nPrimitive);
 	if (item->nColors > 1) {
 		if (bmBot) {
@@ -998,6 +998,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	ogl.SetBlendMode (item->bAdditive);
 	if (bSoftBlend)
 		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
+	item->bmP->SetColor ();
 	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthTest (true);
