@@ -196,7 +196,7 @@ void CShaderManager::PrintLog (GLhandleARB handle, int bProgram)
 
 #ifdef GL_VERSION_20
 if (bProgram) {
-	glGetProgramiv (static_cast<GLuint> (handle), GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetProgramiv (GLuint (int64_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
 		glGetProgramInfoLog (static_cast<GLuint> (handle), nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
@@ -214,9 +214,9 @@ else {
 		}
 	}
 #else
-glGetObjectParameteriv (handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
+glGetObjectParameteriv (GLuint (int64_t (handle)), GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
 if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-	glGetInfoLog (handle, nLogLen, &charsWritten, infoLog);
+	glGetInfoLog (GLuint (int64_t (handle)), nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
 		::PrintLog ("\n%s\n\n", infoLog);
 	delete[] infoLog;
