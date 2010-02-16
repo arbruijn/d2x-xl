@@ -198,16 +198,16 @@ void CShaderManager::PrintLog (GLhandleARB handle, int bProgram)
 if (bProgram) {
 	glGetProgramiv (GLuint (int64_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetProgramInfoLog (static_cast<GLuint> (handle), nLogLen, &charsWritten, infoLog);
+		glGetProgramInfoLog (GLuint (int64_t (handle)), nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}
 else {
-	glGetShaderiv (static_cast<GLuint> (handle), GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetShaderiv (GLuint (int64_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetShaderInfoLog (static_cast<GLuint> (handle), nLogLen, &charsWritten, infoLog);
+		glGetShaderInfoLog (GLuint (int64_t (handle)), nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
