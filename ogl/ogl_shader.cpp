@@ -196,18 +196,18 @@ void CShaderManager::PrintLog (GLhandleARB handle, int bProgram)
 
 #ifdef GL_VERSION_20
 if (bProgram) {
-	glGetProgramiv (GLuint (handle), GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetProgramiv (static_cast<GLuint> (handle), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetProgramInfoLog (GLuint (handle), nLogLen, &charsWritten, infoLog);
+		glGetProgramInfoLog (static_cast<GLuint> (handle), nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}
 else {
-	glGetShaderiv (GLuint (handle), GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetShaderiv (static_cast<GLuint> (handle), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetShaderInfoLog (GLuint (handle), nLogLen, &charsWritten, infoLog);
+		glGetShaderInfoLog (static_cast<GLuint> (handle), nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
