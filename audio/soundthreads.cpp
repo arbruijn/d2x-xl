@@ -66,13 +66,16 @@ while (tiSound.ti.pThread && tiSound.ti.bExec /*&& (SDL_GetTicks () - t1 < 1000)
 
 //------------------------------------------------------------------------------
 
+bool HaveSoundThread (void)
+{
+return tiSound.ti.pThread != NULL;
+}
+
+//------------------------------------------------------------------------------
+
 void StartSoundThread (void)
 {
-#if 1
 if (!tiSound.ti.pThread) {
-#else
-if (gameData.app.bUseMultiThreading [rtSound] && !tiSound.ti.pThread) {
-#endif
 	memset (&tiSound, 0, sizeof (tiSound));
 	tiSound.ti.nId = 0;
 	tiSound.ti.pThread = SDL_CreateThread (SoundThread, &tiSound.ti.nId);

@@ -487,7 +487,7 @@ glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	CFloatVector	rotVerts [3];
 	CFloatMatrix	mRot;
-	int		h, i, j;
+	int				i, j;
 
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosInd), sinCosInd);
@@ -530,7 +530,7 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 #if GL_FALLBACK
 		else {
 			glBegin (bMarker ? GL_LINE_LOOP : GL_TRIANGLES);
-			for (h = 0; h < 3; h++)
+			for (int h = 0; h < 3; h++)
 				glVertex3fv (reinterpret_cast<GLfloat*> (rotVerts + h));
 			glEnd ();
 			}
@@ -590,10 +590,10 @@ ogl.SetFaceCulling (true);
 
 void RenderTargetIndicator (CObject *objP, tRgbColorf *pc)
 {
-	CFixVector	vPos;
-	CFloatVector		fPos, fVerts [4];
-	float			r, r2, r3;
-	int			i, bStencil, bDrawArrays, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
+	CFixVector		vPos;
+	CFloatVector	fPos, fVerts [4];
+	float				r, r2, r3;
+	int				bStencil, bDrawArrays, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -661,7 +661,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 #if GL_FALLBACK
 		else {
 			glBegin (GL_LINE_STRIP);
-			for (i = 0; i < 4; i++)
+			for (int i = 0; i < 4; i++)
 				glVertex3fv (reinterpret_cast<GLfloat*> (fVerts + i));
 			glEnd ();
 			}

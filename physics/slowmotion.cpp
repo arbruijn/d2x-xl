@@ -186,7 +186,7 @@ void SpeedupSound (void)
 {
 if (!gameOpts->gameplay.nSlowMotionSpeedup)
 	gameOpts->gameplay.nSlowMotionSpeedup = 6;
-if (gameData.app.bUseMultiThreading [rtSound]) {
+if (HaveSoundThread ()) {
 	tiSound.fSlowDown = 1.0f;
 	RunSoundThread (stReconfigureAudio);
 	}
@@ -207,7 +207,7 @@ else {
 
 void SlowdownSound (void)
 {
-if (gameData.app.bUseMultiThreading [rtSound]) {
+if (HaveSoundThread ()) {
 	tiSound.fSlowDown = float (gameOpts->gameplay.nSlowMotionSpeedup) / 2;
 	RunSoundThread (stReconfigureAudio);
 	}
