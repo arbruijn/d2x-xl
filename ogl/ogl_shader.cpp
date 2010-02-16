@@ -189,7 +189,7 @@ return bufP;
 //------------------------------------------------------------------------------
 
 #ifdef __macosx__
-#	define	_HANDLE	(uint) handle
+#	define	_HANDLE	GLuint (handle)
 #else
 #	define	_HANDLE	handle
 #endif

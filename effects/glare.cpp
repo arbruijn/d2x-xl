@@ -770,15 +770,15 @@ if (ogl.m_states.bDepthBlending) {
 		if (dMax < 1)
 			dMax = 1;
 		m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
-		if (0 < int (m_shaderProg)) {
+		if (0 < int64_t (m_shaderProg)) {
 			glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
 			glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
 			glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
 			glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
 			glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
 			}
-		else if (0 > int (m_shaderProg)) {
-			m_shaderProg = GLhandleARB (-int (m_shaderProg));
+		else if (0 > int64_t (m_shaderProg)) {
+			m_shaderProg = GLhandleARB (-int64_t (m_shaderProg));
 			if (dMaxPrev != dMax)
 				glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
 			if (bAddPrev != bAdditive)
