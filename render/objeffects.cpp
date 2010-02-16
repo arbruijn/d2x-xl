@@ -731,8 +731,8 @@ void RenderTowedFlag (CObject *objP)
 	};
 
 	static tTexCoord2f texCoordList [2][4] = {
-		{{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}},
-		{{0.0f, 0.7f}, {1.0f, 0.7f}, {1.0f, -0.3f}, {0.0f, -0.3f}}
+		{{{0.0f, -0.3f}}, {{1.0f, -0.3f}}, {{1.0f, 0.7f}}, {{0.0f, 0.7f}}},
+		{{{0.0f, 0.7f}}, {{1.0f, 0.7f}}, {{1.0f, -0.3f}}, {{0.0f, -0.3f}}}
 		};
 
 if (gameStates.app.bNostalgia)

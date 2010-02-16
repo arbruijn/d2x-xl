@@ -680,14 +680,14 @@ if ((m_nType < 0) || (m_nType >= PARTICLE_TYPES))
 if (m_nType == LIGHT_PARTICLES)
 	m_nType = m_nType;
 #endif
-if (!(bmP = bmpParticle [0][m_nType]))
+if (!(bmP = bmpParticle [0][int (m_nType)]))
 	return 0;
 hp = m_vTransPos;
 if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	bFlushed = particleManager.FlushBuffer (brightness);
 	particleManager.SetLastType (m_nType);
 	bBufferEmissive = m_bEmissive;
-	nFrames = nParticleFrames [0][m_nType];
+	nFrames = nParticleFrames [0][int (m_nType)];
 	deltaUV = 1.0f / (float) nFrames;
 	}
 if (m_bBright)
@@ -1062,7 +1062,7 @@ else
 	t = nCurTime - m_nMoved;
 #endif
 	nPartSeg = -1;
-	j = m_nFirstPart;
+	
 	#pragma omp parallel
 		{
 		#pragma omp for

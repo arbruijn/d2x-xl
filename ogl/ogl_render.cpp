@@ -1170,7 +1170,7 @@ else if (texCoordP)
 else {
 	GLfloat			u = bmP->Texture ()->U ();
 	GLfloat			v = bmP->Texture ()->V ();
-	tTexCoord2f		texCoords [4] = {{0,0},{u,0},{u,v},{0,v}};
+	tTexCoord2f		texCoords [4] = {{{0,0}},{{u,0}},{{u,v}},{{0,v}}};
 
 	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoords, colorP, nColors, bmP, 0, nWrap);
 	}
@@ -1270,7 +1270,7 @@ return 0;
 
 void COGL::RenderScreenQuad (int bTextured)
 {
-	static tTexCoord2f texCoord [4] = {{0,0},{0,1},{1,1},{1,0}};
+	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
 
 CFloatVector verts [4];
 verts [0][X] =

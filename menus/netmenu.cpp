@@ -818,7 +818,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-static char* szMslNames [] = {
+static const char* szMslNames [] = {
 	"===Missiles===",
 	"",
 	"Concussion: %d",

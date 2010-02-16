@@ -472,11 +472,11 @@ return -1;
 
 Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn)
 {
-	Mix_Chunk	*chunkP;
-	char			szWAV [FILENAME_LEN];
-	char*			pszFolder, * pszFile;
-	int			i;
-	CFile			cf;
+	Mix_Chunk*		chunkP;
+	char				szWAV [FILENAME_LEN];
+	const char*		pszFolder, * pszFile;
+	int				i;
+	CFile				cf;
 
 if (!::isdigit (*pszSoundFile))
 	i = FindAddonSound (pszSoundFile);

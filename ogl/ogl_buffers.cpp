@@ -650,7 +650,8 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 
 void COGL::DeleteEnhanced3DShader (void)
 {
-if (enhance3DShaderProg) {
+if (duboisShaderProg >= 0) {
+	shaderManager.Delete (duboisShaderProg);
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 3; j++) {
