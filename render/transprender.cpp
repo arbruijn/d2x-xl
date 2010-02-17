@@ -826,16 +826,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	else
 		glColor3d (1, 1, 1);
-	bAdditive = item->bAdditive;
-	ogl.SetBlending (true);
-	if (bAdditive == 1)
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
-	else if (bAdditive == 2)
-		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	else if (bAdditive == 3)
-		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	else
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (bAdditive = item->bAdditive);
 #if DBG
 	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -1029,8 +1020,10 @@ void CTransparencyRenderer::FlushSparkBuffer (void)
 
 if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+#if 0
 	ogl.SetTextureUsage (true);
 	bmpSparks->Texture ()->Bind ();
+#endif
 	if (bSoftSparks)
 		glareRenderer.LoadShader (3, 1);
 	else

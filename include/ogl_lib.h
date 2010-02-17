@@ -363,10 +363,12 @@ class COGL {
 			}
 
 		inline void SetBlendMode (int bAdditive) {
-			if (bAdditive == 2)
-				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-			else if (bAdditive == 1)
+			if (bAdditive == 1)
 				SetBlendMode (GL_ONE, GL_ONE);
+			else if (bAdditive == 2)
+				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			else if (bAdditive == 3)
+				SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 			else
 				SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			}
