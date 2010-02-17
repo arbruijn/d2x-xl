@@ -48,6 +48,20 @@ class CShaderManager {
 		void Delete (int nShader);
 		inline int Current (void) { return m_nCurrent; }
 		inline bool IsCurrent (int nShader) { return m_nCurrent == nShader; }
+		inline bool Rebuild (GLhandleARB& nShaderProg) {
+			if (sizeof (GLhandleARB) == 4) {
+				if (0 < int32_t (nShaderProg))
+					return true;
+				nShaderProg = GLhandleARB (-(int32_t (nShaderProg)));
+				return false;
+				}
+			else {
+				if (0 < int64_t (nShaderProg))
+					return true;
+				nShaderProg = GLhandleARB (-(int64_t (nShaderProg)));
+				return false;
+				}
+			}
 
 	private:
 		void Dispose (GLhandleARB& shaderProg);

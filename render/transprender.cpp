@@ -599,7 +599,6 @@ m_data.bDecal = 0;
 m_data.bTextured = 0;
 m_data.nFrame = -1;
 m_data.bUseLightmaps = 0;
-ogl.SetDepthMode (GL_LEQUAL);
 }
 
 //------------------------------------------------------------------------------
@@ -784,7 +783,6 @@ else {
 if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->nColors, -1, item->nWrap, 1, 3, (faceP != NULL) || bSoftBlend, bLightmaps, mask ? 2 : bDecal > 0, 0) &&
 	 ((bDecal < 1) || LoadImage (bmTop, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 1)) &&
 	 (!mask || LoadImage (mask, 0, -1, item->nWrap, 1, 3, 1, bLightmaps, 0, 2))) {
-	ogl.SetDepthMode (GL_LEQUAL);
 	nIndex = triP ? triP->nIndex : faceP ? faceP->m_info.nIndex : 0;
 	if (triP || faceP) {
 		if (!bLightmaps) {
@@ -851,7 +849,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 						 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 						break;
 					bAdditive = 2;
-					ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					ogl.SetBlendMode (2);
 					ogl.SetDepthWrite (false);
 					}
 				}
@@ -866,19 +864,16 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
 				if (bAdditive != 2) {
 					bAdditive = 2;
-					ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+					ogl.SetBlendMode (2);
 					ogl.SetDepthWrite (false);
 					}
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			}
-		ogl.SetDepthMode (GL_LEQUAL);
 		}
 	else {
 		if (bAdditive && !automap.Display ()) {
-			if (bSoftBlend)
-				glareRenderer.LoadShader (5);
-			else
+			if (!(bSoftBlend && glareRenderer.LoadShader (5)))
 				shaderManager.Deploy (-1);
 			}
 		else
@@ -950,10 +945,6 @@ if (!bmBot) {
 	glDisable (GL_POLYGON_OFFSET_FILL);
 	}
 #endif
-if (bAdditive)
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-if (bSoftBlend)
-	ogl.SetDepthTest (true);
 PROF_END(ptRenderFaces)
 }
 
@@ -987,8 +978,8 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		glColor3f (1, 1, 1);
 	ogl.SetBlending (true);
 	ogl.SetBlendMode (item->bAdditive);
-	if (bSoftBlend)
-		glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0);
+	if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0)))
+		shaderManager.Deploy (-1);
 	item->bmP->SetColor ();
 	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1016,26 +1007,23 @@ tSparkBuffer sparkBuffer;
 
 void CTransparencyRenderer::FlushSparkBuffer (void)
 {
-	int bSoftSparks = (gameOpts->render.effects.bSoftParticles & 2) != 0;
+	int bSoftBlend = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
-if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftSparks, 0, 0, 0)) {
+if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftBlend, 0, 0, 0)) {
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 #if 0
 	ogl.SetTextureUsage (true);
 	bmpSparks->Texture ()->Bind ();
 #endif
-	if (bSoftSparks)
-		glareRenderer.LoadShader (3, 1);
-	else
+	if (!(bSoftBlend && glareRenderer.LoadShader (3, 1)))
 		shaderManager.Deploy (-1);
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (1);
 	glColor3f (1, 1, 1);
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
 	OglDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	if (bSoftSparks)
-		ogl.SetDepthTest (true);
+	ogl.SetBlendMode (0);
+	ogl.SetDepthTest (true);
 	m_data.bClientColor = 0;
 	sparkBuffer.nSparks = 0;
 	}
@@ -1263,8 +1251,9 @@ if (!pl->bRendered) {
 #endif
 	try {
 		FlushBuffers (m_data.nCurType);
-		ogl.SetBlending (true);
+		ogl.SetBlendMode (0);
 		ogl.SetDepthWrite (false);
+		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
 			RenderPoly (&pl->item.poly);

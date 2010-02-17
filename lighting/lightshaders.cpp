@@ -1485,7 +1485,7 @@ if (!shaderProg) {
 	return -1;
 	}
 
-if (0 < int64_t (shaderProg)) {
+if (shaderManager.Rebuild (shaderProg)) {
 	if (bLightmaps)
 		glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType) {
@@ -1497,19 +1497,19 @@ if (0 < int64_t (shaderProg)) {
 			}
 		}
 	}
-else
-	shaderProg = GLhandleARB (-int64_t (shaderProg));
-if (!nType)
-	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+if (shaderProg) {
+	if (!nType)
+		glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 #if CONST_LIGHT_COUNT
-glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
+	glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
 #endif
-glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"),
+	glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"),
 #if 1
-				 (nLights ? float (nLights) / float (ogl.m_states.nLights) : 1.0f));
+					 (nLights ? float (nLights) / float (ogl.m_states.nLights) : 1.0f));
 #else
-				 (nLights && ogl.m_states.iLight) ? 0.0 : 1.0);
+					 (nLights && ogl.m_states.iLight) ? 0.0 : 1.0);
 #endif
+	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];
@@ -1542,7 +1542,7 @@ GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShad
 if (!shaderProg)
 	return -1;
 
-if (0 < int64_t (shaderProg)) {
+if (shaderManager.Rebuild (shaderProg)) {
 	ogl.ClearError (0);
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType) {
@@ -1555,7 +1555,6 @@ if (0 < int64_t (shaderProg)) {
 		}
 	}
 else if (!nType) {
-	shaderProg = GLhandleARB (-int64_t (shaderProg));
 	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 	}
 ogl.ClearError (0);
@@ -1578,16 +1577,17 @@ if (nType > 2)
 	nType = 2;
 int bLightmaps = lightmapManager.HaveLightmaps ();
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (grayscaleShaderProgs [bLightmaps][nType]));
-if (0 < int64_t (shaderProg)) {
-	if (!nType)
-		glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
-	else {
-		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
-		if (nType > 1)
-			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
-		}
-	ogl.ClearError (0);
+if (!shaderProg)
+	return -1;
+shaderManager.Rebuild (shaderProg);
+if (!nType)
+	glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
+else {
+	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
+	if (nType > 1)
+		glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
 	}
+ogl.ClearError (0);
 return grayscaleShaderProgs [bLightmaps][nType];
 }
 

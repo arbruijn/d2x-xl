@@ -829,43 +829,42 @@ InitHeadlightShaders (h);
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (headlightShaderProgs [bLightmaps][nType]));
 if (!shaderProg)
 	return -1;
+shaderManager.Rebuild (shaderProg);
 
-if (0 < int64_t (shaderProg)) {
-	if (nType) {
-		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
-		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
-			if (nType > 2)
-				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2 + bLightmaps);
-			}
+if (nType) {
+	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
+	if (nType > 1) {
+		glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
+		if (nType > 2)
+			glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2 + bLightmaps);
 		}
-	//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
-	//glUniform1f (glGetUniformLocation (shaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
-	if ((bTransform = !ogl.m_states.nTransformCalls))
-		ogl.SetupTransform (1);
-	for (h = i = 0; i < MAX_PLAYERS; i++) {
-		if (lightIds [i] >= 0) {
-			glEnable (GL_LIGHT0 + h);
-			glLightfv (GL_LIGHT0 + h, GL_POSITION, reinterpret_cast<GLfloat*> (pos + i));
-			glLightfv (GL_LIGHT0 + h, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (dir + i));
-			h++;
-			}
-		}
-	if (bTransform)
-		ogl.ResetTransform (1);
-	if (colorP) {
-		color.red = colorP->red * 1.1f;
-		color.green = colorP->green * 1.1f;
-		color.blue = colorP->blue * 1.1f;
-		color.alpha = colorP->alpha;
-		}
-	else {
-		color.red = color.green = color.blue = 2.0f;
-		color.alpha = 1;
-		}
-	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
-	ogl.ClearError (0);
 	}
+//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
+//glUniform1f (glGetUniformLocation (shaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
+if ((bTransform = !ogl.m_states.nTransformCalls))
+	ogl.SetupTransform (1);
+for (h = i = 0; i < MAX_PLAYERS; i++) {
+	if (lightIds [i] >= 0) {
+		glEnable (GL_LIGHT0 + h);
+		glLightfv (GL_LIGHT0 + h, GL_POSITION, reinterpret_cast<GLfloat*> (pos + i));
+		glLightfv (GL_LIGHT0 + h, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (dir + i));
+		h++;
+		}
+	}
+if (bTransform)
+	ogl.ResetTransform (1);
+if (colorP) {
+	color.red = colorP->red * 1.1f;
+	color.green = colorP->green * 1.1f;
+	color.blue = colorP->blue * 1.1f;
+	color.alpha = colorP->alpha;
+	}
+else {
+	color.red = color.green = color.blue = 2.0f;
+	color.alpha = 1;
+	}
+glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&color));
+ogl.ClearError (0);
 return headlightShaderProgs [bLightmaps][nType];
 }
 

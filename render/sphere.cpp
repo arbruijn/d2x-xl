@@ -182,12 +182,12 @@ if (!nHits)
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (sphereShaderProg));
 if (shaderProg) {
-	if (0 < int64_t (shaderProg))
+	if (shaderManager.Rebuild (shaderProg))
 		glUniform1i (glGetUniformLocation (shaderProg, "shaderTex"), 0);
-	else
-		shaderProg = GLhandleARB (-int64_t (shaderProg));
-	glUniform4fv (glGetUniformLocation (shaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
-	glUniform3fv (glGetUniformLocation (shaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
+	if (shaderProg) {
+		glUniform4fv (glGetUniformLocation (shaderProg, "vHit"), 3, reinterpret_cast<GLfloat*> (vHitf));
+		glUniform3fv (glGetUniformLocation (shaderProg, "fRad"), 1, reinterpret_cast<GLfloat*> (fScale));
+		}
 	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)

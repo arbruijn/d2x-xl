@@ -756,43 +756,48 @@ return (hGlareShader >= 0) && (shaderManager.Current () == hGlareShader);
 
 //-------------------------------------------------------------------------
 
-void CGlareRenderer::LoadShader (float dMax, int bAdditive)
+bool CGlareRenderer::LoadShader (float dMax, int bAdditive)
 {
 	static float dMaxPrev = -1;
 	static int	 bAddPrev = -1;
 
 ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
-if (ogl.m_states.bDepthBlending) {
+if (!ogl.m_states.bDepthBlending) 
+	return false;
+#if 0
 	if (ogl.Enhance3D () < 0)
 		ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 	else
 		ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect);
-	if (CopyDepthTexture ()) {
-		ogl.m_states.bUseDepthBlending = 1;
-		if (dMax < 1)
-			dMax = 1;
-		m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
-		if (0 < int64_t (m_shaderProg)) {
-			glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
-			glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
-			glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
-			glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
-			glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
-			}
-		else if (0 > int64_t (m_shaderProg)) {
-			m_shaderProg = GLhandleARB (-int64_t (m_shaderProg));
-			if (dMaxPrev != dMax)
-				glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
-			if (bAddPrev != bAdditive)
-				glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
-			}
-		dMaxPrev = dMax;
-		bAddPrev = bAdditive;
-		ogl.SetDepthTest (false);
-		}
-	ogl.SelectTMU (GL_TEXTURE0);
+#endif
+if (!CopyDepthTexture ())
+	return false;
+
+ogl.m_states.bUseDepthBlending = 1;
+if (dMax < 1)
+	dMax = 1;
+m_shaderProg = GLhandleARB (shaderManager.Deploy (hGlareShader));
+if (!m_shaderProg)
+	return false;
+if (shaderManager.Rebuild (m_shaderProg)) {
+	glUniform1i (glGetUniformLocation (m_shaderProg, "glareTex"), 0);
+	glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
+	glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
+	glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
+	glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
 	}
+else {
+	if (dMaxPrev != dMax)
+		glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
+	if (bAddPrev != bAdditive)
+		glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
+	}
+dMaxPrev = dMax;
+bAddPrev = bAdditive;
+ogl.SetDepthTest (false);
+ogl.SelectTMU (GL_TEXTURE0);
+return true;
 }
 
 //-------------------------------------------------------------------------

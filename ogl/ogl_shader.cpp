@@ -425,7 +425,7 @@ if (nShader >= int (m_shaders.ToS ()))
 	return 0;
 GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
 if (m_nCurrent == nShader)
-	return -int64_t (shaderProg);
+	return (sizeof (GLhandleARB) == 4) ? -int32_t (shaderProg) : -int64_t (shaderProg);
 m_nCurrent = nShader;
 glUseProgramObject (shaderProg);
 gameData.render.nShaderChanges++;

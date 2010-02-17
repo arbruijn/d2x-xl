@@ -1714,23 +1714,19 @@ if (bmP->Bind (0))
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
 bufferBrightness = brightness;
-ogl.SetBlending (true);
+//ogl.SetBlending (true);
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
-ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTextureUsage (true);
+ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
-		else if ((gameOpts->render.effects.bSoftParticles & 4) && (nType <= WATERFALL_PARTICLES))
-			glareRenderer.LoadShader (10, bBufferEmissive);
-		else {
+		else if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (10, bBufferEmissive)))
 			shaderManager.Deploy (-1);
-			ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
-			}
 		}
 	glNormal3f (0, 0, 0);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer);

@@ -10,7 +10,7 @@ class CGlareRenderer {
 		int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *dimP);
 		void Render (short nSegment, short nSide, float fIntensity, float fSize);
 		float Visibility (int nQuery);
-		void LoadShader (float dMax, int bAdditive = 1);
+		bool LoadShader (float dMax, int bAdditive = 1);
 		void UnloadShader (void);
 		void InitShader (void);
 		bool ShaderActive (void);
