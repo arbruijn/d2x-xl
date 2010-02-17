@@ -734,6 +734,7 @@ faceP = item->faceP;
 triP = item->triP;
 bLightmaps = m_data.bLightmaps && (faceP != NULL);
 #if DBG
+ogl.SetAlphaTest (false);
 if (!bLightmaps)
 	bLightmaps = bLightmaps;
 if (faceP) {

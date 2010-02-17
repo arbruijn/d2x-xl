@@ -764,7 +764,7 @@ void CGlareRenderer::LoadShader (float dMax, int bAdditive)
 ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
 if (ogl.m_states.bDepthBlending) {
-	ogl.SetReadBuffer (GL_BACK, 1);
+	//ogl.SetReadBuffer (GL_BACK, 1);
 	if (CopyDepthTexture ()) {
 		ogl.m_states.bUseDepthBlending = 1;
 		if (dMax < 1)
