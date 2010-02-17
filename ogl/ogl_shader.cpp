@@ -196,27 +196,27 @@ void CShaderManager::PrintLog (GLhandleARB handle, int bProgram)
 
 #ifdef GL_VERSION_20
 if (bProgram) {
-	glGetProgramiv (GLuint (int64_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetProgramiv (GLuint (intptr_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetProgramInfoLog (GLuint (int64_t (handle)), nLogLen, &charsWritten, infoLog);
+		glGetProgramInfoLog (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}
 else {
-	glGetShaderiv (GLuint (int64_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
+	glGetShaderiv (GLuint (intptr_t (handle)), GL_INFO_LOG_LENGTH, &nLogLen);
 	if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-		glGetShaderInfoLog (GLuint (int64_t (handle)), nLogLen, &charsWritten, infoLog);
+		glGetShaderInfoLog (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			::PrintLog ("\n%s\n\n", infoLog);
 		delete[] infoLog;
 		}
 	}
 #else
-glGetObjectParameteriv (GLuint (int64_t (handle)), GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
+glGetObjectParameteriv (GLuint (intptr_t (handle)), GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
 if ((nLogLen > 0) && (infoLog = new char [nLogLen])) {
-	glGetInfoLog (GLuint (int64_t (handle)), nLogLen, &charsWritten, infoLog);
+	glGetInfoLog (GLuint (intptr_t (handle)), nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
 		::PrintLog ("\n%s\n\n", infoLog);
 	delete[] infoLog;
@@ -417,7 +417,7 @@ if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
 
 //------------------------------------------------------------------------------
 
-int64_t CShaderManager::Deploy (int nShader)
+intptr_t CShaderManager::Deploy (int nShader)
 {
 if (!ogl.m_states.bShadersOk)
 	return 0;
@@ -425,11 +425,11 @@ if (nShader >= int (m_shaders.ToS ()))
 	return 0;
 GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
 if (m_nCurrent == nShader)
-	return (sizeof (GLhandleARB) == 4) ? -int32_t (shaderProg) : -int64_t (shaderProg);
+	return -intptr_t (shaderProg);
 m_nCurrent = nShader;
 glUseProgramObject (shaderProg);
 gameData.render.nShaderChanges++;
-return int64_t (shaderProg);
+return intptr_t (shaderProg);
 }
 
 //------------------------------------------------------------------------------

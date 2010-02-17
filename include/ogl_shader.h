@@ -26,6 +26,12 @@ typedef struct tShaderData {
 	int*				refP;
 } tShaderData;
 
+#if defined(_WIN64) || defined(__LP64__) || defined(__ppc64__) || defined(__x86_64__)
+#	define intptr_t	int64_t
+#else
+#	define intptr_t	int32_t
+#endif
+
 class CShaderManager {
 	private:
 		CStack<tShaderData>		m_shaders;
@@ -37,7 +43,7 @@ class CShaderManager {
 		void Init (void);
 		void Destroy (bool bAll = true);
 		void Setup (void);
-		int64_t Deploy (int nShader);
+		intptr_t Deploy (int nShader);
 		int Alloc (int& nShader);
 		char* Load (const char* filename);
 		int Create (int nShader);
@@ -49,18 +55,10 @@ class CShaderManager {
 		inline int Current (void) { return m_nCurrent; }
 		inline bool IsCurrent (int nShader) { return m_nCurrent == nShader; }
 		inline bool Rebuild (GLhandleARB& nShaderProg) {
-			if (sizeof (GLhandleARB) == 4) {
-				if (0 < int32_t (nShaderProg))
-					return true;
-				nShaderProg = GLhandleARB (-(int32_t (nShaderProg)));
-				return false;
-				}
-			else {
-				if (0 < int64_t (nShaderProg))
-					return true;
-				nShaderProg = GLhandleARB (-(int64_t (nShaderProg)));
-				return false;
-				}
+			if (0 < intptr_t (nShaderProg))
+				return true;
+			nShaderProg = GLhandleARB (-(intptr_t (nShaderProg)));
+			return false;
 			}
 
 	private:
