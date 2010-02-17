@@ -680,9 +680,8 @@ if (bVertexArrays) {
 	if (bmTop && !bOverlay)
 		ogl.DisableClientStates (GL_TEXTURE1);
 	}
-else
 #endif
-	{
+else if (ogl.SizeBuffers (nVertices)) {
 	tTexCoord2f ovlTexCoord [128];
 	tFaceColor	faceColor;
 
