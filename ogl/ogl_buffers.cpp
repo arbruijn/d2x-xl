@@ -267,15 +267,14 @@ void COGL::SetReadBuffer (int nBuffer, int bFBO)
 {
 #if FBO_DRAW_BUFFER
 if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
-	if (!DrawBuffer ()->Active ()) {
-		DrawBuffer ()->Enable ();
+	if (DrawBuffer ()->Active () || DrawBuffer ()->Enable ())
 		glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
-		}
+	else
+		glReadBuffer (GL_BACK);
 	}
 else {
-	if (DrawBuffer ()->Active ()) {
+	if (DrawBuffer ()->Active ())
 		DrawBuffer ()->Disable ();
-		}
 	glReadBuffer (nBuffer);
 	}
 #else
