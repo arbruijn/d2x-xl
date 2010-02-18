@@ -483,7 +483,7 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 	return 0;
 item.particle = particle;
 item.fBrightness = fBrightness;
-particle->Transform (gameStates.render.bPerPixelLighting == 2);
+//particle->Transform (gameStates.render.bPerPixelLighting == 2);
 return Add (tiParticle, &item, sizeof (item), particle->m_vPos);
 }
 

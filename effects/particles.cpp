@@ -648,12 +648,11 @@ return 1;
 
 int CParticle::Render (float brightness)
 {
-	CFixVector				hp;
 	GLfloat					d, u, v;
 	CBitmap*					bmP;
 	tRgbaColorf				pc;
 	tParticleVertex*		pb;
-	CFloatVector			vOffset, vCenter;
+	CFloatVector			vOffset;
 	int						i;
 	bool						bFlushed = false;
 	float						fFade, decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
@@ -673,7 +672,6 @@ if (m_nType == LIGHT_PARTICLES)
 #endif
 if (!(bmP = bmpParticle [0][int (m_nType)]))
 	return 0;
-hp = m_vTransPos;
 if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	bFlushed = particleManager.FlushBuffer (brightness);
 	particleManager.SetLastType (m_nType);
@@ -741,7 +739,6 @@ if (m_nType == SMOKE_PARTICLES) {
 	pc.green *= brightness;
 	pc.blue *= brightness;
 	}
-vCenter.Assign (hp);
 i = m_nOrient;
 
 if (m_nFadeType == 0)	// default (start fully visible, fade out)
@@ -819,11 +816,10 @@ pb [0].color =
 pb [1].color =
 pb [2].color =
 pb [3].color = pc;
-if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
-pb [0].vertex.Assign (vCenter);
+pb [0].vertex.Assign (m_vPos);
 pb [1].vertex.Assign (vOffset);
-pb [2].vertex [X] = float ((m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame);
+pb [2].vertex [X] = ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles) ? float (sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6)) : 0;
+pb [2].vertex [Y] = float ((m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame);
 particleManager.IncBufPtr (4);
 if (particleManager.BufPtr () >= VERT_BUF_SIZE)
 	particleManager.FlushBuffer (brightness);
@@ -1647,9 +1643,13 @@ return 1;
 
 void CParticleManager::ProjectVertices (tParticleVertex* pb)
 {
-	CFloatVector3	vCenter = pb [0].vertex;
+	CFloatVector3	vCenter;
 	CFloatVector3	vOffset = pb [1].vertex;
 
+transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
+vCenter [X] += pb [2].vertex [X];
+
+vCenter [X] += pb [0].vertex [X];
 pb [0].vertex [X] =
 pb [3].vertex [X] = vCenter [X] - vOffset [X];
 pb [1].vertex [X] =
@@ -1672,9 +1672,12 @@ void CParticleManager::RotateVertices (tParticleVertex* pb)
 	static int				bInitSinCos = 1;
 	static CFloatMatrix	mRot;
 
-	CFloatVector3	vCenter = pb [0].vertex;
+	CFloatVector3	vCenter;
 	CFloatVector3	vOffset = pb [1].vertex;
-	int				nFrame = int (pb [2].vertex [X]);
+	int				nFrame = int (pb [2].vertex [Y]);
+
+transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
+vCenter [X] += pb [2].vertex [X];
 
 if (bInitSinCos) {
 	ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
@@ -1690,6 +1693,7 @@ mRot.UVec ()[Y] = sinCosPart [nFrame].fCos;
 mRot.UVec ()[X] = sinCosPart [nFrame].fSin;
 mRot.RVec ()[Y] = -mRot.UVec ()[X];
 vOffset = mRot * vOffset;
+vCenter [X] += pb [0].vertex [X];
 pb [0].vertex [X] = vCenter [X] - vOffset [X];
 pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
 pb [1].vertex [X] = vCenter [X] + vOffset [Y];
@@ -1708,17 +1712,17 @@ pb [3].vertex [Z] = vCenter [Z];
 
 void CParticleManager::SetupVertices (int nType)
 {
-#	pragma omp parallel
+//#	pragma omp parallel
 	{
 		int	h = m_iBuffer / 4;
 
 	if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate) {
-#		pragma omp for 
+//#		pragma omp for 
 		for (int i = 0; i < h; i++)
 			RotateVertices (particleBuffer + 4 * i);
 		}
 	else {
-#		pragma omp for 
+//#		pragma omp for 
 		for (int i = 0; i < h; i++)
 			ProjectVertices (particleBuffer + 4 * i);
 		}
@@ -1751,6 +1755,7 @@ ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
+SetupVertices (nType);
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
@@ -1760,12 +1765,11 @@ if (InitBuffer (bLightmaps)) {
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, 0);
-	ogl.SetTransform (1);
-	ogl.SetupTransform (0);
-	SetupVertices (nType);
+//	ogl.SetTransform (1);
+//	ogl.SetupTransform (0);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
-	ogl.ResetTransform (1);
-	ogl.SetTransform (0);
+//	ogl.ResetTransform (1);
+//	ogl.SetTransform (0);
 	glNormal3f (1, 1, 1);
 	}
 #if GL_FALLBACK
