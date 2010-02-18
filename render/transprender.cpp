@@ -997,11 +997,7 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftBle
 	glColor3f (1, 1, 1);
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
-	ogl.SetTransform (1);
-	ogl.SetupTransform (0);
 	OglDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
-	ogl.ResetTransform (1);
-	ogl.SetTransform (0);
 	ogl.SetBlendMode (0);
 	ogl.SetDepthTest (true);
 	m_data.bClientColor = 0;
@@ -1017,11 +1013,12 @@ if (sparkBuffer.nSparks >= SPARK_BUF_SIZE)
 	FlushSparkBuffer ();
 
 	tSparkVertex	*infoP = sparkBuffer.info + 4 * sparkBuffer.nSparks;
-	CFloatVector	vPos = item->position;
+	CFloatVector	vPos;
 	float				nSize = X2F (item->nSize);
 	float				nCol = (float) (item->nFrame / 8);
 	float				nRow = (float) (item->nFrame % 8);
 
+transformation.Transform (vPos, item->position, 0);
 if (!item->nType)
 	nCol += 4;
 infoP->vPos [X] = vPos [X] - nSize;

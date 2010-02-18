@@ -1762,11 +1762,7 @@ if (InitBuffer (bLightmaps)) {
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, 0);
-//	ogl.SetTransform (1);
-//	ogl.SetupTransform (0);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
-//	ogl.ResetTransform (1);
-//	ogl.SetTransform (0);
 	glNormal3f (1, 1, 1);
 	}
 #if GL_FALLBACK
