@@ -1049,10 +1049,10 @@ void CAutomap::DrawEdges (void)
 	fix				distance;
 	fix				minDistance = 0x7fffffff;
 	g3sPoint			*p1, *p2;
-	int				bUseTransform = ogl.m_states.bUseTransform;
+	int				bUseTransform = ogl.UseTransform ();
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
-ogl.m_states.bUseTransform = 1;
+ogl.SetTransform (1);
 glLineWidth (GLfloat (screen.Width ()) / 640.0f);
 ogl.SetDepthTest (false);
 ogl.SetDepthWrite (false);
@@ -1162,7 +1162,7 @@ if (m_bDrawBuffers && m_nVerts) {
 ogl.SetDepthTest (true);
 ogl.SetDepthWrite (true);
 glLineWidth (1);
-ogl.m_states.bUseTransform = bUseTransform;
+ogl.SetTransform (bUseTransform);
 }
 
 

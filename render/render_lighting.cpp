@@ -112,7 +112,7 @@ PROF_START
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
-ogl.m_states.bUseTransform = 1;
+ogl.SetTransform (1);
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
 if (ogl.m_states.bVertexLighting)
@@ -207,7 +207,7 @@ for (i = nStart; i < nEnd; i++) {
 	lightManager.Material ().bValid = 0;
 	}
 PROF_END(ptLighting)
-ogl.m_states.bUseTransform = 0;
+ogl.SetTransform (0);
 }
 
 //------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ PROF_START
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 //memset (&gameData.render.lights.dynamic.shader.index, 0, sizeof (gameData.render.lights.dynamic.shader.index));
-ogl.m_states.bUseTransform = 1;
+ogl.SetTransform (1);
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
 if (ogl.m_states.bVertexLighting)
@@ -380,7 +380,7 @@ if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
 PROF_END(ptLighting)
-ogl.m_states.bUseTransform = 0;
+ogl.SetTransform (0);
 #if 0
 bSemaphore [nThread] = 0;
 #endif
@@ -408,7 +408,7 @@ PROF_START
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
 lightManager.ResetIndex ();
-ogl.m_states.bUseTransform = 1;
+ogl.SetTransform (1);
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
 if (ogl.m_states.bVertexLighting)
@@ -510,7 +510,7 @@ if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
 PROF_END(ptLighting)
-ogl.m_states.bUseTransform = 0;
+ogl.SetTransform (0);
 }
 
 //------------------------------------------------------------------------------
@@ -533,7 +533,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-ogl.m_states.bUseTransform = 1;
+ogl.SetTransform (1);
 gameStates.render.nState = 0;
 for (i = nStart; i < nEnd; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
@@ -585,7 +585,7 @@ for (i = nStart; i < nEnd; i++) {
 			}
 		}
 	}
-ogl.m_states.bUseTransform = 0;
+ogl.SetTransform (0);
 }
 
 //------------------------------------------------------------------------------

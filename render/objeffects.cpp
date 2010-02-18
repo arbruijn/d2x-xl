@@ -1109,7 +1109,7 @@ else { //3D
 	CreateThrusterFlame ();
 	ogl.SetFaceCulling (false);
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	ogl.m_states.bUseTransform = 1;
+	ogl.SetTransform (1);
 	ogl.SetDepthWrite (false);
 
 	tTexCoord2flStep.v.u = 1.0f / RING_SEGS;
@@ -1202,7 +1202,7 @@ else { //3D
 #endif
 		transformation.End ();
 		}
-	ogl.m_states.bUseTransform = 0;
+	ogl.SetTransform (0);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetFaceCulling (true);
 	OglCullFace (0);

@@ -193,7 +193,7 @@ CFixVector	vNormal;
 
 #if 1
 if (pvNormal) {
-	if (ogl.m_states.bUseTransform)
+	if (ogl.UseTransform ())
 		glNormal3f ((GLfloat) X2F ((*pvNormal) [X]),
 						(GLfloat) X2F ((*pvNormal) [Y]),
 						(GLfloat) X2F ((*pvNormal) [Z]));
@@ -226,7 +226,7 @@ else
 												gameData.segs.vertices [vSorted [2]]);
 		if (bFlip)
 			vNormal = -vNormal;
-		if (!ogl.m_states.bUseTransform)
+		if (!ogl.UseTransform ())
 			transformation.Rotate (vNormal, vNormal, 0);
 		glNormal3f ((GLfloat) X2F (vNormal [X]), (GLfloat) X2F (vNormal [Y]), (GLfloat) X2F (vNormal [Z]));
 		}

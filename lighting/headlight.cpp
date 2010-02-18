@@ -108,7 +108,7 @@ for (int i = 0; i < MAX_PLAYERS; i++) {
 			dir [i] = *pl->info.vDirf.XYZ ();
 			brightness [i] = 100.0f;
 			}
-		else if (pl->bTransform && !ogl.m_states.bUseTransform)
+		else if (pl->bTransform && !ogl.UseTransform ())
 			transformation.Rotate (pl->info.vDirf, pl->info.vDirf, 0);
 
 		}

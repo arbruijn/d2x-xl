@@ -311,7 +311,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg, short nFirstSide = 0, shor
 	CObject			viewer;
 
 //PrintLog ("computing visibility of segment %d\n", nStartSeg);
-ogl.m_states.bUseTransform = 1;
+ogl.SetTransform (1);
 #if DBG
 if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
@@ -383,7 +383,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			SetSegAndVertVis (nSegment, nStartSeg, 0);
 		}
 	}
-ogl.m_states.bUseTransform = 0;
+ogl.SetTransform (0);
 }
 
 //------------------------------------------------------------------------------

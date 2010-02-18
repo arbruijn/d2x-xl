@@ -880,14 +880,14 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 		RenderStartFrame ();
 	}
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-	ogl.m_states.bUseTransform = 1;
+	ogl.SetTransform (1);
 	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.nSegRenderList & gameData.render.mine.nRenderSegs
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildRenderObjLists (gameData.render.mine.nRenderSegs);
 		if (xStereoSeparation <= 0)	// Do for left eye or zero.
 			SetDynamicLight ();
 		}
-	ogl.m_states.bUseTransform = 0;
+	ogl.SetTransform (0);
 	lightManager.Transform (0, 1);
 	}
 gameStates.render.bFullBright = automap.Display () && gameOpts->render.automap.bBright;
@@ -1135,54 +1135,61 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 
 void RenderEffects (int nWindow)
 {
-	int bLightnings, bParticles, bSparks;
-
-PROF_START
-#if UNIFY_THREADS
-WaitForRenderThreads ();
-#else
-WaitForEffectsThread ();
-#endif
-if (automap.Display ()) {
-	bLightnings = gameOpts->render.automap.bLightnings;
-	bParticles = gameOpts->render.automap.bParticles;
-	bSparks = gameOpts->render.automap.bSparks;
-	}
-else {
-	bSparks = (gameOptions [0].render.nQuality > 0);
-	bLightnings = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
-					  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
-	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
-					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
-	}
-if (bSparks) {
-	SEM_ENTER (SEM_SPARKS)
-	//PrintLog ("RenderEnergySparks\n");
-	sparkManager.Render ();
-	//SEM_LEAVE (SEM_SPARKS)
-	}
-if (bParticles) {
-	SEM_ENTER (SEM_SMOKE)
-	//PrintLog ("RenderSmoke\n");
-	particleManager.Cleanup ();
-	particleManager.Render ();
-	//SEM_LEAVE (SEM_SMOKE)
-	}
-if (bLightnings) {
-	SEM_ENTER (SEM_LIGHTNING)
-	//PrintLog ("RenderLightnings\n");
-	lightningManager.Render ();
-	}
-//PrintLog ("transparencyRenderer.Render\n");
-if (bLightnings)
-	SEM_LEAVE (SEM_LIGHTNING)
-transparencyRenderer.Render ();
 #if 1
-if (bParticles)
-	SEM_LEAVE (SEM_SMOKE)
-if (bSparks)
-	SEM_LEAVE (SEM_SPARKS)
+	bool	bCreate = !gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0);
+#else
+	bool	bCreate = true; 
 #endif
+	int bLightning, bParticles, bSparks;
+	PROF_START
+
+if (bCreate) {
+	#if UNIFY_THREADS
+	WaitForRenderThreads ();
+	#else
+	WaitForEffectsThread ();
+	#endif
+	if (automap.Display ()) {
+		bLightning = gameOpts->render.automap.bLightnings;
+		bParticles = gameOpts->render.automap.bParticles;
+		bSparks = gameOpts->render.automap.bSparks;
+		}
+	else {
+		bSparks = (gameOptions [0].render.nQuality > 0);
+		bLightning = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
+						  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
+		bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
+						 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
+		}
+	if (bSparks) {
+		SEM_ENTER (SEM_SPARKS)
+		//PrintLog ("RenderEnergySparks\n");
+		sparkManager.Render ();
+		//SEM_LEAVE (SEM_SPARKS)
+		}
+	if (bParticles) {
+		SEM_ENTER (SEM_SMOKE)
+		//PrintLog ("RenderSmoke\n");
+		particleManager.Cleanup ();
+		particleManager.Render ();
+		//SEM_LEAVE (SEM_SMOKE)
+		}
+	if (bLightning) {
+		SEM_ENTER (SEM_LIGHTNING)
+		//PrintLog ("RenderLightnings\n");
+		lightningManager.Render ();
+		}
+	//PrintLog ("transparencyRenderer.Render\n");
+	if (bLightning)
+		SEM_LEAVE (SEM_LIGHTNING)
+	}
+transparencyRenderer.Render ();
+if (bCreate) {
+	if (bParticles)
+		SEM_LEAVE (SEM_SMOKE)
+	if (bSparks)
+		SEM_LEAVE (SEM_SPARKS)
+	}
 PROF_END(ptEffects)
 }
 

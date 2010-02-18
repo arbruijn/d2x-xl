@@ -134,7 +134,7 @@ if (CreateSphereShader () < 1) {
 	CFixMatrix m;
 	CFixVector vPos;
 
-if (!ogl.m_states.bUseTransform) {
+if (!ogl.UseTransform ()) {
 	fSize *= X2F (objP->Size ());
 	ogl.SetupTransform (0);
 	m = CFixMatrix::IDENTITY;
@@ -152,7 +152,7 @@ for (int i = 0; i < 3; i++) {
 		if (h > 1.0f / 1e6f) {
 			fScale [i] = 1.0f / h;
 			vHitf [i][W] = 0.0f;
-			if (ogl.m_states.bUseTransform) {
+			if (ogl.UseTransform ()) {
 				vHitf [i].Assign (m * hitInfo.v [i]);
 				CFloatVector::Normalize (vHitf [i]);
 				}
@@ -172,7 +172,7 @@ for (int i = 0; i < 3; i++) {
 		vHitf [i].SetZero ();
 		}
 	}
-if (!ogl.m_states.bUseTransform) {
+if (!ogl.UseTransform ()) {
 	transformation.End ();
 	ogl.ResetTransform (1);
 	}
@@ -618,7 +618,7 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
-if (ogl.m_states.bUseTransform) {
+if (ogl.UseTransform ()) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
 		svP [0] = svP [1] = m_vertices.Buffer ();
@@ -760,7 +760,7 @@ ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if RINGED_SPHERE
 #if 1
-ogl.m_states.bUseTransform = 1;
+ogl.SetTransform (1);
 if (!bEffect)
 #else
 if (ogl.m_states.bUseTransform = !bEffect)
@@ -777,7 +777,7 @@ transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
-ogl.m_states.bUseTransform = 0;
+ogl.SetTransform (0);
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE
@@ -902,7 +902,7 @@ if (gameData.render.monsterball.nFaces > 0)
 		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		float r = X2F (objP->info.xSize);
-		ogl.m_states.bUseTransform = 1;
+		ogl.SetTransform (1);
 		ogl.SetupTransform (0);
 		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		CFloatVector p;
@@ -911,7 +911,7 @@ if (gameData.render.monsterball.nFaces > 0)
 														&gameData.hoard.monsterball.bm, 4, 0);
 		transformation.End ();
 		ogl.ResetTransform (1);
-		ogl.m_states.bUseTransform = 0;
+		ogl.SetTransform (0);
 		}
 	}
 }

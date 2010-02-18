@@ -682,7 +682,7 @@ if (m_nType == LIGHT_PARTICLES)
 #endif
 if (!(bmP = bmpParticle [0][int (m_nType)]))
 	return 0;
-hp = m_vTransPos;
+hp = m_vPos; //m_vTransPos;
 if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	bFlushed = particleManager.FlushBuffer (brightness);
 	particleManager.SetLastType (m_nType);
@@ -1714,11 +1714,9 @@ if (bmP->Bind (0))
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
 bufferBrightness = brightness;
-//ogl.SetBlending (true);
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
-ogl.SetTextureUsage (true);
 ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
 
 if (InitBuffer (bLightmaps)) {
@@ -1729,7 +1727,11 @@ if (InitBuffer (bLightmaps)) {
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, 0);
+	ogl.SetTransform (1);
+	ogl.SetupTransform (0);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
+	ogl.ResetTransform (1);
+	ogl.SetTransform (0);
 	glNormal3f (1, 1, 1);
 	}
 #if GL_FALLBACK
@@ -1789,7 +1791,7 @@ if (gameStates.render.bDepthSort <= 0) {
 	}
 #endif
 particleManager.SetLastType (-1);
-if (gameStates.app.nSDLTicks - t0 < 33)
+if ((gameStates.app.nSDLTicks - t0 < 33) || (ogl.StereoSeparation () < 0))
 	particleManager.m_bAnimate = 0;
 else {
 	t0 = gameStates.app.nSDLTicks;

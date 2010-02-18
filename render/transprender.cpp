@@ -53,6 +53,8 @@ int nDbgPoly = -1, nDbgItem = -1;
 
 CTransparencyRenderer transparencyRenderer;
 
+#define LAZY_RESET 1
+
 //------------------------------------------------------------------------------
 
 static tTexCoord2f tcDefault [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
@@ -94,19 +96,28 @@ m_data.nFreeItems = ITEM_BUFFER_SIZE;
 
 void CTransparencyRenderer::InitBuffer (int zMin, int zMax)
 {
-m_data.zMin = 0;
-m_data.zMax = zMax - m_data.zMin;
-m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - m_data.zMin);
-if (m_data.zScale < 0)
-	m_data.zScale = 1;
-else if (m_data.zScale > 1)
-	m_data.zScale = 1;
+#if LAZY_RESET
+if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0)) 
+#endif
+	{
+	m_data.zMin = 0;
+	m_data.zMax = zMax - m_data.zMin;
+	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - m_data.zMin);
+	if (m_data.zScale < 0)
+		m_data.zScale = 1;
+	else if (m_data.zScale > 1)
+		m_data.zScale = 1;
+	}
 }
 
 //------------------------------------------------------------------------------
 
 int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex)
 {
+#if LAZY_RESET
+if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
+	return 0;
+#endif
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
 	int			nOffset;
@@ -491,8 +502,8 @@ int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int
 item.nSize = nSize;
 item.nFrame = nFrame;
 item.nType = nType;
+item.position.Assign (position);
 transformation.Transform (vPos, position, 0);
-item.position.Assign (vPos);
 return Add (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
 }
 
@@ -890,14 +901,14 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 else if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapManager.HaveLightmaps () && (faceP != NULL), 0, 0)) {
 	if (item->bAdditive == 1) {
 		shaderManager.Deploy (-1);
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+		ogl.SetBlendMode (1);
 		}
 	else if (item->bAdditive == 2) {
 		shaderManager.Deploy (-1);
-		ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (2);
 		}
 	else {
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ogl.SetBlendMode (0);
 		G3SetupShader (faceP, 0, 0, 0, bmBot != NULL,
 							(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 							bmBot ? NULL : item->color);
@@ -982,8 +993,6 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		shaderManager.Deploy (-1);
 	item->bmP->SetColor ();
 	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ogl.SetDepthTest (true);
 	}
 }
 
@@ -1021,7 +1030,11 @@ if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftBle
 	glColor3f (1, 1, 1);
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (tSparkVertex), &sparkBuffer.info [0].vPos);
+	ogl.SetTransform (1);
+	ogl.SetupTransform (0);
 	OglDrawArrays (GL_QUADS, 0, 4 * sparkBuffer.nSparks);
+	ogl.ResetTransform (1);
+	ogl.SetTransform (0);
 	ogl.SetBlendMode (0);
 	ogl.SetDepthTest (true);
 	m_data.bClientColor = 0;
@@ -1086,7 +1099,6 @@ ResetBitmaps ();
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //------------------------------------------------------------------------------
@@ -1159,7 +1171,7 @@ void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
 ogl.SetDepthWrite (true);
 ogl.SetFaceCulling (false);
-ogl.SetBlendMode (GL_ONE, GL_ONE);
+ogl.SetBlendMode (1);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
@@ -1189,7 +1201,7 @@ if (LoadImage (item->bmP, 0, -1, GL_CLAMP, 0, 1, 0, 0, 0, 0)) {
 	}
 #endif
 ogl.SetFaceCulling (true);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1243,7 +1255,7 @@ return parentP;
 int CTransparencyRenderer::RenderItem (struct tTranspItem *pl)
 {
 if (!pl->bRendered) {
-	pl->bRendered = true;
+	//pl->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
 	m_data.nCurType = pl->nType;
 #if DBG
@@ -1299,6 +1311,7 @@ void CTransparencyRenderer::Render (void)
 #if RENDER_TRANSPARENCY
 	struct tTranspItem	**pd, *pl, *pn;
 	int						nItems, nDepth, bStencil;
+	bool						bReset = !LAZY_RESET || (ogl.StereoSeparation () >= 0);
 
 if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
@@ -1324,14 +1337,15 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems; (pd >= m_data.depthBuffer.Buffer ()) && nItems; pd--) {
 	if ((pl = *pd)) {
-		*pd = NULL;
+		if (bReset)
+			*pd = NULL;
 		nDepth = 0;
 		do {
 #if DBG
@@ -1341,30 +1355,35 @@ for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems; (pd >= m
 			nItems--;
 			RenderItem (pl);
 			pn = pl->pNextItem;
-			pl->pNextItem = NULL;
+			if (bReset)
+				pl->pNextItem = NULL;
 			pl = pn;
 			nDepth++;
 			} while (pl);
 		}
 	}
 #if DBG
-pl = m_data.itemLists.Buffer ();
-for (int i = m_data.itemLists.Length (); i; i--, pl++)
-	if (pl->pNextItem)
-		pl->pNextItem = NULL;
+if (bReset) {
+	pl = m_data.itemLists.Buffer ();
+	for (int i = m_data.itemLists.Length (); i; i--, pl++)
+		if (pl->pNextItem)
+			pl->pNextItem = NULL;
+	}
 #endif
 FlushBuffers (-1);
 particleManager.EndRender ();
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 ogl.SetTextureUsage (false);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
-m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
-m_data.nMaxOffs = 0;
-m_data.nFreeItems = ITEM_BUFFER_SIZE;
+if (bReset) {
+	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
+	m_data.nMaxOffs = 0;
+	m_data.nFreeItems = ITEM_BUFFER_SIZE;
+	}
 PROF_END(ptTranspPolys)
 #endif
 }
