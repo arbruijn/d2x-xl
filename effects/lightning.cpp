@@ -897,7 +897,7 @@ void CLightning::ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nS
 	CFloatVector			vn [2], vd;
 
 	static CFloatVector vEye = CFloatVector::ZERO;
-	static CFloatVector vNormal [3] = {CFloatVector::ZERO,CFloatVector::ZERO,CFloatVector::ZERO};
+	static CFloatVector vNormal [3] = {CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO};
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (CFloatVector));
 if (bStart) {
@@ -954,9 +954,9 @@ memcpy (plasmaBuffers [nThread][bScale].texCoord + 4 * nSegment,
 
 void CLightning::ComputePlasma (int nDepth, int nThread)
 {
-	CLightningNode	*nodeP;
-	CFloatVector			vPosf [3] = {CFloatVector::ZERO,CFloatVector::ZERO,CFloatVector::ZERO};
-	int				bScale, i, j;
+	CLightningNode*	nodeP;
+	CFloatVector		vPosf [3] = {CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO};
+	int					bScale, i, j;
 
 for (bScale = 0; bScale < 2; bScale++) {
 	nodeP = m_nodes.Buffer ();
@@ -1140,7 +1140,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 		return;
 	if (!MayBeVisible ())
 		return;
-	#pragma omp critical
+#pragma omp critical
 		{
 		transparencyRenderer.AddLightning (this, nDepth);
 		}
@@ -1152,7 +1152,11 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 else {
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
+	ogl.SetTransform (1);
+	ogl.SetupTransform (0);
 	RenderBuffered (0, nThread);
+	ogl.ResetTransform (1);
+	ogl.SetTransform (0);
 	if (!nDepth)
 		ogl.SetFaceCulling (true);
 	glLineWidth (1);
