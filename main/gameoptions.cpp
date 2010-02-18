@@ -207,7 +207,7 @@ if (i) {
 	gameOptions [1].render.powerups.nSpin = 0;
 	gameOptions [1].render.automap.bTextured = 0;
 	gameOptions [1].render.automap.bParticles = 0;
-	gameOptions [1].render.automap.bLightnings = 0;
+	gameOptions [1].render.automap.bLightning = 0;
 	gameOptions [1].render.automap.bSkybox = 0;
 	gameOptions [1].render.automap.bBright = 1;
 	gameOptions [1].render.automap.bCoronas = 0;
@@ -341,7 +341,7 @@ else {
 	gameOptions [0].render.powerups.nSpin = 0;
 	gameOptions [0].render.automap.bTextured = 0;
 	gameOptions [0].render.automap.bParticles = 0;
-	gameOptions [0].render.automap.bLightnings = 0;
+	gameOptions [0].render.automap.bLightning = 0;
 	gameOptions [0].render.automap.bSkybox = 0;
 	gameOptions [0].render.automap.bBright = 1;
 	gameOptions [0].render.automap.bCoronas = 0;

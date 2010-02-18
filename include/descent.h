@@ -296,7 +296,7 @@ typedef struct tAutomapOptions {
 	int bCoronas;
 	int bParticles;
 	int bSparks;
-	int bLightnings;
+	int bLightning;
 	int bGrayOut;
 	int bSkybox;
 	int nColor;

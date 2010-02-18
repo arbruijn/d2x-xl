@@ -583,7 +583,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.automap.bGrayOut, i, 0);
 		RP (gameOptions [i].render.automap.bSparks, i, 0);
 		RP (gameOptions [i].render.automap.bParticles, i, 0);
-		RP (gameOptions [i].render.automap.bLightnings, i, 0);
+		RP (gameOptions [i].render.automap.bLightning, i, 0);
 		RP (gameOptions [i].render.automap.bSkybox, i, 0);
 		RP (gameOptions [i].render.automap.nRange, i, 0);
 		RP (gameOptions [i].render.automap.nColor, i, 0);
@@ -1411,7 +1411,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.automap.bCoronas", "0"},
 	 {"gameOptions[0].render.automap.bSparks", "1"},
 	 {"gameOptions[0].render.automap.bParticles", "0"},
-	 {"gameOptions[0].render.automap.bLightnings", "0"},
+	 {"gameOptions[0].render.automap.bLightning", "0"},
 	 {"gameOptions[0].render.automap.bSkybox", "0"},
 	 {"gameOptions[0].render.cockpit.bRotateMslLockInd", "1"},
 	 {"gameOptions[0].render.cockpit.bScaleGauges", "1"},

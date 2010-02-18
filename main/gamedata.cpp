@@ -1790,7 +1790,7 @@ gameOptions [0].render.automap.bGrayOut = 1;
 gameOptions [0].render.automap.bCoronas = 0;
 gameOptions [0].render.automap.bSparks = 0; 
 gameOptions [0].render.automap.bParticles = 0;
-gameOptions [0].render.automap.bLightnings = 0;
+gameOptions [0].render.automap.bLightning = 0;
 gameOptions [0].render.automap.bSkybox = 0;
 }
 

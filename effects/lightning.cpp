@@ -962,13 +962,13 @@ for (bScale = 0; bScale < 2; bScale++) {
 	nodeP = m_nodes.Buffer ();
 	vPosf [2].Assign (nodeP->m_vPos);
 	nodeP++;
-	if (!ogl.m_states.bUseTransform)
+	//if (!ogl.m_states.bUseTransform)
 		transformation.Transform (vPosf [2], vPosf [2], 0);
 	for (i = m_nNodes - 2, j = 0, nodeP = m_nodes.Buffer (); j <= i; j++) {
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
 		nodeP++;
 		vPosf [2].Assign (nodeP->m_vPos);
-		if (!ogl.m_states.bUseTransform)
+		//if (!ogl.m_states.bUseTransform)
 			transformation.Transform (vPosf [2], vPosf [2], 0);
 		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
 		}
@@ -981,8 +981,8 @@ void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
 {
 	int				bScale;
 #if RENDER_LIGHTNING_OUTLINE
-	tTexCoord2f		*texCoordP;
-	CFloatVector			*vertexP;
+	tTexCoord2f*	texCoordP;
+	CFloatVector*	vertexP;
 	int				i, j;
 #endif
 

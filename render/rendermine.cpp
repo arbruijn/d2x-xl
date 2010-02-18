@@ -1150,7 +1150,7 @@ if (bCreate) {
 	WaitForEffectsThread ();
 	#endif
 	if (automap.Display ()) {
-		bLightning = gameOpts->render.automap.bLightnings;
+		bLightning = gameOpts->render.automap.bLightning;
 		bParticles = gameOpts->render.automap.bParticles;
 		bSparks = gameOpts->render.automap.bSparks;
 		}

@@ -788,14 +788,14 @@ while ((c = KeyInKey ())) {
 
 		case KEY_F3:
 			gameOpts->render.automap.bCoronas =
-			gameOpts->render.automap.bLightnings =
+			gameOpts->render.automap.bLightning =
 			gameOpts->render.automap.bParticles =
 				!(gameOpts->render.automap.bCoronas ||
-				  gameOpts->render.automap.bLightnings ||
+				  gameOpts->render.automap.bLightning ||
 				  gameOpts->render.automap.bParticles);
 			gameOpts->render.automap.bSparks =
 				gameOpts->render.automap.bCoronas &&
-				gameOpts->render.automap.bLightnings &&
+				gameOpts->render.automap.bLightning &&
 				gameOpts->render.automap.bParticles &&
 				(gameOptions [0].render.nQuality > 0);
 			break;
@@ -839,7 +839,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_L:
-			gameOpts->render.automap.bLightnings = !gameOpts->render.automap.bLightnings;
+			gameOpts->render.automap.bLightning = !gameOpts->render.automap.bLightning;
 			break;
 
 		case KEY_ALTED + KEY_P:
