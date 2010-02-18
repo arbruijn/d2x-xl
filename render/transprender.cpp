@@ -340,7 +340,10 @@ if (bDepthMask && m_data.bSplitPolys) {
 else
 #endif
 	{
-#if 0
+	if (faceP)
+		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), 
+						SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true);
+
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
 		v += item.vertices [i];
@@ -349,10 +352,6 @@ else
 	vPos.Assign (v);
 	fix d = CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos);
 	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), vPos, true);
-#else
-	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), 
-					SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true);
-#endif
 	}
 }
 
