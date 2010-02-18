@@ -1152,11 +1152,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 else {
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
-	ogl.SetTransform (1);
-	ogl.SetupTransform (0);
 	RenderBuffered (0, nThread);
-	ogl.ResetTransform (1);
-	ogl.SetTransform (0);
 	if (!nDepth)
 		ogl.SetFaceCulling (true);
 	glLineWidth (1);

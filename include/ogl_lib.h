@@ -206,7 +206,7 @@ class COglStates {
 class COglBuffers {
 	public:
 		CArray<CFloatVector>		vertices;
-		CArray<tTexCoord2f>		texCoord;
+		CArray<tTexCoord2f>		texCoord [2];
 		CArray<tRgbaColorf>		color;
 		int							m_nVertices;
 
@@ -308,7 +308,7 @@ class COGL {
 
 		inline COglBuffers& Buffers (void) { return m_buffers; }
 		inline CArray<CFloatVector>& VertexBuffer (void) { return Buffers ().vertices; }
-		inline CArray<tTexCoord2f>& TexCoordBuffer (void) { return Buffers ().texCoord; }
+		inline CArray<tTexCoord2f>& TexCoordBuffer (int i = 0) { return Buffers ().texCoord [i]; }
 		inline CArray<tRgbaColorf>& ColorBuffer (void) { return Buffers ().color; }
 		inline bool SizeBuffers (int nVerts) { return m_buffers.SizeBuffers (nVerts); }
 		inline bool SizeVertexBuffer (int nVerts) { return m_buffers.SizeVertices (nVerts); }

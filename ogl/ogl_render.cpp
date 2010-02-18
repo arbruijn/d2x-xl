@@ -682,7 +682,6 @@ if (bVertexArrays) {
 	}
 #endif
 else if (ogl.SizeBuffers (nVertices)) {
-	tTexCoord2f ovlTexCoord [128];
 	tFaceColor	faceColor;
 
 	if (bDynLight) {
@@ -706,7 +705,7 @@ else if (ogl.SizeBuffers (nVertices)) {
 				ogl.ColorBuffer () [i] = faceColor.color;
 				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				SetTexCoord (uvlList + i, orient, 1, ovlTexCoord + i, mask != NULL);
+				SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
 				ogl.VertexBuffer () [i] = vVertPos;
 				}
 			}
@@ -736,7 +735,7 @@ else if (ogl.SizeBuffers (nVertices)) {
 					}
 				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				SetTexCoord (uvlList + i, orient, 1, ovlTexCoord + i, mask != NULL);
+				SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
 				OglVertex3f (*ppl, ogl.VertexBuffer () + i);
 				}
 			}
@@ -753,7 +752,7 @@ else if (ogl.SizeBuffers (nVertices)) {
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				SetTexCoord (uvlList + i, orient, 1, ovlTexCoord + i, mask != NULL);
+				SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
 				OglVertex3f (*ppl, ogl.VertexBuffer () + i);
 				}
 			}
@@ -761,9 +760,9 @@ else if (ogl.SizeBuffers (nVertices)) {
 	if (bOverlay) {
 		ogl.EnableClientStates (1, 1, 0, 1);
 		OglColorPointer (4, GL_FLOAT, 0, &ogl.ColorBuffer ());
-		OglTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoord);
+		OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
 		ogl.EnableClientStates (1, 0, 0, 2);
-		OglTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoord);
+		OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 1, bDynLight || bLight);
 	if (bOverlay) {
@@ -904,8 +903,6 @@ if (bmTop) { // use render pipeline 1 for overlay texture
 	}
 // use render pipeline 2 for lightmap texture
 if (ogl.SizeBuffers (nVertices)) {
-	tTexCoord2f	texCoord [128];
-
 	InitTMU2 (0);
 	//ogl.BindTexture (lightmap->handle);
 	if (bShaderMerge)
@@ -919,13 +916,13 @@ if (ogl.SizeBuffers (nVertices)) {
 		ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
 		ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
 		if (bmTop)
-			SetTexCoord (uvlList + i, orient, 1, texCoord + i, 0);
+			SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, 0);
 		glMultiTexCoord2f (GL_TEXTURE2, X2F (uvlLMap [i].u), X2F (uvlLMap [i].v));
 		OglVertex3f (*ppl, ogl.VertexBuffer () + i);
 		}
 	ogl.EnableClientStates (1, 1, 0, 1);
 	OglColorPointer (4, GL_FLOAT, 0, &ogl.ColorBuffer ());
-	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+	OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
 	ogl.EnableClientStates (1, 0, 0, 2);
 	OglTexCoordPointer (2, GL_FLOAT, 0, &ogl.TexCoordBuffer ());
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 1, !gameStates.render.bFullBright);
@@ -1303,10 +1300,11 @@ return color.Create (nVerts) != NULL;
 
 bool COglBuffers::SizeTexCoord (int nVerts)
 {
-if (int (texCoord.Length ()) >= nVerts)
+if ((int (texCoord [0].Length ()) >= nVerts) && (int (texCoord [1].Length ()) >= nVerts))
 	return true;
-texCoord.Destroy ();
-return texCoord.Create (nVerts) != NULL;
+texCoord [0].Destroy ();
+texCoord [1].Destroy ();
+return ((texCoord [0].Create (nVerts) != NULL) && (texCoord [1].Create (nVerts) != NULL));
 }
 
 bool COglBuffers::SizeBuffers (int nVerts)
@@ -1322,9 +1320,9 @@ void COglBuffers::Flush (GLenum nPrimitive, int nVerts, int nDimensions, int bTe
 if (nVerts > 0)
 	m_nVertices = nVerts;
 if (vertices.Buffer () && m_nVertices) {
-	if (bTextured && texCoord.Buffer ()) {
+	if (bTextured && texCoord [0].Buffer ()) {
 		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY);
-		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord.Buffer ());
+		OglTexCoordPointer (2, GL_FLOAT, 0, texCoord [0].Buffer ());
 		}
 	if (bColored && color.Buffer ()) {
 		ogl.EnableClientState (GL_COLOR_ARRAY);
