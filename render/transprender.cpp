@@ -112,7 +112,7 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, bool bClamp)
+int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp)
 {
 #if LAZY_RESET
 if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
@@ -120,7 +120,7 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 #endif
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
-	int			nOffset, nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos);
+	int			nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + nOffset;
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
@@ -340,6 +340,7 @@ if (bDepthMask && m_data.bSplitPolys) {
 else
 #endif
 	{
+#if 0
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
 		v += item.vertices [i];
@@ -348,6 +349,10 @@ else
 	vPos.Assign (v);
 	fix d = CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos);
 	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), vPos, true);
+#else
+	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), 
+					SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true);
+#endif
 	}
 }
 
@@ -484,7 +489,7 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 item.particle = particle;
 item.fBrightness = fBrightness;
 //particle->Transform (gameStates.render.bPerPixelLighting == 2);
-return Add (tiParticle, &item, sizeof (item), particle->m_vPos);
+return Add (tiParticle, &item, sizeof (item), particle->m_vPos, (gameOpts->render.effects.bSoftParticles & 1) ? -10 : 0);
 }
 
 //------------------------------------------------------------------------------

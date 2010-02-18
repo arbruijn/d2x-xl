@@ -1648,8 +1648,6 @@ void CParticleManager::ProjectVertices (tParticleVertex* pb)
 
 transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
 vCenter [X] += pb [2].vertex [X];
-
-vCenter [X] += pb [0].vertex [X];
 pb [0].vertex [X] =
 pb [3].vertex [X] = vCenter [X] - vOffset [X];
 pb [1].vertex [X] =
@@ -1693,7 +1691,6 @@ mRot.UVec ()[Y] = sinCosPart [nFrame].fCos;
 mRot.UVec ()[X] = sinCosPart [nFrame].fSin;
 mRot.RVec ()[Y] = -mRot.UVec ()[X];
 vOffset = mRot * vOffset;
-vCenter [X] += pb [0].vertex [X];
 pb [0].vertex [X] = vCenter [X] - vOffset [X];
 pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
 pb [1].vertex [X] = vCenter [X] + vOffset [Y];
