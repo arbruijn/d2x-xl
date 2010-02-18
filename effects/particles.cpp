@@ -1709,17 +1709,17 @@ pb [3].vertex [Z] = vCenter [Z];
 
 void CParticleManager::SetupVertices (int nType)
 {
-//#	pragma omp parallel
+#	pragma omp parallel
 	{
 		int	h = m_iBuffer / 4;
 
 	if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate) {
-//#		pragma omp for 
+#		pragma omp for 
 		for (int i = 0; i < h; i++)
 			RotateVertices (particleBuffer + 4 * i);
 		}
 	else {
-//#		pragma omp for 
+#		pragma omp for 
 		for (int i = 0; i < h; i++)
 			ProjectVertices (particleBuffer + 4 * i);
 		}
