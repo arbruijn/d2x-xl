@@ -26,7 +26,7 @@ typedef struct tShaderData {
 	int*				refP;
 } tShaderData;
 
-#if defined(_WIN64) || defined(__LP64__) || defined(__ppc64__) || defined(__x86_64__)
+#if defined(__macosx__) && defined(__LP64__)
 #	define intptr_t	int64_t
 #else
 #	define intptr_t	int32_t
