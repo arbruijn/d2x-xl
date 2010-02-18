@@ -166,8 +166,7 @@ class CTransparencyRenderer {
 			}
 		inline void Reset (void) { m_data.nItems = 0; }
 		inline int ItemCount (void) { return m_data.nItems; }
-		int Add (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
-		int AddMT (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread);
+		int Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, bool bClamp = false);
 		inline int AddFace (CSegFace *faceP) {
 			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);
 			}

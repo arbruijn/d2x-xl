@@ -99,12 +99,6 @@ static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0
 #define PART_BUF_SIZE	4096
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
-typedef struct tParticleVertex {
-	tTexCoord2f		texCoord;
-	tRgbaColorf		color;
-	CFloatVector3	vertex;
-	} tParticleVertex;
-
 static tRgbaColorf defaultParticleColor = {1.0f, 1.0f, 1.0f, 2.0f * 0.6f};
 static tParticleVertex particleBuffer [VERT_BUF_SIZE];
 static float bufferBrightness = -1;
@@ -660,15 +654,12 @@ int CParticle::Render (float brightness)
 	tRgbaColorf				pc;
 	tParticleVertex*		pb;
 	CFloatVector			vOffset, vCenter;
-	int						i, nFrame;
+	int						i;
 	bool						bFlushed = false;
 	float						fFade, decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 
 	static int				nFrames = 1;
 	static float			deltaUV = 1.0f;
-	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
-	static int				bInitSinCos = 1;
-	static CFloatMatrix	mRot;
 
 if (m_nDelay > 0)
 	return 0;
@@ -682,7 +673,7 @@ if (m_nType == LIGHT_PARTICLES)
 #endif
 if (!(bmP = bmpParticle [0][int (m_nType)]))
 	return 0;
-hp = m_vPos; //m_vTransPos;
+hp = m_vTransPos;
 if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	bFlushed = particleManager.FlushBuffer (brightness);
 	particleManager.SetLastType (m_nType);
@@ -830,49 +821,9 @@ pb [2].color =
 pb [3].color = pc;
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
-if (((m_nType == SMOKE_PARTICLES) /*|| (m_nType == WATERFALL_PARTICLES)*/) && gameOpts->render.particles.bRotate) {
-	if (bInitSinCos) {
-		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
-		bInitSinCos = 0;
-		mRot.RVec ()[Z] =
-		mRot.UVec ()[Z] =
-		mRot.FVec ()[X] =
-		mRot.FVec ()[Y] = 0;
-		mRot.FVec ()[Z] = 1;
-		}
-	nFrame = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	mRot.RVec ()[X] =
-	mRot.UVec ()[Y] = sinCosPart [nFrame].fCos;
-	mRot.UVec ()[X] = sinCosPart [nFrame].fSin;
-	mRot.RVec ()[Y] = -mRot.UVec ()[X];
-	vOffset = mRot * vOffset;
-	pb [0].vertex [X] = vCenter [X] - vOffset [X];
-	pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
-	pb [1].vertex [X] = vCenter [X] + vOffset [Y];
-	pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
-	pb [2].vertex [X] = vCenter [X] + vOffset [X];
-	pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
-	pb [3].vertex [X] = vCenter [X] - vOffset [Y];
-	pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
-	pb [0].vertex [Z] =
-	pb [1].vertex [Z] =
-	pb [2].vertex [Z] =
-	pb [3].vertex [Z] = vCenter [Z];
-	}
-else {
-	pb [0].vertex [X] =
-	pb [3].vertex [X] = vCenter [X] - vOffset [X];
-	pb [1].vertex [X] =
-	pb [2].vertex [X] = vCenter [X] + vOffset [X];
-	pb [0].vertex [Y] =
-	pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
-	pb [2].vertex [Y] =
-	pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
-	pb [0].vertex [Z] =
-	pb [1].vertex [Z] =
-	pb [2].vertex [Z] =
-	pb [3].vertex [Z] = vCenter [Z];
-	}
+pb [0].vertex.Assign (vCenter);
+pb [1].vertex.Assign (vOffset);
+pb [2].vertex [X] = float ((m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame);
 particleManager.IncBufPtr (4);
 if (particleManager.BufPtr () >= VERT_BUF_SIZE)
 	particleManager.FlushBuffer (brightness);
@@ -1694,6 +1645,88 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void CParticleManager::ProjectVertices (tParticleVertex* pb)
+{
+	CFloatVector3	vCenter = pb [0].vertex;
+	CFloatVector3	vOffset = pb [1].vertex;
+
+pb [0].vertex [X] =
+pb [3].vertex [X] = vCenter [X] - vOffset [X];
+pb [1].vertex [X] =
+pb [2].vertex [X] = vCenter [X] + vOffset [X];
+pb [0].vertex [Y] =
+pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
+pb [2].vertex [Y] =
+pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
+pb [0].vertex [Z] =
+pb [1].vertex [Z] =
+pb [2].vertex [Z] =
+pb [3].vertex [Z] = vCenter [Z];
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleManager::RotateVertices (tParticleVertex* pb)
+{
+	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
+	static int				bInitSinCos = 1;
+	static CFloatMatrix	mRot;
+
+	CFloatVector3	vCenter = pb [0].vertex;
+	CFloatVector3	vOffset = pb [1].vertex;
+	int				nFrame = int (pb [2].vertex [X]);
+
+if (bInitSinCos) {
+	ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
+	bInitSinCos = 0;
+	mRot.RVec ()[Z] =
+	mRot.UVec ()[Z] =
+	mRot.FVec ()[X] =
+	mRot.FVec ()[Y] = 0;
+	mRot.FVec ()[Z] = 1;
+	}
+mRot.RVec ()[X] =
+mRot.UVec ()[Y] = sinCosPart [nFrame].fCos;
+mRot.UVec ()[X] = sinCosPart [nFrame].fSin;
+mRot.RVec ()[Y] = -mRot.UVec ()[X];
+vOffset = mRot * vOffset;
+pb [0].vertex [X] = vCenter [X] - vOffset [X];
+pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
+pb [1].vertex [X] = vCenter [X] + vOffset [Y];
+pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
+pb [2].vertex [X] = vCenter [X] + vOffset [X];
+pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
+pb [3].vertex [X] = vCenter [X] - vOffset [Y];
+pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
+pb [0].vertex [Z] =
+pb [1].vertex [Z] =
+pb [2].vertex [Z] =
+pb [3].vertex [Z] = vCenter [Z];
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleManager::SetupVertices (int nType)
+{
+#	pragma omp parallel
+	{
+		int	h = m_iBuffer / 4;
+
+	if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate) {
+#		pragma omp for 
+		for (int i = 0; i < h; i++)
+			RotateVertices (particleBuffer + 4 * i);
+		}
+	else {
+#		pragma omp for 
+		for (int i = 0; i < h; i++)
+			ProjectVertices (particleBuffer + 4 * i);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 bool CParticleManager::FlushBuffer (float brightness)
 {
 if (bufferBrightness < 0)
@@ -1729,6 +1762,7 @@ if (InitBuffer (bLightmaps)) {
 	glNormal3f (0, 0, 0);
 	ogl.SetTransform (1);
 	ogl.SetupTransform (0);
+	SetupVertices (nType);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
 	ogl.ResetTransform (1);
 	ogl.SetTransform (0);

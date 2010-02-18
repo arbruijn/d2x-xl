@@ -496,18 +496,25 @@ if (left < r)
 void InitSegZRef (int i, int j, int nThread)
 {
 	tSegZRef		*ps = segZRef [0] + i;
-	CFixVector	v;
-	int			zMax = -0x7fffffff;
+	CFixVector	v, vViewer = OBJPOS (gameData.objs.viewerP)->vPos;
+	int			z, zMax = -0x7fffffff;
 	CSegment*	segP;
 
 for (; i < j; i++, ps++) {
 	segP = SEGMENTS + gameData.render.mine.nSegRenderList [i];
+#if 1
+	z = CFixVector::Dist (segP->Center (), vViewer) + segP->MaxRad ();
+	if (zMax < z)
+		zMax = z;
+	ps->z = z;
+#else
 	v = segP->Center ();
 	transformation.Transform (v, v, 0);
 	v [Z] += segP->MaxRad ();
 	if (zMax < v [Z])
 		zMax = v [Z];
 	ps->z = v [Z];
+#endif
 	ps->nSegment = gameData.render.mine.nSegRenderList [i];
 	}
 tiRender.zMax [nThread] = zMax;

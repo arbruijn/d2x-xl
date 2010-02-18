@@ -208,6 +208,12 @@ class CParticleSystem : public tParticleSystem {
 
 //------------------------------------------------------------------------------
 
+typedef struct tParticleVertex {
+	tTexCoord2f		texCoord;
+	tRgbaColorf		color;
+	CFloatVector3	vertex;
+	} tParticleVertex;
+
 class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
@@ -330,6 +336,9 @@ class CParticleManager {
 
 	private:
 		void RebuildSystemList (void);
+		void SetupVertices (int nType);
+		void RotateVertices (tParticleVertex* pb);
+		void ProjectVertices (tParticleVertex* pb);
 
 };
 

@@ -112,7 +112,7 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex)
+int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, bool bClamp)
 {
 #if LAZY_RESET
 if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
@@ -120,31 +120,23 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 #endif
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
-	int			nOffset;
+	int			nOffset, nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos);
 
-#if DBG
-if (nDepth < m_data.zMin)
-	return m_data.nFreeItems;
-if (nDepth > m_data.zMax) {
-	//if (nType != riParticle)
+if (nDepth < m_data.zMin) {
+	if (!bClamp)
+		return m_data.nFreeItems;
+	nDepth = m_data.zMin;
+	}
+else if (nDepth > m_data.zMax) {
+	if (!bClamp)
 		return m_data.nFreeItems;
 	nDepth = m_data.zMax;
 	}
-#else
-if ((nDepth < m_data.zMin) || (nDepth > m_data.zMax))
-	return m_data.nFreeItems;
-#endif
+
 AllocBuffers ();
 if (!m_data.nFreeItems)
 	return 0;
-#if 1
-	nOffset = (int) ((double) (nDepth - m_data.zMin) * m_data.zScale);
-#else
-if (nIndex < m_data.zMin)
-	nOffset = 0;
-else
-	nOffset = (int) ((double) (nIndex - m_data.zMin) * m_data.zScale);
-#endif
+nOffset = (int) ((double) (nDepth - m_data.zMin) * m_data.zScale);
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = m_data.depthBuffer + nOffset;
@@ -180,31 +172,6 @@ return m_data.nFreeItems;
 #else
 return 0;
 #endif
-}
-
-//------------------------------------------------------------------------------
-
-int CTransparencyRenderer::AddMT (tTranspItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread)
-{
-if (!gameStates.app.bMultiThreaded || (nThread < 0) || !gameData.app.bUseMultiThreading [rtTranspRender])
-	return Add (nType, itemData, itemSize, nDepth, nIndex);
-#if UNIFY_THREADS
-WaitForRenderThreads ();
-#else
-while (tiTranspRender.ti [nThread].bExec)
-	G3_SLEEP (0);
-#endif
-tiTranspRender.itemData [nThread].nType = nType;
-tiTranspRender.itemData [nThread].nSize = itemSize;
-tiTranspRender.itemData [nThread].nDepth = nDepth;
-tiTranspRender.itemData [nThread].nIndex = nIndex;
-memcpy (&tiTranspRender.itemData [nThread].item, itemData, itemSize);
-#if UNIFY_THREADS
-RunRenderThreads (rtTranspRender, 2);
-#else
-tiTranspRender.ti [nThread].bExec = 1;
-#endif
-return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -308,14 +275,14 @@ return SplitPoly (split, nDepth + 1) && SplitPoly (split + 1, nDepth + 1);
 int CTransparencyRenderer::AddObject (CObject *objP)
 {
 	tTranspObject	item;
-	CFixVector		vPos;
+//	CFixVector		vPos;
 
 if (objP->info.nType == 255)
 	return 0;
 item.objP = objP;
 item.vScale = gameData.models.vScale;
-transformation.Transform (vPos, OBJPOS (objP)->vPos, 0);
-return Add (tiObject, &item, sizeof (item), vPos [Z], vPos [Z]);
+//transformation.Transform (vPos, OBJPOS (objP)->vPos, 0);
+return Add (tiObject, &item, sizeof (item), OBJPOS (objP)->vPos);
 }
 
 //------------------------------------------------------------------------------
@@ -328,7 +295,7 @@ int CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitma
 	tTranspPoly	item;
 	int			i;
 	float			s = gameStates.render.grAlpha;
-	fix			zCenter;
+	//fix			zCenter;
 
 item.faceP = faceP;
 item.triP = triP;
@@ -372,35 +339,15 @@ if (bDepthMask && m_data.bSplitPolys) {
 	}
 else
 #endif
- {
-#if TI_POLY_CENTER
-	zCenter = 0;
-#endif
-	float zMinf = 1e30f;
-	float zMaxf = -1e30f;
-	float z;
-	for (i = 0; i < item.nVertices; i++) {
-		z = item.vertices [i][Z];
-#if TI_POLY_CENTER
-		zCenter += F2X (z);
-#endif
-		if (zMinf > z)
-			zMinf = z;
-		if (zMaxf < z)
-			zMaxf = z;
-		}
-	if ((F2X (zMaxf) < m_data.zMin) || (F2X (zMinf) > m_data.zMax))
-		return -1;
-#if TI_POLY_CENTER
-	zCenter /= item.nVertices;
-#else
-	zCenter = F2X (zMinf);
-#endif
-	if (zCenter < m_data.zMin)
-		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), m_data.zMin, m_data.zMin);
-	if (zCenter > m_data.zMax)
-		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), m_data.zMax, m_data.zMax);
-	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), zCenter, zCenter);
+	{
+	CFloatVector v = item.vertices [0];
+	for (i = 1; i < item.nVertices; i++) 
+		v += item.vertices [i];
+	v /= item.nVertices;
+	CFixVector vPos;
+	vPos.Assign (v);
+	fix d = CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos);
+	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), vPos, true);
 	}
 }
 
@@ -487,9 +434,9 @@ item.nHeight = nHeight;
 item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
-transformation.Transform (vPos, position, 0);
+//transformation.Transform (vPos, position, 0);
 item.position.Assign (vPos);
-return Add (tiSprite, &item, sizeof (item), vPos [Z], vPos [Z]);
+return Add (tiSprite, &item, sizeof (item), vPos);
 }
 
 //------------------------------------------------------------------------------
@@ -497,14 +444,14 @@ return Add (tiSprite, &item, sizeof (item), vPos [Z], vPos [Z]);
 int CTransparencyRenderer::AddSpark (const CFixVector& position, char nType, int nSize, char nFrame)
 {
 	tTranspSpark	item;
-	CFixVector		vPos;
+//	CFixVector		vPos;
 
 item.nSize = nSize;
 item.nFrame = nFrame;
 item.nType = nType;
 item.position.Assign (position);
-transformation.Transform (vPos, position, 0);
-return Add (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
+//transformation.Transform (vPos, position, 0);
+return Add (tiSpark, &item, sizeof (item), position);
 }
 
 //------------------------------------------------------------------------------
@@ -512,7 +459,7 @@ return Add (tiSpark, &item, sizeof (item), vPos [Z], vPos [Z]);
 int CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP, fix nSize)
 {
 	tTranspSphere	item;
-	CFixVector		vPos;
+	//CFixVector		vPos;
 
 item.nType = nType;
 item.color.red = red;
@@ -521,8 +468,8 @@ item.color.blue = blue;
 item.color.alpha = alpha;
 item.nSize = nSize;
 item.objP = objP;
-transformation.Transform (vPos, objP->info.position.vPos, 0);
-return Add (tiSphere, &item, sizeof (item), vPos [Z], vPos [Z]);
+//transformation.Transform (vPos, objP->info.position.vPos, 0);
+return Add (tiSphere, &item, sizeof (item), objP->info.position.vPos);
 }
 
 //------------------------------------------------------------------------------
@@ -530,17 +477,14 @@ return Add (tiSphere, &item, sizeof (item), vPos [Z], vPos [Z]);
 int CTransparencyRenderer::AddParticle (CParticle *particle, float fBrightness, int nThread)
 {
 	tTranspParticle	item;
-	fix					z;
+//	fix					z;
 
 if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 	return 0;
 item.particle = particle;
 item.fBrightness = fBrightness;
-z = particle->Transform (gameStates.render.bPerPixelLighting == 2);
-if (gameStates.app.bMultiThreaded && gameData.app.bUseMultiThreading [rtTranspRender])
-	return AddMT (tiParticle, &item, sizeof (item), z, z, nThread);
-else
-	return Add (tiParticle, &item, sizeof (item), z, z);
+particle->Transform (gameStates.render.bPerPixelLighting == 2);
+return Add (tiParticle, &item, sizeof (item), particle->m_vPos);
 }
 
 //------------------------------------------------------------------------------
@@ -548,17 +492,26 @@ else
 int CTransparencyRenderer::AddLightning (CLightning *lightningP, short nDepth)
 {
 	tTranspLightning	item;
-	CFixVector			vPos;
-	int					z;
+	//CFixVector			vPos;
 
 item.lightning = lightningP;
 item.nDepth = nDepth;
+#if 0
 transformation.Transform (vPos, lightningP->m_vPos, 0);
 z = vPos [Z];
 transformation.Transform (vPos, lightningP->m_vEnd, 0);
 if (z < vPos [Z])
 	z = vPos [Z];
-if (!Add (tiLightning, &item, sizeof (item), z, z))
+#endif
+fix d1 = CFixVector::Dist (lightningP->m_vPos, OBJPOS (gameData.objs.viewerP)->vPos);
+fix d2 = CFixVector::Dist (lightningP->m_vEnd, OBJPOS (gameData.objs.viewerP)->vPos);
+if (d1 > d2)
+	::Swap (d1, d2);
+if (d1 > m_data.zMax)
+	return 0;
+if (d2 < m_data.zMin)
+	return 0;
+if (!Add (tiLightning, &item, sizeof (item), CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd), true))
 	return 0;
 return 1;
 }
@@ -568,8 +521,10 @@ return 1;
 int CTransparencyRenderer::AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP)
 {
 	tTranspLightTrail	item;
-	int					i, j;
-	float					z = 0;
+	int					i, j, iMin = 0;
+	CFixVector			v;
+	CFloatVector		vViewer;
+	float					d, dMin = 1e30f;
 
 item.bmP = bmP;
 memcpy (item.vertices, vThruster, 4 * sizeof (CFloatVector));
@@ -582,10 +537,17 @@ if ((item.bTrail = (vFlame != NULL))) {
 	}
 else
 	j = 4;
-for (i = 0; i < j; i++)
-	if (z < item.vertices [i][Z])
-		z = item.vertices [i][Z];
-return Add (tiThruster, &item, sizeof (item), F2X (z), F2X (z));
+transformation.Transform (v, OBJPOS (gameData.objs.viewerP)->vPos);
+vViewer.Assign (v);
+for (i = 0; i < j; i++) {
+	d = CFloatVector::Dist (item.vertices [i], vViewer);
+	if (dMin > d) {
+		dMin = d;
+		iMin = i;
+		}
+	}
+v.Assign (item.vertices [iMin]);
+return Add (tiThruster, &item, sizeof (item), v);
 }
 
 //------------------------------------------------------------------------------

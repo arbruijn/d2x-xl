@@ -204,12 +204,11 @@ return 0;
 
 int _CDECL_ TranspRenderThread (void *pThreadId)
 {
-	int	i;
-
+#if TRANSPRENDER_THREADS
 do {
 	while (!(tiTranspRender.ti [0].bExec || tiTranspRender.ti [1].bExec))
 		G3_SLEEP (0);
-	for (i = 0; i < 2; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (tiTranspRender.ti [i].bExec) {
 			transparencyRenderer.Add ((tTranspItemType) tiTranspRender.itemData [i].nType, 
 											  &tiTranspRender.itemData [i].item, 
@@ -220,6 +219,7 @@ do {
 			}
 		}
 	} while (!(tiTranspRender.ti [0].bDone && tiTranspRender.ti [1].bDone));
+#endif
 return 0;
 }
 
