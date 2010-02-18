@@ -120,7 +120,7 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 #endif
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
-	int			nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + nOffset;
+	int			nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + I2X (nOffset);
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
