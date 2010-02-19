@@ -1453,15 +1453,13 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int G3SetupPerPixelShader (CSegFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
+int G3SetupPerPixelShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;
 
 	int	bLightmaps, nLights;
 
-if (bDepthOnly)
-	return 0;
 if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
 	return 0;
 #if ONLY_LIGHTMAPS == 2
@@ -1517,13 +1515,11 @@ return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];
 
 //------------------------------------------------------------------------------
 
-int G3SetupLightmapShader (CSegFace *faceP, int bDepthOnly, int nType, bool bHeadlight)
+int G3SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;
 
-if (bDepthOnly)
-	return 0;
 if (!CreateLightmapShader (nType))
 	return 0;
 #if DBG

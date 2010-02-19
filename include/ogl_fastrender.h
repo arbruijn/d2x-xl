@@ -18,12 +18,12 @@ int G3DrawHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlen
 int G3DrawHeadlightsPPLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int G3DrawFaceArraysLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void G3FlushFaceBuffer (int bForce);
-int G3SetupPerPixelShader (CSegFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
-int G3SetupLightmapShader (CSegFace *faceP, int bDepthOnly, int nType, bool bHeadlight);
+int G3SetupPerPixelShader (CSegFace *faceP, int nType, bool bHeadlight);
+int G3SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight);
 //int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 int G3SetupTexMergeShader (int bColorKey, int bColored, int nType);
 int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
-int G3SetupShader (CSegFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
+int G3SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);
 
 typedef int (*CRenderFaceDrawerP) (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);

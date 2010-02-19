@@ -179,7 +179,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int G3SetupShader (CSegFace *faceP, int bDepthOnly, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
+int G3SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
 {
 	int	nType, nShader = -1;
 
@@ -190,24 +190,16 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
-if (bDepthOnly) {
-	if (bColorKey || bMultiTexture)
-		nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
-	else
-		shaderManager.Deploy (-1);
-	}
-else {
-	if (!bColored && gameOpts->render.automap.bGrayOut)
-		nShader = G3SetupGrayScaleShader (nType, colorP);
-	else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixelLighting == 2))
-		nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
-	else if (gameStates.render.bHeadlights && !bDepthOnly)
-		nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
-	else if (bColorKey || bMultiTexture)
-		nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
-	else
-		shaderManager.Deploy (-1);
-	}
+if (!bColored && gameOpts->render.automap.bGrayOut)
+	nShader = G3SetupGrayScaleShader (nType, colorP);
+else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixelLighting == 2))
+	nShader = G3SetupPerPixelShader (faceP, nType, false);
+else if (gameStates.render.bHeadlights)
+	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
+else if (bColorKey || bMultiTexture)
+	nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
+else
+	shaderManager.Deploy (-1);
 ogl.ClearError (0);
 return nShader;
 }
@@ -263,7 +255,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int G3SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored, bool bForce = false)
+int G3SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bColorKey, int bColored, bool bForce = false)
 {
 PROF_START
 if (bTextured) {
@@ -309,7 +301,7 @@ if (bTextured) {
 	if (bStateChange) {
 		gameData.render.nStateChanges++;
 		if (!gameStates.render.bFullBright)
-			G3SetupShader (faceP, bDepthOnly, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->m_info.color);
+			G3SetupShader (faceP, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->m_info.color);
 		}
 	}
 else {
@@ -324,7 +316,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3SetRenderStatesLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bDepthOnly, int bTextured, int bColorKey, int bColored)
+int G3SetRenderStatesLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bColorKey, int bColored)
 {
 PROF_START
 if (bTextured) {
@@ -472,9 +464,8 @@ else if (bmBot) {
 	}
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 if (bDepthOnly) {
-	if (bTransparent)
+	if (bTransparent || (bmTop && bmTop->Mask ()))
 		return 0;
-	bColored = 0;
 	}
 else {
 	bColored = G3FaceIsColored (faceP);
@@ -497,9 +488,7 @@ else {
 	}
 
 #if G3_BUFFER_FACES
-if (bDepthOnly)
-	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
-else {
+if (!bDepthOnly) {
 	if (bMonitor)
 		G3FlushFaceBuffer (1);
 	else {
@@ -512,14 +501,12 @@ else {
 		G3FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
 		}
 	if (faceBuffer.nFaces <= 1)
-		G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored, true);
+		G3SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, true);
 	}
+else
 #else
-G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
-#endif
-ogl.m_states.iLight = 0;
-
-if (bDepthOnly) {
+if (bDepthOnly)
+	{
 	if (gameStates.render.bTriangleMesh)
 		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
 	else
@@ -527,6 +514,10 @@ if (bDepthOnly) {
 	return 0;
 	}
 
+G3SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+#endif
+
+ogl.m_states.iLight = 0;
 gameData.render.nTotalFaces++;
 #if DBG
 RenderWireFrame (faceP, bTextured);
@@ -608,9 +599,8 @@ else if (bmBot)
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
-	if (bTransparent)
+	if (bTransparent || (bmTop && bmTop->Mask ()))
 		return 0;
-	bColored = 0;
 	}
 else {
 	bColored = G3FaceIsColored (faceP);
@@ -636,16 +626,17 @@ else {
 		}
 	}
 
-ogl.m_states.iLight = 0;
-if (gameStates.render.bFullBright)
-	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
-else
-	G3SetRenderStatesLM (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 if (bDepthOnly) {
 	RenderFacePP (faceP);
 	PROF_END(ptRenderFaces)
 	return 1;
 	}
+
+if (gameStates.render.bFullBright)
+	G3SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+else
+	G3SetRenderStatesLM (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+ogl.m_states.iLight = 0;
 #if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
@@ -670,7 +661,7 @@ else if (gameStates.render.bFullBright) {
 else {
 	bool bAdditive = false;
 	for (;;) {
-		G3SetupPerPixelShader (faceP, 0, gameStates.render.history.nType, false);
+		G3SetupPerPixelShader (faceP, gameStates.render.history.nType, false);
 		RenderFacePP (faceP);
 		if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 			 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
@@ -728,9 +719,8 @@ else if (bmBot)
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
-	if (bTransparent)
+	if (bTransparent || (bmTop && bmTop->Mask ()))
 		return 0;
-	bColored = 0;
 	}
 else {
 	bColored = G3FaceIsColored (faceP);
@@ -758,16 +748,17 @@ else {
 		}
 	}
 
-ogl.m_states.iLight = 0;
-if (gameStates.render.bFullBright)
-	G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
-else
-	G3SetRenderStatesLM (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 if (bDepthOnly) {
 	RenderFacePP (faceP);
 	PROF_END(ptRenderFaces)
 	return 1;
 	}
+
+if (gameStates.render.bFullBright)
+	G3SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+else
+	G3SetRenderStatesLM (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+ogl.m_states.iLight = 0;
 #if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
@@ -790,7 +781,7 @@ else if (gameStates.render.bFullBright) {
 	RenderFacePP (faceP);
 	}
 else {
-	G3SetupLightmapShader (faceP, 0, gameStates.render.history.nType, false);
+	G3SetupLightmapShader (faceP, gameStates.render.history.nType, false);
 	RenderFacePP (faceP);
 	}
 
@@ -860,7 +851,7 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-G3SetRenderStatesLM (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);
+G3SetRenderStatesLM (faceP, bmBot, bmTop, 1, bColorKey, 1);
 if (bMonitor)
 	G3SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;

@@ -812,14 +812,14 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 			}
 		else {
 			if (gameStates.render.bPerPixelLighting == 1) {
-				G3SetupLightmapShader (faceP, 0, (int) faceP->m_info.nRenderType, false);
+				G3SetupLightmapShader (faceP, int (faceP->m_info.nRenderType), false);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				}
 			else {
 				ogl.m_states.iLight = 0;
 				lightManager.Index (0)[0].nActive = -1;
 				for (;;) {
-					G3SetupPerPixelShader (faceP, 0, faceP->m_info.nRenderType, false);
+					G3SetupPerPixelShader (faceP, int (faceP->m_info.nRenderType), false);
 					OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 					if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 						 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
@@ -853,7 +853,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 				shaderManager.Deploy (-1);
 			}
 		else
-			G3SetupShader (faceP, 0, mask != NULL, bDecal > 0, bmBot != NULL,
+			G3SetupShader (faceP, mask != NULL, bDecal > 0, bmBot != NULL,
 								(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 								m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -874,7 +874,7 @@ else if (LoadImage (bmBot, item->nColors, -1, item->nWrap, 0, 3, 1, lightmapMana
 		}
 	else {
 		ogl.SetBlendMode (0);
-		G3SetupShader (faceP, 0, 0, 0, bmBot != NULL,
+		G3SetupShader (faceP, 0, 0, bmBot != NULL,
 							(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 							bmBot ? NULL : item->color);
 		}
