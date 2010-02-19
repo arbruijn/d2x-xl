@@ -107,6 +107,10 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 		m_data.zScale = 1;
 	else if (m_data.zScale > 1)
 		m_data.zScale = 1;
+	m_data.vViewer [0] = OBJPOS (gameData.objs.viewerP)->vPos;
+	transformation.Transform (m_data.vViewer [1], m_data.vViewer [0]);
+	m_data.vViewerf [0].Assign (m_data.vViewer [0]);
+	m_data.vViewerf [1].Assign (m_data.vViewer [1]);
 	}
 }
 
@@ -124,15 +128,7 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 #endif
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
-	int			nDepth; 
-		
-if (!bTransform)
-	nDepth = CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + I2X (nOffset);
-else {
-	CFixVector	vViewer;
-	transformation.Transform (vViewer, OBJPOS (gameData.objs.viewerP)->vPos);
-	nDepth = CFixVector::Dist (vPos, vViewer) + I2X (nOffset);
-	}
+	int			nDepth = CFixVector::Dist (vPos, m_data.vViewer [bTransform]) + I2X (nOffset);
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
@@ -354,7 +350,7 @@ else
 	{
 	if (faceP)
 		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), 
-						SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true);
+						SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, true);
 
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
@@ -538,7 +534,6 @@ int CTransparencyRenderer::AddLightTrail (CBitmap *bmP, CFloatVector *vThruster,
 	tTranspLightTrail	item;
 	int					i, j, iMin = 0;
 	CFixVector			v;
-	CFloatVector		vViewer;
 	float					d, dMin = 1e30f;
 
 item.bmP = bmP;
@@ -552,10 +547,8 @@ if ((item.bTrail = (vFlame != NULL))) {
 	}
 else
 	j = 4;
-transformation.Transform (v, OBJPOS (gameData.objs.viewerP)->vPos);
-vViewer.Assign (v);
 for (i = 0; i < j; i++) {
-	d = CFloatVector::Dist (item.vertices [i], vViewer);
+	d = CFloatVector::Dist (item.vertices [i], m_data.vViewerf [1]);
 	if (dMin > d) {
 		dMin = d;
 		iMin = i;

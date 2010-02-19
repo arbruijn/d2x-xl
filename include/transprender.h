@@ -138,7 +138,9 @@ typedef struct tTranspItemBuffer {
 	char				bUseLightmaps;
 	char				bDecal;
 	char				bSplitPolys;
-	CBitmap			*bmP [3];
+	CBitmap*			bmP [3];
+	CFixVector		vViewer [2];
+	CFloatVector	vViewerf [2];
 } tTranspItemBuffer;
 
 typedef struct tTranspItemData {
