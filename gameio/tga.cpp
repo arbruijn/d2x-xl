@@ -202,7 +202,7 @@ else {
 #endif
 		if (nAlpha > w * w / 1000) {
 			if (!n) {
-				if (avgColor.alpha / nAlpha > 1.0f)
+				if (avgColor.alpha / nAlpha > 5.0f)
 					bmP->AddFlags (BM_FLAG_TRANSPARENT);
 				else
 					bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);

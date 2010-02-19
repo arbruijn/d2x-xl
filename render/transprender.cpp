@@ -112,7 +112,7 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp)
+int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, bool bTransform)
 {
 if (gameStates.render.bDepthSort < 0)
 	return 0;
@@ -124,7 +124,15 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 #endif
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
-	static int			nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + I2X (nOffset);
+	int			nDepth; 
+		
+if (!bTransform)
+	nDepth = CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + I2X (nOffset);
+else {
+	CFixVector	vViewer;
+	transformation.Transform (vViewer, OBJPOS (gameData.objs.viewerP)->vPos);
+	nDepth = CFixVector::Dist (vPos, vViewer) + I2X (nOffset);
+	}
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
@@ -554,7 +562,7 @@ for (i = 0; i < j; i++) {
 		}
 	}
 v.Assign (item.vertices [iMin]);
-return Add (tiThruster, &item, sizeof (item), v);
+return Add (tiThruster, &item, sizeof (item), v, 0, false, true);
 }
 
 //------------------------------------------------------------------------------
