@@ -853,31 +853,31 @@ if (!CreateShieldSphere ())
 if (gameData.render.shield.nFaces > 0)
 #endif
  {
-	if (gameStates.render.bDepthSort > 0)
-		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize);
+	float	fScale;
+	int	bAdditive;
+	if (nSize) {
+		fScale = 0.5f;
+		bAdditive = 0;
+		}
 	else {
-		float	fScale;
-		int	bAdditive;
-		if (nSize) {
-			fScale = 0.5f;
-			bAdditive = 0;
-			}
+		if (objP->rType.polyObjInfo.nModel < 0) 
+			nSize = objP->info.xSize;
 		else {
-			if (objP->rType.polyObjInfo.nModel < 0) 
-				nSize = objP->info.xSize;
-			else {
-				CPolyModel* modelP = GetPolyModel (objP, NULL, objP->rType.polyObjInfo.nModel, 0);
-				nSize = modelP ? modelP->Rad () : objP->info.xSize;
-				}
-			fScale = gameData.render.shield.Pulse ()->fScale;
-			bAdditive = 2;
+			CPolyModel* modelP = GetPolyModel (objP, NULL, objP->rType.polyObjInfo.nModel, 0);
+			nSize = modelP ? modelP->Rad () : objP->info.xSize;
 			}
-		tObjTransformation *posP = OBJPOS (objP);
-		float r = X2F (nSize);
-		if (gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive) && !shaderManager.IsCurrent (sphereShaderProg)) {
-			// full and not just partial sphere rendered
+		fScale = gameData.render.shield.Pulse ()->fScale;
+		bAdditive = 2;
+		}
+	float r = X2F (nSize);
+	if (gameStates.render.bDepthSort < 0)
+		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
+	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize)) {
+		// full and not just partial sphere rendered
+		if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk) ||
+			 ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT))) {
 			CFixVector vPos;
-			transformation.Begin (*PolyObjPos (objP, &vPos), posP->mOrient);
+			transformation.Begin (*PolyObjPos (objP, &vPos), OBJPOS (objP)->mOrient);
 			vPos.SetZero ();
 			RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 			transformation.End ();

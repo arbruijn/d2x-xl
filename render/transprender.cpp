@@ -1,4 +1,4 @@
-		/*
+/*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTTIBUTING THE CODE TO
 END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
@@ -114,13 +114,17 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp)
 {
+if (gameStates.render.bDepthSort < 0)
+	return 0;
+if (gameStates.render.nType == 5)
+	return 0;
 #if LAZY_RESET
 if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return 0;
 #endif
 #if RENDER_TRANSPARENCY
 	tTranspItem *ph, *pi, *pj, **pd;
-	int			nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + I2X (nOffset);
+	static int			nDepth =	CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos) + I2X (nOffset);
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
@@ -1341,6 +1345,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
 if (bReset) {
+	m_data.nItems = 0;
 	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
