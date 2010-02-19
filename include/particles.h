@@ -337,7 +337,7 @@ class CParticleManager {
 	private:
 		void RebuildSystemList (void);
 		void SetupVertices (int nType);
-		void RotateVertices (tParticleVertex* pb);
+		void RotateVertices (tParticleVertex* pb, int nThread = 0);
 		void ProjectVertices (tParticleVertex* pb);
 
 };

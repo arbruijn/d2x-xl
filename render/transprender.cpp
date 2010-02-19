@@ -437,9 +437,9 @@ item.nHeight = nHeight;
 item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
-//transformation.Transform (vPos, position, 0);
+transformation.Transform (vPos, position, 0);
 item.position.Assign (vPos);
-return Add (tiSprite, &item, sizeof (item), vPos);
+return Add (tiSprite, &item, sizeof (item), position);
 }
 
 //------------------------------------------------------------------------------
@@ -952,7 +952,6 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 		glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	else
 		glColor3f (1, 1, 1);
-	ogl.SetBlending (true);
 	ogl.SetBlendMode (item->bAdditive);
 	if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0)))
 		shaderManager.Deploy (-1);

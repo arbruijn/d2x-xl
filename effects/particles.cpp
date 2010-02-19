@@ -1664,12 +1664,13 @@ pb [3].vertex [Z] = vCenter [Z];
 
 //------------------------------------------------------------------------------
 
-void CParticleManager::RotateVertices (tParticleVertex* pb)
+void CParticleManager::RotateVertices (tParticleVertex* pb, int nThread)
 {
 	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
 	static int				bInitSinCos = 1;
-	static CFloatMatrix	mRot;
+	static CFloatMatrix	mRot [MAX_THREADS];
 
+	CFloatMatrix&	m = mRot [nThread];
 	CFloatVector3	vCenter;
 	CFloatVector3	vOffset = pb [1].vertex;
 	int				nFrame = int (pb [2].vertex [Y]);
@@ -1677,20 +1678,23 @@ void CParticleManager::RotateVertices (tParticleVertex* pb)
 transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
 vCenter [X] += pb [2].vertex [X];
 
+#pragma omp critical
+{
 if (bInitSinCos) {
 	ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 	bInitSinCos = 0;
-	mRot.RVec ()[Z] =
-	mRot.UVec ()[Z] =
-	mRot.FVec ()[X] =
-	mRot.FVec ()[Y] = 0;
-	mRot.FVec ()[Z] = 1;
+	m.RVec ()[Z] =
+	m.UVec ()[Z] =
+	m.FVec ()[X] =
+	m.FVec ()[Y] = 0;
+	m.FVec ()[Z] = 1;
 	}
-mRot.RVec ()[X] =
-mRot.UVec ()[Y] = sinCosPart [nFrame].fCos;
-mRot.UVec ()[X] = sinCosPart [nFrame].fSin;
-mRot.RVec ()[Y] = -mRot.UVec ()[X];
-vOffset = mRot * vOffset;
+}
+m.RVec ()[X] =
+m.UVec ()[Y] = sinCosPart [nFrame].fCos;
+m.UVec ()[X] = sinCosPart [nFrame].fSin;
+m.RVec ()[Y] = -sinCosPart [nFrame].fSin;
+vOffset = m * vOffset;
 pb [0].vertex [X] = vCenter [X] - vOffset [X];
 pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
 pb [1].vertex [X] = vCenter [X] + vOffset [Y];
@@ -1709,20 +1713,22 @@ pb [3].vertex [Z] = vCenter [Z];
 
 void CParticleManager::SetupVertices (int nType)
 {
-#	pragma omp parallel
-	{
-		int	h = m_iBuffer / 4;
+	int h = m_iBuffer / 4;
 
-	if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate) {
-#		pragma omp for 
-		for (int i = 0; i < h; i++)
-			RotateVertices (particleBuffer + 4 * i);
-		}
-	else {
-#		pragma omp for 
-		for (int i = 0; i < h; i++)
-			ProjectVertices (particleBuffer + 4 * i);
-		}
+if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)
+#pragma omp parallel
+	{
+	int nThread = omp_get_thread_num();
+#	pragma omp for 
+	for (int i = 0; i < h; i++)
+		RotateVertices (particleBuffer + 4 * i, nThread);
+	}
+else 
+#pragma omp parallel
+	{
+#	pragma omp for 
+	for (int i = 0; i < h; i++)
+		ProjectVertices (particleBuffer + 4 * i);
 	}
 }
 
