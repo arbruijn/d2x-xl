@@ -6544,10 +6544,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\rendersetup.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\rendershadows.h"
 						>
 					</File>

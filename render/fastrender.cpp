@@ -378,7 +378,7 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) 
-	ogl.SetDepthMode (GL_LEQUAL);
+	ogl.SetDepthMode (GL_EQUAL); //GL_LEQUAL);
 else {
 	ogl.ColorMask (0,0,0,0,0);
 	ogl.SetDepthWrite (true);
@@ -564,7 +564,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 	int				bAutomap = (nType == 0);
 
 #if 1
-if (automap.Display ())
+if (automap.Display () && !bDepthOnly)
 	flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
 #endif
 for (i = 0; i < flx.nUsedKeys; i++) {
@@ -849,14 +849,6 @@ else {	//front to back
 	RenderHeadlights (nType);
 	}
 EndRenderFaces (nType, 0);
-}
-
-//------------------------------------------------------------------------------
-
-void RenderDepth (void)
-{
-for (int i = gameData.render.mine.nRenderSegs; i; )
-	RenderFaceList ();
 }
 
 //------------------------------------------------------------------------------

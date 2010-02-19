@@ -63,7 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 //increment counter for checking if points bTransformed
 //This must be called at the start of the frame if RotateVertexList() will be used
-static void RenderStartFrame (void)
+void RenderStartFrame (void)
 {
 if (!++gameStates.render.nFrameCount) {		//wrap!
 	gameData.render.mine.nRotatedLast.Clear (0);		//clear all to zero
@@ -73,7 +73,7 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 
 //------------------------------------------------------------------------------
 
-static void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
+void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
 {
 	short nStartSeg;
 	bool	bPlayer = gameData.objs.viewerP == gameData.objs.consoleP;

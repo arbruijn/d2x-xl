@@ -20,6 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 void QSortFaces (int left, int right);
+int SetupDepthBuffer (int nType);
 void RenderFaceList (int nType, int bFrontToBack);
 void ComputeDynamicQuadLight (int nStart, int nEnd, int nThread);
 void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread);

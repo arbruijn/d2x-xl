@@ -190,16 +190,24 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
-if (!bColored && gameOpts->render.automap.bGrayOut)
-	nShader = G3SetupGrayScaleShader (nType, colorP);
-else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixelLighting == 2))
-	nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
-else if (gameStates.render.bHeadlights && !bDepthOnly)
-	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
-else if (bColorKey || bMultiTexture)
-	nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
-else
-	shaderManager.Deploy (-1);
+if (bDepthOnly) {
+	if (bColorKey || bMultiTexture)
+		nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
+	else
+		shaderManager.Deploy (-1);
+	}
+else {
+	if (!bColored && gameOpts->render.automap.bGrayOut)
+		nShader = G3SetupGrayScaleShader (nType, colorP);
+	else if ((gameStates.render.nType != 4) && faceP && (gameStates.render.bPerPixelLighting == 2))
+		nShader = G3SetupPerPixelShader (faceP, bDepthOnly, nType, false);
+	else if (gameStates.render.bHeadlights && !bDepthOnly)
+		nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
+	else if (bColorKey || bMultiTexture)
+		nShader = G3SetupTexMergeShader (bColorKey, bColored, nType);
+	else
+		shaderManager.Deploy (-1);
+	}
 ogl.ClearError (0);
 return nShader;
 }
@@ -464,7 +472,7 @@ else if (bmBot) {
 	}
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 if (bDepthOnly) {
-	if (bTransparent || faceP->m_info.bOverlay)
+	if (bTransparent)
 		return 0;
 	bColored = 0;
 	}
@@ -510,7 +518,7 @@ else {
 G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
 #endif
 ogl.m_states.iLight = 0;
-//G3SetRenderStates (faceP, bmBot, bmTop, bDepthOnly, bTextured, bColorKey, bColored);
+
 if (bDepthOnly) {
 	if (gameStates.render.bTriangleMesh)
 		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
@@ -534,10 +542,8 @@ else
 #endif
 if (gameStates.render.bTriangleMesh) {
 #if USE_RANGE_ELEMENTS
-	 {
 		GLsizei nElements = faceP->m_info.nTris * 3;
 		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
-		}
 #else
 		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
 #endif
@@ -602,7 +608,7 @@ else if (bmBot)
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
-	if (bTransparent || faceP->m_info.bOverlay)
+	if (bTransparent)
 		return 0;
 	bColored = 0;
 	}
@@ -722,7 +728,7 @@ else if (bmBot)
 bTransparent = G3FaceIsTransparent (faceP, bmBot, bmTop);
 
 if (bDepthOnly) {
-	if (bTransparent || faceP->m_info.bOverlay)
+	if (bTransparent)
 		return 0;
 	bColored = 0;
 	}
