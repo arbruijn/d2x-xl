@@ -1718,7 +1718,11 @@ void CParticleManager::SetupVertices (int nType)
 if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)
 #pragma omp parallel
 	{
+#	ifdef _OPENMP
 	int nThread = omp_get_thread_num();
+#	else
+	int nThread = 0;
+#	endif
 #	pragma omp for 
 	for (int i = 0; i < h; i++)
 		RotateVertices (particleBuffer + 4 * i, nThread);
