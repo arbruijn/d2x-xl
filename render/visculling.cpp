@@ -496,7 +496,7 @@ if (left < r)
 void InitSegZRef (int i, int j, int nThread)
 {
 	tSegZRef		*ps = segZRef [0] + i;
-	CFixVector	v, vViewer = OBJPOS (gameData.objs.viewerP)->vPos;
+	CFixVector	vViewer = OBJPOS (gameData.objs.viewerP)->vPos;
 	int			z, zMax = -0x7fffffff;
 	CSegment*	segP;
 
@@ -508,7 +508,7 @@ for (; i < j; i++, ps++) {
 		zMax = z;
 	ps->z = z;
 #else
-	v = segP->Center ();
+	CFixVector v = segP->Center ();
 	transformation.Transform (v, v, 0);
 	v [Z] += segP->MaxRad ();
 	if (zMax < v [Z])

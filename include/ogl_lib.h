@@ -208,6 +208,7 @@ class COglBuffers {
 		CArray<CFloatVector>		vertices;
 		CArray<tTexCoord2f>		texCoord [2];
 		CArray<tRgbaColorf>		color;
+		CUShortArray				indices;
 		int							m_nVertices;
 
 	public:
@@ -215,6 +216,7 @@ class COglBuffers {
 		bool SizeVertices (int nVerts);
 		bool SizeColor (int nVerts);
 		bool SizeTexCoord (int nVerts);
+		bool SizeIndex (int nVerts);
 		bool SizeBuffers (int nVerts);
 		void Flush (GLenum nPrimitive, int nVerts, int nDimension = 3, int bTextured = 0, int bColored = 0);
 

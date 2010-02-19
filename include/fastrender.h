@@ -25,6 +25,7 @@ void ComputeDynamicQuadLight (int nStart, int nEnd, int nThread);
 void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread);
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread);
 void ComputeStaticFaceLight (int nStart, int nEnd, int nThread);
+void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
 void UpdateSlidingFaces (void);
 int CountRenderFaces (void);
 void GetRenderVertices (void);

@@ -1033,6 +1033,73 @@ return gmObjP &&
 		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature);
 }
 
+//------------------------------------------------------------------------------
+
+#if 0
+
+// Draw the reticle in 3D for head tracking
+void Draw3DReticle (fix xStereoSeparation)
+{
+	g3sPoint 	reticlePoints [4];
+	tUVL			tUVL [4];
+	g3sPoint		*pointList [4];
+	int 			i;
+	CFixVector	v1, v2;
+	int			saved_interp_method;
+
+//	if (!transformation.m_info.bUsePlayerHeadAngles) return;
+
+for (i = 0; i < 4; i++) {
+	reticlePoints [i].p3_index = -1;
+	pointList [i] = reticlePoints + i;
+	tUVL [i].l = MAX_LIGHT;
+	}
+tUVL [0].u =
+tUVL [0].v =
+tUVL [1].v =
+tUVL [3].u = 0;
+tUVL [1].u =
+tUVL [2].u =
+tUVL [2].v =
+tUVL [3].v = I2X (1);
+
+v1 = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.FVec () * (I2X (4));
+v1 += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (I2X (1));
+G3TransformAndEncodePoint(&reticlePoints [0], v2);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (I2X (1));
+G3TransformAndEncodePoint(&reticlePoints [1], v2);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (+I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (-I2X (1));
+G3TransformAndEncodePoint(&reticlePoints [2], v2);
+v2 = v1 + gameData.objs.viewerP->info.position.mOrient.RVec () * (-I2X (1));
+v2 += gameData.objs.viewerP->info.position.mOrient.UVec () * (-I2X (1));
+G3TransformAndEncodePoint(&reticlePoints [3], v2);
+
+if ( reticleCanvas == NULL) {
+	reticleCanvas = CCanvas::Create (64, 64);
+	if ( !reticleCanvas)
+		Error ("Couldn't allocate reticleCanvas");
+	//reticleCanvas->Bitmap ().nId = 0;
+	reticleCanvas->SetFlags (BM_FLAG_TRANSPARENT);
+	}
+
+CCanvas::Push ();
+CCanvas::SetCurrent (reticleCanvas);
+reticleCanvas->Clear (0);		// Clear to Xparent
+cockpit->DrawReticle (1);
+CCanvas::Pop ();
+
+saved_interp_method = gameStates.render.nInterpolationMethod;
+gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
+G3DrawTexPoly (4, pointList, tUVL, reticleCanvas, NULL, 1, -1);
+gameStates.render.nInterpolationMethod	= saved_interp_method;
+}
+
+#endif
+
 //	-----------------------------------------------------------------------------
 
 tRgbColorb playerColors [] = {

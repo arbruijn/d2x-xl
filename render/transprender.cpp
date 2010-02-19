@@ -136,7 +136,7 @@ else if (nDepth > m_data.zMax) {
 AllocBuffers ();
 if (!m_data.nFreeItems)
 	return 0;
-nOffset = (int) ((double) (nDepth - m_data.zMin) * m_data.zScale);
+nOffset = int (double (nDepth - m_data.zMin) * m_data.zScale);
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = m_data.depthBuffer + nOffset;
@@ -350,8 +350,7 @@ else
 	v /= item.nVertices;
 	CFixVector vPos;
 	vPos.Assign (v);
-	fix d = CFixVector::Dist (vPos, OBJPOS (gameData.objs.viewerP)->vPos);
-	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), vPos, true);
+	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), vPos, 0, true);
 	}
 }
 

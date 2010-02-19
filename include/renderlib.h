@@ -98,6 +98,8 @@ int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist);
 void BumpVisitedFlag (void);
 void BumpProcessedFlag (void);
 void BumpVisibleFlag (void);
+void SetupMineRenderer (void);
+void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
 
 #if DBG
 void OutlineSegSide (CSegment *seg, int _side, int edge, int vert);

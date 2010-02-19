@@ -852,4 +852,12 @@ EndRenderFaces (nType, 0);
 }
 
 //------------------------------------------------------------------------------
+
+void RenderDepth (void)
+{
+for (int i = gameData.render.mine.nRenderSegs; i; )
+	RenderFaceList ();
+}
+
+//------------------------------------------------------------------------------
 // eof

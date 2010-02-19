@@ -6472,6 +6472,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\render\rendersetup.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\render\rendershadows.cpp"
 						>
 					</File>
@@ -6537,6 +6541,10 @@
 					</File>
 					<File
 						RelativePath="..\include\rendermine.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\rendersetup.h"
 						>
 					</File>
 					<File
@@ -10735,11 +10743,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

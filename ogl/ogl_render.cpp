@@ -1307,9 +1307,17 @@ texCoord [1].Destroy ();
 return ((texCoord [0].Create (nVerts) != NULL) && (texCoord [1].Create (nVerts) != NULL));
 }
 
+bool COglBuffers::SizeIndex (int nVerts)
+{
+if (int (indices.Length ()) >= nVerts)
+	return true;
+indices.Destroy ();
+return indices.Create (nVerts) != NULL;
+}
+
 bool COglBuffers::SizeBuffers (int nVerts)
 {
-return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts);
+return SizeVertices (nVerts) && SizeColor (nVerts) && SizeTexCoord (nVerts) && SizeIndex (nVerts);
 }
 
 
