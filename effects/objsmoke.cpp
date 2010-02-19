@@ -777,28 +777,28 @@ int t = objP->info.nType;
 if (gameStates.render.bQueryCoronas)
 	return 0;
 if (t == OBJ_PLAYER)
-	;//DoPlayerSmoke (objP, -1);
+	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)
-	;//DoRobotSmoke (objP);
+	DoRobotSmoke (objP);
 else if ((t == OBJ_EFFECT) && (objP->info.nId == SMOKE_ID))
-	;//DoStaticParticles (objP);
+	DoStaticParticles (objP);
 else if (t == OBJ_REACTOR)
-	;//DoReactorSmoke (objP);
+	DoReactorSmoke (objP);
 else if (t == OBJ_WEAPON) {
 	if (gameData.objs.bIsMissile [objP->info.nId])
 		DoMissileSmoke (objP);
 	else if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))
-		;//DoParticleTrail (objP);
+		DoParticleTrail (objP);
 	else if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->info.nId == PROXMINE_ID))
-		;//DoBombSmoke (objP);
+		DoBombSmoke (objP);
 	else if (gameOpts->render.particles.bPlasmaTrails && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0) &&
 				gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsSlowWeapon [objP->info.nId])
-		;//DoParticleTrail (objP);
+		DoParticleTrail (objP);
 	else
 		return 0;
 	}
 else if (t == OBJ_DEBRIS)
-	;//DoDebrisSmoke (objP);
+	DoDebrisSmoke (objP);
 else
 	return 0;
 return 1;
