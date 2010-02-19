@@ -371,7 +371,7 @@ m_data.Initialize ();
 void COGL::InitState (void)
 {
 // select clearing (background) color
-glClearColor (0, 0, 0, 0);
+glClearColor (0,0,0,1);
 glShadeModel (GL_SMOOTH);
 // initialize viewing values
 glMatrixMode (GL_PROJECTION);
@@ -812,7 +812,7 @@ else {
 	if (gameStates.render.nRenderPass < 0) {
 		ogl.SetDepthWrite (true);
 		ColorMask (1,1,1,1,1);
-		glClearColor (0,0,0,0);
+		glClearColor (0,0,0,1);
 #if 1
 		if (bResetColorBuf && (automap.Display () || gameStates.render.bRenderIndirect))
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -823,7 +823,7 @@ else {
 	else if (gameStates.render.nRenderPass) {
 		SetDepthWrite (false);
 		ColorMask (1,1,1,1,1);
-		glClearColor (0,0,0,0);
+		glClearColor (0,0,0,1);
 		if (bResetColorBuf)
 			glClear (GL_COLOR_BUFFER_BIT);
 		}
@@ -1043,7 +1043,7 @@ if (gameStates.video.nScreenMode == SCREEN_GAME)
 else {
 	SetDrawBuffer (GL_BACK, 1);
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
-		glClearColor (0,0,0,0);
+		glClearColor (0,0,0,1);
 		glClear (GL_COLOR_BUFFER_BIT);
 		glMatrixMode (GL_PROJECTION);
 		glLoadIdentity ();//clear matrix
