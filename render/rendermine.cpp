@@ -410,8 +410,10 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
+#if 0
 SetupDepthBuffer (0);
 SetupDepthBuffer (1);
+#endif
 RenderSegmentList (0, 1);	// render opaque geometry
 RenderSegmentList (1, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {

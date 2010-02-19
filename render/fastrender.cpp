@@ -377,8 +377,14 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
-if (!bDepthOnly) 
-	ogl.SetDepthMode (GL_EQUAL); //GL_LEQUAL);
+if (!bDepthOnly) {
+#if 1
+	ogl.SetDepthMode (GL_LEQUAL); 
+#else
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetDepthWrite (false);
+#endif
+	}
 else {
 	ogl.ColorMask (0,0,0,0,0);
 	ogl.SetDepthWrite (true);
