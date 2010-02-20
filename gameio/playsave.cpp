@@ -697,7 +697,7 @@ if (!m_cf.Open (fn, gameFolders.szProfDir, "wt", 0))
 	return 0;
 for (pp = paramList; pp; pp = pp->next)
 	pp->Save (m_cf);
-return m_cf.Close ();
+return !m_cf.Close ();
 }
 
 //------------------------------------------------------------------------------
@@ -768,7 +768,7 @@ for (int i = 0; i < 2; i++) {
 	else if (gameStates.render.cockpit.n3DView [i] >= CV_FUNC_COUNT)
 		gameStates.render.cockpit.n3DView [i] = CV_FUNC_COUNT - 1;
 	}
-return m_cf.Close ();
+return !m_cf.Close ();
 }
 
 //------------------------------------------------------------------------------
@@ -1572,469 +1572,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void ReadBinD2XParams (CFile& cf)
-{
-	uint	i, j, gameOptsSize = 0;
-
-if (gameStates.input.nPlrFileVersion >= 97)
-	gameOptsSize = cf.ReadInt ();
-for (i = 0; i < 2; i++) {
-	if (i && (gameOptsSize > sizeof (tGameOptions)))
-		cf.Seek (gameOptsSize - sizeof (tGameOptions), SEEK_CUR);
-	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 26)
-			extraGameInfo [0].bFixedRespawns = (int) cf.ReadByte ();
-		if (gameStates.input.nPlrFileVersion >= 27)
-			/*extraGameInfo [0].bFriendlyFire = (int)*/ cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 28) {
-		gameOptions [i].render.nMaxFPS = (int) cf.ReadByte ();
-		if (gameOptions [i].render.nMaxFPS < 0) {
-			gameOptions [i].render.nMaxFPS += 256;
-			if (gameOptions [i].render.nMaxFPS < 0)
-				gameOptions [i].render.nMaxFPS = 250;
-			}
-		if (!i)
-			extraGameInfo [0].nSpawnDelay = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 29)
-		gameOptions [i].input.joystick.deadzones [0] = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 30)
-		gameOptions [i].render.cockpit.nWindowSize = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 31)
-		gameOptions [i].render.cockpit.nWindowPos = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 32)
-		gameOptions [i].render.cockpit.nWindowZoom = (int) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 33))
-		extraGameInfo [0].bPowerupsOnRadar = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 34) {
-		gameOptions [i].input.keyboard.nRamp = (int) cf.ReadByte ();
-		if (gameOptions [i].input.keyboard.nRamp < 10)
-			gameOptions [i].input.keyboard.nRamp = 10;
-		else if (gameOptions [i].input.keyboard.nRamp > 100)
-			gameOptions [i].input.keyboard.nRamp = 100;
-		}
-	if (gameStates.input.nPlrFileVersion >= 35)
-		cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 36)
-		gameOptions [i].ogl.bSetGammaRamp = (int) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 37))
-		extraGameInfo [0].nZoomMode = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 38)
-		for (j = 0; j < 3; j++)
-			gameOptions [i].input.keyboard.bRamp [j] = (int) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 39))
-#if 0
-		extraGameInfo [0].bEnhancedCTF = (int) cf.ReadByte ();
-#else
-		cf.ReadByte ();
-#endif
-	if (!i && (gameStates.input.nPlrFileVersion >= 40))
-		extraGameInfo [0].bRobotsHitRobots = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 41)
-		gameOptions [i].gameplay.nAutoSelectWeapon = (int) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 42))
-		extraGameInfo [0].bAutoDownload = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 43)
-		cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 44)
-		tracker.m_bUse = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 45)
-		gameOptions [i].gameplay.bFastRespawn = (int) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 46))
-		extraGameInfo [0].bDualMissileLaunch = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 47) {
-		gameStates.app.nDifficultyLevel = (int) cf.ReadByte ();
-		gameStates.app.nDifficultyLevel = NMCLAMP (gameStates.app.nDifficultyLevel, 0, 4);
-		}
-	if (gameStates.input.nPlrFileVersion >= 48)
-		gameOptions [i].render.effects.bTransparent = (int) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 49))
-		extraGameInfo [0].bRobotsOnRadar = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 50)
-		cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 51))
-		extraGameInfo [0].grWallTransparency = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 52)
-		gameOptions [i].input.mouse.sensitivity [0] = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 53) {
-		gameOptions [i].multi.bUseMacros = (int) cf.ReadByte ();
-		if (!i)
-			extraGameInfo [0].bWiggle = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 54)
-		gameOptions [i].movies.nQuality = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 55)
-		gameOptions [i].render.color.bWalls = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 56)
-		gameOptions [i].input.joystick.bLinearSens = (int) cf.ReadByte ();
-	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 57)
-			extraGameInfo [0].nSpeedBoost = (int) cf.ReadByte ();
-		if (gameStates.input.nPlrFileVersion >= 58) {
-			extraGameInfo [0].bDropAllMissiles = (int) cf.ReadByte ();
-			extraGameInfo [0].bImmortalPowerups = (int) cf.ReadByte ();
-			}
-		if (gameStates.input.nPlrFileVersion >= 59)
-			extraGameInfo [0].bUseCameras = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 60) {
-		gameOptions [i].render.cameras.bFitToWall = (int) cf.ReadByte ();
-		gameOptions [i].render.cameras.nFPS = (int) cf.ReadByte ();
-		if (!i)
-			extraGameInfo [0].nFusionRamp = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 62)
-		gameOptions [i].render.color.bUseLightmaps = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 63)
-		gameOptions [i].render.cockpit.bHUD = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 64)
-		gameOptions [i].render.color.nLightmapRange = (int) cf.ReadByte ();
-	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 65)
-			extraGameInfo [0].bMouseLook = (int) cf.ReadByte ();
-		if	(gameStates.input.nPlrFileVersion >= 66)
-			extraGameInfo [0].bMultiBosses = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 67)
-		gameOptions [i].app.nVersionFilter = (int) cf.ReadByte ();
-	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 68)
-			extraGameInfo [0].bSmartWeaponSwitch = (int) cf.ReadByte ();
-		if (gameStates.input.nPlrFileVersion >= 69)
-			extraGameInfo [0].bFluidPhysics = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 70) {
-		gameOptions [i].render.nImageQuality = (int) cf.ReadByte ();
-		ogl.SetRenderQuality ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 71)
-		gameOptions [i].movies.bSubTitles = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 72)
-		gameOptions [i].render.textures.nQuality = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 73)
-		gameOptions [i].render.cameras.nSpeed = cf.ReadInt ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 74))
-		extraGameInfo [0].nWeaponDropMode = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 75)
-		gameOptions [i].menus.bSmartFileSearch = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 76)
-		downloadManager.SetTimeoutIndex (cf.ReadInt ());
-	if (!i && (gameStates.input.nPlrFileVersion >= 79)) {
-		extraGameInfo [0].entropy.nCaptureVirusLimit = cf.ReadByte ();
-		extraGameInfo [0].entropy.nCaptureTimeLimit = cf.ReadByte ();
-		extraGameInfo [0].entropy.nMaxVirusCapacity = cf.ReadByte ();
-		extraGameInfo [0].entropy.nBumpVirusCapacity = cf.ReadByte ();
-		extraGameInfo [0].entropy.nBashVirusCapacity = cf.ReadByte ();
-		extraGameInfo [0].entropy.nVirusGenTime = cf.ReadByte ();
-		extraGameInfo [0].entropy.nVirusLifespan = cf.ReadByte ();
-		extraGameInfo [0].entropy.nVirusStability = cf.ReadByte ();
-		extraGameInfo [0].entropy.nEnergyFillRate = cf.ReadShort ();
-		extraGameInfo [0].entropy.nShieldFillRate = cf.ReadShort ();
-		extraGameInfo [0].entropy.nShieldDamageRate = cf.ReadShort ();
-		extraGameInfo [0].entropy.bRevertRooms = cf.ReadByte ();
-		extraGameInfo [0].entropy.bDoConquerWarning = cf.ReadByte ();
-		extraGameInfo [0].entropy.nOverrideTextures = cf.ReadByte ();
-		extraGameInfo [0].entropy.bBrightenRooms = cf.ReadByte ();
-		extraGameInfo [0].entropy.bPlayerHandicap = cf.ReadByte ();
-
-		mpParams.nLevel = cf.ReadByte ();
-		mpParams.nGameType = cf.ReadByte ();
-		mpParams.nGameMode = cf.ReadByte ();
-		mpParams.nGameAccess = cf.ReadByte ();
-		mpParams.bShowPlayersOnAutomap = cf.ReadByte ();
-		mpParams.nDifficulty = cf.ReadByte ();
-		mpParams.nWeaponFilter = cf.ReadInt ();
-		mpParams.nReactorLife = cf.ReadInt ();
-		mpParams.nMaxTime = cf.ReadByte ();
-		mpParams.nScoreGoal = cf.ReadByte ();
-		mpParams.bInvul = cf.ReadByte ();
-		mpParams.bMarkerView = cf.ReadByte ();
-		mpParams.bIndestructibleLights = cf.ReadByte ();
-		mpParams.bBrightPlayers = cf.ReadByte ();
-		mpParams.bShowAllNames = cf.ReadByte ();
-		mpParams.bShortPackets = cf.ReadByte ();
-		mpParams.nPPS = cf.ReadByte ();
-		mpParams.udpPorts [1] = cf.ReadInt ();
-		cf.Read(mpParams.szServerIpAddr, 16, 1);
-		}
-	if (gameStates.input.nPlrFileVersion >= 80)
-		cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 81)) {
-		extraGameInfo [1].bRotateLevels = (int) cf.ReadByte ();
-		extraGameInfo [1].bDisableReactor = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 82) {
-		for (j = 0; j < 4; j++)
-			gameOptions [i].input.joystick.deadzones [j] = (int) cf.ReadByte ();
-		for (j = 0; j < 4; j++)
-			gameOptions [i].input.joystick.sensitivity [j] = cf.ReadByte ();
-		gameOptions [i].input.joystick.bSyncAxes = (int) cf.ReadByte ();
-		}
-	if (!i && (gameStates.input.nPlrFileVersion >= 83))
-		extraGameInfo [1].bDualMissileLaunch = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 84) {
-		if (!i)
-			extraGameInfo [1].bMouseLook = (int) cf.ReadByte ();
-		for (j = 0; j < 3; j++)
-			gameOptions [i].input.mouse.sensitivity [j] = (int) cf.ReadByte ();
-		gameOptions [i].input.mouse.bSyncAxes = (int) cf.ReadByte ();
-		gameOptions [i].render.color.bMix = (int) cf.ReadByte ();
-		gameOptions [i].render.color.bCap = (int) cf.ReadByte ();
-		}
-	if (!i && (gameStates.input.nPlrFileVersion >= 85))
-		extraGameInfo [0].nWeaponIcons = (ubyte) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 86)
-		gameOptions [i].render.weaponIcons.bSmall = (ubyte) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 87))
-		extraGameInfo [0].bAutoBalanceTeams = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 88) {
-		gameOptions [i].movies.bResize = (int) cf.ReadByte ();
-		gameOptions [i].menus.bShowLevelVersion = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 89)
-		gameOptions [i].render.weaponIcons.nSort = (ubyte) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 90)
-		gameOptions [i].render.weaponIcons.bShowAmmo = (ubyte) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 91) {
-		gameOptions [i].input.mouse.bUse = (ubyte) cf.ReadByte ();
-		gameOptions [i].input.joystick.bUse = (ubyte) cf.ReadByte ();
-		gameOptions [i].input.bUseHotKeys = (ubyte) cf.ReadByte ();
-		}
-	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 92)
-			extraGameInfo [0].bSafeUDP = (char) cf.ReadByte ();
-		if (gameStates.input.nPlrFileVersion >= 93)
-			cf.Read(mpParams.szServerIpAddr + 16, 6, 1);
-		}
-	if (gameStates.input.nPlrFileVersion >= 95) {
-		gameOptions [i].render.cockpit.bTextGauges = (int) cf.ReadByte ();
-		gameOptions [i].render.cockpit.bScaleGauges = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 96) {
-		gameOptions [i].render.weaponIcons.bEquipment = (int) cf.ReadByte ();
-		gameOptions [i].render.weaponIcons.alpha = (ubyte) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 97)
-		gameOptions [i].render.cockpit.bFlashGauges = (int) cf.ReadByte ();
-	if (!i && (gameStates.input.nPlrFileVersion >= 98))
-		for (j = 0; j < 2; j++)
-			if (!(extraGameInfo [j].bFastPitch = (int) cf.ReadByte ()))
-				extraGameInfo [j].bFastPitch = 2;
-	if (!i && (gameStates.input.nPlrFileVersion >= 99))
-		gameStates.multi.nConnection = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 100) {
-		if (!i)
-			extraGameInfo [0].bUseParticles = (int) cf.ReadByte ();
-		gameOptions [i].render.particles.nDens [0] = cf.ReadInt ();
-		gameOptions [i].render.particles.nSize [0] = cf.ReadInt ();
-		gameOptions [i].render.particles.nDens [0] = NMCLAMP (gameOptions [i].render.particles.nDens [0], 0, 4);
-		gameOptions [i].render.particles.nSize [0] = NMCLAMP (gameOptions [i].render.particles.nSize [0], 0, 3);
-		gameOptions [i].render.particles.bPlayers = (int) cf.ReadByte ();
-		gameOptions [i].render.particles.bRobots = (int) cf.ReadByte ();
-		gameOptions [i].render.particles.bMissiles = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 101) {
-		if (!i) {
-			extraGameInfo [0].bDamageExplosions = (int) cf.ReadByte ();
-			extraGameInfo [0].bThrusterFlames = (int) cf.ReadByte ();
-			}
-		}
-	if (gameStates.input.nPlrFileVersion >= 102) {
-		cf.ReadByte ();
-		gameOptions [i].render.particles.bCollisions = 0;
-		}
-	if (gameStates.input.nPlrFileVersion >= 103)
-		gameOptions [i].gameplay.bShieldWarning = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 104)
-		gameOptions [i].app.bExpertMode = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 105) {
-		if (!i)
-			extraGameInfo [0].bShadows = cf.ReadByte ();
-		gameOptions [i].render.shadows.nLights = cf.ReadInt ();
-		gameOptions [i].render.shadows.nLights = NMCLAMP (gameOptions [i].render.shadows.nLights, 0, 8);
-		}
-	if (gameStates.input.nPlrFileVersion >= 106)
-		if (!i)
-			ogl.m_states.nContrast = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 107)
-		if (!i)
-			extraGameInfo [0].bPlayerShield = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 108)
-		gameOptions [i].gameplay.bInventory = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 109)
-		gameOptions [i].input.mouse.bJoystick = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 110)
-		if (!i) {
-			int	w, h;
-			w = cf.ReadInt ();
-			h = cf.ReadInt ();
-			if (!gameStates.gfx.bOverride && (gameStates.video.nDefaultDisplayMode == NUM_DISPLAY_MODES))
-				SetCustomDisplayMode (w, h);
-			}
-	if (gameStates.input.nPlrFileVersion >= 111)
-		gameOptions [i].render.cockpit.bMouseIndicator = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 112)
-		extraGameInfo [i].bTeleporterCams = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 113)
-		gameOptions [i].render.cockpit.bSplitHUDMsgs = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 114) {
-		gameOptions [i].input.joystick.deadzones [4] = (int) cf.ReadByte ();
-		gameOptions [i].input.joystick.sensitivity [4] = cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 115)
-		if (!i) {
-			tMonsterballForce *pf = extraGameInfo [0].monsterball.forces;
-			extraGameInfo [0].monsterball.nBonus = cf.ReadByte ();
-			for (j = 0; j < MAX_MONSTERBALL_FORCES; j++, pf++) {
-				pf->nWeaponId = cf.ReadByte ();
-				pf->nForce = cf.ReadByte ();
-				}
-			}
-	if (gameStates.input.nPlrFileVersion >= 116)
-		if (!i)
-			extraGameInfo [0].monsterball.nSizeMod = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 117) {
-		gameOptions [i].render.nLightingMethod = cf.ReadInt ();
-		gameOptions [i].ogl.bLightObjects = cf.ReadInt ();
-		gameOptions [i].ogl.nMaxLightsPerFace = cf.ReadInt ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 118)
-		extraGameInfo [i].bDarkness = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 119) {
-		extraGameInfo [i].bTeamDoors = cf.ReadByte ();
-		extraGameInfo [i].bEnableCheats = cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 120) {
-		extraGameInfo [i].bTargetIndicators = cf.ReadByte ();
-		extraGameInfo [i].bDamageIndicators = cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 121) {
-		extraGameInfo [i].bCloakedIndicators = cf.ReadByte ();
-		extraGameInfo [i].bFriendlyIndicators = cf.ReadByte ();
-		extraGameInfo [i].headlight.bAvailable = cf.ReadByte ();
-		extraGameInfo [i].bPowerupLights = cf.ReadByte ();
-		extraGameInfo [i].nSpotSize = cf.ReadByte ();
-		extraGameInfo [i].nSpotStrength = extraGameInfo [i].nSpotSize;
-		}
-	if (gameStates.input.nPlrFileVersion >= 122)
-		extraGameInfo [i].bTowFlags = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 123)
-		gameOptions [i].render.particles.bDecreaseLag = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 124)
-		gameOptions [i].render.effects.bAutoTransparency = cf.ReadByte ();
-	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 125)
-			extraGameInfo [i].bUseHitAngles = cf.ReadByte ();
-		if (gameStates.input.nPlrFileVersion >= 126)
-			extraGameInfo [i].bLightTrails = cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 126) {
-		gameOptions [i].render.particles.bSyncSizes = cf.ReadInt ();
-		for (j = 1; j < 4; j++) {
-			gameOptions [i].render.particles.nDens [j] = cf.ReadInt ();
-			gameOptions [i].render.particles.nSize [j] = cf.ReadInt ();
-			}
-		}
-	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 127) {
-			extraGameInfo [i].bTracers = cf.ReadByte ();
-			cf.ReadByte ();
-			extraGameInfo [i].bShockwaves = 0;
-			}
-		}
-	if (gameStates.input.nPlrFileVersion >= 128)
-		gameOptions [i].render.particles.bDisperse = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 129)
-		extraGameInfo [i].bTagOnlyHitObjs = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 130)
-		for (j = 0; j < 4; j++)
-			gameOptions [i].render.particles.nLife [j] = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 131) {
-		gameOptions [i].render.shadows.bRobots = (int) cf.ReadByte ();
-		gameOptions [i].render.shadows.bMissiles = (int) cf.ReadByte ();
-		gameOptions [i].render.shadows.bReactors = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 132)
-		gameOptions [i].render.shadows.bPlayers = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 133)
-		gameOptions [i].render.shadows.bFast = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 134)
-		gameOptions [i].render.shadows.nReach = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 135)
-		gameOptions [i].render.shadows.nClip = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 136) {
-		gameOptions [i].render.powerups.b3D = (int) cf.ReadByte ();
-		gameOptions [i].render.powerups.nSpin = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 137)
-		gameOptions [i].gameplay.bIdleAnims = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 138)
-		if (!i)
-			gameStates.app.nDifficultyLevel = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 139)
-		gameOptions [i].demo.bOldFormat = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 140)
-		gameOptions [i].render.cockpit.bObjectTally = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 141)
-		if (!i)
-			extraGameInfo [0].nLightRange = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 142)
-		if (i)
-			extraGameInfo [i].bCompetition = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 143)
-		extraGameInfo [i].bFlickerLights = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 144)
-		if (!i)
-			extraGameInfo [i].bSmokeGrenades = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 145)
-		if (!i)
-			extraGameInfo [i].nMaxSmokeGrenades = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 146)
-		if (!i)
-			extraGameInfo [i].nMslTurnSpeed = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 147) {
-		gameOptions [i].render.particles.bDebris = (int) cf.ReadByte ();
-		gameOptions [i].render.particles.bStatic = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 148)
-		gameOptions [i].gameplay.nAIAwareness = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 149) {
-		extraGameInfo [i].nCoopPenalty = cf.ReadByte ();
-		extraGameInfo [i].bKillMissiles = cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 150)
-		extraGameInfo [i].nHitboxes = cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 151)
-		gameOptions [i].render.cockpit.bPlayerStats = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 152)
-		gameOptions [i].render.coronas.bUse = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 153) {
-		gameOptions [i].render.automap.bTextured = (int) cf.ReadByte ();
-		gameOptions [i].render.automap.bBright = (int) cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 154)
-		gameOptions [i].render.automap.bCoronas = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 155) {
-		gameOptions [i].render.automap.nColor = (int) cf.ReadByte ();
-		if (!i)
-			extraGameInfo [0].nRadar = cf.ReadByte ();
-		}
-	if (gameStates.input.nPlrFileVersion >= 156)
-		gameOptions [i].render.automap.nRange = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 157)
-		gameOptions [i].render.automap.bParticles = (int) cf.ReadByte ();
-	if (gameStates.input.nPlrFileVersion >= 158)
-		gameOptions [i].render.nDebrisLife = cf.ReadInt ();
-	if (gameStates.input.nPlrFileVersion >= 159) {
-		extraGameInfo [i].bMslLockIndicators = cf.ReadByte ();
-		gameOpts->render.cockpit.bRotateMslLockInd = cf.ReadByte ();
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 //this length must match the value in escort.c
 #define GUIDEBOT_NAME_LEN 9
 
@@ -2055,56 +1592,44 @@ if (profile.Busy ())
 	short	gameWindowH = gameData.render.window.h;
 	ubyte nDisplayMode = gameStates.video.nDefaultDisplayMode;
 
-#if 1
-
-	char		filename [FILENAME_LEN], buf [128];
-	short		nControlTypes;
-	int		id, nMaxControls;
+	char		filename [FILENAME_LEN];
+	int		id;
 
 sprintf (filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
 	PrintLog ("   couldn't read player file '%s'\n", filename);
-	return errno;
-	}
-id = cf.ReadInt ();
-// SWAPINT added here because old versions of d2x
-// used the wrong byte order.
-if (nCFileError || ((id != SAVE_FILE_ID) && (id != SWAPINT (SAVE_FILE_ID)))) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Invalid player file");
-	cf.Close ();
-	return -1;
-	}
-
-gameStates.input.nPlrFileVersion = cf.ReadShort ();
-if (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION)
-	nMaxControls = 48;
-else if (gameStates.input.nPlrFileVersion < 108)
-	nMaxControls = 60;
-else if (gameStates.input.nPlrFileVersion < D2XXL_PLAYER_FILE_VERSION)
-	nMaxControls = 64;
-else
-	nMaxControls = 64;	//MAX_CONTROLS
-
-if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
-	 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) &&
-	  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
-	PrintLog ("Player profile '%s' is invalid\r\n", filename);
 	nHighestLevels = 0;
-	memset (highestLevels, 0, sizeof (highestLevels));
 	}
 else {
-	if (gameStates.input.nPlrFileVersion < 161) {
-		cf.Seek (12 + (gameStates.input.nPlrFileVersion >= 19), SEEK_CUR);
-	nHighestLevels = cf.ReadShort ();
-	Assert (nHighestLevels <= MAX_MISSIONS);
-	if (cf.Read (highestLevels, sizeof (hli), nHighestLevels) != (size_t) nHighestLevels) {
-		PrintLog ("Player profile '%s' is damaged\r\n", filename);
+	id = cf.ReadInt ();
+	if (nCFileError || ((id != SAVE_FILE_ID) && (id != SWAPINT (SAVE_FILE_ID)))) {
+		PrintLog ("Player profile '%s' is invalid\r\n", filename);
 		nHighestLevels = 0;
-		memset (highestLevels, 0, sizeof (highestLevels);
 		}
+	else {
+		gameStates.input.nPlrFileVersion = cf.ReadShort ();
+		if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
+			 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) &&
+			  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
+			PrintLog ("Player profile '%s' is invalid\r\n", filename);
+			nHighestLevels = 0;
+			}
+		else {
+			if (gameStates.input.nPlrFileVersion < 161)
+				cf.Seek (12 + (gameStates.input.nPlrFileVersion >= 19), SEEK_CUR);
+			nHighestLevels = cf.ReadShort ();
+			Assert (nHighestLevels <= MAX_MISSIONS);
+			if (cf.Read (highestLevels, sizeof (hli), nHighestLevels) != (size_t) nHighestLevels) {
+				PrintLog ("Player profile '%s' is damaged\r\n", filename);
+				nHighestLevels = 0;
+				}
+			}
+		}
+	cf.Close ();
 	}
 
-cf.Close ();
+if (!nHighestLevels)
+	memset (highestLevels, 0, sizeof (highestLevels));
 
 if (!profile.Load ())
 	funcRes = errno;
@@ -2187,7 +1712,7 @@ int FindHLIEntry (void)
 {
 	int i;
 
-for (i = 0; i <nHighestLevels; i++) {
+for (i = 0; i < nHighestLevels; i++) {
 	if (!stricmp (highestLevels [i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename))
 		break;
 	}
@@ -2248,32 +1773,19 @@ if (profile.Busy ())
 
 	CFile	cf;
 	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
-	char	buf [128];
-	int	funcRes, i;
+	int	funcRes = EZERO;
 
 funcRes = WriteConfigFile ();
 sprintf (filename, "%s.plr", LOCALPLAYER.callsign);
 cf.Open (filename, gameFolders.szProfDir, "wb", 0);
-#if 0
-//check filename
-if (cf.file && isatty(fileno ()) {
-	//if the callsign is the name of a tty device, prepend a char
-	fclose ();
-	sprintf(filename,"$%.7s.plr",LOCALPLAYER.callsign);
-	&cf = fopen(filename,"wb");
+if (cf.File ()) {
+	cf.WriteInt (SAVE_FILE_ID);
+	cf.WriteShort (PLAYER_FILE_VERSION);
+	Assert (nHighestLevels <= MAX_MISSIONS);
+	cf.WriteShort (nHighestLevels);
+	cf.Write (highestLevels, sizeof (hli), nHighestLevels);
+	cf.Close ();
 	}
-#endif
-if (!cf.File ())
-	return errno;
-funcRes = EZERO;
-//Write out player's accessible levels info
-cf.WriteInt (SAVE_FILE_ID);
-cf.WriteShort (PLAYER_FILE_VERSION);
-//write higest level info
-Assert (nHighestLevels <= MAX_MISSIONS);
-cf.WriteShort (nHighestLevels);
-cf.Write (highestLevels, sizeof (hli), nHighestLevels);
-cf.Close ();
 // write D2X-XL stuff
 if (!profile.Save ()) {
 	funcRes = errno;
