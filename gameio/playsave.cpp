@@ -2047,14 +2047,21 @@ if (profile.Busy ())
 	return 1;
 
 	CFile		cf;
-	char		filename [FILENAME_LEN], buf [128];
-	ubyte		nDisplayMode;
-	short		nControlTypes, gameWindowW, gameWindowH;
 	int		funcRes = EZERO;
-	int		id, bRewriteIt = 0, nMaxControls;
-	uint i;
+	int		bRewriteIt = 0;
+	uint		i;
 
-sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
+	short gameWindowW = gameData.render.window.w;
+	short	gameWindowH = gameData.render.window.h;
+	ubyte nDisplayMode = gameStates.video.nDefaultDisplayMode;
+
+#if 1
+
+	char		filename [FILENAME_LEN], buf [128];
+	short		nControlTypes;
+	int		id, nMaxControls;
+
+sprintf (filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
 	PrintLog ("   couldn't read player file '%s'\n", filename);
 	return errno;
@@ -2081,98 +2088,35 @@ else
 if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
 	 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) &&
 	  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
-	MsgBox(TXT_ERROR, NULL, 1, TXT_OK, TXT_ERROR_PLR_VERSION);
-	cf.Close ();
-	return -1;
+	PrintLog ("Player profile '%s' is invalid\r\n", filename);
+	nHighestLevels = 0;
+	memset (highestLevels, 0, sizeof (highestLevels));
+	}
+else {
+	if (gameStates.input.nPlrFileVersion < 161) {
+		cf.Seek (12 + (gameStates.input.nPlrFileVersion >= 19), SEEK_CUR);
+	nHighestLevels = cf.ReadShort ();
+	Assert (nHighestLevels <= MAX_MISSIONS);
+	if (cf.Read (highestLevels, sizeof (hli), nHighestLevels) != (size_t) nHighestLevels) {
+		PrintLog ("Player profile '%s' is damaged\r\n", filename);
+		nHighestLevels = 0;
+		memset (highestLevels, 0, sizeof (highestLevels);
+		}
 	}
 
-gameWindowW = gameData.render.window.w;
-gameWindowH = gameData.render.window.h;
-gameData.render.window.w = cf.ReadShort ();
-gameData.render.window.h = cf.ReadShort ();
-if (bOnlyWindowSizes)
-	goto done;
+cf.Close ();
 
-gameStates.app.nDifficultyLevel = cf.ReadByte ();
-gameOpts->gameplay.nAutoLeveling = cf.ReadByte ();
-gameOpts->render.cockpit.bReticle = cf.ReadByte ();
-cf.ReadByte (); //skip cockpit type
-nDisplayMode = gameStates.video.nDefaultDisplayMode;
-gameStates.video.nDefaultDisplayMode = cf.ReadByte ();
-gameOpts->render.cockpit.bMissileView = cf.ReadByte ();
-extraGameInfo [0].headlight.bAvailable = cf.ReadByte ();
-gameOptions [0].render.cockpit.bGuidedInMainView = cf.ReadByte ();
-if (gameStates.input.nPlrFileVersion >= 19)
-	cf.ReadByte ();	//skip obsolete byte value
-//read new highest level info
-nHighestLevels = cf.ReadShort ();
-Assert (nHighestLevels <= MAX_MISSIONS);
-if (cf.Read (highestLevels, sizeof (hli), nHighestLevels) != (size_t) nHighestLevels) {
+if (!profile.Load ())
 	funcRes = errno;
-	cf.Close ();
+
+DefaultAllSettings ();
+
+if (funcRes != EZERO) {
+	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_READING_PLR, strerror (funcRes));
 	return funcRes;
 	}
-//read taunt macros
-for (i = 0; i < 4; i++)
-	if (cf.Read (gameData.multigame.msg.szMacro [i], MAX_MESSAGE_LEN, 1) != 1) {
-		funcRes = errno;
-		break;
-	}
-//read KConfig data
-nControlTypes = (gameStates.input.nPlrFileVersion < 20) ? 7 : CONTROL_MAX_TYPES;
-if (cf.Read (controlSettings.custom, nMaxControls * nControlTypes, 1) != 1)
-	funcRes = errno;
-else if (cf.Read (reinterpret_cast<ubyte*> (&dosControlType), sizeof (ubyte), 1) != 1)
-	funcRes = errno;
-else if ((gameStates.input.nPlrFileVersion >= 21) && cf.Read (reinterpret_cast<ubyte*> (&winControlType), sizeof (ubyte), 1) != 1)
-	funcRes = errno;
-else if (cf.Read (gameOptions [0].input.joystick.sensitivity, sizeof (ubyte), 1) != 1)
-	funcRes = errno;
-gameConfig.nControlType = dosControlType;
-for (i = 0; i < 11; i++) {
-	nWeaponOrder [0][i] = cf.ReadByte ();
-	nWeaponOrder [1][i] = cf.ReadByte ();
-	}
-if (gameStates.input.nPlrFileVersion >= 16) {
-	gameStates.render.cockpit.n3DView [0] = cf.ReadInt ();
-	gameStates.render.cockpit.n3DView [1] = cf.ReadInt ();
-	}
 
-if (gameStates.input.nPlrFileVersion >= 22) {
-	networkData.nNetLifeKills = cf.ReadInt ();
-	networkData.nNetLifeKilled = cf.ReadInt ();
-	}
-else {
-	networkData.nNetLifeKills = 0;
-	networkData.nNetLifeKilled = 0;
-	}
-
-if (gameStates.input.nPlrFileVersion >= 23)
-  gameData.app.nLifetimeChecksum = cf.ReadInt ();
-
-//read guidebot name
-if (gameStates.input.nPlrFileVersion >= 18)
-	cf.ReadString (gameData.escort.szName, GUIDEBOT_NAME_LEN);
-else
-	strcpy (gameData.escort.szName, "GUIDE-BOT");
-gameData.escort.szName [sizeof (gameData.escort.szName) - 1] = '\0';
-if (gameStates.input.nPlrFileVersion >= D2W95_PLAYER_FILE_VERSION)
-	cf.ReadString (buf, 127);
-if (gameStates.input.nPlrFileVersion >= 25)
-	cf.Read (controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1);
-else {
-	for (i = 0; i < MAX_HOTKEY_CONTROLS; i++)
-		controlSettings.d2xCustom [i] = controlSettings.d2xDefaults [i];
-	}
-if (gameStates.input.nPlrFileVersion >= D2XXL_PLAYER_FILE_VERSION) {
-	profile.Load ();
-	KCSetControls (1);
-	}
-else {
-	ReadBinD2XParams (cf);
-	KCSetControls (0);
-	}
-DefaultAllSettings ();
+KCSetControls (1);
 //post processing of parameters
 if (gameStates.input.nPlrFileVersion >= 23) {
 	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
@@ -2195,7 +2139,7 @@ for (i = 0; i < sizeof (gameData.escort.szName); i++) {
 	if (!gameData.escort.szName [i])
 		break;
 	if (!isprint (gameData.escort.szName [i])) {
-		strcpy(gameData.escort.szName, "GUIDE-BOT");
+		strcpy (gameData.escort.szName, "GUIDE-BOT");
 		break;
 		}
 	}
@@ -2210,11 +2154,6 @@ ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 SetDebrisCollisions ();
 SetMaxOmegaCharge ();
 
-done:
-
-if (cf.Close ())
-	if (funcRes == EZERO)
-		funcRes = errno;
 if (bRewriteIt)
 	SavePlayerProfile ();
 
@@ -2327,78 +2266,17 @@ if (cf.file && isatty(fileno ()) {
 if (!cf.File ())
 	return errno;
 funcRes = EZERO;
-//Write out CPlayerData's info
+//Write out player's accessible levels info
 cf.WriteInt (SAVE_FILE_ID);
 cf.WriteShort (PLAYER_FILE_VERSION);
-cf.WriteShort ((short) gameData.render.window.w);
-cf.WriteShort ((short) gameData.render.window.h);
-cf.WriteByte ((sbyte) gameStates.app.nDifficultyLevel);
-cf.WriteByte ((sbyte) gameOptions [0].gameplay.nAutoLeveling);
-cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle);
-cf.WriteByte ((sbyte) ((gameStates.render.cockpit.nTypeSave != -1) 
-							  ? gameStates.render.cockpit.nTypeSave
-							  : gameStates.render.cockpit.nType));   //if have saved mode, write it instead of letterbox/rear view
-cf.WriteByte ((sbyte) gameStates.video.nDefaultDisplayMode);
-cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView);
-cf.WriteByte ((sbyte) extraGameInfo [0].headlight.bAvailable);
-cf.WriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView);
-cf.WriteByte ((sbyte) 0);	//place holder for an obsolete value
 //write higest level info
 Assert (nHighestLevels <= MAX_MISSIONS);
 cf.WriteShort (nHighestLevels);
-if ((cf.Write (highestLevels, sizeof (hli), nHighestLevels) != nHighestLevels)) {
-	funcRes = errno;
-	cf.Close ();
-	return funcRes;
-	}
-
-if ((cf.Write(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4) != 4)) {
-	funcRes = errno;
-	cf.Close ();
-	return funcRes;
-	}
-
-//write KConfig info
-dosControlType = gameConfig.nControlType;
-if (cf.Write(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1) != 1)
-	funcRes = errno;
-else if (cf.Write (&dosControlType, sizeof(ubyte), 1) != 1)
-	funcRes = errno;
-else if (cf.Write (&winControlType, sizeof(ubyte), 1) != 1)
-	funcRes = errno;
-else if (cf.Write (gameOptions [0].input.joystick.sensitivity, sizeof(ubyte), 1) != 1)
-	funcRes = errno;
-
-for (i = 0; i < 11; i++) {
-	cf.Write (primaryOrder + i, sizeof(ubyte), 1);
-	cf.Write (secondaryOrder + i, sizeof(ubyte), 1);
-	}
-cf.WriteInt (gameStates.render.cockpit.n3DView [0]);
-cf.WriteInt (gameStates.render.cockpit.n3DView [1]);
-cf.WriteInt (networkData.nNetLifeKills);
-cf.WriteInt (networkData.nNetLifeKilled);
-gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
-#if TRACE
-console.printf (CON_DBG,"Writing: Lifetime checksum is %d\n",i);
-#endif
-cf.WriteInt (gameData.app.nLifetimeChecksum);
-//write guidebot name
-cf.WriteString (gameData.escort.szRealName);
-strcpy (buf, "DOS joystick");
-cf.WriteString (buf);  // Write out current joystick for player.
-
-cf.Write(controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1);
+cf.Write (highestLevels, sizeof (hli), nHighestLevels);
+cf.Close ();
 // write D2X-XL stuff
-#if 1
-profile.Save ();
-#else
-WriteBinD2XParams ();
-#endif
-
-if (cf.Close ())
+if (!profile.Save ()) {
 	funcRes = errno;
-if (funcRes != EZERO) {
-	cf.Delete (filename, gameFolders.szProfDir);         //delete bogus &cf
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
 	}
 return funcRes;

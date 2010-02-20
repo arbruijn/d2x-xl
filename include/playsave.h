@@ -19,8 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 CPlayerData file version
-#define D2XXL_PLAYER_FILE_VERSION			160
-#define PLAYER_FILE_VERSION					160	//increment this every time the CPlayerData file changes
+#define D2XXL_PLAYER_FILE_VERSION			161
+#define PLAYER_FILE_VERSION					161	//increment this every time the CPlayerData file changes
 
 #define N_SAVE_SLOTS    10
 #define GAME_NAME_LEN   25      // +1 for terminating zero = 26

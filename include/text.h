@@ -1961,10 +1961,10 @@ void LoadGameTexts(void);
 #define TXT_3D_SCREEN_DIST				GT(1177)
 #define TXT_3D_DEGHOST					GT(1178)
 #define TXT_3D_DUBOIS					GT(1179)
+#define TXT_ERROR_READING_PLR			GT(1180)
 
 #if 0
 
-#define TXT_					GT(1180)
 #define TXT_					GT(1181)
 #define TXT_					GT(1182)
 #define TXT_					GT(1183)

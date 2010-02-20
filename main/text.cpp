@@ -1924,6 +1924,7 @@ const char *defaultGameTexts [][2] = {
  {"bild~Schirm-Abstand: %d", "~Screen distance: %d"},
  {"~Geisterbilder verringern: %s", "decrease g~Hosting: %s"},
  {"Dubois", "Dubois"},
+ {"Spielerprofil nicht lesbar.", "Player profile couldn't be read."},
 #if 0
  {"", ""},
 #endif
