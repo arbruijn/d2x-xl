@@ -3281,8 +3281,8 @@ class CGameData {
 		void Init (void);
 		bool Create (int nSegments, int nVertices);
 		void Destroy (void);
-		inline void SetFusionCharge (fix xCharge, bool bLocal = false);
-		inline fix FusionCharge (int nId = -1);
+		void SetFusionCharge (fix xCharge, bool bLocal = false);
+		fix FusionCharge (int nId = -1);
 };
 
 extern CGameData gameData;

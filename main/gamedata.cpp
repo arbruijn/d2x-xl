@@ -1543,7 +1543,7 @@ nGameMode = GM_GAME_OVER;
 
 // ----------------------------------------------------------------------------
 
-inline void CGameData::SetFusionCharge (fix xCharge, bool bLocal)
+void CGameData::SetFusionCharge (fix xCharge, bool bLocal)
 {
 gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].xFusionCharge = xCharge;
 if (!bLocal)
@@ -1552,7 +1552,7 @@ if (!bLocal)
 
 // ----------------------------------------------------------------------------
 
-inline fix CGameData::FusionCharge (fix nId)
+fix CGameData::FusionCharge (fix nId)
 {
 return gameData.multiplayer.weaponStates [(nId < 0) ? gameData.multiplayer.nLocalPlayer : nId].xFusionCharge;
 }
