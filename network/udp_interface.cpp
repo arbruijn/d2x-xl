@@ -78,8 +78,6 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #	include <winsock2.h>
 #	include <ws2tcpip.h>
 #	include <Wspiapi.h>
-#endif
-
 #else
 #	include <netdb.h>
 #	include <unistd.h>
