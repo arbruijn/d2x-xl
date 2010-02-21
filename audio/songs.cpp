@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "soundthreads.h"
 
-char CDROM_dir[40] = ".";
+char CDROM_dir[40] = ".\\";
 
 
 //------------------------------------------------------------------------------

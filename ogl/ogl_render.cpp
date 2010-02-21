@@ -764,7 +764,7 @@ else if (ogl.SizeBuffers (nVertices)) {
 		ogl.EnableClientStates (1, 0, 0, 2);
 		OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
 		}
-	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 1, bDynLight || bLight);
+	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bDynLight || bLight);
 	if (bOverlay) {
 		ogl.DisableClientStates (1, 0, 0, 2);
 		ogl.DisableClientStates (1, 1, 0, 1);
@@ -803,7 +803,7 @@ if ((bOverlay > 0) && ogl.SizeBuffers (nVertices)) {
 			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
 			}
 		}
-	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 1, bDynLight || bLight);
+	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bDynLight || bLight);
 
 	ogl.SetDepthMode (GL_LESS);
 #if OGL_CLEANUP
@@ -925,7 +925,7 @@ if (ogl.SizeBuffers (nVertices)) {
 	OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
 	ogl.EnableClientStates (1, 0, 0, 2);
 	OglTexCoordPointer (2, GL_FLOAT, 0, &ogl.TexCoordBuffer ());
-	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 1, !gameStates.render.bFullBright);
+	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, !gameStates.render.bFullBright);
 	ogl.DisableClientStates (1, 0, 0, 2);
 	ogl.DisableClientStates (1, 1, 0, 1);
 	ogl.SelectTMU (0);
@@ -1040,7 +1040,7 @@ if (ogl.SizeBuffers (nVertices)) {
 			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
 			}
 		}
-	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices);
+	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bLight || bDynLight);
 	}
 ogl.SetTextureUsage (false);
 tMapColor.index =

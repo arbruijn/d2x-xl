@@ -541,40 +541,27 @@ strcpy (filename, pszFilename);
 bHires = bRobotMovie ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
 if (bHires)
 	*pszRes = 'h';
-for (nTries = 0; !m_libs [nLibrary].Setup (filename); nTries++) {
-	strcpy (cdName, CDROM_dir);
+for (nTries = 0; !m_libs [nLibrary].Setup (filename) && (nTries < 4); nTries++) {
+	strcpy (cdName, (nTries < 2) ? CDROM_dir : "d1/");
 	strcat (cdName, filename);
 	if (m_libs [nLibrary].Setup (cdName)) {
 		m_libs [nLibrary].m_flags |= MLF_ON_CD;
 		break; // we found our movie on the CD
 		}
-	if (nTries == 0) { // first attempt
-		if (*pszRes == 'h') { // try low res instead
-			*pszRes = 'l';
-			bHires = 0;
-			}
-		else if (*pszRes == 'l') { // try hires
-			*pszRes = 'h';
-			bHires = 1;
-			}
-		else {
-#if DBG
-			if (bRequired)
-				Warning (TXT_MOVIE_FILE, filename);
-#endif
-			break;
-			}
+	if (*pszRes == 'h') { // try low res instead
+		*pszRes = 'l';
+		bHires = 0;
 		}
-	else { // nTries == 1
-		if (bRequired) {
-			*pszRes = '*';
-#if DBG
-			//Warning (TXT_MOVIE_ANY, filename);
-#endif
-			}
-		break;
+	else if (*pszRes == 'l') { // try hires
+		*pszRes = 'h';
+		bHires = 1;
 		}
 	}
+
+#if DBG
+if ((nTries == 4) && bRequired)
+	Warning (TXT_MOVIE_FILE, filename);
+#endif
 
 if (bRobotMovie && m_libs [nLibrary].m_nMovies)
 	m_nRobots = bHires ? 2 : 1;
