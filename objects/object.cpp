@@ -868,7 +868,7 @@ DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 gameData.objs.bWantEffect [nObject] = 0;
 #if 1
-OBJECTS [nObject].RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNINGS);
+OBJECTS [nObject].RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
 #else
 SEM_ENTER (SEM_SMOKE)
 KillObjectSmoke (nObject);

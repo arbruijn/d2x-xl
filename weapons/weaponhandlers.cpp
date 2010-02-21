@@ -172,8 +172,8 @@ if (0 <= LaserPlayerFire (objP, FUSION_ID, 1, 1, 0, nLightObj))
 if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP->info.nId].bTripleFusion)
 	if (0 <= LaserPlayerFire (objP, FUSION_ID, 6, 1, 0, nLightObj))
 		nFired++;
-nFlags = (sbyte) (gameData.fusion.xCharge >> 12);
-gameData.fusion.xCharge = 0;
+nFlags = sbyte (gameData.FusionCharge () >> 12);
+gameData.SetFusionCharge (0);
 if (!nFired) {
 	if (nLightObj >= 0)
 		OBJECTS [nLightObj].Die ();

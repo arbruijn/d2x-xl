@@ -1570,7 +1570,7 @@ meshBuilder.ComputeFaceKeys ();
 ResetTime ();
 ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;
-gameData.fusion.xCharge = 0;
+gameData.SetFusionCharge (0);
 gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
 SetD1Sound ();
@@ -1747,7 +1747,7 @@ AIResetAllPaths ();
 ResetTime ();
 ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;
-gameData.fusion.xCharge = 0;
+gameData.SetFusionCharge (0);
 gameStates.app.cheats.bRobotsFiring = 1;
 SetD1Sound ();
 if (gameStates.app.bD1Mission) {

@@ -68,6 +68,7 @@
 #include "shrapnel.h"
 #include "collide.h"
 #include "lightcluster.h"
+#include "multi.h"
 
 // ----------------------------------------------------------------------------
 
@@ -1538,6 +1539,22 @@ CApplicationData::CApplicationData ()
 {
 memset (this, 0, sizeof (*this));
 nGameMode = GM_GAME_OVER;
+}
+
+// ----------------------------------------------------------------------------
+
+inline void CGameData::SetFusionCharge (fix xCharge, bool bLocal)
+{
+gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].xFusionCharge = xCharge;
+if (!bLocal)
+	MultiSendFusionCharge ();
+}
+
+// ----------------------------------------------------------------------------
+
+inline fix CGameData::FusionCharge (fix nId)
+{
+return gameData.multiplayer.weaponStates [(nId < 0) ? gameData.multiplayer.nLocalPlayer : nId].xFusionCharge;
 }
 
 // ----------------------------------------------------------------------------

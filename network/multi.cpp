@@ -219,7 +219,8 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{99, -1}, // MULTI_SYNC_MONSTERBALL
 	{31, -1}, // MULTI_DROP_POWERUP
 	{31, -1}, // MULTI_CREATE_WEAPON
-	{6, -1} // MULTI_AMMO
+	{6, -1},  // MULTI_AMMO
+	{6, -1},  // MULTI_FUSION_CHARGE
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -628,7 +629,7 @@ MultiSendData (gameData.multigame.msg.buf, 22, 0);
 
 void MultiDoPlayerWeapons (char *buf)
 {
-	CWeaponState	*wsP = gameData.multiplayer.weaponStates + (int) buf [1];
+	CWeaponState	*wsP = gameData.multiplayer.weaponStates + int (buf [1]);
 	tFiringData		*fP;
 	int				i;
 
@@ -1359,7 +1360,7 @@ if (!(gameData.app.nGameMode & GM_MULTI_COOP))
 
 void MultiDoFire (char *buf)
 {
-	int nPlayer = (int) buf [1];
+	int nPlayer = int (buf [1]);
 	ubyte weapon = (ubyte) buf [2];
 	sbyte flags = buf [4];
 
@@ -1388,18 +1389,17 @@ else if (weapon >= MISSILE_ADJUST) {
 	LaserPlayerFire (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, weaponId, weaponGun, 1, 0, -1);
 	}
 else {
-	fix xSaveCharge = gameData.fusion.xCharge;
+	fix xSaveCharge = gameData.FusionCharge ();
 	if (weapon == FUSION_INDEX)
-		gameData.fusion.xCharge = flags << 12;
-	if (weapon == LASER_ID) {
+		gameData.SetFusionCharge (flags << 12, true);
+	else if (weapon == LASER_ID) {
 		if (flags & LASER_QUAD)
 			gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
 		else
 			gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		}
 	FireWeapon ((short) gameData.multiplayer.players [nPlayer].nObject, weapon, (int) buf [3], flags, (int)buf [5]);
-	if (weapon == FUSION_INDEX)
-		gameData.fusion.xCharge = xSaveCharge;
+	gameData.SetFusionCharge (xSaveCharge, true);
 	}
 gameData.multigame.laser.nFired [0] =
 gameData.multigame.laser.nFired [1] = 0;
@@ -1970,7 +1970,7 @@ TRIGGERS [nTrigger].Operate (nObject, nPlayer, 0, 0);
 
 void MultiDoShields (char *buf)
 {
-	int	nPlayer = (int) buf [1];
+	int	nPlayer = int (buf [1]);
 	int	shields = GET_INTEL_INT (buf+2);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
@@ -2562,7 +2562,7 @@ if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 
 void MultiDoSyncKills (char *buf)
 {
-	int	nPlayer = (int) buf [1];
+	int	nPlayer = int (buf [1]);
 	char	*bufP = buf + 2;
 
 gameData.multiplayer.players [nPlayer].score = GET_INTEL_INT (bufP);
@@ -3689,7 +3689,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 
 void MultiDoGuided (char *buf)
 {
-	int nPlayer = (int) buf [1];
+	int nPlayer = int (buf [1]);
 	int count = 3;
 	static int fun = 200;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -4026,7 +4026,7 @@ for (i = 0; i < 6; i++, buf += 2) {
 
 void MultiDoFlags (char *buf)
 {
-	int nPlayer = (int) buf [1];
+	int nPlayer = int (buf [1]);
 	uint flags;
 
 flags = GET_INTEL_INT (buf + 2);
@@ -4049,29 +4049,36 @@ MultiSendData (gameData.multigame.msg.buf, 6, 1);
 void MultiDoWeapons (char *buf)
 {
 	int	i, bufP = 1;
-	int	nPlayer = (int) buf [bufP++];
+	int	nPlayer = int (buf [bufP++]);
 
 gameData.multiplayer.players [nPlayer].shields  =
 OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.xShields = GET_INTEL_INT (buf + bufP);
 bufP += 4;
-gameData.multiplayer.players [int (nPlayer)].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
+gameData.multiplayer.players [nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
-	gameData.multiplayer.players [int (nPlayer)].secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
+	gameData.multiplayer.players [nPlayer].secondaryAmmo [i] = GET_INTEL_SHORT (buf + bufP);
 	bufP += 2;
 	}
-gameData.multiplayer.players [int (nPlayer)].laserLevel = gameData.multigame.msg.buf [bufP++];
-gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
+gameData.multiplayer.players [nPlayer].laserLevel = gameData.multigame.msg.buf [bufP++];
+gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = GET_INTEL_SHORT (buf + bufP);
 }
 
 //-----------------------------------------------------------------------------
 
 void MultiDoAmmo (char *buf)
 {
-	int	nPlayer = (int) buf [1];
+	int	nPlayer = int (buf [1]);
 
 gameData.multiplayer.players [int (nPlayer)].primaryAmmo [VULCAN_INDEX] = ushort (GET_INTEL_SHORT (buf + 2));
 gameData.multiplayer.weaponStates [int (nPlayer)].nAmmoUsed = GET_INTEL_SHORT (buf + 4);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiDoFusionCharge (char *buf)
+{
+gameData.multiplayer.weaponStates [int (buf [1])].xFusionCharge = GET_INTEL_INT (buf + 2);
 }
 
 //-----------------------------------------------------------------------------
@@ -4120,6 +4127,22 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, short (LOCALPLAYER.primaryAm
 bufP += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nAmmoUsed);
 bufP += 2;
+MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendFusionCharge (void)
+{
+if (!IsMultiGame || (gameStates.multi.nGameType != UDP_GAME))
+	return;
+
+	int bufP = 0;
+
+gameData.multigame.msg.buf [bufP++] = (char) MULTI_FUSION_CHARGE;
+gameData.multigame.msg.buf [bufP++] = (char) gameData.multiplayer.nLocalPlayer;
+PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, int (gameData.FusionCharge ()));
+bufP += 4;
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 }
 
@@ -4217,7 +4240,7 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 
 void MultiDoDropBlob (char *buf)
 {
-DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [(int) buf [1]].nObject], 2, I2X (1), -1, NULL, 0);
+DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [int (buf [1])].nObject], 2, I2X (1), -1, NULL, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -4352,7 +4375,7 @@ void MultiDoCaptureBonus (char *buf)
 	// Figure out the results of a network kills and add it to the
 	// appropriate player's tally.
 
-	int 	nPlayer = (int) buf [1];
+	int 	nPlayer = int (buf [1]);
 	short	nTeam, penalty = 0, bonus;
 	//char	szTeam [20];
 
@@ -4412,7 +4435,7 @@ int GetOrbBonus (char num)
 
 void MultiDoOrbBonus (char *buf)
 {
-	int nPlayer = (int) buf [1];
+	int nPlayer = int (buf [1]);
 	int bonus = GetOrbBonus (buf [2]);
 	int nTeam = GetTeam (nPlayer);
 
@@ -4466,7 +4489,7 @@ MultiSendData (gameData.multigame.msg.buf, 6, 1);
 
 void MultiDoCheating (char *buf)
 {
-HUDInitMessage (TXT_PLAYER_CHEATED, gameData.multiplayer.players [(int) buf [1]].callsign);
+HUDInitMessage (TXT_PLAYER_CHEATED, gameData.multiplayer.players [int (buf [1])].callsign);
 audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, DEFAULT_VOLUME, DEFAULT_PAN, 0, 3);
 }
 
@@ -4508,7 +4531,7 @@ MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 
 void MultiDoGotFlag (char *buf)
 {
-	int nPlayer = (int) buf [1];
+	int nPlayer = int (buf [1]);
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	soundQueue.StartSound (SOUND_HUD_YOU_GOT_FLAG, I2X (2));
@@ -4525,7 +4548,7 @@ HUDInitMessage (TXT_PICKFLAG2, gameData.multiplayer.players [nPlayer].callsign);
 
 void MultiDoGotOrb (char *buf)
 {
-	int nPlayer = (int) buf [1];
+	int nPlayer = int (buf [1]);
 
 Assert (gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY));
 if (gameData.app.nGameMode & GM_TEAM) {
@@ -4966,7 +4989,7 @@ void MultiSendRanking ()
 void MultiDoRanking (char *buf)
 {
 	char rankstr [20];
-	int nPlayer = (int) buf [1];
+	int nPlayer = int (buf [1]);
 	char rank = buf [2];
 
 	if (netPlayers.m_info.players [nPlayer].rank<rank)
@@ -5164,7 +5187,7 @@ MultiSendData (gameData.multigame.msg.buf, 5, 0);
 
 void MultiDoTeleport (char *buf)
 {
-	short	nObject = gameData.multiplayer.players [(int) buf [1]].nObject;
+	short	nObject = gameData.multiplayer.players [int (buf [1])].nObject;
 	short nSegment = GET_INTEL_SHORT (buf + 2);
 //	short	nSide = buf [4];
 
@@ -5291,7 +5314,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoSyncMonsterball, 1},
 	{MultiDoDropPowerup, 1},
 	{MultiDoCreateWeapon, 1},
-	{MultiDoAmmo, 1}
+	{MultiDoAmmo, 1},
+	{MultiDoFusionCharge, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5639,6 +5663,9 @@ switch (nType) {
 	case MULTI_AMMO:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoAmmo (buf);
+	case MULTI_FUSION_CHARGE:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoFusionCharge (buf);
 	default:
 		Int3 ();
 	}

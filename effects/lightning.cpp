@@ -31,7 +31,7 @@
 #define RENDER_LIGHTNING_PLASMA 1
 #define RENDER_LIGHTNING_OUTLINE 0
 #define RENDER_LIGHTINGS_BUFFERED 1
-#define UPDATE_LIGHTNINGS 1
+#define UPDATE_LIGHTNING 1
 #define USE_NEW 1
 
 #define LIMIT_FLASH_FPS	1
@@ -186,7 +186,7 @@ void CLightningNode::Animate (bool bInit, short nSegment, int nDepth)
 {
 if (bInit)
 	m_vPos = m_vNewPos;
-#if UPDATE_LIGHTNINGS
+#if UPDATE_LIGHTNING
 else
 	m_vPos += m_vOffs;
 #endif
@@ -751,7 +751,7 @@ void CLightning::Animate (int nDepth)
 	int				j, bSeed;
 	bool				bInit;
 
-#if UPDATE_LIGHTNINGS
+#if UPDATE_LIGHTNING
 m_nTTL -= gameStates.app.tick40fps.nTime;
 #endif
 if (m_nNodes > 0) {
@@ -764,7 +764,7 @@ if (m_nNodes > 0) {
 		}
 	for (j = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; j > 0; j--, nodeP++)
 		nodeP->Animate (bInit, m_nSegment, nDepth);
-#if UPDATE_LIGHTNINGS
+#if UPDATE_LIGHTNING
 	(m_iStep)--;
 #endif
 	}
@@ -1646,7 +1646,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
-	if (gameData.fusion.xCharge > I2X (2)) {
+	if (gameData.FusionCharge (objP->info.nId) > I2X (2)) {
 		static tRgbaColorf color = {0.666f, 0.0f, 0.75f, 0.2f};
 		return &color;
 		}
@@ -1687,8 +1687,8 @@ if (SHOW_LIGHTNING) {
 #	endif
 #endif
 	for (i = 0, objP = OBJECTS.Buffer (); i < gameData.objs.nLastObject [1]; i++, objP++) {
-		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNINGS) {
-			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNINGS;
+		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNING) {
+			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNING;
 			DestroyForObject (objP);
 			}
 		}
@@ -1702,35 +1702,35 @@ if (SHOW_LIGHTNING) {
 	FORALL_OBJS (objP, i) {
 		i = objP->Index ();
 		h = gameData.objs.bWantEffect [i];
-		if (h & EXPL_LIGHTNINGS) {
+		if (h & EXPL_LIGHTNING) {
 			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))
 				CreateForBlowup (objP);
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
-		else if (h & MISSILE_LIGHTNINGS) {
+		else if (h & MISSILE_LIGHTNING) {
 			if ((objP->info.nType == OBJ_WEAPON) || gameData.objs.bIsMissile [objP->info.nId])
 				CreateForMissile (objP);
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
-		else if (h & ROBOT_LIGHTNINGS) {
+		else if (h & ROBOT_LIGHTNING) {
 			if (objP->info.nType == OBJ_ROBOT)
 				CreateForRobot (objP, LightningColor (objP));
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
-		else if (h & PLAYER_LIGHTNINGS) {
+		else if (h & PLAYER_LIGHTNING) {
 			if (objP->info.nType == OBJ_PLAYER)
 				CreateForPlayer (objP, LightningColor (objP));
 			else if (objP->info.nType != 255)
 				PrintLog ("invalid effect requested\n");
 			}
-		else if (h & MOVE_LIGHTNINGS) {
+		else if (h & MOVE_LIGHTNING) {
 			if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))
 				MoveForObject (objP);
 			}
-		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNINGS | ROBOT_LIGHTNINGS | MISSILE_LIGHTNINGS | EXPL_LIGHTNINGS | MOVE_LIGHTNINGS);
+		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNING | ROBOT_LIGHTNING | MISSILE_LIGHTNING | EXPL_LIGHTNING | MOVE_LIGHTNING);
 		}
 	}
 }
@@ -1766,7 +1766,7 @@ void CLightningManager::DestroyForAllObjects (int nType, int nId)
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == nType) && ((nId < 0) || (objP->info.nId == nId)))
 #if 1
-		objP->RequestEffects (DESTROY_LIGHTNINGS);
+		objP->RequestEffects (DESTROY_LIGHTNING);
 #else
 		DestroyObjectLightnings (objP);
 #endif

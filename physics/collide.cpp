@@ -643,11 +643,11 @@ if ((info.nType == OBJ_WEAPON) && gameData.objs.bIsMissile [info.nId]) {
 	if (bExplBlast)
 		CreateExplBlast ();
 	if ((info.nId == EARTHSHAKER_ID) || (info.nId == EARTHSHAKER_ID))
-		RequestEffects (MISSILE_LIGHTNINGS);
+		RequestEffects (MISSILE_LIGHTNING);
 	else if ((info.nId == EARTHSHAKER_MEGA_ID) || (info.nId == ROBOT_SHAKER_MEGA_ID))
-		RequestEffects (MISSILE_LIGHTNINGS);
+		RequestEffects (MISSILE_LIGHTNING);
 	else if ((info.nId == MEGAMSL_ID) || (info.nId == ROBOT_MEGAMSL_ID))
-		RequestEffects (MISSILE_LIGHTNINGS);
+		RequestEffects (MISSILE_LIGHTNING);
 	else
 		return 0;
 	return 1;

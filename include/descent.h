@@ -1971,12 +1971,12 @@ class CObjectData {
 		int RebuildEffects (void);
 };
 
-#define PLAYER_LIGHTNINGS	1
-#define ROBOT_LIGHTNINGS	2
-#define MISSILE_LIGHTNINGS	4
-#define EXPL_LIGHTNINGS		8
-#define MOVE_LIGHTNINGS		16
-#define DESTROY_LIGHTNINGS	32
+#define PLAYER_LIGHTNING	1
+#define ROBOT_LIGHTNING		2
+#define MISSILE_LIGHTNING	4
+#define EXPL_LIGHTNING		8
+#define MOVE_LIGHTNING		16
+#define DESTROY_LIGHTNING	32
 #define SHRAPNEL_SMOKE		64
 #define DESTROY_SMOKE		128
 
@@ -2323,6 +2323,7 @@ class CWeaponState {
 	public:
 		tFiringData				firing [2];
 		fix						xMslFireTime;
+		fix						xFusionCharge;
 		short						nAmmoUsed;
 		char						nMissiles;
 		char						nPrimary;
@@ -3280,6 +3281,8 @@ class CGameData {
 		void Init (void);
 		bool Create (int nSegments, int nVertices);
 		void Destroy (void);
+		inline void SetFusionCharge (fix xCharge, bool bLocal = false);
+		inline fix FusionCharge (int nId = -1);
 };
 
 extern CGameData gameData;

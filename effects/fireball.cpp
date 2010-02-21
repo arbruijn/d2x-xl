@@ -452,7 +452,7 @@ void CObject::ExplodePolyModel (void)
 {
 Assert (info.renderType == RT_POLYOBJ);
 CreateExplBlast ();
-RequestEffects (EXPL_LIGHTNINGS | SHRAPNEL_SMOKE);
+RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
 if (gameData.models.nDyingModels [rType.polyObjInfo.nModel] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [rType.polyObjInfo.nModel];
 if (gameData.models.polyModels [0][rType.polyObjInfo.nModel].ModelCount () > 1) {

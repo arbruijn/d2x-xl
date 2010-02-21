@@ -242,10 +242,10 @@ else if (nWeaponType == FUSION_ID) {
 	}
 if (parentP && (parentP->info.nType == OBJ_PLAYER)) {
 	if (nWeaponType == FUSION_ID) {
-		if (gameData.fusion.xCharge <= 0)
+		if (gameData.FusionCharge () <= 0)
 			objP->cType.laserInfo.xScale = I2X (1);
-		else if (gameData.fusion.xCharge <= I2X (4))
-			objP->cType.laserInfo.xScale = I2X (1) + gameData.fusion.xCharge / 2;
+		else if (gameData.FusionCharge () <= I2X (4))
+			objP->cType.laserInfo.xScale = I2X (1) + gameData.FusionCharge () / 2;
 		else
 			objP->cType.laserInfo.xScale = I2X (4);
 		}

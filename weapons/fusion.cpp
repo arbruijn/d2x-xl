@@ -43,7 +43,7 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objs.consoleP->RandomBump (I2X (1) / 8, (gameData.fusion.xCharge > I2X (2)) ? gameData.fusion.xCharge * 4 : I2X (4));
+		gameData.objs.consoleP->RandomBump (I2X (1) / 8, (gameData.FusionCharge () > I2X (2)) ? gameData.FusionCharge () * 4 : I2X (4));
 		}
 	}
 return 1;
@@ -59,10 +59,10 @@ if ((LOCALPLAYER.energy < I2X (2)) && (gameData.fusion.xAutoFireTime == 0)) {
 	}
 else {
 	gameData.fusion.xFrameTime += gameData.time.xFrame;
-	if (!gameData.fusion.xCharge)
+	if (!gameData.FusionCharge ())
 		LOCALPLAYER.energy -= I2X (2);
 	fix h = (gameData.fusion.xFrameTime <= LOCALPLAYER.energy) ? gameData.fusion.xFrameTime : LOCALPLAYER.energy;
-	gameData.fusion.xCharge += h;
+	gameData.SetFusionCharge (gameData.FusionCharge () + h);
 	LOCALPLAYER.energy -= h;
 	if (LOCALPLAYER.energy > 0) 
 		gameData.fusion.xAutoFireTime = gameData.time.xGame + gameData.fusion.xFrameTime / 2 + 1;
@@ -73,17 +73,17 @@ else {
 	if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)
 		return;
 
-	float fScale = float (gameData.fusion.xCharge >> 11) / 64.0f;
+	float fScale = float (gameData.FusionCharge () >> 11) / 64.0f;
 	tRgbaColorf* colorP = gameData.weapons.color + FUSION_ID;
 
-	if (gameData.fusion.xCharge < I2X (2)) 
+	if (gameData.FusionCharge () < I2X (2)) 
 		paletteManager.BumpEffect (colorP->red * fScale, colorP->green * fScale, colorP->blue * fScale);
 	else 
 		paletteManager.BumpEffect (colorP->blue * fScale, colorP->red * fScale, colorP->green * fScale);
 	if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 		gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 	if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
-		if (gameData.fusion.xCharge > I2X (2)) {
+		if (gameData.FusionCharge () > I2X (2)) {
 			audio.PlaySound (11);
 			gameData.objs.consoleP->ApplyDamageToPlayer (gameData.objs.consoleP, d_rand () * 4);
 			}

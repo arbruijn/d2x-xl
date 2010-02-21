@@ -510,8 +510,8 @@ if (!bSecondary) {
 	if ((nWeapon == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
 		nWeapon = SUPER_LASER_INDEX;
 	hasFlag = HAS_WEAPON_FLAG;
-	LOCALPLAYER.energy += gameData.fusion.xCharge;
-	gameData.fusion.xCharge = 0;
+	LOCALPLAYER.energy += gameData.FusionCharge ();
+	gameData.SetFusionCharge (0);
 	}
 else if (nWeapon == 2) {
 	ToggleBomb ();

@@ -377,7 +377,7 @@ switch (info.movementType) {
 		DoPhysicsSim ();
 		lightManager.SetPos (OBJ_IDX (this));
 #if 1
-		RequestEffects (MOVE_LIGHTNINGS);
+		RequestEffects (MOVE_LIGHTNING);
 #else
 		lightningManager.MoveForObject (this);
 #endif
@@ -500,19 +500,19 @@ void CObject::UpdateEffects (void)
 {
 if (info.nType == OBJ_ROBOT) {
 	if (ROBOTINFO (info.nId).energyDrain) {
-		RequestEffects (ROBOT_LIGHTNINGS);
+		RequestEffects (ROBOT_LIGHTNING);
 		}
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	int nType = SEGMENTS [OBJSEG (this)].m_nType;
-	if (gameData.fusion.xCharge > I2X (2))
-		RequestEffects (PLAYER_LIGHTNINGS);
+	if (gameData.FusionCharge (info.nId) > I2X (2)) 
+		RequestEffects (PLAYER_LIGHTNING);
 	else if (nType == SEGMENT_IS_FUELCEN)
-		RequestEffects (PLAYER_LIGHTNINGS);
+		RequestEffects (PLAYER_LIGHTNING);
 	else if (nType == SEGMENT_IS_REPAIRCEN)
-		RequestEffects (PLAYER_LIGHTNINGS);
+		RequestEffects (PLAYER_LIGHTNING);
 	else
-		RequestEffects (DESTROY_LIGHTNINGS);
+		RequestEffects (DESTROY_LIGHTNING);
 	}
 }
 

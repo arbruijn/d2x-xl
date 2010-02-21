@@ -134,7 +134,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_DROP_POWERUP				84
 #define MULTI_CREATE_WEAPON			85
 #define MULTI_AMMO						86
-#define MULTI_MAX_TYPE					86
+#define MULTI_FUSION_CHARGE			87
+#define MULTI_MAX_TYPE					87
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -193,6 +194,7 @@ void MultiSendReturnFlagHome (short nObject);
 void MultiSendCaptureBonus (char pnum);
 void MultiSendShields (void);
 void MultiSendCheating (void);
+void MultiSendFusionCharge (void);
 
 void MultiEndLevelScore (void);
 void MultiPrepLevel (void);
