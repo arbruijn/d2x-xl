@@ -524,7 +524,6 @@ NetworkProcessSyncPacket (&netGame, 1); // Read it myself, as if I had sent it
 
 void NetworkSendData (ubyte * buf, int len, int bUrgent)
 {
-	char	bCheck;
 	int	bD2XData;
 
 #ifdef NETPROFILING
