@@ -522,14 +522,14 @@ NetworkProcessSyncPacket (&netGame, 1); // Read it myself, as if I had sent it
 
 //------------------------------------------------------------------------------
 
-void NetworkSendData (ubyte * ptr, int len, int urgent)
+void NetworkSendData (ubyte * buf, int len, int bUrgent)
 {
 	char	bCheck;
 	int	bD2XData;
 
 #ifdef NETPROFILING
-TTSent [ptr [0]]++;  
-fprintf (SendLogFile, "Packet nType: %d Len:%d Urgent:%d TT=%d\n", ptr [0], len, urgent, TTSent [ptr [0]]);
+TTSent [buf [0]]++;  
+fprintf (SendLogFile, "Packet nType: %d Len:%d Urgent:%d TT=%d\n", buf [0], len, bUrgent, TTSent [buf [0]]);
 fflush (SendLogFile);
 #endif
    
@@ -539,29 +539,23 @@ if (!networkData.bSyncPackInited) {
 	networkData.bSyncPackInited = 1;
 	memset (&networkData.syncPack, 0, sizeof (tFrameInfoLong));
 	}
-if (urgent)
-	networkData.bPacketUrgent = 1;
 if ((networkData.syncPack.dataSize + len) > networkData.nMaxXDataSize) {
-	bCheck = ptr [0];
 	NetworkDoFrame (1, 0);
 	if (networkData.syncPack.dataSize != 0) {
-#if 1			
-	console.printf (CON_DBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.dataSize);
+#if 0			
+		console.printf (CON_DBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.dataSize);
 #endif
-	Int3 ();
+		Int3 ();
 	}
-//              Int3 ();         // Trying to send too much!
-//              return;
-#if 1			
-	console.printf (CON_DBG, "Packet overflow, sending additional packet, nType %d len %d.\n", ptr [0], len);
+#if 0
+	console.printf (CON_DBG, "Packet overflow, sending additional packet, nType %d len %d.\n", buf [0], len);
 #endif
-	Assert (bCheck == ptr [0]);
 	}
 // for IPX game, separate legacy and D2X message to avoid non D2X-XL participants losing data
 // because they do not know the D2X data and hence cannot determine its length, thus getting out
 // of sync when decompositing a multi-data packet.
 if (gameStates.multi.nGameType == IPX_GAME) {
-	bD2XData = (*ptr > MULTI_MAX_TYPE_D2);
+	bD2XData = (*buf > MULTI_MAX_TYPE_D2);
 	if (bD2XData && (gameStates.app.bNostalgia > 1))
 		return;
 	if (networkData.syncPack.dataSize && !bD2XData && networkData.bD2XData)
@@ -569,8 +563,10 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 	networkData.bD2XData = bD2XData;
 	}
 Assert (networkData.syncPack.dataSize + len <= networkData.nMaxXDataSize);
-memcpy (networkData.syncPack.data + networkData.syncPack.dataSize, ptr, len);
+memcpy (networkData.syncPack.data + networkData.syncPack.dataSize, buf, len);
 networkData.syncPack.dataSize += len;
+if (bUrgent)
+	networkData.bPacketUrgent = bUrgent;
 }
 
 //------------------------------------------------------------------------------

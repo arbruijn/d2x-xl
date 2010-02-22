@@ -423,8 +423,6 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 #endif
 				}
 			else {// If long packets
-					int send_dataSize;
-
 				networkData.syncPack.nType = PID_PDATA;
 				networkData.syncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
 				networkData.syncPack.objRenderType = OBJECTS [nObject].info.renderType;
@@ -434,7 +432,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				networkData.syncPack.objOrient = OBJECTS [nObject].info.position.mOrient;
 				networkData.syncPack.physVelocity = OBJECTS [nObject].mType.physInfo.velocity;
 				networkData.syncPack.physRotVel = OBJECTS [nObject].mType.physInfo.rotVel;
-				send_dataSize = networkData.syncPack.dataSize;                  // do this so correct size data is sent
+				int nDataSize = networkData.syncPack.dataSize;                  // do this so correct size data is sent
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)                        // do the swap stuff
 				if (gameStates.multi.nGameType >= IPX_GAME) {
 					networkData.syncPack.nObjSeg = INTEL_SHORT (networkData.syncPack.nObjSeg);
@@ -446,9 +444,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 					}
 #endif
 				networkData.syncPack.nPackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
-				IpxSendGamePacket (
-					reinterpret_cast<ubyte*> (&networkData.syncPack), 
-					sizeof (tFrameInfoLong) - networkData.nMaxXDataSize + send_dataSize);
+				IpxSendGamePacket (reinterpret_cast<ubyte*> (&networkData.syncPack), sizeof (tFrameInfoLong) - networkData.nMaxXDataSize + nDataSize);
 				}
 			networkData.syncPack.dataSize = 0;               // Start data over at 0 length.
 			networkData.bD2XData = 0;

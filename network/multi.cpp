@@ -151,7 +151,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{5, -1},  // DOOR_OPEN
 	{2, -1},  // CREATE_EXPLOSION
 	{16, -1}, // CONTROLCEN_FIRE
-	{97+9, -1}, // PLAYER_DROP
+	{97+9, 97+11}, // PLAYER_DROP
 	{19, -1}, // CREATE_POWERUP
 	{9, -1},  // MISSILE_TRACK
 	{2, -1},  // DE-CLOAK
@@ -2323,7 +2323,7 @@ bufI += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
 bufI += 4;
 #if 1
-if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
+if (multiMessageLengths [nType][1] > 0) {
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameStates.app.nRandSeed);
 		bufI += 2;
@@ -2346,10 +2346,10 @@ for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	}
 gameData.multigame.create.nCount = 0;
 #if DBG
-if (bufI > MultiMsgLen (MULTI_PLAYER_EXPLODE))
+if (bufI > MultiMsgLen (nType))
 	Warning ("MultiSendPlayerExplode:\nMax. message length exceeded!"); // See Rob
 #endif
-MultiSendData (gameData.multigame.msg.buf, MultiMsgLen (MULTI_PLAYER_EXPLODE), 2);
+MultiSendData (gameData.multigame.msg.buf, MultiMsgLen (nType), 2);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
@@ -5663,9 +5663,11 @@ switch (nType) {
 	case MULTI_AMMO:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoAmmo (buf);
+		break;
 	case MULTI_FUSION_CHARGE:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoFusionCharge (buf);
+		break;
 	default:
 		Int3 ();
 	}
