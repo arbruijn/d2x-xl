@@ -874,8 +874,6 @@ if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
 	static CFloatMatrix	mRot [MAX_THREADS];
 
 	CFloatMatrix&	m = mRot [nThread];
-	CFloatVector3	vCenter;
-	CFloatVector3	vOffset = pb [1].vertex;
 
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
@@ -1733,14 +1731,14 @@ return 1;
 
 void CParticleManager::SetupRenderBuffer (void)
 {
-//#pragma omp parallel
+#pragma omp parallel
 	{
-# if 0//	ifdef _OPENMP
+#	ifdef _OPENMP
 	int nThread = omp_get_thread_num();
 #	else
 	int nThread = 0;
 #	endif
-//#	pragma omp for 
+#	pragma omp for 
 	for (int i = 0; i < m_iBuffer; i++)
 		particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleRenderBuffer + 4 * i, nThread);
 	}
@@ -1782,7 +1780,7 @@ if (InitBuffer (bLightmaps)) {
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, 0);
-	OglDrawArrays (GL_QUADS, 0, m_iBuffer);
+	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
 	glNormal3f (1, 1, 1);
 	}
 #if GL_FALLBACK
