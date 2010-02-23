@@ -467,17 +467,20 @@ else
 	if (!gameStates.render.bFullBright)
 		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (FACES.vertices.Buffer ()));
-	ogl.EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
-	OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
-	if (!gameStates.render.bFullBright)
-		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
-	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
+	if (nType < 3) {
+		ogl.EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
+		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
+		if (!gameStates.render.bFullBright)
+			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
+		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
+		}
 	}
+#if 0
 if (bNormals)
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
+#endif
 if (gameStates.render.bFullBright)
 	glColor3f (1,1,1);
-ogl.SetBlending (true);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.ClearError (0);
 return 1;

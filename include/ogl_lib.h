@@ -94,6 +94,7 @@ class COglData {
 		GLenum			nDepthMode;
 		GLenum			nCullMode;
 		GLuint			nDepthFunc;
+		bool				bUseTextures [4];
 		bool				bAlphaTest;
 		bool				bScissorTest;
 		bool				bDepthTest;
@@ -101,7 +102,6 @@ class COglData {
 		bool				bUseBlending;
 		bool				bStencilTest;
 		bool				bCullFaces;
-		bool				bUseTextures;
 		bool				bLineSmooth;
 		bool				bLighting;
 		bool				bPolyOffsetFill;
@@ -342,8 +342,12 @@ class COGL {
 		inline bool SetBlending (bool bUseBlending) { return Enable (m_data.bUseBlending, bUseBlending, GL_BLEND); }
 		inline bool GetBlendUsage (void) { return m_data.bUseBlending; }
 		
-		inline bool SetTextureUsage (bool bUseTextures) { return Enable (m_data.bUseTextures, bUseTextures, GL_TEXTURE_2D); }
-		inline bool GetTextureUsage (void) { return m_data.bUseTextures; }
+		inline bool SetTextureUsage (bool bUseTextures, int nTMU = -1) { 
+			if (nTMU >= 0)
+				SelectTMU (nTMU);
+			return Enable (m_data.bUseTextures [m_data.nTMU [0]], bUseTextures, GL_TEXTURE_2D); 
+			}
+		inline bool GetTextureUsage (void) { return m_data.bUseTextures [m_data.nTMU [0]]; }
 		
 		inline bool SetLineSmooth (bool bLineSmooth) { return Enable (m_data.bLineSmooth, bLineSmooth, GL_LINE_SMOOTH); }
 		inline bool GetLineSmoothe (void) { return m_data.bLineSmooth; }

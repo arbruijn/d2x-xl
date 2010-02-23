@@ -303,7 +303,7 @@ nDrawBuffer = -1;
 void COglData::Initialize (void)
 {
 palette = NULL;
-bUseTextures = false;
+memset (bUseTextures, 0, sizeof (bUseTextures));
 nTMU [0] = 0;
 if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 #ifndef GL_VERSION_20
@@ -312,12 +312,16 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 		{
 		glActiveTexture (GL_TEXTURE3);
 		glBindTexture (GL_TEXTURE_2D, nTexture [3] = 0);
+		glDisable (GL_TEXTURE_2D);
 		glActiveTexture (GL_TEXTURE2);
 		glBindTexture (GL_TEXTURE_2D, nTexture [2] = 0);
+		glDisable (GL_TEXTURE_2D);
 		glActiveTexture (GL_TEXTURE1);
 		glBindTexture (GL_TEXTURE_2D, nTexture [1] = 0);
+		glDisable (GL_TEXTURE_2D);
 		glActiveTexture (GL_TEXTURE0);
 		glBindTexture (GL_TEXTURE_2D, nTexture [0] = 0);
+		glDisable (GL_TEXTURE_2D);
 		}
 	bUseBlending = true;
 	glEnable (GL_BLEND);
@@ -472,6 +476,7 @@ int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
+SetTextureUsage (true);
 if (!bNormals)
 	DisableClientState (GL_NORMAL_ARRAY);
 else if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
@@ -506,6 +511,7 @@ if (bTexCoord)
 if (bColor)
 	DisableClientState (GL_COLOR_ARRAY);
 DisableClientState (GL_VERTEX_ARRAY);
+SetTextureUsage (false);
 }
 
 //------------------------------------------------------------------------------

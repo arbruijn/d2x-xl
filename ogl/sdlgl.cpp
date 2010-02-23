@@ -185,7 +185,7 @@ if (!ogl.m_states.bQuadBuffering)
 	ogl.m_states.nStereo = 0;
 else {
 	glGetIntegerv (GL_STEREO, &ogl.m_states.nStereo);
-	gameStates.render.bHaveStereoBuffers =  (ogl.m_states.nStereo > 0);
+	gameStates.render.bHaveStereoBuffers = (ogl.m_states.nStereo > 0);
 	}
 SDL_ShowCursor (0);
 ogl.m_states.nCurWidth = w;

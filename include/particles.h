@@ -28,6 +28,12 @@ typedef struct tPartPos {
 	float		x, y, z;
 } __pack__ tPartPos;
 
+typedef struct tParticleVertex {
+	CFloatVector3	vertex;
+	tTexCoord2f		texCoord;
+	tRgbaColorf		color;
+	} tParticleVertex;
+
 typedef struct tParticle {
 #if !EXTRA_VERTEX_ARRAYS
 	tPartPos		m_glPos;
@@ -40,12 +46,15 @@ typedef struct tParticle {
 	CFixVector	m_vDrift;
 	int			m_nTTL;				//time to live
 	int			m_nLife;				//remaining life time
+	float			m_decay;
 	int			m_nDelay;			//time between creation and appearance
 	int			m_nMoved;			//time last moved
 	int			m_nWidth;
 	int			m_nHeight;
 	int			m_nRad;
 	short			m_nSegment;
+	tTexCoord2f	m_texCoord;
+	float			m_deltaUV;
 	tRgbaColorf	m_color [2];		//well ... the color, ya know =)
 	char			m_nType;				//black or white
 	char			m_nRotDir;
@@ -59,6 +68,7 @@ typedef struct tParticle {
 	char			m_nFadeState;
 	char			m_nClass;
 	char			m_nFrame;
+	char			m_nFrames;
 	char			m_nRotFrame;
 	char			m_nOrient;
 	char			m_bChecked;
@@ -71,6 +81,7 @@ class CParticle : public tParticle {
 				      float fScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp, char nFadeType,
 					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
+		void Setup (float brightness, tParticleVertex* pb, int nThread);
 		int Update (int nCurTime);
 		inline bool IsVisible (void);
 		inline fix Transform (bool bUnscaled) {
@@ -81,7 +92,11 @@ class CParticle : public tParticle {
 	private:
 		inline int ChangeDir (int d);
 		int CollideWithWall (void);
-
+		void UpdateTexCoord (void);
+		void UpdateColor (void);
+		void RotateVertices (tParticleVertex* pb, int nThread);
+		void ProjectVertices (tParticleVertex* pb);
+		void Fade (tRgbaColorf& color);
 };
 
 //------------------------------------------------------------------------------
@@ -208,12 +223,6 @@ class CParticleSystem : public tParticleSystem {
 
 //------------------------------------------------------------------------------
 
-typedef struct tParticleVertex {
-	tTexCoord2f		texCoord;
-	tRgbaColorf		color;
-	CFloatVector3	vertex;
-	} tParticleVertex;
-
 class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
@@ -223,6 +232,7 @@ class CParticleManager {
 		int								m_bAnimate;
 		int								m_bStencil;
 		int								m_iBuffer;
+		int								m_iRenderBuffer;
 
 	public:
 		CParticleManager () {}
@@ -331,14 +341,19 @@ class CParticleManager {
 		inline int BufPtr (void)
 			{ return m_iBuffer; }
 
-		inline void IncBufPtr (int i)
+		inline void IncBufPtr (int i = 1)
 			{ m_iBuffer += i; }
+
+		inline int RenderBufPtr (void)
+			{ return m_iRenderBuffer; }
+
+		inline void IncRenderBufPtr (int i = 1)
+			{ m_iRenderBuffer += i; }
+
 
 	private:
 		void RebuildSystemList (void);
-		void SetupVertices (int nType);
-		void RotateVertices (tParticleVertex* pb, int nThread = 0);
-		void ProjectVertices (tParticleVertex* pb);
+		void SetupRenderBuffer (void);
 
 };
 

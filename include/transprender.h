@@ -119,7 +119,7 @@ typedef struct tTranspItemBuffer {
 	CArray<tTranspItem>	itemLists;
 	int				nMinOffs;
 	int				nMaxOffs;
-	int				nItems;
+	int				nItems [2];
 	int				nFreeItems;
 	int				nCurType;
 	int				nPrevType;
@@ -166,8 +166,8 @@ class CTransparencyRenderer {
 			m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 			m_data.nMaxOffs = 0;
 			}
-		inline void Reset (void) { m_data.nItems = 0; }
-		inline int ItemCount (void) { return m_data.nItems; }
+		inline void Reset (void) { m_data.nItems [0] = 0; }
+		inline int ItemCount (int i = 1) { return m_data.nItems [i]; }
 		int Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset = 0, bool bClamp = false, bool bTransform = false);
 		inline int AddFace (CSegFace *faceP) {
 			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);

@@ -150,7 +150,7 @@ if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 ph = m_data.itemLists + --m_data.nFreeItems;
-ph->nItem = m_data.nItems++;
+ph->nItem = m_data.nItems [0]++;
 ph->nType = nType;
 ph->bRendered = 0;
 ph->parentP = NULL;
@@ -1275,7 +1275,7 @@ extern int bLog;
 void CTransparencyRenderer::Render (void)
 {
 #if RENDER_TRANSPARENCY
-	struct tTranspItem	**pd, *pl, *pn;
+	static struct tTranspItem	**pd, *pl, *pn;
 	int						nItems, nDepth, bStencil;
 	bool						bReset = !LAZY_RESET || (ogl.StereoSeparation () >= 0);
 
@@ -1308,7 +1308,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
-for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems; (pd >= m_data.depthBuffer.Buffer ()) && nItems; pd--) {
+for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd >= m_data.depthBuffer.Buffer ()) && nItems; pd--) {
 	if ((pl = *pd)) {
 		if (bReset)
 			*pd = NULL;
@@ -1346,7 +1346,8 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
 if (bReset) {
-	m_data.nItems = 0;
+	m_data.nItems [1] = 	m_data.nItems [0];
+	m_data.nItems [0] = 0;
 	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;

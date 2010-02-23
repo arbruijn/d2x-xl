@@ -99,8 +99,17 @@ static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0
 #define PART_BUF_SIZE	4096
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
+typedef struct tRenderParticle {
+	CParticle*	particle;
+	float			brightness;
+	short			nFrame;
+	short			nRotFrame;
+} tRenderParticles;
+
+
 static tRgbaColorf defaultParticleColor = {1.0f, 1.0f, 1.0f, 2.0f * 0.6f};
-static tParticleVertex particleBuffer [VERT_BUF_SIZE];
+static tRenderParticle particleBuffer [PART_BUF_SIZE];
+static tParticleVertex particleRenderBuffer [VERT_BUF_SIZE];
 static float bufferBrightness = -1;
 static char bBufferEmissive = 0;
 
@@ -191,7 +200,7 @@ int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 
 	tRgbaColorf	color;
 	CFixVector	vDrift;
-	int			nRad, nFrames, nType = particleImageManager.GetType (nParticleSystemType);
+	int			nRad, nType = particleImageManager.GetType (nParticleSystemType);
 
 m_bChecked = 0;
 if (nScale < 0)
@@ -364,6 +373,7 @@ else
 m_vStartPos = m_vPos;
 m_nLife =
 m_nTTL = nLife;
+m_decay = 1.0f;
 m_nMoved = nCurTime;
 m_nDelay = 0; //bStart ? randN (nLife) : 0;
 if ((m_bBlowUp = bBlowUp)) {
@@ -377,14 +387,15 @@ else {
 	m_nHeight = nRad;
 	m_nRad = nRad / 2;
 	}
-nFrames = nParticleFrames [0][nType];
+m_nFrames = nParticleFrames [0][nType];
+m_deltaUV = 1.0f / float (m_nFrames);
 if (nType == BULLET_PARTICLES) {
 	m_nFrame = 0;
 	m_nRotFrame = 0;
 	m_nOrient = 3;
 	}
 else if (nType == BUBBLE_PARTICLES) {
-	m_nFrame = rand () % (nFrames * nFrames);
+	m_nFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
@@ -394,10 +405,11 @@ else if ((nType == LIGHT_PARTICLES) /*|| (nType == WATERFALL_PARTICLES)*/) {
 	m_nOrient = 0;
 	}
 else {
-	m_nFrame = rand () % (nFrames * nFrames);
+	m_nFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = m_nFrame / 2;
 	m_nOrient = rand () % 4;
 	}
+UpdateTexCoord ();
 #if 1
 if (m_bEmissive)
 	m_color [0].alpha *= ParticleBrightness (colorP);
@@ -498,6 +510,54 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void CParticle::UpdateTexCoord (void)
+{
+if ((m_nType <= WATERFALL_PARTICLES) && ((m_nType != BUBBLE_PARTICLES) || gameOpts->render.particles.bWobbleBubbles)) {
+	m_texCoord.v.u = float (m_nFrame % m_nFrames) * m_deltaUV;
+	m_texCoord.v.v = float (m_nFrame / m_nFrames) * m_deltaUV;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CParticle::UpdateColor (void)
+{
+if (m_nType == SMOKE_PARTICLES) {
+	if (m_nFadeState > 0) {
+		if (m_color [0].green < m_color [1].green) {
+#if SMOKE_SLOWMO
+			m_color [0].green += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+#else
+			m_color [0].green += 1.0f / 20.0f;
+#endif
+			if (m_color [0].green > m_color [1].green) {
+				m_color [0].green = m_color [1].green;
+				m_nFadeState--;
+				}
+			}
+		if (m_color [0].blue < m_color [1].blue) {
+#if SMOKE_SLOWMO
+			m_color [0].blue += 1.0f / 10.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
+#else
+			m_color [0].blue += 1.0f / 10.0f;
+#endif
+			if (m_color [0].blue > m_color [1].blue) {
+				m_color [0].blue = m_color [1].blue;
+				m_nFadeState--;
+				}
+			}
+		}
+	else if (m_nFadeState == 0) {
+		m_color [0].red = m_color [1].red * RANDOM_FADE;
+		m_color [0].green = m_color [1].green * RANDOM_FADE;
+		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
+		m_nFadeState = -1;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int CParticle::Update (int nCurTime)
 {
 	int			j, nRad;
@@ -506,6 +566,7 @@ int CParticle::Update (int nCurTime)
 	CFixVector	vPos, drift;
 	fix			drag;
 	
+UpdateColor ();
 if (m_nType == BUBBLE_PARTICLES) 
 	drag = I2X (1); // constant speed
 else if (m_nType == WATERFALL_PARTICLES) {
@@ -609,6 +670,7 @@ else {
 			m_nLife = -1;
 #	endif
 #endif
+		m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 		if ((m_nType == SMOKE_PARTICLES) && (nRad = m_nRad)) {
 			if (m_bBlowUp) {
 				if (m_nWidth >= nRad)
@@ -648,18 +710,6 @@ return 1;
 
 int CParticle::Render (float brightness)
 {
-	GLfloat					d, u, v;
-	CBitmap*					bmP;
-	tRgbaColorf				pc;
-	tParticleVertex*		pb;
-	CFloatVector			vOffset;
-	int						i;
-	bool						bFlushed = false;
-	float						fFade, decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
-
-	static int				nFrames = 1;
-	static float			deltaUV = 1.0f;
-
 if (m_nDelay > 0)
 	return 0;
 if (m_nLife < 0)
@@ -669,82 +719,47 @@ if ((m_nType < 0) || (m_nType >= PARTICLE_TYPES))
 #if DBG
 if (m_nType == LIGHT_PARTICLES)
 	m_nType = m_nType;
-#endif
 if (!(bmP = bmpParticle [0][int (m_nType)]))
 	return 0;
+#endif
+bool bFlushed;
+
 if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	bFlushed = particleManager.FlushBuffer (brightness);
 	particleManager.SetLastType (m_nType);
 	bBufferEmissive = m_bEmissive;
-	nFrames = nParticleFrames [0][int (m_nType)];
-	deltaUV = 1.0f / (float) nFrames;
 	}
-if (m_bBright)
-	brightness = (float) sqrt (brightness);
-if (m_nType == SMOKE_PARTICLES) {
-	if (m_nFadeState > 0) {
-		if (m_color [0].green < m_color [1].green) {
-#if SMOKE_SLOWMO
-			m_color [0].green += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
-#else
-			m_color [0].green += 1.0f / 20.0f;
-#endif
-			if (m_color [0].green > m_color [1].green) {
-				m_color [0].green = m_color [1].green;
-				m_nFadeState--;
-				}
-			}
-		if (m_color [0].blue < m_color [1].blue) {
-#if SMOKE_SLOWMO
-			m_color [0].blue += 1.0f / 10.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
-#else
-			m_color [0].blue += 1.0f / 10.0f;
-#endif
-			if (m_color [0].blue > m_color [1].blue) {
-				m_color [0].blue = m_color [1].blue;
-				m_nFadeState--;
-				}
-			}
+else
+	bFlushed = false;
+tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
+pb->particle = this;
+pb->brightness = brightness;
+pb->nFrame = m_nFrame;
+pb->nRotFrame = m_nRotFrame;
+particleManager.IncBufPtr ();
+if (particleManager.BufPtr () >= PART_BUF_SIZE)
+	particleManager.FlushBuffer (brightness);
+if (particleManager.Animate ()) {
+	if (m_nFrames > 1) {
+		m_nFrame = (m_nFrame + 1) % (m_nFrames * m_nFrames);
+		UpdateTexCoord ();
 		}
-	else if (m_nFadeState == 0) {
-		m_color [0].red = m_color [1].red * RANDOM_FADE;
-		m_color [0].green = m_color [1].green * RANDOM_FADE;
-		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
-		m_nFadeState = -1;
-		}
+	if (!(m_nType || (m_nFrame & 1)))
+		m_nRotFrame = (m_nRotFrame + 1) % 64;
 	}
-pc = m_color [0];
-//pc.alpha *= /*gameOpts->render.particles.bDisperse ? decay2 :*/ decay;
-if (m_nType <= WATERFALL_PARTICLES) {
-	char nFrame = ((m_nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles) ? 0 : m_nFrame;
-	u = (float) (nFrame % nFrames) * deltaUV;
-	v = (float) (nFrame / nFrames) * deltaUV;
-	d = deltaUV;
-	}
-else {
-	u = v = 0.0f;
-	d = 1.0f;
-	}
-if (m_nType == SMOKE_PARTICLES) {
-#if 0
-	if (SHOW_DYN_LIGHT) {
-		tFaceColor *psc = AvgSgmColor (m_nSegment, NULL);
-		pc.red *= (float) psc->color.red;
-		pc.green *= (float) psc->color.green;
-		pc.blue *= (float) psc->color.blue;
-		}
-#endif
-	brightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
-	pc.red *= brightness;
-	pc.green *= brightness;
-	pc.blue *= brightness;
-	}
-i = m_nOrient;
+return bFlushed ? -1 : 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CParticle::Fade (tRgbaColorf& color)
+{
+	float	fFade;
 
 if (m_nFadeType == 0)	// default (start fully visible, fade out)
-	pc.alpha *= float (cos (double (sqr (1.0f - decay)) * Pi) * 0.5 + 0.5) * 0.6f;
+	color.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 else if (m_nFadeType == 1)	// quickly fade in, then gently fade out
-	pc.alpha *= float (sin (double (/*sqr*/ (sqr (1.0f - decay))) * Pi * 1.5) * 0.5 + 0.5);
+	color.alpha *= float (sin (double (sqr (1.0f - m_decay)) * Pi * 1.5) * 0.5 + 0.5);
 else if (m_nFadeType == 2) {	// fade in, then gently fade out
 	float fPivot = m_nTTL / 4000.0f;
 	if (fPivot > 0.25f)
@@ -760,75 +775,168 @@ else if (m_nFadeType == 2) {	// fade in, then gently fade out
 		fFade = 0.1f + 0.9f * fFade;
 	if (fFade > 1.0f)
 		fFade = 1.0f;
-	pc.alpha *= fFade;
+	color.alpha *= fFade;
 	}
 else if (m_nFadeType == 3) {	// fire (additive, blend in)
-	if (decay > 0.5f)
-		fFade = 2.0f * (1.0f - decay);
+	if (m_decay > 0.5f)
+		fFade = 2.0f * (1.0f - m_decay);
 	else
-		fFade = decay * 2.0f;
-	decay = 1.0f;
-	pc.red =
-	pc.green = 
-	pc.blue = fFade;
-	m_color [0] = pc;
+		fFade = m_decay * 2.0f;
+	m_decay = 1.0f;
+	color.red =
+	color.green = 
+	color.blue = fFade;
+	m_color [0] = color;
 	}
 else if (m_nFadeType == 4) {	// light trail (additive, constant effect)
-	pc.red /= 50.0f;
-	pc.green /= 50.0f;
-	pc.blue /= 50.0f;
+	color.red /= 50.0f;
+	color.green /= 50.0f;
+	color.blue /= 50.0f;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CParticle::ProjectVertices (tParticleVertex* pb)
+{
+	CFloatVector3	vCenter;
+	CFloatVector3	vOffset = pb [1].vertex;
+
+transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
+vCenter [X] += pb [2].vertex [X];
+pb [0].vertex [X] =
+pb [3].vertex [X] = vCenter [X] - vOffset [X];
+pb [1].vertex [X] =
+pb [2].vertex [X] = vCenter [X] + vOffset [X];
+pb [0].vertex [Y] =
+pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
+pb [2].vertex [Y] =
+pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
+pb [0].vertex [Z] =
+pb [1].vertex [Z] =
+pb [2].vertex [Z] =
+pb [3].vertex [Z] = vCenter [Z];
+}
+
+//------------------------------------------------------------------------------
+
+void CParticle::RotateVertices (tParticleVertex* pb, int nThread)
+{
+	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
+	static int				bInitSinCos = 1;
+	static CFloatMatrix	mRot [MAX_THREADS];
+
+	CFloatMatrix&	m = mRot [nThread];
+	CFloatVector3	vCenter;
+	CFloatVector3	vOffset = pb [1].vertex;
+	int				nFrame = int (pb [2].vertex [Y]);
+
+transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
+vCenter [X] += pb [2].vertex [X];
+
+#pragma omp critical
+{
+if (bInitSinCos) {
+	ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
+	bInitSinCos = 0;
+	m.RVec ()[Z] =
+	m.UVec ()[Z] =
+	m.FVec ()[X] =
+	m.FVec ()[Y] = 0;
+	m.FVec ()[Z] = 1;
+	}
+}
+m.RVec ()[X] =
+m.UVec ()[Y] = sinCosPart [nFrame].fCos;
+m.UVec ()[X] = sinCosPart [nFrame].fSin;
+m.RVec ()[Y] = -sinCosPart [nFrame].fSin;
+vOffset = m * vOffset;
+pb [0].vertex [X] = vCenter [X] - vOffset [X];
+pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
+pb [1].vertex [X] = vCenter [X] + vOffset [Y];
+pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
+pb [2].vertex [X] = vCenter [X] + vOffset [X];
+pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
+pb [3].vertex [X] = vCenter [X] - vOffset [Y];
+pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
+pb [0].vertex [Z] =
+pb [1].vertex [Z] =
+pb [2].vertex [Z] =
+pb [3].vertex [Z] = vCenter [Z];
+}
+
+//------------------------------------------------------------------------------
+
+#define PARTICLE_POSITIONS 64
+
+void CParticle::Setup (float brightness, tParticleVertex* pb, int nThread)
+{
+	GLfloat					d, u, v;
+	tRgbaColorf				color;
+	CFloatVector			vOffset;
+
+#if DBG
+if (m_nType == LIGHT_PARTICLES)
+	m_nType = m_nType;
+if (!(bmP = bmpParticle [0][int (m_nType)]))
+	return 0;
+#endif
+if (m_bBright)
+	brightness = float (sqrt (brightness));
+
+color = m_color [0];
+if (m_nType == SMOKE_PARTICLES) {
+	brightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
+	color.red *= brightness;
+	color.green *= brightness;
+	color.blue *= brightness;
+	}
+Fade (color);
+
+if (m_nType <= WATERFALL_PARTICLES) {
+	char nFrame = ((m_nType == BUBBLE_PARTICLES) && !gameOpts->render.particles.bWobbleBubbles) ? 0 : m_nFrame;
+	d = 1.0f / float (m_nFrames);
+	u = float (nFrame % m_nFrames) * d;
+	v = float (nFrame / m_nFrames) * d;
+	}
+else {
+	u = v = 0.0f;
+	d = 1.0f;
 	}
 
-if (pc.alpha < 1.0 / 255.0) {
-	m_nLife = -1;
-	return 0;
-	}
-#if 0
-if (!lightManager.Headlights ().nLights && (pc.red + pc.green + pc.blue < 0.001)) {
-	m_nLife = 0;
-	return 0;
-	}
-#endif
 if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
-#if 0
-	decay = (float) sqrt (decay);
-#else
-	decay = (float) pow (decay * decay * decay, 1.0f / 5.0f);
-#endif
+	float decay = (float) pow (m_decay * m_decay * m_decay, 1.0f / 5.0f);
 	vOffset [X] = X2F (m_nWidth) / decay;
 	vOffset [Y] = X2F (m_nHeight) / decay;
 	}
 else {
-	vOffset [X] = X2F (m_nWidth) * decay;
-	vOffset [Y] = X2F (m_nHeight) * decay;
+	vOffset [X] = X2F (m_nWidth) * m_decay;
+	vOffset [Y] = X2F (m_nHeight) * m_decay;
 	}
 vOffset [Z] = 0;
-pb = particleBuffer + particleManager.BufPtr ();
-pb [i].texCoord.v.u =
-pb [(i + 3) % 4].texCoord.v.u = u;
-pb [i].texCoord.v.v =
-pb [(i + 1) % 4].texCoord.v.v = v;
-pb [(i + 1) % 4].texCoord.v.u =
-pb [(i + 2) % 4].texCoord.v.u = u + d;
-pb [(i + 2) % 4].texCoord.v.v =
-pb [(i + 3) % 4].texCoord.v.v = v + d;
+
+pb [m_nOrient].texCoord.v.u =
+pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u;
+pb [m_nOrient].texCoord.v.v =
+pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v;
+pb [(m_nOrient + 1) % 4].texCoord.v.u =
+pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV;
+pb [(m_nOrient + 2) % 4].texCoord.v.v =
+pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV;
 pb [0].color =
 pb [1].color =
 pb [2].color =
-pb [3].color = pc;
-pb [0].vertex.Assign (m_vPos);
-pb [1].vertex.Assign (vOffset);
-pb [2].vertex [X] = ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles) ? float (sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6)) : 0;
-pb [2].vertex [Y] = float ((m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame);
-particleManager.IncBufPtr (4);
-if (particleManager.BufPtr () >= VERT_BUF_SIZE)
-	particleManager.FlushBuffer (brightness);
-if (particleManager.Animate ()) {
-	m_nFrame = (m_nFrame + 1) % (nFrames * nFrames);
-	if (!(m_nType || (m_nFrame & 1)))
-		m_nRotFrame = (m_nRotFrame + 1) % 64;
-	}
-return bFlushed ? -1 : 1;
+pb [3].color = color;
+
+CFloatVector	vCenter;
+
+vCenter.Assign (m_vPos);
+if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
+	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
+if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate) 
+	RotateVertices (pb, nThread);
+else
+	ProjectVertices (pb);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1633,89 +1741,16 @@ if (bLightmaps) {
 	ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 	}
 ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
-OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
-OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
-OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
+OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].texCoord);
+OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].color);
+OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].vertex);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void CParticleManager::ProjectVertices (tParticleVertex* pb)
+void CParticleManager::SetupRenderBuffer (void)
 {
-	CFloatVector3	vCenter;
-	CFloatVector3	vOffset = pb [1].vertex;
-
-transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
-vCenter [X] += pb [2].vertex [X];
-pb [0].vertex [X] =
-pb [3].vertex [X] = vCenter [X] - vOffset [X];
-pb [1].vertex [X] =
-pb [2].vertex [X] = vCenter [X] + vOffset [X];
-pb [0].vertex [Y] =
-pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
-pb [2].vertex [Y] =
-pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
-pb [0].vertex [Z] =
-pb [1].vertex [Z] =
-pb [2].vertex [Z] =
-pb [3].vertex [Z] = vCenter [Z];
-}
-
-//------------------------------------------------------------------------------
-
-void CParticleManager::RotateVertices (tParticleVertex* pb, int nThread)
-{
-	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
-	static int				bInitSinCos = 1;
-	static CFloatMatrix	mRot [MAX_THREADS];
-
-	CFloatMatrix&	m = mRot [nThread];
-	CFloatVector3	vCenter;
-	CFloatVector3	vOffset = pb [1].vertex;
-	int				nFrame = int (pb [2].vertex [Y]);
-
-transformation.Transform (vCenter, pb [0].vertex, gameStates.render.bPerPixelLighting == 2);
-vCenter [X] += pb [2].vertex [X];
-
-#pragma omp critical
-{
-if (bInitSinCos) {
-	ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
-	bInitSinCos = 0;
-	m.RVec ()[Z] =
-	m.UVec ()[Z] =
-	m.FVec ()[X] =
-	m.FVec ()[Y] = 0;
-	m.FVec ()[Z] = 1;
-	}
-}
-m.RVec ()[X] =
-m.UVec ()[Y] = sinCosPart [nFrame].fCos;
-m.UVec ()[X] = sinCosPart [nFrame].fSin;
-m.RVec ()[Y] = -sinCosPart [nFrame].fSin;
-vOffset = m * vOffset;
-pb [0].vertex [X] = vCenter [X] - vOffset [X];
-pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
-pb [1].vertex [X] = vCenter [X] + vOffset [Y];
-pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
-pb [2].vertex [X] = vCenter [X] + vOffset [X];
-pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
-pb [3].vertex [X] = vCenter [X] - vOffset [Y];
-pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
-pb [0].vertex [Z] =
-pb [1].vertex [Z] =
-pb [2].vertex [Z] =
-pb [3].vertex [Z] = vCenter [Z];
-}
-
-//------------------------------------------------------------------------------
-
-void CParticleManager::SetupVertices (int nType)
-{
-	int h = m_iBuffer / 4;
-
-if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)
 #pragma omp parallel
 	{
 #	ifdef _OPENMP
@@ -1724,15 +1759,8 @@ if ((nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)
 	int nThread = 0;
 #	endif
 #	pragma omp for 
-	for (int i = 0; i < h; i++)
-		RotateVertices (particleBuffer + 4 * i, nThread);
-	}
-else 
-#pragma omp parallel
-	{
-#	pragma omp for 
-	for (int i = 0; i < h; i++)
-		ProjectVertices (particleBuffer + 4 * i);
+	for (int i = 0; i < m_iBuffer; i++)
+		particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleRenderBuffer + 4 * i, nThread);
 	}
 }
 
@@ -1762,7 +1790,7 @@ ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
-SetupVertices (nType);
+SetupRenderBuffer ();
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
@@ -1780,7 +1808,7 @@ else {
 	tParticleVertex *pb;
 	glNormal3f (0, 0, 0);
 	glBegin (GL_QUADS);
-	for (pb = particleBuffer; m_iBuffer; m_iBuffer--, pb++) {
+	for (pb = particleRenderBuffer; m_iBuffer; m_iBuffer--, pb++) {
 		glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
 		glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
 		glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));

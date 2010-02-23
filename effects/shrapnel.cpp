@@ -25,7 +25,7 @@ CShrapnelManager shrapnelManager;
 
 // -----------------------------------------------------------------------------
 
-#define SHRAPNEL_MAX_PARTS			500
+#define SHRAPNEL_MAX_PARTS			250
 #define SHRAPNEL_PART_LIFE			-1750
 #define SHRAPNEL_PART_SPEED		10
 
@@ -43,7 +43,7 @@ m_info.xLife =
 m_info.xTTL = I2X (3) / 2 + rand ();
 m_info.tUpdate = gameStates.app.nSDLTicks;
 m_info.nSmoke = 
-	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS,
+	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS * gameOpts->render.particles.nQuality,
 								   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
 if (objP->info.xLifeLeft < m_info.xLife)
 	objP->info.xLifeLeft = m_info.xLife;
