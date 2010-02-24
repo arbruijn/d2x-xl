@@ -76,6 +76,8 @@
 
 #define PARTICLE_FPS	30
 
+#define PARTICLE_POSITIONS 64
+
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
@@ -723,8 +725,11 @@ CBitmap* bmP = bmpParticle [0][int (m_nType)];
 if (!bmP)
 	return 0;
 #endif
-if (!SetupColor (brightness))
+PROF_START
+if (!SetupColor (brightness)) {
+	PROF_END(ptParticles)
 	return 0;
+	}
 
 bool bFlushed;
 
@@ -755,8 +760,9 @@ if (particleManager.Animate ()) {
 		UpdateTexCoord ();
 		}
 	if (!(m_nType || (m_nFrame & 1)))
-		m_nRotFrame = (m_nRotFrame + 1) % 64;
+		m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
 	}
+PROF_END(ptParticles)
 return bFlushed ? -1 : 1;
 }
 
@@ -821,8 +827,6 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
-
-#define PARTICLE_POSITIONS 64
 
 void CParticle::Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
@@ -1757,20 +1761,27 @@ for (int i = 0; i < m_iBuffer; i++)
 
 bool CParticleManager::FlushBuffer (float brightness)
 {
+PROF_START
 if (bufferBrightness < 0)
 	bufferBrightness = brightness;
-if (!m_iBuffer)
+if (!m_iBuffer) {
+	PROF_END(ptParticles)
 	return false;
+	}
 
 int nType = particleManager.LastType ();
 
 CBitmap *bmP = bmpParticle [0][nType];
-if (!bmP)
+if (!bmP) {
+	PROF_END(ptParticles)
 	return false;
+	}
 if (bmP->CurFrame ())
 	bmP = bmP->CurFrame ();
-if (bmP->Bind (0))
+if (bmP->Bind (0)) {
+	PROF_END(ptParticles)
 	return false;
+	}
 
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
@@ -1811,6 +1822,7 @@ m_iBuffer = 0;
 //ogl.SetDepthWrite (true);
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
+PROF_END(ptParticles)
 return true;
 }
 

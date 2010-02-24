@@ -2618,6 +2618,7 @@ typedef enum tProfilerTags {
 	ptShaderStates,
 	ptTranspPolys,
 	ptEffects,
+	ptParticles,
 	ptCockpit,
 	ptTransform,
 	ptVertexColor,
@@ -2631,7 +2632,8 @@ typedef struct tProfilerData {
 } tProfilerData;
 
 #define PROF_INIT			memset(&gameData.profiler.t, 0, sizeof (gameData.profiler.t));
-#define PROF_START		time_t	tProf = clock ();
+#define PROF_START		time_t tProf = clock ();
+#define PROF_CONT			tProf = clock ();
 #define PROF_END(_tag)	(gameData.profiler.t [_tag]) += clock () - tProf;
 
 #else
