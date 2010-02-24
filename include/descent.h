@@ -3283,6 +3283,7 @@ class CGameData {
 		void Destroy (void);
 		void SetFusionCharge (fix xCharge, bool bLocal = false);
 		fix FusionCharge (int nId = -1);
+		fix FusionDamage (fix xBaseDamage);
 };
 
 extern CGameData gameData;

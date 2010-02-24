@@ -1221,7 +1221,7 @@ return parentP;
 int CTransparencyRenderer::RenderItem (struct tTranspItem *pl)
 {
 if (!pl->bRendered) {
-	//pl->bRendered = true;
+	pl->bRendered = true;
 	m_data.nPrevType = m_data.nCurType;
 	m_data.nCurType = pl->nType;
 #if DBG

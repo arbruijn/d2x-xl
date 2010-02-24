@@ -1362,7 +1362,7 @@ void MultiDoFire (char *buf)
 {
 	int nPlayer = int (buf [1]);
 	ubyte weapon = (ubyte) buf [2];
-	sbyte flags = buf [4];
+	int flags = int (buf [4]);
 
 gameData.multigame.laser.nTrack = GET_INTEL_SHORT (buf + 6);
 #if 0
@@ -1398,7 +1398,7 @@ else {
 		else
 			gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		}
-	FireWeapon ((short) gameData.multiplayer.players [nPlayer].nObject, weapon, (int) buf [3], flags, (int)buf [5]);
+	FireWeapon (short (gameData.multiplayer.players [nPlayer].nObject), weapon, int (buf [3]), flags, int (buf [5]));
 	gameData.SetFusionCharge (xSaveCharge, true);
 	}
 gameData.multigame.laser.nFired [0] =

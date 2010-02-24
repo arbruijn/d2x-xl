@@ -1559,6 +1559,16 @@ return gameData.multiplayer.weaponStates [(nId < 0) ? gameData.multiplayer.nLoca
 
 // ----------------------------------------------------------------------------
 
+fix CGameData::FusionDamage (fix xBaseDamage)
+{
+return 
+	(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && !COMPETITION)
+	? fix (float (xBaseDamage) * float (extraGameInfo [IsMultiGame].nFusionRamp) / 2)
+	: xBaseDamage;
+}
+
+// ----------------------------------------------------------------------------
+
 bool CGameData::Create (int nSegments, int nVertices)
 {
 if (!(gameData.segs.Create (nSegments, nVertices) &&

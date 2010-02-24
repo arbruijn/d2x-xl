@@ -1578,8 +1578,9 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 				if (botInfoP->bossFlag)
 					xDamage = (xDamage * (2 * NDL - gameStates.app.nDifficultyLevel)) / (2 * NDL);
 				}
-			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (info.nId == FUSION_ID))
-				xDamage *= extraGameInfo [IsMultiGame].nFusionRamp / 2;
+			else if (info.nId == FUSION_ID) {
+				xDamage = gameData.FusionDamage (xDamage);
+				}
 			if (!robotP->ApplyDamageToRobot (xDamage, cType.laserInfo.parent.nObject))
 				BumpTwoObjects (robotP, this, 0, vHitPt);		//only bump if not dead. no xDamage from bump
 #if DBG
@@ -1769,9 +1770,9 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 
 int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 {
-	fix		damage = info.xShields;
+	fix xDamage = info.xShields;
 
-	//	In multiplayer games, only do damage to another CPlayerData if in first frame.
+	//	In multiplayer games, only do xDamage to another CPlayerData if in first frame.
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
 	//	have a bit of a lifetime.  But they start out with a lifetime of ONE_FRAME_TIME, and this
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
@@ -1790,11 +1791,11 @@ gameData.multiplayer.bWasHit [playerObjP->info.nId] = -1;
 CreateWeaponEffects (1);
 if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-damage = FixMul (damage, cType.laserInfo.xScale);
-if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (info.nId == FUSION_ID))
-	damage *= extraGameInfo [IsMultiGame].nFusionRamp / 2;
+xDamage = FixMul (xDamage, cType.laserInfo.xScale);
+if (info.nId == FUSION_ID)
+	xDamage = gameData.FusionDamage (xDamage);
 if (IsMultiGame)
-	damage = FixMul (damage, gameData.weapons.info [info.nId].xMultiDamageScale);
+	xDamage = FixMul (xDamage, gameData.weapons.info [info.nId].xMultiDamageScale);
 if (mType.physInfo.flags & PF_PERSISTENT) {
 	if (AddHitObject (this, OBJ_IDX (playerObjP)) < 0)
 		return 1;
@@ -1815,9 +1816,9 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 if (WI_damage_radius (info.nId))
 	ExplodeBadassWeapon (vHitPt);
 MaybeKillWeapon (playerObjP);
-BumpTwoObjects (playerObjP, this, 0, vHitPt);	//no damage from bump
-if (!WI_damage_radius (info.nId) && (cType.laserInfo.parent.nObject > -1) && !(info.nFlags & OF_HARMLESS))
-	playerObjP->ApplyDamageToPlayer (OBJECTS + cType.laserInfo.parent.nObject, damage);
+BumpTwoObjects (playerObjP, this, 0, vHitPt);	//no xDamage from bump
+if (!WI_xDamage_radius (info.nId) && (cType.laserInfo.parent.nObject > -1) && !(info.nFlags & OF_HARMLESS))
+	playerObjP->ApplyDamageToPlayer (OBJECTS + cType.laserInfo.parent.nObject, xDamage);
 //	Robots become aware of you if you get hit.
 AIDoCloakStuff ();
 return 1;

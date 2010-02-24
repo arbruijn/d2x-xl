@@ -98,7 +98,7 @@ static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
 #endif
 
-#define PART_BUF_SIZE	4096
+#define PART_BUF_SIZE	10000
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
 typedef struct tRenderParticle {

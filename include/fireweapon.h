@@ -126,7 +126,7 @@ int CreateNewWeapon(CFixVector * direction, CFixVector * position, short nSegmen
 // Returns the number of shots actually fired, which will typically be
 // 1, but could be higher for low frame rates when rapidfire weapons,
 // such as vulcan or plasma are fired.
-int FireWeapon(short nObject, ubyte weapon_id, int level, int flags, int nfires);
+int FireWeapon (short nObject, ubyte weapon_id, int level, int& flags, int nfires);
 void FireGun (void);
 
 // Easier to call than CreateNewWeapon because it determines the
