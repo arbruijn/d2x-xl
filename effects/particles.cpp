@@ -63,9 +63,9 @@
 //------------------------------------------------------------------------------
 
 #if DBG
-#	define ENABLE_RENDER	0
-#	define ENABLE_UPDATE	0
-#	define ENABLE_FLUSH	0
+#	define ENABLE_RENDER	1
+#	define ENABLE_UPDATE	1
+#	define ENABLE_FLUSH	1
 #else
 #	define ENABLE_RENDER	1
 #	define ENABLE_UPDATE	1
@@ -800,10 +800,10 @@ if (m_nType == SMOKE_PARTICLES) {
 	float	fFade;
 
 if (m_nFadeType == 0)	// default (start fully visible, fade out)
-#if 0
-	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
-#else
+#if DBG
 	m_renderColor.alpha *= m_decay * 0.6f;
+#else
+	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 #endif
 else if (m_nFadeType == 1)	// quickly fade in, then gently fade out
 	m_renderColor.alpha *= float (sin (double (sqr (1.0f - m_decay)) * Pi * 1.5) * 0.5 + 0.5);
