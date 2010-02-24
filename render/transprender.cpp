@@ -1109,7 +1109,7 @@ else {
 		m_data.bTextured = 1;
 		}
 #endif
-#if 1
+#if 0
 	if (item->particle->Render (item->fBrightness) < 0) {
 		SetClientState (0, 0, 0, 0, 0);
 		ResetBitmaps ();
@@ -1333,7 +1333,7 @@ for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd 
 			} while (pl);
 		}
 	}
-#if DBG
+#if 0 //DBG
 if (bReset) {
 	pl = m_data.itemLists.Buffer ();
 	for (int i = m_data.itemLists.Length (); i; i--, pl++)

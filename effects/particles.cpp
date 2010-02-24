@@ -62,6 +62,16 @@
 
 //------------------------------------------------------------------------------
 
+#if DBG
+#	define ENABLE_RENDER	0
+#	define ENABLE_UPDATE	0
+#	define ENABLE_FLUSH	0
+#else
+#	define ENABLE_RENDER	1
+#	define ENABLE_UPDATE	1
+#	define ENABLE_FLUSH	1
+#endif
+
 #define LAZY_RENDER_SETUP 1
 
 #define MAKE_SMOKE_IMAGE 0
@@ -561,7 +571,7 @@ int CParticle::Update (int nCurTime)
 	fix			drag;
 	
 t = nCurTime - m_nMoved;
-#if 0
+#if !ENABLE_UPDATE 
 m_nLife -= t;
 m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 #else
@@ -722,18 +732,18 @@ if (!bmP)
 	return 0;
 #endif
 
-#if 0
+#if !ENABLE_RENDER
 return 1;
 #else
 
 PROF_START
 
+bool bFlushed = false;
+
 if (!SetupColor (brightness)) {
 	PROF_END(ptParticles)
 	return 0;
 	}
-
-bool bFlushed;
 
 if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	PROF_END(ptParticles)
@@ -1778,7 +1788,7 @@ if (!m_iBuffer)
 int nType = particleManager.LastType ();
 if (nType < 0)
 	return false;
-#if 1
+#if ENABLE_FLUSH
 PROF_START
 CBitmap *bmP = bmpParticle [0][nType];
 if (!bmP) {
@@ -1947,31 +1957,14 @@ void CParticleImageManager::Animate (int nType)
 if (nFrames > 1) {
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0};
 
-	time_t	t = gameStates.app.nSDLTicks;
-	int		iFrame = iParticleFrames [0][nType];
-#if 0
-	int		iFrameIncr = iPartFrameIncr [0][nType];
-#endif
-	CBitmap*	bmP = bmpParticle [0][GetType (nType)];
-
-	if (!bmP->Frames ())
-		return;
-	bmP->SetCurFrame (iFrame);
-#if 1
-	if (t - t0 [nType] > 150)
-#endif
-	 {
-		t0 [nType] = t;
-#if 1
+	if (gameStates.app.nSDLTicks - t0 [nType] > 150) {
+		CBitmap*	bmP = bmpParticle [0][GetType (nType)];
+		if (!bmP->Frames ())
+			return;
+		int iFrame = iParticleFrames [0][nType];
+		bmP->SetCurFrame (iFrame);
+		t0 [nType] = gameStates.app.nSDLTicks;
 		iParticleFrames [0][nType] = (iFrame + 1) % nFrames;
-#else
-		iFrame += iFrameIncr;
-		if ((iFrame < 0) || (iFrame >= nFrames)) {
-			iPartFrameIncr [0][nType] = -iFrameIncr;
-			iFrame += -2 * iFrameIncr;
-			}
-		iParticleFrames [0][nType] = iFrame;
-#endif
 		}
 	}
 }
