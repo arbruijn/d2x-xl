@@ -102,8 +102,8 @@ static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0
 typedef struct tRenderParticle {
 	CParticle*	particle;
 	float			brightness;
-	short			nFrame;
-	short			nRotFrame;
+	char			nFrame;
+	char			nRotFrame;
 } tRenderParticles;
 
 
