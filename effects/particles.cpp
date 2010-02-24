@@ -875,8 +875,6 @@ if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
 	static int				bInitSinCos = 1;
 	static CFloatVector	vRot [64];
 
-	CFloatMatrix&	m = mRot [nThread];
-
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 		bInitSinCos = 0;
