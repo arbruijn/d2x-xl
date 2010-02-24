@@ -81,7 +81,6 @@ class CParticle : public tParticle {
 				      float fScale, tRgbaColorf *colorP, int nCurTime, int bBlowUp, char nFadeType,
 					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
-		void Setup (float brightness, tParticleVertex* pb, int nThread);
 		int Update (int nCurTime);
 		inline bool IsVisible (void);
 		inline fix Transform (bool bUnscaled) {
@@ -94,8 +93,7 @@ class CParticle : public tParticle {
 		int CollideWithWall (void);
 		void UpdateTexCoord (void);
 		void UpdateColor (void);
-		void RotateVertices (tParticleVertex* pb, int nThread);
-		void ProjectVertices (tParticleVertex* pb);
+		void Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
 		void Fade (tRgbaColorf& color);
 };
 

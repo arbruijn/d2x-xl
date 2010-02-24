@@ -706,8 +706,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-#define PARTICLE_POSITIONS 64
-
 int CParticle::Render (float brightness)
 {
 if (m_nDelay > 0)
@@ -734,9 +732,14 @@ else
 	bFlushed = false;
 tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
 pb->particle = this;
+#if 1
+Setup (brightness, m_nFrame, m_nRotFrame, particleRenderBuffer + particleManager.RenderBufPtr (), 0);
+particleManager.IncRenderBufPtr (4);
+#else
 pb->brightness = brightness;
 pb->nFrame = m_nFrame;
 pb->nRotFrame = m_nRotFrame;
+#endif
 particleManager.IncBufPtr ();
 if (particleManager.BufPtr () >= PART_BUF_SIZE)
 	particleManager.FlushBuffer (brightness);
@@ -798,21 +801,9 @@ else if (m_nFadeType == 4) {	// light trail (additive, constant effect)
 
 //------------------------------------------------------------------------------
 
-void CParticle::ProjectVertices (tParticleVertex* pb)
-{
-}
-
-//------------------------------------------------------------------------------
-
-void CParticle::RotateVertices (tParticleVertex* pb, int nThread)
-{
-}
-
-//------------------------------------------------------------------------------
-
 #define PARTICLE_POSITIONS 64
 
-void CParticle::Setup (float brightness, tParticleVertex* pb, int nThread)
+void CParticle::Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
 	tRgbaColorf				color;
 	CFloatVector			vOffset;
@@ -869,11 +860,11 @@ vCenter.Assign (m_vPos);
 transformation.Transform (vCenter, vCenter, gameStates.render.bPerPixelLighting == 2);
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-	vCenter [X] += (float) sin (m_nFrame / 4.0f * Pi) / (10 + rand () % 6);
+	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
 	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
 	static int				bInitSinCos = 1;
-	static CFloatVector	vRot [64];
+	static CFloatVector	vRot [PARTICLE_POSITIONS];
 
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
@@ -886,17 +877,17 @@ if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
 		m.FVec ()[Z] = 1;
 		CFloatVector v;
 		v.Set (1.0f, 1.0f, 0.0f, 1.0f);
-		for (int nFrame = 0; nFrame < 64; nFrame++) {
+		for (int i = 0; i < PARTICLE_POSITIONS; i++) {
 			m.RVec ()[X] =
-			m.UVec ()[Y] = sinCosPart [nFrame].fCos;
-			m.UVec ()[X] = sinCosPart [nFrame].fSin;
+			m.UVec ()[Y] = sinCosPart [i].fCos;
+			m.UVec ()[X] = sinCosPart [i].fSin;
 			m.RVec ()[Y] = -m.UVec ()[X];
-			vRot [nFrame] = m * v;
+			vRot [i] = m * v;
 			}
 		}
-	int nFrame = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	vOffset [X] *= vRot [nFrame][X];
-	vOffset [Y] *= vRot [nFrame][Y];
+	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
+	vOffset [X] *= vRot [i][X];
+	vOffset [Y] *= vRot [i][Y];
 
 	pb [0].vertex [X] = vCenter [X] - vOffset [X];
 	pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
@@ -1748,7 +1739,7 @@ for (int i = 0; i < m_iBuffer; i++)
 #	endif
 #	pragma omp for 
 	for (int i = 0; i < m_iBuffer; i++)
-		particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleRenderBuffer + 4 * i, nThread);
+		particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 	}
 #endif
 }
@@ -1779,7 +1770,9 @@ ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
+#if 0
 SetupRenderBuffer ();
+#endif
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
