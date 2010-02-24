@@ -463,40 +463,38 @@ return (d * 10 + h) / 10;
 
 //------------------------------------------------------------------------------
 
-static int nPartSeg = -1;
-static int nFaces [6];
-static int vertexList [6][6];
-static int bSidePokesOut [6];
+static int nPartSeg [MAX_THREADS] = {-1, -1, -1, -1};
+static int nFaceCount [MAX_THREADS][6];
+static int bSidePokesOut [MAX_THREADS][6];
 //static int nVert [6];
 static CFixVector	*wallNorm;
 
-int CParticle::CollideWithWall (void)
+int CParticle::CollideWithWall (int nThread)
 {
 	CSegment*	segP;
 	CSide*		sideP;
-	int			bInit, nSide, nChild, nFace, nInFront;
+	int			bInit, nSide, nChild, nFace, nFaces, nInFront;
 	fix			nDist;
-	int			*vlP;
 
 //redo:
 
 segP = SEGMENTS + m_nSegment;
-if ((bInit = (m_nSegment != nPartSeg)))
-	nPartSeg = m_nSegment;
+if ((bInit = (m_nSegment != nPartSeg [nThread])))
+	nPartSeg [nThread] = m_nSegment;
 for (nSide = 0, sideP = segP->m_sides; nSide < 6; nSide++, sideP++) {
-	vlP = vertexList [nSide];
 	if (bInit) {
-		bSidePokesOut [nSide] = !sideP->IsPlanar ();
-		nFaces [nSide] = sideP->m_nFaces;
+		bSidePokesOut [nThread][nSide] = !sideP->IsPlanar ();
+		nFaceCount [nThread][nSide] = sideP->m_nFaces;
 		}
-	for (nFace = nInFront = 0; nFace < nFaces [nSide]; nFace++) {
+	nFaces = nFaceCount [nThread][nSide];
+	for (nFace = nInFront = 0; nFace < nFaces; nFace++) {
 		nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
 			wallNorm = sideP->m_normals + nFace;
 		}
-	if (!nInFront || (bSidePokesOut [nSide] && (nFaces [nSide] == 2) && (nInFront < 2))) {
+	if (!nInFront || (bSidePokesOut [nThread][nSide] && (nFaces == 2) && (nInFront < 2))) {
 		if (0 > (nChild = segP->m_children [nSide]))
 			return 1;
 		m_nSegment = nChild;
@@ -562,7 +560,7 @@ if (m_nType == SMOKE_PARTICLES) {
 
 //------------------------------------------------------------------------------
 
-int CParticle::Update (int nCurTime)
+int CParticle::Update (int nCurTime, int nThread)
 {
 	int			j, nRad;
 	short			nSegment;
@@ -620,7 +618,7 @@ else {
 		if ((m_nType == WATERFALL_PARTICLES) 
 			 ? !m_bChecked 
 			 : (m_nType == BUBBLE_PARTICLES) /*|| (m_nTTL - m_nLife > I2X (1) / 16)*/) {
-			if (0 > (nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), 1))) {
+			if (0 > (nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread))) {
 				m_nLife = -1;
 				return 0;
 				}
@@ -644,7 +642,7 @@ else {
 				}
 			m_nSegment = nSegment;
 			}
-		if (gameOpts->render.particles.bCollisions && CollideWithWall ()) {	//Reflect the particle
+		if (gameOpts->render.particles.bCollisions && CollideWithWall (nThread)) {	//Reflect the particle
 			if (j || (m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES) || !(dot = CFixVector::Dot (drift, *wallNorm))) {
 				m_nLife = -1;
 				return 0;
@@ -1104,13 +1102,13 @@ else
 #else
 	t = nCurTime - m_nMoved;
 #endif
-	nPartSeg = -1;
+	nPartSeg [nThread] = -1;
 	
 	//#pragma omp parallel
 		{
 		//#pragma omp for
 		for (i = 0; i < m_nParts; i++)
-			m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime);
+			m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime, nThread);
 		}
 			
 	for (i = 0, j = m_nFirstPart; i < m_nParts; i++) {
@@ -1527,7 +1525,7 @@ return m_nEmitters;
 
 //------------------------------------------------------------------------------
 
-int CParticleSystem::Update (void)
+int CParticleSystem::Update (int nThread)
 {
 if (m_bValid < 1)
 	return 0;
@@ -1555,15 +1553,9 @@ if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
 		else {
 			if (bKill)
 				emitterP->SetLife (0);
-			emitters [nEmitters++] = emitterP++;
+			emitterP->Update (gameStates.app.nSDLTicks, nThread);
+			nEmitters++, emitterP++;
 			}
-		}
-
-#	pragma omp parallel
-		{
-		#pragma omp for
-		for (int i = 0; i < nEmitters; i++)
-			emitters [i]->Update (gameStates.app.nSDLTicks, -1);
 		}
 	}
 return nEmitters;
@@ -1605,6 +1597,7 @@ if (!m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
 	extraGameInfo [0].bUseParticles = 0;
 	return;
 	}
+m_systemList.Create (MAX_PARTICLE_SYSTEMS);
 int i = 0;
 int nCurrent = m_systems.FreeList ();
 for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
@@ -1718,9 +1711,26 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 	int	h = 0;
 
-int nCurrent = -1;
-for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
-	h += systemP->Update ();
+#ifdef _OPENMP
+if (m_systemList.Buffer ()) {
+	int nCurrent = -1;
+	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
+		m_systemList [h++] = systemP;
+#	pragma omp parallel
+		{
+		int nThread = omp_get_thread_num();
+#	pragma omp for
+		for (int i = 0; i < h; i++)
+			m_systemList [i]->Update (nThread);
+		}
+	}
+else 
+#endif
+	{
+	int nCurrent = -1;
+	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
+		h += systemP->Update (0);
+	}
 return h;
 }
 
@@ -1918,6 +1928,7 @@ CParticleManager::~CParticleManager ()
 Shutdown ();
 particleImageManager.FreeAll ();
 m_systems.Destroy ();
+m_systemList.Destroy ();
 m_objectSystems.Destroy ();
 m_objExplTime.Destroy ();
 }

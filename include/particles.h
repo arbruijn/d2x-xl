@@ -83,7 +83,7 @@ class CParticle : public tParticle {
 					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
 		void Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
-		int Update (int nCurTime);
+		int Update (int nCurTime, int nThread);
 		inline bool IsVisible (void);
 		inline fix Transform (bool bUnscaled) {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
@@ -92,7 +92,7 @@ class CParticle : public tParticle {
 
 	private:
 		inline int ChangeDir (int d);
-		int CollideWithWall (void);
+		int CollideWithWall (int nThread);
 		void UpdateTexCoord (void);
 		void UpdateColor (void);
 		int SetupColor (float brightness);
@@ -200,7 +200,7 @@ class CParticleSystem : public tParticleSystem {
 						tRgbaColorf *pColor, int bBlowUpParts, char nFace);
 		void Destroy (void);
 		int Render (void);
-		int Update (void);
+		int Update (int nThread);
 		int RemoveEmitter (int i);
 		void SetDensity (int nMaxParts, int nDensity);
 		void SetPartScale (float fScale);
@@ -225,6 +225,7 @@ class CParticleSystem : public tParticleSystem {
 class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
+		CArray<CParticleSystem*>	m_systemList;
 		CArray<short>					m_objectSystems;
 		CArray<time_t>					m_objExplTime;
 		int								m_nLastType;
