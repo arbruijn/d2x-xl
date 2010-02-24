@@ -62,7 +62,7 @@
 
 //------------------------------------------------------------------------------
 
-#define LAZY_RENDER_SETUP 1
+#define LAZY_RENDER_SETUP 2
 
 #define MAKE_SMOKE_IMAGE 0
 
@@ -1732,7 +1732,7 @@ void CParticleManager::SetupRenderBuffer (void)
 {
 #if DBG || (LAZY_RENDER_SETUP == 2)
 for (int i = 0; i < m_iBuffer; i++)
-	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
+	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
 #else
 #pragma omp parallel
 	{
