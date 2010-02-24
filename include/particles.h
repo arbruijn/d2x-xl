@@ -56,6 +56,7 @@ typedef struct tParticle {
 	tTexCoord2f	m_texCoord;
 	float			m_deltaUV;
 	tRgbaColorf	m_color [2];		//well ... the color, ya know =)
+	tRgbaColorf	m_renderColor;
 	char			m_nType;				//black or white
 	char			m_nRotDir;
 	char			m_nBounce;
@@ -94,7 +95,7 @@ class CParticle : public tParticle {
 		int CollideWithWall (void);
 		void UpdateTexCoord (void);
 		void UpdateColor (void);
-		void Fade (tRgbaColorf& color);
+		int SetupColor (float brightness);
 };
 
 //------------------------------------------------------------------------------

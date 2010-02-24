@@ -342,9 +342,7 @@ class COGL {
 		inline bool SetBlending (bool bUseBlending) { return Enable (m_data.bUseBlending, bUseBlending, GL_BLEND); }
 		inline bool GetBlendUsage (void) { return m_data.bUseBlending; }
 		
-		inline bool SetTextureUsage (bool bUseTextures, int nTMU = -1) { 
-			if (nTMU >= 0)
-				SelectTMU (nTMU);
+		inline bool SetTextureUsage (bool bUseTextures) { 
 			return Enable (m_data.bUseTextures [m_data.nTMU [0]], bUseTextures, GL_TEXTURE_2D); 
 			}
 		inline bool GetTextureUsage (void) { return m_data.bUseTextures [m_data.nTMU [0]]; }

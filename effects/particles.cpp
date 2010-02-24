@@ -62,7 +62,7 @@
 
 //------------------------------------------------------------------------------
 
-#define LAZY_RENDER_SETUP 2
+#define LAZY_RENDER_SETUP 1
 
 #define MAKE_SMOKE_IMAGE 0
 
@@ -723,6 +723,9 @@ CBitmap* bmP = bmpParticle [0][int (m_nType)];
 if (!bmP)
 	return 0;
 #endif
+if (!SetupColor (brightness))
+	return 0;
+
 bool bFlushed;
 
 if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
@@ -732,6 +735,7 @@ if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness)
 	}
 else
 	bFlushed = false;
+
 #if LAZY_RENDER_SETUP
 tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
 pb->particle = this;
@@ -757,14 +761,25 @@ return bFlushed ? -1 : 1;
 
 //------------------------------------------------------------------------------
 
-void CParticle::Fade (tRgbaColorf& color)
+int CParticle::SetupColor (float brightness)
 {
+if (m_bBright)
+	brightness = float (sqrt (brightness));
+
+m_renderColor = m_color [0];
+if (m_nType == SMOKE_PARTICLES) {
+	brightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
+	m_renderColor.red *= brightness;
+	m_renderColor.green *= brightness;
+	m_renderColor.blue *= brightness;
+	}
+
 	float	fFade;
 
 if (m_nFadeType == 0)	// default (start fully visible, fade out)
-	color.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
+	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 else if (m_nFadeType == 1)	// quickly fade in, then gently fade out
-	color.alpha *= float (sin (double (sqr (1.0f - m_decay)) * Pi * 1.5) * 0.5 + 0.5);
+	m_renderColor.alpha *= float (sin (double (sqr (1.0f - m_decay)) * Pi * 1.5) * 0.5 + 0.5);
 else if (m_nFadeType == 2) {	// fade in, then gently fade out
 	float fPivot = m_nTTL / 4000.0f;
 	if (fPivot > 0.25f)
@@ -780,7 +795,7 @@ else if (m_nFadeType == 2) {	// fade in, then gently fade out
 		fFade = 0.1f + 0.9f * fFade;
 	if (fFade > 1.0f)
 		fFade = 1.0f;
-	color.alpha *= fFade;
+	m_renderColor.alpha *= fFade;
 	}
 else if (m_nFadeType == 3) {	// fire (additive, blend in)
 	if (m_decay > 0.5f)
@@ -788,16 +803,20 @@ else if (m_nFadeType == 3) {	// fire (additive, blend in)
 	else
 		fFade = m_decay * 2.0f;
 	m_decay = 1.0f;
-	color.red =
-	color.green = 
-	color.blue = fFade;
-	m_color [0] = color;
+	m_renderColor.red =
+	m_renderColor.green = 
+	m_renderColor.blue = fFade;
+	m_color [0] = m_renderColor;
 	}
 else if (m_nFadeType == 4) {	// light trail (additive, constant effect)
-	color.red /= 50.0f;
-	color.green /= 50.0f;
-	color.blue /= 50.0f;
+	m_renderColor.red /= 50.0f;
+	m_renderColor.green /= 50.0f;
+	m_renderColor.blue /= 50.0f;
 	}
+if (m_renderColor.alpha >= 1.0 / 255.0) 
+	return 1;
+m_nLife = -1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -806,7 +825,6 @@ else if (m_nFadeType == 4) {	// light trail (additive, constant effect)
 
 void CParticle::Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
-	tRgbaColorf				color;
 	CFloatVector			vOffset;
 
 #if DBG
@@ -817,22 +835,10 @@ CBitmap* bmP = bmpParticle [0][int (m_nType)];
 if (!bmP)
 	return;
 #endif
-if (m_bBright)
-	brightness = float (sqrt (brightness));
-
-color = m_color [0];
-if (m_nType == SMOKE_PARTICLES) {
-	brightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
-	color.red *= brightness;
-	color.green *= brightness;
-	color.blue *= brightness;
-	}
-Fade (color);
-
 pb [0].color =
 pb [1].color =
 pb [2].color =
-pb [3].color = color;
+pb [3].color = m_renderColor;
 
 pb [m_nOrient].texCoord.v.u =
 pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u;
