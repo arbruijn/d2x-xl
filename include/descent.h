@@ -2640,6 +2640,7 @@ typedef struct tProfilerData {
 
 #define PROF_INIT
 #define PROF_START	
+#define PROF_CONT	
 #define PROF_END(_tAcc)
 
 #endif

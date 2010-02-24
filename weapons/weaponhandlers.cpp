@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	--------------------------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef int ( __fastcall * pWeaponHandler) (CObject *, int, int, int);
+typedef int ( __fastcall * pWeaponHandler) (CObject *, int, int&, int);
 #else
 typedef int (* pWeaponHandler) (CObject *, int, int&, int);
 #endif

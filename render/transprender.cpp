@@ -1109,7 +1109,7 @@ else {
 		m_data.bTextured = 1;
 		}
 #endif
-#if 0
+#if 1
 	if (item->particle->Render (item->fBrightness) < 0) {
 		SetClientState (0, 0, 0, 0, 0);
 		ResetBitmaps ();
