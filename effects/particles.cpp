@@ -1730,7 +1730,7 @@ return 1;
 
 void CParticleManager::SetupRenderBuffer (void)
 {
-#if DBG
+#if DBG || (LAZY_RENDER_SETUP == 2)
 for (int i = 0; i < m_iBuffer; i++)
 	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 #else
