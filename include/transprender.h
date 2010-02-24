@@ -114,9 +114,14 @@ typedef struct tTranspItem {
 	} item;
 } tTranspItem;
 
+typedef struct tTranspItemList {
+	tTranspItem*	head;
+	tTranspItem*	tail;
+} tTranspItemList;
+
 typedef struct tTranspItemBuffer {
-	CArray<tTranspItem*>	depthBuffer;
-	CArray<tTranspItem>	itemLists;
+	CArray<tTranspItemList> depthBuffer;
+	CArray<tTranspItem> itemLists;
 	int				nMinOffs;
 	int				nMaxOffs;
 	int				nItems [2];

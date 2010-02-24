@@ -127,8 +127,9 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return 0;
 #endif
 #if RENDER_TRANSPARENCY
-	tTranspItem *ph, *pi, *pj, **pd;
-	int			nDepth = CFixVector::Dist (vPos, m_data.vViewer [bTransform]) + I2X (nOffset);
+	tTranspItem*		ph, *	pi;
+	tTranspItemList*	pd;
+	int					nDepth = CFixVector::Dist (vPos, m_data.vViewer [bTransform]) + I2X (nOffset);
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
@@ -157,20 +158,21 @@ ph->parentP = NULL;
 ph->z = nDepth;
 ph->bValid = true;
 memcpy (&ph->item, itemData, itemSize);
-for (pi = NULL, pj = *pd; pj && ((pj->z < nDepth) || ((pj->z == nDepth) && (pj->nType < nType))); pj = pj->pNextItem) {
-#if DBG
-	if (pj == pi)
-		break; // loop
-#endif
-	pi = pj;
+if (!(pi = pd->tail) || (pi->z > nDepth) || ((pi->z == nDepth) && (pi->nType > nType))) {
+	for (pi = pd->head; pi; pi = pi->pNextItem) {
+		if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
+			break;
+		}
 	}
 if (pi) {
-	ph->pNextItem = pi->pNextItem;
+	if (!(ph->pNextItem = pi->pNextItem))
+		pd->tail = ph;
 	pi->pNextItem = ph;
 	}
 else {
-	ph->pNextItem = *pd;
-	*pd = ph;
+	if (!(ph->pNextItem = pd->head))
+		pd->tail = ph;
+	pd->head = ph;
 	}
 if (m_data.nMinOffs > nOffset)
 	m_data.nMinOffs = nOffset;
@@ -1096,22 +1098,23 @@ void CTransparencyRenderer::RenderParticle (tTranspParticle *item)
 if (item->particle->m_nType == BULLET_PARTICLES)
 	CTransparencyRenderer::RenderBullet (item->particle);
 else {
-	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
-
 #if 0
+	int bSoftSmoke = (gameOpts->render.effects.bSoftParticles & 4) != 0;
 	if (!bSoftSmoke || (gameStates.render.history.nShader != 999))
 		shaderManager.Deploy (-1);
-#endif
 	if (m_data.nPrevType != tiParticle) {
 		ogl.SetTextureUsage (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		particleManager.SetLastType (-1);
 		m_data.bTextured = 1;
 		}
+#endif
+#if 1
 	if (item->particle->Render (item->fBrightness) < 0) {
 		SetClientState (0, 0, 0, 0, 0);
 		ResetBitmaps ();
 		}
+#endif
 	}
 }
 
@@ -1275,9 +1278,10 @@ extern int bLog;
 void CTransparencyRenderer::Render (void)
 {
 #if RENDER_TRANSPARENCY
-	static struct tTranspItem	**pd, *pl, *pn;
-	int						nItems, nDepth, bStencil;
-	bool						bReset = !LAZY_RESET || (ogl.StereoSeparation () >= 0);
+	tTranspItem*		pl, * pn;
+	tTranspItemList*	pd;
+	int					nItems, nDepth, bStencil;
+	bool					bReset = !LAZY_RESET || (ogl.StereoSeparation () >= 0);
 
 if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
@@ -1309,9 +1313,10 @@ ogl.SetFaceCulling (true);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd >= m_data.depthBuffer.Buffer ()) && nItems; pd--) {
-	if ((pl = *pd)) {
+	if ((pl = pd->head)) {
 		if (bReset)
-			*pd = NULL;
+			pd->head = 
+			pd->tail = NULL;
 		nDepth = 0;
 		do {
 #if DBG
