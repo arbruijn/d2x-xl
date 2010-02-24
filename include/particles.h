@@ -83,7 +83,7 @@ class CParticle : public tParticle {
 					   float fBrightness, CFixVector *vEmittingFace);
 		int Render (float brightness);
 		void Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
-		int Update (int nCurTime, int nThread);
+		int Update (int nCurTime, float brightness, int nThread);
 		inline bool IsVisible (void);
 		inline fix Transform (bool bUnscaled) {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
@@ -94,7 +94,7 @@ class CParticle : public tParticle {
 		inline int ChangeDir (int d);
 		int CollideWithWall (int nThread);
 		void UpdateTexCoord (void);
-		void UpdateColor (void);
+		void UpdateColor (float brightness);
 		int SetupColor (float brightness);
 };
 

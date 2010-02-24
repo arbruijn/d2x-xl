@@ -115,7 +115,7 @@ static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0
 
 typedef struct tRenderParticle {
 	CParticle*	particle;
-	float			brightness;
+	float			fBrightness;
 	char			nFrame;
 	char			nRotFrame;
 } tRenderParticles;
@@ -245,6 +245,7 @@ m_nDelay = 0; //bStart ? randN (nLife) : 0;
 m_color [0] =
 m_color [1] = 
 color = (colorP && (m_bEmissive < 2)) ? *colorP : defaultParticleColor;
+SetupColor (fBrightness);
 
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 	m_bBright = 0;
@@ -522,7 +523,7 @@ if ((m_nType <= WATERFALL_PARTICLES) && ((m_nType != BUBBLE_PARTICLES) || gameOp
 
 //------------------------------------------------------------------------------
 
-void CParticle::UpdateColor (void)
+void CParticle::UpdateColor (float fBrightness)
 {
 if (m_nType == SMOKE_PARTICLES) {
 	if (m_nFadeState > 0) {
@@ -556,11 +557,12 @@ if (m_nType == SMOKE_PARTICLES) {
 		m_nFadeState = -1;
 		}
 	}
+SetupColor (fBrightness);
 }
 
 //------------------------------------------------------------------------------
 
-int CParticle::Update (int nCurTime, int nThread)
+int CParticle::Update (int nCurTime, float fBrightness, int nThread)
 {
 	int			j, nRad;
 	short			nSegment;
@@ -573,7 +575,7 @@ t = nCurTime - m_nMoved;
 m_nLife -= t;
 m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 #else
-UpdateColor ();
+UpdateColor (fBrightness);
 if (m_nType == BUBBLE_PARTICLES) 
 	drag = I2X (1); // constant speed
 else if (m_nType == WATERFALL_PARTICLES) {
@@ -714,7 +716,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CParticle::Render (float brightness)
+int CParticle::Render (float fBrightness)
 {
 if (m_nDelay > 0)
 	return 0;
@@ -738,14 +740,9 @@ PROF_START
 
 bool bFlushed = false;
 
-if (!SetupColor (brightness)) {
+if ((particleManager.LastType () != m_nType) || (fBrightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	PROF_END(ptParticles)
-	return 0;
-	}
-
-if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
-	PROF_END(ptParticles)
-	bFlushed = particleManager.FlushBuffer (brightness);
+	bFlushed = particleManager.FlushBuffer (fBrightness);
 	PROF_CONT
 	particleManager.SetLastType (m_nType);
 	bBufferEmissive = m_bEmissive;
@@ -756,15 +753,15 @@ else
 #if LAZY_RENDER_SETUP
 tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
 pb->particle = this;
-pb->brightness = brightness;
+pb->fBrightness = fBrightness;
 pb->nFrame = m_nFrame;
 pb->nRotFrame = m_nRotFrame;
 #else
-Setup (brightness, m_nFrame, m_nRotFrame, particleRenderBuffer + particleManager.BufPtr () * 4, 0);
+Setup (fBrightness, m_nFrame, m_nRotFrame, particleRenderBuffer + particleManager.BufPtr () * 4, 0);
 #endif
 particleManager.IncBufPtr ();
 if (particleManager.BufPtr () >= PART_BUF_SIZE)
-	particleManager.FlushBuffer (brightness);
+	particleManager.FlushBuffer (fBrightness);
 
 if (particleManager.Animate ()) {
 	if (m_nFrames > 1) {
@@ -782,23 +779,23 @@ return bFlushed ? -1 : 1;
 
 //------------------------------------------------------------------------------
 
-int CParticle::SetupColor (float brightness)
+int CParticle::SetupColor (float fBrightness)
 {
 if (m_bBright)
-	brightness = float (sqrt (brightness));
+	fBrightness = float (sqrt (fBrightness));
 
 m_renderColor = m_color [0];
 if (m_nType == SMOKE_PARTICLES) {
-	brightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
-	m_renderColor.red *= brightness;
-	m_renderColor.green *= brightness;
-	m_renderColor.blue *= brightness;
+	fBrightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
+	m_renderColor.red *= fBrightness;
+	m_renderColor.green *= fBrightness;
+	m_renderColor.blue *= fBrightness;
 	}
 
 	float	fFade;
 
 if (m_nFadeType == 0)	// default (start fully visible, fade out)
-#if DBG
+#if 1 
 	m_renderColor.alpha *= m_decay * 0.6f;
 #else
 	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
@@ -846,7 +843,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CParticle::Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
+void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
 	CFloatVector vOffset;
 
@@ -1108,7 +1105,7 @@ else
 		{
 		//#pragma omp for
 		for (i = 0; i < m_nParts; i++)
-			m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime, nThread);
+			m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime, fBrightness, nThread);
 		}
 			
 	for (i = 0, j = m_nFirstPart; i < m_nParts; i++) {
@@ -1199,7 +1196,7 @@ else
 #if 1
 	PROF_START
 
-	float		brightness = Brightness ();
+	float		fBrightness = Brightness ();
 	int		h, i, j;
 	int		bVisible = (m_nObject >= 0x70000000) || MayBeVisible ();
 
@@ -1210,7 +1207,7 @@ else
 		m_nPartLimit = int (m_particles.Length ());
 #endif
 	for (h = 0, i = m_nParts, j = m_nFirstPart; i; i--, j = (j + 1) % m_nPartLimit)
-		if ((bVisible || m_particles [j].IsVisible ()) && transparencyRenderer.AddParticle (m_particles + j, brightness, nThread))
+		if ((bVisible || m_particles [j].IsVisible ()) && transparencyRenderer.AddParticle (m_particles + j, fBrightness, nThread))
 			h++;
 	PROF_END(ptParticles)
 	return h;
@@ -1770,7 +1767,7 @@ PROF_START
 if (m_iBuffer <= 100)
 #endif
 for (int i = 0; i < m_iBuffer; i++)
-	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
+	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
 #if (LAZY_RENDER_SETUP < 2)
 else
 #endif
@@ -1783,14 +1780,14 @@ else
 #	endif
 #	pragma omp for 
 	for (int i = 0; i < m_iBuffer; i++)
-		particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
+		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 	}
 PROF_END(ptParticles)
 }
 
 //------------------------------------------------------------------------------
 
-bool CParticleManager::FlushBuffer (float brightness)
+bool CParticleManager::FlushBuffer (float fBrightness)
 {
 if (!m_iBuffer)
 	return false;
@@ -1813,11 +1810,11 @@ if (bmP->Bind (0)) {
 	}
 
 if (bufferBrightness < 0)
-	bufferBrightness = brightness;
+	bufferBrightness = fBrightness;
 
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
-bufferBrightness = brightness;
+bufferBrightness = fBrightness;
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
