@@ -736,6 +736,7 @@ if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness)
 else
 	bFlushed = false;
 
+transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
 #if LAZY_RENDER_SETUP
 tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
 pb->particle = this;
@@ -849,7 +850,6 @@ pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV;
 pb [(m_nOrient + 2) % 4].texCoord.v.v =
 pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV;
 
-
 if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
 	float decay = (float) pow (m_decay * m_decay * m_decay, 1.0f / 5.0f);
 	vOffset [X] = X2F (m_nWidth) / decay;
@@ -863,8 +863,7 @@ vOffset [Z] = 0;
 
 CFloatVector3	vCenter;
 
-vCenter.Assign (m_vPos);
-transformation.Transform (vCenter, vCenter, gameStates.render.bPerPixelLighting == 2);
+vCenter.Assign (m_vTransPos);
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
