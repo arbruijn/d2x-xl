@@ -62,6 +62,8 @@
 
 //------------------------------------------------------------------------------
 
+#define LAZY_RENDER_SETUP 1
+
 #define MAKE_SMOKE_IMAGE 0
 
 #define MT_PARTICLES	0
@@ -730,15 +732,14 @@ if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness)
 	}
 else
 	bFlushed = false;
+#if LAZY_RENDER_SETUP
 tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
 pb->particle = this;
-#if 1
-Setup (brightness, m_nFrame, m_nRotFrame, particleRenderBuffer + particleManager.RenderBufPtr (), 0);
-particleManager.IncRenderBufPtr (4);
-#else
 pb->brightness = brightness;
 pb->nFrame = m_nFrame;
 pb->nRotFrame = m_nRotFrame;
+#else
+Setup (brightness, m_nFrame, m_nRotFrame, particleRenderBuffer + particleManager.BufPtr () * 4, 0);
 #endif
 particleManager.IncBufPtr ();
 if (particleManager.BufPtr () >= PART_BUF_SIZE)
@@ -1728,7 +1729,7 @@ void CParticleManager::SetupRenderBuffer (void)
 {
 #if DBG
 for (int i = 0; i < m_iBuffer; i++)
-	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleRenderBuffer + 4 * i, 0);
+	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 #else
 #pragma omp parallel
 	{
@@ -1770,7 +1771,7 @@ ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
 ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
-#if 0
+#if LAZY_RENDER_SETUP
 SetupRenderBuffer ();
 #endif
 
