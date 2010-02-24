@@ -116,6 +116,8 @@ static tRenderParticle particleBuffer [PART_BUF_SIZE];
 static tParticleVertex particleRenderBuffer [VERT_BUF_SIZE];
 static float bufferBrightness = -1;
 static char bBufferEmissive = 0;
+static CFloatVector vRot [PARTICLE_POSITIONS];
+
 
 #define SMOKE_START_ALPHA		(gameOpts->render.particles.bDisperse ? 64 : 96) //96 : 128)
 
@@ -725,9 +727,9 @@ CBitmap* bmP = bmpParticle [0][int (m_nType)];
 if (!bmP)
 	return 0;
 #endif
-PROF_START
+//PROF_START
 if (!SetupColor (brightness)) {
-	PROF_END(ptParticles)
+	//PROF_END(ptParticles)
 	return 0;
 	}
 
@@ -741,7 +743,6 @@ if ((particleManager.LastType () != m_nType) || (brightness != bufferBrightness)
 else
 	bFlushed = false;
 
-transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
 #if LAZY_RENDER_SETUP
 tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
 pb->particle = this;
@@ -762,7 +763,7 @@ if (particleManager.Animate ()) {
 	if (!(m_nType || (m_nFrame & 1)))
 		m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
 	}
-PROF_END(ptParticles)
+//PROF_END(ptParticles)
 return bFlushed ? -1 : 1;
 }
 
@@ -867,37 +868,13 @@ vOffset [Z] = 0;
 
 CFloatVector3	vCenter;
 
+if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
+	transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
 vCenter.Assign (m_vTransPos);
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
-	static int				bInitRotVec = 1;
-	static CFloatVector	vRot [PARTICLE_POSITIONS];
-
-#	pragma omp critical
-	{
-	if (bInitRotVec) {
-		tSinCosf sinCosPart [PARTICLE_POSITIONS];
-		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
-		bInitRotVec = 0;
-		CFloatMatrix m;
-		m.RVec ()[Z] =
-		m.UVec ()[Z] =
-		m.FVec ()[X] =
-		m.FVec ()[Y] = 0;
-		m.FVec ()[Z] = 1;
-		CFloatVector v;
-		v.Set (1.0f, 1.0f, 0.0f, 1.0f);
-		for (int i = 0; i < PARTICLE_POSITIONS; i++) {
-			m.RVec ()[X] =
-			m.UVec ()[Y] = sinCosPart [i].fCos;
-			m.UVec ()[X] = sinCosPart [i].fSin;
-			m.RVec ()[Y] = -m.UVec ()[X];
-			vRot [i] = m * v;
-			}
-		}
-	}
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
 	vOffset [X] *= vRot [i][X];
 	vOffset [Y] *= vRot [i][Y];
@@ -1612,6 +1589,24 @@ int nCurrent = m_systems.FreeList ();
 for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Init (i++);
 m_iBuffer = 0;
+
+tSinCosf sinCosPart [PARTICLE_POSITIONS];
+ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
+CFloatMatrix m;
+m.RVec ()[Z] =
+m.UVec ()[Z] =
+m.FVec ()[X] =
+m.FVec ()[Y] = 0;
+m.FVec ()[Z] = 1;
+CFloatVector v;
+v.Set (1.0f, 1.0f, 0.0f, 1.0f);
+for (int i = 0; i < PARTICLE_POSITIONS; i++) {
+	m.RVec ()[X] =
+	m.UVec ()[Y] = sinCosPart [i].fCos;
+	m.UVec ()[X] = sinCosPart [i].fSin;
+	m.RVec ()[Y] = -m.UVec ()[X];
+	vRot [i] = m * v;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1739,7 +1734,8 @@ return 1;
 
 void CParticleManager::SetupRenderBuffer (void)
 {
-#if DBG || (LAZY_RENDER_SETUP == 2)
+PROF_START
+#if (LAZY_RENDER_SETUP == 2)
 for (int i = 0; i < m_iBuffer; i++)
 	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
 #else
@@ -1755,17 +1751,18 @@ for (int i = 0; i < m_iBuffer; i++)
 		particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 	}
 #endif
+PROF_END(ptParticles)
 }
 
 //------------------------------------------------------------------------------
 
 bool CParticleManager::FlushBuffer (float brightness)
 {
-PROF_START
+//PROF_START
 if (bufferBrightness < 0)
 	bufferBrightness = brightness;
 if (!m_iBuffer) {
-	PROF_END(ptParticles)
+	//PROF_END(ptParticles)
 	return false;
 	}
 
@@ -1773,13 +1770,13 @@ int nType = particleManager.LastType ();
 
 CBitmap *bmP = bmpParticle [0][nType];
 if (!bmP) {
-	PROF_END(ptParticles)
+	//PROF_END(ptParticles)
 	return false;
 	}
 if (bmP->CurFrame ())
 	bmP = bmP->CurFrame ();
 if (bmP->Bind (0)) {
-	PROF_END(ptParticles)
+	//PROF_END(ptParticles)
 	return false;
 	}
 
@@ -1819,10 +1816,9 @@ else {
 	}
 #endif
 m_iBuffer = 0;
-//ogl.SetDepthWrite (true);
 if ((ogl.m_states.bShadersOk && !particleManager.LastType ()) && !glareRenderer.ShaderActive ())
 	shaderManager.Deploy (-1);
-PROF_END(ptParticles)
+//PROF_END(ptParticles)
 return true;
 }
 

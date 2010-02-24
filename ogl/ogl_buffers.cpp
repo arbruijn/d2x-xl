@@ -123,7 +123,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		static float nFrameCount = 1;
 		if (t1 - t0 >= 1000) {
 			memcpy (&p, &gameData.profiler, sizeof (p));
-			nFrameCount = 1; //float (gameData.app.nFrameCount);
+			nFrameCount = float (gameData.app.nFrameCount);
 			t0 = t1;
 			}
 		int h = SMALL_FONT->Height () + 3, i = 3;
