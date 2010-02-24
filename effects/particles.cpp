@@ -863,13 +863,15 @@ transformation.Transform (vCenter, vCenter, gameStates.render.bPerPixelLighting 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
-	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
-	static int				bInitSinCos = 1;
+	static int				bInitRotVec = 1;
 	static CFloatVector	vRot [PARTICLE_POSITIONS];
 
-	if (bInitSinCos) {
+#	pragma omp critical
+	{
+	if (bInitRotVec) {
+		tSinCosf sinCosPart [PARTICLE_POSITIONS];
 		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
-		bInitSinCos = 0;
+		bInitRotVec = 0;
 		CFloatMatrix m;
 		m.RVec ()[Z] =
 		m.UVec ()[Z] =
@@ -886,6 +888,7 @@ if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
 			vRot [i] = m * v;
 			}
 		}
+	}
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
 	vOffset [X] *= vRot [i][X];
 	vOffset [Y] *= vRot [i][Y];
