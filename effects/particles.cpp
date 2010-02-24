@@ -837,6 +837,21 @@ if (m_nType == SMOKE_PARTICLES) {
 	}
 Fade (color);
 
+pb [0].color =
+pb [1].color =
+pb [2].color =
+pb [3].color = color;
+
+pb [m_nOrient].texCoord.v.u =
+pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u;
+pb [m_nOrient].texCoord.v.v =
+pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v;
+pb [(m_nOrient + 1) % 4].texCoord.v.u =
+pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV;
+pb [(m_nOrient + 2) % 4].texCoord.v.v =
+pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV;
+
+
 if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
 	float decay = (float) pow (m_decay * m_decay * m_decay, 1.0f / 5.0f);
 	vOffset [X] = X2F (m_nWidth) / decay;
@@ -848,19 +863,6 @@ else {
 	}
 vOffset [Z] = 0;
 
-pb [m_nOrient].texCoord.v.u =
-pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u;
-pb [m_nOrient].texCoord.v.v =
-pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v;
-pb [(m_nOrient + 1) % 4].texCoord.v.u =
-pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV;
-pb [(m_nOrient + 2) % 4].texCoord.v.v =
-pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV;
-pb [0].color =
-pb [1].color =
-pb [2].color =
-pb [3].color = color;
-
 CFloatVector3	vCenter;
 
 vCenter.Assign (m_vPos);
@@ -871,25 +873,33 @@ if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
 	static tSinCosf		sinCosPart [PARTICLE_POSITIONS];
 	static int				bInitSinCos = 1;
-	static CFloatMatrix	mRot [MAX_THREADS];
+	static CFloatVector	vRot [64];
 
 	CFloatMatrix&	m = mRot [nThread];
 
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 		bInitSinCos = 0;
+		CFloatMatrix m;
 		m.RVec ()[Z] =
 		m.UVec ()[Z] =
 		m.FVec ()[X] =
 		m.FVec ()[Y] = 0;
 		m.FVec ()[Z] = 1;
+		CFloatVector v;
+		v.Set (1.0f, 1.0f, 0.0f, 1.0f);
+		for (int nFrame = 0; nFrame < 64; nFrame++) {
+			m.RVec ()[X] =
+			m.UVec ()[Y] = sinCosPart [nFrame].fCos;
+			m.UVec ()[X] = sinCosPart [nFrame].fSin;
+			m.RVec ()[Y] = -m.UVec ()[X];
+			vRot [nFrame] = m * v;
+			}
 		}
 	int nFrame = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	m.RVec ()[X] =
-	m.UVec ()[Y] = sinCosPart [nFrame].fCos;
-	m.UVec ()[X] = sinCosPart [nFrame].fSin;
-	m.RVec ()[Y] = -m.UVec ()[X];
-	vOffset = m * vOffset;
+	vOffset [X] *= vRot [nFrame][X];
+	vOffset [Y] *= vRot [nFrame][Y];
+
 	pb [0].vertex [X] = vCenter [X] - vOffset [X];
 	pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
 	pb [1].vertex [X] = vCenter [X] + vOffset [Y];
@@ -898,10 +908,6 @@ if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
 	pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
 	pb [3].vertex [X] = vCenter [X] - vOffset [Y];
 	pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
-	pb [0].vertex [Z] =
-	pb [1].vertex [Z] =
-	pb [2].vertex [Z] =
-	pb [3].vertex [Z] = vCenter [Z];
 	}
 else {
 	pb [0].vertex [X] =
@@ -912,11 +918,11 @@ else {
 	pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
 	pb [2].vertex [Y] =
 	pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
-	pb [0].vertex [Z] =
-	pb [1].vertex [Z] =
-	pb [2].vertex [Z] =
-	pb [3].vertex [Z] = vCenter [Z];
 	}
+pb [0].vertex [Z] =
+pb [1].vertex [Z] =
+pb [2].vertex [Z] =
+pb [3].vertex [Z] = vCenter [Z];
 }
 
 //	-----------------------------------------------------------------------------
@@ -1731,6 +1737,10 @@ return 1;
 
 void CParticleManager::SetupRenderBuffer (void)
 {
+#if DBG
+for (int i = 0; i < m_iBuffer; i++)
+	particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleRenderBuffer + 4 * i, 0);
+#else
 #pragma omp parallel
 	{
 #	ifdef _OPENMP
@@ -1742,6 +1752,7 @@ void CParticleManager::SetupRenderBuffer (void)
 	for (int i = 0; i < m_iBuffer; i++)
 		particleBuffer [i].particle->Setup (particleBuffer [i].brightness, particleRenderBuffer + 4 * i, nThread);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
