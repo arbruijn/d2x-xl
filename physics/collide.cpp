@@ -1817,7 +1817,7 @@ if (WI_damage_radius (info.nId))
 	ExplodeBadassWeapon (vHitPt);
 MaybeKillWeapon (playerObjP);
 BumpTwoObjects (playerObjP, this, 0, vHitPt);	//no xDamage from bump
-if (!WI_xDamage_radius (info.nId) && (cType.laserInfo.parent.nObject > -1) && !(info.nFlags & OF_HARMLESS))
+if (!WI_damage_radius (info.nId) && (cType.laserInfo.parent.nObject > -1) && !(info.nFlags & OF_HARMLESS))
 	playerObjP->ApplyDamageToPlayer (OBJECTS + cType.laserInfo.parent.nObject, xDamage);
 //	Robots become aware of you if you get hit.
 AIDoCloakStuff ();
