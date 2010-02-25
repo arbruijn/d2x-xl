@@ -95,7 +95,7 @@ m_info.tUpdate = gameStates.app.nSDLTicks - nTicks;
 
 void CShrapnel::Draw (void)
 {
-if ((m_info.xTTL > 0) && LoadExplBlast ()) {
+if (m_info.xTTL > 0) {
 	fix xSize = I2X (1) / 2 + d_rand () % (I2X (1) / 4);
 	#pragma omp critical
 		{
@@ -125,9 +125,9 @@ return 0; //kill
 uint CShrapnelCloud::Update (void)
 {
 	int i;
-//#pragma omp parallel
+#pragma omp parallel
 	{
-	//#pragma omp for 
+	#pragma omp for 
 	for (i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Update ();
 	}
@@ -146,6 +146,7 @@ return 0;
 
 void CShrapnelCloud::Draw (void)
 {
+if (LoadExplBlast ())
 #pragma omp parallel
 	{
 	#pragma omp for
@@ -187,8 +188,12 @@ return 1;
 
 void CShrapnelCloud::Destroy (void)
 {
-for (uint i = 0; i < m_tos; i++)
-	m_data.buffer [i].Destroy ();
+#pragma omp parallel
+	{
+	#pragma omp for 
+	for (uint i = 0; i < m_tos; i++)
+		m_data.buffer [i].Destroy ();
+	}
 CStack<CShrapnel>::Destroy ();
 }
 
