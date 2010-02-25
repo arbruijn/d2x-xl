@@ -1034,7 +1034,7 @@ if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
 	CSegment*	segP;
 	int			nSegment, nChildSeg, nChild, h, i, j;
 	ubyte			bVisited [MAX_THREADS][MAX_SEGMENTS_D2X];
-	ubyte*		visitedP = bVisited [MAX_THREADS];
+	ubyte*		visitedP = bVisited [nThread];
 
 BumpProcessedFlag ();
 gameData.render.mine.nSegRenderList [0] = nStartSeg;
