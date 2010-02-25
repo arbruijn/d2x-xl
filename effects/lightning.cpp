@@ -971,18 +971,24 @@ for (bScale = 0; bScale < 1; bScale++) {
 	nodeP = m_nodes.Buffer ();
 	vPosf [2].Assign (nodeP->m_vPos);
 	transformation.Transform (vPosf [2], vPosf [2], 0);
-	m_vCenter = vPosf [2];
 	for (i = m_nNodes - 2, j = 0; j <= i; j++) {
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
 		nodeP++;
 		vPosf [2].Assign (nodeP->m_vPos);
 		transformation.Transform (vPosf [2], vPosf [2], 0);
-		m_vCenter += vPosf [2];
 		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
 		}
-	m_vCenter /= m_nNodes;
-	for (i = 4 * (m_nNodes - 1), j = 0; j < i; j++) 
-		m_plasmaVerts [0][i] -= m_vCenter;
+	for (i = 4 * (m_nNodes - 1), j = 0; j < i; j += 2) {
+		vPosf [0] = CFloatVector::Avg (m_plasmaVerts [0][j], m_plasmaVerts [0][j+1]);
+		vPosf [1] = m_plasmaVerts [0][j] - m_plasmaVerts [0][j+1];
+		vPosf [1] /= 2 * PLASMA_WIDTH;
+		m_plasmaVerts [1][j] = vPosf [0] + vPosf [1];
+		m_plasmaVerts [1][j+1] = vPosf [0] - vPosf [1];
+		}
+	m_plasmaVerts [1][0] += (m_plasmaVerts [1][2] - m_plasmaVerts [1][0]) / 4;
+	m_plasmaVerts [1][1] += (m_plasmaVerts [1][3] - m_plasmaVerts [1][1]) / 4;
+	m_plasmaVerts [1][i-2] += (m_plasmaVerts [1][2] - m_plasmaVerts [1][i-4]) / 4;
+	m_plasmaVerts [1][i-3] += (m_plasmaVerts [1][3] - m_plasmaVerts [1][i-1]) / 4;
 	}
 }
 
@@ -1013,16 +1019,14 @@ void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 ogl.SetBlendMode (1);
-glPushMatrix ();
-glTranslatef (m_vCenter [X], m_vCenter [Y], m_vCenter [Z]);
+OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 for (bScale = 0; bScale < 2; bScale++) {
-	if (bScale) {
-		glScalef (1.1f, 1.1f, 1.0f);
+#if 0
+	if (bScale)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
-		}
 	else
+#endif
 		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
-	OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [bScale].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
@@ -1057,6 +1061,7 @@ for (int i = 0; i < m_nNodes; i++)
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
+#if 0
 ogl.SetBlendMode (1);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? CORE_WIDTH : 2 * CORE_WIDTH));
@@ -1084,6 +1089,7 @@ if (!ogl.m_states.bUseTransform)
 glLineWidth ((GLfloat) 1);
 ogl.SetLineSmooth (false);
 ogl.ClearError (0);
+#endif
 }
 
 //------------------------------------------------------------------------------
