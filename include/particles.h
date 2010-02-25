@@ -199,7 +199,7 @@ class CParticleSystem : public tParticleSystem {
 						int nLife, int nSpeed, char nType, int nObject,
 						tRgbaColorf *pColor, int bBlowUpParts, char nFace);
 		void Destroy (void);
-		int Render (void);
+		int Render (int nThread);
 		int Update (int nThread);
 		int RemoveEmitter (int i);
 		void SetDensity (int nMaxParts, int nDensity);

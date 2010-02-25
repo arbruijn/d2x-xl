@@ -62,7 +62,7 @@ typedef struct tLightning {
 	CFixVector					m_vRefEnd;
 	CFixVector					m_vDelta;
 	CArray<CLightningNode>	m_nodes;
-	CArray<CFloatVector>		m_plasmaVerts;
+	CArray<CFloatVector>		m_plasmaVerts [2];
 	CArray<tTexCoord2f>		m_plasmaTexCoord;
 	CArray<CFloatVector3>	m_coreVerts;
 	tRgbaColorf					m_color;
