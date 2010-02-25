@@ -165,7 +165,7 @@ class CParticleEmitter : public tParticleEmitter {
 	private:
 		char ObjectClass (int nObject);
 		float Brightness (void);
-		inline int MayBeVisible (void);
+		inline int MayBeVisible (int nThread);
 };
 
 //------------------------------------------------------------------------------

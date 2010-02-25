@@ -944,9 +944,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-inline int CParticleEmitter::MayBeVisible (void)
+inline int CParticleEmitter::MayBeVisible (int nThread)
 {
-return (m_nSegment < 0) || SegmentMayBeVisible (m_nSegment, 5, -1);
+return (m_nSegment < 0) || SegmentMayBeVisible (m_nSegment, 5, -1, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -1198,7 +1198,7 @@ else
 
 	float		fBrightness = Brightness ();
 	int		h, i, j;
-	int		bVisible = (m_nObject >= 0x70000000) || MayBeVisible ();
+	int		bVisible = (m_nObject >= 0x70000000) || MayBeVisible (nThread);
 
 #if DBG
 	if (m_nFirstPart >= int (m_particles.Length ()))
