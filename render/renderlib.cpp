@@ -996,32 +996,44 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 //------------------------------------------------------------------------------
 
-void BumpVisitedFlag (void)
+ubyte BumpVisitedFlag (void)
 {
-if (!++gameData.render.mine.nVisited) {
-	gameData.render.mine.bVisited.Clear (0);
-	gameData.render.mine.nVisited = 1;
+#pragma omp critical
+	{
+	if (!++gameData.render.mine.nVisited) {
+		gameData.render.mine.bVisited.Clear (0);
+		gameData.render.mine.nVisited = 1;
+		}
 	}
+return gameData.render.mine.nVisited;
 }
 
 //------------------------------------------------------------------------------
 
-void BumpProcessedFlag (void)
+ubyte BumpProcessedFlag (void)
 {
-if (!++gameData.render.mine.nProcessed) {
-	gameData.render.mine.bProcessed.Clear (0);
-	gameData.render.mine.nProcessed = 1;
+#pragma omp critical
+	{
+	if (!++gameData.render.mine.nProcessed) {
+		gameData.render.mine.bProcessed.Clear (0);
+		gameData.render.mine.nProcessed = 1;
+		}
 	}
+return gameData.render.mine.nProcessed;
 }
 
 //------------------------------------------------------------------------------
 
-void BumpVisibleFlag (void)
+ubyte BumpVisibleFlag (void)
 {
-if (!++gameData.render.mine.nVisible) {
-	gameData.render.mine.bVisible.Clear (0);
-	gameData.render.mine.nVisible = 1;
+#pragma omp critical
+	{
+	if (!++gameData.render.mine.nVisible) {
+		gameData.render.mine.bVisible.Clear (0);
+		gameData.render.mine.nVisible = 1;
+		}
 	}
+return gameData.render.mine.nVisible;
 }
 
 // ----------------------------------------------------------------------------
@@ -1037,9 +1049,8 @@ if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
 	ubyte*		visitedP = bVisited [nThread];
 	short*		segListP = gameData.render.mine.nSegRenderList [nThread].Buffer ();
 
-BumpProcessedFlag ();
 segListP [0] = nStartSeg;
-gameData.render.mine.bProcessed [nStartSeg] = gameData.render.mine.nProcessed;
+gameData.render.mine.bProcessed [nStartSeg] = BumpProcessedFlag ();
 if (nMaxDist < 0)
 	nMaxDist = nRadius * I2X (20);
 memset (visitedP, 0, gameData.segs.nSegments);
@@ -1053,7 +1064,7 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {
 			nChildSeg = segP->m_children [nChild];
-			if (!visitedP [nChildSeg] && (nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG)) {
+			if ((nChildSeg >= 0) && !visitedP [nChildSeg] && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG)) {
 				segListP [j++] = nChildSeg;
 				visitedP [nChildSeg] = 1;
 				}

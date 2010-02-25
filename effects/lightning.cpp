@@ -997,11 +997,9 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 ogl.SetBlendMode (1);
 for (bScale = 0; bScale < 2; bScale++) {
 	if (bScale)
-		glColor4f (0.15f, 0.15f, 0.15f, colorP->alpha / 2);
+		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
-		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
-	ogl.SetDepthTest (true);
-	ogl.SetDepthWrite (true);
+		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 	OglTexCoordPointer (2, GL_FLOAT, 0, plasmaBuffers [nThread][bScale].texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), plasmaBuffers [nThread][bScale].vertices);
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
@@ -1458,13 +1456,10 @@ if (automap.Display () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 		}
 	}
 
-CLightning *lightningP = m_lightning + nStart;
-
 if (nBolts < 0)
 	nBolts = m_nBolts;
-
-for (int i = 0; i < nBolts; i++)
-	lightningP [i].Render (0, nThread);
+for (int i = nStart; i < nBolts; i++)
+	m_lightning [i].Render (0, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -1705,7 +1700,7 @@ if (SHOW_LIGHTNING) {
 			}
 #	pragma omp parallel
 			{
-#		pragma omp for
+#		pragma omp for private(systemP)
 			for (int i = 0; i < nSystems; i++) {
 				systemP = m_systemList [i];
 				if (0 > systemP->Update ())
@@ -1836,7 +1831,7 @@ if (SHOW_LIGHTNING) {
 #	pragma omp parallel
 			{
 			int nThread = omp_get_thread_num ();
-#		pragma omp for
+#		pragma omp for private(systemP)
 			for (int i = 0; i < nSystems; i++) {
 				systemP = m_systemList [i];
 				systemP->Render (0, systemP->m_nBolts, nThread);

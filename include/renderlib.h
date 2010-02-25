@@ -95,9 +95,9 @@ int ToggleShowOnlyCurSide (void);
 void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient);
 int FaceIsVisible (short nSegment, short nSide);
 int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread = 0);
-void BumpVisitedFlag (void);
-void BumpProcessedFlag (void);
-void BumpVisibleFlag (void);
+ubyte BumpVisitedFlag (void);
+ubyte BumpProcessedFlag (void);
+ubyte BumpVisibleFlag (void);
 void SetupMineRenderer (void);
 void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
 
