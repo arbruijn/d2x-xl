@@ -28,7 +28,7 @@ class CLightningNode : public tLightningNode {
 		CFixVector *Create (CFixVector *vOffs, CFixVector *vAttract, int nDist);
 		void Destroy (void);
 		void Setup (bool bInit, CFixVector *vPos, CFixVector *vDelta);
-		void Animate (bool bInit, short nSegment, int nDepth);
+		void Animate (bool bInit, short nSegment, int nDepth, int nThread);
 		bool CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 							   int nLife, int nLength, int nAmplitude,
 							   char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
@@ -44,7 +44,7 @@ class CLightningNode : public tLightningNode {
 		CFixVector CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
 									    int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp);
 		CFixVector CreatePerlin (int nSteps, int nAmplitude, int *nSeed, double phi, double i);
-		void Move (CFixVector& vDelta, short nSegment);
+		void Move (int nDepth, CFixVector& vDelta, short nSegment, int nThread);
 		bool SetLight (short nSegment, tRgbaColorf *colorP);
 		inline CLightning *GetChild (void) { return m_child; }
 		inline void GetChild (CLightning * child) { m_child = child; }
@@ -61,6 +61,9 @@ typedef struct tLightning {
 	CFixVector					m_vRefEnd;
 	CFixVector					m_vDelta;
 	CArray<CLightningNode>	m_nodes;
+	CArray<CFloatVector>		m_plasmaVerts;
+	CArray<tTexCoord2f>		m_plasmaTexCoord;
+	CArray<CFloatVector3>	m_coreVerts;
 	tRgbaColorf					m_color;
 	int							m_nNext;
 	int							m_nLife;
@@ -76,7 +79,6 @@ typedef struct tLightning {
 	short							m_nNodes;
 	short							m_nChildren;
 	short							m_nObject;
-	short							nSegment;
 	short							m_nNode;
 	char							m_nStyle;
 	char							m_nAngle;
@@ -105,9 +107,9 @@ class CLightning : public tLightning {
 		void ComputeOffsets (void);
 		void Bump (void);
 		int SetLife (void);
-		void Animate (int nDepth);
-		int Update (int nDepth);
-		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
+		void Animate (int nDepth, int nThread);
+		int Update (int nDepth, int nThread);
+		void Move (int nDepth, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd, int nThread);
 		void Render (int nDepth, int nThread);
 		int SetLight (void);
 		inline int MayBeVisible (int nThread);
@@ -120,7 +122,9 @@ class CLightning : public tLightning {
 		int ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength);
 		void ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread);
 		void ComputePlasma (int nDepth, int nThread);
+		void ComputeCore (void);
 		void RenderCore (tRgbaColorf *colorP, int nDepth, int nThread);
+		void RenderSetup (int nDepth, int nThread);
 		int SetupPlasma (void);
 		void RenderPlasma (tRgbaColorf *colorP, int nThread);
 		void RenderBuffered (int nDepth, int nThread);
@@ -153,21 +157,21 @@ class CLightningSystem : public tLightningSystem {
 						 short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						 char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
 		void Destroy (void);
-		void Animate (int nStart, int nBolts);
+		void Animate (int nStart, int nBolts, int nThread);
 		void Render (int nStart, int nBolts, int nThread);
-		int Update (void);
-		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
+		int Update (int nThread);
+		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd, int nThread);
 		void Mute (void);
 		int SetLife (void);
 		int SetLight (void);
-		inline CLightning* Lightnings (void) { return m_lightning.Buffer (); }
+		inline CLightning* Lightning (void) { return m_lightning.Buffer (); }
 		inline int Id (void) { return m_nId; }
 		inline void SetValid (char bValid) { m_bValid = bValid; }
 	private:
 		void CreateSound (int bSound);
 		void DestroySound (void);
 		void UpdateSound (void);
-		void MoveForObject (void);
+		void MoveForObject (int nThread = 0);
 		void RenderBuffered (int nStart, int nBolts, int nThread);
 };
 
