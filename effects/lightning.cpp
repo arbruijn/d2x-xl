@@ -1165,10 +1165,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 	if (!MayBeVisible (nThread))
 		return;
 	RenderSetup (0, nThread);
-#pragma omp critical
-		{
-		transparencyRenderer.AddLightning (this, nDepth);
-		}
+	transparencyRenderer.AddLightning (this, nDepth);
 	if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())

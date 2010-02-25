@@ -1393,7 +1393,7 @@ if (m_emitters.Buffer ()) {
 
 //------------------------------------------------------------------------------
 
-int CParticleSystem::Render (void)
+int CParticleSystem::Render (int nThread)
 {
 if (m_bValid < 1)
 	return 0;
@@ -1410,7 +1410,7 @@ if (emitterP) {
 		  (particleManager.GetObjectSystem (m_nObject) < 0)))
 		SetLife (0);
 	for (int i = m_nEmitters; i; i--, emitterP++)
-		h += emitterP->Render (-1);
+		h += emitterP->Render (nThread);
 	}
 #if DBG
 if (!h)
@@ -1708,9 +1708,10 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 	int	h = 0;
 
+	int nCurrent = -1;
+
 #ifdef _OPENMP
 if (m_systemList.Buffer ()) {
-	int nCurrent = -1;
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 		m_systemList [h++] = systemP;
 #	pragma omp parallel
@@ -1724,7 +1725,6 @@ if (m_systemList.Buffer ()) {
 else 
 #endif
 	{
-	int nCurrent = -1;
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 		h += systemP->Update (0);
 	}
@@ -1736,8 +1736,26 @@ return h;
 void CParticleManager::Render (void)
 {
 int nCurrent = -1;
-for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
-	systemP->Render ();
+
+#ifdef _OPENMP
+if (m_systemList.Buffer ()) {
+	int h = 0;
+	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
+		m_systemList [h++] = systemP;
+#	pragma omp parallel
+		{
+		int nThread = omp_get_thread_num();
+#	pragma omp for
+		for (int i = 0; i < h; i++)
+			m_systemList [i]->Render (nThread);
+		}
+	}
+else 
+#endif
+	{
+	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
+		systemP->Render (0);
+	}
 }
 
 //------------------------------------------------------------------------------

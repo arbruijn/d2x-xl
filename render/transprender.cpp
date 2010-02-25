@@ -150,43 +150,46 @@ if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
-ph = m_data.itemLists + --m_data.nFreeItems;
-ph->nItem = m_data.nItems [0]++;
-ph->nType = nType;
-ph->bRendered = 0;
-ph->parentP = NULL;
-ph->z = nDepth;
-ph->bValid = true;
-memcpy (&ph->item, itemData, itemSize);
-#if 0
-if (!(pi = pd->tail) || (pi->z > nDepth) || ((pi->z == nDepth) && (pi->nType > nType))) 
-#endif
+#pragma omp critical
 	{
-	for (pi = pd->head; pi; pi = pi->pNextItem) {
-		if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
-			break;
+	ph = m_data.itemLists + --m_data.nFreeItems;
+	ph->nItem = m_data.nItems [0]++;
+	ph->nType = nType;
+	ph->bRendered = 0;
+	ph->parentP = NULL;
+	ph->z = nDepth;
+	ph->bValid = true;
+	memcpy (&ph->item, itemData, itemSize);
+#if 0
+	if (!(pi = pd->tail) || (pi->z > nDepth) || ((pi->z == nDepth) && (pi->nType > nType))) 
+#endif
+		{
+		for (pi = pd->head; pi; pi = pi->pNextItem) {
+			if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
+				break;
+			}
 		}
-	}
-if (pi) {
+	if (pi) {
 #if 0
-	if (!pi->pNextItem)
-		pd->tail = ph;
+		if (!pi->pNextItem)
+			pd->tail = ph;
 #endif
-	ph->pNextItem = pi->pNextItem;
-	pi->pNextItem = ph;
-	}
-else {
+		ph->pNextItem = pi->pNextItem;
+		pi->pNextItem = ph;
+		}
+	else {
 #if 0
-	if (!pd->head)
-		pd->tail = ph;
+		if (!pd->head)
+			pd->tail = ph;
 #endif
-	ph->pNextItem = pd->head;
-	pd->head = ph;
+		ph->pNextItem = pd->head;
+		pd->head = ph;
+		}
+	if (m_data.nMinOffs > nOffset)
+		m_data.nMinOffs = nOffset;
+	if (m_data.nMaxOffs < nOffset)
+		m_data.nMaxOffs = nOffset;
 	}
-if (m_data.nMinOffs > nOffset)
-	m_data.nMinOffs = nOffset;
-if (m_data.nMaxOffs < nOffset)
-	m_data.nMaxOffs = nOffset;
 return m_data.nFreeItems;
 #else
 return 0;
