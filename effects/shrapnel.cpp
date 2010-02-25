@@ -191,7 +191,7 @@ void CShrapnelCloud::Destroy (void)
 #pragma omp parallel
 	{
 	#pragma omp for 
-	for (uint i = 0; i < m_tos; i++)
+	for (int i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Destroy ();
 	}
 CStack<CShrapnel>::Destroy ();
