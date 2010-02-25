@@ -639,10 +639,10 @@ if ((h = nAmplitude - nMaxDist)) {
 
 void CLightning::CreatePath (int bSeed, int nDepth)
 {
-	CLightningNode	*plh, *nodeP [2];
-	int			h, i, j, nSteps, nStyle, nSmoothe, bClamp, bInPlane, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
-	CFixVector	vPos [2], vBase [2], vPrevOffs [2];
-	double		phi;
+	CLightningNode*	plh, * nodeP [2];
+	int					h, i, j, nSteps, nStyle, nSmoothe, bClamp, bInPlane, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
+	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
+	double				phi;
 
 	static int	nSeed [2];
 
@@ -1309,12 +1309,8 @@ if (m_bValid < 1)
 
 if (nBolts < 0)
 	nBolts = m_nBolts;
-#pragma omp parallel
-	{
-	#pragma omp for
-	for (int i = 0; i < nBolts; i++)
-		lightningP [i].Animate (0);
-	}
+for (int i = 0; i < nBolts; i++)
+	lightningP [i].Animate (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1414,9 +1410,9 @@ if (nSegment < 0)
 if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING) {
-	#pragma omp parallel
+	//#pragma omp parallel
 		{
-		#pragma omp for
+		//#pragma omp for
 		for (int i = 0; i < m_nBolts; i++)
 			m_lightning [i].Move (vNewPos, nSegment, bStretch, bFromEnd);
 		}
@@ -1459,12 +1455,8 @@ CLightning *lightningP = m_lightning + nStart;
 if (nBolts < 0)
 	nBolts = m_nBolts;
 
-#pragma omp parallel
-	{
-	#pragma omp for
-	for (int i = 0; i < nBolts; i++)
-		lightningP [i].Render (0, nThread);
-	}
+for (int i = 0; i < nBolts; i++)
+	lightningP [i].Render (0, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -1526,6 +1518,7 @@ if (!m_systems.Create (MAX_LIGHTNING_SYSTEMS)) {
 	extraGameInfo [0].bUseLightning = 0;
 	return;
 	}
+m_systemList.Create (MAX_LIGHTNING_SYSTEMS);
 int i = 0;
 int nCurrent = m_systems.FreeList ();
 for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
@@ -1607,6 +1600,7 @@ else {
 		}
 	ResetLights (1);
 	m_systems.Destroy ();
+	m_systemList.Destroy ();
 	m_objects.Destroy ();
 	m_lights.Destroy ();
 	if (!bSem)
@@ -1693,10 +1687,32 @@ if (SHOW_LIGHTNING) {
 			}
 		}
 	int nCurrent = -1;
-	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
-		nextP = m_systems.GetNext (nCurrent);
-		if (0 > systemP->Update ())
-			Destroy (systemP, NULL);
+#ifdef _OPENMP
+	if (m_systemList.Buffer ()) {
+		int nSystems = 0;
+		CLightningSystem* systemP, * nextP;
+		for (systemP = m_systems.GetFirst (nCurrent), nextP = NULL; systemP; systemP = nextP) {
+			m_systemList [nSystems++] = systemP;
+			nextP = m_systems.GetNext (nCurrent);
+			}
+#	pragma omp parallel
+			{
+#		pragma omp for
+			for (int i = 0; i < nSystems; i++) {
+				systemP = m_systemList [i];
+				if (0 > systemP->Update ())
+					Destroy (systemP, NULL);
+				}
+			}
+		}
+	else 
+#endif
+		{
+		for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
+			nextP = m_systems.GetNext (nCurrent);
+			if (0 > systemP->Update ())
+				Destroy (systemP, NULL);
+			}
 		}
 
 	FORALL_OBJS (objP, i) {
@@ -1802,9 +1818,30 @@ if (SHOW_LIGHTNING) {
 		int bStencil = ogl.StencilOff ();
 
 	int nCurrent = -1;
-	for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
-		if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
-			systemP->Render (0, systemP->m_nBolts, 0);
+#ifdef _OPENMP
+	if (m_systemList.Buffer ()) {
+		CLightningSystem* systemP;
+		int nSystems = 0;
+		for (systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
+			if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
+				m_systemList [nSystems++] = systemP;
+#	pragma omp parallel
+			{
+			int nThread = omp_get_thread_num ();
+#		pragma omp for
+			for (int i = 0; i < nSystems; i++) {
+				systemP = m_systemList [i];
+				systemP->Render (0, systemP->m_nBolts, nThread);
+				}
+			}
+		}
+	else 
+#endif
+		{
+		for (CLightningSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = m_systems.GetNext (nCurrent))
+			if (!(systemP->m_nKey [0] | systemP->m_nKey [1]))
+				systemP->Render (0, systemP->m_nBolts, 0);
+		}
 	ogl.StencilOn (bStencil);
 	}
 }
