@@ -245,7 +245,6 @@ m_nDelay = 0; //bStart ? randN (nLife) : 0;
 m_color [0] =
 m_color [1] = 
 color = (colorP && (m_bEmissive < 2)) ? *colorP : defaultParticleColor;
-SetupColor (fBrightness);
 
 if ((nType == BULLET_PARTICLES) || (nType == BUBBLE_PARTICLES)) {
 	m_bBright = 0;
@@ -429,6 +428,7 @@ else if (nParticleSystemType == GATLING_PARTICLES)
 	;//m_color [0].alpha /= 6;
 #	endif
 #endif
+SetupColor (fBrightness);
 return 1;
 }
 
