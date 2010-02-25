@@ -36,6 +36,7 @@
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
+#define LIGHTNING_WIDTH 3.0f
 
 #define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightning.nStyle < m_nStyle)) ? \
 					 gameOpts->render.lightning.nStyle : m_nStyle)
@@ -906,13 +907,13 @@ if (bStart) {
 	}
 else {
 	vn [0] = vNormal [0] + vNormal [1];
-	vn [0] = vn [0] * 0.5f;
+	vn [0] = vn [0] * (LIGHTNING_WIDTH / 4.0f);
 }
 
 if (bEnd) {
 	vn [1] = vNormal [1];
 	vd = vPosf [1] - vPosf [0];
-	vd = vd * (bScale ? 0.25f : 0.5f);
+	vd = vd * (bScale ? LIGHTNING_WIDTH / 8.0f : LIGHTNING_WIDTH / 4.0f);
 	vPosf [1] += vd;
 	}
 else {
@@ -920,15 +921,15 @@ else {
 	if (CFloatVector::Dot (vNormal [1], vNormal [2]) < 0)
 		vNormal [2].Neg ();
 	vn [1] = vNormal [1] + vNormal [2];
-	vn [1] = vn [1] * 0.5f;
+	vn [1] = vn [1] * (LIGHTNING_WIDTH / 4.0f);
 	}
 if (!(nDepth || bScale)) {
-	vn [0] = vn [0] * 2;
-	vn [1] = vn [1] * 2;
+	vn [0] = vn [0] * LIGHTNING_WIDTH;
+	vn [1] = vn [1] * LIGHTNING_WIDTH;
 	}
 if (!bScale && nDepth) {
-	vn [0] = vn [0] * 0.5f;
-	vn [1] = vn [1] * 0.5f;
+	vn [0] = vn [0] * (LIGHTNING_WIDTH / 4.0f);
+	vn [1] = vn [1] * (LIGHTNING_WIDTH / 4.0f);
 	}
 if (bStart) {
 	vPlasma [0] = vPosf [0] + vn [0];
@@ -936,7 +937,7 @@ if (bStart) {
 	vd = vPosf [0] - vPosf [1];
 	CFloatVector::Normalize (vd);
 	if (bScale)
-		vd = vd * 0.5f;
+		vd = vd * (LIGHTNING_WIDTH / 4.0f);
 	vPlasma [0] += vd;
 	vPlasma [1] += vd;
 	}
@@ -1024,7 +1025,7 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 
 ogl.SetBlendMode (1);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
-glLineWidth ((GLfloat) (nDepth ? 2 : 4));
+glLineWidth ((GLfloat) (nDepth ? LIGHTNING_WIDTH : 2 * LIGHTNING_WIDTH));
 ogl.SetLineSmooth (true);
 for (i = 0; i < m_nNodes; i++)
 	vPosf [i].Assign (m_nodes [i].m_vPos);
