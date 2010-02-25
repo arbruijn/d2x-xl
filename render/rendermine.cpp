@@ -227,7 +227,7 @@ PROF_START
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-for (i = 0, j = SortObjList (gameData.render.mine.nSegRenderList [nListPos]); i < j; i++)
+for (i = 0, j = SortObjList (gameData.render.mine.nSegRenderList [0][nListPos]); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
 gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
 PROF_END(ptRenderObjects)
@@ -276,7 +276,7 @@ if (nType != 1)
 	return;
 gameStates.render.nState = 1;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
-	nSegment = gameData.render.mine.nSegRenderList [--nListPos];
+	nSegment = gameData.render.mine.nSegRenderList [0][--nListPos];
 	if (nSegment < 0) {
 		if (nSegment == -0x7fff)
 			continue;

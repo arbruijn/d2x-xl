@@ -1035,9 +1035,10 @@ if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
 	int			nSegment, nChildSeg, nChild, h, i, j;
 	ubyte			bVisited [MAX_THREADS][MAX_SEGMENTS_D2X];
 	ubyte*		visitedP = bVisited [nThread];
+	short*		segListP = gameData.render.mine.nSegRenderList [nThread].Buffer ();
 
 BumpProcessedFlag ();
-gameData.render.mine.nSegRenderList [0] = nStartSeg;
+segListP [0] = nStartSeg;
 gameData.render.mine.bProcessed [nStartSeg] = gameData.render.mine.nProcessed;
 if (nMaxDist < 0)
 	nMaxDist = nRadius * I2X (20);
@@ -1045,15 +1046,15 @@ memset (visitedP, 0, gameData.segs.nSegments);
 visitedP [nStartSeg] = 1;
 for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
-		nSegment = gameData.render.mine.nSegRenderList [h];
+		nSegment = segListP [h];
 		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
-			 (!nMaxDist || (CFixVector::Dist(SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
+			 (!nMaxDist || (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
 			return 1;
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {
 			nChildSeg = segP->m_children [nChild];
 			if (!visitedP [nChildSeg] && (nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG)) {
-				gameData.render.mine.nSegRenderList [j++] = nChildSeg;
+				segListP [j++] = nChildSeg;
 				visitedP [nChildSeg] = 1;
 				}
 			}

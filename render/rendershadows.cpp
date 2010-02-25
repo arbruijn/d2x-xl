@@ -246,7 +246,7 @@ FORALL_ACTOR_OBJS (objP, i)
 	else if ((objP->info.nType == OBJ_PLAYER) || 
 				(gameOpts->render.shadows.bRobots && (objP->info.nType == OBJ_ROBOT))) {
 		for (j = gameData.render.mine.nRenderSegs; j--;) {
-			fakePlayerPos.info.nSegment = gameData.render.mine.nSegRenderList [j];
+			fakePlayerPos.info.nSegment = gameData.render.mine.nSegRenderList [0][j];
 			fakePlayerPos.info.position.vPos = SEGMENTS [fakePlayerPos.info.nSegment].Center ();
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {

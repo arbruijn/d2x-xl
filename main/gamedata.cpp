@@ -331,7 +331,8 @@ bool CMineRenderData::Create (void)
 nVisited = 255;
 nProcessed = 255;
 nVisible = 255;
-CREATE (nSegRenderList, gameData.segs.nSegments, 0);
+for (int i = 0; i < MAX_THREADS; i++)
+	CREATE (nSegRenderList [i], gameData.segs.nSegments, 0);
 CREATE (pFaceRenderList, gameData.segs.nFaces, 0);
 CREATE (bVisited, gameData.segs.nSegments, 0);
 CREATE (bVisible, gameData.segs.nSegments, 0);
@@ -353,7 +354,8 @@ return true;
 
 void CMineRenderData::Destroy (void)
 {
-DESTROY (nSegRenderList);
+for (int i = 0; i < MAX_THREADS; i++)
+	DESTROY (nSegRenderList [i]);
 DESTROY (pFaceRenderList);
 DESTROY (bVisited);
 DESTROY (bVisible);

@@ -370,7 +370,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	G3EndFrame ();
 	//PrintLog ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+		if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
 			continue;
 #if DBG
 		if (nSegment == nDbgSeg)

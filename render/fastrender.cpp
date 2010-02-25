@@ -326,7 +326,7 @@ int SortFaces (void)
 	short			nSegment;
 
 for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.nRenderSegs; i++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
 		continue;
 	segFaceP = SEGFACES + nSegment;
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++, h++, ph++) {
@@ -707,7 +707,7 @@ if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
 	return 0;
 gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
 		continue;
 	if ((SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) ||
 		 (SEGMENTS [nSegment].m_nType == SEGMENT_IS_OUTDOOR))
@@ -778,7 +778,7 @@ if (nType > 1) {
 		}
 	else {
 		for (i = gameData.render.mine.nRenderSegs; i; )
-			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bDepthOnly, bAutomap, bHeadlight);
+			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [0][--i], bDepthOnly, bAutomap, bHeadlight);
 		}
 	}
 else {

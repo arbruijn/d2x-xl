@@ -1449,7 +1449,7 @@ class CObjRenderList {
 class CMineRenderData {
 	public:
 		CFixVector				viewerEye;
-		CShortArray				nSegRenderList; //[MAX_SEGMENTS_D2X];
+		CShortArray				nSegRenderList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
 		CArray< CSegFace* >	pFaceRenderList; //[MAX_SEGMENTS_D2X * 6];
 		CObjRenderList			renderObjs;
 		int						nRenderSegs;

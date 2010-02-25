@@ -412,7 +412,7 @@ gameData.render.mine.renderObjs.ref.Clear (char (0xff));
 gameData.render.mine.renderObjs.nUsed = 0;
 
 for (nListPos = 0; nListPos < nSegCount; nListPos++) {
-	nSegment = gameData.render.mine.nSegRenderList [nListPos];
+	nSegment = gameData.render.mine.nSegRenderList [0][nListPos];
 	if (nSegment == -0x7fff)
 		continue;
 #if DBG
@@ -501,7 +501,7 @@ void InitSegZRef (int i, int j, int nThread)
 	CSegment*	segP;
 
 for (; i < j; i++, ps++) {
-	segP = SEGMENTS + gameData.render.mine.nSegRenderList [i];
+	segP = SEGMENTS + gameData.render.mine.nSegRenderList [0][i];
 #if 1
 	z = CFixVector::Dist (segP->Center (), vViewer) + segP->MaxRad ();
 	if (zMax < z)
@@ -515,7 +515,7 @@ for (; i < j; i++, ps++) {
 		zMax = v [Z];
 	ps->z = v [Z];
 #endif
-	ps->nSegment = gameData.render.mine.nSegRenderList [i];
+	ps->nSegment = gameData.render.mine.nSegRenderList [0][i];
 	}
 tiRender.zMax [nThread] = zMax;
 }
@@ -557,7 +557,7 @@ void SetSegRenderList (void)
 {
 tSegZRef* ps = segZRef [gameStates.app.bMultiThreaded];
 for (int i = 0; i < gameData.render.mine.nRenderSegs; i++)
-	gameData.render.mine.nSegRenderList [i] = ps [i].nSegment;
+	gameData.render.mine.nSegRenderList [0][i] = ps [i].nSegment;
 }
 
 //------------------------------------------------------------------------------
@@ -652,7 +652,7 @@ if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar (
 		if ((automap.Visible (i)) &&
 			 (bSkyBox || (SEGMENTS [i].m_nType != SEGMENT_IS_SKYBOX)) &&
 			 (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
-			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
+			gameData.render.mine.nSegRenderList [0][gameData.render.mine.nRenderSegs++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
 			}
@@ -660,7 +660,7 @@ if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar (
 	return;
 	}
 
-gameData.render.mine.nSegRenderList [0] = nStartSeg;
+gameData.render.mine.nSegRenderList [0][0] = nStartSeg;
 gameData.render.mine.nSegDepth [0] = 0;
 VISIT (nStartSeg);
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
@@ -680,7 +680,7 @@ for (l = 0; l < nRenderDepth; l++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
-		nSegment = gameData.render.mine.nSegRenderList [nHead];
+		nSegment = gameData.render.mine.nSegRenderList [0][nHead];
 		curPortal = renderPortals + nHead;
 		if (nSegment == -1)
 			continue;
@@ -783,7 +783,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				//see if this segment has already been visited, and if so, does the current portal expand the old portal?
 				if (nPos == -1) {
 					gameData.render.mine.nRenderPos [nChildSeg] = nCurrent;
-					gameData.render.mine.nSegRenderList [nCurrent] = nChildSeg;
+					gameData.render.mine.nSegRenderList [0][nCurrent] = nChildSeg;
 					gameData.render.mine.nSegDepth [nCurrent++] = l;
 					VISIT (nChildSeg);
 					}
@@ -813,7 +813,7 @@ for (l = 0; l < nRenderDepth; l++) {
 						bExpand = true;
 					if (bExpand) {
 						if (nCurrent < gameData.segs.nSegments)
-							gameData.render.mine.nSegRenderList [nCurrent] = -0x7fff;
+							gameData.render.mine.nSegRenderList [0][nCurrent] = -0x7fff;
 						*oldPortal = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
 #if 0
@@ -834,11 +834,11 @@ gameData.render.mine.nRenderSegs = nCurrent;
 
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 #if DBG
-	if (gameData.render.mine.nSegRenderList [i] == nDbgSeg)
+	if (gameData.render.mine.nSegRenderList [0][i] == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	if (gameData.render.mine.nSegRenderList [i] >= 0)
-		gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [i]] = gameData.render.mine.nVisible;
+	if (gameData.render.mine.nSegRenderList [0][i] >= 0)
+		gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [0][i]] = gameData.render.mine.nVisible;
 	}
 }
 
@@ -856,7 +856,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
 #endif
 	if (gameData.segs.SegVis (nStartSeg, nSegment)) {
 		gameData.render.mine.bVisible [nSegment] = gameData.render.mine.nVisible;
-		gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = nSegment;
+		gameData.render.mine.nSegRenderList [0][gameData.render.mine.nRenderSegs++] = nSegment;
 		RotateVertexList (8, SEGMENTS [nSegment].m_verts);
 		}
 	}

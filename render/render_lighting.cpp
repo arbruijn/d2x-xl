@@ -277,12 +277,12 @@ if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
+		gameData.render.mine.nSegRenderList [0][i] = -gameData.render.mine.nSegRenderList [0][i];
 		continue;
 		}
 #if DBG
@@ -415,12 +415,12 @@ if (ogl.m_states.bVertexLighting)
 	ogl.m_states.bVertexLighting = gpgpuLighting.Compute (-1, 0, NULL);
 #endif
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i] - 1;
+		gameData.render.mine.nSegRenderList [0][i] = -gameData.render.mine.nSegRenderList [0][i] - 1;
 		continue;
 		}
 #if DBG
@@ -536,12 +536,12 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
 for (i = nStart; i < nEnd; i++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
 		continue;
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
-		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i] - 1;
+		gameData.render.mine.nSegRenderList [0][i] = -gameData.render.mine.nSegRenderList [0][i] - 1;
 		continue;
 		}
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
@@ -597,18 +597,18 @@ int CountRenderFaces (void)
 	int			h, i, j, nFaces, nSegments;
 
 for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs; i++) {
-	segP = SEGMENTS + gameData.render.mine.nSegRenderList [i];
+	segP = SEGMENTS + gameData.render.mine.nSegRenderList [0][i];
 	if (SegmentIsVisible (segP)) {
 		nSegments++;
 		nFaces += SEGFACES [i].nFaces;
 		}
 	else
-		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
+		gameData.render.mine.nSegRenderList [0][i] = -gameData.render.mine.nSegRenderList [0][i];
 	}
 tiRender.nMiddle = 0;
 if (nFaces) {
 	for (h = nFaces / 2, i = j = 0; i < gameData.render.mine.nRenderSegs; i++) {
-		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+		if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
 			continue;
 		j += SEGFACES [nSegment].nFaces;
 		if (j > h) {
@@ -635,10 +635,10 @@ void GetRenderVertices (void)
 
 nRenderVertices = 0;
 for (h = i = 0; h < gameData.render.mine.nRenderSegs; h++) {
-	nSegment = gameData.render.mine.nSegRenderList [h];
+	nSegment = gameData.render.mine.nSegRenderList [0][h];
 	segFaceP = SEGFACES + nSegment;
 	if (!SegmentIsVisible (SEGMENTS + nSegment))
-		gameData.render.mine.nSegRenderList [h] = -gameData.render.mine.nSegRenderList [i];
+		gameData.render.mine.nSegRenderList [0][h] = -gameData.render.mine.nSegRenderList [0][i];
 	else {
 		for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 			for (j = 0; j < 4; j++) {
@@ -664,9 +664,9 @@ void SetFaceColors (void)
 
 nRenderVertices = 0;
 for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [h]))
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][h]))
 		continue;
-	segFaceP = SEGFACES + gameData.render.mine.nSegRenderList [h];
+	segFaceP = SEGFACES + gameData.render.mine.nSegRenderList [0][h];
 	for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++)
 		for (j = 0; j < 4; j++)
 			FACES.color [j] = gameData.render.color.vertices [faceP->m_info.index [j]].color;
