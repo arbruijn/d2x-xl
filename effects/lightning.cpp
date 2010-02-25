@@ -521,10 +521,9 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes))
 	return false;
-if (!m_plasmaVerts [0].Create ((m_nNodes - 1) * 4))
-	return false;
-if (!m_plasmaVerts [1].Create ((m_nNodes - 1) * 4))
-	return false;
+for (int i = 0; i < 3; i++)
+	if (!m_plasmaVerts [i].Create ((m_nNodes - 1) * 4))
+		return false;
 if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 	return false;
 if (!m_coreVerts.Create ((m_nNodes - 1) * 4))
@@ -567,8 +566,8 @@ if (nodeP) {
 	for (int i = abs (m_nNodes); i > 0; i--, nodeP++)
 		nodeP->Destroy ();
 	m_nodes.Destroy ();
-	m_plasmaVerts [0].Destroy ();
-	m_plasmaVerts [1].Destroy ();
+	for (int i = 0; i < 3; i++)
+		m_plasmaVerts [i].Destroy ();
 	m_plasmaTexCoord.Destroy ();
 	m_coreVerts.Destroy ();
 	m_nNodes = 0;
@@ -964,31 +963,33 @@ void CLightning::ComputePlasma (int nDepth, int nThread)
 {
 	CLightningNode*	nodeP;
 	CFloatVector		vPosf [3] = {CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO};
-	int					bScale, i, j;
+	int					bScale, h, i, j;
 
 for (bScale = 0; bScale < 1; bScale++) {
 	memset (m_vNormals, 0, sizeof (m_vNormals));
 	nodeP = m_nodes.Buffer ();
 	vPosf [2].Assign (nodeP->m_vPos);
 	transformation.Transform (vPosf [2], vPosf [2], 0);
-	for (i = m_nNodes - 2, j = 0; j <= i; j++) {
+	for (h = m_nNodes - 2, i = 0; i <= h; i++) {
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
 		nodeP++;
 		vPosf [2].Assign (nodeP->m_vPos);
 		transformation.Transform (vPosf [2], vPosf [2], 0);
-		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
+		ComputePlasmaSegment (vPosf, bScale, i, i == 1, i == h, nDepth, nThread);
 		}
-	for (i = 4 * (m_nNodes - 1), j = 0; j < i; j += 2) {
-		vPosf [0] = CFloatVector::Avg (m_plasmaVerts [0][j], m_plasmaVerts [0][j+1]);
-		vPosf [1] = m_plasmaVerts [0][j] - m_plasmaVerts [0][j+1];
-		vPosf [1] /= 2 * PLASMA_WIDTH;
-		m_plasmaVerts [1][j] = vPosf [0] + vPosf [1];
-		m_plasmaVerts [1][j+1] = vPosf [0] - vPosf [1];
+	for (int j = 0; j < 2; j++) {
+		for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
+			vPosf [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
+			vPosf [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
+			vPosf [1] /= 3;
+			m_plasmaVerts [j+1][i] = vPosf [0] + vPosf [1];
+			m_plasmaVerts [j+1][i+1] = vPosf [0] - vPosf [1];
+			}
+		m_plasmaVerts [j+1][0] += (m_plasmaVerts [j+1][2] - m_plasmaVerts [j+1][0]) / 4;
+		m_plasmaVerts [j+1][1] += (m_plasmaVerts [j+1][3] - m_plasmaVerts [j+1][1]) / 4;
+		m_plasmaVerts [j+1][h-2] += (m_plasmaVerts [j+1][h-2] - m_plasmaVerts [j+1][h-4]) / 4;
+		m_plasmaVerts [j+1][h-3] += (m_plasmaVerts [j+1][h-3] - m_plasmaVerts [j+1][h-1]) / 4;
 		}
-	m_plasmaVerts [1][0] += (m_plasmaVerts [1][2] - m_plasmaVerts [1][0]) / 4;
-	m_plasmaVerts [1][1] += (m_plasmaVerts [1][3] - m_plasmaVerts [1][1]) / 4;
-	m_plasmaVerts [1][i-2] += (m_plasmaVerts [1][2] - m_plasmaVerts [1][i-4]) / 4;
-	m_plasmaVerts [1][i-3] += (m_plasmaVerts [1][3] - m_plasmaVerts [1][i-1]) / 4;
 	}
 }
 
@@ -1020,7 +1021,7 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 ogl.SetBlendMode (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-for (bScale = 0; bScale < 2; bScale++) {
+for (bScale = 0; bScale < 3; bScale++) {
 #if 0
 	if (bScale)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);

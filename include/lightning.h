@@ -90,7 +90,7 @@ typedef struct tLightning {
 
 class CLightning : public tLightning {
 	private:
-		CArray<CFloatVector>		m_plasmaVerts [2];
+		CArray<CFloatVector>		m_plasmaVerts [3];
 		CArray<tTexCoord2f>		m_plasmaTexCoord;
 		CArray<CFloatVector3>	m_coreVerts;
 		CFloatVector				m_vNormals [3];
