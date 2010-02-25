@@ -33,7 +33,8 @@ class CLightningNode : public tLightningNode {
 							   int nLife, int nLength, int nAmplitude,
 							   char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
 							   short nSmoothe, char bClamp, char bPlasma, char bLight,
-							   char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode);
+							   char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode,
+								int nThread);
 		void ComputeOffset (int nSteps);
 		int ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i);
 		int Clamp (CFixVector *vPos, CFixVector *vBase, int nAmplitude);
@@ -94,7 +95,7 @@ class CLightning : public tLightning {
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
 		~CLightning () { Destroy (); };
-		bool Create (char nDepth);
+		bool Create (char nDepth, int nThread);
 		void Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 					  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 					  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,

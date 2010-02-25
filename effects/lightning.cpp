@@ -130,14 +130,15 @@ bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 											 int nLife, int nLength, int nAmplitude,
 											 char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
 											 short nSmoothe, char bClamp, char bPlasma, char bLight,
-											 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
+											 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode,
+											 int nThread)
 {
 if (!(m_child = new CLightning))
 	return false;
 m_child->Init (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
 					nNodes, nChildren, nSteps, nSmoothe, bClamp, bPlasma, bLight,
 					nStyle, colorP, parentP, nNode);
-return m_child->Create (nDepth - 1);
+return m_child->Create (nDepth - 1, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -513,7 +514,7 @@ m_nStyle = nStyle;
 
 //------------------------------------------------------------------------------
 
-bool CLightning::Create (char nDepth)
+bool CLightning::Create (char nDepth, int nThread)
 {
 if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
@@ -546,10 +547,11 @@ if (gameOpts->render.lightning.nQuality && nDepth && m_nChildren) {
 			nNode = int (j);
 		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
 													 2 * m_nNodes / n, m_nChildren / 5, nDepth - 1, m_nSteps / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
-													 m_nStyle, &m_color, this, nNode))
+													 m_nStyle, &m_color, this, nNode, nThread))
 			return false;
 		}
 	}
+RenderSetup (0, nThread);
 return true;
 }
 
@@ -1257,12 +1259,17 @@ l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 int bFail = 0;
 #pragma omp parallel 
 	{
+#ifdef _OPENMP
+	int nThread = omp_get_thread_num ();
+#else
+	int nThread = 0;
+#endif
 	#pragma omp for
 	for (int i = 0; i < nBolts; i++) {
 		if (bFail)
 			continue;
 		m_lightning [i] = l;
-		if (!m_lightning [i].Create (0))
+		if (!m_lightning [i].Create (0, nThread))
 			bFail = 1;
 		}
 	}
