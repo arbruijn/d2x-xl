@@ -993,8 +993,7 @@ if (gameOpts->render.lightning.nQuality)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
 			m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
-if (!nDepth)
-	ComputeCore ();
+ComputeCore ();
 }
 
 //------------------------------------------------------------------------------
@@ -1051,7 +1050,6 @@ for (int i = 0; i < m_nNodes; i++)
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-ComputeCore ();
 ogl.SetBlendMode (1);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? LIGHTNING_WIDTH : 2 * LIGHTNING_WIDTH));
@@ -1142,10 +1140,8 @@ if (nDepth)
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (bPlasma) {
-	ComputePlasma (nDepth, nThread);
+if (bPlasma)
 	RenderPlasma (&color, nThread);
-	}
 RenderCore (&color, nDepth, nThread);
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
@@ -1168,6 +1164,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 		return;
 	if (!MayBeVisible (nThread))
 		return;
+	RenderSetup (0, nThread);
 #pragma omp critical
 		{
 		transparencyRenderer.AddLightning (this, nDepth);
