@@ -94,6 +94,7 @@ class CLightning : public tLightning {
 		CArray<tTexCoord2f>		m_plasmaTexCoord;
 		CArray<CFloatVector3>	m_coreVerts;
 		CFloatVector				m_vNormals [3];
+		CFloatVector				m_vCenter;
 
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };

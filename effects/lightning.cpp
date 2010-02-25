@@ -966,21 +966,23 @@ void CLightning::ComputePlasma (int nDepth, int nThread)
 	CFloatVector		vPosf [3] = {CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO};
 	int					bScale, i, j;
 
-for (bScale = 0; bScale < 2; bScale++) {
+for (bScale = 0; bScale < 1; bScale++) {
 	memset (m_vNormals, 0, sizeof (m_vNormals));
 	nodeP = m_nodes.Buffer ();
 	vPosf [2].Assign (nodeP->m_vPos);
-	nodeP++;
-	//if (!ogl.m_states.bUseTransform)
-		transformation.Transform (vPosf [2], vPosf [2], 0);
-	for (i = m_nNodes - 2, j = 0, nodeP = m_nodes.Buffer (); j <= i; j++) {
+	transformation.Transform (vPosf [2], vPosf [2], 0);
+	m_vCenter = vPosf [2];
+	for (i = m_nNodes - 2, j = 0; j <= i; j++) {
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
 		nodeP++;
 		vPosf [2].Assign (nodeP->m_vPos);
-		//if (!ogl.m_states.bUseTransform)
-			transformation.Transform (vPosf [2], vPosf [2], 0);
+		transformation.Transform (vPosf [2], vPosf [2], 0);
+		m_vCenter += vPosf [2];
 		ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
 		}
+	m_vCenter /= m_nNodes;
+	for (i = 4 * (m_nNodes - 1), j = 0; j < i; j++) 
+		m_plasmaVerts [0][i] -= m_vCenter;
 	}
 }
 
@@ -1011,9 +1013,13 @@ void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 ogl.SetBlendMode (1);
+glPushMatrix ();
+glTranslatef (m_vCenter [X], m_vCenter [Y], m_vCenter [Z]);
 for (bScale = 0; bScale < 2; bScale++) {
-	if (bScale)
+	if (bScale) {
+		glScalef (1.1f, 1.1f, 1.0f);
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
+		}
 	else
 		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 	OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
