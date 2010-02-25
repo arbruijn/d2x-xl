@@ -62,9 +62,6 @@ typedef struct tLightning {
 	CFixVector					m_vRefEnd;
 	CFixVector					m_vDelta;
 	CArray<CLightningNode>	m_nodes;
-	CArray<CFloatVector>		m_plasmaVerts [2];
-	CArray<tTexCoord2f>		m_plasmaTexCoord;
-	CArray<CFloatVector3>	m_coreVerts;
 	tRgbaColorf					m_color;
 	int							m_nNext;
 	int							m_nLife;
@@ -92,6 +89,12 @@ typedef struct tLightning {
 } tLightning;
 
 class CLightning : public tLightning {
+	private:
+		CArray<CFloatVector>		m_plasmaVerts [2];
+		CArray<tTexCoord2f>		m_plasmaTexCoord;
+		CArray<CFloatVector3>	m_coreVerts;
+		CFloatVector				m_vNormals [3];
+
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
 		~CLightning () { Destroy (); };

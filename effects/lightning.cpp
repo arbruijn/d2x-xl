@@ -901,48 +901,44 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 void CLightning::ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
 {
 	static CFloatVector vEye = CFloatVector::ZERO;
-	static CFloatVector vNormal [MAX_THREADS][3] = {
-		{CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO},
-		{CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO},
-		{CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO},
-		{CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO}
-	};
-
-	CFloatVector*	vPlasma = &m_plasmaVerts [bScale][4 * nSegment], * normalP = vNormal [nThread];
+	CFloatVector*	vPlasma = &m_plasmaVerts [bScale][4 * nSegment];
 	CFloatVector	vn [2], vd;
 
-memcpy (normalP, normalP + 1, 2 * sizeof (CFloatVector));
+memcpy (m_vNormals, m_vNormals + 1, 2 * sizeof (CFloatVector));
 if (bStart) {
-	normalP [1] = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
-	vn [0] = normalP [1];
+	m_vNormals [1] = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
+	vn [0] = m_vNormals [1];
 	}
 else {
-	vn [0] = normalP [0] + normalP [1];
+	vn [0] = m_vNormals [0] + m_vNormals [1];
 	vn [0] = vn [0] * (PLASMA_WIDTH / 4.0f);
 	}
 
 if (bEnd) {
-	vn [1] = normalP [1];
+	vn [1] = m_vNormals [1];
 	vd = vPosf [1] - vPosf [0];
 	vd = vd * (bScale ? PLASMA_WIDTH / 8.0f : PLASMA_WIDTH / 4.0f);
 	vPosf [1] += vd;
 	}
 else {
-	normalP [2] = CFloatVector::Normal (vPosf [1], vPosf [2], vEye);
-	if (CFloatVector::Dot (normalP [1], normalP [2]) < 0)
-		normalP [2].Neg ();
-	vn [1] = normalP [1] + normalP [2];
+	m_vNormals [2] = CFloatVector::Normal (vPosf [1], vPosf [2], vEye);
+	if (CFloatVector::Dot (m_vNormals [1], m_vNormals [2]) < 0)
+		m_vNormals [2].Neg ();
+	vn [1] = m_vNormals [1] + m_vNormals [2];
 	vn [1] = vn [1] * (PLASMA_WIDTH / 4.0f);
 	}
 
-if (!(nDepth || bScale)) {
-	vn [0] = vn [0] * PLASMA_WIDTH;
-	vn [1] = vn [1] * PLASMA_WIDTH;
+if (!bScale) {
+	if (!nDepth) {
+		vn [0] = vn [0] * PLASMA_WIDTH;
+		vn [1] = vn [1] * PLASMA_WIDTH;
+		}
+	else {
+		vn [0] = vn [0] * (PLASMA_WIDTH / 4.0f);
+		vn [1] = vn [1] * (PLASMA_WIDTH / 4.0f);
+		}
 	}
-if (!bScale && nDepth) {
-	vn [0] = vn [0] * (PLASMA_WIDTH / 4.0f);
-	vn [1] = vn [1] * (PLASMA_WIDTH / 4.0f);
-	}
+
 if (bStart) {
 	vPlasma [0] = vPosf [0] + vn [0];
 	vPlasma [1] = vPosf [0] - vn [0];
@@ -971,6 +967,7 @@ void CLightning::ComputePlasma (int nDepth, int nThread)
 	int					bScale, i, j;
 
 for (bScale = 0; bScale < 2; bScale++) {
+	memset (m_vNormals, 0, sizeof (m_vNormals));
 	nodeP = m_nodes.Buffer ();
 	vPosf [2].Assign (nodeP->m_vPos);
 	nodeP++;
