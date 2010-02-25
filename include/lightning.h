@@ -110,7 +110,7 @@ class CLightning : public tLightning {
 		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
 		void Render (int nDepth, int nThread);
 		int SetLight (void);
-		inline int MayBeVisible (void);
+		inline int MayBeVisible (int nThread);
 		CLightning& operator= (CLightning& source) { 
 			memcpy (this, &source, sizeof (CLightning)); 
 			return *this;

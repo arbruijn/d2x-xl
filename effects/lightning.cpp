@@ -871,10 +871,10 @@ if (0 < (h = m_nNodes)) {
 
 //------------------------------------------------------------------------------
 
-inline int CLightning::MayBeVisible (void)
+inline int CLightning::MayBeVisible (int nThread)
 {
 if (m_nSegment >= 0)
-	return SegmentMayBeVisible (m_nSegment, m_nLength / 20, 3 * m_nLength / 2);
+	return SegmentMayBeVisible (m_nSegment, m_nLength / 20, 3 * m_nLength / 2, nThread);
 if (m_nObject >= 0)
 	return (gameData.render.mine.bObjectRendered [m_nObject] == gameStates.render.nFrameFlipFlop);
 return 1;
@@ -891,11 +891,15 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 	};
 
 //------------------------------------------------------------------------------
+// Compute billboards around each lightning segment using the normal of the plane
+// spanned by the lightning segment and the vector from the camera (eye) position
+// to one lightning coordinate
+// vPosf: Coordinates of two subsequent lightning bolt segments
 
 void CLightning::ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
 {
-	CFloatVector			*vPlasma = plasmaBuffers [nThread][bScale].vertices + 4 * nSegment;
-	CFloatVector			vn [2], vd;
+	CFloatVector*	vPlasma = plasmaBuffers [nThread][bScale].vertices + 4 * nSegment;
+	CFloatVector	vn [2], vd;
 
 	static CFloatVector vEye = CFloatVector::ZERO;
 	static CFloatVector vNormal [3] = {CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO};
@@ -908,7 +912,7 @@ if (bStart) {
 else {
 	vn [0] = vNormal [0] + vNormal [1];
 	vn [0] = vn [0] * (LIGHTNING_WIDTH / 4.0f);
-}
+	}
 
 if (bEnd) {
 	vn [1] = vNormal [1];
@@ -923,6 +927,7 @@ else {
 	vn [1] = vNormal [1] + vNormal [2];
 	vn [1] = vn [1] * (LIGHTNING_WIDTH / 4.0f);
 	}
+
 if (!(nDepth || bScale)) {
 	vn [0] = vn [0] * LIGHTNING_WIDTH;
 	vn [1] = vn [1] * LIGHTNING_WIDTH;
@@ -997,6 +1002,7 @@ for (bScale = 0; bScale < 2; bScale++) {
 		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 	OglTexCoordPointer (2, GL_FLOAT, 0, plasmaBuffers [nThread][bScale].texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), plasmaBuffers [nThread][bScale].vertices);
+	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	ogl.SetTextureUsage (false);
@@ -1139,7 +1145,7 @@ void CLightning::Render (int nDepth, int nThread)
 if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// not in transparency renderer
 	if ((m_nNodes < 0) || (m_nSteps < 0))
 		return;
-	if (!MayBeVisible ())
+	if (!MayBeVisible (nThread))
 		return;
 #pragma omp critical
 		{

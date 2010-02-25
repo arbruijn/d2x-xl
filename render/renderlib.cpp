@@ -1026,21 +1026,23 @@ if (!++gameData.render.mine.nVisible) {
 
 // ----------------------------------------------------------------------------
 
-int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist)
+int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread)
 {
-	CSegment	*segP;
-	int		nSegment, nChildSeg, nChild, h, i, j;
-	ubyte		bVisited [MAX_SEGMENTS_D2X];
-
 if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
 	return 1;
+
+	CSegment*	segP;
+	int			nSegment, nChildSeg, nChild, h, i, j;
+	ubyte			bVisited [MAX_THREADS][MAX_SEGMENTS_D2X];
+	ubyte*		visitedP = bVisited [MAX_THREADS];
+
 BumpProcessedFlag ();
 gameData.render.mine.nSegRenderList [0] = nStartSeg;
 gameData.render.mine.bProcessed [nStartSeg] = gameData.render.mine.nProcessed;
 if (nMaxDist < 0)
 	nMaxDist = nRadius * I2X (20);
-memset (bVisited, 0, gameData.segs.nSegments);
-bVisited [nStartSeg] = 1;
+memset (visitedP, 0, gameData.segs.nSegments);
+visitedP [nStartSeg] = 1;
 for (i = 0, j = 1; nRadius; nRadius--) {
 	for (h = i, i = j; h < i; h++) {
 		nSegment = gameData.render.mine.nSegRenderList [h];
@@ -1050,9 +1052,9 @@ for (i = 0, j = 1; nRadius; nRadius--) {
 		segP = SEGMENTS + nSegment;
 		for (nChild = 0; nChild < 6; nChild++) {
 			nChildSeg = segP->m_children [nChild];
-			if (!bVisited [nChildSeg] && (nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG)) {
+			if (!visitedP [nChildSeg] && (nChildSeg >= 0) && (segP->IsDoorWay (nChild, NULL) & WID_RENDPAST_FLAG)) {
 				gameData.render.mine.nSegRenderList [j++] = nChildSeg;
-				bVisited [nChildSeg] = 1;
+				visitedP [nChildSeg] = 1;
 				}
 			}
 		}
