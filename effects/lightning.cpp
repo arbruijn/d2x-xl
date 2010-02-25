@@ -551,7 +551,6 @@ if (gameOpts->render.lightning.nQuality && nDepth && m_nChildren) {
 			return false;
 		}
 	}
-RenderSetup (0, nThread);
 return true;
 }
 
@@ -768,7 +767,6 @@ if (m_nNodes > 0) {
 	(m_iStep)--;
 #endif
 	}
-RenderSetup (0, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -867,7 +865,6 @@ if (0 < (h = m_nNodes)) {
 		nodeP->Move (nDepth, vDelta, nSegment, nThread);
 		}
 	}
-RenderSetup (nDepth, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -1054,6 +1051,7 @@ for (int i = 0; i < m_nNodes; i++)
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
+ComputeCore ();
 ogl.SetBlendMode (1);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? LIGHTNING_WIDTH : 2 * LIGHTNING_WIDTH));
@@ -1144,8 +1142,10 @@ if (nDepth)
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (bPlasma)
+if (bPlasma) {
+	ComputePlasma (nDepth, nThread);
 	RenderPlasma (&color, nThread);
+	}
 RenderCore (&color, nDepth, nThread);
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
