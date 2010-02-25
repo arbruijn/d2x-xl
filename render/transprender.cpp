@@ -158,20 +158,29 @@ ph->parentP = NULL;
 ph->z = nDepth;
 ph->bValid = true;
 memcpy (&ph->item, itemData, itemSize);
-if (!(pi = pd->tail) || (pi->z > nDepth) || ((pi->z == nDepth) && (pi->nType > nType))) {
+#if 0
+if (!(pi = pd->tail) || (pi->z > nDepth) || ((pi->z == nDepth) && (pi->nType > nType))) 
+#endif
+	{
 	for (pi = pd->head; pi; pi = pi->pNextItem) {
 		if ((pi->z < nDepth) || ((pi->z == nDepth) && (pi->nType < nType)))
 			break;
 		}
 	}
 if (pi) {
-	if (!(ph->pNextItem = pi->pNextItem))
+#if 0
+	if (!pi->pNextItem)
 		pd->tail = ph;
+#endif
+	ph->pNextItem = pi->pNextItem;
 	pi->pNextItem = ph;
 	}
 else {
-	if (!(ph->pNextItem = pd->head))
+#if 0
+	if (!pd->head)
 		pd->tail = ph;
+#endif
+	ph->pNextItem = pd->head;
 	pd->head = ph;
 	}
 if (m_data.nMinOffs > nOffset)
