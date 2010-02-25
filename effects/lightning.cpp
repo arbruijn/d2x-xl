@@ -36,7 +36,7 @@
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
-#define PLASMA_WIDTH	3.0f
+#define PLASMA_WIDTH	2.0f
 #define CORE_WIDTH 2.0f
 
 #define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightning.nStyle < m_nStyle)) ? \
@@ -764,8 +764,10 @@ if (m_nNodes > 0) {
 		CreatePath (bSeed, nDepth + 1);
 		m_iStep = m_nSteps;
 		}
+#if 1
 	for (j = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; j > 0; j--, nodeP++)
 		nodeP->Animate (bInit, m_nSegment, nDepth, nThread);
+#endif
 #if UPDATE_LIGHTNING
 	(m_iStep)--;
 #endif
@@ -977,19 +979,27 @@ for (bScale = 0; bScale < 1; bScale++) {
 		transformation.Transform (vPosf [2], vPosf [2], 0);
 		ComputePlasmaSegment (vPosf, bScale, i, i == 1, i == h, nDepth, nThread);
 		}
-	for (int j = 0; j < 2; j++) {
-		for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
-			vPosf [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
-			vPosf [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
-			vPosf [1] /= 3;
-			m_plasmaVerts [j+1][i] = vPosf [0] + vPosf [1];
-			m_plasmaVerts [j+1][i+1] = vPosf [0] - vPosf [1];
-			}
-		m_plasmaVerts [j+1][0] += (m_plasmaVerts [j+1][2] - m_plasmaVerts [j+1][0]) / 4;
-		m_plasmaVerts [j+1][1] += (m_plasmaVerts [j+1][3] - m_plasmaVerts [j+1][1]) / 4;
-		m_plasmaVerts [j+1][h-2] += (m_plasmaVerts [j+1][h-2] - m_plasmaVerts [j+1][h-4]) / 4;
-		m_plasmaVerts [j+1][h-3] += (m_plasmaVerts [j+1][h-3] - m_plasmaVerts [j+1][h-1]) / 4;
+	}
+
+#if 0
+for (h = 4 * (m_nNodes - 2), i = 0; i < h; i += 4) {
+	m_plasmaVerts [0][i+3] = m_plasmaVerts [0][i+4] = CFloatVector::Avg (m_plasmaVerts [0][i+3], m_plasmaVerts [0][i+4]);
+	m_plasmaVerts [0][i+2] = m_plasmaVerts [0][i+5] = CFloatVector::Avg (m_plasmaVerts [0][i+2], m_plasmaVerts [0][i+5]);
+	}
+#endif
+
+for (j = 0; j < 1; j++) {
+	for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
+		vPosf [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
+		vPosf [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
+		vPosf [1] /= 4;
+		m_plasmaVerts [j+1][i] = vPosf [0] + vPosf [1];
+		m_plasmaVerts [j+1][i+1] = vPosf [0] - vPosf [1];
 		}
+	m_plasmaVerts [j+1][0] += (m_plasmaVerts [j+1][2] - m_plasmaVerts [j+1][0]) / 4;
+	m_plasmaVerts [j+1][1] += (m_plasmaVerts [j+1][3] - m_plasmaVerts [j+1][1]) / 4;
+	m_plasmaVerts [j+1][h-2] += (m_plasmaVerts [j+1][h-2] - m_plasmaVerts [j+1][h-4]) / 4;
+	m_plasmaVerts [j+1][h-3] += (m_plasmaVerts [j+1][h-3] - m_plasmaVerts [j+1][h-1]) / 4;
 	}
 }
 
@@ -1021,21 +1031,21 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 ogl.SetBlendMode (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-for (bScale = 0; bScale < 3; bScale++) {
+for (bScale = 0; bScale < 2; bScale++) {
 #if 0
 	if (bScale)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
 #endif
-		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
+		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [bScale].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	ogl.SetTextureUsage (false);
 	glColor3f (1,1,1);
-	texCoordP = plasmaBuffers [nThread][bScale].texCoord;
-	vertexP = plasmaBuffers [nThread][bScale].vertices;
-	for (i = nNodes - 1; i; i--) {
+	texCoordP = m_plasmaTexCoord.Buffer ();
+	vertexP = m_plasmaVerts [bScale].Buffer ();
+	for (i = m_nNodes - 1; i; i--) {
 		glBegin (GL_LINE_LOOP);
 		for (j = 0; j < 4; j++) {
 			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
@@ -1062,7 +1072,7 @@ for (int i = 0; i < m_nNodes; i++)
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-#if 0
+#if 1
 ogl.SetBlendMode (1);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? CORE_WIDTH : 2 * CORE_WIDTH));
@@ -1854,7 +1864,7 @@ if (SHOW_LIGHTNING) {
 		int bStencil = ogl.StencilOff ();
 
 	int nCurrent = -1;
-#ifdef _OPENMP
+#if 0//def _OPENMP
 	if (m_systemList.Buffer ()) {
 		CLightningSystem* systemP;
 		int nSystems = 0;
