@@ -749,7 +749,7 @@ if (faceP) {
 else {
 	}
 #endif
-#if 0
+#if 1
 ogl.SetDepthWrite (0);
 #else
 ogl.SetDepthWrite (item->bDepthMask != 0);
