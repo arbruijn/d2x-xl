@@ -365,7 +365,7 @@ else {
 #endif
 
 //bmP->SetupTexture (1, 1);
-if (!bmP)
+if (!bmP || bmP->Bind (1))
 	return;
 #if 0
 if (!bmP->Prepared () && bmP->PrepareTexture (1, 0))

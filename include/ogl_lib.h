@@ -429,7 +429,7 @@ class COGL {
 			}
 
 		inline void BindTexture (GLuint handle) { 
-#if DBG_OGL < 2
+#if 0 //DBG_OGL < 2
 			if (m_data.nTexture [m_data.nTMU [0]] != handle)
 #endif
 				glBindTexture (GL_TEXTURE_2D, m_data.nTexture [m_data.nTMU [0]] = handle); 
