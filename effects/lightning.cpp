@@ -995,7 +995,6 @@ ComputeCore ();
 
 void CLightning::RenderGlow (tRgbaColorf *colorP, int nThread)
 {
-	int				bScale;
 #if RENDER_LIGHTNING_OUTLINE
 	tTexCoord2f*	texCoordP;
 	CFloatVector*	vertexP;
@@ -1004,16 +1003,16 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nThread)
 
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
-ogl.SetBlendMode (1);
+ogl.SetBlendMode (2);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-for (bScale = 0; bScale < 2; bScale++) {
+for (int i = 1; i >= 0; i--) {
 #if 1
-	if (bScale)
-		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
+	if (i)
+		glColor4f (0.15f, 0.15f, 0.15f, colorP->alpha / 2);
 	else
 #endif
-		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [bScale].Buffer ());
+		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	ogl.SetTextureUsage (false);
@@ -1139,9 +1138,9 @@ if (nDepth)
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
+RenderCore (&color, nDepth, nThread);
 if (bPlasma)
 	RenderGlow (&color, nThread);
-RenderCore (&color, nDepth, nThread);
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
