@@ -921,13 +921,13 @@ g3sPoint *RotateVertex (int i)
 g3sPoint *p = gameData.segs.points + i;
 if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
 	G3TransformAndEncodePoint (p, gameData.segs.vertices [i]);
-#if 1
-	if (gameData.render.zMax < p->p3_vec [Z])
-		gameData.render.zMax = p->p3_vec [Z];
-#else
-	fix d = CFixVector::Dist (gameData.segs.vertices [i], OBJPOS (gameData.objs.viewer)->vPos);
+#if TRANSP_DEPTH_HASH
+	fix d = p->p3_vec.Mag ();
 	if (gameData.render.zMax < d)
 		gameData.render.zMax = d;
+#else
+	if (gameData.render.zMax < p->p3_vec [Z])
+		gameData.render.zMax = p->p3_vec [Z];
 #endif
 	if (!ogl.m_states.bUseTransform) {
 		gameData.segs.fVertices [i][X] = X2F (p->p3_vec [X]);

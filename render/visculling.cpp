@@ -502,7 +502,7 @@ void InitSegZRef (int i, int j, int nThread)
 
 for (; i < j; i++, ps++) {
 	segP = SEGMENTS + gameData.render.mine.nSegRenderList [0][i];
-#if 1
+#if TRANSP_DEPTH_HASH
 	z = CFixVector::Dist (segP->Center (), vViewer) + segP->MaxRad ();
 	if (zMax < z)
 		zMax = z;

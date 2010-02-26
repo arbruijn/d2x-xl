@@ -8,6 +8,7 @@
 
 #define ITEM_DEPTHBUFFER_SIZE	100000
 #define ITEM_BUFFER_SIZE		100000
+#define TRANSP_DEPTH_HASH		1
 
 typedef enum tTranspItemType {
 	tiSprite,
@@ -197,8 +198,8 @@ class CTransparencyRenderer {
 		tTranspItem *SetParent (int nChild, int nParent);
 
 		inline int CTransparencyRenderer::Depth (CFixVector vPos, bool bTransformed) {
-#if 0
-			return CFixVector::Dist (vPos, m_data.vViewer [bTransformed]);
+#if TRANSP_DEPTH_HASH
+			return bTransformed ? vPos.Mag () : CFixVector::Dist (vPos, m_data.vViewer [0]);
 #else
 			if (!bTransformed)
 				transformation.Transform (vPos, vPos);
@@ -207,8 +208,8 @@ class CTransparencyRenderer {
 			}
 
 		inline float CTransparencyRenderer::Depth (CFloatVector vPos, bool bTransformed) {
-#if 0
-			return CFloatVector::Dist (vPos, m_data.vViewer [bTransformed]);
+#if TRANSP_DEPTH_HASH
+			return bTransformed ? vPos.Mag () : CFloatVector::Dist (vPos, m_data.vViewerf [0]);
 #else
 			if (!bTransformed)
 				transformation.Transform (vPos, vPos);

@@ -116,8 +116,6 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
 int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, bool bTransformed)
 {
 if (gameStates.render.bDepthSort < 0)
@@ -751,7 +749,9 @@ if (faceP) {
 else {
 	}
 #endif
-#if 0
+#if 1
+ogl.SetDepthWrite (0);
+#else
 ogl.SetDepthWrite (item->bDepthMask != 0);
 #endif
 if (!faceP) {
