@@ -439,7 +439,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline bool CParticle::IsVisible (void)
+inline bool CParticle::IsVisible (int nThread)
 {
 #if 0
 return gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible;
@@ -452,8 +452,12 @@ short* childP = SEGMENTS [m_nSegment].m_children;
 for (int i = 6; i; i--, childP++)
 	if ((*childP >= 0) && (gameData.render.mine.bVisible [*childP] == gameData.render.mine.nVisible))
 		return true;
+int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread);
+if (nSegment < 0)
+	return false;
+m_nSegment = nSegment;
+return gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible;
 #endif
-return false;
 }
 
 //------------------------------------------------------------------------------
@@ -1223,7 +1227,7 @@ else
 		m_nPartLimit = int (m_particles.Length ());
 #endif
 	for (h = 0, i = m_nParts, j = m_nFirstPart; i; i--, j = (j + 1) % m_nPartLimit)
-		if ((bVisible || m_particles [j].IsVisible ()) && transparencyRenderer.AddParticle (m_particles + j, fBrightness, nThread))
+		if ((bVisible || m_particles [j].IsVisible (nThread)) && transparencyRenderer.AddParticle (m_particles + j, fBrightness, nThread))
 			h++;
 	PROF_END(ptParticles)
 	return h;

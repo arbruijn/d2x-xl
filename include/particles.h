@@ -84,7 +84,7 @@ class CParticle : public tParticle {
 		int Render (float brightness);
 		void Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
 		int Update (int nCurTime, float brightness, int nThread);
-		inline bool IsVisible (void);
+		inline bool IsVisible (int nThread);
 		inline fix Transform (bool bUnscaled) {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos [Z];
