@@ -48,7 +48,7 @@ extern int r_upixelc;
 void OglDrawPixel (int x, int y, tCanvasColor *colorP)
 {
 if (ogl.SizeVertexBuffer (1)) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	glPointSize (1.0);
 	if (!colorP)
 		colorP = &COLOR;
@@ -68,7 +68,7 @@ GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.
 GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 if (!colorP)
 	colorP = &COLOR;
 OglCanvasColor (colorP);
@@ -90,7 +90,7 @@ if (ogl.SizeBuffers (nVerts + 1)) {
 	int j;
 	bool bColor;
 
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	if (!(bColor = colorP && (nColors == nVerts)))
 		OglCanvasColor (&COLOR);
 	for (int i = 0; i <= nVerts; i++) {
@@ -113,7 +113,7 @@ if (ogl.SizeVertexBuffer (2)) {
 	GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
 	GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 	GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	if (!colorP)
 		colorP = &COLOR;
 	OglCanvasColor (colorP);
@@ -134,7 +134,7 @@ if (ogl.SizeVertexBuffer (4)) {
 	GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.nLastW);
 	GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
 	GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.nLastH);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	if (!colorP)
 		colorP = &COLOR;
 	OglCanvasColor (colorP);

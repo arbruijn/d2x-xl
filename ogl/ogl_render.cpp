@@ -121,7 +121,7 @@ return 0;
 int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
 if (ogl.SizeVertexBuffer (2)) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	ogl.VertexBuffer () [0].Assign (p0->p3_vec);
 	ogl.VertexBuffer () [1].Assign (p1->p3_vec);
@@ -213,7 +213,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 {
 	double r;
 
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
 glTranslatef (X2F (pnt->p3_vec [X]), X2F (pnt->p3_vec [Y]), X2F (pnt->p3_vec [Z]));
@@ -253,7 +253,7 @@ int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 	float				ang;
 
 if (ogl.SizeVertexBuffer (nSides + 1)) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	x = X2F (p.p3_vec [X]);
 	y = X2F (p.p3_vec [Y]);
@@ -284,7 +284,7 @@ int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 	float				ang;
 
 if (ogl.SizeVertexBuffer (2 * (nSides + 1))) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	x = X2F (p.p3_vec [X]);
 	y = X2F (p.p3_vec [Y]);
@@ -309,7 +309,7 @@ return 1;
 
 int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 //	glPointSize (X2F (rad);
 OglCanvasColor (&CCanvas::Current ()->Color ());
 glPushMatrix ();
@@ -342,7 +342,7 @@ int G3DrawWhitePoly (int nVertices, g3sPoint **pointList)
 	g3sPoint*	p;
 
 if (ogl.SizeVertexBuffer (nVertices)) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SetBlending (false);
 	glColor4d (1.0, 1.0, 1.0, 1.0);
 	for (i = 0; i < nVertices; i++) {
@@ -369,7 +369,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	return 0;
 	}
 if (ogl.SizeVertexBuffer (nVertices)) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	for (i = 0; i < nVertices; i++) {
 		p = pointList [i];
@@ -453,7 +453,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 			}
 		}
 	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	glColor4d (0, 0, 0, gameStates.render.grAlpha);
 	for (i = 0; i < nVertices; i++) {
 		p = pointList [i];
@@ -586,7 +586,7 @@ if (bShaderMerge) {
 else if (!bDepthSort) {
 	if (bmBot == gameData.endLevel.satellite.bmP) {
 		ogl.SelectTMU (GL_TEXTURE0);
-		ogl.SetTextureUsage (true);
+		ogl.SetTexturing (true);
 		}
 	else
 		InitTMU0 (bVertexArrays);
@@ -775,7 +775,7 @@ if ((bOverlay > 0) && ogl.SizeBuffers (nVertices)) {
 	tFaceColor	faceColor;
 
 	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if (bmTop->Bind (1))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
@@ -808,21 +808,21 @@ if ((bOverlay > 0) && ogl.SizeBuffers (nVertices)) {
 	ogl.SetDepthMode (GL_LESS);
 #if OGL_CLEANUP
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 #endif
 	}
 else if (bShaderMerge) {
 #if OGL_CLEANUP
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false); // Disable the 2nd texture
+	ogl.SetTexturing (false); // Disable the 2nd texture
 #endif
 	activeShaderProg = 0;
 	shaderManager.Deploy (-1);
 	}
 ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 ogl.BindTexture (0);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 tMapColor.index =
 lightColor.index = 0;
 if (!bBlend)
@@ -979,7 +979,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 bmP = bmP->Override (-1);
 if (bmP == gameData.endLevel.satellite.bmP) {
 	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	}
 else
 	InitTMU0 (0);
@@ -1042,7 +1042,7 @@ if (ogl.SizeBuffers (nVertices)) {
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bLight || bDynLight);
 	}
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 tMapColor.index =
 lightColor.index = 0;
 if (!bBlend)
@@ -1055,7 +1055,7 @@ return 0;
 int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap)
 {
 if (bmP) {
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if (!bmP->IsBound ()) {
 		if (bmP->Bind (1))
 			return 0;
@@ -1066,7 +1066,7 @@ if (bmP) {
 		}
 	}
 else if (!(ogl.DrawBuffer () && ogl.DrawBuffer ()->IsBound ()))
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 return 1;
 }
 

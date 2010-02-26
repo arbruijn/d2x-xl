@@ -479,13 +479,13 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (vOffsetP && (nSubModel == nExclusive))
 		transformation.Begin (vOffsetP, NULL);
 #endif
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
 		if (bTextured && (nBitmap != pmf->m_nBitmap)) {
 			if (0 > (nBitmap = pmf->m_nBitmap))
-				ogl.SetTextureUsage (false);
+				ogl.SetTexturing (false);
 			else {
 				if (!bHires)
 					bmP = modelBitmaps [nBitmap];
@@ -497,7 +497,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 						}
 					}
 				ogl.SelectTMU (GL_TEXTURE0, true);
-				ogl.SetTextureUsage (true);
+				ogl.SetTexturing (true);
 				bmP = bmP->Override (-1);
 				if (bmP->Frames ())
 					bmP = bmP->CurFrame ();
@@ -901,7 +901,7 @@ G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHire
 if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
 #endif
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 if (gameStates.render.bCloaked)

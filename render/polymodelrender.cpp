@@ -229,7 +229,7 @@ transformation.Transform (&p0.p3_vec, &objP->info.position.vPos);
 VmVecSub (&p1.p3_vec, &objP->info.position.vPos, &objP->mType.physInfo.velocity);
 transformation.Transform (&p1.p3_vec, &p1.p3_vec);
 glLineWidth (20);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 glBegin (GL_LINES);
 glColor4d (1.0, 0.5, 0.0, 0.3);
 OglVertex3x (p0.p3_vec [X], p0.p3_vec [Y], p0.p3_vec [Z]);

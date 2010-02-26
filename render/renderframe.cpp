@@ -107,7 +107,7 @@ if (LoadScope ()) {
 	float y = 1.0f - float (CCanvas::Current ()->Top ()) / sh;
 	float h = ch / sh;
 
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	ogl.SetBlending (true);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthTest (false);
@@ -127,7 +127,7 @@ if (LoadScope ()) {
 	glEnd ();
 	ogl.BindTexture (0);
 	ogl.SetDepthTest (true);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	glPopMatrix ();
 	}
 }
@@ -335,7 +335,7 @@ if (gameOpts->app.bEpilepticFriendly ||
 
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glColor4f (0, 0, 0, /*1.0f -*/ 3 * X2F (gameStates.render.nFlashScale) / 4);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 ogl.SetDepthTest (false);
 ogl.RenderScreenQuad ();
 ogl.SetDepthTest (true);

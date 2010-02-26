@@ -426,7 +426,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				if (bmP->Bind (1))
 					return 0;
 				bmP->Texture ()->Wrap (GL_REPEAT);
-				ogl.SetTextureUsage (true);
+				ogl.SetTexturing (true);
 				}
 
 			fl = *fLight * (0.75f - 0.25f * (pf->m_vNormal * mView.FVec ()));
@@ -497,7 +497,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 			if (bTextured == 1) {
 				ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [0], 1, 1);
 				bTextured = 0;
-				ogl.SetTextureUsage (false);
+				ogl.SetTexturing (false);
 				bmP = NULL;
 				}
 			fl = fLight [1];
@@ -599,7 +599,7 @@ vPos.Assign (transformation.m_info.pos);
 if (IsMultiGame && netGame.m_info.BrightPlayers)
 	*fLight = 1.0f;
 ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 	if (pso->m_nParent == -1) {
 		if (!pso->Render (objP, this, vo, i, fLight)) {
@@ -608,7 +608,7 @@ for (i = 0, pso = m_subModels.Buffer (); i < m_nSubModels; i++, pso++)
 			}
 		}
 transformation.End ();
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 return r;
 }
 

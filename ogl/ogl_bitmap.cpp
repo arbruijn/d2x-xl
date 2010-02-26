@@ -122,7 +122,7 @@ CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 {
 ogl.ClearError (1);
 ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 if (Bind (bMipMaps))
 	return NULL;
 m_info.texP->Wrap (GL_REPEAT);
@@ -164,7 +164,7 @@ ogl.SetDepthMode (m_render.depthFunc);
 ogl.SetBlending (m_render.bBlendState != 0);
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.BindTexture (0);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 }
 
 //------------------------------------------------------------------------------
@@ -259,7 +259,7 @@ void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, 
 	int	wScreen = screen.Width ();
 	int	hScreen = screen.Height ();
 
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 ogl.SetReadBuffer (GL_FRONT, 1);
 if (bTGA) {
 	ogl.SetReadBuffer (GL_FRONT, 0);

@@ -79,7 +79,7 @@ ogl.GenTextures (1, &hBuffer);
 if (!hBuffer)
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0 + i, true);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 ogl.BindTexture (hBuffer);
 // set up texture parameters, turn off filtering
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

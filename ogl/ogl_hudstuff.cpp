@@ -69,7 +69,7 @@ else {
 		glPushMatrix ();
 		glTranslatef ((float) (mouseData.x) / (float) screen.Width (), 1.0f - (float) (mouseData.y) / (float) screen.Height (), 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);//the positions are based upon the standard reticle at 320x200 res.
-		ogl.SetTextureUsage (false);
+		ogl.SetTexturing (false);
 		ogl.SetLineSmooth (true);
 		glColor4f (1.0f, 0.8f, 0.0f, 0.9f);
 		glLineWidth (3);
@@ -91,7 +91,7 @@ else {
 		bmpDeadzone->SetTexCoord (texCoord);
 		ogl.RenderQuad (bmpDeadzone, vPosf, w, h);
 		ogl.BindTexture (0);
-		ogl.SetTextureUsage (false);
+		ogl.SetTexturing (false);
 		glPopMatrix ();
 		}
 	else {
@@ -103,7 +103,7 @@ else {
 		glColor4f (1.0f, 0.8f, 0.0f, 1.0f / (3.0f + 0.5f * gameOpts->input.mouse.nDeadzone));
 		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
-		ogl.SetTextureUsage (false);
+		ogl.SetTexturing (false);
 		OglDrawEllipse (30, GL_LINES, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
 		glPopMatrix ();
 		}

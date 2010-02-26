@@ -45,7 +45,7 @@ ogl.SetBlending (true);
 ogl.SetBlendMode (GL_ONE,GL_ONE);
 glColor3fv (reinterpret_cast<GLfloat*> (&m_data.flash));
 ogl.SetDepthTest (false);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 ogl.RenderScreenQuad ();
 ogl.SetDepthTest (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

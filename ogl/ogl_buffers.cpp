@@ -293,7 +293,7 @@ if (HaveDrawBuffer ()) {
 
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer ()->RenderBuffer ());
 
@@ -307,7 +307,7 @@ if (HaveDrawBuffer ()) {
 			if (shaderProg > 0) {
 				SelectDrawBuffer (1);
 				SetDrawBuffer (GL_BACK, 0);
-				ogl.SetTextureUsage (true);
+				ogl.SetTexturing (true);
 				SelectTMU (GL_TEXTURE1);
 				ogl.BindTexture (DrawBuffer ()->RenderBuffer ());
 
@@ -346,7 +346,7 @@ GLuint COGL::CreateDepthTexture (int nTMU, int bFBO)
 
 if (nTMU > GL_TEXTURE0)
 	SelectTMU (nTMU);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hBuffer = 0;
@@ -383,7 +383,7 @@ GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 
 if (nTMU > 0)
 	SelectTMU (nTMU);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;

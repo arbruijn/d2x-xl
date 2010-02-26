@@ -583,7 +583,7 @@ void CTransparencyRenderer::DisableTMU (int nTMU, char bFull)
 ogl.DisableClientStates (1, 1, 1, nTMU);
 if (bFull) {
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	}
 }
 
@@ -634,7 +634,7 @@ if (m_data.bUseLightmaps != bUseLightmaps) {
 	ogl.ResetClientStates ();
 	ResetBitmaps ();
 	ogl.EnableClientStates (1, 1, bUseLightmaps, GL_TEXTURE0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if ((m_data.bUseLightmaps = bUseLightmaps))
 		ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
 	}
@@ -663,7 +663,7 @@ if (bmP) {
 		ogl.SelectTMU (GL_TEXTURE0 + bUseLightmaps + bDecal, true);
 		m_data.bTextured = 1;
 		}
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if (bDecal == 1)
 		bmP = bmP->Override (-1);
 	if ((bmP != m_data.bmP [bDecal]) || (nFrame != m_data.nFrame) || (nWrap != m_data.nWrap)) {
@@ -687,7 +687,7 @@ if (bmP) {
 else if (SetClientState (bClientState, 0, /*!m_data.bLightmaps &&*/ (nColors > 1), bUseLightmaps, 0) || m_data.bTextured) {
 	if (m_data.bTextured) {
 		ogl.BindTexture (0);
-		ogl.SetTextureUsage (false);
+		ogl.SetTexturing (false);
 		ResetBitmaps ();
 		}
 	}
@@ -1008,7 +1008,7 @@ void CTransparencyRenderer::FlushSparkBuffer (void)
 if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, -1, GL_CLAMP, 1, 1, bSoftBlend, 0, 0, 0)) {
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 #if 0
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	bmpSparks->Texture ()->Bind ();
 #endif
 	if (!(bSoftBlend && glareRenderer.LoadShader (3, 1)))
@@ -1082,7 +1082,7 @@ gameStates.render.bDepthSort = 1;
 ResetBitmaps ();
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 }
 
 //------------------------------------------------------------------------------
@@ -1119,7 +1119,7 @@ else {
 	if (!bSoftSmoke || (gameStates.render.history.nShader != 999))
 		shaderManager.Deploy (-1);
 	if (m_data.nPrevType != tiParticle) {
-		ogl.SetTextureUsage (true);
+		ogl.SetTexturing (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		particleManager.SetLastType (-1);
 		m_data.bTextured = 1;
@@ -1361,7 +1361,7 @@ FlushBuffers (-1);
 particleManager.EndRender ();
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);

@@ -230,7 +230,7 @@ int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
 ogl.SetFaceCulling (false);
 ogl.SetBlending (true);
 gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 glLineWidth (2 * GLfloat (screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 if (!m_bRadar) {
@@ -1056,7 +1056,7 @@ ogl.SetTransform (1);
 glLineWidth (GLfloat (screen.Width ()) / 640.0f);
 ogl.SetDepthTest (false);
 ogl.SetDepthWrite (false);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 
 m_bFade = m_nColor = -1;
 m_fScale = 1e10f;

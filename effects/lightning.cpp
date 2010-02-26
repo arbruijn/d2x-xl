@@ -1021,7 +1021,7 @@ for (int i = 0; i < 3; i++) {
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	glColor3f (1,1,1);
 	texCoordP = m_plasmaTexCoord.Buffer ();
 	vertexP = m_plasmaVerts [bScale].Buffer ();
@@ -1062,7 +1062,7 @@ ogl.SetLineSmooth (true);
 if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
@@ -1070,7 +1070,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 #if GL_FALLBACK
 else {
 	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	glBegin (GL_LINE_STRIP);
 	for (i = m_nNodes, vPosf = coreBuffer [nThread]; i; i--, vPosf++)
 		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf));
@@ -1092,7 +1092,7 @@ int CLightning::SetupGlow (void)
 if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0, true);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 if (LoadCorona () && !bmpCorona->Bind (1)) {
 	bmpCorona->Texture ()->Wrap (GL_CLAMP);
 	return 1;

@@ -71,7 +71,7 @@ if (nError)
 	nError = nError;
 #endif
 ogl.SelectTMU (GL_TEXTURE1);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 if (!ogl.m_states.hDepthBuffer)
 	ogl.m_states.bHaveDepthBuffer = 0;
 if (ogl.m_states.hDepthBuffer || (ogl.m_states.hDepthBuffer = ogl.CreateDepthTexture (-1, 0))) {
@@ -460,7 +460,7 @@ void RenderCoronaOutline(CFloatVector *sprite, CFloatVector *vCenter)
 {
 	int	i;
 
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 glColor4d (1,1,1,1);
 glLineWidth (2);
 glBegin (GL_LINE_LOOP);
@@ -582,11 +582,11 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	CBitmap*		bmP = NULL;
 
 if (gameStates.render.bQueryCoronas) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
 else {
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	ogl.SetDepthMode (GL_ALWAYS);
 	if (bAdditive)
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
@@ -807,7 +807,7 @@ void CGlareRenderer::UnloadShader (void)
 if (ogl.m_states.bDepthBlending) {
 	shaderManager.Deploy (-1);
 	//DestroyGlareDepthTexture ();
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	ogl.SelectTMU (GL_TEXTURE1);
 	ogl.BindTexture (0);
 	ogl.SelectTMU (GL_TEXTURE2);

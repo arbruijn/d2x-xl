@@ -160,7 +160,7 @@ do {
 
 if ((bTmpBuf = (buf == NULL))) {
 	buf = new ubyte [screen.Width () * screen.Height () * 3];
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
 	glReadPixels (0, 0, screen.Width (), screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
 	glErrCode = glGetError ();

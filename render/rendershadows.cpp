@@ -81,7 +81,7 @@ glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 ogl.SetDepthTest (false);
 ogl.SetStencilTest (true);
 ogl.SetDepthWrite (false);
@@ -178,7 +178,7 @@ ogl.SetBlending (false);
 ogl.SetBlending (true);
 SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 ogl.SelectTMU (GL_TEXTURE0);
 shadowBuf.SetTranspType (0);
 if (shadowBuf.Bind (0))
@@ -291,7 +291,7 @@ void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 
 #if 1
 ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetTextureUsage (true); 
+ogl.SetTexturing (true); 
 
 glEnable (GL_TEXTURE_GEN_S);
 glEnable (GL_TEXTURE_GEN_T);
@@ -326,7 +326,7 @@ glDisable (GL_TEXTURE_GEN_T);
 glDisable (GL_TEXTURE_GEN_R);
 glDisable (GL_TEXTURE_GEN_Q);
 ogl.SelectTMU (GL_TEXTURE0);	
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 #endif
 DestroyShadowMaps ();
 }

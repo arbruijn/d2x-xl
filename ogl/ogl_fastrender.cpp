@@ -215,7 +215,7 @@ if (gameOpts->render.debug.bWireFrame) {
 		tFaceTriangle	*triP = FACES.tris + faceP->m_info.nTriIndex;
 		ogl.DisableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
-			ogl.SetTextureUsage (false);
+			ogl.SetTexturing (false);
 		glColor3f (1.0f, 0.5f, 0.0f);
 		glLineWidth (6);
 		if (ogl.SizeVertexBuffer (4)) {
@@ -233,7 +233,7 @@ if (gameOpts->render.debug.bWireFrame) {
 		if (gameOpts->render.debug.bDynamicLight)
 			ogl.EnableClientState (GL_COLOR_ARRAY);
 		if (bTextured)
-			ogl.SetTextureUsage (true);
+			ogl.SetTexturing (true);
 		}
 	glLineWidth (1);
 	}
@@ -275,7 +275,7 @@ if (bTextured) {
 		else {
 			ogl.SelectTMU (GL_TEXTURE1, true);
 			ogl.BindTexture (0);
-			ogl.SetTextureUsage (false);
+			ogl.SetTexturing (false);
 			mask = NULL;
 			}
 		}
@@ -290,7 +290,7 @@ if (bTextured) {
 		else {
 			ogl.SelectTMU (GL_TEXTURE2, true);
 			ogl.BindTexture (0);
-			ogl.SetTextureUsage (false);
+			ogl.SetTexturing (false);
 			bColorKey = 0;
 			}
 		}
@@ -308,7 +308,7 @@ else {
 	gameStates.render.history.bmBot = NULL;
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	}
 PROF_END(ptRenderStates)
 return 1;
@@ -364,7 +364,7 @@ else {
 	gameStates.render.history.bmBot = NULL;
 	ogl.SelectTMU (GL_TEXTURE1, true);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	}
 PROF_END(ptRenderStates)
 return 1;
@@ -378,7 +378,7 @@ ogl.SelectTMU ((bmTop ? GL_TEXTURE1 : GL_TEXTURE0) + bLightmaps, true);
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, faceP->texCoordP - faceP->m_info.nIndex);
 else {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.BindTexture (0);
 	}
 }
@@ -389,7 +389,7 @@ void G3ResetMonitor (CBitmap *bmTop, int bLightmaps)
 {
 if (bmTop) {
 	ogl.SelectTMU (GL_TEXTURE1 + bLightmaps, true);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<GLvoid*> (FACES.ovlTexCoord.Buffer ()));
 	//gameStates.render.history.bmTop = NULL;
 	}

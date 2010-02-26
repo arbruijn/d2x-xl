@@ -1513,9 +1513,9 @@ pszMsg = GetMessage (gameStates.app.bD1Mission ? briefingScreens [nScreen % MAX_
 if (!pszMsg)
 	return (0);
 SetColors ();
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 i = ShowMessage (nScreen, pszMsg, nLevel);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 return i;
 }
 

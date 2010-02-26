@@ -1337,7 +1337,7 @@ if (pso - po->m_subModels == 8)
 GatherLitFaces (po);
 if ((m_nRenderFlipFlop = !m_nRenderFlipFlop))
 	m_fClipDist = ClipDist (objP, po);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 h = RenderShadowCaps (objP, po, 0) &&
 	 RenderShadowCaps (objP, po, 1) &&
 	 RenderShadowVolume (po, 0) &&
@@ -1402,7 +1402,7 @@ if (!gameStates.render.bShadowMaps) {
 		return 0;
 	}
 ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 ogl.EnableClientState (GL_VERTEX_ARRAY);
 pnl = lightManager.NearestSegLights  () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;

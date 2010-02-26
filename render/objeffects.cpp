@@ -178,7 +178,7 @@ else {
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlending (true);
 ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 ogl.SetDepthWrite (false);
 
 tBox hb [MAX_HITBOXES + 1];
@@ -417,7 +417,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	fVerts [0][Z] = fVerts [1][Z] = fVerts [2][Z] = fVerts [3][Z] = vPosf [Z];
 	fVerts [0][W] = fVerts [1][W] = fVerts [2][W] = fVerts [3][W] = 1;
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 	OglVertexPointer (4, GL_FLOAT, 0, fVerts);
 	OglDrawArrays (GL_QUADS, 0, 4);
@@ -482,7 +482,7 @@ ogl.SetFaceCulling (false);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE0);
 bVertexArrays = ogl.EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 ogl.SelectTMU (GL_TEXTURE0);
-ogl.SetTextureUsage (false);
+ogl.SetTexturing (false);
 glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	CFloatVector	rotVerts [3];
@@ -621,7 +621,7 @@ if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (objP->Damage () >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	bStencil = ogl.StencilOff ();
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) &&
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ?
 		  reinterpret_cast<tRgbColorf*> (&trackGoalColor [0]) : ObjectFrameColor (objP, pc);
@@ -751,7 +751,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 	if (pp) {
 		bStencil = ogl.StencilOff ();
 		ogl.SelectTMU (GL_TEXTURE0);
-		ogl.SetTextureUsage (true);
+		ogl.SetTexturing (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadBitmap (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
@@ -1055,15 +1055,15 @@ nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0);
 
 if (!LoadThruster ()) {
 	extraGameInfo [IsMultiGame].bThrusterFlames = 2;
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	}
 else if (nStyle == 2) {
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	bmP = bmpThruster [1][bPlayer];
 	bmP->SetTranspType (-1);
 	if (bmP->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
-		ogl.SetTextureUsage (false);
+		ogl.SetTexturing (false);
 		}
 	else {
 		bmP->Texture ()->Wrap (GL_CLAMP);
@@ -1124,7 +1124,7 @@ else { //3D
 			bmP->SetTranspType (-1);
 			if (bmP->Bind (1)) {
 				bTextured = 0;
-				ogl.SetTextureUsage (false);
+				ogl.SetTexturing (false);
 				}
 			else {
 				bmP->Texture ()->Wrap (GL_CLAMP);
@@ -1328,7 +1328,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 		ogl.SetFaceCulling (false);
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthWrite (false);
-		ogl.SetTextureUsage (true);
+		ogl.SetTexturing (true);
 		bmpCorona->SetTranspType (-1);
 		if (bmpCorona->Bind (1))
 			return 0;
@@ -1358,7 +1358,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 			}
 		transformation.End ();
 		ogl.SetDepthMode (GL_LESS);
-		ogl.SetTextureUsage (false);
+		ogl.SetTexturing (false);
 		ogl.SetFaceCulling (true);
 		}
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1394,7 +1394,7 @@ if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]
 		if (ogl.SizeBuffers (2 * 3 * (RING_SEGS + 1))) {
 			transformation.Begin (vPos, objP->info.position.mOrient);
 			ogl.SetDepthWrite (false);
-			ogl.SetTextureUsage (false);
+			ogl.SetTexturing (false);
 			//OglCullFace (1);
 			ogl.SetFaceCulling (false);
 			r [3] = X2F (objP->info.xSize);

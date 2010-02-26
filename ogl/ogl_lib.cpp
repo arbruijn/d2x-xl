@@ -476,7 +476,7 @@ int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
-SetTextureUsage (true);
+SetTexturing (true);
 if (!bNormals)
 	DisableClientState (GL_NORMAL_ARRAY);
 else if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {
@@ -511,7 +511,7 @@ if (bTexCoord)
 if (bColor)
 	DisableClientState (GL_COLOR_ARRAY);
 DisableClientState (GL_VERTEX_ARRAY);
-SetTextureUsage (false);
+SetTexturing (false);
 }
 
 //------------------------------------------------------------------------------
@@ -520,10 +520,10 @@ void COGL::ResetClientStates (void)
 {
 for (int i = 4; i; ) {
 	DisableClientStates (1, 1, 1, GL_TEXTURE0 + --i);
-	SetTextureUsage (true);
+	SetTexturing (true);
 	ogl.BindTexture (0);
 	if (i)
-		SetTextureUsage (false);
+		SetTexturing (false);
 	}
 memset (m_data.clientStates, 0, sizeof (m_data.clientStates));
 }
@@ -881,7 +881,7 @@ if (m_states.bShadersOk)
 // new string texture is uploaded to the OpenGL driver when depth textures are used.
 DestroyGlareDepthTexture ();
 #endif
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 DisableClientStates (1, 1, 1, GL_TEXTURE3);
 ogl.BindTexture (0);
 DisableClientStates (1, 1, 1, GL_TEXTURE2);
@@ -1058,7 +1058,7 @@ else {
 		glLoadIdentity ();//clear matrix
 		SetBlending (true);
 		SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		SetTextureUsage (false);
+		SetTexturing (false);
 		SetDepthMode (GL_ALWAYS); //LEQUAL);
 		SetDepthTest (false);
 		}
@@ -1089,7 +1089,7 @@ GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 
 if (nTMU > 0)
 	SelectTMU (nTMU);
-ogl.SetTextureUsage (true);
+ogl.SetTexturing (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;

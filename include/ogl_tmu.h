@@ -22,7 +22,7 @@ static inline void InitTMU (int i, int bVertexArrays)
 
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (tmuIds [i], bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if (i == 0)
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	else if (i == 1)
@@ -37,7 +37,7 @@ else {
 	if (g3InitTMU [i][bVertexArrays])
 		glNewList (g3InitTMU [i][bVertexArrays], GL_COMPILE);
 	ogl.SelectTMU (tmuIds [i], bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if (i == 0)
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	else if (i == 1)
@@ -58,7 +58,7 @@ static inline void InitTMU0 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #else
 if (glIsList (g3InitTMU [0][bVertexArrays]))
@@ -68,7 +68,7 @@ else {
 	if (g3InitTMU [0][bVertexArrays])
 		glNewList (g3InitTMU [0][bVertexArrays], GL_COMPILE);
 	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [0][bVertexArrays]) {
 		glEndList ();
@@ -84,7 +84,7 @@ static inline void InitTMU1 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_MODULATE : GL_DECAL);
 #else
 if (glIsList (g3InitTMU [1][bVertexArrays]))
@@ -95,7 +95,7 @@ else
 	if (g3InitTMU [1][bVertexArrays])
 		glNewList (g3InitTMU [1][bVertexArrays], GL_COMPILE);
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_MODULATE : GL_DECAL);
 	if (g3InitTMU [1][bVertexArrays]) {
 		glEndList ();
@@ -111,7 +111,7 @@ static inline void InitTMU2 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_DECAL : GL_MODULATE);
 #else
 if (glIsList (g3InitTMU [2][bVertexArrays]))
@@ -121,7 +121,7 @@ else {
 	if (g3InitTMU [2][bVertexArrays])
 		glNewList (g3InitTMU [2][bVertexArrays], GL_COMPILE);
 	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, bLightmaps ? GL_DECAL : GL_MODULATE);
 	if (g3InitTMU [2][bVertexArrays]) {
 		glEndList ();
@@ -137,7 +137,7 @@ static inline void InitTMU3 (int bVertexArrays, int bLightmaps = 0)
 {
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #else
 if (glIsList (g3InitTMU [3][bVertexArrays]))
@@ -148,7 +148,7 @@ else
 	if (g3InitTMU [3][bVertexArrays])
 		glNewList (g3InitTMU [3][bVertexArrays], GL_COMPILE);
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [3][bVertexArrays]) {
 		glEndList ();
@@ -165,16 +165,16 @@ static inline void ExitTMU (int bVertexArrays)
 #if !USE_DISPLAY_LISTS
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 #else
 if (glIsList (g3ExitTMU [bVertexArrays]))
 	glCallList (g3ExitTMU [bVertexArrays]);
@@ -184,16 +184,16 @@ else {
 		glNewList (g3ExitTMU [bVertexArrays], GL_COMPILE);
 	ogl.SelectTMU (GL_TEXTURE3, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SelectTMU (GL_TEXTURE2, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	if (g3ExitTMU [bVertexArrays]) {
 		glEndList ();
 		ExitTMU (bVertexArrays);

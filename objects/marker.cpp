@@ -87,7 +87,7 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 	G3TransformAndEncodePoint (&basePoint, MarkerObj (-1, nMarker)->info.position.vPos);
 	glPushMatrix ();
 	glTranslatef (X2F (basePoint.p3_vec[X]), X2F (basePoint.p3_vec[Y]), X2F (basePoint.p3_vec[Z]));
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	OglCanvasColor (&CCanvas::Current ()->Color ());
 	px = xCoord [nMarker];
 	py = yCoord [nMarker];

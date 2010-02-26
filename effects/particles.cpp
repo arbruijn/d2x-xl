@@ -1766,7 +1766,7 @@ ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
 ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
 if (bLightmaps) {
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
 	}
 ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
@@ -1901,7 +1901,7 @@ if (gameStates.render.bDepthSort <= 0) {
 	ogl.SetFaceCulling (false);
 	ogl.SetBlending (true);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if ((nType >= 0) && bmP->Bind (0))
 		return 0;
 	ogl.SetDepthMode (GL_LESS);
@@ -1927,7 +1927,7 @@ int CParticleManager::EndRender (void)
 CloseBuffer ();
 if (gameStates.render.bDepthSort <= 0) {
 	ogl.BindTexture (0);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	ogl.SetDepthWrite (true);
 	ogl.StencilOn (particleManager.Stencil ());
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

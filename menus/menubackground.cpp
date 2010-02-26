@@ -426,7 +426,7 @@ if (bForce || (MODERN_STYLE == 1)) {
 	if (bottom >= screen.Height ())
 		bottom = screen.Height () - 1;
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	OglDrawFilledRect (left, top, right, bottom);
 	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
 	glLineWidth (GLfloat (nLineWidth) * sqrt (GLfloat (screen.Width ()) / 640.0f));

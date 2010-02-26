@@ -489,7 +489,7 @@ if (m_info.buffer.Buffer ())
 	m_info.buffer.ReleaseTexture ();
 #if CAMERA_READPIXELS
 	memset (m_info.buffer.Buffer (), 0, m_info.buffer.Width () * m_info.buffer.Height () * 4);
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 #endif
 	glReadBuffer (GL_BACK);
 	if (gameOpts->render.cameras.bFitToWall || m_info.bTeleport) {

@@ -467,7 +467,7 @@ if (bmP && (bmP == bmpShield)) {
 #endif
 if (bmP) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.SetTextureUsage (true);
+	ogl.SetTexturing (true);
 	if (bmP->Bind (1))
 		bmP = NULL;
 	else {
@@ -478,7 +478,7 @@ if (bmP) {
 		}
 	}
 if (!bmP) {
-	ogl.SetTextureUsage (false);
+	ogl.SetTexturing (false);
 	bTextured = 0;
 	alpha /= 2;
 	}

@@ -342,7 +342,9 @@ class COGL {
 		inline bool SetBlending (bool bUseBlending) { return Enable (m_data.bUseBlending, bUseBlending, GL_BLEND); }
 		inline bool GetBlendUsage (void) { return m_data.bUseBlending; }
 		
-		inline bool SetTextureUsage (bool bUseTextures) { 
+		inline bool SetTexturing (bool bUseTextures) { 
+			if (!bUseTextures)
+				m_data.nTexture [m_data.nTMU [0]] = 0;
 			return Enable (m_data.bUseTextures [m_data.nTMU [0]], bUseTextures, GL_TEXTURE_2D); 
 			}
 		inline bool GetTextureUsage (void) { return m_data.bUseTextures [m_data.nTMU [0]]; }
@@ -429,7 +431,7 @@ class COGL {
 			}
 
 		inline void BindTexture (GLuint handle) { 
-#if 0 //DBG_OGL < 2
+#if DBG_OGL < 2
 			if (m_data.nTexture [m_data.nTMU [0]] != handle)
 #endif
 				glBindTexture (GL_TEXTURE_2D, m_data.nTexture [m_data.nTMU [0]] = handle); 
