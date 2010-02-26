@@ -36,7 +36,7 @@
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
-#define PLASMA_WIDTH	2.0f
+#define PLASMA_WIDTH	3.0f
 #define CORE_WIDTH 2.0f
 
 #define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightning.nStyle < m_nStyle)) ? \
