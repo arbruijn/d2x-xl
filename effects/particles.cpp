@@ -267,20 +267,20 @@ else {
 		m_nFadeState = 2;
 		}
 	if (m_bEmissive)
-		m_color [0].alpha = (float) (SMOKE_START_ALPHA + 64) / 255.0f;
+		m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
-			m_color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+			m_color [0].alpha = float (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 		else {
 			if (colorP->alpha < 0)
 				m_color [0].alpha = -colorP->alpha;
 			else {
-				if (2 == (m_nFadeState = (char) colorP->alpha)) {
+				if (2 == (m_nFadeState = char (colorP->alpha))) {
 					m_color [0].red = 1.0f;
 					m_color [0].green = 0.5f;
 					m_color [0].blue = 0.0f;
 					}
-				m_color [0].alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+				m_color [0].alpha = float (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 				}
 			}
 		if (gameOpts->render.particles.bDisperse && !m_bBright) {
@@ -414,20 +414,25 @@ else {
 	m_nOrient = rand () % 4;
 	}
 UpdateTexCoord ();
-#if 1
-if (m_bEmissive)
-	m_color [0].alpha *= ParticleBrightness (colorP);
-else if (nParticleSystemType == SMOKE_PARTICLES)
-	m_color [0].alpha /= colorP ? color.red + color.green + color.blue + 2 : 2;
-else if (nParticleSystemType == BUBBLE_PARTICLES)
-	m_color [0].alpha /= 2;
-else if ((nParticleSystemType == LIGHT_PARTICLES) || (nParticleSystemType == FIRE_PARTICLES))
-	m_color [0].alpha = 1.0f;
-#	if 0
-else if (nParticleSystemType == GATLING_PARTICLES)
-	;//m_color [0].alpha /= 6;
-#	endif
+#if 0
+if (colorP && (colorP->alpha < 0))
+	m_color [0].alpha /= 2.0f;
+else 
 #endif
+	{
+	if (m_bEmissive)
+		m_color [0].alpha *= ParticleBrightness (colorP);
+	else if (nParticleSystemType == SMOKE_PARTICLES)
+		m_color [0].alpha /= colorP ? 2.0f + color.red + color.green + color.blue : 2.0f;
+	else if (nParticleSystemType == BUBBLE_PARTICLES)
+		m_color [0].alpha /= 2.0f;
+	else if ((nParticleSystemType == LIGHT_PARTICLES) || (nParticleSystemType == FIRE_PARTICLES))
+		m_color [0].alpha = 1.0f;
+#	if 0
+	else if (nParticleSystemType == GATLING_PARTICLES)
+		;//m_color [0].alpha /= 6;
+#	endif
+	}
 SetupColor (fBrightness);
 return 1;
 }
@@ -794,14 +799,18 @@ if (m_nType == SMOKE_PARTICLES) {
 
 	float	fFade;
 
-if (m_nFadeType == 0)	// default (start fully visible, fade out)
+if (m_nFadeType == 0) {	// default (start fully visible, fade out)
 #if 1 
 	m_renderColor.alpha *= m_decay * 0.6f;
 #else
 	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 #endif
-else if (m_nFadeType == 1)	// quickly fade in, then gently fade out
+	}
+else if (m_nFadeType == 1)	{ // quickly fade in, then gently fade out
 	m_renderColor.alpha *= float (sin (double (sqr (1.0f - m_decay)) * Pi * 1.5) * 0.5 + 0.5);
+	if (m_decay >= 0.666f)
+		return 1;
+	}
 else if (m_nFadeType == 2) {	// fade in, then gently fade out
 	float fPivot = m_nTTL / 4000.0f;
 	if (fPivot > 0.25f)
@@ -818,24 +827,31 @@ else if (m_nFadeType == 2) {	// fade in, then gently fade out
 	if (fFade > 1.0f)
 		fFade = 1.0f;
 	m_renderColor.alpha *= fFade;
+	if (m_decay >= 0.75f) 
+		return 1;
 	}
 else if (m_nFadeType == 3) {	// fire (additive, blend in)
 	if (m_decay > 0.5f)
 		fFade = 2.0f * (1.0f - m_decay);
 	else
 		fFade = m_decay * 2.0f;
-	m_decay = 1.0f;
+	if ((m_decay < 0.5f) && (fFade < 0.00333f)) {
+		m_nLife = -1;
+		return 0;
+		}
 	m_renderColor.red =
 	m_renderColor.green = 
 	m_renderColor.blue = fFade;
 	m_color [0] = m_renderColor;
+	return 1;
 	}
 else if (m_nFadeType == 4) {	// light trail (additive, constant effect)
 	m_renderColor.red /= 50.0f;
 	m_renderColor.green /= 50.0f;
 	m_renderColor.blue /= 50.0f;
+	return 1;
 	}
-if (m_renderColor.alpha >= 0.04f) //1.0 / 255.0
+if (m_renderColor.alpha >= 0.01f) //1.0 / 255.0
 	return 1;
 m_nLife = -1;
 return 0;
@@ -873,10 +889,10 @@ if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
 #if 0
 	float decay = (float) pow (m_decay * m_decay * m_decay, 1.0f / 5.0f);
 #else
-	float decay = (float) pow (m_decay, 1.0f / 3.0f);
+	float fFade = (m_nFadeType == 3) ? 1.0f : float (pow (m_decay, 1.0f / 3.0f));
 #endif
-	vOffset [X] = X2F (m_nWidth) / decay;
-	vOffset [Y] = X2F (m_nHeight) / decay;
+	vOffset [X] = X2F (m_nWidth) / fFade;
+	vOffset [Y] = X2F (m_nHeight) / fFade;
 	}
 else {
 	vOffset [X] = X2F (m_nWidth) * m_decay;

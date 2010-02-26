@@ -1746,7 +1746,7 @@ gameOptions [0].render.particles.nAlpha [2] = 2;
 // missiles
 gameOptions [0].render.particles.nSize [3] = 1 + (gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nDens [3] = 1 + (gameOpts->render.particles.nQuality > 1);
-gameOptions [0].render.particles.nLife [3] = (gameOpts->render.particles.nQuality > 1);
+gameOptions [0].render.particles.nLife [3] = 0; //(gameOpts->render.particles.nQuality > 1);
 gameOptions [0].render.particles.nAlpha [3] = 2;
 // debris
 gameOptions [0].render.particles.nSize [4] = 1;
