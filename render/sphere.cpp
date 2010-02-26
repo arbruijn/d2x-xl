@@ -895,7 +895,7 @@ if (gameData.render.monsterball.nFaces > 0)
 #endif
  {
 	if (gameStates.render.bDepthSort > 0)
-		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP);
+		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP, 0);
 	else {
 		float r = X2F (objP->info.xSize);
 		ogl.SetTransform (1);
