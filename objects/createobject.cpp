@@ -519,7 +519,8 @@ if ((nObject <= 0) || (nObject >= LEVEL_OBJECTS))
 	CObject *objP = OBJECTS + nObject;
 
 if (objP->info.nType == OBJ_WEAPON) {
-	RespawnDestroyedWeapon (nObject);
+	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
+		RespawnDestroyedWeapon (nObject);
 	if (objP->info.nId == GUIDEDMSL_ID) {
 		nParent = OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId;
 		if (nParent != gameData.multiplayer.nLocalPlayer)

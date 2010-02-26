@@ -6607,6 +6607,10 @@
 						RelativePath="..\effects\shrapnel.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\effects\sparkeffect.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Header Files"
@@ -6708,10 +6712,6 @@
 			<Filter
 				Name="gameio"
 				>
-				<File
-					RelativePath="..\effects\sparkeffect.cpp"
-					>
-				</File>
 				<Filter
 					Name="Source Files"
 					>

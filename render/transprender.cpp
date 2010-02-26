@@ -116,9 +116,9 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 //------------------------------------------------------------------------------
 
-int nCritical = 0;
+//------------------------------------------------------------------------------
 
-int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, bool bTransform)
+int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, bool bTransformed)
 {
 if (gameStates.render.bDepthSort < 0)
 	return 0;
@@ -131,7 +131,7 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 #if RENDER_TRANSPARENCY
 	tTranspItem*		ph, *	pi;
 	tTranspItemList*	pd;
-	int					nDepth = CFixVector::Dist (vPos, m_data.vViewer [bTransform]) + I2X (nOffset);
+	int					nDepth = Depth (vPos, bTransformed) + I2X (nOffset);
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
@@ -521,6 +521,7 @@ return Add (tiParticle, &item, sizeof (item), particle->m_vPos, (gameOpts->rende
 int CTransparencyRenderer::AddLightning (CLightning *lightningP, short nDepth)
 {
 	tTranspLightning	item;
+	bool					bSwap;
 	//CFixVector			vPos;
 
 item.lightning = lightningP;
@@ -532,15 +533,15 @@ transformation.Transform (vPos, lightningP->m_vEnd, 0);
 if (z < vPos [Z])
 	z = vPos [Z];
 #endif
-fix d1 = CFixVector::Dist (lightningP->m_vPos, OBJPOS (gameData.objs.viewerP)->vPos);
-fix d2 = CFixVector::Dist (lightningP->m_vEnd, OBJPOS (gameData.objs.viewerP)->vPos);
-if (d1 > d2)
+fix d1 = Depth (lightningP->m_vPos, false);
+fix d2 = Depth (lightningP->m_vEnd, false);
+if ((bSwap = (d1 < d2)))
 	::Swap (d1, d2);
-if (d1 > m_data.zMax)
+if (d2 > m_data.zMax)
 	return 0;
-if (d2 < m_data.zMin)
+if (d1 < m_data.zMin)
 	return 0;
-if (!Add (tiLightning, &item, sizeof (item), CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd), true))
+if (!Add (tiLightning, &item, sizeof (item), bSwap ? lightningP->m_vEnd : lightningP->m_vPos /*CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd)*/, true))
 	return 0;
 return 1;
 }
@@ -566,7 +567,7 @@ if ((item.bTrail = (vFlame != NULL))) {
 else
 	j = 4;
 for (i = 0; i < j; i++) {
-	d = CFloatVector::Dist (item.vertices [i], m_data.vViewerf [1]);
+	d = Depth (item.vertices [i], true);
 	if (dMin > d) {
 		dMin = d;
 		iMin = i;
@@ -750,7 +751,9 @@ if (faceP) {
 else {
 	}
 #endif
+#if 0
 ogl.SetDepthWrite (item->bDepthMask != 0);
+#endif
 if (!faceP) {
 	bmTop = mask = NULL;
 	bDecal = 0;

@@ -50,6 +50,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objsmoke.h"
 #include "menu.h"
 #include "findfile.h"
+#include "createmesh.h"
+#include "strutil.h"
 
 void SetFunctionMode (int);
 
@@ -743,6 +745,57 @@ switch (objP->info.renderType) {
 	case RT_LASER:
 		break;
 
+	case RT_SMOKE:
+		objP->rType.particleInfo.nLife = NDReadInt ();
+		objP->rType.particleInfo.nSize [0] = NDReadInt ();
+		objP->rType.particleInfo.nParts = NDReadInt ();
+		objP->rType.particleInfo.nSpeed = NDReadInt ();
+		objP->rType.particleInfo.nDrift = NDReadInt ();
+		objP->rType.particleInfo.nBrightness = NDReadInt ();
+		objP->rType.particleInfo.color.red = NDReadByte ();
+		objP->rType.particleInfo.color.green = NDReadByte ();
+		objP->rType.particleInfo.color.blue = NDReadByte ();
+		objP->rType.particleInfo.color.alpha = NDReadByte ();
+		objP->rType.particleInfo.nSide = NDReadByte ();
+		objP->rType.particleInfo.nType = NDReadByte ();
+		objP->rType.particleInfo.bEnabled = NDReadByte ();
+		break;
+
+	case RT_LIGHTNING:
+		objP->rType.lightningInfo.nLife = NDReadInt ();
+		objP->rType.lightningInfo.nDelay = NDReadInt ();
+		objP->rType.lightningInfo.nLength = NDReadInt ();
+		objP->rType.lightningInfo.nAmplitude = NDReadInt ();
+		objP->rType.lightningInfo.nOffset = NDReadInt ();
+		objP->rType.lightningInfo.nBolts = NDReadShort ();
+		objP->rType.lightningInfo.nId = NDReadShort ();
+		objP->rType.lightningInfo.nTarget = NDReadShort ();
+		objP->rType.lightningInfo.nNodes = NDReadShort ();
+		objP->rType.lightningInfo.nChildren = NDReadShort ();
+		objP->rType.lightningInfo.nSteps = NDReadShort ();
+		objP->rType.lightningInfo.nAngle = NDReadByte ();
+		objP->rType.lightningInfo.nStyle = NDReadByte ();
+		objP->rType.lightningInfo.nSmoothe = NDReadByte ();
+		objP->rType.lightningInfo.bClamp = NDReadByte ();
+		objP->rType.lightningInfo.bPlasma = NDReadByte ();
+		objP->rType.lightningInfo.bSound = NDReadByte ();
+		objP->rType.lightningInfo.bRandom = NDReadByte ();
+		objP->rType.lightningInfo.bInPlane = NDReadByte ();
+		objP->rType.lightningInfo.color.red = NDReadByte ();
+		objP->rType.lightningInfo.color.green = NDReadByte ();
+		objP->rType.lightningInfo.color.blue = NDReadByte ();
+		objP->rType.lightningInfo.color.alpha = NDReadByte ();
+		objP->rType.lightningInfo.bEnabled = NDReadByte ();
+		break;
+
+	case RT_SOUND:
+		NDRead (objP->rType.soundInfo.szFilename, 1, sizeof (objP->rType.soundInfo.szFilename));
+		objP->rType.soundInfo.szFilename [sizeof (objP->rType.soundInfo.szFilename) - 1] = '\0';
+		strlwr (objP->rType.soundInfo.szFilename);
+		objP->rType.soundInfo.nVolume = int (float (NDReadInt ()) * float (I2X (1)) / 10.0f + 0.5f);
+		objP->rType.soundInfo.bEnabled = NDReadByte ();
+		break;
+
 	default:
 		Int3 ();
 	}
@@ -776,6 +829,8 @@ if ((o.info.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || game
 if ((o.info.nType == OBJ_ROBOT) && (o.info.nId == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 #endif
+if (o.info.nType == OBJ_EFFECT)
+	return;
 if (o.cType.aiInfo.behavior == AIB_STATIC)
 	o.info.movementType = MT_PHYSICS;
 // Do renderType first so on read, we can make determination of
@@ -905,6 +960,55 @@ switch (o.info.renderType) {
 		break;
 
 	case RT_LASER:
+		break;
+
+	case RT_SMOKE:
+		NDWriteInt (o.rType.particleInfo.nLife);
+		NDWriteInt (o.rType.particleInfo.nSize [0]);
+		NDWriteInt (o.rType.particleInfo.nParts);
+		NDWriteInt (o.rType.particleInfo.nSpeed);
+		NDWriteInt (o.rType.particleInfo.nDrift);
+		NDWriteInt (o.rType.particleInfo.nBrightness);
+		NDWriteByte (o.rType.particleInfo.color.red);
+		NDWriteByte (o.rType.particleInfo.color.green);
+		NDWriteByte (o.rType.particleInfo.color.blue);
+		NDWriteByte (o.rType.particleInfo.color.alpha);
+		NDWriteByte (o.rType.particleInfo.nSide);
+		NDWriteByte (o.rType.particleInfo.nType);
+		NDWriteByte (o.rType.particleInfo.bEnabled);
+		break;
+
+	case RT_LIGHTNING:
+		NDWriteInt (o.rType.lightningInfo.nLife);
+		NDWriteInt (o.rType.lightningInfo.nDelay);
+		NDWriteInt (o.rType.lightningInfo.nLength);
+		NDWriteInt (o.rType.lightningInfo.nAmplitude);
+		NDWriteInt (o.rType.lightningInfo.nOffset);
+		NDWriteShort (o.rType.lightningInfo.nBolts);
+		NDWriteShort (o.rType.lightningInfo.nId);
+		NDWriteShort (o.rType.lightningInfo.nTarget);
+		NDWriteShort (o.rType.lightningInfo.nNodes);
+		NDWriteShort (o.rType.lightningInfo.nChildren);
+		NDWriteShort (o.rType.lightningInfo.nSteps);
+		NDWriteByte (o.rType.lightningInfo.nAngle);
+		NDWriteByte (o.rType.lightningInfo.nStyle);
+		NDWriteByte (o.rType.lightningInfo.nSmoothe);
+		NDWriteByte (o.rType.lightningInfo.bClamp);
+		NDWriteByte (o.rType.lightningInfo.bPlasma);
+		NDWriteByte (o.rType.lightningInfo.bSound);
+		NDWriteByte (o.rType.lightningInfo.bRandom);
+		NDWriteByte (o.rType.lightningInfo.bInPlane);
+		NDWriteByte (o.rType.lightningInfo.color.red);
+		NDWriteByte (o.rType.lightningInfo.color.green);
+		NDWriteByte (o.rType.lightningInfo.color.blue);
+		NDWriteByte (o.rType.lightningInfo.color.alpha);
+		NDWriteByte (o.rType.lightningInfo.bEnabled);
+		break;
+
+	case RT_SOUND:
+		NDWrite (o.rType.soundInfo.szFilename, 1, sizeof (o.rType.soundInfo.szFilename));
+		NDWriteInt (int (float (o.rType.soundInfo.nVolume) * 10.f / float (I2X (1))));
+		NDWriteByte (o.rType.soundInfo.bEnabled);
 		break;
 
 	default:
@@ -1834,7 +1938,7 @@ else {
 void NDRenderExtras (ubyte, CObject *); 
 void MultiApplyGoalTextures ();
 
-int NDReadFrameInfo ()
+int NDReadFrameInfo (void)
 {
 	int bDone, nSegment, nTexture, nSide, nObject, soundno, angle, volume, i, bShot;
 	CObject *objP;
@@ -1847,9 +1951,15 @@ int NDReadFrameInfo ()
 
 bDone = 0;
 nTag = 255;
+#if 0
+for (int nObject = 1; nObject < gameData.objs.nLastObject [0]; nObject++)
+	if ((OBJECTS [nObject].info.nType != OBJ_NONE) && (OBJECTS [nObject].info.nType != OBJ_EFFECT))
+		ReleaseObject (nObject);
+#else
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 	ResetSegObjLists ();
 ResetObjects (1);
+#endif
 /*
 cameraManager.Destroy ();
 cameraManager.Create ();
@@ -1919,6 +2029,10 @@ while (!bDone) {
 			nObject = AllocObject ();
 			if (nObject == -1)
 				break;
+#if DBG
+			if (nObject == nDbgObj)
+				nDbgObj = nDbgObj;
+#endif
 			objP = OBJECTS + nObject;
 			NDReadObject (objP);
 			CATCH_BAD_READ
@@ -2693,6 +2807,7 @@ while (!bDone) {
 				}
 			if (!LoadLevel ((int) loadedLevel, true, false))
 				return -1;
+			meshBuilder.ComputeFaceKeys ();
 			gameData.demo.bCtrlcenDestroyed = 0;
 			if (bJustStartedPlayback) {
 				gameData.walls.nWalls = NDReadInt ();

@@ -196,6 +196,26 @@ class CTransparencyRenderer {
 		void Free (void);
 		tTranspItem *SetParent (int nChild, int nParent);
 
+		inline int CTransparencyRenderer::Depth (CFixVector vPos, bool bTransformed) {
+#if 0
+			return CFixVector::Dist (vPos, m_data.vViewer [bTransformed]);
+#else
+			if (!bTransformed)
+				transformation.Transform (vPos, vPos);
+			return vPos [Z];
+#endif
+			}
+
+		inline float CTransparencyRenderer::Depth (CFloatVector vPos, bool bTransformed) {
+#if 0
+			return CFloatVector::Dist (vPos, m_data.vViewer [bTransformed]);
+#else
+			if (!bTransformed)
+				transformation.Transform (vPos, vPos);
+			return vPos [Z];
+#endif
+			}
+
 	private:
 		int AddFaceTris (CSegFace *faceP);
 		int AddFaceQuads (CSegFace *faceP);
