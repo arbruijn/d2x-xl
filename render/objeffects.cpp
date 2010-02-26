@@ -164,7 +164,7 @@ else if (objP->info.nType == OBJ_ROBOT) {
 		}
 	}
 if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
-	DrawShieldSphere (objP, red, green, blue, alpha);
+	DrawShieldSphere (objP, red, green, blue, alpha, 1);
 	return;
 	}
 else if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
@@ -241,7 +241,7 @@ if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo
 	o.info.xSize = I2X (2);
 	objP->rType.polyObjInfo.nModel = -1;
 	//SetRenderView (0, NULL);
-	DrawShieldSphere (&o, 1, 0, 0, 0.33f);
+	DrawShieldSphere (&o, 1, 0, 0, 0.33f, 1);
 	}
 #endif
 ogl.SetDepthWrite (true);
@@ -311,7 +311,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 #if RENDER_HITBOX
 	RenderHitbox (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
 #else
-	DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
+	DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha, 1);
 #endif
 	ogl.StencilOn (bStencil);
 	}
@@ -343,13 +343,13 @@ if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 dt = gameStates.app.nSDLTicks - objP->TimeLastHit ();
 if (dt < SHIELD_EFFECT_TIME) {
 	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)) : 1;
-	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
+	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale, 1);
 	}
 else if (!gameOpts->render.effects.bOnlyShieldHits) {
 	if ((objP->info.nType != OBJ_ROBOT) || ROBOTINFO (objP->info.nId).companion)
-		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, objP->Damage () / 2 * scale);
+		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, objP->Damage () / 2 * scale, 1);
 	else
-		DrawShieldSphere (objP, 0.75f * scale, 0.0f, 0.75f * scale, objP->Damage () / 2 * scale);
+		DrawShieldSphere (objP, 0.75f * scale, 0.0f, 0.75f * scale, objP->Damage () / 2 * scale, 1);
 	}
 #endif
 }

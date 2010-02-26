@@ -79,6 +79,7 @@ typedef struct tTranspSphere {
 	tRgbaColorf			color;
 	CObject				*objP;
 	int					nSize;
+	char					bAdditive;
 } tTranspSphere;
 
 typedef struct tTranspLightning {
@@ -185,7 +186,7 @@ class CTransparencyRenderer {
 		int AddSprite (CBitmap *bmP, const CFixVector& position, tRgbaColorf *color,
 							  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad);
 		int AddSpark (const CFixVector& position, char nType, int nSize, char nFrame);
-		int AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP, fix nSize = 0);
+		int AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP, char bAdditive, fix nSize = 0);
 		int AddParticle (CParticle *particle, float fBrightness, int nThread);
 		int AddLightning (CLightning *lightningP, short nDepth);
 		int AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);

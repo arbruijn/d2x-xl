@@ -740,7 +740,7 @@ delete[] rotSphereP;
 // -----------------------------------------------------------------------------
 
 int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
-							float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive)
+							float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, char bAdditive)
 {
 	float	fScale = 1.0f;
 	int	bTextured = 0;
@@ -845,7 +845,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, fix nSize)
+void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
 {
 if (!CreateShieldSphere ())
 	return;
@@ -854,11 +854,8 @@ if (gameData.render.shield.nFaces > 0)
 #endif
  {
 	float	fScale;
-	int	bAdditive;
-	if (nSize) {
+	if (nSize)
 		fScale = 0.5f;
-		bAdditive = 0;
-		}
 	else {
 		if (objP->rType.polyObjInfo.nModel < 0) 
 			nSize = objP->info.xSize;
@@ -867,12 +864,11 @@ if (gameData.render.shield.nFaces > 0)
 			nSize = modelP ? modelP->Rad () : objP->info.xSize;
 			}
 		fScale = gameData.render.shield.Pulse ()->fScale;
-		bAdditive = 2;
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.bDepthSort < 0)
 		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
-	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, nSize)) {
+	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize)) {
 		// full and not just partial sphere rendered
 		if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk) ||
 			 ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT))) {

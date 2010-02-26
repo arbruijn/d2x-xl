@@ -483,7 +483,8 @@ return Add (tiSpark, &item, sizeof (item), position);
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, CObject *objP, fix nSize)
+int CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, 
+												  CObject *objP, char bAdditive, fix nSize)
 {
 	tTranspSphere	item;
 	//CFixVector		vPos;
@@ -494,6 +495,7 @@ item.color.green = green;
 item.color.blue = blue;
 item.color.alpha = alpha;
 item.nSize = nSize;
+item.bAdditive = bAdditive;
 item.objP = objP;
 //transformation.Transform (vPos, objP->info.position.vPos, 0);
 return Add (tiSphere, &item, sizeof (item), objP->info.position.vPos);
@@ -1073,7 +1075,7 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 gameStates.render.bDepthSort = -1;
 if (item->nType == riSphereShield)
-	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->nSize);
+	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 gameStates.render.bDepthSort = 1;

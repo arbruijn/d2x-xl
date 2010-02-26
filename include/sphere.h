@@ -42,7 +42,7 @@ class CSphere : private CSphereData {
 		void Destroy ();
 		int Create (int nRings = 32, int nTiles = 1);
 		int Render (CObject* objP, CFloatVector *pPos, float xScale, float yScale, float zScale,
-						float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, int bAdditive);
+						float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, char bAdditive);
 		inline CPulseData* Pulse (void) { return m_pulseP ? m_pulseP : &m_pulse; }
 		void SetPulse (CPulseData* pulseP);
 		void SetupPulse (float fSpeed, float fMin);
@@ -57,7 +57,7 @@ class CSphere : private CSphereData {
 void SetupSpherePulse (CPulseData *pulseP, float fSpeed, float fMin);
 
 int CreateShieldSphere (void);
-void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, fix nSize = 0);
+void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize = 0);
 void DrawMonsterball (CObject *objP, float red, float green, float blue, float alpha);
 
 #endif //__SPHERE_H
