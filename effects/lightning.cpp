@@ -949,7 +949,7 @@ for (h = 4 * (m_nNodes - 2), i = 0; i < h; i += 4) {
 	m_plasmaVerts [0][i+2] = m_plasmaVerts [0][i+5] = CFloatVector::Avg (m_plasmaVerts [0][i+2], m_plasmaVerts [0][i+5]);
 	}
 
-#if 1
+#if 0
 for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
 	vPosf [0] = CFloatVector::Avg (m_plasmaVerts [0][i], m_plasmaVerts [0][i+1]);
 	vPosf [1] = m_plasmaVerts [0][i] - m_plasmaVerts [0][i+1];
@@ -1003,14 +1003,14 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nThread)
 
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
-ogl.SetBlendMode (2);
+ogl.SetBlendMode (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-for (int i = 1; i >= 0; i--) {
-#if 1
-	if (i)
-		glColor4f (0.15f, 0.15f, 0.15f, colorP->alpha / 2);
+for (int i = 0; i < 3; i++) {
+	if (i == 2)
+		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+	else if (i == 1)
+		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
-#endif
 		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
@@ -1046,7 +1046,7 @@ for (int i = 0; i < m_nNodes; i++)
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-#if 1
+#if 0
 ogl.SetBlendMode (1);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? CORE_WIDTH : 2 * CORE_WIDTH));
@@ -1373,7 +1373,7 @@ if (m_bDestroy) {
 if (!m_bValid)
 	return 0;
 
-if (gameStates.app.nSDLTicks - m_tUpdate >= 2500) {
+if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nBolts, nThread);
