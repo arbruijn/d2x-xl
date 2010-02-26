@@ -116,6 +116,8 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 //------------------------------------------------------------------------------
 
+int nCritical = 0;
+
 int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, bool bTransform)
 {
 if (gameStates.render.bDepthSort < 0)
