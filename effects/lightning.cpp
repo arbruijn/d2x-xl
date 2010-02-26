@@ -29,7 +29,7 @@
 #endif
 
 #define RENDER_LIGHTNING_PLASMA 1
-#define RENDER_LIGHTNING_OUTLINE 0
+#define RENDER_LIGHTNING_OUTLINE 1
 #define RENDER_LIGHTINGS_BUFFERED 1
 #define UPDATE_LIGHTNING 1
 #define USE_NEW 1
@@ -905,14 +905,9 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 // to one lightning coordinate
 // vPosf: Coordinates of two subsequent lightning bolt segments
 
-void CLightning::ComputeGlowSegment (CFloatVector *vPosf, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
+void CLightning::ComputeGlowSegment (CFloatVector *vPosf, short nSegment, int nDepth)
 {
-	static CFloatVector vEye = CFloatVector::ZERO;
-	CFloatVector*	vGlow = &m_plasmaVerts [0][4 * nSegment];
-	CFloatVector	vn, vd;
-
-m_vNormals [0] = m_vNormals [1];
-vn = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
+#if 0
 if (bStart) {
 	vd = vPosf [0] - vPosf [1];
 	vd *= PLASMA_WIDTH / 4.0f;
@@ -923,37 +918,50 @@ if (bEnd) {
 	vd = vd * PLASMA_WIDTH / 4.0f;
 	vPosf [1] += vd;
 	}
-vn *= nDepth ? (PLASMA_WIDTH / 4.0f) : PLASMA_WIDTH;
-
-vGlow [0] = vPosf [0] + vn;
-vGlow [1] = vPosf [0] - vn;
-vGlow [2] = vPosf [1] - vn;
-vGlow [3] = vPosf [1] + vn;
-memcpy (&m_plasmaTexCoord [4 * nSegment], plasmaTexCoord [bStart + 2 * bEnd], 4 * sizeof (tTexCoord2f));
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::ComputeGlow (int nDepth, int nThread)
 {
-	CLightningNode*	nodeP;
-	CFloatVector		vPosf [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
-	int					h, i;
+	static CFloatVector vEye = CFloatVector::ZERO;
 
-memset (m_vNormals, 0, sizeof (m_vNormals));
+	CLightningNode*	nodeP;
+	CFloatVector*		vertP, vn, vd, vPosf [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
+	tTexCoord2f*		texCoordP;
+	int					h, i, j;
+	float					fWidth = nDepth ? (PLASMA_WIDTH / 4.0f) : PLASMA_WIDTH;
+
 nodeP = m_nodes.Buffer ();
+vertP = m_plasmaVerts [0].Buffer ();
+texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
+	if (i == h)
+		i = h;
 	vPosf [0] = vPosf [1];
 	vPosf [1].Assign (nodeP->m_vPos);
 	transformation.Transform (vPosf [1], vPosf [1], 0);
-	if (i)
-		ComputeGlowSegment (vPosf, i - 1, i == 1, i == h, nDepth, nThread);
+	if (i) {
+		vn = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
+		vn *= fWidth;
+		*vertP++ = vPosf [0] + vn;
+		*vertP++ = vPosf [0] - vn;
+		*vertP++ = vPosf [1] - vn;
+		*vertP++ = vPosf [1] + vn;
+		memcpy (texCoordP, plasmaTexCoord [0], 4 * sizeof (tTexCoord2f));
+		texCoordP += 4;
+		}
 	}
+memcpy (texCoordP - 4, plasmaTexCoord [2], 4 * sizeof (tTexCoord2f));
+memcpy (&m_plasmaTexCoord [0], plasmaTexCoord [1], 4 * sizeof (tTexCoord2f));
 
-for (h = 4 * (m_nNodes - 2), i = 0; i < h; i += 4) {
-	m_plasmaVerts [0][i+3] = m_plasmaVerts [0][i+4] = CFloatVector::Avg (m_plasmaVerts [0][i+3], m_plasmaVerts [0][i+4]);
-	m_plasmaVerts [0][i+2] = m_plasmaVerts [0][i+5] = CFloatVector::Avg (m_plasmaVerts [0][i+2], m_plasmaVerts [0][i+5]);
+#if 0
+for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
+	m_plasmaVerts [0][i+1] = m_plasmaVerts [0][j] = CFloatVector::Avg (m_plasmaVerts [0][i+1], m_plasmaVerts [0][j]);
+	m_plasmaVerts [0][i] = m_plasmaVerts [0][j+1] = CFloatVector::Avg (m_plasmaVerts [0][i], m_plasmaVerts [0][j+1]);
 	}
+#endif
 
 #if 0
 for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
@@ -968,7 +976,7 @@ m_plasmaVerts [1][1] += (m_plasmaVerts [1][3] - m_plasmaVerts [1][1]) / 4;
 m_plasmaVerts [1][h-2] += (m_plasmaVerts [1][h-2] - m_plasmaVerts [1][h-4]) / 4;
 m_plasmaVerts [1][h-3] += (m_plasmaVerts [1][h-3] - m_plasmaVerts [1][h-1]) / 4;
 #else
-for (int j = 0; j < 2; j++) {
+for (j = 0; j < 2; j++) {
 	for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
 		vPosf [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
 		vPosf [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
@@ -1004,30 +1012,31 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nThread)
 #if RENDER_LIGHTNING_OUTLINE
 	tTexCoord2f*	texCoordP;
 	CFloatVector*	vertexP;
-	int				i, j;
 #endif
 
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 ogl.SetBlendMode (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-for (int i = 0; i < 3; i++) {
-	if (i == 2)
+for (int h = 0; h < 3; h++) {
+	if (h == 2)
 		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
-	else if (i == 1)
+	else if (h == 1)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
-		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
+		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [h].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
+	if (h != 1)
+		continue;
 	ogl.SetTexturing (false);
 	glColor3f (1,1,1);
 	texCoordP = m_plasmaTexCoord.Buffer ();
-	vertexP = m_plasmaVerts [bScale].Buffer ();
-	for (i = m_nNodes - 1; i; i--) {
+	vertexP = m_plasmaVerts [h].Buffer ();
+	for (int i = m_nNodes - 1; i; i--) {
 		glBegin (GL_LINE_LOOP);
-		for (j = 0; j < 4; j++) {
+		for (int j = 0; j < 4; j++) {
 			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
 			glVertex3fv (reinterpret_cast<GLfloat*> (vertexP++));
 			}
@@ -1383,7 +1392,7 @@ if (m_bDestroy) {
 if (!m_bValid)
 	return 0;
 
-if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
+if (gameStates.app.nSDLTicks - m_tUpdate >= 2500) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nBolts, nThread);

@@ -97,7 +97,6 @@ class CLightning : public tLightning {
 #if RENDER_LIGHTNING_CORE
 		CArray<CFloatVector3>	m_coreVerts;
 #endif
-		CFloatVector				m_vNormals [3];
 
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
@@ -128,7 +127,7 @@ class CLightning : public tLightning {
 	private:
 		void CreatePath (int bSeed, int nDepth);
 		int ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength);
-		void ComputeGlowSegment (CFloatVector *vPosf, short nSegment, char bStart, char bEnd, int nDepth, int nThread);
+		void ComputeGlowSegment (CFloatVector *vPosf, short nSegment, int nDepth);
 		void ComputeGlow (int nDepth, int nThread);
 		void ComputeCore (void);
 		void RenderCore (tRgbaColorf *colorP, int nDepth, int nThread);
