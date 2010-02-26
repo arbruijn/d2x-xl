@@ -630,7 +630,7 @@ for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
 	}
 if ((h = nAmplitude - nMaxDist)) {
 	if (m_nNodes > 0) {
-		nMaxDist += (d_rand () % 5) * h / 4;
+		nMaxDist += (d_rand () % 4 + 1) * h / 4;
 		for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++)
 			nodeP->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
 		}
@@ -741,7 +741,9 @@ else {
 if (nStyle < 2) {
 	Smoothe ();
 	ComputeOffsets ();
+#if 0
 	Bump ();
+#endif
 	}
 }
 
