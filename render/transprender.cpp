@@ -364,7 +364,7 @@ else
 	{
 	if (faceP)
 		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), 
-						SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, true);
+						SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, false);
 
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
@@ -511,7 +511,7 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 item.particle = particle;
 item.fBrightness = fBrightness;
 //particle->Transform (gameStates.render.bPerPixelLighting == 2);
-return Add (tiParticle, &item, sizeof (item), particle->m_vPos, (gameOpts->render.effects.bSoftParticles & 1) ? -10 : 0);
+return Add (tiParticle, &item, sizeof (item), particle->m_vPos, -10); //(gameOpts->render.effects.bSoftParticles & 1) ? -10 : 0);
 }
 
 //------------------------------------------------------------------------------
@@ -749,7 +749,7 @@ if (faceP) {
 else {
 	}
 #endif
-#if 1
+#if 0
 ogl.SetDepthWrite (0);
 #else
 ogl.SetDepthWrite (item->bDepthMask != 0);
