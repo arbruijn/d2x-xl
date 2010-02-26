@@ -29,7 +29,7 @@
 #endif
 
 #define RENDER_LIGHTNING_PLASMA 1
-#define RENDER_LIGHTNING_OUTLINE 1
+#define RENDER_LIGHTNING_OUTLINE 0
 #define RENDER_LIGHTINGS_BUFFERED 1
 #define UPDATE_LIGHTNING 1
 #define USE_NEW 1
@@ -928,7 +928,8 @@ void CLightning::ComputeGlow (int nDepth, int nThread)
 	static CFloatVector vEye = CFloatVector::ZERO;
 
 	CLightningNode*	nodeP;
-	CFloatVector*		vertP, vn, vd, vPosf [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
+	CFloatVector*		vertP, vn, vd, 
+							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
 	float					fWidth = nDepth ? (PLASMA_WIDTH / 4.0f) : PLASMA_WIDTH;
@@ -937,18 +938,29 @@ nodeP = m_nodes.Buffer ();
 vertP = m_plasmaVerts [0].Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
-	if (i == h)
-		i = h;
-	vPosf [0] = vPosf [1];
-	vPosf [1].Assign (nodeP->m_vPos);
-	transformation.Transform (vPosf [1], vPosf [1], 0);
+	if (i >= h - 1)
+		i = i;
+	vPos [0] = vPos [1];
+	vPos [1].Assign (nodeP->m_vPos);
+	transformation.Transform (vPos [1], vPos [1], 0);
 	if (i) {
-		vn = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
+		vn = CFloatVector::Normal (vPos [0], vPos [1], vEye);
 		vn *= fWidth;
-		*vertP++ = vPosf [0] + vn;
-		*vertP++ = vPosf [0] - vn;
-		*vertP++ = vPosf [1] - vn;
-		*vertP++ = vPosf [1] + vn;
+		//vn [Z] = 0.0f;
+		if (i == 1) {
+			vd = vPos [0] - vPos [1];
+			vd *= PLASMA_WIDTH / 4.0f;
+			vPos [0] += vd;
+			}
+		if (i == h) {
+			vd = vPos [1] - vPos [0];
+			vd = vd * PLASMA_WIDTH / 4.0f;
+			vPos [1] += vd;
+			}
+		*vertP++ = vPos [0] + vn;
+		*vertP++ = vPos [0] - vn;
+		*vertP++ = vPos [1] - vn;
+		*vertP++ = vPos [1] + vn;
 		memcpy (texCoordP, plasmaTexCoord [0], 4 * sizeof (tTexCoord2f));
 		texCoordP += 4;
 		}
@@ -956,7 +968,7 @@ for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 memcpy (texCoordP - 4, plasmaTexCoord [2], 4 * sizeof (tTexCoord2f));
 memcpy (&m_plasmaTexCoord [0], plasmaTexCoord [1], 4 * sizeof (tTexCoord2f));
 
-#if 0
+#if 1
 for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
 	m_plasmaVerts [0][i+1] = m_plasmaVerts [0][j] = CFloatVector::Avg (m_plasmaVerts [0][i+1], m_plasmaVerts [0][j]);
 	m_plasmaVerts [0][i] = m_plasmaVerts [0][j+1] = CFloatVector::Avg (m_plasmaVerts [0][i], m_plasmaVerts [0][j+1]);
@@ -978,16 +990,18 @@ m_plasmaVerts [1][h-3] += (m_plasmaVerts [1][h-3] - m_plasmaVerts [1][h-1]) / 4;
 #else
 for (j = 0; j < 2; j++) {
 	for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
-		vPosf [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
-		vPosf [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
-		vPosf [1] /= 4;
-		m_plasmaVerts [j+1][i] = vPosf [0] + vPosf [1];
-		m_plasmaVerts [j+1][i+1] = vPosf [0] - vPosf [1];
+		vPos [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
+		vPos [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
+		vPos [1] /= 4;
+		m_plasmaVerts [j+1][i] = vPos [0] + vPos [1];
+		m_plasmaVerts [j+1][i+1] = vPos [0] - vPos [1];
 		}
+#if 0
 	m_plasmaVerts [j+1][0] += (m_plasmaVerts [j+1][2] - m_plasmaVerts [j+1][0]) / 4;
 	m_plasmaVerts [j+1][1] += (m_plasmaVerts [j+1][3] - m_plasmaVerts [j+1][1]) / 4;
 	m_plasmaVerts [j+1][h-2] += (m_plasmaVerts [j+1][h-2] - m_plasmaVerts [j+1][h-4]) / 4;
 	m_plasmaVerts [j+1][h-3] += (m_plasmaVerts [j+1][h-3] - m_plasmaVerts [j+1][h-1]) / 4;
+#endif
 	}
 #endif
 }
@@ -1024,7 +1038,7 @@ for (int h = 0; h < 3; h++) {
 	else if (h == 1)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
-		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [h].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
@@ -1035,6 +1049,7 @@ for (int h = 0; h < 3; h++) {
 	texCoordP = m_plasmaTexCoord.Buffer ();
 	vertexP = m_plasmaVerts [h].Buffer ();
 	for (int i = m_nNodes - 1; i; i--) {
+		OglDrawArrays (GL_LINE_LOOP, 0, 4);
 		glBegin (GL_LINE_LOOP);
 		for (int j = 0; j < 4; j++) {
 			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
@@ -1392,7 +1407,7 @@ if (m_bDestroy) {
 if (!m_bValid)
 	return 0;
 
-if (gameStates.app.nSDLTicks - m_tUpdate >= 2500) {
+if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nBolts, nThread);
@@ -1857,7 +1872,7 @@ if (SHOW_LIGHTNING) {
 		int bStencil = ogl.StencilOff ();
 
 	int nCurrent = -1;
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 	if (m_systemList.Buffer ()) {
 		CLightningSystem* systemP;
 		int nSystems = 0;
