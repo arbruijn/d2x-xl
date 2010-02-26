@@ -526,8 +526,10 @@ for (int i = 0; i < 3; i++)
 		return false;
 if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 	return false;
+#if RENDER_LIGHTNING_CORE
 if (!m_coreVerts.Create ((m_nNodes - 1) * 4))
 	return false;
+#endif
 m_nodes.Clear ();
 if (m_bRandom) {
 	m_nTTL = 3 * m_nTTL / 4 + int (dbl_rand () * m_nTTL / 2);
@@ -569,7 +571,9 @@ if (nodeP) {
 	for (int i = 0; i < 3; i++)
 		m_plasmaVerts [i].Destroy ();
 	m_plasmaTexCoord.Destroy ();
+#if RENDER_LIGHTNING_CORE
 	m_coreVerts.Destroy ();
+#endif
 	m_nNodes = 0;
 	}
 }
@@ -1038,17 +1042,19 @@ ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::ComputeCore (void)
 {
+#if RENDER_LIGHTNING_CORE
 	CFloatVector3*	vPosf = m_coreVerts.Buffer ();
 
 for (int i = 0; i < m_nNodes; i++)
 	vPosf [i].Assign (m_nodes [i].m_vPos);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-#if 0
+#if RENDER_LIGHTNING_CORE
 ogl.SetBlendMode (1);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 glLineWidth ((GLfloat) (nDepth ? CORE_WIDTH : 2 * CORE_WIDTH));
@@ -1140,7 +1146,9 @@ if (nDepth)
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
+#if RENDER_LIGHTNING_CORE
 RenderCore (&color, nDepth, nThread);
+#endif
 if (bPlasma)
 	RenderGlow (&color, nThread);
 #ifndef _OPENMP

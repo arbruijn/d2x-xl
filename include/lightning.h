@@ -7,6 +7,8 @@
 #define MAX_LIGHTNING_SYSTEMS	1000
 #define MAX_LIGHTNING_NODES	1000
 
+#define RENDER_LIGHTNING_CORE	0
+
 //------------------------------------------------------------------------------
 
 class CLightning;
@@ -92,9 +94,10 @@ class CLightning : public tLightning {
 	private:
 		CArray<CFloatVector>		m_plasmaVerts [3];
 		CArray<tTexCoord2f>		m_plasmaTexCoord;
+#if RENDER_LIGHTNING_CORE
 		CArray<CFloatVector3>	m_coreVerts;
+#endif
 		CFloatVector				m_vNormals [3];
-		CFloatVector				m_vCenter;
 
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
