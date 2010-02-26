@@ -32,7 +32,7 @@ class CLightningNode : public tLightningNode {
 		bool CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 							   int nLife, int nLength, int nAmplitude,
 							   char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
-							   short nSmoothe, char bClamp, char bPlasma, char bLight,
+							   short nSmoothe, char bClamp, char bGlow, char bLight,
 							   char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode,
 								int nThread);
 		void ComputeOffset (int nSteps);
@@ -103,7 +103,7 @@ class CLightning : public tLightning {
 		void Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 					  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 					  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
-					  short nSmoothe, char bClamp, char bPlasma, char bLight,
+					  short nSmoothe, char bClamp, char bGlow, char bLight,
 					  char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode);
 		void Setup (bool bInit);
 		void Destroy (void);
@@ -125,13 +125,13 @@ class CLightning : public tLightning {
 	private:
 		void CreatePath (int bSeed, int nDepth);
 		int ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength);
-		void ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread);
-		void ComputePlasma (int nDepth, int nThread);
+		void ComputeGlowSegment (CFloatVector *vPosf, short nSegment, char bStart, char bEnd, int nDepth, int nThread);
+		void ComputeGlow (int nDepth, int nThread);
 		void ComputeCore (void);
 		void RenderCore (tRgbaColorf *colorP, int nDepth, int nThread);
 		void RenderSetup (int nDepth, int nThread);
-		int SetupPlasma (void);
-		void RenderPlasma (tRgbaColorf *colorP, int nThread);
+		int SetupGlow (void);
+		void RenderGlow (tRgbaColorf *colorP, int nThread);
 		void RenderBuffered (int nDepth, int nThread);
 };
 
@@ -160,7 +160,7 @@ class CLightningSystem : public tLightningSystem {
 		bool Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						 short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						 short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
-						 char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
+						 char bClamp, char bGlow, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
 		void Destroy (void);
 		void Animate (int nStart, int nBolts, int nThread);
 		void Render (int nStart, int nBolts, int nThread);
@@ -214,7 +214,7 @@ class CLightningManager : public tLightningData {
 		int Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
-						char bClamp, char bPlasma, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
+						char bClamp, char bGlow, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
 		void Destroy (CLightningSystem* systemP, CLightning *lightningP);
 		void Cleanup (void);
 		int Shutdown (bool bForce);

@@ -899,96 +899,70 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 // to one lightning coordinate
 // vPosf: Coordinates of two subsequent lightning bolt segments
 
-void CLightning::ComputePlasmaSegment (CFloatVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
+void CLightning::ComputeGlowSegment (CFloatVector *vPosf, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
 {
 	static CFloatVector vEye = CFloatVector::ZERO;
-	CFloatVector*	vPlasma = &m_plasmaVerts [bScale][4 * nSegment];
-	CFloatVector	vn [2], vd;
+	CFloatVector*	vGlow = &m_plasmaVerts [0][4 * nSegment];
+	CFloatVector	vn, vd;
 
-memcpy (m_vNormals, m_vNormals + 1, 2 * sizeof (CFloatVector));
+m_vNormals [0] = m_vNormals [1];
+vn = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
 if (bStart) {
-	m_vNormals [1] = CFloatVector::Normal (vPosf [0], vPosf [1], vEye);
-	vn [0] = m_vNormals [1];
+	vd = vPosf [0] - vPosf [1];
+	vd *= PLASMA_WIDTH / 4.0f;
+	vPosf [0] += vd;
 	}
-else {
-	vn [0] = m_vNormals [0] + m_vNormals [1];
-	vn [0] = vn [0] * (PLASMA_WIDTH / 4.0f);
-	}
-
 if (bEnd) {
-	vn [1] = m_vNormals [1];
 	vd = vPosf [1] - vPosf [0];
-	vd = vd * (bScale ? PLASMA_WIDTH / 8.0f : PLASMA_WIDTH / 4.0f);
+	vd = vd * PLASMA_WIDTH / 4.0f;
 	vPosf [1] += vd;
 	}
-else {
-	m_vNormals [2] = CFloatVector::Normal (vPosf [1], vPosf [2], vEye);
-	if (CFloatVector::Dot (m_vNormals [1], m_vNormals [2]) < 0)
-		m_vNormals [2].Neg ();
-	vn [1] = m_vNormals [1] + m_vNormals [2];
-	vn [1] = vn [1] * (PLASMA_WIDTH / 4.0f);
-	}
+vn *= nDepth ? (PLASMA_WIDTH / 4.0f) : PLASMA_WIDTH;
 
-if (!bScale) {
-	if (!nDepth) {
-		vn [0] = vn [0] * PLASMA_WIDTH;
-		vn [1] = vn [1] * PLASMA_WIDTH;
-		}
-	else {
-		vn [0] = vn [0] * (PLASMA_WIDTH / 4.0f);
-		vn [1] = vn [1] * (PLASMA_WIDTH / 4.0f);
-		}
-	}
-
-if (bStart) {
-	vPlasma [0] = vPosf [0] + vn [0];
-	vPlasma [1] = vPosf [0] - vn [0];
-	vd = vPosf [0] - vPosf [1];
-	CFloatVector::Normalize (vd);
-	if (bScale)
-		vd = vd * (PLASMA_WIDTH / 4.0f);
-	vPlasma [0] += vd;
-	vPlasma [1] += vd;
-	}
-else {
-	vPlasma [0] = vPlasma [-1];
-	vPlasma [1] = vPlasma [-2];
-	}
-vPlasma [3] = vPosf [1] + vn [1];
-vPlasma [2] = vPosf [1] - vn [1];
+vGlow [0] = vPosf [0] + vn;
+vGlow [1] = vPosf [0] - vn;
+vGlow [2] = vPosf [1] - vn;
+vGlow [3] = vPosf [1] + vn;
 memcpy (&m_plasmaTexCoord [4 * nSegment], plasmaTexCoord [bStart + 2 * bEnd], 4 * sizeof (tTexCoord2f));
 }
 
 //------------------------------------------------------------------------------
 
-void CLightning::ComputePlasma (int nDepth, int nThread)
+void CLightning::ComputeGlow (int nDepth, int nThread)
 {
 	CLightningNode*	nodeP;
-	CFloatVector		vPosf [3] = {CFloatVector::ZERO, CFloatVector::ZERO, CFloatVector::ZERO};
-	int					bScale, h, i, j;
+	CFloatVector		vPosf [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
+	int					h, i;
 
-for (bScale = 0; bScale < 1; bScale++) {
-	memset (m_vNormals, 0, sizeof (m_vNormals));
-	nodeP = m_nodes.Buffer ();
-	vPosf [2].Assign (nodeP->m_vPos);
-	transformation.Transform (vPosf [2], vPosf [2], 0);
-	for (h = m_nNodes - 2, i = 0; i <= h; i++) {
-		memcpy (vPosf, vPosf + 1, 2 * sizeof (CFloatVector));
-		nodeP++;
-		vPosf [2].Assign (nodeP->m_vPos);
-		transformation.Transform (vPosf [2], vPosf [2], 0);
-		ComputePlasmaSegment (vPosf, bScale, i, i == 1, i == h, nDepth, nThread);
-		}
+memset (m_vNormals, 0, sizeof (m_vNormals));
+nodeP = m_nodes.Buffer ();
+for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
+	vPosf [0] = vPosf [1];
+	vPosf [1].Assign (nodeP->m_vPos);
+	transformation.Transform (vPosf [1], vPosf [1], 0);
+	if (i)
+		ComputeGlowSegment (vPosf, i - 1, i == 1, i == h, nDepth, nThread);
 	}
 
-#if 0
 for (h = 4 * (m_nNodes - 2), i = 0; i < h; i += 4) {
 	m_plasmaVerts [0][i+3] = m_plasmaVerts [0][i+4] = CFloatVector::Avg (m_plasmaVerts [0][i+3], m_plasmaVerts [0][i+4]);
 	m_plasmaVerts [0][i+2] = m_plasmaVerts [0][i+5] = CFloatVector::Avg (m_plasmaVerts [0][i+2], m_plasmaVerts [0][i+5]);
 	}
-#endif
 
-for (j = 0; j < 1; j++) {
+#if 1
+for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
+	vPosf [0] = CFloatVector::Avg (m_plasmaVerts [0][i], m_plasmaVerts [0][i+1]);
+	vPosf [1] = m_plasmaVerts [0][i] - m_plasmaVerts [0][i+1];
+	vPosf [1] /= 4;
+	m_plasmaVerts [1][i] = vPosf [0] + vPosf [1];
+	m_plasmaVerts [1][i+1] = vPosf [0] - vPosf [1];
+	}
+m_plasmaVerts [1][0] += (m_plasmaVerts [1][2] - m_plasmaVerts [1][0]) / 4;
+m_plasmaVerts [1][1] += (m_plasmaVerts [1][3] - m_plasmaVerts [1][1]) / 4;
+m_plasmaVerts [1][h-2] += (m_plasmaVerts [1][h-2] - m_plasmaVerts [1][h-4]) / 4;
+m_plasmaVerts [1][h-3] += (m_plasmaVerts [1][h-3] - m_plasmaVerts [1][h-1]) / 4;
+#else
+for (int j = 0; j < 2; j++) {
 	for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
 		vPosf [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
 		vPosf [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
@@ -1001,6 +975,7 @@ for (j = 0; j < 1; j++) {
 	m_plasmaVerts [j+1][h-2] += (m_plasmaVerts [j+1][h-2] - m_plasmaVerts [j+1][h-4]) / 4;
 	m_plasmaVerts [j+1][h-3] += (m_plasmaVerts [j+1][h-3] - m_plasmaVerts [j+1][h-1]) / 4;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1008,7 +983,7 @@ for (j = 0; j < 1; j++) {
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
 if (gameOpts->render.lightning.bPlasma && m_bPlasma)
-	ComputePlasma (nDepth, nThread);
+	ComputeGlow (nDepth, nThread);
 if (gameOpts->render.lightning.nQuality)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
@@ -1018,7 +993,7 @@ ComputeCore ();
 
 //------------------------------------------------------------------------------
 
-void CLightning::RenderPlasma (tRgbaColorf *colorP, int nThread)
+void CLightning::RenderGlow (tRgbaColorf *colorP, int nThread)
 {
 	int				bScale;
 #if RENDER_LIGHTNING_OUTLINE
@@ -1032,12 +1007,12 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 ogl.SetBlendMode (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 for (bScale = 0; bScale < 2; bScale++) {
-#if 0
+#if 1
 	if (bScale)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
 #endif
-		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
+		glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [bScale].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
@@ -1105,7 +1080,7 @@ ogl.ClearError (0);
 
 //------------------------------------------------------------------------------
 
-int CLightning::SetupPlasma (void)
+int CLightning::SetupGlow (void)
 {
 if (!(gameOpts->render.lightning.bPlasma && m_bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
@@ -1157,7 +1132,7 @@ if (m_nLife > 0) {
 color.red *= (float) (0.9 + dbl_rand () / 5);
 color.green *= (float) (0.9 + dbl_rand () / 5);
 color.blue *= (float) (0.9 + dbl_rand () / 5);
-if (!(bPlasma = SetupPlasma ()))
+if (!(bPlasma = SetupGlow ()))
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
@@ -1165,7 +1140,7 @@ if (nDepth)
 WaitForRenderThread (nThread);
 #endif
 if (bPlasma)
-	RenderPlasma (&color, nThread);
+	RenderGlow (&color, nThread);
 RenderCore (&color, nDepth, nThread);
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
@@ -1399,7 +1374,7 @@ if (m_bDestroy) {
 if (!m_bValid)
 	return 0;
 
-if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
+if (gameStates.app.nSDLTicks - m_tUpdate >= 2500) {
 	if (!(m_nKey [0] || m_nKey [1])) {
 		m_tUpdate = gameStates.app.nSDLTicks;
 		Animate (0, m_nBolts, nThread);
