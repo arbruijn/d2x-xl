@@ -1840,7 +1840,7 @@ if (SHOW_LIGHTNING) {
 		int bStencil = ogl.StencilOff ();
 
 	int nCurrent = -1;
-#if 0//def _OPENMP
+#ifdef _OPENMP
 	if (m_systemList.Buffer ()) {
 		CLightningSystem* systemP;
 		int nSystems = 0;
