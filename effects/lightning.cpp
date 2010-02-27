@@ -521,12 +521,13 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes))
 	return false;
-if (m_bPlasma) {
-	for (int i = 0; i < 3; i++)
-		if (!m_plasmaVerts [i].Create ((m_nNodes - 1) * 4))
-			return false;
+if (gameOpts->render.lightning.bPlasma) {
 	if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 		return false;
+	int j = m_bPlasma ? 3 : 1;
+	for (int i = 0; i < j; i++)
+		if (!m_plasmaVerts [i].Create ((m_nNodes - 1) * 4))
+			return false;
 	}
 if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
 	return false;
@@ -569,7 +570,8 @@ if (nodeP) {
 	for (i = abs (m_nNodes); i > 0; i--, nodeP++)
 		nodeP->Destroy ();
 	m_nodes.Destroy ();
-	for (i = 0; i < 3; i++)
+	int j = m_bPlasma ? 3 : 1;
+	for (i = 0; i < j; i++)
 		m_plasmaVerts [i].Destroy ();
 	m_plasmaTexCoord.Destroy ();
 	m_coreVerts.Destroy ();
