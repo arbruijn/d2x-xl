@@ -129,7 +129,7 @@ class CLightning : public tLightning {
 		void RenderSetup (int nDepth, int nThread);
 		int SetupGlow (void);
 		void RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread);
-		void RenderBuffered (int nDepth, int nThread);
+		void Draw (int nDepth, int nThread);
 };
 
 //------------------------------------------------------------------------------

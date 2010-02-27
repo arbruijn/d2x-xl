@@ -981,9 +981,10 @@ if (bPlasma) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-ComputeCore ();
-if (m_bPlasma && gameOpts->render.lightning.bPlasma)
+if (gameOpts->render.lightning.bPlasma)
 	ComputeGlow (nDepth, nThread);
+else
+	ComputeCore ();
 if (gameOpts->render.lightning.nQuality)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
@@ -1129,7 +1130,7 @@ if (gameStates.app.bMultiThreaded && (nThread > 0)) {	//thread 1 will always ren
 
 //------------------------------------------------------------------------------
 
-void CLightning::RenderBuffered (int nDepth, int nThread)
+void CLightning::Draw (int nDepth, int nThread)
 {
 	int				i, bPlasma;
 	tRgbaColorf		color;
@@ -1167,7 +1168,7 @@ WaitForRenderThread (nThread);
 if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
-				m_nodes [i].GetChild ()->RenderBuffered (nDepth + 1, nThread);
+				m_nodes [i].GetChild ()->Draw (nDepth + 1, nThread);
 ogl.ClearError (0);
 }
 
@@ -1194,7 +1195,7 @@ else {
 		RenderSetup (0, 0);
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
-	RenderBuffered (0, nThread);
+	Draw (0, nThread);
 	if (!nDepth)
 		ogl.SetFaceCulling (true);
 	glLineWidth (1);
@@ -2319,9 +2320,13 @@ if (i >= 0) {
 		systemP->m_nKey [1] = key.i [1];
 		}
 	if (systemP->Lightning () && (systemP->m_nBolts = systemP->Lightning ()->Update (0, 0))) {
+		if (gameOpts->render.lightning.bPlasma)
+			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		gameStates.render.bDepthSort = -1;
 		systemP->Render (0, -1, -1);
 		gameStates.render.bDepthSort = 1;
+		if (gameOpts->render.lightning.bPlasma)
+			transformation.End ();
 		}
 	else
 		Destroy (m_systems + i, NULL);
