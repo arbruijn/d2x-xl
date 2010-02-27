@@ -102,9 +102,9 @@ typedef struct tTranspItem {
 	tTranspItemType		nType;
 	int						nItem;
 	int						z;
+	int						bTransformed;
 	bool						bValid;
 	bool						bRendered;
-	bool						bTransformed;
 	union {
 		tTranspPoly					poly;
 		tTranspObject				object;
@@ -176,7 +176,7 @@ class CTransparencyRenderer {
 			}
 		inline void Reset (void) { m_data.nItems [0] = 0; }
 		inline int ItemCount (int i = 1) { return m_data.nItems [i]; }
-		int Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset = 0, bool bClamp = false, bool bTransform = false);
+		int Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset = 0, bool bClamp = false, int bTransformed = 0);
 		inline int AddFace (CSegFace *faceP) {
 			return gameStates.render.bTriangleMesh ? AddFaceTris (faceP) : AddFaceQuads (faceP);
 			}
@@ -198,21 +198,21 @@ class CTransparencyRenderer {
 		void Free (void);
 		tTranspItem *SetParent (int nChild, int nParent);
 
-		inline int CTransparencyRenderer::Depth (CFixVector vPos, bool bTransformed) {
+		inline int CTransparencyRenderer::Depth (CFixVector vPos, int bTransformed) {
 #if TRANSP_DEPTH_HASH
-			return bTransformed ? vPos.Mag () : CFixVector::Dist (vPos, m_data.vViewer [0]);
+			return (bTransformed > 0) ? vPos.Mag () : CFixVector::Dist (vPos, m_data.vViewer [0]);
 #else
-			if (!bTransformed)
+			if (bTransformed < 1)
 				transformation.Transform (vPos, vPos);
 			return vPos [Z];
 #endif
 			}
 
-		inline float CTransparencyRenderer::Depth (CFloatVector vPos, bool bTransformed) {
+		inline float CTransparencyRenderer::Depth (CFloatVector vPos, int bTransformed) {
 #if TRANSP_DEPTH_HASH
-			return bTransformed ? vPos.Mag () : CFloatVector::Dist (vPos, m_data.vViewerf [0]);
+			return (bTransformed > 0) ? vPos.Mag () : CFloatVector::Dist (vPos, m_data.vViewerf [0]);
 #else
-			if (!bTransformed)
+			if (bTransformed < 1)
 				transformation.Transform (vPos, vPos);
 			return vPos [Z];
 #endif

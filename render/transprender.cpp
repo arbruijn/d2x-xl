@@ -116,7 +116,7 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 //------------------------------------------------------------------------------
 
-int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, bool bTransformed)
+int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, int bTransformed)
 {
 if (gameStates.render.bDepthSort < 0)
 	return 0;
@@ -450,7 +450,6 @@ int CTransparencyRenderer::AddSprite (CBitmap *bmP, const CFixVector& position, 
 												  int nWidth, int nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
 	tTranspSprite	item;
-	CFixVector		vPos;
 
 item.bmP = bmP;
 if ((item.bColor = (color != NULL)))
@@ -460,8 +459,7 @@ item.nHeight = nHeight;
 item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 item.fSoftRad = fSoftRad;
-transformation.Transform (vPos, position, 0);
-item.position.Assign (vPos);
+item.position.Assign (position);
 return Add (tiSprite, &item, sizeof (item), position);
 }
 
@@ -540,7 +538,7 @@ if (d2 > m_data.zMax)
 	return 0;
 if (d1 < m_data.zMin)
 	return 0;
-if (!Add (tiLightning, &item, sizeof (item), bSwap ? lightningP->m_vEnd : lightningP->m_vPos /*CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd)*/, true))
+if (!Add (tiLightning, &item, sizeof (item), bSwap ? lightningP->m_vEnd : lightningP->m_vPos /*CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd)*/, 0, true, -1))
 	return 0;
 return 1;
 }
@@ -973,7 +971,7 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
 if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend, 0, 0, 0)) {
-	CFloatVector	vPosf = item->position;
+	CFloatVector	vPosf;
 
 	if (item->bColor)
 		glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
@@ -983,6 +981,7 @@ if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend
 	if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive != 0)))
 		shaderManager.Deploy (-1);
 	item->bmP->SetColor ();
+	transformation.Transform (vPosf, item->position, 0);
 	ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 	}
 }

@@ -349,46 +349,45 @@ void RenderEffects (int nWindow)
 	int bLightning, bParticles, bSparks;
 	PROF_START
 
-if (bCreate) {
-	#if UNIFY_THREADS
-	WaitForRenderThreads ();
-	#else
-	WaitForEffectsThread ();
-	#endif
-	if (automap.Display ()) {
-		bLightning = gameOpts->render.automap.bLightning;
-		bParticles = gameOpts->render.automap.bParticles;
-		bSparks = gameOpts->render.automap.bSparks;
-		}
-	else {
-		bSparks = (gameOptions [0].render.nQuality > 0);
-		bLightning = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
-						  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
-		bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
-						 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
-		}
-	if (bSparks) {
-		SEM_ENTER (SEM_SPARKS)
-		//PrintLog ("RenderEnergySparks\n");
-		sparkManager.Render ();
-		//SEM_LEAVE (SEM_SPARKS)
-		}
-	if (bParticles) {
-		SEM_ENTER (SEM_SMOKE)
-		//PrintLog ("RenderSmoke\n");
-		particleManager.Cleanup ();
-		particleManager.Render ();
-		//SEM_LEAVE (SEM_SMOKE)
-		}
-	if (bLightning) {
-		SEM_ENTER (SEM_LIGHTNING)
-		//PrintLog ("RenderLightnings\n");
-		lightningManager.Render ();
-		}
-	//PrintLog ("transparencyRenderer.Render\n");
-	if (bLightning)
-		SEM_LEAVE (SEM_LIGHTNING)
+#if UNIFY_THREADS
+WaitForRenderThreads ();
+#else
+WaitForEffectsThread ();
+#endif
+if (automap.Display ()) {
+	bLightning = gameOpts->render.automap.bLightning;
+	bParticles = gameOpts->render.automap.bParticles;
+	bSparks = gameOpts->render.automap.bSparks;
 	}
+else {
+	bSparks = (gameOptions [0].render.nQuality > 0);
+	bLightning = (!nWindow || gameOpts->render.lightning.bAuxViews) && 
+					  (!gameStates.render.cameras.bActive || gameOpts->render.lightning.bMonitors);
+	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
+					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
+	}
+if (bCreate && bSparks) {
+	SEM_ENTER (SEM_SPARKS)
+	//PrintLog ("RenderEnergySparks\n");
+	sparkManager.Render ();
+	//SEM_LEAVE (SEM_SPARKS)
+	}
+if (bCreate && bParticles) {
+	SEM_ENTER (SEM_SMOKE)
+	//PrintLog ("RenderSmoke\n");
+	particleManager.Cleanup ();
+	particleManager.Render ();
+	//SEM_LEAVE (SEM_SMOKE)
+	}
+if (bLightning) {
+	SEM_ENTER (SEM_LIGHTNING)
+	//PrintLog ("RenderLightnings\n");
+	lightningManager.Render ();
+	}
+//PrintLog ("transparencyRenderer.Render\n");
+if (bLightning)
+	SEM_LEAVE (SEM_LIGHTNING)
+
 transparencyRenderer.Render ();
 if (bCreate) {
 	if (bParticles)

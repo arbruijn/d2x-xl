@@ -1207,7 +1207,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 				m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
 	}
 else {
-	if (nThread < 0)
+	if (gameOpts->render.n3DGlasses || (nThread < 0))
 		RenderSetup (0, 0);
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
