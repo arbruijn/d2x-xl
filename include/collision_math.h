@@ -153,7 +153,8 @@ return dMin;
 
 static inline int UseHitbox (CObject *objP)
 {
-return (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 
+return !gameStates.app.bNostalgia &&
+		 (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 
 		 ((objP->info.nType != OBJ_WEAPON) || ((objP->info.nId != GAUSS_ID) && (objP->info.nId != VULCAN_ID)));
 }
 
@@ -163,7 +164,7 @@ static inline int UseSphere (CObject *objP)
 {
 	int nType = objP->info.nType;
 
-return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP);
+return gameStates.app.bNostalgia || (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP) || ((nType == OBJ_WEAPON) && WeaponIsMine (objP->info.nId));
 }
 
 //	-----------------------------------------------------------------------------
