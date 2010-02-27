@@ -123,7 +123,7 @@ if (gameStates.render.bDepthSort < 0)
 if (gameStates.render.nType == 5)
 	return 0;
 #if LAZY_RESET
-if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
+if (!bTransformed && gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return 0;
 #endif
 #if RENDER_TRANSPARENCY
@@ -156,6 +156,7 @@ pd = m_data.depthBuffer + nOffset;
 	ph->nItem = m_data.nItems [0]++;
 	ph->nType = nType;
 	ph->bRendered = 0;
+	ph->bTransformed = bTransformed;
 	ph->parentP = NULL;
 	ph->z = nDepth;
 	ph->bValid = true;
@@ -1297,7 +1298,7 @@ extern int bLog;
 void CTransparencyRenderer::Render (void)
 {
 #if RENDER_TRANSPARENCY
-	tTranspItem*		pl, * pn;
+	tTranspItem*		pl, * pn, * pp;
 	tTranspItemList*	pd;
 	int					nItems, nDepth, bStencil;
 	bool					bReset = !LAZY_RESET || (ogl.StereoSeparation () >= 0);
@@ -1334,9 +1335,10 @@ m_data.nCurType = -1;
 for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd >= m_data.depthBuffer.Buffer ()) && nItems; pd--) {
 	if ((pl = pd->head)) {
 		if (bReset)
-			pd->head = 
-			pd->tail = NULL;
+			pd->head = NULL;
+			//pd->tail = NULL;
 		nDepth = 0;
+		pp = NULL;
 		do {
 #if DBG
 			if (pl->nItem == nDbgItem)
@@ -1347,6 +1349,16 @@ for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd 
 			pn = pl->pNextItem;
 			if (bReset)
 				pl->pNextItem = NULL;
+			else if (pl->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
+				if (pp) {
+					pp->pNextItem = pn;
+					pl->pNextItem = NULL;
+					}
+				else
+					pd->head = pn;
+				}
+			else
+				pp = pl;
 			pl = pn;
 			nDepth++;
 			} while (pl);

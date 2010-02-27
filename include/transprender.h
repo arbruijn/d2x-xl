@@ -104,6 +104,7 @@ typedef struct tTranspItem {
 	int						z;
 	bool						bValid;
 	bool						bRendered;
+	bool						bTransformed;
 	union {
 		tTranspPoly					poly;
 		tTranspObject				object;
