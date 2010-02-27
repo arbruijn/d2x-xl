@@ -904,24 +904,6 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 // to one lightning coordinate
 // vPosf: Coordinates of two subsequent lightning bolt segments
 
-void CLightning::ComputeGlowSegment (CFloatVector *vPosf, short nSegment, int nDepth)
-{
-#if 0
-if (bStart) {
-	vd = vPosf [0] - vPosf [1];
-	vd *= PLASMA_WIDTH / 4.0f;
-	vPosf [0] += vd;
-	}
-if (bEnd) {
-	vd = vPosf [1] - vPosf [0];
-	vd = vd * PLASMA_WIDTH / 4.0f;
-	vPosf [1] += vd;
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
 void CLightning::ComputeGlow (int nDepth, int nThread)
 {
 	static CFloatVector vEye = CFloatVector::ZERO;

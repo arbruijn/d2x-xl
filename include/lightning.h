@@ -125,7 +125,6 @@ class CLightning : public tLightning {
 	private:
 		void CreatePath (int bSeed, int nDepth);
 		int ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength);
-		void ComputeGlowSegment (CFloatVector *vPosf, short nSegment, int nDepth);
 		void ComputeGlow (int nDepth, int nThread);
 		void ComputeCore (void);
 		void RenderCore (tRgbaColorf *colorP, int nDepth, int nThread);
