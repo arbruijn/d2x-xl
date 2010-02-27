@@ -1187,7 +1187,8 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 		return;
 	if (!MayBeVisible (nThread))
 		return;
-	RenderSetup (0, nThread);
+	if (!gameOpts->render.n3DGlasses)
+		RenderSetup (0, nThread);
 	transparencyRenderer.AddLightning (this, nDepth);
 	if (gameOpts->render.lightning.nQuality)
 		for (i = 0; i < m_nNodes; i++)
@@ -1196,7 +1197,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 	}
 else {
 	if (gameOpts->render.n3DGlasses || (nThread < 0))
-		RenderSetup (0, -1);
+		RenderSetup (0, nThread);
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
 	Draw (0, nThread);
