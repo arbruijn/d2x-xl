@@ -565,12 +565,12 @@ void CLightning::DestroyNodes (void)
 	CLightningNode	*nodeP = m_nodes.Buffer ();
 
 if (nodeP) {
-	for (int i = abs (m_nNodes); i > 0; i--, nodeP++)
+	int i;
+	for (i = abs (m_nNodes); i > 0; i--, nodeP++)
 		nodeP->Destroy ();
 	m_nodes.Destroy ();
-	m_plasmaVerts [0].Destroy ();
-	m_plasmaVerts [1].Destroy ();
-	m_plasmaVerts [2].Destroy ();
+	for (i = 0; i < 3; i++)
+		m_plasmaVerts [i].Destroy ();
 	m_plasmaTexCoord.Destroy ();
 	m_coreVerts.Destroy ();
 	m_nNodes = 0;
@@ -913,8 +913,8 @@ void CLightning::ComputeGlow (int nDepth, int nThread)
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
-	bool					bPlasma = !nDepth && m_bPlasma && gameOpts->render.lightning.bPlasma;
-	float					fWidth = bPlasma ? PLASMA_WIDTH : (PLASMA_WIDTH / 4.0f);
+	bool					bPlasma = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
+	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) :  (PLASMA_WIDTH / 16.0f);
 
 nodeP = m_nodes.Buffer ();
 vertP = m_plasmaVerts [0].Buffer ();
@@ -955,7 +955,9 @@ for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
 	}
 
 if (bPlasma) {
-	for (j = 0; j < 2; j++) {
+	for (j = 0; j < 3; j++) {
+		if (j == 2)
+			j = j;
 		for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
 			vPos [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
 			vPos [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
@@ -1000,10 +1002,11 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 ogl.SetBlendMode (2);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 int bWide = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
-int h = bWide ? 0 : 2;
-for (int i = 2; i >= h; i--) {
+int h = bWide ? 0 : 0;
+int i = bWide ? 2 : 0;
+for (; i >= h; i--) {
 	if (!bWide)
-		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+		glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
 	else if (h == 2)
 		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
 	else if (h == 1)
@@ -2439,7 +2442,7 @@ return 1;
 
 // ---------------------------------------------------------------------------------
 
-#define OMEGA_PLASMA 1
+#define OMEGA_PLASMA 0
 
 int COmegaLightning::Create (CFixVector *vTargetPos, CObject* parentObjP, CObject* targetObjP)
 {
@@ -2474,7 +2477,7 @@ else {
 #if OMEGA_PLASMA
 										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else
-										 0,
+										 -1,
 #endif
 										 1, 1, -1, &color);
 	}

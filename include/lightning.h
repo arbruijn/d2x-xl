@@ -7,8 +7,6 @@
 #define MAX_LIGHTNING_SYSTEMS	1000
 #define MAX_LIGHTNING_NODES	1000
 
-#define RENDER_LIGHTNING_CORE	0
-
 //------------------------------------------------------------------------------
 
 class CLightning;
