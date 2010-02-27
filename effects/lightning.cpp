@@ -1055,37 +1055,37 @@ ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::ComputeCore (void)
 {
-	CFloatVector3*	vertP, * v;
+	CFloatVector3*	vertP, * vPosf, vd;
 	int				i;
 
-v = vertP = &m_coreVerts [0][0];
+vPosf = vertP = &m_coreVerts [0][0];
 
-for (i = 0; i < m_nNodes; i++, v++)
-	v->Assign (m_nodes [i].m_vPos);
+for (i = 0; i < m_nNodes; i++, vPosf++)
+	vPosf->Assign (m_nodes [i].m_vPos);
 
-*v = vertP [0] - vertP [1];
-*v /= 20.0f * v->Mag ();
-*v += vertP [0];
-*++v = vertP [0];
+*vPosf = vertP [0] - vertP [1];
+*vPosf /= 20.0f * vPosf->Mag ();
+*vPosf += vertP [0];
+*++vPosf = vertP [0];
 i = m_nNodes - 1;
-*++v = vertP [i];
-*++v = vertP [i] - vertP [i - 1];
-*v /= 8.0f * v->Mag ();
-*v += vertP [i];
+*++vPosf = vertP [i];
+*++vPosf = vertP [i] - vertP [i - 1];
+*vPosf /= 8.0f * vPosf->Mag ();
+*vPosf += vertP [i];
 
-v = vertP = &m_coreVerts [1][0];
+vPosf = vertP = &m_coreVerts [1][0];
 
 for (i = 0; i < m_nNodes; ) {
-	(v++)->Assign (m_nodes [i].m_vPos);
-	(v++)->Assign (m_nodes [++i].m_vPos);
+	(vPosf++)->Assign (m_nodes [i].m_vPos);
+	(vPosf++)->Assign (m_nodes [++i].m_vPos);
 	}
 
-v = vertP;
+vPosf = vertP;
 for (i = 0; i < 2 * m_nNodes; i += 2) {
-	v = vertP [i] - vertP [i+1];
-	v /= 20.0f * v.Mag ();
-	vertP [i] += v;
-	vertP [i+1] -= v;
+	vd = vertP [i] - vertP [i+1];
+	vd /= 20.0f * vd.Mag ();
+	vertP [i] += vd;
+	vertP [i+1] -= vd;
 	}
 }
 
@@ -1104,15 +1104,17 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
 		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH));
 		OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [--i][0]);
-		OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
+		if (i)
+			OglDrawArrays (GL_LINES, 0, 2 * m_nNodes);
+		else
+			OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 		}
 
-	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [m_nNodes]);
+	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0][m_nNodes]);
 	for (int i = nDepth ? 1 : 2; i; ) {
 		int h = 2 * i;
 		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
 		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH / 2));
-		OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [--i][0]);
 		OglDrawArrays (GL_LINES, 0, 4);
 		}
 	ogl.DisableClientStates (0, 0, 0, -1);
