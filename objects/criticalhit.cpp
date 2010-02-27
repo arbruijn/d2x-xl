@@ -51,6 +51,8 @@
 
 CFixVector CObject::RegisterHit (CFixVector vHit, short nModel)
 {
+if (gameStates.app.bNostalgia)
+	return vHit;
 if ((info.nType != OBJ_ROBOT) && (info.nType != OBJ_PLAYER) && (info.nType != OBJ_REACTOR))
 	return vHit;
 
@@ -194,7 +196,9 @@ fix CObject::SubSystemDamage (int i)
 {
 	fix	nHits;
 
-return (EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) ? fix ((I2X (1) / 2) * pow (DamageRate (), nHits) + 0.5f) : I2X (1) / 2;
+return (!gameStates.app.bNostalgia && EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) 
+		 ? fix ((I2X (1) / 2) * pow (DamageRate (), nHits) + 0.5f) 
+		 : I2X (1) / 2;
 }
 
 //------------------------------------------------------------------------------

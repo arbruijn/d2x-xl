@@ -1582,7 +1582,7 @@ for (i = 0; i < nPlayers; i++) {
 
 void CGenericCockpit::DrawDamage (void)
 {
-if (!EGI_FLAG (nDamageModel, 0, 0, 0))
+if (gameStates.app.bNostalgia || !EGI_FLAG (nDamageModel, 0, 0, 0))
 	return;
 if (cockpit->Hide ())
 	return;
