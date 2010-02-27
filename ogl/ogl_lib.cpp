@@ -474,9 +474,10 @@ return glGetError () == 0;
 
 int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
-if (nTMU >= GL_TEXTURE0)
+if (nTMU >= GL_TEXTURE0) {
 	SelectTMU (nTMU, true);
-SetTexturing (true);
+	SetTexturing (true);
+	}
 if (!bNormals)
 	DisableClientState (GL_NORMAL_ARRAY);
 else if (!EnableClientState (GL_NORMAL_ARRAY, -1)) {

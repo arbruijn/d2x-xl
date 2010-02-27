@@ -170,10 +170,10 @@ if (nType == GL_LINES) {	// implies a dashed circle
 	}
 else {
 	if (sinCosP) {
-		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+		ogl.EnableClientStates (0, 0, 0, -1);
 		OglVertexPointer (2, GL_FLOAT, 2 * sizeof (float), reinterpret_cast<GLfloat*> (sinCosP));
 		OglDrawArrays (nType, 0, nSides);
-		ogl.DisableClientStates (0, 0, 0, GL_TEXTURE0);
+		ogl.DisableClientStates (0, 0, 0, -1);
 		}
 	else {
 		if (ogl.SizeVertexBuffer (nSides)) {
