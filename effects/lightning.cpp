@@ -528,7 +528,7 @@ if (m_bPlasma) {
 	if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 		return false;
 	}
-if (!m_coreVerts.Create ((m_nNodes - 1) * 4))
+if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
 	return false;
 m_nodes.Clear ();
 if (m_bRandom) {
@@ -1052,10 +1052,21 @@ ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::ComputeCore (void)
 {
-	CFloatVector3*	vPosf = m_coreVerts.Buffer ();
+	CFloatVector3*	vPosf = &m_coreVerts [0];
+	int				i;
 
-for (int i = 0; i < m_nNodes; i++)
-	vPosf [i].Assign (m_nodes [i].m_vPos);
+for (i = 0; i < m_nNodes; i++, vPosf++)
+	vPosf->Assign (m_nodes [i].m_vPos);
+
+*vPosf = m_coreVerts [0] - m_coreVerts [1];
+*vPosf /= 8.0f * vPosf->Mag ();
+*vPosf += m_coreVerts [0];
+*++vPosf = m_coreVerts [0];
+i = m_nNodes - 1;
+*++vPosf = m_coreVerts [i];
+*++vPosf = m_coreVerts [i] - m_coreVerts [i - 1];
+*vPosf /= 8.0f * vPosf->Mag ();
+*vPosf += m_coreVerts [i];
 }
 
 //------------------------------------------------------------------------------
@@ -1068,12 +1079,20 @@ if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
-	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
+	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0]);
 	for (int i = nDepth ? 1 : 2; i; i--) {
 		int h = 2 * i;
 		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
 		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH));
 		OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
+		}
+
+	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [m_nNodes]);
+	for (int i = nDepth ? 1 : 2; i; i--) {
+		int h = 2 * i;
+		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
+		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH / 2));
+		OglDrawArrays (GL_LINES, 0, 4);
 		}
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
