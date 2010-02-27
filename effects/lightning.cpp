@@ -528,9 +528,7 @@ if (m_bPlasma) {
 	if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 		return false;
 	}
-if (!m_coreVerts [0].Create ((m_nNodes + 3) * 4))
-	return false;
-if (!m_coreVerts [1].Create (2 * m_nNodes))
+if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
 	return false;
 m_nodes.Clear ();
 if (m_bRandom) {
@@ -574,8 +572,7 @@ if (nodeP) {
 	m_plasmaVerts [1].Destroy ();
 	m_plasmaVerts [2].Destroy ();
 	m_plasmaTexCoord.Destroy ();
-	m_coreVerts [0].Destroy ();
-	m_coreVerts [1].Destroy ();
+	m_coreVerts.Destroy ();
 	m_nNodes = 0;
 	}
 }
@@ -1018,7 +1015,7 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
-ogl.SetBlendMode (1);
+ogl.SetBlendMode (2);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 int bWide = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
 int h = bWide ? 0 : 2;
@@ -1061,7 +1058,7 @@ void CLightning::ComputeCore (void)
 	CFloatVector3*	vertP, * vPosf;
 	int				i;
 
-vPosf = vertP = &m_coreVerts [0][0];
+vPosf = vertP = &m_coreVerts [0];
 
 for (i = 0; i < m_nNodes; i++, vPosf++)
 	vPosf->Assign (m_nodes [i].m_vPos);
@@ -1075,25 +1072,6 @@ i = m_nNodes - 1;
 *++vPosf = vertP [i] - vertP [i - 1];
 *vPosf /= 100.0f * vPosf->Mag ();
 *vPosf += vertP [i];
-#if 0
-vPosf = vertP = &m_coreVerts [1][0];
-
-for (i = 0; i < m_nNodes - 1; ) {
-	(vPosf++)->Assign (m_nodes [i].m_vPos);
-	(vPosf++)->Assign (m_nodes [++i].m_vPos);
-	}
-
-vPosf = vertP;
-
-CFloatVector3 vd;
-
-for (i = 0; i < 2 * m_nNodes; i += 2) {
-	vd = vertP [i] - vertP [i+1];
-	vd /= 010.0f * vd.Mag ();
-	vertP [i] += vd;
-	vertP [i+1] -= vd;
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1106,31 +1084,10 @@ if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
-#if 1
 	glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
 	glLineWidth (GLfloat (nDepth ? CORE_WIDTH : CORE_WIDTH * 2));
-	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0][0]);
+	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0]);
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
-#else
-	for (int i = nDepth ? 1 : 2; i; ) {
-		int h = 2 * i;
-		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
-		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH));
-		OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [--i][0]);
-		if (i)
-			OglDrawArrays (GL_LINES, 0, 2 * m_nNodes);
-		else
-			OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
-		}
-
-	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0][m_nNodes]);
-	for (int i = nDepth ? 1 : 2; i; i--) {
-		int h = 2 * i;
-		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
-		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH / 2));
-		OglDrawArrays (GL_LINES, 0, 4);
-		}
-#endif
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
 #if GL_FALLBACK
