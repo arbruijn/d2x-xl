@@ -906,8 +906,7 @@ vOffset [Z] = 0;
 
 CFloatVector3	vCenter;
 
-if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
-	transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
+transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
 vCenter.Assign (m_vTransPos);
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
