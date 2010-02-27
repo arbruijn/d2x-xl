@@ -37,7 +37,7 @@
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
 #define PLASMA_WIDTH	3.0f
-#define CORE_WIDTH 2.0f
+#define CORE_WIDTH 4.0f
 
 #define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightning.nStyle < m_nStyle)) ? \
 					 gameOpts->render.lightning.nStyle : m_nStyle)
@@ -521,11 +521,13 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes))
 	return false;
-for (int i = 0; i < 3; i++)
-	if (!m_plasmaVerts [i].Create ((m_nNodes - 1) * 4))
+if (m_bPlasma) {
+	for (int i = 0; i < 3; i++)
+		if (!m_plasmaVerts [i].Create ((m_nNodes - 1) * 4))
+			return false;
+	if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 		return false;
-if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
-	return false;
+	}
 if (!m_coreVerts.Create ((m_nNodes - 1) * 4))
 	return false;
 m_nodes.Clear ();
@@ -993,7 +995,7 @@ if (bPlasma) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if (gameOpts->render.lightning.bPlasma)
+if (m_bPlasma && gameOpts->render.lightning.bPlasma)
 	ComputeGlow (nDepth, nThread);
 if (gameOpts->render.lightning.nQuality)
 	for (int i = 0; i < m_nNodes; i++)
@@ -1061,15 +1063,18 @@ for (int i = 0; i < m_nNodes; i++)
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
 ogl.SetBlendMode (1);
-glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
-glLineWidth ((GLfloat) (nDepth ? CORE_WIDTH : 2 * CORE_WIDTH));
 ogl.SetLineSmooth (true);
 if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
-	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
+	for (int i = nDepth ? 1 : 2; i; i--) {
+		int h = 2 * i;
+		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
+		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH));
+		OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
+		}
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
 #if GL_FALLBACK
@@ -1150,10 +1155,10 @@ if (nDepth)
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (!bPlasma)
-	RenderCore (&color, nDepth, nThread);
-else
+if (bPlasma)
 	RenderGlow (&color, nDepth, nThread);
+else
+	RenderCore (&color, nDepth, nThread);
 #ifndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
