@@ -616,11 +616,11 @@ else
 	nLights = 1;
 ogl.SetBlending (true);
 if (bEmissive)
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (1);
 else if (gameStates.render.bCloaked)
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (0);
 else if (bTransparency) {
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (0);
 	ogl.SetDepthWrite (false);
 	}
 else
@@ -633,7 +633,7 @@ else
 for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
-			ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			ogl.SetBlendMode (2);
 			ogl.SetDepthWrite (false);
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
@@ -736,7 +736,7 @@ ogl.ResetTransform (1);
 
 //------------------------------------------------------------------------------
 
-void G3RenderDamageLightnings (CObject *objP, short nModel, short nSubModel,
+void G3RenderDamageLightning (CObject *objP, short nModel, short nSubModel,
 										 CAngleVector *animAnglesP, CFixVector *vOffsetP, int bHires)
 {
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bDamage))
@@ -766,13 +766,13 @@ vo = psm->m_vOffset;
 if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 if (vOffsetP) {
-	transformation.Begin(vo, *va);
+	transformation.Begin (vo, *va);
 	vo += *vOffsetP;
 	}
 // render any dependent submodels
 for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, psm++)
 	if (psm->m_nParent == nSubModel)
-		G3RenderDamageLightnings (objP, nModel, i, animAnglesP, &vo, bHires);
+		G3RenderDamageLightning (objP, nModel, i, animAnglesP, &vo, bHires);
 // render the lightnings
 for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; i--, pmf++)
 	lightningManager.RenderForDamage (objP, NULL, pm->m_faceVerts + pmf->m_nIndex, pmf->m_nVerts);
@@ -915,7 +915,7 @@ if (gameOpts->render.debug.bWireFrame)
 #if 1 //!DBG
 if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
 	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-	G3RenderDamageLightnings (objP, nModel, 0, animAnglesP, NULL, bHires);
+	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
 	transformation.End ();
 	}
 #endif

@@ -908,16 +908,19 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 
 void CLightning::ComputeGlow (int nDepth, int nThread)
 {
-	static CFloatVector vEye = CFloatVector::ZERO;
 
 	CLightningNode*	nodeP;
-	CFloatVector*		vertP, vn, vd, 
+	CFloatVector*		vertP, vEye, vn, vd, 
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
 	bool					bPlasma = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
-	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) :  (PLASMA_WIDTH / 16.0f);
+	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) :  (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
+if (nThread < 0)
+	vEye.Assign (OBJPOS (gameData.objs.viewerP)->vPos);
+else
+	vEye.SetZero ();
 nodeP = m_nodes.Buffer ();
 vertP = m_plasmaVerts [0].Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
@@ -926,7 +929,8 @@ for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 		i = i;
 	vPos [0] = vPos [1];
 	vPos [1].Assign (nodeP->m_vPos);
-	transformation.Transform (vPos [1], vPos [1]);
+	if (nThread >= 0)
+		transformation.Transform (vPos [1], vPos [1]);
 	if (i) {
 		vn = CFloatVector::Normal (vPos [0], vPos [1], vEye);
 		vn *= fWidth;
@@ -1192,7 +1196,7 @@ if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// n
 	}
 else {
 	if (gameOpts->render.n3DGlasses || (nThread < 0))
-		RenderSetup (0, 0);
+		RenderSetup (0, -1);
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
 	Draw (0, nThread);
@@ -2320,13 +2324,9 @@ if (i >= 0) {
 		systemP->m_nKey [1] = key.i [1];
 		}
 	if (systemP->Lightning () && (systemP->m_nBolts = systemP->Lightning ()->Update (0, 0))) {
-		if (gameOpts->render.lightning.bPlasma)
-			transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		gameStates.render.bDepthSort = -1;
 		systemP->Render (0, -1, -1);
 		gameStates.render.bDepthSort = 1;
-		if (gameOpts->render.lightning.bPlasma)
-			transformation.End ();
 		}
 	else
 		Destroy (m_systems + i, NULL);
@@ -2484,9 +2484,9 @@ else {
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
 										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA
-										 ((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
+										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else
-										 0,
+										 -1,
 #endif
 										 1, 1, -1, &color);
 	}
