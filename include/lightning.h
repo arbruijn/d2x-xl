@@ -270,14 +270,14 @@ typedef struct tOmegaLightningHandles {
 } tOmegaLightningHandles;
 
 
-class COmegaLightnings {
+class COmegaLightning {
 	private:
 		tOmegaLightningHandles	m_handles [MAX_OBJECTS_D2X];
 		int							m_nHandles;
 
 	public:
-		COmegaLightnings () { m_nHandles = 0; };
-		~COmegaLightnings () {};
+		COmegaLightning () { m_nHandles = 0; };
+		~COmegaLightning () {};
 		void Init (void) { m_nHandles = 0; };
 		int Create (CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP);
 		int Update (CObject *parentObjP, CObject *targetObjP);
@@ -290,7 +290,7 @@ class COmegaLightnings {
 		CFixVector *GetGunPoint (CObject *objP, CFixVector *vMuzzle);
 };
 
-extern COmegaLightnings	omegaLightnings;
+extern COmegaLightning	omegaLightnings;
 
 //------------------------------------------------------------------------------
 

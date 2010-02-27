@@ -37,13 +37,13 @@
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
 #define PLASMA_WIDTH	3.0f
-#define CORE_WIDTH 4.0f
+#define CORE_WIDTH 3.0f
 
 #define STYLE	(((m_nStyle < 0) || (gameOpts->render.lightning.nStyle < m_nStyle)) ? \
 					 gameOpts->render.lightning.nStyle : m_nStyle)
 
 CLightningManager lightningManager;
-COmegaLightnings	omegaLightnings;
+COmegaLightning	omegaLightnings;
 
 //------------------------------------------------------------------------------
 
@@ -1020,15 +1020,18 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 ogl.SetBlendMode (1);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-int h = !nDepth && m_bPlasma && gameOpts->render.lightning.bPlasma ? 3 : 1;
-while (h-- > 0) {
-	if (h == 2)
+int bWide = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
+int h = bWide ? 0 : 2;
+for (int i = 2; i >= h; i--) {
+	if (!bWide)
+		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+	else if (h == 2)
 		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
 	else if (h == 1)
 		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
 	else
 		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [h].Buffer ());
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 	if (h != 1)
@@ -1055,7 +1058,7 @@ ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 
 void CLightning::ComputeCore (void)
 {
-	CFloatVector3*	vertP, * vPosf, vd;
+	CFloatVector3*	vertP, * vPosf;
 	int				i;
 
 vPosf = vertP = &m_coreVerts [0][0];
@@ -1064,29 +1067,33 @@ for (i = 0; i < m_nNodes; i++, vPosf++)
 	vPosf->Assign (m_nodes [i].m_vPos);
 
 *vPosf = vertP [0] - vertP [1];
-*vPosf /= 20.0f * vPosf->Mag ();
+*vPosf /= 100.0f * vPosf->Mag ();
 *vPosf += vertP [0];
 *++vPosf = vertP [0];
 i = m_nNodes - 1;
 *++vPosf = vertP [i];
 *++vPosf = vertP [i] - vertP [i - 1];
-*vPosf /= 8.0f * vPosf->Mag ();
+*vPosf /= 100.0f * vPosf->Mag ();
 *vPosf += vertP [i];
-
+#if 0
 vPosf = vertP = &m_coreVerts [1][0];
 
-for (i = 0; i < m_nNodes; ) {
+for (i = 0; i < m_nNodes - 1; ) {
 	(vPosf++)->Assign (m_nodes [i].m_vPos);
 	(vPosf++)->Assign (m_nodes [++i].m_vPos);
 	}
 
 vPosf = vertP;
+
+CFloatVector3 vd;
+
 for (i = 0; i < 2 * m_nNodes; i += 2) {
 	vd = vertP [i] - vertP [i+1];
-	vd /= 20.0f * vd.Mag ();
+	vd /= 010.0f * vd.Mag ();
 	vertP [i] += vd;
 	vertP [i+1] -= vd;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1099,6 +1106,12 @@ if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
+#if 1
+	glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
+	glLineWidth (GLfloat (nDepth ? CORE_WIDTH : CORE_WIDTH * 2));
+	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0][0]);
+	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
+#else
 	for (int i = nDepth ? 1 : 2; i; ) {
 		int h = 2 * i;
 		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
@@ -1111,12 +1124,13 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 		}
 
 	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0][m_nNodes]);
-	for (int i = nDepth ? 1 : 2; i; ) {
+	for (int i = nDepth ? 1 : 2; i; i--) {
 		int h = 2 * i;
 		glColor4f (colorP->red / h, colorP->green / h, colorP->blue / h, colorP->alpha);
 		glLineWidth (GLfloat ((h - 1) * CORE_WIDTH / 2));
 		OglDrawArrays (GL_LINES, 0, 4);
 		}
+#endif
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
 #if GL_FALLBACK
@@ -2373,7 +2387,7 @@ if (i >= 0) {
 // ---------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------
 
-int COmegaLightnings::Find (short nObject)
+int COmegaLightning::Find (short nObject)
 {
 	int	i;
 
@@ -2385,7 +2399,7 @@ return -1;
 
 // ---------------------------------------------------------------------------------
 
-void COmegaLightnings::Delete (short nHandle)
+void COmegaLightning::Delete (short nHandle)
 {
 if (m_nHandles) {
 	lightningManager.Destroy (lightningManager.m_systems + m_handles [nHandle].nLightning, NULL);
@@ -2397,7 +2411,7 @@ if (m_nHandles) {
 
 // ---------------------------------------------------------------------------------
 
-void COmegaLightnings::Destroy (short nObject)
+void COmegaLightning::Destroy (short nObject)
 {
 	int	nHandle;
 
@@ -2413,7 +2427,7 @@ else {
 
 // ---------------------------------------------------------------------------------
 
-CFixVector *COmegaLightnings::GetGunPoint (CObject* objP, CFixVector *vMuzzle)
+CFixVector *COmegaLightning::GetGunPoint (CObject* objP, CFixVector *vMuzzle)
 {
 	CFixVector			*vGunPoints;
 	int					bSpectate;
@@ -2436,7 +2450,7 @@ return vMuzzle;
 
 // ---------------------------------------------------------------------------------
 
-int COmegaLightnings::Update (CObject* parentObjP, CObject* targetObjP)
+int COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP)
 {
 	CFixVector					vMuzzle;
 	tOmegaLightningHandles	*handleP;
@@ -2486,9 +2500,9 @@ return 1;
 
 // ---------------------------------------------------------------------------------
 
-#define OMEGA_PLASMA 0
+#define OMEGA_PLASMA 1
 
-int COmegaLightnings::Create (CFixVector *vTargetPos, CObject* parentObjP, CObject* targetObjP)
+int COmegaLightning::Create (CFixVector *vTargetPos, CObject* parentObjP, CObject* targetObjP)
 {
 	tOmegaLightningHandles	*handleP;
 	int							nObject;
@@ -2519,7 +2533,7 @@ else {
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
 										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA
-										 (parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam,
+										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else
 										 0,
 #endif
