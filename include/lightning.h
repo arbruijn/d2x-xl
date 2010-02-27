@@ -94,9 +94,7 @@ class CLightning : public tLightning {
 	private:
 		CArray<CFloatVector>		m_plasmaVerts [3];
 		CArray<tTexCoord2f>		m_plasmaTexCoord;
-#if RENDER_LIGHTNING_CORE
 		CArray<CFloatVector3>	m_coreVerts;
-#endif
 
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
@@ -133,7 +131,7 @@ class CLightning : public tLightning {
 		void RenderCore (tRgbaColorf *colorP, int nDepth, int nThread);
 		void RenderSetup (int nDepth, int nThread);
 		int SetupGlow (void);
-		void RenderGlow (tRgbaColorf *colorP, int nThread);
+		void RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread);
 		void RenderBuffered (int nDepth, int nThread);
 };
 
