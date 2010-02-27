@@ -955,7 +955,7 @@ for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
 	}
 
 if (bPlasma) {
-	for (j = 0; j < 3; j++) {
+	for (j = 0; j < 2; j++) {
 		if (j == 2)
 			j = j;
 		for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
@@ -1001,37 +1001,39 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 ogl.SetBlendMode (2);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-int bWide = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
-int h = bWide ? 0 : 0;
-int i = bWide ? 2 : 0;
-for (; i >= h; i--) {
-	if (!bWide)
-		glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
-	else if (h == 2)
-		glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
-	else if (h == 1)
-		glColor4f (0.1f, 0.1f, 0.1f, colorP->alpha / 2);
-	else
-		glColor4f (colorP->red / 3, colorP->green / 3, colorP->blue / 3, colorP->alpha);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
+if (nDepth || !m_bPlasma) {
+	glColor3f (colorP->red, colorP->green, colorP->blue);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [0].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
+	}
+else {
+	for (int i = 2; i >= 0; i--) {
+		if (i == 2)
+			glColor3f (colorP->red / 2, colorP->green / 2, colorP->blue / 2);
+		else if (i == 1)
+			glColor3f (0.1f, 0.1f, 0.1f);
+		else
+			glColor3f (colorP->red / 3, colorP->green / 3, colorP->blue / 3);
+		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
+		OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
-	if (h != 1)
-		continue;
-	ogl.SetTexturing (false);
-	glColor3f (1,1,1);
-	texCoordP = m_plasmaTexCoord.Buffer ();
-	vertexP = m_plasmaVerts [h].Buffer ();
-	for (int i = m_nNodes - 1; i; i--) {
-		OglDrawArrays (GL_LINE_LOOP, 0, 4);
-		glBegin (GL_LINE_LOOP);
-		for (int j = 0; j < 4; j++) {
-			glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
-			glVertex3fv (reinterpret_cast<GLfloat*> (vertexP++));
+		if (h != 1)
+			continue;
+		ogl.SetTexturing (false);
+		glColor3f (1,1,1);
+		texCoordP = m_plasmaTexCoord.Buffer ();
+		vertexP = m_plasmaVerts [h].Buffer ();
+		for (int i = m_nNodes - 1; i; i--) {
+			OglDrawArrays (GL_LINE_LOOP, 0, 4);
+			glBegin (GL_LINE_LOOP);
+			for (int j = 0; j < 4; j++) {
+				glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
+				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP++));
+				}
+			glEnd ();
 			}
-		glEnd ();
-		}
 #endif
+		}
 	}
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 }
@@ -1096,7 +1098,7 @@ ogl.ClearError (0);
 
 int CLightning::SetupGlow (void)
 {
-if (!(m_bPlasma && gameOpts->render.lightning.bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
+if (!(/*m_bPlasma &&*/ gameOpts->render.lightning.bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTexturing (true);
@@ -2475,9 +2477,9 @@ else {
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
 										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 100, 10, 1, 3, 1, 1,
 #if OMEGA_PLASMA
-										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
+										 ((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else
-										 -1,
+										 0,
 #endif
 										 1, 1, -1, &color);
 	}
