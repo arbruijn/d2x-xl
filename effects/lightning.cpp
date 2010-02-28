@@ -962,8 +962,6 @@ for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
 
 if (bPlasma) {
 	for (j = 0; j < 2; j++) {
-		if (j == 2)
-			j = j;
 		for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
 			vPos [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
 			vPos [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
