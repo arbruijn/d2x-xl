@@ -86,8 +86,10 @@ m_data.depthBuffer.Destroy ();
 
 void CTransparencyRenderer::ResetBuffers (void)
 {
-m_data.depthBuffer.Clear ();
-memset (m_data.itemLists.Buffer (), 0, (ITEM_BUFFER_SIZE - m_data.nFreeItems) * sizeof (struct tTranspItem));
+if (m_data.depthBuffer.Buffer ())
+	m_data.depthBuffer.Clear ();
+if (m_data.itemLists.Buffer ())
+	memset (m_data.itemLists.Buffer (), 0, (ITEM_BUFFER_SIZE - m_data.nFreeItems) * sizeof (struct tTranspItem));
 m_data.nFreeItems = ITEM_BUFFER_SIZE;
 }
 
