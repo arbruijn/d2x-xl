@@ -91,6 +91,7 @@ if (m_data.depthBuffer.Buffer ())
 if (m_data.itemLists.Buffer ())
 	memset (m_data.itemLists.Buffer (), 0, (ITEM_BUFFER_SIZE - m_data.nFreeItems) * sizeof (struct tTranspItem));
 m_data.nFreeItems = ITEM_BUFFER_SIZE;
+m_data.freeList.head = NULL;
 }
 
 
@@ -154,7 +155,13 @@ pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 #pragma omp critical
 	{
-	ph = m_data.itemLists + --m_data.nFreeItems;
+	--m_data.nFreeItems;
+	if (!m_data.freeList.head)
+		ph = m_data.itemLists + m_data.nFreeItems;
+	else {
+		ph = m_data.freeList.head;
+		m_data.freeList.head = ph->pNextItem;
+		}
 	ph->nItem = m_data.nItems [0]++;
 	ph->nType = nType;
 	ph->bRendered = 0;
@@ -1351,7 +1358,9 @@ for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd 
 			if (bReset)
 				pl->pNextItem = NULL;
 			else if (pl->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
-				pl->pNextItem = NULL;
+				pl->pNextItem = m_data.freeList.head;
+				m_data.freeList.head = pl;
+				m_data.nFreeItems++;
 				if (pp)
 					pp->pNextItem = pn;
 				else
@@ -1382,6 +1391,10 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
 if (bReset) {
+	for (pl = m_data.freeList.head; pl; pl = pn) {
+		pn = pl->pNextItem;
+		pl->pNextItem = NULL;
+		}
 	m_data.nItems [1] = 	m_data.nItems [0];
 	m_data.nItems [0] = 0;
 	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
