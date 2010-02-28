@@ -1349,10 +1349,9 @@ for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd 
 			if (bReset)
 				pl->pNextItem = NULL;
 			else if (pl->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
-				if (pp) {
+				pl->pNextItem = NULL;
+				if (pp)
 					pp->pNextItem = pn;
-					pl->pNextItem = NULL;
-					}
 				else
 					pd->head = pn;
 				}
