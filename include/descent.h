@@ -128,7 +128,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AMBIENT_LIGHT	0.3f
 #define DIFFUSE_LIGHT	0.7f
 
-#define MAX_THREADS		4
+#define MAX_THREADS		8
 
 //------------------------------------------------------------------------------
 
