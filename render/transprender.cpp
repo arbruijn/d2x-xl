@@ -84,6 +84,18 @@ m_data.depthBuffer.Destroy ();
 
 //------------------------------------------------------------------------------
 
+void CTransparencyRenderer::ResetFreeList (void)
+{
+	tTranspItem* pl, * pn;
+
+for (pl = m_data.freeList.head; pl; pl = pn) {
+	pn = pl->pNextItem;
+	pl->pNextItem = NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CTransparencyRenderer::ResetBuffers (void)
 {
 if (m_data.depthBuffer.Buffer ())
@@ -91,7 +103,7 @@ if (m_data.depthBuffer.Buffer ())
 if (m_data.itemLists.Buffer ())
 	memset (m_data.itemLists.Buffer (), 0, (ITEM_BUFFER_SIZE - m_data.nFreeItems) * sizeof (struct tTranspItem));
 m_data.nFreeItems = ITEM_BUFFER_SIZE;
-m_data.freeList.head = NULL;
+ResetFreeList ();
 }
 
 
@@ -1391,10 +1403,7 @@ ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
 if (bReset) {
-	for (pl = m_data.freeList.head; pl; pl = pn) {
-		pn = pl->pNextItem;
-		pl->pNextItem = NULL;
-		}
+	ResetFreeList ();
 	m_data.nItems [1] = 	m_data.nItems [0];
 	m_data.nItems [0] = 0;
 	m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;

@@ -220,6 +220,7 @@ class CTransparencyRenderer {
 			}
 
 	private:
+		void ResetFreeList (void);
 		int AddFaceTris (CSegFace *faceP);
 		int AddFaceQuads (CSegFace *faceP);
 		void ResetBitmaps (void);
