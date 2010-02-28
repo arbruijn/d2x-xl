@@ -230,6 +230,7 @@ if (renderOpts.n3DGlasses >= 0) {
 	m = menu + renderOpts.n3DGlasses;
 	v = m->m_value;
 	if ((h = gameOpts->render.n3DGlasses) != v) {
+		transparencyRenderer.ResetBuffers ();
 		gameOpts->render.n3DGlasses = v;
 		sprintf (m->m_text, TXT_STEREO_VIEW, psz3DGlasses [v]);
 		m->m_bRebuild = -1;

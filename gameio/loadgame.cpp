@@ -809,6 +809,7 @@ static void CleanupBeforeGame (int nLevel, int bRestore)
 {
 /*---*/PrintLog ("Loading level...\n");
 EndRenderThreads ();
+transparencyRenderer.ResetBuffers ();
 gameData.Destroy ();
 srand (SDL_GetTicks ());
 gameData.time.tLast = 0;

@@ -573,6 +573,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 MultiLeaveGame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
+transparencyRenderer.ResetBuffers ();
 CGenericCockpit::Rewind (false);
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 StopPlayerMovement ();
