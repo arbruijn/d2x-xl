@@ -219,10 +219,11 @@ int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 	int			nRad, nType = particleImageManager.GetType (nParticleSystemType);
 
 m_bChecked = 0;
+m_bBlowUp = bBlowUp && gameOpts->render.particles.bDisperse;
 if (nScale < 0)
 	nRad = (int) -nScale;
 else if (gameOpts->render.particles.bSyncSizes)
-	nRad = (int) PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale);
+	nRad = (int) PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, m_bBlowUp);
 else
 	nRad = (int) nScale;
 if (!nRad)
@@ -364,7 +365,7 @@ if ((nType != BUBBLE_PARTICLES) && mOrient) {
 	mRot = CFixMatrix::Create (vRot);
 	m_mOrient = *mOrient * mRot;
 	}
-m_bBlowUp = bBlowUp && gameOpts->render.particles.bDisperse;
+
 if (nType == SMOKE_PARTICLES) {
 	if (m_bBlowUp)
 		nLife = (nLife * 2) / 3;

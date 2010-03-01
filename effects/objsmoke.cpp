@@ -282,7 +282,7 @@ void DoPlayerSmoke (CObject *objP, int nPlayer)
 	int					nObject, nSmoke, d, nParts, nType;
 	float					nScale;
 	CParticleEmitter	*emitterP;
-	CFixVector			fn, mn, vDir, *vDirP;
+	CFixVector			fn, mn, vDir;
 	tThrusterInfo		ti;
 
 	static int	bForward = 1;
@@ -344,28 +344,24 @@ else {
 		nParts += 75;
 		}
 	if (SHOW_SMOKE && nParts && gameOpts->render.particles.bPlayers) {
+		CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
+		int bBlowUp = (nType != 2) || (vDirP != NULL);
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
-			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, bBlowUp);
 			}
 		else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [1]);
-			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale, bBlowUp);
 			}
-		if (!(SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ())) {
-			vDirP = NULL;
-			//nParts /= 2;
-			//nScale /= 2;
-			}
-		else {	// if the ship is standing still, let the thruster smoke move away from it
+		if (vDirP) {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			nScale /= 2;
 			vDir = OBJPOS (objP)->mOrient.FVec () * (I2X (1) / 8);
 			vDir = -vDir;
 			vDirP = &vDir;
 			}
-		int bBlowUp = (nType != 2) || (vDirP != NULL);
-		int nLife = PLR_PART_LIFE / bBlowUp ? (nType + 1) : 20;
+		int nLife = PLR_PART_LIFE / (bBlowUp ? (nType + 1) : 20);
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
@@ -433,7 +429,7 @@ if (nParts > 0) {
 	nScale *= 1.0f + h / 25.0f;
 	if (!gameOpts->render.particles.bSyncSizes) {
 		nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [2]);
-		nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [2], nScale);
+		nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [2], nScale, 1);
 		}
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		//PrintLog ("creating robot %d smoke\n", nObject);
@@ -538,7 +534,7 @@ if (nParts) {
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
-			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
 			}
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
@@ -576,7 +572,7 @@ else
 if (nParts) {
 	if (!gameOpts->render.particles.bSyncSizes) {
 		nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [4]);
-		nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [4], nScale);
+		nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [4], nScale, 1);
 		}
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts / 2,
@@ -637,7 +633,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 	dir = objP->info.position.mOrient.FVec () * (objP->rType.particleInfo.nSpeed * I2X (2) / 55);
 	nSmoke = particleManager.Create (&objP->info.position.vPos, &dir, &objP->info.position.mOrient,
 												objP->info.nSegment, 1, -objP->rType.particleInfo.nParts,
-												-PARTICLE_SIZE (objP->rType.particleInfo.nSize [gameOpts->render.particles.bDisperse], (nType == 1) ? 4.0f : 2.0f),
+												-PARTICLE_SIZE (objP->rType.particleInfo.nSize [gameOpts->render.particles.bDisperse], (nType == 1) ? 4.0f : 2.0f, 1),
 												-1, 3, (nType == 2) ? FIRE_PART_LIFE * int (sqrt (double (objP->rType.particleInfo.nLife))) : STATIC_SMOKE_PART_LIFE * objP->rType.particleInfo.nLife,
 												objP->rType.particleInfo.nDrift, particleTypes [nType], 
 												nObject, bColor ? &color : defaultColors + nType, 1, objP->rType.particleInfo.nSide - 1);
@@ -682,7 +678,7 @@ else
 if (nParts) {
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts,
-												   -PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, SMOKE_PARTICLES, nObject, NULL, 1, -1);
+												   -PARTICLE_SIZE (3, 0.5f, 1), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, SMOKE_PARTICLES, nObject, NULL, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
@@ -757,7 +753,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			nScale = 1;
 		c.alpha = 0.1f + nScale / 10;
 		}
-	nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale),
+	nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts << bGatling, -PARTICLE_SIZE (1, nScale, 1),
 											   gameOpts->render.particles.nSize [3],
 												1, (gameOpts->render.particles.nLife [3] + 1) * (bGatling ? 3 * LASER_PART_LIFE / 2 : LASER_PART_LIFE >> bOmega) /*<< bGatling*/, LASER_PART_SPEED, 
 											   bGatling ? GATLING_PARTICLES : LIGHT_PARTICLES, nObject, &c, 0, -1);

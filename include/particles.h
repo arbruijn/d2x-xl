@@ -19,8 +19,8 @@
 #define LIGHT_PARTICLES			5
 #define GATLING_PARTICLES		6
 
-#define MAX_PARTICLES(_nParts,_nDens)	particleManager.MaxParticles (_nParts, _nDens)
-#define PARTICLE_SIZE(_nSize,_fScale)	particleManager.ParticleSize (_nSize, _fScale)
+#define MAX_PARTICLES(_nParts,_nDens)				particleManager.MaxParticles (_nParts, _nDens)
+#define PARTICLE_SIZE(_nSize,_fScale,_bBlowUp)	particleManager.ParticleSize (_nSize, _fScale, _bBlowUp)
 
 //------------------------------------------------------------------------------
 
@@ -335,10 +335,10 @@ class CParticleManager {
 			return (nParts < 100000) ? nParts : 100000;
 			}
 
-		inline float ParticleSize (int nSize, float fScale) {
-			if (gameOpts->render.particles.bDisperse)
-				return (float) (PARTICLE_RAD * (nSize + 1)) / fScale + 0.5f;
-			return (float) (PARTICLE_RAD * (nSize + 1) * (nSize + 2) / 2) / fScale + 0.5f;
+		inline float ParticleSize (int nSize, float fScale, int bBlowUp = 1) {
+			return (bBlowUp && gameOpts->render.particles.bDisperse)
+					 ? float (PARTICLE_RAD * (nSize + 1)) / fScale + 0.5f
+					 : float (PARTICLE_RAD * (nSize + 1) * (nSize + 2) / 2) / fScale + 0.5f;
 			}
 
 		inline int RemoveEmitter (int i, int j)
