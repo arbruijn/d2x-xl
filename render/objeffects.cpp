@@ -1590,29 +1590,29 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				!gameData.objs.bIsSlowWeapon [objP->info.nId] &&
 				(!objP->mType.physInfo.velocity.IsZero ()) &&
 				(bAdditive ? LoadGlare () : LoadCorona ())) {
-			CFloatVector	vNormf, vOffsf, vTrailVerts [4];
+			CFloatVector	vNormf, vOffsf, vTrailVerts [6];
 			float				h, l, r, dx, dy;
 			CBitmap*			bmP;
 
 			static CFloatVector vEye = CFloatVector::ZERO;
 
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
-			static tTexCoord2f	tTexCoordTrail [4] = {{{0.1f,0.1f}},{{0.9f,0.1f}},{{0.9f,0.9f}},{{0.1f,0.9f}}};
+			static tTexCoord2f	tTexCoordTrail [6] = {
+				//{{0.1f,0.1f}},{{0.9f,0.1f}},{{0.9f,0.9f}},{{0.1f,0.9f}}
+				{{0.0f,0.0f}},{{1.0f,0.0f}},{{0.0f,1.0f}},
+				{{0.0f,1.0f}},{{1.0f,0.0f}},{{1.0f,1.0f}}
+				};
 
 		if (objP->info.renderType == RT_POLYOBJ) {
 			tHitbox*	phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
 			l = X2F (phb->vMax [Z] - phb->vMin [Z]);
 			dx = X2F (phb->vMax [X] - phb->vMin [X]);
 			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
-			r = (float) (sqrt (dx * dx + dy * dy) / sqrt (2.0f));
-			if (objP->info.nId == FUSION_ID) {
-				l *= 1.5f;
-				r /= 1.5f;
-				}
+			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 1.5f : 3.0f);
 			}
 		else {
-			r = WeaponBlobSize (objP->info.nId) / 1.5f;
-			l = 4 * r;
+			l = WeaponBlobSize (objP->info.nId) * 1.5f;
+			r = l * 2.0f;
 			}
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
@@ -1628,18 +1628,39 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		h = X2F (CFixVector::Dist (objP->info.position.vPos, objP->Origin ()));
 		if (h > 100.0f)
 			h = 100.0f;
-		vTrailVerts [2] = vTrailVerts [0] - vOffsf * (h + l);
+		else if (h < 1.0f)
+			h = 1.0f;
+		vTrailVerts [5] = vTrailVerts [0] - vOffsf * (h + l);
 		transformation.Transform (vTrailVerts [0], vTrailVerts [0], 0);
-		transformation.Transform (vTrailVerts [2], vTrailVerts [2], 0);
-		vOffsf = vTrailVerts [2] - vTrailVerts [0];
-		vOffsf = vOffsf * (r * 4.0f / h);
-		vNormf = CFloatVector::Normal (vTrailVerts [0], vTrailVerts [2], vEye);
-		vNormf = vNormf * (r * 4);
+		transformation.Transform (vTrailVerts [5], vTrailVerts [5], 0);
+		vOffsf = vTrailVerts [5] - vTrailVerts [0];
+		vOffsf = vOffsf * (r / h);
+		vNormf = CFloatVector::Normal (vTrailVerts [0], vTrailVerts [5], vEye);
+		vNormf *= r;
 		vTrailVerts [1] = vTrailVerts [0] + vNormf;
 		vTrailVerts [1] += vOffsf;
-		vTrailVerts [3] = vTrailVerts [0] - vNormf;
-		vTrailVerts [3] += vOffsf;
-		nTrailItem = transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
+		vTrailVerts [2] = vTrailVerts [0] - vNormf;
+		vTrailVerts [2] += vOffsf;
+		vTrailVerts [4] = vTrailVerts [1];
+		vTrailVerts [3] = vTrailVerts [2];
+		vNormf = CFloatVector::Normal (vTrailVerts [1], vTrailVerts [2], vEye);
+		vNormf *= r;
+		vTrailVerts [0] = CFloatVector::Avg (vTrailVerts [1], vTrailVerts [2]) - vNormf;
+#if 0 //DBG
+		trailColor.red = trailColor.green = trailColor.blue = 1.0;
+		glColor3f (1,1,1);
+		glLineWidth (2);
+		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+		ogl.SetTexturing (false);
+		ogl.SetBlendMode (1);
+		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), (GLfloat*) vTrailVerts);
+		OglDrawArrays (GL_LINE_LOOP, 0, 3);
+		OglDrawArrays (GL_LINE_LOOP, 3, 3);
+		ogl.DisableClientStates (0, 0, 0, GL_TEXTURE0);
+		glLineWidth (1);
+#else
+		nTrailItem = transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 6, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_TRIANGLES, GL_CLAMP, bAdditive, -1);
+#endif
 		}
 	RenderShockwave (objP);
 	}

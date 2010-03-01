@@ -851,6 +851,7 @@ if (LoadImage (bmBot, (bLightmaps || gameStates.render.bFullBright) ? 0 : item->
 	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
+	ogl.SetTexturing (m_data.bTextured != 0);
 	if (faceP && gameStates.render.bPerPixelLighting) {
 		if (!faceP->m_info.bColored) {
 			G3SetupGrayScaleShader ((int) faceP->m_info.nRenderType, &faceP->m_info.color);
