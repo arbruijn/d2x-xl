@@ -623,6 +623,7 @@ const char *pszLightingVS [] = {
 	};
 
 // ----------------------------------------------------------------------------------------------
+// per pixel lighting with lightmaps, 2 to 8 light sources per pass
 
 const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
@@ -977,6 +978,7 @@ const char *pszPP1LMLightingFS [] = {
 	};
 
 // ----------------------------------------------------------------------------------------------
+// per pixel lighting with lightmaps, 1 light source per pass
 
 const char *pszPPLMLightingVS [] = {
 	"varying vec3 normal, vertPos;\r\n" \
@@ -1399,7 +1401,12 @@ for (nLights = 0;
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
-		glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat*) (&CFloatVector3::ZERO));
+		if (!faceP)
+			glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat*) (&CFloatVector3::ZERO));
+		else {
+			CFloatVector vNormal = -(faceP->Normal ());
+			glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&vNormal));
+			}
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
