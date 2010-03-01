@@ -1610,12 +1610,13 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			l = X2F (phb->vMax [Z] - phb->vMin [Z]);
 			dx = X2F (phb->vMax [X] - phb->vMin [X]);
 			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
-			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 2.0f : 4.0f);
+			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 1.5f : 3.0f);
 			vCenter += vOffs * (l / 2.0f);
 			}
 		else {
-			l = WeaponBlobSize (objP->info.nId) * 1.5f;
-			r = 2 * l;
+			r = WeaponBlobSize (objP->info.nId);
+			l = r * 1.5f;
+			r *= 2;
 			}
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
@@ -1636,7 +1637,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		transformation.Transform (vTrailVerts [0], vTrailVerts [0], 0);
 		transformation.Transform (vTrailVerts [7], vTrailVerts [7], 0);
 		vNorm = CFloatVector::Normal (vTrailVerts [0], vTrailVerts [7], vEye);
-		vNorm *= r / 2.0f;
+		vNorm *= r;
 		vTrailVerts [2] = 
 		vTrailVerts [5] = vCenter + vNorm;
 		vTrailVerts [3] = 
@@ -1645,7 +1646,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vTrailVerts [6] = vTrailVerts [7] + vNorm;
 		vTrailVerts [7] -= vNorm;
 		vNorm = CFloatVector::Normal (vTrailVerts [2], vTrailVerts [3], vEye);
-		vNorm *= r / 2.0f;
+		vNorm *= r;
 		vTrailVerts [0] = vTrailVerts [3] - vNorm;
 		vTrailVerts [1] = vTrailVerts [2] - vNorm;
 #if 0 //DBG
