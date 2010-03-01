@@ -1108,7 +1108,7 @@ else { //3D
 
 	CreateThrusterFlame ();
 	ogl.SetFaceCulling (false);
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (1);
 	ogl.SetTransform (1);
 	ogl.SetDepthWrite (false);
 
@@ -1120,7 +1120,7 @@ else { //3D
 		transformation.Begin (ti.vPos [h], (ti.pp && !bSpectate) ? ti.pp->mOrient : objP->info.position.mOrient);
 		// render a cap for the thruster flame at its base
 		if (bTextured && (bTextured = LoadThruster (1))) {
-			CBitmap* bmP = bmpThruster [0][bPlayer];
+			bmP = bmpThruster [0][bPlayer];
 			bmP->SetTranspType (-1);
 			if (bmP->Bind (1)) {
 				bTextured = 0;
@@ -1136,12 +1136,12 @@ else { //3D
 			for (j = 0; j < 4; j++) {
 				k = j * 4;
 				verts [j] = vFlame [5][k];
-				verts [j] [X] *= ti.fSize * 1.5f;
-				verts [j] [Y] *= ti.fSize * 1.5f;
+				verts [j] [X] *= ti.fSize * 1.666f;
+				verts [j] [Y] *= ti.fSize * 1.666f;
 				verts [j] [Z] = z;
 				}
-			bmP->SetTexCoord (tcThruster);
-			ogl.RenderQuad (bmP, verts, 3);
+			ogl.RenderQuad (bmP, verts, 3, tcThruster);
+			ogl.SetTexturing (true);
 			bmpThruster [1][bPlayer]->Bind (1);
 			}
 		else {
@@ -1168,7 +1168,7 @@ else { //3D
 			color [1].blue = 0.0f;
 			color [1].alpha = 0.9f;
 			}
-#if 1
+
 		if (ogl.SizeBuffers ((THRUSTER_SEGS - 1) * (RING_SEGS + 1) * 2)) {
 			int nVerts = 0;
 			for (i = 0; i < THRUSTER_SEGS - 1; i++) {
@@ -1196,14 +1196,13 @@ else { //3D
 						ogl.VertexBuffer () [nVerts++] = v;
 						}
 					}
-				ogl.FlushBuffers (GL_QUAD_STRIP, nVerts, bTextured, !bTextured);
 				}
+			ogl.FlushBuffers (GL_QUAD_STRIP, nVerts, 3, bTextured, !bTextured);
 			}
-#endif
 		transformation.End ();
 		}
 	ogl.SetTransform (0);
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (0);
 	ogl.SetFaceCulling (true);
 	OglCullFace (0);
 	ogl.SetDepthWrite (true);

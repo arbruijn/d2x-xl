@@ -370,7 +370,7 @@ else {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
 														gameOpts->render.particles.nSize [1],
-														2, PLR_PART_LIFE / (nType + 1) * (vDirP ? 2 : 1), PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
+														2, PLR_PART_LIFE / (nType + 2) * (vDirP ? 2 : 1), PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
 			if (nSmoke < 0)
 				return;
 			particleManager.SetObjectSystem (nObject, nSmoke);
