@@ -845,9 +845,7 @@ memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLast
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 gameData.objs.objects.Clear ();
 lightClusterManager.Init ();
-gameData.render.faceIndex.roots.Clear (0xff);
-gameData.render.faceIndex.tails.Clear (0xff);
-gameData.render.faceIndex.nUsedKeys = 0;
+gameData.render.faceIndex.Init ();
 lightManager.ResetIndex ();
 memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
 omegaLightnings.Init ();
@@ -1237,6 +1235,7 @@ void InitSecretLevel (int nLevel)
 {
 Assert (gameData.missions.nCurrentLevel == nLevel);	//make sure level set right
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
+meshBuilder.ComputeFaceKeys ();
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
 automap.ClearVisited ();

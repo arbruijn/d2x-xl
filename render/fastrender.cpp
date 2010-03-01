@@ -43,12 +43,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void ResetFaceList (void)
 {
 PROF_START
-CFaceListIndex& flx = gameData.render.faceIndex;
-int* tails = flx.tails.Buffer (),
-	* usedKeys = flx.usedKeys.Buffer ();
-for (int i = 0, h = flx.nUsedKeys; i < h; i++) 
+int* tails = gameData.render.faceIndex.tails.Buffer (),
+	* usedKeys = gameData.render.faceIndex.usedKeys.Buffer ();
+for (int i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) 
 	tails [usedKeys [i]] = -1;
-flx.nUsedKeys = 0;
+gameData.render.faceIndex.nUsedKeys = 0;
 PROF_END(ptFaceList)
 }
 
@@ -75,19 +74,23 @@ if (faceP - FACES.faces >= gameData.segs.nFaces)
 #endif
 {
 PROF_START
-CFaceListIndex& flx = gameData.render.faceIndex; //[nThread];
 int nKey = faceP->m_info.nKey;
 int i = gameData.render.nUsedFaces++;
-int j = flx.tails [nKey];
+int j = gameData.render.faceIndex.tails [nKey];
 if (j < 0) {
-	flx.usedKeys [flx.nUsedKeys++] = nKey;
-	flx.roots [nKey] = i;
+	gameData.render.faceIndex.usedKeys [gameData.render.faceIndex.nUsedKeys++] = nKey;
+	gameData.render.faceIndex.roots [nKey] = i;
 	}
-else
+else {
+#if DBG
+	if (!i)
+		i = i;
+#endif
 	gameData.render.faceList [j].nNextItem = i;
+	}
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
-flx.tails [nKey] = i;
+gameData.render.faceIndex.tails [nKey] = i;
 faceP->m_info.nTransparent = -1;
 faceP->m_info.nColored = -1;
 faceP->m_info.nFrame = gameData.app.nFrameCount;

@@ -541,8 +541,8 @@ usedKeys.Destroy ();
 void CFaceListIndex::Init (void)
 {
 #if 1
-roots.Clear (short (-1));
-tails.Clear (short (-1));
+roots.Clear (0xff);
+tails.Clear (0xff);
 usedKeys.Clear (0);
 #endif
 }

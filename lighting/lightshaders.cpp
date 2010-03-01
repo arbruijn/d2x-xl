@@ -1324,7 +1324,7 @@ for (nLights = 0;
 	  activeLightsP++, nLightRange--) {
 	if (!(psl = lightManager.GetActive (activeLightsP, 0)))
 		continue;
-#if DBG
+#if 0 //DBG
 	if (psl->info.nObject < 1)
 		continue;
 	if (OBJECTS [psl->info.nObject].info.nType != OBJ_LIGHT)
