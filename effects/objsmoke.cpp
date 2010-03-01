@@ -329,25 +329,20 @@ else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlay
 	nParts = 0;
 else {
 	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].shields);
+	nScale = X2F (objP->info.xSize) / 2.0f;
 	nParts = 10 - nSmoke / 5;
-	nScale = X2F (objP->info.xSize);
-	if (nSmoke <= 25)
-		nScale /= 1.5;
-	else if (nSmoke <= 50)
-		nScale /= 2;
-	else
-		nScale /= 3;
 	if (nParts <= 0) {
 		nType = 2;
-		//nParts = (gameStates.entropy.nTimeLastMoved < 0) ? 250 : 125;
+		nScale /= 2;
+		nParts = objP->mType.physInfo.thrust.IsZero () ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
 		}
 	else {
 		CreateDamageExplosion (nParts, nObject);
 		nType = (nSmoke > 25);
+		nScale *= 2.0f - float (nSmoke) / 50.0f;
 		nParts *= 25;
 		nParts += 75;
 		}
-	nParts = objP->mType.physInfo.thrust.IsZero () ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
 	if (SHOW_SMOKE && nParts && gameOpts->render.particles.bPlayers) {
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
@@ -359,6 +354,8 @@ else {
 			}
 		if (!(SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ())) {
 			vDirP = NULL;
+			//nParts /= 2;
+			//nScale /= 2;
 			}
 		else {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
@@ -367,16 +364,13 @@ else {
 			vDir = -vDir;
 			vDirP = &vDir;
 			}
-		int nLife = PLR_PART_LIFE;
-		if (nType == 2)
-			nLife /= vDirP ? nType + 1 : 20;
-		else
-			nLife /= nType + 1;
+		int bBlowUp = (nType != 2) || (vDirP != NULL);
+		int nLife = PLR_PART_LIFE / bBlowUp ? (nType + 1) : 20;
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
 														gameOpts->render.particles.nSize [1],
-														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, vDirP ? 1 : 0, -1);
+														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, bBlowUp, -1);
 			if (nSmoke < 0)
 				return;
 			particleManager.SetObjectSystem (nObject, nSmoke);
@@ -385,7 +379,7 @@ else {
 			if (vDirP)
 				particleManager.SetDir (nSmoke, vDirP);
 			particleManager.SetLife (nSmoke, nLife);
-			particleManager.SetBlowUp (nSmoke, vDirP ? 1 : 0);
+			particleManager.SetBlowUp (nSmoke, bBlowUp);
 			particleManager.SetType (nSmoke, SMOKE_PARTICLES);
 			particleManager.SetScale (nSmoke, -nScale);
 			particleManager.SetDensity (nSmoke, nParts, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [1]);

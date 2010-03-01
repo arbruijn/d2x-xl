@@ -129,7 +129,7 @@ static char bBufferEmissive = 0;
 static CFloatVector vRot [PARTICLE_POSITIONS];
 
 
-#define SMOKE_START_ALPHA		(gameOpts->render.particles.bDisperse ? 64 : 96) //96 : 128)
+#define SMOKE_START_ALPHA		(m_bBlowUp ? 64 : 96) //96 : 128)
 
 CParticleManager particleManager;
 CParticleImageManager particleImageManager;
@@ -283,7 +283,7 @@ else {
 				m_color [0].alpha = float (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 				}
 			}
-		if (gameOpts->render.particles.bDisperse && !m_bBright) {
+		if (m_bBlowUp && !m_bBright) {
 			fBrightness = 1.0f - fBrightness;
 			m_color [0].alpha += fBrightness * fBrightness / 8.0f;
 			}
@@ -364,8 +364,9 @@ if ((nType != BUBBLE_PARTICLES) && mOrient) {
 	mRot = CFixMatrix::Create (vRot);
 	m_mOrient = *mOrient * mRot;
 	}
+m_bBlowUp = bBlowUp && gameOpts->render.particles.bDisperse;
 if (nType == SMOKE_PARTICLES) {
-	if (gameOpts->render.particles.bDisperse)
+	if (m_bBlowUp)
 		nLife = (nLife * 2) / 3;
 	nLife = nLife / 2 + randN (nLife / 2);
 	nRad += randN (nRad);
@@ -380,7 +381,7 @@ else
 	nRad *= 2;
 m_vStartPos = m_vPos;
 
-if ((m_bBlowUp = bBlowUp)) {
+if (m_bBlowUp) {
 	m_nRad = nRad / 2;
 	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 3 : m_nRad;
 	m_nHeight = m_nRad;
@@ -889,7 +890,7 @@ pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV;
 pb [(m_nOrient + 2) % 4].texCoord.v.v =
 pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV;
 
-if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bDisperse) {
+if ((m_nType == SMOKE_PARTICLES) && m_bBlowUp) {
 #if 0
 	float decay = (float) pow (m_decay * m_decay * m_decay, 1.0f / 5.0f);
 #else
