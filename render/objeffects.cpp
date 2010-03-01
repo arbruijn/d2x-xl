@@ -1646,7 +1646,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vNorm *= r / 2.0f;
 		vTrailVerts [0] = vTrailVerts [3] - vNorm;
 		vTrailVerts [1] = vTrailVerts [2] - vNorm;
-#if 1 //DBG
+#if 0 //DBG
 		trailColor.red = trailColor.green = trailColor.blue = 1.0;
 		glColor3f (1,1,1);
 		glLineWidth (2);
@@ -1658,7 +1658,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		OglDrawArrays (GL_LINE_LOOP, 4, 4);
 		ogl.DisableClientStates (0, 0, 0, GL_TEXTURE0);
 		glLineWidth (1);
-//#else
+#else
 		transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 8, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 #endif
 		}
