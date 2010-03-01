@@ -1054,8 +1054,9 @@ return 0;
 
 int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap)
 {
+SelectTMU (GL_TEXTURE0);
 if (bmP) {
-	ogl.SetTexturing (true);
+	SetTexturing (true);
 	if (!bmP->IsBound ()) {
 		if (bmP->Bind (1))
 			return 0;
@@ -1066,7 +1067,7 @@ if (bmP) {
 		}
 	}
 else if (!(ogl.DrawBuffer () && ogl.DrawBuffer ()->IsBound ()))
-	ogl.SetTexturing (false);
+	SetTexturing (false);
 return 1;
 }
 
@@ -1109,7 +1110,7 @@ int COGL::RenderArrays (int nPrimitive,
 {
 if (!BindBitmap (bmP, nFrame, nWrap))
 	return 0;
-if (BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, bmP, GL_TEXTURE0)) {
+if (BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, bmP)) {
 	OglDrawArrays (nPrimitive, 0, nVertices);
 	ogl.ReleaseBuffers ();
 	}

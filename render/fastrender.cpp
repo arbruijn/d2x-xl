@@ -475,10 +475,8 @@ else
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 		}
 	}
-#if 0
-if (bNormals)
+if (bNormals)	// somehow these get disabled above
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
-#endif
 if (gameStates.render.bFullBright)
 	glColor3f (1,1,1);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);

@@ -176,14 +176,11 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	   if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -220,14 +217,11 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -267,14 +261,11 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -318,14 +309,11 @@ const char *pszPPXLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -364,14 +352,11 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightAngle = /*decay **/ min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
 	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -402,14 +387,11 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightAngle = /*decay **/ min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
 	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -442,14 +424,11 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightAngle = /*decay **/ min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
 	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -486,14 +465,11 @@ const char *pszPP1LightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
+	"	float lightAngle = /*decay **/ min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
 	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -641,14 +617,11 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		  if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -685,14 +658,11 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	   if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -731,14 +701,11 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"		  if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -781,14 +748,11 @@ const char *pszPPXLMLightingFS [] = {
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
 	"		float lightDist = length (lightVec);\r\n" \
 	"		vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"     /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"     float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"		float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"		float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"		float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"		float decay = min (NdotL, lightAngle);\r\n" \
-	"		if (decay < 0.0) {\r\n" \
-	"			/*decay += 1.0000001;*/\r\n" \
-	"			lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"			}\r\n" \
+	"	   lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"		float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	   if (dist == 0.0)\r\n" \
 	"			color = gl_LightSource [i].diffuse + gl_LightSource [i].ambient;\r\n" \
@@ -826,14 +790,11 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"	float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \
 	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -865,14 +826,11 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"	float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \
 	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -905,14 +863,11 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"	float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \
 	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -949,14 +904,11 @@ const char *pszPP1LMLightingFS [] = {
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
+	"  /*float decay = length (gl_LightSource [i].spotDirection);*/\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
-	"	float lightAngle = (lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0;\r\n" \
+	"	float lightAngle = /*decay **/ ((lightDist > 0.01) ? -dot (lightNorm, gl_LightSource [i].spotDirection) + 0.01 : 1.0);\r\n" \
 	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	float decay = min (NdotL, lightAngle);\r\n" \
-	"	if (decay < 0.0) {\r\n" \
-	"		/*decay += 1.0000001;*/\r\n" \
-	"		lightDist -= 1e2 * decay/*lightDist /= decay * decay*/;\r\n" \
-	"		}\r\n" \
+	"	lightDist -= 100.0 * /*decay **/ min (0.0, min (NdotL, lightAngle)); //decay\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	  if (dist == 0.0)\r\n" \
 	"		colorSum += gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -1372,6 +1324,12 @@ for (nLights = 0;
 	  activeLightsP++, nLightRange--) {
 	if (!(psl = lightManager.GetActive (activeLightsP, 0)))
 		continue;
+#if DBG
+	if (psl->info.nObject < 1)
+		continue;
+	if (OBJECTS [psl->info.nObject].info.nType != OBJ_LIGHT)
+		continue;
+#endif
 #if 0//DBG
 	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -1401,12 +1359,16 @@ for (nLights = 0;
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
 		glLightf (hLight, GL_LINEAR_ATTENUATION, OBJ_LIN_ATT / fBrightness);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, OBJ_QUAD_ATT / fBrightness);
+#if 1
+		glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat*) (&CFloatVector3::ZERO));
+#else
 		if (!faceP)
 			glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat*) (&CFloatVector3::ZERO));
 		else {
 			CFloatVector vNormal = -(faceP->Normal ());
 			glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&vNormal));
 			}
+#endif
 		ambient.red = psl->info.color.red * PPL_AMBIENT_LIGHT;
 		ambient.green = psl->info.color.green * PPL_AMBIENT_LIGHT;
 		ambient.blue = psl->info.color.blue * PPL_AMBIENT_LIGHT;
