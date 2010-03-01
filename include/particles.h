@@ -151,6 +151,7 @@ class CParticleEmitter : public tParticleEmitter {
 		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment);
 		inline void SetDir (CFixVector *vDir);
 		inline void SetLife (int nLife);
+		inline void SetBlowUp (int bBlowUpParts);
 		inline void SetBrightness (int nBrightness);
 		inline void SetFadeType (int nFadeType);
 		inline void SetSpeed (int nSpeed);
@@ -206,6 +207,7 @@ class CParticleSystem : public tParticleSystem {
 		void SetPartScale (float fScale);
 		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment);
 		void SetDir (CFixVector *vDir);
+		void SetBlowUp (int bBlowUp);
 		void SetLife (int nLife);
 		void SetScale (float fScale);
 		void SetType (int nType);
@@ -292,6 +294,10 @@ class CParticleManager {
 
 		inline void SetLife (int i, int nLife) {
 			GetSystem (i).SetLife (nLife);
+			}
+
+		inline void SetBlowUp (int i, int bBlowUpParts) {
+			GetSystem (i).SetBlowUp (bBlowUpParts);
 			}
 
 		inline void SetBrightness (int i, int nBrightness) {

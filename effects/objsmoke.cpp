@@ -357,8 +357,9 @@ else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale);
 			}
-		if (!objP->mType.physInfo.thrust.IsZero ())
+		if (!(SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ())) {
 			vDirP = NULL;
+			}
 		else {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			nScale /= 2;
@@ -366,11 +367,16 @@ else {
 			vDir = -vDir;
 			vDirP = &vDir;
 			}
+		int nLife = PLR_PART_LIFE;
+		if (nType == 2)
+			nLife /= vDirP ? nType + 1 : 20;
+		else
+			nLife /= nType + 1;
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
 														gameOpts->render.particles.nSize [1],
-														2, PLR_PART_LIFE / (nType + 2) * (vDirP ? 2 : 1), PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
+														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, vDirP ? 1 : 0, -1);
 			if (nSmoke < 0)
 				return;
 			particleManager.SetObjectSystem (nObject, nSmoke);
@@ -378,7 +384,8 @@ else {
 		else {
 			if (vDirP)
 				particleManager.SetDir (nSmoke, vDirP);
-			particleManager.SetLife (nSmoke, PLR_PART_LIFE / (nType + 1) * (vDirP ? 2 : 1));
+			particleManager.SetLife (nSmoke, nLife);
+			particleManager.SetBlowUp (nSmoke, vDirP ? 1 : 0);
 			particleManager.SetType (nSmoke, SMOKE_PARTICLES);
 			particleManager.SetScale (nSmoke, -nScale);
 			particleManager.SetDensity (nSmoke, nParts, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [1]);

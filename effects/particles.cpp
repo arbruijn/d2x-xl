@@ -1281,6 +1281,13 @@ m_nFadeType = nFadeType;
 
 //------------------------------------------------------------------------------
 
+inline void CParticleEmitter::SetBlowUp (int bBlowUpParts)
+{
+m_bBlowUpParts = bBlowUpParts;
+}
+
+//------------------------------------------------------------------------------
+
 inline void CParticleEmitter::SetSpeed (int nSpeed)
 {
 m_nSpeed = nSpeed;
@@ -1475,6 +1482,16 @@ if (m_bValid && m_emitters.Buffer () && (m_nLife != nLife)) {
 	m_nLife = nLife;
 	for (int i = 0; i < m_nEmitters; i++)
 		m_emitters [i].SetLife (nLife);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CParticleSystem::SetBlowUp (int bBlowUpParts)
+{
+if (m_bValid && m_emitters.Buffer ()) {
+	for (int i = 0; i < m_nEmitters; i++)
+		m_emitters [i].SetBlowUp (bBlowUpParts);
 	}
 }
 
