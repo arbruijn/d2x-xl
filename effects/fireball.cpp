@@ -158,7 +158,7 @@ FORALL_OBJS (objP, i) {
 		}
 	else if ((nType != OBJ_REACTOR) && (nType != OBJ_PLAYER))
 		continue;
-	dist = CFixVector::Dist (objP->info.position.vPos, explObjP->info.position.vPos);
+	dist = CFixVector::Dist (OBJPOS (objP)->vPos, explObjP->info.position.vPos);
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
 	if (dist >= xMaxDistance)
 		continue;

@@ -122,7 +122,7 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 		m_data.zScale = 1;
 	else if (m_data.zScale > 1)
 		m_data.zScale = 1;
-	m_data.vViewer [0] = OBJPOS (gameData.objs.viewerP)->vPos;
+	m_data.vViewer [0] = gameData.render.mine.viewerEye;
 	transformation.Transform (m_data.vViewer [1], m_data.vViewer [0]);
 	m_data.vViewerf [0].Assign (m_data.vViewer [0]);
 	m_data.vViewerf [1].Assign (m_data.vViewer [1]);
