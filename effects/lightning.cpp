@@ -2193,7 +2193,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP
 		MoveForObject (objP);
 	else {
 		h = Create (4 * objP->info.xSize / I2X (1), &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -5000, 1000,
-						4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, 0, 1, 1, 1, colorP);
+						4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, -1, 1, 1, 1, colorP);
 		if (h >= 0)
 			m_objects [i] = h;
 		}

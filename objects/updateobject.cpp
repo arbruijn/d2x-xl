@@ -504,15 +504,18 @@ if (info.nType == OBJ_ROBOT) {
 		}
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
+	bool bNeedEffect, bHaveEffect = lightningManager.GetObjectSystem (Index ()) >= 0;
 	int nType = SEGMENTS [OBJSEG (this)].m_nType;
-	if (gameData.FusionCharge (info.nId) > I2X (2)) 
-		RequestEffects (PLAYER_LIGHTNING);
+	if (gameData.FusionCharge (info.nId) > I2X (2))
+		bNeedEffect = true;
 	else if (nType == SEGMENT_IS_FUELCEN)
-		RequestEffects (PLAYER_LIGHTNING);
+		bNeedEffect = gameData.multiplayer.players [info.nId].energy < I2X (100);
 	else if (nType == SEGMENT_IS_REPAIRCEN)
-		RequestEffects (PLAYER_LIGHTNING);
+		bool bNeedEffect = gameData.multiplayer.players [info.nId].shields < I2X (100);
 	else
-		RequestEffects (DESTROY_LIGHTNING);
+		bNeedEffect = false;
+	if (bHaveEffect != bNeedEffect)
+		RequestEffects (bNeedEffect ? PLAYER_LIGHTNING : DESTROY_LIGHTNING);
 	}
 }
 
