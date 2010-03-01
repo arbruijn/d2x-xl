@@ -511,7 +511,7 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	else if (nType == SEGMENT_IS_FUELCEN)
 		bNeedEffect = gameData.multiplayer.players [info.nId].energy < I2X (100);
 	else if (nType == SEGMENT_IS_REPAIRCEN)
-		bool bNeedEffect = gameData.multiplayer.players [info.nId].shields < I2X (100);
+		bNeedEffect = gameData.multiplayer.players [info.nId].shields < I2X (100);
 	else
 		bNeedEffect = false;
 	if (bHaveEffect != bNeedEffect)
