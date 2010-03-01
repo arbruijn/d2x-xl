@@ -633,7 +633,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
-				OutputFile="n:\programs\d2\bin\x64-omp\d2x-xl-x64.exe"
+				OutputFile="\programs\d2\bin\x64-omp\d2x-xl-x64.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
@@ -10739,11 +10739,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
