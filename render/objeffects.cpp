@@ -1599,8 +1599,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
 			static tTexCoord2f	tTexCoordTrail [8] = {
 				//{{0.1f,0.1f}},{{0.9f,0.1f}},{{0.9f,0.9f}},{{0.1f,0.9f}}
-				{{0.0f,0.0f}},{{0.0f,1.0f}},{{0.5f,1.0f}},{{0.5f,0.0f}},
-				{{0.5f,0.0f}},{{0.5f,1.0f}},{{1.0f,1.0f}},{{1.0f,0.0f}}
+				{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.0f,0.5f}},
+				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
 				};
 
 		if (objP->info.renderType == RT_POLYOBJ) {
@@ -1611,8 +1611,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 1.5f : 3.0f);
 			}
 		else {
-			l = WeaponBlobSize (objP->info.nId) * 1.5f;
-			r = l * 2.0f;
+			r = l = WeaponBlobSize (objP->info.nId) * 1.5f;
 			}
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
@@ -1626,29 +1625,27 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vCenter.Assign (objP->info.position.vPos);
 		vTrailVerts [0] = vCenter + vOffs * l;
 		h = X2F (CFixVector::Dist (objP->info.position.vPos, objP->Origin ()));
-		if (h > 100.0f)
-			h = 100.0f;
+		if (h > 50.0f)
+			h = 50.0f;
 		else if (h < 1.0f)
 			h = 1.0f;
 		vTrailVerts [7] = vTrailVerts [0] - vOffs * (h + l);
 		transformation.Transform (vCenter, vCenter, 0);
 		transformation.Transform (vTrailVerts [0], vTrailVerts [0], 0);
 		transformation.Transform (vTrailVerts [7], vTrailVerts [7], 0);
-		vOffs = vTrailVerts [7] - vTrailVerts [0];
-		vOffs = vOffs * (r / h);
 		vNorm = CFloatVector::Normal (vTrailVerts [0], vTrailVerts [7], vEye);
 		vNorm *= r / 2.0f;
 		vTrailVerts [2] = 
 		vTrailVerts [5] = vCenter + vNorm;
 		vTrailVerts [3] = 
 		vTrailVerts [4] = vCenter - vNorm;
-		vNorm /= 4;
+		//vNorm /= 4;
 		vTrailVerts [6] = vTrailVerts [7] + vNorm;
 		vTrailVerts [7] -= vNorm;
 		vNorm = CFloatVector::Normal (vTrailVerts [2], vTrailVerts [3], vEye);
-		vNorm *= r;
-		vTrailVerts [0] = vTrailVerts [3] + vNorm;
-		vTrailVerts [1] = vTrailVerts [2] + vNorm;
+		vNorm *= r / 2.0f;
+		vTrailVerts [0] = vTrailVerts [3] - vNorm;
+		vTrailVerts [1] = vTrailVerts [2] - vNorm;
 #if 1 //DBG
 		trailColor.red = trailColor.green = trailColor.blue = 1.0;
 		glColor3f (1,1,1);

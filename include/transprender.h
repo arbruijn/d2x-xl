@@ -27,10 +27,10 @@ typedef struct tTranspPoly {
 	CSegFace*			faceP;
 	tFaceTriangle*		triP;
 	CBitmap*				bmP;
-	CFloatVector		vertices [6];
-	tTexCoord2f			texCoord [6];
-	tRgbaColorf			color [6];
-	short					sideLength [6];
+	CFloatVector		vertices [8];
+	tTexCoord2f			texCoord [8];
+	tRgbaColorf			color [8];
+	short					sideLength [8];
 	short					nSegment;
 	int					nWrap;
 	int					nPrimitive;
