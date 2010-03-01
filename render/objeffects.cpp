@@ -1603,15 +1603,19 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
 				};
 
+		vCenter.Assign (objP->info.position.vPos);
+		vOffs.Assign (objP->info.position.mOrient.FVec ());
 		if (objP->info.renderType == RT_POLYOBJ) {
 			tHitbox*	phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
 			l = X2F (phb->vMax [Z] - phb->vMin [Z]);
 			dx = X2F (phb->vMax [X] - phb->vMin [X]);
 			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);
-			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 1.5f : 3.0f);
+			r = float (sqrt (dx * dx + dy * dy)) * ((objP->info.nId == FUSION_ID) ? 2.0f : 4.0f);
+			vCenter += vOffs * (l / 2.0f);
 			}
 		else {
-			r = l = WeaponBlobSize (objP->info.nId) * 1.5f;
+			l = WeaponBlobSize (objP->info.nId) * 1.5f;
+			r = 2 * l;
 			}
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
@@ -1621,8 +1625,6 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			trailColor.green *= fScale;
 			trailColor.blue *= fScale;
 			}
-		vOffs.Assign (objP->info.position.mOrient.FVec ());
-		vCenter.Assign (objP->info.position.vPos);
 		vTrailVerts [0] = vCenter + vOffs * l;
 		h = X2F (CFixVector::Dist (objP->info.position.vPos, objP->Origin ()));
 		if (h > 50.0f)
@@ -1647,7 +1649,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vTrailVerts [0] = vTrailVerts [3] - vNorm;
 		vTrailVerts [1] = vTrailVerts [2] - vNorm;
 #if 0 //DBG
-		trailColor.red = trailColor.green = trailColor.blue = 1.0;
+		//trailColor.red = trailColor.green = trailColor.blue = 1.0;
 		glColor3f (1,1,1);
 		glLineWidth (2);
 		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
