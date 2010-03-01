@@ -391,7 +391,7 @@ if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
 		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);
 		}
 	//the actual shield in the sprite texture has 3/4 of the textures size
-	DrawShieldSphere (objP, 3 * color.red / 2, 3 * color.green / 2, 3 * color.blue / 2, 1.0f, 3 * objP->info.xSize / 4, 2);
+	DrawShieldSphere (objP, color.red / 2, color.green / 2, color.blue / 2, 1.0f, 1, 3 * objP->info.xSize / 4);
 	}
 else if (fAlpha < 1) {
 	if (bAdditive) {
