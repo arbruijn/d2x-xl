@@ -11,7 +11,7 @@
 #define MAX_SHRAPNEL_LIFE			I2X (2)
 
 #define SHIP_MAX_PARTS				50
-#define PLR_PART_LIFE				-4000
+#define PLR_PART_LIFE				-1400
 #define PLR_PART_SPEED				50
 
 #define BOT_MAX_PARTS				250

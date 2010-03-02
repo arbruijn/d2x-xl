@@ -328,13 +328,15 @@ else if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].shields < 0)))
 	nParts = 0;
 else {
+	CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
+
 	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].shields);
 	nScale = X2F (objP->info.xSize) / 2.0f;
 	nParts = 10 - nSmoke / 5;	// scale with damage, starting at 50% damage
 	if (nParts <= 0) {
 		nType = 2;	// no damage
 		//nScale /= 2;
-		nParts = objP->mType.physInfo.thrust.IsZero () ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
+		nParts = SHIP_MAX_PARTS / 2; //vDirP ? SHIP_MAX_PARTS / 2 : SHIP_MAX_PARTS;
 		}
 	else {
 		CreateDamageExplosion (nParts, nObject);
@@ -343,15 +345,15 @@ else {
 		nParts *= 25;
 		nParts += 75;
 		}
+
 	if (SHOW_SMOKE && nParts && gameOpts->render.particles.bPlayers) {
-		CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
-			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, 0);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, 1);
 			}
 		else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [1]);
-			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale, 0);
+			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale, 1);
 			}
 		if (vDirP) {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
@@ -360,13 +362,13 @@ else {
 			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 8);
 			}
 		else if (nType == 2)
-			nScale /= 2;
-		int nLife = PLR_PART_LIFE / (((nType != 2) || (vDirP != NULL)) ? 3 : 8);
+			nParts /= 2;
+		int nLife = ((nType != 2) || vDirP) ? PLR_PART_LIFE : PLR_PART_LIFE / 7;
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
 														gameOpts->render.particles.nSize [1],
-														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 0, -1);
+														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
 			if (nSmoke < 0)
 				return;
 			particleManager.SetObjectSystem (nObject, nSmoke);

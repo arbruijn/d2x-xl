@@ -385,13 +385,17 @@ int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 if (!psm->m_nFrames)
 	return 0;
 if (psm->m_bThruster) {
-	nTimeout = 5 * gameStates.gameplay.slowmo [0].fSpeed;
+	nTimeout = gameStates.gameplay.slowmo [0].fSpeed;
 	glPushMatrix ();
 	CFloatVector vCenter;
 	vCenter.Assign (psm->m_vCenter);
 	glTranslatef (vCenter [X], vCenter [Y], vCenter [Z]);
-	glRotatef (-360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
+	glRotatef (-360.0f * 3.0f * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (-vCenter [X], -vCenter [Y], -vCenter [Z]);
+	if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
+		psm->m_tFrame = gameStates.app.nSDLTicks;
+		psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
+		}
 	}
 else {
 	nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
@@ -416,10 +420,10 @@ else {
 	glTranslatef (0, y, 0);
 	glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (0, -y, 0);
-	}
-if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
-	psm->m_tFrame = gameStates.app.nSDLTicks;
-	psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
+	if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
+		psm->m_tFrame = gameStates.app.nSDLTicks;
+		psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
+		}
 	}
 return 1;
 }
@@ -464,8 +468,6 @@ if (psm->m_bThruster) {
 	}
 	//return;
 	}
-else
-	return;
 if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 #endif
