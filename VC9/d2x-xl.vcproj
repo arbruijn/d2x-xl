@@ -6432,6 +6432,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\render\lighttrails.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\render\morph.cpp"
 						>
 					</File>
@@ -6477,6 +6481,10 @@
 					</File>
 					<File
 						RelativePath="..\render\rendershadows.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\render\rendershields.cpp"
 						>
 					</File>
 					<File
