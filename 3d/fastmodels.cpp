@@ -390,7 +390,7 @@ if (psm->m_bThruster) {
 	CFloatVector vCenter;
 	vCenter.Assign (psm->m_vCenter);
 	glTranslatef (vCenter [X], vCenter [Y], vCenter [Z]);
-	glRotatef (-360.0f * 3.0f * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
+	glRotatef (-360.0f * 5.0f * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (-vCenter [X], -vCenter [Y], -vCenter [Z]);
 	if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
 		psm->m_tFrame = gameStates.app.nSDLTicks;

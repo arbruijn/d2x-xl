@@ -144,7 +144,10 @@ if (!bTransformed && gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 
 #if RENDER_TRANSPARENCY
 	tTranspItem*		ph, *	pi;
 	tTranspItemList*	pd;
-	int					nDepth = Depth (vPos, bTransformed) + I2X (nOffset);
+	int					nDepth = Depth (vPos, bTransformed);
+	
+if (nDepth >= I2X (nOffset))
+	nDepth -= I2X (nOffset);
 
 if (nDepth < m_data.zMin) {
 	if (!bClamp)
@@ -531,7 +534,7 @@ if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 item.particle = particle;
 item.fBrightness = fBrightness;
 //particle->Transform (gameStates.render.bPerPixelLighting == 2);
-return Add (tiParticle, &item, sizeof (item), particle->m_vPos, -10); //(gameOpts->render.effects.bSoftParticles & 1) ? -10 : 0);
+return Add (tiParticle, &item, sizeof (item), particle->m_vPos, 10); //(gameOpts->render.effects.bSoftParticles & 1) ? -10 : 0);
 }
 
 //------------------------------------------------------------------------------
