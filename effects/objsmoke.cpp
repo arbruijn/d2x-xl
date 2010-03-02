@@ -330,16 +330,16 @@ else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlay
 else {
 	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].shields);
 	nScale = X2F (objP->info.xSize) / 2.0f;
-	nParts = 10 - nSmoke / 5;
+	nParts = 10 - nSmoke / 5;	// scale with damage, starting at 50% damage
 	if (nParts <= 0) {
-		nType = 2;
-		nScale /= 2;
+		nType = 2;	// no damage
+		//nScale /= 4;
 		nParts = objP->mType.physInfo.thrust.IsZero () ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
 		}
 	else {
 		CreateDamageExplosion (nParts, nObject);
-		nType = (nSmoke > 25);
-		nScale *= 2.0f - float (nSmoke) / 50.0f;
+		nType = (nSmoke > 25);	// 0: severely damaged, 1: damaged
+		nScale /= 2.0f - float (nSmoke) / 50.0f;
 		nParts *= 25;
 		nParts += 75;
 		}
@@ -357,16 +357,16 @@ else {
 		if (vDirP) {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			nScale /= 2;
-			vDir = OBJPOS (objP)->mOrient.FVec () * (I2X (1) / 8);
-			vDir = -vDir;
-			vDirP = &vDir;
+			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 8);
 			}
-		int nLife = PLR_PART_LIFE / (bBlowUp ? (nType + 1) : 20);
+		else if (nType == 2)
+			nScale /= 2;
+		int nLife = PLR_PART_LIFE / (bBlowUp ? 3 : 20);
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
 														gameOpts->render.particles.nSize [1],
-														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, bBlowUp, -1);
+														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 0, -1);
 			if (nSmoke < 0)
 				return;
 			particleManager.SetObjectSystem (nObject, nSmoke);
@@ -375,7 +375,7 @@ else {
 			if (vDirP)
 				particleManager.SetDir (nSmoke, vDirP);
 			particleManager.SetLife (nSmoke, nLife);
-			particleManager.SetBlowUp (nSmoke, bBlowUp);
+			//particleManager.SetBlowUp (nSmoke, bBlowUp);
 			particleManager.SetType (nSmoke, SMOKE_PARTICLES);
 			particleManager.SetScale (nSmoke, -nScale);
 			particleManager.SetDensity (nSmoke, nParts, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [1]);
