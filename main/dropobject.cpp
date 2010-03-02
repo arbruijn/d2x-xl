@@ -15,6 +15,7 @@
 #include "fireball.h"
 #include "dropobject.h"
 #include "headlight.h"
+#include "thrusterflames.h"
 
 #if DBG
 #	define	BASE_NET_DROP_DEPTH	2
@@ -772,7 +773,7 @@ void DropAfterburnerBlobs (CObject *objP, int count, fix xSizeScale, fix xLifeTi
 	CObject			*blobObjP;
 	tThrusterInfo	ti;
 
-nThrusters = CalcThrusterPos (objP, &ti, 1);
+nThrusters = thrusterFlames.CalcPos (objP, &ti, 1);
 for (i = 0; i < nThrusters; i++) {
 	nSegment = FindSegByPos (ti.vPos [i], objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
