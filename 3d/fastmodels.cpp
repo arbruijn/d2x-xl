@@ -384,8 +384,17 @@ int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 
 if (!psm->m_nFrames)
 	return 0;
-nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
-if (!psm->m_bThruster) {
+if (psm->m_bThruster) {
+	nTimeout = 5 * gameStates.gameplay.slowmo [0].fSpeed;
+	glPushMatrix ();
+	CFloatVector vCenter;
+	vCenter.Assign (psm->m_vCenter);
+	glTranslatef (vCenter [X], vCenter [Y], vCenter [Z]);
+	glRotatef (-360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
+	glTranslatef (-vCenter [X], -vCenter [Y], -vCenter [Z]);
+	}
+else {
+	nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
 	fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 	if (gameData.weapons.nPrimary == VULCAN_INDEX)
 		nTimeout /= 2;
@@ -402,18 +411,16 @@ if (!psm->m_bThruster) {
 		}
 	else
 		return 0;
+	glPushMatrix ();
+	y = X2F (psm->m_vCenter [Y]);
+	glTranslatef (0, y, 0);
+	glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
+	glTranslatef (0, -y, 0);
 	}
-else
-	return 0;
 if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
 	psm->m_tFrame = gameStates.app.nSDLTicks;
 	psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
 	}
-glPushMatrix ();
-y = X2F (psm->m_vCenter [Y]);
-glTranslatef (0, y, 0);
-glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
-glTranslatef (0, -y, 0);
 return 1;
 }
 
