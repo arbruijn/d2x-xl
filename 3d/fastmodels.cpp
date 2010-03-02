@@ -465,8 +465,9 @@ if (psm->m_bThruster) {
 	if (!nPass) {
 		vo = psm->m_vOffset + psm->m_vCenter;
 		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->m_faces->m_vNormal, psm->m_nRad, bHires);
-	}
-	//return;
+		}
+	if (!psm->m_nFrames)
+		return;
 	}
 if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 	return;

@@ -243,6 +243,7 @@ if (renderOpts.n3DGlasses >= 0) {
 		v = m->m_value;
 		if (xStereoSeparation != v) {
 			xStereoSeparation = v;
+			gameOpts->render.xStereoSeparation = (EXPERTMODE ? (xStereoSeparation + 1) : 3) * (STEREO_SEPARATION_STEP);
 			sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 			m->m_bRebuild = -1;
 			}
@@ -617,7 +618,6 @@ do {
 #endif
 	} while (i == -2);
 
-gameOpts->render.xStereoSeparation = (EXPERTMODE ? (xStereoSeparation + 1) : 3) * (STEREO_SEPARATION_STEP);
 lightManager.SetMethod ();
 DefaultRenderSettings ();
 }
