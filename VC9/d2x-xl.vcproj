@@ -6488,6 +6488,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\render\thrusterflames.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\render\transprender.cpp"
 						>
 					</File>
@@ -10739,11 +10743,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
