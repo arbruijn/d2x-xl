@@ -327,7 +327,7 @@ else if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 	nParts = 0;
 else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].shields < 0)))
 	nParts = 0;
-else {
+else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
 
 	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].shields);
@@ -346,7 +346,7 @@ else {
 		nParts += 75;
 		}
 
-	if (SHOW_SMOKE && nParts && gameOpts->render.particles.bPlayers) {
+	if (nParts && ((nType < 2) || vDirP)) {
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, 1);
