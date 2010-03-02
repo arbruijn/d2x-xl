@@ -136,7 +136,7 @@ if (!tiP)
 	tiP = &m_ti;
 
 	tThrusterInfo	ti = *tiP;
-	int				i, m_nThrusters, bMissile = IS_MISSILE (objP);
+	int				i, bMissile = IS_MISSILE (objP);
 
 m_pt = NULL;
 ti.pp = NULL;
