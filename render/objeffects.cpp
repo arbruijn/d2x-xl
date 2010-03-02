@@ -942,190 +942,6 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-//extern CAngleVector CAngleVector::ZERO;
-
-void RenderShockwave (CObject *objP)
-{
-if (!SHOW_OBJ_FX)
-	return;
-if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-	return;
-if ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId]) {
-		CFixVector	vPos;
-		int			bStencil;
-
-	vPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (objP->info.xSize / 2);
-	bStencil = ogl.StencilOff ();
-	if (EGI_FLAG (bShockwaves, 1, 1, 0) &&
-		 (objP->mType.physInfo.velocity [X] || objP->mType.physInfo.velocity [Y] || objP->mType.physInfo.velocity [Z])) {
-			CFloatVector	vPosf;
-			int				h, i, j, k, n;
-			float				r [4], l [4], alpha;
-			tRgbaColorf		*colorP = gameData.weapons.color + objP->info.nId;
-
-		if (ogl.SizeBuffers (2 * 3 * (RING_SEGS + 1))) {
-			transformation.Begin (vPos, objP->info.position.mOrient);
-			ogl.SetDepthWrite (false);
-			ogl.SetTexturing (false);
-			//OglCullFace (1);
-			ogl.SetFaceCulling (false);
-			r [3] = X2F (objP->info.xSize);
-			if (r [3] >= 3.0f)
-				r [3] /= 1.5f;
-			else if (r [3] < 1)
-				r [3] *= 2;
-			else if (r [3] < 2)
-				r [3] *= 1.5f;
-			r [2] = r [3];
-			r [1] = r [2] / 4.0f * 3.0f;
-			r [0] = r [2] / 3;
-			l [3] = (r [3] < 1.0f) ? 10.0f : 20.0f;
-			l [2] = r [3] / 4;
-			l [1] = -r [3] / 6;
-			l [0] = -r [3] / 3;
-			alpha = 0.15f;
-			int nVerts = 0;
-			tRgbaColorf	color = *colorP;
-			for (h = 0; h < 3; h++) {
-				for (i = 0; i <= RING_SEGS; i++) {
-					j = i % RING_SEGS;
-					for (k = 0; k < 2; k++) {
-						n = h + k;
-						color.alpha = (n == 3) ? 0.0f : alpha;
-						ogl.ColorBuffer () [nVerts] = color;
-						vPosf = vRingVerts [j];
-						vPosf [X] *= r [n];
-						vPosf [Y] *= r [n];
-						vPosf [Z] = -l [n];
-						transformation.Transform (ogl.VertexBuffer () [nVerts], vPosf, 0);
-						nVerts++;
-						}
-					}
-				}
-			ogl.FlushBuffers (GL_QUAD_STRIP, nVerts, 0, 1);
-			ogl.SetFaceCulling (true);
-			nVerts = 0;
-			for (h = 0; h < 3; h += 2) {
-				ogl.SetCullMode (h ? GL_FRONT : GL_BACK);
-				glColor4f (colorP->red, colorP->green, colorP->blue, h ? 0.1f : alpha);
-				for (j = 0; j < RING_SEGS; j++) {
-					vPosf = vRingVerts [nStripIdx [j]];
-					vPosf [X] *= r [h];
-					vPosf [Y] *= r [h];
-					vPosf [Z] = -l [h];
-					transformation.Transform (ogl.VertexBuffer () [nVerts], vPosf, 0);
-					nVerts++;
-					}
-				ogl.FlushBuffers (GL_TRIANGLE_STRIP, nVerts, 0, 1);
-				}
-			ogl.SetDepthWrite (true);
-			OglCullFace (0);
-			transformation.End ();
-			}
-		}
-	ogl.StencilOn (bStencil);
-	}
-}
-
-// -----------------------------------------------------------------------------
-
-#define TRACER_WIDTH	3
-
-#if 0
-
-void RenderTracers (CObject *objP)
-{
-if (!SHOW_OBJ_FX)
-	return;
-if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-	return;
-if (EGI_FLAG (bTracers, 0, 1, 0) &&
-	 (objP->info.nType == OBJ_WEAPON) && ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID))) {
-		CFloatVector	vPosf [2], vDirf;
-		short				i;
-		int				bStencil;
-
-	vPosf [0].Assign (objP->info.position.vPos);
-	vPosf [1].Assign (objP->info.vLastPos);
-	transformation.Transform (vPosf [0], vPosf [0], 0);
-	transformation.Transform (vPosf [1], vPosf [1], 0);
-	vDirf = vPosf [0] - vPosf [1];
-	if (vDirf.IsZero ()) {
-		//return;
-		vPosf [1].Assign (OBJECTS [objP->cType.laserInfo.parent.nObject].info.position.vPos);
-		transformation.Transform(vPosf [1], vPosf [1], 0);
-		vDirf = vPosf [0] - vPosf [1];
-		if(vDirf.IsZero ())
-			return;
-		}
-	bStencil = ogl.StencilOff ();
-	ogl.SetDepthWrite (false);
-	glEnable (GL_LINE_STIPPLE);
-	ogl.SetBlending (true);
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ogl.SetLineSmooth (true);
-	glLineStipple (6, 0x003F); //patterns [h]);
-	vDirf *= TRACER_WIDTH / 20.0f;
-	for (i = 1; i < 5; i++) {
-		glLineWidth ((GLfloat) (TRACER_WIDTH * i));
-		glBegin (GL_LINES);
-		glColor4d (1, 1, 1, 0.5 / i);
-		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf + 1));
-		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf));
-		glEnd ();
-		}
-	glLineWidth (1);
-	glDisable (GL_LINE_STIPPLE);
-	ogl.SetLineSmooth (false);
-	ogl.SetDepthWrite (true);
-	ogl.StencilOn (bStencil);
-	}
-}
-
-#endif
-
-// -----------------------------------------------------------------------------
-// Draws a texture-mapped laser bolt
-#if 0
-void Laser_draw_one (int nObject, CBitmap * bmp)
-{
-	int t1, t2, t3;
-	g3sPoint p1, p2;
-	CObject *objP = OBJECTS + nObject;
-	CFixVector start_pos,vEndPos;
-	fix Laser_length = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].rad * 2;
-	fix Laser_width = Laser_length / 8;
-
-	start_pos = objP->info.position.vPos;
-	VmVecScaleAdd (&vEndPos,&start_pos,&objP->info.position.mOrient.FVec (),-Laser_length);
-
-	G3TransformAndEncodePoint (&p1,&start_pos);
-	G3TransformAndEncodePoint (&p2,&vEndPos);
-
-	t1 = gameStates.render.nLighting;
-	t2 = gameStates.render.nInterpolationMethod;
-	t3 = gameStates.render.bTransparency;
-
-	gameStates.render.nLighting  = 0;
-	//gameStates.render.nInterpolationMethod = 3;	 //Full perspective
-	gameStates.render.nInterpolationMethod = 1;	//Linear
-	gameStates.render.bTransparency = 1;
-#if 0
-	CCanvas::Current ()->SetColor (gr_getcolor (31,15,0);
-	g3_draw_line_ptrs (p1,p2);
-	g3_draw_rod (p1,0x2000,p2,0x2000);
-	g3_draw_rod (p1,Laser_width,p2,Laser_width);
-#else
-	G3DrawRodTexPoly (bmp,&p2,Laser_width,&p1,Laser_width,0,NULL);
-#endif
-	gameStates.render.nLighting = t1;
-	gameStates.render.nInterpolationMethod = t2;
-	gameStates.render.bTransparency = t3;
-}
-#endif
-
-// -----------------------------------------------------------------------------
-
 #if 0
 static CFloatVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,-50}}},
 											 {{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
@@ -1154,7 +970,6 @@ else {
 	colorP = &color;
 	}
 
-#if 1
 if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
 	if (gameOpts->render.particles.bPlasmaTrails)
 		;//DoObjectSmoke (objP);
@@ -1221,31 +1036,14 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vNorm *= r;
 		vTrailVerts [0] = vTrailVerts [3] - vNorm;
 		vTrailVerts [1] = vTrailVerts [2] - vNorm;
-#if 0 //DBG
-		//trailColor.red = trailColor.green = trailColor.blue = 1.0;
-		glColor3f (1,1,1);
-		glLineWidth (2);
-		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
-		ogl.SetTexturing (false);
-		ogl.SetBlendMode (1);
-		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), (GLfloat*) vTrailVerts);
-		OglDrawArrays (GL_LINE_LOOP, 0, 4);
-		OglDrawArrays (GL_LINE_LOOP, 4, 4);
-		ogl.DisableClientStates (0, 0, 0, GL_TEXTURE0);
-		glLineWidth (1);
-#else
 		transparencyRenderer.AddPoly (NULL, NULL, bmP, vTrailVerts, 8, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
-#endif
 		}
-	RenderShockwave (objP);
 	}
-#endif
-#if 1
+
 if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
 	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (d_rand() % (I2X (1) / 8)), 1, 0, 1);
 else
 	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
-#endif
 }
 
 // -----------------------------------------------------------------------------

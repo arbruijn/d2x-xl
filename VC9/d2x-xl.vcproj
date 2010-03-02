@@ -6488,6 +6488,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\render\targetindicators.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\render\thrusterflames.cpp"
 						>
 					</File>
@@ -6557,6 +6561,10 @@
 					</File>
 					<File
 						RelativePath="..\include\sphere.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\thrusterflames.h"
 						>
 					</File>
 					<File

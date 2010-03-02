@@ -21,68 +21,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <math.h>
 
 #include "descent.h"
-#include "newdemo.h"
 #include "network.h"
 #include "interp.h"
 #include "ogl_lib.h"
-#include "rendermine.h"
-#include "transprender.h"
-#include "glare.h"
-#include "sphere.h"
-#include "marker.h"
-#include "fireball.h"
-#include "objsmoke.h"
-#include "objrender.h"
-#include "objeffects.h"
 #include "hiresmodels.h"
-#include "hitbox.h"
+#include "renderlib.h"
+#include "transprender.h"
+#include "thrusterflames.h"
 
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
 #endif
 
-// -----------------------------------------------------------------------------
-
-#define	THRUSTER_SEGS	14	// number of rings the thruster flame is composed of
-#define	RING_SEGS		16	// number of segments each ring is composed of
-
-#define	FLAME_VERT_COUNT	((THRUSTER_SEGS - 1) * (RING_SEGS + 1) * 2)
-
-
-class CThrusterFlames {
-	private:
-		CFloatVector	m_vFlame [THRUSTER_SEGS][RING_SEGS];
-		CFloatVector	m_flameVerts [FLAME_VERT_COUNT];
-		tTexCoord2f		m_flameTexCoord [FLAME_VERT_COUNT];
-		CThrusterData*	m_pt;
-		tThrusterInfo	m_ti;
-		int				m_nVerts;
-		int				m_nThrusters;
-		int				m_nStyle;
-		bool				m_bHaveFlame;
-		bool				m_bPlayer;
-		bool				m_bSpectate;
-
-	public:
-		CThrusterFlames () { m_bHaveFlame = false; }
-		void Render (CObject *objP);
-		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CBitmap *bmP, tRgbaColorf *colorP);
-
-	private:
-		void Create (void);
-		void CalcPosOnShip (CObject *objP, CFixVector *vPos);
-		int CalcPos (CObject *objP, int bAfterburnerBlob);
-		void RenderCap (void);
-		void Render3D (CObject *objP);
-		bool RenderSetup (CObject *objP);
-};
+CThrusterFlames thrusterFlames;
 
 // -----------------------------------------------------------------------------
-
-#define	THRUSTER_SEGS	14	// number of rings the thruster flame is composed of
-#define	RING_SEGS		16	// number of segments each ring is composed of
-
-#define	FLAME_VERT_COUNT	((THRUSTER_SEGS - 1) * (RING_SEGS + 1) * 2)
 
 static CFloatVector	vRingVerts [RING_SEGS] = {
 	CFloatVector::Create (-0.5f, -0.5f, 0.0f, 1.0f),
@@ -193,7 +146,7 @@ if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !Ge
 		}
 	ti.fSize = (ti.fLength + 1) / 2;
 	m_nThrusters = 2;
-	CalcShipThrusterPos (objP, ti.vPos);
+	CalcPosOnShip (objP, ti.vPos);
 	ti.mtP = NULL;
 	}
 else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
@@ -235,7 +188,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			}
 		ti.fSize = (ti.fLength + 1) / 2;
 		m_nThrusters = 2;
-		CalcShipThrusterPos (objP, ti.vPos);
+		CalcPosOnShip (objP, ti.vPos);
 		}
 	else {
 		tObjTransformation *posP = OBJPOS (objP);
@@ -329,7 +282,7 @@ if (LoadThruster (1)) {
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::Render3D (CObject *objP)
+void CThrusterFlames::Render3D (void)
 {
 glColor3f (1, 1, 1);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
@@ -411,6 +364,9 @@ return true;
 
 void CThrusterFlames::Render (CObject *objP)
 {
+if (!Setup (objP))
+	return;
+
 int bStencil = ogl.StencilOff ();
 
 if (m_nStyle == 1) {	//2D

@@ -773,7 +773,7 @@ if (bSpectate) {
 DrawPolygonObject (objP, 0);
 gameOpts->ogl.bLightObjects = bDynObjLight;
 if (!gameStates.render.bQueryCoronas) {
-	RenderThrusterFlames (objP);
+	thrusterFlames.Render (objP);
 	RenderPlayerShield (objP);
 	RenderTargetIndicator (objP, NULL);
 	}
@@ -800,7 +800,7 @@ if (objP->Index () == nDbgObj)
 DrawPolygonObject (objP, 0);
 #endif
 if (!gameStates.render.bQueryCoronas && objP->info.controlType) {
-	RenderThrusterFlames (objP);
+	thrusterFlames.Render (objP);
 	if (gameStates.render.nShadowPass != 2) {
 		RenderRobotShield (objP);
 		RenderTargetIndicator (objP, NULL);
@@ -854,7 +854,7 @@ else {
 		RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #	endif
 #endif
-		RenderThrusterFlames (objP);
+		thrusterFlames.Render (objP);
 		gameData.models.vScale.SetZero ();
 		}
 	else {
