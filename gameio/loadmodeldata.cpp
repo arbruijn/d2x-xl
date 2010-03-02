@@ -581,7 +581,7 @@ gameData.bots.nJoints = gameData.bots.nDefaultJoints;
 
 //------------------------------------------------------------------------------
 
-#define MODEL_DATA_VERSION 1
+#define MODEL_DATA_VERSION 2
 
 typedef struct tModelDataHeader {
 	int					nVersion;

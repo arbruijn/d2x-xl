@@ -384,20 +384,24 @@ int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 
 if (!psm->m_nFrames)
 	return 0;
-fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
 nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
-if (gameData.weapons.nPrimary == VULCAN_INDEX)
-	nTimeout /= 2;
-if (fP->nStop > 0) {
-	nDelay = gameStates.app.nSDLTicks - fP->nStop;
-	if (nDelay > GATLING_DELAY)
-		return 0;
-	nTimeout += (float) nDelay / 10;
-	}
-else if (fP->nStart > 0) {
-	nDelay = GATLING_DELAY - fP->nDuration;
-	if (nDelay > 0)
+if (!psm->m_bThruster) {
+	fP = gameData.multiplayer.weaponStates [objP->info.nId].firing;
+	if (gameData.weapons.nPrimary == VULCAN_INDEX)
+		nTimeout /= 2;
+	if (fP->nStop > 0) {
+		nDelay = gameStates.app.nSDLTicks - fP->nStop;
+		if (nDelay > GATLING_DELAY)
+			return 0;
 		nTimeout += (float) nDelay / 10;
+		}
+	else if (fP->nStart > 0) {
+		nDelay = GATLING_DELAY - fP->nDuration;
+		if (nDelay > 0)
+			nTimeout += (float) nDelay / 10;
+		}
+	else
+		return 0;
 	}
 else
 	return 0;
@@ -406,9 +410,9 @@ if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
 	psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
 	}
 glPushMatrix ();
-y = X2F (psm->m_vCenter[Y]);
+y = X2F (psm->m_vCenter [Y]);
 glTranslatef (0, y, 0);
-glRotatef (360 * (float) psm->m_iFrame / (float) psm->m_nFrames, 0, 0, 1);
+glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 glTranslatef (0, -y, 0);
 return 1;
 }
@@ -451,8 +455,10 @@ if (psm->m_bThruster) {
 		vo = psm->m_vOffset + psm->m_vCenter;
 		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->m_faces->m_vNormal, psm->m_nRad, bHires);
 	}
-	return;
+	//return;
 	}
+else
+	return;
 if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 #endif

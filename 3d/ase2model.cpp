@@ -75,7 +75,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm->m_nIndex = nIndex;
 	psm->m_iFrame = 0;
 	psm->m_tFrame = 0;
-	psm->m_nFrames = psa->m_bBarrel ? 32 : 0;
+	psm->m_nFrames = (psa->m_bBarrel || psa->m_bThruster) ? 32 : 0;
 	psm->m_vOffset.Assign (psa->m_vOffset);
 	psm->InitMinMax ();
 	for (pfa = psa->m_faces.Buffer (), iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
