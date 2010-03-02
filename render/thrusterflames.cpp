@@ -376,14 +376,10 @@ if (m_nStyle == 1) {	//2D
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
-		CFloatVector	fVecf;
-
 	if (!gameData.models.vScale.IsZero ())
 		m_ti.fSize *= X2F (gameData.models.vScale [Z]);
 	m_ti.fLength *= 4 * m_ti.fSize;
 	m_ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
-	if (!m_ti.mtP)
-		fVecf.Assign (m_ti.pp ? m_ti.pp->mOrient.FVec () : objP->info.position.mOrient.FVec ());
 	for (int i = 0; i < m_nThrusters; i++)
 		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize, m_ti.fLength, bmpThruster [0][m_bPlayer], &tcColor);
 	}
