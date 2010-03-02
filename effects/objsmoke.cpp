@@ -20,6 +20,7 @@
 #include "objsmoke.h"
 #include "shrapnel.h"
 #include "automap.h"
+#include "thrusterflames.h"
 #include "renderthreads.h"
 
 static tRgbaColorf smokeColors [] = {
@@ -384,7 +385,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			particleManager.SetSpeed (particleManager.GetObjectSystem (nObject),
 											  objP->mType.physInfo.thrust.IsZero () ? PLR_PART_SPEED * 2 : PLR_PART_SPEED);
 			}
-		CalcThrusterPos (objP, &ti, 0);
+		thrusterFlames.CalcPos (objP, &ti);
 		for (int i = 0; i < 2; i++)
 			if ((emitterP = particleManager.GetEmitter (nSmoke, i)))
 				emitterP->SetPos (ti.vPos + i, NULL, objP->info.nSegment);
@@ -545,7 +546,7 @@ if (nParts) {
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
-	CalcThrusterPos (objP, &ti, 0);
+	thrusterFlames.CalcPos (objP, &ti);
 	particleManager.SetPos (nSmoke, ti.vPos, NULL, objP->info.nSegment);
 	}
 else

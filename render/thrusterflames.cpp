@@ -130,9 +130,12 @@ else {
 
 // -----------------------------------------------------------------------------
 
-int CThrusterFlames::CalcPos (CObject *objP, int bAfterburnerBlob)
+int CThrusterFlames::CalcPos (CObject *objP, tThrusterInfo* tiP, int bAfterburnerBlob)
 {
-	tThrusterInfo	ti = m_ti;
+if (!tiP)
+	tiP = &m_ti;
+
+	tThrusterInfo	ti = *tiP;
 	int				i, m_nThrusters, bMissile = IS_MISSILE (objP);
 
 m_pt = NULL;
@@ -212,7 +215,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 	}
 else
 	return 0;
-m_ti = ti;
+*tiP = ti;
 return m_nThrusters;
 }
 
@@ -339,7 +342,7 @@ if (m_pt)
 m_bSpectate = SPECTATOR (objP);
 
 m_ti.pp = NULL;
-CalcPos (objP, 0);
+CalcPos (objP);
 m_ti.fLength = fSpeed / 60.0f + 0.5f;
 if (m_ti.fLength < m_ti.fSize / 2)
 	m_ti.fLength = m_ti.fSize / 2;

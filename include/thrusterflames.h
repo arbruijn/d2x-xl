@@ -11,11 +11,11 @@
 #define	FLAME_VERT_COUNT	((THRUSTER_SEGS - 1) * (RING_SEGS + 1) * 2)
 
 typedef struct tThrusterInfo {
-	CFixVector				vPos [2];
-	CFixVector				vDir [2];
-	float							fSize;
-	float							fLength;
-	tPathPoint*				pp;
+	CFixVector			vPos [2];
+	CFixVector			vDir [2];
+	float					fSize;
+	float					fLength;
+	tPathPoint*			pp;
 	CModelThrusters*	mtP;
 }  tThrusterInfo;
 
@@ -38,11 +38,11 @@ class CThrusterFlames {
 		CThrusterFlames () { m_bHaveFlame = false; }
 		void Render (CObject *objP);
 		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CBitmap *bmP, tRgbaColorf *colorP);
+		int CalcPos (CObject *objP, tThrusterInfo* tiP = NULL, int bAfterburnerBlob = 0);
 
 	private:
 		void Create (void);
 		void CalcPosOnShip (CObject *objP, CFixVector *vPos);
-		int CalcPos (CObject *objP, int bAfterburnerBlob);
 		void RenderCap (void);
 		void Render3D (void);
 		bool Setup (CObject *objP);
