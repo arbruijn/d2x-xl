@@ -199,7 +199,7 @@ class CTransparencyRenderer {
 		void Free (void);
 		tTranspItem *SetParent (int nChild, int nParent);
 
-		inline int CTransparencyRenderer::Depth (CFixVector vPos, int bTransformed) {
+		inline int Depth (CFixVector vPos, int bTransformed) {
 #if TRANSP_DEPTH_HASH
 			return (bTransformed > 0) ? vPos.Mag () : CFixVector::Dist (vPos, m_data.vViewer [0]);
 #else
