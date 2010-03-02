@@ -333,7 +333,7 @@ else {
 	nParts = 10 - nSmoke / 5;	// scale with damage, starting at 50% damage
 	if (nParts <= 0) {
 		nType = 2;	// no damage
-		//nScale /= 4;
+		//nScale /= 2;
 		nParts = objP->mType.physInfo.thrust.IsZero () ? SHIP_MAX_PARTS : SHIP_MAX_PARTS / 2;
 		}
 	else {
@@ -356,12 +356,13 @@ else {
 			}
 		if (vDirP) {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
-			nScale /= 2;
+			if (nType != 2)
+				nScale /= 2;
 			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 8);
 			}
 		else if (nType == 2)
 			nScale /= 2;
-		int nLife = PLR_PART_LIFE / (bBlowUp ? 3 : 20);
+		int nLife = PLR_PART_LIFE / (bBlowUp ? 3 : 8);
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
