@@ -223,7 +223,7 @@ do {
 	m.Destroy ();
 	m.Create (20);
 	soundOpts.nGatling = -1;
-	if (gameOpts->app.bNotebookFriendly) {
+	if (gameOpts->app.bNotebookFriendly || gameOpts->app.bExpertMode) {
 		sprintf (szSlider + 1, TXT_SOUND_CHANNEL_COUNT, pszLowMediumHigh [gameStates.sound.nSoundChannels - 2]);
 		*szSlider = *(TXT_SOUND_CHANNEL_COUNT - 1);
 		soundOpts.nChannels = m.AddSlider (szSlider + 1, gameStates.sound.nSoundChannels - 2, 0, 2, KEY_C, HTX_SOUND_CHANNEL_COUNT);  

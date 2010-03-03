@@ -431,7 +431,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 
 for (uint i = 0; i < m_objects.ToS (); i++, soundObjP++) {
 	if ((soundObjP->m_flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ)) {
-		if ((soundObjP->m_linkType.obj.nObject == nObject) && (soundObjP->m_channel > -1) && (soundObjP->m_volume != nVolume)) {
+		if ((soundObjP->m_linkType.obj.nObject == nObject) && (soundObjP->m_channel > -1)) {
 			SetVolume (soundObjP->m_channel, soundObjP->m_volume = nVolume);
 			return 1;
 			}
