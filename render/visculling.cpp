@@ -512,10 +512,6 @@ for (; i < j; i++, ps++) {
 		zMax = z + r;
 	if (zMin > z - r)
 		zMin = z - r;
-#if DBG
-if (z - r < 0)
-	z = 0;
-#endif
 	ps->z = z;
 #else
 	CFixVector v = segP->Center ();
