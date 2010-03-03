@@ -923,6 +923,8 @@ if (gameData.render.mine.nRotatedLast [i] != gameStates.render.nFrameCount) {
 	G3TransformAndEncodePoint (p, gameData.segs.vertices [i]);
 #if TRANSP_DEPTH_HASH
 	fix d = p->p3_vec.Mag ();
+	if (gameData.render.zMin > d)
+		gameData.render.zMin = d;
 	if (gameData.render.zMax < d)
 		gameData.render.zMax = d;
 #else

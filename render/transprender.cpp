@@ -115,9 +115,9 @@ void CTransparencyRenderer::InitBuffer (int zMin, int zMax)
 if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0)) 
 #endif
 	{
-	m_data.zMin = 0;
+	m_data.zMin = max (0, zMin);
 	m_data.zMax = zMax - m_data.zMin;
-	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - m_data.zMin);
+	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (m_data.zMax);
 	if (m_data.zScale < 0)
 		m_data.zScale = 1;
 	else if (m_data.zScale > 1)
@@ -149,7 +149,7 @@ if (!bTransformed && gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 
 if (nDepth >= I2X (nOffset))
 	nDepth -= I2X (nOffset);
 
-if (nDepth < m_data.zMin) {
+if (nDepth < 0) {
 	if (!bClamp)
 		return m_data.nFreeItems;
 	nDepth = m_data.zMin;
@@ -163,7 +163,7 @@ else if (nDepth > m_data.zMax) {
 AllocBuffers ();
 if (!m_data.nFreeItems)
 	return 0;
-nOffset = int (double (nDepth - m_data.zMin) * m_data.zScale);
+nOffset = int (double (nDepth) * m_data.zScale);
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = m_data.depthBuffer + nOffset;

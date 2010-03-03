@@ -589,6 +589,10 @@ for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, seg
 #endif
 		}
 #if CALC_SEGRADS
+#	if DBG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#	endif
 	segP->ComputeRads (xMinDist);
 #endif
 	}

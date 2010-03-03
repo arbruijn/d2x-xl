@@ -53,6 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderframe.h"
 #include "automap.h"
 #include "ogl_shader.h"
+#include "fastrender.h"
 
 #ifndef Pi
 #	define Pi 3.141592653589793240
@@ -471,6 +472,7 @@ else {
 		}
 	G3SetViewMatrix (m_data.viewPos, m_data.viewMatrix, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
+UpdateSlidingFaces ();
 if (!m_bRadar && (gameOpts->render.automap.bTextured & 1)) {
 	gameData.render.mine.viewerEye = m_data.viewPos;
 	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);

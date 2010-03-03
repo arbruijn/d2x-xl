@@ -25,6 +25,7 @@ typedef struct tRenderThreadInfo {
 	tRenderTask	nTask;
 	int						nMiddle;
 	int						nFaces;
+	int						zMin [MAX_THREADS];
 	int						zMax [MAX_THREADS];
 	tLightning				*pl;
 	int						nLightnings;

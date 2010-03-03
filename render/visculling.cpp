@@ -495,28 +495,41 @@ if (left < r)
 
 void InitSegZRef (int i, int j, int nThread)
 {
-	tSegZRef		*ps = segZRef [0] + i;
-	CFixVector	vViewer = OBJPOS (gameData.objs.viewerP)->vPos;
-	int			z, zMax = -0x7fffffff;
-	CSegment*	segP;
+	tSegZRef*		ps = segZRef [0] + i;
+	CFloatVector	vViewer, vCenter;
+	int				r, z, zMin = 0x7fffffff, zMax = -0x7fffffff;
+	CSegment*		segP;
 
+vViewer.Assign (gameData.render.mine.viewerEye);
 for (; i < j; i++, ps++) {
 	segP = SEGMENTS + gameData.render.mine.nSegRenderList [0][i];
 #if TRANSP_DEPTH_HASH
-	z = CFixVector::Dist (segP->Center (), vViewer) + segP->MaxRad ();
-	if (zMax < z)
-		zMax = z;
+	vCenter.Assign (segP->Center ());
+	float d = CFloatVector::Dist (vCenter, vViewer);
+	z = F2X (d);
+	r = segP->MaxRad ();
+	if (zMax < z + r)
+		zMax = z + r;
+	if (zMin > z - r)
+		zMin = z - r;
+#if DBG
+if (z - r < 0)
+	z = 0;
+#endif
 	ps->z = z;
 #else
 	CFixVector v = segP->Center ();
 	transformation.Transform (v, v, 0);
 	v [Z] += segP->MaxRad ();
+	if (zMin > v [Z])
+		zMin = v [Z];
 	if (zMax < v [Z])
 		zMax = v [Z];
 	ps->z = v [Z];
 #endif
 	ps->nSegment = gameData.render.mine.nSegRenderList [0][i];
 	}
+tiRender.zMin [nThread] = zMin;
 tiRender.zMax [nThread] = zMax;
 }
 
@@ -548,6 +561,8 @@ gameData.render.zMax = 0;
 for (int i = 0; i < gameStates.app.nThreads; i++) {
 	if (gameData.render.zMax < tiRender.zMax [i])
 		gameData.render.zMax = tiRender.zMax [i];
+	if (gameData.render.zMin > tiRender.zMin [i])
+		gameData.render.zMin = tiRender.zMin [i];
 	}
 }
 
@@ -573,6 +588,7 @@ if (gameData.render.mine.nRenderSegs < 2)
 
 if (gameStates.app.nThreads < 2) {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
+	gameData.render.zMin = tiRender.zMin [0];
 	gameData.render.zMax = tiRender.zMax [0];
 	QSortSegZRef (0, gameData.render.mine.nRenderSegs - 1);
 	}
@@ -591,6 +607,7 @@ if (RunRenderThreads (rtInitSegZRef))
 	GetMaxDepth ();
 else {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
+	gameData.render.zMin = tiRender.zMin [0];
 	gameData.render.zMax = tiRender.zMax [0];
 	}
 #endif
