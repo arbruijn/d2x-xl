@@ -338,6 +338,11 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
+static inline int ShipVolume (int nSpeed)
+{
+return I2X (1) / 64 + nSpeed / 1024;
+}
+
 void CObject::UpdateShipSound (void)
 {
 if (!gameOpts->sound.bShip)
@@ -348,17 +353,19 @@ if (nObject != LOCALPLAYER.nObject)
 	return;
 
 int nSpeed = mType.physInfo.velocity.Mag();
+#if 0
 nSpeed -= I2X (2);
 if (nSpeed < 0)
 	nSpeed = 0;
+#endif
 //if (gameData.multiplayer.bMoving == nSpeed)
 //	return;
 
 if (gameData.multiplayer.bMoving < 0)
-	audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, OBJ_IDX (this), 1, I2X (1) / 8 + nSpeed / 256, I2X (256), -1, -1, 
+	audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, OBJ_IDX (this), 1, ShipVolume (nSpeed), I2X (256), -1, -1, 
 									 const_cast<char*> (addonSounds [SND_ADDON_JET_ENGINE].szSoundFile), 1, 1);
 else
-	audio.ChangeObjectSound (OBJ_IDX (this), I2X (1) / 8 + nSpeed / 256);
+	audio.ChangeObjectSound (OBJ_IDX (this), ShipVolume (nSpeed));
 gameData.multiplayer.bMoving = nSpeed;
 }
 
