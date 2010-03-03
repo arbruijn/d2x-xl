@@ -337,7 +337,7 @@ return true;
 
 int CAudio::CreateObjectSound (
 	short nOrgSound, int nSoundClass, short nObject, int bForever, fix maxVolume, fix maxDistance,
-	int nLoopStart, int nLoopEnd, const char* pszSound, int nDecay)
+	int nLoopStart, int nLoopEnd, const char* pszSound, int nDecay, ubyte bCustom)
 {
 	CObject*			objP;
 	CSoundObject*	soundObjP;
@@ -409,6 +409,7 @@ else {
 		return -1;
 		}
 	}
+soundObjP->m_bCustom = bCustom;
 #if DBG
 if (nOrgSound == SOUND_AFTERBURNER_IGNITE)
 	nDbgChannel = soundObjP->m_channel;
@@ -726,44 +727,46 @@ while (i) {
 				OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
 				&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 			}
-		nNewVolume = FixMulDiv (soundObjP->m_volume, nAudioVolume [soundObjP->m_bAmbient], I2X (1));
+		if (!soundObjP->m_bCustom) {
+			nNewVolume = FixMulDiv (soundObjP->m_volume, nAudioVolume [soundObjP->m_bAmbient], I2X (1));
 #if USE_SDL_MIXER
-		nNewVolume = fix (X2F (nNewVolume) * MIX_MAX_VOLUME + 0.5f);
+			nNewVolume = fix (X2F (nNewVolume) * MIX_MAX_VOLUME + 0.5f);
 #endif
-		if ((nOldVolume != nNewVolume) || (soundObjP->m_channel < 0)) {
+			if ((nOldVolume != nNewVolume) || (soundObjP->m_channel < 0)) {
 #if 0 //DBG
-			if (!strcmp (soundObjP->m_szSound, "steam.wav")) {
-				GetVolPan (
-					mListenerOrient, vListenerPos, nListenerSeg,
-					OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
-					&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
-				}
+				if (!strcmp (soundObjP->m_szSound, "steam.wav")) {
+					GetVolPan (
+						mListenerOrient, vListenerPos, nListenerSeg,
+						OBJPOS (objP)->vPos, OBJSEG (objP), soundObjP->m_maxVolume,
+						&soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
+					}
 #endif
-			soundObjP->m_audioVolume = nAudioVolume [soundObjP->m_bAmbient];
-			if (nNewVolume <= 0) {	// sound is too far away or muted, so stop it playing.
-				if (soundObjP->m_channel > -1) {
-					if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
-						DeleteSoundObject (i);
-						continue;
+				soundObjP->m_audioVolume = nAudioVolume [soundObjP->m_bAmbient];
+				if (nNewVolume <= 0) {	// sound is too far away or muted, so stop it playing.
+					if (soundObjP->m_channel > -1) {
+						if (!(soundObjP->m_flags & SOF_PLAY_FOREVER)) {
+							DeleteSoundObject (i);
+							continue;
+							}
+						soundObjP->Stop ();
 						}
-					soundObjP->Stop ();
+					}
+				else {
+#if 0 //DBG
+					if (*soundObjP->m_szSound)
+						soundObjP = soundObjP;
+					if (strstr (soundObjP->m_szSound, "dripping-water"))
+						soundObjP = soundObjP;
+#endif
+					if (soundObjP->m_channel < 0)
+						soundObjP->Start ();
+					else
+						SetVolume (soundObjP->m_channel, soundObjP->m_volume);
 					}
 				}
-			else {
-#if 0 //DBG
-				if (*soundObjP->m_szSound)
-					soundObjP = soundObjP;
-				if (strstr (soundObjP->m_szSound, "dripping-water"))
-					soundObjP = soundObjP;
-#endif
-				if (soundObjP->m_channel < 0)
-					soundObjP->Start ();
-				else
-					SetVolume (soundObjP->m_channel, soundObjP->m_volume);
-				}
+			if ((nOldPan != soundObjP->m_pan) && (soundObjP->m_channel > -1))
+				SetPan (soundObjP->m_channel, soundObjP->m_pan);
 			}
-		if ((nOldPan != soundObjP->m_pan) && (soundObjP->m_channel > -1))
-			SetPan (soundObjP->m_channel, soundObjP->m_pan);
 		}
 	}
 Cleanup ();

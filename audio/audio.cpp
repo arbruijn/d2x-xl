@@ -191,11 +191,14 @@ m_info.bResampled = 0;
 void CAudioChannel::SetVolume (int nVolume)
 {
 if (m_info.bPlaying) {
-	m_info.nVolume = FixMulDiv (nVolume, audio.Volume (m_info.bAmbient), I2X (1));
+	nVolume = FixMulDiv (nVolume, audio.Volume (m_info.bAmbient), I2X (1));
+	if (m_info.nVolume != nVolume) {
+		m_info.nVolume = nVolume;
 #if USE_SDL_MIXER
-	if (gameOpts->sound.bUseSDLMixer)
-		Mix_VolPan (int (this - audio.Channel ()), m_info.nVolume, -1);
+		if (gameOpts->sound.bUseSDLMixer)
+			Mix_VolPan (int (this - audio.Channel ()), m_info.nVolume, -1);
 #endif
+		}
 	}
 }
 

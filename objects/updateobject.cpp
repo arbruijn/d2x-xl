@@ -356,9 +356,9 @@ if (nSpeed < 0)
 
 if (gameData.multiplayer.bMoving < 0)
 	audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, OBJ_IDX (this), 1, I2X (1) / 64 + nSpeed / 256, I2X (256), -1, -1, 
-									 const_cast<char*> (addonSounds [SND_ADDON_MISSILE_SMALL].szSoundFile), 1);
+									 const_cast<char*> (addonSounds [SND_ADDON_JET_ENGINE].szSoundFile), 1, 1);
 else
-	audio.ChangeObjectSound (OBJ_IDX (this), I2X (1) / 64 + nSpeed / 256);
+	audio.ChangeObjectSound (OBJ_IDX (this), I2X (1) / 4 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;
 }
 

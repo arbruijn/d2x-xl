@@ -206,7 +206,7 @@ class CSoundObject {
 	public:
 		short			m_nSignature;		// A unique nSignature to this sound
 		ubyte			m_flags;				// Used to tell if this slot is used and/or currently playing, and how long.
-		ubyte			m_pad;				//	Keep alignment
+		ubyte			m_bCustom;			//	Keep alignment
 		fix			m_maxVolume;		// Max volume that this sound is playing at
 		fix			m_maxDistance;		// The max distance that this sound can be heard at...
 		int			m_soundClass;
@@ -321,7 +321,7 @@ class CAudio {
 			}
 
 		int CreateObjectSound (short nSound, int nSoundClass, short nObject, int bForever = 0, fix maxVolume = I2X (1), fix maxDistance = I2X (256),
-									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0);
+									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0, ubyte bCuston = 0);
 		int ChangeObjectSound (int nObject, fix nVolume);
 		int DestroyObjectSound (int nObject);
 		bool SuspendObjectSound (int nThreshold);

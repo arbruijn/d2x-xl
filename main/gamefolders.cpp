@@ -588,7 +588,8 @@ static tFileDesc addonSoundFiles [] = {
 	{"\002static-buzz.wav", "sounds2/d2x-xl", false, false, false},
 	{"\002steam.wav", "sounds2/d2x-xl", false, false, false},
 	{"\002teleporter.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002waterfall.wav", "sounds2/d2x-xl", false, false, false}
+	{"\002waterfall.wav", "sounds2/d2x-xl", false, false, false},
+	{"\002jet-engine.wav", "sounds2/d2x-xl", false, false, false}
 
 };
 
