@@ -98,6 +98,8 @@ typedef struct tParticleImageInfo {
 	int			iFrame;
 	int			bHave;
 	int			bAnimate;
+	float			xBorder;
+	float			yBorder;
 } tParticleImageInfo;
 
 tParticleImageInfo particleImageInfo [2][PARTICLE_TYPES] = {
@@ -426,14 +428,16 @@ else {
 	m_iFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = m_iFrame / 2;
 	m_nOrient = rand () % 4;
-	if (nType == FIRE_PARTICLES)
+	if (nType == FIRE_PARTICLES) {
 		m_iFrame = 2;
+		m_nOrient = 0;
+		}
 	}
 if ((nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2))
 	m_bAnimate = (m_nFrames > 1);
 else if (m_iFrame >= m_nFrames)
 	m_nFadeType = 5;
-m_bRotate = (m_nType == SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES);
+m_bRotate = (m_nType == SMOKE_PARTICLES); // || (m_nType == FIRE_PARTICLES);
 
 UpdateTexCoord ();
 #if 0
@@ -809,7 +813,7 @@ if (particleManager.Animate ()) {
 		m_iFrame = (m_iFrame + 1) % (m_nFrames * m_nFrames);
 		UpdateTexCoord ();
 		}
-	if (m_bRotate && !(m_iFrame & 1)))
+	if (m_bRotate && !(m_iFrame & 1))
 		m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
 	}
 
@@ -912,10 +916,15 @@ pb [1].color =
 pb [2].color =
 pb [3].color = m_renderColor;
 
+float h;
+if ((h = m_texCoord.v.u))
+	h += ParticleImageInfo (m_nType).xBorder;
 pb [m_nOrient].texCoord.v.u =
-pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u;
+pb [(m_nOrient + 3) % 4].texCoord.v.u = h;
+if ((h = m_texCoord.v.v))
+	h += ParticleImageInfo (m_nType).yBorder;
 pb [m_nOrient].texCoord.v.v =
-pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v;
+pb [(m_nOrient + 1) % 4].texCoord.v.v = h;
 pb [(m_nOrient + 1) % 4].texCoord.v.u =
 pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV;
 pb [(m_nOrient + 2) % 4].texCoord.v.v =
@@ -943,7 +952,7 @@ vCenter.Assign (m_vTransPos);
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
-if ((m_nType == SMOKE_PARTICLES) && gameOpts->render.particles.bRotate)  {
+if (m_bRotate && gameOpts->render.particles.bRotate)  {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
 	vOffset [X] *= vRot [i][X];
 	vOffset [Y] *= vRot [i][Y];
@@ -2094,22 +2103,22 @@ if (TGAMakeSquare (bmP)) {
 	}
 }
 #endif
-bmP = pii.bmP;
-bmP->SetFrameCount ();
-bmP->SetupTexture (0, 1);
+pii.bmP->SetFrameCount ();
+pii.bmP->SetupTexture (0, 1);
+pii.xBorder = 1.0f / float (pii.bmP->Width ());
+pii.yBorder = 1.0f / float (pii.bmP->Height ());
 if (nType == SMOKE_PARTICLES)
-	h = (gameOpts->render.particles.nQuality == 2) ? 8 : 1;
+	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 8 : 1;
 else if (nType == BUBBLE_PARTICLES)
-	h = 4;
+	pii.nFrames = 4;
 else if (nType == WATERFALL_PARTICLES)
-	h = 1; //8;
+	pii.nFrames = 1; //8;
 else if (nType == FIRE_PARTICLES)
-	h = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
+	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
 else {
-	h = bmP->FrameCount ();
+	pii.nFrames = bmP->FrameCount ();
 	pii.bAnimate = h > 1;
 	}
-pii.nFrames = h;
 return 1;
 }
 
