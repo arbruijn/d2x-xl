@@ -74,6 +74,7 @@ typedef struct tParticle {
 	char			m_nRotFrame;
 	char			m_nOrient;
 	char			m_bChecked;
+	char			m_bAnimate;
 } __pack__ tParticle;
 
 class CParticle : public tParticle {

@@ -427,6 +427,8 @@ else {
 	m_nRotFrame = m_iFrame / 2;
 	m_nOrient = rand () % 4;
 	}
+m_bAnimate = (m_nFrames > 1) && ((nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2));
+
 UpdateTexCoord ();
 #if 0
 if (colorP && (colorP->alpha < 0))
@@ -796,7 +798,7 @@ particleManager.IncBufPtr ();
 if (particleManager.BufPtr () >= PART_BUF_SIZE)
 	particleManager.FlushBuffer (fBrightness);
 
-if (particleManager.Animate ()) {
+if (m_bAnimate && particleManager.Animate ()) {
 	if (m_nFrames > 1) {
 		m_iFrame = (m_iFrame + 1) % (m_nFrames * m_nFrames);
 		UpdateTexCoord ();
