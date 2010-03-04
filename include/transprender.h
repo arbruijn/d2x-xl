@@ -201,11 +201,11 @@ class CTransparencyRenderer {
 
 		inline int Depth (CFixVector vPos, int bTransformed) {
 #if TRANSP_DEPTH_HASH
-			return ((bTransformed > 0) ? vPos.Mag () : CFixVector::Dist (vPos, m_data.vViewer [0])) - m_data.zMin;
+			return (bTransformed > 0) ? vPos.Mag () : CFixVector::Dist (vPos, m_data.vViewer [0]);
 #else
 			if (bTransformed < 1)
 				transformation.Transform (vPos, vPos);
-			return vPos [Z] - m_data.zMin;
+			return vPos [Z];
 #endif
 			}
 

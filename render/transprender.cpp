@@ -149,7 +149,7 @@ if (!bTransformed && gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 
 if (nDepth >= I2X (nOffset))
 	nDepth -= I2X (nOffset);
 
-if (nDepth < 0) {
+if (nDepth < m_data.zMin) {
 	if (!bClamp)
 		return m_data.nFreeItems;
 	nDepth = m_data.zMin;
@@ -163,7 +163,7 @@ else if (nDepth > m_data.zMax) {
 AllocBuffers ();
 if (!m_data.nFreeItems)
 	return 0;
-nOffset = int (double (nDepth) * m_data.zScale);
+nOffset = int (double (nDepth - m_data.zMin) * m_data.zScale);
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = m_data.depthBuffer + nOffset;
