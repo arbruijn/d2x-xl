@@ -428,15 +428,15 @@ else {
 	m_iFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = m_iFrame / 2;
 	m_nOrient = rand () % 4;
+#if 0
 	if (nType == FIRE_PARTICLES) {
 		m_iFrame = 2;
 		m_nOrient = 0;
 		}
+#endif
 	}
 if ((nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2))
 	m_bAnimate = (m_nFrames > 1);
-else if (m_iFrame >= m_nFrames)
-	m_nFadeType = 5;
 m_bRotate = (m_nType == SMOKE_PARTICLES); // || (m_nType == FIRE_PARTICLES);
 
 UpdateTexCoord ();
@@ -715,7 +715,12 @@ else {
 			m_nLife = -1;
 #	endif
 #endif
-		m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
+		if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
+			m_decay = 1.0f;
+		else if (m_nType == FIRE_PARTICLES)
+			m_decay = float (sin (sqrt (1.0 - double (m_nLife) / double (m_nTTL)) * Pi));
+		else
+			m_decay = float (m_nLife) / float (m_nTTL);
 		if ((m_nType == SMOKE_PARTICLES) && (nRad = m_nRad)) {
 			if (m_bBlowUp) {
 				if (m_nWidth >= nRad)
@@ -871,6 +876,7 @@ else if (m_nFadeType == 2) {	// fade in, then gently fade out
 		return 1;
 	}
 else if (m_nFadeType == 3) {	// fire (additive, blend in)
+#if 0
 	if (m_decay > 0.5f)
 		fFade = 2.0f * (1.0f - m_decay);
 	else
@@ -883,6 +889,7 @@ else if (m_nFadeType == 3) {	// fire (additive, blend in)
 	m_renderColor.green = 
 	m_renderColor.blue = fFade;
 	m_color [0] = m_renderColor;
+#endif
 	return 1;
 	}
 else if (m_nFadeType == 4) {	// light trail (additive, constant effect)
@@ -2084,8 +2091,6 @@ int CParticleImageManager::Load (int nType)
 {
 nType = particleImageManager.GetType (nType);
 
-	int						h;
-	CBitmap*					bmP = NULL;
 	tParticleImageInfo&	pii = ParticleImageInfo (nType);
 
 if (pii.bHave)
@@ -2116,8 +2121,8 @@ else if (nType == WATERFALL_PARTICLES)
 else if (nType == FIRE_PARTICLES)
 	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
 else {
-	pii.nFrames = bmP->FrameCount ();
-	pii.bAnimate = h > 1;
+	pii.nFrames = pii.bmP->FrameCount ();
+	pii.bAnimate = pii.nFrames > 1;
 	}
 return 1;
 }
