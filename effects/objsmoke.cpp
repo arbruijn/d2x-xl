@@ -280,6 +280,7 @@ if (bHires >= 0) {
 
 void DoPlayerSmoke (CObject *objP, int nPlayer)
 {
+#if 0
 	int					nObject, nSmoke, d, nParts, nType;
 	float					nScale;
 	CParticleEmitter	*emitterP;
@@ -395,6 +396,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	}
 KillObjectSmoke (nObject);
 KillGatlingSmoke (objP);
+#endif
 }
 
 //------------------------------------------------------------------------------

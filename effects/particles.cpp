@@ -426,8 +426,14 @@ else {
 	m_iFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = m_iFrame / 2;
 	m_nOrient = rand () % 4;
+	if (nType == FIRE_PARTICLES)
+		m_iFrame = 2;
 	}
-m_bAnimate = (m_nFrames > 1) && ((nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2));
+if ((nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2))
+	m_bAnimate = (m_nFrames > 1);
+else if (m_iFrame >= m_nFrames)
+	m_nFadeType = 5;
+m_bRotate = (m_nType == SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES);
 
 UpdateTexCoord ();
 #if 0
@@ -779,7 +785,7 @@ if ((particleManager.LastType () != RenderType ()) || (fBrightness != bufferBrig
 	PROF_END(ptParticles)
 	bFlushed = particleManager.FlushBuffer (fBrightness);
 	PROF_CONT
-	particleManager.SetLastType (RenderType ());
+	particleManager.SetLastType (m_nRenderType);
 	bBufferEmissive = m_bEmissive;
 	}
 else
@@ -798,12 +804,12 @@ particleManager.IncBufPtr ();
 if (particleManager.BufPtr () >= PART_BUF_SIZE)
 	particleManager.FlushBuffer (fBrightness);
 
-if (m_bAnimate && particleManager.Animate ()) {
-	if (m_nFrames > 1) {
+if (particleManager.Animate ()) {
+	if (m_bAnimate && (m_nFrames > 1)) {
 		m_iFrame = (m_iFrame + 1) % (m_nFrames * m_nFrames);
 		UpdateTexCoord ();
 		}
-	if (!(m_nType || (m_iFrame & 1)))
+	if (m_bRotate && !(m_iFrame & 1)))
 		m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
 	}
 
@@ -1002,7 +1008,7 @@ float  CParticleEmitter::Brightness (void)
 
 if (m_nObject >= 0x70000000)
 	return 0.5f;
-if (m_nType > 2)
+if (m_nType > 1)
 	return 1.0f;
 if (m_nObject < 0)
 	return m_fBrightness;
@@ -1877,7 +1883,7 @@ if ((nType < 0) && !bForce)
 	return false;
 #if ENABLE_FLUSH
 PROF_START
-CBitmap *bmP = ParticleImageInfo (nType).bmP;
+CBitmap *bmP = ParticleImageInfo (nType % PARTICLE_TYPES).bmP;
 if (!bmP) {
 	PROF_END(ptParticles)
 	return false;
@@ -1901,7 +1907,7 @@ ogl.SetDepthWrite (false);
 if (nType >= PARTICLE_TYPES)
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);	// multiplicative using fire's smoke texture
 else
-	ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
+	ogl.SetBlendMode (bBufferEmissive);
 #if LAZY_RENDER_SETUP
 SetupRenderBuffer ();
 #endif
