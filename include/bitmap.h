@@ -214,6 +214,7 @@ class CBitmap : public CArray< ubyte > {
 		inline ubyte FrameCount (void) { return ((m_info.nType != BM_TYPE_ALT) && Parent ()) ? m_info.parentP->FrameCount () : m_info.frames.nCount; }
 		inline ubyte FrameIndex (void) { return m_info.frames.nCurrent; }
 		inline CBitmap *Frames (void) { return (m_info.nType == BM_TYPE_ALT) ? m_info.frames.bmP : NULL; }
+
 		inline CBitmap *CurFrame (void) { return m_info.frames.currentP; }
 		inline CBitmap *Override (void) { return m_info.overrideP; }
 		inline CBitmap *Mask (void) { return m_info.maskP; }

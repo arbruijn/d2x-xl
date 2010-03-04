@@ -91,24 +91,28 @@
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
-static int bHavePartImg [2][PARTICLE_TYPES] = {{0,0,0,0,0,0},{0,0,0,0,0,0}};
+typedef struct tParticleImageInfo {
+	CBitmap*		bmP;
+	const char*	szName;
+	int			nFrames;
+	int			iFrame;
+	int			bHave;
+} tParticleImageInfo;
 
-static CBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL, NULL, NULL}};
-#if 0
-static CBitmap *bmpBumpMaps [2] = {NULL, NULL};
-#endif
-
-static const char *szParticleImg [2][PARTICLE_TYPES] = {
- {"smoke.tga", "bubble.tga", "fire.tga", "smoke.tga", "bullcase.tga", "corona.tga"},
- {"smoke.tga", "bubble.tga", "fire.tga", "smoke.tga", "bullcase.tga", "corona.tga"}
+tParticleImageInfo particleImageInfo [2][PARTICLE_TYPES] = {
+	{{NULL, "simple-smoke.png", 1, 0, 0},
+	 {NULL, "bubble.tga", 1, 0, 0},
+	 {NULL, "fire.tga", 1, 0, 0},
+	 {NULL, "simple-smoke.png", 1, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0}},
+	{{NULL, "smoke.tga", 1, 0, 0},
+	 {NULL, "bubble.tga", 1, 0, 0},
+	 {NULL, "fire.tga", 1, 0, 0},
+	 {NULL, "simple-smoke.png", 1, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0}}
 	};
-
-static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1,1,1},{1,1,1,1,1,1}};
-static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0,0,0},{0,0,0,0,0,0}};
-#if 0
-static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
-static float alphaScale [5] = {5.0f / 5.0f, 4.0f / 5.0f, 3.0f / 5.0f, 2.0f / 5.0f, 1.0f / 5.0f};
-#endif
 
 #define PART_BUF_SIZE	10000
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
@@ -133,6 +137,13 @@ static CFloatVector vRot [PARTICLE_POSITIONS];
 
 CParticleManager particleManager;
 CParticleImageManager particleImageManager;
+
+//------------------------------------------------------------------------------
+
+inline tParticleImageInfo& ParticleImageInfo (int nType)
+{
+return particleImageInfo [gameOpts->render.particles.nQuality - 1][nType];
+}
 
 //------------------------------------------------------------------------------
 
@@ -393,7 +404,7 @@ else {
 	m_nHeight = nRad;
 	m_nRad = nRad / 2;
 	}
-m_nFrames = nParticleFrames [0][nType];
+m_nFrames = ParticleImageInfo (nType).nFrames;
 m_deltaUV = 1.0f / float (m_nFrames);
 if (nType == BULLET_PARTICLES) {
 	m_nFrame = 0;
@@ -738,7 +749,7 @@ if ((m_nType < 0) || (m_nType >= PARTICLE_TYPES))
 #if 0 //DBG
 if (m_nType == LIGHT_PARTICLES)
 	m_nType = m_nType;
-CBitmap* bmP = bmpParticle [0][int (m_nType)];
+CBitmap* bmP = ParticleImageInfo (int (m_nType)).bmP;
 if (!bmP)
 	return 0;
 #endif
@@ -873,7 +884,7 @@ void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticle
 if (m_nType == LIGHT_PARTICLES)
 	m_nType = m_nType;
 
-CBitmap* bmP = bmpParticle [0][int (m_nType)];
+CBitmap* bmP = ParticleImageInfo (int (m_nType)).bmP;
 if (!bmP)
 	return;
 #endif
@@ -1853,7 +1864,7 @@ if (nType < 0)
 	return false;
 #if ENABLE_FLUSH
 PROF_START
-CBitmap *bmP = bmpParticle [0][nType];
+CBitmap *bmP = ParticleImageInfo (nType).bmP;
 if (!bmP) {
 	PROF_END(ptParticles)
 	return false;
@@ -1932,7 +1943,7 @@ if (gameStates.render.bDepthSort <= 0) {
 	nType = (nType % PARTICLE_TYPES);
 	if ((nType >= 0) && !gameOpts->render.particles.bSort)
 		particleImageManager.Animate (nType);
-	bmP = bmpParticle [0][nType];
+	bmP = ParticleImageInfo (nType).bmP;
 	particleManager.SetStencil (ogl.StencilOff ());
 	InitBuffer (bLightmaps);
 	ogl.SelectTMU (GL_TEXTURE0, true);
@@ -2016,19 +2027,19 @@ return -1;
 
 void CParticleImageManager::Animate (int nType)
 {
-	int	nFrames = nParticleFrames [0][nType];
+	int	nFrames = ParticleImageInfo (nType).nFrames;
 
 if (nFrames > 1) {
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0};
 
 	if (gameStates.app.nSDLTicks - t0 [nType] > 150) {
-		CBitmap*	bmP = bmpParticle [0][GetType (nType)];
+		CBitmap*	bmP = ParticleImageInfo (GetType (nType)).bmP;
 		if (!bmP->Frames ())
 			return;
-		int iFrame = iParticleFrames [0][nType];
+		int iFrame = ParticleImageInfo (nType).iFrame;
 		bmP->SetCurFrame (iFrame);
 		t0 [nType] = gameStates.app.nSDLTicks;
-		iParticleFrames [0][nType] = (iFrame + 1) % nFrames;
+		ParticleImageInfo (nType).iFrame = (iFrame + 1) % nFrames;
 		}
 	}
 }
@@ -2061,13 +2072,14 @@ delete[] fFrameBright;
 
 int CParticleImageManager::Load (int nType)
 {
-	int		h;
-	CBitmap	*bmP = NULL;
+	int						h;
+	CBitmap*					bmP = NULL;
+	tParticleImageInfo&	pii = ParticleImageInfo (nType);
 
 nType = particleImageManager.GetType (nType);
-if (bHavePartImg [0][nType])
+if (pii.bHave)
 	return 1;
-if (!LoadAddonBitmap (bmpParticle [0] + nType, szParticleImg [0][nType], bHavePartImg [0] + nType))
+if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
 	return 0;
 #if MAKE_SMOKE_IMAGE
 {
@@ -2076,15 +2088,15 @@ if (!LoadAddonBitmap (bmpParticle [0] + nType, szParticleImg [0][nType], bHavePa
 TGAInterpolate (bmP, 2);
 if (TGAMakeSquare (bmP)) {
 	memset (&h, 0, sizeof (h));
-	SaveTGA (szParticleImg [0][nType], gameFolders.szDataDir, &h, bmP);
+	SaveTGA (ParticleImageInfo (nType).szName, gameFolders.szDataDir, &h, bmP);
 	}
 }
 #endif
-bmP = bmpParticle [0][nType];
+bmP = pii.bmP;
 bmP->SetFrameCount ();
 bmP->SetupTexture (0, 1);
 if (nType == SMOKE_PARTICLES)
-	h = 8;
+	h = (gameOpts->render.particles.nQuality == 2) ? 8 : 1;
 else if (nType == BUBBLE_PARTICLES)
 	h = 4;
 else if (nType == WATERFALL_PARTICLES)
@@ -2093,7 +2105,7 @@ else if (nType == FIRE_PARTICLES)
 	h = 4;
 else
 	h = bmP->FrameCount ();
-nParticleFrames [0][nType] = h;
+pii.nFrames = h;
 return 1;
 }
 
@@ -2116,13 +2128,14 @@ return 1;
 void CParticleImageManager::FreeAll (void)
 {
 	int	i, j;
+	tParticleImageInfo* piiP = particleImageInfo [0];
 
 for (i = 0; i < 2; i++)
-	for (j = 0; j < PARTICLE_TYPES; j++)
-		if (bmpParticle [i][j]) {
-			delete bmpParticle [i][j];
-			bmpParticle [i][j] = NULL;
-			bHavePartImg [i][j] = 0;
+	for (j = 0; j < PARTICLE_TYPES; j++, piiP++)
+		if (piiP->bmP) {
+			delete piiP->bmP;
+			piiP->bmP = NULL;
+			piiP->bHave = 0;
 			}
 }
 

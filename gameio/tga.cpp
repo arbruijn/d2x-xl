@@ -640,14 +640,14 @@ if (!pszFolder) {
 if (bmP->ReadS3TC (pszFolder, pszFile))
 	return 1;
 #endif
-if (!cf.Open (pszFile, pszFolder, "rb", 0) && !(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
+if (!(psz = const_cast<char*> (strstr (pszFile, ".tga")))) {
 	strcpy (szFile, pszFile);
 	if ((psz = strchr (szFile, '.')))
 		*psz = '\0';
 	strcat (szFile, ".tga");
 	pszFile = szFile;
-	cf.Open (pszFile, pszFolder, "rb", 0);
 	}
+cf.Open (pszFile, pszFolder, "rb", 0);
 r = (cf.File() != NULL) && LoadTGA (cf, bmP, alpha, brightness, bGrayScale, bReverse);
 #if TEXTURE_COMPRESSION
 if (r && CompressTGA (bmP))
