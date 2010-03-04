@@ -101,7 +101,7 @@ typedef struct tParticleImageInfo {
 } tParticleImageInfo;
 
 tParticleImageInfo particleImageInfo [2][PARTICLE_TYPES] = {
-	{{NULL, "simple-smoke.tga", 1, 0, 0, 0},
+	{{NULL, "simplesmoke.tga", 1, 0, 0, 0},
 	 {NULL, "bubble.tga", 1, 0, 0, 1},
 	 {NULL, "fire.tga", 1, 0, 0, 1},
 	 {NULL, "simple-smoke.tga", 1, 0, 0, 0},
@@ -110,7 +110,7 @@ tParticleImageInfo particleImageInfo [2][PARTICLE_TYPES] = {
 	{{NULL, "smoke.tga", 1, 0, 0, 1},
 	 {NULL, "bubble.tga", 1, 0, 0, 1},
 	 {NULL, "smokingfire.tga", 1, 0, 0, 0},
-	 {NULL, "simple-smoke.tga", 1, 0, 0, 0},
+	 {NULL, "simplesmoke.tga", 1, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1},
 	 {NULL, "corona.tga", 1, 0, 0, 0}}
 	};
@@ -2065,11 +2065,12 @@ delete[] fFrameBright;
 
 int CParticleImageManager::Load (int nType)
 {
+nType = particleImageManager.GetType (nType);
+
 	int						h;
 	CBitmap*					bmP = NULL;
 	tParticleImageInfo&	pii = ParticleImageInfo (nType);
 
-nType = particleImageManager.GetType (nType);
 if (pii.bHave)
 	return 1;
 if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave))
@@ -2093,7 +2094,7 @@ if (nType == SMOKE_PARTICLES)
 else if (nType == BUBBLE_PARTICLES)
 	h = 4;
 else if (nType == WATERFALL_PARTICLES)
-	h = 8;
+	h = 1; //8;
 else if (nType == FIRE_PARTICLES)
 	h = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
 else {
@@ -2108,9 +2109,7 @@ return 1;
 
 int CParticleImageManager::LoadAll (void)
 {
-	int	i;
-
-for (i = 0; i < PARTICLE_TYPES; i++) {
+for (int i = 0; i < PARTICLE_TYPES; i++) {
 	if (!Load (i))
 		return 0;
 	Animate (i);

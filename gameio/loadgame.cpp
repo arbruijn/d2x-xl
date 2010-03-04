@@ -774,6 +774,7 @@ else {
 		LoadTextData (pszLevelName, ".snd", &gameData.sounds);
 		LoadReplacementBitmaps (pszLevelName);
 		LoadSoundReplacements (pszLevelName);
+		particleImageManager.LoadAll ();
 		}
 
 	/*---*/PrintLog ("   loading cambot\n");
