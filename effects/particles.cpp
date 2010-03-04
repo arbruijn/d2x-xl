@@ -97,21 +97,22 @@ typedef struct tParticleImageInfo {
 	int			nFrames;
 	int			iFrame;
 	int			bHave;
+	int			bAnimate;
 } tParticleImageInfo;
 
 tParticleImageInfo particleImageInfo [2][PARTICLE_TYPES] = {
-	{{NULL, "simple-smoke.png", 1, 0, 0},
-	 {NULL, "bubble.tga", 1, 0, 0},
-	 {NULL, "fire.tga", 1, 0, 0},
-	 {NULL, "simple-smoke.png", 1, 0, 0},
-	 {NULL, "bullcase.tga", 1, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0}},
-	{{NULL, "smoke.tga", 1, 0, 0},
-	 {NULL, "bubble.tga", 1, 0, 0},
-	 {NULL, "fire.tga", 1, 0, 0},
-	 {NULL, "simple-smoke.png", 1, 0, 0},
-	 {NULL, "bullcase.tga", 1, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0}}
+	{{NULL, "simple-smoke.tga", 1, 0, 0, 0},
+	 {NULL, "bubble.tga", 1, 0, 0, 1},
+	 {NULL, "fire.tga", 1, 0, 0, 1},
+	 {NULL, "simple-smoke.tga", 1, 0, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0, 1},
+	 {NULL, "corona.tga", 1, 0, 0, 0}},
+	{{NULL, "smoke.tga", 1, 0, 0, 1},
+	 {NULL, "bubble.tga", 1, 0, 0, 1},
+	 {NULL, "smokingfire.tga", 1, 0, 0, 0},
+	 {NULL, "simple-smoke.tga", 1, 0, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0, 1},
+	 {NULL, "corona.tga", 1, 0, 0, 0}}
 	};
 
 #define PART_BUF_SIZE	10000
@@ -1938,26 +1939,6 @@ int CParticleManager::BeginRender (int nType, float nScale)
 	int				bLightmaps = lightmapManager.HaveLightmaps ();
 	static time_t	t0 = 0;
 
-#if 0
-if (gameStates.render.bDepthSort <= 0) {
-	nType = (nType % PARTICLE_TYPES);
-	if ((nType >= 0) && !gameOpts->render.particles.bSort)
-		particleImageManager.Animate (nType);
-	bmP = ParticleImageInfo (nType).bmP;
-	particleManager.SetStencil (ogl.StencilOff ());
-	InitBuffer (bLightmaps);
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.SetFaceCulling (false);
-	ogl.SetBlending (true);
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ogl.SetTexturing (true);
-	if ((nType >= 0) && bmP->Bind (0))
-		return 0;
-	ogl.SetDepthMode (GL_LESS);
-	ogl.SetDepthWrite (false);
-	m_iBuffer = 0;
-	}
-#endif
 particleManager.SetLastType (-1);
 if ((gameStates.app.nSDLTicks - t0 < 33) || (ogl.StereoSeparation () < 0))
 	particleManager.m_bAnimate = 0;
@@ -2027,19 +2008,18 @@ return -1;
 
 void CParticleImageManager::Animate (int nType)
 {
-	int	nFrames = ParticleImageInfo (nType).nFrames;
+	tParticleImageInfo& pii = ParticleImageInfo (nType);
 
-if (nFrames > 1) {
-	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0};
+if (pii.bAnimate && (pii.nFrames > 1)) {
+	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0, 0};
 
 	if (gameStates.app.nSDLTicks - t0 [nType] > 150) {
 		CBitmap*	bmP = ParticleImageInfo (GetType (nType)).bmP;
 		if (!bmP->Frames ())
 			return;
-		int iFrame = ParticleImageInfo (nType).iFrame;
-		bmP->SetCurFrame (iFrame);
+		bmP->SetCurFrame (pii.iFrame);
 		t0 [nType] = gameStates.app.nSDLTicks;
-		ParticleImageInfo (nType).iFrame = (iFrame + 1) % nFrames;
+		pii.iFrame = ++pii.iFrame % pii.nFrames;
 		}
 	}
 }
@@ -2103,8 +2083,10 @@ else if (nType == WATERFALL_PARTICLES)
 	h = 8;
 else if (nType == FIRE_PARTICLES)
 	h = 4;
-else
+else {
 	h = bmP->FrameCount ();
+	pii.bAnimate = h > 1;
+	}
 pii.nFrames = h;
 return 1;
 }
