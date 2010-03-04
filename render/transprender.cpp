@@ -115,8 +115,8 @@ void CTransparencyRenderer::InitBuffer (int zMin, int zMax)
 if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0)) 
 #endif
 	{
-	m_data.zMin = max (0, zMin);
-	m_data.zMax = zMax - m_data.zMin;
+	m_data.zMin = 0;
+	m_data.zMax = zMax;
 	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (m_data.zMax);
 	if (m_data.zScale < 0)
 		m_data.zScale = 1;
