@@ -58,6 +58,7 @@ typedef struct tParticle {
 	tRgbaColorf	m_color [2];		//well ... the color, ya know =)
 	tRgbaColorf	m_renderColor;
 	char			m_nType;				//black or white
+	char			m_nRenderType;
 	char			m_nRotDir;
 	char			m_nBounce;
 	char			m_bHaveDir;
@@ -68,7 +69,7 @@ typedef struct tParticle {
 	char			m_nFadeType;
 	char			m_nFadeState;
 	char			m_nClass;
-	char			m_nFrame;
+	char			m_iFrame;
 	char			m_nFrames;
 	char			m_nRotFrame;
 	char			m_nOrient;
@@ -92,6 +93,7 @@ class CParticle : public tParticle {
 
 	private:
 		inline int ChangeDir (int d);
+		inline int RenderType (void);
 		int CollideWithWall (int nThread);
 		void UpdateTexCoord (void);
 		void UpdateColor (float brightness);
@@ -259,7 +261,7 @@ class CParticleManager {
 		int BeginRender (int nType, float fScale);
 		int EndRender (void);
 		int InitBuffer (int bLightmaps);
-		bool FlushBuffer (float brightness);
+		bool FlushBuffer (float brightness, bool bForce = false);
 		int CloseBuffer (void);
 
 		void AdjustBrightness (CBitmap *bmP);

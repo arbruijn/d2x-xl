@@ -408,23 +408,23 @@ else {
 m_nFrames = ParticleImageInfo (nType).nFrames;
 m_deltaUV = 1.0f / float (m_nFrames);
 if (nType == BULLET_PARTICLES) {
-	m_nFrame = 0;
+	m_iFrame = 0;
 	m_nRotFrame = 0;
 	m_nOrient = 3;
 	}
 else if (nType == BUBBLE_PARTICLES) {
-	m_nFrame = rand () % (m_nFrames * m_nFrames);
+	m_iFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
 else if ((nType == LIGHT_PARTICLES) /*|| (nType == WATERFALL_PARTICLES)*/) {
-	m_nFrame = 0;
+	m_iFrame = 0;
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
 else {
-	m_nFrame = rand () % (m_nFrames * m_nFrames);
-	m_nRotFrame = m_nFrame / 2;
+	m_iFrame = rand () % (m_nFrames * m_nFrames);
+	m_nRotFrame = m_iFrame / 2;
 	m_nOrient = rand () % 4;
 	}
 UpdateTexCoord ();
@@ -448,6 +448,7 @@ else
 #	endif
 	}
 SetupColor (fBrightness);
+m_nRenderType = RenderType ();
 return 1;
 }
 
@@ -539,8 +540,8 @@ return 0;
 void CParticle::UpdateTexCoord (void)
 {
 if ((m_nType <= WATERFALL_PARTICLES) && ((m_nType != BUBBLE_PARTICLES) || gameOpts->render.particles.bWobbleBubbles)) {
-	m_texCoord.v.u = float (m_nFrame % m_nFrames) * m_deltaUV;
-	m_texCoord.v.v = float (m_nFrame / m_nFrames) * m_deltaUV;
+	m_texCoord.v.u = float (m_iFrame % m_nFrames) * m_deltaUV;
+	m_texCoord.v.v = float (m_iFrame / m_nFrames) * m_deltaUV;
 	}
 }
 
@@ -739,6 +740,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+inline int CParticle::RenderType (void)
+{
+if ((m_nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2) || (m_iFrame < m_nFrames))
+	return m_nType;
+return PARTICLE_TYPES + m_nType;
+}
+
+//------------------------------------------------------------------------------
+
 int CParticle::Render (float fBrightness)
 {
 if (m_nDelay > 0)
@@ -763,11 +773,11 @@ PROF_START
 
 bool bFlushed = false;
 
-if ((particleManager.LastType () != m_nType) || (fBrightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
+if ((particleManager.LastType () != RenderType ()) || (fBrightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	PROF_END(ptParticles)
 	bFlushed = particleManager.FlushBuffer (fBrightness);
 	PROF_CONT
-	particleManager.SetLastType (m_nType);
+	particleManager.SetLastType (RenderType ());
 	bBufferEmissive = m_bEmissive;
 	}
 else
@@ -777,10 +787,10 @@ else
 tRenderParticle* pb = particleBuffer + particleManager.BufPtr ();
 pb->particle = this;
 pb->fBrightness = fBrightness;
-pb->nFrame = m_nFrame;
+pb->nFrame = m_iFrame;
 pb->nRotFrame = m_nRotFrame;
 #else
-Setup (fBrightness, m_nFrame, m_nRotFrame, particleRenderBuffer + particleManager.BufPtr () * 4, 0);
+Setup (fBrightness, m_iFrame, m_nRotFrame, particleRenderBuffer + particleManager.BufPtr () * 4, 0);
 #endif
 particleManager.IncBufPtr ();
 if (particleManager.BufPtr () >= PART_BUF_SIZE)
@@ -788,10 +798,10 @@ if (particleManager.BufPtr () >= PART_BUF_SIZE)
 
 if (particleManager.Animate ()) {
 	if (m_nFrames > 1) {
-		m_nFrame = (m_nFrame + 1) % (m_nFrames * m_nFrames);
+		m_iFrame = (m_iFrame + 1) % (m_nFrames * m_nFrames);
 		UpdateTexCoord ();
 		}
-	if (!(m_nType || (m_nFrame & 1)))
+	if (!(m_nType || (m_iFrame & 1)))
 		m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
 	}
 
@@ -1855,13 +1865,13 @@ PROF_END(ptParticles)
 
 //------------------------------------------------------------------------------
 
-bool CParticleManager::FlushBuffer (float fBrightness)
+bool CParticleManager::FlushBuffer (float fBrightness, bool bForce)
 {
 if (!m_iBuffer)
 	return false;
 
 int nType = particleManager.LastType ();
-if (nType < 0)
+if ((nType < 0) && !bForce)
 	return false;
 #if ENABLE_FLUSH
 PROF_START
@@ -1886,7 +1896,10 @@ bufferBrightness = fBrightness;
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (false);
-ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
+if (nType >= PARTICLE_TYPES)
+	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);	// multiplicative using fire's smoke texture
+else
+	ogl.SetBlendMode (bBufferEmissive ? 2 : 0);
 #if LAZY_RENDER_SETUP
 SetupRenderBuffer ();
 #endif
@@ -2082,7 +2095,7 @@ else if (nType == BUBBLE_PARTICLES)
 else if (nType == WATERFALL_PARTICLES)
 	h = 8;
 else if (nType == FIRE_PARTICLES)
-	h = 4;
+	h = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
 else {
 	h = bmP->FrameCount ();
 	pii.bAnimate = h > 1;

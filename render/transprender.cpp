@@ -1224,7 +1224,7 @@ void CTransparencyRenderer::FlushParticleBuffer (int nType)
 if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0)))) {
 	if (sparkBuffer.nSparks)
 		FlushSparkBuffer ();
-	if (particleManager.FlushBuffer (-1.0f)) {
+	if (particleManager.FlushBuffer (-1.0f, true)) {
 		if (nType < 0)
 			particleManager.CloseBuffer ();
 		ogl.SetDepthTest (true);
