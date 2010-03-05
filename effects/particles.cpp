@@ -437,7 +437,9 @@ else {
 	}
 if ((nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2))
 	m_bAnimate = (m_nFrames > 1);
-m_bRotate = (m_nType == SMOKE_PARTICLES); // || (m_nType == FIRE_PARTICLES);
+else
+	m_decay = 0;
+m_bRotate = (m_nType == SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES);
 
 UpdateTexCoord ();
 #if 0
@@ -717,10 +719,11 @@ else {
 #endif
 		if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
 			m_decay = 1.0f;
-		else if (m_nType == FIRE_PARTICLES)
-			m_decay = float (sin (sqrt (1.0 - double (m_nLife) / double (m_nTTL)) * Pi));
-		else
+		else {
 			m_decay = float (m_nLife) / float (m_nTTL);
+			if (m_nType == FIRE_PARTICLES)
+				m_decay = float (sin (1.0 - double (m_decay * m_decay)) * Pi);
+			}
 		if ((m_nType == SMOKE_PARTICLES) && (nRad = m_nRad)) {
 			if (m_bBlowUp) {
 				if (m_nWidth >= nRad)
@@ -924,18 +927,16 @@ pb [2].color =
 pb [3].color = m_renderColor;
 
 float h;
-if ((h = m_texCoord.v.u))
-	h += ParticleImageInfo (m_nType).xBorder;
+h = ParticleImageInfo (m_nType).xBorder;
 pb [m_nOrient].texCoord.v.u =
-pb [(m_nOrient + 3) % 4].texCoord.v.u = h;
-if ((h = m_texCoord.v.v))
-	h += ParticleImageInfo (m_nType).yBorder;
-pb [m_nOrient].texCoord.v.v =
-pb [(m_nOrient + 1) % 4].texCoord.v.v = h;
+pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + h;
 pb [(m_nOrient + 1) % 4].texCoord.v.u =
-pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV;
+pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - h;
+h = ParticleImageInfo (m_nType).yBorder;
+pb [m_nOrient].texCoord.v.v =
+pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + h;
 pb [(m_nOrient + 2) % 4].texCoord.v.v =
-pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV;
+pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
 
 if ((m_nType == SMOKE_PARTICLES) && m_bBlowUp) {
 #if 0
@@ -2110,16 +2111,19 @@ if (TGAMakeSquare (bmP)) {
 #endif
 pii.bmP->SetFrameCount ();
 pii.bmP->SetupTexture (0, 1);
-pii.xBorder = 1.0f / float (pii.bmP->Width ());
-pii.yBorder = 1.0f / float (pii.bmP->Height ());
+pii.xBorder = 
+pii.yBorder = 0;
 if (nType == SMOKE_PARTICLES)
 	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 8 : 1;
 else if (nType == BUBBLE_PARTICLES)
 	pii.nFrames = 4;
 else if (nType == WATERFALL_PARTICLES)
 	pii.nFrames = 1; //8;
-else if (nType == FIRE_PARTICLES)
+else if (nType == FIRE_PARTICLES) {
 	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
+	pii.xBorder = 1.0f / float (pii.bmP->Width ());
+	pii.yBorder = 1.0f / float (pii.bmP->Height ());
+	}
 else {
 	pii.nFrames = pii.bmP->FrameCount ();
 	pii.bAnimate = pii.nFrames > 1;
