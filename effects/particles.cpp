@@ -2088,9 +2088,10 @@ void CParticleImageManager::Animate (int nType)
 	tParticleImageInfo& pii = ParticleImageInfo (nType);
 
 if (pii.bAnimate && (pii.nFrames > 1)) {
+	static time_t to [PARTICLE_TYPES] = {150, 150, 50, 150, 150, 150};
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0, 0};
 
-	if (gameStates.app.nSDLTicks - t0 [nType] > 150) {
+	if (gameStates.app.nSDLTicks - t0 [nType] >= to [nType]) {
 		CBitmap*	bmP = ParticleImageInfo (GetType (nType)).bmP;
 		if (!bmP->Frames ())
 			return;
