@@ -625,18 +625,108 @@ else
 
 //------------------------------------------------------------------------------
 
+int CParticle::Bounce (int nThread)
+{
+if (!gameOpts->render.particles.bCollisions)
+	return 1;
+if (!CollideWithWall (nThread)) {
+	m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
+	return 1;
+	}
+if (!--m_nBounce)
+	return 0;
+fix dot = CFixVector::Dot (m_vDrift, *wallNorm [nThread]);
+if (dot < I2X (1) / 100) {
+	m_nLife = -1;
+	return 0;
+	}
+m_vDrift += m_vDrift + *wallNorm [nThread] * (-2 * dot);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CParticle::UpdateDrift (int t, int nThread)
+{
+m_vPos += m_vDrift * t; //(I2X (t) / 1000);
+
+#if DBG
+CFixVector::Normalize (m_vDrift);
+if (CFixVector::Dot (m_vDrift, m_vDir) < 0)
+	t = t;
+#endif
+
+if ((m_nType == SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES)) {
+	m_vDrift [X] = ChangeDir (m_vDrift [X]);
+	m_vDrift [Y] = ChangeDir (m_vDrift [Y]);
+	m_vDrift [Z] = ChangeDir (m_vDrift [Z]);
+	}
+
+if (m_bHaveDir) {
+	CFixVector vi = m_vDrift, vj = m_vDir;
+	CFixVector::Normalize (vi);
+	CFixVector::Normalize (vj);
+	fix drag = Drag ();
+	if (CFixVector::Dot (vi, vj) < 0)
+		drag = -drag;
+	m_vPos += m_vDir * drag;
+	}
+
+if ((m_nType == WATERFALL_PARTICLES) ? !m_bChecked : (m_nType == BUBBLE_PARTICLES) /*|| (m_nTTL - m_nLife > I2X (1) / 16)*/) {
+	int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
+	if (0 > nSegment) {
+		m_nLife = -1;
+		return 0;
+		}
+	if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) { 
+		m_nLife = -1;
+		return 0;
+		}
+	if (m_nType == WATERFALL_PARTICLES) {
+		CFixVector vDir = m_vPos - m_vStartPos;
+		if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
+			m_nLife = -1;
+			return 0;
+			}
+#if 1
+		if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
+			m_bChecked = 1;
+			m_nLife = 500; 
+			}
+#endif
+		}
+	m_nSegment = nSegment;
+	}
+
+if (!Bounce (nThread))
+	return 0;
+
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CParticle::UpdateDecay (void)
+{
+if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
+	m_decay = 1.0f;
+else {
+	m_decay = float (m_nLife) / float (m_nTTL);
+	if (m_nType == FIRE_PARTICLES) {
+		//m_decay *= m_decay;
+		m_decay = float (sin ((1.0 - double (m_decay /** m_decay*/)) * Pi));
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int CParticle::Update (int nCurTime, float fBrightness, int nThread)
 {
 if ((m_nLife <= 0) /*|| (m_color [0].alpha < 0.01f)*/)
 	return 0;
 
-	int			j, nRad;
-	short			nSegment;
-	fix			t, dot;
-	CFixVector	vPos, drift;
-	fix			drag;
-	
-t = nCurTime - m_nMoved;
+fix t = nCurTime - m_nMoved;
 m_nMoved = nCurTime;
 
 #if !ENABLE_UPDATE 
@@ -644,135 +734,63 @@ m_nLife -= t;
 m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 #else
 UpdateColor (fBrightness);
-drag = Drag ();
 
 if (m_nDelay > 0) {
 	m_nDelay -= t;
 	return 1;
 	}
 
-vPos = m_vPos;
-#if DBG
-drift = m_vDrift;
-CFixVector::Normalize (drift);
-if (CFixVector::Dot (drift, m_vDir) < 0)
-	j = 0;
-#endif
-drift = m_vDrift;
-if ((m_nType == SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES)) {
-	drift [X] = ChangeDir (drift [X]);
-	drift [Y] = ChangeDir (drift [Y]);
-	drift [Z] = ChangeDir (drift [Z]);
-	}
-//for (j = 0; j < 2; j++) 
-	{
-	if (t < 0)
-		t = -t;
-	m_vPos = vPos + drift * t; //(I2X (t) / 1000);
-	if (m_bHaveDir) {
-		CFixVector vi = drift, vj = m_vDir;
-		CFixVector::Normalize (vi);
-		CFixVector::Normalize (vj);
-		if (CFixVector::Dot (vi, vj) < 0)
-			drag = -drag;
-		m_vPos += m_vDir * drag;
-		}
-	if ((m_nType == WATERFALL_PARTICLES) 
-		 ? !m_bChecked 
-		 : (m_nType == BUBBLE_PARTICLES) /*|| (m_nTTL - m_nLife > I2X (1) / 16)*/) {
-		if (0 > (nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread))) {
-			m_nLife = -1;
-			return 0;
-			}
-		if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) { 
-			m_nLife = -1;
-			return 0;
-			}
-		if (m_nType == WATERFALL_PARTICLES) {
-			CFixVector vDir = m_vPos - m_vStartPos;
-			if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
-				m_nLife = -1;
-				return 0;
-				}
-#if 1
-			if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
-				m_bChecked = 1;
-				m_nLife = 500; 
-				break;
-				}
-#endif
-			}
-		m_nSegment = nSegment;
-		}
-	if (!(gameOpts->render.particles.bCollisions && CollideWithWall (nThread))) 
-		m_nBounce = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1 : 2;
-	else {	//Reflect the particle
-		if (!--m_nBounce || ((dot = CFixVector::Dot (drift, *wallNorm [nThread])) < I2X (1) / 100)) {
-			m_nLife = -1;
-			return 0;
-			}
-		else {
-			drift = m_vDrift + *wallNorm * (-2 * dot);
-			//VmVecScaleAdd (&m_vPos, &vPos, &drift, 2 * t);
-			//m_nBounce = 3;
-			//continue;
-			}
-		}
-	}
 
-m_vDrift = drift;
-if (m_nTTL >= 0) {
+//for (int j = 0; j < 2; j++) 
+if (!UpdateDrift (t, nThread))
+	return 0;
+
+if (m_nTTL < 0) 
+	return 1;
+
 #if SMOKE_SLOWMO
-	m_nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
+m_nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
 #else
-	m_nLife -= t;
+m_nLife -= t;
 #	if 0
-	if ((m_nType == FIRE_PARTICLES) && !m_bReversed && (m_nLife <= m_nTTL / 4 + randN (m_nTTL / 4))) {
-		m_vDrift = -m_vDrift;
-		m_bReversed = 1;
-		}
+if ((m_nType == FIRE_PARTICLES) && !m_bReversed && (m_nLife <= m_nTTL / 4 + randN (m_nTTL / 4))) {
+	m_vDrift = -m_vDrift;
+	m_bReversed = 1;
+	}
 #	endif
 #	if DBG
-	if ((m_nLife <= 0) && (m_nType == 2))
-		m_nLife = -1;
+if ((m_nLife <= 0) && (m_nType == 2))
+	m_nLife = -1;
 #	endif
 #endif
-	if (m_nLife < 0)
-		return 0;
-	if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
-		m_decay = 1.0f;
-	else {
-		m_decay = float (m_nLife) / float (m_nTTL);
-		if (m_nType == FIRE_PARTICLES) {
-			//m_decay *= m_decay;
-			m_decay = float (sin ((1.0 - double (m_decay /** m_decay*/)) * Pi));
+if (m_nLife < 0)
+	return 0;
+UpdateDecay ();
+
+if ((m_nType == SMOKE_PARTICLES) && m_nRad) {
+	if (m_bBlowUp) {
+		if (m_nWidth >= m_nRad)
+			m_nRad = 0;
+		else {
+			m_nWidth += m_nRad / 10 / m_bBlowUp;
+			m_nHeight += m_nRad / 10 / m_bBlowUp;
+			if (m_nWidth > m_nRad)
+				m_nWidth = m_nRad;
+			if (m_nHeight > m_nRad)
+				m_nHeight = m_nRad;
+			m_color [0].alpha *= (1.0f + 0.0725f / m_bBlowUp);
+			if (m_color [0].alpha > 1)
+				m_color [0].alpha = 1;
 			}
 		}
-	if ((m_nType == SMOKE_PARTICLES) && m_nRad) {
-		if (m_bBlowUp) {
-			if (m_nWidth >= m_nRad)
-				m_nRad = 0;
-			else {
-				m_nWidth += m_nRad / 10 / m_bBlowUp;
-				m_nHeight += m_nRad / 10 / m_bBlowUp;
-				if (m_nWidth > m_nRad)
-					m_nWidth = m_nRad;
-				if (m_nHeight > m_nRad)
-					m_nHeight = m_nRad;
-				m_color [0].alpha *= (1.0f + 0.0725f / m_bBlowUp);
-				if (m_color [0].alpha > 1)
-					m_color [0].alpha = 1;
-				}
-			}
+	else {
+		if (m_nWidth <= m_nRad)
+			m_nRad = 0;
 		else {
-			if (m_nWidth <= m_nRad)
-				m_nRad = 0;
-			else {
-				m_nRad += m_nRad / 5;
-				m_color [0].alpha *= 1.0725f;
-				if (m_color [0].alpha > 1)
-					m_color [0].alpha = 1;
-				}
+			m_nRad += m_nRad / 5;
+			m_color [0].alpha *= 1.0725f;
+			if (m_color [0].alpha > 1)
+				m_color [0].alpha = 1;
 			}
 		}
 	}

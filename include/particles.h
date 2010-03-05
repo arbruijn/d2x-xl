@@ -97,9 +97,14 @@ class CParticle : public tParticle {
 		inline int ChangeDir (int d);
 		inline int RenderType (void);
 		int CollideWithWall (int nThread);
+		void UpdateDecay (void);
+		int UpdateDrift (int t, int nThread);
 		void UpdateTexCoord (void);
 		void UpdateColor (float brightness);
 		int SetupColor (float brightness);
+		fix Drag (void);
+		int Bounce (int nThread);
+
 };
 
 //------------------------------------------------------------------------------
