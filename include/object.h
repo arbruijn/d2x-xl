@@ -957,6 +957,10 @@ class CObject : public CObjectInfo {
 		void BashToShield (bool bBash);
 		void BashToEnergy (bool bBash);
 
+		inline bool IsPlayer (void) { return (info.nType == OBJ_PLAYER); }
+		bool IsGuideBot (void);
+		bool IsThief (void);
+
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
 		void CheckAfterburnerBlobDrop (void);

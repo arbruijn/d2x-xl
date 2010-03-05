@@ -666,10 +666,10 @@ return 0;
 
 int CObject::CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt)
 {
-	CSegment		*segP = SEGMENTS + nHitSeg;
-	CSide			*sideP = segP->m_sides + nHitWall;
-	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
-	CObject		*wObjP = OBJECTS + cType.laserInfo.parent.nObject;
+	CSegment*		segP = SEGMENTS + nHitSeg;
+	CSide*			sideP = segP->m_sides + nHitWall;
+	CWeaponInfo*	weaponInfoP = gameData.weapons.info + info.nId;
+	CObject*			parentObjP = OBJECTS + cType.laserInfo.parent.nObject;
 
 	int	bBounce, bBlewUp, bEscort, wallType, nPlayer;
 	fix	nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
@@ -691,10 +691,8 @@ if (info.nId == GUIDEDMSL_ID) {
 		mType.physInfo.flags &= ~PF_BOUNCE;
 		}
 	else {
-		CFixVector	vReflect;
-		CAngleVector	va;
-		vReflect = CFixVector::Reflect (info.position.mOrient.FVec (), sideP->m_normals[0]);
-		va = vReflect.ToAnglesVec ();
+		CFixVector vReflect = CFixVector::Reflect (info.position.mOrient.FVec (), sideP->m_normals[0]);
+		CAngleVector va = vReflect.ToAnglesVec ();
 		info.position.mOrient = CFixMatrix::Create (va);
 		}
 	}
@@ -704,7 +702,7 @@ if (!bBounce)
 	CreateWeaponEffects (1);
 //if an energy this hits a forcefield, let it bounce
 if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_FIELD) &&
-	 ((info.nType != OBJ_WEAPON) || wInfoP->xEnergyUsage)) {
+	 ((info.nType != OBJ_WEAPON) || weaponInfoP->xEnergyUsage)) {
 
 	//make sound
 	audio.CreateSegmentSound (SOUND_FORCEFIELD_BOUNCE_WEAPON, nHitSeg, 0, vHitPt);
@@ -732,8 +730,7 @@ if (mType.physInfo.velocity.IsZero ()) {
 	}
 #endif
 bBlewUp = segP->CheckEffectBlowup (nHitWall, vHitPt, this, 0);
-if ((cType.laserInfo.parent.nType == OBJ_ROBOT) && (wObjP->info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (wObjP->info.nId).companion) {
-	bEscort = 1;
+if ((bEscort = parentObjP->IsGuideBot ())) {
 	if (IsMultiGame) {
 		Int3 ();  // Get Jason!
 	   return 1;
@@ -741,8 +738,7 @@ if ((cType.laserInfo.parent.nType == OBJ_ROBOT) && (wObjP->info.nId < MAX_ROBOT_
 	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single CPlayerData, he's the CPlayerData's buddy
 	}
 else {
-	bEscort = 0;
-	nPlayer = (wObjP->info.nType == OBJ_PLAYER) ? wObjP->info.nId : -1;
+	nPlayer = (parentObjP->IsPlayer () ? parentObjP->info.nId : -1;
 	}
 if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate it
 	segP->OperateTrigger (nHitWall, OBJECTS + cType.laserInfo.parent.nObject, 1);
@@ -757,13 +753,13 @@ if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	//we've hit a volatile CWall
 	audio.CreateSegmentSound (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt);
 	//for most weapons, use volatile CWall hit.  For mega, use its special tVideoClip
-	tVideoClip = (info.nId == MEGAMSL_ID) ? wInfoP->nRobotHitVClip : VCLIP_VOLATILE_WALL_HIT;
+	tVideoClip = (info.nId == MEGAMSL_ID) ? weaponInfoP->nRobotHitVClip : VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
-	if (wInfoP->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
+	if (weaponInfoP->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
 		ExplodeBadassWeapon (vHitPt);
 	else
-		CreateBadassExplosion (this, nHitSeg, vHitPt, wInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
-									  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, wInfoP->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
+		CreateBadassExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
+									  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, weaponInfoP->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
 									  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
 	}
@@ -771,20 +767,20 @@ else if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_WATER) ||
 			(sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_WATER))) {
 	//we've hit water
 	//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
-	if (wInfoP->matter) {
+	if (weaponInfoP->matter) {
 		audio.CreateSegmentSound (SOUNDMSL_HIT_WATER, nHitSeg, 0, vHitPt);
-		if (wInfoP->xDamageRadius) {
+		if (weaponInfoP->xDamageRadius) {
 			audio.CreateObjectSound (SOUND_BADASS_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: Badass in water is 1/2 Normal intensity.
-			CreateBadassExplosion (this, nHitSeg, vHitPt, wInfoP->xImpactSize/2, wInfoP->nRobotHitVClip,
-										  nStrength / 4, wInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
+			CreateBadassExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
+										  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
 			}
 		else
-			/*Object*/CreateExplosion (info.nSegment, info.position.vPos, wInfoP->xImpactSize, wInfoP->nWallHitVClip);
+			/*Object*/CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
 		}
 	else {
 		audio.CreateSegmentSound (SOUND_LASER_HIT_WATER, nHitSeg, 0, vHitPt);
-		/*Object*/CreateExplosion (info.nSegment, info.position.vPos, wInfoP->xImpactSize, VCLIP_WATER_HIT);
+		/*Object*/CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, VCLIP_WATER_HIT);
 		}
 	Die ();		//make flares die in water
 	}
@@ -794,13 +790,13 @@ else {
 		//is no CWall, and no blowing up monitor, then play sound
 		if ((cType.laserInfo.parent.nType != OBJ_PLAYER) ||
 			 ((!sideP->IsWall () || wallType == WHP_NOT_SPECIAL) && !bBlewUp))
-			if ((wInfoP->nWallHitSound > -1) && !(info.nFlags & OF_SILENT))
-				CreateSound (wInfoP->nWallHitSound);
-		if (wInfoP->nWallHitVClip > -1) {
-			if (wInfoP->xDamageRadius)
+			if ((weaponInfoP->nWallHitSound > -1) && !(info.nFlags & OF_SILENT))
+				CreateSound (weaponInfoP->nWallHitSound);
+		if (weaponInfoP->nWallHitVClip > -1) {
+			if (weaponInfoP->xDamageRadius)
 				ExplodeBadassWeapon (vHitPt);
 			else
-				CreateExplosion (info.nSegment, info.position.vPos, wInfoP->xImpactSize, wInfoP->nWallHitVClip);
+				CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
 			}
 		}
 	}
@@ -825,7 +821,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 		switch (wallType) {
 			case WHP_NOT_SPECIAL:
 				//should be handled above
-				//audio.CreateSegmentSound (wInfoP->nWallHitSound, info.nSegment, 0, &info.position.vPos, 0, I2X (1));
+				//audio.CreateSegmentSound (weaponInfoP->nWallHitSound, info.nSegment, 0, &info.position.vPos, 0, I2X (1));
 				break;
 
 			case WHP_NO_KEY:
@@ -837,7 +833,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) || bEscort) {
 
 			case WHP_BLASTABLE:
 				//play special blastable CWall sound (if/when we get it)
-				if ((wInfoP->nWallHitSound > -1) && (!(info.nFlags & OF_SILENT)))
+				if ((weaponInfoP->nWallHitSound > -1) && (!(info.nFlags & OF_SILENT)))
 					CreateSound (SOUND_WEAPON_HIT_BLASTABLE);
 				break;
 

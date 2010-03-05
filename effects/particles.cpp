@@ -112,7 +112,7 @@ tParticleImageInfo particleImageInfo [2][PARTICLE_TYPES] = {
 	{{NULL, "smoke.tga", 1, 0, 0, 1},
 	 {NULL, "bubble.tga", 1, 0, 0, 1},
 	 {NULL, "smokingfire.tga", 1, 0, 0, 0},
-	 {NULL, "simplesmoke.tga", 1, 0, 0, 0},
+	 {NULL, "smoke.tga", 1, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1},
 	 {NULL, "corona.tga", 1, 0, 0, 0}}
 	};
@@ -712,13 +712,17 @@ void CParticle::UpdateDecay (void)
 if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
 	m_decay = 1.0f;
 else if (m_nType == FIRE_PARTICLES) {
+#if 0
+	m_decay = float (sin (double (m_nLife) / double (m_nTTL) * Pi));
+#else
 	m_decay = float (m_nLife) / float (m_nTTL);
 	if (m_decay < 0.4)
 		m_decay = float (sin (double (m_decay) * Pi * 1.25));
-	else if (m_decay > 0.1)
-		m_decay = float (sin (double (1.0 - m_decay) * Pi * 5.0));
+	else if (m_decay > 0.15)
+		m_decay = float (sin (double (1.0 - m_decay) * Pi * 0.5 / 0.15));
 	else
 		m_decay = 1.0f;
+#endif
 	}	
 else
 	m_decay = float (m_nLife) / float (m_nTTL);

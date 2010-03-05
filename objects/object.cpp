@@ -1535,4 +1535,18 @@ return objP;
 }
 
 //------------------------------------------------------------------------------
+
+bool CObject::IsGuideBot (void) 
+{
+return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId).companion;
+}
+
+//------------------------------------------------------------------------------
+
+inline bool CObject::IsThief (void) 
+{
+return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId).thief;
+}
+
+//------------------------------------------------------------------------------
 //eof

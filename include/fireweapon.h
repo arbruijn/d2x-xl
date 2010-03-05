@@ -177,7 +177,7 @@ extern int nOmegaDuration [7];
 //	-----------------------------------------------------------------------------------------------------------
 
 static inline int LaserPlayerFireSpread (CObject *objP, ubyte laserType, int nGun, fix spreadr, fix spreadu, 
-									int makeSound, int harmless, short nLightObj)
+													  int makeSound, int harmless, short nLightObj)
 {
 return FireWeaponDelayedWithSpread (objP, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless, nLightObj);
 }
