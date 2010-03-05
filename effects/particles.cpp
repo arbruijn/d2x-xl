@@ -629,6 +629,8 @@ else if (m_nType == WATERFALL_PARTICLES) {
 	h *= h;
 	drag = F2X (h);
 	}
+else if (m_nType == WATERFALL_PARTICLES)
+	drag = F2X (float (sqrt (m_decay))); // decelerate
 else 
 	drag = F2X (m_decay); // decelerate
 
@@ -725,6 +727,8 @@ else {
 			m_nLife = -1;
 #	endif
 #endif
+		if (m_nLife < 0)
+			return 0;
 		if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
 			m_decay = 1.0f;
 		else {
