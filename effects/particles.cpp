@@ -1801,6 +1801,8 @@ int CParticleManager::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mO
 										float fScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType,
 										int nObject, tRgbaColorf *colorP, int bBlowUpParts, char nSide)
 {
+if (!gameOpts->render.particles.nQuality)
+	return -1;
 #if 0
 if (!(EGI_FLAG (bUseParticleSystem, 0, 1, 0)))
 	return 0;
@@ -1867,6 +1869,8 @@ return h;
 
 void CParticleManager::Render (void)
 {
+if (!gameOpts->render.particles.nQuality)
+	return;
 int nCurrent = -1;
 
 #ifdef _OPENMP
@@ -1941,6 +1945,10 @@ bool CParticleManager::FlushBuffer (float fBrightness, bool bForce)
 {
 if (!m_iBuffer)
 	return false;
+if (!gameOpts->render.particles.nQuality) {
+	m_iBuffer = 0;
+	return false;
+	}
 
 int nType = particleManager.LastType ();
 if ((nType < 0) && !bForce)
