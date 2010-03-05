@@ -711,8 +711,15 @@ void CParticle::UpdateDecay (void)
 {
 if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
 	m_decay = 1.0f;
-else if (m_nType == FIRE_PARTICLES) 
-	m_decay = float (sin (double (m_nLife) / double (m_nTTL) * Pi));
+else if (m_nType == FIRE_PARTICLES) {
+	m_decay = float (m_nLife) / float (m_nTTL);
+	if (m_decay < 0.4)
+		m_decay = float (sin (double (m_decay) * Pi * 1.25));
+	else if (m_decay > 0.1)
+		m_decay = float (sin (double (1.0 - m_decay) * Pi * 5.0));
+	else
+		m_decay = 1.0f;
+	}	
 else
 	m_decay = float (m_nLife) / float (m_nTTL);
 }
@@ -760,7 +767,7 @@ if ((m_nLife <= 0) && (m_nType == 2))
 #	endif
 #endif
 if (m_nLife < 0)
-	return 0;
+	m_nLife = 0;
 UpdateDecay ();
 
 if ((m_nType == SMOKE_PARTICLES) && m_nRad) {
