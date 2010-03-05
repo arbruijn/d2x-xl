@@ -55,6 +55,8 @@ CTransparencyRenderer transparencyRenderer;
 
 #define LAZY_RESET 1
 
+static int nAdded = 0, nRendered = 0;
+
 //------------------------------------------------------------------------------
 
 static tTexCoord2f tcDefault [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
@@ -564,6 +566,7 @@ if (d1 < m_data.zMin)
 	return 0;
 if (!Add (tiLightning, &item, sizeof (item), bSwap ? lightningP->m_vEnd : lightningP->m_vPos /*CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd)*/, 0, true, -1))
 	return 0;
+nAdded++;
 return 1;
 }
 
@@ -1173,6 +1176,7 @@ if (m_data.nPrevType != m_data.nCurType) {
 	}
 gameStates.render.bDepthSort = -1;
 item->lightning->Render (item->nDepth, 0);
+nRendered++;
 gameStates.render.bDepthSort = 1;
 ogl.ResetClientStates ();
 ResetBitmaps ();
@@ -1414,7 +1418,9 @@ if (bReset) {
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
+PrintLog ("transparency renderer: %d/%d lightings added/rendered\r\n", nAdded, nRendered);
 PROF_END(ptTranspPolys)
+nAdded = nRendered = 0;
 #endif
 }
 

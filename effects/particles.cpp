@@ -712,7 +712,7 @@ void CParticle::UpdateDecay (void)
 if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
 	m_decay = 1.0f;
 else if (m_nType == FIRE_PARTICLES) {
-#if 0
+#if 1
 	m_decay = float (sin (double (m_nLife) / double (m_nTTL) * Pi));
 #else
 	m_decay = float (m_nLife) / float (m_nTTL);

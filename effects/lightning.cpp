@@ -1004,14 +1004,15 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
-ogl.SetBlendMode (2);
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 if (nDepth || !m_bPlasma) {
+	ogl.SetBlendMode (1);
 	glColor3f (colorP->red, colorP->green, colorP->blue);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [0].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	}
 else {
+	ogl.SetBlendMode (2);
 	for (int i = 2; i >= 0; i--) {
 		if (i == 2)
 			glColor3f (colorP->red / 2, colorP->green / 2, colorP->blue / 2);
@@ -1072,8 +1073,10 @@ void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
 ogl.SetBlendMode (1);
 ogl.SetLineSmooth (true);
+#if 0
 if (!ogl.m_states.bUseTransform)
 	ogl.SetupTransform (1);
+#endif
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
@@ -1092,9 +1095,11 @@ else {
 	glEnd ();
 	}
 #endif
+#if 0
 if (!ogl.m_states.bUseTransform)
 	ogl.ResetTransform (1);
-glLineWidth ((GLfloat) 1);
+#endif
+glLineWidth (GLfloat (1));
 ogl.SetLineSmooth (false);
 ogl.ClearError (0);
 }
@@ -1178,28 +1183,28 @@ ogl.ClearError (0);
 
 void CLightning::Render (int nDepth, int nThread)
 {
-	int				i;
-
-if ((gameStates.render.bDepthSort > 0) && (gameStates.render.nType != 5)) {	// not in transparency renderer
+if (gameStates.render.nType != 5) {	// not in transparency renderer
 	if ((m_nNodes < 0) || (m_nSteps < 0))
 		return;
 	if (!MayBeVisible (nThread))
 		return;
-	if (!gameOpts->render.n3DGlasses)
+#if 0
+	if (!gameOpts->render.n3DGlasses) 
 		RenderSetup (0, nThread);
+#endif
 	transparencyRenderer.AddLightning (this, nDepth);
 	if (gameOpts->render.lightning.nQuality)
-		for (i = 0; i < m_nNodes; i++)
+		for (int i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
 	}
 else {
-	if (gameOpts->render.n3DGlasses || (nThread < 0))
+	//if (gameOpts->render.n3DGlasses || (nThread < 0))
 		RenderSetup (0, nThread);
-	if (!nDepth)
+	//if (!nDepth)
 		ogl.SetFaceCulling (false);
 	Draw (0, nThread);
-	if (!nDepth)
+	//if (!nDepth)
 		ogl.SetFaceCulling (true);
 	glLineWidth (1);
 	ogl.SetLineSmooth (false);
@@ -1277,7 +1282,7 @@ l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 int bFail = 0;
 #pragma omp parallel 
 	{
-#ifdef _OPENMP
+#if 0//def _OPENMP
 	int nThread = omp_get_thread_num ();
 #else
 	int nThread = 0;
@@ -1458,12 +1463,8 @@ if (nSegment < 0)
 if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING) {
-	//#pragma omp parallel
-		{
-		//#pragma omp for
-		for (int i = 0; i < m_nBolts; i++)
-			m_lightning [i].Move (0, vNewPos, nSegment, bStretch, bFromEnd, nThread);
-		}
+	for (int i = 0; i < m_nBolts; i++)
+		m_lightning [i].Move (0, vNewPos, nSegment, bStretch, bFromEnd, nThread);
 	}
 }
 
