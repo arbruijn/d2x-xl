@@ -304,27 +304,33 @@ else {
 			}
 		}
 	}
-
+#if 0
 if (nType == FIRE_PARTICLES)
 	nSpeed = int (sqrt (double (nSpeed)) * float (I2X (1)));
 else
+#endif
 	nSpeed *= I2X (1);
 if (!vDir /*|| (nType == FIRE_PARTICLES)*/) {
 	CFixVector	vOffs;
 	vDrift [X] = nSpeed - randN (2 * nSpeed);
 	vDrift [Y] = nSpeed - randN (2 * nSpeed);
 	vDrift [Z] = nSpeed - randN (2 * nSpeed);
+#if 0
 	if (nType == FIRE_PARTICLES)
 		vDrift *= nRad / 32;
+#endif
 	vOffs = vDrift;
 	m_vDir.SetZero ();
 	m_bHaveDir = 1;
 	}
 else {
 	m_vDir = *vDir;
+#if 0
 	if (nType == FIRE_PARTICLES)
 		vDrift = m_vDir;
-	else {
+	else 
+#endif
+		{
 		CAngleVector	a;
 		CFixMatrix		m;
 		a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
@@ -428,10 +434,12 @@ else {
 	m_iFrame = rand () % (m_nFrames * m_nFrames);
 	m_nRotFrame = m_iFrame / 2;
 	m_nOrient = rand () % 4;
-#if 0
+#if 1
 	if (nType == FIRE_PARTICLES) {
-		m_iFrame = 2;
-		m_nOrient = 0;
+		if (m_iFrame < 2)
+			m_nLife  = 9 * m_nLife / 10;
+		else
+			m_nLife  = 10 * m_nLife / 9;
 		}
 #endif
 	}
@@ -722,8 +730,8 @@ else {
 		else {
 			m_decay = float (m_nLife) / float (m_nTTL);
 			if (m_nType == FIRE_PARTICLES) {
-				m_decay *= m_decay;
-				m_decay = float (sin ((1.0 - double (m_decay * m_decay)) * Pi));
+				//m_decay *= m_decay;
+				m_decay = float (sin ((1.0 - double (m_decay /** m_decay*/)) * Pi));
 				}
 			}
 		if ((m_nType == SMOKE_PARTICLES) && (nRad = m_nRad)) {
