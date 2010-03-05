@@ -721,8 +721,10 @@ else {
 			m_decay = 1.0f;
 		else {
 			m_decay = float (m_nLife) / float (m_nTTL);
-			if (m_nType == FIRE_PARTICLES)
-				m_decay = float (sin (1.0 - double (m_decay * m_decay * m_decay)) * Pi);
+			if (m_nType == FIRE_PARTICLES) {
+				m_decay *= m_decay;
+				m_decay = float (sin ((1.0 - double (m_decay * m_decay)) * Pi));
+				}
 			}
 		if ((m_nType == SMOKE_PARTICLES) && (nRad = m_nRad)) {
 			if (m_bBlowUp) {
