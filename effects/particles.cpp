@@ -621,7 +621,7 @@ else if (m_nType == WATERFALL_PARTICLES) {
 	return F2X (h);
 	}
 else 
-	return F2X (m_decay); // decelerate
+	return I2X (1); //F2X (m_decay); // decelerate
 }
 
 //------------------------------------------------------------------------------
@@ -896,7 +896,7 @@ if (m_nType == SMOKE_PARTICLES) {
 
 if (m_nFadeType == 0) {	// default (start fully visible, fade out)
 #if 1 
-	m_renderColor.alpha *= m_decay * 0.6f;
+	m_renderColor.alpha *= m_decay * ((gameOpts->render.particles.nQuality == 2) ? 0.6f : 0.8f);
 #else
 	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 #endif
@@ -2166,7 +2166,7 @@ if (nType == SMOKE_PARTICLES)
 else if (nType == BUBBLE_PARTICLES)
 	pii.nFrames = 4;
 else if (nType == WATERFALL_PARTICLES)
-	pii.nFrames = 1; //8;
+	pii.nFrames = 8;
 else if (nType == FIRE_PARTICLES) {
 	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
 	pii.xBorder = 1.0f / float (pii.bmP->Width ());

@@ -340,7 +340,7 @@ return 0;
 
 static inline int ShipVolume (int nSpeed)
 {
-return I2X (1) / 32 + nSpeed / 1024;
+return I2X (1) / 16 + nSpeed / 512;
 }
 
 void CObject::UpdateShipSound (void)
