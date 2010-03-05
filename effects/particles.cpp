@@ -431,17 +431,20 @@ else if ((nType == LIGHT_PARTICLES) /*|| (nType == WATERFALL_PARTICLES)*/) {
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
+else if (nType == FIRE_PARTICLES) {
+	m_iFrame = (rand () % 10 < 6) ? 0 : 2;	// more fire than smoke (60:40)
+	if (m_iFrame < 2)
+		m_nLife  = 9 * m_nLife / 10;
+	else
+		m_nLife  = 10 * m_nLife / 9;
+	m_nRotFrame = rand () % PARTICLE_POSITIONS;
+	m_nOrient = rand () % 4;
+	}
 else {
 	m_iFrame = rand () % (m_nFrames * m_nFrames);
-	m_nRotFrame = m_iFrame / 2;
+	m_nRotFrame = rand () % PARTICLE_POSITIONS;
 	m_nOrient = rand () % 4;
 #if 1
-	if (nType == FIRE_PARTICLES) {
-		if (m_iFrame < 2)
-			m_nLife  = 9 * m_nLife / 10;
-		else
-			m_nLife  = 10 * m_nLife / 9;
-		}
 #endif
 	}
 m_nTTL = m_nLife;
