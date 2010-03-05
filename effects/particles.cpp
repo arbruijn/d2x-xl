@@ -711,11 +711,10 @@ void CParticle::UpdateDecay (void)
 {
 if ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) 
 	m_decay = 1.0f;
-else {
+else if (m_nType == FIRE_PARTICLES) 
+	m_decay = float (sin (double (m_nLife) / double (m_nTTL)) * Pi);
+else
 	m_decay = float (m_nLife) / float (m_nTTL);
-	if (m_nType == FIRE_PARTICLES) 
-		m_decay = float (sin (double (m_decay) * Pi));
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -739,8 +738,6 @@ if (m_nDelay > 0) {
 	return 1;
 	}
 
-
-//for (int j = 0; j < 2; j++) 
 if (!UpdateDrift (t, nThread))
 	return 0;
 
@@ -772,9 +769,9 @@ if ((m_nType == SMOKE_PARTICLES) && m_nRad) {
 			m_nRad = 0;
 		else {
 			m_nWidth += m_nRad * 0.1f;
-			m_nHeight += m_nRad * 0.1f;
 			if (m_nWidth > m_nRad)
 				m_nWidth = m_nRad;
+			m_nHeight += m_nRad * 0.1f;
 			if (m_nHeight > m_nRad)
 				m_nHeight = m_nRad;
 			m_color [0].alpha *= (1.0f + 0.0725f / m_bBlowUp);
