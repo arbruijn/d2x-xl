@@ -738,27 +738,27 @@ else {
 				m_decay = float (sin ((1.0 - double (m_decay /** m_decay*/)) * Pi));
 				}
 			}
-		if ((m_nType == SMOKE_PARTICLES) && (nRad = m_nRad)) {
+		if ((m_nType == SMOKE_PARTICLES) && m_nRad) {
 			if (m_bBlowUp) {
-				if (m_nWidth >= nRad)
+				if (m_nWidth >= m_nRad)
 					m_nRad = 0;
 				else {
-					m_nWidth += nRad / 10 / m_bBlowUp;
-					m_nHeight += nRad / 10 / m_bBlowUp;
-					if (m_nWidth > nRad)
-						m_nWidth = nRad;
-					if (m_nHeight > nRad)
-						m_nHeight = nRad;
+					m_nWidth += m_nRad / 10 / m_bBlowUp;
+					m_nHeight += m_nRad / 10 / m_bBlowUp;
+					if (m_nWidth > m_nRad)
+						m_nWidth = m_nRad;
+					if (m_nHeight > m_nRad)
+						m_nHeight = m_nRad;
 					m_color [0].alpha *= (1.0f + 0.0725f / m_bBlowUp);
 					if (m_color [0].alpha > 1)
 						m_color [0].alpha = 1;
 					}
 				}
 			else {
-				if (m_nWidth <= nRad)
+				if (m_nWidth <= m_nRad)
 					m_nRad = 0;
 				else {
-					m_nRad += nRad / 5;
+					m_nRad += m_nRad / 5;
 					m_color [0].alpha *= 1.0725f;
 					if (m_color [0].alpha > 1)
 						m_color [0].alpha = 1;
