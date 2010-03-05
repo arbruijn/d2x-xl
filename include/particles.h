@@ -49,9 +49,9 @@ typedef struct tParticle {
 	float			m_decay;
 	int			m_nDelay;			//time between creation and appearance
 	int			m_nMoved;			//time last moved
-	int			m_nWidth;
-	int			m_nHeight;
-	int			m_nRad;
+	float			m_nWidth;
+	float			m_nHeight;
+	float			m_nRad;
 	short			m_nSegment;
 	tTexCoord2f	m_texCoord;
 	float			m_deltaUV;
