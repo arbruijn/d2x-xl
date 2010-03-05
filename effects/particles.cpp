@@ -399,15 +399,16 @@ else
 m_vStartPos = m_vPos;
 
 if (m_bBlowUp) {
-	m_nRad = nRad / 2;
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 3 : m_nRad;
+	m_nRad = float (nRad / 2);
+	m_nWidth = float ((nType == WATERFALL_PARTICLES) ? nRad / 3 : m_nRad);
 	m_nHeight = m_nRad;
-	m_nRad += m_nRad / bBlowUp;
+	if (m_bBlowUp)
+		m_nRad *= 1.5f;
 	}
 else {
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? nRad / 3 : nRad;
-	m_nHeight = nRad;
-	m_nRad = nRad / 2;
+	m_nWidth = float ((nType == WATERFALL_PARTICLES) ? nRad / 3 : nRad);
+	m_nHeight = float (nRad);
+	m_nRad = float (nRad / 2);
 	}
 m_nWidth /= 65536.0f;
 m_nHeight /= 65536.0f;
