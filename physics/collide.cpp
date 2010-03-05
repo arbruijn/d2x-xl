@@ -738,7 +738,7 @@ if ((bEscort = parentObjP->IsGuideBot ())) {
 	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single CPlayerData, he's the CPlayerData's buddy
 	}
 else {
-	nPlayer = (parentObjP->IsPlayer () ? parentObjP->info.nId : -1;
+	nPlayer = parentObjP->IsPlayer () ? parentObjP->info.nId : -1;
 	}
 if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate it
 	segP->OperateTrigger (nHitWall, OBJECTS + cType.laserInfo.parent.nObject, 1);
