@@ -109,7 +109,7 @@ tParticleImageInfo particleImageInfo [3][PARTICLE_TYPES] = {
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0}},
-	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
+	{{NULL, "smoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "bubble.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "fire.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "simple-smoke.tga", 1, 0, 0, 0, 0, 0},
@@ -235,18 +235,18 @@ int CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
 {
 
 	tRgbaColorf	color;
-	int			nRad, nType = particleImageManager.GetType (nParticleSystemType);
+	int			nType = particleImageManager.GetType (nParticleSystemType);
 
 m_bChecked = 0;
 m_bBlowUp = bBlowUp && gameOpts->render.particles.bDisperse;
 if (nScale < 0)
-	nRad = (int) -nScale;
+	m_nRad = float (-nScale);
 else if (gameOpts->render.particles.bSyncSizes)
-	nRad = (int) PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, m_bBlowUp);
+	m_nRad = float (PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, m_bBlowUp));
 else
-	nRad = (int) nScale;
-if (!nRad)
-	nRad = I2X (1);
+	m_nRad = float (nScale);
+if (!m_nRad)
+	m_nRad = 1.0f;
 m_nType = nType;
 m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES) ? 1 : (nParticleSystemType == FIRE_PARTICLES) ? 2 : 0;
 m_nClass = nClass;
@@ -320,7 +320,7 @@ if (!vDir /*|| (nType == FIRE_PARTICLES)*/) {
 	m_vDrift [Z] = nSpeed - randN (2 * nSpeed);
 #if 0
 	if (nType == FIRE_PARTICLES)
-		m_vDrift *= nRad / 32;
+		m_vDrift *= m_nRad / 32;
 #endif
 	vOffs = m_vDrift;
 	m_vDir.SetZero ();
@@ -391,29 +391,27 @@ if (nType == SMOKE_PARTICLES) {
 	if (m_bBlowUp)
 		m_nLife = 2 * m_nLife / 3;
 	m_nLife = 4 * m_nLife / 5 + randN (2 * m_nLife / 5);
-	nRad += randN (nRad);
+	m_nRad += float (randN (int (m_nRad)));
 	}
 else if (nType == FIRE_PARTICLES) {
 	m_nLife = 3 * m_nLife / 4 + randN (m_nLife / 4);
-	nRad += randN (nRad);
+	m_nRad += float (randN (int (m_nRad)));
 	}
 else if (nType == BUBBLE_PARTICLES)
-	nRad = nRad / 10 + randN (9 * nRad / 10);
+	m_nRad = m_nRad / 10 + float (randN (int (9 * m_nRad / 10)));
 else
-	nRad *= 2;
+	m_nRad *= 2;
+
+//m_nRad *= 0.5f;
 m_vStartPos = m_vPos;
 
 if (m_bBlowUp) {
-	m_nRad = float (nRad / 2);
-	m_nWidth = float ((nType == WATERFALL_PARTICLES) ? nRad / 3 : m_nRad);
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.666666f : m_nRad;
 	m_nHeight = m_nRad;
-	if (m_bBlowUp)
-		m_nRad *= 1.5f;
 	}
 else {
-	m_nWidth = float ((nType == WATERFALL_PARTICLES) ? nRad / 3 : nRad);
-	m_nHeight = float (nRad);
-	m_nRad = float (nRad / 2);
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.333333f : m_nRad * 2;
+	m_nHeight = m_nRad * 2;
 	}
 m_nWidth /= 65536.0f;
 m_nHeight /= 65536.0f;
@@ -779,7 +777,7 @@ if (m_nLife < 0)
 	m_nLife = 0;
 UpdateDecay ();
 
-if ((m_nType == SMOKE_PARTICLES) && m_nRad) {
+if ((m_nType == SMOKE_PARTICLES) && (m_nRad > 0)) {
 	if (m_bBlowUp) {
 		if (m_nWidth >= m_nRad)
 			m_nRad = 0;
