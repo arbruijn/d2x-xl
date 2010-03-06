@@ -522,7 +522,7 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 if (!m_nodes.Create (m_nNodes))
 	return false;
 if (gameOpts->render.lightning.bPlasma) {
-	int h = (m_bPlasma ? 3 : 1) * (m_nNodes - 1) * 4;
+	int h = ((m_bPlasma > 0) ? 3 : 1) * (m_nNodes - 1) * 4;
 	if (!m_plasmaTexCoord.Create (h))
 		return false;
 	if (!m_plasmaVerts.Create (h))
@@ -569,7 +569,6 @@ if (nodeP) {
 	for (i = abs (m_nNodes); i > 0; i--, nodeP++)
 		nodeP->Destroy ();
 	m_nodes.Destroy ();
-	int j = m_bPlasma ? 3 : 1;
 	m_plasmaVerts.Destroy ();
 	m_plasmaTexCoord.Destroy ();
 	m_coreVerts.Destroy ();
@@ -913,7 +912,7 @@ void CLightning::ComputeGlow (int nDepth, int nThread)
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
 	bool					bPlasma = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
-	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) :  (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
+	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 if (nThread < 0)
 	vEye.Assign (OBJPOS (gameData.objs.viewerP)->vPos);
@@ -1009,13 +1008,13 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
-if (nDepth || !m_bPlasma) {
+if (nDepth || (m_bPlasma < 1)) {
 	ogl.SetBlendMode (1);
 	glColor3f (colorP->red, colorP->green, colorP->blue);
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	}
 else {
-	ogl.SetBlendMode (2);
+	ogl.SetBlendMode (1);
 	int h = 4 * (m_nNodes - 1);
 	for (int i = 2; i >= 0; i--) {
 		if (i == 2)
