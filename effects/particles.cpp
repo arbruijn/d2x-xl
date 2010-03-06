@@ -391,11 +391,11 @@ if ((nType != BUBBLE_PARTICLES) && mOrient) {
 if (nType == SMOKE_PARTICLES) {
 	if (m_bBlowUp)
 		m_nLife = (m_nLife * 2) / 3;
-	m_nLife = m_nLife / 2 + randN (m_nLife / 2);
+	m_nLife = 4 * m_nLife / 5 + randN (2 * m_nLife / 5);
 	nRad += randN (nRad);
 	}
 else if (nType == FIRE_PARTICLES) {
-	m_nLife = m_nLife / 2 + randN (m_nLife / 2);
+	m_nLife = 3 * m_nLife / 4 + randN (m_nLife / 4);
 	nRad += randN (nRad);
 	}
 else if (nType == BUBBLE_PARTICLES)
