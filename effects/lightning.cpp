@@ -1017,11 +1017,11 @@ else {
 	ogl.SetBlendMode (1);
 	int h = 4 * (m_nNodes - 1);
 	tRgbaColorf color;
-	if (0 > (color.red = (colorP->red - 0.1f) / 2))
+	if (0 > (color.red = (colorP->red - 0.1f) / 1))
 		color.red = 0;
-	if (0 > (color.green = (colorP->green - 0.1f) / 2))
+	if (0 > (color.green = (colorP->green - 0.1f) / 1))
 		color.green = 0;
-	if (0 > (color.blue = (colorP->blue - 0.1f) / 2))
+	if (0 > (color.blue = (colorP->blue - 0.1f) / 1))
 		color.blue = 0;
 	for (int i = 2; i >= 0; i--) {
 		if (i == 1)
