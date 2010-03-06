@@ -1218,12 +1218,13 @@ ogl.SetBlendMode (0);
 void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
 if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0)))) {
+	ogl.ResetClientStates ();
+	ResetBitmaps ();
 	if (sparkBuffer.nSparks)
 		FlushSparkBuffer ();
 	if (particleManager.FlushBuffer (-1.0f, true)) {
 		if (nType < 0)
 			particleManager.CloseBuffer ();
-		ogl.SetDepthTest (true);
 		ResetBitmaps ();
 		particleManager.SetLastType (-1);
 		m_data.bClientColor = 1;
@@ -1277,6 +1278,7 @@ if (!pl->bRendered) {
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
+			return m_data.nCurType;
 			RenderPoly (&pl->item.poly);
 			}
 		else if (m_data.nCurType == tiObject) {
