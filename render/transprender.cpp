@@ -653,8 +653,8 @@ if (m_data.bDecal != bDecal) {
 int CTransparencyRenderer::SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal)
 {
 PROF_START
+ogl.ResetClientStates (1 + bUseLightmaps);
 if (m_data.bUseLightmaps != bUseLightmaps) {
-	ogl.ResetClientStates ();
 	ResetBitmaps ();
 	ogl.EnableClientStates (1, 1, bUseLightmaps, GL_TEXTURE0);
 	ogl.SetTexturing (true);
