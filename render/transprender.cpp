@@ -388,7 +388,7 @@ else
 #endif
 	{
 	if (faceP)
-		return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), 
+		return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), 
 						SEGMENTS [faceP->m_info.nSegment].Side (faceP->m_info.nSide)->Center (), 0, true, false);
 
 	CFloatVector v = item.vertices [0];
@@ -397,7 +397,7 @@ else
 	v /= item.nVertices;
 	CFixVector vPos;
 	vPos.Assign (v);
-	return Add (item.bmP ? tiTexPoly : tiFlatPoly, &item, sizeof (item), vPos, 0, true);
+	return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true);
 	}
 }
 
@@ -1233,7 +1233,10 @@ if (!pl->bRendered) {
 		ogl.SetDepthWrite (false);
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
-		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
+		if (m_data.nCurType == tiFace) {
+			RenderFace (&pl->item.poly);
+			}
+		if (m_data.nCurType == tiPoly) {
 			RenderPoly (&pl->item.poly);
 			}
 		else if (m_data.nCurType == tiObject) {

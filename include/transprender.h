@@ -18,9 +18,8 @@ typedef enum tTranspItemType {
 	tiLightning,
 	tiThruster,
 	tiObject,
-	tiPoly,
-	tiTexPoly,
-	tiFlatPoly,
+	tiFace,
+	tiPoly
 } tTranspItemType;
 
 typedef struct tTranspPoly {
