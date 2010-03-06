@@ -1901,13 +1901,7 @@ else
 
 int CParticleManager::InitBuffer (int bLightmaps)
 {
-ogl.DisableClientStates (1, 1, 1, GL_TEXTURE2);
-ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
-if (bLightmaps) {
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
-	ogl.DisableClientStates (1, 1, 1, GL_TEXTURE3);
-	}
+ogl.ResetClientStates (1);
 ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
 OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].texCoord);
 OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].color);

@@ -994,6 +994,7 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 {
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
+ogl.ResetClientStates (1);
 if (LoadImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, bSoftBlend, 0, 0, 0)) {
 	CFloatVector	vPosf;
 
@@ -1218,7 +1219,6 @@ ogl.SetBlendMode (0);
 void CTransparencyRenderer::FlushParticleBuffer (int nType)
 {
 if (particleManager.BufPtr () && ((nType < 0) || ((nType != tiParticle) && (particleManager.LastType () >= 0)))) {
-	ogl.ResetClientStates ();
 	ResetBitmaps ();
 	if (sparkBuffer.nSparks)
 		FlushSparkBuffer ();
