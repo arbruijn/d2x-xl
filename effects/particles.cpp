@@ -111,13 +111,13 @@ tParticleImageInfo particleImageInfo [3][PARTICLE_TYPES] = {
 	 {NULL, "", 1, 0, 0, 0, 0, 0}},
 	{{NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
-	 {NULL, "smokingfire.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "smokingfire.tga", 2, 0, 0, 1, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
 	{{NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
-	 {NULL, "smokingfire.tga", 4, 0, 0, 0, 0, 0},
+	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}}
@@ -812,7 +812,7 @@ return 1;
 
 inline int CParticle::RenderType (void)
 {
-if ((m_nType != FIRE_PARTICLES) || /*(gameOpts->render.particles.nQuality < 2) ||*/ (m_iFrame < m_nFrames / 2))
+if ((m_nType != FIRE_PARTICLES) || /*(gameOpts->render.particles.nQuality < 2) ||*/ (m_iFrame < m_nFrames))
 	return m_nType;
 return PARTICLE_TYPES + m_nType;
 }
