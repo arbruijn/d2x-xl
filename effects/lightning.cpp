@@ -522,9 +522,10 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 if (!m_nodes.Create (m_nNodes))
 	return false;
 if (gameOpts->render.lightning.bPlasma) {
-	if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
+	int h = (m_bPlasma ? 3 : 1) * (m_nNodes - 1) * 4;
+	if (!m_plasmaTexCoord.Create (h))
 		return false;
-	if (!m_plasmaVerts.Create ((m_nNodes /*- 1*/) * 4 * (m_bPlasma ? 3 : 1)))
+	if (!m_plasmaVerts.Create (h))
 		return false;
 	}
 if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
@@ -959,10 +960,12 @@ for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
 	}
 
 if (bPlasma) {
+	int h = 4 * (m_nNodes - 1);
 	for (j = 0; j < 2; j++) {
+		memcpy (texCoordP, texCoordP - h, h * sizeof (tTexCoord2f));
 		srcP = dstP;
-		dstP += 4 * (m_nNodes - 1);
-		for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
+		dstP += h;
+		for (i = 0; i < h; i += 2) {
 			vPos [0] = CFloatVector::Avg (srcP [i], srcP [i+1]);
 			vPos [1] = srcP [i] - srcP [i+1];
 			vPos [1] /= 4;
@@ -1005,10 +1008,10 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 if (nDepth || !m_bPlasma) {
 	ogl.SetBlendMode (1);
 	glColor3f (colorP->red, colorP->green, colorP->blue);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	}
 else {
@@ -1021,8 +1024,7 @@ else {
 			glColor3f (0.1f, 0.1f, 0.1f);
 		else
 			glColor3f (colorP->red / 3, colorP->green / 3, colorP->blue / 3);
-		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer () + i * h);
-		OglDrawArrays (GL_QUADS, 0, h);
+		OglDrawArrays (GL_QUADS, i * h, h);
 #if RENDER_LIGHTNING_OUTLINE
 		if (h != 1)
 			continue;
