@@ -1164,9 +1164,9 @@ else {
 void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 {
 if (m_data.nPrevType != m_data.nCurType) {
-	SetClientState (0, 0, 0, 0, 0);
+	ogl.ResetClientStates ();
 	ResetBitmaps ();
-	//shaderManager.Deploy (-1);
+	shaderManager.Deploy (-1);
 	}
 item->lightning->Render (item->nDepth, 0);
 nRendered++;
