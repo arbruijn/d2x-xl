@@ -372,9 +372,8 @@ else if (nType != BUBBLE_PARTICLES)
 else {
 	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
 	nSpeed = m_vDrift.Mag () / 16;
-	m_vDrift = CFixVector::Avg ((*mOrient).RVec () * (nSpeed - randN (2 * nSpeed)), (*mOrient).UVec () * (nSpeed - randN (2 * nSpeed)));
-	m_vPos = *vPos + m_vDrift + (*mOrient).FVec () * (I2X (1) / 2 - randN (I2X (1)));
-	m_vDrift.SetZero ();
+	CFixVector v = CFixVector::Avg ((*mOrient).RVec () * (nSpeed - randN (2 * nSpeed)), (*mOrient).UVec () * (nSpeed - randN (2 * nSpeed)));
+	m_vPos = *vPos + v + (*mOrient).FVec () * (I2X (1) / 2 - randN (I2X (1)));
 	}
 
 if ((nType != BUBBLE_PARTICLES) && mOrient) {
