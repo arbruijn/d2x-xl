@@ -524,7 +524,7 @@ if (!m_nodes.Create (m_nNodes))
 if (gameOpts->render.lightning.bPlasma) {
 	if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 		return false;
-	if (!m_plasmaVerts.Create ((m_nNodes - 1) * 4 * (m_bPlasma ? 3 : 1)))
+	if (!m_plasmaVerts.Create ((m_nNodes /*- 1*/) * 4 * (m_bPlasma ? 3 : 1)))
 		return false;
 	}
 if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
@@ -1005,14 +1005,16 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
-OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 if (nDepth || !m_bPlasma) {
 	ogl.SetBlendMode (1);
 	glColor3f (colorP->red, colorP->green, colorP->blue);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	}
 else {
 	ogl.SetBlendMode (2);
+	int h = 4 * (m_nNodes - 1);
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 	for (int i = 2; i >= 0; i--) {
 		if (i == 2)
 			glColor3f (colorP->red / 2, colorP->green / 2, colorP->blue / 2);
@@ -1020,7 +1022,7 @@ else {
 			glColor3f (0.1f, 0.1f, 0.1f);
 		else
 			glColor3f (colorP->red / 3, colorP->green / 3, colorP->blue / 3);
-		OglDrawArrays (GL_QUADS, i * 4 * (m_nNodes - 1), 4 * (m_nNodes - 1));
+		OglDrawArrays (GL_QUADS, i * h, h);
 #if RENDER_LIGHTNING_OUTLINE
 		if (h != 1)
 			continue;
@@ -1187,10 +1189,8 @@ if ((gameStates.render.nType != 5) && (nThread >= 0)) {	// not in transparency r
 		return;
 	if (!MayBeVisible (nThread))
 		return;
-#if 0
 	if (!gameOpts->render.n3DGlasses) 
 		RenderSetup (0, nThread);
-#endif
 	transparencyRenderer.AddLightning (this, nDepth);
 	if (gameOpts->render.lightning.nQuality)
 		for (int i = 0; i < m_nNodes; i++)
@@ -1198,7 +1198,7 @@ if ((gameStates.render.nType != 5) && (nThread >= 0)) {	// not in transparency r
 				m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
 	}
 else {
-	//if (gameOpts->render.n3DGlasses || (nThread < 0))
+	if (gameOpts->render.n3DGlasses || (nThread < 0))
 		RenderSetup (0, nThread);
 	//if (!nDepth)
 		ogl.SetFaceCulling (false);

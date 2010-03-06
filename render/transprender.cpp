@@ -1278,6 +1278,7 @@ if (!pl->bRendered) {
 		ogl.SetDepthTest (true);
 		//ogl.ResetTransform (0);
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
+			return m_data.nCurType;
 			RenderPoly (&pl->item.poly);
 			}
 		else if (m_data.nCurType == tiObject) {
