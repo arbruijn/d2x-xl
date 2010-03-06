@@ -848,11 +848,11 @@ if (!m_data.bLightmaps) {
 	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 	}
 if (bDecal > 0) {
-	SetRenderPointers (GL_TEXTURE1 + bLightmaps, nIndex, 1);
+	SetRenderPointers (GL_TEXTURE1 + m_data.bLightmaps, nIndex, 1);
 	if (mask)
-		SetRenderPointers (GL_TEXTURE2 + bLightmaps, nIndex, 1);
+		SetRenderPointers (GL_TEXTURE2 + m_data.bLightmaps, nIndex, 1);
 	}
-SetRenderPointers (GL_TEXTURE0 + bLightmaps, nIndex, bDecal < 0);
+SetRenderPointers (GL_TEXTURE0 + m_data.bLightmaps, nIndex, bDecal < 0);
 ogl.SetupTransform (1);
 if (gameStates.render.bFullBright)
 	glColor3d (1, 1, 1);
