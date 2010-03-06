@@ -1183,7 +1183,7 @@ ogl.ClearError (0);
 
 void CLightning::Render (int nDepth, int nThread)
 {
-if (gameStates.render.nType != 5) {	// not in transparency renderer
+if ((gameStates.render.nType != 5) && (nThread >= 0)) {	// not in transparency renderer
 	if ((m_nNodes < 0) || (m_nSteps < 0))
 		return;
 	if (!MayBeVisible (nThread))
@@ -2324,9 +2324,7 @@ if (i >= 0) {
 		systemP->m_nKey [1] = key.i [1];
 		}
 	if (systemP->Lightning () && (systemP->m_nBolts = systemP->Lightning ()->Update (0, 0))) {
-		gameStates.render.bDepthSort = -1;
 		systemP->Render (0, -1, -1);
-		gameStates.render.bDepthSort = 1;
 		}
 	else
 		Destroy (m_systems + i, NULL);

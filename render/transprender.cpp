@@ -135,8 +135,6 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, int bTransformed)
 {
-if (gameStates.render.bDepthSort < 0)
-	return 0;
 if (gameStates.render.nType == 5)
 	return 0;
 #if LAZY_RESET
@@ -984,9 +982,7 @@ void CTransparencyRenderer::RenderObject (tTranspObject *item)
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 gameData.models.vScale = item->vScale;
-gameStates.render.bDepthSort = -1;
 DrawPolygonObject (item->objP, 1);
-gameStates.render.bDepthSort = 1;
 gameData.models.vScale.SetZero ();
 ogl.ResetClientStates ();
 ResetBitmaps ();
@@ -1104,12 +1100,10 @@ void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 {
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
-gameStates.render.bDepthSort = -1;
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha, item->bAdditive, item->nSize);
 else if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
-gameStates.render.bDepthSort = 1;
 ResetBitmaps ();
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
@@ -1170,14 +1164,12 @@ else {
 void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 {
 if (m_data.nPrevType != m_data.nCurType) {
-	ogl.ResetClientStates ();
+	SetClientState (0, 0, 0, 0, 0);
 	ResetBitmaps ();
-	shaderManager.Deploy (-1);
+	//shaderManager.Deploy (-1);
 	}
-gameStates.render.bDepthSort = -1;
 item->lightning->Render (item->nDepth, 0);
 nRendered++;
-gameStates.render.bDepthSort = 1;
 ogl.ResetClientStates ();
 ResetBitmaps ();
 }
@@ -1284,6 +1276,7 @@ if (!pl->bRendered) {
 		ogl.SetDepthWrite (false);
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
+		//ogl.ResetTransform (0);
 		if ((m_data.nCurType == tiTexPoly) || (m_data.nCurType == tiFlatPoly)) {
 			RenderPoly (&pl->item.poly);
 			}
@@ -1418,7 +1411,6 @@ if (bReset) {
 	m_data.nMaxOffs = 0;
 	m_data.nFreeItems = ITEM_BUFFER_SIZE;
 	}
-PrintLog ("transparency renderer: %d/%d lightings added/rendered\r\n", nAdded, nRendered);
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
 #endif

@@ -102,19 +102,25 @@ typedef struct tParticleImageInfo {
 	float			yBorder;
 } tParticleImageInfo;
 
-tParticleImageInfo particleImageInfo [2][PARTICLE_TYPES] = {
-	{{NULL, "simplesmoke.tga", 1, 0, 0, 0},
-	 {NULL, "bubble.tga", 1, 0, 0, 1},
-	 {NULL, "fire.tga", 1, 0, 0, 1},
-	 {NULL, "simple-smoke.tga", 1, 0, 0, 0},
-	 {NULL, "bullcase.tga", 1, 0, 0, 1},
-	 {NULL, "corona.tga", 1, 0, 0, 0}},
-	{{NULL, "smoke.tga", 1, 0, 0, 1},
-	 {NULL, "bubble.tga", 1, 0, 0, 1},
-	 {NULL, "smokingfire.tga", 1, 0, 0, 0},
-	 {NULL, "smoke.tga", 1, 0, 0, 0},
-	 {NULL, "bullcase.tga", 1, 0, 0, 1},
-	 {NULL, "corona.tga", 1, 0, 0, 0}}
+tParticleImageInfo particleImageInfo [3][PARTICLE_TYPES] = {
+	{{NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0}},
+	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "bubble.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "fire.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "simple-smoke.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+	{{NULL, "smoke.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "bubble.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "smokingfire.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "smoke.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}}
 	};
 
 #define PART_BUF_SIZE	10000
@@ -145,7 +151,7 @@ CParticleImageManager particleImageManager;
 
 inline tParticleImageInfo& ParticleImageInfo (int nType)
 {
-return particleImageInfo [gameOpts->render.particles.nQuality - 1][nType];
+return particleImageInfo [gameOpts->render.particles.nQuality][nType];
 }
 
 //------------------------------------------------------------------------------
@@ -2046,16 +2052,6 @@ return 1;
 
 int CParticleManager::EndRender (void)
 {
-#if 0
-CloseBuffer ();
-if (gameStates.render.bDepthSort <= 0) {
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
-	ogl.SetDepthWrite (true);
-	ogl.StencilOn (particleManager.Stencil ());
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-#endif
 return 1;
 }
 

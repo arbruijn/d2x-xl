@@ -866,7 +866,7 @@ if (gameData.render.shield.nFaces > 0)
 		fScale = gameData.render.shield.Pulse ()->fScale;
 		}
 	float r = X2F (nSize);
-	if (gameStates.render.bDepthSort < 0)
+	if (gameStates.render.nType == 5)
 		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
 	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize)) {
 		// full and not just partial sphere rendered
@@ -894,7 +894,7 @@ if (!gameData.render.monsterball.sphereP) {
 if (gameData.render.monsterball.nFaces > 0)
 #endif
  {
-	if (gameStates.render.bDepthSort > 0)
+	if (gameStates.render.nType != 5)
 		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP, 0);
 	else {
 		float r = X2F (objP->info.xSize);
