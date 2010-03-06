@@ -109,16 +109,16 @@ tParticleImageInfo particleImageInfo [3][PARTICLE_TYPES] = {
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0}},
-	{{NULL, "smoke.tga", 1, 0, 0, 0, 0, 0},
-	 {NULL, "bubble.tga", 1, 0, 0, 1, 0, 0},
-	 {NULL, "smokingfire.tga", 1, 0, 0, 1, 0, 0},
-	 {NULL, "smoke.tga", 1, 0, 0, 0, 0, 0},
+	{{NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
+	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "smokingfire.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
-	{{NULL, "smoke.tga", 1, 0, 0, 1, 0, 0},
-	 {NULL, "bubble.tga", 1, 0, 0, 1, 0, 0},
-	 {NULL, "smokingfire.tga", 1, 0, 0, 0, 0, 0},
-	 {NULL, "smoke.tga", 1, 0, 0, 0, 0, 0},
+	{{NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
+	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "smokingfire.tga", 4, 0, 0, 0, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}}
 	};
@@ -2163,13 +2163,13 @@ pii.bmP->SetupTexture (0, 1);
 pii.xBorder = 
 pii.yBorder = 0;
 if (nType == SMOKE_PARTICLES)
-	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 8 : 1;
+	;//pii.nFrames = 8; 
 else if (nType == BUBBLE_PARTICLES)
-	pii.nFrames = 4;
+	;//pii.nFrames = 4;
 else if (nType == WATERFALL_PARTICLES)
-	pii.nFrames = 8;
+	;//pii.nFrames = 8;
 else if (nType == FIRE_PARTICLES) {
-	pii.nFrames = (gameOpts->render.particles.nQuality == 2) ? 2 : 4;
+	;//pii.nFrames = 4; 
 	pii.xBorder = 1.0f / float (pii.bmP->Width ());
 	pii.yBorder = 1.0f / float (pii.bmP->Height ());
 	}
