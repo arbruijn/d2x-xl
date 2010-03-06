@@ -812,7 +812,7 @@ return 1;
 
 inline int CParticle::RenderType (void)
 {
-if ((m_nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2) || (m_iFrame < m_nFrames))
+if ((m_nType != FIRE_PARTICLES) || /*(gameOpts->render.particles.nQuality < 2) ||*/ (m_iFrame < m_nFrames / 2))
 	return m_nType;
 return PARTICLE_TYPES + m_nType;
 }
@@ -843,7 +843,7 @@ PROF_START
 
 bool bFlushed = false;
 
-if ((particleManager.LastType () != RenderType ()) || (fBrightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
+if ((particleManager.LastType () != m_nRenderType) || (fBrightness != bufferBrightness) || (bBufferEmissive != m_bEmissive)) {
 	PROF_END(ptParticles)
 	bFlushed = particleManager.FlushBuffer (fBrightness);
 	PROF_CONT
@@ -1952,17 +1952,20 @@ if (!gameOpts->render.particles.nQuality) {
 	m_iBuffer = 0;
 	return false;
 	}
-
 int nType = particleManager.LastType ();
 if ((nType < 0) && !bForce)
 	return false;
+
 #if ENABLE_FLUSH
 PROF_START
-CBitmap *bmP = ParticleImageInfo (nType % PARTICLE_TYPES).bmP;
+CBitmap* bmP = ParticleImageInfo (nType % PARTICLE_TYPES).bmP;
 if (!bmP) {
 	PROF_END(ptParticles)
 	return false;
 	}
+
+ogl.SelectTMU (GL_TEXTURE0);
+ogl.SetTexturing (true);
 if (bmP->CurFrame ())
 	bmP = bmP->CurFrame ();
 if (bmP->Bind (0)) {
@@ -1976,9 +1979,6 @@ if (bufferBrightness < 0)
 tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 int bLightmaps = lightmapManager.HaveLightmaps ();
 bufferBrightness = fBrightness;
-ogl.SetDepthTest (true);
-ogl.SetDepthMode (GL_LEQUAL);
-ogl.SetDepthWrite (false);
 if (nType >= PARTICLE_TYPES)
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);	// multiplicative using fire's smoke texture
 else

@@ -519,8 +519,8 @@ SetTexturing (false);
 
 void COGL::ResetClientStates (int nFirst)
 {
-for (int i = 3; i >= nFirst; i--) {
-	DisableClientStates (1, 1, 1, GL_TEXTURE0 + i);
+for (int i = 4; i > nFirst; ) {
+	DisableClientStates (1, 1, 1, GL_TEXTURE0 + --i);
 	SetTexturing (true);
 	ogl.BindTexture (0);
 	if (i)
