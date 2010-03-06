@@ -1016,13 +1016,16 @@ if (nDepth || (m_bPlasma < 1)) {
 else {
 	ogl.SetBlendMode (1);
 	int h = 4 * (m_nNodes - 1);
+	glColor3f (colorP->red / 3, colorP->green / 3, colorP->blue / 3);
 	for (int i = 2; i >= 0; i--) {
+#if 0
 		if (i == 2)
 			glColor3f (colorP->red / 2, colorP->green / 2, colorP->blue / 2);
 		else if (i == 1)
 			glColor3f (0.1f, 0.1f, 0.1f);
 		else
 			glColor3f (colorP->red / 3, colorP->green / 3, colorP->blue / 3);
+#endif
 		OglDrawArrays (GL_QUADS, i * h, h);
 #if RENDER_LIGHTNING_OUTLINE
 		if (h != 1)
