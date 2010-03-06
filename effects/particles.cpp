@@ -406,11 +406,11 @@ else
 m_vStartPos = m_vPos;
 
 if (m_bBlowUp) {
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.666666f : m_nRad;
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.6666667f : m_nRad;
 	m_nHeight = m_nRad;
 	}
 else {
-	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.333333f : m_nRad * 2;
+	m_nWidth = (nType == WATERFALL_PARTICLES) ? m_nRad * 0.3333333f : m_nRad * 2;
 	m_nHeight = m_nRad * 2;
 	}
 m_nWidth /= 65536.0f;
