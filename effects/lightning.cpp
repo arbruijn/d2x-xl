@@ -1014,7 +1014,6 @@ if (nDepth || !m_bPlasma) {
 else {
 	ogl.SetBlendMode (2);
 	int h = 4 * (m_nNodes - 1);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 	for (int i = 2; i >= 0; i--) {
 		if (i == 2)
 			glColor3f (colorP->red / 2, colorP->green / 2, colorP->blue / 2);
@@ -1022,7 +1021,8 @@ else {
 			glColor3f (0.1f, 0.1f, 0.1f);
 		else
 			glColor3f (colorP->red / 3, colorP->green / 3, colorP->blue / 3);
-		OglDrawArrays (GL_QUADS, i * h, h);
+		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer () + i * h);
+		OglDrawArrays (GL_QUADS, 0, h);
 #if RENDER_LIGHTNING_OUTLINE
 		if (h != 1)
 			continue;
