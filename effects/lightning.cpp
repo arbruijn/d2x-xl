@@ -524,10 +524,8 @@ if (!m_nodes.Create (m_nNodes))
 if (gameOpts->render.lightning.bPlasma) {
 	if (!m_plasmaTexCoord.Create ((m_nNodes - 1) * 4))
 		return false;
-	int j = m_bPlasma ? 3 : 1;
-	for (int i = 0; i < j; i++)
-		if (!m_plasmaVerts [i].Create ((m_nNodes - 1) * 4))
-			return false;
+	if (!m_plasmaVerts.Create ((m_nNodes - 1) * 4 * (m_bPlasma ? 3 : 1)))
+		return false;
 	}
 if (!m_coreVerts.Create ((m_nNodes + 3) * 4))
 	return false;
@@ -571,8 +569,7 @@ if (nodeP) {
 		nodeP->Destroy ();
 	m_nodes.Destroy ();
 	int j = m_bPlasma ? 3 : 1;
-	for (i = 0; i < j; i++)
-		m_plasmaVerts [i].Destroy ();
+	m_plasmaVerts.Destroy ();
 	m_plasmaTexCoord.Destroy ();
 	m_coreVerts.Destroy ();
 	m_nNodes = 0;
@@ -910,7 +907,7 @@ void CLightning::ComputeGlow (int nDepth, int nThread)
 {
 
 	CLightningNode*	nodeP;
-	CFloatVector*		vertP, vEye, vn, vd, 
+	CFloatVector*		srcP, * dstP, vEye, vn, vd, 
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
@@ -922,7 +919,7 @@ if (nThread < 0)
 else
 	vEye.SetZero ();
 nodeP = m_nodes.Buffer ();
-vertP = m_plasmaVerts [0].Buffer ();
+dstP = m_plasmaVerts.Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 	if (i >= h - 1)
@@ -944,10 +941,10 @@ for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 			vd = vd * PLASMA_WIDTH / 4.0f;
 			vPos [1] += vd;
 			}
-		*vertP++ = vPos [0] + vn;
-		*vertP++ = vPos [0] - vn;
-		*vertP++ = vPos [1] - vn;
-		*vertP++ = vPos [1] + vn;
+		*dstP++ = vPos [0] + vn;
+		*dstP++ = vPos [0] - vn;
+		*dstP++ = vPos [1] - vn;
+		*dstP++ = vPos [1] + vn;
 		memcpy (texCoordP, plasmaTexCoord [0], 4 * sizeof (tTexCoord2f));
 		texCoordP += 4;
 		}
@@ -955,19 +952,22 @@ for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 memcpy (texCoordP - 4, plasmaTexCoord [2], 4 * sizeof (tTexCoord2f));
 memcpy (&m_plasmaTexCoord [0], plasmaTexCoord [1], 4 * sizeof (tTexCoord2f));
 
+dstP = m_plasmaVerts.Buffer ();
 for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
-	m_plasmaVerts [0][i+1] = m_plasmaVerts [0][j] = CFloatVector::Avg (m_plasmaVerts [0][i+1], m_plasmaVerts [0][j]);
-	m_plasmaVerts [0][i] = m_plasmaVerts [0][j+1] = CFloatVector::Avg (m_plasmaVerts [0][i], m_plasmaVerts [0][j+1]);
+	dstP [i+1] = dstP [j] = CFloatVector::Avg (dstP [i+1], dstP [j]);
+	dstP [i] = dstP [j+1] = CFloatVector::Avg (dstP [i], dstP [j+1]);
 	}
 
 if (bPlasma) {
 	for (j = 0; j < 2; j++) {
+		srcP = dstP;
+		dstP += 4 * (m_nNodes - 1);
 		for (h = 4 * (m_nNodes - 1), i = 0; i < h; i += 2) {
-			vPos [0] = CFloatVector::Avg (m_plasmaVerts [j][i], m_plasmaVerts [j][i+1]);
-			vPos [1] = m_plasmaVerts [j][i] - m_plasmaVerts [j][i+1];
+			vPos [0] = CFloatVector::Avg (srcP [i], srcP [i+1]);
+			vPos [1] = srcP [i] - srcP [i+1];
 			vPos [1] /= 4;
-			m_plasmaVerts [j+1][i] = vPos [0] + vPos [1];
-			m_plasmaVerts [j+1][i+1] = vPos [0] - vPos [1];
+			dstP [i] = vPos [0] + vPos [1];
+			dstP [i+1] = vPos [0] - vPos [1];
 			}
 #if 0
 		m_plasmaVerts [j+1][0] += (m_plasmaVerts [j+1][2] - m_plasmaVerts [j+1][0]) / 4;
@@ -1005,10 +1005,10 @@ void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 if (nDepth || !m_bPlasma) {
 	ogl.SetBlendMode (1);
 	glColor3f (colorP->red, colorP->green, colorP->blue);
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [0].Buffer ());
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	}
 else {
@@ -1020,8 +1020,7 @@ else {
 			glColor3f (0.1f, 0.1f, 0.1f);
 		else
 			glColor3f (colorP->red / 3, colorP->green / 3, colorP->blue / 3);
-		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts [i].Buffer ());
-		OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
+		OglDrawArrays (GL_QUADS, i * 4 * (m_nNodes - 1), 4 * (m_nNodes - 1));
 #if RENDER_LIGHTNING_OUTLINE
 		if (h != 1)
 			continue;
