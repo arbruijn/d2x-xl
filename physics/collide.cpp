@@ -735,13 +735,14 @@ if ((bEscort = parentObjP->IsGuideBot ())) {
 		Int3 ();  // Get Jason!
 	   return 1;
 	   }
-	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single CPlayerData, he's the CPlayerData's buddy
+	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single player, he's the players's buddy
+	parentObjP = OBJECTS + LOCALPLAYER.nObject;
 	}
 else {
 	nPlayer = parentObjP->IsPlayer () ? parentObjP->info.nId : -1;
 	}
 if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate it
-	segP->OperateTrigger (nHitWall, OBJECTS + cType.laserInfo.parent.nObject, 1);
+	segP->OperateTrigger (nHitWall, parentObjP, 1);
 	}
 if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();

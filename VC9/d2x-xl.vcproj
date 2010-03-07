@@ -615,7 +615,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CallingConvention="1"
 				CompileAs="0"
 			/>
@@ -638,7 +638,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				GenerateMapFile="false"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

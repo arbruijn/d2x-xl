@@ -974,7 +974,7 @@ if (nDepth > 15)
 nDepth++;
 
 CObject*	objP = (nObject >= 0) ? OBJECTS + nObject : NULL;
-bool bIsPlayer = objP && (objP->IsPlayer () || objP->IsGuideBot ());
+bool bIsPlayer = objP && objP->IsPlayer ();
 
 if (bIsPlayer) {
 	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject) && !objP->IsGuideBot ()) {
