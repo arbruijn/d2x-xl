@@ -43,8 +43,6 @@ ScaleMatrix (1);
 
 void G3SetViewMatrix (const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation)
 {
-	static int t = 0;
-
 transformation.m_info.zoom = xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;

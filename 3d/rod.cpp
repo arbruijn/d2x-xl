@@ -141,8 +141,6 @@ else {
 		return;
 
 	CFloatVector	vertices [4];
-	GLfloat			u = bmP->Texture ()->U ();
-	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
 
 	for (int i = 0; i < 4; i++) {
