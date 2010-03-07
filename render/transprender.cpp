@@ -94,6 +94,7 @@ for (pl = m_data.freeList.head; pl; pl = pn) {
 	pn = pl->pNextItem;
 	pl->pNextItem = NULL;
 	}
+m_data.freeList.head = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1284,8 +1285,8 @@ extern int bLog;
 void CTransparencyRenderer::Render (void)
 {
 #if RENDER_TRANSPARENCY
-	tTranspItem*		pl, * pn, * pp;
-	tTranspItemList*	pd;
+	tTranspItem*		currentP, * nextP, * prevP;
+	tTranspItemList*	listP;
 	int					nItems, nDepth, bStencil;
 	bool					bReset = !LAZY_RESET || (ogl.StereoSeparation () >= 0);
 
@@ -1311,52 +1312,52 @@ sparkBuffer.nSparks = 0;
 ogl.DisableLighting ();
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
-pl = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
+currentP = &m_data.itemLists [ITEM_BUFFER_SIZE - 1];
 m_data.bHaveParticles = particleImageManager.LoadAll ();
 ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetFaceCulling (true);
 particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
-for (pd = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (pd >= m_data.depthBuffer.Buffer ()) && nItems; pd--) {
-	if ((pl = pd->head)) {
+for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
+	if ((currentP = listP->head)) {
 		if (bReset)
-			pd->head = NULL;
-			//pd->tail = NULL;
+			listP->head = NULL;
+			//listP->tail = NULL;
 		nDepth = 0;
-		pp = NULL;
+		prevP = NULL;
 		do {
 #if DBG
-			if (pl->nItem == nDbgItem)
+			if (currentP->nItem == nDbgItem)
 				nDbgItem = nDbgItem;
 #endif
 			nItems--;
-			RenderItem (pl);
-			pn = pl->pNextItem;
+			RenderItem (currentP);
+			nextP = currentP->pNextItem;
 			if (bReset)
-				pl->pNextItem = NULL;
-			else if (pl->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
-				pl->pNextItem = m_data.freeList.head;
-				m_data.freeList.head = pl;
+				currentP->pNextItem = NULL;
+			else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
+				currentP->pNextItem = m_data.freeList.head;
+				m_data.freeList.head = currentP;
 				m_data.nFreeItems++;
-				if (pp)
-					pp->pNextItem = pn;
+				if (prevP)
+					prevP->pNextItem = nextP;
 				else
-					pd->head = pn;
+					listP->head = nextP;
 				}
 			else
-				pp = pl;
-			pl = pn;
+				prevP = currentP;
+			currentP = nextP;
 			nDepth++;
-			} while (pl);
+			} while (currentP);
 		}
 	}
 #if 0 //DBG
 if (bReset) {
-	pl = m_data.itemLists.Buffer ();
-	for (int i = m_data.itemLists.Length (); i; i--, pl++)
-		if (pl->pNextItem)
-			pl->pNextItem = NULL;
+	currentP = m_data.itemLists.Buffer ();
+	for (int i = m_data.itemLists.Length (); i; i--, currentP++)
+		if (currentP->pNextItem)
+			currentP->pNextItem = NULL;
 	}
 #endif
 FlushBuffers (-1);
