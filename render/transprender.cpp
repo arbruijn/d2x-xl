@@ -717,23 +717,21 @@ PROF_START
 	CBitmap*		bmP = item->bmP;
 	int			bSoftBlend = (gameOpts->render.effects.bSoftParticles & 1) != 0;
 
-ogl.EnableClientStates (bmP != NULL, !gameStates.render.bFullBright && item->nColors == item->nVertices, 0, GL_TEXTURE0);
+ogl.ResetClientStates (1);
+ogl.EnableClientStates (bmP != NULL, item->nColors == item->nVertices, 0, GL_TEXTURE0);
 if (LoadImage (bmP, 0, 0, 0, item->nWrap)) {
-	ogl.ResetClientStates (1);
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	if (bmP)
 		OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
-	if (gameStates.render.bFullBright)
-		glColor3f (1,1,1);
-	else if (item->nColors == item->nVertices)
+	if (item->nColors == item->nVertices)
 		OglColorPointer (4, GL_FLOAT, 0, item->color);
 	else
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
-	ogl.SetupTransform (0);
 	ogl.SetBlendMode (item->bAdditive);
 	if (!(bSoftBlend && glareRenderer.LoadShader (5, item->bAdditive)))
 		shaderManager.Deploy (-1);
+	ogl.SetupTransform (0);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	ogl.ResetTransform (0);
 	}
@@ -753,7 +751,7 @@ void CTransparencyRenderer::RenderFace (tTranspPoly *item)
 PROF_START
 	CSegFace*		faceP;
 	tFaceTriangle*	triP;
-	CBitmap*			bmBot = item->bmP, *bmTop = NULL, *mask;
+	CBitmap*			bmBot = item->bmP, *bmTop, *bmMask;
 	int				bDecal, 
 						bLightmaps = m_data.bLightmaps && !gameStates.render.bFullBright,
 						bTextured = (bmBot != NULL), 
@@ -788,17 +786,18 @@ if ((bmTop = faceP->bmTop))
 	bmTop = bmTop->Override (-1);
 if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
 	bmBot = bmTop;
-	bmTop = mask = NULL;
+	bmTop = bmMask = NULL;
 	bDecal = -1;
 	faceP->m_info.nRenderType = gameStates.render.history.nType = 1;
 	}
 else {
 	bDecal = (bmTop != NULL);
-	mask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
+	bmMask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
 	}
 
 int bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
 
+ogl.ResetClientStates (1 + bLightmaps + (bmTop != NULL) + (bmMask != NULL));
 if (bmTop) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmaps);
 	if (bTextured)
@@ -806,8 +805,8 @@ if (bmTop) {
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 	if (!LoadImage (bmTop, 0, 1, bLightmaps, item->nWrap))
 		return;
-	if (mask) {
-		if (!LoadImage (mask, 0, 2, bLightmaps, item->nWrap))
+	if (bmMask) {
+		if (!LoadImage (bmMask, 0, 2, bLightmaps, item->nWrap))
 			return;
 		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2 + bLightmaps);
 		if (bTextured)
@@ -815,10 +814,9 @@ if (bmTop) {
 		OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 		}
 	else
-		ogl.ResetClientStates (2 + bLightmaps);
+		m_data.bmP [2] = NULL;
 	}
 else {
-	ogl.ResetClientStates (1 + bLightmaps);
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	}
 
@@ -897,7 +895,7 @@ if (gameStates.render.bPerPixelLighting) {
 		}
 	}
 else {
-	G3SetupShader (faceP, mask != NULL, bDecal > 0, bmBot != NULL,
+	G3SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
 						(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
 						m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -923,7 +921,6 @@ ogl.ResetClientStates ();
 gameData.models.vScale = item->vScale;
 DrawPolygonObject (item->objP, 1);
 gameData.models.vScale.SetZero ();
-ogl.ResetClientStates ();
 ResetBitmaps ();
 }
 
@@ -934,7 +931,11 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
 ogl.ResetClientStates (1);
-ResetBitmaps ();
+ogl.SelectTMU (GL_TEXTURE0);
+if (!LoadImage (item->bmP, 0, 0, 0, GL_CLAMP))
+	return;
+m_data.bmP [1] = m_data.bmP [2] = NULL;
+m_data.bUseLightmaps = 0;
 if (item->bColor)
 	glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 else
@@ -945,6 +946,7 @@ if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive !=
 item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
+//ogl.SetTexturing (true);
 ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 }
 
@@ -970,10 +972,11 @@ void CTransparencyRenderer::FlushSparkBuffer (void)
 {
 	int bSoftBlend = (gameOpts->render.effects.bSoftParticles & 2) != 0;
 
+ogl.ResetClientStates (1);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (sparkBuffer.nSparks && LoadImage (bmpSparks, 0, 0, 0, GL_CLAMP)) {
-	ogl.ResetClientStates (1);
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
+	m_data.bUseLightmaps = 0;
 	if (!(bSoftBlend && glareRenderer.LoadShader (3, 1)))
 		shaderManager.Deploy (-1);
 	ogl.SetBlendMode (1);
@@ -1071,10 +1074,8 @@ void CTransparencyRenderer::RenderParticle (tTranspParticle *item)
 if (item->particle->m_nType == BULLET_PARTICLES)
 	CTransparencyRenderer::RenderBullet (item->particle);
 else {
-	if (item->particle->Render (item->fBrightness) < 0) {
-		ogl.ResetClientStates ();
+	if (item->particle->Render (item->fBrightness) < 0)
 		ResetBitmaps ();
-		}
 	}
 }
 
@@ -1084,7 +1085,6 @@ void CTransparencyRenderer::RenderLightning (tTranspLightning *item)
 {
 if (m_data.nPrevType != m_data.nCurType) {
 	ogl.ResetClientStates ();
-	ResetBitmaps ();
 	shaderManager.Deploy (-1);
 	}
 item->lightning->Render (item->nDepth, 0);
@@ -1096,21 +1096,21 @@ ResetBitmaps ();
 
 void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
-ogl.SetDepthWrite (true);
-ogl.SetFaceCulling (false);
-ogl.SetBlendMode (1);
 ogl.ResetClientStates (1);
-glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
+	ogl.SetDepthWrite (true);
+	ogl.SetFaceCulling (false);
+	ogl.SetBlendMode (1);
+	glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 	if (item->bTrail)
 		OglDrawArrays (GL_TRIANGLES, 4, 3);
 	OglDrawArrays (GL_QUADS, 0, 4);
+	ogl.SetFaceCulling (true);
+	ogl.SetBlendMode (0);
 	}
-ogl.SetFaceCulling (true);
-ogl.SetBlendMode (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1176,7 +1176,7 @@ if (!pl->bRendered) {
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		if (m_data.nCurType == tiFace) {
-			RenderFace (&pl->item.poly);
+			//RenderFace (&pl->item.poly);
 			}
 		if (m_data.nCurType == tiPoly) {
 			RenderPoly (&pl->item.poly);

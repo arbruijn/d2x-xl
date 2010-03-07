@@ -1110,49 +1110,10 @@ int COGL::RenderArrays (int nPrimitive,
 {
 if (!BindBitmap (bmP, nFrame, nWrap))
 	return 0;
-if (BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, bmP)) {
-	OglDrawArrays (nPrimitive, 0, nVertices);
-	ogl.ReleaseBuffers ();
-	}
-#if GL_FALLBACK
-else {
-	int i = nVertices;
-	glBegin (nPrimitive);
-	if (colorP && (nColors == nVertices)) {
-		if (bmP) {
-			for (i = 0; i < nVertices; i++) {
-				glColor4fv (reinterpret_cast<GLfloat*> (colorP + i));
-				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
-				glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP + i));
-				}
-			}
-		else {
-			for (i = 0; i < nVertices; i++) {
-				glColor4fv (reinterpret_cast<GLfloat*> (colorP + i));
-				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
-				}
-			}
-		}
-	else {
-		if (colorP)
-			glColor4fv (reinterpret_cast<GLfloat*> (colorP));
-		else
-			glColor3d (1, 1, 1);
-		if (bmP) {
-			for (i = 0; i < nVertices; i++) {
-				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
-				glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP + i));
-				}
-			}
-		else {
-			for (i = 0; i < nVertices; i++) {
-				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP + i));
-				}
-			}
-		}
-	glEnd ();
-	}
-#endif
+if (!BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, bmP))
+	return 0;
+OglDrawArrays (nPrimitive, 0, nVertices);
+ogl.ReleaseBuffers ();
 return 1;
 }
 
