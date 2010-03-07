@@ -604,17 +604,6 @@ return Add (tiThruster, &item, sizeof (item), v, 0, false, true);
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::DisableTMU (int nTMU, char bFull)
-{
-ogl.DisableClientStates (1, 1, 1, nTMU);
-if (bFull) {
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
-	}
-}
-
-//------------------------------------------------------------------------------
-
 inline void CTransparencyRenderer::ResetBitmaps (void)
 {
 m_data.bmP [0] =
@@ -624,57 +613,6 @@ m_data.bDecal = 0;
 m_data.bTextured = 0;
 m_data.nFrame = -1;
 m_data.bUseLightmaps = 0;
-}
-
-//------------------------------------------------------------------------------
-
-void CTransparencyRenderer::SetDecalState (char bDecal, char bTexCoord, char bColor, char bUseLightmaps)
-{
-#if RENDER_TRANSP_DECALS
-if (m_data.bDecal != bDecal) {
-	if (bDecal) {
-		if (bDecal == 2)
-			ogl.EnableClientStates (bTexCoord, 0, 0, GL_TEXTURE2 + bUseLightmaps);	// mask
-		ogl.EnableClientStates (bTexCoord, bColor, 0, GL_TEXTURE1 + bUseLightmaps);	// decal
-		m_data.bDecal = bDecal;
-		}
-	else {
-		if (m_data.bDecal == 2) {
-			DisableTMU (GL_TEXTURE2 + bUseLightmaps, 1);
-			m_data.bmP [2] = NULL;
-			}
-		DisableTMU (GL_TEXTURE1 + bUseLightmaps, 1);
-		m_data.bmP [1] = NULL;
-		m_data.bDecal = 0;
-		}
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-int CTransparencyRenderer::SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal)
-{
-PROF_START
-if (m_data.bUseLightmaps != bUseLightmaps) {
-	ResetBitmaps ();
-	if ((m_data.bUseLightmaps = bUseLightmaps))
-		ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
-	else
-		ogl.ResetClientStates (3);
-	}
-
-if (bClientState) {
-	SetDecalState (bDecal, bTexCoord, bColor, bUseLightmaps);
-	ogl.EnableClientStates (bTexCoord, bColor, !bUseLightmaps, GL_TEXTURE0 + bUseLightmaps);
-	}
-else {
-	SetDecalState (0, bTexCoord, bColor, bUseLightmaps);
-	DisableTMU (GL_TEXTURE0 + bUseLightmaps, 0);
-	}
-ogl.SelectTMU (GL_TEXTURE0);
-PROF_END(ptRenderStates)
-return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -798,6 +736,7 @@ else {
 int bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
 
 ogl.ResetClientStates (1 + bLightmaps + (bmTop != NULL) + (bmMask != NULL));
+
 if (bmTop) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmaps);
 	if (bTextured)
@@ -820,7 +759,7 @@ else {
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	}
 
-ogl.EnableClientStates (bTextured, bColored && !bLightmaps, 1, GL_TEXTURE0 + bLightmaps);
+ogl.EnableClientStates (bTextured, bColored && !bLightmaps, !bLightmaps, GL_TEXTURE0 + bLightmaps);
 if (!LoadImage (bmBot, 0, 0, bLightmaps, item->nWrap))
 	return;
 if (bTextured)
@@ -833,7 +772,7 @@ if (!bLightmaps) {
 OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 
 if (bLightmaps) {
-	ogl.EnableClientStates (bTextured, bColored, !m_data.bLightmaps, GL_TEXTURE0);
+	ogl.EnableClientStates (bTextured, bColored, 1, GL_TEXTURE0);
 	if (bTextured)
 		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
 	if (bColored)
@@ -931,11 +870,16 @@ void CTransparencyRenderer::RenderSprite (tTranspSprite *item)
 	int bSoftBlend = ((gameOpts->render.effects.bSoftParticles & 1) != 0) && (item->fSoftRad > 0);
 
 ogl.ResetClientStates (1);
-ogl.SelectTMU (GL_TEXTURE0);
+ogl.SelectTMU (GL_TEXTURE0, true);
+#if 1
 if (!LoadImage (item->bmP, 0, 0, 0, GL_CLAMP))
 	return;
 m_data.bmP [1] = m_data.bmP [2] = NULL;
 m_data.bUseLightmaps = 0;
+#else
+ogl.SetTexturing (true);
+ResetBitmaps ();
+#endif
 if (item->bColor)
 	glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 else
@@ -946,7 +890,6 @@ if (!(bSoftBlend && glareRenderer.LoadShader (item->fSoftRad, item->bAdditive !=
 item->bmP->SetColor ();
 CFloatVector vPosf;
 transformation.Transform (vPosf, item->position, 0);
-//ogl.SetTexturing (true);
 ogl.RenderQuad (item->bmP, vPosf, X2F (item->nWidth), X2F (item->nHeight), 3);
 }
 
@@ -1176,7 +1119,7 @@ if (!pl->bRendered) {
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		if (m_data.nCurType == tiFace) {
-			//RenderFace (&pl->item.poly);
+			RenderFace (&pl->item.poly);
 			}
 		if (m_data.nCurType == tiPoly) {
 			RenderPoly (&pl->item.poly);

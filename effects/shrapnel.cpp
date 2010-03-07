@@ -29,7 +29,7 @@ CShrapnelManager shrapnelManager;
 #define SHRAPNEL_PART_LIFE			-1750
 #define SHRAPNEL_PART_SPEED		10
 
-static float fShrapnelScale [5] = {0, 3.0f, 5.0f, 7.0f, 10.0f};
+static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
 
 void CShrapnel::Create (CObject* parentObjP, CObject* objP)
 {
@@ -156,7 +156,7 @@ if (LoadExplBlast ())
 
 int CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 {
-	int		i, h = int (X2F (parentObjP->info.xSize) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
+	int		i, h = int (sqrt (X2F (parentObjP->info.xSize)) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
 
 objP->info.xLifeLeft = 0;
 objP->cType.explInfo.nSpawnTime = -1;

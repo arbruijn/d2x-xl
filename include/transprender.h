@@ -223,11 +223,7 @@ class CTransparencyRenderer {
 		int AddFaceTris (CSegFace *faceP);
 		int AddFaceQuads (CSegFace *faceP);
 		void ResetBitmaps (void);
-		void DisableTMU (int nTMU, char bFull);
-		void SetDecalState (char bDecal, char bTexCoord, char bColor, char bUseLightmaps);
-		int SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal);
 		int LoadImage (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
-		void SetRenderPointers (int nTMU, int nIndex, int bDecal);
 
 		void FlushSparkBuffer (void);
 		void FlushParticleBuffer (int nType);
