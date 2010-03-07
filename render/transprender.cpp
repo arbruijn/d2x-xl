@@ -653,13 +653,12 @@ if (m_data.bDecal != bDecal) {
 int CTransparencyRenderer::SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal)
 {
 PROF_START
-//ogl.ResetClientStates (1 + bUseLightmaps);
 if (m_data.bUseLightmaps != bUseLightmaps) {
 	ResetBitmaps ();
-	ogl.EnableClientStates (1, 1, bUseLightmaps, GL_TEXTURE0);
-	ogl.SetTexturing (true);
 	if ((m_data.bUseLightmaps = bUseLightmaps))
 		ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1);
+	else
+		ogl.ResetClientStates (3);
 	}
 
 if (bClientState) {
@@ -1142,6 +1141,7 @@ void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 ogl.SetDepthWrite (true);
 ogl.SetFaceCulling (false);
 ogl.SetBlendMode (1);
+ogl.ResetClientStates (1);
 glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 if (LoadImage (item->bmP, 1, -1, GL_CLAMP, 1, 1, 0, 0, 0, 0)) {
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
