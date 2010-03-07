@@ -1958,7 +1958,7 @@ if (!bmP) {
 	return false;
 	}
 
-ogl.SelectTMU (GL_TEXTURE0);
+ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTexturing (true);
 if (bmP->CurFrame ())
 	bmP = bmP->CurFrame ();
