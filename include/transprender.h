@@ -226,9 +226,7 @@ class CTransparencyRenderer {
 		void DisableTMU (int nTMU, char bFull);
 		void SetDecalState (char bDecal, char bTexCoord, char bColor, char bUseLightmaps);
 		int SetClientState (char bClientState, char bTexCoord, char bColor, char bUseLightmaps, char bDecal);
-		int LoadImage (CBitmap *bmP, char nColors, char nFrame, int nWrap,
-						   int bClientState, int nTransp, int bShader, int bUseLightmaps,
-							int bHaveDecal, int bDecal);
+		int LoadImage (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap);
 		void SetRenderPointers (int nTMU, int nIndex, int bDecal);
 
 		void FlushSparkBuffer (void);

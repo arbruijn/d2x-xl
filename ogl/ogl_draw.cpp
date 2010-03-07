@@ -100,7 +100,7 @@ if (ogl.SizeBuffers (nVerts + 1)) {
 		ogl.VertexBuffer () [i][X] = GLfloat (x [j] + left) / GLfloat (ogl.m_states.nLastW);
 		ogl.VertexBuffer () [i][Y] = 1.0f - GLfloat (y [j] + top) / GLfloat (ogl.m_states.nLastH);
 		}
-	ogl.FlushBuffers (GL_POLYGON, nVerts + 1);
+	ogl.FlushBuffers (GL_POLYGON, nVerts + 1, 2);
 	}
 }
 
