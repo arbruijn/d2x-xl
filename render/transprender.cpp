@@ -137,6 +137,8 @@ int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemS
 {
 if (gameStates.render.nType == 5)
 	return 0;
+if (m_data.nFreeItems <= 0)
+	return 0;
 #if LAZY_RESET
 if (!bTransformed && gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return 0;
