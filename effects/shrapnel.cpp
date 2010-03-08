@@ -29,7 +29,7 @@ CShrapnelManager shrapnelManager;
 #define SHRAPNEL_PART_LIFE			-1750
 #define SHRAPNEL_PART_SPEED		10
 
-static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
+static float fShrapnelScale [5] = {0, 3.5f, 7.5f, 10.0f, 13.5f};
 
 void CShrapnel::Create (CObject* parentObjP, CObject* objP)
 {
