@@ -999,7 +999,7 @@ if (gameOpts->render.lightning.nQuality)
 
 void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 {
-if (m_plasmaVerts.Buffer ())
+if (!m_plasmaVerts.Buffer ())
 	return;
 
 #if RENDER_LIGHTNING_OUTLINE
