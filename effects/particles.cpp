@@ -899,7 +899,7 @@ if (m_nType == SMOKE_PARTICLES) {
 
 if (m_nFadeType == 0) {	// default (start fully visible, fade out)
 #if 1 
-	m_renderColor.alpha *= m_decay * 0.6f;
+	m_renderColor.alpha *= m_decay; // * 0.6f;
 #else
 	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 #endif
@@ -989,11 +989,11 @@ pb [(m_nOrient + 2) % 4].texCoord.v.v =
 pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
 
 if ((m_nType == SMOKE_PARTICLES) && m_bBlowUp) {
-#if 0
-	float decay = (float) pow (m_decay * m_decay * m_decay, 1.0f / 5.0f);
-#else
-	float fFade = (m_nFadeType == 3) ? 1.0f : (1.0f - pow (m_decay, 16.0f)) / float (pow (m_decay, 0.25f));
-#endif
+	float fFade = (m_nFadeType == 3) 
+		? 1.0f 
+		: (m_decay > 0.9f)	// start from zero size by scaling with pow (m_decay, 44f) which is < 0.01 for m_decay == 0.9f
+			? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333337f))
+			: float (pow (m_decay, 0.3333337f));
 	vOffset [X] = m_nWidth * fFade;
 	vOffset [Y] = m_nHeight * fFade;
 	}

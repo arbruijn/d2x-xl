@@ -555,8 +555,12 @@ if (nParts) {
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
+#if 1
+	particleManager.SetPos (nSmoke, &objP->info.position.vPos, NULL, objP->info.nSegment);
+#else
 	thrusterFlames.CalcPos (objP, &ti);
 	particleManager.SetPos (nSmoke, ti.vPos, NULL, objP->info.nSegment);
+#endif
 	}
 else
 	KillObjectSmoke (nObject);
