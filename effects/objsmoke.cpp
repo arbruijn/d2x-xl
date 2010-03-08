@@ -517,7 +517,6 @@ void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
 	float				nScale = 1.75f; //1.75f;
-	tThrusterInfo	ti;
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
@@ -558,6 +557,7 @@ if (nParts) {
 #if 1
 	particleManager.SetPos (nSmoke, &objP->info.position.vPos, NULL, objP->info.nSegment);
 #else
+	tThrusterInfo	ti;
 	thrusterFlames.CalcPos (objP, &ti);
 	particleManager.SetPos (nSmoke, ti.vPos, NULL, objP->info.nSegment);
 #endif
