@@ -280,7 +280,7 @@ if (bHires >= 0) {
 
 void DoPlayerSmoke (CObject *objP, int nPlayer)
 {
-#if 0
+#if 1
 	int					nObject, nSmoke, d, nParts, nType;
 	float					nScale;
 	CParticleEmitter	*emitterP;

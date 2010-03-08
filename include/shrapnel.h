@@ -26,7 +26,7 @@ class CShrapnel {
 		tShrapnel	m_info;
 
 	public:
-		void Create (CObject* parentObjP, CObject* objP);
+		void Create (CObject* parentObjP, CObject* objP, float fScale);
 		void Destroy (void);
 		void Move (void);
 		void Draw (void);

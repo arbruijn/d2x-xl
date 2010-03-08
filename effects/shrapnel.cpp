@@ -31,9 +31,9 @@ CShrapnelManager shrapnelManager;
 
 static float fShrapnelScale [5] = {0, 3.5f, 7.5f, 10.0f, 13.5f};
 
-void CShrapnel::Create (CObject* parentObjP, CObject* objP)
+void CShrapnel::Create (CObject* parentObjP, CObject* objP, float fScale)
 {
-	static tRgbaColorf color = {1,1,1,0.5};
+	static tRgbaColorf color = {0.95f, 0.95f, 0.95f, 0.6666667f};
 
 m_info.vDir = CFixVector::Random ();
 m_info.vPos = objP->info.position.vPos + m_info.vDir * (parentObjP->info.xSize / 4 + rand () % (parentObjP->info.xSize / 2));
@@ -44,7 +44,7 @@ m_info.xTTL = I2X (3) / 2 + rand ();
 m_info.tUpdate = gameStates.app.nSDLTicks;
 m_info.nSmoke = 
 	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS * gameOpts->render.particles.nQuality,
-								   -PARTICLE_SIZE (1, 4, 1), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
+								   -PARTICLE_SIZE (1, fScale, 1), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
 if (objP->info.xLifeLeft < m_info.xLife)
 	objP->info.xLifeLeft = m_info.xLife;
 }
@@ -156,7 +156,9 @@ if (LoadExplBlast ())
 
 int CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 {
-	int		i, h = int (sqrt (X2F (parentObjP->info.xSize)) * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
+	float		fScale = float (sqrt (X2F (parentObjP->info.xSize)));
+	int		i, 
+				h = int (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
 
 objP->info.xLifeLeft = 0;
 objP->cType.explInfo.nSpawnTime = -1;
@@ -167,11 +169,12 @@ if (!CStack<CShrapnel>::Create (h))
 	return 0;
 if (!Grow (h))
 	return 0;
+fScale = 5.0f / fScale;
 #pragma omp parallel
 	{
 	#pragma omp for 
 	for (i = 0; i < h; i++) {
-		m_data.buffer [i].Create (parentObjP, objP);
+		m_data.buffer [i].Create (parentObjP, objP, fScale);
 		}
 	}
 objP->info.xLifeLeft *= 2;
