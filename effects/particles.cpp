@@ -899,7 +899,7 @@ if (m_nType == SMOKE_PARTICLES) {
 
 if (m_nFadeType == 0) {	// default (start fully visible, fade out)
 #if 1 
-	m_renderColor.alpha *= m_decay * ((gameOpts->render.particles.nQuality == 2) ? 0.6f : 0.8f);
+	m_renderColor.alpha *= m_decay * 0.6f;
 #else
 	m_renderColor.alpha *= float (cos (double (sqr (1.0f - m_decay)) * Pi) * 0.5 + 0.5) * 0.6f;
 #endif

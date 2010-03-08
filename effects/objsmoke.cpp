@@ -361,7 +361,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			nParts /= 2;
 			if (nType != 2)
 				nScale /= 2;
-			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 8);
+			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 4 + 2 * nType);
 			}
 		else if (nType == 2)
 			nParts /= 2;
@@ -376,8 +376,8 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			particleManager.SetObjectSystem (nObject, nSmoke);
 			}
 		else {
-			if (vDirP)
-				particleManager.SetDir (nSmoke, vDirP);
+			particleManager.SetDir (nSmoke, vDirP);
+			particleManager.SetFadeType (nSmoke, vDirP != NULL);
 			particleManager.SetLife (nSmoke, nLife);
 			//particleManager.SetBlowUp (nSmoke, bBlowUp);
 			particleManager.SetType (nSmoke, SMOKE_PARTICLES);
@@ -405,7 +405,7 @@ void DoRobotSmoke (CObject *objP)
 {
 	int			h = -1, nObject, nSmoke, nShields = 0, nParts;
 	float			nScale;
-	CFixVector	pos;
+	CFixVector	pos, vDir;
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
@@ -423,6 +423,11 @@ if (h < 0)
 	return;
 nParts = 10 - h / 5;
 if (nParts > 0) {
+	CFixVector* vDirP = objP->mType.physInfo.velocity.IsZero () ? &vDir : NULL;
+
+	if (vDirP) // if the robot is standing still, let the smoke move away from it
+		vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 4);
+
 	if (nShields > 4000)
 		nShields = 4000;
 	else if (nShields < 1000)
@@ -446,6 +451,8 @@ if (nParts > 0) {
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
 	else {
+		particleManager.SetDir (nSmoke, vDirP);
+		particleManager.SetFadeType (nSmoke, vDirP != NULL);
 		particleManager.SetScale (nSmoke, nScale);
 		particleManager.SetDensity (nSmoke, nParts, gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [2]);
 		particleManager.SetSpeed (nSmoke, !objP->mType.physInfo.velocity.IsZero () ? BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
