@@ -565,7 +565,7 @@ if (d2 > m_data.zMax)
 	return 0;
 if (d1 < m_data.zMin)
 	return 0;
-if (!Add (tiLightning, &item, sizeof (item), bSwap ? lightningP->m_vEnd : lightningP->m_vPos /*CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd)*/, 0, true, -1))
+if (!Add (tiLightning, &item, sizeof (item), bSwap ? lightningP->m_vEnd : lightningP->m_vPos /*CFixVector::Avg (lightningP->m_vPos, lightningP->m_vEnd)*/, 0, true, 0)) // -1))
 	return 0;
 nAdded++;
 return 1;
@@ -599,7 +599,7 @@ for (i = 0; i < j; i++) {
 		}
 	}
 v.Assign (item.vertices [iMin]);
-return Add (tiThruster, &item, sizeof (item), v, 0, false, true);
+return Add (tiThruster, &item, sizeof (item), v, 0, false, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -620,6 +620,7 @@ m_data.bUseLightmaps = 0;
 int CTransparencyRenderer::LoadImage (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap)
 {
 if (bmP) {
+	ogl.SelectTMU (GL_TEXTURE0 + bLightmaps, true);
 	ogl.SetTexturing (true);
 	if ((bmP != m_data.bmP [bDecal]) || (nFrame != m_data.nFrame) || (nWrap != m_data.nWrap)) {
 		gameData.render.nStateChanges++;

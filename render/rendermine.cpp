@@ -366,29 +366,26 @@ else {
 	bParticles = (!nWindow || gameOpts->render.particles.bAuxViews) &&
 					 (!gameStates.render.cameras.bActive || gameOpts->render.particles.bMonitors);
 	}
-if (bCreate && bSparks) {
-	SEM_ENTER (SEM_SPARKS)
-	//PrintLog ("RenderEnergySparks\n");
-	sparkManager.Render ();
-	//SEM_LEAVE (SEM_SPARKS)
+if (bCreate) {
+	if (bSparks) {
+		SEM_ENTER (SEM_SPARKS)
+		sparkManager.Render ();
+		}
+	if (bParticles) {
+		SEM_ENTER (SEM_SMOKE)
+		particleManager.Cleanup ();
+		particleManager.Render ();
+		}
+	if (bLightning) {
+		SEM_ENTER (SEM_LIGHTNING)
+		lightningManager.Render ();
+		}
+	if (bLightning)
+		SEM_LEAVE (SEM_LIGHTNING)
 	}
-if (bCreate && bParticles) {
-	SEM_ENTER (SEM_SMOKE)
-	//PrintLog ("RenderSmoke\n");
-	particleManager.Cleanup ();
-	particleManager.Render ();
-	//SEM_LEAVE (SEM_SMOKE)
-	}
-if (bLightning) {
-	SEM_ENTER (SEM_LIGHTNING)
-	//PrintLog ("RenderLightnings\n");
-	lightningManager.Render ();
-	}
-//PrintLog ("transparencyRenderer.Render\n");
-if (bLightning)
-	SEM_LEAVE (SEM_LIGHTNING)
 
 transparencyRenderer.Render ();
+
 if (bCreate) {
 	if (bParticles)
 		SEM_LEAVE (SEM_SMOKE)

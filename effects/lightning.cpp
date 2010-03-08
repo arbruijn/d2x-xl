@@ -772,6 +772,7 @@ if (m_nNodes > 0) {
 	for (j = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; j > 0; j--, nodeP++)
 		nodeP->Animate (bInit, m_nSegment, nDepth, nThread);
 #endif
+RenderSetup (nDepth, nThread);
 #if UPDATE_LIGHTNING
 	(m_iStep)--;
 #endif
@@ -816,6 +817,7 @@ return 1;
 int CLightning::Update (int nDepth, int nThread)
 {
 Animate (nDepth, nThread);
+RenderSetup (nDepth, nThread);
 return SetLife ();
 }
 
@@ -906,7 +908,11 @@ static tTexCoord2f plasmaTexCoord [3][4] = {
 void CLightning::ComputeGlow (int nDepth, int nThread)
 {
 
-	CLightningNode*	nodeP;
+	CLightningNode*	nodeP = m_nodes.Buffer ();
+
+if (!nodeP)
+	return;
+
 	CFloatVector*		srcP, * dstP, vEye, vn, vd, 
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
@@ -914,11 +920,7 @@ void CLightning::ComputeGlow (int nDepth, int nThread)
 	bool					bPlasma = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
 	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
-if (nThread < 0)
-	vEye.Assign (OBJPOS (gameData.objs.viewerP)->vPos);
-else
-	vEye.SetZero ();
-nodeP = m_nodes.Buffer ();
+vEye.Assign (OBJPOS (gameData.objs.viewerP)->vPos);
 dstP = m_plasmaVerts.Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
@@ -926,8 +928,6 @@ for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 		i = i;
 	vPos [0] = vPos [1];
 	vPos [1].Assign (nodeP->m_vPos);
-	if (nThread >= 0)
-		transformation.Transform (vPos [1], vPos [1]);
 	if (i) {
 		vn = CFloatVector::Normal (vPos [0], vPos [1], vEye);
 		vn *= fWidth;
@@ -999,6 +999,9 @@ if (gameOpts->render.lightning.nQuality)
 
 void CLightning::RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread)
 {
+if (m_plasmaVerts.Buffer ())
+	return;
+
 #if RENDER_LIGHTNING_OUTLINE
 	tTexCoord2f*	texCoordP;
 	CFloatVector*	vertexP;
@@ -1078,17 +1081,15 @@ i = m_nNodes - 1;
 
 void CLightning::RenderCore (tRgbaColorf *colorP, int nDepth, int nThread)
 {
+if (!m_coreVerts.Buffer ())
+	return;
 ogl.SetBlendMode (1);
 ogl.SetLineSmooth (true);
-#if 0
-if (!ogl.m_states.bUseTransform)
-	ogl.SetupTransform (1);
-#endif
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	glColor4f (colorP->red / 2, colorP->green / 2, colorP->blue / 2, colorP->alpha);
 	glLineWidth (GLfloat (nDepth ? CORE_WIDTH : CORE_WIDTH * 2));
-	OglVertexPointer (3, GL_FLOAT, 0, &m_coreVerts [0]);
+	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
@@ -1101,10 +1102,6 @@ else {
 		glVertex3fv (reinterpret_cast<GLfloat*> (vPosf));
 	glEnd ();
 	}
-#endif
-#if 0
-if (!ogl.m_states.bUseTransform)
-	ogl.ResetTransform (1);
 #endif
 glLineWidth (GLfloat (1));
 ogl.SetLineSmooth (false);
@@ -1195,8 +1192,10 @@ if ((gameStates.render.nType != 5) && (nThread >= 0)) {	// not in transparency r
 		return;
 	if (!MayBeVisible (nThread))
 		return;
+#if 0
 	if (!gameOpts->render.n3DGlasses) 
 		RenderSetup (0, nThread);
+#endif
 	transparencyRenderer.AddLightning (this, nDepth);
 	if (gameOpts->render.lightning.nQuality)
 		for (int i = 0; i < m_nNodes; i++)
@@ -1204,12 +1203,18 @@ if ((gameStates.render.nType != 5) && (nThread >= 0)) {	// not in transparency r
 				m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
 	}
 else {
+#if 0
 	if (gameOpts->render.n3DGlasses || (nThread < 0))
 		RenderSetup (0, nThread);
-	//if (!nDepth)
+#endif
+	if (!nDepth)
 		ogl.SetFaceCulling (false);
+	if (nThread >= 0)
+		ogl.SetupTransform (1);
 	Draw (0, nThread);
-	//if (!nDepth)
+	if (nThread >= 0)
+		ogl.ResetTransform (1);
+	if (!nDepth)
 		ogl.SetFaceCulling (true);
 	glLineWidth (1);
 	ogl.SetLineSmooth (false);
