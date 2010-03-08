@@ -255,7 +255,7 @@ if (!matCenP->nLives)
 	return 0;
 #endif
 //	MK: 11/18/95, At insane, matcens work forever!
-if (gameStates.app.nDifficultyLevel + 1 < NDL)
+if (gameStates.app.bD1Mission || (gameStates.app.nDifficultyLevel + 1 < NDL))
 	matCenP->nLives--;
 
 matCenP->xTimer = I2X (1000);	//	Make sure the first robot gets emitted right away.
