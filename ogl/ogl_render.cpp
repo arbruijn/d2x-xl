@@ -452,7 +452,7 @@ if (ogl.SizeVertexBuffer (nVertices)) {
 			ogl.SetBlendMode (GL_ONE, GL_ONE);
 			}
 		}
-	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (false);
 	glColor4d (0, 0, 0, gameStates.render.grAlpha);
 	for (i = 0; i < nVertices; i++) {
@@ -510,11 +510,6 @@ int G3DrawTexPolyMulti (
 #if USE_VERTNORMS
 	CFloatVector	vNormal, vVertPos;
 #endif
-#if G3_DRAW_ARRAYS
-	int			bVertexArrays = gameData.render.vertP != NULL;
-#else
-	int			bVertexArrays = 0;
-#endif
 
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
@@ -544,6 +539,7 @@ bmBot = bmBot->Override (-1);
 bDepthSort = (!bmTop && 
 				  ((gameStates.render.grAlpha < 1.0f) ||
 				   (bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
+
 if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 	nFrame = (int) (bmTop->CurFrame () - bmTop->Frames ());
 	bmP = bmTop;
@@ -551,6 +547,7 @@ if (bmTop && (bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 	}
 else
 	nFrame = -1;
+
 if (bmTop) {
 	if (nFrame < 0)
       bSuperTransp = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -560,7 +557,8 @@ if (bmTop) {
 	bOverlay = !bShaderMerge;
 	}
 else
-	bOverlay = -1;
+	bOverlay = 0;
+
 #if G3_DRAW_ARRAYS
 retry:
 #endif
@@ -568,16 +566,16 @@ if (bShaderMerge) {
 	mask = gameStates.render.textures.bHaveMaskShader ? bmTop->Mask () : NULL;
 	nShader = bSuperTransp ? mask ? 2 : 1 : 0;
 	activeShaderProg = GLhandleARB (abs (int (shaderManager.Deploy (tmShaderProgs [nShader]))));
-	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), bVertexArrays, 0);
+	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "btmTex"), 0);
-	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), bVertexArrays, 0);
+	INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);
 	glUniform1i (glGetUniformLocation (activeShaderProg, "topTex"), 1);
 	if (mask) {
 #if DBG
-		InitTMU2 (bVertexArrays);
-		G3_BIND (GL_TEXTURE2, mask, lightmapManager.Buffer (), bVertexArrays);
+		InitTMU2 (1);
+		G3_BIND (GL_TEXTURE2, mask, lightmapManager.Buffer (), 1);
 #else
-		INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), bVertexArrays, 0);
+		INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), 1, 0);
 #endif
 		glUniform1i (glGetUniformLocation (activeShaderProg, "maskTex"), 2);
 		}
@@ -585,11 +583,11 @@ if (bShaderMerge) {
 	}
 else if (!bDepthSort) {
 	if (bmBot == gameData.endLevel.satellite.bmP) {
-		ogl.SelectTMU (GL_TEXTURE0);
+		ogl.SelectTMU (GL_TEXTURE0, true);
 		ogl.SetTexturing (true);
 		}
 	else
-		InitTMU0 (bVertexArrays);
+		InitTMU0 (1);
 	if (bmBot->Bind (1))
 		return 1;
 	bmBot = bmBot->CurFrame (-1);
@@ -623,7 +621,7 @@ if (!bDepthSort) {
 	}
 
 ogl.m_states.fAlpha = gameStates.render.grAlpha;
-if (bVertexArrays || bDepthSort) {
+if (bDepthSort) {
 		CFloatVector	vertices [8];
 		tFaceColor		vertColors [8];
 		tTexCoord2f		texCoord [2][8];
@@ -652,129 +650,97 @@ if (bVertexArrays || bDepthSort) {
 	transparencyRenderer.AddPoly (NULL, NULL, bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 	return 0;
 	}
-#if G3_DRAW_ARRAYS
-if (bVertexArrays) {
-	if (!ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0)) {
-		bVertexArrays = 0;
-		goto retry;
-		}
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
-//	OglIndexPointer (GL_INT, 0, colorIndex);
-	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [0]);
-	if (bLight)
-		OglColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
-	if (bmTop && !bOverlay) {
-		if (!ogl.EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
-			ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
-			bVertexArrays = 0;
-			goto retry;
-			}
-		OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertices);
-		if (bLight)
-			OglColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
-//		OglIndexPointer (GL_INT, 0, colorIndex);
-		OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [1]);
-		}
-	OglDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
-	ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0);
-	if (bmTop && !bOverlay)
-		ogl.DisableClientStates (GL_TEXTURE1);
-	}
-#endif
-else if (ogl.SizeBuffers (nVertices)) {
-	tFaceColor	faceColor;
 
-	if (bDynLight) {
-		if (bOverlay) {
-			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				pl = *ppl;
-				G3VERTPOS (vVertPos, pl);
-				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.XYZ (), pl->p3_index, NULL, &faceColor,
-									gameStates.render.nState ? X2F (uvlList [i].l) : 1, 0, 0);
-				ogl.ColorBuffer () [i] = faceColor.color;
-				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
-				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				ogl.VertexBuffer () [i] = vVertPos;
-				}
-			}
-		else {
-			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				pl = *ppl;
-				G3VERTPOS (vVertPos, pl);
-				G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.XYZ (), pl->p3_index, NULL, &faceColor, 1, 0, 0);
-				ogl.ColorBuffer () [i] = faceColor.color;
-				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
-				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
-				ogl.VertexBuffer () [i] = vVertPos;
-				}
-			}
-		}
-	else if (bLight) {
-		if (bOverlay) {
-			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || gameStates.app.bEndLevelSequence)
-					SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
-				else {
-					pc = gameData.render.color.vertices + (*ppl)->p3_index;
-					glColor3fv (reinterpret_cast<GLfloat*> (&pc->color));
-					}
-				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
-				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				OglVertex3f (*ppl, ogl.VertexBuffer () + i);
-				}
-			}
-		else {
-			bResetColor = (bOverlay != 1);
-			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState)
-					SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
-				else {
-					pc = gameData.render.color.vertices + (*ppl)->p3_index;
-					ogl.ColorBuffer () [i] = pc->color;
-					}
-				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
-				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
-				OglVertex3f (*ppl, ogl.VertexBuffer () + i);
-				}
+
+if (!ogl.SizeBuffers (nVertices))
+	return 0;
+
+tFaceColor	faceColor;
+
+if (bDynLight) {
+	if (bShaderMerge) {
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
+			pl = *ppl;
+			G3VERTPOS (vVertPos, pl);
+			G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.XYZ (), pl->p3_index, &faceColor, NULL, 1, 0, 0);
+			ogl.ColorBuffer () [i] = faceColor.color;
+			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
+			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
+			SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
+			ogl.VertexBuffer () [i] = vVertPos;
 			}
 		}
 	else {
-		if (bOverlay) {
-			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
-				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				OglVertex3f (*ppl, ogl.VertexBuffer () + i);
-				}
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
+			pl = *ppl;
+			G3VERTPOS (vVertPos, pl);
+			G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.XYZ (), pl->p3_index, &faceColor, NULL,
+								gameStates.render.nState ? X2F (uvlList [i].l) : 1, 0, 0);
+			ogl.ColorBuffer () [i] = faceColor.color;
+			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
+			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
+			ogl.VertexBuffer () [i] = vVertPos;
 			}
-		else {
-			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
-				ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
-				SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
-				OglVertex3f (*ppl, ogl.VertexBuffer () + i);
-				}
-			}
-		}
-	if (bOverlay) {
-		ogl.EnableClientStates (1, 1, 0, 1);
-		OglColorPointer (4, GL_FLOAT, 0, &ogl.ColorBuffer ());
-		OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
-		ogl.EnableClientStates (1, 0, 0, 2);
-		OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
-		}
-	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bDynLight || bLight);
-	if (bOverlay) {
-		ogl.DisableClientStates (1, 0, 0, 2);
-		ogl.DisableClientStates (1, 1, 0, 1);
-		ogl.SelectTMU (0);
 		}
 	}
-if ((bOverlay > 0) && ogl.SizeBuffers (nVertices)) {
-	tFaceColor	faceColor;
+else if (bLight) {
+	if (bShaderMerge) {
+		bResetColor = (bOverlay != 1);
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
+			if (gameStates.render.nState)
+				SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
+			else {
+				pc = gameData.render.color.vertices + (*ppl)->p3_index;
+				ogl.ColorBuffer () [i] = pc->color;
+				}
+			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
+			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
+			SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
+			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
+			}
+		}
+	else {
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
+			if (gameStates.render.nState || gameStates.app.bEndLevelSequence)
+				SetTMapColor (uvlList + i, i, bmBot, 1, ogl.ColorBuffer () + i);
+			else {
+				pc = gameData.render.color.vertices + (*ppl)->p3_index;
+				glColor3fv (reinterpret_cast<GLfloat*> (&pc->color));
+				}
+			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
+			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
+			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
+			}
+		}
+	}
+else {
+	if (bShaderMerge) {
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
+			ogl.TexCoordBuffer () [i].v.u = X2F (uvlList [i].u);
+			ogl.TexCoordBuffer () [i].v.v = X2F (uvlList [i].v);
+			SetTexCoord (uvlList + i, orient, 1, ogl.TexCoordBuffer (1) + i, mask != NULL);
+			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
+			}
+		}
+	else {
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
+			ogl.TexCoordBuffer (1) [i].v.u = X2F (uvlList [i].u);
+			ogl.TexCoordBuffer (1) [i].v.v = X2F (uvlList [i].v);
+			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
+			}
+		}
+	}
+if (bShaderMerge) {
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
+	OglTexCoordPointer (2, GL_FLOAT, 0, ogl.TexCoordBuffer (1).Buffer ());
+	}
+ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
+ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bDynLight || bLight);
+if (bShaderMerge)
+	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE1);
 
-	ogl.SelectTMU (GL_TEXTURE0);
+if (bOverlay) {
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	if (bmTop->Bind (1))
 		return 1;
@@ -784,7 +750,7 @@ if ((bOverlay > 0) && ogl.SizeBuffers (nVertices)) {
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			vVertPos.Assign ((*ppl)->p3_vec);
-			G3VertexColor (G3GetNormal (*ppl, &vNormal), vVertPos.XYZ (), (*ppl)->p3_index, NULL, &faceColor, 1, 0, 0);
+			G3VertexColor (G3GetNormal (*ppl, &vNormal), vVertPos.XYZ (), (*ppl)->p3_index, &faceColor, NULL, 1, 0, 0);
 			ogl.ColorBuffer () [i] = faceColor.color;
 			SetTexCoord (uvlList + i, orient, 0, ogl.TexCoordBuffer () + i, mask != NULL);
 			OglVertex3f (*ppl, ogl.VertexBuffer () + i);
@@ -805,7 +771,7 @@ if ((bOverlay > 0) && ogl.SizeBuffers (nVertices)) {
 		}
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, bDynLight || bLight);
 
-	ogl.SetDepthMode (GL_LESS);
+	ogl.SetDepthMode (GL_LEQUAL);
 #if OGL_CLEANUP
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);
@@ -813,14 +779,14 @@ if ((bOverlay > 0) && ogl.SizeBuffers (nVertices)) {
 	}
 else if (bShaderMerge) {
 #if OGL_CLEANUP
-	ogl.SelectTMU (GL_TEXTURE1, bVertexArrays != 0);
+	ogl.SelectTMU (GL_TEXTURE1, true);
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false); // Disable the 2nd texture
 #endif
 	activeShaderProg = 0;
 	shaderManager.Deploy (-1);
 	}
-ogl.SelectTMU (GL_TEXTURE0, bVertexArrays != 0);
+ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.BindTexture (0);
 ogl.SetTexturing (false);
 tMapColor.index =
@@ -886,7 +852,7 @@ if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	lmProg = lmShaderProgs [(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0];
 	glUseProgramObject (lmProg);
 	}
-InitTMU0 (0);	// use render pipeline 0 for bottom texture
+InitTMU0 (1);	// use render pipeline 0 for bottom texture
 if (bmBot->Bind (1))
 	return 1;
 bmBot = bmBot->CurFrame (-1);
@@ -894,7 +860,7 @@ bmBot->Texture ()->Wrap (GL_REPEAT);
 if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 if (bmTop) { // use render pipeline 1 for overlay texture
-	InitTMU1 (0);
+	InitTMU1 (1);
 	if (bmTop->Bind (1))
 		return 1;
 	bmTop = bmTop->CurFrame (-1);
@@ -903,7 +869,7 @@ if (bmTop) { // use render pipeline 1 for overlay texture
 	}
 // use render pipeline 2 for lightmap texture
 if (ogl.SizeBuffers (nVertices)) {
-	InitTMU2 (0);
+	InitTMU2 (1);
 	//ogl.BindTexture (lightmap->handle);
 	if (bShaderMerge)
 		glUniform1i (glGetUniformLocation (lmProg, "lMapTex"), 2);
@@ -928,7 +894,7 @@ if (ogl.SizeBuffers (nVertices)) {
 	ogl.FlushBuffers (GL_TRIANGLE_FAN, nVertices, 3, 1, !gameStates.render.bFullBright);
 	ogl.DisableClientStates (1, 0, 0, 2);
 	ogl.DisableClientStates (1, 1, 0, 1);
-	ogl.SelectTMU (0);
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	}
 ExitTMU (0);
 if (bShaderMerge)
@@ -978,11 +944,11 @@ else {
 ogl.SetDepthMode (GL_LEQUAL);
 bmP = bmP->Override (-1);
 if (bmP == gameData.endLevel.satellite.bmP) {
-	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	}
 else
-	InitTMU0 (0);
+	InitTMU0 (1);
 if (bmP->Bind (1))
 	return 1;
 if (bmP == bmpDeadzone)
@@ -1202,7 +1168,7 @@ if (alpha < 1.0f) {
 	transparencyRenderer.AddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive, fSoftRad);
 	}
 else {
-	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.SelectTMU (GL_TEXTURE0, true);
 	v1 = vPos - transformation.m_info.pos;
 	pv = transformation.m_info.view [0] * v1;
 	CFloatVector vPosf;

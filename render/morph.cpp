@@ -280,33 +280,28 @@ MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 
 void MorphDrawModel (CPolyModel* modelP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
 {
-	int i, j, mn;
-	int facing;
-	int sort_list [MAX_SUBMODELS], sort_n;
+	int h, i, j, m, n;
+	int sortList [2 * MAX_SUBMODELS];
 	//first, sort the submodels
 
-sort_list [0] = nSubModel;
-sort_n = 1;
-for (i = 0; i < modelP->ModelCount (); i++) {
-	if (mdP->submodelActive [i] && modelP->SubModels ().parents [i]==nSubModel) {
-		facing = G3CheckNormalFacing(modelP->SubModels ().pnts[i], modelP->SubModels ().norms[i]);
-		if (!facing)
-			sort_list [sort_n++] = i;
-		else {		//put at start
-			int t;
-			for (t=sort_n;t>0;t--)
-				sort_list [t] = sort_list [t-1];
-			sort_list [0] = i;
-			sort_n++;
-			}
+n = h = modelP->ModelCount ();
+m = h - 1;
+sortList [m] = nSubModel;
+for (i = 0; i < h; i++) {
+	if (mdP->submodelActive [i] && modelP->SubModels ().parents [i] == nSubModel) {
+		if (!G3CheckNormalFacing (modelP->SubModels ().pnts [i], modelP->SubModels ().norms [i]))
+			sortList [n++] = i;
+		else
+			sortList [--m] = i;
 		}
 	}
 
-	//now draw everything
-for (i = 0; i < sort_n; i++) {
-	mn = sort_list [i];
-	if (mn == nSubModel) {
-		for (j = 0; j < modelP->TextureCount (); j++) {
+//now draw everything
+for (i = m; i < n; i++) {
+	m = sortList [i];
+	if (m == nSubModel) {
+		h = modelP->TextureCount ();
+		for (j = 0; j < h; j++) {
 			gameData.models.textureIndex [j] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [modelP->FirstTexture () + j]];
 			gameData.models.textures [j] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [modelP->FirstTexture ()+j]]*/gameData.models.textureIndex [j].index;
 			}
@@ -314,18 +309,19 @@ for (i = 0; i < sort_n; i++) {
 #ifdef PIGGY_USE_PAGING
 		// Make sure the textures for this CObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
-		for (j = 0; j < modelP->TextureCount (); j++)
+		for (j = 0; j < h; j++)
 			LoadBitmap (gameData.models.textureIndex [j].index, 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in,
 		// so we need to reread them all in.
 		if (gameData.pig.tex.bPageFlushed) {
 			gameData.pig.tex.bPageFlushed = 0;
-			for (int j = 0; j < modelP->TextureCount (); j++)
+			for (int j = 0; j < h; j++)
 				LoadBitmap (gameData.models.textureIndex [j].index, 0);
 			}
 			// Make sure that they can all fit in memory.
-		Assert ( gameData.pig.tex.bPageFlushed == 0);
+		Assert (gameData.pig.tex.bPageFlushed == 0);
 #endif
+
 		G3DrawMorphingModel (
 			modelP->Data () + modelP->SubModels ().ptrs [nSubModel],
 			gameData.models.textures,
@@ -334,9 +330,9 @@ for (i = 0; i < sort_n; i++) {
 		}
 	else {
 		CFixMatrix orient;
-		orient = CFixMatrix::Create(animAngles[mn]);
-		transformation.Begin (modelP->SubModels ().offsets [mn], orient);
-		MorphDrawModel (modelP, mn, animAngles, light, mdP, nModel);
+		orient = CFixMatrix::Create (animAngles [m]);
+		transformation.Begin (modelP->SubModels ().offsets [m], orient);
+		MorphDrawModel (modelP, m, animAngles, light, mdP, nModel);
 		transformation.End ();
 		}
 	}
