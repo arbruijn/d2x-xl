@@ -25,7 +25,7 @@ CShrapnelManager shrapnelManager;
 
 // -----------------------------------------------------------------------------
 
-#define SHRAPNEL_MAX_PARTS			150
+#define SHRAPNEL_MAX_PARTS			200
 #define SHRAPNEL_PART_LIFE			-1500
 #define SHRAPNEL_PART_SPEED		10
 

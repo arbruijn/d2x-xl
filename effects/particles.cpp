@@ -992,7 +992,7 @@ if ((m_nType == SMOKE_PARTICLES) && m_bBlowUp) {
 #if 0
 	float decay = (float) pow (m_decay * m_decay * m_decay, 1.0f / 5.0f);
 #else
-	float fFade = (m_nFadeType == 3) ? 1.0f : (1.0f - m_decay * m_decay * m_decay) / float (pow (m_decay, 1.0f / 3.0f));
+	float fFade = (m_nFadeType == 3) ? 1.0f : (1.0f - pow (m_decay, 16.0f)) / float (pow (m_decay, 0.25f));
 #endif
 	vOffset [X] = m_nWidth * fFade;
 	vOffset [Y] = m_nHeight * fFade;
