@@ -25,15 +25,15 @@ CShrapnelManager shrapnelManager;
 
 // -----------------------------------------------------------------------------
 
-#define SHRAPNEL_MAX_PARTS			250
+#define SHRAPNEL_MAX_PARTS			200
 #define SHRAPNEL_PART_LIFE			-1750
 #define SHRAPNEL_PART_SPEED		10
 
-static float fShrapnelScale [5] = {0, 3.5f, 7.5f, 10.0f, 13.5f};
+static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
 
 void CShrapnel::Create (CObject* parentObjP, CObject* objP, float fScale)
 {
-	static tRgbaColorf color = {0.95f, 0.95f, 0.95f, 0.6666667f};
+	static tRgbaColorf color = {0.95f, 0.95f, 0.95f, -0.95f};
 
 m_info.vDir = CFixVector::Random ();
 m_info.vPos = objP->info.position.vPos + m_info.vDir * (parentObjP->info.xSize / 4 + rand () % (parentObjP->info.xSize / 2));
@@ -169,7 +169,7 @@ if (!CStack<CShrapnel>::Create (h))
 	return 0;
 if (!Grow (h))
 	return 0;
-fScale = 5.0f / fScale;
+fScale = 6.0f / fScale;
 #pragma omp parallel
 	{
 	#pragma omp for 
