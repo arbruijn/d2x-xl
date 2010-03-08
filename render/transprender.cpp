@@ -1043,9 +1043,12 @@ ResetBitmaps ();
 
 void CTransparencyRenderer::RenderLightTrail (tTranspLightTrail *item)
 {
-ogl.ResetClientStates (1);
-m_data.bmP [1] = m_data.bmP [2] = NULL;
-m_data.bUseLightmaps = 0;
+if (m_data.nPrevType != m_data.nCurType) {
+	ogl.ResetClientStates (1);
+	m_data.bmP [1] = m_data.bmP [2] = NULL;
+	m_data.bUseLightmaps = 0;
+	shaderManager.Deploy (-1);
+	}
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	ogl.SetDepthWrite (true);
@@ -1054,9 +1057,11 @@ if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
+	//ogl.SetupTransform (1);
 	if (item->bTrail)
 		OglDrawArrays (GL_TRIANGLES, 4, 3);
 	OglDrawArrays (GL_QUADS, 0, 4);
+	//ogl.ResetTransform (1);
 	ogl.SetFaceCulling (true);
 	ogl.SetBlendMode (0);
 	}

@@ -1985,7 +1985,7 @@ if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1, 0, &color);
-		else if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (10, bBufferEmissive)))
+		else if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, bBufferEmissive)))
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, 0);

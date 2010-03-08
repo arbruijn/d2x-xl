@@ -225,7 +225,7 @@ void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize,
 {
 	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
 	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-	static CFloatVector	vEye = CFloatVector::ZERO;
+	static CFloatVector	vEye;
 
 	CFloatVector	v, vPosf, vNormf, vTrail [3], vCorona [4], fVecf;
 	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
@@ -233,8 +233,13 @@ void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize,
 fVecf.Assign (vDir);
 vPosf.Assign (vPos);
 vTrail [2] = vPosf - fVecf * fLength;
+#if 0
+vEye.Assign (OBJPOS (gameData.objs.viewerP)->vPos);
+#else
+vEye.SetZero ();
 transformation.Transform (vTrail [2], vTrail [2], 0);
 transformation.Transform (vPosf, vPosf, 0);
+#endif
 vNormf = CFloatVector::Normal (vTrail [2], vPosf, vEye);
 vTrail [0] = vPosf + vNormf * fSize;
 vTrail [1] = vPosf - vNormf * fSize;
