@@ -223,6 +223,9 @@ return m_nThrusters;
 
 void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CBitmap *bmP, tRgbaColorf *colorP)
 {
+if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
+	return;
+
 	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
 	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	static CFloatVector	vEye;
@@ -233,13 +236,7 @@ void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize,
 fVecf.Assign (vDir);
 vPosf.Assign (vPos);
 vTrail [2] = vPosf - fVecf * fLength;
-#if 0
-vEye.Assign (OBJPOS (gameData.objs.viewerP)->vPos);
-#else
-vEye.SetZero ();
-transformation.Transform (vTrail [2], vTrail [2], 0);
-transformation.Transform (vPosf, vPosf, 0);
-#endif
+vEye.Assign (gameData.render.mine.viewerEye);
 vNormf = CFloatVector::Normal (vTrail [2], vPosf, vEye);
 vTrail [0] = vPosf + vNormf * fSize;
 vTrail [1] = vPosf - vNormf * fSize;
@@ -248,11 +245,12 @@ vCorona [0] = vTrail [0];
 vCorona [2] = vTrail [1];
 vCorona [1] = vPosf + vNormf * fSize;
 vCorona [3] = vPosf + vNormf * (-fSize);
+vPosf -= vEye;
 CFloatVector::Normalize (vPosf);
-v = vTrail [2];
+v = vTrail [2] - vEye;
 CFloatVector::Normalize (v);
 dotTrail = CFloatVector::Dot (vPosf, v);
-v = *vCorona;
+v = *vCorona - vEye;
 CFloatVector::Normalize (v);
 dotCorona = CFloatVector::Dot (vPosf, v);
 transparencyRenderer.AddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);

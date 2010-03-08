@@ -920,7 +920,7 @@ if (!nodeP)
 	bool					bPlasma = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
 	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
-vEye.Assign (OBJPOS (gameData.objs.viewerP)->vPos);
+vEye.Assign (gameData.render.mine.viewerEye);
 dstP = m_plasmaVerts.Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {

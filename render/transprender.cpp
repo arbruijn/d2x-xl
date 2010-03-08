@@ -599,7 +599,7 @@ for (i = 0; i < j; i++) {
 		}
 	}
 v.Assign (item.vertices [iMin]);
-return Add (tiThruster, &item, sizeof (item), v, 0, false, 1);
+return Add (tiThruster, &item, sizeof (item), v, 0, false, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1057,11 +1057,11 @@ if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	glColor4fv (reinterpret_cast<GLfloat*> (&item->color));
 	OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
-	//ogl.SetupTransform (1);
+	ogl.SetupTransform (1);
 	if (item->bTrail)
 		OglDrawArrays (GL_TRIANGLES, 4, 3);
 	OglDrawArrays (GL_QUADS, 0, 4);
-	//ogl.ResetTransform (1);
+	ogl.ResetTransform (1);
 	ogl.SetFaceCulling (true);
 	ogl.SetBlendMode (0);
 	}
