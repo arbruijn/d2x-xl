@@ -25,8 +25,8 @@ CShrapnelManager shrapnelManager;
 
 // -----------------------------------------------------------------------------
 
-#define SHRAPNEL_MAX_PARTS			200
-#define SHRAPNEL_PART_LIFE			-1750
+#define SHRAPNEL_MAX_PARTS			150
+#define SHRAPNEL_PART_LIFE			-1500
 #define SHRAPNEL_PART_SPEED		10
 
 static float fShrapnelScale [5] = {0, 5.0f, 10.0f, 15.0f, 20.0f};
@@ -164,12 +164,16 @@ objP->info.xLifeLeft = 0;
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
+#if DBG
+h += h / 2;
+#else
 h += d_rand () % h;
+#endif
 if (!CStack<CShrapnel>::Create (h))
 	return 0;
 if (!Grow (h))
 	return 0;
-fScale = 6.0f / fScale;
+fScale = 7.0f / fScale;
 #pragma omp parallel
 	{
 	#pragma omp for 
