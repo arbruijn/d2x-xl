@@ -208,7 +208,7 @@ class CTransparencyRenderer {
 #endif
 			}
 
-		inline float CTransparencyRenderer::Depth (CFloatVector vPos, int bTransformed) {
+		inline float Depth (CFloatVector vPos, int bTransformed) {
 #if TRANSP_DEPTH_HASH
 			return (bTransformed > 0) ? vPos.Mag () : CFloatVector::Dist (vPos, m_data.vViewerf [0]);
 #else
