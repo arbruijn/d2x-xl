@@ -361,7 +361,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			nParts /= 2;
 			if (nType != 2)
 				nScale /= 2;
-			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 4 + 2 * nType);
+			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / (6 + nType));
 			}
 		else if (nType == 2)
 			nParts /= 2;
@@ -426,7 +426,7 @@ if (nParts > 0) {
 	CFixVector* vDirP = objP->mType.physInfo.velocity.IsZero () ? &vDir : NULL;
 
 	if (vDirP) // if the robot is standing still, let the smoke move away from it
-		vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 4);
+		vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 6);
 
 	if (nShields > 4000)
 		nShields = 4000;
