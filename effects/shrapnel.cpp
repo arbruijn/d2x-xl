@@ -167,7 +167,7 @@ objP->cType.explInfo.nDeleteTime = -1;
 #if DBG
 h += h / 2;
 #else
-h += d_rand () % h;
+h = 5 * h / 4 + d_rand () % (h / 2);
 #endif
 if (!CStack<CShrapnel>::Create (h))
 	return 0;
