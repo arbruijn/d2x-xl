@@ -313,7 +313,7 @@ if (HaveDrawBuffer ()) {
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
-				if (h < 3) {
+				if (h < 4) {
 					if (h)
 						glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
 					if (i)
