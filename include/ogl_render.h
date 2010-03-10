@@ -15,7 +15,7 @@ void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, floa
 void OglDrawCircle (int nSides, int nType);
 int G3DrawWhitePoly (int nv, g3sPoint **pointList);
 int G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask, short nSegment);
-void G3FlushFaceBuffer (int bForce);
+void FlushFaceBuffer (int bForce);
 
 int G3DrawTexPolyMulti (
 	int			nVerts, 

@@ -164,7 +164,7 @@ if (IS_WALL (faceP->m_info.nWall))
 LoadFaceBitmaps (segP, faceP);
 if (!faceP->bmBot)
 	return false;
-g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -177,7 +177,7 @@ if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 if (!IS_WALL (faceP->m_info.nWall))
 	return false;
 LoadFaceBitmaps (segP, faceP);
-g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -196,7 +196,7 @@ if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) ||
 	return false;
 if (!gameData.app.nFrameCount)
 	gameData.render.nColoredFaces++;
-g3FaceDrawer (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -221,7 +221,7 @@ return true;
 bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 LoadFaceBitmaps (segP, faceP);
-G3DrawFaceArrays (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
 return true;
 }
 
@@ -492,7 +492,7 @@ return 1;
 void EndRenderFaces (int nType, int bDepthOnly)
 {
 #if 1
-G3FlushFaceBuffer (1);
+FlushFaceBuffer (1);
 #endif
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
@@ -795,7 +795,7 @@ void RenderHeadlights (int nType)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	g3FaceDrawer = lightmapManager.HaveLightmaps () ? G3DrawHeadlightsPPLM : G3DrawHeadlights;
+	faceRenderFunc = lightmapManager.HaveLightmaps () ? RenderHeadlightsPP : RenderHeadlights;
 	RenderSegments (nType, 0, 1);
 	SetFaceDrawer (-1);
 	}

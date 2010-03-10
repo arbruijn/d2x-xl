@@ -1422,7 +1422,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int G3SetupPerPixelShader (CSegFace *faceP, int nType, bool bHeadlight)
+int SetupPerPixelShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;
@@ -1484,7 +1484,7 @@ return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];
 
 //------------------------------------------------------------------------------
 
-int G3SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
+int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;
@@ -1533,7 +1533,7 @@ return perPixelLightingShaderProgs [nLights][nType];
 
 //------------------------------------------------------------------------------
 
-int G3SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
+int SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
 {
 if (!gameStates.render.textures.bHaveGrayScaleShader)
 	return -1;

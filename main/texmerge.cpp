@@ -535,7 +535,7 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 //------------------------------------------------------------------------------
 
-int G3SetupTexMergeShader (int bColorKey, int bColored, int nType)
+int SetupTexMergeShader (int bColorKey, int bColored, int nType)
 {
 	int nShader = nType - 1 + bColored * 3;
 
