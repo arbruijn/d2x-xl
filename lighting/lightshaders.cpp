@@ -1490,7 +1490,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
 	int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 	GLuint h;
-	if (lightmapManager.Bind (i) && !ogl.IsBound (h = lightmapManager.Buffer (i)->handle)) {
+	if (lightmapManager.Bind (i) && (0 > ogl.IsBound (h = lightmapManager.Buffer (i)->handle))) {
 		ogl.SelectTMU (GL_TEXTURE0, true);
 		ogl.SetTexturing (true);
 		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1549,7 +1549,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 #endif
 int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 GLuint h;
-if (lightmapManager.Bind (i) && !ogl.IsBound (h = lightmapManager.Buffer (i)->handle)) {
+if (lightmapManager.Bind (i) && (0 > ogl.IsBound (h = lightmapManager.Buffer (i)->handle))) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
