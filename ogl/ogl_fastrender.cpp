@@ -916,7 +916,11 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
-OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
+if (bColorKey)
+	SetupLightingShader (faceP);
+else
+	shaderManager.Deploy (-1);
+DrawFacePP (faceP);
 return 0;
 }
 
