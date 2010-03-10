@@ -639,7 +639,7 @@ void COGL::ChooseDrawBuffer (void)
 {
 if (gameStates.render.bPerPixelLighting) {
 	gameStates.render.bRenderIndirect = 1;
-	SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
+	SelectDrawBuffer (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0));
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
 else if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)

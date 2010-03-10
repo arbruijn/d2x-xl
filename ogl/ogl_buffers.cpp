@@ -303,7 +303,7 @@ if (HaveDrawBuffer ()) {
 	SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer ()->ColorBuffer ());
 
-	if (m_data.xStereoSeparation > 0) {
+	if (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0)) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 		int h = gameOpts->render.bDeghost;
 		int i = (gameOpts->render.bColorGain > 0);
@@ -346,11 +346,16 @@ if (HaveDrawBuffer ()) {
 
 // -----------------------------------------------------------------------------------
 
-GLuint COGL::CreateDepthTexture (int nTMU, int bFBO)
+#define GL_DEPTH_STENCIL_EXT 0x84F9
+#define GL_UNSIGNED_INT_24_8_EXT 0x84FA
+#define GL_DEPTH24_STENCIL8_EXT 0x88F0
+#define GL_TEXTURE_STENCIL_SIZE_EXT 0x88F1
+
+GLuint COGL::CreateDepthTexture (int nTMU, int bFBO, int bStencil)
 {
 	GLuint	hBuffer;
 
-if (nTMU > GL_TEXTURE0)
+if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU);
 SetTexturing (true);
 GenTextures (1, &hBuffer);
@@ -358,7 +363,10 @@ if (glGetError ())
 	return hBuffer = 0;
 BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
+if (bStencil)
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_STENCIL_EXT, GL_DEPTH24_STENCIL8_EXT, NULL);
+else
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
 if (glGetError ()) {
 	DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;

@@ -128,24 +128,6 @@ if (nType == 2) { //GPGPU
 	m_info.hStencilBuffer = 0;
 	}
 else {
-	// depth buffer
-	glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
-	glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
-	glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);
-	glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
-	// stencil buffer
-#if FBO_STENCIL_BUFFER
-	if (nType == 1) {
-		glGenRenderbuffersEXT (1, &m_info.hStencilBuffer);
-		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hStencilBuffer);
-		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT, m_info.nWidth, m_info.nHeight);
-		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hStencilBuffer);
-		if (Available () < 0)
-			return 0;
-		}
-	else 
-#endif
-		m_info.hStencilBuffer = 0;
 	// color buffers
 	for (int i = 0; i < nColorBuffers; i++) {
 		ogl.BindTexture (m_info.hColorBuffer [i]);
@@ -158,7 +140,24 @@ else {
 		glGenerateMipmapEXT (GL_TEXTURE_2D);
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i, GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
 		}
-
+	// depth buffer
+	// stencil buffer
+#if FBO_STENCIL_BUFFER
+	if ((nType == 1) && (m_info.hDepthBuffer = ogl.CreateDepthTexture (0, 1, 1))) {
+		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
+		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hStencilBuffer = m_info.hDepthBuffer, 0);
+		if (Available () < 0)
+			return 0;
+		}
+	else 
+#endif
+		{
+		m_info.hStencilBuffer = 0;
+		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
+		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
+		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);
+		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
+		}
 	if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
 		return 0;
 	if (Available () < 0)

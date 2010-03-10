@@ -415,7 +415,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	RenderSegmentList (RENDER_LIGHTING, 1);	// render opaque geometry
 	ogl.DrawBuffer ()->UseBuffers (1);
 	}
-
+#if 0
 RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
 RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
@@ -443,6 +443,7 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		}
 	ogl.SetDepthMode (GL_LESS);
 	}
+#endif
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);
 }

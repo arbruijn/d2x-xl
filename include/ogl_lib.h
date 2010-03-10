@@ -268,7 +268,7 @@ class COGL {
 		void ResetTransform (int bForce);
 		void SetScreenMode (void);
 		void GetVerInfo (void);
-		GLuint CreateDepthTexture (int nTMU, int bFBO);
+		GLuint CreateDepthTexture (int nTMU, int bFBO, int bStencil = 0);
 		void DestroyDepthTexture (void);
 		GLuint CopyDepthTexture (void);
 		GLuint CreateColorTexture (int nTMU, int bFBO);
