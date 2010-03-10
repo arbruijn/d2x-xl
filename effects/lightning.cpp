@@ -1178,7 +1178,7 @@ ogl.ClearError (0);
 
 void CLightning::Render (int nDepth, int nThread)
 {
-if ((gameStates.render.nType != 5) && (nThread >= 0)) {	// not in transparency renderer
+if ((gameStates.render.nType != RENDER_TRANSPARENCY) && (nThread >= 0)) {	// not in transparency renderer
 	if ((m_nNodes < 0) || (m_nSteps < 0))
 		return;
 	if (!MayBeVisible (nThread))

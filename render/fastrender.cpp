@@ -233,7 +233,7 @@ typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP, int
 typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
 #endif
 
-static pRenderHandler renderHandlers [] = {RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
+static pRenderHandler renderHandlers [] = {RenderLighting, RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
 
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType, int bDepthOnly)
@@ -364,7 +364,7 @@ return tiRender.nFaces;
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
-			bLightmaps = (nType < 4) && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
+			bLightmaps = (nType < RENDER_SKYBOX) && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
 			bNormals = !bDepthOnly; 
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -393,7 +393,7 @@ else {
 	ogl.SetDepthWrite (true);
 	ogl.SetDepthMode (GL_LESS);
 	}
-if (nType == 3) {
+if (nType == RENDER_CORONAS) {
 	if (glareRenderer.Style () == 2)
 		glareRenderer.LoadShader (10);
 	return 0;
@@ -405,7 +405,7 @@ else {
 		bVBO = 1;
 		}
 #endif
-	if ((nType < 4) && (gameStates.render.bPerPixelLighting == 2)) {
+	if ((nType < RENDER_SKYBOX) && (gameStates.render.bPerPixelLighting == 2)) {
 		ogl.EnableLighting (1);
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);
@@ -470,7 +470,7 @@ else
 	if (!gameStates.render.bFullBright)
 		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (FACES.vertices.Buffer ()));
-	if (nType < 3) {
+	if (nType < RENDER_CORONAS) {
 		ogl.EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (!gameStates.render.bFullBright)
@@ -489,14 +489,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void EndRenderFaces (int nType, int bDepthOnly)
+void EndRenderFaces (int bDepthOnly)
 {
 #if 1
 FlushFaceBuffer (1);
 #endif
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
-if (nType != 3) {
+if (gameStates.render.nType != RENDER_CORONAS) {
 	if (gameStates.render.bPerPixelLighting == 2)
 		ogl.DisableLighting ();
 	ogl.ResetTransform (1);
@@ -525,9 +525,8 @@ void RenderSkyBoxFaces (void)
 
 if (gameStates.render.bHaveSkyBox) {
 	ogl.SetDepthWrite (true);
-	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
-	BeginRenderFaces (4, 0);
+	BeginRenderFaces (RENDER_SKYBOX, 0);
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
@@ -538,7 +537,7 @@ if (gameStates.render.bHaveSkyBox) {
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
-	EndRenderFaces (4, 0);
+	EndRenderFaces (0);
 	}
 }
 
@@ -571,7 +570,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 	tFaceListItem*	fliP;
 	CSegFace*		faceP;
 	int				i, j, nFaces = 0, nSegment = -1;
-	int				bAutomap = (nType == 0);
+	int				bAutomap = (nType <= RENDER_FACES);
 
 #if 1
 if (automap.Display () && !bDepthOnly)
@@ -671,7 +670,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 
 void QueryCoronas (short nFaces, int nPass)
 {
-BeginRenderFaces (3, 0);
+BeginRenderFaces (RENDER_CORONAS, 0);
 ogl.SetDepthWrite (false);
 ogl.ColorMask (1,1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
@@ -692,7 +691,7 @@ ogl.SetDepthWrite (true);
 glClearColor (0,0,0,0);
 glClearDepth (0xffffffff);
 glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-EndRenderFaces (3, 0);
+EndRenderFaces (0);
 gameStates.render.bQueryCoronas = 0;
 }
 
@@ -767,7 +766,7 @@ return nFaces;
 
 short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
-	int	i, nFaces = 0, bAutomap = (nType == 0);
+	int	i, nFaces = 0, bAutomap = (nType <= RENDER_FACES);
 
 if (nType > 1) {
 	// render mine segment by segment
@@ -816,17 +815,17 @@ if (ogl.m_states.bOcclusionQuery) {
 	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 	QueryCoronas (0, 1);
 	}
-BeginRenderFaces (0, 1);
+BeginRenderFaces (RENDER_FACES, 1);
 short nFaces = RenderSegments (nType, 1, 0);
-EndRenderFaces (0, 1);
+EndRenderFaces (1);
 if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
-	gameStates.render.nType = 1;
+	gameStates.render.nType = RENDER_OBJECTS;
 	RenderMineObjects (1);
-	gameStates.render.nType = 0;
+	gameStates.render.nType = RENDER_FACES;
 	QueryCoronas (nFaces, 2);
 	}
-EndRenderFaces (0, 1);
+EndRenderFaces (1);
 return nFaces;
 }
 
@@ -834,9 +833,9 @@ return nFaces;
 
 int SetupDepthBuffer (int nType)
 {
-BeginRenderFaces (0, 1);
+BeginRenderFaces (RENDER_FACES, 1);
 RenderSegments (nType, 1, 0);
-EndRenderFaces (0, 1);
+EndRenderFaces (1);
 return SortFaces ();
 }
 
@@ -844,7 +843,7 @@ return SortFaces ();
 
 void RenderFaceList (int nType, int bFrontToBack)
 {
-if (nType > 1) {	//back to front
+if (nType > RENDER_OBJECTS) {	//back to front
 	BeginRenderFaces (nType, 0);
 	RenderSegments (nType, 0, 0);
 	}
@@ -858,7 +857,7 @@ else {	//front to back
 	ogl.SetDepthWrite (true);
 	RenderHeadlights (nType);
 	}
-EndRenderFaces (nType, 0);
+EndRenderFaces (0);
 }
 
 //------------------------------------------------------------------------------

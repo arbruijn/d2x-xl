@@ -136,7 +136,7 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, int bTransformed)
 {
-if (gameStates.render.nType == 5)
+if (gameStates.render.nType == RENDER_TRANSPARENCY)
 	return 0;
 if (m_data.nFreeItems <= 0)
 	return 0;
@@ -1183,7 +1183,7 @@ if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
 PROF_START
-gameStates.render.nType = 5;
+gameStates.render.nType = RENDER_TRANSPARENCY;
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
 ogl.ResetClientStates ();

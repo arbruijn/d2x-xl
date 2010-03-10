@@ -471,6 +471,8 @@ ResetPerPixelLightingShaders ();
 InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
+ResetLightMaskShader ();
+InitLightMaskShader ();
 ResetSphereShaders ();
 #if 0
 Link (Alloc ());

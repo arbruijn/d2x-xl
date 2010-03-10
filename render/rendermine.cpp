@@ -241,7 +241,7 @@ PROF_START
 	short		i, nObject;
 	short		*segNumP;
 
-gameStates.render.nType = 1;
+gameStates.render.nType = RENDER_OBJECTS;
 for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
 	for (nObject = SEGMENTS [*segNumP].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
@@ -410,12 +410,12 @@ ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 SetupDepthBuffer (0);
 SetupDepthBuffer (1);
 #endif
-RenderSegmentList (0, 1);	// render opaque geometry
-RenderSegmentList (1, 1);	// render objects
+RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
+RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces) {
 		ogl.SetDepthMode (GL_LEQUAL);
-		RenderSegmentList (2, 1);	// render transparent geometry
+		RenderSegmentList (RENDER_WALLS, 1);	// render transparent geometry
 		ogl.SetDepthMode (GL_LESS);
 		}
 #if 0
@@ -429,7 +429,7 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		ogl.SetDepthMode (GL_LEQUAL);
 		if (!nWindow) {
 			ogl.SetDepthWrite (false);
-			RenderSegmentList (3, 1);
+			RenderSegmentList (RENDER_CORONAS, 1);
 			ogl.SetDepthWrite (true);
 			}
 		ogl.SetDepthMode (GL_LESS);

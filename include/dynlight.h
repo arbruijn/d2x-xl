@@ -308,6 +308,8 @@ char *BuildLightingShader (const char *pszTemplate, int nLights);
 int CreateLightmapShader (int nType);
 void InitLightmapShaders (void);
 void ResetLightmapShaders (void);
+void InitLightMaskShader (void);
+void ResetLightMaskShader (void);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \

@@ -780,7 +780,7 @@ void CModelData::Prepare (void)
 if (!OBJECTS.Buffer ())
 	return;
 PrintLog ("   building optimized polygon model data\n");
-gameStates.render.nType = 1;
+gameStates.render.nType = RENDER_OBJECTS;
 gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;
 h = 0;
