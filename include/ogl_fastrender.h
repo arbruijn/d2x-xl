@@ -21,7 +21,7 @@ void FlushFaceBuffer (int bForce);
 
 int SetupPerPixelShader (CSegFace* faceP, int nType, bool bHeadlight);
 int SetupLightmapShader (CSegFace* faceP, int nType, bool bHeadlight);
-int SetupLightingShader (CSegFace* faceP);
+int SetupLightingShader (CSegFace* faceP, int bColorKey);
 //int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 int SetupTexMergeShader (int bColorKey, int bColored, int nType);
 int SetupGrayScaleShader (int nType, tRgbaColorf *colorP);

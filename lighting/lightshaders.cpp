@@ -1582,13 +1582,11 @@ return perPixelLightingShaderProgs [nLights][nType];
 
 //------------------------------------------------------------------------------
 
-int SetupLightingShader (CSegFace *faceP)
+int SetupLightingShader (CSegFace *faceP, int bColorKey)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;
 
-if (!CreateLightMaskShader ())
-	return 0;
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
@@ -1597,16 +1595,22 @@ int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (lightmapManager.Bind (i))
 	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
 
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightMaskShaderProg));
-if (!shaderProg)
-	return -1;
+if (!bColorKey)
+	shaderManager.Deploy (-1);
+else {
+	if (!CreateLightMaskShader ())
+		return 0;
+	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightMaskShaderProg));
+	if (!shaderProg)
+		return -1;
 
-if (shaderManager.Rebuild (shaderProg)) {
+	if (shaderManager.Rebuild (shaderProg)) {
+		ogl.ClearError (0);
+		glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
+		glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 1);
+		}
 	ogl.ClearError (0);
-	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-	glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 1);
 	}
-ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return lightMaskShaderProg;
 }
