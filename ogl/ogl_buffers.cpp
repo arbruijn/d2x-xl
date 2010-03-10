@@ -185,7 +185,7 @@ void COGL::CreateDrawBuffer (void)
 #if FBO_DRAW_BUFFER
 if (gameStates.render.bRenderIndirect && m_states.bRender2TextureOk && !DrawBuffer ()->Handle ()) {
 	PrintLog ("creating draw buffer\n");
-	DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 1);
+	DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 1, 2);
 	}
 #endif
 }
@@ -216,6 +216,10 @@ bSemaphore--;
 
 void COGL::DestroyDrawBuffers (void)
 {
+if (m_data.drawBuffers [2].Handle ()) {
+	SelectDrawBuffer (1);
+	DestroyDrawBuffer ();
+	}
 if (m_data.drawBuffers [1].Handle ()) {
 	SelectDrawBuffer (1);
 	DestroyDrawBuffer ();
@@ -236,10 +240,12 @@ if (bSemaphore)
 bSemaphore++;
 #endif
 #if FBO_DRAW_BUFFER
-if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
-	if (!DrawBuffer ()->Active ()) {
-		if (DrawBuffer ()->Enable ()) {
-			glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT);
+CFBO*	bufP = DrawBuffer ();
+
+if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && bufP->Handle ()) {
+	if (!bufP->Active ()) {
+		if (bufP->Enable ()) {
+			glDrawBuffer (bufP->BufferCount (), bufP->BufferIds ());
 			}
 		else {
 			DestroyDrawBuffers ();
@@ -328,7 +334,7 @@ if (HaveDrawBuffer ()) {
 		ogl.SetBlending (true);
 		SetBlendMode (GL_ONE, GL_ONE);
 		}
-	glColor3f (1, 1, 1);
+	glColor3f (1,1,1);
 	ogl.RenderScreenQuad (1);
 	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 1);
@@ -346,14 +352,13 @@ GLuint COGL::CreateDepthTexture (int nTMU, int bFBO)
 
 if (nTMU > GL_TEXTURE0)
 	SelectTMU (nTMU);
-ogl.SetTexturing (true);
+SetTexturing (true);
 GenTextures (1, &hBuffer);
 if (glGetError ())
 	return hBuffer = 0;
-ogl.BindTexture (hBuffer);
+BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_states.nCurWidth, m_states.nCurHeight,
-				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
 if (glGetError ()) {
 	DeleteTextures (1, &hBuffer);
 	return hBuffer = 0;
@@ -375,7 +380,105 @@ return hBuffer;
 
 // -----------------------------------------------------------------------------------
 
-#if 0
+GLuint COGL::CopyDepthTexture (void)
+{
+	GLenum nError = glGetError ();
+
+#if DBG
+if (nError)
+	nError = nError;
+#endif
+SelectTMU (GL_TEXTURE1);
+SetTexturing (true);
+if (!m_states.hDepthBuffer)
+	m_states.bHaveDepthBuffer = 0;
+if (m_states.hDepthBuffer || (m_states.hDepthBuffer = CreateDepthTexture (-1, 0))) {
+	BindTexture (m_states.hDepthBuffer);
+	if (!m_states.bHaveDepthBuffer) {
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+		if ((nError = glGetError ())) {
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+			if ((nError = glGetError ())) {
+				DestroyDepthTexture ();
+				return m_states.hDepthBuffer = 0;
+				}
+			}
+		m_states.bHaveDepthBuffer = 1;
+		gameData.render.nStateChanges++;
+		}
+	}
+return m_states.hDepthBuffer;
+}
+
+// -----------------------------------------------------------------------------------
+
+GLuint COGL::CreateColorTexture (int nTMU, int bFBO)
+{
+	GLuint	hBuffer;
+
+if (nTMU > GL_TEXTURE0)
+	SelectTMU (nTMU);
+SetTexturing (true);
+GenTextures (1, &hBuffer);
+if (glGetError ())
+	return hBuffer = 0;
+BindTexture (hBuffer);
+glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, m_states.nCurWidth, m_states.nCurHeight, 0, GL_RGB, GL_UNSIGNED_SHORT, NULL);
+if (glGetError ()) {
+	DeleteTextures (1, &hBuffer);
+	return hBuffer = 0;
+	}
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+if (!bFBO) {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+	}
+if (glGetError ()) {
+	DeleteTextures (1, &hBuffer);
+	return hBuffer = 0;
+	}
+return hBuffer;
+}
+
+// -----------------------------------------------------------------------------------
+
+GLuint COGL::CopyColorTexture (void)
+{
+	GLenum nError = glGetError ();
+
+#if DBG
+if (nError)
+	nError = nError;
+#endif
+SelectTMU (GL_TEXTURE1);
+SetTexturing (true);
+if (!m_states.hColorBuffer)
+	m_states.bHaveColorBuffer = 0;
+if (m_states.hColorBuffer || (m_states.hColorBuffer = CreateColorTexture (-1, 0))) {
+	BindTexture (m_states.hColorBuffer);
+	if (!m_states.bHaveColorBuffer) {
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+		if ((nError = glGetError ())) {
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+			if ((nError = glGetError ())) {
+				DestroyColorTexture ();
+				return m_states.hColorBuffer = 0;
+				}
+			}
+		m_states.bHaveColorBuffer = 1;
+		gameData.render.nStateChanges++;
+		}
+	}
+return m_states.hColorBuffer;
+}
+
+// -----------------------------------------------------------------------------------
+
+#if 1
 
 GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 {
@@ -389,8 +492,7 @@ if (glGetError ())
 	return hDepthBuffer = 0;
 ogl.BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
-				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight, 0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

@@ -19,7 +19,6 @@ class CGlareRenderer {
 		inline GLuint DepthBuffer (void) { return m_hDepthBuffer; }
 
 	private:
-		GLuint CopyDepthTexture (void);
 		void CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, CFloatMatrix *r);
 		int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short* corners);
 		float ComputeCoronaSprite (CFloatVector *sprite, CFloatVector *vCenter, short nSegment, short nSide);

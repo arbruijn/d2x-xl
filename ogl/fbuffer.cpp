@@ -31,7 +31,7 @@
 #include "texmerge.h"
 #include "error.h"
 
-#define FBO_STENCIL_BUFFER	0
+#define FBO_STENCIL_BUFFER	1
 
 //------------------------------------------------------------------------------
 
@@ -85,9 +85,10 @@ memset (&m_info, 0, sizeof (m_info));
 
 //------------------------------------------------------------------------------
 
-int CFBO::Create (int nWidth, int nHeight, int nType)
+int CFBO::Create (int nWidth, int nHeight, int nType, int nColorBuffers)
 {
 	GLenum	nError;
+	GLint		nMaxBuffers;
 
 if (!ogl.m_states.bRender2TextureOk)
 	return 0;
@@ -99,39 +100,41 @@ if (nWidth > 0)
 	m_info.nWidth = nWidth;
 if (nHeight > 0)
 	m_info.nHeight = nHeight;
-ogl.GenTextures (1, &m_info.hRenderBuffer);
+
+glGetIntegerv (GL_MAX_COLOR_ATTACHMENTS_EXT, &nMaxBuffers);
+if (nMaxBuffers > MAX_COLOR_BUFFERS)
+	nMaxBuffers = MAX_COLOR_BUFFERS;
+if (nColorBuffers > nMaxBuffers)
+	nColorBuffers = nMaxBuffers;
+m_info.nColorBuffers [0] = nColorBuffers;
+
+for (int i = 0; i < nColorBuffers; i++)
+	ogl.GenTextures (1, m_info.hColorBuffer + i);
+
 if (nType == 2) { //GPGPU
-	ogl.BindTexture (m_info.hRenderBuffer);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
-	glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, m_info.nWidth, m_info.nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
-	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_info.hRenderBuffer, 0);
+	for (int i = 0; i < nColorBuffers; i++) {
+		ogl.BindTexture (m_info.hColorBuffer [i]);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
+		glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, m_info.nWidth, m_info.nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i, GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
+		}
 	m_info.hDepthBuffer = 0;
+	m_info.hStencilBuffer = 0;
 	}
 else {
-	ogl.BindTexture (m_info.hRenderBuffer);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //LINEAR);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-#if 0
-	if (nType == 1) //depth texture
-		glTexImage2D (GL_TEXTURE_2D, 0, 1, screen.Width (), screen.Height (), 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
-	else 
-#endif
-	 	{
-		glTexImage2D (GL_TEXTURE_2D, 0, 3, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glGenerateMipmapEXT (GL_TEXTURE_2D);
-		}
-	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, m_info.hRenderBuffer, 0);
+	// depth buffer
+	glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
+	glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
+	glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);
+	glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
+	// stencil buffer
 #if FBO_STENCIL_BUFFER
-	if ((nType == 1) && (m_info.hDepthBuffer = OglCreateDepthTexture (0, 1))) {
-		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
+	if (nType == 1) {
 		glGenRenderbuffersEXT (1, &m_info.hStencilBuffer);
 		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hStencilBuffer);
 		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT, m_info.nWidth, m_info.nHeight);
@@ -140,17 +143,21 @@ else {
 			return 0;
 		}
 	else 
-#else
-	m_info.hStencilBuffer = 0;
 #endif
-	 {
-		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
-		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
-		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, m_info.nWidth, m_info.nHeight);
-		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
-		if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
-			return 0;
+		m_info.hStencilBuffer = 0;
+	// color buffers
+	for (int i = 0; i < nColorBuffers; i++) {
+		ogl.BindTexture (m_info.hColorBuffer [i]);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //GL_LINEAR);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST); //GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+		glTexImage2D (GL_TEXTURE_2D, 0, 3, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glGenerateMipmapEXT (GL_TEXTURE_2D);
+		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i, GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
 		}
+
 	if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
 		return 0;
 	if (Available () < 0)
@@ -168,14 +175,15 @@ void CFBO::Destroy (void)
 if (!ogl.m_states.bRender2TextureOk)
 	return;
 if (m_info.hFBO) {
-	if (m_info.hRenderBuffer) {
-		ogl.DeleteTextures (1, &m_info.hRenderBuffer);
-		m_info.hRenderBuffer = 0;
+	if (m_info.nColorBuffers [1]) {
+		ogl.DeleteTextures (m_info.nColorBuffers [1], m_info.hColorBuffer);
+		memset (m_info.hColorBuffer, 0, sizeof (m_info.hColorBuffer));
+		m_info.nColorBuffers [0] = 
+		m_info.nColorBuffers [1] = 0;
 		}
 	if (m_info.hDepthBuffer) {
 #if 1
 		if (m_info.nType == 1) {
-			ogl.DeleteTextures (1, &m_info.hDepthBuffer);
 #if FBO_STENCIL_BUFFER
 			glDeleteRenderbuffersEXT (1, &m_info.hStencilBuffer);
 			m_info.hStencilBuffer = 0;
@@ -217,7 +225,7 @@ if (!m_info.bActive)
 	return 1;
 m_info.bActive = 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-//ogl.BindTexture (m_info.hRenderBuffer);
+//ogl.BindTexture (m_info.hColorBuffer);
 ogl.SetDrawBuffer (GL_BACK, 0);
 return 1;
 }
@@ -228,7 +236,7 @@ return 1;
 
 int CFBO::IsBound (void) 
 { 
-return m_info.hRenderBuffer && (m_info.hRenderBuffer == ogl.BoundTexture ()); 
+return m_info.hColorBuffer [0] && (m_info.hColorBuffer [0] == ogl.BoundTexture ()); 
 }
 
 //------------------------------------------------------------------------------

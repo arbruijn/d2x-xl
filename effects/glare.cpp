@@ -62,42 +62,6 @@ if (ogl.m_states.hDepthBuffer) {
 
 // -----------------------------------------------------------------------------------
 
-GLuint CGlareRenderer::CopyDepthTexture (void)
-{
-	GLenum nError = glGetError ();
-
-#if DBG
-if (nError)
-	nError = nError;
-#endif
-ogl.SelectTMU (GL_TEXTURE1);
-ogl.SetTexturing (true);
-if (!ogl.m_states.hDepthBuffer)
-	ogl.m_states.bHaveDepthBuffer = 0;
-if (ogl.m_states.hDepthBuffer || (ogl.m_states.hDepthBuffer = ogl.CreateDepthTexture (-1, 0))) {
-	ogl.BindTexture (ogl.m_states.hDepthBuffer);
-	if (!ogl.m_states.bHaveDepthBuffer) {
-#if 0
-		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, screen.Width (), screen.Height (), 0);
-#else
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
-#endif
-		if ((nError = glGetError ())) {
-			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
-			if ((nError = glGetError ())) {
-				DestroyDepthTexture ();
-				return ogl.m_states.hDepthBuffer = 0;
-				}
-			}
-		ogl.m_states.bHaveDepthBuffer = 1;
-		gameData.render.nStateChanges++;
-		}
-	}
-return ogl.m_states.hDepthBuffer;
-}
-
-// -----------------------------------------------------------------------------------
-
 void CGlareRenderer::CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, CFloatMatrix *r)
 {
 	CFloatVector	v, h, vdx, vdy;
@@ -771,7 +735,7 @@ if (ogl.Enhance3D () < 0)
 else
 	ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 #endif
-if (!CopyDepthTexture ())
+if (!ogl.CopyDepthTexture ())
 	return false;
 
 ogl.m_states.bUseDepthBlending = 1;

@@ -9,11 +9,15 @@
 
 #if RENDER2TEXTURE == 2
 
+#define MAX_COLOR_BUFFERS 16
+
 typedef struct tFrameBuffer {
 	GLuint	hFBO;
+	GLuint	hColorBuffer [MAX_COLOR_BUFFERS];
+	GLuint	bufferIds [MAX_COLOR_BUFFERS];
 	GLuint	hDepthBuffer;
-	GLuint	hRenderBuffer;
 	GLuint	hStencilBuffer;
+	int		nColorBuffers [2];
 	int		nType;
 	int		nWidth;
 	int		nHeight;
@@ -49,7 +53,7 @@ class CFBO {
 		~CFBO () { Destroy (); }
 		static void Setup (void);
 		void Init (void);
-		int Create (int nWidth, int nHeight, int nType);
+		int Create (int nWidth, int nHeight, int nType, int nColorBuffers = 1);
 		void Destroy (void);
 		int Available (void);
 		int Enable (void);
@@ -63,9 +67,14 @@ class CFBO {
 		inline GLenum GetStatus (void) { return m_info.nStatus; }
 		inline void SetStatus (GLenum nStatus) { m_info.nStatus = nStatus; }
 		inline int Active (void) { return m_info.bActive; }
+		inline GLuint* BufferIds (void) { return m_info.bufferIds; }
+		inline GLuint BufferCount (void) { return m_info.nColorBuffers [0]; }
+		inline int UseBuffers (int nBuffers = 0) { 
+			m_info.nColorBuffers [0] = (nBuffers && (nBuffers <= m_info.nColorBuffers [1])) ? nBuffers : m_info.nColorBuffers [1]; 
+			}
 		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }
-		GLuint& RenderBuffer (void) { return m_info.hRenderBuffer; }
+		GLuint& ColorBuffer (int i = 0) { return m_info.hColorBuffer [(i < m_info.nColorBuffers [1]) ? i : m_info.nColorBuffers [1] - 1]; }
 		GLuint& DepthBuffer (void) { return m_info.hDepthBuffer; }
 		GLuint& StencilBuffer (void) { return m_info.hStencilBuffer; }
 };

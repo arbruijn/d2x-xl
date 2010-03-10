@@ -396,12 +396,21 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) {
-#if 1
-	ogl.SetDepthMode (GL_LEQUAL); 
-#else
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetDepthWrite (false);
-#endif
+	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) 
+		ogl.SetDepthMode (GL_LEQUAL); 
+	else {
+		if (nType == RENDER_LIGHTING) {
+			ogl.SetDepthMode (GL_LEQUAL); 
+			ogl.SetBlendMode (GL_ONE, GL_ONE);
+			gameStates.render.bFullBright = 0;
+			}
+		else {
+			ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+			ogl.SetDepthMode (GL_EQUAL); 
+			ogl.SetDepthWrite (false);
+			gameStates.render.bFullBright = 1;
+			}
+		}
 	}
 else {
 	ogl.ColorMask (0,0,0,0,0);

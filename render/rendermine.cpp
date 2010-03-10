@@ -410,6 +410,12 @@ ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 SetupDepthBuffer (0);
 SetupDepthBuffer (1);
 #endif
+if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
+	gameStates.render.bRenderIndirect = 1;
+	RenderSegmentList (RENDER_LIGHTING, 1);	// render opaque geometry
+	ogl.DrawBuffer ()->UseBuffers (1);
+	}
+
 RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
 RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {

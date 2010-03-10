@@ -79,7 +79,7 @@ class COglData {
 		float				zFar;
 		CFloatVector3	depthScale;
 		tScreenScale	screenScale;
-		CFBO				drawBuffers [2];
+		CFBO				drawBuffers [3];
 		CFBO*				drawBufferP;
 		CFBO				glowBuffer;
 		int				nPerPixelLights [8];
@@ -116,7 +116,8 @@ class COglData {
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
-		inline void SelectDrawBuffer (int nSide) { drawBufferP = drawBuffers + (nSide > 0); }
+		inline CFBO* GetDrawBuffer (int nSide) { return drawBuffers + nSide; }
+		inline void SelectDrawBuffer (int nSide) { drawBufferP = GetDrawBuffer (nSide); }
 };
 
 
@@ -184,6 +185,7 @@ class COglStates {
 		int	bDepthBlending;
 		int	bUseDepthBlending;
 		int	bHaveDepthBuffer;
+		int	bHaveColorBuffer;
 		int	bHaveBlur;
 		int	nDrawBuffer;
 		int	nStencil;
@@ -196,6 +198,7 @@ class COglStates {
 		float	fAlpha;
 		float	fLightRange;
 		GLuint hDepthBuffer;
+		GLuint hColorBuffer;
 
 	public:
 		COglStates () { Initialize (); }
@@ -266,6 +269,9 @@ class COGL {
 		void SetScreenMode (void);
 		void GetVerInfo (void);
 		GLuint CreateDepthTexture (int nTMU, int bFBO);
+		GLuint CopyDepthTexture (void);
+		GLuint CreateColorTexture (int nTMU, int bFBO);
+		GLuint CopyColorTexture (void);
 		GLuint CreateStencilTexture (int nTMU, int bFBO);
 		void CreateDrawBuffer (void);
 		void DestroyDrawBuffer (void);
@@ -273,6 +279,7 @@ class COGL {
 		void SetDrawBuffer (int nBuffer, int bFBO);
 		void SetReadBuffer (int nBuffer, int bFBO);
 		void FlushDrawBuffer (bool bAdditive = false);
+		void ChooseDrawBuffer (void);
 
 		int BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							  tTexCoord2f *texCoordP, 

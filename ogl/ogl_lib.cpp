@@ -635,14 +635,14 @@ else //GLASSES_SHUTTER or NONE
 
 //------------------------------------------------------------------------------
 
-#define GL_INFINITY	0
-
-void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
+void COGL::ChooseDrawBuffer (void)
 {
-	GLint nError = glGetError ();
-
-m_data.xStereoSeparation = xStereoSeparation;
-if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
+if (gameStates.render.bPerPixelLighting) {
+	gameStates.render.bRenderIndirect = 1;
+	SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
+	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+	}
+else if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
 	int i = Enhance3D ();
@@ -658,6 +658,18 @@ else {
 		SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+#define GL_INFINITY	0
+
+void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
+{
+	GLint nError = glGetError ();
+
+m_data.xStereoSeparation = xStereoSeparation;
+ChooseDrawBuffer ();
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
 	float	infProj [4][4];	//projection to infinity
@@ -1079,37 +1091,6 @@ oglRenderer = reinterpret_cast<const char*> (glGetString (GL_RENDERER));
 oglVersion = reinterpret_cast<const char*> (glGetString (GL_VERSION));
 oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 }
-
-//------------------------------------------------------------------------------
-
-#if 0
-
-GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
-{
-	GLuint	hBuffer;
-
-if (nTMU > 0)
-	SelectTMU (nTMU);
-ogl.SetTexturing (true);
-GenTextures (1, &hBuffer);
-if (glGetError ())
-	return hDepthBuffer = 0;
-ogl.BindTexture (hBuffer);
-glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
-				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-if (glGetError ()) {
-	DeleteTextures (1, &hBuffer);
-	return hBuffer = 0;
-	}
-return hBuffer;
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 
