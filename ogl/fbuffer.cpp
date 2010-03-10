@@ -109,8 +109,7 @@ if (nColorBuffers > nMaxBuffers)
 	nColorBuffers = nMaxBuffers;
 m_info.nColorBuffers [0] = nColorBuffers;
 
-for (int i = 0; i < nColorBuffers; i++)
-	ogl.GenTextures (1, m_info.hColorBuffer + i);
+ogl.GenTextures (nColorBuffers, m_info.hColorBuffer);
 
 if (nType == 2) { //GPGPU
 	for (int i = 0; i < nColorBuffers; i++) {
@@ -140,9 +139,8 @@ else {
 		glGenerateMipmapEXT (GL_TEXTURE_2D);
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i, GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
 		}
-	// depth buffer
-	// stencil buffer
 #if FBO_STENCIL_BUFFER
+	// depth + stencil buffer
 	if ((nType == 1) && (m_info.hDepthBuffer = ogl.CreateDepthTexture (0, 1, 1))) {
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hStencilBuffer = m_info.hDepthBuffer, 0);
@@ -152,6 +150,7 @@ else {
 	else 
 #endif
 		{
+		// depth buffer
 		m_info.hStencilBuffer = 0;
 		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
 		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, m_info.hDepthBuffer);
