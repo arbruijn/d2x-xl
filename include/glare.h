@@ -4,7 +4,6 @@
 class CGlareRenderer {
 	private:
 		GLhandleARB	m_shaderProg;
-		GLuint		m_hDepthBuffer;
 
 	public:
 		int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *dimP);
@@ -15,8 +14,6 @@ class CGlareRenderer {
 		void InitShader (void);
 		bool ShaderActive (void);
 		int Style (void);
-		void DestroyDepthTexture (void);
-		inline GLuint DepthBuffer (void) { return m_hDepthBuffer; }
 
 	private:
 		void CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, CFloatMatrix *r);

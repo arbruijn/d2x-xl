@@ -70,7 +70,7 @@ class CFBO {
 		inline GLuint* BufferIds (void) { return m_info.bufferIds; }
 		inline GLuint BufferCount (void) { return m_info.nColorBuffers [0]; }
 		inline int UseBuffers (int nBuffers = 0) { 
-			m_info.nColorBuffers [0] = (nBuffers && (nBuffers <= m_info.nColorBuffers [1])) ? nBuffers : m_info.nColorBuffers [1]; 
+			return m_info.nColorBuffers [0] = (nBuffers && (nBuffers <= m_info.nColorBuffers [1])) ? nBuffers : m_info.nColorBuffers [1]; 
 			}
 		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }

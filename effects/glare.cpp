@@ -52,16 +52,6 @@ switch (gameOpts->render.coronas.nStyle) {
 
 // -----------------------------------------------------------------------------------
 
-void CGlareRenderer::DestroyDepthTexture (void)
-{
-if (ogl.m_states.hDepthBuffer) {
-	ogl.DeleteTextures (1, &ogl.m_states.hDepthBuffer);
-	ogl.m_states.hDepthBuffer = 0;
-	}
-}
-
-// -----------------------------------------------------------------------------------
-
 void CGlareRenderer::CalcSpriteCoords (CFloatVector *vSprite, CFloatVector *vCenter, CFloatVector *vEye, float dx, float dy, CFloatMatrix *r)
 {
 	CFloatVector	v, h, vdx, vdy;

@@ -365,7 +365,7 @@ if (!fbo)
 	m_info.bRenderBuffer = 0;
 else {
 	m_info.fbo = *fbo;
-	m_info.handle = fbo->RenderBuffer ();
+	m_info.handle = fbo->ColorBuffer ();
 	m_info.bRenderBuffer = 1;
 	}
 }
@@ -425,7 +425,7 @@ if (!(m_info.pbo.Bind ())
 #		endif
 #	endif
 #elif RENDER2TEXTURE == 2
-ogl.BindTexture (m_info.fbo.RenderBuffer ());
+ogl.BindTexture (m_info.fbo.ColorBuffer ());
 #endif
 return 0;
 }

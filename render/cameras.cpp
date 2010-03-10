@@ -34,7 +34,7 @@ m_info.glTexId = m_info.pb.texId;
 #elif RENDER2TEXTURE == 2
 if (!m_info.fbo.Create (m_info.buffer.Width (), m_info.buffer.Height (), m_info.bShadowMap))
 	return 0;
-m_info.glTexId = m_info.fbo.RenderBuffer ();
+m_info.glTexId = m_info.fbo.ColorBuffer ();
 #endif
 char szName [20];
 sprintf (szName, "CAM#%04d", m_info.nId);

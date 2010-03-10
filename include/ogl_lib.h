@@ -269,10 +269,14 @@ class COGL {
 		void SetScreenMode (void);
 		void GetVerInfo (void);
 		GLuint CreateDepthTexture (int nTMU, int bFBO);
+		void DestroyDepthTexture (void);
 		GLuint CopyDepthTexture (void);
 		GLuint CreateColorTexture (int nTMU, int bFBO);
+		void DestroyColorTexture (void);
 		GLuint CopyColorTexture (void);
+#if 0
 		GLuint CreateStencilTexture (int nTMU, int bFBO);
+#endif
 		void CreateDrawBuffer (void);
 		void DestroyDrawBuffer (void);
 		void DestroyDrawBuffers (void);

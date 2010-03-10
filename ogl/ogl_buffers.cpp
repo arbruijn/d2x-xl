@@ -245,7 +245,7 @@ CFBO*	bufP = DrawBuffer ();
 if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && bufP->Handle ()) {
 	if (!bufP->Active ()) {
 		if (bufP->Enable ()) {
-			glDrawBuffer (bufP->BufferCount (), bufP->BufferIds ());
+			glDrawBuffers (bufP->BufferCount (), bufP->BufferIds ());
 			}
 		else {
 			DestroyDrawBuffers ();
@@ -301,7 +301,7 @@ if (HaveDrawBuffer ()) {
 	SetDrawBuffer (GL_BACK, 0);
 	ogl.SetTexturing (true);
 	SelectTMU (GL_TEXTURE0);
-	ogl.BindTexture (DrawBuffer ()->RenderBuffer ());
+	ogl.BindTexture (DrawBuffer ()->ColorBuffer ());
 
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
@@ -315,7 +315,7 @@ if (HaveDrawBuffer ()) {
 				SetDrawBuffer (GL_BACK, 0);
 				ogl.SetTexturing (true);
 				SelectTMU (GL_TEXTURE1);
-				ogl.BindTexture (DrawBuffer ()->RenderBuffer ());
+				ogl.BindTexture (DrawBuffer ()->ColorBuffer ());
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
@@ -376,6 +376,16 @@ if (glGetError ()) {
 	return hBuffer = 0;
 	}
 return hBuffer;
+}
+
+// -----------------------------------------------------------------------------------
+
+void COGL::DestroyDepthTexture (void)
+{
+if (ogl.m_states.hDepthBuffer) {
+	ogl.DeleteTextures (1, &ogl.m_states.hDepthBuffer);
+	ogl.m_states.hDepthBuffer = 0;
+	}
 }
 
 // -----------------------------------------------------------------------------------
@@ -446,6 +456,16 @@ return hBuffer;
 
 // -----------------------------------------------------------------------------------
 
+void COGL::DestroyColorTexture (void)
+{
+if (ogl.m_states.hColorBuffer) {
+	ogl.DeleteTextures (1, &ogl.m_states.hColorBuffer);
+	ogl.m_states.hColorBuffer = 0;
+	}
+}
+
+// -----------------------------------------------------------------------------------
+
 GLuint COGL::CopyColorTexture (void)
 {
 	GLenum nError = glGetError ();
@@ -478,7 +498,7 @@ return m_states.hColorBuffer;
 
 // -----------------------------------------------------------------------------------
 
-#if 1
+#if 0
 
 GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
 {
@@ -492,7 +512,7 @@ if (glGetError ())
 	return hDepthBuffer = 0;
 ogl.BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight, 0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_INDEX8_EXT, m_states.nCurWidth, m_states.nCurHeight, 0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
