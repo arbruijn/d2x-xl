@@ -1269,8 +1269,8 @@ void ResetLightmapShaders (void)
 //-------------------------------------------------------------------------
 
 const char *lightMaskFS =
-	"uniform sampler2D lightmap, mask;\r\n" \
-	"void main(void){gl_FragColor = texture2D (mask, gl_TexCoord [1].xy).r * texture2D (lightmap, gl_TexCoord [0].xy);}\r\n"
+	"uniform sampler2D lMapTex, maskTex;\r\n" \
+	"void main(void){gl_FragColor = texture2D (maskTex, gl_TexCoord [1].xy).r * texture2D (lMapTex, gl_TexCoord [0].xy);}\r\n"
 	;
 
 const char *lightMaskVS = 

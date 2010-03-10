@@ -390,13 +390,12 @@ if (mask != gameStates.render.history.bmMask) {
 	bStateChange = true;
 	gameStates.render.history.bmMask = mask;
 	if (mask) {
-		{INIT_TMU (InitTMU1, GL_TEXTURE1, mask, lightmapManager.Buffer (), 2, 0);}
-		ogl.EnableClientStates (1, 0, 0, -1);
+		SetupTMU (mask, GL_TEXTURE1, GL_MODULATE);
+		//ogl.EnableClientStates (1, 0, 0, -1);
 		}
 	else {
-		ogl.SelectTMU (GL_TEXTURE1, true);
-		ogl.BindTexture (0);
-		ogl.DisableClientStates (1, 0, 0, -1);
+		ResetTMU (GL_TEXTURE1);
+		//ogl.DisableClientStates (1, 0, 0, -1);
 		}
 	}
 if (bStateChange)
