@@ -264,6 +264,7 @@ if (bmP->Bind (1))
 	return NULL; 
 bmP = bmP->CurFrame (-1); 
 bmP->Texture ()->Wrap (GL_REPEAT); 
+return bmP;
 }
 
 //------------------------------------------------------------------------------
