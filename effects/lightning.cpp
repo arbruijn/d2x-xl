@@ -522,7 +522,7 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 if (!m_nodes.Create (m_nNodes))
 	return false;
 if (gameOpts->render.lightning.bPlasma) {
-	int h = ((m_bPlasma > 0) ? 3 : 1) * (m_nNodes - 1) * 4;
+	int h = ((m_bPlasma > 0) ? 2 : 1) * (m_nNodes - 1) * 4;
 	if (!m_plasmaTexCoord.Create (h))
 		return false;
 	if (!m_plasmaVerts.Create (h))
