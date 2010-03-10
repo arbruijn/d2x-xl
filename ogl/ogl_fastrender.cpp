@@ -388,7 +388,6 @@ if (mask != gameStates.render.history.bmMask) {
 		ogl.SelectTMU (GL_TEXTURE1, true);
 		ogl.BindTexture (0);
 		ogl.DisableClientStates (1, 0, 0, -1);
-		bColorKey = 0;
 		}
 	}
 if (bStateChange)

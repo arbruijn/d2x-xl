@@ -494,8 +494,11 @@ else
 		if (bColor)
 			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
-		if (nType == RENDER_LIGHTING)
+		if (nType == RENDER_LIGHTING) {
+			ogl.SelectTMU (GL_TEXTURE1, true);
+			ogl.BindTexture (0);
 			ogl.DisableClientStates (1, bColor, bNormals, GL_TEXTURE1);
+			}
 		}
 	if (nType > RENDER_LIGHTING) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1 + bLightmaps);
