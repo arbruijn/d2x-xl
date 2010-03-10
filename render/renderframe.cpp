@@ -345,7 +345,7 @@ ogl.SetDepthTest (true);
 
 void Draw2DFrameElements (void)
 {
-if (!gameStates.render.bRenderIndirect && (ogl.Enhance3D () >= 0))
+if (ogl.Enhance3D () >= 0)
 	ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
@@ -365,7 +365,8 @@ FlashMine ();
 void FlushFrame (fix xStereoSeparation)
 {
 if (!(gameOpts->render.n3DGlasses && xStereoSeparation)) {	//no stereo or shutter glasses
-	Draw2DFrameElements ();
+	if (!gameStates.render.bRenderIndirect)
+		Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
 else {

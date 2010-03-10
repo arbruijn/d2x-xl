@@ -637,12 +637,15 @@ else //GLASSES_SHUTTER or NONE
 
 void COGL::ChooseDrawBuffer (void)
 {
+#if 0
 if (gameStates.render.bPerPixelLighting) {
 	gameStates.render.bRenderIndirect = 1;
 	SelectDrawBuffer (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0));
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 	}
-else if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
+else 
+#endif
+if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
 else {
 	int i = Enhance3D ();

@@ -398,6 +398,9 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) {
+#if 1
+	ogl.SetDepthMode (GL_LEQUAL); 
+#else
 	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) 
 		ogl.SetDepthMode (GL_LEQUAL); 
 	else {
@@ -413,6 +416,7 @@ if (!bDepthOnly) {
 			gameStates.render.bFullBright = 1;
 			}
 		}
+#endif
 	}
 else {
 	ogl.ColorMask (0,0,0,0,0);
@@ -485,22 +489,22 @@ else
 		}
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	if (bLightmaps) {
-		ogl.EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1);
+		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
 		if (bColor)
 			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 		if (nType == RENDER_LIGHTING)
-			ogl.DisableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1);
+			ogl.DisableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		}
 	if (nType > RENDER_LIGHTING) {
-		ogl.EnableClientStates (1, !gameStates.render.bFullBright, bNormals, GL_TEXTURE1 + bLightmaps);
+		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1 + bLightmaps);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
 			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (FACES.vertices.Buffer ()));
 		if (nType < RENDER_CORONAS) {
-			ogl.EnableClientStates (1, !gameStates.render.bFullBright, 0, GL_TEXTURE2 + bLightmaps);
+			ogl.EnableClientStates (1, bColor, 0, GL_TEXTURE2 + bLightmaps);
 			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 			if (bColor)
 				OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));

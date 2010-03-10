@@ -107,7 +107,8 @@ if (nMaxBuffers > MAX_COLOR_BUFFERS)
 	nMaxBuffers = MAX_COLOR_BUFFERS;
 if (nColorBuffers > nMaxBuffers)
 	nColorBuffers = nMaxBuffers;
-m_info.nColorBuffers [0] = nColorBuffers;
+m_info.nColorBuffers [0] = 
+m_info.nColorBuffers [1] = nColorBuffers;
 
 ogl.GenTextures (nColorBuffers, m_info.hColorBuffer);
 
@@ -181,17 +182,9 @@ if (m_info.hFBO) {
 		m_info.nColorBuffers [1] = 0;
 		}
 	if (m_info.hDepthBuffer) {
-#if 1
-		if (m_info.nType == 1) {
-#if FBO_STENCIL_BUFFER
-			glDeleteRenderbuffersEXT (1, &m_info.hStencilBuffer);
-			m_info.hStencilBuffer = 0;
-#endif
-			}
-		else
-#endif
-			glDeleteRenderbuffersEXT (1, &m_info.hDepthBuffer);
-		m_info.hDepthBuffer = 0;
+		glDeleteRenderbuffersEXT (1, &m_info.hDepthBuffer);
+		m_info.hDepthBuffer =
+		m_info.hStencilBuffer = 0;
 		}
 	glDeleteFramebuffersEXT (1, &m_info.hFBO);
 	m_info.hFBO = 0;

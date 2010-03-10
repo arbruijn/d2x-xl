@@ -503,7 +503,7 @@ if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
 	m_bCloseBox = 1;
 	}
 if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0))) {
-	if (gameStates.app.bGameRunning && ogl.Enhance3D ())
+	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect)
 		ogl.FlushDrawBuffer ();
 	GrUpdate (0);
 	}
