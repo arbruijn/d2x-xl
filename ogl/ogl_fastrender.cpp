@@ -49,7 +49,7 @@
 #	define G3_BUFFER_FACES	0
 #endif
 
-tRenderFaceDrawerP faceRenderFunc = RenderFace;
+tRenderFaceDrawerP faceRenderFunc = RenderFaceVL;
 
 //------------------------------------------------------------------------------
 
@@ -246,9 +246,9 @@ if (gameOpts->render.debug.bWireFrame) {
 static inline void G3SetBlendMode (CSegFace *faceP)
 {
 if (faceP->m_info.bAdditive)
-	SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 else if (faceP->m_info.bTransparent)
-	SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 else
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 }
@@ -392,7 +392,6 @@ if (mask != gameStates.render.history.bmMask) {
 	}
 if (bStateChange)
 	gameData.render.nStateChanges++;
-}
 PROF_END(ptRenderStates)
 return 1;
 }
@@ -461,7 +460,7 @@ return (faceP->m_info.nColored >= 0)
 
 //------------------------------------------------------------------------------
 
-int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int RenderFaceVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
@@ -587,7 +586,7 @@ return 0;
 
 #if GEOMETRY_VBOS
 
-inline void RenderFacePP (CSegFace *faceP)
+inline void DrawFacePP (CSegFace *faceP)
 {
 if (FACES.vboDataHandle) {
 	int i = faceP->m_info.nIndex;
@@ -599,7 +598,7 @@ else
 
 #else
 
-#define RenderFacePP(_faceP)	OglDrawArrays (GL_TRIANGLES, (_faceP)->m_info.nIndex, 6)
+#define DrawFacePP(_faceP)	OglDrawArrays (GL_TRIANGLES, (_faceP)->m_info.nIndex, 6)
 
 #endif
 
@@ -654,7 +653,7 @@ else {
 	}
 
 if (bDepthOnly) {
-	RenderFacePP (faceP);
+	DrawFacePP (faceP);
 	PROF_END(ptRenderFaces)
 	return 1;
 	}
@@ -675,7 +674,7 @@ if (bMonitor)
 gameData.render.nTotalFaces++;
 if (!bColored) {
 	SetupGrayScaleShader (gameStates.render.history.nType, &faceP->m_info.color);
-	RenderFacePP (faceP);
+	DrawFacePP (faceP);
 	}
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
@@ -683,13 +682,13 @@ else if (gameStates.render.bFullBright) {
 	else 
 		shaderManager.Deploy (-1);
 	glColor3f (1,1,1);
-	RenderFacePP (faceP);
+	DrawFacePP (faceP);
 	}
 else {
 	bool bAdditive = false;
 	for (;;) {
 		SetupPerPixelShader (faceP, gameStates.render.history.nType, false);
-		RenderFacePP (faceP);
+		DrawFacePP (faceP);
 		if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 			 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 			break;
@@ -776,7 +775,7 @@ else {
 	}
 
 if (bDepthOnly) {
-	RenderFacePP (faceP);
+	DrawFacePP (faceP);
 	PROF_END(ptRenderFaces)
 	return 1;
 	}
@@ -797,7 +796,7 @@ if (bMonitor)
 gameData.render.nTotalFaces++;
 if (!bColored) {
 	SetupGrayScaleShader (gameStates.render.history.nType, &faceP->m_info.color);
-	RenderFacePP (faceP);
+	DrawFacePP (faceP);
 	}
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
@@ -805,11 +804,11 @@ else if (gameStates.render.bFullBright) {
 	else 
 		shaderManager.Deploy (-1);
 	glColor3f (1,1,1);
-	RenderFacePP (faceP);
+	DrawFacePP (faceP);
 	}
 else {
 	SetupLightmapShader (faceP, gameStates.render.history.nType, false);
-	RenderFacePP (faceP);
+	DrawFacePP (faceP);
 	}
 
 if (bMonitor)
@@ -820,7 +819,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int RenderHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int RenderHeadlightsVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bColorKey = 0, bMonitor = 0;
 
@@ -845,7 +844,7 @@ if (bMonitor)
 	SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;
 lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->m_info.color);
-RenderFacePP (faceP);
+DrawFacePP (faceP);
 
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
@@ -893,10 +892,7 @@ return 0;
 
 int RenderLighting (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
-if (!faceP->m_info.bTextured)
-	bmBot = NULL;
-else if (bmBot)
-	bmBot = bmBot->Override (-1);
+	int bColorKey = 0;
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -904,6 +900,12 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 if (bmTop)
 	bmTop = bmTop;
 #endif
+
+if (!faceP->m_info.bTextured)
+	bmBot = NULL;
+else if (bmBot)
+	bmBot = bmBot->Override (-1);
+
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -914,6 +916,8 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
+OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
+return 0;
 }
 
 //------------------------------------------------------------------------------

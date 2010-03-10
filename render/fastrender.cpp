@@ -155,6 +155,21 @@ else {
 
 //------------------------------------------------------------------------------
 
+bool RenderIllumination (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+{
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return false;
+if (IS_WALL (faceP->m_info.nWall))
+	return false;
+LoadFaceBitmaps (segP, faceP);
+if (!faceP->bmBot)
+	return false;
+RenderLighting (faceP, faceP->bmBot, faceP->bmTop);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 bool RenderSolidFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
@@ -221,7 +236,7 @@ return true;
 bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 LoadFaceBitmaps (segP, faceP);
-RenderFace (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
+RenderFaceVL (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
 return true;
 }
 
@@ -233,7 +248,7 @@ typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP, int
 typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
 #endif
 
-static pRenderHandler renderHandlers [] = {RenderLighting, RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
+static pRenderHandler renderHandlers [] = {RenderIllumination, RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace};
 
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType, int bDepthOnly)
@@ -794,7 +809,7 @@ void RenderHeadlights (int nType)
 {
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-	faceRenderFunc = lightmapManager.HaveLightmaps () ? RenderHeadlightsPP : RenderHeadlights;
+	faceRenderFunc = lightmapManager.HaveLightmaps () ? RenderHeadlightsPP : RenderHeadlightsVL;
 	RenderSegments (nType, 0, 1);
 	SetFaceDrawer (-1);
 	}

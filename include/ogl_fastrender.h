@@ -11,10 +11,11 @@
 
 //------------------------------------------------------------------------------
 
-int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int RenderLighting (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
+int RenderFaceVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderFaceLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderFacePP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int RenderHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int RenderHeadlightsVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderHeadlightsPP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void FlushFaceBuffer (int bForce);
 
@@ -48,7 +49,7 @@ if (nType == 2)
 else if (nType == 1)
 	faceRenderFunc = RenderFaceLM;
 else
-	faceRenderFunc = RenderFace;
+	faceRenderFunc = RenderFaceVL;
 }
 
 //------------------------------------------------------------------------------
