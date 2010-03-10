@@ -250,10 +250,8 @@ if (segP->m_nType == SEGMENT_IS_EQUIPMAKER) {	// toggle it on or off
 matCenP = gameData.matCens.fuelCenters + gameData.matCens.botGens [segP->m_nMatCen].nFuelCen;
 if (matCenP->bEnabled)
 	return 0;
-#if 0 //!DBG
 if (!matCenP->nLives)
 	return 0;
-#endif
 //	MK: 11/18/95, At insane, matcens work forever!
 if (gameStates.app.bD1Mission || (gameStates.app.nDifficultyLevel + 1 < NDL))
 	matCenP->nLives--;

@@ -245,7 +245,7 @@ do {
 	nDot = CFixVector::Dot (va, *vOffs);
 	if (++i > 100)
 		i = 0;
-	} while (abs (nDot) < I2X (1) / 32);
+	} while (abs (nDot) < I2X (1) / 42);
 if (nDot < 0)
 	vOffs->Neg ();
 return vOffs;
@@ -677,7 +677,7 @@ if ((nDepth > 1) || m_bRandom) {
 			nAmplitude *= 4;
 		for (i = 0; i < m_nNodes; i++) {
 			phi = bClamp ? double (i) / double (m_nNodes - 1) : 1;
-			m_nodes [i].CreatePerlin (nSteps, nAmplitude, nSeed, 2 * phi / 3, phi * 7.5);
+			m_nodes [i].CreatePerlin (nSteps, nAmplitude, nSeed, 2 * phi / 4, phi * 7.5);
 			}
 		}
 	else {
@@ -703,7 +703,7 @@ else {
 	plh->m_vNewPos = plh->m_vPos;
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
-		nAmplitude = 5 * nAmplitude / 3;
+		nAmplitude = 5 * nAmplitude / 4;
 		for (h = m_nNodes, i = 0, plh = m_nodes.Buffer (); i < h; i++, plh++) {
 			phi = bClamp ? double (i) / double (h - 1) : 1;
 			plh->CreatePerlin (nSteps, nAmplitude, nSeed, phi, phi * 10);
@@ -918,7 +918,7 @@ if (!nodeP)
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
 	bool					bPlasma = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
-	float					fWidth = bPlasma ? PLASMA_WIDTH : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
+	float					fWidth = bPlasma ? PLASMA_WIDTH / 2.0f : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 vEye.Assign (gameData.render.mine.viewerEye);
 dstP = m_plasmaVerts.Buffer ();
@@ -960,14 +960,16 @@ for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
 
 if (bPlasma) {
 	int h = 4 * (m_nNodes - 1);
-	for (j = 0; j < 2; j++) {
+	//for (j = 0; j < 2; j++) 
+		{
 		memcpy (texCoordP, texCoordP - h, h * sizeof (tTexCoord2f));
+		texCoordP += h;
 		srcP = dstP;
 		dstP += h;
 		for (i = 0; i < h; i += 2) {
 			vPos [0] = CFloatVector::Avg (srcP [i], srcP [i+1]);
 			vPos [1] = srcP [i] - srcP [i+1];
-			vPos [1] /= 4;
+			vPos [1] /= 8;
 			dstP [i] = vPos [0] + vPos [1];
 			dstP [i+1] = vPos [0] - vPos [1];
 			}
@@ -1011,26 +1013,15 @@ if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
 	return;
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
+ogl.SetBlendMode (1);
 if (nDepth || (m_bPlasma < 1)) {
-	ogl.SetBlendMode (1);
-	glColor3f (colorP->red, colorP->green, colorP->blue);
+	glColor3fv (reinterpret_cast<GLfloat*> (colorP));
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	}
 else {
-	ogl.SetBlendMode (1);
 	int h = 4 * (m_nNodes - 1);
-	tRgbaColorf color;
-	if (0 > (color.red = (colorP->red - 0.1f) / 1))
-		color.red = 0;
-	if (0 > (color.green = (colorP->green - 0.1f) / 1))
-		color.green = 0;
-	if (0 > (color.blue = (colorP->blue - 0.1f) / 1))
-		color.blue = 0;
-	for (int i = 2; i >= 0; i--) {
-		if (i == 1)
-			glColor3f (0.1f, 0.1f, 0.1f);
-		else
-			glColor3f (color.red, color.green, color.blue);
+	glColor3f (colorP->red / 2.0f, colorP->green / 2.0f, colorP->blue / 2.0f);
+	for (int i = 1; i >= 0; i--) {
 		OglDrawArrays (GL_QUADS, i * h, h);
 #if RENDER_LIGHTNING_OUTLINE
 		if (h != 1)
@@ -1156,8 +1147,8 @@ color = m_color;
 if (m_nLife > 0) {
 	if ((i = m_nLife - m_nTTL) < 250)
 		color.alpha *= (float) i / 250.0f;
-	else if (m_nTTL < m_nLife / 3)
-		color.alpha *= (float) m_nTTL / (float) (m_nLife / 3);
+	else if (m_nTTL < m_nLife / 4)
+		color.alpha *= (float) m_nTTL / (float) (m_nLife / 4);
 	}
 color.red *= (float) (0.9 + dbl_rand () / 5);
 color.green *= (float) (0.9 + dbl_rand () / 5);
@@ -2402,7 +2393,7 @@ if ((bSpectate || (objP->info.nId != gameData.multiplayer.nLocalPlayer)) &&
 	}
 else {
 	*vMuzzle = posP->vPos - posP->mOrient.UVec ();
-	*vMuzzle += posP->mOrient.FVec () * (objP->info.xSize / 3);
+	*vMuzzle += posP->mOrient.FVec () * (objP->info.xSize / 4);
 	}
 return vMuzzle;
 }
