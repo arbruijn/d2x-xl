@@ -1489,10 +1489,13 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 #endif
 if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
 	int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
-#if 1//DBG
-	if (lightmapManager.Bind (i))
-#endif
-	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
+	GLuint h;
+	if (lightmapManager.Bind (i) && !ogl.IsBound (h = lightmapManager.Buffer (i)->handle)) {
+		ogl.SelectTMU (GL_TEXTURE0, true);
+		ogl.SetTexturing (true);
+		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		ogl.BindTexture (h);
+		}
 	}
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType]));
@@ -1545,8 +1548,13 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
-if (lightmapManager.Bind (i))
-	{INIT_TMU (InitTMU0, GL_TEXTURE0, nullBmP, lightmapManager.Buffer (i), 1, 1);}
+GLuint h;
+if (lightmapManager.Bind (i) && !ogl.IsBound (h = lightmapManager.Buffer (i)->handle)) {
+	ogl.SelectTMU (GL_TEXTURE0, true);
+	ogl.SetTexturing (true);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	ogl.BindTexture (h);
+	}
 
 #if CONST_LIGHT_COUNT
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));

@@ -424,9 +424,6 @@ RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)
 		RenderSegmentList (RENDER_WALLS, 1);	// render transparent geometry
-#if 0
-	RenderEffects (nWindow);
-#endif
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
  		ogl.SetTexturing (true);

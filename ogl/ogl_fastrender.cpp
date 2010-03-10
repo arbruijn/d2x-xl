@@ -255,42 +255,58 @@ else
 
 //------------------------------------------------------------------------------
 
+static inline CBitmap* SetupTMU (CBitmap* bmP, int nTMU, int nMode)
+{
+ogl.SelectTMU (nTMU, true);
+ogl.SetTexturing (true);
+glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, nMode);
+if (bmP->Bind (1)) 
+	return NULL; 
+bmP = bmP->CurFrame (-1); 
+bmP->Texture ()->Wrap (GL_REPEAT); 
+}
+
+//------------------------------------------------------------------------------
+
+void inline ResetTMU (int nTMU)
+{
+ogl.SelectTMU (nTMU, true);
+ogl.BindTexture (0);
+ogl.SetTexturing (false);
+}
+
+//------------------------------------------------------------------------------
+
 int SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bColorKey, int bColored, bool bForce = false)
 {
 PROF_START
 if (bTextured) {
 	bool bStateChange = false;
-	CBitmap *mask = NULL;
 	if (bForce || (bmBot != gameStates.render.history.bmBot)) {
 		bStateChange = true;
-		gameStates.render.history.bmBot = bmBot;
-		{INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);}
+		if (!(gameStates.render.history.bmBot = SetupTMU (bmBot, GL_TEXTURE0, GL_MODULATE)))
+			return 0;
 		}
 	if (bForce || (bmTop != gameStates.render.history.bmTop)) {
 		bStateChange = true;
-		gameStates.render.history.bmTop = bmTop;
-		if (bmTop) {
-			{INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, lightmapManager.Buffer (), 1, 0);}
+		if (gameStates.render.history.bmTop = bmTop) {
+			if (!(gameStates.render.history.bmTop = SetupTMU (bmTop, GL_TEXTURE1, GL_DECAL)))
+				return 0;
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE1, true);
-			ogl.BindTexture (0);
-			ogl.SetTexturing (false);
-			mask = NULL;
+			ResetTMU (GL_TEXTURE1);
 			}
 		}
-	mask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
-	if (bForce || (mask != gameStates.render.history.bmMask)) {
+	CBitmap* bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader && bmTop) ? bmTop->Mask () : NULL;
+	if (bForce || (bmMask != gameStates.render.history.bmMask)) {
 		bStateChange = true;
-		gameStates.render.history.bmMask = mask;
-		if (mask) {
-			{INIT_TMU (InitTMU2, GL_TEXTURE2, mask, lightmapManager.Buffer (), 2, 0);}
+		if (gameStates.render.history.bmMask = bmMask) {
+			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE2, GL_MODULATE)))
+				return 0;
 			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE2, true);
-			ogl.BindTexture (0);
-			ogl.SetTexturing (false);
+			ResetTMU (GL_TEXTURE2);
 			bColorKey = 0;
 			}
 		}
@@ -306,9 +322,7 @@ if (bTextured) {
 	}
 else {
 	gameStates.render.history.bmBot = NULL;
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
+	ResetTMU (GL_TEXTURE0);
 	}
 PROF_END(ptRenderStates)
 return 1;
@@ -321,36 +335,32 @@ int SetRenderStatesLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTex
 PROF_START
 if (bTextured) {
 	bool bStateChange = false;
-	CBitmap *mask = NULL;
 	if (bmBot != gameStates.render.history.bmBot) {
 		bStateChange = true;
 		gameStates.render.history.bmBot = bmBot;
-		{INIT_TMU (InitTMU1, GL_TEXTURE1, bmBot, lightmapManager.Buffer (), 1, 0);}
+		if (!(gameStates.render.history.bmBot = SetupTMU (bmBot, GL_TEXTURE1, GL_MODULATE)))
+			return 0;
 		}
 	if (bmTop != gameStates.render.history.bmTop) {
 		bStateChange = true;
-		gameStates.render.history.bmTop = bmTop;
-		if (bmTop) {
-			{INIT_TMU (InitTMU2, GL_TEXTURE2, bmTop, lightmapManager.Buffer (), 1, 0);}
+		if (gameStates.render.history.bmTop = bmTop) {
+			if (!(gameStates.render.history.bmTop = SetupTMU (bmTop, GL_TEXTURE2, GL_DECAL)))
+				return 0;
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE2, true);
-			ogl.BindTexture (0);
-			mask = NULL;
+			ResetTMU (GL_TEXTURE2);
 			}
 		}
-	if (bColorKey)
-		mask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
-	if (mask != gameStates.render.history.bmMask) {
+	CBitmap* bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader && bmTop) ? bmTop->Mask () : NULL;
+	if (bmMask != gameStates.render.history.bmMask) {
 		bStateChange = true;
-		gameStates.render.history.bmMask = mask;
-		if (mask) {
-			{INIT_TMU (InitTMU3, GL_TEXTURE3, mask, lightmapManager.Buffer (), 2, 0);}
-			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
+		if (gameStates.render.history.bmMask = bmMask) {
+			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE3, GL_MODULATE)))
+				return 0;
+			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE3);
 			}
 		else {
-			ogl.SelectTMU (GL_TEXTURE3, true);
-			ogl.BindTexture (0);
+			ResetTMU (GL_TEXTURE3);
 			bColorKey = 0;
 			}
 		}
@@ -362,9 +372,7 @@ if (bTextured) {
 	}
 else {
 	gameStates.render.history.bmBot = NULL;
-	ogl.SelectTMU (GL_TEXTURE1, true);
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
+	ResetTMU (GL_TEXTURE1);
 	}
 PROF_END(ptRenderStates)
 return 1;
@@ -917,6 +925,7 @@ if (bmTop) {
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
 SetupLightingShader (faceP, bColorKey);
+ogl.SetBlendMode (0);
 DrawFacePP (faceP);
 return 0;
 }
