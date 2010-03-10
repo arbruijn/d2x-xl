@@ -375,18 +375,19 @@ return 1;
 int SetLightingRenderStates (CSegFace *faceP, CBitmap *bmTop, int bColorKey)
 {
 PROF_START
-bool bStateChange = true;
+bool bStateChange = false;
 CBitmap *mask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
 if (mask != gameStates.render.history.bmMask) {
 	bStateChange = true;
 	gameStates.render.history.bmMask = mask;
 	if (mask) {
 		{INIT_TMU (InitTMU1, GL_TEXTURE1, mask, lightmapManager.Buffer (), 2, 0);}
-		ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE1);
+		ogl.EnableClientStates (1, 0, 0, -1);
 		}
 	else {
 		ogl.SelectTMU (GL_TEXTURE1, true);
 		ogl.BindTexture (0);
+		ogl.DisableClientStates (1, 0, 0, -1);
 		bColorKey = 0;
 		}
 	}
@@ -916,10 +917,7 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
-if (bColorKey)
-	SetupLightingShader (faceP);
-else
-	shaderManager.Deploy (-1);
+SetupLightingShader (faceP, bColorKey);
 DrawFacePP (faceP);
 return 0;
 }
