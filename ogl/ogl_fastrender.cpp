@@ -358,7 +358,7 @@ if (bTextured) {
 		if (gameStates.render.history.bmMask = bmMask) {
 			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE3, GL_MODULATE)))
 				return 0;
-			ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE3);
+			//ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE3);
 			}
 		else {
 			ResetTMU (GL_TEXTURE3);
@@ -926,9 +926,6 @@ if (bmTop) {
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
 SetupLightingShader (faceP, bColorKey);
-ogl.SetBlendMode (0);
-ogl.SetFaceCulling (false);
-ogl.SetDepthMode (GL_ALWAYS);
 DrawFacePP (faceP);
 return 0;
 }

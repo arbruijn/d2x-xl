@@ -159,8 +159,6 @@ bool RenderIllumination (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
-if (IS_WALL (faceP->m_info.nWall))
-	return false;
 LoadFaceBitmaps (segP, faceP);
 if (!faceP->bmBot)
 	return false;
@@ -444,9 +442,9 @@ else {
 		}
 	}
 ogl.SetupTransform (1);
-ogl.EnableClientStates (!bDepthOnly, bColor, bNormals, GL_TEXTURE0);
 #if GEOMETRY_VBOS
 if (bVBO) {
+	ogl.EnableClientStates (!bDepthOnly, bColor, bNormals, GL_TEXTURE0);
 	if (bNormals)
 		OglNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (FACES.iNormals));
 	if (!bDepthOnly) {
@@ -477,17 +475,6 @@ if (bVBO) {
 else 
 #endif
 	{
-	if (bNormals)
-		OglNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
-	if (!bDepthOnly) {
-		if (bLightmaps)
-			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
-		else
-			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
-		if (bColor)
-			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
-		}
-	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	if (bLightmaps) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
@@ -514,10 +501,25 @@ else
 			OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 			}
 		}
+
+	ogl.EnableClientStates (!bDepthOnly, bColor, bNormals, GL_TEXTURE0);
+	if (bNormals)
+		OglNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
+	if (!bDepthOnly) {
+		if (bLightmaps)
+			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
+		else
+			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
+		if (bColor)
+			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
+		}
+	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
+#if 0
 if (bNormals)	// somehow these get disabled above
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
-if (gameStates.render.bFullBright)
+#endif
+if (gameStates.render.bFullBright || (nType == RENDER_LIGHTING))
 	glColor3f (1,1,1);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.ClearError (0);
