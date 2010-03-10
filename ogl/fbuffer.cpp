@@ -38,6 +38,7 @@
 #if RENDER2TEXTURE == 2
 
 #ifdef _WIN32
+PFNGLDRAWBUFFERSPROC glDrawBuffers;
 PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
 PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
 PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;
@@ -248,7 +249,9 @@ PrintLog ("Checking rendering to texture ...\n");
 if (ogl.m_states.bUseRender2Texture) {
 #	ifdef _WIN32
 	ogl.m_states.bRender2TextureOk = 0;
-	if (!(glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) wglGetProcAddress ("glBindRenderbufferEXT")))
+	if (!(glDrawBuffers = (PFNGLDRAWBUFFERSPROC) wglGetProcAddress ("glDrawBuffers")))
+		PrintLog ("   glDrawBuffers not supported by the OpenGL driver\n");
+	else if (!(glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) wglGetProcAddress ("glBindRenderbufferEXT")))
 		PrintLog ("   glBindRenderbufferEXT not supported by the OpenGL driver\n");
 	else if (!(glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC) wglGetProcAddress ("glIsRenderbufferEXT")))
 		PrintLog ("   glIsRenderbufferEXT not supported by the OpenGL driver\n");

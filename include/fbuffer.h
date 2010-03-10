@@ -26,6 +26,7 @@ typedef struct tFrameBuffer {
 } tFrameBuffer;
 
 #ifdef _WIN32
+extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
 extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
 extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;

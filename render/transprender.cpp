@@ -40,8 +40,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #include "transprender.h"
 #include "renderthreads.h"
 
-#define RENDER_TRANSPARENCY 1
-#define RENDER_TRANSP_DECALS 1
+#define DO_RENDER_TRANSPARENCY 1
 
 #define TI_SPLIT_POLYS 0
 #define TI_POLY_OFFSET 0
@@ -144,7 +143,7 @@ if (m_data.nFreeItems <= 0)
 if (!bTransformed && gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return 0;
 #endif
-#if RENDER_TRANSPARENCY
+#if DO_RENDER_TRANSPARENCY
 	tTranspItem*		ph, *	pi;
 	tTranspItemList*	pd;
 	int					nDepth = Depth (vPos, bTransformed);
@@ -1173,7 +1172,7 @@ extern int bLog;
 
 void CTransparencyRenderer::Render (void)
 {
-#if RENDER_TRANSPARENCY
+#if DO_RENDER_TRANSPARENCY
 	tTranspItem*		currentP, * nextP, * prevP;
 	tTranspItemList*	listP;
 	int					nItems, nDepth, bStencil;
