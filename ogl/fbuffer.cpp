@@ -107,8 +107,9 @@ if (nMaxBuffers > MAX_COLOR_BUFFERS)
 	nMaxBuffers = MAX_COLOR_BUFFERS;
 if (nColorBuffers > nMaxBuffers)
 	nColorBuffers = nMaxBuffers;
-m_info.nColorBuffers [0] = 
-m_info.nColorBuffers [1] = nColorBuffers;
+m_info.nColorBuffers = 
+m_info.nBufferCount = nColorBuffers;
+m_info.nFirstBuffer = 0;
 
 ogl.GenTextures (nColorBuffers, m_info.hColorBuffer);
 
@@ -175,11 +176,11 @@ void CFBO::Destroy (void)
 if (!ogl.m_states.bRender2TextureOk)
 	return;
 if (m_info.hFBO) {
-	if (m_info.nColorBuffers [1]) {
-		ogl.DeleteTextures (m_info.nColorBuffers [1], m_info.hColorBuffer);
+	if (m_info.nColorBuffers) {
+		ogl.DeleteTextures (m_info.nColorBuffers, m_info.hColorBuffer);
 		memset (m_info.hColorBuffer, 0, sizeof (m_info.hColorBuffer));
-		m_info.nColorBuffers [0] = 
-		m_info.nColorBuffers [1] = 0;
+		m_info.nColorBuffers = 
+		m_info.nColorBuffers = 0;
 		}
 	if (m_info.hDepthBuffer) {
 		glDeleteRenderbuffersEXT (1, &m_info.hDepthBuffer);

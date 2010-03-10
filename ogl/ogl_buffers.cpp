@@ -245,7 +245,7 @@ CFBO*	bufP = DrawBuffer ();
 if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && bufP->Handle ()) {
 	if (!bufP->Active ()) {
 		if (bufP->Enable ()) {
-			glDrawBuffers (bufP->BufferCount (), bufP->BufferIds ());
+			bufP->SetDrawBuffers ();
 			}
 		else {
 			DestroyDrawBuffers ();

@@ -17,7 +17,9 @@ typedef struct tFrameBuffer {
 	GLuint	bufferIds [MAX_COLOR_BUFFERS];
 	GLuint	hDepthBuffer;
 	GLuint	hStencilBuffer;
-	int		nColorBuffers [2];
+	int		nColorBuffers;
+	int		nFirstBuffer;
+	int		nBufferCount;
 	int		nType;
 	int		nWidth;
 	int		nHeight;
@@ -68,14 +70,21 @@ class CFBO {
 		inline GLenum GetStatus (void) { return m_info.nStatus; }
 		inline void SetStatus (GLenum nStatus) { m_info.nStatus = nStatus; }
 		inline int Active (void) { return m_info.bActive; }
-		inline GLuint* BufferIds (void) { return m_info.bufferIds; }
-		inline GLuint BufferCount (void) { return m_info.nColorBuffers [0]; }
-		inline int UseBuffers (int nBuffers = 0) { 
-			return m_info.nColorBuffers [0] = (nBuffers && (nBuffers <= m_info.nColorBuffers [1])) ? nBuffers : m_info.nColorBuffers [1]; 
+		inline GLuint* BufferIds (void) { return m_info.bufferIds + m_info.nFirstBuffer; }
+		inline GLuint BufferCount (void) { return m_info.nBufferCount; }
+		inline int UseBuffers (int nFirst = 0, int nLast = 0) { 
+			if (nFirst > m_info.nColorBuffers - 1)
+				nFirst = m_info.nColorBuffers - 1;
+			if (nLast > m_info.nColorBuffers - 1)
+				nLast = m_info.nColorBuffers - 1;
+			m_info.nBufferCount = nLast - nFirst + 1;
+			return nFirst;
 			}
+		inline void SetDrawBuffers (void) { glDrawBuffers (BufferCount (), BufferIds ()); }
+
 		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }
-		GLuint& ColorBuffer (int i = 0) { return m_info.hColorBuffer [(i < m_info.nColorBuffers [1]) ? i : m_info.nColorBuffers [1] - 1]; }
+		GLuint& ColorBuffer (int i = 0) { return m_info.hColorBuffer [(i < m_info.nColorBuffers) ? i : m_info.nColorBuffers - 1]; }
 		GLuint& DepthBuffer (void) { return m_info.hDepthBuffer; }
 		GLuint& StencilBuffer (void) { return m_info.hStencilBuffer; }
 };
