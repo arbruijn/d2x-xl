@@ -364,7 +364,7 @@ if (glGetError ())
 BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 if (bStencil)
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_STENCIL_EXT, GL_DEPTH24_STENCIL8_EXT, NULL);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8_EXT, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, NULL);
 else
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_states.nCurWidth, m_states.nCurHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
 if (glGetError ()) {

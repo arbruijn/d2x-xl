@@ -345,7 +345,7 @@ ogl.SetDepthTest (true);
 
 void Draw2DFrameElements (void)
 {
-if (ogl.Enhance3D () >= 0)
+if (!gameStates.render.bRenderIndirect && (ogl.Enhance3D () >= 0))
 	ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
