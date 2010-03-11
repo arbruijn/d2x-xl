@@ -313,37 +313,25 @@ if (nType == FIRE_PARTICLES)
 else
 #endif
 	nSpeed *= I2X (1);
-if (!vDir /*|| (nType == FIRE_PARTICLES)*/) {
-	CFixVector	vOffs;
+if (!vDir) {
 	m_vDrift [X] = nSpeed - randN (2 * nSpeed);
 	m_vDrift [Y] = nSpeed - randN (2 * nSpeed);
 	m_vDrift [Z] = nSpeed - randN (2 * nSpeed);
-#if 0
-	if (nType == FIRE_PARTICLES)
-		m_vDrift *= m_nRad / 32;
-#endif
-	vOffs = m_vDrift;
 	m_vDir.SetZero ();
 	m_bHaveDir = 1;
 	}
 else {
 	m_vDir = *vDir;
-#if 0
-	if (nType == FIRE_PARTICLES)
-		m_vDrift = m_vDir;
-	else 
-#endif
-		{
-		CAngleVector	a;
-		CFixMatrix		m;
-		a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
-		a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
-		a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
-		m = CFixMatrix::Create (a);
-		if (nType == WATERFALL_PARTICLES)
-			CFixVector::Normalize (m_vDir);
-		m_vDrift = m * m_vDir;
-		}
+
+	CAngleVector	a;
+	CFixMatrix		m;
+	a [PA] = randN (I2X (1) / 4) - I2X (1) / 8;
+	a [BA] = randN (I2X (1) / 4) - I2X (1) / 8;
+	a [HA] = randN (I2X (1) / 4) - I2X (1) / 8;
+	m = CFixMatrix::Create (a);
+	if (nType == WATERFALL_PARTICLES)
+		CFixVector::Normalize (m_vDir);
+	m_vDrift = m * m_vDir;
 	CFixVector::Normalize (m_vDrift);
 	if (nType == WATERFALL_PARTICLES) {
 		fix dot = CFixVector::Dot (m_vDir, m_vDrift);
@@ -655,8 +643,9 @@ int CParticle::UpdateDrift (int t, int nThread)
 m_vPos += m_vDrift * t; //(I2X (t) / 1000);
 
 #if DBG
-CFixVector::Normalize (m_vDrift);
-if (CFixVector::Dot (m_vDrift, m_vDir) < 0)
+CFixVector vDrift = m_vDrift;
+CFixVector::Normalize (vDrift);
+if (CFixVector::Dot (vDrift, m_vDir) < 0)
 	t = t;
 #endif
 
@@ -989,11 +978,21 @@ pb [(m_nOrient + 2) % 4].texCoord.v.v =
 pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
 
 if ((m_nType == SMOKE_PARTICLES) && m_bBlowUp) {
+#if DBG
+	float fFade;
+	if (m_nFadeType == 3)
+		fFade = 1.0;
+	else if (m_decay > 0.9f)
+		fFade = (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.25f));
+	else
+		fFade = 1.0f / float (pow (m_decay, 0.25f));
+#else
 	float fFade = (m_nFadeType == 3) 
 		? 1.0f 
 		: (m_decay > 0.9f)	// start from zero size by scaling with pow (m_decay, 44f) which is < 0.01 for m_decay == 0.9f
 			? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333337f))
-			: float (pow (m_decay, 0.3333337f));
+			: 1.0f / float (pow (m_decay, 0.3333337f));
+#endif
 	vOffset [X] = m_nWidth * fFade;
 	vOffset [Y] = m_nHeight * fFade;
 	}

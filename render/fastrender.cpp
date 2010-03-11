@@ -412,13 +412,17 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) {
-#if 1
-	ogl.SetDepthMode (GL_LEQUAL); 
-#else
-	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) 
+	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) {
 		ogl.SetDepthMode (GL_LEQUAL); 
+		ogl.SetBlendMode (GL_ONE, GL_ZERO);
+		}
 	else {
-		if (nType < RENDER_FACES) {
+		if (nType == RENDER_LIGHTMAPS) {
+			ogl.SetDepthMode (GL_LEQUAL); 
+			ogl.SetBlendMode (GL_ONE, GL_ZERO);
+			gameStates.render.bFullBright = 0;
+			}
+		else if (nType == RENDER_LIGHTS) {
 			ogl.SetDepthMode (GL_LEQUAL); 
 			ogl.SetBlendMode (GL_ONE, GL_ONE);
 			gameStates.render.bFullBright = 0;
@@ -430,12 +434,12 @@ if (!bDepthOnly) {
 			gameStates.render.bFullBright = 1;
 			}
 		}
-#endif
 	}
 else {
 	ogl.ColorMask (0,0,0,0,0);
 	ogl.SetDepthWrite (true);
 	ogl.SetDepthMode (GL_LESS);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
 if (nType == RENDER_CORONAS) {
 	if (glareRenderer.Style () == 2)
@@ -535,7 +539,6 @@ if (bNormals)	// somehow these get disabled above
 #endif
 if (gameStates.render.bFullBright || (nType < RENDER_FACES))
 	glColor3f (1,1,1);
-ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.ClearError (0);
 return 1;
 }

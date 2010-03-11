@@ -163,6 +163,7 @@ const char *pszPP1LightingFS [] = {
 	"	gl_FragColor = colorSum;\r\n" \
 	"	}"
 	,
+	"uniform sampler2D maskTex;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \

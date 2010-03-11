@@ -959,8 +959,8 @@ if (bmTop) {
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
 ogl.m_states.iLight = 0;
+ogl.SetDepthMode (GL_LEQUAL);
 while (0 < SetupPerPixelLightingShader (faceP, bColorKey != 0)) {
-	ogl.SetDepthMode (GL_LEQUAL);
 	DrawFacePP (faceP);
 	if ((ogl.m_states.iLight >= ogl.m_states.nLights) || (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 		return 0;
