@@ -453,7 +453,6 @@ else if (nType == RENDER_LIGHTS) {
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);
 		ogl.SetLighting (false);
-		glColor4f (1,1,1,1);
 		}
 	}
 else if (nType == RENDER_CORONAS) {
@@ -507,7 +506,7 @@ if (bVBO) {
 else 
 #endif
 	{
-	if (nType >= RENDER_FACES) {
+	if (nType >= RENDER_DEPTH_OPAQUE) {
 		if (bLightmaps) {
 			ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 			if (nType < RENDER_FACES)

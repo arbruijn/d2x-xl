@@ -935,6 +935,7 @@ if (bmTop)
 
 if (!FaceIsColored (faceP))
 	return 0;
+#if 0
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
@@ -948,7 +949,6 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-#if 0
 SetLightingRenderStates (faceP, bmTop, bColorKey);
 SetupStaticLightingShader (faceP, bColorKey != 0);
 #else
@@ -972,6 +972,7 @@ if (bmTop)
 #endif
 if (!FaceIsColored (faceP))
 	return 0;
+#if 0
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
@@ -986,6 +987,8 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
+SetLightingRenderStates (faceP, bmTop, 0);
+#endif
 ogl.m_states.iLight = 0;
 while (0 < SetupPerPixelLightingShader (faceP, 0)) {
 	DrawFacePP (faceP);
