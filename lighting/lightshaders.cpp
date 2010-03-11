@@ -484,7 +484,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 #endif
 
 int nLights = SetupHardwareLighting (faceP, nType);
-if (0 > nLights) {
+if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}

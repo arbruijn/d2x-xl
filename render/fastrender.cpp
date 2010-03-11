@@ -901,7 +901,7 @@ if (nType > RENDER_OBJECTS) {	//back to front
 	RenderSegments (nType, 0, 0);
 	}
 else {	//front to back
-	if (!(nType || gameStates.render.nWindow))
+	if ((nType == RENDER_FACES) && !gameStates.render.nWindow)
 		SetupCoronas (nType);
 	BeginRenderFaces (nType, 0);
 	ogl.ColorMask (1,1,1,1,1);
