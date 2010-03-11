@@ -511,7 +511,7 @@ if (bVBO) {
 else 
 #endif
 	{
-	if (nType >= RENDER_DEPTH) {
+	if ((nType == RENDER_DEPTH) || (nType >= RENDER_FACES)) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
@@ -645,8 +645,9 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #endif
 			if (!bDepthOnly) {
 				if (!bHeadlight)
+				if (gameStates.render.nType == RENDER_DEPTH)
 					VisitSegment (nSegment, bAutomap);
-				if (gameStates.render.bPerPixelLighting == 2)
+				else if (gameStates.render.nType == RENDER_LIGHTS)
 					lightManager.Index (0)[0].nActive = -1;
 				}
 			}

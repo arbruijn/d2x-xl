@@ -259,7 +259,7 @@ void RenderMineObjects (int nType)
 if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
-if (nType != 1)
+if (nType != RENDER_OBJECTS)
 	return;
 gameStates.render.nState = 1;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
@@ -315,10 +315,12 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 	RenderFaceList (nType, bFrontToBack);
 	ogl.ClearError (0);
 	}
-RenderMineObjects (nType);
-lightManager.ResetAllUsed (1, 0);
-if (gameStates.app.bMultiThreaded)
-	lightManager.ResetAllUsed (1, 1);
+if (nType == RENDER_OBJECTS)
+	RenderMineObjects (nType);
+else if (nType == RENDER_LIGHTS) {
+	for (int i = 0; i < gameStates.app.nThreads; i++)
+	lightManager.ResetAllUsed (1, i);
+	}
 ogl.ClearError (0);
 PROF_END(ptRenderPass)
 return 1;
@@ -402,7 +404,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 		//ogl.DrawBuffer ()->UseBuffers (gameStates.render.bRenderTransparency, gameStates.render.bRenderTransparency);
 #	if 1
 		RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
-		RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
+		//RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
 		if (gameStates.render.bPerPixelLighting == 2)
 			RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
 #	endif
