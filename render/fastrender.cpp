@@ -437,16 +437,16 @@ if ((nType == RENDER_DEPTH_OPAQUE) || (nType == RENDER_DEPTH_TRANSPARENT)) {
 	ogl.ColorMask (0,0,0,0,0);
 	//ogl.ColorMask (1,1,1,1,0);
 	ogl.SetDepthWrite (true);
-	ogl.SetDepthMode (GL_LEQUAL);
+	ogl.SetDepthMode (GL_LESS);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
 else if (nType == RENDER_LIGHTMAPS) {
-	ogl.SetDepthMode (GL_LEQUAL); 
+	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (false);
 	}
 else if (nType == RENDER_LIGHTS) {
-	ogl.SetDepthMode (GL_LEQUAL); 
+	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.SetDepthWrite (false);
 	if (gameStates.render.bPerPixelLighting == 2) {
