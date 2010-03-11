@@ -406,24 +406,19 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
-#if 0
-SetupDepthBuffer (0);
-SetupDepthBuffer (1);
-#endif
 #if 1
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
-	glColor3f (1,1,1);
+	SetupDepthBuffer (0);
+	//SetupDepthBuffer (1);
 	//ogl.DrawBuffer ()->UseBuffers (0, 1);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
-	if (gameStates.render.bPerPixelLighting == 2) {
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
+	if (gameStates.render.bPerPixelLighting == 2)
 		RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
-		}
 	ogl.DrawBuffer ()->UseBuffers (0);
 	}
 #endif
-#if 1
+#if 0
 RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
 RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {

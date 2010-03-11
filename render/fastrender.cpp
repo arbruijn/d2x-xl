@@ -396,7 +396,7 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 			bLightmaps = (nType < (gameStates.render.bPerPixelLighting ? RENDER_FACES : RENDER_SKYBOX)) && 
 							 !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
 			bNormals = !bDepthOnly,
-			bColor = !(bDepthOnly || gameStates.render.bFullBright || (gameStates.render.bPerPixelLighting && (nType >= RENDER_FACES))); 
+			bColor = !(bDepthOnly || gameStates.render.bFullBright || (gameStates.render.bPerPixelLighting && (nType < RENDER_FACES))); 
 
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -413,34 +413,35 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if (!bDepthOnly) {
+	ogl.ColorMask (0,0,0,0,0);
+	ogl.SetDepthWrite (true);
+	ogl.SetDepthMode (GL_LESS);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	}
+else {
 	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) {
 		ogl.SetDepthMode (GL_LEQUAL); 
 		ogl.SetBlendMode (GL_ONE, GL_ZERO);
 		}
 	else {
 		if (nType == RENDER_LIGHTMAPS) {
-			ogl.SetDepthMode (GL_LEQUAL); 
+			ogl.SetDepthMode (GL_EQUAL); 
 			ogl.SetBlendMode (GL_ONE, GL_ZERO);
-			gameStates.render.bFullBright = 0;
+			ogl.SetDepthWrite (false);
 			}
 		else if (nType == RENDER_LIGHTS) {
-			ogl.SetDepthMode (GL_LEQUAL); 
+			ogl.SetDepthMode (GL_EQUAL); 
 			ogl.SetBlendMode (GL_ONE, GL_ONE);
-			gameStates.render.bFullBright = 0;
+			ogl.SetDepthWrite (false);
 			}
 		else {
+			ogl.SetDepthMode (GL_EQUAL); 
 			ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-			ogl.SetDepthMode (GL_LEQUAL); 
 			ogl.SetDepthWrite (false);
 			}
 		}
 	}
-else {
-	ogl.ColorMask (0,0,0,0,0);
-	ogl.SetDepthWrite (true);
-	ogl.SetDepthMode (GL_LESS);
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	}
+
 if (nType == RENDER_CORONAS) {
 	if (glareRenderer.Style () == 2)
 		glareRenderer.LoadShader (10);
@@ -453,7 +454,7 @@ else {
 		bVBO = 1;
 		}
 #endif
-	if ((nType < RENDER_FACES) && (gameStates.render.bPerPixelLighting == 2)) {
+	if ((nType == RENDER_LIGHTS) && (gameStates.render.bPerPixelLighting == 2)) {
 		ogl.EnableLighting (1);
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);

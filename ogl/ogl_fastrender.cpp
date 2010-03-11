@@ -994,4 +994,34 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+
+int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+{
+	int bColorKey = 0;
+
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+if (bmTop)
+	bmTop = bmTop;
+#endif
+if (!faceP->m_info.bTextured)
+	bmBot = NULL;
+else if (bmBot)
+	bmBot = bmBot->Override (-1);
+if (bmTop) {
+	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bmTop = bmTop->CurFrame ();
+		}
+	else
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+	}
+gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
+SetRenderStates (faceP, bmBot, bmTop, bmBot != NULL, bColorKey, FaceIsColored (faceP));
+DrawFacePP (faceP);
+return 0;
+}
+
+//------------------------------------------------------------------------------
 //eof
