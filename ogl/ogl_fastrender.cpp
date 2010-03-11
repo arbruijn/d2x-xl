@@ -948,8 +948,8 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-SetLightingRenderStates (faceP, bmTop, bColorKey);
 #if 0
+SetLightingRenderStates (faceP, bmTop, bColorKey);
 SetupStaticLightingShader (faceP, bColorKey != 0);
 #else
 if (SetupLightmap (faceP))

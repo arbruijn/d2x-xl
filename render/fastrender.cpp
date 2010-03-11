@@ -520,18 +520,18 @@ if (bVBO) {
 else 
 #endif
 	{
-	if (bLightmaps) {
-		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
-		if (nType < RENDER_FACES)
-			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
-		else
-			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
-		if (bColor)
-			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
-		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
-		}
-
 	if (nType >= RENDER_FACES) {
+		if (bLightmaps) {
+			ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
+			if (nType < RENDER_FACES)
+				OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
+			else
+				OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
+			if (bColor)
+				OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
+			OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
+			}
+
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1 + bLightmaps);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
