@@ -417,12 +417,13 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	ogl.DrawBuffer ()->UseBuffers (0);
 	}
 #endif
-#if 0
-RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
-RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
+RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
+RenderMineObjects (RENDER_OBJECTS);
+RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry
+#if 1
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)
-		RenderSegmentList (RENDER_WALLS, 1);	// render transparent geometry
+		RenderSegmentList (RENDER_COLORED_FACES, 1);	// render transparent geometry
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
  		ogl.SetTexturing (true);

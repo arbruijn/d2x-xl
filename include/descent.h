@@ -1180,12 +1180,13 @@ typedef struct tLimitFPSStates {
 #define RENDER_LIGHTS				1
 #define RENDER_DEPTH					2
 #define RENDER_COLOR					3
-#define RENDER_FACES					4
-#define RENDER_OBJECTS				5
-#define RENDER_WALLS					6
+#define RENDER_STATIC_FACES		4
+#define RENDER_DYNAMIC_FACES		5
+#define RENDER_COLORED_FACES		6
 #define RENDER_CORONAS				7
 #define RENDER_SKYBOX				8
-#define RENDER_TRANSPARENCY		9
+#define RENDER_OBJECTS				9
+#define RENDER_TRANSPARENCY		10
 
 typedef struct tGameStates {
 	tGameplayStates		gameplay;

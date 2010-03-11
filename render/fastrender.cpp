@@ -470,14 +470,14 @@ else {
 		ogl.SetDepthMode (GL_LEQUAL); 
 		ogl.SetBlendMode (GL_ONE, GL_ZERO);
 		}
-	else if ((nType == RENDER_FACES) || (nType == RENDER_WALLS)) {
+	else if ((nType == RENDER_STATIC_FACES) || (nType == RENDER_DYNAMIC_FACES) || (nType == RENDER_COLORED_FACES)) {
 		ogl.SetDepthMode (GL_EQUAL); 
 		ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
 		ogl.SetDepthWrite (false);
 		}
 	else if (nType == RENDER_CORONAS) {
 		ogl.SetDepthMode (GL_LEQUAL); 
-		ogl.SetBlendMode (0);
+		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		ogl.SetDepthWrite (false);
 		}
 	else {
@@ -521,7 +521,7 @@ if (bVBO) {
 else 
 #endif
 	{
-	if ((nType == RENDER_DEPTH) || (nType >= RENDER_FACES)) {
+	if ((nType == RENDER_DEPTH) || (nType >= RENDER_STATIC_FACES)) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
@@ -637,7 +637,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 	tFaceListItem*	fliP;
 	CSegFace*		faceP;
 	int				i, j, nFaces = 0, nSegment = -1;
-	int				bAutomap = (nType <= RENDER_FACES);
+	int				bAutomap = (nType <= RENDER_STATIC_FACES);
 
 #if 1
 if (automap.Display () && !bDepthOnly)
@@ -831,9 +831,9 @@ return nFaces;
 
 short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
-	int	i, nFaces = 0, bAutomap = (nType <= RENDER_FACES);
+	int	i, nFaces = 0, bAutomap = (nType <= RENDER_STATIC_FACES);
 
-if (nType > RENDER_OBJECTS) {
+if (nType >= RENDER_DYNAMIC_FACES) {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
@@ -880,14 +880,13 @@ if (ogl.m_states.bOcclusionQuery) {
 	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
 	QueryCoronas (0, 1);
 	}
-BeginRenderFaces (RENDER_FACES, 1);
+BeginRenderFaces (RENDER_STATIC_FACES, 1);
 short nFaces = RenderSegments (nType, 1, 0);
 EndRenderFaces (1);
 if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
-	gameStates.render.nType = RENDER_OBJECTS;
-	RenderMineObjects (1);
-	gameStates.render.nType = RENDER_FACES;
+	RenderMineObjects (RENDER_OBJECTS);
+	gameStates.render.nType = RENDER_STATIC_FACES;
 	QueryCoronas (nFaces, 2);
 	}
 EndRenderFaces (1);
@@ -913,7 +912,7 @@ if (nType > RENDER_OBJECTS) {	//back to front
 	RenderSegments (nType, 0, 0);
 	}
 else {	//front to back
-	if ((nType == RENDER_FACES) && !gameStates.render.nWindow)
+	if ((nType == RENDER_STATIC_FACES) && !gameStates.render.nWindow)
 		SetupCoronas (nType);
 	BeginRenderFaces (nType, 0);
 	ogl.ColorMask (1,1,1,1,1);
