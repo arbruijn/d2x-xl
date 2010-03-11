@@ -1005,6 +1005,8 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 if (bmTop)
 	bmTop = bmTop;
 #endif
+if (FaceIsTransparent (faceP, bmBot, bmTop))
+	return 0;
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
