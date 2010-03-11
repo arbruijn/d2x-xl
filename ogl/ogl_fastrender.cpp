@@ -909,13 +909,12 @@ if (bmTop)
 	bmTop = bmTop;
 #endif
 
-if (!faceP->m_info.bColored)
+if (!FaceIsColored (faceP))
 	return 0;
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = bmBot->Override (-1);
-
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -943,14 +942,12 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 if (bmTop)
 	bmTop = bmTop;
 #endif
-
-if (!faceP->m_info.bColored)
+if (!FaceIsColored (faceP))
 	return 0;
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = bmBot->Override (-1);
-
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -961,8 +958,8 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
-SetupPerPixelLightingShader (faceP, bColorKey != 0);
-DrawFacePP (faceP);
+if (0 < SetupPerPixelLightingShader (faceP, bColorKey != 0))
+	DrawFacePP (faceP);
 return 0;
 }
 

@@ -185,7 +185,7 @@ void COGL::CreateDrawBuffer (void)
 #if FBO_DRAW_BUFFER
 if (gameStates.render.bRenderIndirect && m_states.bRender2TextureOk && !DrawBuffer ()->Handle ()) {
 	PrintLog ("creating draw buffer\n");
-	DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 1, 2);
+	DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 0, 1);
 	}
 #endif
 }
