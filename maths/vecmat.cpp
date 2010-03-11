@@ -1053,4 +1053,41 @@ return vReflect;
 }
 
 // ------------------------------------------------------------------------
+
+float VmLineEllipsoidDistance (CFloatVector vOrigin,	// origin of ray 
+										 CFloatVector vDir,		// direction of ray
+										 CFloatVector vCenter,	// center of ellipsoid
+										 CFloatVector vScale)	//	axes of ellipsoid
+{
+CFloatVector vLine = vOrigin - vCenter;
+
+if (vDir.IsZero ())
+	vDir = vCenter - vOrigin;
+
+float a = vDir [X] * vDir [X] / vScale [X] +
+			 vDir [Y] * vDir [Y] / vScale [Y] +
+			 vDir [Z] * vDir [Z] / vScale [Z];
+
+float b = (vLine [X] * vDir [X] / vScale [X] +
+			  vLine [Y] * vDir [Y] / vScale [Y] +
+			  vLine [Z] * vDir [Z] / vScale [Z]) * 2.0f;
+
+float c = vLine [X] * vLine [X] / vScale [X] +
+			 vLine [Y] * vLine [Y] / vScale [Y] +
+			 vLine [Z] * vLine [Z] / vScale [Z] - 1.0f;
+
+float det = b * b - 4.0f * a * c;
+
+if (det < 0.0f)
+	return 1e30f;	// no intersection
+
+det = float (sqrt (det));
+a = 1.0f / (2.0f * a);
+float s1 = (-b + det) * a;
+float s2 = (-b - det) * a;
+return (s1 < s2) ? s1 : s2;
+return true;
+}
+
+// ------------------------------------------------------------------------
 // eof
