@@ -399,11 +399,13 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	//SetupDepthBuffer (RENDER_DEPTH_TRANSPARENT);
 	//SetupDepthBuffer (1);
 	//ogl.DrawBuffer ()->UseBuffers (0, 1);
+#	if 0
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
 	if (gameStates.render.bPerPixelLighting == 2)
 		RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
 	ogl.DrawBuffer ()->UseBuffers (0);
+#	endif
 	}
 #endif
 #if 0

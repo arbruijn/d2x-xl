@@ -273,10 +273,10 @@ typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly
 #endif
 
 static pRenderHandler renderHandlers [] = {
-	RenderOpaqueDepth, 
-	RenderTransparentDepth, 
 	RenderStaticLights, 
 	RenderDynamicLights, 
+	RenderOpaqueDepth, 
+	RenderTransparentDepth, 
 	RenderSolidFace, 
 	RenderWallFace, 
 	RenderColoredFace, 
@@ -417,7 +417,7 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 			bLightmaps = (nType < (gameStates.render.bPerPixelLighting ? RENDER_FACES : RENDER_SKYBOX)) && 
 							 !bDepthOnly && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
 			bNormals = !bDepthOnly,
-			bColor = !(bDepthOnly || gameStates.render.bFullBright || (gameStates.render.bPerPixelLighting && (nType < RENDER_FACES))); 
+			bColor = !bDepthOnly && !gameStates.render.bFullBright && (!gameStates.render.bPerPixelLighting || (nType >= RENDER_FACES)); 
 
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -434,7 +434,9 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if ((nType == RENDER_DEPTH_OPAQUE) || (nType == RENDER_DEPTH_TRANSPARENT)) {
-	ogl.ColorMask (0,0,0,0,0);
+	//ogl.ColorMask (0,0,0,0,0);
+	ogl.ColorMask (1,1,1,1,0);
+	bColor = 1;
 	ogl.SetDepthWrite (true);
 	ogl.SetDepthMode (GL_LESS);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
@@ -535,7 +537,8 @@ else
 	ogl.EnableClientStates (!bDepthOnly, bColor, bNormals, GL_TEXTURE0);
 	if (bNormals)
 		OglNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
-	if (!bDepthOnly) {
+	//if (!bDepthOnly) 
+		{
 		if (bLightmaps)
 			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
 		else
@@ -831,7 +834,7 @@ short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
 {
 	int	i, nFaces = 0, bAutomap = (nType <= RENDER_FACES);
 
-if (nType > 1) {
+if (nType > RENDER_OBJECTS) {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();

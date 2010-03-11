@@ -296,7 +296,7 @@ if (bTextured) {
 		}
 	if (bForce || (bmTop != gameStates.render.history.bmTop)) {
 		bStateChange = true;
-		if (gameStates.render.history.bmTop = bmTop) {
+		if (bmTop) {
 			if (!(gameStates.render.history.bmTop = SetupTMU (bmTop, GL_TEXTURE1, GL_DECAL)))
 				return 0;
 			}
@@ -307,7 +307,7 @@ if (bTextured) {
 	CBitmap* bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader && bmTop) ? bmTop->Mask () : NULL;
 	if (bForce || (bmMask != gameStates.render.history.bmMask)) {
 		bStateChange = true;
-		if (gameStates.render.history.bmMask = bmMask) {
+		if (bmMask) {
 			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE2, GL_MODULATE)))
 				return 0;
 			}
