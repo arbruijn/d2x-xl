@@ -13,6 +13,7 @@
 
 int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTransparent);
 int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
+int RenderColor (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderFaceLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);

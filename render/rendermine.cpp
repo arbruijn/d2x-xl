@@ -395,20 +395,22 @@ PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 #if 1
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
-	SetupDepthBuffer (RENDER_DEPTH_OPAQUE);
-	//ogl.DrawBuffer ()->UseBuffers (1, 1);
-	SetupDepthBuffer (RENDER_DEPTH_TRANSPARENT);
-	//ogl.DrawBuffer ()->UseBuffers (0, 1);
+	SetupDepthBuffer (RENDER_DEPTH);
+	for (gameStates.render.bRenderTransparency = 0; gameStates.render.bRenderTransparency < 1; gameStates.render.bRenderTransparency++) {
+		ogl.DrawBuffer ()->UseBuffers (gameStates.render.bRenderTransparency, gameStates.render.bRenderTransparency);
 #	if 1
-	RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
-	if (gameStates.render.bPerPixelLighting == 2)
-		RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
-	ogl.DrawBuffer ()->UseBuffers (0);
+		RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
+		RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
+		if (gameStates.render.bPerPixelLighting == 2)
+			RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
 #	endif
+		}
+	gameStates.render.bRenderTransparency = 0;
+	ogl.DrawBuffer ()->UseBuffers (0);
 	}
 #endif
-#if 1
 RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
+#if 0
 RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)

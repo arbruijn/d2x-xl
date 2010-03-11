@@ -142,7 +142,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-bool RenderOpaqueDepth (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderFaceDepth (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -150,19 +150,6 @@ LoadFaceBitmaps (segP, faceP);
 if (!faceP->bmBot)
 	return false;
 RenderDepth (faceP, faceP->bmBot, faceP->bmTop, 0);
-return true;
-}
-
-//------------------------------------------------------------------------------
-
-bool RenderTransparentDepth (CSegment *segP, CSegFace *faceP, int bDepthOnly)
-{
-if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
-	return false;
-LoadFaceBitmaps (segP, faceP);
-if (!faceP->bmBot)
-	return false;
-RenderDepth (faceP, faceP->bmBot, faceP->bmTop, 1);
 return true;
 }
 
@@ -194,7 +181,20 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderOpaqueFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderFaceColor (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+{
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return false;
+LoadFaceBitmaps (segP, faceP);
+if (!faceP->bmBot)
+	return false;
+RenderColor (faceP, faceP->bmBot, faceP->bmTop);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool RenderStaticFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -209,7 +209,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderWallFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderDynamicFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -235,7 +235,7 @@ if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) ||
 	return false;
 if (!gameData.app.nFrameCount)
 	gameData.render.nColoredFaces++;
-faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -274,11 +274,11 @@ typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly
 
 static pRenderHandler renderHandlers [] = {
 	RenderStaticLights, 
+	RenderFaceColor,
 	RenderDynamicLights, 
-	RenderOpaqueDepth, 
-	RenderTransparentDepth, 
-	RenderOpaqueFace, 
-	RenderWallFace, 
+	RenderFaceDepth, 
+	RenderStaticFace, 
+	RenderDynamicFace, 
 	RenderColoredFace, 
 	RenderCoronaFace, 
 	RenderSkyBoxFace
@@ -415,10 +415,10 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
 			bLightmaps = (nType < (gameStates.render.bPerPixelLighting ? RENDER_FACES : RENDER_SKYBOX)) && 
-							 !bDepthOnly && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
-			bNormals = !bDepthOnly,
-			bColor = !bDepthOnly && !gameStates.render.bFullBright && (!gameStates.render.bPerPixelLighting || (nType >= RENDER_FACES)); 
-
+							 !(bDepthOnly || gameStates.render.bFullBright) && lightmapManager.HaveLightmaps (),
+			bColor = (bDepthOnly || gameStates.render.bFullBright) && (nType >= RENDER_FACES),
+			bTexCoord = (nType != RENDER_COLOR),
+			bNormals = !bDepthOnly && bTexCoord;
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -434,14 +434,13 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 
-if ((nType == RENDER_DEPTH_OPAQUE) || (nType == RENDER_DEPTH_TRANSPARENT)) {
+if (nType == RENDER_DEPTH) {
 	ogl.ColorMask (0,0,0,0,0);
-	//ogl.ColorMask (1,1,1,1,0);
 	ogl.SetDepthWrite (true);
 	ogl.SetDepthMode (GL_LESS);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
-else if (nType == RENDER_LIGHTMAPS) {
+else if ((nType == RENDER_LIGHTMAPS) || (nType == RENDER_COLOR)) {
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (false);
@@ -508,7 +507,7 @@ if (bVBO) {
 else 
 #endif
 	{
-	if (nType >= RENDER_DEPTH_OPAQUE) {
+	if (nType >= RENDER_DEPTH) {
 		if (bLightmaps) {
 			ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 			if (nType < RENDER_FACES)
@@ -534,13 +533,15 @@ else
 			}
 		}
 
-	ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE0);
+	ogl.EnableClientStates (bTexCoord, bColor, bNormals, GL_TEXTURE0);
 	if (bNormals)
 		OglNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
-	if (bLightmaps)
-		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
-	else
-		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
+	if (bTexCoord) {
+		if (bLightmaps)
+			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
+		else
+			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
+		}
 	if (bColor)
 		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
