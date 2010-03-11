@@ -414,9 +414,8 @@ return tiRender.nFaces;
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
-			bLightmaps = (nType < (gameStates.render.bPerPixelLighting ? RENDER_FACES : RENDER_SKYBOX)) && 
-							 !(bDepthOnly || gameStates.render.bFullBright) && lightmapManager.HaveLightmaps (),
-			bColor = (bDepthOnly || gameStates.render.bFullBright) && (nType >= RENDER_FACES),
+			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
+			bColor = !gameStates.render.bFullBright && (nType == RENDER_COLOR),
 			bTexCoord = (nType != RENDER_COLOR),
 			bNormals = !bDepthOnly && bTexCoord;
 
@@ -440,9 +439,14 @@ if (nType == RENDER_DEPTH) {
 	ogl.SetDepthMode (GL_LESS);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
-else if ((nType == RENDER_LIGHTMAPS) || (nType == RENDER_COLOR)) {
+else if (nType == RENDER_LIGHTMAPS) {
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (false);
+	}
+else if (nType == RENDER_COLOR) {
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.SetDepthWrite (false);
 	}
 else if (nType == RENDER_LIGHTS) {
@@ -508,24 +512,13 @@ else
 #endif
 	{
 	if (nType >= RENDER_DEPTH) {
-		if (bLightmaps) {
-			ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
-			if (nType < RENDER_FACES)
-				OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
-			else
-				OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
-			if (bColor)
-				OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
-			OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
-			}
-
-		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1 + bLightmaps);
+		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
 			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (FACES.vertices.Buffer ()));
 		if (nType < RENDER_CORONAS) {
-			ogl.EnableClientStates (1, bColor, 0, GL_TEXTURE2 + bLightmaps);
+			ogl.EnableClientStates (1, bColor, 0, GL_TEXTURE2);
 			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 			if (bColor)
 				OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));

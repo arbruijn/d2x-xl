@@ -1177,9 +1177,9 @@ typedef struct tLimitFPSStates {
 //------------------------------------------------------------------------------
 
 #define RENDER_LIGHTMAPS			0
-#define RENDER_COLOR					1
-#define RENDER_LIGHTS				2
-#define RENDER_DEPTH					3
+#define RENDER_LIGHTS				1
+#define RENDER_DEPTH					2
+#define RENDER_COLOR					3
 #define RENDER_FACES					4
 #define RENDER_OBJECTS				5
 #define RENDER_WALLS					6
