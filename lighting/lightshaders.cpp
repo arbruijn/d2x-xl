@@ -478,33 +478,25 @@ return -1;
 int SetupPerPixelLightingShader (CSegFace *faceP, int nType)
 {
 PROF_START
-	static CBitmap	*nullBmP = NULL;
-
-	int	bLightmaps, nLights;
-
-if (0 > (nLights = SetupHardwareLighting (faceP, nType)))
-	return 0;
-#if ONLY_LIGHTMAPS == 2
-nType = 0;
-#endif
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if ((bLightmaps = lightmapManager.HaveLightmaps ()) && !SetupLightmap (faceP))
+
+int nLights = SetupHardwareLighting (faceP, nType);
+if (0 > nLights) {
+	PROF_END(ptShaderStates)
 	return 0;
+	}
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType]));
 if (!shaderProg) {
 	PROF_END(ptShaderStates);
 	return -1;
 	}
-
-if (shaderManager.Rebuild (shaderProg)) {
-	if (nType)
-		glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 0);
-	}
-if (shaderProg)
-	glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
+shaderManager.Rebuild (shaderProg);
+if (nType)
+	glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 0);
+glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];
