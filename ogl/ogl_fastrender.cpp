@@ -909,6 +909,8 @@ if (bmTop)
 	bmTop = bmTop;
 #endif
 
+if (!faceP->m_info.bColored)
+	return 0;
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
@@ -942,6 +944,8 @@ if (bmTop)
 	bmTop = bmTop;
 #endif
 
+if (!faceP->m_info.bColored)
+	return 0;
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)

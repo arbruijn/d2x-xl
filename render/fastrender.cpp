@@ -40,18 +40,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#if defined(_WIN32) && !DBG
-typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
-#else
-typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
-#endif
-
-static pRenderHandler renderHandlers [] = {
-	RenderStaticLights, RenderDynamicLights, RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace
-	};
-
-//------------------------------------------------------------------------------
-
 void ResetFaceList (void)
 {
 PROF_START
@@ -264,6 +252,18 @@ return true;
 }
 
 //------------------------------------------------------------------------------
+
+#if defined(_WIN32) && !DBG
+typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
+#else
+typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
+#endif
+
+static pRenderHandler renderHandlers [] = {
+	RenderStaticLights, RenderDynamicLights, RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace
+	};
+
+
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType, int bDepthOnly)
 {
