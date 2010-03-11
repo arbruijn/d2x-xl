@@ -995,7 +995,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTransparent)
 {
 	int bColorKey = 0;
 
@@ -1005,7 +1005,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 if (bmTop)
 	bmTop = bmTop;
 #endif
-if (FaceIsTransparent (faceP, bmBot, bmTop))
+if (FaceIsTransparent (faceP, bmBot, bmTop) != bTransparent)
 	return 0;
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;

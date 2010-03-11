@@ -408,7 +408,8 @@ PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 #if 1
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
-	SetupDepthBuffer (0);
+	SetupDepthBuffer (RENDER_DEPTH_OPAQUE);
+	//SetupDepthBuffer (RENDER_DEPTH_TRANSPARENT);
 	//SetupDepthBuffer (1);
 	//ogl.DrawBuffer ()->UseBuffers (0, 1);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);

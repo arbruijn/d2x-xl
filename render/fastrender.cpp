@@ -155,6 +155,32 @@ else {
 
 //------------------------------------------------------------------------------
 
+bool RenderOpaqueDepth (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+{
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return false;
+LoadFaceBitmaps (segP, faceP);
+if (!faceP->bmBot)
+	return false;
+RenderDepth (faceP, faceP->bmBot, faceP->bmTop, 0);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool RenderTransparentDepth (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+{
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return false;
+LoadFaceBitmaps (segP, faceP);
+if (!faceP->bmBot)
+	return false;
+RenderDepth (faceP, faceP->bmBot, faceP->bmTop, 1);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 bool RenderStaticLights (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
@@ -260,7 +286,15 @@ typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly
 #endif
 
 static pRenderHandler renderHandlers [] = {
-	RenderStaticLights, RenderDynamicLights, RenderSolidFace, RenderWallFace, RenderColoredFace, RenderCoronaFace, RenderSkyBoxFace
+	RenderOpaqueDepth, 
+	RenderTransparentDepth, 
+	RenderStaticLights, 
+	RenderDynamicLights, 
+	RenderSolidFace, 
+	RenderWallFace, 
+	RenderColoredFace, 
+	RenderCoronaFace, 
+	RenderSkyBoxFace
 	};
 
 
@@ -412,49 +446,22 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
-if (!bDepthOnly) {
+if ((nType == RENDER_DEPTH_OPAQUE) || (nType == RENDER_DEPTH_TRANSPARENT)) {
 	ogl.ColorMask (0,0,0,0,0);
 	ogl.SetDepthWrite (true);
 	ogl.SetDepthMode (GL_LESS);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
-else {
-	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) {
-		ogl.SetDepthMode (GL_LEQUAL); 
-		ogl.SetBlendMode (GL_ONE, GL_ZERO);
-		}
-	else {
-		if (nType == RENDER_LIGHTMAPS) {
-			ogl.SetDepthMode (GL_EQUAL); 
-			ogl.SetBlendMode (GL_ONE, GL_ZERO);
-			ogl.SetDepthWrite (false);
-			}
-		else if (nType == RENDER_LIGHTS) {
-			ogl.SetDepthMode (GL_EQUAL); 
-			ogl.SetBlendMode (GL_ONE, GL_ONE);
-			ogl.SetDepthWrite (false);
-			}
-		else {
-			ogl.SetDepthMode (GL_EQUAL); 
-			ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-			ogl.SetDepthWrite (false);
-			}
-		}
+else if (nType == RENDER_LIGHTMAPS) {
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (false);
 	}
-
-if (nType == RENDER_CORONAS) {
-	if (glareRenderer.Style () == 2)
-		glareRenderer.LoadShader (10);
-	return 0;
-	}
-else {
-#if GEOMETRY_VBOS
-	if (FACES.vboDataHandle) {
-		glBindBufferARB (GL_ARRAY_BUFFER_ARB, FACES.vboDataHandle);
-		bVBO = 1;
-		}
-#endif
-	if ((nType == RENDER_LIGHTS) && (gameStates.render.bPerPixelLighting == 2)) {
+else if (nType == RENDER_LIGHTS) {
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetDepthWrite (false);
+	if (gameStates.render.bPerPixelLighting == 2) {
 		ogl.EnableLighting (1);
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);
@@ -462,6 +469,23 @@ else {
 		glColor4f (1,1,1,1);
 		}
 	}
+else if (nType == RENDER_CORONAS) {
+	if (glareRenderer.Style () == 2)
+		glareRenderer.LoadShader (10);
+	return 0;
+	}
+else {
+	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) {
+		ogl.SetDepthMode (GL_LEQUAL); 
+		ogl.SetBlendMode (GL_ONE, GL_ZERO);
+		}
+	else {
+		ogl.SetDepthMode (GL_EQUAL); 
+		ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+		ogl.SetDepthWrite (false);
+		}
+	}
+
 ogl.SetupTransform (1);
 #if GEOMETRY_VBOS
 if (bVBO) {
@@ -886,9 +910,9 @@ return nFaces;
 
 int SetupDepthBuffer (int nType)
 {
-BeginRenderFaces (RENDER_FACES, 1);
+BeginRenderFaces (nType, 1);
 RenderSegments (nType, 1, 0);
-EndRenderFaces (1);
+EndRenderFaces (nType);
 return SortFaces ();
 }
 
