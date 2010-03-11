@@ -49,7 +49,7 @@
 #	define G3_BUFFER_FACES	0
 #endif
 
-tRenderFaceDrawerP faceRenderFunc = RenderFaceVL;
+tRenderFaceDrawerP faceRenderFunc = RenderFace;
 
 //------------------------------------------------------------------------------
 
@@ -472,7 +472,7 @@ return (faceP->m_info.nColored >= 0)
 
 //------------------------------------------------------------------------------
 
-int RenderFaceVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;

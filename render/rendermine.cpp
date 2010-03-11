@@ -407,7 +407,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 #	endif
 	}
 #endif
-#if 0
+#if 1
 RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
 RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {

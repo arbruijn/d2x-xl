@@ -14,7 +14,7 @@
 int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTransparent);
 int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
-int RenderFaceVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderFaceLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderFacePP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderHeadlightsVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
@@ -52,7 +52,7 @@ if (nType == 2)
 else if (nType == 1)
 	faceRenderFunc = RenderFaceLM;
 else
-	faceRenderFunc = RenderFaceVL;
+	faceRenderFunc = RenderFace;
 }
 
 //------------------------------------------------------------------------------

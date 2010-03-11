@@ -194,7 +194,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderSolidFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderOpaqueFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -203,7 +203,7 @@ if (IS_WALL (faceP->m_info.nWall))
 LoadFaceBitmaps (segP, faceP);
 if (!faceP->bmBot)
 	return false;
-faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -216,7 +216,7 @@ if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 if (!IS_WALL (faceP->m_info.nWall))
 	return false;
 LoadFaceBitmaps (segP, faceP);
-faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
 return true;
 }
 
@@ -260,7 +260,7 @@ return true;
 bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
 {
 LoadFaceBitmaps (segP, faceP);
-RenderFaceVL (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
 return true;
 }
 
@@ -277,7 +277,7 @@ static pRenderHandler renderHandlers [] = {
 	RenderDynamicLights, 
 	RenderOpaqueDepth, 
 	RenderTransparentDepth, 
-	RenderSolidFace, 
+	RenderOpaqueFace, 
 	RenderWallFace, 
 	RenderColoredFace, 
 	RenderCoronaFace, 
