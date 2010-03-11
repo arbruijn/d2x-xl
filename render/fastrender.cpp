@@ -434,11 +434,10 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 if ((nType == RENDER_DEPTH_OPAQUE) || (nType == RENDER_DEPTH_TRANSPARENT)) {
-	//ogl.ColorMask (0,0,0,0,0);
-	ogl.ColorMask (1,1,1,1,0);
-	bColor = 1;
+	ogl.ColorMask (0,0,0,0,0);
+	//ogl.ColorMask (1,1,1,1,0);
 	ogl.SetDepthWrite (true);
-	ogl.SetDepthMode (GL_LESS);
+	ogl.SetDepthMode (GL_LEQUAL);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
 else if (nType == RENDER_LIGHTMAPS) {
@@ -534,18 +533,15 @@ else
 			}
 		}
 
-	ogl.EnableClientStates (!bDepthOnly, bColor, bNormals, GL_TEXTURE0);
+	ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE0);
 	if (bNormals)
 		OglNormalPointer (GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.normals.Buffer ()));
-	//if (!bDepthOnly) 
-		{
-		if (bLightmaps)
-			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
-		else
-			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
-		if (bColor)
-			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
-		}
+	if (bLightmaps)
+		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.lMapTexCoord.Buffer ()));
+	else
+		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
+	if (bColor)
+		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
 glColor3f (1,1,1);
