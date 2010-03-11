@@ -27,7 +27,6 @@
 #include "dynlight.h"
 
 #define ONLY_LIGHTMAPS 0
-#define CONST_LIGHT_COUNT 1
 
 #define PPL_AMBIENT_LIGHT	0.3f
 #define PPL_DIFFUSE_LIGHT	0.7f

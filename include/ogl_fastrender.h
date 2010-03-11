@@ -11,7 +11,8 @@
 
 //------------------------------------------------------------------------------
 
-int RenderLighting (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
+int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
+int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderFaceVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderFaceLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 int RenderFacePP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
@@ -19,7 +20,7 @@ int RenderHeadlightsVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBl
 int RenderHeadlightsPP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void FlushFaceBuffer (int bForce);
 
-int SetupPerPixelLightingShader (CSegFace* faceP, int nType, bool bHeadlight);
+int SetupPerPixelLightingShader (CSegFace* faceP, int nType);
 int SetupLightmapShader (CSegFace* faceP, int nType, bool bHeadlight);
 int SetupStaticLightingShader (CSegFace* faceP, int bColorKey);
 //int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);

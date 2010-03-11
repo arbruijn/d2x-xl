@@ -27,7 +27,6 @@
 #include "dynlight.h"
 
 #define ONLY_LIGHTMAPS 0
-#define CONST_LIGHT_COUNT 1
 
 //-------------------------------------------------------------------------
 
@@ -164,11 +163,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 #endif
 if (!SetupLightmap (faceP))
 	return 0;
-#if CONST_LIGHT_COUNT
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
-#else
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [nLights][nType]));
-#endif
 if (!shaderProg)
 	return -1;
 
@@ -189,11 +184,7 @@ else if (!nType) {
 	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
-#if CONST_LIGHT_COUNT
 return lightmapShaderProgs [nType];
-#else
-return perPixelLightingShaderProgs [nLights][nType];
-#endif
 }
 
 //-------------------------------------------------------------------------

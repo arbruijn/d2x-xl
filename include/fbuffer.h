@@ -75,7 +75,9 @@ class CFBO {
 		inline int UseBuffers (int nFirst = 0, int nLast = 0) { 
 			if (nFirst > m_info.nColorBuffers - 1)
 				nFirst = m_info.nColorBuffers - 1;
-			if (nLast > m_info.nColorBuffers - 1)
+			if (nLast < nFirst)
+				nLast = nFirst;
+			else if (nLast > m_info.nColorBuffers - 1)
 				nLast = m_info.nColorBuffers - 1;
 			m_info.nBufferCount = nLast - nFirst + 1;
 			return nFirst;

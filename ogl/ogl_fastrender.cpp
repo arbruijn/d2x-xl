@@ -193,7 +193,7 @@ nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if (!bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
 else if ((gameStates.render.nType != RENDER_SKYBOX) && faceP && (gameStates.render.bPerPixelLighting == 2))
-	nShader = SetupPerPixelLightingShader (faceP, nType, false);
+	nShader = SetupPerPixelLightingShader (faceP, nType);
 else if (gameStates.render.bHeadlights)
 	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
 else if (bColorKey || bMultiTexture)
@@ -695,7 +695,7 @@ else if (gameStates.render.bFullBright) {
 else {
 	bool bAdditive = false;
 	for (;;) {
-		SetupPerPixelLightingShader (faceP, gameStates.render.history.nType, false);
+		SetupPerPixelLightingShader (faceP, gameStates.render.history.nType);
 		DrawFacePP (faceP);
 		if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 			 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
@@ -898,7 +898,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int RenderLighting (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
 	int bColorKey = 0;
 
@@ -924,7 +924,40 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
-SetupStaticLightingShader (faceP, bColorKey);
+SetupStaticLightingShader (faceP, bColorKey != 0);
+DrawFacePP (faceP);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+{
+	int bColorKey = 0;
+
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+if (bmTop)
+	bmTop = bmTop;
+#endif
+
+if (!faceP->m_info.bTextured)
+	bmBot = NULL;
+else if (bmBot)
+	bmBot = bmBot->Override (-1);
+
+if (bmTop) {
+	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bmTop = bmTop->CurFrame ();
+		}
+	else
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+	}
+gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
+SetLightingRenderStates (faceP, bmTop, bColorKey);
+SetupPerPixelLightingShader (faceP, bColorKey != 0);
 DrawFacePP (faceP);
 return 0;
 }
