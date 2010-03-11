@@ -32,6 +32,8 @@ int CountRenderFaces (void);
 void GetRenderVertices (void);
 void RenderMineObjects (int nType);
 void RenderSkyBoxFaces (void);
+int BeginRenderFaces (int nType, int bDepthOnly);
+void EndRenderFaces (int bDepthOnly);
 
 //------------------------------------------------------------------------------
 

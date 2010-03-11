@@ -262,6 +262,7 @@ if (!gameOpts->render.debug.bObjects)
 if (nType != RENDER_OBJECTS)
 	return;
 gameStates.render.nState = 1;
+BeginRenderFaces (nType, 0);
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	nSegment = gameData.render.mine.nSegRenderList [0][--nListPos];
 	if (nSegment < 0) {
@@ -301,6 +302,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	else if (nType == 2)	// render objects containing transparency, like explosions
 		RenderObjList (nListPos, gameStates.render.nWindow);
 	}	
+EndRenderFaces (0);
 gameStates.render.nState = 0;
 }
 
@@ -310,16 +312,18 @@ inline int RenderSegmentList (int nType, int bFrontToBack)
 {
 PROF_START
 gameStates.render.nType = nType;
-if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
-	BumpVisitedFlag ();
-	RenderFaceList (nType, bFrontToBack);
-	ogl.ClearError (0);
-	}
 if (nType == RENDER_OBJECTS)
 	RenderMineObjects (nType);
-else if (nType == RENDER_LIGHTS) {
-	for (int i = 0; i < gameStates.app.nThreads; i++)
-	lightManager.ResetAllUsed (1, i);
+else {
+	if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
+		BumpVisitedFlag ();
+		RenderFaceList (nType, bFrontToBack);
+		ogl.ClearError (0);
+		}
+	if (nType == RENDER_LIGHTS) {
+		for (int i = 0; i < gameStates.app.nThreads; i++)
+		lightManager.ResetAllUsed (1, i);
+		}
 	}
 ogl.ClearError (0);
 PROF_END(ptRenderPass)
@@ -413,8 +417,8 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	ogl.DrawBuffer ()->UseBuffers (0);
 	}
 #endif
+#if 0
 RenderSegmentList (RENDER_FACES, 1);	// render opaque geometry
-#if 1
 RenderSegmentList (RENDER_OBJECTS, 1);	// render objects
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)
