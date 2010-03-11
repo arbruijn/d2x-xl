@@ -760,3 +760,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int SetupLightmap (CSegFace* faceP)
+{
+int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
+GLuint h;
+if (!lightmapManager.Bind (i))
+	return 0;
+if (0 <= ogl.IsBound (h = lightmapManager.Buffer (i)->handle))
+	return 1;
+ogl.SelectTMU (GL_TEXTURE0, true);
+ogl.SetTexturing (true);
+glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+ogl.BindTexture (h);
+gameData.render.nStateChanges++;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+

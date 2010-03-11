@@ -44,119 +44,6 @@
 #define OBJ_QUAD_ATT	0.005f
 #endif
 
-//------------------------------------------------------------------------------
-
-int grayscaleShaderProgs [2][3] = {{-1,-1,-1},{-1,-1,-1}};
-
-const char *grayScaleFS [2][3] = {{
-	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 faceColor;\r\n" \
-	"void main(void){" \
-	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
-	,
-	"uniform sampler2D baseTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	,
-	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	},
- {
-	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 faceColor;\r\n" \
-	"void main(void){" \
-	"float l = (faceColor.r + faceColor.g + faceColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, faceColor.a);}"
-	,
-	"uniform sampler2D baseTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	,
-	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"void main(void){" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"vec4 decalColor = texture2D (baseTex, gl_TexCoord [2].xy);\r\n" \
-	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"float l = (texColor.r * 0.3 + texColor.g * 0.59 + texColor.b * 0.11) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
-	}};
-
-const char *grayScaleVS [2][3] = {{
-	"void main(void){" \
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	},
- {
-	"void main(void){" \
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	,
-	"void main(void){" \
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-	}};
-
-//-------------------------------------------------------------------------
-
-void DeleteGrayScaleShader (void)
-{
-for (int i = 0; i < 2; i++)
-	for (int j = 0; j < 3; j++) 
-		shaderManager.Delete (grayscaleShaderProgs [i][j]);
-}
-
-//-------------------------------------------------------------------------
-
-void InitGrayScaleShader (void)
-{
-if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
-	gameOpts->ogl.bGlTexMerge = 0;
-else {
-	PrintLog ("building grayscale shader programs\n");
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 3; j++) {
-			if (!(gameStates.render.textures.bHaveGrayScaleShader = shaderManager.Build (grayscaleShaderProgs [i][j], grayScaleFS [i][j], grayScaleVS [i][j]))) {
-				DeleteGrayScaleShader ();
-				return;
-				}
-			}
-		}
-	}
-if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
-	ogl.m_states.bLowMemory = 0;
-	ogl.m_states.bHaveTexCompression = 0;
-	PrintLog ("+++++ OpenGL shader texture merging has been disabled! +++++\n");
-	}
-}
-
 // ----------------------------------------------------------------------------------------------
 // per pixel lighting, no lightmaps
 // 2 - 8 light sources
@@ -1032,81 +919,6 @@ const char *pszPP0LMLightingFS [] = {
 
 //-------------------------------------------------------------------------
 
-const char *pszLMLightingFS [] = {
-	"uniform sampler2D lMapTex;\r\n" \
-	"uniform vec4 matColor;\r\n" \
-	"void main() {\r\n" \
-	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
-	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);\r\n" \
-	"}"
-	,
-	"uniform sampler2D lMapTex, baseTex;\r\n" \
-	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
-	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
-	"	}"
-	,
-	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
-	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
-	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
-	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
-	"	}"
-	,
-	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
-	"void main() {\r\n" \
-	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
-	"if (bMask < 0.5)\r\n" \
-	"  discard;\r\n" \
-	"else {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
-	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
-	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
-	"	gl_FragColor =  vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
-	"	}\r\n" \
-	"}"
-	};
-
-//-------------------------------------------------------------------------
-
-const char *pszLMLightingVS [] = {
-	"void main() {\r\n" \
-	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"	gl_Position = ftransform();\r\n" \
-   "	gl_FrontColor = gl_Color;\r\n" \
-	"	}"
-	,
-	"void main() {\r\n" \
-	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n" \
-	"	gl_Position = ftransform();\r\n" \
-   "	gl_FrontColor = gl_Color;\r\n" \
-	"	}"
-	,
-	"void main() {\r\n" \
-	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n" \
-	"	gl_TexCoord [2] = gl_MultiTexCoord2;\r\n" \
-	"	gl_Position = ftransform();\r\n" \
-   "	gl_FrontColor = gl_Color;\r\n" \
-	"	}"
-	,
-	"void main() {\r\n" \
-	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n" \
-	"	gl_TexCoord [2] = gl_MultiTexCoord2;\r\n" \
-	"	gl_TexCoord [3] = gl_MultiTexCoord3;\r\n" \
-	"	gl_Position = ftransform();\r\n" \
-   "	gl_FrontColor = gl_Color;\r\n" \
-	"	}"
-	};
-
-//-------------------------------------------------------------------------
-
 char *BuildLightingShader (const char *pszTemplate, int nLights)
 {
 	int	l = (int) strlen (pszTemplate) + 1;
@@ -1131,8 +943,17 @@ return pszFS;
 
 //-------------------------------------------------------------------------
 
-int perPixelLightingShaderProgs [9][4] =
- {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};
+int perPixelLightingShaderProgs [9][4] = {
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1},
+	{-1,-1,-1,-1}
+};
 
 int CreatePerPixelLightingShader (int nType, int nLights)
 {
@@ -1220,100 +1041,6 @@ for (int nType = 0; nType < 4; nType++)
 	for (int nLights = 0; nLights <= gameStates.render.nMaxLightsPerPass; nLights++)
 		CreatePerPixelLightingShader (nType, nLights);
 #endif
-}
-
-// ----------------------------------------------------------------------------------------------
-
-int lightmapShaderProgs [4] = {-1,-1,-1,-1};
-
-int CreateLightmapShader (int nType)
-{
-	int	h, j;
-
-if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
-	gameStates.render.bPerPixelLighting = 0;
-	return 0;
-	}
-if (lightmapShaderProgs [nType] >= 0)
-	return 1;
-for (h = 0; h <= 3; h++) {
-	if (lightmapShaderProgs [h] >= 0)
-		continue;
-	PrintLog ("building lightmap shader programs\n");
-	if (!shaderManager.Build (lightmapShaderProgs [h], pszLMLightingFS [h], pszLMLightingVS [h])) {
-		ogl.m_states.bPerPixelLightingOk = 0;
-		gameStates.render.bPerPixelLighting = 0;
-		for (j = 0; j < 4; j++)
-			shaderManager.Delete (lightmapShaderProgs [j]);
-		return -1;
-		}
-	}
-return 1;
-}
-
-// -----------------------------------------------------------------------------
-
-void InitLightmapShaders (void)
-{
-for (int nType = 0; nType < 4; nType++)
-	CreateLightmapShader (nType);
-}
-
-// -----------------------------------------------------------------------------
-
-void ResetLightmapShaders (void)
-{
-//memset (lightmapShaderProgs, 0xFF, sizeof (lightmapShaderProgs));
-}
-
-//-------------------------------------------------------------------------
-
-const char *lightMaskFS =
-	"uniform sampler2D lMapTex, maskTex;\r\n" \
-	"void main(void){gl_FragColor = texture2D (maskTex, gl_TexCoord [1].xy).r * texture2D (lMapTex, gl_TexCoord [0].xy);}\r\n"
-	;
-
-const char *lightMaskVS = 
-	"void main(void){" \
-	"gl_TexCoord [0] = gl_MultiTexCoord0;"\
-	"gl_TexCoord [1] = gl_MultiTexCoord1;"\
-	"gl_Position = ftransform();"\
-	"gl_FrontColor = gl_Color;}"
-	;
-
-// ----------------------------------------------------------------------------------------------
-
-int lightMaskShaderProg = -1;
-
-int CreateLightMaskShader (void)
-{
-if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
-	gameStates.render.bPerPixelLighting = 0;
-	return 0;
-	}
-if (lightMaskShaderProg >= 0)
-	return 1;
-PrintLog ("building light mask shader programs\n");
-if (shaderManager.Build (lightMaskShaderProg, lightMaskFS, lightMaskVS))
-	return 1;
-ogl.m_states.bPerPixelLightingOk = 0;
-gameStates.render.bPerPixelLighting = 0;
-shaderManager.Delete (lightMaskShaderProg);
-return -1;
-}
-
-// -----------------------------------------------------------------------------
-
-void InitLightMaskShader (void)
-{
-CreateLightMaskShader ();
-}
-
-// -----------------------------------------------------------------------------
-
-void ResetLightMaskShader (void)
-{
-//memset (lightmapShaderProgs, 0xFF, sizeof (lightmapShaderProgs));
 }
 
 //------------------------------------------------------------------------------
@@ -1472,7 +1199,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int SetupPerPixelShader (CSegFace *faceP, int nType, bool bHeadlight)
+int SetupPerPixelLightingShader (CSegFace *faceP, int nType, bool bHeadlight)
 {
 PROF_START
 	static CBitmap	*nullBmP = NULL;
@@ -1488,17 +1215,8 @@ nType = 0;
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if ((bLightmaps = lightmapManager.HaveLightmaps ())) {
-	int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
-	GLuint h;
-	if (lightmapManager.Bind (i) && (0 > ogl.IsBound (h = lightmapManager.Buffer (i)->handle))) {
-		ogl.SelectTMU (GL_TEXTURE0, true);
-		ogl.SetTexturing (true);
-		glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		ogl.BindTexture (h);
-		}
-	}
-
+if ((bLightmaps = lightmapManager.HaveLightmaps ()) && !SetupLightmap (faceP))
+	return 0;
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType]));
 if (!shaderProg) {
 	PROF_END(ptShaderStates);
@@ -1533,126 +1251,6 @@ if (shaderProg) {
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];
-}
-
-//------------------------------------------------------------------------------
-
-int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
-{
-PROF_START
-	static CBitmap	*nullBmP = NULL;
-
-if (!CreateLightmapShader (nType))
-	return 0;
-#if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
-#endif
-int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
-GLuint h;
-if (lightmapManager.Bind (i) && (0 > ogl.IsBound (h = lightmapManager.Buffer (i)->handle))) {
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.SetTexturing (true);
-	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	ogl.BindTexture (h);
-	}
-
-#if CONST_LIGHT_COUNT
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
-#else
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [nLights][nType]));
-#endif
-if (!shaderProg)
-	return -1;
-
-if (shaderManager.Rebuild (shaderProg)) {
-	ogl.ClearError (0);
-	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-	if (nType) {
-		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
-		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
-			if (nType > 2)
-				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
-			}
-		}
-	}
-else if (!nType) {
-	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
-	}
-ogl.ClearError (0);
-PROF_END(ptShaderStates)
-#if CONST_LIGHT_COUNT
-return lightmapShaderProgs [nType];
-#else
-return perPixelLightingShaderProgs [nLights][nType];
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-int SetupLightingShader (CSegFace *faceP, int bColorKey)
-{
-PROF_START
-	static CBitmap	*nullBmP = NULL;
-
-#if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
-#endif
-int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
-GLuint h;
-
-if (lightmapManager.Bind (i) && (0 > ogl.IsBound (h = lightmapManager.Buffer (i)->handle))) {
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.SetTexturing (true);
-	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	ogl.BindTexture (h);
-	}
-
-if (!bColorKey)
-	shaderManager.Deploy (-1);
-else {
-	if (!CreateLightMaskShader ())
-		return 0;
-	GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightMaskShaderProg));
-	if (!shaderProg)
-		return -1;
-
-	if (shaderManager.Rebuild (shaderProg)) {
-		ogl.ClearError (0);
-		glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-		glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 1);
-		}
-	ogl.ClearError (0);
-	}
-PROF_END(ptShaderStates)
-return lightMaskShaderProg;
-}
-
-//------------------------------------------------------------------------------
-
-int SetupGrayScaleShader (int nType, tRgbaColorf *colorP)
-{
-if (!gameStates.render.textures.bHaveGrayScaleShader)
-	return -1;
-
-if (nType > 2)
-	nType = 2;
-int bLightmaps = lightmapManager.HaveLightmaps ();
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (grayscaleShaderProgs [bLightmaps][nType]));
-if (!shaderProg)
-	return -1;
-shaderManager.Rebuild (shaderProg);
-if (!nType)
-	glUniform4fv (glGetUniformLocation (shaderProg, "faceColor"), 1, reinterpret_cast<GLfloat*> (colorP));
-else {
-	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), bLightmaps);
-	if (nType > 1)
-		glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1 + bLightmaps);
-	}
-ogl.ClearError (0);
-return grayscaleShaderProgs [bLightmaps][nType];
 }
 
 // ----------------------------------------------------------------------------------------------

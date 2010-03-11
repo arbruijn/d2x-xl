@@ -807,7 +807,7 @@ if (gameStates.render.bPerPixelLighting) {
 			ogl.m_states.iLight = 0;
 			lightManager.Index (0)[0].nActive = -1;
 			for (;;) {
-				SetupPerPixelShader (faceP, int (faceP->m_info.nRenderType), false);
+				SetupPerPixelLightingShader (faceP, int (faceP->m_info.nRenderType), false);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 					 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))

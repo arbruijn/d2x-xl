@@ -193,7 +193,7 @@ nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if (!bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
 else if ((gameStates.render.nType != RENDER_SKYBOX) && faceP && (gameStates.render.bPerPixelLighting == 2))
-	nShader = SetupPerPixelShader (faceP, nType, false);
+	nShader = SetupPerPixelLightingShader (faceP, nType, false);
 else if (gameStates.render.bHeadlights)
 	nShader = lightManager.Headlights ().SetupShader (nType, lightmapManager.HaveLightmaps (), colorP);
 else if (bColorKey || bMultiTexture)
@@ -695,7 +695,7 @@ else if (gameStates.render.bFullBright) {
 else {
 	bool bAdditive = false;
 	for (;;) {
-		SetupPerPixelShader (faceP, gameStates.render.history.nType, false);
+		SetupPerPixelLightingShader (faceP, gameStates.render.history.nType, false);
 		DrawFacePP (faceP);
 		if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 			 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
@@ -924,7 +924,7 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
-SetupLightingShader (faceP, bColorKey);
+SetupStaticLightingShader (faceP, bColorKey);
 DrawFacePP (faceP);
 return 0;
 }

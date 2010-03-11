@@ -379,7 +379,7 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 	int	//bVBO = 0,
 			bLightmaps = (nType < RENDER_SKYBOX) && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
 			bNormals = !bDepthOnly,
-			bColor = !(bDepthOnly || gameStates.render.bFullBright || (nType == RENDER_LIGHTING)); 
+			bColor = !(bDepthOnly || gameStates.render.bFullBright || (nType == RENDER_LIGHTMAPS)); 
 
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -402,7 +402,7 @@ if (!bDepthOnly) {
 	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) 
 		ogl.SetDepthMode (GL_LEQUAL); 
 	else {
-		if (nType == RENDER_LIGHTING) {
+		if (nType == RENDER_LIGHTMAPS) {
 			ogl.SetDepthMode (GL_LEQUAL); 
 			ogl.SetBlendMode (GL_ONE, GL_ONE);
 			gameStates.render.bFullBright = 0;
@@ -477,17 +477,17 @@ else
 	{
 	if (bLightmaps) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
-		if (nType == RENDER_LIGHTING)
+		if (nType == RENDER_LIGHTMAPS)
 			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		else
 			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.texCoord.Buffer ()));
 		if (bColor)
 			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
-		if (nType == RENDER_LIGHTING)
+		if (nType == RENDER_LIGHTMAPS)
 			;//ogl.DisableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		}
-	if (nType > RENDER_LIGHTING) {
+	if (nType > RENDER_LIGHTMAPS) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1 + bLightmaps);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
@@ -519,7 +519,7 @@ else
 if (bNormals)	// somehow these get disabled above
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 #endif
-if (gameStates.render.bFullBright || (nType == RENDER_LIGHTING))
+if (gameStates.render.bFullBright || (nType == RENDER_LIGHTMAPS))
 	glColor3f (1,1,1);
 ogl.SetBlendMode (GL_ONE, GL_ZERO);
 ogl.ClearError (0);
