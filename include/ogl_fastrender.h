@@ -11,7 +11,7 @@
 
 //------------------------------------------------------------------------------
 
-int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTransparent);
+int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderColor (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);

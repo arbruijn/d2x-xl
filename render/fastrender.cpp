@@ -149,7 +149,7 @@ if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 LoadFaceBitmaps (segP, faceP);
 if (!faceP->bmBot)
 	return false;
-RenderDepth (faceP, faceP->bmBot, faceP->bmTop, 0);
+RenderDepth (faceP, faceP->bmBot, faceP->bmTop);
 return true;
 }
 
