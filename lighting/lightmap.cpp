@@ -773,7 +773,7 @@ ogl.SetTexturing (true);
 glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 ogl.BindTexture (h);
 gameData.render.nStateChanges++;
-return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
