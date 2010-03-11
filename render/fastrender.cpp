@@ -274,9 +274,9 @@ typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly
 
 static pRenderHandler renderHandlers [] = {
 	RenderStaticLights, 
-	RenderFaceColor,
 	RenderDynamicLights, 
 	RenderFaceDepth, 
+	RenderFaceColor,
 	RenderStaticFace, 
 	RenderDynamicFace, 
 	RenderColoredFace, 
@@ -417,7 +417,7 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
 			bColor = !gameStates.render.bFullBright && (nType == RENDER_COLOR),
 			bTexCoord = (nType != RENDER_COLOR),
-			bNormals = !bDepthOnly && bTexCoord;
+			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_COLOR);
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -466,13 +466,23 @@ else if (nType == RENDER_CORONAS) {
 	return 0;
 	}
 else {
-	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright || (nType >= RENDER_OBJECTS)) {
+	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright) {
 		ogl.SetDepthMode (GL_LEQUAL); 
 		ogl.SetBlendMode (GL_ONE, GL_ZERO);
 		}
-	else {
+	else if ((nType == RENDER_FACES) || (nType == RENDER_WALLS)) {
 		ogl.SetDepthMode (GL_EQUAL); 
 		ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+		ogl.SetDepthWrite (false);
+		}
+	else if (nType == RENDER_CORONAS) {
+		ogl.SetDepthMode (GL_LEQUAL); 
+		ogl.SetBlendMode (0);
+		ogl.SetDepthWrite (false);
+		}
+	else {
+		ogl.SetDepthMode (GL_LEQUAL); 
+		ogl.SetBlendMode (GL_ONE, GL_ZERO);
 		ogl.SetDepthWrite (false);
 		}
 	}
@@ -643,13 +653,10 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (!bDepthOnly) {
-				if (!bHeadlight)
-				if (gameStates.render.nType == RENDER_DEPTH)
-					VisitSegment (nSegment, bAutomap);
-				else if (gameStates.render.nType == RENDER_LIGHTS)
-					lightManager.Index (0)[0].nActive = -1;
-				}
+			if (gameStates.render.nType == RENDER_DEPTH)
+				VisitSegment (nSegment, bAutomap);
+			else if (gameStates.render.nType == RENDER_LIGHTS)
+				lightManager.Index (0)[0].nActive = -1;
 			}
 		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly))
 			nFaces++;
