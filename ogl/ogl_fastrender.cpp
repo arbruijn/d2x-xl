@@ -190,7 +190,13 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
-if (!bColored && gameOpts->render.automap.bGrayOut)
+if (gameStates.render.bPerPixelLighting) {
+	if (bColorKey || bMultiTexture)
+		nShader = SetupTexMergeShader (bColorKey, bColored, nType);
+	else
+		shaderManager.Deploy (-1);
+	}
+else if (!bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
 else if ((gameStates.render.nType != RENDER_SKYBOX) && faceP && (gameStates.render.bPerPixelLighting == 2))
 	nShader = SetupPerPixelLightingShader (faceP, nType);
@@ -304,7 +310,6 @@ if (bTextured) {
 		if (gameStates.render.history.bmMask = bmMask) {
 			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE2, GL_MODULATE)))
 				return 0;
-			//ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2);
 			}
 		else {
 			ResetTMU (GL_TEXTURE2);
@@ -317,7 +322,7 @@ if (bTextured) {
 		}
 	if (bStateChange) {
 		gameData.render.nStateChanges++;
-		if (!(gameStates.render.bFullBright || gameStates.render.bPerPixelLighting))
+		if (!gameStates.render.bFullBright)
 			SetupRenderShader (faceP, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->m_info.color);
 		}
 	}
@@ -358,7 +363,6 @@ if (bTextured) {
 		if (gameStates.render.history.bmMask = bmMask) {
 			if (!(gameStates.render.history.bmMask = SetupTMU (bmMask, GL_TEXTURE3, GL_MODULATE)))
 				return 0;
-			//ogl.EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE3);
 			}
 		else {
 			ResetTMU (GL_TEXTURE3);
@@ -679,18 +683,13 @@ gameData.render.nTotalFaces++;
 SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
 if (bMonitor)
 	SetupMonitor (faceP, bmTop, bTextured, 1);
-if (!bColored) {
+if (bColored) 
+	DrawFacePP (faceP);
+else {
 	SetupGrayScaleShader (gameStates.render.history.nType, &faceP->m_info.color);
 	ogl.SetBlendMode (0);
 	DrawFacePP (faceP);
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-	}
-else {
-	if (gameStates.render.history.nType > 1)
-		SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
-	else 
-		shaderManager.Deploy (-1);
-	DrawFacePP (faceP);
 	}
 
 #else

@@ -393,9 +393,10 @@ return tiRender.nFaces;
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
-			bLightmaps = (nType < RENDER_SKYBOX) && !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
+			bLightmaps = (nType < (gameStates.render.bPerPixelLighting ? RENDER_FACES : RENDER_SKYBOX)) && 
+							 !gameStates.render.bFullBright && lightmapManager.HaveLightmaps (),
 			bNormals = !bDepthOnly,
-			bColor = !(bDepthOnly || gameStates.render.bFullBright || (nType < RENDER_FACES)); 
+			bColor = !(bDepthOnly || gameStates.render.bFullBright || (gameStates.render.bPerPixelLighting && (nType >= RENDER_FACES))); 
 
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -429,7 +430,7 @@ if (!bDepthOnly) {
 			}
 		else {
 			ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-			ogl.SetDepthMode (GL_EQUAL); 
+			ogl.SetDepthMode (GL_LEQUAL); 
 			ogl.SetDepthWrite (false);
 			}
 		}
@@ -452,7 +453,7 @@ else {
 		bVBO = 1;
 		}
 #endif
-	if ((nType < RENDER_SKYBOX) && (gameStates.render.bPerPixelLighting == 2)) {
+	if ((nType < RENDER_FACES) && (gameStates.render.bPerPixelLighting == 2)) {
 		ogl.EnableLighting (1);
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);
@@ -504,6 +505,7 @@ else
 			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 		}
+
 	if (nType >= RENDER_FACES) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1 + bLightmaps);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
@@ -532,10 +534,6 @@ else
 		}
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
-#if 0
-if (bNormals)	// somehow these get disabled above
-	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
-#endif
 glColor3f (1,1,1);
 ogl.ClearError (0);
 return 1;
