@@ -396,6 +396,7 @@ ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 #if 1
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	SetupDepthBuffer (RENDER_DEPTH_OPAQUE);
+	//ogl.DrawBuffer ()->UseBuffers (1, 1);
 	SetupDepthBuffer (RENDER_DEPTH_TRANSPARENT);
 	//ogl.DrawBuffer ()->UseBuffers (0, 1);
 #	if 1

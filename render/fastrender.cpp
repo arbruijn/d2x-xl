@@ -433,6 +433,7 @@ ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
+
 if ((nType == RENDER_DEPTH_OPAQUE) || (nType == RENDER_DEPTH_TRANSPARENT)) {
 	ogl.ColorMask (0,0,0,0,0);
 	//ogl.ColorMask (1,1,1,1,0);
