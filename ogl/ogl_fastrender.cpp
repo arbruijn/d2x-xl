@@ -949,8 +949,12 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
+#if 0
 SetupStaticLightingShader (faceP, bColorKey != 0);
-DrawFacePP (faceP);
+#else
+if (SetupLightmap (faceP))
+	DrawFacePP (faceP);
+#endif
 return 0;
 }
 
@@ -983,12 +987,10 @@ if (bmTop) {
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetLightingRenderStates (faceP, bmTop, bColorKey);
 ogl.m_states.iLight = 0;
-ogl.SetDepthMode (GL_LEQUAL);
-while (0 < SetupPerPixelLightingShader (faceP, bColorKey != 0)) {
+while (0 < SetupPerPixelLightingShader (faceP, 0)) {
 	DrawFacePP (faceP);
 	if ((ogl.m_states.iLight >= ogl.m_states.nLights) || (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 		return 0;
-	ogl.SetDepthMode (GL_EQUAL);
 	}
 return 0;
 }
