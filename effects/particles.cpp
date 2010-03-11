@@ -109,7 +109,7 @@ tParticleImageInfo particleImageInfo [3][PARTICLE_TYPES] = {
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0}},
-	{{NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
+	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 1, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},

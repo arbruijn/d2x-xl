@@ -317,7 +317,7 @@ if (bTextured) {
 		}
 	if (bStateChange) {
 		gameData.render.nStateChanges++;
-		if (!gameStates.render.bFullBright)
+		if (!(gameStates.render.bFullBright || gameStates.render.bPerPixelLighting))
 			SetupRenderShader (faceP, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->m_info.color);
 		}
 	}
@@ -666,20 +666,43 @@ if (bDepthOnly) {
 	return 1;
 	}
 
-if (gameStates.render.bFullBright)
-	SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
-else
-	SetRenderStatesLM (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
-ogl.m_states.iLight = 0;
 #if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
 	return 0;
 #endif
+
+gameData.render.nTotalFaces++;
+
+#if 1
+
+SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+if (bMonitor)
+	SetupMonitor (faceP, bmTop, bTextured, 1);
+if (!bColored) {
+	SetupGrayScaleShader (gameStates.render.history.nType, &faceP->m_info.color);
+	ogl.SetBlendMode (0);
+	DrawFacePP (faceP);
+	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+	}
+else {
+	if (gameStates.render.history.nType > 1)
+		SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
+	else 
+		shaderManager.Deploy (-1);
+	DrawFacePP (faceP);
+	}
+
+#else
+
+if (gameStates.render.bFullBright)
+	SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+else
+	SetRenderStatesLM (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
+ogl.m_states.iLight = 0;
 G3SetBlendMode (faceP);
 if (bMonitor)
 	SetupMonitor (faceP, bmTop, bTextured, 1);
-gameData.render.nTotalFaces++;
 if (!bColored) {
 	SetupGrayScaleShader (gameStates.render.history.nType, &faceP->m_info.color);
 	DrawFacePP (faceP);
@@ -723,6 +746,8 @@ else {
 		ogl.SetDepthWrite (true);
 		}
 	}
+
+#endif
 
 if (bMonitor)
 	ResetMonitor (bmTop, 1);

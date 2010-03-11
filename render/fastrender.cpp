@@ -431,7 +431,6 @@ if (!bDepthOnly) {
 			ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
 			ogl.SetDepthMode (GL_EQUAL); 
 			ogl.SetDepthWrite (false);
-			gameStates.render.bFullBright = 1;
 			}
 		}
 	}
@@ -537,8 +536,7 @@ else
 if (bNormals)	// somehow these get disabled above
 	ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 #endif
-if (gameStates.render.bFullBright || (nType < RENDER_FACES))
-	glColor3f (1,1,1);
+glColor3f (1,1,1);
 ogl.ClearError (0);
 return 1;
 }
