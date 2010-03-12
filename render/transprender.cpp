@@ -693,17 +693,8 @@ faceP = item->faceP;
 triP = item->triP;
 
 #if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
-#if 0
-	if (triP) {
-		if ((triP->nIndex - faceP->m_info.nIndex) / 3 < 22)
-			return;
-		if ((triP->nIndex - faceP->m_info.nIndex) / 3 > 23)
-			return;
-		}
-#endif
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
-	}
 #endif
 
 if ((bmTop = faceP->bmTop))
@@ -744,7 +735,7 @@ else
 if (bLightmap) {
 	int nPrevBuffer = ogl.SelectDrawBuffer (2);
 #if DBG
-	glClear (GL_COLOR_BUFFER_BIT);
+//	glClear (GL_COLOR_BUFFER_BIT);
 #endif
 #if 1
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
@@ -787,9 +778,12 @@ if (bLightmap) {
 	ogl.DisableClientStates (1, 0, 1, GL_TEXTURE0);
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.SetTexturing (true);
-	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
-	ogl.SetDepthMode (GL_LEQUAL);
+	ogl.SetDepthMode (GL_ALWAYS);
+	ogl.SetBlendMode (0);
+	ogl.RenderScreenQuad (1);
+	ogl.ResetTransform (1);
+	return;
 #endif
 	bColored = 2;
 	}

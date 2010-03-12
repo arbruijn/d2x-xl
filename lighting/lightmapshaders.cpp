@@ -192,8 +192,8 @@ return lightmapShaderProgs [nType];
 const char *colorFS =
 	"uniform sampler2D lMapTex;\r\n" \
 	"void main(void){\r\n" \
-	"vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"gl_FragColor = vec4 (gl_Color.rgb + texColor.rgb, gl_Color.a);\r\n" \
+	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
+	"gl_FragColor = vec4 (gl_Color.rgb + color.rgb, 1.0); //gl_Color.a);\r\n" \
 	"}"
 	;
 

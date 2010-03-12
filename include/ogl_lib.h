@@ -299,7 +299,7 @@ class COGL {
 							  CBitmap *bmP, 							  
 							  int nTMU = -1);
 		void ReleaseBuffers (void);
-		int BindBitmap (CBitmap* bmP, int nFrame, int nWrap);
+		int BindBitmap (CBitmap* bmP, int nFrame, int nWrap, int bTextured);
 		int RenderArrays (int nPrimitive, 
 								CFloatVector *vertexP, int nVertices, int nDimensions = 3,
 								tTexCoord2f *texCoordP = NULL, 

@@ -1018,7 +1018,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap)
+int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap, int bTextured)
 {
 SelectTMU (GL_TEXTURE0);
 if (bmP) {
@@ -1032,7 +1032,7 @@ if (bmP) {
 		bmP->Texture ()->Wrap (nWrap);
 		}
 	}
-else if (!(ogl.DrawBuffer () && ogl.DrawBuffer ()->IsBound ()))
+else if (!bTextured)
 	SetTexturing (false);
 return 1;
 }
@@ -1074,7 +1074,7 @@ int COGL::RenderArrays (int nPrimitive,
 							   tRgbaColorf *colorP, int nColors, 
 							   CBitmap *bmP, int nFrame, int nWrap)
 {
-if (!BindBitmap (bmP, nFrame, nWrap))
+if (!BindBitmap (bmP, nFrame, nWrap, texCoordP != NULL))
 	return 0;
 if (!BindBuffers (vertexP, nVertices, nDimensions, texCoordP, colorP, nColors, bmP))
 	return 0;
@@ -1088,7 +1088,7 @@ return 1;
 int COGL::RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions, tTexCoord2f* texCoordP, tRgbaColorf* colorP, int nColors, int nWrap)
 {
 if (!bmP)
-	ogl.RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, GL_CLAMP);
+	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, GL_CLAMP);
 else if (texCoordP)
 	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, nWrap);
 else {
