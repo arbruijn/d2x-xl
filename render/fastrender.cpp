@@ -455,6 +455,7 @@ else if (nType == RENDER_LIGHTS) {
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.SetDepthWrite (false);
 	if (gameStates.render.bPerPixelLighting == 2) {
+		gameStates.render.nLights = -1;
 		ogl.EnableLighting (1);
 		for (int i = 0; i < 8; i++)
 			glEnable (GL_LIGHT0 + i);

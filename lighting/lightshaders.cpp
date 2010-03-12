@@ -332,15 +332,26 @@ if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
+int nLightmap = SetupLightmap (faceP);
+if (!nLightmap)
+	return 0;
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass]));
 if (!shaderProg) {
 	PROF_END(ptShaderStates);
 	return -1;
 	}
-shaderManager.Rebuild (shaderProg);
-glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
-glUniform1f (glGetUniformLocation (shaderProg, "fScale"), GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
+if (shaderManager.Rebuild (shaderProg)) {
+	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
+	glUniform1f (glGetUniformLocation (shaderProg, "fScale"), GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
+	glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
+	}
+else {
+	if (gameStates.render.nLights != nLights) {
+		gameStates.render.nLights = nLights;
+		glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
+		glUniform1f (glGetUniformLocation (shaderProg, "fScale"), GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
+		}
+	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass];

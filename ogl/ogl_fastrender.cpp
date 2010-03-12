@@ -938,14 +938,10 @@ if (!FaceIsColored (faceP))
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
 ogl.m_states.iLight = 0;
-if (0 < SetupPerPixelLightingShader (faceP)) {
-	for (;;) {
-		DrawFacePP (faceP);
-		if ((ogl.m_states.iLight >= ogl.m_states.nLights) || (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
-			return 0;
-		if (!SetupHardwareLighting (faceP))
-			return 0;
-		}
+while (0 < SetupPerPixelLightingShader (faceP)) {
+	DrawFacePP (faceP);
+	if ((ogl.m_states.iLight >= ogl.m_states.nLights) || (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
+		return 0;
 	}
 return 0;
 }

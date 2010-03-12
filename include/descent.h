@@ -982,6 +982,7 @@ typedef struct tRenderStates {
 	int nMaxLightsPerPass;
 	int nMaxLightsPerFace;
 	int nMaxLightsPerObject;
+	int nLights;
 	int bVSync;
 	int bVSyncOk;
 	int nThreads;
