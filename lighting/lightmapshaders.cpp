@@ -193,7 +193,7 @@ const char *colorFS =
 	"uniform sampler2D lMapTex;\r\n" \
 	"void main(void){\r\n" \
 	"vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"gl_FragColor = vec4 (gl_Color.rgb + texColor.rgb, texColor.a);\r\n" \
+	"gl_FragColor = vec4 (gl_Color.rgb + texColor.rgb, gl_Color.a);\r\n" \
 	"}"
 	;
 
