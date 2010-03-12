@@ -741,7 +741,7 @@ if (bGrayScale)
 else 
 if (bLightmap) {
 	int nPrevBuffer = ogl.SelectDrawBuffer (2);
-	ogl.SetDrawBuffer (GL_BACK, 1);
+	//ogl.SetDrawBuffer (GL_BACK, 1);
 #if 0
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthMode (GL_ALWAYS);

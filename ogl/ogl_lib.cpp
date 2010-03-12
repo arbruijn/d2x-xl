@@ -1123,18 +1123,22 @@ if (bStencil) {
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)
 {
 glGenTextures (n, hTextures);
+#if 0
 if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
 	DestroyDrawBuffers ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void COGL::DeleteTextures (GLsizei n, GLuint *hTextures)
 {
+#if 0
 if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
 	DestroyDrawBuffers ();
+#endif
 #if DBG
 for (int i = 0; i < n;)
 	if (int (hTextures [i]) < 0)
