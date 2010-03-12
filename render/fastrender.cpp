@@ -718,10 +718,14 @@ gameData.render.nRenderFaces [1] = 0;
 for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
 	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP [j].nNextItem) {
 		faceP = fliP [j].faceP;
+#if DBG
+		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
 		if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 			continue;
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
-		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmTop, faceP->bmBot);
+		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
 		faceP->m_info.nColored = FaceIsColored (faceP);
 		gameData.render.renderFaces [faceP->m_info.nTransparent][gameData.render.nRenderFaces [faceP->m_info.nTransparent]++] = faceP;
 		}

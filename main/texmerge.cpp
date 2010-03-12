@@ -535,7 +535,7 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 int SetupTexMergeShader (int bColored, int nType)
 {
-	int nShader = nType - 2 + bColored * 3;
+	int nShader = nType - 2 + bColored * 2;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
 

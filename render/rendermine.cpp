@@ -302,6 +302,8 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		}
 	}	
 //EndRenderFaces (0);
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	lightManager.ResetAllUsed (1, i);
 gameStates.render.nState = 0;
 }
 
@@ -321,7 +323,7 @@ else {
 		}
 	if (nType == RENDER_LIGHTS) {
 		for (int i = 0; i < gameStates.app.nThreads; i++)
-		lightManager.ResetAllUsed (1, i);
+			lightManager.ResetAllUsed (1, i);
 		}
 	}
 ogl.ClearError (0);
