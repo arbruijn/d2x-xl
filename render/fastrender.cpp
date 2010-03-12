@@ -181,14 +181,14 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderHeadLights (CSegment *segP, CSegFace *faceP)
+bool RenderPlayerLights (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 LoadFaceBitmaps (segP, faceP);
 if (!faceP->bmBot)
 	return false;
-RenderLights (faceP, faceP->bmBot, faceP->bmTop);
+RenderHeadlights (faceP, faceP->bmBot, faceP->bmTop);
 return true;
 }
 
@@ -288,7 +288,7 @@ typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP);
 static pRenderHandler renderHandlers [] = {
 	RenderStaticLights, 
 	RenderDynamicLights, 
-	NULL,
+	RenderPlayerLights,
 	RenderFaceDepth, 
 	RenderFaceColor,
 	RenderStaticFace, 
@@ -431,7 +431,7 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 			bLightmaps = lightmapManager.HaveLightmaps () && ((nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS)),
 			bColor = !gameStates.render.bFullBright && ((nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS)), //(nType == RENDER_COLOR),
 			bTexCoord = (nType != RENDER_COLOR),
-			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS); //(nType == RENDER_COLOR);
+			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS) || (nType == RENDER_HEADLIGHTS); //(nType == RENDER_COLOR);
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
