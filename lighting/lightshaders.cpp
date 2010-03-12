@@ -47,7 +47,7 @@
 // per pixel lighting
 // 2 - 8 light sources
 
-const char *pszPPXLightingFS = {
+const char *multipleLightFS = {
 	"#define LIGHTS 8\r\n" \
 	"uniform float fScale;\r\n" \
 	"uniform int nLights;\r\n" \
@@ -90,7 +90,7 @@ const char *pszPPXLightingFS = {
 //-------------------------------------------------------------------------
 // one light source
 
-const char *pszPP1LightingFS = {
+const char *singleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
@@ -125,7 +125,7 @@ const char *pszPP1LightingFS = {
 
 //-------------------------------------------------------------------------
 
-const char *pszPPLightingVS = {
+const char *lightVS = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
@@ -163,7 +163,7 @@ return pszFS;
 
 //-------------------------------------------------------------------------
 
-int perPixelLightingShaderProgs [9] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+int lightShaderProgs [9] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
 
 int CreatePerPixelLightingShader (int nLights)
 {
@@ -178,21 +178,21 @@ if (!(ogl.m_states.bShadersOk && gameStates.render.bUsePerPixelLighting && (ogl.
 	gameStates.render.bPerPixelLighting = 0;
 	return -1;
 	}
-if (perPixelLightingShaderProgs [nLights] >= 0)
+if (lightShaderProgs [nLights] >= 0)
 	return nLights;
-fsP = (nLights == 1) ? pszPP1LightingFS : pszPPXLightingFS;
-vsP = pszPPLightingVS;
+fsP = (nLights == 1) ? singleLightFS : multipleLightFS;
+vsP = lightVS;
 PrintLog ("building lighting shader programs\n");
 pszFS = BuildLightingShader (fsP, nLights);
 pszVS = BuildLightingShader (vsP, nLights);
-bOk = (pszFS != NULL) && (pszVS != NULL) && shaderManager.Build (perPixelLightingShaderProgs [nLights], pszFS, pszVS);
+bOk = (pszFS != NULL) && (pszVS != NULL) && shaderManager.Build (lightShaderProgs [nLights], pszFS, pszVS);
 delete[] pszFS;
 delete[] pszVS;
 if (!bOk) {
 	ogl.m_states.bPerPixelLightingOk = 1;
 	gameStates.render.bPerPixelLighting = 1;
 	for (int i = 0; i <= MAX_LIGHTS_PER_PIXEL; i++)
-		shaderManager.Delete (perPixelLightingShaderProgs [i]);
+		shaderManager.Delete (lightShaderProgs [i]);
 	nLights = 0;
 	return -1;
 	}
@@ -203,7 +203,7 @@ return ogl.m_data.nPerPixelLights [nLights] = nLights;
 
 void ResetPerPixelLightingShaders (void)
 {
-//memset (perPixelLightingShaderProgs, 0xFF, sizeof (perPixelLightingShaderProgs));
+//memset (lightShaderProgs, 0xFF, sizeof (lightShaderProgs));
 }
 
 //------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ return nLights;
 int LoadPerPixelLightingShader (void)
 {
 PROF_START
-gameStates.render.shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass]));
+gameStates.render.shaderProg = GLhandleARB (shaderManager.Deploy (lightShaderProgs [gameStates.render.nMaxLightsPerPass]));
 if (!gameStates.render.shaderProg) {
 	PROF_END(ptShaderStates);
 	return -1;
@@ -328,7 +328,7 @@ if (!gameStates.render.shaderProg) {
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 gameStates.render.nLights = -1;
 PROF_END(ptShaderStates);
-return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass];
+return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
 }
 
 //------------------------------------------------------------------------------
@@ -354,7 +354,7 @@ if (gameStates.render.nLights != nLights) {
 	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
-return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass];
+return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
 }
 
 // ----------------------------------------------------------------------------------------------
