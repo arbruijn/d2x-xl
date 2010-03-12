@@ -643,7 +643,7 @@ if (gameStates.render.bHaveSkyBox) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
-			if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, faceP->m_info.nSide)))
+			if (!(faceP->m_info.bVisible = FaceIsCulled (nSegment, faceP->m_info.nSide)))
 				continue;
 			RenderMineFace (SEGMENTS + nSegment, faceP, RENDER_SKYBOX);
 			}
@@ -724,7 +724,7 @@ for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		if (!(faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_RENDER_FLAG)))
+		if (!faceP->m_info.bVisible)
 			continue;
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
 		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
@@ -862,7 +862,7 @@ for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
-	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
+	if (faceP->m_info.bVisible && RenderMineFace (SEGMENTS + nSegment, faceP, nType))
 		nFaces++;
 	}
 return nFaces;

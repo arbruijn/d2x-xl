@@ -47,7 +47,7 @@ int	bOutLineMode = 0,
 
 //------------------------------------------------------------------------------
 
-int FaceIsVisible (short nSegment, short nSide)
+int FaceIsCulled (short nSegment, short nSide)
 {
 #if SW_CULLING
 CSegment *segP = SEGMENTS + nSegment;
@@ -55,10 +55,10 @@ CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
 v = gameData.render.mine.viewerEye - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_verts [sideVertIndex [nSide][0]]);
 return (sideP->m_nType == SIDE_IS_QUAD)
-		 ? CFixVector::Dot (sideP->m_normals [0], v) >= 0
-		 : (CFixVector::Dot (sideP->m_normals [0], v) >= 0) || (CFixVector::Dot (sideP->m_normals [1], v) >= 0);
+		 ? CFixVector::Dot (sideP->m_normals [0], v) < 0
+		 : (CFixVector::Dot (sideP->m_normals [0], v) < 0) && (CFixVector::Dot (sideP->m_normals [1], v) < 0);
 #else
-return 1;
+return 0;
 #endif
 }
 

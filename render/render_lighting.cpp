@@ -48,6 +48,19 @@ return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 
 //------------------------------------------------------------------------------
 
+static int FaceIsVisible (CSegFace* faceP)
+{
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return faceP->m_info.bVisible = 0;
+if (!FaceIsCulled (faceP->m_info.nSegment, faceP->m_info.nSide))
+	return faceP->m_info.bVisible = 0;
+if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks)
+	return faceP->m_info.bVisible = 0;
+return faceP->m_info.bVisible = 1;
+}
+
+//------------------------------------------------------------------------------
+
 int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
 {
 	ubyte	bTextured, bCloaked, bTransparent, bWall;
@@ -59,6 +72,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (FACE_IDX (faceP) == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
+if (!FaceIsVisible (faceP))
+	return -1;
+
 bWall = IS_WALL (faceP->m_info.nWall);
 if (bWall) {
 	faceP->m_info.widFlags = segP->IsDoorWay (nSide, NULL);
@@ -128,12 +144,10 @@ for (i = nStart; i < nEnd; i++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks) {
+	if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, &fAlpha))) {
 		faceP->m_info.bVisible = 0;
 		continue;
 		}
-	if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, nSide)))
-		continue;
 
 	if (bNeedLight)
 		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
@@ -144,10 +158,6 @@ for (i = nStart; i < nEnd; i++) {
 			nSegment = nSegment;
 		}
 #endif
-	if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, &fAlpha))) {
-		faceP->m_info.bVisible = 0;
-		continue;
-		}
 	AddFaceListItem (faceP, nThread);
 	faceP->m_info.color = faceColor [nColor].color;
 	pc = FACES.color + faceP->m_info.nIndex;
@@ -300,19 +310,13 @@ for (i = nStart; i < nEnd; i++) {
 				nSegment = nSegment;
 			}
 #endif
-		if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks) {
-			faceP->m_info.bVisible = 0;
-			continue;
-			}
-		if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, nSide)))
-			continue;
-		FixTriangleFan (segP, faceP);
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
+		FixTriangleFan (segP, faceP);
 		faceP->m_info.color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->m_info.nSide, -1);
 		pc = FACES.color + faceP->m_info.nIndex;
@@ -438,12 +442,6 @@ for (i = nStart; i < nEnd; i++) {
 				nSegment = nSegment;
 			}
 #endif
-		if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, nSide)))
-			continue;
-		if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks) {
-			faceP->m_info.bVisible = 0;
-			continue;
-			}
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
 			faceP->m_info.bVisible = 0;
 			continue;
@@ -546,21 +544,17 @@ for (i = nStart; i < nEnd; i++) {
 		}
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->m_info.nSide;
-		if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, nSide)))
+		if (!FaceIsVisible (faceP))
 			continue;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
-		if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks) {
-			faceP->m_info.bVisible = 0;
-			continue;
-			}
-		FixTriangleFan (segP, faceP);
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
+		FixTriangleFan (segP, faceP);
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 		faceP->m_info.color = faceColor [nColor].color;
