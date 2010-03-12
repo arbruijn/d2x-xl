@@ -775,7 +775,7 @@ if (bLightmap) {
 	ogl.SetTexturing (true);
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
-	ogl.SetDepthMode (GL_EQUAL);
+	ogl.SetDepthMode (GL_LEQUAL);
 	if (bTextured)
 		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.texCoord + nIndex);
 	bColored = 2;
@@ -822,7 +822,6 @@ ogl.SetBlendMode (bAdditive = item->bAdditive);
 SetupRenderShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL, bColored,
 						 m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 OglDrawArrays (item->nPrimitive, 0, item->nVertices);
-ogl.SetDepthMode (GL_LEQUAL);
 
 ogl.ResetTransform (1);
 gameData.render.nTotalFaces++;
