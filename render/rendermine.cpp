@@ -421,10 +421,12 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	ogl.DrawBuffer ()->UseBuffers (0);
 	}
 #endif
+
+#if 1
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
 RenderMineObjects (RENDER_OBJECTS);
 RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
-#if 1
+
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)
 		RenderSegmentList (RENDER_COLORED_FACES, 1);	// render transparent geometry

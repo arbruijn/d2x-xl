@@ -1001,6 +1001,7 @@ typedef struct tRenderStates {
 	double glFOV;
 	double glAspect;
 	float grAlpha;
+	GLhandleARB shaderProg;
 	tRenderDetail detail;
 	tRenderHistory history;
 } tRenderStates;

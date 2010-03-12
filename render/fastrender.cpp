@@ -473,16 +473,15 @@ else if (nType == RENDER_HEADLIGHTS) {
 	ogl.SetDepthWrite (false);
 	}
 else if (nType == RENDER_LIGHTS) {
+	if (0 > LoadPerPixelLightingShader ())
+		return 0;
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.SetDepthWrite (false);
-	if (gameStates.render.bPerPixelLighting == 2) {
-		gameStates.render.nLights = -1;
-		ogl.EnableLighting (1);
-		for (int i = 0; i < 8; i++)
-			glEnable (GL_LIGHT0 + i);
-		ogl.SetLighting (false);
-		}
+	ogl.EnableLighting (1);
+	for (int i = 0; i < 8; i++)
+		glEnable (GL_LIGHT0 + i);
+	ogl.SetLighting (false);
 	}
 else if (nType == RENDER_CORONAS) {
 	if (glareRenderer.Style () == 2)

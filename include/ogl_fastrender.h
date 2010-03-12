@@ -23,6 +23,7 @@ int RenderHeadlightsVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBl
 int RenderHeadlightsPP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void FlushFaceBuffer (int bForce);
 
+int LoadPerPixelLightingShader (void);
 int SetupPerPixelLightingShader (CSegFace* faceP);
 int SetupLightmapShader (CSegFace* faceP, int nType, bool bHeadlight);
 int SetupColorShader (void);

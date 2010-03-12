@@ -462,99 +462,6 @@ return (faceP->m_info.nColored >= 0)
 
 //------------------------------------------------------------------------------
 
-int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured)
-{
-PROF_START
-	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
-#if G3_BUFFER_FACES
-	int			nBlendMode;
-#endif
-
-#if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
-#endif
-
-if (!faceP->m_info.bTextured)
-	bmBot = NULL;
-else if (bmBot) {
-	bmBot = bmBot->Override (-1);
-#if 0 //DBG
-	if (strstr (bmBot->Name (), "rock327"))
-		bmBot = bmBot;
-	else
-		return 0;
-#endif
-	}
-bTransparent = FaceIsTransparent (faceP, bmBot, bmTop);
-bColored = FaceIsColored (faceP);
-bMonitor = (faceP->m_info.nCamera >= 0);
-if (bmTop) {
-	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
-		bmTop = bmTop->CurFrame ();
-		}
-	else
-		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
-	}
-gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-if (bTransparent && (gameStates.render.nType < RENDER_SKYBOX) && !bMonitor) {
-	faceP->m_info.nRenderType = gameStates.render.history.nType;
-	faceP->m_info.bColored = bColored;
-	transparencyRenderer.AddFace (faceP);
-	return 0;
-	}
-
-#if G3_BUFFER_FACES
-if (bMonitor)
-	FlushFaceBuffer (1);
-else {
-	nBlendMode = faceP->m_info.bAdditive ? 2 : faceP->m_info.bTransparent ? 1 : 0;
-	if (nBlendMode != gameStates.render.history.nBlendMode) {
-		gameStates.render.history.nBlendMode = nBlendMode;
-		FlushFaceBuffer (1);
-		G3SetBlendMode (faceP);
-		}
-	FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
-	}
-if (faceBuffer.nFaces <= 1)
-#endif
-
-SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, true);
-ogl.m_states.iLight = 0;
-gameData.render.nTotalFaces++;
-#if DBG
-RenderWireFrame (faceP, bTextured);
-if (!gameOpts->render.debug.bTextures)
-	return 0;
-#endif
-
-if (bMonitor)
-	SetupMonitor (faceP, bmTop, bTextured, 0);
-#if G3_BUFFER_FACES
-else
-	return 0;
-#endif
-if (gameStates.render.bTriangleMesh) {
-#if USE_RANGE_ELEMENTS
-		GLsizei nElements = faceP->m_info.nTris * 3;
-		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
-#else
-		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
-#endif
-	}
-else {
-	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
-	}
-
-if (bMonitor)
-	ResetMonitor (bmTop, 0);
-PROF_END(ptRenderFaces)
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
 #if GEOMETRY_VBOS
 
 inline void DrawFacePP (CSegFace *faceP)
@@ -989,6 +896,99 @@ if (bmTop) {
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetRenderStates (faceP, bmBot, bmTop, bmBot != NULL, bColorKey, FaceIsColored (faceP));
 DrawFacePP (faceP);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured)
+{
+PROF_START
+	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
+#if G3_BUFFER_FACES
+	int			nBlendMode;
+#endif
+
+#if DBG
+if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+
+if (!faceP->m_info.bTextured)
+	bmBot = NULL;
+else if (bmBot) {
+	bmBot = bmBot->Override (-1);
+#if 0 //DBG
+	if (strstr (bmBot->Name (), "rock327"))
+		bmBot = bmBot;
+	else
+		return 0;
+#endif
+	}
+bTransparent = FaceIsTransparent (faceP, bmBot, bmTop);
+bColored = FaceIsColored (faceP);
+bMonitor = (faceP->m_info.nCamera >= 0);
+if (bmTop) {
+	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bmTop = bmTop->CurFrame ();
+		}
+	else
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+	}
+gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
+if (bTransparent && (gameStates.render.nType < RENDER_SKYBOX) && !bMonitor) {
+	faceP->m_info.nRenderType = gameStates.render.history.nType;
+	faceP->m_info.bColored = bColored;
+	transparencyRenderer.AddFace (faceP);
+	return 0;
+	}
+
+#if G3_BUFFER_FACES
+if (bMonitor)
+	FlushFaceBuffer (1);
+else {
+	nBlendMode = faceP->m_info.bAdditive ? 2 : faceP->m_info.bTransparent ? 1 : 0;
+	if (nBlendMode != gameStates.render.history.nBlendMode) {
+		gameStates.render.history.nBlendMode = nBlendMode;
+		FlushFaceBuffer (1);
+		G3SetBlendMode (faceP);
+		}
+	FillFaceBuffer (faceP, bmBot, bmTop, bTextured);
+	}
+if (faceBuffer.nFaces <= 1)
+#endif
+
+SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, true);
+ogl.m_states.iLight = 0;
+gameData.render.nTotalFaces++;
+#if DBG
+RenderWireFrame (faceP, bTextured);
+if (!gameOpts->render.debug.bTextures)
+	return 0;
+#endif
+
+if (bMonitor)
+	SetupMonitor (faceP, bmTop, bTextured, 0);
+#if G3_BUFFER_FACES
+else
+	return 0;
+#endif
+if (gameStates.render.bTriangleMesh) {
+#if USE_RANGE_ELEMENTS
+		GLsizei nElements = faceP->m_info.nTris * 3;
+		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
+#else
+		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
+#endif
+	}
+else {
+	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
+	}
+
+if (bMonitor)
+	ResetMonitor (bmTop, 0);
+PROF_END(ptRenderFaces)
 return 0;
 }
 

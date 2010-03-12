@@ -319,6 +319,20 @@ return nLights;
 
 //------------------------------------------------------------------------------
 
+int LoadPerPixelLightingShader (void)
+{
+PROF_START
+gameStates.render.shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass]));
+PROF_END(ptShaderStates);
+if (gameStates.render.shaderProg < 0)
+	return -1;
+glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
+gameStates.render.nLights = -1;
+return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass];
+}
+
+//------------------------------------------------------------------------------
+
 int SetupPerPixelLightingShader (CSegFace *faceP)
 {
 PROF_START
@@ -332,25 +346,13 @@ if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
-int nLightmap = SetupLightmap (faceP);
-if (!nLightmap)
+if (!SetupLightmap (faceP))
 	return 0;
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass]));
-if (!shaderProg) {
-	PROF_END(ptShaderStates);
-	return -1;
-	}
-if (shaderManager.Rebuild (shaderProg)) {
-	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-	glUniform1f (glGetUniformLocation (shaderProg, "fScale"), GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
-	glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
-	}
-else {
-	if (gameStates.render.nLights != nLights) {
-		gameStates.render.nLights = nLights;
-		glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
-		glUniform1f (glGetUniformLocation (shaderProg, "fScale"), GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
-		}
+if (gameStates.render.nLights != nLights) {
+	gameStates.render.nLights = nLights;
+	glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
+	glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), 
+					 GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
 	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
