@@ -49,10 +49,12 @@
 
 const char *pszPPXLightingFS = {
 	"#define LIGHTS 8\r\n" \
+	"uniform sampler2D lMapTex;\r\n" \
+	"uniform float fScale;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = vec4 (0.0, 0.0, 0.0, 1.0);\r\n" \
+	"  vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) / fScale;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -90,10 +92,11 @@ const char *pszPPXLightingFS = {
 // one light source
 
 const char *pszPP1LightingFS = {
+	"uniform sampler2D lMapTex;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum;\r\n" \
+	"  vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -116,7 +119,7 @@ const char *pszPP1LightingFS = {
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
-	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
+	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"	gl_FragColor = colorSum;\r\n" \
 	"	}"
@@ -128,8 +131,9 @@ const char *pszPPLightingVS = {
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"  normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"	vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"  gl_TexCoord [0] = gl_MultiTexCoord0;"\
 	"	gl_Position = ftransform();\r\n" \
    "	gl_FrontColor = gl_Color;\r\n" \
 	"	}"
@@ -163,7 +167,7 @@ return pszFS;
 
 int perPixelLightingShaderProgs [9] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
 
-int CreatePerPixelLightingShader (int nType, int nLights)
+int CreatePerPixelLightingShader (int nLights)
 {
 	int	bOk;
 	char	*pszFS, *pszVS;
@@ -176,7 +180,6 @@ if (!(ogl.m_states.bShadersOk && gameStates.render.bUsePerPixelLighting && (ogl.
 	gameStates.render.bPerPixelLighting = 0;
 	return -1;
 	}
-nLights = gameStates.render.nMaxLightsPerPass;
 if (perPixelLightingShaderProgs [nLights] >= 0)
 	return nLights;
 fsP = (nLights == 1) ? pszPP1LightingFS : pszPPXLightingFS;
@@ -195,22 +198,22 @@ if (!bOk) {
 	nLights = 0;
 	return -1;
 	}
-return ogl.m_data.nPerPixelLights [nType] = nLights;
+return ogl.m_data.nPerPixelLights [nLights] = nLights;
 }
 
-// ----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void ResetPerPixelLightingShaders (void)
 {
 //memset (perPixelLightingShaderProgs, 0xFF, sizeof (perPixelLightingShaderProgs));
 }
 
-// ----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void InitPerPixelLightingShaders (void)
 {
-for (int nType = 0; nType < 4; nType++)
-	CreatePerPixelLightingShader (nType, gameStates.render.nMaxLightsPerPass);
+for (int nLights = 1; nLights <= gameStates.render.nMaxLightsPerPass; nLights++)
+	CreatePerPixelLightingShader (nLights);
 }
 
 //------------------------------------------------------------------------------
@@ -219,7 +222,7 @@ for (int nType = 0; nType < 4; nType++)
 int CheckUsedLights2 (void);
 #endif
 
-int SetupHardwareLighting (CSegFace *faceP, int nType)
+int SetupHardwareLighting (CSegFace *faceP)
 {
 PROF_START
 	int					nLightRange, nLights;
@@ -229,7 +232,6 @@ PROF_START
 	tRgbaColorf			black = {0,0,0,0};
 #endif
 	tRgbaColorf			specular = {0.5f,0.5f,0.5f,0.5f};
-	//CFloatVector			vPos = CFloatVector::Create(0,0,0,1);
 	GLenum				hLight;
 	CActiveDynLight*	activeLightsP;
 	CDynLight*			psl;
@@ -243,7 +245,7 @@ if (faceP - FACES.faces == nDbgFace)
 #endif
 
 if (!ogl.m_states.iLight) {
-	if (!(ogl.m_states.nLights = lightManager.SetNearestToFace (faceP, nType != 0)))
+	if (!(ogl.m_states.nLights = lightManager.SetNearestToFace (faceP)))
 		return 0;
 
 	if (ogl.m_states.nLights > gameStates.render.nMaxLightsPerFace)
@@ -253,6 +255,7 @@ if (!ogl.m_states.iLight) {
 	if (gameData.render.nMaxLights < ogl.m_states.nLights)
 		gameData.render.nMaxLights = ogl.m_states.nLights;
 	}
+
 activeLightsP = lightManager.Active (0) + ogl.m_states.nFirstLight;
 nLightRange = sliP->nLast - ogl.m_states.nFirstLight + 1;
 for (nLights = 0;
@@ -265,7 +268,6 @@ for (nLights = 0;
 		sliP->nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
-	//glEnable (hLight);
 	specular.alpha = (psl->info.nSegment >= 0) ? psl->info.fRad : psl->info.fRad * psl->info.fBoost; //krasser Missbrauch!
 	fBrightness = psl->info.fBrightness;
 	if (psl->info.nType == 2) {
@@ -311,22 +313,13 @@ ogl.m_states.nFirstLight = int (activeLightsP - lightManager.Active (0));
 if ((ogl.m_states.iLight < ogl.m_states.nLights) && !nLightRange)
 	nDbgSeg = nDbgSeg;
 #endif
-#if 0
-if (CreatePerPixelLightingShader (nType, nLights) >= 0)
-#endif
-	{
-	PROF_END(ptPerPixelLighting)
-	return nLights;
-	}
-ogl.DisableLighting ();
-ogl.ClearError (0);
 PROF_END(ptPerPixelLighting)
-return -1;
+return nLights;
 }
 
 //------------------------------------------------------------------------------
 
-int SetupPerPixelLightingShader (CSegFace *faceP, int nType)
+int SetupPerPixelLightingShader (CSegFace *faceP)
 {
 PROF_START
 #if DBG
@@ -334,7 +327,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 
-int nLights = SetupHardwareLighting (faceP, nType);
+int nLights = SetupHardwareLighting (faceP);
 if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
@@ -345,9 +338,9 @@ if (!shaderProg) {
 	return -1;
 	}
 shaderManager.Rebuild (shaderProg);
-if (nType)
-	glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 0);
+glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
+glUniform1f (glGetUniformLocation (shaderProg, "fScale"), GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass];

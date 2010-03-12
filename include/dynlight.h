@@ -216,7 +216,7 @@ class CLightManager {
 		void Transform (int bStatic, int bVariable);
 		ubyte VariableVertexLights (int nVertex);
 		void SetNearestToVertex (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
-		int SetNearestToFace (CSegFace* faceP, int bTextured);
+		int SetNearestToFace (CSegFace* faceP);
 		short SetNearestToSegment (int nSegment, int nFace, int bVariable, int nType, int nThread);
 		void SetNearestStatic (int nSegment, int bStatic, ubyte nType, int nThread);
 		short SetNearestToPixel (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
@@ -300,7 +300,7 @@ void ResetActiveLights (int nThread, int nActive);
 
 #endif
 
-int CreatePerPixelLightingShader (int nType, int nLights);
+int CreatePerPixelLightingShader (int nLights);
 void InitPerPixelLightingShaders (void);
 void ResetPerPixelLightingShaders (void);
 bool InitHeadlightShaders (void);

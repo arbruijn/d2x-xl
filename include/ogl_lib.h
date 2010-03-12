@@ -82,7 +82,7 @@ class COglData {
 		CFBO				drawBuffers [3];
 		CFBO*				drawBufferP;
 		CFBO				glowBuffer;
-		int				nPerPixelLights [8];
+		int				nPerPixelLights [9];
 		float				lightRads [8];
 		CFloatVector	lightPos [8];
 		int				bLightmaps;

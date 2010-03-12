@@ -275,6 +275,7 @@ typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly
 static pRenderHandler renderHandlers [] = {
 	RenderStaticLights, 
 	RenderDynamicLights, 
+	NULL,
 	RenderFaceDepth, 
 	RenderFaceColor,
 	RenderStaticFace, 
@@ -414,8 +415,8 @@ return tiRender.nFaces;
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
-			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
-			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS), //(nType == RENDER_COLOR),
+			bLightmaps = lightmapManager.HaveLightmaps () && ((nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS)),
+			bColor = !gameStates.render.bFullBright && ((nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS)), //(nType == RENDER_COLOR),
 			bTexCoord = (nType != RENDER_COLOR),
 			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS); //(nType == RENDER_COLOR);
 
