@@ -924,7 +924,7 @@ return 0;
 int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured)
 {
 PROF_START
-	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
+	int			bColored, bColorKey = 0, bMonitor = 0;
 #if G3_BUFFER_FACES
 	int			nBlendMode;
 #endif
