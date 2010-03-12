@@ -303,13 +303,13 @@ void ResetActiveLights (int nThread, int nActive);
 int CreatePerPixelLightingShader (int nType, int nLights);
 void InitPerPixelLightingShaders (void);
 void ResetPerPixelLightingShaders (void);
-void InitHeadlightShaders (int nLights);
+void InitHeadlightShaders (void);
 char *BuildLightingShader (const char *pszTemplate, int nLights);
 int CreateLightmapShader (int nType);
 void InitLightmapShaders (void);
 void ResetLightmapShaders (void);
-void InitLightMaskShader (void);
-void ResetLightMaskShader (void);
+void InitColorShader (void);
+void ResetColorShader (void);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \

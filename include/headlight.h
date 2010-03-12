@@ -39,7 +39,7 @@ void RemoveOglHeadlight (CObject *objP);
 void UpdateOglHeadlight (void);
 #endif
 
-void InitHeadlightShaders (int nLights);
+void InitHeadlightShaders (void);
 void SetPlayerHeadlight (int nPlayer, int bOn);
 int PlayerHasHeadlight (int nPlayer);
 int HeadlightIsOn (int nPlayer);

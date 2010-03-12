@@ -456,7 +456,7 @@ gameStates.render.bLightmapsOk = (nTMUs >= 4);
 InitTexMergeShaders ();
 ogl.m_data.nHeadlights = 0;
 ::PrintLog ("   initializing lighting shader programs\n");
-InitHeadlightShaders (1);
+InitHeadlightShaders ();
 #if GPGPU_VERTEX_LIGHTING
 ::PrintLog ("   initializing vertex lighting shader programs\n");
 gpgpuLighting.InitShader ();
@@ -471,8 +471,8 @@ ResetPerPixelLightingShaders ();
 InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
-ResetLightMaskShader ();
-InitLightMaskShader ();
+ResetColorShader ();
+InitColorShader ();
 ResetSphereShaders ();
 #if 0
 Link (Alloc ());
