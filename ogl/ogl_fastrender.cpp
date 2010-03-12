@@ -195,7 +195,7 @@ nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 if ((gameStates.render.nType >= RENDER_STATIC_FACES) && !bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
 else if (bColorKey || bMultiTexture)
-	nShader = SetupTexMergeShader (bColorKey, bColored, nType);
+	nShader = SetupTexMergeShader (bColored, nType);
 else
 	shaderManager.Deploy (-1);
 ogl.ClearError (0);
@@ -296,7 +296,7 @@ if (bTextured) {
 			ResetTMU (GL_TEXTURE1);
 			}
 		}
-	CBitmap* bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader && bmTop) ? bmTop->Mask () : NULL;
+	CBitmap* bmMask = (bColorKey && bmTop) ? bmTop->Mask () : NULL;
 	if (bForce || (bmMask != gameStates.render.history.bmMask)) {
 		bStateChange = true;
 		if (bmMask) {
@@ -349,7 +349,7 @@ if (bTextured) {
 			ResetTMU (GL_TEXTURE2);
 			}
 		}
-	CBitmap* bmMask = (bColorKey && gameStates.render.textures.bHaveMaskShader && bmTop) ? bmTop->Mask () : NULL;
+	CBitmap* bmMask = (bColorKey && bmTop) ? bmTop->Mask () : NULL;
 	if (bmMask != gameStates.render.history.bmMask) {
 		bStateChange = true;
 		if (gameStates.render.history.bmMask = bmMask) {
@@ -381,7 +381,7 @@ int SetLightingRenderStates (CSegFace *faceP, CBitmap *bmTop, int bColorKey)
 {
 PROF_START
 bool bStateChange = false;
-CBitmap *mask = (bColorKey && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
+CBitmap *mask = bColorKey ? bmTop->Mask () : NULL;
 if (mask != gameStates.render.history.bmMask) {
 	bStateChange = true;
 	gameStates.render.history.bmMask = mask;
@@ -585,7 +585,7 @@ if (!bColored) {
 	}
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
-		SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
+		SetupTexMergeShader (bColored, gameStates.render.history.nType);
 	else 
 		shaderManager.Deploy (-1);
 	glColor3f (1,1,1);
@@ -711,7 +711,7 @@ if (!bColored) {
 	}
 else if (gameStates.render.bFullBright) {
 	if (gameStates.render.history.nType > 1)
-		SetupTexMergeShader (bColorKey, bColored, gameStates.render.history.nType);
+		SetupTexMergeShader (bColored, gameStates.render.history.nType);
 	else 
 		shaderManager.Deploy (-1);
 	glColor3f (1,1,1);
@@ -914,7 +914,7 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-SetRenderStates (faceP, bmBot, bmTop, bmBot != NULL, bColorKey, FaceIsColored (faceP));
+SetRenderStates (faceP, bmBot, bmTop, bmBot != NULL, bColorKey, faceP->m_info.nColored);
 DrawFacePP (faceP);
 return 0;
 }
@@ -979,7 +979,6 @@ if (faceBuffer.nFaces <= 1)
 #endif
 
 SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, true);
-ogl.m_states.iLight = 0;
 gameData.render.nTotalFaces++;
 #if DBG
 RenderWireFrame (faceP, bTextured);

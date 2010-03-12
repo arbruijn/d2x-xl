@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTTIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DETIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEATING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -40,7 +27,7 @@ COPYTIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL TIGHTS RESERVED.
 #include "transprender.h"
 #include "renderthreads.h"
 
-#define DO_RENDER_TRANSPARENCY 0
+#define DO_RENDER_TRANSPARENCY 1
 
 #define TI_SPLIT_POLYS 0
 #define TI_POLY_OFFSET 0
@@ -691,7 +678,6 @@ PROF_START
 	tFaceTriangle*	triP;
 	CBitmap*			bmBot = item->bmP, *bmTop, *bmMask;
 	int				bDecal, 
-						bLightmaps = m_data.bLightmaps && !gameStates.render.bFullBright,
 						bTextured = (bmBot != NULL), 
 						bColored = (item->nColors == item->nVertices);
 
@@ -735,19 +721,19 @@ else {
 
 int bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
 
-ogl.ResetClientStates (1 + bLightmaps + (bmTop != NULL) + (bmMask != NULL));
+ogl.ResetClientStates (1 + (bmTop != NULL) + (bmMask != NULL));
 
 if (bmTop) {
-	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmaps);
+	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1);
 	if (bTextured)
 		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-	if (!LoadImage (bmTop, 0, 1, bLightmaps, item->nWrap))
+	if (!LoadImage (bmTop, 0, 1, 0, item->nWrap))
 		return;
 	if (bmMask) {
-		if (!LoadImage (bmMask, 0, 2, bLightmaps, item->nWrap))
+		if (!LoadImage (bmMask, 0, 2, 0, item->nWrap))
 			return;
-		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2 + bLightmaps);
+		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2);
 		if (bTextured)
 			OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 		OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
@@ -759,34 +745,20 @@ else {
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	}
 
-ogl.EnableClientStates (bTextured, bColored && !bLightmaps, !bLightmaps, GL_TEXTURE0 + bLightmaps);
-if (!LoadImage (bmBot, 0, 0, bLightmaps, item->nWrap))
+ogl.EnableClientStates (bTextured, 0, 1, GL_TEXTURE0 + bLightmaps);
+if (!LoadImage (bmBot, 0, 0, 0, item->nWrap))
 	return;
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
-if (!bLightmaps) {
-	if (bColored)
-		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
-	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
-	}
+//if (bColored)
+//	OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
+OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 
-if (bLightmaps) {
-	ogl.EnableClientStates (bTextured, bColored, 1, GL_TEXTURE0);
-	if (bTextured)
-		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
-	if (bColored)
-		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
-	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
-	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-	}
-
 ogl.SetupTransform (1);
-if (gameStates.render.bFullBright)
-	glColor3f (1,1,1);
-else if (!bColored)
-	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
+glColor3f (1,1,1);
 ogl.SetBlendMode (bAdditive = item->bAdditive);
+
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -799,44 +771,40 @@ if (gameStates.render.bPerPixelLighting) {
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	else {
+		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
+		if (!bColored)
+			glColor4fv (reinterpret_cast<GLfloat*> (item->color));
+		else {
+			ogl.EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
+			OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
+			}
+		ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+		ogl.SetDepthMode (GL_EQUAL);
+		ogl.SetDepthWrite (false);
 		if (gameStates.render.bPerPixelLighting == 1) {
-			SetupLightmapShader (faceP, int (faceP->m_info.nRenderType), false);
+			SetupColorShader ();
 			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		else {
 			ogl.m_states.iLight = 0;
 			lightManager.Index (0)[0].nActive = -1;
-			for (;;) {
-				SetupPerPixelLightingShader (faceP);
+			while (0 < SetupPerPixelLightingShader (faceP)) {
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 				if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
 					 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 					break;
-				bAdditive = 2;
-				ogl.SetBlendMode (2);
-				ogl.SetDepthWrite (false);
 				}
 			}
 		if (gameStates.render.bHeadlights) {
-#	if DBG
-			if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
-			ogl.SetBlending (true);
-#	endif
 			lightManager.Headlights ().SetupShader ();
-			if (bAdditive != 2) {
-				bAdditive = 2;
-				ogl.SetBlendMode (2);
-				ogl.SetDepthWrite (false);
-				}
 			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 			}
 		}
 	}
 else {
 	SetupRenderShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
-						(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
-						m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
+							 (item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
+							 m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 ogl.ResetTransform (faceP != NULL);

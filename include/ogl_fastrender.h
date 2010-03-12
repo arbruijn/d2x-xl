@@ -29,7 +29,7 @@ int SetupLightmapShader (CSegFace* faceP, int nType, bool bHeadlight);
 int SetupColorShader (void);
 int SetupHardwareLighting (CSegFace *faceP);
 //int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
-int SetupTexMergeShader (int bColorKey, int bColored, int nType);
+int SetupTexMergeShader (int bColored, int nType);
 int SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
 int SetupRenderShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);

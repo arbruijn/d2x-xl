@@ -19,7 +19,7 @@ CBitmap *TexMergeGetCachedBitmap (int nBaseTex, int nOvlTex, int nOrient);
 void _CDECL_ TexMergeClose (void);
 void TexMergeFlush ();
 void InitTexMergeShaders ();
-int SetupTexMergeShader (int bColorKey, int bColored, int nType);
+int SetupTexMergeShader (int bColored, int nType);
 
 extern int bGlTexMergeOk;
 extern int tmShaderProgs [3]; 

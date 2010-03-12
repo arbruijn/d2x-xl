@@ -563,7 +563,7 @@ else
 retry:
 #endif
 if (bShaderMerge) {
-	mask = gameStates.render.textures.bHaveMaskShader ? bmTop->Mask () : NULL;
+	mask = bmTop->Mask ();
 	nShader = bSuperTransp ? mask ? 2 : 1 : 0;
 	activeShaderProg = GLhandleARB (abs (int (shaderManager.Deploy (tmShaderProgs [nShader]))));
 	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);
