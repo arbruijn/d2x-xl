@@ -206,7 +206,7 @@ if (bFallback) {
 	}
 //ogl.BindTexture (0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-ogl.SetDrawBuffer (GL_BACK, 1);
+SetDrawBuffers ();
 return m_info.bActive = 1;
 }
 
