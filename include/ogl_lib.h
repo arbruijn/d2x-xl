@@ -259,7 +259,7 @@ class COGL {
 
 		void SetupProjection (void);
 		void SetupFrustum (void);
-		void SelectTMU (int nTMU, bool bClient = false);
+		void SelectTMU (int nTMU, bool bClient = true);
 		int EnableClientState (GLuint nState, int nTMU = -1);
 		int DisableClientState (GLuint nState, int nTMU = -1);
 		int EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);

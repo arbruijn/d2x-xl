@@ -781,8 +781,8 @@ if (bLightmap) {
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetBlendMode (0);
-	ogl.RenderScreenQuad (1);
 	ogl.ResetTransform (1);
+	ogl.RenderScreenQuad (1);
 	return;
 #endif
 	bColored = 2;

@@ -1020,8 +1020,8 @@ return 0;
 
 int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap, int bTextured)
 {
-SelectTMU (GL_TEXTURE0);
 if (bmP) {
+	SelectTMU (GL_TEXTURE0, true);
 	SetTexturing (true);
 	if (!bmP->IsBound ()) {
 		if (bmP->Bind (1))
@@ -1032,8 +1032,10 @@ if (bmP) {
 		bmP->Texture ()->Wrap (nWrap);
 		}
 	}
-else if (!bTextured)
+else if (!bTextured) {
+	SelectTMU (GL_TEXTURE0, true);
 	SetTexturing (false);
+	}
 return 1;
 }
 
