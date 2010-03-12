@@ -322,8 +322,10 @@ static pRenderHandler renderHandlers [] = {
 
 static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType)
 {
+#if LOAD_BITMAPS
 if (!faceP->m_info.bVisible)
 	return false;
+#endif
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
@@ -448,9 +450,9 @@ return tiRender.nFaces;
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
-			bLightmaps = lightmapManager.HaveLightmaps () && ((nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS)),
-			bColor = !gameStates.render.bFullBright && ((nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS)), //(nType == RENDER_COLOR),
-			bTexCoord = (nType != RENDER_COLOR),
+			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
+			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS), //(nType == RENDER_COLOR),
+			bTexCoord = (nType != RENDER_COLOR) && (nType != RENDER_LIGHTS),
 			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS) || (nType == RENDER_HEADLIGHTS); //(nType == RENDER_COLOR);
 
 gameData.threads.vertColor.data.bDarkness = 0;
@@ -722,7 +724,7 @@ for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+		if (!(faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_RENDER_FLAG)))
 			continue;
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
 		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);

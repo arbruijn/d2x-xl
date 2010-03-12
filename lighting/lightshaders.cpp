@@ -49,12 +49,11 @@
 
 const char *pszPPXLightingFS = {
 	"#define LIGHTS 8\r\n" \
-	"uniform sampler2D lMapTex;\r\n" \
 	"uniform float fScale;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"  vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) / fScale;\r\n" \
+	"  vec4 colorSum = vec4 (0.0, 0.0, 0.0, 1.0);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -92,11 +91,10 @@ const char *pszPPXLightingFS = {
 // one light source
 
 const char *pszPP1LightingFS = {
-	"uniform sampler2D lMapTex;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"  vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"  vec4 colorSum = vec4 (0.0, 0.0, 0.0, 1.0);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -348,8 +346,6 @@ if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
-if (!SetupLightmap (faceP))
-	return 0;
 if (gameStates.render.nLights != nLights) {
 	gameStates.render.nLights = nLights;
 	glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
