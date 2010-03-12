@@ -259,10 +259,9 @@ void RenderMineObjects (int nType)
 if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
-if (nType != RENDER_OBJECTS)
-	return;
+gameStates.render.nType = RENDER_OBJECTS;
 gameStates.render.nState = 1;
-BeginRenderFaces (nType, 0);
+//BeginRenderFaces (nType, 0);
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	nSegment = gameData.render.mine.nSegRenderList [0][--nListPos];
 	if (nSegment < 0) {
@@ -280,7 +279,9 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (nType == 1) {	// render opaque objects
+	if (gameStates.render.bRenderTransparency)	// render objects containing transparency, like explosions
+		RenderObjList (nListPos, gameStates.render.nWindow);
+	else {	// render opaque objects
 #if DBG
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
@@ -299,10 +300,8 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
-	else if (nType == 2)	// render objects containing transparency, like explosions
-		RenderObjList (nListPos, gameStates.render.nWindow);
 	}	
-EndRenderFaces (0);
+//EndRenderFaces (0);
 gameStates.render.nState = 0;
 }
 
@@ -426,6 +425,9 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
 RenderMineObjects (RENDER_OBJECTS);
 RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
+gameStates.render.bRenderTransparency = 1;
+RenderMineObjects (RENDER_OBJECTS);
+gameStates.render.bRenderTransparency = 0;
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)
