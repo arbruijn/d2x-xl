@@ -231,10 +231,18 @@ const char* headlightFS [2] = {
 	"}"
 	};
 
-const char *headlightVS = {
+const char *headlightVS [2] = {
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"gl_Position = ftransform();\r\n" \
+   "gl_FrontColor = gl_Color;}"
+	,
+	"#define LIGHTS 8\r\n" \
+	"varying vec3 normal, vertPos;\r\n" \
+	"void main (void) {\r\n" \
+	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
@@ -266,7 +274,7 @@ if ((ogl.m_states.bHeadlight = ogl.m_states.bShadersOk)) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 2; i++) {
 		pszFS = i ? BuildLightingShader (headlightFS [i], gameStates.render.nMaxLightsPerPass) : headlightFS [0];
-		bOk = (pszFS != NULL) && (0 <= shaderManager.Build (headlightShaderProgs [i], pszFS, headlightVS));
+		bOk = (pszFS != NULL) && (0 <= shaderManager.Build (headlightShaderProgs [i], pszFS, headlightVS [i]));
 		if (pszFS && i)
 			delete[] pszFS;
 		if (!bOk) {
