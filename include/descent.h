@@ -1560,6 +1560,8 @@ class CRenderData {
 		CSphere						shield;
 		CSphere						monsterball;
 		CArray<tFaceListItem>	faceList;
+		CArray<CSegFace*>			renderFaces [2];
+		int							nRenderFaces [2];
 		fix							xFlashEffect;
 		fix							xTimeFlashLastPlayed;
 		CFloatVector*				vertP;

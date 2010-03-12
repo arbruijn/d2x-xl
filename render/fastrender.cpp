@@ -655,9 +655,96 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-short RenderFaceList (CFaceListIndex& flx, int nType)
+static inline int FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
-	tFaceListItem*	fliP;
+if (!bmBot)
+	return faceP->m_info.nTransparent = (faceP->m_info.color.alpha < 1.0f);
+if (faceP->m_info.bTransparent || faceP->m_info.bAdditive)
+	return 1;
+if (bmBot->Flags () & BM_FLAG_SEE_THRU)
+	return faceP->m_info.nTransparent = 0;
+if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
+	return 0;
+if (!bmTop)
+	return 1;
+if (bmTop->Flags () & BM_FLAG_SEE_THRU)
+	return 0;
+if (bmTop->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+	return 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+static inline int FaceIsColored (CSegFace *faceP)
+{
+return !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
+}
+
+//------------------------------------------------------------------------------
+
+short BuildFaceLists (int nType)
+{
+	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
+	CSegFace*		faceP;
+	int				i, j, nFaces = 0, nSegment = -1;
+	int				bAutomap = (nType <= RENDER_STATIC_FACES);
+
+#if 1
+if (automap.Display ())
+	gameData.render.faceIndex.usedKeys.SortAscending (0, gameData.render.faceIndex.nUsedKeys - 1);
+#endif
+gameData.render.nRenderFaces [0] = 
+gameData.render.nRenderFaces [1] = 0;
+for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
+	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+		faceP = fliP [j].faceP;
+		if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+			continue;
+		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
+		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmTop, faceP->bmBot);
+		faceP->m_info.nColored = FaceIsColored (faceP);
+		gameData.render.renderFaces [faceP->m_info.nTransparent][gameData.render.nRenderFaces [faceP->m_info.nTransparent]++] = faceP;
+		}
+	}
+return nFaces;
+}
+
+//------------------------------------------------------------------------------
+
+#if 1
+
+short RenderFaceList (int nType)
+{
+	CSegFace**	flP = gameData.render.renderFaces [gameStates.render.bTransparency].Buffer ();
+	CSegFace*	faceP;
+	int			i, j, nFaces = 0, nSegment = -1;
+	int			bAutomap = (nType <= RENDER_STATIC_FACES);
+
+for (i = 0, j = gameData.render.nRenderFaces [gameStates.render.bTransparency]; i < j; i++) {
+	faceP = flP [i];
+	if (nSegment != faceP->m_info.nSegment) {
+		nSegment = faceP->m_info.nSegment;
+#if DBG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
+		if (gameStates.render.nType == RENDER_DEPTH)
+			VisitSegment (nSegment, bAutomap);
+		else if (gameStates.render.nType == RENDER_LIGHTS)
+			lightManager.Index (0)[0].nActive = -1;
+		}
+	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
+		nFaces++;
+	}
+return nFaces;
+}
+
+#else
+
+short RenderFaceList (int nType)
+{
+	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
 	CSegFace*		faceP;
 	int				i, j, nFaces = 0, nSegment = -1;
 	int				bAutomap = (nType <= RENDER_STATIC_FACES);
@@ -666,10 +753,9 @@ short RenderFaceList (CFaceListIndex& flx, int nType)
 if (automap.Display ())
 	flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
 #endif
-for (i = 0; i < flx.nUsedKeys; i++) {
-	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
-		fliP = &gameData.render.faceList [j];
-		faceP = fliP->faceP;
+for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
+	for (j = gameData.render.faceIndex.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+		faceP = fliP [j].faceP;
 		if (nSegment != faceP->m_info.nSegment) {
 			nSegment = faceP->m_info.nSegment;
 #if DBG
@@ -688,18 +774,19 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 return nFaces;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
-void RenderCoronaFaceList (CFaceListIndex& flx, int nPass)
+void RenderCoronaFaceList (int nPass)
 {
-	tFaceListItem*	fliP;
+	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
 	CSegFace*		faceP;
 	int				i, j, nSegment;
 
-for (i = 0; i < flx.nUsedKeys; i++) {
-	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
-		fliP = &gameData.render.faceList [j];
-		faceP = fliP->faceP;
+for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
+	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+		faceP = fliP [j].faceP;
 		if (!faceP->m_info.nCorona)
 			continue;
 		nSegment = faceP->m_info.nSegment;
@@ -765,14 +852,14 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 	gameStates.render.bQueryCoronas = 1;
 	// first just render all coronas (happens before any geometry gets rendered)
 	//for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (gameData.render.faceIndex, 0);
+		RenderCoronaFaceList (0);
 	glFlush ();
 	// then query how many samples (pixels) were rendered for each corona
-	RenderCoronaFaceList (gameData.render.faceIndex, 1);
+	RenderCoronaFaceList (1);
 	}
 else { //now find out how many fragments are rendered for each corona if geometry interferes
 	gameStates.render.bQueryCoronas = 2;
-	RenderCoronaFaceList (gameData.render.faceIndex, 2);
+	RenderCoronaFaceList (2);
 	glFlush ();
 	}
 ogl.SetDepthWrite (true);
@@ -871,7 +958,7 @@ if (nType >= RENDER_DYNAMIC_FACES) {
 	}
 else {
 	// render mine by pre-sorted textures
-	nFaces = RenderFaceList (gameData.render.faceIndex, nType);
+	nFaces = RenderFaceList (nType);
 	}
 return nFaces;
 }

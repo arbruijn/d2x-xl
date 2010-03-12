@@ -428,6 +428,8 @@ bPlayerMessage = 1;
 bool CRenderData::Create (void)
 {
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
+for (int i = 0; i < 2; i++)
+	CREATE (gameData.render.renderFaces [i], LEVEL_FACES, 0);
 Init ();
 return true;
 }
@@ -437,6 +439,8 @@ return true;
 void CRenderData::Destroy (void)
 {
 DESTROY (gameData.render.faceList);
+for (int i = 0; i < 2; i++)
+	DESTROY (gameData.render.renderFaces [i]);
 faceIndex.Destroy ();
 }
 
