@@ -458,29 +458,32 @@ const char *texMergeFS [7] = {
 ,
 	// lightmaps
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
+	"uniform vec2 screenScale;\r\n" \
 	"//uniform float grAlpha;\r\n" \
 	"void main(void){" \
-	"vec4 color=/*texture2D(baseTex,gl_TexCoord [1].xy)**/texture2D(baseTex,gl_FragCoord.xy);\r\n" \
+	"vec4 color=/*texture2D(baseTex,screenScale*gl_TexCoord [1].xy)**/texture2D(baseTex,gl_FragCoord.xy);\r\n" \
 	"gl_FragColor=vec4(color.rgb, color.a/**grAlpha*/);\r\n" \
    "}"
 ,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
+	"uniform vec2 screenScale;\r\n" \
 	"//uniform float grAlpha;\r\n" \
 	"void main(void){" \
 	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
 	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
-	"vec4 lMapColor=texture2D(baseTex,gl_FragCoord.xy);\r\n" \
+	"vec4 lMapColor=texture2D(baseTex,screenScale*gl_FragCoord.xy);\r\n" \
 	"gl_FragColor=vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*lMapColor;\r\n" \
    "}"
 ,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
+	"uniform vec2 screenScale;\r\n" \
 	"//uniform float grAlpha;\r\n" \
 	"float bMask;\r\n" \
 	"void main(void){" \
 	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
 	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
 	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
-	"vec4 lMapColor=texture2D(baseTex,gl_FragCoord.xy);\r\n" \
+	"vec4 lMapColor=texture2D(baseTex,screenScale*gl_FragCoord.xy);\r\n" \
 	"gl_FragColor = bMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*lMapColor;\r\n" \
 	"}"
 	};
@@ -585,6 +588,7 @@ if (bColored == 2) {
 		if (nType > 2)
 			glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
 		}
+	glUniform2fv (glGetUniformLocation (shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
 	}
 else {
 	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 0);
