@@ -303,7 +303,7 @@ void ResetActiveLights (int nThread, int nActive);
 int CreatePerPixelLightingShader (int nType, int nLights);
 void InitPerPixelLightingShaders (void);
 void ResetPerPixelLightingShaders (void);
-void InitHeadlightShaders (void);
+bool InitHeadlightShaders (void);
 char *BuildLightingShader (const char *pszTemplate, int nLights);
 int CreateLightmapShader (int nType);
 void InitLightmapShaders (void);
