@@ -413,7 +413,8 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 			RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
 		else
 			RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
-		RenderSegmentList (RENDER_HEADLIGHTS, 1);
+		if (gameStates.render.bHeadlights)
+			RenderSegmentList (RENDER_HEADLIGHTS, 1);
 #	endif
 		}
 	gameStates.render.bRenderTransparency = 0;
