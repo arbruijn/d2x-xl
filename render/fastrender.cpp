@@ -284,7 +284,7 @@ if (!faceP->m_info.nCorona)
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-glareRenderer.Render (faceP->m_info.nSegment, faceP->m_info.nSide, glareRenderer.Visibility (faceP->m_info.nCorona), faceP->m_info.fRads [0]);
+glareRenderer.Render (faceP->m_info.nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
 return true;
 }
 
@@ -797,107 +797,13 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-void RenderCoronaFaceList (int nPass)
-{
-	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
-	CSegFace*		faceP;
-	int				i, j, nSegment;
-
-for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
-	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP [j].nNextItem) {
-		faceP = fliP [j].faceP;
-		if (!faceP->m_info.nCorona)
-			continue;
-		nSegment = faceP->m_info.nSegment;
-		if (automap.Display ()) {
-			if (!(automap.m_bFull || automap.m_visible [nSegment]))
-				return;
-			if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
-				continue;
-			}
-		if (nPass == 1) {
-#if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
-#	if 0
-			else if (nDbgSeg >= 0)
-				continue;
-#	endif
-#endif
-			glareRenderer.Visibility (faceP->m_info.nCorona);
-			}
-		else if (nPass == 2) {
-#if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
-#	if 0
-			else if (nDbgSeg >= 0)
-				continue;
-#	endif
-#endif
-			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
-			if (!glGetError ())
-				glareRenderer.Render (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
-			glEndQuery (GL_SAMPLES_PASSED_ARB);
-			}
-		else {
-#if DBG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
-#	if 0
-			else if (nDbgSeg >= 0)
-				continue;
-#	endif
-#endif
-			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
-			ogl.ClearError (1);
-			glareRenderer.Render (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
-			ogl.ClearError (1);
-			glEndQuery (GL_SAMPLES_PASSED_ARB);
-			ogl.ClearError (1);
-			}	
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void QueryCoronas (short nFaces, int nPass)
-{
-BeginRenderFaces (RENDER_CORONAS, 0);
-ogl.SetDepthWrite (false);
-ogl.ColorMask (1,1,1,1,1);
-if (nPass == 1) {	//find out how many total fragments each corona has
-	gameStates.render.bQueryCoronas = 1;
-	// first just render all coronas (happens before any geometry gets rendered)
-	//for (i = 0; i < gameStates.app.nThreads; i++)
-		RenderCoronaFaceList (0);
-	glFlush ();
-	// then query how many samples (pixels) were rendered for each corona
-	RenderCoronaFaceList (1);
-	}
-else { //now find out how many fragments are rendered for each corona if geometry interferes
-	gameStates.render.bQueryCoronas = 2;
-	RenderCoronaFaceList (2);
-	glFlush ();
-	}
-ogl.SetDepthWrite (true);
-glClearColor (0,0,0,0);
-glClearDepth (0xffffffff);
-glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-EndRenderFaces (0);
-gameStates.render.bQueryCoronas = 0;
-}
-
-//------------------------------------------------------------------------------
-
 int SetupCoronaFaces (void)
 {
-	tSegFaces	*segFaceP;
-	CSegFace		*faceP;
+	tSegFaces*	segFaceP;
+	CSegFace*	faceP;
 	int			i, j, nSegment;
 
-if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
+if (!(gameOpts->render.effects.bEnabled && glareRenderer.Style ()))
 	return 0;
 gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
@@ -1000,28 +906,8 @@ if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 
 int SetupCoronas (int nType)
 {
-if (!SetupCoronaFaces ())
-	return 0;
-if (automap.Display () && !gameOpts->render.automap.bCoronas)
-	return 0;
-int nCoronaStyle = glareRenderer.Style ();
-if (nCoronaStyle != 1)
-	return 0;
-if (ogl.m_states.bOcclusionQuery) {
-	glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
-	QueryCoronas (0, 1);
-	}
-BeginRenderFaces (RENDER_STATIC_FACES, 1);
-short nFaces = RenderSegments (nType);
-EndRenderFaces (1);
-if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
-	gameStates.render.bQueryCoronas = 2;
-	RenderMineObjects (RENDER_OBJECTS);
-	gameStates.render.nType = RENDER_STATIC_FACES;
-	QueryCoronas (nFaces, 2);
-	}
-EndRenderFaces (1);
-return nFaces;
+SetupCoronaFaces ();
+return 0;
 }
 
 //------------------------------------------------------------------------------

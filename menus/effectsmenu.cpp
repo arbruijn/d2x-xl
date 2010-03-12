@@ -75,6 +75,7 @@ static int nShadows, nCoronas, nLightTrails;
 static const char* pszExplShrapnels [5];
 static const char* pszNoneBasicFull [3];
 static const char* pszNoneBasicAdv [3];
+static const char* pszOffOn [2];
 static const char* pszThrusters [3];
 
 int EffectOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
@@ -139,12 +140,14 @@ if (extraGameInfo [0].bUseLightning != v) {
 	m->m_bRebuild = -1;
 	}
 
-m = menu + effectOpts.nCoronas;
-v = m->m_value;
-if (nCoronas != v) {
-	nCoronas = v;
-	sprintf (m->m_text, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
-	m->m_bRebuild = -1;
+if (effectOpts.nCoronas >= 0) {
+	m = menu + effectOpts.nCoronas;
+	v = m->m_value;
+	if (nCoronas != v) {
+		nCoronas = v;
+		sprintf (m->m_text, TXT_CORONAS, pszOffOn [nCoronas]);
+		m->m_bRebuild = -1;
+		}
 	}
 
 return nCurItem;
@@ -182,7 +185,7 @@ pszThrusters [0] = TXT_NONE;
 pszThrusters [1] = TXT_2D;
 pszThrusters [2] = TXT_3D;
 
-nCoronas = gameOpts->render.coronas.bUse ? gameOpts->render.coronas.nStyle == 2 ? 2 : 1 : 0;
+nCoronas = ogl.m_states.bDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nLightTrails = extraGameInfo [0].bLightTrails ? gameOpts->render.particles.bPlasmaTrails ? 2 : 1 : 0;
 do {
@@ -201,9 +204,13 @@ do {
 		*szSlider = *(TXT_SHADOWS - 1);
 		effectOpts.nShadows = m.AddSlider (szSlider + 1, nShadows, 0, 2, KEY_H, HTX_SHADOWS);
 		}
-	sprintf (szSlider + 1, TXT_CORONAS, pszNoneBasicAdv [nCoronas]);
-	*szSlider = *(TXT_CORONAS - 1);
-	effectOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1 + ogl.m_states.bDepthBlending, KEY_O, HTX_CORONAS);
+	if (ogl.m_states.bDepthBlending) {
+		sprintf (szSlider + 1, TXT_CORONAS, pszOffOn [nCoronas]);
+		*szSlider = *(TXT_CORONAS - 1);
+		effectOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1, KEY_O, HTX_CORONAS);
+		}
+	effectOpts.nCoronas = -1;
+
 	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
 	effectOpts.nLightning = m.AddSlider (szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_L, HTX_LIGHTNING);
@@ -260,8 +267,10 @@ do {
 			gameOpts->render.shadows.nReach =
 			gameOpts->render.shadows.nClip = nShadows;
 		}
-	if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
-		gameOpts->render.coronas.nStyle = nCoronas;
+	if (effectOpts.nShadows >= 0) {
+		if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
+			gameOpts->render.coronas.nStyle = nCoronas;
+		}
 	for (j = 0; j < 3; j++) {
 		if (optSoftParticles [j] >= 0) {
 			if (m [optSoftParticles [j]].m_value)

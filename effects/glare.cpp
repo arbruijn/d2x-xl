@@ -39,15 +39,7 @@ CGlareRenderer glareRenderer;
 
 int CGlareRenderer::Style (void)
 {
-switch (gameOpts->render.coronas.nStyle) {
-	case 2:
-		if (!gameStates.render.cameras.bActive)
-			return 2;
-	case 1:
-		return 1;
-	default:
-		return 0;
-	}
+return ogl.m_states.bUseDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && gameStates.render.cameras.bActive;
 }
 
 // -----------------------------------------------------------------------------------
@@ -590,63 +582,33 @@ if (gameStates.render.bQueryCoronas != 2) {
 
 void CGlareRenderer::Render (short nSegment, short nSide, float fIntensity, float fSize)
 {
+if (!Style ())
+	return;
+if (fIntensity < 0.01f)
+	return;
+
 	CFloatVector	sprite [4], vNormal, vCenter = CFloatVector::ZERO, vEye = CFloatVector::ZERO;
 	int				nTexture, bAdditive;
 	tIntervalf		zRange;
 	float				fAngle, fLight;
 
-if (fIntensity < 0.01f)
-	return;
-#if 0//DBG
-if ((nSegment != 6) || (nSide != 2))
-	return;
-#endif
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
+
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (ogl.m_states.bOcclusionQuery && Style ()) {
-	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
-#if 1
-	if (ogl.m_states.bUseDepthBlending && (Style () == 2)) {
-#	if !DBG
-		fSize *= 2;
-		if (fSize < 1)
-			fSize = 1;
-		else if (fSize > 20)
-#	endif
-			fSize = 20;
-		glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), GLfloat (fSize));
-		}
-#endif
-	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
-						  !automap.Display () || automap.m_visited [0][nSegment] || !gameOpts->render.automap.bGrayOut);
-	ogl.SetDepthMode (GL_LESS);
+fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
+glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), 20.0f);
+RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
+					  !automap.Display () || automap.m_visited [0][nSegment] || !gameOpts->render.automap.bGrayOut);
+ogl.SetDepthMode (GL_LESS);
 #if DBG
-	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
 #endif
-	}
-else {
-	vNormal = CFloatVector::Normal (sprite [0], sprite [1], sprite [2]);
-	vEye = vCenter; CFloatVector::Normalize (vEye);
-	//dim corona depending on viewer angle
-	if ((fAngle = CFloatVector::Dot (vNormal, vEye)) > 0) {
-		if (fAngle > 0.25f)
-			return;
-		fIntensity *= 1 - fAngle / 0.25f;
-		}
-	//move corona in towards viewer
-	fIntensity *= coronaIntensities [gameOpts->render.coronas.nIntensity];
-	if (0 == (fIntensity = MoveSpriteIn (sprite, &vCenter, &zRange, fIntensity)))
-		return;
-	ComputeHardGlare (sprite, &vCenter, &vNormal);
-	RenderHardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, 0,	//bAdditive
-						  !automap.Display () || automap.m_visited [0][nSegment]);
-	}
 }
 
 //------------------------------------------------------------------------------
