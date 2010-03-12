@@ -793,6 +793,7 @@ if (bLightmap) {
 #endif
 	bColored = 2;
 	}
+
 if (bmTop) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmap);
 	if (bTextured)
