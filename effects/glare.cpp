@@ -587,10 +587,9 @@ if (!Style ())
 if (fIntensity < 0.01f)
 	return;
 
-	CFloatVector	sprite [4], vNormal, vCenter = CFloatVector::ZERO, vEye = CFloatVector::ZERO;
+	CFloatVector	sprite [4], vCenter = CFloatVector::ZERO, vEye = CFloatVector::ZERO;
 	int				nTexture, bAdditive;
-	tIntervalf		zRange;
-	float				fAngle, fLight;
+	float				fLight;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

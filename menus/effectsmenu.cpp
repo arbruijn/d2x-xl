@@ -209,7 +209,8 @@ do {
 		*szSlider = *(TXT_CORONAS - 1);
 		effectOpts.nCoronas = m.AddSlider (szSlider + 1, nCoronas, 0, 1, KEY_O, HTX_CORONAS);
 		}
-	effectOpts.nCoronas = -1;
+	else
+		effectOpts.nCoronas = -1;
 
 	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
