@@ -194,23 +194,25 @@ if (m_info.hFBO) {
 
 //------------------------------------------------------------------------------
 
-int CFBO::Enable (void)
+int CFBO::Enable (bool bFallback)
 {
 if (Available () <= 0)
 	return 0;
 if (m_info.bActive)
 	return 1;
-ogl.SetDrawBuffer (GL_BACK, 0);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+if (bFallback) {
+	ogl.SetDrawBuffer (GL_BACK, 0);
+	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+	}
 //ogl.BindTexture (0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
-ogl.SetDrawBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
+ogl.SetDrawBuffer (GL_BACK, 1);
 return m_info.bActive = 1;
 }
 
 //------------------------------------------------------------------------------
 
-int CFBO::Disable (void)
+int CFBO::Disable (bool bFallback)
 {
 if (Available () <= 0)
 	return 0;
@@ -218,8 +220,8 @@ if (!m_info.bActive)
 	return 1;
 m_info.bActive = 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-//ogl.BindTexture (m_info.hColorBuffer);
-ogl.SetDrawBuffer (GL_BACK, 0);
+if (bFallback)
+	ogl.SetDrawBuffer (GL_BACK, 0);
 return 1;
 }
 

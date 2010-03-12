@@ -59,8 +59,8 @@ class CFBO {
 		int Create (int nWidth, int nHeight, int nType, int nColorBuffers = 1);
 		void Destroy (void);
 		int Available (void);
-		int Enable (void);
-		int Disable (void);
+		int Enable (bool bFallback = true);
+		int Disable (bool bFallback = true);
 		inline int GetType (void) { return m_info.nType; }
 		inline void SetType (int nType) { m_info.nType = nType; }
 		inline int GetWidth (void) { return m_info.nWidth; }

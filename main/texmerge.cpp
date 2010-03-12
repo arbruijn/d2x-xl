@@ -460,14 +460,15 @@ const char *texMergeFS [7] = {
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
 	"void main(void){" \
-	"gl_FragColor=texture2D(baseTex,gl_TexCoord [0].xy)*texture2D(baseTex,gl_FragCoord.xy);\r\n" \
+	"vec4 color=texture2D(baseTex,gl_TexCoord [1].xy)/**texture2D(baseTex,gl_FragCoord.xy)*/;\r\n" \
+	"gl_FragColor=vec4(color.rgb, color.a*grAlpha);\r\n" \
    "}"
 ,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
 	"void main(void){" \
-	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
-	"vec4 texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
+	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
+	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
 	"vec4 lMapColor=texture2D(baseTex,gl_FragCoord.xy);\r\n" \
 	"gl_FragColor=vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*lMapColor;\r\n" \
    "}"
@@ -477,8 +478,8 @@ const char *texMergeFS [7] = {
 	"float bMask;\r\n" \
 	"void main(void){" \
 	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
-	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
 	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
+	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
 	"vec4 lMapColor=texture2D(baseTex,gl_FragCoord.xy);\r\n" \
 	"gl_FragColor = bMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*lMapColor;\r\n" \
 	"}"
@@ -520,6 +521,7 @@ const char *texMergeVS [7] = {
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
 	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
 	"gl_FrontColor=gl_Color;}"
 ,
@@ -527,6 +529,7 @@ const char *texMergeVS [7] = {
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
 	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
+	"gl_TexCoord [2]=gl_MultiTexCoord3;"\
 	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
 	"gl_FrontColor=gl_Color;}"
 	};
@@ -577,9 +580,11 @@ if (!shaderProg)
 if (bColored == 2) {
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
-	glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
-	if (nType == 3)
-		glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
+	if (nType > 1) {
+		glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
+		if (nType > 2)
+			glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
+		}
 	}
 else {
 	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 0);

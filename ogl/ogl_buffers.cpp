@@ -244,7 +244,7 @@ CFBO*	bufP = DrawBuffer ();
 
 if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && bufP->Handle ()) {
 	if (!bufP->Active ()) {
-		if (bufP->Enable ()) {
+		if (bufP->Enable (false)) {
 			bufP->SetDrawBuffers ();
 			}
 		else {

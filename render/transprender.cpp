@@ -721,9 +721,6 @@ else {
 
 int bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
 
-ogl.ResetClientStates (1);
-
-ogl.SetupTransform (1);
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
@@ -732,11 +729,23 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visited [0][item->nSegment];
 int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale;
 
+ogl.ResetClientStates (1 + bLightmap + (bmTop != NULL) + (bmMask != NULL));
+if (bLightmap) {
+	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.BindTexture (0);
+	ogl.SetTexturing (false);
+	}
+
 if (bGrayScale)
 	bColored = 0;
 else 
-#if 1
 if (bLightmap) {
+	int nPrevBuffer = ogl.SelectDrawBuffer (2);
+	ogl.SetDrawBuffer (GL_BACK, 1);
+#if 0
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthMode (GL_ALWAYS);
+	ogl.SetDepthWrite (false);
 	ogl.EnableClientStates (1, 0, 1, GL_TEXTURE0);
 	if (!bColored)
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
@@ -745,12 +754,6 @@ if (bLightmap) {
 		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
 		}
 	OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
-
-	int nPrevBuffer = ogl.SelectDrawBuffer (2);
-	ogl.SetDrawBuffer (2, 1);
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.SetDepthWrite (false);
 	SetupColorShader ();
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	if (gameStates.render.bPerPixelLighting == 2) {
@@ -771,16 +774,16 @@ if (bLightmap) {
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 	ogl.SelectDrawBuffer (nPrevBuffer);
-	ogl.SetDrawBuffer (nPrevBuffer, 1);
+	ogl.SetDrawBuffer (GL_BACK, 1);
+	ogl.DisableClientStates (1, 0, 1, GL_TEXTURE0);
+	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.SetTexturing (true);
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
 	ogl.SetDepthMode (GL_LEQUAL);
-	if (bTextured)
-		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.texCoord + nIndex);
+#endif
 	bColored = 2;
 	}
-#endif
 if (bmTop) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmap);
 	if (bTextured)
@@ -802,8 +805,9 @@ if (bmTop) {
 else {
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	}
+m_data.bmP [0] = NULL;
 
-ogl.EnableClientStates (bTextured, !bLightmap, 1, GL_TEXTURE0 + bLightmap);
+ogl.EnableClientStates (bTextured, !bLightmap, !bLightmap, GL_TEXTURE0 + bLightmap);
 if (!LoadImage (bmBot, 0, 0, bLightmap, item->nWrap))
 	return;
 if (bTextured)
@@ -813,16 +817,18 @@ if (!bLightmap) {
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	else
 		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
+	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 	}
-OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 
 glColor3f (1,1,1);
 ogl.SetBlendMode (bAdditive = item->bAdditive);
 SetupRenderShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL, bColored,
 						 m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
-OglDrawArrays (item->nPrimitive, 0, item->nVertices);
+ogl.SetDepthMode (GL_LEQUAL);
 
+ogl.SetupTransform (1);
+OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 ogl.ResetTransform (1);
 gameData.render.nTotalFaces++;
 

@@ -637,7 +637,7 @@ else //GLASSES_SHUTTER or NONE
 
 void COGL::ChooseDrawBuffer (void)
 {
-#if 0
+#if 1
 if (gameStates.render.bPerPixelLighting) {
 	gameStates.render.bRenderIndirect = 1;
 	SelectDrawBuffer (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0));

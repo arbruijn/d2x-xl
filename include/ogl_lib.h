@@ -119,8 +119,11 @@ class COglData {
 		inline CFBO* GetDrawBuffer (int nBuffer) { return drawBuffers + nBuffer; }
 		inline int SelectDrawBuffer (int nBuffer) { 
 			int nPrevBuffer = drawBufferP ? int (drawBufferP - drawBuffers) : -1;
-			if ((nBuffer >= 0) && (nBuffer < sizeof (drawBuffers)))
+			if ((nBuffer >= 0) && (nBuffer < sizeof (drawBuffers))) {
+				drawBufferP->Disable (false);
 				drawBufferP = GetDrawBuffer (nBuffer); 
+				drawBufferP->Enable (false);
+				}
 			return nPrevBuffer;
 			}
 };
