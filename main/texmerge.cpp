@@ -408,9 +408,9 @@ switch (nType) {
 
 //------------------------------------------------------------------------------
 
-int tmShaderProgs [6] = {-1,-1,-1,-1,-1,-1};
+int tmShaderProgs [7] = {-1,-1,-1,-1,-1,-1,-1};
 
-const char *texMergeFS [6] = {
+const char *texMergeFS [7] = {
 	// grayscale
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
@@ -457,6 +457,12 @@ const char *texMergeFS [6] = {
 	"}"
 ,
 	// lightmaps
+	"uniform sampler2D lMapTex, baseTex;\r\n" \
+	"uniform float grAlpha;\r\n" \
+	"void main(void){" \
+	"gl_FragColor=texture2D(baseTex,gl_TexCoord [0].xy)*texture2D(baseTex,gl_FragCoord.xy);\r\n" \
+   "}"
+,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
 	"void main(void){" \
@@ -478,7 +484,33 @@ const char *texMergeFS [6] = {
 	"}"
 	};
 
-const char *texMergeVS [3] = {
+const char *texMergeVS [7] = {
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_FrontColor=gl_Color;}"
+,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
+	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_FrontColor=gl_Color;}"
+,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_FrontColor=gl_Color;}"
+,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
+	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_FrontColor=gl_Color;}"
+,
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
@@ -513,8 +545,8 @@ if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building texturing shader programs\n");
-	for (i = 0; i < 6; i++) {
-		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i % 3]);
+	for (i = 0; i < 7; i++) {
+		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i]);
 		gameStates.render.textures.bGlTexMergeOk = (b >= 0);
 		if (!gameStates.render.textures.bGlTexMergeOk) {
 			while (i)
@@ -535,7 +567,7 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 int SetupTexMergeShader (int bColored, int nType)
 {
-	int nShader = nType - 2 + bColored * 2;
+	int nShader = nType - ((bColored == 2) ? 1 : 2) + bColored * 2;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
 

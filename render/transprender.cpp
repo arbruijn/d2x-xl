@@ -786,10 +786,10 @@ if (bmTop) {
 	if (bTextured)
 		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-	if (!LoadImage (bmTop, 0, 1, 0, item->nWrap))
+	if (!LoadImage (bmTop, 0, 1, bLightmap, item->nWrap))
 		return;
 	if (bmMask) {
-		if (!LoadImage (bmMask, 0, 2, 0, item->nWrap))
+		if (!LoadImage (bmMask, 0, 2, bLightmap, item->nWrap))
 			return;
 		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2 + bLightmap);
 		if (bTextured)
@@ -804,7 +804,7 @@ else {
 	}
 
 ogl.EnableClientStates (bTextured, !bLightmap, 1, GL_TEXTURE0 + bLightmap);
-if (!LoadImage (bmBot, 0, 0, 0, item->nWrap))
+if (!LoadImage (bmBot, 0, 0, bLightmap, item->nWrap))
 	return;
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
