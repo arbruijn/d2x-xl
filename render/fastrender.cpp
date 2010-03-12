@@ -47,8 +47,6 @@ PROF_END(ptFaceList)
 
 int AddFaceListItem (CSegFace *faceP, int nThread)
 {
-if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
-	return 0;
 #if 1
 if (faceP->m_info.nFrame == gameData.app.nMineRenderCount)
 	return 0;
@@ -643,7 +641,7 @@ if (gameStates.render.bHaveSkyBox) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
-			if (!(faceP->m_info.bVisible = FaceIsCulled (nSegment, faceP->m_info.nSide)))
+			if (!(faceP->m_info.bVisible = !FaceIsCulled (nSegment, faceP->m_info.nSide)))
 				continue;
 			RenderMineFace (SEGMENTS + nSegment, faceP, RENDER_SKYBOX);
 			}
@@ -724,12 +722,12 @@ for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		if (!faceP->m_info.bVisible)
-			continue;
-		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
-		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
-		faceP->m_info.nColored = FaceIsColored (faceP);
-		gameData.render.renderFaces [faceP->m_info.nTransparent][gameData.render.nRenderFaces [faceP->m_info.nTransparent]++] = faceP;
+		if (faceP->m_info.bVisible) {
+			LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
+			faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
+			faceP->m_info.nColored = FaceIsColored (faceP);
+			gameData.render.renderFaces [faceP->m_info.nTransparent][gameData.render.nRenderFaces [faceP->m_info.nTransparent]++] = faceP;
+			}
 		}
 	}
 return nFaces;
@@ -824,7 +822,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		nSegment = nSegment;
 #endif
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++)
-		if (faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_RENDER_FLAG) && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
+		if (faceP->m_info.bVisible && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
 			 glareRenderer.FaceHasCorona (nSegment, faceP->m_info.nSide, NULL, NULL))
 			faceP->m_info.nCorona = ++gameData.render.lights.nCoronas;
 		else

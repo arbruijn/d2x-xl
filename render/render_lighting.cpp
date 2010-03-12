@@ -50,9 +50,7 @@ return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 
 static int FaceIsVisible (CSegFace* faceP)
 {
-if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
-	return faceP->m_info.bVisible = 0;
-if (!FaceIsCulled (faceP->m_info.nSegment, faceP->m_info.nSide))
+if (FaceIsCulled (faceP->m_info.nSegment, faceP->m_info.nSide))
 	return faceP->m_info.bVisible = 0;
 if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks)
 	return faceP->m_info.bVisible = 0;
@@ -78,8 +76,10 @@ if (!FaceIsVisible (faceP))
 bWall = IS_WALL (faceP->m_info.nWall);
 if (bWall) {
 	faceP->m_info.widFlags = segP->IsDoorWay (nSide, NULL);
-	if (!(faceP->m_info.widFlags & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
+	if (!(faceP->m_info.widFlags & WID_RENDER_FLAG)) {//(WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
+		faceP->m_info.bVisible = 0;
 		return -1;
+		}
 	}
 else
 	faceP->m_info.widFlags = WID_RENDER_FLAG;
