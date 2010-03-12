@@ -462,7 +462,7 @@ return (faceP->m_info.nColored >= 0)
 
 //------------------------------------------------------------------------------
 
-int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured)
 {
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
@@ -471,12 +471,8 @@ PROF_START
 #endif
 
 #if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
-	if (bDepthOnly)
-		nDbgSeg = nDbgSeg;
-	else
-		nDbgSeg = nDbgSeg;
-	}
+if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
 #endif
 
 if (!faceP->m_info.bTextured)
@@ -900,7 +896,7 @@ if (!FaceIsColored (faceP))
 	return 0;
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
-if (SetupColorShader (faceP))
+if (SetupLightmap (faceP))
 	DrawFacePP (faceP);
 return 0;
 }
@@ -926,8 +922,6 @@ return 0;
 
 int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
-	int bColorKey = 0;
-
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
@@ -943,6 +937,23 @@ while (0 < SetupPerPixelLightingShader (faceP)) {
 	if ((ogl.m_states.iLight >= ogl.m_states.nLights) || (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
 		return 0;
 	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int RenderHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+{
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+
+if (!FaceIsColored (faceP))
+	return 0;
+if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
+	return 0;
+OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
 return 0;
 }
 

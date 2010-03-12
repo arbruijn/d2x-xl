@@ -241,18 +241,11 @@ void ResetColorShader (void)
 
 //------------------------------------------------------------------------------
 
-int SetupColorShader (CSegFace *faceP)
+int SetupColorShader (void)
 {
 PROF_START
-#if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
-#endif
-
-if (!SetupLightmap (faceP))
-	return 0;
 if ((colorShaderProg < 0) && !CreateColorShader ())
-		return 0;
+	return 0;
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (colorShaderProg));
 if (!shaderProg)
 	return -1;

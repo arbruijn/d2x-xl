@@ -290,7 +290,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-int CHeadlightManager::SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP)
+int CHeadlightManager::SetupShader (void) //int nType, int bLightmaps, tRgbaColorf *colorP)
 {
 	int bTransform;
 

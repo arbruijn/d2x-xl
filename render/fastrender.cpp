@@ -142,7 +142,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-bool RenderFaceDepth (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderFaceDepth (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -155,7 +155,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderStaticLights (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderStaticLights (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -168,7 +168,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderDynamicLights (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderDynamicLights (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -181,7 +181,20 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderFaceColor (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderHeadLights (CSegment *segP, CSegFace *faceP)
+{
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return false;
+LoadFaceBitmaps (segP, faceP);
+if (!faceP->bmBot)
+	return false;
+RenderLights (faceP, faceP->bmBot, faceP->bmTop);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool RenderFaceColor (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -194,7 +207,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderStaticFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderStaticFace (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -203,26 +216,26 @@ if (IS_WALL (faceP->m_info.nWall))
 LoadFaceBitmaps (segP, faceP);
 if (!faceP->bmBot)
 	return false;
-RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, faceP->m_info.bTextured);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
-bool RenderDynamicFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderDynamicFace (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 if (!IS_WALL (faceP->m_info.nWall))
 	return false;
 LoadFaceBitmaps (segP, faceP);
-RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, faceP->m_info.bTextured);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
-bool RenderColoredFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderColoredFace (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -235,13 +248,13 @@ if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) ||
 	return false;
 if (!gameData.app.nFrameCount)
 	gameData.render.nColoredFaces++;
-RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, !bDepthOnly && faceP->m_info.bTextured, bDepthOnly);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, faceP->m_info.bTextured);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
-bool RenderCoronaFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderCoronaFace (CSegment *segP, CSegFace *faceP)
 {
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
@@ -257,19 +270,19 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP, int bDepthOnly)
+bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP)
 {
 LoadFaceBitmaps (segP, faceP);
-RenderFace (faceP, faceP->bmBot, faceP->bmTop, 1, 1, 0);
+RenderFace (faceP, faceP->bmBot, faceP->bmTop, 1, 1);
 return true;
 }
 
 //------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
+typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP);
 #else
-typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP, int bDepthOnly);
+typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP);
 #endif
 
 static pRenderHandler renderHandlers [] = {
@@ -287,7 +300,7 @@ static pRenderHandler renderHandlers [] = {
 
 
 
-static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType, int bDepthOnly)
+static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType)
 {
 if (!faceP->m_info.bVisible)
 	return false;
@@ -295,7 +308,7 @@ if (!faceP->m_info.bVisible)
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-return renderHandlers [nType] (segP, faceP, bDepthOnly);
+return renderHandlers [nType] (segP, faceP);
 }
 
 //------------------------------------------------------------------------------
@@ -441,11 +454,20 @@ if (nType == RENDER_DEPTH) {
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
 else if (nType == RENDER_LIGHTMAPS) {
+	if (!SetupColorShader ())
+		return 0;
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (false);
 	}
 else if (nType == RENDER_COLOR) {
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetDepthWrite (false);
+	}
+else if (nType == RENDER_HEADLIGHTS) {
+	if (0 > lightManager.Headlights ().SetupShader ())
+		return 0;
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.SetDepthWrite (false);
@@ -602,7 +624,7 @@ if (gameStates.render.bHaveSkyBox) {
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 			if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, faceP->m_info.nSide)))
 				continue;
-			RenderMineFace (SEGMENTS + nSegment, faceP, 4, 0);
+			RenderMineFace (SEGMENTS + nSegment, faceP, RENDER_SKYBOX);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -634,7 +656,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadlight)
+short RenderFaceList (CFaceListIndex& flx, int nType)
 {
 	tFaceListItem*	fliP;
 	CSegFace*		faceP;
@@ -642,7 +664,7 @@ short RenderFaceList (CFaceListIndex& flx, int nType, int bDepthOnly, int bHeadl
 	int				bAutomap = (nType <= RENDER_STATIC_FACES);
 
 #if 1
-if (automap.Display () && !bDepthOnly)
+if (automap.Display ())
 	flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
 #endif
 for (i = 0; i < flx.nUsedKeys; i++) {
@@ -660,7 +682,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			else if (gameStates.render.nType == RENDER_LIGHTS)
 				lightManager.Index (0)[0].nActive = -1;
 			}
-		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly))
+		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
 			nFaces++;
 		}
 	}
@@ -796,7 +818,7 @@ return gameData.render.lights.nCoronas;
 
 //------------------------------------------------------------------------------
 
-static short RenderSegmentFaces (int nType, short nSegment, int bDepthOnly, int bAutomap, int bHeadlight)
+static short RenderSegmentFaces (int nType, short nSegment, int bAutomap)
 {
 if (nSegment < 0)
 	return 0;
@@ -810,7 +832,7 @@ if (nSegment < 0)
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-if (!(bHeadlight || VisitSegment (nSegment, bAutomap)))
+if (!VisitSegment (nSegment, bAutomap))
 	return 0;
 #if DBG
 if (nSegment == nDbgSeg)
@@ -823,7 +845,7 @@ for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
-	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType, bDepthOnly))
+	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
 		nFaces++;
 	}
 return nFaces;
@@ -831,7 +853,7 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-short RenderSegments (int nType, int bDepthOnly, int bHeadlight)
+short RenderSegments (int nType)
 {
 	int	i, nFaces = 0, bAutomap = (nType <= RENDER_STATIC_FACES);
 
@@ -840,17 +862,17 @@ if (nType >= RENDER_DYNAMIC_FACES) {
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
-			if (RenderMineFace (SEGMENTS + faceP->m_info.nSegment, faceP, nType, bDepthOnly))
+			if (RenderMineFace (SEGMENTS + faceP->m_info.nSegment, faceP, nType))
 				nFaces++;
 		}
 	else {
 		for (i = gameData.render.mine.nRenderSegs; i; )
-			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [0][--i], bDepthOnly, bAutomap, bHeadlight);
+			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [0][--i], bAutomap);
 		}
 	}
 else {
 	// render mine by pre-sorted textures
-	nFaces = RenderFaceList (gameData.render.faceIndex, nType, bDepthOnly, bHeadlight);
+	nFaces = RenderFaceList (gameData.render.faceIndex, nType);
 	}
 return nFaces;
 }
@@ -859,12 +881,14 @@ return nFaces;
 
 void RenderHeadlights (int nType)
 {
+#if 0
 if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 	ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 	faceRenderFunc = lightmapManager.HaveLightmaps () ? RenderHeadlightsPP : RenderHeadlightsVL;
 	RenderSegments (nType, 0, 1);
 	SetFaceDrawer (-1);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -883,7 +907,7 @@ if (ogl.m_states.bOcclusionQuery) {
 	QueryCoronas (0, 1);
 	}
 BeginRenderFaces (RENDER_STATIC_FACES, 1);
-short nFaces = RenderSegments (nType, 1, 0);
+short nFaces = RenderSegments (nType);
 EndRenderFaces (1);
 if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas) {
 	gameStates.render.bQueryCoronas = 2;
@@ -900,7 +924,7 @@ return nFaces;
 int SetupDepthBuffer (int nType)
 {
 BeginRenderFaces (nType, 1);
-RenderSegments (nType, 1, 0);
+RenderSegments (nType);
 EndRenderFaces (nType);
 return SortFaces ();
 }
@@ -911,7 +935,7 @@ void RenderFaceList (int nType, int bFrontToBack)
 {
 if (nType > RENDER_OBJECTS) {	//back to front
 	BeginRenderFaces (nType, 0);
-	RenderSegments (nType, 0, 0);
+	RenderSegments (nType);
 	}
 else {	//front to back
 	if ((nType == RENDER_STATIC_FACES) && !gameStates.render.nWindow)
@@ -919,7 +943,7 @@ else {	//front to back
 	BeginRenderFaces (nType, 0);
 	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;
-	RenderSegments (nType, 0, 0);
+	RenderSegments (nType);
 	ogl.SetDepthWrite (true);
 	RenderHeadlights (nType);
 	}

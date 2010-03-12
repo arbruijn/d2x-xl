@@ -142,7 +142,7 @@ class CHeadlightManager {
 		int Add (CObject* objP);
 		void Remove (CObject* objP);
 		void Update (void);
-		int SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP);
+		int SetupShader (void); //int nType, int bLightmaps, tRgbaColorf *colorP);
 };
 
 //------------------------------------------------------------------------------
