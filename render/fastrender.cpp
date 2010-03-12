@@ -25,6 +25,8 @@
 #include "fastrender.h"
 #include "ogl_shader.h"
 
+#define LOAD_BITMAPS	0
+
 //------------------------------------------------------------------------------
 
 void ResetFaceList (void)
@@ -144,9 +146,11 @@ else {
 
 bool RenderFaceDepth (CSegment *segP, CSegFace *faceP)
 {
+#if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 LoadFaceBitmaps (segP, faceP);
+#endif
 if (!faceP->bmBot)
 	return false;
 RenderDepth (faceP, faceP->bmBot, faceP->bmTop);
@@ -157,9 +161,11 @@ return true;
 
 bool RenderStaticLights (CSegment *segP, CSegFace *faceP)
 {
+#if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 LoadFaceBitmaps (segP, faceP);
+#endif
 if (!faceP->bmBot)
 	return false;
 RenderLightmaps (faceP, faceP->bmBot, faceP->bmTop);
@@ -170,9 +176,11 @@ return true;
 
 bool RenderDynamicLights (CSegment *segP, CSegFace *faceP)
 {
+#if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 LoadFaceBitmaps (segP, faceP);
+#endif
 if (!faceP->bmBot)
 	return false;
 RenderLights (faceP, faceP->bmBot, faceP->bmTop);
@@ -183,9 +191,11 @@ return true;
 
 bool RenderPlayerLights (CSegment *segP, CSegFace *faceP)
 {
+#if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 LoadFaceBitmaps (segP, faceP);
+#endif
 if (!faceP->bmBot)
 	return false;
 RenderHeadlights (faceP, faceP->bmBot, faceP->bmTop);
@@ -196,9 +206,11 @@ return true;
 
 bool RenderFaceColor (CSegment *segP, CSegFace *faceP)
 {
+#if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 LoadFaceBitmaps (segP, faceP);
+#endif
 if (!faceP->bmBot)
 	return false;
 RenderColor (faceP, faceP->bmBot, faceP->bmTop);
@@ -209,11 +221,13 @@ return true;
 
 bool RenderStaticFace (CSegment *segP, CSegFace *faceP)
 {
-if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
-	return false;
 if (IS_WALL (faceP->m_info.nWall))
 	return false;
+#if LOAD_BITMAPS
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return false;
 LoadFaceBitmaps (segP, faceP);
+#endif
 if (!faceP->bmBot)
 	return false;
 RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, faceP->m_info.bTextured);
@@ -224,11 +238,13 @@ return true;
 
 bool RenderDynamicFace (CSegment *segP, CSegFace *faceP)
 {
-if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
-	return false;
 if (!IS_WALL (faceP->m_info.nWall))
 	return false;
+#if LOAD_BITMAPS
+if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
+	return false;
 LoadFaceBitmaps (segP, faceP);
+#endif
 RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, faceP->m_info.bTextured);
 return true;
 }
@@ -237,8 +253,10 @@ return true;
 
 bool RenderColoredFace (CSegment *segP, CSegFace *faceP)
 {
+#if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
+#endif
 if (faceP->bmBot)
 	return false;
 short nSegment = faceP->m_info.nSegment;
@@ -256,8 +274,10 @@ return true;
 
 bool RenderCoronaFace (CSegment *segP, CSegFace *faceP)
 {
+#if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
+#endif
 if (!faceP->m_info.nCorona)
 	return false;
 #if DBG
@@ -688,7 +708,6 @@ short BuildFaceLists (void)
 	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
 	CSegFace*		faceP;
 	int				i, j, nFaces = 0, nSegment = -1;
-	int				bAutomap = (nType <= RENDER_STATIC_FACES);
 
 #if 1
 if (automap.Display ())

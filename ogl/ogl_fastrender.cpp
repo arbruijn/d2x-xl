@@ -43,6 +43,8 @@
 #include "gameseg.h"
 #include "automap.h"
 
+#define CHECK_TRANSPARENCY	0
+
 #if DBG
 #	define G3_BUFFER_FACES	0	// well ... no speed increase :/
 #else
@@ -430,6 +432,8 @@ else {
 
 //------------------------------------------------------------------------------
 
+#if CHECK_TRANSPARENCY
+
 static inline int FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
 if (faceP->m_info.nTransparent >= 0)
@@ -451,13 +455,19 @@ if (bmTop->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 return faceP->m_info.nTransparent = 0;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
 static inline int FaceIsColored (CSegFace *faceP)
 {
+#if CHECK_TRANSPARENCY
 return (faceP->m_info.nColored >= 0)
 		 ? faceP->m_info.nColored
 		 : faceP->m_info.nColored = !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
+#else
+return faceP->m_info.nColored;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -805,8 +815,10 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 
 if (!FaceIsColored (faceP))
 	return 0;
+#if CHECK_TRANSPARENCY
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
+#endif
 if (SetupLightmap (faceP))
 	DrawFacePP (faceP);
 return 0;
@@ -823,8 +835,10 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 
 if (!FaceIsColored (faceP))
 	return 0;
+#if CHECK_TRANSPARENCY
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
+#endif
 DrawFacePP (faceP);
 return 0;
 }
@@ -840,8 +854,10 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 
 if (!FaceIsColored (faceP))
 	return 0;
+#if CHECK_TRANSPARENCY
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
+#endif
 ogl.m_states.iLight = 0;
 while (0 < SetupPerPixelLightingShader (faceP)) {
 	DrawFacePP (faceP);
@@ -862,8 +878,10 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 
 if (!FaceIsColored (faceP))
 	return 0;
+#if CHECK_TRANSPARENCY
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
+#endif
 OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
 return 0;
 }
@@ -879,8 +897,10 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 	nDbgSeg = nDbgSeg;
 #endif
 
+#if CHECK_TRANSPARENCY
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
+#endif
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
@@ -925,9 +945,8 @@ else if (bmBot) {
 		return 0;
 #endif
 	}
-bTransparent = FaceIsTransparent (faceP, bmBot, bmTop);
-bColored = FaceIsColored (faceP);
 bMonitor = (faceP->m_info.nCamera >= 0);
+bColored = FaceIsColored (faceP);
 if (bmTop) {
 	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -937,7 +956,7 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-if (bTransparent && (gameStates.render.nType < RENDER_SKYBOX) && !bMonitor) {
+if (faceP->m_info.bTransparent && !bMonitor && (gameStates.render.nType < RENDER_SKYBOX)) {
 	faceP->m_info.nRenderType = gameStates.render.history.nType;
 	faceP->m_info.bColored = bColored;
 	transparencyRenderer.AddFace (faceP);
