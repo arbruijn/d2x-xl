@@ -823,7 +823,7 @@ if (gameStates.render.bPerPixelLighting) {
 				nDbgSeg = nDbgSeg;
 			ogl.SetBlending (true);
 #	endif
-			lightManager.Headlights ().SetupShader (m_data.bTextured, 1, m_data.bTextured ? NULL : &faceP->m_info.color);
+			lightManager.Headlights ().SetupShader ();
 			if (bAdditive != 2) {
 				bAdditive = 2;
 				ogl.SetBlendMode (2);

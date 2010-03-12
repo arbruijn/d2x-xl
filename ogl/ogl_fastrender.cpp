@@ -49,7 +49,7 @@
 #	define G3_BUFFER_FACES	0
 #endif
 
-tRenderFaceDrawerP faceRenderFunc = RenderFace;
+//tRenderFaceDrawerP faceRenderFunc = RenderFace;
 
 //------------------------------------------------------------------------------
 
@@ -816,6 +816,7 @@ return 0;
 
 int RenderHeadlightsVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
+#if 0
 	int			bColorKey = 0, bMonitor = 0;
 
 if (!faceP->m_info.bTextured)
@@ -838,11 +839,12 @@ SetRenderStates (faceP, bmBot, bmTop, 0, 1, bColorKey, 1);
 if (bMonitor)
 	SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;
-lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->m_info.color);
+lightManager.Headlights ().SetupShader ();
 DrawFacePP (faceP);
 
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
+#endif
 return 0;
 }
 
@@ -850,6 +852,7 @@ return 0;
 
 int RenderHeadlightsPP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
+#if 0
 	int			bColorKey = 0, bMonitor = 0;
 
 #if DBG
@@ -876,10 +879,11 @@ SetRenderStatesLM (faceP, bmBot, bmTop, 1, bColorKey, 1);
 if (bMonitor)
 	SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;
-lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->m_info.color);
+lightManager.Headlights ().SetupShader ();
 OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
+#endif
 return 0;
 }
 
