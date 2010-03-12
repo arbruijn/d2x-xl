@@ -323,11 +323,13 @@ int LoadPerPixelLightingShader (void)
 {
 PROF_START
 gameStates.render.shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass]));
-PROF_END(ptShaderStates);
-if (gameStates.render.shaderProg < 0)
+if (!gameStates.render.shaderProg) {
+	PROF_END(ptShaderStates);
 	return -1;
+	}
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 gameStates.render.nLights = -1;
+PROF_END(ptShaderStates);
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass];
 }
 
