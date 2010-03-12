@@ -683,7 +683,7 @@ return !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !
 
 //------------------------------------------------------------------------------
 
-short BuildFaceLists (int nType)
+short BuildFaceLists (void)
 {
 	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
 	CSegFace*		faceP;

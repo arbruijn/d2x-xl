@@ -398,6 +398,7 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
+BuildFaceLists ();
 #if 1
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	SetupDepthBuffer (RENDER_DEPTH);
