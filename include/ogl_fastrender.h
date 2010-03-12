@@ -23,8 +23,7 @@ int RenderHeadlightsPP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBl
 void FlushFaceBuffer (int bForce);
 
 int SetupPerPixelLightingShader (CSegFace* faceP, int nType);
-int SetupLightmapShader (CSegFace* faceP, int nType, bool bHeadlight);
-int SetupStaticLightingShader (CSegFace* faceP, int bColorKey);
+int SetupLightmapShader (CSegFace* faceP);
 //int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 int SetupTexMergeShader (int bColorKey, int bColored, int nType);
 int SetupGrayScaleShader (int nType, tRgbaColorf *colorP);

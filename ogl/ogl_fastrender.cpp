@@ -581,6 +581,7 @@ else
 
 int RenderFacePP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
+#if 0
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
@@ -714,6 +715,7 @@ else {
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
 PROF_END(ptRenderFaces)
+#endif
 return 0;
 }
 
@@ -721,6 +723,7 @@ return 0;
 
 int RenderFaceLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
+#if 0
 PROF_START
 	int			bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
@@ -809,6 +812,7 @@ else {
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
 PROF_END(ptRenderFaces)
+#endif
 return 0;
 }
 
@@ -896,7 +900,7 @@ if (!FaceIsColored (faceP))
 	return 0;
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
-if (SetupLightmap (faceP))
+if (SetupLightmapShader (faceP))
 	DrawFacePP (faceP);
 return 0;
 }

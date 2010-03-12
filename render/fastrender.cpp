@@ -415,9 +415,9 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
 			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
-			bColor = !gameStates.render.bFullBright && (nType == RENDER_COLOR),
+			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS), //(nType == RENDER_COLOR),
 			bTexCoord = (nType != RENDER_COLOR),
-			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_COLOR);
+			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS); //(nType == RENDER_COLOR);
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
