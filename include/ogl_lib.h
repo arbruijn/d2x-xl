@@ -116,8 +116,13 @@ class COglData {
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
-		inline CFBO* GetDrawBuffer (int nSide) { return drawBuffers + nSide; }
-		inline void SelectDrawBuffer (int nSide) { drawBufferP = GetDrawBuffer (nSide); }
+		inline CFBO* GetDrawBuffer (int nBuffer) { return drawBuffers + nBuffer; }
+		inline int SelectDrawBuffer (int nBuffer) { 
+			int nPrevBuffer = drawBufferP ? int (drawBufferP - drawBuffers) : -1;
+			if ((nBuffer >= 0) && (nBuffer < sizeof (drawBuffers)))
+				drawBufferP = GetDrawBuffer (nBuffer); 
+			return nPrevBuffer;
+			}
 };
 
 
@@ -417,12 +422,13 @@ class COGL {
 			return m_data.nCullMode;
 			}
 
-		inline void SelectDrawBuffer (int nSide) { 
-			m_data.SelectDrawBuffer (nSide); 
+		inline int SelectDrawBuffer (int nBuffer) { 
+			int nPrevBuffer = m_data.SelectDrawBuffer (nBuffer); 
 			CreateDrawBuffer ();
+			return nPrevBuffer;
 			}
 
-		inline CFBO* DrawBuffer (void) { return m_data.drawBufferP; }
+		inline CFBO* DrawBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
 
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
