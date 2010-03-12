@@ -112,9 +112,9 @@ const char *pszPP1LightingFS = {
 	"		att += gl_LightSource [0].linearAttenuation * dist + gl_LightSource [0].quadraticAttenuation * dist * dist;\r\n" \
 	"		/*specular highlight >>>>>*/\r\n" \
 	"		if (NdotL >= 0.0) {\r\n" \
-	"			vec3 halfV = normalize (gl_LightSource [i].halfVector.xyz);\r\n" \
+	"			vec3 halfV = normalize (gl_LightSource [0].halfVector.xyz);\r\n" \
 	"			float NdotHV = max (dot (vertNorm, halfV), 0.0);\r\n" \
-	"			colorSum += (gl_LightSource [i].specular * pow (NdotHV, 16.0)) / att;\r\n" \
+	"			colorSum += (gl_LightSource [0].specular * pow (NdotHV, 16.0)) / att;\r\n" \
 	"			}/*<<<<< specular highlight*/\r\n" \
 	"		NdotL = max (NdotL, 0.0);\r\n" \
 	"		if (lightRad > 0.0)\r\n" \
