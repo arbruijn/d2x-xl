@@ -504,7 +504,7 @@ else if (nType == RENDER_LIGHTS) {
 	ogl.SetLighting (false);
 	}
 else if (nType == RENDER_CORONAS) {
-	if (glareRenderer.Style () == 2)
+	if (glareRenderer.Style ())
 		glareRenderer.LoadShader (10);
 	return 0;
 	}

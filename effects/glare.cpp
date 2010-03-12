@@ -39,7 +39,7 @@ CGlareRenderer glareRenderer;
 
 int CGlareRenderer::Style (void)
 {
-return ogl.m_states.bUseDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && gameStates.render.cameras.bActive;
+return ogl.m_states.bDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && !gameStates.render.cameras.bActive;
 }
 
 // -----------------------------------------------------------------------------------

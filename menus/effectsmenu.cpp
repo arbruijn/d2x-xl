@@ -185,6 +185,9 @@ pszThrusters [0] = TXT_NONE;
 pszThrusters [1] = TXT_2D;
 pszThrusters [2] = TXT_3D;
 
+pszOffOn [0] = TXT_OFF;
+pszOffOn [1] = TXT_ON;
+
 nCoronas = ogl.m_states.bDepthBlending && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle;
 nShadows = extraGameInfo [0].bShadows ? ((gameOpts->render.shadows.nReach == 2) && (gameOpts->render.shadows.nClip == 2)) ? 2 : 1 : 0;
 nLightTrails = extraGameInfo [0].bLightTrails ? gameOpts->render.particles.bPlasmaTrails ? 2 : 1 : 0;
