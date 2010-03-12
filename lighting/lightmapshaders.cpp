@@ -30,7 +30,166 @@
 
 //-------------------------------------------------------------------------
 
-const char *lightmapFS =
+const char *lightmapFS [] = {
+	"uniform sampler2D lMapTex;\r\n" \
+	"uniform vec4 matColor;\r\n" \
+	"void main() {\r\n" \
+	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);\r\n" \
+	"}"
+	,
+	"uniform sampler2D lMapTex, baseTex;\r\n" \
+	"void main() {\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	}"
+	,
+	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
+	"void main() {\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
+	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	}"
+	,
+	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
+	"void main() {\r\n" \
+	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
+	"if (bMask < 0.5)\r\n" \
+	"  discard;\r\n" \
+	"else {\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
+	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
+	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
+	"	gl_FragColor =  vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
+	"	}\r\n" \
+	"}"
+	};
+
+//-------------------------------------------------------------------------
+
+const char *lightmapVS [] = {
+	"void main() {\r\n" \
+	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"	gl_Position = ftransform();\r\n" \
+   "	gl_FrontColor = gl_Color;\r\n" \
+	"	}"
+	,
+	"void main() {\r\n" \
+	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n" \
+	"	gl_Position = ftransform();\r\n" \
+   "	gl_FrontColor = gl_Color;\r\n" \
+	"	}"
+	,
+	"void main() {\r\n" \
+	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n" \
+	"	gl_TexCoord [2] = gl_MultiTexCoord2;\r\n" \
+	"	gl_Position = ftransform();\r\n" \
+   "	gl_FrontColor = gl_Color;\r\n" \
+	"	}"
+	,
+	"void main() {\r\n" \
+	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"	gl_TexCoord [1] = gl_MultiTexCoord1;\r\n" \
+	"	gl_TexCoord [2] = gl_MultiTexCoord2;\r\n" \
+	"	gl_TexCoord [3] = gl_MultiTexCoord3;\r\n" \
+	"	gl_Position = ftransform();\r\n" \
+   "	gl_FrontColor = gl_Color;\r\n" \
+	"	}"
+	};
+
+
+// ----------------------------------------------------------------------------------------------
+
+int lightmapShaderProgs [4] = {-1,-1,-1,-1};
+
+int CreateLightmapShader (int nType)
+{
+	int	h, j;
+
+if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
+	gameStates.render.bPerPixelLighting = 0;
+	return 0;
+	}
+if (lightmapShaderProgs [nType] >= 0)
+	return 1;
+for (h = 0; h <= 3; h++) {
+	if (lightmapShaderProgs [h] >= 0)
+		continue;
+	PrintLog ("building lightmap shader programs\n");
+	if (!shaderManager.Build (lightmapShaderProgs [h], lightmapFS [h], lightmapVS [h])) {
+		ogl.m_states.bPerPixelLightingOk = 0;
+		gameStates.render.bPerPixelLighting = 0;
+		for (j = 0; j < 4; j++)
+			shaderManager.Delete (lightmapShaderProgs [j]);
+		return -1;
+		}
+	}
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+void InitLightmapShaders (void)
+{
+for (int nType = 0; nType < 4; nType++)
+	CreateLightmapShader (nType);
+}
+
+// -----------------------------------------------------------------------------
+
+void ResetLightmapShaders (void)
+{
+//memset (lightmapShaderProgs, 0xFF, sizeof (lightmapShaderProgs));
+}
+
+//------------------------------------------------------------------------------
+
+int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
+{
+PROF_START
+	static CBitmap	*nullBmP = NULL;
+
+if (!CreateLightmapShader (nType))
+	return 0;
+#if DBG
+if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+if (!SetupLightmap (faceP))
+	return 0;
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
+if (!shaderProg)
+	return -1;
+
+if (shaderManager.Rebuild (shaderProg)) {
+	ogl.ClearError (0);
+	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
+	if (nType) {
+		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
+		if (nType > 1) {
+			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
+			if (nType > 2)
+				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
+			}
+		}
+	}
+else if (!nType) {
+	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
+	}
+ogl.ClearError (0);
+PROF_END(ptShaderStates)
+return lightmapShaderProgs [nType];
+}
+
+//-------------------------------------------------------------------------
+
+const char *colorFS =
 	"uniform sampler2D lMapTex;\r\n" \
 	"void main(void){\r\n" \
 	"vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
@@ -38,7 +197,7 @@ const char *lightmapFS =
 	"}"
 	;
 
-const char *lightmapVS = 
+const char *colorVS = 
 	"void main(void){" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;"\
 	"gl_Position = ftransform();"\
@@ -47,42 +206,42 @@ const char *lightmapVS =
 
 // ----------------------------------------------------------------------------------------------
 
-int lightmapShaderProg = -1;
+int colorShaderProg = -1;
 
-int CreateLightmapShader (void)
+int CreateColorShader (void)
 {
 if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
 	gameStates.render.bPerPixelLighting = 0;
 	return 0;
 	}
-if (lightmapShaderProg >= 0)
+if (colorShaderProg >= 0)
 	return 1;
 PrintLog ("building light mask shader programs\n");
-if (shaderManager.Build (lightmapShaderProg, lightmapFS, lightmapVS))
+if (shaderManager.Build (colorShaderProg, colorFS, colorVS))
 	return 1;
 ogl.m_states.bPerPixelLightingOk = 0;
 gameStates.render.bPerPixelLighting = 0;
-shaderManager.Delete (lightmapShaderProg);
+shaderManager.Delete (colorShaderProg);
 return -1;
 }
 
 // -----------------------------------------------------------------------------
 
-void InitLightmapShader (void)
+void InitColorShader (void)
 {
-CreateLightmapShader ();
+CreateColorShader ();
 }
 
 // -----------------------------------------------------------------------------
 
-void ResetLightmapShader (void)
+void ResetColorShader (void)
 {
-//memset (lightmapShaderProgs, 0xFF, sizeof (lightmapShaderProgs));
+//memset (colorShaderProgs, 0xFF, sizeof (colorShaderProgs));
 }
 
 //------------------------------------------------------------------------------
 
-int SetupLightmapShader (CSegFace *faceP)
+int SetupColorShader (CSegFace *faceP)
 {
 PROF_START
 #if DBG
@@ -92,9 +251,9 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 
 if (!SetupLightmap (faceP))
 	return 0;
-if ((lightmapShaderProg < 0) && !CreateLightmapShader ())
+if ((colorShaderProg < 0) && !CreateColorShader ())
 		return 0;
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProg));
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (colorShaderProg));
 if (!shaderProg)
 	return -1;
 if (shaderManager.Rebuild (shaderProg)) {
@@ -102,8 +261,8 @@ if (shaderManager.Rebuild (shaderProg)) {
 	ogl.ClearError (0);
 	}
 PROF_END(ptShaderStates)
-return lightmapShaderProg;
+return colorShaderProg;
 }
 
-// ----------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //eof

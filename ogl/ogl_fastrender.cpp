@@ -900,7 +900,7 @@ if (!FaceIsColored (faceP))
 	return 0;
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
-if (SetupLightmapShader (faceP))
+if (SetupColorShader (faceP))
 	DrawFacePP (faceP);
 return 0;
 }
