@@ -449,9 +449,9 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
 			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
-			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS), //(nType == RENDER_COLOR),
+			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS), //RENDER_COLOR),
 			bTexCoord = (nType != RENDER_COLOR) && (nType != RENDER_LIGHTS),
-			bNormals = (nType == RENDER_LIGHTS) || (nType == RENDER_LIGHTMAPS) || (nType == RENDER_HEADLIGHTS); //(nType == RENDER_COLOR);
+			bNormals = (nType == RENDER_LIGHTMAPS) || (nType == RENDER_LIGHTS) || (nType == RENDER_HEADLIGHTS); //(nType == RENDER_COLOR);
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -474,8 +474,10 @@ if (nType == RENDER_DEPTH) {
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	}
 else if (nType == RENDER_LIGHTMAPS) {
+#if 1
 	if (!SetupColorShader ())
 		return 0;
+#endif
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (false);
