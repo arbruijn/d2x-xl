@@ -103,7 +103,7 @@ const char *pszPP1LightingFS = {
 	"	vec3 lightNorm = lightVec / lightDist;\r\n" \
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
-	"	float lightRad = gl_LightSource [i].specular.a * (1.0 - abs (lightAngle));\r\n" \
+	"	float lightRad = gl_LightSource [0].specular.a * (1.0 - abs (lightAngle));\r\n" \
 	"	lightDist -= 100.0 * min (0.0, min (NdotL, lightAngle)); //bDirected\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
