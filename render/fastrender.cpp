@@ -716,7 +716,7 @@ if (automap.Display ())
 gameData.render.nRenderFaces [0] = 
 gameData.render.nRenderFaces [1] = 0;
 for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
-	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP [j].nNextItem) {
 		faceP = fliP [j].faceP;
 		if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 			continue;
@@ -804,7 +804,7 @@ void RenderCoronaFaceList (int nPass)
 	int				i, j, nSegment;
 
 for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
-	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP [j].nNextItem) {
 		faceP = fliP [j].faceP;
 		if (!faceP->m_info.nCorona)
 			continue;
