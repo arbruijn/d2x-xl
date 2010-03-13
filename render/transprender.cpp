@@ -720,7 +720,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visited [0][item->nSegment];
 int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale;
 
-ogl.ResetClientStates (1 + bLightmap + (bmTop != NULL) + (bmMask != NULL));
+ogl.ResetClientStates (bLightmap + bTextured + (bmTop != NULL) + (bmMask != NULL));
 if (bLightmap) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (0);
@@ -793,13 +793,19 @@ if (bmTop) {
 else {
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	}
-m_data.bmP [0] = NULL;
 
 ogl.EnableClientStates (bTextured, !bLightmap, !bLightmap, GL_TEXTURE0 + bLightmap);
-if (!LoadImage (bmBot, 0, 0, bLightmap, item->nWrap))
-	return;
-if (bTextured)
+if (bTextured) {
+	if (!LoadImage (bmBot, 0, 0, bLightmap, item->nWrap))
+		return;
 	OglTexCoordPointer (2, GL_FLOAT, 0, (bDecal < 0) ? FACES.ovlTexCoord + nIndex : FACES.texCoord + nIndex);
+	}
+else {
+	m_data.bmP [0] = NULL;
+	ogl.BindTexture (0);
+	ogl.SetTexturing (false);
+	}
+
 if (!bLightmap) {
 	if (!bColored)
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));

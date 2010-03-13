@@ -60,7 +60,7 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 10
+#define MESH_DATA_VERSION 11
 
 //------------------------------------------------------------------------------
 

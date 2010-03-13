@@ -416,25 +416,16 @@ if (!gameStates.render.bFullBright) {
 
 #if 1
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
-RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
+gameStates.render.bTransparency = 1;
+RenderSegmentList (RENDER_STATIC_FACES, 1);	// render transparent geometry
+gameStates.render.bTransparency = 0;
+//RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
 RenderMineObjects (RENDER_OBJECTS);
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
-	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)
-		RenderSegmentList (RENDER_COLORED_FACES, 1);	// render transparent geometry
-	if (!gameStates.app.bNostalgia &&
-		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
- 		ogl.SetTexturing (true);
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		ogl.SetDepthMode (GL_LEQUAL);
-		if (!nWindow) {
-			ogl.SetDepthWrite (false);
-			RenderSegmentList (RENDER_CORONAS, 1);
-			ogl.SetDepthWrite (true);
-			}
-		ogl.SetTexturing (false);
-		}
-	ogl.SetDepthMode (GL_LESS);
+	if (!gameStates.app.bNostalgia && !nWindow &&
+		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse)
+		RenderSegmentList (RENDER_CORONAS, 1);
 	}
 #endif
 gameData.app.nMineRenderCount++;

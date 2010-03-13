@@ -213,15 +213,15 @@ return true;
 
 bool RenderStaticFace (CSegment *segP, CSegFace *faceP)
 {
-if (IS_WALL (faceP->m_info.nWall))
-	return false;
+//if (IS_WALL (faceP->m_info.nWall))
+//	return false;
+//if (!faceP->bmBot)
+//	return false;
 #if LOAD_BITMAPS
 if (!(faceP->m_info.widFlags & WID_RENDER_FLAG))
 	return false;
 LoadFaceBitmaps (segP, faceP);
 #endif
-if (!faceP->bmBot)
-	return false;
 RenderFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->m_info.nCamera < 0) || faceP->m_info.bTeleport, faceP->m_info.bTextured);
 return true;
 }
