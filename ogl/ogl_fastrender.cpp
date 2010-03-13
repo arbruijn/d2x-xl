@@ -579,10 +579,10 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 
-SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, true);
+SetRenderStates (faceP, bmBot, bmTop, 1, 0, 1, true);
 gameData.render.nTotalFaces++;
 #if DBG
-RenderWireFrame (faceP, bTextured);
+RenderWireFrame (faceP, 1);
 if (!gameOpts->render.debug.bTextures)
 	return 0;
 #endif
