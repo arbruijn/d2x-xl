@@ -461,7 +461,7 @@ const char *texMergeFS [7] = {
 	"uniform vec2 screenScale;\r\n" \
 	"//uniform float grAlpha;\r\n" \
 	"void main(void){" \
-	"vec4 color=/*texture2D(baseTex,gl_TexCoord [1].xy)**/texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
+	"vec4 color=texture2D(baseTex,gl_TexCoord [1].xy)*texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
 	"gl_FragColor=vec4(color.rgb, color.a/**grAlpha*/);\r\n" \
    "}"
 ,

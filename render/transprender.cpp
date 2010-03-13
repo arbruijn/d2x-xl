@@ -755,7 +755,7 @@ if (bLightmap) {
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 	if (SetupColorShader () && SetupLightmap (faceP))
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
-#if 0
+#if 1
 	if (gameStates.render.bPerPixelLighting == 2) {
 		ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 		OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
