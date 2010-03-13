@@ -1044,7 +1044,7 @@ return 1;
 int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							  tTexCoord2f *texCoordP, 
 							  tRgbaColorf *colorP, int nColors,
-							   CBitmap *bmP,
+							  CBitmap *bmP,
 							  int nTMU)
 {
 if (!ogl.EnableClientStates (m_data.bClientTexCoord = texCoordP != NULL, m_data.bClientColor = ((colorP != NULL) && (nColors == nVertices)), 0, nTMU))

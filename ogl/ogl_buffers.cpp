@@ -316,12 +316,26 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 {
 #if FBO_DRAW_BUFFER
 if (HaveDrawBuffer ()) {
+	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
+
+	CFloatVector3 verts [4];
+	verts [0][X] =
+	verts [1][X] = 0;
+	verts [2][X] =
+	verts [3][X] = 1;
+	verts [0][Y] =
+	verts [3][Y] = 0;
+	verts [1][Y] =
+	verts [2][Y] = 1;
+
 	int bStereo = 0;
 
 	SetDrawBuffer (GL_BACK, 0);
-	ogl.SetTexturing (true);
-	SelectTMU (GL_TEXTURE0);
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
+	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
+	OglVertexPointer (2, GL_FLOAT, sizeof (CFloatVector3), verts);
+
 #if 1
 	if (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0)) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
@@ -330,10 +344,12 @@ if (HaveDrawBuffer ()) {
 		int j = Enhance3D () - 1;
 		if ((bStereo = ((j >= 0) && (j <= 2))) && ((h < 4) || (j == 1))) {
 			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
-			if (shaderProg > 0) {
-				SelectTMU (GL_TEXTURE1);
-				ogl.SetTexturing (true);
+			if (shaderProg) {
+				shaderManager.Rebuild (shaderProg);
+				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
 				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
+				OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
+				OglVertexPointer (2, GL_FLOAT, sizeof (CFloatVector3), verts);
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
@@ -353,7 +369,7 @@ if (HaveDrawBuffer ()) {
 		SetBlendMode (GL_ONE, GL_ONE);
 		}
 	glColor3f (1,1,1);
-	ogl.RenderScreenQuad (1);
+	OglDrawArrays (GL_QUADS, 0, 4);
 	SelectDrawBuffer (0);
 	if (bStereo)
 		shaderManager.Deploy (-1);

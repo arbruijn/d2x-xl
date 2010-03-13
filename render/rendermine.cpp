@@ -411,7 +411,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	}
 #endif
 
-#if 0
+#if 1
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
 RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
 RenderMineObjects (RENDER_OBJECTS);
