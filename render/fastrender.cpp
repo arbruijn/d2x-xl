@@ -449,9 +449,9 @@ int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	//bVBO = 0,
 			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
-			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS), //RENDER_COLOR),
+			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS) || (nType == RENDER_COLOR),
 			bTexCoord = (nType != RENDER_COLOR) && (nType != RENDER_LIGHTS),
-			bNormals = (nType == RENDER_LIGHTMAPS) || (nType == RENDER_LIGHTS) || (nType == RENDER_HEADLIGHTS); //(nType == RENDER_COLOR);
+			bNormals = (nType == RENDER_LIGHTMAPS) || (nType == RENDER_LIGHTS) || (nType == RENDER_HEADLIGHTS) || (nType == RENDER_COLOR);
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -484,7 +484,7 @@ else if (nType == RENDER_LIGHTMAPS) {
 	}
 else if (nType == RENDER_COLOR) {
 	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (false);
 	}
 else if (nType == RENDER_HEADLIGHTS) {
@@ -510,26 +510,20 @@ else if (nType == RENDER_CORONAS) {
 		glareRenderer.LoadShader (10);
 	return 0;
 	}
+else if ((nType == RENDER_STATIC_FACES) || (nType == RENDER_DYNAMIC_FACES) || (nType == RENDER_COLORED_FACES)) {
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+	ogl.SetDepthWrite (false);
+	}
+else if (nType == RENDER_CORONAS) {
+	ogl.SetDepthMode (GL_LEQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetDepthWrite (false);
+	}
 else {
-	if (!gameStates.render.bPerPixelLighting || gameStates.render.bFullBright) {
-		ogl.SetDepthMode (GL_LEQUAL); 
-		ogl.SetBlendMode (GL_ONE, GL_ZERO);
-		}
-	else if ((nType == RENDER_STATIC_FACES) || (nType == RENDER_DYNAMIC_FACES) || (nType == RENDER_COLORED_FACES)) {
-		ogl.SetDepthMode (GL_EQUAL); 
-		ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-		ogl.SetDepthWrite (false);
-		}
-	else if (nType == RENDER_CORONAS) {
-		ogl.SetDepthMode (GL_LEQUAL); 
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
-		ogl.SetDepthWrite (false);
-		}
-	else {
-		ogl.SetDepthMode (GL_LEQUAL); 
-		ogl.SetBlendMode (GL_ONE, GL_ZERO);
-		ogl.SetDepthWrite (false);
-		}
+	ogl.SetDepthMode (GL_LEQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (false);
 	}
 
 ogl.SetupTransform (1);
