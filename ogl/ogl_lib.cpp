@@ -642,9 +642,9 @@ if (gameStates.render.bBriefing)
 #if 1
 else if (gameStates.render.bPerPixelLighting) {
 	if (!gameStates.render.cameras.bActive) {
+		int i = Enhance3D ();
 		gameStates.render.bRenderIndirect = 1;
-		SelectDrawBuffer (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0));
-		SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+		SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		}
 	}
 else 
@@ -661,8 +661,10 @@ else {
 		}	
 	else {
 		gameStates.render.bRenderIndirect = m_data.xStereoSeparation && (i > 0);
-		SelectDrawBuffer (gameStates.render.bRenderIndirect && (m_data.xStereoSeparation > 0));
-		SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+		if (gameStates.render.bRenderIndirect)
+			SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
+		else
+			SetDrawBuffer (GL_BACK, 0);
 		}
 	}
 }
@@ -891,7 +893,7 @@ void COGL::EndFrame (void)
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 if (gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
-if (!gameStates.render.bBriefing && (gameStates.render.bPerPixelLighting || !gameStates.render.cameras.bActive)) {
+if (gameStates.render.bPerPixelLighting || !gameStates.render.cameras.bActive) {
 	if (gameStates.render.bRenderIndirect)
 		SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);

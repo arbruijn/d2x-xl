@@ -221,7 +221,6 @@ return m_info.bActive = 1;
 
 int CFBO::Disable (bool bFallback)
 {
-ogl.ClearError (1);
 if (!m_info.bActive)
 	return 1;
 if (Available () <= 0)
@@ -232,7 +231,6 @@ m_info.bActive = 0;
 	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 	ogl.SetDrawBuffer (GL_BACK, 0);
 	}
-ogl.ClearError (1);
 return 1;
 }
 

@@ -389,7 +389,8 @@ else {
 			ogl.ColorMask (1,1,1,1,0);
 //			glAccum (GL_ACCUM, 1.0); 
 //			glAccum (GL_RETURN, 1.0);
-			Draw2DFrameElements ();
+			if (!gameStates.render.bRenderIndirect)
+				Draw2DFrameElements ();
 			ogl.SwapBuffers (0, 0);
 			}
 		}

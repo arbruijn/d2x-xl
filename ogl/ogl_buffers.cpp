@@ -318,12 +318,11 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 if (HaveDrawBuffer ()) {
 	int bStereo = 0;
 
-	SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, 0);
 	ogl.SetTexturing (true);
 	SelectTMU (GL_TEXTURE0);
-	ogl.BindTexture (DrawBuffer ()->ColorBuffer ());
-
+	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
+#if 1
 	if (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0)) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 		int h = gameOpts->render.bDeghost;
@@ -332,11 +331,9 @@ if (HaveDrawBuffer ()) {
 		if ((bStereo = ((j >= 0) && (j <= 2))) && ((h < 4) || (j == 1))) {
 			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
 			if (shaderProg > 0) {
-				SelectDrawBuffer (1);
-				SetDrawBuffer (GL_BACK, 0);
-				ogl.SetTexturing (true);
 				SelectTMU (GL_TEXTURE1);
-				ogl.BindTexture (DrawBuffer ()->ColorBuffer ());
+				ogl.SetTexturing (true);
+				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
@@ -350,7 +347,7 @@ if (HaveDrawBuffer ()) {
 				}
 			}
 		}
-
+#endif
 	if (bAdditive) {
 		ogl.SetBlending (true);
 		SetBlendMode (GL_ONE, GL_ONE);
@@ -358,7 +355,6 @@ if (HaveDrawBuffer ()) {
 	glColor3f (1,1,1);
 	ogl.RenderScreenQuad (1);
 	SelectDrawBuffer (0);
-	SetDrawBuffer (GL_BACK, 1);
 	if (bStereo)
 		shaderManager.Deploy (-1);
 	}

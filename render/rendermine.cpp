@@ -400,6 +400,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	SetupDepthBuffer (RENDER_DEPTH);
 	gameStates.render.bRenderTransparency = 0;
 #	if 1
+	ogl.ColorMask (1,1,1,1,0);
 	RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
 	//RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
 	if (gameStates.render.bPerPixelLighting == 2)
@@ -410,7 +411,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	}
 #endif
 
-#if 1
+#if 0
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
 RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
 RenderMineObjects (RENDER_OBJECTS);
