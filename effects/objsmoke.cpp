@@ -519,7 +519,7 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
-	float				nScale = 2.0f; //1.75f; //1.75f;
+	float				nScale = 2.0f; //(gameOpts->render.particles.nQuality == 2) ? 3.0f : 2.0f; 
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
