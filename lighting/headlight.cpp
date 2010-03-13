@@ -339,9 +339,9 @@ ogl.ClearError (0);
 if ((ogl.m_states.bHeadlight = ogl.m_states.bShadersOk)) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 4; i++) {
-		pszFS = i ? BuildLightingShader (headlightFS [i], gameStates.render.nMaxLightsPerPass) : headlightFS [0];
+		pszFS = (i & 1) ? BuildLightingShader (headlightFS [i], gameStates.render.nMaxLightsPerPass) : headlightFS [i];
 		bOk = (pszFS != NULL) && (0 <= shaderManager.Build (headlightShaderProgs [i], pszFS, headlightVS [i]));
-		if (pszFS && i)
+		if (pszFS && (i & 1))
 			delete[] pszFS;
 		if (!bOk) {
 			DeleteHeadlightShader ();
