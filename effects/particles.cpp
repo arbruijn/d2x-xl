@@ -599,10 +599,13 @@ if (m_nType == SMOKE_PARTICLES) {
 		m_nFadeState = -1;
 		}
 #if SMOKE_LIGHTING > 1
-	tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
-	m_color [0].red *= colorP->color.red;
-	m_color [0].green *= colorP->color.green;
-	m_color [0].blue *= colorP->color.blue;
+	if (gameOpts->render.particles.nQuality == 2) {
+		m_nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread);
+		tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
+		m_color [0].red *= colorP->color.red;
+		m_color [0].green *= colorP->color.green;
+		m_color [0].blue *= colorP->color.blue;
+		}
 #endif
 	}
 
@@ -1992,7 +1995,7 @@ SetupRenderBuffer ();
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
-		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
+		if ((gameOpts->render.particles.nQuality == 2) && !(automap.Display () || nType) && lightManager.Headlights ().nLights)
 			lightManager.Headlights ().SetupShader (1);
 		else 
 #endif
