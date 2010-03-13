@@ -598,7 +598,7 @@ if (m_nType == SMOKE_PARTICLES) {
 		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
 		m_nFadeState = -1;
 		}
-#if SMOKE_LIGHTING
+#if SMOKE_LIGHTING > 1
 	tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
 	m_color [0].red *= colorP->color.red;
 	m_color [0].green *= colorP->color.green;

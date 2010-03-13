@@ -347,8 +347,11 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 		nParts *= 25;
 		nParts += 75;
 		}
-
+#if DBG
+	if (nParts && (nType < 2)) {
+#else
 	if (nParts && ((nType < 2) || vDirP)) {
+#endif
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, 1);
