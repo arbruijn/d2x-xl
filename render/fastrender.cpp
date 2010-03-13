@@ -467,65 +467,6 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 
-if (nType == RENDER_DEPTH) {
-	ogl.ColorMask (0,0,0,0,0);
-	ogl.SetDepthWrite (true);
-	ogl.SetDepthMode (GL_LESS);
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	}
-else if (nType == RENDER_LIGHTMAPS) {
-#if 1
-	if (!SetupColorShader ())
-		return 0;
-#endif
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthWrite (false);
-	}
-else if (nType == RENDER_COLOR) {
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthWrite (false);
-	}
-else if (nType == RENDER_HEADLIGHTS) {
-	if (0 > lightManager.Headlights ().SetupShader ())
-		return 0;
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	ogl.SetDepthWrite (false);
-	}
-else if (nType == RENDER_LIGHTS) {
-	if (0 > LoadPerPixelLightingShader ())
-		return 0;
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	ogl.SetDepthWrite (false);
-	ogl.EnableLighting (1);
-	for (int i = 0; i < 8; i++)
-		glEnable (GL_LIGHT0 + i);
-	ogl.SetLighting (false);
-	}
-else if (nType == RENDER_CORONAS) {
-	if (glareRenderer.Style ())
-		glareRenderer.LoadShader (10);
-	return 0;
-	}
-else if ((nType == RENDER_STATIC_FACES) || (nType == RENDER_DYNAMIC_FACES) || (nType == RENDER_COLORED_FACES)) {
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-	ogl.SetDepthWrite (false);
-	}
-else if (nType == RENDER_CORONAS) {
-	ogl.SetDepthMode (GL_LEQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	ogl.SetDepthWrite (false);
-	}
-else {
-	ogl.SetDepthMode (GL_LEQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthWrite (false);
-	}
-
 ogl.SetupTransform (1);
 #if GEOMETRY_VBOS
 if (bVBO) {
@@ -588,6 +529,72 @@ else
 		OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
+
+if (nType == RENDER_DEPTH) {
+	ogl.ColorMask (0,0,0,0,0);
+	ogl.SetDepthWrite (true);
+	ogl.SetDepthMode (GL_LESS);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	}
+else if (nType == RENDER_LIGHTMAPS) {
+#if 1
+	if (!SetupColorShader ())
+		return 0;
+#endif
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (false);
+	}
+else if (nType == RENDER_COLOR) {
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (false);
+	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.BindTexture (0);
+	ogl.SetTexturing (false);
+	}
+else if (nType == RENDER_HEADLIGHTS) {
+	if (0 > lightManager.Headlights ().SetupShader ())
+		return 0;
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetDepthWrite (false);
+	}
+else if (nType == RENDER_LIGHTS) {
+	if (0 > LoadPerPixelLightingShader ())
+		return 0;
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetDepthWrite (false);
+	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.BindTexture (0);
+	ogl.SetTexturing (false);
+	ogl.EnableLighting (1);
+	for (int i = 0; i < 8; i++)
+		glEnable (GL_LIGHT0 + i);
+	ogl.SetLighting (false);
+	}
+else if (nType == RENDER_CORONAS) {
+	if (glareRenderer.Style ())
+		glareRenderer.LoadShader (10);
+	return 0;
+	}
+else if ((nType == RENDER_STATIC_FACES) || (nType == RENDER_DYNAMIC_FACES) || (nType == RENDER_COLORED_FACES)) {
+	ogl.SetDepthMode (GL_EQUAL); 
+	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+	ogl.SetDepthWrite (false);
+	}
+else if (nType == RENDER_CORONAS) {
+	ogl.SetDepthMode (GL_LEQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetDepthWrite (false);
+	}
+else {
+	ogl.SetDepthMode (GL_LEQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (false);
+	}
+
 glColor3f (1,1,1);
 ogl.ClearError (0);
 return 1;

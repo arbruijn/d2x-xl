@@ -479,7 +479,8 @@ if (!FaceIsColored (faceP))
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
 #endif
-DrawFace (faceP);
+OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
+//DrawFace (faceP);
 return 0;
 }
 
@@ -558,7 +559,17 @@ if (bmTop) {
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
 SetRenderStates (faceP, bmBot, bmTop, bmBot != NULL, bColorKey, faceP->m_info.nColored);
-DrawFace (faceP);
+if (gameStates.render.bTriangleMesh) {
+#if USE_RANGE_ELEMENTS
+		GLsizei nElements = faceP->m_info.nTris * 3;
+		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
+#else
+		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
+#endif
+	}
+else {
+	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
+	}
 return 0;
 }
 
