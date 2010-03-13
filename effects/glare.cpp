@@ -527,47 +527,26 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	CBitmap*		bmP = NULL;
 
-if (gameStates.render.bQueryCoronas) {
-	ogl.SetTexturing (false);
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	}
-else {
-	ogl.SetTexturing (true);
+ogl.SetTexturing (true);
 	ogl.SetDepthMode (GL_ALWAYS);
-	if (bAdditive)
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
-	if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
-		return;
-	}
+ogl.SetBlendMode (bAdditive);
+if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
+	return;
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;
 else
 	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
-if (gameOptions [0].render.coronas.nStyle == 1)
-	fIntensity = float (sqrt (fIntensity));
+fIntensity = float (sqrt (fIntensity));
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
 	glColor4f (color.red, color.green, color.blue, fIntensity);
-if (ogl.EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
-	if (!gameStates.render.bQueryCoronas) {
-		bmP->Bind (1);
-		OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
-		}
-	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
-	OglDrawArrays (GL_QUADS, 0, 4);
-	ogl.DisableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0);
-	}
-else if (gameStates.render.bQueryCoronas) {
-	bmP->SetTexCoord (tcGlare);
-	ogl.RenderQuad (bmP, sprite, 3);
-	}
-else
-	ogl.RenderQuad (NULL, sprite, 3);
-if (!gameStates.render.bQueryCoronas && bAdditive)
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+bmP->Bind (1);
+OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
+OglDrawArrays (GL_QUADS, 0, 4);
 RenderCoronaOutline (sprite, vCenter);
 #if 0
 if (gameStates.render.bQueryCoronas != 2) {

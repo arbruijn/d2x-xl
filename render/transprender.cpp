@@ -27,7 +27,7 @@
 #include "transprender.h"
 #include "renderthreads.h"
 
-#define DO_RENDER_TRANSPARENCY 0
+#define DO_RENDER_TRANSPARENCY 1
 
 #define TI_SPLIT_POLYS 0
 #define TI_POLY_OFFSET 0
@@ -812,7 +812,6 @@ OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 ogl.SetBlendMode (bAdditive = item->bAdditive);
 SetupRenderShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL, bColored,
 						 m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
-ogl.SetDepthMode (GL_LEQUAL);
 
 OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 
