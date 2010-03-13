@@ -410,14 +410,10 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	}
 #endif
 
-
-RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
-RenderMineObjects (RENDER_OBJECTS);
 #if 1
+RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
 RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
-gameStates.render.bRenderTransparency = 1;
-//RenderMineObjects (RENDER_OBJECTS);
-gameStates.render.bRenderTransparency = 0;
+RenderMineObjects (RENDER_OBJECTS);
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameData.app.nFrameCount || gameData.render.nColoredFaces)
