@@ -261,7 +261,6 @@ if (!gameOpts->render.debug.bObjects)
 #endif
 gameStates.render.nType = RENDER_OBJECTS;
 gameStates.render.nState = 1;
-//BeginRenderFaces (nType, 0);
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	nSegment = gameData.render.mine.nSegRenderList [0][--nListPos];
 	if (nSegment < 0) {
@@ -301,7 +300,6 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
 		}
 	}	
-//EndRenderFaces (0);
 for (int i = 0; i < gameStates.app.nThreads; i++)
 	lightManager.ResetAllUsed (1, i);
 gameStates.render.nState = 0;
@@ -313,20 +311,15 @@ inline int RenderSegmentList (int nType, int bFrontToBack)
 {
 PROF_START
 gameStates.render.nType = nType;
-if (nType == RENDER_OBJECTS)
-	RenderMineObjects (nType);
-else {
-	if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
-		BumpVisitedFlag ();
-		RenderFaceList (nType, bFrontToBack);
-		ogl.ClearError (0);
-		}
+if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
+	BumpVisitedFlag ();
+	RenderFaceList (nType, bFrontToBack);
 	if (nType == RENDER_LIGHTS) {
 		for (int i = 0; i < gameStates.app.nThreads; i++)
 			lightManager.ResetAllUsed (1, i);
 		}
+	ogl.ClearError (0);
 	}
-ogl.ClearError (0);
 PROF_END(ptRenderPass)
 return 1;
 }
@@ -417,12 +410,13 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	}
 #endif
 
-#if 1
+
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
 RenderMineObjects (RENDER_OBJECTS);
+#if 1
 RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
 gameStates.render.bRenderTransparency = 1;
-RenderMineObjects (RENDER_OBJECTS);
+//RenderMineObjects (RENDER_OBJECTS);
 gameStates.render.bRenderTransparency = 0;
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {

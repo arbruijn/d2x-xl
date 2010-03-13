@@ -639,6 +639,7 @@ void COGL::ChooseDrawBuffer (void)
 {
 if (gameStates.render.bBriefing)
 	gameStates.render.bRenderIndirect = 0;
+#if 1
 else if (gameStates.render.bPerPixelLighting) {
 	if (!gameStates.render.cameras.bActive) {
 		gameStates.render.bRenderIndirect = 1;
@@ -646,7 +647,9 @@ else if (gameStates.render.bPerPixelLighting) {
 		SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 		}
 	}
-else if (gameStates.render.cameras.bActive)
+else 
+#endif
+if (gameStates.render.cameras.bActive)
 	gameStates.render.bRenderIndirect = 0;
 else {
 	int i = Enhance3D ();

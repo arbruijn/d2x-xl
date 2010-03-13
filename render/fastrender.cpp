@@ -608,18 +608,9 @@ FlushFaceBuffer (1);
 #endif
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
-if (gameStates.render.nType != RENDER_CORONAS) {
-	if (gameStates.render.bPerPixelLighting == 2)
-		ogl.DisableLighting ();
-	ogl.ResetTransform (1);
-	if (FACES.vboDataHandle)
-		glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
-	}
-else if (glareRenderer.Style () == 2)
-	glareRenderer.UnloadShader ();
-else if (ogl.m_states.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (glareRenderer.Style () == 1))
-	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries.Buffer ());
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.DisableLighting ();
+ogl.ResetTransform (1);
+ogl.SetBlendMode (0);
 ogl.SetDepthWrite (true);
 ogl.SetDepthTest (true);
 ogl.SetDepthMode (GL_LEQUAL);
