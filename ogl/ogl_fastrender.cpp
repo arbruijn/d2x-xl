@@ -443,23 +443,39 @@ else
 #endif
 
 //------------------------------------------------------------------------------
-// render lightmaps (including vertex color)
+// render to depth buffer (only opaque geometry)
 
-int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
+	int bColorKey = 0;
+
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 
-if (!FaceIsColored (faceP))
-	return 0;
 #if CHECK_TRANSPARENCY
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
 #endif
-if (SetupLightmap (faceP))
+if (!faceP->m_info.bTextured)
+	bmBot = NULL;
+else if (bmBot)
+	bmBot = bmBot->Override (-1);
+if (bmTop) {
+	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+		bmTop = bmTop->CurFrame ();
+		}
+	else
+		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
+	}
+gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
+SetRenderStates (faceP, bmBot, bmTop, bmBot != NULL, bColorKey, faceP->m_info.nColored);
+if (gameStates.render.bTriangleMesh)
 	DrawFace (faceP);
+else
+	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
 return 0;
 }
 
@@ -479,8 +495,32 @@ if (!FaceIsColored (faceP))
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
 #endif
-OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
+if (gameStates.render.bTriangleMesh)
+	DrawFace (faceP);
+else
+	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
 //DrawFace (faceP);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+// render lightmaps (including vertex color)
+
+int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+{
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+
+if (!FaceIsColored (faceP))
+	return 0;
+#if CHECK_TRANSPARENCY
+if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
+	return 0;
+#endif
+if (SetupLightmap (faceP))
+	DrawFace (faceP);
 return 0;
 }
 
@@ -526,50 +566,6 @@ if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTranspar
 	return 0;
 #endif
 OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, 6);
-return 0;
-}
-
-//------------------------------------------------------------------------------
-// render to depth buffer (only opaque geometry)
-
-int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
-{
-	int bColorKey = 0;
-
-#if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
-#endif
-
-#if CHECK_TRANSPARENCY
-if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
-	return 0;
-#endif
-if (!faceP->m_info.bTextured)
-	bmBot = NULL;
-else if (bmBot)
-	bmBot = bmBot->Override (-1);
-if (bmTop) {
-	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
-		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
-		bmTop = bmTop->CurFrame ();
-		}
-	else
-		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
-	}
-gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-SetRenderStates (faceP, bmBot, bmTop, bmBot != NULL, bColorKey, faceP->m_info.nColored);
-if (gameStates.render.bTriangleMesh) {
-#if USE_RANGE_ELEMENTS
-		GLsizei nElements = faceP->m_info.nTris * 3;
-		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
-#else
-		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
-#endif
-	}
-else {
-	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
-	}
 return 0;
 }
 
@@ -648,18 +644,10 @@ if (bMonitor)
 else
 	return 0;
 #endif
-if (gameStates.render.bTriangleMesh) {
-#if USE_RANGE_ELEMENTS
-		GLsizei nElements = faceP->m_info.nTris * 3;
-		glDrawRangeElements (GL_TRIANGLES, faceP->vertIndex [0], faceP->vertIndex [nElements - 1], nElements, GL_UNSIGNED_INT, faceP->vertIndex);
-#else
-		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
-#endif
-	}
-else {
+if (gameStates.render.bTriangleMesh)
+	DrawFace (faceP);
+else
 	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
-	}
-
 if (bMonitor)
 	ResetMonitor (bmTop, 0);
 PROF_END(ptRenderFaces)
