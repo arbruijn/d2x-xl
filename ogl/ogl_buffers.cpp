@@ -216,16 +216,20 @@ bSemaphore--;
 
 void COGL::DestroyDrawBuffers (void)
 {
+ogl.ClearError (1);
 if (m_data.drawBuffers [2].Handle ()) {
 	m_data.drawBufferP = m_data.drawBuffers + 2;
 	DestroyDrawBuffer ();
 	}
+ogl.ClearError (1);
 if (m_data.drawBuffers [1].Handle ()) {
 	m_data.drawBufferP = m_data.drawBuffers + 1;
 	DestroyDrawBuffer ();
 	}
+ogl.ClearError (1);
 m_data.drawBufferP = m_data.drawBuffers;
 DestroyDrawBuffer ();
+ogl.ClearError (1);
 }
 
 //------------------------------------------------------------------------------

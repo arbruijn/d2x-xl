@@ -783,7 +783,7 @@ if (bLightmap) {
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
 	ogl.SetDepthMode (GL_LEQUAL);
 #if 1
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetBlendMode (0);
 	ogl.ResetTransform (1);
 	ogl.RenderScreenQuad (1);
 	ogl.SetupTransform (1);
@@ -791,6 +791,7 @@ if (bLightmap) {
 	bColored = 2;
 	}
 
+#if 0
 if (bmTop) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmap);
 	if (bTextured)
@@ -834,6 +835,7 @@ SetupRenderShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL, bColored,
 ogl.SetDepthMode (GL_LEQUAL);
 
 OglDrawArrays (item->nPrimitive, 0, item->nVertices);
+#endif
 ogl.ResetTransform (1);
 gameData.render.nTotalFaces++;
 
@@ -1177,6 +1179,7 @@ if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
 PROF_START
+glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 gameStates.render.nType = RENDER_TRANSPARENCY;
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
