@@ -864,7 +864,7 @@ short RenderSegments (int nType)
 {
 	int	i, nFaces = 0, bAutomap = (nType <= RENDER_GEOMETRY);
 
-if (nType >= RENDER_DYNAMIC_FACES) {
+if (nType > RENDER_GEOMETRY) {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
