@@ -192,7 +192,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
-if ((gameStates.render.nType >= RENDER_STATIC_FACES) && !bColored && gameOpts->render.automap.bGrayOut)
+if ((gameStates.render.nType >= RENDER_GEOMETRY) && !bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
 else if (bColorKey || bMultiTexture || (bColored > 1))
 	nShader = SetupTexMergeShader (bColored, nType);

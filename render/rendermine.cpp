@@ -415,10 +415,10 @@ if (!gameStates.render.bFullBright) {
 #endif
 
 
-RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
+RenderSegmentList (RENDER_GEOMETRY, 1);	// render opaque geometry
 #if 1
 gameStates.render.bTransparency = 1;
-RenderSegmentList (RENDER_STATIC_FACES, 1);	// render transparent geometry
+RenderSegmentList (RENDER_GEOMETRY, 1);	// render transparent geometry
 gameStates.render.bTransparency = 0;
 //RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
 RenderMineObjects (RENDER_OBJECTS);

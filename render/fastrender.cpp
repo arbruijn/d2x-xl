@@ -211,7 +211,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool RenderStaticFace (CSegment *segP, CSegFace *faceP)
+bool RenderGeometry (CSegment *segP, CSegFace *faceP)
 {
 //if (IS_WALL (faceP->m_info.nWall))
 //	return false;
@@ -297,15 +297,13 @@ typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP);
 typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP);
 #endif
 
-static pRenderHandler renderHandlers [] = {
+static pRenderHandler renderHandlers [RENDER_PASSES] = {
 	RenderStaticLights, 
 	RenderDynamicLights, 
 	RenderPlayerLights,
 	RenderFaceDepth, 
 	RenderFaceColor,
-	RenderStaticFace, 
-	RenderDynamicFace, 
-	RenderColoredFace, 
+	RenderGeometry, 
 	RenderCoronaFace, 
 	RenderSkyBoxFace
 	};
@@ -515,7 +513,7 @@ else if (nType == RENDER_CORONAS) {
 		glareRenderer.LoadShader (10);
 	return 0;
 	}
-else if ((nType == RENDER_STATIC_FACES) || (nType == RENDER_DYNAMIC_FACES) || (nType == RENDER_COLORED_FACES)) {
+else if (nType == RENDER_GEOMETRY) {
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
 	ogl.SetDepthWrite (false);
@@ -560,7 +558,7 @@ if (bVBO) {
 else 
 #endif
 	{
-	if ((nType == RENDER_DEPTH) || (nType >= RENDER_STATIC_FACES)) {
+	if ((nType == RENDER_DEPTH) || (nType >= RENDER_GEOMETRY)) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
@@ -736,7 +734,7 @@ short RenderFaceList (int nType)
 	CSegFace**	flP = gameData.render.renderFaces [gameStates.render.bTransparency].Buffer ();
 	CSegFace*	faceP;
 	int			i, j, nFaces = 0, nSegment = -1;
-	int			bAutomap = (nType <= RENDER_STATIC_FACES);
+	int			bAutomap = (nType <= RENDER_GEOMETRY);
 
 for (i = 0, j = gameData.render.nRenderFaces [gameStates.render.bTransparency]; i < j; i++) {
 	faceP = flP [i];
@@ -764,7 +762,7 @@ short RenderFaceList (int nType)
 	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
 	CSegFace*		faceP;
 	int				i, j, nFaces = 0, nSegment = -1;
-	int				bAutomap = (nType <= RENDER_STATIC_FACES);
+	int				bAutomap = (nType <= RENDER_GEOMETRY);
 
 #if 1
 if (automap.Display ())
@@ -864,7 +862,7 @@ return nFaces;
 
 short RenderSegments (int nType)
 {
-	int	i, nFaces = 0, bAutomap = (nType <= RENDER_STATIC_FACES);
+	int	i, nFaces = 0, bAutomap = (nType <= RENDER_GEOMETRY);
 
 if (nType >= RENDER_DYNAMIC_FACES) {
 	// render mine segment by segment
@@ -927,7 +925,7 @@ if (nType > RENDER_OBJECTS) {	//back to front
 	RenderSegments (nType);
 	}
 else {	//front to back
-	if ((nType == RENDER_STATIC_FACES) && !gameStates.render.nWindow)
+	if ((nType == RENDER_GEOMETRY) && !gameStates.render.nWindow)
 		SetupCoronas (nType);
 	BeginRenderFaces (nType, 0);
 	ogl.ColorMask (1,1,1,1,1);
