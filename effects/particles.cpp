@@ -182,7 +182,7 @@ static inline int randN (int n)
 {
 if (!n)
 	return 0;
-return (int) ((float) rand () * (float) n / (float) RAND_MAX);
+return int (float (rand ()) * float (n) / float (RAND_MAX));
 }
 
 //------------------------------------------------------------------------------
@@ -596,7 +596,14 @@ if (m_nType == SMOKE_PARTICLES) {
 		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
 		m_nFadeState = -1;
 		}
+#if 0
+	tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL);
+	m_color [0].red *= colorP->color.red;
+	m_color [0].green *= colorP->color.green;
+	m_color [0].blue *= colorP->color.blue;
+#endif
 	}
+
 SetupColor (fBrightness);
 }
 
@@ -1982,9 +1989,12 @@ SetupRenderBuffer ();
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
+#if 0	// smoke is currently always rendered fully bright
 		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1);
-		else if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, bBufferEmissive)))
+		else 
+#endif
+		if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, bBufferEmissive)))
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, 0);

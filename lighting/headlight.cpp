@@ -209,26 +209,6 @@ const char* headlightFS [4] = {
 	"gl_FragColor = vec4 (spotBrightness, spotBrightness, spotBrightness, 1.0);"  \
 	"}"
 	,
-	// one texture
-	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 matColor;\r\n" \
-	"varying vec3 normal, lightVec;\r\n" \
-	"void main (void) {\r\n" \
-	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"vec3 spotColor = gl_Color.rgb;\r\n" \
-	"vec3 lvNorm = normalize (lightVec);\r\n" \
-	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
-	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
-	"   if (spotEffect >= 0.15) {\r\n" \
-	"	    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
-	"      spotEffect = pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
-	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
-	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
-	"	    }\r\n" \
-	"	 }\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n"  \
-	"}"
-	,
 	// multiplayer version - 1 - 8 players
 	// no texture
 	"#define LIGHTS 8\r\n" \
@@ -252,10 +232,29 @@ const char* headlightFS [4] = {
 	"gl_FragColor = vec4 (spotBrightness, spotBrightness, spotBrightness, 1.0);"  \
 	"}"
 	,
+ 	// one player
+	// one texture
+	"uniform sampler2D baseTex;\r\n" \
+	"varying vec3 normal, lightVec;\r\n" \
+	"void main (void) {\r\n" \
+	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
+	"vec3 spotColor = gl_Color.rgb;\r\n" \
+	"vec3 lvNorm = normalize (lightVec);\r\n" \
+	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
+	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
+	"   if (spotEffect >= 0.15) {\r\n" \
+	"	    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
+	"      spotEffect = pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
+	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect) + spotColor;\r\n" \
+	"	    }\r\n" \
+	"	 }\r\n" \
+	"gl_FragColor = vec4 (texColor.rgb * max (vec3 (1.0, 1.0, 1.0), spotColor), texColor.a * gl_Color.a);\r\n"  \
+	"}"
+	,
+	// multiplayer version - 1 - 8 players
 	// one texture
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex;\r\n" \
-	"uniform vec4 matColor;\r\n" \
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
@@ -273,9 +272,8 @@ const char* headlightFS [4] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * spotColor, texColor.a * gl_Color.a);\r\n" \
+	"vec3 spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness) + gl_Color.rgb;\r\n" \
+	"gl_FragColor = vec4 (texColor.rgb * max (vec3 (1.0, 1.0, 1.0), spotColor), texColor.a * gl_Color.a);\r\n" \
 	"}"
 	};
 
@@ -287,19 +285,19 @@ const char *headlightVS [4] = {
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
-	"varying vec3 normal, lightVec;\r\n" \
-	"void main (void) {\r\n" \
-	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
-	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
-	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
-	"gl_Position = ftransform();\r\n" \
-   "gl_FrontColor = gl_Color;}"
-	,
 	"#define LIGHTS 8\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main (void) {\r\n" \
 	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
 	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"gl_Position = ftransform();\r\n" \
+   "gl_FrontColor = gl_Color;}"
+	,
+	"varying vec3 normal, lightVec;\r\n" \
+	"void main (void) {\r\n" \
+	"lightVec = vec3 (gl_ModelViewMatrix * gl_Vertex - gl_LightSource [0].position);\r\n" \
+	"normal = normalize (gl_NormalMatrix * gl_Normal);\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
 	"gl_Position = ftransform();\r\n" \
    "gl_FrontColor = gl_Color;}"
 	,
@@ -382,6 +380,8 @@ for (int i = 0; i < MAX_PLAYERS; i++) {
 	}
 if (bTransform)
 	ogl.ResetTransform (1);
+if (bTextured)
+	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 0);
 if (IsMultiGame)
 	glUniform1i (glGetUniformLocation (shaderProg, "nLights"), ogl.m_data.nHeadlights);
 ogl.ClearError (0);
