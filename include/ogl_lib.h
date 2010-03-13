@@ -416,16 +416,7 @@ class COGL {
 			return m_data.nCullMode;
 			}
 
-		inline int SelectDrawBuffer (int nBuffer) { 
-			int nPrevBuffer = m_data.drawBufferP ? int (m_data.drawBufferP - m_data.drawBuffers) : -1;
-			if ((nBuffer != nPrevBuffer) && (nBuffer >= 0) && (nBuffer < sizeof (m_data.drawBuffers))) {
-				m_data.drawBufferP->Disable (false);
-				m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
-				CreateDrawBuffer ();
-				m_data.drawBufferP->Enable (false);
-				}
-			return nPrevBuffer;
-			}
+		int SelectDrawBuffer (int nBuffer);
 
 		inline CFBO* DrawBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
 

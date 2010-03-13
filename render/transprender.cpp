@@ -778,7 +778,6 @@ if (bLightmap) {
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 #endif
-	glFlush ();
 	ogl.SelectDrawBuffer (nPrevBuffer);
 	gameStates.render.bRenderIndirect = 0;
 	ogl.SetDrawBuffer (GL_BACK, 0);
