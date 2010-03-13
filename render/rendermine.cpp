@@ -414,8 +414,9 @@ if (!gameStates.render.bFullBright) {
 	}
 #endif
 
-#if 1
+
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render opaque geometry
+#if 1
 gameStates.render.bTransparency = 1;
 RenderSegmentList (RENDER_STATIC_FACES, 1);	// render transparent geometry
 gameStates.render.bTransparency = 0;

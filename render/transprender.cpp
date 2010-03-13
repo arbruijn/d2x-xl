@@ -722,6 +722,7 @@ int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale;
 
 ogl.ResetClientStates (bLightmap + bTextured + (bmTop != NULL) + (bmMask != NULL));
 if (bLightmap) {
+	m_data.bmP [0] = NULL;
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);
@@ -733,9 +734,16 @@ glColor3f (1,1,1);
 if (bGrayScale)
 	bColored = 0;
 else if (bLightmap) {
-	int nPrevBuffer = ogl.SelectDrawBuffer (2);
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthMode (GL_ALWAYS);
+	int nPrevBuffer;
+	if (bTextured) {
+		nPrevBuffer = ogl.SelectDrawBuffer (2);
+		ogl.SetBlendMode (GL_ONE, GL_ZERO);
+		ogl.SetDepthMode (GL_ALWAYS);
+		}
+	else {
+		nPrevBuffer = -1;
+		ogl.SetBlendMode (0);
+		}
 	ogl.EnableClientStates (1, bColored, 1, GL_TEXTURE0);
 	if (bColored)
 		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
@@ -764,7 +772,13 @@ else if (bLightmap) {
 		lightManager.Headlights ().SetupShader ();
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-	ogl.SelectDrawBuffer (nPrevBuffer);
+	if (bTextured)
+		ogl.SelectDrawBuffer (nPrevBuffer);
+	else {
+		ogl.ResetTransform (1);
+		PROF_END(ptRenderFaces)
+		return;
+		}
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.SetTexturing (true);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
