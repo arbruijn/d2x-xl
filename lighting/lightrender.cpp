@@ -571,7 +571,7 @@ return m_data.index [0][0].nActive;
 
 //------------------------------------------------------------------------------
 
-tFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP)
+tFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread)
 {
 	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
 	short			i, *pv;
@@ -616,7 +616,7 @@ else if (gameStates.render.bPerPixelLighting) {
 	if (psc->color.red + psc->color.green + psc->color.blue == 0)
 		psc = psc;
 #endif
-	lightManager.ResetAllUsed (0, 0);
+	lightManager.ResetAllUsed (0, nThread);
 	m_data.index [0][0].nActive = -1;
 	}
 else {

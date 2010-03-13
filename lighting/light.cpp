@@ -760,7 +760,7 @@ fix light;
 if (gameStates.render.nLightingMethod && (objP->info.renderType != RT_POLYOBJ)) {
 	int nState = gameStates.render.nState;
 	gameStates.render.nState = -1;
-	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos);
+	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
 	gameStates.render.nState = nState;
 	light = I2X (1);
 	}

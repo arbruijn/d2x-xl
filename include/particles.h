@@ -100,7 +100,7 @@ class CParticle : public tParticle {
 		void UpdateDecay (void);
 		int UpdateDrift (int t, int nThread);
 		void UpdateTexCoord (void);
-		void UpdateColor (float brightness);
+		void UpdateColor (float brightness, int nThread);
 		int SetupColor (float brightness);
 		fix Drag (void);
 		int Bounce (int nThread);

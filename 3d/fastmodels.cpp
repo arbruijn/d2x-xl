@@ -660,7 +660,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				break;
 #endif
 			if (nLights < 0) {
-				tFaceColor *psc = lightManager.AvgSgmColor (objP->info.nSegment, NULL);
+				tFaceColor *psc = lightManager.AvgSgmColor (objP->info.nSegment, NULL, 0);
 				CFloatVector3 vPos;
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);

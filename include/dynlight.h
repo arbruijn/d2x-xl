@@ -224,7 +224,7 @@ class CLightManager {
 		void ResetNearestToVertex (int nVertex, int nThread);
 		int SetNearestToSgmAvg (short nSegment);
 		void ResetSegmentLights (void);
-		tFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP);
+		tFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread);
 		void GatherStaticLights (int nLevel);
 		void GatherStaticVertexLights (int nVertex, int nMax, int nThread);
 		int SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread, bool bForce = false);

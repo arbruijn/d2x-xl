@@ -238,29 +238,30 @@ const char* headlightFS [4] = {
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
-	"vec3 spotColor = gl_Color.rgb;\r\n" \
+	"vec3 spotColor = vec3 (0.0, 0.0, 0.0);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.15) {\r\n" \
 	"	    float attenuation = min (200.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.05, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
-	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect) + spotColor;\r\n" \
+	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
 	"	    }\r\n" \
 	"	 }\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * max (vec3 (1.0, 1.0, 1.0), spotColor), texColor.a * gl_Color.a);\r\n"  \
+	"gl_FragColor = vec4 (texColor.rgb * max (gl_Color.rgb, spotColor), texColor.a * gl_Color.a);\r\n"  \
 	"}"
 	,
 	// multiplayer version - 1 - 8 players
 	// one texture
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex;\r\n" \
+	"uniform int nLights;\r\n" \
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"float spotBrightness = 0.0, normLen = length (normal);\r\n" \
 	"int i;\r\n" \
-	"for (i = 0; i < LIGHTS; i++) {\r\n" \
+	"for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
 	"	 vec3 lvNorm = lightVec / lightDist;\r\n" \
@@ -272,8 +273,8 @@ const char* headlightFS [4] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness) + gl_Color.rgb;\r\n" \
-	"gl_FragColor = vec4 (texColor.rgb * max (vec3 (1.0, 1.0, 1.0), spotColor), texColor.a * gl_Color.a);\r\n" \
+	"vec3 spotColor = vec3 (spotBrightness, spotBrightness, spotBrightness);\r\n" \
+	"gl_FragColor = vec4 (texColor.rgb * max (gl_Color.rgb, spotColor), texColor.a * gl_Color.a);\r\n" \
 	"}"
 	};
 

@@ -74,6 +74,8 @@
 
 #define LAZY_RENDER_SETUP 1
 
+#define SMOKE_LIGHTING 1
+
 #define MAKE_SMOKE_IMAGE 0
 
 #define MT_PARTICLES	0
@@ -563,7 +565,7 @@ if ((m_nType <= WATERFALL_PARTICLES) && ((m_nType != BUBBLE_PARTICLES) || gameOp
 
 //------------------------------------------------------------------------------
 
-void CParticle::UpdateColor (float fBrightness)
+void CParticle::UpdateColor (float fBrightness, int nThread)
 {
 if (m_nType == SMOKE_PARTICLES) {
 	if (m_nFadeState > 0) {
@@ -596,8 +598,8 @@ if (m_nType == SMOKE_PARTICLES) {
 		m_color [0].blue = m_color [1].blue * RANDOM_FADE;
 		m_nFadeState = -1;
 		}
-#if 0
-	tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL);
+#if SMOKE_LIGHTING
+	tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
 	m_color [0].red *= colorP->color.red;
 	m_color [0].green *= colorP->color.green;
 	m_color [0].blue *= colorP->color.blue;
@@ -741,7 +743,7 @@ m_nMoved = nCurTime;
 m_nLife -= t;
 m_decay = ((m_nType == BUBBLE_PARTICLES) || (m_nType == WATERFALL_PARTICLES)) ? 1.0f : float (m_nLife) / float (m_nTTL);
 #else
-UpdateColor (fBrightness);
+UpdateColor (fBrightness, nThread);
 
 if (m_nDelay > 0) {
 	m_nDelay -= t;
@@ -1989,7 +1991,7 @@ SetupRenderBuffer ();
 
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
-#if 0	// smoke is currently always rendered fully bright
+#if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 		if (lightManager.Headlights ().nLights && !(automap.Display () || nType))
 			lightManager.Headlights ().SetupShader (1);
 		else 
