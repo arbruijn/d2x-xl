@@ -461,7 +461,7 @@ const char *texMergeFS [7] = {
 	"uniform vec2 screenScale;\r\n" \
 	"//uniform float grAlpha;\r\n" \
 	"void main(void){" \
-	"vec4 color=/*texture2D(baseTex,screenScale*gl_TexCoord [1].xy)**/texture2D(baseTex,gl_FragCoord.xy);\r\n" \
+	"vec4 color=/*texture2D(baseTex,gl_TexCoord [1].xy)**/texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
 	"gl_FragColor=vec4(color.rgb, color.a/**grAlpha*/);\r\n" \
    "}"
 ,
@@ -471,7 +471,7 @@ const char *texMergeFS [7] = {
 	"void main(void){" \
 	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
 	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
-	"vec4 lMapColor=texture2D(baseTex,screenScale*gl_FragCoord.xy);\r\n" \
+	"vec4 lMapColor=texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
 	"gl_FragColor=vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*lMapColor;\r\n" \
    "}"
 ,
@@ -483,7 +483,7 @@ const char *texMergeFS [7] = {
 	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
 	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
 	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
-	"vec4 lMapColor=texture2D(baseTex,screenScale*gl_FragCoord.xy);\r\n" \
+	"vec4 lMapColor=texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
 	"gl_FragColor = bMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*lMapColor;\r\n" \
 	"}"
 	};
