@@ -418,7 +418,7 @@ class COGL {
 
 		inline int SelectDrawBuffer (int nBuffer) { 
 			int nPrevBuffer = m_data.drawBufferP ? int (m_data.drawBufferP - m_data.drawBuffers) : -1;
-			if ((nBuffer >= 0) && (nBuffer < sizeof (m_data.drawBuffers))) {
+			if ((nBuffer != nPrevBuffer) && (nBuffer >= 0) && (nBuffer < sizeof (m_data.drawBuffers))) {
 				m_data.drawBufferP->Disable (false);
 				m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
 				CreateDrawBuffer ();

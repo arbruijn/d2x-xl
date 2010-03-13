@@ -217,14 +217,14 @@ bSemaphore--;
 void COGL::DestroyDrawBuffers (void)
 {
 if (m_data.drawBuffers [2].Handle ()) {
-	SelectDrawBuffer (1);
+	m_data.drawBufferP = m_data.drawBuffers + 2;
 	DestroyDrawBuffer ();
 	}
 if (m_data.drawBuffers [1].Handle ()) {
-	SelectDrawBuffer (1);
+	m_data.drawBufferP = m_data.drawBuffers + 1;
 	DestroyDrawBuffer ();
 	}
-SelectDrawBuffer (0);
+m_data.drawBufferP = m_data.drawBuffers;
 DestroyDrawBuffer ();
 }
 

@@ -67,6 +67,8 @@ int CFBO::Available (void)
 {
 if (!ogl.m_states.bRender2TextureOk)
 	return 0;
+if (!Handle ())
+	return 0;
 switch (m_info.nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {                                          
 	case GL_FRAMEBUFFER_COMPLETE_EXT:                       
 		return 1;
@@ -205,9 +207,10 @@ if (m_info.bActive)
 	return 1;
 if (Available () <= 0)
 	return 0;
-if (bFallback) {
-	ogl.SetDrawBuffer (GL_BACK, 0);
+//if (bFallback) 
+	{
 	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+	ogl.SetDrawBuffer (GL_BACK, 0);
 	}
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 SetDrawBuffers ();
@@ -223,7 +226,8 @@ if (!m_info.bActive)
 if (Available () <= 0)
 	return 0;
 m_info.bActive = 0;
-if (bFallback) {
+//if (bFallback) 
+	{
 	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 	ogl.SetDrawBuffer (GL_BACK, 0);
 	}
