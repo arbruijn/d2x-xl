@@ -219,9 +219,9 @@ if (Available () <= 0)
 if (!m_info.bActive)
 	return 1;
 m_info.bActive = 0;
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-if (bFallback)
+//if (bFallback)
 	ogl.SetDrawBuffer (GL_BACK, 0);
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 return 1;
 }
 

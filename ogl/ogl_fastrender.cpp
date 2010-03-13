@@ -279,6 +279,7 @@ ogl.SetTexturing (false);
 int SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bColorKey, int bColored, bool bForce = false)
 {
 PROF_START
+ogl.ClearError (0);
 if (bTextured) {
 	bool bStateChange = false;
 	if (bForce || (bmBot != gameStates.render.history.bmBot)) {

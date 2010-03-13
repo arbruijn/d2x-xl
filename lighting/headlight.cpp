@@ -270,6 +270,7 @@ bool InitHeadlightShaders (void)
 
 gameStates.render.bHaveDynLights = 0;
 PrintLog ("building lighting shader programs\n");
+ogl.ClearError (0);
 if ((ogl.m_states.bHeadlight = ogl.m_states.bShadersOk)) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 2; i++) {

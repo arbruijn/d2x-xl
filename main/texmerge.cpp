@@ -576,9 +576,9 @@ int SetupTexMergeShader (int bColored, int nType)
 	int nShader = nType - ((bColored == 2) ? 1 : 2) + bColored * 2;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
-
 if (!shaderProg)
 	return -1;
+shaderManager.Rebuild (shaderProg);
 
 if (bColored == 2) {
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);

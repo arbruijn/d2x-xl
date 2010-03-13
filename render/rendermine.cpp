@@ -402,6 +402,7 @@ PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 BuildFaceLists ();
 #if 1
+ogl.ClearError (0);
 if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	SetupDepthBuffer (RENDER_DEPTH);
 	gameStates.render.bRenderTransparency = 0;

@@ -136,6 +136,7 @@ for (int i = 0; i < int (m_shaders.ToS ()); i++) {
 	}
 if (bAll)
 	m_shaders.Destroy ();
+ogl.ClearError (0);
 }
 
 //------------------------------------------------------------------------------

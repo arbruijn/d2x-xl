@@ -727,6 +727,7 @@ if (bLightmap) {
 	ogl.SetTexturing (false);
 	}
 
+ogl.ClearError (1);
 ogl.SetupTransform (1);
 glColor3f (1,1,1);
 if (bGrayScale)
@@ -734,9 +735,10 @@ if (bGrayScale)
 else 
 if (bLightmap) {
 	int nPrevBuffer = ogl.SelectDrawBuffer (2);
+	ogl.ClearError (1);
 #if DBG
-glClearColor (0.5,0.0,1.0,1.0);
-glClear (GL_COLOR_BUFFER_BIT);
+	glClearColor (1.0,0.0,0.5,1.0);
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #endif
 #if 0
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
@@ -776,8 +778,9 @@ glClear (GL_COLOR_BUFFER_BIT);
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
 #endif
+	ogl.ClearError (1);
 	ogl.SelectDrawBuffer (nPrevBuffer);
-	ogl.DisableClientStates (1, 0, 1, GL_TEXTURE0);
+	ogl.ClearError (1);
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.SetTexturing (true);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
