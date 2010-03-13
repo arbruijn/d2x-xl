@@ -734,16 +734,9 @@ glColor3f (1,1,1);
 if (bGrayScale)
 	bColored = 0;
 else if (bLightmap) {
-	int nPrevBuffer;
-	if (bTextured) {
-		nPrevBuffer = ogl.SelectDrawBuffer (2);
-		ogl.SetBlendMode (GL_ONE, GL_ZERO);
-		ogl.SetDepthMode (GL_ALWAYS);
-		}
-	else {
-		nPrevBuffer = -1;
-		ogl.SetBlendMode (0);
-		}
+	int nPrevBuffer = ogl.SelectDrawBuffer (2);
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.EnableClientStates (1, bColored, 1, GL_TEXTURE0);
 	if (bColored)
 		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
@@ -751,7 +744,7 @@ else if (bLightmap) {
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-	if (SetupColorShader () && SetupLightmap (faceP))
+	if ((!bTextured || SetupColorShader ()) && SetupLightmap (faceP))
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	if (gameStates.render.bPerPixelLighting == 2) {
 		ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
@@ -772,13 +765,7 @@ else if (bLightmap) {
 		lightManager.Headlights ().SetupShader ();
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-	if (bTextured)
-		ogl.SelectDrawBuffer (nPrevBuffer);
-	else {
-		ogl.ResetTransform (1);
-		PROF_END(ptRenderFaces)
-		return;
-		}
+	ogl.SelectDrawBuffer (nPrevBuffer);
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.SetTexturing (true);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
@@ -808,7 +795,7 @@ else {
 	m_data.bmP [1] = m_data.bmP [2] = NULL;
 	}
 
-ogl.EnableClientStates (bTextured, !bLightmap, !bLightmap, GL_TEXTURE0 + bLightmap);
+ogl.EnableClientStates (bTextured, !bLightmap || !bTextured, !bLightmap, GL_TEXTURE0 + bLightmap);
 if (bTextured) {
 	if (!LoadImage (bmBot, 0, 0, bLightmap, item->nWrap))
 		return;
@@ -820,7 +807,7 @@ else {
 	ogl.SetTexturing (false);
 	}
 
-if (!bLightmap) {
+if (!bLightmap || !bTextured) {
 	if (!bColored)
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	else

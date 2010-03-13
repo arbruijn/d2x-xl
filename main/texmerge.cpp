@@ -408,9 +408,11 @@ switch (nType) {
 
 //------------------------------------------------------------------------------
 
-int tmShaderProgs [7] = {-1,-1,-1,-1,-1,-1,-1};
+#define N_TEXMERGE_SHADERS	8
 
-const char *texMergeFS [7] = {
+int tmShaderProgs [N_TEXMERGE_SHADERS] = {-1,-1,-1,-1,-1,-1,-1,-1};
+
+const char *texMergeFS [N_TEXMERGE_SHADERS] = {
 	// grayscale
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"//uniform float grAlpha;\r\n" \
@@ -457,6 +459,13 @@ const char *texMergeFS [7] = {
 	"}"
 ,
 	// lightmaps
+	"uniform sampler2D lMapTex;\r\n" \
+	"uniform vec2 screenScale;\r\n" \
+	"//uniform float grAlpha;\r\n" \
+	"void main(void){" \
+	"gl_FragColor=gl_Color*texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
+   "}"
+,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
 	"//uniform float grAlpha;\r\n" \
@@ -487,44 +496,49 @@ const char *texMergeFS [7] = {
 	"}"
 	};
 
-const char *texMergeVS [7] = {
+const char *texMergeVS [N_TEXMERGE_SHADERS] = {
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
 ,
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
 	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
 ,
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
 ,
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
 	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform();"\
+	"gl_FrontColor=gl_Color;}"
+,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
+	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
 ,
 	"void main(void){" \
@@ -532,13 +546,9 @@ const char *texMergeVS [7] = {
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
 	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
 	"gl_TexCoord [2]=gl_MultiTexCoord3;"\
-	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
 	};
-
-const char *texMergeFSData = 
-	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
-	"//uniform float grAlpha;";
 
 //-------------------------------------------------------------------------
 
@@ -550,7 +560,7 @@ if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building texturing shader programs\n");
-	for (i = 0; i < 7; i++) {
+	for (i = 0; i < N_TEXMERGE_SHADERS; i++) {
 		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i]);
 		gameStates.render.textures.bGlTexMergeOk = (b >= 0);
 		if (!gameStates.render.textures.bGlTexMergeOk) {
@@ -572,7 +582,10 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 int SetupTexMergeShader (int bColored, int nType)
 {
-	int nShader = nType - ((bColored == 2) ? 1 : 2) + bColored * 2;
+	int nShader = nType + bColored * 2;
+
+if (bColored < 2)
+	nShader -= 2;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
 if (!shaderProg)
@@ -581,11 +594,13 @@ shaderManager.Rebuild (shaderProg);
 
 if (bColored == 2) {
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
-	if (nType > 1) {
-		glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
-		if (nType > 2)
-			glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
+	if (nType > 0) {
+		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
+		if (nType > 1) {
+			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
+			if (nType > 2)
+				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
+			}
 		}
 	glUniform2fv (glGetUniformLocation (shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
 	}
