@@ -301,10 +301,8 @@ if (nBuffer != nPrevBuffer) {
 		m_data.drawBufferP->Disable (false);
 	m_data.drawBufferP = m_data.GetDrawBuffer (nBuffer); 
 	}
-if (!m_data.drawBufferP->Handle ()) {
-	CreateDrawBuffer ();
-	m_data.drawBufferP->Enable (false);
-	}
+CreateDrawBuffer ();
+m_data.drawBufferP->Enable (false);
 return nPrevBuffer;
 }
 

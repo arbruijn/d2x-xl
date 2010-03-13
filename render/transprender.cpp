@@ -734,7 +734,6 @@ if (bGrayScale)
 	bColored = 0;
 else 
 if (bLightmap) {
-	gameStates.render.bRenderIndirect = 1;
 	int nPrevBuffer = ogl.SelectDrawBuffer (2);
 #if DBG
 	//glClearColor (1.0,0.5,0.0,1.0);
@@ -779,16 +778,16 @@ if (bLightmap) {
 		}
 #endif
 	ogl.SelectDrawBuffer (nPrevBuffer);
-	gameStates.render.bRenderIndirect = 0;
-	ogl.SetDrawBuffer (GL_BACK, 0);
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.SetTexturing (true);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
-	ogl.SetDepthMode (GL_ALWAYS);
+	ogl.SetDepthMode (GL_LEQUAL);
+#if 1
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.ResetTransform (1);
 	ogl.RenderScreenQuad (1);
-	return;
+	ogl.SetupTransform (1);
+#endif
 	bColored = 2;
 	}
 

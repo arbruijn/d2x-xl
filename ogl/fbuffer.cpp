@@ -221,6 +221,7 @@ return m_info.bActive = 1;
 
 int CFBO::Disable (bool bFallback)
 {
+ogl.ClearError (1);
 if (!m_info.bActive)
 	return 1;
 if (Available () <= 0)
