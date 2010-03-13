@@ -285,7 +285,7 @@ return true;
 bool RenderSkyBoxFace (CSegment *segP, CSegFace *faceP)
 {
 LoadFaceBitmaps (segP, faceP);
-RenderFace (faceP, faceP->bmBot, faceP->bmTop, 1, 1);
+RenderSky (faceP, faceP->bmBot, faceP->bmTop);
 return true;
 }
 

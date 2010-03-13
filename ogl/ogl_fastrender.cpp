@@ -570,6 +570,32 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+
+int RenderSky (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+{
+PROF_START
+#if DBG
+if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+
+SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, true);
+gameData.render.nTotalFaces++;
+#if DBG
+RenderWireFrame (faceP, bTextured);
+if (!gameOpts->render.debug.bTextures)
+	return 0;
+#endif
+
+if (gameStates.render.bTriangleMesh)
+	DrawFace (faceP);
+else
+	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
+PROF_END(ptRenderFaces)
+return 0;
+}
+
+//------------------------------------------------------------------------------
 // render geometry (all multi texturing is done via shaders, 
 // also handles color keyed transparency via pre-computed masks)
 

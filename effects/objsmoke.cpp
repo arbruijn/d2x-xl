@@ -552,7 +552,7 @@ if (nParts) {
 			}
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],
-													1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
+													1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, MISSILE_PARTICLES, nObject, smokeColors + 1, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);

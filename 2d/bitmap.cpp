@@ -264,6 +264,10 @@ else {
 		CountColors (p, m_info.props.w, freq);
 	}
 SetPalette (palette, transparentColor, supertranspColor, freq);
+if (freq [transparentColor])
+	SetTransparent (1);
+if (freq [supertranspColor])
+	SetSuperTransparent (1);
 }
 
 //------------------------------------------------------------------------------
