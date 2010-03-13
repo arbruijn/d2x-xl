@@ -95,7 +95,7 @@ else
 faceP->m_info.bTextured = bTextured;
 faceP->m_info.bCloaked = bCloaked;
 faceP->m_info.bTransparent |= bTransparent;
-if (!gameData.app.nFrameCount) {
+if (faceP->m_info.nSegColor < 0) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
 		pFaceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
 		if (faceP->m_info.nBaseTex < 0)
