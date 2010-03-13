@@ -130,6 +130,7 @@ if (nType == 2) { //GPGPU
 	}
 else {
 	// color buffers
+ogl.ClearError (1);
 	for (int i = 0; i < nColorBuffers; i++) {
 		ogl.BindTexture (m_info.hColorBuffer [i]);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //GL_LINEAR);
@@ -140,8 +141,10 @@ else {
 		glTexImage2D (GL_TEXTURE_2D, 0, 3, m_info.nWidth, m_info.nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 		glGenerateMipmapEXT (GL_TEXTURE_2D);
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i] = GL_COLOR_ATTACHMENT0_EXT + i, GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
+ogl.ClearError (1);
 		}
 #if FBO_STENCIL_BUFFER
+ogl.ClearError (1);
 	// depth + stencil buffer
 	if ((nType == 1) && (m_info.hDepthBuffer = ogl.CreateDepthTexture (0, 1, 1))) {
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
@@ -152,6 +155,7 @@ else {
 	else 
 #endif
 		{
+ogl.ClearError (1);
 		// depth buffer
 		m_info.hStencilBuffer = 0;
 		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
@@ -163,6 +167,7 @@ else {
 		return 0;
 	if (Available () < 0)
 		return 0;
+ogl.ClearError (1);
 	}
 m_info.nType = nType;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
@@ -196,15 +201,14 @@ if (m_info.hFBO) {
 
 int CFBO::Enable (bool bFallback)
 {
-if (Available () <= 0)
-	return 0;
 if (m_info.bActive)
 	return 1;
+if (Available () <= 0)
+	return 0;
 if (bFallback) {
 	ogl.SetDrawBuffer (GL_BACK, 0);
 	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 	}
-//ogl.BindTexture (0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, m_info.hFBO);
 SetDrawBuffers ();
 return m_info.bActive = 1;
@@ -214,14 +218,16 @@ return m_info.bActive = 1;
 
 int CFBO::Disable (bool bFallback)
 {
-if (Available () <= 0)
-	return 0;
 if (!m_info.bActive)
 	return 1;
+if (Available () <= 0)
+	return 0;
 m_info.bActive = 0;
-//if (bFallback)
+if (bFallback) {
+	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 	ogl.SetDrawBuffer (GL_BACK, 0);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+	}
+ogl.ClearError (1);
 return 1;
 }
 
