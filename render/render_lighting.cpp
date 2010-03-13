@@ -97,11 +97,18 @@ faceP->m_info.bCloaked = bCloaked;
 faceP->m_info.bTransparent |= bTransparent;
 if (faceP->m_info.nSegColor < 0) {
 	if ((faceP->m_info.nSegColor = IsColoredSegFace (nSegment, nSide))) {
-		pFaceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
+		faceP->m_info.color = *ColoredSegmentColor (nSegment, nSide, faceP->m_info.nSegColor);
+		pFaceColor [2].color = faceP->m_info.color;
 		if (faceP->m_info.nBaseTex < 0)
-			*pfAlpha = pFaceColor [2].color.alpha;
+			*pfAlpha = faceP->m_info.color.alpha;
 		nColor = 2;
 		}
+	}
+else if (faceP->m_info.nSegColor > 0) {
+	pFaceColor [2].color = faceP->m_info.color;
+	if (faceP->m_info.nBaseTex < 0)
+		*pfAlpha = faceP->m_info.color.alpha;
+	nColor = 2;
 	}
 if ((*pfAlpha < 1) || ((nColor == 2) && (faceP->m_info.nBaseTex < 0)))
 	faceP->m_info.bTransparent = 1;
