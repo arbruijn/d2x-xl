@@ -637,15 +637,16 @@ else //GLASSES_SHUTTER or NONE
 
 void COGL::ChooseDrawBuffer (void)
 {
-#if 1
-if (gameStates.render.bPerPixelLighting) {
-	gameStates.render.bRenderIndirect = 1;
-	SelectDrawBuffer (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0));
-	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+if (gameStates.render.bBriefing)
+	gameStates.render.bRenderIndirect = 0;
+else if (gameStates.render.bPerPixelLighting) {
+	if (!gameStates.render.cameras.bActive) {
+		gameStates.render.bRenderIndirect = 1;
+		SelectDrawBuffer (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0));
+		SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+		}
 	}
-else 
-#endif
-if (gameStates.render.cameras.bActive || gameStates.render.bBriefing)
+else if (gameStates.render.cameras.bActive)
 	gameStates.render.bRenderIndirect = 0;
 else {
 	int i = Enhance3D ();
@@ -885,7 +886,9 @@ void COGL::EndFrame (void)
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
+if (gameStates.render.bBriefing)
+	gameStates.render.bRenderIndirect = 0;
+if (!gameStates.render.bBriefing && (gameStates.render.bPerPixelLighting || !gameStates.render.cameras.bActive)) {
 	if (gameStates.render.bRenderIndirect)
 		SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
