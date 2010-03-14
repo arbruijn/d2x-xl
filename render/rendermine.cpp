@@ -420,7 +420,7 @@ if (!gameStates.render.bFullBright) {
 	}
 #endif
 
-#if 0
+#if 1
 if (!gameStates.render.nWindow)
 	SetupCoronas ();
 RenderSegmentList (RENDER_GEOMETRY, 1);	// render opaque geometry
