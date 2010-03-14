@@ -491,7 +491,7 @@ typedef struct tRenderInfo {
 
 static tRenderInfo renderInfo [RENDER_TYPES] = {
 #if RENDER_COLOR_SEPARATELY
-	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, DefaultShaderHandler}, // LIGHTMAPS
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 0, 1, 1, 1, 0, DefaultShaderHandler}, // LIGHTMAPS
 #else
 	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, LightmapShaderHandler},
 #endif

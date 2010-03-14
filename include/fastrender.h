@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "endlevel.h"
 
-#define RENDER_COLOR_SEPARATELY	0
+#define RENDER_COLOR_SEPARATELY	1
 
 //------------------------------------------------------------------------------
 
