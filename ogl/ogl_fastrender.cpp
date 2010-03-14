@@ -543,7 +543,7 @@ if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTranspar
 ogl.m_states.iLight = 0;
 while (0 < SetupPerPixelLightingShader (faceP)) {
 	DrawFace (faceP);
-	if ((ogl.m_states.iLight >= ogl.m_states.nLights) || (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
+	if (ogl.m_states.iLight >= ogl.m_states.nLights)
 		return 0;
 	}
 return 0;

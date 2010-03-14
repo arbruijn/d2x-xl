@@ -70,9 +70,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (FACE_IDX (faceP) == nDbgFace)
 	nDbgFace = nDbgFace;
 #endif
+
 if (!FaceIsVisible (faceP))
 	return -1;
-
 bWall = IS_WALL (faceP->m_info.nWall);
 if (bWall) {
 	faceP->m_info.widFlags = segP->IsDoorWay (nSide, NULL);

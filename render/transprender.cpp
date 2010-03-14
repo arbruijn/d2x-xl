@@ -767,8 +767,7 @@ else if (bLightmap) {
 		lightManager.Index (0)[0].nActive = -1;
 		while (0 < SetupPerPixelLightingShader (faceP)) {
 			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
-			if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
-				 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
+			if (ogl.m_states.iLight >= ogl.m_states.nLights)
 				break;
 			}
 		}

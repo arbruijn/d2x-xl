@@ -346,12 +346,8 @@ if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
-if (gameStates.render.nLights != nLights) {
-	gameStates.render.nLights = nLights;
-	glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
-	glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), 
-					 GLfloat ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
-	}
+glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
+glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"),  (nLights ? float (nLights) / float (ogl.m_states.nLights) : 1.0f));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
