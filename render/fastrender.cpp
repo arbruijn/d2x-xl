@@ -491,19 +491,19 @@ typedef struct tRenderInfo {
 
 static tRenderInfo renderInfo [RENDER_TYPES] = {
 #if RENDER_COLOR_SEPARATELY
-	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, DefaultShaderHandler},
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, DefaultShaderHandler}, // LIGHTMAPS
 #else
 	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, LightmapShaderHandler},
 #endif
-	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, LightShaderHandler},
-	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler},
-	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler},
-	{GL_ONE, GL_ZERO, GL_EQUAL, false, 0, 1, 0, 1, 0, 1, DefaultShaderHandler},
-	{GL_DST_COLOR, GL_ZERO, GL_EQUAL, false, 0, 0, 1, 0, 1, 1, DefaultShaderHandler},
-	{GL_ONE, GL_ONE, GL_ALWAYS, false, 0, 0, 0, 0, 1, 1, CoronaShaderHandler},
-	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, 0, 1, 1, 1, 1, DefaultShaderHandler},
-	{GL_ONE, GL_ZERO, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler},
-	{GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler}
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, LightShaderHandler}, // LIGHTS
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler}, // HEADLIGHTS
+	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler}, // DEPTH
+	{GL_ONE, GL_ZERO, GL_EQUAL, false, 0, 1, 0, 1, 0, 1, DefaultShaderHandler}, // COLOR
+	{GL_DST_COLOR, GL_ZERO, GL_EQUAL, false, 0, 0, 1, 0, 1, 1, DefaultShaderHandler}, // GEOMETRY
+	{GL_ONE, GL_ONE, GL_ALWAYS, false, 0, 0, 0, 0, 1, 1, CoronaShaderHandler}, // CORONAS
+	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, 0, 1, 1, 1, 1, DefaultShaderHandler}, // SKYBOX
+	{GL_ONE, GL_ZERO, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler}, // OBJECTS
+	{GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler} // TRANSPARENCY
 	};
 
 int BeginRenderFaces (int nType, int bDepthOnly)
