@@ -1088,8 +1088,6 @@ else {	//front to back
 	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;
 	RenderSegments (nType);
-	ogl.SetDepthWrite (true);
-	RenderHeadlights (nType);
 	}
 EndRenderFaces (0);
 }

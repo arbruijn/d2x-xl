@@ -312,6 +312,12 @@ if (bTextured) {
 	if (bColored != gameStates.render.history.bColored) {
 		bStateChange = true;
 		gameStates.render.history.bColored = bColored;
+		if (!gameStates.render.bFullBright) {
+			if (bColored)
+				ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
+			else
+				ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			}	
 		}
 	if (bStateChange) {
 		gameData.render.nStateChanges++;

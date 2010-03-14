@@ -57,7 +57,7 @@ const char *grayScaleFS [3] = {
 	"void main(void){" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"float l = (texColor.r + texColor.g + texColor.b) / 4.0;\r\n" \
-	"gl_FragColor = vec4 (1.0, 0.5, 0.0, texColor.a);}"
+	"gl_FragColor = vec4 (l, l, l, texColor.a);}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"void main(void){" \
