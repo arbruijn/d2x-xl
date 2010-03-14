@@ -547,7 +547,7 @@ int SetupTexMergeShader (int bTransparent, int nType)
 {
 	int nShader = nType + bTransparent * 2;
 
-if (bColored < 2)
+if (!bTransparent)
 	nShader -= 2;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
@@ -555,7 +555,7 @@ if (!shaderProg)
 	return -1;
 shaderManager.Rebuild (shaderProg);
 
-if (bColored == 2) {
+if (bTransparent) {
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType > 0) {
 		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
