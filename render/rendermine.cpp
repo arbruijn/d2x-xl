@@ -392,38 +392,38 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
+if (!gameStates.render.nWindow)
+	SetupCoronas ();
+
 #if 1
 ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
 	BuildFaceLists ();
-	SetupDepthBuffer (RENDER_TYPE_DEPTH);
-	gameStates.render.bRenderTransparency = 0;
-	ogl.ColorMask (1,1,1,1,1);
-#	if RENDER_COLOR_SEPARATELY
-	RenderSegmentList (RENDER_TYPE_COLOR, 1);
-	if (gameStates.render.bPerPixelLighting) {
-		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);
-		if (gameStates.render.bPerPixelLighting == 2)
-			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);
-		}
-#	else
-	if (!gameStates.render.bPerPixelLighting) 
+	if (!gameStates.render.bPerPixelLighting) {
+		gameStates.render.bFullBright = 1; // hack to make the renderer multiply color with the textures
+		RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 		RenderSegmentList (RENDER_TYPE_COLOR, 1);
+		gameStates.render.bFullBright = 0;
+		}
 	else {
+		SetupDepthBuffer (RENDER_TYPE_DEPTH);
+		gameStates.render.bRenderTransparency = 0;
+		ogl.ColorMask (1,1,1,1,1);
+#	if RENDER_COLOR_SEPARATELY
+		RenderSegmentList (RENDER_TYPE_COLOR, 1);
+#endif
 		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);
 		if (gameStates.render.bPerPixelLighting == 2)
 			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);
 		}
-#	endif
 	if (gameStates.render.bHeadlights)
 		RenderSegmentList (RENDER_TYPE_HEADLIGHTS, 1);
 	}
 #endif
 
 #if 1
-if (!gameStates.render.nWindow)
-	SetupCoronas ();
-RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
+if (gameStates.render.bFullBright || gameStates.render.bPerPixelLighting)
+	RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 RenderMineObjects (RENDER_TYPE_OBJECTS);
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
