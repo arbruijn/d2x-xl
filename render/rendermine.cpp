@@ -392,27 +392,27 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
-BuildFaceLists ();
 #if 1
 ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
+	BuildFaceLists ();
 	SetupDepthBuffer (RENDER_TYPE_DEPTH);
 	gameStates.render.bRenderTransparency = 0;
 	ogl.ColorMask (1,1,1,1,1);
 #	if RENDER_COLOR_SEPARATELY
-	RenderSegmentList (RENDER_TYPE_COLOR, 1);		// render vertex color
+	RenderSegmentList (RENDER_TYPE_COLOR, 1);
 	if (gameStates.render.bPerPixelLighting) {
-		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);	// render opaque geometry
+		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);
 		if (gameStates.render.bPerPixelLighting == 2)
-			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);		// render opaque geometry
+			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);
 		}
 #	else
 	if (!gameStates.render.bPerPixelLighting) 
-		RenderSegmentList (RENDER_TYPE_COLOR, 1);		// render vertex color
+		RenderSegmentList (RENDER_TYPE_COLOR, 1);
 	else {
-		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);	// render opaque geometry
+		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);
 		if (gameStates.render.bPerPixelLighting == 2)
-			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);		// render opaque geometry
+			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);
 		}
 #	endif
 	if (gameStates.render.bHeadlights)
@@ -423,10 +423,7 @@ if (!gameStates.render.bFullBright) {
 #if 1
 if (!gameStates.render.nWindow)
 	SetupCoronas ();
-RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);	// render opaque geometry
-gameStates.render.bTransparency = 1;
-RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);	// render transparent geometry
-gameStates.render.bTransparency = 0;
+RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 RenderMineObjects (RENDER_TYPE_OBJECTS);
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {

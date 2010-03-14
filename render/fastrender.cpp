@@ -850,26 +850,62 @@ return nFaces;
 
 short RenderFaceList (int nType)
 {
+	int nFaces = 0;
+
+if (gameStates.render.nType == RENDER_TYPE_GEOMETRY) {
+		tFaceListItem*	fliP = &gameData.render.faceList [0];
+		CSegFace*		faceP;
+		int				i, j, nSegment = -1;
+		int				bAutomap = (nType == 0);
+
+	if (automap.Display ())
+		gameData.render.faceIndex.usedKeys.SortAscending (0, gameData.render.faceIndex.nUsedKeys - 1);
+	for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
+		for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP [j].nNextItem) {
+			faceP = fliP [j].faceP;
+			if (!faceP->m_info.bVisible)
+				continue;
+			LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
+			if (!gameStates.render.bFullBright) {
+				faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
+				faceP->m_info.nColored = FaceIsColored (faceP);
+				}
+			if (nSegment != faceP->m_info.nSegment) {
+				nSegment = faceP->m_info.nSegment;
+#if DBG
+				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+					nDbgSeg = nDbgSeg;
+#endif
+				if (gameStates.render.bFullBright)
+					VisitSegment (nSegment, bAutomap);
+				}
+			if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
+				nFaces++;
+			}
+		}
+	}
+else {
 	CSegFace**	flP = gameData.render.renderFaces [gameStates.render.bTransparency].Buffer ();
 	CSegFace*	faceP;
-	int			i, j, nFaces = 0, nSegment = -1;
+	int			i, j, nSegment = -1;
 	int			bAutomap = (nType <= RENDER_TYPE_GEOMETRY);
 
-for (i = 0, j = gameData.render.nRenderFaces [gameStates.render.bTransparency]; i < j; i++) {
-	faceP = flP [i];
-	if (nSegment != faceP->m_info.nSegment) {
-		nSegment = faceP->m_info.nSegment;
-#if DBG
-		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-			nDbgSeg = nDbgSeg;
-#endif
-		if (gameStates.render.nType == RENDER_TYPE_DEPTH)
-			VisitSegment (nSegment, bAutomap);
-		else if (gameStates.render.nType == RENDER_TYPE_LIGHTS)
-			lightManager.Index (0)[0].nActive = -1;
+	for (i = 0, j = gameData.render.nRenderFaces [gameStates.render.bTransparency]; i < j; i++) {
+		faceP = flP [i];
+		if (nSegment != faceP->m_info.nSegment) {
+			nSegment = faceP->m_info.nSegment;
+	#if DBG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+				nDbgSeg = nDbgSeg;
+	#endif
+			if (gameStates.render.nType == RENDER_TYPE_DEPTH)
+				VisitSegment (nSegment, bAutomap);
+			else if (gameStates.render.nType == RENDER_TYPE_LIGHTS)
+				lightManager.Index (0)[0].nActive = -1;
+			}
+		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
+			nFaces++;
 		}
-	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
-		nFaces++;
 	}
 return nFaces;
 }
@@ -885,10 +921,10 @@ short RenderFaceList (int nType)
 
 #if 1
 if (automap.Display ())
-	flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
+	gameData.render.faceIndex.usedKeys.SortAscending (0, gameData.render.faceIndex.nUsedKeys - 1);
 #endif
 for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
-	for (j = gameData.render.faceIndex.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
+	for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
 		faceP = fliP [j].faceP;
 		if (nSegment != faceP->m_info.nSegment) {
 			nSegment = faceP->m_info.nSegment;
