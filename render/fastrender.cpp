@@ -469,9 +469,11 @@ else if (nType == RENDER_LIGHTMAPS) {
 #if 1
 	if (!SetupColorShader ())
 		return 0;
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+#else
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 #endif
 	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (false);
 	}
 else if (nType == RENDER_COLOR) {
@@ -867,7 +869,9 @@ short RenderSegments (int nType)
 {
 	int	i, nFaces = 0, bAutomap = (nType <= RENDER_GEOMETRY);
 
-if (nType > RENDER_GEOMETRY) {
+if (nType <= RENDER_GEOMETRY) 
+	nFaces = RenderFaceList (nType);
+else {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
@@ -879,10 +883,6 @@ if (nType > RENDER_GEOMETRY) {
 		for (i = gameData.render.mine.nRenderSegs; i; )
 			nFaces += RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [0][--i], bAutomap);
 		}
-	}
-else {
-	// render mine by pre-sorted textures
-	nFaces = RenderFaceList (nType);
 	}
 return nFaces;
 }
@@ -903,7 +903,7 @@ if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 
 //------------------------------------------------------------------------------
 
-int SetupCoronas (int nType)
+int SetupCoronas (void)
 {
 SetupCoronaFaces ();
 return 0;
@@ -928,8 +928,6 @@ if (nType > RENDER_OBJECTS) {	//back to front
 	RenderSegments (nType);
 	}
 else {	//front to back
-	if ((nType == RENDER_GEOMETRY) && !gameStates.render.nWindow)
-		SetupCoronas (nType);
 	BeginRenderFaces (nType, 0);
 	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;

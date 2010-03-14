@@ -398,8 +398,15 @@ ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
 	SetupDepthBuffer (RENDER_DEPTH);
 	gameStates.render.bRenderTransparency = 0;
-#	if 1
 	ogl.ColorMask (1,1,1,1,1);
+#	if 0
+	RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
+	if (gameStates.render.bPerPixelLighting) {
+		RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
+		if (gameStates.render.bPerPixelLighting == 2)
+			RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
+		}
+#	else
 	if (!gameStates.render.bPerPixelLighting) 
 		RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
 	else {
@@ -413,12 +420,13 @@ if (!gameStates.render.bFullBright) {
 	}
 #endif
 
-#if 1
+#if 0
+if (!gameStates.render.nWindow)
+	SetupCoronas ();
 RenderSegmentList (RENDER_GEOMETRY, 1);	// render opaque geometry
 gameStates.render.bTransparency = 1;
 RenderSegmentList (RENDER_GEOMETRY, 1);	// render transparent geometry
 gameStates.render.bTransparency = 0;
-//RenderSegmentList (RENDER_DYNAMIC_FACES, 1);	// render opaque geometry with holes
 RenderMineObjects (RENDER_OBJECTS);
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
