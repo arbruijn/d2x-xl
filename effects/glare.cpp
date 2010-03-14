@@ -538,7 +538,6 @@ else
 	color.red = color.green = color.blue = X2F (IsLight (nTexture)) / 2;
 if (!bColored)
 	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
-fIntensity = float (sqrt (fIntensity));
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else

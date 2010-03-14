@@ -276,7 +276,7 @@ if (!faceP->m_info.nCorona)
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-glareRenderer.Render (faceP->m_info.nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
+glareRenderer.Render (faceP->m_info.nSegment, faceP->m_info.nSide, 1.0f, faceP->m_info.fRads [0]);
 return true;
 }
 
@@ -633,7 +633,6 @@ void RenderSkyBoxFaces (void)
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bFullBright = 1;
 	BeginRenderFaces (RENDER_SKYBOX, 0);
-	ogl.SetDepthTest (false);
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
