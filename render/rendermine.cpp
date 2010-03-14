@@ -228,7 +228,7 @@ PROF_START
 	short		i, nObject;
 	short		*segNumP;
 
-gameStates.render.nType = RENDER_OBJECTS;
+gameStates.render.nType = RENDER_TYPE_OBJECTS;
 for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
 	for (nObject = SEGMENTS [*segNumP].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
@@ -258,7 +258,7 @@ void RenderMineObjects (int nType)
 if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
-gameStates.render.nType = RENDER_OBJECTS;
+gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	nSegment = gameData.render.mine.nSegRenderList [0][--nListPos];
@@ -313,7 +313,7 @@ gameStates.render.nType = nType;
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 	BumpVisitedFlag ();
 	RenderFaceList (nType, bFrontToBack);
-	if (nType == RENDER_LIGHTS) {
+	if (nType == RENDER_TYPE_LIGHTS) {
 		for (int i = 0; i < gameStates.app.nThreads; i++)
 			lightManager.ResetAllUsed (1, i);
 		}
@@ -396,26 +396,26 @@ BuildFaceLists ();
 #if 1
 ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
-	SetupDepthBuffer (RENDER_DEPTH);
+	SetupDepthBuffer (RENDER_TYPE_DEPTH);
 	gameStates.render.bRenderTransparency = 0;
 	ogl.ColorMask (1,1,1,1,1);
 #	if 0
-	RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
+	RenderSegmentList (RENDER_TYPE_COLOR, 1);		// render vertex color
 	if (gameStates.render.bPerPixelLighting) {
-		RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
+		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);	// render opaque geometry
 		if (gameStates.render.bPerPixelLighting == 2)
-			RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
+			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);		// render opaque geometry
 		}
 #	else
 	if (!gameStates.render.bPerPixelLighting) 
-		RenderSegmentList (RENDER_COLOR, 1);		// render vertex color
+		RenderSegmentList (RENDER_TYPE_COLOR, 1);		// render vertex color
 	else {
-		RenderSegmentList (RENDER_LIGHTMAPS, 1);	// render opaque geometry
+		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);	// render opaque geometry
 		if (gameStates.render.bPerPixelLighting == 2)
-			RenderSegmentList (RENDER_LIGHTS, 1);		// render opaque geometry
+			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);		// render opaque geometry
 		}
 	if (gameStates.render.bHeadlights)
-		RenderSegmentList (RENDER_HEADLIGHTS, 1);
+		RenderSegmentList (RENDER_TYPE_HEADLIGHTS, 1);
 #	endif
 	}
 #endif
@@ -423,16 +423,16 @@ if (!gameStates.render.bFullBright) {
 #if 1
 if (!gameStates.render.nWindow)
 	SetupCoronas ();
-RenderSegmentList (RENDER_GEOMETRY, 1);	// render opaque geometry
+RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);	// render opaque geometry
 gameStates.render.bTransparency = 1;
-RenderSegmentList (RENDER_GEOMETRY, 1);	// render transparent geometry
+RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);	// render transparent geometry
 gameStates.render.bTransparency = 0;
-RenderMineObjects (RENDER_OBJECTS);
+RenderMineObjects (RENDER_TYPE_OBJECTS);
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameStates.app.bNostalgia && !nWindow &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse)
-		RenderSegmentList (RENDER_CORONAS, 1);
+		RenderSegmentList (RENDER_TYPE_CORONAS, 1);
 	}
 #endif
 gameData.app.nMineRenderCount++;

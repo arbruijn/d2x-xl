@@ -297,7 +297,7 @@ typedef bool (__fastcall * pRenderHandler) (CSegment *segP, CSegFace *faceP);
 typedef bool (* pRenderHandler) (CSegment *segP, CSegFace *faceP);
 #endif
 
-static pRenderHandler renderHandlers [RENDER_PASSES] = {
+static pRenderHandler renderHandlers [RENDER_TYPES] = {
 	RenderStaticLights, 
 	RenderDynamicLights, 
 	RenderPlayerLights,
@@ -437,14 +437,67 @@ return tiRender.nFaces;
 
 //------------------------------------------------------------------------------
 
+static int LightShaderHandler (void)
+{
+return (0 <= LoadPerPixelLightingShader ());
+}
+
+
+static int HeadlightShaderHandler (void)
+{
+return (0 <= lightManager.Headlights ().SetupShader ());
+}
+
+
+static int CoronaShaderHandler (void)
+{
+if (glareRenderer.Style ())
+	glareRenderer.LoadShader (10);
+return 0;
+}
+
+static int DefaultShaderHandler (void)
+{
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+#if defined(_WIN32) && !DBG
+typedef int ( __fastcall * pShaderHandler) (void);
+#else
+typedef int (* pShaderHandler) (void);
+#endif
+
+typedef struct tRenderInfo {
+	GLuint			nSrcBlendMode;
+	GLuint			nDstBlendMode;
+	GLuint			nDepthMode;
+	bool				bDepthWrite;
+	int				bLightmaps;
+	int				bColor;
+	int				bTexCoord;
+	int				bNormals;
+	int				bTextured;
+	int				bColorMask;
+	pShaderHandler	shaderHandler;
+} tRenderInfo;
+
+static tRenderInfo renderInfo [RENDER_TYPES] = {
+	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, DefaultShaderHandler},
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, LightShaderHandler},
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler},
+	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler},
+	{GL_ONE, GL_ZERO, GL_EQUAL, false, 0, 1, 0, 1, 0, 1, DefaultShaderHandler},
+	{GL_DST_COLOR, GL_ZERO, GL_EQUAL, false, 0, 0, 1, 0, 1, 1, DefaultShaderHandler},
+	{GL_ONE, GL_ONE, GL_ALWAYS, false, 0, 0, 0, 0, 1, 1, CoronaShaderHandler},
+	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, 0, 1, 1, 1, 1, DefaultShaderHandler},
+	{GL_ONE, GL_ZERO, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler},
+	{GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler}
+	};
+
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
-	int	//bVBO = 0,
-			bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_LIGHTMAPS),
-			bColor = !gameStates.render.bFullBright && (nType == RENDER_LIGHTMAPS) || (nType == RENDER_COLOR),
-			bTexCoord = (nType != RENDER_COLOR) && (nType != RENDER_LIGHTS),
-			bNormals = (nType == RENDER_LIGHTMAPS) || (nType == RENDER_LIGHTS) || (nType == RENDER_HEADLIGHTS) || (nType == RENDER_COLOR);
-
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
 gameStates.render.history.bOverlay = -1;
@@ -459,13 +512,37 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 
-if (nType == RENDER_DEPTH) {
+#if 1
+	int	bLightmaps = lightmapManager.HaveLightmaps () && renderInfo [nType].bLightmaps;
+	int	bColor = !gameStates.render.bFullBright && renderInfo [nType].bColor;
+	int	bTexCoord = renderInfo [nType].bTexCoord;
+	int	bNormals =  renderInfo [nType].bNormals;
+
+ogl.SetBlendMode (renderInfo [nType].nSrcBlendMode, renderInfo [nType].nDstBlendMode);
+ogl.SetDepthMode (renderInfo [nType].nDepthMode);
+ogl.SetDepthWrite (renderInfo [nType].bDepthWrite);
+if (renderInfo [nType].bColorMask)
+	ogl.ColorMask (1,1,1,1,1);
+else
 	ogl.ColorMask (0,0,0,0,0);
-	ogl.SetDepthWrite (true);
-	ogl.SetDepthMode (GL_LESS);
+if (!renderInfo [nType].shaderHandler ())
+	return 0;
+
+#else
+
+	//int	bVBO = 0;
+	int	bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_TYPE_LIGHTMAPS);
+	int	bColor = !gameStates.render.bFullBright && (nType == RENDER_TYPE_LIGHTMAPS) || (nType == RENDER_TYPE_COLOR);
+	int	bTexCoord = (nType != RENDER_TYPE_COLOR) && (nType != RENDER_TYPE_LIGHTS) && (nType != RENDER_TYPE_HEADLIGHTS);
+	int	bNormals = (nType == RENDER_TYPE_LIGHTMAPS) || (nType == RENDER_TYPE_LIGHTS) || (nType == RENDER_TYPE_HEADLIGHTS) || (nType == RENDER_TYPE_COLOR);
+
+if (nType == RENDER_TYPE_DEPTH) {
+	ogl.ColorMask (0,0,0,0,0);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthMode (GL_LESS);
+	ogl.SetDepthWrite (true);
 	}
-else if (nType == RENDER_LIGHTMAPS) {
+else if (nType == RENDER_TYPE_LIGHTMAPS) {
 #if 1
 	if (!SetupColorShader ())
 		return 0;
@@ -476,22 +553,22 @@ else if (nType == RENDER_LIGHTMAPS) {
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetDepthWrite (false);
 	}
-else if (nType == RENDER_COLOR) {
-	ogl.SetDepthMode (GL_EQUAL); 
+else if (nType == RENDER_TYPE_COLOR) {
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetDepthWrite (false);
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);
 	}
-else if (nType == RENDER_HEADLIGHTS) {
+else if (nType == RENDER_TYPE_HEADLIGHTS) {
 	if (0 > lightManager.Headlights ().SetupShader ())
 		return 0;
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.SetDepthWrite (false);
 	}
-else if (nType == RENDER_LIGHTS) {
+else if (nType == RENDER_TYPE_LIGHTS) {
 	if (0 > LoadPerPixelLightingShader ())
 		return 0;
 	ogl.SetDepthMode (GL_EQUAL); 
@@ -505,8 +582,7 @@ else if (nType == RENDER_LIGHTS) {
 		glEnable (GL_LIGHT0 + i);
 	ogl.SetLighting (false);
 	}
-else if (nType == RENDER_CORONAS) {
-	ogl.SetDepthMode (GL_LEQUAL); 
+else if (nType == RENDER_TYPE_CORONAS) {
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetDepthWrite (false);
@@ -515,12 +591,12 @@ else if (nType == RENDER_CORONAS) {
 		glareRenderer.LoadShader (10);
 	return 0;
 	}
-else if (nType == RENDER_GEOMETRY) {
+else if (nType == RENDER_TYPE_GEOMETRY) {
 	ogl.SetDepthMode (GL_EQUAL); 
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
 	ogl.SetDepthWrite (false);
 	}
-else if (nType == RENDER_SKYBOX) {
+else if (nType == RENDER_TYPE_SKYBOX) {
 	ogl.SetDepthMode (GL_LEQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (true);
@@ -530,6 +606,7 @@ else {
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthWrite (false);
 	}
+#endif
 
 ogl.SetupTransform (1);
 #if GEOMETRY_VBOS
@@ -565,13 +642,13 @@ if (bVBO) {
 else 
 #endif
 	{
-	if ((nType == RENDER_DEPTH) || (nType >= RENDER_GEOMETRY)) {
+	if ((nType == RENDER_TYPE_DEPTH) || (nType >= RENDER_TYPE_GEOMETRY)) {
 		ogl.EnableClientStates (1, bColor, bNormals, GL_TEXTURE1);
 		OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 		if (bColor)
 			OglColorPointer (4, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.color.Buffer ()));
 		OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid*> (FACES.vertices.Buffer ()));
-		if (nType < RENDER_CORONAS) {
+		if (nType < RENDER_TYPE_CORONAS) {
 			ogl.EnableClientStates (1, bColor, 0, GL_TEXTURE2);
 			OglTexCoordPointer (2, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.ovlTexCoord.Buffer ()));
 			if (bColor)
@@ -594,12 +671,19 @@ else
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
 
-if ((nType == RENDER_LIGHTS) || (nType == RENDER_COLOR)) {
+#if 1
+if (!renderInfo [nType].bTextured) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);
 	}
-
+#else
+if ((nType == RENDER_TYPE_LIGHTS) || (nType == RENDER_TYPE_COLOR)) {
+	ogl.SelectTMU (GL_TEXTURE0);
+	ogl.BindTexture (0);
+	ogl.SetTexturing (false);
+	}
+#endif
 glColor3f (1,1,1);
 ogl.ClearError (0);
 return 1;
@@ -634,13 +718,13 @@ void RenderSkyBoxFaces (void)
 
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bFullBright = 1;
-	BeginRenderFaces (RENDER_SKYBOX, 0);
+	BeginRenderFaces (RENDER_TYPE_SKYBOX, 0);
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 			if (faceP->m_info.bVisible = !FaceIsCulled (nSegment, faceP->m_info.nSide))
-				RenderMineFace (SEGMENTS + nSegment, faceP, RENDER_SKYBOX);
+				RenderMineFace (SEGMENTS + nSegment, faceP, RENDER_TYPE_SKYBOX);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -739,7 +823,7 @@ short RenderFaceList (int nType)
 	CSegFace**	flP = gameData.render.renderFaces [gameStates.render.bTransparency].Buffer ();
 	CSegFace*	faceP;
 	int			i, j, nFaces = 0, nSegment = -1;
-	int			bAutomap = (nType <= RENDER_GEOMETRY);
+	int			bAutomap = (nType <= RENDER_TYPE_GEOMETRY);
 
 for (i = 0, j = gameData.render.nRenderFaces [gameStates.render.bTransparency]; i < j; i++) {
 	faceP = flP [i];
@@ -749,9 +833,9 @@ for (i = 0, j = gameData.render.nRenderFaces [gameStates.render.bTransparency]; 
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			nDbgSeg = nDbgSeg;
 #endif
-		if (gameStates.render.nType == RENDER_DEPTH)
+		if (gameStates.render.nType == RENDER_TYPE_DEPTH)
 			VisitSegment (nSegment, bAutomap);
-		else if (gameStates.render.nType == RENDER_LIGHTS)
+		else if (gameStates.render.nType == RENDER_TYPE_LIGHTS)
 			lightManager.Index (0)[0].nActive = -1;
 		}
 	if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
@@ -767,7 +851,7 @@ short RenderFaceList (int nType)
 	tFaceListItem*	fliP = gameData.render.faceList.Buffer ();
 	CSegFace*		faceP;
 	int				i, j, nFaces = 0, nSegment = -1;
-	int				bAutomap = (nType <= RENDER_GEOMETRY);
+	int				bAutomap = (nType <= RENDER_TYPE_GEOMETRY);
 
 #if 1
 if (automap.Display ())
@@ -782,9 +866,9 @@ for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 				nDbgSeg = nDbgSeg;
 #endif
-			if (gameStates.render.nType == RENDER_DEPTH)
+			if (gameStates.render.nType == RENDER_TYPE_DEPTH)
 				VisitSegment (nSegment, bAutomap);
-			else if (gameStates.render.nType == RENDER_LIGHTS)
+			else if (gameStates.render.nType == RENDER_TYPE_LIGHTS)
 				lightManager.Index (0)[0].nActive = -1;
 			}
 		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
@@ -867,9 +951,9 @@ return nFaces;
 
 short RenderSegments (int nType)
 {
-	int	i, nFaces = 0, bAutomap = (nType <= RENDER_GEOMETRY);
+	int	i, nFaces = 0, bAutomap = (nType <= RENDER_TYPE_GEOMETRY);
 
-if (nType <= RENDER_GEOMETRY) 
+if (nType <= RENDER_TYPE_GEOMETRY) 
 	nFaces = RenderFaceList (nType);
 else {
 	// render mine segment by segment
@@ -923,7 +1007,7 @@ return SortFaces ();
 
 void RenderFaceList (int nType, int bFrontToBack)
 {
-if (nType > RENDER_OBJECTS) {	//back to front
+if (nType > RENDER_TYPE_OBJECTS) {	//back to front
 	BeginRenderFaces (nType, 0);
 	RenderSegments (nType);
 	}

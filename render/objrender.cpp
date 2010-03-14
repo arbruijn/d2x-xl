@@ -655,7 +655,7 @@ if (gameStates.render.bBuildModels)
 	xLight = I2X (1);
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
-	if ((gameStates.render.nType != RENDER_TRANSPARENCY) && (bCloaked || bEnergyWeapon) && (gameStates.render.nShadowPass != 2)) {
+	if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (bCloaked || bEnergyWeapon) && (gameStates.render.nShadowPass != 2)) {
 		transparencyRenderer.AddObject (objP);
 		return 1;
 		}
@@ -788,7 +788,7 @@ return 1;
 
 static int RenderRobotModel (CObject* objP, int bSpectate)
 {
-if (gameStates.render.nType != RENDER_OBJECTS)
+if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 	return 0;
 if (automap.Display () && !AM_SHOW_ROBOTS)
 	return 0;
@@ -815,7 +815,7 @@ return 1;
 
 static int RenderReactorModel (CObject* objP, int bSpectate)
 {
-if (gameStates.render.nType != RENDER_OBJECTS)
+if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 	return 0;
 DrawPolygonObject (objP, 0);
 if (!gameStates.render.bQueryCoronas && (gameStates.render.nShadowPass != 2)) {
@@ -834,7 +834,7 @@ if (automap.Display () && !AM_SHOW_POWERUPS (1))
 if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->info.nId) && (objP->info.nId != SMALLMINE_ID))
 	ConvertWeaponToVClip (objP);
 else {
-	if (gameStates.render.nType != RENDER_OBJECTS)
+	if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 		return 0;
 	if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
 		if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
@@ -950,7 +950,7 @@ return 1;
 
 static int RenderFireball (CObject* objP, int bForce)
 {
-if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_OBJECTS)))
+if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_TYPE_OBJECTS)))
 	return 0;
 if (gameStates.render.nShadowPass != 2) {
 	DrawFireball (objP);
@@ -965,7 +965,7 @@ return 1;
 
 static int RenderExplBlast (CObject* objP, int bForce)
 {
-if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_OBJECTS)))
+if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_TYPE_OBJECTS)))
 	return 0;
 if (gameStates.render.nShadowPass != 2)
 	DrawExplBlast (objP);
@@ -976,7 +976,7 @@ return 1;
 
 static int RenderShrapnel (CObject* objP, int bForce)
 {
-if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_OBJECTS)))
+if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_TYPE_OBJECTS)))
 	return 0;
 if (gameStates.render.nShadowPass != 2)
 	shrapnelManager.Draw (objP);
@@ -987,7 +987,7 @@ return 1;
 
 static int RenderWeapon (CObject* objP, int bForce)
 {
-if (gameStates.render.nType != RENDER_OBJECTS)
+if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 	return 0;
 if (gameStates.render.nShadowPass != 2) {
 	if (automap.Display () && !AM_SHOW_POWERUPS (1))
@@ -1015,7 +1015,7 @@ return 1;
 
 static int RenderHostage (CObject* objP, int bForce)
 {
-if (gameStates.render.nType != RENDER_OBJECTS)
+if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 	return 0;
 if (ConvertHostageToModel (objP))
 	DrawPolygonObject (objP, 0);
@@ -1030,7 +1030,7 @@ static int RenderPowerup (CObject* objP, int bForce)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
-if (gameStates.render.nType != RENDER_OBJECTS)
+if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 	return 0;
 if (objP->PowerupToDevice ()) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
@@ -1045,7 +1045,7 @@ return 1;
 
 static int RenderLaser (CObject* objP, int bForce)
 {
-if (gameStates.render.bQueryCoronas && (gameStates.render.nType != RENDER_OBJECTS))
+if (gameStates.render.bQueryCoronas && (gameStates.render.nType != RENDER_TYPE_OBJECTS))
 	return 0;
 if (gameStates.render.nShadowPass != 2) {
 	RenderLaser (objP);
@@ -1118,7 +1118,7 @@ gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDe
 
 switch (objP->info.renderType) {
 	case RT_NONE:
-		if (gameStates.render.nType != RENDER_OBJECTS)
+		if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 			return 0;
 		break;
 
@@ -1127,7 +1127,7 @@ switch (objP->info.renderType) {
 			objP->info.renderType = (objP->info.nId == SMOKE_ID) ? RT_SMOKE : RT_LIGHTNING;
 			return 0;
 			}
-		if (gameStates.render.nType != RENDER_OBJECTS)
+		if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 			return 0;
 		if (nType == OBJ_PLAYER) {
 			if (!RenderPlayerModel (objP, bSpectate))
@@ -1160,14 +1160,14 @@ switch (objP->info.renderType) {
 		break;
 
 	case RT_MORPH:
-		if (gameStates.render.nType != RENDER_OBJECTS)
+		if (gameStates.render.nType != RENDER_TYPE_OBJECTS)
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
 			objP->MorphDraw ();
 		break;
 
 	case RT_THRUSTER:
-		if (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_OBJECTS))
+		if (gameStates.render.bQueryCoronas || (gameStates.render.nType != RENDER_TYPE_OBJECTS))
 			return 0;
 		if (nWindow && (objP->mType.physInfo.flags & PF_WIGGLE))
 			break;

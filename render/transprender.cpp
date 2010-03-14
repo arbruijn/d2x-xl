@@ -122,7 +122,7 @@ if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0))
 
 int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemSize, CFixVector vPos, int nOffset, bool bClamp, int bTransformed)
 {
-if (gameStates.render.nType == RENDER_TRANSPARENCY)
+if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
 	return 0;
 if (m_data.nFreeItems <= 0)
 	return 0;
@@ -746,7 +746,7 @@ glColor3f (1,1,1);
 if (bGrayScale)
 	bColored = 0;
 else if (bLightmap) {
-	int nPrevBuffer = ogl.SelectDrawBuffer (2);
+	ogl.SelectDrawBuffer (2);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.EnableClientStates (1, bColored, 1, GL_TEXTURE0);
@@ -776,7 +776,7 @@ else if (bLightmap) {
 		lightManager.Headlights ().SetupShader ();
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-	ogl.SelectDrawBuffer (nPrevBuffer);
+	ogl.ChooseDrawBuffer ();
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.SetTexturing (true);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
@@ -1177,7 +1177,7 @@ if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	}
 PROF_START
 //glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-gameStates.render.nType = RENDER_TRANSPARENCY;
+gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
 ogl.ResetClientStates ();

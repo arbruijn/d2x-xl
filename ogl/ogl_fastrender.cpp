@@ -185,14 +185,14 @@ int SetupRenderShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bT
 {
 	int	nType, nShader = -1;
 
-if (!ogl.m_states.bShadersOk || (gameStates.render.nType == RENDER_SKYBOX))
+if (!ogl.m_states.bShadersOk || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
 	return -1;
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
-if ((gameStates.render.nType >= RENDER_GEOMETRY) && !bColored && gameOpts->render.automap.bGrayOut)
+if ((gameStates.render.nType >= RENDER_TYPE_GEOMETRY) && !bColored && gameOpts->render.automap.bGrayOut)
 	nShader = SetupGrayScaleShader (nType, colorP);
 else if (bColorKey || bMultiTexture || (bColored > 1))
 	nShader = SetupTexMergeShader (bColored, nType);
@@ -634,7 +634,7 @@ if (bmTop) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
 gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
-if (faceP->m_info.nTransparent && !bMonitor && (gameStates.render.nType < RENDER_SKYBOX)) {
+if (faceP->m_info.nTransparent && !bMonitor && (gameStates.render.nType < RENDER_TYPE_SKYBOX)) {
 	faceP->m_info.nRenderType = gameStates.render.history.nType;
 	faceP->m_info.bColored = bColored;
 	transparencyRenderer.AddFace (faceP);
