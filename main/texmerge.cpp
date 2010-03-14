@@ -408,35 +408,11 @@ switch (nType) {
 
 //------------------------------------------------------------------------------
 
-#define N_TEXMERGE_SHADERS	8
+#define N_TEXMERGE_SHADERS	6
 
-int tmShaderProgs [N_TEXMERGE_SHADERS] = {-1,-1,-1,-1,-1,-1,-1,-1};
+int tmShaderProgs [N_TEXMERGE_SHADERS] = {-1,-1,-1,-1,-1,-1};
 
 const char *texMergeFS [N_TEXMERGE_SHADERS] = {
-	// grayscale
-	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"//uniform float grAlpha;\r\n" \
-	"void main(void){" \
-	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
-	"vec4 texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
-	"vec4 color = vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*gl_Color;\r\n" \
-	"float l = (color.r + color.g + color.b) / 3.0;\r\n" \
-	"gl_FragColor = vec4 (l, l, l, color.a);\r\n" \
-   "}"
-,
-	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
-	"//uniform float grAlpha;\r\n" \
-	"vec4 decalColor, texColor;\r\n" \
-	"float bMask;\r\n" \
-	"void main(void){" \
-	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
-	"decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
-	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
-	"vec4 color = vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*gl_Color;\r\n" \
-	"float l = (color.r + color.g + color.b) / 3.0;\r\n" \
-	"gl_FragColor = bMask * vec4 (l, l, l, color.a);\r\n" \
-	"}"
-,
 	// colored
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"//uniform float grAlpha;\r\n" \
@@ -512,19 +488,6 @@ const char *texMergeVS [N_TEXMERGE_SHADERS] = {
 ,
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_Position=ftransform();"\
 	"gl_FrontColor=gl_Color;}"
 ,
@@ -580,9 +543,9 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 //------------------------------------------------------------------------------
 
-int SetupTexMergeShader (int bColored, int nType)
+int SetupTexMergeShader (int bTransparent, int nType)
 {
-	int nShader = nType + bColored * 2;
+	int nShader = nType + bTransparent * 2;
 
 if (bColored < 2)
 	nShader -= 2;

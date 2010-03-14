@@ -516,7 +516,7 @@ static tRenderInfo renderInfo [2][RENDER_TYPES] = {
 	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler}, // HEADLIGHTS
 	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler}, // DEPTH
 	{GL_DST_COLOR, GL_ZERO, GL_EQUAL, false, 0, 1, 0, 1, 0, 1, DefaultShaderHandler}, // COLOR
-	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler}, // GEOMETRY
+	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, -1, 1, 0, 1, 1, DefaultShaderHandler}, // GEOMETRY
 	{GL_ONE, GL_ONE, GL_ALWAYS, false, 0, 0, 0, 0, 1, 1, CoronaShaderHandler}, // CORONAS
 	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, 0, 1, 1, 1, 1, DefaultShaderHandler}, // SKYBOX
 	{GL_ONE, GL_ZERO, GL_LEQUAL, false, 0, 0, 1, 1, 1, 1, DefaultShaderHandler}, // OBJECTS
@@ -544,7 +544,7 @@ CTexture::Wrap (GL_REPEAT);
 	tRenderInfo&	ri = renderInfo [gameStates.render.bFullBright][nType];
 
 	int	bLightmaps = lightmapManager.HaveLightmaps () && ri.bLightmaps;
-	int	bColor = ri.bColor;
+	int	bColor = (ri.bColor < 0) ? !gameStates.render.bPerPixelLighting : ri.bColor;
 	int	bTexCoord = ri.bTexCoord;
 	int	bNormals =  ri.bNormals;
 
@@ -878,12 +878,6 @@ if (gameStates.render.nType == RENDER_TYPE_GEOMETRY) {
 #endif
 				if (gameStates.render.bFullBright)
 					VisitSegment (nSegment, bAutomap);
-				}
-			if (gameStates.render.bFullBright) {
-				ogl.DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE2);
-				ogl.DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE1);
-				ogl.DisableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
-				glColor3f (1,1,1);
 				}
 			if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
 				nFaces++;
