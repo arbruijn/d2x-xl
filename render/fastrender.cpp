@@ -489,7 +489,8 @@ typedef struct tRenderInfo {
 	pShaderHandler	shaderHandler;
 } tRenderInfo;
 
-static tRenderInfo renderInfo [RENDER_TYPES] = {
+static tRenderInfo renderInfo [2][RENDER_TYPES] = {
+	{
 #if RENDER_COLOR_SEPARATELY
 	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 0, 1, 1, 1, 0, DefaultShaderHandler}, // LIGHTMAPS
 #else
@@ -504,6 +505,23 @@ static tRenderInfo renderInfo [RENDER_TYPES] = {
 	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, 0, 1, 1, 1, 1, DefaultShaderHandler}, // SKYBOX
 	{GL_ONE, GL_ZERO, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler}, // OBJECTS
 	{GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_LEQUAL, false, 0, 1, 1, 1, 1, 1, DefaultShaderHandler} // TRANSPARENCY
+	},
+	{
+#if RENDER_COLOR_SEPARATELY
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 0, 1, 1, 1, 0, DefaultShaderHandler}, // LIGHTMAPS
+#else
+	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, LightmapShaderHandler},
+#endif
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, LightShaderHandler}, // LIGHTS
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler}, // HEADLIGHTS
+	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler}, // DEPTH
+	{GL_ONE, GL_ZERO, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, DefaultShaderHandler}, // COLOR
+	{GL_ONE, GL_ZERO, GL_EQUAL, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler}, // GEOMETRY
+	{GL_ONE, GL_ONE, GL_ALWAYS, false, 0, 0, 0, 0, 1, 1, CoronaShaderHandler}, // CORONAS
+	{GL_ONE, GL_ZERO, GL_LEQUAL, true, 0, 0, 1, 1, 1, 1, DefaultShaderHandler}, // SKYBOX
+	{GL_ONE, GL_ZERO, GL_LEQUAL, false, 0, 0, 1, 1, 1, 1, DefaultShaderHandler}, // OBJECTS
+	{GL_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_LEQUAL, false, 0, 0, 1, 1, 1, 1, DefaultShaderHandler} // TRANSPARENCY
+	}
 	};
 
 int BeginRenderFaces (int nType, int bDepthOnly)
@@ -523,19 +541,21 @@ ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 
 #if 1
-	int	bLightmaps = lightmapManager.HaveLightmaps () && renderInfo [nType].bLightmaps;
-	int	bColor = !gameStates.render.bFullBright && renderInfo [nType].bColor;
-	int	bTexCoord = renderInfo [nType].bTexCoord;
-	int	bNormals =  renderInfo [nType].bNormals;
+	tRenderInfo&	ri = renderInfo [gameStates.render.bFullBright][nType];
 
-ogl.SetBlendMode (renderInfo [nType].nSrcBlendMode, renderInfo [nType].nDstBlendMode);
-ogl.SetDepthMode (renderInfo [nType].nDepthMode);
-ogl.SetDepthWrite (renderInfo [nType].bDepthWrite);
-if (renderInfo [nType].bColorMask)
+	int	bLightmaps = lightmapManager.HaveLightmaps () && ri.bLightmaps;
+	int	bColor = ri.bColor;
+	int	bTexCoord = ri.bTexCoord;
+	int	bNormals =  ri.bNormals;
+
+ogl.SetBlendMode (ri.nSrcBlendMode, ri.nDstBlendMode);
+ogl.SetDepthMode (ri.nDepthMode);
+ogl.SetDepthWrite (ri.bDepthWrite);
+if (ri.bColorMask)
 	ogl.ColorMask (1,1,1,1,1);
 else
 	ogl.ColorMask (0,0,0,0,0);
-if (!renderInfo [nType].shaderHandler ())
+if (!ri.shaderHandler ())
 	return 0;
 
 #else
@@ -682,7 +702,7 @@ else
 	}
 
 #if 1
-if (!renderInfo [nType].bTextured) {
+if (!ri.bTextured) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);

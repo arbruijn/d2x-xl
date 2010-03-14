@@ -418,7 +418,7 @@ return (faceP->m_info.nColored >= 0)
 		 ? faceP->m_info.nColored
 		 : faceP->m_info.nColored = !automap.Display () || automap.m_visited [0][faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
 #else
-return faceP->m_info.nColored;
+return gameStates.render.bFullBright || faceP->m_info.nColored;
 #endif
 }
 
