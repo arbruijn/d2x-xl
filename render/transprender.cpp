@@ -689,6 +689,11 @@ if (!bmBot) {
 	}
 #endif
 
+#if 0 //DBG
+if (!bTextured)
+	return;
+#endif
+
 faceP = item->faceP;
 triP = item->triP;
 
@@ -697,17 +702,24 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 	nDbgSeg = nDbgSeg;
 #endif
 
-if ((bmTop = faceP->bmTop))
-	bmTop = bmTop->Override (-1);
-if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
-	bmBot = bmTop;
-	bmTop = bmMask = NULL;
-	bDecal = -1;
-	faceP->m_info.nRenderType = gameStates.render.history.nType = 1;
+if (bTextured) {
+	if ((bmTop = faceP->bmTop))
+		bmTop = bmTop->Override (-1);
+	if (bmTop && !(bmTop->Flags () & (BM_FLAG_SUPER_TRANSPARENT | BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU))) {
+		bmBot = bmTop;
+		bmTop = bmMask = NULL;
+		bDecal = -1;
+		faceP->m_info.nRenderType = gameStates.render.history.nType = 1;
+		}
+	else {
+		bDecal = (bmTop != NULL);
+		bmMask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
+		}
 	}
 else {
-	bDecal = (bmTop != NULL);
-	bmMask = (bDecal && ((bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0) && gameStates.render.textures.bHaveMaskShader) ? bmTop->Mask () : NULL;
+	shaderManager.Deploy (-1);
+	bmTop = bmMask = NULL;
+	bDecal = 0;
 	}
 
 int bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
