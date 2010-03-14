@@ -399,7 +399,7 @@ if (!gameStates.render.bFullBright) {
 	SetupDepthBuffer (RENDER_TYPE_DEPTH);
 	gameStates.render.bRenderTransparency = 0;
 	ogl.ColorMask (1,1,1,1,1);
-#	if 0
+#	if RENDER_COLOR_SEPARATELY
 	RenderSegmentList (RENDER_TYPE_COLOR, 1);		// render vertex color
 	if (gameStates.render.bPerPixelLighting) {
 		RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);	// render opaque geometry
@@ -414,9 +414,9 @@ if (!gameStates.render.bFullBright) {
 		if (gameStates.render.bPerPixelLighting == 2)
 			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);		// render opaque geometry
 		}
+#	endif
 	if (gameStates.render.bHeadlights)
 		RenderSegmentList (RENDER_TYPE_HEADLIGHTS, 1);
-#	endif
 	}
 #endif
 

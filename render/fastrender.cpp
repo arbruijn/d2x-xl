@@ -443,6 +443,12 @@ return (0 <= LoadPerPixelLightingShader ());
 }
 
 
+static int LightmapShaderHandler (void)
+{
+return (SetupColorShader () != 0);
+}
+
+
 static int HeadlightShaderHandler (void)
 {
 return (0 <= lightManager.Headlights ().SetupShader ());
@@ -484,7 +490,11 @@ typedef struct tRenderInfo {
 } tRenderInfo;
 
 static tRenderInfo renderInfo [RENDER_TYPES] = {
-	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, DefaultShaderHandler},
+#if RENDER_COLOR_SEPARATELY
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, DefaultShaderHandler},
+#else
+	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 0, LightmapShaderHandler},
+#endif
 	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, LightShaderHandler},
 	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler},
 	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 1, DefaultShaderHandler},
