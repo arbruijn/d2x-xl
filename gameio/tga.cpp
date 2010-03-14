@@ -59,7 +59,7 @@ if ((bmP->BPP () == 4) && bmP->Buffer ()) {
 
 void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightness, bool bSwapRB = true)
 {
-	int			i, n, nAlpha = 0, nVisible = 0, nFrames;
+	int			i, n, nAlpha = 0, nFrames;
 	int			h = bmP->Height ();
 	int			w = bmP->Width ();
 	tRgbaColorf	avgColor;
@@ -83,32 +83,31 @@ if (bmP->BPP () == 3) {
 	tRgbColorf	ac [MAX_THREADS];
 
 	memset (ac, 0, sizeof (ac));
-#pragma omp parallel private (tId)
-	{
-	tId = omp_get_thread_num ();
-#	pragma omp for
-	for (i = 0; i < j; i++) {
-		::Swap (p [i].red, p [i].blue);
-		ac [tId].red += p [i].red;
-		ac [tId].green += p [i].green;
-		ac [tId].blue += p [i].blue;
+#	pragma omp parallel private (tId)
+		{
+		tId = omp_get_thread_num ();
+#		pragma omp for
+		for (i = 0; i < j; i++) {
+			::Swap (p [i].red, p [i].blue);
+			ac [tId].red += p [i].red;
+			ac [tId].green += p [i].green;
+			ac [tId].blue += p [i].blue;
+			}
 		}
 	for (i = 0; i < GetNumThreads (); i++) {
 		avgColor.red += ac [i].red;
 		avgColor.green += ac [i].green;
 		avgColor.blue += ac [i].blue;
 		}
-	avgColor.alpha = 1.0f;
-	}
 #else
 	for (i = h * w; i; i--, p++) {
 		::Swap (p->red, p->blue);
-		avgColor.red += p->red;
-		avgColor.green += p->green;
-		avgColor.blue += p->blue;
+		avgColor.red += float (p->red);
+		avgColor.green += float (p->green);
+		avgColor.blue += float (p->blue);
 		}
 #endif
-	nVisible = w * h * 255;
+	avgColor.alpha = 1.0f;
 	}
 else {
 	int nSuperTransp;
@@ -128,7 +127,7 @@ else {
 #pragma omp parallel private (tId)
 		{
 		tId = omp_get_thread_num ();
-#	pragma omp for reduction (+: nVisible)
+#	pragma omp for
 		for (i = 0; i < j; i++) {
 			if (bSwapRB)
 				::Swap (p [i].red, p [i].blue);
@@ -153,7 +152,6 @@ else {
 				avc [tId].alpha += p [i].alpha;
 				nac [tId]++;
 				}
-			nVisible += p [i].alpha;
 			a = float (p [i].alpha) / 255.0f;
 			avc [tId].red += p [i].red * a;
 			avc [tId].green += p [i].green * a;
@@ -193,7 +191,6 @@ else {
 				avgColor.alpha += p->alpha;
 				nAlpha++;
 				}
-			nVisible += p->alpha;
 			a = float (p->alpha) / 255.0f;
 			avgColor.red += p->red * a;
 			avgColor.green += p->green * a;
@@ -217,10 +214,10 @@ else {
 			}
 		}
 	}
-a = float (nVisible) / 255.0f;
-avgColorb.red = ubyte (avgColor.red / a);
-avgColorb.green = ubyte (avgColor.green / a);
-avgColorb.blue = ubyte (avgColor.blue / a);
+a = 255.0f / float (w * h);
+avgColorb.red = ubyte (avgColor.red * a);
+avgColorb.green = ubyte (avgColor.green * a);
+avgColorb.blue = ubyte (avgColor.blue * a);
 bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB (bmP);
