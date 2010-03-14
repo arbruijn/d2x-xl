@@ -858,7 +858,7 @@ if (gameStates.render.nType == RENDER_TYPE_GEOMETRY) {
 		int				i, j, nSegment = -1;
 		int				bAutomap = (nType == 0);
 
-	if (automap.Display ())
+	if (gameStates.render.bFullBright)
 		gameData.render.faceIndex.usedKeys.SortAscending (0, gameData.render.faceIndex.nUsedKeys - 1);
 	for (i = 0; i < gameData.render.faceIndex.nUsedKeys; i++) {
 		for (j = gameData.render.faceIndex.roots [gameData.render.faceIndex.usedKeys [i]]; j >= 0; j = fliP [j].nNextItem) {
@@ -866,7 +866,7 @@ if (gameStates.render.nType == RENDER_TYPE_GEOMETRY) {
 			if (!faceP->m_info.bVisible)
 				continue;
 			LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
-			if (!gameStates.render.bFullBright) {
+			if (gameStates.render.bFullBright) {
 				faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
 				faceP->m_info.nColored = FaceIsColored (faceP);
 				}
