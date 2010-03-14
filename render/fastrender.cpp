@@ -518,6 +518,11 @@ else if (nType == RENDER_GEOMETRY) {
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
 	ogl.SetDepthWrite (false);
 	}
+else if (nType == RENDER_SKYBOX) {
+	ogl.SetDepthMode (GL_LEQUAL); 
+	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (true);
+	}
 else {
 	ogl.SetDepthMode (GL_LEQUAL); 
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
@@ -626,16 +631,15 @@ void RenderSkyBoxFaces (void)
 	int			i, j, nSegment, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
-	ogl.SetDepthWrite (true);
 	gameStates.render.bFullBright = 1;
 	BeginRenderFaces (RENDER_SKYBOX, 0);
+	ogl.SetDepthTest (false);
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
-			if (!(faceP->m_info.bVisible = !FaceIsCulled (nSegment, faceP->m_info.nSide)))
-				continue;
-			RenderMineFace (SEGMENTS + nSegment, faceP, RENDER_SKYBOX);
+			if (faceP->m_info.bVisible = !FaceIsCulled (nSegment, faceP->m_info.nSide))
+				RenderMineFace (SEGMENTS + nSegment, faceP, RENDER_SKYBOX);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;

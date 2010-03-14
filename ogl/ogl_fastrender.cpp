@@ -579,7 +579,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 
-SetRenderStates (faceP, bmBot, bmTop, 1, 0, 1, true);
+SetRenderStates (faceP, bmBot, bmTop, 1, 0, 1);
 gameData.render.nTotalFaces++;
 #if DBG
 RenderWireFrame (faceP, 1);
@@ -656,7 +656,7 @@ else {
 if (faceBuffer.nFaces <= 1)
 #endif
 
-SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, true);
+SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored);
 gameData.render.nTotalFaces++;
 #if DBG
 RenderWireFrame (faceP, bTextured);

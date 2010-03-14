@@ -241,7 +241,6 @@ void RenderSkyBox (int nWindow)
 {
 PROF_START
 if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
-	ogl.SetDepthWrite (true);
 	RenderSkyBoxFaces ();
 	RenderSkyBoxObjects ();
 	}
@@ -414,9 +413,8 @@ if (!gameStates.render.bFullBright) {
 	}
 #endif
 
-
-RenderSegmentList (RENDER_GEOMETRY, 1);	// render opaque geometry
 #if 1
+RenderSegmentList (RENDER_GEOMETRY, 1);	// render opaque geometry
 gameStates.render.bTransparency = 1;
 RenderSegmentList (RENDER_GEOMETRY, 1);	// render transparent geometry
 gameStates.render.bTransparency = 0;
