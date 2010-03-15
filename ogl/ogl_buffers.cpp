@@ -329,7 +329,6 @@ if (HaveDrawBuffer ()) {
 	int bStereo = 0;
 
 	SetDrawBuffer (GL_BACK, 0);
-	glClear (GL_DEPTH_BUFFER_BIT);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
@@ -369,6 +368,7 @@ if (HaveDrawBuffer ()) {
 		}
 	glColor3f (1,1,1);
 	OglDrawArrays (GL_QUADS, 0, 4);
+	ResetClientStates (0);
 	SelectDrawBuffer (0);
 	if (bStereo)
 		shaderManager.Deploy (-1);
