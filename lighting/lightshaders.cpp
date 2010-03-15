@@ -54,7 +54,8 @@ const char *multipleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) / fScale;\r\n" \
+	"	vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 colorSum = vec4 (texColor.rgb + gl_Color.rgb, gl_Color.a) / fScale;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -96,7 +97,8 @@ const char *singleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) / fScale;\r\n" \
+	"	vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
+	"	vec4 colorSum = vec4 (texColor.rgb + gl_Color.rgb, gl_Color.a);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \

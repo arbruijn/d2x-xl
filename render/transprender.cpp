@@ -730,7 +730,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 #endif
 
 int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visited [0][item->nSegment];
-int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale;
+int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale && SetupLightmap (faceP);
 
 ogl.ResetClientStates (bLightmap + bTextured + (bmTop != NULL) + (bmMask != NULL));
 
@@ -743,19 +743,29 @@ else if (bLightmap) {
 	ogl.SelectDrawBuffer (2);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.EnableClientStates (1, bColored, 1, GL_TEXTURE0);
-	if (bColored)
-		OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
-	else
-		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
+	ogl.EnableClientStates (1, bTextured, 1, GL_TEXTURE0);
+	if (!bTextured) 
+		glColor3f (1,1,1);	// if not textured, the color takes the place of the texture based color information
+	else {
+		if (bColored)
+			OglColorPointer (4, GL_FLOAT, 0, FACES.color + nIndex);
+		else
+			glColor4fv (reinterpret_cast<GLfloat*> (item->color));
+		}
 	OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-	if ((!bTextured || SetupColorShader ()) && SetupLightmap (faceP))
+#if 0
+	if (!SetupLightmap (faceP))
+		return;
+#endif
+	if (gameStates.render.bPerPixelLighting == 1) {
+		if (bTextured && !SetupColorShader ())	// only need to render the color to the light buffer if face is textured
+			return;
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
-	if (gameStates.render.bPerPixelLighting == 2) {
+		}
+	else {
 		ogl.EnableClientState (GL_NORMAL_ARRAY, GL_TEXTURE0);
 		OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
-		ogl.SetBlendMode (GL_ONE, GL_ONE);
 		ogl.m_states.iLight = 0;
 		gameStates.render.nLights = -1;
 		lightManager.Index (0)[0].nActive = -1;
@@ -763,6 +773,7 @@ else if (bLightmap) {
 			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 			if (ogl.m_states.iLight >= ogl.m_states.nLights)
 				break;
+			ogl.SetBlendMode (GL_ONE, GL_ONE);
 			}
 		}
 	if (gameStates.render.bHeadlights) {
