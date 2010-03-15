@@ -81,6 +81,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 char bPauseableMenu = 0;
 char bAlreadyShowingInfo = 0;
 
+//------------------------------------------------------------------------------
+
+bool MenuRenderTimeout (int& t0, int tFade = -1)
+{
+int i = SDL_GetTicks ();
+
+if ((tFade < 0) || (i - tFade > gameOpts->menus.nFade)) {
+	if (i - t0 < 25) {
+		G3_SLEEP (1);
+		return false;
+		}
+	}
+t0 = i;
+return true;
+}
 //------------------------------------------------------------------------------ 
 //------------------------------------------------------------------------------ 
 //------------------------------------------------------------------------------ 
@@ -399,15 +414,8 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 {
 	static	int t0 = 0;
 
-	int	sx, sy, i = SDL_GetTicks ();
-
-if (i - m_tEnter > gameOpts->menus.nFade) {
-	if (i - t0 < 25) {
-		G3_SLEEP (1);
-		return;
-		}
-	t0 = i;
-	}
+if (!MenuTimeout (t0, m_tEnter))
+	return;
 
 m_bRedraw = 0;
 
@@ -480,8 +488,8 @@ if (m_props.bIsScrollBox) {
 	if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
 		m_nLastScrollCheck = m_props.nScrollOffset;
 		fontManager.SetCurrent (SELECTED_FONT);
-		sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-		sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
+		int sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+		int sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
 		if (m_props.nScrollOffset > m_props.nMaxNoScroll)
 			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
 		else

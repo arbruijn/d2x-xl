@@ -388,6 +388,8 @@ int SwitchDisplayMode (int dir);
 void IpxSetDriver (int ipx_driver);
 void DoNewIPAddress (void);
 
+bool MenuRenderTimeout (int& t0, int tFade = -1);
+
 //------------------------------------------------------------------------------
 
 #endif /* _MENU_H */

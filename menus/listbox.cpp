@@ -81,6 +81,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void CListBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
+	static int t0 = 0;
+
+if (!MenuTimeout (t0, -1))
+	return;
+
 backgroundManager.Redraw ();
 FadeIn ();
 fontManager.SetCurrent (NORMAL_FONT);
