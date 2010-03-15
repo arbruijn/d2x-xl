@@ -742,7 +742,6 @@ if (bLightmap) {
 
 ogl.ClearError (1);
 ogl.SetupTransform (1);
-glColor3f (1,1,1);
 if (bGrayScale)
 	bColored = 0;
 else if (bLightmap) {
@@ -782,8 +781,8 @@ else if (bLightmap) {
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
 	ogl.SetDepthMode (GL_LEQUAL);
 	bColored = 2;
-	glColor3f (1,1,1);
 	}
+glColor3f (1,1,1);
 
 if (bmTop) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmap);
