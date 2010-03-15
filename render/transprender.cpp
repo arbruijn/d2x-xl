@@ -516,13 +516,11 @@ return Add (tiSphere, &item, sizeof (item), objP->info.position.vPos);
 int CTransparencyRenderer::AddParticle (CParticle *particle, float fBrightness, int nThread)
 {
 	tTranspParticle	item;
-//	fix					z;
 
 if ((particle->m_nType < 0) || (particle->m_nType >= PARTICLE_TYPES))
 	return 0;
 item.particle = particle;
 item.fBrightness = fBrightness;
-//particle->Transform (gameStates.render.bPerPixelLighting == 2);
 return Add (tiParticle, &item, sizeof (item), particle->m_vPos, 10); //(gameOpts->render.effects.bSoftParticles & 1) ? -10 : 0);
 }
 
@@ -740,7 +738,7 @@ if (bGrayScale)
 	bColored = 0;
 else if (bLightmap) {
 	m_data.bmP [0] = NULL;
-#if 0
+#if 1
 	gameStates.render.bRenderIndirect = 1;
 	ogl.SelectDrawBuffer (2);
 #endif
@@ -767,27 +765,23 @@ else if (bLightmap) {
 			return;
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-	else {
+	else if (0 <= LoadPerPixelLightingShader ()) {
 		ogl.m_states.iLight = 0;
 		gameStates.render.nLights = -1;
 		lightManager.Index (0)[0].nActive = -1;
-		ogl.EnableLighting (1);
 		while (0 < SetupPerPixelLightingShader (faceP)) {
 			OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 			if (ogl.m_states.iLight >= ogl.m_states.nLights)
 				break;
 			ogl.SetBlendMode (GL_ONE, GL_ONE);
 			}
-		ogl.DisableLighting ();
 		}
 	if (gameStates.render.bHeadlights) {
 		ogl.SetBlendMode (GL_ONE, GL_ONE);
-		ogl.EnableLighting (1);
 		lightManager.Headlights ().SetupShader ();
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
-		ogl.DisableLighting ();
 		}
-#if 1
+#if 0
 	ogl.ResetTransform (1);
 	return;
 #endif

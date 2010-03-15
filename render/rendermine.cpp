@@ -393,7 +393,7 @@ SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 
-#if 1
+#if 0
 
 gameStates.render.bFullBright = -1; // hack to make the renderer multiply color with the textures
 RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);

@@ -84,7 +84,7 @@ const char *multipleLightFS = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (1.0, 0.5, 0.0, 1.0); //vec4 (colorSum.rgb, gl_Color.a * fScale);\r\n" \
+	"	gl_FragColor = vec4 (colorSum.rgb, gl_Color.a * fScale);\r\n" \
 	"	}"
 	};
 
@@ -327,7 +327,6 @@ if (!gameStates.render.shaderProg) {
 	PROF_END(ptShaderStates);
 	return -1;
 	}
-glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 gameStates.render.nLights = -1;
 PROF_END(ptShaderStates);
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
@@ -352,7 +351,7 @@ glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
 glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), 
 				 1.0f / float ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
-ogl.ClearError (0);
+ogl.ClearError (1);
 PROF_END(ptShaderStates)
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
 }

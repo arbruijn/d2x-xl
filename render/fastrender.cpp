@@ -453,6 +453,7 @@ return (SetupColorShader () != 0);
 static int HeadlightShaderHandler (void)
 {
 ogl.EnableLighting (1);
+ogl.SetLighting (false);
 return (0 <= lightManager.Headlights ().SetupShader ());
 }
 
