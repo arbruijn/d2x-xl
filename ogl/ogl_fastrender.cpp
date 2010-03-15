@@ -552,7 +552,7 @@ ogl.m_states.iLight = 0;
 //ogl.SetBlendMode (GL_ONE, GL_ZERO);
 while (0 < SetupPerPixelLightingShader (faceP)) {
 	DrawFace (faceP);
-	//if (ogl.m_states.iLight >= ogl.m_states.nLights)
+	if (ogl.m_states.iLight >= ogl.m_states.nLights)
 		break;
 //	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	}
