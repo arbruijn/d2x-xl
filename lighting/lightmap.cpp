@@ -779,7 +779,8 @@ if (0 > ogl.IsBound (h)) {
 	gameData.render.nStateChanges++;
 	}
 #if RENDER_BUFFERED_FACES
-FillFaceBuffer (faceP, NULL, NULL, h);
+if (bUseBuffer)
+	FillFaceBuffer (faceP, NULL, NULL, h);
 #endif
 return i;
 }
