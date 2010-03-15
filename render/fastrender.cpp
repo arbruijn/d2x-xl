@@ -730,8 +730,7 @@ FlushFaceBuffer (1);
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 ogl.DisableLighting ();
-if (gameStates.render.nType != RENDER_TYPE_CORONAS)
-	ogl.ResetTransform (1);
+ogl.ResetTransform (1);
 ogl.SetBlendMode (0);
 ogl.SetDepthWrite (true);
 ogl.SetDepthTest (true);
