@@ -641,6 +641,7 @@ if (gameStates.render.bBriefing) {
 	gameStates.render.bRenderIndirect = 0;
 	SetDrawBuffer (GL_BACK, 0);
 	}
+#if 0
 else if (gameStates.render.bPerPixelLighting) {
 	if (!gameStates.render.cameras.bActive) {
 		int i = Enhance3D ();
@@ -648,6 +649,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
 		}
 	}
+#endif
 else if (gameStates.render.cameras.bActive)
 	gameStates.render.bRenderIndirect = 0;
 else {
