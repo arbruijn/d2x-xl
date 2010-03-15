@@ -321,7 +321,7 @@ if (bTextured) {
 		}
 	if (bStateChange) {
 		gameData.render.nStateChanges++;
-		if (!gameStates.render.bFullBright)
+		if (gameStates.render.bFullBright < 1)
 			SetupRenderShader (faceP, bColorKey, bmTop != NULL, bmBot != NULL, bColored, bmBot ? NULL : &faceP->m_info.color);
 		}
 	}

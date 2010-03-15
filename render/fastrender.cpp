@@ -541,7 +541,7 @@ ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 
 #if 1
-	tRenderInfo&	ri = renderInfo [gameStates.render.bFullBright][nType];
+	tRenderInfo&	ri = renderInfo [gameStates.render.bFullBright != 0][nType];
 
 	int	bLightmaps = lightmapManager.HaveLightmaps () && ri.bLightmaps;
 	int	bColor = (ri.bColor < 0) ? !gameStates.render.bPerPixelLighting : ri.bColor;

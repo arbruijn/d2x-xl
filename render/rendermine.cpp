@@ -400,7 +400,7 @@ ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
 	BuildFaceLists ();
 	if (!gameStates.render.bPerPixelLighting) {
-		gameStates.render.bFullBright = 1; // hack to make the renderer multiply color with the textures
+		gameStates.render.bFullBright = -1; // hack to make the renderer multiply color with the textures
 		RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 //		RenderSegmentList (RENDER_TYPE_COLOR, 1);
 		gameStates.render.bFullBright = 0;
