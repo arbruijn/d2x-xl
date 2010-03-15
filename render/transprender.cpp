@@ -737,11 +737,12 @@ ogl.SetupTransform (1);
 if (bGrayScale)
 	bColored = 0;
 else if (bLightmap) {
-	m_data.bmP [0] = NULL;
-#if 1
+	m_data.bmP [0] = 
+	m_data.bmP [1] = 
+	m_data.bmP [2] = NULL;
+
 	gameStates.render.bRenderIndirect = 1;
 	ogl.SelectDrawBuffer (2);
-#endif
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.EnableClientStates (1, bTextured && bColored, 1, GL_TEXTURE0);
@@ -756,10 +757,6 @@ else if (bLightmap) {
 	OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
 	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-#if 0
-	if (!SetupLightmap (faceP))
-		return;
-#endif
 	if (gameStates.render.bPerPixelLighting == 1) {
 		if (bTextured && !SetupColorShader ())	// only need to render the color to the light buffer if face is textured
 			return;
@@ -784,15 +781,10 @@ else if (bLightmap) {
 		lightManager.Headlights ().SetupShader ();
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-#if 0
-	ogl.ResetTransform (1);
-	return;
-#endif
 	ogl.ChooseDrawBuffer ();
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
 	ogl.SetDepthMode (GL_LEQUAL);
-	m_data.bmP [0] = NULL;
 	bColored = 2;
 	}
 glColor3f (1,1,1);
