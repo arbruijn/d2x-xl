@@ -399,16 +399,16 @@ if (!gameStates.render.nWindow)
 ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
 	BuildFaceLists ();
-	int bLightBuffer = gameStates.render.bPerPixelLighting || gameStates.render.bHeadlights;
-	gameStates.render.bFullBright = bLightBuffer ? 1 : -1; // hack to make the renderer multiply color with the textures
-	RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
-	gameStates.render.bFullBright = 0;
-	if (bLightBuffer) {
-		ogl.SelectDrawBuffer (2);
-		if (!gameStates.render.bPerPixelLighting) 
+	if (!(gameStates.render.bPerPixelLighting || gameStates.render.bHeadlights)) {
+		gameStates.render.bFullBright = -1; // hack to make the renderer multiply color with the textures
+		RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
+		gameStates.render.bFullBright = 0;
+		}
+	else {
+		SetupDepthBuffer (RENDER_TYPE_DEPTH);
+		if (!gameStates.render.bPerPixelLighting)
 			RenderSegmentList (RENDER_TYPE_COLOR, 1);
 		else {
-		//SetupDepthBuffer (RENDER_TYPE_DEPTH);
 #	if RENDER_COLOR_SEPARATELY
 			RenderSegmentList (RENDER_TYPE_COLOR, 1);
 #endif
@@ -418,18 +418,12 @@ if (!gameStates.render.bFullBright) {
 			}
 		if (gameStates.render.bHeadlights)
 			RenderSegmentList (RENDER_TYPE_HEADLIGHTS, 1);
-		ogl.ChooseDrawBuffer ();
-		ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
-		ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
-		ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-		ogl.SetDepthMode (GL_EQUAL);
-		ogl.RenderScreenQuad (1);
 		}
 	}
 #endif
 
 #if 1
-if (gameStates.render.bFullBright) // || gameStates.render.bPerPixelLighting)
+if (gameStates.render.bFullBright || gameStates.render.bPerPixelLighting)
 	RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 RenderMineObjects (RENDER_TYPE_OBJECTS);
 
