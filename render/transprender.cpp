@@ -733,12 +733,6 @@ int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visit
 int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale;
 
 ogl.ResetClientStates (bLightmap + bTextured + (bmTop != NULL) + (bmMask != NULL));
-if (bLightmap) {
-	m_data.bmP [0] = NULL;
-	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
-	}
 
 ogl.ClearError (1);
 ogl.SetupTransform (1);

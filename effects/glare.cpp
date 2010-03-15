@@ -581,7 +581,6 @@ fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 //glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), 20.0f);
 RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
 					  !automap.Display () || automap.m_visited [0][nSegment] || !gameOpts->render.automap.bGrayOut);
-ogl.SetDepthMode (GL_LESS);
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
