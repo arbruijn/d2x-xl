@@ -49,11 +49,12 @@
 
 const char *multipleLightFS = {
 	"#define LIGHTS 8\r\n" \
+	"uniform sampler2D lMapTex;\r\n" \
 	"uniform float fScale;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"  vec4 colorSum = vec4 (0.0, 0.0, 0.0, 1.0);\r\n" \
+	"	vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) / fScale;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -91,10 +92,11 @@ const char *multipleLightFS = {
 // one light source
 
 const char *singleLightFS = {
+	"uniform sampler2D lMapTex;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"  vec4 colorSum = vec4 (0.0, 0.0, 0.0, 1.0);\r\n" \
+	"	vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) / fScale;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -346,8 +348,10 @@ if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
+glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
-glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"),  (nLights ? float (nLights) / float (ogl.m_states.nLights) : 1.0f));
+glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"),  
+				 float ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
