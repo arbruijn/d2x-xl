@@ -394,6 +394,14 @@ PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
 
 #if 1
+
+gameStates.render.bFullBright = -1; // hack to make the renderer multiply color with the textures
+RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
+gameStates.render.bFullBright = 0;
+
+#else
+
+#if 1
 ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
 	if (!(gameStates.render.bPerPixelLighting || gameStates.render.bHeadlights)) {
@@ -420,7 +428,9 @@ if (!gameStates.render.bFullBright) {
 if (gameStates.render.bFullBright || gameStates.render.bHeadlights || gameStates.render.bPerPixelLighting)
 	RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 RenderMineObjects (RENDER_TYPE_OBJECTS);
+#endif
 
+#if 1
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameStates.app.bNostalgia && !nWindow &&
 		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
@@ -428,6 +438,8 @@ if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 		RenderSegmentList (RENDER_TYPE_CORONAS, 1);
 		}
 	}
+#endif
+
 #endif
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);

@@ -84,7 +84,7 @@ const char *multipleLightFS = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (colorSum.rgb, gl_Color.a * fScale);\r\n" \
+	"	gl_FragColor = vec4 (1.0, 0.5, 0.0, 1.0); //vec4 (colorSum.rgb, gl_Color.a * fScale);\r\n" \
 	"	}"
 	};
 

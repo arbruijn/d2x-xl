@@ -439,6 +439,7 @@ return tiRender.nFaces;
 
 static int LightShaderHandler (void)
 {
+ogl.EnableLighting (1);
 return (0 <= LoadPerPixelLightingShader ());
 }
 
@@ -451,6 +452,7 @@ return (SetupColorShader () != 0);
 
 static int HeadlightShaderHandler (void)
 {
+ogl.EnableLighting (1);
 return (0 <= lightManager.Headlights ().SetupShader ());
 }
 
