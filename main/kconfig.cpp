@@ -668,7 +668,7 @@ void CControlConfig::DrawItem (kcItem *item, int is_current, int bRedraw)
 	int x, w, h, aw;
 	char szText [64];
 
-if (bRedraw && MODERN_STYLE)
+if (bRedraw)
 	return;
 
 if (is_current)
@@ -834,7 +834,7 @@ DrawItem (m_items + m_nCurItem, 1, 0);
 
 void CControlConfig::DrawScreen (void)
 {
-if (MODERN_STYLE || !m_bRedraw) {
+if (!m_bRedraw) {
 	m_bRedraw = 1;
 	if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 		GameRenderFrame ();

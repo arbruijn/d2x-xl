@@ -257,7 +257,7 @@ return nStringHeight;
 void CMenu::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
 {
 for (uint i = 0; i < ToS (); i++) {
-	if (MODERN_STYLE && ((Item (i).m_x == short (0x8000)) || Item (i).m_bCentered)) {
+	if (((Item (i).m_x == short (0x8000)) || Item (i).m_bCentered)) {
 		Item (i).m_bCentered = 1;
 		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 		}
@@ -306,7 +306,7 @@ fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 m_props.h = m_props.th;
 m_props.nMenus = m_props.nOthers = 0;
 m_props.nStringHeight = GetSize (m_props.w, m_props.h, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2;
-m_props.nMaxOnMenu = (((MODERN_STYLE && (m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - LHY (8)) / m_props.nStringHeight - 2;
+m_props.nMaxOnMenu = ((((m_props.scHeight > 480)) ? m_props.scHeight * 4 / 5 : 480) - m_props.th - LHY (8)) / m_props.nStringHeight - 2;
 if (/*!m_props.bTinyMode && */ (m_props.h > (m_props.nMaxOnMenu * (m_props.nStringHeight + 1)) + gap)) {
  m_props.bIsScrollBox = 1;
  m_props.h = (m_props.nMaxOnMenu * (m_props.nStringHeight + haveTitle) + haveTitle * LHY (m_props.bTinyMode ? 12 : 8));
@@ -359,10 +359,8 @@ m_props.w += 2 * m_props.xOffs;
 m_props.h += 2 * m_props.yOffs;
 m_props.x = (m_props.scWidth - m_props.w) / 2;
 m_props.y = (m_props.scHeight - m_props.h) / 2;
-if (MODERN_STYLE) {
-	m_props.xOffs += m_props.x;
-	m_props.yOffs += m_props.y;
-	}
+m_props.xOffs += m_props.x;
+m_props.yOffs += m_props.y;
 m_props.bValid = 1;
 SetItemPos (m_props.twidth, m_props.xOffs, m_props.yOffs, m_props.rightOffset);
 return 1;
@@ -438,92 +436,83 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 			}
 		}
 	CCanvas::Pop ();
+	if (gameStates.render.bRenderIndirect)
+		ogl.FlushDrawBuffer ();
 	}
 else {
 	console.Draw ();
 	CalcFrameTime ();
 	}
 
-if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0))) {
-	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect)
+if (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0)) {
+	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
 		ogl.FlushDrawBuffer ();
-	}
+		ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect = 0);
+		}
+	ogl.SetDepthTest (false);
+	FadeIn ();
+	ogl.ColorMask (1,1,1,1,0);
+	backgroundManager.Redraw ();
+	int i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
+	DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
+	if (!m_bRedraw)
+		m_props.ty = i;
 
-ogl.SetDepthTest (false);
-FadeIn ();
-ogl.ColorMask (1,1,1,1,0);
-backgroundManager.Redraw ();
-int i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
-DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
-if (!m_bRedraw)
-	m_props.ty = i;
+	if (m_callback && (gameStates.render.grAlpha == 1.0f))
+		m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice, 1);
 
-if (m_callback && (gameStates.render.grAlpha == 1.0f))
-	m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice, 1);
-
-fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
-for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
-	if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
-		continue;
-	if ((Item (i).m_nType == NM_TYPE_TEXT) && !*Item (i).m_text)
-		continue;	// skip empty lines
-	if (m_bStart || MODERN_STYLE || Item (i).m_bRedraw || Item (i).m_bRebuild) {// warning! ugly hack below 
+	fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
+	for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
+		if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
+			continue;
+		if ((Item (i).m_nType == NM_TYPE_TEXT) && !*Item (i).m_text)
+			continue;	// skip empty lines
 		m_bRedraw = 1;
 		if (Item (i).m_bRebuild && Item (i).m_bCentered)
 			Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 		if (i >= m_props.nScrollOffset)
 			Item (i).m_y -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-		if (!MODERN_STYLE) 
-			SDL_ShowCursor (0);
 		Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
 		Item (i).m_bRedraw = 0;
 		if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
 			SDL_ShowCursor (1);
 		if (i >= m_props.nScrollOffset)
 			Item (i).m_y += ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+		if ((i == m_nChoice) && 
+			 ((Item (i).m_nType == NM_TYPE_INPUT) || 
+			 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))
+			Item (i).UpdateCursor ();
 		}
-	if ((i == m_nChoice) && 
-		 ((Item (i).m_nType == NM_TYPE_INPUT) || 
-		 ((Item (i).m_nType == NM_TYPE_INPUT_MENU) && Item (i).m_group)))
-		Item (i).UpdateCursor ();
-	}
 
-if (m_props.bIsScrollBox) {
-//fontManager.SetCurrent (NORMAL_FONT);
-	if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
-		m_nLastScrollCheck = m_props.nScrollOffset;
-		fontManager.SetCurrent (SELECTED_FONT);
-		int sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-		int sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
-		if (m_props.nScrollOffset > m_props.nMaxNoScroll)
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
-		else
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
-		i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
-		sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-		sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
-		if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
-		else
-			DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+	if (m_props.bIsScrollBox) {
+	//fontManager.SetCurrent (NORMAL_FONT);
+		if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
+			m_nLastScrollCheck = m_props.nScrollOffset;
+			fontManager.SetCurrent (SELECTED_FONT);
+			int sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+			int sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
+			if (m_props.nScrollOffset > m_props.nMaxNoScroll)
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
+			else
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+			i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
+			sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+			sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
+			if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
+			else
+				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
+			}
 		}
-	}
-if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
-	if (MODERN_STYLE)
+	if (m_bCloseBox && m_bStart) {
 		DrawCloseBox (m_props.x, m_props.y);
-	else
-		DrawCloseBox (m_props.x - CCanvas::Current ()->Left (), m_props.y - CCanvas::Current ()->Top ());
-	m_bCloseBox = 1;
-	}
-if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0))) {
-	int bRenderIndirect;
-	if (bRenderIndirect = gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
-		gameStates.render.bRenderIndirect = 0;
-		ogl.SetDrawBuffer (GL_BACK, 0);
+		m_bCloseBox = 1;
 		}
-	GrUpdate (0);
-	if (bRenderIndirect)
-		ogl.ChooseDrawBuffer ();
+	if (gameStates.app.bGameRunning || m_bRedraw) {
+		GrUpdate (0);
+		if (gameStates.app.bGameRunning)
+			ogl.ChooseDrawBuffer ();
+		}
 	}
 m_bRedraw = 1;
 m_bStart = 0;
@@ -614,33 +603,11 @@ if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;
-if (!MODERN_STYLE && (gameStates.app.nFunctionMode == FMODE_GAME) && !(gameData.app.nGameMode & GM_MULTI)) {
-	audio.PauseSounds ();
-	bSoundStopped = 1;
-	}
-
-if (!(MODERN_STYLE || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence)))) {
-	bTimeStopped = 1;
-	StopTime ();
-	#ifdef TACTILE 
-	 if (TactileStick)
-		 DisableForces ();
-	#endif
-	}
 
 if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
-#if 0
-if (!MODERN_STYLE) {
-	ogl.SetDrawBuffer (GL_FRONT, 1);
-	if (gameStates.menus.bNoBackground || gameStates.app.bGameRunning) {
-		//NMLoadBackground (NULL, NULL, 0);
-		GrUpdate (0);
-		}
-	}
-#endif
 SaveScreen (&gameCanvasP);
 bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;
@@ -736,8 +703,6 @@ while (!done) {
 #endif
 	if (InitProps (pszTitle, pszSubTitle)) {
 		backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.w, m_props.h);
-		if (!MODERN_STYLE)
-			CCanvas::SetCurrent (backgroundManager.Canvas ());
 		m_bRedraw = 0;
 		m_props.ty = m_props.yOffs;
 		if (m_nChoice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)
@@ -1237,9 +1202,9 @@ launchOption:
 	
 		if (!done && !nMouseState && nOldMouseState && m_bCloseBox) {
 			MouseGetPos (&mx, &my);
-			x1 = (MODERN_STYLE ? m_props.x : CCanvas::Current ()->Left ()) + MENU_CLOSE_X;
+			x1 = m_props.x;
 			x2 = x1 + MENU_CLOSE_SIZE;
-			y1 = (MODERN_STYLE ? m_props.y : CCanvas::Current ()->Top ()) + MENU_CLOSE_Y;
+			y1 = m_props.y;
 			y2 = y1 + MENU_CLOSE_SIZE;
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				if (nCurItemP)

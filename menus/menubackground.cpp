@@ -159,7 +159,7 @@ if (m_canvas [0]) {
 	m_canvas [0]->Destroy ();
 	m_canvas [0] = NULL;
 	}
-if (MODERN_STYLE && m_canvas [1]) {
+if (m_canvas [1]) {
 	m_canvas [1]->Destroy ();
 	m_canvas [1] = NULL;
 	}
@@ -187,28 +187,13 @@ void CBackground::Setup (int x, int y, int width, int height)
 if (m_canvas [1])
 	m_canvas [1]->Destroy ();
 m_canvas [1] = screen.Canvas ()->CreatePane (x, y, width, height);
-if (MODERN_STYLE)
-	m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
-else
-	m_canvas [0] = m_canvas [1];
+m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, screen.Width (), screen.Height ());
 }
 
 //------------------------------------------------------------------------------
 
 void CBackground::Save (int i, int width, int height)
 {
-if (!MODERN_STYLE) {
-	if (m_saved [i])
-		delete m_saved [i];
-	if ((m_saved [i] = CBitmap::Create (0, width, height, 1))) {
-		CCanvas::Push ();
-		CCanvas::SetCurrent (m_canvas [0]);
-		m_saved [i]->SetPalette (paletteManager.Default ());
-		CCanvas::Current ()->ScreenCopy (m_saved [i], 0, 0, width, height, 0, 0);
-		GrUpdate (0);
-		CCanvas::Pop ();
-		}
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -217,15 +202,11 @@ bool CBackground::Create (char* filename, int x, int y, int width, int height, b
 {
 Destroy ();
 m_bTopMenu = (backgroundManager.Depth () == 0) || bTop;
-m_bMenuBox = MODERN_STYLE && !gameStates.app.bNostalgia; // && (gameOpts->menus.altBg.bHave > 0);
+m_bMenuBox = !gameStates.app.bNostalgia; // && (gameOpts->menus.altBg.bHave > 0);
 if (!(m_background = Load (filename, width, height)))
 	return false;
 Setup (x, y, width, height);
-if (!MODERN_STYLE)
-	Save (1, width, height);
 Draw (false);
-if (!MODERN_STYLE)
-	Save (0, width, height);
 return true;
 }
 
@@ -235,7 +216,7 @@ void CBackground::Draw (bool bDrawBox, bool bUpdate)
 {
 //paletteManager.SetEffect (0, 0, 0);
 if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
-	if (m_filename && (MODERN_STYLE || m_bTopMenu)) {
+	if (m_filename && m_bTopMenu) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (m_canvas [0]);
 		m_background->RenderStretched ();
@@ -265,11 +246,6 @@ if (bUpdate && !gameStates.app.bGameRunning)
 
 void CBackground::DrawArea (int left, int top, int right, int bottom)
 {
-#if 0
-if (MODERN_STYLE)
-	Draw ();
-else
-#endif
 	{
 	if (left < 0)
 		left = 0;
@@ -334,12 +310,7 @@ void CBackground::Restore (void)
 {
 if (!gameStates.app.bGameRunning) {
 	CCanvas::SetCurrent (m_canvas [0]);
-	if (MODERN_STYLE)
-		m_background->RenderStretched ();
-	else if (m_saved [1]) {
-		m_saved [1]->RenderFixed ();
-		GrUpdate (0);
-		}
+	m_background->RenderStretched ();
 	}
 }
 
@@ -416,23 +387,21 @@ Init ();
 void CBackgroundManager::DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce)
 {
 gameStates.render.nFlashScale = 0;
-if (bForce || (MODERN_STYLE == 1)) {
-	if (left <= 0)
-		left = 1;
-	if (top <= 0)
-		top = 1;
-	if (right >= screen.Width ())
-		right = screen.Width () - 1;
-	if (bottom >= screen.Height ())
-		bottom = screen.Height () - 1;
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
-	ogl.SetTexturing (false);
-	OglDrawFilledRect (left, top, right, bottom);
-	CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
-	glLineWidth (GLfloat (nLineWidth) * sqrt (GLfloat (screen.Width ()) / 640.0f));
-	OglDrawEmptyRect (left, top, right, bottom);
-	glLineWidth (1);
-	}
+if (left <= 0)
+	left = 1;
+if (top <= 0)
+	top = 1;
+if (right >= screen.Width ())
+	right = screen.Width () - 1;
+if (bottom >= screen.Height ())
+	bottom = screen.Height () - 1;
+CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
+ogl.SetTexturing (false);
+OglDrawFilledRect (left, top, right, bottom);
+CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
+glLineWidth (GLfloat (nLineWidth) * sqrt (GLfloat (screen.Width ()) / 640.0f));
+OglDrawEmptyRect (left, top, right, bottom);
+glLineWidth (1);
 }
 
 //------------------------------------------------------------------------------
@@ -462,7 +431,7 @@ return filename && !strcmp (filename, m_filename [0]);
 
 CBitmap* CBackgroundManager::LoadCustomBackground (void)
 {
-if (m_background [0] || (gameStates.app.bNostalgia || !MODERN_STYLE))
+if (m_background [0] || gameStates.app.bNostalgia)
 	return m_background [0];
 
 CBitmap* bmP;

@@ -325,7 +325,7 @@ class CControlConfig {
 		void DrawScreen (void);
 		void DrawQuestion (kcItem *item);
 		void DrawItem (kcItem* item, int bIsCurrent, int bRedraw);
-		inline void DrawItem (kcItem *item, int bIsCurrent) { DrawItem (item, bIsCurrent, MODERN_STYLE); }
+		inline void DrawItem (kcItem *item, int bIsCurrent) { DrawItem (item, bIsCurrent, 1); }
 
 		void ReadFCS (int raw_axis);
 
