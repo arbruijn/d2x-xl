@@ -54,7 +54,7 @@ const char *multipleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = vec4 (0.0, 0.0, 0.0, 0.0); //(texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) * fScale;\r\n" \
+	"	vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) * fScale;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
