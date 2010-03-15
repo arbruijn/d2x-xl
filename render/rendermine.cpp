@@ -398,13 +398,13 @@ if (!gameStates.render.nWindow)
 #if 1
 ogl.ClearError (0);
 if (!gameStates.render.bFullBright) {
-	BuildFaceLists ();
 	if (!(gameStates.render.bPerPixelLighting || gameStates.render.bHeadlights)) {
 		gameStates.render.bFullBright = -1; // hack to make the renderer multiply color with the textures
 		RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 		gameStates.render.bFullBright = 0;
 		}
 	else {
+		BuildFaceLists ();
 		SetupDepthBuffer (RENDER_TYPE_DEPTH);
 		if (!gameStates.render.bPerPixelLighting)
 			RenderSegmentList (RENDER_TYPE_COLOR, 1);

@@ -793,7 +793,7 @@ if (!bmBot)
 if (faceP->m_info.bTransparent || faceP->m_info.bAdditive)
 	return 1;
 if (bmBot->Flags () & BM_FLAG_SEE_THRU)
-	return faceP->m_info.nTransparent = 0;
+	return 0;
 if (!(bmBot->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
 	return 0;
 if (!bmTop)
