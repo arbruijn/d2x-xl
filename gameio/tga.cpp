@@ -99,9 +99,12 @@ if (bmP->BPP () == 3) {
 			}
 		}
 	for (i = 0, j = GetNumThreads (); i < j; i++) {
-		avgColor.red += ac [i].red;
-		avgColor.green += ac [i].green;
-		avgColor.blue += ac [i].blue;
+		if (p [i].red || p [i].green || p [i].blue) {
+			avgColor.red += ac [i].red;
+			avgColor.green += ac [i].green;
+			avgColor.blue += ac [i].blue;
+			nVisible++;
+			}
 		}
 #else
 	for (i = h * w; i; i--, p++) {
