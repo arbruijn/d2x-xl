@@ -108,7 +108,7 @@ extern tLightmapData		lightmapData;
 extern int					lightmapWidth [5];
 extern GLhandleARB		lmShaderProgs [3];
 
-int SetupLightmap (CSegFace* faceP);
+int SetupLightmap (CSegFace* faceP, int bUseBuffer = 0);
 
 //------------------------------------------------------------------------------
 

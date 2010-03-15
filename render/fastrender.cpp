@@ -635,7 +635,7 @@ return 1;
 
 void EndRenderFaces (void)
 {
-#if 1
+#if RENDER_BUFFERED_FACES
 FlushFaceBuffer (1);
 #endif
 ogl.ResetClientStates ();

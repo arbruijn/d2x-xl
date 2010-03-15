@@ -161,7 +161,7 @@ if (!CreateLightmapShader (nType))
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (!SetupLightmap (faceP))
+if (0 > SetupLightmap (faceP))
 	return 0;
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
 if (!shaderProg)

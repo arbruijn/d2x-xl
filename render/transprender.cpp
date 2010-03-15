@@ -728,7 +728,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 #endif
 
 int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visited [0][item->nSegment] && gameOpts->render.automap.bGrayOut;
-int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale && SetupLightmap (faceP);
+int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale && (0 <= SetupLightmap (faceP));
 
 ogl.ClearError (1);
 ogl.SetupTransform (1);

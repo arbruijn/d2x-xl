@@ -11,6 +11,14 @@
 
 //------------------------------------------------------------------------------
 
+#if DBG
+#	define RENDER_BUFFERED_FACES	1	// well ... no speed increase :/
+#else
+#	define RENDER_BUFFERED_FACES	0
+#endif
+
+//------------------------------------------------------------------------------
+
 int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderColor (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
@@ -19,6 +27,7 @@ int RenderHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderSky (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured);
 void FlushFaceBuffer (int bForce);
+void FillFaceBuffer (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, GLuint handle);
 
 int LoadPerPixelLightingShader (void);
 int SetupPerPixelLightingShader (CSegFace* faceP);
