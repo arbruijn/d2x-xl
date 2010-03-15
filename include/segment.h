@@ -376,6 +376,7 @@ class CSegFaceInfo {
 		ubyte					bColored :1;
 		ubyte					bCloaked :1;
 		ubyte					bHasColor :1;
+		ubyte					bSegColor :1;
 		ubyte					widFlags;
 		char					nCamera;
 		char					nType;

@@ -970,7 +970,7 @@ void CQuadMeshBuilder::InitColoredFace (short nSegment)
 {
 m_faceP->m_info.nBaseTex = -1;
 m_faceP->m_info.bTransparent = 1;
-m_faceP->m_info.nSegColor = -1;
+m_faceP->m_info.bSegColor = 1;
 m_faceP->m_info.bAdditive = SEGMENTS [nSegment].m_nType >= SEGMENT_IS_LAVA;
 }
 
