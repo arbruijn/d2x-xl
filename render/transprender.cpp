@@ -835,7 +835,7 @@ if (!bLightmap || !bTextured) {
 OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
 
 SetupRenderShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL, bColored,
-						 m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
+						 bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 ogl.SetBlendMode (bAdditive = item->bAdditive);
 OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 ogl.ResetTransform (1);
