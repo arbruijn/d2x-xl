@@ -477,18 +477,18 @@ ogl.SetDepthMode (depthFunc);
 
 char IsColoredSegFace (short nSegment, short nSide)
 {
-	short nConnSeg;
-	int	owner;
-	int	special;
+	CSegment*	segP = SEGMENTS + nSegment;
+	short			nConnSeg;
+	int			owner;
+	int			special;
 
-if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
-	 ((owner = SEGMENTS [nSegment].m_owner) > 0)) {
-	nConnSeg = SEGMENTS [nSegment].m_children [nSide];
-	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_owner != owner))
+if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && ((owner = segP->m_owner) > 0)) {
+	nConnSeg = segP->m_children [nSide];
+	if ((nConnSeg < 0) || (segP->m_owner != owner))
 		return (owner == 1) ? 2 : 1;
 	}
-special = SEGMENTS [nSegment].m_nType;
-nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+special = segP->m_nType;
+nConnSeg = segP->m_children [nSide];
 if ((nConnSeg >= 0) && (special == SEGMENTS [nConnSeg].m_nType))
 	return 0;
 if (special == SEGMENT_IS_WATER)
