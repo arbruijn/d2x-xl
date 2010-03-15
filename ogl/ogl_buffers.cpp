@@ -297,7 +297,7 @@ glReadBuffer (nBuffer);
 
 int COGL::SelectDrawBuffer (int nBuffer) 
 { 
-int nPrevBuffer = m_data.drawBufferP ? int (m_data.drawBufferP - m_data.drawBuffers) : -1;
+int nPrevBuffer = (m_data.drawBufferP && m_data.drawBufferP->Active ()) ? int (m_data.drawBufferP - m_data.drawBuffers) : -1;
 if ((nBuffer < 0) || (nBuffer >= sizeof (m_data.drawBuffers)))
 	return nPrevBuffer;
 if (nBuffer != nPrevBuffer) {

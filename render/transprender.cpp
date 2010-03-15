@@ -744,7 +744,7 @@ else if (bLightmap) {
 	ogl.SelectDrawBuffer (2);
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
 	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.EnableClientStates (1, bTextured, 1, GL_TEXTURE0);
+	ogl.EnableClientStates (1, bTextured && bColored, 1, GL_TEXTURE0);
 	if (!bTextured) 
 		glColor3f (1,1,1);	// if not textured, the color takes the place of the texture based color information
 	else {
@@ -760,7 +760,7 @@ else if (bLightmap) {
 	if (!SetupLightmap (faceP))
 		return;
 #endif
-	if (gameStates.render.bPerPixelLighting == 1) {
+	if (1 || gameStates.render.bPerPixelLighting == 1) {
 		if (bTextured && !SetupColorShader ())	// only need to render the color to the light buffer if face is textured
 			return;
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);

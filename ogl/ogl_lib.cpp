@@ -641,7 +641,7 @@ if (gameStates.render.bBriefing) {
 	gameStates.render.bRenderIndirect = 0;
 	SetDrawBuffer (GL_BACK, 0);
 	}
-#if 0
+#if 1
 else if (gameStates.render.bPerPixelLighting) {
 	if (!gameStates.render.cameras.bActive) {
 		int i = Enhance3D ();
