@@ -392,8 +392,6 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
-if (!gameStates.render.nWindow)
-	SetupCoronas ();
 
 #if 1
 ogl.ClearError (0);
@@ -429,8 +427,10 @@ RenderMineObjects (RENDER_TYPE_OBJECTS);
 
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
 	if (!gameStates.app.bNostalgia && !nWindow &&
-		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse)
+		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
+		SetupCoronas ();
 		RenderSegmentList (RENDER_TYPE_CORONAS, 1);
+		}
 	}
 #endif
 gameData.app.nMineRenderCount++;

@@ -446,7 +446,7 @@ const char *texMergeFS [N_TEXMERGE_SHADERS] = {
 	"uniform vec2 screenScale;\r\n" \
 	"//uniform float grAlpha;\r\n" \
 	"void main(void){" \
-	"gl_FragColor=texture2D(baseTex,gl_TexCoord [1].xy)*texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
+	"gl_FragColor=vec4(texture2D(baseTex,gl_TexCoord [1].xy)*texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
    "}"
 ,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -545,10 +545,7 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 int SetupTexMergeShader (int bTransparent, int nType)
 {
-	int nShader = nType + bTransparent * 2;
-
-if (!bTransparent)
-	nShader -= 2;
+	int nShader = nType + (bTransparent ? 2 : -2);
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
 if (!shaderProg)

@@ -457,6 +457,7 @@ return (0 <= lightManager.Headlights ().SetupShader ());
 
 static int CoronaShaderHandler (void)
 {
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 if (glareRenderer.Style ())
 	glareRenderer.LoadShader (10);
 return 0;
@@ -1079,7 +1080,6 @@ if (nType > RENDER_TYPE_OBJECTS) {	//back to front
 	}
 else {	//front to back
 	BeginRenderFaces (nType, 0);
-	ogl.ColorMask (1,1,1,1,1);
 	gameData.render.mine.nVisited++;
 	RenderSegments (nType);
 	}
