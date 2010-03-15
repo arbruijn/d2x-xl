@@ -70,6 +70,11 @@ if (bFade)
 
 void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
+	static int t0 = 0;
+
+if (!MenuRenderTimeout (t0, -1))
+	return;
+
 CCanvas::SetCurrent (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 #if 0
 if (!gameStates.app.bGameRunning)

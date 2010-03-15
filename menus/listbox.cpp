@@ -83,7 +83,7 @@ void CListBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* g
 {
 	static int t0 = 0;
 
-if (!MenuTimeout (t0, -1))
+if (!MenuRenderTimeout (t0, -1))
 	return;
 
 backgroundManager.Redraw ();

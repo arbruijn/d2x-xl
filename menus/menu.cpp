@@ -83,11 +83,11 @@ char bAlreadyShowingInfo = 0;
 
 //------------------------------------------------------------------------------
 
-bool MenuRenderTimeout (int& t0, int tFade = -1)
+bool MenuRenderTimeout (int& t0, int tFade)
 {
 int i = SDL_GetTicks ();
 
-if ((tFade < 0) || (i - tFade > gameOpts->menus.nFade)) {
+if ((tFade < 0) || (i - tFade > int (gameOpts->menus.nFade))) {
 	if (i - t0 < 25) {
 		G3_SLEEP (1);
 		return false;
@@ -414,7 +414,7 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 {
 	static	int t0 = 0;
 
-if (!MenuTimeout (t0, m_tEnter))
+if (!MenuRenderTimeout (t0, m_tEnter))
 	return;
 
 m_bRedraw = 0;
@@ -448,7 +448,7 @@ ogl.SetDepthTest (false);
 FadeIn ();
 ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Redraw ();
-i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
+int i = DrawTitle (pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 if (!m_bRedraw)
 	m_props.ty = i;
