@@ -967,8 +967,7 @@ if (gameStates.render.bPerPixelLighting && gameStates.render.bHeadlights) {
 
 int SetupCoronas (void)
 {
-SetupCoronaFaces ();
-return 0;
+return SetupCoronaFaces ();
 }
 
 //------------------------------------------------------------------------------
