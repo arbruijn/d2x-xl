@@ -78,7 +78,7 @@ memset (&avgColor, 0, sizeof (avgColor));
 bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (bmP->BPP () == 3) {
 	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
-#ifdef _OPENMP
+#if !DBG && defined (_OPENMP)
 	int			tId, j = w * h;
 	tRgbColorf	ac [MAX_THREADS];
 

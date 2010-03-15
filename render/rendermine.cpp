@@ -423,7 +423,7 @@ if (!gameStates.render.bFullBright) {
 #endif
 
 #if 1
-if (gameStates.render.bFullBright || gameStates.render.bPerPixelLighting)
+if (gameStates.render.bFullBright || gameStates.render.bHeadlights || gameStates.render.bPerPixelLighting)
 	RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
 RenderMineObjects (RENDER_TYPE_OBJECTS);
 
