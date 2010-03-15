@@ -18,10 +18,6 @@ int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderSky (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
 int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured);
-int RenderFaceLM (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int RenderFacePP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int RenderHeadlightsVL (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-int RenderHeadlightsPP (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void FlushFaceBuffer (int bForce);
 
 int LoadPerPixelLightingShader (void);
@@ -41,27 +37,6 @@ static inline int FaceIsAdditive (CSegFace *faceP)
 {
 return (int) ((faceP->m_info.bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->FromPog ()) : faceP->m_info.bAdditive);
 }
-
-//------------------------------------------------------------------------------
-
-#if 0
-typedef int (*tRenderFaceDrawerP) (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-
-extern tRenderFaceDrawerP faceRenderFunc;
-
-static inline void SetFaceDrawer (int nType)
-{
-if (nType < 0)
-	nType = gameStates.render.bPerPixelLighting;
-if (nType == 2)
-	faceRenderFunc = RenderFacePP;
-else if (nType == 1)
-	faceRenderFunc = RenderFaceLM;
-else
-	faceRenderFunc = RenderFace;
-}
-
-#endif
 
 //------------------------------------------------------------------------------
 

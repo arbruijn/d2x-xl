@@ -525,7 +525,7 @@ static tRenderInfo renderInfo [2][RENDER_TYPES] = {
 	}
 	};
 
-int BeginRenderFaces (int nType, int bDepthOnly)
+int BeginRenderFaces (int nType)
 {
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -722,7 +722,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void EndRenderFaces (int bDepthOnly)
+void EndRenderFaces (void)
 {
 #if 1
 FlushFaceBuffer (1);
@@ -730,7 +730,8 @@ FlushFaceBuffer (1);
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 ogl.DisableLighting ();
-ogl.ResetTransform (1);
+if (gameStates.render.nType != RENDER_TYPE_CORONAS)
+	ogl.ResetTransform (1);
 ogl.SetBlendMode (0);
 ogl.SetDepthWrite (true);
 ogl.SetDepthTest (true);
@@ -749,7 +750,7 @@ void RenderSkyBoxFaces (void)
 
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bFullBright = 1;
-	BeginRenderFaces (RENDER_TYPE_SKYBOX, 0);
+	BeginRenderFaces (RENDER_TYPE_SKYBOX);
 	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
@@ -759,7 +760,7 @@ if (gameStates.render.bHaveSkyBox) {
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
-	EndRenderFaces (0);
+	EndRenderFaces ();
 	}
 }
 
@@ -1064,9 +1065,9 @@ return 0;
 
 int SetupDepthBuffer (int nType)
 {
-BeginRenderFaces (nType, 1);
+BeginRenderFaces (nType);
 RenderSegments (nType);
-EndRenderFaces (nType);
+EndRenderFaces ();
 return SortFaces ();
 }
 
@@ -1074,17 +1075,11 @@ return SortFaces ();
 
 void RenderFaceList (int nType, int bFrontToBack)
 {
-if (nType > RENDER_TYPE_OBJECTS) {	//back to front
-	BeginRenderFaces (nType, 0);
-	RenderSegments (nType);
-	}
-else {	//front to back
-	BeginRenderFaces (nType, 0);
-	//ogl.ColorMask (1,1,1,1,1);
+if (nType < RENDER_TYPE_OBJECTS) 	//back to front
 	gameData.render.mine.nVisited++;
-	RenderSegments (nType);
-	}
-EndRenderFaces (0);
+BeginRenderFaces (nType);
+RenderSegments (nType);
+EndRenderFaces ();
 }
 
 //------------------------------------------------------------------------------
