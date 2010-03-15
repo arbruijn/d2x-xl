@@ -1004,8 +1004,8 @@ if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 	float fFade = (m_nFadeType == 3) 
 		? 1.0f 
 		: (m_decay > 0.9f)	// start from zero size by scaling with pow (m_decay, 44f) which is < 0.01 for m_decay == 0.9f
-			? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333337f))
-			: 1.0f / float (pow (m_decay, 0.3333337f));
+			? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
+			: 1.0f / float (pow (m_decay, 0.3333333f));
 #endif
 	vOffset [X] = m_nWidth * fFade;
 	vOffset [Y] = m_nHeight * fFade;
