@@ -49,8 +49,8 @@
 
 const char *multipleLightFS = {
 	"#define LIGHTS 8\r\n" \
-	"//uniform sampler2D lMapTex;\r\n" \
-	"//uniform float fScale;\r\n" \
+	"uniform sampler2D lMapTex;\r\n" \
+	"uniform float fScale;\r\n" \
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
@@ -327,7 +327,7 @@ if (!gameStates.render.shaderProg) {
 	PROF_END(ptShaderStates);
 	return -1;
 	}
-//glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
+glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 gameStates.render.nLights = -1;
 PROF_END(ptShaderStates);
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
@@ -343,14 +343,14 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 	nDbgSeg = nDbgSeg;
 #endif
 
-//int bInit = ogl.m_states.iLight == 0;
+int bInit = ogl.m_states.iLight == 0;
 int nLights = SetupHardwareLighting (faceP);
 if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
-#if 0
+#if 1
 if (bInit) // first pass
 	glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), 
 					 1.0f / float ((ogl.m_states.nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));

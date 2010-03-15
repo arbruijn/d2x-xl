@@ -549,12 +549,12 @@ if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTranspar
 if (!SetupLightmap (faceP))
 	return 1;
 ogl.m_states.iLight = 0;
-//ogl.SetBlendMode (GL_ONE, GL_ZERO);
+ogl.SetBlendMode (GL_ONE, GL_ZERO);
 while (0 < SetupPerPixelLightingShader (faceP)) {
 	DrawFace (faceP);
 	if (ogl.m_states.iLight >= ogl.m_states.nLights)
 		break;
-//	ogl.SetBlendMode (GL_ONE, GL_ONE);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	}
 return 0;
 }

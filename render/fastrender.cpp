@@ -497,7 +497,7 @@ static tRenderInfo renderInfo [2][RENDER_TYPES] = {
 #else
 	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 1, LightmapShaderHandler},
 #endif
-	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, LightShaderHandler}, // LIGHTS
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 1, 1, 1, 1, 1, LightShaderHandler}, // LIGHTS
 	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler}, // HEADLIGHTS
 	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 0, DefaultShaderHandler}, // DEPTH
 	{GL_ONE, GL_ZERO, GL_EQUAL, false, 0, 1, 0, 1, 0, 1, DefaultShaderHandler}, // COLOR
@@ -513,7 +513,7 @@ static tRenderInfo renderInfo [2][RENDER_TYPES] = {
 #else
 	{GL_ONE, GL_ZERO, GL_EQUAL, false, 1, 1, 1, 1, 1, 1, LightmapShaderHandler},
 #endif
-	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, LightShaderHandler}, // LIGHTS
+	{GL_ONE, GL_ONE, GL_EQUAL, false, 1, 1, 1, 1, 1, 1, LightShaderHandler}, // LIGHTS
 	{GL_ONE, GL_ONE, GL_EQUAL, false, 0, 0, 0, 1, 0, 1, HeadlightShaderHandler}, // HEADLIGHTS
 	{GL_ONE, GL_ZERO, GL_LESS, true, 0, 0, 1, 0, 1, 0, DefaultShaderHandler}, // DEPTH
 	{GL_DST_COLOR, GL_ZERO, GL_EQUAL, false, 0, 1, 0, 1, 0, 1, DefaultShaderHandler}, // COLOR
