@@ -112,7 +112,6 @@ if (bmP->BPP () == 3) {
 		}
 #endif
 	avgColor.alpha = 1.0f;
-	nVisible = float (w * h) * 255.0f;
 	}
 else {
 	int nSuperTransp;
