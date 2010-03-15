@@ -27,7 +27,7 @@
 #include "transprender.h"
 #include "renderthreads.h"
 
-#define DO_RENDER_TRANSPARENCY 1
+#define DO_RENDER_TRANSPARENCY 0
 
 #define TI_SPLIT_POLYS 0
 #define TI_POLY_OFFSET 0

@@ -345,11 +345,11 @@ ogl.SetDepthTest (true);
 
 void Draw2DFrameElements (void)
 {
-if (ogl.Enhance3D () >= 0)
-	ogl.SetDrawBuffer (GL_BACK, 0);
+//if (ogl.Enhance3D () >= 0)
+//	ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
-//SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_START
 	cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);

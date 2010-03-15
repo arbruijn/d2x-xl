@@ -444,6 +444,10 @@ else {
 	CalcFrameTime ();
 	}
 
+if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0))) {
+	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect)
+		ogl.FlushDrawBuffer ();
+	}
 
 ogl.SetDepthTest (false);
 FadeIn ();
@@ -512,9 +516,14 @@ if (m_bCloseBox && (m_bStart || MODERN_STYLE)) {
 	m_bCloseBox = 1;
 	}
 if ((m_bRedraw || !MODERN_STYLE) && (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0))) {
-	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect)
-		ogl.FlushDrawBuffer ();
+	int bRenderIndirect;
+	if (bRenderIndirect = gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
+		gameStates.render.bRenderIndirect = 0;
+		ogl.SetDrawBuffer (GL_BACK, 0);
+		}
 	GrUpdate (0);
+	if (bRenderIndirect)
+		ogl.ChooseDrawBuffer ();
 	}
 m_bRedraw = 1;
 m_bStart = 0;

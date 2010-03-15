@@ -163,6 +163,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);
 		gameStates.render.bRenderIndirect = 0;
+		ogl.SetDrawBuffer (GL_BACK, 0);
 		Draw2DFrameElements ();
 		gameStates.render.bRenderIndirect = 1;
 		//SetDrawBuffer (GL_BACK, 1);
@@ -331,6 +332,7 @@ if (HaveDrawBuffer ()) {
 	int bStereo = 0;
 
 	SetDrawBuffer (GL_BACK, 0);
+	glClear (GL_DEPTH_BUFFER_BIT);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
