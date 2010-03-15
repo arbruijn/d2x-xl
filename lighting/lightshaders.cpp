@@ -348,7 +348,7 @@ if (0 >= nLights) {
 	PROF_END(ptShaderStates)
 	return 0;
 	}
-glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
+glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
 glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"),  
 				 float ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
