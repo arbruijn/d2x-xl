@@ -727,19 +727,16 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 	nDbgSeg = nDbgSeg;
 #endif
 
-int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visited [0][item->nSegment];
+int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visited [0][item->nSegment] && gameOpts->render.automap.bGrayOut;
 int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale && SetupLightmap (faceP);
-
-ogl.ResetClientStates (bLightmap);
 
 ogl.ClearError (1);
 ogl.SetupTransform (1);
-if (bGrayScale)
-	bColored = 0;
-else if (bLightmap) {
+if (bLightmap) {
 	m_data.bmP [0] = 
 	m_data.bmP [1] = 
 	m_data.bmP [2] = NULL;
+	ogl.ResetClientStates (bLightmap);
 
 	gameStates.render.bRenderIndirect = 1;
 	ogl.SelectDrawBuffer (2);
@@ -786,6 +783,11 @@ else if (bLightmap) {
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
 	ogl.SetDepthMode (GL_LEQUAL);
 	bColored = 2;
+	}
+else {
+	ogl.ResetClientStates (bTextured + (bmTop != NULL) + (bmMask != NULL));
+	if (bGrayScale)
+		bColored = 0;
 	}
 glColor3f (1,1,1);
 
