@@ -774,6 +774,7 @@ else if (bLightmap) {
 	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (ogl.DrawBuffer (2)->ColorBuffer ());
 	ogl.SetDepthMode (GL_LEQUAL);
+	m_data.bmP [0] = NULL;
 	bColored = 2;
 	}
 glColor3f (1,1,1);
