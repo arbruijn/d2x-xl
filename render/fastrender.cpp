@@ -541,8 +541,7 @@ shaderManager.Deploy (-1);
 ogl.SetFaceCulling (true);
 CTexture::Wrap (GL_REPEAT);
 
-#if 1
-	tRenderInfo&	ri = renderInfo [gameStates.render.bFullBright != 0][nType];
+	tRenderInfo& ri = renderInfo [gameStates.render.bFullBright != 0][nType];
 
 	int	bLightmaps = lightmapManager.HaveLightmaps () && ri.bLightmaps;
 	int	bColor = (ri.bColor < 0) ? !gameStates.render.bPerPixelLighting : ri.bColor;
@@ -558,86 +557,6 @@ else
 	ogl.ColorMask (0,0,0,0,0);
 if (!ri.shaderHandler ())
 	return 0;
-
-#else
-
-	//int	bVBO = 0;
-	int	bLightmaps = lightmapManager.HaveLightmaps () && (nType == RENDER_TYPE_LIGHTMAPS);
-	int	bColor = !gameStates.render.bFullBright && (nType == RENDER_TYPE_LIGHTMAPS) || (nType == RENDER_TYPE_COLOR);
-	int	bTexCoord = (nType != RENDER_TYPE_COLOR) && (nType != RENDER_TYPE_LIGHTS) && (nType != RENDER_TYPE_HEADLIGHTS);
-	int	bNormals = (nType == RENDER_TYPE_LIGHTMAPS) || (nType == RENDER_TYPE_LIGHTS) || (nType == RENDER_TYPE_HEADLIGHTS) || (nType == RENDER_TYPE_COLOR);
-
-if (nType == RENDER_TYPE_DEPTH) {
-	ogl.ColorMask (0,0,0,0,0);
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthMode (GL_LESS);
-	ogl.SetDepthWrite (true);
-	}
-else if (nType == RENDER_TYPE_LIGHTMAPS) {
-#if 1
-	if (!SetupColorShader ())
-		return 0;
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-#else
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-#endif
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetDepthWrite (false);
-	}
-else if (nType == RENDER_TYPE_COLOR) {
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetDepthWrite (false);
-	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
-	}
-else if (nType == RENDER_TYPE_HEADLIGHTS) {
-	if (0 > lightManager.Headlights ().SetupShader ())
-		return 0;
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	ogl.SetDepthWrite (false);
-	}
-else if (nType == RENDER_TYPE_LIGHTS) {
-	if (0 > LoadPerPixelLightingShader ())
-		return 0;
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	ogl.SetDepthWrite (false);
-	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
-	ogl.EnableLighting (1);
-	for (int i = 0; i < 8; i++)
-		glEnable (GL_LIGHT0 + i);
-	ogl.SetLighting (false);
-	}
-else if (nType == RENDER_TYPE_CORONAS) {
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.SetDepthWrite (false);
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	if (glareRenderer.Style ())
-		glareRenderer.LoadShader (10);
-	return 0;
-	}
-else if (nType == RENDER_TYPE_GEOMETRY) {
-	ogl.SetDepthMode (GL_EQUAL); 
-	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);
-	ogl.SetDepthWrite (false);
-	}
-else if (nType == RENDER_TYPE_SKYBOX) {
-	ogl.SetDepthMode (GL_LEQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthWrite (true);
-	}
-else {
-	ogl.SetDepthMode (GL_LEQUAL); 
-	ogl.SetBlendMode (GL_ONE, GL_ZERO);
-	ogl.SetDepthWrite (false);
-	}
-#endif
 
 ogl.SetupTransform (1);
 #if GEOMETRY_VBOS
@@ -702,19 +621,11 @@ else
 	OglVertexPointer (3, GL_FLOAT, 0, reinterpret_cast<const GLvoid *> (FACES.vertices.Buffer ()));
 	}
 
-#if 1
 if (!ri.bTextured) {
 	ogl.SelectTMU (GL_TEXTURE0);
 	ogl.BindTexture (0);
 	ogl.SetTexturing (false);
 	}
-#else
-if ((nType == RENDER_TYPE_LIGHTS) || (nType == RENDER_TYPE_COLOR)) {
-	ogl.SelectTMU (GL_TEXTURE0);
-	ogl.BindTexture (0);
-	ogl.SetTexturing (false);
-	}
-#endif
 glColor3f (1,1,1);
 ogl.ClearError (0);
 return 1;

@@ -527,8 +527,6 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	CBitmap*		bmP = NULL;
 
-ogl.SetTexturing (true);
-	ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (bAdditive);
 if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 	return;

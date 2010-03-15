@@ -55,7 +55,7 @@ const char *multipleLightFS = {
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"	vec4 colorSum = vec4 (texColor.rgb + gl_Color.rgb, gl_Color.a) / fScale;\r\n" \
+	"	vec4 colorSum = vec4 (texColor.rgb + gl_Color.rgb, gl_Color.a) * fScale;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -352,8 +352,7 @@ if (0 >= nLights) {
 	}
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
-glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"),  
-				 float ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
+glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), ogl.m_states.iLight ? 0.0f : 1.0f);
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];

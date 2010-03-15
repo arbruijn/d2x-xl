@@ -730,7 +730,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 #endif
 
 int bGrayScale = (item->nSegment >= 0) && automap.Display () && !automap.m_visited [0][item->nSegment];
-int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale;
+int bLightmap = gameStates.render.bPerPixelLighting && !bGrayScale && SetupLightmap (faceP);
 
 ogl.ResetClientStates (bLightmap);
 
@@ -756,7 +756,7 @@ else if (bLightmap) {
 	OglTexCoordPointer (2, GL_FLOAT, 0, FACES.lMapTexCoord + nIndex);
 	OglNormalPointer (GL_FLOAT, 0, FACES.normals + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-#if 1
+#if 0
 	if (!SetupLightmap (faceP))
 		return;
 #endif
