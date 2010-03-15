@@ -62,9 +62,10 @@ void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightnes
 	int			i, n, nAlpha = 0, nFrames;
 	int			h = bmP->Height ();
 	int			w = bmP->Width ();
+	float			nVisible = 0;
 	tRgbaColorf	avgColor;
 	tRgbColorb	avgColorb;
-	float			nVisible, a;
+	float			a;
 #ifndef _OPENMP
  	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 #endif
@@ -78,7 +79,7 @@ memset (&avgColor, 0, sizeof (avgColor));
 bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (bmP->BPP () == 3) {
 	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
-#if !DBG && defined (_OPENMP)
+#ifdef _OPENMP
 	int			tId, j = w * h;
 	tRgbColorf	ac [MAX_THREADS];
 
@@ -86,15 +87,18 @@ if (bmP->BPP () == 3) {
 #	pragma omp parallel private (tId)
 		{
 		tId = omp_get_thread_num ();
-#		pragma omp for
-		for (i = 0; i < j; i++) {
-			::Swap (p [i].red, p [i].blue);
-			ac [tId].red += p [i].red;
-			ac [tId].green += p [i].green;
-			ac [tId].blue += p [i].blue;
+#		pragma omp for reduction (+: nVisible)
+		for (int i = 0; i < j; i++) {
+			if (p [i].red || p [i].green || p [i].blue) {
+				::Swap (p [i].red, p [i].blue);
+				ac [tId].red += p [i].red;
+				ac [tId].green += p [i].green;
+				ac [tId].blue += p [i].blue;
+				nVisible++;
+				}
 			}
 		}
-	for (i = 0; i < GetNumThreads (); i++) {
+	for (i = 0, j = GetNumThreads (); i < j; i++) {
 		avgColor.red += ac [i].red;
 		avgColor.green += ac [i].green;
 		avgColor.blue += ac [i].blue;
@@ -125,12 +129,11 @@ else {
 		memset (avc, 0, sizeof (avc));
 		memset (nst, 0, sizeof (nst));
 		memset (nac, 0, sizeof (nac));
-		nVisible = 0;
 #pragma omp parallel private (tId)
 		{
 		tId = omp_get_thread_num ();
 #	pragma omp for reduction (+: nVisible)
-		for (i = 0; i < j; i++) {
+		for (int i = 0; i < j; i++) {
 			if (bSwapRB)
 				::Swap (p [i].red, p [i].blue);
 			if (bGrayScale) {
@@ -154,13 +157,14 @@ else {
 				avc [tId].alpha += p [i].alpha;
 				nac [tId]++;
 				}
+			nVisible += p [i].alpha;
 			a = float (p [i].alpha) / 255.0f;
 			avc [tId].red += float (p [i].red) * a;
 			avc [tId].green += float (p [i].green) * a;
 			avc [tId].blue += float (p [i].blue) * a;
 			}
 		}
-	for (i = 0; i < GetNumThreads (); i++) {
+	for (int i = 0, j = GetNumThreads (); i < j; i++) {
 		avgColor.red += avc [i].red;
 		avgColor.green += avc [i].green;
 		avgColor.blue += avc [i].blue;

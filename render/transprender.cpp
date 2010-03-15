@@ -760,12 +760,17 @@ else if (bLightmap) {
 	if (!SetupLightmap (faceP))
 		return;
 #endif
-	if (gameStates.render.bPerPixelLighting == 1) {
+	//if (gameStates.render.bPerPixelLighting == 1) 
+		{
 		if (bTextured && !SetupColorShader ())	// only need to render the color to the light buffer if face is textured
 			return;
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 		}
-	else if (0 <= LoadPerPixelLightingShader ()) {
+	//else 
+	if (0 <= LoadPerPixelLightingShader ()) {
+		ogl.DisableClientState (GL_TEXTURE_COORD_ARRAY, -1);
+		ogl.BindTexture (0);
+		ogl.SetTexturing (false);
 		ogl.m_states.iLight = 0;
 		gameStates.render.nLights = -1;
 		lightManager.Index (0)[0].nActive = -1;

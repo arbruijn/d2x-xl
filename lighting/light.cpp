@@ -514,8 +514,7 @@ switch (nObjType) {
 				maxColor = colorP->green;
 			if (maxColor < colorP->blue)
 				maxColor = colorP->blue;
-			//if (maxColor > 1)
-				{
+			if (maxColor > 0.0) {
 				colorP->red /= maxColor;
 				colorP->green /= maxColor;
 				colorP->blue /= maxColor;
