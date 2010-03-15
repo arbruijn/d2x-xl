@@ -54,8 +54,7 @@ const char *multipleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"	vec4 colorSum = vec4 (texColor.rgb + gl_Color.rgb, gl_Color.a) * fScale;\r\n" \
+	"	vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) * fScale;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -85,7 +84,7 @@ const char *multipleLightFS = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = colorSum;\r\n" \
+	"	gl_FragColor = vec4 (colorSum.rgb, gl_Color.a * fScale);\r\n" \
 	"	}"
 	};
 
@@ -97,8 +96,7 @@ const char *singleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 texColor = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"	vec4 colorSum = vec4 (texColor.rgb + gl_Color.rgb, gl_Color.a);\r\n" \
+	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -106,7 +104,7 @@ const char *singleLightFS = {
 	"  float NdotL = (lightDist > 0.1) ? dot (lightNorm, vertNorm) : 1.0;\r\n" \
 	"	float lightAngle = min (NdotL, -dot (lightNorm, gl_LightSource [0].spotDirection));\r\n" \
 	"	float lightRad = gl_LightSource [0].specular.a * (1.0 - abs (lightAngle));\r\n" \
-	"	lightDist -= 100.0 * min (0.0, min (NdotL, lightAngle)); //bDirected\r\n" \
+	"	lightDist -= 100.0 * min (0.0, min (NdotL, lightAngle));\r\n" \
 	"	float att = 1.0, dist = max (lightDist - lightRad, 0.0);\r\n" \
 	"	if (dist == 0.0)\r\n" \
 	"		colorSum = gl_LightSource [0].diffuse + gl_LightSource [0].ambient;\r\n" \
@@ -123,7 +121,7 @@ const char *singleLightFS = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = colorSum;\r\n" \
+	"	gl_FragColor = vec4 (colorSum.rgb, gl_Color.a);\r\n" \
 	"	}"
 	};
 
@@ -352,7 +350,8 @@ if (0 >= nLights) {
 	}
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
-glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), ogl.m_states.iLight ? 0.0f : 1.0f);
+glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), 
+				 1.0f / float ((nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
