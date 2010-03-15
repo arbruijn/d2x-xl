@@ -86,7 +86,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		color.red = red / b;
 		color.green = green / b;
 		color.blue = blue / b;
-		xSize = I2X (8);
+		xSize = 2 * objP->info.xSize; //I2X (8);
 		}
 	color.alpha = alpha;
 	if (bAdditive) {

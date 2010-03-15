@@ -159,8 +159,8 @@ else {
 				avc [tId].alpha += p [i].alpha;
 				nac [tId]++;
 				}
-			nVisible += p [i].alpha;
 			a = float (p [i].alpha) / 255.0f;
+			nVisible += a;
 			avc [tId].red += float (p [i].red) * a;
 			avc [tId].green += float (p [i].green) * a;
 			avc [tId].blue += float (p [i].blue) * a;

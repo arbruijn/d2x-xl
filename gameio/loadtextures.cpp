@@ -609,7 +609,7 @@ nSize = (int) bmP->FrameSize ();
 if (nIndex >= 0)
 	GetFlagData (bmName, nIndex);
 #if DBG
-if (strstr (bmName, "flare#0"))
+if (strstr (bmName, "pwr02#0"))
 	bmName = bmName;
 if (strstr (bmName, "muzl02#0"))
 	bmName = bmName;
