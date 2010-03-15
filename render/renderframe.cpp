@@ -349,7 +349,7 @@ void Draw2DFrameElements (void)
 //	ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
-ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_START
 	cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);

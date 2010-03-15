@@ -171,11 +171,8 @@ if (!gameStates.menus.nInMenu || bForce) {
 	SDL_GL_SwapBuffers ();
 	if (gameStates.app.bSaveScreenshot)
 		SaveScreenShot (NULL, 0);
+	glClear (GL_COLOR_BUFFER_BIT);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
-#if 1
-	//if (gameStates.menus.nInMenu || bClear)
-		glClear (GL_COLOR_BUFFER_BIT);
-#endif
 	}
 }
 
