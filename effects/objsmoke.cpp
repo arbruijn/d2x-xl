@@ -548,7 +548,11 @@ if (nParts) {
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
+#if 1
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
+#else
+			nScale = float ((gameOpts->render.particles.nQuality == 1) ? I2X (1) : I2X (5) / 4);
+#endif
 			}
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],

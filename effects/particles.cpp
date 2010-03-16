@@ -1805,6 +1805,10 @@ int nCurrent = -1;
 for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Destroy ();
 Cleanup ();
+m_systems.Destroy ();
+m_systemList.Destroy ();
+m_objectSystems.Destroy ();
+m_objExplTime.Destroy ();
 particleImageManager.FreeAll ();
 SEM_LEAVE (SEM_SMOKE)
 return 1;
@@ -2067,11 +2071,6 @@ return 1;
 CParticleManager::~CParticleManager ()
 {
 Shutdown ();
-particleImageManager.FreeAll ();
-m_systems.Destroy ();
-m_systemList.Destroy ();
-m_objectSystems.Destroy ();
-m_objExplTime.Destroy ();
 }
 
 //	-----------------------------------------------------------------------------
