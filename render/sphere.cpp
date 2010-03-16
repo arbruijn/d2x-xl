@@ -893,7 +893,7 @@ if (!gameData.render.monsterball.sphereP) {
 	}
 if (gameData.render.monsterball.nFaces > 0)
 #endif
- {
+	{
 	if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY)
 		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP, 0);
 	else {

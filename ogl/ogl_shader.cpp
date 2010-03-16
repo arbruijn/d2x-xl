@@ -136,7 +136,6 @@ for (int i = 0; i < int (m_shaders.ToS ()); i++) {
 	}
 if (bAll)
 	m_shaders.Destroy ();
-ogl.ClearError (0);
 }
 
 //------------------------------------------------------------------------------
@@ -457,7 +456,7 @@ gameStates.render.bLightmapsOk = (nTMUs >= 4);
 InitTexMergeShaders ();
 ogl.m_data.nHeadlights = 0;
 ::PrintLog ("   initializing lighting shader programs\n");
-InitHeadlightShaders ();
+InitHeadlightShaders (1);
 #if GPGPU_VERTEX_LIGHTING
 ::PrintLog ("   initializing vertex lighting shader programs\n");
 gpgpuLighting.InitShader ();
@@ -472,8 +471,6 @@ ResetPerPixelLightingShaders ();
 InitPerPixelLightingShaders ();
 ResetLightmapShaders ();
 InitLightmapShaders ();
-ResetColorShader ();
-InitColorShader ();
 ResetSphereShaders ();
 #if 0
 Link (Alloc ());

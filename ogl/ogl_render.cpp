@@ -563,7 +563,7 @@ else
 retry:
 #endif
 if (bShaderMerge) {
-	mask = bmTop->Mask ();
+	mask = gameStates.render.textures.bHaveMaskShader ? bmTop->Mask () : NULL;
 	nShader = bSuperTransp ? mask ? 2 : 1 : 0;
 	activeShaderProg = GLhandleARB (abs (int (shaderManager.Deploy (tmShaderProgs [nShader]))));
 	INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, lightmapManager.Buffer (), 1, 0);
@@ -1021,7 +1021,7 @@ return 0;
 int COGL::BindBitmap (CBitmap* bmP, int nFrame, int nWrap, int bTextured)
 {
 if (bmP) {
-	SelectTMU (GL_TEXTURE0, true);
+	SelectTMU (GL_TEXTURE0);
 	SetTexturing (true);
 	if (!bmP->IsBound ()) {
 		if (bmP->Bind (1))
@@ -1032,10 +1032,8 @@ if (bmP) {
 		bmP->Texture ()->Wrap (nWrap);
 		}
 	}
-else if (!bTextured) {
-	SelectTMU (GL_TEXTURE0, true);
+else if (!(bTextured || (ogl.DrawBuffer () && ogl.DrawBuffer ()->IsBound ())))
 	SetTexturing (false);
-	}
 return 1;
 }
 
@@ -1044,7 +1042,7 @@ return 1;
 int COGL::BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
 							  tTexCoord2f *texCoordP, 
 							  tRgbaColorf *colorP, int nColors,
-							  CBitmap *bmP,
+							   CBitmap *bmP,
 							  int nTMU)
 {
 if (!ogl.EnableClientStates (m_data.bClientTexCoord = texCoordP != NULL, m_data.bClientColor = ((colorP != NULL) && (nColors == nVertices)), 0, nTMU))

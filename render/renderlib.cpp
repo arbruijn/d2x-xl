@@ -47,7 +47,7 @@ int	bOutLineMode = 0,
 
 //------------------------------------------------------------------------------
 
-int FaceIsCulled (short nSegment, short nSide)
+int FaceIsVisible (short nSegment, short nSide)
 {
 #if SW_CULLING
 CSegment *segP = SEGMENTS + nSegment;
@@ -55,10 +55,10 @@ CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
 v = gameData.render.mine.viewerEye - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_verts [sideVertIndex [nSide][0]]);
 return (sideP->m_nType == SIDE_IS_QUAD)
-		 ? CFixVector::Dot (sideP->m_normals [0], v) < 0
-		 : (CFixVector::Dot (sideP->m_normals [0], v) < 0) && (CFixVector::Dot (sideP->m_normals [1], v) < 0);
+		 ? CFixVector::Dot (sideP->m_normals [0], v) >= 0
+		 : (CFixVector::Dot (sideP->m_normals [0], v) >= 0) || (CFixVector::Dot (sideP->m_normals [1], v) >= 0);
 #else
-return 0;
+return 1;
 #endif
 }
 
@@ -477,18 +477,18 @@ ogl.SetDepthMode (depthFunc);
 
 char IsColoredSegFace (short nSegment, short nSide)
 {
-	CSegment*	segP = SEGMENTS + nSegment;
-	short			nConnSeg;
-	int			owner;
-	int			special;
+	short nConnSeg;
+	int	owner;
+	int	special;
 
-if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && ((owner = segP->m_owner) > 0)) {
-	nConnSeg = segP->m_children [nSide];
-	if ((nConnSeg < 0) || (segP->m_owner != owner))
+if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
+	 ((owner = SEGMENTS [nSegment].m_owner) > 0)) {
+	nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_owner != owner))
 		return (owner == 1) ? 2 : 1;
 	}
-special = segP->m_nType;
-nConnSeg = segP->m_children [nSide];
+special = SEGMENTS [nSegment].m_nType;
+nConnSeg = SEGMENTS [nSegment].m_children [nSide];
 if ((nConnSeg >= 0) && (special == SEGMENTS [nConnSeg].m_nType))
 	return 0;
 if (special == SEGMENT_IS_WATER)
@@ -501,10 +501,10 @@ return 0;
 // ----------------------------------------------------------------------------
 
 tRgbaColorf segmentColors [4] = {
-	 {0.5f, 0, 0, 0.2f},
-	 {0, 0, 0.5f, 0.2f},
-	 {0, 1.0f / 16.0f, 0.5f, 0.2f},
-	 {0.5f, 0, 0, 0.2f}};
+	 {0.5f, 0, 0, 0.333f},
+	 {0, 0, 0.5f, 0.333f},
+	 {0, 1.0f / 16.0f, 0.5f, 0.333f},
+	 {0.5f, 0, 0, 0.333f}};
 
 tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 {

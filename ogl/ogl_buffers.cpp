@@ -163,7 +163,6 @@ if (!gameStates.menus.nInMenu || bForce) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);
 		gameStates.render.bRenderIndirect = 0;
-		ogl.SetDrawBuffer (GL_BACK, 0);
 		Draw2DFrameElements ();
 		gameStates.render.bRenderIndirect = 1;
 		//SetDrawBuffer (GL_BACK, 1);
@@ -171,8 +170,11 @@ if (!gameStates.menus.nInMenu || bForce) {
 	SDL_GL_SwapBuffers ();
 	if (gameStates.app.bSaveScreenshot)
 		SaveScreenShot (NULL, 0);
-	glClear (GL_COLOR_BUFFER_BIT);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
+#if 1
+	//if (gameStates.menus.nInMenu || bClear)
+		glClear (GL_COLOR_BUFFER_BIT);
+#endif
 	}
 }
 
@@ -183,7 +185,7 @@ void COGL::CreateDrawBuffer (void)
 #if FBO_DRAW_BUFFER
 if (gameStates.render.bRenderIndirect && m_states.bRender2TextureOk && !DrawBuffer ()->Handle ()) {
 	PrintLog ("creating draw buffer\n");
-	DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 1, 1);
+	DrawBuffer ()->Create (m_states.nCurWidth, m_states.nCurHeight, 1);
 	}
 #endif
 }
@@ -214,20 +216,12 @@ bSemaphore--;
 
 void COGL::DestroyDrawBuffers (void)
 {
-ogl.ClearError (1);
-if (m_data.drawBuffers [2].Handle ()) {
-	m_data.drawBufferP = m_data.drawBuffers + 2;
-	DestroyDrawBuffer ();
-	}
-ogl.ClearError (1);
 if (m_data.drawBuffers [1].Handle ()) {
-	m_data.drawBufferP = m_data.drawBuffers + 1;
+	SelectDrawBuffer (1);
 	DestroyDrawBuffer ();
 	}
-ogl.ClearError (1);
-m_data.drawBufferP = m_data.drawBuffers;
+SelectDrawBuffer (0);
 DestroyDrawBuffer ();
-ogl.ClearError (1);
 }
 
 //------------------------------------------------------------------------------
@@ -242,12 +236,10 @@ if (bSemaphore)
 bSemaphore++;
 #endif
 #if FBO_DRAW_BUFFER
-CFBO*	bufP = DrawBuffer ();
-
-if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && bufP->Handle ()) {
-	if (!bufP->Active ()) {
-		if (bufP->Enable (false)) {
-			bufP->SetDrawBuffers ();
+if (bFBO && (nBuffer == GL_BACK) && m_states.bRender2TextureOk && DrawBuffer ()->Handle ()) {
+	if (!DrawBuffer ()->Active ()) {
+		if (DrawBuffer ()->Enable ()) {
+			glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT);
 			}
 		else {
 			DestroyDrawBuffers ();
@@ -315,27 +307,17 @@ void COGL::FlushDrawBuffer (bool bAdditive)
 #if FBO_DRAW_BUFFER
 if (HaveDrawBuffer ()) {
 	static tTexCoord2f texCoord [4] = {{{0,0}},{{0,1}},{{1,1}},{{1,0}}};
-
-	CFloatVector3 verts [4];
-	verts [0][X] =
-	verts [1][X] = 0;
-	verts [2][X] =
-	verts [3][X] = 1;
-	verts [0][Y] =
-	verts [3][Y] = 0;
-	verts [1][Y] =
-	verts [2][Y] = 1;
+	static float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 	int bStereo = 0;
 
 	SetDrawBuffer (GL_BACK, 0);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
-	OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
-	OglVertexPointer (2, GL_FLOAT, sizeof (CFloatVector3), verts);
+	OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+	OglVertexPointer (2, GL_FLOAT, 0, verts);
 
-#if 1
-	if (gameOpts->render.n3DGlasses && (m_data.xStereoSeparation > 0)) {
+	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 		int h = gameOpts->render.bDeghost;
 		int i = (gameOpts->render.bColorGain > 0);
@@ -346,8 +328,8 @@ if (HaveDrawBuffer ()) {
 				shaderManager.Rebuild (shaderProg);
 				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
 				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
-				OglTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoord);
-				OglVertexPointer (2, GL_FLOAT, sizeof (CFloatVector3), verts);
+				OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
+				OglVertexPointer (2, GL_FLOAT, 0, verts);
 
 				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
 				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
@@ -361,11 +343,7 @@ if (HaveDrawBuffer ()) {
 				}
 			}
 		}
-#endif
-	if (bAdditive) {
-		ogl.SetBlending (true);
-		SetBlendMode (GL_ONE, GL_ONE);
-		}
+
 	glColor3f (1,1,1);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	ResetClientStates (0);
@@ -552,7 +530,8 @@ if (glGetError ())
 	return hDepthBuffer = 0;
 ogl.BindTexture (hBuffer);
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_INDEX8_EXT, m_states.nCurWidth, m_states.nCurHeight, 0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
+				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

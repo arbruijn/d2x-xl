@@ -50,7 +50,7 @@ return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 
 static int FaceIsVisible (CSegFace* faceP)
 {
-if (FaceIsCulled (faceP->m_info.nSegment, faceP->m_info.nSide))
+if (!FaceIsVisible (faceP->m_info.nSegment, faceP->m_info.nSide))
 	return faceP->m_info.bVisible = 0;
 if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks)
 	return faceP->m_info.bVisible = 0;
@@ -76,10 +76,8 @@ if (!FaceIsVisible (faceP))
 bWall = IS_WALL (faceP->m_info.nWall);
 if (bWall) {
 	faceP->m_info.widFlags = segP->IsDoorWay (nSide, NULL);
-	if (!(faceP->m_info.widFlags & WID_RENDER_FLAG)) {//(WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
-		faceP->m_info.bVisible = 0;
+	if (!(faceP->m_info.widFlags & WID_RENDER_FLAG)) //(WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
 		return -1;
-		}
 	}
 else
 	faceP->m_info.widFlags = WID_RENDER_FLAG;
@@ -151,7 +149,6 @@ for (i = nStart; i < nEnd; i++) {
 		faceP->m_info.bVisible = 0;
 		continue;
 		}
-
 	if (bNeedLight)
 		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #if DBG
@@ -547,8 +544,6 @@ for (i = nStart; i < nEnd; i++) {
 		}
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->m_info.nSide;
-		if (!FaceIsVisible (faceP))
-			continue;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nSegment = nSegment;

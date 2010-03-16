@@ -1420,10 +1420,6 @@ const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const
 const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp);
 const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& v3, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb);
 const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& v3, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb);
-float VmLineEllipsoidDistance (CFloatVector vOrigin, CFloatVector vDir, CFloatVector vCenter, CFloatVector vScale);
-inline float VmPointEllipsoidDistance (CFloatVector vPoint, CFloatVector vCenter, CFloatVector vScale)	{
-	return VmLineEllipsoidDistance (vPoint, CFloatVector::ZERO, vCenter, vScale);
-	}
 
 CFloatVector* VmsReflect (CFloatVector *vReflect, CFloatVector *vLight, CFloatVector *vNormal);
 

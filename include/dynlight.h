@@ -142,7 +142,7 @@ class CHeadlightManager {
 		int Add (CObject* objP);
 		void Remove (CObject* objP);
 		void Update (void);
-		int SetupShader (int bTextured = 0); //int nType, int bLightmaps, tRgbaColorf *colorP);
+		int SetupShader (int nType, int bLightmaps, tRgbaColorf *colorP);
 };
 
 //------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ class CLightManager {
 		void Transform (int bStatic, int bVariable);
 		ubyte VariableVertexLights (int nVertex);
 		void SetNearestToVertex (int nFace, int nVertex, CFixVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
-		int SetNearestToFace (CSegFace* faceP);
+		int SetNearestToFace (CSegFace* faceP, int bTextured);
 		short SetNearestToSegment (int nSegment, int nFace, int bVariable, int nType, int nThread);
 		void SetNearestStatic (int nSegment, int bStatic, ubyte nType, int nThread);
 		short SetNearestToPixel (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
@@ -300,16 +300,14 @@ void ResetActiveLights (int nThread, int nActive);
 
 #endif
 
-int CreatePerPixelLightingShader (int nLights);
+int CreatePerPixelLightingShader (int nType, int nLights);
 void InitPerPixelLightingShaders (void);
 void ResetPerPixelLightingShaders (void);
-bool InitHeadlightShaders (void);
+void InitHeadlightShaders (int nLights);
 char *BuildLightingShader (const char *pszTemplate, int nLights);
 int CreateLightmapShader (int nType);
 void InitLightmapShaders (void);
 void ResetLightmapShaders (void);
-void InitColorShader (void);
-void ResetColorShader (void);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \

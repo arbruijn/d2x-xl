@@ -27,10 +27,11 @@
 #include "dynlight.h"
 
 #define ONLY_LIGHTMAPS 0
+#define CONST_LIGHT_COUNT 1
 
 //-------------------------------------------------------------------------
 
-const char *lightmapFS [] = {
+const char *pszLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"void main() {\r\n" \
@@ -71,7 +72,7 @@ const char *lightmapFS [] = {
 
 //-------------------------------------------------------------------------
 
-const char *lightmapVS [] = {
+const char *pszLMLightingVS [] = {
 	"void main() {\r\n" \
 	"	gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"	gl_Position = ftransform();\r\n" \
@@ -103,7 +104,6 @@ const char *lightmapVS [] = {
 	"	}"
 	};
 
-
 // ----------------------------------------------------------------------------------------------
 
 int lightmapShaderProgs [4] = {-1,-1,-1,-1};
@@ -122,7 +122,7 @@ for (h = 0; h <= 3; h++) {
 	if (lightmapShaderProgs [h] >= 0)
 		continue;
 	PrintLog ("building lightmap shader programs\n");
-	if (!shaderManager.Build (lightmapShaderProgs [h], lightmapFS [h], lightmapVS [h])) {
+	if (!shaderManager.Build (lightmapShaderProgs [h], pszLMLightingFS [h], pszLMLightingVS [h])) {
 		ogl.m_states.bPerPixelLightingOk = 0;
 		gameStates.render.bPerPixelLighting = 0;
 		for (j = 0; j < 4; j++)
@@ -161,9 +161,13 @@ if (!CreateLightmapShader (nType))
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (0 > SetupLightmap (faceP))
+if (!SetupLightmap (faceP))
 	return 0;
+#if CONST_LIGHT_COUNT
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (lightmapShaderProgs [nType]));
+#else
+GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (perPixelLightingShaderProgs [nLights][nType]));
+#endif
 if (!shaderProg)
 	return -1;
 
@@ -179,83 +183,18 @@ if (shaderManager.Rebuild (shaderProg)) {
 			}
 		}
 	}
-else if (!nType) {
+if (!nType) {
 	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 	}
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
+#if CONST_LIGHT_COUNT
 return lightmapShaderProgs [nType];
+#else
+return perPixelLightingShaderProgs [nLights][nType];
+#endif
 }
 
-// -----------------------------------------------------------------------------
 
-const char *colorFS =
-	"uniform sampler2D lMapTex;\r\n" \
-	"void main(void){\r\n" \
-	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
-	"gl_FragColor = vec4 (gl_Color.rgb + color.rgb, gl_Color.a);\r\n" \
-	"}"
-	;
-
-const char *colorVS = 
-	"void main(void){" \
-	"gl_TexCoord [0] = gl_MultiTexCoord0;"\
-	"gl_Position = ftransform();"\
-	"gl_FrontColor = gl_Color;}"
-	;
-
-// -----------------------------------------------------------------------------
-
-int colorShaderProg = -1;
-
-int CreateColorShader (void)
-{
-if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk)) {
-	gameStates.render.bPerPixelLighting = 0;
-	return 0;
-	}
-if (colorShaderProg >= 0)
-	return 1;
-PrintLog ("building light mask shader programs\n");
-if (shaderManager.Build (colorShaderProg, colorFS, colorVS))
-	return 1;
-ogl.m_states.bPerPixelLightingOk = 0;
-gameStates.render.bPerPixelLighting = 0;
-shaderManager.Delete (colorShaderProg);
-return -1;
-}
-
-// -----------------------------------------------------------------------------
-
-void InitColorShader (void)
-{
-CreateColorShader ();
-}
-
-// -----------------------------------------------------------------------------
-
-void ResetColorShader (void)
-{
-//memset (colorShaderProgs, 0xFF, sizeof (colorShaderProgs));
-}
-
-//------------------------------------------------------------------------------
-
-int SetupColorShader (void)
-{
-PROF_START
-if ((colorShaderProg < 0) && !CreateColorShader ())
-	return 0;
-GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (colorShaderProg));
-if (!shaderProg)
-	return -1;
-if (shaderManager.Rebuild (shaderProg)) {
-	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-	ogl.ClearError (0);
-	}
-PROF_END(ptShaderStates)
-return colorShaderProg;
-}
-
-//------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------
 //eof

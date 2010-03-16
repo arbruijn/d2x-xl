@@ -99,19 +99,16 @@ if (bmP->BPP () == 3) {
 			}
 		}
 	for (i = 0, j = GetNumThreads (); i < j; i++) {
-		if (p [i].red || p [i].green || p [i].blue) {
-			avgColor.red += ac [i].red;
-			avgColor.green += ac [i].green;
-			avgColor.blue += ac [i].blue;
-			nVisible++;
-			}
+		avgColor.red += ac [i].red;
+		avgColor.green += ac [i].green;
+		avgColor.blue += ac [i].blue;
 		}
 #else
-	for (i = h * w; i; i--, p++) {
-		::Swap (p->red, p->blue);
-		avgColor.red += float (p->red);
-		avgColor.green += float (p->green);
-		avgColor.blue += float (p->blue);
+	if (p [i].red || p [i].green || p [i].blue) {
+		avgColor.red += ac [i].red;
+		avgColor.green += ac [i].green;
+		avgColor.blue += ac [i].blue;
+		nVisible++;
 		}
 #endif
 	avgColor.alpha = 1.0f;

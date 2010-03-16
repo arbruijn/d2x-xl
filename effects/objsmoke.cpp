@@ -347,11 +347,8 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 		nParts *= 25;
 		nParts += 75;
 		}
-#if DBG
-	if (nParts && (nType < 2)) {
-#else
+
 	if (nParts && ((nType < 2) || vDirP)) {
-#endif
 		if (gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [0]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [0], nScale, 1);
@@ -519,7 +516,7 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
-	float				nScale = 2.0f; //(gameOpts->render.particles.nQuality == 2) ? 3.0f : 2.0f; 
+	float				nScale = 2.0f;
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
@@ -548,11 +545,7 @@ if (nParts) {
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
-#if 1
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
-#else
-			nScale = float ((gameOpts->render.particles.nQuality == 1) ? I2X (1) : I2X (5) / 4);
-#endif
 			}
 		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, nParts, nScale,
 													gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3],

@@ -345,11 +345,11 @@ ogl.SetDepthTest (true);
 
 void Draw2DFrameElements (void)
 {
-//if (ogl.Enhance3D () >= 0)
-//	ogl.SetDrawBuffer (GL_BACK, 0);
+if (ogl.Enhance3D () >= 0)
+	ogl.SetDrawBuffer (GL_BACK, 0);
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
-//ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (gameStates.app.bGameRunning && !automap.Display ()) {
 	PROF_START
 	cockpit->Render (!(gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()), 0);
@@ -365,8 +365,7 @@ FlashMine ();
 void FlushFrame (fix xStereoSeparation)
 {
 if (!(gameOpts->render.n3DGlasses && xStereoSeparation)) {	//no stereo or shutter glasses
-	if (!gameStates.render.bRenderIndirect)
-		Draw2DFrameElements ();
+	Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
 else {
@@ -389,8 +388,7 @@ else {
 			ogl.ColorMask (1,1,1,1,0);
 //			glAccum (GL_ACCUM, 1.0); 
 //			glAccum (GL_RETURN, 1.0);
-			if (!gameStates.render.bRenderIndirect)
-				Draw2DFrameElements ();
+			Draw2DFrameElements ();
 			ogl.SwapBuffers (0, 0);
 			}
 		}

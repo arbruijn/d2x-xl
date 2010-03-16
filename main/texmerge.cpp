@@ -408,22 +408,64 @@ switch (nType) {
 
 //------------------------------------------------------------------------------
 
-#define N_TEXMERGE_SHADERS	6
+int tmShaderProgs [6] = {-1,-1,-1,-1,-1,-1};
 
-int tmShaderProgs [N_TEXMERGE_SHADERS] = {-1,-1,-1,-1,-1,-1};
-
-const char *texMergeFS [N_TEXMERGE_SHADERS] = {
-	// colored
+const char *texMergeFS [6] = {
 	"uniform sampler2D baseTex, decalTex;\r\n" \
-	"//uniform float grAlpha;\r\n" \
+	"uniform float grAlpha;\r\n" \
 	"void main(void){" \
 	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
 	"vec4 texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
-	"gl_FragColor=vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*gl_Color;\r\n" \
+	"vec4 color = vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*gl_Color;\r\n" \
+	"float l = (color.r + color.g + color.b) / 3.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, color.a);\r\n" \
+   "}"
+,
+	"uniform sampler2D baseTex, decalTex;\r\n" \
+	"uniform float grAlpha;\r\n" \
+	"vec4 decalColor, texColor;\r\n" \
+	"void main(void)" \
+	"{decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
+	"if((abs(decalColor.r-120.0/255.0)<8.0/255.0)&&(abs(decalColor.g-88.0/255.0)<8.0/255.0)&&(abs(decalColor.b-128.0/255.0)<8.0/255.0))discard;\r\n" \
+	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
+	"vec4 color = vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*gl_Color;\r\n" \
+	"float l = (color.r + color.g + color.b) / 3.0;\r\n" \
+	"gl_FragColor = vec4 (l, l, l, color.a);\r\n" \
    "}"
 ,
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
-	"//uniform float grAlpha;\r\n" \
+	"uniform float grAlpha;\r\n" \
+	"vec4 decalColor, texColor;\r\n" \
+	"float bMask;\r\n" \
+	"void main(void){" \
+	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
+	"decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
+	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
+	"vec4 color = vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*gl_Color;\r\n" \
+	"float l = (color.r + color.g + color.b) / 3.0;\r\n" \
+	"gl_FragColor = bMask * vec4 (l, l, l, color.a);\r\n" \
+	"}"
+,
+	"uniform sampler2D baseTex, decalTex;\r\n" \
+	"uniform float grAlpha;\r\n" \
+	"void main(void){" \
+	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
+	"vec4 texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
+	"gl_FragColor=vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*gl_Color;\r\n" \
+   "}"
+,
+	"uniform sampler2D baseTex, decalTex;\r\n" \
+	"uniform float grAlpha;\r\n" \
+	"vec4 decalColor, texColor;\r\n" \
+	"void main(void)" \
+	"{decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
+	"if((abs(decalColor.r-120.0/255.0)<8.0/255.0)&&(abs(decalColor.g-88.0/255.0)<8.0/255.0)&&(abs(decalColor.b-128.0/255.0)<8.0/255.0))discard;\r\n" \
+	"texColor=texture2D(baseTex,gl_TexCoord [0].xy);\r\n" \
+	"gl_FragColor=vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*gl_Color;\r\n" \
+   "}"
+,
+	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
+	"uniform float grAlpha;\r\n" \
 	"uniform float bColored;\r\n" \
 	"vec4 decalColor, texColor;\r\n" \
 	"float bMask;\r\n" \
@@ -431,87 +473,34 @@ const char *texMergeFS [N_TEXMERGE_SHADERS] = {
 	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
 	"decalColor=texture2D(decalTex,gl_TexCoord [1].xy);\r\n" \
 	"texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
-	"gl_FragColor = bMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*gl_Color;\r\n" \
-	"}"
-,
-	// lightmaps
-	"uniform sampler2D lMapTex;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
-	"//uniform float grAlpha;\r\n" \
-	"void main(void){" \
-	"gl_FragColor=gl_Color*texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
-   "}"
-,
-	"uniform sampler2D lMapTex, baseTex;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
-	"//uniform float grAlpha;\r\n" \
-	"void main(void){" \
-	"gl_FragColor=texture2D(baseTex,gl_TexCoord [1].xy)*texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
-   "}"
-,
-	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
-	"//uniform float grAlpha;\r\n" \
-	"void main(void){" \
-	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
-	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
-	"vec4 lMapColor=texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
-	"gl_FragColor=vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*lMapColor;\r\n" \
-   "}"
-,
-	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
-	"uniform vec2 screenScale;\r\n" \
-	"//uniform float grAlpha;\r\n" \
-	"float bMask;\r\n" \
-	"void main(void){" \
-	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
-	"vec4 texColor=texture2D(baseTex,gl_TexCoord [1].xy);\r\n" \
-	"vec4 decalColor=texture2D(decalTex,gl_TexCoord [2].xy);\r\n" \
-	"vec4 lMapColor=texture2D(lMapTex,screenScale*gl_FragCoord.xy);\r\n" \
-	"gl_FragColor = bMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))/**grAlpha*/)*lMapColor;\r\n" \
+	"gl_FragColor = bMask * vec4(vec3(mix(texColor,decalColor,decalColor.a)),min (1.0,(texColor.a+decalColor.a))*grAlpha)*gl_Color;\r\n" \
 	"}"
 	};
 
-const char *texMergeVS [N_TEXMERGE_SHADERS] = {
+const char *texMergeVS [3] = {
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform();"\
+	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
+	"gl_FrontColor=gl_Color;}"
+,
+	"void main(void){" \
+	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
+	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
+	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
 	"gl_FrontColor=gl_Color;}"
 ,
 	"void main(void){" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
 	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_Position=ftransform();"\
-	"gl_FrontColor=gl_Color;}"
-,
-	"void main(void){" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord3;"\
-	"gl_Position=ftransform();"\
+	"gl_Position=ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;"\
 	"gl_FrontColor=gl_Color;}"
 	};
+
+const char *texMergeFSData = 
+	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
+	"uniform float grAlpha;";
 
 //-------------------------------------------------------------------------
 
@@ -523,9 +512,12 @@ if (!(gameOpts->render.bUseShaders && ogl.m_states.bShadersOk))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog ("building texturing shader programs\n");
-	for (i = 0; i < N_TEXMERGE_SHADERS; i++) {
-		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i]);
-		gameStates.render.textures.bGlTexMergeOk = (b >= 0);
+	for (i = 0; i < 6; i++) {
+		b = shaderManager.Build (tmShaderProgs [i], texMergeFS [i], texMergeVS [i % 3]);
+		if (i == 2)
+			gameStates.render.textures.bHaveMaskShader = (b >= 0);
+		else
+			gameStates.render.textures.bGlTexMergeOk = (b >= 0);
 		if (!gameStates.render.textures.bGlTexMergeOk) {
 			while (i)
 				shaderManager.Delete (tmShaderProgs [--i]);
@@ -543,34 +535,19 @@ if (!(ogl.m_states.bGlTexMerge = gameOpts->ogl.bGlTexMerge)) {
 
 //------------------------------------------------------------------------------
 
-int SetupTexMergeShader (int bTransparent, int nType)
+int SetupTexMergeShader (int bColorKey, int bColored, int nType)
 {
-	int nShader = nType + (bTransparent ? 2 : -2);
+	int nShader = nType - 1 + bColored * 3;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
 if (!shaderProg)
 	return -1;
 shaderManager.Rebuild (shaderProg);
 
-if (bTransparent) {
-	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
-	if (nType > 0) {
-		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);
-		if (nType > 1) {
-			glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 2);
-			if (nType > 2)
-				glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 3);
-			}
-		}
-	glUniform2fv (glGetUniformLocation (shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
-	}
-else {
-	glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 0);
-	glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1);
-	if (nType == 3)
-		glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2);
-	}
-//glUniform1f (glGetUniformLocation (shaderProg, "grAlpha"), 1.0f);
+glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 0);
+glUniform1i (glGetUniformLocation (shaderProg, "decalTex"), 1);
+glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2);
+glUniform1f (glGetUniformLocation (shaderProg, "grAlpha"), 1.0f);
 return tmShaderProgs [nShader];
 }
 

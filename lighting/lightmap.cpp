@@ -44,7 +44,6 @@ there I just had it exit instead.
 #include "netmisc.h"
 #include "gamepal.h"
 #include "gamemine.h"
-#include "ogl_fastrender.h"
 #include "renderthreads.h"
 
 CLightmapManager lightmapManager;
@@ -761,28 +760,22 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetupLightmap (CSegFace* faceP, int bUseBuffer)
+int SetupLightmap (CSegFace* faceP)
 {
 int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (!lightmapManager.Bind (i))
-	return -1;
+	return 0;
 GLuint h = lightmapManager.Buffer (i)->handle;
-if (0 > ogl.IsBound (h)) {
-#if RENDER_BUFFERED_FACES
-	if (bUseBuffer)
-		FlushFaceBuffer (1);
+#if 1
+if (0 <= ogl.IsBound (h))
+	return 1;
 #endif
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.SetTexturing (true);
-	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	ogl.BindTexture (h);
-	gameData.render.nStateChanges++;
-	}
-#if RENDER_BUFFERED_FACES
-if (bUseBuffer)
-	FillFaceBuffer (faceP, NULL, NULL, h);
-#endif
-return i;
+ogl.SelectTMU (GL_TEXTURE0, true);
+ogl.SetTexturing (true);
+glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+ogl.BindTexture (h);
+gameData.render.nStateChanges++;
+return 1;
 }
 
 //------------------------------------------------------------------------------

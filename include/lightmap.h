@@ -95,6 +95,7 @@ extern CLightmapManager lightmapManager;
 
 //------------------------------------------------------------------------------
 
+
 #define	USE_LIGHTMAPS \
 			(gameStates.render.bLightmapsOk && \
 			 gameOpts->render.bUseLightmaps && \
@@ -108,7 +109,9 @@ extern tLightmapData		lightmapData;
 extern int					lightmapWidth [5];
 extern GLhandleARB		lmShaderProgs [3];
 
-int SetupLightmap (CSegFace* faceP, int bUseBuffer = 0);
+//------------------------------------------------------------------------------
+
+int SetupLightmap (CSegFace* faceP);
 
 //------------------------------------------------------------------------------
 

@@ -3159,7 +3159,7 @@ typedef void (APIENTRYP PFNGLCOPYTEXSUBIMAGE3DPROC) (GLenum target, GLint level,
 #ifndef GL_VERSION_1_3
 #define GL_VERSION_1_3 1
 #ifdef GL_GLEXT_PROTOTYPES
-GLAPI void APIENTRY glActiveTexture (GLenum);
+GLAPI void APIENTRY ogl.SelectTMU (GLenum);
 GLAPI void APIENTRY glClientActiveTexture (GLenum);
 GLAPI void APIENTRY glMultiTexCoord1d (GLenum, GLdouble);
 GLAPI void APIENTRY glMultiTexCoord1dv (GLenum, const GLdouble *);

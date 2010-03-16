@@ -92,7 +92,7 @@ for (i = 0; i < 10; i++) {
 
 void CFileSelector::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-	static int t0 = 0;
+	static	int t0 = 0;
 
 if (!MenuRenderTimeout (t0, -1))
 	return;

@@ -43,7 +43,6 @@ extern char DOWN_ARROW_MARKER [2];
 //------------------------------------------------------------------------------
 
 #define RETRO_STYLE			0 //ogl.m_states.nDrawBuffer != GL_BACK
-#define MODERN_STYLE			1 //gameOpts->menus.nStyle
 #define FAST_MENUS			1 //gameOpts->menus.bFastMenus
 
 #define MENU_CLOSE_X			(gameStates.menus.bHires?15:7)
@@ -388,7 +387,7 @@ int SwitchDisplayMode (int dir);
 void IpxSetDriver (int ipx_driver);
 void DoNewIPAddress (void);
 
-bool MenuRenderTimeout (int& t0, int tFade = -1);
+bool MenuRenderTimeout (int& t0, int tFade);
 
 //------------------------------------------------------------------------------
 

@@ -58,8 +58,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  #include "tactile.height"
 #endif
 
-#define MODERN_STYLE	1 //gameOpts->menus.nStyle
-
 #define LHX(x)      (gameStates.menus.bHires? 2 * (x) : x)
 #define LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 
@@ -216,7 +214,7 @@ void CBackground::Draw (bool bDrawBox, bool bUpdate)
 {
 //paletteManager.SetEffect (0, 0, 0);
 if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
-	if (m_filename && m_bTopMenu) {
+	if (m_filename) {
 		CCanvas::Push ();
 		CCanvas::SetCurrent (m_canvas [0]);
 		m_background->RenderStretched ();
@@ -246,60 +244,57 @@ if (bUpdate && !gameStates.app.bGameRunning)
 
 void CBackground::DrawArea (int left, int top, int right, int bottom)
 {
-	{
-	if (left < 0)
-		left = 0;
-	if (top < 0)
-		top = 0;
-	int width = right - left + 1;
-	int height = bottom - top + 1;
-	//if (width > nmBackground.Width ()) width = nmBackground.Width ();
-	//if (height > nmBackground.Height ()) height = nmBackground.Height ();
-	right = left + width - 1;
-	bottom = top + height - 1;
-	ogl.SetBlending (false);
-	if (!backgroundManager.Shadow ()) {
-		CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
-		CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
-		m_background->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
-		CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () - LHX (10));
-		CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () - LHX (10));
-		}
-	else {
-		m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
-		gameStates.render.grAlpha = GrAlpha (2 * 7);
-		ogl.SetBlending (true);
-		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		CCanvas::Current ()->SetColorRGB (0, 0, 0, 200);
-		OglDrawFilledRect (right - 5, top + 5, right - 6, bottom - 5);
-		OglDrawFilledRect (right - 4, top + 4, right - 5, bottom - 5);
-		OglDrawFilledRect (right - 3, top + 3, right - 4, bottom - 5);
-		OglDrawFilledRect (right - 2, top + 2, right - 3, bottom - 5);
-		OglDrawFilledRect (right - 1, top + 1, right - 2, bottom - 5);
-		OglDrawFilledRect (right + 0, top + 0, right - 1, bottom - 5);
-		OglDrawFilledRect (left + 5, bottom - 5, right, bottom - 6);
-		OglDrawFilledRect (left + 4, bottom - 4, right, bottom - 5);
-		OglDrawFilledRect (left + 3, bottom - 3, right, bottom - 4);
-		OglDrawFilledRect (left + 2, bottom - 2, right, bottom - 3);
-		OglDrawFilledRect (left + 1, bottom - 1, right, bottom - 2);
-		OglDrawFilledRect (left + 0, bottom - 0, right, bottom - 1);
+if (left < 0)
+	left = 0;
+if (top < 0)
+	top = 0;
+int width = right - left + 1;
+int height = bottom - top + 1;
+//if (width > nmBackground.Width ()) width = nmBackground.Width ();
+//if (height > nmBackground.Height ()) height = nmBackground.Height ();
+right = left + width - 1;
+bottom = top + height - 1;
+ogl.SetBlending (false);
+if (!backgroundManager.Shadow ()) {
+	CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
+	CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
+	m_background->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
+	CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () - LHX (10));
+	CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () - LHX (10));
+	}
+else {
+	m_background->RenderFixed (NULL, left, top, width, height); //, 0, 0);
+	gameStates.render.grAlpha = GrAlpha (2 * 7);
+	ogl.SetBlending (true);
+	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	CCanvas::Current ()->SetColorRGB (0, 0, 0, 200);
+	OglDrawFilledRect (right - 5, top + 5, right - 6, bottom - 5);
+	OglDrawFilledRect (right - 4, top + 4, right - 5, bottom - 5);
+	OglDrawFilledRect (right - 3, top + 3, right - 4, bottom - 5);
+	OglDrawFilledRect (right - 2, top + 2, right - 3, bottom - 5);
+	OglDrawFilledRect (right - 1, top + 1, right - 2, bottom - 5);
+	OglDrawFilledRect (right + 0, top + 0, right - 1, bottom - 5);
+	OglDrawFilledRect (left + 5, bottom - 5, right, bottom - 6);
+	OglDrawFilledRect (left + 4, bottom - 4, right, bottom - 5);
+	OglDrawFilledRect (left + 3, bottom - 3, right, bottom - 4);
+	OglDrawFilledRect (left + 2, bottom - 2, right, bottom - 3);
+	OglDrawFilledRect (left + 1, bottom - 1, right, bottom - 2);
+	OglDrawFilledRect (left + 0, bottom - 0, right, bottom - 1);
 
-		CCanvas::Current ()->SetColorRGB (255, 255, 255, 50);
-		OglDrawFilledRect (left, top + 0, right - 1, top + 1);
-		OglDrawFilledRect (left, top + 1, right - 2, top + 2);
-		OglDrawFilledRect (left, top + 2, right - 3, top + 3);
-		OglDrawFilledRect (left, top + 3, right - 4, top + 4);
-		OglDrawFilledRect (left, top + 4, right - 5, top + 5);
-		OglDrawFilledRect (left, top + 5, right - 6, top + 6);
-		OglDrawFilledRect (left + 0, top + 6, left + 1, bottom - 1);
-		OglDrawFilledRect (left + 1, top + 6, left + 2, bottom - 2);
-		OglDrawFilledRect (left + 2, top + 6, left + 3, bottom - 3);
-		OglDrawFilledRect (left + 3, top + 6, left + 4, bottom - 4);
-		OglDrawFilledRect (left + 4, top + 6, left + 5, bottom - 5);
-		OglDrawFilledRect (left + 5, top + 6, left + 6, bottom - 6);
-		ogl.SetBlending (false);
-		}
-	//GrUpdate (0);
+	CCanvas::Current ()->SetColorRGB (255, 255, 255, 50);
+	OglDrawFilledRect (left, top + 0, right - 1, top + 1);
+	OglDrawFilledRect (left, top + 1, right - 2, top + 2);
+	OglDrawFilledRect (left, top + 2, right - 3, top + 3);
+	OglDrawFilledRect (left, top + 3, right - 4, top + 4);
+	OglDrawFilledRect (left, top + 4, right - 5, top + 5);
+	OglDrawFilledRect (left, top + 5, right - 6, top + 6);
+	OglDrawFilledRect (left + 0, top + 6, left + 1, bottom - 1);
+	OglDrawFilledRect (left + 1, top + 6, left + 2, bottom - 2);
+	OglDrawFilledRect (left + 2, top + 6, left + 3, bottom - 3);
+	OglDrawFilledRect (left + 3, top + 6, left + 4, bottom - 4);
+	OglDrawFilledRect (left + 4, top + 6, left + 5, bottom - 5);
+	OglDrawFilledRect (left + 5, top + 6, left + 6, bottom - 6);
+	ogl.SetBlending (false);
 	}
 gameStates.render.grAlpha = 1.0f;
 }

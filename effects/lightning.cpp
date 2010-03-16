@@ -1194,10 +1194,6 @@ if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (nThread >= 0)) {	/
 				m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
 	}
 else {
-#if 0
-	if (gameOpts->render.n3DGlasses || (nThread < 0))
-		RenderSetup (0, nThread);
-#endif
 	if (!nDepth)
 		ogl.SetFaceCulling (false);
 	if (nThread >= 0)
@@ -1217,8 +1213,8 @@ else {
 
 int CLightning::SetLight (void)
 {
-	int				j, nLights = 0, nStride;
-	double			h, nStep;
+	int		j, nLights = 0, nStride;
+	double	h, nStep;
 
 if (!m_bLight)
 	return 0;
@@ -1316,17 +1312,8 @@ void CLightningSystem::Destroy (void)
 m_bValid =
 m_bDestroy = 0;
 DestroySound ();
-#if 0
-if (m_lightning.Buffer ()) {
-	for (int i = 0; i < m_nBolts; i++)
-		m_lightning [i].Destroy ();
-	m_lightning.Destroy ();
-	m_nBolts = 0;
-	}
-#else
 m_lightning.Destroy ();	//class and d-tors will handle everything gracefully
 m_nBolts = 0;
-#endif
 if ((m_nObject >= 0) && (lightningManager.GetObjectSystem (m_nObject) == m_nId))
 	lightningManager.SetObjectSystem (m_nObject, -1);
 m_nObject = -1;

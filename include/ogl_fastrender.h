@@ -11,33 +11,15 @@
 
 //------------------------------------------------------------------------------
 
-#if DBG
-#	define RENDER_BUFFERED_FACES	0	// well ... no speed increase :/
-#else
-#	define RENDER_BUFFERED_FACES	0
-#endif
-
-//------------------------------------------------------------------------------
-
-int RenderDepth (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
-int RenderLightmaps (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
-int RenderColor (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
-int RenderLights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
-int RenderHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
-int RenderSky (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop);
-int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bBlend, int bTextured);
+int DrawFaceSimple (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured);
+int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bLightmaps);
+int DrawHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bLightmaps);
 void FlushFaceBuffer (int bForce);
-void FillFaceBuffer (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, GLuint handle);
-
-int LoadPerPixelLightingShader (void);
-int SetupPerPixelLightingShader (CSegFace* faceP);
-int SetupLightmapShader (CSegFace* faceP, int nType, bool bHeadlight);
-int SetupColorShader (void);
-int SetupHardwareLighting (CSegFace *faceP);
-//int G3SetupHeadlightShader (int nType, int bLightmaps, tRgbaColorf *colorP);
-int SetupTexMergeShader (int bColored, int nType);
+int SetupPerPixelLightingShader (CSegFace *faceP, int nType, bool bHeadlight);
+int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight);
+int SetupTexMergeShader (int bColorKey, int bColored, int nType);
 int SetupGrayScaleShader (int nType, tRgbaColorf *colorP);
-int SetupRenderShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
+int SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);
 
 //------------------------------------------------------------------------------
@@ -45,6 +27,17 @@ void InitGrayScaleShader (void);
 static inline int FaceIsAdditive (CSegFace *faceP)
 {
 return (int) ((faceP->m_info.bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->FromPog ()) : faceP->m_info.bAdditive);
+}
+
+//------------------------------------------------------------------------------
+
+typedef int (*tFaceRenderFunc) (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bLightmaps);
+
+extern tFaceRenderFunc faceRenderFunc;
+
+static inline void SetFaceDrawer (int nType)
+{
+faceRenderFunc = RenderFace;
 }
 
 //------------------------------------------------------------------------------

@@ -184,6 +184,7 @@ gameStates.zoom.nFactor = I2X (1);
 gameStates.zoom.nMinFactor = I2X (1);
 gameStates.zoom.nMaxFactor = I2X (5);
 gameStates.render.textures.bGlTexMergeOk = 0;
+gameStates.render.textures.bHaveMaskShader = 0;
 gameStates.render.fonts.bHires = 0;
 gameStates.render.fonts.bHiresAvailable = 0;
 gameStates.render.fonts.bInstalled = 0;

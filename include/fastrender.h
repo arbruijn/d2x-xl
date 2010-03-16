@@ -17,14 +17,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "endlevel.h"
 
-#define RENDER_COLOR_SEPARATELY	0
-
 //------------------------------------------------------------------------------
 
 void QSortFaces (int left, int right);
 int SetupDepthBuffer (int nType);
-int SetupCoronas (void);
-void RenderFaceList (int nType, int bFrontToBack);
+void RenderFaceList (int nType);
 void ComputeDynamicQuadLight (int nStart, int nEnd, int nThread);
 void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread);
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread);
@@ -35,9 +32,7 @@ int CountRenderFaces (void);
 void GetRenderVertices (void);
 void RenderMineObjects (int nType);
 void RenderSkyBoxFaces (void);
-int BeginRenderFaces (int nType);
-void EndRenderFaces (void);
-short BuildFaceLists (void);
+int SetupCoronas (void);
 
 //------------------------------------------------------------------------------
 

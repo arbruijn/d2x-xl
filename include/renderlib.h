@@ -93,7 +93,7 @@ void DrawOutline (int nVertices, g3sPoint **pointList);
 int ToggleOutlineMode (void);
 int ToggleShowOnlyCurSide (void);
 void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient);
-int FaceIsCulled (short nSegment, short nSide);
+int FaceIsVisible (short nSegment, short nSide);
 int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist, int nThread = 0);
 ubyte BumpVisitedFlag (void);
 ubyte BumpProcessedFlag (void);

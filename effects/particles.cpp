@@ -2002,7 +2002,7 @@ if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 		if ((gameOpts->render.particles.nQuality == 2) && !(automap.Display () || nType) && lightManager.Headlights ().nLights)
-			lightManager.Headlights ().SetupShader (1);
+			lightManager.Headlights ().SetupShader (1, 0, &color);
 		else 
 #endif
 		if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, bBufferEmissive)))
@@ -2084,19 +2084,7 @@ Shutdown ();
 
 int CParticleImageManager::GetType (int nType)
 {
-if (nType <= SMOKE_PARTICLES)
-	return SMOKE_PARTICLES;
-if (nType == BULLET_PARTICLES)
-	return BULLET_PARTICLES;
-if ((nType == LIGHT_PARTICLES) || (nType == GATLING_PARTICLES))
-	return LIGHT_PARTICLES;
-if (nType == BUBBLE_PARTICLES)
-	return BUBBLE_PARTICLES;
-if (nType == FIRE_PARTICLES)
-	return FIRE_PARTICLES;
-if (nType == WATERFALL_PARTICLES)
-	return WATERFALL_PARTICLES;
-return -1;
+return (nType == GATLING_PARTICLES) ? LIGHT_PARTICLES : nType;
 }
 
 //	-----------------------------------------------------------------------------

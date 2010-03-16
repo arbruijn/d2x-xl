@@ -70,7 +70,7 @@ if (bFade)
 
 void CMessageBox::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-	static int t0 = 0;
+	static	int t0 = 0;
 
 if (!MenuRenderTimeout (t0, -1))
 	return;

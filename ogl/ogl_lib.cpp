@@ -641,15 +641,6 @@ if (gameStates.render.bBriefing) {
 	gameStates.render.bRenderIndirect = 0;
 	SetDrawBuffer (GL_BACK, 0);
 	}
-#if 1
-else if (gameStates.render.bPerPixelLighting) {
-	if (!gameStates.render.cameras.bActive) {
-		int i = Enhance3D ();
-		gameStates.render.bRenderIndirect = 1;
-		SelectDrawBuffer ((i > 0) && (m_data.xStereoSeparation > 0));
-		}
-	}
-#endif
 else if (gameStates.render.cameras.bActive)
 	gameStates.render.bRenderIndirect = 0;
 else {
@@ -892,9 +883,7 @@ void COGL::EndFrame (void)
 //	glViewport (0, 0, screen.Width (), screen.Height ());
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-if (gameStates.render.bBriefing)
-	gameStates.render.bRenderIndirect = 0;
-if (gameStates.render.bPerPixelLighting || !gameStates.render.cameras.bActive) {
+if (!(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 	if (gameStates.render.bRenderIndirect)
 		SelectDrawBuffer (0);
 	SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect);
@@ -1106,6 +1095,37 @@ oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 
 //------------------------------------------------------------------------------
 
+#if 0
+
+GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
+{
+	GLuint	hBuffer;
+
+if (nTMU > 0)
+	SelectTMU (nTMU);
+ogl.SetTexturing (true);
+GenTextures (1, &hBuffer);
+if (glGetError ())
+	return hDepthBuffer = 0;
+ogl.BindTexture (hBuffer);
+glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, m_states.nCurWidth, m_states.nCurHeight,
+				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+if (glGetError ()) {
+	DeleteTextures (1, &hBuffer);
+	return hBuffer = 0;
+	}
+return hBuffer;
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
 int COGL::StencilOff (void)
 {
 if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
@@ -1132,22 +1152,18 @@ if (bStencil) {
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)
 {
 glGenTextures (n, hTextures);
-#if 0
 if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
 	DestroyDrawBuffers ();
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 void COGL::DeleteTextures (GLsizei n, GLuint *hTextures)
 {
-#if 0
 if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
 	DestroyDrawBuffers ();
-#endif
 #if DBG
 for (int i = 0; i < n;)
 	if (int (hTextures [i]) < 0)

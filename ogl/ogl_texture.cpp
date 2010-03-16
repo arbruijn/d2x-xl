@@ -1288,6 +1288,8 @@ CBitmap *CBitmap::CreateMask (void)
 	ubyte		*pi;
 	ubyte		*pm;
 
+if (!gameStates.render.textures.bHaveMaskShader)
+	return NULL;
 if (!Buffer ())
 	return NULL;
 if (m_info.maskP)
@@ -1328,6 +1330,8 @@ int CBitmap::CreateMasks (void)
 {
 	int	nMasks, i, nFrames;
 
+if (!gameStates.render.textures.bHaveMaskShader)
+	return 0;
 if (m_info.nMasks)
 	return m_info.nMasks;
 m_info.nMasks = -1;

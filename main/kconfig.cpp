@@ -834,25 +834,23 @@ DrawItem (m_items + m_nCurItem, 1, 0);
 
 void CControlConfig::DrawScreen (void)
 {
-if (!m_bRedraw) {
-	m_bRedraw = 1;
-	if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
-		GameRenderFrame ();
-	CCanvas::SetCurrent (backgroundManager.Canvas ());
-	backgroundManager.Redraw ();
-	CCanvas::SetCurrent (NULL);
-	DrawTitle ();
-	m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
-	m_closeX += m_xOffs;
-	m_closeY += m_yOffs;
-	m_closeSize = gameStates.menus.bHires?10:5;
-	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
-	OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
-	DrawHeader ();
-	DrawTable ();
-	}
+m_bRedraw = 1;
+if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
+	GameRenderFrame ();
+CCanvas::SetCurrent (backgroundManager.Canvas ());
+backgroundManager.Redraw ();
+CCanvas::SetCurrent (NULL);
+DrawTitle ();
+m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
+m_closeX += m_xOffs;
+m_closeY += m_yOffs;
+m_closeSize = gameStates.menus.bHires?10:5;
+CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
+OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
+DrawHeader ();
+DrawTable ();
 SDL_ShowCursor (0);
 }
 

@@ -1,3 +1,16 @@
+/*
+THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
+SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
+END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
+ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
+IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
+SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
+FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
+CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
+COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
+*/
+
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -229,6 +242,7 @@ PROF_START
 	short		*segNumP;
 
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
+gameStates.render.nState = 1;
 for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
 	for (nObject = SEGMENTS [*segNumP].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow);
@@ -241,6 +255,7 @@ void RenderSkyBox (int nWindow)
 {
 PROF_START
 if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
+	ogl.SetDepthWrite (true);
 	RenderSkyBoxFaces ();
 	RenderSkyBoxObjects ();
 	}
@@ -277,48 +292,41 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (gameStates.render.bRenderTransparency)	// render objects containing transparency, like explosions
-		RenderObjList (nListPos, gameStates.render.nWindow);
-	else {	// render opaque objects
 #if DBG
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
-		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			nSegLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
-			lightManager.SetNearestStatic (nSegment, 1, 1, 0);
-			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
-			}
-		else
-			gameStates.render.bApplyDynLight = 0;
-		RenderObjList (nListPos, gameStates.render.nWindow);
-		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			lightManager.ResetNearestStatic (nSegment, 0);
-			}
-		gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
-		//lightManager.Index (0)[0].nActive = gameData.render.lights.dynamic.shader.iStaticLights [0];
+	if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
+		nSegLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
+		lightManager.SetNearestStatic (nSegment, 1, 1, 0);
+		gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
 		}
+	else
+		gameStates.render.bApplyDynLight = 0;
+	RenderObjList (nListPos, gameStates.render.nWindow);
+	if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
+		lightManager.ResetNearestStatic (nSegment, 0);
+		}
+	gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 	}	
-for (int i = 0; i < gameStates.app.nThreads; i++)
-	lightManager.ResetAllUsed (1, i);
 gameStates.render.nState = 0;
 }
 
 //------------------------------------------------------------------------------
 
-inline int RenderSegmentList (int nType, int bFrontToBack)
+inline int RenderSegmentList (int nType)
 {
 PROF_START
 gameStates.render.nType = nType;
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
 	BumpVisitedFlag ();
-	RenderFaceList (nType, bFrontToBack);
-	if (nType == RENDER_TYPE_LIGHTS) {
-		for (int i = 0; i < gameStates.app.nThreads; i++)
-			lightManager.ResetAllUsed (1, i);
-		}
+	RenderFaceList (nType);
 	ogl.ClearError (0);
 	}
+RenderMineObjects (nType);
+for (int i = 0; i < gameStates.app.nThreads; i++)
+	lightManager.ResetAllUsed (1, i);
+ogl.ClearError (0);
 PROF_END(ptRenderPass)
 return 1;
 }
@@ -392,56 +400,13 @@ PROF_START
 SetupMineRenderer ();
 PROF_END(ptAux)
 ComputeMineLighting (nStartSeg, xStereoSeparation, nWindow);
-
-#if 0
-
-gameStates.render.bFullBright = -1; // hack to make the renderer multiply color with the textures
-RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
-gameStates.render.bFullBright = 0;
-
-#else
-
-#if 1
-ogl.ClearError (0);
-if (!gameStates.render.bFullBright) {
-	if (!(gameStates.render.bPerPixelLighting || gameStates.render.bHeadlights)) {
-		gameStates.render.bFullBright = -1; // hack to make the renderer multiply color with the textures
-		RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
-		gameStates.render.bFullBright = 0;
-		}
-	else {
-		BuildFaceLists ();
-		SetupDepthBuffer (RENDER_TYPE_DEPTH);
-		if (!gameStates.render.bPerPixelLighting)
-			RenderSegmentList (RENDER_TYPE_COLOR, 1);
-		else {
-			RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);
-			if (gameStates.render.bPerPixelLighting == 2)
-				RenderSegmentList (RENDER_TYPE_LIGHTS, 1);
-			}
-		if (gameStates.render.bHeadlights)
-			RenderSegmentList (RENDER_TYPE_HEADLIGHTS, 1);
-		}
-	}
-#endif
-
-#if 1
-if (gameStates.render.bFullBright || gameStates.render.bHeadlights || gameStates.render.bPerPixelLighting)
-	RenderSegmentList (RENDER_TYPE_GEOMETRY, 1);
-RenderMineObjects (RENDER_TYPE_OBJECTS);
-#endif
-
-#if 1
+RenderSegmentList (RENDER_TYPE_GEOMETRY);	// render opaque geometry
 if (!EGI_FLAG (bShadows, 0, 1, 0) || (gameStates.render.nShadowPass == 1)) {
-	if (!gameStates.app.bNostalgia && !nWindow &&
-		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) {
-		if (SetupCoronas ())
-			RenderSegmentList (RENDER_TYPE_CORONAS, 1);
-		}
+	if (!gameStates.app.bNostalgia &&
+		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) 
+		if (!nWindow && SetupCoronas ())
+			RenderSegmentList (RENDER_TYPE_CORONAS);
 	}
-#endif
-
-#endif
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);
 }

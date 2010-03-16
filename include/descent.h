@@ -959,7 +959,6 @@ typedef struct tRenderStates {
 	int bRendering;
 	int bFullBright;
 	int bQueryCoronas;
-	int bRenderTransparency;
 	int bDoLightmaps;
 	int bAmbientColor;
 	int bDoCameras;
@@ -982,7 +981,6 @@ typedef struct tRenderStates {
 	int nMaxLightsPerPass;
 	int nMaxLightsPerFace;
 	int nMaxLightsPerObject;
-	int nLights;
 	int bVSync;
 	int bVSyncOk;
 	int nThreads;
@@ -1001,7 +999,6 @@ typedef struct tRenderStates {
 	double glFOV;
 	double glAspect;
 	float grAlpha;
-	GLhandleARB shaderProg;
 	tRenderDetail detail;
 	tRenderHistory history;
 } tRenderStates;
@@ -1178,17 +1175,12 @@ typedef struct tLimitFPSStates {
 
 //------------------------------------------------------------------------------
 
-#define RENDER_TYPE_LIGHTMAPS			0
-#define RENDER_TYPE_LIGHTS				1
-#define RENDER_TYPE_HEADLIGHTS		2
-#define RENDER_TYPE_DEPTH				3
-#define RENDER_TYPE_COLOR				4
-#define RENDER_TYPE_GEOMETRY			5
-#define RENDER_TYPE_CORONAS			6
-#define RENDER_TYPE_SKYBOX				7
-#define RENDER_TYPE_OBJECTS			8
-#define RENDER_TYPE_TRANSPARENCY		9
-#define RENDER_TYPES						10
+#define RENDER_TYPE_GEOMETRY			0
+#define RENDER_TYPE_CORONAS			1
+#define RENDER_TYPE_SKYBOX				2
+#define RENDER_TYPE_OBJECTS			3
+#define RENDER_TYPE_TRANSPARENCY		4
+#define RENDER_PASSES					5
 
 typedef struct tGameStates {
 	tGameplayStates		gameplay;
@@ -1559,8 +1551,6 @@ class CRenderData {
 		CSphere						shield;
 		CSphere						monsterball;
 		CArray<tFaceListItem>	faceList;
-		CArray<CSegFace*>			renderFaces [2];
-		int							nRenderFaces [2];
 		fix							xFlashEffect;
 		fix							xTimeFlashLastPlayed;
 		CFloatVector*				vertP;

@@ -680,11 +680,12 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 #endif
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
+	//			sprintf (szLightSources + strlen (szLightSources), "%d ", (prl->nObject >= 0) ? -prl->nObject : prl->nSegment);
 				fBrightness = prl->info.fBrightness * fLightScale;
 				color = *(reinterpret_cast<CFloatVector*> (&prl->info.color));
-				color [R] *= fLightScale;
-				color [G] *= fLightScale;
-				color [B] *= fLightScale;
+				color[R] *= fLightScale;
+				color[G] *= fLightScale;
+				color[B] *= fLightScale;
 				glLightfv (hLight, GL_POSITION, reinterpret_cast<GLfloat*> (prl->render.vPosf));
 				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&color));
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));
@@ -702,11 +703,13 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 					}
 				else {
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
+#if 1
 					if (X2F (CFixVector::Dist (objP->info.position.vPos, prl->info.vPos)) <= prl->info.fRad) {
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
 						}
 					else 
+#endif
 						{
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
@@ -729,7 +732,8 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	else
 		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &pm->m_subModels [0].m_vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
-	transformation.End ();
+	//if (nSubModel < 0)
+		transformation.End ();
 	if (!bLighting)
 		break;
 	}

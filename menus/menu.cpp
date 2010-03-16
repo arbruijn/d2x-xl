@@ -436,13 +436,12 @@ if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_
 			}
 		}
 	CCanvas::Pop ();
-	if (gameStates.render.bRenderIndirect)
-		ogl.FlushDrawBuffer ();
 	}
 else {
 	console.Draw ();
 	CalcFrameTime ();
 	}
+
 
 if (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0)) {
 	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
@@ -504,7 +503,7 @@ if (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation (
 				DrawRightStringWXY ((gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
 			}
 		}
-	if (m_bCloseBox && m_bStart) {
+	if (m_bCloseBox) {
 		DrawCloseBox (m_props.x, m_props.y);
 		m_bCloseBox = 1;
 		}
@@ -603,7 +602,6 @@ if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;
-
 if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
@@ -1202,9 +1200,9 @@ launchOption:
 	
 		if (!done && !nMouseState && nOldMouseState && m_bCloseBox) {
 			MouseGetPos (&mx, &my);
-			x1 = m_props.x;
+			x1 = m_props.x + MENU_CLOSE_X;
 			x2 = x1 + MENU_CLOSE_SIZE;
-			y1 = m_props.y;
+			y1 = m_props.y + MENU_CLOSE_Y;
 			y2 = y1 + MENU_CLOSE_SIZE;
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				if (nCurItemP)
