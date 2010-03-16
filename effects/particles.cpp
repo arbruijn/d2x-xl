@@ -74,7 +74,7 @@
 
 #define LAZY_RENDER_SETUP 1
 
-#define SMOKE_LIGHTING 1
+#define SMOKE_LIGHTING 0
 
 #define MAKE_SMOKE_IMAGE 0
 
