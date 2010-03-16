@@ -708,17 +708,8 @@ faceP = item->faceP;
 triP = item->triP;
 
 #if DBG
-if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
-#if 0
-	if (triP) {
-		if ((triP->nIndex - faceP->m_info.nIndex) / 3 < 22)
-			return;
-		if ((triP->nIndex - faceP->m_info.nIndex) / 3 > 23)
-			return;
-		}
-#endif
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
-	}
 #endif
 
 if (bTextured) {
@@ -836,7 +827,7 @@ if (gameStates.render.bPerPixelLighting) {
 				nDbgSeg = nDbgSeg;
 			ogl.SetBlending (true);
 #	endif
-			lightManager.Headlights ().SetupShader (m_data.bTextured, 1, bTextured ? NULL : &faceP->m_info.color);
+			lightManager.Headlights ().SetupShader (bTextured, 1, bTextured ? NULL : &faceP->m_info.color);
 			if (bAdditive != 2) {
 				bAdditive = 2;
 				ogl.SetBlendMode (2);
@@ -849,7 +840,7 @@ if (gameStates.render.bPerPixelLighting) {
 else {
 	SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
 						(item->nSegment < 0) || !automap.Display () || automap.m_visited [0][item->nSegment],
-						m_data.bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
+						bTextured ? NULL : faceP ? &faceP->m_info.color : item->color);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 ogl.ResetTransform (faceP != NULL);
