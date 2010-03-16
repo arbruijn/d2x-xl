@@ -414,10 +414,11 @@ if (!gameStates.render.bFullBright) {
 		SetupDepthBuffer (RENDER_TYPE_DEPTH);
 		if (!gameStates.render.bPerPixelLighting)
 			RenderSegmentList (RENDER_TYPE_COLOR, 1);
-		else if (gameStates.render.bPerPixelLighting == 1)
+		else {
 			RenderSegmentList (RENDER_TYPE_LIGHTMAPS, 1);
-		else // if (gameStates.render.bPerPixelLighting == 2)
-			RenderSegmentList (RENDER_TYPE_LIGHTS, 1);
+			if (gameStates.render.bPerPixelLighting == 2)
+				RenderSegmentList (RENDER_TYPE_LIGHTS, 1);
+			}
 		if (gameStates.render.bHeadlights)
 			RenderSegmentList (RENDER_TYPE_HEADLIGHTS, 1);
 		}

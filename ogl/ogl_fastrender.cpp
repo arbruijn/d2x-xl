@@ -530,8 +530,6 @@ if (!FaceIsColored (faceP))
 if (FaceIsTransparent (faceP, bmBot, bmTop) != gameStates.render.bRenderTransparency)
 	return 0;
 #endif
-if (0 > SetupLightmap (faceP, 0))
-	return 1;
 ogl.m_states.iLight = 0;
 while (0 < SetupPerPixelLightingShader (faceP)) {
 	DrawFace (faceP);

@@ -54,7 +54,7 @@ const char *multipleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = (texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color) * fScale;\r\n" \
+	"	vec4 colorSum = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	int i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
@@ -84,7 +84,7 @@ const char *multipleLightFS = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = colorSum; //vec4 (colorSum.rgb, gl_Color.a * fScale);\r\n" \
+	"	gl_FragColor = colorSum;\r\n" \
 	"	}"
 	};
 
@@ -96,7 +96,7 @@ const char *singleLightFS = {
 	"uniform int nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy) + gl_Color;\r\n" \
+	"	vec4 colorSum = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
 	"	vec3 lightVec = vec3 (gl_LightSource [0].position) - vertPos;\r\n" \
 	"	float lightDist = length (lightVec);\r\n" \
@@ -121,7 +121,7 @@ const char *singleLightFS = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (colorSum.rgb, gl_Color.a);\r\n" \
+	"	gl_FragColor = colorSum;\r\n" \
 	"	}"
 	};
 
@@ -327,7 +327,6 @@ if (!gameStates.render.shaderProg) {
 	PROF_END(ptShaderStates);
 	return -1;
 	}
-glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "lMapTex"), 0);
 gameStates.render.nLights = -1;
 PROF_END(ptShaderStates);
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
@@ -350,11 +349,6 @@ if (0 >= nLights) {
 	return 0;
 	}
 glUniform1i (glGetUniformLocation (gameStates.render.shaderProg, "nLights"), GLint (nLights));
-#if 1
-if (bInit) // first pass
-	glUniform1f (glGetUniformLocation (gameStates.render.shaderProg, "fScale"), 
-					 1.0f / float ((ogl.m_states.nLights + gameStates.render.nMaxLightsPerPass - 1) / gameStates.render.nMaxLightsPerPass));
-#endif
 ogl.ClearError (1);
 PROF_END(ptShaderStates)
 return lightShaderProgs [gameStates.render.nMaxLightsPerPass];
