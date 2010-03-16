@@ -104,11 +104,13 @@ if (bmP->BPP () == 3) {
 		avgColor.blue += ac [i].blue;
 		}
 #else
-	if (p [i].red || p [i].green || p [i].blue) {
-		avgColor.red += p [i].red;
-		avgColor.green += p [i].green;
-		avgColor.blue += p [i].blue;
-		nVisible++;
+	for (int i = 0, j = w * h; i < j; i++) {
+		if (p [i].red || p [i].green || p [i].blue) {
+			avgColor.red += p [i].red;
+			avgColor.green += p [i].green;
+			avgColor.blue += p [i].blue;
+			nVisible++;
+			}
 		}
 #endif
 	avgColor.alpha = 1.0f;
