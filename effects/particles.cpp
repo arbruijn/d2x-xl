@@ -72,6 +72,8 @@
 #	define ENABLE_FLUSH	1
 #endif
 
+#define MAX_SHRAPNEL_LIFE			I2X (2)
+
 #define LAZY_RENDER_SETUP 1
 
 #define SMOKE_LIGHTING 0
@@ -465,8 +467,10 @@ else
 	{
 	if (m_bEmissive)
 		m_color [0].alpha = 1.0f;
-	else if (nParticleSystemType <= SMOKE_PARTICLES)
-		m_color [0].alpha /= colorP ? 2.0f + color.red + color.green + color.blue : 2.0f;
+	else if (nParticleSystemType == MISSILE_PARTICLES)
+		m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
+	else if (nParticleSystemType == SMOKE_PARTICLES)
+		m_color [0].alpha /= colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.5f;
 	else if (nParticleSystemType == BUBBLE_PARTICLES)
 		m_color [0].alpha /= 2.0f;
 #	if 0
@@ -882,8 +886,11 @@ if (particleManager.Animate ()) {
 		m_iFrame = (m_iFrame + 1) % (m_nFrames * m_nFrames);
 		UpdateTexCoord ();
 		}
-	if (m_bRotate && !(m_iFrame & 1))
+	m_bRotate <<= 1;
+	if (m_bRotate == 4) {
+		m_bRotate = 1;
 		m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
+		}
 	}
 
 PROF_END(ptParticles)

@@ -30,6 +30,34 @@ static tRgbaColorf smokeColors [] = {
 	 {1.0f / 5.0f, 1.0f / 5.0f, 1.0f / 5.0f, 2.0f}
 	};
 
+#define SHIP_MAX_PARTS				50
+#define PLR_PART_LIFE				-1400
+#define PLR_PART_SPEED				50
+
+#define BOT_MAX_PARTS				250
+#define BOT_PART_LIFE				-6000
+#define BOT_PART_SPEED				300
+
+#define MSL_MAX_PARTS				500
+#define MSL_PART_LIFE				-3000
+#define MSL_PART_SPEED				100
+
+#define LASER_MAX_PARTS				250
+#define LASER_PART_LIFE				-500
+#define LASER_PART_SPEED			0
+
+#define BOMB_MAX_PARTS				250
+#define BOMB_PART_LIFE				-16000
+#define BOMB_PART_SPEED				200
+
+#define DEBRIS_MAX_PARTS			250
+#define DEBRIS_PART_LIFE			-2000
+#define DEBRIS_PART_SPEED			50
+
+#define FIRE_PART_LIFE				-800
+
+#define REACTOR_MAX_PARTS			500
+
 //------------------------------------------------------------------------------
 
 #if DBG
@@ -516,7 +544,7 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 	int				nParts, nSpeed, nLife, nObject, nSmoke;
-	float				nScale = 2.0f;
+	float				nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f;
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
