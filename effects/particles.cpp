@@ -104,7 +104,7 @@ typedef struct tParticleImageInfo {
 	float			yBorder;
 } tParticleImageInfo;
 
-tParticleImageInfo particleImageInfo [3][PARTICLE_TYPES] = {
+tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	{{NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
@@ -115,6 +115,13 @@ tParticleImageInfo particleImageInfo [3][PARTICLE_TYPES] = {
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 1, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
+	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
+	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
+	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
 	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
@@ -601,7 +608,7 @@ if (m_nType <= SMOKE_PARTICLES) {
 		m_nFadeState = -1;
 		}
 #if SMOKE_LIGHTING //> 1
-	if (gameOpts->render.particles.nQuality == 2) {
+	if (gameOpts->render.particles.nQuality == 3) {
 		if (0 <= (m_nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread))) {
 			tFaceColor* colorP = lightManager.AvgSgmColor (m_nSegment, NULL, nThread);
 			m_color [0].red *= colorP->color.red;
@@ -2002,11 +2009,19 @@ SetupRenderBuffer ();
 if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
-		if ((nType <= SMOKE_PARTICLES) && (gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights)
-			lightManager.Headlights ().SetupShader (1, 0, &color);
-		else 
+		if (nType <= SMOKE_PARTICLES) {
+			if ((gameOpts->render.particles.nQuality == 3) && !automap.Display () && lightManager.Headlights ().nLights)
+				lightManager.Headlights ().SetupShader (1, 0, &color);
+			else 
+				shaderManager.Deploy (-1);
+			}
+		else
 #endif
-		if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, bBufferEmissive)))
+		if (nType <= WATERFALL_PARTICLES) {
+			if (!((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, bBufferEmissive)))
+				shaderManager.Deploy (-1);
+			}
+		else
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, -1);

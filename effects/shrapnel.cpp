@@ -43,7 +43,7 @@ m_info.xLife =
 m_info.xTTL = I2X (3) / 2 + rand ();
 m_info.tUpdate = gameStates.app.nSDLTicks;
 m_info.nSmoke = 
-	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS * gameOpts->render.particles.nQuality,
+	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS * max (gameOpts->render.particles.nQuality, 2),
 								   -PARTICLE_SIZE (1, fScale, 1), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
 if (objP->info.xLifeLeft < m_info.xLife)
 	objP->info.xLifeLeft = m_info.xLife;
