@@ -181,7 +181,7 @@ pszNoneBasicFull [2] = TXT_FULL;
 pszNoneBasicStdFull [0] = TXT_NONE;
 pszNoneBasicStdFull [1] = TXT_BASIC;
 pszNoneBasicStdFull [2] = TXT_STANDARD;
-pszNoneBasicStdFull [2] = TXT_FULL;
+pszNoneBasicStdFull [3] = TXT_FULL;
 
 pszNoneBasicAdv [0] = TXT_NONE;
 pszNoneBasicAdv [1] = TXT_BASIC;
