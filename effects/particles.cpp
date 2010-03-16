@@ -2003,7 +2003,7 @@ if (InitBuffer (bLightmaps)) {
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 		if ((nType <= SMOKE_PARTICLES) && (gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights)
-			lightManager.Headlights ().SetupShader (1, 0, &color);
+			lightManager.Headlights ().SetupShader (-1, 0, &color);
 		else 
 #endif
 		if (!((nType <= WATERFALL_PARTICLES) && (gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, bBufferEmissive)))
