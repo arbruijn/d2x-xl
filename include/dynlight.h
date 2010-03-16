@@ -222,7 +222,7 @@ class CLightManager {
 		short SetNearestToPixel (short nSegment, short nSide, CFixVector *vNormal, CFixVector *vPixelPos, float fLightRad, int nThread);
 		void ResetNearestStatic (int nSegment, int nThread);
 		void ResetNearestToVertex (int nVertex, int nThread);
-		int SetNearestToSgmAvg (short nSegment);
+		int SetNearestToSgmAvg (short nSegment, int nThread);
 		void ResetSegmentLights (void);
 		tFaceColor* AvgSgmColor (int nSegment, CFixVector *vPosP, int nThread);
 		void GatherStaticLights (int nLevel);

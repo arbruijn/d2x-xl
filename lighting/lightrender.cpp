@@ -552,7 +552,7 @@ return m_data.index [0][nThread].nActive;
 
 //------------------------------------------------------------------------------
 
-int CLightManager::SetNearestToSgmAvg (short nSegment)
+int CLightManager::SetNearestToSgmAvg (short nSegment, int nThread)
 {
 	int			i;
 	CSegment		*segP = SEGMENTS + nSegment;
@@ -561,7 +561,7 @@ int CLightManager::SetNearestToSgmAvg (short nSegment)
 if (nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-lightManager.SetNearestToSegment (nSegment, -1, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
+lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #if 1
 for (i = 0; i < 8; i++)
 	lightManager.SetNearestToVertex (-1, segP->m_verts [i], NULL, 0, 1, 1, 0);
@@ -597,7 +597,7 @@ else if (gameStates.render.bPerPixelLighting) {
 	psc->color.green =
 	psc->color.blue = 0;
 	psc->color.alpha = 1.0f;
-	if (SetNearestToSgmAvg (nSegment)) {
+	if (SetNearestToSgmAvg (nSegment, nThread)) {
 			CVertColorData	vcd;
 
 		InitVertColorData (vcd);
