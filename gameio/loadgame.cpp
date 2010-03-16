@@ -1237,6 +1237,7 @@ void InitSecretLevel (int nLevel)
 Assert (gameData.missions.nCurrentLevel == nLevel);	//make sure level set right
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 meshBuilder.ComputeFaceKeys ();
+lightmapManager.Setup (nLevel);
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
 automap.ClearVisited ();
@@ -1544,7 +1545,7 @@ OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 
 //------------------------------------------------------------------------------
 //called when the CPlayerData is starting a level (new game or new ship)
-void StartLevel (int bRandom)
+void StartLevel (int nLevel, int bRandom)
 {
 Assert (!gameStates.app.bPlayerIsDead);
 VerifyConsoleObject ();
@@ -1567,7 +1568,10 @@ if (gameData.app.nGameMode & GM_NETWORK)
 AIResetAllPaths ();
 gameData.bosses.ResetHitTimes ();
 ClearStuckObjects ();
-meshBuilder.ComputeFaceKeys ();
+if (nLevel != 0x7fffffff) {
+	meshBuilder.ComputeFaceKeys ();
+	lightmapManager.Setup (nLevel);
+	}
 ResetTime ();
 ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;
@@ -1706,10 +1710,10 @@ else
 ResetSpecialEffects ();
 if (networkData.nJoinState == 1){
 	networkData.nJoinState = 0;
-	StartLevel (1);
+	StartLevel (nLevel, 1);
 	}
 else {
-	StartLevel (0);		// Note link to above if!
+	StartLevel (nLevel, 0);		// Note link to above if!
 	}
 CopyDefaultsToRobotsAll ();
 if (!bRestore) {
@@ -2261,7 +2265,7 @@ else {
 		}
 	else if (!gameStates.entropy.bExitSequence) {
 		ResetShipData ();
-		StartLevel (1);
+		StartLevel (0x7fffffff, 1);
 		}
 	}
 audio.ResumeAll ();

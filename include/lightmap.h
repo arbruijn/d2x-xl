@@ -45,16 +45,20 @@ typedef struct tLightmapList {
 	ushort						nLightmaps;
 } tLightmapList;
 
+typedef CSegFace* tSegFacePtr;
+
+
 typedef struct tLightmapData {
-	int					nType;
-	int					nColor;
-	CFixVector			vNormal;
-	ushort				sideVerts [4]; 
-	CVertColorData		vcd;
-	tRgbColorb			texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
-	CFixVector			pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
-	int					nOffset [MAX_LIGHTMAP_WIDTH];
-	CSegFace				*faceP;
+	int						nType;
+	int						nColor;
+	CFixVector				vNormal;
+	ushort					sideVerts [4]; 
+	CVertColorData			vcd;
+	tRgbColorb				texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
+	CFixVector				pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
+	int						nOffset [MAX_LIGHTMAP_WIDTH];
+	CArray<tSegFacePtr>	faceList;
+	CSegFace*				faceP;
 	} tLightmapData;
 
 class CLightmapManager {
@@ -66,6 +70,7 @@ class CLightmapManager {
 		CLightmapManager () { Init (); } 
 		~CLightmapManager () { Destroy (); }
 		void Init (void);
+		void Setup (int nLevel);
 		void Destroy (void);
 		void RestoreLights (int bVariable);
 		int Bind (int nLightmap);
@@ -89,6 +94,7 @@ class CLightmapManager {
 		int Load (int nLevel);
 		char* Filename (char *pszFilename, int nLevel);
 
+		static int CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm);
 	};
 
 extern CLightmapManager lightmapManager;

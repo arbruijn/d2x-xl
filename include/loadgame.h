@@ -51,7 +51,7 @@ int StartNewLevel (int nLevel, bool bNewGame);
 void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer = -1);      //clear all stats
 
 int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame);
-void StartLevel (int bRandom);
+void StartLevel (int nLevel, int bRandom);
 int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore);
 
 void GameStartInitNetworkPlayers (void);

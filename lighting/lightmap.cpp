@@ -45,6 +45,7 @@ there I just had it exit instead.
 #include "gamepal.h"
 #include "gamemine.h"
 #include "renderthreads.h"
+#include "createmesh.h"
 
 CLightmapManager lightmapManager;
 
@@ -53,7 +54,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 23
+#define LIGHTMAP_DATA_VERSION 24
 
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
@@ -490,6 +491,16 @@ else
 
 //------------------------------------------------------------------------------
 
+int CLightmapManager::CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm)
+{
+	int	k = (*pf)->m_info.nKey;
+	int	m = (*pm)->m_info.nKey;
+
+return (k < m) ? -1 : (k > m) ? 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
 void CLightmapManager::BuildAll (int nFace)
 {
 	CSide*	sideP; 
@@ -506,19 +517,22 @@ InitVertColorData (m_data.vcd);
 m_data.vcd.vertPosP = &m_data.vcd.vertPos;
 m_data.vcd.fMatShininess = 4;
 
-#if 0
-if (gameStates.app.bMultiThreaded)
-	nLastFace = nFace ? gameData.segs.nFaces : gameData.segs.nFaces / 2;
-else
-#endif
-	INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
+if (!m_data.faceList.Create (gameData.segs.nFaces))
+	return;
+for (i = 0; i < gameData.segs.nFaces; i++)
+	m_data.faceList [i] = FACES.faces + i;
+CQuickSort<tSegFacePtr> qs;
+qs.SortAscending (m_data.faceList.Buffer (), 0, static_cast<uint> (gameData.segs.nFaces - 1), &CLightmapManager::CompareFaces);
+
+INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 if (nFace <= 0) {
 	CreateSpecial (m_data.texColor, 0, 0);
 	CreateSpecial (m_data.texColor, 1, 255);
 	m_list.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
-for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
+for (; nFace < nLastFace; nFace++) {
+	m_data.faceP = m_data.faceList [nFace];
 #if DBG
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
@@ -563,6 +577,7 @@ for (m_data.faceP = FACES.faces + nFace; nFace < nLastFace; nFace++, m_data.face
 		m_data.faceP->m_info.nLightmap = m_list.nLightmaps++;
 		}
 	}
+m_data.faceList.Destroy ();
 }
 
 //------------------------------------------------------------------------------
@@ -756,6 +771,19 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 	Save (nLevel);
 	}
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightmapManager::Setup (int nLevel)
+{
+if (gameStates.render.bPerPixelLighting) {
+	Create (nLevel);
+	if (HaveLightmaps ())
+		meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
+	else
+		gameOpts->render.bUseLightmaps = 0;
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -793,13 +793,9 @@ SetMethod ();
 if (!gameStates.app.bNostalgia) {
 	lightManager.AddGeometryLights ();
 	ComputeNearestLights (nLevel);
-	if (gameStates.render.bPerPixelLighting) {
-		lightmapManager.Create (nLevel);
-		if (lightmapManager.HaveLightmaps ())
-			meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
-		else
-			gameOpts->render.bUseLightmaps = 0;
-		}
+#if 0
+	lightmapManager.Setup (nLevel);
+#endif
 	}
 GatherStaticLights (nLevel);
 }
