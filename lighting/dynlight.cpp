@@ -707,7 +707,7 @@ for (i = 0; i < MAX_THREADS; i++)
 Transform (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++)
 	m_data.variableVertLights [i] = VariableVertexLights (i);
-if (gameStates.render.bPerPixelLighting && lightmapManager.HaveLightmaps ()) {
+if (gameStates.render.bPerPixelLighting/* && lightmapManager.HaveLightmaps ()*/) {
 	gameData.render.color.ambient.Clear ();
 	return;
 	}
@@ -793,9 +793,7 @@ SetMethod ();
 if (!gameStates.app.bNostalgia) {
 	lightManager.AddGeometryLights ();
 	ComputeNearestLights (nLevel);
-#if 0
 	lightmapManager.Setup (nLevel);
-#endif
 	}
 GatherStaticLights (nLevel);
 }

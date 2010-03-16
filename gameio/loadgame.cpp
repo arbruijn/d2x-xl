@@ -1237,7 +1237,6 @@ void InitSecretLevel (int nLevel)
 Assert (gameData.missions.nCurrentLevel == nLevel);	//make sure level set right
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 meshBuilder.ComputeFaceKeys ();
-lightmapManager.Setup (nLevel);
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
 automap.ClearVisited ();
@@ -1568,10 +1567,8 @@ if (gameData.app.nGameMode & GM_NETWORK)
 AIResetAllPaths ();
 gameData.bosses.ResetHitTimes ();
 ClearStuckObjects ();
-if (nLevel != 0x7fffffff) {
+if (nLevel != 0x7fffffff)
 	meshBuilder.ComputeFaceKeys ();
-	lightmapManager.Setup (nLevel);
-	}
 ResetTime ();
 ResetRearView ();
 gameData.fusion.xAutoFireTime = 0;

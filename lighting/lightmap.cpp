@@ -517,13 +517,6 @@ InitVertColorData (m_data.vcd);
 m_data.vcd.vertPosP = &m_data.vcd.vertPos;
 m_data.vcd.fMatShininess = 4;
 
-if (!m_data.faceList.Create (gameData.segs.nFaces))
-	return;
-for (i = 0; i < gameData.segs.nFaces; i++)
-	m_data.faceList [i] = FACES.faces + i;
-CQuickSort<tSegFacePtr> qs;
-qs.SortAscending (m_data.faceList.Buffer (), 0, static_cast<uint> (gameData.segs.nFaces - 1), &CLightmapManager::CompareFaces);
-
 INIT_PROGRESS_LOOP (nFace, nLastFace, gameData.segs.nFaces);
 if (nFace <= 0) {
 	CreateSpecial (m_data.texColor, 0, 0);
@@ -531,14 +524,15 @@ if (nFace <= 0) {
 	m_list.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
-for (; nFace < nLastFace; nFace++) {
-	m_data.faceP = m_data.faceList [nFace];
+for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
 #if DBG
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_nType == SEGMENT_IS_SKYBOX)
+	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
+		m_data.faceP->m_info.nLightmap = 1;
 		continue;
+		}
 	sideP = SEGMENTS [m_data.faceP->m_info.nSegment].m_sides + m_data.faceP->m_info.nSide;
 	memcpy (m_data.sideVerts, m_data.faceP->m_info.index, sizeof (m_data.sideVerts));
 	m_data.nType = (sideP->m_nType == SIDE_IS_QUAD) || (sideP->m_nType == SIDE_IS_TRI_02);
@@ -577,7 +571,6 @@ for (; nFace < nLastFace; nFace++) {
 		m_data.faceP->m_info.nLightmap = m_list.nLightmaps++;
 		}
 	}
-m_data.faceList.Destroy ();
 }
 
 //------------------------------------------------------------------------------
