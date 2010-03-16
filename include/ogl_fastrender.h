@@ -12,9 +12,9 @@
 //------------------------------------------------------------------------------
 
 #if DBG
-#	define RENDER_BUFFERED_FACES	1	// well ... no speed increase :/
+#	define RENDER_BUFFERED_FACES	0	// well ... no speed increase :/
 #else
-#	define RENDER_BUFFERED_FACES	1
+#	define RENDER_BUFFERED_FACES	0
 #endif
 
 //------------------------------------------------------------------------------
