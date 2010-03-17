@@ -348,12 +348,14 @@ else
 	{
 	if (m_bEmissive)
 		m_color [0].alpha = 1.0f;
-	else if (nParticleSystemType == MISSILE_PARTICLES)
+	else if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
 		m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
 	else if (nParticleSystemType == SMOKE_PARTICLES)
 		m_color [0].alpha /= colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.5f;
 	else if (nParticleSystemType == BUBBLE_PARTICLES)
 		m_color [0].alpha /= 2.0f;
+	else if (nParticleSystemType == GATLING_PARTICLES)
+		m_color [0].alpha /= 4.0f;
 #	if 0
 	else if (nParticleSystemType == GATLING_PARTICLES)
 		;//m_color [0].alpha /= 6;

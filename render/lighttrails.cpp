@@ -96,7 +96,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 		color.blue *= fScale;
 		}
 	bmP->SetColor (&color);
-	ogl.RenderSprite (bmP, objP->info.position.vPos, xSize, xSize, alpha, gameOpts->render.coronas.bAdditiveObjs, 5);
+	ogl.RenderSprite (bmP, objP->info.position.vPos, xSize, xSize, alpha, 2, 5);
 	}
 }
 
@@ -104,7 +104,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 
 void RenderLaserCorona (CObject *objP, tRgbaColorf *colorP, float alpha, float fScale)
 {
-	int	bAdditive = 1; //gameOpts->render.bAdditive
+	int	bAdditive = 2; //gameOpts->render.bAdditive
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -171,7 +171,6 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
 else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
-	int			bStencil;
 	fix			xSize;
 	tRgbaColorf	color;
 
@@ -195,64 +194,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.red = colorP->red * alpha;
 	color.green = colorP->green * alpha;
 	color.blue = colorP->blue * alpha;
-#if 0
-	color.red *= color.red;
-	color.green *= color.green;
-	color.blue *= color.blue;
-#endif
-	if (bDepthSort && bSimple)
-		return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 1, 3);
-	bStencil = ogl.StencilOff ();
-	ogl.SetDepthWrite (false);
-	ogl.SetBlendMode (GL_ONE, GL_ONE);
-	if (bSimple) {
-		bmpCorona->SetColor (&color);
-		ogl.RenderSprite (bmpCorona, vPos, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, alpha, 1, 3);
-		}
-	else {
-		CFloatVector	quad [4], verts [8], vCenter, vNormal, v;
-		float		dot;
-		int		i, j;
-
-		ogl.SetFaceCulling (false);
-		ogl.SetDepthMode (GL_LEQUAL);
-		ogl.SetDepthWrite (false);
-		ogl.SetTexturing (true);
-		bmpCorona->SetTranspType (-1);
-		if (bmpCorona->Bind (1))
-			return 0;
-		bmpCorona->Texture ()->Wrap (GL_CLAMP);
-		transformation.Begin (vPos, objP->info.position.mOrient);
-		TransformHitboxf (objP, verts, 0);
-		for (i = 0; i < 6; i++) {
-			vCenter.SetZero ();
-			for (j = 0; j < 4; j++) {
-				quad [j] = verts [hitboxFaceVerts [i][j]];
-				vCenter += quad [j];
-				}
-			vCenter = vCenter * 0.25f;
-			vNormal = CFloatVector::Normal (quad [0], quad [1], quad [2]);
-			v = vCenter; 
-			CFloatVector::Normalize (v);
-			dot = CFloatVector::Dot (vNormal, v);
-			if (dot >= 0)
-				continue;
-			glColor4f (colorP->red, colorP->green, colorP->blue, alpha * (float) sqrt (-dot));
-			for (j = 0; j < 4; j++) {
-				v = quad [j] - vCenter;
-				quad [j] += v * fScale;
-				}
-			bmpCorona->SetTexCoord (tcCorona);
-			ogl.RenderQuad (bmpCorona, quad, 3);
-			}
-		transformation.End ();
-		ogl.SetDepthMode (GL_LESS);
-		ogl.SetTexturing (false);
-		ogl.SetFaceCulling (true);
-		}
-	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ogl.SetDepthWrite (true);
-	ogl.StencilOn (bStencil);
+	return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, 2, 3);
 	}
 return 0;
 }
