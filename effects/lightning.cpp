@@ -2301,7 +2301,7 @@ if (i < 0) {
 		vEnd.Assign (vEndf);
 		}
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0,
-					h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 0, 1, &color);
+					h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, -1, 0, 0, 1, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

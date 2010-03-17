@@ -106,6 +106,7 @@ if (bmP->BPP () == 3) {
 #else
 	for (int i = 0, j = w * h; i < j; i++) {
 		if (p [i].red || p [i].green || p [i].blue) {
+			::Swap (p [i].red, p [i].blue);
 			avgColor.red += p [i].red;
 			avgColor.green += p [i].green;
 			avgColor.blue += p [i].blue;

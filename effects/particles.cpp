@@ -182,17 +182,19 @@ else {
 		m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
-			m_color [0].alpha = float (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+			m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 		else {
-			if (colorP->alpha < 0)
-				m_color [0].alpha = -colorP->alpha;
+			if (colorP->alpha < 0) {
+				ubyte a = ubyte (-colorP->alpha * 255.0f * 0.25f + 0.5f);
+				m_color [0].alpha = float (3 * a + randN (2 * a)) / 255.0f;
+				}
 			else {
 				if (2 == (m_nFadeState = char (colorP->alpha))) {
 					m_color [0].red = 1.0f;
 					m_color [0].green = 0.5f;
 					m_color [0].blue = 0.0f;
 					}
-				m_color [0].alpha = float (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+				m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
 				}
 			}
 		if (m_bBlowUp && !m_bBright) {
@@ -351,7 +353,7 @@ else
 	else if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
 		m_color [0].alpha /= 3.5f - float (gameOpts->render.particles.nQuality) / 2.0f; //colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.0f;
 	else if (nParticleSystemType == SMOKE_PARTICLES)
-		m_color [0].alpha /= colorP ? 2.0f + (color.red + color.green + color.blue) / 3.0f : 2.5f;
+		m_color [0].alpha /= colorP ? 3.0f - (color.red + color.green + color.blue) / 3.0f : 2.5f;
 	else if (nParticleSystemType == BUBBLE_PARTICLES)
 		m_color [0].alpha /= 2.0f;
 	else if (nParticleSystemType == GATLING_PARTICLES)

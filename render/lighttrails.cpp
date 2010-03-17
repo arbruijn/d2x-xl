@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define fabsf(_f)	(float) fabs (_f)
 #endif
 
-#define LIGHTTRAIL_BLENDMODE	1	// GL_ONE, GL_ONE
+#define LIGHTTRAIL_BLENDMODE	2	// 1:GL_ONE, GL_ONE, 2: GL_ONE, GL_ONE_MINUS_SOURCE_COLOR
 
 // -----------------------------------------------------------------------------
 

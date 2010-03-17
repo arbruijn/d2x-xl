@@ -24,8 +24,8 @@
 #include "renderthreads.h"
 
 static tRgbaColorf smokeColors [] = {
-	 {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, 1.0f},
-	 {2.0f / 3.0f, 2.0f / 3.0f, 2.0f / 3.0f, 1.0f},
+	 {0.5f, 0.5f, 0.5f, 1.0f},
+	 {0.75f, 0.75f, 0.75f, 1.0f},
 	 {1.0f, 1.0f, 1.0f, 1.0f},
 	 {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.25f}
 	};
@@ -454,7 +454,7 @@ if (nParts > 0) {
 	CFixVector* vDirP = objP->mType.physInfo.velocity.IsZero () ? &vDir : NULL;
 
 	if (vDirP) // if the robot is standing still, let the smoke move away from it
-		vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 8);
+		vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 12);
 
 	if (nShields > 4000)
 		nShields = 4000;
