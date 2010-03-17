@@ -339,13 +339,16 @@ PROF_END(ptParticles)
 
 bool CParticleManager::FlushBuffer (float fBrightness, bool bForce)
 {
-if (!m_iBuffer)
+int nType = particleManager.LastType ();
+
+if (m_iBuffer < ((nType == BULLET_PARTICLES) ? 2 : 1)) {
+	m_iBuffer = 0;
 	return false;
+	}
 if (!gameOpts->render.particles.nQuality) {
 	m_iBuffer = 0;
 	return false;
 	}
-int nType = particleManager.LastType ();
 if ((nType < 0) && !bForce)
 	return false;
 
@@ -387,7 +390,7 @@ if (InitBuffer ()) {
 			}
 		else
 #endif
-		if (nType <= WATERFALL_PARTICLES) {
+		if ((nType <= WATERFALL_PARTICLES) || (nType >= PARTICLE_TYPES)) {
 			if (!((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, m_bBufferEmissive)))
 				shaderManager.Deploy (-1);
 			}

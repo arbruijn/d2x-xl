@@ -655,15 +655,8 @@ ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
 if (!ogl.m_states.bDepthBlending) 
 	return false;
-#if 1
-if (ogl.Enhance3D () < 0)
-	ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
-else
-	ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect);
-#endif
 if (!ogl.CopyDepthTexture ())
 	return false;
-
 ogl.m_states.bUseDepthBlending = 1;
 if (dMax < 1)
 	dMax = 1;

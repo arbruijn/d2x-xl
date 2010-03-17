@@ -423,13 +423,14 @@ if (!m_states.hDepthBuffer)
 if (m_states.hDepthBuffer || (m_states.hDepthBuffer = CreateDepthTexture (-1, 0))) {
 	BindTexture (m_states.hDepthBuffer);
 	if (!m_states.bHaveDepthBuffer) {
+		if (ogl.Enhance3D () < 0)
+			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
+		else
+			ogl.SetReadBuffer (GL_BACK, gameStates.render.bRenderIndirect);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
 		if ((nError = glGetError ())) {
-			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
-			if ((nError = glGetError ())) {
-				DestroyDepthTexture ();
-				return m_states.hDepthBuffer = 0;
-				}
+			DestroyDepthTexture ();
+			return m_states.hDepthBuffer = 0;
 			}
 		m_states.bHaveDepthBuffer = 1;
 		gameData.render.nStateChanges++;
