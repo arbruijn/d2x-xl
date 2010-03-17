@@ -853,7 +853,7 @@ for (h = i = 0; i < MAX_PLAYERS; i++) {
 if (bTransform)
 	ogl.ResetTransform (1);
 if (colorP) {
-	float fScale = colorP->alpha;
+	float fScale = colorP->alpha * 1.05f;
 	color.red = colorP->red * fScale;
 	color.green = colorP->green * fScale;
 	color.blue = colorP->blue * fScale;
