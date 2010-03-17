@@ -891,9 +891,7 @@ else {
 	}
 vOffset [Z] = 0;
 
-float h;
-h = ParticleImageInfo (m_nType).xBorder;
-
+float h = ParticleImageInfo (m_nType).xBorder;
 pb [m_nOrient].texCoord.v.u =
 pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + h;
 pb [(m_nOrient + 1) % 4].texCoord.v.u =
