@@ -366,7 +366,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline bool CParticle::IsVisible (int nThread)
+bool CParticle::IsVisible (int nThread)
 {
 #if 0
 return gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible;
@@ -861,23 +861,10 @@ return 0;
 
 void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
-	CFloatVector vOffset;
+CFloatVector3	vCenter, vOffset;
 
-#if 0 //DBG
-if (m_nType == LIGHT_PARTICLES)
-	m_nType = m_nType;
-
-CBitmap* bmP = ParticleImageInfo (int (m_nType)).bmP;
-if (!bmP)
-	return;
-#endif
-pb [0].color =
-pb [1].color =
-pb [2].color =
-pb [3].color = m_renderColor;
-
-float h;
-h = ParticleImageInfo (m_nType).xBorder;
+transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
+vCenter.Assign (m_vTransPos);
 
 if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 #if DBG
@@ -904,28 +891,28 @@ else {
 	}
 vOffset [Z] = 0;
 
-CFloatVector3	vCenter;
+float h;
+h = ParticleImageInfo (m_nType).xBorder;
 
-transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
-vCenter.Assign (m_vTransPos);
+pb [m_nOrient].texCoord.v.u =
+pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + h;
+pb [(m_nOrient + 1) % 4].texCoord.v.u =
+pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - h;
+h = ParticleImageInfo (m_nType).yBorder;
+pb [m_nOrient].texCoord.v.v =
+pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + h;
+pb [(m_nOrient + 2) % 4].texCoord.v.v =
+pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
 
-#if !ROTATE_VERTICES
-	pb [m_nOrient].texCoord.v.u =
-	pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + h;
-	pb [(m_nOrient + 1) % 4].texCoord.v.u =
-	pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - h;
-	h = ParticleImageInfo (m_nType).yBorder;
-	pb [m_nOrient].texCoord.v.v =
-	pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + h;
-	pb [(m_nOrient + 2) % 4].texCoord.v.v =
-	pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
-#endif
+pb [0].color =
+pb [1].color =
+pb [2].color =
+pb [3].color = m_renderColor;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate)  {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-#if ROTATE_VERTICES
 	vOffset [X] *= vRot [i][X];
 	vOffset [Y] *= vRot [i][Y];
 
@@ -937,29 +924,6 @@ if (m_bRotate && gameOpts->render.particles.bRotate)  {
 	pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
 	pb [3].vertex [X] = vCenter [X] - vOffset [Y];
 	pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
-#else
-	pb [0].vertex [X] =
-	pb [3].vertex [X] = vCenter [X] - vOffset [X];
-	pb [1].vertex [X] =
-	pb [2].vertex [X] = vCenter [X] + vOffset [X];
-	pb [0].vertex [Y] =
-	pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
-	pb [2].vertex [Y] =
-	pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
-
-	vOffset [X] = 0.5f * vRot [i][X];
-	vOffset [Y] = 0.5f * vRot [i][Y];
-
-	pb [m_nOrient].texCoord.v.u =
-	pb [(m_nOrient + 3) % 4].texCoord.v.u = 0.5f - vOffset [X];
-	pb [(m_nOrient + 1) % 4].texCoord.v.u =
-	pb [(m_nOrient + 2) % 4].texCoord.v.u = 0.5f + vOffset [X];
-	h = ParticleImageInfo (m_nType).yBorder;
-	pb [m_nOrient].texCoord.v.v =
-	pb [(m_nOrient + 1) % 4].texCoord.v.v = 0.5f - vOffset [Y] + h;
-	pb [(m_nOrient + 2) % 4].texCoord.v.v =
-	pb [(m_nOrient + 3) % 4].texCoord.v.v = 0.5f + vOffset [Y] - h;
-#endif
 	}
 else {
 	pb [0].vertex [X] =
@@ -970,17 +934,6 @@ else {
 	pb [1].vertex [Y] = vCenter [Y] + vOffset [Y];
 	pb [2].vertex [Y] =
 	pb [3].vertex [Y] = vCenter [Y] - vOffset [Y];
-#if ROTATE_VERTICES
-	pb [m_nOrient].texCoord.v.u =
-	pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + h;
-	pb [(m_nOrient + 1) % 4].texCoord.v.u =
-	pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - h;
-	h = ParticleImageInfo (m_nType).yBorder;
-	pb [m_nOrient].texCoord.v.v =
-	pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + h;
-	pb [(m_nOrient + 2) % 4].texCoord.v.v =
-	pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - h;
-#endif
 	}
 pb [0].vertex [Z] =
 pb [1].vertex [Z] =

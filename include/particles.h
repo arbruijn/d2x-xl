@@ -130,7 +130,7 @@ class CParticle : public tParticle {
 		int Render (float brightness);
 		void Setup (float brightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread);
 		int Update (int nCurTime, float brightness, int nThread);
-		inline bool IsVisible (int nThread);
+		bool IsVisible (int nThread);
 		inline fix Transform (bool bUnscaled) {
 			transformation.Transform (m_vTransPos, m_vPos, bUnscaled);
 			return m_vTransPos [Z];
@@ -201,15 +201,15 @@ class CParticleEmitter : public tParticleEmitter {
 		int Update (int nCurTime, int nThread);
 		int Render (int nThread);
 		void SetPos (CFixVector *vPos, CFixMatrix *mOrient, short nSegment);
-		inline void SetDir (CFixVector *vDir);
-		inline void SetLife (int nLife);
-		inline void SetBlowUp (int bBlowUpParts);
-		inline void SetBrightness (int nBrightness);
-		inline void SetFadeType (int nFadeType);
-		inline void SetSpeed (int nSpeed);
-		inline void SetType (int nType);
-		inline int SetDensity (int nMaxParts, int nDensity);
-		inline void SetScale (float fScale);
+		void SetDir (CFixVector *vDir);
+		void SetLife (int nLife);
+		void SetBlowUp (int bBlowUpParts);
+		void SetBrightness (int nBrightness);
+		void SetFadeType (int nFadeType);
+		void SetSpeed (int nSpeed);
+		void SetType (int nType);
+		int SetDensity (int nMaxParts, int nDensity);
+		void SetScale (float fScale);
 		inline bool IsAlive (int nCurTime)
 		 { return (m_nLife < 0) || (m_nBirth + m_nLife > nCurTime); }
 		inline bool IsDead (int nCurTime)

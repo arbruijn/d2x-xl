@@ -369,7 +369,7 @@ if (nSegment >= 0)
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetDir (CFixVector *vDir)
+void CParticleEmitter::SetDir (CFixVector *vDir)
 {
 if ((m_bHaveDir = (vDir != NULL)))
 	m_vDir = *vDir;
@@ -377,7 +377,7 @@ if ((m_bHaveDir = (vDir != NULL)))
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetLife (int nLife)
+void CParticleEmitter::SetLife (int nLife)
 {
 m_nLife = nLife;
 m_fPartsPerTick = nLife ? float (m_nMaxParts) / float (abs (nLife) * 1.25f) : 0.0f;
@@ -386,35 +386,35 @@ m_nTicks = 0;
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetBrightness (int nBrightness)
+void CParticleEmitter::SetBrightness (int nBrightness)
 {
 m_nDefBrightness = nBrightness;
 }
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetFadeType (int nFadeType)
+void CParticleEmitter::SetFadeType (int nFadeType)
 {
 m_nFadeType = nFadeType;
 }
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetBlowUp (int bBlowUpParts)
+void CParticleEmitter::SetBlowUp (int bBlowUpParts)
 {
 m_bBlowUpParts = bBlowUpParts;
 }
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetSpeed (int nSpeed)
+void CParticleEmitter::SetSpeed (int nSpeed)
 {
 m_nSpeed = nSpeed;
 }
 
 //------------------------------------------------------------------------------
 
-inline void CParticleEmitter::SetType (int nType)
+void CParticleEmitter::SetType (int nType)
 {
 m_nType = nType;
 }

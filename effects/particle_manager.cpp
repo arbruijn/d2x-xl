@@ -62,6 +62,9 @@
 
 CParticleManager particleManager;
 
+tRenderParticle CParticleManager::particleBuffer [PART_BUF_SIZE];
+tParticleVertex CParticleManager::particleRenderBuffer [VERT_BUF_SIZE];
+
 //------------------------------------------------------------------------------
 
 void CParticleManager::RebuildSystemList (void)
