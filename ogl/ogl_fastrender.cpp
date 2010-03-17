@@ -377,6 +377,16 @@ return gameStates.render.bFullBright || faceP->m_info.nColored;
 
 //------------------------------------------------------------------------------
 
+static inline void DrawFace (CSegFace* faceP)
+{
+if (gameStates.render.bTriangleMesh)
+	OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, faceP->m_info.nTris * 3);
+else
+	OglDrawArrays (GL_TRIANGLE_FAN, faceP->m_info.nIndex, 4);
+}
+
+//------------------------------------------------------------------------------
+
 int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bLightmaps)
 {
 PROF_START
@@ -429,11 +439,11 @@ if (bMonitor)
 gameData.render.nTotalFaces++;
 
 if (!bLightmaps)
-	OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4);
+	DrawFace (faceP);
 else {
 	if (!bColored) {
 		SetupGrayScaleShader (gameStates.render.history.nType, &faceP->m_info.color);
-		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4);
+		DrawFace (faceP);
 		}
 	else if (gameStates.render.bFullBright) {
 		if (gameStates.render.history.nType > 1)
@@ -441,17 +451,17 @@ else {
 		else 
 			shaderManager.Deploy (-1);
 		glColor3f (1,1,1);
-		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4);
+		DrawFace (faceP);
 		}
 	else if (gameStates.render.bPerPixelLighting == 1) {
 		SetupLightmapShader (faceP, gameStates.render.history.nType, false);
-		OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4);
+		DrawFace (faceP);
 		}
 	else {
 		bool bAdditive = false;
 		for (;;) {
 			SetupPerPixelLightingShader (faceP, gameStates.render.history.nType, false);
-			OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4);
+			DrawFace (faceP);
 			if (ogl.m_states.iLight >= ogl.m_states.nLights)
 				break;
 			if (!bAdditive) {
@@ -501,7 +511,7 @@ if (bMonitor)
 	SetupMonitor (faceP, bmTop, bTextured, 1);
 gameData.render.nTotalFaces++;
 lightManager.Headlights ().SetupShader (gameStates.render.history.nType, 1, bmBot ? NULL : &faceP->m_info.color);
-OglDrawArrays (GL_TRIANGLES, faceP->m_info.nIndex, gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4);
+DrawFace (faceP);
 if (bMonitor)
 	ResetMonitor (bmTop, 1);
 return 0;
