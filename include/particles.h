@@ -23,6 +23,48 @@
 #define MAX_PARTICLES(_nParts,_nDens)				particleManager.MaxParticles (_nParts, _nDens)
 #define PARTICLE_SIZE(_nSize,_fScale,_bBlowUp)	particleManager.ParticleSize (_nSize, _fScale, _bBlowUp)
 
+#if DBG
+#	define ENABLE_RENDER	1
+#	define ENABLE_UPDATE	1
+#	define ENABLE_FLUSH	1
+#else
+#	define ENABLE_RENDER	1
+#	define ENABLE_UPDATE	1
+#	define ENABLE_FLUSH	1
+#endif
+
+#define MAX_SHRAPNEL_LIFE			I2X (2)
+
+#define LAZY_RENDER_SETUP 1
+
+#define SMOKE_LIGHTING 0
+
+#define MAKE_SMOKE_IMAGE 0
+
+#define MT_PARTICLES	0
+
+#define BLOWUP_PARTICLES 0		//blow particles up at "birth"
+
+#define SMOKE_SLOWMO 0
+
+#define SORT_CLOUDS 1
+
+#define PARTICLE_FPS	30
+
+#define PARTICLE_POSITIONS 64
+
+#define PART_DEPTHBUFFER_SIZE 100000
+#define PARTLIST_SIZE 1000000
+
+#define PART_BUF_SIZE	100000
+#define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
+
+//------------------------------------------------------------------------------
+
+extern int nPartSeg [MAX_THREADS];
+extern tRgbaColorf defaultParticleColor;
+extern CFloatVector vRot [PARTICLE_POSITIONS];
+
 //------------------------------------------------------------------------------
 
 typedef struct tPartPos {
@@ -234,6 +276,13 @@ class CParticleSystem : public tParticleSystem {
 
 //------------------------------------------------------------------------------
 
+typedef struct tRenderParticle {
+	CParticle*	particle;
+	float			fBrightness;
+	char			nFrame;
+	char			nRotFrame;
+} tRenderParticles;
+
 class CParticleManager {
 	private:
 		CDataPool<CParticleSystem>	m_systems;
@@ -245,6 +294,12 @@ class CParticleManager {
 		int								m_bStencil;
 		int								m_iBuffer;
 		int								m_iRenderBuffer;
+
+	public:
+		static tRenderParticle particleBuffer [PART_BUF_SIZE];
+		static tParticleVertex particleRenderBuffer [VERT_BUF_SIZE];
+		float								m_bufferBrightness;
+		int								m_bBufferEmissive;
 
 	public:
 		CParticleManager () {}
@@ -377,6 +432,17 @@ extern CParticleManager particleManager;
 
 //------------------------------------------------------------------------------
 
+typedef struct tParticleImageInfo {
+	CBitmap*		bmP;
+	const char*	szName;
+	int			nFrames;
+	int			iFrame;
+	int			bHave;
+	int			bAnimate;
+	float			xBorder;
+	float			yBorder;
+} tParticleImageInfo;
+
 class CParticleImageManager {
 	public:
 		CParticleImageManager () {};
@@ -390,6 +456,14 @@ class CParticleImageManager {
 };
 
 extern CParticleImageManager particleImageManager;
+extern tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES];
+
+//------------------------------------------------------------------------------
+
+inline tParticleImageInfo& ParticleImageInfo (int nType)
+{
+return particleImageInfo [gameOpts->render.particles.nQuality][nType];
+}
 
 //------------------------------------------------------------------------------
 

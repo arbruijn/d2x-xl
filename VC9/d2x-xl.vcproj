@@ -6624,6 +6624,22 @@
 						>
 					</File>
 					<File
+						RelativePath="..\effects\particle_emitter.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\particle_images.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\particle_manager.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\particle_system.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\effects\particles.cpp"
 						>
 					</File>
@@ -10775,11 +10791,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
