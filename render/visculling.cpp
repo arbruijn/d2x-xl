@@ -578,7 +578,7 @@ void SortRenderSegs (void)
 if (gameData.render.mine.nRenderSegs < 2)
 	return;
 
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 
 	int h, i, j;
 

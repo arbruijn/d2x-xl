@@ -577,31 +577,31 @@ if (m_bHaveDir) {
 	m_vPos += m_vDir * drag;
 	}
 
-if ((m_nType == WATERFALL_PARTICLES) ? !m_bChecked : (m_nType == BUBBLE_PARTICLES) /*|| (m_nTTL - m_nLife > I2X (1) / 16)*/) {
-	int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
-	if (0 > nSegment) {
-		m_nLife = -1;
-		return 0;
+int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, m_nType >= SMOKE_PARTICLES, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
+if ((0 > nSegment) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
+	if (m_nType == BUBBLE_PARTICLES) { 
+		if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER) {
+			m_nLife = -1;
+			return 0;
+			}
 		}
-	if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) { 
-		m_nLife = -1;
-		return 0;
-		}
-	if (m_nType == WATERFALL_PARTICLES) {
+	else if (m_nType == WATERFALL_PARTICLES) {
 		CFixVector vDir = m_vPos - m_vStartPos;
 		if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
 			m_nLife = -1;
 			return 0;
 			}
-#if 1
 		if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
 			m_bChecked = 1;
 			m_nLife = 500; 
 			}
-#endif
 		}
-	m_nSegment = nSegment;
+	else {
+		m_nLife = -1;
+		return 0;
+		}
 	}
+m_nSegment = nSegment;
 
 if (!Bounce (nThread))
 	return 0;
@@ -744,7 +744,7 @@ PROF_START
 
 bool bFlushed = false;
 
-if ((particleManager.LastType () != m_nRenderType) || (particleManager.m_bufferBrightness != fBrightness) || (particleManager.m_bBufferEmissive != m_bEmissive)) {
+if (particleManager.LastType () != m_nRenderType) {
 	PROF_END(ptParticles)
 	bFlushed = particleManager.FlushBuffer (fBrightness);
 	PROF_CONT

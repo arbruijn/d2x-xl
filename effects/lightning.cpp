@@ -1117,7 +1117,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#ifndef _OPENMP
+#if 1 //ndef _OPENMP
 
 static inline void WaitForRenderThread (int nThread)
 {
@@ -1139,7 +1139,7 @@ void CLightning::Draw (int nDepth, int nThread)
 
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
 	return;
-#ifndef _OPENMP
+#if 1 //ndef _OPENMP
 if (gameStates.app.bMultiThreaded && (nThread > 0))
 	tiRender.ti [nThread].bBlock = 1;
 #endif
@@ -1157,14 +1157,14 @@ if (!(bPlasma = SetupGlow ()))
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
-#ifndef _OPENMP
+#if 1 //ndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
 if (bPlasma)
 	RenderGlow (&color, nDepth, nThread);
 else
 	RenderCore (&color, nDepth, nThread);
-#ifndef _OPENMP
+#if 1 //ndef _OPENMP
 WaitForRenderThread (nThread);
 #endif
 if (gameOpts->render.lightning.nQuality)
@@ -1721,7 +1721,7 @@ if (SHOW_LIGHTNING) {
 			}
 		}
 	int nCurrent = -1;
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 	if (m_systemList.Buffer ()) {
 		int nSystems = 0;
 		CLightningSystem* systemP, * nextP;
@@ -1853,7 +1853,7 @@ if (SHOW_LIGHTNING) {
 		int bStencil = ogl.StencilOff ();
 
 	int nCurrent = -1;
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 	if (m_systemList.Buffer ()) {
 		CLightningSystem* systemP;
 		int nSystems = 0;

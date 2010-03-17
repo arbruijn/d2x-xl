@@ -56,7 +56,7 @@
 #define PART_DEPTHBUFFER_SIZE 100000
 #define PARTLIST_SIZE 1000000
 
-#define PART_BUF_SIZE	100000
+#define PART_BUF_SIZE	50000
 #define VERT_BUF_SIZE	(PART_BUF_SIZE * 4)
 
 //------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ class CParticleManager {
 
 		int BeginRender (int nType, float fScale);
 		int EndRender (void);
-		int InitBuffer (int bLightmaps);
+		int InitBuffer (void);
 		bool FlushBuffer (float brightness, bool bForce = false);
 		int CloseBuffer (void);
 

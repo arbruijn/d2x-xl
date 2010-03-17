@@ -249,7 +249,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		gameStates.render.nThreads = GetNumThreads ();
 		lightManager.ResetSegmentLights ();
 		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
-#ifndef _OPENMP
+#if 1 //ndef _OPENMP
 			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
 #endif
 			) {
@@ -261,7 +261,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			else
 				ComputeFaceLight (0, gameData.segs.nSegments, 0);
 			}
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 		else {
 				int	nStart, nEnd, nMax;
 

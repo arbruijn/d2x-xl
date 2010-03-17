@@ -245,7 +245,7 @@ if (!gameStates.app.tick40fps.bTick)
 
 	int nCurrent = -1;
 
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 if (m_systemList.Buffer ()) {
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 		m_systemList [h++] = systemP;
@@ -274,7 +274,7 @@ if (!gameOpts->render.particles.nQuality)
 	return;
 int nCurrent = -1;
 
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 if (m_systemList.Buffer ()) {
 	int h = 0;
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
@@ -297,10 +297,10 @@ else
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::InitBuffer (int bLightmaps)
+int CParticleManager::InitBuffer (void)
 {
 ogl.ResetClientStates (1);
-ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0/* + bLightmaps*/);
+ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].texCoord);
 OglColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].color);
 OglVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleRenderBuffer [0].vertex);
@@ -312,25 +312,26 @@ return 1;
 void CParticleManager::SetupRenderBuffer (void)
 {
 PROF_START
-#if (LAZY_RENDER_SETUP < 2)
-if (m_iBuffer <= 100)
-#endif
+#ifndef _OPENMP
 for (int i = 0; i < m_iBuffer; i++)
 	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
-#if (LAZY_RENDER_SETUP < 2)
-else
-#endif
-#pragma omp parallel
-	{
-#	ifdef _OPENMP
-	int nThread = omp_get_thread_num();
-#	else
-	int nThread = 0;
+#else
+#	if (LAZY_RENDER_SETUP < 2)
+if (m_iBuffer <= 1000)
 #	endif
+for (int i = 0; i < m_iBuffer; i++)
+	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
+#	if (LAZY_RENDER_SETUP < 2)
+else
+#	endif
+#	pragma omp parallel
+	{
+	int nThread = omp_get_thread_num();
 #	pragma omp for 
 	for (int i = 0; i < m_iBuffer; i++)
 		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 	}
+#endif
 PROF_END(ptParticles)
 }
 
@@ -365,12 +366,6 @@ if (bmP->Bind (0)) {
 	return false;
 	}
 
-if (m_bufferBrightness < 0)
-	m_bufferBrightness = fBrightness;
-m_bufferBrightness = 1.0f;
-tRgbaColorf	color = {m_bufferBrightness, m_bufferBrightness, m_bufferBrightness, 1};
-int bLightmaps = lightmapManager.HaveLightmaps ();
-m_bufferBrightness = fBrightness;
 if (nType >= PARTICLE_TYPES)
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);	// multiplicative using fire's smoke texture
 else
@@ -379,12 +374,14 @@ else
 SetupRenderBuffer ();
 #endif
 
-if (InitBuffer (bLightmaps)) {
+if (InitBuffer ()) {
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 		if (nType <= SMOKE_PARTICLES) {
-			if ((gameOpts->render.particles.nQuality == 3) && !automap.Display () && lightManager.Headlights ().nLights)
+			if ((gameOpts->render.particles.nQuality == 3) && !automap.Display () && lightManager.Headlights ().nLights) {
+				tRgbaColorf color = {1.0f, 1.0f, 1.0f, 1.0f};
 				lightManager.Headlights ().SetupShader (1, 0, &color);
+				}
 			else 
 				shaderManager.Deploy (-1);
 			}
@@ -398,22 +395,11 @@ if (InitBuffer (bLightmaps)) {
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, -1);
+#if 0
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
+#endif
 	glNormal3f (1, 1, 1);
 	}
-#if GL_FALLBACK
-else {
-	tParticleVertex *pb;
-	glNormal3f (0, 0, 0);
-	glBegin (GL_QUADS);
-	for (pb = particleRenderBuffer; m_iBuffer; m_iBuffer--, pb++) {
-		glTexCoord2fv (reinterpret_cast<GLfloat*> (&pb->texCoord));
-		glColor4fv (reinterpret_cast<GLfloat*> (&pb->color));
-		glVertex3fv (reinterpret_cast<GLfloat*> (&pb->vertex));
-		}
-	glEnd ();
-	}
-#endif
 PROF_END(ptParticles)
 #endif
 m_iBuffer = 0;

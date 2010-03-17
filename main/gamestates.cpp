@@ -282,7 +282,7 @@ gameStates.app.bLunacy = 0;
 gameStates.app.bHaveExtraGameInfo [0] = 1;
 gameStates.app.bHaveExtraGameInfo [1] = 0;
 gameStates.app.nSDLTicks = -1;
-#ifdef _OPENMP
+#if 0 //def _OPENMP
 GetNumThreads ();
 #else
 gameStates.app.nThreads = 1;
