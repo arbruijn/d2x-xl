@@ -527,7 +527,7 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	CBitmap*		bmP = NULL;
 
-ogl.SetBlendMode (bAdditive);
+//ogl.SetBlendMode (bAdditive);
 if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
 	return;
 if (gameStates.render.bAmbientColor)

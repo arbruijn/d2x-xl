@@ -427,7 +427,6 @@ if (bTransparent && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor)
 	}
 
 SetRenderStates (faceP, bmBot, bmTop, bTextured, bColorKey, bColored, bLightmaps);
-ogl.m_states.iLight = 0;
 #if DBG
 RenderWireFrame (faceP, bTextured);
 if (!gameOpts->render.debug.bTextures)
@@ -459,6 +458,7 @@ else {
 		}
 	else {
 		bool bAdditive = false;
+		ogl.m_states.iLight = 0;
 		for (;;) {
 			SetupPerPixelLightingShader (faceP, gameStates.render.history.nType, false);
 			DrawFace (faceP);

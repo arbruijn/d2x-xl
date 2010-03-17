@@ -157,7 +157,7 @@ else {
 
 bool RenderGeometryFace (CSegment *segP, CSegFace *faceP)
 {
-faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, faceP->m_info.bTextured, gameStates.render.bPerPixelLighting);
+faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, faceP->m_info.bTextured, gameStates.render.bPerPixelLighting != 0);
 return true;
 }
 
@@ -337,6 +337,8 @@ ogl.SetDepthMode (GL_LEQUAL);
 if (nType == RENDER_TYPE_CORONAS) {
 	if (glareRenderer.Style ())
 		glareRenderer.LoadShader (10);
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	return 0;
 	}
 
@@ -731,7 +733,7 @@ short RenderSegments (int nType, int bHeadlight)
 {
 	int	i, nFaces = 0, bAutomap = (nType == 0);
 
-if (nType > 1) {
+if (nType == RENDER_TYPE_CORONAS) {
 	// render mine segment by segment
 	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
