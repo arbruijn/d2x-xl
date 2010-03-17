@@ -813,11 +813,10 @@ if (gameStates.render.bPerPixelLighting) {
 			for (;;) {
 				SetupPerPixelLightingShader (faceP, int (faceP->m_info.nRenderType), false);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
-				if ((ogl.m_states.iLight >= ogl.m_states.nLights) ||
-					 (ogl.m_states.iLight >= gameStates.render.nMaxLightsPerFace))
+				if (ogl.m_states.iLight >= ogl.m_states.nLights) 
 					break;
-				bAdditive = 2;
-				ogl.SetBlendMode (2);
+				bAdditive = 1;
+				ogl.SetBlendMode (GL_ONE, GL_ONE);
 				ogl.SetDepthWrite (false);
 				}
 			}

@@ -218,7 +218,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), spotColor);\r\n" \
 	"      }\r\n" \
 	"   }\r\n" \
-	"gl_FragColor = vec4 (min (texColor.rgb, texColor.rgb * spotColor), texColor.a);\r\n"  \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * spotColor), matColor.a);"  \
 	"}"
 	,
 	//only base texture
@@ -312,8 +312,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	" 	   }\r\n" \
 	" 	}\r\n" \
 	"vec3 spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
-	"spotColor = min (spotColor, matColor.rgb);\r\n" \
-	"gl_FragColor = vec4 (matColor.rgb * spotColor, matColor.a);"  \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * spotColor), matColor.a);"  \
 	"}"
 	,
 	//only base texture
@@ -411,18 +410,17 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"uniform vec4 matColor;\r\n" \
 	"varying vec3 normal, lightVec;\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 spotColor = vec4 (0.0, 0.0, 0.0, 0.0);\r\n" \
+	"vec3 spotColor = vec3 (0.0, 0.0, 0.0);\r\n" \
 	"vec3 lvNorm = normalize (lightVec);\r\n" \
 	"if (dot (normalize (normal), lvNorm) < 0.0) {\r\n" \
 	"   float spotEffect = dot (gl_LightSource [0].spotDirection, lvNorm);\r\n" \
 	"   if (spotEffect >= 0.15) {\r\n" \
 	"	    float attenuation = min (400.0 / length (lightVec), 1.0);\r\n" \
 	"      spotEffect = pow (spotEffect * 1.02, 4.0 + 16.0 * spotEffect) * attenuation;\r\n" \
-	"      spotColor = vec4 (spotEffect, spotEffect, spotEffect, 1.0);\r\n" \
-	"      spotColor.rgb = min (spotColor.rgb, matColor.rgb);\r\n" \
+	"      spotColor = vec3 (spotEffect, spotEffect, spotEffect);\r\n" \
 	"      }\r\n" \
 	"   }\r\n" \
-	"gl_FragColor = matColor * spotColor;\r\n" \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * spotColor), matColor.a);"  \
 	"}"
 	,
 	//only base texture
@@ -514,8 +512,8 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	" 	      }\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"vec3 spotColor = min (vec3 (spotBrightness, spotBrightness, spotBrightness), matColor.rgb);\r\n" \
-	"gl_FragColor = vec4 (matColor.rgb * spotColor, matColor.a);"  \
+	"vec3 spotColor =vec3 (spotBrightness, spotBrightness, spotBrightness);\r\n" \
+	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * spotColor), matColor.a);"  \
 	"}"
 	,
 	//only base texture
@@ -855,9 +853,10 @@ for (h = i = 0; i < MAX_PLAYERS; i++) {
 if (bTransform)
 	ogl.ResetTransform (1);
 if (colorP) {
-	color.red = colorP->red * 1.05f;
-	color.green = colorP->green * 1.05f;
-	color.blue = colorP->blue * 1.05f;
+	float fScale = colorP->alpha;
+	color.red = colorP->red * fScale;
+	color.green = colorP->green * fScale;
+	color.blue = colorP->blue * fScale;
 	color.alpha = colorP->alpha;
 	}
 else {

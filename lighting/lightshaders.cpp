@@ -86,7 +86,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -128,7 +128,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -172,7 +172,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -220,7 +220,7 @@ const char *pszPPXLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}\r\n" \
 	"}"
 	};
@@ -261,7 +261,7 @@ const char *pszPP1LightingFS [] = {
 	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
 	"  colorSum.rgb *= gl_LightSource [0].constantAttenuation;\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale),  matColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale),  matColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex;\r\n" \
@@ -296,7 +296,7 @@ const char *pszPP1LightingFS [] = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
@@ -333,7 +333,7 @@ const char *pszPP1LightingFS [] = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
@@ -374,7 +374,7 @@ const char *pszPP1LightingFS [] = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum = (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	};
 
@@ -528,7 +528,7 @@ const char *pszPPXLMLightingFS [] = {
 	"			colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"			}\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb) * fLightScale, matColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -569,7 +569,8 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"  colorSum *= texColor;\r\n" \
+	"	gl_FragColor = vec4 (min (texColor.rgb, colorSum.rgb) * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -612,7 +613,8 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"  colorSum *= texColor;\r\n" \
+	"	gl_FragColor = vec4 (min (texColor.rgb, colorSum.rgb) * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"#define LIGHTS 8\r\n" \
@@ -659,7 +661,8 @@ const char *pszPPXLMLightingFS [] = {
 	"			}\r\n" \
 	"		colorSum += color * gl_LightSource [i].constantAttenuation;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"  colorSum *= texColor;\r\n" \
+	"	gl_FragColor = vec4 (min (texColor.rgb, colorSum.rgb) * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	"}"
 	};
@@ -700,8 +703,8 @@ const char *pszPP1LMLightingFS [] = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	colorSum *= gl_LightSource [0].constantAttenuation;\r\n" \
-	"	gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * colorSum.rgb * fLightScale), matColor.a * gl_Color.a);\r\n" \
+	"	colorSum *= matColor * gl_LightSource [0].constantAttenuation;\r\n" \
+	"	gl_FragColor = vec4 (min (matColor.rgb, colorSum.rgb) * fLightScale, matColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
@@ -736,7 +739,8 @@ const char *pszPP1LMLightingFS [] = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"  colorSum *= texColor * gl_LightSource [0].constantAttenuation;\r\n" \
+	"	gl_FragColor = vec4 (min (texColor.rgb, colorSum.rgb) * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -773,7 +777,8 @@ const char *pszPP1LMLightingFS [] = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"  colorSum *= texColor * gl_LightSource [0].constantAttenuation;\r\n" \
+	"	gl_FragColor = vec4 (min (texColor.rgb, colorSum.rgb) * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -814,7 +819,8 @@ const char *pszPP1LMLightingFS [] = {
 	"			NdotL += (1.0 - NdotL) / att;\r\n" \
 	"		colorSum += (gl_LightSource [0].diffuse * NdotL + gl_LightSource [0].ambient) / att;\r\n" \
 	"		}\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * colorSum.rgb * gl_LightSource [0].constantAttenuation, texColor.a * gl_Color.a) * fLightScale;\r\n" \
+	"  colorSum *= texColor * gl_LightSource [0].constantAttenuation;\r\n" \
+	"	gl_FragColor = vec4 (min (texColor.rgb, colorSum.rgb) * fLightScale, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	};
 
@@ -891,7 +897,7 @@ const char *pszPP0LMLightingFS [] = {
 	"void main() {\r\n" \
 	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
@@ -900,7 +906,7 @@ const char *pszPP0LMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
@@ -913,7 +919,7 @@ const char *pszPP0LMLightingFS [] = {
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
-	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a * fLightScale);\r\n" \
+	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
 	"	}\r\n" \
 	"}"
 	};

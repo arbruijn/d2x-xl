@@ -298,6 +298,7 @@ if (bTextured) {
 				return 0;
 			}
 		else {
+			gameStates.render.history.bmTop = NULL;
 			ResetTMU (GL_TEXTURE1 + bLightmaps);
 			}
 		}
@@ -309,6 +310,7 @@ if (bTextured) {
 				return 0;
 			}
 		else {
+			gameStates.render.history.bmMask = NULL;
 			ResetTMU (GL_TEXTURE2 + bLightmaps);
 			bColorKey = 0;
 			}
@@ -393,9 +395,8 @@ PROF_START
 	int bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
 #if DBG
-if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
+if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
-	}
 #endif
 
 if (!faceP->m_info.bTextured)
@@ -466,7 +467,7 @@ else {
 				break;
 			if (!bAdditive) {
 				bAdditive = true;
-				ogl.SetBlendMode (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+				ogl.SetBlendMode (GL_ONE, GL_ONE); //_MINUS_SRC_COLOR);
 				ogl.SetDepthMode (GL_EQUAL);
 				ogl.SetDepthWrite (false);
 				}
