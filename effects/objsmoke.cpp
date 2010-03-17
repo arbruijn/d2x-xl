@@ -288,7 +288,7 @@ if (bHires >= 0) {
 			if (i < 0) {
 				gameData.multiplayer.gatlingSmoke [nPlayer] =
 					particleManager.Create (&vEmitter, &vDir, &posP->mOrient, objP->info.nSegment, 1, GATLING_MAX_PARTS, I2X (1) / 2, 1,
-													1, GATLING_PART_LIFE, GATLING_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 3, 0, -1);
+													1, GATLING_PART_LIFE, GATLING_PART_SPEED, SMOKE_PARTICLES, 0x7ffffffe, smokeColors + 3, 0, -1);
 				}
 			else {
 				particleManager.SetPos (i, &vEmitter, &posP->mOrient, objP->info.nSegment);
