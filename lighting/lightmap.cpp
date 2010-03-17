@@ -542,7 +542,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	CFloatVector3::Normalize (m_data.vcd.vertNorm);
 	m_data.nColor = 0;
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
-#ifdef _OPENMP
+#if USE_OPENMP
 	GetNumThreads ();
 	#pragma omp parallel
 		{

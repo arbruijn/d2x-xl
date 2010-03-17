@@ -66,7 +66,7 @@ void SetTGAProperties (CBitmap* bmP, int alpha, int bGrayScale, double brightnes
 	tRgbaColorf	avgColor;
 	tRgbColorb	avgColorb;
 	float			a;
-#ifndef _OPENMP
+#if !USE_OPENMP
  	tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ());
 #endif
 
@@ -79,7 +79,7 @@ memset (&avgColor, 0, sizeof (avgColor));
 bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 if (bmP->BPP () == 3) {
 	tRgbColorb*	p = reinterpret_cast<tRgbColorb*> (bmP->Buffer ());
-#ifdef _OPENMP
+#if USE_OPENMP
 	int			tId, j = w * h;
 	tRgbColorf	ac [MAX_THREADS];
 
@@ -123,7 +123,7 @@ else {
 		nFrames = 1;
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
-#ifdef _OPENMP
+#if USE_OPENMP
 		int			nst [MAX_THREADS], nac [MAX_THREADS], tId, j = w * (h / nFrames);
 		tRgbaColorb *p = reinterpret_cast<tRgbaColorb*> (bmP->Buffer ()) + n * j;
 		tRgbaColorf	avc [MAX_THREADS];

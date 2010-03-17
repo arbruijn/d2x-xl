@@ -69,7 +69,7 @@ if (faceP - FACES.faces >= gameData.segs.nFaces)
 	return 0;
 #endif
 
-#if 0 //def _OPENMP
+#if USE_OPENMP > 1
 #	pragma omp critical
 #endif
 {

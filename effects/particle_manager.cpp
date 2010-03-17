@@ -245,7 +245,7 @@ if (!gameStates.app.tick40fps.bTick)
 
 	int nCurrent = -1;
 
-#if 0 //def _OPENMP
+#if USE_OPENMP > 1
 if (m_systemList.Buffer ()) {
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 		m_systemList [h++] = systemP;
@@ -274,7 +274,7 @@ if (!gameOpts->render.particles.nQuality)
 	return;
 int nCurrent = -1;
 
-#if 0 //def _OPENMP
+#if USE_OPENMP > 1
 if (m_systemList.Buffer ()) {
 	int h = 0;
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
@@ -312,7 +312,7 @@ return 1;
 void CParticleManager::SetupRenderBuffer (void)
 {
 PROF_START
-#ifndef _OPENMP
+#if USE_OPENMP <= 1
 for (int i = 0; i < m_iBuffer; i++)
 	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
 #else

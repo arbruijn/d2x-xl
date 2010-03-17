@@ -42,7 +42,7 @@ tThreadInfo tiEffects;
 
 bool WaitForRenderThreads (void)
 {
-#if 1 //ndef _OPENMP
+#if !USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
 	while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 		G3_SLEEP (0);	//already running, so wait
@@ -68,7 +68,7 @@ return nActive;
 
 int RunRenderThreads (int nTask, int nThreads)
 {
-#if 0 //def _OPENMP
+#if USE_OPENMP
 
 return 0;
 
@@ -287,7 +287,7 @@ if (!bInitialized) {
 	memset (&tiRender, 0, sizeof (tiRender));
 	bInitialized = true;
 	}
-#if 1 //ndef _OPENMP
+#if !USE_OPENMP
 for (int i = 0; i < gameStates.app.nThreads; i++) {
 	if (!tiRender.ti [i].pThread) {
 		tiRender.ti [i].bDone =
@@ -303,7 +303,7 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 
 void ControlRenderThreads (void)
 {
-#if 1 //ndef _OPENMP
+#if !USE_OPENMP
 StartRenderThreads ();
 #endif
 }
@@ -312,7 +312,7 @@ StartRenderThreads ();
 
 void EndRenderThreads (void)
 {
-#if 1 //ndef _OPENMP
+#if !USE_OPENMP
 tiRender.ti [0].bDone =
 tiRender.ti [1].bDone = 1;
 G3_SLEEP (10);
@@ -358,7 +358,7 @@ if (!bInitialized) {
 	memset (&tiEffects, 0, sizeof (tiEffects));
 	bInitialized = true;
 	}
-#if 1 //ndef _OPENMP
+#if !USE_OPENMP
 tiEffects.bDone = 0;
 tiEffects.bExec = 0;
 if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
@@ -382,7 +382,7 @@ tiEffects.pThread = NULL;
 
 void ControlEffectsThread (void)
 {
-#if 1 //ndef _OPENMP
+#if !USE_OPENMP
 if (gameStates.app.bMultiThreaded > 1)
 	StartEffectsThread ();
 #endif
@@ -392,7 +392,7 @@ if (gameStates.app.bMultiThreaded > 1)
 
 bool WaitForEffectsThread (void)
 {
-#if 1 //ndef _OPENMP
+#if !USE_OPENMP
 if ((gameStates.app.bMultiThreaded > 1) && tiEffects.pThread) {
 	while (tiEffects.bExec)
 		G3_SLEEP (0);
@@ -406,7 +406,7 @@ return false;
 
 int GetNumThreads (void)
 {
-#ifdef _OPENMP
+#if USE_OPENMP
 gameStates.app.nThreads = omp_get_num_threads ();
 if (gameStates.app.nThreads < 2)
 #pragma omp parallel 

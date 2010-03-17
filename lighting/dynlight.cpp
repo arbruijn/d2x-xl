@@ -716,7 +716,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 		CSegment*	segP;
 
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
-#if 0 //def _OPENMP
+#if USE_OPENMP
 	int nStart, nEnd;
 #	pragma omp parallel
 	{

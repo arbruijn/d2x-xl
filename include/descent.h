@@ -40,6 +40,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define USE_SDL_IMAGE	1
 #endif
 
+#define USE_OPENMP		1
+
 #define SUPERUSER			9773
 
 #define SHOW_EXIT_PATH  1
@@ -3624,7 +3626,7 @@ void CheckEndian (void);
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#ifdef _OPENMP
+#if USE_OPENMP
 #	include "omp.h"
 #endif
 
