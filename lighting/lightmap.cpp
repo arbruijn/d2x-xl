@@ -524,7 +524,7 @@ if (nFace <= 0) {
 	m_list.nLightmaps = 2;
 	}
 //Next Go through each surface and create a lightmap for it.
-for (m_data.faceP = FACES + nFace; nFace < nLastFace; nFace++, m_data.faceP++) {
+for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.faceP++) {
 #if DBG
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
