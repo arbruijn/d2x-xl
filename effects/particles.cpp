@@ -596,7 +596,7 @@ if ((0 > nSegment) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
 			m_nLife = 500; 
 			}
 		}
-	else {
+	else if (m_nTTL - m_nLife > 500) {
 		m_nLife = -1;
 		return 0;
 		}
