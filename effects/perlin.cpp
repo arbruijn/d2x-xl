@@ -5,7 +5,7 @@
 
 static long randSeed = 0;
 
-CPerlin perlin;
+CPerlin perlinX, perlinY;
 
 //------------------------------------------------------------------------------
 

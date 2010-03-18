@@ -256,8 +256,8 @@ return m_vOffs;
 
 CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi)
 {
-double dx = perlin.PerlinNoise1D (phi * 2.0, 0.6, 6);
-double dy = perlin.PerlinNoise1D (phi * 2.0, 0.6, 6);
+double dx = perlinX.PerlinNoise1D (phi * 2.0, 0.6, 6);
+double dy = perlinY.PerlinNoise1D (phi * 2.0, 0.6, 6);
 #if 1
 phi = sqrt (sin (phi * Pi)) * nAmplitude;
 dx *= phi;
