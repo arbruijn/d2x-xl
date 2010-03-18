@@ -1139,7 +1139,7 @@ void CLightning::Draw (int nDepth, int nThread)
 
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
 	return;
-#if !USE_OPENMP
+#if 0 //!USE_OPENMP
 if (gameStates.app.bMultiThreaded && (nThread > 0))
 	tiRender.ti [nThread].bBlock = 1;
 #endif
@@ -1157,14 +1157,14 @@ if (!(bPlasma = SetupGlow ()))
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
-#if !USE_OPENMP
+#if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
 if (bPlasma)
 	RenderGlow (&color, nDepth, nThread);
 else
 	RenderCore (&color, nDepth, nThread);
-#if !USE_OPENMP
+#if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
 if (gameOpts->render.lightning.nQuality)
@@ -1276,14 +1276,13 @@ CLightning l;
 l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
 		  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
+
+#if USE_OPENMP > 1
+
 int bFail = 0;
 #pragma omp parallel 
 	{
-#if USE_OPENMP > 1
 	int nThread = omp_get_thread_num ();
-#else
-	int nThread = 0;
-#endif
 	#pragma omp for
 	for (int i = 0; i < nBolts; i++) {
 		if (bFail)
@@ -1293,9 +1292,18 @@ int bFail = 0;
 			bFail = 1;
 		}
 	}
-
 if (bFail)
 	return false;
+
+#else
+
+for (int i = 0; i < nBolts; i++) {
+		m_lightning [i] = l;
+		if (!m_lightning [i].Create (0, 0))
+			return false;
+		}
+
+#endif
 
 CreateSound (bSound);
 m_nKey [0] =

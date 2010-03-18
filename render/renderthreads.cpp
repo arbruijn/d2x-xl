@@ -68,7 +68,7 @@ return nActive;
 
 int RunRenderThreads (int nTask, int nThreads)
 {
-#if USE_OPENMP
+#if 1 //USE_OPENMP
 
 return 0;
 
@@ -287,7 +287,7 @@ if (!bInitialized) {
 	memset (&tiRender, 0, sizeof (tiRender));
 	bInitialized = true;
 	}
-#if !USE_OPENMP
+#if 0 //!USE_OPENMP
 for (int i = 0; i < gameStates.app.nThreads; i++) {
 	if (!tiRender.ti [i].pThread) {
 		tiRender.ti [i].bDone =
@@ -358,7 +358,7 @@ if (!bInitialized) {
 	memset (&tiEffects, 0, sizeof (tiEffects));
 	bInitialized = true;
 	}
-#if !USE_OPENMP
+#if 0 //!USE_OPENMP
 tiEffects.bDone = 0;
 tiEffects.bExec = 0;
 if	(!(tiEffects.pThread || (tiEffects.pThread = SDL_CreateThread (EffectsThread, NULL))))
