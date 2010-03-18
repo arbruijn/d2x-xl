@@ -22,7 +22,7 @@ class CPerlin {
 		double InterpolatedNoise2D (double x, double y);
 		double PerlinNoise2D (double x, double y, double persistence, long octaves);
 
-		bool Setup (int nNodes, int nDimensions = 1);
+		bool Setup (int nNodes, int nOctaves, int nDimensions = 1);
 	};
 
 extern CPerlin perlin;
