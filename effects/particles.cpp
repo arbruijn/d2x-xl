@@ -338,7 +338,7 @@ m_nTTL = m_nLife;
 
 if ((nType != FIRE_PARTICLES) || (gameOpts->render.particles.nQuality < 2))
 	m_bAnimate = (m_nFrames > 1);
-m_bRotate = (m_nType <= SMOKE_PARTICLES) || (m_nType == FIRE_PARTICLES);
+m_bRotate = (m_nType <= SMOKE_PARTICLES) ? 1 : (m_nType == FIRE_PARTICLES) ? -1 : 0;
 
 UpdateDecay ();
 UpdateTexCoord ();
@@ -772,10 +772,16 @@ if (particleManager.Animate ()) {
 		m_iFrame = (m_iFrame + 1) % (m_nFrames * m_nFrames);
 		UpdateTexCoord ();
 		}
-	m_bRotate <<= 1;
-	if (m_bRotate == 4) {
-		m_bRotate = 1;
-		m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
+	if (m_bRotate) {
+		if (m_bRotate < 0)
+			m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
+		else {
+			m_bRotate <<= 1;
+			if (m_bRotate == 4) {
+				m_bRotate = 1;
+				m_nRotFrame = (m_nRotFrame + 1) % PARTICLE_POSITIONS;
+				}
+			}
 		}
 	}
 
