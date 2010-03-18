@@ -19,6 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "particles.h"
 
+#include "SDL_mutex.h"
+
 #define UNIFY_THREADS	0
 
 typedef struct tRenderThreadInfo {
@@ -34,6 +36,7 @@ typedef struct tRenderThreadInfo {
 	tParticleEmitter		*particleEmitters [MAX_THREADS];
 	int						nCurTime [MAX_THREADS];
 	tThreadInfo				ti [MAX_THREADS];
+	SDL_mutex*				semaphore;
 	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;

@@ -71,6 +71,8 @@ if (faceP - FACES.faces >= gameData.segs.nFaces)
 
 #if USE_OPENMP > 1
 #	pragma omp critical
+#elif !USE_OPENMP
+SDL_mutexP (tiRender.semaphore);
 #endif
 {
 PROF_START
@@ -88,6 +90,10 @@ else {
 #endif
 	gameData.render.faceList [j].nNextItem = i;
 	}
+#if !USE_OPENMP
+SDL_mutexV (tiRender.semaphore);
+#endif
+
 gameData.render.faceList [i].nNextItem = -1;
 gameData.render.faceList [i].faceP = faceP;
 gameData.render.faceIndex.tails [nKey] = i;

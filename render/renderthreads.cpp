@@ -297,6 +297,7 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 		tiRender.ti [i].nId = i;
 		tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 		}
+	tiRender.semaphore = SDL_CreateMutex ();
 	}
 #endif
 }
@@ -323,6 +324,7 @@ for (int i = 0; i < 2; i++) {
 		//SDL_KillThread (tiRender.ti [0].pThread);
 		tiRender.ti [i].pThread = NULL;
 		}
+	SDL_DestroyMutex (tiRender.semaphore);
 	}
 EndTranspRenderThread ();
 #endif
