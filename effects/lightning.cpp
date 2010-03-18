@@ -362,10 +362,10 @@ if ((nDepth > 1) || m_bRandom) {
 	if (nStyle == 2) {
 		if (nDepth > 1)
 			nAmplitude *= 4;
-		perlin.Setup (m_nNodes);
+		perlin.Setup (6, 1);
 		for (i = 0; i < m_nNodes; i++) {
 			phi = bClamp ? double (i) / double (m_nNodes - 1) : 1;
-			m_nodes [i].CreatePerlin (nSteps, nAmplitude, nSeed, 2 * phi / 4, phi * 7.5);
+			m_nodes [i].CreatePerlin (nSteps, nAmplitude, phi);
 			}
 		}
 	else {
@@ -392,10 +392,10 @@ else {
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
 		nAmplitude = 5 * nAmplitude / 4;
-		perlin.Setup (m_nNodes);
+		perlin.Setup (6, 1);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++) {
 			phi = bClamp ? double (i) / h : 1;
-			plh->CreatePerlin (nSteps, nAmplitude, nSeed, phi, phi * 10);
+			plh->CreatePerlin (nSteps, nAmplitude, phi);
 			}
 		}
 	else {

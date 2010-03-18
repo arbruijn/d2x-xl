@@ -134,14 +134,14 @@ return total;
 
 //------------------------------------------------------------------------------
 
-bool CPerlin::Setup (int nNodes, int nDimensions)
+bool CPerlin::Setup (int nOctaves, int nDimensions)
 {
-nNodes += 2;
-m_nNodes = nNodes;
-nNodes *= nDimensions;
-if (m_noise.Buffer () && (int (m_noise.Length ()) < nNodes))
+m_nNodes = 1 << (nOctaves - 1);
+m_nNodes += 2;
+m_nNodes *= nDimensions;
+if (m_noise.Buffer () && (int (m_noise.Length ()) < m_nNodes))
 	m_noise.Destroy ();
-if (!(m_noise.Buffer () || m_noise.Create (nNodes)))
+if (!(m_noise.Buffer () || m_noise.Create (m_nNodes)))
 	return false;
 for (int i = 0; i < m_nNodes; i++)
 	m_noise [i] = Random ();
