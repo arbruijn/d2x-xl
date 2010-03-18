@@ -384,13 +384,6 @@ if (bmP->Bind (0)) {
 	return false;
 	}
 
-if (nType >= PARTICLE_TYPES)
-	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);	// multiplicative using fire's smoke texture
-else {
-	m_iBuffer = 0;
-	return true;
-	ogl.SetBlendMode (m_bBufferEmissive);
-	}
 #if LAZY_RENDER_SETUP
 SetupRenderBuffer ();
 #endif
@@ -415,6 +408,7 @@ if (InitBuffer ()) {
 		else
 			shaderManager.Deploy (-1);
 		}
+	ogl.SetBlendMode ((nType < PARTICLE_TYPES) ? m_bBufferEmissive : -1);
 	glNormal3f (0, 0, -1);
 #if 1
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);

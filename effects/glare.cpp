@@ -721,12 +721,10 @@ const char *glareFS =
 	"//gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
 	"if (blendMode > 0) //additive\r\n" \
 	"   gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb * dz, 1.0);\r\n" \
-	"else if (blendMode == 0) //alpha\r\n" \
-	"   gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * dz);\r\n" \
-	"else {\r\n" \
-	"   //float color = 1.0 - dz;\r\n" \
-	"   gl_FragColor = vec4 (max (texColor.rgb, 1.0 - dz /*vec3 (color, color, color)*/), 1.0);\r\n" \
-	"   }\r\n" \
+	"else if (blendMode < 0) //multiplicative\r\n" \
+	"   gl_FragColor = vec4 (max (texColor.rgb, 1.0 - dz), 1.0);\r\n" \
+	"else //alpha\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
 	"}\r\n"
 	;
 
