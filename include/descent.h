@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _OPENMP
+#	include "omp.h"
 #	define USE_OPENMP		2
 #else
 #	define USE_OPENMP		0

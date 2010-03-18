@@ -404,7 +404,7 @@ return (d * 10 + h) / 10;
 
 //------------------------------------------------------------------------------
 
-int nPartSeg [MAX_THREADS] = {-1, -1, -1, -1, -1, -1, -1, -1};
+int nPartSeg [MAX_THREADS] = {-1, -1, -1, -1}; //, -1, -1, -1, -1};
 
 static int nFaceCount [MAX_THREADS][6];
 static int bSidePokesOut [MAX_THREADS][6];
