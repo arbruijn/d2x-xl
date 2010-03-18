@@ -435,7 +435,7 @@ if (!gameOpts->render.debug.bTextures)
 #endif
 G3SetBlendMode (faceP);
 if (bMonitor)
-	SetupMonitor (faceP, bmTop, bTextured, 1);
+	SetupMonitor (faceP, bmTop, bTextured, bLightmaps);
 gameData.render.nTotalFaces++;
 
 if (!bLightmaps)
@@ -480,7 +480,7 @@ else {
 	}
 
 if (bMonitor)
-	ResetMonitor (bmTop, 1);
+	ResetMonitor (bmTop, bLightmaps);
 PROF_END(ptRenderFaces)
 return 0;
 }
