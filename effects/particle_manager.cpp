@@ -386,8 +386,11 @@ if (bmP->Bind (0)) {
 
 if (nType >= PARTICLE_TYPES)
 	ogl.SetBlendMode (GL_DST_COLOR, GL_ZERO);	// multiplicative using fire's smoke texture
-else
+else {
+	m_iBuffer = 0;
+	return true;
 	ogl.SetBlendMode (m_bBufferEmissive);
+	}
 #if LAZY_RENDER_SETUP
 SetupRenderBuffer ();
 #endif
@@ -406,7 +409,7 @@ if (InitBuffer ()) {
 		else
 #endif
 		if ((nType <= WATERFALL_PARTICLES) || (nType >= PARTICLE_TYPES)) {
-			if (!((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, m_bBufferEmissive && (nType < PARTICLE_TYPES))))
+			if (!((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, (nType < PARTICLE_TYPES) ? m_bBufferEmissive : -1)))
 				shaderManager.Deploy (-1);
 			}
 		else

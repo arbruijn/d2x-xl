@@ -336,7 +336,7 @@ CTexture::Wrap (GL_REPEAT);
 ogl.SetDepthMode (GL_LEQUAL); 
 if (nType == RENDER_TYPE_CORONAS) {
 	if (glareRenderer.Style ())
-		glareRenderer.LoadShader (10);
+		glareRenderer.LoadShader (10, 1);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SetBlendMode (GL_ONE, GL_ONE);
 	return 0;

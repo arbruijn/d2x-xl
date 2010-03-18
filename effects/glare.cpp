@@ -646,10 +646,10 @@ return (hGlareShader >= 0) && (shaderManager.Current () == hGlareShader);
 
 //-------------------------------------------------------------------------
 
-bool CGlareRenderer::LoadShader (float dMax, int bAdditive)
+bool CGlareRenderer::LoadShader (float dMax, int nBlendMode)
 {
 	static float dMaxPrev = -1;
-	static int	 bAddPrev = -1;
+	static int nBlendPrev = -1;
 
 ogl.ClearError (0);
 ogl.m_states.bUseDepthBlending = 0;
@@ -668,16 +668,16 @@ if (shaderManager.Rebuild (m_shaderProg)) {
 	glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
 	glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
 	glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
-	glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
+	glUniform1f (glGetUniformLocation (m_shaderProg, "nBlendMode"), (GLfloat) nBlendMode);
 	}
 else {
 	if (dMaxPrev != dMax)
 		glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
-	if (bAddPrev != bAdditive)
-		glUniform1i (glGetUniformLocation (m_shaderProg, "bAdditive"), (GLint) bAdditive);
+	if (nBlendPrev != nBlendMode)
+		glUniform1i (glGetUniformLocation (m_shaderProg, "nBlendMode"), (GLint) nBlendMode);
 	}
 dMaxPrev = dMax;
-bAddPrev = bAdditive;
+nBlendPrev = nBlendMode;
 ogl.SetDepthTest (false);
 ogl.SelectTMU (GL_TEXTURE0);
 return true;
@@ -706,7 +706,7 @@ const char *glareFS =
 	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
-	"uniform int bAdditive;\r\n" \
+	"uniform int blendMode;\r\n" \
 	"//#define ZNEAR 1.0\r\n" \
 	"//#define ZFAR 5000.0\r\n" \
 	"//#define LinearDepth(_z) (2.0 * ZFAR) / (ZFAR + ZNEAR - (_z) * (ZFAR - ZNEAR))\r\n" \
@@ -719,7 +719,14 @@ const char *glareFS =
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
 	"//gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
-	"gl_FragColor = vec4 ((texColor.rgb * gl_Color.rgb) * max (1.0 - bAdditive, dz), max (bAdditive, texColor.a * gl_Color.a * dz));\r\n" \
+	"if (blendMode > 0) //additive\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb * dz, 1.0);\r\n" \
+	"else if (blendMode == 0) //alpha\r\n" \
+	"   gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * dz);\r\n" \
+	"else {\r\n" \
+	"   //float color = 1.0 - dz;\r\n" \
+	"   gl_FragColor = vec4 (max (texColor.rgb, 1.0 - dz /*vec3 (color, color, color)*/), 1.0);\r\n" \
+	"   }\r\n" \
 	"}\r\n"
 	;
 
