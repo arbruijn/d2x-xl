@@ -125,9 +125,9 @@ if (m_nOffset) {
 	m_vEnd += vDir * i;
 	}
 vPos = m_vPos;
-if (m_bInPlane) {
+if (m_bInPlane && !m_vDelta.IsZero ()) {
 	vDelta [0] = m_vDelta;
-	vDelta [i].SetZero ();
+	vDelta [1].SetZero ();
 	}
 else {
 	do {
@@ -236,8 +236,9 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 		nNode = int (j) + 2 - d_rand () % 5;
 		if (nNode < 1)
 			nNode = int (j);
-		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
-													 2 * m_nNodes / n, m_nChildren / 5, nDepth - 1, m_nSteps / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
+		if ((m_nNodes - nNode) && 
+			 !m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
+													 2 * (m_nNodes - nNode) / 3, m_nChildren / 5, nDepth - 1, abs (m_nSteps) / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
 													 m_nStyle, &m_color, this, nNode, nThread))
 			return false;
 		}
@@ -348,11 +349,11 @@ if (bSeed) {
 else
 	bSeed = 0;
 #endif
-nStyle = STYLE;
+nStyle = 2; //STYLE;
 nSteps = m_nSteps;
 nSmoothe = m_nSmoothe;
 bClamp = m_bClamp;
-bInPlane = m_bInPlane && ((nDepth == 1) || (nStyle == 2));
+bInPlane = m_bInPlane && ((nDepth == 1)); // || (nStyle == 2));
 nAmplitude = m_nAmplitude;
 plh = m_nodes.Buffer ();
 plh->m_vNewPos = plh->m_vPos;

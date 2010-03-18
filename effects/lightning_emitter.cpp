@@ -64,6 +64,8 @@ l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
 		  nSmoothe, bClamp, bPlasma, bLight, nStyle, colorP, false, -1);
 
+int bChildren = (gameOpts->render.lightning.nStyle > 1);
+
 #if USE_OPENMP > 1
 
 int bFail = 0;
@@ -75,7 +77,7 @@ int bFail = 0;
 		if (bFail)
 			continue;
 		m_lightning [i] = l;
-		if (!m_lightning [i].Create (0, nThread))
+		if (!m_lightning [i].Create (bChildren, nThread))
 			bFail = 1;
 		}
 	}
@@ -86,7 +88,7 @@ if (bFail)
 
 for (int i = 0; i < nBolts; i++) {
 		m_lightning [i] = l;
-		if (!m_lightning [i].Create (0, 0))
+		if (!m_lightning [i].Create (bChildren, 0))
 			return false;
 		}
 

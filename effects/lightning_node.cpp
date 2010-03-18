@@ -42,7 +42,7 @@ if (!(m_child = new CLightning))
 m_child->Init (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
 					nNodes, nChildren, nSteps, nSmoothe, bClamp, bPlasma, bLight,
 					nStyle, colorP, parentP, nNode);
-return m_child->Create (nDepth - 1, nThread);
+return m_child->Create (nDepth, nThread);
 }
 
 //------------------------------------------------------------------------------
