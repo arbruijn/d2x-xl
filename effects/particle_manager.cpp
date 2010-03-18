@@ -343,7 +343,7 @@ else
 		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 	}
 #else
-if ((m_iBuffer < 0) || !RunRenderThreads (rtParticles))
+if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
 	for (int i = 0; i < m_iBuffer; i++)
 		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
 #endif
