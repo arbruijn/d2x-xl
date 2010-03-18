@@ -6620,7 +6620,23 @@
 						>
 					</File>
 					<File
+						RelativePath="..\effects\lightning_emitter.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\lightning_manager.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\lightning_node.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\effects\objsmoke.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\effects\omega_lightning.cpp"
 						>
 					</File>
 					<File

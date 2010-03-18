@@ -149,10 +149,10 @@ typedef struct tLightningSystem {
 	char						m_bValid;
 } tLightningSystem;
 
-class CLightningSystem : public tLightningSystem {
+class CLightningEmitter : public tLightningSystem {
 	public:
-		CLightningSystem () { m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
-		~CLightningSystem () { Destroy (); };
+		CLightningEmitter () { m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
+		~CLightningEmitter () { Destroy (); };
 		void Init (int nId);
 		bool Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 						 short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
@@ -194,8 +194,8 @@ typedef struct tLightningLight {
 typedef struct tLightningData {
 	CArray<short>						m_objects;
 	CArray<tLightningLight>			m_lights;
-	CDataPool<CLightningSystem>	m_systems; // [MAX_LIGHTNING];
-	CArray<CLightningSystem*>		m_systemList;
+	CDataPool<CLightningEmitter>	m_emitters; // [MAX_LIGHTNING];
+	CArray<CLightningEmitter*>		m_emitterList;
 	int									m_bDestroy;
 	int									m_nFirstLight;
 } tLightningData;
@@ -212,7 +212,7 @@ class CLightningManager : public tLightningData {
 						short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 						short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 						char bClamp, char bGlow, char bSound, char bLight, char nStyle, tRgbaColorf *colorP);
-		void Destroy (CLightningSystem* systemP, CLightning *lightningP);
+		void Destroy (CLightningEmitter* systemP, CLightning *lightningP);
 		void Cleanup (void);
 		int Shutdown (bool bForce);
 		void Render (void);
@@ -293,5 +293,11 @@ extern COmegaLightning	omegaLightnings;
 
 #define	SHOW_LIGHTNING \
 			(gameOpts->render.effects.bEnabled && !(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bUseLightning, 1, 1, 0))
+
+//------------------------------------------------------------------------------
+
+extern CFixVector *VmRandomVector (CFixVector *vRand);
+
+//------------------------------------------------------------------------------
 
 #endif //__LIGHTNING_H

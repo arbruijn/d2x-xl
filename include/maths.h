@@ -121,6 +121,13 @@ static inline float f_rand (void)
 return static_cast<float> (d_rand()) / static_cast<float> (0x7fff);
 }
 
+//------------------------------------------------------------------------------
+
+inline double dbl_rand (void)
+{
+return double (rand ()) / double (RAND_MAX);
+}
+
 //-----------------------------------------------------------------------------
 
 #endif
