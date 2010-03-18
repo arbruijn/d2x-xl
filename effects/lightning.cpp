@@ -142,7 +142,7 @@ m_nNodes = abs (m_nNodes);
 m_iStep = 0;
 if (m_parent) {
 	i = m_parent->m_nChildren + 1;
-	l = m_parent->m_nLength / i;
+	l = m_nNodes * m_parent->m_nLength / m_parent->m_nNodes;
 	m_nLength = ComputeChildEnd (&m_vPos, &m_vEnd, &m_vDir, &m_parent->m_vDir, l + 3 * l / (m_nNode + 1));
 	vDir = m_vDir * (m_nLength / (m_nNodes - 1));
 	}
@@ -208,6 +208,8 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes))
 	return false;
+if (nDepth)
+	m_bPlasma = 0;
 if (gameOpts->render.lightning.bPlasma) {
 	int h = ((m_bPlasma > 0) ? 2 : 1) * (m_nNodes - 1) * 4;
 	if (!m_plasmaTexCoord.Create (h))
