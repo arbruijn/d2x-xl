@@ -28,11 +28,7 @@
 #	include "tactile.h"
 #endif
 
-#define RENDER_LIGHTNING_PLASMA 1
 #define RENDER_LIGHTNING_OUTLINE 0
-#define RENDER_LIGHTINGS_BUFFERED 1
-#define UPDATE_LIGHTNING 1
-#define USE_NEW 1
 
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
@@ -178,7 +174,7 @@ else {
 m_parent = parentP;
 m_nNode = nNode;
 m_nNodes = nNodes;
-m_nChildren = gameOpts->render.lightning.nQuality ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
+m_nChildren = (extraGameInfo [0].bUseLightning > 1) ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
 if (vEnd) {
 	m_vRefEnd = *vEnd;
 	m_vEnd = *vEnd;
@@ -229,7 +225,7 @@ if (m_bRandom) {
 if (m_nAmplitude < 0)
 	m_nAmplitude = m_nLength / 6;
 Setup (true);
-if (gameOpts->render.lightning.nQuality && nDepth && m_nChildren) {
+if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 	int			h, l, n, nNode;
 	double		nStep, j;
 
@@ -448,9 +444,7 @@ void CLightning::Animate (int nDepth, int nThread)
 	int				j, bSeed;
 	bool				bInit;
 
-#if UPDATE_LIGHTNING
 m_nTTL -= gameStates.app.tick40fps.nTime;
-#endif
 if (m_nNodes > 0) {
 	if ((bInit = (m_nSteps < 0)))
 		m_nSteps = -m_nSteps;
@@ -459,14 +453,10 @@ if (m_nNodes > 0) {
 		CreatePath (bSeed, nDepth + 1);
 		m_iStep = m_nSteps;
 		}
-#if 1
 	for (j = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; j > 0; j--, nodeP++)
 		nodeP->Animate (bInit, m_nSegment, nDepth, nThread);
-#endif
 RenderSetup (nDepth, nThread);
-#if UPDATE_LIGHTNING
 	(m_iStep)--;
-#endif
 	}
 }
 
@@ -682,7 +672,7 @@ if (gameOpts->render.lightning.bPlasma)
 	ComputeGlow (nDepth, nThread);
 else
 	ComputeCore ();
-if (gameOpts->render.lightning.nQuality)
+if (extraGameInfo [0].bUseLightning > 1)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
 			m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
@@ -700,8 +690,6 @@ if (!m_plasmaVerts.Buffer ())
 	CFloatVector*	vertexP;
 #endif
 
-if (!ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0))
-	return;
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 ogl.SetBlendMode (1);
@@ -715,20 +703,23 @@ else {
 	for (int i = 1; i >= 0; i--) {
 		OglDrawArrays (GL_QUADS, i * h, h);
 #if RENDER_LIGHTNING_OUTLINE
-		if (h != 1)
+		if (i != 1)
 			continue;
 		ogl.SetTexturing (false);
 		glColor3f (1,1,1);
 		texCoordP = m_plasmaTexCoord.Buffer ();
-		vertexP = m_plasmaVerts [h].Buffer ();
-		for (int i = m_nNodes - 1; i; i--) {
-			OglDrawArrays (GL_LINE_LOOP, 0, 4);
+		vertexP = m_plasmaVerts.Buffer ();
+		for (int i = 0; i < m_nNodes - 1; i++) {
+#if 1
+			OglDrawArrays (GL_LINE_LOOP, i * 4, 4);
+#else
 			glBegin (GL_LINE_LOOP);
 			for (int j = 0; j < 4; j++) {
 				glTexCoord2fv (reinterpret_cast<GLfloat*> (texCoordP++));
 				glVertex3fv (reinterpret_cast<GLfloat*> (vertexP++));
 				}
 			glEnd ();
+#endif
 			}
 #endif
 		}
@@ -858,7 +849,7 @@ else
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (gameOpts->render.lightning.nQuality)
+if (extraGameInfo [0].bUseLightning > 1)
 		for (i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->Draw (nDepth + 1, nThread);
@@ -879,7 +870,7 @@ if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (nThread >= 0)) {	/
 		RenderSetup (0, nThread);
 #endif
 	transparencyRenderer.AddLightning (this, nDepth);
-	if (gameOpts->render.lightning.nQuality)
+	if (extraGameInfo [0].bUseLightning > 1)
 		for (int i = 0; i < m_nNodes; i++)
 			if (m_nodes [i].GetChild ())
 				m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);

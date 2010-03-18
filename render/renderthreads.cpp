@@ -283,6 +283,9 @@ gameData.app.bUseMultiThreading [rtTranspRender] = 0;
 
 void StartRenderThreads (void)
 {
+if (!gameStates.app.bMultiThreaded)
+	return;
+
 	static bool bInitialized = false;
 
 if (!bInitialized) {
@@ -315,17 +318,20 @@ StartRenderThreads ();
 
 void EndRenderThreads (void)
 {
+if (!gameStates.app.bMultiThreaded)
+	return;
 #if !USE_OPENMP
-tiRender.ti [0].bDone =
-tiRender.ti [1].bDone = 1;
+for (int i = 0; i < gameStates.app.nThreads; i++) 
+	tiRender.ti [i].bDone = 1;
 G3_SLEEP (10);
-for (int i = 0; i < 2; i++) {
+for (int i = 0; i < gameStates.app.nThreads; i++) {
 	if (tiRender.ti [i].pThread) {
 		//SDL_KillThread (tiRender.ti [0].pThread);
 		tiRender.ti [i].pThread = NULL;
 		}
-	SDL_DestroyMutex (tiRender.semaphore);
 	}
+SDL_DestroyMutex (tiRender.semaphore);
+tiRender.semaphore = NULL;
 EndTranspRenderThread ();
 #endif
 EndEffectsThread ();

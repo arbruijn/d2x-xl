@@ -82,10 +82,8 @@ void CLightningNode::Animate (bool bInit, short nSegment, int nDepth, int nThrea
 {
 if (bInit)
 	m_vPos = m_vNewPos;
-#if UPDATE_LIGHTNING
 else
 	m_vPos += m_vOffs;
-#endif
 if (m_child) {
 	m_child->Move (nDepth + 1, &m_vPos, nSegment, 0, 0, nThread);
 	m_child->Animate (nDepth + 1, nThread);
