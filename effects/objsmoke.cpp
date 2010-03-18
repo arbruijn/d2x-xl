@@ -27,7 +27,8 @@ static tRgbaColorf smokeColors [] = {
 	 {0.5f, 0.5f, 0.5f, 1.0f},
 	 {0.75f, 0.75f, 0.75f, 1.0f},
 	 {1.0f, 1.0f, 1.0f, 1.0f},
-	 {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.25f}
+	 {1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, -0.25f},
+	 {1.0f, 1.0f, 1.0f, -0.1f}
 	};
 
 #define SHIP_MAX_PARTS				50
@@ -385,15 +386,17 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale, 1);
 			}
+		int nLife = ((nType != 2) || vDirP) ? PLR_PART_LIFE : PLR_PART_LIFE / 7;
 		if (vDirP) {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			if (nType != 2)
 				nScale /= 2;
+			else
+				nType = 4;
 			vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 8);
 			}
 		else if (nType == 2)
 			nParts /= 2;
-		int nLife = ((nType != 2) || vDirP) ? PLR_PART_LIFE : PLR_PART_LIFE / 7;
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
 			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
