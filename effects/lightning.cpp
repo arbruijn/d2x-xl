@@ -143,7 +143,7 @@ m_iStep = 0;
 if (m_parent) {
 	i = m_parent->m_nChildren + 1;
 	l = m_nNodes * m_parent->m_nLength / m_parent->m_nNodes;
-	m_nLength = ComputeChildEnd (&m_vPos, &m_vEnd, &m_vDir, &m_parent->m_vDir, l + 3 * l / (m_nNode + 1));
+	m_nLength = ComputeChildEnd (&m_vPos, &m_vEnd, &m_vDir, &m_parent->m_vDir, l);// + 3 * l / (m_nNode + 1));
 	vDir = m_vDir * (m_nLength / (m_nNodes - 1));
 	}
 for (i = 0; i < m_nNodes; i++) {
@@ -240,7 +240,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 			nNode = int (j);
 		if ((m_nNodes - nNode) && 
 			 !m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude / n * 2, m_nAngle,
-													 3 * (m_nNodes - nNode) / 4, m_nChildren / 5, nDepth - 1, abs (m_nSteps) / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
+													 2 * (m_nNodes - nNode) / 3, m_nChildren / 5, nDepth - 1, abs (m_nSteps) / 2, m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
 													 m_nStyle, &m_color, this, nNode, nThread))
 			return false;
 		}
