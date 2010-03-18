@@ -1206,14 +1206,6 @@ memset (rd->src_network, 0, 4);
 memcpy (rd->src_node, &fromAddr.sin_addr, 4);
 memcpy (rd->src_node + 4, &fromAddr.sin_port, 2);
 rd->pktType = 0;
-#if 0//def UDPDEBUG
-//printf(MSGHDR "ReceivePacket: dataLen=%d,from=",dataLen);
-console.printf (0, "received %d bytes from %u.%u.%u.%u:%u\n",
-				dataLen, rd->src_node [0], rd->src_node [1], rd->src_node [2], rd->src_node [3],
-				(signed short)ntohs (*reinterpret_cast<ushort*> (rd->src_node + 4)));
-//DumpRawAddr (rd->src_node);
-//putchar('\n');
-#endif
 return dataLen;
 }
 

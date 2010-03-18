@@ -1279,7 +1279,7 @@ l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 int bFail = 0;
 #pragma omp parallel 
 	{
-#if 0//def _OPENMP
+#if USE_OPENMP > 1
 	int nThread = omp_get_thread_num ();
 #else
 	int nThread = 0;

@@ -248,11 +248,10 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		ResetFaceList ();
 		gameStates.render.nThreads = GetNumThreads ();
 		lightManager.ResetSegmentLights ();
+#if !USE_OPENMP
 		if (gameStates.render.bPerPixelLighting || (CountRenderFaces () < 16) || (gameStates.app.nThreads < 2)
-#if USE_OPENMP <= 1
-			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)
+			 || !RunRenderThreads (rtComputeFaceLight, gameStates.app.nThreads)) 
 #endif
-			) 
 			{
 			gameStates.render.nThreads = 1;
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))

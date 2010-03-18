@@ -312,10 +312,7 @@ return 1;
 void CParticleManager::SetupRenderBuffer (void)
 {
 PROF_START
-#if USE_OPENMP <= 1
-for (int i = 0; i < m_iBuffer; i++)
-	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
-#else
+#if USE_OPENMP > 1
 #	if (LAZY_RENDER_SETUP < 2)
 if (m_iBuffer <= 1000)
 #	endif
@@ -331,6 +328,9 @@ else
 	for (int i = 0; i < m_iBuffer; i++)
 		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 	}
+#else
+for (int i = 0; i < m_iBuffer; i++)
+	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
 #endif
 PROF_END(ptParticles)
 }

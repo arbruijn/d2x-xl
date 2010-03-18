@@ -40,7 +40,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define USE_SDL_IMAGE	1
 #endif
 
-#define USE_OPENMP		1
+#ifdef _OPENMP
+#	define USE_OPENMP		1
+#else
+#	define USE_OPENMP		0
+#endif
 
 #define SUPERUSER			9773
 
