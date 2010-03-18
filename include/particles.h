@@ -326,6 +326,7 @@ class CParticleManager {
 		int InitBuffer (void);
 		bool FlushBuffer (float brightness, bool bForce = false);
 		int CloseBuffer (void);
+		void SetupParticles (int nThread);
 
 		void AdjustBrightness (CBitmap *bmP);
 

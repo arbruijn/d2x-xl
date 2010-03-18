@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef _OPENMP
+#	error _OPENMP
 #	define USE_OPENMP		1
 #else
 #	define USE_OPENMP		0
@@ -2588,6 +2589,7 @@ typedef enum {
 	rtTranspRender,
 	rtEffects,
 	rtPolyModel,
+	rtParticles,
 	rtTaskCount,
 	rtLightmap
 } tRenderTask;
@@ -3629,10 +3631,6 @@ void CheckEndian (void);
 #define EX_IO_ERROR				2
 
 //	-----------------------------------------------------------------------------------------------------------
-
-#if USE_OPENMP
-#	include "omp.h"
-#endif
 
 #endif
 

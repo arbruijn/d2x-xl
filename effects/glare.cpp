@@ -707,16 +707,18 @@ const char *glareFS =
 	"uniform float dMax;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
 	"uniform int bAdditive;\r\n" \
-	"#define ZNEAR 1.0\r\n" \
-	"#define ZFAR 5000.0\r\n" \
-	"#define LinearDepth(_z) (2.0 * ZFAR) / (ZFAR + ZNEAR - (_z) * (ZFAR - ZNEAR))\r\n" \
+	"//#define ZNEAR 1.0\r\n" \
+	"//#define ZFAR 5000.0\r\n" \
+	"//#define LinearDepth(_z) (2.0 * ZFAR) / (ZFAR + ZNEAR - (_z) * (ZFAR - ZNEAR))\r\n" \
+	"#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
 	"void main (void) {\r\n" \
-	"float texZ = LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
-	"float fragZ = LinearDepth (gl_FragCoord.z);\r\n" \
-	"float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
+	"//float texZ = LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
+	"//float fragZ = LinearDepth (gl_FragCoord.z);\r\n" \
+	"//float dz = clamp (fragZ - texZ, 0.0, dMax);\r\n" \
+	"float dz = clamp (LinearDepth (gl_FragCoord.z) - LinearDepth (texture2D (depthTex, screenScale * gl_FragCoord.xy).r), 0.0, dMax);\r\n" \
 	"dz = (dMax - dz) / dMax;\r\n" \
 	"vec4 texColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
-	"/*gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);*/\r\n" \
+	"//gl_FragColor = vec4 (texColor.rgb * gl_Color.rgb, texColor.a * gl_Color.a * dz);\r\n" \
 	"gl_FragColor = vec4 ((texColor.rgb * gl_Color.rgb) * max (1.0 - bAdditive, dz), max (bAdditive, texColor.a * gl_Color.a * dz));\r\n" \
 	"}\r\n"
 	;
@@ -724,7 +726,7 @@ const char *glareFS =
 const char *glareVS =
 	"void main (void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"gl_Position = ftransform () /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
+	"gl_Position = ftransform (); //gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
 	"gl_FrontColor = gl_Color;}\r\n"
 	;
 

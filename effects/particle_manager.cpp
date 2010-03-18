@@ -311,6 +311,18 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void CParticleManager::SetupParticles (int nThread)
+{
+int nStep = m_iBuffer / gameStates.app.nThreads;
+int nStart = nStep * nThread;
+int nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
+
+for (int i = nStart; i < nEnd; i++)
+	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
+}
+
+//------------------------------------------------------------------------------
+
 void CParticleManager::SetupRenderBuffer (void)
 {
 PROF_START
@@ -331,8 +343,9 @@ else
 		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, nThread);
 	}
 #else
-for (int i = 0; i < m_iBuffer; i++)
-	particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
+if ((m_iBuffer < 0) || !RunRenderThreads (rtParticles))
+	for (int i = 0; i < m_iBuffer; i++)
+		particleBuffer [i].particle->Setup (particleBuffer [i].fBrightness, particleBuffer [i].nFrame, particleBuffer [i].nRotFrame, particleRenderBuffer + 4 * i, 0);
 #endif
 PROF_END(ptParticles)
 }
@@ -393,7 +406,7 @@ if (InitBuffer ()) {
 		else
 #endif
 		if ((nType <= WATERFALL_PARTICLES) || (nType >= PARTICLE_TYPES)) {
-			if (!((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, m_bBufferEmissive)))
+			if (!((gameOpts->render.effects.bSoftParticles & 4) && glareRenderer.LoadShader (5, m_bBufferEmissive && (nType < PARTICLE_TYPES))))
 				shaderManager.Deploy (-1);
 			}
 		else

@@ -68,7 +68,7 @@ return nActive;
 
 int RunRenderThreads (int nTask, int nThreads)
 {
-#if 1 //USE_OPENMP
+#if USE_OPENMP
 
 return 0;
 
@@ -191,6 +191,8 @@ do {
 		}
 	else if (tiRender.nTask == rtLightmap)
 		lightmapManager.Build (nId);
+	else if (tiRender.nTask == rtParticles) 
+		particleManager.SetupParticles (nId);
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);
 #ifdef _WIN32
@@ -287,7 +289,7 @@ if (!bInitialized) {
 	memset (&tiRender, 0, sizeof (tiRender));
 	bInitialized = true;
 	}
-#if 0 //!USE_OPENMP
+#if !USE_OPENMP
 for (int i = 0; i < gameStates.app.nThreads; i++) {
 	if (!tiRender.ti [i].pThread) {
 		tiRender.ti [i].bDone =
