@@ -122,9 +122,14 @@ return 0; //kill
 uint CShrapnelCloud::Update (void)
 {
 	int i;
-#pragma omp parallel
+
+#if USE_OPENMP > 1
+#	pragma omp parallel
+#endif
 	{
-	#pragma omp for 
+#if USE_OPENMP > 1
+#	pragma omp for 
+#endif
 	for (i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Update ();
 	}
@@ -144,9 +149,13 @@ return 0;
 void CShrapnelCloud::Draw (void)
 {
 if (LoadExplBlast ())
-#pragma omp parallel
+#if USE_OPENMP > 1
+#	pragma omp parallel
+#endif
 	{
-	#pragma omp for
+#if USE_OPENMP > 1
+#	pragma omp for
+#endif
 	for (int i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Draw ();
 	}
@@ -174,9 +183,13 @@ if (!CStack<CShrapnel>::Create (h))
 if (!Grow (h))
 	return 0;
 fScale = 7.0f / fScale;
-#pragma omp parallel
+#if USE_OPENMP > 1
+#	pragma omp parallel
+#endif
 	{
-	#pragma omp for 
+#if USE_OPENMP > 1
+#	pragma omp for 
+#endif
 	for (i = 0; i < h; i++) {
 		m_data.buffer [i].Create (parentObjP, objP, fScale);
 		}
@@ -192,9 +205,13 @@ return 1;
 
 void CShrapnelCloud::Destroy (void)
 {
-#pragma omp parallel
+#if USE_OPENMP > 1
+#	pragma omp parallel
+#endif
 	{
-	#pragma omp for 
+#if USE_OPENMP > 1
+#	pragma omp for 
+#endif
 	for (int i = 0; i < int (m_tos); i++)
 		m_data.buffer [i].Destroy ();
 	}

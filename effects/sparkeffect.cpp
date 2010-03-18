@@ -150,9 +150,13 @@ if (gameData.render.mine.bVisible [m_nSegment] == gameData.render.mine.nVisible)
 void CSparks::Update (void)
 {
 if (m_bUpdate) {
-	#pragma omp parallel
+#if USE_OPENMP > 1
+#	pragma omp parallel
+#endif
 		{
-		#pragma omp for
+#if USE_OPENMP > 1
+#		pragma omp for
+#endif
 		for (int i = 0; i < m_nMaxSparks; i++)
 			m_sparks [i].Update ();
 		}

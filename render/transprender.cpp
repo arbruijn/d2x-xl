@@ -171,7 +171,9 @@ if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
-#pragma omp critical
+#if USE_OPENMP > 1
+#	pragma omp critical
+#endif
 	{
 	--m_data.nFreeItems;
 	if (!m_data.freeList.head)

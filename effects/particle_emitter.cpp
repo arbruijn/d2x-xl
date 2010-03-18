@@ -224,7 +224,7 @@ if ((nThread < 0) && RunEmitterThread (emitterP, nCurTime, rtUpdateParticles)) {
 else
 #endif
  {
-		int				t, h, i, j, bSkip, nNewParts = 0;
+		int				t, h, i, j, nNewParts = 0;
 		float				fDist;
 		float				fBrightness = Brightness ();
 		CFixMatrix		mOrient = m_mOrient;
@@ -239,12 +239,8 @@ else
 #endif
 	nPartSeg [nThread] = -1;
 	
-	//#pragma omp parallel
-		{
-		//#pragma omp for
-		for (i = 0; i < m_nParts; i++)
-			m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime, fBrightness, nThread);
-		}
+	for (i = 0; i < m_nParts; i++)
+		m_particles [(m_nFirstPart + i) % m_nPartLimit].Update (nCurTime, fBrightness, nThread);
 			
 	for (i = 0, j = m_nFirstPart; i < m_nParts; i++) {
 		if (m_particles [j].m_nLife <= 0) {
@@ -286,22 +282,15 @@ else
 				vDeltaf [Z] /= (float) h;
 				}
 			j = (m_nFirstPart + m_nParts) % m_nPartLimit;
-			bSkip = 0;
-			//#pragma omp parallel
-				{
-				//#pragma omp for private(vPos) reduction(+: nNewParts)
-				for (i = 0; i < h; i++) {
-					if (bSkip)
-						continue;
-					vPos.Assign (vPosf + vDeltaf * float (i));
-					if (m_particles [(j + i) % m_nPartLimit].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
-																					 m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
-																					 nCurTime, m_bBlowUpParts, m_nFadeType, fBrightness, vEmittingFace)) {
-						nNewParts++;
-						}
-					if (/*(m_nType == LIGHT_PARTICLES) ||*/ (m_nType == BULLET_PARTICLES))
-						bSkip = 1;
+			for (i = 0; i < h; i++) {
+				vPos.Assign (vPosf + vDeltaf * float (i));
+				if (m_particles [(j + i) % m_nPartLimit].Create (&vPos, vDir, &mOrient, m_nSegment, m_nLife,
+																				 m_nSpeed, m_nType, m_nClass, m_fScale, m_bHaveColor ? &m_color : NULL,
+																				 nCurTime, m_bBlowUpParts, m_nFadeType, fBrightness, vEmittingFace)) {
+					nNewParts++;
 					}
+				if ((m_nType == BULLET_PARTICLES))
+					break;
 				}
 			m_nParts += nNewParts;
 			}

@@ -210,7 +210,9 @@ if (!(EGI_FLAG (bUseParticleSystem, 0, 1, 0)))
 else
 #endif
 CParticleSystem *systemP;
-#pragma omp critical
+#if USE_OPENMP > 1
+#	pragma omp critical
+#endif
 {
 if (!particleImageManager.Load (nType))
 	systemP = NULL;

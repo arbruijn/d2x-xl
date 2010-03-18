@@ -727,7 +727,7 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 			}
 	}
 #else
-	if (!RunRenderThreads (rtStaticVertLight))
+	//if (!RunRenderThreads (rtStaticVertLight))
 		lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices, 0);
 #endif
 	pf = gameData.render.color.ambient.Buffer ();

@@ -1006,7 +1006,9 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 ubyte BumpVisitedFlag (void)
 {
-#pragma omp critical
+#if USE_OPENMP > 1
+#	pragma omp critical
+#endif
 	{
 	if (!++gameData.render.mine.nVisited) {
 		gameData.render.mine.bVisited.Clear (0);
@@ -1020,7 +1022,9 @@ return gameData.render.mine.nVisited;
 
 ubyte BumpProcessedFlag (void)
 {
-#pragma omp critical
+#if USE_OPENMP > 1
+#	pragma omp critical
+#endif
 	{
 	if (!++gameData.render.mine.nProcessed) {
 		gameData.render.mine.bProcessed.Clear (0);
@@ -1034,7 +1038,9 @@ return gameData.render.mine.nProcessed;
 
 ubyte BumpVisibleFlag (void)
 {
-#pragma omp critical
+#if USE_OPENMP > 1
+#	pragma omp critical
+#endif
 	{
 	if (!++gameData.render.mine.nVisible) {
 		gameData.render.mine.bVisible.Clear (0);

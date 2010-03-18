@@ -544,7 +544,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	memset (m_data.texColor, 0, LM_W * LM_H * sizeof (tRgbColorb));
 #if USE_OPENMP
 	GetNumThreads ();
-	#pragma omp parallel
+#	pragma omp parallel
 		{
 		#pragma omp for
 		for (i = 0; i < gameStates.app.nThreads; i++)
