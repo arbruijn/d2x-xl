@@ -82,8 +82,10 @@ void CLightningNode::Animate (bool bInit, short nSegment, int nDepth, int nThrea
 {
 if (bInit)
 	m_vPos = m_vNewPos;
+#if 0
 else
 	m_vPos += m_vOffs;
+#endif
 if (m_child) {
 	m_child->Move (nDepth + 1, &m_vPos, nSegment, 0, 0, nThread);
 	m_child->Animate (nDepth + 1, nThread);
@@ -108,7 +110,7 @@ int CLightningNode::Clamp (CFixVector *vPos, CFixVector *vBase, int nAmplitude)
 if (nDist < nAmplitude)
 	return nDist;
 *vPos -= vRoot;	//create vector from intersection to current path point
-*vPos *= FixDiv(nAmplitude, nDist);	//scale down to length nAmplitude
+*vPos *= FixDiv (nAmplitude, nDist);	//scale down to length nAmplitude
 *vPos += vRoot;	//recalculate path point
 return nAmplitude;
 }
@@ -133,22 +135,18 @@ return nDist;
 
 //------------------------------------------------------------------------------
 
-CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist)
+CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist, int nAmplitude)
 {
 	CFixVector	va = *vAttract;
-	int			nDot, i = 0;
+	int			nDot, nMinDot = I2X (nAmplitude) / 45;
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
 CFixVector::Normalize (va);
-if (!(va [X] && va [Y] && va [Z]))
-	i = 0;
 do {
 	VmRandomVector (vOffs);
 	nDot = CFixVector::Dot (va, *vOffs);
-	if (++i > 100)
-		i = 0;
-	} while (abs (nDot) < I2X (1) / 42);
+	} while (abs (nDot) < nMinDot);
 if (nDot < 0)
 	vOffs->Neg ();
 return vOffs;
@@ -180,10 +178,10 @@ CFixVector *CLightningNode::Attract (CFixVector *vOffs, CFixVector *vAttract, CF
 {
 	int nMag = vOffs->Mag ();
 // attract offset vector by scaling it with distance from attracting node
-*vOffs *= FixDiv(i * nDist / 2, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
+*vOffs *= FixDiv (i * nDist / 2, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
 *vOffs += *vAttract;	//add offset and attractor vectors (attractor is the bigger the closer)
 nMag = vOffs->Mag ();
-*vOffs *= FixDiv(bJoinPaths ? nDist / 2 : nDist, nMag);	//rescale to desired path length
+*vOffs *= FixDiv (bJoinPaths ? nDist / 2 : nDist, nMag);	//rescale to desired path length
 *vPos += *vOffs;
 return vPos;
 }
@@ -196,12 +194,13 @@ CFixVector CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFi
 	CFixVector	vAttract, vOffs;
 	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
 
-Create (&vOffs, &vAttract, nDist);
+Create (&vOffs, &vAttract, nDist, nAmplitude);
+vOffs *= nAmplitude;
 if (vPrevOffs)
 	Smoothe (&vOffs, vPrevOffs, nDist, nSmoothe);
-else if (m_vOffs [X] || m_vOffs [Z] || m_vOffs [Z]) {
+else if (!m_vOffs.IsZero ()) {
 	vOffs += m_vOffs * (I2X (2));
-	vOffs /= 3;
+	vOffs /= I2X (3);
 	}
 if (nDist > I2X (1) / 16)
 	Attract (&vOffs, &vAttract, vPos, nDist, i, 0);
@@ -259,12 +258,12 @@ return m_vOffs;
 
 CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, int *nSeed, double phi, double i)
 {
-double dx = PerlinNoise1D (i, 0.33, 6, nSeed [0]);
-double dy = PerlinNoise1D (i, 0.33, 6, nSeed [1]);
-phi = sin (phi * Pi);
-phi = sqrt (phi);
-dx *= nAmplitude * phi;
-dy *= nAmplitude * phi;
+double persistance = 1.0 / sqrt (double (nAmplitude));
+double dx = perlin.PerlinNoise1D (i, persistance, 6);
+double dy = perlin.PerlinNoise1D (i, persistance, 6);
+phi = sqrt (sin (phi * Pi)) * nAmplitude;
+dx *= phi;
+dy *= phi;
 m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
 m_vNewPos += m_vDelta [1] * int (dy);
 m_vOffs = m_vNewPos - m_vPos;

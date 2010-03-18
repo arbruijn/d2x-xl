@@ -25,7 +25,7 @@ class CLightningNode : public tLightningNode {
 	public:
 		CLightningNode () { m_child = NULL; };
 		~CLightningNode () { Destroy (); };
-		CFixVector *Create (CFixVector *vOffs, CFixVector *vAttract, int nDist);
+		CFixVector *Create (CFixVector *vOffs, CFixVector *vAttract, int nDist, int nAmplitude);
 		void Destroy (void);
 		void Setup (bool bInit, CFixVector *vPos, CFixVector *vDelta);
 		void Animate (bool bInit, short nSegment, int nDepth, int nThread);
