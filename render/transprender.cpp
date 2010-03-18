@@ -173,6 +173,8 @@ pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 #if USE_OPENMP > 1
 #	pragma omp critical
+#elif !USE_OPENMP
+SDL_mutexP (tiRender.semaphore);
 #endif
 	{
 	--m_data.nFreeItems;
@@ -220,6 +222,13 @@ pd = m_data.depthBuffer + nOffset;
 	if (m_data.nMaxOffs < nOffset)
 		m_data.nMaxOffs = nOffset;
 	}
+#if !USE_OPENMP
+SDL_mutexV (tiRender.semaphore);
+#endif
+#if !USE_OPENMP
+SDL_mutexV (tiRender.semaphore);
+#endif
+
 return m_data.nFreeItems;
 #else
 return 0;
