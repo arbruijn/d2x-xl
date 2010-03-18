@@ -670,7 +670,7 @@ if (LoadImage (bmP, 0, 0, 0, item->nWrap)) {
 		glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 	ogl.SetBlendMode (item->bAdditive);
-	if (!(bSoftBlend && glareRenderer.LoadShader (5, item->bAdditive)))
+	if (!(bSoftBlend && glareRenderer.LoadShader (5, item->bAdditive != 0)))
 		shaderManager.Deploy (-1);
 	ogl.SetupTransform (0);
 	OglDrawArrays (item->nPrimitive, 0, item->nVertices);
