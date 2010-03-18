@@ -82,10 +82,8 @@ void CLightningNode::Animate (bool bInit, short nSegment, int nDepth, int nThrea
 {
 if (bInit)
 	m_vPos = m_vNewPos;
-#if 0
 else
 	m_vPos += m_vOffs;
-#endif
 if (m_child) {
 	m_child->Move (nDepth + 1, &m_vPos, nSegment, 0, 0, nThread);
 	m_child->Animate (nDepth + 1, nThread);
@@ -256,18 +254,18 @@ return m_vOffs;
 // at the intended start and end points and then have increasing amplitude as 
 // moving out from them.
 
-CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi)
+CFixVector CLightningNode::CreatePerlin (int nSteps, double amplitude, double phi)
 {
-double persistance = 1.0 / sqrt (double (X2D (nAmplitude)));
-double dx = perlin.PerlinNoise1D (phi, persistance, 6);
-double dy = perlin.PerlinNoise1D (phi, persistance, 6);
-#if 0
-phi = sqrt (sin (phi * Pi)) * nAmplitude;
+double persistence = 0.3333333; //1.0 / sqrt (a);
+double dx = perlin.PerlinNoise1D (phi * amplitude, persistence, 6);
+double dy = perlin.PerlinNoise1D (phi * amplitude, persistence, 6);
+#if 1
+phi = sqrt (sin (phi * Pi)) * amplitude * amplitude;
 dx *= phi;
 dy *= phi;
 #endif
-m_vNewPos = m_vBase + m_vDelta [0] * (int (dx * nAmplitude));
-m_vNewPos += m_vDelta [1] * (int (dy * nAmplitude));
+m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
+m_vNewPos += m_vDelta [1] * int (dy);
 m_vOffs = m_vNewPos - m_vPos;
 m_vOffs *= (I2X (1) / nSteps);
 return m_vOffs;
