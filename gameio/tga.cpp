@@ -200,6 +200,7 @@ else {
 				nAlpha++;
 				}
 			a = float (p->alpha) / 255.0f;
+			nVisible += a;
 			avgColor.red += float (p->red) * a;
 			avgColor.green += float (p->green) * a;
 			avgColor.blue += float (p->blue) * a;
