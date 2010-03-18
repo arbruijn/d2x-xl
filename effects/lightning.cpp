@@ -393,9 +393,10 @@ else {
 	plh->m_vNewPos = plh->m_vPos;
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
+		double h = double (m_nNodes - 1);
 		nAmplitude = 5 * nAmplitude / 4;
-		for (h = m_nNodes, i = 0, plh = m_nodes.Buffer (); i < h; i++, plh++) {
-			phi = bClamp ? double (i) / double (h - 1) : 1;
+		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++) {
+			phi = bClamp ? double (i) / h : 1;
 			plh->CreatePerlin (nSteps, nAmplitude, nSeed, phi, phi * 10);
 			}
 		}
