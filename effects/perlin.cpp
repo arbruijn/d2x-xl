@@ -136,7 +136,7 @@ return total;
 
 bool CPerlin::Setup (int nOctaves, int nDimensions)
 {
-m_nNodes = 1 << (nOctaves - 1);
+m_nNodes = 1 << nOctaves;
 m_nNodes += 2;
 m_nNodes *= nDimensions;
 if (m_noise.Buffer () && (int (m_noise.Length ()) < m_nNodes))

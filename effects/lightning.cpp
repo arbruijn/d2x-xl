@@ -333,7 +333,6 @@ void CLightning::CreatePath (int bSeed, int nDepth)
 	CLightningNode*	plh, * nodeP [2];
 	int					h, i, j, nSteps, nStyle, nSmoothe, bClamp, bInPlane, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
 	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
-	double				phi;
 
 	static int	nSeed [2];
 
@@ -362,10 +361,10 @@ if ((nDepth > 1) || m_bRandom) {
 	if (nStyle == 2) {
 		if (nDepth > 1)
 			nAmplitude *= 4;
+		double h = double (m_nNodes - 1);
 		perlin.Setup (6, 1);
 		for (i = 0; i < m_nNodes; i++) {
-			phi = bClamp ? double (i) / double (m_nNodes - 1) : 1;
-			m_nodes [i].CreatePerlin (nSteps, nAmplitude, phi);
+			m_nodes [i].CreatePerlin (nSteps, nAmplitude, double (i) / h);
 			}
 		}
 	else {
@@ -394,8 +393,7 @@ else {
 		nAmplitude = 5 * nAmplitude / 4;
 		perlin.Setup (6, 1);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++) {
-			phi = bClamp ? double (i) / h : 1;
-			plh->CreatePerlin (nSteps, nAmplitude, phi);
+			plh->CreatePerlin (nSteps, nAmplitude, double (i) / h);
 			}
 		}
 	else {
