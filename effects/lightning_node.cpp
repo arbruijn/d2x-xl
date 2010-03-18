@@ -30,8 +30,6 @@
 
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
 bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 											 int nLife, int nLength, int nAmplitude,
 											 char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
@@ -136,7 +134,7 @@ return nDist;
 CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist, int nAmplitude)
 {
 	CFixVector	va = *vAttract;
-	int			nDot, nMinDot = I2X (nAmplitude) / 45;
+	int			nDot, nMinDot = I2X (1) / 42;
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
@@ -256,8 +254,8 @@ return m_vOffs;
 
 CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi)
 {
-double dx = perlinX.PerlinNoise1D (phi * 2.0, 0.6, 6);
-double dy = perlinY.PerlinNoise1D (phi * 2.0, 0.6, 6);
+double dx = perlinX.PerlinNoise1D (phi * 4.0, 0.6, 6);
+double dy = perlinY.PerlinNoise1D (phi * 4.0, 0.6, 6);
 #if 1
 phi = sqrt (sin (phi * Pi)) * nAmplitude;
 dx *= phi;
