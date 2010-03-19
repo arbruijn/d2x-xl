@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "maths.h"
 #include "perlin.h"
 
 static long randSeed = 0;
@@ -11,16 +12,32 @@ CPerlin perlinX, perlinY;
 
 #define RAND_HALF	((double (RAND_MAX) + 1) / 2)
 
-double CPerlin::Random (void)
+#if CUSTOM_RAND
+
+inline double CPerlin::Random (int x)
+{
+x = (x << 13) ^ x;
+return 1.0 - ((x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
+}
+
+#else
+
+inline double CPerlin::Random (void)
 {
 return (double (rand ()) - RAND_HALF) / RAND_HALF;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise1D (double x)
+inline double CPerlin::Noise1D (int x)
 {
-return m_noise [int (x) + 1];
+#if CUSTOM_RAND
+return Random (x);
+#else
+return m_noise [x + 1];
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -34,8 +51,7 @@ return a * (1.0 - x) + b * x;
 
 double CPerlin::CosineInterpolate (double a, double b, double x)
 {
-double ft = x * 3.1415927;	//Pi
-double f = (1.0 - cos (ft)) * 0.5;
+double f = (1.0 - cos (x * Pi)) * 0.5;
 return  a * (1.0 - f) + b * f;
 }
 
@@ -43,22 +59,22 @@ return  a * (1.0 - f) + b * f;
 
 double CPerlin::CubicInterpolate (double v0, double v1, double v2, double v3, double x)
 {
+#if DBG
 double p = (v3 - v2) - (v0 - v1);
 double q = (v0 - v1) - p;
 double r = v2 - v0;
-double bObjectRendered = v1;
-double h = x;
-bObjectRendered += r * h;
-h *= x;
-bObjectRendered += q * h;
-h *= x;
-bObjectRendered += p * h;
-return bObjectRendered;
+double x2 = x * x;
+return v1 + r * x + q * x2 + p * x2 * x;
+#else
+double p = (v3 - v2) - (v0 - v1);
+double x2 = x * x;
+return v1 + (v2 - v0) * x + (v0 - v1 - p) * x2 + p * x2 * x;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise1D (double x)
+double CPerlin::SmoothedNoise1D (int x)
 {
 return Noise1D (x) / 2  +  Noise1D (x-1) / 4  +  Noise1D (x+1) / 4;
 }
@@ -67,10 +83,10 @@ return Noise1D (x) / 2  +  Noise1D (x-1) / 4  +  Noise1D (x+1) / 4;
 
 double CPerlin::InterpolatedNoise1D (double x)
 {
-double xInt, xFrac = modf (x, &xInt);
+int xInt = int (x);
 double v1 = SmoothedNoise1D (xInt);
 double v2 = SmoothedNoise1D (xInt + 1);
-return CosineInterpolate (v1, v2, xFrac);
+return CosineInterpolate (v1, v2, x - xInt);
 }
 
 //------------------------------------------------------------------------------
@@ -88,14 +104,14 @@ return total;
 
 //------------------------------------------------------------------------------
 
-double CPerlin::Noise2D (double x, double y)
+double CPerlin::Noise2D (int x, int y)
 {
 return (Noise1D (x) + Noise1D (y)) / 2.0;
 }
 
 //------------------------------------------------------------------------------
 
-double CPerlin::SmoothedNoise2D (double x, double y)
+double CPerlin::SmoothedNoise2D (int x, int y)
 {
 double corners = (Noise2D (x-1, y-1) + Noise2D (x+1, y-1) + Noise2D (x-1, y+1) + Noise2D (x+1, y+1)) / 16;
 double sides = (Noise2D (x-1, y) + Noise2D (x+1, y) + Noise2D (x, y-1) + Noise2D (x, y+1)) / 8;
@@ -107,13 +123,20 @@ return corners + sides + center;
 
 double CPerlin::InterpolatedNoise2D (double x, double y)
 {
+#if 1
+int xInt = int (x);
+double xFrac = x - xInt;
+int yInt = int (y);
+double yFrac = y - yInt;
+#else
 double xInt, yInt,
 		 xFrac = modf (x, &xInt),
 		 yFrac = modf (x, &yInt);
-double v1 = SmoothedNoise2D ((long) xInt, (long) yInt);
-double v2 = SmoothedNoise2D ((long) xInt+1, (long) yInt);
-double v3 = SmoothedNoise2D ((long) xInt, (long) yInt+1);
-double v4 = SmoothedNoise2D ((long) xInt+1, (long) yInt+1);
+#endif
+double v1 = SmoothedNoise2D (xInt, yInt);
+double v2 = SmoothedNoise2D (xInt+1, yInt);
+double v3 = SmoothedNoise2D (xInt, yInt+1);
+double v4 = SmoothedNoise2D (xInt+1, yInt+1);
 double i1 = CosineInterpolate (v1, v2, xFrac);
 double i2 = CosineInterpolate (v3, v4, xFrac);
 return CosineInterpolate (i1, i2, yFrac);
@@ -136,6 +159,7 @@ return total;
 
 bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
 {
+#if !CUSTOM_RAND
 m_nNodes = nNodes << nOctaves;
 m_nNodes += 2;
 m_nNodes *= nDimensions;
@@ -145,6 +169,7 @@ if (!(m_noise.Buffer () || m_noise.Create (m_nNodes)))
 	return false;
 for (int i = 0; i < m_nNodes; i++)
 	m_noise [i] = Random ();
+#endif
 return true;
 }
 
