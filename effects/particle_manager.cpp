@@ -369,26 +369,25 @@ if ((nType < 0) && !bForce)
 
 #if ENABLE_FLUSH
 PROF_START
-CBitmap* bmP = ParticleImageInfo (nType % PARTICLE_TYPES).bmP;
-if (!bmP) {
-	PROF_END(ptParticles)
-	return false;
-	}
-
-ogl.SelectTMU (GL_TEXTURE0, true);
-ogl.SetTexturing (true);
-if (bmP->CurFrame ())
-	bmP = bmP->CurFrame ();
-if (bmP->Bind (0)) {
-	PROF_END(ptParticles)
-	return false;
-	}
+if (InitBuffer ()) {
+	CBitmap* bmP = ParticleImageInfo (nType % PARTICLE_TYPES).bmP;
+	if (!bmP) {
+		PROF_END(ptParticles)
+		return false;
+		}
+	if (bmP->CurFrame ())
+		bmP = bmP->CurFrame ();
+	if (bmP->Bind (0)) {
+		PROF_END(ptParticles)
+		return false;
+		}
 
 #if LAZY_RENDER_SETUP
-SetupRenderBuffer ();
+	SetupRenderBuffer ();
 #endif
 
-if (InitBuffer ()) {
+	ogl.SetBlendMode ((nType < PARTICLE_TYPES) ? m_bBufferEmissive : -1);
+
 	if (ogl.m_states.bShadersOk) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 		if (nType <= SMOKE_PARTICLES) {
@@ -408,7 +407,6 @@ if (InitBuffer ()) {
 		else
 			shaderManager.Deploy (-1);
 		}
-	ogl.SetBlendMode ((nType < PARTICLE_TYPES) ? m_bBufferEmissive : -1);
 	glNormal3f (0, 0, -1);
 #if 1
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);

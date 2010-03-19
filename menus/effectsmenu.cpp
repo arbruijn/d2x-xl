@@ -300,8 +300,11 @@ do {
 
 SetDebrisCollisions ();
 DefaultEffectSettings ();
-if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks && gameStates.app.bGameRunning && !sparkManager.HaveSparks ())
-	sparkManager.Setup ();
+if (gameStates.app.bGameRunning) {
+	particleImageManager.LoadAll ();
+	if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks &&  !sparkManager.HaveSparks ())
+		sparkManager.Setup ();
+	}
 }
 
 //------------------------------------------------------------------------------
