@@ -668,13 +668,13 @@ if (shaderManager.Rebuild (m_shaderProg)) {
 	glUniform1i (glGetUniformLocation (m_shaderProg, "depthTex"), 1);
 	glUniform2fv (glGetUniformLocation (m_shaderProg, "screenScale"), 1, reinterpret_cast<GLfloat*> (&ogl.m_data.screenScale));
 	glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
-	glUniform1i (glGetUniformLocation (m_shaderProg, "nBlendMode"), (GLint) nBlendMode);
+	glUniform1i (glGetUniformLocation (m_shaderProg, "blendMode"), (GLint) nBlendMode);
 	}
 else {
 	if (dMaxPrev != dMax)
 		glUniform1f (glGetUniformLocation (m_shaderProg, "dMax"), (GLfloat) dMax);
 	if (nBlendPrev != nBlendMode)
-		glUniform1i (glGetUniformLocation (m_shaderProg, "nBlendMode"), (GLint) nBlendMode);
+		glUniform1i (glGetUniformLocation (m_shaderProg, "blendMode"), (GLint) nBlendMode);
 	}
 dMaxPrev = dMax;
 nBlendPrev = nBlendMode;
