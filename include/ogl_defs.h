@@ -54,7 +54,7 @@
 #		include <glext.h>
 #		include <wglext.h>
 #	else
-#		include <GL/glext.h>
+#		include <GL/glew.h>
 #		include <GL/glx.h>
 #		include <GL/glxext.h>
 #	endif

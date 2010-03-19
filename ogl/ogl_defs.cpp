@@ -255,6 +255,9 @@ else
 void COGL::SetupExtensions (void)
 {
 pszOglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
+#ifdef __unix__
+glewInit ();
+#endif
 SetupMultiTexturing ();
 SetupShaders ();
 SetupOcclusionQuery ();

@@ -43,25 +43,6 @@
 #include "renderthreads.h"
 #include "automap.h"
 
-#ifdef __macosx__
-#	include <OpenGL/gl.h>
-#	include <OpenGL/glu.h>
-#	include <OpenGL/glext.h>
-#else
-#	include <GL/gl.h>
-#	include <GL/glu.h>
-#	ifdef _WIN32
-#		include <glext.h>
-#		include <wglext.h>
-#	else
-#		include <GL/glext.h>
-#		include <GL/glx.h>
-#		include <GL/glxext.h>
-#	endif
-#endif
-
-//------------------------------------------------------------------------------
-
 //	-----------------------------------------------------------------------------
 
 char CParticleEmitter::ObjectClass (int nObject)
