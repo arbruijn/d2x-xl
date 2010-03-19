@@ -1286,7 +1286,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 
 	bShowName = (nState ||
 					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) ||
-					 (bShowTeamNames && GetTeam (nPlayer) == nTeam));
+					 (!IsCoopGame && (bShowTeamNames && GetTeam (nPlayer) == nTeam)));
 	bHasFlag = (gameData.multiplayer.players [nPlayer].connected && (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG));
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
