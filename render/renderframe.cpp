@@ -372,22 +372,18 @@ else {
 	int i = ogl.Enhance3D ();
 	if (i < 0)
 		Draw2DFrameElements ();
-	cockpit->DrawReticle (0, (i <= 0) ? 0 : xStereoSeparation);
 	if (i) {
 		if (xStereoSeparation > 0)
 			ogl.SwapBuffers (0, 0);
 		}
 	else {
 		if (xStereoSeparation < 0) {
-			glFlush ();
+			//glFlush ();
 			ogl.ColorMask (1,1,1,1,0);
-//			glAccum (GL_LOAD, 1.0); 
 			}
 		else {
-			glFlush ();
+			//glFlush ();
 			ogl.ColorMask (1,1,1,1,0);
-//			glAccum (GL_ACCUM, 1.0); 
-//			glAccum (GL_RETURN, 1.0);
 			Draw2DFrameElements ();
 			ogl.SwapBuffers (0, 0);
 			}

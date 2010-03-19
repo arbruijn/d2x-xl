@@ -1152,9 +1152,11 @@ if (bStencil) {
 void COGL::GenTextures (GLsizei n, GLuint *hTextures)
 {
 glGenTextures (n, hTextures);
+#if 0
 if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 	 (hTextures != &DrawBuffer ()->ColorBuffer ()))
 	DestroyDrawBuffers ();
+#endif
 }
 
 //------------------------------------------------------------------------------
