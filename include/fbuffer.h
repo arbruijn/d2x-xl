@@ -28,7 +28,7 @@ typedef struct tFrameBuffer {
 } tFrameBuffer;
 
 #ifdef _WIN32
-extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
+extern PFNGLDRAWBUFFERSPROC glDrawBuffersARB;
 extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
 extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
 extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;
@@ -82,7 +82,7 @@ class CFBO {
 			m_info.nBufferCount = nLast - nFirst + 1;
 			return nFirst;
 			}
-		inline void SetDrawBuffers (void) { glDrawBuffers (BufferCount (), BufferIds ()); }
+		inline void SetDrawBuffers (void) { glDrawBuffersARB (BufferCount (), BufferIds ()); }
 
 		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }
