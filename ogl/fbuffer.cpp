@@ -56,9 +56,6 @@ PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
 PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
-#	else
-#		define glDrawBuffers glDrawBuffersARB
-#	endif
 #endif
 
 //------------------------------------------------------------------------------

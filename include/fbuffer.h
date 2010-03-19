@@ -5,6 +5,8 @@
 #ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
+#else
+#	include "ogl_defs.h"
 #endif
 
 #if RENDER2TEXTURE == 2
@@ -46,6 +48,8 @@ extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
 extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
+#else
+#	define glDrawBuffers glDrawBuffersARB
 #endif
 
 class CFBO {
