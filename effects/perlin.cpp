@@ -24,7 +24,6 @@ return 1.0 - ((x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 107374
 
 inline double CPerlin::Random (void)
 {
-rand ();
 return (double (rand ()) - RAND_HALF) / RAND_HALF;
 }
 

@@ -250,12 +250,12 @@ return m_vOffs;
 // at the intended start and end points and then have increasing amplitude as 
 // moving out from them.
 
-CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi)
+CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi, int i)
 {
 	static double dx0, dy0;
 
-double dx = perlinX.PerlinNoise1D (phi * 1.0, 0.6, 6);
-double dy = perlinY.PerlinNoise1D (phi * 1.0, 0.6, 6);
+double dx = perlinX.PerlinNoise1D (double (i), 0.6, 6);
+double dy = perlinY.PerlinNoise1D (double (i), 0.6, 6);
 #if 0
 if (phi == 0.0f) {
 	dx0 = dx;

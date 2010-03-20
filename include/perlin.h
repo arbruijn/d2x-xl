@@ -3,7 +3,7 @@
 
 #include "carray.h"
 
-#define CUSTOM_RAND 1
+#define CUSTOM_RAND 0
 
 class CPerlin {
 	private:
