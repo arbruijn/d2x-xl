@@ -134,7 +134,7 @@ return nDist;
 CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist, int nAmplitude)
 {
 	CFixVector	va = *vAttract;
-	int			nDot, nMinDot = nAmplitude / 45;
+	int			nDot, nMinDot = I2X (1) / 45 + I2X (1) / 2 - FixDiv (I2X (1) / 2, nAmplitude);
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
@@ -191,20 +191,18 @@ CFixVector CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFi
 	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
 
 Create (&vOffs, &vAttract, nDist, nAmplitude);
-vOffs *= nAmplitude;
-if (vPrevOffs)
-	Smoothe (&vOffs, vPrevOffs, nDist, nSmoothe);
-else if (!m_vOffs.IsZero ()) {
-	vOffs += m_vOffs * I2X (2);
-	//vOffs /= I2X (3);
-	}
-if (nDist > I2X (1) / 16)
-	Attract (&vOffs, &vAttract, vPos, nDist, i, 0);
+if (!vPrevOffs)
+	vPrevOffs = &m_vOffs;
+if (!vPrevOffs->IsZero ())
+	vOffs = CFixVector::Avg (vOffs, *vPrevOffs);
+vOffs *= nDist;
+vOffs += vAttract;
+CFixVector::Normalize (vOffs);
 if (bClamp)
 	Clamp (vPos, vBase, nAmplitude);
-m_vNewPos = *vPos;
+m_vNewPos = *vPos + vOffs * nDist;
 m_vOffs = m_vNewPos - m_vPos;
-m_vOffs *= (I2X (1) / nSteps);
+//m_vOffs *= (I2X (1) / nSteps);
 return vOffs;
 }
 
@@ -254,10 +252,20 @@ return m_vOffs;
 
 CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi)
 {
-double dx = perlinX.PerlinNoise1D (phi * 4.0, 0.6, 6);
-double dy = perlinY.PerlinNoise1D (phi * 4.0, 0.6, 6);
+	static double dx0, dy0;
+
+double dx = perlinX.PerlinNoise1D (phi * 1.0, 0.6, 6);
+double dy = perlinY.PerlinNoise1D (phi * 1.0, 0.6, 6);
+#if 0
+if (phi == 0.0f) {
+	dx0 = dx;
+	dy0 = dy;
+	}
+dx -= dx0;
+dy -= dy0;
+#endif
 #if 1
-phi = sqrt (sin (phi * Pi)) * nAmplitude;
+phi = pow (sin (phi * Pi), 0.3333333) * nAmplitude;
 dx *= phi;
 dy *= phi;
 #endif

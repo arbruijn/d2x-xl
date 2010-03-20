@@ -12,7 +12,6 @@
 #endif
 
 #include "descent.h"
-#include "perlin.h"
 #include "gameseg.h"
 
 #include "objsmoke.h"

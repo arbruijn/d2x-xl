@@ -351,7 +351,7 @@ if (bSeed) {
 else
 	bSeed = 0;
 #endif
-nStyle = STYLE;
+nStyle = 2; //STYLE;
 nSteps = m_nSteps;
 nSmoothe = m_nSmoothe;
 bClamp = m_bClamp;

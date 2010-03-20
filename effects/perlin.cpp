@@ -24,6 +24,7 @@ return 1.0 - ((x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 107374
 
 inline double CPerlin::Random (void)
 {
+rand ();
 return (double (rand ()) - RAND_HALF) / RAND_HALF;
 }
 
@@ -33,7 +34,7 @@ return (double (rand ()) - RAND_HALF) / RAND_HALF;
 
 inline double CPerlin::Noise1D (int x)
 {
-#if CUSTOM_RAND
+#if CUSTOM_RAND > 1
 return Random (x);
 #else
 return m_noise [x + 1];
@@ -159,7 +160,7 @@ return total;
 
 bool CPerlin::Setup (int nNodes, int nOctaves, int nDimensions)
 {
-#if !CUSTOM_RAND
+#if CUSTOM_RAND < 2
 m_nNodes = nNodes << nOctaves;
 m_nNodes += 2;
 m_nNodes *= nDimensions;
@@ -167,8 +168,14 @@ if (m_noise.Buffer () && (int (m_noise.Length ()) < m_nNodes))
 	m_noise.Destroy ();
 if (!(m_noise.Buffer () || m_noise.Create (m_nNodes)))
 	return false;
-for (int i = 0; i < m_nNodes; i++)
+#	if CUSTOM_RAND
+int x = rand ();
+for (int i = 0; i < m_nNodes + 1; i++, x++) 
+	m_noise [i] = Random (x);
+#	else
+for (int i = 0; i < m_nNodes + 1; i++) 
 	m_noise [i] = Random ();
+#	endif
 #endif
 return true;
 }

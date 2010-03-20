@@ -12,7 +12,6 @@
 #endif
 
 #include "descent.h"
-#include "perlin.h"
 #include "gameseg.h"
 
 #include "objsmoke.h"
@@ -176,7 +175,7 @@ else {
 #endif
 	handleP->nLightning =
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
-										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (10), 0, 0, 250, 0, 1, 3, 1, 1,
+										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (5), 0, 0, 250, 0, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else
