@@ -113,19 +113,19 @@ return nAmplitude;
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Clamp (CFloatVector &v0, CFloatVector &v1, CFloatVector& vBase, float nBaseLen)
+void CLightningNode::Rotate (CFloatVector &v0, float len0, CFloatVector &v1, float len1, CFloatVector& vBase, int nSteps)
 {
 	CFloatVector	vi, vj, vPos;
-	float				di, dj;
 
 vPos.Assign (m_vNewPos);
 vPos -= vBase;
 VmPointLineIntersection (vi, CFloatVector::ZERO, v1, vPos, 0);
-di = vi.Mag ();
-vj = v0 * (di / nBaseLen);
+vj = v0 * (vi.Mag () / len1 * len0);
 vi -= vPos;
 vj -= vi;
 m_vNewPos.Assign (vj + vBase);
+m_vOffs = m_vNewPos - m_vPos;
+m_vOffs *= (I2X (1) / nSteps);
 }
 
 //------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ return m_vOffs;
 // at the intended start and end points and then have increasing amplitude as 
 // moving out from them.
 
-CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi, int i)
+void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i)
 {
 	double h = double (i) * 0.03125;
 
@@ -290,9 +290,6 @@ dy *= phi;
 #endif
 m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
 m_vNewPos += m_vDelta [1] * int (dy);
-m_vOffs = m_vNewPos - m_vPos;
-m_vOffs *= (I2X (1) / nSteps);
-return m_vOffs;
 }
 
 //------------------------------------------------------------------------------

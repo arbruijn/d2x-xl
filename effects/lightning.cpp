@@ -330,8 +330,10 @@ if ((h = nAmplitude - nMaxDist)) {
 }
 
 //------------------------------------------------------------------------------
+// The end point of Perlin generated lightning do not necessarily lay at
+// the origin. This function rotates the lightning path so that it does.
 
-void CLightning::Clamp (void)
+void CLightning::Rotate (int nSteps)
 {
 CFloatVector v0, v1, vBase;
 v0.Assign (m_vEnd - m_vPos);
@@ -352,11 +354,13 @@ for (int i = 1; i < m_nNodes; i++) {
 	m_nodes [i].m_vNewPos = m_vPos + mRot * v;
 	}
 #else
-float nBaseLen = v0.Mag ();
+float len0 = v0.Mag ();
+float len1 = v1.Mag ();
+len1 *= len1;
 for (int i = 1; i < m_nNodes; i++) {
 	if (i == m_nNodes - 1)
 		i = i;
-	m_nodes [i].Clamp (v0, v1, vBase, nBaseLen);
+	m_nodes [i].Rotate (v0, len0, v1, len1, vBase, nSteps);
 	}
 #endif
 }
@@ -398,8 +402,8 @@ if ((nDepth > 1) || m_bRandom) {
 		perlinX.Setup (m_nNodes, 6, 1);
 		perlinY.Setup (m_nNodes, 6, 1);
 		for (i = 0; i < m_nNodes; i++)
-			m_nodes [i].CreatePerlin (nSteps, nAmplitude, double (i) / h, i);
-		Clamp ();
+			m_nodes [i].CreatePerlin (nAmplitude, double (i) / h, i);
+		Rotate (nSteps);
 		}
 	else {
 		if (m_bInPlane)
@@ -427,8 +431,8 @@ else {
 		perlinX.Setup (m_nNodes, 6, 1);
 		perlinY.Setup (m_nNodes, 6, 1);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
-			plh->CreatePerlin (nSteps, nAmplitude, double (i) / h, i);
-		Clamp ();
+			plh->CreatePerlin (nAmplitude, double (i) / h, i);
+		Rotate (nSteps);
 		}
 	else {
 		if (m_bInPlane)
