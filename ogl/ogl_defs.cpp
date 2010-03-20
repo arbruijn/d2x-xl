@@ -26,6 +26,7 @@
 #endif
 
 #include "descent.h"
+#include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
 
@@ -66,7 +67,7 @@ PFNGLGETQUERYOBJECTUIVARBPROC		glGetQueryObjectuiv = NULL;
 #endif
 
 #if OGL_POINT_SPRITES
-#	ifdef _WIN32
+#	ifndef GL_VERSION_20
 PFNGLPOINTPARAMETERFVARBPROC		glPointParameterfvARB = NULL;
 PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB = NULL;
 #	endif
@@ -81,12 +82,10 @@ PFNGLMAPBUFFERPROC					glMapBufferARB = NULL;
 PFNGLUNMAPBUFFERPROC					glUnmapBufferARB = NULL;
 PFNGLDELETEBUFFERSPROC				glDeleteBuffersARB = NULL;
 PFNGLDRAWRANGEELEMENTSPROC			glDrawRangeElements = NULL;
-#	endif
-#endif
 
-#ifdef _WIN32
 PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT = NULL;
 PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
+#endif
 #endif
 
 const char *pszOglExtensions = NULL;
@@ -255,9 +254,7 @@ else
 void COGL::SetupExtensions (void)
 {
 pszOglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
-#ifdef __unix__
 glewInit ();
-#endif
 SetupMultiTexturing ();
 SetupShaders ();
 SetupOcclusionQuery ();

@@ -39,30 +39,28 @@
 #ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
-#else
-#	define GL_GLEXT_PROTOTYPES
 #endif
 
 #ifdef __macosx__
+#	include <OpenGL/glew.h>
 #	include <OpenGL/gl.h>
 #	include <OpenGL/glu.h>
-#	include <OpenGL/glext.h>
 #else
+#	ifdef __unix__
+#		include <GL/glew.h>
+#		include <GL/glxew.h>
+#		include <GL/glx.h>
+#	else
+#		include "glew.h"
+#		include "wglew.h"
+#	endif
 #	include <GL/gl.h>
 #	include <GL/glu.h>
-#	ifdef _WIN32
-#		include <glext.h>
-#		include <wglext.h>
-#	else
-#		include <GL/glew.h>
-#		include <GL/glx.h>
-#		include <GL/glxext.h>
-#	endif
 #endif
 
-//kludge: since multi texture support has been rewritten
-#undef GL_ARB_multitexture
-#undef GL_SGIS_multitexture
+#ifndef GL_VERSION_20
+#	define GL_VERSION_20
+#endif
 
 #define DEFAULT_FOV				105.0
 #define FISHEYE_FOV				135.0
@@ -85,20 +83,6 @@ void OglSetFOV (double fov);
 #include "fbuffer.h"
 
 //------------------------------------------------------------------------------
-
-#ifdef _WIN32
-#	ifdef GL_VERSION_20
-#		undef GL_VERSION_20
-#	endif
-#elif defined (__linux__)
-#	ifdef GL_VERSION_20
-#		undef GL_VERSION_20
-#	endif
-#else
-#	ifndef GL_VERSION_20
-#		define GL_VERSION_20
-#	endif
-#endif
 
 #ifndef GL_VERSION_20
 
@@ -172,12 +156,6 @@ extern PFNGLDRAWRANGEELEMENTSPROC		glDrawRangeElements;
 extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 #	endif
 
-// v-sync ----------------------------------------------------------------------
-
-#	ifdef _WIN32
-extern PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
-#	endif
-
 // texture compression ---------------------------------------------------------
 
 #	ifdef _WIN32
@@ -227,6 +205,12 @@ extern PFNGLUNIFORM4FVARBPROC					glUniform4fv;
 extern PFNGLUNIFORM3FVARBPROC					glUniform3fv;
 extern PFNGLUNIFORM2FVARBPROC					glUniform2fv;
 extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
+
+// v-sync ----------------------------------------------------------------------
+
+#ifdef _WIN32
+extern PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT;
+#endif
 
 //------------------------------------------------------------------------------
 

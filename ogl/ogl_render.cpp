@@ -850,7 +850,7 @@ if (!lightmap) //lightmapping enabled
 // chose shaders depending on whether overlay bitmap present or not
 if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	lmProg = lmShaderProgs [(bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0];
-	glUseProgramObject (lmProg);
+	glUseProgramObjectARB (lmProg);
 	}
 InitTMU0 (1);	// use render pipeline 0 for bottom texture
 if (bmBot->Bind (1))
@@ -898,7 +898,7 @@ if (ogl.SizeBuffers (nVertices)) {
 	}
 ExitTMU (0);
 if (bShaderMerge)
-	glUseProgramObject (lmProg = 0);
+	glUseProgramObjectARB (lmProg = 0);
 return 0;
 }
 

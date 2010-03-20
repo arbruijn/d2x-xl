@@ -45,10 +45,10 @@ CFixVector *VmRandomVector (CFixVector *vRand)
 	CFixVector	vr;
 
 do {
-	vr [X] = I2X (1) / 4 - d_rand ();
-	vr [Y] = I2X (1) / 4 - d_rand ();
-	vr [Z] = I2X (1) / 4 - d_rand ();
-} while (!(vr [X] && vr [Y] && vr [Z]));
+	vr [X] = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr [Y] = (90 - d_rand () % 181) * (I2X (1) / 90);
+	vr [Z] = (90 - d_rand () % 181) * (I2X (1) / 90);
+} while (vr.IsZero ());
 CFixVector::Normalize (vr);
 *vRand = vr;
 return vRand;
@@ -351,7 +351,7 @@ if (bSeed) {
 else
 	bSeed = 0;
 #endif
-nStyle = 2; //STYLE;
+nStyle = STYLE;
 nSteps = m_nSteps;
 nSmoothe = m_nSmoothe;
 bClamp = m_bClamp;

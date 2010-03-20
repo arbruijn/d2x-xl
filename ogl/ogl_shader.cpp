@@ -46,10 +46,10 @@ PFNGLCREATESHADEROBJECTARBPROC	glCreateShaderObject = NULL;
 PFNGLSHADERSOURCEARBPROC			glShaderSource = NULL;
 PFNGLCOMPILESHADERARBPROC			glCompileShader = NULL;
 PFNGLCREATEPROGRAMOBJECTARBPROC	glCreateProgramObject = NULL;
-PFNGLATTACHOBJECTARBPROC			glAttachObject = NULL;
+PFNGLATTACHOBJECTARBPROC			glAttachObjectARB = NULL;
 PFNGLLINKPROGRAMARBPROC				glLinkProgram = NULL;
-PFNGLUSEPROGRAMOBJECTARBPROC		glUseProgramObject = NULL;
-PFNGLDELETEOBJECTARBPROC			glDeleteObject = NULL;
+PFNGLUSEPROGRAMOBJECTARBPROC		glUseProgramObjectARB = NULL;
+PFNGLDELETEOBJECTARBPROC			glDeleteObjectARB = NULL;
 PFNGLGETOBJECTPARAMETERIVARBPROC	glGetObjectParameteriv = NULL;
 PFNGLGETINFOLOGARBPROC				glGetInfoLog = NULL;
 PFNGLGETUNIFORMLOCATIONARBPROC	glGetUniformLocation = NULL;
@@ -232,7 +232,7 @@ int CShaderManager::Create (int nShader)
 {
 if ((nShader < 0) || (nShader >= int (m_shaders.ToS ())))
 	return 0;
-if (m_shaders [nShader].program || (m_shaders [nShader].program = glCreateProgramObject ()))
+if (m_shaders [nShader].program || (m_shaders [nShader].program = glCreateProgramObjectARB ()))
 	return 1;
 ::PrintLog ("   Couldn't create shader program CObject\n");
 return 0;
@@ -243,7 +243,7 @@ return 0;
 void CShaderManager::Dispose (GLhandleARB& shaderProg)
 {
 if (shaderProg) {
-	glDeleteObject (shaderProg);
+	glDeleteObjectARB (shaderProg);
 	shaderProg = 0;
 	}
 }
@@ -280,10 +280,10 @@ tShaderData& shader = m_shaders [nShader];
 
 for (i = 0; i < 2; i++) {
 	if (shader.shaders [i]) {
-		glDeleteObject (shader.shaders [i]);
+		glDeleteObjectARB (shader.shaders [i]);
 		shader.shaders [i] = 0;
 		}
-	if (!(shader.shaders [i] = glCreateShaderObject (nShaderTypes [i])))
+	if (!(shader.shaders [i] = glCreateShaderObjectARB (nShaderTypes [i])))
 		break;
 #if DBG_SHADERS
 	if (bFromFile) {
@@ -302,10 +302,10 @@ for (i = 0; i < 2; i++) {
 		}
 #endif
 	glCompileShader (shader.shaders [i]);
-	glGetObjectParameteriv (shader.shaders [i], GL_OBJECT_COMPILE_STATUS_ARB, &bCompiled [i]);
+	glGetObjectParameterivARB (shader.shaders [i], GL_OBJECT_COMPILE_STATUS_ARB, &bCompiled [i]);
 	if (!bCompiled [i])
 		break;
-	glAttachObject (shader.program, shader.shaders [i]);
+	glAttachObjectARB (shader.program, shader.shaders [i]);
 	}
 
 for (i = 0; i < 2; i++) {
@@ -317,7 +317,7 @@ for (i = 0; i < 2; i++) {
 			::PrintLog ("   Couldn't compile vertex shader\n   \"%s\"\n", pszVertShader);
 		if (shader.shaders [i]) {
 			PrintLog (shader.shaders [i], 0);
-			glDeleteObject (shader.shaders [i]);
+			glDeleteObjectARB (shader.shaders [i]);
 			shader.shaders [i] = 0;
 			}
 		}
@@ -356,7 +356,7 @@ if (!shader.program) {
 
 glLinkProgram (shader.program);
 GLint	bLinked;
-glGetObjectParameteriv (shader.program, GL_OBJECT_LINK_STATUS_ARB, &bLinked);
+glGetObjectParameterivARB (shader.program, GL_OBJECT_LINK_STATUS_ARB, &bLinked);
 if (bLinked)
 	return 1;
 ::PrintLog ("   Couldn't link shader programs\n");
@@ -404,12 +404,12 @@ if ((nShader >= 0) && (nShader < int (m_shaders.ToS ()))) {
 	tShaderData& shader = m_shaders [nShader];
 	for (int j = 0; j < 2; j++) {
 		if (shader.shaders [j]) {
-			glDeleteObject (shader.shaders [j]);
+			glDeleteObjectARB (shader.shaders [j]);
 			shader.shaders [j] = 0;
 			}
 		}
 	if (shader.program) {
-		glDeleteObject (shader.program);
+		glDeleteObjectARB (shader.program);
 		shader.program = 0;
 		}
 	}
@@ -427,7 +427,7 @@ GLhandleARB shaderProg = (nShader < 0) ? 0 : m_shaders [nShader].program;
 if (m_nCurrent == nShader)
 	return -intptr_t (shaderProg);
 m_nCurrent = nShader;
-glUseProgramObject (shaderProg);
+glUseProgramObjectARB (shaderProg);
 gameData.render.nShaderChanges++;
 return intptr_t (shaderProg);
 }
@@ -506,10 +506,10 @@ else {
 #ifndef GL_VERSION_20
 	if (!(glCreateProgramObject = (PFNGLCREATEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glCreateProgramObjectARB")))
 		PrintLog ("   glCreateProgramObject not supported by the OpenGL driver\n");
-	else if (!(glDeleteObject = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress ("glDeleteObjectARB")))
-		PrintLog ("   glDeleteObject not supported by the OpenGL driver\n");
-	else if (!(glUseProgramObject = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glUseProgramObjectARB")))
-		PrintLog ("   glUseProgramObject not supported by the OpenGL driver\n");
+	else if (!(glDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC) wglGetProcAddress ("glDeleteObjectARBARB")))
+		PrintLog ("   glDeleteObjectARB not supported by the OpenGL driver\n");
+	else if (!(glUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC) wglGetProcAddress ("glUseProgramObjectARBARB")))
+		PrintLog ("   glUseProgramObjectARB not supported by the OpenGL driver\n");
 	else if (!(glCreateShaderObject = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress ("glCreateShaderObjectARB")))
 		PrintLog ("   glCreateShaderObject not supported by the OpenGL driver\n");
 	else if (!(glShaderSource = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress ("glShaderSourceARB")))
@@ -518,8 +518,8 @@ else {
 		PrintLog ("   glCompileShader not supported by the OpenGL driver\n");
 	else if (!(glGetObjectParameteriv = (PFNGLGETOBJECTPARAMETERIVARBPROC) wglGetProcAddress ("glGetObjectParameterivARB")))
 		PrintLog ("   glGetObjectParameteriv not supported by the OpenGL driver\n");
-	else if (!(glAttachObject = (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress ("glAttachObjectARB")))
-		PrintLog ("   glAttachObject not supported by the OpenGL driver\n");
+	else if (!(glAttachObjectARB = (PFNGLATTACHOBJECTARBPROC) wglGetProcAddress ("glAttachObjectARBARB")))
+		PrintLog ("   glAttachObjectARB not supported by the OpenGL driver\n");
 	else if (!(glGetInfoLog = (PFNGLGETINFOLOGARBPROC) wglGetProcAddress ("glGetInfoLogARB")))
 		PrintLog ("   glGetInfoLog not supported by the OpenGL driver\n");
 	else if (!(glLinkProgram = (PFNGLLINKPROGRAMARBPROC) wglGetProcAddress ("glLinkProgramARB")))

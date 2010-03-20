@@ -5,9 +5,8 @@
 #ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
-#else
-#	include "ogl_defs.h"
 #endif
+#include "ogl_defs.h"
 
 #if RENDER2TEXTURE == 2
 
@@ -30,6 +29,7 @@ typedef struct tFrameBuffer {
 } tFrameBuffer;
 
 #ifdef _WIN32
+#	ifndef GL_VERSION_20
 extern PFNGLDRAWBUFFERSPROC glDrawBuffersARB;
 extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
 extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
@@ -48,6 +48,7 @@ extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
 extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
+#	endif
 #endif
 
 class CFBO {
@@ -84,7 +85,7 @@ class CFBO {
 			m_info.nBufferCount = nLast - nFirst + 1;
 			return nFirst;
 			}
-		inline void SetDrawBuffers (void) { glDrawBuffersARB (BufferCount (), BufferIds ()); }
+		inline void SetDrawBuffers (void) { glDrawBuffers (BufferCount (), BufferIds ()); }
 
 		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }

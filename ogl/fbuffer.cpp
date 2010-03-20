@@ -36,8 +36,7 @@
 //------------------------------------------------------------------------------
 
 #if RENDER2TEXTURE == 2
-
-#	ifdef _WIN32
+#	ifndef GL_VERSION_20
 PFNGLDRAWBUFFERSPROC glDrawBuffers;
 PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
 PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;

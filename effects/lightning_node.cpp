@@ -134,7 +134,7 @@ return nDist;
 CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist, int nAmplitude)
 {
 	CFixVector	va = *vAttract;
-	int			nDot, nMinDot = I2X (1) / 42;
+	int			nDot, nMinDot = nAmplitude / 45;
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
@@ -195,8 +195,8 @@ vOffs *= nAmplitude;
 if (vPrevOffs)
 	Smoothe (&vOffs, vPrevOffs, nDist, nSmoothe);
 else if (!m_vOffs.IsZero ()) {
-	vOffs += m_vOffs * (I2X (2));
-	vOffs /= I2X (3);
+	vOffs += m_vOffs * I2X (2);
+	//vOffs /= I2X (3);
 	}
 if (nDist > I2X (1) / 16)
 	Attract (&vOffs, &vAttract, vPos, nDist, i, 0);

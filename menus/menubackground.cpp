@@ -19,13 +19,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <windows.h>
 #	include <stddef.h>
 #endif
-#ifdef __macosx__
-# include <OpenGL/gl.h>
-# include <OpenGL/glu.h>
-#else
-# include <GL/gl.h>
-# include <GL/glu.h>
-#endif
 
 #include <math.h>
 #include <stdio.h>
