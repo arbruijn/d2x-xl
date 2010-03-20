@@ -379,7 +379,7 @@ for (int i = 1; i < m_nNodes; i++) {
 
 CFloatVector vStart, vEnd;
 vStart.Assign (m_vPos);
-vStart.Assign (m_vEnd);
+vEnd.Assign (m_vEnd);
 float scale = X2F (nAmplitude) / X2F (nMaxOffset);
 
 for (int i = 1; i < m_nNodes; i++)
