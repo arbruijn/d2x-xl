@@ -123,14 +123,9 @@ vPos -= vBase;
 VmPointLineIntersection (vi, CFloatVector::ZERO, v1, vPos, 0);
 di = vi.Mag ();
 vj = v0 * (di / nBaseLen);
-vi -= m_vNewPos;
-di = vi.Mag ();
-vj -= m_vNewPos;
-dj = vj.Mag ();
-vj *= di / dj;
-m_vNewPos [X] += F2X (vj [X]);
-m_vNewPos [Y] += F2X (vj [Y]);
-m_vNewPos [Z] += F2X (vj [Z]);
+vi -= vPos;
+vj -= vi;
+m_vNewPos.Assign (vj + vBase);
 }
 
 //------------------------------------------------------------------------------

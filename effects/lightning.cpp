@@ -353,8 +353,11 @@ for (int i = 1; i < m_nNodes; i++) {
 	}
 #else
 float nBaseLen = v0.Mag ();
-for (int i = 1; i < m_nNodes; i++)
+for (int i = 1; i < m_nNodes; i++) {
+	if (i == m_nNodes - 1)
+		i = i;
 	m_nodes [i].Clamp (v0, v1, vBase, nBaseLen);
+	}
 #endif
 }
 
