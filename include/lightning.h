@@ -3,6 +3,7 @@
 
 #include "descent.h"
 #include "u_mem.h"
+#include "maths.h"
 
 #define MAX_LIGHTNING_SYSTEMS	1000
 #define MAX_LIGHTNING_NODES	1000
@@ -39,6 +40,7 @@ class CLightningNode : public tLightningNode {
 		int ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i);
 		int Clamp (CFixVector *vPos, CFixVector *vBase, int nAmplitude);
 		void Rotate (CFloatVector &v0, float len0, CFloatVector &v1, float len1, CFloatVector& vBase, int nSteps);
+		void Scale (CFloatVector vStart, CFloatVector vEnd, float scale, int nSteps);
 		CFixVector *Smoothe (CFixVector *vOffs, CFixVector *vPrevOffs, int nDist, int nSmoothe);
 		CFixVector *Attract (CFixVector *vOffs, CFixVector *vAttract, CFixVector *vPos, int nDist, int i, int bJoinPaths);
 		CFixVector CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
@@ -50,6 +52,9 @@ class CLightningNode : public tLightningNode {
 		bool SetLight (short nSegment, tRgbaColorf *colorP);
 		inline CLightning *GetChild (void) { return m_child; }
 		inline void GetChild (CLightning * child) { m_child = child; }
+		inline fix Offset (CFixVector& vStart, CFixVector& vEnd) {
+			return VmLinePointDist (vStart, vEnd, m_vNewPos);
+			}
 };
 
 //------------------------------------------------------------------------------
@@ -132,6 +137,7 @@ class CLightning : public tLightning {
 		void RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread);
 		void Draw (int nDepth, int nThread);
 		void Rotate (int nSteps);
+		void Scale (int nSteps, int nAmplitude);
 };
 
 //------------------------------------------------------------------------------

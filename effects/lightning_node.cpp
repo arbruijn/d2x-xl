@@ -130,6 +130,21 @@ m_vOffs *= (I2X (1) / nSteps);
 
 //------------------------------------------------------------------------------
 
+void CLightningNode::Scale (CFloatVector vStart, CFloatVector vEnd, float scale, int nSteps)
+{
+CFloatVector	vPos, vi;
+
+vPos.Assign (m_vNewPos);
+VmPointLineIntersection (vi, vStart, vEnd, vPos, 0);
+vPos -= vi;
+vPos = vi + vPos * scale;
+m_vNewPos.Assign (vPos);
+m_vOffs = m_vNewPos - m_vPos;
+m_vOffs *= (I2X (1) / nSteps);
+}
+
+//------------------------------------------------------------------------------
+
 int CLightningNode::ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i)
 {
 	int nDist;
@@ -208,18 +223,19 @@ CFixVector CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFi
 	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
 
 Create (&vOffs, &vAttract, nDist, nAmplitude);
-if (!vPrevOffs)
-	vPrevOffs = &m_vOffs;
-if (!vPrevOffs->IsZero ())
-	vOffs = CFixVector::Avg (vOffs, *vPrevOffs);
-vOffs *= nDist;
-vOffs += vAttract;
-CFixVector::Normalize (vOffs);
+if (vPrevOffs)
+	Smoothe (&vOffs, vPrevOffs, nDist, nSmoothe);
+else if (m_vOffs [X] || m_vOffs [Z] || m_vOffs [Z]) {
+	vOffs += m_vOffs * (I2X (2));
+	vOffs /= 3;
+	}
+if (nDist > I2X (1) / 16)
+	Attract (&vOffs, &vAttract, vPos, nDist, i, 0);
 if (bClamp)
 	Clamp (vPos, vBase, nAmplitude);
-m_vNewPos = *vPos + vOffs * nDist;
-m_vOffs = m_vNewPos - m_vPos;
-//m_vOffs *= (I2X (1) / nSteps);
+m_vNewPos = *vPos;
+m_vOffs = *vPos - m_vPos;
+m_vOffs *= (I2X (1) / nSteps);
 return vOffs;
 }
 

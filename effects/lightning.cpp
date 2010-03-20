@@ -358,11 +358,33 @@ float len0 = v0.Mag ();
 float len1 = v1.Mag ();
 len1 *= len1;
 for (int i = 1; i < m_nNodes; i++) {
-	if (i == m_nNodes - 1)
-		i = i;
 	m_nodes [i].Rotate (v0, len0, v1, len1, vBase, nSteps);
 	}
 #endif
+}
+
+//------------------------------------------------------------------------------
+// Paths of lightning with style 1 isn't affected by amplitude. This function scales
+// these paths with the amplitude.
+
+void CLightning::Scale (int nSteps, int nAmplitude)
+{
+	fix	nOffset, nMaxOffset = 0;
+
+for (int i = 1; i < m_nNodes; i++) {
+	nOffset = m_nodes [i].Offset (m_vPos, m_vEnd);
+	if (nMaxOffset < nOffset)
+		nMaxOffset = nOffset;
+	}
+
+CFloatVector vStart, vEnd;
+vStart.Assign (m_vPos);
+vStart.Assign (m_vEnd);
+float scale = X2F (nAmplitude) / X2F (nMaxOffset);
+
+for (int i = 1; i < m_nNodes; i++)
+	m_nodes [i].Scale (vStart, vEnd, scale, nSteps);
+
 }
 
 //------------------------------------------------------------------------------
@@ -387,7 +409,7 @@ if (bSeed) {
 else
 	bSeed = 0;
 #endif
-nStyle = 2; //STYLE;
+nStyle = STYLE;
 nSteps = m_nSteps;
 nSmoothe = m_nSmoothe;
 bClamp = m_bClamp;
@@ -416,9 +438,9 @@ if ((nDepth > 1) || m_bRandom) {
 				}
 			}
 		else {
-			for (i = m_nNodes - 1, plh = m_nodes + 1; i > 0; i--, plh++, bPrevOffs [0] = 1) {
+			for (i = m_nNodes - 1, plh = m_nodes + 1; i > 0; i--, plh++, bPrevOffs [0] = 1)
 				*vPrevOffs = plh->CreateJaggy (vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, nSteps, nAmplitude, nMinDist, i, nSmoothe, bClamp);
-				}
+			Scale (nSteps, nAmplitude);
 			}
 		}
 	}
@@ -462,6 +484,7 @@ else {
 				else
 					nodeP [0]++;
 				}
+			Scale (nSteps, nAmplitude);
 			}
 		}
 	}
