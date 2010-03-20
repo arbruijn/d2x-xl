@@ -331,6 +331,35 @@ if ((h = nAmplitude - nMaxDist)) {
 
 //------------------------------------------------------------------------------
 
+void CLightning::Clamp (void)
+{
+CFloatVector v0, v1, vBase;
+v0.Assign (m_vEnd - m_vPos);
+v1.Assign (m_nodes [m_nNodes - 1].m_vNewPos - m_vPos);
+vBase.Assign (m_vPos);
+#if 0
+	CAngleVector	vRot;
+	CFixMatrix		mRot;
+	CFixVector		v = v1 - v0;
+
+CFixVector::Normalize (v);
+vRot [BA] = v [X];
+vRot [PA] = v [Y];
+vRot [HA] = v [Z];
+mRot = CFixMatrix::Create (vRot);
+for (int i = 1; i < m_nNodes; i++) {
+	v = m_nodes [i].m_vNewPos - m_vPos;
+	m_nodes [i].m_vNewPos = m_vPos + mRot * v;
+	}
+#else
+float nBaseLen = v0.Mag ();
+for (int i = 1; i < m_nNodes; i++)
+	m_nodes [i].Clamp (v0, v1, vBase, nBaseLen);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 void CLightning::CreatePath (int bSeed, int nDepth)
 {
 	CLightningNode*	plh, * nodeP [2];
@@ -365,9 +394,9 @@ if ((nDepth > 1) || m_bRandom) {
 		double h = double (m_nNodes - 1);
 		perlinX.Setup (m_nNodes, 6, 1);
 		perlinY.Setup (m_nNodes, 6, 1);
-		for (i = 0; i < m_nNodes; i++) {
+		for (i = 0; i < m_nNodes; i++)
 			m_nodes [i].CreatePerlin (nSteps, nAmplitude, double (i) / h, i);
-			}
+		Clamp ();
 		}
 	else {
 		if (m_bInPlane)
@@ -394,9 +423,9 @@ else {
 		double h = double (m_nNodes - 1);
 		perlinX.Setup (m_nNodes, 6, 1);
 		perlinY.Setup (m_nNodes, 6, 1);
-		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++) {
+		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
 			plh->CreatePerlin (nSteps, nAmplitude, double (i) / h, i);
-			}
+		Clamp ();
 		}
 	else {
 		if (m_bInPlane)

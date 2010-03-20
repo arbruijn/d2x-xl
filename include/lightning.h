@@ -38,6 +38,7 @@ class CLightningNode : public tLightningNode {
 		void ComputeOffset (int nSteps);
 		int ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i);
 		int Clamp (CFixVector *vPos, CFixVector *vBase, int nAmplitude);
+		void Clamp (CFloatVector &v0, CFloatVector &v1, CFloatVector& vBase, float nBaseLen);
 		CFixVector *Smoothe (CFixVector *vOffs, CFixVector *vPrevOffs, int nDist, int nSmoothe);
 		CFixVector *Attract (CFixVector *vOffs, CFixVector *vAttract, CFixVector *vPos, int nDist, int i, int bJoinPaths);
 		CFixVector CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
@@ -130,6 +131,7 @@ class CLightning : public tLightning {
 		int SetupGlow (void);
 		void RenderGlow (tRgbaColorf *colorP, int nDepth, int nThread);
 		void Draw (int nDepth, int nThread);
+		void CLightning::Clamp (void);
 };
 
 //------------------------------------------------------------------------------

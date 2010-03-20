@@ -113,6 +113,28 @@ return nAmplitude;
 
 //------------------------------------------------------------------------------
 
+void CLightningNode::Clamp (CFloatVector &v0, CFloatVector &v1, CFloatVector& vBase, float nBaseLen)
+{
+	CFloatVector	vi, vj, vPos;
+	float				di, dj;
+
+vPos.Assign (m_vNewPos);
+vPos -= vBase;
+VmPointLineIntersection (vi, CFloatVector::ZERO, v1, vPos, 0);
+di = vi.Mag ();
+vj = v0 * (di / nBaseLen);
+vi -= m_vNewPos;
+di = vi.Mag ();
+vj -= m_vNewPos;
+dj = vj.Mag ();
+vj *= di / dj;
+m_vNewPos [X] += F2X (vj [X]);
+m_vNewPos [Y] += F2X (vj [Y]);
+m_vNewPos [Z] += F2X (vj [Z]);
+}
+
+//------------------------------------------------------------------------------
+
 int CLightningNode::ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i)
 {
 	int nDist;
@@ -252,19 +274,21 @@ return m_vOffs;
 
 CFixVector CLightningNode::CreatePerlin (int nSteps, int nAmplitude, double phi, int i)
 {
-	static double dx0, dy0;
+	double h = double (i) * 0.03125;
 
-double dx = perlinX.PerlinNoise1D (double (i), 0.6, 6);
-double dy = perlinY.PerlinNoise1D (double (i), 0.6, 6);
-#if 0
-if (phi == 0.0f) {
+double dx = perlinX.PerlinNoise1D (h, 0.6, 6);
+double dy = perlinY.PerlinNoise1D (h, 0.6, 6);
+#if 1
+static double dx0, dy0;
+if (!i) {
 	dx0 = dx;
 	dy0 = dy;
 	}
 dx -= dx0;
 dy -= dy0;
-#endif
-#if 1
+dx *= nAmplitude;
+dy *= nAmplitude;
+#else
 phi = pow (sin (phi * Pi), 0.3333333) * nAmplitude;
 dx *= phi;
 dy *= phi;
