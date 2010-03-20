@@ -43,8 +43,8 @@ class CLightningNode : public tLightningNode {
 		void Scale (CFloatVector vStart, CFloatVector vEnd, float scale, int nSteps);
 		CFixVector *Smoothe (CFixVector *vOffs, CFixVector *vPrevOffs, int nDist, int nSmoothe);
 		CFixVector *Attract (CFixVector *vOffs, CFixVector *vAttract, CFixVector *vPos, int nDist, int i, int bJoinPaths);
-		void CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
-								int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp);
+		CFixVector CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
+									  int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp);
 		CFixVector CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
 									    int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp);
 		void CreatePerlin (int nAmplitude, double phi, int i);

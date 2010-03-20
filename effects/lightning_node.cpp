@@ -216,7 +216,7 @@ return vPos;
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
+CFixVector CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
 												   int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp)
 {
 	CFixVector	vAttract, vOffs;
@@ -234,6 +234,9 @@ if (nDist > I2X (1) / 16)
 if (bClamp)
 	Clamp (vPos, vBase, nAmplitude);
 m_vNewPos = *vPos;
+m_vOffs = *vPos - m_vPos;
+m_vOffs *= (I2X (1) / nSteps);
+return vOffs;
 }
 
 //------------------------------------------------------------------------------
