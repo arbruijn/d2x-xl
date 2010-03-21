@@ -75,9 +75,7 @@ nSign = VECSIGN (vd);
 do {
 	VmRandomVector (&vr);
 	nDot = CFixVector::Dot (vr, vd);
-	if (++i == 100)
-		i = 0;
-	} while ((nDot > nMaxDot) || (nDot < nMinDot));
+	} while (((nDot > nMaxDot) || (nDot < nMinDot)) && (++i < 10));
 *vRand = vr;
 return vRand;
 }
@@ -109,8 +107,7 @@ if (m_bRandom) {
 		CFixVector::Normalize (vRefDir);
 		do {
 			VmRandomVector (&vDir);
-		}
-		while (CFixVector::Dot (vRefDir, vDir) < nMinDot);
+		} while (CFixVector::Dot (vRefDir, vDir) < nMinDot);
 	}
 	m_vEnd = m_vPos + vDir * m_nLength;
 }
@@ -377,6 +374,7 @@ for (int i = 1; i < m_nNodes; i++) {
 		nMaxOffset = nOffset;
 	}
 
+nAmplitude = 3 * nAmplitude / 5 + (rand () % (nAmplitude / 5));
 CFloatVector vStart, vEnd;
 vStart.Assign (m_vPos);
 vEnd.Assign (m_vEnd);

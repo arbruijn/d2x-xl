@@ -166,15 +166,16 @@ return nDist;
 CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist, int nAmplitude)
 {
 	CFixVector	va = *vAttract;
-	int			nDot, nMinDot = I2X (1) / 45 + I2X (1) / 2 - FixDiv (I2X (1) / 2, nAmplitude);
+	int			i, nDot, nMinDot = I2X (1) / 45 + I2X (1) / 2 - FixDiv (I2X (1) / 2, nAmplitude);
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
 CFixVector::Normalize (va);
+i = 0;
 do {
 	VmRandomVector (vOffs);
 	nDot = CFixVector::Dot (va, *vOffs);
-	} while (abs (nDot) < nMinDot);
+	} while ((abs (nDot) < nMinDot) && (++i < 5));
 if (nDot < 0)
 	vOffs->Neg ();
 return vOffs;
