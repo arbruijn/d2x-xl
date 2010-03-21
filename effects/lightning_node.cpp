@@ -286,25 +286,17 @@ return m_vOffs;
 
 void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i, int nThread)
 {
-	double h = double (i) * 0.03125;
-
-double dx = perlinX [nThread].PerlinNoise1D (h, 0.6, 6);
-double dy = perlinY [nThread].PerlinNoise1D (h, 0.6, 6);
-#if 1
-static double dx0, dy0;
+double dx = perlinX [nThread].PerlinNoise1D (double (i) * 0.03125, 0.6, 6);
+double dy = perlinY [nThread].PerlinNoise1D (double (i) * 0.03125, 0.6, 6);
+static double dx0 [MAX_THREADS], dy0 [MAX_THREADS];
 if (!i) {
-	dx0 = dx;
-	dy0 = dy;
+	dx0 [nThread] = dx;
+	dy0 [nThread] = dy;
 	}
-dx -= dx0;
-dy -= dy0;
+dx -= dx0 [nThread];
+dy -= dy0 [nThread];
 dx *= nAmplitude;
 dy *= nAmplitude;
-#else
-phi = pow (sin (phi * Pi), 0.3333333) * nAmplitude;
-dx *= phi;
-dy *= phi;
-#endif
 m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
 m_vNewPos += m_vDelta [1] * int (dy);
 }

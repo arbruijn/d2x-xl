@@ -336,28 +336,12 @@ CFloatVector v0, v1, vBase;
 v0.Assign (m_vEnd - m_vPos);
 v1.Assign (m_nodes [m_nNodes - 1].m_vNewPos - m_vPos);
 vBase.Assign (m_vPos);
-#if 0
-	CAngleVector	vRot;
-	CFixMatrix		mRot;
-	CFixVector		v = v1 - v0;
-
-CFixVector::Normalize (v);
-vRot [BA] = v [X];
-vRot [PA] = v [Y];
-vRot [HA] = v [Z];
-mRot = CFixMatrix::Create (vRot);
-for (int i = 1; i < m_nNodes; i++) {
-	v = m_nodes [i].m_vNewPos - m_vPos;
-	m_nodes [i].m_vNewPos = m_vPos + mRot * v;
-	}
-#else
 float len0 = v0.Mag ();
 float len1 = v1.Mag ();
 len1 *= len1;
 for (int i = 1; i < m_nNodes; i++) {
 	m_nodes [i].Rotate (v0, len0, v1, len1, vBase, nSteps);
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------
