@@ -1,12 +1,13 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "descent.h"
 #include "maths.h"
 #include "perlin.h"
 
 static long randSeed = 0;
 
-CPerlin perlinX, perlinY;
+CPerlin perlinX [MAX_THREADS], perlinY [MAX_THREADS];
 
 //------------------------------------------------------------------------------
 

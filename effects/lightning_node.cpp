@@ -284,12 +284,12 @@ return m_vOffs;
 // at the intended start and end points and then have increasing amplitude as 
 // moving out from them.
 
-void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i)
+void CLightningNode::CreatePerlin (int nAmplitude, double phi, int i, int nThread)
 {
 	double h = double (i) * 0.03125;
 
-double dx = perlinX.PerlinNoise1D (h, 0.6, 6);
-double dy = perlinY.PerlinNoise1D (h, 0.6, 6);
+double dx = perlinX [nThread].PerlinNoise1D (h, 0.6, 6);
+double dy = perlinY [nThread].PerlinNoise1D (h, 0.6, 6);
 #if 1
 static double dx0, dy0;
 if (!i) {

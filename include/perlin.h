@@ -31,7 +31,7 @@ class CPerlin {
 		bool Setup (int nNodes, int nOctaves, int nDimensions = 1);
 	};
 
-extern CPerlin perlinX, perlinY;
+extern CPerlin perlinX [], perlinY [];
 
 #endif //__PERLIN_H
 

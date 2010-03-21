@@ -387,7 +387,7 @@ for (int i = 1; i < m_nNodes; i++)
 
 //------------------------------------------------------------------------------
 
-void CLightning::CreatePath (int bSeed, int nDepth)
+void CLightning::CreatePath (int nDepth, int nThread)
 {
 	CLightningNode*	plh, * nodeP [2];
 	int					h, i, j, nSteps, nStyle, nSmoothe, bClamp, bInPlane, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
@@ -397,16 +397,6 @@ void CLightning::CreatePath (int bSeed, int nDepth)
 
 vBase [0] = vPos [0] = m_vPos;
 vBase [1] = vPos [1] = m_vEnd;
-if (bSeed) {
-	nSeed [0] = d_rand ();
-	nSeed [1] = d_rand ();
-	nSeed [0] *= d_rand ();
-	nSeed [1] *= d_rand ();
-	}
-#if DBG
-else
-	bSeed = 0;
-#endif
 nStyle = STYLE;
 nSteps = m_nSteps;
 nSmoothe = m_nSmoothe;
@@ -419,10 +409,10 @@ plh->m_vOffs.SetZero ();
 if ((nDepth > 1) || m_bRandom) {
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX.Setup (m_nNodes, 6, 1);
-		perlinY.Setup (m_nNodes, 6, 1);
+		perlinX [nThread].Setup (m_nNodes, 6, 1);
+		perlinY [nThread].Setup (m_nNodes, 6, 1);
 		for (i = 0; i < m_nNodes; i++)
-			m_nodes [i].CreatePerlin (nAmplitude, double (i) / h, i);
+			m_nodes [i].CreatePerlin (nAmplitude, double (i) / h, i, nThread);
 		Rotate (nSteps);
 		}
 	else {
@@ -448,10 +438,10 @@ else {
 	plh->m_vOffs.SetZero ();
 	if (nStyle == 2) {
 		double h = double (m_nNodes - 1);
-		perlinX.Setup (m_nNodes, 6, 1);
-		perlinY.Setup (m_nNodes, 6, 1);
+		perlinX [nThread].Setup (m_nNodes, 6, 1);
+		perlinY [nThread].Setup (m_nNodes, 6, 1);
 		for (i = 0, plh = m_nodes.Buffer (); i < m_nNodes; i++, plh++)
-			plh->CreatePerlin (nAmplitude, double (i) / h, i);
+			plh->CreatePerlin (nAmplitude, double (i) / h, i, nThread);
 		Rotate (nSteps);
 		}
 	else {
@@ -500,7 +490,7 @@ if (nStyle < 2) {
 void CLightning::Animate (int nDepth, int nThread)
 {
 	CLightningNode	*nodeP;
-	int				j, bSeed;
+	int				j;
 	bool				bInit;
 
 m_nTTL -= gameStates.app.tick40fps.nTime;
@@ -508,13 +498,12 @@ if (m_nNodes > 0) {
 	if ((bInit = (m_nSteps < 0)))
 		m_nSteps = -m_nSteps;
 	if (!m_iStep) {
-		bSeed = 1;
-		CreatePath (bSeed, nDepth + 1);
+		CreatePath (nDepth + 1, nThread);
 		m_iStep = m_nSteps;
 		}
 	for (j = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; j > 0; j--, nodeP++)
 		nodeP->Animate (bInit, m_nSegment, nDepth, nThread);
-RenderSetup (nDepth, nThread);
+	RenderSetup (nDepth, nThread);
 	(m_iStep)--;
 	}
 }
@@ -734,7 +723,7 @@ else
 if (extraGameInfo [0].bUseLightning > 1)
 	for (int i = 0; i < m_nNodes; i++)
 		if (m_nodes [i].GetChild ())
-			m_nodes [i].GetChild ()->Render (nDepth + 1, nThread);
+			m_nodes [i].GetChild ()->RenderSetup (nDepth + 1, nThread);
 }
 
 //------------------------------------------------------------------------------

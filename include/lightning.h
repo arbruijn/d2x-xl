@@ -47,7 +47,7 @@ class CLightningNode : public tLightningNode {
 									  int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp);
 		CFixVector CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
 									    int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp);
-		void CreatePerlin (int nAmplitude, double phi, int i);
+		void CreatePerlin (int nAmplitude, double phi, int i, int nThread);
 		void Move (int nDepth, CFixVector& vDelta, short nSegment, int nThread);
 		bool SetLight (short nSegment, tRgbaColorf *colorP);
 		inline CLightning *GetChild (void) { return m_child; }
@@ -127,7 +127,7 @@ class CLightning : public tLightning {
 			return *this;
 			}
 	private:
-		void CreatePath (int bSeed, int nDepth);
+		void CreatePath (int nDepth, int nThread);
 		int ComputeChildEnd (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDir, CFixVector *vParentDir, int nLength);
 		void ComputeGlow (int nDepth, int nThread);
 		void ComputeCore (void);
