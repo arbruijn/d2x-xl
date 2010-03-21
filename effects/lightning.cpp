@@ -205,7 +205,7 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes))
 	return false;
-if (nDepth)
+if (nDepth && (m_bPlasma > 0))
 	m_bPlasma = 0;
 if (gameOpts->render.lightning.bPlasma) {
 	int h = ((m_bPlasma > 0) ? 2 : 1) * (m_nNodes - 1) * 4;
