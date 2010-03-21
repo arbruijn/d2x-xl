@@ -239,7 +239,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 		nChildNodes = 2 * nChildNodes / 4 + rand () % (nChildNodes / 4);
 		scale = double (nChildNodes) / double (m_nNodes);
 		l = int (m_nLength * scale + 0.5);
-		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
+		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude, m_nAngle,
 													 nChildNodes, m_nChildren / 5, nDepth - 1, max (1, int (m_nSteps * scale + 0.5)), m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
 													 m_nStyle, &m_color, this, nNode, nThread))
 			return false;
