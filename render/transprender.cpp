@@ -631,8 +631,10 @@ m_data.bUseLightmaps = 0;
 int CTransparencyRenderer::LoadImage (CBitmap *bmP, int nFrame, int bDecal, int bLightmaps, int nWrap)
 {
 if (bmP) {
+#if 0
 	ogl.SelectTMU (GL_TEXTURE0 + bLightmaps, true);
 	ogl.SetTexturing (true);
+#endif
 	if ((bmP != m_data.bmP [bDecal]) || (nFrame != m_data.nFrame) || (nWrap != m_data.nWrap)) {
 		gameData.render.nStateChanges++;
 		if (bmP) {
@@ -744,19 +746,27 @@ else {
 
 int bAdditive, nIndex = triP ? triP->nIndex : faceP->m_info.nIndex;
 
+#if 0 //DBG
+m_data.bmP [0] = NULL;
+ogl.ResetClientStates (bLightmaps);
+#else
 ogl.ResetClientStates (1 + bLightmaps + (bmTop != NULL) + (bmMask != NULL));
+#endif
 
 if (bmTop) {
 	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE1 + bLightmaps);
+#if 0 //DBG
+	m_data.bmP [1] = NULL;
+#endif
+	if (!LoadImage (bmTop, 0, 1, bLightmaps, item->nWrap))
+		return;
 	if (bTextured)
 		OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 	OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);
-	if (!LoadImage (bmTop, 0, 1, bLightmaps, item->nWrap))
-		return;
 	if (bmMask) {
+		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2 + bLightmaps);
 		if (!LoadImage (bmMask, 0, 2, bLightmaps, item->nWrap))
 			return;
-		ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE2 + bLightmaps);
 		if (bTextured)
 			OglTexCoordPointer (2, GL_FLOAT, 0, FACES.ovlTexCoord + nIndex);
 		OglVertexPointer (3, GL_FLOAT, 0, FACES.vertices + nIndex);

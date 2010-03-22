@@ -78,7 +78,7 @@ m_bDestroy = 0;
 int CLightningManager::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
-										 short nSmoothe, char bClamp, char bPlasma, char bSound, char bLight,
+										 short nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
 										 char nStyle, tRgbaColorf *colorP)
 {
 if (!(SHOW_LIGHTNING && colorP))
@@ -90,7 +90,7 @@ CLightningEmitter* emitterP = m_emitters.Pop ();
 if (!emitterP)
 	return -1;
 if (!(emitterP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
-							  nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bPlasma, bSound, bLight,
+							  nAngle, nOffset, nNodes, nChildren, nDepth, nSteps, nSmoothe, bClamp, bGlow, bSound, bLight,
 							  nStyle, colorP))) {
 	m_emitters.Push (emitterP->Id ());
 	emitterP->Destroy ();
@@ -468,7 +468,7 @@ FORALL_EFFECT_OBJS (objP, i) {
 	vDelta = pli->bInPlane ? &objP->info.position.mOrient.RVec () : NULL;
 	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
 				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
-				   pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, 1, pli->nStyle, &color);
+				   pli->nSmoothe, pli->bClamp, pli->bGlow, pli->bSound, 1, pli->nStyle, &color);
 	if (h >= 0) {
 		m_objects [i] = h;
 		if (!objP->rType.lightningInfo.bEnabled)
@@ -813,7 +813,7 @@ if (i < 0) {
 		vEnd.Assign (vEndf);
 		}
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0,
-					h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, -1, 0, 0, 1, &color);
+					h, h / 4, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

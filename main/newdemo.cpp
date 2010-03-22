@@ -777,7 +777,7 @@ switch (objP->info.renderType) {
 		objP->rType.lightningInfo.nStyle = NDReadByte ();
 		objP->rType.lightningInfo.nSmoothe = NDReadByte ();
 		objP->rType.lightningInfo.bClamp = NDReadByte ();
-		objP->rType.lightningInfo.bPlasma = NDReadByte ();
+		objP->rType.lightningInfo.bGlow = NDReadByte ();
 		objP->rType.lightningInfo.bSound = NDReadByte ();
 		objP->rType.lightningInfo.bRandom = NDReadByte ();
 		objP->rType.lightningInfo.bInPlane = NDReadByte ();
@@ -994,7 +994,7 @@ switch (o.info.renderType) {
 		NDWriteByte (o.rType.lightningInfo.nStyle);
 		NDWriteByte (o.rType.lightningInfo.nSmoothe);
 		NDWriteByte (o.rType.lightningInfo.bClamp);
-		NDWriteByte (o.rType.lightningInfo.bPlasma);
+		NDWriteByte (o.rType.lightningInfo.bGlow);
 		NDWriteByte (o.rType.lightningInfo.bSound);
 		NDWriteByte (o.rType.lightningInfo.bRandom);
 		NDWriteByte (o.rType.lightningInfo.bInPlane);

@@ -88,7 +88,7 @@ typedef struct tLightning {
 	char							m_nAngle;
 	char							m_nDepth;
 	char							m_bClamp;
-	char							m_bPlasma;
+	char							m_bGlow;
 	char							m_bRandom;
 	char							m_bLight;
 	char							m_bInPlane;

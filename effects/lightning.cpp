@@ -155,7 +155,7 @@ m_nSteps = -abs (m_nSteps);
 void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 							  short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
 							  char nAngle, int nOffset, short nNodes, short nChildren, short nSteps,
-							  short nSmoothe, char bClamp, char bPlasma, char bLight,
+							  short nSmoothe, char bClamp, char bGlow, char bLight,
 							  char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode)
 {
 	int	bRandom = (vEnd == NULL) || (nAngle > 0);
@@ -189,7 +189,7 @@ m_nOffset = nOffset;
 m_nSteps = -nSteps;
 m_nSmoothe = nSmoothe;
 m_bClamp = bClamp;
-m_bPlasma = bPlasma;
+m_bGlow = bGlow;
 m_iStep = 0;
 m_color = *colorP;
 m_vBase = *vPos;
@@ -205,10 +205,10 @@ if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes))
 	return false;
-if (nDepth && (m_bPlasma > 0))
-	m_bPlasma = 0;
-if (gameOpts->render.lightning.bPlasma) {
-	int h = ((m_bPlasma > 0) ? 2 : 1) * (m_nNodes - 1) * 4;
+if (nDepth && (m_bGlow > 0))
+	m_bGlow = 0;
+if (gameOpts->render.lightning.bGlow) {
+	int h = ((m_bGlow > 0) ? 2 : 1) * (m_nNodes - 1) * 4;
 	if (!m_plasmaTexCoord.Create (h))
 		return false;
 	if (!m_plasmaVerts.Create (h))
@@ -240,7 +240,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 		scale = double (nChildNodes) / double (m_nNodes);
 		l = int (m_nLength * scale + 0.5);
 		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude, m_nAngle,
-													 nChildNodes, m_nChildren / 5, nDepth - 1, max (1, int (m_nSteps * scale + 0.5)), m_nSmoothe, m_bClamp, m_bPlasma, m_bLight,
+													 nChildNodes, m_nChildren / 5, nDepth - 1, max (1, int (m_nSteps * scale + 0.5)), m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
 													 m_nStyle, &m_color, this, nNode, nThread))
 			return false;
 		}
@@ -633,8 +633,8 @@ if (!nodeP)
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
-	bool					bPlasma = !nDepth && (m_bPlasma > 0) && gameOpts->render.lightning.bPlasma;
-	float					fWidth = bPlasma ? PLASMA_WIDTH / 2.0f : (m_bPlasma > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bPlasma < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
+	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow;
+	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
 vEye.Assign (gameData.render.mine.viewerEye);
 dstP = m_plasmaVerts.Buffer ();
@@ -674,7 +674,7 @@ for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
 	dstP [i] = dstP [j+1] = CFloatVector::Avg (dstP [i], dstP [j+1]);
 	}
 
-if (bPlasma) {
+if (bGlow) {
 	int h = 4 * (m_nNodes - 1);
 	//for (j = 0; j < 2; j++) 
 		{
@@ -703,7 +703,7 @@ if (bPlasma) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if (gameOpts->render.lightning.bPlasma)
+if (gameOpts->render.lightning.bGlow)
 	ComputeGlow (nDepth, nThread);
 else
 	ComputeCore ();
@@ -728,7 +728,7 @@ if (!m_plasmaVerts.Buffer ())
 OglTexCoordPointer (2, GL_FLOAT, 0, m_plasmaTexCoord.Buffer ());
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 ogl.SetBlendMode (1);
-if (nDepth || (m_bPlasma < 1)) {
+if (nDepth || (m_bGlow < 1)) {
 	glColor3fv (reinterpret_cast<GLfloat*> (colorP));
 	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
 	}
@@ -820,7 +820,7 @@ ogl.ClearError (0);
 
 int CLightning::SetupGlow (void)
 {
-if (!(/*m_bPlasma &&*/ gameOpts->render.lightning.bPlasma && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
+if (!(/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTexturing (true);
@@ -851,7 +851,7 @@ if (gameStates.app.bMultiThreaded && (nThread > 0)) {	//thread 1 will always ren
 
 void CLightning::Draw (int nDepth, int nThread)
 {
-	int				i, bPlasma;
+	int				i, bGlow;
 	tRgbaColorf		color;
 
 if (!m_nodes.Buffer () || (m_nNodes <= 0) || (m_nSteps < 0))
@@ -870,14 +870,14 @@ if (m_nLife > 0) {
 color.red *= (float) (0.9 + dbl_rand () / 5);
 color.green *= (float) (0.9 + dbl_rand () / 5);
 color.blue *= (float) (0.9 + dbl_rand () / 5);
-if (!(bPlasma = SetupGlow ()))
+if (!(bGlow = SetupGlow ()))
 	color.alpha *= 1.5f;
 if (nDepth)
 	color.alpha /= 2;
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (bPlasma)
+if (bGlow)
 	RenderGlow (&color, nDepth, nThread);
 else
 	RenderCore (&color, nDepth, nThread);

@@ -1766,7 +1766,7 @@ void DefaultLightningSettings (void)
 {
 gameOptions [0].render.lightning.nQuality = 0;
 gameOptions [0].render.lightning.nStyle = extraGameInfo [0].bUseLightning;
-gameOptions [0].render.lightning.bPlasma = (gameOptions [0].render.nQuality > 1);
+gameOptions [0].render.lightning.bGlow = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.lightning.bDamage = 1;
 gameOptions [0].render.lightning.bExplosions = (extraGameInfo [0].bUseLightning > 1);
 gameOptions [0].render.lightning.bPlayers = (extraGameInfo [0].bUseLightning > 1);

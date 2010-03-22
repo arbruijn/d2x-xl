@@ -452,7 +452,7 @@ public:
 	char			nStyle;
 	char			nSmoothe;
 	char			bClamp;
-	char			bPlasma;
+	char			bGlow;
 	char			bSound;
 	char			bRandom;
 	char			bInPlane;
@@ -480,7 +480,7 @@ class CLightningInfo {
 		inline char GetStyle (void) { return m_info.nStyle; }
 		inline char GetSmoothe (void) { return m_info.nSmoothe; }
 		inline char GetClamp (void) { return m_info.bClamp; }
-		inline char GetPlasma (void) { return m_info.bPlasma; }
+		inline char GetGlow (void) { return m_info.bGlow; }
 		inline char GetSound (void) { return m_info.bSound; }
 		inline char GetRandom (void) { return m_info.bRandom; }
 		inline char GetInPlane (void) { return m_info.bInPlane; }

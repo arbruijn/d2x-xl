@@ -240,7 +240,7 @@ switch (info.renderType) {
 		rType.lightningInfo.nStyle = cf.ReadByte ();
 		rType.lightningInfo.nSmoothe = cf.ReadByte ();
 		rType.lightningInfo.bClamp = cf.ReadByte ();
-		rType.lightningInfo.bPlasma = cf.ReadByte ();
+		rType.lightningInfo.bGlow = cf.ReadByte ();
 		rType.lightningInfo.bSound = cf.ReadByte ();
 		rType.lightningInfo.bRandom = cf.ReadByte ();
 		rType.lightningInfo.bInPlane = cf.ReadByte ();

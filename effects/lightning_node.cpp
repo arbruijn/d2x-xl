@@ -33,14 +33,14 @@
 bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
 											 int nLife, int nLength, int nAmplitude,
 											 char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
-											 short nSmoothe, char bClamp, char bPlasma, char bLight,
+											 short nSmoothe, char bClamp, char bGlow, char bLight,
 											 char nStyle, tRgbaColorf *colorP, CLightning *parentP, short nNode,
 											 int nThread)
 {
 if (!(m_child = new CLightning))
 	return false;
 m_child->Init (&m_vPos, vEnd, vDelta, -1, nLife, 0, nLength, nAmplitude, nAngle, 0,
-					nNodes, nChildren, nSteps, nSmoothe, bClamp, bPlasma, bLight,
+					nNodes, nChildren, nSteps, nSmoothe, bClamp, bGlow, bLight,
 					nStyle, colorP, parentP, nNode);
 return m_child->Create (nDepth, nThread);
 }

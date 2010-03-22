@@ -566,7 +566,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.effects.bTransparent, i, 0);
 		RP (gameOptions [i].render.lightning.bAuxViews, i, 0);
 		RP (gameOptions [i].render.lightning.bMonitors, i, 0);
-		RP (gameOptions [i].render.lightning.bPlasma, i, 0);
+		RP (gameOptions [i].render.lightning.bGlow, i, 0);
 		RP (gameOptions [i].render.lightning.bDamage, i, 0);
 		RP (gameOptions [i].render.lightning.bExplosions, i, 0);
 		RP (gameOptions [i].render.lightning.bOmega, i, 0);

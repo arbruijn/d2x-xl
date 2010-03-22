@@ -260,7 +260,7 @@ typedef struct tParticleOptions {
 typedef struct tLightningOptions {
 	int nQuality;
 	int nStyle;
-	int bPlasma;
+	int bGlow;
 	int bPlayers;
 	int bRobots;
 	int bDamage;

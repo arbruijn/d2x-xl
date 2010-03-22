@@ -200,7 +200,7 @@ if (i) {
 	gameOptions [1].render.lightning.bPlayers = 0;
 	gameOptions [1].render.lightning.bRobots = 0;
 	gameOptions [1].render.lightning.bStatic = 0;
-	gameOptions [1].render.lightning.bPlasma = 0;
+	gameOptions [1].render.lightning.bGlow = 0;
 	gameOptions [1].render.lightning.nQuality = 0;
 	gameOptions [1].render.lightning.nStyle = 0;
 	gameOptions [1].render.powerups.b3D = 0;
@@ -334,7 +334,7 @@ else {
 	gameOptions [0].render.lightning.bPlayers = 1;
 	gameOptions [0].render.lightning.bRobots = 1;
 	gameOptions [0].render.lightning.bStatic = 1;
-	gameOptions [0].render.lightning.bPlasma = 1;
+	gameOptions [0].render.lightning.bGlow = 1;
 	gameOptions [0].render.lightning.nQuality = 0;
 	gameOptions [0].render.lightning.nStyle = 1;
 	gameOptions [0].render.powerups.b3D = 0;

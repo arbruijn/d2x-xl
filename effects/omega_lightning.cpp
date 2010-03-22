@@ -171,7 +171,7 @@ else {
 	handleP->nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	vTarget = targetObjP ? &targetObjP->info.position.vPos : vTargetPos;
 #if OMEGA_PLASMA
-	color.alpha = gameOpts->render.lightning.bPlasma ? 0.5f : 0.3f;
+	color.alpha = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning =
 		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
