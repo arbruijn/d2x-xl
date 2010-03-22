@@ -688,15 +688,17 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (objP)
 void CLightningManager::CreateForPlayer (CObject* objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNING && gameOpts->render.lightning.bPlayers && OBJECT_EXISTS (objP)) {
-	int h, i = objP->Index ();
+	int h, nObject = objP->Index ();
 
-	if (0 <= m_objects [i])
+	if (0 <= m_objects [nObject])
 		MoveForObject (objP);
 	else {
-		h = Create (4 * objP->info.xSize / I2X (1), &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -5000, 1000,
-						4 * objP->info.xSize, objP->info.xSize, 0, 2 * objP->info.xSize, 50, 5, 1, 5, 1, 1, -1, 1, 1, 1, colorP);
+		int s = objP->info.xSize;
+		int i = X2I (s);
+		h = Create (1 /*4 * i*/, &OBJPOS (objP)->vPos, NULL, NULL, objP->Index (), -10000, 250,
+						4 * s, s, 0, 2 * s, i * 20, 3, 1, 3, 1, 1, -1, 1, 1, 1, colorP);
 		if (h >= 0)
-			m_objects [i] = h;
+			m_objects [nObject] = h;
 		}
 	}
 }
@@ -813,7 +815,7 @@ if (i < 0) {
 		vEnd.Assign (vEndf);
 		}
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0,
-					h, h / 4, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, &color);
+					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

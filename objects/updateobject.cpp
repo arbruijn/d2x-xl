@@ -516,9 +516,17 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	if (gameData.FusionCharge (info.nId) > I2X (2))
 		bNeedEffect = true;
 	else if (nType == SEGMENT_IS_FUELCEN)
+#if DBG
+		bNeedEffect = 1;
+#else
 		bNeedEffect = gameData.multiplayer.players [info.nId].energy < I2X (100);
+#endif
 	else if (nType == SEGMENT_IS_REPAIRCEN)
+#if DBG
+		bNeedEffect = 1;
+#else
 		bNeedEffect = gameData.multiplayer.players [info.nId].shields < I2X (100);
+#endif
 	else
 		bNeedEffect = false;
 	if (bHaveEffect != bNeedEffect)

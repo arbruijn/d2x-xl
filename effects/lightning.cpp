@@ -176,8 +176,11 @@ if (vEnd) {
 	m_vRefEnd = *vEnd;
 	m_vEnd = *vEnd;
 	}
-if ((m_bInPlane = (vDelta != NULL)))
+if (vDelta)
 	m_vDelta = *vDelta;
+else
+	m_vDelta.SetZero ();
+m_bInPlane = !m_vDelta.IsZero ();
 m_bRandom = bRandom;
 m_nLife = nLife;
 m_nTTL = abs (nLife);
@@ -239,7 +242,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 		nChildNodes = 2 * nChildNodes / 4 + rand () % (nChildNodes / 4);
 		scale = double (nChildNodes) / double (m_nNodes);
 		l = int (m_nLength * scale + 0.5);
-		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, m_nAmplitude, m_nAngle,
+		if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
 													 nChildNodes, m_nChildren / 5, nDepth - 1, max (1, int (m_nSteps * scale + 0.5)), m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
 													 m_nStyle, &m_color, this, nNode, nThread))
 			return false;
@@ -377,7 +380,7 @@ for (int i = 1; i < m_nNodes; i++)
 void CLightning::CreatePath (int nDepth, int nThread)
 {
 	CLightningNode*	plh, * nodeP [2];
-	int					h, i, j, nSteps, nStyle, nSmoothe, bClamp, bInPlane, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
+	int					h, i, j, nSteps, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
 	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
 
 	static int	nSeed [2];
@@ -388,7 +391,6 @@ nStyle = STYLE;
 nSteps = m_nSteps;
 nSmoothe = m_nSmoothe;
 bClamp = m_bClamp;
-bInPlane = m_bInPlane && ((nDepth == 1)); // || (nStyle == 2));
 nAmplitude = m_nAmplitude;
 plh = m_nodes.Buffer ();
 plh->m_vNewPos = plh->m_vPos;
@@ -402,21 +404,20 @@ if ((nDepth > 1) || m_bRandom) {
 			m_nodes [i].CreatePerlin (nAmplitude, double (i) / h, i, nThread);
 		Rotate (nSteps);
 		}
+	else if (nStyle == 1) {
+		nMinDist = m_nLength / (m_nNodes - 1);
+		for (i = m_nNodes - 1, plh = m_nodes + 1; i > 0; i--, plh++, bPrevOffs [0] = 1)
+			*vPrevOffs = plh->CreateJaggy (vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, nSteps, nAmplitude, nMinDist, i, nSmoothe, bClamp);
+		Scale (nSteps, nAmplitude);
+		}
 	else {
-		if (m_bInPlane)
+		int bInPlane = m_bInPlane && (nDepth == 1); 
+		if (bInPlane)
 			nStyle = 0;
 		nMinDist = m_nLength / (m_nNodes - 1);
-		if (!nStyle) {
-			nAmplitude *= (nDepth == 1) ? 4 : 16;
-			for (h = m_nNodes - 1, i = 0, plh = m_nodes + 1; i < h; i++, plh++) {
-				plh->CreateErratic (vPos, vBase, nSteps, nAmplitude, 0, bInPlane, 1, i, h + 1, nSmoothe, bClamp);
-				}
-			}
-		else {
-			for (i = m_nNodes - 1, plh = m_nodes + 1; i > 0; i--, plh++, bPrevOffs [0] = 1)
-				*vPrevOffs = plh->CreateJaggy (vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, nSteps, nAmplitude, nMinDist, i, nSmoothe, bClamp);
-			Scale (nSteps, nAmplitude);
-			}
+		nAmplitude *= (nDepth == 1) ? 4 : 16;
+		for (h = m_nNodes - 1, i = 0, plh = m_nodes + 1; i < h; i++, plh++) 
+			plh->CreateErratic (vPos, vBase, nSteps, nAmplitude, 0, bInPlane, 1, i, h + 1, nSmoothe, bClamp);
 		}
 	}
 else {
@@ -431,35 +432,34 @@ else {
 			plh->CreatePerlin (nAmplitude, double (i) / h, i, nThread);
 		Rotate (nSteps);
 		}
-	else {
-		if (m_bInPlane)
-			nStyle = 0;
-		if (!nStyle) {
-			nAmplitude *= 4;
-			for (h = m_nNodes - 1, i = j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [h - 1]; i < h; i++, j = !j) {
-				plh = nodeP [j];
-				plh->CreateErratic (vPos + j, vBase, nSteps, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
-				if (nodeP [1] <= nodeP [0])
-					break;
-				if (j)
-					nodeP [1]--;
-				else
-					nodeP [0]++;
-				}
+	else if (nStyle == 1) {
+		for (i = m_nNodes - 1, j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [i - 1]; i > 0; i--, j = !j) {
+			plh = nodeP [j];
+			vPrevOffs [j] = plh->CreateJaggy (vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, nSteps, nAmplitude, 0, i, nSmoothe, bClamp);
+			bPrevOffs [j] = 1;
+			if (nodeP [1] <= nodeP [0])
+				break;
+			if (j)
+				nodeP [1]--;
+			else
+				nodeP [0]++;
 			}
-		else {
-			for (i = m_nNodes - 1, j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [i - 1]; i > 0; i--, j = !j) {
-				plh = nodeP [j];
-				vPrevOffs [j] = plh->CreateJaggy (vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, nSteps, nAmplitude, 0, i, nSmoothe, bClamp);
-				bPrevOffs [j] = 1;
-				if (nodeP [1] <= nodeP [0])
-					break;
-				if (j)
-					nodeP [1]--;
-				else
-					nodeP [0]++;
-				}
-			Scale (nSteps, nAmplitude);
+		Scale (nSteps, nAmplitude);
+		}
+	else {
+		int bInPlane = m_bInPlane && (nDepth == 1); 
+		if (bInPlane)
+			nStyle = 0;
+		nAmplitude *= 4;
+		for (h = m_nNodes - 1, i = j = 0, nodeP [0] = m_nodes + 1, nodeP [1] = &m_nodes [h - 1]; i < h; i++, j = !j) {
+			plh = nodeP [j];
+			plh->CreateErratic (vPos + j, vBase, nSteps, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
+			if (nodeP [1] <= nodeP [0])
+				break;
+			if (j)
+				nodeP [1]--;
+			else
+				nodeP [0]++;
 			}
 		}
 	}
@@ -636,7 +636,10 @@ if (!nodeP)
 	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow;
 	float					fWidth = bGlow ? PLASMA_WIDTH / 2.0f : (m_bGlow > 0) ? (PLASMA_WIDTH / 4.0f) : (m_bGlow < 0) ? (PLASMA_WIDTH / 16.0f) : (PLASMA_WIDTH / 8.0f);
 
-vEye.Assign (gameData.render.mine.viewerEye);
+if (nThread < 0)
+	vEye.SetZero ();
+else
+	vEye.Assign (gameData.render.mine.viewerEye);
 dstP = m_plasmaVerts.Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
@@ -644,6 +647,8 @@ for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
 		i = i;
 	vPos [0] = vPos [1];
 	vPos [1].Assign (nodeP->m_vPos);
+	//if (nThread < 0)
+	//	transformation.Transform (vPos [1], vPos [1]);
 	if (i) {
 		vn = CFloatVector::Normal (vPos [0], vPos [1], vEye);
 		vn *= fWidth;
