@@ -795,7 +795,7 @@ int nLighting = gameStates.render.nLighting;
 gameStates.render.nLighting = 0;
 RenderObject (gameData.objs.consoleP, 0, 0);
 gameStates.render.nState = 0;
-transparencyRenderer.Render ();
+transparencyRenderer.Render (0);
 gameStates.render.nLighting = nLighting;
 }
 
@@ -868,7 +868,7 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 else
 	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
-transparencyRenderer.Render ();
+transparencyRenderer.Render (0);
 }
 
 //-----------------------------------------------------------------------------
