@@ -319,8 +319,9 @@ else {
 	}
 m_nTTL = m_nLife;
 
+m_nRenderType = RenderType ();
 m_bAnimate = (nType != FIRE_PARTICLES) && (gameOpts->render.particles.nQuality > 1) && (m_nFrames > 1);
-m_bRotate = (m_nType <= SMOKE_PARTICLES) ? 1 : (m_nType == FIRE_PARTICLES) ? -1 : 0;
+m_bRotate = (m_nRenderType <= SMOKE_PARTICLES) ? 1 : (m_nRenderType == FIRE_PARTICLES + PARTICLE_TYPES) ? -1 : 0;
 
 UpdateDecay ();
 UpdateTexCoord ();
@@ -346,7 +347,6 @@ else
 #	endif
 	}
 SetupColor (fBrightness);
-m_nRenderType = RenderType ();
 return 1;
 }
 
