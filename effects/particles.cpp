@@ -937,13 +937,10 @@ pb [3].vertex [Z] = vCenter [Z];
 
 void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
-	CFloatVector3	vCenter, uVec, rVec;
+	CFloatVector3	vCenter, vOffset, uVec, rVec;
 	float				fScale;
 
 vCenter.Assign (m_vPos);
-
-uVec.Assign (gameData.objs.viewerP->info.position.mOrient.UVec ());
-rVec.Assign (gameData.objs.viewerP->info.position.mOrient.RVec ());
 
 if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 #if DBG
@@ -964,16 +961,16 @@ if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 else {
 	fScale = m_decay;
 	}
+#if 0
 if (m_bRotate && gameOpts->render.particles.bRotate)
-	fScale *= 1.4142f;
+	fScale *= 1.4074037f;
+#endif
 
-uVec *= m_nWidth * fScale;
-rVec *= m_nHeight * fScale;
-
-pb [0].vertex = vCenter + uVec - rVec;
-pb [1].vertex = vCenter + uVec + rVec;
-pb [2].vertex = vCenter - uVec + rVec;
-pb [3].vertex = vCenter - uVec - rVec;
+uVec.Assign (gameData.objs.viewerP->info.position.mOrient.UVec ());
+rVec.Assign (gameData.objs.viewerP->info.position.mOrient.RVec ());
+vOffset = uVec + rVec;
+vOffset [X] *= m_nWidth * fScale;
+vOffset [Y] *= m_nHeight * fScale;
 
 pb [0].color =
 pb [1].color =
@@ -981,27 +978,55 @@ pb [2].color =
 pb [3].color = m_renderColor;
 
 float hx = ParticleImageInfo (m_nType).xBorder;
+pb [m_nOrient].texCoord.v.u =
+pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
+pb [(m_nOrient + 1) % 4].texCoord.v.u =
+pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
 float hy = ParticleImageInfo (m_nType).yBorder;
+pb [m_nOrient].texCoord.v.v =
+pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
+pb [(m_nOrient + 2) % 4].texCoord.v.v =
+pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
+#if 1
+	vOffset [X] *= vRot [i][X];
+	vOffset [Y] *= vRot [i][Y];
+
+	pb [0].vertex [X] = vCenter [X] - vOffset [X];
+	pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
+	pb [1].vertex [X] = vCenter [X] + vOffset [Y];
+	pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
+	pb [2].vertex [X] = vCenter [X] + vOffset [X];
+	pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
+	pb [3].vertex [X] = vCenter [X] - vOffset [Y];
+	pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
+#else
 	float h = m_deltaUV * 0.5f;
 	tTexCoord2f tcOffset = {h - hx, h - hy};
 	tTexCoord2f tcCenter = {m_texCoord.v.u + h, m_texCoord.v.v + h};
-	tTexCoord2f tcRotate = {0.7071f * tcOffset.v.u * vRot [i][X], 0.7071f * tcOffset.v.v * vRot [i][Y]};
+	tTexCoord2f tcRotate = {0.7105281f * tcOffset.v.u * vRot [i][X], 0.7105281f * tcOffset.v.v * vRot [i][Y]};
 
 	pb [m_nOrient].texCoord.v.u = tcCenter.v.u - tcRotate.v.u;
-	pb [m_nOrient].texCoord.v.v = tcCenter.v.v - tcRotate.v.v;
-	pb [(m_nOrient + 1) % 4].texCoord.v.u = tcCenter.v.u - tcRotate.v.u;
-	pb [(m_nOrient + 1) % 4].texCoord.v.v = tcCenter.v.v + tcRotate.v.v;
+	pb [m_nOrient].texCoord.v.v = tcCenter.v.v + tcRotate.v.v;
+	pb [(m_nOrient + 1) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.v;
+	pb [(m_nOrient + 1) % 4].texCoord.v.v = tcCenter.v.v + tcRotate.v.u;
 	pb [(m_nOrient + 2) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.u;
-	pb [(m_nOrient + 2) % 4].texCoord.v.v = tcCenter.v.v + tcRotate.v.v;
-	pb [(m_nOrient + 3) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.u;
-	pb [(m_nOrient + 3) % 4].texCoord.v.v = tcCenter.v.v - tcRotate.v.v;
+	pb [(m_nOrient + 2) % 4].texCoord.v.v = tcCenter.v.v - tcRotate.v.v;
+	pb [(m_nOrient + 3) % 4].texCoord.v.u = tcCenter.v.u - tcRotate.v.v;
+	pb [(m_nOrient + 3) % 4].texCoord.v.v = tcCenter.v.v - tcRotate.v.u;
+#endif
 	}
 else {
+#if 1
+	pb [0].vertex = vCenter + uVec - rVec;
+	pb [1].vertex = vCenter + uVec + rVec;
+	pb [2].vertex = vCenter - uVec + rVec;
+	pb [3].vertex = vCenter - uVec - rVec;
+#else
 	pb [m_nOrient].texCoord.v.u =
 	pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
 	pb [(m_nOrient + 1) % 4].texCoord.v.u =
@@ -1010,6 +1035,7 @@ else {
 	pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
 	pb [(m_nOrient + 2) % 4].texCoord.v.v =
 	pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
+#endif
 	}
 }
 

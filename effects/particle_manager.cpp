@@ -345,8 +345,14 @@ if (!gameOpts->render.particles.nQuality) {
 	m_iBuffer = 0;
 	return false;
 	}
-if ((nType < 0) && !bForce)
+if ((nType < 0) && !bForce) {
+	m_iBuffer = 0;
 	return false;
+	}
+if (nType < PARTICLE_TYPES) {
+	m_iBuffer = 0;
+	return false;
+	}
 
 #if ENABLE_FLUSH
 PROF_START
