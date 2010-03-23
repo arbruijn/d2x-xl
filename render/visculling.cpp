@@ -153,25 +153,25 @@ ubyte bVisible [MAX_SEGMENTS_D2X];
 //Given two sides of CSegment, tell the two verts which form the
 //edge between them
 short edgeBetweenTwoSides [6][6][2] = {
- { {-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3} },
- { {3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3} },
- { {-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1} },
- { {2, 6}, {-1, -1}, {1, 5}, {-1, -1}, {5, 6}, {1, 2} },
- { {6, 7}, {4, 7}, {4, 5}, {5, 6}, {-1, -1}, {-1, -1} },
- { {2, 3}, {0, 3}, {0, 1}, {1, 2}, {-1, -1}, {-1, -1} }
-};
+	{{-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3}},
+	{{3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3}},
+	{{-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1}},
+	{{2, 6}, {-1, -1}, {1, 5}, {-1, -1}, {5, 6}, {1, 2}},
+	{{6, 7}, {4, 7}, {4, 5}, {5, 6}, {-1, -1}, {-1, -1}},
+	{{2, 3}, {0, 3}, {0, 1}, {1, 2}, {-1, -1}, {-1, -1}}
+	};
 
 //given an edge specified by two verts, give the two sides on that edge
 int edgeToSides [8][8][2] = {
- { {-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1} },
- { {2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1} },
- { {-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1} },
- { {1, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {0, 1} },
- { {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {1, 4} },
- { {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {3, 4}, {-1, -1} },
- { {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}, {-1, -1}, {3, 4}, {-1, -1}, {0, 4} },
- { {-1, -1}, {-1, -1}, {-1, -1}, {0, 1}, {1, 4}, {-1, -1}, {0, 4}, {-1, -1} },
-};
+	{{-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}},
+	{{2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}},
+	{{-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}},
+	{{1, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {0, 1}},
+	{{1, 2}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {1, 4}},
+	{{-1, -1}, {2, 3}, {-1, -1}, {-1, -1}, {2, 4}, {-1, -1}, {3, 4}, {-1, -1}},
+	{{-1, -1}, {-1, -1}, {0, 3}, {-1, -1}, {-1, -1}, {3, 4}, {-1, -1}, {0, 4}},
+	{{-1, -1}, {-1, -1}, {-1, -1}, {0, 1}, {1, 4}, {-1, -1}, {0, 4}, {-1, -1}},
+	};
 
 //------------------------------------------------------------------------------
 //given an edge and one side adjacent to that edge, return the other adjacent CSide
@@ -564,15 +564,6 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 
 //------------------------------------------------------------------------------
 
-void SetSegRenderList (void)
-{
-tSegZRef* ps = segZRef [gameStates.app.bMultiThreaded];
-for (int i = 0; i < gameData.render.mine.nRenderSegs; i++)
-	gameData.render.mine.nSegRenderList [0][i] = ps [i].nSegment;
-}
-
-//------------------------------------------------------------------------------
-
 void SortRenderSegs (void)
 {
 if (gameData.render.mine.nRenderSegs < 2)
@@ -630,7 +621,7 @@ gameData.render.zMax = vCenter [Z] + d1 + r;
 
 //-----------------------------------------------------------------
 
-void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors)
+void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nThread)
 {
 	int			nCurrent, nHead, nTail, nStart, nSide;
 	int			l, i, j;
@@ -646,12 +637,15 @@ void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors)
 	CSegment*	segP;
 	CFixVector	viewDir, viewPos;
 
+	CShortArray&	segRenderList = gameData.render.mine.nSegRenderList [nThread];
+	CShortArray&	renderPos = gameData.render.mine.nRenderPos [nThread];
+
 viewDir = transformation.m_info.view [0].FVec ();
 viewPos = transformation.m_info.pos;
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
 bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
-gameData.render.mine.nRenderPos.Clear (char (0xff));
+renderPos.Clear (char (0xff));
 BumpVisitedFlag ();
 BumpProcessedFlag ();
 BumpVisibleFlag ();
@@ -665,7 +659,7 @@ if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar (
 		if ((automap.Visible (i)) &&
 			 (bSkyBox || (SEGMENTS [i].m_nType != SEGMENT_IS_SKYBOX)) &&
 			 (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
-			gameData.render.mine.nSegRenderList [0][gameData.render.mine.nRenderSegs++] = i;
+			segRenderList [gameData.render.mine.nRenderSegs++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
 			}
@@ -673,10 +667,10 @@ if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar (
 	return;
 	}
 
-gameData.render.mine.nSegRenderList [0][0] = nStartSeg;
+segRenderList [0] = nStartSeg;
 gameData.render.mine.nSegDepth [0] = 0;
 VISIT (nStartSeg);
-gameData.render.mine.nRenderPos [nStartSeg] = 0;
+renderPos [nStartSeg] = 0;
 nHead = nTail = nStart = 0;
 nCurrent = 1;
 
@@ -693,7 +687,7 @@ for (l = 0; l < nRenderDepth; l++) {
 		if (gameData.render.mine.bProcessed [nHead] == gameData.render.mine.nProcessed)
 			continue;
 		gameData.render.mine.bProcessed [nHead] = gameData.render.mine.nProcessed;
-		nSegment = gameData.render.mine.nSegRenderList [0][nHead];
+		nSegment = segRenderList [nHead];
 		curPortal = renderPortals + nHead;
 		if (nSegment == -1)
 			continue;
@@ -782,7 +776,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #else
 			if (!bProjected || !(andCodes3D | (0xff & CodePortal (&p, curPortal)))) {	//maybe add this segment
 #endif
-				int nPos = gameData.render.mine.nRenderPos [nChildSeg];
+				int nPos = renderPos [nChildSeg];
 				tPortal *newPortal = renderPortals + nCurrent;
 
 				if (!bProjected)
@@ -795,8 +789,8 @@ for (l = 0; l < nRenderDepth; l++) {
 					}
 				//see if this segment has already been visited, and if so, does the current portal expand the old portal?
 				if (nPos == -1) {
-					gameData.render.mine.nRenderPos [nChildSeg] = nCurrent;
-					gameData.render.mine.nSegRenderList [0][nCurrent] = nChildSeg;
+					renderPos [nChildSeg] = nCurrent;
+					segRenderList [nCurrent] = nChildSeg;
 					gameData.render.mine.nSegDepth [nCurrent++] = l;
 					VISIT (nChildSeg);
 					}
@@ -826,7 +820,7 @@ for (l = 0; l < nRenderDepth; l++) {
 						bExpand = true;
 					if (bExpand) {
 						if (nCurrent < gameData.segs.nSegments)
-							gameData.render.mine.nSegRenderList [0][nCurrent] = -0x7fff;
+							segRenderList [nCurrent] = -0x7fff;
 						*oldPortal = *newPortal;		//get updated tPortal
 						gameData.render.mine.bProcessed [nPos] = gameData.render.mine.nProcessed - 1;		//force reprocess
 #if 0
@@ -847,11 +841,11 @@ gameData.render.mine.nRenderSegs = nCurrent;
 
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 #if DBG
-	if (gameData.render.mine.nSegRenderList [0][i] == nDbgSeg)
+	if (segRenderList [i] == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	if (gameData.render.mine.nSegRenderList [0][i] >= 0)
-		gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [0][i]] = gameData.render.mine.nVisible;
+	if (segRenderList [i] >= 0)
+		gameData.render.mine.bVisible [segRenderList [i]] = gameData.render.mine.nVisible;
 	}
 }
 

@@ -331,8 +331,10 @@ bool CMineRenderData::Create (void)
 nVisited = 255;
 nProcessed = 255;
 nVisible = 255;
-for (int i = 0; i < MAX_THREADS; i++)
+for (int i = 0; i < MAX_THREADS; i++) {
 	CREATE (nSegRenderList [i], gameData.segs.nSegments, 0);
+	CREATE (nRenderPos [i], gameData.segs.nSegments, 0);
+	}
 CREATE (pFaceRenderList, gameData.segs.nFaces, 0);
 CREATE (bVisited, gameData.segs.nSegments, 0);
 CREATE (bVisible, gameData.segs.nSegments, 0);
@@ -341,7 +343,6 @@ CREATE (nSegDepth, gameData.segs.nSegments, 0);
 CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
 CREATE (bRenderSegment, gameData.segs.nSegments, 0);
 CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
-CREATE (nRenderPos, gameData.segs.nSegments, 0);
 CREATE (nRotatedLast, gameData.segs.nVertices, 0);
 CREATE (bCalcVertexColor, gameData.segs.nVertices, 0);
 CREATE (bAutomapVisited, gameData.segs.nSegments, 0);
@@ -354,8 +355,10 @@ return true;
 
 void CMineRenderData::Destroy (void)
 {
-for (int i = 0; i < MAX_THREADS; i++)
+for (int i = 0; i < MAX_THREADS; i++) {
 	DESTROY (nSegRenderList [i]);
+	DESTROY (nRenderPos [i]);
+	}
 DESTROY (pFaceRenderList);
 DESTROY (bVisited);
 DESTROY (bVisible);
@@ -364,7 +367,6 @@ DESTROY (nSegDepth);
 DESTROY (bObjectRendered);
 DESTROY (bRenderSegment);
 DESTROY (nRenderObjList);
-DESTROY (nRenderPos);
 DESTROY (nRotatedLast);
 DESTROY (bCalcVertexColor);
 DESTROY (bAutomapVisited);

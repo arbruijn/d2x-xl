@@ -1464,6 +1464,7 @@ class CMineRenderData {
 	public:
 		CFixVector				viewerEye;
 		CShortArray				nSegRenderList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
+		CShortArray				nRenderPos [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
 		CArray< CSegFace* >	pFaceRenderList; //[MAX_SEGMENTS_D2X * 6];
 		CObjRenderList			renderObjs;
 		int						nRenderSegs;
@@ -1479,7 +1480,6 @@ class CMineRenderData {
 		CByteArray				bObjectRendered; //[MAX_OBJECTS_D2X];
 		CByteArray				bRenderSegment; //[MAX_SEGMENTS_D2X];
 		CShortArray				nRenderObjList; //[MAX_SEGMENTS_D2X+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
-		CShortArray				nRenderPos; //[MAX_SEGMENTS_D2X];
 		CIntArray				nRotatedLast; //[MAX_VERTICES_D2X];
 		CByteArray				bCalcVertexColor; //[MAX_VERTICES_D2X];
 		CUShortArray			bAutomapVisited; //[MAX_SEGMENTS_D2X];
@@ -1775,11 +1775,6 @@ class CSegmentData {
 			}
 
 		inline int SetSegVis (short nSrcSeg, short nDestSeg, int bLights)	{
-			static int bSemaphore = 0;
-
-			if (bSemaphore)
-				return 0;
-			bSemaphore = 1;
 			if (bLights) {
 				int i = LightVisIdx (nSrcSeg, nDestSeg);
 				bSegVis [1][i >> 3] |= (1 << (i & 7));
@@ -1788,7 +1783,6 @@ class CSegmentData {
 				int i = SegVisIdx (nSrcSeg, nDestSeg);
 				bSegVis [0][i >> 3] |= (1 << (i & 7));
 				}
-			bSemaphore = 0;
 			return 1;
 			}
 };

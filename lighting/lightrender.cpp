@@ -445,7 +445,7 @@ if (gameStates.render.nLightingMethod) {
 				nDbgObj = nDbgObj;
 #endif
 			if ((nLightSeg = prl->info.nSegment) >= 0) {
-				if (!gameData.segs.LightVis (nLightSeg, nSegment))
+				if (!(prl->info.nSide >= 0) ? gameData.segs.LightVis (nLightSeg, nSegment) : gameData.segs.SegVis (nLightSeg, nSegment))
 					continue;
 				}
 			else if ((prl->info.nObject >= 0) && ((nLightSeg = OBJECTS [prl->info.nObject].info.nSegment) >= 0)) {

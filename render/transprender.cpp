@@ -225,9 +225,6 @@ SDL_mutexP (tiRender.semaphore);
 #if !USE_OPENMP
 SDL_mutexV (tiRender.semaphore);
 #endif
-#if !USE_OPENMP
-SDL_mutexV (tiRender.semaphore);
-#endif
 
 return m_data.nFreeItems;
 #else

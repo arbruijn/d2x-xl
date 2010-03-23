@@ -422,7 +422,7 @@ else if (nSegment >= 0) {
 #endif
 	if (nSide < 0) {
 		pl->info.nType = 2;
-		pl->info.bVariable = 0;
+		pl->info.bVariable = 1;
 		pl->info.fRad = 0;
 		if (vPos)
 			pl->info.vPos = *vPos;

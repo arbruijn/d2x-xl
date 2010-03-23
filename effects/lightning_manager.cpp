@@ -604,10 +604,14 @@ if (SHOW_LIGHTNING) {
 		llP->color.green /= n;
 		llP->color.blue /= n;
 
+#if 1
+		llP->nBrightness = F2X (sqrt (10 * (llP->color.red + llP->color.green + llP->color.blue) * llP->color.alpha));
+#else
 		if (gameStates.render.bPerPixelLighting == 2)
 			llP->nBrightness = F2X (sqrt (10 * (llP->color.red + llP->color.green + llP->color.blue) * llP->color.alpha));
 		else
 			llP->nBrightness = F2X (10 * (llP->color.red + llP->color.green + llP->color.blue) * llP->color.alpha);
+#endif
 		if (bDynLighting) {
 			llP->nDynLight = lightManager.Add (NULL, &llP->color, llP->nBrightness, llP->nSegment, -1, -1, -1, &llP->vPos);
 			nLights++;

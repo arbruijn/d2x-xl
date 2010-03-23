@@ -38,6 +38,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "dynlight.h"
 
+#if !USE_OPENMP
+#include "SDL_mutex.h"
+
+static SDL_mutex* semaphore;
+#endif
+
 //------------------------------------------------------------------------------
 
 #define LIGHT_DATA_VERSION 15
@@ -152,9 +158,9 @@ for (segP = SEGMENTS + i; i < j; i++, segP++) {
 	h = (nMaxLights < n) ? nMaxLights : n;
 	k = i * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
-		lightManager.NearestSegLights  ()[k + l] = pDists [l].nIndex;
+		lightManager.NearestSegLights ()[k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
-		lightManager.NearestSegLights  ()[k + l] = -1;
+		lightManager.NearestSegLights ()[k + l] = -1;
 	}
 delete[] pDists;
 return 1;
@@ -336,11 +342,10 @@ else
 viewer.info.nSegment = nStartSeg;
 gameData.objs.viewerP = &viewer;
 for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
-#if 1
+
 	if (bLights && gameStates.render.bPerPixelLighting) {
 		if (0 <= (nChildSeg = segP->m_children [nSide])) {
-			while (!gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights))
-				;
+			gameData.segs.SetSegVis (nStartSeg, nChildSeg, bLights);
 			childP = SEGMENTS + nChildSeg;
 			for (nChildSide = 0; nChildSide < 6; nChildSide++) {
 				if (0 <= (nSegment = childP->m_children [nSide])) {
@@ -359,7 +364,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	G3StartFrame (0, 0, 0);
 	RenderStartFrame ();
 	G3SetViewMatrix (viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, 1);
-#endif
+
 #if DBG
 if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
@@ -379,8 +384,6 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			continue;
 #endif
 		SetSegAndVertVis (nStartSeg, nSegment, bLights);
-		if (!bLights)
-			SetSegAndVertVis (nSegment, nStartSeg, 0);
 		}
 	}
 ogl.SetTransform (0);
@@ -393,14 +396,12 @@ void ComputeSegmentVisibility (int startI)
 	int			i, endI;
 
 PrintLog ("computing segment visibility (%d)\n", startI);
-if (gameStates.app.bMultiThreaded) {
-	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
-	}
+if (gameStates.app.bMultiThreaded)
+	endI = gameData.segs.nSegments;
 else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 if (startI < 0)
 	startI = 0;
-// every segment can see itself and its neighbours
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);
 }
@@ -420,9 +421,8 @@ if (startI <= 0) {
 	}
 else if (!gameData.segs.bVertVis)
 	return;
-if (gameStates.app.bMultiThreaded) {
-	endI = startI ? lightManager.LightCount (0) : lightManager.LightCount (0)  / 2;
-	}
+if (gameStates.app.bMultiThreaded)
+	endI = lightManager.LightCount (0);
 else
 	INIT_PROGRESS_LOOP (startI, endI, lightManager.LightCount (0));
 if (startI < 0)
