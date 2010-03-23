@@ -390,9 +390,9 @@ if (InitBuffer ()) {
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, -1);
-#if 1
+	ogl.SetupTransform (1);
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
-#endif
+	ogl.ResetTransform (1);
 	glNormal3f (1, 1, 1);
 	}
 PROF_END(ptParticles)

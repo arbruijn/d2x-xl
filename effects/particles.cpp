@@ -938,36 +938,37 @@ pb [3].vertex [Z] = vCenter [Z];
 void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
 	CFloatVector3	vCenter, uVec, rVec;
+	float				fScale;
 
-transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
-vCenter.Assign (m_vTransPos);
+vCenter.Assign (m_vPos);
 
 uVec.Assign (gameData.objs.viewerP->info.position.mOrient.UVec ());
 rVec.Assign (gameData.objs.viewerP->info.position.mOrient.RVec ());
 
 if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 #if DBG
-	float fFade;
 	if (m_nFadeType == 3)
-		fFade = 1.0;
+		fScale = 1.0;
 	else if (m_decay > 0.9f)
-		fFade = (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.25f));
+		fScale = (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.25f));
 	else
-		fFade = 1.0f / float (pow (m_decay, 0.25f));
+		fScale = 1.0f / float (pow (m_decay, 0.25f));
 #else
-	float fFade = (m_nFadeType == 3) 
+	float fScale = (m_nFadeType == 3) 
 		? 1.0f 
 		: (m_decay > 0.9f)	// start from zero size by scaling with pow (m_decay, 44f) which is < 0.01 for m_decay == 0.9f
 			? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
 			: 1.0f / float (pow (m_decay, 0.3333333f));
 #endif
-	uVec *= fFade * 0.7071f;
-	rVec *= fFade * 0.7071f;
 	}
 else {
-	uVec *= m_decay * 0.7071f;
-	rVec *= m_decay * 0.7071f;
+	fScale = m_decay;
 	}
+if (m_bRotate && gameOpts->render.particles.bRotate)
+	fScale *= 1.4142f;
+
+uVec *= m_nWidth * fScale;
+rVec *= m_nHeight * fScale;
 
 pb [0].vertex = vCenter + uVec - rVec;
 pb [1].vertex = vCenter + uVec + rVec;
@@ -984,20 +985,21 @@ float hy = ParticleImageInfo (m_nType).yBorder;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
-if (m_bRotate && gameOpts->render.particles.bRotate)  {
+if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	tTexCoord2f tcOffset = {(m_deltaUV - 2 * hx) / 2, (m_deltaUV - 2 * hy) / 2};
-	tTexCoord2f tcCenter = {m_texCoord.v.u + tcOffset.v.u, m_texCoord.v.v + tcOffset.v.v};
+	float h = m_deltaUV * 0.5f;
+	tTexCoord2f tcOffset = {h - hx, h - hy};
+	tTexCoord2f tcCenter = {m_texCoord.v.u + h, m_texCoord.v.v + h};
 	tTexCoord2f tcRotate = {0.7071f * tcOffset.v.u * vRot [i][X], 0.7071f * tcOffset.v.v * vRot [i][Y]};
 
 	pb [m_nOrient].texCoord.v.u = tcCenter.v.u - tcRotate.v.u;
-	pb [m_nOrient].texCoord.v.v = tcCenter.v.u - tcRotate.v.v;
+	pb [m_nOrient].texCoord.v.v = tcCenter.v.v - tcRotate.v.v;
 	pb [(m_nOrient + 1) % 4].texCoord.v.u = tcCenter.v.u - tcRotate.v.u;
-	pb [(m_nOrient + 1) % 4].texCoord.v.v = tcCenter.v.u + tcRotate.v.v;
+	pb [(m_nOrient + 1) % 4].texCoord.v.v = tcCenter.v.v + tcRotate.v.v;
 	pb [(m_nOrient + 2) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.u;
-	pb [(m_nOrient + 2) % 4].texCoord.v.v = tcCenter.v.u + tcRotate.v.v;
+	pb [(m_nOrient + 2) % 4].texCoord.v.v = tcCenter.v.v + tcRotate.v.v;
 	pb [(m_nOrient + 3) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.u;
-	pb [(m_nOrient + 3) % 4].texCoord.v.v = tcCenter.v.u - tcRotate.v.v;
+	pb [(m_nOrient + 3) % 4].texCoord.v.v = tcCenter.v.v - tcRotate.v.v;
 	}
 else {
 	pb [m_nOrient].texCoord.v.u =
