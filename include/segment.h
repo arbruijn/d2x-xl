@@ -265,6 +265,8 @@ class CSegment {
 		void ComputeRads (fix xMinDist);
 		inline void ComputeSideCenter (int nSide) { m_sides [nSide].ComputeCenter (); }
 		inline CSide* Side (int nSide) { return m_sides + nSide; }
+		CSide* AdjacentSide (int nSegment);
+		CSide* OppositeSide (int nSide);
 		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
 		inline CTrigger* Trigger (int nSide) { return m_sides [nSide].Trigger (); }
 		inline sbyte Type (int nSide) { return m_sides [nSide].m_nType; }

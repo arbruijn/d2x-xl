@@ -1032,7 +1032,7 @@ CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex)
 	CBitmap*		bmBot = (nBaseTex < 0) ? NULL : LoadFaceBitmap (nBaseTex, 0, 1);
 	CBitmap*		bmTop = (nOvlTex <= 0) ? NULL : LoadFaceBitmap (nOvlTex, 0, 1);
 	tSegFaces*	segFaceP = SEGFACES + Index ();
-	CSegFace	*	faceP = segFaceP->faceP;
+	CSegFace*	faceP = segFaceP->faceP;
 
 for (int i = segFaceP->nFaces; i; i--, faceP++) {
 	if (bmBot) {
@@ -1045,6 +1045,25 @@ for (int i = segFaceP->nFaces; i; i--, faceP++) {
 		}
 	}
 return bmBot ? bmBot : bmTop;
+}
+
+//------------------------------------------------------------------------------
+
+CSide* CSegment::AdjacentSide (int nSegment)
+{
+for (int i = 0; i < 5; i++)
+	if (m_children [i] == nSegment)
+		return m_sides + i;
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+CSide* CSegment::OppositeSide (int nSide)
+{
+if (m_children [nSide] < 0)
+	return NULL;
+return SEGMENTS [m_children [nSide]].AdjacentSide (Index ());
 }
 
 //------------------------------------------------------------------------------

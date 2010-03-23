@@ -1017,11 +1017,22 @@ return CWall::IsTriggerTarget ();
 
 // -----------------------------------------------------------------------------------
 
+CWall* CWall::Opposite (void)
+{
+CSide* sideP = SEGMENTS [nSegment].OppositeSide (nSide);
+return sideP ? sideP->Wall () : NULL;
+}
+
+// -----------------------------------------------------------------------------------
+
 bool CWall::IsInvisible (void)
 {
 if ((nType != WALL_OPEN) && ((nType != WALL_CLOAKED) || (cloakValue <  FADE_LEVELS)))
 	return false;
-return !IsTriggerTarget ();
+if (IsTriggerTarget ())
+	return false;
+CWall* wallP = Opposite ();
+return (wallP != NULL) && !wallP->IsTriggerTarget ();
 }
 
 // -----------------------------------------------------------------------------------
@@ -1030,7 +1041,7 @@ return !IsTriggerTarget ();
 void BlastNearbyGlass (CObject *objP, fix damage)
 {
 	int		i;
-	sbyte   visited [MAX_SEGMENTS_D2X];
+	sbyte		visited [MAX_SEGMENTS_D2X];
 	CSegment	*cursegp;
 
 cursegp = &SEGMENTS [objP->info.nSegment];
