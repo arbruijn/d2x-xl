@@ -1178,13 +1178,13 @@ return m_data.nCurType;
 
 extern int bLog;
 
-void CTransparencyRenderer::Render (void)
+void CTransparencyRenderer::Render (int nWindow)
 {
 #if RENDER_TRANSPARENCY
 	tTranspItem*		currentP, * nextP, * prevP;
 	tTranspItemList*	listP;
 	int					nItems, nDepth, bStencil;
-	bool					bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || gameStates.render.cameras.bActive;
+	bool					bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow || gameStates.render.cameras.bActive;
 
 if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;

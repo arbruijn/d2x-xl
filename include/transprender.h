@@ -192,7 +192,7 @@ class CTransparencyRenderer {
 		int AddParticle (CParticle *particle, float fBrightness, int nThread);
 		int AddLightning (CLightning *lightningP, short nDepth);
 		int AddLightTrail (CBitmap *bmP, CFloatVector *vThruster, tTexCoord2f *tcThruster, CFloatVector *vFlame, tTexCoord2f *tcFlame, tRgbaColorf *colorP);
-		void Render (void);
+		void Render (int nWindow);
 		void StartRenderThreads (void);
 		void EndRenderThreads (void);
 		void Free (void);
