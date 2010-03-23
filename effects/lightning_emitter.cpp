@@ -295,22 +295,12 @@ int CLightningEmitter::SetLight (void)
 {
 if (m_bValid < 1)
 	return 0;
+if (!m_lightning.Buffer ())
+	return 0;
 
-	int nLights = 0;
-
-if (m_lightning.Buffer ()) {
-#if USE_OPENMP > 1
-#	pragma omp parallel
-#endif
-		{
-#if USE_OPENMP > 1
-#		pragma omp for reduction(+: nLights)
-#endif
-		for (int i = 0; i < m_nBolts; i++) {
-			nLights = m_lightning [i].SetLight ();
-			}
-		}
-	}
+int nLights = 0;
+for (int i = 0; i < m_nBolts; i++)
+	nLights += m_lightning [i].SetLight ();
 return nLights;
 }
 

@@ -564,8 +564,27 @@ if (SHOW_LIGHTNING) {
 
 	m_nFirstLight = -1;
 	int nCurrent = -1;
-	for (CLightningEmitter* emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))
-		nLights += emitterP->SetLight ();
+
+#if USE_OPENMP > 1
+	if (m_emitterList.Buffer ()) {
+		CLightningEmitter* emitterP;
+		int nSystems = 0;
+		for (emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))
+			m_emitterList [nSystems++] = emitterP;
+#	pragma omp parallel
+			{
+			int nThread = omp_get_thread_num ();
+#		pragma omp for private(emitterP) reduction(+: nLights)
+			for (int i = 0; i < nSystems; i++) {
+				emitterP = m_emitterList [i];
+				nLights += emitterP->SetLight ();
+				}
+			}
+		}
+	else 
+#endif
+		for (CLightningEmitter* emitterP = m_emitters.GetFirst (nCurrent); emitterP; emitterP = m_emitters.GetNext (nCurrent))
+			nLights += emitterP->SetLight ();
 	if (!nLights)
 		return;
 	nLights = 0;
@@ -586,9 +605,9 @@ if (SHOW_LIGHTNING) {
 		llP->color.blue /= n;
 
 		if (gameStates.render.bPerPixelLighting == 2)
-			llP->nBrightness = F2X (sqrt ((llP->color.red * 3 + llP->color.green * 5 + llP->color.blue * 2) * llP->color.alpha));
+			llP->nBrightness = F2X (sqrt (10 * (llP->color.red + llP->color.green + llP->color.blue) * llP->color.alpha));
 		else
-			llP->nBrightness = F2X ((llP->color.red * 3 + llP->color.green * 5 + llP->color.blue * 2) * llP->color.alpha);
+			llP->nBrightness = F2X (10 * (llP->color.red + llP->color.green + llP->color.blue) * llP->color.alpha);
 		if (bDynLighting) {
 			llP->nDynLight = lightManager.Add (NULL, &llP->color, llP->nBrightness, llP->nSegment, -1, -1, -1, &llP->vPos);
 			nLights++;
