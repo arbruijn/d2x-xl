@@ -64,7 +64,7 @@
 extern int nPartSeg [MAX_THREADS];
 extern tRgbaColorf defaultParticleColor;
 extern CFloatVector vRot [PARTICLE_POSITIONS];
-extern CFixMatrix vRot [PARTICLE_POSITIONS];
+extern CFixMatrix mRot [PARTICLE_POSITIONS];
 
 //------------------------------------------------------------------------------
 

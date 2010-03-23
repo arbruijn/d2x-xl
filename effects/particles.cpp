@@ -936,7 +936,7 @@ pb [3].vertex [Z] = vCenter [Z];
 
 #else // -----------------------------------------------------------------------
 
-bool CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
+void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
 	CFloatVector3	vCenter, uVec, rVec;
 	float				fScale;
