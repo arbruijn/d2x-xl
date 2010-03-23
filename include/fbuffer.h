@@ -75,6 +75,7 @@ class CFBO {
 		inline int Active (void) { return m_info.bActive; }
 		inline GLuint* BufferIds (void) { return m_info.bufferIds + m_info.nFirstBuffer; }
 		inline GLuint BufferCount (void) { return m_info.nBufferCount; }
+
 		inline int UseBuffers (int nFirst = 0, int nLast = 0) { 
 			if (nFirst > m_info.nColorBuffers - 1)
 				nFirst = m_info.nColorBuffers - 1;
@@ -85,7 +86,13 @@ class CFBO {
 			m_info.nBufferCount = nLast - nFirst + 1;
 			return nFirst;
 			}
-		inline void SetDrawBuffers (void) { glDrawBuffers (BufferCount (), BufferIds ()); }
+
+		inline void SetDrawBuffers (void) { 
+			if (m_info.nBufferCount == 1)
+				glDrawBuffer (m_info.bufferIds [0]);
+			else
+				glDrawBuffers (m_info.nBufferCount, m_info.bufferIds); 
+			}
 
 		int IsBound (void);
 		GLuint Handle (void) { return m_info.hFBO; }
