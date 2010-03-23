@@ -1184,7 +1184,7 @@ void CTransparencyRenderer::Render (void)
 	tTranspItem*		currentP, * nextP, * prevP;
 	tTranspItemList*	listP;
 	int					nItems, nDepth, bStencil;
-	bool					bReset = !LAZY_RESET || (ogl.StereoSeparation () >= 0);
+	bool					bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || gameStates.render.cameras.bActive;
 
 if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
@@ -1217,7 +1217,7 @@ particleManager.BeginRender (-1, 1);
 m_data.nCurType = -1;
 for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (listP >= m_data.depthBuffer.Buffer ()) && nItems; listP--) {
 	if ((currentP = listP->head)) {
-		if (bReset)
+		if (bCleanup)
 			listP->head = NULL;
 			//listP->tail = NULL;
 		nDepth = 0;
@@ -1230,7 +1230,7 @@ for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (
 			nItems--;
 			RenderItem (currentP);
 			nextP = currentP->pNextItem;
-			if (bReset)
+			if (bCleanup)
 				currentP->pNextItem = NULL;
 			else if (currentP->bTransformed) {	// remove items that have transformed coordinates when stereo rendering since these items will be reentered with different coordinates
 				currentP->pNextItem = m_data.freeList.head;
@@ -1249,7 +1249,7 @@ for (listP = m_data.depthBuffer + m_data.nMaxOffs, nItems = m_data.nItems [0]; (
 		}
 	}
 #if 0 //DBG
-if (bReset) {
+if (bCleanup) {
 	currentP = m_data.itemLists.Buffer ();
 	for (int i = m_data.itemLists.Length (); i; i--, currentP++)
 		if (currentP->pNextItem)
@@ -1265,7 +1265,7 @@ ogl.SetBlendMode (0);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
-if (bReset) {
+if (bCleanup) {
 	ResetFreeList ();
 	m_data.nItems [1] = 	m_data.nItems [0];
 	m_data.nItems [0] = 0;
