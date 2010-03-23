@@ -111,6 +111,8 @@ for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP 
 	systemP->Init (i++);
 m_iBuffer = 0;
 
+#if 0
+
 tSinCosf sinCosPart [PARTICLE_POSITIONS];
 ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
 CFloatMatrix m;
@@ -128,6 +130,18 @@ for (int i = 0; i < PARTICLE_POSITIONS; i++) {
 	m.RVec ()[Y] = -m.UVec ()[X];
 	vRot [i] = m * v;
 	}
+
+#else
+
+CAngleVector vRotAngs;
+vRotAngs.SetZero ();
+for (int i = 0; i < PARTICLE_POSITIONS; i++) {
+	vRotAngs [BA] = i * (I2X (1) / 64);
+	mRot [i] = CFixMatrix::Create (vRotAngs);
+	}
+
+#endif
+
 m_bufferBrightness = -1;
 m_bBufferEmissive = 0;
 }

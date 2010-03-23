@@ -50,6 +50,7 @@
 tRgbaColorf defaultParticleColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
 CFloatVector vRot [PARTICLE_POSITIONS];
+CFixMatrix mRot [PARTICLE_POSITIONS];
 
 #define SMOKE_START_ALPHA		(m_bBlowUp ? 64 : 96) //96 : 128)
 
@@ -935,9 +936,9 @@ pb [3].vertex [Z] = vCenter [Z];
 
 #else // -----------------------------------------------------------------------
 
-void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
+bool CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
-	CFloatVector3	vCenter, vOffset, uVec, rVec;
+	CFloatVector3	vCenter, uVec, rVec;
 	float				fScale;
 
 vCenter.Assign (m_vPos);
@@ -951,7 +952,7 @@ if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 	else
 		fScale = 1.0f / float (pow (m_decay, 0.25f));
 #else
-	float fScale = (m_nFadeType == 3) 
+	fScale = (m_nFadeType == 3) 
 		? 1.0f 
 		: (m_decay > 0.9f)	// start from zero size by scaling with pow (m_decay, 44f) which is < 0.01 for m_decay == 0.9f
 			? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
@@ -961,16 +962,6 @@ if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
 else {
 	fScale = m_decay;
 	}
-#if 0
-if (m_bRotate && gameOpts->render.particles.bRotate)
-	fScale *= 1.4074037f;
-#endif
-
-uVec.Assign (gameData.objs.viewerP->info.position.mOrient.UVec ());
-rVec.Assign (gameData.objs.viewerP->info.position.mOrient.RVec ());
-vOffset = uVec + rVec;
-vOffset [X] *= m_nWidth * fScale;
-vOffset [Y] *= m_nHeight * fScale;
 
 pb [0].color =
 pb [1].color =
@@ -992,51 +983,24 @@ if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-#if 1
-	vOffset [X] *= vRot [i][X];
-	vOffset [Y] *= vRot [i][Y];
-
-	pb [0].vertex [X] = vCenter [X] - vOffset [X];
-	pb [0].vertex [Y] = vCenter [Y] + vOffset [Y];
-	pb [1].vertex [X] = vCenter [X] + vOffset [Y];
-	pb [1].vertex [Y] = vCenter [Y] + vOffset [X];
-	pb [2].vertex [X] = vCenter [X] + vOffset [X];
-	pb [2].vertex [Y] = vCenter [Y] - vOffset [Y];
-	pb [3].vertex [X] = vCenter [X] - vOffset [Y];
-	pb [3].vertex [Y] = vCenter [Y] - vOffset [X];
-#else
-	float h = m_deltaUV * 0.5f;
-	tTexCoord2f tcOffset = {h - hx, h - hy};
-	tTexCoord2f tcCenter = {m_texCoord.v.u + h, m_texCoord.v.v + h};
-	tTexCoord2f tcRotate = {0.7105281f * tcOffset.v.u * vRot [i][X], 0.7105281f * tcOffset.v.v * vRot [i][Y]};
-
-	pb [m_nOrient].texCoord.v.u = tcCenter.v.u - tcRotate.v.u;
-	pb [m_nOrient].texCoord.v.v = tcCenter.v.v + tcRotate.v.v;
-	pb [(m_nOrient + 1) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.v;
-	pb [(m_nOrient + 1) % 4].texCoord.v.v = tcCenter.v.v + tcRotate.v.u;
-	pb [(m_nOrient + 2) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.u;
-	pb [(m_nOrient + 2) % 4].texCoord.v.v = tcCenter.v.v - tcRotate.v.v;
-	pb [(m_nOrient + 3) % 4].texCoord.v.u = tcCenter.v.u - tcRotate.v.v;
-	pb [(m_nOrient + 3) % 4].texCoord.v.v = tcCenter.v.v - tcRotate.v.u;
-#endif
+	CFixMatrix mOrient = gameData.objs.viewerP->info.position.mOrient * mRot [i];
+	uVec.Assign (mOrient.UVec ());
+	rVec.Assign (mOrient.RVec ());
 	}
 else {
-#if 1
-	pb [0].vertex = vCenter + uVec - rVec;
-	pb [1].vertex = vCenter + uVec + rVec;
-	pb [2].vertex = vCenter - uVec + rVec;
-	pb [3].vertex = vCenter - uVec - rVec;
-#else
-	pb [m_nOrient].texCoord.v.u =
-	pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
-	pb [(m_nOrient + 1) % 4].texCoord.v.u =
-	pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
-	pb [m_nOrient].texCoord.v.v =
-	pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
-	pb [(m_nOrient + 2) % 4].texCoord.v.v =
-	pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
-#endif
+	uVec.Assign (gameData.objs.viewerP->info.position.mOrient.UVec ());
+	rVec.Assign (gameData.objs.viewerP->info.position.mOrient.RVec ());
 	}
+uVec *= m_nHeight * fScale;
+rVec *= m_nWidth * fScale;
+pb [0].vertex = vCenter - rVec - uVec;
+pb [1].vertex = vCenter - rVec + uVec;
+pb [2].vertex = vCenter + rVec + uVec;
+pb [3].vertex = vCenter + rVec - uVec;
+pb [0].vertex = vCenter - rVec - uVec;
+pb [1].vertex = vCenter - rVec + uVec;
+pb [2].vertex = vCenter + rVec + uVec;
+pb [3].vertex = vCenter + rVec - uVec;
 }
 
 #endif
