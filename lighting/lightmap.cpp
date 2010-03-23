@@ -1,17 +1,3 @@
-/*
-Here is all the code for gameOpts->render.color.bUseLightmaps.  Some parts need 
-to be optamized but the core functionality is there.
-The thing you will need to add is the menu code to change
-the value of int gameOpts->render.color.bUseLightmaps.  THIS CANNOT BE CHANGED IF
-A GAME IS RUNNING.  It would likely cause it to crash.
-
-Almost forgot there are a few lines that read exit (0) after 
-checking certain capabilties.  This should really just 
-disable the gameOpts->render.color.bUseLightmaps option, because the person's computer 
-doesn't support shaders.  But since the menu option isn't 
-there I just had it exit instead.
-*/
-
 #ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
