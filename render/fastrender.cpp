@@ -622,11 +622,8 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 #	endif
 #endif
 			glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->m_info.nCorona - 1]);
-			ogl.ClearError (1);
 			glareRenderer.Render (nSegment, faceP->m_info.nSide, 1, faceP->m_info.fRads [0]);
-			ogl.ClearError (1);
 			glEndQuery (GL_SAMPLES_PASSED_ARB);
-			ogl.ClearError (1);
 			}	
 		}
 	}

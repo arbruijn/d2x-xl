@@ -120,7 +120,6 @@ m_render.v2 = float (Bottom ()) / h;
 
 CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
 {
-ogl.ClearError (1);
 ogl.SelectTMU (GL_TEXTURE0);
 ogl.SetTexturing (true);
 if (Bind (bMipMaps))

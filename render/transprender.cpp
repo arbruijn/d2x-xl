@@ -937,7 +937,7 @@ void CTransparencyRenderer::FlushSparkBuffer (void)
 if (!sparkBuffer.nSparks)
 	return;
 
-	int bSoftBlend = (gameOpts->render.effects.bSoftParticles & 2) != 0;
+	int bSoftBlend = !gameStates.render.cameras.bActive && ((gameOpts->render.effects.bSoftParticles & 2) != 0);
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;

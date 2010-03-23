@@ -1029,7 +1029,6 @@ else
 		}
 	catch (...) {
 		}
-	ogl.ClearError (1);
 #if TEXTURE_COMPRESSION
 	Compress ();
 #endif
