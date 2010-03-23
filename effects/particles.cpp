@@ -560,7 +560,7 @@ if (m_bHaveDir) {
 	m_vPos += m_vDir * drag;
 	}
 
-int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, m_nType >= SMOKE_PARTICLES, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
+int nSegment = FindSegByPos (m_vPos, m_nSegment, m_nSegment < 0, 1, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
 if ((0 > nSegment) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
 	if (m_nType == BUBBLE_PARTICLES) { 
 		if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER) {
@@ -993,10 +993,6 @@ else {
 	}
 uVec *= m_nHeight * fScale;
 rVec *= m_nWidth * fScale;
-pb [0].vertex = vCenter - rVec - uVec;
-pb [1].vertex = vCenter - rVec + uVec;
-pb [2].vertex = vCenter + rVec + uVec;
-pb [3].vertex = vCenter + rVec - uVec;
 pb [0].vertex = vCenter - rVec - uVec;
 pb [1].vertex = vCenter - rVec + uVec;
 pb [2].vertex = vCenter + rVec + uVec;

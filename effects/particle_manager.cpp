@@ -136,7 +136,7 @@ for (int i = 0; i < PARTICLE_POSITIONS; i++) {
 CAngleVector vRotAngs;
 vRotAngs.SetZero ();
 for (int i = 0; i < PARTICLE_POSITIONS; i++) {
-	vRotAngs [BA] = i * (I2X (1) / 64);
+	vRotAngs [BA] = i * (I2X (1) / PARTICLE_POSITIONS);
 	mRot [i] = CFixMatrix::Create (vRotAngs);
 	}
 
