@@ -851,6 +851,8 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+#if ROTATE_VERTICES
+
 void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {
 CFloatVector3	vCenter, vOffset;
@@ -930,6 +932,86 @@ pb [1].vertex [Z] =
 pb [2].vertex [Z] =
 pb [3].vertex [Z] = vCenter [Z];
 }
+
+#else // -----------------------------------------------------------------------
+
+void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
+{
+	CFloatVector3	vCenter, uVec, rVec;
+
+transformation.Transform (m_vTransPos, m_vPos, gameStates.render.bPerPixelLighting == 2);
+vCenter.Assign (m_vTransPos);
+
+uVec.Assign (gameData.objs.viewerP->info.position.mOrient.UVec ());
+rVec.Assign (gameData.objs.viewerP->info.position.mOrient.RVec ());
+
+if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
+#if DBG
+	float fFade;
+	if (m_nFadeType == 3)
+		fFade = 1.0;
+	else if (m_decay > 0.9f)
+		fFade = (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.25f));
+	else
+		fFade = 1.0f / float (pow (m_decay, 0.25f));
+#else
+	float fFade = (m_nFadeType == 3) 
+		? 1.0f 
+		: (m_decay > 0.9f)	// start from zero size by scaling with pow (m_decay, 44f) which is < 0.01 for m_decay == 0.9f
+			? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
+			: 1.0f / float (pow (m_decay, 0.3333333f));
+#endif
+	uVec *= fFade * 0.7071f;
+	rVec *= fFade * 0.7071f;
+	}
+else {
+	uVec *= m_decay * 0.7071f;
+	rVec *= m_decay * 0.7071f;
+	}
+
+pb [0].vertex = vCenter + uVec - rVec;
+pb [1].vertex = vCenter + uVec + rVec;
+pb [2].vertex = vCenter - uVec + rVec;
+pb [3].vertex = vCenter - uVec - rVec;
+
+pb [0].color =
+pb [1].color =
+pb [2].color =
+pb [3].color = m_renderColor;
+
+float hx = ParticleImageInfo (m_nType).xBorder;
+float hy = ParticleImageInfo (m_nType).yBorder;
+
+if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
+	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
+if (m_bRotate && gameOpts->render.particles.bRotate)  {
+	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
+	tTexCoord2f tcOffset = {(m_deltaUV - 2 * hx) / 2, (m_deltaUV - 2 * hy) / 2};
+	tTexCoord2f tcCenter = {m_texCoord.v.u + tcOffset.v.u, m_texCoord.v.v + tcOffset.v.v};
+	tTexCoord2f tcRotate = {0.7071f * tcOffset.v.u * vRot [i][X], 0.7071f * tcOffset.v.v * vRot [i][Y]};
+
+	pb [m_nOrient].texCoord.v.u = tcCenter.v.u - tcRotate.v.u;
+	pb [m_nOrient].texCoord.v.v = tcCenter.v.u - tcRotate.v.v;
+	pb [(m_nOrient + 1) % 4].texCoord.v.u = tcCenter.v.u - tcRotate.v.u;
+	pb [(m_nOrient + 1) % 4].texCoord.v.v = tcCenter.v.u + tcRotate.v.v;
+	pb [(m_nOrient + 2) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.u;
+	pb [(m_nOrient + 2) % 4].texCoord.v.v = tcCenter.v.u + tcRotate.v.v;
+	pb [(m_nOrient + 3) % 4].texCoord.v.u = tcCenter.v.u + tcRotate.v.u;
+	pb [(m_nOrient + 3) % 4].texCoord.v.v = tcCenter.v.u - tcRotate.v.v;
+	}
+else {
+	pb [m_nOrient].texCoord.v.u =
+	pb [(m_nOrient + 3) % 4].texCoord.v.u = m_texCoord.v.u + hx;
+	pb [(m_nOrient + 1) % 4].texCoord.v.u =
+	pb [(m_nOrient + 2) % 4].texCoord.v.u = m_texCoord.v.u + m_deltaUV - hx;
+	pb [m_nOrient].texCoord.v.v =
+	pb [(m_nOrient + 1) % 4].texCoord.v.v = m_texCoord.v.v + hy;
+	pb [(m_nOrient + 2) % 4].texCoord.v.v =
+	pb [(m_nOrient + 3) % 4].texCoord.v.v = m_texCoord.v.v + m_deltaUV - hy;
+	}
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof
