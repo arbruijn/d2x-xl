@@ -1017,7 +1017,7 @@ return CWall::IsTriggerTarget ();
 
 // -----------------------------------------------------------------------------------
 
-CWall* CWall::Opposite (void)
+CWall* CWall::OppositeWall (void)
 {
 CSide* sideP = SEGMENTS [nSegment].OppositeSide (nSide);
 return sideP ? sideP->Wall () : NULL;
@@ -1031,7 +1031,7 @@ if ((nType != WALL_OPEN) && ((nType != WALL_CLOAKED) || (cloakValue <  FADE_LEVE
 	return false;
 if (IsTriggerTarget ())
 	return false;
-CWall* wallP = Opposite ();
+CWall* wallP = OppositeWall ();
 return (wallP != NULL) && !wallP->IsTriggerTarget ();
 }
 

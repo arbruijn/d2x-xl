@@ -221,7 +221,7 @@ class CWall {
 		int AnimateOpeningDoor (fix xElapsedTime);
 		int AnimateClosingDoor (fix xElapsedTime);
 		int ProcessHit (int nPlayer, CObject* objP);
-		CWall* Opposite (void);
+		CWall* OppositeWall (void);
 		CTrigger* Trigger (void);
 		void LoadState (CFile& cf);
 		void SaveState (CFile& cf);

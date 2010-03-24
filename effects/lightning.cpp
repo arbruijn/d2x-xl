@@ -383,8 +383,6 @@ void CLightning::CreatePath (int nDepth, int nThread)
 	int					h, i, j, nSteps, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
 	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
 
-	static int	nSeed [2];
-
 vBase [0] = vPos [0] = m_vPos;
 vBase [1] = vPos [1] = m_vEnd;
 nStyle = STYLE;
