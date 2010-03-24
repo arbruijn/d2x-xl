@@ -221,9 +221,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
 			static tTexCoord2f	tTexCoordTrail [8] = {
-				//{{0.1f,0.1f}},{{0.9f,0.1f}},{{0.9f,0.9f}},{{0.1f,0.9f}}
-				{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.0f,0.5f}},
-				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
+				{{0.0f,0.0f}},{{0.5f,0.0f}},{{0.5f,0.25f}},{{0.0f,0.25f}},
+				{{0.0f,0.75f}},{{0.5f,0.75f}},{{0.5f,1.0f}},{{0.0f,1.0f}}
 				};
 
 		vCenter.Assign (objP->info.position.vPos);
