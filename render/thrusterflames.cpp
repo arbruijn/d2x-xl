@@ -213,12 +213,12 @@ void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize,
 if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return;
 
-	static tTexCoord2f	tcTrail [3] = {{{0.5f,1.0f}},{{0.0f,0.5f}},{{0.0f,1.0f}}};
-	static tTexCoord2f	tcCap [4] = {{{0.0f,0.0f}},{{0.5f,0.0f}},{{0.5f,0.5f}},{{0.0f,0.5f}}};
+	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
+	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	static CFloatVector	vEye;
 
-	CFloatVector	v, vPosf, vNormf, vTrail [3], vCap [4], fVecf;
-	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCap;
+	CFloatVector	v, vPosf, vNormf, vTrail [3], vCorona [4], fVecf;
+	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
 
 fVecf.Assign (vDir);
 vPosf.Assign (vPos);
@@ -228,19 +228,19 @@ vNormf = CFloatVector::Normal (vTrail [2], vPosf, vEye);
 vTrail [0] = vPosf + vNormf * fSize;
 vTrail [1] = vPosf - vNormf * fSize;
 vNormf = CFloatVector::Normal (vTrail [0], vTrail [1], vTrail [2]);
-vCap [0] = vTrail [0];
-vCap [2] = vTrail [1];
-vCap [1] = vPosf + vNormf * fSize;
-vCap [3] = vPosf + vNormf * (-fSize);
+vCorona [0] = vTrail [0];
+vCorona [2] = vTrail [1];
+vCorona [1] = vPosf + vNormf * fSize;
+vCorona [3] = vPosf + vNormf * (-fSize);
 vPosf -= vEye;
 CFloatVector::Normalize (vPosf);
 v = vTrail [2] - vEye;
 CFloatVector::Normalize (v);
 dotTrail = CFloatVector::Dot (vPosf, v);
-v = *vCap - vEye;
+v = *vCorona - vEye;
 CFloatVector::Normalize (v);
-dotCap = CFloatVector::Dot (vPosf, v);
-transparencyRenderer.AddLightTrail (bmP, vCap, tcCap, (dotTrail < dotCap) ? vTrail : NULL, tcTrail, colorP);
+dotCorona = CFloatVector::Dot (vPosf, v);
+transparencyRenderer.AddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
 }
 
 // -----------------------------------------------------------------------------
