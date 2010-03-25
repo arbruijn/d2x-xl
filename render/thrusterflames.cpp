@@ -325,7 +325,6 @@ else {
 
 if (m_nStyle == 2) {
 	ogl.SetTexturing (true);
-	CBitmap* bmpThruster = bmpThruster;
 	bmpThruster->SetTranspType (-1);
 	if (bmpThruster->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = bFallback ? 0 : 1;
