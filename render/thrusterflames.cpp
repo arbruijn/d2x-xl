@@ -269,10 +269,9 @@ if (LoadThruster (1)) {
 	CFloatVector	verts [4];
 	float				z = (m_vFlame [0][0][Z] + m_vFlame [1][0][Z]) / 2.0f * m_ti.fLength;
 	float				scale = m_ti.fSize * 1.6666667f;
-	int				i;
 
 	// choose 4 vertices from the widest ring of the flame
-	for (i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		verts [i] = m_vFlame [5][4 * i];
 		verts [i] [X] *= scale;
 		verts [i] [Y] *= scale;
