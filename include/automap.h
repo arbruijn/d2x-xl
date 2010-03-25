@@ -65,13 +65,13 @@ typedef struct tAutomapColors {
 } __pack__ tAutomapColors;
 
 typedef struct tAutomapData {
-	int				bCheat;
-	int				bHires;
-	fix				nViewDist;
-	fix				nMaxDist;
-	fix				nZoom;
-	tObjPosition	viewer;
-	CFixVector		viewTarget;
+	int						bCheat;
+	int						bHires;
+	fix						nViewDist;
+	fix						nMaxDist;
+	fix						nZoom;
+	tObjTransformation	viewer;
+	CFixVector				viewTarget;
 } __pack__ tAutomapData;
 
 //------------------------------------------------------------------------------
