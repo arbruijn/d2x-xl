@@ -102,7 +102,7 @@ ResetFreeList ();
 void CTransparencyRenderer::InitBuffer (int zMin, int zMax, int nWindow)
 {
 #if LAZY_RESET
-if (!nWindow)
+if (nWindow)
 	m_data.bAllowAdd = 0;
 else if (gameStates.render.cameras.bActive)
 	m_data.bAllowAdd = 1;
