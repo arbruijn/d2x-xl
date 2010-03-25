@@ -562,13 +562,7 @@ if (m_bHaveDir) {
 
 int nSegment = FindSegByPos (m_vPos, m_nSegment, m_nSegment < 0, 1, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
 if ((0 > nSegment) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
-	if (m_nType == BUBBLE_PARTICLES) { 
-		if (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER) {
-			m_nLife = -1;
-			return 0;
-			}
-		}
-	else if (m_nType == WATERFALL_PARTICLES) {
+	if (m_nType == WATERFALL_PARTICLES) {
 		CFixVector vDir = m_vPos - m_vStartPos;
 		if ((CFixVector::Normalize (vDir) >= I2X (1)) && (CFixVector::Dot (vDir, m_vDir) < I2X (1) / 2)) {
 			m_nLife = -1;
@@ -583,6 +577,10 @@ if ((0 > nSegment) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
 		m_nLife = -1;
 		return 0;
 		}
+	}
+else if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) {
+	m_nLife = -1;
+	return 0;
 	}
 m_nSegment = nSegment;
 
