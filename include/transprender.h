@@ -89,8 +89,8 @@ typedef struct tTranspLightning {
 
 typedef struct tTranspLightTrail {
 	CBitmap					*bmP;
-	CFloatVector			vertices [7];
-	tTexCoord2f				texCoord [7];
+	CFloatVector			vertices [8];
+	tTexCoord2f				texCoord [8];
 	tRgbaColorf				color;
 	char						bTrail;
 } tTranspLightTrail;

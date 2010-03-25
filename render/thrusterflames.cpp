@@ -220,13 +220,13 @@ void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize,
 if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return;
 
-	static tTexCoord2f tcTrail [2][3] = {
-		{{{0.5f,0.5f}},{{0.0f,0.0f}},{{0.5f,0.0f}}},
-		{{{1.0f,0.5f}},{{0.5f,0.0f}},{{1.0f,0.0f}}}
+	static tTexCoord2f tcTrail [2][4] = {
+		{{{0.25f,0.0f}},{{0.5f,0.0f}},{{0.5f,0.5f}},{{0.25f,0.5f}}},
+		{{{0.75f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.75f,0.5f}}}
 		};
 	static CFloatVector	vEye;
 
-	CFloatVector	v, vPosf, vNormf, vTrail [3], vCap [4], fVecf;
+	CFloatVector	v, vPosf, vNormf, vTrail [4], vCap [4], fVecf;
 	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCap;
 
 fVecf.Assign (vDir);
@@ -234,11 +234,15 @@ vPosf.Assign (vPos);
 vTrail [2] = vPosf - fVecf * fLength;
 vEye.Assign (gameData.render.mine.viewerEye);
 vNormf = CFloatVector::Normal (vTrail [2], vPosf, vEye);
+if (m_bPlayer)
+	fSize *= 1.1f;
+vCap [0] = vPosf + vNormf * fSize;
+vCap [2] = vPosf - vNormf * fSize;
 vTrail [0] = vPosf + vNormf * fSize;
 vTrail [1] = vPosf - vNormf * fSize;
+vTrail [2] = vTrail [1] - fVecf * fLength;
+vTrail [3] = vTrail [2] - fVecf * fLength;
 vNormf = CFloatVector::Normal (vTrail [0], vTrail [1], vTrail [2]);
-vCap [0] = vTrail [0];
-vCap [2] = vTrail [1];
 vCap [1] = vPosf + vNormf * fSize;
 vCap [3] = vPosf + vNormf * (-fSize);
 vPosf -= vEye;
@@ -378,7 +382,7 @@ if (m_nStyle == 1) {	//2D
 	m_ti.fLength *= 4 * m_ti.fSize;
 	m_ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 	for (int i = 0; i < m_nThrusters; i++)
-		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize, m_ti.fLength, &tcColor);
+		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize, m_ti.fLength * 3, &tcColor);
 	}
 else { //3D
 	Create ();

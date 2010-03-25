@@ -576,16 +576,16 @@ int CTransparencyRenderer::AddLightTrail (CBitmap *bmP, CFloatVector *vThruster,
 	float					d, dMin = 1e30f;
 
 item.bmP = bmP;
-memcpy (item.vertices, vThruster, 4 * sizeof (CFloatVector));
-memcpy (item.texCoord, tcThruster, 4 * sizeof (tTexCoord2f));
-item.color = *colorP;
 if ((item.bTrail = (vFlame != NULL))) {
-	memcpy (item.vertices + 4, vFlame, 3 * sizeof (CFloatVector));
-	memcpy (item.texCoord + 4, tcFlame, 3 * sizeof (tTexCoord2f));
-	j = 7;
+	memcpy (item.vertices, vFlame, 4 * sizeof (CFloatVector));
+	memcpy (item.texCoord, tcFlame, 4 * sizeof (tTexCoord2f));
+	j = 4;
 	}
 else
-	j = 4;
+	j = 0;
+memcpy (item.vertices + j, vThruster, 4 * sizeof (CFloatVector));
+memcpy (item.texCoord + j, tcThruster, 4 * sizeof (tTexCoord2f));
+item.color = *colorP;
 for (i = 0; i < j; i++) {
 	d = Depth (item.vertices [i], true);
 	if (dMin > d) {
@@ -1065,9 +1065,7 @@ if (LoadImage (item->bmP, 0, 0, 0, GL_CLAMP)) {
 	OglTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), item->vertices);
 	ogl.SetupTransform (1);
-	if (item->bTrail)
-		OglDrawArrays (GL_TRIANGLES, 4, 3);
-	OglDrawArrays (GL_QUADS, 0, 4);
+	OglDrawArrays (GL_QUADS, 0, item->bTrail ? 8 : 4);
 	ogl.ResetTransform (1);
 	ogl.SetFaceCulling (true);
 	ogl.SetBlendMode (0);
