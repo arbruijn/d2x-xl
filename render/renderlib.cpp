@@ -330,32 +330,25 @@ if (bmpHalo) {
 
 //------------------------------------------------------------------------------
 
-CBitmap *bmpThruster [2][2] = {{NULL, NULL}, {NULL, NULL}};
-int bHaveThruster [2][2] = {{0, 0},{0, 0}};
+CBitmap* bmpThruster = NULL;
+int bHaveThruster = 0;
 
 int LoadThruster (int nStyle)
 {
-	static const char* szThruster [2][2] = {{"thrust2d-red.tga", "thrust2d-blue.tga"}, {"thrust3d-red.tga", "thrust3d-blue.tga"}};
+	static const char* szThruster = {"thruster.tga"};
 
-	if (nStyle < 0)
-		nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0);
-	int b3D = (nStyle == 2);
-
-return LoadAddonBitmap (&bmpThruster [b3D][0], szThruster [b3D][0], &bHaveThruster [b3D][0]) && 
-		 LoadAddonBitmap (&bmpThruster [b3D][1], szThruster [b3D][1], &bHaveThruster [b3D][1]);
+return LoadAddonBitmap (&bmpThruster, szThruster, &bHaveThruster);
 }
 
 //------------------------------------------------------------------------------
 
 void FreeThruster (void)
 {
-for (int i = 0; i < 2; i++)
-	for (int j = 0; j < 2; j++)
-		if (bmpThruster [i][j]) {
-			delete bmpThruster [i][j];
-			bmpThruster [i][j] = NULL;
-			bHaveThruster [i][j] = 0;
-			}
+if (bmpThruster) {
+	delete bmpThruster;
+	bmpThruster = NULL;
+	bHaveThruster = 0;
+	}
 }
 
 //------------------------------------------------------------------------------

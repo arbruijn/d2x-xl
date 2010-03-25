@@ -108,17 +108,17 @@ void DrawWindowBox (uint color, short left, short top, short right, short bot);
 
 //------------------------------------------------------------------------------
 
-extern CBitmap *bmpCorona;
-extern CBitmap *bmpGlare;
-extern CBitmap *bmpHalo;
-extern CBitmap *bmpThruster [2][2];
-extern CBitmap *bmpShield;
-extern CBitmap *bmpExplBlast;
-extern CBitmap *bmpSparks;
-extern CBitmap *bmpDeadzone;
-extern CBitmap *bmpScope;
-extern CBitmap *bmpJoyMouse;
-extern CBitmap *bmpDamageIcon [3];
+extern CBitmap* bmpCorona;
+extern CBitmap* bmpGlare;
+extern CBitmap* bmpHalo;
+extern CBitmap* bmpThruster;
+extern CBitmap* bmpShield;
+extern CBitmap* bmpExplBlast;
+extern CBitmap* bmpSparks;
+extern CBitmap* bmpDeadzone;
+extern CBitmap* bmpScope;
+extern CBitmap* bmpJoyMouse;
+extern CBitmap* bmpDamageIcon [3];
 extern int bHaveDamageIcon [3];
 extern const char* szDamageIcon [3];
 

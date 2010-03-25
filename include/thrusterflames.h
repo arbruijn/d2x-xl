@@ -24,7 +24,7 @@ class CThrusterFlames {
 	private:
 		CFloatVector	m_vFlame [THRUSTER_SEGS][RING_SEGS];
 		CFloatVector	m_flameVerts [FLAME_VERT_COUNT];
-		tTexCoord2f		m_flameTexCoord [FLAME_VERT_COUNT];
+		tTexCoord2f		m_flameTexCoord [2][FLAME_VERT_COUNT];
 		CThrusterData*	m_pt;
 		tThrusterInfo	m_ti;
 		int				m_nVerts;
@@ -37,7 +37,7 @@ class CThrusterFlames {
 	public:
 		CThrusterFlames () { m_bHaveFlame = false; }
 		void Render (CObject *objP);
-		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CBitmap *bmP, tRgbaColorf *colorP);
+		void Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, tRgbaColorf *colorP);
 		int CalcPos (CObject *objP, tThrusterInfo* tiP = NULL, int bAfterburnerBlob = 0);
 
 	private:

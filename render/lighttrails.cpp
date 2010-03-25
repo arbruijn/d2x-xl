@@ -220,9 +220,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 			static CFloatVector vEye = CFloatVector::ZERO;
 
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
-			static tTexCoord2f	tTexCoordTrail [8] = {
-				{{0.0f,0.0f}},{{0.5f,0.0f}},{{0.5f,0.25f}},{{0.0f,0.25f}},
-				{{0.0f,0.75f}},{{0.5f,0.75f}},{{0.5f,1.0f}},{{0.0f,1.0f}}
+			static tTexCoord2f	tcTrail [8] = {
+				{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.0f,0.5f}},
+				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
 				};
 
 		vCenter.Assign (objP->info.position.vPos);
@@ -268,7 +268,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vNorm *= r;
 		vTrailVerts [0] = vTrailVerts [3] - vNorm;
 		vTrailVerts [1] = vTrailVerts [2] - vNorm;
-		transparencyRenderer.AddPoly (NULL, NULL, bmpGlare, vTrailVerts, 8, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, LIGHTTRAIL_BLENDMODE, -1);
+		transparencyRenderer.AddPoly (NULL, NULL, bmpGlare, vTrailVerts, 8, tcTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, LIGHTTRAIL_BLENDMODE, -1);
 		}
 	}
 

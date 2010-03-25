@@ -22,6 +22,11 @@
 
 CThrusterFlames thrusterFlames;
 
+static tTexCoord2f tcCap [2][4] = {
+	{{{0.0f,0.0f}},{{0.5f,0.0f}},{{0.5f,0.5f}},{{0.0f,0.5f}}},
+	{{{0.5f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.5f,0.5f}}}
+	};
+
 // -----------------------------------------------------------------------------
 
 static CFloatVector	vRingVerts [RING_SEGS] = {
@@ -74,16 +79,18 @@ if (!m_bHaveFlame) {
 			}
 		}
 
-	tTexCoord2f	tTexCoord2fl, tTexCoord2flStep = {{1.0f / RING_SEGS, 0.9f / THRUSTER_SEGS}};
+	tTexCoord2f	tTexCoord2fl, tTexCoord2flStep = {{0.5f / RING_SEGS, 0.45f / THRUSTER_SEGS}};
+	tTexCoord2f* flameTexCoord = m_flameTexCoord [m_bPlayer];
+	float uOffset = m_bPlayer ? 0.5f : 0.0f;
 
 	int nVerts = 0;
 	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 		for (j = 0; j <= RING_SEGS; j++) {
 			m = j % RING_SEGS;
-			tTexCoord2fl.v.u = j * tTexCoord2flStep.v.u;
+			tTexCoord2fl.v.u = uOffset + j * tTexCoord2flStep.v.u;
 			for (n = 0; n < 2; n++) {
-				tTexCoord2fl.v.v = 0.1f + tTexCoord2flStep.v.v * (i + n);
-				m_flameTexCoord [nVerts] = tTexCoord2fl;
+				tTexCoord2fl.v.v = 0.5f + tTexCoord2flStep.v.v * (i + n);
+				flameTexCoord [nVerts] = tTexCoord2fl;
 				m_flameVerts [nVerts++] = m_vFlame [i + n][m];
 				}
 			}
@@ -208,17 +215,19 @@ return m_nThrusters;
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, CBitmap *bmP, tRgbaColorf *colorP)
+void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, tRgbaColorf *colorP)
 {
 if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	return;
 
-	static tTexCoord2f	tcTrail [3] = {{{0,0}},{{1,1}},{{1,0}}};
-	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+	static tTexCoord2f tcTrail [2][3] = {
+		{{{0.5f,0.5f}},{{0.0f,0.0f}},{{0.5f,0.0f}}},
+		{{{1.0f,0.5f}},{{0.5f,0.0f}},{{1.0f,0.0f}}}
+		};
 	static CFloatVector	vEye;
 
-	CFloatVector	v, vPosf, vNormf, vTrail [3], vCorona [4], fVecf;
-	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCorona;
+	CFloatVector	v, vPosf, vNormf, vTrail [3], vCap [4], fVecf;
+	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCap;
 
 fVecf.Assign (vDir);
 vPosf.Assign (vPos);
@@ -228,48 +237,47 @@ vNormf = CFloatVector::Normal (vTrail [2], vPosf, vEye);
 vTrail [0] = vPosf + vNormf * fSize;
 vTrail [1] = vPosf - vNormf * fSize;
 vNormf = CFloatVector::Normal (vTrail [0], vTrail [1], vTrail [2]);
-vCorona [0] = vTrail [0];
-vCorona [2] = vTrail [1];
-vCorona [1] = vPosf + vNormf * fSize;
-vCorona [3] = vPosf + vNormf * (-fSize);
+vCap [0] = vTrail [0];
+vCap [2] = vTrail [1];
+vCap [1] = vPosf + vNormf * fSize;
+vCap [3] = vPosf + vNormf * (-fSize);
 vPosf -= vEye;
 CFloatVector::Normalize (vPosf);
 v = vTrail [2] - vEye;
 CFloatVector::Normalize (v);
 dotTrail = CFloatVector::Dot (vPosf, v);
-v = *vCorona - vEye;
+v = *vCap - vEye;
 CFloatVector::Normalize (v);
-dotCorona = CFloatVector::Dot (vPosf, v);
-transparencyRenderer.AddLightTrail (bmP, vCorona, tcCorona, (dotTrail < dotCorona) ? vTrail : NULL, tcTrail, colorP);
+dotCap = CFloatVector::Dot (vPosf, v);
+transparencyRenderer.AddLightTrail (bmpThruster, vCap, tcCap [m_bPlayer], (dotTrail < dotCap) ? vTrail : NULL, tcTrail [m_bPlayer], colorP);
 }
 
 // -----------------------------------------------------------------------------
 
 void CThrusterFlames::RenderCap (void)
 {
-	static tTexCoord2f	tcThruster [4] = {{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,1.0f}},{{0.0f,1.0f}}};
-
 if (LoadThruster (1)) {
-	CBitmap* bmP = bmpThruster [0][m_bPlayer];
-	bmP->SetTranspType (-1);
-	if (bmP->Bind (1))
+	bmpThruster->SetTranspType (-1);
+	if (bmpThruster->Bind (1))
 		return;
-	bmP->Texture ()->Wrap (GL_CLAMP);
+	bmpThruster->Texture ()->Wrap (GL_CLAMP);
 	
 	CFloatVector	verts [4];
 	float				z = (m_vFlame [0][0][Z] + m_vFlame [1][0][Z]) / 2.0f * m_ti.fLength;
-	int				i, j;
+	float				scale = m_ti.fSize * 1.6666667f;
+	int				i;
 
+	// choose 4 vertices from the widest ring of the flame
 	for (i = 0; i < 4; i++) {
-		j = i * 4;
-		verts [i] = m_vFlame [5][j];
-		verts [i] [X] *= m_ti.fSize * 1.666f;
-		verts [i] [Y] *= m_ti.fSize * 1.666f;
+		verts [i] = m_vFlame [5][4 * i];
+		verts [i] [X] *= scale;
+		verts [i] [Y] *= scale;
 		verts [i] [Z] = z;
 		}
-	ogl.RenderQuad (bmP, verts, 3, tcThruster);
+	glColor3f (1,1,1);
+	ogl.RenderQuad (bmpThruster, verts, 3, tcCap [m_bPlayer]);
 	ogl.SetTexturing (true);
-	bmpThruster [1][m_bPlayer]->Bind (1);
+	bmpThruster->Bind (1);
 	}
 }
 
@@ -277,9 +285,9 @@ if (LoadThruster (1)) {
 
 void CThrusterFlames::Render3D (void)
 {
-glColor3f (1, 1, 1);
+glColor3f (1,1,1);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-OglTexCoordPointer (2, GL_FLOAT, 0, m_flameTexCoord);
+OglTexCoordPointer (2, GL_FLOAT, 0, &m_flameTexCoord [m_bPlayer]);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_flameVerts);
 glPushMatrix ();
 glScalef (m_ti.fSize, m_ti.fSize, m_ti.fLength);
@@ -317,13 +325,13 @@ else {
 
 if (m_nStyle == 2) {
 	ogl.SetTexturing (true);
-	CBitmap* bmP = bmpThruster [1][m_bPlayer];
-	bmP->SetTranspType (-1);
-	if (bmP->Bind (1)) {
+	CBitmap* bmpThruster = bmpThruster;
+	bmpThruster->SetTranspType (-1);
+	if (bmpThruster->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = bFallback ? 0 : 1;
 		return false;
 		}
-	bmP->Texture ()->Wrap (GL_CLAMP);
+	bmpThruster->Texture ()->Wrap (GL_CLAMP);
 	}
 
 float fSpeed = X2F (objP->mType.physInfo.velocity.Mag ());
@@ -371,10 +379,11 @@ if (m_nStyle == 1) {	//2D
 	m_ti.fLength *= 4 * m_ti.fSize;
 	m_ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 	for (int i = 0; i < m_nThrusters; i++)
-		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize, m_ti.fLength, bmpThruster [0][m_bPlayer], &tcColor);
+		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize, m_ti.fLength, &tcColor);
 	}
 else { //3D
 	Create ();
+	ogl.ResetClientStates (1);
 	ogl.SetFaceCulling (false);
 	ogl.SetBlendMode (1);
 	ogl.SetTransform (1);
@@ -389,6 +398,7 @@ else { //3D
 		Render3D ();
 		transformation.End ();
 		}
+
 	ogl.SetTransform (0);
 	ogl.SetBlendMode (0);
 	ogl.SetFaceCulling (true);
