@@ -45,8 +45,6 @@
 
 //------------------------------------------------------------------------------
 
-#define TRANSFORM_VERTICES 1
-
 tRgbaColorf defaultParticleColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
 CFloatVector vRot [PARTICLE_POSITIONS];
@@ -850,7 +848,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#if TRANSFORM_VERTICES
+#if TRANSFORM_PARTICLE_VERTICES
 
 void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {

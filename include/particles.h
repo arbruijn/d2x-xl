@@ -35,6 +35,8 @@
 
 #define MAX_SHRAPNEL_LIFE			I2X (2)
 
+#define TRANSFORM_VERTICES 0
+
 #define LAZY_RENDER_SETUP 1
 
 #define SMOKE_LIGHTING 0
