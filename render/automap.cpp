@@ -146,9 +146,9 @@ m_data.bHires = 1;
 m_data.nViewDist = 0;
 m_data.nMaxDist = I2X (2000);
 m_data.nZoom = 0x9000;
-m_data.viewPos.SetZero ();
+m_data.viewer.vPos.SetZero ();
 m_data.viewTarget.SetZero ();
-m_data.viewMatrix = CFixMatrix::IDENTITY;
+m_data.viewer.mOrient = CFixMatrix::IDENTITY;
 for (int i = 0; i < 2; i++) {
 	if (!m_visited [i].Buffer ())
 		m_visited [i].Create (MAX_SEGMENTS_D2X);
@@ -461,20 +461,20 @@ if (bAutomapFrame)
 	ogl.Viewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (m_bRadar == 2) {
-	m_data.viewPos = m_data.viewTarget + mRadar.FVec () * (-m_data.nViewDist);
-	G3SetViewMatrix (m_data.viewPos, mRadar, m_data.nZoom * 2, 1);
+	m_data.viewer.vPos = m_data.viewTarget + mRadar.FVec () * (-m_data.nViewDist);
+	G3SetViewMatrix (m_data.viewer.vPos, mRadar, m_data.nZoom * 2, 1);
 	}
 else {
-	m_data.viewPos = m_data.viewTarget + m_data.viewMatrix.FVec () * -m_data.nViewDist;
+	m_data.viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.FVec () * -m_data.nViewDist;
 	if (!m_bRadar && xStereoSeparation) {
 		//glClear (GL_COLOR_BUFFER_BIT);
-		m_data.viewPos += m_data.viewMatrix.RVec () * xStereoSeparation;
+		m_data.viewer.vPos += m_data.viewer.mOrient.RVec () * xStereoSeparation;
 		}
-	G3SetViewMatrix (m_data.viewPos, m_data.viewMatrix, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
+	G3SetViewMatrix (m_data.viewer.vPos, m_data.viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
 UpdateSlidingFaces ();
 if (!m_bRadar && (gameOpts->render.automap.bTextured & 1)) {
-	gameData.render.mine.viewerEye = m_data.viewPos;
+	gameData.render.mine.viewer = m_data.viewer;
 	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);
 	RenderEffects (0);
 	}
@@ -600,7 +600,7 @@ if (m_bDisplay < 0) {
 	else if (!m_data.nViewDist)
 		m_data.nViewDist = ZOOM_DEFAULT;
 	playerP = OBJECTS + LOCALPLAYER.nObject;
-	m_data.viewMatrix = playerP->info.position.mOrient;
+	m_data.viewer.mOrient = playerP->info.position.mOrient;
 
 	m_vTAngles [PA] = PITCH_DEFAULT;
 	m_vTAngles [HA] = 0;
@@ -647,18 +647,18 @@ if (Controls [0].firePrimaryDownCount) {
 	m_data.viewTarget = playerP->info.position.vPos;
 	}
 if (Controls [0].forwardThrustTime)
-	m_data.viewTarget += m_data.viewMatrix.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
+	m_data.viewTarget += m_data.viewer.mOrient.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
 m_vTAngles [PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
 m_vTAngles [HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
 m_vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 m = CFixMatrix::Create (m_vTAngles);
 if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
-	m_data.viewMatrix = playerP->info.position.mOrient * m;
-	m_data.viewTarget += m_data.viewMatrix.UVec () * (Controls [0].verticalThrustTime * SLIDE_SPEED);
-	m_data.viewTarget += m_data.viewMatrix.RVec () * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
+	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
+	m_data.viewTarget += m_data.viewer.mOrient.UVec () * (Controls [0].verticalThrustTime * SLIDE_SPEED);
+	m_data.viewTarget += m_data.viewer.mOrient.RVec () * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
-m_data.viewMatrix = playerP->info.position.mOrient * m;
+m_data.viewer.mOrient = playerP->info.position.mOrient * m;
 if (m_data.nViewDist < ZOOM_MIN_VALUE)
 	m_data.nViewDist = ZOOM_MIN_VALUE;
 if (m_data.nViewDist > ZOOM_MAX_VALUE)

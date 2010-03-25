@@ -263,11 +263,11 @@ if (sideOpposite [c0] == c1)
 	return 0;
 //find normals of adjoining sides
 FindAdjacentSideNorms (segP, c0, c1, s);
-temp = gameData.render.mine.viewerEye - *s [0].p;
+temp = gameData.render.mine.viewer.vPos - *s [0].p;
 d0 = CFixVector::Dot (s [0].n [0], temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
 	d0 |= CFixVector::Dot (s [0].n [1], temp);	// we only need the sign, so a bitwise or does the trick
-temp = gameData.render.mine.viewerEye - *s [1].p;
+temp = gameData.render.mine.viewer.vPos - *s [1].p;
 d1 = CFixVector::Dot (s [1].n [0], temp);
 if (s [1].t != 1)
 	d1 |= CFixVector::Dot (s [1].n [1], temp);
@@ -393,7 +393,7 @@ if (nObject == nDbgObj)
 pi->nNextItem = gameData.render.mine.renderObjs.ref [nSegment];
 gameData.render.mine.renderObjs.ref [nSegment] = gameData.render.mine.renderObjs.nUsed++;
 pi->nObject = nObject;
-pi->xDist = CFixVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.render.mine.viewerEye);
+pi->xDist = CFixVector::Dist (OBJECTS [nObject].info.position.vPos, gameData.render.mine.viewer.vPos);
 }
 
 //------------------------------------------------------------------------------
@@ -500,7 +500,7 @@ void InitSegZRef (int i, int j, int nThread)
 	int				r, z, zMin = 0x7fffffff, zMax = -0x7fffffff;
 	CSegment*		segP;
 
-vViewer.Assign (gameData.render.mine.viewerEye);
+vViewer.Assign (gameData.render.mine.viewer.vPos);
 for (; i < j; i++, ps++) {
 	segP = SEGMENTS + gameData.render.mine.nSegRenderList [0][i];
 #if TRANSP_DEPTH_HASH

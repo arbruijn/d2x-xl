@@ -983,13 +983,13 @@ if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
 	vCenter [X] += (float) sin (nFrame / 4.0f * Pi) / (10 + rand () % 6);
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
-	CFixMatrix mOrient = gameData.objs.viewerP->info.position.mOrient * mRot [i];
+	CFixMatrix mOrient = gameData.render.mine.viewer.position.mOrient * mRot [i];
 	uVec.Assign (mOrient.UVec ());
 	rVec.Assign (mOrient.RVec ());
 	}
 else {
-	uVec.Assign (gameData.objs.viewerP->info.position.mOrient.UVec ());
-	rVec.Assign (gameData.objs.viewerP->info.position.mOrient.RVec ());
+	uVec.Assign (gameData.render.mine.viewer.position.mOrient.UVec ());
+	rVec.Assign (gameData.render.mine.viewer.position.mOrient.RVec ());
 	}
 uVec *= m_nHeight * fScale;
 rVec *= m_nWidth * fScale;

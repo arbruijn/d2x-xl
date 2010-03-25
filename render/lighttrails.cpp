@@ -158,7 +158,7 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	xSize = (fix) (WeaponBlobSize (objP->info.nId) * F2X (fScale));
 	if (xOffset) {
 		if (bViewerOffset) {
-			CFixVector o = gameData.render.mine.viewerEye - vPos;
+			CFixVector o = gameData.render.mine.viewer.vPos - vPos;
 			CFixVector::Normalize (o);
 			vPos += o * xOffset;
 			}

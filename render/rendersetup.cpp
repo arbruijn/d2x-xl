@@ -78,14 +78,14 @@ void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
 	short nStartSeg;
 	bool	bPlayer = gameData.objs.viewerP == gameData.objs.consoleP;
 
-gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
+gameData.render.mine.viewer = gameData.objs.viewerP->info.position;
 if (xStereoSeparation && bPlayer)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
+	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
 
 externalView.SetPos (NULL);
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
-	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+	G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	}
 else {
 	if (!gameStates.render.nWindow && (bPlayer))
@@ -93,7 +93,7 @@ else {
 	if ((bPlayer) && transformation.m_info.bUsePlayerHeadAngles) {
 		CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
 		CFixMatrix mView = gameData.objs.viewerP->info.position.mOrient * mHead;
-		G3SetViewMatrix (gameData.render.mine.viewerEye, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
+		G3SetViewMatrix (gameData.render.mine.viewer.vPos, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
 		}
 	else if (gameStates.render.bRearView && (bPlayer)) {
 #if 1
@@ -111,7 +111,7 @@ else {
 		VmAngles2Matrix (&mHead, &transformation.m_info.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
 #endif
-		G3SetViewMatrix (gameData.render.mine.viewerEye, mView,  //gameStates.render.xZoom, bOglScale);
+		G3SetViewMatrix (gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
 							  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
@@ -126,21 +126,21 @@ else {
 #endif
 			externalView.GetViewPoint ();
 			if (xStereoSeparation)
-				gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
-			G3SetViewMatrix (gameData.render.mine.viewerEye,
+				gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.RVec () * xStereoSeparation;
+			G3SetViewMatrix (gameData.render.mine.viewer.vPos,
 								  externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
 								  gameStates.render.xZoom, bOglScale, xStereoSeparation);
 			}
 		else
-			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
+			G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
 								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
 	else
-		G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient,
+		G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
 							  gameStates.render.xZoom, bOglScale, xStereoSeparation);
 	if (!nStartSegP)
 		nStartSeg = gameStates.render.nStartSeg;
-	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.nSegment, 1, 0)))
+	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.nSegment, 1, 0)))
 		nStartSeg = gameData.objs.viewerP->info.nSegment;
 	}
 if (nStartSegP)

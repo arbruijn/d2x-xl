@@ -400,10 +400,10 @@ if (!bShadowTest)
 #else	
 		if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION)))
 #endif			 
-			G3SetViewMatrix (gameData.render.mine.viewerEye, externalView.Pos () ? externalView.Pos ()->mOrient : 
+			G3SetViewMatrix (gameData.render.mine.viewer.vPos, externalView.Pos () ? externalView.Pos ()->mOrient : 
 								  gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 		else
-			G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, 
+			G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, 
 								  FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), 1);
 		ApplyShadowMaps (nStartSeg, xStereoSeparation, nWindow);
 		}

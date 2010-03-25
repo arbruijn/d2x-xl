@@ -637,7 +637,7 @@ if (!nodeP)
 if (nThread < 0)
 	vEye.SetZero ();
 else
-	vEye.Assign (gameData.render.mine.viewerEye);
+	vEye.Assign (gameData.render.mine.viewer.vPos);
 dstP = m_plasmaVerts.Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {

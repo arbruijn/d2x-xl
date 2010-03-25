@@ -233,7 +233,7 @@ vDirf.Assign (vDir);
 vPosf.Assign (vPos);
 vDirf *= fLength;
 vTrailTip = vPosf - vDirf;
-vEye.Assign (gameData.render.mine.viewerEye);
+vEye.Assign (gameData.render.mine.viewer.vPos);
 vNormf = CFloatVector::Normal (vTrailTip, vPosf, vEye) * fSize;
 vCap [0] = vPosf + vNormf;
 vCap [2] = vPosf - vNormf;

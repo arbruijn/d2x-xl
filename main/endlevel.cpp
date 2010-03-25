@@ -763,9 +763,9 @@ void RenderExternalScene (fix xEyeOffset)
 	CFixVector vDelta;
 	g3sPoint p, pTop;
 
-gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
+gameData.render.mine.viewer.vPos = gameData.objs.viewerP->info.position.vPos;
 if (xEyeOffset)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * (xEyeOffset);
+	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.RVec () * (xEyeOffset);
 G3SetViewMatrix (gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 CCanvas::Current ()->Clear (BLACK_RGBA);
 transformation.Begin (CFixVector::ZERO, mSurfaceOrient);
@@ -845,16 +845,16 @@ void RenderEndLevelMine (fix xEyeOffset, int nWindowNum)
 {
 	short nStartSeg;
 
-gameData.render.mine.viewerEye = gameData.objs.viewerP->info.position.vPos;
+gameData.render.mine.viewer.vPos = gameData.objs.viewerP->info.position.vPos;
 if (gameData.objs.viewerP->info.nType == OBJ_PLAYER)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.FVec () * ((gameData.objs.viewerP->info.xSize * 3) / 4);
+	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.FVec () * ((gameData.objs.viewerP->info.xSize * 3) / 4);
 if (xEyeOffset)
-	gameData.render.mine.viewerEye += gameData.objs.viewerP->info.position.mOrient.RVec () * (xEyeOffset);
+	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.RVec () * (xEyeOffset);
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	nStartSeg = gameData.endLevel.exit.nSegNum;
 	}
 else {
-	nStartSeg = FindSegByPos (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.nSegment, 1, 0);
+	nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.nSegment, 1, 0);
 	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewerP->info.nSegment;
 	}
@@ -863,10 +863,10 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	CAngleVector angles = CAngleVector::Create(0, 0, 0x7fff);
 	headm = CFixMatrix::Create (angles);
 	viewm = gameData.objs.viewerP->info.position.mOrient * headm;
-	G3SetViewMatrix (gameData.render.mine.viewerEye, viewm, gameStates.render.xZoom, 1);
+	G3SetViewMatrix (gameData.render.mine.viewer.vPos, viewm, gameStates.render.xZoom, 1);
 	}
 else
-	G3SetViewMatrix (gameData.render.mine.viewerEye, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
+	G3SetViewMatrix (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, 1);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 transparencyRenderer.Render (0);
 }
