@@ -146,6 +146,7 @@ typedef struct tTranspItemBuffer {
 	char					bUseLightmaps;
 	char					bDecal;
 	char					bSplitPolys;
+	char					bAllowAdd;
 	CBitmap*				bmP [3];
 	CFixVector			vViewer [2];
 	CFloatVector		vViewerf [2];
@@ -169,7 +170,7 @@ class CTransparencyRenderer {
 		int AllocBuffers (void);
 		void FreeBuffers (void);
 		void ResetBuffers (void);
-		void InitBuffer (int zMin, int zMax);
+		void InitBuffer (int zMin, int zMax, int nWindow);
 		inline void Init (void) {
 			m_data.nMinOffs = ITEM_DEPTHBUFFER_SIZE;
 			m_data.nMaxOffs = 0;

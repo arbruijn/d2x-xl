@@ -45,7 +45,7 @@
 
 //------------------------------------------------------------------------------
 
-#define ROTATE_VERTICES 0
+#define TRANSFORM_VERTICES 1
 
 tRgbaColorf defaultParticleColor = {1.0f, 1.0f, 1.0f, 1.0f};
 
@@ -850,7 +850,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#if ROTATE_VERTICES
+#if TRANSFORM_VERTICES
 
 void CParticle::Setup (float fBrightness, char nFrame, char nRotFrame, tParticleVertex* pb, int nThread)
 {

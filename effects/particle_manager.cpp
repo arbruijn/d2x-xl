@@ -43,6 +43,8 @@
 #include "renderthreads.h"
 #include "automap.h"
 
+#define TRANSFORM_VERTICES 1
+
 CParticleManager particleManager;
 
 tRenderParticle CParticleManager::particleBuffer [PART_BUF_SIZE];
@@ -111,7 +113,7 @@ for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP 
 	systemP->Init (i++);
 m_iBuffer = 0;
 
-#if 0
+#if TRANSFORM_VERTICES
 
 tSinCosf sinCosPart [PARTICLE_POSITIONS];
 ComputeSinCosTable (sizeofa (sinCosPart), sinCosPart);
@@ -406,9 +408,13 @@ if (InitBuffer ()) {
 			shaderManager.Deploy (-1);
 		}
 	glNormal3f (0, 0, -1);
+#if !TRANSFORM_VERTICES
 	ogl.SetupTransform (1);
+#endif
 	OglDrawArrays (GL_QUADS, 0, m_iBuffer * 4);
+#if !TRANSFORM_VERTICES
 	ogl.ResetTransform (1);
+#endif
 	glNormal3f (1, 1, 1);
 	}
 PROF_END(ptParticles)

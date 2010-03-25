@@ -99,10 +99,18 @@ ResetFreeList ();
 
 //------------------------------------------------------------------------------
 
-void CTransparencyRenderer::InitBuffer (int zMin, int zMax)
+void CTransparencyRenderer::InitBuffer (int zMin, int zMax, int nWindow)
 {
 #if LAZY_RESET
-if (!gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0)) 
+if (!nWindow)
+	m_data.bAllowAdd = 0;
+else if (gameStates.render.cameras.bActive)
+	m_data.bAllowAdd = 1;
+else if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
+	m_data.bAllowAdd = -1;
+else
+	m_data.bAllowAdd = 1;
+if (m_data.bAllowAdd) 
 #endif
 	{
 	m_data.zMin = 0;
@@ -128,7 +136,9 @@ if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
 if (m_data.nFreeItems <= 0)
 	return 0;
 #if LAZY_RESET
-if (!bTransformed && gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
+if (!m_data.bAllowAdd)
+	return 0;
+if (!bTransformed && (m_data.bAllowAdd < 0))	// already added and still in buffer
 	return 0;
 #endif
 #if RENDER_TRANSPARENCY
@@ -1182,7 +1192,7 @@ void CTransparencyRenderer::Render (int nWindow)
 	tTranspItem*		currentP, * nextP, * prevP;
 	tTranspItemList*	listP;
 	int					nItems, nDepth, bStencil;
-	bool					bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow || gameStates.render.cameras.bActive;
+	bool					bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;

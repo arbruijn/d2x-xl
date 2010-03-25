@@ -306,7 +306,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && 
 												  !(gameStates.render.bFullBright || automap.Display ());
 		}
-	transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax);
+	transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax, nWindow);
 	}
 }
 
