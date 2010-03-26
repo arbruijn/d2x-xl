@@ -694,7 +694,7 @@ return v;
 
 inline int CSegmentGrid::GridIndex (int x, int y, int z)
 {
-return z * m_vDim [Y] * m_vDim [X] + y * m_vDim [X] + x;
+return (z * m_vDim [Y] + y) * m_vDim [X] + x;
 }
 
 // ----------------------------------------------------------------------------
