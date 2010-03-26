@@ -662,29 +662,32 @@ return (v > 0) ? Floor (v + 0xFFFF) : -Floor (-v);
 
 // ----------------------------------------------------------------------------
 
-inline void Floor (CFixVector& v)
+inline CFixVector& Floor (CFixVector& v)
 {
 v [X] = Floor (v [X]);
 v [Y] = Floor (v [Y]);
 v [Z] = Floor (v [Z]);
+return v;
 }
 
 // ----------------------------------------------------------------------------
 
-inline void Ceil (CFixVector& v)
+inline CFixVector& Ceil (CFixVector& v)
 {
 v [X] = Ceil (v [X]);
 v [Y] = Ceil (v [Y]);
 v [Z] = Ceil (v [Z]);
+return v;
 }
 
 // ----------------------------------------------------------------------------
 
-inline void ToInt (CFixVector& v)
+inline CFixVector& ToInt (CFixVector& v)
 {
 v [X] = X2I (v [X]);
 v [Y] = X2I (v [Y]);
 v [Z] = X2I (v [Z]);
+return v;
 }
 
 // ----------------------------------------------------------------------------
@@ -703,8 +706,9 @@ bool CSegmentGrid::Create (int nGridSize, int bSkyBox)
 	CFixVector		m_vDim, v0, v1;
 	int				size, i, j, x, y, z;
 
+m_nGridSize = nGridSize;
 m_vDim = gameData.segs.vMax - gameData.segs.vMin;
-m_vDim /= I2X (nGridSize);
+m_vDim /= I2X (m_nGridSize);
 Ceil (m_vDim);
 ToInt (m_vDim);
 size = ++m_vDim [X] * ++m_vDim [Y] * ++m_vDim [Z];
@@ -718,10 +722,10 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
 		v0 = segP->m_extents [0] - gameData.segs.vMin;
 		v1 = segP->m_extents [1] - gameData.segs.vMin;
-		Floor (v0);
-		Floor (v1);
-		ToInt (v0);
-		ToInt (v1);
+		v0 /= I2X (100);
+		v1 /= I2X (100);
+		ToInt (Floor (v0));
+		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
 				indexP = &m_index [GridIndex (v0 [X], y, z)];
@@ -748,10 +752,10 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
 		v0 = segP->m_extents [0] - gameData.segs.vMin;
 		v1 = segP->m_extents [1] - gameData.segs.vMin;
-		Floor (v0);
-		Floor (v1);
-		ToInt (v0);
-		ToInt (v1);
+		v0 /= I2X (100);
+		v1 /= I2X (100);
+		ToInt (Floor (v0));
+		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
 				indexP = &m_index [GridIndex (v0 [X], y, z)];
@@ -779,7 +783,8 @@ int CSegmentGrid::GetSegList (CFixVector vPos, short*& listP)
 {
 if (!Available ())
 	return -1;
-Ceil (vPos);
+vPos /= I2X (m_nGridSize);
+ToInt (Floor (vPos));
 int i = GridIndex (vPos [X], vPos [Y], vPos [Z]);
 if ((i < 0) || (i >= int (m_index.Size ())))
 	return 0;

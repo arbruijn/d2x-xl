@@ -1717,6 +1717,7 @@ class CSegmentGrid {
 		CArray<tSegGridIndex>	m_index;
 		CShortArray					m_segments;
 		CFixVector					m_vDim;
+		int							m_nGridSize;
 
 	public:
 		bool Create (int nGridSize, int bSkyBox);
