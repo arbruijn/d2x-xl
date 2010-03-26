@@ -773,7 +773,7 @@ if (!HaveGrid ())
 	return -1;
 Ceil (vPos);
 int i = GridIndex (vPos [X], vPos [Y], vPos [Z]);
-if ((i < 0) || (i >= int (gridIndex.Size ()))
+if ((i < 0) || (i >= int (gridIndex.Size ())))
 	return 0;
 listP = &segGrid [gridIndex [i].nIndex];
 return gridIndex [i].nSegments;
