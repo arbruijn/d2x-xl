@@ -721,8 +721,9 @@ m_index.Clear ();
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
-		v0 = segP->m_extents [0] - gameData.segs.vMin;
-		v1 = segP->m_extents [1] - gameData.segs.vMin;
+		v0 = v1 = segP->Center () - gameData.segs.vMin;
+		v0 += segP->m_extents [0];
+		v1 += segP->m_extents [1];
 		v0 /= I2X (m_nGridSize);
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
@@ -731,7 +732,7 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
 				indexP = &m_index [h = GridIndex (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++) {
-					if (indexP - m_index.Buffer () == 61)
+					if (indexP - m_index.Buffer () == 174177)
 						indexP = indexP;
 					indexP->nSegments++;
 					}
@@ -757,8 +758,9 @@ if (!m_segments.Create (j)) {
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
-		v0 = segP->m_extents [0] - gameData.segs.vMin;
-		v1 = segP->m_extents [1] - gameData.segs.vMin;
+		v0 = v1 = segP->Center () - gameData.segs.vMin;
+		v0 += segP->m_extents [0];
+		v1 += segP->m_extents [1];
 		v0 /= I2X (m_nGridSize);
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
