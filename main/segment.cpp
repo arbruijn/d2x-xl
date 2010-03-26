@@ -185,7 +185,7 @@ m_rads [1] = 0;
 vMin [X] = vMin [Y] = vMin [Z] = 0x7FFFFFFF;
 vMax [X] = vMax [Y] = vMax [Z] = -0x7FFFFFFF;
 for (int i = 0; i < 8; i++) {
-	v = m_vCenter - gameData.segs.vertices [m_verts [i]];
+	v = gameData.segs.vertices [m_verts [i]];
 	if (vMin [X] > v [X])
 		vMin [X] = v [X];
 	if (vMin [Y] > v [Y])
@@ -198,7 +198,7 @@ for (int i = 0; i < 8; i++) {
 		vMax [Y] = v [Y];
 	if (vMax [Z] < v [Z])
 		vMax [Z] = v [Z];
-	xDist = v.Mag ();
+	xDist = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [1] < xDist)
 		m_rads [1] = xDist;
 	}

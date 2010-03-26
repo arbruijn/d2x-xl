@@ -795,8 +795,8 @@ else {
 	LoadTexColorsCompiled (-1, cf);
 	ComputeSegSideCenters (-1);
 	}
-gameData.segs.BuildGrid (50, 0);
-gameData.segs.BuildGrid (100, 1);
+gameData.segs.BuildGrid (40, 0);
+gameData.segs.BuildGrid (80, 1);
 gameData.segs.fRad = X2F (CFixVector::Dist(gameData.segs.vMax, gameData.segs.vMin));
 ResetObjects (1);		//one CObject, the player
 return 0;

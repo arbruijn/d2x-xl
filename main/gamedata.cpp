@@ -713,9 +713,8 @@ m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
-		v0 = v1 = segP->Center ();
-		v0 += segP->m_extents [0];
-		v1 += segP->m_extents [1];
+		v0 = segP->m_extents [0];
+		v1 = segP->m_extents [1];
 		if (m_vMin [X] > v0 [X])
 			m_vMin [X] = v0 [X];
 		if (m_vMin [Y] > v0 [Y])
@@ -744,9 +743,12 @@ m_index.Clear ();
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
-		v0 = v1 = segP->Center () - m_vMin;
-		v0 += segP->m_extents [0];
-		v1 += segP->m_extents [1];
+#if DBG
+		if (segP - SEGMENTS.Buffer () == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		v0 = segP->m_extents [0] - m_vMin;
+		v1 = segP->m_extents [1] - m_vMin;
 		v0 /= I2X (m_nGridSize);
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
@@ -755,8 +757,6 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
 				indexP = &m_index [h = GridIndex (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++) {
-					if (indexP - m_index.Buffer () == 174177)
-						indexP = indexP;
 					indexP->nSegments++;
 					}
 				}
@@ -779,18 +779,21 @@ if (!m_segments.Create (j)) {
 	}
 
 segP = SEGMENTS.Buffer ();
-for (i = gameData.segs.nSegments; i; i--, segP++) {
+for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
-		v0 = v1 = segP->Center () - m_vMin;
-		v0 += segP->m_extents [0];
-		v1 += segP->m_extents [1];
+#if DBG
+		if (segP - SEGMENTS.Buffer () == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		v0 = segP->m_extents [0] - m_vMin;
+		v1 = segP->m_extents [1] - m_vMin;
 		v0 /= I2X (m_nGridSize);
 		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
 		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
-				indexP = &m_index [GRID_INDEX (v0 [X], y, z)];
+				indexP = &m_index [h = GridIndex (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
 					m_segments [indexP->nIndex + indexP->nSegments++] = i;
 				}
