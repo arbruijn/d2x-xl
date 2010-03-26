@@ -778,8 +778,6 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 	if (gameData.segs.vMax [Z] < v [Z])
 		gameData.segs.vMax [Z] = v [Z];
 	}
-gameData.segs.BuildGrid (50, 0);
-gameData.segs.BuildGrid (100, 1);
 SEGMENTS.Clear ();
 #if TRACE
 console.printf (CON_DBG, "   loading segments ...\n");
@@ -797,6 +795,8 @@ else {
 	LoadTexColorsCompiled (-1, cf);
 	ComputeSegSideCenters (-1);
 	}
+gameData.segs.BuildGrid (50, 0);
+gameData.segs.BuildGrid (100, 1);
 gameData.segs.fRad = X2F (CFixVector::Dist(gameData.segs.vMax, gameData.segs.vMin));
 ResetObjects (1);		//one CObject, the player
 return 0;
