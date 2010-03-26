@@ -637,6 +637,8 @@ DESTROY (gameData.segs.bSegVis [0]);
 DESTROY (gameData.segs.bSegVis [1]);
 DESTROY (gameData.segs.slideSegs);
 DESTROY (gameData.segs.segFaces);
+DESTROY (gameData.segs.gridIndex);
+DESTROY (gameData.segs.segGrid);
 nSegments = 0;
 nFaces = 0;
 faces.Destroy ();
@@ -687,18 +689,25 @@ v [Z] = X2I (v [Z]);
 
 // ----------------------------------------------------------------------------
 
+inline int CSegmentData::GridIndex (int x, int y, int z)
+{
+return z * vGridDim [Y] * vGridDim [X] + y * vGridDim [Y] + x;
+}
+
+// ----------------------------------------------------------------------------
+
 bool CSegmentData::BuildGrid (void)
 {
 	CSegment*		segP;
 	tSegGridIndex*	indexP;
-	CFixVector		vDim, v0, v1;
+	CFixVector		vGridDim, v0, v1;
 	int				size, i, j, x, y, z;
 
-vDim = vMax - vMin;
-vDim /= I2X (100);
-Ceil (vDim);
-ToInt (vDim);
-size = ++vDim [X] * ++vDim [Y] * ++vDim [Z];
+vGridDim = vMax - vMin;
+vGridDim /= I2X (100);
+Ceil (vGridDim);
+ToInt (vGridDim);
+size = ++vGridDim [X] * ++vGridDim [Y] * ++vGridDim [Z];
 
 if (!gridIndex.Create (size))
 	return false;
@@ -706,17 +715,19 @@ gridIndex.Clear ();
 
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
-	v0 = segP->m_extents [0] - vMin;
-	v1 = segP->m_extents [1] - vMin;
-	Floor (v0);
-	Floor (v1);
-	ToInt (v0);
-	ToInt (v1);
-	for (z = v0 [Z]; z <= v1 [Z]; z++) {
-		for (y = v0 [Y]; y <= v1 [Y]; y++) {
-			indexP = &gridIndex [z * vDim [Y] * vDim [X] + y * vDim [Y] + v0 [X]];
-			for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
-				indexP->nSegments++;
+	if (segP->m_nType != SEGMENT_IS_SKYBOX) {
+		v0 = segP->m_extents [0] - vMin;
+		v1 = segP->m_extents [1] - vMin;
+		Floor (v0);
+		Floor (v1);
+		ToInt (v0);
+		ToInt (v1);
+		for (z = v0 [Z]; z <= v1 [Z]; z++) {
+			for (y = v0 [Y]; y <= v1 [Y]; y++) {
+				indexP = &gridIndex [GridIndex (v0 [X], y, z)];
+				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
+					indexP->nSegments++;
+				}
 			}
 		}
 	}
@@ -734,22 +745,38 @@ if (!segGrid.Create (j)) {
 
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
-	v0 = segP->m_extents [0] - vMin;
-	v1 = segP->m_extents [1] - vMin;
-	Floor (v0);
-	Floor (v1);
-	ToInt (v0);
-	ToInt (v1);
-	for (z = v0 [Z]; z <= v1 [Z]; z++) {
-		for (y = v0 [Y]; y <= v1 [Y]; y++) {
-			indexP = &gridIndex [z * vDim [Y] * vDim [X] + y * vDim [Y] + v0 [X]];
-			for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
-				segGrid [indexP->nIndex + indexP->nSegments++] = i;
+	if (segP->m_nType != SEGMENT_IS_SKYBOX) {
+		v0 = segP->m_extents [0] - vMin;
+		v1 = segP->m_extents [1] - vMin;
+		Floor (v0);
+		Floor (v1);
+		ToInt (v0);
+		ToInt (v1);
+		for (z = v0 [Z]; z <= v1 [Z]; z++) {
+			for (y = v0 [Y]; y <= v1 [Y]; y++) {
+				indexP = &gridIndex [GridIndex (v0 [X], y, z)];
+				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
+					segGrid [indexP->nIndex + indexP->nSegments++] = i;
+				}
 			}
 		}
 	}
 
 return true;
+}
+
+// ----------------------------------------------------------------------------
+
+int CSegmentData::GetSegList (CFixVector vPos, short*& listP)
+{
+if (!HaveGrid ())
+	return -1;
+Ceil (vPos);
+int i = GridIndex (vPos);
+if ((i < 0) || (i >= int gridIndex.Size ()))
+	return 0;
+listP = segGrid [gridIndex [i].nIndex];
+return gridIndex [i].nSegments;
 }
 
 // ----------------------------------------------------------------------------

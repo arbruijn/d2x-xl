@@ -162,53 +162,51 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // 2. Recursivel [Y] trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos (const CFixVector& p, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
+int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
 	static char		bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
 
-	int		nNewSeg, i;
-	short		*segNumP;
-#if 0
-	static	int nSemaphore = 0;
+	int			i, nNewSeg = -1;
+	short*		segListP;
+	CSegment*	segP;
 
-while (nSemaphore > 0)
-	G3_SLEEP (0);
-if (nSemaphore < 0)
-	nSemaphore = 0;
-nSemaphore++;
-#endif
 //allow nSegment == -1, meaning we have no idea what CSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
 	memset (bVisited [nThread], 0, gameData.segs.nSegments);
-		nNewSeg = TraceSegs (p, nSegment, 0, bVisited [nThread], xTolerance);
-	if (nNewSeg != -1)//we found a CSegment!
-		goto funcExit;
+	if (0 <= (nNewSeg = TraceSegs (vPos, nSegment, 0, bVisited [nThread], xTolerance)))
+		return nNewSeg;
 	}
 
 //couldn't find via attached segs, so search all segs
-if (!bExhaustive) {
-	nNewSeg = -1;
-	goto funcExit;
-	}
-++nExhaustiveCount;
+if (!bExhaustive)
+	return -1;
 
 if (bSkyBox) {
-	for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
-		if (!SEGMENTS [nNewSeg = *segNumP].Masks (p, 0).m_center)
-			goto funcExit;
+	for (i = gameData.segs.skybox.GetSegList (segListP); i; i--, segListP++) {
+		nNewSeg = *segListP;
+		segP = SEGMENTS + nNewSeg;
+		if ((CFixVector::Dist (segP->Center (), vPos) <= segP->m_rads [0]) || (!segP->Masks (vPos, 0).m_center))
+			return nNewSeg;
+		}
+	}
+else if (gameData.segs.HaveGrid ()) {
+	for (i = gameData.segs.GetSegList (vPos, segListP); i; i--, segListP++) {
+		nNewSeg = *segListP;
+		segP = SEGMENTS + nNewSeg;
+		if ((CFixVector::Dist (segP->Center (), vPos) <= segP->m_rads [0]) || (!segP->Masks (vPos, 0).m_center))
+			return nNewSeg;
+		}
 	}
 else {
-	for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++)
-		if ((SEGMENTS [nNewSeg].m_nType != SEGMENT_IS_SKYBOX) && !SEGMENTS [nNewSeg].Masks (p, 0).m_center)
-			goto funcExit;
+	segP = SEGMENTS.Buffer ();
+	for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++, segP++) {
+		if ((segP->m_nType == SEGMENT_IS_SKYBOX) && 
+		    ((CFixVector::Dist (segP->Center (), vPos) <= segP->m_rads [0]) || (!SEGMENTS [nNewSeg].Masks (vPos, 0).m_center)))
+			return nNewSeg;
+		}
 	}
-nNewSeg = -1;
-++nExhaustiveFailedCount;
-
-funcExit:
-
-return nNewSeg;		//no CSegment found
+return -1;		//no CSegment found
 }
 
 // -------------------------------------------------------------------------------

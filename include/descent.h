@@ -1682,6 +1682,10 @@ class CSkyBox : public CStack< short > {
 	public:
 		void Destroy (void);
 		int CountSegments (void);
+		inline int GetSegList (short*& listP) {
+			listP = Buffer ();
+			return ToS ();
+			}
 };
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -1725,6 +1729,7 @@ class CSegmentData {
 #endif
 		CFixVector					vMin;
 		CFixVector					vMax;
+		CFixVector					vGridDim;
 		float							fRad;
 		CArray<CFixVector>		segCenters [2];
 		CArray<CFixVector>		sideCenters;
@@ -1795,6 +1800,9 @@ class CSegmentData {
 			}
 
 		bool BuildGrid (void);
+		int GetSegList (CFixVector vPos, short*& listP);
+		inline int GridIndex (int x, int y, int z);
+		inline bool HaveGrid (void) { return (segGrid.Buffer () != NULL); }
 };
 
 //------------------------------------------------------------------------------
