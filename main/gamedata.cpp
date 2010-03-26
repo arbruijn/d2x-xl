@@ -691,7 +691,7 @@ v [Z] = X2I (v [Z]);
 
 inline int CSegmentGrid::GridIndex (int x, int y, int z)
 {
-return z * m_vDim [Y] * m_vDim [X] + y * m_vDim [Y] + x;
+return z * m_vDim [Y] * m_vDim [X] + y * m_vDim [X] + x;
 }
 
 // ----------------------------------------------------------------------------
@@ -738,7 +738,7 @@ for (i = j = 0; i < size; i++) {
 	m_index [i].nSegments = 0;
 	}
 
-if (!m_segments .Create (j)) {
+if (!m_segments.Create (j)) {
 	m_index.Destroy ();
 	return false;
 	}

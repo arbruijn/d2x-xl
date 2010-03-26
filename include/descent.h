@@ -1708,8 +1708,8 @@ class CSkyBox : public CStack< short > {
 #define TRIAMATIDX(_i, _j)					(((_j) < (_i)) ? TRIAMATSIZE (_i) + (_j) : TRIAMATSIZE (_j) + (_i))
 
 typedef struct tSegGridIndex {
-	int	nIndex;
-	short	nSegments;
+	int		nIndex;
+	ushort	nSegments;
 	} tSegGridIndex;
 
 class CSegmentGrid {
