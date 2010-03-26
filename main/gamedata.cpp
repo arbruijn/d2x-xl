@@ -826,7 +826,7 @@ vPos -= m_vMin;
 vPos /= I2X (m_nGridSize);
 ToInt (Floor (vPos));
 int i = GRID_INDEX (vPos [X], vPos [Y], vPos [Z]);
-if ((i < 0) || (i >= int (m_index.Size ())))
+if ((i < 0) || (i >= int (m_index.Length ())))
 	return 0;
 listP = &m_segments [m_index [i].nIndex];
 return m_index [i].nSegments;
