@@ -558,7 +558,9 @@ if (m_bHaveDir) {
 	m_vPos += m_vDir * drag;
 	}
 
-int nSegment = FindSegByPos (m_vPos, m_nSegment, m_nSegment < 0, 1, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
+int nSegment = FindSegByPos (m_vPos, m_nSegment, m_nSegment < 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
+if (nSegment < 0)
+	nSegment = FindSegByPos (m_vPos, m_nSegment, m_nSegment < 0, 1, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
 if ((0 > nSegment) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
 	if (m_nType == WATERFALL_PARTICLES) {
 		CFixVector vDir = m_vPos - m_vStartPos;

@@ -244,7 +244,7 @@ if (!gameStates.app.tick40fps.bTick)
 
 	int nCurrent = -1;
 
-#if USE_OPENMP > 1
+#if USE_OPENMP > 2
 if (m_systemList.Buffer ()) {
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 		m_systemList [h++] = systemP;

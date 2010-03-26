@@ -90,7 +90,7 @@ if (bVisited [nCurSeg])
 	return -1;
 bVisited [nCurSeg] = 1;
 segP = SEGMENTS + nCurSeg;
-if (nTraceDepth && !(centerMask = segP->GetSideDists (vPos, xSideDists, 1)))		//we're in the old segment
+if (!(centerMask = segP->GetSideDists (vPos, xSideDists, 1)))		//we're in the old segment
 	return nCurSeg;		
 for (;;) {
 	nMaxSide = -1;
@@ -182,19 +182,9 @@ int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSk
 //allow nSegment == -1, meaning we have no idea what CSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
-	if (PointInSeg (SEGMENTS + nSegment, vPos))
-		return nSegment;
-	if (gameData.segs.HaveGrid (bSkyBox)) {
-		for (i = gameData.segs.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
-			if (PointInSeg (SEGMENTS + *segListP, vPos))
-				return *segListP;
-			}
-		}
-	else {
-		memset (bVisited [nThread], 0, gameData.segs.nSegments);
-		if (0 <= (i = TraceSegs (vPos, nSegment, 0, bVisited [nThread], xTolerance)))
-			return i;
-		}
+	memset (bVisited [nThread], 0, gameData.segs.nSegments);
+	if (0 <= (i = TraceSegs (vPos, nSegment, 0, bVisited [nThread], xTolerance))) 
+		return i;
 	}
 
 //couldn't find via attached segs, so search all segs
