@@ -722,8 +722,8 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
 		v0 = segP->m_extents [0] - gameData.segs.vMin;
 		v1 = segP->m_extents [1] - gameData.segs.vMin;
-		v0 /= I2X (100);
-		v1 /= I2X (100);
+		v0 /= I2X (m_nGridSize);
+		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
 		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
@@ -752,8 +752,8 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
 		v0 = segP->m_extents [0] - gameData.segs.vMin;
 		v1 = segP->m_extents [1] - gameData.segs.vMin;
-		v0 /= I2X (100);
-		v1 /= I2X (100);
+		v0 /= I2X (m_nGridSize);
+		v1 /= I2X (m_nGridSize);
 		ToInt (Floor (v0));
 		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
