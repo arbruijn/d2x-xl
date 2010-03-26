@@ -706,7 +706,7 @@ bool CSegmentGrid::Create (int nGridSize, int bSkyBox)
 	CSegment*		segP;
 	tSegGridIndex*	indexP;
 	CFixVector		v0, v1;
-	int				size, h, i, j, k, x, y, z;
+	int				size, i, j, x, y, z;
 
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
@@ -755,7 +755,7 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
-				indexP = &m_index [h = GridIndex (v0 [X], y, z)];
+				indexP = &m_index [GridIndex (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++) {
 					indexP->nSegments++;
 					}
@@ -764,11 +764,15 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 		}
 	}
 
-h = k = 0;
+#if DBG
+int h = 0, k = 0;
+#endif
 for (i = j = 0; i < size; i++) {
 	m_index [i].nIndex = j;
+#if DBG
 	if (h < m_index [i].nSegments)
 		h = m_index [k = i].nSegments;
+#endif
 	j += m_index [i].nSegments;
 	m_index [i].nSegments = 0;
 	}
@@ -793,7 +797,7 @@ for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
 		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
-				indexP = &m_index [h = GridIndex (v0 [X], y, z)];
+				indexP = &m_index [GridIndex (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
 					m_segments [indexP->nIndex + indexP->nSegments++] = i;
 				}
