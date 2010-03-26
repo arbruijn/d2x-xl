@@ -1703,41 +1703,48 @@ class CSkyBox : public CStack< short > {
 #define TRIAMATSIZE(_i)						((_i) * ((_i) + 1) / 2)
 #define TRIAMATIDX(_i, _j)					(((_j) < (_i)) ? TRIAMATSIZE (_i) + (_j) : TRIAMATSIZE (_j) + (_i))
 
+typedef struct tSegGridIndex {
+	int	nIndex;
+	short	nSegments;
+	} tSegGridIndex;
+
 class CSegmentData {
 	public:
-		int						nMaxSegments;
-		CArray<CFixVector>	vertices;
-		CArray<CFloatVector>	fVertices;
-		CArray<CSegment>		segments;
-		CArray<tSegFaces>		segFaces;
-		CArray<g3sPoint>		points;
-		CSkyBox					skybox;
+		int							nMaxSegments;
+		CArray<CFixVector>		vertices;
+		CArray<CFloatVector>		fVertices;
+		CArray<CSegment>			segments;
+		CArray<tSegGridIndex>	gridIndex;
+		CShortArray					segGrid;
+		CArray<tSegFaces>			segFaces;
+		CArray<g3sPoint>			points;
+		CSkyBox						skybox;
 #if CALC_SEGRADS
-		CArray<fix>				segRads [2];
-		CArray<tSegExtent>	extent;
+		CArray<fix>					segRads [2];
+		CArray<tSegExtent>		extent;
 #endif
-		CFixVector				vMin;
-		CFixVector				vMax;
-		float						fRad;
-		CArray<CFixVector>	segCenters [2];
-		CArray<CFixVector>	sideCenters;
-		CArray<ubyte>			bSegVis [2];
-		CArray<ubyte>			bVertVis;
-		int						nVertices;
-		int						nFaceVerts;
-		int						nLastVertex;
-		int						nSegments;
-		int						nLastSegment;
-		int						nFaces;
-		int						nFaceKeys;
-		int						nTris;
-		int						nLevelVersion;
-		char						szLevelFilename [FILENAME_LEN];
-		CSecretData				secret;
-		CArray<tSlideSegs>	slideSegs;
-		short						nSlideSegs;
-		int						bHaveSlideSegs;
-		CFaceData				faces;
+		CFixVector					vMin;
+		CFixVector					vMax;
+		float							fRad;
+		CArray<CFixVector>		segCenters [2];
+		CArray<CFixVector>		sideCenters;
+		CArray<ubyte>				bSegVis [2];
+		CArray<ubyte>				bVertVis;
+		int							nVertices;
+		int							nFaceVerts;
+		int							nLastVertex;
+		int							nSegments;
+		int							nLastSegment;
+		int							nFaces;
+		int							nFaceKeys;
+		int							nTris;
+		int							nLevelVersion;
+		char							szLevelFilename [FILENAME_LEN];
+		CSecretData					secret;
+		CArray<tSlideSegs>		slideSegs;
+		short							nSlideSegs;
+		int							bHaveSlideSegs;
+		CFaceData					faces;
 	public:
 		CSegmentData ();
 		void Init (void);
@@ -1786,18 +1793,20 @@ class CSegmentData {
 				}
 			return 1;
 			}
+
+		bool BuildGrid (void);
 };
 
 //------------------------------------------------------------------------------
 
 class CWallData {
 	public:
-		CArray<CWall>				walls ; //[MAX_WALLS];
-		CStack<CExplodingWall>	exploding ; //[MAX_EXPLODING_WALLS];
-		CStack<CActiveDoor>		activeDoors ; //[MAX_DOORS];
-		CStack<CCloakingWall>	cloaking ; //[MAX_CLOAKING_WALLS];
+		CArray<CWall>				walls; //[MAX_WALLS];
+		CStack<CExplodingWall>	exploding; //[MAX_EXPLODING_WALLS];
+		CStack<CActiveDoor>		activeDoors; //[MAX_DOORS];
+		CStack<CCloakingWall>	cloaking; //[MAX_CLOAKING_WALLS];
 		CArray<tWallClip>			anims [2]; //[MAX_WALL_ANIMS];
-		CArray<int>					bitmaps ; //[MAX_WALL_ANIMS];
+		CArray<int>					bitmaps; //[MAX_WALL_ANIMS];
 		int							nWalls;
 		int							nAnims [2];
 		CArray<tWallClip>			animP;

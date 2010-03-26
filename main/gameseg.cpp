@@ -181,30 +181,21 @@ nSemaphore++;
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
 	memset (bVisited [nThread], 0, gameData.segs.nSegments);
-#if 0
-	if (xTolerance) {
-		CFloatVector v;
-		v.Assign (p);
-		nNewSeg = TraceSegsf (v, nSegment, 0, bVisited [nThread], X2F (xTolerance));
-		}
-	else
-#endif
 		nNewSeg = TraceSegs (p, nSegment, 0, bVisited [nThread], xTolerance);
 	if (nNewSeg != -1)//we found a CSegment!
 		goto funcExit;
 	}
+
 //couldn't find via attached segs, so search all segs
-if (bDoingLightingHack || !bExhaustive) {
+if (!bExhaustive) {
 	nNewSeg = -1;
 	goto funcExit;
 	}
 ++nExhaustiveCount;
-#if 0 //TRACE
-console.printf (1, "Warning: doing exhaustive search to find point CSegment (%i times)\n", nExhaustiveCount);
-#endif
+
 if (bSkyBox) {
 	for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
-		if (!SEGMENTS [*segNumP].Masks (p, 0).m_center)
+		if (!SEGMENTS [nNewSeg = *segNumP].Masks (p, 0).m_center)
 			goto funcExit;
 	}
 else {
@@ -214,17 +205,9 @@ else {
 	}
 nNewSeg = -1;
 ++nExhaustiveFailedCount;
-#if TRACE
-console.printf (1, "Warning: could not find point CSegment (%i times)\n", nExhaustiveFailedCount);
-#endif
 
 funcExit:
-#if 0
-if (nSemaphore > 0)
-	nSemaphore--;
-else
-	nSemaphore = 0;
-#endif
+
 return nNewSeg;		//no CSegment found
 }
 

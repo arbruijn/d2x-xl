@@ -717,7 +717,8 @@ int LoadMineSegmentsCompiled (CFile& cf)
 {
 	int			i, nSegments, nVertices;
 	ubyte			nCompiledVersion;
-	char			*psz;
+	char*			psz;
+	CFixVector	v;
 
 gameData.segs.vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 /*	[X] =
@@ -759,25 +760,25 @@ if (!InitGame (nSegments, nVertices))
 console.printf (CON_DBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
-	cf.ReadVector (gameData.segs.vertices [i]);
+	cf.ReadVector (v);
+	gameData.segs.vertices [i] = v;
 #if !FLOAT_COORD
-	gameData.segs.fVertices [i][X] = X2F (gameData.segs.vertices [i][X]);
-	gameData.segs.fVertices [i][Y] = X2F (gameData.segs.vertices [i][Y]);
-	gameData.segs.fVertices [i][Z] = X2F (gameData.segs.vertices [i][Z]);
+	gameData.segs.fVertices [i].Assign (v);
 #endif
-	if (gameData.segs.vMin [X] > gameData.segs.vertices [i][X])
-		gameData.segs.vMin [X] = gameData.segs.vertices [i][X];
-	if (gameData.segs.vMin [Y] > gameData.segs.vertices [i][Y])
-		gameData.segs.vMin [Y] = gameData.segs.vertices [i][Y];
-	if (gameData.segs.vMin [Z] > gameData.segs.vertices [i][Z])
-		gameData.segs.vMin [Z] = gameData.segs.vertices [i][Z];
-	if (gameData.segs.vMax [X] < gameData.segs.vertices [i][X])
-		gameData.segs.vMax [X] = gameData.segs.vertices [i][X];
-	if (gameData.segs.vMax [Y] < gameData.segs.vertices [i][Y])
-		gameData.segs.vMax [Y] = gameData.segs.vertices [i][Y];
-	if (gameData.segs.vMax [Z] < gameData.segs.vertices [i][Z])
-		gameData.segs.vMax [Z] = gameData.segs.vertices [i][Z];
+	if (gameData.segs.vMin [X] > v [X])
+		gameData.segs.vMin [X] = v [X];
+	if (gameData.segs.vMin [Y] > v [Y])
+		gameData.segs.vMin [Y] = v [Y];
+	if (gameData.segs.vMin [Z] > v [Z])
+		gameData.segs.vMin [Z] = v [Z];
+	if (gameData.segs.vMax [X] < v [X])
+		gameData.segs.vMax [X] = v [X];
+	if (gameData.segs.vMax [Y] < v [Y])
+		gameData.segs.vMax [Y] = v [Y];
+	if (gameData.segs.vMax [Z] < v [Z])
+		gameData.segs.vMax [Z] = v [Z];
 	}
+gameData.segs.BuildGrid ();
 SEGMENTS.Clear ();
 #if TRACE
 console.printf (CON_DBG, "   loading segments ...\n");

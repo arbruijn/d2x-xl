@@ -644,6 +644,116 @@ faces.Destroy ();
 
 // ----------------------------------------------------------------------------
 
+inline fix Ceil (fix v);
+
+inline fix Floor (fix v)
+{
+return (v > 0) ? v & 0xFFFF0000 : -Ceil (-v);
+}
+
+// ----------------------------------------------------------------------------
+
+inline fix Ceil (fix v)
+{
+return (v > 0) ? Floor (v + 0xFFFF) : -Floor (-v);
+}
+
+// ----------------------------------------------------------------------------
+
+inline void Floor (CFixVector& v)
+{
+v [X] = Floor (v [X]);
+v [Y] = Floor (v [Y]);
+v [Z] = Floor (v [Z]);
+}
+
+// ----------------------------------------------------------------------------
+
+inline void Ceil (CFixVector& v)
+{
+v [X] = Ceil (v [X]);
+v [Y] = Ceil (v [Y]);
+v [Z] = Ceil (v [Z]);
+}
+
+// ----------------------------------------------------------------------------
+
+inline void ToInt (CFixVector& v)
+{
+v [X] = X2I (v [X]);
+v [Y] = X2I (v [Y]);
+v [Z] = X2I (v [Z]);
+}
+
+// ----------------------------------------------------------------------------
+
+bool CSegmentData::BuildGrid (void)
+{
+	CSegment*		segP;
+	tSegGridIndex*	indexP;
+	CFixVector		vDim, v0, v1;
+	int				size, i, j, x, y, z;
+
+vDim = vMax - vMin;
+vDim /= I2X (100);
+Ceil (vDim);
+ToInt (vDim);
+size = ++vDim [X] * ++vDim [Y] * ++vDim [Z];
+
+if (!gridIndex.Create (size))
+	return false;
+gridIndex.Clear ();
+
+segP = SEGMENTS.Buffer ();
+for (i = gameData.segs.nSegments; i; i--, segP++) {
+	v0 = segP->m_extents [0] - vMin;
+	v1 = segP->m_extents [1] - vMin;
+	Floor (v0);
+	Floor (v1);
+	ToInt (v0);
+	ToInt (v1);
+	for (z = v0 [Z]; z <= v1 [Z]; z++) {
+		for (y = v0 [Y]; y <= v1 [Y]; y++) {
+			indexP = &gridIndex [z * vDim [Y] * vDim [X] + y * vDim [Y] + v0 [X]];
+			for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
+				indexP->nSegments++;
+			}
+		}
+	}
+
+for (i = j = 0; i < size; i++) {
+	gridIndex [i].nIndex = j;
+	j += gridIndex [i].nSegments;
+	gridIndex [i].nSegments = 0;
+	}
+
+if (!segGrid.Create (j)) {
+	gridIndex.Destroy ();
+	return false;
+	}
+
+segP = SEGMENTS.Buffer ();
+for (i = gameData.segs.nSegments; i; i--, segP++) {
+	v0 = segP->m_extents [0] - vMin;
+	v1 = segP->m_extents [1] - vMin;
+	Floor (v0);
+	Floor (v1);
+	ToInt (v0);
+	ToInt (v1);
+	for (z = v0 [Z]; z <= v1 [Z]; z++) {
+		for (y = v0 [Y]; y <= v1 [Y]; y++) {
+			indexP = &gridIndex [z * vDim [Y] * vDim [X] + y * vDim [Y] + v0 [X]];
+			for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
+				segGrid [indexP->nIndex + indexP->nSegments++] = i;
+			}
+		}
+	}
+
+return true;
+}
+
+// ----------------------------------------------------------------------------
+
 CWallData::CWallData ()
 {
 exploding.Create (MAX_EXPLODING_WALLS);
