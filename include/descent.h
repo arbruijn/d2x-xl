@@ -1717,6 +1717,8 @@ class CSegmentGrid {
 		CArray<tSegGridIndex>	m_index;
 		CShortArray					m_segments;
 		CFixVector					m_vDim;
+		CFixVector					m_vMin;
+		CFixVector					m_vMax;
 		int							m_nGridSize;
 
 	public:
