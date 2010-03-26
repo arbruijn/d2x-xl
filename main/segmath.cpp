@@ -182,16 +182,16 @@ if (nSegment != -1) {
 if (!bExhaustive)
 	return -1;
 
-if (bSkyBox) {
-	for (i = gameData.segs.skybox.GetSegList (segListP); i; i--, segListP++) {
+if (gameData.segs.HaveGrid (bSkyBox)) {
+	for (i = gameData.segs.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
 		nNewSeg = *segListP;
 		segP = SEGMENTS + nNewSeg;
 		if ((CFixVector::Dist (segP->Center (), vPos) <= segP->m_rads [0]) || (!segP->Masks (vPos, 0).m_center))
 			return nNewSeg;
 		}
 	}
-else if (gameData.segs.HaveGrid ()) {
-	for (i = gameData.segs.GetSegList (vPos, segListP); i; i--, segListP++) {
+else if (bSkyBox) {
+	for (i = gameData.segs.skybox.GetSegList (segListP); i; i--, segListP++) {
 		nNewSeg = *segListP;
 		segP = SEGMENTS + nNewSeg;
 		if ((CFixVector::Dist (segP->Center (), vPos) <= segP->m_rads [0]) || (!segP->Masks (vPos, 0).m_center))

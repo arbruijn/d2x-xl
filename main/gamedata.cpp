@@ -637,8 +637,8 @@ DESTROY (gameData.segs.bSegVis [0]);
 DESTROY (gameData.segs.bSegVis [1]);
 DESTROY (gameData.segs.slideSegs);
 DESTROY (gameData.segs.segFaces);
-DESTROY (gameData.segs.gridIndex);
-DESTROY (gameData.segs.segGrid);
+gameData.segs.grids [0].Destroy ();
+gameData.segs.grids [1].Destroy ();
 nSegments = 0;
 nFaces = 0;
 faces.Destroy ();
@@ -689,42 +689,42 @@ v [Z] = X2I (v [Z]);
 
 // ----------------------------------------------------------------------------
 
-inline int CSegmentData::GridIndex (int x, int y, int z)
+inline int CSegmentGrid::GridIndex (int x, int y, int z)
 {
-return z * vGridDim [Y] * vGridDim [X] + y * vGridDim [Y] + x;
+return z * m_vDim [Y] * m_vDim [X] + y * m_vDim [Y] + x;
 }
 
 // ----------------------------------------------------------------------------
 
-bool CSegmentData::BuildGrid (void)
+bool CSegmentGrid::Create (int nGridSize, int bSkyBox)
 {
 	CSegment*		segP;
 	tSegGridIndex*	indexP;
-	CFixVector		vGridDim, v0, v1;
+	CFixVector		m_vDim, v0, v1;
 	int				size, i, j, x, y, z;
 
-vGridDim = vMax - vMin;
-vGridDim /= I2X (100);
-Ceil (vGridDim);
-ToInt (vGridDim);
-size = ++vGridDim [X] * ++vGridDim [Y] * ++vGridDim [Z];
+m_vDim = gameData.segs.vMax - gameData.segs.vMin;
+m_vDim /= I2X (nGridSize);
+Ceil (m_vDim);
+ToInt (m_vDim);
+size = ++m_vDim [X] * ++m_vDim [Y] * ++m_vDim [Z];
 
-if (!gridIndex.Create (size))
+if (!m_index.Create (size))
 	return false;
-gridIndex.Clear ();
+m_index.Clear ();
 
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
-	if (segP->m_nType != SEGMENT_IS_SKYBOX) {
-		v0 = segP->m_extents [0] - vMin;
-		v1 = segP->m_extents [1] - vMin;
+	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
+		v0 = segP->m_extents [0] - gameData.segs.vMin;
+		v1 = segP->m_extents [1] - gameData.segs.vMin;
 		Floor (v0);
 		Floor (v1);
 		ToInt (v0);
 		ToInt (v1);
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
-				indexP = &gridIndex [GridIndex (v0 [X], y, z)];
+				indexP = &m_index [GridIndex (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
 					indexP->nSegments++;
 				}
@@ -733,30 +733,30 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 	}
 
 for (i = j = 0; i < size; i++) {
-	gridIndex [i].nIndex = j;
-	j += gridIndex [i].nSegments;
-	gridIndex [i].nSegments = 0;
+	m_index [i].nIndex = j;
+	j += m_index [i].nSegments;
+	m_index [i].nSegments = 0;
 	}
 
-if (!segGrid.Create (j)) {
-	gridIndex.Destroy ();
+if (!m_segments .Create (j)) {
+	m_index.Destroy ();
 	return false;
 	}
 
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
-	if (segP->m_nType != SEGMENT_IS_SKYBOX) {
-		v0 = segP->m_extents [0] - vMin;
-		v1 = segP->m_extents [1] - vMin;
+	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
+		v0 = segP->m_extents [0] - gameData.segs.vMin;
+		v1 = segP->m_extents [1] - gameData.segs.vMin;
 		Floor (v0);
 		Floor (v1);
 		ToInt (v0);
 		ToInt (v1);
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
-				indexP = &gridIndex [GridIndex (v0 [X], y, z)];
+				indexP = &m_index [GridIndex (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
-					segGrid [indexP->nIndex + indexP->nSegments++] = i;
+					m_segments [indexP->nIndex + indexP->nSegments++] = i;
 				}
 			}
 		}
@@ -767,16 +767,24 @@ return true;
 
 // ----------------------------------------------------------------------------
 
-int CSegmentData::GetSegList (CFixVector vPos, short*& listP)
+void CSegmentGrid::Destroy (void)
 {
-if (!HaveGrid ())
+m_index.Destroy ();
+m_segments.Destroy ();
+}
+
+// ----------------------------------------------------------------------------
+
+int CSegmentGrid::GetSegList (CFixVector vPos, short*& listP)
+{
+if (!Available ())
 	return -1;
 Ceil (vPos);
 int i = GridIndex (vPos [X], vPos [Y], vPos [Z]);
-if ((i < 0) || (i >= int (gridIndex.Size ())))
+if ((i < 0) || (i >= int (m_index.Size ())))
 	return 0;
-listP = &segGrid [gridIndex [i].nIndex];
-return gridIndex [i].nSegments;
+listP = &m_segments [m_index [i].nIndex];
+return m_index [i].nSegments;
 }
 
 // ----------------------------------------------------------------------------

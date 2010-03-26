@@ -1712,24 +1712,36 @@ typedef struct tSegGridIndex {
 	short	nSegments;
 	} tSegGridIndex;
 
+class CSegmentGrid {
+	private:
+		CArray<tSegGridIndex>	m_index;
+		CShortArray					m_segments;
+		CFixVector					m_vDim;
+
+	public:
+		bool Create (int nGridSize, int bSkyBox);
+		void Destroy (void);
+		int GetSegList (CFixVector vPos, short*& listP);
+		inline int GridIndex (int x, int y, int z);
+		inline bool Available (void) { return (m_segments.Buffer () != NULL); }
+};
+
 class CSegmentData {
 	public:
 		int							nMaxSegments;
 		CArray<CFixVector>		vertices;
 		CArray<CFloatVector>		fVertices;
 		CArray<CSegment>			segments;
-		CArray<tSegGridIndex>	gridIndex;
-		CShortArray					segGrid;
 		CArray<tSegFaces>			segFaces;
 		CArray<g3sPoint>			points;
 		CSkyBox						skybox;
+		CSegmentGrid				grids [2];
 #if CALC_SEGRADS
 		CArray<fix>					segRads [2];
 		CArray<tSegExtent>		extent;
 #endif
 		CFixVector					vMin;
 		CFixVector					vMax;
-		CFixVector					vGridDim;
 		float							fRad;
 		CArray<CFixVector>		segCenters [2];
 		CArray<CFixVector>		sideCenters;
@@ -1799,10 +1811,9 @@ class CSegmentData {
 			return 1;
 			}
 
-		bool BuildGrid (void);
-		int GetSegList (CFixVector vPos, short*& listP);
-		inline int GridIndex (int x, int y, int z);
-		inline bool HaveGrid (void) { return (segGrid.Buffer () != NULL); }
+		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }
+		inline int GetSegList (CFixVector vPos, short*& listP, int bSkyBox) { return grids [bSkyBox].GetSegList (vPos, listP); }
+		inline bool HaveGrid (int bSkyBox) { return grids [bSkyBox].Available (); }
 };
 
 //------------------------------------------------------------------------------
