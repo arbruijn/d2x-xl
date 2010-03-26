@@ -778,7 +778,8 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 	if (gameData.segs.vMax [Z] < v [Z])
 		gameData.segs.vMax [Z] = v [Z];
 	}
-gameData.segs.BuildGrid ();
+gameData.segs.BuildGrid (50, 0);
+gameData.segs.BuildGrid (100, 1);
 SEGMENTS.Clear ();
 #if TRACE
 console.printf (CON_DBG, "   loading segments ...\n");
