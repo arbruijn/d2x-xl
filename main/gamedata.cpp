@@ -650,14 +650,14 @@ inline fix Ceil (fix v);
 
 inline fix Floor (fix v)
 {
-return (v > 0) ? v & 0xFFFF0000 : -Ceil (-v);
+return (v >= 0) ? v & 0xFFFF0000 : -Ceil (-v);
 }
 
 // ----------------------------------------------------------------------------
 
 inline fix Ceil (fix v)
 {
-return (v > 0) ? Floor (v + 0xFFFF) : -Floor (-v);
+return (v >= 0) ? Floor (v + 0xFFFF) : -Floor (-v);
 }
 
 // ----------------------------------------------------------------------------
@@ -694,23 +694,24 @@ return v;
 
 inline int CSegmentGrid::GridIndex (int x, int y, int z)
 {
-return (z * m_vDim [Y] + y) * m_vDim [X] + x;
+return z * m_vDim [Y] * m_vDim [X] + y * m_vDim [X] + x;
 }
 
 // ----------------------------------------------------------------------------
+
+#define GRID_INDEX(_x,_y,_z)	(((_z) * m_vDim [Y] + (_y)) * m_vDim [X] + (_x))
 
 bool CSegmentGrid::Create (int nGridSize, int bSkyBox)
 {
 	CSegment*		segP;
 	tSegGridIndex*	indexP;
-	CFixVector		m_vDim, v0, v1;
-	int				size, i, j, x, y, z;
+	CFixVector		v0, v1;
+	int				size, h, i, j, k, x, y, z;
 
 m_nGridSize = nGridSize;
 m_vDim = gameData.segs.vMax - gameData.segs.vMin;
 m_vDim /= I2X (m_nGridSize);
-Ceil (m_vDim);
-ToInt (m_vDim);
+ToInt (Ceil (m_vDim));
 size = ++m_vDim [X] * ++m_vDim [Y] * ++m_vDim [Z];
 
 if (!m_index.Create (size))
@@ -728,16 +729,22 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
-				indexP = &m_index [GridIndex (v0 [X], y, z)];
-				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
+				indexP = &m_index [h = GridIndex (v0 [X], y, z)];
+				for (x = v0 [X]; x <= v1 [X]; x++, indexP++) {
+					if (indexP - m_index.Buffer () == 61)
+						indexP = indexP;
 					indexP->nSegments++;
+					}
 				}
 			}
 		}
 	}
 
+h = k = 0;
 for (i = j = 0; i < size; i++) {
 	m_index [i].nIndex = j;
+	if (h < m_index [i].nSegments)
+		h = m_index [k = i].nSegments;
 	j += m_index [i].nSegments;
 	m_index [i].nSegments = 0;
 	}
@@ -758,7 +765,7 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 		ToInt (Floor (v1));
 		for (z = v0 [Z]; z <= v1 [Z]; z++) {
 			for (y = v0 [Y]; y <= v1 [Y]; y++) {
-				indexP = &m_index [GridIndex (v0 [X], y, z)];
+				indexP = &m_index [GRID_INDEX (v0 [X], y, z)];
 				for (x = v0 [X]; x <= v1 [X]; x++, indexP++)
 					m_segments [indexP->nIndex + indexP->nSegments++] = i;
 				}
@@ -785,7 +792,7 @@ if (!Available ())
 	return -1;
 vPos /= I2X (m_nGridSize);
 ToInt (Floor (vPos));
-int i = GridIndex (vPos [X], vPos [Y], vPos [Z]);
+int i = GRID_INDEX (vPos [X], vPos [Y], vPos [Z]);
 if ((i < 0) || (i >= int (m_index.Size ())))
 	return 0;
 listP = &m_segments [m_index [i].nIndex];
