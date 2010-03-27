@@ -708,11 +708,13 @@ bool CSegmentGrid::Create (int nGridSize, int bSkyBox)
 	CFixVector		v0, v1;
 	int				size, i, j, x, y, z;
 
+Destroy ();
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 segP = SEGMENTS.Buffer ();
-for (i = gameData.segs.nSegments; i; i--, segP++) {
+for (i = gameData.segs.nSegments, j = 0; i; i--, segP++) {
 	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
+		j++;
 		v0 = segP->m_extents [0];
 		v1 = segP->m_extents [1];
 		if (m_vMin [X] > v0 [X])
@@ -729,6 +731,9 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 			m_vMax [Z] = v1 [Z];
 		}
 	}
+
+if (!j)
+	return true;
 
 m_nGridSize = nGridSize;
 m_vDim = m_vMax - m_vMin;
