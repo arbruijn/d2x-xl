@@ -226,7 +226,7 @@ if (!bExhaustive)
 	return -1;
 
 if (bSkyBox < 0) {
-	if ((nSegment = FindSegByPosExhaustive (vPos, 0)))
+	if (0 <= (nSegment = FindSegByPosExhaustive (vPos, 0)))
 		return nSegment;
 	bSkyBox = 1;
 	}
