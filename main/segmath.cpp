@@ -84,7 +84,7 @@ static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, char
 	fix			xSideDists [6], xMaxDist;
 	int			centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
-if (nTraceDepth >= gameData.segs.nSegments)
+if (nTraceDepth >= 200) //gameData.segs.nSegments)
 	return -1;
 if (bVisited [nCurSeg])
 	return -1;

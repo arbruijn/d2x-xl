@@ -122,6 +122,7 @@ typedef struct tParticle {
 	char			m_bChecked;
 	char			m_bAnimate;
 	char			m_bRotate;
+	char			m_nDelayPosUpdate;
 } __pack__ tParticle;
 
 class CParticle : public tParticle {

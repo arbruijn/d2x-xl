@@ -507,6 +507,8 @@ if ((nObject >= 0) && (gameData.demo.nState == ND_STATE_RECORDING))
 if (nObject == LOCALPLAYER.nObject)
 	gameData.multiplayer.bMoving = -1;
 
+#pragma omp critical
+{
 	uint i = m_objects.ToS ();
 	CSoundObject*	soundObjP = m_objects.Buffer () + i;
 
@@ -531,6 +533,7 @@ while (i) {
 		nKilled++;
 		}
 	}
+}
 return (nKilled > 0);
 }
 
