@@ -229,6 +229,10 @@ if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
 	CFloatVector	v, vPosf, vNormf, vTrail [4], vCap [4], vTrailTip, vDirf;
 	float		c = 1/*0.7f + 0.03f * fPulse*/, dotTrail, dotCap;
 
+#if DBG
+if (fSize > 5.0f)
+	fSize = fSize;
+#endif
 vDirf.Assign (vDir);
 vPosf.Assign (vPos);
 vDirf *= fLength;
@@ -342,7 +346,8 @@ if (m_pt)
 m_bSpectate = SPECTATOR (objP);
 
 m_ti.pp = NULL;
-CalcPos (objP);
+if (!CalcPos (objP))
+	return false;
 m_ti.fLength = fSpeed / 60.0f + 0.5f;
 if (m_ti.fLength < m_ti.fSize / 2)
 	m_ti.fLength = m_ti.fSize / 2;
