@@ -346,7 +346,7 @@ else
 #	endif
 	}
 SetupColor (fBrightness);
-m_nDelayPosUpdate = -1;
+m_nDelayPosUpdate = -2;
 return 1;
 }
 
@@ -564,12 +564,9 @@ int nSegment = -1;
 if (m_nSegment < -1)
 	m_nSegment++;
 if (m_nSegment >= -1) {
-	nSegment = FindSegByPos (m_vPos, m_nSegment, m_nSegment < 0, 0, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
-	if (nSegment < 0) {
-		nSegment = FindSegByPos (m_vPos, m_nSegment, m_nSegment < 0, 1, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
-		if (nSegment < 0)
-			m_nSegment = int (--m_nDelayPosUpdate);
-		}
+	nSegment = FindSegByPos (m_vPos, m_nSegment, 1, -1, (m_nType == BUBBLE_PARTICLES) ? 0 : fix (m_nRad), nThread);
+	if (nSegment < 0)
+		m_nSegment = int (--m_nDelayPosUpdate);
 	}
 if ((nSegment < 0) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
 	if (m_nType == WATERFALL_PARTICLES) {

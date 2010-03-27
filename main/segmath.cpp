@@ -169,27 +169,12 @@ return (segP->Masks (vPos, 0).m_center == 0);
 }
 
 // -------------------------------------------------------------------------------
-//Find segment containing point vPos.
 
-int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
+static int FindSegByPosExhaustive (const CFixVector& vPos, int bSkyBox)
 {
-	static char		bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
-
 	int			i;
 	short*		segListP;
 	CSegment*	segP;
-
-//allow nSegment == -1, meaning we have no idea what CSegment point is in
-Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
-if (nSegment != -1) {
-	memset (bVisited [nThread], 0, gameData.segs.nSegments);
-	if (0 <= (i = TraceSegs (vPos, nSegment, 0, bVisited [nThread], xTolerance))) 
-		return i;
-	}
-
-//couldn't find via attached segs, so search all segs
-if (!bExhaustive)
-	return -1;
 
 if (gameData.segs.HaveGrid (bSkyBox)) {
 	for (i = gameData.segs.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
@@ -212,7 +197,34 @@ else {
 			return i;
 		}
 	}
-return -1;		//no CSegment found
+return -1;
+}
+
+// -------------------------------------------------------------------------------
+//Find segment containing point vPos.
+
+int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
+{
+	static char		bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
+
+//allow nSegment == -1, meaning we have no idea what CSegment point is in
+Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
+if (nSegment != -1) {
+	memset (bVisited [nThread], 0, gameData.segs.nSegments);
+	if (0 <= (nSegment = TraceSegs (vPos, nSegment, 0, bVisited [nThread], xTolerance))) 
+		return nSegment;
+	}
+
+//couldn't find via attached segs, so search all segs
+if (!bExhaustive)
+	return -1;
+
+if (bSkyBox < 0) {
+	if ((nSegment = FindSegByPosExhaustive (vPos, 0)))
+		return nSegment;
+	bSkyBox = 1;
+	}
+return FindSegByPosExhaustive (vPos, bSkyBox);
 }
 
 // -------------------------------------------------------------------------------
