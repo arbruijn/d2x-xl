@@ -242,31 +242,32 @@ else {
 	m_vPos = *vPos + v + (*mOrient).FVec () * (I2X (1) / 2 - randN (I2X (1)));
 	}
 
-if ((nType != BUBBLE_PARTICLES) && mOrient) {
-		CAngleVector	vRot;
-		CFixMatrix		mRot;
+if (nType == BUBBLE_PARTICLES)
+	m_nRad = m_nRad / 20 + float (randN (int (9 * m_nRad / 20)));
+else {
+	if (nType <= SMOKE_PARTICLES) {
+		if (m_bBlowUp)
+			m_nLife = 2 * m_nLife / 3;
+		m_nLife = 4 * m_nLife / 5 + randN (2 * m_nLife / 5);
+		m_nRad += float (randN (int (m_nRad)));
+		}
+	else if (nType == FIRE_PARTICLES) {
+		m_nLife = 3 * m_nLife / 4 + randN (m_nLife / 4);
+		m_nRad += float (randN (int (m_nRad)));
+		}
+	else 
+		m_nRad *= 2;
+	if (mOrient) {
+			CAngleVector	vRot;
+			CFixMatrix		mRot;
 
-	vRot [BA] = 0;
-	vRot [PA] = 2048 - ((d_rand () % 9) * 512);
-	vRot [HA] = 2048 - ((d_rand () % 9) * 512);
-	mRot = CFixMatrix::Create (vRot);
-	m_mOrient = *mOrient * mRot;
+		vRot [BA] = 0;
+		vRot [PA] = 2048 - ((d_rand () % 9) * 512);
+		vRot [HA] = 2048 - ((d_rand () % 9) * 512);
+		mRot = CFixMatrix::Create (vRot);
+		m_mOrient = *mOrient * mRot;
+		}
 	}
-
-if (nType <= SMOKE_PARTICLES) {
-	if (m_bBlowUp)
-		m_nLife = 2 * m_nLife / 3;
-	m_nLife = 4 * m_nLife / 5 + randN (2 * m_nLife / 5);
-	m_nRad += float (randN (int (m_nRad)));
-	}
-else if (nType == FIRE_PARTICLES) {
-	m_nLife = 3 * m_nLife / 4 + randN (m_nLife / 4);
-	m_nRad += float (randN (int (m_nRad)));
-	}
-else if (nType == BUBBLE_PARTICLES)
-	m_nRad = m_nRad / 10 + float (randN (int (9 * m_nRad / 10)));
-else
-	m_nRad *= 2;
 
 //m_nRad *= 0.5f;
 m_vStartPos = m_vPos;
