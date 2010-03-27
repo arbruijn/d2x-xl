@@ -565,7 +565,7 @@ if (SHOW_LIGHTNING) {
 	m_nFirstLight = -1;
 	int nCurrent = -1;
 
-#if USE_OPENMP > 2
+#if USE_OPENMP > 1
 	if (m_emitterList.Buffer ()) {
 		CLightningEmitter* emitterP;
 		int nSystems = 0;
