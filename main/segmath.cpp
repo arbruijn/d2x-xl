@@ -78,7 +78,7 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns CSegment number, or -1 if can't find CSegment
-static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, char* bVisited, fix xTolerance = 0)
+static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, char* bVisited, char bFlag, fix xTolerance = 0)
 {
 	CSegment*	segP;
 	fix			xSideDists [6], xMaxDist;
@@ -86,9 +86,9 @@ static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, char
 
 if (nTraceDepth >= 200) //gameData.segs.nSegments)
 	return -1;
-if (bVisited [nCurSeg])
+if (bVisited [nCurSeg] == bFlag)
 	return -1;
-bVisited [nCurSeg] = 1;
+bVisited [nCurSeg] = bFlag;
 segP = SEGMENTS + nCurSeg;
 if (!(centerMask = segP->GetSideDists (vPos, xSideDists, 1)))		//we're in the old segment
 	return nCurSeg;		
@@ -107,7 +107,7 @@ for (;;) {
 	if (nMaxSide == -1)
 		break;
 	xSideDists [nMaxSide] = 0;
-	if (0 <= (nMatchSeg = TraceSegs (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, xTolerance)))	//trace into adjacent CSegment
+	if (0 <= (nMatchSeg = TraceSegs (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, xTolerance)))	//trace into adjacent CSegment
 		break;
 	}
 return nMatchSeg;		//we haven't found a CSegment
@@ -115,7 +115,7 @@ return nMatchSeg;		//we haven't found a CSegment
 
 // -------------------------------------------------------------------------------
 
-static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, char* bVisited, float fTolerance)
+static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, char* bVisited, char bFlag, float fTolerance)
 {
 	CSegment*		segP;
 	float				fSideDists [6], fMaxDist;
@@ -123,9 +123,9 @@ static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, c
 
 if (nTraceDepth >= gameData.segs.nSegments)
 	return -1;
-if (bVisited [nCurSeg])
+if (bVisited [nCurSeg] == bFlag)
 	return -1;
-bVisited [nCurSeg] = 1;
+bVisited [nCurSeg] = bFlag;
 segP = SEGMENTS + nCurSeg;
 if (!(centerMask = segP->GetSideDistsf (vPos, fSideDists, 1)))		//we're in the old CSegment
 	return nCurSeg;		
@@ -148,7 +148,7 @@ for (;;) {
 	if (nMaxSide == -1)
 		break;
 	fSideDists [nMaxSide] = 0;
-	if (0 <= (nMatchSeg = TraceSegsf (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, fTolerance)))	//trace into adjacent CSegment
+	if (0 <= (nMatchSeg = TraceSegsf (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, fTolerance)))	//trace into adjacent CSegment
 		break;
 	}
 return nMatchSeg;		//we haven't found a CSegment
@@ -205,13 +205,19 @@ return -1;
 
 int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
-	static char		bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
+	static char	bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
+	static char	bFlags [MAX_THREADS] = {-1, -1, -1, -1};
 
 //allow nSegment == -1, meaning we have no idea what CSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
-	memset (bVisited [nThread], 0, gameData.segs.nSegments);
-	if (0 <= (nSegment = TraceSegs (vPos, nSegment, 0, bVisited [nThread], xTolerance))) 
+	if (bFlags [nThread] < 0) {
+		memset (bVisited [nThread], 0, gameData.segs.nSegments);
+		bFlags [nThread] = 1;
+		}
+	else
+		bFlags [nThread] = !bFlags [nThread];
+	if (0 <= (nSegment = TraceSegs (vPos, nSegment, 0, bVisited [nThread], bFlags [nThread], xTolerance))) 
 		return nSegment;
 	}
 
