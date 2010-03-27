@@ -574,7 +574,11 @@ int TIRLoad (void)
 #ifdef _WIN32
 if (hTIRDll)
 	return 1;
+#	ifdef _M_X64
+hTIRDll = LoadLibrary ("d2x-trackir-x64.dll");
+#	else
 hTIRDll = LoadLibrary ("d2x-trackir.dll");
+#	endif
 if ((size_t) hTIRDll < HINSTANCE_ERROR) {
 	hTIRDll = NULL;
 	return gameStates.input.bHaveTrackIR = 0;
