@@ -542,8 +542,9 @@ bVisited [nStartSeg] = bFlag;
 segQueue [0] = nStartSeg;
 segDepth [nStartSeg] = 0;
 
-for (;;) {
-	nSegment = segQueue [nTail++];
+while (nTail < nHead) {
+	nSegment = segQueue [nTail];
+	nTail = ++nTail % (MAX_SEGMENTS_D2X * 2);
 	if (nSegment == nDestSeg) {
 		nSegment = segPreds [nSegment];
 		xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
@@ -566,8 +567,6 @@ for (;;) {
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
 			nChildSeg = segP->m_children [nSide];
-			if (nChildSeg < 0)
-				continue;
 			if (bVisited [nChildSeg] != bFlag) {
 				segDepth [nChildSeg] = nDepth;
 				bVisited [nChildSeg] = bFlag;
@@ -576,8 +575,12 @@ for (;;) {
 				segDepth [nChildSeg] = nDepth;
 			else
 				continue;
+#if DBG
+			if (nChildSeg == nDestSeg)
+				nChildSeg = nChildSeg;
+#endif
 			segQueue [nHead] = nChildSeg;
-			segPreds [nHead] = nSegment;
+			segPreds [nChildSeg] = nSegment;
 			nHead = ++nHead % (MAX_SEGMENTS_D2X * 2);
 			}
 		}
