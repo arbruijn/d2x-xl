@@ -19,6 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>	//	for memset ()
 
+#define USE_DACS 1
+
 #include "u_mem.h"
 #include "descent.h"
 #include "error.h"
@@ -27,7 +29,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "light.h"
 #include "segment.h"
-#include "dialheap.h"
+
+#if USE_DACS
+#	include "dialheap.h"
+#endif
 
 // How far a point can be from a plane, and still be "in" the plane
 
@@ -403,9 +408,12 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
-#if 1
+#if USE_DACS
 
-	short			nSegment, nExpanded = 0;
+	short	nSegment;
+#if DBG
+	short	nExpanded = 0;
+#endif
 
 # if BIDIRECTIONAL_DACS
 
@@ -478,13 +486,13 @@ for (;;) {
 		xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
 		return xDist;
 		}
-	else {
-		nExpanded++;
-		segP = SEGMENTS + nSegment;
-		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-			if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
-				dialHeap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
-			}
+#if DBG
+	nExpanded++;
+#endif
+	segP = SEGMENTS + nSegment;
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
+			dialHeap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
 		}
 	}
 
