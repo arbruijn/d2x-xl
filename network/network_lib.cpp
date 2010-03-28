@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "network_lib.h"
 #include "netmisc.h"
-#include "gameseg.h"
+#include "segmath.h"
 
 //------------------------------------------------------------------------------
 

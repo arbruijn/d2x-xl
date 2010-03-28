@@ -17,7 +17,7 @@
 #include "ogl_shader.h"
 #include "ogl_fastrender.h"
 #include "rendermine.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "objrender.h"
 #include "lightmap.h"
 #include "lightning.h"

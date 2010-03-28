@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "slew.h"
 #include "cockpit.h"
 #include "texmap.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "u_mem.h"
 #include "light.h"
 #include "newdemo.h"

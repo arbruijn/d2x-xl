@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "headlight.h"
 #include "highscores.h"
 #include "multibot.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "physics.h"
 #include "state.h"
 #include "byteswap.h"

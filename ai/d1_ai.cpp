@@ -53,7 +53,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "powerup.h"
 #include "cockpit.h"
 #include "text.h"
-#include "gameseg.h"
+#include "segmath.h"
 
 #if DBG
 #include "string.h"

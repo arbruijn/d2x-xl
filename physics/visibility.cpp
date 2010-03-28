@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "error.h"
 #include "rle.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "interp.h"
 #include "hitbox.h"
 #include "network.h"

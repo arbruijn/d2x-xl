@@ -82,6 +82,8 @@ void ComputeVertexNormals (void);
 void ResetVertexNormals (void);
 float FaceSize (short nSegment, ubyte nSide);
 
+// -----------------------------------------------------------------------------------
+
 #endif
 
 

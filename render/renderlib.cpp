@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "u_mem.h"
 #include "error.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "network.h"
 #include "light.h"
 #include "dynlight.h"

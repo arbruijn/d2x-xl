@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "error.h"
 #include "fireball.h"
-#include "gameseg.h"
+#include "segmath.h"
 
 #if DBG
 #include "string.h"

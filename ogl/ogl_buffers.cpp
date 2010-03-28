@@ -32,7 +32,7 @@
 #include "maths.h"
 #include "crypt.h"
 #include "strutil.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "light.h"
 #include "dynlight.h"
 #include "lightmap.h"

@@ -16,7 +16,7 @@
 #include "error.h"
 #include "lightmap.h"
 #include "rendermine.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "menu.h"
 #include "netmisc.h"
 #include "key.h"

@@ -11,7 +11,7 @@
 #include "lightcluster.h"
 #include "dynlight.h"
 #include "light.h"
-#include "gameseg.h"
+#include "segmath.h"
 
 CLightClusterManager lightClusterManager;
 

@@ -2436,10 +2436,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\gameseg.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\highscores.h"
 						>
 					</File>
@@ -2457,6 +2453,10 @@
 					</File>
 					<File
 						RelativePath="..\include\scores.h"
+						>
+					</File>
+					<File
+						RelativePath="..\include\segmath.h"
 						>
 					</File>
 					<File

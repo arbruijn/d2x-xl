@@ -13,7 +13,7 @@
 
 #include "descent.h"
 #include "perlin.h"
-#include "gameseg.h"
+#include "segmath.h"
 
 #include "objsmoke.h"
 #include "transprender.h"

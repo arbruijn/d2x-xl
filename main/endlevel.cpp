@@ -45,7 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "compbit.h"
 #include "movie.h"
 #include "rendermine.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "key.h"
 #include "joy.h"
 #include "songs.h"

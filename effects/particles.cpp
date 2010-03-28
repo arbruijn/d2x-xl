@@ -29,7 +29,7 @@
 #include "ogl_fastrender.h"
 #include "piggy.h"
 #include "globvars.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "network.h"
 #include "light.h"
 #include "dynlight.h"

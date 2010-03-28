@@ -10,7 +10,7 @@
 #include "descent.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "shadows.h"
 #include "objrender.h"
 #include "rendermine.h"

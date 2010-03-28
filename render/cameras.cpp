@@ -12,7 +12,7 @@
 #include "ogl_lib.h"
 #include "rendermine.h"
 #include "u_mem.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "cockpit.h"
 #include "newdemo.h"
 

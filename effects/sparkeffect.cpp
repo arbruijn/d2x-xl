@@ -18,7 +18,7 @@
 #include "maths.h"
 #include "vecmat.h"
 #include "hudmsgs.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "piggy.h"
 #include "renderlib.h"
 #include "sparkeffect.h"

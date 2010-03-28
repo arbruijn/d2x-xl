@@ -56,7 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "multi.h"
 #include "makesig.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "light.h"
 #include "objrender.h"
 #include "createmesh.h"

@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "endlevel.h"
 #include "text.h"
 #include "cockpit.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "gamecntl.h"
 #include "input.h"
 #include "slowmotion.h"

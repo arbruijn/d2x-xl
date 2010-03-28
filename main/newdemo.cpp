@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "stdlib.h"
 #include "texmap.h"
 #include "key.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "objrender.h"
 #include "physics.h"
 #include "slew.h"

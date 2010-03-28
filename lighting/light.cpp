@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_color.h"
 #include "error.h"
 #include "timer.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "lightmap.h"
 #include "text.h"
 #include "dynlight.h"

@@ -7,7 +7,7 @@
 #include "text.h"
 #include "u_mem.h"
 #include "timer.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "network.h"
 #include "network_lib.h"
 #include "gamesave.h"

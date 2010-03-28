@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "timer.h"
 #include "physics.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "input.h"
 #include "dropobject.h"
 #include "lightcluster.h"

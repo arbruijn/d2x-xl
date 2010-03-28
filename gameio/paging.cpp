@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "gamemine.h"
 #include "error.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "game.h"
 #include "piggy.h"
 #include "texmerge.h"

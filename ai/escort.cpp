@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "playsave.h"
 #include "network.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "headlight.h"
 #include "visibility.h"
 

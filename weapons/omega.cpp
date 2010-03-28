@@ -4,7 +4,7 @@
 
 #include "descent.h"
 #include "error.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "network.h"
 #include "lightning.h"
 #include "omega.h"

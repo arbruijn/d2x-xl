@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 #include "physics.h" 
 #include "byteswap.h"
-#include "gameseg.h"
+#include "segmath.h"
 
 int MultiAddControlledRobot (int nObject, int agitation);
 void MultiSendReleaseRobot (int nObject);

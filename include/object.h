@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "vecmat.h"
 //#include "segment.h"
-//#include "gameseg.h"
+//#include "segmath.h"
 #include "piggy.h"
 #include "aistruct.h"
 #include "segment.h"

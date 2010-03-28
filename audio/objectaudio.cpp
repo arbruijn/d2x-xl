@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "text.h"
 #include "kconfig.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "midi.h"
 #include "audio.h"
 #include "network.h"

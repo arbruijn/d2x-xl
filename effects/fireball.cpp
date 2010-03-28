@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "physics.h"
 #include "timer.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "marker.h"
 #include "text.h"
 #include "interp.h"

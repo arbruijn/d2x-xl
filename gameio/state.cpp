@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamemine.h"
 #include "gamesave.h"
 #include "error.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "menu.h"
 #include "trigger.h"
 #include "game.h"

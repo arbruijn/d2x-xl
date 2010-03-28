@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "descent.h"
 #include "error.h"
 #include "input.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "network.h"
 #include "multibot.h"
 #include "headlight.h"

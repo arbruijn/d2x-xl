@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "descent.h"
 #include "collide.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "fireweapon.h"
 #include "omega.h"
 #include "network.h"

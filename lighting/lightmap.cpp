@@ -18,7 +18,7 @@
 #include "light.h"
 #include "dynlight.h"
 #include "lightmap.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "wall.h"
 #include "loadgamedata.h"
 #include "fbuffer.h"

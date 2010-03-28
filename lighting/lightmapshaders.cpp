@@ -18,7 +18,7 @@
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "ogl_render.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "endlevel.h"
 #include "renderthreads.h"
 #include "light.h"

@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "timer.h"
 #include "network.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "kconfig.h"
 #include "automap.h"
 #ifdef TACTILE

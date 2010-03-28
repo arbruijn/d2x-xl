@@ -15,7 +15,7 @@
 #include "error.h"
 #include "ogl_lib.h"
 #include "ogl_shader.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "light.h"
 #include "dynlight.h"
 #include "lightmap.h"

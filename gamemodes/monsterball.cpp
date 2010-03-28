@@ -6,7 +6,7 @@
 #include "error.h"
 #include "text.h"
 #include "interp.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "fireball.h"
 #include "objeffects.h"
 #include "dropobject.h"

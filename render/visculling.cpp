@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segpoint.h"
 #include "texmerge.h"
 #include "physics.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "light.h"
 #include "dynlight.h"
 #include "headlight.h"

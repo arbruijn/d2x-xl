@@ -40,7 +40,7 @@
 #include "ogl_tmu.h"
 #include "texmerge.h"
 #include "transprender.h"
-#include "gameseg.h"
+#include "segmath.h"
 #include "automap.h"
 
 #if DBG

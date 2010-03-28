@@ -12,7 +12,7 @@
 #endif
 
 #include "descent.h"
-#include "gameseg.h"
+#include "segmath.h"
 
 #include "objsmoke.h"
 #include "transprender.h"
