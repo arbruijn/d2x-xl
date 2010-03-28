@@ -36,6 +36,13 @@ class CDialHeap {
 		inline short* Route (void) { return m_route.Buffer (); }
 };
 
+
+#define BIDIRECTIONAL_DACS 0
+
+# if BIDIRECTIONAL_DACS
 extern CDialHeap dialHeaps [2];
+#else
+extern CDialHeap dialHeap;
+#endif
 
 #endif //DIALHEAP_H

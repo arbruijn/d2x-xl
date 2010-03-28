@@ -3,7 +3,15 @@
 
 #include "dialheap.h"
 
+#if BIDIRECTIONAL_DACS
+
 CDialHeap dialHeaps [2];
+
+#else
+
+CDialHeap dialHeap;
+
+#endif
 
 //-----------------------------------------------------------------------------
 

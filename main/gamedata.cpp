@@ -604,8 +604,12 @@ CREATE (segFaces, LEVEL_SEGMENTS, 0);
 for (int i = 0; i < LEVEL_SEGMENTS; i++)
 	segments [i].m_objects = -1;
 Init ();
+#if BIDIRECTIONAL_DACS
 dialHeaps [0].Create (gameData.segs.nSegments);
 dialHeaps [1].Create (gameData.segs.nSegments);
+#else
+dialHeap.Create (gameData.segs.nSegments);
+#endif
 return faces.Create ();
 }
 
@@ -645,8 +649,12 @@ gameData.segs.grids [1].Destroy ();
 nSegments = 0;
 nFaces = 0;
 faces.Destroy ();
+#if BIDIRECTIONAL_DACS
 dialHeaps [0].Destroy ();
 dialHeaps [1].Destroy ();
+#else
+dialHeap.Destroy ();
+#endif
 }
 
 // ----------------------------------------------------------------------------

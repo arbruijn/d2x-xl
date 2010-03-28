@@ -358,6 +358,8 @@ else {
 
 //	----------------------------------------------------------------------------------------------------------
 
+# if BIDIRECTIONAL_DACS
+
 static int Expand (int nDir, short nDestSeg, int widFlag)
 {
 ushort nDist;
@@ -373,6 +375,8 @@ for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	}
 return nSegment;
 }
+
+#endif
 
 //	----------------------------------------------------------------------------------------------------------
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
@@ -403,13 +407,12 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 
 	short			nSegment, nExpanded = 0;
 
-dialHeaps [0].Setup (nStartSeg);
-
-# if 1
+# if BIDIRECTIONAL_DACS
 
 	short	nSegments [2] = {nStartSeg, nDestSeg};
 	static short route [2 * MAX_SEGMENTS_D2X];
 
+dialHeaps [0].Setup (nStartSeg);
 dialHeaps [1].Setup (nDestSeg);
 
 for (;;) {
@@ -457,17 +460,18 @@ for (;;) {
 	ushort		nDist;
 	CSegment*	segP;
 
+dialHeap.Setup (nStartSeg);
 nExpanded = 0;
-nSegment = dialHeaps [0].Pop (nDist);
 for (;;) {
+	nSegment = dialHeap.Pop (nDist);
 	if (nSegment < 0) {
 		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
 		return -1;
 		}
 	if (nSegment == nDestSeg) {
-		gameData.fcd.nConnSegDist = dialHeaps [0].BuildRoute (nDestSeg);
+		gameData.fcd.nConnSegDist = dialHeap.BuildRoute (nDestSeg);
 		int j = gameData.fcd.nConnSegDist - 2;
-		short* route = dialHeaps [0].Route ();
+		short* route = dialHeap.Route ();
 		fix xDist = 0;
 		for (int i = 1; i < j; i++)
 			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
@@ -479,7 +483,7 @@ for (;;) {
 		segP = SEGMENTS + nSegment;
 		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
-				dialHeaps [0].Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
+				dialHeap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
 			}
 		}
 	}
