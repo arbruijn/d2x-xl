@@ -517,7 +517,7 @@ for (;;) {
 	int				nDepth;
 	fix				xDist;
 	CSegment*		segP;
-	short				segQueue [MAX_SEGMENTS_D2X * 2];
+	short				segQueue [MAX_SEGMENTS_D2X];
 	short				segPreds [MAX_SEGMENTS_D2X];
 	short				segDepth [MAX_SEGMENTS_D2X];
 
@@ -544,8 +544,8 @@ segQueue [0] = nStartSeg;
 segDepth [nStartSeg] = 0;
 
 while (nTail < nHead) {
-	nSegment = segQueue [nTail];
-	nTail = ++nTail % (MAX_SEGMENTS_D2X * 2);
+	nSegment = segQueue [nTail++];
+#if 0
 	if (nSegment == nDestSeg) {
 		nSegment = segPreds [nSegment];
 		xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
@@ -562,7 +562,7 @@ while (nTail < nHead) {
 		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, xDist);
 		return xDist;
 		}
-
+#endif
 	segP = SEGMENTS + nSegment;
 	nDepth = segDepth [nSegment] + 1;
 	if (nDepth < nMaxDepth) {
@@ -579,8 +579,22 @@ while (nTail < nHead) {
 				else
 					continue;
 				segPreds [nChildSeg] = nSegment;
-				segQueue [nHead] = nChildSeg;
-				nHead = ++nHead % (MAX_SEGMENTS_D2X * 2);
+				segQueue [nHead++] = nChildSeg;
+				if (nChildSeg == nDestSeg) {
+					xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
+					gameData.fcd.nConnSegDist = 3;
+					for (;;) {
+						nChildSeg = segPreds [nSegment];
+						if (nChildSeg == nStartSeg)
+							break;
+						gameData.fcd.nConnSegDist++;
+						xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
+						nSegment = nChildSeg;
+						}
+					xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
+					AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, xDist);
+					return xDist;
+					}
 #else
 					segPreds [nChildSeg] = nSegment;
 					segQueue [nHead] = nChildSeg;
