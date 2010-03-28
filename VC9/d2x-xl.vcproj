@@ -2396,6 +2396,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\main\dialheap.h"
+						>
+					</File>
+					<File
 						RelativePath="..\include\dropobject.h"
 						>
 					</File>
@@ -2841,6 +2845,10 @@
 					</File>
 					<File
 						RelativePath="..\main\descent.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\main\dialheap.cpp"
 						>
 					</File>
 					<File
@@ -10747,11 +10755,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

@@ -84,7 +84,7 @@ static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, char
 	fix			xSideDists [6], xMaxDist;
 	int			centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
-if (nTraceDepth >= 200) //gameData.segs.nSegments)
+if (nTraceDepth >= gameData.segs.nSegments) //gameData.segs.nSegments)
 	return -1;
 if (bVisited [nCurSeg] == bFlag)
 	return -1;
@@ -338,29 +338,23 @@ for (i = 0; i < MAX_FCD_CACHE; i++)
 
 void AddToFCDCache (int seg0, int seg1, int nDepth, fix dist)
 {
-	if (dist > MIN_CACHE_FCD_DIST) {
-		gameData.fcd.cache [gameData.fcd.nIndex].seg0 = seg0;
-		gameData.fcd.cache [gameData.fcd.nIndex].seg1 = seg1;
-		gameData.fcd.cache [gameData.fcd.nIndex].csd = nDepth;
-		gameData.fcd.cache [gameData.fcd.nIndex].dist = dist;
+if (dist > MIN_CACHE_FCD_DIST) {
+	gameData.fcd.cache [gameData.fcd.nIndex].seg0 = seg0;
+	gameData.fcd.cache [gameData.fcd.nIndex].seg1 = seg1;
+	gameData.fcd.cache [gameData.fcd.nIndex].csd = nDepth;
+	gameData.fcd.cache [gameData.fcd.nIndex].dist = dist;
+	if (++gameData.fcd.nIndex >= MAX_FCD_CACHE)
+		gameData.fcd.nIndex = 0;
 
-		gameData.fcd.nIndex++;
-
-		if (gameData.fcd.nIndex >= MAX_FCD_CACHE)
-			gameData.fcd.nIndex = 0;
-
-	} else {
-		//	If it's in the cache, remove it.
-		int	i;
-
-		for (i=0; i<MAX_FCD_CACHE; i++)
-			if (gameData.fcd.cache [i].seg0 == seg0)
-				if (gameData.fcd.cache [i].seg1 == seg1) {
-					gameData.fcd.cache [gameData.fcd.nIndex].seg0 = -1;
-					break;
-				}
 	}
-
+else {
+	//	If it's in the cache, remove it.
+	for (int i = 0; i<MAX_FCD_CACHE; i++) {
+		if ((gameData.fcd.cache [i].seg0 == seg0) && (gameData.fcd.cache [i].seg1 == seg1)) {
+			gameData.fcd.cache [gameData.fcd.nIndex].seg0 = -1;
+			break;
+		}
+	}
 }
 
 //	----------------------------------------------------------------------------------------------------------
@@ -374,13 +368,15 @@ fix FindConnectedDistance (CFixVector& p0, short nSrcSeg, CFixVector& p1, short 
 	short				nSide;
 	int				qTail = 0, qHead = 0;
 	int				i, nCurDepth, nPoints;
-	sbyte				visited [MAX_SEGMENTS_D2X];
 	segQueueEntry	segmentQ [MAX_SEGMENTS_D2X];
 	short				nDepth [MAX_SEGMENTS_D2X];
 	tPointSeg		routeSegs [MAX_LOC_POINT_SEGS];
 	fix				dist;
 	CSegment			*segP;
 	tFCDCacheData	*pc;
+
+	static sbyte	bVisited [MAX_SEGMENTS_D2X];
+	static sbyte	bFlag = -1;
 
 	//	If > this, will overrun routeSegs buffer
 if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
@@ -414,12 +410,18 @@ if (bUseCache) {
 			return pc->dist;
 			}
 	}
-memset (visited, 0, gameData.segs.nSegments);
+
+if (bFlag < 0) {
+	memset (bVisited, 0, gameData.segs.nSegments);
+	bFlag = 1;
+	}
+else 
+	bFlag = !bFlag;
 memset (nDepth, 0, sizeof (nDepth [0]) * gameData.segs.nSegments);
 
 nPoints = 0;
 nCurSeg = nSrcSeg;
-visited [nCurSeg] = 1;
+bVisited [nCurSeg] = 1;
 nCurDepth = 0;
 
 while (nCurSeg != nDestSeg) {
@@ -430,10 +432,10 @@ while (nCurSeg != nDestSeg) {
 			nThisSeg = segP->m_children [nSide];
 			Assert ((nThisSeg >= 0) && (nThisSeg < LEVEL_SEGMENTS));
 			Assert ((qTail >= 0) && (qTail < LEVEL_SEGMENTS));
-			if (!visited [nThisSeg]) {
+			if (bVisited [nThisSeg] = bFlag) {
 				segmentQ [qTail].start = nCurSeg;
 				segmentQ [qTail].end = nThisSeg;
-				visited [nThisSeg] = 1;
+				bVisited [nThisSeg] = bFlag;
 				nDepth [qTail++] = nCurDepth+1;
 				if (nMaxDepth != -1) {
 					if (nDepth [qTail - 1] == nMaxDepth) {
