@@ -18,7 +18,6 @@ return true;
 void CDialHeap::Reset (void)
 {
 m_index.Clear (0xFF);
-//m_links.Clear (0xFF);
 m_cost.Clear (0xFF);
 m_nIndex = 0;
 }
@@ -39,6 +38,11 @@ bool CDialHeap::Push (short nNode, short nPredNode, ushort nNewCost)
 
 if (nNewCost >= nOldCost)
 	return false;
+
+#if DBG
+if (!nNewCost)
+	nNewCost = nNewCost;
+#endif
 
 	ushort nIndex = nNewCost & 0xFFFF;
 
@@ -86,7 +90,7 @@ short CDialHeap::BuildRoute (short nNode, int bReverse)
 {
 	short	h = nNode, i = 0;
 
-while (0 >= (h = m_pred [h]))
+while (0 <= (h = m_pred [h]))
 	i++;
 h = i + 1;
 if (bReverse) {

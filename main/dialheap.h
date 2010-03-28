@@ -7,6 +7,11 @@
 #include "carray.h"
 
 class CDialHeap {
+	struct tHeapIndex {
+		short		nNode;
+		ushort	nCost;
+	} tHeapIndex;
+
 	private:
 		CShortArray		m_index;
 		CUShortArray	m_cost;

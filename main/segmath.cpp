@@ -407,6 +407,32 @@ while (0 <= (nSegment = heap.Pop (nDist))) {
 			}
 		}
 	}
+
+#if DBG
+heap.Reset ();
+heap.Push (nStartSeg, -1, 0);
+while (0 <= (nSegment = heap.Pop (nDist))) {
+	if (nSegment == nDestSeg) {
+		gameData.fcd.nConnSegDist = heap.BuildRoute (nDestSeg);
+		int j = gameData.fcd.nConnSegDist - 2;
+		short* route = heap.Route ();
+		fix xDist = 0;
+		for (int i = 1; i < j; i++)
+			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
+		xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
+		return xDist;
+		}
+	else {
+		if (!--nExpanded)
+			nExpanded = nExpanded;
+		segP = SEGMENTS + nSegment;
+		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+			if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
+				heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
+			}
+		}
+	}
+#endif
 gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
 return -1;
 
