@@ -60,7 +60,7 @@ class CFCDCache {
 		inline fix GetPathLength (void) { return m_nPathLength; }
 };
 
-CFCDCache fcdCaches [4];
+CFCDCache fcdCaches [2];
 
 // -----------------------------------------------------------------------------------
 
@@ -895,20 +895,10 @@ return (nParentDepth + 1) * gameStates.render.bViewDist;
 
 
 //	-----------------------------------------------------------------------------
-
-fix FindConnectedDistanceSegments (short seg0, short seg1, int nDepth, int widFlag)
-{
-	CFixVector	p0, p1;
-
-p0 = SEGMENTS [seg0].Center ();
-p1 = SEGMENTS [seg1].Center ();
-return FindConnectedDistance (p0, seg0, p1, seg1, nDepth, widFlag, 0);
-}
-
-#define	AMBIENT_SEGMENT_DEPTH		5
-
-//	-----------------------------------------------------------------------------
 //	Do a bfs from nSegment, marking slots in markedSegs if the segment is reachable.
+
+#define	AMBIENT_SEGMENT_DEPTH 5
+
 void AmbientMarkBfs (short nSegment, sbyte* markedSegs, int nDepth)
 {
 	short	i, child;

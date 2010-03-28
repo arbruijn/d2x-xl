@@ -2083,7 +2083,7 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 														 objP->info.nSegment,
 														 gameData.multiplayer.playerInit [i].position.vPos,
 														 gameData.multiplayer.playerInit [i].nSegment,
-														 10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
+														 10, WID_FLY_FLAG, -1);	//	Used to be 5, search up to 10 segments
 				if (xDist < 0)
 					continue;
 				if (spawnMap [i].xDist > xDist)
