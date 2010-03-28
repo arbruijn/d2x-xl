@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>	//	for memset ()
 
-#define USE_DACS 1
+#define USE_DACS 0
 
 #include "u_mem.h"
 #include "descent.h"
@@ -408,6 +408,17 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
+
+if (bUseCache) {
+	tFCDCacheData*	pc = gameData.fcd.cache.Buffer ();
+	for (int i = gameData.fcd.cache.Length (); i; i--, pc++) {
+		if ((pc->seg0 == nStartSeg) && (pc->seg1 == nDestSeg)) {
+			gameData.fcd.nConnSegDist = pc->csd;
+			return pc->dist;
+			}
+		}
+	}
+
 #if USE_DACS
 
 	short	nSegment;
@@ -500,15 +511,14 @@ for (;;) {
 
 #else
 
-	short				nCurSeg, nParentSeg, nThisSeg;
-	int				qTail = 0, qHead = 0;
-	int				i, nCurDepth, nPoints;
-	segQueueEntry	segmentQ [MAX_SEGMENTS_D2X];
-	short				nDepth [MAX_SEGMENTS_D2X];
-	tPointSeg		routeSegs [MAX_LOC_POINT_SEGS];
+	short				nSegment, nChildSeg;
+	short				nTail = 0, nHead = 1;
+	int				nDepth;
 	fix				xDist;
-	CSegment			*segP;
-	tFCDCacheData	*pc;
+	CSegment*		segP;
+	short				segQueue [MAX_SEGMENTS_D2X * 2];
+	short				segPreds [MAX_SEGMENTS_D2X];
+	short				segDepth [MAX_SEGMENTS_D2X];
 
 	static ubyte	bVisited [MAX_SEGMENTS_D2X];
 	static ubyte	bFlag = 255;
@@ -520,109 +530,59 @@ if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
 #endif
 	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
 	}
-//	Periodically flush cache.
-if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > I2X (2)) ||
-	 (gameData.time.xGame < gameData.fcd.xLastFlushTime)) {
-	FlushFCDCache ();
-	gameData.fcd.xLastFlushTime = gameData.time.xGame;
-	}
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
-if (bUseCache) {
-	for (i = gameData.fcd.cache.Length (), pc = gameData.fcd.cache.Buffer (); i; i--, pc++)
-		if ((pc->seg0 == nStartSeg) && (pc->seg1 == nDestSeg)) {
-			gameData.fcd.nConnSegDist = pc->csd;
-			return pc->dist;
-			}
-	}
-
 if (!++bFlag) {
 	memset (bVisited, 0, gameData.segs.nSegments);
 	bFlag = 1;
 	}
-memset (nDepth, 0, sizeof (nDepth [0]) * gameData.segs.nSegments);
 
-nPoints = 0;
-nCurSeg = nStartSeg;
-bVisited [nCurSeg] = 1;
-nCurDepth = 0;
+nSegment = nStartSeg;
+bVisited [nStartSeg] = bFlag;
+segQueue [0] = nStartSeg;
+segDepth [nStartSeg] = 0;
 
-while (nCurSeg != nDestSeg) {
-	segP = SEGMENTS + nCurSeg;
+for (;;) {
+	nSegment = segQueue [nTail++];
+	if (nSegment == nDestSeg) {
+		nSegment = segPreds [nSegment];
+		xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
+		gameData.fcd.nConnSegDist = 3;
+		for (;;) {
+			nChildSeg = segPreds [nSegment];
+			if (nChildSeg == nStartSeg)
+				break;
+			gameData.fcd.nConnSegDist++;
+			xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
+			nSegment = nChildSeg;
+			}
+		xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
+		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, xDist);
+		}
 
+	segP = SEGMENTS + nSegment;
+	nDepth = segDepth [nSegment] + 1;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
-			nThisSeg = segP->m_children [nSide];
-			Assert ((nThisSeg >= 0) && (nThisSeg < LEVEL_SEGMENTS));
-			Assert ((qTail >= 0) && (qTail < LEVEL_SEGMENTS));
-			if (bVisited [nThisSeg] != bFlag) {
-				segmentQ [qTail].start = nCurSeg;
-				segmentQ [qTail].end = nThisSeg;
-				bVisited [nThisSeg] = bFlag;
-				nDepth [qTail++] = nCurDepth+1;
-				if (nMaxDepth != -1) {
-					if (nDepth [qTail - 1] == nMaxDepth) {
-						gameData.fcd.nConnSegDist = 1000;
-						AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
-						return -1;
-						}
-					}
-				else if (nThisSeg == nDestSeg) {
-					goto fcd_done1;
+			nChildSeg = segP->m_children [nSide];
+			if (bVisited [nChildSeg] != bFlag) {
+				segDepth [nChildSeg] = nDepth;
+				bVisited [nChildSeg] = bFlag;
 				}
+			else if (segDepth [nChildSeg] > nDepth)
+				segDepth [nChildSeg] = nDepth;
+			else
+				continue;
+			segQueue [nHead] = nChildSeg;
+			segPreds [nHead] = nSegment;
+			nHead = ++nHead % (MAX_SEGMENTS_D2X * 2);
 			}
 		}
-	}	//	for (nSide...
+	}	
 
-	if (qHead >= qTail) {
-		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
-		return -1;
-		}
-	Assert ((qHead >= 0) && (qHead < LEVEL_SEGMENTS));
-	nCurSeg = segmentQ [qHead].end;
-	nCurDepth = nDepth [qHead];
-	qHead++;
-
-fcd_done1: ;
-	}	//	while (nCurSeg ...
-
-//	Set qTail to the CSegment which ends at the goal.
-while (segmentQ [--qTail].end != nDestSeg)
-	if (qTail < 0) {
-		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
-		return -1;
-		}
-
-while (qTail >= 0) {
-	nThisSeg = segmentQ [qTail].end;
-	nParentSeg = segmentQ [qTail].start;
-	routeSegs [nPoints].nSegment = nThisSeg;
-	routeSegs [nPoints].point = SEGMENTS [nThisSeg].Center ();
-	nPoints++;
-	if (nParentSeg == nStartSeg)
-		break;
-	while (segmentQ [--qTail].end != nParentSeg)
-		Assert (qTail >= 0);
-	}
-routeSegs [nPoints].nSegment = nStartSeg;
-routeSegs [nPoints].point = SEGMENTS [nStartSeg].Center ();
-nPoints++;
-if (nPoints == 1) {
-	gameData.fcd.nConnSegDist = nPoints;
-	return CFixVector::Dist (p0, p1);
-	}
-else {
-	xDist = CFixVector::Dist (p1, routeSegs [1].point);
-	xDist += CFixVector::Dist (p0, routeSegs [nPoints-2].point);
-	for (i = 1; i < nPoints - 2; i++) {
-		xDist += CFixVector::Dist(routeSegs [i].point, routeSegs [i+1].point);
-		}
-	}
-gameData.fcd.nConnSegDist = nPoints;
-AddToFCDCache (nStartSeg, nDestSeg, nPoints, xDist);
-return xDist;
+gameData.fcd.nConnSegDist = 10000;
+AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (10000));
+return -1;
 
 #endif
 
