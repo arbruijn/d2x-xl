@@ -34,8 +34,86 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "dialheap.h"
 #endif
 
-// How far a point can be from a plane, and still be "in" the plane
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
 
+typedef struct {
+	short	seg0, seg1;
+	int	pathLen;
+	fix	dist;
+} tFCDCacheData;
+
+#define	MAX_FCD_CACHE	128
+
+class CFCDCache {
+	public:	
+		int				m_nIndex;
+		CStaticArray< tFCDCacheData, MAX_FCD_CACHE >	m_cache; // [MAX_FCD_CACHE];
+		fix				m_xLastFlushTime;
+		fix				m_nPathLength;
+
+		void Flush (void);
+		void Add (int seg0, int seg1, int nDepth, fix dist);
+		fix Dist (short seg0, short seg1);
+		inline void SetPathLength (fix nPathLength) { m_nPathLength = nPathLength; }
+		inline fix GetPathLength (void) { return m_nPathLength; }
+};
+
+CFCDCache fcdCaches [4];
+
+// -----------------------------------------------------------------------------------
+
+#define	MIN_CACHE_FCD_DIST	 (I2X (80))	//	Must be this far apart for cache lookup to succeed.  Recognizes small changes in distance matter at small distances.
+
+void CFCDCache::Flush (void)
+{
+m_nIndex = 0;
+for (int i = 0; i < MAX_FCD_CACHE; i++)
+	m_cache [i].seg0 = -1;
+}
+
+// -----------------------------------------------------------------------------------
+
+void CFCDCache::Add (int seg0, int seg1, int nPathLen, fix dist)
+{
+if (dist > MIN_CACHE_FCD_DIST) {
+	m_cache [m_nIndex].seg0 = seg0;
+	m_cache [m_nIndex].seg1 = seg1;
+	m_cache [m_nIndex].pathLen = nPathLen;
+	m_cache [m_nIndex].dist = dist;
+	if (++m_nIndex >= MAX_FCD_CACHE)
+		m_nIndex = 0;
+	SetPathLength (nPathLen);
+	}
+else {
+	//	If it's in the cache, remove it.
+	for (int i = 0; i < MAX_FCD_CACHE; i++) {
+		if ((m_cache [i].seg0 == seg0) && (m_cache [i].seg1 == seg1)) {
+			m_cache [m_nIndex].seg0 = -1;
+			break;
+			}
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------------
+
+fix CFCDCache::Dist (short seg0, short seg1)
+{
+	tFCDCacheData*	pc = m_cache.Buffer ();
+
+for (int i = int (m_cache.Length ()); i; i--, pc++) {
+	if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
+		SetPathLength (pc->pathLen);
+		return pc->dist;
+		}
+	}
+return -1;
+}
+
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 // Fill in array with four absolute point numbers for a given CSide
 void GetCorners (int nSegment, int nSide, ushort* vertIndex)
@@ -324,43 +402,6 @@ return nClosestSeg;
 //--repair-- 	return ((Lsegment_highest_segment_index == gameData.segs.nLastSegment) && (Lsegment_highest_vertex_index == gameData.segs.nLastVertex);
 //--repair-- }
 
-#define	MAX_LOC_POINT_SEGS	64
-
-#define	MIN_CACHE_FCD_DIST	 (I2X (80))	//	Must be this far apart for cache lookup to succeed.  Recognizes small changes in distance matter at small distances.
-//	----------------------------------------------------------------------------------------------------------
-
-void FlushFCDCache (void)
-{
-	int	i;
-
-gameData.fcd.nIndex = 0;
-for (i = 0; i < MAX_FCD_CACHE; i++)
-	gameData.fcd.cache [i].seg0 = -1;
-}
-
-//	----------------------------------------------------------------------------------------------------------
-
-void AddToFCDCache (int seg0, int seg1, int nDepth, fix dist)
-{
-if (dist > MIN_CACHE_FCD_DIST) {
-	gameData.fcd.cache [gameData.fcd.nIndex].seg0 = seg0;
-	gameData.fcd.cache [gameData.fcd.nIndex].seg1 = seg1;
-	gameData.fcd.cache [gameData.fcd.nIndex].csd = nDepth;
-	gameData.fcd.cache [gameData.fcd.nIndex].dist = dist;
-	if (++gameData.fcd.nIndex >= MAX_FCD_CACHE)
-		gameData.fcd.nIndex = 0;
-	}
-else {
-	//	If it's in the cache, remove it.
-	for (int i = 0; i < MAX_FCD_CACHE; i++) {
-		if ((gameData.fcd.cache [i].seg0 == seg0) && (gameData.fcd.cache [i].seg1 == seg1)) {
-			gameData.fcd.cache [gameData.fcd.nIndex].seg0 = -1;
-			break;
-			}
-		}
-	}
-}
-
 //	----------------------------------------------------------------------------------------------------------
 
 # if BIDIRECTIONAL_DACS
@@ -388,36 +429,29 @@ return nSegment;
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
 
-fix FindConnectedDistance (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int bUseCache)
+fix FindConnectedDistance (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int nCacheType)
 {
+	fix	xDist;
 #if 0 //DBG
 gameData.fcd.nConnSegDist = 10000;
 return -1;
 #endif
 
 // same segment?
-if (nStartSeg == nDestSeg) {
-	gameData.fcd.nConnSegDist = 0;
+if ((nCacheType >= 0) && (nStartSeg == nDestSeg)) {
+	fcdCaches [nCacheType].SetPathLength (0);
 	return CFixVector::Dist (p0, p1);
 	}
 
 // adjacent segments?
 short nSide = SEGMENTS [nStartSeg].ConnectedSide (SEGMENTS + nDestSeg);
 if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
-	gameData.fcd.nConnSegDist = 1;
+	fcdCaches [nCacheType].SetPathLength (1);
 	return CFixVector::Dist (p0, p1);
 	}
 
-//if (bUseCache) 
-	{
-	tFCDCacheData*	pc = gameData.fcd.cache.Buffer ();
-	for (int i = gameData.fcd.cache.Length (); i; i--, pc++) {
-		if ((pc->seg0 == nStartSeg) && (pc->seg1 == nDestSeg)) {
-			gameData.fcd.nConnSegDist = pc->csd;
-			return pc->dist;
-			}
-		}
-	}
+if ((nCacheType >= 0) && (0 <= (xDist = fcdCaches [nCacheType].Dist (nStartSeg, nDestSeg))))
+	return xDist;
 
 #if USE_DACS
 
@@ -467,7 +501,7 @@ for (;;) {
 	if (nSegments [1] >= 0)
 		gameData.fcd.nConnSegDist += dialHeaps [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist);
 	int j = gameData.fcd.nConnSegDist - 2;
-	fix xDist = 0;
+	xDist = 0;
 	for (int i = 1; i < j; i++)
 		xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
 	xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
@@ -491,7 +525,7 @@ for (;;) {
 		gameData.fcd.nConnSegDist = dialHeap.BuildRoute (nDestSeg);
 		int j = gameData.fcd.nConnSegDist - 2;
 		short* route = dialHeap.Route ();
-		fix xDist = 0;
+		xDist = 0;
 		for (int i = 1; i < j; i++)
 			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
 		xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
@@ -513,8 +547,7 @@ for (;;) {
 
 	short				nSegment, nChildSeg;
 	short				nTail = 0, nHead = 1;
-	int				nDepth;
-	fix				xDist;
+	int				nDepth, nLength;
 	CSegment*		segP;
 	short				segQueue [MAX_SEGMENTS_D2X];
 	short				segPreds [MAX_SEGMENTS_D2X];
@@ -522,14 +555,6 @@ for (;;) {
 
 	static ushort	bVisited [MAX_SEGMENTS_D2X];
 	static ushort	bFlag = 0xFFFF;
-
-	//	If > this, will overrun routeSegs buffer
-if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
-#if TRACE
-	console.printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
-#endif
-	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
-	}
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (!++bFlag) {
@@ -544,24 +569,6 @@ segDepth [nStartSeg] = 0;
 
 while (nTail < nHead) {
 	nSegment = segQueue [nTail++];
-#if 0
-	if (nSegment == nDestSeg) {
-		nSegment = segPreds [nSegment];
-		xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
-		gameData.fcd.nConnSegDist = 3;
-		for (;;) {
-			nChildSeg = segPreds [nSegment];
-			if (nChildSeg == nStartSeg)
-				break;
-			gameData.fcd.nConnSegDist++;
-			xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
-			nSegment = nChildSeg;
-			}
-		xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
-		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, xDist);
-		return xDist;
-		}
-#endif
 	segP = SEGMENTS + nSegment;
 	nDepth = segDepth [nSegment] + 1;
 	if (nDepth < nMaxDepth) {
@@ -581,17 +588,18 @@ while (nTail < nHead) {
 				segQueue [nHead++] = nChildSeg;
 				if (nChildSeg == nDestSeg) {
 					xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
-					gameData.fcd.nConnSegDist = 3;
+					nLength = 3;
 					for (;;) {
 						nChildSeg = segPreds [nSegment];
 						if (nChildSeg == nStartSeg)
 							break;
-						gameData.fcd.nConnSegDist++;
+						nLength++;
 						xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
 						nSegment = nChildSeg;
 						}
 					xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
-					AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, xDist);
+					if (nCacheType >= 0) 
+						fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength, xDist);
 					return xDist;
 					}
 #else
@@ -604,9 +612,8 @@ while (nTail < nHead) {
 			}
 		}
 	}	
-
-gameData.fcd.nConnSegDist = 10000;
-AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (10000));
+if (nCacheType >= 0) 
+	fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, 10000, I2X (10000));
 return -1;
 
 #endif

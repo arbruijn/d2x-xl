@@ -3087,23 +3087,6 @@ class CHUDData {
 
 //------------------------------------------------------------------------------
 
-typedef struct {
-	int	seg0, seg1, csd;
-	fix	dist;
-} tFCDCacheData;
-
-#define	MAX_FCD_CACHE	128
-
-class CFCDData {
-	public:	
-		int				nIndex;
-		CStaticArray< tFCDCacheData, MAX_FCD_CACHE >	cache; // [MAX_FCD_CACHE];
-		fix				xLastFlushTime;
-		fix				nConnSegDist;
-};
-
-//------------------------------------------------------------------------------
-
 typedef struct tVertColorThreadData {
 #if MULTI_THREADED_LIGHTS
 	tThreadInfo		info [2];
@@ -3299,7 +3282,6 @@ class CGameData {
 		CHUDData				hud;
 		CTerrainData		terrain;
 		CTimeData			time;
-		CFCDData				fcd;
 		CVertColorData		vertColor;
 		CThreadData			threads;
 	#if DBG
