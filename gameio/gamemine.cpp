@@ -650,7 +650,11 @@ else if (loadOp == 2) {
 	}
 else if (loadOp == 3) {
 	ComputeChildDists (loadIdx);
-	loadOp++;
+	loadIdx += PROGRESS_INCR;
+	if (loadIdx >= gameData.segs.nSegments) {
+		loadIdx = 0;
+		loadOp++;
+		}
 	}
 else if (loadOp == 4) {
 	LoadExtSegmentsCompiled (*mineDataFile);
