@@ -181,7 +181,7 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	if (0 > m_children [i])
 		m_childDists [i] = 0xFFFF;
 	else {
-		m_childDists [i] = X2I (CFixVector::Dist (Center (), SEGMENTS [m_children [i]].Center ()));
+		m_childDists [i] = CFixVector::Dist (Center (), SEGMENTS [m_children [i]].Center ()) / gameData.segs.xDistScale;
 		if (m_childDists [i] == 0)
 			m_childDists [i] = 1;
 		}

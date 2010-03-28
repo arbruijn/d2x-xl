@@ -1745,6 +1745,7 @@ class CSegmentData {
 #endif
 		CFixVector					vMin;
 		CFixVector					vMax;
+		fix							xDistScale;
 		float							fRad;
 		CArray<CFixVector>		segCenters [2];
 		CArray<CFixVector>		sideCenters;

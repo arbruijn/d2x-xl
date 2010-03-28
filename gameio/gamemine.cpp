@@ -794,6 +794,11 @@ for (i = 0; i < gameData.segs.nVertices; i++) {
 	if (gameData.segs.vMax [Z] < v [Z])
 		gameData.segs.vMax [Z] = v [Z];
 	}
+
+gameData.segs.xDistScale = X2I (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));
+if (!gameData.segs.xDistScale)
+	gameData.segs.xDistScale = 1;
+
 SEGMENTS.Clear ();
 #if TRACE
 console.printf (CON_DBG, "   loading segments ...\n");
