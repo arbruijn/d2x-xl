@@ -381,6 +381,11 @@ return nSegment;
 
 fix FindConnectedDistance (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int bUseCache)
 {
+#if 0 //DBG
+gameData.fcd.nConnSegDist = 10000;
+return -1;
+#endif
+
 // same segment?
 if (nStartSeg == nDestSeg) {
 	gameData.fcd.nConnSegDist = 0;
@@ -396,7 +401,7 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 
 #if 1
 
-	short			nSegment;
+	short			nSegment, nExpanded = 0;
 
 dialHeaps [0].Setup (nStartSeg);
 
@@ -408,10 +413,14 @@ dialHeaps [0].Setup (nStartSeg);
 dialHeaps [1].Setup (nDestSeg);
 
 for (;;) {
-	if (nSegments [0] >= 0)
+	if (nSegments [0] >= 0) {
+		nExpanded++;
 		nSegments [0] = Expand (0, nDestSeg, widFlag);
-	if (nSegments [1] >= 0)
+		}
+	if (nSegments [1] >= 0) {
+		nExpanded++;
 		nSegments [1] = Expand (1, nStartSeg, widFlag);
+		}
 	if ((nSegments [0] < 0) && (nSegments [1] < 0)) {
 		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
 		return -1;
@@ -445,7 +454,7 @@ for (;;) {
 
 #	else
 
-	ushort		nDist, nExpanded;
+	ushort		nDist;
 	CSegment*	segP;
 
 nExpanded = 0;
