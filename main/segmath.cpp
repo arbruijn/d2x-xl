@@ -564,24 +564,29 @@ while (nTail < nHead) {
 
 	segP = SEGMENTS + nSegment;
 	nDepth = segDepth [nSegment] + 1;
-	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
-			nChildSeg = segP->m_children [nSide];
-			if (bVisited [nChildSeg] != bFlag) {
-				segDepth [nChildSeg] = nDepth;
-				bVisited [nChildSeg] = bFlag;
-				}
-			else if (segDepth [nChildSeg] > nDepth)
-				segDepth [nChildSeg] = nDepth;
-			else
-				continue;
-#if DBG
-			if (nChildSeg == nDestSeg)
-				nChildSeg = nChildSeg;
+	if (nDepth < nMaxDepth) {
+		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+			if (segP->IsDoorWay (nSide, NULL) & widFlag) {
+				nChildSeg = segP->m_children [nSide];
+				if (bVisited [nChildSeg] != bFlag) {
+					bVisited [nChildSeg] = bFlag;
+					segDepth [nChildSeg] = nDepth;
+#if 1
+					}
+				else if (segDepth [nChildSeg] > nDepth)
+					segDepth [nChildSeg] = nDepth;
+				else
+					continue;
+				segPreds [nChildSeg] = nSegment;
+				segQueue [nHead] = nChildSeg;
+				nHead = ++nHead % (MAX_SEGMENTS_D2X * 2);
+#else
+					segPreds [nChildSeg] = nSegment;
+					segQueue [nHead] = nChildSeg;
+					nHead = ++nHead % (MAX_SEGMENTS_D2X * 2);
+					}
 #endif
-			segQueue [nHead] = nChildSeg;
-			segPreds [nChildSeg] = nSegment;
-			nHead = ++nHead % (MAX_SEGMENTS_D2X * 2);
+				}
 			}
 		}
 	}	
