@@ -815,6 +815,7 @@ else {
 	LoadSideLightsCompiled (-1, cf);
 	LoadTexColorsCompiled (-1, cf);
 	ComputeSegSideCenters (-1);
+	ComputeChildDists (-1);
 	}
 gameData.segs.BuildGrid (40, 0);
 gameData.segs.BuildGrid (80, 1);

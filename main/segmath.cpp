@@ -386,7 +386,8 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	CSegment*	segP;
 
 heap.Create (gameData.segs.nSegments);
-heap.Setup (nStartSeg);
+//heap.Setup (nStartSeg);
+heap.Push (nStartSeg, -1, 0);
 while (0 <= (nSegment = heap.Pop (nDist))) {
 	if (nSegment == nDestSeg) {
 		gameData.fcd.nConnSegDist = heap.BuildRoute (nDestSeg);
@@ -443,7 +444,7 @@ if (bUseCache) {
 	for (i = gameData.fcd.cache.Length (), pc = gameData.fcd.cache.Buffer (); i; i--, pc++)
 		if ((pc->seg0 == nStartSeg) && (pc->seg1 == nDestSeg)) {
 			gameData.fcd.nConnSegDist = pc->csd;
-			return pc->xDist;
+			return pc->dist;
 			}
 	}
 
