@@ -175,6 +175,23 @@ m_vCenter [Z] /= 8;
 
 // -----------------------------------------------------------------------------
 
+void CSegment::ComputeChildDists (void)
+{
+	int nChild;
+
+for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	if (0 > m_sides [i])
+		m_childDist [i] = 0xFFFF;
+	else {
+		m_childDist [i] = X2I (CFixVector::Dist (Center (), SEGMENTS [m_children [i]].Center ()));
+		if (m_childDist [i] == 0)
+			m_childDist [i] = 1;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 void CSegment::ComputeRads (fix xMinDist)
 {
 	CFixVector	vMin, vMax, v;

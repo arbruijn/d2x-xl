@@ -600,6 +600,18 @@ for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, seg
 
 //------------------------------------------------------------------------------
 
+void ComputeChildDists (int nSegment)
+{
+	int			j;
+
+INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
+
+for (; nSegment < j; nSegment++)
+	SEGMENTS [nSegment].ComputeChildDists ();
+}
+
+//------------------------------------------------------------------------------
+
 static int loadIdx = 0;
 static int loadOp = 0;
 static CFile *mineDataFile;
@@ -637,10 +649,14 @@ else if (loadOp == 2) {
 		}
 	}
 else if (loadOp == 3) {
-	LoadExtSegmentsCompiled (*mineDataFile);
+	ComputeChildDists (loadIdx);
 	loadOp++;
 	}
 else if (loadOp == 4) {
+	LoadExtSegmentsCompiled (*mineDataFile);
+	loadOp++;
+	}
+else if (loadOp == 5) {
 	LoadVertLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= gameData.segs.nVertices)) {
@@ -648,7 +664,7 @@ else if (loadOp == 4) {
 		loadOp++;
 		}
 	}
-else if (loadOp == 5) {
+else if (loadOp == 6) {
 	LoadSideLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= (gameStates.app.bD2XLevel ?
@@ -657,7 +673,7 @@ else if (loadOp == 5) {
 		loadOp++;
 		}
 	}
-else if (loadOp == 6) {
+else if (loadOp == 7) {
 	LoadTexColorsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
 	if (!gameStates.app.bD2XLevel || (loadIdx >= MAX_WALL_TEXTURES)) {
@@ -681,7 +697,7 @@ return nCurItem;
 
 int LoadMineGaugeSize (void)
 {
-	int	i = 2 * PROGRESS_STEPS (gameData.segs.nSegments) + 2;
+	int	i = 3 * PROGRESS_STEPS (gameData.segs.nSegments) + 3;
 	int	bLightmaps = 0, bShadows = 0;
 
 	if (gameStates.render.bLightmapsOk)
