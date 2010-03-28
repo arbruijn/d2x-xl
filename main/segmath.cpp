@@ -79,7 +79,7 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns CSegment number, or -1 if can't find CSegment
-static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, char* bVisited, char bFlag, fix xTolerance = 0)
+static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, ubyte* bVisited, ubyte bFlag, fix xTolerance = 0)
 {
 	CSegment*	segP;
 	fix			xSideDists [6], xMaxDist;
@@ -116,7 +116,7 @@ return nMatchSeg;		//we haven't found a CSegment
 
 // -------------------------------------------------------------------------------
 
-static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, char* bVisited, char bFlag, float fTolerance)
+static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, ubyte* bVisited, ubyte bFlag, float fTolerance)
 {
 	CSegment*		segP;
 	float				fSideDists [6], fMaxDist;
@@ -206,18 +206,16 @@ return -1;
 
 int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
-	static char	bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
-	static char	bFlags [MAX_THREADS] = {-1, -1, -1, -1};
+	static ubyte bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
+	static ubyte bFlags [MAX_THREADS] = {255, 255, 255, 255};
 
 //allow nSegment == -1, meaning we have no idea what CSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
-	if (bFlags [nThread] < 0) {
+	if (!++bFlags [nThread]) {
 		memset (bVisited [nThread], 0, gameData.segs.nSegments);
 		bFlags [nThread] = 1;
 		}
-	else
-		bFlags [nThread] = !bFlags [nThread];
 	if (0 <= (nSegment = TraceSegs (vPos, nSegment, 0, bVisited [nThread], bFlags [nThread], xTolerance))) 
 		return nSegment;
 	}
@@ -382,12 +380,13 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 
 	CDialHeap	heap;
 	short			nSegment;
-	ushort		nDist;
+	ushort		nDist, nExpanded;
 	CSegment*	segP;
 
 heap.Create (gameData.segs.nSegments);
 //heap.Setup (nStartSeg);
 heap.Push (nStartSeg, -1, 0);
+nExpanded = 0;
 while (0 <= (nSegment = heap.Pop (nDist))) {
 	if (nSegment == nDestSeg) {
 		gameData.fcd.nConnSegDist = heap.BuildRoute (nDestSeg);
@@ -400,9 +399,10 @@ while (0 <= (nSegment = heap.Pop (nDist))) {
 		return xDist;
 		}
 	else {
+		nExpanded++;
 		segP = SEGMENTS + nSegment;
 		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-			if (segP->IsDoorWay (nSide, NULL) & widFlag)
+			if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
 				heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
 			}
 		}
@@ -422,8 +422,8 @@ return -1;
 	CSegment			*segP;
 	tFCDCacheData	*pc;
 
-	static sbyte	bVisited [MAX_SEGMENTS_D2X];
-	static sbyte	bFlag = -1;
+	static ubyte	bVisited [MAX_SEGMENTS_D2X];
+	static ubyte	bFlag = 255;
 
 	//	If > this, will overrun routeSegs buffer
 if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
@@ -448,12 +448,10 @@ if (bUseCache) {
 			}
 	}
 
-if (bFlag < 0) {
+if (!++bFlag) {
 	memset (bVisited, 0, gameData.segs.nSegments);
 	bFlag = 1;
 	}
-else 
-	bFlag = !bFlag;
 memset (nDepth, 0, sizeof (nDepth [0]) * gameData.segs.nSegments);
 
 nPoints = 0;
@@ -469,7 +467,7 @@ while (nCurSeg != nDestSeg) {
 			nThisSeg = segP->m_children [nSide];
 			Assert ((nThisSeg >= 0) && (nThisSeg < LEVEL_SEGMENTS));
 			Assert ((qTail >= 0) && (qTail < LEVEL_SEGMENTS));
-			if (bVisited [nThisSeg] = bFlag) {
+			if (bVisited [nThisSeg] != bFlag) {
 				segmentQ [qTail].start = nCurSeg;
 				segmentQ [qTail].end = nThisSeg;
 				bVisited [nThisSeg] = bFlag;

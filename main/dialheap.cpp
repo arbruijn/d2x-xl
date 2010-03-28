@@ -75,6 +75,7 @@ for (int i = 65536; i; i--) {
 		m_cost [nNode] = 0;
 		return nNode;
 		}
+	m_nIndex++;
 	}
 return -1;
 }
