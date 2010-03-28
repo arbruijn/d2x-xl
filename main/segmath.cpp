@@ -396,49 +396,69 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 
 #if 1
 
-	short			nSegment, nSegments [2] = {nStartSeg, nDestSeg};
-	static short route [2 * MAX_SEGMENTS_D2X];
+	short			nSegment;
 
 dialHeaps [0].Setup (nStartSeg);
-dialHeaps [1].Setup (nStartSeg);
+
+# if 1
+
+	short	nSegments [2] = {nStartSeg, nDestSeg};
+	static short route [2 * MAX_SEGMENTS_D2X];
+
+dialHeaps [1].Setup (nDestSeg);
+
 for (;;) {
-#if 1
 	if (nSegments [0] >= 0)
-		nSegments [0] = Expand (0, nSegments [0], widFlag);
+		nSegments [0] = Expand (0, nDestSeg, widFlag);
 	if (nSegments [1] >= 0)
-		nSegments [1] = Expand (1, nSegments [1], widFlag);
+		nSegments [1] = Expand (1, nStartSeg, widFlag);
 	if ((nSegments [0] < 0) && (nSegments [1] < 0)) {
 		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
 		return -1;
 		}
-	if (dialHeaps [0].Popped (nSegments [1]))
+	if (nSegments [0] == nDestSeg) {
+		nSegment = nSegments [0];
+		nSegments [1] = -1;
+		}
+	else if (nSegments [1] == nStartSeg) {
 		nSegment = nSegments [1];
-	else if (dialHeaps [1].Popped (nSegments [0]))
+		nSegments [0] = -1;
+		}
+	else if ((nSegments [1] >= 0) && dialHeaps [0].Popped (nSegments [1]))
+		nSegment = nSegments [1];
+	else if ((nSegments [0] >= 0) && dialHeaps [1].Popped (nSegments [0]))
 		nSegment = nSegments [0];
 	else
 		continue;
-	gameData.fcd.nConnSegDist = dialHeaps [0].BuildRoute (nSegment, 0, route);
-	gameData.fcd.nConnSegDist += dialHeaps [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist - 1);
+	gameData.fcd.nConnSegDist = 0;
+	if (nSegments [0] >= 0)
+		gameData.fcd.nConnSegDist += dialHeaps [0].BuildRoute (nSegment, 0, route) - 1;
+	if (nSegments [1] >= 0)
+		gameData.fcd.nConnSegDist += dialHeaps [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist);
 	int j = gameData.fcd.nConnSegDist - 2;
 	fix xDist = 0;
 	for (int i = 1; i < j; i++)
 		xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
 	xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
 	return xDist;
-#else
+	}
+
+#	else
+
 	ushort		nDist, nExpanded;
 	CSegment*	segP;
 
-	nExpanded = 0;
-	nSegment = dialHeaps [0].Pop (nDist);
+nExpanded = 0;
+nSegment = dialHeaps [0].Pop (nDist);
+for (;;) {
 	if (nSegment < 0) {
 		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
 		return -1;
 		}
 	if (nSegment == nDestSeg) {
-		gameData.fcd.nConnSegDist = heap.BuildRoute (nDestSeg);
+		gameData.fcd.nConnSegDist = dialHeaps [0].BuildRoute (nDestSeg);
 		int j = gameData.fcd.nConnSegDist - 2;
-		short* route = heap.Route ();
+		short* route = dialHeaps [0].Route ();
 		fix xDist = 0;
 		for (int i = 1; i < j; i++)
 			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
@@ -450,11 +470,12 @@ for (;;) {
 		segP = SEGMENTS + nSegment;
 		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
-				heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
+				dialHeaps [0].Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
 			}
 		}
-#endif
 	}
+
+#	endif
 
 #else
 
