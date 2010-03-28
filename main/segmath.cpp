@@ -558,6 +558,7 @@ for (;;) {
 			}
 		xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
 		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, xDist);
+		return xDist;
 		}
 
 	segP = SEGMENTS + nSegment;
@@ -565,6 +566,8 @@ for (;;) {
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
 			nChildSeg = segP->m_children [nSide];
+			if (nChildSeg < 0)
+				continue;
 			if (bVisited [nChildSeg] != bFlag) {
 				segDepth [nChildSeg] = nDepth;
 				bVisited [nChildSeg] = bFlag;
