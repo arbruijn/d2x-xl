@@ -352,7 +352,7 @@ if (dist > MIN_CACHE_FCD_DIST) {
 	}
 else {
 	//	If it's in the cache, remove it.
-	for (int i = 0; i<MAX_FCD_CACHE; i++) {
+	for (int i = 0; i < MAX_FCD_CACHE; i++) {
 		if ((gameData.fcd.cache [i].seg0 == seg0) && (gameData.fcd.cache [i].seg1 == seg1)) {
 			gameData.fcd.cache [gameData.fcd.nIndex].seg0 = -1;
 			break;
@@ -408,8 +408,8 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
-#if 1
-if (bUseCache) {
+//if (bUseCache) 
+	{
 	tFCDCacheData*	pc = gameData.fcd.cache.Buffer ();
 	for (int i = gameData.fcd.cache.Length (); i; i--, pc++) {
 		if ((pc->seg0 == nStartSeg) && (pc->seg1 == nDestSeg)) {
@@ -418,7 +418,6 @@ if (bUseCache) {
 			}
 		}
 	}
-#endif
 
 #if USE_DACS
 

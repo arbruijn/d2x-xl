@@ -3092,7 +3092,7 @@ typedef struct {
 	fix	dist;
 } tFCDCacheData;
 
-#define	MAX_FCD_CACHE	64
+#define	MAX_FCD_CACHE	128
 
 class CFCDData {
 	public:	
