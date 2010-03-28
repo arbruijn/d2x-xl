@@ -17,7 +17,7 @@ return true;
 
 //-----------------------------------------------------------------------------
 
-void CDialHeap::Destroy (short nNodes)
+void CDialHeap::Destroy (void)
 {
 m_index.Destroy ();
 m_cost.Destroy ();

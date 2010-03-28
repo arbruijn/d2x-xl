@@ -404,9 +404,9 @@ dialHeaps [1].Setup (nStartSeg);
 for (;;) {
 #if 1
 	if (nSegments [0] >= 0)
-		nSegments [0] = Expand (0, nDestSeg, widFlag);
+		nSegments [0] = Expand (0, nSegments [0], widFlag);
 	if (nSegments [1] >= 0)
-		nSegments [1] = Expand (1, nStartSeg, widFlag);
+		nSegments [1] = Expand (1, nSegments [1], widFlag);
 	if ((nSegments [0] < 0) && (nSegments [1] < 0)) {
 		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
 		return -1;
