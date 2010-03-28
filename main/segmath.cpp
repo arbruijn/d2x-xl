@@ -357,6 +357,24 @@ else {
 }
 
 //	----------------------------------------------------------------------------------------------------------
+
+static int Expand (int nDir, short nDestSeg, int widFlag)
+{
+ushort nDist;
+short nSegment = dialHeaps [nDir].Pop (nDist);
+if ((nSegment < 0) || (nSegment == nDestSeg))
+	return nSegment;
+if (dialHeaps [!nDir].Popped (nSegment))
+	return nSegment;
+CSegment* segP = SEGMENTS + nSegment;
+for (short nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
+		dialHeaps [nDir].Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
+	}
+return nSegment;
+}
+
+//	----------------------------------------------------------------------------------------------------------
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
@@ -378,16 +396,45 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 
 #if 1
 
-	CDialHeap	heap;
-	short			nSegment;
+	short			nSegment, nSegments [2] = {nStartSeg, nDestSeg};
+	static short route [2 * MAX_SEGMENTS_D2X];
+
+dialHeaps [0].Setup (nStartSeg);
+dialHeaps [1].Setup (nStartSeg);
+for (;;) {
+#if 1
+	if (nSegments [0] >= 0)
+		nSegments [0] = Expand (0, nDestSeg, widFlag);
+	if (nSegments [1] >= 0)
+		nSegments [1] = Expand (1, nStartSeg, widFlag);
+	if ((nSegments [0] < 0) && (nSegments [1] < 0)) {
+		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
+		return -1;
+		}
+	if (dialHeaps [0].Popped (nSegments [1]))
+		nSegment = nSegments [1];
+	else if (dialHeaps [1].Popped (nSegments [0]))
+		nSegment = nSegments [0];
+	else
+		continue;
+	gameData.fcd.nConnSegDist = dialHeaps [0].BuildRoute (nSegment, 0, route);
+	gameData.fcd.nConnSegDist += dialHeaps [1].BuildRoute (nSegment, 1, route + gameData.fcd.nConnSegDist - 1);
+	int j = gameData.fcd.nConnSegDist - 2;
+	fix xDist = 0;
+	for (int i = 1; i < j; i++)
+		xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
+	xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
+	return xDist;
+#else
 	ushort		nDist, nExpanded;
 	CSegment*	segP;
 
-heap.Create (gameData.segs.nSegments);
-//heap.Setup (nStartSeg);
-heap.Push (nStartSeg, -1, 0);
-nExpanded = 0;
-while (0 <= (nSegment = heap.Pop (nDist))) {
+	nExpanded = 0;
+	nSegment = dialHeaps [0].Pop (nDist);
+	if (nSegment < 0) {
+		gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
+		return -1;
+		}
 	if (nSegment == nDestSeg) {
 		gameData.fcd.nConnSegDist = heap.BuildRoute (nDestSeg);
 		int j = gameData.fcd.nConnSegDist - 2;
@@ -406,35 +453,8 @@ while (0 <= (nSegment = heap.Pop (nDist))) {
 				heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
 			}
 		}
-	}
-
-#if DBG
-heap.Reset ();
-heap.Push (nStartSeg, -1, 0);
-while (0 <= (nSegment = heap.Pop (nDist))) {
-	if (nSegment == nDestSeg) {
-		gameData.fcd.nConnSegDist = heap.BuildRoute (nDestSeg);
-		int j = gameData.fcd.nConnSegDist - 2;
-		short* route = heap.Route ();
-		fix xDist = 0;
-		for (int i = 1; i < j; i++)
-			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
-		xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
-		return xDist;
-		}
-	else {
-		if (!--nExpanded)
-			nExpanded = nExpanded;
-		segP = SEGMENTS + nSegment;
-		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-			if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & widFlag))
-				heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
-			}
-		}
-	}
 #endif
-gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
-return -1;
+	}
 
 #else
 

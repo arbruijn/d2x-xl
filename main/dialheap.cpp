@@ -3,14 +3,27 @@
 
 #include "dialheap.h"
 
+CDialHeap dialHeaps [2];
+
 //-----------------------------------------------------------------------------
 
 bool CDialHeap::Create (short nNodes)
 {
-if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_route.Create (nNodes)))
+m_nNodes = nNodes;
+if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes)))
 	return false;
-Reset ();
 return true;
+}
+
+//-----------------------------------------------------------------------------
+
+void CDialHeap::Destroy (short nNodes)
+{
+m_index.Destroy ();
+m_cost.Destroy ();
+m_links.Destroy ();
+m_pred.Destroy ();
+m_route.Destroy ();
 }
 
 //-----------------------------------------------------------------------------
@@ -26,8 +39,8 @@ m_nIndex = 0;
 
 void CDialHeap::Setup (short nNode)
 {
-m_index [0] = nNode;
-m_cost [nNode] = 0;
+Reset ();
+Push (nNode, -1, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -86,22 +99,36 @@ return -1;
 
 //-----------------------------------------------------------------------------
 
-short CDialHeap::BuildRoute (short nNode, int bReverse)
+short CDialHeap::RouteLength (short nNode)
 {
 	short	h = nNode, i = 0;
 
 while (0 <= (h = m_pred [h]))
 	i++;
-h = i + 1;
+return i + 1;
+}
+
+//-----------------------------------------------------------------------------
+
+short CDialHeap::BuildRoute (short nNode, int bReverse, short* route)
+{
+	short	h = RouteLength (nNode);
+
+if (!route) {
+	if (!m_route.Buffer ())
+		m_route.Create (m_nNodes);
+	route = m_route.Buffer ();
+	}
+
 if (bReverse) {
-	for (i = 0; i < h; i++) {
-		m_route [i] = nNode;
+	for (int i = 0; i < h; i++) {
+		route [i] = nNode;
 		nNode = m_pred [nNode];
 		}
 	}
 else {
-	for (; i >= 0; i--) {
-		m_route [i] = nNode;
+	for (int i = h - 1; i >= 0; i--) {
+		route [i] = nNode;
 		nNode = m_pred [nNode];
 		}
 	}
