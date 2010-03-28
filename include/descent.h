@@ -3098,7 +3098,7 @@ class CFCDData {
 		int				nIndex;
 		CStaticArray< tFCDCacheData, MAX_FCD_CACHE >	cache; // [MAX_FCD_CACHE];
 		fix				xLastFlushTime;
-		int				nConnSegDist;
+		fix				nConnSegDist;
 };
 
 //------------------------------------------------------------------------------

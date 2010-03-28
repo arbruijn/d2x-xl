@@ -7,7 +7,7 @@
 
 bool CDialHeap::Create (short nNodes)
 {
-if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes)))
+if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_route.Create (nNodes)))
 	return false;
 Reset ();
 return true;
@@ -21,6 +21,14 @@ m_index.Clear (0xFF);
 //m_links.Clear (0xFF);
 m_cost.Clear (0xFF);
 m_nIndex = 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void CDialHeap::Setup (short nNode)
+{
+m_index [0] = nNode;
+m_cost [nNode] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -73,27 +81,27 @@ return -1;
 
 //-----------------------------------------------------------------------------
 
-short CDialHeap::Route (short* route, short nNode)
+short CDialHeap::BuildRoute (short nNode, int bReverse)
 {
 	short	h = nNode, i = 0;
 
 while (0 >= (h = m_pred [h]))
 	i++;
 h = i + 1;
-while (i >= 0) {
-	route [i--] = nNode;
-	nNode = m_pred [nNode];
+if (bReverse) {
+	for (i = 0; i < h; i++) {
+		m_route [i] = nNode;
+		nNode = m_pred [nNode];
+		}
+	}
+else {
+	for (; i >= 0; i--) {
+		m_route [i] = nNode;
+		nNode = m_pred [nNode];
+		}
 	}
 return h;
 }
-
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 

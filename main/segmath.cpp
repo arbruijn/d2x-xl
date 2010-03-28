@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "light.h"
 #include "segment.h"
+#include "dialheap.h"
 
 // How far a point can be from a plane, and still be "in" the plane
 
@@ -345,7 +346,6 @@ if (dist > MIN_CACHE_FCD_DIST) {
 	gameData.fcd.cache [gameData.fcd.nIndex].dist = dist;
 	if (++gameData.fcd.nIndex >= MAX_FCD_CACHE)
 		gameData.fcd.nIndex = 0;
-
 	}
 else {
 	//	If it's in the cache, remove it.
@@ -353,6 +353,7 @@ else {
 		if ((gameData.fcd.cache [i].seg0 == seg0) && (gameData.fcd.cache [i].seg1 == seg1)) {
 			gameData.fcd.cache [gameData.fcd.nIndex].seg0 = -1;
 			break;
+			}
 		}
 	}
 }
@@ -361,17 +362,62 @@ else {
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
-fix FindConnectedDistance (CFixVector& p0, short nSrcSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int bUseCache)
+
+fix FindConnectedDistance (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int bUseCache)
 {
-	short				nConnSide;
+// same segment?
+if (nStartSeg == nDestSeg) {
+	gameData.fcd.nConnSegDist = 0;
+	return CFixVector::Dist (p0, p1);
+	}
+
+// adjacent segments?
+short nSide = SEGMENTS [nStartSeg].ConnectedSide (SEGMENTS + nDestSeg);
+if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
+	gameData.fcd.nConnSegDist = 1;
+	return CFixVector::Dist (p0, p1);
+	}
+
+#if 1
+
+	CDialHeap	heap;
+	short			nSegment;
+	ushort		nDist;
+	CSegment*	segP;
+
+heap.Create (gameData.segs.nSegments);
+heap.Setup (nStartSeg);
+while (0 <= (nSegment = heap.Pop (nDist))) {
+	if (nSegment == nDestSeg) {
+		gameData.fcd.nConnSegDist = heap.BuildRoute (nDestSeg);
+		int j = gameData.fcd.nConnSegDist - 2;
+		short* route = heap.Route ();
+		fix xDist = 0;
+		for (int i = 1; i < j; i++)
+			xDist += CFixVector::Dist (SEGMENTS [route [i]].Center (), SEGMENTS [route [i + 1]].Center ());
+		xDist += CFixVector::Dist (p0, SEGMENTS [route [1]].Center ()) + CFixVector::Dist (p1, SEGMENTS [route [j]].Center ());
+		return xDist;
+		}
+	else {
+		segP = SEGMENTS + nSegment;
+		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+			if (segP->IsDoorWay (nSide, NULL) & widFlag)
+				heap.Push (segP->m_children [nSide], nSegment, nDist + segP->m_childDists [nSide]);
+			}
+		}
+	}
+gameData.fcd.nConnSegDist = gameData.segs.nSegments + 1;
+return -1;
+
+#else
+
 	short				nCurSeg, nParentSeg, nThisSeg;
-	short				nSide;
 	int				qTail = 0, qHead = 0;
 	int				i, nCurDepth, nPoints;
 	segQueueEntry	segmentQ [MAX_SEGMENTS_D2X];
 	short				nDepth [MAX_SEGMENTS_D2X];
 	tPointSeg		routeSegs [MAX_LOC_POINT_SEGS];
-	fix				dist;
+	fix				xDist;
 	CSegment			*segP;
 	tFCDCacheData	*pc;
 
@@ -385,16 +431,6 @@ if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
 #endif
 	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
 	}
-if (nSrcSeg == nDestSeg) {
-	gameData.fcd.nConnSegDist = 0;
-	return CFixVector::Dist (p0, p1);
-	}
-nConnSide = SEGMENTS [nSrcSeg].ConnectedSide (SEGMENTS + nDestSeg);
-if ((nConnSide != -1) &&
-	 (SEGMENTS [nDestSeg].IsDoorWay (nConnSide, NULL) & widFlag)) {
-	gameData.fcd.nConnSegDist = 1;
-	return CFixVector::Dist (p0, p1);
-	}
 //	Periodically flush cache.
 if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > I2X (2)) ||
 	 (gameData.time.xGame < gameData.fcd.xLastFlushTime)) {
@@ -405,9 +441,9 @@ if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > I2X (2)) ||
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (bUseCache) {
 	for (i = gameData.fcd.cache.Length (), pc = gameData.fcd.cache.Buffer (); i; i--, pc++)
-		if ((pc->seg0 == nSrcSeg) && (pc->seg1 == nDestSeg)) {
+		if ((pc->seg0 == nStartSeg) && (pc->seg1 == nDestSeg)) {
 			gameData.fcd.nConnSegDist = pc->csd;
-			return pc->dist;
+			return pc->xDist;
 			}
 	}
 
@@ -420,7 +456,7 @@ else
 memset (nDepth, 0, sizeof (nDepth [0]) * gameData.segs.nSegments);
 
 nPoints = 0;
-nCurSeg = nSrcSeg;
+nCurSeg = nStartSeg;
 bVisited [nCurSeg] = 1;
 nCurDepth = 0;
 
@@ -440,7 +476,7 @@ while (nCurSeg != nDestSeg) {
 				if (nMaxDepth != -1) {
 					if (nDepth [qTail - 1] == nMaxDepth) {
 						gameData.fcd.nConnSegDist = 1000;
-						AddToFCDCache (nSrcSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
+						AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
 						return -1;
 						}
 					}
@@ -453,7 +489,7 @@ while (nCurSeg != nDestSeg) {
 
 	if (qHead >= qTail) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (nSrcSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
+		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
 		return -1;
 		}
 	Assert ((qHead >= 0) && (qHead < LEVEL_SEGMENTS));
@@ -468,7 +504,7 @@ fcd_done1: ;
 while (segmentQ [--qTail].end != nDestSeg)
 	if (qTail < 0) {
 		gameData.fcd.nConnSegDist = 1000;
-		AddToFCDCache (nSrcSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
+		AddToFCDCache (nStartSeg, nDestSeg, gameData.fcd.nConnSegDist, I2X (1000));
 		return -1;
 		}
 
@@ -478,30 +514,31 @@ while (qTail >= 0) {
 	routeSegs [nPoints].nSegment = nThisSeg;
 	routeSegs [nPoints].point = SEGMENTS [nThisSeg].Center ();
 	nPoints++;
-	if (nParentSeg == nSrcSeg)
+	if (nParentSeg == nStartSeg)
 		break;
 	while (segmentQ [--qTail].end != nParentSeg)
 		Assert (qTail >= 0);
 	}
-routeSegs [nPoints].nSegment = nSrcSeg;
-routeSegs [nPoints].point = SEGMENTS [nSrcSeg].Center ();
+routeSegs [nPoints].nSegment = nStartSeg;
+routeSegs [nPoints].point = SEGMENTS [nStartSeg].Center ();
 nPoints++;
 if (nPoints == 1) {
 	gameData.fcd.nConnSegDist = nPoints;
 	return CFixVector::Dist (p0, p1);
 	}
 else {
-	fix	ndist;
-	dist = CFixVector::Dist (p1, routeSegs [1].point);
-	dist += CFixVector::Dist (p0, routeSegs [nPoints-2].point);
+	xDist = CFixVector::Dist (p1, routeSegs [1].point);
+	xDist += CFixVector::Dist (p0, routeSegs [nPoints-2].point);
 	for (i = 1; i < nPoints - 2; i++) {
-		ndist = CFixVector::Dist(routeSegs [i].point, routeSegs [i+1].point);
-		dist += ndist;
+		xDist += CFixVector::Dist(routeSegs [i].point, routeSegs [i+1].point);
 		}
 	}
 gameData.fcd.nConnSegDist = nPoints;
-AddToFCDCache (nSrcSeg, nDestSeg, nPoints, dist);
-return dist;
+AddToFCDCache (nStartSeg, nDestSeg, nPoints, xDist);
+return xDist;
+
+#endif
+
 }
 
 // -------------------------------------------------------------------------------

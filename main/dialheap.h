@@ -12,18 +12,21 @@ class CDialHeap {
 		CUShortArray	m_cost;
 		CShortArray		m_links;
 		CShortArray		m_pred;
+		CShortArray		m_route;
 		ushort			m_nIndex;
 
 	public:
 		bool Create (short nNodes);
 		bool Destroy (void);
 		void Reset (void);
+		void Setup (short nNode);
 		bool Push (short nNode, short nPredNode, ushort nCost);
 		short Pop (ushort &nCost);
-		short Route (short* route, short nNode);
+		short BuildRoute (short nNode, int bReverse = 0);
 		inline ushort Cost (short nNode) { return m_cost [nNode]; }
 		inline bool Pushed (short nNode) { return Cost (nNode) < 0xFFFF; }
 		inline bool Popped (short nNode) { return Cost (nNode) == 0; }
+		inline short* Route (void) { return m_route.Buffer (); }
 };
 
 #endif //DIALHEAP_H
