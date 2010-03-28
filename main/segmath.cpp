@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>	//	for memset ()
 
-#define USE_DACS 1
+#define USE_DACS 0
 
 #include "u_mem.h"
 #include "descent.h"
@@ -408,7 +408,7 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
-#if 0
+#if 1
 if (bUseCache) {
 	tFCDCacheData*	pc = gameData.fcd.cache.Buffer ();
 	for (int i = gameData.fcd.cache.Length (); i; i--, pc++) {
