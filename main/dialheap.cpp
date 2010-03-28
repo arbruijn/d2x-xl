@@ -17,9 +17,11 @@ CDialHeap dialHeap;
 
 bool CDialHeap::Create (short nNodes)
 {
-m_nNodes = nNodes;
-if (!(m_index.Create (65536) && m_cost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes)))
+if (!(m_index.Create (65536) && m_usedIndex.Create (65536) && m_cost.Create (nNodes) && m_usedCost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes)))
 	return false;
+m_nNodes = nNodes;
+m_nIndex = 0;
+m_nUsedIndex = 0;
 return true;
 }
 
@@ -28,7 +30,9 @@ return true;
 void CDialHeap::Destroy (void)
 {
 m_index.Destroy ();
+m_usedIndex.Destroy ();
 m_cost.Destroy ();
+m_usedCost.Destroy ();
 m_links.Destroy ();
 m_pred.Destroy ();
 m_route.Destroy ();
@@ -38,9 +42,15 @@ m_route.Destroy ();
 
 void CDialHeap::Reset (void)
 {
+#if 0
 m_index.Clear (0xFF);
 m_cost.Clear (0xFF);
-m_nIndex = 0;
+#else
+while (m_nUsedIndex)
+	m_index [m_usedIndex [--m_nUsedIndex]] = -1;
+while (m_nUsedCost)
+	m_cost [m_usedCost [--m_nUsedCost]] = 0xFFFF;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -80,6 +90,10 @@ if (nOldCost < 0xFFFF) {	// node already in heap with higher m_cost, so unlink
 			}
 		}
 	}
+else 
+	m_usedCost [m_nUsedCost++] = nNode;
+if (m_index [nIndex] < 0)
+	m_usedIndex [m_nUsedIndex++] = nIndex;
 m_links [nNode] = m_index [nIndex];
 m_index [nIndex] = nNode;
 m_cost [nNode] = nNewCost;

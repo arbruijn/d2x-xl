@@ -20,6 +20,10 @@ class CDialHeap {
 		CShortArray		m_route;
 		short				m_nNodes;
 		ushort			m_nIndex;
+		CUShortArray	m_usedIndex;
+		ushort			m_nUsedIndex;
+		CShortArray		m_usedCost;
+		short				m_nUsedCost;
 
 	public:
 		bool Create (short nNodes);
