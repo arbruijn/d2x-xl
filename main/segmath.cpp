@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>	//	for memset ()
 
-#define USE_DACS 0
+#define USE_DACS 1
 
 #include "u_mem.h"
 #include "descent.h"
@@ -84,7 +84,7 @@ int	bDoingLightingHack=0;
 
 //figure out what seg the given point is in, tracing through segments
 //returns CSegment number, or -1 if can't find CSegment
-static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, ubyte* bVisited, ubyte bFlag, fix xTolerance = 0)
+static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, ushort* bVisited, ushort bFlag, fix xTolerance = 0)
 {
 	CSegment*	segP;
 	fix			xSideDists [6], xMaxDist;
@@ -121,7 +121,7 @@ return nMatchSeg;		//we haven't found a CSegment
 
 // -------------------------------------------------------------------------------
 
-static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, ubyte* bVisited, ubyte bFlag, float fTolerance)
+static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, ushort* bVisited, ushort bFlag, float fTolerance)
 {
 	CSegment*		segP;
 	float				fSideDists [6], fMaxDist;
@@ -211,14 +211,14 @@ return -1;
 
 int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
 {
-	static ubyte bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
-	static ubyte bFlags [MAX_THREADS] = {255, 255, 255, 255};
+	static ushort bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
+	static ushort bFlags [MAX_THREADS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
 
 //allow nSegment == -1, meaning we have no idea what CSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
 if (nSegment != -1) {
 	if (!++bFlags [nThread]) {
-		memset (bVisited [nThread], 0, gameData.segs.nSegments);
+		memset (bVisited [nThread], 0, sizeofa (bVisited [nThread]));
 		bFlags [nThread] = 1;
 		}
 	if (0 <= (nSegment = TraceSegs (vPos, nSegment, 0, bVisited [nThread], bFlags [nThread], xTolerance))) 
@@ -408,7 +408,7 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
-
+#if 0
 if (bUseCache) {
 	tFCDCacheData*	pc = gameData.fcd.cache.Buffer ();
 	for (int i = gameData.fcd.cache.Length (); i; i--, pc++) {
@@ -418,6 +418,7 @@ if (bUseCache) {
 			}
 		}
 	}
+#endif
 
 #if USE_DACS
 
@@ -520,8 +521,8 @@ for (;;) {
 	short				segPreds [MAX_SEGMENTS_D2X];
 	short				segDepth [MAX_SEGMENTS_D2X];
 
-	static ubyte	bVisited [MAX_SEGMENTS_D2X];
-	static ubyte	bFlag = 255;
+	static ushort	bVisited [MAX_SEGMENTS_D2X];
+	static ushort	bFlag = 0xFFFF;
 
 	//	If > this, will overrun routeSegs buffer
 if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
@@ -533,7 +534,7 @@ if (nMaxDepth > MAX_LOC_POINT_SEGS - 2) {
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (!++bFlag) {
-	memset (bVisited, 0, gameData.segs.nSegments);
+	memset (bVisited, 0, sizeofa (bVisited));
 	bFlag = 1;
 	}
 
