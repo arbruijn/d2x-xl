@@ -19,8 +19,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>	//	for memset ()
 
-#define USE_DACS 0
-
 #include "u_mem.h"
 #include "descent.h"
 #include "error.h"
@@ -29,6 +27,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "light.h"
 #include "segment.h"
+
+#define USE_DACS 0
 
 #if USE_DACS
 #	include "dialheap.h"
