@@ -313,17 +313,19 @@ memset (bSemaphore, 0, sizeofa (bSemaphore));
 while (h) {
 	do {
 //			i = ++i % gameStates.app.nThreads;
-	} while (!(bSemaphore [i] & 1));
-	j = nListPos [i];
-	nListPos [i] += gameStates.app.nThreads;
-	if (nListPos [i] >= gameData.render.mine.nRenderSegs)
-		h--;
-	if (0 <= ObjectSegment (j)) {
-		lightManager.SetThreadId (i);
-		RenderObjList (j, gameStates.render.nWindow);
-		lightManager.SetThreadId (-1);
+	} while (!bSemaphore [i]);
+	if (bSemaphore [i] & 1) {
+		j = nListPos [i];
+		nListPos [i] += gameStates.app.nThreads;
+		if (nListPos [i] >= gameData.render.mine.nRenderSegs)
+			h--;
+		if (0 <= ObjectSegment (j)) {
+			lightManager.SetThreadId (i);
+			RenderObjList (j, gameStates.render.nWindow);
+			lightManager.SetThreadId (-1);
+			}
+		bSemaphore [i] &= 0xFE;
 		}
-	bSemaphore [i] &= 0xFE;
 	i = ++i % gameStates.app.nThreads;
 	}
 }
