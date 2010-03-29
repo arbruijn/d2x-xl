@@ -8976,10 +8976,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\ogl\ogl_lib.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\ogl\ogl_palette.cpp"
 						>
 					</File>
@@ -10848,6 +10844,10 @@
 			</File>
 			<File
 				RelativePath="..\include\ogl_hudstuff.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ogl\ogl_lib.cpp"
 				>
 			</File>
 			<File

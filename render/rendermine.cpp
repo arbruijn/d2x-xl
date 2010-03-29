@@ -289,7 +289,7 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
-	if (gameStates.render.bApplyDynLight) {
+	if (0 && gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
 		}
@@ -310,7 +310,7 @@ SDL_mutexP (semaphore);
 #if !USE_OPENMP
 SDL_mutexV (semaphore);
 #endif
-	if (gameStates.render.bApplyDynLight)
+	if (0 && gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
 }

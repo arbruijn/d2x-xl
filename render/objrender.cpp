@@ -1100,7 +1100,7 @@ switch (objP->info.renderType) {
 
 	case RT_POLYOBJ:
 		if (nType == OBJ_EFFECT) {
-			objP->info.renderType = (objP->info.nId == SMOKE_ID) ? RT_SMOKE : RT_LIGHTNING;
+			objP->info.renderType = (objP->info.nId == SMOKE_ID) ? RT_SMOKE : (objP->info.nId == LIGHTNING_ID) ? RT_LIGHTNING : RT_SOUND;
 			return 0;
 			}
 		if (nType == OBJ_PLAYER) {
@@ -1112,7 +1112,7 @@ switch (objP->info.renderType) {
 				return 0;
 			}
 		else if (nType == OBJ_WEAPON) {
-			if (!RenderWeaponModel (objP, bSpectate))
+			//if (!RenderWeaponModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_REACTOR) {
@@ -1120,7 +1120,7 @@ switch (objP->info.renderType) {
 				return 0;
 			}
 		else if (nType == OBJ_POWERUP) {
-			if (!RenderPowerupModel (objP, bSpectate))
+			//if (!RenderPowerupModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_HOSTAGE) {

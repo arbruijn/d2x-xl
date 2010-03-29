@@ -416,11 +416,15 @@ if ((i < 0) || (i > 3))
 	return;
 #endif
 //SDL_mutexP (semaphore);
-if (m_data.nTMU [0] != nTMU)
-	glActiveTexture (m_data.nTMU [0] = nTMU);
+//if (m_data.nTMU [0] != nTMU)
+	{
+	glActiveTexture (nTMU);
+	m_data.nTMU [0] = nTMU - GL_TEXTURE0;
+	}
 if (bClient) {
-	if (m_data.nTMU [1] != nTMU)
-		glClientActiveTexture (m_data.nTMU [1] = nTMU);
+//	if (m_data.nTMU [1] != nTMU)
+		glClientActiveTexture (nTMU);
+		m_data.nTMU [1] = nTMU - GL_TEXTURE0;
 	}
 ClearError (0);
 //SDL_mutexV (semaphore);
