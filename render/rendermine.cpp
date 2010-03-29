@@ -299,6 +299,10 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.
 SDL_mutexP (semaphore);
 #endif
 	{
+#	if DBG
+	if (lightManager.ThreadId (-1) != -1)
+		nSegment = nSegment;
+#	endif
 	lightManager.SetThreadId (nThread);
 	RenderObjList (i, gameStates.render.nWindow);
 	lightManager.SetThreadId (-1);

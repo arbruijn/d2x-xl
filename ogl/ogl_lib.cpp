@@ -304,7 +304,8 @@ void COglData::Initialize (void)
 {
 palette = NULL;
 memset (bUseTextures, 0, sizeof (bUseTextures));
-nTMU [0] = 0;
+nTMU [0] = 
+nTMU [1] = -1;
 if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 #ifndef GL_VERSION_20
 	if (glActiveTexture) 
@@ -364,10 +365,14 @@ drawBufferP = drawBuffers;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+static SDL_mutex* semaphore = NULL;
+
 void COGL::Initialize (void)
 {
 m_states.Initialize ();
 m_data.Initialize ();
+if (!semaphore)
+	semaphore = SDL_CreateMutex ();
 }
 
 //------------------------------------------------------------------------------
@@ -404,25 +409,21 @@ if (m_states.bAntiAliasingOk && m_states.bAntiAliasing)
 
 void COGL::SelectTMU (int nTMU, bool bClient)
 {
+#if DBG
 	int	i = nTMU - GL_TEXTURE0;
 
-#if DBG
 if ((i < 0) || (i > 3))
 	return;
 #endif
-//if (m_data.nTMU [0] != i)
-	{
-	glActiveTexture (nTMU);
-	m_data.nTMU [0] = i;
-	}
+//SDL_mutexP (semaphore);
+if (m_data.nTMU [0] != nTMU)
+	glActiveTexture (m_data.nTMU [0] = nTMU);
 if (bClient) {
-	//if (m_data.nTMU [1] != i)
-		{
-		glClientActiveTexture (nTMU);
-		m_data.nTMU [1] = i;
-		}
+	if (m_data.nTMU [1] != nTMU)
+		glClientActiveTexture (m_data.nTMU [1] = nTMU);
 	}
 ClearError (0);
+//SDL_mutexV (semaphore);
 }
 
 //------------------------------------------------------------------------------
