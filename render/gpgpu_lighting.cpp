@@ -318,7 +318,7 @@ else if (nState == 1) {
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
 	lightManager.SetNearestToVertex (-1, nVertex, NULL, 1, 0, 1, 0);
-	if (!(h = lightManager.Index (0) [0].nActive))
+	if (!(h = lightManager.Index (0,0).nActive))
 		return 1;
 	if (h > GPGPU_LIGHT_BUF_SIZE)
 		h = GPGPU_LIGHT_BUF_SIZE;

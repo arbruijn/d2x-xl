@@ -544,7 +544,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			if (!bHeadlight)
 				VisitSegment (nSegment, bAutomap);
 			if (gameStates.render.bPerPixelLighting == 2)
-				lightManager.Index (0)[0].nActive = -1;
+				lightManager.Index (0,0).nActive = -1;
 			}
 		if (RenderMineFace (SEGMENTS + nSegment, faceP, nType))
 			nFaces++;
@@ -700,7 +700,7 @@ if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (gameStates.render.bPerPixelLighting == 2)
-	lightManager.Index (0)[0].nActive = -1;
+	lightManager.Index (0,0).nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))

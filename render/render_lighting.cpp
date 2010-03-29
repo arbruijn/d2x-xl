@@ -154,7 +154,7 @@ for (i = nStart; i < nEnd; i++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 		nSegment = nSegment;
-		if (lightManager.Index (0)[nThread].nActive)
+		if (lightManager.Index (0, nThread).nActive)
 			nSegment = nSegment;
 		}
 #endif
@@ -194,7 +194,7 @@ for (i = nStart; i < nEnd; i++) {
 							G3VertexColor(gameData.segs.points[nVertex].p3_normal.vNormal.XYZ (),
 											  gameData.segs.fVertices[nVertex].XYZ (), nVertex,
 											  NULL, &c, 1, 0, nThread);
-							lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
+							lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 							lightManager.ResetNearestToVertex (nVertex, nThread);
 							}
 #if DBG
@@ -306,7 +306,7 @@ for (i = nStart; i < nEnd; i++) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (lightManager.Index (0)[nThread].nActive)
+			if (lightManager.Index (0, nThread).nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -356,7 +356,7 @@ for (i = nStart; i < nEnd; i++) {
 								G3VertexColor (gameData.segs.points [nVertex].p3_normal.vNormal.XYZ (),
 													gameData.segs.fVertices [nVertex].XYZ (), nVertex,
 													NULL, &c, 1, 0, nThread);
-								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
+								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
 #if DBG
@@ -436,7 +436,7 @@ for (i = nStart; i < nEnd; i++) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-			if (lightManager.Index (0)[nThread].nActive)
+			if (lightManager.Index (0, nThread).nActive)
 				nSegment = nSegment;
 			}
 #endif
@@ -482,7 +482,7 @@ for (i = nStart; i < nEnd; i++) {
 								}
 							else {
 								G3VertexColor (FACES.normals + nIndex, FACES.vertices + nIndex, nVertex, NULL, &c, 1, 0, nThread);
-								lightManager.Index (0)[nThread] = lightManager.Index (1)[nThread];
+								lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
 								lightManager.ResetNearestToVertex (nVertex, nThread);
 								}
 #if DBG

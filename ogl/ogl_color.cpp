@@ -382,7 +382,7 @@ int G3AccumVertColor (int nVertex, CFloatVector3 *pColorSum, CVertColorData *vcd
 	CFloatVector3		spotDir, lightDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum, vertColor = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 	CDynLight*			prl;
-	CDynLightIndex*	sliP = &lightManager.Index (0) [nThread];
+	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData		vcd = *vcdP;
 
@@ -753,7 +753,7 @@ if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 else
 #endif
  {
-	if (lightManager.Index (0) [nThread].nActive) {
+	if (lightManager.Index (0, nThread).nActive) {
 		if (pBaseColor)
 			memcpy (&colorSum, &pBaseColor->color, sizeof (colorSum));
 #if DBG

@@ -153,7 +153,7 @@ int DrawPolyModel (
 	CPolyModel*	modelP;
 	int			nTextures, bHires = 0;
 
-#if DBG
+#if 0 //DBG
 if (!gameStates.render.bBuildModels) {
 	glColor3f (0,0,0);
 	ogl.RenderScreenQuad (0);
@@ -185,13 +185,14 @@ G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
 ogl.SetTransform (1);
 if (!flags) {	//draw entire object
-	if (gameStates.render.bBuildModels)
-		if (!gameStates.app.bNostalgia && G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
-			ogl.SetTransform (0);
-			return 1;
-			}
+	if (gameStates.app.bNostalgia || !G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
+		ogl.SetTransform (0);
+		gameData.render.vertP = NULL;
+		return 1;
+		}
 	if (bHires) {
 		ogl.SetTransform (0);
+		gameData.render.vertP = NULL;
 		return 0;
 		}
 	if (objP && (objP->info.nType == OBJ_POWERUP)) {

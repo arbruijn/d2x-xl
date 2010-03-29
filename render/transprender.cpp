@@ -824,7 +824,7 @@ if (gameStates.render.bPerPixelLighting) {
 			}
 		else {
 			ogl.m_states.iLight = 0;
-			lightManager.Index (0)[0].nActive = -1;
+			lightManager.Index (0,0).nActive = -1;
 			for (;;) {
 				SetupPerPixelLightingShader (faceP, int (faceP->m_info.nRenderType), false);
 				OglDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -1021,7 +1021,7 @@ o.info.nType = OBJ_POWERUP;
 o.info.position.vPos = pParticle->m_vPos;
 o.info.position.mOrient = pParticle->m_mOrient;
 if (0 <= (o.info.nSegment = FindSegByPos (o.info.position.vPos, pParticle->m_nSegment, 0, 0))) {
-	lightManager.Index (0)[0].nActive = 0;
+	lightManager.Index (0,0).nActive = 0;
 	o.info.renderType = RT_POLYOBJ;
 	o.rType.polyObjInfo.nModel = BULLET_MODEL;
 	o.rType.polyObjInfo.nTexOverride = -1;

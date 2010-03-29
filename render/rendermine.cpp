@@ -267,7 +267,6 @@ PROF_END(ptRenderPass)
 void DoRenderMineObjects (int nThread)
 {
 for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.nThreads) {
-	nThread = 0;
 	short nSegment = gameData.render.mine.nSegRenderList [0][i];
 	if (nSegment < 0) {
 		if (nSegment == -0x7fff)
@@ -315,9 +314,9 @@ gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 gameStates.render.bApplyDynLight = 0; //gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 
-#pragma omp parallel
+//#pragma omp parallel
 {
-#	pragma omp for 
+//#	pragma omp for 
 	for (int i = 0; i < gameStates.app.nThreads; i++)
 		DoRenderMineObjects (i);
 }

@@ -242,7 +242,7 @@ class CLightManager {
 		inline CDynLight** RenderLights (void) { return m_data.renderLights.Buffer (); }
 		inline int LightCount (uint i) { return m_data.nLights [i]; }
 		inline CActiveDynLight* Active (uint i) { return m_data.active [ThreadId (i)].Buffer (); }
-		inline CDynLightIndex* Index (uint i) { return m_data.index [ThreadId (i)].Buffer (); }
+		inline CDynLightIndex& Index (uint i, int nThread) { return m_data.index [0][ThreadId (nThread)]; }
 		inline CFBO& FBO (void) { return m_data.fbo; }
 		inline CHeadlightManager& Headlights (void) { return m_headlights; }
 		inline CShortArray& NearestSegLights (void) { return m_data.nearestSegLights; }

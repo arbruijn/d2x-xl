@@ -1068,7 +1068,7 @@ PROF_START
 	GLenum				hLight;
 	CActiveDynLight*	activeLightsP;
 	CDynLight*			psl;
-	CDynLightIndex*	sliP = &lightManager.Index (0)[0];
+	CDynLightIndex&	sli = lightManager.Index (0,0);
 
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -1090,7 +1090,7 @@ if (!ogl.m_states.iLight) {
 #endif
 	if (ogl.m_states.nLights > gameStates.render.nMaxLightsPerFace)
 		ogl.m_states.nLights = gameStates.render.nMaxLightsPerFace;
-	ogl.m_states.nFirstLight = sliP->nFirst;
+	ogl.m_states.nFirstLight = sli.nFirst;
 	gameData.render.nTotalLights += ogl.m_states.nLights;
 	if (gameData.render.nMaxLights < ogl.m_states.nLights)
 		gameData.render.nMaxLights = ogl.m_states.nLights;
@@ -1100,7 +1100,7 @@ if (!ogl.m_states.iLight) {
 #endif
 	}
 activeLightsP = lightManager.Active (0) + ogl.m_states.nFirstLight;
-nLightRange = sliP->nLast - ogl.m_states.nFirstLight + 1;
+nLightRange = sli.nLast - ogl.m_states.nFirstLight + 1;
 for (nLights = 0;
 	  (ogl.m_states.iLight < ogl.m_states.nLights) & (nLightRange > 0) && (nLights < gameStates.render.nMaxLightsPerPass);
 	  activeLightsP++, nLightRange--) {
@@ -1126,7 +1126,7 @@ for (nLights = 0;
 #endif
 	if (psl->render.bUsed [0] == 2) {//nearest vertex light
 		lightManager.ResetUsed (psl, 0);
-		sliP->nActive--;
+		sli.nActive--;
 		}
 	hLight = GL_LIGHT0 + nLights++;
 	//glEnable (hLight);

@@ -603,7 +603,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
 	CFloatVector			color;
-	CDynLightIndex*		sliP = bLighting ? &lightManager.Index (0)[0] : NULL;
+	CDynLightIndex*		sliP = bLighting ? &lightManager.Index (0,0) : NULL;
 	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
 	tObjTransformation*	posP = OBJPOS (objP);
 
@@ -841,6 +841,8 @@ if (pm->m_bValid < 1) {
 		}
 	}
 
+//#pragma omp critical (fastModelRender)
+{
 PROF_START
 if (gameStates.render.bCloaked)
 	 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
@@ -922,6 +924,7 @@ if (gameOpts->render.debug.bWireFrame)
 pm->m_bRendered = 1;
 ogl.ClearError (0);
 PROF_END(ptRenderObjectsFast)
+}
 return 1;
 }
 
