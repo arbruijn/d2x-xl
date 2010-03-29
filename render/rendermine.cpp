@@ -320,6 +320,7 @@ gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->o
 	for (int i = 0; i < gameStates.app.nThreads; i++)
 		DoRenderMineObjects (i);
 }
+
 gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 gameStates.render.nState = 0;
 }
