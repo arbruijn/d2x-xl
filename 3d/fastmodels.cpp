@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -612,8 +599,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
 	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && 
 												gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
-	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && 
-												!(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive || bBright);
+	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
 	CFloatVector			color;
@@ -817,10 +803,12 @@ if (objP && (ObjIdx (objP) == nDbgObj))
 if (objP->info.nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
+#if 0
 if (gameStates.render.bQueryCoronas &&
 	 (((objP->info.nType == OBJ_WEAPON) && (objP->info.nId < MAX_WEAPONS) &&
 	  gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]) || gameStates.render.bCloaked))
 	return 1;
+#endif
 if (pm->m_bValid < 1) {
 	if (pm->m_bValid) {
 		i = 0;
@@ -874,7 +862,7 @@ if (bHires)
 	gameData.models.vScale.SetZero ();
 #	endif
 #endif
-if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameStates.render.bCloaked))
+if (!(gameOpts->ogl.bObjLighting || gameStates.render.bCloaked))
 	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
 if (bUseVBO) {
 	if (!gameStates.render.bCloaked) {

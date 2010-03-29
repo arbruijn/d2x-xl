@@ -169,7 +169,7 @@ if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 pd = m_data.depthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 #if USE_OPENMP > 1
-#	pragma omp critical
+#	pragma omp critical (transpRender)
 #elif !USE_OPENMP
 SDL_mutexP (tiRender.semaphore);
 #endif

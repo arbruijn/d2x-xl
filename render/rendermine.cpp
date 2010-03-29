@@ -267,6 +267,7 @@ PROF_END(ptRenderPass)
 void DoRenderMineObjects (int nThread)
 {
 for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.nThreads) {
+	nThread = 0;
 	short nSegment = gameData.render.mine.nSegRenderList [0][i];
 	if (nSegment < 0) {
 		if (nSegment == -0x7fff)
@@ -291,7 +292,7 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
 		}
-#	pragma omp critical
+#	pragma omp critical (objRender)
 	{
 	lightManager.SetThreadId (nThread);
 	RenderObjList (i, gameStates.render.nWindow);
@@ -312,7 +313,7 @@ if (!gameOpts->render.debug.bObjects)
 #endif
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
-gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
+gameStates.render.bApplyDynLight = 0; //gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 
 #pragma omp parallel
 {

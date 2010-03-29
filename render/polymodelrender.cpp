@@ -153,6 +153,14 @@ int DrawPolyModel (
 	CPolyModel*	modelP;
 	int			nTextures, bHires = 0;
 
+#if DBG
+if (!gameStates.render.bBuildModels) {
+	glColor3f (0,0,0);
+	ogl.RenderScreenQuad (0);
+	return 0;
+	}
+#endif
+
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
 if (!(modelP = GetPolyModel (objP, pos, nModel, flags))) {
@@ -173,27 +181,30 @@ if (nModel == nDbgModel)
 	nDbgModel = nDbgModel;
 #endif
 nTextures = bHires ? 0 : modelP->LoadTextures (altTextures);
-ogl.SetTransform (1);
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
-if (!flags) {	//draw entire CObject
-	if (gameStates.app.bNostalgia || !G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
-		if (bHires) {
+ogl.SetTransform (1);
+if (!flags) {	//draw entire object
+	if (gameStates.render.bBuildModels)
+		if (!gameStates.app.bNostalgia && G3RenderModel (objP, nModel, -1, modelP, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 			ogl.SetTransform (0);
-			return 0;
+			return 1;
 			}
-		if (objP && (objP->info.nType == OBJ_POWERUP)) {
-			if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
-				gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
-			else
-				gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
-			}
-		ogl.SetTransform ((gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
-								!(SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects)));
-		transformation.Begin (*pos, *orient);
-		G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-		transformation.End ();
+	if (bHires) {
+		ogl.SetTransform (0);
+		return 0;
 		}
+	if (objP && (objP->info.nType == OBJ_POWERUP)) {
+		if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
+			gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
+		else
+			gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
+		}
+	ogl.SetTransform ((gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
+							!(SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects)));
+	transformation.Begin (*pos, *orient);
+	G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
+	transformation.End ();
 	}
 else {	
 	CFixVector vOffset;
@@ -221,24 +232,6 @@ else {
 	}
 ogl.SetTransform (0);
 gameData.render.vertP = NULL;
-#if 0
-{
-	g3sPoint p0, p1;
-
-transformation.Transform (&p0.p3_vec, &objP->info.position.vPos);
-VmVecSub (&p1.p3_vec, &objP->info.position.vPos, &objP->mType.physInfo.velocity);
-transformation.Transform (&p1.p3_vec, &p1.p3_vec);
-glLineWidth (20);
-ogl.SetTexturing (false);
-glBegin (GL_LINES);
-glColor4d (1.0, 0.5, 0.0, 0.3);
-OglVertex3x (p0.p3_vec [X], p0.p3_vec [Y], p0.p3_vec [Z]);
-glColor4d (1.0, 0.5, 0.0, 0.1);
-OglVertex3x (p1.p3_vec [X], p1.p3_vec [Y], p1.p3_vec [Z]);
-glEnd ();
-glLineWidth (1);
-}
-#endif
 return 1;
 }
 

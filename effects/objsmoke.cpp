@@ -818,8 +818,6 @@ particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 int DoObjectSmoke (CObject *objP)
 {
 int t = objP->info.nType;
-if (gameStates.render.bQueryCoronas)
-	return 0;
 if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)

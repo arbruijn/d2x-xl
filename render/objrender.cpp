@@ -546,8 +546,6 @@ int DrawCloakedObject (CObject *objP, fix light, fix *glow, fix xCloakStartTime,
 	tCloakInfo	ci;
 	int			bOk = 0;
 
-if (gameStates.render.bQueryCoronas)
-	return 1;
 GetCloakInfo (objP, xCloakStartTime, xCloakEndTime, &ci);
 if (ci.bFading < 0) {
 	fix xNewLight, xSaveGlow;
@@ -771,13 +769,12 @@ if (bSpectate) {
 	objP->info.position = gameStates.app.playerPos;
 	}
 //DoObjectSmoke (objP);
-DrawPolygonObject (objP, 0);
+if (!DrawPolygonObject (objP, 0))
+	return 0;
 gameOpts->ogl.bLightObjects = bDynObjLight;
-if (!gameStates.render.bQueryCoronas) {
-	thrusterFlames.Render (objP);
-	RenderPlayerShield (objP);
-	RenderTargetIndicator (objP, NULL);
-	}
+thrusterFlames.Render (objP);
+RenderPlayerShield (objP);
+RenderTargetIndicator (objP, NULL);
 RenderTowedFlag (objP);
 if (bSpectate)
 	objP->info.position = savePos;
@@ -796,9 +793,10 @@ if (objP->Index () == nDbgObj)
 	nDbgObj = nDbgObj;
 #endif
 #if !RENDER_HITBOX
-DrawPolygonObject (objP, 0);
+if (!DrawPolygonObject (objP, 0))
+	return 0;
 #endif
-if (!gameStates.render.bQueryCoronas && objP->info.controlType) {
+if (objP->info.controlType) {
 	thrusterFlames.Render (objP);
 	if (gameStates.render.nShadowPass != 2) {
 		RenderRobotShield (objP);
@@ -813,8 +811,9 @@ return 1;
 
 static int RenderReactorModel (CObject* objP, int bSpectate)
 {
-DrawPolygonObject (objP, 0);
-if (!gameStates.render.bQueryCoronas && (gameStates.render.nShadowPass != 2)) {
+if (!DrawPolygonObject (objP, 0))
+	return 0;
+if ((gameStates.render.nShadowPass != 2)) {
 	RenderRobotShield (objP);
 	RenderTargetIndicator (objP, NULL);
 	}
@@ -841,15 +840,16 @@ else {
 				}
 			}
 		//DoObjectSmoke (objP);
-		DrawPolygonObject (objP, 0);
+		if (DrawPolygonObject (objP, 0)) {
 #if RENDER_HITBOX
 #	if 0
-		DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f, 0);
+			DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f, 0);
 #	else
-		RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #	endif
 #endif
-		thrusterFlames.Render (objP);
+			thrusterFlames.Render (objP);
+			}
 		gameData.models.vScale.SetZero ();
 		}
 	else {
@@ -861,15 +861,15 @@ else {
 #	endif
 #endif
 		if (objP->info.nType != OBJ_WEAPON) {
-			DrawPolygonObject (objP, 0);
-			if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
+			if (!DrawPolygonObject (objP, 0))
+				return 0;
+			if (objP->info.nId != SMALLMINE_ID)
 				RenderLightTrail (objP);
 			}
 		else {
 			if ((objP->info.nId == VULCAN_ID) || (objP->info.nId == GAUSS_ID)) {
 				if (SHOW_OBJ_FX && extraGameInfo [0].bTracers) {
-					if (!gameStates.render.bQueryCoronas)
-						RenderLightTrail (objP);
+					RenderLightTrail (objP);
 					gameData.models.vScale.Set (I2X (1) / 4, I2X (1) / 4, I2X (3) / 2);
 					CFixVector vSavedPos = objP->info.position.vPos;
 					objP->info.position.vPos += objP->info.position.mOrient.FVec ();
@@ -878,7 +878,7 @@ else {
 					}
 				}
 			else {
-				if ((objP->info.nId != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
+				if (objP->info.nId != SMALLMINE_ID)
 					RenderLightTrail (objP);
 				DrawPolygonObject (objP, 0);
 				}
@@ -1048,8 +1048,6 @@ if (nType == 255) {
 	return 0;
 	}
 int bEmissive = (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
-if (bEmissive && gameStates.render.bQueryCoronas)
-	return 0;
 if ((gameStates.render.nShadowPass != 2) &&
 	 (objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].objP) &&
 	 (objP->info.nSignature == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer].nSignature)) {

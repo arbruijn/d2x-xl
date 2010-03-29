@@ -599,7 +599,7 @@ float CGlareRenderer::Visibility (int nQuery)
 
 if (! (ogl.m_states.bOcclusionQuery && nQuery) || (Style () != 1))
 	return 1;
-if (! (gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
+if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
 	return 0;
 for (;;) {
 	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
