@@ -264,21 +264,13 @@ PROF_END(ptRenderPass)
 
 //------------------------------------------------------------------------------
 
-void RenderMineObjects (int nType)
+void DoRenderMineObjects (int nThread)
 {
-#if DBG
-if (!gameOpts->render.debug.bObjects)
-	return;
-#endif
-gameStates.render.nType = RENDER_TYPE_OBJECTS;
-gameStates.render.nState = 1;
-gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
+	int	nStep = gameData.render.mine.nRenderSegs / gameStates.app.nThreads;
+	int	nStart = nStep * nThread;
+	int	nEnd = (nThread == gameStates.app.nThreads - 1) ? gameData.render.mine.nRenderSegs : nStart + nStep;
 
-#pragma omp parallel
-{
-	int nThread = omp_get_thread_num ();
-#	pragma omp for 
-for (int nListPos = 0; nListPos < gameData.render.mine.nRenderSegs; nListPos++) {
+for (int nListPos = nStart; nListPos < nEnd; nListPos++) {
 	short nSegment = gameData.render.mine.nSegRenderList [0][nListPos];
 	if (nSegment < 0) {
 		if (nSegment == -0x7fff)
@@ -312,6 +304,25 @@ for (int nListPos = 0; nListPos < gameData.render.mine.nRenderSegs; nListPos++) 
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
+}
+
+//------------------------------------------------------------------------------
+
+void RenderMineObjects (int nType)
+{
+#if DBG
+if (!gameOpts->render.debug.bObjects)
+	return;
+#endif
+gameStates.render.nType = RENDER_TYPE_OBJECTS;
+gameStates.render.nState = 1;
+gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
+
+#pragma omp parallel
+{
+#	pragma omp for 
+	for (int i = 0; i < gameStates.app.nThreads; i++)
+		DoRenderMineObjects (i);
 }
 gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 gameStates.render.nState = 0;
