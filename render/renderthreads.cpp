@@ -68,15 +68,21 @@ return 0;
 	int		nActive;
 	static	int nLockups = 0;
 #	endif
-	int		i;
+	int		i, bWait = 1;
 
 if (!gameStates.app.bMultiThreaded)
 	return 0;
+if (nTask < 0) {
+	nTask = -nTask - 1;
+	bWait = 0;
+	}
 tiRender.nTask = (tRenderTask) nTask;
 if (nThreads < 0)
 	nThreads = gameStates.app.nThreads;
 for (i = 0; i < nThreads; i++)
 	tiRender.ti [i].bExec = 1;
+if (!bWait)
+	return 1;
 #if DBG
 t0 = clock ();
 while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
