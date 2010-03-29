@@ -273,8 +273,6 @@ static ubyte bRendering = 1;
 void DoRenderMineObjects (int nThread)
 {
 for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.nThreads) {
-	while (bWaiting)
-		G3_SLEEP (0);
 	short nSegment = gameData.render.mine.nSegRenderList [0][i];
 	if (nSegment < 0) {
 		if (nSegment == -0x7fff)
@@ -295,7 +293,7 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
-	if (0 && gameStates.render.bApplyDynLight) {
+	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
 		}
@@ -313,13 +311,15 @@ SDL_mutexP (semaphore);
 	lightManager.SetThreadId (nThread);
 	RenderObjList (i, gameStates.render.nWindow);
 	lightManager.SetThreadId (-1);
-	bWaiting |= 1 << nThread;
 	}
 #if !USE_OPENMP
 SDL_mutexV (semaphore);
 #endif
 #endif
-	if (0 && gameStates.render.bApplyDynLight)
+	bWaiting |= 1 << nThread;
+	while (bWaiting)
+		G3_SLEEP (0);
+	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
 bDone |= 1 << nThread;
@@ -335,7 +335,7 @@ if (!gameOpts->render.debug.bObjects)
 #endif
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
-gameStates.render.bApplyDynLight = 0; //gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
+gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 
 #if USE_OPENMP > 1
 #pragma omp parallel
