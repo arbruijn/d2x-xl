@@ -852,96 +852,91 @@ if (pm->m_bValid < 1) {
 			}
 		}
 	}
+
+#pragma omp critical
+{
 PROF_START
-if (!(gameStates.render.bCloaked
-	   ? ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)
-		: ogl.EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0)))
-	return 0;
-if (bUseVBO) {
-	int i;
-	glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->m_vboDataHandle);
-	if ((i = glGetError ())) {
-#if DBG
+if (gameStates.render.bCloaked
+	 ? ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)
+	 : ogl.EnableClientStates (1, 1, gameOpts->ogl.bObjLighting, GL_TEXTURE0)) {
+	if (bUseVBO)
 		glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->m_vboDataHandle);
-		if ((i = glGetError ()))
-#endif
-			return 0;
+	else {
+		pm->m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (pm->m_vertBuf [0].Buffer ()), 1, pm->m_nFaceVerts);
+		pm->m_vbNormals.SetBuffer (pm->m_vbVerts.Buffer () + pm->m_nFaceVerts, 1, pm->m_nFaceVerts);
+		pm->m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (pm->m_vbNormals.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
+		pm->m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (pm->m_vbColor.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
 		}
-	}
-else {
-	pm->m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (pm->m_vertBuf [0].Buffer ()), 1, pm->m_nFaceVerts);
-	pm->m_vbNormals.SetBuffer (pm->m_vbVerts.Buffer () + pm->m_nFaceVerts, 1, pm->m_nFaceVerts);
-	pm->m_vbColor.SetBuffer (reinterpret_cast<tRgbaColorf*> (pm->m_vbNormals.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
-	pm->m_vbTexCoord.SetBuffer (reinterpret_cast<tTexCoord2f*> (pm->m_vbColor.Buffer () + pm->m_nFaceVerts), 1, pm->m_nFaceVerts);
-	}
-#if G3_SW_SCALING
-G3ScaleModel (nModel);
-#else
-#	if 0
-if (bHires)
-	gameData.models.vScale.SetZero ();
+#	if G3_SW_SCALING
+	G3ScaleModel (nModel);
+#	else
+#		if 0
+	if (bHires)
+		gameData.models.vScale.SetZero ();
+#		endif
 #	endif
-#endif
-if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameStates.render.bCloaked))
-	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
-if (bUseVBO) {
-	if (!gameStates.render.bCloaked) {
-		OglNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * sizeof (CFloatVector3)));
-		OglColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
-		OglTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * ((2 * sizeof (CFloatVector3) + sizeof (tRgbaColorf)))));
+	if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameStates.render.bCloaked))
+		G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
+	if (bUseVBO) {
+		if (!gameStates.render.bCloaked) {
+			OglNormalPointer (GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * sizeof (CFloatVector3)));
+			OglColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * 2 * sizeof (CFloatVector3)));
+			OglTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->m_nFaceVerts * ((2 * sizeof (CFloatVector3) + sizeof (tRgbaColorf)))));
+			}
+		OglVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
+		if (pm->m_vboIndexHandle)
+			glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->m_vboIndexHandle);
 		}
-	OglVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
-	if (pm->m_vboIndexHandle)
-		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->m_vboIndexHandle);
-	}
-else {
-	if (!gameStates.render.bCloaked) {
-		OglTexCoordPointer (2, GL_FLOAT, 0, pm->m_vbTexCoord.Buffer ());
-		if (gameOpts->ogl.bObjLighting)
-			OglNormalPointer (GL_FLOAT, 0, pm->m_vbNormals.Buffer ());
-		OglColorPointer (4, GL_FLOAT, 0, pm->m_vbColor.Buffer ());
+	else {
+		if (!gameStates.render.bCloaked) {
+			OglTexCoordPointer (2, GL_FLOAT, 0, pm->m_vbTexCoord.Buffer ());
+			if (gameOpts->ogl.bObjLighting)
+				OglNormalPointer (GL_FLOAT, 0, pm->m_vbNormals.Buffer ());
+			OglColorPointer (4, GL_FLOAT, 0, pm->m_vbColor.Buffer ());
+			}
+		OglVertexPointer (3, GL_FLOAT, 0, pm->m_vbVerts.Buffer ());
 		}
-	OglVertexPointer (3, GL_FLOAT, 0, pm->m_vbVerts.Buffer ());
-	}
-nGunId = EquippedPlayerGun (objP);
-nBombId = EquippedPlayerBomb (objP);
-nMissileId = EquippedPlayerMissile (objP, &nMissiles);
-if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
-	if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
-		gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
+	nGunId = EquippedPlayerGun (objP);
+	nBombId = EquippedPlayerBomb (objP);
+	nMissileId = EquippedPlayerMissile (objP, &nMissiles);
+	if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
+		if ((objP->info.nId == POW_SMARTMINE) || (objP->info.nId == POW_PROXMINE))
+			gameData.models.vScale.Set (I2X (2), I2X (2), I2X (2));
+		else
+			gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
+		}
+#	if 1 //!DBG
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
+	if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
+		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+#	endif
+	ogl.SetTexturing (false);
+	glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
+	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+	if (gameStates.render.bCloaked)
+		ogl.DisableClientStates (0, 0, 0, -1);
 	else
-		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
-	}
-#if 1 //!DBG
-G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
-if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
-	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
-#endif
-ogl.SetTexturing (false);
-glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
-glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-if (gameStates.render.bCloaked)
-	ogl.DisableClientStates (0, 0, 0, -1);
-else
-	ogl.DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
-#if DBG
-if (gameOpts->render.debug.bWireFrame)
-	glLineWidth (3.0f);
-#endif
-#if 1 //!DBG
-if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
-	transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
-	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
-	transformation.End ();
-	}
-#endif
-#if DBG
-if (gameOpts->render.debug.bWireFrame)
-	glLineWidth (1.0f);
-#endif
-pm->m_bRendered = 1;
-ogl.ClearError (0);
+		ogl.DisableClientStates (1, 1, gameOpts->ogl.bObjLighting, -1);
+#	if DBG
+	if (gameOpts->render.debug.bWireFrame)
+		glLineWidth (3.0f);
+#	endif
+#	if 1 //!DBG
+	if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {
+		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
+		G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
+		transformation.End ();
+		}
+#	endif
+#	if DBG
+	if (gameOpts->render.debug.bWireFrame)
+		glLineWidth (1.0f);
+#	endif
+	pm->m_bRendered = 1;
+	ogl.ClearError (0);
+}
 PROF_END(ptRenderObjectsFast)
+}
 return 1;
 }
 
