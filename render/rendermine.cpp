@@ -355,25 +355,27 @@ gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->o
 if (!semaphore)
 	semaphore = SDL_CreateMutex ();
 memset (bWaiting, 1, sizeofa (bWaiting));
+
 if (RunRenderThreads (-int (rtPolyModel) - 1)) {
-	int h = (1 << gameStates.app.nThreads) - 1, i = 0, j, b;
-	while (i < gameData.render.mine.nRenderSegs) {
-		for (j = 0; j < gameStates.app.nThreads; j++)
-			bWaiting [j] &= ~1;
+		int	h = gameStates.app.nThreads, i, j, nListPos [MAX_THREADS];
+
+	for (i = 0; i < gameStates.app.nThreads; i++)
+		nListPos [i] = i;
+	memset (bWaiting, 0, sizeofa (bWaiting));
+	while (h) {
 		do {
-			//G3_SLEEP (0);
-			b = gameStates.app.nThreads;
-			for (j = 0; j < gameStates.app.nThreads; j++)
-				if (bWaiting [j])
-					b--;
-			} while (b);
-		for (j = 0; j < gameStates.app.nThreads; j++, i++) {
-			if (0 <= ObjectSegment (i)) {
-				lightManager.SetThreadId (j);
-				RenderObjList (i, gameStates.render.nWindow);
-				lightManager.SetThreadId (-1);
-				}
+			i = ++i % gameStates.app.nThreads;
+		} while (!(bWaiting [i] & 1));
+		j = nListPos [i];
+		nListPos [i] += gameStates.app.nThreads;
+		if (nListPos [i] >= gameData.render.mine.nRenderSegs)
+			h--;
+		if (0 <= ObjectSegment (j)) {
+			lightManager.SetThreadId (i);
+			RenderObjList (j, gameStates.render.nWindow);
+			lightManager.SetThreadId (-1);
 			}
+		bWaiting [i] &= 0xFE;
 		}
 	}
 else
