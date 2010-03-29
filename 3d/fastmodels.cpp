@@ -809,6 +809,7 @@ if (gameStates.render.bQueryCoronas &&
 	  gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]) || gameStates.render.bCloaked))
 	return 1;
 #endif
+
 if (pm->m_bValid < 1) {
 	if (pm->m_bValid) {
 		i = 0;

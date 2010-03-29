@@ -190,7 +190,7 @@ if (!flags) {	//draw entire object
 		gameData.render.vertP = NULL;
 		return 1;
 		}
-	//if (bHires) 
+	if (bHires) 
 		{
 		ogl.SetTransform (0);
 		gameData.render.vertP = NULL;

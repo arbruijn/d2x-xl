@@ -1112,7 +1112,7 @@ switch (objP->info.renderType) {
 				return 0;
 			}
 		else if (nType == OBJ_WEAPON) {
-			//if (!RenderWeaponModel (objP, bSpectate))
+			if (!RenderWeaponModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_REACTOR) {
@@ -1120,7 +1120,7 @@ switch (objP->info.renderType) {
 				return 0;
 			}
 		else if (nType == OBJ_POWERUP) {
-			//if (!RenderPowerupModel (objP, bSpectate))
+			if (!RenderPowerupModel (objP, bSpectate))
 				return 0;
 			}
 		else if (nType == OBJ_HOSTAGE) {
