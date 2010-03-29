@@ -264,6 +264,8 @@ PROF_END(ptRenderPass)
 
 //------------------------------------------------------------------------------
 
+static SDL_mutex* semaphore = NULL;
+
 void DoRenderMineObjects (int nThread)
 {
 for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.nThreads) {
@@ -291,12 +293,19 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
 		}
+#if USE_OPENMP > 1
 #	pragma omp critical (objRender)
+#elif !USE_OPENMP
+SDL_mutexP (semaphore);
+#endif
 	{
 	lightManager.SetThreadId (nThread);
 	RenderObjList (i, gameStates.render.nWindow);
 	lightManager.SetThreadId (-1);
 	}
+#if !USE_OPENMP
+SDL_mutexV (semaphore);
+#endif
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
@@ -314,13 +323,21 @@ gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 gameStates.render.bApplyDynLight = 0; //gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 
-//#pragma omp parallel
+#if USE_OPENMP > 1
+#pragma omp parallel
 {
-//#	pragma omp for 
+#	pragma omp for 
 	for (int i = 0; i < gameStates.app.nThreads; i++)
 		DoRenderMineObjects (i);
 }
-
+#else
+#	if !USE_OPENMP
+if (!semaphore)
+	semaphore = SDL_CreateMutex ();
+if (!RunRenderThreads (rtPolyModel))
+#	endif
+	DoRenderMineObjects (0);
+#endif
 gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 gameStates.render.nState = 0;
 }

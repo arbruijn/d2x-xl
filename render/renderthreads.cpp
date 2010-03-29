@@ -25,6 +25,8 @@ tRenderThreadInfo tiRender;
 tTranspRenderThreadInfo tiTranspRender;
 tThreadInfo tiEffects;
 
+void DoRenderMineObjects (int nThread);
+
 //------------------------------------------------------------------------------
 
 bool WaitForRenderThreads (void)
@@ -160,21 +162,7 @@ do {
 			}
 		}
 	else if (tiRender.nTask == rtPolyModel) {
-		short	iVerts, nVerts, iFaceVerts, nFaceVerts;
-
-		if (nId) {
-			nVerts = tiRender.pm->m_nVerts;
-			iVerts = nVerts / 2;
-			nFaceVerts = tiRender.pm->m_nFaceVerts;
-			iFaceVerts = nFaceVerts / 2;
-			}
-		else {
-			iVerts = 0;
-			nVerts = tiRender.pm->m_nVerts / 2;
-			iFaceVerts = 0;
-			nFaceVerts = tiRender.pm->m_nFaceVerts / 2;
-			}
-		G3DynLightModel (tiRender.objP, tiRender.pm, iVerts, nVerts, iFaceVerts, nFaceVerts);
+		DoRenderMineObjects (nId);
 		}
 	else if (tiRender.nTask == rtLightmap)
 		lightmapManager.Build (nId);
