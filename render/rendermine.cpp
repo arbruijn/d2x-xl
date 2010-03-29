@@ -272,6 +272,8 @@ if (!gameOpts->render.debug.bObjects)
 #endif
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
+gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
+
 #pragma omp parallel
 {
 	int nThread = omp_get_thread_num ();
@@ -297,20 +299,17 @@ for (int nListPos = 0; nListPos < gameData.render.mine.nRenderSegs; nListPos++) 
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
-	if (gameStates.render.bUseDynLight) {
+	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
-		gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
 		}
-	else
-		gameStates.render.bApplyDynLight = 0;
 #	pragma omp critical
 	{
 	lightManager.SetThreadId (nThread);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	lightManager.SetThreadId (-1);
 	}
-	if (gameStates.render.bUseDynLight)
+	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
 }
