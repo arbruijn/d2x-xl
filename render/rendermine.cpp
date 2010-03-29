@@ -295,7 +295,7 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.
 	if (0 > (nSegment = ObjectSegment (i))) {
 		bWaiting [nThread] = 1;
 		while (bWaiting [nThread])
-			G3_SLEEP (0);
+			; //G3_SLEEP (0);
 		}
 	else {
 		if (gameStates.render.bApplyDynLight) {
@@ -323,7 +323,7 @@ SDL_mutexV (semaphore);
 #endif
 		bWaiting [nThread] = 1;
 		while (bWaiting [nThread])
-			G3_SLEEP (0);
+			; //G3_SLEEP (0);
 		if (gameStates.render.bApplyDynLight)
 			lightManager.ResetNearestStatic (nSegment, nThread);
 		}
@@ -361,7 +361,7 @@ if (RunRenderThreads (-int (rtPolyModel) - 1)) {
 		for (j = 0; j < gameStates.app.nThreads; j++)
 			bWaiting [j] &= ~1;
 		do {
-			G3_SLEEP (0);
+			//G3_SLEEP (0);
 			b = gameStates.app.nThreads;
 			for (j = 0; j < gameStates.app.nThreads; j++)
 				if (bWaiting [j])
