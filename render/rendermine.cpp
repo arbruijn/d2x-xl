@@ -266,12 +266,8 @@ PROF_END(ptRenderPass)
 
 void DoRenderMineObjects (int nThread)
 {
-	int	nStep = gameData.render.mine.nRenderSegs / gameStates.app.nThreads;
-	int	nStart = nStep * nThread;
-	int	nEnd = (nThread == gameStates.app.nThreads - 1) ? gameData.render.mine.nRenderSegs : nStart + nStep;
-
-for (int nListPos = nStart; nListPos < nEnd; nListPos++) {
-	short nSegment = gameData.render.mine.nSegRenderList [0][nListPos];
+for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.nThreads) {
+	short nSegment = gameData.render.mine.nSegRenderList [0][i];
 	if (nSegment < 0) {
 		if (nSegment == -0x7fff)
 			continue;
@@ -298,7 +294,7 @@ for (int nListPos = nStart; nListPos < nEnd; nListPos++) {
 #	pragma omp critical
 	{
 	lightManager.SetThreadId (nThread);
-	RenderObjList (nListPos, gameStates.render.nWindow);
+	RenderObjList (i, gameStates.render.nWindow);
 	lightManager.SetThreadId (-1);
 	}
 	if (gameStates.render.bApplyDynLight)
