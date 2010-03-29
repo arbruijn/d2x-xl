@@ -266,9 +266,7 @@ PROF_END(ptRenderPass)
 
 static SDL_mutex* semaphore = NULL;
 
-static ubyte bWaiting = 0;
-static ubyte bDone = 0;
-static ubyte bRendering = 1;
+static sbyte bWaiting [MAX_THREADS];
 
 //------------------------------------------------------------------------------
 
@@ -293,15 +291,15 @@ void DoRenderMineObjects (int nThread)
 
 for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.nThreads) {
 	if (0 > (nSegment = ObjectSegment (i))) {
-		bWaiting |= 1 << nThread;
-		while (bWaiting)
+		bWaiting [nThread] = 1;
+		while (bWaiting [nThread])
 			G3_SLEEP (0);
-		continue;
 		}
-	if (gameStates.render.bApplyDynLight) {
-		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
-		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
-		}
+	else {
+		if (gameStates.render.bApplyDynLight) {
+			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
+			lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
+			}
 #if 0
 #if USE_OPENMP > 1
 #	pragma omp critical (objRender)
@@ -321,13 +319,14 @@ SDL_mutexP (semaphore);
 SDL_mutexV (semaphore);
 #endif
 #endif
-	bWaiting |= 1 << nThread;
-	while (bWaiting)
-		G3_SLEEP (0);
-	if (gameStates.render.bApplyDynLight)
-		lightManager.ResetNearestStatic (nSegment, nThread);
+		bWaiting [nThread] = 1;
+		while (bWaiting [nThread])
+			G3_SLEEP (0);
+		if (gameStates.render.bApplyDynLight)
+			lightManager.ResetNearestStatic (nSegment, nThread);
+		}
 	}	
-bDone |= 1 << nThread;
+bWaiting [nThread] = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -354,17 +353,24 @@ gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->o
 if (!semaphore)
 	semaphore = SDL_CreateMutex ();
 if (RunRenderThreads (rtPolyModel)) {
-	int h = (1 << gameStates.app.nThreads) - 1, i = 0;
-	bDone = 0;
+	int h = (1 << gameStates.app.nThreads) - 1, i = 0, j, b;
+	memset (bWaiting, 0, sizeofa (bWaiting));
 	while (i < gameData.render.mine.nRenderSegs) {
-		bWaiting = 0;
-		while ((bWaiting | bDone) != h)
+		for (;;) {
+			b = gameStates.app.nThreads;
+			for (j = 0; j < gameStates.app.nThreads; j++)
+				if (bWaiting [j])
+					b--;
+			if (!b)
+				break;
 			G3_SLEEP (0);
-		for (int j = 0; j < gameStates.app.nThreads; j++, i++) {
-			if (bWaiting & (1 << j) && (0 <= ObjectSegment (i))) {
+		}
+		for (j = 0; j < gameStates.app.nThreads; j++, i++) {
+			if ((bWaiting [j] > 0) && (0 <= ObjectSegment (i))) {
 				lightManager.SetThreadId (j);
 				RenderObjList (i, gameStates.render.nWindow);
 				lightManager.SetThreadId (-1);
+				bWaiting [j] = 0;
 				}
 			}
 		}
