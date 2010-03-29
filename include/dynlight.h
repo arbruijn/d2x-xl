@@ -168,6 +168,7 @@ class CDynLightData {
 		short					nHeadlights [MAX_PLAYERS];
 		short					nSegment;
 		GLuint				nTexHandle;
+		int					nThread;
 
 	public:
 		CDynLightData ();
@@ -234,12 +235,14 @@ class CLightManager {
 		void ResetAllUsed (int bVariable, int nThread);
 		int SetMethod (void);
 
+		inline void SetThreadId (int nThread = -1) { m_data.nThread = nThread; }
+		inline int ThreadId (uint i) { return (m_data.nThread < 0) ? i : m_data.nThread; }
 		inline CDynLight* Lights (void) { return m_data.lights.Buffer (); }
 		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }
 		inline CDynLight** RenderLights (void) { return m_data.renderLights.Buffer (); }
 		inline int LightCount (uint i) { return m_data.nLights [i]; }
-		inline CActiveDynLight* Active (uint i) { return m_data.active [i].Buffer (); }
-		inline CDynLightIndex* Index (uint i) { return m_data.index [i].Buffer (); }
+		inline CActiveDynLight* Active (uint i) { return m_data.active [ThreadId (i)].Buffer (); }
+		inline CDynLightIndex* Index (uint i) { return m_data.index [ThreadId (i)].Buffer (); }
 		inline CFBO& FBO (void) { return m_data.fbo; }
 		inline CHeadlightManager& Headlights (void) { return m_headlights; }
 		inline CShortArray& NearestSegLights (void) { return m_data.nearestSegLights; }

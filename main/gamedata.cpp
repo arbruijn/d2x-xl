@@ -159,6 +159,7 @@ nVertLights = 0;
 nSegment = -1;
 nTexHandle = 0;
 nVariable = 0;
+nThread = -1;
 material.bValid = 0;
 memset (nHeadlights, 0xff, sizeof (nHeadlights));
 int i;

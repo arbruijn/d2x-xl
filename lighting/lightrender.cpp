@@ -576,6 +576,7 @@ if (!vPosP && (psc->index == (char) (gameData.app.nFrameCount & 0xff)) && (psc->
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
+nThread = ThreadId (nThread);
 if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) {
 	psc->color.red = psc->color.green = psc->color.blue = psc->color.alpha = 1.0f;
 	psc->index = 1;

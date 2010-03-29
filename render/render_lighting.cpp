@@ -411,7 +411,6 @@ PROF_START
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
-lightManager.ResetIndex ();
 ogl.SetTransform (1);
 gameStates.render.nState = 0;
 #	if GPGPU_VERTEX_LIGHTING
@@ -431,8 +430,7 @@ for (i = nStart; i < nEnd; i++) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (bNeedLight)
-		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
+	bool bComputeLight = bNeedLight;
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->m_info.nSide;
 #if DBG
@@ -451,6 +449,10 @@ for (i = nStart; i < nEnd; i++) {
 		faceP->m_info.color = faceColor [nColor].color;
 		if (!(bNeedLight || nColor) && faceP->m_info.bHasColor)
 			continue;
+		if (bComputeLight) {
+			nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
+			bComputeLight = false;
+			}
 		faceP->m_info.bHasColor = 1;
 		for (k = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; k; k--, triP++) {
 			nIndex = triP->nIndex;
