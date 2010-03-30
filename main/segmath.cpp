@@ -458,8 +458,10 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
+#if !DBG
 if ((nCacheType >= 0) && (0 <= (xDist = fcdCaches [nCacheType].Dist (nStartSeg, nDestSeg))))
 	return xDist;
+#endif
 
 #if USE_DACS
 
@@ -574,31 +576,34 @@ nSegment = nStartSeg;
 bVisited [nStartSeg] = bFlag;
 segQueue [0] = nStartSeg;
 segDepth [nStartSeg] = 0;
+nDepth = 0;
+if (nMaxDepth < 0)
+	nMaxDepth = gameData.segs.nSegments;
 
-while (nTail < nHead) {
+while ((nTail < nHead) && (nDepth < nMaxDepth)) {
 	nSegment = segQueue [nTail++];
 	segP = SEGMENTS + nSegment;
 	nDepth = segDepth [nSegment] + 1;
-	if (nDepth < nMaxDepth) {
-		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-			if (segP->IsDoorWay (nSide, NULL) & widFlag) {
-				nChildSeg = segP->m_children [nSide];
-				if (bVisited [nChildSeg] != bFlag) {
-					bVisited [nChildSeg] = bFlag;
+	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
+			nChildSeg = segP->m_children [nSide];
+			if (bVisited [nChildSeg] != bFlag) {
+				bVisited [nChildSeg] = bFlag;
+				if (nChildSeg != nDestSeg) {
 					segDepth [nChildSeg] = nDepth;
-#if 1
+					segPreds [nChildSeg] = nSegment;
+					segQueue [nHead++] = nChildSeg;
 					}
-				else if (segDepth [nChildSeg] > nDepth)
-					segDepth [nChildSeg] = nDepth;
-				else
-					continue;
-				segPreds [nChildSeg] = nSegment;
-				segQueue [nHead++] = nChildSeg;
-				if (nChildSeg == nDestSeg) {
+				else {
+					// destination segment reached
 					xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
-					nLength = 3;
+					nLength = 3; 
 					for (;;) {
 						nChildSeg = segPreds [nSegment];
+#if DBG
+						if (nChildSeg < 0)
+							nChildSeg = nChildSeg;
+#endif
 						if (nChildSeg == nStartSeg)
 							break;
 						nLength++;
@@ -610,12 +615,6 @@ while (nTail < nHead) {
 						fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength, xDist);
 					return xDist;
 					}
-#else
-					segPreds [nChildSeg] = nSegment;
-					segQueue [nHead] = nChildSeg;
-					nHead = ++nHead % (MAX_SEGMENTS_D2X * 2);
-					}
-#endif
 				}
 			}
 		}
