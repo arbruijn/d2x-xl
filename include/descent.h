@@ -1465,9 +1465,9 @@ class CMineRenderData {
 		//CFixVector				viewer.vPos;
 		tObjTransformation	viewer;
 		CShortArray				segRenderList [2]; //[MAX_SEGMENTS_D2X];
-		CShortArray				nRenderPos; //[MAX_SEGMENTS_D2X];
+		CShortArray				renderPos; //[MAX_SEGMENTS_D2X];
 		CArray< CSegFace* >	renderFaceListP; //[MAX_SEGMENTS_D2X * 6];
-		CObjRenderList			renderObjs;
+		CObjRenderList			objRenderList;
 		int						nRenderSegs [2];
 		CByteArray				bVisited; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisible; //[MAX_SEGMENTS_D2X];
