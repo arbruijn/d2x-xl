@@ -585,38 +585,37 @@ while ((nTail < nHead) && (nDepth < nMaxDepth)) {
 	segP = SEGMENTS + nSegment;
 	nDepth = segDepth [nSegment] + 1;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		if (segP->IsDoorWay (nSide, NULL) & widFlag) {
-			nChildSeg = segP->m_children [nSide];
-			if (bVisited [nChildSeg] != bFlag) {
-				bVisited [nChildSeg] = bFlag;
-				if (nChildSeg != nDestSeg) {
-					segDepth [nChildSeg] = nDepth;
-					segPreds [nChildSeg] = nSegment;
-					segQueue [nHead++] = nChildSeg;
-					}
-				else {
-					// destination segment reached
-					xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
-					nLength = 3; 
-					for (;;) {
-						nChildSeg = segPreds [nSegment];
-#if DBG
-						if (nChildSeg < 0)
-							nChildSeg = nChildSeg;
-#endif
-						if (nChildSeg == nStartSeg)
-							break;
-						nLength++;
-						xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
-						nSegment = nChildSeg;
-						}
-					xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
-					if (nCacheType >= 0) 
-						fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength, xDist);
-					return xDist;
-					}
-				}
+		if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
+			continue;
+		nChildSeg = segP->m_children [nSide];
+		if (bVisited [nChildSeg] == bFlag)
+			continue;
+		if (nChildSeg != nDestSeg) {
+			bVisited [nChildSeg] = bFlag;
+			segDepth [nChildSeg] = nDepth;
+			segPreds [nChildSeg] = nSegment;
+			segQueue [nHead++] = nChildSeg;
+			continue;
 			}
+		// destination segment reached
+		xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
+		nLength = 3; 
+		for (;;) {
+			nChildSeg = segPreds [nSegment];
+#if DBG
+			if (nChildSeg < 0)
+				nChildSeg = nChildSeg;
+#endif
+			if (nChildSeg == nStartSeg)
+				break;
+			nLength++;
+			xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
+			nSegment = nChildSeg;
+			}
+		xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
+		if (nCacheType >= 0) 
+			fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength, xDist);
+		return xDist;
 		}
 	}	
 if (nCacheType >= 0) 
