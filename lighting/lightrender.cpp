@@ -50,9 +50,8 @@ for (i = 0; i < m_data.nLights [0]; i++, pl++) {
 	pl->render.nType = pl->info.nType;
 	pl->render.bState = pl->info.bState && (pl->info.color.red + pl->info.color.green + pl->info.color.blue > 0.0);
 	pl->render.bLightning = (pl->info.nObject < 0) && (pl->info.nSide < 0);
-	ResetUsed (pl, 0);
-	if (gameStates.app.bMultiThreaded)
-		ResetUsed (pl, 1);
+	for (int j = 0; j < gameStates.app.nThreads; j++)
+		ResetUsed (pl, j);
 	pl->render.bShadow =
 	pl->render.bExclusive = 0;
 	if (pl->render.bState) {
@@ -748,7 +747,7 @@ if (!lock)
 	CActiveDynLight* activeLightsP = prl->render.activeLightsP [nThread];
 
 if (activeLightsP) {
-	if (int (activeLightsP) < 0x10000)
+	if (activeLightsP != prl->render.activeLightsP [nThread])
 		activeLightsP = activeLightsP;
 	else {
 		activeLightsP->pl = NULL;
