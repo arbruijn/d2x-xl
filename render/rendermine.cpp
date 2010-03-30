@@ -374,6 +374,8 @@ if (0 > gameData.render.mine.objRenderList.ref [nSegment])
 	return -1;
 if (!automap.Display ())
 	return nSegment;
+if (!(gameOpts->render.automap.bTextured & 1))
+	return -1;
 if (extraGameInfo [IsMultiGame].bPowerupsOnRadar && extraGameInfo [IsMultiGame].bRobotsOnRadar)
 	return nSegment;
 
