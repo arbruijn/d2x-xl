@@ -346,7 +346,6 @@ void RenderObjectsMT (void)
 	int	nListPos [MAX_THREADS] = {0,1,2,3};
 	int	i = 0;
 
-memset (bSemaphore, 0, sizeofa (bSemaphore));
 while (nThreads) {
 	if (bSemaphore [i]) {
 		lightManager.SetThreadId (i);
@@ -403,11 +402,15 @@ RenderObjectsST ();
 #else
 
 nThreads = 0;
+memset (bSemaphore, 0, sizeofa (bSemaphore));
+
 if (gameStates.app.nThreads < 3) 
 	RenderObjectsST ();
 else {
 #if USE_OPENMP > 1
-	--gameStates.app.nThreads;
+	if (!threadLock)
+		threadLock = SDL_CreateMutex ();
+	nThreads = --gameStates.app.nThreads;
 	SDL_Thread*	threads [MAX_THREADS];
 	int nThread;
 	for (i = 0; i < gameStates.app.nThreads; i++) {
@@ -419,7 +422,7 @@ else {
 #elif !USE_OPENMP
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
-	--gameStates.app.nThreads;
+	nThreads = --gameStates.app.nThreads;
 	RunRenderThreads (-int (rtPolyModel) - 1);
 	RenderObjectsMT ();
 	++gameStates.app.nThreads;
