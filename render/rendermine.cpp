@@ -200,7 +200,7 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-int SortObjList (short nSegment)
+int SortObjList (int nSegment)
 {
 	tObjRenderListItem*	pi;
 	int						i, j;
@@ -220,14 +220,14 @@ return j;
 
 //------------------------------------------------------------------------------
 
-void RenderObjList (short nSegment, int nWindow)
+void RenderObjList (int nListPos, int nWindow)
 {
 PROF_START
 	int i, j;
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-for (i = 0, j = SortObjList (nSegment); i < j; i++)
+for (i = 0, j = SortObjList (gameData.render.mine.segRenderList [1][nListPos]); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
 gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
 PROF_END(ptRenderObjects)
@@ -264,17 +264,21 @@ PROF_END(ptRenderPass)
 
 //------------------------------------------------------------------------------
 
+static sbyte bSemaphore [MAX_THREADS];
+
+//------------------------------------------------------------------------------
+
 void RenderObjectsST (void)
 {
 	short nSegment;
 
-for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
+for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 	nSegment = gameData.render.mine.segRenderList [1][i];
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 		lightManager.SetNearestStatic (nSegment, 1, 1, 0);
 		}
-	RenderObjList (nSegment, gameStates.render.nWindow);
+	RenderObjList (i, gameStates.render.nWindow);
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, 0);
 	}	
@@ -282,20 +286,7 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 
 //------------------------------------------------------------------------------
 
-static SDL_mutex* renderLock = NULL;
-
-void RenderObjectsMT (short nSegment, int nThread)
-{
-SDL_mutexP (renderLock);
-lightManager.SetThreadId (nThread);
-RenderObjList (nSegment, gameStates.render.nWindow);
-lightManager.SetThreadId (-1);
-SDL_mutexV (renderLock);
-}
-
-//------------------------------------------------------------------------------
-
-int _CDECL_ RenderObjectsThread (int nThread)
+int _CDECL_ LightObjectsThread (int nThread)
 {
 	short nSegment;
 
@@ -305,11 +296,41 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
 		}
-	RenderObjectsMT (nSegment, nThread);
+	bSemaphore [nThread] = 1;
+	while (bSemaphore [nThread])
+		; //G3_SLEEP (0);
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
+bSemaphore [nThread] = 2;
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void RenderObjectsMT (void)
+{
+	int	nThreads = gameStates.app.nThreads;
+	int	nListPos [MAX_THREADS];
+	int	bFinished [MAX_THREADS] = {0,0,0,0};
+	int	i;
+
+memset (bSemaphore, 0, sizeofa (bSemaphore));
+i = -1;
+while (nThreads) {
+	do {
+		i = ++i % gameStates.app.nThreads;
+		} while (bSemaphore [i] & 2);
+	if (bSemaphore [i] & 1) {
+		lightManager.SetThreadId (i);
+		RenderObjList (nListPos [i], gameStates.render.nWindow);
+		lightManager.SetThreadId (-1);
+		nListPos [i] += gameStates.app.nThreads;
+		if (nListPos [i] >= gameData.render.mine.nRenderSegs [1])
+			nThreads--;
+		bSemaphore [i] &= 2;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -341,34 +362,42 @@ gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 
-	int i;
-	short nSegment;
+int i, j;
+short nSegment;
 
 gameData.render.mine.nRenderSegs [1] = 0;
-for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
+for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
+memset (bSemaphore, 1, sizeofa (bSemaphore));
 
-#if DBG
+if (gameStates.app.nThreads > 1) {
+	for (i = 0; i < gameStates.app.nThreads; i++) {
+		}
+	}
+
+#if 0
 int nThreads = gameStates.app.nThreads;
 gameStates.app.nThreads = 1;
 #endif
 
-if (!renderLock)
-	renderLock = SDL_CreateMutex ();
-
-#if USE_OPENMP
-SDL_thread* threads [MAX_THREADS];
-for (i = 0; i < gameStates.app.nThreads)
-	threads [i] = SDL_CreateThread (RenderObjectsThread, &i);
-for (i = 0; i < gameStates.app.nThreads)
-	SDL_WaitThread (threads [i]);
-#else
-if (!RunRenderThreads (rtPolyModel))
+if (gameStates.app.nThreads < 2) 
 	RenderObjectsST ();
+else {
+#if USE_OPENMP > 1
+	SDL_thread*	threads [MAX_THREADS];
+	for (i = 0; i < gameStates.app.nThreads; i++)
+		threads [i] = SDL_CreateThread (LightObjectsThread, &i);
+	RenderObjectsMT ();
+#elif !USE_OPENMP
+	RunRenderThreads (-int (rtPolyModel) - 1);
+	RenderObjectsMT ();
+#else
+RenderObjectsST ();
 #endif
+	}
 
-#if DBG
+#if 0
 gameStates.app.nThreads = nThreads;
 #endif
 

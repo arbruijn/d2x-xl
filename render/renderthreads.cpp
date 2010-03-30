@@ -25,7 +25,7 @@ tRenderThreadInfo tiRender;
 tTranspRenderThreadInfo tiTranspRender;
 tThreadInfo tiEffects;
 
-int _CDECL_ RenderObjectsThread (int nThread);
+int _CDECL_ LightObjectsThread (int nThread);
 
 //------------------------------------------------------------------------------
 
@@ -65,7 +65,6 @@ return 0;
 
 #	if DBG
 	time_t	t0 = 0, t2 = 0;
-	int		nActive;
 	static	int nLockups = 0;
 #	endif
 	int		i, bWait = 1;
@@ -84,6 +83,7 @@ for (i = 0; i < nThreads; i++)
 if (!bWait)
 	return 1;
 #if 0 //DBG
+int nActive;
 t0 = clock ();
 while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 	G3_SLEEP (0);
@@ -168,7 +168,7 @@ do {
 			}
 		}
 	else if (tiRender.nTask == rtPolyModel) {
-		RenderObjectsThread (nId);
+		LightObjectsThread (nId);
 		}
 	else if (tiRender.nTask == rtLightmap)
 		lightmapManager.Build (nId);
