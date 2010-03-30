@@ -311,7 +311,7 @@ int _CDECL_ RenderMineObjectsThread (int nThread)
 SDL_SemWait (semaphores [nThread]);
 semVal = SDL_SemValue (semaphores [nThread]);
 for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
-	nSegment = gameData.render.mine.segRenderList [i];
+	nSegment = gameData.render.mine.segRenderList [1][i];
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
@@ -393,7 +393,7 @@ short nSegment;
 gameData.render.mine.nRenderSegs [1] = 0;
 for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
-		gameData.render.mine.senderSegs [gameData.render.mine.nRenderSegs [1]++] = nSegment;
+		gameData.render.mine.renderSegs [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 //memset (bSemaphore, 1, sizeofa (bSemaphore));
 for (i = 0; i < gameStates.app.nThreads; i++)
 	semaphores [i] = SDL_CreateSemaphore (0);
