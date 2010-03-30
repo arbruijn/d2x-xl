@@ -84,7 +84,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "headlight.h"
 #include "playsave.h"
-#include "gpgpu_lighting.h"
+#include "addon_bitmaps.h"
 
 u_int32_t nCurrentVGAMode;
 

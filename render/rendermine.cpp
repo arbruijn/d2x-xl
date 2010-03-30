@@ -288,25 +288,10 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 
 //------------------------------------------------------------------------------
 
-static int EnterLightObjectsThread (void)
-{
-int nThread;
-SDL_mutexP (threadLock);
-nThread = nThreads++;
-SDL_mutexV (threadLock);
-return nThread;
-}
-
-//------------------------------------------------------------------------------
-
-static void LeaveLightObjectsThread (void)
-{
-SDL_mutexP (threadLock);
-nThreads--;
-SDL_mutexV (threadLock);
-}
-
-//------------------------------------------------------------------------------
+#ifdef _MSC_VER
+#	pragma optimize("ga", off)
+#	pragma auto_inline(off)
+#endif
 
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {
@@ -338,6 +323,11 @@ LeaveLightObjectsThread ();
 #endif
 return 1;
 }
+
+#ifdef _MSC_VER
+#	pragma optimize("ga", on)
+#	pragma auto_inline(on)
+#endif
 
 //------------------------------------------------------------------------------
 
