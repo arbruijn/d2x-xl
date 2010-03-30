@@ -286,6 +286,23 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 
 //------------------------------------------------------------------------------
 
+SDL_mutex* threadLock = NULL;
+static int nThreads;
+
+static void LeaveLightObjectsThread (void)
+{
+#if USE_OPENMP > 1
+#	pragma omp atomic
+	nThreads--;
+#else
+SDL_mutexP (threadLock);
+nThreads--;
+SDL_mutexV (threadLock);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {
 	int	nThread = *((int*) nThreadP);
@@ -303,7 +320,8 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
-bSemaphore [nThread] = 3;
+bSemaphore [nThread] = 2;
+LeaveLightObjectsThread ();
 return 1;
 }
 
@@ -311,25 +329,22 @@ return 1;
 
 void RenderObjectsMT (void)
 {
-	int	nThreads = gameStates.app.nThreads;
 	int	nListPos [MAX_THREADS] = {0,1,2,3};
-	int	i = -1;
+	int	i = 0;
 
+nThreads = --gameStates.app.nThreads;
 memset (bSemaphore, 0, sizeofa (bSemaphore));
 while (nThreads) {
-	do {
-		i = ++i % gameStates.app.nThreads;
-		} while (!(bSemaphore [i] & 1));
-	if (bSemaphore [i] & 2)
-		--nThreads;
-	else {
+	if (bSemaphore [i] & 1) {
 		lightManager.SetThreadId (i);
 		RenderObjList (nListPos [i], gameStates.render.nWindow);
 		lightManager.SetThreadId (-1);
 		nListPos [i] += gameStates.app.nThreads;
+		bSemaphore [i] = 0;
 		}
-	bSemaphore [i] &= 2;
+	i = ++i % gameStates.app.nThreads;
 	}
+++gameStates.app.nThreads;
 }
 
 //------------------------------------------------------------------------------
@@ -380,17 +395,15 @@ if (gameStates.app.nThreads < 3)
 	RenderObjectsST ();
 else {
 #if USE_OPENMP > 1
-	--gameStates.app.nThreads;
+	RenderObjectsMT ();
 	SDL_Thread*	threads [MAX_THREADS];
 	for (i = 0; i < gameStates.app.nThreads; i++)
 		threads [i] = SDL_CreateThread (LightObjectsThread, &i);
-	RenderObjectsMT ();
-	++gameStates.app.nThreads;
 #elif !USE_OPENMP
-	--gameStates.app.nThreads;
-	RunRenderThreads (-int (rtPolyModel) - 1);
+	if (!threadLock)
+		threadLock = SDL_CreateMutex ();
 	RenderObjectsMT ();
-	++gameStates.app.nThreads;
+	RunRenderThreads (-int (rtPolyModel) - 1);
 #else
 RenderObjectsST ();
 #endif
