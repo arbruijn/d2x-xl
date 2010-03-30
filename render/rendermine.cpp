@@ -311,7 +311,7 @@ return 1;
 void RenderObjectsMT (void)
 {
 	int	nThreads = gameStates.app.nThreads;
-	int	nListPos [MAX_THREADS];
+	int	nListPos [MAX_THREADS] = {0,1,2,3};
 	int	bFinished [MAX_THREADS] = {0,0,0,0};
 	int	i;
 
