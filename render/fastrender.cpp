@@ -274,8 +274,8 @@ int SortFaces (void)
 	int			h, i, j;
 	short			nSegment;
 
-for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.nRenderSegs; i++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
+for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.nRenderSegs [0]; i++) {
+	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
 		continue;
 	segFaceP = SEGFACES + nSegment;
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++, h++, ph++) {
@@ -656,8 +656,8 @@ int SetupCoronaFaces (void)
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
 	return 0;
 gameData.render.lights.nCoronas = 0;
-for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [0][i]))
+for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
+	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
 		continue;
 	if ((SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) ||
 		 (SEGMENTS [nSegment].m_nType == SEGMENT_IS_OUTDOOR))
@@ -725,15 +725,15 @@ short RenderSegments (int nType, int bHeadlight)
 
 if (nType == RENDER_TYPE_CORONAS) {
 	// render mine segment by segment
-	if (gameData.render.mine.nRenderSegs == gameData.segs.nSegments) {
+	if (gameData.render.mine.nRenderSegs [0] == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
 		for (i = gameData.segs.nFaces; i; i--, faceP++)
 			if (RenderMineFace (SEGMENTS + faceP->m_info.nSegment, faceP, nType))
 				nFaces++;
 		}
 	else {
-		short* segRenderListP = gameData.render.mine.nSegRenderList [0].Buffer ();
-		for (i = gameData.render.mine.nRenderSegs; i; )
+		short* segRenderListP = gameData.render.mine.segRenderList [0][0].Buffer ();
+		for (i = gameData.render.mine.nRenderSegs [0]; i; )
 			nFaces += RenderSegmentFaces (nType, segRenderListP [--i], bAutomap, bHeadlight);
 		}
 	}

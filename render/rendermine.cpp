@@ -207,8 +207,8 @@ int SortObjList (int nSegment)
 
 if (nSegment < 0)
 	nSegment = -nSegment - 1;
-for (i = gameData.render.mine.renderObjs.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
-	pi = gameData.render.mine.renderObjs.objs + i;
+for (i = gameData.render.mine.objRenderList.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
+	pi = gameData.render.mine.objRenderList.objs + i;
 	objRenderList [j++] = *pi;
 	}
 #if 1
@@ -227,7 +227,7 @@ PROF_START
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-for (i = 0, j = SortObjList (gameData.render.mine.nSegRenderList [0][nListPos]); i < j; i++)
+for (i = 0, j = SortObjList (gameData.render.mine.segRenderList [0][nListPos]); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
 gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
 PROF_END(ptRenderObjects)
@@ -267,17 +267,17 @@ PROF_END(ptRenderPass)
 SDL_sem* semaphores [MAX_THREADS];
 //static sbyte bSemaphore [MAX_THREADS];
 
-static inline int ObjectSegment (int i)
+static inline int ObjectRenderSegment (int i)
 {
-if (i >= gameData.render.mine.nRenderSegs)
+if (i >= gameData.render.mine.nRenderSegs [0])
 	return -1;
-short nSegment = gameData.render.mine.nSegRenderList [0][i];
+short nSegment = gameData.render.mine.segRenderList [0][i];
 if (nSegment < 0) {
 	if (nSegment == -0x7fff)
 		return -1;
 	nSegment = -nSegment - 1;
 	}
-if (0 > gameData.render.mine.renderObjs.ref [nSegment])
+if (0 > gameData.render.mine.objRenderList.ref [nSegment])
 	return -1;
 return nSegment;
 }
@@ -288,8 +288,8 @@ void RenderMineObjectsST (void)
 {
 	short nSegment;
 
-for (int i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-	if (0 <= (nSegment = ObjectSegment (i))) {
+for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
+	if (0 <= (nSegment = ObjectRenderSegment (i))) {
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 			lightManager.SetNearestStatic (nSegment, 1, 1, 0);
@@ -299,6 +299,41 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 			lightManager.ResetNearestStatic (nSegment, 0);
 		}
 	}	
+}
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ RenderMineObjectsThread (int nThread)
+{
+	short nSegment;
+	Uint32 semVal;
+
+SDL_SemWait (semaphores [nThread]);
+semVal = SDL_SemValue (semaphores [nThread]);
+for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
+	nSegment = gameData.render.mine.segRenderList [i];
+	if (gameStates.render.bApplyDynLight) {
+		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
+		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
+		}
+#if 1
+	semVal = SDL_SemValue (semaphores [nThread]);
+	if (semVal == 1)
+		semVal = semVal;
+	SDL_SemWait (semaphores [nThread]);
+	semVal = SDL_SemValue (semaphores [nThread]);
+#else
+	bSemaphore [nThread] = 1;
+	while (bSemaphore [nThread])
+		; //G3_SLEEP (0);
+#endif
+	if (gameStates.render.bApplyDynLight)
+		lightManager.ResetNearestStatic (nSegment, nThread);
+	}	
+#if 0
+bSemaphore [nThread] = 2;
+#endif
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -319,16 +354,14 @@ while (nThreads) {
 //	if (bSemaphore [i] & 1) {
 		j = nListPos [i];
 		nListPos [i] += gameStates.app.nThreads;
-		if (nListPos [i] >= gameData.render.mine.nRenderSegs) {
+		if (nListPos [i] >= gameData.render.mine.nRenderSegs [1]) {
 			nThreads--;
 			SDL_DestroySemaphore (semaphores [i]);
 			semaphores [i] = NULL;
 			}
-		if (0 <= ObjectSegment (j)) {
-			lightManager.SetThreadId (i);
-			RenderObjList (j, gameStates.render.nWindow);
-			lightManager.SetThreadId (-1);
-			}
+		lightManager.SetThreadId (i);
+		RenderObjList (j, gameStates.render.nWindow);
+		lightManager.SetThreadId (-1);
 #if 1
 		if (semaphores [i])
 			SDL_SemPost (semaphores [i]);
@@ -344,57 +377,6 @@ while (nThreads) {
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ RenderMineObjectsThread (int nThread)
-{
-	short nSegment;
-	Uint32 semVal;
-
-SDL_SemWait (semaphores [nThread]);
-semVal = SDL_SemValue (semaphores [nThread]);
-for (int i = nThread; i < gameData.render.mine.nRenderSegs; i += gameStates.app.nThreads) {
-	if (i == 6)
-		i = i;
-	if (0 > (nSegment = ObjectSegment (i))) {
-#if 1
-		semVal = SDL_SemValue (semaphores [nThread]);
-		if (semVal == 1)
-			semVal = semVal;
-		SDL_SemWait (semaphores [nThread]);
-		semVal = SDL_SemValue (semaphores [nThread]);
-#else
-		bSemaphore [nThread] = 1;
-		while (bSemaphore [nThread])
-			; //G3_SLEEP (0);
-#endif
-		}
-	else {
-		if (gameStates.render.bApplyDynLight) {
-			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
-			lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
-			}
-#if 1
-		semVal = SDL_SemValue (semaphores [nThread]);
-		if (semVal == 1)
-			semVal = semVal;
-		SDL_SemWait (semaphores [nThread]);
-		semVal = SDL_SemValue (semaphores [nThread]);
-#else
-		bSemaphore [nThread] = 1;
-		while (bSemaphore [nThread])
-			; //G3_SLEEP (0);
-#endif
-		if (gameStates.render.bApplyDynLight)
-			lightManager.ResetNearestStatic (nSegment, nThread);
-		}
-	}	
-#if 0
-bSemaphore [nThread] = 2;
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
 void RenderMineObjects (int nType)
 {
 #if DBG
@@ -405,8 +387,15 @@ gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 
+int i, j;
+short nSegment;
+
+gameData.render.mine.nRenderSegs [1] = 0;
+for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
+	if (0 <= (nSegment = ObjectRenderSegment (i)))
+		gameData.render.mine.senderSegs [gameData.render.mine.nRenderSegs [1]++] = nSegment;
 //memset (bSemaphore, 1, sizeofa (bSemaphore));
-for (int i = 0; i < gameStates.app.nThreads; i++)
+for (i = 0; i < gameStates.app.nThreads; i++)
 	semaphores [i] = SDL_CreateSemaphore (0);
 
 int nThreads = gameStates.app.nThreads;

@@ -127,11 +127,11 @@ do {
 			return 0;
 		}
 	if (tiRender.nTask == rtSortSegZRef) {
-		ComputeThreadRange (nId, gameData.render.mine.nRenderSegs, nStart, nEnd);
+		ComputeThreadRange (nId, gameData.render.mine.nRenderSegs [0], nStart, nEnd);
 		QSortSegZRef (nStart, nEnd);
 		}
 	else if (tiRender.nTask == rtInitSegZRef) {
-		ComputeThreadRange (nId, gameData.render.mine.nRenderSegs, nStart, nEnd);
+		ComputeThreadRange (nId, gameData.render.mine.nRenderSegs [0], nStart, nEnd);
 		InitSegZRef (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtStaticVertLight) {
@@ -139,12 +139,12 @@ do {
 		lightManager.GatherStaticVertexLights (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
-		if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments)) {
+		if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments)) {
 			// special handling: 
 			// tiMiddle is the index at which an equal number of visible faces is both at indices below and above it
 			// use it to balance thread load
 			if (gameStates.app.nThreads & 1) {
-				ComputeThreadRange (nId, gameData.render.mine.nRenderSegs, nStart, nEnd);
+				ComputeThreadRange (nId, gameData.render.mine.nRenderSegs [0], nStart, nEnd);
 				ComputeFaceLight (nStart, nEnd, nId);
 				}
 			else {
@@ -154,7 +154,7 @@ do {
 					ComputeFaceLight (nStart, nEnd, nId);
 					}
 				else {
-					ComputeThreadRange (nId - nPivot, gameData.render.mine.nRenderSegs - tiRender.nMiddle, nStart, nEnd, nPivot);
+					ComputeThreadRange (nId - nPivot, gameData.render.mine.nRenderSegs [0] - tiRender.nMiddle, nStart, nEnd, nPivot);
 					ComputeFaceLight (nStart + tiRender.nMiddle, nEnd + tiRender.nMiddle, nId);
 					}
 				}

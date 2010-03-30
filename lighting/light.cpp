@@ -613,8 +613,8 @@ lightClusterManager.Reset ();
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
 if (!gameStates.render.nLightingMethod) {
-	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
-		nSegment = gameData.render.mine.nSegRenderList [0][iRenderSeg];
+	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs [0]; iRenderSeg++) {
+		nSegment = gameData.render.mine.segRenderList [0][iRenderSeg];
 		if (nSegment != -1) {
 			short* vp = SEGMENTS [nSegment].m_verts;
 			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
@@ -648,8 +648,8 @@ CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
 gameData.render.lights.newObjects.Clear ();
 if (EGI_FLAG (bUseLightning, 0, 0, 1) && !gameStates.render.nLightingMethod) {
 	tLightningLight	*pll;
-	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
-		nSegment = gameData.render.mine.nSegRenderList [0][iRenderSeg];
+	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs [0]; iRenderSeg++) {
+		nSegment = gameData.render.mine.segRenderList [0][iRenderSeg];
 		pll = lightningManager.GetLight (nSegment);
 		if (pll->nFrame == gameData.app.nFrameCount)
 			ApplyLight (pll->nBrightness, nSegment, &pll->vPos, nRenderVertices, gameData.render.lights.vertices, -1, &pll->color);

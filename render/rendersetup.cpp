@@ -163,9 +163,9 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 	}
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	ogl.SetTransform (1);
-	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.nSegRenderList & gameData.render.mine.nRenderSegs
+	BuildRenderSegList (nStartSeg, nWindow);		//fills in gameData.render.mine.segRenderList & gameData.render.mine.nRenderSegs [0]
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-		BuildRenderObjLists (gameData.render.mine.nRenderSegs);
+		BuildRenderObjLists (gameData.render.mine.nRenderSegs [0]);
 		if (xStereoSeparation <= 0)	// Do for left eye or zero.
 			SetDynamicLight ();
 		}
@@ -256,8 +256,8 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			)
 			{
 			gameStates.render.nThreads = 1;
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
-				ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
+				ComputeFaceLight (0, gameData.render.mine.nRenderSegs [0], 0);
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 				ComputeFaceLight (0, gameData.segs.nFaces, 0);
 			else
@@ -267,8 +267,8 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		else {
 				int	nStart, nEnd, nMax;
 
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs < gameData.segs.nSegments))
-				nMax = gameData.render.mine.nRenderSegs;
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.nRenderSegs [0] < gameData.segs.nSegments))
+				nMax = gameData.render.mine.nRenderSegs [0];
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 				nMax = gameData.segs.nFaces;
 			else
