@@ -420,7 +420,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 
-#if 1
+#if 0
 
 RenderObjectsST ();
 
