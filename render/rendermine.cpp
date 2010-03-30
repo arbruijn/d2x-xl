@@ -264,12 +264,6 @@ PROF_END(ptRenderPass)
 
 //------------------------------------------------------------------------------
 
-static sbyte bSemaphore [MAX_THREADS];
-static SDL_mutex* threadLock = NULL;
-static int nThreads;
-
-//------------------------------------------------------------------------------
-
 void RenderObjectsST (void)
 {
 	short nSegment;
@@ -292,6 +286,11 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 #	pragma optimize("ga", off)
 #	pragma auto_inline(off)
 #endif
+
+static sbyte bSemaphore [MAX_THREADS];
+static SDL_mutex* threadLock = NULL;
+static int nThreads;
+
 
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {
@@ -324,11 +323,6 @@ LeaveLightObjectsThread ();
 return 1;
 }
 
-#ifdef _MSC_VER
-#	pragma optimize("ga", on)
-#	pragma auto_inline(on)
-#endif
-
 //------------------------------------------------------------------------------
 
 void RenderObjectsMT (void)
@@ -336,7 +330,7 @@ void RenderObjectsMT (void)
 	int	nListPos [MAX_THREADS] = {0,1,2,3};
 	int	i = 0;
 
-while (nThreads) {
+while (nThreads > 0) {
 	if (bSemaphore [i]) {
 		lightManager.SetThreadId (i);
 		RenderObjList (nListPos [i], gameStates.render.nWindow);
@@ -347,6 +341,11 @@ while (nThreads) {
 	i = ++i % gameStates.app.nThreads;
 	}
 }
+
+#ifdef _MSC_VER
+#	pragma optimize("ga", on)
+#	pragma auto_inline(on)
+#endif
 
 //------------------------------------------------------------------------------
 
