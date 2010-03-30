@@ -364,7 +364,7 @@ for (i = 0; i < gameStates.app.nThreads)
 for (i = 0; i < gameStates.app.nThreads)
 	SDL_WaitThread (threads [i]);
 #else
-if (!RunRenderThreads (-int (rtPolyModel) - 1))
+if (!RunRenderThreads (rtPolyModel))
 	RenderObjectsST ();
 #endif
 
