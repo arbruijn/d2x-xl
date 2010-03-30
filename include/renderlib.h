@@ -40,29 +40,6 @@ typedef struct tFaceListEntry {
 	tFaceProps	props;
 } tFaceListEntry;
 
-//------------------------------------------------------------------------------
-
-int LoadExplBlast (void);
-void FreeExplBlast (void);
-int LoadCorona (void);
-int LoadGlare (void);
-int LoadHalo (void);
-int LoadThruster (int nStyle = -1);
-int LoadShield (void);
-int LoadDeadzone (void);
-void LoadDamageIcons (void);
-void FreeDamageIcons (void);
-int LoadDamageIcon (int i);
-void FreeDamageIcon (int i);
-int LoadScope (void);
-void FreeScope (void);
-void LoadAddonImages (void);
-void FreeExtraImages (void);
-void FreeDeadzone (void);
-int LoadJoyMouse (void);
-void FreeJoyMouse (void);
-int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP);
-
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
 g3sPoint *RotateVertex (int i);
@@ -107,23 +84,6 @@ void DrawWindowBox (uint color, short left, short top, short right, short bot);
 #endif
 
 //------------------------------------------------------------------------------
-
-extern CBitmap* bmpCorona;
-extern CBitmap* bmpGlare;
-extern CBitmap* bmpHalo;
-extern CBitmap* bmpThruster;
-extern CBitmap* bmpShield;
-extern CBitmap* bmpExplBlast;
-extern CBitmap* bmpSparks;
-extern CBitmap* bmpDeadzone;
-extern CBitmap* bmpScope;
-extern CBitmap* bmpJoyMouse;
-extern CBitmap* bmpDamageIcon [3];
-extern int bHaveDamageIcon [3];
-extern const char* szDamageIcon [3];
-
-extern int bHaveDeadzone;
-extern int bHaveJoyMouse;
 
 extern tRgbaColorf segmentColors [4];
 

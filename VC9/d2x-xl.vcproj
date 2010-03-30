@@ -601,6 +601,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
+				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="&quot;..\..\..\libraries\SDL-1.2.13\include&quot;;&quot;..\..\..\libraries\SDL_mixer-1.2.8&quot;;&quot;..\..\..\libraries\SDL_image-1.2.7&quot;;&quot;\projects\OpenAL 1.1 SDK\include&quot;;&quot;..\d2x-trackir&quot;;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include"
 				PreprocessorDefinitions="DBG=1;_WINNT_WIN32=0x0700;OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC"
 				StringPooling="true"
@@ -634,13 +635,14 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib ws2_32.lib opengl32.lib glu32.lib winmm.lib urlmon.lib"
 				OutputFile="\programs\d2\bin\x64-omp\d2x-xl-x64.exe"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="true"
 				GenerateMapFile="false"
 				SubSystem="2"
+				LinkTimeCodeGeneration="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="17"
@@ -6728,6 +6730,10 @@
 					Name="Source Files"
 					>
 					<File
+						RelativePath="..\gameio\addon_bitmaps.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\main\config.cpp"
 						>
 						<FileConfiguration
@@ -7567,6 +7573,10 @@
 				<Filter
 					Name="Header Files"
 					>
+					<File
+						RelativePath="..\include\addon_bitmaps.h"
+						>
+					</File>
 					<File
 						RelativePath="..\include\createmesh.h"
 						>
@@ -10751,11 +10761,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
