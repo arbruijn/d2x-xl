@@ -17,6 +17,7 @@ class CAddonBitmap {
 		void Unload (void);
 		inline CBitmap* Bitmap (void) { return m_bmP; }
 		inline CTexture* Texture (void) { return m_bmP->Texture (); }
+		inline int Bind (int bMipMaps) { return m_bmP->Bind (bMipMaps); }
 		~CAddonBitmap () { Unload (); }
 };
 
@@ -36,6 +37,7 @@ extern CAddonBitmap shield;
 extern CAddonBitmap deadzone;
 extern CAddonBitmap damageIcon [3];
 extern CAddonBitmap scope;
+extern CAddonBitmap sparks;
 extern CAddonBitmap joyMouse;
 
 #if 0

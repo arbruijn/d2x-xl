@@ -49,7 +49,7 @@ if ((gameOpts->render.coronas.bShots && (bCorona ? corona.Load () : halo.Load ()
 
 void RenderPowerupCorona (CObject *objP, float red, float green, float blue, float alpha)
 {
-if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) && LoadGlare ()) {
+if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gameOpts->render.coronas.bWeapons) && glare.Load ()) {
 	static tRgbaColorf keyColors [3] = {
 	 {0.2f, 0.2f, 0.9f, 0.2f},
 	 {0.9f, 0.2f, 0.2f, 0.2f},
@@ -78,9 +78,9 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 	color.red *= fScale;
 	color.green *= fScale;
 	color.blue *= fScale;
-	bmpGlare->SetColor (&color);
-	ogl.RenderSprite (bmpGlare, objP->info.position.vPos, xSize, xSize, alpha, LIGHTTRAIL_BLENDMODE, 5);
-	bmpGlare->SetColor (NULL);
+	glare.Bitmap ()->SetColor (&color);
+	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos, xSize, xSize, alpha, LIGHTTRAIL_BLENDMODE, 5);
+	glare.Bitmap ()->SetColor (NULL);
 	}
 }
 
@@ -92,7 +92,7 @@ if (!SHOW_OBJ_FX)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
-if (gameOpts->render.coronas.bShots && LoadGlare ()) {
+if (gameOpts->render.coronas.bShots && glare.Load ()) {
 	tHitbox*			phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
 	float				fLength = X2F (phb->vMax [Z] - phb->vMin [Z]) / 2;
 	tRgbaColorf		color;
@@ -106,9 +106,9 @@ if (gameOpts->render.coronas.bShots && LoadGlare ()) {
 	color.red *= fScale;
 	color.green *= fScale;
 	color.blue *= fScale;
-	bmpGlare->SetColor (colorP);
-	ogl.RenderSprite (bmpGlare, objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
-	bmpGlare->SetColor (NULL);
+	glare.Bitmap ()->SetColor (colorP);
+	ogl.RenderSprite (glare.Bitmap (), objP->info.position.vPos + objP->info.position.mOrient.FVec () * (F2X (fLength - 0.5f)), I2X (1), I2X (1), alpha, LIGHTTRAIL_BLENDMODE, 1);
+	glare.Bitmap ()->SetColor (NULL);
 	}
 }
 
@@ -215,7 +215,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->info.nType == OBJ_WEAPON) &&
 				!gameData.objs.bIsSlowWeapon [objP->info.nId] &&
 				(!objP->mType.physInfo.velocity.IsZero ()) &&
-				LoadGlare ()) {
+				glare.Load ()) {
 			CFloatVector	vNorm, vCenter, vOffs, vTrailVerts [8];
 			float				h, l, r, dx, dy;
 
@@ -270,7 +270,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vNorm *= r;
 		vTrailVerts [0] = vTrailVerts [3] - vNorm;
 		vTrailVerts [1] = vTrailVerts [2] - vNorm;
-		transparencyRenderer.AddPoly (NULL, NULL, bmpGlare, vTrailVerts, 8, tcTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, LIGHTTRAIL_BLENDMODE, -1);
+		transparencyRenderer.AddPoly (NULL, NULL, glare.Bitmap (), vTrailVerts, 8, tcTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, LIGHTTRAIL_BLENDMODE, -1);
 		}
 	}
 

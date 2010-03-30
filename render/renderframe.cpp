@@ -112,7 +112,7 @@ if (scope.Load ()) {
 	ogl.SetBlending (true);
 	ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ogl.SetDepthTest (false);
-	if (bmpScope->Bind (1))
+	if (scope.Bind (1))
 		return;
 	scope.Texture ()->Wrap (GL_REPEAT);
 	glColor3f (1.0f, 1.0f, 1.0f);

@@ -529,7 +529,7 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	CBitmap*		bmP = NULL;
 
 //ogl.SetBlendMode (bAdditive);
-if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ()))
+if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;

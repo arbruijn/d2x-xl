@@ -24,6 +24,7 @@
 #include "sparkeffect.h"
 #include "transprender.h"
 #include "automap.h"
+#include "addon_bitmaps.h"
 
 #define SPARK_MIN_PROB		16
 #define SPARK_FRAME_TIME	50

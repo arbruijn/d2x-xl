@@ -26,6 +26,7 @@
 #include "automap.h"
 #include "transprender.h"
 #include "renderthreads.h"
+#include "addon_bitmaps.h"
 
 #define RENDER_TRANSPARENCY 1
 #define RENDER_TRANSP_DECALS 1
