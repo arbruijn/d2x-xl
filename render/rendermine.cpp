@@ -374,8 +374,6 @@ if (0 > gameData.render.mine.objRenderList.ref [nSegment])
 	return -1;
 if (!automap.Display ())
 	return nSegment;
-if (!(gameOpts->render.automap.bTextured & 1))
-	return -1;
 if (extraGameInfo [IsMultiGame].bPowerupsOnRadar && extraGameInfo [IsMultiGame].bRobotsOnRadar)
 	return nSegment;
 
@@ -407,6 +405,9 @@ void RenderMineObjects (int nType)
 if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
+if (automap.Display () && !(gameOpts->render.automap.bTextured & 1))
+	return;
+
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
@@ -428,7 +429,7 @@ RenderObjectsST ();
 nThreads = 0;
 memset (bSemaphore, 0, sizeofa (bSemaphore));
 
-if (gameStates.app.nThreads < 3) 
+if ((gameStates.app.nThreads < 3) || (gameData.render.mine.nRenderSegs [1] < 2 * (gameStates.app.nThreads - 1)))
 	RenderObjectsST ();
 else {
 #if USE_OPENMP > 1
