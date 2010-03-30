@@ -332,7 +332,7 @@ void RenderObjectsMT (void)
 	int	nListPos [MAX_THREADS] = {0,1,2,3};
 	int	i = 0;
 
-nThreads = --gameStates.app.nThreads;
+nThreads = gameStates.app.nThreads;
 memset (bSemaphore, 0, sizeofa (bSemaphore));
 while (nThreads) {
 	if (bSemaphore [i] & 1) {
@@ -344,7 +344,6 @@ while (nThreads) {
 		}
 	i = ++i % gameStates.app.nThreads;
 	}
-++gameStates.app.nThreads;
 }
 
 //------------------------------------------------------------------------------
@@ -383,7 +382,6 @@ gameData.render.mine.nRenderSegs [1] = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
-memset (bSemaphore, 1, sizeofa (bSemaphore));
 
 #if 0
 
@@ -395,15 +393,19 @@ if (gameStates.app.nThreads < 3)
 	RenderObjectsST ();
 else {
 #if USE_OPENMP > 1
-	RenderObjectsMT ();
+	--gameStates.app.nThreads;
 	SDL_Thread*	threads [MAX_THREADS];
 	for (i = 0; i < gameStates.app.nThreads; i++)
 		threads [i] = SDL_CreateThread (LightObjectsThread, &i);
+	RenderObjectsMT ();
+	++gameStates.app.nThreads;
 #elif !USE_OPENMP
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
-	RenderObjectsMT ();
+	--gameStates.app.nThreads;
 	RunRenderThreads (-int (rtPolyModel) - 1);
+	RenderObjectsMT ();
+	++gameStates.app.nThreads;
 #else
 RenderObjectsST ();
 #endif
