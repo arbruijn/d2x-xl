@@ -73,7 +73,7 @@ if (!m_bAvailable) {
 		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureDir [0], pszName);
 	m_bmP = CreateAndReadTGA (szFilename);
 	}
-if (m_bmP)
+if (!m_bmP)
 	m_bAvailable = -1;
 else {
 	m_bAvailable = 1;
