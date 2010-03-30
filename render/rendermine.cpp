@@ -310,7 +310,11 @@ SDL_mutexV (threadLock);
 
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {
+#if 1
+	int	nThread = *((int*) nThreadP);
+#else
 	int	nThread = EnterLightObjectsThread (); //*((int*) nThreadP);
+#endif
 	short nSegment;
 
 for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
@@ -325,8 +329,13 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
-bSemaphore [nThread] = 2;
+#if 1
+SDL_mutexP (threadLock);
+nThreads--;
+SDL_mutexV (threadLock);
+#else
 LeaveLightObjectsThread ();
+#endif
 return 1;
 }
 
@@ -339,7 +348,7 @@ void RenderObjectsMT (void)
 
 memset (bSemaphore, 0, sizeofa (bSemaphore));
 while (nThreads) {
-	if (bSemaphore [i] & 1) {
+	if (bSemaphore [i]) {
 		lightManager.SetThreadId (i);
 		RenderObjList (nListPos [i], gameStates.render.nWindow);
 		lightManager.SetThreadId (-1);
