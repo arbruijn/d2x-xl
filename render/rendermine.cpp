@@ -265,6 +265,8 @@ PROF_END(ptRenderPass)
 //------------------------------------------------------------------------------
 
 static sbyte bSemaphore [MAX_THREADS];
+static SDL_mutex* threadLock = NULL;
+static int nThreads;
 
 //------------------------------------------------------------------------------
 
@@ -286,26 +288,29 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 
 //------------------------------------------------------------------------------
 
-SDL_mutex* threadLock = NULL;
-static int nThreads;
+static int EnterLightObjectsThread (void)
+{
+int nThread;
+SDL_mutexP (threadLock);
+nThread = nThreads++;
+SDL_mutexV (threadLock);
+return nThread;
+}
+
+//------------------------------------------------------------------------------
 
 static void LeaveLightObjectsThread (void)
 {
-#if USE_OPENMP > 1
-#	pragma omp atomic
-	nThreads--;
-#else
 SDL_mutexP (threadLock);
 nThreads--;
 SDL_mutexV (threadLock);
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {
-	int	nThread = *((int*) nThreadP);
+	int	nThread = EnterLightObjectsThread (); //*((int*) nThreadP);
 	short nSegment;
 
 for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
@@ -332,7 +337,6 @@ void RenderObjectsMT (void)
 	int	nListPos [MAX_THREADS] = {0,1,2,3};
 	int	i = 0;
 
-nThreads = gameStates.app.nThreads;
 memset (bSemaphore, 0, sizeofa (bSemaphore));
 while (nThreads) {
 	if (bSemaphore [i] & 1) {
@@ -389,6 +393,7 @@ RenderObjectsST ();
 
 #else
 
+nThreads = 0;
 if (gameStates.app.nThreads < 3) 
 	RenderObjectsST ();
 else {
