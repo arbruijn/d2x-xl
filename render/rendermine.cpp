@@ -371,11 +371,6 @@ for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 memset (bSemaphore, 1, sizeofa (bSemaphore));
 
-if (gameStates.app.nThreads > 1) {
-	for (i = 0; i < gameStates.app.nThreads; i++) {
-		}
-	}
-
 #if 0
 int nThreads = gameStates.app.nThreads;
 gameStates.app.nThreads = 1;
