@@ -1054,7 +1054,7 @@ if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
 	int			nSegment, nChildSeg, nChild, h, i, j;
 	ubyte			bVisited [MAX_THREADS][MAX_SEGMENTS_D2X];
 	ubyte*		visitedP = bVisited [nThread];
-	short*		segListP = gameData.render.mine.segRenderList [0][nThread].Buffer ();
+	short*		segListP = gameData.render.mine.segRenderList [0].Buffer ();
 
 segListP [0] = nStartSeg;
 gameData.render.mine.bProcessed [nStartSeg] = BumpProcessedFlag ();

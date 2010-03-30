@@ -732,9 +732,9 @@ if (nType == RENDER_TYPE_CORONAS) {
 				nFaces++;
 		}
 	else {
-		short* segRenderListP = gameData.render.mine.segRenderList [0][0].Buffer ();
+		short* segListP = gameData.render.mine.segRenderList [0].Buffer ();
 		for (i = gameData.render.mine.nRenderSegs [0]; i; )
-			nFaces += RenderSegmentFaces (nType, segRenderListP [--i], bAutomap, bHeadlight);
+			nFaces += RenderSegmentFaces (nType, segListP [--i], bAutomap, bHeadlight);
 		}
 	}
 else {

@@ -393,7 +393,7 @@ short nSegment;
 gameData.render.mine.nRenderSegs [1] = 0;
 for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
-		gameData.render.mine.renderSegs [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
+		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 //memset (bSemaphore, 1, sizeofa (bSemaphore));
 for (i = 0; i < gameStates.app.nThreads; i++)
 	semaphores [i] = SDL_CreateSemaphore (0);
