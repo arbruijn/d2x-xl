@@ -372,7 +372,29 @@ if (nSegment < 0) {
 	}
 if (0 > gameData.render.mine.objRenderList.ref [nSegment])
 	return -1;
-return nSegment;
+if (!automap.Display ())
+	return nSegment;
+if (extraGameInfo [IsMultiGame].bPowerupsOnRadar && extraGameInfo [IsMultiGame].bRobotsOnRadar)
+	return nSegment;
+
+tObjRenderListItem* pi;
+
+for (i = gameData.render.mine.objRenderList.ref [nSegment]; i >= 0; i = pi->nNextItem) {
+	pi = gameData.render.mine.objRenderList.objs + i;
+	int nType = OBJECTS [pi->nObject].info.nType;
+	if (nType == OBJ_POWERUP) {
+		if (extraGameInfo [IsMultiGame].bPowerupsOnRadar)
+			return nSegment;
+		}
+	else if (nType == OBJ_ROBOT) {
+		if (extraGameInfo [IsMultiGame].bRobotsOnRadar)
+			return nSegment;
+		}
+	else
+		return nSegment;
+	}
+
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -395,7 +417,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 
-#if 0
+#if 1
 
 RenderObjectsST ();
 
