@@ -224,31 +224,38 @@ ogl.SetTransform (0);
 
 void FixTriangleFan (CSegment* segP, CSegFace* faceP)
 {
-if (segP->Type (faceP->m_info.nSide) == SIDE_IS_TRI_13) {	//rearrange vertex order for TRIANGLE_FAN rendering
+if (segP->Type (faceP->m_info.nSide) == SIDE_IS_TRI_13) 
+#if USE_OPEN_MP > 1
+#pragma omp critical
+#endif
+	{	//rearrange vertex order for TRIANGLE_FAN rendering
+#if !USE_OPENMP
+	SDL_mutexP (tiRender.semaphore);
+#endif
 	segP->SetType (faceP->m_info.nSide, faceP->m_info.nType = SIDE_IS_TRI_02);
-	{
+
 	short	h = faceP->m_info.index [0];
 	memcpy (faceP->m_info.index, faceP->m_info.index + 1, 3 * sizeof (short));
 	faceP->m_info.index [3] = h;
-	}
-	{
-	CFloatVector3 h = FACES.vertices [faceP->m_info.nIndex];
+
+	CFloatVector3 v = FACES.vertices [faceP->m_info.nIndex];
 	memcpy (FACES.vertices + faceP->m_info.nIndex, FACES.vertices + faceP->m_info.nIndex + 1, 3 * sizeof (CFloatVector3));
-	FACES.vertices [faceP->m_info.nIndex + 3] = h;
-	}
-	{
-	tTexCoord2f h = FACES.texCoord [faceP->m_info.nIndex];
+	FACES.vertices [faceP->m_info.nIndex + 3] = v;
+
+	tTexCoord2f tc = FACES.texCoord [faceP->m_info.nIndex];
 	memcpy (FACES.texCoord + faceP->m_info.nIndex, FACES.texCoord + faceP->m_info.nIndex + 1, 3 * sizeof (tTexCoord2f));
-	FACES.texCoord [faceP->m_info.nIndex + 3] = h;
-	h = FACES.lMapTexCoord [faceP->m_info.nIndex];
+	FACES.texCoord [faceP->m_info.nIndex + 3] = tc;
+	tc = FACES.lMapTexCoord [faceP->m_info.nIndex];
 	memcpy (FACES.lMapTexCoord + faceP->m_info.nIndex, FACES.lMapTexCoord + faceP->m_info.nIndex + 1, 3 * sizeof (tTexCoord2f));
-	FACES.lMapTexCoord [faceP->m_info.nIndex + 3] = h;
+	FACES.lMapTexCoord [faceP->m_info.nIndex + 3] = tc;
 	if (faceP->m_info.nOvlTex) {
-		h = FACES.ovlTexCoord [faceP->m_info.nIndex];
+		tc = FACES.ovlTexCoord [faceP->m_info.nIndex];
 		memcpy (FACES.ovlTexCoord + faceP->m_info.nIndex, FACES.ovlTexCoord + faceP->m_info.nIndex + 1, 3 * sizeof (tTexCoord2f));
-		FACES.ovlTexCoord [faceP->m_info.nIndex + 3] = h;
+		FACES.ovlTexCoord [faceP->m_info.nIndex + 3] = tc;
 		}
-	}
+#if !USE_OPENMP
+	SDL_mutexV (tiRender.semaphore);
+#endif
 	}
 }
 
@@ -554,7 +561,6 @@ for (i = nStart; i < nEnd; i++) {
 			faceP->m_info.bVisible = 0;
 			continue;
 			}
-		FixTriangleFan (segP, faceP);
 		if (!AddFaceListItem (faceP, nThread))
 			continue;
 		faceP->m_info.color = faceColor [nColor].color;
