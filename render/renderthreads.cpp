@@ -83,7 +83,7 @@ for (i = 0; i < nThreads; i++)
 	tiRender.ti [i].bExec = 1;
 if (!bWait)
 	return 1;
-#if DBG
+#if 0 //DBG
 t0 = clock ();
 while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 	G3_SLEEP (0);
