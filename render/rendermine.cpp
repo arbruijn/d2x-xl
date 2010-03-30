@@ -302,7 +302,7 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
-bSemaphore [nThread] = 2;
+bSemaphore [nThread] |= 2;
 return 1;
 }
 
@@ -312,11 +312,9 @@ void RenderObjectsMT (void)
 {
 	int	nThreads = gameStates.app.nThreads;
 	int	nListPos [MAX_THREADS] = {0,1,2,3};
-	int	bFinished [MAX_THREADS] = {0,0,0,0};
-	int	i;
+	int	i = -1;
 
 memset (bSemaphore, 0, sizeofa (bSemaphore));
-i = -1;
 while (nThreads) {
 	do {
 		i = ++i % gameStates.app.nThreads;
