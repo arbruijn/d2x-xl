@@ -362,11 +362,11 @@ gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 
-int i, j;
-short nSegment;
+	int	i;
+	short nSegment;
 
 gameData.render.mine.nRenderSegs [1] = 0;
-for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
+for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 memset (bSemaphore, 1, sizeofa (bSemaphore));
