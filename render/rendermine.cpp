@@ -369,10 +369,11 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 memset (bSemaphore, 1, sizeofa (bSemaphore));
 
-#if 0
-int nThreads = gameStates.app.nThreads;
-gameStates.app.nThreads = 1;
-#endif
+#if 1
+
+RenderObjectsST ();
+
+#else
 
 if (gameStates.app.nThreads < 2) 
 	RenderObjectsST ();
@@ -390,8 +391,6 @@ RenderObjectsST ();
 #endif
 	}
 
-#if 0
-gameStates.app.nThreads = nThreads;
 #endif
 
 gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
