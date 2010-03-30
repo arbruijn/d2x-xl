@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "visibility.h"
 #include "autodl.h"
 #include "key.h"
+#include "addon_bitmaps.h"
 
 #define SHOW_PLAYER_IP		0
 

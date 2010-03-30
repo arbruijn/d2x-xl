@@ -258,7 +258,7 @@ dotTrail = CFloatVector::Dot (vPosf, v);
 v = *vCap - vEye;
 CFloatVector::Normalize (v);
 dotCap = CFloatVector::Dot (vPosf, v);
-transparencyRenderer.AddLightTrail (bmpThruster, vCap, tcCap [m_bPlayer], (dotTrail < dotCap) ? vTrail : NULL, tcTrail [m_bPlayer], colorP);
+transparencyRenderer.AddLightTrail (thruster.Bitmap (), vCap, tcCap [m_bPlayer], (dotTrail < dotCap) ? vTrail : NULL, tcTrail [m_bPlayer], colorP);
 }
 
 // -----------------------------------------------------------------------------
@@ -278,7 +278,7 @@ if (thruster.Load ()) {
 		verts [i] [Z] = z;
 		}
 	glColor3f (1,1,1);
-	ogl.RenderQuad (bmpThruster, verts, 3, tcCap [m_bPlayer]);
+	ogl.RenderQuad (thruster.Bitmap (), verts, 3, tcCap [m_bPlayer]);
 	ogl.SetTexturing (true);
 	thruster.Bitmap ()->Bind (1);
 	}
@@ -328,12 +328,12 @@ else {
 
 if (m_nStyle == 2) {
 	ogl.SetTexturing (true);
-	bmpThruster->SetTranspType (-1);
-	if (bmpThruster->Bind (1)) {
+	thruster.Bitmap ()->SetTranspType (-1);
+	if (thruster.Bitmap ()->Bind (1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = bFallback ? 0 : 1;
 		return false;
 		}
-	bmpThruster->Texture ()->Wrap (GL_CLAMP);
+	thruster.Texture ()->Wrap (GL_CLAMP);
 	}
 
 float fSpeed = X2F (objP->mType.physInfo.velocity.Mag ());

@@ -21,6 +21,7 @@
 #include "network.h"
 #include "glare.h"
 #include "automap.h"
+#include "addon_bitmaps.h"
 
 #define CORONA_OUTLINE	0
 #if DBG

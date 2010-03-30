@@ -46,6 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 #include "radar.h"
 #include "menubackground.h"
+#include "addon_bitmaps.h"
 
 #define bSavingMovieFrames 0
 
@@ -100,7 +101,7 @@ if (xStereoSeparation) {
 
 void DrawScope (void)
 {
-if (LoadScope ()) {
+if (scope.Load ()) {
 	float sh = float (screen.Height ());
 	float ch = float (CCanvas::Current ()->Height ());
 	float w = 0.25f * float (CCanvas::Current ()->Width ()) / ch;
@@ -113,7 +114,7 @@ if (LoadScope ()) {
 	ogl.SetDepthTest (false);
 	if (bmpScope->Bind (1))
 		return;
-	bmpScope->Texture ()->Wrap (GL_REPEAT);
+	scope.Texture ()->Wrap (GL_REPEAT);
 	glColor3f (1.0f, 1.0f, 1.0f);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0.5f - w, 0.25f);

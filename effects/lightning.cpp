@@ -826,7 +826,7 @@ if (!(/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates 
 ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTexturing (true);
 if (corona.Load ()) {
-	corona.Bitmap ()->Texture ()->Wrap (GL_CLAMP);
+	corona.Texture ()->Wrap (GL_CLAMP);
 	return 1;
 	}
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);

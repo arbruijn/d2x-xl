@@ -16,6 +16,7 @@ class CAddonBitmap {
 		int Load (char *pszName = NULL);
 		void Unload (void);
 		inline CBitmap* Bitmap (void) { return m_bmP; }
+		inline CTexture* Texture (void) { return m_bmP->Texture (); }
 		~CAddonBitmap () { Unload (); }
 };
 
@@ -59,7 +60,7 @@ void FreeJoyMouse (void);
 extern CBitmap* corona.Bitmap ();
 extern CBitmap* bmpGlare;
 extern CBitmap* bmpHalo;
-extern CBitmap* bmpThruster;
+extern CBitmap* thruster.Bitmap ();
 extern CBitmap* shield.Bitmap ();
 extern CBitmap* explBlast.Bitmap ();
 extern CBitmap* bmpSparks;

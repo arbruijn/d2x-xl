@@ -42,6 +42,7 @@
 #include "particles.h"
 #include "renderthreads.h"
 #include "automap.h"
+#include "addon_bitmaps.h"
 
 //------------------------------------------------------------------------------
 

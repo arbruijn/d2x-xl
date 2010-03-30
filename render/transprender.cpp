@@ -940,7 +940,7 @@ ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;
 m_data.bUseLightmaps = 0;
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-if (LoadImage (bmpSparks, 0, 0, 0, GL_CLAMP)) {
+if (LoadImage (sparks.Bitmap (), 0, 0, 0, GL_CLAMP)) {
 	if (!(bSoftBlend && glareRenderer.LoadShader (3, 1)))
 		shaderManager.Deploy (-1);
 	ogl.SetBlendMode (1);

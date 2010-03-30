@@ -42,6 +42,7 @@
 #include "glare.h"
 #include "renderlib.h"
 #include "transprender.h"
+#include "addon_bitmaps.h"
 
 //------------------------------------------------------------------------------
 

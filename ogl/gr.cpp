@@ -41,6 +41,7 @@
 #include "lightmap.h"
 #include "menu.h"
 #include "menubackground.h"
+#include "addon_bitmaps.h"
 
 #define DECLARE_VARS
 
