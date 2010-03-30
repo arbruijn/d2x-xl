@@ -200,7 +200,7 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-int SortObjList (int nSegment)
+int SortObjList (short nSegment)
 {
 	tObjRenderListItem*	pi;
 	int						i, j;
@@ -220,14 +220,14 @@ return j;
 
 //------------------------------------------------------------------------------
 
-void RenderObjList (int nListPos, int nWindow)
+void RenderObjList (short nSegment, int nWindow)
 {
 PROF_START
 	int i, j;
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
-for (i = 0, j = SortObjList (gameData.render.mine.segRenderList [1][nListPos]); i < j; i++)
+for (i = 0, j = SortObjList (nSegment); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
 gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
 PROF_END(ptRenderObjects)
@@ -274,7 +274,7 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 		lightManager.SetNearestStatic (nSegment, 1, 1, 0);
 		}
-	RenderObjList (i, gameStates.render.nWindow);
+	RenderObjList (nSegment, gameStates.render.nWindow);
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, 0);
 	}	
@@ -284,11 +284,11 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 
 static SDL_mutex* renderLock = NULL;
 
-void RenderObjectsMT (int i, int nThread)
+void RenderObjectsMT (short nSegment, int nThread)
 {
 SDL_mutexP (renderLock);
 lightManager.SetThreadId (nThread);
-RenderObjList (i, gameStates.render.nWindow);
+RenderObjList (nSegment, gameStates.render.nWindow);
 lightManager.SetThreadId (-1);
 SDL_mutexV (renderLock);
 }
@@ -305,7 +305,7 @@ for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
 		}
-	RenderObjectsMT (i, nThread);
+	RenderObjectsMT (nSegment, nThread);
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, nThread);
 	}	
