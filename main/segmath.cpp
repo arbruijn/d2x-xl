@@ -555,27 +555,33 @@ for (;;) {
 
 #else
 
+typedef struct tSegPathNode {
+	ushort			bVisited;
+	short				nDepth;
+	short				nPred;
+} tSegPathNode;
+
 	short				nSegment, nChildSeg;
 	short				nTail = 0, nHead = 1;
 	int				nDepth, nLength;
 	CSegment*		segP;
 	short				segQueue [MAX_SEGMENTS_D2X];
-	short				segPreds [MAX_SEGMENTS_D2X];
-	short				segDepth [MAX_SEGMENTS_D2X];
+	tSegPathNode*	pathNodeP;
 
-	static ushort	bVisited [MAX_SEGMENTS_D2X];
+	static tSegPathNode	segPath [MAX_SEGMENTS_D2X];
 	static ushort	bFlag = 0xFFFF;
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (!++bFlag) {
-	memset (bVisited, 0, sizeofa (bVisited));
+	memset (segPath, 0, sizeof (segPath));
 	bFlag = 1;
 	}
 
 nSegment = nStartSeg;
-bVisited [nStartSeg] = bFlag;
+segPath [nStartSeg].bVisited = bFlag;
+segPath [nStartSeg].nDepth = 0;
+segPath [nStartSeg].nPred = -1;
 segQueue [0] = nStartSeg;
-segDepth [nStartSeg] = 0;
 nDepth = 0;
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
@@ -583,17 +589,18 @@ if (nMaxDepth < 0)
 while ((nTail < nHead) && (nDepth < nMaxDepth)) {
 	nSegment = segQueue [nTail++];
 	segP = SEGMENTS + nSegment;
-	nDepth = segDepth [nSegment] + 1;
+	nDepth = segPath [nSegment].nDepth + 1;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
 			continue;
 		nChildSeg = segP->m_children [nSide];
-		if (bVisited [nChildSeg] == bFlag)
+		pathNodeP = segPath + nChildSeg;
+		if (pathNodeP->bVisited == bFlag)
 			continue;
 		if (nChildSeg != nDestSeg) {
-			bVisited [nChildSeg] = bFlag;
-			segDepth [nChildSeg] = nDepth;
-			segPreds [nChildSeg] = nSegment;
+			pathNodeP->bVisited = bFlag;
+			pathNodeP->nDepth = nDepth;
+			pathNodeP->nPred = nSegment;
 			segQueue [nHead++] = nChildSeg;
 			continue;
 			}
@@ -601,7 +608,7 @@ while ((nTail < nHead) && (nDepth < nMaxDepth)) {
 		xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
 		nLength = 3; 
 		for (;;) {
-			nChildSeg = segPreds [nSegment];
+			nChildSeg = segPath [nSegment].nPred;
 #if DBG
 			if (nChildSeg < 0)
 				nChildSeg = nChildSeg;

@@ -155,13 +155,14 @@ else
 distance = CFixVector::NormalizedDir (vecToSound, vSoundPos, vListenerPos);
 if (distance < maxDistance) {
 	int nSearchSegs = X2I (maxDistance / 10);
-	if (nSearchSegs < 1)
-		nSearchSegs = 1;
+	if (nSearchSegs < 3)
+		nSearchSegs = 3;
 	pathDistance = FindConnectedDistance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_RENDPAST_FLAG | WID_FLY_FLAG, 0);
 	if (pathDistance > -1) {
 		if (!nDecay)
 #if 1
-			*nVolume = FixMulDiv (maxVolume, maxDistance - pathDistance, maxDistance);
+			//*nVolume = FixMulDiv (maxVolume, maxDistance - pathDistance, maxDistance);
+			*nVolume = fix (float (maxVolume) * (1.0f - float (pathDistance) / float (maxDistance)));
 #else
 			*nVolume = maxVolume - FixDiv (pathDistance, maxDistance);
 #endif
