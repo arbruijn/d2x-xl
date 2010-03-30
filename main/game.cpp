@@ -781,7 +781,7 @@ gameData.render.monsterball.Destroy ();
 PrintLog ("unloading HUD icons\n");
 hudIcons.Destroy ();
 PrintLog ("unloading extra texture data\n");
-FreeExtraImages ();
+UnloadAddonImages ();
 PrintLog ("unloading palettes\n");
 gameData.segs.skybox.Destroy ();
 #if GPGPU_VERTEX_LIGHTING

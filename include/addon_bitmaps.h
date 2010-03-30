@@ -15,11 +15,15 @@ class CAddonBitmap {
 		CAddonBitmap (char *pszName = NULL);
 		int Load (char *pszName = NULL);
 		void Unload (void);
+		inline CBitmap* Bitmap (void) { return m_bmP; }
 };
 
 //------------------------------------------------------------------------------
 
 int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP);
+
+void LoadAddonImages (void);
+void UnloadAddonImages (void);
 
 extern CAddonBitmap explBlast;
 extern CAddonBitmap corona;
@@ -47,8 +51,6 @@ int LoadDamageIcon (int i);
 void FreeDamageIcon (int i);
 int LoadScope (void);
 void FreeScope (void);
-void LoadAddonImages (void);
-void FreeExtraImages (void);
 void FreeDeadzone (void);
 int LoadJoyMouse (void);
 void FreeJoyMouse (void);

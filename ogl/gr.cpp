@@ -176,7 +176,7 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 		hudIcons.Destroy ();
 		//ResetHoardData ();
 		particleImageManager.FreeAll ();
-		FreeExtraImages ();
+		UnloadAddonImages ();
 		LoadAddonImages ();
 		FreeStringPool ();
 		OOF_ReleaseTextures ();
