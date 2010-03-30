@@ -25,7 +25,7 @@ tRenderThreadInfo tiRender;
 tTranspRenderThreadInfo tiTranspRender;
 tThreadInfo tiEffects;
 
-void RenderMineObjectsThread (int nThread);
+int _CDECL_ RenderMineObjectsThread (int nThread);
 
 //------------------------------------------------------------------------------
 
