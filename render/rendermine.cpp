@@ -286,8 +286,9 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ LightObjectsThread (int nThread)
+int _CDECL_ LightObjectsThread (void* nThreadP)
 {
+	int	nThread = *((int*) nThreadP);
 	short nSegment;
 
 for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
@@ -369,23 +370,27 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 memset (bSemaphore, 1, sizeofa (bSemaphore));
 
-#if 1
+#if 0
 
 RenderObjectsST ();
 
 #else
 
-if (gameStates.app.nThreads < 2) 
+if (gameStates.app.nThreads < 3) 
 	RenderObjectsST ();
 else {
 #if USE_OPENMP > 1
-	SDL_thread*	threads [MAX_THREADS];
+	--gameStates.app.nThreads;
+	SDL_Thread*	threads [MAX_THREADS];
 	for (i = 0; i < gameStates.app.nThreads; i++)
 		threads [i] = SDL_CreateThread (LightObjectsThread, &i);
 	RenderObjectsMT ();
+	++gameStates.app.nThreads;
 #elif !USE_OPENMP
+	--gameStates.app.nThreads;
 	RunRenderThreads (-int (rtPolyModel) - 1);
 	RenderObjectsMT ();
+	++gameStates.app.nThreads;
 #else
 RenderObjectsST ();
 #endif

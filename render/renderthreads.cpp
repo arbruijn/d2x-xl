@@ -25,7 +25,7 @@ tRenderThreadInfo tiRender;
 tTranspRenderThreadInfo tiTranspRender;
 tThreadInfo tiEffects;
 
-int _CDECL_ LightObjectsThread (int nThread);
+int _CDECL_ LightObjectsThread (void* nThreadP);
 
 //------------------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ do {
 			}
 		}
 	else if (tiRender.nTask == rtPolyModel) {
-		LightObjectsThread (nId);
+		LightObjectsThread (&nId);
 		}
 	else if (tiRender.nTask == rtLightmap)
 		lightmapManager.Build (nId);
