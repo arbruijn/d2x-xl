@@ -8,7 +8,7 @@
 class CAddonBitmap {
 	private:
 		int		m_bAvailable;
-		char		m_szName [PATHNAME_LEN];
+		char		m_szName [FILENAME_LEN];
 		CBitmap*	m_bmP;
 
 	public:
@@ -16,6 +16,7 @@ class CAddonBitmap {
 		int Load (char *pszName = NULL);
 		void Unload (void);
 		inline CBitmap* Bitmap (void) { return m_bmP; }
+		~CAddonBitmap () { Unload (); }
 };
 
 //------------------------------------------------------------------------------
@@ -32,18 +33,18 @@ extern CAddonBitmap halo;
 extern CAddonBitmap thruster;
 extern CAddonBitmap shield;
 extern CAddonBitmap deadzone;
-extern CAddonBitmap damageIcons [3];
+extern CAddonBitmap damageIcon [3];
 extern CAddonBitmap scope;
 extern CAddonBitmap joyMouse;
 
 #if 0
-int LoadExplBlast (void);
+int explBlast.Load (void);
 void FreeExplBlast (void);
-int LoadCorona (void);
+int corona.Load () (void);
 int LoadGlare (void);
 int LoadHalo (void);
 int LoadThruster (int nStyle = -1);
-int LoadShield (void);
+int shield.Load (void);
 int LoadDeadzone (void);
 void LoadDamageIcons (void);
 void FreeDamageIcons (void);
@@ -55,14 +56,14 @@ void FreeDeadzone (void);
 int LoadJoyMouse (void);
 void FreeJoyMouse (void);
 
-extern CBitmap* bmpCorona;
+extern CBitmap* corona.Bitmap ();
 extern CBitmap* bmpGlare;
 extern CBitmap* bmpHalo;
 extern CBitmap* bmpThruster;
-extern CBitmap* bmpShield;
-extern CBitmap* bmpExplBlast;
+extern CBitmap* shield.Bitmap ();
+extern CBitmap* explBlast.Bitmap ();
 extern CBitmap* bmpSparks;
-extern CBitmap* bmpDeadzone;
+extern CBitmap* deadzone.Bitmap ();
 extern CBitmap* bmpScope;
 extern CBitmap* bmpJoyMouse;
 extern CBitmap* bmpDamageIcon [3];

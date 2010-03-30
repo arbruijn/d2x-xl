@@ -15,6 +15,7 @@
 #include "renderlib.h"
 #include "transprender.h"
 #include "thrusterflames.h"
+#include "addon_bitmaps.h"
 
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
@@ -264,12 +265,7 @@ transparencyRenderer.AddLightTrail (bmpThruster, vCap, tcCap [m_bPlayer], (dotTr
 
 void CThrusterFlames::RenderCap (void)
 {
-if (LoadThruster (1)) {
-	bmpThruster->SetTranspType (-1);
-	if (bmpThruster->Bind (1))
-		return;
-	bmpThruster->Texture ()->Wrap (GL_CLAMP);
-	
+if (thruster.Load ()) {
 	CFloatVector	verts [4];
 	float				z = (m_vFlame [0][0][Z] + m_vFlame [1][0][Z]) / 2.0f * m_ti.fLength;
 	float				scale = m_ti.fSize * 1.6666667f;
@@ -284,7 +280,7 @@ if (LoadThruster (1)) {
 	glColor3f (1,1,1);
 	ogl.RenderQuad (bmpThruster, verts, 3, tcCap [m_bPlayer]);
 	ogl.SetTexturing (true);
-	bmpThruster->Bind (1);
+	thruster.Bitmap ()->Bind (1);
 	}
 }
 
@@ -319,11 +315,11 @@ if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->inf
 
 bool bFallback;
 
-if (LoadThruster (m_nStyle)) 
+if (thruster.Load ()) 
 	bFallback = false;
 else {
 	m_nStyle ^= 3;	// fall back to other style
-	if (!LoadThruster (m_nStyle)) {
+	if (!thruster.Load ()) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 0;	// didn't work either
 		return false;
 		}

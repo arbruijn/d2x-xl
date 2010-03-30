@@ -23,6 +23,7 @@
 #include "objeffects.h"
 #include "hiresmodels.h"
 #include "hitbox.h"
+#include "addon_bitmaps.h"
 
 #ifndef fabsf
 #	define fabsf(_f)	(float) fabs (_f)
@@ -34,10 +35,10 @@
 
 void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, float blue, float alpha, int bCorona)
 {
-if ((gameOpts->render.coronas.bShots && (bCorona ? LoadCorona () : LoadHalo ()))) {
+if ((gameOpts->render.coronas.bShots && (bCorona ? corona.Load () : halo.Load ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	ogl.SetDepthWrite (false);
-	CBitmap* bmP = bCorona ? bmpCorona : bmpHalo;
+	CBitmap* bmP = bCorona ? corona.Bitmap () : halo.Bitmap ();
 	bmP->SetColor (&c);
 	ogl.RenderSprite (bmP, *vPos, xSize, xSize, alpha * 4.0f / 3.0f, LIGHTTRAIL_BLENDMODE, 1);
 	ogl.SetDepthWrite (true);
@@ -148,7 +149,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return 0;
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
-else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
+else if (gameOpts->render.coronas.bShots && corona.Load ()) {
 	fix			xSize;
 	tRgbaColorf	color;
 
@@ -172,7 +173,8 @@ else if (gameOpts->render.coronas.bShots && LoadCorona ()) {
 	color.red = colorP->red * alpha;
 	color.green = colorP->green * alpha;
 	color.blue = colorP->blue * alpha;
-	return transparencyRenderer.AddSprite (bmpCorona, vPos, &color, FixMulDiv (xSize, bmpCorona->Width (), bmpCorona->Height ()), xSize, 0, LIGHTTRAIL_BLENDMODE, 3);
+	return transparencyRenderer.AddSprite (corona.Bitmap (), vPos, &color, FixMulDiv (xSize, corona.Bitmap ()->Width (), corona.Bitmap ()->Height ()), 
+														xSize, 0, LIGHTTRAIL_BLENDMODE, 3);
 	}
 return 0;
 }

@@ -20,6 +20,7 @@
 #include "objrender.h"
 #include "transprender.h"
 #include "oof.h"
+#include "addon_bitmaps.h"
 
 #define ADDITIVE_SPHERE_BLENDING 1
 #define MAX_SPHERE_RINGS 256
@@ -456,7 +457,7 @@ if (m_pulseP) {
 else
 	fScale = 1;
 #if 1
-if (bmP && (bmP == bmpShield)) {
+if (bmP && (bmP == shield.Bitmap ())) {
 	static time_t t0 = 0;
 	bTextured = 1;
 	if ((gameStates.app.nSDLTicks - t0 > 40) && bmP->CurFrame ()) {
@@ -825,7 +826,7 @@ pulseP->fDir = fSpeed;
 
 int CreateShieldSphere (void)
 {
-if (!LoadShield ())
+if (!shield.Load ())
 	return 0;
 #if RINGED_SPHERE
 //gameData.render.shield.Destroy ();
@@ -867,7 +868,7 @@ if (gameData.render.shield.nFaces > 0)
 		}
 	float r = X2F (nSize);
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
-		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, bmpShield, 1, bAdditive);
+		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
 	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize)) {
 		// full and not just partial sphere rendered
 		if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk) ||

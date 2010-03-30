@@ -591,7 +591,7 @@ else if (!bDepthSort) {
 	if (bmBot->Bind (1))
 		return 1;
 	bmBot = bmBot->CurFrame (-1);
-	bmBot->Texture ()->Wrap ((bmBot == bmpDeadzone) ? GL_CLAMP : GL_REPEAT);
+	bmBot->Texture ()->Wrap ((bmBot == deadzone.Bitmap ()) ? GL_CLAMP : GL_REPEAT);
 	}
 
 if (!bDepthSort) {
@@ -951,7 +951,7 @@ else
 	InitTMU0 (1);
 if (bmP->Bind (1))
 	return 1;
-if (bmP == bmpDeadzone)
+if (bmP == deadzone.Bitmap ())
 	bmP->Texture ()->Wrap (GL_CLAMP);
 else
 	bmP->Texture ()->Wrap (GL_REPEAT);

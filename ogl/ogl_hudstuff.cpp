@@ -32,6 +32,7 @@
 #include "ogl_hudstuff.h"
 #include "renderlib.h"
 #include "cockpit.h"
+#include "addon_bitmaps.h"
 
 //------------------------------------------------------------------------------
 
@@ -60,9 +61,9 @@ glCallList (mouseIndList);
 else {
 	glNewList (mouseIndList, GL_COMPILE_AND_EXECUTE);
 #endif
-	if (LoadJoyMouse ()) {
+	if (joyMouse.Load ()) {
 		color.color.alpha = 255;
-		bmpJoyMouse->RenderScaled (mouseData.x - 8, mouseData.y - 8, 16, 16, I2X (1), 0, &color);
+		joyMouse.Bitmap ()->RenderScaled (mouseData.x - 8, mouseData.y - 8, 16, 16, I2X (1), 0, &color);
 		color.color.alpha = 96;
 		}
 	else {
@@ -76,7 +77,7 @@ else {
 		OglDrawEllipse (12, GL_LINE_LOOP, 1.5f, 0, 1.5f * float (screen.Height ()) / float (screen.Width ()), 0, sinCos12);
 		glPopMatrix ();
 		}
-	if (LoadDeadzone ()) {
+	if (deadzone.Load ()) {
 		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (float) screen.Width ();
 		h = r / (float) screen.Height ();
@@ -88,14 +89,14 @@ else {
 		vPosf [X] =
 		vPosf [Y] = 0;
 		tTexCoord2f texCoord [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-		bmpDeadzone->SetTexCoord (texCoord);
-		ogl.RenderQuad (bmpDeadzone, vPosf, w, h);
+		deadzone.Bitmap ()->SetTexCoord (texCoord);
+		ogl.RenderQuad (deadzone.Bitmap (), vPosf, w, h);
 		ogl.BindTexture (0);
 		ogl.SetTexturing (false);
 		glPopMatrix ();
 		}
 	else {
-		LoadDeadzone ();
+		deadzone.Load ();
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
 		glScalef (scale / 320.0f, scale / 200.0f, scale);	//the positions are based upon the standard reticle at 320x200 res.

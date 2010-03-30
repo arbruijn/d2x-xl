@@ -1675,9 +1675,9 @@ else {
 
 	nRad *= 2;
 	for (i = 0; i < 3; i++) {
-		if (LoadDamageIcon (i)) {
+		if (damageIcon [i].Load ()) {
 			CCanvas::Current ()->SetColorRGBi (dmgColors [i][int (X2F (m_info.nDamage [i]) * 200.0f + 0.5f) / 33]);
-			bmpDamageIcon [i]->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
+			damageIcon [i].Bitmap ()->RenderScaled (x, y, nRad, nRad, I2X (1), 0, &CCanvas::Current ()->Color ());
 			}
 		}
 	}

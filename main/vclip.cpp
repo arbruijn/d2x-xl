@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "u_mem.h"
 #include "hiresmodels.h"
+#include "addon_bitmaps.h"
 
 #define BLAST_TYPE 0
 #define MOVE_BLAST 1
@@ -170,7 +171,7 @@ void DrawExplBlast (CObject *objP)
 #endif
 if (objP->info.xLifeLeft <= 0)
 	return;
-if (!LoadExplBlast ())
+if (!explBlast.Load ())
 	return;
 fLife = X2F (BLAST_LIFE * 2 - objP->info.xLifeLeft);
 xSize = (fix) (objP->info.xSize * fLife * BLAST_SCALE);
@@ -188,13 +189,13 @@ color.red =
 color.green =
 color.blue =
 color.alpha = fAlpha;
-bmpExplBlast->SetColor (&color);
-ogl.RenderSprite (bmpExplBlast, vPos, xSize, xSize, fAlpha, 2, 10);
+explBlast.Bitmap ()->SetColor (&color);
+ogl.RenderSprite (explBlast.Bitmap (), vPos, xSize, xSize, fAlpha, 2, 10);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
-	ogl.RenderSprite (bmpExplBlast, &vPos, xSize, xSize, &color, fAlpha * blastColors [i].alpha, 0);
+	ogl.RenderSprite (explBlast.Bitmap (), &vPos, xSize, xSize, &color, fAlpha * blastColors [i].alpha, 0);
 #elif BLAST_TYPE == 2
 CreateSphere (&sd);
 fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);

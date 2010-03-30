@@ -463,7 +463,7 @@ if (!bColored)
 color.alpha *= fIntensity * fIntensity;
 if (color.alpha < 0.01f)
 	return;
-if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
+if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ())))
 	return;
 bmP->SetTranspType (-1);
 ogl.SetFaceCulling (false);
@@ -528,7 +528,7 @@ void CGlareRenderer::RenderSoftGlare (CFloatVector *sprite, CFloatVector *vCente
 	CBitmap*		bmP = NULL;
 
 //ogl.SetBlendMode (bAdditive);
-if (!(bmP = bAdditive ? bmpGlare : bmpCorona))
+if (!(bmP = (bAdditive ? glare.Bitmap () : corona.Bitmap ()))
 	return;
 if (gameStates.render.bAmbientColor)
 	color = gameData.render.color.textures [nTexture].color;

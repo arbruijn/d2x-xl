@@ -24,9 +24,7 @@
 #include "dynlight.h"
 #include "ogl_lib.h"
 #include "automap.h"
-#ifdef TACTILE
-#	include "tactile.h"
-#endif
+#include "addon_bitmaps.h"
 
 #define RENDER_LIGHTNING_OUTLINE 0
 
@@ -827,8 +825,8 @@ if (!(/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates 
 	return 0;
 ogl.SelectTMU (GL_TEXTURE0, true);
 ogl.SetTexturing (true);
-if (LoadCorona () && !bmpCorona->Bind (1)) {
-	bmpCorona->Texture ()->Wrap (GL_CLAMP);
+if (corona.Load ()) {
+	corona.Bitmap ()->Texture ()->Wrap (GL_CLAMP);
 	return 1;
 	}
 ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
