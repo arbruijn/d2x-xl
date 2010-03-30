@@ -395,8 +395,11 @@ else {
 #if USE_OPENMP > 1
 	--gameStates.app.nThreads;
 	SDL_Thread*	threads [MAX_THREADS];
-	for (i = 0; i < gameStates.app.nThreads; i++)
-		threads [i] = SDL_CreateThread (LightObjectsThread, &i);
+	int nThread;
+	for (i = 0; i < gameStates.app.nThreads; i++) {
+		nThread = i;
+		threads [i] = SDL_CreateThread (LightObjectsThread, &nThread);
+		}
 	RenderObjectsMT ();
 	++gameStates.app.nThreads;
 #elif !USE_OPENMP
