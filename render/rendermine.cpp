@@ -264,26 +264,12 @@ PROF_END(ptRenderPass)
 
 //------------------------------------------------------------------------------
 
-typedef struct tObjRenderThreadInfo {
-	SDL_thread*	render;
-	SDL_thread*	light;
-	SDL_mutex*	lock;
-	SDL_cond*	canRender;
-	SDL_cond*	canReset;
-	} tObjRenderThreadInfo;
-
-static SDL_mutex* renderLock;
-
-static tObjRenderThreadInfo orti [MAX_THREADS];
-
-//------------------------------------------------------------------------------
-
-void RenderMineObjectsST (void)
+void RenderObjectsST (void)
 {
 	short nSegment;
 
 for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
-	nSegment = gameData.render.mine.renderSegs [1][i];
+	nSegment = gameData.render.mine.segRenderList [1][i];
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 		lightManager.SetNearestStatic (nSegment, 1, 1, 0);
@@ -296,11 +282,13 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 
 //------------------------------------------------------------------------------
 
-void RenderMineObjectsMT (short nSegment, int nThread)
+static SDL_mutex* renderLock = NULL;
+
+void RenderObjectsMT (short nSegment, int nThread)
 {
 SDL_mutexP (renderLock);
 lightManager.SetThreadId (nThread);
-RenderObjList (i, gameStates.render.nWindow);
+RenderObjList (nSegment, gameStates.render.nWindow);
 lightManager.SetThreadId (-1);
 SDL_mutexV (renderLock);
 }
@@ -357,7 +345,7 @@ gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->o
 	short nSegment;
 
 gameData.render.mine.nRenderSegs [1] = 0;
-for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
+for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 
@@ -365,6 +353,9 @@ for (i = j = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 int nThreads = gameStates.app.nThreads;
 gameStates.app.nThreads = 1;
 #endif
+
+if (!renderLock)
+	renderLock = SDL_CreateMutex ();
 
 #if USE_OPENMP
 SDL_thread* threads [MAX_THREADS];
@@ -374,7 +365,7 @@ for (i = 0; i < gameStates.app.nThreads)
 	SDL_WaitThread (threads [i]);
 #else
 if (!RunRenderThreads (-int (rtPolyModel) - 1))
-	RenderMineObjectsST ();
+	RenderObjectsST ();
 #endif
 
 #if DBG
