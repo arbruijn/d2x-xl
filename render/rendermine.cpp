@@ -427,7 +427,7 @@ RenderObjectsST ();
 #else
 
 nThreads = 0;
-memset (bSemaphore, 0, sizeofa (bSemaphore));
+memset (bSemaphore, 0, sizeof (bSemaphore));
 
 if ((gameStates.app.nThreads < 3) || (gameData.render.mine.nRenderSegs [1] < 2 * (gameStates.app.nThreads - 1)))
 	RenderObjectsST ();
@@ -437,11 +437,9 @@ else {
 		threadLock = SDL_CreateMutex ();
 	nThreads = --gameStates.app.nThreads;
 	SDL_Thread*	threads [MAX_THREADS];
-	int nThread;
-	for (i = 0; i < gameStates.app.nThreads; i++) {
-		nThread = i;
-		threads [i] = SDL_CreateThread (LightObjectsThread, &nThread);
-		}
+	int nThreadIds [MAX_THREADS] = {0,1,2,3};
+	for (i = 0; i < gameStates.app.nThreads; i++) 
+		threads [i] = SDL_CreateThread (LightObjectsThread, nThreadIds + i);
 	RenderObjectsMT ();
 	++gameStates.app.nThreads;
 #elif !USE_OPENMP

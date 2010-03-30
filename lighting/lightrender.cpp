@@ -736,28 +736,16 @@ void CLightManager::ResetNearestToVertex (int nVertex, int nThread)
 
 //------------------------------------------------------------------------------
 
-static SDL_mutex* lock = NULL;
-static int prevThread [2] = {-1,-1};
-
 void CLightManager::ResetUsed (CDynLight* prl, int nThread)
 {
-if (!lock)
-	lock = SDL_CreateMutex ();
-
 	CActiveDynLight* activeLightsP = prl->render.activeLightsP [nThread];
 
 if (activeLightsP) {
-	if (activeLightsP != prl->render.activeLightsP [nThread])
-		activeLightsP = activeLightsP;
-	else {
-		activeLightsP->pl = NULL;
-		activeLightsP->nType = 0;
-		prl->render.activeLightsP [nThread] = NULL;
-		}
+	prl->render.activeLightsP [nThread] = NULL;
+	activeLightsP->pl = NULL;
+	activeLightsP->nType = 0;
 	}
 prl->render.bUsed [nThread] = 0;
-prevThread [1] = prevThread [0];
-prevThread [0] = nThread;
 }
 
 //------------------------------------------------------------------------------
