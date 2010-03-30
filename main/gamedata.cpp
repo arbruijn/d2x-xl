@@ -335,7 +335,7 @@ nProcessed = 255;
 nVisible = 255;
 CREATE (segRenderList [0], gameData.segs.nSegments, 0);
 CREATE (segRenderList [1], gameData.segs.nSegments, 0);
-CREATE (nRenderPos, gameData.segs.nSegments, 0);
+CREATE (renderPos, gameData.segs.nSegments, 0);
 CREATE (renderFaceListP, gameData.segs.nFaces, 0);
 CREATE (bVisited, gameData.segs.nSegments, 0);
 CREATE (bVisible, gameData.segs.nSegments, 0);
@@ -358,7 +358,7 @@ void CMineRenderData::Destroy (void)
 {
 DESTROY (segRenderList [0]);
 DESTROY (segRenderList [1]);
-DESTROY (renderPos [i]);
+DESTROY (renderPos);
 DESTROY (renderFaceListP);
 DESTROY (bVisited);
 DESTROY (bVisible);
