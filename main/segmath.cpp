@@ -562,13 +562,102 @@ typedef struct tSegPathNode {
 } tSegPathNode;
 
 	short				nSegment, nChildSeg;
+	short				nTail [2] = {0, 0}, nHead [2] = {1, 1};
+	int				nDepth, nLength;
+	CSegment*		segP;
+	short				segQueue [2][MAX_SEGMENTS_D2X];
+	tSegPathNode*	pathNodeP;
+
+	static tSegPathNode	segPath [2][MAX_SEGMENTS_D2X];
+	static ushort	bFlag = 0xFFFF;
+
+//	Can't quickly get distance, so see if in gameData.fcd.cache.
+if (!++bFlag) {
+	memset (segPath, 0, sizeof (segPath));
+	bFlag = 1;
+	}
+
+#if 1
+	short				nStartSegs [2] = {nStartSeg, nDestSeg};
+	short				nDestSegs [2] = {nDestSeg, nStartSeg};
+
+nSegment = nStartSeg;
+segPath [0][nStartSeg].bVisited = bFlag;
+segPath [0][nStartSeg].nDepth = 0;
+segPath [0][nStartSeg].nPred = -1;
+segQueue [0][0] = nStartSeg;
+segPath [1][nDestSeg].bVisited = bFlag;
+segPath [1][nDestSeg].nDepth = 0;
+segPath [1][nDestSeg].nPred = -1;
+segQueue [1][0] = nDestSeg;
+nDepth = 0;
+if (nMaxDepth < 0)
+	nMaxDepth = gameData.segs.nSegments;
+
+	int nDir, bScanning = 3;
+
+while (bScanning) {
+	for (nDir = 0; nDir < 2; nDir++) {
+		if (!bScanning & (1 << nDir))
+			continue;
+		if (nTail [nDir] >= nHead [nDir]) {
+			bScanning &= ~(1 << nDir);
+			continue;
+			}
+		nSegment = segQueue [nDir][nTail [nDir]++];
+		nDepth = segPath [nDir][nSegment].nDepth + 1;
+		if (nDepth > nMaxDepth) {
+			bScanning &= ~(1 << nDir);
+			continue;
+			}
+		segP = SEGMENTS + nSegment;
+		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+			if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
+				continue;
+			nChildSeg = segP->m_children [nSide];
+			pathNodeP = &segPath [nDir][nChildSeg];
+			if (pathNodeP->bVisited == bFlag)
+				continue;
+			pathNodeP->nPred = nSegment;
+			if (segPath [!nDir][nChildSeg].bVisited != bFlag) {
+				pathNodeP->bVisited = bFlag;
+				pathNodeP->nDepth = nDepth;
+				segQueue [nDir][nHead [nDir]++] = nChildSeg;
+				continue;
+				}
+			// destination segment reached
+			xDist = 0;
+			nLength = 3; 
+			for (nDir = 0; nDir < 2; nDir++) {
+				nSegment = segPath [nDir][nChildSeg].nPred;
+				for (;;) {
+					nChildSeg = segPath [nDir][nSegment].nPred;
+					if (nChildSeg == nStartSegs [nDir]) {
+						xDist += CFixVector::Dist (nDir ? p1 : p0, SEGMENTS [nSegment].Center ());
+						break;
+						}
+					nLength++;
+					xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
+					nSegment = nChildSeg;
+					}
+				}
+			if (nCacheType >= 0) 
+				fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength, xDist);
+				return xDist;
+			}
+		}
+	}	
+
+#else
+
+	short				nSegment, nChildSeg;
 	short				nTail = 0, nHead = 1;
 	int				nDepth, nLength;
 	CSegment*		segP;
-	short				segQueue [MAX_SEGMENTS_D2X];
+	short				segQueue [2][MAX_SEGMENTS_D2X];
 	tSegPathNode*	pathNodeP;
 
-	static tSegPathNode	segPath [MAX_SEGMENTS_D2X];
+	static tSegPathNode	segPath [2][MAX_SEGMENTS_D2X];
 	static ushort	bFlag = 0xFFFF;
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
@@ -625,6 +714,9 @@ while ((nTail < nHead) && (nDepth < nMaxDepth)) {
 		return xDist;
 		}
 	}	
+
+#endif
+
 if (nCacheType >= 0) 
 	fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, 10000, I2X (10000));
 return -1;
