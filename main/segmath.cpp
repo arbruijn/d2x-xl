@@ -750,17 +750,17 @@ scanData [1].segQueue [0] = nDestSeg;
 scanData [1].nDestSeg = nStartSeg;
 scanData [1].nTail = 0;
 scanData [1].nHead = 1;
-scanData [0].nRouteDir = (nCacheType != 0);
+scanData [1].nRouteDir = (nCacheType != 0);
 scanData [1].nLinkSeg = 0;
 
-#if DBG_SCAN
-if ((nStartSeg == 1307) && (nDestSeg == 1301))
-	nDepth = nDepth;
+#if DBG
+if ((nStartSeg == 4056) && (nDestSeg == 4060))
+	nDbgSeg = nDbgSeg;
 if ((nStartSeg == 702) && (nDestSeg == 71))
-	nDepth = nDepth;
+	nDbgSeg = nDbgSeg;
 #endif
 
-
+#if 0
 if (gameStates.app.nThreads > 1) {
 	SDL_Thread* threads [2];
 	int nThreadIds [2] = {0, 1};
@@ -772,7 +772,9 @@ if (gameStates.app.nThreads > 1) {
 	if ((0 < (scanInfo.nLinkSeg = scanData [0].nLinkSeg)) || (0 < (scanInfo.nLinkSeg = scanData [1].nLinkSeg)))
 		return BuildPathBiDir (p0, p1, nCacheType);
 	}
-else {
+else 
+#endif
+	{
 	for (;;) {
 		for (int nDir = 0; nDir < 2; nDir++) {
 			if (!(scanInfo.nLinkSeg = ExpandSegment (nDir)))
@@ -786,13 +788,6 @@ else {
 	}
 
 errorExit:
-
-#if DBG_SCAN > 1
-if (!++bFlag) {
-	memset (segPath, 0, sizeof (segPath));
-	bFlag = 1;
-	}
-#endif
 
 #else
 
