@@ -569,10 +569,10 @@ typedef struct tSegPathNode {
 retry:
 #endif
 
-	short				nSegment, nSuccSeg, nPredSeg;
+	short				nSuccSeg, nPredSeg;
 	short				nTail [2] = {0, 0}, nHead [2] = {1, 1};
 	int				nDepth, nLength, nRouteDir = (nCacheType != 0);
-	CSegment*		segP;
+	CSegment*		segP, * otherSegP;
 	short				segQueue [2][MAX_SEGMENTS_D2X];
 	tSegPathNode*	pathNodeP;
 
@@ -585,21 +585,23 @@ if (!++bFlag) {
 	bFlag = 1;
 	}
 
-#if 1
-	short				nStartSegs [2] = {nStartSeg, nDestSeg};
-	short				nDestSegs [2] = {nDestSeg, nStartSeg};
+	short	nStartSegs [2] = {nStartSeg, nDestSeg};
 
-segPath [0][nStartSeg].bVisited = bFlag;
-segPath [0][nStartSeg].nDepth = 0;
-segPath [0][nStartSeg].nPred = -1;
-segQueue [0][0] = nStartSeg;
+segPath [0][nStartSeg].bVisited =
 segPath [1][nDestSeg].bVisited = bFlag;
+segPath [0][nStartSeg].nDepth =
 segPath [1][nDestSeg].nDepth = 0;
+segPath [0][nStartSeg].nPred =
 segPath [1][nDestSeg].nPred = -1;
+segQueue [0][0] = nStartSeg;
 segQueue [1][0] = nDestSeg;
 nDepth = 0;
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
+
+#if 0
+
+// bi-directional scanner (expands 1/3 of the segments the uni-directional scanner does on average)
 
 #if DBG
 if ((nStartSeg == 1307) && (nDestSeg == 1301))
@@ -635,9 +637,9 @@ while (bScanning) {
 			if (nSuccSeg < 0)
 				continue;
 			if (nRouteDir) {
-				CSegment* otherSegP = SEGMENTS + nSuccSeg;
-				short nSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
-				if ((nSide == -1) || !(otherSegP->IsDoorWay (nSide, NULL) & widFlag))
+				otherSegP = SEGMENTS + nSuccSeg;
+				short nOtherSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
+				if ((nOtherSide == -1) || !(otherSegP->IsDoorWay (nOtherSide, NULL) & widFlag))
 					continue;
 				}
 			else {
@@ -662,7 +664,7 @@ while (bScanning) {
 			// destination segment reached
 			xDist = 0;
 			nLength = 0; 
-			nSegment = nSuccSeg;
+			short nSegment = nSuccSeg;
 			for (int nDir = 0; nDir < 2; nDir++) {
 				nSuccSeg = nSegment;
 				for (;;) {
@@ -694,6 +696,8 @@ while (bScanning) {
 
 #else
 
+// uni-directional scanner
+
 done:
 
 if (!++bFlag) {
@@ -701,7 +705,7 @@ if (!++bFlag) {
 	bFlag = 1;
 	}
 
-nSegment = nStartSeg;
+nPredSeg = nStartSeg;
 segPath [0][nStartSeg].bVisited = bFlag;
 segPath [0][nStartSeg].nDepth = 0;
 segPath [0][nStartSeg].nPred = -1;
@@ -713,39 +717,52 @@ if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
 
 while ((nTail [0] < nHead [0]) && (nDepth < nMaxDepth)) {
-	nSegment = segQueue [0][nTail [0]++];
-	segP = SEGMENTS + nSegment;
-	nDepth = segPath [0][nSegment].nDepth + 1;
+	nPredSeg = segQueue [0][nTail [0]++];
+	segP = SEGMENTS + nPredSeg;
+	nDepth = segPath [0][nPredSeg].nDepth + 1;
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
+#if 1
+		if (nRouteDir) {
+			otherSegP = SEGMENTS + nSuccSeg;
+			short nOtherSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
+			if ((nOtherSide == -1) || !(otherSegP->IsDoorWay (nOtherSide, NULL) & widFlag))
+				continue;
+			}
+		else {
+			if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
+				continue;
+			}
+#else
 		if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
 			continue;
-		nChildSeg = segP->m_children [nSide];
-		pathNodeP = &segPath [0][nChildSeg];
+#endif
+		nSuccSeg = segP->m_children [nSide];
+		pathNodeP = &segPath [0][nSuccSeg];
 		if (pathNodeP->bVisited == bFlag)
 			continue;
-		if (nChildSeg != nDestSeg) {
+		if (nSuccSeg != nDestSeg) {
 			pathNodeP->bVisited = bFlag;
 			pathNodeP->nDepth = nDepth;
-			pathNodeP->nPred = nSegment;
-			segQueue [0][nHead [0]++] = nChildSeg;
+			pathNodeP->nPred = nPredSeg;
+			segQueue [0][nHead [0]++] = nSuccSeg;
 			continue;
 			}
 		// destination segment reached
-		xDist = CFixVector::Dist (p1, SEGMENTS [nSegment].Center ());
+		xDist = CFixVector::Dist (p1, SEGMENTS [nPredSeg].Center ());
 		nLength = 3; 
 		for (;;) {
-			nChildSeg = segPath [0][nSegment].nPred;
+			nPredSeg = segPath [0][nSuccSeg].nPred;
 #if DBG
-			if (nChildSeg < 0)
-				nChildSeg = nChildSeg;
+			if (nPredSeg < 0)
+				nPredSeg = nPredSeg;
 #endif
-			if (nChildSeg == nStartSeg)
+			if (nPredSeg == nStartSeg)
 				break;
 			nLength++;
-			xDist += CFixVector::Dist (SEGMENTS [nChildSeg].Center (), SEGMENTS [nSegment].Center ());
-			nSegment = nChildSeg;
+			xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
+			nPredSeg = nSuccSeg;
 			}
-		xDist += CFixVector::Dist (p0, SEGMENTS [nSegment].Center ());
+		xDist += CFixVector::Dist (p0, SEGMENTS [nPredSeg].Center ());
 		if (nCacheType >= 0) 
 			fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength, xDist);
 		return xDist;
