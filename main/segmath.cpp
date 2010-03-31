@@ -29,6 +29,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 
 #define USE_DACS 0
+#define BIDIRECTIONAL_SCAN 1
+#if DBG
+#	define DBG_SCAN 0
+#else
+#	define DBG_SCAN 0
+#endif
 
 #if USE_DACS
 #	include "dialheap.h"
@@ -599,11 +605,11 @@ nDepth = 0;
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
 
-#if 0
+#if BIDIRECTIONAL_SCAN
 
 // bi-directional scanner (expands 1/3 of the segments the uni-directional scanner does on average)
 
-#if DBG
+#if DBG_SCAN
 if ((nStartSeg == 1307) && (nDestSeg == 1301))
 	nDepth = nDepth;
 if ((nStartSeg == 702) && (nDestSeg == 71))
@@ -612,24 +618,36 @@ if ((nStartSeg == 702) && (nDestSeg == 71))
 
 	int bScanning = 3;
 
+#if 0
 while (bScanning) {
+#else
+for (;;) {
+#endif
 	for (int nDir = 0; nDir < 2; nDir++) {
 		nRouteDir = !nRouteDir;
+#if 0
 		if (!bScanning & (1 << nDir))
 			continue;
+#endif
 		if (nTail [nDir] >= nHead [nDir]) {
+#if 1
+			goto errorExit;
+#else
 			bScanning &= ~(1 << nDir);
 			continue;
+#endif
 			}
 		nPredSeg = segQueue [nDir][nTail [nDir]++];
-#if DBG
+#if DBG_SCAN
 		if (nPredSeg == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
 		nDepth = segPath [nDir][nPredSeg].nDepth + 1;
 		if (nDepth > nMaxDepth / 2 + 1) {
 			bScanning &= ~(1 << nDir);
-			continue;
+			if (bScanning)
+				continue;
+			goto errorExit;
 			}
 		segP = SEGMENTS + nPredSeg;
 		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
@@ -646,8 +664,7 @@ while (bScanning) {
 				if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
 					continue;
 				}
-
-#if DBG
+#if DBG_SCAN
 			if (nSuccSeg == nDbgSeg)
 				nDbgSeg = nDbgSeg;
 #endif
@@ -669,7 +686,7 @@ while (bScanning) {
 				nSuccSeg = nSegment;
 				for (;;) {
 					nPredSeg = segPath [nDir][nSuccSeg].nPred;
-#if DBG
+#if DBG_SCAN
 					if (nPredSeg < 0)
 						goto retry;
 #endif
@@ -679,7 +696,7 @@ while (bScanning) {
 						break;
 						}
 					nLength++;
-#if DBG
+#if DBG_SCAN
 					if (nLength > 2 * nMaxDepth + 2)
 						goto retry;
 #endif
@@ -760,9 +777,9 @@ while ((nTail [0] < nHead [0]) && (nDepth < nMaxDepth)) {
 				break;
 			nLength++;
 			xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
-			nPredSeg = nSuccSeg;
+			nSuccSeg = nPredSeg;
 			}
-		xDist += CFixVector::Dist (p0, SEGMENTS [nPredSeg].Center ());
+		xDist += CFixVector::Dist (p0, SEGMENTS [nSuccSeg].Center ());
 		if (nCacheType >= 0) 
 			fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength, xDist);
 		return xDist;
@@ -770,6 +787,8 @@ while ((nTail [0] < nHead [0]) && (nDepth < nMaxDepth)) {
 	}	
 
 #endif
+
+errorExit:
 
 if (nCacheType >= 0) 
 	fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, 10000, I2X (10000));
