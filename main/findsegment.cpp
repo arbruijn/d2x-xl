@@ -186,9 +186,7 @@ int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSk
 	static ushort bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
 	static ushort bFlags [MAX_THREADS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
 
-//allow nSegment == -1, meaning we have no idea what CSegment point is in
-Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
-if (nSegment != -1) {
+if (nSegment >= 0) {
 	if (!++bFlags [nThread]) {
 		memset (bVisited [nThread], 0, sizeofa (bVisited [nThread]));
 		bFlags [nThread] = 1;

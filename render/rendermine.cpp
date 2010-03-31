@@ -268,7 +268,7 @@ void RenderObjectsST (void)
 {
 	short nSegment;
 
-for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
+for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 	nSegment = gameData.render.mine.segRenderList [1][i];
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);

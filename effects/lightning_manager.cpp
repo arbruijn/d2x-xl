@@ -628,7 +628,7 @@ if (SHOW_LIGHTNING && gameOpts->render.lightning.bExplosions) {
 	//m_objects [objP->Index ()] =
 		Create (
 			nRods, &objP->info.position.vPos, NULL, NULL, objP->Index (), nTTL, 0,
-			nRad, I2X (4), 0, I2X (2), 50, 5, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
+			nRad, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, colorP);
 	}
 }
 
