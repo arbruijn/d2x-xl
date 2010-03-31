@@ -635,8 +635,9 @@ while (bScanning) {
 			if (nSuccSeg < 0)
 				continue;
 			if (nRouteDir) {
-				short nSide = SEGMENTS [nPredSeg].ConnectedSide (SEGMENTS + nSuccSeg);
-				if ((nSide == -1) || !(SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag))
+				CSegment* otherSegP = SEGMENTS + nSuccSeg;
+				short nSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
+				if ((nSide == -1) || !(otherSegP->IsDoorWay (nSide, NULL) & widFlag))
 					continue;
 				}
 			else {
