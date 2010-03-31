@@ -451,6 +451,10 @@ if ((nCacheType >= 0) && (nStartSeg == nDestSeg)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
+if ((nStartSeg == 4056) && (nDestSeg == 4060))
+	nDbgSeg = nDbgSeg;
+
+
 // adjacent segments?
 short nSide = SEGMENTS [nStartSeg].ConnectedSide (SEGMENTS + nDestSeg);
 if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
@@ -567,7 +571,7 @@ retry:
 
 	short				nSegment, nSuccSeg, nPredSeg;
 	short				nTail [2] = {0, 0}, nHead [2] = {1, 1};
-	int				nDepth, nLength;
+	int				nDepth, nLength, nRouteDir = (nCacheType != 0);
 	CSegment*		segP;
 	short				segQueue [2][MAX_SEGMENTS_D2X];
 	tSegPathNode*	pathNodeP;
@@ -604,10 +608,11 @@ if ((nStartSeg == 702) && (nDestSeg == 71))
 	nDepth = nDepth;
 #endif
 
-	int nDir, bScanning = 3;
+	int bScanning = 3;
 
 while (bScanning) {
-	for (nDir = 0; nDir < 2; nDir++) {
+	for (int nDir = 0; nDir < 2; nDir++) {
+		nRouteDir = !nRouteDir;
 		if (!bScanning & (1 << nDir))
 			continue;
 		if (nTail [nDir] >= nHead [nDir]) {
@@ -626,9 +631,19 @@ while (bScanning) {
 			}
 		segP = SEGMENTS + nPredSeg;
 		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-			if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
-				continue;
 			nSuccSeg = segP->m_children [nSide];
+			if (nSuccSeg < 0)
+				continue;
+			if (nRouteDir) {
+				short nSide = SEGMENTS [nPredSeg].ConnectedSide (SEGMENTS + nSuccSeg);
+				if ((nSide == -1) || !(SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag))
+					continue;
+				}
+			else {
+				if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
+					continue;
+				}
+
 #if DBG
 			if (nSuccSeg == nDbgSeg)
 				nDbgSeg = nDbgSeg;
@@ -647,7 +662,7 @@ while (bScanning) {
 			xDist = 0;
 			nLength = 0; 
 			nSegment = nSuccSeg;
-			for (nDir = 0; nDir < 2; nDir++) {
+			for (int nDir = 0; nDir < 2; nDir++) {
 				nSuccSeg = nSegment;
 				for (;;) {
 					nPredSeg = segPath [nDir][nSuccSeg].nPred;
@@ -655,7 +670,7 @@ while (bScanning) {
 					if (nPredSeg < 0)
 						goto retry;
 #endif
-					segPath [nDir][nSuccSeg].nPred = -2;
+					//segPath [nDir][nSuccSeg].nPred = -2;
 					if (nPredSeg == nStartSegs [nDir]) {
 						xDist += CFixVector::Dist (nDir ? p1 : p0, SEGMENTS [nSuccSeg].Center ());
 						break;
