@@ -561,7 +561,11 @@ typedef struct tSegPathNode {
 	short				nPred;
 } tSegPathNode;
 
-	short				nSegment, nChildSeg, nPredSeg;
+#if DBG
+retry:
+#endif
+
+	short				nSegment, nSuccSeg, nPredSeg;
 	short				nTail [2] = {0, 0}, nHead [2] = {1, 1};
 	int				nDepth, nLength;
 	CSegment*		segP;
@@ -571,10 +575,6 @@ typedef struct tSegPathNode {
 	static tSegPathNode	segPath [2][MAX_SEGMENTS_D2X];
 	static ushort	bFlag = 0xFFFF;
 
-retry:
-
-nTail [0] = nTail [1] = 0;
-nHead [0] = nHead [1] = 1;
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (!++bFlag) {
 	memset (segPath, 0, sizeof (segPath));
@@ -585,7 +585,6 @@ if (!++bFlag) {
 	short				nStartSegs [2] = {nStartSeg, nDestSeg};
 	short				nDestSegs [2] = {nDestSeg, nStartSeg};
 
-nSegment = nStartSeg;
 segPath [0][nStartSeg].bVisited = bFlag;
 segPath [0][nStartSeg].nDepth = 0;
 segPath [0][nStartSeg].nPred = -1;
@@ -598,10 +597,12 @@ nDepth = 0;
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
 
+#if DBG
 if ((nStartSeg == 1307) && (nDestSeg == 1301))
 	nDepth = nDepth;
 if ((nStartSeg == 702) && (nDestSeg == 71))
 	nDepth = nDepth;
+#endif
 
 	int nDir, bScanning = 3;
 
@@ -613,60 +614,72 @@ while (bScanning) {
 			bScanning &= ~(1 << nDir);
 			continue;
 			}
-		nSegment = segQueue [nDir][nTail [nDir]++];
-		nDepth = segPath [nDir][nSegment].nDepth + 1;
+		nPredSeg = segQueue [nDir][nTail [nDir]++];
+#if DBG
+		if (nPredSeg == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		nDepth = segPath [nDir][nPredSeg].nDepth + 1;
 		if (nDepth > nMaxDepth / 2 + 1) {
 			bScanning &= ~(1 << nDir);
 			continue;
 			}
-		segP = SEGMENTS + nSegment;
+		segP = SEGMENTS + nPredSeg;
 		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
 				continue;
-			nChildSeg = segP->m_children [nSide];
+			nSuccSeg = segP->m_children [nSide];
 #if DBG
-			if (nChildSeg == nDbgSeg)
+			if (nSuccSeg == nDbgSeg)
 				nDbgSeg = nDbgSeg;
 #endif
-			pathNodeP = &segPath [nDir][nChildSeg];
+			pathNodeP = &segPath [nDir][nSuccSeg];
 			if (pathNodeP->bVisited == bFlag)
 				continue;
-			pathNodeP->nPred = nSegment;
-			if (segPath [!nDir][nChildSeg].bVisited != bFlag) {
+			pathNodeP->nPred = nPredSeg;
+			if (segPath [!nDir][nSuccSeg].bVisited != bFlag) {
 				pathNodeP->bVisited = bFlag;
 				pathNodeP->nDepth = nDepth;
-				segQueue [nDir][nHead [nDir]++] = nChildSeg;
+				segQueue [nDir][nHead [nDir]++] = nSuccSeg;
 				continue;
 				}
 			// destination segment reached
 			xDist = 0;
 			nLength = 0; 
+			nSegment = nSuccSeg;
 			for (nDir = 0; nDir < 2; nDir++) {
-				nSegment = nChildSeg;
+				nSuccSeg = nSegment;
 				for (;;) {
-					nPredSeg = segPath [nDir][nSegment].nPred;
+					nPredSeg = segPath [nDir][nSuccSeg].nPred;
+#if DBG
 					if (nPredSeg < 0)
 						goto retry;
-					segPath [nDir][nSegment].nPred = -2;
+#endif
+					segPath [nDir][nSuccSeg].nPred = -2;
 					if (nPredSeg == nStartSegs [nDir]) {
-						xDist += CFixVector::Dist (nDir ? p1 : p0, SEGMENTS [nSegment].Center ());
+						xDist += CFixVector::Dist (nDir ? p1 : p0, SEGMENTS [nSuccSeg].Center ());
 						break;
 						}
 					nLength++;
-					if (nLength > 2 * nMaxDepth)
+#if DBG
+					if (nLength > 2 * nMaxDepth + 2)
 						goto retry;
-					xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSegment].Center ());
-					nSegment = nPredSeg;
+#endif
+					xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
+					nSuccSeg = nPredSeg;
 					}
 				}
 			if (nCacheType >= 0) 
 				fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength + 3, xDist);
+			goto done;
 			//return xDist;
 			}
 		}
 	}	
 
 #else
+
+done:
 
 if (!++bFlag) {
 	memset (segPath, 0, sizeof (segPath));
