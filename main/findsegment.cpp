@@ -228,4 +228,77 @@ return nClosestSeg;
 }
 
 //	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	Do a bfs from nSegment, marking slots in markedSegs if the segment is reachable.
+
+#define	AMBIENT_SEGMENT_DEPTH 5
+
+void AmbientMarkBfs (short nSegment, sbyte* markedSegs, int nDepth)
+{
+	short	i, child;
+
+if (nDepth < 0)
+	return;
+markedSegs [nSegment] = 1;
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+	child = SEGMENTS [nSegment].m_children [i];
+	if (IS_CHILD (child) && (SEGMENTS [nSegment].IsDoorWay (i, NULL) & WID_RENDPAST_FLAG) && !markedSegs [child])
+		AmbientMarkBfs (child, markedSegs, nDepth - 1);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+//	Indicate all segments which are within audible range of falling water or lava,
+//	and so should hear ambient gurgles.
+void SetAmbientSoundFlagsCommon (int tmi_bit, int s2f_bit)
+{
+	short		i, j;
+
+	static sbyte	markedSegs [MAX_SEGMENTS_D2X];
+
+	//	Now, all segments containing ambient lava or water sound makers are flagged.
+	//	Additionally flag all segments which are within range of them.
+memset (markedSegs, 0, sizeof (markedSegs));
+for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+	SEGMENTS [i].m_flags &= ~s2f_bit;
+	}
+
+//	Mark all segments which are sources of the sound.
+CSegment	*segP = SEGMENTS.Buffer ();
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	CSide	*sideP = segP->m_sides;
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sideP++) {
+		if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & tmi_bit) ||
+			 (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & tmi_bit)) {
+			if (!IS_CHILD (segP->m_children [j]) || IS_WALL (sideP->m_nWall)) {
+				segP->m_flags |= s2f_bit;
+				markedSegs [i] = 1;		//	Say it's itself that it is close enough to to hear something.
+				}
+			}
+		}
+	}
+//	Next mark all segments within N segments of a source.
+segP = SEGMENTS.Buffer ();
+for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	if (segP->m_flags & s2f_bit)
+		AmbientMarkBfs (i, markedSegs, AMBIENT_SEGMENT_DEPTH);
+	}
+//	Now, flip bits in all segments which can hear the ambient sound.
+for (i = 0; i <= gameData.segs.nLastSegment; i++)
+	if (markedSegs [i])
+		SEGMENTS [i].m_flags |= s2f_bit;
+}
+
+//	-----------------------------------------------------------------------------
+//	Indicate all segments which are within audible range of falling water or lava,
+//	and so should hear ambient gurgles.
+
+void SetAmbientSoundFlags (void)
+{
+SetAmbientSoundFlagsCommon (TMI_VOLATILE, S2F_AMBIENT_LAVA);
+SetAmbientSoundFlagsCommon (TMI_WATER, S2F_AMBIENT_WATER);
+}
+
+//	-----------------------------------------------------------------------------
 //eof

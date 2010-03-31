@@ -164,13 +164,11 @@ class CSide {
 			return m_nFaces;
 			}
 		CFixVector* GetCorners (CFixVector* vertices);
-		void GetCornerIndex (int nSide, ushort* vertIndex);
 		inline short* Corners (void) { return m_corners; }
 		CFixVector& Vertex (int nVertex);
 		CFixVector& MinVertex (void);
 		CFixVector& Normal (int nFace);
 		fix Height (void);
-		float FaceSize (ubyte nSide);
 		bool IsPlanar (void);
 		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
 		ubyte Distf (const CFloatVector& point, float& fSideDist, int bBehind, short sideBit);
@@ -277,7 +275,9 @@ class CSegment {
 		inline void SetType (int nSide, sbyte nType) { m_sides [nSide].SetType (nType); }
 		inline void SetTextures (int nSide, int nBaseTex, int nOvlTex) { m_sides [nSide].SetTextures (nBaseTex, nOvlTex); }
 
+		void GetCornerIndex (int nSide, ushort* vertIndex);
 		void ComputeSideRads (void);
+		float FaceSize (ubyte nSide);
 		inline bool IsVertex (int nVertex);
 		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
@@ -512,8 +512,6 @@ void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);
 
 void SetupSegments (void);
-
-void GetCorners (int nSegment, int nSide, ushort* vertIndex);
 
 // ----------------------------------------------------------------------------
 
