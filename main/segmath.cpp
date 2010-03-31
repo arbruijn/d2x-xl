@@ -618,24 +618,11 @@ if ((nStartSeg == 702) && (nDestSeg == 71))
 
 	int bScanning = 3;
 
-#if 0
-while (bScanning) {
-#else
 for (;;) {
-#endif
 	for (int nDir = 0; nDir < 2; nDir++) {
 		nRouteDir = !nRouteDir;
-#if 0
-		if (!bScanning & (1 << nDir))
-			continue;
-#endif
 		if (nTail [nDir] >= nHead [nDir]) {
-#if 1
 			goto errorExit;
-#else
-			bScanning &= ~(1 << nDir);
-			continue;
-#endif
 			}
 		nPredSeg = segQueue [nDir][nTail [nDir]++];
 #if DBG_SCAN
@@ -645,9 +632,9 @@ for (;;) {
 		nDepth = segPath [nDir][nPredSeg].nDepth + 1;
 		if (nDepth > nMaxDepth / 2 + 1) {
 			bScanning &= ~(1 << nDir);
-			if (bScanning)
-				continue;
-			goto errorExit;
+			if (!bScanning)
+				goto errorExit;
+			continue;
 			}
 		segP = SEGMENTS + nPredSeg;
 		for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
