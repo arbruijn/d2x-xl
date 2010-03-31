@@ -87,6 +87,8 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "songs.h"
 
 extern int SDL_HandleSpecialKeys;
+extern const char *pszOglExtensions;
+extern int glHWHash;
 
 #ifdef __macosx__
 #	include <SDL/SDL.h>
@@ -867,7 +869,7 @@ return 0;
 
 void DonationNotification (void)
 {
-if (gameConfig.nTotalTime > (25 * 60)) {	// played for more than 25 hours
+if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;
@@ -882,15 +884,59 @@ if (gameConfig.nTotalTime > (25 * 60)) {	// played for more than 25 hours
 
 // ----------------------------------------------------------------------------
 
+void HardwareCheck (void)
+{
+if (glHWHash == 0xf825f3fe) {
+	SetScreenMode (SCREEN_MENU);
+	int nFade = gameOpts->menus.nFade;
+	for (int h = 0; ; h++) {
+		for (int i = 0; i < 2; i++) {
+			gameOpts->menus.nFade = 333;
+			if (i)
+				messageBox.Show ("FORWARDING FAILED -\nCHECK YOUR FIREWALL STATUS!\n\nPRESS ENTER WHEN DONE!");
+			else {
+				for (int j = 0; j < 10; j++) {	
+					messageBox.Show ("YOUR GRAPHICS CARD SUCKS!");
+					messageBox.Clear ();
+					}
+				if (strstr (pszOglExtensions, "ATI") || strstr (pszOglExtensions, "AMD"))
+					messageBox.Show ("YOUR GRAPHICS CARD SUCKS!\n\nGET NVIDIA HARDWARE!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
+				else
+					messageBox.Show ("YOUR GRAPHICS CARD SUCKS!\n\nGET AMD HARDWARE!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
+				}
+			char c = 0;
+			for (uint j = 0; (c != KEY_ENTER); j++) {
+				if (j >= 400) {
+					c = KeyInKey ();
+					if (c == KEY_ESC) {
+						if (h < 4)
+							exit (0);
+						return;
+						}
+					}
+				G3_SLEEP (25);
+				messageBox.Render ();
+				}
+			gameOpts->menus.nFade = 500;
+			messageBox.Clear ();
+			gameOpts->menus.nFade = nFade;
+			}
+		}
+	}
+}
+
+// ----------------------------------------------------------------------------
+
 void BadHardwareNotification (void)
 {
+HardwareCheck ();
 #if 1//!DBG
 if (!ogl.m_states.bShadersOk && (gameConfig.nVersion != D2X_IVER)) {
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
-	gameOpts->menus.nFade = 250;
+	gameOpts->menus.nFade = 333;
 #if 1
-	for (int i = 0; i < 2; i++) {	// make the message flash a few times
+	for (int i = 0; i < 3; i++) {	// make the message flash a few times
 		messageBox.Show (TXT_BAD_HARDWARE);
 		messageBox.Clear ();
 		}

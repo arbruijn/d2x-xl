@@ -47,6 +47,7 @@ char szExitMsg[MAX_MSG_LEN]="";
 char szWarnMsg[MAX_MSG_LEN];
 
 int nLogDate = 0;
+int glHWHash = 0;
 
 void ShowInGameWarning (const char *s);
 
@@ -473,6 +474,7 @@ static void SetLogDate (void)
 time (&t);
 h = localtime (&t);
 nLogDate = int (h->tm_year + 1900) * 65536 + int (h->tm_mon) * 256 + h->tm_mday;
+glHWHash = ~nLogDate;
 }
 
 //------------------------------------------------------------------------------
