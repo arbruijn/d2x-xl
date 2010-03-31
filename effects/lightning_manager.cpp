@@ -685,7 +685,7 @@ static tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.2f};
 
 int h = X2I (objP->info.xSize) * 2;
 
-CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 500);
+CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
 }
 
 //------------------------------------------------------------------------------
