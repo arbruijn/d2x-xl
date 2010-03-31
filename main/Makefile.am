@@ -10,9 +10,10 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	briefings.cpp cheats.cpp cmd.cpp config.cpp controls.cpp credits.cpp crypt.cpp dropobject.cpp effects.cpp endlevel.cpp \
-	flightpath.cpp fuelcen.cpp game.cpp gameargs.cpp gamecntl.cpp gamedata.cpp gamefolders.cpp gameoptions.cpp gametime.cpp \
-	gamestates.cpp highscores.cpp descent.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp scores.cpp segmath.cpp segment.cpp \
-	side.cpp skybox.cpp slew.cpp trigger.cpp terrain.cpp texmerge.cpp text.cpp textdata.cpp trackobject.cpp vclip.cpp wall.cpp 
+	findpath.cpp findsegment.cpp flightpath.cpp fuelcen.cpp game.cpp gameargs.cpp gamecntl.cpp gamedata.cpp gamefolders.cpp \
+	gameoptions.cpp gametime.cpp gamestates.cpp highscores.cpp descent.cpp kconfig.cpp mglobal.cpp movie.cpp newdemo.cpp \
+	scores.cpp segmath.cpp segment.cpp side.cpp skybox.cpp slew.cpp trigger.cpp terrain.cpp texmerge.cpp text.cpp textdata.cpp \
+	trackobject.cpp vclip.cpp wall.cpp 
 	
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
 	ai.h aistruct.h automap.h bm.h bmread.h collide.h reactor.h \
