@@ -327,31 +327,29 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 
-if (objP) {
-	ubyte nChildType = SEGMENTS [nChildSeg].m_nType;
-	if ((nChildType == SEGMENT_IS_BLOCKED) || (nChildType == SEGMENT_IS_SKYBOX)) {
-		if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP))
-			return WID_RENDER_FLAG;
-		}
-	else if ((m_nType == SEGMENT_IS_SPEEDBOOST) && (nChildType != SEGMENT_IS_SPEEDBOOST)) {
-		// handle the player in a speed boost area
-		if ((objP == gameData.objs.consoleP) && gameData.objs.speedBoost [objP->Index ()].bBoosted) {
-			if (!wallP)
-				return WID_RENDER_FLAG;
-			int widFlag = wallP->IsDoorWay (objP, bIgnoreDoors);
-			if ((widFlag != WID_NO_WALL) && (widFlag != WID_ILLUSORY_WALL) && (widFlag != WID_TRANSILLUSORY_WALL))
-				return widFlag;
-			CTrigger* trigP = wallP->Trigger ();
-			if (!trigP || (trigP->m_info.nType != TT_SPEEDBOOST))
-				return WID_RENDER_FLAG;
-			return widFlag;
-			}
-		}
-	return wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
-	}
-else {
+if (!objP) 
 	return wallP ? wallP->IsDoorWay (NULL, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
+
+ubyte nChildType = SEGMENTS [nChildSeg].m_nType;
+if ((nChildType == SEGMENT_IS_BLOCKED) || (nChildType == SEGMENT_IS_SKYBOX)) {
+	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP))
+		return WID_RENDER_FLAG;
 	}
+else if ((m_nType == SEGMENT_IS_SPEEDBOOST) && (nChildType != SEGMENT_IS_SPEEDBOOST)) {
+	// handle the player in a speed boost area
+	if ((objP == gameData.objs.consoleP) && gameData.objs.speedBoost [objP->Index ()].bBoosted) {
+		if (!wallP)
+			return WID_RENDER_FLAG;
+		int widFlag = wallP->IsDoorWay (objP, bIgnoreDoors);
+		if ((widFlag != WID_NO_WALL) && (widFlag != WID_ILLUSORY_WALL) && (widFlag != WID_TRANSILLUSORY_WALL))
+			return widFlag;
+		CTrigger* trigP = wallP->Trigger ();
+		if (!trigP || (trigP->m_info.nType != TT_SPEEDBOOST))
+			return WID_RENDER_FLAG;
+		return widFlag;
+		}
+	}
+return wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
 }
 
 #else
