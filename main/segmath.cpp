@@ -556,9 +556,9 @@ for (;;) {
 #else
 
 typedef struct tSegPathNode {
-	ushort			bVisited;
-	short				nDepth;
-	short				nPred;
+	uint		bVisited;
+	short		nDepth;
+	short		nPred;
 } tSegPathNode;
 
 #if DBG
@@ -573,7 +573,7 @@ retry:
 	tSegPathNode*	pathNodeP;
 
 	static tSegPathNode	segPath [2][MAX_SEGMENTS_D2X];
-	static ushort	bFlag = 0xFFFF;
+	static uint	bFlag = 0xFFFFFFFF;
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (!++bFlag) {
@@ -671,8 +671,7 @@ while (bScanning) {
 				}
 			if (nCacheType >= 0) 
 				fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength + 3, xDist);
-			goto done;
-			//return xDist;
+			return xDist;
 			}
 		}
 	}	
