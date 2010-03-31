@@ -281,6 +281,8 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 }
 
 //------------------------------------------------------------------------------
+// The following pragmas keep the Visual C++ 9 optimizer from trying to inline
+// the following thread function.
 
 #ifdef _MSC_VER
 #	pragma optimize("ga", off)
@@ -291,6 +293,12 @@ static sbyte bSemaphore [MAX_THREADS];
 static SDL_mutex* threadLock = NULL;
 static int nThreads;
 
+//------------------------------------------------------------------------------
+// LightObjectsThread computes the segment lighting for the object render process.
+// It will set its semaphore to 1 after lighting for a segment has been computed to
+// tell the render process that this segment's objects can be rendered, and waits
+// for the render process to reset its semaphore before proceeding with the next 
+// segment.
 
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {
@@ -324,6 +332,15 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+// RenderObjectsMT is the object rendering function. It must reside in the main
+// process because only the main process has a valid OpenGL context. It communicates
+// with the object lighting threads via a semaphore. If a lighting threads semaphore
+// is set, that thread has finished lighting calculations for its current segment
+// and all objects in that segment can be rendered. The lighting thread waits for 
+// semaphore to be reset by the render process after the objects have been rendered.
+// Since the object render process needs to run full throttle, only gameStates.app.nThreads - 1
+// lighting threads are executed.
+// Note: SDL's semaphore/mutex handling doesn't really cut it here (and is too slow).
 
 void RenderObjectsMT (void)
 {
