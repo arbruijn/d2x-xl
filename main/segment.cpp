@@ -336,17 +336,14 @@ if ((nChildType == SEGMENT_IS_BLOCKED) || (nChildType == SEGMENT_IS_SKYBOX)) {
 		return WID_RENDER_FLAG;
 	}
 else if ((m_nType == SEGMENT_IS_SPEEDBOOST) && (nChildType != SEGMENT_IS_SPEEDBOOST)) {
-	// handle the player in a speed boost area
+	// handle the player in a speed boost area. The player must only exit speed boost areas through a segment side with a speed boost trigger
 	if ((objP == gameData.objs.consoleP) && gameData.objs.speedBoost [objP->Index ()].bBoosted) {
 		if (!wallP)
 			return WID_RENDER_FLAG;
-		int widFlag = wallP->IsDoorWay (objP, bIgnoreDoors);
-		if ((widFlag != WID_NO_WALL) && (widFlag != WID_ILLUSORY_WALL) && (widFlag != WID_TRANSILLUSORY_WALL))
-			return widFlag;
 		CTrigger* trigP = wallP->Trigger ();
 		if (!trigP || (trigP->m_info.nType != TT_SPEEDBOOST))
 			return WID_RENDER_FLAG;
-		return widFlag;
+		return wallP->IsDoorWay (objP, bIgnoreDoors);
 		}
 	}
 return wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
