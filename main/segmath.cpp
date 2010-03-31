@@ -29,7 +29,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 
 #define USE_DACS 0
+#define USE_FCD_CACHE 1
 #define BIDIRECTIONAL_SCAN 1
+#define MULTITHREADED_SCAN 1
+
 #if DBG
 #	define DBG_SCAN 0
 #else
@@ -249,10 +252,8 @@ for (;;) {
 	if (0 <= (nMatchSeg = TraceSegsf (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, fTolerance)))	//trace into adjacent CSegment
 		break;
 	}
-return nMatchSeg;		//we haven't found a CSegment
+return nMatchSeg;		//we haven't found a segment
 }
-
-int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 
 // -------------------------------------------------------------------------------
 
@@ -526,6 +527,8 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
+#if MULTITHREADED_SCAN
+
 int _CDECL_ ExpandSegmentMT (void* nThreadP)
 {
 	int nDir = *((int *) nThreadP);
@@ -534,6 +537,8 @@ while (!(ExpandSegment (nDir) || scanData [!nDir].nLinkSeg))
 	;
 return 1;
 }
+
+#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -554,6 +559,8 @@ for (int nDir = 0; nDir < 2; nDir++) {
 			break;
 			}
 		nLength++;
+		if (nLength > 2 * scanInfo.nMaxDepth + 2)
+			return -0x7FFFFFFF;
 		xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSuccSeg].Center ());
 		nSuccSeg = nPredSeg;
 		}
@@ -612,7 +619,7 @@ if ((nSide != -1) && (SEGMENTS [nDestSeg].IsDoorWay (nSide, NULL) & widFlag)) {
 	return CFixVector::Dist (p0, p1);
 	}
 
-#if !DBG
+#if USE_FCD_CACHE
 if (nCacheType >= 0) {
 	fix xDist = fcdCaches [nCacheType].Dist (nStartSeg, nDestSeg);
 	if (xDist >= 0)
@@ -720,7 +727,6 @@ if (!++scanInfo.bFlag) {
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
 
-
 scanData [0].segPath [nStartSeg].bVisited = scanInfo.bFlag;
 scanData [0].segPath [nStartSeg].nDepth = 0;
 scanData [0].segPath [nStartSeg].nPred = -1;
@@ -733,14 +739,14 @@ scanData [0].nRouteDir = (nCacheType == 0);
 scanData [0].nLinkSeg = 0;
 
 scanInfo.widFlag = widFlag;
-scanInfo.nLinkSeg = -1;
+scanInfo.nLinkSeg = 0;
 scanInfo.bScanning = 3;
 
 #if BIDIRECTIONAL_SCAN
 
 scanInfo.nMaxDepth = nMaxDepth / 2 + 1;
 
-// bi-directional scanner (expands 1/3 of the segments the uni-directional scanner does on average)
+// bi-directional scanner (expands about 1/3 of the segments the uni-directional scanner does on average)
 
 scanData [1].segPath [nDestSeg].bVisited = scanInfo.bFlag;
 scanData [1].segPath [nDestSeg].nDepth = 0;
@@ -753,14 +759,7 @@ scanData [1].nHead = 1;
 scanData [1].nRouteDir = (nCacheType != 0);
 scanData [1].nLinkSeg = 0;
 
-#if DBG
-if ((nStartSeg == 4056) && (nDestSeg == 4060))
-	nDbgSeg = nDbgSeg;
-if ((nStartSeg == 702) && (nDestSeg == 71))
-	nDbgSeg = nDbgSeg;
-#endif
-
-#if 0
+#if MULTITHREADED_SCAN
 if (gameStates.app.nThreads > 1) {
 	SDL_Thread* threads [2];
 	int nThreadIds [2] = {0, 1};
@@ -769,7 +768,8 @@ if (gameStates.app.nThreads > 1) {
 	SDL_WaitThread (threads [0], NULL);
 	SDL_WaitThread (threads [1], NULL);
 
-	if ((0 < (scanInfo.nLinkSeg = scanData [0].nLinkSeg)) || (0 < (scanInfo.nLinkSeg = scanData [1].nLinkSeg)))
+	if (((0 < (scanInfo.nLinkSeg = scanData [0].nLinkSeg)) && (scanInfo.nLinkSeg != scanData [0].nDestSeg + 1)) || 
+		 ((0 < (scanInfo.nLinkSeg = scanData [1].nLinkSeg)) && (scanInfo.nLinkSeg != scanData [1].nDestSeg + 1)))
 		return BuildPathBiDir (p0, p1, nCacheType);
 	}
 else 
