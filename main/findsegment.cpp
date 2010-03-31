@@ -1,0 +1,231 @@
+/*
+THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
+SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
+END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
+ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
+IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
+SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
+FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
+CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
+AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
+COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
+*/
+
+#ifdef HAVE_CONFIG_H
+#include <conf.h>
+#endif
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>	//	for memset ()
+
+#include "u_mem.h"
+#include "descent.h"
+#include "error.h"
+#include "mono.h"
+#include "segmath.h"
+#include "byteswap.h"
+#include "light.h"
+#include "segment.h"
+
+// -------------------------------------------------------------------------------
+//this was converted from GetSegMasks ()...it fills in an array of 6
+//elements for the distace behind each CSide, or zero if not behind
+//only gets centerMask, and assumes zero rad
+
+ubyte CSegment::GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind)
+{
+	ubyte		mask = 0;
+
+for (int nSide = 0; nSide < 6; nSide++)
+	mask |= m_sides [nSide].Dist (refP, xSideDists [nSide], bBehind, 1 << nSide);
+return mask;
+}
+
+// -------------------------------------------------------------------------------
+
+ubyte CSegment::GetSideDistsf (const CFloatVector& refP, float* fSideDists, int bBehind)
+{
+	ubyte		mask = 0;
+
+for (int nSide = 0; nSide < 6; nSide++)
+	mask |= m_sides [nSide].Distf (refP, fSideDists [nSide], bBehind, 1 << nSide);
+return mask;
+}
+
+// -------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------
+//figure out what seg the given point is in, tracing through segments
+//returns CSegment number, or -1 if can't find segment
+
+static int TraceSegs (const CFixVector& vPos, int nCurSeg, int nTraceDepth, ushort* bVisited, ushort bFlag, fix xTolerance = 0)
+{
+	CSegment*	segP;
+	fix			xSideDists [6], xMaxDist;
+	int			centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
+
+if (nTraceDepth >= gameData.segs.nSegments) //gameData.segs.nSegments)
+	return -1;
+if (bVisited [nCurSeg] == bFlag)
+	return -1;
+bVisited [nCurSeg] = bFlag;
+segP = SEGMENTS + nCurSeg;
+if (!(centerMask = segP->GetSideDists (vPos, xSideDists, 1)))		//we're in the old segment
+	return nCurSeg;		
+for (;;) {
+	nMaxSide = -1;
+	xMaxDist = 0; // find only sides we're behind as seen from inside the current segment
+	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
+		if ((centerMask & bit) && (xTolerance || (segP->m_children [nSide] > -1)) && (xSideDists [nSide] < xMaxDist)) {
+			if (xTolerance && (xTolerance >= -xSideDists [nSide]) && (xTolerance >= segP->Side (nSide)->DistToPoint (vPos))) 
+				return nCurSeg;
+			if (segP->m_children [nSide] >= 0) {
+				xMaxDist = xSideDists [nSide];
+				nMaxSide = nSide;
+				}
+			}
+	if (nMaxSide == -1)
+		break;
+	xSideDists [nMaxSide] = 0;
+	if (0 <= (nMatchSeg = TraceSegs (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, xTolerance)))	//trace into adjacent CSegment
+		break;
+	}
+return nMatchSeg;		//we haven't found a CSegment
+}
+
+// -------------------------------------------------------------------------------
+
+static int TraceSegsf (const CFloatVector& vPos, int nCurSeg, int nTraceDepth, ushort* bVisited, ushort bFlag, float fTolerance)
+{
+	CSegment*		segP;
+	float				fSideDists [6], fMaxDist;
+	int				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
+
+if (nTraceDepth >= gameData.segs.nSegments)
+	return -1;
+if (bVisited [nCurSeg] == bFlag)
+	return -1;
+bVisited [nCurSeg] = bFlag;
+segP = SEGMENTS + nCurSeg;
+if (!(centerMask = segP->GetSideDistsf (vPos, fSideDists, 1)))		//we're in the old CSegment
+	return nCurSeg;		
+for (;;) {
+	nMaxSide = -1;
+	fMaxDist = 0; // find only sides we're behind as seen from inside the current segment
+	for (nSide = 0, bit = 1; nSide < 6; nSide ++, bit <<= 1)
+		if ((centerMask & bit) && (fSideDists [nSide] < fMaxDist)) {
+			if ((fTolerance >= -fSideDists [nSide])  && (fTolerance >= segP->Side (nSide)->DistToPointf (vPos))) {
+#if DBG
+				SEGMENTS [nCurSeg].GetSideDistsf (vPos, fSideDists, 1);
+#endif
+				return nCurSeg;
+				}
+			if (segP->m_children [nSide] >= 0) {
+				fMaxDist = fSideDists [nSide];
+				nMaxSide = nSide;
+				}
+			}
+	if (nMaxSide == -1)
+		break;
+	fSideDists [nMaxSide] = 0;
+	if (0 <= (nMatchSeg = TraceSegsf (vPos, segP->m_children [nMaxSide], nTraceDepth + 1, bVisited, bFlag, fTolerance)))	//trace into adjacent CSegment
+		break;
+	}
+return nMatchSeg;		//we haven't found a segment
+}
+
+// -------------------------------------------------------------------------------
+
+static inline int PointInSeg (CSegment* segP, CFixVector vPos)
+{
+fix d = CFixVector::Dist (vPos, segP->Center ());
+if (d <= segP->m_rads [0])
+	return 1;
+if (d > segP->m_rads [1])
+	return 0;
+return (segP->Masks (vPos, 0).m_center == 0);
+}
+
+// -------------------------------------------------------------------------------
+
+static int FindSegByPosExhaustive (const CFixVector& vPos, int bSkyBox)
+{
+	int			i;
+	short*		segListP;
+	CSegment*	segP;
+
+if (gameData.segs.HaveGrid (bSkyBox)) {
+	for (i = gameData.segs.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
+		if (PointInSeg (SEGMENTS + *segListP, vPos))
+			return *segListP;
+		}
+	}
+else if (bSkyBox) {
+	for (i = gameData.segs.skybox.GetSegList (segListP); i; i--, segListP++) {
+		segP = SEGMENTS + *segListP;
+		if ((segP->m_nType == SEGMENT_IS_SKYBOX) && PointInSeg (segP, vPos))
+			return *segListP;
+		}
+	}
+else {
+	segP = SEGMENTS.Buffer ();
+	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+		segP = SEGMENTS + i;
+		if ((segP->m_nType != SEGMENT_IS_SKYBOX) && PointInSeg (segP, vPos))
+			return i;
+		}
+	}
+return -1;
+}
+
+// -------------------------------------------------------------------------------
+//Find segment containing point vPos.
+
+int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance, int nThread)
+{
+	static ushort bVisited [MAX_THREADS][MAX_SEGMENTS_D2X]; 
+	static ushort bFlags [MAX_THREADS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
+
+//allow nSegment == -1, meaning we have no idea what CSegment point is in
+Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
+if (nSegment != -1) {
+	if (!++bFlags [nThread]) {
+		memset (bVisited [nThread], 0, sizeofa (bVisited [nThread]));
+		bFlags [nThread] = 1;
+		}
+	if (0 <= (nSegment = TraceSegs (vPos, nSegment, 0, bVisited [nThread], bFlags [nThread], xTolerance))) 
+		return nSegment;
+	}
+
+//couldn't find via attached segs, so search all segs
+if (!bExhaustive)
+	return -1;
+
+if (bSkyBox < 0) {
+	if (0 <= (nSegment = FindSegByPosExhaustive (vPos, 0)))
+		return nSegment;
+	bSkyBox = 1;
+	}
+return FindSegByPosExhaustive (vPos, bSkyBox);
+}
+
+// -------------------------------------------------------------------------------
+
+short FindClosestSeg (CFixVector& vPos)
+{
+	CSegment*	segP = SEGMENTS + 0;
+	short			nSegment, nClosestSeg = -1;
+	fix			nDist, nMinDist = 0x7fffffff;
+
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+	nDist = CFixVector::Dist (vPos, segP->Center ()) - segP->MinRad ();
+	if (nDist < nMinDist) {
+		nMinDist = nDist;
+		nClosestSeg = nSegment;
+		}
+	}
+return nClosestSeg;
+}
+
+//	-----------------------------------------------------------------------------
+//eof

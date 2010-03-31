@@ -164,11 +164,13 @@ class CSide {
 			return m_nFaces;
 			}
 		CFixVector* GetCorners (CFixVector* vertices);
+		void GetCornerIndex (int nSide, ushort* vertIndex);
 		inline short* Corners (void) { return m_corners; }
 		CFixVector& Vertex (int nVertex);
 		CFixVector& MinVertex (void);
 		CFixVector& Normal (int nFace);
 		fix Height (void);
+		float FaceSize (ubyte nSide);
 		bool IsPlanar (void);
 		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
 		ubyte Distf (const CFloatVector& point, float& fSideDist, int bBehind, short sideBit);
@@ -508,6 +510,8 @@ void ClearLightSubtracted (void);
 int CountSkyBoxSegments (void);
 void FreeSkyBoxSegList (void);
 int BuildSkyBoxSegList (void);
+
+void SetupSegments (void);
 
 void GetCorners (int nSegment, int nSide, ushort* vertIndex);
 

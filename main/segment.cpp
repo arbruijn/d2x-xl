@@ -28,6 +28,18 @@ int sideVertIndex [MAX_SIDES_PER_SEGMENT][4] = {
 
 extern bool bNewFileFormat;
 
+// -----------------------------------------------------------------------------------
+// Fill in array with four absolute point numbers for a given CSide
+void CSegment::GetCornerIndex (int nSide, ushort* vertIndex)
+{
+	int*	sv = sideVertIndex [nSide];
+
+vertIndex [0] = m_verts [sv [0]];
+vertIndex [1] = m_verts [sv [1]];
+vertIndex [2] = m_verts [sv [2]];
+vertIndex [3] = m_verts [sv [3]];
+}
+
 //------------------------------------------------------------------------------
 
 int CSegment::Index (void)
@@ -125,7 +137,7 @@ for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 ushort sideVerts [4];
 
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
-	::GetCorners (Index (), i, sideVerts);
+	GetCornerIndex (i, sideVerts);
 	m_sides [i].Read (cf, sideVerts, m_children [i] == -1);
 	}
 }
@@ -1132,6 +1144,36 @@ return SEGMENTS [m_children [nSide]].AdjacentSide (Index ());
 CSegment* CSegFace::Segment (void) 
 { 
 return &SEGMENTS [m_info.nSegment]; 
+}
+
+// -------------------------------------------------------------------------------
+//	Set up all segments.
+//	gameData.segs.nLastSegment must be set.
+//	For all used segments (number <= gameData.segs.nLastSegment), nSegment field must be != -1.
+
+void SetupSegments (void)
+{
+gameOpts->render.nMathFormat = 0;
+gameData.segs.points.Clear ();
+for (int i = 0; i <= gameData.segs.nLastSegment; i++)
+	SEGMENTS [i].Setup ();
+ComputeVertexNormals ();
+gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
+}
+
+// -------------------------------------------------------------------------------
+
+float CSegment::FaceSize (ubyte nSide)
+{
+	int*		s2v = sideVertIndex [nSide];
+
+	short		v0 = m_verts [s2v [0]];
+	short		v1 = m_verts [s2v [1]];
+	short		v2 = m_verts [s2v [2]];
+	short		v3 = m_verts [s2v [3]];
+
+return TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v1], gameData.segs.vertices [v2]) +
+		 TriangleSize (gameData.segs.vertices [v0], gameData.segs.vertices [v2], gameData.segs.vertices [v3]);
 }
 
 //------------------------------------------------------------------------------

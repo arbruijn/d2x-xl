@@ -3061,6 +3061,14 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\main\findpath.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\main\findsegment.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\main\flightpath.cpp"
 						>
 						<FileConfiguration
@@ -10764,11 +10772,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File

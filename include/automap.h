@@ -129,6 +129,7 @@ class CAutomap {
 		inline int Display (void) { return m_bDisplay; }
 
 	private:
+		int SetSegmentDepths (int nStartSeg, ushort *depthBufP);
 		void AdjustSegmentLimit (int nSegmentLimit, CArray<ushort>& visited);
 		void DrawEdges (void);
 		void DrawPlayer (CObject* objP);

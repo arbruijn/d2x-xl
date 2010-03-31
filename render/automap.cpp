@@ -545,10 +545,68 @@ sprintf (szExplored, " (%1.1f %s)", (float) (h * 100) / (float) gameData.segs.nS
 strcat (m_szLevelName, szExplored);
 }
 
+//	-----------------------------------------------------------------------------
+//	Set the segment depth of all segments from nStartSeg in *segbuf.
+//	Returns maximum nDepth value.
+int CAutomap::SetSegmentDepths (int nStartSeg, ushort *depthBufP)
+{
+	ubyte		bVisited [MAX_SEGMENTS_D2X];
+	short		queue [MAX_SEGMENTS_D2X];
+	int		head = 0;
+	int		tail = 0;
+	int		nDepth = 1;
+	int		nSegment, nSide, nChild;
+	ushort	nParentDepth = 0;
+	short*	childP;
+
+	head = 0;
+	tail = 0;
+
+if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
+	return 1;
+if (depthBufP [nStartSeg] == 0)
+	return 1;
+queue [tail++] = nStartSeg;
+memset (bVisited, 0, sizeof (*bVisited) * gameData.segs.nSegments);
+bVisited [nStartSeg] = 1;
+depthBufP [nStartSeg] = nDepth++;
+if (nDepth == 0)
+	nDepth = 0x7fff;
+while (head < tail) {
+	nSegment = queue [head++];
+#if DBG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
+	nParentDepth = depthBufP [nSegment];
+	childP = SEGMENTS [nSegment].m_children;
+	for (nSide = MAX_SIDES_PER_SEGMENT; nSide; nSide--, childP++) {
+		if (0 > (nChild = *childP))
+			continue;
+#if DBG
+		if (nChild >= gameData.segs.nSegments) {
+			Error ("Invalid segment in SetSegmentDepths()\nsegment=%d, side=%d, child=%d",
+					 nSegment, nSide, nChild);
+			return 1;
+			}
+#endif
+#if DBG
+		if (nChild == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		if (!depthBufP [nChild])
+			continue;
+		if (bVisited [nChild])
+			continue;
+		bVisited [nChild] = 1;
+		depthBufP [nChild] = nParentDepth + 1;
+		queue [tail++] = nChild;
+		}
+	}
+return (nParentDepth + 1) * gameStates.render.bViewDist;
+}
+
 //------------------------------------------------------------------------------
-
-int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
-
 
 int CAutomap::Setup (int bPauseGame, fix& xEntryTime)
 {
@@ -624,8 +682,7 @@ else
 	memcpy (automap.m_visible.Buffer (), m_visited [0].Buffer (), m_visited [0].Size ());
 //m_visited [0][OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
 m_nSegmentLimit =
-m_nMaxSegsAway =
-	SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
+m_nMaxSegsAway = SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
 AdjustSegmentLimit (m_nSegmentLimit, automap.m_visible);
 m_bDisplay++;
 return gameData.app.bGamePaused;

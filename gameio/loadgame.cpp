@@ -2080,7 +2080,7 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (j != gameData.multiplayer.nLocalPlayer) {
 			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
 			if ((objP->info.nType == OBJ_PLAYER)) {
-				xDist = FindConnectedDistance (objP->info.position.vPos,
+				xDist = PathLength (objP->info.position.vPos,
 														 objP->info.nSegment,
 														 gameData.multiplayer.playerInit [i].position.vPos,
 														 gameData.multiplayer.playerInit [i].nSegment,

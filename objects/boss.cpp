@@ -70,7 +70,7 @@ m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 //	Create list of segments boss is allowed to teleport to at segListP.
 //	Set *segCountP.
 //	Boss is allowed to teleport to segments he fits in (calls ObjectIntersectsWall) and
-//	he can reach from his initial position (calls FindConnectedDistance).
+//	he can reach from his initial position (calls PathLength).
 //	If bSizeCheck is set, then only add CSegment if boss can fit in it, else any segment is legal.
 //	bOneWallHack added by MK, 10/13/95: A mega-hack! Set to !0 to ignore the
 bool CBossInfo::SetupSegments (CShortArray& segments, int bSizeCheck, int bOneWallHack)
