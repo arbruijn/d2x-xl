@@ -438,7 +438,35 @@ return nSegment;
 
 #endif
 
-//	----------------------------------------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+typedef struct tSegPathNode {
+	uint		bVisited;
+	short		nDepth;
+	short		nPred;
+} tSegPathNode;
+
+typedef struct tSegScanInfo {
+	uint	bFlag;
+	int	nMaxDepth;
+	int	nRouteDir;
+	short	nLinkSeg;
+} tSegScanInfo;
+
+typedef struct tSegScanData {
+	short	nStartSeg;
+	short nHead;
+	short nTail;
+	short segQueue [MAX_SEGMENTS_D2X];
+	tSegPathNode* segPath;
+	uint	bFlag;
+} tSegScanData;
+
+static int ScanSegments (int nDir)
+{
+}
+
+//	-----------------------------------------------------------------------------
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
@@ -565,21 +593,15 @@ for (;;) {
 
 #else
 
-typedef struct tSegPathNode {
-	uint		bVisited;
-	short		nDepth;
-	short		nPred;
-} tSegPathNode;
-
 #if DBG
 retry:
 #endif
 
 	short				nSuccSeg, nPredSeg;
-	short				nTail [2] = {0, 0}, nHead [2] = {1, 1};
 	int				nDepth, nLength, nRouteDir = (nCacheType != 0);
 	CSegment*		segP, * otherSegP;
-	short				segQueue [2][MAX_SEGMENTS_D2X];
+	tSegScanData	scanData [2];
+	tSegScanInfo	scanInfo;
 	tSegPathNode*	pathNodeP;
 
 	static tSegPathNode	segPath [2][MAX_SEGMENTS_D2X];
@@ -587,20 +609,35 @@ retry:
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (!++bFlag) {
-	memset (segPath, 0, sizeof (segPath));
+	memset (scanData, 0, sizeof (scanData));
 	bFlag = 1;
 	}
 
 	short	nStartSegs [2] = {nStartSeg, nDestSeg};
 
-segPath [0][nStartSeg].bVisited =
-segPath [1][nDestSeg].bVisited = bFlag;
-segPath [0][nStartSeg].nDepth =
-segPath [1][nDestSeg].nDepth = 0;
-segPath [0][nStartSeg].nPred =
-segPath [1][nDestSeg].nPred = -1;
-segQueue [0][0] = nStartSeg;
-segQueue [1][0] = nDestSeg;
+scanInfo.bFlag = bFlag;
+scanInfo.nRouteDir = (nCacheType != 0);
+scanInfo.nMaxDepth = nMaxDepth / 2 + 1;
+scanInfo.nLinkSeg = -1;
+
+scanData [0].segPath = segPath [0];
+scanData [0].segPath [nStartSeg].bVisited = bFlag;
+scanData [0].segPath [nStartSeg].nDepth = 0;
+scanData [0].segPath [nStartSeg].nPred = -1;
+scanData [0].nStartSeg = 
+scanData [0].segQueue [0] = nStartSeg;
+scanData [0].nTail = 0;
+scanData [0].nHead = 1;
+
+scanData [0].segPath = segPath [1];
+scanData [1].segPath [nDestSeg].bVisited = bFlag;
+scanData [1].segPath [nDestSeg].nDepth = 0;
+scanData [1].segPath [nDestSeg].nPred = -1;
+scanData [1].nStartSeg =
+scanData [1].segQueue [0] = nDestSeg;
+scanData [1].nTail = 0;
+scanData [1].nHead = 1;
+
 nDepth = 0;
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
@@ -620,17 +657,18 @@ if ((nStartSeg == 702) && (nDestSeg == 71))
 
 for (;;) {
 	for (int nDir = 0; nDir < 2; nDir++) {
+		tSegScanData& sd = scanData [nDir];
 		nRouteDir = !nRouteDir;
-		if (nTail [nDir] >= nHead [nDir]) {
+		if (sd.nTail >= sd.nHead) {
 			goto errorExit;
 			}
-		nPredSeg = segQueue [nDir][nTail [nDir]++];
+		nPredSeg = sd.segQueue [sd.nTail++];
 #if DBG_SCAN
 		if (nPredSeg == nDbgSeg)
 			nDbgSeg = nDbgSeg;
 #endif
-		nDepth = segPath [nDir][nPredSeg].nDepth + 1;
-		if (nDepth > nMaxDepth / 2 + 1) {
+		nDepth = sd.segPath [nPredSeg].nDepth + 1;
+		if (nDepth > scanInfo.nMaxDepth) {
 			bScanning &= ~(1 << nDir);
 			if (!bScanning)
 				goto errorExit;
@@ -655,30 +693,31 @@ for (;;) {
 			if (nSuccSeg == nDbgSeg)
 				nDbgSeg = nDbgSeg;
 #endif
-			pathNodeP = &segPath [nDir][nSuccSeg];
+			pathNodeP = &sd.segPath [nSuccSeg];
 			if (pathNodeP->bVisited == bFlag)
 				continue;
 			pathNodeP->nPred = nPredSeg;
-			if (segPath [!nDir][nSuccSeg].bVisited != bFlag) {
+			if (scanData [!nDir].segPath [nSuccSeg].bVisited != bFlag) {
 				pathNodeP->bVisited = bFlag;
 				pathNodeP->nDepth = nDepth;
-				segQueue [nDir][nHead [nDir]++] = nSuccSeg;
+				sd.segQueue [sd.nHead++] = nSuccSeg;
 				continue;
 				}
 			// destination segment reached
 			xDist = 0;
 			nLength = 0; 
-			short nSegment = nSuccSeg;
+			scanInfo.nLinkSeg = nSuccSeg;
 			for (int nDir = 0; nDir < 2; nDir++) {
-				nSuccSeg = nSegment;
+				sd = scanData [nDir];
+				nSuccSeg = scanInfo.nLinkSeg;
 				for (;;) {
-					nPredSeg = segPath [nDir][nSuccSeg].nPred;
+					nPredSeg = sd.segPath [nSuccSeg].nPred;
 #if DBG_SCAN
 					if (nPredSeg < 0)
 						goto retry;
 #endif
 					//segPath [nDir][nSuccSeg].nPred = -2;
-					if (nPredSeg == nStartSegs [nDir]) {
+					if (nPredSeg == sd.nStartSeg) {
 						xDist += CFixVector::Dist (nDir ? p1 : p0, SEGMENTS [nSuccSeg].Center ());
 						break;
 						}
