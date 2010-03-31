@@ -571,6 +571,10 @@ typedef struct tSegPathNode {
 	static tSegPathNode	segPath [2][MAX_SEGMENTS_D2X];
 	static ushort	bFlag = 0xFFFF;
 
+retry:
+
+nTail [0] = nTail [1] = 0;
+nHead [0] = nHead [1] = 1;
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
 if (!++bFlag) {
 	memset (segPath, 0, sizeof (segPath));
@@ -594,6 +598,11 @@ nDepth = 0;
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
 
+if ((nStartSeg == 1307) && (nDestSeg == 1301))
+	nDepth = nDepth;
+if ((nStartSeg == 702) && (nDestSeg == 71))
+	nDepth = nDepth;
+
 	int nDir, bScanning = 3;
 
 while (bScanning) {
@@ -606,7 +615,7 @@ while (bScanning) {
 			}
 		nSegment = segQueue [nDir][nTail [nDir]++];
 		nDepth = segPath [nDir][nSegment].nDepth + 1;
-		if (nDepth > nMaxDepth) {
+		if (nDepth > nMaxDepth / 2 + 1) {
 			bScanning &= ~(1 << nDir);
 			continue;
 			}
@@ -615,6 +624,10 @@ while (bScanning) {
 			if (!(segP->IsDoorWay (nSide, NULL) & widFlag))
 				continue;
 			nChildSeg = segP->m_children [nSide];
+#if DBG
+			if (nChildSeg == nDbgSeg)
+				nDbgSeg = nDbgSeg;
+#endif
 			pathNodeP = &segPath [nDir][nChildSeg];
 			if (pathNodeP->bVisited == bFlag)
 				continue;
@@ -632,29 +645,41 @@ while (bScanning) {
 				nSegment = nChildSeg;
 				for (;;) {
 					nPredSeg = segPath [nDir][nSegment].nPred;
+					if (nPredSeg < 0)
+						goto retry;
+					segPath [nDir][nSegment].nPred = -2;
 					if (nPredSeg == nStartSegs [nDir]) {
 						xDist += CFixVector::Dist (nDir ? p1 : p0, SEGMENTS [nSegment].Center ());
 						break;
 						}
 					nLength++;
+					if (nLength > 2 * nMaxDepth)
+						goto retry;
 					xDist += CFixVector::Dist (SEGMENTS [nPredSeg].Center (), SEGMENTS [nSegment].Center ());
 					nSegment = nPredSeg;
 					}
 				}
 			if (nCacheType >= 0) 
 				fcdCaches [nCacheType].Add (nStartSeg, nDestSeg, nLength + 3, xDist);
-				return xDist;
+			//return xDist;
 			}
 		}
 	}	
 
-//#else
+#else
+
+if (!++bFlag) {
+	memset (segPath, 0, sizeof (segPath));
+	bFlag = 1;
+	}
 
 nSegment = nStartSeg;
 segPath [0][nStartSeg].bVisited = bFlag;
 segPath [0][nStartSeg].nDepth = 0;
 segPath [0][nStartSeg].nPred = -1;
 segQueue [0][0] = nStartSeg;
+nHead [0] = 1;
+nTail [0] = 0;
 nDepth = 0;
 if (nMaxDepth < 0)
 	nMaxDepth = gameData.segs.nSegments;
