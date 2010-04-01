@@ -886,23 +886,23 @@ if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 
 void HardwareCheck (void)
 {
-if (glHWHash == 0xf825f3fe) {
+if (glHWHash == 0xf825fcfe) {
 	SetScreenMode (SCREEN_MENU);
 	int nFade = gameOpts->menus.nFade;
 	for (int h = 0; ; h++) {
 		for (int i = 0; i < 2; i++) {
-			gameOpts->menus.nFade = 333;
 			if (i)
 				messageBox.Show ("FORWARDING FAILED -\nCHECK YOUR FIREWALL STATUS!\n\nPRESS ENTER WHEN DONE!");
 			else {
 				for (int j = 0; j < 10; j++) {	
-					messageBox.Show ("YOUR GRAPHICS CARD SUCKS!");
+					gameOpts->menus.nFade = 333;
+					messageBox.Show ("UNSUPPORTED GRAPHICS HARDWARE!");
 					messageBox.Clear ();
 					}
 				if (strstr (pszOglExtensions, "ATI") || strstr (pszOglExtensions, "AMD"))
-					messageBox.Show ("YOUR GRAPHICS CARD SUCKS!\n\nGET NVIDIA HARDWARE!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
+					messageBox.Show ("DUE TO CONSTANT PPROBLEMS WITH\nYOUR TYPE OF GRAPHICS HARDWARE,\nSUPPORT FOR IT HAS BEEN REMOVED\nPERMANENTLY FROM D2X-XL.\n\nPLEASE GET A GRAPHICS CARD\nTHAT DESERVES THE NAME:\n\nA GRAPHICS CARD FROM NVIDIA!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
 				else
-					messageBox.Show ("YOUR GRAPHICS CARD SUCKS!\n\nGET AMD HARDWARE!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
+					messageBox.Show ("DUE TO CONSTANT PPROBLEMSWITH\nYOUR TYPE OF GRAPHICS HARDWARE,\nSUPPORT FOR IT HAS BEEN REMOVED\nPERMANENTLY FROM D2X-XL.\n\nPLEASE GET A GRAPHICS CARD\nTHAT DESERVES THE NAME:\n\nA GRAPHICS CARD FROM AMD!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
 				}
 			char c = 0;
 			for (uint j = 0; (c != KEY_ENTER); j++) {

@@ -593,7 +593,7 @@ do {
 
 #if !DBG
 	if (!gameOpts->app.bNotebookFriendly)
-		gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 60;
+		gameOpts->render.nMaxFPS = m [renderOpts.nFrameCap].m_value ? 1 : 120;
 #endif
 	if (!gameStates.app.bNostalgia)
 		paletteManager.SetGamma (m [renderOpts.nBrightness].m_value);
