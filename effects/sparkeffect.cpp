@@ -37,10 +37,10 @@ void CEnergySpark::Setup (short nSegment, ubyte nType)
 {
 	CSegment*			segP = SEGMENTS + nSegment;
 	CFixVector			vOffs;
-	CFloatVector		vMaxf, vMax2f;
+	CFloatVector		vRadf;
 
-vMaxf.Assign (segP->m_extents [0]);
-vMax2f = vMaxf * 2;
+vRadf.Assign (segP->m_extents [1] - segP->m_extents [0]);
+vRadf *= 0.5f;
 if (m_tRender)
 	return;
 if (!m_nProb)
@@ -52,9 +52,9 @@ m_tCreate = gameStates.app.nSDLTicks;
 if (d_rand () % m_nProb)
 	m_nProb--;
 else {
-	vOffs [X] = F2X (vMaxf [X] - f_rand () * vMax2f [X]);
-	vOffs [Y] = F2X (vMaxf [Y] - f_rand () * vMax2f [Y]);
-	vOffs [Z] = F2X (vMaxf [Z] - f_rand () * vMax2f [Z]);
+	vOffs [X] = F2X (vRadf [X] - (2 * f_rand ()) * vRadf [X]);
+	vOffs [Y] = F2X (vRadf [Y] - (2 * f_rand ()) * vRadf [Y]);
+	vOffs [Z] = F2X (vRadf [Z] - (2 * f_rand ()) * vRadf [Z]);
 	m_vPos = segP->Center () + vOffs;
 	if ((vOffs.Mag () > segP->MinRad ()) && segP->Masks (m_vPos, 0).m_center)
 		m_nProb = 1;

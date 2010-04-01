@@ -929,7 +929,7 @@ if (glHWHash == 0xf825fcfe) {
 
 void BadHardwareNotification (void)
 {
-HardwareCheck ();
+//HardwareCheck ();
 #if 1//!DBG
 if (!ogl.m_states.bShadersOk && (gameConfig.nVersion != D2X_IVER)) {
 	SetScreenMode (SCREEN_MENU);
