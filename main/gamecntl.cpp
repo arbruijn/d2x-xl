@@ -165,6 +165,7 @@ StartTime (0);
 if (redbook.Playing ())
 	rba.Resume ();
 audio.ResumeAll ();
+gameStates.render.cockpit.nShieldFlash = 0;
 gameData.app.bGamePaused = 0;
 }
 

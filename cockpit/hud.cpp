@@ -208,26 +208,15 @@ int CHUD::FlashGauge (int h, int *bFlash, int tToggle)
 
 if (gameOpts->app.bEpilepticFriendly || gameStates.app.bPlayerIsDead || gameStates.app.bPlayerExploded)
 	b = 0;
-else if (b == 2) {
+else {
+	if (!b)
+		tToggle = -1;
 	if (h > 20)
 		b = 0;
 	else if (h > 10)
 		b = 1;
-	}
-else if (b == 1) {
-	if (h > 20)
-		b = 0;
-	else if (h <= 10)
-		b = 2;
-	}
-else {
-	if (h <= 10)
-		b = 2;
-	else if (h <= 20)
-		b = 1;
 	else
 		b = 0;
-	tToggle = -1;
 	}
 *bFlash = b;
 return (int) ((b && (tToggle <= t)) ? t + 300 / b : 0);
