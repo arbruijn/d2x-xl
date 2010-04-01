@@ -254,7 +254,9 @@ return 1;
 
 #endif
 
-//	-----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+#if BIDIRECTIONAL_SCAN 
 
 static fix BuildPathBiDir (CFixVector& p0, CFixVector& p1, int nCacheType)
 {
@@ -284,7 +286,7 @@ if (nCacheType >= 0)
 return xDist;
 }
 
-//	-----------------------------------------------------------------------------
+#else //	-----------------------------------------------------------------------
 
 static fix BuildPathUniDir (CFixVector& p0, CFixVector& p1, int nCacheType)
 {
@@ -308,7 +310,9 @@ if (nCacheType >= 0)
 return xDist;
 }
 
-//	-----------------------------------------------------------------------------
+#endif 
+
+// -----------------------------------------------------------------------------
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
