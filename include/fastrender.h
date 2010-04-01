@@ -16,7 +16,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread);
 void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
 void UpdateSlidingFaces (void);
 int CountRenderFaces (void);
-void GetRenderVertices (void);
+void GetRenderFaces (void);
 void RenderMineObjects (int nType);
 void RenderSkyBoxFaces (void);
 int SetupCoronas (void);

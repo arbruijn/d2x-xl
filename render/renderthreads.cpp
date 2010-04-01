@@ -405,10 +405,12 @@ if (gameStates.app.nThreads < 2)
 	gameStates.app.nThreads = omp_get_max_threads ();
 	}
 
-if (gameStates.app.nThreads > MAX_THREADS) {
-	gameStates.app.nThreads = MAX_THREADS;
-	omp_set_num_threads (MAX_THREADS);
-	}
+if (gameStates.app.nThreads > MAX_THREADS)
+#if DBG
+	omp_set_num_threads (gameStates.app.nThreads = 2);
+#else
+	omp_set_num_threads (gameStates.app.nThreads = MAX_THREADS);
+#endif
 #endif
 return gameStates.app.nThreads;
 }
