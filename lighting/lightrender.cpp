@@ -102,6 +102,9 @@ if (left < r)
 #endif //SORT_ACTIVE_LIGHTS
 
 //------------------------------------------------------------------------------
+// SetActive puts lights to be activated in a jump table depending on their 
+// distance to the lit object. If a jump table entry is already occupied, the 
+// light will be moved back in the table to the next free entry.
 
 int CLightManager::SetActive (CActiveDynLight* activeLightsP, CDynLight* prl, short nType, int nThread, bool bForce)
 {
@@ -114,37 +117,30 @@ if ((nDbgObj >= 0) && (prl->info.nObject == nDbgObj))
 
 if (prl->render.bUsed [nThread])
 	return 0;
-fix xDist = (bForce || prl->info.bSpot) ? 0 : (prl->render.xDistance / 2000 + 5) / 10;
-if (xDist >= MAX_SHADER_LIGHTS)
-	return 0;
-if (xDist < 0)
+fix xDist;
+if (bForce || prl->info.bSpot) 
 	xDist = 0;
+else {
+	xDist = (prl->render.xDistance / 2000 + 5) / 10;
+	if (xDist >= MAX_OGL_LIGHTS)
+		return 0;
+	if (xDist < 0)
+		xDist = 0;
+	}
 #if PREFER_GEOMETRY_LIGHTS
 else if (prl->info.nSegment >= 0)
 	xDist /= 2;
 else if (!prl->info.bSpot)
 	xDist += (MAX_SHADER_LIGHTS - xDist) / 2;
 #endif
-#if 1
-while (activeLightsP [xDist].nType) {
-	if (activeLightsP [xDist].pl == prl)
+activeLightsP += xDist;
+while (activeLightsP->nType) {
+	if (activeLightsP->pl == prl)
 		return 0;
-	if (++xDist >= MAX_SHADER_LIGHTS)
+	if (++xDist >= MAX_OGL_LIGHTS)
 		return 0;
+	activeLightsP++;
 	}
-#else
-if (activeLightsP [xDist].info.nType) {
-	for (int j = xDist; j < MAX_SHADER_LIGHTS - 1; j++) {
-		if (!activeLightsP [j].info.nType) {
-			memmove (activeLightsP + xDist + 1, activeLightsP + xDist, (j - xDist) * sizeof (CActiveDynLight));
-			xDist = j;
-			break;
-			}
-		else if (activeLightsP [j].pl == prl)
-			return 0;
-		}
-	}
-#endif
 
 #if DBG
 if ((nDbgSeg >= 0) && (prl->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (prl->info.nSide == nDbgSide)))
@@ -153,18 +149,18 @@ if ((nDbgObj >= 0) && (prl->info.nObject == nDbgObj))
 	nDbgObj = nDbgObj;
 #endif
 
-activeLightsP [xDist].nType = nType;
-activeLightsP [xDist].pl = prl;
-prl->render.activeLightsP [nThread] = activeLightsP + xDist;
-prl->render.bUsed [nThread] = (ubyte) nType;
+activeLightsP->nType = nType;
+activeLightsP->pl = prl;
+prl->render.activeLightsP [nThread] = activeLightsP;
+prl->render.bUsed [nThread] = ubyte (nType);
 
 CDynLightIndex* sliP = &m_data.index [0][nThread];
 
 sliP->nActive++;
 if (sliP->nFirst > xDist)
-	sliP->nFirst = (short) xDist;
+	sliP->nFirst = short (xDist);
 if (sliP->nLast < xDist)
-	sliP->nLast = (short) xDist;
+	sliP->nLast = short (xDist);
 return 1;
 }
 
