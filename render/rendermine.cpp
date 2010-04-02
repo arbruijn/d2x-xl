@@ -61,7 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "systemkeys.h"
 
 #if USE_OPENMP
-#	define PERSISTENT_THREADS 0
+#	define PERSISTENT_THREADS 1
 #else
 #	define PERSISTENT_THREADS 0
 #endif
@@ -295,9 +295,9 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 #	pragma auto_inline(off)
 #endif
 
-static sbyte bSemaphore [MAX_THREADS];
+static sbyte bSemaphore [MAX_THREADS] = {0,0,0,0};
 static SDL_mutex* threadLock = NULL;
-static int nThreads;
+static int nThreads = 0;
 
 //------------------------------------------------------------------------------
 // LightObjectsThread computes the segment lighting for the object render process.
@@ -306,12 +306,12 @@ static int nThreads;
 // for the render process to reset its semaphore before proceeding with the next 
 // segment.
 
+static int nDbgThread = -1;
+
 int _CDECL_ LightObjectsThread (void* nThreadP)
 {
 #if 1
 	int	nThread = *((int*) nThreadP);
-#else
-	int	nThread = EnterLightObjectsThread (); //*((int*) nThreadP);
 #endif
 	short nSegment;
 
@@ -320,10 +320,10 @@ for (;;) {
 	while (bSemaphore [nThread] < 0)
 		G3_SLEEP (1);
 #endif
-	SDL_mutexP (threadLock);
-	nThreads++;
-	SDL_mutexV (threadLock);
-	for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
+	for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += nThreads) {
+if ((nThread < 0) || (nThread >= gameStates.app.nThreads))
+	nDbgThread = nThread;
+
 		nSegment = gameData.render.mine.segRenderList [1][i];
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
@@ -366,10 +366,10 @@ while (nThreads > 0) {
 		lightManager.SetThreadId (i);
 		RenderObjList (nListPos [i], gameStates.render.nWindow);
 		lightManager.SetThreadId (-1);
-		nListPos [i] += gameStates.app.nThreads;
+		nListPos [i] += (gameStates.app.nThreads - 1);
 		bSemaphore [i] = 0;
 		}
-	i = ++i % gameStates.app.nThreads;
+	i = ++i % (gameStates.app.nThreads - 1);
 	}
 }
 
@@ -419,6 +419,8 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+static int bRenderObjects = 0;
+
 void RenderMineObjects (int nType)
 {
 #if DBG
@@ -440,14 +442,14 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 
+bRenderObjects = 1;
+
 #if 0
 
 RenderObjectsST ();
 
 #else
 
-nThreads = 0;
-memset (bSemaphore, 0, sizeof (bSemaphore));
 
 if ((gameStates.app.nThreads < 3) || (gameData.render.mine.nRenderSegs [1] < 2 * (gameStates.app.nThreads - 1)))
 	RenderObjectsST ();
@@ -455,33 +457,39 @@ else {
 #if USE_OPENMP > 1
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
-	--gameStates.app.nThreads;
+	nThreads = gameStates.app.nThreads - 1;
+	memset (bSemaphore, 0, sizeof (bSemaphore));
 	int nThreadIds [MAX_THREADS] = {0,1,2,3};
 #if PERSISTENT_THREADS
 	static SDL_Thread* threads [MAX_THREADS] = {NULL, NULL, NULL, NULL};
 #else
 	SDL_Thread* threads [MAX_THREADS];
 #endif
-	for (i = 0; i < gameStates.app.nThreads; i++) 
+	for (i = 0; i < nThreads; i++) 
 #if PERSISTENT_THREADS
 		if (!threads [i])
 #endif
 		threads [i] = SDL_CreateThread (LightObjectsThread, nThreadIds + i);
 	RenderObjectsMT ();
-	++gameStates.app.nThreads;
+#if !PERSISTENT_THREADS
+	for (i = 0; i < gameStates.app.nThreads; i++) 
+		SDL_KillThread (threads [i]);
+#endif
 #elif !USE_OPENMP
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
-	--gameStates.app.nThreads;
-	RunRenderThreads (-int (rtPolyModel) - 1);
+	nThreads = gameStates.app.nThreads - 1;
+	memset (bSemaphore, 0, sizeof (bSemaphore));
+	RunRenderThreads (-int (rtPolyModel) - 1, nThreads);
 	RenderObjectsMT ();
-	++gameStates.app.nThreads;
 #else
 RenderObjectsST ();
 #endif
 	}
 
 #endif
+
+bRenderObjects = 0;
 
 gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 gameStates.render.nState = 0;
