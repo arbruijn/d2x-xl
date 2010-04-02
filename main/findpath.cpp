@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define USE_DACS 0
 #define USE_FCD_CACHE 1
 #define BIDIRECTIONAL_SCAN 1
-#define MULTITHREADED_SCAN 1
+#define MULTITHREADED_SCAN 0
 
 #if DBG
 #	define DBG_SCAN 0
@@ -320,8 +320,11 @@ return xDist;
 fix PathLength (CFixVector& p0, short nStartSeg, CFixVector& p1, short nDestSeg, int nMaxDepth, int widFlag, int nCacheType)
 {
 #if 0 //DBG
-gameData.fcd.nConnSegDist = 10000;
-return -1;
+//if (!nCacheType) 
+	{
+	fcdCaches [nCacheType].SetPathLength (10000);
+	return -1;
+	}
 #endif
 
 // same segment?
@@ -516,7 +519,7 @@ scanInfo.nMaxDepth = nMaxDepth;
 for (;;) {
 	if (0 > (scanInfo.nLinkSeg = ExpandSegment (nDir)))
 		break;
-	if (scanInfo.nLinkSeg < 0)
+	if (scanInfo.nLinkSeg > 0)
 		// destination segment reached
 		return BuildPathUniDir (p0, p1, nCacheType);
 	}	

@@ -60,6 +60,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "createmesh.h"
 #include "systemkeys.h"
 
+#if USE_OPENMP
+#	define PERSISTENT_THREADS 1
+#else
+#	define PERSISTENT_THREADS 0
+#endif
+
 // ------------------------------------------------------------------------------
 
 #define CLEAR_WINDOW	0
@@ -309,24 +315,32 @@ int _CDECL_ LightObjectsThread (void* nThreadP)
 #endif
 	short nSegment;
 
-for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
-	nSegment = gameData.render.mine.segRenderList [1][i];
-	if (gameStates.render.bApplyDynLight) {
-		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
-		lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
-		}
-	bSemaphore [nThread] = 1;
-	while (bSemaphore [nThread])
-		; //G3_SLEEP (0);
-	if (gameStates.render.bApplyDynLight)
-		lightManager.ResetNearestStatic (nSegment, nThread);
-	}	
-#if 1
-SDL_mutexP (threadLock);
-nThreads--;
-SDL_mutexV (threadLock);
-#else
-LeaveLightObjectsThread ();
+#if PERSISTENT_THREADS
+for (;;) {
+	while (bSemaphore [nThread] < 0)
+		G3_SLEEP (1);
+#endif
+	SDL_mutexP (threadLock);
+	nThreads++;
+	SDL_mutexV (threadLock);
+	for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads) {
+		nSegment = gameData.render.mine.segRenderList [1][i];
+		if (gameStates.render.bApplyDynLight) {
+			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
+			lightManager.SetNearestStatic (nSegment, 1, 1, nThread);
+			}
+		bSemaphore [nThread] = 1;
+		while (bSemaphore [nThread])
+			; //G3_SLEEP (0);
+		if (gameStates.render.bApplyDynLight)
+			lightManager.ResetNearestStatic (nSegment, nThread);
+		}	
+	SDL_mutexP (threadLock);
+	nThreads--;
+	SDL_mutexV (threadLock);
+#if PERSISTENT_THREADS
+	bSemaphore [nThread] = -1;
+	}
 #endif
 return 1;
 }
@@ -348,7 +362,7 @@ void RenderObjectsMT (void)
 	int	i = 0;
 
 while (nThreads > 0) {
-	if (bSemaphore [i]) {
+	if (bSemaphore [i] > 0) {
 		lightManager.SetThreadId (i);
 		RenderObjList (nListPos [i], gameStates.render.nWindow);
 		lightManager.SetThreadId (-1);
@@ -441,17 +455,24 @@ else {
 #if USE_OPENMP > 1
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
-	nThreads = --gameStates.app.nThreads;
-	SDL_Thread*	threads [MAX_THREADS];
+	--gameStates.app.nThreads;
 	int nThreadIds [MAX_THREADS] = {0,1,2,3};
+#if PERSISTENT_THREADS
+	static SDL_Thread* threads [MAX_THREADS] = {NULL, NULL, NULL, NULL};
+#else
+	SDL_Thread* threads [MAX_THREADS];
+#endif
 	for (i = 0; i < gameStates.app.nThreads; i++) 
+#if PERSISTENT_THREADS
+		if (!threads [i])
+#endif
 		threads [i] = SDL_CreateThread (LightObjectsThread, nThreadIds + i);
 	RenderObjectsMT ();
 	++gameStates.app.nThreads;
 #elif !USE_OPENMP
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
-	nThreads = --gameStates.app.nThreads;
+	--gameStates.app.nThreads;
 	RunRenderThreads (-int (rtPolyModel) - 1);
 	RenderObjectsMT ();
 	++gameStates.app.nThreads;
