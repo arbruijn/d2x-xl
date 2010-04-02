@@ -760,7 +760,6 @@ if (bVariable) {
 else {
 	while (i) {
 		if (prl = m_data.renderLights [--i]) {
-			dbgPrl [nThread] = prl;
 			ResetUsed (prl, nThread);
 			}
 		}

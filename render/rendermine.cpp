@@ -437,8 +437,6 @@ for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.segRenderList [1][gameData.render.mine.nRenderSegs [1]++] = nSegment;
 
-bRenderObjects = 1;
-
 #if 0
 
 RenderObjectsST ();
@@ -468,7 +466,7 @@ else {
 	RenderObjectsMT ();
 #if !PERSISTENT_THREADS
 	for (i = 0; i < gameStates.app.nThreads; i++) 
-		SDL_KillThread (threads [i]);
+		SDL_WaitThread (threads [i], NULL);
 #endif
 #elif !USE_OPENMP
 	if (!threadLock)
@@ -483,8 +481,6 @@ RenderObjectsST ();
 	}
 
 #endif
-
-bRenderObjects = 0;
 
 gameStates.render.bApplyDynLight = (gameStates.render.nLightingMethod != 0);
 gameStates.render.nState = 0;
