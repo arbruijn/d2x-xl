@@ -317,15 +317,12 @@ if (faceP - FACES.faces == nDbgFace)
 if (m_data.index [0][0].nActive < 0)
 	lightManager.SetNearestToSegment (faceP->m_info.nSegment, faceP - FACES.faces, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 else {
-#if 0//DBG
-	CheckUsedLights2 ();
-#endif
 	m_data.index [0][0] = m_data.index [1][0];
 	}
 #else
 lightManager.SetNearestToSegment (faceP->m_info.nSegment, faceP - FACES, 0, 0, 0);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #endif
-vNormal = sideP->m_normals[0] + sideP->m_normals[1];
+vNormal = sideP->m_normals [0] + sideP->m_normals [1];
 vNormal *= (I2X (1) / 2);
 #if 1
 for (i = 0; i < 4; i++)
