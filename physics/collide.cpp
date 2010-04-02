@@ -1399,7 +1399,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 
 		//	Cause weapon to bounce.
 		//	Make a copy of this weaponP, because the physics wants to destroy it.
-		if (!WI_matter (weaponP->info.nId)) {
+		if ((weaponP->info.nType == OBJ_WEAPON) && !WI_matter (weaponP->info.nId)) {
 			short nClone = CreateObject (weaponP->info.nType, weaponP->info.nId, -1, weaponP->info.nSegment, weaponP->info.position.vPos,
 												  weaponP->info.position.mOrient, weaponP->info.xSize, 
 												  weaponP->info.controlType, weaponP->info.movementType, weaponP->info.renderType);

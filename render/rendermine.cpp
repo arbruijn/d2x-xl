@@ -61,7 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "systemkeys.h"
 
 #if USE_OPENMP
-#	define PERSISTENT_THREADS 1
+#	define PERSISTENT_THREADS 0
 #else
 #	define PERSISTENT_THREADS 0
 #endif
@@ -328,7 +328,7 @@ for (;;) {
 			}
 		bSemaphore [nThread] = 1;
 		while (bSemaphore [nThread])
-			; //G3_SLEEP (0);
+			G3_SLEEP (0);
 		if (gameStates.render.bApplyDynLight)
 			lightManager.ResetNearestStatic (nSegment, nThread);
 		}	
