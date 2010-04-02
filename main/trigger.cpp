@@ -1374,6 +1374,8 @@ if (!OBJTRIGGERS.Buffer ())
 	return NULL;
 if (!gameData.trigs.objTriggerRefs [nObject].nCount)
 	return NULL;
+if (gameData.trigs.objTriggerRefs [nObject].nFirst >= OBJTRIGGERS.Length ())
+	return NULL;
 if (nTrigger < 0)
 	return OBJTRIGGERS + gameData.trigs.objTriggerRefs [nObject].nFirst;
 if (++nTrigger - gameData.trigs.objTriggerRefs [nObject].nFirst < gameData.trigs.objTriggerRefs [nObject].nCount)
