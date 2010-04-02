@@ -216,7 +216,7 @@ else {
 	else if (h > 10)
 		b = 1;
 	else
-		b = 0;
+		b = 2;
 	}
 *bFlash = b;
 return (int) ((b && (tToggle <= t)) ? t + 300 / b : 0);
