@@ -743,21 +743,14 @@ prl->render.bUsed [nThread] = 0;
 
 //------------------------------------------------------------------------------
 
-static CDynLight* dbgPrl [MAX_THREADS] = {NULL, NULL, NULL, NULL};
-static int nDbgThread = -1;
-
 void CLightManager::ResetAllUsed (int bVariable, int nThread)
 {
-if ((nThread < 0) || (nThread >= gameStates.app.nThreads))
-	nDbgThread = nThread;
-
 	int			i = m_data.nLights [1];
 	CDynLight*	prl;
 
 if (bVariable) {
 	while (i) {
 		if (prl = m_data.renderLights [--i]) {
-			dbgPrl [nThread] = prl;
 			if (prl->info.nType < 2)
 				break;
 			ResetUsed (prl, nThread);
@@ -778,9 +771,6 @@ else {
 
 void CLightManager::ResetActive (int nThread, int nActive)
 {
-if ((nThread < 0) || (nThread >= gameStates.app.nThreads))
-	nDbgThread = nThread;
-
 	CDynLightIndex*	sliP = &m_data.index [0][nThread];
 	int					h;
 

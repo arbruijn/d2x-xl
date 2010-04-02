@@ -298,7 +298,6 @@ for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++) {
 static sbyte bSemaphore [MAX_THREADS] = {0,0,0,0};
 static SDL_mutex* threadLock = NULL;
 static int nThreads = 0;
-static int bRenderObjects = 0;
 
 //------------------------------------------------------------------------------
 // LightObjectsThread computes the segment lighting for the object render process.
@@ -322,11 +321,6 @@ for (;;) {
 		G3_SLEEP (1);
 #endif
 	for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += nThreads) {
-		if (!bRenderObjects)
-			break;
-if ((nThread < 0) || (nThread >= gameStates.app.nThreads))
-	nDbgThread = nThread;
-
 		nSegment = gameData.render.mine.segRenderList [1][i];
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
