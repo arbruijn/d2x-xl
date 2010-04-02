@@ -131,7 +131,7 @@ else {
 else if (prl->info.nSegment >= 0)
 	xDist /= 2;
 else if (!prl->info.bSpot)
-	xDist += (MAX_SHADER_LIGHTS - xDist) / 2;
+	xDist += (MAX_OGL_LIGHTS - xDist) / 2;
 #endif
 activeLightsP += xDist;
 while (activeLightsP->nType) {
@@ -744,9 +744,13 @@ prl->render.bUsed [nThread] = 0;
 //------------------------------------------------------------------------------
 
 static CDynLight* dbgPrl [MAX_THREADS] = {NULL, NULL, NULL, NULL};
+static int nDbgThread = -1;
 
 void CLightManager::ResetAllUsed (int bVariable, int nThread)
 {
+if ((nThread < 0) || (nThread >= gameStates.app.nThreads))
+	nDbgThread = nThread;
+
 	int			i = m_data.nLights [1];
 	CDynLight*	prl;
 
@@ -774,13 +778,16 @@ else {
 
 void CLightManager::ResetActive (int nThread, int nActive)
 {
+if ((nThread < 0) || (nThread >= gameStates.app.nThreads))
+	nDbgThread = nThread;
+
 	CDynLightIndex*	sliP = &m_data.index [0][nThread];
 	int					h;
 
 if (0 < (h = sliP->nLast - sliP->nFirst + 1))
 	memset (m_data.active [nThread] + sliP->nFirst, 0, sizeof (CActiveDynLight) * h);
 sliP->nActive = nActive;
-sliP->nFirst = MAX_SHADER_LIGHTS;
+sliP->nFirst = MAX_OGL_LIGHTS;
 sliP->nLast = 0;
 }
 

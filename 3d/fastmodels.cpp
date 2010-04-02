@@ -640,7 +640,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			}
 		for (iLight = 0; (nLightRange > 0) && (iLight < 8) && nLights; activeLightsP++, nLightRange--) {
 #if DBG
-			if (activeLightsP - lightManager.Active (0) >= MAX_SHADER_LIGHTS)
+			if (activeLightsP - lightManager.Active (0) >= MAX_OGL_LIGHTS)
 				break;
 			if (activeLightsP < lightManager.Active (0))
 				break;

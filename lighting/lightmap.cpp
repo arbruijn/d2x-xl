@@ -723,7 +723,7 @@ if (gameStates.render.bPerPixelLighting && gameData.segs.nFaces) {
 		gameOpts->render.color.nSaturation = 1;
 		gameStates.render.bHaveLightmaps = 1;
 		//gameData.render.fAttScale [0] = 2.0f;
-		lightManager.Index (0,0).nFirst = MAX_SHADER_LIGHTS;
+		lightManager.Index (0,0).nFirst = MAX_OGL_LIGHTS;
 		lightManager.Index (0,0).nLast = 0;
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
