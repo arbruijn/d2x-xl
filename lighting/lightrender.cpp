@@ -747,6 +747,8 @@ prl->render.bUsed [nThread] = 0;
 
 //------------------------------------------------------------------------------
 
+static CDynLight* dbgPrl [MAX_THREADS] = {NULL, NULL, NULL, NULL};
+
 void CLightManager::ResetAllUsed (int bVariable, int nThread)
 {
 	int			i = m_data.nLights [1];
@@ -754,18 +756,20 @@ void CLightManager::ResetAllUsed (int bVariable, int nThread)
 
 if (bVariable) {
 	while (i) {
-		if (!(prl = RenderLights (--i)))
-			continue;
-		if (prl->info.nType < 2)
-			break;
-		ResetUsed (prl, nThread);
+		if (prl = m_data.renderLights [--i]) {
+			dbgPrl [nThread] = prl;
+			if (prl->info.nType < 2)
+				break;
+			ResetUsed (prl, nThread);
+			}
 		}
 	}
 else {
 	while (i) {
-		if (!(prl = RenderLights (--i)))
-			continue;
-		ResetUsed (prl, nThread);
+		if (prl = m_data.renderLights [--i]) {
+			dbgPrl [nThread] = prl;
+			ResetUsed (prl, nThread);
+			}
 		}
 	}
 }
