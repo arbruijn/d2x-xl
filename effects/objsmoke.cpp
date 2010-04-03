@@ -359,6 +359,8 @@ else if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].shields < 0)))
 	nParts = 0;
 else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
+	tObjTransformation* pos = OBJPOS (objP);
+	short nSegment = OBJSEG (objP);
 	CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
 
 	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].shields);
@@ -399,7 +401,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			nParts /= 2;
 		if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 			//PrintLog ("creating CPlayerData smoke\n");
-			nSmoke = particleManager.Create (&objP->info.position.vPos, vDirP, NULL, objP->info.nSegment, 2, nParts, nScale,
+			nSmoke = particleManager.Create (&pos->vPos, vDirP, NULL, nSegment, 2, nParts, nScale,
 														gameOpts->render.particles.nSize [1],
 														2, nLife, PLR_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + nType, 1, -1);
 			if (nSmoke < 0)
@@ -420,7 +422,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 		thrusterFlames.CalcPos (objP, &ti);
 		for (int i = 0; i < 2; i++)
 			if ((emitterP = particleManager.GetEmitter (nSmoke, i)))
-				emitterP->SetPos (ti.vPos + i, NULL, objP->info.nSegment);
+				emitterP->SetPos (ti.vPos + i, NULL, nSegment);
 		DoGatlingSmoke (objP);
 		return;
 		}

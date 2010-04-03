@@ -161,7 +161,7 @@ else {
 		m_nFadeState = 2;
 		}
 	if (m_bEmissive)
-		m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
+		; // m_color [0].alpha = float (SMOKE_START_ALPHA + 64) / 255.0f;
 	else if (nParticleSystemType != GATLING_PARTICLES) {
 		if (!colorP)
 			m_color [0].alpha = float (3 * SMOKE_START_ALPHA / 4 + randN (SMOKE_START_ALPHA / 2)) / 255.0f;
