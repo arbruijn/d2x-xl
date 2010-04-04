@@ -518,7 +518,7 @@ int CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float 
 {
 	tTranspSphere	item;
 	//CFixVector		vPos;
-
+++qqq;
 item.nType = nType;
 item.color.red = red;
 item.color.green = green;
@@ -1200,7 +1200,6 @@ if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
 PROF_START
-qqq = 2;
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();

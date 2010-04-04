@@ -16,6 +16,8 @@ class CSphereData {
 public:
 		int						m_nRings;
 		int						m_nTiles;
+		int						m_nFrame;
+		tTexCoord2f				m_texCoord;
 		CPulseData				m_pulse;
 		CPulseData*				m_pulseP;
 

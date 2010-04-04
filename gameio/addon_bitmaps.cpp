@@ -32,7 +32,7 @@ CAddonBitmap corona ("corona.tga");
 CAddonBitmap glare ("glare.tga");
 CAddonBitmap halo ("halo.tga");
 CAddonBitmap thruster ("thruster.tga");
-CAddonBitmap shield ("shield.tga");
+CAddonBitmap shield ("shield2.tga");
 CAddonBitmap deadzone ("deadzone.tga");
 CAddonBitmap damageIcon [3];
 CAddonBitmap scope ("scope.tga");

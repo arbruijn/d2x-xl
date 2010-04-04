@@ -205,6 +205,7 @@ m_nFaces = 0;
 m_nFaceNodes = 4; //tesselate using quads
 #endif
 m_pulseP = NULL;
+m_nFrame = 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -461,19 +462,25 @@ if (bmP && (bmP == shield.Bitmap ())) {
 	static time_t t0 = 0;
 	bTextured = 1;
 	if ((gameStates.app.nSDLTicks - t0 > 40) && bmP->CurFrame ()) {
+#if 1
+		++m_nFrame;
+		m_texCoord.v.u = 1.0f / float (m_nFrame % 8);
+		m_texCoord.v.v = 1.0f / float (m_nFrame / 8);
+#else
 		t0 = gameStates.app.nSDLTicks;
 		bmP->NextFrame ();
+#endif
 		}
 	}
 #endif
 if (bmP) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
+	if (bmP->CurFrame ())
+		bmP = bmP->CurFrame ();
 	if (bmP->Bind (1))
 		bmP = NULL;
 	else {
-		if (bmP->CurFrame ())
-			bmP = bmP->CurFrame ();
 		if (!bTextured)
 			bTextured = -1;
 		}
@@ -505,7 +512,7 @@ return bTextured;
 
 #if RINGED_SPHERE
 
-#define UV_SCALE	3.0f
+#define UV_SCALE	(3.0f / 8.0f)
 
 int CSphere::Create (int nRings, int nTiles)
 {
@@ -545,14 +552,14 @@ for (j = 0; j < h; j++) {
 		svP->vPos [X] = cost2 * cost3;
 		svP->vPos [Y] = sint2;
 		svP->vPos [Z] = cost2 * sint3;
-		svP->uv.v.u = (1 - float (i) / nRings) * nTiles * UV_SCALE;
-		svP->uv.v.v = (float (2 * j + 2) / nRings) * nTiles * UV_SCALE;
+		svP->uv.v.u = m_texCoord.v.u + (1.0f - float (i) / nRings) * nTiles * UV_SCALE;
+		svP->uv.v.v = m_texCoord.v.v + (float (2 * j + 2) / nRings) * nTiles * UV_SCALE;
 		svP++;
 		svP->vPos [X] = cost1 * cost3;
 		svP->vPos [Y] = sint1;
 		svP->vPos [Z] = cost1 * sint3;
-		svP->uv.v.u = (1 - float (i) / nRings) * nTiles * UV_SCALE;
-		svP->uv.v.v = (float (2 * j) / nRings) * nTiles * UV_SCALE;
+		svP->uv.v.u = m_texCoord.v.u + (1.0f - float (i) / nRings) * nTiles * UV_SCALE;
+		svP->uv.v.v = m_texCoord.v.v + (float (2 * j) / nRings) * nTiles * UV_SCALE;
 		svP++;
 		}
 	}
