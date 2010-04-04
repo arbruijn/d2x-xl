@@ -803,12 +803,6 @@ if (objP && (ObjIdx (objP) == nDbgObj))
 if (objP->info.nSegment == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-#if 0
-if (gameStates.render.bQueryCoronas &&
-	 (((objP->info.nType == OBJ_WEAPON) && (objP->info.nId < MAX_WEAPONS) &&
-	  gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]) || gameStates.render.bCloaked))
-	return 1;
-#endif
 
 if (pm->m_bValid < 1) {
 	if (pm->m_bValid) {

@@ -422,6 +422,8 @@ void RenderMineObjects (int nType)
 if (!gameOpts->render.debug.bObjects)
 	return;
 #endif
+if (nType != RENDER_TYPE_GEOMETRY)
+	return;
 if (automap.Display () && !(gameOpts->render.automap.bTextured & 1))
 	return;
 

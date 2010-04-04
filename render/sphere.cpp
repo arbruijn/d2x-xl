@@ -870,15 +870,14 @@ if (gameData.render.shield.nFaces > 0)
 	if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
 		gameData.render.shield.Render (objP, NULL, r, r, r, red, green, blue, alpha, shield.Bitmap (), 1, bAdditive);
 	else if (transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize)) {
+#if 0
 		// full and not just partial sphere rendered
 		if (!(ogl.m_states.bShadersOk && ogl.m_states.bPerPixelLightingOk) ||
 			 ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT))) {
 			CFixVector vPos;
-			transformation.Begin (*PolyObjPos (objP, &vPos), OBJPOS (objP)->mOrient);
-			vPos.SetZero ();
-			RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
-			transformation.End ();
+			RenderObjectHalo (PolyObjPos (objP, &vPos), 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 			}
+#endif
 		}
 	}
 }

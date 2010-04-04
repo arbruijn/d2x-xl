@@ -296,14 +296,6 @@ for (i = 0; i < 4; i++) {
 	}
 v.Assign (SEGMENTS [nSegment].SideCenter (nSide));
 transformation.Transform (*vCenter, v, 0);
-#if 0
-if (gameStates.render.bQueryCoronas) {
-	for (i = 0; i < 4; i++) {
-		v = sprite [i] - *vCenter;
-		VmVecScaleAdd (sprite + i, vCenter, &v, 0.5f);
-	}
-}
-#endif
 return fLight;
 }
 
@@ -546,13 +538,6 @@ OglTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), sprite);
 OglDrawArrays (GL_QUADS, 0, 4);
 RenderCoronaOutline (sprite, vCenter);
-#if 0
-if (gameStates.render.bQueryCoronas != 2) {
-	ogl.SetDepthTest (true);
-	if (gameStates.render.bQueryCoronas == 1)
-		ogl.SetDepthMode (GL_LEQUAL);
-	}
-#endif
 }
 
 // -----------------------------------------------------------------------------------

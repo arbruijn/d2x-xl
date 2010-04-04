@@ -379,14 +379,15 @@ if (colorP /*&& (bmi >= 0)*/)
 
 xSize = objP->info.xSize;
 
+int b3DShield = ((nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
+					 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields);
+
 if (nType == OBJ_POWERUP) {
-	if ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons))
-		RenderPowerupCorona (objP, color.red, color.green, color.blue,
-									coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
+	if (/*!b3DShield &&**/ ((bEnergy && gameOpts->render.coronas.bPowerups) || (!bEnergy && gameOpts->render.coronas.bWeapons)))
+		RenderPowerupCorona (objP, color.red, color.green, color.blue, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	}
 
-if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_SHIELD_BOOST) &&
-	 !gameStates.app.bNostalgia && gameOpts->render.powerups.b3D && gameOpts->render.powerups.b3DShields) {
+if (b3DShield) {
 	if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
 		objP->info.movementType = MT_SPINNING;
 		objP->mType.spinRate = objP->info.position.mOrient.UVec () * (I2X (1) / 8);

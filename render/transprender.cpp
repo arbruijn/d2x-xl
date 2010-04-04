@@ -43,7 +43,7 @@ CTransparencyRenderer transparencyRenderer;
 
 #define LAZY_RESET 1
 
-static int nAdded = 0, nRendered = 0;
+static int nAdded = 0, nRendered = 0, qqq = 0;
 
 //------------------------------------------------------------------------------
 
@@ -1001,6 +1001,7 @@ sparkBuffer.nSparks++;
 
 void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 {
+qqq--;
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 if (item->nType == riSphereShield)
@@ -1199,6 +1200,7 @@ if (!(m_data.depthBuffer.Buffer () && (m_data.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
 PROF_START
+qqq = 2;
 gameStates.render.nType = RENDER_TYPE_TRANSPARENCY;
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
@@ -1284,6 +1286,8 @@ if (bCleanup) {
 	}
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
+if (qqq)
+	qqq = 0;
 #endif
 }
 

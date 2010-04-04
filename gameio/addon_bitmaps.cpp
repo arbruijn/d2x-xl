@@ -22,6 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "descent.h"
 #include "error.h"
+#include "ogl_lib.h"
 #include "addon_bitmaps.h"
 
 //------------------------------------------------------------------------------
@@ -57,6 +58,11 @@ int CAddonBitmap::Load (char *pszName)
 {
 if (m_bAvailable < 0)
 	return 0;
+if (m_bAvailable > 0) {
+	ogl.SelectTMU (GL_TEXTURE0);
+	m_bmP->Bind (1);
+	return 1;
+	}
 if (pszName)
 	strncpy (m_szName, pszName, sizeof (m_szName));
 else
