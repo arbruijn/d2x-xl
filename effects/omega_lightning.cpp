@@ -138,7 +138,7 @@ for (handleP = m_handles + i; j; j--) {
 		lightningManager.Move (nLightning, &vMuzzle, nSegment, true, false);
 		if (targetObjP)
 			lightningManager.Move (nLightning, &targetObjP->info.position.vPos, targetObjP->info.nSegment, true, true);
-		else if (0 <= (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0)))
+		else if (vTargetPos && (0 <= (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0))))
 			lightningManager.Move (nLightning, vTargetPos, nTargetSeg, true, true);
 		}
 	handleP++;

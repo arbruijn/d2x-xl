@@ -43,7 +43,7 @@ CTransparencyRenderer transparencyRenderer;
 
 #define LAZY_RESET 1
 
-static int nAdded = 0, nRendered = 0, qqq = 0;
+static int nAdded = 0, nRendered = 0;
 
 //------------------------------------------------------------------------------
 
@@ -518,7 +518,6 @@ int CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float 
 {
 	tTranspSphere	item;
 	//CFixVector		vPos;
-++qqq;
 item.nType = nType;
 item.color.red = red;
 item.color.green = green;
@@ -1001,7 +1000,6 @@ sparkBuffer.nSparks++;
 
 void CTransparencyRenderer::RenderSphere (tTranspSphere *item)
 {
-qqq--;
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 if (item->nType == riSphereShield)
@@ -1285,8 +1283,6 @@ if (bCleanup) {
 	}
 PROF_END(ptTranspPolys)
 nAdded = nRendered = 0;
-if (qqq)
-	qqq = 0;
 #endif
 }
 
