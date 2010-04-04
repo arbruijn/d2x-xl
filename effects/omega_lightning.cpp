@@ -121,9 +121,6 @@ else {
 	m_handles [i].nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	}
 
-nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
-if (!targetObjP && (0 > (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0))))
-	return -1;
 
 for (handleP = m_handles + i; j; j--) {
 	if ((nLightning = handleP->nLightning) >= 0) {
@@ -136,16 +133,13 @@ for (handleP = m_handles + i; j; j--) {
 				}
 			}
 		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
-		if (targetObjP) {
-			nTargetSeg = targetObjP->info.nSegment;
-			vTargetPos = &targetObjP->info.position.vPos;
-			}
 		GetGunPoint (parentObjP, &vMuzzle);
+		nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
 		lightningManager.Move (nLightning, &vMuzzle, nSegment, true, false);
 		if (targetObjP)
+			lightningManager.Move (nLightning, &targetObjP->info.position.vPos, targetObjP->info.nSegment, true, true);
+		else if (0 <= (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0)))
 			lightningManager.Move (nLightning, vTargetPos, nTargetSeg, true, true);
-		else {
-			}
 		}
 	handleP++;
 	}
