@@ -122,7 +122,7 @@ else {
 	}
 
 if (!targetObjP && (0 > (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0))))
-	return;
+	return -1;
 
 for (handleP = m_handles + i; j; j--) {
 	if ((nLightning = handleP->nLightning) >= 0) {
