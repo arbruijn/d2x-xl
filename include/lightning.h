@@ -285,7 +285,7 @@ class COmegaLightning {
 		~COmegaLightning () {};
 		void Init (void) { m_nHandles = 0; };
 		int Create (CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP);
-		int Update (CObject *parentObjP, CObject *targetObjP);
+		int Update (CObject *parentObjP, CObject *targetObjP, CFixVector* vTargetPos = NULL);
 		void Destroy (short nObject);
 		inline bool Exist (void) { return m_nHandles > 0; }
 

@@ -94,19 +94,19 @@ return vMuzzle;
 
 // ---------------------------------------------------------------------------------
 
-int COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP)
+int COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP, CFixVector* vTargetPos)
 {
 	CFixVector					vMuzzle;
-	tOmegaLightningHandles	*handleP;
-	CWeaponState				*wsP;
+	tOmegaLightningHandles*	handleP;
+	CWeaponState*				wsP;
 	int							i, j, nHandle, nLightning;
+	short							nSegment, nTargetSeg;
 
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
 	return -1;
 if (m_nHandles < 1)
 	return 0;
-if ((gameData.omega.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE) &&
-	 (0 <= (nHandle = Find (LOCALPLAYER.nObject))))
+if ((gameData.omega.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE) && (0 <= (nHandle = Find (LOCALPLAYER.nObject))))
 	Destroy (nHandle);
 short nObject = parentObjP ? OBJ_IDX (parentObjP) : -1;
 if (nObject < 0) {
@@ -120,6 +120,10 @@ else {
 	j = 1;
 	m_handles [i].nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	}
+
+if (!targetObjP && (0 > (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0))))
+	return;
+
 for (handleP = m_handles + i; j; j--) {
 	if ((nLightning = handleP->nLightning) >= 0) {
 		parentObjP = OBJECTS + handleP->nParentObj;
@@ -131,11 +135,17 @@ for (handleP = m_handles + i; j; j--) {
 				}
 			}
 		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
+		if (targetObjP) {
+			nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
+			nTargetSeg = targetObjP->info.nSegment;
+			vTargetPos = &targetObjP->info.position.vPos;
+			}
 		GetGunPoint (parentObjP, &vMuzzle);
-		lightningManager.Move (nLightning, &vMuzzle,
-									  SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment, true, false);
+		lightningManager.Move (nLightning, &vMuzzle, nSegment, true, false);
 		if (targetObjP)
-			lightningManager.Move (nLightning, &targetObjP->info.position.vPos, targetObjP->info.nSegment, true, true);
+			lightningManager.Move (nLightning, vTargetPos, nTargetSeg, true, true);
+		else {
+			}
 		}
 	handleP++;
 	}
@@ -156,7 +166,7 @@ if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.
 if ((parentObjP->info.nType == OBJ_ROBOT) && (!gameOpts->render.lightning.bRobotOmega || gameStates.app.bHaveMod))
 	return 0;
 nObject = OBJ_IDX (parentObjP);
-if (Update (parentObjP, targetObjP)) {
+if (Update (parentObjP, targetObjP, vTargetPos)) {
 	if (!(handleP = m_handles + Find (nObject)))
 		return 0;
 	}
