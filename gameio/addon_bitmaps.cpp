@@ -32,7 +32,7 @@ CAddonBitmap corona ("corona.tga");
 CAddonBitmap glare ("glare.tga");
 CAddonBitmap halo ("halo.tga");
 CAddonBitmap thruster ("thruster.tga");
-CAddonBitmap shield ("shield2.tga");
+CAddonBitmap shield ("shield.tga");
 CAddonBitmap deadzone ("deadzone.tga");
 CAddonBitmap damageIcon [3];
 CAddonBitmap scope ("scope.tga");
@@ -59,8 +59,8 @@ int CAddonBitmap::Load (char *pszName)
 if (m_bAvailable < 0)
 	return 0;
 if (m_bAvailable > 0) {
-	ogl.SelectTMU (GL_TEXTURE0);
-	m_bmP->Bind (1);
+	//ogl.SelectTMU (GL_TEXTURE0);
+	//m_bmP->Bind (1);
 	return 1;
 	}
 if (pszName)
@@ -85,7 +85,7 @@ else {
 	m_bAvailable = 1;
 	m_bmP->SetFrameCount ();
 	m_bmP->SetTranspType (-1);
-	m_bmP->Bind (1);
+	//m_bmP->Bind (1);
 	m_bmP->Texture ()->Wrap (GL_CLAMP);
 	}
 return (m_bAvailable > 0);
