@@ -121,6 +121,7 @@ else {
 	m_handles [i].nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	}
 
+nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
 if (!targetObjP && (0 > (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0))))
 	return -1;
 
@@ -136,7 +137,6 @@ for (handleP = m_handles + i; j; j--) {
 			}
 		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
 		if (targetObjP) {
-			nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
 			nTargetSeg = targetObjP->info.nSegment;
 			vTargetPos = &targetObjP->info.position.vPos;
 			}
