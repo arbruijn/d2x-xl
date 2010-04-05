@@ -625,8 +625,10 @@ else if (bTransparency) {
 	ogl.SetBlendMode (0);
 	ogl.SetDepthWrite (false);
 	}
-else
+else {
 	ogl.SetBlendMode (GL_ONE, GL_ZERO);
+	ogl.SetDepthWrite (true);
+	}
 
 if (!bLighting || (sliP->nLast < 0))
 	nLightRange = 0;

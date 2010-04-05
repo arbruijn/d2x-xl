@@ -17,13 +17,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 #include "mission.h"
 
-#define SUPERMSL       0
-#define SUPER_SEEKER        1
-#define SUPER_SMARTBOMB     2
-#define SUPER_SHOCKWAVE     3
-
-extern int LastLevel, Last_secretLevel, Last_mission;   //set by mission code
-
 // CurrentLevel_num starts at 1 for the first level
 // -1,-2,-3 are secret levels
 // 0 means not a real level loaded
@@ -35,8 +28,6 @@ extern int bPlayerIsTyping [MAX_PLAYERS];
 extern int nTypingTimeout;
 #endif
 // This is the highest level the CPlayerData has ever reached
-extern int Player_highestLevel;
-
 //
 // New game sequencing functions
 //
