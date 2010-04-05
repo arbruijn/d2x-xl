@@ -1234,7 +1234,7 @@ if (shaderManager.Rebuild (shaderProg)) {
 if (!nType)
 	glUniform4fv (glGetUniformLocation (shaderProg, "matColor"), 1, reinterpret_cast<GLfloat*> (&faceP->m_info.color));
 glUniform1i (glGetUniformLocation (shaderProg, "nLights"), GLint (nLights));
-glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), nLights ? GLfloat (nLights) / GLfloat (ogl.m_states.nLights) : 1.0f);
+glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), (nLights ? GLfloat (nLights) / GLfloat (ogl.m_states.nLights) : 1.0f) * gameData.render.fBrightness);
 ogl.ClearError (0);
 PROF_END(ptShaderStates)
 return perPixelLightingShaderProgs [gameStates.render.nMaxLightsPerPass][nType];

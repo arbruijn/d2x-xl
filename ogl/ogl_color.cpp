@@ -783,6 +783,7 @@ else
 if (gameData.render.lights.dynamic.headlights.nLights)
 	colorSum [R] = colorSum [G] = colorSum [B] = 0;
 #endif
+colorSum *= gameData.render.fBrightness;
 if (bSetColor)
 	OglColor4sf (colorSum [R] * fScale, colorSum [G] * fScale, colorSum [B] * fScale, 1.0);
 #if 1

@@ -1586,6 +1586,7 @@ class CRenderData {
 		int							nShaderChanges;
 		int							nUsedFaces;
 		float							fAttScale [2];
+		float							fBrightness;
 		ubyte							nPowerupFilter;
 
 	public:

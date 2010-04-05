@@ -779,6 +779,7 @@ void CLightManager::Setup (int nLevel)
 {
 SetMethod ();
 if (!gameStates.app.bNostalgia) {
+	gameData.render.fBrightness = 1.0f;
 	lightManager.AddGeometryLights ();
 	ComputeNearestLights (nLevel);
 	lightmapManager.Setup (nLevel);
