@@ -258,7 +258,7 @@ if (gameStates.render.bHaveSparks) {
 
 void CSparkManager::Update (void)
 {
-if (gameStates.render.bHaveSparks = (gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks)) {
+if ((gameStates.render.bHaveSparks = (gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks))) {
 	for (short i = 0; i < m_nSegments; i++)
 		UpdateSparks (i);
 	}
