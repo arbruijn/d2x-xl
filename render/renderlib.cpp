@@ -362,6 +362,10 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 else {
 	ScaleColor (colorP, fl + dl);
 	}
+colorP->color.red *= gameData.render.fBrightness;
+colorP->color.green *= gameData.render.fBrightness;
+colorP->color.blue *= gameData.render.fBrightness;
+light = fix (light * gameData.render.fBrightness);
 //saturate at max value
 if (light > MAX_LIGHT)
 	light = MAX_LIGHT;

@@ -289,6 +289,10 @@ if (xObjIntensity) {
 		short *vp = SEGMENTS [nObjSeg].m_verts;
 		for (iVertex = 0; iVertex < MAX_VERTICES_PER_SEGMENT; iVertex++) {
 			nVertex = vp [iVertex];
+#if DBG
+			if (nVertex == nDbgVertex)
+				nDbgVertex = nDbgVertex;
+#endif
 #if !FLICKERFIX
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif

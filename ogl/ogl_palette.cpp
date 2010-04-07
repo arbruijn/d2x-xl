@@ -57,14 +57,14 @@ void CPaletteManager::SetEffect (float red, float green, float blue, bool bForce
 {
 if (m_data.nSuspended)
 	return;
-#if 1
+#if 0
 if (!gameStates.render.nLightingMethod) // || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
-#endif
 	{
 	red += float (m_data.nGamma) / 64.0f;
 	green += float (m_data.nGamma) / 64.0f;
 	blue += float (m_data.nGamma) / 64.0f;
 	}
+#endif
 CLAMP (red, 0, 1);
 CLAMP (green, 0, 1);
 CLAMP (blue, 0, 1);

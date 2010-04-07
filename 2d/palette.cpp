@@ -350,20 +350,20 @@ return nColor;
 
 void CPaletteManager::FadeEffect (void)
 {
-	float	nDecAmount = 0;
+	float	nDelta = 0;
 	bool	bForce = false;
 
 	//	Diminish at FADE_RATE units/second.
 	//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
 if (gameData.time.xFrame < I2X (1) / FADE_RATE) {
 	if (d_rand () < gameData.time.xFrame * FADE_RATE / 2)	
-		nDecAmount = 1;
+		nDelta = 1;
 	}
 else {
-	if (!(nDecAmount = X2F (gameData.time.xFrame * FADE_RATE)))		// one second = FADE_RATE counts
-		nDecAmount = 1;						// make sure we decrement by something
+	if (!(nDelta = X2F (gameData.time.xFrame * FADE_RATE)))		// one second = FADE_RATE counts
+		nDelta = 1;						// make sure we decrement by something
 	}
-nDecAmount /= 64.0f;
+nDelta /= 64.0f;
 
 if (m_data.xFlashDuration) {
 	//	Part of hack system to force update of palette after exiting a menu.
@@ -387,9 +387,9 @@ if (m_data.xFlashDuration) {
 		}
 	}
 
-m_data.effect.red = UpdateEffect (m_data.effect.red, nDecAmount);
-m_data.effect.green = UpdateEffect (m_data.effect.green, nDecAmount);
-m_data.effect.blue = UpdateEffect (m_data.effect.blue, nDecAmount);
+m_data.effect.red = UpdateEffect (m_data.effect.red, nDelta);
+m_data.effect.green = UpdateEffect (m_data.effect.green, nDelta);
+m_data.effect.blue = UpdateEffect (m_data.effect.blue, nDelta);
 
 if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.red || m_data.effect.green || m_data.effect.blue))
      NDRecordPaletteEffect (short (m_data.effect.red * 64), short (m_data.effect.green * 64), short (m_data.effect.blue * 64));
