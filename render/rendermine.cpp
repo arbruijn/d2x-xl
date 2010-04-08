@@ -128,10 +128,13 @@ else {
 
 void DoRenderObject (int nObject, int nWindow)
 {
+nDbgObj = nObject;
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
-if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount)
+#if DBG
+if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount) 
 	return;
+#endif
 
 CObject*	objP = OBJECTS + nObject;
 
@@ -142,7 +145,9 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	}
 
 if (RenderObject (objP, nWindow, 0)) {
+#if DBG
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameCount;
+#endif
 	if (!gameStates.render.cameras.bActive) {
 		tWindowRenderedData*	wrd = windowRenderedData + nWindow;
 		int nType = objP->info.nType;
@@ -219,12 +224,15 @@ return j;
 
 //------------------------------------------------------------------------------
 
+static int nDbgListPos = -1;
+
 void RenderObjList (int nListPos, int nWindow)
 {
 PROF_START
 	int i, j;
 	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 
+nDbgListPos = nListPos;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 for (i = 0, j = SortObjList (gameData.render.mine.segRenderList [1][nListPos]); i < j; i++)
 	DoRenderObject (objRenderList [i].nObject, nWindow);	// note link to above else
@@ -313,7 +321,7 @@ for (;;) {
 	while (bSemaphore [nThread] < 0)
 		G3_SLEEP (1);
 #endif
-	for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += nThreads) {
+	for (int i = nThread; i < gameData.render.mine.nRenderSegs [1]; i += gameStates.app.nThreads - 1) {
 		nSegment = gameData.render.mine.segRenderList [1][i];
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
