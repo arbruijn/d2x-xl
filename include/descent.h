@@ -1478,7 +1478,7 @@ class CMineRenderData {
 		CShortArray				nSegDepth; //[MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
 		int						lCntSave;
 		int						sCntSave;
-		CByteArray				bObjectRendered; //[MAX_OBJECTS_D2X];
+		CIntArray				bObjectRendered; //[MAX_OBJECTS_D2X];
 		CByteArray				bRenderSegment; //[MAX_SEGMENTS_D2X];
 		CShortArray				nRenderObjList; //[MAX_SEGMENTS_D2X+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
 		CIntArray				nRotatedLast; //[MAX_VERTICES_D2X];

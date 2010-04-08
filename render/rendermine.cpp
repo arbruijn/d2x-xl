@@ -133,6 +133,8 @@ void DoRenderObject (int nObject, int nWindow)
 
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
+if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount)
+	return;
 Assert(nObject < LEVEL_OBJECTS);
 #if 0
 if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShadowPass < 2) &&
@@ -150,7 +152,7 @@ if ((count++ > LEVEL_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
 	return;					// get out of this infinite loop!
 	}
 if (RenderObject (objP, nWindow, 0)) {
-	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
+	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameCount;
 	if (!gameStates.render.cameras.bActive) {
 		tWindowRenderedData*	wrd = windowRenderedData + nWindow;
 		int nType = objP->info.nType;
@@ -377,6 +379,25 @@ while (nThreads > 0) {
 
 //------------------------------------------------------------------------------
 
+#if DBG
+
+static inline int VerifyObjectRenderSegment (short nSegment)
+{
+for (int i = 0; i < gameData.render.mine.nRenderSegs [1]; i++)
+	if (gameData.render.mine.segRenderList [1][i] == nSegment)
+		return -1;
+return nSegment;
+}
+
+#else
+
+#	define VerifyObjectRenderSegment(_nSegment) (_nSegment)
+
+
+#endif
+
+//------------------------------------------------------------------------------
+
 static inline int ObjectRenderSegment (int i)
 {
 if (i >= gameData.render.mine.nRenderSegs [0])
@@ -390,9 +411,9 @@ if (nSegment < 0) {
 if (0 > gameData.render.mine.objRenderList.ref [nSegment])
 	return -1;
 if (!automap.Display ())
-	return nSegment;
+	return VerifyObjectRenderSegment (nSegment);
 if (extraGameInfo [IsMultiGame].bPowerupsOnRadar && extraGameInfo [IsMultiGame].bRobotsOnRadar)
-	return nSegment;
+	return VerifyObjectRenderSegment (nSegment);
 
 tObjRenderListItem* pi;
 
@@ -401,14 +422,14 @@ for (i = gameData.render.mine.objRenderList.ref [nSegment]; i >= 0; i = pi->nNex
 	int nType = OBJECTS [pi->nObject].info.nType;
 	if (nType == OBJ_POWERUP) {
 		if (extraGameInfo [IsMultiGame].bPowerupsOnRadar)
-			return nSegment;
+			return VerifyObjectRenderSegment (nSegment);
 		}
 	else if (nType == OBJ_ROBOT) {
 		if (extraGameInfo [IsMultiGame].bRobotsOnRadar)
-			return nSegment;
+			return VerifyObjectRenderSegment (nSegment);
 		}
 	else
-		return nSegment;
+		return VerifyObjectRenderSegment (nSegment);
 	}
 
 return -1;
