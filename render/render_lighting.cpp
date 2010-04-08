@@ -603,7 +603,7 @@ for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs [0]; i++) 
 		nFaces += SEGFACES [i].nFaces;
 		}
 	else
-		gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i];
+		gameData.render.mine.segRenderList [0][i] = -gameData.render.mine.segRenderList [0][i] - 1;
 	}
 tiRender.nMiddle = 0;
 if (nFaces) {
