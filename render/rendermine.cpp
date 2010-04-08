@@ -128,29 +128,19 @@ else {
 
 void DoRenderObject (int nObject, int nWindow)
 {
-	CObject*					objP = OBJECTS + nObject;
-	int						count = 0;
-
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
 if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount)
 	return;
-Assert(nObject < LEVEL_OBJECTS);
-#if 0
-if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShadowPass < 2) &&
-    (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop))	//already rendered this...
-	return;
-#endif
+
+CObject*	objP = OBJECTS + nObject;
+
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
   		return;
 		}
 	}
-if ((count++ > LEVEL_OBJECTS) || (objP->info.nNextInSeg == nObject)) {
-	Int3();					// infinite loop detected
-	objP->info.nNextInSeg = -1;		// won't this clean things up?
-	return;					// get out of this infinite loop!
-	}
+
 if (RenderObject (objP, nWindow, 0)) {
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameCount;
 	if (!gameStates.render.cameras.bActive) {
@@ -166,6 +156,7 @@ if (RenderObject (objP, nWindow, 0)) {
 			}
 		}
 	}
+
 for (int i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
 	objP = OBJECTS + i;
 	Assert (objP->info.nType == OBJ_FIREBALL);
