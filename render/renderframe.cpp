@@ -348,6 +348,7 @@ void Draw2DFrameElements (void)
 {
 if (ogl.Enhance3D () >= 0)
 	ogl.SetDrawBuffer (GL_BACK, 0);
+fix xStereoSeparation = ogl.StereoSeparation ();
 ogl.SetStereoSeparation (0);
 ogl.ColorMask (1,1,1,1,0);
 //SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -359,6 +360,7 @@ if (gameStates.app.bGameRunning && !automap.Display ()) {
 paletteManager.RenderEffect ();
 console.Draw ();
 FlashMine ();
+ogl.SetStereoSeparation (xStereoSeparation);
 }
 
 //------------------------------------------------------------------------------
@@ -374,8 +376,17 @@ else {
 	if (i < 0)
 		Draw2DFrameElements ();
 	if (i) {
-		if (xStereoSeparation > 0)
-			ogl.SwapBuffers (0, 0);
+		if (xStereoSeparation > 0) {
+#if 0
+			if (gameStates.menus.nInMenu) {
+				gameStates.render.bRenderIndirect = 0;
+				Draw2DFrameElements ();
+				gameStates.render.bRenderIndirect = 1;
+				}
+			else
+#endif
+				ogl.SwapBuffers (0, 0);
+			}
 		}
 	else {
 		if (xStereoSeparation < 0) {

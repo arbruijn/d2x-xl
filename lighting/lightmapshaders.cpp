@@ -34,24 +34,24 @@
 const char *pszLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float boost;\r\n" \
+	"uniform float fLightScale;\r\n" \
 	"void main() {\r\n" \
-	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * boost + gl_Color;\r\n" \
+	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale + gl_Color;\r\n" \
 	"gl_FragColor = vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);\r\n" \
 	"}"
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
-	"uniform float boost;\r\n" \
+	"uniform float fLightScale;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * boost + gl_Color;\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale + gl_Color;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"	gl_FragColor = vec4 (texColor.rgb * color.rgb, texColor.a * gl_Color.a);\r\n" \
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
-	"uniform float boost;\r\n" \
+	"uniform float fLightScale;\r\n" \
 	"void main() {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * boost + gl_Color;\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale + gl_Color;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
@@ -59,13 +59,13 @@ const char *pszLMLightingFS [] = {
 	"	}"
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
-	"uniform float boost;\r\n" \
+	"uniform float fLightScale;\r\n" \
 	"void main() {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [3].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
 	"  discard;\r\n" \
 	"else {\r\n" \
-	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * boost + gl_Color;\r\n" \
+	"	vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale + gl_Color;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), min (texColor.a + decalColor.a, 1.0));\r\n" \
@@ -177,7 +177,7 @@ if (!shaderProg)
 
 if (shaderManager.Rebuild (shaderProg)) {
 	ogl.ClearError (0);
-	glUniform1f (glGetUniformLocation (shaderProg, "boost"), (gameOpts->render.n3DGlasses > 0) ? 2.0f : 1.0f + float (paletteManager.GetGamma ()) / 4.0f);
+	glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), (gameOpts->render.n3DGlasses > 0) ? 2.0f : 1.0f + float (paletteManager.GetGamma ()) / 4.0f);
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);
 	if (nType) {
 		glUniform1i (glGetUniformLocation (shaderProg, "baseTex"), 1);

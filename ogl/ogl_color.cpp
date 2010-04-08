@@ -260,6 +260,7 @@ void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, tRgbaCol
 	float l = (bmP->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
 
+l *= gameData.render.fBrightness;
 if (ogl.m_states.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
@@ -276,6 +277,9 @@ else if (colorP) {
 	if (tMapColor.index) {
 		ScaleColor (&tMapColor, l);
 		*colorP = tMapColor.color;
+		colorP->red *= gameData.render.fBrightness;
+		colorP->green *= gameData.render.fBrightness;
+		colorP->blue *= gameData.render.fBrightness;
 		if (l >= 0)
 			tMapColor.color.red =
 			tMapColor.color.green =
@@ -287,6 +291,9 @@ else if (colorP) {
 			tFaceColor *pvc = vertColors + i;
 
 		*colorP = vertColors [i].color;
+		colorP->red *= gameData.render.fBrightness;
+		colorP->green *= gameData.render.fBrightness;
+		colorP->blue *= gameData.render.fBrightness;
 		if (bResetColor) {
 			pvc->color.red =
 			pvc->color.green =
@@ -697,8 +704,13 @@ if (!(gameStates.render.nState || vcd.bExclusive || vcd.bMatEmissive) && (nVerte
 			pVertColor->color.blue = pc->color.blue * fScale;
 			pVertColor->color.alpha = 1;
 			}
-		if (bSetColor)
+		if (bSetColor > 0)
 			OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
+		else if (bSetColor < 0) {
+			pc->color.red *= gameData.render.fBrightness;
+			pc->color.green *= gameData.render.fBrightness;
+			pc->color.blue *= gameData.render.fBrightness;
+			}
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
 			nVertex = nVertex;

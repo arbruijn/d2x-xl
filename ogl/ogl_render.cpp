@@ -600,7 +600,7 @@ if (!bDepthSort) {
 #if USE_VERTNORMS
 		if (pvNormal) {
 			vNormal.Assign (*pvNormal);
-			transformation.Rotate(vNormal, vNormal, 0);
+			transformation.Rotate (vNormal, vNormal, 0);
 			}
 	else
 			G3CalcNormal (pointList, &vNormal);
@@ -643,7 +643,7 @@ if (bDepthSort) {
 		G3VERTPOS (vVertPos, pl);
 		if (bDynLight)
 			G3VertexColor (G3GetNormal (pl, &vNormal), vVertPos.XYZ (), vertIndex [i], vertColors + i, NULL,
-								gameStates.render.nState ? X2F (uvlList [i].l) : 1, 0, 0);
+								gameStates.render.nState ? X2F (uvlList [i].l) : 1, -1, 0);
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bOverlay, &vertColors [i].color);
 		}

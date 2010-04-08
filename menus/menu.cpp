@@ -70,6 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "songs.h"
 #include "automap.h"
+#include "renderframe.h"
 
 //------------------------------------------------------------------------------ 
 
@@ -446,7 +447,10 @@ else {
 if (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0)) {
 	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
 		ogl.FlushDrawBuffer ();
-		ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect = 0);
+		if (ogl.StereoSeparation () > 0)
+			Draw2DFrameElements ();
+		else
+			ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect = 0);
 		}
 	ogl.SetDepthTest (false);
 	FadeIn ();
