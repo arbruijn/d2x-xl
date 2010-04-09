@@ -596,7 +596,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	RenderModel::CModel*	pm;
 	CDynLight*				prl;
 	int						nPass, iLight, nLights, nLightRange;
-	int						bBright = 1; //objP && (objP->info.nType == OBJ_MARKER);
+	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
 	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && 
 												gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bCloaked || bEmissive || bBright);

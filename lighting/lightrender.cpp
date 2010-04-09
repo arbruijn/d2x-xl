@@ -439,7 +439,7 @@ if (gameStates.render.nLightingMethod) {
 		else
 			prl = prl;
 #endif
-		prl->render.xDistance = (fix) ((CFixVector::Dist(c, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / (prl->info.fRange * max (prl->info.fRad, 1.0f)));
+		prl->render.xDistance = (fix) ((CFixVector::Dist (c, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / (prl->info.fRange * max (prl->info.fRad, 1.0f)));
 		if (prl->render.xDistance > xMaxLightRange)
 			continue;
 #if DBG

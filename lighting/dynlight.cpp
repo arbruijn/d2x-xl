@@ -388,6 +388,10 @@ if (nObject >= 0) {
 			pl->info.bPowerup = 1;
 		else
 			pl->info.bPowerup = 2;
+#if 0
+		if (pl->info.bPowerup > gameData.render.nPowerupFilter)
+			return -1;
+#endif
 		}
 	pl->info.vPos = objP->info.position.vPos;
 	pl->info.fRad = 0; //X2F (OBJECTS [nObject].size) / 2;
