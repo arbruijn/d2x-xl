@@ -322,15 +322,13 @@ void CLightningNode::Move (const CFixVector& vOldPos, const CFixVector& vOldEnd,
 
 VmPointLineIntersection (vi, vOldPos, vOldEnd, m_vPos, 0);
 float fOffset = X2F (CFixVector::Dist (vi, vOldPos)) * fScale;
-if (fOffset != 0.0f) {
-	vo = vNewEnd - vNewPos;
-	fOffset /= X2F (vo.Mag ());
-	vo [X] = fix (vo [X] * fOffset);
-	vo [Y] = fix (vo [Y] * fOffset);
-	vo [Z] = fix (vo [Z] * fOffset);
-	vj = vNewPos + vo;
-	Move (vj - vi, nSegment, nThread);
-	}
+vo = vNewEnd - vNewPos;
+fOffset /= X2F (vo.Mag ());
+vo [X] = fix (vo [X] * fOffset);
+vo [Y] = fix (vo [Y] * fOffset);
+vo [Z] = fix (vo [Z] * fOffset);
+vj = vNewPos + vo;
+Move (vj - vi, nSegment, nThread);
 }
 
 //------------------------------------------------------------------------------
