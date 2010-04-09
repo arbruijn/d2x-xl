@@ -48,7 +48,10 @@ class CLightningNode : public tLightningNode {
 		CFixVector CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
 									    int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp);
 		void CreatePerlin (int nAmplitude, double phi, int i, int nThread);
-		void Move (int nDepth, CFixVector& vDelta, short nSegment, int nThread);
+		void Move (const CFixVector& vOffset, short nSegment, int nThread);
+		void Move (const CFixVector& vOldStart, const CFixVector& vOldEnd, fix xOldLength, 
+					  const CFixVector& vNewStart, const CFixVector& vNewEnd, fix xNewLength,
+					  short nSegment, int nThread);
 		bool SetLight (short nSegment, tRgbaColorf *colorP);
 		inline CLightning *GetChild (void) { return m_child; }
 		inline void GetChild (CLightning * child) { m_child = child; }
@@ -118,7 +121,8 @@ class CLightning : public tLightning {
 		int SetLife (void);
 		void Animate (int nDepth, int nThread);
 		int Update (int nDepth, int nThread);
-		void Move (int nDepth, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd, int nThread);
+		void Move (CFixVector vNewPos, short nSegment, int nThread);
+		void Move (CFixVector vStart, CFixVector vEnd, short nSegment, int nThread);
 		void Render (int nDepth, int nThread);
 		int SetLight (void);
 		inline int MayBeVisible (int nThread);
@@ -170,7 +174,8 @@ class CLightningEmitter : public tLightningSystem {
 		void Animate (int nStart, int nBolts, int nThread);
 		void Render (int nStart, int nBolts, int nThread);
 		int Update (int nThread);
-		void Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd, int nThread);
+		void Move (CFixVector vNewPos, short nSegment, int nThread);
+		void Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread);
 		void Mute (void);
 		int SetLife (void);
 		int SetLight (void);
@@ -225,7 +230,8 @@ class CLightningManager : public tLightningData {
 		int Shutdown (bool bForce);
 		void Render (void);
 		void Update (void);
-		void Move (int i, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd);
+		void Move (int i, CFixVector vNewPos, short nSegment);
+		void Move (int i, CFixVector vNewPos, CFixVector vNewEnd, short nSegment);
 		void Mute (void);
 		void MoveForObject (CObject *objP);
 		void Render (tLightning *pl, int nBolts, short nDepth);

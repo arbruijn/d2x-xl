@@ -535,59 +535,28 @@ return SetLife ();
 
 //------------------------------------------------------------------------------
 
-void CLightning::Move (int nDepth, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd, int nThread)
+void CLightning::Move (CFixVector vStart, CFixVector vEnd, short nSegment, int nThread)
+{
+	fix	xNewLength = CFixVector::Dist (vEnd, vStart);
+
+for (int i = 0; i < m_nNodes; i++)
+	m_nodes [i].Move (m_vPos, m_vEnd, m_nLength, vStart, vEnd, xNewLength, nSegment, nThread);
+m_vPos = vStart;
+m_vEnd = vEnd;
+m_vDir = m_vEnd - m_vPos;
+m_nLength = xNewLength;
+m_nSegment = nSegment;
+}
+
+//------------------------------------------------------------------------------
+
+void CLightning::Move (CFixVector vNewPos, short nSegment, int nThread)
 {
 if (nSegment < 0)
 	return;
 if (!m_nodes.Buffer ())
 	return;
-
-	CLightningNode	*nodeP;
-	CFixVector		vDelta, vOffs;
-	int				h, j;
-	double			fStep;
-
-m_nSegment = nSegment;
-if (bFromEnd)
-	vDelta = *vNewPos - m_vEnd;
-else
-	vDelta = *vNewPos - m_vPos;
-if (vDelta.IsZero ())
-	return;
-if (bStretch) {
-	vOffs = vDelta;
-	if (bFromEnd)
-		m_vEnd += vDelta;
-	else
-		m_vPos += vDelta;
-	}
-else if (bFromEnd) {
-	m_vPos += vDelta;
-	m_vEnd = *vNewPos;
-	}
-else {
-	m_vEnd += vDelta;
-	m_vPos = *vNewPos;
-	}
-if (bStretch) {
-	m_vDir = m_vEnd - m_vPos;
-	m_nLength = m_vDir.Mag();
-	}
-if (0 < (h = m_nNodes)) {
-	for (j = h, nodeP = m_nodes.Buffer (); j > 0; j--, nodeP++) {
-		if (bStretch) {
-			vDelta = vOffs;
-			if (bFromEnd)
-				fStep = double (h - j + 1) / double (h);
-			else
-				fStep = double (j) / double (h);
-			vDelta [X] = int (vOffs [X] * fStep + 0.5);
-			vDelta [Y] = int (vOffs [Y] * fStep + 0.5);
-			vDelta [Z] = int (vOffs [Z] * fStep + 0.5);
-			}
-		nodeP->Move (nDepth, vDelta, nSegment, nThread);
-		}
-	}
+Move (vNewPos, m_vEnd + (vNewPos - m_vPos), nSegment, nThread);
 }
 
 //------------------------------------------------------------------------------

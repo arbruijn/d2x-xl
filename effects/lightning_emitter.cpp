@@ -157,7 +157,7 @@ int CLightningEmitter::SetLife (void)
 if (!m_bValid)
 	return 0;
 
-	CLightning	*lightningP = m_lightning.Buffer ();
+	CLightning*	lightningP = m_lightning.Buffer ();
 	int			i;
 
 for (i = 0; i < m_nBolts; ) {
@@ -238,7 +238,7 @@ m_bSound = -1;
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Move (CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd, int nThread)
+void CLightningEmitter::Move (CFixVector vNewPos, short nSegment, int nThread)
 {
 if (!m_bValid)
 	return;
@@ -248,7 +248,23 @@ if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING) {
 	for (int i = 0; i < m_nBolts; i++)
-		m_lightning [i].Move (0, vNewPos, nSegment, bStretch, bFromEnd, nThread);
+		m_lightning [i].Move (vNewPos, nSegment, nThread);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningEmitter::Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread)
+{
+if (!m_bValid)
+	return;
+if (nSegment < 0)
+	return;
+if (!m_lightning.Buffer ())
+	return;
+if (SHOW_LIGHTNING) {
+	for (int i = 0; i < m_nBolts; i++)
+		m_lightning [i].Move (vNewPos, vNewEnd, nSegment, nThread);
 	}
 }
 
@@ -261,7 +277,7 @@ if (!m_bValid)
 
 	CObject* objP = OBJECTS + m_nObject;
 
-Move (&OBJPOS (objP)->vPos, objP->info.nSegment, 0, 0, nThread);
+Move (OBJPOS (objP)->vPos, objP->info.nSegment, nThread);
 }
 
 //------------------------------------------------------------------------------

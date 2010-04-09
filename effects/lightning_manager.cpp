@@ -157,12 +157,22 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CLightningManager::Move (int i, CFixVector *vNewPos, short nSegment, bool bStretch, bool bFromEnd)
+void CLightningManager::Move (int i, CFixVector vNewPos, CFixVector vNewEnd, short nSegment)
 {
 if (nSegment < 0)
 	return;
 if (SHOW_LIGHTNING)
-	m_emitters [i].Move (vNewPos, nSegment, bStretch, bFromEnd, 0);
+	m_emitters [i].Move (vNewPos, vNewEnd, nSegment, 0);
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningManager::Move (int i, CFixVector vNewPos, short nSegment)
+{
+if (nSegment < 0)
+	return;
+if (SHOW_LIGHTNING)
+	m_emitters [i].Move (vNewPos, nSegment, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -172,7 +182,7 @@ void CLightningManager::MoveForObject (CObject* objP)
 	int i = objP->Index ();
 
 if (m_objects [i] >= 0)
-	Move (m_objects [i], &OBJPOS (objP)->vPos, OBJSEG (objP), 0, 0);
+	Move (m_objects [i], OBJPOS (objP)->vPos, OBJSEG (objP));
 }
 
 //------------------------------------------------------------------------------

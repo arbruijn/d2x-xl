@@ -83,7 +83,7 @@ if (bInit)
 else
 	m_vPos += m_vOffs;
 if (m_child) {
-	m_child->Move (nDepth + 1, &m_vPos, nSegment, 0, 0, nThread);
+	m_child->Move (m_vPos, nSegment, nThread);
 	m_child->Animate (nDepth + 1, nThread);
 	}
 }
@@ -132,7 +132,7 @@ m_vOffs *= (I2X (1) / nSteps);
 
 void CLightningNode::Scale (CFloatVector vStart, CFloatVector vEnd, float scale, int nSteps)
 {
-CFloatVector	vPos, vi;
+	CFloatVector	vPos, vi;
 
 vPos.Assign (m_vNewPos);
 VmPointLineIntersection (vi, vStart, vEnd, vPos, 0);
@@ -303,13 +303,29 @@ m_vNewPos += m_vDelta [1] * int (dy);
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Move (int nDepth, CFixVector& vDelta, short nSegment, int nThread)
+void CLightningNode::Move (const CFixVector& vOffset, short nSegment, int nThread)
 {
-m_vNewPos += vDelta;
-m_vBase += vDelta;
-m_vPos += vDelta;
+m_vNewPos += vOffset;
+m_vBase += vOffset;
+m_vPos += vOffset;
 if (m_child)
-	m_child->Move (nDepth + 1, &m_vPos, nSegment, 0, false, nThread);
+	m_child->Move (m_vPos, nSegment, nThread);
+}
+
+//------------------------------------------------------------------------------
+
+void CLightningNode::Move (const CFixVector& vOldStart, const CFixVector& vOldEnd, fix xOldLength, 
+									const CFixVector& vNewStart, const CFixVector& vNewEnd, fix xNewLength,
+									short nSegment, int nThread)
+{
+	CFixVector	vi, vj, vo;
+
+VmPointLineIntersection (vi, vOldStart, vOldEnd, m_vPos, 0);
+fix xOffset = CFixVector::Dist (vi, vOldStart);
+vo = vNewEnd - vNewStart;
+xOffset = FixMulDiv (xNewLength, xOffset, xOldLength);
+vj = vNewStart + vo * xOffset;
+Move (vj - vi, nSegment, nThread);
 }
 
 //------------------------------------------------------------------------------

@@ -100,7 +100,7 @@ int COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP, CFixVecto
 	tOmegaLightningHandles*	handleP;
 	CWeaponState*				wsP;
 	int							i, j, nHandle, nLightning;
-	short							nSegment, nTargetSeg;
+	short							nSegment;
 
 if (!(SHOW_LIGHTNING && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
 	return -1;
@@ -121,7 +121,6 @@ else {
 	m_handles [i].nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	}
 
-
 for (handleP = m_handles + i; j; j--) {
 	if ((nLightning = handleP->nLightning) >= 0) {
 		parentObjP = OBJECTS + handleP->nParentObj;
@@ -135,11 +134,11 @@ for (handleP = m_handles + i; j; j--) {
 		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
 		GetGunPoint (parentObjP, &vMuzzle);
 		nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
-		lightningManager.Move (nLightning, &vMuzzle, nSegment, true, false);
+		lightningManager.Move (nLightning, vMuzzle, nSegment);
 		if (targetObjP)
-			lightningManager.Move (nLightning, &targetObjP->info.position.vPos, targetObjP->info.nSegment, true, true);
-		else if (vTargetPos && (0 <= (nTargetSeg = FindSegByPos (*vTargetPos, nSegment, 0, 0))))
-			lightningManager.Move (nLightning, vTargetPos, nTargetSeg, true, true);
+			lightningManager.Move (nLightning, vMuzzle, targetObjP->info.position.vPos, nSegment);
+		else if (vTargetPos)
+			lightningManager.Move (nLightning, vMuzzle, *vTargetPos, nSegment);
 		}
 	handleP++;
 	}
@@ -178,8 +177,8 @@ else {
 	color.alpha = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning =
-		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
-										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 250, 0, 1, 3, 1, 1,
+		lightningManager.Create (1/*0*/, &vMuzzle, vTarget, NULL, -nObject - 1,
+										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 10 /* 250*/, 0, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else
