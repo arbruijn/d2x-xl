@@ -49,9 +49,9 @@ class CLightningNode : public tLightningNode {
 									    int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp);
 		void CreatePerlin (int nAmplitude, double phi, int i, int nThread);
 		void Move (const CFixVector& vOffset, short nSegment, int nThread);
-		void Move (const CFixVector& vOldStart, const CFixVector& vOldEnd, fix xOldLength, 
-					  const CFixVector& vNewStart, const CFixVector& vNewEnd, fix xNewLength,
-					  short nSegment, int nThread);
+		void Move (const CFixVector& vOldPos, const CFixVector& vOldEnd, 
+					  const CFixVector& vNewPos, const CFixVector& vNewEnd, 
+					  float fScale, short nSegment, int nThread);
 		bool SetLight (short nSegment, tRgbaColorf *colorP);
 		inline CLightning *GetChild (void) { return m_child; }
 		inline void GetChild (CLightning * child) { m_child = child; }
@@ -122,7 +122,7 @@ class CLightning : public tLightning {
 		void Animate (int nDepth, int nThread);
 		int Update (int nDepth, int nThread);
 		void Move (CFixVector vNewPos, short nSegment, int nThread);
-		void Move (CFixVector vStart, CFixVector vEnd, short nSegment, int nThread);
+		void Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread);
 		void Render (int nDepth, int nThread);
 		int SetLight (void);
 		inline int MayBeVisible (int nThread);

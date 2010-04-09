@@ -177,8 +177,8 @@ else {
 	color.alpha = gameOpts->render.lightning.bGlow ? 0.5f : 0.3f;
 #endif
 	handleP->nLightning =
-		lightningManager.Create (1/*0*/, &vMuzzle, vTarget, NULL, -nObject - 1,
-										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 10 /* 250*/, 0, 1, 3, 1, 1,
+		lightningManager.Create (10, &vMuzzle, vTarget, NULL, -nObject - 1,
+										 -5000, 0, CFixVector::Dist(vMuzzle, *vTarget), I2X (3), 0, 0, 250, 0, 1, 3, 1, 1,
 #if OMEGA_PLASMA
 										 -((parentObjP != gameData.objs.viewerP) || gameStates.render.bFreeCam || gameStates.render.bChaseCam),
 #else

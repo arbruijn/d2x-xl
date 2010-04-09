@@ -535,14 +535,27 @@ return SetLife ();
 
 //------------------------------------------------------------------------------
 
-void CLightning::Move (CFixVector vStart, CFixVector vEnd, short nSegment, int nThread)
+void CLightning::Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread)
 {
-	fix	xNewLength = CFixVector::Dist (vEnd, vStart);
+	fix	xNewLength = CFixVector::Dist (vNewEnd, vNewPos);
+	float	fScale = X2F (xNewLength) / X2F (m_nLength);
+	CLightningNode*	nodeP = m_nodes.Buffer ();
 
-for (int i = 0; i < m_nNodes; i++)
-	m_nodes [i].Move (m_vPos, m_vEnd, m_nLength, vStart, vEnd, xNewLength, nSegment, nThread);
-m_vPos = vStart;
-m_vEnd = vEnd;
+for (int i = m_nNodes; i; i--, nodeP++) {
+#if DBG
+	if (i == 1)
+		i = i;
+#endif
+	nodeP->Move (m_vPos, m_vEnd, vNewPos, vNewEnd, fScale, nSegment, nThread);
+#if DBG
+	if ((i == m_nNodes) && (nodeP->m_vPos != vNewPos))
+		nodeP->m_vPos = vNewPos;
+	else if ((i == 1) && (nodeP->m_vPos != vNewEnd))
+		nodeP->m_vPos = vNewEnd;
+#endif
+	}
+m_vPos = vNewPos;
+m_vEnd = vNewEnd;
 m_vDir = m_vEnd - m_vPos;
 m_nLength = xNewLength;
 m_nSegment = nSegment;

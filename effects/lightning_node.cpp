@@ -314,18 +314,23 @@ if (m_child)
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Move (const CFixVector& vOldStart, const CFixVector& vOldEnd, fix xOldLength, 
-									const CFixVector& vNewStart, const CFixVector& vNewEnd, fix xNewLength,
-									short nSegment, int nThread)
+void CLightningNode::Move (const CFixVector& vOldPos, const CFixVector& vOldEnd, 
+									const CFixVector& vNewPos, const CFixVector& vNewEnd, 
+									float fScale, short nSegment, int nThread)
 {
 	CFixVector	vi, vj, vo;
 
-VmPointLineIntersection (vi, vOldStart, vOldEnd, m_vPos, 0);
-fix xOffset = CFixVector::Dist (vi, vOldStart);
-vo = vNewEnd - vNewStart;
-xOffset = FixMulDiv (xNewLength, xOffset, xOldLength);
-vj = vNewStart + vo * xOffset;
-Move (vj - vi, nSegment, nThread);
+VmPointLineIntersection (vi, vOldPos, vOldEnd, m_vPos, 0);
+float fOffset = X2F (CFixVector::Dist (vi, vOldPos)) * fScale;
+if (fOffset != 0.0f) {
+	vo = vNewEnd - vNewPos;
+	fOffset /= X2F (vo.Mag ());
+	vo [X] = fix (vo [X] * fOffset);
+	vo [Y] = fix (vo [Y] * fOffset);
+	vo [Z] = fix (vo [Z] * fOffset);
+	vj = vNewPos + vo;
+	Move (vj - vi, nSegment, nThread);
+	}
 }
 
 //------------------------------------------------------------------------------
