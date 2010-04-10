@@ -52,13 +52,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #	include "joystick.h"
 #endif
 
-#ifdef D2X_KEYS
 //added/removed by Victor Rachels for adding rebindable keys for these
 // KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0
 ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_MINUS, (ubyte) KEY_EQUALS, (ubyte) KEY_ALTED+KEY_F9 };
-#else
-ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_0, (ubyte) KEY_1, (ubyte) KEY_2, (ubyte) KEY_3, (ubyte) KEY_4, (ubyte) KEY_5, (ubyte) KEY_6, (ubyte) KEY_7, (ubyte) KEY_8, (ubyte) KEY_9, (ubyte) KEY_0, (ubyte) KEY_MINUS, (ubyte) KEY_EQUALS, (ubyte) KEY_ALTED+KEY_F9 };
-#endif
 
 #define TABLE_CREATION 0
 
@@ -359,7 +355,6 @@ kcItem kcSuperJoy [] = {
  { 33, 25,134, 85, 26, 30, 14, 31, 32,"Automap", 292, BT_JOY_BUTTON, 255 },
 };
 
-#ifdef D2X_KEYS
 //added on 2/4/99 by Victor Rachels to add d1x new keys
 kcItem kcHotkeys [] = {
 //        id,x,y,w1,w2,u,d,l,r,text_num1,nType,value
@@ -395,7 +390,6 @@ kcItem kcHotkeys [] = {
 	//{ 27, 8,155,107, 26, 25, 0, 26, 0, "TOGGLE SEC AUTO", BT_JOY_BUTTON, 255 },
 };
 //end this section addition - VR
-#endif
 
 CExternalControls externalControls;
 
@@ -778,15 +772,14 @@ if (m_items == kcKeyboard) {
 	kc_gr_pixel (KC_LHX (283), KC_LHY (44));
 
 	GrString (KC_LHX (264), KC_LHY (40), "OR", NULL);
-
-}
-if (m_items == kcJoystick) {
+	}
+else if (m_items == kcJoystick) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
-	OglDrawLine (KC_LHX (18), KC_LHY (37), KC_LHX (135), KC_LHY (37));
-	OglDrawLine (KC_LHX (181), KC_LHY (37), KC_LHX (294), KC_LHY (37));
-	OglDrawLine (KC_LHX (18), KC_LHY (119+18), KC_LHX (144), KC_LHY (119+18));
-	OglDrawLine (KC_LHX (174), KC_LHY (119+18), KC_LHX (294), KC_LHY (119+18));
+	OglDrawLine (KC_LHX (18), KC_LHY (37), KC_LHX (116), KC_LHY (37));
+	OglDrawLine (KC_LHX (200), KC_LHY (37), KC_LHX (294), KC_LHY (37));
+	OglDrawLine (KC_LHX (18), KC_LHY (127+18), KC_LHX (144), KC_LHY (127+18));
+	OglDrawLine (KC_LHX (174), KC_LHY (127+18), KC_LHX (294), KC_LHY (127+18));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS, NULL);
 	GrString (0x8000,KC_LHY (125+18), TXT_AXES, NULL);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
@@ -794,29 +787,27 @@ if (m_items == kcJoystick) {
 	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT, NULL);
 	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS, NULL);
 	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT, NULL);
-} else if (m_items == kcMouse) {
+	}
+else if (m_items == kcMouse) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31,27,6));
 	OglDrawLine (KC_LHX (18), KC_LHY (37), KC_LHX (135), KC_LHY (37));
 	OglDrawLine (KC_LHX (181), KC_LHY (37), KC_LHX (294), KC_LHY (37));
-	OglDrawLine (KC_LHX (18), KC_LHY (119+5), KC_LHX (144), KC_LHY (119+5));
-	OglDrawLine (KC_LHX (174), KC_LHY (119+5), KC_LHX (294), KC_LHY (119+5));
+	OglDrawLine (KC_LHX (18), KC_LHY (127+5), KC_LHX (144), KC_LHY (127+5));
+	OglDrawLine (KC_LHX (174), KC_LHY (127+5), KC_LHX (294), KC_LHY (127+5));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS, NULL);
 	GrString (0x8000,KC_LHY (125+5), TXT_AXES, NULL);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS, NULL);
 	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT, NULL);
-}
-#ifdef D2X_KEYS
-else if (m_items == kcHotkeys)
-{
+	}
+else if (m_items == kcHotkeys) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 
 	GrString (KC_LHX (94), KC_LHY (40), "KB", NULL);
 	GrString (KC_LHX (121), KC_LHY (40), "JOY", NULL);
-}
-#endif
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1522,11 +1513,9 @@ else if (nType == 2)
 else if (nType == 3)
 	Edit (kcSuperJoy, NUM_JOY_CONTROLS);
 #endif
-#ifdef D2X_KEYS
 else if (nType == 4)
 	Edit (kcHotkeys, NUM_HOTKEY_CONTROLS);
 //end this section addition - VR
-#endif
 else {
 	Int3 ();
 	gameOpts->legacy.bInput = b;
