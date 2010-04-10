@@ -419,7 +419,7 @@ if (bmTop) {
 	else
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	}
-gameStates.render.history.nType = bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL);
+gameStates.render.history.nType = (bColorKey ? 3 : (bmTop != NULL) ? 2 : (bmBot != NULL));
 if (bTransparent && (gameStates.render.nType < RENDER_TYPE_SKYBOX) && !bMonitor) {
 	faceP->m_info.nRenderType = gameStates.render.history.nType;
 	faceP->m_info.bColored = bColored;

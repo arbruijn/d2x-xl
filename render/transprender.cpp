@@ -701,7 +701,7 @@ PROF_START
 	int				bDecal, 
 						bLightmaps = m_data.bLightmaps && !gameStates.render.bFullBright,
 						bTextured = (bmBot != NULL), 
-						bColored = (item->nColors == item->nVertices);
+						bColored = (item->nColors == item->nVertices) && !(bTextured && gameStates.render.bFullBright);
 
 #if TI_POLY_OFFSET
 if (!bmBot) {
@@ -802,7 +802,7 @@ if (!bTextured) {
 
 ogl.SetupTransform (1);
 if (gameStates.render.bFullBright)
-	glColor3f (1,1,1);
+	glColor4f (1,1,1,item->color [0].alpha);
 else if (!bColored)
 	glColor4fv (reinterpret_cast<GLfloat*> (item->color));
 ogl.SetBlendMode (bAdditive = item->bAdditive);
@@ -812,7 +812,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 	nDbgSeg = nDbgSeg;
 #endif
 
-if (gameStates.render.bPerPixelLighting) {
+if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	if (!faceP->m_info.bColored) {
 		SetupGrayScaleShader ((int) faceP->m_info.nRenderType, &faceP->m_info.color);
 		OglDrawArrays (item->nPrimitive, 0, item->nVertices);

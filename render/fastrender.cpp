@@ -150,7 +150,7 @@ else {
 
 bool RenderGeometryFace (CSegment *segP, CSegFace *faceP)
 {
-faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, faceP->m_info.bTextured, gameStates.render.bPerPixelLighting != 0);
+faceRenderFunc (faceP, faceP->bmBot, faceP->bmTop, faceP->m_info.bTextured, (gameStates.render.bPerPixelLighting != 0) && !gameStates.render.bFullBright);
 return true;
 }
 
