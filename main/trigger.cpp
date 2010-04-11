@@ -149,7 +149,15 @@ OperateBotGen (objP, m_info.nLinks ? m_info.segments [0] : -1);
 void CTrigger::DoTeleportBot (CObject* objP)
 {
 if (m_info.nLinks) {
-	short nSegment = m_info.segments [d_rand () % m_info.nLinks];
+	short nSegment;
+	if (m_info.nLinks == 1)
+		nSegment = m_info.segments [0];
+	else {
+		do {
+			nSegment = m_info.segments [d_rand () % m_info.nLinks];
+			} while (nSegment == m_info.nSegment);
+		m_info.nSegment = nSegment;
+		}
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
 		objP->info.position.vPos = SEGMENTS [nSegment].Center ();

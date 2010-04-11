@@ -129,6 +129,7 @@ class __pack__ CTriggerInfo {
 		short		segments [MAX_TRIGGER_TARGETS];
 		short		sides [MAX_TRIGGER_TARGETS];
 
+		short		nSegment;
 		int		nChannel;
 		int		nObject;
 		int		nPlayer;
