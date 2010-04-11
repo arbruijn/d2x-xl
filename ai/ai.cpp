@@ -88,32 +88,26 @@ sbyte newAwareness [MAX_SEGMENTS_D2X];
 
 void pae_aux (int nSegment, int nType, int level)
 {
-	int j;
-
-if (newAwareness [nSegment] < nType)
-	newAwareness [nSegment] = nType;
-// Process children.
-for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
-	if (IS_CHILD (SEGMENTS [nSegment].m_children [j])) {
-		if (level <= 3) {
-			if (nType == 4)
-				pae_aux (SEGMENTS [nSegment].m_children [j], nType-1, level+1);
-			else
-				pae_aux (SEGMENTS [nSegment].m_children [j], nType, level+1);
+if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
+	if (newAwareness [nSegment] < nType)
+		newAwareness [nSegment] = nType;
+	for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
+		if (IS_CHILD (SEGMENTS [nSegment].m_children [i])) {
+			if (level <= 3) {
+				pae_aux (SEGMENTS [nSegment].m_children [i], (nType == 4) ? nType - 1 : nType, level + 1);
+				}
 			}
 		}
+	}
 }
-
 
 // ----------------------------------------------------------------------------------
 
 void ProcessAwarenessEvents (void)
 {
-	int i;
-
 if (IsRobotGame) {
 	memset (newAwareness, 0, sizeof (newAwareness [0]) * gameData.segs.nSegments);
-	for (i = 0; i < gameData.ai.nAwarenessEvents; i++)
+	for (int i = 0; i < gameData.ai.nAwarenessEvents; i++)
 		pae_aux (gameData.ai.awarenessEvents [i].nSegment, gameData.ai.awarenessEvents [i].nType, 1);
 	}
 gameData.ai.nAwarenessEvents = 0;
