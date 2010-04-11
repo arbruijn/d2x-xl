@@ -50,7 +50,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 			if (vector & (1 << count))
 				sideP->m_nOvlTex = bm;
 			count++;
-			Assert (count < 32);
+			//Assert (count < 32);
 			}
 		}
 	}

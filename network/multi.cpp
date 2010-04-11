@@ -164,7 +164,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},  // CREATE_ROBOT
 	{3, -1},  // TRIGGER
 	{10, -1}, // BOSS_ACTIONS
-	{27, 29}, // ROBOT_POWERUPS
+	{27, 27}, // ROBOT_POWERUPS
 	{7, -1},  // HOSTAGE_DOOR
 	{2+24, -1}, // SAVE_GAME      (ubyte slot, -1}, uint id, -1}, char name [20])
 	{2+4, -1},  // RESTORE_GAME   (ubyte slot, -1}, uint id)

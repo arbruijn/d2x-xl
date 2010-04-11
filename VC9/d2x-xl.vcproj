@@ -509,7 +509,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="1"
 				CompileAs="0"
 			/>
