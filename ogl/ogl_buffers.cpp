@@ -159,7 +159,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 	if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 		paletteManager.RenderEffect ();
 #endif
-	if (gameStates.render.bRenderIndirect) {
+	if (gameStates.render.bRenderIndirect && !gameStates.menus.nInMenu) {
 		FlushDrawBuffer ();
 		//SelectDrawBuffer (0);
 		gameStates.render.bRenderIndirect = 0;
