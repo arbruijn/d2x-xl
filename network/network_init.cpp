@@ -151,14 +151,14 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 			if (((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
 					(gameData.eff.effectP[ec].nDestBm != -1)) {
 				nMonitor++;
-				Assert (nMonitor < 32);
+				//Assert (nMonitor < 32);
 				}
 			else {
 				for (k = 0; k < nBlownBitmaps; k++) {
 					if ((tm) == blownBitmaps [k]) {
 						vector |= (1 << nMonitor);
 						nMonitor++;
-						Assert (nMonitor < 32);
+						//Assert (nMonitor < 32);
 						break;
 						}
 					}
@@ -166,7 +166,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 			}
 		}
 	}
-return (vector);
+return vector;
 }
 
 //------------------------------------------------------------------------------

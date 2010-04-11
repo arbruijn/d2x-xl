@@ -465,7 +465,7 @@ void CLightManager::DeleteFromList (CDynLight* pl, short nLight)
 //PrintLog ("removing light %d,%d\n", nLight, pl - m_data.lights [0]);
 // if not removing last light in list, move last light down to the now free list entry
 // and keep the freed light handle thus avoiding gaps in used handles
-if (nLight < --m_data.nLights [0]) {
+if (m_data.lights.Buffer () && (nLight < --m_data.nLights [0])) {
 	*pl = m_data.lights [m_data.nLights [0]];
 	if (pl->info.nObject >= 0)
 		m_data.owners [pl->info.nObject] = nLight;
