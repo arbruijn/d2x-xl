@@ -530,8 +530,10 @@ vSwapped[Z] = (fix)INTEL_INT ((int) delObjP->info.position.vPos[Z]);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));     
 #endif
 bufP += 12;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
-bufP += 2;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
+	bufP += 2;
+	}
 gameData.multigame.create.nCount = 0;
 for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
 	h = (nContained > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : nContained;
@@ -541,7 +543,7 @@ for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [j]);
 		MapObjnumLocalToLocal (gameData.multigame.create.nObjNums [j]);
 		}
-	MultiSendData (gameData.multigame.msg.buf, 27, 2);
+	MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 29 : 27, 2);
 	}
 }
 
@@ -921,8 +923,8 @@ delObjP.mType.physInfo.velocity.SetZero ();
 delObjP.info.position.vPos [X] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [X]);
 delObjP.info.position.vPos [Y] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Y]);
 delObjP.info.position.vPos [Z] = (fix) INTEL_INT ((int) delObjP.info.position.vPos [Z]);
- if (gameStates.multi.nGameType == UDP_GAME)
-	 gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufP);
+if (gameStates.multi.nGameType == UDP_GAME)
+	gameStates.app.nRandSeed = GET_INTEL_SHORT (buf + bufP);
 else
 	gameStates.app.nRandSeed = 8321L;
 d_srand (gameStates.app.nRandSeed);
