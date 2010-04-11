@@ -176,7 +176,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{11, -1}, // MULTI_STOLEN_ITEMS
 	{6, -1},  // MULTI_WALL_STATUS
 	{5, -1},  // MULTI_HEARTBEAT
-	{9, -1},  // MULTI_SCOREGOALS
+	{9, 17},  // MULTI_SCOREGOALS
 	{9, -1},  // MULTI_SEISMIC
 	{18, -1}, // MULTI_LIGHT
 	{2, -1},  // MULTI_START_TRIGGER
@@ -3813,10 +3813,11 @@ return;
 
 void MultiSendScoreGoalCounts ()
 {
-	int i, count = 1;
+	int h, i, count = 1;
 	gameData.multigame.msg.buf [0] = MULTI_SCOREGOALS;
 
-for (i = 0; i < MAX_PLAYERS; i++)
+h = (gameStates.multi.nGameType == UDP_GAME) ? MAX_PLAYERS_D2X : MAX_PLAYERS_D2;
+for (i = 0; i < h; i++)
 		gameData.multigame.msg.buf [count++] = (char)gameData.multiplayer.players [i].nScoreGoalCount;
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
@@ -3825,9 +3826,10 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 void MultiDoScoreGoalCounts (char *buf)
 {
-	int i, count = 1;
+	int h, i, count = 1;
 
-for (i = 0; i < MAX_PLAYERS; i++)
+h = (gameStates.multi.nGameType == UDP_GAME) ? MAX_PLAYERS_D2X : MAX_PLAYERS_D2;
+for (i = 0; i < h; i++)
 	gameData.multiplayer.players [i].nScoreGoalCount = buf [count++];
 }
 
