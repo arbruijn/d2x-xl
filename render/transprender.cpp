@@ -134,8 +134,6 @@ int CTransparencyRenderer::Add (tTranspItemType nType, void *itemData, int itemS
 {
 if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
 	return 0;
-if (m_data.nFreeItems <= 0)
-	return 0;
 #if LAZY_RESET
 if (!m_data.bAllowAdd)
 	return 0;
@@ -162,8 +160,6 @@ else if (nDepth > m_data.zMax) {
 	}
 
 AllocBuffers ();
-if (!m_data.nFreeItems)
-	return 0;
 nOffset = int (double (nDepth) * m_data.zScale);
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
@@ -174,7 +170,7 @@ pd = m_data.depthBuffer + nOffset;
 #elif !USE_OPENMP
 SDL_mutexP (tiRender.semaphore);
 #endif
-	{
+if (m_data.nFreeItems > 0) {
 	--m_data.nFreeItems;
 	if (!m_data.freeList.head)
 		ph = m_data.itemLists + m_data.nFreeItems;
