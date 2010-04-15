@@ -951,6 +951,8 @@ for (int i = 0; i < int (sizeofa (xlatTriggers)); i++)
 		gameData.trigs.delay [nTrigger] = -1;
 		if (!Operate (nObject, nPlayer, bShot, false))
 			h = 0;
+		if ((xlatTriggers [i].nFlag == TRIGGER_EXIT) || (xlatTriggers [i].nFlag == TRIGGER_SECRET_EXIT))
+			break;
 		}
 m_info.nType = TT_DESCENT1;
 if (!h)
@@ -1007,6 +1009,10 @@ else {
 	}
 
 int nTrigger = bObjTrigger ? OBJTRIGGERS.Index (this) : TRIGGERS.Index (this);
+if (nTrigger < 0) {
+	nDepth--;
+	return 1;
+	}
 
 if (!nDepth && !bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks;

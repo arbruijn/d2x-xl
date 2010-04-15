@@ -409,6 +409,8 @@ if ((info.movementType != MT_PHYSICS) || (nPrevSegment == info.nSegment))
 	return 0;
 nOldLevel = gameData.missions.nCurrentLevel;
 for (i = 0; i < gameData.physics.nSegments - 1; i++) {
+	if (gameData.physics.segments [i] < 0)
+		continue;
 #if DBG
 	if (gameData.physics.segments [i] > gameData.segs.nLastSegment)
 		PrintLog ("invalid segment in gameData.physics.segments\n");
