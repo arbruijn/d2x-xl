@@ -50,6 +50,10 @@ return RotateVertexList (8, segP->m_verts).ccAnd == 0;
 
 static int FaceIsVisible (CSegFace* faceP)
 {
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 if (!FaceIsVisible (faceP->m_info.nSegment, faceP->m_info.nSide))
 	return faceP->m_info.bVisible = 0;
 if ((faceP->m_info.bSparks == 1) && gameOpts->render.effects.bEnabled && gameOpts->render.effects.bEnergySparks)
