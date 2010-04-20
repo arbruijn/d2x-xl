@@ -572,8 +572,10 @@ switch (m_nType) {
 
 int CMenuItem::GetSize (int h, int aw, int& nStringWidth, int& nStringHeight, int& nAverageWidth, int& nMenus, int& nOthers, int bTiny)
 {
+#if 0
 if (!gameStates.app.bEnglish)
 	m_nKey = *(m_text - 1);
+#endif
 if (m_nKey) {
 	if (gameOpts->menus.nHotKeys < 0) {
 		if ((m_nKey < KEY_1) || (m_nKey > KEY_0))
