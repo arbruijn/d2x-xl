@@ -8,16 +8,6 @@
 
 extern GLhandleARB	genShaderProg;
 
-#if 0
-char *LoadShader (char* fileName);
-int CreateShaderProg (GLhandleARB *shaderProgP);
-int CreateShaderFunc (GLhandleARB *shaderProgP, GLhandleARB *fsP, GLhandleARB *vsP, 
-		const char *fsName, const char *vsName, int bFromFile);
-int LinkShaderProg (GLhandleARB *shaderProgP);
-void DeleteShaderProg (GLhandleARB *shaderProgP);
-void InitShaders (void);
-#endif
-
 void OglInitShaders (void);
 
 typedef struct tShaderData {

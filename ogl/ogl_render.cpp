@@ -85,15 +85,13 @@ if (texCoord) {
 	texCoord->v.v = v1;
 	}
 else {
-#if OGL_MULTI_TEXTURING
 	if (bMulti) {
 		glMultiTexCoord2f (GL_TEXTURE1, u1, v1);
 		if (bMask)
 			glMultiTexCoord2f (GL_TEXTURE2, u1, v1);
 	}
 else
-#endif
-		glTexCoord2f (u1, v1);
+	glTexCoord2f (u1, v1);
 	}
 }
 

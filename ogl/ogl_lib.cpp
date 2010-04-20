@@ -733,9 +733,6 @@ if (gameStates.render.nShadowPass) {
 					}
 				glClearStencil (0);
 				glClear (GL_STENCIL_BUFFER_BIT);
-#if 0
-				if (!glActiveStencilFaceEXT)
-#endif
 					bSingleStencil = 1;
 #	if DBG_SHADOWS
 				if (bSingleStencil || bShadowTest) {
@@ -745,30 +742,6 @@ if (gameStates.render.nShadowPass) {
 					glStencilMask (~0);
 					glStencilFunc (GL_ALWAYS, 0, ~0);
 					}
-#if 0
-				else {
-					glEnable (GL_STENCIL_TEST_TWO_SIDE_EXT);
-					glActiveStencilFaceEXT (GL_BACK);
-					if (bZPass)
-						glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
-					else
-						glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-					glStencilOp (GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-					glStencilMask (~0);
-					glStencilFunc (GL_ALWAYS, 0, ~0);
-					glActiveStencilFaceEXT (GL_FRONT);
-					if (bZPass)
-						glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-					else
-						glStencilOp (GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-					glStencilMask (~0);
-					glStencilFunc (GL_ALWAYS, 0, ~0);
-					}
-#endif
-#if 0
-				ogl.SetPolyOffsetFill (true);
-				glPolygonOffset (1.0f, 1.0f);
-#endif
 				}
 			}
 		}
@@ -778,9 +751,6 @@ if (gameStates.render.nShadowPass) {
 			SetDepthMode (GL_LESS);
 			}
 		else {
-#if 0
-			ogl.SetPolyOffsetFill (false);
-#endif
 			if (gameStates.render.nShadowBlurPass == 2)
 				SetStencilTest (false);
          else if (FAST_SHADOWS) {
