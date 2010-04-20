@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 
 #include "segment.h"
-#include "gameseg.h"
+//#include "gameseg.h"
 #include "network.h"
 #include "network_lib.h"
 #include "wall.h"
