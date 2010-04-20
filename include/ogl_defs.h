@@ -27,7 +27,7 @@
 #endif
 
 #ifdef __macosx__
-#	include <OpenGL/glew.h>
+#	include "glew.h"
 #	include <OpenGL/gl.h>
 #	include <OpenGL/glu.h>
 #else
