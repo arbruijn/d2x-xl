@@ -48,24 +48,11 @@ extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture;
 
 #endif
 
-#if DBG
-
-int TrapSeg (short nSegment);
-int TrapSegSide (short nSegment, short nSide);
-int TrapVert (int nVertex);
-int TrapTex (int nBaseTex, int nOvlTex);
-int TrapBmp (CBitmap *bmP, char *pszName);
-
-#else
-
 #define TrapSeg (short nSegment)
 #define TrapSegSide (short nSegment, short nSide)
 #define TrapVert (int nVertex)
 #define TrapTex (int nBaseTex, int nOvlTex)
 #define TrapBmp (CBitmap *bmP, char *pszName)
-
-#endif
-
 
 #if DBG		//macros for debugging
 
