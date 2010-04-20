@@ -307,6 +307,9 @@ if (renderOpts.n3DGlasses >= 0) {
 
 	if (renderOpts.nFlipFrames >= 0) 
 		gameOpts->render.stereo.bFlipFrames = menu [renderOpts.nFlipFrames].m_value;
+
+	if (renderOpts.nBrighten >= 0) 
+		gameOpts->render.stereo.bBrighten = menu [renderOpts.nBrighten].m_value;
 	}
 
 m = menu + renderOpts.nCameras;
@@ -609,7 +612,6 @@ do {
 		gameOpts->render.bUseLightmaps = (nLighting > 1);
 		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.bUseLightmaps;
 		}
-	GET_VAL (gameOpts->render.stereo.bBrighten, renderOpts.nBrighten);
 
 #if DBG
 	if (EXPERTMODE) {
