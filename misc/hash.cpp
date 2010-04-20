@@ -21,6 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <ctype.h>
 
 #include "u_mem.h"
+#include "carray.h"
 #include "strutil.h"
 #include "error.h"
 #include "hash.h"

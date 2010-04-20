@@ -16,7 +16,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include "pstypes.h"
-#include "gr.h"
+//#include "gr.h"
 
 #ifdef __GNUC__
 #define __noreturn __attribute__ ((noreturn))
