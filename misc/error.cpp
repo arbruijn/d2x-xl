@@ -518,47 +518,5 @@ short nDbgChannel = -1;
 
 #endif
 
-#if DBG
-
-int TrapSeg (short nSegment)
-{
-if (nSegment == nDbgSeg)
-	return 1;
-return 0;
-}
-
-
-int TrapSegSide (short nSegment, short nSide)
-{
-if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	return 1;
-return 0;
-}
-
-int TrapVert (int nVertex)
-{
-if (nVertex == nDbgVertex)
-	return 1;
-return 0;
-}
-
-
-int TrapBmp (CBitmap *bmP, char *pszName)
-{
-if (strstr (bmP->Name (), pszName))
-	return 1;
-return 0;
-}
-
-
-int TrapTex (int nBaseTex, int nOvlTex)
-{
-if (((nBaseTex < 0) || (nBaseTex == nDbgBaseTex)) && ((nDbgOvlTex < 0) || (nOvlTex == nDbgOvlTex)))
-	return 1;
-return 0;
-}
-
-#endif
-
 //------------------------------------------------------------------------------
 //eof
