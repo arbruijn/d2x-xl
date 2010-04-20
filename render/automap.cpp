@@ -999,11 +999,11 @@ do {
 	redbook.CheckRepeat ();
 	bDone = gameStates.menus.nInMenu || ReadControls (nLeaveMode, bDone, bPauseGame);
 	Update ();
-	if (!gameOpts->render.n3DGlasses)
+	if (!gameOpts->render.stereo.nGlasses)
 		Render ();
 	else {
-		Render (-gameOpts->render.xStereoSeparation);
-		Render (gameOpts->render.xStereoSeparation);
+		Render (-gameOpts->render.stereo.xSeparation);
+		Render (gameOpts->render.stereo.xSeparation);
 		}
 	if (bFirstTime) {
 		bFirstTime = 0;

@@ -532,7 +532,7 @@ return 1;
 void RenderEffects (int nWindow)
 {
 #if 1
-	bool	bCreate = !gameOpts->render.n3DGlasses || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive;
+	bool	bCreate = !gameOpts->render.stereo.nGlasses || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive;
 #else
 	bool	bCreate = true; 
 #endif

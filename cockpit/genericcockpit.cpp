@@ -1955,7 +1955,7 @@ fontManager.SetCurrent (GAME_FONT);
 
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || gameStates.render.bFreeCam);
 
-//if (!(transformation.m_info.bUsePlayerHeadAngles || gameOpts->render.n3DGlasses))
+//if (!(transformation.m_info.bUsePlayerHeadAngles || gameOpts->render.stereo.nGlasses))
 	DrawReticle (0);
 
 if (!bLimited) {

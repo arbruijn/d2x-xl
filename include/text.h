@@ -1962,10 +1962,10 @@ void LoadGameTexts(void);
 #define TXT_3D_DEGHOST					GT(1178)
 #define TXT_3D_DUBOIS					GT(1179)
 #define TXT_ERROR_READING_PLR			GT(1180)
+#define TXT_BUMP_BRIGHTNESS			GT(1181)
 
 #if 0
 
-#define TXT_					GT(1181)
 #define TXT_					GT(1182)
 #define TXT_					GT(1183)
 #define TXT_					GT(1184)
@@ -2523,10 +2523,10 @@ void LoadGameTexts(void);
 #define HTX_3D_SCREEN_DIST				HT(417)
 #define HTX_3D_DEGHOST					HT(418)
 #define HTX_EXPERT_MODE					HT(419)
+#define HTX_BUMP_BRIGHTNESS			HT(420)
 
 #if 0
 
-#define HTX_						HT(420)
 #define HTX_						HT(421)
 #define HTX_						HT(422)
 #define HTX_						HT(423)

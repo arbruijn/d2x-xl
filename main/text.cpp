@@ -1713,12 +1713,12 @@ const char *defaultGameTexts [][2] = {
  {"Darstellungs~Qualitaet: %s", "render ~Quality: %s"},
  {"Darstellungs~Art: %s", "render ~Style: %s"},
  {"p~Lasma darstellen", "render p~Lasma"},
- {"blitze bei ~Beschaedigungen", "show ~Damage lightnings"},
- {"~Explosionen verursachen Blitze", "~Explosions cast lightnings"},
- {"s~Pielerschiffe erzeugen Blitze", "~Player ships cast lightnings"},
- {"~Roboter erzeugen Blitze", "~Robots cast lightnings"},
- {"s~Tatische Blitze darstellen", "show s~Tatic lightnings"},
- {"~Omega schiesst blitze", "~Omega fires lightnings"},
+ {"blitze bei ~Beschaedigungen", "show ~Damage lightning"},
+ {"~Explosionen verursachen Blitze", "~Explosions cast lightning"},
+ {"s~Pielerschiffe erzeugen Blitze", "~Player ships cast lightning"},
+ {"~Roboter erzeugen Blitze", "~Robots cast lightning"},
+ {"s~Tatische Blitze darstellen", "show s~Tatic lightning"},
+ {"~Omega schiesst blitze", "~Omega fires lightning"},
  {"erratisch", "erratic"},
  {"gezackt", "jaggy"},
  {"weich", "smooth"},
@@ -1730,7 +1730,7 @@ const char *defaultGameTexts [][2] = {
  {"~Objekt-Koronas additiv einblenden", "additive ~Object corona blending"},
  {"po~Werupschatten", "po~Werup shadows"},
  {"Rauch in Cockpit-~Fenstern zeigen", "show smoke in cockpit ~Windows"},
- {"Blitze in Cockpit-~Fenstern zeigen", "show lightnings in cockpit ~Windows"},
+ {"Blitze in Cockpit-~Fenstern zeigen", "show lightning in cockpit ~Windows"},
  {"~Waffen mit Lichthoefen zeichnen", "render coronas for ~Weapons"},
  {"~Harte Lichthoefe", "~Hard coronas"},
  {"~Weiche Lichthoefe", "~Soft coronas"},
@@ -1799,7 +1799,7 @@ const char *defaultGameTexts [][2] = {
  {"%s", "%s"},
  {"unerforschte ~Bereiche schwarz/weiss", "gra~Y out unexplored areas"},
  {"Initialisiere...", "Initializing..."},
- {"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
+ {"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightning"},
  {"Geometrie-~Verbesserung: %s", "Mesh impro~Vement: %s"},
  {"light~Map-qualitaet: %s", "light~Map Quality: %s"},
  {"~Klaenge", "~Sound"},
@@ -1837,7 +1837,7 @@ const char *defaultGameTexts [][2] = {
  {"Luftblasen schwingen hin und her", "air bubbles w~Iggle"},
  {"Luftblasen aendern die Form", "air bubbles w~Obble"},
  {"Rauch auf ~onitoren zeigen", "show smoke on ~Monitors"},
- {"Blitze auf ~Monitoren zeigen", "show lightnings on ~Monitors"},
+ {"Blitze auf ~Monitoren zeigen", "show lightning on ~Monitors"},
  {"Existierende Datei ueberschreiben?", "Overwrite existing file?"},
  {"~Fetter Rahmen um aktive Waffe", "~Bold armed weapon highlight"},
  {"b~Reite Cockpit-Anzeigefenster", "wi~De cockpit display windows"},
@@ -1856,7 +1856,7 @@ const char *defaultGameTexts [][2] = {
  {"~Zielmarkierungen: %s", "~Target indicators: %s"},
  {"~Leuchtspuren: %s", "light ~Trails: %s"},
  {"standard", "basic"},
- {"simple", "einfach"},
+ {"einfach", "simple"},
  {"verbessert", "advanced"},
  {"voll", "full"},
  {"beste", "best"},
@@ -1925,6 +1925,7 @@ const char *defaultGameTexts [][2] = {
  {"~Geisterbilder verringern: %s", "decrease g~Hosting: %s"},
  {"Dubois", "Dubois"},
  {"Spielerprofil nicht lesbar.", "Player profile couldn't be read."},
+ {"Bild auf~Hellen", "increase brigh~Tness"},
 #if 0
  {"", ""},
 #endif
@@ -2485,7 +2486,7 @@ const char *defaultHelpTexts [][2] = {
 	 "If checked, transparent objects are being sorted according to\n their distance from the viewer, ensuring that far\naway transparent objects aren't hidden behind closer ones.\n"},
  {"Wenn angekreuzt werden elektrische Entladungen gezeichnet.", "Check to have electric discharges rendered."},
  {"Bei hoher Qualitaet haben Blitze kurze Seitenkanaele; die dafuer\nerforderliche Rechenleistung ist allerdings hoch. Bei niedriger\nQualitaet fehlen die seitlichen Entladungen, dafuer wird aber\nauch weniger Rechenleistung benoetigt.",
-	 "At high quality lightnings have short secondary discharges; you\nneed however a lot of computing power for these. At low quality\nno secondary discharges are created, but you also need less\ncomputing power."},
+	 "At high quality lightning have short secondary discharges; you\nneed however a lot of computing power for these. At low quality\nno secondary discharges are created, but you also need less\ncomputing power."},
  {"Hier kann zwischen gezackten und wellenfoermigen Entladungs-\nkanaelen gewaehlt werden.", "Here you can choose between jaggy and smooth discharge\npaths of lightings."},
  {"Wenn angekreuzt werden Blitze mit einem Plasmakanal gezeichnet.", "If checked lightings are render with a plasma channel."},
  {"Wenn angekreuzt schlagen Blitze aus beschaedigten Objekten.", "If checked damaged objects show electric discharges."},
@@ -2588,7 +2589,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, schweben Luftblasen beim Aufsteigen etwas\nhin und her.", "If checked air bubbles wiggle left and right while rising."},
  {"Wenn angekreuzt, aendern Luftblasen staendig ihre Form", "If checked air bubbles slightly change their shape while\nrising."},
  {"Wenn angekreuzt, ist Rauch auch auf Monitoren sichtbar.", "If checked smoke is visible on monitors."},
- {"Wenn angekreuzt, sind Blitze auch auf Monitoren sichtbar.", "If checked lightnings are visible on monitors."},
+ {"Wenn angekreuzt, sind Blitze auch auf Monitoren sichtbar.", "If checked lightning is visible on monitors."},
  {"Wenn angekreuzt, erhalten die Icons aktiver Waffen und\nAusruestung besonders fette Rahmen.", "If checked, armed weapons and active equipment\nhave a bold frame."},
  {"Wenn angekreuzt werden bei Widescreen-Aufloesungen auch\ndie Anzeigefenster im HUD verbreitert.",
   "If checked, HUD display windows are wider too for\nwidescreen resolutions."},
@@ -2634,6 +2635,7 @@ const char *defaultHelpTexts [][2] = {
  {"Je nach Einstellung versucht D2X-XL, mehr oder weniger stark,\nGeisterbilder zu verringern. Dabei verringert sich\nallerdings die Helligkeit des Bildes.", 
   "Depending on the chosen setting, D2X-XL tries to diminish\nghost images more or less intensive. This will however\ndecrease the image brightness."},
  {"Je nach Einstellung werden keine, einige oder viele\nzusaetzliche Menueoptionen angezeigt.", "Depending on this setting no, a few or many\nadditional menu options are shown."},
+ {"Wenn angekreuzt wird das Bild aufgehellt, um durch\n3D-Brillen verursachte Helligkeitsverluste\nauszugleichen.", "If checked the image is made brighter to\ncompensate brightness loss caused by 3D glasses."},
 #if 0
  {"", ""},
 #endif
@@ -2890,7 +2892,7 @@ fprintf (fTxt, "%s\n", pi);
 void LoadGameTexts (void)
 {
 #if DUMP_TEXTS == 2
-	FILE *fTxt = fopen (gameStates.app.bEnglish ? "d:\\temp\\descent.tex.e" : "d:\\temp\\descent.tex.g", "wt");
+	FILE *fTxt = fopen (gameStates.app.bEnglish ? "e:\\temp\\descent.tex.e" : "e:\\temp\\descent.tex.g", "wt");
 #elif DUMP_TEXTS == 3
 	FILE *fTxt = fopen ("d:\\temp\\basetex.h", "wt");
 #endif
@@ -2902,7 +2904,7 @@ void LoadGameTexts (void)
 
 #if DUMP_TEXTS == 2
 for (i = 0; *GT (i); i++)
-	DumpGameText (fTxt, GT (i));
+	DumpGameText (fTxt, const_cast<char*>(GT (i)));
 fclose (fTxt);
 #endif
 if ((i = FindArg ("-text")))

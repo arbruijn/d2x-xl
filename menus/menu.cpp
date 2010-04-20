@@ -157,14 +157,12 @@ return Menu (pszTitle, pszSubTitle, callback, nCurItemP, filename, width, height
 //returns 1 if a control device button has been pressed
 int NMCheckButtonPress ()
 {
-	int i;
-
-	switch (gameConfig.nControlType) {
+switch (gameConfig.nControlType) {
 	case CONTROL_JOYSTICK:
 	case CONTROL_FLIGHTSTICK_PRO:
 	case CONTROL_THRUSTMASTER_FCS:
 	case CONTROL_GRAVIS_GAMEPAD:
-		for (i = 0; i < 4; i++)
+		for (int i = 0; i < 4; i++)
 	 		if (JoyGetButtonDownCnt (i) > 0) 
 				return 1;
 		break;
@@ -181,8 +179,7 @@ int NMCheckButtonPress ()
 	default:
 		Error ("Bad control nType (gameConfig.nControlType):%i", gameConfig.nControlType);
 	}
-
-	return 0;
+return 0;
 }
 
 //------------------------------------------------------------------------------ 

@@ -473,7 +473,7 @@ gameData.objs.viewerP = m_info.objP;
 //gameOpts->render.nMaxFPS = 1;
 #if RENDER2TEXTURE
 if (ReleaseBuffer () && EnableBuffer ()) {
-	//int h = gameOpts->render.n3DGlasses;
+	//int h = gameOpts->render.stereo.nGlasses;
 	RenderFrame (0, 0);
 	m_info.bValid = 1;
 	DisableBuffer ();

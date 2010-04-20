@@ -367,7 +367,7 @@ ogl.SetStereoSeparation (xStereoSeparation);
 
 void FlushFrame (fix xStereoSeparation)
 {
-if (!(gameOpts->render.n3DGlasses && xStereoSeparation)) {	//no stereo or shutter glasses
+if (!(gameOpts->render.stereo.nGlasses && xStereoSeparation)) {	//no stereo or shutter glasses
 	Draw2DFrameElements ();
 	ogl.SwapBuffers (0, 0);
 	}
@@ -816,10 +816,10 @@ if (!ogl.Enhance3D () || !(gameData.app.nFrameCount & 1)) {
 	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
-if (!gameOpts->render.n3DGlasses)
+if (!gameOpts->render.stereo.nGlasses)
 	RenderMonoFrame ();
 else {
-	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.xStereoSeparation : gameOpts->render.xStereoSeparation;
+	fix xStereoSeparation = automap.Display () ? 2 * gameOpts->render.stereo.xSeparation : gameOpts->render.stereo.xSeparation;
 	if (gameStates.menus.nInMenu && ogl.Enhance3D ()) {
 		RenderMonoFrame ((gameData.app.nFrameCount & 1) ? xStereoSeparation : -xStereoSeparation);
 		}

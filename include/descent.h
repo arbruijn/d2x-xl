@@ -368,6 +368,18 @@ typedef struct tDebugRenderOptions {
 #define STEREO_PARALLEL			0
 #define STEREO_TOE_IN			1
 
+typedef struct tStereoRenderOptions {
+	int nGlasses;
+	int nMethod;
+	int nScreenDist;
+	int bEnhance;
+	int bColorGain;
+	int bDeghost;
+	int bFlipFrames;
+	int bBrighten;
+	fix xSeparation;
+} tStereoRenderOptions;
+
 typedef struct tRenderOptions {
 	int bAllSegs;
 	int nLightingMethod;
@@ -378,14 +390,6 @@ typedef struct tRenderOptions {
 	int bUseShaders;
 	int nMathFormat;
 	int nDefMathFormat;
-	int n3DGlasses;
-	int n3DMethod;
-	int nScreenDist;
-	int bEnhance3D;
-	int bColorGain;
-	int bDeghost;
-	int bFlipFrames;
-	fix xStereoSeparation;
 	short nMaxFPS;
 	int nPath;
 	int nQuality;
@@ -404,6 +408,7 @@ typedef struct tRenderOptions {
 	tShipRenderOptions ship;
 	tCoronaRenderOptions coronas;
 	tEffectRenderOptions effects;
+	tStereoRenderOptions stereo;
 	tDebugRenderOptions debug;
 } tRenderOptions;
 

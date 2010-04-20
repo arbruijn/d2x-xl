@@ -435,15 +435,15 @@ class COGL {
 		inline int Enhance3D (int bForce = 0) { 
 			return !(gameOpts->render.bUseShaders && m_states.bShadersOk)
 					 ? 0
-					 : !(bForce || gameOpts->render.bEnhance3D)
+					 : !(bForce || gameOpts->render.stereo.bEnhance)
 						 ? 0
-						 : (gameOpts->render.n3DGlasses == GLASSES_AMBER_BLUE) 
+						 : (gameOpts->render.stereo.nGlasses == GLASSES_AMBER_BLUE) 
 							 ? 1 
-							 : (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) 
+							 : (gameOpts->render.stereo.nGlasses == GLASSES_RED_CYAN) 
 								? 2 
-								 : (gameOpts->render.n3DGlasses == GLASSES_GREEN_MAGENTA) 
+								 : (gameOpts->render.stereo.nGlasses == GLASSES_GREEN_MAGENTA) 
 									? 3 
-									 : ((gameOpts->render.n3DGlasses == GLASSES_SHUTTER) && m_states.nStereo)
+									 : ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER) && m_states.nStereo)
 										? -1
 										: 0; 
 			}

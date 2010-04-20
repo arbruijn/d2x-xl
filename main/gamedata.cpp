@@ -2080,13 +2080,13 @@ gameOptions [0].render.weaponIcons.bShowAmmo = 1;
 gameOptions [0].render.weaponIcons.alpha = 4;
 
 if (!gameOpts->app.bExpertMode) {
-	if (gameOpts->render.n3DGlasses) {
-		gameOpts->render.n3DMethod = 1;
-		gameOpts->render.nScreenDist = 5;
-		gameOpts->render.bColorGain = 1;
-		gameOpts->render.bDeghost = 1;
-		gameOpts->render.bEnhance3D = (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk);
-		gameOpts->render.bFlipFrames = 0;
+	if (gameOpts->render.stereo.nGlasses) {
+		gameOpts->render.stereo.nMethod = 1;
+		gameOpts->render.stereo.nScreenDist = 5;
+		gameOpts->render.stereo.bColorGain = 1;
+		gameOpts->render.stereo.bDeghost = 1;
+		gameOpts->render.stereo.bEnhance = (gameOpts->render.bUseShaders && ogl.m_states.bShadersOk);
+		gameOpts->render.stereo.bFlipFrames = 0;
 		}
 	}
 

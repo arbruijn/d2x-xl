@@ -485,13 +485,14 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.shadows.nLights, i, 0);
 		RP (gameOptions [i].render.nMaxFPS, i, 0);
 		RP (gameOptions [i].render.nImageQuality, i, 0);
-		RP (gameOptions [i].render.n3DGlasses, i, 0);
-		RP (gameOptions [i].render.n3DMethod, i, 0);
-		RP (gameOptions [i].render.nScreenDist, i, 0);
-		RP (gameOptions [i].render.xStereoSeparation, i, 0);
-		RP (gameOptions [i].render.bEnhance3D, i, 0);
-		RP (gameOptions [i].render.bColorGain, i, 0);
-		RP (gameOptions [i].render.bDeghost, i, 0);
+		RP (gameOptions [i].render.stereo.nGlasses, i, 0);
+		RP (gameOptions [i].render.stereo.nMethod, i, 0);
+		RP (gameOptions [i].render.stereo.nScreenDist, i, 0);
+		RP (gameOptions [i].render.stereo.xSeparation, i, 0);
+		RP (gameOptions [i].render.stereo.bEnhance, i, 0);
+		RP (gameOptions [i].render.stereo.bColorGain, i, 0);
+		RP (gameOptions [i].render.stereo.bDeghost, i, 0);
+		RP (gameOptions [i].render.stereo.bBrighten, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
@@ -978,13 +979,14 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].ogl.nMaxLightsPerPass", "8"},
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
-	 {"gameOptions[0].render.n3DGlasses", "0"},
-	 {"gameOptions[0].render.n3DMethod", "0"},
-	 {"gameOptions[0].render.nScreenDist", "3"},
-	 {"gameOptions[0].render.xStereoSeparation", "32768"},
-	 {"gameOptions[0].render.bEnhance3D", "0"},
-	 {"gameOptions[0].render.bColorGain", "0"},
-	 {"gameOptions[0].render.bDeghost", "0"},
+	 {"gameOptions[0].render.stereo.nGlasses", "0"},
+	 {"gameOptions[0].render.stereo.nMethod", "0"},
+	 {"gameOptions[0].render.stereo.nScreenDist", "3"},
+	 {"gameOptions[0].render.stereo.xSeparation", "32768"},
+	 {"gameOptions[0].render.stereo.bEnhance", "0"},
+	 {"gameOptions[0].render.stereo.bColorGain", "0"},
+	 {"gameOptions[0].render.stereo.bDeghost", "0"},
+	 {"gameOptions[0].render.stereo.bBrighten", "1"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},
 	 {"gameOptions[0].render.effects.bEnergySparks", "1"},

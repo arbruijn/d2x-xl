@@ -880,7 +880,7 @@ if ((gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) && (nThread >= 0)) {	/
 	if (!MayBeVisible (nThread))
 		return;
 #if 0
-	if (!gameOpts->render.n3DGlasses) 
+	if (!gameOpts->render.stereo.nGlasses) 
 		RenderSetup (0, nThread);
 #endif
 	transparencyRenderer.AddLightning (this, nDepth);

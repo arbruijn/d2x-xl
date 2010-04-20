@@ -218,7 +218,7 @@ return m_nThrusters;
 
 void CThrusterFlames::Render2D (CFixVector& vPos, CFixVector &vDir, float fSize, float fLength, tRgbaColorf *colorP)
 {
-if (gameOpts->render.n3DGlasses && (ogl.StereoSeparation () >= 0))
+if (gameOpts->render.stereo.nGlasses && (ogl.StereoSeparation () >= 0))
 	return;
 
 	static tTexCoord2f tcTrail [2][4] = {

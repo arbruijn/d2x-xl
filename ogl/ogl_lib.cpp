@@ -122,7 +122,7 @@ tRenderQuality renderQualities [] = {
 
 double COGL::ZScreen (void)
 {
-return double (nScreenDists [gameOpts->render.nScreenDist] * (automap.Display () + 1));
+return double (nScreenDists [gameOpts->render.stereo.nScreenDist] * (automap.Display () + 1));
 }
 
 //------------------------------------------------------------------------------
@@ -569,7 +569,7 @@ else
 #endif
 glMatrixMode (GL_PROJECTION);
 glLoadIdentity ();//clear matrix
-if (StereoSeparation () && (gameOpts->render.n3DMethod == STEREO_PARALLEL))
+if (StereoSeparation () && (gameOpts->render.stereo.nMethod == STEREO_PARALLEL))
 	SetupFrustum ();
 else {
 	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom),
@@ -614,22 +614,22 @@ if ((x != m_states.nLastX) || (y != m_states.nLastY) || (w != m_states.nLastW) |
 
 void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset) 
 {
-if (!bEyeOffset || !gameOpts->render.n3DGlasses || gameOpts->render.bEnhance3D)
+if (!bEyeOffset || !gameOpts->render.stereo.nGlasses || gameOpts->render.stereo.bEnhance)
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
-else if (gameOpts->render.n3DGlasses == GLASSES_AMBER_BLUE) {	//colorcode 3-d (amber/blue)
-	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
+else if (gameOpts->render.stereo.nGlasses == GLASSES_AMBER_BLUE) {	//colorcode 3-d (amber/blue)
+	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.stereo.bFlipFrames)
 		glColorMask (bRed, bGreen, GL_FALSE, bAlpha);
 	else
 		glColorMask (GL_FALSE, GL_FALSE, bBlue, bAlpha);
 	}
-else if (gameOpts->render.n3DGlasses == GLASSES_RED_CYAN) {	//red/cyan
-	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
+else if (gameOpts->render.stereo.nGlasses == GLASSES_RED_CYAN) {	//red/cyan
+	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.stereo.bFlipFrames)
 		glColorMask (bRed, GL_FALSE, GL_FALSE, bAlpha);
 	else
 		glColorMask (GL_FALSE, bGreen, bBlue, bAlpha);
 	}
-else if (gameOpts->render.n3DGlasses == GLASSES_GREEN_MAGENTA) {	//blue/red
-	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.bFlipFrames)
+else if (gameOpts->render.stereo.nGlasses == GLASSES_GREEN_MAGENTA) {	//blue/red
+	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.stereo.bFlipFrames)
 		glColorMask (GL_FALSE, bGreen, GL_FALSE, bAlpha);
 	else
 		glColorMask (bRed, GL_FALSE, bBlue, bAlpha);
@@ -654,7 +654,7 @@ else {
 		ogl.ClearError (0);
 		SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		if (ogl.ClearError (0))
-			gameOpts->render.n3DGlasses = 0;
+			gameOpts->render.stereo.nGlasses = 0;
 		}	
 	else {
 		gameStates.render.bRenderIndirect = m_data.xStereoSeparation && (i > 0);

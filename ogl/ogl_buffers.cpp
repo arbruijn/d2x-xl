@@ -319,8 +319,8 @@ if (HaveDrawBuffer ()) {
 
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
-		int h = gameOpts->render.bDeghost;
-		int i = (gameOpts->render.bColorGain > 0);
+		int h = gameOpts->render.stereo.bDeghost;
+		int i = (gameOpts->render.stereo.bColorGain > 0);
 		int j = Enhance3D () - 1;
 		if ((bStereo = ((j >= 0) && (j <= 2))) && ((h < 4) || (j == 1))) {
 			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][j]));
@@ -331,13 +331,13 @@ if (HaveDrawBuffer ()) {
 				OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 				OglVertexPointer (2, GL_FLOAT, 0, verts);
 
-				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.bFlipFrames);
-				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.bFlipFrames);
+				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
+				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
 				if (h < 4) {
 					if (h)
-						glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.bDeghost]));
+						glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.stereo.bDeghost]));
 					if (i)
-						glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.bColorGain]);
+						glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.stereo.bColorGain]);
 					}
 				ClearError (0);
 				}
@@ -769,7 +769,7 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 	gameStates.render.textures.bHaveEnhanced3DShader = (0 <= shaderManager.Build (duboisShaderProg, duboisFS, enhance3DVS));
 	if (!gameStates.render.textures.bHaveEnhanced3DShader) {
 		DeleteEnhanced3DShader ();
-		gameOpts->render.n3DGlasses = GLASSES_NONE;
+		gameOpts->render.stereo.nGlasses = GLASSES_NONE;
 		return;
 		}
 	PrintLog ("building enhanced 3D shader programs\n");
@@ -779,7 +779,7 @@ if (gameOpts->render.bUseShaders && m_states.bShadersOk) {
 				gameStates.render.textures.bHaveEnhanced3DShader = (0 <= shaderManager.Build (enhance3DShaderProg [h][i][j], enhance3DFS [h][i][j], enhance3DVS));
 				if (!gameStates.render.textures.bHaveEnhanced3DShader) {
 					DeleteEnhanced3DShader ();
-					gameOpts->render.n3DGlasses = GLASSES_NONE;
+					gameOpts->render.stereo.nGlasses = GLASSES_NONE;
 					return;
 					}
 				}

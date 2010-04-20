@@ -89,6 +89,7 @@ static struct {
 	int	nWallTransp;
 	int	nContrast;
 	int	nBrightness;
+	int	nBrighten;
 } renderOpts;
 
 #if 1 //DBG
@@ -229,9 +230,9 @@ if (renderOpts.nMeshQual > 0) {
 if (renderOpts.n3DGlasses >= 0) {
 	m = menu + renderOpts.n3DGlasses;
 	v = m->m_value;
-	if ((h = gameOpts->render.n3DGlasses) != v) {
+	if ((h = gameOpts->render.stereo.nGlasses) != v) {
 		transparencyRenderer.ResetBuffers ();
-		gameOpts->render.n3DGlasses = v;
+		gameOpts->render.stereo.nGlasses = v;
 		sprintf (m->m_text, TXT_STEREO_VIEW, psz3DGlasses [v]);
 		m->m_bRebuild = -1;
 		key = -2;
@@ -243,7 +244,7 @@ if (renderOpts.n3DGlasses >= 0) {
 		v = m->m_value;
 		if (xStereoSeparation != v) {
 			xStereoSeparation = v;
-			gameOpts->render.xStereoSeparation = (EXPERTMODE ? (xStereoSeparation + 1) : 3) * (STEREO_SEPARATION_STEP);
+			gameOpts->render.stereo.xSeparation = (EXPERTMODE ? (xStereoSeparation + 1) : 3) * (STEREO_SEPARATION_STEP);
 			sprintf (m->m_text, TXT_STEREO_SEPARATION, pszStereoSeparation [v]);
 			m->m_bRebuild = -1;
 			}
@@ -252,8 +253,8 @@ if (renderOpts.n3DGlasses >= 0) {
 	if (renderOpts.n3DMethod >= 0) {
 		m = menu + renderOpts.n3DMethod;
 		v = m->m_value;
-		if (gameOpts->render.n3DMethod != v) {
-			gameOpts->render.n3DMethod = v;
+		if (gameOpts->render.stereo.nMethod != v) {
+			gameOpts->render.stereo.nMethod = v;
 			sprintf (m->m_text, TXT_3D_METHOD, psz3DMethod [v]);
 			m->m_bRebuild = -1;
 			}
@@ -262,8 +263,8 @@ if (renderOpts.n3DGlasses >= 0) {
 	if (renderOpts.nScreenDist >= 0) {
 		m = menu + renderOpts.nScreenDist;
 		v = m->m_value;
-		if (gameOpts->render.nScreenDist != v) {
-			gameOpts->render.nScreenDist = v;
+		if (gameOpts->render.stereo.nScreenDist != v) {
+			gameOpts->render.stereo.nScreenDist = v;
 			sprintf (m->m_text, TXT_3D_SCREEN_DIST, nScreenDists [v]);
 			m->m_bRebuild = -1;
 			}
@@ -272,10 +273,10 @@ if (renderOpts.n3DGlasses >= 0) {
 	if (renderOpts.nDeghost >= 0) {
 		m = menu + renderOpts.nDeghost;
 		v = m->m_value;
-		if (gameOpts->render.bDeghost != v) {
-			if ((v == 4) || (gameOpts->render.bDeghost == 4))
+		if (gameOpts->render.stereo.bDeghost != v) {
+			if ((v == 4) || (gameOpts->render.stereo.bDeghost == 4))
 				key = -2;
-			gameOpts->render.bDeghost = v;
+			gameOpts->render.stereo.bDeghost = v;
 			sprintf (m->m_text, TXT_3D_DEGHOST, pszDeghost [v]);
 			m->m_bRebuild = -1;
 			if (key == -2)
@@ -286,8 +287,8 @@ if (renderOpts.n3DGlasses >= 0) {
 	if (renderOpts.nColorGain >= 0) {
 		m = menu + renderOpts.nColorGain;
 		v = m->m_value;
-		if (gameOpts->render.bColorGain != v) {
-			gameOpts->render.bColorGain = v;
+		if (gameOpts->render.stereo.bColorGain != v) {
+			gameOpts->render.stereo.bColorGain = v;
 			sprintf (m->m_text, TXT_COLORGAIN, pszEnhance3D [v]);
 			m->m_bRebuild = -1;
 			}
@@ -296,8 +297,8 @@ if (renderOpts.n3DGlasses >= 0) {
 	if (renderOpts.nEnhance3D >= 0) {
 		m = menu + renderOpts.nEnhance3D;
 		v = m->m_value;
-		if (gameOpts->render.bEnhance3D != v) {
-			gameOpts->render.bEnhance3D = v;
+		if (gameOpts->render.stereo.bEnhance != v) {
+			gameOpts->render.stereo.bEnhance = v;
 			m->m_bRebuild = -1;
 			key = -2;
 			return nCurItem;
@@ -305,7 +306,7 @@ if (renderOpts.n3DGlasses >= 0) {
 		}
 
 	if (renderOpts.nFlipFrames >= 0) 
-		gameOpts->render.bFlipFrames = menu [renderOpts.nFlipFrames].m_value;
+		gameOpts->render.stereo.bFlipFrames = menu [renderOpts.nFlipFrames].m_value;
 	}
 
 m = menu + renderOpts.nCameras;
@@ -441,7 +442,7 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 					: (gameStates.render.bLightmapsOk && gameOpts->render.bUseLightmaps) + 1;
 nPowerups = gameOpts->render.powerups.b3D ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
-xStereoSeparation = gameOpts->render.xStereoSeparation / (STEREO_SEPARATION_STEP) - 1;
+xStereoSeparation = gameOpts->render.stereo.xSeparation / (STEREO_SEPARATION_STEP) - 1;
 if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
 else if (xStereoSeparation >= sizeofa (pszStereoSeparation))
@@ -523,11 +524,11 @@ do {
 	*szSlider = *(TXT_POWERUPS - 1);
 	renderOpts.nPowerups = m.AddSlider (szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
 
-	if (EXPERTMODE && gameOpts->render.n3DGlasses)
+	if (EXPERTMODE && gameOpts->render.stereo.nGlasses)
 		m.AddText ("");
-	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.n3DGlasses]);
+	sprintf (szSlider + 1, TXT_STEREO_VIEW, psz3DGlasses [gameOpts->render.stereo.nGlasses]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
-	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.n3DGlasses, 0, sizeofa (psz3DGlasses) - 2 + gameStates.render.bHaveStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	renderOpts.n3DGlasses = m.AddSlider (szSlider + 1, gameOpts->render.stereo.nGlasses, 0, sizeofa (psz3DGlasses) - 2 + gameStates.render.bHaveStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 	renderOpts.n3DMethod = 
 	renderOpts.nScreenDist =
 	renderOpts.nColorGain =
@@ -536,34 +537,35 @@ do {
 	renderOpts.nFlipFrames = 
 	renderOpts.nStereoSeparation = -1;
 
-	if (EXPERTMODE && gameOpts->render.n3DGlasses) {
-		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.n3DMethod]);
+	if (EXPERTMODE && gameOpts->render.stereo.nGlasses) {
+		sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
 		*szSlider = *(TXT_3D_METHOD - 1);
-		renderOpts.n3DMethod = m.AddSlider (szSlider + 1, gameOpts->render.n3DMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
+		renderOpts.n3DMethod = m.AddSlider (szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
 
 		sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
 		*szSlider = *(TXT_STEREO_SEPARATION - 1);
 		renderOpts.nStereoSeparation = m.AddSlider (szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
 
-		sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.nScreenDist]);
+		sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.stereo.nScreenDist]);
 		*szSlider = *(TXT_3D_SCREEN_DIST - 1);
-		renderOpts.nScreenDist = m.AddSlider (szSlider + 1, gameOpts->render.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
+		renderOpts.nScreenDist = m.AddSlider (szSlider + 1, gameOpts->render.stereo.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
 
 		if (ogl.Enhance3D () > 0) {
-			sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.bDeghost]);
+			sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.stereo.bDeghost]);
 			*szSlider = *(TXT_3D_DEGHOST - 1);
-			renderOpts.nDeghost = m.AddSlider (szSlider + 1, gameOpts->render.bDeghost, 0, sizeofa (pszDeghost) - 2 + (ogl.Enhance3D (1) == 2), KEY_H, HTX_3D_DEGHOST);
-			if (gameOpts->render.bDeghost < 4) {
-				sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.bColorGain]);
+			renderOpts.nDeghost = m.AddSlider (szSlider + 1, gameOpts->render.stereo.bDeghost, 0, sizeofa (pszDeghost) - 2 + (ogl.Enhance3D (1) == 2), KEY_H, HTX_3D_DEGHOST);
+			if (gameOpts->render.stereo.bDeghost < 4) {
+				sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.stereo.bColorGain]);
 				*szSlider = *(TXT_COLORGAIN - 1);
-				renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
+				renderOpts.nColorGain = m.AddSlider (szSlider + 1, gameOpts->render.stereo.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
 				}
 			}
 		m.AddText ("");
+		renderOpts.nBrighten = m.AddCheck (TXT_BUMP_BRIGHTNESS, gameOpts->render.stereo.bBrighten, KEY_T, HTX_BUMP_BRIGHTNESS);
 		if (ogl.Enhance3D (1) > 0)
-			renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.bEnhance3D, KEY_D, HTX_ENHANCE_3D);
+			renderOpts.nEnhance3D = m.AddCheck (TXT_ENHANCE_3D, gameOpts->render.stereo.bEnhance, KEY_D, HTX_ENHANCE_3D);
 #if 0
-		renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
+		renderOpts.nFlipFrames = m.AddCheck (TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
 #endif
 		}
 	else
