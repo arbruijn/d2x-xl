@@ -535,6 +535,7 @@ do {
 	renderOpts.nEnhance3D = 
 	renderOpts.nDeghost =
 	renderOpts.nFlipFrames = 
+	renderOpts.nBrighten =
 	renderOpts.nStereoSeparation = -1;
 
 	if (EXPERTMODE && gameOpts->render.stereo.nGlasses) {
@@ -608,6 +609,7 @@ do {
 		gameOpts->render.bUseLightmaps = (nLighting > 1);
 		gameOpts->render.nLightingMethod = nLighting - gameOpts->render.bUseLightmaps;
 		}
+	GET_VAL (gameOpts->render.stereo.bBrighten, renderOpts.nBrighten);
 
 #if DBG
 	if (EXPERTMODE) {
