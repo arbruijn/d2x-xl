@@ -58,7 +58,9 @@ void OglSetFOV (double fov);
 
 //------------------------------------------------------------------------------
 
-#define GLhandle								GLhandleARB
+#ifndef GL_VERSION_20
+#	define GLhandle	GLhandleARB
+#endif
 
 #define OGL_TEXENV(p,m) OGL_SETSTATE(p,m,glTexEnvi(GL_TEXTURE_ENV, p,m));
 #define OGL_TEXPARAM(p,m) OGL_SETSTATE(p,m,glTexParameteri(GL_TEXTURE_2D,p,m));
