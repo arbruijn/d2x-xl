@@ -487,7 +487,7 @@ static tFileDesc vertigoFiles [] = {
 	{"\002hoard.ham", "data", false, false, false},
 	{"\002d2x.hog", "missions", false, false, false},
 	{"\002d2x.mn2", "missions", false, false, false},
-	{"\002d2x-h.mvl", "movies", false, false, false},
+	{"\002d2x-h.mvl", "movies", true, false, false},
 	{"\002d2x-l.mvl", "movies", true, false, false},
 };
 

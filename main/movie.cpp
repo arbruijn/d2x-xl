@@ -558,7 +558,7 @@ for (nTries = 0; !m_libs [nLibrary].Setup (filename) && (nTries < 4); nTries++) 
 		}
 	}
 
-#if DBG
+#if 0 //DBG
 if ((nTries == 4) && bRequired)
 	Warning (TXT_MOVIE_FILE, filename);
 #endif
