@@ -1490,7 +1490,7 @@ const char *defaultGameTexts [][2] = {
  {"~Einstellungen an Rechnerleistung anpassen", "t~Une settings to computer speed"},
  {"Kehre aus Geheimlevel zurueck", "Returning from secret level"},
  {"Ladekapazitaet ueberschritten", "Inventory full"},
- {"Inventarsystem ~Verwenden", "use in~Ventory"},
+ {"Inventarsystem ~Verwenden", "~Use inventory"},
  {"Tarnen", "Use cloak"},
  {"Haerten", "Use invul"},
  {"\n(erwarte %d statt %d)", "\n(expected %d, got %d)"},
