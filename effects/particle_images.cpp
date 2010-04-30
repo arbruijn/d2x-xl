@@ -52,6 +52,7 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0},
+	 {NULL, "", 1, 0, 0, 0, 0, 0},
 	 {NULL, "", 1, 0, 0, 0, 0, 0}},
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
@@ -59,21 +60,24 @@ tParticleImageInfo particleImageInfo [4][PARTICLE_TYPES] = {
 	 {NULL, "smokingfire.tga", 2, 0, 0, 1, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0}},
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}},
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0}},
 	{{NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 1, 0, 0},
 	 {NULL, "bubble.tga", 4, 0, 0, 1, 0, 0},
 	 {NULL, "smokingfire.tga", 2, 0, 0, 0, 0, 0},
 	 {NULL, "smoke.tga", 8, 0, 0, 0, 0, 0},
 	 {NULL, "bullcase.tga", 1, 0, 0, 1, 0, 0},
-	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0}}
+	 {NULL, "corona.tga", 1, 0, 0, 0, 0, 0},
+	 {NULL, "simplesmoke.tga", 1, 0, 0, 0, 0, 0}}
 	};
 
 CParticleImageManager particleImageManager;
@@ -82,7 +86,7 @@ CParticleImageManager particleImageManager;
 
 int CParticleImageManager::GetType (int nType)
 {
-return (nType == GATLING_PARTICLES) ? LIGHT_PARTICLES : nType;
+return nType;
 }
 
 //	-----------------------------------------------------------------------------
@@ -92,8 +96,8 @@ void CParticleImageManager::Animate (int nType)
 	tParticleImageInfo& pii = ParticleImageInfo (nType);
 
 if (pii.bAnimate && (pii.nFrames > 1)) {
-	static time_t to [PARTICLE_TYPES] = {150, 150, 150, 50, 150, 150, 150};
-	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0, 0, 0};
+	static time_t to [PARTICLE_TYPES] = {150, 150, 150, 50, 150, 150, 150, 150};
+	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	if (gameStates.app.nSDLTicks - t0 [nType] >= to [nType]) {
 		CBitmap*	bmP = ParticleImageInfo (GetType (nType)).bmP;

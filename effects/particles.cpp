@@ -296,7 +296,7 @@ else if (nType == BUBBLE_PARTICLES) {
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
-else if ((nType == LIGHT_PARTICLES) /*|| (nType == WATERFALL_PARTICLES)*/) {
+else if ((nType == LIGHT_PARTICLES) || (nType == GATLING_PARTICLES)) {
 	m_iFrame = 0;
 	m_nRotFrame = 0;
 	m_nOrient = 0;

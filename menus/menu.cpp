@@ -407,6 +407,40 @@ memcpy (Item (j).m_text, h, MENU_MAX_TEXTLEN + 1);
 
 //------------------------------------------------------------------------------ 
 
+void RenderMenuGameFrame (void)
+{
+if (automap.Display ()) {
+	automap.DoFrame (0, 0);
+	CalcFrameTime ();
+	}
+else if (gameData.app.bGamePaused /*|| timer_paused*/) {
+	GameRenderFrame ();
+	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
+	CalcFrameTime ();
+	}
+else {
+	GameFrame (1, 0);
+	}
+}
+
+//------------------------------------------------------------------------------ 
+
+bool BeginRenderMenu (void)
+{
+if (gameStates.app.bGameRunning && ogl.Enhance3D () & (ogl.StereoSeparation () <= 0)) 
+	return false;
+if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
+	ogl.FlushDrawBuffer ();
+	if (ogl.StereoSeparation () > 0)
+		Draw2DFrameElements ();
+	else
+		ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect = 0);
+	}
+return true;
+}
+
+//------------------------------------------------------------------------------ 
+
 void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
 	static	int t0 = 0;
@@ -419,20 +453,8 @@ m_bRedraw = 0;
 if (gameStates.app.bGameRunning && gameCanvasP /*&& (gameData.demo.nState == ND_STATE_NORMAL)*/) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (gameCanvasP);
-	if (!gameStates.app.bShowError) {
-		if (automap.Display ()) {
-			automap.DoFrame (0, 0);
-			CalcFrameTime ();
-			}
-		else if (gameData.app.bGamePaused /*|| timer_paused*/) {
-			GameRenderFrame ();
-			gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-			CalcFrameTime ();
-			}
-		else {
-			GameFrame (1, 0);
-			}
-		}
+	if (!gameStates.app.bShowError)
+		RenderMenuGameFrame ();
 	CCanvas::Pop ();
 	}
 else {
@@ -440,15 +462,7 @@ else {
 	CalcFrameTime ();
 	}
 
-
-if (!gameStates.app.bGameRunning || !ogl.Enhance3D () || (ogl.StereoSeparation () > 0)) {
-	if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
-		ogl.FlushDrawBuffer ();
-		if (ogl.StereoSeparation () > 0)
-			Draw2DFrameElements ();
-		else
-			ogl.SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect = 0);
-		}
+if (BeginRenderMenu ()) {
 	ogl.SetDepthTest (false);
 	FadeIn ();
 	ogl.ColorMask (1,1,1,1,0);

@@ -45,6 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "headlight.h"
 #include "ogl_render.h"
+#include "renderframe.h"
 #if defined (TACTILE)
 #	include "tactile.h"
 #endif
@@ -823,26 +824,29 @@ DrawItem (m_items + m_nCurItem, 1, 0);
 
 //------------------------------------------------------------------------------
 
-void CControlConfig::DrawScreen (void)
+void CControlConfig::Render (void)
 {
-m_bRedraw = 1;
 if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
-	GameRenderFrame ();
-CCanvas::SetCurrent (backgroundManager.Canvas ());
-backgroundManager.Redraw ();
-CCanvas::SetCurrent (NULL);
-DrawTitle ();
-m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
-m_closeX += m_xOffs;
-m_closeY += m_yOffs;
-m_closeSize = gameStates.menus.bHires?10:5;
-CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
-OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
-DrawHeader ();
-DrawTable ();
-SDL_ShowCursor (0);
+	RenderMenuGameFrame ();
+
+if (BeginRenderMenu ()) {
+	CCanvas::SetCurrent (backgroundManager.Canvas ());
+	backgroundManager.Redraw ();
+	CCanvas::SetCurrent (NULL);
+	DrawTitle ();
+	m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
+	m_closeX += m_xOffs;
+	m_closeY += m_yOffs;
+	m_closeSize = gameStates.menus.bHires?10:5;
+	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+	OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
+	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
+	OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
+	DrawHeader ();
+	DrawTable ();
+	SDL_ShowCursor (0);
+	m_bRedraw = 1;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1236,7 +1240,7 @@ int CControlConfig::HandleControl (void)
 {
 m_nPrevChangeMode = m_nChangeMode;
 do {
-	DrawScreen ();
+	Render ();
 
 	switch (m_nChangeMode) {
 		case BT_KEY:
@@ -1264,7 +1268,12 @@ do {
 		}
 	m_nPrevChangeMode = m_nChangeMode;
 	SDL_ShowCursor (1);
-	GrUpdate (1);
+	if (m_bRedraw) {
+		GrUpdate (1);
+		if (gameStates.app.bGameRunning)
+			ogl.ChooseDrawBuffer ();
+		m_bRedraw = 0;
+		}
 	} while (m_nChangeMode != BT_NONE);
 return m_nChangeMode;
 }
@@ -1285,7 +1294,7 @@ switch (k) {
 		break;
 
 	case KEY_COMMAND+KEY_SHIFTED+KEY_P:
-	case KEY_ALTED+KEY_F9:
+	case KEY_PRINT_SCREEN:
 		SaveScreenShot (NULL, 0);
 		break;
 

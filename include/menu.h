@@ -388,6 +388,8 @@ void IpxSetDriver (int ipx_driver);
 void DoNewIPAddress (void);
 
 bool MenuRenderTimeout (int& t0, int tFade);
+bool BeginRenderMenu (void);
+void RenderMenuGameFrame (void);
 
 //------------------------------------------------------------------------------
 

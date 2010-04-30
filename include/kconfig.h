@@ -322,7 +322,7 @@ class CControlConfig {
 		void DrawTitle (void);
 		void DrawHeader (void);
 		void DrawTable (void);
-		void DrawScreen (void);
+		void Render (void);
 		void DrawQuestion (kcItem *item);
 		void DrawItem (kcItem* item, int bIsCurrent, int bRedraw);
 		inline void DrawItem (kcItem *item, int bIsCurrent) { DrawItem (item, bIsCurrent, 1); }
