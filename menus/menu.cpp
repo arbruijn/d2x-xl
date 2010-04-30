@@ -427,7 +427,7 @@ else {
 
 bool BeginRenderMenu (void)
 {
-if (gameStates.app.bGameRunning && ogl.Enhance3D () & (ogl.StereoSeparation () <= 0)) 
+if (gameStates.app.bGameRunning && ogl.Enhance3D () && (ogl.StereoSeparation () <= 0)) 
 	return false;
 if (gameStates.app.bGameRunning && gameStates.render.bRenderIndirect) {
 	ogl.FlushDrawBuffer ();
