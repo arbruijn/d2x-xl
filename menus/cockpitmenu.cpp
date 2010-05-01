@@ -157,8 +157,7 @@ void CockpitOptionsMenu (void)
 
 	CMenu m;
 	int	i;
-	int	optTextGauges, optHUD, optReticle, optMissiles, optPosition, optAlignment, optZoomType = -1;
-	//int	optObjTally;
+	int	optTextGauges, optHUD, optReticle, optMissiles, optObjTally, optPosition, optAlignment, optZoomType = -1;
 
 	char	szSlider [50];
 
@@ -202,7 +201,7 @@ do {
 	optReticle = m.AddCheck (TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
 	optMissiles = m.AddCheck (TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
 	optTextGauges = m.AddCheck (TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
-	//optObjTally = m.AddCheck (TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
+	optObjTally = m.AddCheck (TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
 	optZoomType = m.AddCheck (TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
 #if 0
 	optTgtInd = m.AddCheck (TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
@@ -265,7 +264,7 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bReticle, optReticle);
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissiles);
-	//GET_VAL (gameOpts->render.cockpit.bObjectTally, optObjTally);
+	GET_VAL (gameOpts->render.cockpit.bObjectTally, optObjTally);
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, optTgtInd);
 	gameOpts->render.cockpit.bTextGauges = !m [optTextGauges].m_value;
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
