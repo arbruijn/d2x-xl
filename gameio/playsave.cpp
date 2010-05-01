@@ -469,7 +469,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.color.nLevel, i, 0);
 
 		RP (gameOptions [i].render.cockpit.bMouseIndicator, i, 0);
-		RP (gameOptions [i].render.cockpit.bObjectTally, i, 0);
+		//RP (gameOptions [i].render.cockpit.bObjectTally, i, 0);
 		RP (gameOptions [i].render.cockpit.bPlayerStats, i, 0);
 		RP (gameOptions [i].render.cockpit.bTextGauges, i, 0);
 		RP (gameOptions [i].render.cockpit.nWindowPos, i, 0);
@@ -994,7 +994,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.automap.bBright", "0"},
 	 {"gameOptions[0].render.automap.nRange", "0"},
 	 {"gameOptions[0].render.cockpit.bMouseIndicator", "1"},
-	 {"gameOptions[0].render.cockpit.bObjectTally", "1"},
+	 //{"gameOptions[0].render.cockpit.bObjectTally", "1"},
 	 {"gameOptions[0].render.cockpit.bPlayerStats", "0"},
 	 {"gameOptions[0].render.cockpit.bTextGauges", "0"},
 	 {"gameOptions[0].render.cockpit.nWindowPos", "1"},
