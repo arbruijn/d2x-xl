@@ -195,7 +195,7 @@ void PhysicsOptionsMenu (void)
 	static int choice = 0;
 
 	CMenu	m;
-	int	i, nFusionRamp;
+	int	i;
 	int	optWiggle = -1;
 	char	szSlider [50];
 
