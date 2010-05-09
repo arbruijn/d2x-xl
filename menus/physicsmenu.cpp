@@ -235,7 +235,7 @@ do {
 	m.Create (30);
 	sprintf (szSlider + 1, TXT_FUSION_RAMP, nFusionRamp);
 	*szSlider = *(TXT_FUSION_RAMP - 1);
-	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, nFusionRamp, 0, 1, KEY_F, HTX_FUSION_RAMP);
+	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, nFusionRamp - 1, 0, 1, KEY_F, HTX_FUSION_RAMP);
 	sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
 	*szSlider = *(TXT_PLAYER_DRAG - 1);
 	physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
