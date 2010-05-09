@@ -397,6 +397,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].nWeaponIcons, 0, 0);
 		RP (extraGameInfo [i].nZoomMode, 0, 0);
 		RP (extraGameInfo [i].bShowWeapons, 0, 0);
+		RP (extraGameInfo [i].nFusionRamp, 0, 0);
 
 		RP (extraGameInfo [i].entropy.nCaptureVirusLimit, 0, 0);
 		RP (extraGameInfo [i].entropy.nCaptureTimeLimit, 0, 0);
@@ -523,7 +524,6 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bRotateMarkers, i, 0);
 		RP (extraGameInfo [i].bBrightObjects, i, 0);
 		RP (extraGameInfo [i].grWallTransparency, 0, 0);
-		RP (extraGameInfo [i].nFusionRamp, 0, 0);
 		RP (extraGameInfo [i].nOmegaRamp, 0, 0);
 		RP (extraGameInfo [i].nSpeedBoost, 0, 0);
 		for (j = 0; j < 5; j++) {
@@ -941,6 +941,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].loadout.nMissiles[9]", "-1"},
 	 {"extraGameInfo [0].bShowWeapons", "1"},
 	 {"extraGameInfo [0].bBrightObjects", "0"},
+	 {"extraGameInfo[0].nFusionRamp", "2"},
 	 {"gameOptions[0].input.keyboard.bRamp[0]", "0"},
 	 {"gameOptions[0].input.mouse.sensitivity[0]", "8"},
 	 {"gameOptions[0].input.trackIR.sensitivity[0]", "8"},
@@ -1342,7 +1343,6 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].bRotateMarkers", "0"},
 	 {"extraGameInfo[0].bWiggle", "1"},
 	 {"extraGameInfo[0].grWallTransparency", "19"},
-	 {"extraGameInfo[0].nFusionRamp", "4"},
 	 {"extraGameInfo[0].nOmegaRamp", "4"},
 	 {"extraGameInfo[0].nMslTurnSpeed", "1"},
 	 {"extraGameInfo[0].nMslStartSpeed", "0"},
