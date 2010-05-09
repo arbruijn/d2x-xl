@@ -77,7 +77,7 @@ static const char *pszAutoLevel [4];
 static const char *pszStdAdv [2];
 static const char *pszDrag [4];
 
-static int nDrag;
+static int nDrag, nFusionRamp;
 
 //------------------------------------------------------------------------------
 
@@ -106,10 +106,11 @@ if (nState)
 	int			v;
 
 m = menu + physOpts.nFusionRamp;
-v = m->m_value + 2;
-if (extraGameInfo [0].nFusionRamp != v) {
-	extraGameInfo [0].nFusionRamp = v;
-	sprintf (m->m_text, TXT_FUSION_RAMP, extraGameInfo [0].nFusionRamp * 50, '%');
+v = m->m_value + 1;
+if (nFusionRamp != v) {
+	nFusionRamp = v;
+	extraGameInfo [0].nFusionRamp = 6 - 2 * nFusionRamp;
+	sprintf (m->m_text, TXT_FUSION_RAMP, nFusionRamp);
 	m->m_bRebuild = 1;
 	}
 
@@ -194,7 +195,7 @@ void PhysicsOptionsMenu (void)
 	static int choice = 0;
 
 	CMenu	m;
-	int	i;
+	int	i, nFusionRamp;
 	int	optWiggle = -1;
 	char	szSlider [50];
 
@@ -228,12 +229,13 @@ for (nDrag = sizeofa (nDragTable); nDrag; ) {
 		break;
 	}
 
+nFusionRamp = (extraGameInfo [0].nFusionRamp > 2) ? 1 : 2;
 do {
 	m.Destroy ();
 	m.Create (30);
-	sprintf (szSlider + 1, TXT_FUSION_RAMP, extraGameInfo [0].nFusionRamp * 50, '%');
+	sprintf (szSlider + 1, TXT_FUSION_RAMP, nFusionRamp);
 	*szSlider = *(TXT_FUSION_RAMP - 1);
-	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, extraGameInfo [0].nFusionRamp - 2, 0, 6, KEY_F, HTX_FUSION_RAMP);
+	physOpts.nFusionRamp = m.AddSlider (szSlider + 1, nFusionRamp, 0, 1, KEY_F, HTX_FUSION_RAMP);
 	sprintf (szSlider + 1, TXT_PLAYER_DRAG, pszDrag [nDrag]);
 	*szSlider = *(TXT_PLAYER_DRAG - 1);
 	physOpts.nDrag = m.AddSlider (szSlider + 1, nDrag, 0, 3, KEY_P, HTX_PLAYER_DRAG);
