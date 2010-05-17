@@ -20,7 +20,7 @@ typedef struct tCamera {
 	char				bValid;
 	char				bVisible;
 	char				bTimedOut;
-	char				bHaveUVL;
+	char				bAligned;
 	char				bShadowMap;
 	char				bTeleport;
 	char				bMirror;
@@ -51,12 +51,13 @@ class CCamera {
 		int Ready (time_t t);
 		void Reset (void);
 		void Rotate (void);
-		void GetUVL (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP);
+		void Align (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP);
 		int Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
 						CObject *objP, int bShadowMap, int bTeleport);
 		void Destroy (void);
 		int HaveBuffer (int bCheckTexture);
 		int HaveTexture (void);
+		inline void ReAlign (void) { m_info.bAligned = 0; }
 		inline void SetVisible (char bVisible) { m_info.bVisible = bVisible; }
 		inline char GetVisible (void) { return m_info.bVisible; }
 		inline char GetTeleport (void) { return m_info.bTeleport; }
@@ -98,6 +99,7 @@ class CCameraManager {
 		inline int GetObjectCamera (int nObject);
 		inline void SetObjectCamera (int nObject, int i);
 		int GetFaceCamera (int nFace);
+		void ReAlign (void);
 		inline void SetFaceCamera (int nFace, int i);
 	};
 

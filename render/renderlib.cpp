@@ -546,7 +546,7 @@ bHaveMonitorBg = cameraP->Valid () && /*!cameraP->bShadowMap &&*/
 					  (cameraP->Texture ().Texture () || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
-	cameraP->GetUVL (faceP, NULL, FACES.texCoord + faceP->m_info.nIndex, FACES.vertices + faceP->m_info.nIndex);
+	cameraP->Align (faceP, NULL, FACES.texCoord + faceP->m_info.nIndex, FACES.vertices + faceP->m_info.nIndex);
 	if (bIsTeleCam) {
 #if DBG
 		faceP->bmBot = &cameraP->Texture ();

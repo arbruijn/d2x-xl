@@ -264,7 +264,7 @@ if (ogl.m_states.bRender2TextureOk)
 
 #define EPS 0.01f
 
-void CCamera::GetUVL (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP)
+void CCamera::Align (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP)
 {
 	int	i2, i3, nType = 0, nScale = 2 - gameOpts->render.cameras.bHires;
 
@@ -283,7 +283,7 @@ else {
 	}
 
 #if !DBG
-if (m_info.bHaveUVL) {
+if (m_info.bAligned) {
 	if (uvlP)
 		memcpy (uvlP, m_info.uvlList, sizeof (m_info.uvlList));
 	}
@@ -429,7 +429,7 @@ else
 			}
 		memcpy (m_info.texCoord, texCoord, sizeof (m_info.texCoord));
 		}
-	m_info.bHaveUVL = 1;
+	m_info.bAligned = 1;
 	}
 }
 
@@ -785,7 +785,7 @@ if (m_objectCameras.Buffer () && (nObject >= 0) && (nObject < LEVEL_OBJECTS))
 
 int CCameraManager::GetFaceCamera (int nFace) 
 {
-return (m_cameras && m_faceCameras.Buffer()) ? m_faceCameras [nFace] : -1;
+return (m_cameras && m_faceCameras.Buffer ()) ? m_faceCameras [nFace] : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -813,6 +813,16 @@ void CCameraManager::Rotate (CObject *objP)
 
 if (i >= 0)
 	m_cameras [i].Rotate ();
+}
+
+//------------------------------------------------------------------------------
+
+void CCameraManager::ReAlign (void)
+{
+Destroy ();
+Create ();
+for (int i = 0; i < m_nCameras; i++)
+	m_cameras [i].ReAlign ();
 }
 
 //------------------------------------------------------------------------------

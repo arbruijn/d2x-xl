@@ -39,7 +39,7 @@ static tRgbaColorf smokeColors [] = {
 #define BOT_PART_LIFE				-6000
 #define BOT_PART_SPEED				300
 
-#define MSL_MAX_PARTS				500
+#define MSL_MAX_PARTS				750
 #define MSL_PART_LIFE				-3000
 #define MSL_PART_SPEED				100
 
