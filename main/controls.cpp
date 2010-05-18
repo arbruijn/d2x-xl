@@ -127,12 +127,12 @@ if (forwardThrustTime)
 #endif
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [gameData.multiplayer.nLocalPlayer].DriveDamage ())) {
 	if (controls [0].afterburnerState) {			//CPlayerData has key down
-		fix afterburner_scale;
-		int oldCount,newCount;
+		fix xAfterburnerScale;
+		int oldCount, newCount;
 
 		//add in value from 0..1
-		afterburner_scale = I2X (1) + min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
-		forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
+		xAfterburnerScale = I2X (1) + min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
+		forwardThrustTime = FixMul (gameData.time.xFrame, xAfterburnerScale);	//based on full thrust
 		oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 		if (!gameStates.gameplay.bAfterburnerCheat)
 			gameData.physics.xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;

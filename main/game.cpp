@@ -307,11 +307,11 @@ void DoCloakStuff (void)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-		if (gameData.time.xGame - gameData.multiplayer.players[i].cloakTime > CLOAK_TIME_MAX) {
+		if (gameData.time.xGame - gameData.multiplayer.players [i].cloakTime > CLOAK_TIME_MAX) {
 			gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
 			if (i == gameData.multiplayer.nLocalPlayer) {
 				audio.PlaySound (SOUND_CLOAK_OFF);
-				if (gameData.app.nGameMode & GM_MULTI)
+				if (IsMultiGame)
 					MultiSendPlaySound (SOUND_CLOAK_OFF, I2X (1));
 				MaybeDropNetPowerup (-1, POW_CLOAK, FORCE_DROP);
 				MultiSendDeCloak (); // For demo recording
@@ -337,9 +337,6 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 				MultiSendPlaySound (SOUND_INVULNERABILITY_OFF, I2X (1));
 				MaybeDropNetPowerup (-1, POW_INVUL, FORCE_DROP);
 				}
-#if TRACE
-				//console.printf (CON_DBG, " --- You have been DE-INVULNERABLEIZED! ---\n");
-#endif
 			}
 		bFakingInvul = 0;
 		}
@@ -488,7 +485,7 @@ DoLunacyOff ();
 gameStates.app.cheats.bLaserRapidFire = 0;
 gameStates.app.cheats.bPhysics = 0;
 gameStates.app.cheats.bMonsterMode = 0;
-gameStates.app.cheats.bRobotsKillRobots=0;
+gameStates.app.cheats.bRobotsKillRobots = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 }
 
@@ -609,6 +606,8 @@ AutoScreenshot ();
 
 //	-----------------------------------------------------------------------------
 
+#if 0
+
 #define PHYSICS_FRAME_TIME	(1000.0f / 60.0f)
 
 int GameFrame (int bRenderFrame, int bReadControls, int fps)
@@ -623,29 +622,28 @@ while (t >= physicsFrameTime) {
 	i++;
 	}
 if (i) {
+	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	gameData.time.xFrame = MSEC2X (physicsFrameTime);
 	gameData.physics.xTime = gameData.time.xFrame; 
-	if (bReadControls)
+	if (bReadControls > 0)
 		ReadControls ();
+	else if (bReadControls < 0)
+		controls.Reset ();
 	while (i--) {
 		gameData.objs.nFrameCount++;
 		if (0 > (h = DoGameFrame (0, 0, 0)))
 			return h;
+		controls.ResetTriggers ();
 		}
 	gameData.physics.fLastTick = float (gameStates.app.nSDLTicks) - t;
 	}
 CalcFrameTime ();
-if (bRenderFrame) {
-	if (gameStates.render.cockpit.bRedraw) {
-		cockpit->Init ();
-		gameStates.render.cockpit.bRedraw = 0;
-		}
-	GameRenderFrame ();
-	gameStates.app.bUsingConverter = 0;
-	AutoScreenshot ();
-	}
+if (bRenderFrame)
+	DoRenderFrame ();
 return h;
 }
+
+#endif
 
 //	------------------------------------------------------------------------------------
 //this function is the game.  called when game mode selected.  runs until
@@ -934,7 +932,7 @@ else
 //-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
-int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
@@ -943,16 +941,7 @@ if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
 	GasolineCheat (0);
 	}
-if (!MultiProtectGame ()) {
-	SetFunctionMode (FMODE_MENU);
-	return -1;
-	}
 
-AutoBalanceTeams ();
-MultiSendTyping ();
-MultiSendWeapons (0);
-MultiSyncKills ();
-MultiRefillPowerups ();
 UpdatePlayerStats ();
 UpdatePlayerWeaponInfo ();
 paletteManager.FadeEffect ();		//	Should leave palette effect up for as long as possible by putting right before render.
@@ -965,6 +954,15 @@ DoFinalBossFrame ();
 DrainHeadlightPower ();
 
 if (IsMultiGame) {
+	if (!MultiProtectGame ()) {
+		SetFunctionMode (FMODE_MENU);
+		return -1;
+		}
+	AutoBalanceTeams ();
+	MultiSendTyping ();
+	MultiSendWeapons (0);
+	MultiSyncKills ();
+	MultiRefillPowerups ();
 	tracker.AddServer ();
 	MultiDoFrame ();
 	CheckMonsterballScore ();
@@ -975,6 +973,12 @@ if (IsMultiGame) {
 
 if (bRenderFrame)
 	DoRenderFrame ();
+if (bFrameTime)
+	CalcFrameTime ();
+if (bReadControls > 0)
+	ReadControls ();
+else if (bReadControls < 0)
+	controls.Reset ();
 
 DeadPlayerFrame ();
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
@@ -984,10 +988,6 @@ ProcessSmartMinesFrame ();
 DoSeismicStuff ();
 DoEffectsFrame ();
 DoAmbientSounds ();
-if (bReadControls > 0)
-	ReadControls ();
-else if (bReadControls < 0)
-	controls.Reset ();
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
 if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) {
@@ -1056,8 +1056,6 @@ CheckInventory ();
 OmegaChargeFrame ();
 SlideTextures ();
 FlickerLights ();
-if (bFrameTime)
-	CalcFrameTime ();
 return 1;
 }
 

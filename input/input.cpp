@@ -1161,6 +1161,7 @@ else {
 
 int CControlsManager::CapSampleRate (void)
 {
+#if 0
 	float t = float (SDL_GetTicks ());
 
 if (t - m_lastTick < 1000.0f / 30.0f)
@@ -1172,6 +1173,18 @@ m_maxTurnRate = int (m_slackTurnRate);
 m_slackTurnRate -= float (m_maxTurnRate);
 m_lastTick = t;
 return 0;
+#else
+if (gameData.app.bGamePaused)
+	GetSlowTicks ();
+m_frameCount++;
+m_pollTime += gameData.time.xFrame;
+if (!gameStates.app.tick40fps.bTick)
+	return 1;
+m_frameTime = float (m_pollTime) / m_frameCount;
+m_maxTurnRate = int (m_frameTime);
+#endif
+return 0;
+
 }
 
 //------------------------------------------------------------------------------

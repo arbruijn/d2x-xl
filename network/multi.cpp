@@ -760,6 +760,13 @@ if (gameStates.app.bHaveExtraGameInfo && (bForce || extraGameInfo [1].bAutoBalan
 void AutoBalanceTeams (void)
 {
 if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && IsTeamGame && NetworkIAmMaster ()) {
+
+		static int nTimeout = 0;
+
+	if (gameStates.app.nSDLTicks - nTimeout < 1000)
+		return;
+	nTimeout = gameStates.app.nSDLTicks;
+
 		int	h, i, t, teamSize [2], teamScore [2];
 
 	teamSize [0] =
@@ -2606,7 +2613,7 @@ void MultiSyncKills (void)
 {
 	static	time_t	t0;
 
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) &&(gameStates.app.nSDLTicks - t0 > 1000)) {
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.nSDLTicks - t0 > 1000)) {
 	t0 = gameStates.app.nSDLTicks;
 	MultiSendSyncKills ();
 	}

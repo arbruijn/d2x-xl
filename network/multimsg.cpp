@@ -188,9 +188,8 @@ gameStates.multi.bPlayerIsTyping [int (buf [1])] = 0;
 void MultiSendTyping (void)
 {
 if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer]) {
-	int t = gameStates.app.nSDLTicks;
-	if (t - gameData.multigame.nTypingTimeout > 1000) {
-		gameData.multigame.nTypingTimeout = t;
+	if (gameStates.app.nSDLTicks - gameData.multigame.nTypingTimeout > 1000) {
+		gameData.multigame.nTypingTimeout = gameStates.app.nSDLTicks;
 		gameData.multigame.msg.buf [0] = (char) MULTI_START_TYPING;
 		gameData.multigame.msg.buf [1] = (char) gameData.multiplayer.nLocalPlayer; 
 		gameData.multigame.msg.buf [2] = gameData.multigame.msg.bSending;
@@ -203,7 +202,7 @@ if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer]) {
 
 void MultiSendMsgStart (char nMsg)
 {
-if (gameData.app.nGameMode&GM_MULTI) {
+if (gameData.app.nGameMode & GM_MULTI) {
 	if (nMsg > 0)
 		gameData.multigame.msg.bDefining = nMsg;
 	else

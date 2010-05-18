@@ -242,7 +242,7 @@ if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
 	gameData.ai.target.vLastPosFiredAt.SetZero ();
 if (!gameData.ai.target.vLastPosFiredAt.IsZero ())
 	gameData.ai.target.nDistToLastPosFiredAt =
-		CFixVector::Dist(gameData.ai.target.vLastPosFiredAt, gameData.ai.target.vBelievedPos);
+		CFixVector::Dist (gameData.ai.target.vLastPosFiredAt, gameData.ai.target.vBelievedPos);
 else
 	gameData.ai.target.nDistToLastPosFiredAt = I2X (10000);
 abState = gameData.physics.xAfterburnerCharge && controls [0].afterburnerState &&
