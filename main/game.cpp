@@ -611,35 +611,39 @@ AutoScreenshot ();
 
 #define PHYSICS_FRAME_TIME	(1000.0f / 60.0f)
 
-int DoGameFrame (void)
+int GameFrame (int bRenderFrame, int bReadControls, int fps)
 {
 	fix		xFrameTime = gameData.time.xFrame; 
+	float		physicsFrameTime = 1000.0f / float (fps);
 	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
 	int		h = 1, i = 0;
 
-while (t >= PHYSICS_FRAME_TIME) {
-	t -= PHYSICS_FRAME_TIME;
+while (t >= physicsFrameTime) {
+	t -= physicsFrameTime;
 	i++;
 	}
 if (i) {
-	gameData.time.xFrame = MSEC2X (PHYSICS_FRAME_TIME);
+	gameData.time.xFrame = MSEC2X (physicsFrameTime);
 	gameData.physics.xTime = gameData.time.xFrame; 
-	ReadControls ();
+	if (bReadControls)
+		ReadControls ();
 	while (i--) {
 		gameData.objs.nFrameCount++;
-		if (0 > (h = GameFrame (0, 0, 0)))
+		if (0 > (h = DoGameFrame (0, 0, 0)))
 			return h;
 		}
 	gameData.physics.fLastTick = float (gameStates.app.nSDLTicks) - t;
 	}
 CalcFrameTime ();
-if (gameStates.render.cockpit.bRedraw) {
-	cockpit->Init ();
-	gameStates.render.cockpit.bRedraw = 0;
+if (bRenderFrame) {
+	if (gameStates.render.cockpit.bRedraw) {
+		cockpit->Init ();
+		gameStates.render.cockpit.bRedraw = 0;
+		}
+	GameRenderFrame ();
+	gameStates.app.bUsingConverter = 0;
+	AutoScreenshot ();
 	}
-GameRenderFrame ();
-gameStates.app.bUsingConverter = 0;
-AutoScreenshot ();
 return h;
 }
 
@@ -678,7 +682,7 @@ if (!setjmp (gameExitPoint)) {
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
 		try {
-			i = DoGameFrame ();
+			i = GameFrame (1, 1);
 			}
 		catch (int e) {
 			ClearWarnFunc (ShowInGameWarning);
@@ -930,7 +934,7 @@ else
 //-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
-int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
