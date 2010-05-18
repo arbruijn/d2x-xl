@@ -245,7 +245,7 @@ if (!gameData.ai.target.vLastPosFiredAt.IsZero ())
 		CFixVector::Dist(gameData.ai.target.vLastPosFiredAt, gameData.ai.target.vBelievedPos);
 else
 	gameData.ai.target.nDistToLastPosFiredAt = I2X (10000);
-abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState &&
+abState = gameData.physics.xAfterburnerCharge && controls [0].afterburnerState &&
 			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadlightIsOn (-1) || abState)
 	AIDoCloakStuff ();

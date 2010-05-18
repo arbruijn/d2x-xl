@@ -103,13 +103,13 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 			rotang[HA]  = (KeyDownTime(KEY_PAD6) - KeyDownTime(KEY_PAD4))/ROT_SPEED;
 		}
 		else {
-			objP->mType.physInfo.velocity[X] += VEL_SPEED * Controls [0].sidewaysThrustTime;
-			objP->mType.physInfo.velocity[Y] += VEL_SPEED * Controls [0].verticalThrustTime;
-			objP->mType.physInfo.velocity[Z] += VEL_SPEED * Controls [0].forwardThrustTime;
+			objP->mType.physInfo.velocity[X] += VEL_SPEED * controls [0].sidewaysThrustTime;
+			objP->mType.physInfo.velocity[Y] += VEL_SPEED * controls [0].verticalThrustTime;
+			objP->mType.physInfo.velocity[Z] += VEL_SPEED * controls [0].forwardThrustTime;
 
-			rotang[PA] = Controls [0].pitchTime/ROT_SPEED ;
-			rotang[BA]  = Controls [0].bankTime/ROT_SPEED;
-			rotang[HA]  = Controls [0].headingTime/ROT_SPEED;
+			rotang[PA] = controls [0].pitchTime/ROT_SPEED ;
+			rotang[BA]  = controls [0].bankTime/ROT_SPEED;
+			rotang[HA]  = controls [0].headingTime/ROT_SPEED;
 		}
 	}
 	else

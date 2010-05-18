@@ -100,9 +100,9 @@ if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 	//this is a horrible hack.  guided missile stuff should not be
 	//handled in the middle of a routine that is dealing with the CPlayerData
 	objP->mType.physInfo.rotThrust.SetZero ();
-	vRotAngs [PA] = Controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
-	vRotAngs [BA] = Controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
-	vRotAngs [HA] = Controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
+	vRotAngs [PA] = controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
+	vRotAngs [BA] = controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
+	vRotAngs [HA] = controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
 	mRot = CFixMatrix::Create (vRotAngs);
 	mOrient = gmObjP->info.position.mOrient * mRot;
 	gmObjP->info.position.mOrient = mOrient;
@@ -113,16 +113,16 @@ if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 	}
 else {
 #if DBG
-	if (Controls [0].headingTime)
-		Controls [0].headingTime = Controls [0].headingTime;
+	if (controls [0].headingTime)
+		controls [0].headingTime = controls [0].headingTime;
 #endif
-	objP->mType.physInfo.rotThrust = CFixVector::Create (Controls [0].pitchTime,
-	                                                     Controls [0].headingTime, //Controls [0].headingTime ? I2X (1) / 4 : 0; //Controls [0].headingTime;
-	                                                     Controls [0].bankTime);
+	objP->mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime,
+	                                                     controls [0].headingTime, //controls [0].headingTime ? I2X (1) / 4 : 0; //controls [0].headingTime;
+	                                                     controls [0].bankTime);
 	}
-forwardThrustTime = Controls [0].forwardThrustTime;
+forwardThrustTime = controls [0].forwardThrustTime;
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [gameData.multiplayer.nLocalPlayer].DriveDamage ())) {
-	if (Controls [0].afterburnerState) {			//CPlayerData has key down
+	if (controls [0].afterburnerState) {			//CPlayerData has key down
 		fix afterburner_scale;
 		int oldCount,newCount;
 
@@ -156,9 +156,9 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [game
 // Set CObject's thrust vector for forward/backward
 objP->mType.physInfo.thrust = objP->info.position.mOrient.FVec () * forwardThrustTime;
 // slide left/right
-objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * Controls [0].sidewaysThrustTime;
+objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * controls [0].sidewaysThrustTime;
 // slide up/down
-objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * Controls [0].verticalThrustTime;
+objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * controls [0].verticalThrustTime;
 objP->mType.physInfo.thrust *= 2 * objP->DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
