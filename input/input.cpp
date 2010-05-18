@@ -1158,8 +1158,8 @@ else {
 int CControlsManager::CapSampleRate (void)
 {
 #if 1
-	m_pollTime = gameData.physics.xTime;
-	m_frameTime = gameData.physics.xTime; 
+	m_pollTime = time_t (gameData.physics.xTime);
+	m_frameTime = float (gameData.physics.xTime); 
 #else
 if (gameStates.limitFPS.bControls) {
 	// check elapsed time since last call to ReadAll

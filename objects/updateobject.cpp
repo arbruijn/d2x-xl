@@ -613,6 +613,8 @@ int DoPhysicsFrame (void)
 while (t >= PHYSICS_FRAME_TIME) {
 	gameData.objs.nFrameCount++;
 	gameData.physics.xTime = MSEC2X (PHYSICS_FRAME_TIME);
+	if (!i++)
+		controls.Read ();
 	if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
 		FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
 	CleanupObjects ();
