@@ -9,8 +9,12 @@ class CControlsManager {
 	private:
 		tControlInfo	m_info [4];
 		int				m_frameCount;
+		int				m_maxTurnRate;
 
 	public:
+		CControlsManager () {
+			m_frameCount = m_maxTurnRate = 0;
+			}
 		int ReadJoystick (int* joyAxisP);
 		void ReadFCS (int nRawAxis);
 		int ReadAll (void);

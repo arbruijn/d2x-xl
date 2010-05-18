@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "objrender.h"
 #include "key.h"
+#include "input.h"
 #include "fireball.h"
 #include "cockpit.h"
 #include "text.h"
@@ -36,7 +37,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int ReturnFlagHome (CObject *pObj);
 void InvalidateEscortGoal (void);
-char GetKeyValue (char);
 void MultiSendGotFlag (char);
 
 const char *pszPowerup [MAX_POWERUP_TYPES] = {
@@ -469,7 +469,7 @@ int PickupConverter (CObject *objP, int nPlayer)
 {
 	char		szTemp [50];
 
-sprintf (szTemp, TXT_GOT_CONVERTER, KeyToASCII (GetKeyValue (54)));
+sprintf (szTemp, TXT_GOT_CONVERTER, KeyToASCII (controls.GetKeyValue (54)));
 HUDInitMessage (szTemp);
 return PickupEquipment (objP, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp, nPlayer) != 0;
 }

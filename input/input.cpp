@@ -57,16 +57,13 @@ tTransRotInfo	tirInfo;
 
 // *must* be defined - set to 0 if no limit
 #define MIN_TIME_360	3.0f	//time for a 360 degree turn in secs
-//#define nMaxTurnRate		(gameStates.input.kcPollTime / kcFrameCount)
+//#define m_maxTurnRate		(gameStates.input.kcPollTime / m_frameCount)
 
 #define	KCCLAMP(_val,_max) \
 			if ((_val) < -(_max)) \
 				(_val) = (fix) -(_max); \
 			else if ((_val) > (_max)) \
 				(_val) = (fix) (_max)
-
-static int	kcFrameCount = 0;
-static int	nMaxTurnRate;
 
 #define FASTPITCH	(gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? extraGameInfo [IsMultiGame].bFastPitch : 2)
 
@@ -443,8 +440,8 @@ if (automap.Display () ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 1, 0))) {
-	KCCLAMP (m_info [0].pitchTime, nMaxTurnRate / FASTPITCH);
-	KCCLAMP (m_info [0].headingTime, nMaxTurnRate);
+	KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FASTPITCH);
+	KCCLAMP (m_info [0].headingTime, m_maxTurnRate);
 	}
 KCCLAMP (m_info [0].bankTime, gameStates.input.kcFrameTime);
 return 1;
@@ -595,7 +592,7 @@ if (*bBankOn) {
 	}
 if (bGetSlideBank == 2)
 	LimitTurnRate (0);
-//KCCLAMP (pitchTime, nMaxTurnRate / FASTPITCH);
+//KCCLAMP (pitchTime, m_maxTurnRate / FASTPITCH);
 *pitchTimeP = m_info [1].pitchTime;
 *headingTimeP = m_info [1].headingTime;
 }
@@ -747,9 +744,9 @@ for (i = 0; i < 60; i += 30) {
 			if (!*bBankOn) {
 				if ((v = kcJoystick [i + 14].value) < 255) {
 					if (kcJoystick [61].value)		// If inverted...
-						m_info [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); //kcFrameCount;
+						m_info [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); //m_frameCount;
 					else
-						m_info [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); // kcFrameCount;
+						m_info [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); // m_frameCount;
 					}
 				}
 			}
@@ -767,7 +764,7 @@ for (i = 0; i < 60; i += 30) {
 
 //------------------------------------------------------------------------------
 
-int CalcDeadzone (int d, int nDeadzone)
+int CControlsManager::CalcDeadzone (int d, int nDeadzone)
 {
 double	r = 32 * nDeadzone;
 return (int) (r ? (d ? sqrt (fabs (r * r - d * d)) : r) : 0);
@@ -776,8 +773,8 @@ return (int) (r ? (d ? sqrt (fabs (r * r - d * d)) : r) : 0);
 //------------------------------------------------------------------------------
 
 void CControlsManager::DoMouse (int *mouseAxis, int nMouseButtons,
-							   int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed,
-							   int bGetSlideBank)
+										  int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed,
+										  int bGetSlideBank)
 {
 	int	v, nMouseSensMod = 8;
 
@@ -1170,7 +1167,7 @@ if (gameStates.limitFPS.bControls) {
 	else {
 		if (gameData.app.bGamePaused)
 			GetSlowTicks ();
-		kcFrameCount++;
+		m_frameCount++;
 		gameStates.input.kcPollTime += gameData.time.xFrame;
 		if (!gameStates.app.tick40fps.bTick)
 			return 1;
@@ -1178,11 +1175,11 @@ if (gameStates.limitFPS.bControls) {
 	}
 else
 	gameStates.input.kcPollTime = gameData.time.xFrame;
-gameStates.input.kcFrameTime = (float) gameStates.input.kcPollTime / kcFrameCount;
+gameStates.input.kcFrameTime = (float) gameStates.input.kcPollTime / m_frameCount;
 #if 1
-nMaxTurnRate = (int) gameStates.input.kcFrameTime;
+m_maxTurnRate = (int) gameStates.input.kcFrameTime;
 #else
-nMaxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - X2F (gameData.pig.ship.player->maxRotThrust)));
+m_maxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - X2F (gameData.pig.ship.player->maxRotThrust)));
 #endif
 return 0;
 }
@@ -1244,7 +1241,7 @@ if (CapSampleRate ())
 gameStates.input.bControlsSkipFrame = 0;
 Reset ();
 gameStates.input.bKeepSlackTime = 1;
-nBankSensMod = kcFrameCount;
+nBankSensMod = m_frameCount;
 nMouseButtons = 0;
 bUseMouse = 0;
 bSlideOn = 0;
@@ -1318,31 +1315,31 @@ if (gameStates.input.kcPollTime > I2X (1)) {
 	gameStates.input.kcPollTime = I2X (1);
 	}
 #if 0
-m_info [0].verticalThrustTime /= kcFrameCount;
-m_info [0].sidewaysThrustTime /= kcFrameCount;
-m_info [0].forwardThrustTime /= kcFrameCount;
-m_info [0].headingTime /= kcFrameCount;
-m_info [0].pitchTime /= kcFrameCount;
-m_info [0].bankTime /= kcFrameCount;
+m_info [0].verticalThrustTime /= m_frameCount;
+m_info [0].sidewaysThrustTime /= m_frameCount;
+m_info [0].forwardThrustTime /= m_frameCount;
+m_info [0].headingTime /= m_frameCount;
+m_info [0].pitchTime /= m_frameCount;
+m_info [0].bankTime /= m_frameCount;
 #endif
-KCCLAMP (m_info [0].verticalThrustTime, nMaxTurnRate);
-KCCLAMP (m_info [0].sidewaysThrustTime, nMaxTurnRate);
-KCCLAMP (m_info [0].forwardThrustTime, nMaxTurnRate);
+KCCLAMP (m_info [0].verticalThrustTime, m_maxTurnRate);
+KCCLAMP (m_info [0].sidewaysThrustTime, m_maxTurnRate);
+KCCLAMP (m_info [0].forwardThrustTime, m_maxTurnRate);
 if (LimitTurnRate (bUseMouse)) {
 	if (m_info [1].headingTime || m_info [2].headingTime) {
-		KCCLAMP (m_info [0].headingTime, nMaxTurnRate);
+		KCCLAMP (m_info [0].headingTime, m_maxTurnRate);
 		}
 	if (m_info [1].pitchTime || m_info [2].pitchTime) {
-		KCCLAMP (m_info [0].pitchTime, nMaxTurnRate / FASTPITCH);
+		KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FASTPITCH);
 		}
 	if (m_info [1].bankTime || m_info [2].bankTime) {
-		KCCLAMP (m_info [0].bankTime, nMaxTurnRate);
+		KCCLAMP (m_info [0].bankTime, m_maxTurnRate);
 		}
 	}
 else {
-	KCCLAMP (m_info [0].headingTime, nMaxTurnRate);
-	KCCLAMP (m_info [0].pitchTime, nMaxTurnRate / FASTPITCH);
-	KCCLAMP (m_info [0].bankTime, nMaxTurnRate);
+	KCCLAMP (m_info [0].headingTime, m_maxTurnRate);
+	KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FASTPITCH);
+	KCCLAMP (m_info [0].bankTime, m_maxTurnRate);
 	}
 if (gameStates.zoom.nFactor > I2X (1)) {
 		int r = int (gameStates.zoom.nFactor * 100 / I2X (1));
@@ -1357,7 +1354,7 @@ if (gameStates.input.keys.pressed [KEY_DELETE])
 	memset (&m_info, 0, sizeof (m_info));
 #endif
 gameStates.input.bKeepSlackTime = 0;
-kcFrameCount = 0;
+m_frameCount = 0;
 gameStates.input.kcPollTime = 0;
 return 0;
 }
