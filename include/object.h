@@ -1194,7 +1194,7 @@ void CleanupObjects();
 void object_toggle_lock_targets();
 
 // move all objects for the current frame
-int UpdateAllObjects();     // moves all objects
+int DoPhysicsFrame();     // moves all objects
 
 // set viewer CObject to next CObject in array
 void object_goto_nextViewer();

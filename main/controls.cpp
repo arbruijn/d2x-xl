@@ -77,7 +77,7 @@ if (gameData.time.xFrame <= 0)
 
 if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
 	StopPlayerMovement ();
-	FlushInput ();
+	controls.FlushInput ();
 /*
 	VmVecZero(&objP->mType.physInfo.rotThrust);
 	VmVecZero(&objP->mType.physInfo.thrust);

@@ -1788,7 +1788,7 @@ void KCSetControls (int bGet)
 {
 	int i, j;
 
-SetControlType ();
+controls.SetType ();
 return;
 for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++) {
 	if (bGet)

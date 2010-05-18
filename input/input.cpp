@@ -44,6 +44,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #	include "tactile.h"
 #endif
 
+class CControlsManager controls;
+
 #ifdef USE_LINUX_JOY
 #include "joystick.h"
 #endif
@@ -1252,7 +1254,7 @@ if (!gameOpts->legacy.bInput)
 	event_poll (SDL_ALLEVENTS);	//why poll 2 dozen times in the following code when input polling calls all necessary input handlers anyway?
 #endif
 
-SetControlType ();
+SetType ();
 bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (reinterpret_cast<int*> (&joyAxis [0]));
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {

@@ -433,7 +433,7 @@ void DoEndLevelFrame (void)
 	static fix ext_expl_halflife;
 
 vLastPosSave = gameData.objs.consoleP->info.vLastPos;	//don't let move code change this
-UpdateAllObjects ();
+DoPhysicsFrame ();
 gameData.objs.consoleP->info.vLastPos = vLastPosSave;
 
 if (gameStates.render.bExtExplPlaying) {

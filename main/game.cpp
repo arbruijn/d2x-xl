@@ -956,7 +956,7 @@ DoAmbientSounds ();
 if (bReadControls)
 	ReadControls ();
 else
-	ResetControls ();
+	controls.Reset ();
 //PrintLog ("DropPowerups\n");
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
@@ -999,8 +999,8 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	}
 else { // Note the link to above!
 	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  DoWeaponSequence modifies this.
-	//PrintLog ("UpdateAllObjects\n");
-	if (!UpdateAllObjects ())
+	//PrintLog ("DoPhysicsFrame\n");
+	if (!DoPhysicsFrame ())
 		return 0;
 	//PrintLog ("PowerupGrabCheatAll \n");
 	PowerupGrabCheatAll ();

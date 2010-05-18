@@ -604,10 +604,11 @@ return 1;
 
 #define PHYSICS_FRAME_TIME	(1000.0f / 60.0f)
 
-int UpdateAllObjects (void)
+int DoPhysicsFrame (void)
 {
-	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
 	CObject*	objP, * nextObjP;
+	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
+	int		i = 0;
 
 while (t >= PHYSICS_FRAME_TIME) {
 	gameData.objs.nFrameCount++;

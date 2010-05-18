@@ -21,6 +21,7 @@
 #include "network.h"
 #include "joy.h"
 #include "joydefs.h"
+#include "input.h"
 
 //------------------------------------------------------------------------------
 
@@ -147,7 +148,7 @@ if (nState)
 	int ocType = gameConfig.nControlType;
 	CMenuItem * m;
 
-SetControlType ();
+controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
 	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
 	}
@@ -243,7 +244,7 @@ do {
 		m.Create (20);
 
 		nCustMouseOpt = nMouseTypeOpt = -1;
-		SetControlType ();
+		controls.SetType ();
 		mouseOpts.nUse = m.AddCheck (TXT_USE_MOUSE, gameOpts->input.mouse.bUse, KEY_M, HTX_CONF_USEMOUSE);
 		mouseOpts.nDeadzone = -1;
 		if (gameOpts->input.mouse.bUse || gameStates.app.bNostalgia) {
@@ -303,7 +304,7 @@ if (nState)
 	int ocType = gameConfig.nControlType;
 	CMenuItem * m;
 
-SetControlType ();
+controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
 	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
 	}
@@ -397,7 +398,7 @@ do {
 		m.Create (20);
 
 		nCustJoyOpt = nJoyTypeOpt = -1;
-		SetControlType ();
+		controls.SetType ();
 		joyOpts.nUse = m.AddCheck (TXT_USE_JOY, gameOpts->input.joystick.bUse, KEY_J, HTX_CONF_USEJOY);
 		if (gameOpts->input.joystick.bUse || gameStates.app.bNostalgia) {
 			nCustJoyOpt = m.AddMenu (TXT_CUST_JOY, KEY_C, HTX_CONF_CUSTJOY);
@@ -626,7 +627,7 @@ do {
 		m.Create (20);
 
 		nCustHotKeysOpt = -1;
-		SetControlType ();
+		controls.SetType ();
 		nCustKbdOpt = m.AddMenu (TXT_CUST_JOY, KEY_K, HTX_CONF_CUSTKBD);
 		if (gameStates.app.bNostalgia) {
 			gameOpts->input.keyboard.nRamp = 100;
@@ -683,7 +684,7 @@ do {
 	m.Destroy ();
 	m.Create (10);
 
-	SetControlType ();
+	controls.SetType ();
 	nKeyboardOpt = m.AddMenu (TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);
 	nMouseOpt = m.AddMenu (TXT_MOUSECFG_MENUCALL, KEY_M, HTX_MOUSE_CONFIG);
 	if (gameStates.input.nJoysticks)

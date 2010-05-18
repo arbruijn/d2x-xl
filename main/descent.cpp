@@ -67,6 +67,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "kconfig.h"
 #include "mouse.h"
 #include "joy.h"
+#include "input.h"
 #include "desc_id.h"
 #include "joydefs.h"
 #include "gamepal.h"
@@ -659,7 +660,7 @@ switch (loadOp) {
 		break;
 	case 2:
 		/*---*/PrintLog ("Initializing control types\n");
-		SetControlType ();
+		controls.SetType ();
 		break;
 	case 3:
 		/*---*/PrintLog ("Initializing keyboard\n");
