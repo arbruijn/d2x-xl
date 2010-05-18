@@ -57,7 +57,7 @@ tTransRotInfo	tirInfo;
 
 // *must* be defined - set to 0 if no limit
 #define MIN_TIME_360	3.0f	//time for a 360 degree turn in secs
-//#define m_maxTurnRate		(gameStates.input.kcPollTime / m_frameCount)
+//#define m_maxTurnRate		(m_pollTime / m_frameCount)
 
 #define	KCCLAMP(_val,_max) \
 			if ((_val) < -(_max)) \
@@ -117,10 +117,10 @@ MouseGetDeltaZ (&dx, &dy, &dz);
 #else
 MouseGetDelta (&dx, &dy);
 #endif
-mouseAxis [0] = (int) ((dx * gameStates.input.kcPollTime) / 35);
-mouseAxis [1] = (int) ((dy * gameStates.input.kcPollTime) / 25);
+mouseAxis [0] = (int) ((dx * m_pollTime) / 35);
+mouseAxis [1] = (int) ((dy * m_pollTime) / 25);
 #ifdef SDL_INPUT
-mouseAxis [2] = (int) (dz * gameStates.input.kcPollTime);
+mouseAxis [2] = (int) (dz * m_pollTime);
 #endif
 *nMouseButtons = MouseGetButtons ();
 return 1;
@@ -179,7 +179,7 @@ else if (h < -joyDeadzoneScaled)
 	h = ((h + joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
 else
 	h = 0;
-return (int) ((AttenuateAxis (h, i) * gameStates.input.kcPollTime) / 128);
+return (int) ((AttenuateAxis (h, i) * m_pollTime) / 128);
 }
 
 //------------------------------------------------------------------------------
@@ -307,8 +307,8 @@ int CControlsManager::ReadCyberman (int *mouseAxis, int *nMouseButtons)
 	int idx, idy;
 
 MouseGetCybermanPos (&idx, &idy);
-mouseAxis [0] = (int) ((idx * gameStates.input.kcPollTime) / 128);
-mouseAxis [1] = (int) ((idy * gameStates.input.kcPollTime) / 128);
+mouseAxis [0] = (int) ((idx * m_pollTime) / 128);
+mouseAxis [1] = (int) ((idy * m_pollTime) / 128);
 *nMouseButtons = MouseGetButtons ();
 return 1;
 }
@@ -443,7 +443,7 @@ if (automap.Display () ||
 	KCCLAMP (m_info [0].pitchTime, m_maxTurnRate / FASTPITCH);
 	KCCLAMP (m_info [0].headingTime, m_maxTurnRate);
 	}
-KCCLAMP (m_info [0].bankTime, gameStates.input.kcFrameTime);
+KCCLAMP (m_info [0].bankTime, m_frameTime);
 return 1;
 }
 
@@ -557,7 +557,7 @@ if (bGetSlideBank == 2) {
 	// cruise speed
 	for (i = 0; i < 4; i++)
 		if ((v = HaveKey (kcKeyboard, 38 + i)) < 255)
-			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcPollTime);
+			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, m_pollTime);
 	for (i = 0; i < 2; i++)
 		if (((v = HaveKey (kcKeyboard,
  + i)) < 255) && KeyDownCount (v))
@@ -1026,11 +1026,11 @@ if (gameOpts->input.trackIR.nMode == 0) {
 	else
 		dy = 0;
 	if (gameOpts->input.trackIR.bMove [0]) {
-		m_info [0].headingTime -= (fix) (dx * gameStates.input.kcPollTime);
-		m_info [0].pitchTime += (fix) (dy * gameStates.input.kcPollTime);
+		m_info [0].headingTime -= (fix) (dx * m_pollTime);
+		m_info [0].pitchTime += (fix) (dy * m_pollTime);
 		}
 	if (gameOpts->input.trackIR.bMove [1])
-		m_info [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+		m_info [0].bankTime += (int) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else if (gameOpts->input.trackIR.nMode == 1) {
 	dx = (int) ((float) tirInfo.fvRot.z * (float) screen.Width () / 16384.0f);
@@ -1071,7 +1071,7 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 		m_info [0].pitchTime += dy;
 		}
 	if (gameOpts->input.trackIR.bMove [1])
-		m_info [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+		m_info [0].bankTime += (int) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else {
 	transformation.m_info.bUsePlayerHeadAngles = 1;
@@ -1094,21 +1094,21 @@ if (gameOpts->input.trackIR.bMove [2] && (float (fabs (tirInfo.fvTrans.x) > fDea
 		tirInfo.fvTrans.x += fDeadzone;
 	else
 		tirInfo.fvTrans.x -= fDeadzone;
-	m_info [0].sidewaysThrustTime -= int ((tirInfo.fvTrans.x - fDeadzone) * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
+	m_info [0].sidewaysThrustTime -= int ((tirInfo.fvTrans.x - fDeadzone) * m_pollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
 	}
 if (gameOpts->input.trackIR.bMove [3] && (float (fabs (tirInfo.fvTrans.y) > fDeadzone))) {
 	if (tirInfo.fvTrans.y < 0)
 		tirInfo.fvTrans.y += fDeadzone;
 	else
 		tirInfo.fvTrans.y -= fDeadzone;
-	m_info [0].verticalThrustTime += (int) ((tirInfo.fvTrans.y - fDeadzone) * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
+	m_info [0].verticalThrustTime += (int) ((tirInfo.fvTrans.y - fDeadzone) * m_pollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
 	}
 if (gameOpts->input.trackIR.bMove [4] && ((float) fabs (tirInfo.fvTrans.z) > fDeadzone)) {
 	if (tirInfo.fvTrans.z < 0)
 		tirInfo.fvTrans.z += fDeadzone;
 	else
 		tirInfo.fvTrans.z -= fDeadzone;
-	m_info [0].forwardThrustTime -= (int) ((tirInfo.fvTrans.z - fDeadzone) * gameStates.input.kcPollTime / 8192.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+	m_info [0].forwardThrustTime -= (int) ((tirInfo.fvTrans.z - fDeadzone) * m_pollTime / 8192.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 }
 
@@ -1157,30 +1157,29 @@ else {
 
 int CControlsManager::CapSampleRate (void)
 {
-//	DEFTIME
-
+#if 1
+	m_pollTime = gameData.physics.xTime;
+	m_frameTime = gameData.physics.xTime; 
+#else
 if (gameStates.limitFPS.bControls) {
 	// check elapsed time since last call to ReadAll
 	// if less than 25 ms (i.e. 40 fps) return
 	if (gameOpts->legacy.bMouse)
-		gameStates.input.kcPollTime = gameData.time.xFrame;
+		m_pollTime = gameData.time.xFrame;
 	else {
 		if (gameData.app.bGamePaused)
 			GetSlowTicks ();
 		m_frameCount++;
-		gameStates.input.kcPollTime += gameData.time.xFrame;
+		m_pollTime += gameData.time.xFrame;
 		if (!gameStates.app.tick40fps.bTick)
 			return 1;
 		}
 	}
 else
-	gameStates.input.kcPollTime = gameData.time.xFrame;
-gameStates.input.kcFrameTime = (float) gameStates.input.kcPollTime / m_frameCount;
-#if 1
-m_maxTurnRate = (int) gameStates.input.kcFrameTime;
-#else
-m_maxTurnRate = (int) (gameStates.input.kcFrameTime * (1.0f - X2F (gameData.pig.ship.player->maxRotThrust)));
+	m_pollTime = gameData.time.xFrame;
+m_frameTime = float (m_pollTime) / m_frameCount;
 #endif
+m_maxTurnRate = int (m_frameTime);
 return 0;
 }
 
@@ -1298,7 +1297,7 @@ if (gameStates.input.nCruiseSpeed > I2X (100))
 else if (gameStates.input.nCruiseSpeed < 0)
 	gameStates.input.nCruiseSpeed = 0;
 if (!m_info [0].forwardThrustTime)
-	m_info [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcPollTime) /100;
+	m_info [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,m_pollTime) /100;
 
 #if 0 //LIMIT_CONTROLS_FPS
 if (nBankSensMod > 2) {
@@ -1307,12 +1306,12 @@ if (nBankSensMod > 2) {
 	}
 #endif
 
-//----------- Clamp values between -gameStates.input.kcPollTime and gameStates.input.kcPollTime
-if (gameStates.input.kcPollTime > I2X (1)) {
+//----------- Clamp values between -m_pollTime and m_pollTime
+if (m_pollTime > I2X (1)) {
 #if TRACE
-	console.printf (1, "Bogus frame time of %.2f seconds\n", X2F (gameStates.input.kcPollTime));
+	console.printf (1, "Bogus frame time of %.2f seconds\n", X2F (m_pollTime));
 #endif
-	gameStates.input.kcPollTime = I2X (1);
+	m_pollTime = I2X (1);
 	}
 #if 0
 m_info [0].verticalThrustTime /= m_frameCount;
@@ -1348,14 +1347,14 @@ if (gameStates.zoom.nFactor > I2X (1)) {
 	m_info [0].pitchTime = (m_info [0].pitchTime * 100) / r;
 	m_info [0].bankTime = (m_info [0].bankTime * 100) / r;
 	}
-//	KCCLAMP (m_info [0].afterburnerTime, gameStates.input.kcPollTime);
+//	KCCLAMP (m_info [0].afterburnerTime, m_pollTime);
 #if DBG
 if (gameStates.input.keys.pressed [KEY_DELETE])
 	memset (&m_info, 0, sizeof (m_info));
 #endif
 gameStates.input.bKeepSlackTime = 0;
 m_frameCount = 0;
-gameStates.input.kcPollTime = 0;
+m_pollTime = 0;
 return 0;
 }
 

@@ -10,6 +10,8 @@ class CControlsManager {
 		tControlInfo	m_info [4];
 		int				m_frameCount;
 		int				m_maxTurnRate;
+		time_t			m_pollTime;
+		float				m_frameTime;
 
 	public:
 		CControlsManager () {
