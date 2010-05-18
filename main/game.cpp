@@ -615,7 +615,7 @@ int DoGameFrame (void)
 {
 	fix		xFrameTime = gameData.time.xFrame; 
 	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
-	int		h, i = 0;
+	int		h = 1, i = 0;
 
 while (t >= PHYSICS_FRAME_TIME) {
 	t -= PHYSICS_FRAME_TIME;
@@ -627,7 +627,7 @@ if (i) {
 	ReadControls ();
 	while (i--) {
 		gameData.objs.nFrameCount++;
-		if (0 > (h = GameFrame (0, 0)))
+		if (0 > (h = GameFrame (0, 0, 0)))
 			return h;
 		}
 	gameData.physics.fLastTick = float (gameStates.app.nSDLTicks) - t;
