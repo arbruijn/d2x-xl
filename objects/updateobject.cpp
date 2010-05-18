@@ -601,50 +601,37 @@ return 1;
 
 // -----------------------------------------------------------------------------
 //move all OBJECTS for the current frame
+
+#define PHYSICS_FRAME_TIME	(1000.0f / 60.0f)
+
 int UpdateAllObjects (void)
 {
-	int i;
-	CObject *objP, *nextObjP;
+	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
+	CObject*	objP, * nextObjP;
 
-gameData.objs.nFrameCount++;
-#if 0 //DBG
-	static int bOnce = 1;
-
-if (bOnce >= 0) {
-	if (bOnce > 0)
-		bOnce = -1;
-if (!OBJECTS [gameData.multiplayer.nLocalPlayer].CriticalDamage () && 
-	 (gameStates.app.nSDLTicks - OBJECTS [gameData.multiplayer.nLocalPlayer].TimeLastRepaired () > 5000))
-	OBJECTS [gameData.multiplayer.nLocalPlayer].SetDamage (1 + d_rand () % 10, 1 + d_rand () % 10, 1 + d_rand () % 10);
+while (t >= PHYSICS_FRAME_TIME) {
+	gameData.objs.nFrameCount++;
+	gameData.physics.xTime = MSEC2X (PHYSICS_FRAME_TIME);
+	if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
+		FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
+	CleanupObjects ();
+	if (gameOpts->gameplay.nAutoLeveling)
+		gameData.objs.consoleP->mType.physInfo.flags |= PF_LEVELLING;
+	else
+		gameData.objs.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
+	//gameData.laser.xUpdateTime %= I2X (1) / 40;
+	gameData.laser.xUpdateTime += gameData.time.xFrame;
+	// Move all OBJECTS
+	gameStates.entropy.bConquering = 0;
+	UpdatePlayerOrient ();
+	//WaitForEffectsThread ();
+	for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
+		nextObjP = objP->Links (0).next;
+		if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
+			return 0;
+		}
 	}
-#endif
-if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
-	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
-#if LIMIT_PHYSICS_FPS
-if (!gameStates.app.tick60fps.bTick)
-	return 1;
-gameData.physics.xTime = MSEC2X (gameStates.app.tick60fps.nTime);
-#else
-gameData.physics.xTime = gameData.time.xFrame;
-#endif
-CleanupObjects ();
-if (gameOpts->gameplay.nAutoLeveling)
-	gameData.objs.consoleP->mType.physInfo.flags |= PF_LEVELLING;
-else
-	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
-gameData.laser.xUpdateTime %= I2X (1) / 40;
-gameData.laser.xUpdateTime += gameData.time.xFrame;
-// Move all OBJECTS
-gameStates.entropy.bConquering = 0;
-UpdatePlayerOrient ();
-//WaitForEffectsThread ();
-i = 0;
-for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
-	nextObjP = objP->Links (0).next;
-	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
-		return 0;
-	i++;
-	}
+gameData.physics.fLastTick = float (gameStates.app.nSDLTicks) - t;
 return 1;
 }
 

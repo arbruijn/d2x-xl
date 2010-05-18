@@ -536,6 +536,7 @@ gameData.time.xFrame = 0;			//make first frame zero
 GameFlushInputs ();
 lightManager.SetMethod ();
 gameData.time.xGameStart = SDL_GetTicks ();
+gameData.physics.fLastTick = float (gameData.time.xGameStart);
 }
 
 //------------------------------------------------------------------------------

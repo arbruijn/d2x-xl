@@ -2049,6 +2049,7 @@ class CPhysicsData {
 		CStaticArray< short, MAX_FVI_SEGS >	segments;
 		CArray<short>		ignoreObjs;
 		CFVISideData		side;
+		float					fLastTick;
 		fix					xTime;
 		fix					xAfterburnerCharge;
 		fix					xBossInvulDot;
