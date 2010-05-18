@@ -23,6 +23,7 @@
 #include "event.h"
 #include "error.h"
 #include "key.h"
+#include "input.h"
 #include "timer.h"
 #include "hudmsgs.h"
 #include "maths.h"

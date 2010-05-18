@@ -43,7 +43,7 @@ class CControlsManager {
 			m_info [0].fireSecondaryDownCount = 0;
 			}
 
-		inline time_t PollTime (void) { return m_info.m_pollTime; }
+		inline time_t PollTime (void) { return m_pollTime; }
 
 		inline tControlInfo& operator[] (int i) { return m_info [i]; }
 
