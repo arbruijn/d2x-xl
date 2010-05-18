@@ -8,6 +8,7 @@
 class CControlsManager {
 	private:
 		tControlInfo	m_info [4];
+		int				m_frameCount;
 
 	public:
 		int ReadJoystick (int* joyAxisP);

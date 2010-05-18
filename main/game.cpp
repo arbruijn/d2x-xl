@@ -125,7 +125,7 @@ void MultiSendSoundFunction (char, char);
 void DefaultAllSettings (void);
 void ProcessSmartMinesFrame (void);
 void DoSeismicStuff (void);
-int ReadControls (void);		// located in gamecntl.c
+void ReadControls (void);		// located in gamecntl.c
 void DoFinalBossFrame (void);
 
 void MultiRemoveGhostShips (void);

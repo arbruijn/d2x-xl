@@ -1115,11 +1115,12 @@ char OldHomingState [20];
 
 //------------------------------------------------------------------------------
 
-int ReadControls (void)
+void ReadControls (void)
 {
-	int key, skipControls = 0;
-	fix keyTime;
-	static ubyte explodingFlag=0;
+	int	key;
+	fix	keyTime;
+
+	static ubyte explodingFlag = 0;
 
 gameStates.app.bPlayerFiredLaserThisFrame = -1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
@@ -1128,7 +1129,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
 			controls.Reset ();
 		else
-			skipControls = controls.Read ();		//NOTE LINK TO ABOVE!!!
+			controls.Read ();		//NOTE LINK TO ABOVE!!!
 	CheckRearView ();
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (controls [0].automapDownCount &&
@@ -1198,7 +1199,6 @@ if (gameStates.app.bPlayerIsDead)
 #endif
 		}
 	}
-return skipControls;
 }
 
 //------------------------------------------------------------------------------
