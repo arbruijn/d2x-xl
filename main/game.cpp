@@ -174,7 +174,7 @@ void GameFlushInputs (void)
 	int dx, dy;
 
 #if 1
-FlushInput ();
+controls.FlushInput ();
 #else
 KeyFlush ();
 JoyFlush ();
@@ -184,7 +184,7 @@ MouseFlush ();
 if ((gameStates.app.nFunctionMode != FMODE_MENU) && !joydefs_calibrating)		// only reset mouse when not in menu or not calibrating
 #endif
 MouseGetDelta (&dx, &dy);	// Read mouse
-memset (&Controls,0,sizeof (tControlInfo));
+controls.Reset ();
 }
 
 //------------------------------------------------------------------------------
@@ -956,7 +956,7 @@ DoAmbientSounds ();
 if (bReadControls)
 	ReadControls ();
 else
-	memset (&Controls, 0, sizeof (Controls));
+	ResetControls ();
 //PrintLog ("DropPowerups\n");
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;

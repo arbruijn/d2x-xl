@@ -3,7 +3,7 @@
 
 #include "kconfig.h"
 
-//extern tControlInfo Controls [4];
+//extern tControlInfo controls [4];
 
 class CControlsManager {
 	private:
