@@ -121,6 +121,10 @@ else {
 	                                                     controls [0].bankTime);
 	}
 forwardThrustTime = controls [0].forwardThrustTime;
+#if DBG
+if (forwardThrustTime)
+	forwardThrustTime = controls [0].forwardThrustTime;
+#endif
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [gameData.multiplayer.nLocalPlayer].DriveDamage ())) {
 	if (controls [0].afterburnerState) {			//CPlayerData has key down
 		fix afterburner_scale;

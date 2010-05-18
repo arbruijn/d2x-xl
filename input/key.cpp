@@ -770,7 +770,7 @@ return shift_status;
 
 //------------------------------------------------------------------------------
 // Returns the number of seconds this key has been down since last call.
-fix KeyDownTime (int scancode)
+fix KeyDownTime (int scanCode)
 {
 	static fix lastTime = -1;
 	fix timeDown, time, slack = 0;
@@ -778,42 +778,46 @@ fix KeyDownTime (int scancode)
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
 event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-#endif
-if ((scancode<0)|| (scancode>255)) return 0;
+#endif 
+if ((scanCode < 0) || (scanCode > 255))
+	return 0;
 
-if (!gameStates.input.keys.pressed [scancode]) {
-	timeDown = keyData.keys [scancode].timeHeldDown;
-	keyData.keys [scancode].timeHeldDown = 0;
+if (!gameStates.input.keys.pressed [scanCode]) {
+	timeDown = keyData.keys [scanCode].timeHeldDown;
+	keyData.keys [scanCode].timeHeldDown = 0;
 	} 
 else {
 	QLONG s, ms;
-
+#if DBG
+	if (scanCode == 72)
+		scanCode = scanCode;
+#endif
 	time = TimerGetFixedSeconds();
-	timeDown = time - keyData.keys [scancode].timeWentDown;
+	timeDown = time - keyData.keys [scanCode].timeWentDown;
 	s = timeDown / 65536;
 	ms = (timeDown & 0xFFFF);
 	ms *= 1000;
 	ms >>= 16;
-	keyData.keys [scancode].timeHeldDown += (int) (s * 1000 + ms);
+	keyData.keys [scanCode].timeHeldDown += (int) (s * 1000 + ms);
 	// the following code takes care of clamping in KConfig.c::control_read_all()
 	if (gameStates.input.bKeepSlackTime && (timeDown > gameStates.input.kcPollTime)) {
 		slack = (fix) (timeDown - gameStates.input.kcPollTime);
 		time -= slack + slack / 10;	// there is still some slack, so add an extra 10%
 		if (time < lastTime)
 			time = lastTime;
-		timeDown = (fix) gameStates.input.kcPollTime;
+		timeDown = fix (controls.PollTime ());
 		}
-	keyData.keys [scancode].timeWentDown = time;
+	keyData.keys [scanCode].timeWentDown = time;
 	lastTime = time;
 	if (timeDown && timeDown < gameStates.input.kcPollTime)
-		timeDown = (fix) gameStates.input.kcPollTime;
+		timeDown = fix (controls.PollTime ());
 	}
 return timeDown;
 }
 
 //------------------------------------------------------------------------------
 
-uint KeyDownCount (int scancode)
+uint KeyDownCount (int scanCode)
 {
 	int n;
 
@@ -821,52 +825,52 @@ uint KeyDownCount (int scancode)
 if (!bFastPoll)
 event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 #endif
-if ((scancode<0)|| (scancode>255)) return 0;
+if ((scanCode<0)|| (scanCode>255)) return 0;
 
-n = keyData.keys [scancode].downCount;
-keyData.keys [scancode].downCount = 0;
-keyData.keys [scancode].flags = 0;
+n = keyData.keys [scanCode].downCount;
+keyData.keys [scanCode].downCount = 0;
+keyData.keys [scanCode].flags = 0;
 return n;
 }
 
 //------------------------------------------------------------------------------
 
-ubyte KeyFlags (int scancode)
+ubyte KeyFlags (int scanCode)
 {
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
 	event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 #endif
-if ((scancode < 0)|| (scancode > 255)) 
+if ((scanCode < 0)|| (scanCode > 255)) 
 	return 0;
-return keyData.keys [scancode].flags;
+return keyData.keys [scanCode].flags;
 }
 
 //------------------------------------------------------------------------------
 
-uint KeyUpCount (int scancode)
+uint KeyUpCount (int scanCode)
 {
 	int n;
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
 event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 #endif
-if ((scancode < 0)|| (scancode > 255)) 
+if ((scanCode < 0)|| (scanCode > 255)) 
 	return 0;
-n = keyData.keys [scancode].upCount;
-keyData.keys [scancode].upCount = 0;
+n = keyData.keys [scanCode].upCount;
+keyData.keys [scanCode].upCount = 0;
 return n;
 }
 
 //------------------------------------------------------------------------------
 
-fix KeyRamp (int scancode)
+fix KeyRamp (int scanCode)
 {
 if (!gameOpts->input.keyboard.nRamp)
 	return 1;
 else {
 		int maxRampTime = gameOpts->input.keyboard.nRamp * 20; // / gameOpts->input.keyboard.nRamp;
-		fix t = keyData.keys [scancode].timeHeldDown;
+		fix t = keyData.keys [scanCode].timeHeldDown;
 
 	if (!t)
 		return maxRampTime;

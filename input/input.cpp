@@ -511,6 +511,10 @@ if (bGetSlideBank == 2) {
 		m_info [1].bankTime -= DELTACTRL (22 + i, 1);
 		m_info [0].forwardThrustTime += DELTACTRL (30 + i, 0);
 		m_info [0].forwardThrustTime -= DELTACTRL (32 + i, 0);
+#if DBG
+		if (m_info [0].forwardThrustTime)
+			m_info [0].forwardThrustTime = m_info [0].forwardThrustTime;
+#endif
 		if ((v = HaveKey (kcKeyboard, 46 + i)) < 255)
 			m_info [0].afterburnerState |= gameStates.input.keys.pressed [v];
 		// count bomb drops
@@ -1159,14 +1163,15 @@ int CControlsManager::CapSampleRate (void)
 {
 	float t = float (SDL_GetTicks ());
 
-if (t - m_lastTick < 1000.0f / 33.0f)
-	return 0;
+if (t - m_lastTick < 1000.0f / 30.0f)
+	return 1;
+m_pollTime = time_t (gameData.physics.xTime);
 m_frameTime = float (gameData.physics.xTime);
 m_slackTurnRate += m_frameTime;
 m_maxTurnRate = int (m_slackTurnRate);
 m_slackTurnRate -= float (m_maxTurnRate);
 m_lastTick = t;
-return 1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1201,6 +1206,21 @@ else
 
 //------------------------------------------------------------------------------
 
+void CControlsManager::ResetTriggers (void)
+{
+m_info [0].cyclePrimaryCount = 0;
+m_info [0].cycleSecondaryCount = 0;
+m_info [0].toggleIconsCount = 0;
+m_info [0].zoomDownCount = 0;
+m_info [0].headlightCount = 0;
+m_info [0].fireFlareDownCount = 0;
+m_info [0].dropBombDownCount = 0;
+m_info [0].automapDownCount = 0;
+m_info [0].rearViewDownCount = 0;
+}
+
+//------------------------------------------------------------------------------
+
 int CControlsManager::Read (void)
 {
 	int	i;
@@ -1211,15 +1231,7 @@ int CControlsManager::Read (void)
 	int	nMouseButtons;
 	int	bUseMouse, bUseJoystick;
 
-m_info [0].cyclePrimaryCount = 0;
-m_info [0].cycleSecondaryCount = 0;
-m_info [0].toggleIconsCount = 0;
-m_info [0].zoomDownCount = 0;
-m_info [0].headlightCount = 0;
-m_info [0].fireFlareDownCount = 0;
-m_info [0].dropBombDownCount = 0;
-m_info [0].automapDownCount = 0;
-m_info [0].rearViewDownCount = 0;
+ResetTriggers ();
 gameStates.input.bControlsSkipFrame = 1;
 if (CapSampleRate ())
 	return 1;
@@ -1283,7 +1295,7 @@ if (gameStates.input.nCruiseSpeed > I2X (100))
 else if (gameStates.input.nCruiseSpeed < 0)
 	gameStates.input.nCruiseSpeed = 0;
 if (!m_info [0].forwardThrustTime)
-	m_info [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,m_pollTime) /100;
+	m_info [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed, m_pollTime) /100;
 
 #if 0 //LIMIT_CONTROLS_FPS
 if (nBankSensMod > 2) {
@@ -1306,6 +1318,10 @@ m_info [0].forwardThrustTime /= m_frameCount;
 m_info [0].headingTime /= m_frameCount;
 m_info [0].pitchTime /= m_frameCount;
 m_info [0].bankTime /= m_frameCount;
+#endif
+#if DBG
+if (m_info [0].forwardThrustTime)
+	m_info [0].forwardThrustTime = m_info [0].forwardThrustTime;
 #endif
 KCCLAMP (m_info [0].verticalThrustTime, m_maxTurnRate);
 KCCLAMP (m_info [0].sidewaysThrustTime, m_maxTurnRate);

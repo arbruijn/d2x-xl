@@ -30,6 +30,7 @@ class CControlsManager {
 		void SetType (void);
 		int CalcDeadzone (int d, int nDeadzone);
 		void Reset (void);
+		void ResetTriggers (void);
 		int Read (void);
 
 		inline void StopPrimaryFire (void) {
@@ -41,6 +42,8 @@ class CControlsManager {
 			m_info [0].fireSecondaryState = 0;
 			m_info [0].fireSecondaryDownCount = 0;
 			}
+
+		inline time_t PollTime (void) { return m_info.m_pollTime; }
 
 		inline tControlInfo& operator[] (int i) { return m_info [i]; }
 
