@@ -602,40 +602,28 @@ return 1;
 // -----------------------------------------------------------------------------
 //move all OBJECTS for the current frame
 
-#define PHYSICS_FRAME_TIME	(1000.0f / 60.0f)
-
-int DoPhysicsFrame (void)
+int UpdateAllObjects (void)
 {
 	CObject*	objP, * nextObjP;
-	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
-	int		i = 0;
 
-while (t >= PHYSICS_FRAME_TIME) {
-	t -= PHYSICS_FRAME_TIME;
-	gameData.objs.nFrameCount++;
-	gameData.physics.xTime = MSEC2X (PHYSICS_FRAME_TIME);
-	if (!i++)
-		controls.Read ();
-	if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
-		FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
-	CleanupObjects ();
-	if (gameOpts->gameplay.nAutoLeveling)
-		gameData.objs.consoleP->mType.physInfo.flags |= PF_LEVELLING;
-	else
-		gameData.objs.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
-	//gameData.laser.xUpdateTime %= I2X (1) / 40;
-	gameData.laser.xUpdateTime += gameData.time.xFrame;
-	// Move all OBJECTS
-	gameStates.entropy.bConquering = 0;
-	UpdatePlayerOrient ();
-	//WaitForEffectsThread ();
-	for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
-		nextObjP = objP->Links (0).next;
-		if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
-			return 0;
-		}
+if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
+	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
+CleanupObjects ();
+if (gameOpts->gameplay.nAutoLeveling)
+	gameData.objs.consoleP->mType.physInfo.flags |= PF_LEVELLING;
+else
+	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
+//gameData.laser.xUpdateTime %= I2X (1) / 40;
+gameData.laser.xUpdateTime += gameData.time.xFrame;
+// Move all OBJECTS
+gameStates.entropy.bConquering = 0;
+UpdatePlayerOrient ();
+//WaitForEffectsThread ();
+for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
+	nextObjP = objP->Links (0).next;
+	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ())
+		return 0;
 	}
-gameData.physics.fLastTick = float (gameStates.app.nSDLTicks) - t;
 return 1;
 }
 

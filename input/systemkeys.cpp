@@ -1128,10 +1128,8 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 			|| gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
 			controls.Reset ();
-#if 0
 		else
 			controls.Read ();		//NOTE LINK TO ABOVE!!!
-#endif
 	CheckRearView ();
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (controls [0].automapDownCount &&

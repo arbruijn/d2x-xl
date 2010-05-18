@@ -10,12 +10,16 @@ class CControlsManager {
 		tControlInfo	m_info [4];
 		int				m_frameCount;
 		int				m_maxTurnRate;
+		float				m_slackTurnRate;
 		time_t			m_pollTime;
 		float				m_frameTime;
+		float				m_lastTick;
 
 	public:
 		CControlsManager () {
 			m_frameCount = m_maxTurnRate = 0;
+			m_lastTick = 0;
+			m_slackTurnRate = 0;
 			}
 		int ReadJoystick (int* joyAxisP);
 		void ReadFCS (int nRawAxis);

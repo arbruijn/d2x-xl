@@ -1157,30 +1157,16 @@ else {
 
 int CControlsManager::CapSampleRate (void)
 {
-#if 1
-	m_pollTime = time_t (gameData.physics.xTime);
-	m_frameTime = float (gameData.physics.xTime); 
-#else
-if (gameStates.limitFPS.bControls) {
-	// check elapsed time since last call to ReadAll
-	// if less than 25 ms (i.e. 40 fps) return
-	if (gameOpts->legacy.bMouse)
-		m_pollTime = gameData.time.xFrame;
-	else {
-		if (gameData.app.bGamePaused)
-			GetSlowTicks ();
-		m_frameCount++;
-		m_pollTime += gameData.time.xFrame;
-		if (!gameStates.app.tick40fps.bTick)
-			return 1;
-		}
-	}
-else
-	m_pollTime = gameData.time.xFrame;
-m_frameTime = float (m_pollTime) / m_frameCount;
-#endif
-m_maxTurnRate = int (m_frameTime);
-return 0;
+	float t = float (SDL_GetTicks ());
+
+if (t - m_lastTick < 1000.0f / 33.0f)
+	return 0;
+m_frameTime = float (gameData.physics.xTime);
+m_slackTurnRate += m_frameTime;
+m_maxTurnRate = int (m_slackTurnRate);
+m_slackTurnRate -= float (m_maxTurnRate);
+m_lastTick = t;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1396,9 +1382,9 @@ if (gameData.multiplayer.nLocalPlayer > -1) {
 	m_info [0].pitchTime += FixMul (externalControls.m_info->pitchTime,gameData.time.xFrame);
 	m_info [0].verticalThrustTime += FixMul (externalControls.m_info->verticalThrustTime,gameData.time.xFrame);
 	m_info [0].headingTime += FixMul (externalControls.m_info->headingTime,gameData.time.xFrame);
-	m_info [0].sidewaysThrustTime += FixMul (externalControls.m_info->sidewaysThrustTime ,gameData.time.xFrame);
-	m_info [0].bankTime += FixMul (externalControls.m_info->bankTime ,gameData.time.xFrame);
-	m_info [0].forwardThrustTime += FixMul (externalControls.m_info->forwardThrustTime ,gameData.time.xFrame);
+	m_info [0].sidewaysThrustTime += FixMul (externalControls.m_info->sidewaysThrustTime, gameData.time.xFrame);
+	m_info [0].bankTime += FixMul (externalControls.m_info->bankTime, gameData.time.xFrame);
+	m_info [0].forwardThrustTime += FixMul (externalControls.m_info->forwardThrustTime, gameData.time.xFrame);
 //	m_info [0].rearViewDownCount += externalControls.m_info->rearViewDownCount;
 //	m_info [0].rearViewDownState |= externalControls.m_info->rearViewDownState;
 	m_info [0].firePrimaryDownCount += externalControls.m_info->firePrimaryDownCount;

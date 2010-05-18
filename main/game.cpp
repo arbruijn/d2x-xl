@@ -594,6 +594,55 @@ SavePlayerProfile ();
 SetFunctionMode (FMODE_MENU);	
 }
 
+//	-----------------------------------------------------------------------------
+
+void DoRenderFrame (void)
+{
+if (gameStates.render.cockpit.bRedraw) {
+	cockpit->Init ();
+	gameStates.render.cockpit.bRedraw = 0;
+	}
+GameRenderFrame ();
+gameStates.app.bUsingConverter = 0;
+AutoScreenshot ();
+}
+
+//	-----------------------------------------------------------------------------
+
+#define PHYSICS_FRAME_TIME	(1000.0f / 60.0f)
+
+int DoGameFrame (void)
+{
+	fix		xFrameTime = gameData.time.xFrame; 
+	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
+	int		h, i = 0;
+
+while (t >= PHYSICS_FRAME_TIME) {
+	t -= PHYSICS_FRAME_TIME;
+	i++;
+	}
+if (i) {
+	gameData.time.xFrame = MSEC2X (PHYSICS_FRAME_TIME);
+	gameData.physics.xTime = gameData.time.xFrame; 
+	ReadControls ();
+	while (i--) {
+		gameData.objs.nFrameCount++;
+		if (0 > (h = GameFrame (0, 0)))
+			return h;
+		}
+	gameData.physics.fLastTick = float (gameStates.app.nSDLTicks) - t;
+	}
+CalcFrameTime ();
+if (gameStates.render.cockpit.bRedraw) {
+	cockpit->Init ();
+	gameStates.render.cockpit.bRedraw = 0;
+	}
+GameRenderFrame ();
+gameStates.app.bUsingConverter = 0;
+AutoScreenshot ();
+return h;
+}
+
 //	------------------------------------------------------------------------------------
 //this function is the game.  called when game mode selected.  runs until
 //editor mode or exit selected
@@ -629,7 +678,7 @@ if (!setjmp (gameExitPoint)) {
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
 		try {
-			i = GameFrame (1, 1);
+			i = DoGameFrame ();
 			}
 		catch (int e) {
 			ClearWarnFunc (ShowInGameWarning);
@@ -881,7 +930,7 @@ else
 //-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
-int GameFrame (int bRenderFrame, int bReadControls)
+int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
 {
 gameStates.app.bGameRunning = 1;
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
@@ -903,69 +952,45 @@ MultiRefillPowerups ();
 UpdatePlayerStats ();
 UpdatePlayerWeaponInfo ();
 paletteManager.FadeEffect ();		//	Should leave palette effect up for as long as possible by putting right before render.
-//PrintLog ("DoAfterburnerStuff\n");
 DoAfterburnerStuff ();
-//PrintLog ("DoCloakStuff\n");
 DoCloakStuff ();
-//PrintLog ("DoInvulnerableStuff\n");
 DoInvulnerableStuff ();
-//PrintLog ("RemoveObsoleteStuckObjects \n");
 RemoveObsoleteStuckObjects ();
-//PrintLog ("InitAIFrame \n");
 InitAIFrame ();
-//PrintLog ("DoFinalBossFrame\n");
 DoFinalBossFrame ();
-// -- lightning_frame ();
-// -- recharge_energy_frame ();
-//PrintLog ("DrainHeadlightPower\n");
 DrainHeadlightPower ();
 
 if (IsMultiGame) {
 	tracker.AddServer ();
-   MultiDoFrame ();
+	MultiDoFrame ();
 	CheckMonsterballScore ();
 	MultiCheckForScoreGoalWinner (netGame.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.GetPlayTimeAllowed () * 5 * 60))));
 	MultiCheckForEntropyWinner ();
 	MultiRemoveGhostShips ();
-  }
-if (bRenderFrame) {
-	if (gameStates.render.cockpit.bRedraw) {			//screen need redrawing?
-		//PrintLog ("cockpit->Init ()\n");
-		cockpit->Init ();
-		gameStates.render.cockpit.bRedraw = 0;
 	}
-	//PrintLog ("GameRenderFrame\n");
-	GameRenderFrame ();
-	gameStates.app.bUsingConverter = 0;
-	}
-//PrintLog ("CalcFrameTime\n");
-CalcFrameTime ();
-//PrintLog ("DeadPlayerFrame\n");
+
+if (bRenderFrame)
+	DoRenderFrame ();
+
 DeadPlayerFrame ();
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	DoReactorDeadFrame ();
 	}
-//PrintLog ("ProcessSmartMinesFrame \n");
 ProcessSmartMinesFrame ();
-//PrintLog ("DoSeismicStuff\n");
 DoSeismicStuff ();
-//PrintLog ("DoEffectsFrame\n");
 DoEffectsFrame ();
-//PrintLog ("DoAmbientSounds\n");
 DoAmbientSounds ();
-if (bReadControls)
+if (bReadControls > 0)
 	ReadControls ();
-else
+else if (bReadControls < 0)
 	controls.Reset ();
-//PrintLog ("DropPowerups\n");
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
 if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) {
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
 	}
 if (IsMultiGame && netGame.GetPlayTimeAllowed ())
-   gameStates.app.xThisLevelTime += gameData.time.xFrame;
-//PrintLog ("DigiSyncSounds\n");
+	gameStates.app.xThisLevelTime += gameData.time.xFrame;
 audio.SyncSounds ();
 if (gameStates.app.bEndLevelSequence) {
 	DoEndLevelFrame ();
@@ -974,15 +999,11 @@ if (gameStates.app.bEndLevelSequence) {
 	return 1;					//skip everything else
 	}
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-//PrintLog ("DoExplodingWallFrame\n");
 	DoExplodingWallFrame ();
 	}
 if ((gameData.demo.nState != ND_STATE_PLAYBACK) || (gameData.demo.nVcrState != ND_STATE_PAUSED)) {
-//PrintLog ("DoSpecialEffects\n");
 	DoSpecialEffects ();
-//PrintLog ("WallFrameProcess\n");
 	WallFrameProcess ();
-//PrintLog ("TriggersFrameProcess\n");
 	TriggersFrameProcess ();
 	}
 if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING)) {
@@ -999,25 +1020,20 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	}
 else { // Note the link to above!
 	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  DoWeaponSequence modifies this.
-	//PrintLog ("DoPhysicsFrame\n");
-	if (!DoPhysicsFrame ())
+	if (!UpdateAllObjects ())
 		return 0;
-	//PrintLog ("PowerupGrabCheatAll \n");
 	PowerupGrabCheatAll ();
 	if (gameStates.app.bEndLevelSequence)	//might have been started during move
 		return 1;
-	//PrintLog ("FuelcenUpdateAll\n");
 	FuelcenUpdateAll ();
-	//PrintLog ("DoAIFrameAll\n");
 	DoAIFrameAll ();
 	if (AllowedToFireGun ()) {
-		//PrintLog ("FireGun\n");
 		FireGun ();				// Fire Laser!
 		}
 	if (!FusionBump ())
 		return 1;
 	if (gameData.laser.nGlobalFiringCount)
-		gameData.laser.nGlobalFiringCount -= LocalPlayerFireGun ();	//FireWeapon (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
+		gameData.laser.nGlobalFiringCount -= LocalPlayerFireGun ();	
 	if (gameData.laser.nGlobalFiringCount < 0)
 		gameData.laser.nGlobalFiringCount = 0;
 	}
@@ -1026,23 +1042,18 @@ if (gameStates.render.bDoAppearanceEffect) {
 	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGame.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-		LOCALPLAYER.invulnerableTime = gameData.time.xGame-I2X (27);
+		LOCALPLAYER.invulnerableTime = gameData.time.xGame - I2X (27);
 		bFakingInvul = 1;
 		SetupSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 		}
 	}
-//PrintLog ("DoSlowMotionFrame\n");
 DoSlowMotionFrame ();
-//PrintLog ("CheckInventory\n");
 CheckInventory ();
-//PrintLog ("OmegaChargeFrame \n");
 OmegaChargeFrame ();
-//PrintLog ("SlideTextures \n");
 SlideTextures ();
-//PrintLog ("FlickerLights \n");
 FlickerLights ();
-//PrintLog ("\n");
-AutoScreenshot ();
+if (bFrameTime)
+	CalcFrameTime ();
 return 1;
 }
 

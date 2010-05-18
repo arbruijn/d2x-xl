@@ -1044,8 +1044,6 @@ int CControlConfig::ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrl
 {
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();
-//		if (gameData.app.nGameMode & GM_MULTI)
-//			GameFrame (0, 0);				// Continue
 	k = KeyInKey ();
 	if (k == KEY_ESC)
 		return AssignControl (item, BT_NONE, 255);
@@ -1729,9 +1727,9 @@ else if (m_version > 0)  {
 	controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.time.xFrame);
 	controls [0].verticalThrustTime += FixMul (m_info->verticalThrustTime,gameData.time.xFrame);
 	controls [0].headingTime += FixMul (m_info->headingTime,gameData.time.xFrame);
-	controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime ,gameData.time.xFrame);
-	controls [0].bankTime += FixMul (m_info->bankTime ,gameData.time.xFrame);
-	controls [0].forwardThrustTime += FixMul (m_info->forwardThrustTime ,gameData.time.xFrame);
+	controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime, gameData.time.xFrame);
+	controls [0].bankTime += FixMul (m_info->bankTime, gameData.time.xFrame);
+	controls [0].forwardThrustTime += FixMul (m_info->forwardThrustTime, gameData.time.xFrame);
 	controls [0].rearViewDownCount += m_info->rearViewDownCount;
 	controls [0].rearViewDownState |= m_info->rearViewDownState;
 	controls [0].firePrimaryDownCount += m_info->firePrimaryDownCount;

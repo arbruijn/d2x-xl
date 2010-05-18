@@ -1329,7 +1329,7 @@ xOldShields = LOCALPLAYER.shields;
 bPlayerWasDead = gameStates.app.bPlayerIsDead;
 if (!gameOpts->menus.nStyle) {
 	gameData.multigame.menu.bInvoked++; // Track level of menu nesting
-	GameFrame (0, 0);
+	GameFrame (0, -1);
 	gameData.multigame.menu.bInvoked--;
 	G3_SLEEP (100);   // delay 100 milliseconds
 	}

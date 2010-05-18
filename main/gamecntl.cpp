@@ -118,7 +118,7 @@ gameStates.app.bUsingConverter = 1;
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 
-if (gameData.time.xGame > last_playTime+CONVERTER_SOUND_DELAY) {
+if (gameData.time.xGame > last_playTime + CONVERTER_SOUND_DELAY) {
 	audio.PlaySound (SOUND_CONVERT_ENERGY);
 	last_playTime = gameData.time.xGame;
 	}

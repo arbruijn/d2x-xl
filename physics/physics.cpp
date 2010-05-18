@@ -1077,4 +1077,4 @@ fix k = FixMulDiv (mType.physInfo.mass, mType.physInfo.drag, (I2X (1) - mType.ph
 mType.physInfo.thrust = mType.physInfo.velocity * k;
 }
 
-
+//	-----------------------------------------------------------------------------

@@ -419,7 +419,7 @@ else if (gameData.app.bGamePaused /*|| timer_paused*/) {
 	CalcFrameTime ();
 	}
 else {
-	GameFrame (1, 0);
+	GameFrame (1, -1);
 	}
 }
 
