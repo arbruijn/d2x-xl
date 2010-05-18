@@ -70,12 +70,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void StopObjectMovement (CObject *objP)
 {
-Controls [0].headingTime = 0;
-Controls [0].pitchTime = 0;
-Controls [0].bankTime = 0;
-Controls [0].verticalThrustTime = 0;
-Controls [0].sidewaysThrustTime = 0;
-Controls [0].forwardThrustTime = 0;
+controls [0].headingTime = 0;
+controls [0].pitchTime = 0;
+controls [0].bankTime = 0;
+controls [0].verticalThrustTime = 0;
+controls [0].sidewaysThrustTime = 0;
+controls [0].forwardThrustTime = 0;
 if (objP) {
 	objP->mType.physInfo.rotThrust.SetZero ();
 	objP->mType.physInfo.thrust.SetZero ();
@@ -224,7 +224,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 		 segP->CheckForGoal ();
    else if (gameData.app.nGameMode & GM_HOARD)
 		 segP->CheckForHoardGoal ();
-	else if (Controls [0].forwardThrustTime || Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
+	else if (controls [0].forwardThrustTime || controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 		gameStates.entropy.nTimeLastMoved = -1;
 		if ((gameData.app.nGameMode & GM_ENTROPY) &&
 			 ((segP->m_owner < 0) || (segP->m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))) {

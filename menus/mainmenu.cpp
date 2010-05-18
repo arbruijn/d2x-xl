@@ -223,7 +223,7 @@ do {
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
 if (gameStates.app.nFunctionMode == FMODE_GAME)
 	paletteManager.DisableEffect ();
-FlushInput ();
+controls.FlushInput ();
 return mainOpts.nChoice;
 }
 

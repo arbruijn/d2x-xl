@@ -940,7 +940,7 @@ ubyte CControlConfig::JoyBtnCtrlFunc (void)
 if (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS) {
 	int axis [JOY_MAX_AXES];
 	JoyReadRawAxis (JOY_ALL_AXIS, axis);
-	ControlsReadFCS (axis [3]);
+	controls.ReadFCS (axis [3]);
 	if (JoyGetButtonState (19))
 		code = 19;
 	else if (JoyGetButtonState (15))
@@ -991,7 +991,7 @@ ubyte CControlConfig::JoyAxisCtrlFunc (void)
 memset (curAxis, 0, sizeof (curAxis));
 gameOpts->input.joystick.bLinearSens = 1;
 gameStates.input.kcPollTime = 128;
-ControlsReadJoystick (curAxis);
+controls.ReadJoystick (curAxis);
 gameOpts->input.joystick.bLinearSens = bLinJoySensSave;
 for (i = dd = 0; i < JOY_MAX_AXES; i++) {
 	hd = abs (curAxis [i] - m_startAxis [i]);
@@ -1257,7 +1257,7 @@ do {
 			break;
 		case BT_JOY_AXIS:
 			if (m_nChangeMode != m_nPrevChangeMode)
-				ControlsReadJoystick (m_startAxis);
+				controls.ReadJoystick (m_startAxis);
 			m_nChangeMode = ChangeJoyAxis (m_items + m_nCurItem);
 			break;
 		case BT_INVERT:
@@ -1445,7 +1445,7 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 CCanvas::Push ();
 CCanvas::SetCurrent (NULL);
 CFont* font = CCanvas::Current ()->Font ();
-FlushInput ();
+controls.FlushInput ();
 backgroundManager.Setup (NULL, m_xOffs, m_yOffs, 640, 480);
 //paletteManager.ResumeEffect ();
 CCanvas::SetCurrent (NULL);
@@ -1599,9 +1599,9 @@ read_head_tracker ()
 		else if ((yaw < (I2X (1)/4)) && (Last_angles_h > ((I2X (3))/4)))
 			yaw1 += I2X (1);
 
-		Controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
-		Controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
-		Controls [0].bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
+		controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
+		controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
+		controls [0].bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
 	}
 	Last_angles_read = 1;
 	Last_angles_p = pitch;
@@ -1726,22 +1726,22 @@ else if (m_version > 0)  {
 		}
 	}
 
-	Controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.time.xFrame);
-	Controls [0].verticalThrustTime += FixMul (m_info->verticalThrustTime,gameData.time.xFrame);
-	Controls [0].headingTime += FixMul (m_info->headingTime,gameData.time.xFrame);
-	Controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime ,gameData.time.xFrame);
-	Controls [0].bankTime += FixMul (m_info->bankTime ,gameData.time.xFrame);
-	Controls [0].forwardThrustTime += FixMul (m_info->forwardThrustTime ,gameData.time.xFrame);
-	Controls [0].rearViewDownCount += m_info->rearViewDownCount;
-	Controls [0].rearViewDownState |= m_info->rearViewDownState;
-	Controls [0].firePrimaryDownCount += m_info->firePrimaryDownCount;
-	Controls [0].firePrimaryState |= m_info->firePrimaryState;
-	Controls [0].fireSecondaryState |= m_info->fireSecondaryState;
-	Controls [0].fireSecondaryDownCount += m_info->fireSecondaryDownCount;
-	Controls [0].fireFlareDownCount += m_info->fireFlareDownCount;
-	Controls [0].dropBombDownCount += m_info->dropBombDownCount;
-	Controls [0].automapDownCount += m_info->automapDownCount;
-	Controls [0].automapState |= m_info->automapState;
+	controls [0].pitchTime += FixMul (m_info->pitchTime,gameData.time.xFrame);
+	controls [0].verticalThrustTime += FixMul (m_info->verticalThrustTime,gameData.time.xFrame);
+	controls [0].headingTime += FixMul (m_info->headingTime,gameData.time.xFrame);
+	controls [0].sidewaysThrustTime += FixMul (m_info->sidewaysThrustTime ,gameData.time.xFrame);
+	controls [0].bankTime += FixMul (m_info->bankTime ,gameData.time.xFrame);
+	controls [0].forwardThrustTime += FixMul (m_info->forwardThrustTime ,gameData.time.xFrame);
+	controls [0].rearViewDownCount += m_info->rearViewDownCount;
+	controls [0].rearViewDownState |= m_info->rearViewDownState;
+	controls [0].firePrimaryDownCount += m_info->firePrimaryDownCount;
+	controls [0].firePrimaryState |= m_info->firePrimaryState;
+	controls [0].fireSecondaryState |= m_info->fireSecondaryState;
+	controls [0].fireSecondaryDownCount += m_info->fireSecondaryDownCount;
+	controls [0].fireFlareDownCount += m_info->fireFlareDownCount;
+	controls [0].dropBombDownCount += m_info->dropBombDownCount;
+	controls [0].automapDownCount += m_info->automapDownCount;
+	controls [0].automapState |= m_info->automapState;
 
    if (m_version>=3)
 	 {
@@ -1749,14 +1749,14 @@ else if (m_version > 0)  {
 		temp_ptr += (sizeof (ext_control_info) + sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix));
 
 	   if (* (temp_ptr))
-		 Controls [0].cyclePrimaryCount= (* (temp_ptr));
+		 controls [0].cyclePrimaryCount= (* (temp_ptr));
 	   if (* (temp_ptr+1))
-		 Controls [0].cycleSecondaryCount= (* (temp_ptr+1));
+		 controls [0].cycleSecondaryCount= (* (temp_ptr+1));
 
 		if (* (temp_ptr+2))
-		 Controls [0].afterburnerState= (* (temp_ptr+2));
+		 controls [0].afterburnerState= (* (temp_ptr+2));
 		if (* (temp_ptr+3))
-		 Controls [0].headlightCount= (* (temp_ptr+3));
+		 controls [0].headlightCount= (* (temp_ptr+3));
   	 }
    if (m_version>=4)
 	 {

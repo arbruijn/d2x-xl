@@ -608,7 +608,7 @@ memset (&m_props, 0, sizeof (m_props));
 m_props.width = width;
 m_props.height = height;
 m_props.bTinyMode = bTinyMode;
-FlushInput ();
+controls.FlushInput ();
 
 if (int (ToS ()) < 1)
 	return - 1;

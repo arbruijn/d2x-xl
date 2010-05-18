@@ -695,7 +695,7 @@ int CAutomap::Update (void)
 	CObject*		playerP = OBJECTS + LOCALPLAYER.nObject;
 	CFixMatrix	m;
 
-if (Controls [0].firePrimaryDownCount) {
+if (controls [0].firePrimaryDownCount) {
 	// Reset orientation
 	m_data.nViewDist = ZOOM_DEFAULT;
 	m_vTAngles [PA] = PITCH_DEFAULT;
@@ -703,17 +703,17 @@ if (Controls [0].firePrimaryDownCount) {
 	m_vTAngles [BA] = 0;
 	m_data.viewTarget = playerP->info.position.vPos;
 	}
-if (Controls [0].forwardThrustTime)
-	m_data.viewTarget += m_data.viewer.mOrient.FVec () * (Controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
-m_vTAngles [PA] += (fixang) FixDiv (Controls [0].pitchTime, ROT_SPEED_DIVISOR);
-m_vTAngles [HA] += (fixang) FixDiv (Controls [0].headingTime, ROT_SPEED_DIVISOR);
-m_vTAngles [BA] += (fixang) FixDiv (Controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+if (controls [0].forwardThrustTime)
+	m_data.viewTarget += m_data.viewer.mOrient.FVec () * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
+m_vTAngles [PA] += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
+m_vTAngles [HA] += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
+m_vTAngles [BA] += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
 
 m = CFixMatrix::Create (m_vTAngles);
-if (Controls [0].verticalThrustTime || Controls [0].sidewaysThrustTime) {
+if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
-	m_data.viewTarget += m_data.viewer.mOrient.UVec () * (Controls [0].verticalThrustTime * SLIDE_SPEED);
-	m_data.viewTarget += m_data.viewer.mOrient.RVec () * (Controls [0].sidewaysThrustTime * SLIDE_SPEED);
+	m_data.viewTarget += m_data.viewer.mOrient.UVec () * (controls [0].verticalThrustTime * SLIDE_SPEED);
+	m_data.viewTarget += m_data.viewer.mOrient.RVec () * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
 	}
 m_data.viewer.mOrient = playerP->info.position.mOrient * m;
 if (m_data.nViewDist < ZOOM_MIN_VALUE)
@@ -738,8 +738,8 @@ int CAutomap::ReadControls (int nLeaveMode, int bDone, int& bPauseGame)
 {
 	int	c, nMarker, nMaxDrop, nColor = gameOpts->render.automap.bBright | (gameOpts->render.automap.bGrayOut << 1);
 
-ControlsReadAll ();
-if (Controls [0].automapDownCount && !nLeaveMode)
+controls.Read ();
+if (controls [0].automapDownCount && !nLeaveMode)
 	return 1;
 while ((c = KeyInKey ())) {
 	if (!gameOpts->menus.nStyle)
@@ -942,15 +942,15 @@ int CAutomap::GameFrame (int bPauseGame, int bDone)
 
 if (!bPauseGame) {
 	ushort bWiggleSave;
-	controlInfoSave = Controls [0];				// Save controls so we can zero them
-	memset (&Controls, 0, sizeof (tControlInfo));	// Clear everything...
+	controlInfoSave = controls [0];				// Save controls so we can zero them
+	controls.Reset ();
 	bWiggleSave = gameData.objs.consoleP->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
 	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 	if (MultiMenuPoll ())
 		bDone = 1;
 	::GameFrame (0, 0);		// Do game loop with no rendering and no reading controls.
 	gameData.objs.consoleP->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
-	Controls [0] = controlInfoSave;
+	controls [0] = controlInfoSave;
 	}
 return bDone;
 }
@@ -987,13 +987,13 @@ if (bRadar) {
 		}
 	return;
 	}
-Controls [0].automapState = 0;
+controls [0].automapState = 0;
 GetSlowTicks ();
 do {
 	PROF_START
-	if (!nLeaveMode && Controls [0].automapState && ((TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME))
+	if (!nLeaveMode && controls [0].automapState && ((TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME))
 		nLeaveMode = 1;
-	if (!Controls [0].automapState && (nLeaveMode == 1))
+	if (!controls [0].automapState && (nLeaveMode == 1))
 		bDone = 1;
 	bDone = GameFrame (bPauseGame, bDone);
 	redbook.CheckRepeat ();

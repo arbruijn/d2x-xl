@@ -554,7 +554,7 @@ int GrToggleFullScreenGame (void)
 	static char szFullscreen [2][30] = {"toggling fullscreen mode off", "toggling fullscreen mode on"};
 
 int i = GrToggleFullScreen ();
-FlushInput ();
+controls.FlushInput ();
 if (gameStates.app.bGameRunning) {
 	HUDMessage (MSGC_GAME_FEEDBACK, szFullscreen [i]);
 	StopPlayerMovement ();

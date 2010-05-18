@@ -605,8 +605,7 @@ else
 	gameData.laser.xNextFireTime = gameData.time.xGame + WI_fire_wait (gameData.weapons.nPrimary);
 #endif
 gameData.laser.nGlobalFiringCount = 0;
-Controls [0].firePrimaryState = 0;
-Controls [0].firePrimaryDownCount = 0;
+controls.StopPrimaryFire ();
 gameData.weapons.firing [0].nStart =
 gameData.weapons.firing [0].nStop =
 gameData.weapons.firing [0].nDuration = 0;
@@ -618,8 +617,7 @@ void StopSecondaryFire (void)
 {
 gameData.missiles.xNextFireTime = gameData.time.xGame;	//	Prevents shots-to-fire from building up.
 gameData.missiles.nGlobalFiringCount = 0;
-Controls [0].fireSecondaryState = 0;
-Controls [0].fireSecondaryDownCount = 0;
+controls.StopSecondaryFire ();
 }
 
 //	--------------------------------------------------------------------------------------------------

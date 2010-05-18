@@ -444,7 +444,7 @@ else {
 	gameData.laser.xNextFireTime =
 	gameData.missiles.xLastFiredTime =
 	gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
-	Controls [0].afterburnerState = 0;
+	controls [0].afterburnerState = 0;
 	gameStates.gameplay.bLastAfterburnerState = 0;
 	audio.DestroyObjectSound (playerP->nObject);
 #ifdef TACTILE
@@ -536,7 +536,7 @@ LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//CPlayerData no longer dead
 LOCALPLAYER.homingObjectDist = -I2X (1); // Added by RH
-Controls [0].afterburnerState = 0;
+controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
@@ -2147,7 +2147,7 @@ GetPlayerSpawn (nSpawnPos, gameData.objs.consoleP);
 done:
 
 ResetPlayerObject ();
-ResetCruise ();
+controls.ResetCruise ();
 }
 
 //------------------------------------------------------------------------------

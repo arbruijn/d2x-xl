@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 tTransRotInfo	tirInfo;
 #endif
 
-tControlInfo m_info [4];
+//tControlInfo m_info [4];
 
 // *must* be defined - set to 0 if no limit
 #define MIN_TIME_360	3.0f	//time for a 360 degree turn in secs
@@ -81,7 +81,7 @@ fix	joyAxis [JOY_MAX_AXES];
 
 fix Next_toggleTime [3]={0,0,0};
 
-int Controls::AllowToToggle (int i)
+int CControlsManager::AllowToToggle (int i)
 {
 //used for keeping tabs of when its ok to toggle headlight,primary,and secondary
 if (Next_toggleTime [i] > gameData.time.xGame)
@@ -100,14 +100,14 @@ int d2xJoystick_ostate [20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 //------------------------------------------------------------------------------
 
-int Controls::ReadKeyboard (void)
+int CControlsManager::ReadKeyboard (void)
 {
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int Controls::ReadMouse (int *mouseAxis, int *nMouseButtons)
+int CControlsManager::ReadMouse (int *mouseAxis, int *nMouseButtons)
 {
 	int	dx, dy;
 #ifdef SDL_INPUT
@@ -133,7 +133,7 @@ static int joy_sens_mod [4] = {16, 16, 16, 16};
 
 static double dMaxAxis = 127.0;
 
-int Controls::AttenuateAxis (double a, int nAxis)
+int CControlsManager::AttenuateAxis (double a, int nAxis)
 {
 if (gameOpts->input.joystick.bLinearSens)
 	return (int) a;
@@ -167,7 +167,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int Controls::ReadJoyAxis (int i, int rawJoyAxis [])
+int CControlsManager::ReadJoyAxis (int i, int rawJoyAxis [])
 {
 int joyDeadzoneScaled = joyDeadzone [i % 4] / 128;
 int h = JoyGetScaledReading (rawJoyAxis [i], i);
@@ -185,7 +185,7 @@ return (int) ((AttenuateAxis (h, i) * gameStates.input.kcPollTime) / 128);
 
 //------------------------------------------------------------------------------
 
-int Controls::ReadJoystick (int * joyAxis)
+int CControlsManager::ReadJoystick (int * joyAxis)
 {
 	int	rawJoyAxis [JOY_MAX_AXES];
 	ulong channelMasks;
@@ -247,7 +247,7 @@ return bUseJoystick;
 
 //------------------------------------------------------------------------------
 
-void Controls::SetFCSButton (int btn, int button)
+void CControlsManager::SetFCSButton (int btn, int button)
 {
 	int state, timeDown, upCount, downCount;
 	state = timeDown = upCount = downCount = 0;
@@ -273,7 +273,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void Controls::ReadFCS (int rawAxis)
+void CControlsManager::ReadFCS (int rawAxis)
 {
 	int raw_button, button;
 	tJoyAxisCal	cal [4];
@@ -303,7 +303,7 @@ SetFCSButton (7, button);
 
 //------------------------------------------------------------------------------
 
-int Controls::ReadCyberman (int *mouseAxis, int *nMouseButtons)
+int CControlsManager::ReadCyberman (int *mouseAxis, int *nMouseButtons)
 {
 	int idx, idy;
 
@@ -360,7 +360,7 @@ return KeyDownCount (v);
 
 //------------------------------------------------------------------------------
 
-void Controls::DoD2XKeys (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
+void CControlsManager::DoD2XKeys (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
 #ifdef D2X_KEYS
 //added on 2/4/99 by Victor Rachels for d1x keys
@@ -432,7 +432,7 @@ if (!(gameStates.app.bPlayerIsDead || automap.Display ())) { {
 
 //------------------------------------------------------------------------------
 
-int Controls::LimitTurnRate (int bUseMouse)
+int CControlsManager::LimitTurnRate (int bUseMouse)
 {
 if (!(gameOpts->input.bLimitTurnRate || IsMultiGame))
 	return 0;
@@ -469,7 +469,7 @@ return h;
 
 #define DELTACTRL(_i,_b)	DeltaCtrl (kcKeyboard [_i].value, speedFactor, gameOpts->input.keyboard.nRamp, _b)
 
-void Controls::DoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
+void CControlsManager::DoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
 	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) &&
 									 (FASTPITCH == 1)) ? 2 * PH_SCALE : 1;
@@ -630,7 +630,7 @@ return gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v
 
 //------------------------------------------------------------------------------
 
-void Controls::DoJoystick (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
+void CControlsManager::DoJoystick (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
 	int	i, v;
 
@@ -773,7 +773,7 @@ return (int) (r ? (d ? sqrt (fabs (r * r - d * d)) : r) : 0);
 
 //------------------------------------------------------------------------------
 
-void Controls::DoMouse (int *mouseAxis, int nMouseButtons,
+void CControlsManager::DoMouse (int *mouseAxis, int nMouseButtons,
 							   int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed,
 							   int bGetSlideBank)
 {
@@ -974,7 +974,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 #ifdef _WIN32
 
-int Controls::ReadTrackIR (void)
+int CControlsManager::ReadTrackIR (void)
 {
 transformation.m_info.bUsePlayerHeadAngles = 0;
 if (!(gameStates.input.bHaveTrackIR && gameOpts->input.trackIR.bUse))
@@ -993,7 +993,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DoTrackIR (void)
+void CControlsManager::DoTrackIR (void)
 {
 	int	dx = (int) ((float) tirInfo.fvRot.z * (float) screen.Width () / 16384.0f),
 			dy = (int) ((float) tirInfo.fvRot.y * (float) screen.Height () / 16384.0f),
@@ -1117,7 +1117,7 @@ if (gameOpts->input.trackIR.bMove [4] && ((float) fabs (tirInfo.fvTrans.z) > fDe
 
 //------------------------------------------------------------------------------
 
-void Controls::DoSlideBank (int bSlideOn, int bBankOn, fix pitchTime, fix headingTime)
+void CControlsManager::DoSlideBank (int bSlideOn, int bBankOn, fix pitchTime, fix headingTime)
 {
 if (bSlideOn)
 	m_info [0].headingTime =
@@ -1156,7 +1156,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int Controls::CapSampleRate (void)
+int CControlsManager::CapSampleRate (void)
 {
 //	DEFTIME
 
@@ -1187,7 +1187,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void Controls::ResetControls (void)
+void CControlsManager::Reset (void)
 {
 //fix ht = m_info [0].headingTime;
 //fix pt = m_info [0].pitchTime;
@@ -1199,7 +1199,7 @@ LimitTurnRate (gameOpts->input.mouse.bUse && !gameStates.input.bCybermouseActive
 
 //------------------------------------------------------------------------------
 
-void Controls::SetType (void)
+void CControlsManager::SetType (void)
 {
 if (gameStates.input.nMouseType < 0)
 	gameStates.input.nMouseType = (gameConfig.nControlType == CONTROL_CYBERMAN) ? CONTROL_CYBERMAN : CONTROL_MOUSE;
@@ -1217,7 +1217,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int Controls::Read (void)
+int CControlsManager::Read (void)
 {
 	int	i;
 	int	bSlideOn, bBankOn;
@@ -1240,7 +1240,7 @@ gameStates.input.bControlsSkipFrame = 1;
 if (CapSampleRate ())
 	return 1;
 gameStates.input.bControlsSkipFrame = 0;
-ResetControls ();
+Reset ();
 gameStates.input.bKeepSlackTime = 1;
 nBankSensMod = kcFrameCount;
 nMouseButtons = 0;
@@ -1362,14 +1362,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void Controls::ResetCruise (void)
+void CControlsManager::ResetCruise (void)
 {
 gameStates.input.nCruiseSpeed = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void Controls::CybermouseAdjust (void)
+void CControlsManager::CybermouseAdjust (void)
 {
 #if 0
 if (gameData.multiplayer.nLocalPlayer > -1) {
@@ -1415,14 +1415,14 @@ if (gameData.multiplayer.nLocalPlayer > -1) {
 
 //------------------------------------------------------------------------------
 
-char Controls::GetKeyValue (char key)
+char CControlsManager::GetKeyValue (char key)
 {
 return (kcKeyboard [int (key)].value);
  }
 
 //------------------------------------------------------------------------------
 
-void Controls::FlushInput (void)
+void CControlsManager::FlushInput (void)
 {
 	int	b = gameOpts->legacy.bInput;
 

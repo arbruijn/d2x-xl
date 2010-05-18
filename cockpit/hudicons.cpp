@@ -163,7 +163,7 @@ if (!IsMultiGame || IsCoopGame) {
 
 void CHUDIcons::ToggleWeaponIcons (void)
 {
-for (int i = 0; i < Controls [0].toggleIconsCount; i++)
+for (int i = 0; i < controls [0].toggleIconsCount; i++)
 	if (gameStates.app.bNostalgia)
 		extraGameInfo [0].nWeaponIcons = 0;
 	else {
@@ -457,7 +457,7 @@ int CHUDIcons::EquipmentActive (int bFlag)
 {
 switch (bFlag) {
 	case PLAYER_FLAGS_AFTERBURNER:
-		return (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState);
+		return (gameData.physics.xAfterburnerCharge && controls [0].afterburnerState);
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:

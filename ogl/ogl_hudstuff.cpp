@@ -78,9 +78,9 @@ else {
 		glPopMatrix ();
 		}
 	if (deadzone.Load ()) {
-		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
-		w = r / (float) screen.Width ();
-		h = r / (float) screen.Height ();
+		r = float (controls.CalcDeadzone (0, gameOpts->input.mouse.nDeadzone));
+		w = r / float (screen.Width ());
+		h = r / float (screen.Height ());
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glPushMatrix ();
 		glTranslatef (0.5f, 0.5f, 0);
@@ -103,7 +103,7 @@ else {
 		ogl.SetBlendMode (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f (1.0f, 0.8f, 0.0f, 1.0f / (3.0f + 0.5f * gameOpts->input.mouse.nDeadzone));
 		glLineWidth (4); //(GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
-		r = (float) CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
+		r = float (controls.CalcDeadzone (0, gameOpts->input.mouse.nDeadzone)) / 4;
 		ogl.SetTexturing (false);
 		OglDrawEllipse (30, GL_LINES, r, 0, r * float (screen.Height ()) / float (screen.Width ()), 0, sinCos30);
 		glPopMatrix ();

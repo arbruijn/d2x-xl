@@ -144,14 +144,14 @@ void CheckRearView (void)
 	static int nLeaveMode;
 	static fix entryTime;
 
-if (Controls [0].rearViewDownCount) {		//key/button has gone down
-	Controls [0].rearViewDownCount = 0;
+if (controls [0].rearViewDownCount) {		//key/button has gone down
+	controls [0].rearViewDownCount = 0;
 	if (ToggleRearView () && gameStates.render.bRearView) {
 		nLeaveMode = 0;		//means wait for another key
 		entryTime = TimerGetFixedSeconds ();
 		}
 	}
-else if (Controls [0].rearViewDownState) {
+else if (controls [0].rearViewDownState) {
 	if (!nLeaveMode && (TimerGetFixedSeconds () - entryTime) > LEAVE_TIME)
 		nLeaveMode = 1;
 	}
@@ -753,7 +753,7 @@ void HandleGameKey(int key)
 {
 	switch (key) {
 
-#ifndef D2X_KEYS // weapon selection handled in ControlsReadAll, d1x-style
+#ifndef D2X_KEYS // weapon selection handled in controls.Read, d1x-style
 // MWA changed the weapon select cases to have each case call
 // DoSelectWeapon the macintosh keycodes aren't consecutive from 1
 // -- 0 on the keyboard -- boy is that STUPID!!!!
@@ -1126,12 +1126,12 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 		if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.marker.nDefiningMsg)
 			|| gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining
 			)	 // WATCH OUT!!! WEIRD CODE ABOVE!!!
-			memset(&Controls, 0, sizeof(tControlInfo));
+			controls.Reset ();
 		else
-			skipControls = ControlsReadAll ();		//NOTE LINK TO ABOVE!!!
+			skipControls = controls.Read ();		//NOTE LINK TO ABOVE!!!
 	CheckRearView ();
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
-	if (Controls [0].automapDownCount &&
+	if (controls [0].automapDownCount &&
 		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted &&
 		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 		automap.m_bDisplay = -1;
@@ -1213,7 +1213,7 @@ inline int ZoomKeyPressed (void)
 return gameStates.input.keys.pressed [kcKeyboard [52].value] || gameStates.input.keys.pressed [kcKeyboard [53].value] ||
 		 (((v = kcMouse [30].value) < 255) && MouseButtonState (v));
 #else
-return (Controls [0].zoomDownCount > 0);
+return (controls [0].zoomDownCount > 0);
 #endif
 }
 

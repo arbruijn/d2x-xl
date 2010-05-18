@@ -825,42 +825,42 @@ void DoWeaponStuff (void)
 {
   int i;
 
-if (Controls [0].useCloakDownCount)
+if (controls [0].useCloakDownCount)
 	ApplyCloak (0, -1);
-if (Controls [0].useInvulDownCount)
+if (controls [0].useInvulDownCount)
 	ApplyInvul (0, -1);
-if (Controls [0].fireFlareDownCount)
+if (controls [0].fireFlareDownCount)
 	if (AllowedToFireFlare ())
-		CreateFlare(gameData.objs.consoleP);
+		CreateFlare (gameData.objs.consoleP);
 if (AllowedToFireMissile (-1, 1)) {
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
-	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
+	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (controls [0].fireSecondaryState || controls [0].fireSecondaryDownCount);
 	}
 if (gameData.missiles.nGlobalFiringCount) {
 	DoMissileFiring (1);			//always enable autoselect for Normal missile firing
 	gameData.missiles.nGlobalFiringCount--;
 	}
-if (Controls [0].cyclePrimaryCount) {
-	for (i = 0; i < Controls [0].cyclePrimaryCount; i++)
+if (controls [0].cyclePrimaryCount) {
+	for (i = 0; i < controls [0].cyclePrimaryCount; i++)
 	CyclePrimary ();
 	}
-if (Controls [0].cycleSecondaryCount) {
-	for (i = 0; i < Controls [0].cycleSecondaryCount; i++)
+if (controls [0].cycleSecondaryCount) {
+	for (i = 0; i < controls [0].cycleSecondaryCount; i++)
 	CycleSecondary ();
 	}
-if (Controls [0].headlightCount) {
-	for (i = 0; i < Controls [0].headlightCount; i++)
+if (controls [0].headlightCount) {
+	for (i = 0; i < controls [0].headlightCount; i++)
 	lightManager.Headlights ().Toggle ();
 	}
 if (gameData.missiles.nGlobalFiringCount < 0)
 	gameData.missiles.nGlobalFiringCount = 0;
 //	Drop proximity bombs.
-if (Controls [0].dropBombDownCount) {
+if (controls [0].dropBombDownCount) {
 	if (gameStates.app.bD2XLevel && (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
-		Controls [0].dropBombDownCount = 0;
+		controls [0].dropBombDownCount = 0;
 	else {
 		int ssw_save = gameData.weapons.nSecondary;
-		while (Controls [0].dropBombDownCount--) {
+		while (controls [0].dropBombDownCount--) {
 			int ssw_save2 = gameData.weapons.nSecondary = ArmedBomb();
 			if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 				DropSecondaryWeapon (-1);

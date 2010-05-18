@@ -725,9 +725,9 @@ if (sbd.bBoosted) {
 			CFixVector::Normalize (n);
 			}
 		else {
-			Controls [0].verticalThrustTime =
-			Controls [0].forwardThrustTime =
-			Controls [0].sidewaysThrustTime = 0;
+			controls [0].verticalThrustTime =
+			controls [0].forwardThrustTime =
+			controls [0].sidewaysThrustTime = 0;
 			memcpy (&n, SEGMENTS [destSegnum].m_sides [destSidenum].m_normals, sizeof (n));
 		// turn the ship so that it is facing the destination nSide of the destination CSegment
 		// Invert the Normal as it points into the CSegment

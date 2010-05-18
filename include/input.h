@@ -5,7 +5,7 @@
 
 //extern tControlInfo Controls [4];
 
-class Controls {
+class CControlsManager {
 	private:
 		tControlInfo	m_info [4];
 
@@ -18,8 +18,20 @@ class Controls {
 		char GetKeyValue (char key);
 		void SetType (void);
 		int CalcDeadzone (int d, int nDeadzone);
-		void ResetControls (void);
+		void Reset (void);
 		int Read (void);
+
+		inline void StopPrimaryFire (void) {
+			m_info [0].firePrimaryState = 0;
+			m_info [0].firePrimaryDownCount = 0;
+			}
+
+		inline void StopSecondaryFire (void) {
+			m_info [0].fireSecondaryState = 0;
+			m_info [0].fireSecondaryDownCount = 0;
+			}
+
+		inline tControlInfo& operator[] (int i) { return m_info [i]; }
 
 	private:
 		int AllowToToggle (int i);
@@ -40,9 +52,9 @@ class Controls {
 		void DoTrackIR (void);
 		void DoSlideBank (int bSlideOn, int bBankOn, fix pitchTime, fix headingTime);
 		void CybermouseAdjust (void);
-
 };
 
+extern CControlsManager controls;
 
 
 #endif //__INPUT_H

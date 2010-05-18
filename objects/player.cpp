@@ -120,7 +120,7 @@ void UpdateFiringState (void)
 {
 	int	bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
 
-if ((Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0)) {
+if ((controls [0].firePrimaryState != 0) || (controls [0].firePrimaryDownCount != 0)) {
 	if (gameData.weapons.firing [0].nStart <= 0) {
 		gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks;
 		if (bGatling) {
@@ -145,7 +145,7 @@ else if (gameData.weapons.firing [0].nStop > 0) {
 		gameData.weapons.firing [0].nStop = 0;
 		}
 	}
-if ((Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0)) {
+if ((controls [0].fireSecondaryState != 0) || (controls [0].fireSecondaryDownCount != 0)) {
 	if (gameData.weapons.firing [1].nStart <= 0)
 		gameData.weapons.firing [1].nStart = gameStates.app.nSDLTicks;
 	gameData.weapons.firing [1].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [1].nStart;
