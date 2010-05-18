@@ -611,6 +611,7 @@ int DoPhysicsFrame (void)
 	int		i = 0;
 
 while (t >= PHYSICS_FRAME_TIME) {
+	t -= PHYSICS_FRAME_TIME;
 	gameData.objs.nFrameCount++;
 	gameData.physics.xTime = MSEC2X (PHYSICS_FRAME_TIME);
 	if (!i++)
