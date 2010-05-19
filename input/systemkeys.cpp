@@ -62,6 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "marker.h"
 #include "songs.h"
+#include "hudicons.h"
 
 #if defined (TACTILE)
 #	include "tactile.h"
@@ -1137,6 +1138,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 		automap.m_bDisplay = -1;
 	DoWeaponStuff ();
+	hudIcons.ToggleWeaponIcons ();
 	}
 if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING)) {
 	if (!explodingFlag)  {
