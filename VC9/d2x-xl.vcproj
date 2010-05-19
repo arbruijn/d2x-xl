@@ -2389,10 +2389,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\include\controls.h"
-						>
-					</File>
-					<File
 						RelativePath="..\include\credits.h"
 						>
 					</File>

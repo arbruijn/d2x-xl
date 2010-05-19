@@ -135,7 +135,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [game
 				xChargeUp = min (xChargeUp, xCurEnergy / 10);
 				if (xChargeUp > 0) {
 					gameData.physics.xAfterburnerCharge += xChargeUp;
-					LOCALPLAYER.energy -= xChargeUp * 100 / 10;	//full charge uses 10% of energy
+					LOCALPLAYER.energy -= 100 * xChargeUp / 10;	//full charge uses 10% of energy
 					}
 				}
 			}
