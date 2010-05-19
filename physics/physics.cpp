@@ -172,6 +172,7 @@ int	bDontMoveAIObjects=0;
 extern int bSimpleFVI;
 //	-----------------------------------------------------------------------------------------------------------
 // add rotational velocity & acceleration
+
 void CObject::DoPhysicsSimRot (void)
 {
 	CAngleVector	turnAngles;

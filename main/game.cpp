@@ -595,6 +595,7 @@ SetFunctionMode (FMODE_MENU);
 
 void DoRenderFrame (void)
 {
+gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 if (gameStates.render.cockpit.bRedraw) {
 	cockpit->Init ();
 	gameStates.render.cockpit.bRedraw = 0;
@@ -608,13 +609,16 @@ AutoScreenshot ();
 
 #if 1
 
+#define PHYSICS_FPS	32
+
 int GameFrame (int bRenderFrame, int bReadControls, int fps)
 {
-gameStates.app.nSDLTicks = SDL_GetTicks ();
+if (bRenderFrame)
+	DoRenderFrame ();
 
 	fix		xFrameTime = gameData.time.xFrame; 
-	float		physicsFrameTime = 1000.0f / 32.0f;
-	float		t = float (gameStates.app.nSDLTicks), dt = t - gameData.physics.fLastTick;
+	float		physicsFrameTime = 1000.0f / float (PHYSICS_FPS);
+	float		t = float (SDL_GetTicks ()), dt = t - gameData.physics.fLastTick;
 	int		h = 1, i = 0;
 
 while (dt >= physicsFrameTime) {
@@ -622,8 +626,7 @@ while (dt >= physicsFrameTime) {
 	i++;
 	}
 if (i) {
-	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-	gameData.time.SetTime (I2X (1) / 32);
+	gameData.time.SetTime (I2X (1) / PHYSICS_FPS);
 	gameData.physics.xTime = gameData.time.xFrame; 
 	if (bReadControls > 0)
 		ReadControls ();
@@ -632,17 +635,20 @@ if (i) {
 	gameStates.app.tick40fps.bTick = 1;
 	while (i--) {
 		gameData.objs.nFrameCount++;
-		if (0 > (h = DoGameFrame (0, 0, 0)))
-			return h;
+		h = DoGameFrame (0, 0, 0);
 		controls.ResetTriggers ();
 		gameStates.app.tick40fps.bTick = 0;
+		if (0 > h)
+			return h;
 		}
 	gameData.physics.fLastTick = t - dt;
+	gameStates.app.tick40fps.bTick = 1;
+	CalcFrameTime ();
+	DoEffectsFrame ();
 	}
-if (bRenderFrame)
-	DoRenderFrame ();
-CalcFrameTime ();
-DoEffectsFrame ();
+else
+	CalcFrameTime ();
+gameStates.app.tick40fps.bTick = 0;
 return h;
 }
 
