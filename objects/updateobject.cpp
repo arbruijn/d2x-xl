@@ -268,7 +268,7 @@ switch (info.controlType) {
 		break;
 
 	case CT_FLYING:
-		ReadFlyingControls (this);
+		ProcessFlightControls (this);
 		break;
 
 	case CT_REPAIRCEN:
