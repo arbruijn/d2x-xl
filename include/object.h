@@ -836,6 +836,8 @@ class CObject : public CObjectInfo {
 		void MaybeDelete (void);
 
 		void TurnTowardsVector (CFixVector vGoal, fix rate);
+		void Wiggle (void);
+		void ApplyFlightControls (void);
 		void ApplyForce (CFixVector vForce);
 		void ApplyRotForce (CFixVector vForce);
 		void SetThrustFromVelocity (void);

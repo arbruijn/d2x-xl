@@ -78,7 +78,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "ai.h"
 #include "fireball.h"
-#include "controls.h"
 #include "fireweapon.h"
 #include "omega.h"
 #include "multibot.h"

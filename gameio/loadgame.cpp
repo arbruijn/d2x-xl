@@ -105,7 +105,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "gamepal.h"
 #include "movie.h"
-#include "controls.h"
 #include "credits.h"
 #include "gamemine.h"
 #include "lightmap.h"

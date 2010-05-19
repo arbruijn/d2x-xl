@@ -25,8 +25,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // these global vars are set after a call to DoPhysicsSim().  Ugly, I know.
 // list of segments went through
 // Read contrls and set physics vars
-void ProcessFlightControls(CObject *obj);
-
 // Simulate a physics CObject for this frame
 void DoPhysicsSim(CObject *obj);
 

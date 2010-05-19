@@ -24,7 +24,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "joy.h"
 #include "timer.h"
 #include "error.h"
-#include "controls.h"
 #include "rendermine.h"
 #include "mouse.h"
 #include "kconfig.h"
@@ -32,11 +31,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // ----------------------------------------------------------------------------
 
-void WiggleObject (CObject *objP)
+void CObject::Wiggle (void)
 {
 	fix		xWiggle;
 	int		nParent;
-	CObject	*pParent;
+	CObject	*parentP;
 
 if (gameStates.render.nShadowPass == 2)
 	return;
@@ -44,18 +43,18 @@ if (gameOpts->app.bEpilepticFriendly)
 	return;
 if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWiggle, 1, 0, 1)))
 	return;
-nParent = gameData.objs.parentObjs [objP->Index ()];
-pParent = (nParent < 0) ? NULL : OBJECTS + nParent;
+nParent = gameData.objs.parentObjs [Index ()];
+parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
 FixFastSinCos (fix (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
 if (gameData.time.xFrame < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 	xWiggle = FixMul (xWiggle * 20, gameData.time.xFrame); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
-if (SPECTATOR (objP))
-	OBJPOS (objP)->vPos += (OBJPOS (objP)->mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
-else if ((objP->info.nType == OBJ_PLAYER) || !pParent)
-	objP->mType.physInfo.velocity += objP->info.position.mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
+if (SPECTATOR (this))
+	OBJPOS (this)->vPos += (OBJPOS (this)->mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
+else if ((info.nType == OBJ_PLAYER) || !parentP)
+	mType.physInfo.velocity += info.position.mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {
-	objP->mType.physInfo.velocity += pParent->info.position.mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
-	objP->info.position.vPos += objP->mType.physInfo.velocity * gameData.time.xFrame;
+	mType.physInfo.velocity += parentP->info.position.mOrient.UVec () * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
+	info.position.vPos += mType.physInfo.velocity * gameData.time.xFrame;
 	}
 }
 
@@ -66,7 +65,7 @@ else {
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
 #define DROP_DELTA_TIME			(I2X (1)/15)	//drop 3 per second
 
-void ProcessFlightControls (CObject *objP)
+void CObject::ApplyFlightControls (void)
 {
 	fix		forwardThrustTime;
 	CObject*	gmObjP;
@@ -78,16 +77,11 @@ if (gameData.time.xFrame <= 0)
 if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
 	StopPlayerMovement ();
 	controls.FlushInput ();
-/*
-	VmVecZero(&objP->mType.physInfo.rotThrust);
-	VmVecZero(&objP->mType.physInfo.thrust);
-	VmVecZero(&objP->mType.physInfo.velocity);
-*/
 	gameStates.app.bEnterGame--;
 	return;
 	}
 
-if ((objP->info.nType != OBJ_PLAYER) || (objP->info.nId != gameData.multiplayer.nLocalPlayer))
+if ((info.nType != OBJ_PLAYER) || (info.nId != gameData.multiplayer.nLocalPlayer))
 	return;	//references to CPlayerShip require that this obj be the CPlayerData
 
 tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + gameData.multiplayer.nLocalPlayer;
@@ -99,7 +93,7 @@ if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 
 	//this is a horrible hack.  guided missile stuff should not be
 	//handled in the middle of a routine that is dealing with the CPlayerData
-	objP->mType.physInfo.rotThrust.SetZero ();
+	mType.physInfo.rotThrust.SetZero ();
 	vRotAngs [PA] = controls [0].pitchTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
 	vRotAngs [BA] = controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
 	vRotAngs [HA] = controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
@@ -112,7 +106,7 @@ if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
 		MultiSendGuidedInfo (gmObjP, 0);
 	}
 else {
-	objP->mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
+	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
 	}
 forwardThrustTime = controls [0].forwardThrustTime;
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [gameData.multiplayer.nLocalPlayer].DriveDamage ())) {
@@ -147,38 +141,36 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [game
 			}
 		}
 	}
-// Set CObject's thrust vector for forward/backward
-objP->mType.physInfo.thrust = objP->info.position.mOrient.FVec () * forwardThrustTime;
+// Set object's thrust vector for forward/backward
+mType.physInfo.thrust = info.position.mOrient.FVec () * forwardThrustTime;
 // slide left/right
-objP->mType.physInfo.thrust += objP->info.position.mOrient.RVec () * controls [0].sidewaysThrustTime;
+mType.physInfo.thrust += info.position.mOrient.RVec () * controls [0].sidewaysThrustTime;
 // slide up/down
-objP->mType.physInfo.thrust += objP->info.position.mOrient.UVec () * controls [0].verticalThrustTime;
-objP->mType.physInfo.thrust *= 2 * objP->DriveDamage ();
+mType.physInfo.thrust += info.position.mOrient.UVec () * controls [0].verticalThrustTime;
+mType.physInfo.thrust *= 2 * DriveDamage ();
 if (!gameStates.input.bSkipControls)
-	memcpy (&gameData.physics.playerThrust, &objP->mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
+	memcpy (&gameData.physics.playerThrust, &mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
 bMulti = IsMultiGame;
-if ((objP->mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [objP->Index ()].bBoosted) {
-#if 1//!DBG
-	WiggleObject (objP);
-#endif
-	}
-	// As of now, objP->mType.physInfo.thrust & objP->mType.physInfo.rotThrust are
-	// in units of time... In other words, if thrust==gameData.time.xFrame, that
-	// means that the user was holding down the MaxThrust key for the
-	// whole frame.  So we just scale them up by the max, and divide by
-	// gameData.time.xFrame to make them independant of framerate
+if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [Index ()].bBoosted)
+	Wiggle ();
 
-	//	Prevent divide overflows on high frame rates.
-	//	In a signed divide, you get an overflow if num >= div<<15
+// As of now, mType.physInfo.thrust & mType.physInfo.rotThrust are
+// in units of time... In other words, if thrust==gameData.time.xFrame, that
+// means that the user was holding down the MaxThrust key for the
+// whole frame.  So we just scale them up by the max, and divide by
+// gameData.time.xFrame to make them independant of framerate
+
+//	Prevent divide overflows on high frame rates.
+//	In a signed divide, you get an overflow if num >= div<<15
 fix	ft = gameData.time.xFrame;
 
 //	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
 if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
 	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
-objP->mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
+mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
 if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
-objP->mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
+mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 }
 
 // ----------------------------------------------------------------------------
