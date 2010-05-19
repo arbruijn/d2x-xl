@@ -95,7 +95,7 @@ return gameData.time.nPaused > 0;
 
 void ResetTime (void)
 {
-gameData.time.xFrame = 0;
+gameData.time.SetTime (0);
 gameData.time.xLast = TimerGetFixedSeconds ();
 }
 
@@ -107,7 +107,7 @@ void CalcFrameTime (void)
 {
 if (gameData.app.bGamePaused) {
 	gameData.time.xLast = TimerGetFixedSeconds ();
-	gameData.time.xFrame = 0;
+	gameData.time.SetTime (0);
 	gameData.time.xRealFrame = 0;
 	return;
 	}
@@ -151,7 +151,7 @@ timerValue = MSEC2X (gameStates.app.nSDLTicks);
 fix xMinFrameTime = ((MAXFPS > 1) ? I2X (1) / MAXFPS : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
-   gameData.time.xFrame = timerValue - gameData.time.xLast;
+   gameData.time.SetTime (timerValue - gameData.time.xLast);
 	if (MAXFPS < 2)
 		break;
 	G3_SLEEP (1);
@@ -159,7 +159,7 @@ do {
 
 #endif
 
-gameData.time.xFrame = timerValue - gameData.time.xLast;
+gameData.time.SetTime (timerValue - gameData.time.xLast);
 gameData.time.xRealFrame = gameData.time.xFrame;
 if (gameStates.app.cheats.bTurboMode)
 	gameData.time.xFrame *= 2;
@@ -178,7 +178,7 @@ gameData.time.tLast = SDL_GetTicks ();
 #endif
 
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
-	gameData.time.xFrame = xLastFrameTime;		//d:\temp\dm_test.then use time from last frame
+	gameData.time.SetTime (xLastFrameTime);	//d:\temp\dm_test.then use time from last frame
 #if Arcade_mode
 gameData.time.xFrame /= 2;
 #endif

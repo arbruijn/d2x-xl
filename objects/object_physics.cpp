@@ -162,6 +162,16 @@ if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [Index ()].b
 
 //	Prevent divide overflows on high frame rates.
 //	In a signed divide, you get an overflow if num >= div<<15
+#if 1
+float fScale = gameData.time.fFrame / float (gameData.pig.ship.player->maxThrust);
+mType.physInfo.thrust [X] = fix (float (mType.physInfo.thrust [X]) * fScale);
+mType.physInfo.thrust [Y] = fix (float (mType.physInfo.thrust [Y]) * fScale);
+mType.physInfo.thrust [Z] = fix (float (mType.physInfo.thrust [Z]) * fScale);
+fScale = gameData.time.fFrame / float (gameData.pig.ship.player->maxRotThrust);
+mType.physInfo.rotThrust [X] = fix (float (mType.physInfo.rotThrust [X]) * fScale);
+mType.physInfo.rotThrust [Y] = fix (float (mType.physInfo.rotThrust [Y]) * fScale);
+mType.physInfo.rotThrust [Z] = fix (float (mType.physInfo.rotThrust [Z]) * fScale);
+#else
 fix	ft = gameData.time.xFrame;
 
 //	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
@@ -171,6 +181,7 @@ mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
 if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
+#endif
 }
 
 // ----------------------------------------------------------------------------

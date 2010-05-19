@@ -1011,7 +1011,7 @@ do {
 		}
 	t2 = TimerGetFixedSeconds ();
 	if (bPauseGame)
-		gameData.time.xFrame = t2 - t1;
+		gameData.time.SetTime (t2 - t1);
 	t1 = t2;
 	PROF_END(ptFrame)
 	} while (!bDone);

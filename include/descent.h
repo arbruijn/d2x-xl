@@ -2594,6 +2594,7 @@ class CMarkerData {
 class CTimeData {
 	public:
 		fix					xFrame;	//  since last frame, in seconds
+		float					fFrame;
 		fix					xRealFrame;
 		fix					xGame;	//	 in game, in seconds
 		fix					xGameStart;
@@ -2610,6 +2611,10 @@ class CTimeData {
 
 	public:
 		CTimeData ();
+		inline void SetTime (fix xTime) {
+			xFrame = xTime;
+			fFrame = X2F (xTime);
+			}
 };
 
 //------------------------------------------------------------------------------

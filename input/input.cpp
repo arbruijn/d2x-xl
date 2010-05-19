@@ -1178,8 +1178,10 @@ if (gameData.app.bGamePaused)
 	GetSlowTicks ();
 m_frameCount++;
 m_pollTime += gameData.time.xFrame;
+#if 0
 if (!gameStates.app.tick40fps.bTick)
 	return 1;
+#endif
 m_frameTime = float (m_pollTime) / m_frameCount;
 m_maxTurnRate = int (m_frameTime);
 #endif
@@ -1308,7 +1310,7 @@ if (gameStates.input.nCruiseSpeed > I2X (100))
 else if (gameStates.input.nCruiseSpeed < 0)
 	gameStates.input.nCruiseSpeed = 0;
 if (!m_info [0].forwardThrustTime)
-	m_info [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed, m_pollTime) /100;
+	m_info [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed, m_pollTime) / 100;
 
 #if 0 //LIMIT_CONTROLS_FPS
 if (nBankSensMod > 2) {
@@ -1324,18 +1326,6 @@ if (m_pollTime > I2X (1)) {
 #endif
 	m_pollTime = I2X (1);
 	}
-#if 0
-m_info [0].verticalThrustTime /= m_frameCount;
-m_info [0].sidewaysThrustTime /= m_frameCount;
-m_info [0].forwardThrustTime /= m_frameCount;
-m_info [0].headingTime /= m_frameCount;
-m_info [0].pitchTime /= m_frameCount;
-m_info [0].bankTime /= m_frameCount;
-#endif
-#if DBG
-if (m_info [0].forwardThrustTime)
-	m_info [0].forwardThrustTime = m_info [0].forwardThrustTime;
-#endif
 KCCLAMP (m_info [0].verticalThrustTime, m_maxTurnRate);
 KCCLAMP (m_info [0].sidewaysThrustTime, m_maxTurnRate);
 KCCLAMP (m_info [0].forwardThrustTime, m_maxTurnRate);
@@ -1362,11 +1352,6 @@ if (gameStates.zoom.nFactor > I2X (1)) {
 	m_info [0].pitchTime = (m_info [0].pitchTime * 100) / r;
 	m_info [0].bankTime = (m_info [0].bankTime * 100) / r;
 	}
-//	KCCLAMP (m_info [0].afterburnerTime, m_pollTime);
-#if DBG
-if (gameStates.input.keys.pressed [KEY_DELETE])
-	memset (&m_info, 0, sizeof (m_info));
-#endif
 gameStates.input.bKeepSlackTime = 0;
 m_frameCount = 0;
 m_pollTime = 0;

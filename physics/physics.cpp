@@ -222,15 +222,16 @@ if (mType.physInfo.turnRoll) {
 	mOrient = info.position.mOrient * mRotate;
 	info.position.mOrient = mOrient;
 }
-turnAngles [PA] = (fixang) FixMul (mType.physInfo.rotVel [X], gameData.physics.xTime);
-turnAngles [HA] = (fixang) FixMul (mType.physInfo.rotVel [Y], gameData.physics.xTime);
-turnAngles [BA] = (fixang) FixMul (mType.physInfo.rotVel [Z], gameData.physics.xTime);
+turnAngles [PA] = fixang (FixMul (mType.physInfo.rotVel [X], gameData.physics.xTime));
+turnAngles [HA] = fixang (FixMul (mType.physInfo.rotVel [Y], gameData.physics.xTime));
+turnAngles [BA] = fixang (FixMul (mType.physInfo.rotVel [Z], gameData.physics.xTime));
 if (!IsMultiGame) {
 	int i = (this != gameData.objs.consoleP) ? 0 : 1;
-	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-		turnAngles [PA] = (fixang) (turnAngles [PA] / gameStates.gameplay.slowmo [i].fSpeed);
-		turnAngles [HA] = (fixang) (turnAngles [HA] / gameStates.gameplay.slowmo [i].fSpeed);
-		turnAngles [BA] = (fixang) (turnAngles [BA] / gameStates.gameplay.slowmo [i].fSpeed);
+	float fSpeed = gameStates.gameplay.slowmo [i].fSpeed;
+	if (fSpeed != 1) {
+		turnAngles [PA] = fixang (turnAngles [PA] / fSpeed);
+		turnAngles [HA] = fixang (turnAngles [HA] / fSpeed);
+		turnAngles [BA] = fixang (turnAngles [BA] / fSpeed);
 		}
 	}
 mRotate = CFixMatrix::Create (turnAngles);

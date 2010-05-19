@@ -526,7 +526,7 @@ gameData.objs.viewerP = gameData.objs.consoleP;
 FlyInit (gameData.objs.consoleP);
 gameStates.app.bGameSuspended = 0;
 ResetTime ();
-gameData.time.xFrame = 0;			//make first frame zero
+gameData.time.SetTime (0);			//make first frame zero
 #if TRACE
 //console.printf (CON_DBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
@@ -623,7 +623,7 @@ while (t >= physicsFrameTime) {
 	}
 if (i) {
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-	gameData.time.xFrame = MSEC2X (physicsFrameTime);
+	gameData.time.SetTime (MSEC2X (physicsFrameTime));
 	gameData.physics.xTime = gameData.time.xFrame; 
 	if (bReadControls > 0)
 		ReadControls ();
@@ -973,7 +973,7 @@ if (IsMultiGame) {
 
 if (bRenderFrame)
 	DoRenderFrame ();
-if (bFrameTime)
+//if (bFrameTime)
 	CalcFrameTime ();
 if (bReadControls > 0)
 	ReadControls ();

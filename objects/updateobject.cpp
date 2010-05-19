@@ -91,7 +91,7 @@ void StopPlayerMovement (void)
 if (OBJECTS.Buffer () && !(gameData.objs.speedBoost.Buffer () && gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted)) {
 	StopObjectMovement (OBJECTS + LOCALPLAYER.nObject);
 	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
-//	gameData.time.xFrame = I2X (1);
+//	gameData.time.SetTime (I2X (1));
 	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
 	}
 }
