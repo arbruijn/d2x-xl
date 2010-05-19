@@ -606,40 +606,43 @@ AutoScreenshot ();
 
 //	-----------------------------------------------------------------------------
 
-#if 0
-
-#define PHYSICS_FRAME_TIME	(1000.0f / 60.0f)
+#if 1
 
 int GameFrame (int bRenderFrame, int bReadControls, int fps)
 {
+gameStates.app.nSDLTicks = SDL_GetTicks ();
+
 	fix		xFrameTime = gameData.time.xFrame; 
-	float		physicsFrameTime = 1000.0f / float (fps);
-	float		t = float (gameStates.app.nSDLTicks) - gameData.physics.fLastTick;
+	float		physicsFrameTime = 1000.0f / 32.0f;
+	float		t = float (gameStates.app.nSDLTicks), dt = t - gameData.physics.fLastTick;
 	int		h = 1, i = 0;
 
-while (t >= physicsFrameTime) {
-	t -= physicsFrameTime;
+while (dt >= physicsFrameTime) {
+	dt -= physicsFrameTime;
 	i++;
 	}
 if (i) {
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-	gameData.time.SetTime (MSEC2X (physicsFrameTime));
+	gameData.time.SetTime (I2X (1) / 32);
 	gameData.physics.xTime = gameData.time.xFrame; 
 	if (bReadControls > 0)
 		ReadControls ();
 	else if (bReadControls < 0)
 		controls.Reset ();
+	gameStates.app.tick40fps.bTick = 1;
 	while (i--) {
 		gameData.objs.nFrameCount++;
 		if (0 > (h = DoGameFrame (0, 0, 0)))
 			return h;
 		controls.ResetTriggers ();
+		gameStates.app.tick40fps.bTick = 0;
 		}
-	gameData.physics.fLastTick = float (gameStates.app.nSDLTicks) - t;
+	gameData.physics.fLastTick = t - dt;
 	}
-CalcFrameTime ();
 if (bRenderFrame)
 	DoRenderFrame ();
+CalcFrameTime ();
+DoEffectsFrame ();
 return h;
 }
 
@@ -932,10 +935,10 @@ else
 //-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
-int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
 {
 gameStates.app.bGameRunning = 1;
-gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
+//gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
 if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
@@ -973,7 +976,7 @@ if (IsMultiGame) {
 
 if (bRenderFrame)
 	DoRenderFrame ();
-//if (bFrameTime)
+if (bFrameTime)
 	CalcFrameTime ();
 if (bReadControls > 0)
 	ReadControls ();
@@ -986,7 +989,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	}
 ProcessSmartMinesFrame ();
 DoSeismicStuff ();
-DoEffectsFrame ();
+//DoEffectsFrame ();
 DoAmbientSounds ();
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
