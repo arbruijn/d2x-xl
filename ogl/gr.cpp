@@ -218,7 +218,7 @@ displayModeInfo.SortAscending ();
 int GrInit (void)
 {
 	int mode = SM (800, 600);
-	int retcode, t;
+	int retcode, i;
 
 // Only do this function once!
 if (gameStates.gfx.bInstalled)
@@ -237,9 +237,9 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 #if DBG
 	ogl.m_states.bFullScreen = 0;
 #else
-if ((t = FindArg ("-fullscreen"))) {
+if ((i = FindArg ("-fullscreen"))) {
 	/***/PrintLog ("   switching to fullscreen\n");
-	ogl.m_states.bFullScreen = NumArg (t, 1);
+	ogl.m_states.bFullScreen = NumArg (i, 1);
 	//GrToggleFullScreen();
 	}
 #endif
@@ -248,12 +248,13 @@ textureManager.Init ();
 /***/PrintLog ("   allocating screen buffer\n");
 screen.Canvas ()->SetBuffer (NULL);
 
+CreateDisplayModeInfo ();
 // Set the mode.
-for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)
-	if (FindArg (ScrSizeArg (scrSizes [t].x, scrSizes [t].y))) {
+for (i = 0; i < NUM_DISPLAY_MODES; i++)
+	if (FindArg (ScrSizeArg (displayModeInfo [i].w, displayModeInfo [i].h))) {
 		gameStates.gfx.bOverride = 1;
 		gameStates.gfx.nStartScrSize =
-		mode = SM (scrSizes [t].x, scrSizes [t].y);
+		mode = displayModeInfo [i].dim;
 		gameStates.gfx.nStartScrMode = FindDisplayMode (mode);
 		break;
 		}
@@ -316,9 +317,9 @@ int S_MODE (u_int32_t *VV, int *VG)
 {
 	int	h, i;
 
-for (i = 0; scrSizes [i].x && scrSizes [i].y; i++)
-	if ((h = FindArg (ScrSizeArg (scrSizes [i].x, scrSizes [i].y))) && (h < nArgCount)) {
-		*VV = SM (scrSizes [i].x, scrSizes [i].y);
+for (i = 0; i < NUM_DISPLAY_MODES; i++)
+	if ((h = FindArg (ScrSizeArg (displayModeInfo [i].w, displayModeInfo [i].h))) && (h < nArgCount)) {
+		*VV = displayModeInfo [i].dim;
 		*VG = 1; //always 1 in d2x-xl
 		return h;
 		}

@@ -417,10 +417,10 @@ else {
 	if (!CFile::Exist (filename, gameFolders.szDataDir, 0))
 		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
 	GrSetMode (
-		gameStates.menus.bHires ?
-			(gameStates.gfx.nStartScrMode < 0) ?
-				SM (800, 600)
-				: SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y)
+		gameStates.menus.bHires 
+			? (gameStates.gfx.nStartScrMode < 0) 
+				? SM (800, 600)
+				: displayModeInfo [gameStates.gfx.nStartScrMode].dim
 			: SM (320, 200));
 	SetScreenMode (SCREEN_MENU);
 	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
@@ -614,7 +614,7 @@ if ((t = GrInit ())) {		//doesn't do much
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
-nScreenSize = SM (scrSizes [gameStates.gfx.nStartScrMode].x, scrSizes [gameStates.gfx.nStartScrMode].y);
+nScreenSize = displayModeInfo [gameStates.gfx.nStartScrMode].dim;
 /*---*/PrintLog ("Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode

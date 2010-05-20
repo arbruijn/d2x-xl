@@ -220,8 +220,6 @@ typedef struct tScrSize {
 	int	x, y, c;
 } __pack__ tScrSize;
 
-extern tScrSize scrSizes [];
-
 extern int curDrawBuffer;
 
 char *ScrSizeArg (int x, int y);
