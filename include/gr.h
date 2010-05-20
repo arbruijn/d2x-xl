@@ -268,6 +268,6 @@ extern CArray<CDisplayModeInfo> displayModeInfo;
 #define NUM_DISPLAY_MODES		int (displayModeInfo.Length ())
 #define CUSTOM_DISPLAY_MODE	(NUM_DISPLAY_MODES - 1)
 
-#define CUSTOM_SCREEN_RES 1
+int FindDisplayMode (int nScrSize);
 
 #endif /* def _GR_H */

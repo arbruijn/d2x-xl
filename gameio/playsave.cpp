@@ -67,8 +67,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cockpit.h"
 #include "playsave.h"
 #include "tracker.h"
+#include "gr.h"
 
 CPlayerProfile profile;
+CDisplayModeInfo customDisplayMode;
 
 void DefaultAllSettings (void);
 
@@ -1660,13 +1662,11 @@ if (gameStates.gfx.bOverride) {
 	gameData.render.window.h = gameWindowH;
 	}
 else if (gameStates.video.nDefaultDisplayMode < 0) {
-	displayModeInfo [CUSTOM_DISPLAY_MODE].dim = gameStates.video.nDefaultDisplayMode;
-	displayModeInfo [CUSTOM_DISPLAY_MODE].w = gameData.render.window.w;
-	displayModeInfo [CUSTOM_DISPLAY_MODE].h = gameData.render.window.h;
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
 	}
 else 
 	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
+displayModeInfo [CUSTOM_DISPLAY_MODE] = customDisplayMode;
 
 for (i = 0; i < sizeof (gameData.escort.szName); i++) {
 	if (!gameData.escort.szName [i])
@@ -1797,6 +1797,7 @@ if (cf.File ()) {
 // write D2X-XL stuff
 if (gameStates.video.nDefaultDisplayMode >= CUSTOM_DISPLAY_MODE)
 	gameStates.video.nDefaultDisplayMode = -1;
+customDisplayMode = displayModeInfo [CUSTOM_DISPLAY_MODE];
 if (!profile.Save ()) {
 	funcRes = errno;
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
