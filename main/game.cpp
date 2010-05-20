@@ -609,7 +609,7 @@ AutoScreenshot ();
 
 #if 1
 
-#define PHYSICS_FPS	32
+#define PHYSICS_FPS	40
 
 int GameFrame (int bRenderFrame, int bReadControls, int fps)
 {

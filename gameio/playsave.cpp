@@ -1667,7 +1667,7 @@ else if (gameStates.video.nDefaultDisplayMode < 0) {
 	}
 else 
 	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
-displayModeInfo [CUSTOM_DISPLAY_MODE] = customDisplayMode;
+SetCustomDisplayMode (customDisplayMode.w, customDisplayMode.h);
 
 for (i = 0; i < sizeof (gameData.escort.szName); i++) {
 	if (!gameData.escort.szName [i])

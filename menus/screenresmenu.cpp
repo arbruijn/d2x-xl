@@ -67,8 +67,6 @@ static struct {
 	int	nCustom;
 } screenResOpts;
 
-static int nDisplayMode;
-
 //------------------------------------------------------------------------------
 
 static int ScreenResMenuItemToMode (int menuItem)
@@ -107,14 +105,13 @@ if (nState)
 
 	int	i, j;
 
-if (menu [screenResOpts.nCustom].m_value != (nDisplayMode == NUM_DISPLAY_MODES)) 
+if (menu [screenResOpts.nCustom].m_value != (gameStates.video.nDisplayMode == CUSTOM_DISPLAY_MODE)) 
 	nKey = -2;
 for (i = 0; i < screenResOpts.nCustom; i++)
 	if (menu [i].m_value) {
 		j = ScreenResMenuItemToMode (i);
-		if ((j < NUM_DISPLAY_MODES) && (j != nDisplayMode)) {
-			SetDisplayMode (j, 0);
-			nDisplayMode = gameStates.video.nDisplayMode;
+		if ((j < NUM_DISPLAY_MODES) && (j != gameStates.video.nDisplayMode)) {
+			//SetDisplayMode (j, 0);
 			nKey = -2;
 			}
 		break;
@@ -163,7 +160,7 @@ if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode !
 			"You may not change screen\nresolution when VR modes enabled.");
 	return;
 	}
-nDisplayMode = gameStates.video.nDisplayMode;
+
 do {
 	screenResOpts.nWideScreen = -1;
 	cShortCut = '1';
@@ -198,18 +195,14 @@ do {
 
 	screenResOpts.nCustom = m.AddRadio (TXT_CUSTOM_SCRRES, 0, KEY_U, HTX_CUSTOM_SCRRES);
 	*szCustX = *szCustY = '\0';
-	if (displayModeInfo [NUM_DISPLAY_MODES - 1].w)
-		sprintf (szCustX, "%d", displayModeInfo [NUM_DISPLAY_MODES - 1].w);
-	else
-		*szCustX = '\0';
-	if (displayModeInfo [NUM_DISPLAY_MODES].h)
-		sprintf (szCustY, "%d", displayModeInfo [NUM_DISPLAY_MODES].h);
-	else
-		*szCustY = '\0';
+	if (displayModeInfo [CUSTOM_DISPLAY_MODE].w)
+		sprintf (szCustX, "%d", displayModeInfo [CUSTOM_DISPLAY_MODE].w);
+	if (displayModeInfo [CUSTOM_DISPLAY_MODE].h)
+		sprintf (szCustY, "%d", displayModeInfo [CUSTOM_DISPLAY_MODE].h);
 	nCustWOpt = m.AddInput (szCustX, 4, NULL);
 	nCustHOpt = m.AddInput (szCustY, 4, NULL);
 
-	choice = ScreenResModeToMenuItem (nDisplayMode);
+	choice = ScreenResModeToMenuItem (gameStates.video.nDisplayMode);
 	m [choice].m_value = 1;
 
 	key = m.Menu (NULL, TXT_SELECT_SCRMODE, ScreenResCallback, &choice);
@@ -218,7 +211,6 @@ do {
 	bStdRes = 0;
 	if (m [screenResOpts.nCustom].m_value) {
 		key = -2;
-		nDisplayMode = NUM_DISPLAY_MODES;
 		if ((nCustWOpt > 0) && (nCustHOpt > 0) &&
 			 (0 < (nCustW = atoi (szCustX))) && (0 < (nCustH = atoi (szCustY)))) {
 			i = CUSTOM_DISPLAY_MODE;
@@ -245,7 +237,7 @@ do {
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_ERROR_SCRMODE);
 		return;
 		}
-	if (i == gameStates.video.nDisplayMode) {
+	if (i != gameStates.video.nDisplayMode) {
 		SetDisplayMode (i, 0);
 		SetScreenMode (SCREEN_MENU);
 		if (bStdRes)

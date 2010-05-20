@@ -384,13 +384,23 @@ if (ogl.m_states.bInitialized)
 
 int SetCustomDisplayMode (int w, int h)
 {
-displayModeInfo [CUSTOM_DISPLAY_MODE].dim = SM (w, h);
-displayModeInfo [CUSTOM_DISPLAY_MODE].w = w;
-displayModeInfo [CUSTOM_DISPLAY_MODE].h = h;
-if (!(displayModeInfo [CUSTOM_DISPLAY_MODE].bAvailable = 
-	   GrVideoModeOK (displayModeInfo [CUSTOM_DISPLAY_MODE].dim)))
+	int i = CUSTOM_DISPLAY_MODE;
+
+displayModeInfo [i].dim = SM (w, h);
+displayModeInfo [i].w = w;
+displayModeInfo [i].h = h;
+if (!(displayModeInfo [i].bAvailable = GrVideoModeOK (displayModeInfo [i].dim))) {
+	displayModeInfo [i].dim = 0;
+	displayModeInfo [i].w = 0;
+	displayModeInfo [i].h = 0;
 	return 0;
-SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
+	}
+displayModeInfo [i].renderMethod = VR_NONE;
+displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
+displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
+displayModeInfo [i].bFullScreen = 1;
+displayModeInfo [i].bAvailable = 1;
+//SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
 return 1;
 }
 
