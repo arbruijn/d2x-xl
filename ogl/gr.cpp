@@ -177,18 +177,16 @@ return -1;
 int FindDisplayMode (short w, short h)
 {
 	CDisplayModeInfo	dmi;
+	int					i;
 
 dmi.w = w;
 dmi.h = h;
 dmi.bWideScreen = float (w) / float (h) > 1.5f;
 
-for (uint i = 0; i < displayModeInfo.Length (); i++)
-	if (displayModeInfo [i] == dmi) 
-		return i;
+for (i = 0; i < NUM_DISPLAY_MODES; i++)
 	if (displayModeInfo [i] > dmi) 
-		return i - 1;
-	}
-return -1;
+		break;
+return i - 1;
 }
 
 //------------------------------------------------------------------------------
