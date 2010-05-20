@@ -324,8 +324,8 @@ for (i = 0; i < 2; i++) {
 		for (j = 0; j < 4; j++)
 			RP (gameData.multigame.msg.szMacro [j], j, 0);
 
-		RP (displayModeInfo [NUM_DISPLAY_MODES].w, NUM_DISPLAY_MODES, 0);
-		RP (displayModeInfo [NUM_DISPLAY_MODES].h, NUM_DISPLAY_MODES, 0);
+		RP (customDisplayMode.w, 0, 0);
+		RP (customDisplayMode.h, 0, 0);
 
 		RP (gameStates.app.nDifficultyLevel, 0, 0);
 		RP (ogl.m_states.nContrast, 0, 0);
@@ -797,8 +797,8 @@ tParamValue defaultParams [] = {
 	 {"gameData.multigame.msg.szMacro[1]", "Hey, I got a present for ya"},
 	 {"gameData.multigame.msg.szMacro[2]", "I got a hankerin' for a spankerin'"},
 	 {"gameData.multigame.msg.szMacro[3]", "This one's headed for Uranus"},
-	 {"displayModeInfo[21].w", "0"},
-	 {"displayModeInfo[21].h", "0"},
+	 {"customDisplayMode.w", "0"},
+	 {"customDisplayMode.h", "0"},
 	 {"gameStates.app.nDifficultyLevel", "2"},
 	 {"ogl.m_states.nContrast", "8"},
 	 {"gameStates.multi.nConnection", "1"},
@@ -1659,8 +1659,14 @@ if (gameStates.gfx.bOverride) {
 	gameData.render.window.w = gameWindowW;
 	gameData.render.window.h = gameWindowH;
 	}
-else if (gameStates.video.nDefaultDisplayMode == NUM_DISPLAY_MODES)
-	displayModeInfo [NUM_DISPLAY_MODES].dim = SM (gameData.render.window.w, gameData.render.window.h);
+else if (gameStates.video.nDefaultDisplayMode < 0) {
+	displayModeInfo [CUSTOM_DISPLAY_MODE].dim = gameStates.video.nDefaultDisplayMode;
+	displayModeInfo [CUSTOM_DISPLAY_MODE].w = gameData.render.window.w;
+	displayModeInfo [CUSTOM_DISPLAY_MODE].h = gameData.render.window.h;
+	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
+	}
+else 
+	gameStates.video.nDefaultDisplayMode = FindDisplayMode (gameData.render.window.w, gameData.render.window.h);
 
 for (i = 0; i < sizeof (gameData.escort.szName); i++) {
 	if (!gameData.escort.szName [i])
@@ -1789,10 +1795,14 @@ if (cf.File ()) {
 	cf.Close ();
 	}
 // write D2X-XL stuff
+if (gameStates.video.nDefaultDisplayMode >= CUSTOM_DISPLAY_MODE)
+	gameStates.video.nDefaultDisplayMode = -1;
 if (!profile.Save ()) {
 	funcRes = errno;
 	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
 	}
+if (gameStates.video.nDefaultDisplayMode < 0)
+	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;
 return funcRes;
 }
 

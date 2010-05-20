@@ -176,11 +176,18 @@ return -1;
 
 int FindDisplayMode (short w, short h)
 {
-	int dim = SM (w, h);
+	CDisplayModeInfo	dmi;
+
+dmi.w = w;
+dmi.h = h;
+dmi.bWideScreen = float (w) / float (h) > 1.5f;
 
 for (uint i = 0; i < displayModeInfo.Length (); i++)
-	if (displayModeInfo [i].dim == dim)
-		return int (i);
+	if (displayModeInfo [i] == dmi) 
+		return i;
+	if (displayModeInfo [i] > dmi) 
+		return i - 1;
+	}
 return -1;
 }
 
@@ -385,13 +392,13 @@ if (ogl.m_states.bInitialized)
 
 int SetCustomDisplayMode (int w, int h)
 {
-displayModeInfo [NUM_DISPLAY_MODES - 1].dim = SM (w, h);
-displayModeInfo [NUM_DISPLAY_MODES - 1].w = w;
-displayModeInfo [NUM_DISPLAY_MODES - 1].h = h;
-if (!(displayModeInfo [NUM_DISPLAY_MODES - 1].bAvailable = 
-	   GrVideoModeOK (displayModeInfo [NUM_DISPLAY_MODES - 1].dim)))
+displayModeInfo [CUSTOM_DISPLAY_MODE].dim = SM (w, h);
+displayModeInfo [CUSTOM_DISPLAY_MODE].w = w;
+displayModeInfo [CUSTOM_DISPLAY_MODE].h = h;
+if (!(displayModeInfo [CUSTOM_DISPLAY_MODE].bAvailable = 
+	   GrVideoModeOK (displayModeInfo [CUSTOM_DISPLAY_MODE].dim)))
 	return 0;
-SetDisplayMode (NUM_DISPLAY_MODES - 1, 0);
+SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
 return 1;
 }
 

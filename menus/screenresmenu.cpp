@@ -169,7 +169,7 @@ do {
 	cShortCut = '1';
 	m.Destroy ();
 	m.Create (N_SCREENRES_ITEMS);
-	for (i = 0, j = NUM_DISPLAY_MODES; i < j; i++) {
+	for (i = 0, j = NUM_DISPLAY_MODES - 1; i < j; i++) {
 		if (!(displayModeInfo [i].bAvailable = 
 				 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim)))
 				continue;
@@ -195,10 +195,11 @@ do {
 			cShortCut++;
 		m.AddRadio (szMode, 0, -1);
 		}
+
 	screenResOpts.nCustom = m.AddRadio (TXT_CUSTOM_SCRRES, 0, KEY_U, HTX_CUSTOM_SCRRES);
 	*szCustX = *szCustY = '\0';
-	if (displayModeInfo [NUM_DISPLAY_MODES].w)
-		sprintf (szCustX, "%d", displayModeInfo [NUM_DISPLAY_MODES].w);
+	if (displayModeInfo [NUM_DISPLAY_MODES - 1].w)
+		sprintf (szCustX, "%d", displayModeInfo [NUM_DISPLAY_MODES - 1].w);
 	else
 		*szCustX = '\0';
 	if (displayModeInfo [NUM_DISPLAY_MODES].h)
@@ -207,6 +208,7 @@ do {
 		*szCustY = '\0';
 	nCustWOpt = m.AddInput (szCustX, 4, NULL);
 	nCustHOpt = m.AddInput (szCustY, 4, NULL);
+
 	choice = ScreenResModeToMenuItem (nDisplayMode);
 	m [choice].m_value = 1;
 
@@ -219,7 +221,7 @@ do {
 		nDisplayMode = NUM_DISPLAY_MODES;
 		if ((nCustWOpt > 0) && (nCustHOpt > 0) &&
 			 (0 < (nCustW = atoi (szCustX))) && (0 < (nCustH = atoi (szCustY)))) {
-			i = NUM_DISPLAY_MODES;
+			i = CUSTOM_DISPLAY_MODE;
 			if (SetCustomDisplayMode (nCustW, nCustH))
 				key = 0;
 			else
@@ -228,7 +230,8 @@ do {
 		else
 			continue;
 		}
-	else {
+	else 
+		{
 		for (i = 0; i <= screenResOpts.nCustom; i++)
 			if (m [i].m_value) {
 				bStdRes = 1;
