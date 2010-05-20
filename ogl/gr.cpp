@@ -348,13 +348,13 @@ if (ogl.m_states.bInitialized)
 
 int SetCustomDisplayMode (int w, int h)
 {
-displayModeInfo [NUM_DISPLAY_MODES].dim = SM (w, h);
-displayModeInfo [NUM_DISPLAY_MODES].w = w;
-displayModeInfo [NUM_DISPLAY_MODES].h = h;
-if (!(displayModeInfo [NUM_DISPLAY_MODES].bAvailable = 
-	   GrVideoModeOK (displayModeInfo [NUM_DISPLAY_MODES].dim)))
+displayModeInfo [NUM_DISPLAY_MODES - 1].dim = SM (w, h);
+displayModeInfo [NUM_DISPLAY_MODES - 1].w = w;
+displayModeInfo [NUM_DISPLAY_MODES - 1].h = h;
+if (!(displayModeInfo [NUM_DISPLAY_MODES - 1].bAvailable = 
+	   GrVideoModeOK (displayModeInfo [NUM_DISPLAY_MODES - 1].dim)))
 	return 0;
-SetDisplayMode (NUM_DISPLAY_MODES, 0);
+SetDisplayMode (NUM_DISPLAY_MODES - 1, 0);
 return 1;
 }
 

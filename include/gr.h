@@ -267,6 +267,6 @@ class CDisplayModeInfo {
 
 extern CArray<CDisplayModeInfo> displayModeInfo;
 
-#define NUM_DISPLAY_MODES	(displayModeInfo.Length () - 1)
+#define NUM_DISPLAY_MODES	int (displayModeInfo.Length ())
 
 #endif /* def _GR_H */

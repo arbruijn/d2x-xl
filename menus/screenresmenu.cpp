@@ -78,7 +78,7 @@ static int ScreenResMenuItemToMode (int menuItem)
 if ((screenResOpts.nWideScreen >= 0) && (menuItem > screenResOpts.nWideScreen))
 	menuItem--;
 for (j = 0; j < NUM_DISPLAY_MODES; j++)
-	if (displayModeInfo [j].isAvailable)
+	if (displayModeInfo [j].bAvailable)
 		if (--menuItem < 0)
 			break;
 return j;
@@ -91,7 +91,7 @@ static int ScreenResModeToMenuItem (int mode)
 	int item = 0;
 
 for (int j = 0; j < mode; j++)
-	if (displayModeInfo [j].isAvailable)
+	if (displayModeInfo [j].bAvailable)
 		item++;
 if ((screenResOpts.nWideScreen >= 0) && (mode >= screenResOpts.nWideScreen))
 	item++;
@@ -129,8 +129,8 @@ int SwitchDisplayMode (int dir)
 	int	i, h = NUM_DISPLAY_MODES;
 
 for (i = 0; i < h; i++)
-	displayModeInfo [i].isAvailable =
-		 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].VGA_mode);
+	displayModeInfo [i].bAvailable =
+		 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim);
 i = gameStates.video.nDisplayMode;
 do {
 	i += dir;
@@ -138,7 +138,7 @@ do {
 		i = 0;
 	else if (i >= h)
 		i = h - 1;
-	if (displayModeInfo [i].isAvailable) {
+	if (displayModeInfo [i].bAvailable) {
 		SetDisplayMode (i, 0);
 		return 1;
 		}
@@ -155,7 +155,7 @@ void ScreenResMenu (void)
 	CMenu		m;
 	int		choice;
 	int		i, j, key, nCustWOpt, nCustHOpt, nCustW, nCustH, bStdRes;
-	char		szMode [NUM_DISPLAY_MODES][20];
+	char		szMode [40];
 	char		cShortCut, szCustX [5], szCustY [5];
 
 if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE)) {				//special VR mode
@@ -170,16 +170,21 @@ do {
 	m.Destroy ();
 	m.Create (N_SCREENRES_ITEMS);
 	for (i = 0, j = NUM_DISPLAY_MODES; i < j; i++) {
-		if (!(displayModeInfo [i].isAvailable = 
-				 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].VGA_mode)))
+		if (!(displayModeInfo [i].bAvailable = 
+				 ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim)))
 				continue;
-		if (displayModeInfo [i].isWideScreen && !displayModeInfo [i-1].isWideScreen) {
+		if (displayModeInfo [i].bWideScreen && !displayModeInfo [i-1].bWideScreen) {
 			m.AddText (TXT_WIDESCREEN_RES, 0);
 			m.NewGroup (-1);
 			if (screenResOpts.nWideScreen < 0)
 				screenResOpts.nWideScreen = m.ToS () - 1;
 			}
-		sprintf (szMode [i], "%c. %dx%d", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
+		if ((displayModeInfo [i].w == 1280) && (displayModeInfo [i].h == 720))
+			sprintf (szMode, "%c. %dx%d (720p)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
+		else if ((displayModeInfo [i].w == 1920) && (displayModeInfo [i].h == 1080))
+			sprintf (szMode, "%c. %dx%d (1080p)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
+		else
+			sprintf (szMode, "%c. %dx%d", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
 		if (cShortCut == '9')
 			cShortCut = 'A';
 		else
@@ -229,7 +234,7 @@ do {
 			if (!bStdRes)
 				continue;
 		}
-	if (((i > 1) && !gameStates.menus.bHiresAvailable) || !GrVideoModeOK (displayModeInfo [i].VGA_mode)) {
+	if (((i > 1) && !gameStates.menus.bHiresAvailable) || !GrVideoModeOK (displayModeInfo [i].dim)) {
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_ERROR_SCRMODE);
 		return;
 		}
