@@ -73,6 +73,7 @@ CPlayerProfile profile;
 CDisplayModeInfo customDisplayMode;
 
 void DefaultAllSettings (void);
+int FindDisplayMode (short w, short h);
 
 //------------------------------------------------------------------------------
 

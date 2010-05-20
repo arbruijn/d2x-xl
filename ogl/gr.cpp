@@ -161,19 +161,6 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 
 //------------------------------------------------------------------------------
 
-int FindDisplayMode (int nScrSize)
-{
-	CDisplayModeInfo* dmiP = displayModeInfo.Buffer ();
-	int w = nScrSize >> 16, h = nScrSize & 0xffff;
-
-for (int j = int (displayModeInfo.Length ()), i = 0; i < j; i++, dmiP++)
-	if ((dmiP->w == w) && (dmiP->h == h))
-		return i;
-return -1;
-}
-
-//------------------------------------------------------------------------------
-
 int FindDisplayMode (short w, short h)
 {
 	CDisplayModeInfo	dmi;
@@ -187,6 +174,13 @@ for (i = 0; i < NUM_DISPLAY_MODES; i++)
 	if (displayModeInfo [i] > dmi) 
 		break;
 return i - 1;
+}
+
+//------------------------------------------------------------------------------
+
+int FindDisplayMode (int nScrSize)
+{
+return FindDisplayMode (SM_W (nScrSize), SM_H (nScrSize));
 }
 
 //------------------------------------------------------------------------------
