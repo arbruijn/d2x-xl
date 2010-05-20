@@ -229,17 +229,44 @@ int SCREENMODE (int x, int y, int c);
 int S_MODE (u_int32_t *VV, int *VG);
 int GrBitmapHasTransparency (CBitmap *bmP);
 
-typedef struct tDisplayModeInfo {
-	int	VGA_mode;
-	short	w,h;
-	short	render_method;
-	short	flags;
-	char	isWideScreen;
-	char	isAvailable;
-} __pack__ tDisplayModeInfo;
+class CDisplayModeInfo {
+	public:
+		int	dim;
+		short	w, h;
+		short	renderMethod;
+		short	flags;
+		char	bWideScreen;
+		char	bFullScreen;
+		char	bAvailable;
 
-#define NUM_DISPLAY_MODES	21
+	inline bool operator< (CDisplayModeInfo& other) {
+		if (bWideScreen < other.bWideScreen)
+			return true;
+		if (bWideScreen > other.bWideScreen)
+			return false;
+		if (w < other.w) 
+			return true;
+		if (w > other.w)
+			return false;
+		return h < other.h;
+		}
 
-extern tDisplayModeInfo displayModeInfo [NUM_DISPLAY_MODES + 1];
+	inline bool operator> (CDisplayModeInfo& other) {
+		if (bWideScreen > other.bWideScreen)
+			return true;
+		if (bWideScreen < other.bWideScreen)
+			return false;
+		if (w > other.w) 
+			return true;
+		if (w < other.w)
+			return false;
+		return h > other.h;
+		}
+
+};
+
+extern CArray<CDisplayModeInfo> displayModeInfo;
+
+#define NUM_DISPLAY_MODES	(displayModeInfo.Length () - 1)
 
 #endif /* def _GR_H */

@@ -52,58 +52,7 @@ extern int screenShotIntervals [];
 
 //------------------------------------------------------------------------------
 
-tScrSize	scrSizes [] = {
- { 320, 200,1},
- { 640, 400,0},
- { 640, 480,0},
- { 800, 600,0},
- {1024, 768,0},
- {1152, 864,0},
- {1280, 960,0},
- {1280,1024,0},
- {1600,1200,0},
- {2048,1526,0},
- { 720, 480,0},
- {1280, 768,0},
- {1280, 800,0},
- {1280, 854,0},
- {1400,1050,0},
- {1440, 900,0},
- {1440, 960,0},
- {1680,1050,0},
- {1920,1200,0},
- {0,0,0}
-};
-
-//------------------------------------------------------------------------------
-
-tDisplayModeInfo displayModeInfo [NUM_DISPLAY_MODES + 1] = {
- {SM ( 320,  200),  320,  200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM ( 640,  400),  640,  400, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM ( 640,  480),  640,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM ( 800,  600),  800,  600, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM (1024,  768), 1024,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM (1152,  864), 1152,  864, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM (1280,  960), 1280,  960, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM (1280, 1024), 1280, 1024, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM (1600, 1200), 1600, 1200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
- {SM (2048, 1536), 2048, 1536, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	//test>>>
- {SM (4096, 3072), 4096, 3072, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	//<<<test
- {SM ( 720,  480),  720,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1280,  768), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1280,  800), 1280,  800, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1280,  854), 1280,  854, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1360,  768), 1360,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1400, 1050), 1400, 1050, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1440,  900), 1440,  900, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1440,  960), 1440,  960, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1680, 1050), 1680, 1050, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
- {SM (1920, 1200), 1920, 1200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0},
-	//placeholder for custom resolutions
- {              0,    0,    0, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0} 
-	};
+CArray<CDisplayModeInfo> displayModeInfo;
 
 //------------------------------------------------------------------------------
 
@@ -214,13 +163,54 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 
 int FindDisplayMode (int nScrSize)
 {
-	tDisplayModeInfo *dmiP = displayModeInfo;
+	CDisplayModeInfo* dmiP = displayModeInfo.Buffer ();
 	int w = nScrSize >> 16, h = nScrSize & 0xffff;
 
-for (int j = sizeofa (displayModeInfo), i = 0; i < j; i++, dmiP++)
+for (int j = int (displayModeInfo.Length ()), i = 0; i < j; i++, dmiP++)
 	if ((dmiP->w == w) && (dmiP->h == h))
 		return i;
 return -1;
+}
+
+//------------------------------------------------------------------------------
+
+int FindDisplayMode (short w, short h)
+{
+	int dim = SM (w, h);
+
+for (uint i = 0; i < displayModeInfo.Length (); i++)
+	if (displayModeInfo [i].dim == dim)
+		return int (i);
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void CreateDisplayModeInfo (void)
+{
+	SDL_Rect**	displayModes;
+	int			h, i;
+
+displayModes = SDL_ListModes (NULL, SDL_HWSURFACE);
+for (h = 0; displayModes [h]; h++)
+	;
+displayModeInfo.Create (h + 1);
+for (i = 0; i < h; i++) {
+	displayModeInfo [i].w = displayModes [h]->w;
+	displayModeInfo [i].h = displayModes [h]->h;
+	displayModeInfo [i].dim = SM (displayModeInfo [i].w, displayModeInfo [i].h);
+	displayModeInfo [i].renderMethod = VR_NONE;
+	displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
+	displayModeInfo [i].bWideScreen = 3 * displayModeInfo [i].w != 4 * displayModeInfo [i].h;
+	displayModeInfo [i].bFullScreen = 0;
+	displayModeInfo [i].bAvailable = 1;
+	}
+displayModes = SDL_ListModes (NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
+for (i = 0; displayModes [i]; i++) {
+	if (0 <= (h = FindDisplayMode (displayModes [i]->w, displayModes [i]->w)))
+		displayModeInfo [h].bWideScreen = 1;
+	}
+displayModeInfo.SortAscending ();
 }
 
 //------------------------------------------------------------------------------
@@ -358,11 +348,11 @@ if (ogl.m_states.bInitialized)
 
 int SetCustomDisplayMode (int w, int h)
 {
-displayModeInfo [NUM_DISPLAY_MODES].VGA_mode = SM (w, h);
+displayModeInfo [NUM_DISPLAY_MODES].dim = SM (w, h);
 displayModeInfo [NUM_DISPLAY_MODES].w = w;
 displayModeInfo [NUM_DISPLAY_MODES].h = h;
-if (!(displayModeInfo [NUM_DISPLAY_MODES].isAvailable = 
-	   GrVideoModeOK (displayModeInfo [NUM_DISPLAY_MODES].VGA_mode)))
+if (!(displayModeInfo [NUM_DISPLAY_MODES].bAvailable = 
+	   GrVideoModeOK (displayModeInfo [NUM_DISPLAY_MODES].dim)))
 	return 0;
 SetDisplayMode (NUM_DISPLAY_MODES, 0);
 return 1;
@@ -375,7 +365,7 @@ int GetDisplayMode (int mode)
 	int h, i;
 
 for (i = 0, h = NUM_DISPLAY_MODES; i < h; i++)
-	if (mode == displayModeInfo [i].VGA_mode)
+	if (mode == displayModeInfo [i].dim)
 		return i;
 return -1;
 }
@@ -392,7 +382,7 @@ return -1;
 
 void SetDisplayMode (int nMode, int bOverride)
 {
-	tDisplayModeInfo *dmiP;
+	CDisplayModeInfo *dmiP;
 
 if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR nMode
 	return;	//...don't change
@@ -403,12 +393,12 @@ else
 	gameStates.gfx.bOverride = 0;
 if (!gameStates.menus.bHiresAvailable && (nMode != 1))
 	nMode = 0;
-if (!GrVideoModeOK (displayModeInfo [nMode].VGA_mode))		//can't do nMode
+if (!GrVideoModeOK (displayModeInfo [nMode].dim))		//can't do nMode
 	nMode = 0;
 gameStates.video.nDisplayMode = nMode;
 dmiP = displayModeInfo + nMode;
 if (gameStates.video.nDisplayMode != -1) {
-	GameInitRenderBuffers (dmiP->VGA_mode, dmiP->w, dmiP->h, dmiP->render_method, dmiP->flags);
+	GameInitRenderBuffers (dmiP->dim, dmiP->w, dmiP->h, dmiP->renderMethod, dmiP->flags);
 	gameStates.video.nDefaultDisplayMode = gameStates.video.nDisplayMode;
 	}
 gameStates.video.nScreenMode = -1;		//force screen reset
