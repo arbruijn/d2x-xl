@@ -181,7 +181,7 @@ do {
 			}
 		if ((displayModeInfo [i].w == 640) && (displayModeInfo [i].h == 480))
 			sprintf (szMode, "%c. %dx%d (NTSC)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
-		else if ((displayModeInfo [i].w == 768) && (displayModeInfo [i].h == 576))
+		else if ((displayModeInfo [i].w == 720) && (displayModeInfo [i].h == 576))
 			sprintf (szMode, "%c. %dx%d (PAL/SECAM)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
 		else if ((displayModeInfo [i].w == 1280) && (displayModeInfo [i].h == 720))
 			sprintf (szMode, "%c. %dx%d (720p)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);

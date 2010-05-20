@@ -186,31 +186,67 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+
+SDL_Rect defaultDisplayModes [] = {
+	{ 320,  200},
+	{ 640,  400},
+	{ 640,  480},
+	{ 720,  576},
+	{ 800,  600},
+	{1024,  768},
+	{1152,  864},
+	{1280,  720},
+	{1280,  960},
+	{1280, 1024},
+	{1600, 1200},
+	{2048, 1526},
+	{ 720,  480},
+	{1280,  768},
+	{1280,  800},
+	{1280,  854},
+	{1360,  768},
+	{1400, 1050},
+	{1440,  900},
+	{1440,  960},
+	{1680, 1050},
+	{1920, 1080},
+	{1920, 1200},
+	{2560, 1600}
+	};
+
+
+
 void CreateDisplayModeInfo (void)
 {
-	SDL_Rect**	displayModes;
+	SDL_Rect**	displayModes, * displayModeP;
 	int			h, i;
 
-displayModes = SDL_ListModes (NULL, SDL_HWSURFACE);
-for (h = 0; displayModes [h]; h++)
-	;
+displayModes = SDL_ListModes (NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
+if (displayModes == (SDL_Rect**) -1) {
+	displayModeP = defaultDisplayModes;
+	h = sizeofa (defaultDisplayModes);
+	}
+else {
+	for (h = 0; displayModes [h]; h++)
+		;
+	displayModeP = new SDL_Rect [h];
+	for (i = 0; i < h; i++)
+		displayModeP [i] = *displayModes [i];
+	}
 displayModeInfo.Create (h + 1);
 for (i = 0; i < h; i++) {
-	displayModeInfo [i].w = displayModes [h]->w;
-	displayModeInfo [i].h = displayModes [h]->h;
+	displayModeInfo [i].w = displayModeP [i].w;
+	displayModeInfo [i].h = displayModeP [i].h;
 	displayModeInfo [i].dim = SM (displayModeInfo [i].w, displayModeInfo [i].h);
 	displayModeInfo [i].renderMethod = VR_NONE;
 	displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
-	displayModeInfo [i].bWideScreen = 3 * displayModeInfo [i].w != 4 * displayModeInfo [i].h;
-	displayModeInfo [i].bFullScreen = 0;
+	displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
+	displayModeInfo [i].bFullScreen = 1;
 	displayModeInfo [i].bAvailable = 1;
 	}
-displayModes = SDL_ListModes (NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
-for (i = 0; displayModes [i]; i++) {
-	if (0 <= (h = FindDisplayMode (displayModes [i]->w, displayModes [i]->w)))
-		displayModeInfo [h].bWideScreen = 1;
-	}
-displayModeInfo.SortAscending ();
+if (displayModes != (SDL_Rect**) -1)
+	delete displayModeP;
+displayModeInfo.SortAscending (0, h - 1);
 }
 
 //------------------------------------------------------------------------------
