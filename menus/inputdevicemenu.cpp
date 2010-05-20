@@ -376,8 +376,10 @@ if (gameStates.input.nJoysticks && gameOpts->input.joystick.bUse) {
 			m->m_bRebuild = 1;
 			}
 		}
-	for (i = h; i < UNIQUE_JOY_AXES; i++)
+	for (i = h; i < UNIQUE_JOY_AXES; i++) {
 		gameOpts->input.joystick.deadzones [i] = gameOpts->input.joystick.deadzones [0];
+		JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
+		}
 	}
 return nCurItem;
 }
@@ -687,10 +689,14 @@ do {
 	controls.SetType ();
 	nKeyboardOpt = m.AddMenu (TXT_KBDCFG_MENUCALL, KEY_K, HTX_KEYBOARD_CONFIG);
 	nMouseOpt = m.AddMenu (TXT_MOUSECFG_MENUCALL, KEY_M, HTX_MOUSE_CONFIG);
+#if DBG
+	nJoystickOpt = m.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
+#else
 	if (gameStates.input.nJoysticks)
 		nJoystickOpt = m.AddMenu (TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 	else
 		nJoystickOpt = -1;
+#endif
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) 
 		nTrackIROpt = m.AddMenu (TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
 	else

@@ -1845,6 +1845,8 @@ for (i = 0, j = NUM_HOTKEY_CONTROLS; i < j; i++) {
 	else
 		kcHotkeys [i].value = controlSettings.d2xCustom [i];
 	}
+for (i = 0; i < 4; i++)
+	JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
 }
 
 //------------------------------------------------------------------------------

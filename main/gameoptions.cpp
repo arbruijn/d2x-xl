@@ -507,7 +507,7 @@ if (i) {
 	gameOptions [1].input.joystick.deadzones [0] =
 	gameOptions [1].input.joystick.deadzones [1] =
 	gameOptions [1].input.joystick.deadzones [2] =
-	gameOptions [1].input.joystick.deadzones [3] = 10;
+	gameOptions [1].input.joystick.deadzones [3] = 1;
 	}
 else {
 	gameOptions [0].input.bLimitTurnRate = 1;
@@ -543,7 +543,7 @@ else {
 	gameOptions [0].input.joystick.deadzones [0] =
 	gameOptions [0].input.joystick.deadzones [1] =
 	gameOptions [0].input.joystick.deadzones [2] =
-	gameOptions [0].input.joystick.deadzones [3] = 10;
+	gameOptions [0].input.joystick.deadzones [3] = 1;
 	}
 }
 
