@@ -179,7 +179,11 @@ do {
 			if (screenResOpts.nWideScreen < 0)
 				screenResOpts.nWideScreen = m.ToS () - 1;
 			}
-		if ((displayModeInfo [i].w == 1280) && (displayModeInfo [i].h == 720))
+		if ((displayModeInfo [i].w == 640) && (displayModeInfo [i].h == 480))
+			sprintf (szMode, "%c. %dx%d (NTSC)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
+		else if ((displayModeInfo [i].w == 768) && (displayModeInfo [i].h == 576))
+			sprintf (szMode, "%c. %dx%d (PAL/SECAM)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
+		else if ((displayModeInfo [i].w == 1280) && (displayModeInfo [i].h == 720))
 			sprintf (szMode, "%c. %dx%d (720p)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
 		else if ((displayModeInfo [i].w == 1920) && (displayModeInfo [i].h == 1080))
 			sprintf (szMode, "%c. %dx%d (1080p)", cShortCut, displayModeInfo [i].w, displayModeInfo [i].h);
@@ -189,7 +193,7 @@ do {
 			cShortCut = 'A';
 		else
 			cShortCut++;
-		m.AddRadio (szMode [i], 0, -1);
+		m.AddRadio (szMode, 0, -1);
 		}
 	screenResOpts.nCustom = m.AddRadio (TXT_CUSTOM_SCRRES, 0, KEY_U, HTX_CUSTOM_SCRRES);
 	*szCustX = *szCustY = '\0';
