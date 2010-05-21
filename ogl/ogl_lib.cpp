@@ -306,7 +306,7 @@ palette = NULL;
 memset (bUseTextures, 0, sizeof (bUseTextures));
 nTMU [0] = 
 nTMU [1] = -1;
-if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
+if (/*gameStates.app.bInitialized &&*/ ogl.m_states.bInitialized) {
 #ifndef GL_VERSION_20
 	if (glActiveTexture) 
 #endif
