@@ -384,23 +384,24 @@ if (ogl.m_states.bInitialized)
 
 int SetCustomDisplayMode (int w, int h)
 {
-	int i = CUSTOM_DISPLAY_MODE;
+if (w && h) {
+		int i = CUSTOM_DISPLAY_MODE;
 
-displayModeInfo [i].dim = SM (w, h);
-displayModeInfo [i].w = w;
-displayModeInfo [i].h = h;
-if (!(displayModeInfo [i].bAvailable = GrVideoModeOK (displayModeInfo [i].dim))) {
-	displayModeInfo [i].dim = 0;
-	displayModeInfo [i].w = 0;
-	displayModeInfo [i].h = 0;
-	return 0;
+	displayModeInfo [i].dim = SM (w, h);
+	displayModeInfo [i].w = w;
+	displayModeInfo [i].h = h;
+	if (!(displayModeInfo [i].bAvailable = GrVideoModeOK (displayModeInfo [i].dim))) {
+		displayModeInfo [i].dim = 0;
+		displayModeInfo [i].w = 0;
+		displayModeInfo [i].h = 0;
+		return 0;
+		}
+	displayModeInfo [i].renderMethod = VR_NONE;
+	displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
+	displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
+	displayModeInfo [i].bFullScreen = 1;
+	displayModeInfo [i].bAvailable = 1;
 	}
-displayModeInfo [i].renderMethod = VR_NONE;
-displayModeInfo [i].flags = VRF_COMPATIBLE_MENUS + VRF_ALLOW_COCKPIT;
-displayModeInfo [i].bWideScreen = float (displayModeInfo [i].w) / float (displayModeInfo [i].h) >= 1.5f;
-displayModeInfo [i].bFullScreen = 1;
-displayModeInfo [i].bAvailable = 1;
-//SetDisplayMode (CUSTOM_DISPLAY_MODE, 0);
 return 1;
 }
 
