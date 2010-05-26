@@ -170,7 +170,7 @@ dmi.w = w;
 dmi.h = h;
 dmi.bWideScreen = float (w) / float (h) > 1.5f;
 
-for (i = 0; i < NUM_DISPLAY_MODES; i++)
+for (i = 0; i < NUM_DISPLAY_MODES - 1; i++)
 	if (displayModeInfo [i] > dmi) 
 		break;
 return i - 1;
@@ -233,6 +233,7 @@ else {
 		displayModeP [i] = *displayModes [i];
 	}
 displayModeInfo.Create (h + 1);
+displayModeInfo.Clear ();
 for (i = 0; i < h; i++) {
 	displayModeInfo [i].w = displayModeP [i].w;
 	displayModeInfo [i].h = displayModeP [i].h;

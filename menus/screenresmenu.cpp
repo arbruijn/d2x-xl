@@ -71,15 +71,9 @@ static struct {
 
 static int ScreenResMenuItemToMode (int menuItem)
 {
-	int j;
-
 if ((screenResOpts.nWideScreen >= 0) && (menuItem > screenResOpts.nWideScreen))
 	menuItem--;
-for (j = 0; j < NUM_DISPLAY_MODES; j++)
-	if (displayModeInfo [j].bAvailable)
-		if (--menuItem < 0)
-			break;
-return j;
+return menuItem;
 }
 
 //------------------------------------------------------------------------------
@@ -153,7 +147,7 @@ void ScreenResMenu (void)
 	int		choice;
 	int		i, j, key, nCustWOpt, nCustHOpt, nCustW, nCustH, bStdRes;
 	char		szMode [40];
-	char		cShortCut, szCustX [5], szCustY [5];
+	char		cShortCut, szCustX [7], szCustY [7];
 
 if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE)) {				//special VR mode
 	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, 
@@ -225,13 +219,11 @@ do {
 	else 
 		{
 		for (i = 0; i <= screenResOpts.nCustom; i++)
-			if (m [i].m_value) {
+			if ((i != screenResOpts.nWideScreen) && (m [i].m_value)) {
 				bStdRes = 1;
 				i = ScreenResMenuItemToMode(i);
 				break;
 				}
-			if (!bStdRes)
-				continue;
 		}
 	if (((i > 1) && !gameStates.menus.bHiresAvailable) || !GrVideoModeOK (displayModeInfo [i].dim)) {
 		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_ERROR_SCRMODE);
