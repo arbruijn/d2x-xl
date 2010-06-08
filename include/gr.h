@@ -223,8 +223,6 @@ typedef struct tScrSize {
 extern int curDrawBuffer;
 
 char *ScrSizeArg (int x, int y);
-int SCREENMODE (int x, int y, int c);
-int S_MODE (u_int32_t *VV, int *VG);
 int GrBitmapHasTransparency (CBitmap *bmP);
 
 class CDisplayModeInfo {
@@ -267,6 +265,7 @@ extern CArray<CDisplayModeInfo> displayModeInfo;
 
 #define NUM_DISPLAY_MODES		int (displayModeInfo.Length ())
 #define CUSTOM_DISPLAY_MODE	(NUM_DISPLAY_MODES - 1)
+#define MAX_DISPLAY_MODE		(NUM_DISPLAY_MODES - 2)
 
 int FindDisplayMode (int nScrSize);
 

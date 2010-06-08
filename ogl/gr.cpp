@@ -253,8 +253,7 @@ displayModeInfo.SortAscending (0, h - 1);
 
 int GrInit (void)
 {
-	int mode = SM (800, 600);
-	int retcode, i;
+	int i;
 
 // Only do this function once!
 if (gameStates.gfx.bInstalled)
@@ -278,24 +277,30 @@ if ((i = FindArg ("-fullscreen"))) {
 	ogl.m_states.bFullScreen = NumArg (i, 1);
 	//GrToggleFullScreen();
 	}
+else
+	ogl.m_states.bFullScreen = 1;
 #endif
-/***/PrintLog ("   initializing internal texture list\n");
+/***/PrintLog ("   initializing texture manager\n");
 textureManager.Init ();
 /***/PrintLog ("   allocating screen buffer\n");
 screen.Canvas ()->SetBuffer (NULL);
 
 CreateDisplayModeInfo ();
 // Set the mode.
-for (i = 0; i < NUM_DISPLAY_MODES; i++)
+for (i = 0; i < NUM_DISPLAY_MODES - 1; i++)
 	if (FindArg (ScrSizeArg (displayModeInfo [i].w, displayModeInfo [i].h))) {
 		gameStates.gfx.bOverride = 1;
-		gameStates.gfx.nStartScrSize =
-		mode = displayModeInfo [i].dim;
-		gameStates.gfx.nStartScrMode = FindDisplayMode (mode);
+		gameStates.gfx.nStartScrSize = displayModeInfo [i].dim;
 		break;
 		}
-if ((retcode = GrSetMode (mode)))
-	return retcode;
+if (!gameStates.gfx.bOverride)
+#if 0//DBG
+	gameStates.gfx.nStartScrMode = FindDisplayMode (gameStates.gfx.nStartScrSize = SM (800, 600));
+#else
+	gameStates.gfx.nStartScrSize = displayModeInfo [gameStates.gfx.nStartScrMode = MAX_DISPLAY_MODE].dim;
+#endif
+if ((i = GrSetMode (gameStates.gfx.nStartScrSize)))
+	return i;
 
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
@@ -330,36 +335,6 @@ char *ScrSizeArg (int x, int y)
 
 sprintf (szScrMode, "-%dx%d", x, y);
 return szScrMode;
-}
-
-//------------------------------------------------------------------------------
-
-int SCREENMODE (int x, int y, int c)
-{
-	int i = FindArg (ScrSizeArg (x, y));
-
-if (i && (i < nArgCount)) {
-	gameStates.gfx.bOverride = 1; 
-	gameData.render.window.w = x;
-	gameData.render.window.h = y;
-	return gameStates.gfx.nStartScrSize = GetDisplayMode (SM (x, y)); 
-	}
-return -1;
-}
-
-//------------------------------------------------------------------------------
-
-int S_MODE (u_int32_t *VV, int *VG)
-{
-	int	h, i;
-
-for (i = 0; i < NUM_DISPLAY_MODES; i++)
-	if ((h = FindArg (ScrSizeArg (displayModeInfo [i].w, displayModeInfo [i].h))) && (h < nArgCount)) {
-		*VV = displayModeInfo [i].dim;
-		*VG = 1; //always 1 in d2x-xl
-		return h;
-		}
-return -1;
 }
 
 //------------------------------------------------------------------------------
