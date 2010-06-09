@@ -2508,41 +2508,7 @@ class CMultiGameData {
 
 //------------------------------------------------------------------------------
 
-#define LEVEL_NAME_LEN 36       //make sure this is a multiple of 4!
-
 #include "mission.h"
-
-class CMissionData {
-	public:
-		char					szCurrentLevel [LEVEL_NAME_LEN];
-		int					nSecretLevels;
-		int					nLastLevel;
-		int					nCurrentLevel;
-		int					nNextLevel;
-		int					nLastSecretLevel;
-		int					nLastMission;
-		int					nEntryLevel;
-		int					nEnhancedMission;
-		int					nCurrentMission;
-		int					nBuiltinMission;
-		int					nD1BuiltinMission;
-		int					nBuiltinHogSize;
-		int					nD1BuiltinHogSize;
-		char					szBuiltinMissionFilename [9];
-		char					szD1BuiltinMissionFilename [9];
-		char					szBriefingFilename [13];
-		char					szEndingFilename [13];
-		tMsnListEntry		list [MAX_MISSIONS + 1];
-		char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
-		char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
-		int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
-		char					szSongNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
-
-	public:
-		CMissionData ();
-};
-
-//------------------------------------------------------------------------------
 
 #define N_MAX_ROOMS	128
 
@@ -3278,7 +3244,6 @@ class CGameData {
 		CMultiGameData		multigame;
 		CMuzzleData			muzzle;
 		CWeaponData			weapons;
-		CMissionData		missions;
 		CEntropyData		entropy;
 		CReactorData		reactor;
 		CMarkerData			marker;

@@ -1330,7 +1330,7 @@ if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_FRONT, 0);
 
 m_info.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
-							 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
+							 (missionManager.nCurrentMission == missionManager.nD1BuiltinMission);
 m_info.bOnlyRobots = movieManager.m_bHaveExtras && m_info.bExtraSounds && (m_info.nLevel == 1) && (m_info.nScreen < 4);
 
 fontManager.SetCurrent (GAME_FONT);
@@ -1589,7 +1589,7 @@ void CBriefing::Run (const char* filename, int nLevel)
 {
 	int	bAbortBriefing = 0;
 	int	nCurBriefingScreen = 0;
-	int	bEnding = strstr (filename, "endreg") || !stricmp (filename, gameData.missions.szEndingFilename);
+	int	bEnding = strstr (filename, "endreg") || !stricmp (filename, missionManager.szEndingFilename);
 	char	fnBriefing [FILENAME_LEN];
 
 PrintLog ("Starting the briefing\n");
@@ -1599,7 +1599,7 @@ if (gameOpts->gameplay.bSkipBriefingScreens) {
 	gameStates.render.bBriefing = 0;
 	return;
 	}
-strcpy (fnBriefing, *gameData.missions.szBriefingFilename ? gameData.missions.szBriefingFilename : filename);
+strcpy (fnBriefing, *missionManager.szBriefingFilename ? missionManager.szBriefingFilename : filename);
 console.printf (CON_DBG, "Trying briefing screen <%s>\n", fnBriefing);
 PrintLog ("Looking for briefing screen '%s'\n", fnBriefing);
 if (!*fnBriefing) {
@@ -1610,7 +1610,7 @@ if (!*fnBriefing) {
 if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_FRONT, 0);
 
-if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.missions.nD1BuiltinMission)) {
+if (gameStates.app.bD1Mission && (missionManager.nCurrentMission != missionManager.nD1BuiltinMission)) {
 	FILE	*fp;
 	int	i;
 	char	*psz;

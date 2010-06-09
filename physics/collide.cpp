@@ -1260,16 +1260,16 @@ if ((bIsBoss = ROBOTINFO (info.nId).bossFlag)) {
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.
 //	Also invulnerable if his cheat for firing weapons is in effect.
 if (ROBOTINFO (info.nId).companion) {
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
-		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
+	if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
+		 (missionManager.nCurrentLevel == missionManager.nLastLevel))
 		return 0;
 	}
 SetTimeLastHit (gameStates.app.nSDLTicks);
 info.xShields -= xDamage;
 //	Do unspeakable hacks to make sure CPlayerData doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
-		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
+	if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
+		 (missionManager.nCurrentLevel == missionManager.nLastLevel) &&
 		 (info.xShields < 0) && (extraGameInfo [0].nBossCount == 1)) {
 		if (IsMultiGame) {
 			if (!MultiAllPlayersAlive ()) // everyones gotta be alive

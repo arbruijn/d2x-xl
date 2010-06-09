@@ -333,7 +333,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
 	return;
 	}
-if ((sbyte)pd->nLevel != gameData.missions.nCurrentLevel) {
+if ((sbyte)pd->nLevel != missionManager.nCurrentLevel) {
 #if 1
 	console.printf (CON_DBG, "Got frame packet from CPlayerData %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
 #endif
@@ -452,7 +452,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	gameStates.app.bEndLevelSequence = old_Endlevel_sequence;
 	return;
 	}
-if ((sbyte) new_pd.nLevel != gameData.missions.nCurrentLevel) {
+if ((sbyte) new_pd.nLevel != missionManager.nCurrentLevel) {
 #if 1
 	console.printf (CON_DBG, "Got frame packet from CPlayerData %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
 #endif

@@ -407,7 +407,7 @@ int CObject::CheckTriggerHits (short nPrevSegment)
 
 if ((info.movementType != MT_PHYSICS) || (nPrevSegment == info.nSegment))
 	return 0;
-nOldLevel = gameData.missions.nCurrentLevel;
+nOldLevel = missionManager.nCurrentLevel;
 for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 	if (gameData.physics.segments [i] < 0)
 		continue;
@@ -423,7 +423,7 @@ for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", gameData.physics.segments [i+1], gameData.physics.segments [i]);
 #endif
 	//maybe we've gone on to the next level.  if so, bail!
-	if (gameData.missions.nCurrentLevel != nOldLevel)
+	if (missionManager.nCurrentLevel != nOldLevel)
 		return 1;
 	}
 return 0;

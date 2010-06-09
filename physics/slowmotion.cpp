@@ -199,7 +199,7 @@ else {
 	else
 		songManager.SetPos (SDL_GetTicks () - songManager.Start ());
 	songManager.SetSlowDown (0);
-	songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 	}
 }
 
@@ -220,7 +220,7 @@ else {
 #else
 	songManager.SetPos (songManager.SlowDown () - songManager.Start ());
 #endif
-	songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 	}
 }
 

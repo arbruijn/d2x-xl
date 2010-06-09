@@ -105,7 +105,7 @@ void DoThiefFrame (CObject *objP)
 	tAILocalInfo*	ailp = gameData.ai.localInfo + nObject;
 	fix				connectedDistance;
 
-	if ((gameData.missions.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
+	if ((missionManager.nCurrentLevel < 0) && (gameData.thief.xReInitTime < gameData.time.xGame)) {
 		if (gameData.thief.xReInitTime > gameData.time.xGame - I2X (2))
 			InitThiefForLevel();
 		gameData.thief.xReInitTime = 0x3f000000;

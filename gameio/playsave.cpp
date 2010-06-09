@@ -1722,7 +1722,7 @@ int FindHLIEntry (void)
 	int i;
 
 for (i = 0; i < nHighestLevels; i++) {
-	if (!stricmp (highestLevels [i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename))
+	if (!stricmp (highestLevels [i].shortname, missionManager.list [missionManager.nCurrentMission].filename))
 		break;
 	}
 if (i == nHighestLevels) {		//not found.  create entry
@@ -1730,7 +1730,7 @@ if (i == nHighestLevels) {		//not found.  create entry
 		i--;		//take last entry
 	else
 		nHighestLevels++;
-	strcpy (highestLevels [i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename);
+	strcpy (highestLevels [i].shortname, missionManager.list [missionManager.nCurrentMission].filename);
 	highestLevels [i].nLevel = 0;
 	}
 return i;
@@ -1758,15 +1758,15 @@ int GetHighestLevel(void)
 
 LoadPlayerProfile (0);
 #ifndef SATURN
-if (strlen (gameData.missions.list [gameData.missions.nCurrentMission].filename) == 0) {
+if (strlen (missionManager.list [missionManager.nCurrentMission].filename) == 0) {
 	for (i = 0; i < nHighestLevels; i++)
 		if (!stricmp (highestLevels [i].shortname, "DESTSAT")) 	//	Destination Saturn.
 		 	nHighestSaturnLevel = highestLevels [i].nLevel;
 }
 #endif
 i = highestLevels [FindHLIEntry()].nLevel;
-if (i > gameData.missions.nLastLevel) 
-	i = highestLevels [FindHLIEntry()].nLevel = gameData.missions.nLastLevel;
+if (i > missionManager.nLastLevel) 
+	i = highestLevels [FindHLIEntry()].nLevel = missionManager.nLastLevel;
 if (nHighestSaturnLevel > i)
    i = nHighestSaturnLevel;
 return i;

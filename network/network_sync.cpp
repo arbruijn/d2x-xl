@@ -352,7 +352,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	}
 *netGame.TeamKills (0) = gameData.multigame.kills.nTeam [0];
 *netGame.TeamKills (1) = gameData.multigame.kills.nTeam [1];
-netGame.m_info.SetLevel (gameData.missions.nCurrentLevel);
+netGame.m_info.SetLevel (missionManager.nCurrentLevel);
 }
 
 //------------------------------------------------------------------------------

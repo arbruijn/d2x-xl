@@ -4912,7 +4912,7 @@ void MultiDoFinishGame (char *buf)
 {
 if (buf [0]!=MULTI_FINISH_GAME)
 	return;
-if (gameData.missions.nCurrentLevel!=gameData.missions.nLastLevel)
+if (missionManager.nCurrentLevel!=missionManager.nLastLevel)
 	return;
 DoFinalBossHacks ();
 }

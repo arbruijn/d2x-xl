@@ -849,13 +849,24 @@ bool CTrigger::DoExit (int nPlayer)
 {
 if (nPlayer != gameData.multiplayer.nLocalPlayer)
 	return false;
+if (m_info.flags & TF_DISABLED)
+	return false;
 audio.StopAll ();		//kill the sounds
 StopSpeedBoost (gameData.multiplayer.players [nPlayer].nObject);
-if ((gameData.missions.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
+if ((missionManager.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
+	if ((m_info.value >= 0) && (m_info.value <= missionManager.nLastLevel)) {
+		if (missionManager.nLevelState [m_info.value] < 0)
+			return false;
+		missionManager.nNextLevel [1] = int (m_info.value);
+		}
+	missionManager.nLevelState [missionManager.nCurrentLevel] =  gameData.reactor.bDestroyed ? -1 : 1;
+	SaveMissionStates ();
+	if (!(m_info.flags & TF_PERMANENT))
+		m_info.flags |= TF_DISABLED;
 	StartEndLevelSequence (0);
 	return true;
 	}
-else if (gameData.missions.nCurrentLevel < 0) {
+else if (missionManager.nCurrentLevel < 0) {
 	if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
 		return false;
 	ExitSecretLevel ();

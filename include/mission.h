@@ -37,28 +37,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define D1_SHAREWARE_10_MISSION_HOGSIZE 2365676 // v1.0 - 1.2
 #define D1_MAC_SHARE_MISSION_HOGSIZE    3370339
 
-#define SHAREWARE_MISSION_FILENAME  "d2demo"
-#define SHAREWARE_MISSION_NAME      "Descent 2 Demo"
-#define SHAREWARE_MISSION_HOGSIZE   2292566 // v1.0 (d2demo.hog)
-#define MAC_SHARE_MISSION_HOGSIZE   4292746
+#define SHAREWARE_MISSION_FILENAME		"d2demo"
+#define SHAREWARE_MISSION_NAME			"Descent 2 Demo"
+#define SHAREWARE_MISSION_HOGSIZE		2292566 // v1.0 (d2demo.hog)
+#define MAC_SHARE_MISSION_HOGSIZE		4292746
 
-#define OEM_MISSION_FILENAME        "d2"
-#define OEM_MISSION_NAME            "D2 Destination:Quartzon"
-#define OEM_MISSION_HOGSIZE         6132957 // v1.1
+#define OEM_MISSION_FILENAME				"d2"
+#define OEM_MISSION_NAME					"D2 Destination:Quartzon"
+#define OEM_MISSION_HOGSIZE				6132957 // v1.1
 
-#define FULL_MISSION_FILENAME       "d2"
-#define FULL_MISSION_HOGSIZE        7595079 // v1.1 - 1.2
-#define FULL_10_MISSION_HOGSIZE     7107354 // v1.0
-#define MAC_FULL_MISSION_HOGSIZE    7110007 // v1.1 - 1.2
-
-//mission list entry
-typedef struct tMsnListEntry {
-	char    filename [FILENAME_LEN];                // path and filename without extension
-	char    szMissionName [MISSION_NAME_LEN+5];
-	ubyte   bAnarchyOnly;          // if true, mission is anarchy only
-	ubyte   location;                   // see defines below
-	ubyte   nDescentVersion;            // descent 1 or descent 2?
-} tMsnListEntry;
+#define FULL_MISSION_FILENAME				"d2"
+#define FULL_MISSION_HOGSIZE				7595079 // v1.1 - 1.2
+#define FULL_10_MISSION_HOGSIZE			7107354 // v1.0
+#define MAC_FULL_MISSION_HOGSIZE			7110007 // v1.1 - 1.2
 
 //values that describe where a mission is located
 #define ML_MISSIONDIR   0
@@ -72,30 +63,105 @@ typedef struct tMsnListEntry {
 #define BASE_MISSION_DIR "missions"
 #define MISSION_DIR (gameOpts->app.bSinglePlayer ? BASE_MISSION_DIR "/single/" : BASE_MISSION_DIR)
 
-#define IS_SHAREWARE (gameData.missions.nBuiltinHogSize == SHAREWARE_MISSION_HOGSIZE)
-#define IS_MAC_SHARE (gameData.missions.nBuiltinHogSize == MAC_SHARE_MISSION_HOGSIZE)
-#define IS_D2_OEM (gameData.missions.nBuiltinHogSize == OEM_MISSION_HOGSIZE)
+//------------------------------------------------------------------------------
 
-//fills in the global list of missions.  Returns the number of missions
-//in the list.  If anarchy_mode set, don't include non-anarchy levels.
-//if there is only one mission, this function will call LoadMission on it.
-int BuildMissionList (int anarchy_mode, int nSubFolder);
+#define LEVEL_NAME_LEN 36       //make sure this is a multiple of 4!
 
-//loads the specfied mission from the mission list.  BuildMissionList()
-//must have been called.  If BuildMissionList() returns 0, this function
-//does not need to be called.  Returns true if mission loaded ok, else false.
-int LoadMission (int nMission);
+//mission list entry
+typedef struct tMsnListEntry {
+	char    filename [FILENAME_LEN];                // path and filename without extension
+	char    szMissionName [MISSION_NAME_LEN+5];
+	ubyte   bAnarchyOnly;          // if true, mission is anarchy only
+	ubyte   location;                   // see defines below
+	ubyte   nDescentVersion;            // descent 1 or descent 2?
+} tMsnListEntry;
 
-//loads the named mission if exists.
-//Returns true if mission loaded ok, else false.
-int LoadMissionByName(char *szMissionName, int nSubFolder);
-int FindMissionByName(char *szMissionName, int nSubFolder);
 
-int IsBuiltInMission (char* pszMission);
+class CMissionData {
+	public:
+		char					szCurrentLevel [LEVEL_NAME_LEN];
+		int					nSecretLevels;
+		int					nLastLevel;
+		int					nCurrentLevel;
+		int					nNextLevel [2];
+		int					nLastSecretLevel;
+		int					nLastMission;
+		int					nEntryLevel;
+		int					nEnhancedMission;
+		int					nCurrentMission;
+		int					nBuiltinMission;
+		int					nD1BuiltinMission;
+		int					nBuiltinHogSize;
+		int					nD1BuiltinHogSize;
+		char					szBuiltinMissionFilename [9];
+		char					szD1BuiltinMissionFilename [9];
+		char					szBriefingFilename [13];
+		char					szEndingFilename [13];
+		tMsnListEntry		list [MAX_MISSIONS + 1];
+		char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
+		char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
+		int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
+		char					szSongNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
+		char					nLevelState [MAX_LEVELS_PER_MISSION];
+
+	public:
+		CMissionData ();
+};
+
+
+class CMissionManager : public CMissionData {
+	public:
+		//fills in the global list of missions.  Returns the number of missions
+		//in the list.  If anarchy_mode set, don't include non-anarchy levels.
+		//if there is only one mission, this function will call LoadMission on it.
+		int BuildList (int anarchy_mode, int nSubFolder);
+
+		//loads the specfied mission from the mission list.  BuildMissionList()
+		//must have been called.  If BuildMissionList() returns 0, this function
+		//does not need to be called.  Returns true if mission loaded ok, else false.
+		int Load (int nMission);
+
+		//loads the named mission if exists.
+		//Returns true if mission loaded ok, else false.
+		int LoadByName (char *szMissionName, int nSubFolder);
+		int FindByName (char *szMissionName, int nSubFolder);
+
+		int IsBuiltIn (char* pszMission);
+		int LoadStates (void);
+		int SaveStates (void);
+
+	private:
+		int LoadD1 (int nMission);
+		int LoadShareware (int nMission);
+		int LoadOEM (int nMission);
+		int ReadFile (const char *filename, int count, int location);
+		void AddBuiltinD1Mission (int *count);
+		void AddBuiltinD2XMission (int *count);
+		void AddBuiltinMission (int *count);
+		void Add (int *count, int anarchy_mode, int bD1Mission, int bSubFolder, int bHaveSubFolders, int nLocation);
+		void Promote (const char * szMissionName, int * nTopPlace, int nMissionCount);
+		void MoveFolderUp (void);
+		void MoveFolderDown (int nSubFolder);
+		int Parse (CFile& cf);
+		void LoadSongList (char *szFile);
+};
+
+extern CMissionManager missionManager;
+
+//------------------------------------------------------------------------------
+
+#define IS_SHAREWARE (missionManager.nBuiltinHogSize == SHAREWARE_MISSION_HOGSIZE)
+#define IS_MAC_SHARE (missionManager.nBuiltinHogSize == MAC_SHARE_MISSION_HOGSIZE)
+#define IS_D2_OEM		(missionManager.nBuiltinHogSize == OEM_MISSION_HOGSIZE)
+
+
+//------------------------------------------------------------------------------
 
 static inline bool MsnHasGameVer (const char *pszMission)
 {
 return (pszMission [0] == '[') && ::isdigit (pszMission [1]) && (pszMission [2] == ']');
 }
+
+//------------------------------------------------------------------------------
 
 #endif

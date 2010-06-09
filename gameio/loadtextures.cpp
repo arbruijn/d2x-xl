@@ -638,10 +638,10 @@ if ((*bmName && /*!gameStates.app.bDemoData &&*/ ((nIndex < 0) || IsCockpit (bmN
 #endif
 	if (*gameFolders.szTextureDir [2]) {
 		char szLevelFolder [FILENAME_LEN];
-		if (gameData.missions.nCurrentLevel < 0)
-			sprintf (szLevelFolder, "slevel%02d", -gameData.missions.nCurrentLevel);
+		if (missionManager.nCurrentLevel < 0)
+			sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
 		else
-			sprintf (szLevelFolder, "level%02d", gameData.missions.nCurrentLevel);
+			sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
 		sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
 		sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
 		}

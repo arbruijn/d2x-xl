@@ -369,7 +369,7 @@ if (bQuit) {
 gameData.score.bNoMovieMessage = 0;
 backgroundManager.Remove ();
 gameStates.menus.nInMenu--;
-if ((gameData.missions.nCurrentLevel >= gameData.missions.nLastLevel) &&
+if ((missionManager.nCurrentLevel >= missionManager.nLastLevel) &&
 	 !extraGameInfo [IsMultiGame].bRotateLevels)
 	longjmp (gameExitPoint, 0);
 }
@@ -379,7 +379,7 @@ if ((gameData.missions.nCurrentLevel >= gameData.missions.nLastLevel) &&
 #define MAX_VIEW_TIME   	15000
 #define ENDLEVEL_IDLE_TIME	10000
 
-#define LAST_OEM_LEVEL	IS_D2_OEM && (gameData.missions.nCurrentLevel == 8)
+#define LAST_OEM_LEVEL	IS_D2_OEM && (missionManager.nCurrentLevel == 8)
 
 void ScoreTableView (int bNetwork)
 {											 

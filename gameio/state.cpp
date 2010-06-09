@@ -501,7 +501,7 @@ if (IsMultiGame) {
 	MultiInitiateSaveGame ();
 	return 0;
 	}
-if ((gameData.missions.nCurrentLevel < 0) && !(m_bSecret || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
+if ((missionManager.nCurrentLevel < 0) && !(m_bSecret || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
 	HUDInitMessage (TXT_SECRET_SAVE_ERROR);
 	return 0;
 	}
@@ -803,10 +803,10 @@ m_cf.WriteInt (gameData.segs.nMaxSegments);
 // Save the Between levels flag...
 m_cf.WriteInt (m_bBetweenLevels);
 // Save the mission info...
-m_cf.Write (gameData.missions.list + gameData.missions.nCurrentMission, sizeof (char), 9);
+m_cf.Write (missionManager.list + missionManager.nCurrentMission, sizeof (char), 9);
 //Save level info
-m_cf.WriteInt (gameData.missions.nCurrentLevel);
-m_cf.WriteInt (gameData.missions.nNextLevel);
+m_cf.WriteInt (missionManager.nCurrentLevel);
+m_cf.WriteInt (missionManager.nNextLevel);
 //Save gameData.time.xGame
 m_cf.WriteFix (gameData.time.xGame);
 // If coop save, save all
@@ -982,7 +982,7 @@ m_cf.WriteShort (paletteManager.BlueEffect ());
 gameData.render.lights.subtracted.Write (m_cf, LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
-m_cf.WriteShort (gameData.missions.nEntryLevel);
+m_cf.WriteShort (missionManager.nEntryLevel);
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	SaveSpawnPoint (i);
 }
@@ -1784,7 +1784,7 @@ if (!m_bBetweenLevels) {
 	gameData.objs.nNextSignature++;
 	//	1 = Didn't die on secret level.
 	//	2 = Died on secret level.
-	if (m_bSecret && (gameData.missions.nCurrentLevel >= 0)) {
+	if (m_bSecret && (missionManager.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
 			ResetShipData (true);
@@ -2000,7 +2000,7 @@ if (m_bSecret != 1)
 else
 	m_cf.ReadFix ();
 if (m_nVersion > 27)
-	gameData.missions.nEntryLevel = m_cf.ReadShort ();
+	missionManager.nEntryLevel = m_cf.ReadShort ();
 *nLevel = nCurrentLevel;
 if (m_nVersion >= 37) {
 	tObjPosition playerInitSave [MAX_PLAYERS];
@@ -2101,7 +2101,7 @@ if (!m_bBetweenLevels) {
 	gameData.objs.nNextSignature++;
 	//	1 = Didn't die on secret level.
 	//	2 = Died on secret level.
-	if (m_bSecret && (gameData.missions.nCurrentLevel >= 0)) {
+	if (m_bSecret && (missionManager.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
 			ResetShipData (true);
@@ -2328,6 +2328,7 @@ if (!i) {
 	StartTime (1);
 	return 0;
 	}
+LoadMissionStates ();
 FixObjectSegs ();
 FixObjectSizes ();
 //lightManager.Setup (nLevel);

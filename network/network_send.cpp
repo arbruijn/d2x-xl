@@ -466,7 +466,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	   break;
 Assert (i < MAX_NUM_NET_PLAYERS);
 networkData.thisPlayer.nType = PID_REQUEST;
-networkData.thisPlayer.player.connected = gameData.missions.nCurrentLevel;
+networkData.thisPlayer.player.connected = missionManager.nCurrentLevel;
 networkData.nJoinState = 0;
 networkData.bHaveSync = 0;
 networkData.sync [0].objs.nFrame = 0;

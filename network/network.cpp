@@ -406,7 +406,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				shortSyncPack.nType = PID_PDATA;
 				shortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
 				shortSyncPack.objRenderType = OBJECTS [nObject].info.renderType;
-				shortSyncPack.nLevel = gameData.missions.nCurrentLevel;
+				shortSyncPack.nLevel = missionManager.nCurrentLevel;
 				shortSyncPack.dataSize = networkData.syncPack.dataSize;
 				memcpy (shortSyncPack.data, networkData.syncPack.data, networkData.syncPack.dataSize);
 				networkData.syncPack.nPackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
@@ -426,7 +426,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				networkData.syncPack.nType = PID_PDATA;
 				networkData.syncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
 				networkData.syncPack.objRenderType = OBJECTS [nObject].info.renderType;
-				networkData.syncPack.nLevel = gameData.missions.nCurrentLevel;
+				networkData.syncPack.nLevel = missionManager.nCurrentLevel;
 				networkData.syncPack.nObjSeg = OBJECTS [nObject].info.nSegment;
 				networkData.syncPack.objPos = OBJECTS [nObject].info.position.vPos;
 				networkData.syncPack.objOrient = OBJECTS [nObject].info.position.mOrient;

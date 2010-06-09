@@ -362,10 +362,10 @@ if (bCustom) {
 	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
 		pszFile = DefaultSoundFile ();
 		pszFolder = gameFolders.szDataDir;
-		if (gameData.missions.nCurrentLevel < 0)
-			sprintf (gameFolders.szSoundDir [5], "%s/slevel%02d", gameFolders.szSoundDir [4], -gameData.missions.nCurrentLevel);
+		if (missionManager.nCurrentLevel < 0)
+			sprintf (gameFolders.szSoundDir [5], "%s/slevel%02d", gameFolders.szSoundDir [4], -missionManager.nCurrentLevel);
 		else
-			sprintf (gameFolders.szSoundDir [5], "%s/level%02d", gameFolders.szSoundDir [4], gameData.missions.nCurrentLevel);
+			sprintf (gameFolders.szSoundDir [5], "%s/level%02d", gameFolders.szSoundDir [4], missionManager.nCurrentLevel);
 		}
 	}
 else {

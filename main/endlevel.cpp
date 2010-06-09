@@ -152,21 +152,21 @@ int StartEndLevelMovie (void)
 
 strcpy (szMovieName, gameStates.app.bD1Mission ? "exita.mve" : "esa.mve");
 if (!IS_D2_OEM)
-	if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)
+	if (missionManager.nCurrentLevel == missionManager.nLastLevel)
 		return 1;   //don't play movie
-if (gameData.missions.nCurrentLevel > 0)
+if (missionManager.nCurrentLevel > 0)
 	if (gameStates.app.bD1Mission)
-		szMovieName [4] = movieTable [1][gameData.missions.nCurrentLevel-1];
+		szMovieName [4] = movieTable [1][missionManager.nCurrentLevel-1];
 	else
-		szMovieName [2] = movieTable [0][gameData.missions.nCurrentLevel-1];
+		szMovieName [2] = movieTable [0][missionManager.nCurrentLevel-1];
 else if (gameStates.app.bD1Mission) {
-	szMovieName [4] = movieTable [1][26 - gameData.missions.nCurrentLevel];
+	szMovieName [4] = movieTable [1][26 - missionManager.nCurrentLevel];
 	}
 else {
 #ifndef SHAREWARE
 	return 0;       //no escapes for secret level
 #else
-	Error ("Invalid level number <%d>", gameData.missions.nCurrentLevel);
+	Error ("Invalid level number <%d>", missionManager.nCurrentLevel);
 #endif
 }
 #ifndef SHAREWARE
@@ -228,8 +228,8 @@ void StartEndLevelSequence (int bSecret)
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playback mode
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
-		 ((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) &&
+	if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) ||
+		 ((missionManager.nCurrentMission == missionManager.nD1BuiltinMission) &&
 		 movieManager.m_bHaveExtras))
 		StartEndLevelMovie ();
 	paletteManager.SetLastLoaded ("");		//force palette load next time
@@ -240,7 +240,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
-			/*Object*/CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7)/2, VCLIP_POWERUP_DISAPPEARANCE);
+			/*Object*/CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 			objP->Die ();
 		}
 LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
@@ -249,8 +249,8 @@ if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
 	}
-if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
-	 ((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) && movieManager.m_bHaveExtras)) {
+if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) ||
+	 ((missionManager.nCurrentMission == missionManager.nD1BuiltinMission) && movieManager.m_bHaveExtras)) {
 	// only play movie for built-in mission
 	if (!IsMultiGame)
 		nMoviePlayed = StartEndLevelMovie ();
@@ -310,7 +310,7 @@ if (IsMultiGame) {
 	NetworkDoFrame (1, 1);
 	}
 Assert (nLastSeg == gameData.endLevel.exit.nSegNum);
-if (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1)
+if (missionManager.list [missionManager.nCurrentMission].nDescentVersion == 1)
 	songManager.Play (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
 gameData.objs.consoleP->info.movementType = MT_NONE;			//movement handled by flythrough
@@ -537,7 +537,7 @@ switch (gameStates.app.bEndLevelSequence) {
 	case EL_FLYTHROUGH: {
 		DoEndLevelFlyThrough (0);
 		if (gameData.objs.consoleP->info.nSegment == gameData.endLevel.exit.nTransitSegNum) {
-			if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
+			if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
 					(StartEndLevelMovie () != MOVIE_NOT_PLAYED))
 				StopEndLevelSequence ();
 			else {
@@ -1123,9 +1123,9 @@ try_again:
 if (gameStates.app.bAutoRunMission)
 	strcpy (filename, szAutoMission);
 else if (nLevel < 0)		//secret level
-	strcpy (filename, gameData.missions.szSecretLevelNames [-nLevel-1]);
+	strcpy (filename, missionManager.szSecretLevelNames [-nLevel-1]);
 else					//Normal level
-	strcpy (filename, gameData.missions.szLevelNames [nLevel-1]);
+	strcpy (filename, missionManager.szLevelNames [nLevel-1]);
 if (!ConvertExt (filename, "end"))
 	Error ("Error converting filename\n'<%s>'\nfor endlevel data\n", filename);
 if (!cf.Open (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {

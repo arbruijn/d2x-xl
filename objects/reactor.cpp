@@ -124,8 +124,8 @@ if (gameStates.limitFPS.bCountDown && !gameStates.app.tick40fps.bTick)
 	return;
 if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and SHAREWARE only
 	// On last level, we don't want a countdown.
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
-		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
+	if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) && 
+		 (missionManager.nCurrentLevel == missionManager.nLastLevel)) {
 		if (!IsMultiGame)
 			return;
 		if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
@@ -221,7 +221,7 @@ if (bFinalCountdown ||
 			KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
 			SEGMENTS [gameData.reactor.triggers.segments [i]].ToggleWall (gameData.reactor.triggers.sides [i]);
-		if (gameData.missions.nCurrentLevel < 0)
+		if (missionManager.nCurrentLevel < 0)
 			CFile::Delete ("secret.sgc", gameFolders.szSaveDir);
 		}
 	InitCountdown (trigP, bFinalCountdown, -1);
@@ -364,7 +364,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			MultiSendCtrlcenFire (&vecToGoal, nBestGun, objP->Index ());
 		CreateNewWeaponSimple (&vecToGoal, &rStatP->vGunPos [nBestGun], objP->Index (), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at CPlayerData, so it might hit him if he's constantly moving.
-		nRandProb = I2X (1) / (abs (gameData.missions.nCurrentLevel) / 4 + 2);
+		nRandProb = I2X (1) / (abs (missionManager.nCurrentLevel) / 4 + 2);
 		count = 0;
 		while ((d_rand () > nRandProb) && (count < 4)) {
 			CFixVector	vRand;
@@ -395,9 +395,9 @@ fix ReactorStrength (void)
 {
 if (gameData.reactor.nStrength == -1) {		//use old defaults
 	//	Boost control center strength at higher levels.
-	if (gameData.missions.nCurrentLevel >= 0)
-		return I2X (200) + I2X (50) * gameData.missions.nCurrentLevel;
-	return I2X (200) - gameData.missions.nCurrentLevel * I2X (150);
+	if (missionManager.nCurrentLevel >= 0)
+		return I2X (200) + I2X (50) * missionManager.nCurrentLevel;
+	return I2X (200) - missionManager.nCurrentLevel * I2X (150);
 	}
 return I2X (gameData.reactor.nStrength);
 }

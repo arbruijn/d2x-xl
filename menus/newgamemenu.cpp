@@ -91,7 +91,7 @@ do {
 		return -1;
 	nDefaultMission = 0;
 	for (i = 0; i < nMissions; i++) {
-		msnNames.Push (gameData.missions.list [i].szMissionName);
+		msnNames.Push (missionManager.list [i].szMissionName);
 		j = MsnHasGameVer (msnNames [i]) ? 4 : 0;
 		if (!stricmp (msnNames [i] + j, gameConfig.szLastMission))
 			nDefaultMission = i;
@@ -102,17 +102,17 @@ do {
 	GameFlushInputs ();
 	if (nNewMission == -1)
 		return -1;      //abort!
-	} while (!gameData.missions.list [nNewMission].nDescentVersion);
+	} while (!missionManager.list [nNewMission].nDescentVersion);
 strncpy (gameConfig.szLastMission, msnNames [nNewMission] + (MsnHasGameVer (msnNames [nNewMission]) ? 4 : 0), sizeof (gameConfig.szLastMission));
 gameConfig.szLastMission [sizeof (gameConfig.szLastMission) - 1] = '\0';
 if (!LoadMission (nNewMission)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
 	return -1;
 	}
-gameStates.app.bD1Mission = (gameData.missions.list [nNewMission].nDescentVersion == 1);
-gameData.missions.nLastMission = nNewMission;
+gameStates.app.bD1Mission = (missionManager.list [nNewMission].nDescentVersion == 1);
+missionManager.nLastMission = nNewMission;
 if (bAnarchyOnly)
-	*bAnarchyOnly = gameData.missions.list [nNewMission].bAnarchyOnly;
+	*bAnarchyOnly = missionManager.list [nNewMission].bAnarchyOnly;
 return nNewMission;
 }
 
@@ -165,7 +165,7 @@ do {
 	if (nMissions < 1)
 		return;
 	for (i = 0; i < nMissions; i++) {
-		m.Push (gameData.missions.list [i].szMissionName);
+		m.Push (missionManager.list [i].szMissionName);
 		if (!stricmp (m [i], gameConfig.szLastMission))
 			nDefaultMission = i;
 		}
@@ -175,21 +175,21 @@ do {
 		return;         //abort!
 	nFolder = nMission;
 	}
-while (!gameData.missions.list [nMission].nDescentVersion);
+while (!missionManager.list [nMission].nDescentVersion);
 strcpy (gameConfig.szLastMission, m [nMission]);
 if (!LoadMission (nMission)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
 	return;
 }
-gameStates.app.bD1Mission = (gameData.missions.list [nMission].nDescentVersion == 1);
-gameData.missions.nLastMission = nMission;
+gameStates.app.bD1Mission = (missionManager.list [nMission].nDescentVersion == 1);
+missionManager.nLastMission = nMission;
 nNewLevel = 1;
 
 PrintLog ("   getting highest level allowed to play\n");
 nHighestPlayerLevel = GetHighestLevel ();
 
-if (nHighestPlayerLevel > gameData.missions.nLastLevel)
-	nHighestPlayerLevel = gameData.missions.nLastLevel;
+if (nHighestPlayerLevel > missionManager.nLastLevel)
+	nHighestPlayerLevel = missionManager.nLastLevel;
 
 if (nHighestPlayerLevel > 1) {
 	CMenu	m (2);
@@ -251,7 +251,7 @@ void NewGameMenu (void)
 {
 	CMenu				m;
 	int				optSelMsn, optMsnName, optLevelText, optLevel, optUseMod, optLaunch, optLoadout;
-	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
+	int				nMission = missionManager.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
 	char				szDifficulty [50];
 	char				szLevelText [32];
@@ -281,8 +281,8 @@ else if (gameOpts->app.bSinglePlayer) {
 	}
 if (nMission >= 0) {
 	nPlayerMaxLevel = GetHighestLevel ();
-	if (nPlayerMaxLevel > gameData.missions.nLastLevel)
-		nPlayerMaxLevel = gameData.missions.nLastLevel;
+	if (nPlayerMaxLevel > missionManager.nLastLevel)
+		nPlayerMaxLevel = missionManager.nLastLevel;
 	}
 hogFileManager.UseMission ("");
 
@@ -294,7 +294,7 @@ for (;;) {
 	optUseMod = -1;
 
 	optSelMsn = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
+	optMsnName = m.AddText ((nMission < 0) ? TXT_NONE_SELECTED : missionManager.list [nMission].szMissionName, 0);
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
 		Assert (strlen (szLevelText) < 100);
@@ -305,9 +305,9 @@ for (;;) {
 		}
 
 	if (nMission >= 0) {
-		bBuiltIn = IsBuiltInMission (gameData.missions.list [nMission].szMissionName);
+		bBuiltIn = IsBuiltInMission (missionManager.list [nMission].szMissionName);
 		gameOpts->app.bEnableMods = 1;
-		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : gameData.missions.list [nMission].filename);
+		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager.list [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
 		if (gameStates.app.bHaveMod == bBuiltIn) {
 			m.AddText ("", 0);
@@ -354,16 +354,16 @@ for (;;) {
 			nLevel = 1;
 			PrintLog ("   getting highest level allowed to play\n");
 			nPlayerMaxLevel = GetHighestLevel ();
-			if (nPlayerMaxLevel > gameData.missions.nLastLevel)
-				nPlayerMaxLevel = gameData.missions.nLastLevel;
+			if (nPlayerMaxLevel > missionManager.nLastLevel)
+				nPlayerMaxLevel = missionManager.nLastLevel;
 			}
 		}
 	else if (choice == optLevel) {
 		i = atoi (m [optLevel].m_text);
 #if DBG
-		if (!i || (i < -gameData.missions.nSecretLevels) || (i > nPlayerMaxLevel) || (i > gameData.missions.nLastLevel))
+		if (!i || (i < -missionManager.nSecretLevels) || (i > nPlayerMaxLevel) || (i > missionManager.nLastLevel))
 #else
-		if ((i <= 0) || (i > nPlayerMaxLevel) || (i > gameData.missions.nLastLevel))
+		if ((i <= 0) || (i > nPlayerMaxLevel) || (i > missionManager.nLastLevel))
 #endif
 			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		else if (nLevel == i)
@@ -434,7 +434,7 @@ else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nStartKali) |
 else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) && (nChoice != multiOpts.nJoinMCast4))
 	return 0;
 gameOpts->app.bSinglePlayer = 0;
-LoadMission (gameData.missions.nLastMission);
+LoadMission (missionManager.nLastMission);
 gameStates.multi.bServer = (nChoice & 1) == 0;
 gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
 if (bUDP) {

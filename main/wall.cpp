@@ -504,7 +504,7 @@ return false;
 int AllowToOpenSpecialBossDoor (int nSegment, short nSide)
 {
 if (IsMultiGame)
-	return (gameData.missions.nCurrentLevel == BOSS_LOCKED_DOOR_LEVEL) &&
+	return (missionManager.nCurrentLevel == BOSS_LOCKED_DOOR_LEVEL) &&
 			 (nSegment == BOSS_LOCKED_DOOR_SEG) &&
 			 (nSide == BOSS_LOCKED_DOOR_SIDE);
 return 0;

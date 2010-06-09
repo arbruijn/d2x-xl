@@ -526,18 +526,18 @@ void CAutomap::CreateNameCanvas (void)
 	char	szExplored [100];
 	int	h, i;
 
-if (gameData.missions.nCurrentLevel > 0)
-	sprintf (m_szLevelNum, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
+if (missionManager.nCurrentLevel > 0)
+	sprintf (m_szLevelNum, "%s %i",TXT_LEVEL, missionManager.nCurrentLevel);
 else
-	sprintf (m_szLevelNum, "Secret Level %i", -gameData.missions.nCurrentLevel);
-if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
-		(gameData.missions.nCurrentLevel > 0))		//built-in mission
+	sprintf (m_szLevelNum, "Secret Level %i", -missionManager.nCurrentLevel);
+if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
+		(missionManager.nCurrentLevel > 0))		//built-in mission
 	sprintf (m_szLevelName,"%s %d: ",
-				pszSystemNames [(gameData.missions.nCurrentLevel - 1) / 4],
-				((gameData.missions.nCurrentLevel - 1) % 4) + 1);
+				pszSystemNames [(missionManager.nCurrentLevel - 1) / 4],
+				((missionManager.nCurrentLevel - 1) % 4) + 1);
 else
 	strcpy (m_szLevelName, " ");
-strcat (m_szLevelName, gameData.missions.szCurrentLevel);
+strcat (m_szLevelName, missionManager.szCurrentLevel);
 for (h = i = 0; i < gameData.segs.nSegments; i++)
 	if (m_visited [0][i])
 		h++;

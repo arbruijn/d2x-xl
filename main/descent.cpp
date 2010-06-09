@@ -176,9 +176,9 @@ if (*LOCALPLAYER.callsign) {
 	strcat (szCaption, "]");
 	strupr (szCaption);
 	}
-if (*gameData.missions.szCurrentLevel) {
+if (*missionManager.szCurrentLevel) {
 	strcat (szCaption, " - ");
-	strcat (szCaption, gameData.missions.szCurrentLevel);
+	strcat (szCaption, missionManager.szCurrentLevel);
 	}
 for (i = 0; szCaption [i]; i++)
 	wszCaption [i] = (wchar_t) szCaption [i];
@@ -193,9 +193,9 @@ if (*LOCALPLAYER.callsign) {
 	strcat (szCaption, "]");
 	strupr (szCaption);
 	}
-if (*gameData.missions.szCurrentLevel) {
+if (*missionManager.szCurrentLevel) {
 	strcat (szCaption, " - ");
-	strcat (szCaption, gameData.missions.szCurrentLevel);
+	strcat (szCaption, missionManager.szCurrentLevel);
 	}
 SDL_WM_SetCaption (szCaption, "Descent II");
 #endif

@@ -47,7 +47,7 @@ do {
 			songManager.SetSlowDown (SDL_GetTicks ());
 			songManager.SetPos (songManager.SlowDown () - songManager.Start ());
 			}
-		songManager.PlayLevelSong (gameData.missions.nCurrentLevel, 1, false);
+		songManager.PlayLevelSong (missionManager.nCurrentLevel, 1, false);
 		}
 	tiSound.ti.bExec = 0;
 	} while (!tiSound.ti.bDone);

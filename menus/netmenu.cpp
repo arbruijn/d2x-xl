@@ -975,7 +975,7 @@ optGameName = m.AddInput (szName, NETGAME_NAME_LEN, HTX_MULTI_NAME);
 optMission = m.AddMenu (TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 optMissionName = m.AddText ("", 0);
 m [optMissionName].m_bRebuild = 1; 
-if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
+if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
 	optLevelText = m.AddText (szLevelText, 0); 
 	optLevel = m.AddInput (szLevel, 4, HTX_MULTI_LEVEL);
 	}
@@ -1039,15 +1039,15 @@ if (!gameStates.app.bNostalgia) {
 
 int GameParamsMenu (CMenu& m, int& key, int& choice, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, int& nNewMission)
 {
-	int i, bAnarchyOnly = (nNewMission < 0) ? 0 : gameData.missions.list [nNewMission].bAnarchyOnly;
+	int i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager.list [nNewMission].bAnarchyOnly;
 
 if (m [optMissionName].m_bRebuild) {
 	strncpy (netGame.m_info.szMissionName, 
-				(nNewMission < 0) ? "" : gameData.missions.list [nNewMission].filename, 
+				(nNewMission < 0) ? "" : missionManager.list [nNewMission].filename, 
 				sizeof (netGame.m_info.szMissionName) - 1);
-	m [optMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (gameData.missions.list [nNewMission].szMissionName));
-	if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
-		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, gameData.missions.nLastLevel);
+	m [optMissionName].SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager.list [nNewMission].szMissionName));
+	if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
+		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
 		Assert (strlen (szLevelText) < 32);
 		m [optLevelText].m_bRebuild = 1;
 		}
@@ -1099,7 +1099,7 @@ else if (choice == optMission) {
 	int h = SelectAndLoadMission (1, &bAnarchyOnly);
 	if (h < 0)
 		return 1;
-	gameData.missions.nLastMission = nNewMission = h;
+	missionManager.nLastMission = nNewMission = h;
 	m [optMissionName].m_bRebuild = 1;
 	return 2;
 	}
@@ -1117,7 +1117,7 @@ if (key != -1) {
 		}
 	strncpy (mpParams.szGameName, szName, sizeof (mpParams.szGameName));
 	mpParams.nLevel = atoi (szLevel);
-	if ((gameData.missions.nLastLevel > 0) && ((mpParams.nLevel < 1) || (mpParams.nLevel > gameData.missions.nLastLevel))) {
+	if ((missionManager.nLastLevel > 0) && ((mpParams.nLevel < 1) || (mpParams.nLevel > missionManager.nLastLevel))) {
 		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
 		sprintf (szLevel, "1");
 		return 1;
@@ -1159,7 +1159,7 @@ int NetworkGetGameParams (int bAutoRun)
 	char	szIpAddr [80];
 	char	szLevel [5];
 
-	int nNewMission = gameData.missions.nLastMission;
+	int nNewMission = missionManager.nLastMission;
 
 gameOpts->app.bSinglePlayer = 0;
 SetAllAllowablesTo (mpParams.nWeaponFilter);
@@ -1224,7 +1224,7 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bTagOnlyHitObjs = 0;
 	}
 netGame.m_info.szMissionName [sizeof (netGame.m_info.szMissionName) - 1] = '\0';
-strncpy (netGame.m_info.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGame.m_info.szMissionTitle));
+strncpy (netGame.m_info.szMissionTitle, missionManager.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGame.m_info.szMissionTitle));
 netGame.m_info.szMissionTitle [sizeof (netGame.m_info.szMissionTitle) - 1] = '\0';
 netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 netGame.SetPlayTimeAllowed (mpParams.nMaxTime);

@@ -134,10 +134,10 @@ void SaveScreenShot (ubyte *buf, int bAutomap)
 if (!gameStates.app.bSaveScreenshot)
 	return;
 gameStates.app.bSaveScreenshot = 0;
-for (i = j = 0; gameData.missions.szCurrentLevel [i]; i++)
-	if (isalnum (gameData.missions.szCurrentLevel [i]))
-		szLevelName [j++] = gameData.missions.szCurrentLevel [i];
-	else if ((gameData.missions.szCurrentLevel [i] == ' ') && j && (szLevelName [j - 1] != '_'))
+for (i = j = 0; missionManager.szCurrentLevel [i]; i++)
+	if (isalnum (missionManager.szCurrentLevel [i]))
+		szLevelName [j++] = missionManager.szCurrentLevel [i];
+	else if ((missionManager.szCurrentLevel [i] == ' ') && j && (szLevelName [j - 1] != '_'))
 		szLevelName [j++] = '_';
 while (j && (szLevelName [j - 1] == '_'))
 	j--;

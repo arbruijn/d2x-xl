@@ -1204,9 +1204,9 @@ int MarkPlayerPathToSegment (int nSegment)
 	short		player_path_length=0;
 	int		player_hide_index=-1;
 
-if (nLastLevelPathCreated == gameData.missions.nCurrentLevel)
+if (nLastLevelPathCreated == missionManager.nCurrentLevel)
 	return 0;
-nLastLevelPathCreated = gameData.missions.nCurrentLevel;
+nLastLevelPathCreated = missionManager.nCurrentLevel;
 if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
 	//console.printf (CON_DBG, "Unable to form path of length %i for myself\n", 100);

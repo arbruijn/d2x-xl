@@ -201,7 +201,7 @@ if (gameStates.app.bD1Mission)
 	m_nGateInterval = I2X (5) - I2X (gameStates.app.nDifficultyLevel) / 2;
 else
 	m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
-if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) {
+if (missionManager.nCurrentLevel == missionManager.nLastLevel) {
 	m_nTeleportInterval = I2X (10);
 	m_nCloakInterval = I2X (15);					//	Time between cloaks
 	}

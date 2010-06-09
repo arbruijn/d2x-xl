@@ -611,9 +611,9 @@ int nNewLevel;
 
 if (!MenuGetValues (TXT_WARP_TO_LEVEL, &nNewLevel, 1))
 	return;
-if (nNewLevel > gameData.missions.nLastLevel)
+if (nNewLevel > missionManager.nLastLevel)
 	return;
-else if (nNewLevel < gameData.missions.nLastSecretLevel)
+else if (nNewLevel < missionManager.nLastSecretLevel)
 	return;
 #if DBG
 else if (!nNewLevel)

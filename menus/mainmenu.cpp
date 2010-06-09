@@ -327,7 +327,7 @@ else if (nChoice == mainOpts.nLoadDirect) {
 	m.AddInput (szLevel, sizeof (szLevel), NULL);
 	m.Menu (NULL, "Enter level to load", NULL, NULL);
 	nLevel = atoi (m [0].m_text);
-	if (nLevel && (nLevel >= gameData.missions.nLastSecretLevel) && (nLevel <= gameData.missions.nLastLevel)) {
+	if (nLevel && (nLevel >= missionManager.nLastSecretLevel) && (nLevel <= missionManager.nLastLevel)) {
 		paletteManager.DisableEffect ();
 		StartNewGame (nLevel);
 		}

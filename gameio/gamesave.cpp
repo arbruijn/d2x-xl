@@ -323,21 +323,21 @@ static int ReadLevelInfo (CFile& cf)
 {
 if (gameTopFileInfo.fileinfoVersion >= 31) { //load mine filename
 	// read newline-terminated string, not sure what version this changed.
-	cf.GetS (gameData.missions.szCurrentLevel, sizeof (gameData.missions.szCurrentLevel));
+	cf.GetS (missionManager.szCurrentLevel, sizeof (missionManager.szCurrentLevel));
 
-	if (gameData.missions.szCurrentLevel [strlen (gameData.missions.szCurrentLevel) - 1] == '\n')
-		gameData.missions.szCurrentLevel [strlen (gameData.missions.szCurrentLevel) - 1] = 0;
+	if (missionManager.szCurrentLevel [strlen (missionManager.szCurrentLevel) - 1] == '\n')
+		missionManager.szCurrentLevel [strlen (missionManager.szCurrentLevel) - 1] = 0;
 }
 else if (gameTopFileInfo.fileinfoVersion >= 14) { //load mine filename
 	// read null-terminated string
-	char *p = gameData.missions.szCurrentLevel;
+	char *p = missionManager.szCurrentLevel;
 	//must do read one char at a time, since no cf.GetS()
 	do {
 		*p = cf.GetC ();
 		} while (*p++);
 }
 else
-	gameData.missions.szCurrentLevel [0] = 0;
+	missionManager.szCurrentLevel [0] = 0;
 if (gameTopFileInfo.fileinfoVersion >= 19) {	//load pof names
 	nSavePOFNames = cf.ReadShort ();
 	if ((nSavePOFNames != 0x614d) && (nSavePOFNames != 0x5547)) { // "Ma"de w/DMB beta/"GU"ILE

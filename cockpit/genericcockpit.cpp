@@ -258,8 +258,8 @@ if (gameStates.app.bEndLevelSequence || !gameData.reactor.bDestroyed  || (gameDa
 
 if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {    // no countdown on registered only
 	//	On last level, we don't want a countdown.
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
-		(gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
+	if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
+		(missionManager.nCurrentLevel == missionManager.nLastLevel)) {
 		if (!IsMultiGame)
 			return;
 		if (gameData.app.nGameMode & GM_MULTI_ROBOTS)

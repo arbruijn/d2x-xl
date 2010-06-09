@@ -356,7 +356,7 @@ console.printf (CON_DBG, "Ignored request from new player to join during endgame
 	return NULL; 
 	}
 
-if (player->player.connected != gameData.missions.nCurrentLevel) {
+if (player->player.connected != missionManager.nCurrentLevel) {
 #if 1      
 	console.printf (CON_DBG, "Dumping player due to old level number.\n");
 #endif

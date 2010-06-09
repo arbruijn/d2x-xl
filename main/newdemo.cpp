@@ -1070,7 +1070,7 @@ NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
 gameData.demo.nStartFrame = gameData.app.nFrameCount;
 bJustStartedRecording = 1;
-NDSetNewLevel (gameData.missions.nCurrentLevel);
+NDSetNewLevel (missionManager.nCurrentLevel);
 StartTime (0);
 }
 
@@ -1744,7 +1744,7 @@ void NDSetNewLevel (int level_num)
 StopTime ();
 NDWriteByte (ND_EVENT_NEW_LEVEL);
 NDWriteByte ((sbyte)level_num);
-NDWriteByte ((sbyte)gameData.missions.nCurrentLevel);
+NDWriteByte ((sbyte)missionManager.nCurrentLevel);
 
 if (bJustStartedRecording == 1) {
 	NDWriteInt (gameData.walls.nWalls);
@@ -2800,8 +2800,8 @@ while (!bDone) {
 					gameData.multiplayer.players [i].flags &= ~PLAYER_FLAGS_CLOAKED;
 					}
 				}
-			if ((loadedLevel < gameData.missions.nLastSecretLevel) || 
-				 (loadedLevel > gameData.missions.nLastLevel)) {
+			if ((loadedLevel < missionManager.nLastSecretLevel) || 
+				 (loadedLevel > missionManager.nLastLevel)) {
 				NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
 				return -1;
 				}
@@ -2884,12 +2884,12 @@ void NDGotoEnd ()
 
 ndInFile.Seek (-2, SEEK_END);
 level = NDReadByte ();
-if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.nLastLevel)) {
+if ((level < missionManager.nLastSecretLevel) || (level > missionManager.nLastLevel)) {
 	NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
 	NDStopPlayback ();
 	return;
 	}
-if (level != gameData.missions.nCurrentLevel)
+if (level != missionManager.nCurrentLevel)
 	LoadLevel (level, 1, 0);
 ndInFile.Seek (-4, SEEK_END);
 byteCount = NDReadShort ();
@@ -3109,7 +3109,7 @@ gameData.reactor.countdown.nSecsLeft = -1;
 paletteManager.SetEffect (0, 0, 0);       //clear flash
 if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 	 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-	level = gameData.missions.nCurrentLevel;
+	level = missionManager.nCurrentLevel;
 	if (gameData.demo.nFrameCount == 0)
 		return;
 	else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) && (gameData.demo.nFrameCount < 10)) {
@@ -3121,10 +3121,10 @@ if ((gameData.demo.nVcrState == ND_STATE_REWINDING) ||
 		ndInFile.Seek (11, SEEK_CUR);
 		}
 	NDBackFrames (nFramesBack);
-	if (level != gameData.missions.nCurrentLevel)
+	if (level != missionManager.nCurrentLevel)
 		NDPopCtrlCenTriggers ();
 	if (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD) {
-		if (level != gameData.missions.nCurrentLevel)
+		if (level != missionManager.nCurrentLevel)
 			NDBackFrames (1);
 		gameData.demo.nVcrState = ND_STATE_PAUSED;
 		}
@@ -3146,12 +3146,12 @@ else if (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) {
 	}
 else if (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD) {
 	if (!gameData.demo.bEof) {
-		level = gameData.missions.nCurrentLevel;
+		level = missionManager.nCurrentLevel;
 		if (NDReadFrameInfo () == -1) {
 			if (!gameData.demo.bEof)
 				NDStopPlayback ();
 			}
-		if (level != gameData.missions.nCurrentLevel) {
+		if (level != missionManager.nCurrentLevel) {
 			if (NDReadFrameInfo () == -1) {
 				if (!gameData.demo.bEof)
 					NDStopPlayback ();
@@ -3196,13 +3196,13 @@ else {
 					break;
 					}
 				memcpy (curObjs, OBJECTS.Buffer (), (nObjects + 1) * sizeof (CObject));
-				nLevel = gameData.missions.nCurrentLevel;
+				nLevel = missionManager.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
 					delete[] curObjs;
 					NDStopPlayback ();
 					return;
 					}
-				if (nLevel != gameData.missions.nCurrentLevel) {
+				if (nLevel != missionManager.nCurrentLevel) {
 					delete[] curObjs;
 					if (NDReadFrameInfo () == -1)
 						NDStopPlayback ();
@@ -3342,7 +3342,7 @@ else {
 	byteCount += 4;
 	}
 NDWriteShort (byteCount);
-NDWriteByte ((sbyte) gameData.missions.nCurrentLevel);
+NDWriteByte ((sbyte) missionManager.nCurrentLevel);
 NDWriteByte (ND_EVENT_EOF);
 gameData.demo.nState = ND_STATE_NORMAL;
 ndOutFile.Close ();
