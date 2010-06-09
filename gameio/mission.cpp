@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	error filefind missing!
 #endif
 
-//this stuff should get defined elsewhere
+CMissionManager missionManager;
 
 //values for d1 built-in mission
 #define BIM_LAST_LEVEL          27
