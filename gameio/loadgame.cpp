@@ -1299,12 +1299,12 @@ if (missionManager.nNextLevel [1] < 0)
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
-	sprintf (szFile, "%s.level%02d", list [nCurrentMission].szMissionName, missionManager.nCurrentLevel);
+	sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName, missionManager.nCurrentLevel);
 	saveGameManager.Save (0, 2, 0, szFile);
 	}
 else if (CFile::Exist (szFile, gameFolders.szSaveDir, 0))
 	CFile::Delete (szFile, gameFolders.szSaveDir);
-sprintf (szFile, "%s.level%02d", list [nCurrentMission].szMissionName, missionManager.nNextLevel [1]);
+sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName, missionManager.nNextLevel [1]);
 if (!gameStates.app.bD1Mission && CFile::Exist (szFile, gameFolders.szSaveDir, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
@@ -1353,7 +1353,7 @@ gameStates.render.cockpit.nLastDrawn [1] = -1;
 if (missionManager.nCurrentLevel < 0)
 	ExitSecretLevel ();
 else
-	ExitLevel ();
+	AdvanceLevel (0,0);
 }
 
 //------------------------------------------------------------------------------
