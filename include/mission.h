@@ -113,7 +113,7 @@ class CMissionManager : public CMissionData {
 	public:
 		//fills in the global list of missions.  Returns the number of missions
 		//in the list.  If anarchy_mode set, don't include non-anarchy levels.
-		//if there is only one mission, this function will call LoadMission on it.
+		//if there is only one mission, this function will call missionManager.Load on it.
 		int BuildList (int anarchy_mode, int nSubFolder);
 
 		//loads the specfied mission from the mission list.  BuildMissionList()

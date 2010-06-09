@@ -195,7 +195,7 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 			int gameStatus = activeNetGames [i].m_info.gameStatus;
 			int nplayers = 0;
 			char szLevelName [20], szMissionName [50], szGameName [50];
-			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? FindMissionByName (activeNetGames [i].m_info.szMissionName, -1) : -1;
+			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? missionManager.FindByName (activeNetGames [i].m_info.szMissionName, -1) : -1;
 
 		// These next two loops protect against menu skewing
 		// if missiontitle or gamename contain a tab
@@ -376,7 +376,7 @@ if (tracker.m_bUse) {
 	}
 // Check for valid mission name
 console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
-if (!(LoadMissionByName (AGI.m_info.szMissionName, -1) ||	(downloadManager.DownloadMission (AGI.m_info.szMissionName) && LoadMissionByName (AGI.m_info.szMissionName, -1)))) {
+if (!(missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	(downloadManager.DownLoadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, -1)))) {
 	PrintLog ("Mission '%s' not found%s\n", AGI.m_info.szMissionName);
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;

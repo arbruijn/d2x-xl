@@ -62,7 +62,7 @@ class CDownloadManager {
 		int GetTimeoutSecs (void);
 		int Upload (ubyte *data);
 		int Download (ubyte *data);
-		int DownloadMission (char *pszMission);
+		int DownLoadMission (char *pszMission);
 		void CleanUp (void);
 		int Poll (CMenu& menu, int& key, int nCurItem);
 

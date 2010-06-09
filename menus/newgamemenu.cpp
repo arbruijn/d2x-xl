@@ -86,7 +86,7 @@ if (bAnarchyOnly)
 	*bAnarchyOnly = 0;
 do {
 	msnNames.Reset ();
-	nMissions = BuildMissionList (1, nNewMission);
+	nMissions = missionManager.BuildList (1, nNewMission);
 	if (nMissions < 1)
 		return -1;
 	nDefaultMission = 0;
@@ -105,7 +105,7 @@ do {
 	} while (!missionManager.list [nNewMission].nDescentVersion);
 strncpy (gameConfig.szLastMission, msnNames [nNewMission] + (MsnHasGameVer (msnNames [nNewMission]) ? 4 : 0), sizeof (gameConfig.szLastMission));
 gameConfig.szLastMission [sizeof (gameConfig.szLastMission) - 1] = '\0';
-if (!LoadMission (nNewMission)) {
+if (!missionManager.Load (nNewMission)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
 	return -1;
 	}
@@ -161,7 +161,7 @@ if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubDir [0] = '\0';
 hogFileManager.UseMission ("");
 do {
-	nMissions = BuildMissionList (0, nFolder);
+	nMissions = missionManager.BuildList (0, nFolder);
 	if (nMissions < 1)
 		return;
 	for (i = 0; i < nMissions; i++) {
@@ -177,7 +177,7 @@ do {
 	}
 while (!missionManager.list [nMission].nDescentVersion);
 strcpy (gameConfig.szLastMission, m [nMission]);
-if (!LoadMission (nMission)) {
+if (!missionManager.Load (nMission)) {
 	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
 	return;
 }
@@ -305,7 +305,7 @@ for (;;) {
 		}
 
 	if (nMission >= 0) {
-		bBuiltIn = IsBuiltInMission (missionManager.list [nMission].szMissionName);
+		bBuiltIn = missionManager.IsBuiltIn (missionManager.list [nMission].szMissionName);
 		gameOpts->app.bEnableMods = 1;
 		MakeModFolders (bBuiltIn ? hogFileManager.m_files.MsnHogFiles.szName : missionManager.list [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
@@ -397,7 +397,7 @@ SavePlayerProfile ();
 
 paletteManager.DisableEffect ();
 if (!bMsnLoaded)
-	LoadMission (nMission);
+	missionManager.Load (nMission);
 if (!StartNewGame (nLevel))
 	SetFunctionMode (FMODE_MENU);
 }
@@ -434,7 +434,7 @@ else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nStartKali) |
 else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) && (nChoice != multiOpts.nJoinMCast4))
 	return 0;
 gameOpts->app.bSinglePlayer = 0;
-LoadMission (missionManager.nLastMission);
+missionManager.Load (missionManager.nLastMission);
 gameStates.multi.bServer = (nChoice & 1) == 0;
 gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
 if (bUDP) {

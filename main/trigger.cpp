@@ -860,7 +860,7 @@ if ((missionManager.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
 		missionManager.nNextLevel [1] = int (m_info.value);
 		}
 	missionManager.nLevelState [missionManager.nCurrentLevel] =  gameData.reactor.bDestroyed ? -1 : 1;
-	SaveMissionStates ();
+	missionManager.SaveStates ();
 	if (!(m_info.flags & TF_PERMANENT))
 		m_info.flags |= TF_DISABLED;
 	StartEndLevelSequence (0);

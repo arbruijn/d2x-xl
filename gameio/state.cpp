@@ -806,7 +806,7 @@ m_cf.WriteInt (m_bBetweenLevels);
 m_cf.Write (missionManager.list + missionManager.nCurrentMission, sizeof (char), 9);
 //Save level info
 m_cf.WriteInt (missionManager.nCurrentLevel);
-m_cf.WriteInt (missionManager.nNextLevel);
+m_cf.WriteInt (missionManager.nNextLevel [0]);
 //Save gameData.time.xGame
 m_cf.WriteFix (gameData.time.xGame);
 // If coop save, save all
@@ -1211,7 +1211,7 @@ int CSaveGameManager::LoadMission (void)
 m_cf.Read (szMission, sizeof (char), 9);
 szMission [9] = '\0';
 gameOpts->app.nVersionFilter = 3;
-i = LoadMissionByName (szMission, -1);
+i = missionManager.LoadByName (szMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (i)
 	return 1;
@@ -2328,7 +2328,7 @@ if (!i) {
 	StartTime (1);
 	return 0;
 	}
-LoadMissionStates ();
+missionManager.LoadStates ();
 FixObjectSegs ();
 FixObjectSizes ();
 //lightManager.Setup (nLevel);

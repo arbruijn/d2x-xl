@@ -686,7 +686,7 @@ if (count > nTopPlace)
 			count - nTopPlace,
 			sizeof(*list),
 			(int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
-//LoadMission(0);   //set built-in mission as default
+//missionManager.Load(0);   //set built-in mission as default
 nMissionCount = count;
 return count;
 }
@@ -1047,7 +1047,7 @@ int CMissionManager::SaveStates (void)
 	CFile		cf;
 	char		szFile [FILENAME_LEN] = {'\0'};
 
-sprintf (szFile, "%s.state", gameFolders.szCacheDir, list [nCurrentMission].szMissionName);
+sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
 if (!cf.Open (szFile, gameFolders.szMissionDir, "wb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
@@ -1063,7 +1063,7 @@ int CMissionManager::LoadStates (void)
 	CFile		cf;
 	char		szFile [FILENAME_LEN] = {'\0'};
 
-sprintf (szFile, "%s.state", gameFolders.szCacheDir, list [nCurrentMission].szMissionName);
+sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
 if (!cf.Open (szFile, gameFolders.szMissionDir, "rb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)

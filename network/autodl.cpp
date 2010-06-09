@@ -549,7 +549,7 @@ return downloadManager.Poll (menu, key, nCurItem);
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::DownloadMission (char *pszMission)
+int CDownloadManager::DownLoadMission (char *pszMission)
 {
 	CMenu	m (3);
 	char	szTitle [30];

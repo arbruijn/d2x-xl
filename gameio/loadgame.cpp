@@ -882,7 +882,7 @@ CleanupBeforeGame (nLevel, bRestore);
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (missionManager.list [missionManager.nCurrentMission].nDescentVersion == 1);
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
-if (!(gameStates.app.bHaveMod || IsBuiltInMission (hogFileManager.m_files.MsnHogFiles.szName)))
+if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.m_files.MsnHogFiles.szName)))
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!");
 if (gameStates.app.bHaveMod)
 	songManager.LoadPlayList (szDefaultPlayList, 1);
@@ -1074,10 +1074,12 @@ int StartNewGame (int nLevel)
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 missionManager.nNextLevel [0] = 0;
+missionManager.nNextLevel [1] = -1;
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
 memset (missionManager.nLevelState, 0, sizeof (missionManager.nLevelState));
+missionManager.SaveStates ();
 InitMultiPlayerObject (0);
 if (!StartNewLevel (nLevel, true)) {
 	gameStates.app.bAutoRunMission = 0;
@@ -1252,7 +1254,7 @@ paletteManager.ResetEffect ();
 
 //------------------------------------------------------------------------------
 
-//	Called from switch.c when CPlayerData is on a secret level and hits exit to return to base level.
+//	Called from trigger.cpp when player is on a secret level and hits exit to return to base level.
 void ExitSecretLevel (void)
 {
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
@@ -1282,6 +1284,39 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 		StartNewLevel (missionManager.nEntryLevel + 1, false);
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+//	Called from trigger.cpp when player is exiting via a directed exit
+int ReenterLevel (void)
+{
+if (missionManager.nNextLevel [1] < 0) 
+	return 0;
+
+		char	szFile [FILENAME_LEN] = {'\0'};
+
+if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
+	NDStopRecording ();
+if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
+	sprintf (szFile, "%s.level%02d", list [nCurrentMission].szMissionName, missionManager.nCurrentLevel);
+	saveGameManager.Save (0, 2, 0, szFile);
+	}
+else if (CFile::Exist (szFile, gameFolders.szSaveDir, 0))
+	CFile::Delete (szFile, gameFolders.szSaveDir);
+sprintf (szFile, "%s.level%02d", list [nCurrentMission].szMissionName, missionManager.nNextLevel [1]);
+if (!gameStates.app.bD1Mission && CFile::Exist (szFile, gameFolders.szSaveDir, 0)) {
+	int pwSave = gameData.weapons.nPrimary;
+	int swSave = gameData.weapons.nSecondary;
+	saveGameManager.Load (1, 0, 0, szFile);
+	SetD1Sound ();
+	SetDataVersion (-1);
+	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
+	gameData.weapons.nPrimary = pwSave;
+	gameData.weapons.nSecondary = swSave;
+	return 1;
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1318,7 +1353,7 @@ gameStates.render.cockpit.nLastDrawn [1] = -1;
 if (missionManager.nCurrentLevel < 0)
 	ExitSecretLevel ();
 else
-	AdvanceLevel (0, 0);				//now go on to the next one (if one)
+	ExitLevel ();
 }
 
 //------------------------------------------------------------------------------
@@ -1447,7 +1482,7 @@ if (IsMultiGame) {
 		longjmp (gameExitPoint, 0);		// Exit out of game loop
 		}
 	}
-if ((missionManager.nCurrentLevel == missionManager.nLastLevel) &&
+if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManager.nNextLevel [1] < 0) &&
 	 !extraGameInfo [IsMultiGame].bRotateLevels) //CPlayerData has finished the game!
 	DoEndGame ();
 else {
@@ -1465,7 +1500,8 @@ else {
 		}
 	if (!IsMultiGame)
 		DoEndlevelMenu (); // Let user save their game
-	StartNewLevel (missionManager.nNextLevel [0], false);
+	if (!ReenterLevel ())
+		StartNewLevel (missionManager.nNextLevel [0], false);
 	}
 gameStates.app.bBetweenLevels = 0;
 }

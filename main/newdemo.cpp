@@ -1853,7 +1853,7 @@ if (laserLevel != LOCALPLAYER.laserLevel) {
 NDReadString (szCurrentMission);
 nVersionFilter = gameOpts->app.nVersionFilter;
 gameOpts->app.nVersionFilter = 3;	//make sure mission will be loaded
-i = LoadMissionByName (szCurrentMission, -1);
+i = missionManager.LoadByName (szCurrentMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (!i) {
 	if (bRandom)
