@@ -1311,6 +1311,7 @@ if (!gameStates.app.bD1Mission && CFile::Exist (szFile, gameFolders.szSaveDir, 0
 	saveGameManager.Load (1, 0, 0, szFile);
 	SetD1Sound ();
 	SetDataVersion (-1);
+	InitPlayerPosition (1);
 	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	gameData.weapons.nPrimary = pwSave;
 	gameData.weapons.nSecondary = swSave;
