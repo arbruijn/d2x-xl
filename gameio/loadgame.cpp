@@ -1074,7 +1074,7 @@ int StartNewGame (int nLevel)
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
 missionManager.SetNextLevel (0);
-missionManager.NextLevel (1, -1);
+missionManager.SetNextLevel (1, -1);
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
