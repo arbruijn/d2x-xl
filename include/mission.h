@@ -127,8 +127,22 @@ class CMissionManager : public CMissionData {
 		int FindByName (char *szMissionName, int nSubFolder);
 
 		int IsBuiltIn (char* pszMission);
-		int LoadStates (void);
-		int SaveStates (void);
+		int LoadLevelStates (void);
+		int SaveLevelStates (void);
+
+		inline int NextLevel (int i = 0) { return nNextLevel [i]; }
+		inline void SetNextLevel (int nLevel, int i = 0) { nNextLevel [i] = nLevel; }
+
+		inline int LastLevel (void) { return nLastLevel; }
+		inline int LastSecretLevel (void) { return nLastSecretLevel; }
+
+		inline int GetLevelState (int nLevel) {
+			return ((nLevel < 1) || (nLevel > nLastLevel)) ? -1 : nLevelState [nLevel];
+			}
+		inline void SetLevelState (int nLevel, char nState) {
+			if ((nLevel >= 1) && (nLevel <= nLastLevel)) 
+				nLevelState [nLevel] = nState;
+			}
 
 	private:
 		int LoadD1 (int nMission);

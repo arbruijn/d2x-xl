@@ -806,7 +806,7 @@ m_cf.WriteInt (m_bBetweenLevels);
 m_cf.Write (missionManager.list + missionManager.nCurrentMission, sizeof (char), 9);
 //Save level info
 m_cf.WriteInt (missionManager.nCurrentLevel);
-m_cf.WriteInt (missionManager.nNextLevel [0]);
+m_cf.WriteInt (missionManager.NextLevel ());
 //Save gameData.time.xGame
 m_cf.WriteFix (gameData.time.xGame);
 // If coop save, save all
@@ -2328,7 +2328,7 @@ if (!i) {
 	StartTime (1);
 	return 0;
 	}
-missionManager.LoadStates ();
+missionManager.LoadLevelStates ();
 FixObjectSegs ();
 FixObjectSizes ();
 //lightManager.Setup (nLevel);

@@ -1042,7 +1042,7 @@ return (strstr (pszMission, "Descent: First Strike") != NULL) ||
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::SaveStates (void)
+int CMissionManager::SaveLevelStates (void)
 {
 	CFile		cf;
 	char		szFile [FILENAME_LEN] = {'\0'};
@@ -1058,7 +1058,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::LoadStates (void)
+int CMissionManager::LoadLevelStates (void)
 {
 	CFile		cf;
 	char		szFile [FILENAME_LEN] = {'\0'};

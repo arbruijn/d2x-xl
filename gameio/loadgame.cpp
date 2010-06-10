@@ -1073,13 +1073,13 @@ int StartNewGame (int nLevel)
 {
 gameData.app.nGameMode = GM_NORMAL;
 SetFunctionMode (FMODE_GAME);
-missionManager.nNextLevel [0] = 0;
-missionManager.nNextLevel [1] = -1;
+missionManager.SetNextLevel (0);
+missionManager.NextLevel (1, -1);
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
 memset (missionManager.nLevelState, 0, sizeof (missionManager.nLevelState));
-missionManager.SaveStates ();
+missionManager.SaveLevelStates ();
 InitMultiPlayerObject (0);
 if (!StartNewLevel (nLevel, true)) {
 	gameStates.app.bAutoRunMission = 0;
@@ -1291,7 +1291,7 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 //	Called from trigger.cpp when player is exiting via a directed exit
 int ReenterLevel (void)
 {
-if (missionManager.nNextLevel [1] < 1) 
+if (missionManager.GetLevelState (missionManager.NextLevel (1)) < 1) 
 	return 0;
 
 		char	szFile [FILENAME_LEN] = {'\0'};
@@ -1304,7 +1304,7 @@ if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
 	}
 else if (CFile::Exist (szFile, gameFolders.szSaveDir, 0))
 	CFile::Delete (szFile, gameFolders.szSaveDir);
-sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName, missionManager.nNextLevel [1]);
+sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName, missionManager.NextLevel (1));
 if (!gameStates.app.bD1Mission && CFile::Exist (szFile, gameFolders.szSaveDir, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
@@ -1484,29 +1484,29 @@ if (IsMultiGame) {
 		}
 	}
 
-missionManager.nLevelState [missionManager.nCurrentLevel] = gameData.reactor.bDestroyed ? -1 : 1;
-missionManager.SaveStates ();
+missionManager.SetLevelState (missionManager.nCurrentLevel, gameData.reactor.bDestroyed ? -1 : 1);
+missionManager.SaveLevelStates ();
 
-if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManager.nNextLevel [1] < 1) &&
+if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManager.NextLevel (1) < 1) &&
 	 !extraGameInfo [IsMultiGame].bRotateLevels) //CPlayerData has finished the game!
 	DoEndGame ();
 else {
-	if (missionManager.nNextLevel [1] < 1) 
-		missionManager.nNextLevel [0] = missionManager.nCurrentLevel + 1;		//assume go to next Normal level
+	if (missionManager.NextLevel (1) < 1) 
+		missionManager.SetNextLevel (missionManager.nCurrentLevel + 1);		//assume go to next Normal level
 	else {
-		missionManager.nNextLevel [0] = missionManager.nNextLevel [1];
-		missionManager.nNextLevel [1] = -1;
+		missionManager.SetNextLevel (missionManager.NextLevel (1));
+		missionManager.SetNextLevel (1, -1);
 		}
-	if (missionManager.nNextLevel [0] > missionManager.nLastLevel) {
+	if (missionManager.NextLevel () > missionManager.nLastLevel) {
 		if (extraGameInfo [IsMultiGame].bRotateLevels)
-			missionManager.nNextLevel [0] = 1;
+			missionManager.SetNextLevel (1);
 		else
-			missionManager.nNextLevel [0] = missionManager.nLastLevel;
+			missionManager.SetNextLevel (missionManager.LastLevel ());
 		}
 	if (!IsMultiGame)
 		DoEndlevelMenu (); // Let user save their game
 	if (!ReenterLevel ())
-		StartNewLevel (missionManager.nNextLevel [0], false);
+		StartNewLevel (missionManager.NextLevel (), false);
 	}
 gameStates.app.bBetweenLevels = 0;
 }
@@ -1907,20 +1907,20 @@ if (gameData.reactor.bDestroyed)
 	DoEndLevelScoreGlitz (0);
 if (gameData.demo.nState != ND_STATE_PLAYBACK)
 	saveGameManager.Save (0, 1, 0, NULL);	//	Not between levels (ie, save all), IS a secret level, NO filename override
-//	Find secret level number to go to, stuff in missionManager.nNextLevel [0].
+//	Find secret level number to go to, stuff in missionManager.NextLevel ().
 for (i = 0; i < -missionManager.nLastSecretLevel; i++)
 	if (missionManager.secretLevelTable [i] == missionManager.nCurrentLevel) {
-		missionManager.nNextLevel [0] = -i - 1;
+		missionManager.SetNextLevel (-i - 1);
 		break;
 		}
 	else if (missionManager.secretLevelTable [i] > missionManager.nCurrentLevel) {	//	Allows multiple exits in same group.
-		missionManager.nNextLevel [0] = -i;
+		missionManager.SetNextLevel (-i);
 		break;
 		}
 if (i >= -missionManager.nLastSecretLevel)		//didn't find level, so must be last
-	missionManager.nNextLevel [0] = missionManager.nLastSecretLevel;
+	missionManager.SetNextLevel (missionManager.LastSecretLevel ());
 xOldGameTime = gameData.time.xGame;
-PrepareSecretLevel (missionManager.nNextLevel [0], true);
+PrepareSecretLevel (missionManager.NextLevel (), true);
 // do_cloak_invul_stuff ();
 }
 
