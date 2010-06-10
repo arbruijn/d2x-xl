@@ -1694,8 +1694,8 @@ nLastMission = -1;
 nLastLevel = -1;
 nLastSecretLevel = -1;
 nEntryLevel = -1;
-strcpy (szEndingFilename, "endreg.txt");
-strcpy (szBriefingFilename, "briefing.txt");
+strcpy (szBriefingFilename [1], "endreg.txt");
+strcpy (szBriefingFilename [0], "briefing.txt");
 }
 
 // ----------------------------------------------------------------------------

@@ -79,24 +79,20 @@ typedef struct tMsnListEntry {
 
 class CMissionData {
 	public:
-		char					szCurrentLevel [LEVEL_NAME_LEN];
-		int					nSecretLevels;
-		int					nLastLevel;
-		int					nCurrentLevel;
-		int					nNextLevel [2];
-		int					nLastSecretLevel;
-		int					nLastMission;
-		int					nEntryLevel;
-		int					nEnhancedMission;
 		int					nCurrentMission;
-		int					nBuiltinMission;
-		int					nD1BuiltinMission;
-		int					nBuiltinHogSize;
-		int					nD1BuiltinHogSize;
-		char					szBuiltinMissionFilename [9];
-		char					szD1BuiltinMissionFilename [9];
-		char					szBriefingFilename [13];
-		char					szEndingFilename [13];
+		int					nLastMission;
+		int					nEnhancedMission;
+		int					nEntryLevel;
+		int					nCurrentLevel;
+		int					nLastLevel;
+		int					nSecretLevels;
+		int					nLastSecretLevel;
+		int					nNextLevel [2];
+		int					nBuiltInMission [2];
+		int					nBuiltInHogSize [2];
+		char					szCurrentLevel [LEVEL_NAME_LEN];
+		char					szBuiltinMissionFilename [2][9];
+		char					szBriefingFilename [2][13];
 		tMsnListEntry		list [MAX_MISSIONS + 1];
 		char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 		char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
@@ -164,9 +160,9 @@ extern CMissionManager missionManager;
 
 //------------------------------------------------------------------------------
 
-#define IS_SHAREWARE (missionManager.nBuiltinHogSize == SHAREWARE_MISSION_HOGSIZE)
-#define IS_MAC_SHARE (missionManager.nBuiltinHogSize == MAC_SHARE_MISSION_HOGSIZE)
-#define IS_D2_OEM		(missionManager.nBuiltinHogSize == OEM_MISSION_HOGSIZE)
+#define IS_SHAREWARE (missionManager.nBuiltInHogSize [0] == SHAREWARE_MISSION_HOGSIZE)
+#define IS_MAC_SHARE (missionManager.nBuiltInHogSize [0] == MAC_SHARE_MISSION_HOGSIZE)
+#define IS_D2_OEM		(missionManager.nBuiltInHogSize [0] == OEM_MISSION_HOGSIZE)
 
 
 //------------------------------------------------------------------------------

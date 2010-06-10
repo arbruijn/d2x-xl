@@ -530,7 +530,7 @@ if (missionManager.nCurrentLevel > 0)
 	sprintf (m_szLevelNum, "%s %i",TXT_LEVEL, missionManager.nCurrentLevel);
 else
 	sprintf (m_szLevelNum, "Secret Level %i", -missionManager.nCurrentLevel);
-if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
+if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
 		(missionManager.nCurrentLevel > 0))		//built-in mission
 	sprintf (m_szLevelName,"%s %d: ",
 				pszSystemNames [(missionManager.nCurrentLevel - 1) / 4],

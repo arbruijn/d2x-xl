@@ -228,8 +228,8 @@ void StartEndLevelSequence (int bSecret)
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playback mode
-	if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) ||
-		 ((missionManager.nCurrentMission == missionManager.nD1BuiltinMission) &&
+	if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) ||
+		 ((missionManager.nCurrentMission == missionManager.nBuiltInMission [1]) &&
 		 movieManager.m_bHaveExtras))
 		StartEndLevelMovie ();
 	paletteManager.SetLastLoaded ("");		//force palette load next time
@@ -249,8 +249,8 @@ if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
 	}
-if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) ||
-	 ((missionManager.nCurrentMission == missionManager.nD1BuiltinMission) && movieManager.m_bHaveExtras)) {
+if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) ||
+	 ((missionManager.nCurrentMission == missionManager.nBuiltInMission [1]) && movieManager.m_bHaveExtras)) {
 	// only play movie for built-in mission
 	if (!IsMultiGame)
 		nMoviePlayed = StartEndLevelMovie ();
@@ -537,7 +537,7 @@ switch (gameStates.app.bEndLevelSequence) {
 	case EL_FLYTHROUGH: {
 		DoEndLevelFlyThrough (0);
 		if (gameData.objs.consoleP->info.nSegment == gameData.endLevel.exit.nTransitSegNum) {
-			if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
+			if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
 					(StartEndLevelMovie () != MOVIE_NOT_PLAYED))
 				StopEndLevelSequence ();
 			else {

@@ -307,7 +307,7 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 	//Int3 (); // Not enough positions!!
 }
 #endif
-if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltinMission) && (missionManager.nCurrentLevel == 8)) {
+if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.m_info.players [i].versionMinor & 0xF0)) {
 			MsgBox ("Warning!", NULL, 1, TXT_OK,
@@ -315,7 +315,7 @@ if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManage
 			return;
 			}
 	}
-if (IS_MAC_SHARE && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltinMission) && (missionManager.nCurrentLevel == 4)) {
+if (IS_MAC_SHARE && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.m_info.players [i].versionMinor & 0xF0)) {
 			MsgBox ("Warning!", NULL, 1 , TXT_OK,
@@ -554,7 +554,7 @@ InitAIForShip ();
 void DoGameOver (void)
 {
 //	MsgBox (TXT_GAME_OVER, 1, TXT_OK, "");
-if (missionManager.nCurrentMission == missionManager.nBuiltinMission)
+if (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])
 	MaybeAddPlayerScore (0);
 SetFunctionMode (FMODE_MENU);
 gameData.app.nGameMode = GM_GAME_OVER;
@@ -1394,7 +1394,7 @@ SetScreenMode (SCREEN_MENU);
 CCanvas::SetCurrent (NULL);
 KeyFlush ();
 if (!IsMultiGame) {
-	if (missionManager.nCurrentMission == (gameStates.app.bD1Mission ? missionManager.nD1BuiltinMission : missionManager.nBuiltinMission)) {
+	if (missionManager.nCurrentMission == (gameStates.app.bD1Mission ? missionManager.nBuiltInMission [1] : missionManager.nBuiltInMission [0])) {
 		int bPlayed = MOVIE_NOT_PLAYED;	//default is not bPlayed
 
 		if (!gameStates.app.bD1Mission) {
@@ -1436,7 +1436,7 @@ else
 	// NOTE LINK TO ABOVE
 	DoEndLevelScoreGlitz (0);
 
-if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) &&
+if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
 	 !(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) {
 	CCanvas::SetCurrent (NULL);
 	CCanvas::Current ()->Clear (BLACK_RGBA);
@@ -1988,7 +1988,7 @@ if (!IsMultiGame) {
 	uint i, bPlayed = 0;
 
 	PlayLevelIntroMovie (nLevel);
-	if (!gameStates.app.bD1Mission && (missionManager.nCurrentMission == missionManager.nBuiltinMission)) {
+	if (!gameStates.app.bD1Mission && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])) {
 		if (IS_SHAREWARE) {
 			if (nLevel == 1)
 				briefing.Run ("brief2.tex", 1);
@@ -2025,12 +2025,12 @@ if (!IsMultiGame) {
 		}
 	else {	//not the built-in mission.  check for add-on briefing
 		if ((missionManager.list [missionManager.nCurrentMission].nDescentVersion == 1) &&
-			 (missionManager.nCurrentMission == missionManager.nD1BuiltinMission)) {
+			 (missionManager.nCurrentMission == missionManager.nBuiltInMission [1])) {
 			if (movieManager.m_bHaveExtras && (nLevel == 1)) {
 				if (movieManager.Play ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
 					 movieManager.Play ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 				}
-			briefing.Run (missionManager.szBriefingFilename, nLevel);
+			briefing.Run (missionManager.szBriefingFilename [0], nLevel);
 			}
 		else {
 			char szBriefing [FILENAME_LEN];

@@ -64,7 +64,7 @@ nCurrentMission = nMission;
 gameStates.app.szCurrentMissionFile = list [nMission].filename;
 gameStates.app.szCurrentMission = list [nMission].szMissionName;
 
-switch (nD1BuiltinHogSize) {
+switch (nBuiltInHogSize [1]) {
 case D1_SHAREWARE_MISSION_HOGSIZE:
 case D1_SHAREWARE_10_MISSION_HOGSIZE:
 	nSecretLevels = 0;
@@ -129,8 +129,8 @@ case D1_MAC_MISSION_HOGSIZE:
 
 	break;
 	}
-strcpy (szBriefingFilename,BIM_BRIEFING_FILE);
-strcpy (szEndingFilename,BIM_ENDING_FILE);
+strcpy (szBriefingFilename [0], BIM_BRIEFING_FILE);
+strcpy (szBriefingFilename [1], BIM_ENDING_FILE);
 gameStates.app.bD1Mission = 1;
 return 1;
 }
@@ -147,7 +147,7 @@ nCurrentMission = nMission;
 gameStates.app.szCurrentMissionFile = list [nMission].filename;
 gameStates.app.szCurrentMission = list [nMission].szMissionName;
 
-switch (nBuiltinHogSize) {
+switch (nBuiltInHogSize [0]) {
 	case MAC_SHARE_MISSION_HOGSIZE:
 		nSecretLevels = 1;
 
@@ -379,8 +379,8 @@ void CMissionManager::AddBuiltinD1Mission (int *count)
 
 if (!cf.Exist ("descent.hog", gameFolders.szDataDir, 1))
 	return;
-nD1BuiltinHogSize = cf.Size ("descent.hog", gameFolders.szDataDir, 0);
-switch (nD1BuiltinHogSize) {
+nBuiltInHogSize [1] = cf.Size ("descent.hog", gameFolders.szDataDir, 0);
+switch (nBuiltInHogSize [1]) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
 	case D1_SHAREWARE_10_MISSION_HOGSIZE:
 	case D1_MAC_SHARE_MISSION_HOGSIZE:
@@ -398,7 +398,7 @@ switch (nD1BuiltinHogSize) {
 
 	default:
 #if 0//DBG
-		Warning (TXT_D1_HOGSIZE, nD1BuiltinHogSize);
+		Warning (TXT_D1_HOGSIZE, nBuiltInHogSize [1]);
 #endif
 		// fall through
 	case D1_MISSION_HOGSIZE:
@@ -416,7 +416,7 @@ switch (nD1BuiltinHogSize) {
 		break;
 	}
 
-	strcpy (szD1BuiltinMissionFilename, list [*count].filename);
+	strcpy (szBuiltinMissionFilename [1], list [*count].filename);
 	list [*count].nDescentVersion = 1;
 	list [*count].bAnarchyOnly = 0;
 	list [*count].location = ML_DATADIR;
@@ -448,11 +448,11 @@ void CMissionManager::AddBuiltinMission (int *count)
 {
 	CFile	cf;
 
-nBuiltinHogSize = cf.Size ("descent2.hog", gameFolders.szDataDir, 0);
-if (nBuiltinHogSize == -1)
-	nBuiltinHogSize = cf.Size ("d2demo.hog", gameFolders.szDataDir, 0);
+nBuiltInHogSize [0] = cf.Size ("descent2.hog", gameFolders.szDataDir, 0);
+if (nBuiltInHogSize [0] == -1)
+	nBuiltInHogSize [0] = cf.Size ("d2demo.hog", gameFolders.szDataDir, 0);
 
-switch (nBuiltinHogSize) {
+switch (nBuiltInHogSize [0]) {
 	case SHAREWARE_MISSION_HOGSIZE:
 	case MAC_SHARE_MISSION_HOGSIZE:
 		strcpy (list [*count].filename, SHAREWARE_MISSION_FILENAME);
@@ -468,9 +468,9 @@ switch (nBuiltinHogSize) {
 
 	default:
 #if 0//DBG
-		Warning (TXT_HOGSIZE, nBuiltinHogSize, "descent2.hog");
+		Warning (TXT_HOGSIZE, nBuiltInHogSize [0], "descent2.hog");
 #endif
-		nBuiltinHogSize = FULL_MISSION_HOGSIZE;	//fall through
+		nBuiltInHogSize [0] = FULL_MISSION_HOGSIZE;	//fall through
 
 	case FULL_MISSION_HOGSIZE:
 	case FULL_10_MISSION_HOGSIZE:
@@ -480,7 +480,7 @@ switch (nBuiltinHogSize) {
 		break;
 		//goto retry;
 	}
-strcpy (szBuiltinMissionFilename, list [*count].filename);
+strcpy (szBuiltinMissionFilename [0], list [*count].filename);
 list [*count].nDescentVersion = 2;
 list [*count].bAnarchyOnly = 0;
 list [*count].location = ML_DATADIR;
@@ -665,14 +665,14 @@ else {
 	// to top of mission list
 nTopPlace = 0;
 if (bSubFolder) {
-	nBuiltinMission =
-	nD1BuiltinMission = -1;
+	nBuiltInMission [0] =
+	nBuiltInMission [1] = -1;
 	}
 else {
 	Promote ("descent", &nTopPlace, count); // original descent 1 mission
-	nD1BuiltinMission = nTopPlace - 1;
-	Promote (szBuiltinMissionFilename, &nTopPlace, count); // d2 or d2demo
-	nBuiltinMission = nTopPlace - 1;
+	nBuiltInMission [1] = nTopPlace - 1;
+	Promote (szBuiltinMissionFilename [0], &nTopPlace, count); // d2 or d2demo
+	nBuiltInMission [0] = nTopPlace - 1;
 	Promote ("d2x", &nTopPlace, count); // vertigo
 	}
 if (count > nTopPlace)
@@ -721,8 +721,8 @@ int CMissionManager::Parse (CFile& cf)
 PrintLog ("   parsing mission file\n");
 nLastLevel = 0;
 nLastSecretLevel = 0;
-*szBriefingFilename = '\0';
-*szEndingFilename = '\0';
+*szBriefingFilename [0] = '\0';
+*szBriefingFilename [1] = '\0';
 while (MsnGetS (buf, 80, cf)) {
 	PrintLog ("      '%s'\n", buf);
 	MsnTrimComment (buf);
@@ -753,7 +753,7 @@ while (MsnGetS (buf, 80, cf)) {
 		if ((v = MsnGetValue (buf))) {
 			MsnAddStrTerm (v);
 			if (strlen (v) < 13)
-				strcpy (szBriefingFilename, v);
+				strcpy (szBriefingFilename [0], v);
 			else
 				PrintLog ("      mission file: ignoring invalid briefing name\n");
 			}
@@ -762,7 +762,7 @@ while (MsnGetS (buf, 80, cf)) {
 		if ((v = MsnGetValue (buf))) {
 			MsnAddStrTerm (v);
 			if (strlen (v) < 13)
-				strcpy (szEndingFilename, v);
+				strcpy (szBriefingFilename [1], v);
 			else
 				PrintLog ("      mission file: ignoring invalid end briefing name\n");
 			}
@@ -853,9 +853,9 @@ int CMissionManager::Load (int nMission)
 
 nEnhancedMission = 0;
 if (nMission >= 0) {
-	if (nMission == nD1BuiltinMission) {
+	if (nMission == nBuiltInMission [1]) {
 		hogFileManager.UseD1 ("descent.hog");
-		switch (nD1BuiltinHogSize) {
+		switch (nBuiltInHogSize [1]) {
 		default:
 			Int3(); // fall through
 		case D1_MISSION_HOGSIZE:
@@ -872,8 +872,8 @@ if (nMission >= 0) {
 			}
 		}
 
-	if (nMission == nBuiltinMission) {
-		switch (nBuiltinHogSize) {
+	if (nMission == nBuiltInMission [0]) {
+		switch (nBuiltInHogSize [0]) {
 		case SHAREWARE_MISSION_HOGSIZE:
 		case MAC_SHARE_MISSION_HOGSIZE:
 			return LoadShareware (nMission);
@@ -934,7 +934,7 @@ if (!i) {
 	}
 //for non-builtin missions, load HOG
 hogFileManager.UseMission ("");
-if (!strcmp (list [nMission].filename, szBuiltinMissionFilename)) 
+if (!strcmp (list [nMission].filename, szBuiltinMissionFilename [0])) 
 	bFoundHogFile = 1;
 else {
 	sprintf (szFile, "%s%s.hog", szFolder, list [nMission].filename);

@@ -124,7 +124,7 @@ if (gameStates.limitFPS.bCountDown && !gameStates.app.tick40fps.bTick)
 	return;
 if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and SHAREWARE only
 	// On last level, we don't want a countdown.
-	if ((missionManager.nCurrentMission == missionManager.nBuiltinMission) && 
+	if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && 
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel)) {
 		if (!IsMultiGame)
 			return;
