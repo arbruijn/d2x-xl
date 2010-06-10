@@ -1291,7 +1291,7 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 //	Called from trigger.cpp when player is exiting via a directed exit
 int ReenterLevel (void)
 {
-if (missionManager.nNextLevel [1] < 0) 
+if (missionManager.nNextLevel [1] < 1) 
 	return 0;
 
 		char	szFile [FILENAME_LEN] = {'\0'};
@@ -1483,11 +1483,15 @@ if (IsMultiGame) {
 		longjmp (gameExitPoint, 0);		// Exit out of game loop
 		}
 	}
-if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManager.nNextLevel [1] < 0) &&
+
+missionManager.nLevelState [missionManager.nCurrentLevel] = gameData.reactor.bDestroyed ? -1 : 1;
+missionManager.SaveStates ();
+
+if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManager.nNextLevel [1] < 1) &&
 	 !extraGameInfo [IsMultiGame].bRotateLevels) //CPlayerData has finished the game!
 	DoEndGame ();
 else {
-	if (missionManager.nNextLevel [1] < 0) 
+	if (missionManager.nNextLevel [1] < 1) 
 		missionManager.nNextLevel [0] = missionManager.nCurrentLevel + 1;		//assume go to next Normal level
 	else {
 		missionManager.nNextLevel [0] = missionManager.nNextLevel [1];
