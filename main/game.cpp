@@ -626,6 +626,7 @@ while (dt >= physicsFrameTime) {
 	i++;
 	}
 if (i) {
+	gameData.physics.fLastTick = t - dt;
 	gameData.time.SetTime (I2X (1) / PHYSICS_FPS);
 	gameData.physics.xTime = gameData.time.xFrame; 
 	if (bReadControls > 0)
@@ -641,7 +642,6 @@ if (i) {
 		if (0 > h)
 			return h;
 		}
-	gameData.physics.fLastTick = t - dt;
 	gameStates.app.tick40fps.bTick = 1;
 	CalcFrameTime ();
 	DoEffectsFrame ();

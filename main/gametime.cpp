@@ -41,15 +41,11 @@ void StopTime (void)
 if (pfnTIRStop)
 	pfnTIRStop ();
 if (++gameData.time.nPaused == 1) {
+	gameData.time.xStopped = SDL_GetTicks ();
 	fix xTime = TimerGetFixedSeconds ();
 	gameData.time.xSlack = xTime - gameData.time.xLast;
-	if (gameData.time.xSlack < 0) {
-#if defined (TIMER_TEST) && defined (_DEBUG)
-		Int3 ();		//get Matt!!!!
-#endif
+	if (gameData.time.xSlack < 0)
 		gameData.time.xLast = 0;
-		}
-	gameData.time.xStopped = SDL_GetTicks ();
 	}
 }
 
@@ -68,7 +64,7 @@ if (!--gameData.time.nPaused) {
 		Int3 ();		//get Matt!!!!
 #endif
 	gameData.time.xLast = xTime - gameData.time.xSlack;
-	gameData.physics.fLastTick += SDL_GetTicks () - gameData.time.xStopped;
+	gameData.physics.fLastTick += float (SDL_GetTicks () - gameData.time.xStopped);
 	}
 if (pfnTIRStart)
 	pfnTIRStart ();
