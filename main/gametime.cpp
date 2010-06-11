@@ -49,13 +49,8 @@ if (++gameData.time.nPaused == 1) {
 #endif
 		gameData.time.xLast = 0;
 		}
-#if defined (TIMER_TEST) && defined (_DEBUG)
-	gameData.time.xStopped = xTime;
-	#endif
+	gameData.time.xStopped = SDL_GetTicks ();
 	}
-#if defined (TIMER_TEST) && defined (_DEBUG)
-gameData.time.xStops++;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -73,13 +68,8 @@ if (!--gameData.time.nPaused) {
 		Int3 ();		//get Matt!!!!
 #endif
 	gameData.time.xLast = xTime - gameData.time.xSlack;
-#if defined (TIMER_TEST) && defined (_DEBUG)
-	gameData.time.xStarted = time;
-#endif
+	gameData.physics.fLastTick += SDL_GetTicks () - gameData.time.xStopped;
 	}
-#if defined (TIMER_TEST) && defined (_DEBUG)
-gameData.time.xStarts++;
-#endif
 if (pfnTIRStart)
 	pfnTIRStart ();
 }
