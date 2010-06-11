@@ -160,7 +160,7 @@ class CTrigger {
 		void DoUnlockDoors (void);
 		void DoLockDoors (void);
 		int DoSetSpawnPoints (void);
-		int DoMasterTrigger (short nObject, bool bObjTrigger);
+		int DoMasterTrigger (short nObject, int nPlayer, bool bObjTrigger);
 		int DoEnableTrigger (void);
 		int DoDisableTrigger (void);
 		void DoTeleport (short nObject);
@@ -175,7 +175,7 @@ class CTrigger {
 		bool TargetsWall (int nWall);
 		inline int Index (void);
 		inline int HasTarget (short nSegment, short nSide);
-		inline bool ClientOnly (void) { return (m_info.nType == TT_SHIELD_DAMAGE) || (m_info.nType == TT_ENERGY_DRAIN); }
+		inline bool ClientOnly (void) { return (m_info.nType == TT_SPEEDBOOST) || (m_info.nType == TT_SHIELD_DAMAGE) || (m_info.nType == TT_ENERGY_DRAIN); }
 		int Delay (void);
 		bool IsDelayed (void);
 		bool IsExit (void);

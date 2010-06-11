@@ -302,13 +302,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTrigger::DoMasterTrigger (short nObject, bool bObjTrigger)
+int CTrigger::DoMasterTrigger (short nObject, int nPlayer, bool bObjTrigger)
 {
 	CTrigger*	trigP;
 
 for (int i = 0; i < m_info.nLinks; i++)
 	if ((trigP = SEGMENTS [m_info.segments [i]].Trigger (m_info.sides [i])))
-		trigP->Operate (nObject, gameData.multiplayer.nLocalPlayer, 0, bObjTrigger);
+		trigP->Operate (nObject, nPlayer, 0, bObjTrigger);
 return 1;
 }
 
@@ -994,9 +994,19 @@ CObject*	objP = (nObject >= 0) ? OBJECTS + nObject : NULL;
 bool bIsPlayer = objP && objP->IsPlayer ();
 
 if (bIsPlayer) {
-	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject) && !objP->IsGuideBot ()) {
-		nDepth--;
-		return 1;
+	if (nObject != LOCALPLAYER.nObject) {
+		if (IsMultiGame) {
+			if (ClientOnly ()) {
+				nDepth--;
+				return 1;
+				}
+			}
+		else {
+			if (!objP->IsGuideBot ()) {
+				nDepth--;
+				return 1;
+				}
+			}
 		}
 	}
 else {
@@ -1225,7 +1235,7 @@ switch (m_info.nType) {
 		break;
 
 	case TT_MASTER:
-		DoMasterTrigger (nObject, bObjTrigger);
+		DoMasterTrigger (nObject, nPlayer, bObjTrigger);
 		break;
 
 	case TT_ENABLE_TRIGGER:
