@@ -99,8 +99,8 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		for (j = 0; j < jj; j++) {
 			fuelP = gameData.matCens.fuelCenters + virusGens [j];
 			h = fuelP->nSegment;
-			SEGMENTS [h].m_nType = gameData.matCens.origStationTypes [uint (fuelP - gameData.matCens.fuelCenters.Buffer ())];
-			SEGMENTS [h].CreateFuelCen (SEGMENTS [h].m_nType);
+			SEGMENTS [h].m_function = gameData.matCens.origStationTypes [uint (fuelP - gameData.matCens.fuelCenters.Buffer ())];
+			SEGMENTS [h].CreateFuelCen (SEGMENTS [h].m_function);
 			ChangeSegmentTexture (h, newOwner);
 			}
 		}
@@ -119,13 +119,13 @@ for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; 
 					h = i;
 				break;
 			case SEGMENT_FUNC_REPAIRCEN:
-				if ((h < 0) || (SEGMENTS [h].m_nType == SEGMENT_FUNC_FUELCEN))
+				if ((h < 0) || (SEGMENTS [h].m_function == SEGMENT_FUNC_FUELCEN))
 					h = i;
 			}
 if (h < 0)
 	return;
-i = SEGMENTS [h].m_nType;
-SEGMENTS [h].m_nType = SEGMENT_FUNC_ROBOTMAKER;
+i = SEGMENTS [h].m_function;
+SEGMENTS [h].m_function = SEGMENT_FUNC_ROBOTMAKER;
 SEGMENTS [h].CreateBotGen (i);
 ChangeSegmentTexture (h, newOwner);
 }

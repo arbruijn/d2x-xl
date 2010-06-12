@@ -266,7 +266,7 @@ for (i = 0; i < nPlayers; i++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
 			continue;
-		segType = bCoop ? SEGMENTS [segNum].m_nType : SEGMENT_FUNC_NONE;
+		segType = bCoop ? SEGMENTS [segNum].m_function : SEGMENT_FUNC_NONE;
 #if 0
 		switch (segType) {
 			case SEGMENT_FUNC_GOAL_RED:
