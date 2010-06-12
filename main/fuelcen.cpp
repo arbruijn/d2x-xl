@@ -74,7 +74,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 // Turns a CSegment into a fully charged up fuel center...
 void CSegment::CreateFuelCen (int oldType)
 {
-	int	i, stationType = m_nType;
+	int	i, stationType = m_function;
 
 switch (stationType) {
 	case SEGMENT_FUNC_NONE:
@@ -137,7 +137,7 @@ void CSegment::CreateMatCen (int nOldType, int nMaxCount)
 	int	i;
 
 if (m_nMatCen >= nMaxCount) {
-	m_nType = SEGMENT_FUNC_NONE;
+	m_function = SEGMENT_FUNC_NONE;
 	m_nMatCen = -1;
 	return;
 	}
@@ -152,9 +152,9 @@ switch (nOldType) {
 		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
 		m_value = i = gameData.matCens.nFuelCenters;
 	}
-gameData.matCens.origStationTypes [i] = (nOldType == m_nType) ? SEGMENT_FUNC_NONE : nOldType;
+gameData.matCens.origStationTypes [i] = (nOldType == m_function) ? SEGMENT_FUNC_NONE : nOldType;
 tFuelCenInfo* fuelCenP = &gameData.matCens.fuelCenters [i];
-fuelCenP->nType = m_nType;
+fuelCenP->nType = m_function;
 fuelCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
 fuelCenP->xMaxCapacity = fuelCenP->xCapacity;
 fuelCenP->nSegment = Index ();
@@ -208,14 +208,14 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 // Adds a CSegment that already is a special nType into the gameData.matCens.fuelCenters array.
 void CSegment::CreateGenerator (int nType)
 {
-m_nType = nType;
-if (m_nType == SEGMENT_FUNC_ROBOTMAKER)
+m_function = nType;
+if (m_function == SEGMENT_FUNC_ROBOTMAKER)
 	CreateBotGen (SEGMENT_FUNC_NONE);
-else if (m_nType == SEGMENT_FUNC_EQUIPMAKER)
+else if (m_function == SEGMENT_FUNC_EQUIPMAKER)
 	CreateEquipGen (SEGMENT_FUNC_NONE);
 else {
 	CreateFuelCen (SEGMENT_FUNC_NONE);
-	if (m_nType == SEGMENT_FUNC_REPAIRCEN)
+	if (m_function == SEGMENT_FUNC_REPAIRCEN)
 		m_nMatCen = gameData.matCens.nRepairCenters++;
 	}
 }
@@ -696,13 +696,13 @@ fix CSegment::Damage (fix xMaxDamage)
 {
 	static fix lastPlayTime = 0;
 
-if (!(segP->m_xDamage || (gameData.app.nGameMode & GM_ENTROPY)))
+if (!(m_xDamage || (gameData.app.nGameMode & GM_ENTROPY)))
 	return 0;
-int bEntropy = !segP->m_xDamage;
+int bEntropy = !m_xDamage;
 gameData.matCens.playerSegP = this;
 if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1)))
 	return 0;
-fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : segP->m_xDamage;
+fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : m_xDamage;
 fix amount = FixMul (gameData.time.xFrame, rate);
 if (amount > xMaxDamage)
 	amount = xMaxDamage;
@@ -731,7 +731,7 @@ gameData.matCens.playerSegP = this;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
 	 ((m_owner > 0) && (m_owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (m_nType != SEGMENT_FUNC_FUELCEN)
+if (m_function != SEGMENT_FUNC_FUELCEN)
 	return 0;
 DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 #if 0
@@ -779,7 +779,7 @@ gameData.matCens.playerSegP = this;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
 	 ((m_owner > 0) && (m_owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (m_nType != SEGMENT_FUNC_REPAIRCEN)
+if (m_function != SEGMENT_FUNC_REPAIRCEN)
 	return 0;
 if (nMaxShields <= 0) {
 	return 0;
@@ -936,7 +936,7 @@ return 0;
 
 int CSegment::CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId)
 {
-if (m_nType != nGoalId)
+if (m_function != nGoalId)
 	return 0;
 if (GetTeam (gameData.multiplayer.nLocalPlayer) != nTeamId)
 	return 0;
@@ -987,7 +987,7 @@ void CSegment::CheckForHoardGoal (void)
 Assert (gameData.app.nGameMode & GM_HOARD);
 if (gameStates.app.bPlayerIsDead)
 	return;
-if ((m_nType != SEGMENT_FUNC_GOAL_BLUE) && (m_nType != SEGMENT_FUNC_GOAL_RED))
+if ((m_function != SEGMENT_FUNC_GOAL_BLUE) && (m_function != SEGMENT_FUNC_GOAL_RED))
 	return;
 if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	return;

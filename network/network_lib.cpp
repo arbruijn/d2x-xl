@@ -265,7 +265,7 @@ int GotTeamSpawnPos (void)
 
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	j = FindSegByPos (*PlayerSpawnPos (i), -1, 1, 0);
-	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_FUNC_NONE : SEGMENTS [j].m_nType;
+	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_FUNC_NONE : SEGMENTS [j].m_function;
 	switch (gameData.multiplayer.playerInit [i].nSegType) {
 		case SEGMENT_FUNC_GOAL_BLUE:
 		case SEGMENT_FUNC_TEAM_BLUE:

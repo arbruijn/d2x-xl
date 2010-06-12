@@ -245,7 +245,7 @@ while (nSegment == -1) {
 	else {	//don't drop in any children of control centers
 		for (int i = 0; i < 6; i++) {
 			int nChild = segP->m_children [i];
-			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_nType == SEGMENT_FUNC_CONTROLCEN)) {
+			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_function == SEGMENT_FUNC_CONTROLCEN)) {
 				nSegment = -1;
 				break;
 				}

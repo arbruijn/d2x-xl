@@ -126,7 +126,7 @@ void CSegment::Upgrade (void)
 {
 m_props = segPropsFromType [m_function];
 m_function = segFuncFromType [m_function];
-m_damage = 0;
+m_xDamage = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -140,8 +140,8 @@ m_flags = cf.ReadByte ();
 if (gameData.segs.nLevelVersion <= 20)
 	Upgrade ();
 else {
-	m_props = cf.ReadByte;
-	m_damage = I2X (cf.ReadFix ());
+	m_props = cf.ReadByte ();
+	m_xDamage = I2X (cf.ReadFix ());
 	}
 m_xAvgSegLight = cf.ReadFix ();
 }
