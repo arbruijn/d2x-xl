@@ -474,7 +474,7 @@ if (bAutomap) {
 	if (automap.Display ()) {
 		if (!(automap.m_bFull || automap.m_visible [nSegment]))
 			return 0;
-		if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
+		if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX))
 			return 0;
 		}
 	else
@@ -571,7 +571,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (automap.Display ()) {
 			if (!(automap.m_bFull || automap.m_visible [nSegment]))
 				return;
-			if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX))
+			if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX))
 				continue;
 			}
 		if (nPass == 1) {
@@ -659,8 +659,8 @@ gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs [0]; i++) {
 	if (0 > (nSegment = gameData.render.mine.segRenderList [0][i]))
 		continue;
-	if ((SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) ||
-		 (SEGMENTS [nSegment].m_nType == SEGMENT_IS_OUTDOOR))
+	if ((SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) ||
+		 (SEGMENTS [nSegment].HasOutdoorsProp ()))
 		continue;
 	segFaceP = SEGFACES + nSegment;
 #if DBG

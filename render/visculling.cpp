@@ -654,7 +654,7 @@ if (automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar (
 
 	for (i = gameData.render.mine.nRenderSegs [0] = 0; i < gameData.segs.nSegments; i++)
 		if ((automap.Visible (i)) &&
-			 (bSkyBox || (SEGMENTS [i].m_nType != SEGMENT_IS_SKYBOX)) &&
+			 (bSkyBox || (SEGMENTS [i].m_nType != SEGMENT_FUNC_SKYBOX)) &&
 			 (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
 			gameData.render.mine.segRenderList [0][gameData.render.mine.nRenderSegs [0]++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;

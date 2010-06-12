@@ -264,7 +264,7 @@ void CSegment::LoadBotGenTextures (void)
 	uint		flags;
 	int		robotIndex;
 
-if (m_nType != SEGMENT_IS_ROBOTMAKER)
+if (m_nType != SEGMENT_FUNC_ROBOTMAKER)
 	return;
 LoadVClipTextures (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
 if (!gameData.matCens.botGens [m_nMatCen].objFlags)
@@ -299,7 +299,7 @@ void CSegment::LoadTextures (void)
 if (Index () == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-if (m_nType == SEGMENT_IS_ROBOTMAKER)
+if (m_nType == SEGMENT_FUNC_ROBOTMAKER)
 	LoadBotGenTextures ();
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	m_sides [nSide].LoadTextures ();

@@ -130,9 +130,9 @@ if (!gameData.hoard.monsterballP)
 if (gameData.hoard.nLastHitter != LOCALPLAYER.nObject)
 	return 0;
 special = SEGMENTS [gameData.hoard.monsterballP->info.nSegment].m_nType;
-if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))
+if ((special != SEGMENT_FUNC_GOAL_BLUE) && (special != SEGMENT_FUNC_GOAL_RED))
 	return 0;
-if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_IS_GOAL_RED))
+if ((GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) == (special == SEGMENT_FUNC_GOAL_RED))
 	MultiSendCaptureBonus (-gameData.multiplayer.nLocalPlayer - 1);
 else
 	MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);

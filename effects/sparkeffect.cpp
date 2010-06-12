@@ -172,7 +172,7 @@ if (m_bUpdate) {
 
 inline int CSparkManager::Type (short nMatCen)
 {
-return SEGMENTS [m_segments [nMatCen]].m_nType == SEGMENT_IS_FUELCEN;
+return SEGMENTS [m_segments [nMatCen]].m_nType == SEGMENT_FUNC_FUELCEN;
 }
 
 //-----------------------------------------------------------------------------
@@ -219,7 +219,7 @@ int CSparkManager::BuildSegList (void)
 
 m_nSegments = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++)
-	if ((segP->m_nType == SEGMENT_IS_FUELCEN) || (segP->m_nType == SEGMENT_IS_REPAIRCEN))
+	if ((segP->m_function == SEGMENT_FUNC_FUELCEN) || (segP->m_function == SEGMENT_FUNC_REPAIRCEN))
 		m_segments [m_nSegments++] = nSegment;
 return m_nSegments;
 }

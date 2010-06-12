@@ -693,10 +693,9 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			//PrintLog ("done\n");
 			//if what we have hit is a door, check the adjoining segP
 			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nChildSide >= 0)) {
-				int nType = SEGMENTS [nChildSide].m_nType;
-				if (((nType != SEGMENT_IS_BLOCKED) && (nType != SEGMENT_IS_SKYBOX)) ||
+				if (SEGMENTS [nChildSide].HasBlockedProp () ||
 					 (gameData.objs.speedBoost [nThisObject].bBoosted &&
-					  ((SEGMENTS [nStartSeg].m_nType != SEGMENT_IS_SPEEDBOOST) || (nType == SEGMENT_IS_SPEEDBOOST))))
+					  ((SEGMENTS [nStartSeg].m_nType != SEGMENT_FUNC_SPEEDBOOST) || (nType == SEGMENT_FUNC_SPEEDBOOST))))
 					widResult |= WID_FLY_FLAG;
 				}
 			if ((widResult & WID_FLY_FLAG) ||

@@ -49,7 +49,7 @@ void ResetGenerators (void)
 	int i;
 
 for (i = 0; i < LEVEL_SEGMENTS; i++)
-	SEGMENTS [i].m_nType = SEGMENT_IS_NOTHING;
+	SEGMENTS [i].m_nType = SEGMENT_FUNC_NONE;
 gameData.matCens.nFuelCenters = 0;
 gameData.matCens.nBotCenters = 0;
 gameData.matCens.nEquipCenters = 0;
@@ -63,8 +63,8 @@ void reset_allRobot_centers ()
 
 	// Remove all materialization centers
 for (i = 0; i < gameData.segs.nSegments; i++)
-	if (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
-		SEGMENTS [i].m_nType = SEGMENT_IS_NOTHING;
+	if (SEGMENTS [i].m_nType == SEGMENT_FUNC_ROBOTMAKER) {
+		SEGMENTS [i].m_nType = SEGMENT_FUNC_NONE;
 		SEGMENTS [i].m_nMatCen = -1;
 		}
 }
@@ -77,34 +77,29 @@ void CSegment::CreateFuelCen (int oldType)
 	int	i, stationType = m_nType;
 
 switch (stationType) {
-	case SEGMENT_IS_NOTHING:
-	case SEGMENT_IS_GOAL_BLUE:
-	case SEGMENT_IS_GOAL_RED:
-	case SEGMENT_IS_TEAM_BLUE:
-	case SEGMENT_IS_TEAM_RED:
-	case SEGMENT_IS_WATER:
-	case SEGMENT_IS_LAVA:
-	case SEGMENT_IS_SPEEDBOOST:
-	case SEGMENT_IS_BLOCKED:
-	case SEGMENT_IS_NODAMAGE:
-	case SEGMENT_IS_SKYBOX:
-	case SEGMENT_IS_OUTDOOR:
+	case SEGMENT_FUNC_NONE:
+	case SEGMENT_FUNC_GOAL_BLUE:
+	case SEGMENT_FUNC_GOAL_RED:
+	case SEGMENT_FUNC_TEAM_BLUE:
+	case SEGMENT_FUNC_TEAM_RED:
+	case SEGMENT_FUNC_SPEEDBOOST:
+	case SEGMENT_FUNC_SKYBOX:
 		return;
-	case SEGMENT_IS_FUELCEN:
-	case SEGMENT_IS_REPAIRCEN:
-	case SEGMENT_IS_CONTROLCEN:
-	case SEGMENT_IS_ROBOTMAKER:
-	case SEGMENT_IS_EQUIPMAKER:
+	case SEGMENT_FUNC_FUELCEN:
+	case SEGMENT_FUNC_REPAIRCEN:
+	case SEGMENT_FUNC_CONTROLCEN:
+	case SEGMENT_FUNC_ROBOTMAKER:
+	case SEGMENT_FUNC_EQUIPMAKER:
 		break;
 	default:
 		Error ("Segment %d has invalid\nstation nType %d in fuelcen.c\n", Index (), stationType);
 	}
 
 switch (oldType) {
-	case SEGMENT_IS_FUELCEN:
-	case SEGMENT_IS_REPAIRCEN:
-	case SEGMENT_IS_ROBOTMAKER:
-	case SEGMENT_IS_EQUIPMAKER:
+	case SEGMENT_FUNC_FUELCEN:
+	case SEGMENT_FUNC_REPAIRCEN:
+	case SEGMENT_FUNC_ROBOTMAKER:
+	case SEGMENT_FUNC_EQUIPMAKER:
 		i = m_value;
 		break;
 	default:
@@ -114,7 +109,7 @@ switch (oldType) {
 
 m_value = i;
 gameData.matCens.fuelCenters [i].nType = stationType;
-gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_IS_NOTHING : oldType;
+gameData.matCens.origStationTypes [i] = (oldType == stationType) ? SEGMENT_FUNC_NONE : oldType;
 gameData.matCens.fuelCenters [i].xMaxCapacity = gameData.matCens.xFuelMaxAmount;
 gameData.matCens.fuelCenters [i].xCapacity = gameData.matCens.fuelCenters [i].xMaxCapacity;
 gameData.matCens.fuelCenters [i].nSegment = Index ();
@@ -124,12 +119,12 @@ gameData.matCens.fuelCenters [i].bFlag = 0;
 //	gameData.matCens.fuelCenters [i].last_created_obj=NULL;
 //	gameData.matCens.fuelCenters [i].last_created_sig = -1;
 gameData.matCens.fuelCenters [i].vCenter = Center ();
-if (oldType == SEGMENT_IS_NOTHING)
+if (oldType == SEGMENT_FUNC_NONE)
 	gameData.matCens.nFuelCenters++;
-if (oldType == SEGMENT_IS_EQUIPMAKER)
+if (oldType == SEGMENT_FUNC_EQUIPMAKER)
 	gameData.matCens.nEquipCenters++;
-else if (oldType == SEGMENT_IS_ROBOTMAKER) {
-	gameData.matCens.origStationTypes [i] = SEGMENT_IS_NOTHING;
+else if (oldType == SEGMENT_FUNC_ROBOTMAKER) {
+	gameData.matCens.origStationTypes [i] = SEGMENT_FUNC_NONE;
 	if (m_nMatCen < --gameData.matCens.nBotCenters)
 		gameData.matCens.botGens [m_nMatCen] = gameData.matCens.botGens [gameData.matCens.nBotCenters];
 	}
@@ -142,22 +137,22 @@ void CSegment::CreateMatCen (int nOldType, int nMaxCount)
 	int	i;
 
 if (m_nMatCen >= nMaxCount) {
-	m_nType = SEGMENT_IS_NOTHING;
+	m_nType = SEGMENT_FUNC_NONE;
 	m_nMatCen = -1;
 	return;
 	}
 switch (nOldType) {
-	case SEGMENT_IS_FUELCEN:
-	case SEGMENT_IS_REPAIRCEN:
-	case SEGMENT_IS_ROBOTMAKER:
-	case SEGMENT_IS_EQUIPMAKER:
+	case SEGMENT_FUNC_FUELCEN:
+	case SEGMENT_FUNC_REPAIRCEN:
+	case SEGMENT_FUNC_ROBOTMAKER:
+	case SEGMENT_FUNC_EQUIPMAKER:
 		i = m_value;	// index in fuel center array passed from level editor
 		break;
 	default:
 		Assert (gameData.matCens.nFuelCenters < MAX_FUEL_CENTERS);
 		m_value = i = gameData.matCens.nFuelCenters;
 	}
-gameData.matCens.origStationTypes [i] = (nOldType == m_nType) ? SEGMENT_IS_NOTHING : nOldType;
+gameData.matCens.origStationTypes [i] = (nOldType == m_nType) ? SEGMENT_FUNC_NONE : nOldType;
 tFuelCenInfo* fuelCenP = &gameData.matCens.fuelCenters [i];
 fuelCenP->nType = m_nType;
 fuelCenP->xCapacity = I2X (gameStates.app.nDifficultyLevel + 3);
@@ -178,7 +173,7 @@ int i = gameData.matCens.nBotCenters++;
 gameData.matCens.botGens [i].xHitPoints = MATCEN_HP_DEFAULT;
 gameData.matCens.botGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
 gameData.matCens.botGens [i].nSegment = Index ();
-if (nOldType == SEGMENT_IS_NOTHING)
+if (nOldType == SEGMENT_FUNC_NONE)
 	gameData.matCens.botGens [i].nFuelCen = gameData.matCens.nFuelCenters;
 gameData.matCens.nFuelCenters++;
 }
@@ -194,7 +189,7 @@ int i = gameData.matCens.nEquipCenters++;
 gameData.matCens.equipGens [i].xHitPoints = MATCEN_HP_DEFAULT;
 gameData.matCens.equipGens [i].xInterval = MATCEN_INTERVAL_DEFAULT;
 gameData.matCens.equipGens [i].nSegment = Index ();
-if (nOldType == SEGMENT_IS_NOTHING)
+if (nOldType == SEGMENT_FUNC_NONE)
 	gameData.matCens.equipGens [i].nFuelCen = gameData.matCens.nFuelCenters;
 gameData.matCens.nFuelCenters++;
 }
@@ -214,13 +209,13 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++)
 void CSegment::CreateGenerator (int nType)
 {
 m_nType = nType;
-if (m_nType == SEGMENT_IS_ROBOTMAKER)
-	CreateBotGen (SEGMENT_IS_NOTHING);
-else if (m_nType == SEGMENT_IS_EQUIPMAKER)
-	CreateEquipGen (SEGMENT_IS_NOTHING);
+if (m_nType == SEGMENT_FUNC_ROBOTMAKER)
+	CreateBotGen (SEGMENT_FUNC_NONE);
+else if (m_nType == SEGMENT_FUNC_EQUIPMAKER)
+	CreateEquipGen (SEGMENT_FUNC_NONE);
 else {
-	CreateFuelCen (SEGMENT_IS_NOTHING);
-	if (m_nType == SEGMENT_IS_REPAIRCEN)
+	CreateFuelCen (SEGMENT_FUNC_NONE);
+	if (m_nType == SEGMENT_FUNC_REPAIRCEN)
 		m_nMatCen = gameData.matCens.nRepairCenters++;
 	}
 }
@@ -243,7 +238,7 @@ int StartMatCen (short nSegment)
 #if TRACE
 console.printf (CON_DBG, "Trigger matcen, CSegment %i\n", nSegment);
 #endif
-if (segP->m_nType == SEGMENT_IS_EQUIPMAKER) {	// toggle it on or off
+if (segP->m_function == SEGMENT_FUNC_EQUIPMAKER) {	// toggle it on or off
 	matCenP = gameData.matCens.fuelCenters + gameData.matCens.equipGens [segP->m_nMatCen].nFuelCen;
 	return (matCenP->bEnabled = !matCenP->bEnabled) ? 1 : 2;
 	}
@@ -667,17 +662,17 @@ void FuelcenUpdateAll (void)
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 	t = fuelCenP->nType;
-	if (t == SEGMENT_IS_ROBOTMAKER) {
+	if (t == SEGMENT_FUNC_ROBOTMAKER) {
 		if (IsMultiGame && (gameData.app.nGameMode & GM_ENTROPY))
 			VirusGenHandler (gameData.matCens.fuelCenters + i);
 		else if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
 			BotGenHandler (gameData.matCens.fuelCenters + i);
 		}
-	else if (t == SEGMENT_IS_EQUIPMAKER) {
+	else if (t == SEGMENT_FUNC_EQUIPMAKER) {
 		if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS))
 			EquipGenHandler (gameData.matCens.fuelCenters + i);
 		}
-	else if (t == SEGMENT_IS_CONTROLCEN) {
+	else if (t == SEGMENT_FUNC_CONTROLCEN) {
 		//controlcen_proc (gameData.matCens.fuelCenters + i);
 		}
 	else if ((fuelCenP->xMaxCapacity > 0) &&
@@ -733,7 +728,7 @@ gameData.matCens.playerSegP = this;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
 	 ((m_owner > 0) && (m_owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (m_nType != SEGMENT_IS_FUELCEN)
+if (m_nType != SEGMENT_FUNC_FUELCEN)
 	return 0;
 DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 #if 0
@@ -781,7 +776,7 @@ gameData.matCens.playerSegP = this;
 if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
 	 ((m_owner > 0) && (m_owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
-if (m_nType != SEGMENT_IS_REPAIRCEN)
+if (m_nType != SEGMENT_FUNC_REPAIRCEN)
 	return 0;
 if (nMaxShields <= 0) {
 	return 0;
@@ -807,7 +802,7 @@ void DisableMatCens (void)
 	int	i;
 
 for (i = 0; i < gameData.matCens.nBotCenters; i++) {
-	if (gameData.matCens.fuelCenters [i].nType != SEGMENT_IS_EQUIPMAKER) {
+	if (gameData.matCens.fuelCenters [i].nType != SEGMENT_FUNC_EQUIPMAKER) {
 		gameData.matCens.fuelCenters [i].bEnabled = 0;
 		gameData.matCens.fuelCenters [i].xDisableTime = 0;
 		}
@@ -825,7 +820,7 @@ void InitAllMatCens (void)
 #endif
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++)
-	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
+	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_FUNC_ROBOTMAKER) {
 		 gameData.matCens.fuelCenters [i].nLives = 3;
 		 gameData.matCens.fuelCenters [i].bEnabled = 0;
 		 gameData.matCens.fuelCenters [i].xDisableTime = 0;
@@ -834,7 +829,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 #if DBG
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++)
-	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
+	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_FUNC_ROBOTMAKER) {
 		//	Make sure this fuelcen is pointed at by a matcen.
 		for (j = 0; j < gameData.matCens.nBotCenters; j++)
 			if (gameData.matCens.botGens [j].nFuelCen == i)
@@ -846,7 +841,7 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 		Assert (j != gameData.matCens.nBotCenters);
 #	endif
 		}
-	else if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_EQUIPMAKER) {
+	else if (gameData.matCens.fuelCenters [i].nType == SEGMENT_FUNC_EQUIPMAKER) {
 		//	Make sure this fuelcen is pointed at by a matcen.
 		for (j = 0; j < gameData.matCens.nEquipCenters; j++)
 			if (gameData.matCens.equipGens [j].nFuelCen == i)
@@ -864,10 +859,10 @@ for (i = 0; i < gameData.matCens.nBotCenters; i++) {
 	nFuelCen = gameData.matCens.botGens [i].nFuelCen;
 	Assert (nFuelCen < gameData.matCens.nFuelCenters);
 #	if 1
-	if (gameData.matCens.fuelCenters [nFuelCen].nType != SEGMENT_IS_ROBOTMAKER)
+	if (gameData.matCens.fuelCenters [nFuelCen].nType != SEGMENT_FUNC_ROBOTMAKER)
 		i = i;
 #	else
-	Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_IS_ROBOTMAKER);
+	Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_FUNC_ROBOTMAKER);
 #	endif
 	}
 
@@ -875,10 +870,10 @@ for (i = 0; i < gameData.matCens.nEquipCenters; i++) {
 	nFuelCen = gameData.matCens.equipGens [i].nFuelCen;
 	Assert (nFuelCen < gameData.matCens.nFuelCenters);
 #	if 1
-	if (gameData.matCens.fuelCenters [nFuelCen].nType != SEGMENT_IS_EQUIPMAKER)
+	if (gameData.matCens.fuelCenters [nFuelCen].nType != SEGMENT_FUNC_EQUIPMAKER)
 		i = i;
 #	else
-	Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_IS_EQUIPMAKER);
+	Assert (gameData.matCens.fuelCenters [nFuelCen].nType == SEGMENT_FUNC_EQUIPMAKER);
 #	endif
 	}
 #endif
@@ -900,11 +895,11 @@ int GatherFlagGoals (void)
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
 for (h = i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
-	if (segP->m_nType == SEGMENT_IS_GOAL_BLUE) {
+	if (segP->m_function == SEGMENT_FUNC_GOAL_BLUE) {
 		j = 0;
 		h |= 1;
 		}
-	else if (segP->m_nType == SEGMENT_IS_GOAL_RED) {
+	else if (segP->m_function == SEGMENT_FUNC_GOAL_RED) {
 		h |= 2;
 		j = 1;
 		}
@@ -960,19 +955,19 @@ void CSegment::CheckForGoal (void)
 	Assert (gameData.app.nGameMode & GM_CAPTURE);
 
 #if 1
-CheckFlagDrop (TEAM_BLUE, POW_REDFLAG, SEGMENT_IS_GOAL_BLUE);
-CheckFlagDrop (TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
+CheckFlagDrop (TEAM_BLUE, POW_REDFLAG, SEGMENT_FUNC_GOAL_BLUE);
+CheckFlagDrop (TEAM_RED, POW_BLUEFLAG, SEGMENT_FUNC_GOAL_RED);
 #else
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return;
-if (segP->m_nType == SEGMENT_IS_GOAL_BLUE) {
+if (segP->m_function == SEGMENT_FUNC_GOAL_BLUE) {
 	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
-else if (segP->m_nType == SEGMENT_IS_GOAL_RED) {
+else if (segP->m_function == SEGMENT_FUNC_GOAL_RED) {
 	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
@@ -989,7 +984,7 @@ void CSegment::CheckForHoardGoal (void)
 Assert (gameData.app.nGameMode & GM_HOARD);
 if (gameStates.app.bPlayerIsDead)
 	return;
-if ((m_nType != SEGMENT_IS_GOAL_BLUE) && (m_nType != SEGMENT_IS_GOAL_RED))
+if ((m_nType != SEGMENT_FUNC_GOAL_BLUE) && (m_nType != SEGMENT_FUNC_GOAL_RED))
 	return;
 if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	return;

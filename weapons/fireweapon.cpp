@@ -638,7 +638,7 @@ int LocalPlayerFireGun (void)
 
 if (gameStates.app.bPlayerIsDead)
 	return 0;
-if (gameStates.app.bD2XLevel && (SEGMENTS [OBJECTS [playerP->nObject].info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [OBJECTS [playerP->nObject].info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
 	return 0;
 nWeaponIndex = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 xEnergyUsed = WI_energy_usage (nWeaponIndex);

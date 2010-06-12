@@ -576,7 +576,7 @@ if ((nSegment < 0) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
 			m_nLife = -1;
 			return 0;
 			}
-		if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_WATER) { 
+		if (SEGMENTS [nSegment].HasWaterProp ()) { 
 			m_bChecked = 1;
 			m_nLife = 500; 
 			}
@@ -586,7 +586,7 @@ if ((nSegment < 0) && ((m_nType != WATERFALL_PARTICLES) || m_bChecked)) {
 		return 0;
 		}
 	}
-else if ((m_nType == BUBBLE_PARTICLES) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_WATER)) {
+else if ((m_nType == BUBBLE_PARTICLES) && !SEGMENTS [nSegment].HasWaterProp ()) {
 	m_nLife = -1;
 	return 0;
 	}

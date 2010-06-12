@@ -14,7 +14,7 @@ int CSkyBox::CountSegments (void)
 	int			i, nSegments;
 
 for (i = gameData.segs.nSegments, nSegments = 0, segP = SEGMENTS.Buffer (); i; i--, segP++)
-	if (segP->m_nType == SEGMENT_IS_SKYBOX)
+	if (segP->m_function == SEGMENT_FUNC_SKYBOX)
 		nSegments++;
 return nSegments;
 }
@@ -41,7 +41,7 @@ if (!nSegments)
 if (!gameData.segs.skybox.Create (nSegments))
 	return 0;
 for (int i = 0; i < gameData.segs.nSegments; i++)
-	if (SEGMENTS [i].m_nType == SEGMENT_IS_SKYBOX)
+	if (SEGMENTS [i].m_nType == SEGMENT_FUNC_SKYBOX)
 		gameData.segs.skybox.Push (i);
 gameStates.render.bHaveSkyBox = (gameData.segs.skybox.ToS () > 0);
 return gameData.segs.skybox.ToS ();

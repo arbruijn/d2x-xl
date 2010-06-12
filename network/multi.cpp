@@ -3321,31 +3321,31 @@ void ChangeSegmentTexture (int nSegment, int oldOwner)
 //	oldOwner = segP->nOwner;
 if ((gameData.app.nGameMode & GM_ENTROPY) &&(extraGameInfo [1].entropy.nOverrideTextures == 2))
 	return;
-switch (segP->m_nType) {
-	case SEGMENT_IS_GOAL_BLUE:
+switch (segP->m_function) {
+	case SEGMENT_FUNC_GOAL_BLUE:
 		Goal_blue_segnum = nSegment;
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_BLUE), -1, -1, bFullBright, 1);
 		break;
 
-	case SEGMENT_IS_GOAL_RED:
+	case SEGMENT_FUNC_GOAL_RED:
 		Goal_red_segnum = nSegment;
 		// Make both textures the same if Hoard mode
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_RED), -1, -1, bFullBright, 1);
 		break;
 
-	case SEGMENT_IS_ROBOTMAKER:
+	case SEGMENT_FUNC_ROBOTMAKER:
 		if ((gameData.app.nGameMode & GM_ENTROPY) &&(segP->m_owner >= 0))
 			OverrideTextures (segP, texOverrides [(int) segP->m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 316, bFullBright, oldOwner < 0);
 		break;
 
-	case SEGMENT_IS_REPAIRCEN:
+	case SEGMENT_FUNC_REPAIRCEN:
 		if ((gameData.app.nGameMode & GM_ENTROPY) &&(segP->m_owner >= 0))
 			OverrideTextures (segP, texOverrides [(int) segP->m_owner],
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
 
-	case SEGMENT_IS_FUELCEN:
+	case SEGMENT_FUNC_FUELCEN:
 		if ((gameData.app.nGameMode & GM_ENTROPY) &&(segP->m_owner >= 0))
 			OverrideTextures (segP, texOverrides [(int) segP->m_owner],
 								   (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 314, bFullBright, oldOwner < 0);

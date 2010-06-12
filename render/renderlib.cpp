@@ -152,23 +152,22 @@ ogl.SetDepthMode (depthFunc);
 
 char IsColoredSegFace (short nSegment, short nSide)
 {
-	short nConnSeg;
-	int	owner;
-	int	special;
+	CSegment*	segP = SEGMENTS + nSegment;
+	short			nConnSeg;
+	int			owner;
 
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
-	 ((owner = SEGMENTS [nSegment].m_owner) > 0)) {
-	nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+	 ((owner = segP->m_owner) > 0)) {
+	nConnSeg = segP->m_children [nSide];
 	if ((nConnSeg < 0) || (SEGMENTS [nConnSeg].m_owner != owner))
 		return (owner == 1) ? 2 : 1;
 	}
-special = SEGMENTS [nSegment].m_nType;
-nConnSeg = SEGMENTS [nSegment].m_children [nSide];
-if ((nConnSeg >= 0) && (special == SEGMENTS [nConnSeg].m_nType))
+nConnSeg = segP->m_children [nSide];
+if ((nConnSeg >= 0) && (segP->m_function == SEGMENTS [nConnSeg].m_function))
 	return 0;
-if (special == SEGMENT_IS_WATER)
+if (segP->HasWaterProp ())
 	return 3;
-if (special == SEGMENT_IS_LAVA)
+if (segP->HasLavaProp ())
 	return 4;
 return 0;
 }
@@ -183,32 +182,31 @@ tRgbaColorf segmentColors [4] = {
 
 tRgbaColorf *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 {
-	short nConnSeg;
-	int	owner;
-	int	special;
+	CSegment*	segP = SEGMENTS + nSegment;
+	short			nConnSeg;
+	int			owner;
 
 if (nColor > 0)
 	nColor--;
 else {
 	if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) &&
-		((owner = SEGMENTS [nSegment].m_owner) > 0)) {
-		nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+		((owner = segP->m_owner) > 0)) {
+		nConnSeg = segP->m_children [nSide];
 		if ((nConnSeg >= 0) && (SEGMENTS [nConnSeg].m_owner == owner))
 			return NULL;
 		nColor = (owner == 1);
 		}
-	special = SEGMENTS [nSegment].m_nType;
-	if (special == SEGMENT_IS_WATER)
+	if (segP->HasWaterProp ())
 		nColor = 2;
-	else if (special == SEGMENT_IS_LAVA)
+	else if (segP->HasLavaProp ())
 		nColor = 3;
 	else
 		return NULL;
-	nConnSeg = SEGMENTS [nSegment].m_children [nSide];
+	nConnSeg = segP->m_children [nSide];
 	if (nConnSeg >= 0) {
-		if (special == SEGMENTS [nConnSeg].m_nType)
+		if (segP->m_function == SEGMENTS [nConnSeg].m_function)
 			return NULL;
-		if (IS_WALL (SEGMENTS [nSegment].WallNum (nSide)))
+		if (IS_WALL (segP->WallNum (nSide)))
 			return NULL;
 		}
 	}

@@ -470,7 +470,7 @@ else {
 #endif
    SEGMENTS [nHitSeg].ProcessWallHit (nHitSide, 20, info.nId, this);
 	}
-if (gameStates.app.bD2XLevel && (SEGMENTS [nHitSeg].m_nType == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [nHitSeg].HasNoDamageProp ()))
 	return;
 //	** Damage from hitting CWall **
 //	If the CPlayerData has less than 10% shields, don't take damage from bump
@@ -514,7 +514,7 @@ int CObject::ApplyWallPhysics (short nSegment, short nSide)
 if (!((nType = SEGMENTS [nSegment].Physics (nSide, xDamage)) || 
 		(nType = SEGMENTS [nSegment].Physics (xDamage))))
 	return 0;
-if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_NODAMAGE)
+if (SEGMENTS [nSegment].HasNoDamageProp ())
 	 xDamage = 0;
 if (info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (xDamage > 0) {
@@ -1663,7 +1663,7 @@ return 1;
 int CObject::CollidePlayerAndPlayer (CObject* otherP, CFixVector& vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
 	return 1;
 if (BumpTwoObjects (this, otherP, 1, vHitPt))
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
@@ -1711,7 +1711,7 @@ CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? 
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	return;
@@ -1773,7 +1773,7 @@ int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
 	//	have a bit of a lifetime.  But they start out with a lifetime of ONE_FRAME_TIME, and this
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
-if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
 	return 1;
 if ((info.nId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
@@ -1941,7 +1941,7 @@ return 1;
 int CObject::CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_NODAMAGE))
+	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
 	return 1;
 if (!(info.nFlags & OF_EXPLODING) && BumpTwoObjects (clutter, this, 1, vHitPt))
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);

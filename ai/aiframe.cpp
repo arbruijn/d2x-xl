@@ -1011,7 +1011,7 @@ return 0;
 
 int AIMatCenHandler (CObject *objP, tAIStateInfo *siP)
 {
-if (siP->bMultiGame || (SEGMENTS [objP->info.nSegment].m_nType != SEGMENT_IS_ROBOTMAKER))
+if (siP->bMultiGame || (SEGMENTS [objP->info.nSegment].m_nType != SEGMENT_FUNC_ROBOTMAKER))
 	return 0;
 if (!gameData.matCens.fuelCenters [SEGMENTS [objP->info.nSegment].m_value].bEnabled)
 	return 0;

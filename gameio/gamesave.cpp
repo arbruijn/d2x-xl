@@ -278,7 +278,25 @@ gameFileInfo.fileinfo_sizeof = cf.ReadInt ();
 cf.Read (gameFileInfo.mine_filename, sizeof (char), 15);
 gameFileInfo.level = cf.ReadInt ();
 gameFileInfo.player.offset = cf.ReadInt ();				// Player info
+#if 1
+
 gameFileInfo.player.size = cf.ReadInt ();
+gameFileInfo.objects.Read (cf);
+gameFileInfo.walls.Read (cf);
+gameFileInfo.doors.Read (cf);
+gameFileInfo.triggers.Read (cf);
+gameFileInfo.links.Read (cf);
+gameFileInfo.control.Read (cf);
+gameFileInfo.botGen.Read (cf);
+if (gameTopFileInfo.fileinfoVersion >= 29) {
+	gameFileInfo.lightDeltaIndices.Read (cf);
+	gameFileInfo.lightDeltas.Read (cf);
+	}
+if (gameData.segs.nLevelVersion >= 17)
+	gameFileInfo.equipGen.Read (cf);
+
+#else
+
 gameFileInfo.objects.offset = cf.ReadInt ();				// Object info
 gameFileInfo.objects.count = cf.ReadInt ();    
 gameFileInfo.objects.size = cf.ReadInt ();  
@@ -314,6 +332,8 @@ if (gameData.segs.nLevelVersion >= 17) {
 	gameFileInfo.equipGen.count = cf.ReadInt ();
 	gameFileInfo.equipGen.size = cf.ReadInt ();
 	}
+
+#endif
 return 0;
 }
 
@@ -705,7 +725,7 @@ if (gameFileInfo.botGen.offset > -1) {
 
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		for (j = gameData.segs.nSegments, segP = SEGMENTS.Buffer (); j; j--, segP++)
-			if ((segP->m_nType == SEGMENT_IS_ROBOTMAKER) && (segP->m_nMatCen == i)) {
+			if ((segP->m_function == SEGMENT_FUNC_ROBOTMAKER) && (segP->m_nMatCen == i)) {
 				gameData.matCens.botGens [i].nFuelCen = segP->m_value;
 				break;
 				}
@@ -738,7 +758,7 @@ if (gameFileInfo.equipGen.offset > -1) {
 		//	Set links in gameData.matCens.botGens to gameData.matCens.fuelCenters array
 		CSegment* segP = SEGMENTS.Buffer ();
 		for (j = 0; j <= gameData.segs.nLastSegment; j++, segP++)
-			if ((segP->m_nType == SEGMENT_IS_EQUIPMAKER) && (segP->m_nMatCen == i))
+			if ((segP->m_function == SEGMENT_FUNC_EQUIPMAKER) && (segP->m_nMatCen == i))
 				gameData.matCens.equipGens [i].nFuelCen = segP->m_value;
 		}
 	}
@@ -929,7 +949,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 			//check to see that if a CTrigger requires a CWall that it has one,
 			//and if it requires a botGen that it has one
 			if (trigP->m_info.nType == TT_MATCEN) {
-				if ((SEGMENTS [nSegment].m_nType != SEGMENT_IS_ROBOTMAKER) && (SEGMENTS [nSegment].m_nType != SEGMENT_IS_EQUIPMAKER)) {
+				if ((SEGMENTS [nSegment].m_function != SEGMENT_FUNC_ROBOTMAKER) && (SEGMENTS [nSegment].m_function != SEGMENT_FUNC_EQUIPMAKER)) {
 					if (j < --h) {
 						trigP->m_info.segments [j] = trigP->m_info.segments [h];
 						trigP->m_info.sides [j] = trigP->m_info.sides [h];

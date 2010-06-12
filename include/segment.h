@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "carray.h"
 
+//------------------------------------------------------------------------------
 // Version 1 - Initial version
 // Version 2 - Mike changed some shorts to bytes in segments, so incompatible!
 
@@ -30,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SIDE_IS_TRI_02  2   // render CSide as two triangles, triangulated along edge from 0 to 2
 #define SIDE_IS_TRI_13  3   // render CSide as two triangles, triangulated along edge from 1 to 3
 
+//------------------------------------------------------------------------------
 // Set maximum values for tSegment and face data structures.
 #define MAX_VERTICES_PER_SEGMENT    8
 #define MAX_SIDES_PER_SEGMENT       6
@@ -52,12 +54,41 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_FACES			(MAX_SIDES * 2)
 #define MAX_TRIANGLES	(MAX_FACES * 16)
 
+//------------------------------------------------------------------------------
 //normal everyday vertices
 
 #define DEFAULT_LIGHTING        0   // (I2X (1)/2)
 
 # define MAX_VERTICES           (MAX_SEGMENT_VERTICES)
 # define MAX_VERTICES_D2X       (MAX_SEGMENT_VERTICES_D2X)
+
+//------------------------------------------------------------------------------
+//values for function field
+#define SEGMENT_FUNC_NONE				0
+#define SEGMENT_FUNC_FUELCEN			1
+#define SEGMENT_FUNC_REPAIRCEN		2
+#define SEGMENT_FUNC_CONTROLCEN		3
+#define SEGMENT_FUNC_ROBOTMAKER		4
+#define SEGMENT_FUNC_GOAL_BLUE		5
+#define SEGMENT_FUNC_GOAL_RED			6
+#define SEGMENT_FUNC_WATER				7
+#define SEGMENT_FUNC_LAVA				8
+#define SEGMENT_FUNC_TEAM_BLUE		9
+#define SEGMENT_FUNC_TEAM_RED			10
+#define SEGMENT_FUNC_SPEEDBOOST		11
+#define SEGMENT_FUNC_BLOCKED			12
+#define SEGMENT_FUNC_NODAMAGE			13
+#define SEGMENT_FUNC_SKYBOX			14
+#define SEGMENT_FUNC_EQUIPMAKER		15
+#define SEGMENT_FUNC_OUTDOORS			16
+#define MAX_SEGMENT_FUNCTIONS			17
+
+#define SEGMENT_PROP_WATER				1
+#define SEGMENT_PROP_LAVA				2
+#define SEGMENT_PROP_BLOCKED			4
+#define SEGMENT_PROP_NODAMAGE			8
+#define SEGMENT_PROP_DAMAGE			16
+#define SEGMENT_PROP_OUTDOORS			32
 
 // Returns true if nSegment references a child, else returns false.
 // Note that -1 means no connection, -2 means a connection to the outside world.
@@ -200,10 +231,11 @@ class CSegment {
 		short			m_verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
 		int			m_objects;    // pointer to objects in this tSegment
 
-		ubyte			m_nType;
-		sbyte			m_nMatCen;
-		sbyte			m_value;
+		ubyte			m_function;
 		ubyte			m_flags;
+		ubyte			m_props;
+		sbyte			m_value;
+		sbyte			m_nMatCen;
 		fix			m_xAvgSegLight;
 
 		char			m_owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)
@@ -215,7 +247,7 @@ class CSegment {
 	public:
 		int Index (void);
 		void Read (CFile& cf);
-		void ReadType (CFile& cf, ubyte flags);
+		void ReadFunction (CFile& cf, ubyte flags);
 		void ReadVerts (CFile& cf);
 		void ReadChildren (CFile& cf, ubyte flags);
 		void ReadExtras (CFile& cf);
@@ -331,6 +363,14 @@ class CSegment {
 
 		void OperateTrigger (int nSide, CObject *objP, int bShot);
 
+		inline int HasProp (ubyte prop) { return (m_props & prop) != 0; }
+		inline int HasBlockedProp (void) { return HasProp (SEGMENT_PROP_BLOCKED); }
+		inline int HasDamageProp (void) { return HasProp (SEGMENT_PROP_DAMAGE); }
+		inline int HasNoDamageProp (void) { return HasProp (SEGMENT_PROP_NODAMAGE); }
+		inline int HasWaterProp (void) { return HasProp (SEGMENT_PROP_WATER); }
+		inline int HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }
+		inline int HasOutdoorsProp (void) { return HasProp (SEGMENT_PROP_OUTDOORS); }
+
 	private:
 		inline int PokesThrough (int nObject, int nSide);
 
@@ -427,26 +467,6 @@ typedef struct tSegFaces {
 #define S2F_AMBIENT_LAVA    0x02
 
 //------------------------------------------------------------------------------
-
-//values for special field
-#define SEGMENT_IS_NOTHING			0
-#define SEGMENT_IS_FUELCEN			1
-#define SEGMENT_IS_REPAIRCEN		2
-#define SEGMENT_IS_CONTROLCEN		3
-#define SEGMENT_IS_ROBOTMAKER		4
-#define SEGMENT_IS_GOAL_BLUE		5
-#define SEGMENT_IS_GOAL_RED		6
-#define SEGMENT_IS_WATER			7
-#define SEGMENT_IS_LAVA				8
-#define SEGMENT_IS_TEAM_BLUE		9
-#define SEGMENT_IS_TEAM_RED		10
-#define SEGMENT_IS_SPEEDBOOST		11
-#define SEGMENT_IS_BLOCKED			12
-#define SEGMENT_IS_NODAMAGE		13
-#define SEGMENT_IS_SKYBOX			14
-#define SEGMENT_IS_EQUIPMAKER		15
-#define SEGMENT_IS_OUTDOOR			16
-#define MAX_CENTER_TYPES			17
 
 // Local tSegment data.
 // This is stuff specific to a tSegment that does not need to get

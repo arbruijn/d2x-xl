@@ -727,7 +727,7 @@ m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments, j = 0; i; i--, segP++) {
-	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
+	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 		j++;
 		v0 = segP->m_extents [0];
 		v1 = segP->m_extents [1];
@@ -761,7 +761,7 @@ m_index.Clear ();
 
 segP = SEGMENTS.Buffer ();
 for (i = gameData.segs.nSegments; i; i--, segP++) {
-	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
+	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
 		if (segP - SEGMENTS.Buffer () == nDbgSeg)
 			nDbgSeg = nDbgSeg;
@@ -803,7 +803,7 @@ if (!m_segments.Create (j)) {
 
 segP = SEGMENTS.Buffer ();
 for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
-	if ((segP->m_nType == SEGMENT_IS_SKYBOX) == bSkyBox) {
+	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
 		if (segP - SEGMENTS.Buffer () == nDbgSeg)
 			nDbgSeg = nDbgSeg;

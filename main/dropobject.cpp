@@ -175,7 +175,7 @@ int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState)
 	int			nPlayer = 0;
 	short			nSegment = -1;
 	int			nDepth, nDropDepth;
-	int			special, count;
+	int			count;
 	short			nPlayerSeg;
 	CFixVector	tempv, *vPlayerPos;
 	fix			nDist = 0;
@@ -232,19 +232,20 @@ while (nSegment == -1) {
 		nDepth--;
 		continue;
 		}
-	special = SEGMENTS [nSegment].m_nType;
-	if ((special == SEGMENT_IS_CONTROLCEN) ||
-		 (special == SEGMENT_IS_BLOCKED) ||
-		 (special == SEGMENT_IS_SKYBOX) ||
-		 (special == SEGMENT_IS_GOAL_BLUE) ||
-		 (special == SEGMENT_IS_GOAL_RED) ||
-		 (special == SEGMENT_IS_TEAM_BLUE) ||
-		 (special == SEGMENT_IS_TEAM_RED))
+
+	CSegment* segP = SEGMENTS + nSegment;
+	int nSegFunc = segP->m_function;
+	if (segP->HasBlockedProp () ||
+		 (nSegFunc == SEGMENT_FUNC_CONTROLCEN) ||
+		 (nSegFunc == SEGMENT_FUNC_GOAL_BLUE) ||
+		 (nSegFunc == SEGMENT_FUNC_GOAL_RED) ||
+		 (nSegFunc == SEGMENT_FUNC_TEAM_BLUE) ||
+		 (nSegFunc == SEGMENT_FUNC_TEAM_RED))
 		nSegment = -1;
 	else {	//don't drop in any children of control centers
 		for (int i = 0; i < 6; i++) {
-			int nChild = SEGMENTS [nSegment].m_children [i];
-			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_nType == SEGMENT_IS_CONTROLCEN)) {
+			int nChild = segP->m_children [i];
+			if (IS_CHILD (nChild) && (SEGMENTS [nChild].m_nType == SEGMENT_FUNC_CONTROLCEN)) {
 				nSegment = -1;
 				break;
 				}
@@ -252,7 +253,7 @@ while (nSegment == -1) {
 		}
 	//bail if not far enough from original position
 	if (nSegment > -1) {
-		tempv = SEGMENTS [nSegment].Center ();
+		tempv = segP->Center ();
 		nDist = PathLength (*vPlayerPos, nPlayerSeg, tempv, nSegment, -1, WID_FLY_FLAG, -1);
 		if ((nDist < 0) || (nDist >= I2X (20) * nDepth))
 			break;
@@ -1043,7 +1044,7 @@ int ReturnFlagHome (CObject *objP)
 	CObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (SEGMENTS [objP->info.nSegment].m_nType == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
+	if (SEGMENTS [objP->info.nSegment].m_nType == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_FUNC_GOAL_RED : SEGMENT_FUNC_GOAL_BLUE))
 		return objP->info.nSegment;
 	if ((initObjP = FindInitObject (objP))) {
 	//objP->info.nSegment = initObjP->info.nSegment;

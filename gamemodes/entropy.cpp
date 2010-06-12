@@ -68,10 +68,10 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), se
 	if ((segP->m_group == roomId) && (segP->m_owner == oldOwner)) {
 		segP->m_owner = newOwner;
 		ChangeSegmentTexture (i, oldOwner);
-		if (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER) {
+		if (SEGMENTS [i].m_nType == SEGMENT_FUNC_ROBOTMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
-				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
+				 (gameData.matCens.origStationTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [--kk] = f;
 			for (nObject = segP->m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
 				objP = OBJECTS + nObject;
@@ -81,10 +81,10 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), se
 			}
 		}
 	else {
-		if ((segP->m_owner == newOwner) && (SEGMENTS [i].m_nType == SEGMENT_IS_ROBOTMAKER)) {
+		if ((segP->m_owner == newOwner) && (SEGMENTS [i].m_nType == SEGMENT_FUNC_ROBOTMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
-				 (gameData.matCens.origStationTypes [f] != SEGMENT_IS_NOTHING))
+				 (gameData.matCens.origStationTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [jj++] = f;
 			}
 		}
@@ -112,20 +112,20 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
 	if (segP->m_owner == oldOwner) 
 		switch (SEGMENTS [i].m_nType) {
-			case SEGMENT_IS_ROBOTMAKER:
+			case SEGMENT_FUNC_ROBOTMAKER:
 				return;
-			case SEGMENT_IS_FUELCEN:
+			case SEGMENT_FUNC_FUELCEN:
 				if (h < 0)
 					h = i;
 				break;
-			case SEGMENT_IS_REPAIRCEN:
-				if ((h < 0) || (SEGMENTS [h].m_nType == SEGMENT_IS_FUELCEN))
+			case SEGMENT_FUNC_REPAIRCEN:
+				if ((h < 0) || (SEGMENTS [h].m_nType == SEGMENT_FUNC_FUELCEN))
 					h = i;
 			}
 if (h < 0)
 	return;
 i = SEGMENTS [h].m_nType;
-SEGMENTS [h].m_nType = SEGMENT_IS_ROBOTMAKER;
+SEGMENTS [h].m_nType = SEGMENT_FUNC_ROBOTMAKER;
 SEGMENTS [h].CreateBotGen (i);
 ChangeSegmentTexture (h, newOwner);
 }

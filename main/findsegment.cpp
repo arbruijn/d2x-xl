@@ -163,7 +163,7 @@ if (gameData.segs.HaveGrid (bSkyBox)) {
 else if (bSkyBox) {
 	for (i = gameData.segs.skybox.GetSegList (segListP); i; i--, segListP++) {
 		segP = SEGMENTS + *segListP;
-		if ((segP->m_nType == SEGMENT_IS_SKYBOX) && PointInSeg (segP, vPos))
+		if ((segP->m_function == SEGMENT_FUNC_SKYBOX) && PointInSeg (segP, vPos))
 			return *segListP;
 		}
 	}
@@ -171,7 +171,7 @@ else {
 	segP = SEGMENTS.Buffer ();
 	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
 		segP = SEGMENTS + i;
-		if ((segP->m_nType != SEGMENT_IS_SKYBOX) && PointInSeg (segP, vPos))
+		if ((segP->m_function != SEGMENT_FUNC_SKYBOX) && PointInSeg (segP, vPos))
 			return i;
 		}
 	}

@@ -263,11 +263,11 @@ void DoBumpHack (CObject *objP)
 vCenter = SEGMENTS [objP->info.nSegment].Center ();
 //don't bump CPlayerData towards center of reactor CSegment
 CFixVector::NormalizedDir (vBump, vCenter, objP->info.position.vPos);
-if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
+if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_FUNC_CONTROLCEN)
 	vBump.Neg ();
 objP->info.position.vPos += vBump * (objP->info.xSize / 5);
 //if moving away from seg, might move out of seg, so update
-if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_CONTROLCEN)
+if (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_FUNC_CONTROLCEN)
 	UpdateObjectSeg (objP);
 }
 
@@ -545,9 +545,9 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 #endif
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
-	if (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_WATER)
+	if (SEGMENTS [info.nSegment].HasWaterProp ())
 		xTimeScale = 75;
-	else if (SEGMENTS [info.nSegment].m_nType == SEGMENT_IS_LAVA)
+	else if (SEGMENTS [info.nSegment].HasLavaProp ())
 		xTimeScale = 66;
 	else
 		xTimeScale = 100;
@@ -641,7 +641,7 @@ retryMove:
 		}
 	else if (fviResult == HIT_WALL) {
 		if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
-			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_IS_SKYBOX) {
+			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_FUNC_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].m_children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (info.xLifeLeft > I2X (1))) {	//leaving the mine
 					info.xLifeLeft = 0;
@@ -651,7 +651,7 @@ retryMove:
 				}
 			else if (SEGMENTS [hi.hit.nSideSegment].CheckForTranspPixel (hi.hit.vPoint, hi.hit.nSide, hi.hit.nFace)) {
 				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox [0], 1, 1);
-				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_nType == SEGMENT_IS_SKYBOX)) {
+				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_nType == SEGMENT_FUNC_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
 					fviResult = HIT_NONE;
 					}

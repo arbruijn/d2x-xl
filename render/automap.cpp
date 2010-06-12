@@ -1347,28 +1347,29 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	color = WHITE_RGBA;
 	if (segP->m_children [nSide] == -1)
 		color = m_colors.walls.nNormal;
-	switch (SEGMENTS [nSegment].m_nType) {
-		case SEGMENT_IS_FUELCEN:
+	switch (segP->m_function) {
+		case SEGMENT_FUNC_FUELCEN:
 			color = GOLD_RGBA;
 			break;
-		case SEGMENT_IS_SPEEDBOOST:
+		case SEGMENT_FUNC_SPEEDBOOST:
 			color = ORANGE_RGBA;
 			break;
-		case SEGMENT_IS_BLOCKED:
-			color = RGBA_PAL2 (13, 13, 13);
-			break;
-		case SEGMENT_IS_REPAIRCEN:
+		case SEGMENT_FUNC_REPAIRCEN:
 			color = RGBA_PAL2 (0, 15, 31);
 			break;
-		case SEGMENT_IS_CONTROLCEN:
+		case SEGMENT_FUNC_CONTROLCEN:
 			if (gameData.reactor.bPresent)
 				color = RGBA_PAL2 (29, 0, 0);
 			break;
-		case SEGMENT_IS_ROBOTMAKER:
+		case SEGMENT_FUNC_ROBOTMAKER:
 			color = RGBA_PAL2 (29, 0, 31);
 			break;
-		case SEGMENT_IS_SKYBOX:
+		case SEGMENT_FUNC_SKYBOX:
 			continue;
+		case SEGMENT_FUNC_NORMAL:
+			if (segP->HasBlockedProp ())
+				color = RGBA_PAL2 (13, 13, 13);
+			break;
 		}
 
 	CWall* wallP = segP->Wall (nSide);

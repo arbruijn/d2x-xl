@@ -569,7 +569,7 @@ if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 nThread = ThreadId (nThread);
-if (SEGMENTS [nSegment].m_nType == SEGMENT_IS_SKYBOX) {
+if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 	psc->color.red = psc->color.green = psc->color.blue = psc->color.alpha = 1.0f;
 	psc->index = 1;
 	}

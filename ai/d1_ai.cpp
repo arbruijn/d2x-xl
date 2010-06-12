@@ -1854,7 +1854,7 @@ if (DoAnyRobotDyingFrame (objP))
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
  	//	If in materialization center, exit
- 	if (!(IsMultiGame) && (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_IS_ROBOTMAKER)) {
+ 	if (!(IsMultiGame) && (SEGMENTS [objP->info.nSegment].m_nType == SEGMENT_FUNC_ROBOTMAKER)) {
  		AIFollowPath (objP, 1, 1, NULL);		// 1 = playerP is visible, which might be a lie, but it works.
  		return;
  	}

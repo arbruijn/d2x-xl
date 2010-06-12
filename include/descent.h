@@ -3321,9 +3321,18 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(SE
 //-----------------------------------------------------------------------------
 
 typedef struct tGameItemInfo {
-	int		offset;
-	int		count;
-	int		size;
+	public:
+		int		offset;
+		int		count;
+		int		size;
+
+	public:
+		inline void Read (CFile& cf) {
+			offset = cf.ReadInt ();				// Player info
+			count = cf.ReadInt ();
+			size = cf.ReadInt ();
+			}
+
 } __pack__ tGameItemInfo;
 
 typedef struct {

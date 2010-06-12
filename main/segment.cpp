@@ -50,15 +50,15 @@ return this - SEGMENTS;
 
 //------------------------------------------------------------------------------
 
-void CSegment::ReadType (CFile& cf, ubyte flags)
+void CSegment::ReadFunction (CFile& cf, ubyte flags)
 {
 if (flags & (1 << MAX_SIDES_PER_SEGMENT)) {
-	m_nType = cf.ReadByte ();
+	m_function = cf.ReadByte ();
 	m_nMatCen = cf.ReadByte ();
 	m_value = char (cf.ReadShort ());
 	}
 else {
-	m_nType = 0;
+	m_function = 0;
 	m_nMatCen = -1;
 	m_value = 0;
 	}
@@ -82,12 +82,39 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 
 //------------------------------------------------------------------------------
 
+void CSegment::CreateProps (void)
+{
+if (m_function == SEGMENT_FUNC_WATER)
+	m_props = SEGMENT_PROP_WATER;
+else if (m_function == SEGMENT_FUNC_LAVA)
+	m_props = SEGMENT_PROP_LAVA;
+else if (HasNoDamageProp ())
+	m_props = SEGMENT_PROP_NODAMAGE;
+else if (m_function == SEGMENT_FUNC_BLOCKED)
+	m_props = SEGMENT_PROP_BLOCKED;
+else if (m_function == SEGMENT_FUNC_OUTDOORS)
+	m_props = SEGMENT_PROP_OUTDOOR;
+else if (m_function == SEGMENT_FUNC_SKYBOX) {
+	m_props = SEGMENT_PROP_BLOCKED;
+	return;	// keep segment function
+	}
+else
+	return;
+m_function = SEGMENT_FUNC_NORMAL;
+}
+
+//------------------------------------------------------------------------------
+
 void CSegment::ReadExtras (CFile& cf)
 {
-m_nType = cf.ReadByte ();
+m_function = cf.ReadByte ();
 m_nMatCen = cf.ReadByte ();
 m_value = cf.ReadByte ();
 m_flags = cf.ReadByte ();
+if (gameData.segs.nLevelVersion >= 20)
+	m_props = cf.ReadByte;
+else
+	CreateProps ();
 m_xAvgSegLight = cf.ReadFix ();
 }
 
@@ -111,7 +138,7 @@ else {
 ubyte flags = bNewFileFormat ? cf.ReadByte () : 0x7f;
 
 if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
-	ReadType (cf, flags);
+	ReadFunction (cf, flags);
 	ReadVerts (cf);
 	ReadChildren (cf, flags);
 	}
@@ -119,7 +146,7 @@ else {
 	ReadChildren (cf, flags);
 	ReadVerts (cf);
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 level
-		ReadType (cf, flags);
+		ReadFunction (cf, flags);
 		}
 	}
 m_objects = -1;
@@ -343,12 +370,12 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (!objP) 
 	return wallP ? wallP->IsDoorWay (NULL, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
 
-ubyte nChildType = SEGMENTS [nChildSeg].m_nType;
-if ((nChildType == SEGMENT_IS_BLOCKED) || (nChildType == SEGMENT_IS_SKYBOX)) {
+ubyte nChildType = SEGMENTS [nChildSeg].m_function;
+if (SEGMENTS [nChildSeg].HasBlockedProp ()) {
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP))
 		return WID_RENDER_FLAG;
 	}
-else if ((m_nType == SEGMENT_IS_SPEEDBOOST) && (nChildType != SEGMENT_IS_SPEEDBOOST)) {
+else if ((m_function == SEGMENT_FUNC_SPEEDBOOST) && (nChildType != SEGMENT_FUNC_SPEEDBOOST)) {
 	// handle the player in a speed boost area. The player must only exit speed boost areas through a segment side with a speed boost trigger
 	if ((objP == gameData.objs.consoleP) && gameData.objs.speedBoost [objP->Index ()].bBoosted) {
 		if (!wallP)
@@ -385,11 +412,11 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
-	 (m_nType == SEGMENT_IS_SPEEDBOOST) && (childP->m_nType != SEGMENT_IS_SPEEDBOOST) &&
+	 (m_function == SEGMENT_FUNC_SPEEDBOOST) && (childP->m_function != SEGMENT_FUNC_SPEEDBOOST) &&
 	 (!wallP || (TRIGGERS [wallP->nTrigger].m_info.nType != TT_SPEEDBOOST)))
 	return WID_RENDER_FLAG;
 
-if ((childP->m_nType == SEGMENT_IS_BLOCKED) || (childP->m_nType == SEGMENT_IS_SKYBOX))
+if (childP->HasBlockedProp ())
 	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP)))
 			 ? WID_RENDER_FLAG
 			 : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_FLY_FLAG | WID_RENDPAST_FLAG;
@@ -416,11 +443,11 @@ return false;
 
 int CSegment::Physics (fix& xDamage)
 {
-if (m_nType == SEGMENT_IS_LAVA) {
+if (HasLavaProp ()) {
 	xDamage = gameData.pig.tex.tMapInfo [0][404].damage / 2;
 	return 1;
 	}
-if (m_nType == SEGMENT_IS_WATER) {
+if (HasWaterProp ()) {
 	xDamage = 0;
 	return 2;
 	}

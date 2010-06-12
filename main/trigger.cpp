@@ -288,7 +288,7 @@ for (i = j = 0; i < MAX_PLAYERS; i++) {
 	nSegment = m_info.segments [j];
 	TriggerSetOrient (&gameData.multiplayer.playerInit [i].position, nSegment, m_info.sides [j], 1, 0);
 	gameData.multiplayer.playerInit [i].nSegment = nSegment;
-	gameData.multiplayer.playerInit [i].nSegType = SEGMENTS [nSegment].m_nType;
+	gameData.multiplayer.playerInit [i].nSegType = SEGMENTS [nSegment].m_function;
 	if (i == gameData.multiplayer.nLocalPlayer)
 		MoveSpawnMarker (&gameData.multiplayer.playerInit [i].position, nSegment);
 	j = (j + 1) % m_info.nLinks;

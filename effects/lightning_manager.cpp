@@ -201,11 +201,11 @@ else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers
 		return &color;
 		}
 	int s = SEGMENTS [objP->info.nSegment].m_nType;
-	if (s == SEGMENT_IS_FUELCEN) {
+	if (s == SEGMENT_FUNC_FUELCEN) {
 		static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 		return &color;
 		}
-	if (s == SEGMENT_IS_REPAIRCEN) {
+	if (s == SEGMENT_FUNC_REPAIRCEN) {
 		static tRgbaColorf color = {0.3f, 0.5f, 0.1f, 0.2f};
 		return &color;
 		}

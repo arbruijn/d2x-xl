@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------
 // A refueling center is one CSegment... to identify it in the
 // CSegment structure, the "special" field is set to
-// SEGMENT_IS_FUELCEN.  The "value" field is then used for how
+// SEGMENT_FUNC_FUELCEN.  The "value" field is then used for how
 // much fuel the center has left, with a maximum value of 100.
 
 //-------------------------------------------------------------
@@ -71,8 +71,6 @@ void FuelCenDamage(CSegment *segp, fix AmountOfDamage );
 int GatherFlagGoals (void);
 // Called to repair an CObject
 //--repair-- int refuel_do_repair_effect( CObject * obj, int firstTime, int repair_seg );
-
-extern char Special_names[MAX_CENTER_TYPES][11];
 
 //--repair-- //do the repair center for this frame
 //--repair-- void do_repair_sequence(CObject *obj);

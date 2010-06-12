@@ -265,12 +265,12 @@ int GotTeamSpawnPos (void)
 
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	j = FindSegByPos (*PlayerSpawnPos (i), -1, 1, 0);
-	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_IS_NOTHING : SEGMENTS [j].m_nType;
+	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_FUNC_NONE : SEGMENTS [j].m_nType;
 	switch (gameData.multiplayer.playerInit [i].nSegType) {
-		case SEGMENT_IS_GOAL_BLUE:
-		case SEGMENT_IS_TEAM_BLUE:
-		case SEGMENT_IS_GOAL_RED:
-		case SEGMENT_IS_TEAM_RED:
+		case SEGMENT_FUNC_GOAL_BLUE:
+		case SEGMENT_FUNC_TEAM_BLUE:
+		case SEGMENT_FUNC_GOAL_RED:
+		case SEGMENT_FUNC_TEAM_RED:
 			break;
 		default:
 			return 0;
@@ -294,13 +294,13 @@ for (h = j = 0; j < i; j++)
 // assign the spawn location # (h+1) to CPlayerData i
 for (j = 0; j < gameData.multiplayer.nPlayerPositions; j++) {
 	switch (gameData.multiplayer.playerInit [j].nSegType) {
-		case SEGMENT_IS_GOAL_BLUE:
-		case SEGMENT_IS_TEAM_BLUE:
+		case SEGMENT_FUNC_GOAL_BLUE:
+		case SEGMENT_FUNC_TEAM_BLUE:
 			if (!t && (--h < 0))
 				return j;
 			break;
-		case SEGMENT_IS_GOAL_RED:
-		case SEGMENT_IS_TEAM_RED:
+		case SEGMENT_FUNC_GOAL_RED:
+		case SEGMENT_FUNC_TEAM_RED:
 			if (t && (--h < 0))
 				return j;
 			break;
