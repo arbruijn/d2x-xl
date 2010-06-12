@@ -82,25 +82,50 @@ for (int i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
 
 //------------------------------------------------------------------------------
 
-void CSegment::CreateProps (void)
+static ubyte segFuncFromType [] = {
+	SEGMENT_FUNC_NONE,
+	SEGMENT_FUNC_FUELCEN,
+	SEGMENT_FUNC_REPAIRCEN,
+	SEGMENT_FUNC_CONTROLCEN,
+	SEGMENT_FUNC_ROBOTMAKER,
+	SEGMENT_FUNC_GOAL_BLUE,
+	SEGMENT_FUNC_GOAL_RED,
+	SEGMENT_FUNC_NONE,
+	SEGMENT_FUNC_NONE,
+	SEGMENT_FUNC_TEAM_BLUE,
+	SEGMENT_FUNC_TEAM_RED,
+	SEGMENT_FUNC_SPEEDBOOST,
+	SEGMENT_FUNC_NONE,
+	SEGMENT_FUNC_NONE,
+	SEGMENT_FUNC_SKYBOX,
+	SEGMENT_FUNC_EQUIPMAKER,
+	SEGMENT_FUNC_NONE
+	};
+
+static ubyte segPropsFromType [] = {
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_WATER,
+	SEGMENT_PROP_LAVA,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_BLOCKED,
+	SEGMENT_PROP_NODAMAGE,
+	SEGMENT_PROP_BLOCKED,
+	SEGMENT_PROP_NONE,
+	SEGMENT_PROP_OUTDOORS
+	};
+
+void CSegment::Upgrade (void)
 {
-if (m_function == SEGMENT_FUNC_WATER)
-	m_props = SEGMENT_PROP_WATER;
-else if (m_function == SEGMENT_FUNC_LAVA)
-	m_props = SEGMENT_PROP_LAVA;
-else if (HasNoDamageProp ())
-	m_props = SEGMENT_PROP_NODAMAGE;
-else if (m_function == SEGMENT_FUNC_BLOCKED)
-	m_props = SEGMENT_PROP_BLOCKED;
-else if (m_function == SEGMENT_FUNC_OUTDOORS)
-	m_props = SEGMENT_PROP_OUTDOOR;
-else if (m_function == SEGMENT_FUNC_SKYBOX) {
-	m_props = SEGMENT_PROP_BLOCKED;
-	return;	// keep segment function
-	}
-else
-	return;
-m_function = SEGMENT_FUNC_NORMAL;
+m_props = segPropsFromType [m_function];
+m_function = segFuncFromType [m_function];
 }
 
 //------------------------------------------------------------------------------
@@ -111,10 +136,10 @@ m_function = cf.ReadByte ();
 m_nMatCen = cf.ReadByte ();
 m_value = cf.ReadByte ();
 m_flags = cf.ReadByte ();
-if (gameData.segs.nLevelVersion >= 20)
+if (gameData.segs.nLevelVersion > 20)
 	m_props = cf.ReadByte;
 else
-	CreateProps ();
+	Upgrade ();
 m_xAvgSegLight = cf.ReadFix ();
 }
 
