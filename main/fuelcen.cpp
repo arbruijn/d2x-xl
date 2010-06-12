@@ -49,7 +49,7 @@ void ResetGenerators (void)
 	int i;
 
 for (i = 0; i < LEVEL_SEGMENTS; i++)
-	SEGMENTS [i].m_nType = SEGMENT_FUNC_NONE;
+	SEGMENTS [i].m_function = SEGMENT_FUNC_NONE;
 gameData.matCens.nFuelCenters = 0;
 gameData.matCens.nBotCenters = 0;
 gameData.matCens.nEquipCenters = 0;
@@ -63,8 +63,8 @@ void reset_allRobot_centers ()
 
 	// Remove all materialization centers
 for (i = 0; i < gameData.segs.nSegments; i++)
-	if (SEGMENTS [i].m_nType == SEGMENT_FUNC_ROBOTMAKER) {
-		SEGMENTS [i].m_nType = SEGMENT_FUNC_NONE;
+	if (SEGMENTS [i].m_function == SEGMENT_FUNC_ROBOTMAKER) {
+		SEGMENTS [i].m_function = SEGMENT_FUNC_NONE;
 		SEGMENTS [i].m_nMatCen = -1;
 		}
 }
@@ -696,13 +696,13 @@ fix CSegment::Damage (fix xMaxDamage)
 {
 	static fix lastPlayTime = 0;
 
-if (!(segP->m_damage || (gameData.app.nGameMode & GM_ENTROPY)))
+if (!(segP->m_xDamage || (gameData.app.nGameMode & GM_ENTROPY)))
 	return 0;
-int bEntropy = !segP->m_damage;
+int bEntropy = !segP->m_xDamage;
 gameData.matCens.playerSegP = this;
 if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1)))
 	return 0;
-fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : segP->m_damage;
+fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : segP->m_xDamage;
 fix amount = FixMul (gameData.time.xFrame, rate);
 if (amount > xMaxDamage)
 	amount = xMaxDamage;

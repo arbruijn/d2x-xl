@@ -983,7 +983,7 @@ void CreateGenerators (void)
 {
 gameData.matCens.nRepairCenters = 0;
 for (int i = 0; i < gameData.segs.nSegments; i++) {
-	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_nType);
+	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_function);
 	}
 }
 

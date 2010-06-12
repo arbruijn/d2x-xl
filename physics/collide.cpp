@@ -1663,7 +1663,7 @@ return 1;
 int CObject::CollidePlayerAndPlayer (CObject* otherP, CFixVector& vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
+	 (SEGMENTS [info.nSegment].HasNoDamageProp ()))
 	return 1;
 if (BumpTwoObjects (this, otherP, 1, vHitPt))
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);
@@ -1711,7 +1711,7 @@ CPlayerData *killerP = (killerObjP && (killerObjP->info.nType == OBJ_PLAYER)) ? 
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [info.nSegment].HasNoDamageProp ()))
 	return;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	return;
@@ -1773,7 +1773,7 @@ int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually
 	//	have a bit of a lifetime.  But they start out with a lifetime of ONE_FRAME_TIME, and this
 	//	gets bashed to 1/4 second in laser_doWeapon_sequence.  This bashing occurs for visual purposes only.
-if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
+if (gameStates.app.bD2XLevel && (SEGMENTS [playerObjP->info.nSegment].HasNoDamageProp ()))
 	return 1;
 if ((info.nId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
@@ -1941,7 +1941,7 @@ return 1;
 int CObject::CollideActorAndClutter (CObject* clutter, CFixVector& vHitPt)
 {
 if (gameStates.app.bD2XLevel &&
-	 (SEGMENTS [info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
+	 (SEGMENTS [info.nSegment].HasNoDamageProp ()))
 	return 1;
 if (!(info.nFlags & OF_EXPLODING) && BumpTwoObjects (clutter, this, 1, vHitPt))
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, info.nSegment, 0, vHitPt);

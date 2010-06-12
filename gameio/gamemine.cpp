@@ -465,7 +465,7 @@ gameData.matCens.nRepairCenters = 0;
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
 		SEGMENTS [i].ReadExtras (cf);
-	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_nType);
+	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_function);
 	}
 }
 

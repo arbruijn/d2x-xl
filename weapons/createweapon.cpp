@@ -155,7 +155,7 @@ if (parentP->info.nType == OBJ_ROBOT)
 	DoMuzzleStuff (nSegment, vPosition);
 else if (gameStates.app.bD2XLevel &&
 			(parentP == gameData.objs.consoleP) &&
-			(SEGMENTS [gameData.objs.consoleP->info.nSegment].m_nType == SEGMENT_FUNC_NODAMAGE))
+			(SEGMENTS [gameData.objs.consoleP->info.nSegment].HasNoDamageProp ()))
 	return -1;
 #if 1
 if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {

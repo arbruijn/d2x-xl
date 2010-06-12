@@ -1366,7 +1366,7 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 			break;
 		case SEGMENT_FUNC_SKYBOX:
 			continue;
-		case SEGMENT_FUNC_NORMAL:
+		case SEGMENT_FUNC_NONE:
 			if (segP->HasBlockedProp ())
 				color = RGBA_PAL2 (13, 13, 13);
 			break;

@@ -380,7 +380,7 @@ class CSegment {
 
 		inline int HasProp (ubyte prop) { return (m_props & prop) != 0; }
 		inline int HasBlockedProp (void) { return HasProp (SEGMENT_PROP_BLOCKED); }
-		inline int HasDamageProp (void) { return HasProp (SEGMENT_PROP_DAMAGE); }
+		inline int HasDamageProp (void) { return (m_xDamage != 0); }
 		inline int HasNoDamageProp (void) { return HasProp (SEGMENT_PROP_NODAMAGE); }
 		inline int HasWaterProp (void) { return HasProp (SEGMENT_PROP_WATER); }
 		inline int HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }

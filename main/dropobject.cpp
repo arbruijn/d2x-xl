@@ -1044,7 +1044,7 @@ int ReturnFlagHome (CObject *objP)
 	CObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (SEGMENTS [objP->info.nSegment].m_nType == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_FUNC_GOAL_RED : SEGMENT_FUNC_GOAL_BLUE))
+	if (SEGMENTS [objP->info.nSegment].m_function == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_FUNC_GOAL_RED : SEGMENT_FUNC_GOAL_BLUE))
 		return objP->info.nSegment;
 	if ((initObjP = FindInitObject (objP))) {
 	//objP->info.nSegment = initObjP->info.nSegment;

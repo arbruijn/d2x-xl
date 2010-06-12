@@ -514,7 +514,7 @@ if (info.nType == OBJ_ROBOT) {
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	bool bNeedEffect, bHaveEffect = lightningManager.GetObjectSystem (Index ()) >= 0;
-	int nType = SEGMENTS [OBJSEG (this)].m_nType;
+	int nType = SEGMENTS [OBJSEG (this)].m_function;
 	if (gameData.FusionCharge (info.nId) > I2X (2))
 		bNeedEffect = true;
 	else if (nType == SEGMENT_FUNC_FUELCEN)

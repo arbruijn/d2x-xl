@@ -68,7 +68,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), se
 	if ((segP->m_group == roomId) && (segP->m_owner == oldOwner)) {
 		segP->m_owner = newOwner;
 		ChangeSegmentTexture (i, oldOwner);
-		if (SEGMENTS [i].m_nType == SEGMENT_FUNC_ROBOTMAKER) {
+		if (SEGMENTS [i].m_function == SEGMENT_FUNC_ROBOTMAKER) {
 			--k;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_FUNC_NONE))
@@ -81,7 +81,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (), se
 			}
 		}
 	else {
-		if ((segP->m_owner == newOwner) && (SEGMENTS [i].m_nType == SEGMENT_FUNC_ROBOTMAKER)) {
+		if ((segP->m_owner == newOwner) && (SEGMENTS [i].m_function == SEGMENT_FUNC_ROBOTMAKER)) {
 			j++;
 			if (extraGameInfo [1].entropy.bRevertRooms && (-1 < (f = FindFuelCen (i))) &&
 				 (gameData.matCens.origStationTypes [f] != SEGMENT_FUNC_NONE))
@@ -111,7 +111,7 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 // preferrably convert repair centers
 for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
 	if (segP->m_owner == oldOwner) 
-		switch (SEGMENTS [i].m_nType) {
+		switch (SEGMENTS [i].m_function) {
 			case SEGMENT_FUNC_ROBOTMAKER:
 				return;
 			case SEGMENT_FUNC_FUELCEN:
