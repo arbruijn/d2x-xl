@@ -102,8 +102,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SEGMENT_PROP_LAVA				2
 #define SEGMENT_PROP_BLOCKED			4
 #define SEGMENT_PROP_NODAMAGE			8
-#define SEGMENT_PROP_DAMAGE			16
-#define SEGMENT_PROP_OUTDOORS			32
+#define SEGMENT_PROP_OUTDOORS			16
 
 // Returns true if nSegment references a child, else returns false.
 // Note that -1 means no connection, -2 means a connection to the outside world.
@@ -251,6 +250,7 @@ class CSegment {
 		ubyte			m_props;
 		sbyte			m_value;
 		sbyte			m_nMatCen;
+		fix			m_xDamage;
 		fix			m_xAvgSegLight;
 
 		char			m_owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)

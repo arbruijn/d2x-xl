@@ -694,24 +694,27 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 
 fix CSegment::Damage (fix xMaxDamage)
 {
-	static fix last_playTime=0;
-	fix amount;
+	static fix lastPlayTime = 0;
 
-if (!(gameData.app.nGameMode & GM_ENTROPY))
+if (!(segP->m_damage || (gameData.app.nGameMode & GM_ENTROPY)))
 	return 0;
+int bEntropy = !segP->m_damage;
 gameData.matCens.playerSegP = this;
-if ((m_owner < 1) || (m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))
+if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1)))
 	return 0;
-amount = FixMul (gameData.time.xFrame, I2X (extraGameInfo [1].entropy.nShieldDamageRate));
+fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : segP->m_damage;
+fix amount = FixMul (gameData.time.xFrame, rate);
 if (amount > xMaxDamage)
 	amount = xMaxDamage;
-if (last_playTime > gameData.time.xGame)
-	last_playTime = 0;
-if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
-	audio.PlaySound (SOUND_PLAYER_GOT_HIT, SOUNDCLASS_GENERIC, I2X (1) / 2);
-	if (IsMultiGame)
-		MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, I2X (1) / 2);
-	last_playTime = gameData.time.xGame;
+if (bEntropy) {
+	if (lastPlayTime > gameData.time.xGame)
+		lastPlayTime = 0;
+	if (gameData.time.xGame > lastPlayTime + FUELCEN_SOUND_DELAY) {
+		audio.PlaySound (SOUND_PLAYER_GOT_HIT, SOUNDCLASS_GENERIC, I2X (1) / 2);
+		if (IsMultiGame)
+			MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, I2X (1) / 2);
+		lastPlayTime = gameData.time.xGame;
+		}
 	}
 return amount;
 }

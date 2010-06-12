@@ -821,7 +821,7 @@ class CObject : public CObjectInfo {
 		void SaveState (CFile& cf);
 		void LoadTextures (void);
 		int PowerupToDevice (void);
-		void HandleSpecialSegment (void);
+		void HandleSegmentFunction (void);
 		void SetupSmoke (void);
 
 		int OpenableDoorsInSegment (void);

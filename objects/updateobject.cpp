@@ -213,7 +213,7 @@ return nType;
 
 // -----------------------------------------------------------------------------
 
-void CObject::HandleSpecialSegment (void)
+void CObject::HandleSegmentFunction (void)
 {
 if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId)) {
 	CSegment*		segP = SEGMENTS + info.nSegment;
@@ -569,7 +569,7 @@ if (info.nType == OBJ_ROBOT) {
 	}
 info.vLastPos = info.position.vPos;			// Save the current position
 RepairDamage ();
-HandleSpecialSegment ();
+HandleSegmentFunction ();
 if ((info.xLifeLeft != IMMORTAL_TIME) &&
 	 (info.xLifeLeft != ONE_FRAME_TIME) &&
 	 (gameData.physics.xTime > 0))
