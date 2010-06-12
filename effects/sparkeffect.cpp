@@ -172,7 +172,7 @@ if (m_bUpdate) {
 
 inline int CSparkManager::Type (short nMatCen)
 {
-return SEGMENTS [m_segments [nMatCen]].m_nType == SEGMENT_FUNC_FUELCEN;
+return SEGMENTS [m_segments [nMatCen]].m_function == SEGMENT_FUNC_FUELCEN;
 }
 
 //-----------------------------------------------------------------------------

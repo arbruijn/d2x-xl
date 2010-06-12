@@ -515,7 +515,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;
 #endif
-	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_nType == SEGMENT_FUNC_SKYBOX) {
+	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.faceP->m_info.nLightmap = 1;
 		continue;
 		}

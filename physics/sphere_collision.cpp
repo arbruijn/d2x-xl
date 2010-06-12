@@ -695,7 +695,7 @@ if ((endMask = masks.m_face)) { //on the back of at least one face
 			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55) && (nChildSide >= 0)) {
 				if (SEGMENTS [nChildSide].HasBlockedProp () ||
 					 (gameData.objs.speedBoost [nThisObject].bBoosted &&
-					  ((SEGMENTS [nStartSeg].m_nType != SEGMENT_FUNC_SPEEDBOOST) || (nType == SEGMENT_FUNC_SPEEDBOOST))))
+					  ((SEGMENTS [nStartSeg].m_function != SEGMENT_FUNC_SPEEDBOOST) || (SEGMENTS [nChildSide].m_function == SEGMENT_FUNC_SPEEDBOOST))))
 					widResult |= WID_FLY_FLAG;
 				}
 			if ((widResult & WID_FLY_FLAG) ||

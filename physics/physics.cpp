@@ -641,7 +641,7 @@ retryMove:
 		}
 	else if (fviResult == HIT_WALL) {
 		if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
-			if (SEGMENTS [hi.hit.nSegment].m_nType == SEGMENT_FUNC_SKYBOX) {
+			if (SEGMENTS [hi.hit.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].m_children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (info.xLifeLeft > I2X (1))) {	//leaving the mine
 					info.xLifeLeft = 0;
@@ -651,7 +651,7 @@ retryMove:
 				}
 			else if (SEGMENTS [hi.hit.nSideSegment].CheckForTranspPixel (hi.hit.vPoint, hi.hit.nSide, hi.hit.nFace)) {
 				short nNewSeg = FindSegByPos (vNewPos, gameData.segs.skybox [0], 1, 1);
-				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_nType == SEGMENT_FUNC_SKYBOX)) {
+				if ((nNewSeg >= 0) && (SEGMENTS [nNewSeg].m_function == SEGMENT_FUNC_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
 					fviResult = HIT_NONE;
 					}
