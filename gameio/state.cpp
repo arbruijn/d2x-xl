@@ -501,7 +501,7 @@ if (IsMultiGame) {
 	MultiInitiateSaveGame ();
 	return 0;
 	}
-if ((missionManager.nCurrentLevel < 0) && !(m_bSecret || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
+if ((missionManager.nCurrentLevel < 0) && !((m_bSecret > 0) || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
 	HUDInitMessage (TXT_SECRET_SAVE_ERROR);
 	return 0;
 	}
@@ -509,7 +509,7 @@ if (gameStates.gameplay.bFinalBossIsDead)		//don't allow save while final boss i
 	return 0;
 //	If this is a secret save and the control center has been destroyed, don't allow
 //	return to the base level.
-if (m_bSecret && gameData.reactor.bDestroyed) {
+if ((m_bSecret > 0) && gameData.reactor.bDestroyed) {
 	CFile::Delete (SECRETB_FILENAME, gameFolders.szSaveDir);
 	return 0;
 	}
@@ -1048,7 +1048,7 @@ else {
 
 int CSaveGameManager::SaveState (int bSecret, char *filename, char *description)
 {
-	int			i;
+	int	i;
 
 StopTime ();
 if (filename)
@@ -1073,6 +1073,10 @@ m_cf.Write (m_description, sizeof (char) * DESC_LENGTH, 1);
 // Save the current screen shot...
 SaveImage ();
 SaveGameData ();
+if (!bSecret) {
+	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
+		m_cf.WriteByte (sbyte (missionManager.GetLevelState (i)));
+	}
 if (m_cf.Error ()) {
 	if (!IsMultiGame) {
 		MsgBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR);
@@ -1161,7 +1165,7 @@ if (!m_bQuick) {
 		}
 	PopSecretSave (nSaveSlot);
 	AutoSave (nSaveSlot);
-	if (!m_bSecret && bInGame) {
+	if (!bSecret && bInGame) {
 		int choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 		if (choice != 0) {
 			gameData.app.bGamePaused = 0;
@@ -2328,7 +2332,14 @@ if (!i) {
 	StartTime (1);
 	return 0;
 	}
-missionManager.LoadLevelStates ();
+if (bSecret < 0)
+	missionManager.LoadLevelStates ();
+else if (!bSecret) {
+	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
+		missionManager.SetLevelState (i, char (m_cf.ReadByte ()));
+	missionManager.SaveLevelStates ();
+	}
+
 FixObjectSegs ();
 FixObjectSizes ();
 //lightManager.Setup (nLevel);
