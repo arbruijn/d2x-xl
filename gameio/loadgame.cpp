@@ -1476,7 +1476,6 @@ if (!bFromSecret && ((missionManager.nCurrentLevel != missionManager.nLastLevel)
 	}
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
-gameData.reactor.bDestroyed = 0;
 if (IsMultiGame) {
 	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
 		gameStates.app.bBetweenLevels = 0;
@@ -1486,7 +1485,8 @@ if (IsMultiGame) {
 		}
 	}
 
-missionManager.SetLevelState (missionManager.nCurrentLevel, gameData.reactor.bDestroyed ? -1 : 1);
+if (gameData.reactor.bDestroyed)
+	missionManager.SetLevelState (missionManager.nCurrentLevel, -1);
 missionManager.SaveLevelStates ();
 
 if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManager.NextLevel (1) < 1) &&
@@ -1683,6 +1683,7 @@ if (!funcRes) {
 	}
 Assert (gameStates.app.bAutoRunMission || (missionManager.nCurrentLevel == nLevel));	//make sure level set right
 
+missionManager.SetLevelState (missionManager.nCurrentLevel, 1);
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
 #if 0 //DBG										  // this level
 InitHoardData ();
@@ -2065,6 +2066,7 @@ int StartNewLevel (int nLevel, bool bNewGame)
 {
 	gameStates.app.xThisLevelTime = 0;
 
+gameData.reactor.bDestroyed = 0;
 MakeModFolders (hogFileManager.m_files.MsnHogFiles.szName);
 if (nLevel < 0)
 	return PrepareSecretLevel (nLevel, false);
