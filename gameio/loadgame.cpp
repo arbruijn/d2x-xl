@@ -1299,12 +1299,12 @@ if (missionManager.GetLevelState (missionManager.NextLevel (1)) < 0)
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
-	sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName, missionManager.nCurrentLevel);
+	sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, missionManager.nCurrentLevel);
 	saveGameManager.Save (0, 2, 0, szFile);
 	}
 else if (CFile::Exist (szFile, gameFolders.szSaveDir, 0))
 	CFile::Delete (szFile, gameFolders.szSaveDir);
-sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName, missionManager.NextLevel (1));
+sprintf (szFile, "%s.level%02d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, missionManager.NextLevel (1));
 if (!gameStates.app.bD1Mission && CFile::Exist (szFile, gameFolders.szSaveDir, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
