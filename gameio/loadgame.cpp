@@ -1291,7 +1291,7 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 //	Called from trigger.cpp when player is exiting via a directed exit
 int ReenterLevel (void)
 {
-if (missionManager.GetLevelState (missionManager.NextLevel (1)) < 1) 
+if (missionManager.GetLevelState (missionManager.NextLevel (1)) < 0) 
 	return 0;
 
 		char	szFile [FILENAME_LEN] = {'\0'};
