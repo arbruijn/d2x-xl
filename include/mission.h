@@ -133,7 +133,7 @@ class CMissionManager : public CMissionData {
 		inline int LastSecretLevel (void) { return nLastSecretLevel; }
 
 		inline int GetLevelState (int nLevel) {
-			return ((nLevel < 1) || (nLevel > nLastLevel)) ? -1 : nLevelState [nLevel];
+			return ((nLevel < 1) || (nLevel > nLastLevel)) ? 0 : nLevelState [nLevel]; // 0: not yet been there, -1: destroyed, 1: been there already
 			}
 		inline void SetLevelState (int nLevel, char nState) {
 			if ((nLevel >= 1) && (nLevel <= nLastLevel)) 
