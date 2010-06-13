@@ -639,7 +639,7 @@ if (i) {
 		h = DoGameFrame (0, 0, 0);
 		controls.ResetTriggers ();
 		gameStates.app.tick40fps.bTick = 0;
-		if (0 > h)
+		if (0 >= h)
 			return h;
 		}
 	gameStates.app.tick40fps.bTick = 1;

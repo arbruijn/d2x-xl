@@ -2327,11 +2327,6 @@ if (m_nVersion < 27)
 	i = LoadBinFormat (bMulti, xOldGameTime, &nLevel);
 else
 	i = LoadUniFormat (bMulti, xOldGameTime, &nLevel);
-m_cf.Close ();
-if (!i) {
-	StartTime (1);
-	return 0;
-	}
 if (bSecret < 0)
 	missionManager.LoadLevelStates ();
 else if (!bSecret && (m_nVersion >= 53)) {
@@ -2340,6 +2335,11 @@ else if (!bSecret && (m_nVersion >= 53)) {
 	missionManager.SaveLevelStates ();
 	}
 
+m_cf.Close ();
+if (!i) {
+	StartTime (1);
+	return 0;
+	}
 FixObjectSegs ();
 FixObjectSizes ();
 //lightManager.Setup (nLevel);

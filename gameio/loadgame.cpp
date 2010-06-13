@@ -1317,6 +1317,7 @@ if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFold
 	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	gameData.weapons.nPrimary = pwSave;
 	gameData.weapons.nSecondary = swSave;
+	missionManager.nCurrentLevel = missionManager.NextLevel (1);
 	return 1;
 	}
 return 0;
