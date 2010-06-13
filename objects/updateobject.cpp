@@ -218,7 +218,6 @@ void CObject::HandleSegmentFunction (void)
 if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId)) {
 	CSegment*		segP = SEGMENTS + info.nSegment;
 	CPlayerData*	playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
-	fix				shields, fuel;
 
    if (gameData.app.nGameMode & GM_CAPTURE)
 		 segP->CheckForGoal ();
@@ -234,27 +233,21 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 	else if (gameStates.entropy.nTimeLastMoved < 0)
 		gameStates.entropy.nTimeLastMoved = 0;
 
-	shields = segP->Damage (playerP->shields + 1);
-	if (shields > 0) {
-		playerP->shields -= shields;
-		MultiSendShields ();
-		if (playerP->shields < 0)
-			StartPlayerDeathSequence (this);
-		else
-			segP->ConquerCheck ();
-		}
+	playerP->shields -= segP->ShieldDamage (playerP->shields + 1);
+	playerP->energy -= segP->EnergyDamage (playerP->energy);
+	MultiSendShields ();
+	if (playerP->shields < 0)
+		StartPlayerDeathSequence (this);
 	else {
-		StopConquerWarning ();
-		fuel = segP->Refuel (INITIAL_ENERGY - playerP->energy);
-		if (fuel > 0)
-			playerP->energy += fuel;
-		shields = segP->Repair (INITIAL_SHIELDS - playerP->shields);
+		segP->ConquerCheck ();
+		fix energy = segP->Refuel (INITIAL_ENERGY - playerP->energy);
+		if (energy > 0)
+			playerP->energy += energy;
+		fix shields = segP->Repair (INITIAL_SHIELDS - playerP->shields);
 		if (shields > 0) {
 			playerP->shields += shields;
 			MultiSendShields ();
 			}
-		if (!segP->m_owner)
-			segP->ConquerCheck ();
 		}
 	}
 }

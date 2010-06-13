@@ -1684,6 +1684,7 @@ if (!funcRes) {
 Assert (gameStates.app.bAutoRunMission || (missionManager.nCurrentLevel == nLevel));	//make sure level set right
 
 missionManager.SetLevelState (missionManager.nCurrentLevel, 1);
+missionManager.SaveLevelStates ();
 GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
 #if 0 //DBG										  // this level
 InitHoardData ();

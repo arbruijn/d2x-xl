@@ -692,17 +692,16 @@ for (i = 0; i < gameData.matCens.nFuelCenters; i++, fuelCenP++) {
 
 //-------------------------------------------------------------
 
-fix CSegment::Damage (fix xMaxDamage)
+fix CSegment::ShieldDamage (fix xMaxDamage)
 {
 	static fix lastPlayTime = 0;
 
-if (!(m_xDamage || (gameData.app.nGameMode & GM_ENTROPY)))
+if (!(m_xDamage [0] || (gameData.app.nGameMode & GM_ENTROPY)))
 	return 0;
-int bEntropy = !m_xDamage;
-gameData.matCens.playerSegP = this;
+int bEntropy = !m_xDamage [0];
 if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1)))
 	return 0;
-fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : m_xDamage;
+fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : m_xDamage [0];
 fix amount = FixMul (gameData.time.xFrame, rate);
 if (amount > xMaxDamage)
 	amount = xMaxDamage;
@@ -716,6 +715,18 @@ if (bEntropy) {
 		lastPlayTime = gameData.time.xGame;
 		}
 	}
+return amount;
+}
+
+//-------------------------------------------------------------
+
+fix CSegment::EnergyDamage (fix xMaxDamage)
+{
+if (!m_xDamage [1])
+	return 0;
+fix amount = FixMul (gameData.time.xFrame, m_xDamage [1]);
+if (amount > xMaxDamage)
+	amount = xMaxDamage;
 return amount;
 }
 

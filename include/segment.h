@@ -250,7 +250,7 @@ class CSegment {
 		ubyte			m_props;
 		sbyte			m_value;
 		sbyte			m_nMatCen;
-		fix			m_xDamage;
+		fix			m_xDamage [2];
 		fix			m_xAvgSegLight;
 
 		char			m_owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)
@@ -297,7 +297,8 @@ class CSegment {
 
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShields);
-		fix Damage (fix xMaxDamage);
+		fix ShieldDamage (fix xMaxDamage);
+		fix EnergyDamage (fix xMaxDamage);
 		void CheckForGoal (void);
 		void CheckForHoardGoal (void);
 		int CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId);
@@ -380,7 +381,7 @@ class CSegment {
 
 		inline int HasProp (ubyte prop) { return (m_props & prop) != 0; }
 		inline int HasBlockedProp (void) { return HasProp (SEGMENT_PROP_BLOCKED); }
-		inline int HasDamageProp (void) { return (m_xDamage != 0); }
+		inline int HasDamageProp (int i = -1) { return (i < 0) ? (m_xDamage [0] | m_xDamage [1]) != 0 : (m_xDamage [i] != 0); }
 		inline int HasNoDamageProp (void) { return HasProp (SEGMENT_PROP_NODAMAGE); }
 		inline int HasWaterProp (void) { return HasProp (SEGMENT_PROP_WATER); }
 		inline int HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }
