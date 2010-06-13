@@ -96,7 +96,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define IFDBG(_expr)
 #endif
 
-#define STATE_VERSION				52
+#define STATE_VERSION				53
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -2334,7 +2334,7 @@ if (!i) {
 	}
 if (bSecret < 0)
 	missionManager.LoadLevelStates ();
-else if (!bSecret) {
+else if (!bSecret && (m_nVersion >= 53)) {
 	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 		missionManager.SetLevelState (i, char (m_cf.ReadByte ()));
 	missionManager.SaveLevelStates ();
