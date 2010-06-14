@@ -1291,7 +1291,7 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 //	Called from trigger.cpp when player is exiting via a directed exit
 int ReenterLevel (void)
 {
-	char nState = missionManager.GetLevelState (missionManager.NextLevel (1));
+	char nState = missionManager.GetLevelState (missionManager.NextLevel ());
 
 if (nState < 0) 
 	return 0;
@@ -1306,7 +1306,7 @@ if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
 	}
 else if (CFile::Exist (szFile, gameFolders.szSaveDir, 0))
 	CFile::Delete (szFile, gameFolders.szSaveDir);
-sprintf (szFile, "\x02%s.level%d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, missionManager.NextLevel (1));
+sprintf (szFile, "\x02%s.level%d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, missionManager.NextLevel ());
 if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.szSaveDir, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
@@ -1317,7 +1317,7 @@ if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFold
 	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	gameData.weapons.nPrimary = pwSave;
 	gameData.weapons.nSecondary = swSave;
-	missionManager.nCurrentLevel = missionManager.NextLevel (1);
+	missionManager.nCurrentLevel = missionManager.NextLevel ();
 	return 1;
 	}
 return 0;
@@ -1494,12 +1494,8 @@ if ((missionManager.nCurrentLevel == missionManager.nLastLevel) && (missionManag
 	 !extraGameInfo [IsMultiGame].bRotateLevels) //CPlayerData has finished the game!
 	DoEndGame ();
 else {
-	if (missionManager.NextLevel (1) < 1) 
+	if (missionManager.NextLevel () < 1) 
 		missionManager.SetNextLevel (missionManager.nCurrentLevel + 1);		//assume go to next Normal level
-	else {
-		missionManager.SetNextLevel (missionManager.NextLevel (1));
-		missionManager.SetNextLevel (-1, 1);
-		}
 	if (missionManager.NextLevel () > missionManager.nLastLevel) {
 		if (extraGameInfo [IsMultiGame].bRotateLevels)
 			missionManager.SetNextLevel (1);

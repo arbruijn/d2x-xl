@@ -855,8 +855,8 @@ audio.StopAll ();		//kill the sounds
 StopSpeedBoost (gameData.multiplayer.players [nPlayer].nObject);
 if ((missionManager.nCurrentLevel > 0) || gameStates.app.bD1Mission) {
 	if (gameData.segs.nLevelVersion > 20)
-		missionManager.SetNextLevel (X2I (m_info.value), 1);
-	if (missionManager.GetLevelState (missionManager.NextLevel (1)) < 0)
+		missionManager.SetNextLevel (X2I (m_info.value));
+	if (missionManager.GetLevelState (missionManager.NextLevel ()) < 0)
 		return false;
 	if (!(m_info.flags & TF_PERMANENT))
 		m_info.flags |= TF_DISABLED;
