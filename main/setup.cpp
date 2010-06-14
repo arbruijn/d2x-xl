@@ -25,6 +25,7 @@
 #include "descent.h"
 #include "findfile.h"
 #include "args.h"
+#include "config.h"
 #include "text.h"
 
 #ifdef __macosx__

@@ -3524,7 +3524,6 @@ void MultiRestoreGame (ubyte slot, uint id)
 	char			filename [128];
 	CPlayerData	nSavedPlayer;
 	int			i;
-	uint			thisid;
 
 #if !DBG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
@@ -3535,8 +3534,7 @@ sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiStripRobots (i);
-thisid = saveGameManager.GetGameId (filename);
-if (thisid != id) {
+if (saveGameManager.GetGameId (filename) != id) {
 	MultiBadRestore ();
 	gameData.app.bGamePaused = 0;
 	return;
