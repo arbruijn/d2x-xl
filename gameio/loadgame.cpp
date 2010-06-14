@@ -1313,8 +1313,10 @@ if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFold
 	saveGameManager.Load (1, -1, 0, szFile + 1);
 	SetD1Sound ();
 	SetDataVersion (-1);
-	//InitPlayerPosition (1);
-	GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
+	InitPlayerPosition (1);
+	int nMaxPlayers = IsCoopGame ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
+	for (int i = 0; i < nMaxPlayers; i++)
+		gameData.multiplayer.bAdjustPowerupCap [i] = true;
 	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	gameData.weapons.nPrimary = pwSave;
 	gameData.weapons.nSecondary = swSave;
