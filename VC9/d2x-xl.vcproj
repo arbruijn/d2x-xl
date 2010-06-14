@@ -3705,6 +3705,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\main\setup.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\main\side.cpp"
 						>
 					</File>
@@ -4122,6 +4126,10 @@
 					</File>
 					<File
 						RelativePath="..\main\trigger.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\main\update.cpp"
 						>
 					</File>
 					<File
@@ -10708,11 +10716,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\descent.ico"
 				>
 			</File>
 			<File

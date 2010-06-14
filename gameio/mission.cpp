@@ -1048,7 +1048,7 @@ int CMissionManager::SaveLevelStates (void)
 	char		szFile [FILENAME_LEN] = {'\0'};
 
 sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
-if (!cf.Open (szFile, gameFolders.szMissionDir, "wb", 0))
+if (!cf.Open (szFile, gameFolders.szSaveDir, "wb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	cf.WriteByte (sbyte (nLevelState [i]));
@@ -1064,7 +1064,7 @@ int CMissionManager::LoadLevelStates (void)
 	char		szFile [FILENAME_LEN] = {'\0'};
 
 sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
-if (!cf.Open (szFile, gameFolders.szMissionDir, "rb", 0))
+if (!cf.Open (szFile, gameFolders.szSaveDir, "rb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	nLevelState [i] = char (cf.ReadByte ());
