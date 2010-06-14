@@ -3492,13 +3492,15 @@ if (!MultiAllPlayersAlive ()) {
 	return;
 	}
 if (bSecret < 0)
-	slot = missionManager.NextLevel ();
-else if (!(slot = saveGameManager.GetLoadFile (1)))
-	return;
+	slot = -missionManager.NextLevel ();
+else {
+	if (!(slot = saveGameManager.GetLoadFile (1)))
+		return;
+	slot--;
+	}
 gameData.app.nStateGameId = saveGameManager.GetGameId (saveGameManager.Filename ());
 if (!gameData.app.nStateGameId)
 	return;
-slot--;
 //StartTime (0);
 MultiSendRestoreGame (slot, gameData.app.nStateGameId);
 MultiDoFrame ();
