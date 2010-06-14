@@ -198,6 +198,8 @@ NetworkSetGameMode (netGame.m_info.gameMode);
 d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 netGame.m_info.nSecurity = d_rand ();  // For syncing NetGames with CPlayerData packets
 if (NetworkSelectPlayers (bAutoRun)) {
+	missionManager.DeleteLevelStates ();
+	missionManager.SaveLevelStates ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
 	return 1;

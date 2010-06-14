@@ -3542,7 +3542,7 @@ else
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiStripRobots (i);
-if (saveGameManager.GetGameId (szFile, slot < 0) != id) {
+if (saveGameManager.GetGameId (szFile, (slot < 0) ? -1 : 0) != id) {
 	MultiBadRestore ();
 	gameData.app.bGamePaused = 0;
 	return;
