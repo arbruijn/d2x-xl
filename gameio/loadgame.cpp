@@ -1296,7 +1296,7 @@ int ReenterLevel (void)
 if (nState < 0) 
 	return 0;
 
-		char	szFile [FILENAME_LEN] = {'\0'};
+	char	szFile [FILENAME_LEN] = {'\0'};
 
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();

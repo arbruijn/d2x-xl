@@ -1073,4 +1073,16 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+
+void CMissionManager::UnrollLevelState (int nLevel, char nState)
+{
+if ((nLevelState [nLevel] > 0) && !nState) {
+	char	szFile [FILENAME_LEN] = {'\0'};
+	sprintf (szFile, "%s.level%d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, nLevel);
+	if (CFile::Exist (szFile, gameFolders.szSaveDir, 0))
+		CFile::Delete (szFile, gameFolders.szSaveDir);
+	}
+}
+
+//------------------------------------------------------------------------------
 // eof
