@@ -3536,7 +3536,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 #endif
 nSavedPlayer = LOCALPLAYER;
 if (slot < 0)
-	missionManager.LevelStateName (szFile, missionManager.NextLevel ());
+	missionManager.LevelStateName (szFile, -slot);
 else
 	sprintf (szFile, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
