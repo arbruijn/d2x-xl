@@ -3444,7 +3444,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-void MultiInitiateSaveGame (int bSecret)
+void MultiInitiateSaveGame (int bSecret, int bAutoSave = 0)
 {
 	uint	gameId;
 	int	i;
@@ -3460,11 +3460,10 @@ if (bSecret < 0) {
 	slot = -missionManager.nCurrentLevel;
 	strcpy (saveGameManager.Description (), "[LEVEL STATE]");
 	}
-else {
-	if (!(slot = saveGameManager.GetSaveFile (1)))
-		return;
-	slot--;
-	}
+else if (bAutoSave)
+	slot = 8;
+else if (0 > (slot = saveGameManager.GetSaveFile (1) - 1))
+	return;
 // Make a unique game id (two separate operations because of data type mix)
 gameId = TimerGetFixedSeconds ();
 gameId ^= gameData.multiplayer.nPlayers << 4;
@@ -3493,11 +3492,8 @@ if (!MultiAllPlayersAlive ()) {
 	}
 if (bSecret < 0)
 	slot = -missionManager.NextLevel ();
-else {
-	if (!(slot = saveGameManager.GetLoadFile (1)))
-		return;
-	slot--;
-	}
+else if (0 > (slot = saveGameManager.GetLoadFile (1) - 1))
+	return;
 gameData.app.nStateGameId = saveGameManager.GetGameId (saveGameManager.Filename (), bSecret);
 if (!gameData.app.nStateGameId)
 	return;

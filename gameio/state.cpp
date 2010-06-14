@@ -123,7 +123,7 @@ void SetFunctionMode (int);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
 void CopyDefaultsToRobot (CObject *objP);
-void MultiInitiateSaveGame (int bSecret);
+void MultiInitiateSaveGame (int bSecret, int bAutoSave = 0);
 void MultiInitiateRestoreGame (int bSecret);
 void ApplyAllChangedLight (void);
 void DoLunacyOn (void);
@@ -490,9 +490,9 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 int CSaveGameManager::Save (int bBetweenLevels, int bSecret, int bQuick, const char *pszFilenameOverride)
 {
-	int	rval, nSaveSlot = -1;
+	int	rval, bAutoSave = 0, nSaveSlot = -1;
 
-m_override = pszFilenameOverride;
+	m_override = pszFilenameOverride;
 m_bBetweenLevels = bBetweenLevels;
 m_bQuick = bQuick;
 m_bSecret = bSecret;
@@ -526,6 +526,7 @@ else {
 		if (m_override) {
 			strcpy (m_filename, m_override);
 			sprintf (m_description, " [autosave backup]");
+			bAutoSave = 1;
 			}
 		else if (!(nSaveSlot = GetSaveFile (0))) {
 			gameData.app.bGamePaused = 0;
@@ -537,7 +538,7 @@ else {
 	Backup ();
 	}
 if (IsMultiGame) {
-	MultiInitiateSaveGame (bSecret);
+	MultiInitiateSaveGame (bSecret, bAutoSave);
 	return 0;
 	}
 if ((rval = SaveState (bSecret))) {
