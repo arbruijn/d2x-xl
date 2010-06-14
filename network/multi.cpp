@@ -3498,7 +3498,7 @@ else {
 		return;
 	slot--;
 	}
-gameData.app.nStateGameId = saveGameManager.GetGameId (saveGameManager.Filename ());
+gameData.app.nStateGameId = saveGameManager.GetGameId (saveGameManager.Filename (), bSecret);
 if (!gameData.app.nStateGameId)
 	return;
 //StartTime (0);

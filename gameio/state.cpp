@@ -2376,7 +2376,7 @@ int CSaveGameManager::GetGameId (char *filename, int bSecret)
 {
 	int	nId;
 
-if (!m_cf.Open (filename, ? gameFolders.szCacheDir : gameFolders.szSaveDir, "rb", 0))
+if (!m_cf.Open (filename, (bSecret < 0) ? gameFolders.szCacheDir : gameFolders.szSaveDir, "rb", 0))
 	return 0;
 //Read nId
 m_cf.Read (&nId, sizeof (char) * 4, 1);
