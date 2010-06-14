@@ -123,8 +123,8 @@ void SetFunctionMode (int);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
 void CopyDefaultsToRobot (CObject *objP);
-void MultiInitiateSaveGame ();
-void MultiInitiateRestoreGame ();
+void MultiInitiateSaveGame (int bSecret);
+void MultiInitiateRestoreGame (int bSecret);
 void ApplyAllChangedLight (void);
 void DoLunacyOn (void);
 void DoLunacyOff (void);
@@ -1139,7 +1139,7 @@ m_bQuick = bQuick;
 m_override = pszFilenameOverride;
 m_bBetweenLevels = 0;
 if (IsMultiGame) {
-	MultiInitiateRestoreGame ();
+	MultiInitiateRestoreGame (bSecret);
 	return 0;
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING)

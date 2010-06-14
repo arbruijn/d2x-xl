@@ -143,7 +143,7 @@ class CMissionManager : public CMissionData {
 				nLevelState [nLevel] = nState;
 			}
 
-		inline char* LevelStateName (char* szFile, int nLevel) {
+		inline char* LevelStateName (char* szFile, int nLevel = 0) {
 			sprintf (szFile, "%s.level%d", list [nCurrentMission].szMissionName + 4, nLevel ? nLevel : nCurrentLevel);
 			return szFile;
 			}
