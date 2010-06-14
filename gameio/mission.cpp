@@ -1079,7 +1079,7 @@ void CMissionManager::DeleteLevelStates (void)
 	char	szFile [FILENAME_LEN] = {'\0'};
 
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++) {
-	sprintf (szFile, "%s.level%d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, i);
+	LevelStateName (szFile, i);
 	if (CFile::Exist (szFile, gameFolders.szCacheDir, 0))
 		CFile::Delete (szFile, gameFolders.szCacheDir);
 	}

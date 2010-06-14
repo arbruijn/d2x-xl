@@ -498,7 +498,7 @@ m_bQuick = bQuick;
 m_bSecret = bSecret;
 m_cf.Init ();
 if (IsMultiGame) {
-	MultiInitiateSaveGame ();
+	MultiInitiateSaveGame (bSecret);
 	return 0;
 	}
 if ((missionManager.nCurrentLevel < 0) && !((m_bSecret > 0) || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {

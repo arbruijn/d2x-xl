@@ -65,8 +65,8 @@ void MultiAddLifetimeKills (void);
 void MultiSendPlayByPlay (int num, int spnum, int dpnum);
 void MultiSendHeartBeat (void);
 void MultiCapObjects (void);
-void MultiSaveGame (ubyte slot, uint id, char *desc);
-void MultiRestoreGame (ubyte slot, uint id);
+void MultiSaveGame (char slot, uint id, char *desc);
+void MultiRestoreGame (char slot, uint id);
 void MultiSetRobotAI (void);
 void MultiSendPowerupUpdate (void);
 void FreeHoardData (void);
@@ -2063,7 +2063,7 @@ void MultiDoSaveGame (char *buf)
 {
 	char desc [25];
 
-ubyte slot = (ubyte) buf [1];
+char slot = buf [1];
 uint id = GET_INTEL_INT (buf + 2);
 memcpy (desc, buf + 6, 20);
 MultiSaveGame (slot, id, desc);
@@ -2073,7 +2073,7 @@ MultiSaveGame (slot, id, desc);
 
 void MultiDoRestoreGame (char *buf)
 {
-ubyte slot = (ubyte) buf [1];
+char slot = buf [1];
 uint id = GET_INTEL_INT (buf + 2);
 MultiRestoreGame (slot, id);
 }
@@ -3444,39 +3444,45 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-void MultiInitiateSaveGame (void)
+void MultiInitiateSaveGame (int bSecret)
 {
-	uint game_id;
-	int i;
-	ubyte slot;
+	uint	gameId;
+	int	i;
+	char	slot;
 
 if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
 	return;
 if (!MultiAllPlayersAlive ()) {
 	HUDInitMessage (TXT_SAVE_DEADPLRS);
 	return;
- }
-slot = saveGameManager.GetSaveFile (1);
-if (!slot)
-	return;
-slot--;
-// Make a unique game id
-game_id = TimerGetFixedSeconds ();
-game_id ^= gameData.multiplayer.nPlayers<<4;
-for (i = 0; i<gameData.multiplayer.nPlayers; i++)
-	game_id ^= *reinterpret_cast<uint*> (gameData.multiplayer.players [i].callsign);
-if (game_id == 0)
-	game_id = 1; // 0 is invalid
-MultiSendSaveGame (slot, game_id, saveGameManager.Description ());
+	}
+if (bSecret < 0) {
+	slot = -missionManager.nCurrentLevel;
+	strcpy (m_description, "[LEVEL STATE]");
+	}
+else {
+	slot = saveGameManager.GetSaveFile (1);
+	if (!slot)
+		return;
+	slot--;
+	}
+// Make a unique game id (two separate operations because of data type mix)
+gameId = TimerGetFixedSeconds ();
+gameId ^= gameData.multiplayer.nPlayers << 4;
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	gameId ^= *reinterpret_cast<uint*> (gameData.multiplayer.players [i].callsign);
+if (gameId == 0)
+	gameId = 1; // 0 is invalid
+MultiSendSaveGame (slot, gameId, saveGameManager.Description ());
 MultiDoFrame ();
-MultiSaveGame (slot, game_id, saveGameManager.Description ());
+MultiSaveGame (slot, gameId, saveGameManager.Description ());
 }
 
 //-----------------------------------------------------------------------------
 
-void MultiInitiateRestoreGame (void)
+void MultiInitiateRestoreGame (int bSecret)
 {
-	ubyte slot;
+	char slot;
 
 #if !DBG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
@@ -3504,24 +3510,24 @@ MultiRestoreGame (slot, gameData.app.nStateGameId);
 
 //-----------------------------------------------------------------------------
 
-void MultiSaveGame (ubyte slot, uint id, char *description)
+void MultiSaveGame (char slot, uint id, char *description)
 {
-	char filename [128];
+	char szFile [FILENAME_LEN];
 
 if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
 	return;
-sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
-HUDInitMessage (TXT_SAVEGAME_NO, slot, description);
+if (slot >= 0)
+	HUDInitMessage (TXT_SAVEGAME_NO, slot, description);
 StopTime ();
 gameData.app.nStateGameId = id;
-saveGameManager.SaveState (0, filename, description);
+saveGameManager.SaveState (0, missionManager.LevelStateName (szFile), description);
 }
 
 //-----------------------------------------------------------------------------
 
-void MultiRestoreGame (ubyte slot, uint id)
+void MultiRestoreGame (char slot, uint id)
 {
-	char			filename [128];
+	char			szFile [FILENAME_LEN];
 	CPlayerData	nSavedPlayer;
 	int			i;
 
@@ -3530,16 +3536,17 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
 #endif
 nSavedPlayer = LOCALPLAYER;
-sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
+if (slot < 0)
+sprintf (szFile, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiStripRobots (i);
-if (saveGameManager.GetGameId (filename) != id) {
+if (saveGameManager.GetGameId (szFile) != id) {
 	MultiBadRestore ();
 	gameData.app.bGamePaused = 0;
 	return;
 	}
-saveGameManager.LoadState (1, 0, filename);
+saveGameManager.LoadState (1, 0, szFile);
 ogl.RebuildContext (1);
 gameData.app.bGamePaused = 0;
 }
