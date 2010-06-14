@@ -3515,11 +3515,15 @@ void MultiSaveGame (char slot, uint id, char *description)
 
 if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
 	return;
-if (slot >= 0)
+if (slot < 0) 
+	missionManager.LevelStateName (szFile);
+else {
 	HUDInitMessage (TXT_SAVEGAME_NO, slot, description);
+	sprintf (szFile, "%s.mg%d", LOCALPLAYER.callsign, slot);
+	}
 StopTime ();
 gameData.app.nStateGameId = id;
-saveGameManager.SaveState (0, missionManager.LevelStateName (szFile), description);
+saveGameManager.SaveState (0, szFile, description);
 }
 
 //-----------------------------------------------------------------------------
