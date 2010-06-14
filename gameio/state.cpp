@@ -123,7 +123,7 @@ void SetFunctionMode (int);
 void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
 void CopyDefaultsToRobot (CObject *objP);
-void MultiInitiateSaveGame (int bSecret, int bAutoSave = 0);
+void MultiInitiateSaveGame (int bSecret);
 void MultiInitiateRestoreGame (int bSecret);
 void ApplyAllChangedLight (void);
 void DoLunacyOn (void);
@@ -490,12 +490,18 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 int CSaveGameManager::Save (int bBetweenLevels, int bSecret, int bQuick, const char *pszFilenameOverride)
 {
-	int	rval, bAutoSave = 0, nSaveSlot = -1;
+	int	rval,nSaveSlot = -1;
 
-	m_override = pszFilenameOverride;
+m_override = pszFilenameOverride;
 m_bBetweenLevels = bBetweenLevels;
 m_bQuick = bQuick;
 m_bSecret = bSecret;
+
+if (IsMultiGame) {
+	MultiInitiateSaveGame (m_bSecret);
+	return 0;
+	}
+
 m_cf.Init ();
 if ((missionManager.nCurrentLevel < 0) && !((m_bSecret > 0) || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
 	HUDInitMessage (TXT_SECRET_SAVE_ERROR);
@@ -526,7 +532,6 @@ else {
 		if (m_override) {
 			strcpy (m_filename, m_override);
 			sprintf (m_description, " [autosave backup]");
-			bAutoSave = 1;
 			}
 		else if (!(nSaveSlot = GetSaveFile (0))) {
 			gameData.app.bGamePaused = 0;
@@ -536,10 +541,6 @@ else {
 		}
 	PushSecretSave (nSaveSlot);
 	Backup ();
-	}
-if (IsMultiGame) {
-	MultiInitiateSaveGame (bSecret, bAutoSave);
-	return 0;
 	}
 if ((rval = SaveState (bSecret))) {
 	if (bQuick)
@@ -1140,6 +1141,12 @@ m_bSecret = bSecret;
 m_bQuick = bQuick;
 m_override = pszFilenameOverride;
 m_bBetweenLevels = 0;
+
+if (IsMultiGame) {
+	MultiInitiateRestoreGame (bSecret);
+	return 0;
+	}
+
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDStopRecording ();
 if (gameData.demo.nState != ND_STATE_NORMAL)
@@ -1173,10 +1180,6 @@ if (!m_bQuick) {
 		}
 	}
 gameStates.app.bGameRunning = 0;
-if (IsMultiGame) {
-	MultiInitiateRestoreGame (bSecret);
-	return 0;
-	}
 i = LoadState (0, bSecret);
 gameData.app.bGamePaused = 0;
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");
