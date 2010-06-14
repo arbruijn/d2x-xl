@@ -3458,11 +3458,10 @@ if (!MultiAllPlayersAlive ()) {
 	}
 if (bSecret < 0) {
 	slot = -missionManager.nCurrentLevel;
-	strcpy (m_description, "[LEVEL STATE]");
+	strcpy (saveGameManager.Description (), "[LEVEL STATE]");
 	}
 else {
-	slot = saveGameManager.GetSaveFile (1);
-	if (!slot)
+	if (!(slot = saveGameManager.GetSaveFile (1)))
 		return;
 	slot--;
 	}
@@ -3492,12 +3491,10 @@ if (!MultiAllPlayersAlive ()) {
 	HUDInitMessage (TXT_LOAD_DEADPLRS);
 	return;
 	}
-//StopTime ();
-slot = saveGameManager.GetLoadFile (1);
-if (!slot) {
-	//StartTime (0);
+if (bSecret < 0)
+	slot = missionManager.NextLevel ();
+else if (!(slot = saveGameManager.GetLoadFile (1)))
 	return;
-	}
 gameData.app.nStateGameId = saveGameManager.GetGameId (saveGameManager.Filename ());
 if (!gameData.app.nStateGameId)
 	return;
@@ -3537,7 +3534,9 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 #endif
 nSavedPlayer = LOCALPLAYER;
 if (slot < 0)
-sprintf (szFile, "%s.mg%d", LOCALPLAYER.callsign, slot);
+	missionManager.LevelStateName (szFile, missionManager.NextLevel ());
+else
+	sprintf (szFile, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiStripRobots (i);
