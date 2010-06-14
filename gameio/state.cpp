@@ -1056,7 +1056,7 @@ if (filename)
 if (description)
 	strcpy (m_description, description);
 m_bSecret = bSecret;
-if (!m_cf.Open (m_filename, gameFolders.szSaveDir, "wb", 0)) {
+if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheDir : gameFolders.szSaveDir, "wb", 0)) {
 	if (!IsMultiGame)
 		MsgBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR2);
 	StartTime (1);
@@ -2298,7 +2298,7 @@ int CSaveGameManager::LoadState (int bMulti, int bSecret, char *filename)
 StopTime ();
 if (filename)
 	strcpy (m_filename, filename);
-if (!m_cf.Open (m_filename, gameFolders.szSaveDir, "rb", 0)) {
+if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheDir : gameFolders.szSaveDir, "rb", 0)) {
 	StartTime (1);
 	return 0;
 	}

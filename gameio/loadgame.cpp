@@ -1078,7 +1078,7 @@ missionManager.SetNextLevel (-1, 1);
 gameData.multiplayer.nPlayers = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
-memset (missionManager.nLevelState, 0, sizeof (missionManager.nLevelState));
+missionManager.DeleteLevelStates ();
 missionManager.SaveLevelStates ();
 InitMultiPlayerObject (0);
 if (!StartNewLevel (nLevel, true)) {

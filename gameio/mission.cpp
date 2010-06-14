@@ -1048,7 +1048,7 @@ int CMissionManager::SaveLevelStates (void)
 	char		szFile [FILENAME_LEN] = {'\0'};
 
 sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
-if (!cf.Open (szFile, gameFolders.szSaveDir, "wb", 0))
+if (!cf.Open (szFile, gameFolders.szCacheDir, "wb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	cf.WriteByte (sbyte (nLevelState [i]));
@@ -1064,7 +1064,7 @@ int CMissionManager::LoadLevelStates (void)
 	char		szFile [FILENAME_LEN] = {'\0'};
 
 sprintf (szFile, "%s.state", list [nCurrentMission].szMissionName);
-if (!cf.Open (szFile, gameFolders.szSaveDir, "rb", 0))
+if (!cf.Open (szFile, gameFolders.szCacheDir, "rb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	nLevelState [i] = char (cf.ReadByte ());
@@ -1074,14 +1074,16 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CMissionManager::UnrollLevelState (int nLevel, char nState)
+void CMissionManager::DeleteLevelStates (void)
 {
-if ((nLevelState [nLevel] > 0) && !nState) {
 	char	szFile [FILENAME_LEN] = {'\0'};
-	sprintf (szFile, "%s.level%d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, nLevel);
-	if (CFile::Exist (szFile, gameFolders.szSaveDir, 0))
-		CFile::Delete (szFile, gameFolders.szSaveDir);
+
+for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++) {
+	sprintf (szFile, "%s.level%d", missionManager.list [missionManager.nCurrentMission].szMissionName + 4, i);
+	if (CFile::Exist (szFile, gameFolders.szCacheDir, 0))
+		CFile::Delete (szFile, gameFolders.szCacheDir);
 	}
+memset (nLevelState, 0, sizeof (nLevelState));
 }
 
 //------------------------------------------------------------------------------

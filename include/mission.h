@@ -132,17 +132,15 @@ class CMissionManager : public CMissionData {
 		inline int LastLevel (void) { return nLastLevel; }
 		inline int LastSecretLevel (void) { return nLastSecretLevel; }
 
-		void UnrollLevelState (int nLevel, char nState);
+		void DeleteLevelStates (void);
 
 		inline int GetLevelState (int nLevel) {
 			return ((nLevel < 1) || (nLevel > nLastLevel)) ? 0 : nLevelState [nLevel]; // 0: not yet been there, -1: destroyed, 1: been there already
 			}
 
 		inline void SetLevelState (int nLevel, char nState) {
-			if ((nLevel >= 1) && (nLevel <= nLastLevel)) {
-				UnrollLevelState (nLevel, nState);
+			if ((nLevel >= 1) && (nLevel <= nLastLevel))
 				nLevelState [nLevel] = nState;
-				}
 			}
 
 	private:
