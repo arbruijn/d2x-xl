@@ -497,10 +497,6 @@ m_bBetweenLevels = bBetweenLevels;
 m_bQuick = bQuick;
 m_bSecret = bSecret;
 m_cf.Init ();
-if (IsMultiGame) {
-	MultiInitiateSaveGame (bSecret);
-	return 0;
-	}
 if ((missionManager.nCurrentLevel < 0) && !((m_bSecret > 0) || gameOpts->gameplay.bSecretSave || gameStates.app.bD1Mission)) {
 	HUDInitMessage (TXT_SECRET_SAVE_ERROR);
 	return 0;
@@ -540,9 +536,14 @@ else {
 	PushSecretSave (nSaveSlot);
 	Backup ();
 	}
-if ((rval = SaveState (bSecret)))
+if (IsMultiGame) {
+	MultiInitiateSaveGame (bSecret);
+	return 0;
+	}
+if ((rval = SaveState (bSecret))) {
 	if (bQuick)
 		HUDInitMessage (TXT_QUICKSAVE);
+	}
 gameData.app.bGamePaused = 0;
 StartTime (1);
 return rval;
@@ -1138,10 +1139,6 @@ m_bSecret = bSecret;
 m_bQuick = bQuick;
 m_override = pszFilenameOverride;
 m_bBetweenLevels = 0;
-if (IsMultiGame) {
-	MultiInitiateRestoreGame (bSecret);
-	return 0;
-	}
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDStopRecording ();
 if (gameData.demo.nState != ND_STATE_NORMAL)
@@ -1156,7 +1153,7 @@ if (m_bQuick) {
 if (!m_bQuick) {
 	if (m_override) {
 		strcpy (m_filename, m_override);
-		nSaveSlot = NUM_SAVES + 1;		//	So we don't CTrigger autosave
+		nSaveSlot = NUM_SAVES + 1;		//	So we don't trigger autosave
 		}
 	else if (!(nSaveSlot = GetLoadFile (0))) {
 		gameData.app.bGamePaused = 0;
@@ -1175,6 +1172,10 @@ if (!m_bQuick) {
 		}
 	}
 gameStates.app.bGameRunning = 0;
+if (IsMultiGame) {
+	MultiInitiateRestoreGame (bSecret);
+	return 0;
+	}
 i = LoadState (0, bSecret);
 gameData.app.bGamePaused = 0;
 /*---*/PrintLog ("   rebuilding OpenGL texture data\n");

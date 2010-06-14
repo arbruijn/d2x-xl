@@ -3523,7 +3523,7 @@ else {
 	}
 StopTime ();
 gameData.app.nStateGameId = id;
-saveGameManager.SaveState (0, szFile, description);
+saveGameManager.SaveState ((slot < 0) ? -1 : 0, szFile, description);
 }
 
 //-----------------------------------------------------------------------------
@@ -3551,7 +3551,7 @@ if (saveGameManager.GetGameId (szFile, slot < 0) != id) {
 	gameData.app.bGamePaused = 0;
 	return;
 	}
-saveGameManager.LoadState (1, 0, szFile);
+saveGameManager.LoadState (1, (slot < 0) ? -1 : 0, szFile);
 ogl.RebuildContext (1);
 gameData.app.bGamePaused = 0;
 }
