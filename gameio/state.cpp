@@ -2372,11 +2372,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::GetGameId (char *filename)
+int CSaveGameManager::GetGameId (char *filename, int bSecret)
 {
 	int	nId;
 
-if (!m_cf.Open (filename, gameFolders.szSaveDir, "rb", 0))
+if (!m_cf.Open (filename, ? gameFolders.szCacheDir : gameFolders.szSaveDir, "rb", 0))
 	return 0;
 //Read nId
 m_cf.Read (&nId, sizeof (char) * 4, 1);

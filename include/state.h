@@ -49,7 +49,7 @@ class CSaveGameManager {
 		int LoadState (int bMulti, int bSecret, char *filename = NULL);
 		int GetSaveFile (int bMulti);
 		int GetLoadFile (int bMulti);
-		int GetGameId (char *filename);
+		int GetGameId (char *filename, int bSecret = 0);
 		inline char* Filename (void) { return m_filename; }
 		inline char* Description (void) { return m_description; }
 		inline int Version (void) { return m_nVersion; }
