@@ -471,10 +471,10 @@ FORALL_EFFECT_OBJS (objP, i) {
 		v = objP->info.position.vPos + objP->info.position.mOrient.FVec () * I2X (pli->nLength);
 		vEnd = &v;
 		}
-	color.red = (float) pli->color.red / 255.0f;
-	color.green = (float) pli->color.green / 255.0f;
-	color.blue = (float) pli->color.blue / 255.0f;
-	color.alpha = (float) pli->color.alpha / 255.0f;
+	color.red = float (pli->color.red) / 255.0f;
+	color.green = float (pli->color.green) / 255.0f;
+	color.blue = float (pli->color.blue) / 255.0f;
+	color.alpha = float (pli->color.alpha) / 255.0f;
 	vDelta = pli->bInPlane ? &objP->info.position.mOrient.RVec () : NULL;
 	h = Create (pli->nBolts, &objP->info.position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, I2X (pli->nLength),
 				   I2X (pli->nAmplitude), pli->nAngle, I2X (pli->nOffset), pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
