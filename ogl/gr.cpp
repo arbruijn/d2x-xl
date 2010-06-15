@@ -418,8 +418,6 @@ else
 	gameStates.gfx.nStartScrMode = nMode;
 if (!gameStates.menus.bHiresAvailable && (nMode != 1))
 	nMode = 0;
-if (gameStates.video.nDisplayMode == nMode)
-	return;
 if (!GrVideoModeOK (displayModeInfo [nMode].dim))		//can't do nMode
 	nMode = 0;
 gameStates.video.nDisplayMode = nMode;
