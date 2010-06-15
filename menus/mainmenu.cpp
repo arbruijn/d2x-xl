@@ -337,10 +337,8 @@ else if (nChoice == mainOpts.nMulti)
 		MultiplayerMenu ();
 else if (nChoice == mainOpts.nConfig) 
 	ConfigMenu ();
-else if (nChoice == mainOpts.nPilots) {
-	gameStates.gfx.bOverride = 0;
+else if (nChoice == mainOpts.nPilots)
 	SelectPlayer ();
-	}
 else if (nChoice == mainOpts.nDemo) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 

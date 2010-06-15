@@ -291,6 +291,7 @@ for (i = 0; i < NUM_DISPLAY_MODES - 1; i++)
 	if (FindArg (ScrSizeArg (displayModeInfo [i].w, displayModeInfo [i].h))) {
 		gameStates.gfx.bOverride = 1;
 		gameStates.gfx.nStartScrSize = displayModeInfo [i].dim;
+		gameStates.gfx.nStartScrMode = i;
 		break;
 		}
 if (!gameStates.gfx.bOverride)
@@ -409,13 +410,16 @@ void SetDisplayMode (int nMode, int bOverride)
 
 if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR nMode
 	return;	//...don't change
-if (bOverride && gameStates.gfx.bOverride) {
-	gameStates.gfx.nStartScrMode = nMode;
-	}
-else
+if (!bOverride)
 	gameStates.gfx.bOverride = 0;
+else if (gameStates.gfx.bOverride)
+	nMode = gameStates.gfx.nStartScrMode;
+else
+	gameStates.gfx.nStartScrMode = nMode;
 if (!gameStates.menus.bHiresAvailable && (nMode != 1))
 	nMode = 0;
+if (gameStates.video.nDisplayMode == nMode)
+	return;
 if (!GrVideoModeOK (displayModeInfo [nMode].dim))		//can't do nMode
 	nMode = 0;
 gameStates.video.nDisplayMode = nMode;
