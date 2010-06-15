@@ -1042,7 +1042,7 @@ return (strstr (pszMission, "Descent: First Strike") != NULL) ||
 
 //------------------------------------------------------------------------------
 
-char* CMissionManager::LevelStateName (char* szFile)
+char* CMissionManager::LevelStateName (char* szFile, int nLevel)
 {
 sprintf (szFile, "%s-%d.level%d", 
 			list [nCurrentMission].szMissionName + 4, IsMultiGame ? gameData.multiplayer.nLocalPlayer + 1 : 0, nLevel ? nLevel : nCurrentLevel);
