@@ -69,7 +69,9 @@
 #include "collide.h"
 #include "lightcluster.h"
 #include "multi.h"
-#include "dialheap.h"
+#if USE_DACS
+#	include "dialheap.h"
+#endif
 
 // ----------------------------------------------------------------------------
 
