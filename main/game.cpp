@@ -643,8 +643,8 @@ if (i) {
 			return h;
 		}
 	gameStates.app.tick40fps.bTick = 1;
-	CalcFrameTime ();
 	DoEffectsFrame ();
+	CalcFrameTime ();
 	}
 else
 	CalcFrameTime ();
