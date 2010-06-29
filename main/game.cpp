@@ -532,6 +532,7 @@ gameData.time.SetTime (0);			//make first frame zero
 #endif
 GameFlushInputs ();
 lightManager.SetMethod ();
+gameStates.app.nSDLTicks = 
 gameData.time.xGameStart = SDL_GetTicks ();
 gameData.physics.fLastTick = float (gameData.time.xGameStart);
 }
@@ -643,11 +644,12 @@ if (i) {
 			return h;
 		}
 	gameStates.app.tick40fps.bTick = 1;
-	DoEffectsFrame ();
 	CalcFrameTime ();
+	DoEffectsFrame ();
 	}
 else
 	CalcFrameTime ();
+gameStates.app.nSDLTicks = SDL_GetTicks ();
 gameStates.app.tick40fps.bTick = 0;
 return h;
 }
