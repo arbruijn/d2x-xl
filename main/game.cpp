@@ -644,12 +644,9 @@ if (i) {
 			return h;
 		}
 	gameStates.app.tick40fps.bTick = 1;
-	CalcFrameTime ();
 	DoEffectsFrame ();
 	}
-else
-	CalcFrameTime ();
-gameStates.app.nSDLTicks = SDL_GetTicks ();
+CalcFrameTime ();
 gameStates.app.tick40fps.bTick = 0;
 return h;
 }

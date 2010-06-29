@@ -190,7 +190,7 @@ else
 
 void GetSlowTicks (void)
 {
-//gameStates.app.nSDLTicks = SDL_GetTicks ();
+gameStates.app.nSDLTicks = SDL_GetTicks ();
 gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks - gameStates.app.tick40fps.nLastTick;
 if ((gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25)))
 	gameStates.app.tick40fps.nLastTick = gameStates.app.nSDLTicks;
