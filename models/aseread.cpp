@@ -447,7 +447,7 @@ while ((pszToken = ReadLine (cf))) {
 			m_nGunPoint = atoi (m_szName + 8);
 		if (strstr (m_szName, "$BULLETS"))
 			m_nBullets = 1;
-		else if (strstr (m_szName, "GLOW") != NULL)
+		else if (strstr (m_szName, "$GLOW") != NULL)
 			m_bGlow = 1;
 		else if (strstr (m_szName, "$DUMMY") != NULL)
 			m_bRender = 0;
@@ -487,6 +487,9 @@ while ((pszToken = ReadLine (cf))) {
 			m_nBomb = atoi (m_szName + 6) + 1;
 			m_nGun =
 			m_nMissile = -1;
+			}
+		else if (strstr (m_szName, "$LIGHTBEAM") != NULL) {
+			m_bHeadlight = 1;
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {

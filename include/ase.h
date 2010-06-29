@@ -33,6 +33,7 @@ class CSubModel {
 		ubyte						m_bGlow;
 		ubyte						m_bThruster;
 		ubyte						m_bWeapon;
+		ubyte						m_bHeadlight;
 		char						m_nGun;
 		char						m_nBomb;
 		char						m_nMissile;

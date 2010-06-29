@@ -284,6 +284,8 @@ if (psm->m_nGunPoint >= 0)
 	return 1;
 if (psm->m_bBullets)
 	return 1;
+if (psm->m_bHeadlight)
+	return !HeadlightIsOn (nId);
 if (psm->m_bWeapon) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nId;
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
