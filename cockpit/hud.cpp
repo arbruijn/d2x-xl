@@ -203,7 +203,7 @@ CGenericCockpit::DrawFlag (5 * LineSpacing (), LineSpacing () * (gameStates.rend
 
 int CHUD::FlashGauge (int h, int *bFlash, int tToggle)
 {
-	time_t t = gameStates.app.nSDLTicks;
+	time_t t = gameStates.app.nSDLTicks [0];
 	int b = *bFlash;
 
 if (gameOpts->app.bEpilepticFriendly || gameStates.app.bPlayerIsDead || gameStates.app.bPlayerExploded)
@@ -548,7 +548,7 @@ if (cockpit->Hide ())
 	static int		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
 
-	time_t			t = gameStates.app.nSDLTicks;
+	time_t			t = gameStates.app.nSDLTicks [0];
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
 
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen

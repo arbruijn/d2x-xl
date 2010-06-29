@@ -155,8 +155,8 @@ void CObject::RotateMarker (void)
 if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	static time_t	t0 [MAX_DROP_SINGLE] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-	time_t t = (gameStates.app.nSDLTicks - t0 [info.nId]) % 1000;
-	t0 [info.nId] = gameStates.app.nSDLTicks;
+	time_t t = (gameStates.app.nSDLTicks [0] - t0 [info.nId]) % 1000;
+	t0 [info.nId] = gameStates.app.nSDLTicks [0];
 	if (t) {
 		CAngleVector a = CAngleVector::Create (0, 0, (fixang) ((float) (I2X (1) / 512) * t / 25.0f));
 		CFixMatrix mRotate = CFixMatrix::Create (a);

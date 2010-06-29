@@ -138,8 +138,8 @@ else {
 	if (!IS_TRACK_GOAL (objP))
 		return;
 	}
-if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
-	t0 [bMarker] = gameStates.app.nSDLTicks;
+if (gameStates.app.nSDLTicks [0] - t0 [bMarker] > tDelay [bMarker]) {
+	t0 [bMarker] = gameStates.app.nSDLTicks [0];
 	if (!nMslLockColor [bMarker] || (nMslLockColor [bMarker] == 15))
 		nMslLockColorIncr [bMarker] = -nMslLockColorIncr [bMarker];
 	nMslLockColor [bMarker] += nMslLockColorIncr [bMarker];

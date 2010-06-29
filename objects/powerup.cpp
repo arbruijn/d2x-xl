@@ -139,14 +139,14 @@ if (vcP) {
 else {
 	int	h, nFrames;
 
-	if (0 > (h = (gameStates.app.nSDLTicks - vciP->xTotalTime))) {
-		vciP->xTotalTime = gameStates.app.nSDLTicks;
+	if (0 > (h = (gameStates.app.nSDLTicks [0] - vciP->xTotalTime))) {
+		vciP->xTotalTime = gameStates.app.nSDLTicks [0];
 		h = 0;
 		}
 	else if ((h = h / 80) && (nFrames = gameData.pig.tex.addonBitmaps [-vciP->nClipIndex - 1].FrameCount ())) { //???
 		vciP->xTotalTime += h * 80;
-		if (gameStates.app.nSDLTicks < vciP->xTotalTime)
-			vciP->xTotalTime = gameStates.app.nSDLTicks;
+		if (gameStates.app.nSDLTicks [0] < vciP->xTotalTime)
+			vciP->xTotalTime = gameStates.app.nSDLTicks [0];
 		if (nObject & 1)
 			vciP->nCurFrame += h;
 		else

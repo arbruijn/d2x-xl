@@ -166,7 +166,7 @@ int ShowGameMessage (CTextData *msgP, int nId, int nDuration)
 if (nId < 0) {
 	if (!(indexP = msgP->currentMsg))
 		return 0;
-	if ((msgP->nEndTime > 0) && (msgP->nEndTime <= gameStates.app.nSDLTicks)) {
+	if ((msgP->nEndTime > 0) && (msgP->nEndTime <= gameStates.app.nSDLTicks [0])) {
 		msgP->currentMsg = NULL;
 		return 0;
 		}
@@ -175,8 +175,8 @@ else {
 	if (!(indexP = FindTextData (msgP, nId)))
 		return 0;
 	msgP->currentMsg = indexP;
-	msgP->nStartTime = gameStates.app.nSDLTicks;
-	msgP->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks + 1000 * nDuration;
+	msgP->nStartTime = gameStates.app.nSDLTicks [0];
+	msgP->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks [0] + 1000 * nDuration;
 	if (msgP->bmP) {
 		delete msgP->bmP;
 		msgP->bmP = NULL;
@@ -202,10 +202,10 @@ else if (!gameStates.render.nWindow) {
 		y = (CCanvas::Current ()->Height () - h) * 2 / 5;
 		if (msgP->nEndTime < 0)
 			fAlpha = 1.0f;
-		else if (gameStates.app.nSDLTicks - msgP->nStartTime < 250)
-			fAlpha = (float) (gameStates.app.nSDLTicks - msgP->nStartTime) / 250.0f;
-		else if (msgP->nEndTime - gameStates.app.nSDLTicks < 500)
-			fAlpha = (float) (msgP->nEndTime - gameStates.app.nSDLTicks) / 500.0f;
+		else if (gameStates.app.nSDLTicks [0] - msgP->nStartTime < 250)
+			fAlpha = (float) (gameStates.app.nSDLTicks [0] - msgP->nStartTime) / 250.0f;
+		else if (msgP->nEndTime - gameStates.app.nSDLTicks [0] < 500)
+			fAlpha = (float) (msgP->nEndTime - gameStates.app.nSDLTicks [0]) / 500.0f;
 		else
 			fAlpha = 1.0f;
 		backgroundManager.DrawBox (x - 8, y - 8, x + w + 4, y + h + 4, 3, fAlpha, 1);

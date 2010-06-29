@@ -300,8 +300,8 @@ else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 		h = 0;
 	if (h < 10) {
 		h = (10 - h) / 20.0f;
-		if (gameStates.app.nSDLTicks - t0 > 50) {
-			t0 = gameStates.app.nSDLTicks;
+		if (gameStates.app.nSDLTicks [0] - t0 > 50) {
+			t0 = gameStates.app.nSDLTicks [0];
 			debrisGlow.red = 0.5f + X2F (d_rand () % (I2X (1) / 4));
 			debrisGlow.green = X2F (d_rand () % (I2X (1) / 4));
 			}

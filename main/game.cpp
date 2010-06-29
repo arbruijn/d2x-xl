@@ -532,7 +532,8 @@ gameData.time.SetTime (0);			//make first frame zero
 #endif
 GameFlushInputs ();
 lightManager.SetMethod ();
-gameStates.app.nSDLTicks = 
+gameStates.app.nSDLTicks [0] = 
+gameStates.app.nSDLTicks [1] = 
 gameData.time.xGameStart = SDL_GetTicks ();
 gameData.physics.fLastTick = float (gameData.time.xGameStart);
 }
@@ -630,6 +631,7 @@ if (i) {
 	gameData.physics.fLastTick = t - dt;
 	gameData.time.SetTime (I2X (1) / PHYSICS_FPS);
 	gameData.physics.xTime = gameData.time.xFrame; 
+	gameStates.app.nSDLTicks [0] = gameStates.app.nSDLTicks [1];
 	if (bReadControls > 0)
 		ReadControls ();
 	else if (bReadControls < 0)
@@ -645,8 +647,13 @@ if (i) {
 		}
 	gameStates.app.tick40fps.bTick = 1;
 	DoEffectsFrame ();
+	CalcFrameTime ();
+	gameStates.app.nSDLTicks [1] = gameStates.app.nSDLTicks [0];
 	}
-CalcFrameTime ();
+else {
+	CalcFrameTime ();
+	gameStates.app.nSDLTicks [0] = nSDLTicks;
+	}
 gameStates.app.tick40fps.bTick = 0;
 return h;
 }

@@ -188,9 +188,9 @@ if (m_bDestroy) {
 if (!m_bValid)
 	return 0;
 
-if (gameStates.app.nSDLTicks - m_tUpdate >= 25) {
+if (gameStates.app.nSDLTicks [0] - m_tUpdate >= 25) {
 	if (!(m_nKey [0] || m_nKey [1])) {
-		m_tUpdate = gameStates.app.nSDLTicks;
+		m_tUpdate = gameStates.app.nSDLTicks [0];
 		Animate (0, m_nBolts, nThread);
 		if (!(m_nBolts = SetLife ()))
 			lightningManager.Destroy (this, NULL);

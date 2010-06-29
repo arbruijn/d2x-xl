@@ -68,11 +68,11 @@ if ((m_nObject = nObject) < 0x70000000) {
 m_nEmitters = 0;
 m_nLife = nLife;
 m_nSpeed = nSpeed;
-m_nBirth = gameStates.app.nSDLTicks;
+m_nBirth = gameStates.app.nSDLTicks [0];
 m_nMaxEmitters = nMaxEmitters;
 for (i = 0; i < nMaxEmitters; i++)
 	if (m_emitters [i].Create (vPos, vDir, mOrient, nSegment, nObject, nMaxParts, fScale, nDensity,
-										nPartsPerPos, nLife, nSpeed, nType, colorP, gameStates.app.nSDLTicks, bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
+										nPartsPerPos, nLife, nSpeed, nType, colorP, gameStates.app.nSDLTicks [0], bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
 		m_nEmitters++;
 	else {
 		particleManager.Destroy (m_nId);
@@ -265,7 +265,7 @@ if (m_bValid < 1)
 	int								nEmitters = 0;
 
 if ((m_nObject == 0x7fffffff) && (m_nType <= SMOKE_PARTICLES) &&
-	 (gameStates.app.nSDLTicks - m_nBirth > (MAX_SHRAPNEL_LIFE / I2X (1)) * 1000))
+	 (gameStates.app.nSDLTicks [0] - m_nBirth > (MAX_SHRAPNEL_LIFE / I2X (1)) * 1000))
 	SetLife (0);
 
 if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
@@ -274,7 +274,7 @@ if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
 	while (nEmitters < m_nEmitters) {
 		if (!emitterP)
 			return 0;
-		if (emitterP->IsDead (gameStates.app.nSDLTicks)) {
+		if (emitterP->IsDead (gameStates.app.nSDLTicks [0])) {
 			if (!RemoveEmitter (nEmitters)) {
 				m_bDestroy = true;
 				break;
@@ -283,7 +283,7 @@ if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
 		else {
 			if (bKill)
 				emitterP->SetLife (0);
-			emitterP->Update (gameStates.app.nSDLTicks, nThread);
+			emitterP->Update (gameStates.app.nSDLTicks [0], nThread);
 			nEmitters++, emitterP++;
 			}
 		}

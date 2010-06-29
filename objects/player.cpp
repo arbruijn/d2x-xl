@@ -122,7 +122,7 @@ void UpdateFiringState (void)
 
 if ((controls [0].firePrimaryState != 0) || (controls [0].firePrimaryDownCount != 0)) {
 	if (gameData.weapons.firing [0].nStart <= 0) {
-		gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks;
+		gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks [0];
 		if (bGatling) {
 			if (EGI_FLAG (bGatlingSpeedUp, 1, 0, 0))
 				gameData.weapons.firing [0].bSound = 1;
@@ -132,27 +132,27 @@ if ((controls [0].firePrimaryState != 0) || (controls [0].firePrimaryDownCount !
 				}
 			}
 		}
-	gameData.weapons.firing [0].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart;
+	gameData.weapons.firing [0].nDuration = gameStates.app.nSDLTicks [0] - gameData.weapons.firing [0].nStart;
 	gameData.weapons.firing [0].nStop = 0;
 	}
 else if (gameData.weapons.firing [0].nDuration) {
-	gameData.weapons.firing [0].nStop = gameStates.app.nSDLTicks;
+	gameData.weapons.firing [0].nStop = gameStates.app.nSDLTicks [0];
 	gameData.weapons.firing [0].nDuration = 
 	gameData.weapons.firing [0].nStart = 0;
 	}
 else if (gameData.weapons.firing [0].nStop > 0) {
-	if (gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStop >= GATLING_DELAY /*WIFireTicks (gameData.weapons.nPrimary) * 4 / 5*/) {
+	if (gameStates.app.nSDLTicks [0] - gameData.weapons.firing [0].nStop >= GATLING_DELAY /*WIFireTicks (gameData.weapons.nPrimary) * 4 / 5*/) {
 		gameData.weapons.firing [0].nStop = 0;
 		}
 	}
 if ((controls [0].fireSecondaryState != 0) || (controls [0].fireSecondaryDownCount != 0)) {
 	if (gameData.weapons.firing [1].nStart <= 0)
-		gameData.weapons.firing [1].nStart = gameStates.app.nSDLTicks;
-	gameData.weapons.firing [1].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [1].nStart;
+		gameData.weapons.firing [1].nStart = gameStates.app.nSDLTicks [0];
+	gameData.weapons.firing [1].nDuration = gameStates.app.nSDLTicks [0] - gameData.weapons.firing [1].nStart;
 	gameData.weapons.firing [1].nStop = 0;
 	}
 else if (gameData.weapons.firing [1].nDuration) {
-	gameData.weapons.firing [1].nStop = gameStates.app.nSDLTicks;
+	gameData.weapons.firing [1].nStop = gameStates.app.nSDLTicks [0];
 	gameData.weapons.firing [1].nDuration = 
 	gameData.weapons.firing [1].nStart = 0;
 	}

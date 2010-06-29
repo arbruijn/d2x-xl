@@ -119,7 +119,7 @@ else {
 	if (!gameData.time.tLast)
 		nDeltaTime = 0;
 	else {
-		nFrameTime = gameStates.app.nSDLTicks - gameData.time.tLast;
+		nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
 		nMinFrameTime = 1000 / MAXFPS;
 		nDeltaTime = nMinFrameTime - nFrameTime;
 		fSlack += 1000.0f / MAXFPS - nMinFrameTime;
@@ -131,7 +131,7 @@ else {
 			G3_SLEEP (nDeltaTime);
 		}
 	}
-timerValue = MSEC2X (gameStates.app.nSDLTicks);
+timerValue = MSEC2X (gameStates.app.nSDLTicks [0]);
 
 #else
 
@@ -154,7 +154,7 @@ gameData.time.xLast = timerValue;
 
 #if EXACT_FRAME_TIME
 
-gameData.time.tLast = gameStates.app.nSDLTicks;
+gameData.time.tLast = gameStates.app.nSDLTicks [0];
 if (nDeltaTime > 0)
 	gameData.time.tLast += nDeltaTime;
 
@@ -190,14 +190,14 @@ else
 
 void GetSlowTicks (void)
 {
-gameStates.app.nSDLTicks = SDL_GetTicks ();
-gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks - gameStates.app.tick40fps.nLastTick;
+gameStates.app.nSDLTicks [0] = SDL_GetTicks ();
+gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks [0] - gameStates.app.tick40fps.nLastTick;
 if ((gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25)))
-	gameStates.app.tick40fps.nLastTick = gameStates.app.nSDLTicks;
+	gameStates.app.tick40fps.nLastTick = gameStates.app.nSDLTicks [0];
 #if 0
-gameStates.app.tick60fps.nTime = gameStates.app.nSDLTicks - gameStates.app.tick60fps.nLastTick;
+gameStates.app.tick60fps.nTime = gameStates.app.nSDLTicks [0] - gameStates.app.tick60fps.nLastTick;
 if ((gameStates.app.tick60fps.bTick = (gameStates.app.tick60fps.nTime >= (50 + ++gameStates.app.tick60fps.nSlack) / 3))) {
-	gameStates.app.tick60fps.nLastTick = gameStates.app.nSDLTicks;
+	gameStates.app.tick60fps.nLastTick = gameStates.app.nSDLTicks [0];
 	gameStates.app.tick60fps.nSlack %= 3;
 	}
 #endif

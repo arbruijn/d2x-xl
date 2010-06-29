@@ -102,12 +102,12 @@ if (pii.bAnimate && (pii.nFrames > 1)) {
 	static time_t to [PARTICLE_TYPES] = {150, 150, 150, 50, 150, 150, 150, 150};
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-	if (gameStates.app.nSDLTicks - t0 [nType] >= to [nType]) {
+	if (gameStates.app.nSDLTicks [0] - t0 [nType] >= to [nType]) {
 		CBitmap*	bmP = ParticleImageInfo (GetType (nType)).bmP;
 		if (!bmP->Frames ())
 			return;
 		bmP->SetCurFrame (pii.iFrame);
-		t0 [nType] = gameStates.app.nSDLTicks;
+		t0 [nType] = gameStates.app.nSDLTicks [0];
 		pii.iFrame = ++pii.iFrame % pii.nFrames;
 		}
 	}

@@ -1264,7 +1264,7 @@ if (ROBOTINFO (info.nId).companion) {
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel))
 		return 0;
 	}
-SetTimeLastHit (gameStates.app.nSDLTicks);
+SetTimeLastHit (gameStates.app.nSDLTicks [0]);
 info.xShields -= xDamage;
 //	Do unspeakable hacks to make sure CPlayerData doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {

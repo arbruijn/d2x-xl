@@ -159,7 +159,7 @@ for (; iBox <= nBoxes; iBox++) {
 //transformation.End ();
 float r = X2F (CFixVector::Dist (pmhb->vMin, pmhb->vMax) / 2);
 #if 0 //DBG //display collision point
-if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
+if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
 	CObject	o;
 
 	o.info.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
@@ -203,11 +203,11 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 	if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
 			gameData.multiplayer.bWasHit [i] = 1;
-			gameData.multiplayer.nLastHitTime [i] = gameStates.app.nSDLTicks;
+			gameData.multiplayer.nLastHitTime [i] = gameStates.app.nSDLTicks [0];
 			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.1f, 0.5f);
 			dt = 0;
 			}
-		else if ((dt = gameStates.app.nSDLTicks - gameData.multiplayer.nLastHitTime [i]) >= 300) {
+		else if ((dt = gameStates.app.nSDLTicks [0] - gameData.multiplayer.nLastHitTime [i]) >= 300) {
 			gameData.multiplayer.bWasHit [i] = 0;
 			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.4f);
 			}
@@ -266,7 +266,7 @@ if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	scale = (float) ci.nFadeValue / (float) FADE_LEVELS;
 	scale *= scale;
 	}
-dt = gameStates.app.nSDLTicks - objP->TimeLastHit ();
+dt = gameStates.app.nSDLTicks [0] - objP->TimeLastHit ();
 if (dt < SHIELD_EFFECT_TIME) {
 	scale *= gameOpts->render.effects.bOnlyShieldHits ? float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)) : 1;
 	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale, 1);

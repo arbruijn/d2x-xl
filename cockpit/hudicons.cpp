@@ -128,7 +128,7 @@ if (!IsMultiGame || IsCoopGame) {
 	if ((extraGameInfo [0].nWeaponIcons >= 3) && (CCanvas::Current ()->Height () < 670))
 		x0 -= HUD_LHX (20);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	t = gameStates.app.nSDLTicks;
+	t = gameStates.app.nSDLTicks [0];
 	if (t - t0 > 333) {	//update 3 times per second
 		t0 = t;
 		for (i = 0; i < 2; i++) 
@@ -188,7 +188,7 @@ void CHUDIcons::DrawWeapons (void)
 	int	nDmgIconWidth = 0;
 #if 0
 								((nWeaponIcons == 2) 
-								 && ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+								 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
 								     gameData.objs.consoleP->CriticalDamage ()))) ? 32 : 0;
 #endif
 	int	fw, fh, faw, 
@@ -501,7 +501,7 @@ void CHUDIcons::DrawInventory (void)
 	int		nDmgIconWidth = 0;
 #if 0
 									(nIconPos
-									 && ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+									 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
 									     gameData.objs.consoleP->CriticalDamage ()))) ? 80 : 0;
 #endif
 	float		fLineWidth = float (CCanvas::Current ()->Width ()) / 640.0f;

@@ -285,7 +285,7 @@ for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 			dMin = RegisterHit (&intersection, &vHit, vRef, dMin);
 			nHits++;
 #if DBG
-			pf1->t = pf2->t = gameStates.app.nSDLTicks;
+			pf1->t = pf2->t = gameStates.app.nSDLTicks [0];
 #endif
 			}
 		}
@@ -350,7 +350,7 @@ if (!nHits) {
 #if DBG
 if (nHits) {
 	pmhb1->vHit = pmhb2->vHit = intersection;
-	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks;
+	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks [0];
 	}
 #endif
 return nHits ? dMin ? dMin : 1 : 0;

@@ -63,9 +63,9 @@ HUDMessage (0, "set hit point %d,%d,%d", vHit [0], vHit [1], vHit [2]);
 CFixVector vDir;
 vDir = vHit - info.position.vPos;
 CFixVector::Normalize (vDir);
-m_damage.tRepaired = gameStates.app.nSDLTicks;
+m_damage.tRepaired = gameStates.app.nSDLTicks [0];
 
-if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCritical)) {	// check and handle critical hits
+if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks [0] > m_damage.tCritical)) {	// check and handle critical hits
 	float fDamage = (1.0f - Damage ()) / float (sqrt (DamageRate ()));
 	if ((m_damage.bCritical = d_rand () < F2X (fDamage))) {
 		if (!extraGameInfo [0].nHitboxes)
@@ -86,7 +86,7 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 		else
 			m_damage.nHits [2]++;
 #endif
-		m_damage.tCritical = gameStates.app.nSDLTicks;
+		m_damage.tCritical = gameStates.app.nSDLTicks [0];
 		m_damage.nCritical++;
 		return vHit;
 		}
@@ -94,16 +94,16 @@ if (EGI_FLAG (nDamageModel, 0, 0, 0) && (gameStates.app.nSDLTicks > m_damage.tCr
 
 // avoid the shield effect lighting up to soon after a critical hit
 #if 1
-if (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4)
+if (gameStates.app.nSDLTicks [0] - m_damage.tCritical < SHIELD_EFFECT_TIME / 4)
 	return vHit;
 #else
-if ((gameStates.app.nSDLTicks - m_damage.tShield < SHIELD_EFFECT_TIME * 2) &&
-	 (gameStates.app.nSDLTicks - m_damage.tCritical < SHIELD_EFFECT_TIME / 4))
+if ((gameStates.app.nSDLTicks [0] - m_damage.tShield < SHIELD_EFFECT_TIME * 2) &&
+	 (gameStates.app.nSDLTicks [0] - m_damage.tCritical < SHIELD_EFFECT_TIME / 4))
 	return vHit;
 #endif
 
 vHit = vDir * info.xSize;
-m_damage.tShield = gameStates.app.nSDLTicks;
+m_damage.tShield = gameStates.app.nSDLTicks [0];
 
 for (int i = 0; i < 3; i++)
 #if 1
@@ -116,12 +116,12 @@ for (int i = 0; i < 3; i++)
 		CFixVector::Normalize (vHit);
 		vHit *= info.xSize;
 		m_hitInfo.v [m_hitInfo.i] = vHit;
-		m_hitInfo.t [i] = gameStates.app.nSDLTicks;
+		m_hitInfo.t [i] = gameStates.app.nSDLTicks [0];
 		return m_hitInfo.v [m_hitInfo.i];
 		}
 #endif
 m_hitInfo.v [m_hitInfo.i] = vHit;
-m_hitInfo.t [m_hitInfo.i] = gameStates.app.nSDLTicks;
+m_hitInfo.t [m_hitInfo.i] = gameStates.app.nSDLTicks [0];
 m_hitInfo.i = (m_hitInfo.i + 1) % 3;
 return m_hitInfo.v [m_hitInfo.i];
 }
@@ -170,7 +170,7 @@ bool CObject::RepairDamage (int i)
 if (!m_damage.nHits [i])
 	return false;
 m_damage.nHits [i]--;
-m_damage.tRepaired = gameStates.app.nSDLTicks;
+m_damage.tRepaired = gameStates.app.nSDLTicks [0];
 #if DBG
 static const char* szSubSystem [3] = {"AIM", "DRIVES", "GUNS"};
 HUDMessage (0, "%s repaired (%d)", szSubSystem [i], m_damage.nHits [i]);
@@ -184,7 +184,7 @@ void CObject::RepairDamage (void)
 {
 if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OBJ_REACTOR))
 	return;
-if (gameStates.app.nSDLTicks - m_damage.tRepaired < REPAIR_DELAY)
+if (gameStates.app.nSDLTicks [0] - m_damage.tRepaired < REPAIR_DELAY)
 	return;
 for (int i = 0; i < 3; i++)
 	RepairDamage (i);

@@ -231,7 +231,7 @@ int CParticleManager::Update (void)
 {
 #if SMOKE_SLOWMO
 	static int	t0 = 0;
-	int t = gameStates.app.nSDLTicks - t0;
+	int t = gameStates.app.nSDLTicks [0] - t0;
 
 if (t / gameStates.gameplay.slowmo [0].fSpeed < 25)
 	return 0;
@@ -440,10 +440,10 @@ int CParticleManager::BeginRender (int nType, float nScale)
 	static time_t	t0 = 0;
 
 particleManager.SetLastType (-1);
-if ((gameStates.app.nSDLTicks - t0 < 33) || (ogl.StereoSeparation () < 0))
+if ((gameStates.app.nSDLTicks [0] - t0 < 33) || (ogl.StereoSeparation () < 0))
 	particleManager.m_bAnimate = 0;
 else {
-	t0 = gameStates.app.nSDLTicks;
+	t0 = gameStates.app.nSDLTicks [0];
 	particleManager.m_bAnimate = 1;
 	}
 return 1;

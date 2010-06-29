@@ -964,7 +964,7 @@ for (int i = 0; i < int (sizeofa (xlatTriggers)); i++)
 		}
 m_info.nType = TT_DESCENT1;
 if (!h)
-	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks;
+	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks [0];
 return h;
 }
 
@@ -1033,12 +1033,12 @@ if (nTrigger < 0) {
 	}
 
 if (!nDepth && !bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
-	int t = gameStates.app.nSDLTicks;
+	int t = gameStates.app.nSDLTicks [0];
 	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750)) {
 		nDepth--;
 		return 1;
 		}
-	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks;
+	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks [0];
 	}
 
 if (m_info.tOperated < 0) {

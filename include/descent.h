@@ -1101,7 +1101,7 @@ typedef struct tApplicationStates {
 #ifdef __unix__
 	int bLinuxMsgBox;
 #endif
-	int nSDLTicks;
+	int nSDLTicks [2];
 	int nExtGameStatus;
 	int nFunctionMode;
 	int nLastFuncMode;
@@ -3541,7 +3541,7 @@ int TIRUnload (void);
 
 static inline void SemWait (uint sem)
 {
-	time_t t0 = gameStates.app.nSDLTicks;
+	time_t t0 = gameStates.app.nSDLTicks [0];
 
 while (gameData.app.semaphores [sem]) {
 	G3_SLEEP (0);

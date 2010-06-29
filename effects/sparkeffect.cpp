@@ -45,10 +45,10 @@ if (m_tRender)
 	return;
 if (!m_nProb)
 	m_nProb = SPARK_MIN_PROB;
-if (gameStates.app.nSDLTicks - m_tCreate < SPARK_FRAME_TIME)
+if (gameStates.app.nSDLTicks [0] - m_tCreate < SPARK_FRAME_TIME)
 	return;
 m_nType = nType;
-m_tCreate = gameStates.app.nSDLTicks;
+m_tCreate = gameStates.app.nSDLTicks [0];
 if (d_rand () % m_nProb)
 	m_nProb--;
 else {
@@ -83,10 +83,10 @@ void CEnergySpark::Update (void)
 {
 if (!m_tRender)
 	return;
-if (gameStates.app.nSDLTicks - m_tRender < SPARK_FRAME_TIME)
+if (gameStates.app.nSDLTicks [0] - m_tRender < SPARK_FRAME_TIME)
 	return;
 if (++m_nFrame < 32) {
-	m_tRender = gameStates.app.nSDLTicks; //+= SPARK_FRAME_TIME;
+	m_tRender = gameStates.app.nSDLTicks [0]; //+= SPARK_FRAME_TIME;
 	if (gameOpts->render.effects.bMovingSparks)
 		m_vPos += m_vDir;
 	}

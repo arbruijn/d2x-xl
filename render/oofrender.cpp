@@ -644,13 +644,13 @@ if (FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 if (m_bCloaked != bCloaked) {
 	m_bCloaked = bCloaked;
 	m_nCloakPulse = 0;
-	m_nCloakChangedTime = gameStates.app.nSDLTicks;
+	m_nCloakChangedTime = gameStates.app.nSDLTicks [0];
 	}
-dt = (float) (gameStates.app.nSDLTicks - m_nCloakChangedTime) / 1000.0f;
+dt = (float) (gameStates.app.nSDLTicks [0] - m_nCloakChangedTime) / 1000.0f;
 if (bCloaked) {
 	if (m_nCloakPulse) {
 		//dt = 0.001f;
-		m_nCloakChangedTime = gameStates.app.nSDLTicks;
+		m_nCloakChangedTime = gameStates.app.nSDLTicks [0];
 		m_fAlpha += dt * m_nCloakPulse / 10.0f;
 		if (m_nCloakPulse < 0) {
 			if (m_fAlpha <= 0.01f)
@@ -663,7 +663,7 @@ if (bCloaked) {
 		m_fAlpha = 1.0f - dt;
 		if (m_fAlpha <= 0.01f) {
 			m_nCloakPulse = 1;
-			m_nCloakChangedTime = gameStates.app.nSDLTicks;
+			m_nCloakChangedTime = gameStates.app.nSDLTicks [0];
 			}
 		}
 	}

@@ -596,7 +596,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 		nIdEntropy [0] = GrPrintF (nIdEntropy, x, y, szInfo);
 		if (gameStates.entropy.bConquering) {
 			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) -
-					   (gameStates.app.nSDLTicks - gameStates.entropy.nTimeLastMoved);
+					   (gameStates.app.nSDLTicks [0] - gameStates.entropy.nTimeLastMoved);
 
 			if (t < 0)
 				t = 0;
@@ -1325,7 +1325,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 				fix y = vPlayerPos.p3_screen.y;
 				if (bShowName) {				// Draw callsign on HUD
 					if (nState) {
-						int t = gameStates.app.nSDLTicks;
+						int t = gameStates.app.nSDLTicks [0];
 
 						if (t - tColorChange > 333) {
 							tColorChange = t;
@@ -1406,7 +1406,7 @@ if (!(IsMultiGame && gameData.multigame.kills.bShowList))
 
 	int	nPlayers, playerList [MAX_PLAYERS];
 	int	nLeft, nameLen, i, xo = 0, x0, x1, y0, fth;
-	int	t = gameStates.app.nSDLTicks;
+	int	t = gameStates.app.nSDLTicks [0];
 	int	bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
 	int	faw = int (float (GAME_FONT->TotalWidth ()) / float (GAME_FONT->Range ()) * 1.05f + 0.5f);
 	float fScale;
@@ -1605,7 +1605,7 @@ if (gameStates.app.bPlayerIsDead)
 							};
 
 #if 1 //!DBG
-if ((gameStates.app.nSDLTicks - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 2000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
+if ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 2000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
 	return;
 #endif
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;

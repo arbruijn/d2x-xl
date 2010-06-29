@@ -29,7 +29,7 @@ else if (gameStates.gameplay.slowmo [i].fSpeed > 1) {
 else {
 	gameStates.gameplay.slowmo [i].nState = 1;
 	}
-gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
+gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks [0];
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -240,7 +240,7 @@ bMsg = ToggleSlowMotion ();
 f = float (gameOpts->gameplay.nSlowMotionSpeedup) / 2;
 h = (f - 1) / (SLOWDOWN_SECS * SLOWDOWN_FPS);
 for (i = 0; i < 2; i++) {
-	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].tUpdate > 25)) {
+	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks [0] - gameStates.gameplay.slowmo [i].tUpdate > 25)) {
 		gameStates.gameplay.slowmo [i].fSpeed += gameStates.gameplay.slowmo [i].nState * h;
 		if (gameStates.gameplay.slowmo [i].fSpeed >= f) {
 			gameStates.gameplay.slowmo [i].fSpeed = f;
@@ -254,7 +254,7 @@ for (i = 0; i < 2; i++) {
 			if (!i)
 				SpeedupSound ();
 			}
-		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
+		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks [0];
 		}
 	}
 if (bMsg)

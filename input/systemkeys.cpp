@@ -1241,7 +1241,7 @@ if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
 			else
 				gameStates.zoom.nDestFactor = fix (gameStates.zoom.nFactor * pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f) + 0.5f);
 			gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 6.25f;
-			gameStates.zoom.nTime = gameStates.app.nSDLTicks - 40;
+			gameStates.zoom.nTime = gameStates.app.nSDLTicks [0] - 40;
 			gameStates.zoom.nState = (gameStates.zoom.nStep > 0) ? 1 : -1;
 			if (audio.ChannelIsPlaying (gameStates.zoom.nChannel))
 				audio.StopSound (gameStates.zoom.nChannel);
@@ -1257,7 +1257,7 @@ else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
 			gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
 			gameStates.zoom.nDestFactor = gameStates.zoom.nMaxFactor;
 			gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 25.0f;
-			gameStates.zoom.nTime = gameStates.app.nSDLTicks - 40;
+			gameStates.zoom.nTime = gameStates.app.nSDLTicks [0] - 40;
 			gameStates.zoom.nState = 1;
 			}
 		}
@@ -1267,13 +1267,13 @@ else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
 		gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
 		gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
 		gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 25.0f;
-		gameStates.zoom.nTime = gameStates.app.nSDLTicks - 40;
+		gameStates.zoom.nTime = gameStates.app.nSDLTicks [0] - 40;
 		gameStates.zoom.nState = -1;
 		}
 	}
 if (!gameStates.zoom.nState)
 	gameStates.zoom.nChannel = -1;
-else if (gameStates.app.nSDLTicks - gameStates.zoom.nTime >= 40) {
+else if (gameStates.app.nSDLTicks [0] - gameStates.zoom.nTime >= 40) {
 	gameStates.zoom.nTime += 40;
 	gameStates.zoom.nFactor += gameStates.zoom.nStep;
 	if (((gameStates.zoom.nState > 0) && (gameStates.zoom.nFactor > gameStates.zoom.nDestFactor)) || 

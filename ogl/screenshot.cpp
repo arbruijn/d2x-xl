@@ -195,9 +195,9 @@ if (gameData.app.bGamePaused || gameStates.menus.nInMenu)
 	return;
 if (!(h = screenShotIntervals [gameOpts->app.nScreenShotInterval]))
 	return;
-if (gameStates.app.nSDLTicks - t0 < h * 1000)
+if (gameStates.app.nSDLTicks [0] - t0 < h * 1000)
 	return;
-t0 = gameStates.app.nSDLTicks;
+t0 = gameStates.app.nSDLTicks [0];
 gameStates.app.bSaveScreenshot = 1;
 SaveScreenShot (0, 0);
 }

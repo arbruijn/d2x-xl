@@ -647,7 +647,7 @@ wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 18);
 for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 	if (fP->nDuration) {
 		if (fP->nStart <= 0) {
-			fP->nStart = gameStates.app.nSDLTicks - fP->nDuration;
+			fP->nStart = gameStates.app.nSDLTicks [0] - fP->nDuration;
 			if (fP->bSpeedUp &&(fP->nDuration < GATLING_DELAY)) {
 				fP->bSound = 1;
 				}
@@ -663,7 +663,7 @@ for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 	else {
 		if (wsP->firing [i].nStart) {
 			wsP->firing [i].nStart = 0;
-			wsP->firing [i].nStop = gameStates.app.nSDLTicks;
+			wsP->firing [i].nStop = gameStates.app.nSDLTicks [0];
 			}
 		}
 	}
@@ -763,9 +763,9 @@ if (gameStates.app.bHaveExtraGameInfo && extraGameInfo [1].bAutoBalanceTeams && 
 
 		static int nTimeout = 0;
 
-	if (gameStates.app.nSDLTicks - nTimeout < 1000)
+	if (gameStates.app.nSDLTicks [0] - nTimeout < 1000)
 		return;
-	nTimeout = gameStates.app.nSDLTicks;
+	nTimeout = gameStates.app.nSDLTicks [0];
 
 		int	h, i, t, teamSize [2], teamScore [2];
 
@@ -1141,8 +1141,8 @@ void MultiSyncMonsterball (void)
 if ((gameData.app.nGameMode & GM_MONSTERBALL) && gameData.hoard.monsterballP && NetworkIAmMaster ()) {
 	static time_t	t0 = 0;
 
-	if (gameStates.app.nSDLTicks - t0 > 250) {
-		t0 = gameStates.app.nSDLTicks;
+	if (gameStates.app.nSDLTicks [0] - t0 > 250) {
+		t0 = gameStates.app.nSDLTicks [0];
 		gameData.multigame.msg.buf [0] = (char) MULTI_SYNC_MONSTERBALL;
 		int i = 1;
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + i, gameData.hoard.monsterballP->info.nSegment);
@@ -2613,8 +2613,8 @@ void MultiSyncKills (void)
 {
 	static	time_t	t0;
 
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.nSDLTicks - t0 > 1000)) {
-	t0 = gameStates.app.nSDLTicks;
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.nSDLTicks [0] - t0 > 1000)) {
+	t0 = gameStates.app.nSDLTicks [0];
 	MultiSendSyncKills ();
 	}
 }
@@ -3882,7 +3882,7 @@ if (!IsEntropyGame)
 	return;
 #if 1//!DBG
 if (gameData.reactor.bDestroyed) {
-	if (gameStates.app.nSDLTicks - countDown  >= 5000)
+	if (gameStates.app.nSDLTicks [0] - countDown  >= 5000)
 		StopEndLevelSequence ();
 	return;
 	}
@@ -3918,7 +3918,7 @@ gameStates.entropy.bExitSequence = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if ((GetTeam (i) != t) && (gameData.multiplayer.players [i].shields >= 0))
 		return;
-countDown = gameStates.app.nSDLTicks;
+countDown = gameStates.app.nSDLTicks [0];
 #if 1//!DBG
 gameData.reactor.bDestroyed = 1;
 gameData.reactor.countdown.nTimer = -1;
@@ -4102,7 +4102,7 @@ gameData.multiplayer.weaponStates [int (buf [1])].xFusionCharge = GET_INTEL_INT 
 
 void MultiSendWeapons (int bForce)
 {
-	int t = gameStates.app.nSDLTicks;
+	int t = gameStates.app.nSDLTicks [0];
 
 	static int nTimeout = 0;
 
@@ -4206,7 +4206,7 @@ gameData.hoard.monsterballP->ApplyRotForce (v);
 
 void MultiSendMonsterball (int bForce, int bCreate)
 {
-	int t = gameStates.app.nSDLTicks;
+	int t = gameStates.app.nSDLTicks [0];
 
 	static int nTimeout = 0;
 
@@ -5217,7 +5217,7 @@ OBJECTS [nObject].CreateAppearanceEffect ();
 void MultiRefillPowerups (void)
 {
 	int		h, i, j;
-	time_t	t = gameStates.app.nSDLTicks;
+	time_t	t = gameStates.app.nSDLTicks [0];
 	static	time_t	t0 = 0;
 
 if (gameStates.multi.nGameType != UDP_GAME)

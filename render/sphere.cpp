@@ -147,7 +147,7 @@ else {
 	m = m.Inverse ();
 	}
 for (int i = 0; i < 3; i++) {
-	int dt = gameStates.app.nSDLTicks - int (hitInfo.t [i]);
+	int dt = gameStates.app.nSDLTicks [0] - int (hitInfo.t [i]);
 	if (dt < SHIELD_EFFECT_TIME) {
 		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * Pi / 2)));
 		if (h > 1.0f / 1e6f) {
@@ -441,8 +441,8 @@ int CSphere::InitSurface (float red, float green, float blue, float alpha, CBitm
 
 if (m_pulseP) {
 	static time_t	t0 = 0;
-	if (gameStates.app.nSDLTicks - t0 > 25) {
-		t0 = gameStates.app.nSDLTicks;
+	if (gameStates.app.nSDLTicks [0] - t0 > 25) {
+		t0 = gameStates.app.nSDLTicks [0];
 		m_pulseP->fScale += m_pulseP->fDir;
 		if (m_pulseP->fScale > 1.0f) {
 			m_pulseP->fScale = 1.0f;
@@ -461,8 +461,8 @@ else
 if (bmP && (bmP == shield.Bitmap ())) {
 	static time_t t0 = 0;
 	bTextured = 1;
-	if ((gameStates.app.nSDLTicks - t0 > 40) && bmP->CurFrame ()) {
-		t0 = gameStates.app.nSDLTicks;
+	if ((gameStates.app.nSDLTicks [0] - t0 > 40) && bmP->CurFrame ()) {
+		t0 = gameStates.app.nSDLTicks [0];
 		bmP->NextFrame ();
 		}
 	}

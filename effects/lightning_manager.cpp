@@ -226,11 +226,11 @@ if (SHOW_LIGHTNING) {
 #if LIMIT_LIGHTNING_FPS
 #	if LIGHTNING_SLOWMO
 		static int	t0 = 0;
-		int t = gameStates.app.nSDLTicks - t0;
+		int t = gameStates.app.nSDLTicks [0] - t0;
 
 	if (t / gameStates.gameplay.slowmo [0].fSpeed < 25)
 		return;
-	t0 = gameStates.app.nSDLTicks + 25 - int (gameStates.gameplay.slowmo [0].fSpeed * 25);
+	t0 = gameStates.app.nSDLTicks [0] + 25 - int (gameStates.gameplay.slowmo [0].fSpeed * 25);
 #	else
 	if (!gameStates.app.tick40fps.bTick)
 		return 0;

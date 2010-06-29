@@ -458,7 +458,7 @@ void CCamera::Reset (void)
 {
 m_info.nWaitFrames = 0;
 m_info.bTimedOut = 0;
-m_info.nTimeout = gameStates.app.nSDLTicks; //SDL_GetTicks ();
+m_info.nTimeout = gameStates.app.nSDLTicks [0]; //SDL_GetTicks ();
 m_info.bVisible = 0;
 }
 
@@ -594,7 +594,7 @@ if (!m_info.objP)
 
 #if 1
 	time_t	t0 = m_info.t0;
-	time_t	t = gameStates.app.nSDLTicks;
+	time_t	t = gameStates.app.nSDLTicks [0];
 
 if ((t0 < 0) || (t - t0 >= 1000 / 90))
 #endif

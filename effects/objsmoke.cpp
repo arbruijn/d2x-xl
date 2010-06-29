@@ -125,8 +125,8 @@ return (int) ((double) rand () * (double) n / (double) RAND_MAX);
 void CreateDamageExplosion (int h, int i)
 {
 if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
-	 (gameStates.app.nSDLTicks - *particleManager.ObjExplTime (i) > 100)) {
-	*particleManager.ObjExplTime (i) = gameStates.app.nSDLTicks;
+	 (gameStates.app.nSDLTicks [0] - *particleManager.ObjExplTime (i) > 100)) {
+	*particleManager.ObjExplTime (i) = gameStates.app.nSDLTicks [0];
 	if (!RandN (11 - h))
 		CreateSmallFireballOnObject (OBJECTS + i, I2X (1), 1);
 	}

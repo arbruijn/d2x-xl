@@ -379,8 +379,8 @@ if (psm->m_bThruster) {
 	glTranslatef (vCenter [X], vCenter [Y], vCenter [Z]);
 	glRotatef (-360.0f * 5.0f * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (-vCenter [X], -vCenter [Y], -vCenter [Z]);
-	if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
-		psm->m_tFrame = gameStates.app.nSDLTicks;
+	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
+		psm->m_tFrame = gameStates.app.nSDLTicks [0];
 		psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
 		}
 	}
@@ -390,7 +390,7 @@ else {
 	if (gameData.weapons.nPrimary == VULCAN_INDEX)
 		nTimeout /= 2;
 	if (fP->nStop > 0) {
-		nDelay = gameStates.app.nSDLTicks - fP->nStop;
+		nDelay = gameStates.app.nSDLTicks [0] - fP->nStop;
 		if (nDelay > GATLING_DELAY)
 			return 0;
 		nTimeout += (float) nDelay / 10;
@@ -407,8 +407,8 @@ else {
 	glTranslatef (0, y, 0);
 	glRotatef (360 * float (psm->m_iFrame) / float (psm->m_nFrames), 0, 0, 1);
 	glTranslatef (0, -y, 0);
-	if (gameStates.app.nSDLTicks - psm->m_tFrame > nTimeout) {
-		psm->m_tFrame = gameStates.app.nSDLTicks;
+	if (gameStates.app.nSDLTicks [0] - psm->m_tFrame > nTimeout) {
+		psm->m_tFrame = gameStates.app.nSDLTicks [0];
 		psm->m_iFrame = ++psm->m_iFrame % psm->m_nFrames;
 		}
 	}

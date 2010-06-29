@@ -371,7 +371,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (IsMultiGame && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
-				 (gameStates.app.nSDLTicks - gameData.objs.dropInfo [nObject].nDropTime < extraGameInfo [IsMultiGame].nSpawnDelay))
+				 (gameStates.app.nSDLTicks [0] - gameData.objs.dropInfo [nObject].nDropTime < extraGameInfo [IsMultiGame].nSpawnDelay))
 				return 0;
 			nDropState = EXEC_DROP;
 			}
@@ -381,7 +381,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			gameData.objs.dropInfo [h].nObject = nObject;
 			gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
 			gameData.objs.dropInfo [h].nDropTime =
-				 (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks;
+				 (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks [0];
 			return 0;
 			}
 		if (nDropState == EXEC_DROP) {

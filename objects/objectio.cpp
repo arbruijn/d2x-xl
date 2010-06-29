@@ -412,9 +412,9 @@ else {
 	m_damage.nHits [1] = cf.ReadFix ();
 	m_damage.nHits [2] = cf.ReadFix ();
 	if (saveGameManager.Version () < 46)
-		m_damage.tRepaired = gameStates.app.nSDLTicks;
+		m_damage.tRepaired = gameStates.app.nSDLTicks [0];
 	else
-		m_damage.tRepaired = gameStates.app.nSDLTicks - cf.ReadFix ();
+		m_damage.tRepaired = gameStates.app.nSDLTicks [0] - cf.ReadFix ();
 	}
 }
 
@@ -543,7 +543,7 @@ switch (info.renderType) {
 cf.WriteFix (m_damage.nHits [0]);
 cf.WriteFix (m_damage.nHits [1]);
 cf.WriteFix (m_damage.nHits [2]);
-cf.WriteFix (gameStates.app.nSDLTicks - m_damage.tRepaired);
+cf.WriteFix (gameStates.app.nSDLTicks [0] - m_damage.tRepaired);
 }
 
 //------------------------------------------------------------------------------

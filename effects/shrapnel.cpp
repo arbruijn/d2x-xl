@@ -42,7 +42,7 @@ m_info.nTurn = 1;
 m_info.xSpeed = 3 * (I2X (1) / 20 + rand () % (I2X (1) / 20)) / 4;
 m_info.xLife =
 m_info.xTTL = I2X (3) / 2 + rand ();
-m_info.tUpdate = gameStates.app.nSDLTicks;
+m_info.tUpdate = gameStates.app.nSDLTicks [0];
 m_info.nSmoke = 
 	particleManager.Create (&m_info.vPos, NULL, NULL, objP->info.nSegment, 1, -SHRAPNEL_MAX_PARTS * max (gameOpts->render.particles.nQuality, 2),
 								   -PARTICLE_SIZE (1, fScale, 1), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, SIMPLE_SMOKE_PARTICLES, 0x7fffffff, &color, 1, -1);
@@ -69,7 +69,7 @@ void CShrapnel::Move (void)
 	CFixVector	vOffs;
 	time_t		nTicks;
 
-if ((nTicks = gameStates.app.nSDLTicks - m_info.tUpdate) < 25)
+if ((nTicks = gameStates.app.nSDLTicks [0] - m_info.tUpdate) < 25)
 	return;
 xSpeed = (fix) (xSpeed / gameStates.gameplay.slowmo [0].fSpeed);
 for (; nTicks >= 25; nTicks -= 25) {
@@ -89,7 +89,7 @@ for (; nTicks >= 25; nTicks -= 25) {
 	}
 if (m_info.nSmoke >= 0)
 	particleManager.SetPos (m_info.nSmoke, &m_info.vPos, NULL, -1);
-m_info.tUpdate = gameStates.app.nSDLTicks - nTicks;
+m_info.tUpdate = gameStates.app.nSDLTicks [0] - nTicks;
 }
 
 // -----------------------------------------------------------------------------

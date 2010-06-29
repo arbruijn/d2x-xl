@@ -38,7 +38,7 @@ if (gameData.fusion.xAutoFireTime) {
 	else {
 		static time_t t0 = 0;
 
-		time_t t = gameStates.app.nSDLTicks;
+		time_t t = gameStates.app.nSDLTicks [0];
 		if (t - t0 < 30)
 			return 0;
 		t0 = t;

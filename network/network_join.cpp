@@ -59,7 +59,7 @@ if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) &&
 // Slots are full but game is open, see if anyone is
 // disconnected and replace the oldest player with this new one
 int oldestPlayer = -1;
-fix oldestTime = gameStates.app.nSDLTicks;
+fix oldestTime = gameStates.app.nSDLTicks [0];
 
 Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -378,9 +378,9 @@ if (nConnection < 0) {
 	}
 else { //prevent flooding with connection attempts from the same player
 	syncP = networkData.sync + nConnection;
-	if (gameStates.app.nSDLTicks - syncP->tLastJoined < 2100)
+	if (gameStates.app.nSDLTicks [0] - syncP->tLastJoined < 2100)
 		return NULL;
-	syncP->tLastJoined = gameStates.app.nSDLTicks;
+	syncP->tLastJoined = gameStates.app.nSDLTicks [0];
 	}
 return syncP;
 }
@@ -460,7 +460,7 @@ syncP->nState = 1;
 syncP->objs.nCurrent = -1;
 syncP->nExtras = 0;
 syncP->timeout = 0;
-syncP->tLastJoined = gameStates.app.nSDLTicks;
+syncP->tLastJoined = gameStates.app.nSDLTicks [0];
 NetworkDoSyncFrame ();
 }
 
@@ -571,8 +571,8 @@ if (!networkData.refuse.bWaitForAnswer) {
 	gameData.messages [1].nMessages = 1;
 	gameData.messages [1].index = 
 	gameData.messages [1].currentMsg = &joinMsgIndex;
-	gameData.messages [1].nStartTime = gameStates.app.nSDLTicks;
-	gameData.messages [1].nEndTime = gameStates.app.nSDLTicks + 5000;
+	gameData.messages [1].nStartTime = gameStates.app.nSDLTicks [0];
+	gameData.messages [1].nEndTime = gameStates.app.nSDLTicks [0] + 5000;
 	gameData.messages [1].textBuffer = NULL;
 	gameData.messages [1].bmP = NULL;
 #endif
