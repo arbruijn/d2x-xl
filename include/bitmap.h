@@ -103,6 +103,7 @@ class CBitmapInfo {
 		ubyte					bSetup;
 		char					nMasks;
 		ubyte					nTeam;
+		ubyte					nBlendMode;	//0: alpha, 1: additive
 #if TEXTURE_COMPRESSION
 		CBitmapCompressionData	compressed;
 #endif
@@ -258,6 +259,7 @@ class CBitmap : public CArray< ubyte > {
 		inline ubyte Flat (void) { return m_info.bFlat; }
 		inline ubyte Static (void) { return m_info.bStatic; }
 		inline ubyte Team (void) { return m_info.nTeam; }
+		inline ubyte BlendMode (void) { return m_info.nBlendMode; }
 		inline CTexture* Texture (void) { return m_info.texP; }
 		inline int *TransparentFrames (int i = 0) { return m_info.transparentFrames + i; }
 		inline int *SuperTranspFrames (int i = 0) { return m_info.supertranspFrames + i; }
@@ -281,6 +283,7 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetFromPog (ubyte bFromPog) { m_info.bFromPog = bFromPog; }
 		inline void SetFlat (ubyte bFlat) { m_info.bFlat = bFlat; }
 		inline void SetTeam (ubyte nTeam) { m_info.nTeam = nTeam; }
+		inline void SetBlendMode (ubyte nBlendMode) { m_info.nBlendMode = nBlendMode; }
 		inline void SetAvgColorIndex (ubyte nIndex) { m_info.avgColorIndex = nIndex; }
 		inline void SetAvgColor (tRgbColorb& color) { m_info.avgColor = color; }
 		inline void SetTranspType (int nTranspType) { m_info.nTranspType = ((m_info.nBPP > 1) ? -1 : nTranspType); }

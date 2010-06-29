@@ -574,7 +574,7 @@ while ((pszToken = ReadLine (cf))) {
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (bmP->Buffer ())	//duplicate
-			return CModel::Error ("duplicate item");
+			return CModel::Error ("duplicate bitmap");
 		CFile::SplitPath (StrTok ("\""), NULL, fn, NULL);
 		if (!ReadModelTGA (::strlwr (fn), bmP, m_bCustom))
 			return CModel::Error ("texture not found");
@@ -587,6 +587,27 @@ while ((pszToken = ReadLine (cf))) {
 		else
 			m_textures.m_nTeam [nBitmap] = 0;
 		bmP->SetTeam (m_textures.m_nTeam [nBitmap]);
+		}
+	}
+return CModel::Error ("unexpected end of file");
+}
+
+//------------------------------------------------------------------------------
+
+int CModel::ReadOpacity (CFile& cf, int nBitmap)
+{
+	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
+
+if (CharTok (" \t") != '{')
+	return CModel::Error ("syntax error");
+bmP->SetFlat (0);
+while ((pszToken = ReadLine (cf))) {
+	if (*pszToken == '}')
+		return 1;
+	if (!strcmp (pszToken, "*BITMAP")) {
+		if (!bmP->Buffer ())	//duplicate
+			return CModel::Error ("missing glow bitmap");
+		bmP->SetBlendMode (2);
 		}
 	}
 return CModel::Error ("unexpected end of file");
@@ -620,6 +641,10 @@ while ((pszToken = ReadLine (cf))) {
 		if (!ReadTexture (cf, i))
 			return CModel::Error (NULL);
 		}
+	else if (!strcmp (pszToken, "*MAP_OPACITY")) {
+		if (!ReadOpacity (cf, i))
+			return CModel::Error (NULL);
+		}
 	}
 return CModel::Error ("unexpected end of file");
 }
@@ -640,11 +665,15 @@ if (!nBitmaps)
 if (!(m_textures.Create (nBitmaps)))
 	return CModel::Error ("out of memory");
 while ((pszToken = ReadLine (cf))) {
-	if (*pszToken == '}')
-		return 1;
+	if (*pszToken == '}') {
+		if (!nBitmaps)
+			return 1;
+		return CModel::Error ("bitmaps missing");
+		}
 	if (!strcmp (pszToken, "*MATERIAL")) {
 		if (!ReadMaterial (cf))
 			return CModel::Error (NULL);
+		nBitmaps--;
 		}
 	}
 return CModel::Error ("unexpected end of file");

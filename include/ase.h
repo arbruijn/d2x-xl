@@ -92,6 +92,7 @@ class CModel {
 
 	private:
 		int ReadTexture (CFile& cf, int nBitmap);
+		int ReadOpacity (CFile& cf, int nBitmap);
 		int ReadMaterial (CFile& cf);
 		int ReadMaterialList (CFile& cf);
 		int FindSubModel (const char *pszName);

@@ -494,6 +494,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = modelBitmaps [nBitmap];
 				else {
 					bmP = pm->m_textures + nBitmap;
+					ogl.SetBlendMode (bmP->BlendMode () ? 2 : 0);
 					if (nTeamColor && bmP->Team () && (0 <= (h = pm->m_teamTextures [nTeamColor % MAX_PLAYER_COLORS]))) {
 						nBitmap = h;
 						bmP = pm->m_textures + nBitmap;
