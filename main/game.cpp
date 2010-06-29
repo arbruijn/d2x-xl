@@ -652,7 +652,6 @@ if (i) {
 	}
 else {
 	CalcFrameTime ();
-	gameStates.app.nSDLTicks [0] = nSDLTicks;
 	}
 gameStates.app.tick40fps.bTick = 0;
 return h;
