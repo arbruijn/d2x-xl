@@ -104,6 +104,7 @@ class CSubModel {
 		ubyte						m_bGlow :1;
 		ubyte						m_bThruster :1;
 		ubyte						m_bWeapon :1;
+		ubyte						m_bHeadlight :1;
 		ubyte						m_bBullets :1;
 		ubyte						m_nType :2;
 		char						m_nGunPoint;

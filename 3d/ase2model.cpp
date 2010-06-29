@@ -65,6 +65,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm->m_bRender = psa->m_bRender;
 	psm->m_bThruster = psa->m_bThruster;
 	psm->m_bWeapon = psa->m_bWeapon;
+	psm->m_bHeadlight = psa->m_bHeadlight;
 	psm->m_nGun = psa->m_nGun;
 	psm->m_nBomb = psa->m_nBomb;
 	psm->m_nMissile = psa->m_nMissile;

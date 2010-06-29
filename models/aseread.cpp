@@ -31,7 +31,7 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
-#define MODEL_DATA_VERSION 1000	//must start with something bigger than the biggest model number
+#define MODEL_DATA_VERSION 1001	//must start with something bigger than the biggest model number
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -179,6 +179,7 @@ m_bRender = 1;
 m_bGlow = 0;
 m_bThruster = 0;
 m_bWeapon = 0;
+m_bHeadlight = 0;
 m_nGun = -1;
 m_nBomb = -1;
 m_nMissile = -1;
@@ -801,6 +802,7 @@ cf.WriteByte (sbyte (m_bRender));
 cf.WriteByte (sbyte (m_bGlow));
 cf.WriteByte (sbyte (m_bThruster));
 cf.WriteByte (sbyte (m_bWeapon));
+cf.WriteByte (sbyte (m_bHeadlight));
 cf.WriteByte (m_nGun);
 cf.WriteByte (m_nBomb);
 cf.WriteByte (m_nMissile);
@@ -868,6 +870,7 @@ m_bRender = ubyte (cf.ReadByte ());
 m_bGlow = ubyte (cf.ReadByte ());
 m_bThruster = ubyte (cf.ReadByte ());
 m_bWeapon = ubyte (cf.ReadByte ());
+m_bHeadlight = ubyte (cf.ReadByte ());
 m_nGun = cf.ReadByte ();
 m_nBomb = cf.ReadByte ();
 m_nMissile = cf.ReadByte ();
