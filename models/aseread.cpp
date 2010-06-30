@@ -446,10 +446,10 @@ while ((pszToken = ReadLine (cf))) {
 		strcpy (m_szName, StrTok (" \t\""));
 		if (strstr (m_szName, "$GUNPNT"))
 			m_nGunPoint = atoi (m_szName + 8);
+		if (strstr (m_szName, "GLOW") != NULL)
+			m_bGlow = 1;
 		if (strstr (m_szName, "$BULLETS"))
 			m_nBullets = 1;
-		else if (strstr (m_szName, "$GLOW") != NULL)
-			m_bGlow = 1;
 		else if (strstr (m_szName, "$DUMMY") != NULL)
 			m_bRender = 0;
 		else if (strstr (m_szName, "$THRUSTER") != NULL)
@@ -491,6 +491,7 @@ while ((pszToken = ReadLine (cf))) {
 			}
 		else if (strstr (m_szName, "$LIGHTBEAM") != NULL) {
 			m_bHeadlight = 1;
+			m_bGlow = 1;
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {
@@ -611,7 +612,6 @@ while ((pszToken = ReadLine (cf))) {
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (!bmP->Buffer ())	//duplicate
 			return CModel::Error ("missing glow bitmap");
-		bmP->SetBlendMode (2);
 		}
 	}
 return CModel::Error ("unexpected end of file");
