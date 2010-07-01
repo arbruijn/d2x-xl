@@ -737,7 +737,7 @@ if (m_nModel >= 0)
 	return 0;
 
 try {
-	if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom, cf.Date (filename, "", 0)))
+	if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
 		return 1;
 	}
 catch(...) {
@@ -904,7 +904,7 @@ sprintf (szFilename, "model%03d.bin", nModel);
 
 time_t tBIN = cf.Date (szFilename, gameFolders.szModelDir [bCustom], 0);
 
-if (tBIN < tASE)
+if (tASE > tBIN)
 	return 0;
 
 if (!cf.Open (szFilename, gameFolders.szModelDir [bCustom], "rb", 0))

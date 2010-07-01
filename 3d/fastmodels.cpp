@@ -515,7 +515,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			}
 		nIndex = pmf->m_nIndex;
 		if (bHires) {
-			bTransparent = bmP && ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0);
+			bTransparent = bmP && (psm->m_bGlow || ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0));
 			if (bTransparent != bTransparency) {
 				if (bTransparent)
 					pm->m_bHasTransparency = 1;
