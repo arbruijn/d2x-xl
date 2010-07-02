@@ -443,7 +443,7 @@ void G3DrawSubModel (CObject *objP, short nModel, short nSubModel, short nExclus
 	CAngleVector				va = animAnglesP ? animAnglesP [psm->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
 	int							h, i, j, bTransparent, bAnimate, bTextured = gameOpts->render.debug.bTextures && !(gameStates.render.bCloaked /*|| nPass*/),
-									bGetThruster = !nPass && ObjectHasThruster (objP);
+									bGetThruster = !(nPass || bTransparency) && ObjectHasThruster (objP);
 	short							nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
 if (objP->info.nType == OBJ_PLAYER)
@@ -480,6 +480,8 @@ for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, p
 							 bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 #endif
 // render the faces
+psm = pm->m_subModels + nSubModel;
+if (psm->m_bBillboard)
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #if 0
 	if (vOffsetP && (nSubModel == nExclusive))
@@ -509,7 +511,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = modelBitmaps [nBitmap];
 				else {
 					bmP = pm->m_textures + nBitmap;
-					ogl.SetBlendMode (psm->m_bFlare ? 2 : 0);
+					ogl.SetBlendMode (psm->m_bFlare);
 					if (nTeamColor && bmP->Team () && (0 <= (h = pm->m_teamTextures [nTeamColor % MAX_PLAYER_COLORS]))) {
 						nBitmap = h;
 						bmP = pm->m_textures + nBitmap;
@@ -613,8 +615,7 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	CDynLight*				prl;
 	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
-	int						bEmissive = objP && ((bTransparency > 1) || 
-														   ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]));
+	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
