@@ -357,7 +357,7 @@ else {
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
 // This also jitters the laser a bit so that it doesn't alias.
 //	Don't do for weapons created by weapons.
-if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID)) {
+if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !gameData.objs.bIsMissile [nWeaponType]) {
 #if 1
 	objP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
 #if 0 //DBG
