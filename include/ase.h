@@ -31,6 +31,8 @@ class CSubModel {
 		short						m_nIndex;
 		ubyte						m_bRender;
 		ubyte						m_bGlow;
+		ubyte						m_bFlare;
+		ubyte						m_bBillboard;
 		ubyte						m_bThruster;
 		ubyte						m_bWeapon;
 		ubyte						m_bHeadlight;

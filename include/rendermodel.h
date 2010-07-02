@@ -67,6 +67,7 @@ class CFace {
 		short						m_nId;
 		ubyte						m_nSubModel;
 		ubyte						m_bGlow :1;
+		ubyte						m_bBillboard :1;
 		ubyte						m_bThruster :1;
 
 	public:
@@ -102,6 +103,8 @@ class CSubModel {
 		ushort					m_nAngles;
 		ubyte						m_bRender :1;
 		ubyte						m_bGlow :1;
+		ubyte						m_bFlare :1;
+		ubyte						m_bBillboard :1;
 		ubyte						m_bThruster :1;
 		ubyte						m_bWeapon :1;
 		ubyte						m_bHeadlight :1;

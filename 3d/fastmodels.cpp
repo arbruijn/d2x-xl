@@ -485,10 +485,22 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (vOffsetP && (nSubModel == nExclusive))
 		transformation.Begin (vOffsetP, NULL);
 #endif
+	psm = pm->m_subModels + nSubModel;
+	if (!bAnimate && psm->m_bBillboard) {
+		glPushMatrix ();
+		float modelView [16];
+		glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
+		// undo all rotations
+		// beware all scaling is lost as well 
+		for (int i = 0; i < 3; i++) 
+			 for (int j = 0; j < 3; j++)
+				modelView [i * 4 + j] = (i == j) ? 1.0f : 0.0f;
+		glLoadMatrixf (modelView);
+		}
 	ogl.SetTexturing (false);
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
-	for (psm = pm->m_subModels + nSubModel, i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
+	for (i = psm->m_nFaces, pmf = psm->m_faces; i; ) {
 		if (bTextured && (nBitmap != pmf->m_nBitmap)) {
 			if (0 > (nBitmap = pmf->m_nBitmap))
 				ogl.SetTexturing (false);
@@ -497,7 +509,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = modelBitmaps [nBitmap];
 				else {
 					bmP = pm->m_textures + nBitmap;
-					ogl.SetBlendMode (psm->m_bGlow ? 2 : 0);
+					ogl.SetBlendMode (psm->m_bFlare ? 2 : 0);
 					if (nTeamColor && bmP->Team () && (0 <= (h = pm->m_teamTextures [nTeamColor % MAX_PLAYER_COLORS]))) {
 						nBitmap = h;
 						bmP = pm->m_textures + nBitmap;
@@ -515,10 +527,10 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			}
 		nIndex = pmf->m_nIndex;
 		if (bHires) {
-			bTransparent = bmP && (psm->m_bGlow || ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0));
+			bTransparent = !bmP ? 0 : psm->m_bGlow ? 2 : ((bmP->Flags () & BM_FLAG_TRANSPARENT) != 0) ? 1 : 0;
 			if (bTransparent != bTransparency) {
 				if (bTransparent)
-					pm->m_bHasTransparency = 1;
+					pm->m_bHasTransparency |= bTransparent;
 				pmf++;
 				i--;
 				continue;
@@ -583,7 +595,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 		}
 	}
-if (bAnimate)
+if (bAnimate || psm->m_bBillboard)
 	glPopMatrix ();
 #if 1
 if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
@@ -601,8 +613,8 @@ void G3DrawModel (CObject *objP, short nModel, short nSubModel, CArray<CBitmap*>
 	CDynLight*				prl;
 	int						nPass, iLight, nLights, nLightRange;
 	int						bBright = objP && (objP->info.nType == OBJ_MARKER);
-	int						bEmissive = objP && (objP->info.nType == OBJ_WEAPON) && 
-												gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId];
+	int						bEmissive = objP && ((bTransparency > 1) || 
+														   ((objP->info.nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->info.nId] && !gameData.objs.bIsMissile [objP->info.nId]));
 	int						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
@@ -897,8 +909,12 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	}
 #if 1 //!DBG
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
-if ((objP->info.nType != OBJ_DEBRIS) && bHires && pm->m_bHasTransparency)
-	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+if ((objP->info.nType != OBJ_DEBRIS) && bHires) {
+	if (pm->m_bHasTransparency & 1)
+		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+	if (pm->m_bHasTransparency & 2)
+		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles);
+	}
 #endif
 ogl.SetTexturing (false);
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);

@@ -62,6 +62,8 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm->m_faces = pmf;
 	psm->m_nFaces = nFaces = psa->m_nFaces;
 	psm->m_bGlow = psa->m_bGlow;
+	psm->m_bFlare = psa->m_bFlare;
+	psm->m_bBillboard = psa->m_bBillboard;
 	psm->m_bRender = psa->m_bRender;
 	psm->m_bThruster = psa->m_bThruster;
 	psm->m_bWeapon = psa->m_bWeapon;

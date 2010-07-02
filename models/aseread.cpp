@@ -31,7 +31,7 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
-#define MODEL_DATA_VERSION 1001	//must start with something bigger than the biggest model number
+#define MODEL_DATA_VERSION 1003	//must start with something bigger than the biggest model number
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -177,6 +177,8 @@ m_nTexCoord = 0;
 m_nIndex = 0;
 m_bRender = 1;
 m_bGlow = 0;
+m_bFlare = 0;
+m_bBillboard = 0;
 m_bThruster = 0;
 m_bWeapon = 0;
 m_bHeadlight = 0;
@@ -446,9 +448,13 @@ while ((pszToken = ReadLine (cf))) {
 		strcpy (m_szName, StrTok (" \t\""));
 		if (strstr (m_szName, "$GUNPNT"))
 			m_nGunPoint = atoi (m_szName + 8);
-		if (strstr (m_szName, "GLOW") != NULL)
+		else if (strstr (m_szName, "$GLOW") != NULL)
 			m_bGlow = 1;
-		if (strstr (m_szName, "$BULLETS"))
+		else if (strstr (m_szName, "$FLARE") != NULL)
+			m_bGlow = 
+			m_bFlare = 
+			m_bBillboard = 1;
+		else if (strstr (m_szName, "$BULLETS"))
 			m_nBullets = 1;
 		else if (strstr (m_szName, "$DUMMY") != NULL)
 			m_bRender = 0;
@@ -491,7 +497,8 @@ while ((pszToken = ReadLine (cf))) {
 			}
 		else if (strstr (m_szName, "$LIGHTBEAM") != NULL) {
 			m_bHeadlight = 1;
-			m_bGlow = 1;
+			m_bGlow = 
+			m_bFlare = 1;
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {
@@ -800,6 +807,8 @@ cf.WriteShort (m_nTexCoord);
 cf.WriteShort (m_nIndex);
 cf.WriteByte (sbyte (m_bRender));
 cf.WriteByte (sbyte (m_bGlow));
+cf.WriteByte (sbyte (m_bFlare));
+cf.WriteByte (sbyte (m_bBillboard));
 cf.WriteByte (sbyte (m_bThruster));
 cf.WriteByte (sbyte (m_bWeapon));
 cf.WriteByte (sbyte (m_bHeadlight));
@@ -868,6 +877,8 @@ m_nTexCoord = cf.ReadShort ();
 m_nIndex = cf.ReadShort ();
 m_bRender = ubyte (cf.ReadByte ());
 m_bGlow = ubyte (cf.ReadByte ());
+m_bFlare = ubyte (cf.ReadByte ());
+m_bBillboard = ubyte (cf.ReadByte ());
 m_bThruster = ubyte (cf.ReadByte ());
 m_bWeapon = ubyte (cf.ReadByte ());
 m_bHeadlight = ubyte (cf.ReadByte ());

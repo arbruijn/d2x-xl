@@ -175,6 +175,10 @@ int CFace::Compare (const CFace* pf, const CFace* pm)
 {
 if (pf == pm)
 	return 0;
+if (pf->m_bBillboard < pm->m_bBillboard)
+	return -1;
+if (pf->m_bBillboard > pm->m_bBillboard)
+	return 1;
 if (pf->m_textureP && (pf->m_nBitmap >= 0) && (pm->m_nBitmap >= 0)) {
 	if (pf->m_textureP->BPP () < pm->m_textureP->BPP ())
 		return -1;
