@@ -182,7 +182,7 @@ m_bBillboard = 0;
 m_bThruster = 0;
 m_bWeapon = 0;
 m_bHeadlight = 0;
-m_bMslMount = 0;
+m_bBombMount = 0;
 m_nGun = -1;
 m_nBomb = -1;
 m_nMissile = -1;
@@ -465,8 +465,8 @@ while ((pszToken = ReadLine (cf))) {
 			}
 		if (strstr (m_szName, "$GUNPNT"))
 			m_nGunPoint = atoi (m_szName + 8);
-		if (strstr (m_szName, "$MSLMOUNT"))
-			m_bMslMount = 1;
+		if (strstr (m_szName, "$BOMBMOUNT"))
+			m_bBombMount = 1;
 		else if (strstr (m_szName, "$BULLETS"))
 			m_nBullets = 1;
 		else if (strstr (m_szName, "$DUMMY") != NULL)
@@ -825,7 +825,7 @@ cf.WriteByte (sbyte (m_bBillboard));
 cf.WriteByte (sbyte (m_bThruster));
 cf.WriteByte (sbyte (m_bWeapon));
 cf.WriteByte (sbyte (m_bHeadlight));
-cf.WriteByte (sbyte (m_bMslMount));
+cf.WriteByte (sbyte (m_bBombMount));
 cf.WriteByte (m_nGun);
 cf.WriteByte (m_nBomb);
 cf.WriteByte (m_nMissile);
@@ -896,7 +896,7 @@ m_bBillboard = ubyte (cf.ReadByte ());
 m_bThruster = ubyte (cf.ReadByte ());
 m_bWeapon = ubyte (cf.ReadByte ());
 m_bHeadlight = ubyte (cf.ReadByte ());
-m_bMslMount = ubyte (cf.ReadByte ());
+m_bBombMount = ubyte (cf.ReadByte ());
 m_nGun = cf.ReadByte ();
 m_nBomb = cf.ReadByte ();
 m_nMissile = cf.ReadByte ();

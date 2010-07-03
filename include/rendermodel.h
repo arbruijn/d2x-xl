@@ -108,7 +108,7 @@ class CSubModel {
 		ubyte						m_bWeapon :1;
 		ubyte						m_bHeadlight :1;
 		ubyte						m_bBullets :1;
-		ubyte						m_bMslMount :1;
+		ubyte						m_bBombMount :1;
 		ubyte						m_bGlow :2;
 		ubyte						m_nType :2;
 		char						m_nGunPoint;

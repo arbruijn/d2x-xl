@@ -274,7 +274,6 @@ mtP->nCount++;
 //------------------------------------------------------------------------------
 
 static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
-static int bCenterMsls [] = {0, 0, 1, 1, 0, 0, 1, 1, 0, 1};
 
 int G3FilterSubModel (CObject *objP, RenderModel::CSubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -288,7 +287,7 @@ if (psm->m_bBullets)
 	return 1;
 if (psm->m_bHeadlight)
 	return !HeadlightIsOn (nId);
-if (psm->m_bMslMount)
+if (psm->m_bBombMount)
 	return (nBombId == 0);
 if (psm->m_bWeapon) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nId;
