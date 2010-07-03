@@ -918,11 +918,13 @@ G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHire
 if ((objP->info.nType != OBJ_DEBRIS) && bHires) {
 	if (pm->m_bHasTransparency & 1)
 		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
+#if 1
 	if (pm->m_bHasTransparency & 2) {
 		ogl.SetFaceCulling (false);
 		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles);
 		ogl.SetFaceCulling (true);
 		}
+#endif
 	}
 #endif
 ogl.SetTexturing (false);

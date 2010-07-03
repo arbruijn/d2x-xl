@@ -211,7 +211,11 @@ int HUDInitMessageVA (ubyte nType, const char * format, va_list args)
 					*pszLastMsg = NULL;
 	char			con_message [HUD_MESSAGE_LENGTH + 3];
 
+#if DBG
+if (!gameOpts->render.cockpit.bHUDMsgs)
+#else
 if (!gameOpts->render.cockpit.bHUDMsgs || cockpit->Hide ())
+#endif
 	return 0;
 nModexHUDMsgs = 2;
 if ((pMsgs->nLast < 0) || (pMsgs->nLast >= HUD_MAX_MSGS))
@@ -344,7 +348,10 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 
 void _CDECL_ HUDMessage (int nClass, const char *format, ...)
 {
-if (gameOpts->render.cockpit.bHUDMsgs && !cockpit->Hide () &&
+if (gameOpts->render.cockpit.bHUDMsgs && 
+#if !DBG
+	 !cockpit->Hide () &&
+#endif
 	 (!bNoMsgRedundancy || (nClass & MSGC_NOREDUNDANCY)) &&
 	 (!bMSGPlayerMsgs || !(gameData.app.nGameMode & GM_MULTI) || (nClass & MSGC_PLAYERMESSAGES))) {
 		va_list vp;

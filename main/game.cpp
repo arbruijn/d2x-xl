@@ -609,9 +609,7 @@ AutoScreenshot ();
 
 //	-----------------------------------------------------------------------------
 
-#if 1
-
-#define PHYSICS_FPS	40
+#if PHYSICS_FPS >= 0
 
 int GameFrame (int bRenderFrame, int bReadControls, int fps)
 {
@@ -638,12 +636,14 @@ if (i) {
 		controls.Reset ();
 	gameStates.app.tick40fps.bTick = 1;
 	while (i--) {
+		HUDMessage (0, "physics tick %d", i);
 		gameData.objs.nFrameCount++;
 		h = DoGameFrame (0, 0, 0);
 		controls.ResetTriggers ();
 		gameStates.app.tick40fps.bTick = 0;
 		if (0 >= h)
 			return h;
+		gameStates.input.bSkipControls = 1;
 		}
 	gameStates.app.tick40fps.bTick = 1;
 	DoEffectsFrame ();
@@ -653,6 +653,7 @@ if (i) {
 else {
 	CalcFrameTime ();
 	}
+gameStates.input.bSkipControls = 0;
 gameStates.app.tick40fps.bTick = 0;
 return h;
 }
@@ -946,7 +947,11 @@ else
 //-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
+#if PHYSICS_FPS >= 0
 int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+#else
+int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+#endif
 {
 gameStates.app.bGameRunning = 1;
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;

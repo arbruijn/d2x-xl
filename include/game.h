@@ -21,6 +21,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_FRAMERATE		120
 
+#define PHYSICS_FPS			-1
+
 // from mglobal.c
 #define CV_NONE            0
 #define CV_ESCORT          1

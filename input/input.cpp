@@ -1161,7 +1161,7 @@ else {
 
 int CControlsManager::CapSampleRate (void)
 {
-#if 0
+#if PHYSICS_FPS >= 0
 	float t = float (SDL_GetTicks ());
 
 if (t - m_lastTick < 1000.0f / 30.0f)

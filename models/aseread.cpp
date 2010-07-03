@@ -31,7 +31,7 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
-#define MODEL_DATA_VERSION 1003	//must start with something bigger than the biggest model number
+#define MODEL_DATA_VERSION 1004	//must start with something bigger than the biggest model number
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -457,10 +457,11 @@ while ((pszToken = ReadLine (cf))) {
 		strcpy (m_szName, StrTok (" \t\""));
 		if (strstr (m_szName, "GLOW") != NULL)
 			m_bGlow = 1;
-		if (strstr (m_szName, "FLARE") != NULL)
-			m_bGlow = 
+		if (strstr (m_szName, "FLARE") != NULL) {
+			m_bGlow =
 			m_bFlare = 
 			m_bBillboard = 1;
+			}
 		if (strstr (m_szName, "$GUNPNT"))
 			m_nGunPoint = atoi (m_szName + 8);
 		else if (strstr (m_szName, "$BULLETS"))
