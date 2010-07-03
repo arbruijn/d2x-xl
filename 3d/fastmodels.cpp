@@ -480,8 +480,10 @@ for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, p
 							 bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 #endif
 // render the faces
+#if 0
 psm = pm->m_subModels + nSubModel;
 if (psm->m_bBillboard)
+#endif
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #if 0
 	if (vOffsetP && (nSubModel == nExclusive))
@@ -489,14 +491,20 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 	psm = pm->m_subModels + nSubModel;
 	if (!bAnimate && psm->m_bBillboard) {
+		glMatrixMode (GL_MODELVIEW);
+		CFloatVector v;
+		v.SetZero ();
+		transformation.Transform (v, v);
 		glPushMatrix ();
 		float modelView [16];
 		glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
 		// undo all rotations
 		// beware all scaling is lost as well 
+#if 1
 		for (int i = 0; i < 3; i++) 
 			 for (int j = 0; j < 3; j++)
 				modelView [i * 4 + j] = (i == j) ? 1.0f : 0.0f;
+#endif
 		glLoadMatrixf (modelView);
 		}
 	ogl.SetTexturing (false);
@@ -913,8 +921,11 @@ G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHire
 if ((objP->info.nType != OBJ_DEBRIS) && bHires) {
 	if (pm->m_bHasTransparency & 1)
 		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
-	if (pm->m_bHasTransparency & 2)
+	if (pm->m_bHasTransparency & 2) {
+		ogl.SetFaceCulling (false);
 		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 2, nGunId, nBombId, nMissileId, nMissiles);
+		ogl.SetFaceCulling (true);
+		}
 	}
 #endif
 ogl.SetTexturing (false);

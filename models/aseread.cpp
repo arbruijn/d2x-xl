@@ -226,14 +226,20 @@ return CModel::Error ("unexpected end of file");
 
 int CSubModel::ReadMeshVertexList (CFile& cf)
 {
-	CVertex	*pv;
-	int					i;
+	CVertex*	pv;
+	int		i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
 while ((pszToken = ReadLine (cf))) {
-	if (*pszToken == '}')
+	if (*pszToken == '}') {
+		if (m_bBillboard) {
+			m_vOffset /= m_nVerts;
+			for (i = 0; i < m_nVerts; i++)
+				m_verts [i].m_vertex -= m_vOffset;
+			}
 		return 1;
+		}
 	if (!strcmp (pszToken, "*MESH_VERTEX")) {
 		if (!m_verts)
 			return CModel::Error ("no vertices found");
@@ -242,6 +248,9 @@ while ((pszToken = ReadLine (cf))) {
 			return CModel::Error ("invalid vertex number");
 		pv = m_verts + i;
 		ReadVector (cf, &pv->m_vertex);
+		if (m_bBillboard)
+			m_vOffset += pv->m_vertex;
+		//pv->m_vertex -= m_vOffset;
 		}
 	}
 return CModel::Error ("unexpected end of file");
@@ -446,14 +455,14 @@ while ((pszToken = ReadLine (cf))) {
 		return 1;
 	if (!strcmp (pszToken, "*NODE_NAME")) {
 		strcpy (m_szName, StrTok (" \t\""));
-		if (strstr (m_szName, "$GUNPNT"))
-			m_nGunPoint = atoi (m_szName + 8);
-		else if (strstr (m_szName, "$GLOW") != NULL)
+		if (strstr (m_szName, "GLOW") != NULL)
 			m_bGlow = 1;
-		else if (strstr (m_szName, "$FLARE") != NULL)
+		if (strstr (m_szName, "FLARE") != NULL)
 			m_bGlow = 
 			m_bFlare = 
 			m_bBillboard = 1;
+		if (strstr (m_szName, "$GUNPNT"))
+			m_nGunPoint = atoi (m_szName + 8);
 		else if (strstr (m_szName, "$BULLETS"))
 			m_nBullets = 1;
 		else if (strstr (m_szName, "$DUMMY") != NULL)
