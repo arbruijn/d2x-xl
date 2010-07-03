@@ -492,9 +492,6 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	psm = pm->m_subModels + nSubModel;
 	if (!bAnimate && psm->m_bBillboard) {
 		glMatrixMode (GL_MODELVIEW);
-		CFloatVector v;
-		v.SetZero ();
-		transformation.Transform (v, v);
 		glPushMatrix ();
 		float modelView [16];
 		glGetFloatv (GL_MODELVIEW_MATRIX, modelView);
