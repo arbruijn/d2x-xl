@@ -288,6 +288,8 @@ if (psm->m_bBullets)
 	return 1;
 if (psm->m_bHeadlight)
 	return !HeadlightIsOn (nId);
+if (psm->m_bMslMount)
+	return (nBombId == 0);
 if (psm->m_bWeapon) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nId;
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
@@ -342,8 +344,6 @@ if (psm->m_bWeapon) {
 						 (nLaunchPos == (nMslPos [(int) psm->m_nWeaponPos]));
 				}
 			}
-		else if (psm->m_bMslMount && !nBombId)
-			return 0;
 		else
 			return 1;
 		}
