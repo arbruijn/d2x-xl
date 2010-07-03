@@ -1005,7 +1005,9 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	}
 ProcessSmartMinesFrame ();
 DoSeismicStuff ();
-//DoEffectsFrame ();
+#if PHYSICS_FPS < 0
+DoEffectsFrame ();
+#endif
 DoAmbientSounds ();
 DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
