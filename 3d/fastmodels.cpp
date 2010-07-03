@@ -343,7 +343,7 @@ if (psm->m_bWeapon) {
 						 (nLaunchPos == (nMslPos [(int) psm->m_nWeaponPos]));
 				}
 			}
-		else if (psm->m_nMslMount && bCenterMsl)
+		else if (psm->m_bMslMount && bCenterMsl)
 			return 0;
 		else
 			return 1;
