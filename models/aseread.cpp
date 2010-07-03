@@ -31,7 +31,7 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
-#define MODEL_DATA_VERSION 1004	//must start with something bigger than the biggest model number
+#define MODEL_DATA_VERSION 1005	//must start with something bigger than the biggest model number
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
