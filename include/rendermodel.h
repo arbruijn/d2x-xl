@@ -102,13 +102,14 @@ class CSubModel {
 		int						m_nRad;
 		ushort					m_nAngles;
 		ubyte						m_bRender :1;
-		ubyte						m_bGlow :2;
 		ubyte						m_bFlare :1;
 		ubyte						m_bBillboard :1;
 		ubyte						m_bThruster :1;
 		ubyte						m_bWeapon :1;
 		ubyte						m_bHeadlight :1;
 		ubyte						m_bBullets :1;
+		ubyte						m_bMslMount :1;
+		ubyte						m_bGlow :2;
 		ubyte						m_nType :2;
 		char						m_nGunPoint;
 		char						m_nGun;

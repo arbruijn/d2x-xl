@@ -274,6 +274,7 @@ mtP->nCount++;
 //------------------------------------------------------------------------------
 
 static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
+static int bCenterMsls [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
 int G3FilterSubModel (CObject *objP, RenderModel::CSubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
@@ -292,7 +293,8 @@ if (psm->m_bWeapon) {
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
 	int		bQuadLasers = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bQuadLasers;
-	int		bCenter = bCenterGuns [nGunId];
+	int		bCenterGun = bCenterGuns [nGunId];
+	int		bCenterMsl = bCenterMsls [nMissileId];
 	int		nWingtip = bQuadLasers ? bSuperLasers : 2; //gameOpts->render.ship.nWingtip;
 
 	gameOpts->render.ship.nWingtip = nWingtip;
@@ -315,12 +317,12 @@ if (psm->m_bWeapon) {
 		else if (psm->m_nGun == LASER_INDEX + 1) {
 			if (nWingtip)
 				return 1;
-			return !bCenter && (psm->m_nWeaponPos < 3);
+			return !bCenterGun && (psm->m_nWeaponPos < 3);
 			}
 		else if (psm->m_nGun == SUPER_LASER_INDEX + 1) {
 			if (nWingtip != 1)
 				return 1;
-			return !bCenter && (psm->m_nWeaponPos < 3);
+			return !bCenterGun && (psm->m_nWeaponPos < 3);
 			}
 		else if (!psm->m_nGun) {
 			if (bLasers && bQuadLasers)
@@ -341,6 +343,8 @@ if (psm->m_bWeapon) {
 						 (nLaunchPos == (nMslPos [(int) psm->m_nWeaponPos]));
 				}
 			}
+		else if (psm->m_nMslMount && bCenterMsl)
+			return 0;
 		else
 			return 1;
 		}
