@@ -200,7 +200,7 @@ if (gameStates.limitFPS.bJoystick) {
 	if ((LastReadTime + JOYSTICK_READ_TIME > ctime) && (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)) {
 		if ((ctime < 0) && (LastReadTime >= 0))
 			LastReadTime = ctime;
-		bUseJoystick=1;
+		bUseJoystick = 1;
 		}
 	else if (gameOpts->input.joystick.bUse) {
 		LastReadTime = ctime;
@@ -1178,10 +1178,8 @@ if (gameData.app.bGamePaused)
 	GetSlowTicks ();
 m_frameCount++;
 m_pollTime += gameData.time.xFrame;
-#if 0
 if (!gameStates.app.tick40fps.bTick)
 	return 1;
-#endif
 m_frameTime = float (m_pollTime) / m_frameCount;
 m_maxTurnRate = int (m_frameTime);
 #endif

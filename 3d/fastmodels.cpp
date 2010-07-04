@@ -302,7 +302,7 @@ if (psm->m_bWeapon) {
 		nWingtip = bLasers && bSuperLasers && bQuadLasers;
 	else if (nWingtip == 1)
 		nWingtip = !bLasers || bSuperLasers;
-
+	
 	if (EGI_FLAG (bShowWeapons, 0, 1, 0)) {
 		if (psm->m_nGun == nGunId + 1) {
 			if (psm->m_nGun == FUSION_INDEX + 1) {
