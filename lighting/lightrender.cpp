@@ -339,6 +339,8 @@ if (gameStates.render.nLightingMethod) {
 	short					i, j;
 	CDynLight*			prl;
 	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
+	fix					xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
+	CFixVector			c = SEGMENTS [nSegment].Center ();
 
 	//m_data.iStaticLights [nThread] = m_data.index [0][nThread].nActive;
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
@@ -356,6 +358,9 @@ if (gameStates.render.nLightingMethod) {
 			if (!bStatic)
 				continue;
 			}
+		prl->render.xDistance = (fix) ((CFixVector::Dist (c, prl->info.vPos) /*- F2X (prl->info.fRad)*/) / (prl->info.fRange * max (prl->info.fRad, 1.0f)));
+		if (prl->render.xDistance > xMaxLightRange)
+			continue;
 		SetActive (activeLightsP, prl, 3, nThread);
 		}
 	}
