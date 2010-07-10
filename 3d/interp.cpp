@@ -368,7 +368,7 @@ if (!mtP->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
 		if (nSize > (h = CFixVector::Dist(v, pointList [i]->p3_src)))
 			nSize = h;
-	mtP->fSize = X2F (nSize);// * 1.25f;
+	mtP->fSize [i] = X2F (nSize);// * 1.25f;
 	}
 }
 

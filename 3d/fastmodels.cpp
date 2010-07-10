@@ -259,14 +259,15 @@ if (vOffsetP)
 	v -= vo;
 mtP->vDir [nCount] = *vNormal;
 mtP->vDir [nCount] = -mtP->vDir [nCount];
-if (!nCount) {
+//if (!nCount) 
+	{
 	if (!pmf)
-		mtP->fSize = X2F (nRad);
+		mtP->fSize [nCount] = X2F (nRad);
 	else {
 		for (i = 0, nSize = 1000000000; i < j; i++)
 			if (nSize > (h = CFloatVector3::Dist (v, pmv [i].m_vertex)))
 				nSize = h;
-		mtP->fSize = nSize;// * 1.25f;
+		mtP->fSize [nCount] = nSize;// * 1.25f;
 		}
 	}
 mtP->nCount = -(++nCount);

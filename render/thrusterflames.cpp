@@ -142,7 +142,10 @@ if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !Ge
 		m_pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = m_pt->path.GetPoint ();
 		}
-	ti.fSize = (ti.fLength + 1) / 2;
+	ti.fLength [0] =
+	ti.fLength [1] = ti.fScale;
+	ti.fSize [0] =
+	ti.fSize [1] = (ti.fLength [0] + 1) / 2;
 	m_nThrusters = 2;
 	CalcPosOnShip (objP, ti.vPos);
 	ti.mtP = NULL;
@@ -154,16 +157,17 @@ else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 	if (bAfterburnerBlob)
 		nObjRad *= 2;
 	if (objP->info.nId == EARTHSHAKER_ID)
-		ti.fSize = 1.0f;
+		ti.fSize [0] = 1.0f;
 	else if ((objP->info.nId == MEGAMSL_ID) || (objP->info.nId == EARTHSHAKER_MEGA_ID))
-		ti.fSize = 0.8f;
+		ti.fSize [0] = 0.8f;
 	else if (objP->info.nId == SMARTMSL_ID)
-		ti.fSize = 0.6f;
+		ti.fSize [0] = 0.6f;
 	else
-		ti.fSize = 0.5f;
+		ti.fSize [0] = 0.5f;
+	ti.fLength [0] = ti.fSize [0] * (1.0f + ti.fScale);
 	m_nThrusters = 1;
 	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
-		ti.fLength /= 2;
+		ti.fLength [0] /= 2;
 	if (!gameData.models.vScale.IsZero ())
 		ti.vPos [0] *= gameData.models.vScale;
 	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-nObjRad);
@@ -184,7 +188,10 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			m_pt = gameData.render.thrusters + objP->info.nId;
 			ti.pp = m_pt->path.GetPoint ();
 			}
-		ti.fSize = (ti.fLength + 1) / 2;
+		ti.fLength [0] =
+		ti.fLength [1] = ti.fScale;
+		ti.fSize [0] = 
+		ti.fSize [1] = (ti.fLength [0] + 1) / 2;
 		m_nThrusters = 2;
 		CalcPosOnShip (objP, ti.vPos);
 		}
@@ -197,6 +204,9 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 		else
 			viewP = objP->View ();
 		for (i = 0; i < m_nThrusters; i++) {
+			ti.fSize [i] = ti.mtP->fSize [i];
+			float h = (1.0f + ti.fScale) / 2.0f;
+			ti.fLength [i] = ti.fSize [i] * h * h;
 			ti.vPos [i] = *viewP * ti.mtP->vPos [i];
 			if (!gameData.models.vScale.IsZero ())
 				ti.vPos [i] *= gameData.models.vScale;
@@ -211,7 +221,6 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			//a [HA] = a1 [HA] - a2 [HA];
 			ti.mRot [i] = CFixMatrix::Create (a);
 			}
-		ti.fSize = ti.mtP->fSize;
 		if (bMissile)
 			m_nThrusters = 1;
 		}
@@ -271,19 +280,19 @@ transparencyRenderer.AddLightTrail (thruster.Bitmap (), vCap, tcCap [m_bPlayer],
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::RenderCap (void)
+void CThrusterFlames::RenderCap (int i)
 {
 if (thruster.Load ()) {
 	CFloatVector	verts [4];
-	float				z = (m_vFlame [0][0][Z] + m_vFlame [1][0][Z]) / 2.0f * m_ti.fLength;
-	float				scale = m_ti.fSize * 1.6666667f;
+	float				z = (m_vFlame [0][0][Z] + m_vFlame [1][0][Z]) / 2.0f * m_ti.fLength [i];
+	float				scale = m_ti.fSize [i] * 1.6666667f;
 
 	// choose 4 vertices from the widest ring of the flame
 	for (int i = 0; i < 4; i++) {
 		verts [i] = m_vFlame [5][4 * i];
-		verts [i] [X] *= scale;
-		verts [i] [Y] *= scale;
-		verts [i] [Z] = z;
+		verts [i][X] *= scale;
+		verts [i][Y] *= scale;
+		verts [i][Z] = z;
 		}
 	glColor3f (1,1,1);
 	ogl.RenderQuad (thruster.Bitmap (), verts, 3, tcCap [m_bPlayer]);
@@ -294,14 +303,14 @@ if (thruster.Load ()) {
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::Render3D (void)
+void CThrusterFlames::Render3D (int i)
 {
 glColor3f (1,1,1);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, &m_flameTexCoord [m_bPlayer]);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_flameVerts);
 glPushMatrix ();
-glScalef (m_ti.fSize, m_ti.fSize, m_ti.fLength);
+glScalef (m_ti.fSize [i], m_ti.fSize [i], m_ti.fLength [i]);
 OglDrawArrays (GL_QUAD_STRIP, 0, FLAME_VERT_COUNT);
 glPopMatrix ();
 }
@@ -350,12 +359,13 @@ if (m_pt)
 m_bSpectate = SPECTATOR (objP);
 
 m_ti.pp = NULL;
+m_ti.fScale = fSpeed / 60.0f + 0.5f;
+HUDMessage (0, "%1.2f", m_ti.fScale);
+//if (m_ti.fScale < m_ti.fSize / 2)
+//	m_ti.fScale = m_ti.fSize / 2;
+m_ti.fScale += float (rand () % 100) / 1000.0f;
 if (!CalcPos (objP))
 	return false;
-m_ti.fLength = fSpeed / 60.0f + 0.5f;
-if (m_ti.fLength < m_ti.fSize / 2)
-	m_ti.fLength = m_ti.fSize / 2;
-m_ti.fLength += float (rand () % 100) / 1000.0f;
 
 m_bPlayer = (objP->info.nType == OBJ_PLAYER);
 
@@ -387,12 +397,13 @@ if (m_nStyle == 1) {	//2D
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
-	if (!gameData.models.vScale.IsZero ())
-		m_ti.fSize *= X2F (gameData.models.vScale [Z]);
-	m_ti.fLength *= 4 * m_ti.fSize;
-	m_ti.fSize *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
-	for (int i = 0; i < m_nThrusters; i++)
-		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize, m_ti.fLength, &tcColor);
+	//m_ti.fLength *= 4 * m_ti.fSize;
+	for (int i = 0; i < m_nThrusters; i++) {
+		m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
+		if (!gameData.models.vScale.IsZero ())
+			m_ti.fSize [i] *= X2F (gameData.models.vScale [Z]);
+		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i], &tcColor);
+		}
 	}
 else { //3D
 	Create ();
@@ -402,22 +413,14 @@ else { //3D
 	ogl.SetTransform (1);
 	ogl.SetDepthWrite (false);
 
-	m_ti.fLength /= 2;
+	//m_ti.fLength /= 2;
 
 	for (int i = 0; i < m_nThrusters; i++) {
 		transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
-#if 0
-		CAngleVector a1 = objP->info.position.mOrient.FVec ().ToAnglesVec ();
-		CAngleVector a2 = m_ti.vDir [i].ToAnglesVec ();
-		CAngleVector a;
-		a [PA] = a1 [PA] - a2 [PA];
-		a [BA] = a1 [BA] - a2 [BA];
-		a [HA] = a1 [HA] - a2 [HA];
-#endif
 		transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
 		// render a cap for the thruster flame at its base
-		RenderCap ();
-		Render3D ();
+		RenderCap (i);
+		Render3D (i);
 		transformation.End ();
 		transformation.End ();
 		}

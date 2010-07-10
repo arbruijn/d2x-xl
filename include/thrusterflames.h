@@ -14,8 +14,9 @@ typedef struct tThrusterInfo {
 	CFixVector			vPos [MAX_THRUSTERS];
 	CFixVector			vDir [MAX_THRUSTERS];
 	CFixMatrix			mRot [MAX_THRUSTERS];
-	float					fSize;
-	float					fLength;
+	float					fSize [MAX_THRUSTERS];
+	float					fLength [MAX_THRUSTERS];
+	float					fScale;
 	tPathPoint*			pp;
 	CModelThrusters*	mtP;
 }  tThrusterInfo;
@@ -44,8 +45,8 @@ class CThrusterFlames {
 	private:
 		void Create (void);
 		void CalcPosOnShip (CObject *objP, CFixVector *vPos);
-		void RenderCap (void);
-		void Render3D (void);
+		void RenderCap (int i);
+		void Render3D (int i);
 		bool Setup (CObject *objP);
 };
 
