@@ -223,12 +223,12 @@ void G3GetThrusterPos (CObject *objP, short nModel, RenderModel::CFace *pmf, CFi
 if (!objP)
 	return;
 if (nCount < 0) {
-	if (nCount <= MAX_THRUSTERS)
-		return;
 	if (pm->m_bRendered && gameData.models.vScale.IsZero ())
 		return;
 	nCount = 0;
 	}	
+else if (nCount >= MAX_THRUSTERS)
+	return;
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
 if ((nModel != 108) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f))
 	return;
@@ -923,7 +923,9 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	}
 #if 1 //!DBG
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
-gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
+pm->m_bRendered = 1;
+if (gameData.models.thrusters [nModel].nCount < 0)
+	gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
 if ((objP->info.nType != OBJ_DEBRIS) && bHires) {
 	if (pm->m_bHasTransparency & 1)
 		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
@@ -958,7 +960,6 @@ if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)
 if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (1.0f);
 #endif
-pm->m_bRendered = 1;
 ogl.ClearError (0);
 PROF_END(ptRenderObjectsFast)
 }

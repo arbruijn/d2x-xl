@@ -404,12 +404,14 @@ else { //3D
 
 	for (int i = 0; i < m_nThrusters; i++) {
 		transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
+#if 0
 		CAngleVector a1 = objP->info.position.mOrient.FVec ().ToAnglesVec ();
 		CAngleVector a2 = m_ti.vDir [i].ToAnglesVec ();
 		CAngleVector a;
 		a [PA] = a1 [PA] - a2 [PA];
 		a [BA] = a1 [BA] - a2 [BA];
 		a [HA] = a1 [HA] - a2 [HA];
+#endif
 		transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
 		// render a cap for the thruster flame at its base
 		RenderCap ();
