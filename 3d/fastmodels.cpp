@@ -285,6 +285,8 @@ if (psm->m_nGunPoint >= 0)
 	return 1;
 if (psm->m_bBullets)
 	return 1;
+if (psm->m_bThruster > 1)
+	return 1;
 if (psm->m_bHeadlight)
 	return !HeadlightIsOn (nId);
 if (psm->m_bBombMount)
@@ -376,7 +378,7 @@ int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 
 if (!psm->m_nFrames)
 	return 0;
-if (psm->m_bThruster == 2) {
+if (psm->m_bThruster == 1) {
 	nTimeout = gameStates.gameplay.slowmo [0].fSpeed;
 	glPushMatrix ();
 	CFloatVector vCenter;
@@ -453,7 +455,7 @@ if (objP->info.nType == OBJ_PLAYER)
 else
 	nTeamColor = 0;
 #if 1
-if (psm->m_bThruster) {
+if (psm->m_bThruster == 1) {
 	if (!nPass) {
 		vo = psm->m_vOffset + psm->m_vCenter;
 		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->m_faces->m_vNormal, psm->m_nRad, bHires);

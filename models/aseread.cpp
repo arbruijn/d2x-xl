@@ -472,22 +472,18 @@ while ((pszToken = ReadLine (cf))) {
 		else if (strstr (m_szName, "$DUMMY") != NULL)
 			m_bRender = 0;
 		else if (strstr (m_szName, "$THRUSTER-") != NULL) {
-			if (m_szName [10] == 'F')
+			if (m_szName [10] == 'R') // rear
 				m_bThruster |= 1;
-			else if (m_szName [10] == 'B')
+			else if (m_szName [10] == 'F') // front
 				m_bThruster |= 2;
-			if (m_szName [11] == 'L')
+			if (m_szName [11] == 'L') // left
 				m_bThruster |= 4;
-			else if (m_szName [11] == 'R')
+			else if (m_szName [11] == 'R') // right
 				m_bThruster |= 8;
-			if (m_szName [12] == 'T')
+			if (m_szName [12] == 'T') // top
 				m_bThruster |= 16;
-			else if (m_szName [12] == 'B')
+			else if (m_szName [12] == 'B') // bottom
 				m_bThruster |= 32;
-			if (m_bThruster != 2)
-				m_bGlow =
-				m_bFlare = 
-				m_bBillboard = 1;
 			}
 		else if (strstr (m_szName, "$WINGTIP") != NULL) {
 			m_bWeapon = 1;
