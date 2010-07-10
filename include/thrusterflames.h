@@ -11,8 +11,8 @@
 #define	FLAME_VERT_COUNT	((THRUSTER_SEGS - 1) * (RING_SEGS + 1) * 2)
 
 typedef struct tThrusterInfo {
-	CFixVector			vPos [2];
-	CFixVector			vDir [2];
+	CFixVector			vPos [8];
+	CFixVector			vDir [8];
 	float					fSize;
 	float					fLength;
 	tPathPoint*			pp;
