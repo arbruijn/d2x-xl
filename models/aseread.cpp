@@ -31,7 +31,7 @@ static int bErrMsg = 0;
 
 using namespace ASE;
 
-#define MODEL_DATA_VERSION 1005	//must start with something bigger than the biggest model number
+#define MODEL_DATA_VERSION 1006	//must start with something bigger than the biggest model number
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -471,8 +471,20 @@ while ((pszToken = ReadLine (cf))) {
 			m_nBullets = 1;
 		else if (strstr (m_szName, "$DUMMY") != NULL)
 			m_bRender = 0;
-		else if (strstr (m_szName, "$THRUSTER") != NULL)
-			m_bThruster = 1;
+		else if (strstr (m_szName, "$THRUSTER-") != NULL) {
+			if (m_szName [10] == 'F')
+				m_bThruster |= 1;
+			else if (m_szName [10] == 'B')
+				m_bThruster |= 2;
+			if (m_szName [11] == 'L')
+				m_bThruster |= 4;
+			else if (m_szName [11] == 'R')
+				m_bThruster |= 8;
+			if (m_szName [12] == 'T')
+				m_bThruster |= 16;
+			else if (m_szName [12] == 'B')
+				m_bThruster |= 32;
+			}
 		else if (strstr (m_szName, "$WINGTIP") != NULL) {
 			m_bWeapon = 1;
 			m_nGun = 0;

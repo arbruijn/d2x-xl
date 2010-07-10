@@ -2280,8 +2280,8 @@ class CModelHitboxes {
 
 class CModelThrusters {
 	public:
-		CFixVector	vPos [2];
-		CFixVector	vDir [2];
+		CFixVector	vPos [8];
+		CFixVector	vDir [8];
 		float			fSize;
 		ushort		nCount;
 	};

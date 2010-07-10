@@ -376,7 +376,7 @@ int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 
 if (!psm->m_nFrames)
 	return 0;
-if (psm->m_bThruster) {
+if (psm->m_bThruster & 3) {
 	nTimeout = gameStates.gameplay.slowmo [0].fSpeed;
 	glPushMatrix ();
 	CFloatVector vCenter;
