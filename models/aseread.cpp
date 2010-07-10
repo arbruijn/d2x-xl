@@ -484,6 +484,10 @@ while ((pszToken = ReadLine (cf))) {
 				m_bThruster |= 16;
 			else if (m_szName [12] == 'B')
 				m_bThruster |= 32;
+			if (m_bThruster != 2)
+				m_bGlow =
+				m_bFlare = 
+				m_bBillboard = 1;
 			}
 		else if (strstr (m_szName, "$WINGTIP") != NULL) {
 			m_bWeapon = 1;

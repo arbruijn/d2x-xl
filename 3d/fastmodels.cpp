@@ -224,7 +224,7 @@ if (!objP)
 	return;
 if (!pm->m_bRendered || !gameData.models.vScale.IsZero ())
 	mtP->nCount = 0;
-else if (mtP->nCount >= (((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT)) ? 2 : 1))
+else if (mtP->nCount >= ((objP->info.nType == OBJ_PLAYER) ? 8 : (objP->info.nType == OBJ_ROBOT) ? 3 : 1))
 	return;
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
 if (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f)
@@ -376,7 +376,7 @@ int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 
 if (!psm->m_nFrames)
 	return 0;
-if (psm->m_bThruster & 3) {
+if (psm->m_bThruster == 2) {
 	nTimeout = gameStates.gameplay.slowmo [0].fSpeed;
 	glPushMatrix ();
 	CFloatVector vCenter;
