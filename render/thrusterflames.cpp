@@ -203,7 +203,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			ti.vPos [i] += posP->vPos;
 			ti.vDir [i] = *viewP * ti.mtP->vDir [i];
 			//CAngleVector a1 = objP->info.position.mOrient.FVec ().ToAnglesVec ();
-			CFixVector v = -ti.mtP->vDir [i];
+			CFixVector v = ti.mtP->vDir [i];
 			CAngleVector a = v.ToAnglesVec ();
 			//CAngleVector a;
 			//a [PA] = a1 [PA] - a2 [PA];
@@ -359,6 +359,7 @@ m_ti.fLength += float (rand () % 100) / 1000.0f;
 
 m_bPlayer = (objP->info.nType == OBJ_PLAYER);
 
+#if 0
 if (m_nThrusters > 1) {
 	CFixVector vRot [2];
 	transformation.Rotate (vRot [0], m_ti.vPos [0], 0);
@@ -369,6 +370,7 @@ if (m_nThrusters > 1) {
 			::Swap (m_ti.vDir [0], m_ti.vDir [1]);
 		}
 	}
+#endif
 return true;
 }
 
