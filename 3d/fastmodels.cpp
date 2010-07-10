@@ -224,7 +224,7 @@ if (!objP)
 	return;
 if (!pm->m_bRendered || !gameData.models.vScale.IsZero ())
 	mtP->nCount = 0;
-else if (mtP->nCount >= ((objP->info.nType == OBJ_PLAYER) ? 8 : (objP->info.nType == OBJ_ROBOT) ? 3 : 1))
+else if (mtP->nCount >= ((objP->info.nType == OBJ_PLAYER) ? MAX_THRUSTERS : (objP->info.nType == OBJ_ROBOT) ? 3 : 1))
 	return;
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
 if (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f)
@@ -455,7 +455,7 @@ if (objP->info.nType == OBJ_PLAYER)
 else
 	nTeamColor = 0;
 #if 1
-if (psm->m_bThruster == 1) {
+if (psm->m_bThruster /*== 1*/) {
 	if (!nPass) {
 		vo = psm->m_vOffset + psm->m_vCenter;
 		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->m_faces->m_vNormal, psm->m_nRad, bHires);

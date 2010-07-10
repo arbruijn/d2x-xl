@@ -2278,10 +2278,12 @@ class CModelHitboxes {
 #endif
 	};
 
+#define MAX_THRUSTERS 16
+
 class CModelThrusters {
 	public:
-		CFixVector	vPos [8];
-		CFixVector	vDir [8];
+		CFixVector	vPos [MAX_THRUSTERS];
+		CFixVector	vDir [MAX_THRUSTERS];
 		float			fSize;
 		ushort		nCount;
 	};
