@@ -217,17 +217,20 @@ void G3GetThrusterPos (CObject *objP, short nModel, RenderModel::CFace *pmf, CFi
 	RenderModel::CVertex*	pmv = NULL;
 	CFloatVector3				v = CFloatVector3::ZERO, vn, vo, vForward = CFloatVector3::Create(0,0,1);
 	CModelThrusters*			mtP = gameData.models.thrusters + nModel;
-	int							i, j = 0;
+	int							i, j = 0, nCount = -mtP->nCount;
 	float							h, nSize;
 
 if (!objP)
 	return;
-if (!pm->m_bRendered || !gameData.models.vScale.IsZero ())
-	mtP->nCount = 0;
-else if (mtP->nCount > 0)
-	return;
+if (nCount < 0) {
+	if (nCount <= MAX_THRUSTERS)
+		return;
+	if (pm->m_bRendered && gameData.models.vScale.IsZero ())
+		return;
+	nCount = 0;
+	}	
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
-if (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f)
+if ((nModel != 108) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f))
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->m_nVerts, pmv = pm->m_faceVerts + pmf->m_nIndex; i < j; i++)
@@ -249,14 +252,14 @@ if (vOffsetP) {
 	}
 #endif
 #endif
-if (mtP->nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (v[Z] == mtP->vPos [0][Z]))
+if (nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (v[Z] == mtP->vPos [0][Z]))
 	return;
-mtP->vPos [mtP->nCount].Assign (v);
+mtP->vPos [nCount].Assign (v);
 if (vOffsetP)
 	v -= vo;
-mtP->vDir [-mtP->nCount] = *vNormal;
-mtP->vDir [-mtP->nCount] = -mtP->vDir [-mtP->nCount];
-if (!mtP->nCount) {
+mtP->vDir [nCount] = *vNormal;
+mtP->vDir [nCount] = -mtP->vDir [nCount];
+if (!nCount) {
 	if (!pmf)
 		mtP->fSize = X2F (nRad);
 	else {
@@ -266,7 +269,7 @@ if (!mtP->nCount) {
 		mtP->fSize = nSize;// * 1.25f;
 		}
 	}
-mtP->nCount--;
+mtP->nCount = -(++nCount);
 }
 
 //------------------------------------------------------------------------------
