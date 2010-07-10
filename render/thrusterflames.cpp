@@ -172,7 +172,7 @@ else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 else if ((objP->info.nType == OBJ_PLAYER) ||
 			((objP->info.nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) ||
 			bMissile) {
-	CFixMatrix	m, *viewP;
+	CFixMatrix	mView, *viewP;
 	if (!m_bSpectate && (objP->info.nType == OBJ_PLAYER)) {
 		m_pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = m_pt->path.GetPoint ();
@@ -191,8 +191,8 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 	else {
 		tObjTransformation *posP = OBJPOS (objP);
 		if (SPECTATOR (objP)) {
-			viewP = &m;
-			m = posP->mOrient.Transpose ();
+			viewP = &mView;
+			mView = posP->mOrient.Transpose ();
 			}
 		else
 			viewP = objP->View ();
@@ -202,6 +202,14 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 				ti.vPos [i] *= gameData.models.vScale;
 			ti.vPos [i] += posP->vPos;
 			ti.vDir [i] = *viewP * ti.mtP->vDir [i];
+			//CAngleVector a1 = objP->info.position.mOrient.FVec ().ToAnglesVec ();
+			CFixVector v = -ti.mtP->vDir [i];
+			CAngleVector a = v.ToAnglesVec ();
+			//CAngleVector a;
+			//a [PA] = a1 [PA] - a2 [PA];
+			//a [BA] = a1 [BA] - a2 [BA];
+			//a [HA] = a1 [HA] - a2 [HA];
+			ti.mRot [i] = CFixMatrix::Create (a);
 			}
 		ti.fSize = ti.mtP->fSize;
 		if (bMissile)
@@ -396,15 +404,17 @@ else { //3D
 
 	for (int i = 0; i < m_nThrusters; i++) {
 		transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
-		CFixVector v = objP->info.position.mOrient.FVec () - m_ti.vDir [i];
-		CAngleVector a = v.ToAnglesVec ();
-		if (!a.IsZero ())
-			transformation.Begin (CFixVector::ZERO, a);
+		CAngleVector a1 = objP->info.position.mOrient.FVec ().ToAnglesVec ();
+		CAngleVector a2 = m_ti.vDir [i].ToAnglesVec ();
+		CAngleVector a;
+		a [PA] = a1 [PA] - a2 [PA];
+		a [BA] = a1 [BA] - a2 [BA];
+		a [HA] = a1 [HA] - a2 [HA];
+		transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
 		// render a cap for the thruster flame at its base
 		RenderCap ();
 		Render3D ();
-		if (!a.IsZero ())
-			transformation.End ();
+		transformation.End ();
 		transformation.End ();
 		}
 

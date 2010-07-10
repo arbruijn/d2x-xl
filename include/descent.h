@@ -2285,7 +2285,7 @@ class CModelThrusters {
 		CFixVector	vPos [MAX_THRUSTERS];
 		CFixVector	vDir [MAX_THRUSTERS];
 		float			fSize;
-		ushort		nCount;
+		short			nCount;
 	};
 
 typedef struct tGunInfo {

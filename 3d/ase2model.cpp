@@ -94,7 +94,6 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 		pmf->m_nBitmap = bTextured ? i : -1;
 		pmf->m_nVerts = 3;
 		pmf->m_nId = iFace;
-		pmf->m_vNormal.Assign (pfa->m_vNormal);
 		for (i = 0; i < 3; i++, pmv++) {
 			h = pfa->m_nVerts [i];
 			if ((pmv->m_bTextured = bTextured))
@@ -116,6 +115,14 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 			psm->SetMinMax (&pmv->m_vertex);
 			nIndex++;
 			}
+#if 1
+		if (psm->m_bThruster) {
+			CFloatVector3 n = CFloatVector3::Normal ((pmv - 3)->m_vertex, (pmv - 2)->m_vertex, (pmv - 1)->m_vertex);
+			pmf->m_vNormal.Assign (n);
+			}
+		else
+#endif
+			pmf->m_vNormal.Assign (pfa->m_vNormal);
 		}
 	nVerts += psa->m_nVerts;
 	}

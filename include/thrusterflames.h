@@ -13,6 +13,7 @@
 typedef struct tThrusterInfo {
 	CFixVector			vPos [MAX_THRUSTERS];
 	CFixVector			vDir [MAX_THRUSTERS];
+	CFixMatrix			mRot [MAX_THRUSTERS];
 	float					fSize;
 	float					fLength;
 	tPathPoint*			pp;

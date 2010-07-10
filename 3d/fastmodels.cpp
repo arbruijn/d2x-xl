@@ -224,7 +224,7 @@ if (!objP)
 	return;
 if (!pm->m_bRendered || !gameData.models.vScale.IsZero ())
 	mtP->nCount = 0;
-else if (mtP->nCount >= ((objP->info.nType == OBJ_PLAYER) ? MAX_THRUSTERS : (objP->info.nType == OBJ_ROBOT) ? 3 : 1))
+else if (mtP->nCount > 0)
 	return;
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
 if (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f)
@@ -254,8 +254,8 @@ if (mtP->nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (
 mtP->vPos [mtP->nCount].Assign (v);
 if (vOffsetP)
 	v -= vo;
-mtP->vDir [mtP->nCount] = *vNormal;
-mtP->vDir [mtP->nCount] = -mtP->vDir [mtP->nCount];
+mtP->vDir [-mtP->nCount] = *vNormal;
+mtP->vDir [-mtP->nCount] = -mtP->vDir [-mtP->nCount];
 if (!mtP->nCount) {
 	if (!pmf)
 		mtP->fSize = X2F (nRad);
@@ -266,7 +266,7 @@ if (!mtP->nCount) {
 		mtP->fSize = nSize;// * 1.25f;
 		}
 	}
-mtP->nCount++;
+mtP->nCount--;
 }
 
 //------------------------------------------------------------------------------
@@ -283,8 +283,10 @@ if (psm->m_nGunPoint >= 0)
 	return 1;
 if (psm->m_bBullets)
 	return 1;
+#if 0
 if (psm->m_bThruster > 1)
 	return 1;
+#endif
 if (psm->m_bHeadlight)
 	return !HeadlightIsOn (nId);
 if (psm->m_bBombMount)
@@ -918,6 +920,7 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 	}
 #if 1 //!DBG
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles);
+gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
 if ((objP->info.nType != OBJ_DEBRIS) && bHires) {
 	if (pm->m_bHasTransparency & 1)
 		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles);
