@@ -251,9 +251,7 @@ if (vOffsetP) {
 #endif
 if (mtP->nCount && (v[X] == mtP->vPos [0][X]) && (v[Y] == mtP->vPos [0][Y]) && (v[Z] == mtP->vPos [0][Z]))
 	return;
-mtP->vPos [mtP->nCount][X] = F2X (v[X]);
-mtP->vPos [mtP->nCount][Y] = F2X (v[Y]);
-mtP->vPos [mtP->nCount][Z] = F2X (v[Z]);
+mtP->vPos [mtP->nCount].Assign (v);
 if (vOffsetP)
 	v -= vo;
 mtP->vDir [mtP->nCount] = *vNormal;
