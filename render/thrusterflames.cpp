@@ -211,7 +211,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			viewP = objP->View ();
 		for (i = 0; i < m_nThrusters; i++) {
 			ti.fSize [i] = ti.mtP->fSize [i];
-			float h = (1.0f + ti.fScale) / 2.0f;
+			float h = (1.0f + ti.fScale) / ((m_nStyle == 1) ? 1.0f : 2.5f);
 			ti.fLength [i] = ti.fSize [i] * h * h;
 			ti.vPos [i] = *viewP * ti.mtP->vPos [i];
 			if (!gameData.models.vScale.IsZero ())
@@ -411,16 +411,20 @@ if (!Setup (objP))
 
 int bStencil = ogl.StencilOff ();
 
+CWeaponState* ws = (objP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.weaponStates + objP->info.nId : NULL;
+
 if (m_nStyle == 1) {	//2D
 		static tRgbaColorf	tcColor = {0.75f, 0.75f, 0.75f, 1.0f};
 		static CFloatVector	vEye = CFloatVector::ZERO;
 
 	//m_ti.fLength *= 4 * m_ti.fSize;
 	for (int i = 0; i < m_nThrusters; i++) {
-		m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
-		if (!gameData.models.vScale.IsZero ())
-			m_ti.fSize [i] *= X2F (gameData.models.vScale [Z]);
-		Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i], &tcColor);
+		if (IsFiring (ws, i)) {
+			m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
+			if (!gameData.models.vScale.IsZero ())
+				m_ti.fSize [i] *= X2F (gameData.models.vScale [Z]);
+			Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i] /** m_ti.fSize [i] * 2.0f*/, &tcColor);
+			}
 		}
 	}
 else { //3D
@@ -432,7 +436,6 @@ else { //3D
 	ogl.SetDepthWrite (false);
 
 	//m_ti.fLength /= 2;
-	CWeaponState* ws = (objP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.weaponStates + objP->info.nId : NULL;
 	char szMsg [200], szNum [10];
 	sprintf (szMsg, "%d thrusters: [%d %d] ", m_nThrusters, ws->nThrusters [0], ws->nThrusters [1]);
 

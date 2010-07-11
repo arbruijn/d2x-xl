@@ -288,8 +288,12 @@ if (psm->m_nGunPoint >= 0)
 	return 1;
 if (psm->m_bBullets)
 	return 1;
-#if 0
+#if 1
 if (psm->m_bThruster > 1)
+	return 1;
+#endif
+#if 0
+if (psm->m_bFlare)
 	return 1;
 #endif
 if (psm->m_bHeadlight)

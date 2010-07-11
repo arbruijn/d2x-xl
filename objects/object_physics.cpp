@@ -188,12 +188,16 @@ mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 #endif
 
 CWeaponState& ws = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer];
+
+ws.nThrusters [0] = 
+ws.nThrusters [1] = 
+ws.nThrusters [2] = 0;
+
 if (controls [0].forwardThrustTime < 0)
 	ws.nThrusters [0] = FRONT_THRUSTER | FRONTAL_THRUSTER;
-else if (controls [1].forwardThrustTime > 0)
+else //if (controls [1].forwardThrustTime > 0)
 	ws.nThrusters [0] = REAR_THRUSTER | FRONTAL_THRUSTER;
 
-ws.nThrusters [1] = 0;
 if (controls [0].sidewaysThrustTime > 0)
 	ws.nThrusters [1] |= RIGHT_THRUSTER | FR_THRUSTERS | TB_THRUSTERS | LATERAL_THRUSTER;
 else if (controls [0].sidewaysThrustTime < 0)
@@ -203,7 +207,6 @@ if (controls [0].verticalThrustTime > 0)
 else if (controls [0].verticalThrustTime < 0)
 	ws.nThrusters [1] |= TOP_THRUSTER | FR_THRUSTERS | LR_THRUSTERS | LATERAL_THRUSTER;
 
-ws.nThrusters [2] = 0;
 if (controls [0].pitchTime > 0)
 	ws.nThrusters [2] |= FRONT_THRUSTER | BOTTOM_THRUSTER | LR_THRUSTERS | LATERAL_THRUSTER;
 else if (controls [0].pitchTime < 0)
