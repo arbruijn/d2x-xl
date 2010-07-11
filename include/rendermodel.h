@@ -66,7 +66,7 @@ class CFace {
 		short						m_nIndex;
 		short						m_nId;
 		ubyte						m_nSubModel;
-		ubyte						m_bThruster :6;
+		ubyte						m_bThruster;
 		ubyte						m_bGlow :2;
 		ubyte						m_bBillboard;
 
@@ -108,9 +108,9 @@ class CSubModel {
 		ubyte						m_bHeadlight :1;
 		ubyte						m_bBullets :1;
 		ubyte						m_bBombMount :1;
-		ubyte						m_bThruster :6;
 		ubyte						m_bGlow :2;
 		ubyte						m_bBillboard :1;
+		ubyte						m_bThruster;
 		char						m_nGunPoint;
 		char						m_nGun;
 		char						m_nBomb;
