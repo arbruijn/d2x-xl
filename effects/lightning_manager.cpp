@@ -236,7 +236,7 @@ if (SHOW_LIGHTNING) {
 		return 0;
 #	endif
 #endif
-	for (i = 0, objP = OBJECTS.Buffer (); i < gameData.objs.nLastObject [1]; i++, objP++) {
+	for (i = 0, objP = OBJECTS.Buffer (); i <= gameData.objs.nLastObject [1]; i++, objP++) {
 		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNING) {
 			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNING;
 			DestroyForObject (objP);
