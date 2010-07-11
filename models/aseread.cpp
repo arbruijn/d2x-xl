@@ -484,6 +484,10 @@ while ((pszToken = ReadLine (cf))) {
 				m_bThruster |= TOP_THRUSTER;
 			else if (m_szName [12] == 'B') // bottom
 				m_bThruster |= BOTTOM_THRUSTER;
+			if (m_bThruster < 3)
+				m_bThruster |= FRONTAL_THRUSTER;
+			else
+				m_bThruster |= LATERAL_THRUSTER;
 			}
 		else if (strstr (m_szName, "$WINGTIP") != NULL) {
 			m_bWeapon = 1;

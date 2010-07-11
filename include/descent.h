@@ -2285,6 +2285,8 @@ class CModelHitboxes {
 #define RIGHT_THRUSTER		8
 #define TOP_THRUSTER			16
 #define BOTTOM_THRUSTER		32
+#define FRONTAL_THRUSTER	64
+#define LATERAL_THRUSTER	128
 
 class CModelThrusters {
 	public:

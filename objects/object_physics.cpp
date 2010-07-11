@@ -188,32 +188,32 @@ mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 #endif
 
 CWeaponState& ws = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer];
-ws.nThrusters [0] = REAR_THRUSTER;	// always on
+ws.nThrusters [0] = REAR_THRUSTER | FRONTAL_THRUSTER;	// always on
 if (controls [0].forwardThrustTime < 0)
 	ws.nThrusters [0] |= FRONT_THRUSTER;
 else if (controls [1].forwardThrustTime > 0)
 	ws.nThrusters [0] |= REAR_THRUSTER;
 if (controls [1].sidewaysThrustTime < 0)
-	ws.nThrusters [1] |= RIGHT_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER;
+	ws.nThrusters [1] |= RIGHT_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER | LATERAL_THRUSTER;
 else if (controls [1].sidewaysThrustTime > 0)
-	ws.nThrusters [1] |= LEFT_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER;
+	ws.nThrusters [1] |= LEFT_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER | LATERAL_THRUSTER;
 if (controls [1].verticalThrustTime < 0)
-	ws.nThrusters [1] |= BOTTOM_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER;
+	ws.nThrusters [1] |= BOTTOM_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER | LATERAL_THRUSTER;
 if (controls [1].verticalThrustTime > 0)
-	ws.nThrusters [1] |= TOP_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER;
+	ws.nThrusters [1] |= TOP_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER | LATERAL_THRUSTER;
 ws.nThrusters [1] = 0;
 if (controls [0].pitchTime < 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | BOTTOM_THRUSTER;
+	ws.nThrusters [2] |= FRONT_THRUSTER | BOTTOM_THRUSTER | LATERAL_THRUSTER;
 else if (controls [0].pitchTime > 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | TOP_THRUSTER;
+	ws.nThrusters [2] |= FRONT_THRUSTER | TOP_THRUSTER | LATERAL_THRUSTER;
 if (controls [0].headingTime < 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | RIGHT_THRUSTER;
+	ws.nThrusters [2] |= FRONT_THRUSTER | RIGHT_THRUSTER | LATERAL_THRUSTER;
 else if (controls [0].headingTime > 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | LEFT_THRUSTER;
+	ws.nThrusters [2] |= FRONT_THRUSTER | LEFT_THRUSTER | LATERAL_THRUSTER;
 if (controls [0].bankTime < 0)
-	ws.nThrusters [2] |= RIGHT_THRUSTER | BOTTOM_THRUSTER;
+	ws.nThrusters [2] |= RIGHT_THRUSTER | BOTTOM_THRUSTER | LATERAL_THRUSTER;
 else if (controls [0].bankTime > 0)
-	ws.nThrusters [2] |= LEFT_THRUSTER | BOTTOM_THRUSTER;
+	ws.nThrusters [2] |= LEFT_THRUSTER | BOTTOM_THRUSTER | LATERAL_THRUSTER;
 #if DBG
 //HUDMessage (0, "%d %d", ws.nThrusters [0], ws.nThrusters [1]);
 #endif
