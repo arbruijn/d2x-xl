@@ -392,6 +392,18 @@ return true;
 
 // -----------------------------------------------------------------------------
 
+bool CThrusterFlames::IsFiring (CWeaponState* ws, int i)
+{
+if (!ws)
+	return true;
+for (int j = 0; j < 3; j++)
+	if (ws->nThrusters [j] && ((ti.nType [i] & ws->nThrusters [j]) == ti.nType [i]))
+		return true;
+return false;
+}
+
+// -----------------------------------------------------------------------------
+
 void CThrusterFlames::Render (CObject *objP)
 {
 if (!Setup (objP))
@@ -425,7 +437,7 @@ else { //3D
 	sprintf (szMsg, "%d thrusters: [%d %d] ", m_nThrusters, ws->nThrusters [0], ws->nThrusters [1]);
 
 	for (int i = 0; i < m_nThrusters; i++) {
-		if (!ws || (m_ti.nType [i] & ws->nThrusters [0]) || (m_ti.nType [i] & ws->nThrusters [1])) {
+		if (IsFiring (ws, i)) {
 			transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
 			transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
 			sprintf (szNum, "%d ", i);

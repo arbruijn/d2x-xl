@@ -49,6 +49,7 @@ class CThrusterFlames {
 		void RenderCap (int i);
 		void Render3D (int i);
 		bool Setup (CObject *objP);
+		bool IsFiring (CWeaponState* ws, int i);
 };
 
 extern CThrusterFlames thrusterFlames;

@@ -2278,13 +2278,13 @@ class CModelHitboxes {
 #endif
 	};
 
-#define MAX_THRUSTERS	16
-#define REAR_THRUSTER	1
-#define FRONT_THRUSTER	2
-#define LEFT_THRUSTER	4
-#define RIGHT_THRUSTER	8
-#define TOP_THRUSTER		16
-#define BOTTOM_THRUSTER	32
+#define MAX_THRUSTERS		16
+#define REAR_THRUSTER		1
+#define FRONT_THRUSTER		2
+#define LEFT_THRUSTER		4
+#define RIGHT_THRUSTER		8
+#define TOP_THRUSTER			16
+#define BOTTOM_THRUSTER		32
 
 class CModelThrusters {
 	public:
@@ -2389,7 +2389,7 @@ class CWeaponState {
 		char						nLaserLevel;
 		char						bTripleFusion;
 		char						nMslLaunchPos;
-		ubyte						nThrusters [2];
+		ubyte						nThrusters [3];
 
 	public:
 		CWeaponState () { memset (this, 0, sizeof (*this)); }
