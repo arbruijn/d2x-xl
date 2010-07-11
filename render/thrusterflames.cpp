@@ -146,6 +146,8 @@ if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !Ge
 	ti.fLength [1] = ti.fScale;
 	ti.fSize [0] =
 	ti.fSize [1] = (ti.fLength [0] + 1) / 2;
+	ti.nType [0] = 
+	ti.nType [1] = 1;
 	m_nThrusters = 2;
 	CalcPosOnShip (objP, ti.vPos);
 	ti.mtP = NULL;
@@ -171,6 +173,8 @@ else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
 	if (!gameData.models.vScale.IsZero ())
 		ti.vPos [0] *= gameData.models.vScale;
 	*ti.vPos = objP->info.position.vPos + objP->info.position.mOrient.FVec () * (-nObjRad);
+	ti.nType [0] = 
+	ti.nType [1] = 1;
 	ti.mtP = NULL;
 	}
 else if ((objP->info.nType == OBJ_PLAYER) ||
@@ -192,6 +196,8 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 		ti.fLength [1] = ti.fScale;
 		ti.fSize [0] = 
 		ti.fSize [1] = (ti.fLength [0] + 1) / 2;
+		ti.nType [0] = 
+		ti.nType [1] = 1;
 		m_nThrusters = 2;
 		CalcPosOnShip (objP, ti.vPos);
 		}
@@ -220,6 +226,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			//a [BA] = a1 [BA] - a2 [BA];
 			//a [HA] = a1 [HA] - a2 [HA];
 			ti.mRot [i] = CFixMatrix::Create (a);
+			ti.nType [i] = ti.mtP->nType [i];
 			}
 		if (bMissile)
 			m_nThrusters = 1;
