@@ -193,6 +193,8 @@ if (controls [0].forwardThrustTime < 0)
 	ws.nThrusters [0] |= FRONT_THRUSTER;
 else if (controls [1].forwardThrustTime > 0)
 	ws.nThrusters [0] |= REAR_THRUSTER;
+
+ws.nThrusters [1] = 0;
 if (controls [1].sidewaysThrustTime < 0)
 	ws.nThrusters [1] |= RIGHT_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER | LATERAL_THRUSTER;
 else if (controls [1].sidewaysThrustTime > 0)
@@ -201,7 +203,8 @@ if (controls [1].verticalThrustTime < 0)
 	ws.nThrusters [1] |= BOTTOM_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER | LATERAL_THRUSTER;
 if (controls [1].verticalThrustTime > 0)
 	ws.nThrusters [1] |= TOP_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER | LATERAL_THRUSTER;
-ws.nThrusters [1] = 0;
+
+ws.nThrusters [2] = 0;
 if (controls [0].pitchTime < 0)
 	ws.nThrusters [2] |= FRONT_THRUSTER | BOTTOM_THRUSTER | LATERAL_THRUSTER;
 else if (controls [0].pitchTime > 0)
