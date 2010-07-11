@@ -416,7 +416,7 @@ else { //3D
 	CWeaponState* ws = (objP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.weaponStates + objP->info.nId : NULL;
 
 	for (int i = 0; i < m_nThrusters; i++) {
-		if (!ws || (m_ti.nType [i] == ws.nThrusters [0]) || (m_ti.nType == ws.nThrusters [1])) {
+		if (!ws || (m_ti.nType [i] == ws->nThrusters [0]) || (m_ti.nType [i] == ws->nThrusters [1])) {
 			transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
 			transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
 		// render a cap for the thruster flame at its base
