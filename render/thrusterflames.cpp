@@ -423,7 +423,7 @@ if (m_nStyle == 1) {	//2D
 			m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 			if (!gameData.models.vScale.IsZero ())
 				m_ti.fSize [i] *= X2F (gameData.models.vScale [Z]);
-			Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i] /** m_ti.fSize [i] * 2.0f*/, &tcColor);
+			Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i], &tcColor);
 			}
 		}
 	}
