@@ -473,17 +473,17 @@ while ((pszToken = ReadLine (cf))) {
 			m_bRender = 0;
 		else if (strstr (m_szName, "$THRUSTER-") != NULL) {
 			if (m_szName [10] == 'R') // rear
-				m_bThruster |= 1;
+				m_bThruster |= REAR_THRUSTER;
 			else if (m_szName [10] == 'F') // front
-				m_bThruster |= 2;
+				m_bThruster |= FRONT_THRUSTER;
 			if (m_szName [11] == 'L') // left
-				m_bThruster |= 4;
+				m_bThruster |= LEFT_THRUSTER;
 			else if (m_szName [11] == 'R') // right
-				m_bThruster |= 8;
+				m_bThruster |= RIGHT_THRUSTER;
 			if (m_szName [12] == 'T') // top
-				m_bThruster |= 16;
+				m_bThruster |= TOP_THRUSTER;
 			else if (m_szName [12] == 'B') // bottom
-				m_bThruster |= 32;
+				m_bThruster |= BOTTOM_THRUSTER;
 			}
 		else if (strstr (m_szName, "$WINGTIP") != NULL) {
 			m_bWeapon = 1;

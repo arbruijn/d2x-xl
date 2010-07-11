@@ -360,7 +360,6 @@ m_bSpectate = SPECTATOR (objP);
 
 m_ti.pp = NULL;
 m_ti.fScale = fSpeed / 60.0f + 0.5f;
-HUDMessage (0, "%1.2f", m_ti.fScale);
 //if (m_ti.fScale < m_ti.fSize / 2)
 //	m_ti.fScale = m_ti.fSize / 2;
 m_ti.fScale += float (rand () % 100) / 1000.0f;
