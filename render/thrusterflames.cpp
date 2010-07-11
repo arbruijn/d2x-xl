@@ -397,7 +397,7 @@ bool CThrusterFlames::IsFiring (CWeaponState* ws, int i)
 if (!ws)
 	return true;
 for (int j = 0; j < 3; j++)
-	if (ws->nThrusters [j] && ((ti.nType [i] & ws->nThrusters [j]) == ti.nType [i]))
+	if (ws->nThrusters [j] && ((m_ti.nType [i] & ws->nThrusters [j]) == m_ti.nType [i]))
 		return true;
 return false;
 }
