@@ -211,7 +211,7 @@ pm->m_fScale *= fScale;
 //------------------------------------------------------------------------------
 
 void G3GetThrusterPos (CObject *objP, short nModel, RenderModel::CFace *pmf, CFixVector *vOffsetP,
-							  CFixVector *vNormal, int nRad, int bHires, ubyte nType)
+							  CFixVector *vNormal, int nRad, int bHires, ubyte nType = 255)
 {
 	RenderModel::CModel*		pm = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CVertex*	pmv = NULL;
