@@ -189,6 +189,12 @@ mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 
 CWeaponState& ws = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer];
 
+ubyte nOldThrusters [3];
+
+nOldThrusters [0] = ws.nThrusters [0];
+nOldThrusters [1] = ws.nThrusters [1];
+nOldThrusters [2] = ws.nThrusters [2];
+
 ws.nThrusters [0] = 
 ws.nThrusters [1] = 
 ws.nThrusters [2] = 0;
@@ -208,13 +214,13 @@ else if (controls [0].verticalThrustTime < 0)
 	ws.nThrusters [1] |= TOP_THRUSTER | FR_THRUSTERS | LR_THRUSTERS | LATERAL_THRUSTER;
 
 if (controls [0].pitchTime > 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | BOTTOM_THRUSTER | LR_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [2] |= REAR_THRUSTER | BOTTOM_THRUSTER | LR_THRUSTERS | LATERAL_THRUSTER;
 else if (controls [0].pitchTime < 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | TOP_THRUSTER | LR_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [2] |= REAR_THRUSTER | TOP_THRUSTER | LR_THRUSTERS | LATERAL_THRUSTER;
 if (controls [0].headingTime > 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | RIGHT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [2] |= REAR_THRUSTER | RIGHT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
 else if (controls [0].headingTime < 0)
-	ws.nThrusters [2] |= FRONT_THRUSTER | LEFT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [2] |= REAR_THRUSTER | LEFT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
 if (controls [0].bankTime > 0)
 	ws.nThrusters [2] |= RIGHT_THRUSTER | BOTTOM_THRUSTER | FR_THRUSTERS | LATERAL_THRUSTER;
 else if (controls [0].bankTime < 0)
@@ -222,6 +228,9 @@ else if (controls [0].bankTime < 0)
 
 if (!(ws.nThrusters [0] | ws.nThrusters [1] | ws.nThrusters [2]))
 	ws.nThrusters [0] = REAR_THRUSTER | FRONTAL_THRUSTER;	// always on
+
+if (IsMultiGame && ((nOldThrusters [0] != ws.nThrusters [0]) || (nOldThrusters [1] != ws.nThrusters [1]) || (nOldThrusters [2] != ws.nThrusters [2])))
+	MultiSendPlayerThrust ();
 
 #if DBG
 //HUDMessage (0, "%d %d", ws.nThrusters [0], ws.nThrusters [1]);

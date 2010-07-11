@@ -221,6 +221,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{31, -1}, // MULTI_CREATE_WEAPON
 	{6, -1},  // MULTI_AMMO
 	{6, -1},  // MULTI_FUSION_CHARGE
+	{5, -1}   // MULTI_PLAYER_THRUST
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd);
@@ -605,12 +606,12 @@ return (netGame.m_info.GetTeamVector () & (1 << nPlayer)) ? 1 : 0;
 
 //-----------------------------------------------------------------------------
 
-void MultiSendPlayerWeapons (int nPlayer)
+void MultiSendPlayerWeapons (void)
 {
-	CWeaponState	*wsP = gameData.multiplayer.weaponStates + nPlayer;
+	CWeaponState	*wsP = gameData.multiplayer.weaponStates + gameData.multiplayer.nLocalPlayer;
 
-gameData.multigame.msg.buf [0] = (char) MULTI_PLAYER_WEAPONS;
-gameData.multigame.msg.buf [1] = (char) nPlayer;
+gameData.multigame.msg.buf [0] = char (MULTI_PLAYER_WEAPONS);
+gameData.multigame.msg.buf [1] = char (gameData.multiplayer.nLocalPlayer);
 gameData.multigame.msg.buf [2] = wsP->nPrimary;
 gameData.multigame.msg.buf [3] = wsP->nSecondary;
 gameData.multigame.msg.buf [4] = wsP->nMissiles;
@@ -622,7 +623,24 @@ gameData.multigame.msg.buf [15] = (ubyte) wsP->firing [0].bSpeedUp;
 gameData.multigame.msg.buf [16] = wsP->bTripleFusion;
 gameData.multigame.msg.buf [17] = wsP->nMslLaunchPos;
 PUT_INTEL_INT (gameData.multigame.msg.buf + 18, wsP->xMslFireTime);
-MultiSendData (gameData.multigame.msg.buf, 22, 0);
+gameData.multigame.msg.buf [22] = wsP->nThrusters [0];
+gameData.multigame.msg.buf [23] = wsP->nThrusters [1];
+gameData.multigame.msg.buf [24] = wsP->nThrusters [2];
+MultiSendData (gameData.multigame.msg.buf, 25, 0);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendPlayerThrust (void)
+{
+	CWeaponState	*wsP = gameData.multiplayer.weaponStates + gameData.multiplayer.nLocalPlayer;
+
+gameData.multigame.msg.buf [0] = char (MULTI_PLAYER_THRUST);
+gameData.multigame.msg.buf [1] = char (gameData.multiplayer.nLocalPlayer);
+gameData.multigame.msg.buf [2] = wsP->nThrusters [0];
+gameData.multigame.msg.buf [3] = wsP->nThrusters [1];
+gameData.multigame.msg.buf [4] = wsP->nThrusters [2];
+MultiSendData (gameData.multigame.msg.buf, 5, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -644,6 +662,9 @@ wsP->firing [0].bSpeedUp = buf [15];
 wsP->bTripleFusion = buf [16];
 wsP->nMslLaunchPos = buf [17];
 wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 18);
+wsP->nThrusters [0] = buf [22];
+wsP->nThrusters [1] = buf [23];
+wsP->nThrusters [2] = buf [24];
 for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 	if (fP->nDuration) {
 		if (fP->nStart <= 0) {
@@ -667,6 +688,17 @@ for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 			}
 		}
 	}
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiDoPlayerThrust (char *buf)
+{
+	CWeaponState	*wsP = gameData.multiplayer.weaponStates + int (buf [1]);
+
+wsP->nThrusters [0] = buf [2];
+wsP->nThrusters [1] = buf [3];
+wsP->nThrusters [2] = buf [4];
 }
 
 //-----------------------------------------------------------------------------
@@ -5332,7 +5364,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoDropPowerup, 1},
 	{MultiDoCreateWeapon, 1},
 	{MultiDoAmmo, 1},
-	{MultiDoFusionCharge, 1}
+	{MultiDoFusionCharge, 1},
+	{MultiDoPlayerThrust, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5684,6 +5717,10 @@ switch (nType) {
 	case MULTI_FUSION_CHARGE:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoFusionCharge (buf);
+		break;
+	case MULTI_PLAYER_THRUST:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoPlayerThrust (buf);
 		break;
 	default:
 		Int3 ();

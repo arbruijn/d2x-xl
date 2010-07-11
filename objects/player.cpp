@@ -230,7 +230,7 @@ if (wsP->xMslFireTime != gameData.missiles.xNextFireTime) {
 	bUpdate = 1;
 	}
 if (bUpdate)
-	MultiSendPlayerWeapons (gameData.multiplayer.nLocalPlayer);	
+	MultiSendPlayerWeapons ();	
 UpdateFiringSounds ();
 }
 

@@ -135,7 +135,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_CREATE_WEAPON			85
 #define MULTI_AMMO						86
 #define MULTI_FUSION_CHARGE			87
-#define MULTI_MAX_TYPE					87
+#define MULTI_PLAYER_THRUST			88
+#define MULTI_MAX_TYPE					88
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -154,7 +155,8 @@ void MultiShowPlayerList (void);
 void MultiDoFrame (void);
 void MultiCapObjects (void);
 
-void MultiSendPlayerWeapons (int nPlayer);
+void MultiSendPlayerWeapons (void);
+void MultiSendPlayerThrust (void);
 void MultiSendFlags (char);
 void MultiSendWeapons (int bForce);
 void MultiSendAmmo (void);
