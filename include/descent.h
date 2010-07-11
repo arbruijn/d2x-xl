@@ -2291,6 +2291,7 @@ class CModelThrusters {
 		CFixVector	vPos [MAX_THRUSTERS];
 		CFixVector	vDir [MAX_THRUSTERS];
 		float			fSize [MAX_THRUSTERS];
+		ubyte			nType [MAX_THRUSTERS];
 		short			nCount;
 	};
 

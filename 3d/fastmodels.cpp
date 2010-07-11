@@ -211,7 +211,7 @@ pm->m_fScale *= fScale;
 //------------------------------------------------------------------------------
 
 void G3GetThrusterPos (CObject *objP, short nModel, RenderModel::CFace *pmf, CFixVector *vOffsetP,
-							  CFixVector *vNormal, int nRad, int bHires)
+							  CFixVector *vNormal, int nRad, int bHires, ubyte nType)
 {
 	RenderModel::CModel*		pm = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CVertex*	pmv = NULL;
@@ -259,6 +259,7 @@ if (vOffsetP)
 	v -= vo;
 mtP->vDir [nCount] = *vNormal;
 mtP->vDir [nCount] = -mtP->vDir [nCount];
+mtP->nType [nCount] = nType;
 //if (!nCount) 
 	{
 	if (!pmf)
@@ -462,7 +463,7 @@ else
 if (psm->m_bThruster /*== 1*/) {
 	if (!nPass) {
 		vo = psm->m_vOffset + psm->m_vCenter;
-		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->m_faces->m_vNormal, psm->m_nRad, bHires);
+		G3GetThrusterPos (objP, nModel, NULL, &vo, &psm->m_faces->m_vNormal, psm->m_nRad, bHires, psm->m_bThruster);
 		}
 	if (!psm->m_nFrames)
 		return;

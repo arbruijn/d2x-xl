@@ -16,6 +16,7 @@ typedef struct tThrusterInfo {
 	CFixMatrix			mRot [MAX_THRUSTERS];
 	float					fSize [MAX_THRUSTERS];
 	float					fLength [MAX_THRUSTERS];
+	ubyte					nType [MAX_THRUSTERS];
 	float					fScale;
 	tPathPoint*			pp;
 	CModelThrusters*	mtP;

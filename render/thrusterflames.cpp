@@ -413,15 +413,18 @@ else { //3D
 	ogl.SetDepthWrite (false);
 
 	//m_ti.fLength /= 2;
+	CWeaponState* ws = (objP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.weaponStates + objP->info.nId : NULL;
 
 	for (int i = 0; i < m_nThrusters; i++) {
-		transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
-		transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
+		if (!ws || (m_ti.nType [i] == ws.nThrusters [0]) || (m_ti.nType == ws.nThrusters [1])) {
+			transformation.Begin (m_ti.vPos [i], (m_ti.pp && !m_bSpectate) ? m_ti.pp->mOrient : objP->info.position.mOrient);
+			transformation.Begin (CFixVector::ZERO, m_ti.mRot [i]);
 		// render a cap for the thruster flame at its base
-		RenderCap (i);
-		Render3D (i);
-		transformation.End ();
-		transformation.End ();
+			RenderCap (i);
+			Render3D (i);
+			transformation.End ();
+			transformation.End ();
+			}
 		}
 
 	ogl.SetTransform (0);
