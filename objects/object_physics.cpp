@@ -194,13 +194,13 @@ if (controls [0].forwardThrustTime < 0)
 else if (controls [0].forwardThrustTime > 0)
 	ws.nThrusters [0] |= REAR_THRUSTER;
 if (controls [0].sidewaysThrustTime < 0)
-	ws.nThrusters [0] |= RIGHT_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER;
+	ws.nThrusters [0] |= RIGHT_THRUSTER;
 else if (controls [0].sidewaysThrustTime > 0)
-	ws.nThrusters [0] |= LEFT_THRUSTER | FRONT_THRUSTER | REAR_THRUSTER;
+	ws.nThrusters [0] |= LEFT_THRUSTER;
 if (controls [0].verticalThrustTime < 0)
-	ws.nThrusters [0] |= BOTTOM_THRUSTER | LEFT_THRUSTER | RIGHT_THRUSTER;
+	ws.nThrusters [0] |= BOTTOM_THRUSTER;
 if (controls [0].verticalThrustTime > 0)
-	ws.nThrusters [0] |= TOP_THRUSTER | LEFT_THRUSTER | RIGHT_THRUSTER;
+	ws.nThrusters [0] |= TOP_THRUSTER;
 ws.nThrusters [1] = 0;
 if (controls [0].pitchTime < 0)
 	ws.nThrusters [1] |= FRONT_THRUSTER | BOTTOM_THRUSTER;
@@ -214,6 +214,9 @@ if (controls [0].bankTime < 0)
 	ws.nThrusters [1] |= RIGHT_THRUSTER | BOTTOM_THRUSTER;
 else if (controls [0].bankTime > 0)
 	ws.nThrusters [1] |= LEFT_THRUSTER | BOTTOM_THRUSTER;
+#if DBG
+//HUDMessage (0, "%d %d", ws.nThrusters [0], ws.nThrusters [1]);
+#endif
 }
 
 // ----------------------------------------------------------------------------

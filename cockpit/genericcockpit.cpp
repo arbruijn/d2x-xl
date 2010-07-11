@@ -1894,8 +1894,12 @@ void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
 {
 if (Hide ())
 	return;
-if (gameStates.render.bChaseCam || gameStates.render.bFreeCam)
+if (gameStates.render.bChaseCam || gameStates.render.bFreeCam) {
+#if DBG
+	HUDRenderMessageFrame ();
+#endif
 	return;
+	}
 #if 1
 if (!cockpit->Setup (false))
 	return;
