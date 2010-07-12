@@ -621,7 +621,7 @@ return h;
 
 inline int DeltaAxis (int v)
 {
-#if DBG
+#if 0 //DBG
 int a = gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
 if (a)
 	HUDMessage (0, "%d", a);

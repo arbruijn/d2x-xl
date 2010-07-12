@@ -259,7 +259,7 @@ else {
 	if (gameData.ai.nTargetVisibility)
 		ailP->timeTargetSeen = gameData.time.xGame;
 	}
-#if DBG
+#if 0 //DBG
 if (objP->Index () == nDbgObj) {
 	HUDMessage (0, "vis: %d", gameData.ai.nTargetVisibility);
 	}

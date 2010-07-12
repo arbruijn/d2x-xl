@@ -30,12 +30,17 @@ char bJoyPresent = 0;
 
 int joyDeadzone [4] = {32767 / 10, 32767 / 10, 32767 / 10, 32767 / 10};	//10% of max. range
 
-static struct tJoyInfo {
-	int			nAxes;
-	int			nButtons;
-	tJoyAxis		axes [MAX_JOYSTICKS * JOY_MAX_AXES];
-	tJoyButton	buttons [MAX_JOYSTICKS * JOY_MAX_BUTTONS];
-} joyInfo;
+class CJoyInfo {
+	public:
+		int			nAxes;
+		int			nButtons;
+		tJoyAxis		axes [MAX_JOYSTICKS * JOY_MAX_AXES];
+		tJoyButton	buttons [MAX_JOYSTICKS * JOY_MAX_BUTTONS];
+
+		CJoyInfo () { memset (this, 0, sizeof (*this)); }
+};
+
+CJoyInfo joyInfo;
 
 tSdlJoystick /*tSdlJoystick*/ sdlJoysticks [MAX_JOYSTICKS];
 

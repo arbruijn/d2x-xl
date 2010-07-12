@@ -990,11 +990,11 @@ ubyte CControlConfig::JoyAxisCtrlFunc (void)
 
 memset (curAxis, 0, sizeof (curAxis));
 gameOpts->input.joystick.bLinearSens = 1;
-gameStates.input.kcPollTime = 128;
+controls.SetPollTime (128);
 controls.ReadJoystick (curAxis);
 gameOpts->input.joystick.bLinearSens = bLinJoySensSave;
 for (i = dd = 0; i < JOY_MAX_AXES; i++) {
-	hd = abs (curAxis [i] - m_startAxis [i]);
+	hd = abs (curAxis [i]); // - m_startAxis [i]);
   	if ((hd > (128 * 3 / 4)) && (hd > dd)) {
 		dd = hd;
 		code = i;
@@ -1254,7 +1254,7 @@ do {
 			m_nChangeMode = ChangeJoyButton (m_items + m_nCurItem);
 			break;
 		case BT_JOY_AXIS:
-			if (m_nChangeMode != m_nPrevChangeMode)
+			//if (m_nChangeMode != m_nPrevChangeMode)
 				controls.ReadJoystick (m_startAxis);
 			m_nChangeMode = ChangeJoyAxis (m_items + m_nCurItem);
 			break;

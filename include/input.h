@@ -44,6 +44,7 @@ class CControlsManager {
 			}
 
 		inline time_t PollTime (void) { return m_pollTime; }
+		inline void SetPollTime (time_t pollTime) { m_pollTime = pollTime; }
 
 		inline tControlInfo& operator[] (int i) { return m_info [i]; }
 

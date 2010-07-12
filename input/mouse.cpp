@@ -22,6 +22,7 @@
 #include "timer.h"
 #include "event.h"
 #include "mouse.h"
+#include "input.h"
 
 #ifdef WIN32_WCE
 # define LANDSCAPE
@@ -252,7 +253,7 @@ if (!bFastPoll)
 	if (!mouseData.buttons [button].pressed) {
 		timeDown = mouseData.buttons [button].xTimeHeldDown;
 		if (!timeDown && mouseData.buttons [button].rotated)
-			timeDown = (fix) (MouseButtonDownCount (button) * gameStates.input.kcPollTime);
+			timeDown = (fix) (MouseButtonDownCount (button) * controls.PollTime ());
 		mouseData.buttons [button].xTimeHeldDown = 0;
 		}
 	else {

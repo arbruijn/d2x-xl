@@ -801,8 +801,8 @@ else {
 	ms >>= 16;
 	keyData.keys [scanCode].timeHeldDown += (int) (s * 1000 + ms);
 	// the following code takes care of clamping in KConfig.c::control_read_all()
-	if (gameStates.input.bKeepSlackTime && (timeDown > gameStates.input.kcPollTime)) {
-		slack = (fix) (timeDown - gameStates.input.kcPollTime);
+	if (gameStates.input.bKeepSlackTime && (timeDown > controls.PollTime ())) {
+		slack = (fix) (timeDown - controls.PollTime ());
 		time -= slack + slack / 10;	// there is still some slack, so add an extra 10%
 		if (time < lastTime)
 			time = lastTime;
@@ -810,7 +810,7 @@ else {
 		}
 	keyData.keys [scanCode].timeWentDown = time;
 	lastTime = time;
-	if (timeDown && timeDown < gameStates.input.kcPollTime)
+	if (timeDown && timeDown < controls.PollTime ())
 		timeDown = fix (controls.PollTime ());
 	}
 return timeDown;
