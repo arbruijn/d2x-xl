@@ -14,7 +14,7 @@
 
 tReplacementModel replacementModels [] = {
 	// player ship
-#if DBG
+#if 1 //DBG
  {"phantomxl", "pyrogl.pol", 108, 0, 0, -1}, 
 #else
  {"pyrogl", "pyrogl.pol", 108, 0, 0, -1}, 
