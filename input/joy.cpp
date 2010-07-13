@@ -116,7 +116,7 @@ int JoyInit (void)
 	int				i, j, n;
 	tSdlJoystick	*joyP = sdlJoysticks;
 
-if (SDL_Init(SDL_INIT_JOYSTICK) < 0) {
+if (SDL_Init (SDL_INIT_JOYSTICK) < 0) {
 #if TRACE
 	console.printf(CON_VERBOSE, "sdl-joystick: initialisation failed: %s.",SDL_GetError());
 #endif

@@ -212,9 +212,7 @@ void AutoScreenshot (void);
 
 void ResetTextures (int bReload, int bGame);
 
-int GrCheckFullScreen(void);
-int GrToggleFullScreen(void);
-int GrToggleFullScreenMenu(void);//returns state after toggling (ie, same as if you had called check_fullscreen immediatly after)
+int GrToggleFullScreenMenu (void);//returns state after toggling (ie, same as if you had called check_fullscreen immediatly after)
 
 typedef struct tScrSize {
 	int	x, y, c;

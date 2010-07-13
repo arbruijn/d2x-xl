@@ -275,7 +275,7 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 if ((i = FindArg ("-fullscreen"))) {
 	/***/PrintLog ("   switching to fullscreen\n");
 	ogl.m_states.bFullScreen = NumArg (i, 1);
-	//GrToggleFullScreen();
+	//ogl.ToggleFullScreen();
 	}
 else
 	ogl.m_states.bFullScreen = 1;
@@ -336,25 +336,6 @@ char *ScrSizeArg (int x, int y)
 
 sprintf (szScrMode, "-%dx%d", x, y);
 return szScrMode;
-}
-
-//------------------------------------------------------------------------------
-
-int GrCheckFullScreen (void)
-{
-return ogl.m_states.bFullScreen;
-}
-
-//------------------------------------------------------------------------------
-
-void GrDoFullScreen (int f)
-{
-if (ogl.m_states.bVoodooHack)
-	ogl.m_states.bFullScreen = 1;//force fullscreen mode on voodoos.
-else
-	ogl.m_states.bFullScreen = f;
-if (ogl.m_states.bInitialized)
-	SdlGlDoFullScreenInternal (0);
 }
 
 //------------------------------------------------------------------------------
@@ -556,19 +537,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int GrToggleFullScreen (void)
-{
-GrDoFullScreen (!ogl.m_states.bFullScreen);
-return ogl.m_states.bFullScreen;
-}
-
-//------------------------------------------------------------------------------
-
 int GrToggleFullScreenGame (void)
 {
 	static char szFullscreen [2][30] = {"toggling fullscreen mode off", "toggling fullscreen mode on"};
 
-int i = GrToggleFullScreen ();
+int i = ogl.ToggleFullScreen ();
 controls.FlushInput ();
 if (gameStates.app.bGameRunning) {
 	HUDMessage (MSGC_GAME_FEEDBACK, szFullscreen [i]);

@@ -315,7 +315,7 @@ mouse2State = omouse2State = 0;
 CMenu::DrawCloseBox (m_xOffset, m_yOffset);
 SDL_ShowCursor (1);
 
-SDL_EnableKeyRepeat(60, 30);
+SDL_EnableKeyRepeat (60, 30);
 while (!done) {
 	m_nOldChoice = m_nChoice;
 	nPrevItem = m_nFirstItem;

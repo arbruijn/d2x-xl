@@ -9,6 +9,7 @@
 
 #include "descent.h"
 #include "vecmat.h"
+#include "sdlgl.h"
 
 //------------------------------------------------------------------------------
 
@@ -301,6 +302,20 @@ class COGL {
 		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, tRgbaColorf* colorP, float alpha, int bAdditive);
 		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int bAdditive, float fSoftRad);
 		void RenderScreenQuad (int bTextured = 0);
+
+		inline int FullScreen (void) { return m_states.bFullScreen; }
+
+		inline void SetFullScreen (int bFullScreen) {
+			m_states.bFullScreen = bFullScreen;
+			if (m_states.bInitialized)
+				SdlGlDoFullScreenInternal (0);
+			}
+
+		int ToggleFullScreen (void) {
+			SetFullScreen (!m_states.bFullScreen);
+			return m_states.bFullScreen;
+			}
+
 
 		inline bool Enable (bool& bCurrent, bool bNew, GLenum nFunc) {
 #if DBG_OGL < 2

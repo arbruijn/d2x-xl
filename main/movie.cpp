@@ -700,7 +700,7 @@ while ((result = MVE_rmStepMovie ()) == 0) {
 		ClearPauseMessage ();
 		}
 	if ((key == KEY_ALTED+KEY_ENTER) || (key == KEY_ALTED+KEY_PADENTER))
-		GrToggleFullScreen ();
+		ogl.ToggleFullScreen ();
 	nFrame++;
 	}
 Assert (aborted || result == MVE_ERR_EOF);	 ///movie should be over

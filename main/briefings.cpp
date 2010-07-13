@@ -1276,7 +1276,7 @@ if (!m_info.bRedraw && m_info.nDelayCount) {
 		}
 	if ((keypress == KEY_ALTED + KEY_ENTER) ||
 		 (keypress == KEY_ALTED + KEY_PADENTER))
-		GrToggleFullScreen ();
+		ogl.ToggleFullScreen ();
 	}
 return 1;
 }
