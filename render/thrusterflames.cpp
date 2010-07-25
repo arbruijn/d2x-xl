@@ -212,8 +212,8 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 		for (i = 0; i < m_nThrusters; i++) {
 			ti.fSize [i] = ti.mtP->fSize [i];
 			float h = ((ti.nType [i] & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | FRONTAL_THRUSTER)) ? ti.fScale : 1.5f;
-//			if (m_nStyle != 1)
-//				h /= 2.5f;
+			if (m_nStyle == 1)
+				h *= 4.0f;
 			ti.fLength [i] = ti.fSize [i] * h;
 			ti.vPos [i] = *viewP * ti.mtP->vPos [i];
 			if (!gameData.models.vScale.IsZero ())

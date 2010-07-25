@@ -289,7 +289,7 @@ if (psm->m_nGunPoint >= 0)
 if (psm->m_bBullets)
 	return 1;
 #if 1
-if (psm->m_bThruster > 1)
+if (psm->m_bThruster && ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) != (REAR_THRUSTER | FRONTAL_THRUSTER)))
 	return 1;
 #endif
 #if 0
@@ -387,7 +387,7 @@ int G3AnimateSubModel (CObject *objP, RenderModel::CSubModel *psm, short nModel)
 
 if (!psm->m_nFrames)
 	return 0;
-if (psm->m_bThruster == 1) {
+if ((psm->m_bThruster & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | FRONTAL_THRUSTER)) {
 	nTimeout = gameStates.gameplay.slowmo [0].fSpeed;
 	glPushMatrix ();
 	CFloatVector vCenter;
