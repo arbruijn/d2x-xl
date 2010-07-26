@@ -352,7 +352,7 @@ else {		// Note link to above if!!!
 void InitAmmoAndEnergy (void)
 {
 if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
-	LOCALPLAYER.Energy () = INITIAL_ENERGY;
+	LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
 if (LOCALPLAYER.Shield () < gameStates.gameplay.xStartingShield)
 	LOCALPLAYER.SetShield (gameStates.gameplay.xStartingShield);
 if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
@@ -1805,9 +1805,9 @@ gameStates.app.cheats.bRobotsFiring = 1;
 SetD1Sound ();
 if (gameStates.app.bD1Mission) {
 	if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
-		LOCALPLAYER.Energy () = INITIAL_ENERGY;
+		LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
 	if (LOCALPLAYER.Shield () < INITIAL_SHIELD)
-		LOCALPLAYER.Shield () = INITIAL_SHIELD;
+		LOCALPLAYER.SetShield (LOCALPLAYER.InitialShield ());
 	}
 }
 
@@ -2296,8 +2296,8 @@ else {
 if (gameData.reactor.bDestroyed) {
 	//clear out stuff so no bonus
 	LOCALPLAYER.hostages.nOnBoard = 0;
-	LOCALPLAYER.Energy () = 0;
-	LOCALPLAYER.Shield () = 0;
+	LOCALPLAYER.SetEnergy (0);
+	LOCALPLAYER.SetShield (0);
 	LOCALPLAYER.connected = 3;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}

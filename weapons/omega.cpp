@@ -52,7 +52,7 @@ void SetMaxOmegaCharge (void)
 {
 gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE * nOmegaDuration [int (extraGameInfo [0].nOmegaRamp)];
 if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
-	LOCALPLAYER.Energy () += OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - gameData.omega.xMaxCharge);
+	LOCALPLAYER.UpdateEnergy (OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - gameData.omega.xMaxCharge));
 	gameData.omega.xCharge [IsMultiGame] = gameData.omega.xMaxCharge;
 	}
 }
@@ -209,9 +209,9 @@ if (LOCALPLAYER.Energy ()) {
 	gameData.omega.xCharge [IsMultiGame] += (fix) (gameData.time.xFrame / OMEGA_CHARGE_SCALE / gameStates.gameplay.slowmo [0].fSpeed);
 	if (gameData.omega.xCharge [IsMultiGame] > MAX_OMEGA_CHARGE)
 		gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
-	LOCALPLAYER.Energy () -= OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - xOldOmegaCharge);
+	LOCALPLAYER.UpdateEnergy (-OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - xOldOmegaCharge));
 	if (LOCALPLAYER.Energy () < 0)
-		LOCALPLAYER.Energy () = 0;
+		LOCALPLAYER.SetEnergy (0);
 	}
 }
 
