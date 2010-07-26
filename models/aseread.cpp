@@ -885,7 +885,7 @@ int CModel::SaveBinary (const char* szFilename)
 	char		szBin [FILENAME_LEN];
 
 strcpy (szBin, szFilename);
-strcpy (strchr (szBin, '.'), ".bin");
+strcpy (strrchr (szBin, '.'), ".bin");
 
 if (!cf.Open (szBin, gameFolders.szModelDir [m_bCustom], "wb", 0))
 	return 0;
@@ -971,12 +971,15 @@ return ReadBinary (szFilename, bCustom, tASE);
 
 int CModel::ReadBinary (const char* szFilename, int bCustom, time_t tASE)
 {
+if (!(szFilename && *szFilename))
+	return 0;
+
 	CFile		cf;
 	int		h, i;
 	char		szBin [FILENAME_LEN];
 
 strcpy (szBin, szFilename);
-strcpy (strchr (szBin, '.'), ".bin");
+strcpy (strrchr (szBin, '.'), ".bin");
 
 time_t tBIN = cf.Date (szBin, gameFolders.szModelDir [bCustom], 0);
 

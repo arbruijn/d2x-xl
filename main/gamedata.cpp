@@ -2141,6 +2141,8 @@ extraGameInfo [0].bEnhancedShakers = 1;
 gameOptions [0].gameplay.bUseD1AI = 1;
 //if (!gameOpts->app.bExpertMode)
 //	extraGameInfo [0].nZoomMode = 1;
+gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = gameOpts->gameplay.nShip;
+MultiSendPlayerWeapons ();
 }
 
 // ----------------------------------------------------------------------------
