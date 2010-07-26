@@ -312,19 +312,17 @@ return fix (INITIAL_SHIELD * ShieldScale ());
 
 fix CPlayerData::Shield (void)
 {
-return shield;
+return shield * ShieldScale ();
 }
 
 //-------------------------------------------------------------------------
 
 fix CPlayerData::SetShield (fix s) 
 { 
-if (nObject < 0) {
-	CObject* objP = OBJECTS + nObject;
-	if (s > fix (MAX_SHIELD * objP->ShieldScale ()))
-		s = fix (MAX_SHIELD * objP->ShieldScale ());
-	objP->SetShield (s); 
-	}
+if (s > MaxShield ())
+	s = MaxShield ();
+if (nObject < 0)
+	OBJECTS [nObject].SetShield (s); 
 return shield = s;
 }
 

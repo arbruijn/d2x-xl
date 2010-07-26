@@ -272,6 +272,7 @@ void GameplayOptionsMenu (void)
 	int	optSmartWeaponSwitch = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optNoThief = -1, optLoadout = -1;
 	int	optInventory = -1, optShip = -1;
 	int	optReorderPrim, optReorderSec;
+	int	nShip = gameOpts->gameplay.nShip;
 	char	szSlider [50];
 
 pszAggressivities [0] = TXT_STANDARD;
@@ -350,6 +351,10 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
+if (gameOpts->gameplay.nShip != nShip) {
+	LOCALPLAYER.SetShield (-I2X (10000));
+	MultiSendPlayerWeapons ();
+	}
 }
 
 //------------------------------------------------------------------------------
