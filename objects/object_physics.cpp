@@ -29,6 +29,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "input.h"
 
+float speedScale [3] = {1.0f, 1.2f, 0.8f};
+float shieldScale [3] = {1.0f, 0.8f, 1.2f};
+
+//------------------------------------------------------------------------------
+
+float CObject::SpeedScale (void)
+{
+return speedScale [gameData.multiplayer.weaponStates [info.nId].nShip];
+}
+
+//------------------------------------------------------------------------------
+
+float CObject::ShieldScale (void)
+{
+return shieldScale [gameData.multiplayer.weaponStates [info.nId].nShip];
+}
+
 // ----------------------------------------------------------------------------
 
 void CObject::Wiggle (void)
@@ -179,10 +196,10 @@ if (!mType.physInfo.rotThrust.IsZero ()) {
 fix ft = gameData.time.xFrame;
 
 //	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
-if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
+if ((ft < I2X (1) / 2) && ((ft << 15) <= fix (gameData.pig.ship.player->maxThrust * SpeedScale ())))
 	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
-if ((ft < I2X (1)/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
+if ((ft < I2X (1) / 2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 #endif

@@ -969,6 +969,11 @@ class CObject : public CObjectInfo {
 
 		int ModelId (bool bRaw = false);
 
+		float SpeedScale (void);
+		float ShieldScale (void);
+		inline int MaxSpeed (void) { return int (60 * SpeedScale ()); }
+		inline fix MaxShields (void) { return fix (I2X (100) * ShieldScale ()); }
+
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
 		void CheckAfterburnerBlobDrop (void);
@@ -1318,6 +1323,8 @@ void DetachChildObjects (CObject *parentP);
 void InitMultiPlayerObject (int nStage);
 
 extern ubyte bIsMissile [];
+extern float speedScale [];
+extern float shieldScale [];
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------

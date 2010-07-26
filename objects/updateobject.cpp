@@ -240,10 +240,11 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 		StartPlayerDeathSequence (this);
 	else {
 		segP->ConquerCheck ();
+		CObject* objP = OBJECTS + playerP->nObject;
 		fix energy = segP->Refuel (INITIAL_ENERGY - playerP->energy);
 		if (energy > 0)
 			playerP->energy += energy;
-		fix shields = segP->Repair (INITIAL_SHIELDS - playerP->shields);
+		fix shields = segP->Repair (fix (INITIAL_SHIELDS * objP->ShieldScale ()) - playerP->shields);
 		if (shields > 0) {
 			playerP->shields += shields;
 			MultiSendShields ();
