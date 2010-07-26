@@ -87,6 +87,8 @@ class CModel {
 		void Destroy (void);
 		int Read (const char* filename, short nModel, int bCustom);
 		int SaveBinary (void);
+		int SaveBinary (const char* szFilename);
+		int ReadBinary (const char* szFilename, int bCustom, time_t tASE);
 		int ReadBinary (short nModel, int bCustom, time_t tASE);
 		int ReloadTextures (void);
 		int ReleaseTextures (void);

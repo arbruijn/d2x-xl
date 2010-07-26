@@ -774,13 +774,17 @@ if (nModel == nDbgModel)
 if (m_nModel >= 0)
 	return 0;
 
-try {
-	if (gameStates.app.bCacheModelData && ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
-		return 1;
-	}
-catch(...) {
-	PrintLog ("Compiled model file 'model%03d.bin' is damaged and will be replaced\n", nModel);
-	Destroy ();
+if (gameStates.app.bCacheModelData) {
+	try {
+		if ((nModel == 108) 
+			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0))
+			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
+			return 1;
+		}
+	catch(...) {
+		PrintLog ("Compiled model file 'model%03d.bin' is damaged and will be replaced\n", nModel);
+		Destroy ();
+		}
 	}
 
 if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
@@ -812,8 +816,12 @@ if (!nResult)
 else {
 	LinkSubModels ();
 	gameData.models.bHaveHiresModel [uint (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
-	if (gameStates.app.bCacheModelData)
-		SaveBinary ();
+	if (gameStates.app.bCacheModelData) {
+		if (nModel == 108)
+			SaveBinary (filename);
+		else
+			SaveBinary ();
+		}
 	}
 aseFile = NULL;
 return nResult;
@@ -863,11 +871,18 @@ return 1;
 
 int CModel::SaveBinary (void)
 {
-	CFile		cf;
-	int		h, i;
 	char		szFilename [FILENAME_LEN];
 
 sprintf (szFilename, "model%03d.bin", m_nModel);
+return SaveBinary (szFilename);
+}
+
+//------------------------------------------------------------------------------
+
+int CModel::SaveBinary (const char* szFilename)
+{
+	CFile		cf;
+
 if (!cf.Open (szFilename, gameFolders.szModelDir [m_bCustom], "wb", 0))
 	return 0;
 cf.WriteInt (MODEL_DATA_VERSION);
@@ -877,6 +892,8 @@ cf.WriteInt (m_nVerts);
 cf.WriteInt (m_nFaces);
 cf.WriteInt (m_bCustom);
 cf.WriteInt (m_textures.m_nBitmaps);
+
+int h, i;
 
 for (i = 0; i < m_textures.m_nBitmaps; i++) {
 	h = int (m_textures.m_names [i].Length ());
@@ -940,11 +957,18 @@ return 1;
 
 int CModel::ReadBinary (short nModel, int bCustom, time_t tASE)
 {
-	CFile		cf;
-	int		h, i;
 	char		szFilename [FILENAME_LEN];
 
 sprintf (szFilename, "model%03d.bin", nModel);
+return ReadBinary (szFilename, bCustom, tASE);
+}
+
+//------------------------------------------------------------------------------
+
+int CModel::ReadBinary (const char* szFilename, int bCustom, time_t tASE)
+{
+	CFile		cf;
+	int		h, i;
 
 time_t tBIN = cf.Date (szFilename, gameFolders.szModelDir [bCustom], 0);
 
