@@ -287,7 +287,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void RotateMarker (bool bRotate)
+void RotateMarker (void)
 {
 	int	nObject; 
 

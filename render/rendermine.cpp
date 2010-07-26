@@ -128,15 +128,21 @@ else {
 
 void DoRenderObject (int nObject, int nWindow)
 {
-nDbgObj = nObject;
+#if DBG
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
+#endif
 #if 0 //DBG
 if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount) 
 	return;
 #endif
 
 CObject*	objP = OBJECTS + nObject;
+
+#if DBG
+if (nWindow && (objP->info.nType == OBJ_WEAPON))
+	nWindow = nWindow;
+#endif
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
