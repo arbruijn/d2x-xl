@@ -1232,7 +1232,7 @@ void FixObjectSizes (void)
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP, i)
-	objP->info.xSize = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].Rad ();
+	objP->info.xSize = gameData.models.polyModels [0][objP->ModelId ()].Rad ();
 }
 
 //------------------------------------------------------------------------------
@@ -1550,11 +1550,11 @@ return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (i
 
 //------------------------------------------------------------------------------
 
-int CObject::ModelId (void)
+int CObject::ModelId (bool bRaw)
 {
-return (info.nType == OBJ_PLAYER) 
-		 ? rType.polyObjInfo.nModel + gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip
-		 : rType.polyObjInfo.nModel;
+return (bRaw || (info.nType != OBJ_PLAYER))
+		 ? rType.polyObjInfo.nModel
+		 : rType.polyObjInfo.nModel + gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip;
 }
 
 //------------------------------------------------------------------------------

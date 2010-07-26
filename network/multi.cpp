@@ -2191,7 +2191,7 @@ if (objP->info.nType == OBJ_GHOST)
 void MultiSetObjectTextures (CObject *objP)
 {
 	int				id, i, j;
-	CPolyModel*		modelP = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
+	CPolyModel*		modelP = gameData.models.polyModels [0] + objP->ModelId ();
 	tBitmapIndex*	bmiP;
 
 id = (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId % MAX_PLAYER_COLORS);

@@ -963,7 +963,7 @@ class CObject : public CObjectInfo {
 		bool IsGuideBot (void);
 		bool IsThief (void);
 
-		int ModelId (void);
+		int ModelId (bool bRaw = false);
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);

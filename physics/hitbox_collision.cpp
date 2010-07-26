@@ -299,8 +299,8 @@ fix CheckHitboxToHitbox (CFixVector& intersection, CObject *objP1, CObject *objP
 {
 	CFixVector		vHit, vRef = OBJPOS (objP2)->vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
-	CModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->rType.polyObjInfo.nModel;
-	CModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->rType.polyObjInfo.nModel;
+	CModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
+	CModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
 	tBox				hb1 [MAX_HITBOXES + 1];
 	tBox				hb2 [MAX_HITBOXES + 1];
 	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;
@@ -362,7 +362,7 @@ fix CheckVectorToHitbox (CFixVector& intersection, CFixVector *p0, CFixVector *p
 {
 	int				iModel, nModels;
 	fix				xDist = 0x7fffffff, dMin = 0x7fffffff;
-	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
+	CModelHitboxes	*pmhb = gameData.models.hitboxes + objP->ModelId ();
 	tBox				hb [MAX_HITBOXES + 1];
 	CFixVector		vHit;
 

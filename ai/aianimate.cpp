@@ -108,7 +108,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 	for (int nJoint = 0; nJoint < nJointPositions; nJoint++) {
 		int				jointnum = jointPositions [nJoint].jointnum;
 
-		if (jointnum >= gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ())
+		if (jointnum >= gameData.models.polyModels [0][objP->ModelId ()].ModelCount ())
 			continue;
 
 		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
@@ -159,7 +159,7 @@ void AIFrameAnimation (CObject *objP)
 {
 	int	nObject = objP->Index ();
 	int	nJoint;
-	int	nJoints = gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount ();
+	int	nJoints = gameData.models.polyModels [0][objP->ModelId ()].ModelCount ();
 
 for (nJoint = 1; nJoint < nJoints; nJoint++) {
 	fix				deltaToGoal;

@@ -93,7 +93,7 @@ if (!SHOW_OBJ_FX)
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (gameOpts->render.coronas.bShots && glare.Load ()) {
-	tHitbox*			phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
+	tHitbox*			phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
 	float				fLength = X2F (phb->vMax [Z] - phb->vMin [Z]) / 2;
 	tRgbaColorf		color;
 
@@ -230,7 +230,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->info.nId] && gameStates.app.bHaveExtraGa
 		vCenter.Assign (objP->info.position.vPos);
 		vOffs.Assign (objP->info.position.mOrient.FVec ());
 		if (objP->info.renderType == RT_POLYOBJ) {
-			tHitbox*	phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
+			tHitbox*	phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
 			l = X2F (phb->vMax [Z] - phb->vMin [Z]);
 			dx = X2F (phb->vMax [X] - phb->vMin [X]);
 			dy = X2F (phb->vMax [Y] - phb->vMin [Y]);

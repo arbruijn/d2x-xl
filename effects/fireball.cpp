@@ -345,7 +345,7 @@ if (objP->info.renderType != RT_POLYOBJ)
 	size = 4 * Pi * pow (X2F (objP->info.xSize), 3) / 3;
 else {
 	size = 0;
-	modelP = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
+	modelP = gameData.models.polyModels [0] + objP->ModelId ();
 	if ((i = objP->rType.polyObjInfo.nSubObjFlags)) {
 		for (j = 0; i && (j < modelP->ModelCount ()); i >>= 1, j++)
 			if (i & 1)
@@ -385,11 +385,11 @@ if (nObject < 0)
 debrisP = OBJECTS + nObject;
 Assert (nSubObj < 32);
 //Set polygon-CObject-specific data
-debrisP->rType.polyObjInfo.nModel = rType.polyObjInfo.nModel;
+debrisP->rType.polyObjInfo.nModel = ModelId ();
 debrisP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
 debrisP->rType.polyObjInfo.nTexOverride = rType.polyObjInfo.nTexOverride;
 //Set physics data for this CObject
-po = gameData.models.polyModels [0] + debrisP->rType.polyObjInfo.nModel;
+po = gameData.models.polyModels [0] + debrisP->ModelId ();
 debrisP->mType.physInfo.velocity[X] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Y] = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity[Z] = RAND_MAX/2 - d_rand ();
@@ -453,10 +453,10 @@ void CObject::ExplodePolyModel (void)
 Assert (info.renderType == RT_POLYOBJ);
 CreateExplBlast ();
 RequestEffects (EXPL_LIGHTNING | SHRAPNEL_SMOKE);
-if (gameData.models.nDyingModels [rType.polyObjInfo.nModel] != -1)
-	rType.polyObjInfo.nModel = gameData.models.nDyingModels [rType.polyObjInfo.nModel];
-if (gameData.models.polyModels [0][rType.polyObjInfo.nModel].ModelCount () > 1) {
-	for (int i = 1; i < gameData.models.polyModels [0][rType.polyObjInfo.nModel].ModelCount (); i++)
+if (gameData.models.nDyingModels [ModelId ()] != -1)
+	rType.polyObjInfo.nModel = gameData.models.nDyingModels [ModelId ()];
+if (gameData.models.polyModels [0][ModelId ()].ModelCount () > 1) {
+	for (int i = 1; i < gameData.models.polyModels [0][ModelId ()].ModelCount (); i++)
 		if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 			CreateDebris (i);
 	//make parent CObject only draw center part
@@ -468,8 +468,8 @@ if (gameData.models.polyModels [0][rType.polyObjInfo.nModel].ModelCount () > 1) 
 //if the CObject has a destroyed model, switch to it.  Otherwise, delete it.
 void CObject::MaybeDelete (void)
 {
-if (gameData.models.nDeadModels [rType.polyObjInfo.nModel] != -1) {
-	rType.polyObjInfo.nModel = gameData.models.nDeadModels [rType.polyObjInfo.nModel];
+if (gameData.models.nDeadModels [ModelId ()] != -1) {
+	rType.polyObjInfo.nModel = gameData.models.nDeadModels [ModelId ()];
 	info.nFlags |= OF_DESTROYED;
 	}
 else {		//Normal, multi-stage explosion

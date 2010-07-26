@@ -215,7 +215,7 @@ CFixVector *GetGunPoints (CObject *objP, int nGun)
 if (!objP)
 	return NULL;
 
-	tGunInfo*	giP = gameData.models.gunInfo + objP->rType.polyObjInfo.nModel;
+	tGunInfo*	giP = gameData.models.gunInfo + objP->ModelId ();
 	CFixVector*	vDefaultGunPoints, *vGunPoints;
 	int			nDefaultGuns, nGuns;
 

@@ -68,7 +68,7 @@ short WeaponModel (CObject *objP)
 
 if ((nModel = WeaponToModel (objP->info.nId)))
 	return nModel;
-return objP->rType.polyObjInfo.nModel;
+return objP->ModelId ();
 }
 
 //------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 rType.polyObjInfo.nModel = nModel;
 #if 1
 if (bHasModel)
-	info.xSize = gameData.models.polyModels [0][rType.polyObjInfo.nModel].Rad ();
+	info.xSize = gameData.models.polyModels [0][ModelId ()].Rad ();
 #endif
 rType.polyObjInfo.nTexOverride = -1;
 info.xLifeLeft = IMMORTAL_TIME;
@@ -560,7 +560,7 @@ if (ci.bFading < 0) {
 	gameData.models.nLightScale = ci.xLightScale;
 	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
 								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
-								objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
+								objP->ModelId (), objP->rType.polyObjInfo.nSubObjFlags,
 								xNewLight, glow, altTextures, NULL);
 	gameData.models.nLightScale = 0;
 	glow [0] = xSaveGlow;
@@ -572,7 +572,7 @@ else {
 	fpDrawTexPolyMulti = G3DrawTexPolyFlat;
 	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
 								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
-								objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags,
+								objP->ModelId (), objP->rType.polyObjInfo.nSubObjFlags,
 								light, glow, NULL, NULL);
 	fpDrawTexPolyMulti = G3DrawTexPolyMulti;
 	gameStates.render.grAlpha = 1.0f;
@@ -611,7 +611,7 @@ else if ((objP->info.nType == OBJ_POWERUP) || (objP->info.nType == OBJ_WEAPON)) 
 		return 0;
 	}
 else
-	nModel = objP->rType.polyObjInfo.nModel;
+	nModel = objP->ModelId ();
 if (!(po = GetOOFModel (nModel)))
 	return 0;
 if (gameData.models.renderModels [1][nModel].m_bValid >= 0)
@@ -667,7 +667,7 @@ else {
 	}
 if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #if DBG
-	CPolyModel* pm = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
+	CPolyModel* pm = gameData.models.polyModels [0] + objP->ModelId ();
 #endif
 	tBitmapIndex	bm = gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride],
 						bmiP [MAX_MODEL_TEXTURES];
@@ -680,7 +680,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 	bOk = DrawPolyModel (objP, &objP->info.position.vPos,
 								&objP->info.position.mOrient,
 								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
-								objP->rType.polyObjInfo.nModel,
+								objP->ModelId (),
 								objP->rType.polyObjInfo.nSubObjFlags,
 								xLight,
 								xEngineGlow,
@@ -737,7 +737,7 @@ else {
 			}
 		bOk = DrawPolyModel (objP, &objP->info.position.vPos, &objP->info.position.mOrient,
 									objP->rType.polyObjInfo.animAngles,
-									objP->rType.polyObjInfo.nModel,
+									objP->ModelId (true),
 									objP->rType.polyObjInfo.nSubObjFlags,
 									(bGatling || bBrightPolys) ? I2X (1) : xLight,
 									xEngineGlow,
@@ -832,7 +832,7 @@ if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMin
 else {
 	if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
 		if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-			 (gameData.models.renderModels [1][objP->rType.polyObjInfo.nModel].m_bValid > 0)) {	//hires player ship
+			 (gameData.models.renderModels [1][objP->ModelId ()].m_bValid > 0)) {	//hires player ship
 			float dt = X2F (gameData.time.xGame - objP->CreationTime ());
 
 			if (dt < 1) {

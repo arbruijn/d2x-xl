@@ -198,7 +198,7 @@ for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 
 void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
-	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+	tHitbox		*pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes;
 	tQuad			*pf;
 	CFixVector	rotVerts [8];
 	int			i, j, iModel, nModels;
@@ -209,7 +209,7 @@ if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	}
 else {
 	iModel = 1;
-	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
+	nModels = gameData.models.hitboxes [objP->ModelId ()].nSubModels;
 	}
 transformation.Begin (vPos ? vPos : &objP->info.position.vPos, &objP->info.position.mOrient);
 for (; iModel <= nModels; iModel++, phb++, pmhb++) {
@@ -228,7 +228,7 @@ transformation.End ();
 
 void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 {
-	tHitbox*		pmhb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
+	tHitbox*		pmhb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
 	CFixMatrix*	viewP = objP->View ();
@@ -240,7 +240,7 @@ if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	}
 else {
 	iBox = 1;
-	nBoxes = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nHitboxes;
+	nBoxes = gameData.models.hitboxes [objP->ModelId ()].nHitboxes;
 	}
 if (!vPos)
 	vPos = &objP->info.position.vPos;

@@ -182,7 +182,7 @@ switch (info.renderType) {
 
 	case RT_POLYOBJ:
 		if (rType.polyObjInfo.nTexOverride == -1)
-			LoadModelTextures (rType.polyObjInfo.nModel);
+			LoadModelTextures (ModelId ());
 		else
 			LoadBitmap (gameData.pig.tex.bmIndex [0][rType.polyObjInfo.nTexOverride].index, 0);
 		break;
@@ -221,8 +221,8 @@ switch (info.nType) {
 
 	case OBJ_REACTOR:
 		LoadWeaponTextures (CONTROLCEN_WEAPON_NUM);
-		if (gameData.models.nDeadModels [rType.polyObjInfo.nModel] != -1)
-			LoadModelTextures (gameData.models.nDeadModels [rType.polyObjInfo.nModel]);
+		if (gameData.models.nDeadModels [ModelId ()] != -1)
+			LoadModelTextures (gameData.models.nDeadModels [ModelId ()]);
 		break;
 	}
 }

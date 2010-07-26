@@ -288,10 +288,10 @@ bVClipLoaded.Clear ();
 FORALL_OBJS (objP, i) {
 	if (objP->info.renderType != RT_POLYOBJ)
 		continue;
-	if (bModelLoaded [objP->rType.polyObjInfo.nModel])
+	if (bModelLoaded [objP->ModelId ()])
 		continue;
-	bModelLoaded [objP->rType.polyObjInfo.nModel] = true;
-	OglCachePolyModelTextures (objP->rType.polyObjInfo.nModel);
+	bModelLoaded [objP->ModelId ()] = true;
+	OglCachePolyModelTextures (objP->ModelId ());
 	}
 
 PrintLog ("   caching hostage sprites\n");

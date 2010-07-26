@@ -192,7 +192,7 @@ if (!(mdP = MorphFindData (this))) {	//maybe loaded half-morphed from disk
 	Die ();	//so kill it
 	return;
 	}
-pmP = gameData.models.polyModels [0] + mdP->objP->rType.polyObjInfo.nModel;
+pmP = gameData.models.polyModels [0] + mdP->objP->ModelId ();
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
 for (i = 0; i < pmP->ModelCount (); i++)
 	if (mdP->submodelActive [i] == 1) {
@@ -260,7 +260,7 @@ info.controlType = CT_MORPH;
 info.renderType = RT_MORPH;
 info.movementType = MT_PHYSICS;		//RT_NONE;
 mType.physInfo.rotVel = morph_rotvel;
-pmP = gameData.models.polyModels [0] + rType.polyObjInfo.nModel;
+pmP = gameData.models.polyModels [0] + ModelId ();
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
 vBoxSize [X] = max (-pmmin [X], pmmax [X]) / 2;
@@ -349,13 +349,13 @@ void CObject::MorphDraw (void)
 
 mdP = MorphFindData (this);
 Assert (mdP != NULL);
-Assert (rType.polyObjInfo.nModel < gameData.models.nPolyModels);
-pmP = gameData.models.polyModels [0] + rType.polyObjInfo.nModel;
+Assert (ModelId () < gameData.models.nPolyModels);
+pmP = gameData.models.polyModels [0] + ModelId ();
 light = ComputeObjectLight (this, NULL);
 transformation.Begin (info.position.vPos, info.position.mOrient);
 G3SetModelPoints (gameData.models.polyModelPoints.Buffer ());
 gameData.render.vertP = gameData.models.fPolyModelVerts.Buffer ();
-MorphDrawModel (pmP, 0, rType.polyObjInfo.animAngles, light, mdP, rType.polyObjInfo.nModel);
+MorphDrawModel (pmP, 0, rType.polyObjInfo.animAngles, light, mdP, ModelId ());
 gameData.render.vertP = NULL;
 transformation.End ();
 

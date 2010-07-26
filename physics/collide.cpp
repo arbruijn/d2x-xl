@@ -1407,7 +1407,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				CObject	*cloneP = OBJECTS + nClone;
 				if (weaponP->info.renderType == RT_POLYOBJ) {
 					cloneP->rType.polyObjInfo.nModel = gameData.weapons.info [cloneP->info.nId].nModel;
-					cloneP->info.xSize = FixDiv (gameData.models.polyModels [0][cloneP->rType.polyObjInfo.nModel].Rad (), 
+					cloneP->info.xSize = FixDiv (gameData.models.polyModels [0][cloneP->ModelId ()].Rad (), 
 															gameData.weapons.info [cloneP->info.nId].poLenToWidthRatio);
 					}
 				cloneP->mType.physInfo.thrust.SetZero ();

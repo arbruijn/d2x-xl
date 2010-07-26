@@ -416,7 +416,7 @@ return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY
 int CreateDebris (CObject *parentP, short nSubModel)
 {
 return CreateObject (OBJ_DEBRIS, 0, -1, parentP->info.nSegment, parentP->info.position.vPos, parentP->info.position.mOrient,
-							gameData.models.polyModels [0][parentP->rType.polyObjInfo.nModel].SubModels ().rads [nSubModel],
+							gameData.models.polyModels [0][parentP->ModelId ()].SubModels ().rads [nSubModel],
 							CT_DEBRIS, MT_PHYSICS, RT_POLYOBJ);
 }
 

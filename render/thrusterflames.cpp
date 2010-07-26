@@ -135,9 +135,9 @@ if (!tiP)
 
 m_pt = NULL;
 ti.pp = NULL;
-ti.mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
+ti.mtP = gameData.models.thrusters + objP->ModelId ();
 m_nThrusters = ti.mtP->nCount;
-if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !GetASEModel (objP->rType.polyObjInfo.nModel)) {
+if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !GetASEModel (objP->ModelId ())) {
 	if (!m_bSpectate) {
 		m_pt = gameData.render.thrusters + objP->info.nId;
 		ti.pp = m_pt->path.GetPoint ();
@@ -153,7 +153,7 @@ if (gameOpts->render.bHiresModels [0] && (objP->info.nType == OBJ_PLAYER) && !Ge
 	ti.mtP = NULL;
 	}
 else if (bAfterburnerBlob || (bMissile && !m_nThrusters)) {
-		tHitbox	*phb = &gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes [0];
+		tHitbox	*phb = &gameData.models.hitboxes [objP->ModelId ()].hitboxes [0];
 		fix		nObjRad = (phb->vMax [Z] - phb->vMin [Z]) / 2;
 
 	if (bAfterburnerBlob)
@@ -211,9 +211,12 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			viewP = objP->View ();
 		for (i = 0; i < m_nThrusters; i++) {
 			ti.fSize [i] = ti.mtP->fSize [i];
+			ti.nType [i] = ti.mtP->nType [i];
 			float h = ((ti.nType [i] & (REAR_THRUSTER | FRONTAL_THRUSTER)) == (REAR_THRUSTER | FRONTAL_THRUSTER)) ? ti.fScale : 1.5f;
 			if (m_nStyle == 1)
 				h *= 4.0f;
+			else
+				h *= 0.75f;
 			ti.fLength [i] = ti.fSize [i] * h;
 			ti.vPos [i] = *viewP * ti.mtP->vPos [i];
 			if (!gameData.models.vScale.IsZero ())
@@ -422,7 +425,7 @@ if (m_nStyle == 1) {	//2D
 	//m_ti.fLength *= 4 * m_ti.fSize;
 	for (int i = 0; i < m_nThrusters; i++) {
 		if (IsFiring (ws, i)) {
-			m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
+			m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->ModelId ())) ? 1.2f : 1.5f;
 			if (!gameData.models.vScale.IsZero ())
 				m_ti.fSize [i] *= X2F (gameData.models.vScale [Z]);
 			Render2D (m_ti.vPos [i], m_ti.vDir [i], m_ti.fSize [i], m_ti.fLength [i], &tcColor);

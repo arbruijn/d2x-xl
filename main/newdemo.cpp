@@ -725,7 +725,7 @@ switch (objP->info.renderType) {
 			objP->rType.polyObjInfo.nSubObjFlags = NDReadInt ();
 			}
 		if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_DEBRIS))
-		for (i = 0; i < gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].ModelCount (); i++)
+		for (i = 0; i < gameData.models.polyModels [0][objP->ModelId ()].ModelCount (); i++)
 			NDReadAngVec (objP->rType.polyObjInfo.animAngles[i]);
 		tmo = NDReadInt ();
 		objP->rType.polyObjInfo.nTexOverride = tmo;
@@ -943,7 +943,7 @@ switch (o.info.renderType) {
 			for (i = 0; i < MAX_SUBMODELS; i++)
 				NDWriteAngVec (o.polyObjInfo.animAngles + i);
 #endif
-		for (i = 0; i < gameData.models.polyModels [0][o.rType.polyObjInfo.nModel].ModelCount (); i++)
+		for (i = 0; i < gameData.models.polyModels [0][o.ModelId ()].ModelCount (); i++)
 			NDWriteAngVec (o.rType.polyObjInfo.animAngles[i]);
 		NDWriteInt (o.rType.polyObjInfo.nTexOverride);
 		break;
@@ -2052,7 +2052,7 @@ while (!bDone) {
 						break;
 					nPlayer--;
 					for (i = 0; i < N_PLAYER_SHIP_TEXTURES; i++)
-						mpTextureIndex [nPlayer][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [0][objP->rType.polyObjInfo.nModel].FirstTexture () + i]];
+						mpTextureIndex [nPlayer][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.models.polyModels [0][objP->ModelId ()].FirstTexture () + i]];
 					mpTextureIndex [nPlayer][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayer * 2]];
 					mpTextureIndex [nPlayer][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [gameData.pig.tex.nFirstMultiBitmap + nPlayer * 2 + 1]];
 					objP->rType.polyObjInfo.nAltTextures = nPlayer+1;

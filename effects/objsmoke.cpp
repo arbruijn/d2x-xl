@@ -196,7 +196,7 @@ if (i >= 0) {
 void DoPlayerBullets (CObject *objP)
 {
 if (gameOpts->render.ship.bBullets) {
-		int	nModel = objP->rType.polyObjInfo.nModel;
+		int	nModel = objP->ModelId ();
 		int	bHires = G3HaveModel (nModel) - 1;
 
 	if (bHires >= 0) {
@@ -254,7 +254,7 @@ if (gameOpts->render.ship.bBullets) {
 
 void DoGatlingSmoke (CObject *objP)
 {
-	int	nModel = objP->rType.polyObjInfo.nModel;
+	int	nModel = objP->ModelId ();
 	int	bHires = G3HaveModel (nModel) - 1;
 
 if (bHires >= 0) {

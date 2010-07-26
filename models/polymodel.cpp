@@ -787,10 +787,10 @@ h = 0;
 #if !BUILD_ALL_MODELS
 for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
 	if ((objP->info.nSegment >= 0) && (objP->info.nType != 255) && (objP->info.renderType == RT_POLYOBJ) &&
-		 !G3HaveModel (objP->rType.polyObjInfo.nModel)) {
-		PrintLog ("      building model %d\n", objP->rType.polyObjInfo.nModel);
+		 !G3HaveModel (objP->ModelId ())) {
+		PrintLog ("      building model %d\n", objP->ModelId ());
 #if DBG
-		if (objP->rType.polyObjInfo.nModel == nDbgModel)
+		if (objP->ModelId () == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
 		if (DrawPolygonObject (objP, 0))
@@ -826,12 +826,12 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 		nDbgObjId = nDbgObjId;
 #endif
 	o.rType.polyObjInfo.nModel = rmP->nModel;
-	if (!G3HaveModel (o.rType.polyObjInfo.nModel)) {
+	if (!G3HaveModel (o.ModelId ())) {
 #if DBG
-		if (o.rType.polyObjInfo.nModel == nDbgModel)
+		if (o.ModelId () == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
-		PrintLog ("      building model %d (%s)\n", o.rType.polyObjInfo.nModel, pszHires ? pszHires : "n/a");
+		PrintLog ("      building model %d (%s)\n", o.ModelId (), pszHires ? pszHires : "n/a");
 		if (DrawPolygonObject (&o, 0))
 			h++;
 		}

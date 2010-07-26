@@ -34,7 +34,7 @@ void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj)
 {
 
 	CFloatVector		hv;
-	tHitbox*				phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
+	tHitbox*				phb = gameData.models.hitboxes [objP->ModelId ()].hitboxes + iSubObj;
 	CFixVector			vMin = phb->vMin;
 	CFixVector			vMax = phb->vMax;
 	int					i;
@@ -57,7 +57,7 @@ if (objP->rType.polyObjInfo.nModel < 0)
 	return;
 
 	CFloatVector	v;
-	tHitbox*			pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes.Buffer ();
+	tHitbox*			pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes.Buffer ();
 	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
 	int				i, j, iBox, nBoxes, bHit = 0;
 	float				fFade;
@@ -99,7 +99,7 @@ else if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	}
 else {
 	iBox = 1;
-	nBoxes = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nHitboxes;
+	nBoxes = gameData.models.hitboxes [objP->ModelId ()].nHitboxes;
 	}
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetBlending (true);
@@ -159,10 +159,10 @@ for (; iBox <= nBoxes; iBox++) {
 //transformation.End ();
 float r = X2F (CFixVector::Dist (pmhb->vMin, pmhb->vMax) / 2);
 #if 0 //DBG //display collision point
-if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
+if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [objP->ModelId ()].tHit < 500) {
 	CObject	o;
 
-	o.info.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
+	o.info.position.vPos = gameData.models.hitboxes [objP->ModelId ()].vHit;
 	o.info.position.mOrient = objP->info.position.mOrient;
 	o.info.xSize = I2X (2);
 	objP->rType.polyObjInfo.nModel = -1;

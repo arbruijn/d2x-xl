@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //fills in gun_point
 int CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int nGun)
 {
-	CPolyModel*	pm = gameData.models.polyModels [0] + objP->rType.polyObjInfo.nModel;
+	CPolyModel*	pm = gameData.models.polyModels [0] + objP->ModelId ();
 	tRobotInfo*	botInfoP;
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
