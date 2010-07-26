@@ -538,7 +538,7 @@ if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal (bForce)
 		HUDInitMessage (TXT_REACH_SCOREGOAL2, gameData.multiplayer.players [nPlayer].callsign);
 	else {
 		HUDInitMessage (TXT_REACH_SCOREGOAL);
-		LOCALPLAYER.Shield () = I2X (200);
+		LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
 		}
 	if (!gameData.reactor.bDestroyed) {
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
@@ -1314,7 +1314,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	MultiCapObjects ();
 	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
 	shield = LOCALPLAYER.Shield ();
-	LOCALPLAYER.Shield () = -1;
+	LOCALPLAYER.SetShield (-1);
 	DropPlayerEggs (gameData.objs.consoleP);
 	LOCALPLAYER.SetShield (shield);
 	MultiSendPosition (LOCALPLAYER.nObject);
