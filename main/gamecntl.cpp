@@ -101,7 +101,7 @@ void TransferEnergyToShield (fix time)
 if (time <= 0)
 	return;
 e = min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - INITIAL_ENERGY);
-e = min (e, (MAX_SHIELD - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
+e = min (e, (LOCALPLAYER.MaxShield () - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
 if (e <= 0) {
 	if (LOCALPLAYER.Energy () <= INITIAL_ENERGY)
 		HUDInitMessage (TXT_TRANSFER_ENERGY, X2I(INITIAL_ENERGY));
@@ -110,8 +110,8 @@ if (e <= 0) {
 	return;
 }
 
-LOCALPLAYER.Energy () -= e;
-LOCALPLAYER.Shield () += e / CONVERTER_SCALE;
+LOCALPLAYER.UpdateEnergy (-e);
+LOCALPLAYER.UpdateShield (e / CONVERTER_SCALE);
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 MultiSendShield ();
 gameStates.app.bUsingConverter = 1;

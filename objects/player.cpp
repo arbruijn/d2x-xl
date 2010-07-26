@@ -289,9 +289,23 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 
 //-------------------------------------------------------------------------
 
+int CPlayerData::Index (void)
+{
+return this - gameData.multiplayer.players;
+}
+
+//-------------------------------------------------------------------------
+
+float CPlayerData::ShieldScale (void)
+{
+return shieldScale [gameData.multiplayer.weaponStates [Index ()].nShip];
+}
+
+//-------------------------------------------------------------------------
+
 fix CPlayerData::InitialShield (void)
 {
-return (nObject < 0) ? INITIAL_SHIELD : fix (INITIAL_SHIELD * OBJECTS [nObject].ShieldScale ());
+return fix (INITIAL_SHIELD * ShieldScale ());
 }
 
 //-------------------------------------------------------------------------
@@ -318,7 +332,7 @@ return shield = s;
 
 fix CPlayerData::MaxShield (void)
 {
-return (nObject < 0) ? MAX_SHIELD : fix (MAX_SHIELD  * OBJECTS [nObject].ShieldScale ());
+return fix (MAX_SHIELD * ShieldScale ());
 }
 
 //-------------------------------------------------------------------------
@@ -346,8 +360,7 @@ return energy = (e > MAX_ENERGY) ? MAX_ENERGY : e;
 
 void CPlayerData::SetObject (short n)
 {
-if (0 <= (nObject = n))
-	SetShield (Shield () * OBJECTS [n].ShieldScale ());
+nObject = n;
 }
 
 

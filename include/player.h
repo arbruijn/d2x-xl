@@ -27,10 +27,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Initial CPlayerData stat values
 #define INITIAL_ENERGY  I2X(100)    // 100% energy to start
-#define INITIAL_SHIELDS I2X(100)    // 100% shield to start
+#define INITIAL_SHIELD	I2X(100)    // 100% shield to start
 
 #define MAX_ENERGY      I2X(200)    // go up to 200
-#define MAX_SHIELD     I2X(200)
+#define MAX_SHIELD		I2X(200)
 
 #define INITIAL_LIVES               3   // start off with 3 lives
 
@@ -129,15 +129,24 @@ class __pack__ CPlayerData {
 		fix     homingObjectDist;     // Distance of nearest homing CObject.
 		sbyte   hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
 		sbyte   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
+
 	public:
 		CPlayerData () { memset (this, 0, sizeof (*this)); }
+		fix InitialShield (void);
+		fix InitialEnergy (void);
 		fix Shield (void);
 		fix Energy (void);
 		fix SetShield (fix s);
 		fix SetEnergy (fix e);
 		inline fix UpdateShield (fix delta) { SetShield (Shield () + delta); }
 		inline fix UpdateEnergy (fix delta) { SetEnergy (Energy () + delta); }
+		fix MaxShield (void);
 		void SetObject (short n);
+
+	private:
+		int Index (void);
+		float ShieldScale (void);
+
 };
 
 

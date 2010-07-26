@@ -244,7 +244,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 		fix energy = segP->Refuel (INITIAL_ENERGY - playerP->energy);
 		if (energy > 0)
 			playerP->energy += energy;
-		fix shield = segP->Repair (fix (INITIAL_SHIELDS * objP->ShieldScale ()) - playerP->Shield ());
+		fix shield = segP->Repair (fix (playerP->InitialShield ()) - playerP->Shield ());
 		if (shield > 0) {
 			playerP->UpdateShield (shield);
 			MultiSendShield ();
@@ -521,7 +521,7 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 #if DBG
 		bNeedEffect = 1;
 #else
-		bNeedEffect = gameData.multiplayer.players [info.nId].Shield () < I2X (100);
+		bNeedEffect = gameData.multiplayer.players [info.nId].Shield () < gameData.multiplayer.players [info.nId].MaxShield ();
 #endif
 	else
 		bNeedEffect = false;

@@ -1806,8 +1806,8 @@ SetD1Sound ();
 if (gameStates.app.bD1Mission) {
 	if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
 		LOCALPLAYER.Energy () = INITIAL_ENERGY;
-	if (LOCALPLAYER.Shield () < INITIAL_SHIELDS)
-		LOCALPLAYER.Shield () = INITIAL_SHIELDS;
+	if (LOCALPLAYER.Shield () < INITIAL_SHIELD)
+		LOCALPLAYER.Shield () = INITIAL_SHIELD;
 	}
 }
 

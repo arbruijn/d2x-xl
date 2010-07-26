@@ -492,7 +492,7 @@ if (damage >= DAMAGE_THRESHOLD) {
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);
 		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-		if (LOCALPLAYER.Shield () > I2X (1)*10 || bForceFieldHit)
+		if (LOCALPLAYER.Shield () > I2X (1) * 10 || bForceFieldHit)
 			ApplyDamageToPlayer (this, damage);
 	}
 return;
@@ -1215,7 +1215,7 @@ if (gameStates.app.bPlayerIsDead) {
 	gameStates.app.bPlayerIsDead = 0;
 	}
 if (LOCALPLAYER.Shield () <= 0)
-	LOCALPLAYER.Shield () = 1;
+	LOCALPLAYER.SetShield (1);
 //	If you're not invulnerable, get invulnerable!
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame;

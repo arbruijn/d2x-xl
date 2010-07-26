@@ -1877,8 +1877,8 @@ gameData.weapons.nSecondary = NDReadByte ();
 // Next bit of code to fix problem that I introduced between 1.0 and 1.1
 // check the next byte -- it _will_ be a load_newLevel event.  If it is
 // not, then we must shift all bytes up by one.
-LOCALPLAYER.Energy () = I2X (energy);
-LOCALPLAYER.Shield () = I2X (shield);
+LOCALPLAYER.SetEnergy (I2X (energy));
+LOCALPLAYER.SetShield (I2X (shield));
 bJustStartedPlayback = 1;
 return 0;
 }
@@ -2284,11 +2284,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.Shield () = I2X (shield);
+				LOCALPLAYER.SetShield (I2X (shield));
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_shield != 255)
-					LOCALPLAYER.Shield () = I2X (old_shield);
+					LOCALPLAYER.SetShield (I2X (old_shield));
 				}
 			}
 			break;
@@ -2906,8 +2906,8 @@ bshort = NDReadShort ();
 bint = NDReadInt ();
 energy = NDReadByte ();
 shield = NDReadByte ();
-LOCALPLAYER.Energy () = I2X (energy);
-LOCALPLAYER.Shield () = I2X (shield);
+LOCALPLAYER.SetEnergy (I2X (energy));
+LOCALPLAYER.SetShield (I2X (shield));
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
