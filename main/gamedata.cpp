@@ -1942,7 +1942,7 @@ gameOptions [0].render.particles.bCollisions = 0;
 gameOptions [0].render.particles.bDisperse = 1;
 gameOptions [0].render.particles.bRotate = 1;
 gameOptions [0].render.particles.bDecreaseLag = (gameOptions [0].render.nQuality < 2);
-gameOptions [0].render.particles.bAuxViews = 0;
+gameOptions [0].render.particles.bAuxViews = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.particles.bMonitors = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.particles.bWiggleBubbles = 1;
 gameOptions [0].render.particles.bWobbleBubbles = 1;
@@ -1987,7 +1987,7 @@ gameOptions [0].render.lightning.bRobots = (extraGameInfo [0].bUseLightning > 1)
 gameOptions [0].render.lightning.bStatic = 1;
 gameOptions [0].render.lightning.bOmega = 1;
 gameOptions [0].render.lightning.bRobotOmega = 1;
-gameOptions [0].render.lightning.bAuxViews = 0;
+gameOptions [0].render.lightning.bAuxViews = (gameOptions [0].render.nQuality > 1);
 gameOptions [0].render.lightning.bMonitors = 1;
 }
 

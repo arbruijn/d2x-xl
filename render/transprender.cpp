@@ -41,7 +41,7 @@ int nDbgPoly = -1, nDbgItem = -1;
 
 CTransparencyRenderer transparencyRenderer;
 
-#define LAZY_RESET 1
+#define LAZY_RESET 0
 
 static int nAdded = 0, nRendered = 0;
 
@@ -137,13 +137,13 @@ if (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY)
 #if LAZY_RESET
 if (!m_data.bAllowAdd)
 	return 0;
-if (!bTransformed && (m_data.bAllowAdd < 0))	// already added and still in buffer
+if ((bTransformed > 0) && (m_data.bAllowAdd < 0))	// already added and still in buffer
 	return 0;
 #endif
 #if RENDER_TRANSPARENCY
 	tTranspItem*		ph, *	pi;
 	tTranspItemList*	pd;
-	int					nDepth = Depth (vPos, bTransformed);
+	int					nDepth = Depth (vPos, bTransformed > 0);
 	
 if (nDepth >= I2X (nOffset))
 	nDepth -= I2X (nOffset);
@@ -334,7 +334,7 @@ if (objP->info.nType == 255)
 item.objP = objP;
 item.vScale = gameData.models.vScale;
 //transformation.Transform (vPos, OBJPOS (objP)->vPos, 0);
-return Add (tiObject, &item, sizeof (item), OBJPOS (objP)->vPos);
+return Add (tiObject, &item, sizeof (item), OBJPOS (objP)->vPos, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -402,7 +402,7 @@ else
 	v /= item.nVertices;
 	CFixVector vPos;
 	vPos.Assign (v);
-	return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true);
+	return Add ((faceP || triP) ? tiFace : tiPoly, &item, sizeof (item), vPos, 0, true, (faceP || triP) ? 0 : -1);
 	}
 }
 
