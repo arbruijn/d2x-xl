@@ -1924,8 +1924,6 @@ fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 m_info.nLineSpacing = int (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
 fontManager.SetScale (1.0f);
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
-m_info.nEnergy = X2IR (LOCALPLAYER.Energy ());
-m_info.nShield = X2IR (LOCALPLAYER.Shield ());
 m_info.nDamage [0] = gameData.objs.consoleP->AimDamage ();
 m_info.nDamage [1] = gameData.objs.consoleP->DriveDamage ();
 m_info.nDamage [2] = gameData.objs.consoleP->GunDamage ();
@@ -1934,7 +1932,7 @@ m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ?
 m_info.nEnergy = X2IR (LOCALPLAYER.Energy ());
 if (m_info.nEnergy < 0)
 	m_info.nEnergy  = 0;
-m_info.nShield = X2IR (LOCALPLAYER.shield);
+m_info.nShield = int (100.0f * float (LOCALPLAYER.Shield ()) / float (LOCALPLAYER.MaxShield ()) + 0.5f);
 if (m_info.nShield < 0)
 	m_info.nShield  = 0;
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
