@@ -315,7 +315,7 @@ objP->rType.polyObjInfo.nSubObjFlags = 0;
 objP->mType.physInfo.mass = botInfoP->mass;
 objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
-objP->info.xShields = RobotDefaultShields (objP);
+objP->SetShield (RobotDefaultShield (objP));
 default_behavior = botInfoP->behavior;
 if (ROBOTINFO (objP->info.nId).bossFlag)
 	gameData.bosses.Add (nObject);
@@ -779,7 +779,7 @@ return amount;
 // DM/050904
 // Repair centers
 // use same values as fuel centers
-fix CSegment::Repair (fix nMaxShields)
+fix CSegment::Repair (fix nMaxShield)
 {
 	static fix last_playTime=0;
 	fix amount;
@@ -792,12 +792,12 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && ((m_owner < 0) ||
 	return 0;
 if (m_function != SEGMENT_FUNC_REPAIRCEN)
 	return 0;
-if (nMaxShields <= 0) {
+if (nMaxShield <= 0) {
 	return 0;
 }
 amount = FixMul (gameData.time.xFrame, I2X (extraGameInfo [IsMultiGame].entropy.nShieldFillRate));
-if (amount > nMaxShields)
-	amount = nMaxShields;
+if (amount > nMaxShield)
+	amount = nMaxShield;
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
 if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {

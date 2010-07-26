@@ -951,7 +951,7 @@ gameData.escort.nObjNum = nObject;
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
 	if ((PlayerHasHeadlight (-1) && EGI_FLAG (headlight.bDrainPower, 0, 0, 1))	&&
-		 (X2I (LOCALPLAYER.energy) < 40) && ((X2I (LOCALPLAYER.energy) / 2) & 2) && (!gameStates.app.bPlayerIsDead))
+		 (X2I (LOCALPLAYER.Energy ()) < 40) && ((X2I (LOCALPLAYER.Energy ()) / 2) & 2) && (!gameStates.app.bPlayerIsDead))
 		BuddyMessage (TXT_HEADLIGHT_WARN);
 	}
 if (gameStates.app.cheats.bMadBuddy)

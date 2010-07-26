@@ -436,7 +436,7 @@ KillGatlingSmoke (objP);
 
 void DoRobotSmoke (CObject *objP)
 {
-	int			h = -1, nObject, nSmoke, nShields = 0, nParts;
+	int			h = -1, nObject, nSmoke, nShield = 0, nParts;
 	float			nScale;
 	CFixVector	pos, vDir;
 
@@ -446,11 +446,11 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
 		KillObjectSmoke (nObject);
 	return;
 	}
-if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
-	nShields = X2IR (RobotDefaultShields (objP));
-	h = X2IR (objP->info.xShields) * 100 / nShields;
+	nShield = X2IR (RobotDefaultShield (objP));
+	h = X2IR (objP->info.xShield) * 100 / nShield;
 	}
 if (h < 0)
 	return;
@@ -461,12 +461,12 @@ if (nParts > 0) {
 	if (vDirP) // if the robot is standing still, let the smoke move away from it
 		vDir = OBJPOS (objP)->mOrient.FVec () * -(I2X (1) / 12);
 
-	if (nShields > 4000)
-		nShields = 4000;
-	else if (nShields < 1000)
-		nShields = 1000;
+	if (nShield > 4000)
+		nShield = 4000;
+	else if (nShield < 1000)
+		nShield = 1000;
 	CreateDamageExplosion (nParts, nObject);
-	//nParts *= nShields / 10;
+	//nParts *= nShield / 10;
 	nParts = BOT_MAX_PARTS;
 	nScale = (float) sqrt (8.0 / X2F (objP->info.xSize));
 	nScale *= 1.0f + h / 25.0f;
@@ -501,7 +501,7 @@ else
 
 void DoReactorSmoke (CObject *objP)
 {
-	int			h = -1, nObject, nSmoke, nShields = 0, nParts;
+	int			h = -1, nObject, nSmoke, nShield = 0, nParts;
 	CFixVector	vDir, vPos;
 
 nObject = objP->Index ();
@@ -510,11 +510,11 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
 		KillObjectSmoke (nObject);
 	return;
 	}
-if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
-	nShields = X2IR (gameData.bots.info [gameStates.app.bD1Mission][objP->info.nId].strength);
-	h = nShields ? X2IR (objP->info.xShields) * 100 / nShields : 0;
+	nShield = X2IR (gameData.bots.info [gameStates.app.bD1Mission][objP->info.nId].strength);
+	h = nShield ? X2IR (objP->info.xShield) * 100 / nShield : 0;
 	}
 if (h < 0)
 	h = 0;
@@ -557,7 +557,7 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
 		KillObjectSmoke (nObject);
 	return;
 	}
-if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
@@ -613,7 +613,7 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris)) {
 		KillObjectSmoke (nObject);
 	return;
 	}
-if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)) ||
+if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)) ||
 	 (gameOpts->render.nDebrisLife && (I2X (nDebrisLife [gameOpts->render.nDebrisLife]) - objP->info.xLifeLeft > I2X (10))))
 	nParts = 0;
 else
@@ -720,7 +720,7 @@ void DoBombSmoke (CObject *objP)
 if (gameStates.app.bNostalgia || !gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	return;
 nObject = objP->Index ();
-if ((objP->info.xShields < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else
 	nParts = -BOMB_MAX_PARTS;

@@ -646,7 +646,7 @@ typedef struct tGameplayStates {
 	int bLastAfterburnerState;
 	fix xLastAfterburnerCharge;
 	fix nPlayerSpeed;
-	fix xStartingShields;
+	fix xStartingShield;
 	CFixVector vTgtDir;
 	int nDirSteps;
 	int nInitialLives;
@@ -2710,7 +2710,7 @@ class CBossInfo {
 		fix					m_nLastGateTime;
 		fix					m_nGateInterval;
 	#if DBG
-		fix					m_xPrevShields;
+		fix					m_xPrevShield;
 	#endif
 		int					m_bHitThisFrame;
 		int					m_bHasBeenHit;

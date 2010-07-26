@@ -455,7 +455,7 @@ FORALL_ACTOR_OBJS (objP, i) {
 				gameData.reactor.bPresent = 1;
 				rStatP->nObject = objP->Index ();
 				if (bNew) {
-					objP->info.xShields = ReactorStrength ();
+					objP->SetShield (ReactorStrength ());
 					//	Say the control center has not yet been hit.
 					rStatP->bHit = 0;
 					rStatP->bSeenPlayer = 0;

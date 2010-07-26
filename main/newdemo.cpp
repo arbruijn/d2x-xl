@@ -575,7 +575,7 @@ objP->info.nId = NDReadByte ();
 if (gameData.demo.nVersion > DEMO_VERSION + 1) {
 	if (bRevertFormat > 0)
 		bRevertFormat = 0;
-	objP->info.xShields = NDReadFix ();
+	objP->SetShield (NDReadFix ());
 	if (!(bRevertFormat || bSkip))
 		bRevertFormat = gameOpts->demo.bRevertFormat;
 	}
@@ -845,7 +845,7 @@ if ((o.info.renderType == RT_NONE) && (o.info.nType != OBJ_CAMERA))
 	return;
 NDWriteByte (o.info.nId);
 if (!(gameStates.app.bNostalgia || gameOpts->demo.bOldFormat))
-	NDWriteFix (o.info.xShields);
+	NDWriteFix (o.info.xShield);
 NDWriteByte (o.info.nFlags);
 NDWriteShort ((short) o.info.nSignature);
 NDWritePosition (&o);
@@ -1063,8 +1063,8 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 NDWriteByte ((sbyte)LOCALPLAYER.laserLevel);
 //  Support for missions added here
 NDWriteString (gameStates.app.szCurrentMissionFile);
-NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.energy)));
-NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shields)));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.Energy ())));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shield ())));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
@@ -1385,7 +1385,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordPlayerShields (int old_shield, int shield)
+void NDRecordPlayerShield (int old_shield, int shield)
 {
 if (gameStates.render.cameras.bActive)
 	return;
@@ -1877,8 +1877,8 @@ gameData.weapons.nSecondary = NDReadByte ();
 // Next bit of code to fix problem that I introduced between 1.0 and 1.1
 // check the next byte -- it _will_ be a load_newLevel event.  If it is
 // not, then we must shift all bytes up by one.
-LOCALPLAYER.energy = I2X (energy);
-LOCALPLAYER.shields = I2X (shield);
+LOCALPLAYER.Energy () = I2X (energy);
+LOCALPLAYER.shield () = I2X (shield);
 bJustStartedPlayback = 1;
 return 0;
 }
@@ -2246,11 +2246,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.energy = I2X (energy);
+				LOCALPLAYER.Energy () = I2X (energy);
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_energy != 255)
-					LOCALPLAYER.energy = I2X (old_energy);
+					LOCALPLAYER.Energy () = I2X (old_energy);
 				}
 			}
 			break;
@@ -2284,11 +2284,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.shields = I2X (shield);
+				LOCALPLAYER.shield () = I2X (shield);
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_shield != 255)
-					LOCALPLAYER.shields = I2X (old_shield);
+					LOCALPLAYER.shield () = I2X (old_shield);
 				}
 			}
 			break;
@@ -2906,8 +2906,8 @@ bshort = NDReadShort ();
 bint = NDReadInt ();
 energy = NDReadByte ();
 shield = NDReadByte ();
-LOCALPLAYER.energy = I2X (energy);
-LOCALPLAYER.shields = I2X (shield);
+LOCALPLAYER.Energy () = I2X (energy);
+LOCALPLAYER.shield () = I2X (shield);
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
@@ -3306,8 +3306,8 @@ else {
 NDWriteShort (ND_EVENT_EOF);
 NDWriteInt (ND_EVENT_EOF);
 byteCount += 10;       // from gameData.demo.nFrameBytesWritten
-NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.energy)));
-NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shields)));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.Energy ())));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shield ())));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);

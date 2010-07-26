@@ -375,13 +375,13 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 //LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 fontManager.SetColorRGBi (BLACK_RGBA, 1, 0, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
-sprintf (szShield, "%d", m_info.nShields);
+sprintf (szShield, "%d", m_info.nShield);
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 
 						  -(ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
 						  -(ScaleY (SB_SHIELD_NUM_Y) + HeightPad ()), 
-						  "%d", m_info.nShields);
+						  "%d", m_info.nShield);
 fontManager.SetScale (1.0f);
 CCanvas::Pop ();
 }
@@ -393,7 +393,7 @@ void CStatusBar::DrawShieldBar (void)
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) || (m_info.tInvul <= 0)) {
 	CCanvas::Push ();
 	CCanvas::SetCurrent (CurrentGameScreen ());
-	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShields >= 100) ? 9 : (m_info.nShields / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
+	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShield >= 100) ? 9 : (m_info.nShield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
 	CCanvas::Pop ();
 	}
 }

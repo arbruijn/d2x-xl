@@ -77,7 +77,7 @@ SetLifeLeft (
 	 ((gameData.app.nGameMode & GM_ENTROPY) &&  (nType == OBJ_POWERUP) &&  (nId == POW_HOARD_ORB) &&  (extraGameInfo [1].entropy.nVirusLifespan > 0)) ?
 		I2X (extraGameInfo [1].entropy.nVirusLifespan) : IMMORTAL_TIME);
 SetAttachedObj (-1);
-SetShields (I2X (20));
+SetShield (I2X (20));
 SetSegment (-1);					//set to zero by memset, above
 LinkToSeg (nSegment);
 }

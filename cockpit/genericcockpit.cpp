@@ -433,7 +433,7 @@ if (Hide ())
 	return;
 if (gameStates.render.bRearView)
 	return;
-if ((LOCALPLAYER.energy <= I2X (10)) || !(LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION))
+if ((LOCALPLAYER.Energy () <= I2X (10)) || !(LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION))
 	return;
 
 	char	szScore [40];
@@ -1924,19 +1924,19 @@ fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 m_info.nLineSpacing = int (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
 fontManager.SetScale (1.0f);
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
-m_info.nEnergy = X2IR (LOCALPLAYER.energy);
-m_info.nShields = X2IR (LOCALPLAYER.shields);
+m_info.nEnergy = X2IR (LOCALPLAYER.Energy ());
+m_info.nShield = X2IR (LOCALPLAYER.Shield ());
 m_info.nDamage [0] = gameData.objs.consoleP->AimDamage ();
 m_info.nDamage [1] = gameData.objs.consoleP->DriveDamage ();
 m_info.nDamage [2] = gameData.objs.consoleP->GunDamage ();
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
-m_info.nEnergy = X2IR (LOCALPLAYER.energy);
+m_info.nEnergy = X2IR (LOCALPLAYER.Energy ());
 if (m_info.nEnergy < 0)
 	m_info.nEnergy  = 0;
-m_info.nShields = X2IR (LOCALPLAYER.shields);
-if (m_info.nShields < 0)
-	m_info.nShields  = 0;
+m_info.nShield = X2IR (LOCALPLAYER.shield);
+if (m_info.nShield < 0)
+	m_info.nShield  = 0;
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.tInvul = (LOCALPLAYER.invulnerableTime == 0x7fffffff) ? LOCALPLAYER.invulnerableTime : LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
 m_info.nColor = WHITE_RGBA;
@@ -2050,11 +2050,11 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 		}
 
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
-		m_history [gameStates.render.vr.nCurrentPage].shields = m_info.nShields ^ 1;
+		m_history [gameStates.render.vr.nCurrentPage].shields = m_info.nShield ^ 1;
 	else {
-		if (m_info.nShields != m_history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
-			NDRecordPlayerShields (m_history [gameStates.render.vr.nCurrentPage].shields, m_info.nShields);
-			m_history [gameStates.render.vr.nCurrentPage].shields = m_info.nShields;
+		if (m_info.nShield != m_history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
+			NDRecordPlayerShield (m_history [gameStates.render.vr.nCurrentPage].shields, m_info.nShield);
+			m_history [gameStates.render.vr.nCurrentPage].shields = m_info.nShield;
 			}
 		}
 	if (LOCALPLAYER.flags != m_history [gameStates.render.vr.nCurrentPage].flags) {

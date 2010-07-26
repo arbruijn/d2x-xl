@@ -116,7 +116,7 @@ SlowMotionMessage ();
 
 int ToggleSlowMotion (void)
 {
-	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > I2X (10)) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
+	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.Energy () > I2X (10)) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
 	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & (PLAYER_FLAGS_SLOWMOTION | PLAYER_FLAGS_BULLETTIME)));
 	int	bSlowMotion = bSlowMotionOk && (controls [0].slowMotionCount > 0);
 	int	bBulletTime = bBulletTimeOk && (controls [0].bulletTimeCount > 0);
@@ -127,9 +127,9 @@ controls [0].slowMotionCount = 0;
 if (SlowMotionActive ()) {
 	if (!gameStates.app.cheats.bSpeed)
 #if 0
-		LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
+		LOCALPLAYER.Energy () -= gameData.time.xFrame * (1 + BulletTimeActive ());
 #else
-		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 6;
+		LOCALPLAYER.Energy () -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 6;
 #endif
 	if (!bSlowMotionOk) {
 		if (gameStates.gameplay.slowmo [0].nState != -1) {

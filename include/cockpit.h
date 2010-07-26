@@ -79,7 +79,7 @@ class CCockpitHistory {
 		int		score;
 		int		energy;
 		int		shields;
-		uint	flags;
+		uint		flags;
 		int		bCloak;
 		int		lives;
 		fix		afterburner;
@@ -116,7 +116,7 @@ class CCockpitInfo {
 		int	fontHeight;
 		int	heightPad;
 		int	nCockpit;
-		int	nShields;
+		int	nShield;
 		int	nEnergy;
 		int	bCloak;
 		int	nDamage [3];

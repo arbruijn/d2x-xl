@@ -146,13 +146,13 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [game
 	else {
 		fix xChargeUp = min (gameData.time.xFrame / 8, I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
 		if (xChargeUp > 0) {
-			fix xCurEnergy = LOCALPLAYER.energy - I2X (10);
+			fix xCurEnergy = LOCALPLAYER.Energy () - I2X (10);
 			xCurEnergy = max (xCurEnergy, 0) / 10;	//don't drop below 10
 			if (xCurEnergy > 0) {	//maybe limit charge up by energy
 				xChargeUp = min (xChargeUp, xCurEnergy / 10);
 				if (xChargeUp > 0) {
 					gameData.physics.xAfterburnerCharge += xChargeUp;
-					LOCALPLAYER.energy -= 100 * xChargeUp / 10;	//full charge uses 10% of energy
+					LOCALPLAYER.Energy () -= 100 * xChargeUp / 10;	//full charge uses 10% of energy
 					}
 				}
 			}

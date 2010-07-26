@@ -666,7 +666,7 @@ switch (nType) {
 			objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId).mass;
 			objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
 			objP->mType.physInfo.flags |= (PF_LEVELLING);
-			objP->info.xShields = ROBOTINFO (objP->info.nId).strength;
+			objP->SetShield (ROBOTINFO (objP->info.nId).strength);
 			objP->cType.aiInfo.behavior = AIB_NORMAL;
 			gameData.ai.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
 			gameData.ai.localInfo [nObject].targetAwarenessTime = I2X (3);
@@ -704,24 +704,24 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 		}
 	else {
 		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
-			if (LOCALPLAYER.shields >= I2X (100)) {
+			if (LOCALPLAYER.Shield () >= I2X (100)) {
 				if (d_rand () > 16384) {
 					return -1;
 					}
 				} 
-			else  if (LOCALPLAYER.shields >= I2X (150)) {
+			else  if (LOCALPLAYER.Shield () >= I2X (150)) {
 				if (d_rand () > 8192) {
 					return -1;
 					}
 				}
 			}
 		else if (objP->info.contains.nId == POW_ENERGY) {
-			if (LOCALPLAYER.energy >= I2X (100)) {
+			if (LOCALPLAYER.Energy () >= I2X (100)) {
 				if (d_rand () > 16384) {
 					return -1;
 					}
 				} 
-			else if (LOCALPLAYER.energy >= I2X (150)) {
+			else if (LOCALPLAYER.Energy () >= I2X (150)) {
 				if (d_rand () > 8192) {
 					return -1;
 					}

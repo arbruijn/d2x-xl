@@ -66,9 +66,9 @@ LOCALPLAYER.score = 0;
 void MultiDoCheatPenalty ()
 {
 DoCheatPenalty ();
-LOCALPLAYER.shields = I2X (1);
-MultiSendShields ();
-LOCALPLAYER.energy = I2X (1);
+LOCALPLAYER.Shield () = I2X (1);
+MultiSendShield ();
+LOCALPLAYER.Energy () = I2X (1);
 if (gameData.app.nGameMode & GM_MULTI) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 	sprintf (gameData.multigame.msg.szMsg, TXT_CRIPPLED, LOCALPLAYER.callsign);
@@ -122,7 +122,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else 
-			objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
+			objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);
 		nKilled++;
@@ -147,7 +147,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
+			objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
 			objP->info.nFlags |= OF_ARMAGEDDON;
 			}
 		}
@@ -175,7 +175,7 @@ else {
 			if (gameStates.app.bNostalgia)
 				objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			else {
-				objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
+				objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
 				objP->info.nFlags |= OF_ARMAGEDDON;
 				}
 			gameStates.gameplay.bKillBossCheat = 1;
@@ -243,7 +243,7 @@ FORALL_ROBOT_OBJS (objP, i)
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
-			objP->ApplyDamageToRobot (objP->info.xShields + 1, -1);
+			objP->ApplyDamageToRobot (objP->info.xShield + 1, -1);
 			objP->info.nFlags |= OF_ARMAGEDDON;
 			}
 		if (bVerbose)
@@ -369,9 +369,9 @@ LOCALPLAYER.flags |= PLAYER_FLAGS_ALL_KEYS;
 
 void BlueOrbCheat (int bVerbose)
 {
-if (BoostVal (&LOCALPLAYER.shields, MAX_SHIELDS)) {
-	MultiSendShields ();
-	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.shields));
+if (BoostVal (&LOCALPLAYER.Shield (), MAX_SHIELDS)) {
+	MultiSendShield ();
+	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Shield ()));
 	}
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
@@ -451,8 +451,8 @@ if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segs.nLastSegment)) {
 
 void ElectroCheat (int bVerbose)
 {
-if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
-	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.energy));
+if (BoostVal (&LOCALPLAYER.Energy (), MAX_ENERGY))
+	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Energy ()));
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 }
@@ -504,10 +504,10 @@ if (bVerbose)
 
 void GasolineCheat (int bVerbose)
 {
-LOCALPLAYER.shields = MAX_SHIELDS;
+LOCALPLAYER.Shield () = MAX_SHIELDS;
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
-MultiSendShields ();
-LOCALPLAYER.energy = MAX_ENERGY;
+MultiSendShield ();
+LOCALPLAYER.Energy () = MAX_ENERGY;
 if (bVerbose)
 	HUDInitMessage (TXT_SLURP);
 }
@@ -782,7 +782,7 @@ bLastSecondaryWasSuper [PROXMINE_INDEX] = 1;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
 
-LOCALPLAYER.energy = MAX_ENERGY;
+LOCALPLAYER.Energy () = MAX_ENERGY;
 if (gameStates.app.bD1Mission)
 	LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
 else
@@ -1023,8 +1023,8 @@ void DoCheatMenu ()
 	m.AddCheck ("Invulnerability", LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE); 
 	m.AddCheck ("Cloaked", LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED);
 	m.AddCheck ("All keys", 0);
-	m.AddNumber ("% Energy", X2I (LOCALPLAYER.energy), 0, 200);
-	m.AddNumber ("% Shields", X2I (LOCALPLAYER.shields), 0, 200);
+	m.AddNumber ("% Energy", X2I (LOCALPLAYER.Energy ()), 0, 200);
+	m.AddNumber ("% Shield", X2I (LOCALPLAYER.Shield ()), 0, 200);
 	m.AddText ("Score:");
 	m.AddInput (szScore, 10);
 	m.AddNumber ("Laser Level", LOCALPLAYER.laserLevel + 1, 0, MAX_SUPER_LASER_LEVEL + 1); 
@@ -1049,8 +1049,8 @@ void DoCheatMenu ()
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
 
 		if (m [2].m_value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
-		LOCALPLAYER.energy=I2X (m [3].m_value);
-		LOCALPLAYER.shields=I2X (m [4].m_value);
+		LOCALPLAYER.Energy ()=I2X (m [3].m_value);
+		LOCALPLAYER.Shield ()=I2X (m [4].m_value);
 		LOCALPLAYER.score = atoi (m [6].m_text);
 		//if (m [7].m_value) LOCALPLAYER.laserLevel=0;
 		//if (m [8].m_value) LOCALPLAYER.laserLevel=1;

@@ -678,7 +678,7 @@ if (pfnTIRStart)
 if (!setjmp (gameExitPoint)) {
 	for (;;) {
 		PROF_START
-		int playerShields;
+		int playerShield;
 			// GAME LOOP!
 #if DBG
 		if (automap.Display ())
@@ -691,7 +691,7 @@ if (!setjmp (gameExitPoint)) {
 #endif
 			 //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
 			}
-		playerShields = LOCALPLAYER.shields;
+		playerShield = LOCALPLAYER.Shield ();
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
 		try {
@@ -731,7 +731,7 @@ if (!setjmp (gameExitPoint)) {
 				gameStates.app.bSingleStep = 0;
 			}
 		//if the CPlayerData is taking damage, give up guided missile control
-		if (LOCALPLAYER.shields != playerShields)
+		if (LOCALPLAYER.Shield () != playerShield)
 			ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 		//see if redbook song needs to be restarted
 		redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.

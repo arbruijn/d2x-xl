@@ -288,3 +288,8 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 }
 
 //-------------------------------------------------------------------------
+
+fix CPlayerData::Shield (void) { return (nObject < 0) ? 0 : OBJECTS [nObject].Shield (); }
+
+fix CPlayerData::Energy (void) { return (nObject < 0) ? 0 : OBJECTS [nObject].Energy (); }
+//-------------------------------------------------------------------------

@@ -339,7 +339,7 @@ for (i = 0; i < 2; i++) {
 				}
 			}
 		else {
-			bAvailable = (LOCALPLAYER.energy > gameData.weapons.info [l].xEnergyUsage);
+			bAvailable = (LOCALPLAYER.Energy () > gameData.weapons.info [l].xEnergyUsage);
 			if (l == 0) {//Lasers
 				sprintf (szAmmo, "%d", (ll > MAX_LASER_LEVEL) ? MAX_LASER_LEVEL + 1 : ll + 1);
 				fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
@@ -560,7 +560,7 @@ for (j = firstItem; j < n; j++) {
 		}
 	else
 		bHave = LOCALPLAYER.flags & nInvFlags [j];
-	bAvailable = (LOCALPLAYER.energy > nEnergyType [j]);
+	bAvailable = (LOCALPLAYER.Energy () > nEnergyType [j]);
 #if 1
 	if (bHave) {
 		if (bAvailable)

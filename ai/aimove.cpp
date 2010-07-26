@@ -272,7 +272,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 			fix	xDamageScale;
 
 			if (botInfoP->strength)
-				xDamageScale = FixDiv (objP->info.xShields, botInfoP->strength);
+				xDamageScale = FixDiv (objP->info.xShield, botInfoP->strength);
 			else
 				xDamageScale = I2X (1);
 			if (xDamageScale > I2X (1))
@@ -485,7 +485,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 #if TRACE
 		console.printf (CON_DBG, "Note: Killing robot #%i because he's badly stuck outside the mine.\n", objP->Index ());
 #endif
-		objP->ApplyDamageToRobot (objP->info.xShields*2, objP->Index ());
+		objP->ApplyDamageToRobot (objP->info.xShield*2, objP->Index ());
 	}
 }
 

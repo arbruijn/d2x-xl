@@ -96,10 +96,10 @@ int CObject::ApplyDamageToClutter (fix xDamage)
 {
 if (info.nFlags & OF_EXPLODING)
 	return 0;
-if (info.xShields < 0)
+if (info.xShield < 0)
 	return 0;	//clutter already dead...
-info.xShields -= xDamage;
-if (info.xShields < 0) {
+info.xShield -= xDamage;
+if (info.xShield < 0) {
 	Explode (0);
 	return 1;
 	}
@@ -492,7 +492,7 @@ if (damage >= DAMAGE_THRESHOLD) {
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);
 		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-		if (LOCALPLAYER.shields > I2X (1)*10 || bForceFieldHit)
+		if (LOCALPLAYER.Shield () > I2X (1)*10 || bForceFieldHit)
 			ApplyDamageToPlayer (this, damage);
 	}
 return;
@@ -560,7 +560,7 @@ if (xDamage > 0) {
 			ApplyDamageToPlayer (this, xDamage);
 		}
 	if (info.nType == OBJ_ROBOT) {
-		ApplyDamageToRobot (info.xShields + 1, OBJ_IDX (this));
+		ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (this));
 		}
 
 #ifdef TACTILE
@@ -746,7 +746,7 @@ if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate 
 	}
 if (info.nId == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-wallType = segP->ProcessWallHit (nHitWall, info.xShields, nPlayer, this);
+wallType = segP->ProcessWallHit (nHitWall, info.xShield, nPlayer, this);
 // Wall is volatile if either tmap 1 or 2 is volatile
 if ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	 (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE))) {
@@ -957,7 +957,7 @@ if (playerObjP->info.nId == gameData.multiplayer.nLocalPlayer) {
 	if (ROBOTINFO (info.nId).companion)	//	Player and companion don't Collide.
 		return 1;
 	if (ROBOTINFO (info.nId).kamikaze) {
-		ApplyDamageToRobot (info.xShields + 1, OBJ_IDX (playerObjP));
+		ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (playerObjP));
 #if DBG
 		if (playerObjP == gameData.objs.consoleP)
 #else
@@ -1049,9 +1049,9 @@ if (OBJECTS [nAttacker].info.nId == gameData.multiplayer.nLocalPlayer) {
 		gameData.reactor.states [i].bHit = 1;
 	AIDoCloakStuff ();
 	}
-if (info.xShields >= 0)
-	info.xShields -= xDamage;
-if ((info.xShields < 0) && !(info.nFlags & (OF_EXPLODING | OF_DESTROYED))) {
+if (info.xShield >= 0)
+	info.xShield -= xDamage;
+if ((info.xShield < 0) && !(info.nFlags & (OF_EXPLODING | OF_DESTROYED))) {
 	/*if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)*/
 	extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (this);
@@ -1127,9 +1127,9 @@ if (WeaponIsMine (info.nId)) {
 if (mType.physInfo.flags & PF_PERSISTENT) {
 	//	Weapons do a lot of damage to weapons, other OBJECTS do much less.
 	if (!(otherObjP->mType.physInfo.flags & PF_PERSISTENT)) {
-		info.xShields -= otherObjP->info.xShields / ((otherObjP->info.nType == OBJ_WEAPON) ? 2 : 4);
-		if (info.xShields <= 0) {
-			info.xShields = 0;
+		info.xShield -= otherObjP->info.xShield / ((otherObjP->info.nType == OBJ_WEAPON) ? 2 : 4);
+		if (info.xShield <= 0) {
+			SetShield (0);
 			Die ();	// info.xLifeLeft = 1;
 			}
 		}
@@ -1149,7 +1149,7 @@ if (info.nId == OMEGA_ID)
 	if (!OkToDoOmegaDamage (this))
 		return 1;
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
-	fix damage = info.xShields;
+	fix damage = info.xShield;
 	if (OBJECTS [cType.laserInfo.parent.nObject].info.nId == gameData.multiplayer.nLocalPlayer)
 		if (0 <= (i = FindReactor (reactorP)))
 			gameData.reactor.states [i].bHit = 1;
@@ -1174,11 +1174,11 @@ return 1;
 int CObject::CollideWeaponAndClutter (CObject* clutterP, CFixVector& vHitPt)
 {
 ubyte exp_vclip = VCLIP_SMALL_EXPLOSION;
-if (clutterP->info.xShields >= 0)
-	clutterP->info.xShields -= info.xShields;
+if (clutterP->info.xShield >= 0)
+	clutterP->info.xShield -= info.xShield;
 audio.CreateSegmentSound (SOUND_LASER_HIT_CLUTTER, (short) info.nSegment, 0, vHitPt);
 /*Object*/CreateExplosion ((short) clutterP->info.nSegment, vHitPt, ((clutterP->info.xSize / 3) * 3) / 4, exp_vclip);
-if ((clutterP->info.xShields < 0) && !(clutterP->info.nFlags & (OF_EXPLODING | OF_DESTROYED)))
+if ((clutterP->info.xShield < 0) && !(clutterP->info.nFlags & (OF_EXPLODING | OF_DESTROYED)))
 	clutterP->Explode (STANDARD_EXPL_DELAY);
 MaybeKillWeapon (clutterP);
 return 1;
@@ -1214,8 +1214,8 @@ if (gameStates.app.bPlayerIsDead) {
 	Int3 ();		//	Uh-oh, CPlayerData is dead.  Try to rescue him.
 	gameStates.app.bPlayerIsDead = 0;
 	}
-if (LOCALPLAYER.shields <= 0)
-	LOCALPLAYER.shields = 1;
+if (LOCALPLAYER.Shield () <= 0)
+	LOCALPLAYER.Shield () = 1;
 //	If you're not invulnerable, get invulnerable!
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame;
@@ -1240,7 +1240,7 @@ int CObject::ApplyDamageToRobot (fix xDamage, int nKillerObj)
 
 if (info.nFlags & OF_EXPLODING)
 	return 0;
-if (info.xShields < 0)
+if (info.xShield < 0)
 	return 0;	//this already dead...
 if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
@@ -1265,30 +1265,30 @@ if (ROBOTINFO (info.nId).companion) {
 		return 0;
 	}
 SetTimeLastHit (gameStates.app.nSDLTicks [0]);
-info.xShields -= xDamage;
+info.xShield -= xDamage;
 //	Do unspeakable hacks to make sure CPlayerData doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
 	if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel) &&
-		 (info.xShields < 0) && (extraGameInfo [0].nBossCount == 1)) {
+		 (info.xShield < 0) && (extraGameInfo [0].nBossCount == 1)) {
 		if (IsMultiGame) {
 			if (!MultiAllPlayersAlive ()) // everyones gotta be alive
-				info.xShields = 1;
+				SetShield (1);
 			else {
 				MultiSendFinishGame ();
 				DoFinalBossHacks ();
 				}
 			}
 		else {	// NOTE LINK TO ABOVE!!!
-			if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
-				info.xShields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
+			if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
+				SetShield (1);		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
 			else
 				DoFinalBossHacks ();
 			}
 		}
 	}
 
-if (info.xShields >= 0) {
+if (info.xShield >= 0) {
 	if (killerObjP == gameData.objs.consoleP)
 		ExecObjTriggers (OBJ_IDX (this), 1);
 	return 0;
@@ -1523,8 +1523,8 @@ if (cType.laserInfo.parent.nSignature == robotP->info.nSignature)
 //	Changed, 10/04/95, put out blobs based on skill level and power of this doing damage.
 //	Also, only a this hit from a tPlayer this causes smart blobs.
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
-	if ((robotP->info.xShields > 0) && bIsEnergyWeapon [info.nId]) {
-		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (info.xShields, robotP->info.xShields);
+	if ((robotP->info.xShield > 0) && bIsEnergyWeapon [info.nId]) {
+		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (info.xShield, robotP->info.xShield);
 		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
 		int nBlobs = xProb >> 16;
 		if (2 * d_rand () < (xProb & 0xffff))
@@ -1568,7 +1568,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 		if (bDamage && (botInfoP->nExp1Sound > -1))
 			audio.CreateSegmentSound (botInfoP->nExp1Sound, robotP->info.nSegment, 0, vHitPt);
 		if (!(info.nFlags & OF_HARMLESS)) {
-			fix xDamage = bDamage ? FixMul (info.xShields, cType.laserInfo.xScale) : 0;
+			fix xDamage = bDamage ? FixMul (info.xShield, cType.laserInfo.xScale) : 0;
 			//	Cut Gauss xDamage on bosses because it just breaks the game.  Bosses are so easy to
 			//	hit, and missing a robotP is what prevents the Gauss from being game-breaking.
 			if (info.nId == GAUSS_ID) {
@@ -1626,7 +1626,7 @@ return 1;
 //--unused-- {
 //--unused-- 	//	Cannot kill hostages, as per Matt's edict!
 //--unused-- 	//	 (A fine edict, but in contradiction to the milestone: "Robots attack hostages.")
-//--unused-- 	hostage->info.xShields -= weaponP->info.xShields/2;
+//--unused-- 	hostage->info.xShield -= weaponP->info.xShield/2;
 //--unused--
 //--unused-- 	CreateAwarenessEvent (weaponP, WEAPON_ROBOT_COLLISION);			// CObject "weapon" can attract attention to CPlayerData
 //--unused--
@@ -1634,7 +1634,7 @@ return 1;
 //--unused-- 	audio.CreateSegmentSound (SOUND_HOSTAGE_KILLED, hostage->info.nSegment, 0, vHitPt);
 //--unused--
 //--unused--
-//--unused-- 	if (hostage->info.xShields <= 0) {
+//--unused-- 	if (hostage->info.xShield <= 0) {
 //--unused-- 		ExplodeObject (hostage, 0);
 //--unused-- 		hostage->Die ();
 //--unused-- 	}
@@ -1749,8 +1749,8 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 		if (!(damage = (fix) ((double) damage * h)))
 			damage = 1;
 		}
-	playerP->shields -= damage;
-	MultiSendShields ();
+	UpdateShield (-damage);
+	MultiSendShield ();
 	paletteManager.BumpEffect (X2I (damage) * 4, -X2I (damage / 2), -X2I (damage / 2));	//flash red
 	if (playerP->shields < 0) {
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
@@ -1759,7 +1759,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 			if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (killerObjP->info.nId).companion))
 				gameData.escort.xSorryTime = gameData.time.xGame;
 		}
-	info.xShields = playerP->shields;		//mirror
+	info.xShield = playerP->shields;		//mirror
 	}
 }
 
@@ -1767,7 +1767,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 
 int CObject::CollideWeaponAndPlayer (CObject* playerObjP, CFixVector& vHitPt)
 {
-	fix xDamage = info.xShields;
+	fix xDamage = info.xShield;
 
 	//	In multiplayer games, only do xDamage to another CPlayerData if in first frame.
 	//	This is necessary because in multiplayer, due to varying framerates, omega blobs actually

@@ -961,7 +961,7 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
-			damage_scale = FixDiv (objP->info.xShields, botInfoP->strength);
+			damage_scale = FixDiv (objP->info.xShield, botInfoP->strength);
 			if (damage_scale > I2X (1))
 				damage_scale = I2X (1);		//	Just in case...
 			else if (damage_scale < 0)
@@ -1297,7 +1297,7 @@ void move_object_to_legal_spot(CObject *objP)
 	}
 
 	// Int3();		//	Darn you John, you done it again!  (But contact Mike)
-	objP->ApplyDamageToRobot(objP->info.xShields*2, objP->Index ());
+	objP->ApplyDamageToRobot(objP->info.xShield*2, objP->Index ());
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1435,7 +1435,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 	objP->mType.physInfo.mass = botInfoP->mass;
 	objP->mType.physInfo.drag = botInfoP->drag;
 	objP->mType.physInfo.flags |= (PF_LEVELLING);
-	objP->info.xShields = botInfoP->strength;
+	objP->SetShield (botInfoP->strength);
 	objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robotP as having been created by the boss.
 	default_behavior = D1_AIB_NORMAL;
 	if (nObjId == 10)						//	This is a toaster guy!

@@ -96,7 +96,7 @@ extern int NumNetPlayerPositions;
 void BashToShield(int, const char *);
 void BashToEnergy(int, const char *);
 
-fix RobotDefaultShields (CObject *objP);
+fix RobotDefaultShield (CObject *objP);
 
 char *LevelName (int nLevel);
 char *LevelSongName (int nLevel);

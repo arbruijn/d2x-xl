@@ -232,14 +232,14 @@ if (cockpit->Hide ())
 	int h, y;
 	static int nIdEnergy = 0;
 
-h = LOCALPLAYER.energy ? X2IR (LOCALPLAYER.energy) : 0;
+h = LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = CCanvas::Current ()->Height () - (IsMultiGame ? 5 : 1) * LineSpacing ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	nIdEnergy = GrPrintF (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	int energy = X2IR (LOCALPLAYER.energy);
+	int energy = X2IR (LOCALPLAYER.Energy ());
 
 	if (energy != m_history [gameStates.render.vr.nCurrentPage].energy) {
 		NDRecordPlayerEnergy (m_history [gameStates.render.vr.nCurrentPage].energy, energy);
@@ -534,7 +534,7 @@ if (cockpit->Hide ())
 if (gameOpts->render.cockpit.bTextGauges) {
 	int y = CCanvas::Current ()->Height () - (IsMultiGame ? 6 : 2) * LineSpacing ();
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-	nIdShield = GrPrintF (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, m_info.nShields);
+	nIdShield = GrPrintF (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, m_info.nShield);
 	}
 }
 
@@ -554,7 +554,7 @@ if (cockpit->Hide ())
 //	CCanvas::SetCurrent (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 if (!gameOpts->render.cockpit.bTextGauges) {
 
-	int h = m_info.nShields;
+	int h = m_info.nShield;
 	if ((t = FlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;

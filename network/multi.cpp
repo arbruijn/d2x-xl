@@ -538,7 +538,7 @@ if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal (bForce)
 		HUDInitMessage (TXT_REACH_SCOREGOAL2, gameData.multiplayer.players [nPlayer].callsign);
 	else {
 		HUDInitMessage (TXT_REACH_SCOREGOAL);
-		LOCALPLAYER.shields = I2X (200);
+		LOCALPLAYER.shield () = I2X (200);
 		}
 	if (!gameData.reactor.bDestroyed) {
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
@@ -1313,10 +1313,10 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	AdjustMineSpawn ();
 	MultiCapObjects ();
 	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
-	shields = LOCALPLAYER.shields;
-	LOCALPLAYER.shields = -1;
+	shields = LOCALPLAYER.shield ();
+	LOCALPLAYER.shield () = -1;
 	DropPlayerEggs (gameData.objs.consoleP);
-	LOCALPLAYER.shields = shields;
+	LOCALPLAYER.shield () = shields;
 	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
@@ -1356,7 +1356,7 @@ return (gameData.app.nGameMode & GM_NETWORK) ? NetworkEndLevel (secret) : 0;
 
 int MultiMenuPoll (void)
 {
-	fix xOldShields;
+	fix xOldShield;
 	int bWasFuelCenAlive;
 	int bPlayerWasDead;
 
@@ -1366,7 +1366,7 @@ if (!((gameData.app.nGameMode & GM_MULTI) &&(gameStates.app.nFunctionMode == FMO
 	return 0;
 if (gameData.multigame.menu.bLeave)
 	return -1;
-xOldShields = LOCALPLAYER.shields;
+xOldShield = LOCALPLAYER.shield ();
 bPlayerWasDead = gameStates.app.bPlayerIsDead;
 if (!gameOpts->menus.nStyle) {
 	gameData.multigame.menu.bInvoked++; // Track level of menu nesting
@@ -1377,7 +1377,7 @@ if (!gameOpts->menus.nStyle) {
 if (gameStates.app.bEndLevelSequence ||
 	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) ||
 	 (gameStates.app.bPlayerIsDead != bPlayerWasDead) ||
-	 (LOCALPLAYER.shields < xOldShields)) {
+	 (LOCALPLAYER.shield () < xOldShield)) {
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}
@@ -2009,7 +2009,7 @@ TRIGGERS [nTrigger].Operate (nObject, nPlayer, 0, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoShields (char *buf)
+void MultiDoShield (char *buf)
 {
 	int	nPlayer = int (buf [1]);
 	int	shields = GET_INTEL_INT (buf+2);
@@ -2019,7 +2019,7 @@ if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == 
 	return;
 	}
 gameData.multiplayer.players [nPlayer].shields  =
-OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.xShields = shields;
+OBJECTS [gameData.multiplayer.players [nPlayer].nObject].SetShield (shields);
 }
 
 //-----------------------------------------------------------------------------
@@ -4103,7 +4103,7 @@ void MultiDoWeapons (char *buf)
 	int	nPlayer = int (buf [bufP++]);
 
 gameData.multiplayer.players [nPlayer].shields  =
-OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.xShields = GET_INTEL_INT (buf + bufP);
+OBJECTS [gameData.multiplayer.players [nPlayer].nObject].SetShield (GET_INTEL_INT (buf + bufP));
 bufP += 4;
 gameData.multiplayer.players [nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
@@ -4148,7 +4148,7 @@ if (bForce || (t - nTimeout > 1000)) {
 	nTimeout = t;
 	gameData.multigame.msg.buf [bufP++] = (char) MULTI_WEAPONS;
 	gameData.multigame.msg.buf [bufP++] = (char) gameData.multiplayer.nLocalPlayer;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.shields);
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.shield ());
 	bufP += 4;
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.primaryWeaponFlags);
 	bufP += 2;
@@ -4528,11 +4528,11 @@ MultiShowPlayerList ();
 
 //-----------------------------------------------------------------------------
 
-void MultiSendShields (void)
+void MultiSendShield (void)
 {
 gameData.multigame.msg.buf [0] = MULTI_PLAYER_SHIELDS;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
-PUT_INTEL_INT (gameData.multigame.msg.buf+2, LOCALPLAYER.shields);
+PUT_INTEL_INT (gameData.multigame.msg.buf+2, LOCALPLAYER.shield ());
 MultiSendData (gameData.multigame.msg.buf, 6, 1);
 }
 
@@ -5352,7 +5352,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoStartTyping, 1},
 	{MultiDoQuitTyping, 1},
 	{MultiDoObjTrigger, 1},
-	{MultiDoShields, 1},
+	{MultiDoShield, 1},
 	{MultiDoInvul, 1},
 	{MultiDoDeInvul, 1},
 	{MultiDoWeapons, 1},
@@ -5682,7 +5682,7 @@ switch (nType) {
 		break;
 	case MULTI_PLAYER_SHIELDS:
 		if (!gameStates.app.bEndLevelSequence)
-			MultiDoShields (buf);
+			MultiDoShield (buf);
 		break;
 	case MULTI_CHEATING:
 		if (!gameStates.app.bEndLevelSequence)

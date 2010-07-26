@@ -1370,7 +1370,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
 	nSegment = objP->info.nSegment;
 	// hack for a bug I haven't yet been able to fix 
-	if ((objP->info.nType != OBJ_REACTOR) && (objP->info.xShields < 0)) {
+	if ((objP->info.nType != OBJ_REACTOR) && (objP->info.xShield < 0)) {
 		j = gameData.bosses.Find (i);
 		if ((j < 0) || (gameData.bosses [j].m_nDying != i))
 			objP->info.nType = OBJ_NONE;
@@ -1383,13 +1383,13 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		}
 	//look for, and fix, boss with bogus shields
 	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag) {
-		fix xShieldSave = objP->info.xShields;
+		fix xShieldSave = objP->info.xShield;
 		CopyDefaultsToRobot (objP);		//calculate starting shields
 		//if in valid range, use loaded shield value
-		if (xShieldSave > 0 && (xShieldSave <= objP->info.xShields))
-			objP->info.xShields = xShieldSave;
+		if (xShieldSave > 0 && (xShieldSave <= objP->info.xShield))
+			objP->SetShield (xShieldSave);
 		else
-			objP->info.xShields /= 2;  //give CPlayerData a break
+			objP->info.xShield /= 2;  //give player a break
 		}
 	}
 }

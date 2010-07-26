@@ -194,7 +194,7 @@ void MultiSendDropMarker (int nPlayer,CFixVector position,char messagenum,char t
 void MultiSendGuidedInfo (CObject *miss,char);
 void MultiSendReturnFlagHome (short nObject);
 void MultiSendCaptureBonus (char pnum);
-void MultiSendShields (void);
+void MultiSendShield (void);
 void MultiSendCheating (void);
 void MultiSendFusionCharge (void);
 

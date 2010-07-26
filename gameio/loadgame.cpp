@@ -351,10 +351,10 @@ else {		// Note link to above if!!!
 
 void InitAmmoAndEnergy (void)
 {
-if (LOCALPLAYER.energy < INITIAL_ENERGY)
-	LOCALPLAYER.energy = INITIAL_ENERGY;
-if (LOCALPLAYER.shields < gameStates.gameplay.xStartingShields)
-	LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
+if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
+	LOCALPLAYER.Energy () = INITIAL_ENERGY;
+if (LOCALPLAYER.shield () < gameStates.gameplay.xStartingShield)
+	LOCALPLAYER.shield () = gameStates.gameplay.xStartingShield;
 if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 	SetMaxOmegaCharge ();
 if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
@@ -381,7 +381,7 @@ if (bNewGame) {
 	playerP->hoursLevel = 0;
 	playerP->hoursTotal = 0;
 	playerP->energy = INITIAL_ENERGY;
-	playerP->shields = gameStates.gameplay.xStartingShields;
+	playerP->shields = gameStates.gameplay.xStartingShield;
 	playerP->nKillerObj = -1;
 	playerP->netKilledTotal = 0;
 	playerP->netKillsTotal = 0;
@@ -495,8 +495,8 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordPlayerWeapon (1, 0);
 	}
 
-LOCALPLAYER.energy = INITIAL_ENERGY;
-LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
+LOCALPLAYER.Energy () = INITIAL_ENERGY;
+LOCALPLAYER.shield () = gameStates.gameplay.xStartingShield;
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.hostages.nOnBoard = 0;
@@ -1146,11 +1146,11 @@ if (!gameStates.app.cheats.bEnabled) {
 		}
 	else
 		nSkillPoints = 0;
-	if (0 > (nShieldPoints = X2I (LOCALPLAYER.shields) * 5 * nMineLevel))
+	if (0 > (nShieldPoints = X2I (LOCALPLAYER.shield ()) * 5 * nMineLevel))
 		nShieldPoints = 0;
 	else
 		nShieldPoints -= nShieldPoints % 50;
-	if (0 > (nEnergyPoints = X2I (LOCALPLAYER.energy) * 2 * nMineLevel))
+	if (0 > (nEnergyPoints = X2I (LOCALPLAYER.Energy ()) * 2 * nMineLevel))
 		nEnergyPoints = 0;
 	else
 		nEnergyPoints -= nEnergyPoints % 50;
@@ -1600,7 +1600,7 @@ VerifyConsoleObject ();
 InitPlayerPosition (bRandom);
 gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-MultiSendShields ();
+MultiSendShield ();
 DisableMatCens ();
 ClearTransientObjects (0);		//0 means leave proximity bombs
 // gameData.objs.consoleP->CreateAppearanceEffect ();
@@ -1804,10 +1804,10 @@ gameData.SetFusionCharge (0);
 gameStates.app.cheats.bRobotsFiring = 1;
 SetD1Sound ();
 if (gameStates.app.bD1Mission) {
-	if (LOCALPLAYER.energy < INITIAL_ENERGY)
-		LOCALPLAYER.energy = INITIAL_ENERGY;
-	if (LOCALPLAYER.shields < INITIAL_SHIELDS)
-		LOCALPLAYER.shields = INITIAL_SHIELDS;
+	if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
+		LOCALPLAYER.Energy () = INITIAL_ENERGY;
+	if (LOCALPLAYER.shield () < INITIAL_SHIELDS)
+		LOCALPLAYER.shield () = INITIAL_SHIELDS;
 	}
 }
 
@@ -2203,9 +2203,9 @@ controls.ResetCruise ();
 
 //------------------------------------------------------------------------------
 
-fix RobotDefaultShields (CObject *objP)
+fix RobotDefaultShield (CObject *objP)
 {
-	tRobotInfo	*botInfoP;
+	tRobotInfo*	botInfoP;
 	int			objId, i;
 	fix			shields;
 
@@ -2250,14 +2250,14 @@ return shields;
 //	What about setting size!?  Where does that come from?
 void CopyDefaultsToRobot (CObject *objP)
 {
-objP->info.xShields = RobotDefaultShields (objP);
+objP->SetShield (RobotDefaultShield (objP));
 }
 
 //------------------------------------------------------------------------------
 //	Copy all values from the robot info structure to all instances of robots.
 //	This allows us to change bitmaps.tbl and have these changes manifested in existing robots.
 //	This function should be called at level load time.
-void CopyDefaultsToRobotsAll ()
+void CopyDefaultsToRobotsAll (void)
 {
 	//int		i;
 	CObject	*objP;
@@ -2296,8 +2296,8 @@ else {
 if (gameData.reactor.bDestroyed) {
 	//clear out stuff so no bonus
 	LOCALPLAYER.hostages.nOnBoard = 0;
-	LOCALPLAYER.energy = 0;
-	LOCALPLAYER.shields = 0;
+	LOCALPLAYER.Energy () = 0;
+	LOCALPLAYER.shield () = 0;
 	LOCALPLAYER.connected = 3;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}

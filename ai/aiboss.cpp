@@ -126,7 +126,7 @@ objP->rType.polyObjInfo.nSubObjFlags = 0;
 objP->mType.physInfo.mass = botInfoP->mass;
 objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
-objP->info.xShields = botInfoP->strength;
+objP->SetShield (botInfoP->strength);
 objP->info.nCreator = BOSS_GATE_MATCEN_NUM;	//	flag this robot as having been created by the boss.
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
@@ -353,11 +353,11 @@ nBossId = ROBOTINFO (objP->info.nId).bossFlag;
 //	Assert ((nBossId >= BOSS_D2) && (nBossId < BOSS_D2 + NUM_D2_BOSSES));
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
-if (objP->info.xShields != gameData.bosses [i].m_xPrevShields) {
+if (objP->info.xShield != gameData.bosses [i].m_xPrevShield) {
 #if TRACE
-	console.printf (CON_DBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShields), objP->Index ());
+	console.printf (CON_DBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShield), objP->Index ());
 #endif
-	gameData.bosses [i].m_xPrevShields = objP->info.xShields;
+	gameData.bosses [i].m_xPrevShield = objP->info.xShield;
 	}
 #endif
 	//	New code, fixes stupid bug which meant boss never gated in robots if > 32767 seconds played.

@@ -256,9 +256,9 @@ for (i = 3; i < MAX_SECONDARY_WEAPONS; i++)
 	LOCALPLAYER.secondaryAmmo[i] = quantity/5;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
-LOCALPLAYER.energy = I2X (200);
-LOCALPLAYER.shields = I2X (200);
-MultiSendShields ();
+LOCALPLAYER.Energy () = I2X (200);
+LOCALPLAYER.Shield () = I2X (200);
+MultiSendShield ();
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
 if (gameData.app.nGameMode & GM_HOARD)
@@ -307,7 +307,7 @@ if (playerP->shields < MAX_SHIELDS) {
 		playerP->shields = MAX_SHIELDS;
 	if (ISLOCALPLAYER (nPlayer)) {
 		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->shields));
-		MultiSendShields ();
+		MultiSendShield ();
 		}
 	OBJECTS [nPlayer].ResetDamage ();
 	return 1;

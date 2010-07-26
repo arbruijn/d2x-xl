@@ -584,7 +584,7 @@ typedef struct tObjectInfo {
 	short   					pad;
 #endif
 	short   					nNextInSeg,
-								nPrevInSeg;  // id of next and previous connected CObject in Objects, -1 = no connection
+								nPrevInSeg;		// id of next and previous connected CObject in Objects, -1 = no connection
 	ubyte   					controlType;   // how this CObject is controlled
 	ubyte   					movementType;  // how this CObject moves
 	ubyte   					renderType;    // how this CObject renders
@@ -593,16 +593,16 @@ typedef struct tObjectInfo {
 	short   					nAttachedObj;  // number of attached fireball CObject
 	tObjTransformation	position;
 	fix     					xSize;         // 3d size of CObject - for collision detection
-	fix     					xShields;      // Starts at maximum, when <0, CObject dies..
+	fix     					xShield;      // Starts at maximum, when <0, CObject dies..
 	CFixVector 				vLastPos;		// where CObject was last frame
 	tObjContainerInfo		contains;
-	sbyte   					nCreator; // Materialization center that created this CObject, high bit set if matcen-created
-	fix     					xLifeLeft;      // how long until goes away, or 7fff if immortal
+	sbyte   					nCreator;		// Materialization center that created this CObject, high bit set if matcen-created
+	fix     					xLifeLeft;     // how long until goes away, or 7fff if immortal
 } __pack__ tObjectInfo;
 
 typedef union tObjMovementInfo {
-	tPhysicsInfo		physInfo; // a physics CObject
-	CFixVector   		spinRate; // for spinning objects
+	tPhysicsInfo		physInfo;		// a physics CObject
+	CFixVector   		spinRate;		// for spinning objects
 	} __pack__ tObjMovementInfo;
 
 typedef union tObjControlInfo {
@@ -614,7 +614,7 @@ typedef union tObjControlInfo {
 	} __pack__ tObjControlInfo;
 
 typedef union tObjRenderInfo {
-	tPolyObjInfo		polyObjInfo;      // polygon model
+	tPolyObjInfo		polyObjInfo;   // polygon model
 	tVClipInfo			vClipInfo;     // tVideoClip
 	tParticleInfo		particleInfo;
 	tLightningInfo		lightningInfo;
@@ -650,7 +650,7 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline int Signature () { return info.nSignature; }
 		inline ubyte Id () { return info.nId; }
 		inline fix Size () { return info.xSize; }
-		inline fix Shields () { return info.xShields; }
+		inline fix Shield () { return info.xShield; }
 		inline fix LifeLeft () { return info.xLifeLeft; }
 		inline short Segment () { return info.nSegment; }
 		inline short AttachedObj () { return info.nAttachedObj; }
@@ -667,7 +667,8 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
 		inline void SetId (ubyte nId) { info.nId = nId; }
 		inline void SetSize (fix xSize) { info.xSize = xSize; }
-		inline void SetShields (fix xShields) { info.xShields = xShields; }
+		inline void SetShield (fix xShield) { info.xShield = xShield; }
+		inline void UpdateShield (fix xShield) { info.xShield += xShield; }
 		inline void SetLifeLeft (fix xLifeLeft) { info.xLifeLeft = xLifeLeft; }
 		inline void SetSegment (short nSegment) { info.nSegment = nSegment; }
 		inline void SetAttachedObj (short nAttachedObj) { info.nAttachedObj = nAttachedObj; }
@@ -972,7 +973,7 @@ class CObject : public CObjectInfo {
 		float SpeedScale (void);
 		float ShieldScale (void);
 		inline int MaxSpeed (void) { return int (60 * SpeedScale ()); }
-		inline fix MaxShields (void) { return fix (I2X (100) * ShieldScale ()); }
+		inline fix MaxShield (void) { return fix (I2X (100) * ShieldScale ()); }
 
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);

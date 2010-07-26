@@ -274,7 +274,7 @@ if (weaponInfoP->renderType == WEAPON_RENDER_POLYMODEL)
 	xLaserLength = gameData.models.polyModels [0][objP->ModelId ()].Rad () * 2;
 if (nWeaponType == FLARE_ID)
 	objP->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
-objP->info.xShields = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
+objP->info.xShield = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
 // Fill in laser-specific data
 objP->info.xLifeLeft	= WI_lifetime (nWeaponType);
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from

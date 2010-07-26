@@ -43,14 +43,14 @@ void NDRecordWallHitProcess (int nSegment, int nSide, int damage, int playernum)
 void NDRecordTrigger (int nSegment, int nSide, int nObject, int shot);
 void NDRecordHostageRescued (int nHostage);
 void NDRecordMorphFrame (tMorphInfo* md);
-void newdemo_record_player_stats (int shields, int energy, int score);
+void NDRecordPlayerStats (int shields, int energy, int score);
 void NDRecordPlayerAfterburner (fix old_afterburner, fix afterburner);
 void NDRecordWallToggle (int nSegment, int nSide);
 void NDRecordControlCenterDestroyed (void);
 void NDRecordHUDMessage (char* s);
 void NDRecordPaletteEffect (short r, short g, short b);
 void NDRecordPlayerEnergy (int, int);
-void NDRecordPlayerShields (int, int);
+void NDRecordPlayerShield (int, int);
 void NDRecordPlayerFlags (uint, uint);
 void NDRecordPlayerWeapon (int, int);
 void NDRecordEffectBlowup (short, int, CFixVector&);

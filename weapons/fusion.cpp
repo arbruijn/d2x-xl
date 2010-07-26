@@ -54,20 +54,20 @@ return 1;
 //				    cannon.
 void ChargeFusion (void)
 {
-if ((LOCALPLAYER.energy < I2X (2)) && (gameData.fusion.xAutoFireTime == 0)) {
+if ((LOCALPLAYER.Energy () < I2X (2)) && (gameData.fusion.xAutoFireTime == 0)) {
 	gameData.laser.nGlobalFiringCount = 0;
 	}
 else {
 	gameData.fusion.xFrameTime += gameData.time.xFrame;
 	if (!gameData.FusionCharge ())
-		LOCALPLAYER.energy -= I2X (2);
-	fix h = (gameData.fusion.xFrameTime <= LOCALPLAYER.energy) ? gameData.fusion.xFrameTime : LOCALPLAYER.energy;
+		LOCALPLAYER.Energy () -= I2X (2);
+	fix h = (gameData.fusion.xFrameTime <= LOCALPLAYER.Energy ()) ? gameData.fusion.xFrameTime : LOCALPLAYER.Energy ();
 	gameData.SetFusionCharge (gameData.FusionCharge () + h);
-	LOCALPLAYER.energy -= h;
-	if (LOCALPLAYER.energy > 0) 
+	LOCALPLAYER.Energy () -= h;
+	if (LOCALPLAYER.Energy () > 0) 
 		gameData.fusion.xAutoFireTime = gameData.time.xGame + gameData.fusion.xFrameTime / 2 + 1;
 	else {
-		LOCALPLAYER.energy = 0;
+		LOCALPLAYER.Energy () = 0;
 		gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!
 		}
 	if (gameStates.limitFPS.bFusion && !gameStates.app.tick40fps.bTick)

@@ -203,7 +203,7 @@ FORALL_OBJS (objP, i) {
 		vNegForce [Y] = vForce [Y] * xScale;
 		vNegForce [Z] = vForce [Z] * xScale;
 		objP->ApplyRotForce (vNegForce);
-		if (objP->info.xShields >= 0) {
+		if (objP->info.xShield >= 0) {
 			if (ROBOTINFO (objP->info.nId).bossFlag &&
 				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP->info.nId).bossFlag - BOSS_D2].bInvulKinetic)
 				damage /= 4;
@@ -220,7 +220,7 @@ FORALL_OBJS (objP, i) {
 			BuddyOuchMessage (damage);
 		}
 	else if (nType == OBJ_REACTOR) {
-		if (objP->info.xShields >= 0)
+		if (objP->info.xShield >= 0)
 			objP->ApplyDamageToReactor (damage, nParent);
 		}
 	else if (nType == OBJ_PLAYER) {
@@ -260,7 +260,7 @@ FORALL_OBJS (objP, i) {
 		objP->ApplyRotForce (vRotForce);
 		if (gameStates.app.nDifficultyLevel == 0)
 			damage /= 4;
-		if (objP->info.xShields >= 0)
+		if (objP->info.xShield >= 0)
 			objP->ApplyDamageToPlayer (killerP, damage);
 		}
 	}

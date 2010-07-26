@@ -203,7 +203,7 @@ CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-sprintf (szShield, "%d", m_info.nShields);
+sprintf (szShield, "%d", m_info.nShield);
 int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
@@ -459,7 +459,7 @@ if (yMax) {
 void CCockpit::DrawShieldBar (void)
 {
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) || (m_info.tInvul <= 0))
-	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShields >= 100) ? 9 : (m_info.nShields / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
+	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShield >= 100) ? 9 : (m_info.nShield / 10)), SHIELD_GAUGE_X, SHIELD_GAUGE_Y);
 }
 
 //	-----------------------------------------------------------------------------

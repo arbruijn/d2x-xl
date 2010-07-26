@@ -235,7 +235,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 
 	playerP->shields -= segP->ShieldDamage (playerP->shields + 1);
 	playerP->energy -= segP->EnergyDamage (playerP->energy);
-	MultiSendShields ();
+	MultiSendShield ();
 	if (playerP->shields < 0)
 		StartPlayerDeathSequence (this);
 	else {
@@ -247,7 +247,7 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 		fix shields = segP->Repair (fix (INITIAL_SHIELDS * objP->ShieldScale ()) - playerP->shields);
 		if (shields > 0) {
 			playerP->shields += shields;
-			MultiSendShields ();
+			MultiSendShield ();
 			}
 		}
 	}
@@ -548,17 +548,17 @@ if (OBJ_IDX (this) == nDbgObj)
 if (info.nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId).thief) {
 #if 1
-		ApplyDamageToRobot (info.xShields + I2X (1), -1);
+		ApplyDamageToRobot (info.xShield + I2X (1), -1);
 #else
-		info.xShields = 0;
+		SetShield (0);
 		info.xLifeLeft = 0;
 		Die ();
 #endif
 		}
 	else {
-		fix xMaxShields = RobotDefaultShields (this);
-		if (info.xShields > xMaxShields)
-			info.xShields = xMaxShields;
+		fix xMaxShield = RobotDefaultShield (this);
+		if (info.xShield > xMaxShield)
+			SetShield (xMaxShield);
 		}
 	}
 info.vLastPos = info.position.vPos;			// Save the current position

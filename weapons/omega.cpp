@@ -52,7 +52,7 @@ void SetMaxOmegaCharge (void)
 {
 gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE * nOmegaDuration [int (extraGameInfo [0].nOmegaRamp)];
 if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
-	LOCALPLAYER.energy += OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - gameData.omega.xMaxCharge);
+	LOCALPLAYER.Energy () += OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - gameData.omega.xMaxCharge);
 	gameData.omega.xCharge [IsMultiGame] = gameData.omega.xMaxCharge;
 	}
 }
@@ -158,7 +158,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		//	Only make the last one move fast, else multiple blobs might collide with target.
 		objP->mType.physInfo.velocity *= (I2X (4));
 		objP->info.xSize = gameData.weapons.info [objP->info.nId].blob_size;
-		objP->info.xShields = FixMul (OMEGA_DAMAGE_SCALE * gameData.time.xFrame, WI_strength (objP->info.nId,gameStates.app.nDifficultyLevel));
+		objP->info.xShield = FixMul (OMEGA_DAMAGE_SCALE * gameData.time.xFrame, WI_strength (objP->info.nId,gameStates.app.nDifficultyLevel));
 		objP->cType.laserInfo.parent.nType = parentObjP->info.nType;
 		objP->cType.laserInfo.parent.nSignature = parentObjP->info.nSignature;
 		objP->cType.laserInfo.parent.nObject = OBJ_IDX (parentObjP);
@@ -193,7 +193,7 @@ if (gameStates.app.bPlayerIsDead) {
 	omegaLightnings.Destroy (LOCALPLAYER.nObject);
 	return;
 	}
-if ((gameData.weapons.nPrimary == OMEGA_INDEX) && !gameData.omega.xCharge [IsMultiGame] && !LOCALPLAYER.energy) {
+if ((gameData.weapons.nPrimary == OMEGA_INDEX) && !gameData.omega.xCharge [IsMultiGame] && !LOCALPLAYER.Energy ()) {
 	omegaLightnings.Destroy (LOCALPLAYER.nObject);
 	gameData.weapons.nPrimary--;
 	AutoSelectWeapon (0, 1);
@@ -204,14 +204,14 @@ if ((gameData.omega.nLastFireFrame == gameData.app.nFrameCount) ||
 	return;
 
 omegaLightnings.Destroy (LOCALPLAYER.nObject);
-if (LOCALPLAYER.energy) {
+if (LOCALPLAYER.Energy ()) {
 	xOldOmegaCharge = gameData.omega.xCharge [IsMultiGame];
 	gameData.omega.xCharge [IsMultiGame] += (fix) (gameData.time.xFrame / OMEGA_CHARGE_SCALE / gameStates.gameplay.slowmo [0].fSpeed);
 	if (gameData.omega.xCharge [IsMultiGame] > MAX_OMEGA_CHARGE)
 		gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
-	LOCALPLAYER.energy -= OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - xOldOmegaCharge);
-	if (LOCALPLAYER.energy < 0)
-		LOCALPLAYER.energy = 0;
+	LOCALPLAYER.Energy () -= OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - xOldOmegaCharge);
+	if (LOCALPLAYER.Energy () < 0)
+		LOCALPLAYER.Energy () = 0;
 	}
 }
 

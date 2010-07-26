@@ -229,7 +229,7 @@ int AllowedToFireFlare (void)
 if ((xNextFlareFireTime > gameData.time.xGame) &&
 	 (xNextFlareFireTime < gameData.time.xGame + FLARE_BIG_DELAY))	//	In case time is bogus, never wait > 1 second.
 		return 0;
-if (LOCALPLAYER.energy >= WI_energy_usage (FLARE_ID))
+if (LOCALPLAYER.Energy () >= WI_energy_usage (FLARE_ID))
 	xNextFlareFireTime = gameData.time.xGame + F2X (gameStates.gameplay.slowmo [0].fSpeed) / 4;
 else
 	xNextFlareFireTime = gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * FLARE_BIG_DELAY);
@@ -510,7 +510,7 @@ if (!bSecondary) {
 	if ((nWeapon == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
 		nWeapon = SUPER_LASER_INDEX;
 	hasFlag = HAS_WEAPON_FLAG;
-	LOCALPLAYER.energy += gameData.FusionCharge ();
+	LOCALPLAYER.Energy () += gameData.FusionCharge ();
 	gameData.SetFusionCharge (0);
 	}
 else if (nWeapon == 2) {

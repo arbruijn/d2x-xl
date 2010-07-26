@@ -296,7 +296,7 @@ class CSegment {
 		void CreateSound (short nSound, int nSide);
 
 		fix Refuel (fix xMaxFuel);
-		fix Repair (fix xMaxShields);
+		fix Repair (fix xMaxShield);
 		fix ShieldDamage (fix xMaxDamage);
 		fix EnergyDamage (fix xMaxDamage);
 		void CheckForGoal (void);

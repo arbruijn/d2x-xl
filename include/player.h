@@ -131,6 +131,8 @@ class __pack__ CPlayerData {
 		sbyte   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
 	public:
 		CPlayerData () { memset (this, 0, sizeof (*this)); }
+		fix Shield (void);
+		fix Energy (void);
 };
 
 

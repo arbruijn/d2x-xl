@@ -872,7 +872,7 @@ else if (missionManager.nCurrentLevel > 0) {
 	return true;
 	}
 else if (missionManager.nCurrentLevel < 0) {
-	if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+	if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 		return false;
 	ExitSecretLevel ();
 	return true;
@@ -886,7 +886,7 @@ bool CTrigger::DoSecretExit (int nPlayer)
 {
 if (nPlayer != gameData.multiplayer.nLocalPlayer)
 	return false;
-if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 	return false;
 if (gameData.app.nGameMode & GM_MULTI) {
 	HUDInitMessage (TXT_TELEPORT_MULTI);
@@ -1164,7 +1164,7 @@ switch (m_info.nType) {
 			if (bIsPlayer) {
 				if (nPlayer != gameData.multiplayer.nLocalPlayer)
 					break;
-				if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+				if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 					break;
 				}
 			audio.PlaySound (SOUND_SECRET_EXIT, I2X (1));
@@ -1178,7 +1178,7 @@ switch (m_info.nType) {
 		if (bIsPlayer) {
 			if (nPlayer != gameData.multiplayer.nLocalPlayer)
 				break;
-			if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+			if ((LOCALPLAYER.Shield () < 0) || gameStates.app.bPlayerIsDead)
 				break;
 			}
 		DoSpeedBoost (nObject);
@@ -1189,10 +1189,10 @@ switch (m_info.nType) {
 	case TT_SHIELD_DAMAGE:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.shields -= TRIGGERS [nTrigger].m_info.value;
+				LOCALPLAYER.Shield () -= TRIGGERS [nTrigger].m_info.value;
 			else
-				LOCALPLAYER.shields -= (fix) ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].m_info.value)));
-			if (LOCALPLAYER.shields < 0)
+				LOCALPLAYER.Shield () -= (fix) ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].m_info.value)));
+			if (LOCALPLAYER.Shield () < 0)
 				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
 			}
 		break;
@@ -1200,11 +1200,11 @@ switch (m_info.nType) {
 	case TT_ENERGY_DRAIN:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.energy -= TRIGGERS [nTrigger].m_info.value;
+				LOCALPLAYER.Energy () -= TRIGGERS [nTrigger].m_info.value;
 			else
-				LOCALPLAYER.energy -= (fix) (LOCALPLAYER.energy * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
-			if (LOCALPLAYER.energy < 0)
-				LOCALPLAYER.energy = 0;
+				LOCALPLAYER.Energy () -= (fix) (LOCALPLAYER.Energy () * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
+			if (LOCALPLAYER.Energy () < 0)
+				LOCALPLAYER.Energy () = 0;
 			}
 		break;
 

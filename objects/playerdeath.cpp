@@ -241,11 +241,11 @@ if (gameStates.app.bPlayerIsDead) {
 
 //	------------------------------------------------------------------------
 
-void StartPlayerDeathSequence (CObject *playerP)
+void StartPlayerDeathSequence (CObject* playerObjP)
 {
 	int	nObject;
 
-Assert (playerP == gameData.objs.consoleP);
+Assert (playerObjP == gameData.objs.consoleP);
 gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
 if (gameStates.app.bPlayerIsDead)
 	return;
@@ -258,7 +258,7 @@ StopConquerWarning ();
 //Assert (gameData.objs.deadPlayerCamera == NULL);
 ResetRearView ();
 nKilledInFrame = gameData.app.nFrameCount;
-nKilledObjNum = OBJ_IDX (playerP);
+nKilledObjNum = OBJ_IDX (playerObjP);
 gameStates.app.bDeathSequenceAborted = 0;
 if (!IsMultiGame)
 	HUDClearMessages ();
@@ -279,11 +279,11 @@ gameStates.app.bPlayerIsDead = 1;
 	Buffeting (70);
 #endif
 //LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
-playerP->mType.physInfo.rotThrust.SetZero ();
-playerP->mType.physInfo.thrust.SetZero ();
-playerP->ResetDamage ();
+playerObjP->mType.physInfo.rotThrust.SetZero ();
+playerObjP->mType.physInfo.thrust.SetZero ();
+playerObjP->ResetDamage ();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-nObject = CreateCamera (playerP);
+nObject = CreateCamera (playerObjP);
 viewerSaveP = gameData.objs.viewerP;
 if (nObject != -1)
 	gameData.objs.viewerP = gameData.objs.deadPlayerCamera = OBJECTS + nObject;
@@ -295,15 +295,15 @@ CGenericCockpit::Save (true);
 cockpit->Activate (CM_LETTERBOX);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLetterbox ();
-nPlayerFlagsSave = playerP->info.nFlags;
-nControlTypeSave = playerP->info.controlType;
-nRenderTypeSave = playerP->info.renderType;
-playerP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
+nPlayerFlagsSave = playerObjP->info.nFlags;
+nControlTypeSave = playerObjP->info.controlType;
+nRenderTypeSave = playerObjP->info.renderType;
+playerObjP->info.nFlags &= ~OF_SHOULD_BE_DEAD;
 //	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-playerP->info.controlType = CT_NONE;
+playerObjP->info.controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
-	playerP->info.xShields = I2X (1000);
-	MultiSendShields ();
+	playerObjP->SetShield (I2X (1000));
+	MultiSendShield ();
 	}
 paletteManager.SetEffect (0, 0, 0);
 }

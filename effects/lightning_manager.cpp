@@ -743,8 +743,8 @@ void CLightningManager::CreateForDamage (CObject* objP, tRgbaColorf *colorP)
 if (SHOW_LIGHTNING && gameOpts->render.lightning.bDamage && OBJECT_EXISTS (objP)) {
 		int h, n, i = objP->Index ();
 
-	n = X2IR (RobotDefaultShields (objP));
-	h = X2IR (objP->info.xShields) * 100 / n;
+	n = X2IR (RobotDefaultShield (objP));
+	h = X2IR (objP->info.xShield) * 100 / n;
 	if ((h < 0) || (h >= 50))
 		return;
 	n = (5 - h / 10) * 2;

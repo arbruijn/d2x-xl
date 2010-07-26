@@ -117,20 +117,20 @@ char	szObjectTypeNames [MAX_OBJECT_TYPES][10] = {
 float CObject::Damage (void)
 {
 	float	fDmg;
-	fix	xMaxShields;
+	fix	xMaxShield;
 
 if (info.nType == OBJ_PLAYER)
 	fDmg = X2F (gameData.multiplayer.players [info.nId].shields) / 100;
 else if (info.nType == OBJ_ROBOT) {
-	xMaxShields = RobotDefaultShields (this);
-	fDmg = X2F (info.xShields) / X2F (xMaxShields);
+	xMaxShield = RobotDefaultShield (this);
+	fDmg = X2F (info.xShield) / X2F (xMaxShield);
 #if 0
 	if (gameData.bots.info [0][info.nId].companion)
 		fDmg /= 2;
 #endif
 	}
 else if (info.nType == OBJ_REACTOR)
-	fDmg = X2F (info.xShields) / X2F (ReactorStrength ());
+	fDmg = X2F (info.xShield) / X2F (ReactorStrength ());
 else if ((info.nType == 255) || (info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	fDmg = 0.0f;
 else

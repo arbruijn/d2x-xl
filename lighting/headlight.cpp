@@ -914,8 +914,8 @@ if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
 if (!HeadlightIsOn (-1))
 	return;
 
-LOCALPLAYER.energy -= (gameData.time.xFrame * 3 / 8);
-if (LOCALPLAYER.energy < I2X (10)) {
+LOCALPLAYER.Energy () -= (gameData.time.xFrame * 3 / 8);
+if (LOCALPLAYER.Energy () < I2X (10)) {
 	if (!bTurnedOff) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 		audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
@@ -926,8 +926,8 @@ if (LOCALPLAYER.energy < I2X (10)) {
 	}
 else
 	bTurnedOff = 0;
-if (LOCALPLAYER.energy <= 0) {
-	LOCALPLAYER.energy = 0;
+if (LOCALPLAYER.Energy () <= 0) {
+	LOCALPLAYER.Energy () = 0;
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 	if (IsMultiGame)
 		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
