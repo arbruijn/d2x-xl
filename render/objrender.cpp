@@ -832,7 +832,7 @@ if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMin
 else {
 	if (gameData.objs.bIsMissile [objP->info.nId]) {	//make missiles smaller during launch
 		if ((objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-			 (gameData.models.renderModels [1][108].m_bValid > 0)) {	//hires player ship
+			 (gameData.models.renderModels [1][objP->rType.polyObjInfo.nModel].m_bValid > 0)) {	//hires player ship
 			float dt = X2F (gameData.time.xGame - objP->CreationTime ());
 
 			if (dt < 1) {

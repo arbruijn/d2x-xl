@@ -1549,4 +1549,13 @@ return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (i
 }
 
 //------------------------------------------------------------------------------
+
+int CObject::ModelId (void)
+{
+return (info.nType == OBJ_PLAYER) 
+		 ? rType.polyObjInfo.nModel + gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip
+		 : rType.polyObjInfo.nModel;
+}
+
+//------------------------------------------------------------------------------
 //eof

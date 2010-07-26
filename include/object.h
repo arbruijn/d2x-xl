@@ -963,6 +963,8 @@ class CObject : public CObjectInfo {
 		bool IsGuideBot (void);
 		bool IsThief (void);
 
+		int ModelId (void);
+
 	private:
 		void CheckGuidedMissileThroughExit (short nPrevSegment);
 		void CheckAfterburnerBlobDrop (void);
