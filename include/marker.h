@@ -32,7 +32,7 @@ return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SING
 void DropBuddyMarker (CObject *objP);
 void DropSpawnMarker (void);
 void DrawMarkers (void);
-void RotateMarker (int bForce);
+void RotateMarker (void);
 void DeleteMarker (int bForce);
 void TeleportToMarker (void);
 void ClearMarkers (void);

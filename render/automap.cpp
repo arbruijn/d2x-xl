@@ -829,7 +829,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_CTRLED + KEY_R:
-			RotateMarker (0);
+			RotateMarker ();
 			break;
 
 		case KEY_F1:
