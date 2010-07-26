@@ -248,7 +248,7 @@ void GameplayOptionsMenu (void)
 	CMenu m;
 	int	i;
 	int	optSmartWeaponSwitch = -1, optHeadlightBuiltIn = -1, optHeadlightPowerDrain = -1, optNoThief = -1, optLoadout = -1;
-	//int	optInventory = -1;
+	int	optInventory = -1, optShip = -1;
 	int	optReorderPrim, optReorderSec;
 	char	szSlider [50];
 
@@ -285,10 +285,16 @@ do {
 	optHeadlightBuiltIn = m.AddCheck (TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
 	optHeadlightPowerDrain = m.AddCheck (TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
 	optNoThief = m.AddCheck (TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
-	//optInventory = m.AddCheck (TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
+	optInventory = m.AddCheck (TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
+	m.AddText ("");
+	optShip = m.AddRadio (TXT_PYRO_GX, 0, KEY_G, HTX_PLAYERSHIP);
+	m.AddRadio (TXT_PHANTOM_XL, 0, KEY_X, HTX_PLAYERSHIP);
+	for (i = 0; i < 2; i++)
+		m [optShip + i].m_value = (i == gameOpts->gameplay.nShip);
+	m.AddText ("");
 	if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
 		optLoadout = -1;
 	else {
@@ -304,7 +310,7 @@ do {
 			ReorderPrimary ();
 		else if (choice == optReorderSec)
 			ReorderSecondary ();
-		};
+		}
 	} while (i == -2);
 if (nAIAggressivity == 5) {
 	gameOpts->gameplay.nAIAwareness = 1;
@@ -317,10 +323,15 @@ else {
 
 extraGameInfo [0].headlight.bAvailable = m [gplayOpts.nHeadlightAvailable].m_value;
 extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].m_value;
-//GET_VAL (gameOpts->gameplay.bInventory, optInventory);
+GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);
+for (i = 0; i < 2; i++)
+	if (m [optShip + i].m_value) {
+		gameOpts->gameplay.nShip = i;
+		break;
+		}
 DefaultGameplaySettings ();
 if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;

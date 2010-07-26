@@ -513,8 +513,9 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].sound.bGatling, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
 		RP (gameOptions [i].sound.bShip, i, 0);
-		//RP (gameOptions [i].gameplay.bInventory, i, 0);
+		RP (gameOptions [i].gameplay.bInventory, i, 0);
 		RP (gameOptions [i].gameplay.bNoThief, i, 0);
+		RP (gameOptions [i].gameplay.nShip, i, 0);
 		RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
 		RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
 		RP (gameOptions [i].gameplay.nAIAggressivity, i, 0);
@@ -1021,8 +1022,9 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].sound.xCustomVolume", "5"},
 	 {"gameOptions[0].app.nVersionFilter", "3"},
 	 {"gameOptions[0].demo.bOldFormat", "0"},
-	 //{"gameOptions[0].gameplay.bInventory", "1"},
+	 {"gameOptions[0].gameplay.bInventory", "1"},
 	 {"gameOptions[0].gameplay.bNoThief", "0"},
+	 {"gameOptions[0].gameplay.nShip", "0"},
 	 {"gameOptions[0].gameplay.nAIAwareness", "0"},
 	 {"gameOptions[0].gameplay.nAIAggressivity", "0"},
 	 {"gameOptions[0].gameplay.nAutoSelectWeapon", "1"},

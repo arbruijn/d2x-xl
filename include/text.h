@@ -1963,11 +1963,11 @@ void LoadGameTexts(void);
 #define TXT_3D_DUBOIS					GT(1179)
 #define TXT_ERROR_READING_PLR			GT(1180)
 #define TXT_BUMP_BRIGHTNESS			GT(1181)
+#define TXT_PYRO_GX						GT(1182)
+#define TXT_PHANTOM_XL					GT(1183)
 
 #if 0
 
-#define TXT_					GT(1182)
-#define TXT_					GT(1183)
 #define TXT_					GT(1184)
 #define TXT_					GT(1185)
 #define TXT_					GT(1186)
@@ -2418,7 +2418,7 @@ void LoadGameTexts(void);
 #define HTX_LIGHTNING_OPTIONS			HT(313)
 #define HTX_BRIGHT_OBJECTS				HT(314)
 #define HTX_POWERUP_CORONAS			HT(315)
-#define HTX_AUTOMAP_LIGHTNING		HT(316)
+#define HTX_AUTOMAP_LIGHTNING			HT(316)
 #define HTX_ADDITIVE_CORONAS			HT(317)
 #define HTX_ADDITIVE_OBJCORONAS		HT(318)
 #define HTX_POWERUP_SHADOWS			HT(319)
@@ -2524,10 +2524,10 @@ void LoadGameTexts(void);
 #define HTX_3D_DEGHOST					HT(418)
 #define HTX_EXPERT_MODE					HT(419)
 #define HTX_BUMP_BRIGHTNESS			HT(420)
+#define HTX_PLAYERSHIP					HT(421)
 
 #if 0
 
-#define HTX_						HT(421)
 #define HTX_						HT(422)
 #define HTX_						HT(423)
 #define HTX_						HT(424)

@@ -215,7 +215,7 @@ static int multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{5, -1},  // MULTI_TRIGGER_EXT
 	{16, -1}, // MULTI_SYNC_KILLS
 	{5, -1},	 // MULTI_COUNTDOWN
-	{22, -1}, // MULTI_PLAYER_WEAPONS
+	{26, -1}, // MULTI_PLAYER_WEAPONS
 	{99, -1}, // MULTI_SYNC_MONSTERBALL
 	{31, -1}, // MULTI_DROP_POWERUP
 	{31, -1}, // MULTI_CREATE_WEAPON
@@ -626,7 +626,8 @@ PUT_INTEL_INT (gameData.multigame.msg.buf + 18, wsP->xMslFireTime);
 gameData.multigame.msg.buf [22] = wsP->nThrusters [0];
 gameData.multigame.msg.buf [23] = wsP->nThrusters [1];
 gameData.multigame.msg.buf [24] = wsP->nThrusters [2];
-MultiSendData (gameData.multigame.msg.buf, 25, 0);
+gameData.multigame.msg.buf [25] = char (gameOpts->gameplay.nShip);
+MultiSendData (gameData.multigame.msg.buf, 26, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -665,6 +666,7 @@ wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 18);
 wsP->nThrusters [0] = buf [22];
 wsP->nThrusters [1] = buf [23];
 wsP->nThrusters [2] = buf [24];
+wsP->nShip = buf [25];
 for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 	if (fP->nDuration) {
 		if (fP->nStart <= 0) {

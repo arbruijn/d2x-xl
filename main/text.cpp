@@ -1926,6 +1926,8 @@ const char *defaultGameTexts [][2] = {
  {"Dubois", "Dubois"},
  {"Spielerprofil nicht lesbar.", "Player profile couldn't be read."},
  {"Bild auf~Hellen", "increase brigh~Tness"},
+ {"Pyro ~GX", "Pyro ~GX"},
+ {"Phantom ~XL", "Phantom ~XL"},
 #if 0
  {"", ""},
 #endif
@@ -2636,6 +2638,8 @@ const char *defaultHelpTexts [][2] = {
   "Depending on the chosen setting, D2X-XL tries to diminish\nghost images more or less intensive. This will however\ndecrease the image brightness."},
  {"Je nach Einstellung werden keine, einige oder viele\nzusaetzliche Menueoptionen angezeigt.", "Depending on this setting no, a few or many\nadditional menu options are shown."},
  {"Wenn angekreuzt wird das Bild aufgehellt, um durch\n3D-Brillen verursachte Helligkeitsverluste\nauszugleichen.", "If checked the image is made brighter to\ncompensate brightness loss caused by 3D glasses."},
+ {"Hier kann das Spielerschiff ausgewählt werden.\n\nPyro GX: Standardschiff\nPhantom XL: Schneller, leichter gepanzert und bewaffnet", 
+  "Chose the player ship here.\n\nPyro GX: Standard ship\nPhantom XL: Faster, lighter armor and weapons"},
 #if 0
  {"", ""},
 #endif

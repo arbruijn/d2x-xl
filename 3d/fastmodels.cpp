@@ -827,6 +827,9 @@ if (vOffsetP)
 int G3RenderModel (CObject *objP, short nModel, short nSubModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps,
 						 CAngleVector *animAnglesP, CFixVector *vOffsetP, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
+if (objP && (objP->info.nType == OBJ_PLAYER))
+	nModel += gameData.multiplayer.weaponStates [objP->info.nId].nShip;
+
 	RenderModel::CModel*	pm = gameData.models.renderModels [1] + nModel;
 	int						i, 
 								bHires = 1, 

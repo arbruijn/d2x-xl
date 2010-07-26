@@ -2126,7 +2126,7 @@ void DefaultGameplaySettings (void)
 {
 extraGameInfo [0].headlight.bAvailable = 1;
 gameOptions [0].gameplay.bHeadlightOnWhenPickedUp = 0;
-gameOptions [0].gameplay.bInventory = 1;
+//gameOptions [0].gameplay.bInventory = 1;
 extraGameInfo [0].bRotateMarkers = 1;
 extraGameInfo [0].bMultiBosses = 1;
 gameOptions [0].gameplay.bIdleAnims = (gameOpts->gameplay.nAIAggressivity > 0);

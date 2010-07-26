@@ -14,11 +14,8 @@
 
 tReplacementModel replacementModels [] = {
 	// player ship
-#if DBG
- {"phantomxl", "pyrogl.pol", 108, 0, 0, -1}, 
-#else
  {"pyrogl", "pyrogl.pol", 108, 0, 0, -1}, 
-#endif
+ {"phantomxl", "pyrogl.pol", 109, 0, 0, -1}, 
  {NULL, NULL, 110, 0, 0, -1}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
 #if 0//DBG	//D3 robots for testing
 /*

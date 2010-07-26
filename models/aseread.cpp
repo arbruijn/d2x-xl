@@ -776,7 +776,7 @@ if (m_nModel >= 0)
 
 if (gameStates.app.bCacheModelData) {
 	try {
-		if ((nModel == 108) 
+		if ((nModel >= 108) && (nModel <= 110)
 			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0))
 			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
 			return 1;
@@ -817,7 +817,7 @@ else {
 	LinkSubModels ();
 	gameData.models.bHaveHiresModel [uint (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
 	if (gameStates.app.bCacheModelData) {
-		if (nModel == 108)
+		if ((nModel >= 108) && (nModel <= 110))
 			SaveBinary (filename);
 		else
 			SaveBinary ();

@@ -457,6 +457,7 @@ typedef struct tGameplayOptions {
 	int nSlowMotionSpeedup;
 	int bUseD1AI;
 	int bNoThief;
+	int nShip;
 } tGameplayOptions;
 
 //------------------------------------------------------------------------------
@@ -2396,6 +2397,7 @@ class CWeaponState {
 		char						bTripleFusion;
 		char						nMslLaunchPos;
 		ubyte						nThrusters [3];
+		ubyte						nShip;
 
 	public:
 		CWeaponState () { memset (this, 0, sizeof (*this)); }
