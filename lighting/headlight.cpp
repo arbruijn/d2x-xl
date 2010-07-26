@@ -927,7 +927,6 @@ if (LOCALPLAYER.Energy () < I2X (10)) {
 else
 	bTurnedOff = 0;
 if (LOCALPLAYER.Energy () <= 0) {
-	LOCALPLAYER.SetEnergy (0);
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 	if (IsMultiGame)
 		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);

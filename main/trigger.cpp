@@ -1203,8 +1203,6 @@ switch (m_info.nType) {
 				LOCALPLAYER.UpdateEnergy (-TRIGGERS [nTrigger].m_info.value);
 			else
 				LOCALPLAYER.UpdateEnergy (-fix (LOCALPLAYER.Energy () * X2F (TRIGGERS [nTrigger].m_info.value) / 100));
-			if (LOCALPLAYER.Energy () < 0)
-				LOCALPLAYER.SetEnergy (0);
 			}
 		break;
 

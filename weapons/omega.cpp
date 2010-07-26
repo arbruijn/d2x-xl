@@ -210,8 +210,6 @@ if (LOCALPLAYER.Energy ()) {
 	if (gameData.omega.xCharge [IsMultiGame] > MAX_OMEGA_CHARGE)
 		gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	LOCALPLAYER.UpdateEnergy (-OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - xOldOmegaCharge));
-	if (LOCALPLAYER.Energy () < 0)
-		LOCALPLAYER.SetEnergy (0);
 	}
 }
 

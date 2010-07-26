@@ -87,11 +87,8 @@ if (!TARGETOBJ->Cloaked ()) {
 	if (CFixVector::Dist (OBJPOS (TARGETOBJ)->vPos, robotP->info.position.vPos) <
 		 robotP->info.xSize + TARGETOBJ->info.xSize + I2X (2)) {
 		targetP->CollidePlayerAndNastyRobot (robotP, *vCollision);
-		if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
-			LOCALPLAYER.Energy () -= I2X (botInfoP->energyDrain);
-			if (LOCALPLAYER.Energy () < 0)
-				LOCALPLAYER.Energy () = 0;
-			}
+		if (botInfoP->energyDrain && LOCALPLAYER.Energy ())
+			LOCALPLAYER.UpdateEnergy (-I2X (botInfoP->energyDrain));
 		}
 	}
 robotP->cType.aiInfo.GOAL_STATE = AIS_RECOVER;
