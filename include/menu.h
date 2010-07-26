@@ -391,6 +391,9 @@ bool MenuRenderTimeout (int& t0, int tFade);
 bool BeginRenderMenu (void);
 void RenderMenuGameFrame (void);
 
+void AddShipSelection (CMenu& m, int& optShip);
+void GetShipSelection (CMenu& m, int& optShip);
+
 //------------------------------------------------------------------------------
 
 #endif /* _MENU_H */

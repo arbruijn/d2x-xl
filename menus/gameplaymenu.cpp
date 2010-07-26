@@ -241,6 +241,28 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+void AddShipSelection (CMenu& m, int& optShip)
+{
+m.AddText (TXT_PLAYERSHIP);
+optShip = m.AddRadio (TXT_PYRO_GX, 0, KEY_G, HTX_PLAYERSHIP);
+m.AddRadio (TXT_PHANTOM_XL, 0, KEY_X, HTX_PLAYERSHIP);
+for (int i = 0; i < 2; i++)
+	m [optShip + i].m_value = (i == gameOpts->gameplay.nShip);
+}
+
+//------------------------------------------------------------------------------
+
+void GetShipSelection (CMenu& m, int& optShip)
+{
+for (int i = 0; i < 2; i++)
+	if (m [optShip + i].m_value) {
+		gameOpts->gameplay.nShip = i;
+		break;
+		}
+}
+
+//------------------------------------------------------------------------------
+
 void GameplayOptionsMenu (void)
 {
 	static int choice = 0;
@@ -289,11 +311,7 @@ do {
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
-	m.AddText (TXT_PLAYERSHIP);
-	optShip = m.AddRadio (TXT_PYRO_GX, 0, KEY_G, HTX_PLAYERSHIP);
-	m.AddRadio (TXT_PHANTOM_XL, 0, KEY_X, HTX_PLAYERSHIP);
-	for (i = 0; i < 2; i++)
-		m [optShip + i].m_value = (i == gameOpts->gameplay.nShip);
+	AddShipSelection (m, optShip);
 	if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
 		optLoadout = -1;
 	else {
@@ -326,11 +344,7 @@ GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);
-for (i = 0; i < 2; i++)
-	if (m [optShip + i].m_value) {
-		gameOpts->gameplay.nShip = i;
-		break;
-		}
+GetShipSelection (m, optShip);
 DefaultGameplaySettings ();
 if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;

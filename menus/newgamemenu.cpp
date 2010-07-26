@@ -250,7 +250,7 @@ return nCurItem;
 void NewGameMenu (void)
 {
 	CMenu				m;
-	int				optSelMsn, optMsnName, optLevelText, optLevel, optUseMod, optLaunch, optLoadout;
+	int				optSelMsn, optMsnName, optLevelText, optLevel, optUseMod, optLaunch, optLoadout, optShip;
 	int				nMission = missionManager.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
 	char				szDifficulty [50];
@@ -326,6 +326,7 @@ for (;;) {
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	nOptDifficulty = m.AddSlider (szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	AddShipSelection (m, optShip);
 	m.AddText ("", 0);
 	optLoadout = m.AddMenu (TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
 
@@ -393,6 +394,7 @@ if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
 	gameData.bosses.InitGateIntervals ();
 	}
+GetShipSelection (m, optShip);
 SavePlayerProfile ();
 
 paletteManager.DisableEffect ();
