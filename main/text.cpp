@@ -1928,6 +1928,7 @@ const char *defaultGameTexts [][2] = {
  {"Bild auf~Hellen", "increase brigh~Tness"},
  {"Pyro ~GX", "Pyro ~GX"},
  {"Phantom ~XL", "Phantom ~XL"},
+ {"\nSchiffsauswahl:", "\nChose your ship:"},
 #if 0
  {"", ""},
 #endif

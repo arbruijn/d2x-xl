@@ -1965,10 +1965,10 @@ void LoadGameTexts(void);
 #define TXT_BUMP_BRIGHTNESS			GT(1181)
 #define TXT_PYRO_GX						GT(1182)
 #define TXT_PHANTOM_XL					GT(1183)
+#define TXT_PLAYERSHIP					GT(1184)
 
 #if 0
 
-#define TXT_					GT(1184)
 #define TXT_					GT(1185)
 #define TXT_					GT(1186)
 #define TXT_					GT(1187)

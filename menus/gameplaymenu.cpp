@@ -289,12 +289,11 @@ do {
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
-	m.AddText ("");
+	m.AddText (TXT_PLAYERSHIP);
 	optShip = m.AddRadio (TXT_PYRO_GX, 0, KEY_G, HTX_PLAYERSHIP);
 	m.AddRadio (TXT_PHANTOM_XL, 0, KEY_X, HTX_PLAYERSHIP);
 	for (i = 0; i < 2; i++)
 		m [optShip + i].m_value = (i == gameOpts->gameplay.nShip);
-	m.AddText ("");
 	if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
 		optLoadout = -1;
 	else {
