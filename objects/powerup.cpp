@@ -256,8 +256,8 @@ for (i = 3; i < MAX_SECONDARY_WEAPONS; i++)
 	LOCALPLAYER.secondaryAmmo[i] = quantity/5;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
-LOCALPLAYER.Energy () = I2X (200);
-LOCALPLAYER.Shield () = I2X (200);
+LOCALPLAYER.SetEnergy (I2X (200));
+LOCALPLAYER.SetShield (LocalPlayer.MaxShield ());
 MultiSendShield ();
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;

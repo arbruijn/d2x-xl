@@ -914,7 +914,7 @@ if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
 if (!HeadlightIsOn (-1))
 	return;
 
-LOCALPLAYER.Energy () -= (gameData.time.xFrame * 3 / 8);
+LOCALPLAYER.UpdateEnergy (-gameData.time.xFrame * 3 / 8);
 if (LOCALPLAYER.Energy () < I2X (10)) {
 	if (!bTurnedOff) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
@@ -927,7 +927,7 @@ if (LOCALPLAYER.Energy () < I2X (10)) {
 else
 	bTurnedOff = 0;
 if (LOCALPLAYER.Energy () <= 0) {
-	LOCALPLAYER.Energy () = 0;
+	LOCALPLAYER.SetEnergy (0);
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 	if (IsMultiGame)
 		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);

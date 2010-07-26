@@ -952,12 +952,12 @@ void HandleTestKey(int key)
 
 
 		case KEYDBGGED + KEY_K:
-			LOCALPLAYER.Shield () = 1;
+			LOCALPLAYER.SetShield (1);
 			MultiSendShield ();
 			break;
 						//	a virtual kill
 		case KEYDBGGED + KEY_SHIFTED + KEY_K:
-			LOCALPLAYER.Shield () = -1;
+			LOCALPLAYER.SetShield (-1);
 			MultiSendShield ();
 			break;  //	an actual kill
 

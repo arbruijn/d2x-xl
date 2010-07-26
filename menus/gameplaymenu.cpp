@@ -352,7 +352,8 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 if (gameOpts->gameplay.nShip != nShip) {
-	LOCALPLAYER.SetShield (-I2X (10000));
+	LOCALPLAYER.SetShield (-1);
+	MultiSendShield ();
 	MultiSendPlayerWeapons ();
 	}
 }

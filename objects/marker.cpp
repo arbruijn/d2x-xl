@@ -342,8 +342,8 @@ if (!IsMultiGame || IsCoopGame) {
 			CObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
 
 #if 1 //!DBG
-			LOCALPLAYER.Energy () -= I2X (101) / 2;
-			LOCALPLAYER.Shield () -= I2X (51) / 2;
+			LOCALPLAYER.UpdateEnergy (-I2X (101) / 2);
+			LOCALPLAYER.UpdateShield (-I2X (51) / 2);
 #endif
 			OBJECTS [LOCALPLAYER.nObject].info.position.vPos = markerP->info.position.vPos;
 			OBJECTS [LOCALPLAYER.nObject].RelinkToSeg (markerP->info.nSegment);

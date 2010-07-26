@@ -312,7 +312,7 @@ return fix (INITIAL_SHIELD * ShieldScale ());
 
 fix CPlayerData::Shield (void)
 {
-return shield * ShieldScale ();
+return fix (shield * ShieldScale ());
 }
 
 //-------------------------------------------------------------------------
@@ -351,7 +351,7 @@ return energy;
 
 fix CPlayerData::SetEnergy (fix e) 
 {
-return energy = (e > MAX_ENERGY) ? MAX_ENERGY : e;
+return energy = (e > MAX_ENERGY) ? MAX_ENERGY : (e < 0) ? 0 : e;
 }
 
 //-------------------------------------------------------------------------

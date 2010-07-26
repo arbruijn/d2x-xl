@@ -138,8 +138,8 @@ class __pack__ CPlayerData {
 		fix Energy (void);
 		fix SetShield (fix s);
 		fix SetEnergy (fix e);
-		inline fix UpdateShield (fix delta) { SetShield (Shield () + delta); }
-		inline fix UpdateEnergy (fix delta) { SetEnergy (Energy () + delta); }
+		inline fix UpdateShield (fix delta) { return SetShield (Shield () + delta); }
+		inline fix UpdateEnergy (fix delta) { return SetEnergy (Energy () + delta); }
 		fix MaxShield (void);
 		void SetObject (short n);
 

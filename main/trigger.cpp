@@ -1189,9 +1189,9 @@ switch (m_info.nType) {
 	case TT_SHIELD_DAMAGE:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.Shield () -= TRIGGERS [nTrigger].m_info.value;
+				LOCALPLAYER.UpdateShield (-TRIGGERS [nTrigger].m_info.value);
 			else
-				LOCALPLAYER.Shield () -= (fix) ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].m_info.value)));
+				LOCALPLAYER.UpdateShield (-fix ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].m_info.value))));
 			if (LOCALPLAYER.Shield () < 0)
 				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
 			}
@@ -1200,11 +1200,11 @@ switch (m_info.nType) {
 	case TT_ENERGY_DRAIN:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.Energy () -= TRIGGERS [nTrigger].m_info.value;
+				LOCALPLAYER.UpdateEnergy (-TRIGGERS [nTrigger].m_info.value);
 			else
-				LOCALPLAYER.Energy () -= (fix) (LOCALPLAYER.Energy () * X2F (TRIGGERS [nTrigger].m_info.value) / 100);
+				LOCALPLAYER.UpdateEnergy (-fix (LOCALPLAYER.Energy () * X2F (TRIGGERS [nTrigger].m_info.value) / 100));
 			if (LOCALPLAYER.Energy () < 0)
-				LOCALPLAYER.Energy () = 0;
+				LOCALPLAYER.SetEnergy (0);
 			}
 		break;
 

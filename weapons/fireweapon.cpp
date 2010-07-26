@@ -415,10 +415,7 @@ void CreateFlare (CObject *objP)
 
 if (gameStates.app.nDifficultyLevel < 2)
 	xEnergyUsage = FixMul (xEnergyUsage, I2X (gameStates.app.nDifficultyLevel+2)/4);
-LOCALPLAYER.Energy () -= xEnergyUsage;
-if (LOCALPLAYER.Energy () <= 0) {
-	LOCALPLAYER.Energy () = 0;
-	}
+LOCALPLAYER.UpdateEnergy (-xEnergyUsage);
 LaserPlayerFire (objP, FLARE_ID, 6, 1, 0, -1);
 if (IsMultiGame) {
 	gameData.multigame.laser.bFired = 1;

@@ -127,9 +127,9 @@ controls [0].slowMotionCount = 0;
 if (SlowMotionActive ()) {
 	if (!gameStates.app.cheats.bSpeed)
 #if 0
-		LOCALPLAYER.Energy () -= gameData.time.xFrame * (1 + BulletTimeActive ());
+		LOCALPLAYER.UpdateEnergy (-gameData.time.xFrame * (1 + BulletTimeActive ()));
 #else
-		LOCALPLAYER.Energy () -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 6;
+		LOCALPLAYER.UpdateEnergy (-((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 6);
 #endif
 	if (!bSlowMotionOk) {
 		if (gameStates.gameplay.slowmo [0].nState != -1) {

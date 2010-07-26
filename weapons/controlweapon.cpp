@@ -510,7 +510,7 @@ if (!bSecondary) {
 	if ((nWeapon == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
 		nWeapon = SUPER_LASER_INDEX;
 	hasFlag = HAS_WEAPON_FLAG;
-	LOCALPLAYER.Energy () += gameData.FusionCharge ();
+	LOCALPLAYER.UpdateEnergy (gameData.FusionCharge ());
 	gameData.SetFusionCharge (0);
 	}
 else if (nWeapon == 2) {
