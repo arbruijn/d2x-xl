@@ -18,6 +18,7 @@
 #include "strutil.h"
 #include "interp.h"
 #include "ase.h"
+#include "hiresmodels.h"
 
 static char	szLine [1024];
 static char	szLineBackup [1024];
@@ -776,7 +777,7 @@ if (m_nModel >= 0)
 
 if (gameStates.app.bCacheModelData) {
 	try {
-		if (((nModel >= 108) && (nModel <= 110))
+		if (IsPlayerShip (nModel)
 			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0))
 			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
 			return 1;
@@ -817,7 +818,7 @@ else {
 	LinkSubModels ();
 	gameData.models.bHaveHiresModel [uint (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
 	if (gameStates.app.bCacheModelData) {
-		if ((nModel >= 108) && (nModel <= 110))
+		if (IsPlayerShip (nModel))
 			SaveBinary (filename);
 		else
 			SaveBinary ();

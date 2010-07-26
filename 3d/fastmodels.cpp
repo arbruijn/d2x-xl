@@ -230,7 +230,7 @@ if (nCount < 0) {
 else if (nCount >= MAX_THRUSTERS)
 	return;
 vn.Assign (pmf ? pmf->m_vNormal : *vNormal);
-if ((nModel != 108) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f))
+if (!IsPlayerShip (nModel) && (CFloatVector3::Dot (vn, vForward) > -1.0f / 3.0f))
 	return;
 if (pmf) {
 	for (i = 0, j = pmf->m_nVerts, pmv = pm->m_faceVerts + pmf->m_nIndex; i < j; i++)

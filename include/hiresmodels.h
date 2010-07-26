@@ -70,4 +70,11 @@ return HaveHiresModel (nModel) || (GetPOLModel (nModel) != NULL);
 
 // ----------------------------------------------------------------------------
 
+static inline bool IsPlayerShip (int nModel)
+{
+return (nModel >= 108) && (nModel <= 110);
+}
+
+// ----------------------------------------------------------------------------
+
 #endif //_HIRESMODELS_H
