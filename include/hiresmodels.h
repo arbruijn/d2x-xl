@@ -19,6 +19,8 @@ extern tReplacementModel replacementModels [];
 void LoadModelsGauge (void);
 void LoadHiresModels (int bCustom);
 void FreeHiresModels (int bCustom);
+short LoadHiresModel (int nModel, short i, int bCustom, const char* filename = NULL);
+void FreeHiresModel (int nModel);
 int ReplacementModelCount (void);
 
 // ----------------------------------------------------------------------------

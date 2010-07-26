@@ -324,18 +324,18 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadHiresModel (int nModel, short i, int bCustom)
+short LoadHiresModel (int nModel, short i, int bCustom, const char* filename)
 {
 	short	j = sizeofa (replacementModels);
-	char	szModel [FILENAME_LEN];
 
 #if DBG
 if ((nDbgModel >= 0) && (replacementModels [i].nModel == nDbgModel))
 	nDbgModel = nDbgModel;
 #endif
+if (filename)
+	replacementModels [i].pszHires = filename;
 if (replacementModels [i].pszHires)
 	PrintLog ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
-sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
 if ((j = LoadASEModel (gameData.models.aseModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom)))
 	return j;
 #if 1
@@ -432,6 +432,23 @@ else /*if (gameOpts->render.bHiresModels [0])*/ {
 			}
 		}
 	messageBox.Clear ();
+	}
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeHiresModel (int nModel)
+{
+for (int i = 0, l = gameData.models.nHiresModels; i < l; i++) {
+	for (int j = 0; j < 2; j++) {
+		if (gameData.models.aseModels [j][i].m_nModel == nModel) {
+			if (gameData.models.modelToASE [j][nModel]) {
+				gameData.models.modelToASE [j][nModel] = NULL;
+				gameData.models.aseModels [j][i].Destroy ();
+				gameData.models.nHiresModels--;
+				}
+			}
+		}
 	}
 }
 
