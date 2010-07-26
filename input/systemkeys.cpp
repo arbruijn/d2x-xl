@@ -856,6 +856,11 @@ void HandleGameKey(int key)
 
 		case KEY_F4 + KEY_CTRLED:
 			if (!gameData.marker.nDefiningMsg)
+				InitMarkerInput (true);
+			break;
+
+		case KEY_F4 + KEY_CTRLED + KEY_ALTED:
+			if (!gameData.marker.nDefiningMsg)
 				DropSpawnMarker ();
 			break;
 
@@ -1165,7 +1170,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK)
 while ((key = KeyInKeyTime (&keyTime)) != 0) {
 	if (gameData.marker.nDefiningMsg) {
 		MarkerInputMessage (key);
-			continue;
+		continue;
 		}
 if (IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining)) {
 	MultiMsgInputSub (key);

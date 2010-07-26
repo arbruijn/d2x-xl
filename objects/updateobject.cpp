@@ -152,7 +152,7 @@ cameraManager.Rotate (this);
 
 void CObject::RotateMarker (void)
 {
-if (EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
+if (m_bRotate && EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.bTick) {
 	static time_t	t0 [MAX_DROP_SINGLE] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	time_t t = (gameStates.app.nSDLTicks [0] - t0 [info.nId]) % 1000;

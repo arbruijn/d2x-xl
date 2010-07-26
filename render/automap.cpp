@@ -828,6 +828,10 @@ while ((c = KeyInKey ())) {
 			DeleteMarker (0);
 			break;
 
+		case KEY_CTRLED + KEY_R:
+			RotateMarker (0);
+			break;
+
 		case KEY_F1:
 			if (gameOpts->render.automap.bTextured == 1)
 				gameOpts->render.automap.bTextured = 3;

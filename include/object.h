@@ -756,6 +756,7 @@ class CObject : public CObjectInfo {
 		CObjHitInfo		m_hitInfo;
 		CObjDamageInfo	m_damage;
 		bool				m_bMultiplayer;
+		bool				m_bRotate;
 
 	public:
 		CObject ();
@@ -962,6 +963,9 @@ class CObject : public CObjectInfo {
 		inline bool IsPlayer (void) { return (info.nType == OBJ_PLAYER); }
 		bool IsGuideBot (void);
 		bool IsThief (void);
+
+		inline void Rotate (bool bRotate) { m_bRotate = bRotate; }
+		inline bool Rotation (void) { return m_bRotate; }
 
 		int ModelId (bool bRaw = false);
 

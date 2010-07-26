@@ -2567,6 +2567,7 @@ class CMarkerData {
 		int					nIndex;
 		int					nCurrent;
 		int					nLast;
+		bool					bRotate;
 
 	public:
 		CMarkerData ();

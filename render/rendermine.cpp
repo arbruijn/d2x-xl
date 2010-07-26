@@ -131,7 +131,7 @@ void DoRenderObject (int nObject, int nWindow)
 nDbgObj = nObject;
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
 	return;
-#if DBG
+#if 0 //DBG
 if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCount) 
 	return;
 #endif
@@ -145,7 +145,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	}
 
 if (RenderObject (objP, nWindow, 0)) {
-#if DBG
+#if 0 //DBG
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameCount;
 #endif
 	if (!gameStates.render.cameras.bActive) {

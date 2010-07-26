@@ -287,6 +287,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+void RotateMarker (bool bRotate)
+{
+	int	nObject; 
+
+if ((gameData.marker.nHighlight > -1) && ((nObject = gameData.marker.objects [gameData.marker.nHighlight]) != -1))
+	OBJECTS [nObject].Rotate (!OBJECTS [nObject].Rotation ());
+}
+
+//------------------------------------------------------------------------------
+
 void DeleteMarker (int bForce)
 {
 if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
@@ -346,7 +356,7 @@ if (!IsMultiGame || IsCoopGame) {
 
 //------------------------------------------------------------------------------
 
-void InitMarkerInput (void)
+void InitMarkerInput (bool bRotate)
 {
 	int nMaxDrop, i;
 
@@ -371,6 +381,7 @@ if (i == nMaxDrop) {		//no free slot
 //got a free slot. start inputting marker message
 gameData.marker.szInput [0] = '\0';
 gameData.marker.nIndex = 0;
+gameData.marker.bRotate = bRotate;
 gameData.marker.nDefiningMsg = 1;
 gameData.marker.nCurrent = i;
 }
