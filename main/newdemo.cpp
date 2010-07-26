@@ -2246,11 +2246,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.Energy () = I2X (energy);
+				LOCALPLAYER.SetEnergy (I2X (energy));
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_energy != 255)
-					LOCALPLAYER.Energy () = I2X (old_energy);
+					LOCALPLAYER.SetEnergy (I2X (old_energy));
 				}
 			}
 			break;

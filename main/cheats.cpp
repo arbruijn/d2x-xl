@@ -66,9 +66,9 @@ LOCALPLAYER.score = 0;
 void MultiDoCheatPenalty ()
 {
 DoCheatPenalty ();
-LOCALPLAYER.Shield () = I2X (1);
+LOCALPLAYER.SetShield (I2X (1));
 MultiSendShield ();
-LOCALPLAYER.Energy () = I2X (1);
+LOCALPLAYER.SetEnergy (I2X (1));
 if (gameData.app.nGameMode & GM_MULTI) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 	sprintf (gameData.multigame.msg.szMsg, TXT_CRIPPLED, LOCALPLAYER.callsign);
@@ -369,7 +369,7 @@ LOCALPLAYER.flags |= PLAYER_FLAGS_ALL_KEYS;
 
 void BlueOrbCheat (int bVerbose)
 {
-if (BoostVal (&LOCALPLAYER.Shield (), MAX_SHIELD)) {
+if (BoostVal (&LOCALPLAYER.shield, LOCALPLAYER.MaxShield ())) {
 	MultiSendShield ();
 	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Shield ()));
 	}
@@ -451,7 +451,7 @@ if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segs.nLastSegment)) {
 
 void ElectroCheat (int bVerbose)
 {
-if (BoostVal (&LOCALPLAYER.Energy (), MAX_ENERGY))
+if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
 	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Energy ()));
 else if (bVerbose)
 	HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
@@ -504,10 +504,10 @@ if (bVerbose)
 
 void GasolineCheat (int bVerbose)
 {
-LOCALPLAYER.Shield () = MAX_SHIELD;
+LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 MultiSendShield ();
-LOCALPLAYER.Energy () = MAX_ENERGY;
+LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (bVerbose)
 	HUDInitMessage (TXT_SLURP);
 }
@@ -782,7 +782,7 @@ bLastSecondaryWasSuper [PROXMINE_INDEX] = 1;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
 
-LOCALPLAYER.Energy () = MAX_ENERGY;
+LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (gameStates.app.bD1Mission)
 	LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
 else
@@ -1049,8 +1049,8 @@ void DoCheatMenu ()
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_CLOAKED;
 
 		if (m [2].m_value) LOCALPLAYER.flags |= PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY;
-		LOCALPLAYER.Energy ()=I2X (m [3].m_value);
-		LOCALPLAYER.Shield ()=I2X (m [4].m_value);
+		LOCALPLAYER.SetEnergy (I2X (m [3].m_value));
+		LOCALPLAYER.SetShield (I2X (m [4].m_value));
 		LOCALPLAYER.score = atoi (m [6].m_text);
 		//if (m [7].m_value) LOCALPLAYER.laserLevel=0;
 		//if (m [8].m_value) LOCALPLAYER.laserLevel=1;
