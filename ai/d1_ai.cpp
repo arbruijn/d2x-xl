@@ -955,7 +955,7 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
 		fix	dot;
 
 		//	Only take evasive action if looking at playerP.
-		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
+		//	Evasion speed is scaled by percentage of shield left so wounded robots evade less effectively.
 
 		dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.FVec ());
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
@@ -1514,7 +1514,7 @@ if (awareness_level == 0)
 return MultiCanRemoveRobot(objP->Index (), awareness_level);
 }
 #if DBG
-fix	Prev_boss_shields = -1;
+fix	Prev_boss_shield = -1;
 #endif
 
 // --------------------------------------------------------------------------------------------------------------------

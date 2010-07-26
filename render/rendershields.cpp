@@ -229,7 +229,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 	else if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 		alpha = 1;
 	else {
-		alpha = X2F (gameData.multiplayer.players [i].shields) / 100.0f;
+		alpha = X2F (gameData.multiplayer.players [i].Shield ()) / X2F (gameData.multiplayer.players [i].MaxShield ());
 		scale *= alpha;
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);

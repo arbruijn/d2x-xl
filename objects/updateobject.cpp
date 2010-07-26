@@ -233,10 +233,10 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 	else if (gameStates.entropy.nTimeLastMoved < 0)
 		gameStates.entropy.nTimeLastMoved = 0;
 
-	playerP->shields -= segP->ShieldDamage (playerP->shields + 1);
-	playerP->energy -= segP->EnergyDamage (playerP->energy);
+	playerP->UpdateShield (-segP->ShieldDamage (playerP->Shield () + 1));
+	playerP->UpdateEnergy (-segP->EnergyDamage (playerP->energy));
 	MultiSendShield ();
-	if (playerP->shields < 0)
+	if (playerP->Shield () < 0)
 		StartPlayerDeathSequence (this);
 	else {
 		segP->ConquerCheck ();
@@ -244,9 +244,9 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 		fix energy = segP->Refuel (INITIAL_ENERGY - playerP->energy);
 		if (energy > 0)
 			playerP->energy += energy;
-		fix shields = segP->Repair (fix (INITIAL_SHIELDS * objP->ShieldScale ()) - playerP->shields);
-		if (shields > 0) {
-			playerP->shields += shields;
+		fix shield = segP->Repair (fix (INITIAL_SHIELDS * objP->ShieldScale ()) - playerP->Shield ());
+		if (shield > 0) {
+			playerP->UpdateShield (shield);
 			MultiSendShield ();
 			}
 		}
@@ -521,7 +521,7 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 #if DBG
 		bNeedEffect = 1;
 #else
-		bNeedEffect = gameData.multiplayer.players [info.nId].shields < I2X (100);
+		bNeedEffect = gameData.multiplayer.players [info.nId].Shield () < I2X (100);
 #endif
 	else
 		bNeedEffect = false;

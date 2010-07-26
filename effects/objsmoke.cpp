@@ -356,14 +356,14 @@ if ((gameData.app.nGameMode & GM_NETWORK) && !gameData.multiplayer.players [nPla
 	nParts = 0;
 else if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 	nParts = 0;
-else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].shields < 0)))
+else if ((nPlayer == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].Shield () < 0)))
 	nParts = 0;
 else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	tObjTransformation* pos = OBJPOS (objP);
 	short nSegment = OBJSEG (objP);
 	CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
 
-	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].shields);
+	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].Shield ());
 	nScale = X2F (objP->info.xSize) / 2.0f;
 	nParts = 10 - nSmoke / 5;	// scale with damage, starting at 50% damage
 	if (nParts <= 0) {

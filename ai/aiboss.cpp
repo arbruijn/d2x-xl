@@ -355,7 +355,7 @@ nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
 if (objP->info.xShield != gameData.bosses [i].m_xPrevShield) {
 #if TRACE
-	console.printf (CON_DBG, "Boss shields = %7.3f, CObject %i\n", X2F (objP->info.xShield), objP->Index ());
+	console.printf (CON_DBG, "Boss shield = %7.3f, CObject %i\n", X2F (objP->info.xShield), objP->Index ());
 #endif
 	gameData.bosses [i].m_xPrevShield = objP->info.xShield;
 	}

@@ -127,7 +127,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WEAPON_IDMSLLE        1
 #define WEAPON_ID_CANNONBALL    2
 
-// Object Initial shields...
+// Object Initial shield...
 #define OBJECT_INITIAL_SHIELDS I2X (1)/2
 
 // physics flags
@@ -667,6 +667,10 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline void SetSignature (int nSignature) { info.nSignature = nSignature; }
 		inline void SetId (ubyte nId) { info.nId = nId; }
 		inline void SetSize (fix xSize) { info.xSize = xSize; }
+		inline fix Energy (void) { return info.xEnergy; }
+		inline void SetEnergy (fix xEnergy) { info.xEnergy = xEnergy; }
+		inline void UpdateEnergy (fix xEnergy) { info.xEnergy += xEnergy; }
+		inline fix Shield (void) { return info.xShield; }
 		inline void SetShield (fix xShield) { info.xShield = xShield; }
 		inline void UpdateShield (fix xShield) { info.xShield += xShield; }
 		inline void SetLifeLeft (fix xLifeLeft) { info.xLifeLeft = xLifeLeft; }

@@ -120,7 +120,7 @@ float CObject::Damage (void)
 	fix	xMaxShield;
 
 if (info.nType == OBJ_PLAYER)
-	fDmg = X2F (gameData.multiplayer.players [info.nId].shields) / 100;
+	fDmg = X2F (gameData.multiplayer.players [info.nId].Shield ()) / 100;
 else if (info.nType == OBJ_ROBOT) {
 	xMaxShield = RobotDefaultShield (this);
 	fDmg = X2F (info.xShield) / X2F (xMaxShield);
@@ -253,7 +253,7 @@ if (nStage == 0) {
 		gameData.multiplayer.players [0] = LOCALPLAYER;
 		gameData.multiplayer.nLocalPlayer = 0;
 		}
-	LOCALPLAYER.nObject = 0;
+	LOCALPLAYER.SetObject (0);
 	LOCALPLAYER.nInvuls =
 	LOCALPLAYER.nCloaks = 0;
 	}

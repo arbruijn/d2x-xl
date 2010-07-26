@@ -84,7 +84,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_CONTROL_CENTER_DESTROYED 15 // Just a simple flag
 #define ND_EVENT_PALETTE_EFFECT     16  // Followed by short r, g, b
 #define ND_EVENT_PLAYER_ENERGY      17  // followed by byte energy
-#define ND_EVENT_PLAYER_SHIELD      18  // followed by byte shields
+#define ND_EVENT_PLAYER_SHIELD      18  // followed by byte shield
 #define ND_EVENT_PLAYER_FLAGS       19  // followed by CPlayerData flags
 #define ND_EVENT_PLAYER_WEAPON      20  // followed by weapon nType and weapon number
 #define ND_EVENT_EFFECT_BLOWUP      21  // followed by CSegment, nSide, and pnt
@@ -1064,7 +1064,7 @@ NDWriteByte ((sbyte)LOCALPLAYER.laserLevel);
 //  Support for missions added here
 NDWriteString (gameStates.app.szCurrentMissionFile);
 NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.Energy ())));
-NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shield ())));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.Shield ())));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
@@ -1878,7 +1878,7 @@ gameData.weapons.nSecondary = NDReadByte ();
 // check the next byte -- it _will_ be a load_newLevel event.  If it is
 // not, then we must shift all bytes up by one.
 LOCALPLAYER.Energy () = I2X (energy);
-LOCALPLAYER.shield () = I2X (shield);
+LOCALPLAYER.Shield () = I2X (shield);
 bJustStartedPlayback = 1;
 return 0;
 }
@@ -2284,11 +2284,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.shield () = I2X (shield);
+				LOCALPLAYER.Shield () = I2X (shield);
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_shield != 255)
-					LOCALPLAYER.shield () = I2X (old_shield);
+					LOCALPLAYER.Shield () = I2X (old_shield);
 				}
 			}
 			break;
@@ -2907,7 +2907,7 @@ bint = NDReadInt ();
 energy = NDReadByte ();
 shield = NDReadByte ();
 LOCALPLAYER.Energy () = I2X (energy);
-LOCALPLAYER.shield () = I2X (shield);
+LOCALPLAYER.Shield () = I2X (shield);
 LOCALPLAYER.flags = NDReadInt ();
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 	LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
@@ -3307,7 +3307,7 @@ NDWriteShort (ND_EVENT_EOF);
 NDWriteInt (ND_EVENT_EOF);
 byteCount += 10;       // from gameData.demo.nFrameBytesWritten
 NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.Energy ())));
-NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.shield ())));
+NDWriteByte ((sbyte) (X2IR (LOCALPLAYER.Shield ())));
 NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);

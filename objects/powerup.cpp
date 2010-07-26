@@ -298,15 +298,13 @@ int PickupShieldBoost (CObject *objP, int nPlayer)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
-if (playerP->shields < MAX_SHIELDS) {
+if (playerP->Shield () < playerP->MaxShield ()) {
 	fix boost = I2X (3) * (NDL - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
-	playerP->shields += boost;
-	if (playerP->shields > MAX_SHIELDS)
-		playerP->shields = MAX_SHIELDS;
+	playerP->UpdateShield (boost);
 	if (ISLOCALPLAYER (nPlayer)) {
-		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->shields));
+		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->Shield ()));
 		MultiSendShield ();
 		}
 	OBJECTS [nPlayer].ResetDamage ();
@@ -672,7 +670,7 @@ bLocalPlayer = (nPlayer == gameData.multiplayer.nLocalPlayer);
 if (bLocalPlayer &&
 	 (gameStates.app.bPlayerIsDead || 
 	  (gameData.objs.consoleP->info.nType == OBJ_GHOST) || 
-	  (playerP->shields < 0)))
+	  (playerP->Shield () < 0)))
 	return 0;
 if (objP->cType.powerupInfo.xCreationTime > gameData.time.xGame)		//gametime wrapped!
 	objP->cType.powerupInfo.xCreationTime = 0;				//allow CPlayerData to pick up
@@ -1134,7 +1132,7 @@ if (!nClass || ((nClass < 3) && (nIndex < 0)))
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 	if ((i == gameData.multiplayer.nLocalPlayer) && (gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead))
 		continue;
-	if (playerP->shields < 0)
+	if (playerP->Shield () < 0)
 		continue;
 	if (!playerP->connected)
 		continue;

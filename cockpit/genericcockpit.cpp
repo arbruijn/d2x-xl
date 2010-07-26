@@ -85,7 +85,7 @@ void CCockpitHistory::Init (void)
 {
 score = (IsMultiGame && !IsCoopGame) ? -99 : -1;
 energy = -1;
-shields = -1;
+shield = -1;
 flags = -1;
 bCloak = 0;
 lives = -1;
@@ -2050,11 +2050,11 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 		}
 
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
-		m_history [gameStates.render.vr.nCurrentPage].shields = m_info.nShield ^ 1;
+		m_history [gameStates.render.vr.nCurrentPage].shield = m_info.nShield ^ 1;
 	else {
-		if (m_info.nShield != m_history [gameStates.render.vr.nCurrentPage].shields) {		// Draw the shield gauge
-			NDRecordPlayerShield (m_history [gameStates.render.vr.nCurrentPage].shields, m_info.nShield);
-			m_history [gameStates.render.vr.nCurrentPage].shields = m_info.nShield;
+		if (m_info.nShield != m_history [gameStates.render.vr.nCurrentPage].shield) {		// Draw the shield gauge
+			NDRecordPlayerShield (m_history [gameStates.render.vr.nCurrentPage].shield, m_info.nShield);
+			m_history [gameStates.render.vr.nCurrentPage].shield = m_info.nShield;
 			}
 		}
 	if (LOCALPLAYER.flags != m_history [gameStates.render.vr.nCurrentPage].flags) {

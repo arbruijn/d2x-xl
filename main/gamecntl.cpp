@@ -89,7 +89,7 @@ void PlayTestSound(void);
 // Functions ------------------------------------------------------------------
 
 #define CONVERTER_RATE  20		//10 units per second xfer rate
-#define CONVERTER_SCALE  2		//2 units energy -> 1 unit shields
+#define CONVERTER_SCALE  2		//2 units energy -> 1 unit shield
 
 #define CONVERTER_SOUND_DELAY (I2X (1)/2)		//play every half second
 
@@ -101,7 +101,7 @@ void TransferEnergyToShield (fix time)
 if (time <= 0)
 	return;
 e = min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - INITIAL_ENERGY);
-e = min (e, (MAX_SHIELDS - LOCALPLAYER.shield ()) * CONVERTER_SCALE);
+e = min (e, (MAX_SHIELD - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
 if (e <= 0) {
 	if (LOCALPLAYER.Energy () <= INITIAL_ENERGY)
 		HUDInitMessage (TXT_TRANSFER_ENERGY, X2I(INITIAL_ENERGY));
@@ -111,7 +111,7 @@ if (e <= 0) {
 }
 
 LOCALPLAYER.Energy () -= e;
-LOCALPLAYER.shield () += e / CONVERTER_SCALE;
+LOCALPLAYER.Shield () += e / CONVERTER_SCALE;
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 MultiSendShield ();
 gameStates.app.bUsingConverter = 1;

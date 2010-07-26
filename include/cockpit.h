@@ -78,7 +78,7 @@ class CCockpitHistory {
 	public:
 		int		score;
 		int		energy;
-		int		shields;
+		int		shield;
 		uint		flags;
 		int		bCloak;
 		int		lives;

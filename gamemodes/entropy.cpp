@@ -170,7 +170,7 @@ if (gameStates.entropy.nTimeLastMoved < 0) {
 	StopConquerWarning ();
 	return 0;
 	}
-if (playerP->shields < 0) {
+if (playerP->Shield () < 0) {
 	HUDMessage (0, "you are dead");
 	StopConquerWarning ();
 	return 0;
@@ -192,7 +192,7 @@ if (m_owner == team) {
 	}
 #else
 if ((gameStates.entropy.nTimeLastMoved < 0) || 
-	 (playerP->shields < 0) || 
+	 (playerP->Shield () < 0) || 
 	 (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].entropy.nCaptureVirusLimit) ||
 	 (m_owner < 0) || 
 	 (m_owner == team)) {

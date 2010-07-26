@@ -473,7 +473,7 @@ else {
 if (gameStates.app.bD2XLevel && (SEGMENTS [nHitSeg].HasNoDamageProp ()))
 	return;
 //	** Damage from hitting CWall **
-//	If the CPlayerData has less than 10% shields, don't take damage from bump
+//	If the CPlayerData has less than 10% shield, don't take damage from bump
 // Note: Does quad damage if hit a vForce field - JL
 damage = (xHitSpeed / DAMAGE_SCALE) * (bForceFieldHit * 8 + 1);
 nOvlTex = SEGMENTS [nHitSeg].m_sides [nHitSide].m_nOvlTex;
@@ -1734,10 +1734,6 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 
 gameData.multiplayer.bWasHit [info.nId] = -1;
-//for the CPlayerData, the 'real' shields are maintained in the gameData.multiplayer.players []
-//array.  The shields value in the CPlayerData's CObject are, I think, not
-//used anywhere.  This routine, however, sets the OBJECTS shields to
-//be a mirror of the value in the Player structure.
 
 if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlayerData?
 	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
@@ -1749,17 +1745,16 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {		//is this the local CPlaye
 		if (!(damage = (fix) ((double) damage * h)))
 			damage = 1;
 		}
-	UpdateShield (-damage);
+	playerP->UpdateShield (-damage);
 	MultiSendShield ();
 	paletteManager.BumpEffect (X2I (damage) * 4, -X2I (damage / 2), -X2I (damage / 2));	//flash red
-	if (playerP->shields < 0) {
+	if (playerP->Shield () < 0) {
   		playerP->nKillerObj = OBJ_IDX (killerObjP);
 		Die ();
 		if (gameData.escort.nObjNum != -1)
 			if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (killerObjP->info.nId).companion))
 				gameData.escort.xSorryTime = gameData.time.xGame;
 		}
-	info.xShield = playerP->shields;		//mirror
 	}
 }
 

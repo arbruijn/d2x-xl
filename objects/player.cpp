@@ -289,7 +289,66 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 
 //-------------------------------------------------------------------------
 
-fix CPlayerData::Shield (void) { return (nObject < 0) ? 0 : OBJECTS [nObject].Shield (); }
+fix CPlayerData::InitialShield (void)
+{
+return (nObject < 0) ? INITIAL_SHIELD : fix (INITIAL_SHIELD * OBJECTS [nObject].ShieldScale ());
+}
 
-fix CPlayerData::Energy (void) { return (nObject < 0) ? 0 : OBJECTS [nObject].Energy (); }
+//-------------------------------------------------------------------------
+
+fix CPlayerData::Shield (void)
+{
+return shield;
+}
+
+//-------------------------------------------------------------------------
+
+fix CPlayerData::SetShield (fix s) 
+{ 
+if (nObject < 0) {
+	CObject* objP = OBJECTS + nObject;
+	if (s > fix (MAX_SHIELD * objP->ShieldScale ()))
+		s = fix (MAX_SHIELD * objP->ShieldScale ());
+	objP->SetShield (s); 
+	}
+return shield = s;
+}
+
+//-------------------------------------------------------------------------
+
+fix CPlayerData::MaxShield (void)
+{
+return (nObject < 0) ? MAX_SHIELD : fix (MAX_SHIELD  * OBJECTS [nObject].ShieldScale ());
+}
+
+//-------------------------------------------------------------------------
+
+fix CPlayerData::InitialEnergy (void)
+{
+return INITIAL_ENERGY;
+}
+
+//-------------------------------------------------------------------------
+
+fix CPlayerData::Energy (void)
+{
+return energy;
+}
+
+//-------------------------------------------------------------------------
+
+fix CPlayerData::SetEnergy (fix e) 
+{
+return energy = (e > MAX_ENERGY) ? MAX_ENERGY : e;
+}
+
+//-------------------------------------------------------------------------
+
+void CPlayerData::SetObject (short n)
+{
+if (0 <= (nObject = n))
+	SetShield (Shield () * OBJECTS [n].ShieldScale ());
+}
+
+
 //-------------------------------------------------------------------------

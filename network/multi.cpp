@@ -107,7 +107,7 @@ typedef struct tNetPlayerStats {
 	ubyte  nLocalPlayer;          // Who am i?
 	uint   flags;                 // Powerup flags, see below...
 	fix    energy;                // Amount of energy remaining.
-	fix    shields;               // shields remaining (protection)
+	fix    shield;                // shield remaining (protection)
 	ubyte  lives;                 // Lives remaining, 0 = game over.
 	ubyte  laserLevel;				// Current level of the laser.
 	ubyte  primaryWeaponFlags;		// bit set indicates the player has this weapon.
@@ -436,7 +436,7 @@ void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj)
 if (nLocalObj != nRemoteObj)
 	for (int i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 		if (gameData.multiplayer.players [i].nObject == nRemoteObj) {
-			gameData.multiplayer.players [i].nObject = nLocalObj;
+			gameData.multiplayer.players [i].SetObject (nLocalObj);
 			if (i == gameData.multiplayer.nLocalPlayer)
 				gameData.objs.consoleP = OBJECTS + nLocalObj;
 			break;
@@ -538,7 +538,7 @@ if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal (bForce)
 		HUDInitMessage (TXT_REACH_SCOREGOAL2, gameData.multiplayer.players [nPlayer].callsign);
 	else {
 		HUDInitMessage (TXT_REACH_SCOREGOAL);
-		LOCALPLAYER.shield () = I2X (200);
+		LOCALPLAYER.Shield () = I2X (200);
 		}
 	if (!gameData.reactor.bDestroyed) {
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
@@ -764,7 +764,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] &&(!extraGameInfo [1].bAutoBalanceTeam
 	SetTeam (nPlayer, t);
 	MultiSendSetTeam (nPlayer);
 	if (!bForce) {
-		gameData.multiplayer.players [nPlayer].shields = -1;
+		gameData.multiplayer.players [nPlayer].SetShield (-1);
 		StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 		}
 	}
@@ -1304,7 +1304,7 @@ else if (gameData.app.nGameMode & GM_NETWORK)
 
 void MultiLeaveGame (void)
 {
-	fix	shields;
+	fix	shield;
 
 if (!IsMultiGame)
 	return;
@@ -1313,10 +1313,10 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	AdjustMineSpawn ();
 	MultiCapObjects ();
 	d_srand (gameStates.app.nRandSeed = TimerGetFixedSeconds ());
-	shields = LOCALPLAYER.shield ();
-	LOCALPLAYER.shield () = -1;
+	shield = LOCALPLAYER.Shield ();
+	LOCALPLAYER.Shield () = -1;
 	DropPlayerEggs (gameData.objs.consoleP);
-	LOCALPLAYER.shield () = shields;
+	LOCALPLAYER.SetShield (shield);
 	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
@@ -1366,7 +1366,7 @@ if (!((gameData.app.nGameMode & GM_MULTI) &&(gameStates.app.nFunctionMode == FMO
 	return 0;
 if (gameData.multigame.menu.bLeave)
 	return -1;
-xOldShield = LOCALPLAYER.shield ();
+xOldShield = LOCALPLAYER.Shield ();
 bPlayerWasDead = gameStates.app.bPlayerIsDead;
 if (!gameOpts->menus.nStyle) {
 	gameData.multigame.menu.bInvoked++; // Track level of menu nesting
@@ -1377,7 +1377,7 @@ if (!gameOpts->menus.nStyle) {
 if (gameStates.app.bEndLevelSequence ||
 	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) ||
 	 (gameStates.app.bPlayerIsDead != bPlayerWasDead) ||
-	 (LOCALPLAYER.shield () < xOldShield)) {
+	 (LOCALPLAYER.Shield () < xOldShield)) {
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}
@@ -1547,14 +1547,14 @@ nRemoteCreated = buf [bufI++]; // How many did the other guy create?
 gameData.multigame.create.nCount = 0;
 //if (gameStates.multi.nGameType != UDP_GAME) 
 	{
-	fix shields = playerP->shields;
-	playerP->shields = -1;
+	fix shield = playerP->Shield ();
+	playerP->SetShield (-1);
 #if 0
 	if (multiMessageLengths [1][MULTI_PLAYER_EXPLODE] < 0)
 	if (gameStates.multi.nGameType != UDP_GAME)
 #endif
 	DropPlayerEggs (objP);
-	playerP->shields = shields;
+	playerP->SetShield (shield);
 // Create mapping from remote to local numbering system
 	for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
 		nRemoteObj = GET_INTEL_SHORT (buf + bufI);
@@ -1587,7 +1587,7 @@ if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers)) {
 	return;
 	}
 int nKilled = gameData.multiplayer.players [nPlayer].nObject;
-gameData.multiplayer.players [nPlayer].shields = -1;
+gameData.multiplayer.players [nPlayer].SetShield (-1);
 int nKiller = GET_INTEL_SHORT (buf + 2);
 if (nKiller < 0) 
 	nPlayer = -1;
@@ -2012,14 +2012,13 @@ TRIGGERS [nTrigger].Operate (nObject, nPlayer, 0, 0);
 void MultiDoShield (char *buf)
 {
 	int	nPlayer = int (buf [1]);
-	int	shields = GET_INTEL_INT (buf+2);
+	int	shield = GET_INTEL_INT (buf+2);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
 	Int3 (); // Got CTrigger from illegal nPlayer
 	return;
 	}
-gameData.multiplayer.players [nPlayer].shields  =
-OBJECTS [gameData.multiplayer.players [nPlayer].nObject].SetShield (shields);
+gameData.multiplayer.players [nPlayer].SetShield (shield);
 }
 
 //-----------------------------------------------------------------------------
@@ -3596,7 +3595,7 @@ void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerData * pd)
 
 ps->flags = INTEL_INT (pd->flags);                                   // Powerup flags, see below...
 ps->energy = (fix)INTEL_INT (pd->energy);                            // Amount of energy remaining.
-ps->shields = (fix)INTEL_INT (pd->shields);                          // shields remaining (protection)
+ps->shield = (fix)INTEL_INT (pd->shield);                          // shield remaining (protection)
 ps->lives = pd->lives;                                              // Lives remaining, 0 = game over.
 ps->laserLevel = pd->laserLevel;                                  // Current level of the laser.
 ps->primaryWeaponFlags = (ubyte) pd->primaryWeaponFlags;                  // bit set indicates the player has this weapon.
@@ -3632,7 +3631,7 @@ void UseNetPlayerStats (CPlayerData * ps, tNetPlayerStats *pd)
 
 ps->flags = INTEL_INT (pd->flags);                       // Powerup flags, see below...
 ps->energy = (fix)INTEL_INT ((int)pd->energy);           // Amount of energy remaining.
-ps->shields = (fix)INTEL_INT ((int)pd->shields);         // shields remaining (protection)
+ps->shield = (fix)INTEL_INT ((int)pd->shield);         // shield remaining (protection)
 ps->lives = pd->lives;                                  // Lives remaining, 0 = game over.
 ps->laserLevel = pd->laserLevel;                      // Current level of the laser.
 ps->primaryWeaponFlags = pd->primaryWeaponFlags;      // bit set indicates the player has this weapon.
@@ -3950,7 +3949,7 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 	}
 gameStates.entropy.bExitSequence = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((GetTeam (i) != t) && (gameData.multiplayer.players [i].shields >= 0))
+	if ((GetTeam (i) != t) && (gameData.multiplayer.players [i].Shield () >= 0))
 		return;
 countDown = gameStates.app.nSDLTicks [0];
 #if 1//!DBG
@@ -4102,8 +4101,7 @@ void MultiDoWeapons (char *buf)
 	int	i, bufP = 1;
 	int	nPlayer = int (buf [bufP++]);
 
-gameData.multiplayer.players [nPlayer].shields  =
-OBJECTS [gameData.multiplayer.players [nPlayer].nObject].SetShield (GET_INTEL_INT (buf + bufP));
+gameData.multiplayer.players [nPlayer].SetShield (GET_INTEL_INT (buf + bufP));
 bufP += 4;
 gameData.multiplayer.players [nPlayer].primaryWeaponFlags = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
@@ -4148,7 +4146,7 @@ if (bForce || (t - nTimeout > 1000)) {
 	nTimeout = t;
 	gameData.multigame.msg.buf [bufP++] = (char) MULTI_WEAPONS;
 	gameData.multigame.msg.buf [bufP++] = (char) gameData.multiplayer.nLocalPlayer;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.shield ());
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.Shield ());
 	bufP += 4;
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.primaryWeaponFlags);
 	bufP += 2;
@@ -4532,7 +4530,7 @@ void MultiSendShield (void)
 {
 gameData.multigame.msg.buf [0] = MULTI_PLAYER_SHIELDS;
 gameData.multigame.msg.buf [1] = gameData.multiplayer.nLocalPlayer;
-PUT_INTEL_INT (gameData.multigame.msg.buf+2, LOCALPLAYER.shield ());
+PUT_INTEL_INT (gameData.multigame.msg.buf+2, LOCALPLAYER.Shield ());
 MultiSendData (gameData.multigame.msg.buf, 6, 1);
 }
 

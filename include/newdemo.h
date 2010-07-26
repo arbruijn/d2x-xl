@@ -43,7 +43,7 @@ void NDRecordWallHitProcess (int nSegment, int nSide, int damage, int playernum)
 void NDRecordTrigger (int nSegment, int nSide, int nObject, int shot);
 void NDRecordHostageRescued (int nHostage);
 void NDRecordMorphFrame (tMorphInfo* md);
-void NDRecordPlayerStats (int shields, int energy, int score);
+void NDRecordPlayerStats (int shield, int energy, int score);
 void NDRecordPlayerAfterburner (fix old_afterburner, fix afterburner);
 void NDRecordWallToggle (int nSegment, int nSide);
 void NDRecordControlCenterDestroyed (void);

@@ -677,7 +677,7 @@ switch (nType) {
 				gameData.bosses.Add (nObject);
 			}
 		// At JasenW's request, robots which contain robots
-		// sometimes drop shields.
+		// sometimes drop shield.
 		if (d_rand () > 16384)
 			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, vPos, nSegment);
 		break;

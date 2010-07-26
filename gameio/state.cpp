@@ -672,7 +672,7 @@ m_cf.WriteInt (playerP->nPacketsGot);         // How many packets we got from th
 m_cf.WriteInt (playerP->nPacketsSent);        // How many packets we sent to them
 m_cf.WriteInt ((int) playerP->flags);           // Powerup flags, see below...
 m_cf.WriteFix (playerP->energy);                // Amount of energy remaining.
-m_cf.WriteFix (playerP->shields);               // shields remaining (protection)
+m_cf.WriteFix (playerP->Shield ());               // shield remaining (protection)
 m_cf.WriteByte (playerP->lives);                // Lives remaining, 0 = game over.
 m_cf.WriteByte (playerP->level);                // Current level CPlayerData is playing. (must be signed for secret levels)
 m_cf.WriteByte ((sbyte) playerP->laserLevel);  // Current level of the laser.
@@ -1381,10 +1381,10 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		if (objP->info.nSignature > gameData.objs.nNextSignature)
 			gameData.objs.nNextSignature = objP->info.nSignature;
 		}
-	//look for, and fix, boss with bogus shields
+	//look for, and fix, boss with bogus shield
 	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag) {
 		fix xShieldSave = objP->info.xShield;
-		CopyDefaultsToRobot (objP);		//calculate starting shields
+		CopyDefaultsToRobot (objP);		//calculate starting shield
 		//if in valid range, use loaded shield value
 		if (xShieldSave > 0 && (xShieldSave <= objP->info.xShield))
 			objP->SetShield (xShieldSave);
@@ -1536,7 +1536,7 @@ playerP->nPacketsGot = m_cf.ReadInt ();         // How many packets we got from 
 playerP->nPacketsSent = m_cf.ReadInt ();        // How many packets we sent to them
 playerP->flags = (uint) m_cf.ReadInt ();           // Powerup flags, see below...
 playerP->energy = m_cf.ReadFix ();                // Amount of energy remaining.
-playerP->shields = m_cf.ReadFix ();               // shields remaining (protection)
+playerP->SetShield (m_cf.ReadFix ());               // shield remaining (protection)
 playerP->lives = m_cf.ReadByte ();                // Lives remaining, 0 = game over.
 playerP->level = m_cf.ReadByte ();                // Current level CPlayerData is playing. (must be signed for secret levels)
 playerP->laserLevel = (ubyte) m_cf.ReadByte ();  // Current level of the laser.
@@ -1735,7 +1735,7 @@ else {
 	LoadPlayer (&retPlayer);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-LOCALPLAYER.nObject = nLocalObjNum;
+LOCALPLAYER.SetObject (nLocalObjNum);
 strcpy (LOCALPLAYER.callsign, szOrgCallSign);
 // Set the right level
 if (m_bBetweenLevels)
@@ -2080,7 +2080,7 @@ else {
 	m_cf.Read (&retPlayer, sizeof (CPlayerData), 1);
 	AwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-LOCALPLAYER.nObject = nLocalObjNum;
+LOCALPLAYER.SetObject (nLocalObjNum);
 strcpy (LOCALPLAYER.callsign, szOrgCallSign);
 // Set the right level
 if (m_bBetweenLevels)

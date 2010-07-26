@@ -151,7 +151,7 @@ return bReset;
 // It is used to scale critical hit damage with a target's durability to avoid strong targets being disabled
 // by critical hits too soon. This is necessary since strong targets take a lot of hits to be taken down,
 // so will receive a lot of critical hits compared to weak targets.
-// Player shields are given a ratio of 2 to reduce critical hit effects on them.
+// Player shield are given a ratio of 2 to reduce critical hit effects on them.
 
 float CObject::DamageRate (void)
 {

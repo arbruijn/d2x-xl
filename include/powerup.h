@@ -120,7 +120,7 @@ int DoPowerup(CObject *objP, int nPlayer);
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject);
 void UpdateFlagClips (void);
 
-// Diminish shields and energy towards max in case they exceeded it.
+// Diminish shield and energy towards max in case they exceeded it.
 void diminish_towards_max(void);
 
 void DoMegaWowPowerup(int quantity);

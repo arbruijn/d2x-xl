@@ -27,10 +27,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Initial CPlayerData stat values
 #define INITIAL_ENERGY  I2X(100)    // 100% energy to start
-#define INITIAL_SHIELDS I2X(100)    // 100% shields to start
+#define INITIAL_SHIELDS I2X(100)    // 100% shield to start
 
 #define MAX_ENERGY      I2X(200)    // go up to 200
-#define MAX_SHIELDS     I2X(200)
+#define MAX_SHIELD     I2X(200)
 
 #define INITIAL_LIVES               3   // start off with 3 lives
 
@@ -91,7 +91,7 @@ class __pack__ CPlayerData {
 		// Game data
 		uint    flags;							// Powerup flags, see below...
 		fix     energy;						// Amount of energy remaining.
-		fix     shields;						// shields remaining (protection)
+		fix     shield;						// shield remaining (protection)
 		ubyte   lives;							// Lives remaining, 0 = game over.
 		sbyte   level;							// Current level CPlayerData is playing. (must be signed for secret levels)
 		ubyte   laserLevel;					// Current level of the laser.
@@ -133,6 +133,11 @@ class __pack__ CPlayerData {
 		CPlayerData () { memset (this, 0, sizeof (*this)); }
 		fix Shield (void);
 		fix Energy (void);
+		fix SetShield (fix s);
+		fix SetEnergy (fix e);
+		inline fix UpdateShield (fix delta) { SetShield (Shield () + delta); }
+		inline fix UpdateEnergy (fix delta) { SetEnergy (Energy () + delta); }
+		void SetObject (short n);
 };
 
 
@@ -155,7 +160,7 @@ typedef struct player16 {
 	// Game data
 	uint    flags;                  // Powerup flags, see below...
 	fix     energy;                 // Amount of energy remaining.
-	fix     shields;                // shields remaining (protection)
+	fix     shield;                // shield remaining (protection)
 	ubyte   lives;                  // Lives remaining, 0 = game over.
 	sbyte   level;                  // Current level CPlayerData is playing. (must be signed for secret levels)
 	ubyte   laserLevel;            // Current level of the laser.

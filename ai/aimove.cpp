@@ -265,7 +265,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
 		fix	dot;
 
 		//	Only take evasive action if looking at player.
-		//	Evasion speed is scaled by percentage of shields left so wounded robots evade less effectively.
+		//	Evasion speed is scaled by percentage of shield left so wounded robots evade less effectively.
 
 		dot = CFixVector::Dot (gameData.ai.target.vDir, objP->info.position.mOrient.FVec ());
 		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !TARGETOBJ->Cloaked ()) {

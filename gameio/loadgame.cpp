@@ -290,7 +290,7 @@ for (i = 0; i < nPlayers; i++) {
 		gameData.multiplayer.playerInit [i].position = objP->info.position;
 		gameData.multiplayer.playerInit [i].nSegment = objP->info.nSegment;
 		gameData.multiplayer.playerInit [i].nSegType = segType;
-		gameData.multiplayer.players [i].nObject = playerObjs [j];
+		gameData.multiplayer.players [i].SetObject (playerObjs [j]);
 		objP->info.nId = i;
 		startSegs [j] = -1;
 		break;
@@ -353,8 +353,8 @@ void InitAmmoAndEnergy (void)
 {
 if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
 	LOCALPLAYER.Energy () = INITIAL_ENERGY;
-if (LOCALPLAYER.shield () < gameStates.gameplay.xStartingShield)
-	LOCALPLAYER.shield () = gameStates.gameplay.xStartingShield;
+if (LOCALPLAYER.Shield () < gameStates.gameplay.xStartingShield)
+	LOCALPLAYER.SetShield (gameStates.gameplay.xStartingShield);
 if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
 	SetMaxOmegaCharge ();
 if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
@@ -381,7 +381,7 @@ if (bNewGame) {
 	playerP->hoursLevel = 0;
 	playerP->hoursTotal = 0;
 	playerP->energy = INITIAL_ENERGY;
-	playerP->shields = gameStates.gameplay.xStartingShield;
+	playerP->SetShield (gameStates.gameplay.xStartingShield);
 	playerP->nKillerObj = -1;
 	playerP->netKilledTotal = 0;
 	playerP->netKillsTotal = 0;
@@ -495,8 +495,8 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordPlayerWeapon (1, 0);
 	}
 
-LOCALPLAYER.Energy () = INITIAL_ENERGY;
-LOCALPLAYER.shield () = gameStates.gameplay.xStartingShield;
+LOCALPLAYER.SetEnergy (INITIAL_ENERGY);
+LOCALPLAYER.SetShield (gameStates.gameplay.xStartingShield);
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.hostages.nOnBoard = 0;
@@ -1146,7 +1146,7 @@ if (!gameStates.app.cheats.bEnabled) {
 		}
 	else
 		nSkillPoints = 0;
-	if (0 > (nShieldPoints = X2I (LOCALPLAYER.shield ()) * 5 * nMineLevel))
+	if (0 > (nShieldPoints = X2I (LOCALPLAYER.Shield ()) * 5 * nMineLevel))
 		nShieldPoints = 0;
 	else
 		nShieldPoints -= nShieldPoints % 50;
@@ -1806,8 +1806,8 @@ SetD1Sound ();
 if (gameStates.app.bD1Mission) {
 	if (LOCALPLAYER.Energy () < INITIAL_ENERGY)
 		LOCALPLAYER.Energy () = INITIAL_ENERGY;
-	if (LOCALPLAYER.shield () < INITIAL_SHIELDS)
-		LOCALPLAYER.shield () = INITIAL_SHIELDS;
+	if (LOCALPLAYER.Shield () < INITIAL_SHIELDS)
+		LOCALPLAYER.Shield () = INITIAL_SHIELDS;
 	}
 }
 
@@ -2207,7 +2207,7 @@ fix RobotDefaultShield (CObject *objP)
 {
 	tRobotInfo*	botInfoP;
 	int			objId, i;
-	fix			shields;
+	fix			shield;
 
 if (objP->info.nType != OBJ_ROBOT)
 	return (objP->info.nType == OBJ_REACTOR) ? ReactorStrength () : 0;
@@ -2216,33 +2216,33 @@ objId = objP->info.nId;
 i = gameStates.app.bD1Mission && (objId < gameData.bots.nTypes [1]);
 botInfoP = gameData.bots.info [i] + objId;
 //	Boost shield for Thief and Buddy based on level.
-shields = botInfoP->strength;
+shield = botInfoP->strength;
 if (botInfoP->thief || botInfoP->companion) {
-	shields = (shields * (abs (missionManager.nCurrentLevel) + 7)) / 8;
+	shield = (shield * (abs (missionManager.nCurrentLevel) + 7)) / 8;
 	if (botInfoP->companion) {
 		//	Now, scale guide-bot hits by skill level
 		switch (gameStates.app.nDifficultyLevel) {
 			case 0:
-				shields = I2X (20000);
+				shield = I2X (20000);
 				break;		//	Trainee, basically unkillable
 			case 1:
-				shields *= 3;
+				shield *= 3;
 				break;		//	Rookie, pretty dang hard
 			case 2:
-				shields *= 2;
+				shield *= 2;
 				break;		//	Hotshot, a bit tough
 			default:
 				break;
 			}
 		}
 	}
-else if (botInfoP->bossFlag) {	//	MK, 01/16/95, make boss shields lower on lower diff levels.
-	shields = shields / (NDL + 3) * (gameStates.app.nDifficultyLevel + 4);
+else if (botInfoP->bossFlag) {	//	MK, 01/16/95, make boss shield lower on lower diff levels.
+	shield = shield / (NDL + 3) * (gameStates.app.nDifficultyLevel + 4);
 //	Additional wimpification of bosses at Trainee
 	if (gameStates.app.nDifficultyLevel == 0)
-		shields /= 2;
+		shield /= 2;
 	}
-return shields;
+return shield;
 }
 
 //------------------------------------------------------------------------------
@@ -2297,7 +2297,7 @@ if (gameData.reactor.bDestroyed) {
 	//clear out stuff so no bonus
 	LOCALPLAYER.hostages.nOnBoard = 0;
 	LOCALPLAYER.Energy () = 0;
-	LOCALPLAYER.shield () = 0;
+	LOCALPLAYER.Shield () = 0;
 	LOCALPLAYER.connected = 3;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}

@@ -78,7 +78,7 @@ typedef struct tRobotInfo {
 	sbyte   badass;         //  Dies with badass explosion, and strength thereof, 0 means NO.
 	sbyte   energyDrain;   //  Points of energy drained at each collision.
 	fix     lighting;       // should this be here or with polygon model?
-	fix     strength;       // Initial shields of robot
+	fix     strength;       // Initial shield of robot
 	fix     mass;           // how heavy is this thing?
 	fix     drag;           // how much drag does it have?
 	fix     fieldOfView[NDL]; // compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
@@ -128,28 +128,28 @@ typedef struct tRobotInfo {
 } __pack__ tRobotInfo;
 
 typedef struct D1Robot_info {
-	int			nModel;							// which polygon model?
+	int			nModel;								// which polygon model?
 	int			nGuns;								// how many different gun positions
-	CFixVector	gunPoints[MAX_GUNS];			// where each gun model is
-	ubyte			gunSubModels[MAX_GUNS];		// which submodel is each gun in?
+	CFixVector	gunPoints[MAX_GUNS];				// where each gun model is
+	ubyte			gunSubModels[MAX_GUNS];			// which submodel is each gun in?
 	short 		exp1_vclip_num;
 	short			exp1Sound_num;
 	short 		exp2_vclip_num;
 	short			exp2Sound_num;
 	short			weaponType;
 	sbyte			contains_id;						//	ID of powerup this robot can contain.
-	sbyte			containsCount;					//	Max number of things this instance can contain.
+	sbyte			containsCount;						//	Max number of things this instance can contain.
 	sbyte			containsProb;						//	Probability that this instance will contain something in N/16
 	sbyte			containsType;						//	Type of thing contained, robot or powerup, in bitmaps.tbl, !0=robot, 0=powerup
-	int			scoreValue;						//	Score from this robot.
+	int			scoreValue;							//	Score from this robot.
 	fix			lighting;							// should this be here or with polygon model?
-	fix			strength;							// Initial shields of robot
+	fix			strength;							// Initial shield of robot
 
 	fix		mass;										// how heavy is this thing?
 	fix		drag;										// how much drag does it have?
 
-	fix		fieldOfView[NDL];					// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
-	fix		primaryFiringWait[NDL];						//	time in seconds between shots
+	fix		fieldOfView[NDL];						// compare this value with forward_vector.dot.vector_to_player, if fieldOfView <, then robot can see CPlayerData
+	fix		primaryFiringWait[NDL];				//	time in seconds between shots
 	fix		turnTime [NDL];						// time in seconds to rotate 360 degrees in a dimension
 	fix		fire_power[NDL];						//	damage done by a hit from this robot
 	fix		shield[NDL];							//	shield strength of this robot
@@ -159,7 +159,7 @@ typedef struct D1Robot_info {
 	sbyte		nRapidFireCount[NDL];				//	number of shots fired rapidly
 	sbyte		evadeSpeed[NDL];						//	rate at which robot can evade shots, 0=none, 4=very fast
 	sbyte		cloakType;								//	0=never, 1=always, 2=except-when-firing
-	sbyte		attackType;							//	0=firing, 1=charge (like green guy)
+	sbyte		attackType;								//	0=firing, 1=charge (like green guy)
 	sbyte		bossFlag;								//	0 = not boss, 1 = boss.  Is that surprising?
 	ubyte		seeSound;								//	sound robot makes when it first sees the CPlayerData
 	ubyte		attackSound;							//	sound robot makes when it attacks the CPlayerData

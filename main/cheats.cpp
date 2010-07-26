@@ -369,7 +369,7 @@ LOCALPLAYER.flags |= PLAYER_FLAGS_ALL_KEYS;
 
 void BlueOrbCheat (int bVerbose)
 {
-if (BoostVal (&LOCALPLAYER.Shield (), MAX_SHIELDS)) {
+if (BoostVal (&LOCALPLAYER.Shield (), MAX_SHIELD)) {
 	MultiSendShield ();
 	PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Shield ()));
 	}
@@ -504,7 +504,7 @@ if (bVerbose)
 
 void GasolineCheat (int bVerbose)
 {
-LOCALPLAYER.Shield () = MAX_SHIELDS;
+LOCALPLAYER.Shield () = MAX_SHIELD;
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 MultiSendShield ();
 LOCALPLAYER.Energy () = MAX_ENERGY;
