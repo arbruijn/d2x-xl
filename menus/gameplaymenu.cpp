@@ -312,7 +312,8 @@ do {
 	m.AddText ("");
 	optReorderPrim = m.AddMenu (TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	optReorderSec = m.AddMenu (TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
-	AddShipSelection (m, optShip);
+	if (gameStates.app.bGameRunning)
+		AddShipSelection (m, optShip);
 	if (gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)
 		optLoadout = -1;
 	else {
@@ -345,7 +346,8 @@ GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 GET_VAL (gameOpts->gameplay.bNoThief, optNoThief);
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadlightPowerDrain);
 GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadlightBuiltIn);
-GetShipSelection (m, optShip);
+if (gameStates.app.bGameRunning)
+	GetShipSelection (m, optShip);
 DefaultGameplaySettings ();
 if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
