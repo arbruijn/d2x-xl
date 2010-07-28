@@ -158,12 +158,16 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (d_rand () < OBJECTS [game
 			}
 		}
 	}
+
+float fScale = SpeedScale ();
+
+forwardThrustTime = fix (forwardThrustTime * fScale);
 // Set object's thrust vector for forward/backward
 mType.physInfo.thrust = info.position.mOrient.FVec () * forwardThrustTime;
 // slide left/right
-mType.physInfo.thrust += info.position.mOrient.RVec () * controls [0].sidewaysThrustTime;
+mType.physInfo.thrust += info.position.mOrient.RVec () * fix (controls [0].sidewaysThrustTime * fScale);
 // slide up/down
-mType.physInfo.thrust += info.position.mOrient.UVec () * controls [0].verticalThrustTime;
+mType.physInfo.thrust += info.position.mOrient.UVec () * fix (controls [0].verticalThrustTime * fScale);
 mType.physInfo.thrust *= 2 * DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
@@ -194,11 +198,12 @@ if (!mType.physInfo.rotThrust.IsZero ()) {
 	}
 #else
 fix ft = gameData.time.xFrame;
+fix maxThrust = fix (gameData.pig.ship.player->maxThrust * fScale);
 
 //	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
-if ((ft < I2X (1) / 2) && ((ft << 15) <= fix (gameData.pig.ship.player->maxThrust * SpeedScale ())))
+if ((ft < I2X (1) / 2) && ((ft << 15) <= maxThrust))
 	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
-mType.physInfo.thrust *= FixDiv (gameData.pig.ship.player->maxThrust, ft);
+mType.physInfo.thrust *= FixDiv (maxThrust, ft);
 if ((ft < I2X (1) / 2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 	ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
