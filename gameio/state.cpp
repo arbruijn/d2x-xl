@@ -97,7 +97,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define IFDBG(_expr)
 #endif
 
-#define STATE_VERSION				53
+#define STATE_VERSION				54
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -986,6 +986,7 @@ m_cf.WriteFix (gameData.omega.xCharge [0]);
 m_cf.WriteShort (missionManager.nEntryLevel);
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	SaveSpawnPoint (i);
+m_cf.WriteInt (gameOpts->gameplay.nShip);
 }
 
 //------------------------------------------------------------------------------
@@ -2016,6 +2017,10 @@ if (m_nVersion >= 37) {
 		memcpy (gameData.multiplayer.playerInit, playerInitSave, sizeof (playerInitSave));
 	}
 /*---*/PrintLog ("   initializing sound sources\n");
+if (m_nVersion >= 54) {
+	gameOpts->gameplay.nShip = m_cf.ReadInt ();
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nShip = ubyte (gameOpts->gameplay.nShip);
+	}
 SetSoundSources ();
 return 1;
 }

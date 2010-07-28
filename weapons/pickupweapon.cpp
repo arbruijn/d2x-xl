@@ -93,6 +93,8 @@ else {
 	if (gameData.multiplayer.weaponStates [nPlayer].nShip != 1) {
 		if (nWeaponIndex == EARTHSHAKER_INDEX)
 			nMaxAmount /= 2;
+		else
+			nMaxAmount = 3 * nMaxAmount / 4;
 		}
 	else {
 		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
