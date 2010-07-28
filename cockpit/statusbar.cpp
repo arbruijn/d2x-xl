@@ -375,7 +375,7 @@ CCanvas::SetCurrent (CurrentGameScreen ());
 //LoadBitmap (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 fontManager.SetColorRGBi (BLACK_RGBA, 1, 0, 0);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
-sprintf (szShield, "%d", m_info.nShield);
+sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 nIdShield = PrintF (&nIdShield, 

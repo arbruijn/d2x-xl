@@ -136,16 +136,16 @@ class __pack__ CPlayerData {
 		fix InitialEnergy (void);
 		fix Shield (void);
 		fix Energy (void);
-		fix SetShield (fix s);
+		fix SetShield (fix s, bool bScale = true);
 		fix SetEnergy (fix e);
-		inline fix UpdateShield (fix delta) { return delta ? SetShield (Shield () + delta) : Shield (); }
+		inline fix UpdateShield (fix delta) { return delta ? SetShield (Shield () + delta, false) : Shield (); }
 		inline fix UpdateEnergy (fix delta) { return delta ? SetEnergy (Energy () + delta) : Energy (); }
 		fix MaxShield (void);
 		void SetObject (short n);
+		float ShieldScale (void);
 
 	private:
 		int Index (void);
-		float ShieldScale (void);
 
 };
 

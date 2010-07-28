@@ -398,7 +398,8 @@ if (bNewGame) {
 	playerP->flags = 0;
 	playerP->nCloaks =
 	playerP->nInvuls = 0;
-	ResetShipData (bRestore);
+	if (nPlayer == gameData.multiplayer.nLocalPlayer)
+		ResetShipData (bRestore);
 	if (IsMultiGame && !IsCoopGame) {
 		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
 			playerP->flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);

@@ -312,13 +312,15 @@ return fix (INITIAL_SHIELD * ShieldScale ());
 
 fix CPlayerData::Shield (void)
 {
-return fix (shield * ShieldScale ());
+return shield;
 }
 
 //-------------------------------------------------------------------------
 
-fix CPlayerData::SetShield (fix s) 
+fix CPlayerData::SetShield (fix s, bool bScale) 
 { 
+if (bScale)
+	s = fix (s * ShieldScale ());
 if (s > MaxShield ())
 	s = MaxShield ();
 if (shield != s) {

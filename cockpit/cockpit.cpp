@@ -203,7 +203,7 @@ CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 CCanvas::Push ();
 CCanvas::SetCurrent (CurrentGameScreen ());
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-sprintf (szShield, "%d", m_info.nShield);
+sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
