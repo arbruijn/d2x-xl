@@ -312,7 +312,7 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 			if (markerManager.Viewer (nWindow) == -1)
 				markerManager.SetViewer (nWindow, gameData.multiplayer.nLocalPlayer * 3);
-			else if (markerManager.Viewer (nWindow) < gameData.multiplayer.nLocalPlayer * 3 + MaxDrop ())
+			else if (markerManager.Viewer (nWindow) < gameData.multiplayer.nLocalPlayer * 3 + markerManager.MaxDrop ())
 				markerManager.SetViewer (nWindow, markerManager.Viewer (nWindow) + 1);
 			else
 				gameStates.render.cockpit.n3DView [nWindow] = CV_NONE;
