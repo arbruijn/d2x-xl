@@ -33,17 +33,52 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menu.h"
 #include "marker.h"
 
-// -------------------------------------------------------------
+CMarkerManager markerManager;
 
-static inline CObject *MarkerObj (int nPlayer, int nMarker)
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+CMarkerData::CMarkerData ()
 {
-short nObject = gameData.marker.objects [((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer) * 2 + nMarker];
+Init ();
+}
+
+// ----------------------------------------------------------------------------
+
+void CMarkerData::Init (void)
+{
+nHighlight = -1;
+viewers [0] =
+viewers [1] = -1;
+fScale = 2.0f;
+CLEAR (szMessage);
+CLEAR (nOwner);
+CLEAR (viewers);
+CLEAR (szInput);
+nHighlight = 0;
+nIndex = 0;
+nCurrent = 0;
+nLast = -1;
+fScale = 0;
+nDefiningMsg = 0;
+position.Clear ();
+objects.Clear ();
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+inline CObject* CMarkerManager::GetObject (int nPlayer, int nMarker)
+{
+short nObject = m_data.objects [((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer) * 2 + nMarker];
 return (nObject < 0) ? NULL : OBJECTS + nObject;
 }
 
-// -------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-void DrawMarkerNumber (int nMarker)
+void CMarkerManager::DrawNumber (int nMarker)
 {
 	g3sPoint	basePoint;
 	int		i, j;
@@ -76,15 +111,15 @@ void DrawMarkerNumber (int nMarker)
   int nPoints [] = {6, 10, 8, 6, 10, 10, 4, 10, 8};
 
 if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
-	if (gameData.marker.fScale == 0.0f)
-		gameData.marker.fScale = 2.0f;
-	if (nMarker == gameData.marker.nHighlight)
+	if (m_data.fScale == 0.0f)
+		m_data.fScale = 2.0f;
+	if (nMarker == m_data.nHighlight)
 		CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
-	else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
+	else if (!strcmp (m_data.szMessage [nMarker], "SPAWN"))
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 0, 47));
 	else
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (63, 15, 0));
-	G3TransformAndEncodePoint (&basePoint, MarkerObj (-1, nMarker)->info.position.vPos);
+	G3TransformAndEncodePoint (&basePoint, GetObject (-1, nMarker)->info.position.vPos);
 	glPushMatrix ();
 	glTranslatef (X2F (basePoint.p3_vec[X]), X2F (basePoint.p3_vec[Y]), X2F (basePoint.p3_vec[Z]));
 	ogl.SetTexturing (false);
@@ -92,11 +127,11 @@ if (ogl.SizeVertexBuffer (nPoints [nMarker])) {
 	px = xCoord [nMarker];
 	py = yCoord [nMarker];
 	for (i = nPoints [nMarker] / 2, j = 0; i; i--) {
-		ogl.VertexBuffer () [j][X] = *px++ * gameData.marker.fScale;
-		ogl.VertexBuffer () [j][Y] = *py++ * gameData.marker.fScale;
+		ogl.VertexBuffer () [j][X] = *px++ * m_data.fScale;
+		ogl.VertexBuffer () [j][Y] = *py++ * m_data.fScale;
 		j++;
-		ogl.VertexBuffer () [j][X] = *px++ * gameData.marker.fScale;
-		ogl.VertexBuffer () [j][Y] = *py++ * gameData.marker.fScale;
+		ogl.VertexBuffer () [j][X] = *px++ * m_data.fScale;
+		ogl.VertexBuffer () [j][Y] = *py++ * m_data.fScale;
 		j++;
 		}
 	ogl.FlushBuffers (GL_LINES, nPoints [nMarker], 2);
@@ -108,7 +143,7 @@ glPopMatrix ();
 
 #define MARKER_SPHERE_SIZE 0x58000
 
-void DrawMarkers (void)
+void CMarkerManager::Render (void)
 {
 	g3sPoint spherePoint;
 	int		i, j, nMaxDrop, bSpawn;
@@ -118,20 +153,20 @@ void DrawMarkers (void)
 	static int cyc = 10, cycdir = 1;
 	static ubyte	colors [2][3] = {{20, 30, 40},{40, 50, 60}};
 
-if (gameData.marker.fScale == 0.0f)
-	gameData.marker.fScale = 2.0f;
+if (m_data.fScale == 0.0f)
+	m_data.fScale = 2.0f;
 nMaxDrop = MaxDrop ();
 spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
-	if ((objP = MarkerObj (-1, i))) {
-		bSpawn = (objP == SpawnMarkerObject (-1));
+	if ((objP = GetObject (-1, i))) {
+		bSpawn = (objP == markerManager.SpawnObject (-1));
 		colorP = &colors [bSpawn][0];
 		G3TransformAndEncodePoint (&spherePoint, objP->info.position.vPos);
 		for (j = 0; j < 3; j++, colorP++) {
 			CCanvas::Current ()->SetColorRGB (PAL2RGBA (*colorP), 0, 0, 255);
-			G3DrawSphere (&spherePoint, int (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
+			G3DrawSphere (&spherePoint, int (m_data.fScale * MARKER_SPHERE_SIZE) >> j, 1);
 			}
-		DrawMarkerNumber (i);
+		DrawNumber (i);
 		}
 if (cycdir) {
 	cyc += 2;
@@ -151,11 +186,11 @@ else {
 
 //------------------------------------------------------------------------------
 
-int MoveSpawnMarker (tObjTransformation *posP, short nSegment)
+int CMarkerManager::MoveSpawnPoint (tObjTransformation *posP, short nSegment)
 {
-	CObject	*markerP;
+	CObject	*markerP = markerManager.SpawnObject (-1);
 
-if (!(markerP = SpawnMarkerObject (-1)))
+if (!markerP)
 	return 0;
 markerP->info.position = *posP;
 markerP->RelinkToSeg (nSegment);
@@ -164,72 +199,69 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DropMarker (char nPlayerMarker, int bSpawn)
+void CMarkerManager::Drop (char nPlayerMarker, int bSpawn)
 {
 	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
 	CObject	*playerP = OBJECTS + LOCALPLAYER.nObject;
 
-if (!(bSpawn && MoveSpawnMarker (&playerP->info.position, playerP->info.nSegment))) {
-	gameData.marker.position [nMarker] = playerP->info.position.vPos;
-	short nObject = gameData.marker.objects [nMarker];
+if (!(bSpawn && markerManager.MoveSpawnPoint (&playerP->info.position, playerP->info.nSegment))) {
+	m_data.position [nMarker] = playerP->info.position.vPos;
+	short nObject = m_data.objects [nMarker];
 	if ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]) && (OBJECTS [nObject].info.nType == OBJ_MARKER))
 		ReleaseObject (nObject);
 	if (bSpawn)
-		strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
-	gameData.marker.objects [nMarker] =
+		strcpy (m_data.szMessage [nMarker], "SPAWN");
+	m_data.objects [nMarker] =
 		DropMarkerObject (playerP->info.position.vPos, (short) playerP->info.nSegment, playerP->info.position.mOrient, nMarker);
 	if (IsMultiGame)
-		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->info.position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
+		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->info.position.vPos, nPlayerMarker, m_data.szMessage [nMarker]);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void DropSpawnMarker (void)
+void CMarkerManager::DropSpawnPoint (void)
 {
 if ((!IsMultiGame || IsCoopGame) && !(gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead)) {
-		char nMarker = (char) SpawnMarkerIndex (-1);
+		char nMarker = (char) markerManager.SpawnIndex (-1);
 
 	if (nMarker < 0)
-		nMarker = (gameData.marker.nLast + 1) % MaxDrop ();
+		nMarker = (m_data.nLast + 1) % MaxDrop ();
 	else
 		nMarker -= (gameData.multiplayer.nLocalPlayer * 2);
-	DropMarker (nMarker, 1);
+	Drop (nMarker, 1);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void DropBuddyMarker (CObject *objP)
+void CMarkerManager::DropForGuidebot (CObject *objP)
 {
-	ubyte	nMarker;
+	ubyte	nMarker = MAX_DROP_SINGLE + 1;
 
-	//	Find spare marker slot.  "if" code below should be an assert, but what if someone changes NUM_MARKERS or MAX_CROP_SINGLE and it never gets hit?
-nMarker = MAX_DROP_SINGLE + 1;
+//	Find spare marker slot.  "if" code below should be an assert, but what if someone changes NUM_MARKERS or MAX_CROP_SINGLE and it never gets hit?
 if (nMarker > NUM_MARKERS - 1)
 	nMarker = NUM_MARKERS - 1;
-sprintf (gameData.marker.szMessage [nMarker], "RIP: %s",gameData.escort.szName);
-gameData.marker.position [nMarker] = objP->info.position.vPos;
-if ((gameData.marker.objects [nMarker] != -1) && (gameData.marker.objects [nMarker] != 0))
-	ReleaseObject (gameData.marker.objects [nMarker]);
-gameData.marker.objects [nMarker] = DropMarkerObject (objP->info.position.vPos, (short) objP->info.nSegment, objP->info.position.mOrient, nMarker);
+sprintf (m_data.szMessage [nMarker], "RIP: %s",gameData.escort.szName);
+m_data.position [nMarker] = objP->info.position.vPos;
+if ((m_data.objects [nMarker] != -1) && (m_data.objects [nMarker] != 0))
+	ReleaseObject (m_data.objects [nMarker]);
+m_data.objects [nMarker] = DropMarkerObject (objP->info.position.vPos, (short) objP->info.nSegment, objP->info.position.mOrient, nMarker);
 }
 
 //------------------------------------------------------------------------------
 
-void ClearMarkers (void)
+void CMarkerManager::Clear (void)
 {
-int i;
-
-for (i = 0; i < NUM_MARKERS; i++) {
-	gameData.marker.szMessage [i][0] = 0;
-	gameData.marker.objects [i] = -1;
+for (int i = 0; i < NUM_MARKERS; i++) {
+	m_data.szMessage [i][0] = 0;
+	m_data.objects [i] = -1;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int LastMarker (void)
+int CMarkerManager::Last (void)
 {
 	int nMaxDrop, h, i;
 
@@ -237,14 +269,14 @@ int LastMarker (void)
 nMaxDrop = MaxDrop ();
 h = gameData.multiplayer.nLocalPlayer * 2 + nMaxDrop;
 for (i = nMaxDrop; i; i--)
-	if (gameData.marker.objects [--h] > -1)		//found free slot!
+	if (m_data.objects [--h] > -1)		//found free slot!
 		return i - 1;
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-int SpawnMarkerIndex (int nPlayer)
+int CMarkerManager::SpawnIndex (int nPlayer)
 {
 	int nMaxDrop, h, i;
 
@@ -253,9 +285,9 @@ nMaxDrop = MaxDrop ();
 if (nPlayer < 0)
 	nPlayer = gameData.multiplayer.nLocalPlayer;
 for (i = nPlayer * 2, h = i + nMaxDrop; i < h; i++) {
-	if (gameData.marker.objects [i] < 0)		//found free slot!
+	if (m_data.objects [i] < 0)		//found free slot!
 		continue;
-	if (!strcmp (gameData.marker.szMessage [i], "SPAWN"))
+	if (!strcmp (m_data.szMessage [i], "SPAWN"))
 		return i;
 	}
 return -1;
@@ -263,23 +295,23 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-CObject *SpawnMarkerObject (int nPlayer)
+CObject* CMarkerManager::SpawnObject (int nPlayer)
 {
-	int	i = (IsCoopGame || !IsMultiGame) ? SpawnMarkerIndex (nPlayer) : -1;
+	int	i = (IsCoopGame || !IsMultiGame) ? markerManager.SpawnIndex (nPlayer) : -1;
 
-return (i < 0) ? NULL : OBJECTS + gameData.marker.objects [i];
+return (i < 0) ? NULL : OBJECTS + m_data.objects [i];
 }
 
 //------------------------------------------------------------------------------
 
-int IsSpawnMarkerObject (CObject *objP)
+int CMarkerManager::IsSpawnObject (CObject *objP)
 {
 if (objP->info.nType == OBJ_MARKER) {
 	int nMaxDrop, h, i, nObject = objP->Index ();
 
 	nMaxDrop = MaxDrop ();
 	for (i = gameData.multiplayer.nLocalPlayer * 2, h = i + nMaxDrop; i < h; i++)
-		if (gameData.marker.objects [i] == nObject)		//found free slot!
+		if (m_data.objects [i] == nObject)		//found free slot!
 			return 1;
 	}
 return 0;
@@ -287,39 +319,39 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void RotateMarker (void)
+void CMarkerManager::Rotate (void)
 {
 	int	nObject; 
 
-if ((gameData.marker.nHighlight > -1) && ((nObject = gameData.marker.objects [gameData.marker.nHighlight]) != -1))
+if ((m_data.nHighlight > -1) && ((nObject = m_data.objects [m_data.nHighlight]) != -1))
 	OBJECTS [nObject].Rotate (!OBJECTS [nObject].Rotation ());
 }
 
 //------------------------------------------------------------------------------
 
-void DeleteMarker (int bForce)
+void CMarkerManager::Delete (int bForce)
 {
-if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
-	gameData.objs.viewerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
+if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
+	gameData.objs.viewerP = OBJECTS + m_data.objects [m_data.nHighlight];
 	if (bForce || !MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int	h, i;
-		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
-		i = LastMarker ();
-		if (i == gameData.marker.nHighlight) {
-			gameData.marker.objects [gameData.marker.nHighlight] = -1;
-			gameData.marker.szMessage [gameData.marker.nHighlight][0] = '\0';
-			gameData.marker.nHighlight = i ? 0 : -1;
+		ReleaseObject (m_data.objects [m_data.nHighlight]);
+		i = markerManager.Last ();
+		if (i == m_data.nHighlight) {
+			m_data.objects [m_data.nHighlight] = -1;
+			m_data.szMessage [m_data.nHighlight][0] = '\0';
+			m_data.nHighlight = i ? 0 : -1;
 			}
 		else {
-			h = i - gameData.marker.nHighlight;
-			memcpy (gameData.marker.objects + gameData.marker.nHighlight,
-						gameData.marker.objects + gameData.marker.nHighlight + 1,
-						h * sizeof (gameData.marker.objects [0]));
-			memcpy (gameData.marker.szMessage [gameData.marker.nHighlight],
-						gameData.marker.szMessage [gameData.marker.nHighlight + 1],
-						h * sizeof (gameData.marker.szMessage [0]));
-			gameData.marker.objects [i] = -1;
-			gameData.marker.szMessage [i][0] = '\0';
+			h = i - m_data.nHighlight;
+			memcpy (m_data.objects + m_data.nHighlight,
+						m_data.objects + m_data.nHighlight + 1,
+						h * sizeof (m_data.objects [0]));
+			memcpy (m_data.szMessage [m_data.nHighlight],
+						m_data.szMessage [m_data.nHighlight + 1],
+						h * sizeof (m_data.szMessage [0]));
+			m_data.objects [i] = -1;
+			m_data.szMessage [i][0] = '\0';
 			}
 		}
 	gameData.objs.viewerP = gameData.objs.consoleP;
@@ -328,7 +360,7 @@ if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.mark
 
 //------------------------------------------------------------------------------
 
-void TeleportToMarker (void)
+void CMarkerManager::Teleport (void)
 {
 if (!IsMultiGame || IsCoopGame) {
 #if 1 //!DBG
@@ -336,10 +368,10 @@ if (!IsMultiGame || IsCoopGame) {
 		HUDMessage (0, TXT_CANNOT_TELEPORT);
 	else
 #endif
-	if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
-		gameData.objs.viewerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
+	if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
+		gameData.objs.viewerP = OBJECTS + m_data.objects [m_data.nHighlight];
 		if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
-			CObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight];
+			CObject	*markerP = OBJECTS + m_data.objects [m_data.nHighlight];
 
 #if 1 //!DBG
 			LOCALPLAYER.UpdateEnergy (-I2X (101) / 2);
@@ -356,22 +388,22 @@ if (!IsMultiGame || IsCoopGame) {
 
 //------------------------------------------------------------------------------
 
-void InitMarkerInput (bool bRotate)
+void CMarkerManager::InitInput (bool bRotate)
 {
 	int nMaxDrop, i;
 
-if (gameData.marker.nLast < 0)
-	gameData.marker.nLast = MaxDrop ();
+if (m_data.nLast < 0)
+	m_data.nLast = MaxDrop ();
 //find free marker slot
-i = LastMarker () + 1;
+i = markerManager.Last () + 1;
 nMaxDrop = MaxDrop ();
 if (i == nMaxDrop) {		//no free slot
 	if (IsCoopGame)
-		i = (gameData.marker.nLast + 1) % nMaxDrop;
+		i = (m_data.nLast + 1) % nMaxDrop;
 	else if (IsMultiGame) {
-		if (gameData.marker.nLast < 0)
-			gameData.marker.nLast = MaxDrop ();
-		i = !gameData.marker.nLast;		//in multi, replace older of two
+		if (m_data.nLast < 0)
+			m_data.nLast = MaxDrop ();
+		i = !m_data.nLast;		//in multi, replace older of two
 		}
 	else {
 		HUDInitMessage (TXT_MARKER_SLOTS);
@@ -379,54 +411,54 @@ if (i == nMaxDrop) {		//no free slot
 		}
 	}
 //got a free slot. start inputting marker message
-gameData.marker.szInput [0] = '\0';
-gameData.marker.nIndex = 0;
-gameData.marker.bRotate = bRotate;
-gameData.marker.nDefiningMsg = 1;
-gameData.marker.nCurrent = i;
+m_data.szInput [0] = '\0';
+m_data.nIndex = 0;
+m_data.bRotate = bRotate;
+m_data.nDefiningMsg = 1;
+m_data.nCurrent = i;
 }
 
 //------------------------------------------------------------------------------
 
-void MarkerInputMessage (int key)
+void CMarkerManager::InputMessage (int key)
 {
 	int nMarker, bSpawn;
 
 switch (key) {
 	case KEY_F8:
 	case KEY_ESC:
-		gameData.marker.nDefiningMsg = 0;
+		m_data.nDefiningMsg = 0;
 		GameFlushInputs ();
 		break;
 
 	case KEY_LEFT:
 	case KEY_BACKSPACE:
 	case KEY_PAD4:
-		if (gameData.marker.nIndex > 0)
-			gameData.marker.nIndex--;
-		gameData.marker.szInput [gameData.marker.nIndex] = 0;
+		if (m_data.nIndex > 0)
+			m_data.nIndex--;
+		m_data.szInput [m_data.nIndex] = 0;
 		break;
 
 	case KEY_ENTER:
-		nMarker = (gameData.multiplayer.nLocalPlayer * 2)+gameData.marker.nCurrent;
-		strupr (gameData.marker.szInput);
-		strcpy (gameData.marker.szMessage [nMarker], gameData.marker.szInput);
+		nMarker = (gameData.multiplayer.nLocalPlayer * 2)+m_data.nCurrent;
+		strupr (m_data.szInput);
+		strcpy (m_data.szMessage [nMarker], m_data.szInput);
 		if (IsMultiGame)
-			strcpy (gameData.marker.nOwner [nMarker], LOCALPLAYER.callsign);
-		if ((bSpawn = !strcmp (gameData.marker.szMessage [nMarker], "SPAWN")))
-			*gameData.marker.szMessage [nMarker] = '\0';
-		DropMarker (gameData.marker.nCurrent, bSpawn);
-		gameData.marker.nLast = gameData.marker.nCurrent;
+			strcpy (m_data.nOwner [nMarker], LOCALPLAYER.callsign);
+		if ((bSpawn = !strcmp (m_data.szMessage [nMarker], "SPAWN")))
+			*m_data.szMessage [nMarker] = '\0';
+		Drop (m_data.nCurrent, bSpawn);
+		m_data.nLast = m_data.nCurrent;
 		GameFlushInputs ();
-		gameData.marker.nDefiningMsg = 0;
+		m_data.nDefiningMsg = 0;
 		break;
 
 	default:
 		if (key > 0) {
 			int ascii = KeyToASCII (key);
-			if ((ascii < 255) && (gameData.marker.nIndex < 38)) {
-				gameData.marker.szInput [gameData.marker.nIndex++] = ascii;
-				gameData.marker.szInput [gameData.marker.nIndex] = 0;
+			if ((ascii < 255) && (m_data.nIndex < 38)) {
+				m_data.szInput [m_data.nIndex++] = ascii;
+				m_data.szInput [m_data.nIndex] = 0;
 				}
 			}
 		break;

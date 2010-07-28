@@ -254,7 +254,7 @@ return h;
 
 void GetPlayerSpawn (int nSpawnPos, CObject *objP)
 {
-	CObject	*markerP = SpawnMarkerObject (-1);
+	CObject	*markerP = markerManager.SpawnObject (-1);
 
 if (markerP) {
 	objP->info.position = markerP->info.position;
@@ -273,7 +273,7 @@ else {
 
 CFixVector* PlayerSpawnPos (int nPlayer)
 {
-	CObject	*markerP = SpawnMarkerObject (nPlayer);
+	CObject	*markerP = markerManager.SpawnObject (nPlayer);
 
 return markerP ? &markerP->info.position.vPos : &gameData.multiplayer.playerInit [nPlayer].position.vPos;
 }
@@ -282,7 +282,7 @@ return markerP ? &markerP->info.position.vPos : &gameData.multiplayer.playerInit
 
 CFixMatrix *PlayerSpawnOrient (int nPlayer)
 {
-	CObject	*markerP = SpawnMarkerObject (nPlayer);
+	CObject	*markerP = markerManager.SpawnObject (nPlayer);
 
 return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerInit [nPlayer].position.mOrient;
 }

@@ -2550,6 +2550,8 @@ typedef struct tCountdownData {
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 #define NUM_MARKERS         (MAX_PLAYERS * 3)
 #define MARKER_MESSAGE_LEN  40
 
@@ -2573,6 +2575,8 @@ class CMarkerData {
 		CMarkerData ();
 		void Init (void);
 };
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -3265,7 +3269,7 @@ class CGameData {
 		CWeaponData			weapons;
 		CEntropyData		entropy;
 		CReactorData		reactor;
-		CMarkerData			marker;
+		//CMarkerData			marker;
 		CBossData			bosses; // [MAX_BOSS_COUNT];
 		CAIData				ai;
 		CEndLevelData		endLevel;

@@ -617,7 +617,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 				DropStolenItems (delObjP);
 #if !DBG
 			if (botInfoP->companion)
-				DropBuddyMarker (delObjP);
+				markerManager.DropForGuidebot (delObjP);
 #endif
 			}
 		}

@@ -129,7 +129,7 @@ void RenderMslLockIndicator (CObject *objP)
 	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->info.nType == OBJ_MARKER);
 
 if (bMarker) {
-	if (objP != SpawnMarkerObject (-1))
+	if (objP != markerManager.SpawnObject (-1))
 		return;
 	}
 else {

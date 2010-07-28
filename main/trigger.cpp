@@ -290,13 +290,13 @@ for (i = j = 0; i < MAX_PLAYERS; i++) {
 	gameData.multiplayer.playerInit [i].nSegment = nSegment;
 	gameData.multiplayer.playerInit [i].nSegType = SEGMENTS [nSegment].m_function;
 	if (i == gameData.multiplayer.nLocalPlayer)
-		MoveSpawnMarker (&gameData.multiplayer.playerInit [i].position, nSegment);
+		markerManager.MoveSpawnPoint (&gameData.multiplayer.playerInit [i].position, nSegment);
 	j = (j + 1) % m_info.nLinks;
 	}
 // delete any spawn markers that have been set before passing through this trigger to
 // avoid players getting stuck when respawning at that marker
-if (0 <= (gameData.marker.nHighlight = SpawnMarkerIndex (-1)))
-	DeleteMarker (1);
+if (0 <= (gameData.marker.nHighlight = markerManager.SpawnIndex (-1)))
+	markerManager.Delete (1);
 return 1;
 }
 

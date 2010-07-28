@@ -851,17 +851,17 @@ void HandleGameKey(int key)
 
 		case KEY_F4:
 			if (!gameData.marker.nDefiningMsg)
-				InitMarkerInput ();
+				markerManager.InitInput ();
 			break;
 
 		case KEY_F4 + KEY_CTRLED:
 			if (!gameData.marker.nDefiningMsg)
-				InitMarkerInput (true);
+				markerManager.InitInput (true);
 			break;
 
 		case KEY_F4 + KEY_CTRLED + KEY_ALTED:
 			if (!gameData.marker.nDefiningMsg)
-				DropSpawnMarker ();
+				markerManager.DropSpawnPoint ();
 			break;
 
 		case KEY_ALTED + KEY_CTRLED + KEY_T:
@@ -1169,7 +1169,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	UpdateVCRState ();
 while ((key = KeyInKeyTime (&keyTime)) != 0) {
 	if (gameData.marker.nDefiningMsg) {
-		MarkerInputMessage (key);
+		markerManager.InputMessage (key);
 		continue;
 		}
 if (IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining)) {

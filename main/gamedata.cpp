@@ -1071,35 +1071,6 @@ for (int i = 0; i < NDL; i++)
 	xWaitTimes [i] = I2X (30 - i * 5);
 }
 
-// ----------------------------------------------------------------------------
-
-CMarkerData::CMarkerData ()
-{
-Init ();
-}
-
-// ----------------------------------------------------------------------------
-
-void CMarkerData::Init (void)
-{
-gameData.marker.nHighlight = -1;
-gameData.marker.viewers [0] =
-gameData.marker.viewers [1] = -1;
-gameData.marker.fScale = 2.0f;
-CLEAR (szMessage);
-CLEAR (nOwner);
-CLEAR (viewers);
-CLEAR (szInput);
-nHighlight = 0;
-nIndex = 0;
-nCurrent = 0;
-nLast = -1;
-fScale = 0;
-nDefiningMsg = 0;
-position.Clear ();
-objects.Clear ();
-}
-
  // ----------------------------------------------------------------------------
 
 CModelData::CModelData ()

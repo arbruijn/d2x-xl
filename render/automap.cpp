@@ -170,7 +170,7 @@ InitColors ();
 void CAutomap::ClearVisited ()
 {
 m_visited [0].Clear ();
-ClearMarkers ();
+markerManager.Clear ();
 }
 
 //------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ ogl.SetTexturing (false);
 glLineWidth (2 * GLfloat (screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 if (!m_bRadar) {
-	DrawMarkers ();
+	markerManager.Render ();
 	if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
 		char msg [10 + MARKER_MESSAGE_LEN + 1];
 		sprintf (msg, TXT_MARKER_MSG, gameData.marker.nHighlight + 1,
@@ -825,11 +825,11 @@ while ((c = KeyInKey ())) {
 		break;
 
 		case KEY_CTRLED + KEY_D:
-			DeleteMarker (0);
+			markerManager.Delete (0);
 			break;
 
 		case KEY_CTRLED + KEY_R:
-			RotateMarker ();
+			markerManager.Rotate ();
 			break;
 
 		case KEY_F1:
@@ -870,7 +870,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_F9:
-			TeleportToMarker ();
+			markerManager.Teleport ();
 			break;
 
 		case KEY_ALTED + KEY_F:

@@ -20,29 +20,66 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_DROP_COOP		3
 #define	MAX_DROP_SINGLE	9
 
+//------------------------------------------------------------------------------
+
+#define NUM_MARKERS         (MAX_PLAYERS * 3)
+#define MARKER_MESSAGE_LEN  40
+
+class CMarkerData {
+	public:
+		CStaticArray< CFixVector, NUM_MARKERS >	position; // [NUM_MARKERS];	//three markers (two regular + one spawn) per player in multi
+		char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
+		char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
+		CStaticArray< short, NUM_MARKERS >			objects; // [NUM_MARKERS];
+		short					viewers [2];
+		int					nHighlight;
+		float					fScale;
+		ubyte					nDefiningMsg;
+		char					szInput [40];
+		int					nIndex;
+		int					nCurrent;
+		int					nLast;
+		bool					bRotate;
+
+	public:
+		CMarkerData ();
+		void Init (void);
+};
+
 // -------------------------------------------------------------
 
-static inline int MaxDrop (void)
-{
-return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
-}
+class CMarkerManager {
+	private:
+		CMarkerData	m_data;
 
-// -------------------------------------------------------------
+	public:
+		CMarkerManager () {}
+		~CMarkerManager () {}
+		void Drop (char nPlayerMarker, int bSpawn);
+		void DropForGuidebot (CObject *objP);
+		void DropSpawnPoint (void);
+		void Render (void);
+		void Rotate (void);
+		void Delete (int bForce);
+		void Teleport (void);
+		void Clear (void);
+		int Last (void);
+		void InitInput (bool bRotate = false);
+		void InputMessage (int key);
+		int SpawnIndex (int nPlayer);
+		CObject *SpawnObject (int nPlayer);
+		int IsSpawnObject (CObject *objP);
+		int MoveSpawnPoint (tObjTransformation *posP, short nSegment);
+		inline int MaxDrop (void) {
+			return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
+			}
 
-void DropBuddyMarker (CObject *objP);
-void DropSpawnMarker (void);
-void DrawMarkers (void);
-void RotateMarker (void);
-void DeleteMarker (int bForce);
-void TeleportToMarker (void);
-void ClearMarkers (void);
-int LastMarker (void);
-void InitMarkerInput (bool bRotate = false);
-void MarkerInputMessage (int key);
-int SpawnMarkerIndex (int nPlayer);
-CObject *SpawnMarkerObject (int nPlayer);
-int IsSpawnMarkerObject (CObject *objP);
-int MoveSpawnMarker (tObjTransformation *posP, short nSegment);
+	private:
+		void DrawNumber (int nMarker);
+		inline CObject *GetObject (int nPlayer, int nMarker);
+};
+
+extern CMarkerManager markerManager;
 
 // -------------------------------------------------------------
 
