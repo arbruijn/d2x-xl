@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segmath.h"
 #include "headlight.h"
 #include "visibility.h"
+#include "marker.h"
 
 void SayEscortGoal (int nGoal);
 void ShowEscortMenu (char *msg);
@@ -630,7 +631,7 @@ switch (nGoal) {
 	case ESCORT_GOAL_MARKER9: {
 			char szMarkerMsg [BUDDY_MARKER_TEXT_LEN];
 
-		strncpy (marker_text, markerManager.Message (nGoal - ESCORT_GOAL_MARKER1), BUDDY_MARKER_TEXT_LEN-1);
+		strncpy (szMarkerMsg, markerManager.Message (nGoal - ESCORT_GOAL_MARKER1), BUDDY_MARKER_TEXT_LEN - 1);
 		szMarkerMsg [BUDDY_MARKER_TEXT_LEN - 1] = 0;
 		BuddyMessage (TXT_FIND_MARKER, nGoal - ESCORT_GOAL_MARKER1 + 1, szMarkerMsg);
 		break;

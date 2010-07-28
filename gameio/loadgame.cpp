@@ -128,6 +128,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "multi.h"
 #include "addon_bitmaps.h"
+#include "marker.h"
 
 #if defined (TACTILE)
  #include "tactile.h"

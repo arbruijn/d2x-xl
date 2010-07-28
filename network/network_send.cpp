@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "tracker.h"
 #include "monsterball.h"
+#include "marker.h"
 
 //------------------------------------------------------------------------------
 
@@ -68,7 +69,7 @@ void NetworkSendMarkers (void)
 for (i = j = 0; i < gameData.multiplayer.nPlayers; i++, j++) {
    if (markerManager.Objects (j) != -1)
 		MultiSendDropMarker (i, markerManager.Position (j), 0, markerManager.Message (j));
-   if (markerManager.objects (++j) != -1)
+   if (markerManager.Objects (++j) != -1)
 		MultiSendDropMarker (i, markerManager.Position (j), 0, markerManager.Message (j));
 	}
  }

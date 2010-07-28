@@ -50,6 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "entropy.h"
 #include "monsterball.h"
 #include "dropobject.h"
+#include "marker.h"
 
 typedef void tMultiHandler (char *);
 typedef tMultiHandler *pMultiHandler;
@@ -2056,15 +2057,11 @@ vPos [Z] = GET_INTEL_INT (buf + 11);
 memcpy (markerManager.Message (2 * nPlayer + nMsg), buf + 15, 40);
 markerManager.SetPosition (nMarker, vPos);
 if ((markerManager.Objects (nMarker) != -1) &&
-	 (OBJECTS [markerManager.objects (nMarker)].info.nType != OBJ_NONE) &&
+	 (OBJECTS [markerManager.Objects (nMarker)].info.nType != OBJ_NONE) &&
 	 (markerManager.Objects (nMarker) != 0))
 	ReleaseObject (markerManager.Objects (nMarker));
-markerManager.SetObject (nPlayer * 2 + nMsg) =
-	DropMarkerObject (
-		vPos,
-		OBJECTS [LOCALPLAYER.nObject].info.nSegment,
-		OBJECTS [LOCALPLAYER.nObject].info.vPos.mOrient,
-		(ubyte) nMarker);
+markerManager.SetObject (nPlayer * 2 + nMsg, 
+								 DropMarkerObject (vPos, OBJECTS [LOCALPLAYER.nObject].info.nSegment, OBJECTS [LOCALPLAYER.nObject].info.position.mOrient, (ubyte) nMarker));
 markerManager.SetOwner (nMarker, gameData.multiplayer.players [nPlayer].callsign);
 }
 
