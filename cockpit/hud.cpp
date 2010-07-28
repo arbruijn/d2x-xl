@@ -562,12 +562,14 @@ if (!gameOpts->render.cockpit.bTextGauges) {
 
 	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 	int y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
-	CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
+	int bOverflow = h > X2I (LOCALPLAYER.InitialShield ());
+
+	CCanvas::Current ()->SetColorRGB (0, ubyte (bOverflow ? 255 : 64), 255, 255);
 	glLineWidth (1);
-	OglDrawEmptyRect (6, y, 6 + (int) (100 * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
+	OglDrawEmptyRect (6, y, 6 + int (100 * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
 	if (bShow) {
-		CCanvas::Current ()->SetColorRGB (0, (ubyte) ((h > 100) ? 224 : 64), 224, 128);
-		OglDrawFilledRect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * m_info.xGaugeScale), y + (int) (9 * m_info.yGaugeScale));
+		CCanvas::Current ()->SetColorRGB (0, ubyte (bOverflow ? 224 : 64), 224, 128);
+		OglDrawFilledRect (6, y, 6 + int ((bOverflow ? h - X2I (LOCALPLAYER.InitialShield ()) : h) * m_info.xGaugeScale), y + int (9 * m_info.yGaugeScale));
 		}
 	}
 if (gameStates.render.cockpit.nShieldFlash) {

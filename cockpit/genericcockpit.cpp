@@ -1933,7 +1933,7 @@ m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ?
 m_info.nEnergy = X2IR (LOCALPLAYER.Energy ());
 if (m_info.nEnergy < 0)
 	m_info.nEnergy  = 0;
-m_info.nShield = int (100.0f * float (LOCALPLAYER.Shield ()) / float (LOCALPLAYER.MaxShield ()) + 0.5f);
+m_info.nShield = int (100.0f * float (LOCALPLAYER.Shield ()) / float (LOCALPLAYER.InitialShield ()) + 0.5f);
 if (m_info.nShield < 0)
 	m_info.nShield  = 0;
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
