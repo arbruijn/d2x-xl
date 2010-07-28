@@ -366,5 +366,11 @@ void CPlayerData::SetObject (short n)
 nObject = n;
 }
 
+//-------------------------------------------------------------------------
+
+CObject* CPlayerData::Object (void)
+{
+return (nObject < 0) ? NULL : OBJECTS + nObject;
+}
 
 //-------------------------------------------------------------------------

@@ -141,6 +141,7 @@ class __pack__ CPlayerData {
 		inline fix UpdateShield (fix delta) { return delta ? SetShield (Shield () + delta, false) : Shield (); }
 		inline fix UpdateEnergy (fix delta) { return delta ? SetEnergy (Energy () + delta) : Energy (); }
 		fix MaxShield (void);
+		CObject* Object (void);
 		void SetObject (short n);
 		float ShieldScale (void);
 

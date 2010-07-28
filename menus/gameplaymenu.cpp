@@ -353,9 +353,8 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
-if (gameOpts->gameplay.nShip != nShip) {
-	LOCALPLAYER.SetShield (-1);
-	MultiSendShield ();
+if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip != nShip)) {
+	LOCALPLAYER.Object ()->ApplyDamageToPlayer (NULL, LOCALPLAYER.Shield () + I2X (1));
 	MultiSendPlayerWeapons ();
 	}
 }
