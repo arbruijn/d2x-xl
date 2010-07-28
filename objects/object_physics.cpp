@@ -219,7 +219,9 @@ nOldThrusters [2] = ws.nThrusters [2];
 
 ws.nThrusters [0] = 
 ws.nThrusters [1] = 
-ws.nThrusters [2] = 0;
+ws.nThrusters [2] = 
+ws.nThrusters [3] = 
+ws.nThrusters [4] = 0;
 
 if (controls [0].forwardThrustTime < 0)
 	ws.nThrusters [0] = FRONT_THRUSTER | FRONTAL_THRUSTER;
@@ -240,15 +242,15 @@ if (controls [0].pitchTime > 0)
 else if (controls [0].pitchTime < 0)
 	ws.nThrusters [2] |= REAR_THRUSTER | TOP_THRUSTER | LR_THRUSTERS | LATERAL_THRUSTER;
 if (controls [0].headingTime > 0)
-	ws.nThrusters [2] |= REAR_THRUSTER | RIGHT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [3] |= REAR_THRUSTER | LEFT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
 else if (controls [0].headingTime < 0)
-	ws.nThrusters [2] |= REAR_THRUSTER | LEFT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [3] |= REAR_THRUSTER | RIGHT_THRUSTER | TB_THRUSTERS | LATERAL_THRUSTER;
 if (controls [0].bankTime > 0)
-	ws.nThrusters [2] |= RIGHT_THRUSTER | BOTTOM_THRUSTER | FR_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [4] |= LEFT_THRUSTER | BOTTOM_THRUSTER | FR_THRUSTERS | LATERAL_THRUSTER;
 else if (controls [0].bankTime < 0)
-	ws.nThrusters [2] |= LEFT_THRUSTER | BOTTOM_THRUSTER | FR_THRUSTERS | LATERAL_THRUSTER;
+	ws.nThrusters [4] |= RIGHT_THRUSTER | BOTTOM_THRUSTER | FR_THRUSTERS | LATERAL_THRUSTER;
 
-if (!(ws.nThrusters [0] | ws.nThrusters [1] | ws.nThrusters [2]))
+if (!(ws.nThrusters [0] | ws.nThrusters [1] | ws.nThrusters [2] | ws.nThrusters [3] | ws.nThrusters [4]))
 	ws.nThrusters [0] = REAR_THRUSTER | FRONTAL_THRUSTER;	// always on
 
 if (IsMultiGame && ((nOldThrusters [0] != ws.nThrusters [0]) || (nOldThrusters [1] != ws.nThrusters [1]) || (nOldThrusters [2] != ws.nThrusters [2])))

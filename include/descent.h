@@ -2396,7 +2396,7 @@ class CWeaponState {
 		char						nLaserLevel;
 		char						bTripleFusion;
 		char						nMslLaunchPos;
-		ubyte						nThrusters [3];
+		ubyte						nThrusters [5];
 		ubyte						nShip;
 
 	public:

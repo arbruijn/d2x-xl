@@ -358,7 +358,9 @@ if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip != nShip)) {
 	SetChaseCam (0);
 	SetFreeCam (0);
 	SetRearView (0);
+#if DBG
 	LOCALPLAYER.lives++;
+#endif
 	LOCALPLAYER.SetShield (-1);
 	if (LOCALPLAYER.Object ())
 		LOCALPLAYER.Object ()->Die ();
