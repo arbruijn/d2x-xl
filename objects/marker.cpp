@@ -53,7 +53,7 @@ viewers [0] =
 viewers [1] = -1;
 fScale = 2.0f;
 CLEAR (szMessage);
-CLEAR (nOwner);
+CLEAR (szOwner);
 CLEAR (viewers);
 CLEAR (szInput);
 nHighlight = 0;
@@ -61,7 +61,7 @@ nIndex = 0;
 nCurrent = 0;
 nLast = -1;
 fScale = 0;
-nDefiningMsg = 0;
+bDefiningMsg = false;
 position.Clear ();
 objects.Clear ();
 }
@@ -414,7 +414,7 @@ if (i == nMaxDrop) {		//no free slot
 m_data.szInput [0] = '\0';
 m_data.nIndex = 0;
 m_data.bRotate = bRotate;
-m_data.nDefiningMsg = 1;
+m_data.bDefiningMsg = true;
 m_data.nCurrent = i;
 }
 
@@ -427,7 +427,7 @@ void CMarkerManager::InputMessage (int key)
 switch (key) {
 	case KEY_F8:
 	case KEY_ESC:
-		m_data.nDefiningMsg = 0;
+		m_data.bDefiningMsg = 0;
 		GameFlushInputs ();
 		break;
 
@@ -444,13 +444,13 @@ switch (key) {
 		strupr (m_data.szInput);
 		strcpy (m_data.szMessage [nMarker], m_data.szInput);
 		if (IsMultiGame)
-			strcpy (m_data.nOwner [nMarker], LOCALPLAYER.callsign);
+			strcpy (m_data.szOwner [nMarker], LOCALPLAYER.callsign);
 		if ((bSpawn = !strcmp (m_data.szMessage [nMarker], "SPAWN")))
 			*m_data.szMessage [nMarker] = '\0';
 		Drop (m_data.nCurrent, bSpawn);
 		m_data.nLast = m_data.nCurrent;
 		GameFlushInputs ();
-		m_data.nDefiningMsg = 0;
+		m_data.bDefiningMsg = 0;
 		break;
 
 	default:
@@ -470,8 +470,8 @@ switch (key) {
 void CMarkerManager::SaveState (CFile& cf)
 {
 for (int i = 0; i < NUM_MARKERS; i++)
-	cf.WriteShort (m_Data.objects [i]);
-cf.Write (m_data.nOwner, sizeof (m_data.nOwner), 1);
+	cf.WriteShort (m_data.objects [i]);
+cf.Write (m_data.szOwner, sizeof (m_data.szOwner), 1);
 cf.Write (m_data.szMessage, sizeof (m_data.szMessage), 1);
 }
 
@@ -480,13 +480,13 @@ cf.Write (m_data.szMessage, sizeof (m_data.szMessage), 1);
 void CMarkerManager::LoadState (CFile& cf, bool bBinary)
 {
 if (bBinary)
-	m_data.objects.Read (m_cf);
+	m_data.objects.Read (cf);
 else {
-	for (i = 0; i < NUM_MARKERS; i++)
-		m_data.objects [i] = m_cf.ReadShort ();
+	for (int i = 0; i < NUM_MARKERS; i++)
+		m_data.objects [i] = cf.ReadShort ();
 	}
-m_cf.Read (m_data.nOwner, sizeof (m_data.nOwner), 1);
-m_cf.Read (m_data.szMessage, sizeof (m_data.szMessage), 1);
+cf.Read (m_data.szOwner, sizeof (m_data.szOwner), 1);
+cf.Read (m_data.szMessage, sizeof (m_data.szMessage), 1);
 }
 
 //------------------------------------------------------------------------------

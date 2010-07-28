@@ -49,6 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "key.h"
 #include "addon_bitmaps.h"
+#include "marker.h"
 
 #define SHOW_PLAYER_IP		0
 
@@ -1860,14 +1861,14 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 
 		case CV_MARKER: {
 			char label [10];
-			short v = markerManager.Viewers (w);
+			short v = markerManager.Viewer (w);
 			gameStates.render.nRenderingType = 5 + (w << 4);
 			if ((v == -1) || (markerManager.Objects (v) == -1)) {
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				break;
 				}
-			sprintf (label, "Marker %d", markerManager.Viewers (w) + 1);
-			cockpit->RenderWindow (w, OBJECTS + markerManager.Objects (markerManager.Viewers (w)), 0, WBU_MARKER, label);
+			sprintf (label, "Marker %d", markerManager.Viewer (w) + 1);
+			cockpit->RenderWindow (w, OBJECTS + markerManager.Objects (markerManager.Viewer (w)), 0, WBU_MARKER, label);
 			break;
 			}
 

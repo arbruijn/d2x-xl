@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "sphere.h"
 #include "monsterball.h"
+#include "marker.h"
 
 #ifdef TACTILE
 #include "tactile.h"
@@ -1105,7 +1106,7 @@ if (info.nId == gameData.multiplayer.nLocalPlayer) {
 		bDrawn = HUDInitMessage (TXT_MARKER_PLRMSG, gameData.multiplayer.players [markerP->info.nId / 2].callsign, markerManager.Message (markerP->info.nId));
 	else {
 		if (*markerManager.Message (markerP->info.nId))
-			bDrawn = HUDInitMessage (TXT_MARKER_IDMSG, markerP->info.nId + 1, markerManager.szMessage (markerP->info.nId));
+			bDrawn = HUDInitMessage (TXT_MARKER_IDMSG, markerP->info.nId + 1, markerManager.Message (markerP->info.nId));
 		else
 			bDrawn = HUDInitMessage (TXT_MARKER_ID, markerP->info.nId + 1);
 		}

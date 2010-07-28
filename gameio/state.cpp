@@ -89,6 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "dynlight.h"
 #include "ipx.h"
 #include "gr.h"
+#include "marker.h"
 
 #if DBG
 #	define IFDBG(_expr)	_expr
@@ -1971,7 +1972,7 @@ if (gameStates.app.bLunacy)
 	DoLunacyOn ();
 
 IFDBG (fPos = m_cf.Tell ());
-markerManager.LoadState ();
+markerManager.LoadState (m_cf);
 if (m_bSecret != 1)
 	gameData.physics.xAfterburnerCharge = m_cf.ReadFix ();
 else {
