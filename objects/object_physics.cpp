@@ -36,7 +36,7 @@ float shieldScale [3] = {1.0f, 0.8f, 1.2f};
 
 float CObject::SpeedScale (void)
 {
-return speedScale [gameData.multiplayer.weaponStates [info.nId].nShip];
+return (info.nType == OBJ_PLAYER) ? speedScale [gameData.multiplayer.weaponStates [info.nId].nShip] : 1.0f;
 }
 
 //------------------------------------------------------------------------------

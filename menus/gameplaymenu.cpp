@@ -52,6 +52,7 @@
 #include "renderthreads.h"
 #include "soundthreads.h"
 #include "menubackground.h"
+#include "systemkeys.h"
 
 static const char *pszAggressivities [6];
 static const char *pszWeaponSwitch [3];
@@ -354,6 +355,9 @@ if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 if (gameStates.app.bGameRunning && (gameOpts->gameplay.nShip != nShip)) {
+	SetChaseCam (0);
+	SetFreeCam (0);
+	SetRearView (0);
 	LOCALPLAYER.lives++;
 	LOCALPLAYER.SetShield (-1);
 	if (LOCALPLAYER.Object ())
