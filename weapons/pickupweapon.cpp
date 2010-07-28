@@ -94,7 +94,7 @@ else {
 		if (nWeaponIndex == EARTHSHAKER_INDEX)
 			nMaxAmount /= 2;
 		else
-			nMaxAmount = 3 * nMaxAmount / 4;
+			nMaxAmount = 4 * nMaxAmount / 5;
 		}
 	else {
 		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
