@@ -38,7 +38,10 @@ int PickupPrimary (int nWeaponIndex, int nPlayer)
 	ushort flag = 1 << nWeaponIndex;
 	int nCutPoint;
 	int nSupposedWeapon = gameData.weapons.nPrimary;
-	int bTripleFusion = !gameData.multiplayer.weaponStates [nPlayer].bTripleFusion && (nWeaponIndex == FUSION_INDEX) && EGI_FLAG (bTripleFusion, 0, 0, 0);
+	int bTripleFusion = (nWeaponIndex == FUSION_INDEX) 
+							  && (gameData.multiplayer.weaponStates [nPlayer].nShip != 1)
+							  && !gameData.multiplayer.weaponStates [nPlayer].bTripleFusion 
+							  && EGI_FLAG (bTripleFusion, 0, 0, 0);
 
 if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag) && !bTripleFusion) {
 	if (ISLOCALPLAYER (nPlayer))
@@ -87,8 +90,14 @@ if ((nWeaponIndex == PROXMINE_INDEX) && IsMultiGame && !COMPETITION && EGI_FLAG 
 else {
 	bSmokeGrens = 0;
 	nMaxAmount = nMaxSecondaryAmmo [nWeaponIndex];
-	if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
-		nMaxAmount *= 2;
+	if (gameData.multiplayer.weaponStates [nPlayer].nShip != 1) {
+		if (nWeaponIndex == EARTHSHAKER_INDEX)
+			nMaxAmount /= 2;
+		}
+	else {
+		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
+			nMaxAmount *= 2;
+		}
 	if (IsMultiGame && !IsCoopGame && gameStates.app.bHaveExtraGameInfo [1] && (nMaxAmount > extraGameInfo [1].loadout.nMissiles [nWeaponIndex]))
 		nMaxAmount = extraGameInfo [1].loadout.nMissiles [nWeaponIndex];
 	}

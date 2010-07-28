@@ -476,7 +476,9 @@ return PickupEquipment (objP, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp,
 
 int PickupAmmoRack (CObject *objP, int nPlayer)
 {
-return PickupEquipment (objP, PLAYER_FLAGS_AMMO_RACK, TXT_THE_AMMORACK, TXT_GOT_AMMORACK, nPlayer) != 0;
+return (gameData.multiplayer.weaponStates [nPlayer].nShip == 1)
+		 ? 0
+		 : PickupEquipment (objP, PLAYER_FLAGS_AMMO_RACK, TXT_THE_AMMORACK, TXT_GOT_AMMORACK, nPlayer) != 0;
 }
 
 //	-----------------------------------------------------------------------------
