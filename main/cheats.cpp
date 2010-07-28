@@ -504,7 +504,7 @@ if (bVerbose)
 
 void GasolineCheat (int bVerbose)
 {
-LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
+LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
 OBJECTS [gameData.multiplayer.nLocalPlayer].ResetDamage ();
 MultiSendShield ();
 LOCALPLAYER.SetEnergy (MAX_ENERGY);
@@ -782,6 +782,7 @@ bLastSecondaryWasSuper [PROXMINE_INDEX] = 1;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
 
+LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
 LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (gameStates.app.bD1Mission)
 	LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;

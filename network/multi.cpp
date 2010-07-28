@@ -539,7 +539,7 @@ if (gameData.multiplayer.players [nPlayer].nScoreGoalCount >= ScoreGoal (bForce)
 		HUDInitMessage (TXT_REACH_SCOREGOAL2, gameData.multiplayer.players [nPlayer].callsign);
 	else {
 		HUDInitMessage (TXT_REACH_SCOREGOAL);
-		LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield ());
+		LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
 		}
 	if (!gameData.reactor.bDestroyed) {
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
