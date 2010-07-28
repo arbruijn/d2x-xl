@@ -321,8 +321,11 @@ fix CPlayerData::SetShield (fix s)
 { 
 if (s > MaxShield ())
 	s = MaxShield ();
-if (nObject >= 0)
-	OBJECTS [nObject].SetShield (s); 
+if (shield != s) {
+	if (nObject >= 0)
+		OBJECTS [nObject].SetShield (s); 
+	MultiSendShield ();
+	}
 return shield = s;
 }
 

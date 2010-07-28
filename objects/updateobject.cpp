@@ -235,7 +235,6 @@ if ((info.nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == info.nId
 
 	playerP->UpdateShield (-segP->ShieldDamage (playerP->Shield () + 1));
 	playerP->UpdateEnergy (-segP->EnergyDamage (playerP->energy));
-	MultiSendShield ();
 	if (playerP->Shield () < 0)
 		StartPlayerDeathSequence (this);
 	else {
